@@ -1,0 +1,195 @@
+{
+  "schema": "rtdl.v4.goal4674.aggregate_frontier_device_columns_static_protocol_gate.v1",
+  "date": "2026-06-25",
+  "status": "goal4674_static_protocol_gate_complete_pod_not_authorized",
+  "decision_label": "aggregate_frontier_device_columns_static_protocol_gate_pass__goal4675_local_runner_authorized__pod_not_authorized",
+  "purpose": "Prove that AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D is a valid V4 local implementation target before any POD benchmark or release claim.",
+  "inputs": {
+    "approved_forward_goals": "future/v4/v4_goal4674_4683_forward_goals_after_design_gate_2026-06-25.md",
+    "goal4673_target_design_gate": "future/v4/v4_goal4673_target_design_gate_2026-06-25.md",
+    "goal4673_machine_evidence": "future/v4/evidence/v4_goal4673_target_design_gate_2026-06-25.json",
+    "v2_14_primitive_audit": "future/v4/v4_goal4672_v2_14_per_app_primitive_audit_2026-06-25.md",
+    "v4_three_tier_design": "future/v4/rtdl_v4_0_three_tier_fused_architecture_design_2026-06-24.md",
+    "refresh_runbook_read": "future/v4/V4_CURRENT_AGENT_REFRESH_RUNBOOK_2026-06-25.md"
+  },
+  "selected_target": {
+    "operator": "AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D",
+    "candidate_v4_surface": "v4_aggregate_frontier_device_columns_2d_prepared_runner",
+    "work_class": "new_generic_runtime_lever_absent_from_v2_14_but_preexisting_in_v3_0_2",
+    "app_probe": "barnes_hut",
+    "app_probe_role": "stress_probe_only_not_engine_identity",
+    "target_identity": "generic aggregate-frontier device-column producer for downstream continuation",
+    "not_target_identity": [
+      "Barnes-Hut force-law engine",
+      "aggregate-tree fused weighted-vector sum as-is",
+      "partner migration",
+      "front-door cleanup only"
+    ]
+  },
+  "static_source_audit": {
+    "current_contract_file": "src/rtdsl/aggregate_tree_reference.py",
+    "current_optix_runtime_file": "src/rtdsl/optix_runtime.py",
+    "current_native_api_file": "src/native/optix/rtdl_optix_api.cpp",
+    "current_native_prelude_file": "src/native/optix/rtdl_optix_prelude.h",
+    "contract_validation_function": "validate_aggregate_frontier_device_columns_native_abi_contract",
+    "required_current_symbols": [
+      "AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D",
+      "rtdl_optix_prepare_aggregate_frontier_device_columns_2d",
+      "rtdl_optix_run_aggregate_frontier_device_columns_2d",
+      "rtdl_optix_destroy_aggregate_frontier_device_columns_2d"
+    ],
+    "current_symbols_present": true,
+    "current_python_runtime_exports_prepare_wrapper": true,
+    "native_device_column_body_does_not_wrap_old_host_row_collector": true,
+    "native_device_column_body_forbidden_substrings_absent": [
+      "rtdl_optix_collect_aggregate_frontier_2d(",
+      "frontier_rows_out",
+      "std::vector<int64_t> frontier_rows"
+    ],
+    "native_device_column_api_required_substrings_present": [
+      "rtdl_aggregate_frontier_count_2d",
+      "rtdl_aggregate_frontier_prefix_2d",
+      "rtdl_aggregate_frontier_write_2d"
+    ],
+    "native_device_column_run_body_required_substrings_present": [
+      "g_aggregate_frontier_device_columns_2d.count_fn",
+      "g_aggregate_frontier_device_columns_2d.prefix_fn",
+      "g_aggregate_frontier_device_columns_2d.write_fn",
+      "cuLaunchKernel",
+      "row_offsets",
+      "source_ids_device_ptr"
+    ],
+    "runtime_metadata_claims": {
+      "frontier_columns_materialized_on_host": false,
+      "row_offsets_materialized_on_host": false,
+      "small_host_outputs_materialized_only": [
+        "row_count",
+        "attempted_count",
+        "overflow"
+      ],
+      "device_resident_payload_required": true,
+      "host_row_materialization_before_partner_forbidden": true
+    },
+    "claim_boundary_in_contract": {
+      "implementation_claim_authorized": true,
+      "public_speedup_claim_authorized": false,
+      "rt_core_speedup_claim_authorized": false,
+      "whole_app_speedup_claim_authorized": false,
+      "true_zero_copy_claim_authorized": false,
+      "paper_reproduction_claim_authorized": false
+    }
+  },
+  "version_denominators": {
+    "v2_14": {
+      "classification": "logical_family_present_device_column_primitive_absent",
+      "strongest_known_relevant_route": "RTDL/OptiX aggregate-frontier host/native row collection plus explicit CuPy or Numba weighted-vector continuation",
+      "symbols_confirmed_present": [
+        "rtdl_optix_collect_aggregate_frontier_2d"
+      ],
+      "symbols_confirmed_absent": [
+        "AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D",
+        "rtdl_optix_prepare_aggregate_frontier_device_columns_2d",
+        "rtdl_optix_run_aggregate_frontier_device_columns_2d",
+        "rtdl_optix_destroy_aggregate_frontier_device_columns_2d"
+      ],
+      "comparison_rule": "V4 must compare against this strongest V2.14 logical route, not against toy CPU-only or weak host baselines."
+    },
+    "v3_0_2": {
+      "classification": "device_column_primitive_present",
+      "symbols_confirmed_present": [
+        "AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D",
+        "rtdl_optix_prepare_aggregate_frontier_device_columns_2d",
+        "rtdl_optix_run_aggregate_frontier_device_columns_2d",
+        "rtdl_optix_destroy_aggregate_frontier_device_columns_2d",
+        "rtdl_optix_collect_aggregate_frontier_2d"
+      ],
+      "comparison_rule": "A V4/V3.0.2 same-route parity result is not a clean V4 failure by itself; the clean-new-lever claim is V4/V2.14. Any V4/V3.0.2 claim must be framed as productization or same-route improvement only."
+    },
+    "current_v4": {
+      "classification": "target_selected_static_gate_passed_but_not_catalog_or_release_surface",
+      "next_allowed_work": "Goal4675 local runner productization only"
+    }
+  },
+  "frozen_correctness_contract": {
+    "aggregate_frontier_row_parity_required": true,
+    "row_schema": [
+      "source_id",
+      "frontier_kind_code",
+      "item_id",
+      "owner_aggregate_id",
+      "dfs_index",
+      "resume_index",
+      "metadata_flags"
+    ],
+    "row_offsets_parity_required": true,
+    "overflow_policy": "fail_closed_before_result_materialization",
+    "downstream_summary_parity_required": true,
+    "downstream_summary_reference": "sum_aggregate_frontier_weighted_vectors_2d_cpu_reference",
+    "allowed_small_host_outputs": [
+      "row_count",
+      "attempted_count",
+      "overflow",
+      "phase_timings"
+    ],
+    "forbidden_hot_path_outputs_before_partner": [
+      "frontier_i64_rows_host_tuple",
+      "frontier_rows_host_dicts",
+      "per_source_summary_host_dict"
+    ]
+  },
+  "frozen_later_pod_bars_if_goal4676_is_authorized": {
+    "aggregate_frontier_hot_v4_over_v2_14_min": 1.2,
+    "aggregate_frontier_wall_v4_over_v2_14_min": 1.1,
+    "app_probe_hot_v4_over_v2_14_min": 1.2,
+    "correctness_parity_required": true,
+    "host_frontier_materialization_in_hot_path_allowed": false,
+    "partner_migration_counts_as_speed": false,
+    "v4_over_v3_0_2_same_route_required_for_clean_new_lever": false
+  },
+  "goal4675_authorization": {
+    "local_runner_productization_authorized": true,
+    "pod_run_authorized": false,
+    "public_claim_authorized": false,
+    "required_goal4675_output": "v4_aggregate_frontier_device_columns_2d_prepared_runner with phase/residency telemetry and local correctness fixtures",
+    "required_goal4675_restrictions": [
+      "no app-identity public or native symbols",
+      "no Barnes-Hut force-law engine",
+      "no wrapping rtdl_optix_collect_aggregate_frontier_2d as the hot device-column route",
+      "no promotion of aggregate-tree fused weighted-vector sum as-is",
+      "no POD benchmark before Goal4676 protocol"
+    ]
+  },
+  "kill_conditions": [
+    "A later audit finds an equivalent V2.14 device-column route under another name.",
+    "Goal4675 cannot implement the route without host frontier row materialization before partner continuation.",
+    "Goal4675 requires Barnes-Hut, force-law, or app-specific engine semantics.",
+    "Goal4675 can only reuse the rejected aggregate-tree fused weighted-vector implementation as-is.",
+    "Correctness parity against the frozen row and summary contracts fails.",
+    "Phase telemetry cannot distinguish aggregate-frontier traversal from downstream continuation."
+  ],
+  "review_state": {
+    "codex_status": "self_audit_complete",
+    "claude_status": "weekly_limit_known_until_2026-06-28_19:00_America_New_York_review_debt_recorded",
+    "antigravity_status": "bounded_attempt_empty_stdout_stderr_review_debt_recorded",
+    "three_ai_consensus_status": "pending_or_debt_allowed_no_release_authorization",
+    "local_work_can_continue": "Goal4675 local implementation only"
+  },
+  "claim_boundary": {
+    "release_authorized": false,
+    "public_speedup_wording_authorized": false,
+    "whole_app_high_performance_wording_authorized": false,
+    "pod_run_authorized_by_goal4674": false,
+    "rt_core_speedup_wording_authorized": false,
+    "true_zero_copy_wording_authorized": false,
+    "c_abi_or_embedding_authorized": false,
+    "non_python_host_authorized": false,
+    "arbitrary_callback_claim_authorized": false
+  },
+  "goal_level_decision_audit": {
+    "was_i_being_stupid": true,
+    "stupid_action_risk": "The stupid path would be to count the existing aggregate-frontier family as a V4 speed win without freezing the V2.14 denominator and without proving the device-column route avoids host frontier materialization.",
+    "alternative_path": "Treat Goal4674 as a static/protocol gate only, authorize only local runner productization, and keep POD and public claims blocked.",
+    "can_try_better_path_now": true,
+    "decision": "Proceed to Goal4675 local runner productization; do not run POD until Goal4676 is separately authorized."
+  }
+}

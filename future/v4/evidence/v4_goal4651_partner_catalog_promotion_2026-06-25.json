@@ -1,0 +1,123 @@
+{
+  "status": "goal4651_partner_catalog_promotion_regression_gate_pass_pending_review",
+  "goal": "Goal4651",
+  "tier2_measured_operator_surface_count": 8,
+  "certified_partner_surface_count": 2,
+  "tier2_catalog_preserved_as_rt_core_operator_catalog": true,
+  "partner_catalog_is_separate_from_tier2_catalog": true,
+  "am1_partner_migration_lock_preserved": true,
+  "formal_v4_speed_claim_from_partner_rows_authorized": false,
+  "certified_partner_surfaces": [
+    {
+      "operator": "grouped_vector_sum_f64x2",
+      "catalog_class": "certified_partner",
+      "surface_status": "certified_partner_surface_goal4651_not_formal_v4_speed_win",
+      "api_surface": "prepare_grouped_vector_sum_2d_partner_columns_session(partner='cupy')",
+      "generic_primitive": "GROUPED_VECTOR_SUM_F64X2",
+      "measured_partners": [
+        "cupy"
+      ],
+      "declared_unmeasured_partners": [
+        "torch",
+        "numba",
+        "rtdl_native"
+      ],
+      "partner_claim_status": "certified_on_v4_goal4649_pod_cupy_not_v4_speed_win",
+      "continuation_class": "grouped_vector_sum",
+      "baseline_denominator": "same_contract_python_cpu_row_loop_and_optional_numba_partner_control",
+      "scale": "rows 262144/524288, groups 1024/2048, repeat 100, warmup 3",
+      "representative_speedup_floor": 1.2,
+      "partner_parity_floor": 0.98,
+      "min_representative_speedup": 1716.8217704918034,
+      "representative_speedup_range": "1716.8218x-2390.9160x",
+      "comparison_class": "partner_certification_same_contract_python_cpu_row_loop_denominator",
+      "claim_class": "partner_certified_surface_not_formal_v4_speed_win",
+      "rt_core_operator_surface": false,
+      "source_evidence": [
+        "future/v4/evidence/v4_goal4649_cupy_grouped_reduction_gate_2026-06-25/pod_live_summary.json",
+        "future/v4/v4_goal4649_cupy_frontdoor_certification_gate_2026-06-25.md",
+        "future/v4/reviews/goal4649_completion_consensus_2026-06-25.md"
+      ],
+      "partner_migration_counts_as_v4_speed_win": false,
+      "partner_parity_counts_as_v4_speed_win": false,
+      "cupy_performance_claim_authorized": false,
+      "release_claim_authorized": false,
+      "broad_v4_speedup_claim_authorized": false,
+      "whole_app_speedup_claim_authorized": false,
+      "app_specific_native_kernel_authorized": false
+    },
+    {
+      "operator": "fixed_radius_graph_component_union_3d",
+      "catalog_class": "certified_partner",
+      "surface_status": "certified_partner_surface_goal4651_not_formal_v4_speed_win",
+      "api_surface": "v4_fixed_radius_graph_component_union_3d_device_arrays",
+      "generic_primitive": "FIXED_RADIUS_GRAPH_COMPONENT_UNION_3D",
+      "measured_partners": [
+        "numba"
+      ],
+      "declared_unmeasured_partners": [
+        "torch",
+        "cupy"
+      ],
+      "partner_claim_status": "certified_on_v4_goal4650_from_goal4635_pod_numba",
+      "continuation_class": "component_union",
+      "baseline_denominator": "same_contract_embree_control_and_legacy_optix_control",
+      "scale": "clustered3d 262144 points, repeat 5, warmup 1",
+      "representative_speedup_floor": 1.2,
+      "partner_parity_floor": 0.98,
+      "min_representative_speedup": 1.3930791165731065,
+      "representative_speedup_range": "1.3931x-1.6001x vs Embree, 1.2080x wall vs legacy",
+      "comparison_class": "same_contract_embree_control_and_legacy_optix_control",
+      "claim_class": "fixed_numba_certified_tier2_operator_surface_not_whole_app_speed_win",
+      "rt_core_operator_surface": true,
+      "source_evidence": [
+        "future/v4/evidence/v4_goal4650_fixed_numba_continuation_certification_2026-06-25.json",
+        "future/v4/evidence/v4_goal4635_component_union_pod_gate_embree_2026-06-25/summary.json",
+        "future/v4/reviews/goal4650_completion_consensus_2026-06-25.md"
+      ],
+      "partner_migration_counts_as_v4_speed_win": false,
+      "partner_parity_counts_as_v4_speed_win": false,
+      "cupy_performance_claim_authorized": false,
+      "release_claim_authorized": false,
+      "broad_v4_speedup_claim_authorized": false,
+      "whole_app_speedup_claim_authorized": false,
+      "app_specific_native_kernel_authorized": false
+    }
+  ],
+  "planner_regression_expectations": [
+    {
+      "operator": "grouped_vector_sum",
+      "partner": "cupy",
+      "expected_status": "certified_partner_measured_ready"
+    },
+    {
+      "operator": "grouped_vector_sum",
+      "partner": "torch",
+      "expected_status": "certified_partner_declared_unmeasured"
+    },
+    {
+      "operator": "grouped_vector_sum",
+      "partner": "numba",
+      "expected_status": "certified_partner_declared_unmeasured"
+    },
+    {
+      "operator": "component_union",
+      "partner": "numba",
+      "expected_status": "tier2_measured_ready"
+    }
+  ],
+  "test_command": "py -m unittest tests.v4_goal4651_partner_catalog_promotion_test tests.v4_operator_catalog_test tests.v4_frontdoor_test tests.v4_goal4649_cupy_certification_gate_test tests.v4_goal4649_cupy_certification_pod_evidence_test tests.v4_goal4650_fixed_numba_continuation_certification_test",
+  "test_result": "Ran 35 tests OK",
+  "claim_boundaries": {
+    "release_claim_authorized": false,
+    "broad_v4_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "cupy_performance_claim_authorized": false,
+    "tier3_callback_claim_authorized": false,
+    "raw_optix_callback_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "c_abi_or_embedding_claim_authorized": false,
+    "non_python_host_claim_authorized": false,
+    "app_specific_native_kernel_authorized": false
+  }
+}

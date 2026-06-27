@@ -1,0 +1,143 @@
+{
+  "goal": "Goal4742",
+  "title": "current release framing after blocker closure",
+  "date": "2026-06-26",
+  "status": "complete_pending_external_review_debt",
+  "decision": "bounded_high_performance_python_edsl_release_candidate__not_all_benchmark_apps_faster",
+  "current_position": {
+    "recommended_label": "bounded_high_performance_python_edsl_operator_pushdown_release_candidate",
+    "all_10_historical_benchmark_apps_faster_than_v2_14": false,
+    "final_tag_authorized": false,
+    "external_review_required": true
+  },
+  "benchmark_app_matrix": {
+    "app_count": 10,
+    "candidate_rows_vs_v2_with_v3_no_regression": 3,
+    "candidate_apps": [
+      "hausdorff_xhd",
+      "triangle_counting",
+      "barnes_hut"
+    ],
+    "rows": [
+      {
+        "app": "hausdorff_xhd",
+        "v4_vs_v2_14_hot": 201581.8595690473,
+        "v4_vs_v3_0_2_hot": 2.545755697036957,
+        "classification": "app_level_candidate_win_denominator_caveat"
+      },
+      {
+        "app": "triangle_counting",
+        "v4_vs_v2_14_hot": 6.380727131464089,
+        "v4_vs_v3_0_2_hot": 1.0433948035922396,
+        "classification": "app_level_candidate_win_after_high_repeat_rerun"
+      },
+      {
+        "app": "barnes_hut",
+        "v4_vs_v2_14_hot": 282.46785456124815,
+        "v4_vs_v3_0_2_hot": 1.00274877675932,
+        "classification": "app_level_candidate_vs_v2_v3_no_regression_no_rt_core_force_law"
+      },
+      {
+        "app": "raydb_style",
+        "v4_vs_v2_14_hot": 1.1031164464050043,
+        "v4_vs_v3_0_2_hot": 1.1048050187116953,
+        "classification": "repaired_modest_device_output_win_below_formal_candidate_bar"
+      },
+      {
+        "app": "rt_dbscan",
+        "v4_vs_v2_14_hot": 1.086127902760864,
+        "v4_vs_v3_0_2_hot": 1.083118498208389,
+        "classification": "modest_no_go_for_current_grouped_union_trunk"
+      },
+      {
+        "app": "librts_spatial_index",
+        "v4_vs_v2_14_hot": 1.002850507944097,
+        "v4_vs_v3_0_2_hot": 1.0039094127325017,
+        "classification": "parity_not_speed_evidence"
+      },
+      {
+        "app": "rtnn",
+        "v4_vs_v2_14_hot_serious_262144": 0.9985142636714865,
+        "v4_vs_v2_14_hot_serious_1048576": 0.9938654084870772,
+        "v4_vs_v3_0_2_hot_serious_262144": 1.005,
+        "v4_vs_v3_0_2_hot_serious_1048576": 0.993,
+        "classification": "measured_no_win_at_serious_scales"
+      },
+      {
+        "app": "robot_collision",
+        "classification": "same_primitive_boundary_repaired_no_v4_over_v2_speed_credit"
+      },
+      {
+        "app": "contact_manifold",
+        "classification": "design_no_go_for_current_high_performance_path"
+      },
+      {
+        "app": "spatial_rayjoin",
+        "shape_pair_subprobe_v4_hot_over_v2_14": 0.9631953985515683,
+        "shape_pair_subprobe_v4_hot_over_v3_0_2": 0.9769985795123769,
+        "classification": "no_current_full_v4_route_subprobe_failed_bars"
+      }
+    ]
+  },
+  "v4_edsl_operator_pushdown_value": {
+    "workflow": "ray_triangle_custom_predicate_early_exit_multi_hit",
+    "surface": "v4_ray_triangle_custom_predicate_early_exit_3d_numba",
+    "v4_vs_v2_14_materialized_device_fallback_geomean": 4.632757911153888,
+    "v4_vs_v3_0_2_materialized_device_fallback_geomean": 4.632757911153888,
+    "minimum_primary_ratio": 2.054686620906942,
+    "correctness": "pass",
+    "counts_as_legacy_10_app_win": false,
+    "counts_as_v4_edsl_value": true
+  },
+  "allowed_internal_wording": "V4 is a Python eDSL/runtime release candidate for measured RT-core operator pushdown. It includes 10 measured operator/workflow surfaces, a constrained Numba custom-predicate early-exit surface with 4.633x serious-scale geomean versus materialized-device fallback, and three historical benchmark-app candidate wins. It does not claim that all historical benchmark apps are faster than V2.14.",
+  "blocked_wording": [
+    "all benchmark apps are faster",
+    "V4 universally beats V2.14",
+    "formal high-performance across the full 10-app suite",
+    "arbitrary Python callbacks",
+    "raw OptiX callbacks",
+    "true zero-copy",
+    "non-Python embedding/C ABI",
+    "app-specific native kernels"
+  ],
+  "next_goals": [
+    {
+      "id": "Goal4743",
+      "target": "public_docs_examples_status",
+      "objective": "update docs/tutorials/examples/status pages to match bounded framing"
+    },
+    {
+      "id": "Goal4744",
+      "target": "clean_local_and_gpu_gates",
+      "objective": "run clean local gates and selected GPU catalog/POD gate"
+    },
+    {
+      "id": "Goal4745",
+      "target": "external_release_candidate_review",
+      "objective": "send bounded release-candidate packet to Claude and Antigravity"
+    },
+    {
+      "id": "Goal4746",
+      "target": "final_release_or_reject_decision",
+      "objective": "approve bounded V4 release or reject and require more app-level wins"
+    }
+  ],
+  "claim_boundary": {
+    "release_authorized": false,
+    "final_v4_tag_authorized": false,
+    "all_benchmark_speedup_claim_authorized": false,
+    "broad_v4_over_v2_14_claim_authorized": false,
+    "formal_high_performance_across_full_10_app_suite_authorized": false,
+    "arbitrary_callback_support_authorized": false,
+    "raw_optix_callback_support_authorized": false,
+    "true_zero_copy_wording_authorized": false,
+    "non_python_embedding_c_abi_claim_authorized": false,
+    "app_specific_native_kernel_authorized": false
+  },
+  "goal_level_decision_audit": {
+    "was_i_being_foolish": false,
+    "foolish_action_if_yes": "Hiding no-go rows and pretending the three candidate apps plus custom predicate workflow mean the whole 10-app suite is faster would be foolish.",
+    "alternative_path": "Continue chasing known no-go rows without a new route, which would be avoidance.",
+    "different_path_now": "Move to release hardening under honest wording: docs, tests, external review, and final bounded-release decision."
+  }
+}

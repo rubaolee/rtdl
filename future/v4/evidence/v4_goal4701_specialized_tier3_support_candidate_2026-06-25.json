@@ -1,0 +1,46 @@
+{
+  "candidate": {
+    "arbitrary_callback_authorized": false,
+    "broad_speedup_claim_authorized": false,
+    "candidate_label": "specialized_numba_scalar_callback_support_candidate",
+    "candidate_scope": "module-specialized Numba C-ABI scalar device callback called as a direct device function from an RTDL-generated OptiX hit-program route",
+    "evidence_chain": [
+      "Goal4689 minimal launch correctness for scalar callback",
+      "Goal4691 SBT direct-callable overhead measured yellow at 1.6705538933080346x",
+      "Goal4692 pivot away from SBT direct-callable support",
+      "Goal4693 specialized hit-program callback correctness",
+      "Goal4695 specialized hit-program callback overhead passed at 1.0355240926982583x",
+      "Goal4696 productization decision for constrained specialized candidate",
+      "Goal4697 API contract and negative validation scaffold",
+      "Goal4698 compile/cache/error-reporting scaffold",
+      "Goal4699 app-route validation protocol frozen",
+      "Goal4700 weighted-sum app-route POD gate passed against Tier-2 denominator"
+    ],
+    "missing_before_public_support": [
+      "external 3-AI review of Goals4696-4700",
+      "20 compile/link/launch attempts across at least 4 accepted scalar callback variants",
+      "dense/sparse/no-hit correctness datasets for the candidate route",
+      "cache reuse and error-reporting behavior tested under repeated compiles",
+      "user-facing docs wording reviewed and bounded",
+      "final release/support authorization gate"
+    ],
+    "next_goal": "Goal4702 specialized Tier-3 reliability matrix protocol",
+    "public_support_authorized": false,
+    "raw_optix_callback_authorized": false,
+    "release_authorized": false,
+    "satisfied_gates": [
+      "single scalar callback PTX generation",
+      "OptiX module composition and launch correctness",
+      "specialized hit-program overhead under 1.50x focused gate",
+      "one weighted-sum app-route parity/performance gate passed",
+      "fail-closed rejection for arbitrary Python/action/external-memory/dynamic-SBT shapes",
+      "public support flags remain false"
+    ],
+    "status": "goal4701_specialized_tier3_support_candidate_packet_not_public_support",
+    "whole_app_speedup_claim_authorized": false
+  },
+  "missing_or_invalid": [],
+  "schema": "rtdl.v4.goal4701_specialized_tier3_support_candidate.v1",
+  "status": "passed",
+  "validation_status": "passed"
+}

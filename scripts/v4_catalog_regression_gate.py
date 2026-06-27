@@ -150,6 +150,10 @@ def _example_commands(
             [python, "future/v4/examples/v4_frontdoor_quickstart.py"],
         ),
         (
+            "custom_predicate_early_exit_planning",
+            [python, "examples/v4/custom_predicate_early_exit_planning.py"],
+        ),
+        (
             "operator_callback_planning_tier2",
             [python, "future/v4/examples/operator_callback_planning.py", "--case", "tier2"],
         ),
@@ -205,10 +209,23 @@ def _validate_payload(name: str, payload: dict[str, Any], mode: str) -> tuple[bo
     elif name == "v4_frontdoor_quickstart":
         if payload.get("status") != "ok":
             failures.append("quickstart_status_not_ok")
-        if payload.get("measured_surface_count") != 8:
-            failures.append("quickstart_surface_count_not_8")
+        if payload.get("measured_surface_count") != 10:
+            failures.append("quickstart_surface_count_not_10")
         if payload.get("candidate_surface_count") != 0:
             failures.append("quickstart_candidate_surface_count_not_0")
+        if payload.get("candidate_operator_count") != 0:
+            failures.append("quickstart_candidate_operator_count_not_0")
+    elif name == "custom_predicate_early_exit_planning":
+        if payload.get("status") != "ok":
+            failures.append("custom_predicate_status_not_ok")
+        if payload.get("surface") != "v4_ray_triangle_custom_predicate_early_exit_3d_numba":
+            failures.append("custom_predicate_surface_drift")
+        if payload.get("planner_accepts_constrained_predicate") is not True:
+            failures.append("custom_predicate_planner_not_accepting")
+        if payload.get("arbitrary_python_callback_authorized") is not False:
+            failures.append("custom_predicate_arbitrary_python_authorized")
+        if float(payload.get("serious_scale_v4_vs_v3_0_2_geomean", 0.0)) < 4.0:
+            failures.append("custom_predicate_serious_scale_geomean_below_4x")
     elif name == "operator_callback_planning_tier2":
         if payload.get("status") != "tier2_measured_ready":
             failures.append("tier2_planner_not_ready")
@@ -221,6 +238,8 @@ def _validate_payload(name: str, payload: dict[str, Any], mode: str) -> tuple[bo
             "v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays",
             "v4_fixed_radius_graph_component_union_3d_device_arrays",
             "v4_aabb_index_query_2d_all_ops_count_prepared_runner",
+            "v4_aggregate_frontier_device_columns_2d_prepared_runner",
+            "v4_ray_triangle_custom_predicate_early_exit_3d_numba",
         }:
             failures.append("tier2_planner_surface_not_measured")
         if payload.get("measured_partner") is not True:
@@ -305,11 +324,16 @@ def main() -> int:
         "git_commit": _git_value("rev-parse", "HEAD"),
         "git_branch": _git_value("rev-parse", "--abbrev-ref", "HEAD"),
         "native_library": os.environ.get("RTDL_OPTIX_LIBRARY") or os.environ.get("RTDL_OPTIX_LIB"),
-        "release_authorized": True,
+        "release_authorized": False,
         "authorized_release_label": V4_AUTHORIZED_RELEASE_LABEL,
         "broad_v4_speedup_claim_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "all_benchmark_speedup_claim_authorized": False,
+        "true_zero_copy_authorized": False,
         "tier3_callback_claim_authorized": False,
+        "raw_optix_callback_claim_authorized": False,
         "cupy_performance_claim_authorized": False,
+        "embedding_c_abi_claim_authorized": False,
         "non_python_host_binding_claim_authorized": False,
         "app_specific_native_kernel_authorized": False,
         "examples": rows,

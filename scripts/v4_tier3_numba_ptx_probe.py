@@ -14,8 +14,8 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 
-def _custom_scalar_reduce(hit_distance, weight, state):
-    return state + hit_distance * weight
+def _custom_scalar_reduce(hit_distance, primitive_id, weight, state):
+    return state + hit_distance * weight + primitive_id * 0.0
 
 
 def _configure_numba_legacy_nvvm_env(toolchain: dict[str, object]) -> dict[str, object]:
@@ -117,13 +117,15 @@ def _run_probe(dry_run: bool, ptx_out: Path | None = None) -> dict[str, Any]:
     try:
         ptx, return_type = cuda.compile_ptx(
             _custom_scalar_reduce,
-            (types.float64, types.float64, types.float64),
+            (types.float64, types.uint32, types.float64, types.float64),
             device=True,
             fastmath=False,
+            abi="c",
         )
         payload.update(
             {
                 "status": "ptx_generated",
+                "ptx_abi": "c",
                 "ptx_generated": True,
                 "ptx_length": len(ptx),
                 "return_type": str(return_type),

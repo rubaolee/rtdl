@@ -1,0 +1,298 @@
+{
+  "schema": "rtdl.v4.goal4723.complete_10_app_app_level_protocol.v1",
+  "status": "goal4723_complete_10_app_protocol_frozen_not_run",
+  "date": "2026-06-26",
+  "decision_label": "complete_10_app_v2_14_vs_v4_protocol_frozen_final_tag_blocked_until_matrix_closure",
+  "purpose": "Freeze the complete 10 benchmark-app V2.14-vs-V4 app-level protocol before additional POD runs. Every promoted benchmark app must become a measured row, measured no-win row, regression row, or explicit no-route/no-go blocker.",
+  "source_context": [
+    "future/v4/v2_14_vs_v4_per_app_implementation_comparison_2026-06-26.md",
+    "future/v4/v4_goals_4723_4733_complete_10_app_app_level_benchmark_closure_2026-06-26.md",
+    "future/v4/evidence/v4_goal4672_v2_14_per_app_primitive_audit_2026-06-25.json",
+    "future/v4/evidence/v4_goal4662_app_route_binding_after_hausdorff_rtnn_2026-06-25.json",
+    "future/v4/evidence/v4_goal4669_app_level_benchmark_analysis_2026-06-25.json"
+  ],
+  "app_order": [
+    "rt_dbscan",
+    "raydb_style",
+    "triangle_counting",
+    "librts_spatial_index",
+    "hausdorff_xhd",
+    "robot_collision",
+    "contact_manifold",
+    "rtnn",
+    "spatial_rayjoin",
+    "barnes_hut"
+  ],
+  "allowed_row_classes": [
+    "measured_existing_full_app_row",
+    "measured_no_win_candidate",
+    "route_gap_requires_generic_operator",
+    "no_v4_route_blocker",
+    "deferred_no_app_identity_route"
+  ],
+  "global_rules": {
+    "v2_means_v2_14": true,
+    "same_rt_hardware_required": true,
+    "correctness_parity_required_for_timed_credit": true,
+    "silent_v2_v3_fallback_authorized": false,
+    "app_specific_native_kernel_authorized": false,
+    "partner_migration_counts_as_v4_speed_win": false,
+    "same_primitive_productization_counts_as_v4_speed_win": false,
+    "operator_or_subprobe_counts_as_full_app_result": false,
+    "final_v4_tag_blocked_until_goal4733": true,
+    "pod_authorized_by_goal4723": false
+  },
+  "default_bars": {
+    "no_regression_floor": 0.98,
+    "default_v4_vs_v2_14_speedup_min_for_high_performance": 1.2,
+    "default_v4_vs_v3_0_2_speedup_min_for_clean_v4_win": 1.05,
+    "missing_route_row_must_name_generic_operator_gap": true
+  },
+  "rows": [
+    {
+      "app": "rt_dbscan",
+      "row_class": "measured_existing_full_app_row",
+      "v2_14_route": "mixed explicit RT-DBSCAN route with prepared RT-core count-threshold 3D plus grouped-stream CuPy/Numba component continuation",
+      "v4_route": "V4 fixed-radius count-threshold plus fixed Numba component-union route",
+      "v4_route_status": "runnable_full_app_route",
+      "mapped_v4_operators": [
+        "v4_fixed_radius_count_threshold_2d_device_arrays",
+        "v4_fixed_radius_graph_component_union_3d_device_arrays"
+      ],
+      "dataset_scale": "clustered3d point_count=262144 radius=3.0 min_neighbors=4",
+      "warmup": 1,
+      "repeat": 5,
+      "correctness_oracle": "component-label/signature parity; large performance row may require same-route parity companion if full oracle is too expensive",
+      "primary_metrics": [
+        "hot_median",
+        "primary_wall"
+      ],
+      "latest_known_v4_vs_v2_14_hot": 1.086127902760864,
+      "latest_known_v4_vs_v2_14_wall": 1.074,
+      "latest_known_v4_vs_v3_0_2_hot": 1.083118498208389,
+      "claim_if_repeated": "modest_gain_below_formal_high_performance_bar",
+      "performance_claim_authorized": false,
+      "next_goal": "Goal4730 rerun or carry forward only if protocol accepts existing same-hardware evidence"
+    },
+    {
+      "app": "raydb_style",
+      "row_class": "measured_existing_full_app_row",
+      "v2_14_route": "primitive-first RTDL/OptiX grouped count/sum reduction route using ray-triangle primitive grouped-i64 reduction",
+      "v4_route": "V4 grouped-i64, grouped-argmin, and any-hit operator route",
+      "v4_route_status": "runnable_full_app_route",
+      "mapped_v4_operators": [
+        "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays",
+        "v4_closest_hit_grouped_argmin_3d_device_arrays",
+        "v4_ray_triangle_any_hit_flags_2d_device_arrays"
+      ],
+      "dataset_scale": "deterministic RayDB-style rows >=131072; grouped-i64 widths 1/16/256",
+      "warmup": 2,
+      "repeat": 7,
+      "correctness_oracle": "grouped reduction and argmin parity against V2.14 denominator/control",
+      "primary_metrics": [
+        "hot_median",
+        "primary_wall"
+      ],
+      "latest_known_v4_vs_v2_14_hot": 0.9744073401484975,
+      "latest_known_v4_vs_v2_14_wall": 0.974,
+      "latest_known_v4_vs_v3_0_2_hot": 1.0045383344772214,
+      "claim_if_repeated": "regression_or_no_win",
+      "performance_claim_authorized": false,
+      "next_goal": "Goal4730 rerun under complete matrix or record regression"
+    },
+    {
+      "app": "triangle_counting",
+      "row_class": "measured_existing_full_app_row",
+      "v2_14_route": "generic RT graph relationship-count composition using ray-triangle weighted any-hit sum with CuPy partner continuation",
+      "v4_route": "V4 ray-triangle any-hit weighted-sum plus grouped-i64 route",
+      "v4_route_status": "runnable_full_app_route",
+      "mapped_v4_operators": [
+        "v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays",
+        "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays"
+      ],
+      "dataset_scale": "Goal4633 shapes 32768/131072/262144/524288 plus grouped-i64 ray_counts 32768/131072",
+      "warmup": 2,
+      "repeat": 7,
+      "correctness_oracle": "triangle count / weighted any-hit sum parity",
+      "primary_metrics": [
+        "hot_median",
+        "primary_wall"
+      ],
+      "latest_known_v4_vs_v2_14_hot": 4.054841666199054,
+      "latest_known_v4_vs_v2_14_wall": 4.055,
+      "latest_known_v4_vs_v3_0_2_hot": 0.9480014215438715,
+      "claim_if_repeated": "fast_vs_v2_14_but_not_clean_v4_win_until_v3_regression_explained_or_fixed",
+      "performance_claim_authorized": false,
+      "next_goal": "Goal4730 rerun or classify with explicit V3 regression caveat"
+    },
+    {
+      "app": "librts_spatial_index",
+      "row_class": "measured_existing_full_app_row",
+      "v2_14_route": "prepared RTDL/OptiX AABB spatial-index query primitive",
+      "v4_route": "V4 generic prepared AABB all-ops/count route",
+      "v4_route_status": "runnable_full_app_route",
+      "mapped_v4_operators": [
+        "v4_aabb_index_query_2d_all_ops_count_prepared_runner"
+      ],
+      "dataset_scale": "box_count=1000000 query_count=1000 operation=all repeats=240",
+      "warmup": 1,
+      "repeat": 240,
+      "correctness_oracle": "AABB query count parity against V2.14/control",
+      "primary_metrics": [
+        "hot_median",
+        "primary_wall"
+      ],
+      "latest_known_v4_vs_v2_14_hot": 1.002850507944097,
+      "latest_known_v4_vs_v2_14_wall": 1.049,
+      "latest_known_v4_vs_v3_0_2_hot": 1.0039094127325017,
+      "claim_if_repeated": "parity_not_v4_speed_win",
+      "performance_claim_authorized": false,
+      "next_goal": "Goal4730 rerun or carry forward as parity"
+    },
+    {
+      "app": "hausdorff_xhd",
+      "row_class": "measured_existing_full_app_row",
+      "v2_14_route": "directed-summary/nearest-witness denominator; V2.14 route table also records RTDL/OptiX active-frontier nearest-witness plus grouped max continuation",
+      "v4_route": "official V4 point-group nearest-witness route plus Torch/CuPy global argmax continuation with coordinate-normalized correctness boundary",
+      "v4_route_status": "runnable_full_app_route",
+      "mapped_v4_operators": [
+        "v4_point_group_nearest_witness_2d_device_arrays",
+        "v4_fixed_radius_count_threshold_2d_device_arrays"
+      ],
+      "dataset_scale": "Goal4669 Hausdorff XHD serious row plus 1M coordinate-normalized correctness-boundary probe",
+      "warmup": 1,
+      "repeat": 5,
+      "correctness_oracle": "directed Hausdorff/XHD correctness parity including coordinate-normalized boundary check",
+      "primary_metrics": [
+        "hot_median",
+        "primary_wall"
+      ],
+      "latest_known_v4_vs_v2_14_hot": 201581.8595690473,
+      "latest_known_v4_vs_v2_14_wall": 114.824,
+      "latest_known_v4_vs_v3_0_2_hot": 2.545755697036957,
+      "claim_if_repeated": "true_v4_app_candidate_win_with_visible_denominator_caveat",
+      "performance_claim_authorized": false,
+      "next_goal": "Goal4730 rerun or carry forward with denominator provenance visible"
+    },
+    {
+      "app": "robot_collision",
+      "row_class": "route_gap_requires_generic_operator",
+      "v2_14_route": "prepared RTDL/OptiX any-hit collision flag primitive including device-buffer modes",
+      "v4_route": "partial V4 ray-triangle any-hit flag coverage only",
+      "v4_route_status": "partial_operator_coverage_not_full_app_route",
+      "mapped_v4_operators": [
+        "v4_ray_triangle_any_hit_flags_2d_device_arrays"
+      ],
+      "dataset_scale": "to be frozen in Goal4726 from the promoted robot-collision app contract",
+      "warmup": null,
+      "repeat": null,
+      "correctness_oracle": "collision flag/count parity against V2.14 prepared any-hit denominator",
+      "primary_metrics": [
+        "hot_median",
+        "primary_wall"
+      ],
+      "missing_generic_operator_or_route": "complete generic robot-collision app route or material same-primitive improvement over V2.14 any-hit collision primitive",
+      "performance_claim_authorized": false,
+      "next_goal": "Goal4726"
+    },
+    {
+      "app": "contact_manifold",
+      "row_class": "route_gap_requires_generic_operator",
+      "v2_14_route": "prepared bounded contact-witness collect primitive",
+      "v4_route": "partial nearest-witness coverage only",
+      "v4_route_status": "partial_operator_coverage_not_full_app_route",
+      "mapped_v4_operators": [
+        "v4_point_group_nearest_witness_2d_device_arrays"
+      ],
+      "dataset_scale": "to be frozen in Goal4727 from the promoted contact-manifold app contract",
+      "warmup": null,
+      "repeat": null,
+      "correctness_oracle": "bounded contact/witness parity with fail-closed output semantics",
+      "primary_metrics": [
+        "hot_median",
+        "primary_wall"
+      ],
+      "missing_generic_operator_or_route": "complete generic bounded contact/witness collect route or material same-primitive improvement over V2.14 collect primitive",
+      "performance_claim_authorized": false,
+      "next_goal": "Goal4727"
+    },
+    {
+      "app": "rtnn",
+      "row_class": "measured_no_win_candidate",
+      "v2_14_route": "prepared RTDL/OptiX fixed-radius ranked-summary aggregate",
+      "v4_route": "V4 fixed-radius ranked-summary prepared runner candidate, deferred after serious-scale parity/slower result",
+      "v4_route_status": "candidate_measured_but_deferred",
+      "mapped_v4_operators": [
+        "v4_point_group_nearest_witness_2d_device_arrays",
+        "v4_fixed_radius_ranked_summary_3d_prepared_runner"
+      ],
+      "dataset_scale": "point_count=262144 and 1048576, query_count equals point_count",
+      "warmup": 1,
+      "repeat": 5,
+      "correctness_oracle": "ranked-summary signatures and distance summary parity",
+      "primary_metrics": [
+        "hot_median",
+        "primary_wall"
+      ],
+      "latest_known_v4_vs_v2_14_hot_by_scale": {
+        "262144": 0.9985142636714865,
+        "1048576": 0.9938654084870772
+      },
+      "latest_known_v4_vs_v3_0_2_hot_by_scale": {
+        "262144": 1.0053613081712485,
+        "1048576": 0.992565851297169
+      },
+      "claim_if_repeated": "measured_no_win_candidate_deferred",
+      "performance_claim_authorized": false,
+      "next_goal": "Goal4725"
+    },
+    {
+      "app": "spatial_rayjoin",
+      "row_class": "no_v4_route_blocker",
+      "v2_14_route": "mixed explicit RayJoin route with prepared point/closed-shape batch count, segment-pair exact count, and shape-pair active count",
+      "v4_route": null,
+      "v4_route_status": "no_current_v4_app_route",
+      "mapped_v4_operators": [],
+      "dataset_scale": "to be frozen in Goal4728 if a generic relation-topology route exists",
+      "warmup": null,
+      "repeat": null,
+      "correctness_oracle": "relation/topology count parity; exact route must not silently fall back to V2/V3",
+      "primary_metrics": [
+        "hot_median",
+        "primary_wall"
+      ],
+      "missing_generic_operator_or_route": "generic relation-topology route for point/closed-shape, segment-pair exact, or shape-pair active-count workloads",
+      "performance_claim_authorized": false,
+      "next_goal": "Goal4728"
+    },
+    {
+      "app": "barnes_hut",
+      "row_class": "deferred_no_app_identity_route",
+      "v2_14_route": "RTDL/OptiX aggregate-frontier membership primitive plus explicit force-vector partner continuation; CuPy fastest with Numba reference",
+      "v4_route": "aggregate-frontier device-column subprobe exists, but no complete generic Barnes-Hut app route",
+      "v4_route_status": "subprobe_only_not_full_app_route",
+      "mapped_v4_operators": [
+        "v4_aggregate_frontier_device_columns_2d_prepared_runner"
+      ],
+      "dataset_scale": "to be frozen in Goal4729; aggregate-frontier subprobe used 32768 bodies but is not a full app denominator",
+      "warmup": null,
+      "repeat": null,
+      "correctness_oracle": "force/vector result parity for a complete aggregate-tree weighted-vector workflow",
+      "primary_metrics": [
+        "hot_median",
+        "primary_wall"
+      ],
+      "missing_generic_operator_or_route": "generic aggregate-tree weighted-vector workflow; app-identity Barnes-Hut kernel forbidden",
+      "performance_claim_authorized": false,
+      "next_goal": "Goal4729"
+    }
+  ],
+  "claim_boundary": {
+    "release_authorized": false,
+    "public_speed_claim_authorized": false,
+    "whole_app_high_performance_claim_authorized": false,
+    "all_benchmark_speedup_claim_authorized": false,
+    "operator_catalog_substitutes_for_app_matrix": false,
+    "final_tag_authorized": false
+  }
+}

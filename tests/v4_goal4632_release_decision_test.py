@@ -15,21 +15,31 @@ from rtdsl.v4_release_decision import v4_goal4632_release_decision
 
 
 class V4Goal4632ReleaseDecisionTest(unittest.TestCase):
-    def test_final_decision_is_formal_v4_release_after_goal4643(self) -> None:
+    def test_decision_records_goal4720_release_candidate_with_legacy_app_boundary(self) -> None:
         decision = validate_v4_goal4632_release_decision()
 
         self.assertEqual(V4_GOAL4632_DECISION, decision["decision"])
-        self.assertTrue(decision["release_authorized"])
-        self.assertTrue(decision["formal_release_authorized"])
+        self.assertFalse(decision["release_authorized"])
+        self.assertFalse(decision["formal_release_authorized"])
+        self.assertTrue(decision["bounded_operator_surface_available"])
+        self.assertFalse(decision["app_level_high_performance_authorized"])
+        self.assertTrue(decision["v4_python_edsl_release_candidate_supported"])
+        self.assertTrue(decision["operator_pushdown_workflow_high_performance_supported"])
+        self.assertFalse(decision["legacy_all_app_high_performance_supported"])
+        self.assertEqual(
+            "complete_rt_core_app_matrix__bounded_material_wins__no_broad_all_app_speedup_claim",
+            decision["current_app_level_decision_label"],
+        )
         self.assertEqual(
             V4_AUTHORIZED_RELEASE_LABEL,
             decision["authorized_release_label"],
         )
-        self.assertFalse(decision["release_candidate_authorized"])
+        self.assertTrue(decision["release_candidate_authorized"])
         self.assertTrue(decision["performance_preview_authorized"])
         self.assertFalse(decision["development_state_authorized"])
-        self.assertIn("bounded operator release", decision["public_wording"])
-        self.assertIn("brute-force partner/CPU baselines", decision["public_wording"])
+        self.assertIn("Python eDSL/operator-pushdown release candidate", decision["public_wording"])
+        self.assertIn("custom predicate early-exit", decision["public_wording"])
+        self.assertIn("complete 10-app", decision["public_wording"])
 
     def test_all_scorecard_gates_are_recorded(self) -> None:
         decision = v4_goal4632_release_decision()
@@ -49,6 +59,9 @@ class V4Goal4632ReleaseDecisionTest(unittest.TestCase):
                 "G9_serious_release_scorecard_pod_gate",
                 "G10_clean_tree_reproducibility",
                 "G11_final_release_authorization",
+                "G12_custom_predicate_early_exit_workflow",
+                "G13_public_docs_current_frontdoor_cleanup",
+                "G14_full_v4_local_gate_after_current_frontdoor_cleanup",
             },
         )
         self.assertTrue(gates["G1_fixed_radius_anchor"]["passed_for_release"])
@@ -63,14 +76,23 @@ class V4Goal4632ReleaseDecisionTest(unittest.TestCase):
         self.assertTrue(gates["G9_serious_release_scorecard_pod_gate"]["passed_for_release"])
         self.assertTrue(gates["G10_clean_tree_reproducibility"]["passed_for_release"])
         self.assertTrue(gates["G11_final_release_authorization"]["passed_for_release"])
+        self.assertIn("Goal4756", gates["G11_final_release_authorization"]["note"])
+        self.assertTrue(gates["G12_custom_predicate_early_exit_workflow"]["passed_for_release"])
+        self.assertIn("4.633x", gates["G12_custom_predicate_early_exit_workflow"]["note"])
+        self.assertTrue(gates["G13_public_docs_current_frontdoor_cleanup"]["passed_for_release"])
+        self.assertTrue(gates["G14_full_v4_local_gate_after_current_frontdoor_cleanup"]["passed_for_release"])
 
-    def test_release_has_no_blockers_but_preserves_scope_limitations(self) -> None:
+    def test_external_review_blocker_and_scope_limitations_are_preserved(self) -> None:
         decision = v4_goal4632_release_decision()
 
-        self.assertEqual((), decision["release_blockers"])
-        self.assertIn("tier3_deferred_not_supported", decision["scope_limitations"])
-        self.assertIn("whole_app_speedup_wording_not_authorized", decision["scope_limitations"])
-        self.assertIn("cupy_performance_unmeasured", decision["scope_limitations"])
+        self.assertIn(
+            "external_3ai_review_debt_open_for_goal4743_goal4744_current_release_candidate",
+            decision["release_blockers"],
+        )
+        self.assertIn("legacy_all_app_speedup_wording_not_authorized", decision["scope_limitations"])
+        self.assertIn("arbitrary_python_callback_not_supported", decision["scope_limitations"])
+        self.assertIn("raw_optix_callback_not_supported", decision["scope_limitations"])
+        self.assertIn("public_tier3_deferred_not_supported", decision["scope_limitations"])
         self.assertIn("no_true_zero_copy_public_claim_authorized", decision["scope_limitations"])
         self.assertIn("no_c_abi_embedding_or_non_python_host_scope", decision["scope_limitations"])
 
@@ -78,7 +100,7 @@ class V4Goal4632ReleaseDecisionTest(unittest.TestCase):
         decision = v4_goal4632_release_decision()
         coverage = decision["coverage_summary"]
 
-        self.assertEqual(8, decision["measured_surfaces_count"])
+        self.assertEqual(10, decision["measured_surfaces_count"])
         self.assertEqual(0, decision["candidate_surfaces_count"])
         self.assertEqual(
             "promote_component_union_to_measured_tier2_operator_coverage_not_release",
@@ -148,9 +170,10 @@ class V4Goal4632ReleaseDecisionTest(unittest.TestCase):
             "Tier-3 callback support",
             "CuPy performance",
             "C ABI / embedding / non-Python host",
-            "Barnes-Hut covered by V4.0",
-            "Spatial RayJoin covered by V4.0",
+            "Barnes-Hut new V4-over-V3 speedup",
+            "Spatial RayJoin speedup",
             "LibRTS paper reproduction",
+            "raw OptiX callback support",
         ):
             self.assertIn(claim, decision["forbidden_claims"])
 

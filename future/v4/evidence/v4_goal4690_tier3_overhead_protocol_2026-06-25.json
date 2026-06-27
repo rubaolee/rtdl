@@ -1,0 +1,29 @@
+{
+  "missing_or_invalid": [],
+  "protocol": {
+    "baseline_variants": [
+      "direct_device_function_loop_same_numba_callback",
+      "inline_formula_loop_context_only"
+    ],
+    "callback_shape": "double_return_four_args_scalar_reduce",
+    "correctness_required": true,
+    "hard_kill_ratio_min": 2.0,
+    "inner_iterations": 1000000,
+    "measured_launches": 30,
+    "measured_variants": [
+      "optix_direct_callable_loop_same_numba_callback"
+    ],
+    "next_goal": "Goal4691 tier3 callback overhead pod measurement",
+    "pass_ratio_max": 1.5,
+    "performance_claim_authorized": false,
+    "pod_authorized": false,
+    "primary_ratio": "direct_callable_loop_median_ms / direct_device_function_loop_median_ms",
+    "release_authorized": false,
+    "status": "goal4690_tier3_callback_overhead_protocol_frozen_not_measured",
+    "tier3_public_support_authorized": false,
+    "warmup_launches": 5
+  },
+  "schema": "rtdl.v4.goal4690_tier3_overhead_protocol.v1",
+  "status": "passed",
+  "validation_status": "passed"
+}

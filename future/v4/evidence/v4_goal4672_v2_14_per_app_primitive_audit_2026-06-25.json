@@ -1,0 +1,158 @@
+{
+  "schema": "rtdl.v4.goal4672.v2_14_per_app_primitive_audit.v1",
+  "status": "goal4672_prerequisite_v2_14_per_app_primitive_audit_complete_not_target_selection",
+  "date": "2026-06-25",
+  "decision_label": "v2_14_primitives_preexisting__existing_app_target_selection_requires_new_runtime_lever",
+  "purpose": "Before selecting the next V4 performance target, identify which primitives and partner routes already existed in V2.14 for each benchmark app. This prevents V4 from counting front-door migration or partner/productization work as a new V4 speed win.",
+  "sources": {
+    "v2_14_route_table": "git show v2.14:src/rtdsl/current_benchmark_route_decisions.py",
+    "v2_14_raw_goal4669_rows": "future/v4/evidence/v4_goal4669_serious_20260625/raw/v2_14_*.json",
+    "v2_14_raw_goal4654_rows": "future/v4/evidence/v4_goal4654_serious_20260625_2/raw/v2_14_*.json",
+    "current_v4_route_matrix": "future/v4/evidence/v4_goal4662_app_route_binding_after_hausdorff_rtnn_2026-06-25.json",
+    "current_v4_app_analysis": "future/v4/evidence/v4_goal4669_app_level_benchmark_analysis_2026-06-25.json"
+  },
+  "summary": {
+    "audited_app_count": 10,
+    "v2_14_had_primitive_or_explicit_partner_route_for_all_apps": true,
+    "v2_14_already_had_primitive_first_or_no_partner_route_count": 7,
+    "v2_14_had_mixed_explicit_route_count": 2,
+    "v2_14_had_fastest_partner_with_numba_reference_count": 1,
+    "robot_collision_is_not_clean_second_true_v4_win_target": true,
+    "existing_app_selection_rule": "An existing benchmark app can support a new V4 performance claim only if V4 either introduces a generic primitive/runtime lever absent in V2.14, or proves the same primitive is materially faster than the V2.14 app route under the frozen same-hardware app protocol. Otherwise it is productization or parity, not a V4 speed win.",
+    "next_goal4672_effect": "Do not finalize robot_collision as the next target until its denominator is explicitly framed as same-primitive improvement over V2.14. Prefer a target whose needed lever is not already a V2.14 promoted primitive, or declare that a new generic primitive must be built."
+  },
+  "claim_boundary": {
+    "release_authorized": false,
+    "public_speed_claim_authorized": false,
+    "whole_app_high_performance_claim_authorized": false,
+    "partner_migration_counts_as_v4_speed_win": false,
+    "same_primitive_productization_counts_as_v4_speed_win": false,
+    "app_specific_native_kernel_authorized": false
+  },
+  "apps": [
+    {
+      "app": "hausdorff_xhd",
+      "v2_14_decision_kind": "primitive_first",
+      "v2_14_partner_policy": "primitive_only",
+      "v2_14_primary_route": "RTDL/OptiX active-frontier nearest-witness plus generic grouped max continuation",
+      "v2_14_primitive_contract": "directed max-of-nearest-distance witness computation",
+      "v2_14_measured_goal4669_route": {
+        "backend": "embree",
+        "partner": null,
+        "note": "The Goal4669 V2.14 denominator row used Embree directed-summary style evidence, while the V2.14 route table also records an OptiX nearest-witness primitive-first path."
+      },
+      "v4_implication": "V4 Hausdorff improvements must be framed as official-route/productized continuation and measured app-route improvement, not as first invention of nearest-witness primitives."
+    },
+    {
+      "app": "spatial_rayjoin",
+      "v2_14_decision_kind": "mixed_explicit",
+      "v2_14_partner_policy": "mixed_explicit_user_choice",
+      "v2_14_primary_route": "mixed explicit RayJoin route from Goal4039 RTX 4000 Ada fixed-Numba-toolchain evidence",
+      "v2_14_primitive_contract": "prepared point/closed-shape batch count, segment-pair exact count, shape-pair active count",
+      "v2_14_measured_goal4669_route": null,
+      "v4_implication": "Current V4 has no app route for spatial_rayjoin. A future V4 win would require a new generic relation-topology route, not reuse of the old mixed Numba/OptiX evidence."
+    },
+    {
+      "app": "rt_dbscan",
+      "v2_14_decision_kind": "mixed_explicit",
+      "v2_14_partner_policy": "mixed_explicit_user_choice",
+      "v2_14_primary_route": "mixed explicit RT-DBSCAN route with grouped-stream Numba/CuPy and explicit direct-status variants",
+      "v2_14_primitive_contract": "fixed-radius count-threshold device columns plus grouped stream component labels",
+      "v2_14_measured_goal4669_route": {
+        "mode": "optix_rt_core_grouped_stream_cupy_column_signature_3d",
+        "partner": "cupy",
+        "count_threshold_native_execution_path": "prepared_rt_core_count_threshold_3d",
+        "grouped_union_native_execution_path": "prepared_rt_core_grouped_union_3d_self_query",
+        "producer_primitive": "fixed_radius_graph_component_labels_3d"
+      },
+      "v4_implication": "Goal4670/4671 modest results are expected: V2.14 already had the count-threshold plus grouped-union primitive path. V4 needs a genuinely new grouped-union lever or must stop treating RTDBSCAN as a second-win target."
+    },
+    {
+      "app": "robot_collision",
+      "v2_14_decision_kind": "no_partner_needed",
+      "v2_14_partner_policy": "none",
+      "v2_14_primary_route": "prepared RTDL/OptiX any-hit flag primitive",
+      "v2_14_primitive_contract": "prepared any-hit collision flag and scalar count",
+      "v2_14_measured_goal4669_route": null,
+      "v4_implication": "Robot collision is not a clean second true V4 win target by default, because V2.14 already exposed prepared OptiX any-hit collision flags including device-buffer modes. It may only be selected as a same-primitive improvement experiment with V2.14 as the explicit denominator."
+    },
+    {
+      "app": "contact_manifold",
+      "v2_14_decision_kind": "no_partner_needed",
+      "v2_14_partner_policy": "none",
+      "v2_14_primary_route": "prepared bounded contact-witness collect primitive",
+      "v2_14_primitive_contract": "fail-closed bounded witness collection",
+      "v2_14_measured_goal4669_route": null,
+      "v4_implication": "A V4 win would require a new generic full contact-manifold route or materially faster bounded collect-k path, not just reusing the V2.14 bounded witness primitive."
+    },
+    {
+      "app": "raydb_style",
+      "v2_14_decision_kind": "primitive_first",
+      "v2_14_partner_policy": "primitive_only",
+      "v2_14_primary_route": "primitive-first RTDL/OptiX grouped count/sum reductions",
+      "v2_14_primitive_contract": "columnar grouped count/sum/min/max/avg reduction",
+      "v2_14_measured_goal4669_route": {
+        "backend": "paper_rt_optix_prepared_grouped_reduction",
+        "mode": "sum",
+        "generic_primitive_used": "RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
+        "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64_reduction",
+        "primitive_contract_required_for_native": "generic_ray_triangle_primitive_grouped_i64_reduction_3d"
+      },
+      "v4_implication": "V4 grouped-i64 catalog work mostly productizes and bounds an existing V2.14 primitive-first path. It cannot by itself prove V4 is faster than V2.14."
+    },
+    {
+      "app": "barnes_hut",
+      "v2_14_decision_kind": "fastest_partner_with_numba_reference",
+      "v2_14_partner_policy": "cupy_fastest_numba_reference",
+      "v2_14_primary_route": "RTDL/OptiX membership primitive plus explicit force-vector partner continuation",
+      "v2_14_primitive_contract": "aggregate-frontier membership plus grouped vector continuation",
+      "v2_14_measured_goal4669_route": null,
+      "v4_implication": "Barnes-Hut remains one of the few places where a true V4 path could exist if a generic fused aggregate-tree weighted-vector primitive beats the V2.14 membership-plus-partner route. That must be proven as generic pushdown, not Barnes-Hut app identity."
+    },
+    {
+      "app": "librts_spatial_index",
+      "v2_14_decision_kind": "no_partner_needed",
+      "v2_14_partner_policy": "none",
+      "v2_14_primary_route": "prepared RTDL/OptiX AABB spatial-index query primitive",
+      "v2_14_primitive_contract": "prepared AABB index query",
+      "v2_14_measured_goal4669_route": {
+        "mode": "optix_aabb_index",
+        "prepared_session_primitive": "aabb_index_query_2d",
+        "primitive_contract": "generic_prepared_aabb_index_query_2d"
+      },
+      "v4_implication": "V4 AABB all-ops/count coverage is bounded operator catalog value, but app-level LibRTS parity is not surprising because V2.14 already had the prepared AABB primitive."
+    },
+    {
+      "app": "rtnn",
+      "v2_14_decision_kind": "primitive_first",
+      "v2_14_partner_policy": "primitive_only",
+      "v2_14_primary_route": "prepared RTDL/OptiX fixed-radius ranked-summary aggregate",
+      "v2_14_primitive_contract": "fixed-radius ranked nearest summary aggregate",
+      "v2_14_measured_goal4669_route": null,
+      "v4_implication": "Goal4660/4661 parity is expected: V2.14 already had prepared ranked-summary aggregate. V4 candidate wrappers are not enough for a speed claim."
+    },
+    {
+      "app": "triangle_counting",
+      "v2_14_decision_kind": "primitive_first",
+      "v2_14_partner_policy": "primitive_only",
+      "v2_14_primary_route": "generic RT graph relationship-count composition",
+      "v2_14_primitive_contract": "canonical graph-cycle scalar count",
+      "v2_14_measured_goal4669_route": {
+        "backend": "optix",
+        "mode": "rt_graph_2a1_generic_rt",
+        "contract": "rt_graph_2a1_mapped_to_generic_ray_triangle_any_hit",
+        "summary_primitive": "PREPARED_TRIANGLE_SCENE_3D_RAY_ANY_HIT_WEIGHTED_SUM_DEVICE_COLUMNS_V1",
+        "prepared_session_primitive": "ray_triangle_weighted_any_hit_sum_3d",
+        "partner": "cupy"
+      },
+      "v4_implication": "V4 weighted-sum work is not a clean new app speed win against V2.14 because the serious V2.14 row already used a weighted any-hit sum primitive. The V4/V3 regression must be treated as a blocker, not hidden by the V4/V2 ratio."
+    }
+  ],
+  "goal_level_decision_audit": {
+    "was_i_being_stupid": true,
+    "stupid_action": "I was about to select robot_collision mainly from current V4 operator evidence and prior Embree-vs-OptiX evidence without first proving whether V2.14 already had the same primitive route.",
+    "alternative_path": "Audit V2.14 per-app primitives first, then select only targets where V4 has a real new runtime lever or a frozen same-primitive improvement over V2.14.",
+    "can_try_better_path_now": true
+  },
+  "next_action": "Use this audit as a prerequisite for Goal4672 target selection. Robot_collision is demoted from clean next target to same-primitive improvement candidate. If no existing app has a nontrivial V4-new lever, Goal4672 must say that a new generic primitive is required rather than inventing a weak target."
+}

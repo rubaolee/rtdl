@@ -1,0 +1,55 @@
+{
+  "contract_validation": {
+    "failing_example": {
+      "changed_ptx_changes_key": true,
+      "changed_toolchain_changes_key": true,
+      "classification": "fail_source_level_cache_stability_gate_repair_required",
+      "next_goal": "Repair source-level PTX cache stability before support docs",
+      "performance_claim_authorized": false,
+      "release_authorized": false,
+      "rows_checked": 4,
+      "stable_source_cache_keys": false,
+      "tier3_public_support_authorized": false
+    },
+    "goal_status": "goal4705_source_level_ptx_cache_stability_gate_not_public_support",
+    "missing_or_invalid": [],
+    "passing_example": {
+      "changed_ptx_changes_key": true,
+      "changed_toolchain_changes_key": true,
+      "classification": "pass_source_level_cache_stability_gate_not_public_support",
+      "next_goal": "Goal4706 specialized Tier-3 negative validation and user-doc example gate",
+      "performance_claim_authorized": false,
+      "release_authorized": false,
+      "rows_checked": 4,
+      "stable_source_cache_keys": true,
+      "tier3_public_support_authorized": false
+    },
+    "status": "passed"
+  },
+  "dry_run": true,
+  "performance_claim_authorized": false,
+  "release_authorized": false,
+  "rows": [
+    {
+      "canonical_ptx_equal": true,
+      "changed_ptx_changes_key": true,
+      "changed_toolchain_changes_key": true,
+      "same_source_compile_cache_key_match": true,
+      "variant": "custom_scalar_reduce_weighted_sum"
+    }
+  ],
+  "schema": "rtdl.v4.goal4705_source_ptx_cache_stability.v1",
+  "status": "dry_run_contract_passed",
+  "summary": {
+    "changed_ptx_changes_key": true,
+    "changed_toolchain_changes_key": true,
+    "classification": "pass_source_level_cache_stability_gate_not_public_support",
+    "next_goal": "Goal4706 specialized Tier-3 negative validation and user-doc example gate",
+    "performance_claim_authorized": false,
+    "release_authorized": false,
+    "rows_checked": 4,
+    "stable_source_cache_keys": true,
+    "tier3_public_support_authorized": false
+  },
+  "tier3_public_support_authorized": false
+}

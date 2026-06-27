@@ -1,0 +1,224 @@
+{
+  "app": "barnes_hut_force_app",
+  "body_count": 32768,
+  "capacity": {
+    "capacity_attempts": [
+      {
+        "attempt_index": 0,
+        "attempted_count": 12006704,
+        "capacity": 22937600,
+        "overflow": false,
+        "row_count": 12006704,
+        "traversal_seconds": 0.108813525
+      }
+    ],
+    "final_row_capacity": 12007728,
+    "initial_capacity": 22937600
+  },
+  "checksum": {
+    "force_x": -4733.575645893308,
+    "force_y": 46717.65234663877
+  },
+  "claim_flags": {
+    "automatic_partner_selection_allowed": false,
+    "device_column_contract": true,
+    "frontier_columns_materialized_on_host": false,
+    "host_frontier_materialization_in_hot_path": false,
+    "partner_migration_counts_as_speed": false,
+    "row_offsets_materialized_on_host": false,
+    "same_logical_frontier_contract": true
+  },
+  "frontier_summary": {
+    "contract": "generic_aggregate_frontier_device_columns_2d_v1",
+    "frontier_columns_materialized_on_host": false,
+    "frontier_row_count": 12006704,
+    "partner_contract": "generic_aggregate_frontier_device_columns_prepared_weighted_vector_sum_2d_v1",
+    "row_offsets_materialized_on_host": false,
+    "runner_metadata": {
+      "adapter": "v4_aggregate_frontier_device_columns_2d_prepared_runner",
+      "app_specific_native_kernel_authorized": false,
+      "automatic_partner_selection_authorized": false,
+      "backend": "optix",
+      "broad_v4_speedup_claim_authorized": false,
+      "candidate_surface": true,
+      "continuation_class": "aggregate_frontier_device_columns",
+      "contract": "generic_aggregate_frontier_device_columns_2d_v1",
+      "device_resident": true,
+      "device_resident_frontier_columns_required": true,
+      "downstream_partner": "cupy",
+      "frontier_columns_materialized_on_host": false,
+      "frontier_output_metadata": {
+        "attempted_count": 12006704,
+        "attempted_count_device_ptr_nonzero": true,
+        "backend": "optix",
+        "capacity": 12007728,
+        "contract": "generic_aggregate_frontier_device_columns_2d_v1",
+        "device_ordinal": 0,
+        "device_resident": true,
+        "frontier_columns_materialized_on_host": false,
+        "lifecycle": "valid until prepared aggregate-frontier device-column handle is run again or closed",
+        "native_abi_contract": "generic_aggregate_frontier_device_columns_2d_native_abi_v1",
+        "native_symbol": "rtdl_optix_run_aggregate_frontier_device_columns_2d",
+        "output_residency": "device_resident_aggregate_frontier_columns",
+        "overflow": false,
+        "overflow_device_ptr_nonzero": true,
+        "primitive": "AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D",
+        "public_speedup_claim_authorized": false,
+        "row_count": 12006704,
+        "row_count_device_ptr_nonzero": true,
+        "row_offsets_device_ptr_nonzero": true,
+        "row_offsets_materialized_on_host": false,
+        "row_schema": [
+          "source_id",
+          "frontier_kind_code",
+          "item_id",
+          "owner_aggregate_id",
+          "dfs_index",
+          "resume_index",
+          "metadata_flags"
+        ],
+        "rt_core_speedup_claim_authorized": false,
+        "small_host_outputs_materialized": [
+          "row_count",
+          "attempted_count",
+          "overflow"
+        ],
+        "source_count": 32768,
+        "traversal_seconds": 0.095370321,
+        "true_zero_copy_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "generic_primitive": "AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D",
+      "host_frontier_materialization_before_partner_forbidden": true,
+      "host_materialization_in_hot_path": false,
+      "measured_v4_release_surface": false,
+      "native_abi_contract": "generic_aggregate_frontier_device_columns_2d_native_abi_v1",
+      "native_prepared_route": "prepare_aggregate_frontier_device_columns_2d_optix",
+      "native_run_route": "PreparedOptixAggregateFrontierDeviceColumns2D.run_device_columns",
+      "old_fused_weighted_vector_sum_promoted": false,
+      "phase_accounting": {
+        "aggregate_frontier_traversal_seconds": 0.095370321,
+        "downstream_partner_seconds": null,
+        "host_frontier_materialization_seconds": 0.0,
+        "phase_accounting_is_first_class": true
+      },
+      "pod_benchmark_authorized": false,
+      "public_speedup_claim_authorized": false,
+      "raw_optix_callback_claim_authorized": false,
+      "release_claim_authorized": false,
+      "row_capacity": 12007728,
+      "row_offsets_materialized_on_host": false,
+      "rt_core_speedup_claim_authorized": false,
+      "small_host_outputs_allowed": [
+        "row_count",
+        "attempted_count",
+        "overflow",
+        "phase_timings"
+      ],
+      "source_count": 32768,
+      "status": "candidate_goal4675_local_runner_not_pod_measured",
+      "tier3_callback_claim_authorized": false,
+      "true_zero_copy_authorized": false,
+      "v2_14_denominator": "RTDL/OptiX aggregate-frontier host/native row collection plus explicit CuPy or Numba weighted-vector continuation",
+      "v3_0_2_same_route_caveat": "V3.0.2 already has aggregate-frontier device-column symbols; V4/V3.0.2 parity is not a clean new V4 performance failure or win.",
+      "v4_api_surface": "v4_aggregate_frontier_device_columns_2d_prepared_runner",
+      "whole_app_speedup_claim_authorized": false
+    }
+  },
+  "hot_repeats": [
+    {
+      "aggregate_contribution_row_count": 3473415.0,
+      "exact_contribution_row_count": 8533289.0,
+      "frontier_row_count": 12006704.0,
+      "frontier_traversal_seconds": 0.094751214,
+      "hot_seconds": 0.11150504401565933,
+      "partner_seconds": 0.016753830015659332,
+      "repeat_index": 0.0,
+      "wall_seconds": 0.11945939809083939
+    },
+    {
+      "aggregate_contribution_row_count": 3473415.0,
+      "exact_contribution_row_count": 8533289.0,
+      "frontier_row_count": 12006704.0,
+      "frontier_traversal_seconds": 0.094704106,
+      "hot_seconds": 0.11129002973132705,
+      "partner_seconds": 0.016585923731327057,
+      "repeat_index": 1.0,
+      "wall_seconds": 0.1789800189435482
+    },
+    {
+      "aggregate_contribution_row_count": 3473415.0,
+      "exact_contribution_row_count": 8533289.0,
+      "frontier_row_count": 12006704.0,
+      "frontier_traversal_seconds": 0.095262452,
+      "hot_seconds": 0.11203649916610908,
+      "partner_seconds": 0.016774047166109085,
+      "repeat_index": 2.0,
+      "wall_seconds": 0.12540384382009506
+    },
+    {
+      "aggregate_contribution_row_count": 3473415.0,
+      "exact_contribution_row_count": 8533289.0,
+      "frontier_row_count": 12006704.0,
+      "frontier_traversal_seconds": 0.096276595,
+      "hot_seconds": 0.11306227252242089,
+      "partner_seconds": 0.016785677522420883,
+      "repeat_index": 3.0,
+      "wall_seconds": 0.24262113496661186
+    },
+    {
+      "aggregate_contribution_row_count": 3473415.0,
+      "exact_contribution_row_count": 8533289.0,
+      "frontier_row_count": 12006704.0,
+      "frontier_traversal_seconds": 0.095892269,
+      "hot_seconds": 0.11267000420350456,
+      "partner_seconds": 0.016777735203504562,
+      "repeat_index": 4.0,
+      "wall_seconds": 0.19381942227482796
+    },
+    {
+      "aggregate_contribution_row_count": 3473415.0,
+      "exact_contribution_row_count": 8533289.0,
+      "frontier_row_count": 12006704.0,
+      "frontier_traversal_seconds": 0.096440567,
+      "hot_seconds": 0.11283393047579957,
+      "partner_seconds": 0.01639336347579956,
+      "repeat_index": 5.0,
+      "wall_seconds": 0.12897111475467682
+    },
+    {
+      "aggregate_contribution_row_count": 3473415.0,
+      "exact_contribution_row_count": 8533289.0,
+      "frontier_row_count": 12006704.0,
+      "frontier_traversal_seconds": 0.095370321,
+      "hot_seconds": 0.112224961096426,
+      "partner_seconds": 0.01685464009642601,
+      "repeat_index": 6.0,
+      "wall_seconds": 0.17324619740247726
+    }
+  ],
+  "medians": {
+    "frontier_traversal_seconds": 0.095370321,
+    "hot_seconds": 0.112224961096426,
+    "partner_seconds": 0.016774047166109085,
+    "wall_seconds": 0.17324619740247726
+  },
+  "partner": "cupy",
+  "route": "v4_candidate_runner_explicit_partner_continuation",
+  "schema": "rtdl.v4.goal4676.aggregate_frontier_focused_pod_benchmark.v1",
+  "theta": 0.5,
+  "tree_summary": {
+    "bucket_size": 32,
+    "leaf_node_count": 2260,
+    "max_depth": 6,
+    "max_leaf_member_count": 32,
+    "morton_bits": 16,
+    "source_count": 32768,
+    "tree_node_count": 3013
+  },
+  "validation": {
+    "reason": "user_skip_validation",
+    "skipped": true
+  },
+  "version": "v4_current"
+}

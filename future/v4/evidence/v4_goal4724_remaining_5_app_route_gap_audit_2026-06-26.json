@@ -1,0 +1,194 @@
+{
+  "schema": "rtdl.v4.goal4724.remaining_5_app_route_gap_audit.v1",
+  "status": "goal4724_remaining_5_app_route_gap_audit_complete_pending_external_review_debt",
+  "date": "2026-06-26",
+  "decision_label": "remaining_five_apps_are_not_ready_for_pod_until_each_has_a_named_route_or_no_go_protocol",
+  "purpose": "Classify the five incomplete benchmark-app rows left by Goal4723 before spending POD time. The audit separates partial operator coverage, measured no-win candidates, no-route blockers, and deferred app-identity/subprobe cases so none can be used as a V4 app-level result by implication.",
+  "source_context": [
+    "future/v4/evidence/v4_goal4723_complete_10_app_protocol_2026-06-26.json",
+    "future/v4/v2_14_vs_v4_per_app_implementation_comparison_2026-06-26.md",
+    "future/v4/evidence/v4_goal4672_v2_14_per_app_primitive_audit_2026-06-25.json",
+    "src/rtdsl/v4_app_route_binding.py",
+    "src/rtdsl/v4_app_benchmark_protocol.py",
+    "src/rtdsl/v4_goal4678_ranked_summary_disposition.py",
+    "src/rtdsl/v4_goal4683_contact_witness_design_audit.py"
+  ],
+  "global_rules": {
+    "v2_means_v2_14": true,
+    "same_rt_hardware_required_for_timed_rows": true,
+    "correctness_parity_required_for_timed_credit": true,
+    "silent_v2_v3_fallback_authorized": false,
+    "operator_or_subprobe_counts_as_full_app_result": false,
+    "partner_migration_counts_as_v4_speed_win": false,
+    "same_primitive_productization_counts_as_v4_speed_win": false,
+    "app_identity_native_kernel_authorized": false,
+    "pod_authorized_by_goal4724": false,
+    "release_authorized": false,
+    "final_v4_tag_blocked_until_goal4733": true
+  },
+  "summary": {
+    "remaining_app_count": 5,
+    "partial_operator_coverage_count": 2,
+    "measured_no_win_candidate_count": 1,
+    "no_current_v4_route_count": 1,
+    "subprobe_or_deferred_app_identity_count": 1,
+    "ready_for_blind_all_app_pod_run": false,
+    "next_goals": [
+      "Goal4725 RTNN measured no-win disposition",
+      "Goal4726 robot_collision full-route or same-primitive improvement protocol",
+      "Goal4727 contact_manifold no-go or fresh generic bounded witness protocol",
+      "Goal4728 spatial_rayjoin relation-topology route/no-route decision",
+      "Goal4729 barnes_hut generic aggregate weighted workflow or no-go",
+      "Goal4730 complete app-level V2.14-vs-V4 matrix rerun only after Goals4725-4729 close"
+    ]
+  },
+  "rows": [
+    {
+      "app": "robot_collision",
+      "goal4723_row_class": "route_gap_requires_generic_operator",
+      "goal4724_gap_class": "partial_operator_exists_full_app_missing",
+      "v2_14_denominator": "prepared RTDL/OptiX any-hit collision flag primitive including device-buffer modes",
+      "v2_14_denominator_strength": "strong_preexisting_same_primitive_denominator",
+      "current_v4_artifacts": [
+        "src/rtdsl/app_adapters/robot_collision.py::robot_collision_pose_flags_optix_prepared_partner_device_columns",
+        "src/rtdsl/v4_app_route_binding.py::robot_collision",
+        "src/rtdsl/v4_app_benchmark_protocol.py::robot_collision"
+      ],
+      "current_v4_status": "V4 has generic ray-triangle any-hit flag operator coverage and an app adapter reducing ray flags to pose flags with Torch/CuPy, but the promoted app route/planning contract is not complete.",
+      "missing_route_or_operator": "complete generic collision app route with frozen pose/ray lowering and parity, or a material same-primitive improvement over V2.14 prepared any-hit collision flags",
+      "not_allowed_to_claim": [
+        "partial any-hit operator coverage is a full robot_collision app result",
+        "Torch/CuPy pose-flag reduction by itself is a V4 speed win",
+        "same primitive productization is a V4 speed win without a frozen V2.14 denominator"
+      ],
+      "required_next_goal": "Goal4726",
+      "goal4726_exit_condition": "Either a complete same-hardware V2.14-vs-V4 app row with correctness parity and explicit same-primitive denominator, or a no-go row explaining why robot_collision cannot support V4 high-performance claims.",
+      "can_count_as_v4_speed_win_now": false,
+      "pod_authorized_now": false
+    },
+    {
+      "app": "contact_manifold",
+      "goal4723_row_class": "route_gap_requires_generic_operator",
+      "goal4724_gap_class": "partial_operator_exists_no_go_prior_for_rebranded_collect_k",
+      "v2_14_denominator": "prepared bounded contact-witness collect primitive",
+      "v2_14_denominator_strength": "strong_preexisting_collect_k_denominator",
+      "current_v4_artifacts": [
+        "src/rtdsl/v4_goal4683_contact_witness_design_audit.py",
+        "src/rtdsl/v4_app_route_binding.py::contact_manifold",
+        "src/rtdsl/v4_app_benchmark_protocol.py::contact_manifold",
+        "src/rtdsl/v4_point_group.py::prepare_point_group_nearest_witness_2d_device_arrays_v4"
+      ],
+      "current_v4_status": "V4 has nearest-witness operator coverage adjacent to the app, while Goal4683 already killed the simple contact/witness target because it reuses V2.14 bounded collect-k and current exact-witness partner plumbing.",
+      "missing_route_or_operator": "fresh app-name-free bounded witness/contact route that is not rebranded V2.14 collect-k, or an explicit no-go row",
+      "not_allowed_to_claim": [
+        "nearest-witness control is a complete contact_manifold app result",
+        "V2.14 collect-k plus partner exact-witness plumbing is a new V4 lever",
+        "contact-specific fused witness native kernel is allowed"
+      ],
+      "required_next_goal": "Goal4727",
+      "goal4727_exit_condition": "Either a new generic bounded witness protocol with frozen bars and parity, or formal no-go carrying Goal4683 into the 10-app matrix.",
+      "can_count_as_v4_speed_win_now": false,
+      "pod_authorized_now": false
+    },
+    {
+      "app": "rtnn",
+      "goal4723_row_class": "measured_no_win_candidate",
+      "goal4724_gap_class": "measured_candidate_requires_formal_no_win_row",
+      "v2_14_denominator": "prepared RTDL/OptiX fixed-radius ranked-summary aggregate",
+      "v2_14_denominator_strength": "strong_preexisting_ranked_summary_denominator",
+      "current_v4_artifacts": [
+        "future/v4/evidence/v4_goal4660_rtnn_ranked_summary_20260625/summary.json",
+        "src/rtdsl/v4_goal4678_ranked_summary_disposition.py",
+        "src/rtdsl/v4_app_route_binding.py::rtnn",
+        "src/rtdsl/v4_app_benchmark_protocol.py::rtnn"
+      ],
+      "current_v4_status": "V4 ranked-summary candidate executed and validated, but serious-scale hot ratios are parity or below parity against V2.14 and V3.0.2.",
+      "latest_known_v4_vs_v2_14_hot_by_scale": {
+        "262144": 0.9985142636714865,
+        "1048576": 0.9938654084870772
+      },
+      "latest_known_v4_vs_v3_0_2_hot_by_scale": {
+        "262144": 1.0053613081712485,
+        "1048576": 0.992565851297169
+      },
+      "missing_route_or_operator": "No missing route is assumed; the known route should become a formal measured no-win row unless a genuinely new generic lever is proposed later.",
+      "not_allowed_to_claim": [
+        "ranked-summary wrapper execution is a V4 speed win",
+        "parity/slower serious-scale rows can support formal high-performance V4",
+        "RTNN should be rerun blindly before recording the no-win disposition"
+      ],
+      "required_next_goal": "Goal4725",
+      "goal4725_exit_condition": "Record RTNN as a measured no-win/deferred app row with parity evidence and no speed claims, unless source evidence is invalid and must be reopened.",
+      "can_count_as_v4_speed_win_now": false,
+      "pod_authorized_now": false
+    },
+    {
+      "app": "spatial_rayjoin",
+      "goal4723_row_class": "no_v4_route_blocker",
+      "goal4724_gap_class": "no_current_v4_relation_topology_route",
+      "v2_14_denominator": "mixed explicit RayJoin route with prepared point/closed-shape batch count, segment-pair exact count, and shape-pair active count",
+      "v2_14_denominator_strength": "strong_mixed_explicit_v2_14_route",
+      "current_v4_artifacts": [
+        "src/rtdsl/v4_app_route_binding.py::spatial_rayjoin",
+        "src/rtdsl/v4_app_benchmark_protocol.py::spatial_rayjoin",
+        "src/rtdsl/optix_runtime.py::prepare_rayjoin_cdb_point_location_2d_optix",
+        "src/rtdsl/optix_runtime.py::prepare_shape_pair_relation_left_set_optix"
+      ],
+      "current_v4_status": "The current tree contains older/V2-style topology and RayJoin primitives, but no current V4 GPU-array Tier-2 app route is bound for spatial_rayjoin.",
+      "missing_route_or_operator": "generic relation-topology route for at least one promoted RayJoin workload class: point/closed-shape PIP, segment-pair exact count, or shape-pair active count",
+      "not_allowed_to_claim": [
+        "old RayJoin/shape-pair OptiX symbols are current V4 app route evidence",
+        "V2/V3 RayJoin fallback can be hidden inside a V4 benchmark row",
+        "relation-topology subprobe can substitute for full app-level parity and timing"
+      ],
+      "required_next_goal": "Goal4728",
+      "goal4728_exit_condition": "Either bind a generic relation-topology V4 route with frozen parity/timing protocol, or record a no-route blocker row in the final 10-app matrix.",
+      "can_count_as_v4_speed_win_now": false,
+      "pod_authorized_now": false
+    },
+    {
+      "app": "barnes_hut",
+      "goal4723_row_class": "deferred_no_app_identity_route",
+      "goal4724_gap_class": "aggregate_frontier_subprobe_not_complete_app_route",
+      "v2_14_denominator": "RTDL/OptiX aggregate-frontier membership primitive plus explicit force-vector partner continuation; CuPy fastest with Numba reference",
+      "v2_14_denominator_strength": "strong_preexisting_membership_plus_partner_continuation_denominator",
+      "current_v4_artifacts": [
+        "src/rtdsl/aggregate_tree_reference.py::aggregate_frontier_device_columns_native_abi_contract",
+        "src/rtdsl/aggregate_tree_reference.py::aggregate_tree_fused_weighted_vector_sum_2d_rt_native_contract",
+        "src/rtdsl/app_reference/aggregate_force_math.py::sum_aggregate_tree_fused_weighted_vectors_2d_numba_cuda",
+        "src/rtdsl/app_adapters/barnes_hut.py::pairwise_inverse_square_force_2d_partner_columns"
+      ],
+      "current_v4_status": "Aggregate-frontier and weighted-vector assets exist, but the released V4 matrix only has subprobe/productization evidence, not a complete generic app-level Barnes-Hut workflow row.",
+      "missing_route_or_operator": "generic aggregate-tree weighted-vector workflow that keeps force-law/app identity outside native engine boundaries, or formal no-go if that boundary cannot be preserved",
+      "not_allowed_to_claim": [
+        "aggregate-frontier device-columns subprobe is a Barnes-Hut app result",
+        "Barnes-Hut app-identity native kernel is allowed",
+        "CuPy/Numba force continuation reuse is a new V4 speed win by itself"
+      ],
+      "required_next_goal": "Goal4729",
+      "goal4729_exit_condition": "Either define and measure a complete generic aggregate-tree weighted-vector app workflow with parity, or record a no-go/deferred row for the final 10-app matrix.",
+      "can_count_as_v4_speed_win_now": false,
+      "pod_authorized_now": false
+    }
+  ],
+  "goal_level_decision_audit": {
+    "was_i_being_stupid": false,
+    "stupid_action_if_yes": "Not for this goal. The deliberately narrow action is to prevent another stupid jump from partial operator evidence to a release claim.",
+    "alternative_path": "Do not run a blind all-app POD matrix yet; first force each incomplete app to name a concrete route, measured no-win disposition, or no-go row.",
+    "can_try_better_path_now": true
+  },
+  "claim_boundary": {
+    "goal4724_authorizes_pod": false,
+    "goal4724_authorizes_release": false,
+    "goal4724_authorizes_public_speed_claim": false,
+    "goal4724_authorizes_whole_app_high_performance_claim": false,
+    "goal4724_authorizes_final_tag": false
+  },
+  "external_review": {
+    "required": true,
+    "status": "review_debt_allowed_not_blocking_engineering",
+    "review_packet": "future/v4/reviews/call_for_review_v4_goal4724_remaining_5_app_route_gap_audit_2026-06-26.md",
+    "debt_record": "future/v4/reviews/v4_goal4724_remaining_5_app_route_gap_audit_review_debt_2026-06-26.md"
+  },
+  "test_command": "py -m unittest tests.v4_goal4724_remaining_app_route_gap_audit_test tests.v4_goal4723_complete_app_protocol_test"
+}

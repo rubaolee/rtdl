@@ -1,0 +1,30 @@
+{
+  "decision": {
+    "decision": "productize a constrained candidate surface for module-specialized Numba scalar callbacks, but do not authorize public Tier-3 support",
+    "next_goal": "Goal4697 constrained specialized Tier-3 API contract scaffold",
+    "performance_claim_authorized": false,
+    "productization_candidate": "module_specialized_direct_device_callback",
+    "rejected_callback_shapes": [
+      "arbitrary_python_callback",
+      "action_or_side_effect_callback",
+      "external_memory_mutation_callback",
+      "dynamic_sbt_direct_callable_hot_path"
+    ],
+    "release_authorized": false,
+    "required_before_public_support": [
+      "stable API contract",
+      "negative validation for rejected callback shapes",
+      "compile/cache/error-reporting behavior",
+      "at least one app-route validation using the specialized callback path",
+      "external 3-AI review"
+    ],
+    "sbt_direct_callable_status": "experimental_yellow_not_public_support",
+    "status": "goal4696_productize_constrained_specialized_tier3_candidate_not_public_support",
+    "supported_callback_shape": "pure_scalar_return_numba_cabi_device_function",
+    "tier3_public_support_authorized": false
+  },
+  "missing_or_invalid": [],
+  "schema": "rtdl.v4.goal4696_tier3_productization_decision.v1",
+  "status": "passed",
+  "validation_status": "passed"
+}

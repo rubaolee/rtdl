@@ -1,0 +1,133 @@
+{
+  "schema": "rtdl.v4.goal4673.target_design_gate.v1",
+  "status": "goal4673_target_design_gate_complete_pod_not_authorized",
+  "date": "2026-06-25",
+  "decision_label": "select_aggregate_frontier_device_columns_as_conditional_goal4674_target__pod_not_authorized",
+  "purpose": "Choose the next V4 performance target after the V2.14 per-app primitive audit, without repeating the error of treating V2.14 primitives or partner/front-door migration as new V4 speed wins.",
+  "inputs": {
+    "v2_14_per_app_primitive_audit": "future/v4/evidence/v4_goal4672_v2_14_per_app_primitive_audit_2026-06-25.json",
+    "goal4672_target_selection": "future/v4/evidence/v4_goal4672_next_target_selection_after_v2_14_audit_2026-06-25.json",
+    "v4_three_tier_design": "future/v4/rtdl_v4_0_three_tier_fused_architecture_design_2026-06-24.md",
+    "current_v4_status": "docs/current_v4_status.md",
+    "current_source_contract": "src/rtdsl/aggregate_tree_reference.py",
+    "current_optix_runtime": "src/rtdsl/optix_runtime.py",
+    "current_native_optix_api": "src/native/optix/rtdl_optix_api.cpp",
+    "v2_14_source_probe": "git show v2.14:src/rtdsl/aggregate_tree_reference.py and git show v2.14:src/rtdsl/optix_runtime.py"
+  },
+  "selected_target": {
+    "operator": "AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D",
+    "candidate_v4_surface": "v4_aggregate_frontier_device_columns_2d_prepared_runner",
+    "work_class": "new_generic_runtime_lever_absent_from_v2_14",
+    "selected_app_probe": "barnes_hut",
+    "app_probe_role": "probe_only_not_engine_identity",
+    "selected_for_goal": 4674,
+    "why_this_target": [
+      "The V2.14 audit shows existing benchmark apps already had primitive routes, so the next target must be a new runtime lever or a material same-primitive improvement.",
+      "git show v2.14 confirms V2.14 had generic aggregate-frontier host/native collection but did not expose AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D or its prepare/run/destroy device-column symbols.",
+      "Current source exposes AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D with app-generic contract, device-resident payload handoff, same-stream/event-order requirement, and forbidden host frontier rows before partner continuation.",
+      "This target attacks the exact V3/V4 bottleneck class: host materialization of hierarchical frontier rows between RTDL traversal and partner continuation.",
+      "Barnes-Hut can be used only as a benchmark probe because it stresses hierarchical frontier plus weighted continuation; the V4 engine target remains aggregate-frontier device columns, not a Barnes-Hut kernel."
+    ],
+    "why_not_existing_fused_weighted_vector_sum": [
+      "The existing aggregate-tree fused weighted-vector implementation remains rejected as a V4.0 public target as-is.",
+      "It contains domain-shaped force-law semantics and records CUDA-driver execution inside the OptiX backend rather than RT-core traversal evidence.",
+      "Goal4673 does not authorize relabeling that implementation as generic Tier-2 performance."
+    ]
+  },
+  "v2_14_denominator": {
+    "same_logical_family_existed_in_v2_14": true,
+    "same_device_column_primitive_existed_in_v2_14": false,
+    "v2_14_logical_family": "generic aggregate-frontier collect plus app/partner continuation",
+    "v2_14_route_for_app_probe": "RTDL/OptiX aggregate-frontier membership plus explicit CuPy/Numba force-vector continuation",
+    "v2_14_symbols_confirmed_present": [
+      "rtdl_optix_collect_aggregate_frontier_2d"
+    ],
+    "v2_14_symbols_confirmed_absent": [
+      "rtdl_optix_prepare_aggregate_frontier_device_columns_2d",
+      "rtdl_optix_run_aggregate_frontier_device_columns_2d",
+      "rtdl_optix_destroy_aggregate_frontier_device_columns_2d",
+      "AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D"
+    ],
+    "denominator_rule": "V4 must compare against the strongest V2.14 logical aggregate-frontier route, not against a weak CPU or toy route. If the V2.14 archive contains an equivalent device-column path under another name, this target must be reclassified as same-primitive improvement before any run."
+  },
+  "goal4674_pre_pod_gate": {
+    "pod_authorized_by_goal4673": false,
+    "required_before_pod": [
+      "static source audit proving the selected surface is app-name-free",
+      "static source audit proving the selected surface does not wrap the old host-row collector",
+      "static source audit proving the selected surface forbids host frontier row materialization before partner continuation",
+      "static source audit preserving the RT-core claim boundary: CUDA-driver device-column execution is not RT-core traversal evidence unless OptiX trace is proven in the measured path",
+      "frozen correctness parity oracle for aggregate-frontier rows and downstream weighted-vector summaries",
+      "frozen V2.14, V3.0.2, and current V4 denominators",
+      "frozen numeric material-speed bars before any hardware run",
+      "review request or recorded review debt for the target choice"
+    ],
+    "if_pod_later_authorized_primary_bars": {
+      "aggregate_frontier_hot_v4_over_v2_14_min": 1.2,
+      "aggregate_frontier_wall_v4_over_v2_14_min": 1.1,
+      "app_probe_hot_v4_over_v2_14_min": 1.2,
+      "correctness_parity_required": true,
+      "host_frontier_materialization_in_hot_path_allowed": false,
+      "partner_migration_counts_as_speed": false
+    },
+    "kill_conditions": [
+      "V2.14 is found to have an equivalent device-column aggregate-frontier primitive",
+      "the current implementation cannot run without host frontier row materialization before partner continuation",
+      "the only app-level win requires Barnes-Hut or force-law identity in the engine",
+      "phase telemetry shows the device-column lever is too small to plausibly move app-level hot path by 20 percent",
+      "correctness parity fails against the frozen reference"
+    ]
+  },
+  "rejected_or_deferred_targets": [
+    {
+      "target": "spatial_rayjoin_segment_pair_or_point_location",
+      "decision": "defer_as_same_primitive_or_new_route_design",
+      "reason": "git show v2.14 confirms segment-pair, directed point-location, and RayJoin CDB point-location symbols already existed, including prepared-left/direct/grouped-range variants. A V4 front door would be useful but cannot be counted as a clean new speed lever without a material same-primitive improvement over V2.14."
+    },
+    {
+      "target": "contact_manifold_collect_k_bounded",
+      "decision": "defer_as_same_primitive_improvement",
+      "reason": "V2.14 already had collect-k bounded native symbols and contact-manifold bounded witness routes. This remains a possible same-primitive improvement target, not the first new V4 lever."
+    },
+    {
+      "target": "robot_collision_any_hit_flags",
+      "decision": "reject_as_clean_new_win",
+      "reason": "V2.14 already had prepared any-hit collision flag primitives."
+    },
+    {
+      "target": "rt_dbscan_grouped_union",
+      "decision": "reject_after_goal4670_4671_no_go",
+      "reason": "Focused RTDBSCAN evidence did not clear the second-win bar, and V2.14 already had the core count-threshold/grouped-union route."
+    },
+    {
+      "target": "aggregate_tree_fused_weighted_vector_sum_as_is",
+      "decision": "reject_as_v4_public_target_as_is",
+      "reason": "Existing fused weighted-vector route has force-law/app-domain risk and no RT-core claim basis; it may inform tests but cannot be promoted as-is."
+    }
+  ],
+  "review_state": {
+    "requires_3_ai_before_goal4674_pod_or_release_claim": true,
+    "claude_status": "weekly_limit_known_until_2026-06-28_19:00_America_New_York_review_debt_allowed",
+    "antigravity_status": "review_request_to_be_sent_or_recorded_as_debt",
+    "codex_status": "goal4673_self_audit_complete_not_external_consensus",
+    "implementation_can_continue_before_external_review": "only local static/protocol work; no POD performance claim and no release wording"
+  },
+  "claim_boundary": {
+    "release_authorized": false,
+    "public_speed_claim_authorized": false,
+    "whole_app_high_performance_claim_authorized": false,
+    "pod_run_authorized_by_this_artifact": false,
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "barnes_hut_engine_kernel_authorized": false,
+    "existing_fused_weighted_vector_sum_promoted": false
+  },
+  "goal_level_decision_audit": {
+    "was_i_being_stupid": true,
+    "stupid_action": "The risk was to jump from the V2.14 primitive audit into another convenient existing benchmark app target without proving that the target contains a V2.14-absent runtime lever.",
+    "alternative_path": "Select a V2.14-absent generic runtime lever first, freeze denominators and bars, and keep app names as probes only.",
+    "can_try_better_path_now": true,
+    "decision": "Use AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D as the conditional Goal4674 target, with no POD run until the pre-POD gate is satisfied."
+  },
+  "next_action": "Goal4674 should perform the local static/protocol feasibility gate for v4_aggregate_frontier_device_columns_2d_prepared_runner. Only if that gate passes should a focused POD benchmark be requested."
+}

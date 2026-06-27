@@ -1,0 +1,75 @@
+{
+  "goal": "Goal4770",
+  "title": "RT-BarnesHut release packet delta after author phase accounting",
+  "date": "2026-06-26",
+  "status": "release_packet_delta_complete_pending_external_review_debt",
+  "app": "barnes_hut",
+  "source_context": [
+    "future/v4/v4_goal4757_final_v4_0_release_packet_after_goal4756_2026-06-26.md",
+    "future/v4/v4_goal4768_rt_barneshut_preprocessing_sort_bottleneck_2026-06-26.md",
+    "future/v4/v4_goal4769_rt_barneshut_author_phase_accounting_2026-06-26.md"
+  ],
+  "current_matrix_policy": {
+    "goal4756_matrix_is_historical": true,
+    "do_not_rewrite_goal4756_rows": true,
+    "goal4770_is_a_delta_and_claim_boundary_update": true
+  },
+  "native_author_route_10m": {
+    "route": "v4_native_rt_barneshut_author_semantics_rt_core_candidate",
+    "dataset": "/root/external/RT-BarnesHut-author/treelogy_synthetic_10M.txt",
+    "point_count": 10000000,
+    "same_input": true,
+    "same_author_semantics_contract": true,
+    "checksum_valid": true,
+    "checksum_relative_error": 9.051486889720442e-7,
+    "rt_core_execution": true,
+    "host_fallback_used": false,
+    "input_columns_downloaded_for_tree_build": true,
+    "custom_primitive_control_geometry": true,
+    "literal_author_triangle_geometry": false
+  },
+  "author_phase_seconds": {
+    "sort": 6.87096,
+    "tree_build": 1.71362,
+    "tree_to_dfs": 0.043701,
+    "install_autoropes": 0.015301,
+    "intersections_setup": 0.484204,
+    "rt_force": 1.12905,
+    "iterative_step": 1.76213,
+    "total_program": 10.4391
+  },
+  "rtdl_phase_seconds": {
+    "input_download": 0.0804588,
+    "sort": 6.16351,
+    "preprocessing": 6.503060236,
+    "warm_rt_force": 0.886653679,
+    "warm_execution": 7.432850354,
+    "warm_execution_plus_input_download": 7.513309154
+  },
+  "ratios": {
+    "author_sort_over_rtdl_sort": 1.1147803767658364,
+    "author_sort_tree_over_rtdl_preprocessing": 1.3200831129438122,
+    "author_total_program_over_rtdl_execution_plus_input_download": 1.3894144092875964,
+    "author_rt_force_over_rtdl_rt_force": 1.27338331384739
+  },
+  "release_classification_delta": {
+    "old_incorrect_reading": "Do not treat author artifact-mode execution as full workflow; it excludes sort/tree build.",
+    "new_reading": "Barnes-Hut has a 10M checksum-valid native RT-core author-semantics route with an apples-to-apples internal-program win over the authors' binary.",
+    "still_not_authorized": [
+      "public RT-BarnesHut paper-reproduction wording",
+      "public broad V4 speedup wording",
+      "V2/V3/V4 public RT-BarnesHut speed table",
+      "no-copy or device-resident tree-build wording",
+      "literal author triangle geometry wording",
+      "public V4 tag"
+    ]
+  },
+  "claim_boundary": {
+    "release_authorized": false,
+    "public_tag_authorized": false,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "no_copy_tree_build_claim_authorized": false,
+    "broad_all_app_speedup_claim_authorized": false
+  }
+}

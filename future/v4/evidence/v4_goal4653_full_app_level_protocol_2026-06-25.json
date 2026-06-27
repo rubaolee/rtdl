@@ -1,0 +1,95 @@
+{
+  "status": "goal4653_full_app_level_protocol_freeze_evidence",
+  "date": "2026-06-25",
+  "source_of_truth": "src/rtdsl/v4_app_benchmark_protocol.py",
+  "route_matrix_input": "future/v4/evidence/v4_goal4652_app_route_binding_matrix_2026-06-25.json",
+  "summary": {
+    "app_count": 10,
+    "full_app_v4_speed_row_count": 4,
+    "partial_control_count": 4,
+    "visible_blocker_or_deferred_count": 2,
+    "all_rows_have_pre_frozen_bars": true,
+    "no_naive_whole_suite_geomean_trigger": true,
+    "posthoc_app_exclusion_forbidden": true,
+    "pod_spend_authorized_by_this_goal": false
+  },
+  "full_app_v4_speed_rows": [
+    {
+      "app": "rt_dbscan",
+      "v4_route": "V4 fixed-radius count-threshold plus fixed Numba component-union route",
+      "dataset_scale": "clustered3d point_count=262144 radius=3.0 min_neighbors=4 plus fixed-radius operator scale from Goal4639",
+      "warmup": 1,
+      "repeat": 5,
+      "bar": {
+        "correctness_parity_required": true,
+        "v4_vs_v2_14_wall_speedup_min": 1.2,
+        "v4_vs_v3_wall_speedup_min": 1.05,
+        "no_regression_floor": 0.98,
+        "partner_migration_counts_as_win": false
+      }
+    },
+    {
+      "app": "raydb_style",
+      "v4_route": "V4 grouped-i64, grouped-argmin, and any-hit operator route",
+      "dataset_scale": "generated deterministic RayDB rows >=131072, grouped-i64 widths 1/16/256, repeat=7 warmup=2 controls",
+      "warmup": 2,
+      "repeat": 7,
+      "bar": {
+        "correctness_parity_required": true,
+        "v4_vs_v2_14_wall_speedup_min": 1.2,
+        "v4_vs_v3_wall_speedup_min": 1.05,
+        "no_regression_floor": 0.98,
+        "partner_migration_counts_as_win": false
+      }
+    },
+    {
+      "app": "triangle_counting",
+      "v4_route": "V4 ray-triangle any-hit weighted-sum plus grouped-i64 route",
+      "dataset_scale": "Goal4633 shapes 32768/131072/262144/524288 plus grouped-i64 ray_counts 32768/131072",
+      "warmup": 2,
+      "repeat": 7,
+      "bar": {
+        "correctness_parity_required": true,
+        "v4_vs_v2_14_wall_speedup_min": 1.2,
+        "v4_vs_v3_wall_speedup_min": 1.05,
+        "no_regression_floor": 0.98,
+        "partner_migration_counts_as_win": false
+      }
+    },
+    {
+      "app": "librts_spatial_index",
+      "v4_route": "V4 generic prepared AABB all-ops count route",
+      "dataset_scale": "box_count=1000000 query_count=1000 operation=all repeats=240",
+      "warmup": 1,
+      "repeat": 240,
+      "bar": {
+        "correctness_parity_required": true,
+        "v4_vs_v2_14_wall_speedup_min": 1.2,
+        "v4_vs_v3_wall_speedup_min": 1.05,
+        "no_regression_floor": 0.98,
+        "partner_migration_counts_as_win": false,
+        "algorithmic_complexity_outlier_must_be_labeled": true,
+        "public_geomean_headline_forbidden": true
+      }
+    }
+  ],
+  "partial_control_rows": [
+    "hausdorff_xhd",
+    "robot_collision",
+    "contact_manifold",
+    "rtnn"
+  ],
+  "visible_blocker_or_deferred_rows": [
+    "spatial_rayjoin",
+    "barnes_hut"
+  ],
+  "claim_boundaries": {
+    "release_claim_authorized": false,
+    "broad_v4_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "app_specific_native_kernel_authorized": false,
+    "silent_v2_v3_fallback_authorized": false
+  },
+  "test_command": "py -m unittest tests.v4_goal4653_app_level_protocol_test tests.v4_goal4652_app_route_binding_test tests.v4_goal4651_partner_catalog_promotion_test tests.v4_operator_catalog_test",
+  "test_result": "30 tests OK"
+}

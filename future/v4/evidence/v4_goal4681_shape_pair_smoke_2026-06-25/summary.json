@@ -1,0 +1,265 @@
+{
+  "active_counts": {
+    "correctness": [
+      3969,
+      3969,
+      3969
+    ],
+    "serious": [
+      3969,
+      3969,
+      3969
+    ]
+  },
+  "claim_boundary": {
+    "app_identity_kernel_authorized": false,
+    "broad_v4_over_v2_v3_wording_authorized": false,
+    "partner_migration_counts_as_speed": false,
+    "public_speedup_wording_authorized": false,
+    "release_authorized": false,
+    "whole_app_high_performance_wording_authorized": false
+  },
+  "dataset": "/root/rtdl_v4_candidate_pod/future/v4/evidence/v4_goal4681_shape_pair_smoke_20260625_021904/datasets/goal4681_serious_left_grid32.cdb + /root/rtdl_v4_candidate_pod/future/v4/evidence/v4_goal4681_shape_pair_smoke_20260625_021904/datasets/goal4681_serious_right_grid32.cdb",
+  "decision_label": "goal4681_no_speed_credit_productization_or_reclassify",
+  "executions": [
+    {
+      "command": [
+        "/root/rtdl_v4_venv/bin/python",
+        "-m",
+        "examples.current.research_benchmarks.spatial_rayjoin.rtdl_rayjoin_v2_spatial_join_app",
+        "--workload",
+        "overlay_seed",
+        "--execution-route",
+        "prepared_optix_shape_pair_active_count",
+        "--dataset",
+        "/root/rtdl_v4_candidate_pod/future/v4/evidence/v4_goal4681_shape_pair_smoke_20260625_021904/datasets/goal4681_serious_left_grid32.cdb + /root/rtdl_v4_candidate_pod/future/v4/evidence/v4_goal4681_shape_pair_smoke_20260625_021904/datasets/goal4681_serious_right_grid32.cdb",
+        "--repeat",
+        "3",
+        "--warmup",
+        "1",
+        "--no-rows"
+      ],
+      "cwd": "/root/rtdl_v2_14_tag",
+      "ended_unix": 1782440347.919983,
+      "error": null,
+      "returncode": 0,
+      "run_kind": "serious",
+      "runner_elapsed_sec": 2.2481264509260654,
+      "started_unix": 1782440345.6717808,
+      "stderr": "/root/rtdl_v4_candidate_pod/future/v4/evidence/v4_goal4681_shape_pair_smoke_20260625_021904/v2_14_serious.stderr.txt",
+      "stdout_json": "/root/rtdl_v4_candidate_pod/future/v4/evidence/v4_goal4681_shape_pair_smoke_20260625_021904/v2_14_serious.json",
+      "timed_out": false,
+      "version": "v2_14"
+    },
+    {
+      "command": [
+        "/root/rtdl_v4_venv/bin/python",
+        "-m",
+        "examples.current.research_benchmarks.spatial_rayjoin.rtdl_rayjoin_v2_spatial_join_app",
+        "--workload",
+        "overlay_seed",
+        "--execution-route",
+        "prepared_optix_shape_pair_active_count",
+        "--dataset",
+        "/root/rtdl_v4_candidate_pod/future/v4/evidence/v4_goal4681_shape_pair_smoke_20260625_021904/datasets/goal4681_serious_left_grid32.cdb + /root/rtdl_v4_candidate_pod/future/v4/evidence/v4_goal4681_shape_pair_smoke_20260625_021904/datasets/goal4681_serious_right_grid32.cdb",
+        "--repeat",
+        "3",
+        "--warmup",
+        "1",
+        "--no-rows"
+      ],
+      "cwd": "/root/rtdl_v3_0_2_tag",
+      "ended_unix": 1782440350.1706603,
+      "error": null,
+      "returncode": 0,
+      "run_kind": "serious",
+      "runner_elapsed_sec": 2.2500053979456425,
+      "started_unix": 1782440347.92058,
+      "stderr": "/root/rtdl_v4_candidate_pod/future/v4/evidence/v4_goal4681_shape_pair_smoke_20260625_021904/v3_0_2_serious.stderr.txt",
+      "stdout_json": "/root/rtdl_v4_candidate_pod/future/v4/evidence/v4_goal4681_shape_pair_smoke_20260625_021904/v3_0_2_serious.json",
+      "timed_out": false,
+      "version": "v3_0_2"
+    },
+    {
+      "command": [
+        "/root/rtdl_v4_venv/bin/python",
+        "/root/rtdl_v4_candidate_pod/scripts/v4_goal4681_shape_pair_relation_pod_benchmark.py",
+        "--worker",
+        "--route",
+        "v4_shape_pair_relation_active_count_wrapper",
+        "--dataset",
+        "/root/rtdl_v4_candidate_pod/future/v4/evidence/v4_goal4681_shape_pair_smoke_20260625_021904/datasets/goal4681_serious_left_grid32.cdb + /root/rtdl_v4_candidate_pod/future/v4/evidence/v4_goal4681_shape_pair_smoke_20260625_021904/datasets/goal4681_serious_right_grid32.cdb",
+        "--repeat",
+        "3",
+        "--warmup",
+        "1"
+      ],
+      "cwd": "/root/rtdl_v4_candidate_pod",
+      "ended_unix": 1782440352.3702488,
+      "error": null,
+      "returncode": 0,
+      "run_kind": "serious",
+      "runner_elapsed_sec": 2.198758166283369,
+      "started_unix": 1782440350.1714215,
+      "stderr": "/root/rtdl_v4_candidate_pod/future/v4/evidence/v4_goal4681_shape_pair_smoke_20260625_021904/v4_current_serious.stderr.txt",
+      "stdout_json": "/root/rtdl_v4_candidate_pod/future/v4/evidence/v4_goal4681_shape_pair_smoke_20260625_021904/v4_current_serious.json",
+      "timed_out": false,
+      "version": "v4_current"
+    },
+    {
+      "command": [
+        "/root/rtdl_v4_venv/bin/python",
+        "-m",
+        "examples.current.research_benchmarks.spatial_rayjoin.rtdl_rayjoin_v2_spatial_join_app",
+        "--workload",
+        "overlay_seed",
+        "--execution-route",
+        "prepared_optix_shape_pair_active_count",
+        "--dataset",
+        "/root/rtdl_v4_candidate_pod/future/v4/evidence/v4_goal4681_shape_pair_smoke_20260625_021904/datasets/goal4681_correctness_left_grid32.cdb + /root/rtdl_v4_candidate_pod/future/v4/evidence/v4_goal4681_shape_pair_smoke_20260625_021904/datasets/goal4681_correctness_right_grid32.cdb",
+        "--repeat",
+        "1",
+        "--warmup",
+        "0",
+        "--no-rows"
+      ],
+      "cwd": "/root/rtdl_v2_14_tag",
+      "ended_unix": 1782440354.5206602,
+      "error": null,
+      "returncode": 0,
+      "run_kind": "correctness",
+      "runner_elapsed_sec": 2.1498122960329056,
+      "started_unix": 1782440352.3707783,
+      "stderr": "/root/rtdl_v4_candidate_pod/future/v4/evidence/v4_goal4681_shape_pair_smoke_20260625_021904/v2_14_correctness.stderr.txt",
+      "stdout_json": "/root/rtdl_v4_candidate_pod/future/v4/evidence/v4_goal4681_shape_pair_smoke_20260625_021904/v2_14_correctness.json",
+      "timed_out": false,
+      "version": "v2_14"
+    },
+    {
+      "command": [
+        "/root/rtdl_v4_venv/bin/python",
+        "-m",
+        "examples.current.research_benchmarks.spatial_rayjoin.rtdl_rayjoin_v2_spatial_join_app",
+        "--workload",
+        "overlay_seed",
+        "--execution-route",
+        "prepared_optix_shape_pair_active_count",
+        "--dataset",
+        "/root/rtdl_v4_candidate_pod/future/v4/evidence/v4_goal4681_shape_pair_smoke_20260625_021904/datasets/goal4681_correctness_left_grid32.cdb + /root/rtdl_v4_candidate_pod/future/v4/evidence/v4_goal4681_shape_pair_smoke_20260625_021904/datasets/goal4681_correctness_right_grid32.cdb",
+        "--repeat",
+        "1",
+        "--warmup",
+        "0",
+        "--no-rows"
+      ],
+      "cwd": "/root/rtdl_v3_0_2_tag",
+      "ended_unix": 1782440356.6704721,
+      "error": null,
+      "returncode": 0,
+      "run_kind": "correctness",
+      "runner_elapsed_sec": 2.149211712181568,
+      "started_unix": 1782440354.521186,
+      "stderr": "/root/rtdl_v4_candidate_pod/future/v4/evidence/v4_goal4681_shape_pair_smoke_20260625_021904/v3_0_2_correctness.stderr.txt",
+      "stdout_json": "/root/rtdl_v4_candidate_pod/future/v4/evidence/v4_goal4681_shape_pair_smoke_20260625_021904/v3_0_2_correctness.json",
+      "timed_out": false,
+      "version": "v3_0_2"
+    },
+    {
+      "command": [
+        "/root/rtdl_v4_venv/bin/python",
+        "/root/rtdl_v4_candidate_pod/scripts/v4_goal4681_shape_pair_relation_pod_benchmark.py",
+        "--worker",
+        "--route",
+        "v4_shape_pair_relation_active_count_wrapper",
+        "--dataset",
+        "/root/rtdl_v4_candidate_pod/future/v4/evidence/v4_goal4681_shape_pair_smoke_20260625_021904/datasets/goal4681_correctness_left_grid32.cdb + /root/rtdl_v4_candidate_pod/future/v4/evidence/v4_goal4681_shape_pair_smoke_20260625_021904/datasets/goal4681_correctness_right_grid32.cdb",
+        "--repeat",
+        "1",
+        "--warmup",
+        "0"
+      ],
+      "cwd": "/root/rtdl_v4_candidate_pod",
+      "ended_unix": 1782440358.820714,
+      "error": null,
+      "returncode": 0,
+      "run_kind": "correctness",
+      "runner_elapsed_sec": 2.1494151204824448,
+      "started_unix": 1782440356.6712322,
+      "stderr": "/root/rtdl_v4_candidate_pod/future/v4/evidence/v4_goal4681_shape_pair_smoke_20260625_021904/v4_current_correctness.stderr.txt",
+      "stdout_json": "/root/rtdl_v4_candidate_pod/future/v4/evidence/v4_goal4681_shape_pair_smoke_20260625_021904/v4_current_correctness.json",
+      "timed_out": false,
+      "version": "v4_current"
+    }
+  ],
+  "generated_inputs": {
+    "correctness": {
+      "dataset": "/root/rtdl_v4_candidate_pod/future/v4/evidence/v4_goal4681_shape_pair_smoke_20260625_021904/datasets/goal4681_correctness_left_grid32.cdb + /root/rtdl_v4_candidate_pod/future/v4/evidence/v4_goal4681_shape_pair_smoke_20260625_021904/datasets/goal4681_correctness_right_grid32.cdb",
+      "generated_input": true,
+      "generated_input_note": "Focused same-primitive shape-pair relation benchmark input. This is not RayJoin paper input and does not authorize paper/app-level claims.",
+      "grid": 32,
+      "left_cdb": "/root/rtdl_v4_candidate_pod/future/v4/evidence/v4_goal4681_shape_pair_smoke_20260625_021904/datasets/goal4681_correctness_left_grid32.cdb",
+      "right_cdb": "/root/rtdl_v4_candidate_pod/future/v4/evidence/v4_goal4681_shape_pair_smoke_20260625_021904/datasets/goal4681_correctness_right_grid32.cdb",
+      "shape_count_per_side": 1024
+    },
+    "serious": {
+      "dataset": "/root/rtdl_v4_candidate_pod/future/v4/evidence/v4_goal4681_shape_pair_smoke_20260625_021904/datasets/goal4681_serious_left_grid32.cdb + /root/rtdl_v4_candidate_pod/future/v4/evidence/v4_goal4681_shape_pair_smoke_20260625_021904/datasets/goal4681_serious_right_grid32.cdb",
+      "generated_input": true,
+      "generated_input_note": "Focused same-primitive shape-pair relation benchmark input. This is not RayJoin paper input and does not authorize paper/app-level claims.",
+      "grid": 32,
+      "left_cdb": "/root/rtdl_v4_candidate_pod/future/v4/evidence/v4_goal4681_shape_pair_smoke_20260625_021904/datasets/goal4681_serious_left_grid32.cdb",
+      "right_cdb": "/root/rtdl_v4_candidate_pod/future/v4/evidence/v4_goal4681_shape_pair_smoke_20260625_021904/datasets/goal4681_serious_right_grid32.cdb",
+      "shape_count_per_side": 1024
+    }
+  },
+  "metrics": {
+    "v2_14_correctness": {
+      "active_count": 3969,
+      "hot_seconds": 0.000215187668800354,
+      "wall_seconds": 0.00042251497507095337
+    },
+    "v2_14_serious": {
+      "active_count": 3969,
+      "hot_seconds": 8.497759699821472e-05,
+      "wall_seconds": 0.00032150372862815857
+    },
+    "v3_0_2_correctness": {
+      "active_count": 3969,
+      "hot_seconds": 0.0002567470073699951,
+      "wall_seconds": 0.0004980824887752533
+    },
+    "v3_0_2_serious": {
+      "active_count": 3969,
+      "hot_seconds": 8.519366383552551e-05,
+      "wall_seconds": 0.11143405735492706
+    },
+    "v4_current_correctness": {
+      "active_count": 3969,
+      "hot_seconds": 0.00034496933221817017,
+      "wall_seconds": 0.0005813203752040863
+    },
+    "v4_current_serious": {
+      "active_count": 3969,
+      "hot_seconds": 0.00010589882731437683,
+      "wall_seconds": 0.0003265589475631714
+    }
+  },
+  "pass_fail": {
+    "all_subprocesses_returned_zero": true,
+    "correctness_companion_ok": true,
+    "goal4681_speed_credit_pass": false,
+    "partner_migration_counted_as_speed": false,
+    "same_primitive_denominator_used": true,
+    "serious_active_count_parity": true,
+    "v4_host_row_stream_materialization_in_hot_path": false,
+    "v4_hot_bar_pass": false,
+    "v4_v3_parity_floor_pass": false,
+    "v4_wall_bar_pass": false
+  },
+  "profile": "smoke",
+  "ratios": {
+    "v4_hot_over_v2_14_same_primitive": 0.802441340978647,
+    "v4_hot_over_v3_0_2_control": 0.8044816547648362,
+    "v4_wall_over_v2_14_same_primitive": 0.9845197353410906
+  },
+  "schema": "rtdl.v4.goal4681.shape_pair_relation_focused_pod_benchmark.v1"
+}

@@ -1,11 +1,48 @@
 # RTDL V4
 
-RTDL V4 is the current RTDL user surface for measured generic RT-core
-operators.
+RTDL V4 is the current Python eDSL/operator-pushdown surface for generic
+RT-core work on NVIDIA GPUs.
 
-Status: RTDL V4.0.0 is a bounded operator release: 8 documented generic RT-core
-operators are faster than their stated brute-force partner/CPU baselines on the
-frozen Goal4639 scorecard.
+V4 is a V2/V3 superset: existing V2.14 and V3 routes remain part of the usable
+system, and V4 adds measured generic operator surfaces plus constrained
+predicate pushdown.
+
+## Current Status
+
+Status:
+
+```text
+V4.0 tag target ready, complete 10-app RT-core matrix, external public-tag review approved under bounded framing, clean wheel smoke passed
+```
+
+Goal4756 completed the serious NVIDIA RTX A5000 POD matrix:
+
+- `10/10` promoted benchmark apps;
+- `30/30` V2.14/V3.0.2/V4.0 rows executed successfully;
+- all rows returned parseable JSON;
+- Embree is not used as a primary denominator;
+- no `n/a` rows;
+- no hot-path regressions in the Goal4756 table;
+- material hot-path candidates over V2.14: `triangle_counting`,
+  `barnes_hut`;
+- V4/V2.14 hot geomean: `2.10069x`, not a headline.
+
+Read [docs/app_level_benchmark_summary.md](docs/app_level_benchmark_summary.md)
+before making any app-level performance claim.
+
+Final release-review evidence is indexed in
+[future/v4/v4_goal4759_final_review_evidence_manifest_2026-06-26.md](future/v4/v4_goal4759_final_review_evidence_manifest_2026-06-26.md).
+The consolidated Antigravity review
+[future/v4/reviews/antigravity_v4_gemini_full_coverage_review_2026-06-27.md](future/v4/reviews/antigravity_v4_gemini_full_coverage_review_2026-06-27.md)
+authorizes the bounded public V4.0 tag. The tag target must be a clean release
+commit verified by clean checkout and installed-wheel smoke, not an uncommitted
+worktree.
+
+Supplemental Barnes-Hut evidence: RTDL V4 has a checksum-valid native
+RT-BarnesHut author-semantics route at 10M and an apples-to-apples
+internal-program win over the authors' binary after full phase accounting. This
+remains bounded evidence: it does not authorize public paper-reproduction
+wording, no-copy tree-build wording, or broad all-app speedup claims.
 
 ## What RTDL Is
 
@@ -17,44 +54,46 @@ The V4 contract is:
 
 ```text
 Python owns the application.
-RTDL owns generic RT-shaped fused operators.
+RTDL owns generic RT-shaped fused operators and prepared routes.
 Users choose measured partners explicitly.
-Unsupported custom logic fails closed instead of becoming an unsafe callback.
+Unsupported custom logic fails closed or remains V4.1/Tier-3 work.
 ```
 
 The Python package is `rtdsl`.
 
 ## What V4 Adds
 
-V4 promotes RTDL from a prepared-runtime capability surface into a measured
-generic RT-core operator lane:
-
 - one import: `import rtdsl.v4 as rtdl_v4`;
-- eight measured Tier-2 operator surfaces;
-- measured partner scopes: Torch CUDA, Numba, and RTDL native prepared runner;
-- no current Tier-2 candidates in the public front door;
-- a conservative callback/operator planner for complex user logic;
-- a serious Goal4639 scorecard pass: `8/8` measured surfaces and `4/4`
-  strong benchmark families passed.
-- final 3-AI publication authorization for the narrow V4.0.0 operator release.
+- V2/V3-compatible app routes under a single current front door;
+- measured generic RT-core operator/workflow surfaces;
+- explicit partner scopes for Torch CUDA, CuPy where named, Numba where named,
+  and RTDL native prepared runners;
+- constrained custom predicate early-exit for the measured Numba workflow;
+- clear claim boundaries for app rows, operator rows, and future V4.1 callback
+  work.
 
-The honest Goal4639 distribution is:
+V4 does not claim that every historical benchmark app is faster. It does claim
+that the current 10-app RT-core matrix is complete and that V4 has bounded,
+measured value over V2.14 in the documented rows.
 
-- most measured operators are 1.2x-1.7x faster than their stated
-  brute-force partner/CPU baselines;
-- ray/triangle any-hit flags is a larger `5.671x` operator win against its
-  Torch reference baseline;
-- point-group nearest witness (`389.707x`) and AABB all-ops (`164.716x`) are
-  large scale-dependent algorithmic-complexity wins where the alternative is
-  brute force or a slower same-contract index control.
+For operator surfaces, most measured operators are 1.2x-1.7x against their
+stated brute-force partner/CPU baselines; point-group nearest witness and AABB
+all-ops are large scale-dependent algorithmic-complexity wins. These operator
+rows are separate from the 10-app matrix and must keep their denominators.
 
-Do not use the raw geomean as a headline. These are operator-scorecard rows
-with explicit denominators, not whole-application speedup claims and not
-near-hand-written-OptiX claims.
+## Current User Paths
+
+| Path | Purpose |
+| --- | --- |
+| [docs/README.md](docs/README.md) | Current V4 documentation index. |
+| [docs/current_v4_status.md](docs/current_v4_status.md) | V4 status, user promise, and boundaries. |
+| [docs/app_level_benchmark_summary.md](docs/app_level_benchmark_summary.md) | Complete Goal4756 V2.14/V3.0.2/V4.0 app matrix summary. |
+| [tutorials/current/README.md](tutorials/current/README.md) | Short V4 learning path. |
+| [examples/README.md](examples/README.md) | Runnable V4 examples. |
+| [future/v4/tier2_operator_catalog.md](future/v4/tier2_operator_catalog.md) | Measured operator catalog and exact scope. |
+| [docs/learn/performance_wording.md](docs/learn/performance_wording.md) | Performance wording guide. |
 
 ## Start Here
-
-Run from the repository root.
 
 PowerShell:
 
@@ -62,6 +101,7 @@ PowerShell:
 $env:PYTHONPATH = "src;."
 py -3 examples\v4\v4_frontdoor_quickstart.py
 py -3 examples\v4\operator_callback_planning.py --case complex-callback
+py -3 examples\v4\custom_predicate_early_exit_planning.py
 py -3 scripts\v4_catalog_regression_gate.py --mode dry-run
 ```
 
@@ -70,37 +110,24 @@ Linux or macOS:
 ```bash
 PYTHONPATH=src:. python examples/v4/v4_frontdoor_quickstart.py
 PYTHONPATH=src:. python examples/v4/operator_callback_planning.py --case complex-callback
+PYTHONPATH=src:. python examples/v4/custom_predicate_early_exit_planning.py
 PYTHONPATH=src:. python scripts/v4_catalog_regression_gate.py --mode dry-run
 ```
 
-The quickstart prints JSON with the current V4 front-door status, measured
-surface count, partner list, and claim-boundary flags.
-
-## Current User Paths
-
-| Path | Use |
-| --- | --- |
-| [docs/README.md](docs/README.md) | Current V4 documentation index. |
-| [docs/current_v4_status.md](docs/current_v4_status.md) | V4 status, scorecard summary, and claim boundaries. |
-| [tutorials/current/README.md](tutorials/current/README.md) | Short V4 learning path. |
-| [examples/README.md](examples/README.md) | Runnable V4 examples. |
-| [future/v4/tier2_operator_catalog.md](future/v4/tier2_operator_catalog.md) | Measured operator catalog and exact scope. |
-| [docs/learn/performance_wording.md](docs/learn/performance_wording.md) | Performance wording guide. |
-
 ## Non-Claims
 
-This front page authorizes the V4.0.0 operator release above. It does not
-authorize:
+This front page does not authorize:
 
-- broad "V4 is faster for everything" wording;
-- whole-application speedup wording;
-- all-benchmark speedup wording;
+- "all benchmark apps are faster";
+- broad V4-over-V2.14 speedup wording;
+- broad V4-over-V3 speedup wording;
 - public true-zero-copy claims;
+- whole-application speedup claims;
 - Tier-3 callback/PTX support claims;
-- raw OptiX callback support;
-- CuPy performance claims;
-- embedding, C ABI, or non-Python host binding claims;
-- app-specific native engine kernels.
+- broad CuPy performance claims beyond explicitly named measurements;
+- raw OptiX callback support claims;
+- app-specific native engine/kernel claims;
+- embedding, C ABI, or non-Python host binding claims.
 
 ## Repository Layout
 

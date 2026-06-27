@@ -1,0 +1,121 @@
+{
+  "claim_boundary": {
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "v2_v3_v4_author_speed_table_authorized": false
+  },
+  "dataset": {
+    "author_scaling_applied": false,
+    "file_type": "treelogy",
+    "header_values": [
+      1000000.0,
+      1.0,
+      0.025,
+      0.05,
+      0.5
+    ],
+    "path": "/root/external/RT-BarnesHut-author/treelogy_synthetic_1M.txt",
+    "point_count": 8192
+  },
+  "goal": "Goal4765",
+  "interpretation": "first run includes OptiX/NVRTC pipeline initialization; second run is warm candidate hot path for the same loaded library process",
+  "probe": "same_process_warm_repeat",
+  "runs": [
+    {
+      "author_commit": "2a3c60da0bbbd00ff1777cb57ec2089cb0029cf7",
+      "claim_boundary": {
+        "external_author_binary_used": false,
+        "host_fallback_used": false,
+        "input_columns_downloaded_for_tree_build": true,
+        "native_v4_abi_symbols_available": true,
+        "native_v4_checksum_route_available": true,
+        "native_v4_operator_available": true,
+        "public_rt_barneshut_paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "purpose": "native ABI author-semantics checksum route with explicit RT-core/fallback status",
+        "rt_core_execution": true,
+        "same_semantics_author_contract_required": true,
+        "v2_v3_v4_author_speed_table_authorized": false
+      },
+      "contract_version": "rtdl.rt_barneshut.author_contract.v1",
+      "device_columns": {
+        "force_device_ptr_nonzero": true,
+        "point_count": 8192,
+        "point_ids_device_ptr_nonzero": true
+      },
+      "first_forces": [
+        2.1914572378989305e-09,
+        2.810597310443086e-09,
+        2.9539692913971294e-09,
+        2.2846002867282778e-09,
+        2.1189276999677986e-09,
+        2.125400966335178e-09,
+        2.556616918170107e-09,
+        2.5422750571379993e-09
+      ],
+      "force_abs_checksum": 3.601569137667848e-05,
+      "force_checksum": 3.601569137667848e-05,
+      "force_max": 2.7639499577958304e-08,
+      "force_min": 1.6366403787770878e-09,
+      "implementation_status": "rt_core_author_semantics_candidate_route",
+      "implementation_status_code": 3,
+      "phase_seconds": {
+        "copy_seconds": 0.000443562,
+        "execution_seconds": 0.788206481,
+        "preprocessing_seconds": 0.005693513,
+        "rt_force_seconds": 0.782372891
+      },
+      "point_count": 8192,
+      "route_version": "rtdl.v4.rt_barneshut.native_author_route.feasibility.v1",
+      "status": "native_3d_author_semantics_rt_core_candidate_available"
+    },
+    {
+      "author_commit": "2a3c60da0bbbd00ff1777cb57ec2089cb0029cf7",
+      "claim_boundary": {
+        "external_author_binary_used": false,
+        "host_fallback_used": false,
+        "input_columns_downloaded_for_tree_build": true,
+        "native_v4_abi_symbols_available": true,
+        "native_v4_checksum_route_available": true,
+        "native_v4_operator_available": true,
+        "public_rt_barneshut_paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "purpose": "native ABI author-semantics checksum route with explicit RT-core/fallback status",
+        "rt_core_execution": true,
+        "same_semantics_author_contract_required": true,
+        "v2_v3_v4_author_speed_table_authorized": false
+      },
+      "contract_version": "rtdl.rt_barneshut.author_contract.v1",
+      "device_columns": {
+        "force_device_ptr_nonzero": true,
+        "point_count": 8192,
+        "point_ids_device_ptr_nonzero": true
+      },
+      "first_forces": [
+        2.1914572378989305e-09,
+        2.810597310443086e-09,
+        2.9539692913971294e-09,
+        2.2846002867282778e-09,
+        2.1189276999677986e-09,
+        2.125400966335178e-09,
+        2.556616918170107e-09,
+        2.5422750571379993e-09
+      ],
+      "force_abs_checksum": 3.601569137667848e-05,
+      "force_checksum": 3.601569137667848e-05,
+      "force_max": 2.7639499577958304e-08,
+      "force_min": 1.6366403787770878e-09,
+      "implementation_status": "rt_core_author_semantics_candidate_route",
+      "implementation_status_code": 3,
+      "phase_seconds": {
+        "copy_seconds": 0.000245256,
+        "execution_seconds": 0.006655984,
+        "preprocessing_seconds": 0.005022022,
+        "rt_force_seconds": 0.001561678
+      },
+      "point_count": 8192,
+      "route_version": "rtdl.v4.rt_barneshut.native_author_route.feasibility.v1",
+      "status": "native_3d_author_semantics_rt_core_candidate_available"
+    }
+  ]
+}

@@ -1,0 +1,1403 @@
+{
+  "app": "raydb_style_columnar_aggregate",
+  "backend": "paper_rt_optix_prepared_grouped_reduction",
+  "copies": 1,
+  "elapsed_sec": 0.005533222109079361,
+  "matches_cpu_reference": true,
+  "metadata": {
+    "authors_code_comparison": false,
+    "claim_boundary": "This is a prepared v2.4-style diagnostic opponent for fairness analysis. It is RT-core accelerated, but it does not use the v2.5 typed hit-stream handoff and does not authorize public speedup or true-zero-copy wording.",
+    "contract": "raydb_paper_triangle_scan_prepared_grouped_reduction_optix",
+    "copies": 1,
+    "cpu_reference_match_policy": {
+      "abs_tol": 1e-09,
+      "numeric_policy": "exact_for_integral_values_otherwise_isclose",
+      "rel_tol": 1e-09,
+      "row_order": "ordered"
+    },
+    "engine_boundary": "This prepared v2.4-style opponent reuses the generic RTDL scene, ray batch, and primitive grouped payload on the selected backend. It still returns compact grouped rows through the native grouped-reduction contract rather than exposing a typed device hit stream to a partner continuation.",
+    "fixture": "generated_deterministic",
+    "fixture_generation": {
+      "discount_mod": 16,
+      "group_count": 1024,
+      "quantity_mod": 64,
+      "revenue_mod": 64,
+      "row_count": 131072,
+      "ship_year_mod": 64
+    },
+    "generic_primitive_reduction": "sum",
+    "generic_primitive_used": "RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
+    "group_keys": [
+      "region_id"
+    ],
+    "hit_event_count_before_dedup": 1845,
+    "host_row_bridge_bypassed": false,
+    "native_device_column_path_used": false,
+    "native_device_hit_stream_columns_ready": false,
+    "native_rt_core_lowering_path_present": true,
+    "native_rt_core_lowering_ready": false,
+    "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64_reduction",
+    "packed_host_buffers": true,
+    "paper_reproduction": "paper_shaped_rt_prepared_grouped_reduction_optix",
+    "prepared_internal_repeat": 7,
+    "prepared_internal_warmup": 2,
+    "prepared_iteration_wall_sec": [],
+    "prepared_iteration_wall_sec_suppressed": true,
+    "prepared_iteration_wall_summary": {
+      "count": 7,
+      "max_sec": 0.005565822124481201,
+      "median_sec": 0.005533222109079361,
+      "min_sec": 0.005512554198503494,
+      "total_sec": 0.03874248266220093
+    },
+    "prepared_optix_scene_reused": true,
+    "prepared_payload_columns_reused": false,
+    "prepared_phase_timing_summary": {
+      "generic_payload_prepare": {
+        "count": 7,
+        "max_sec": 0.0014860257506370544,
+        "median_sec": 0.0014860257506370544,
+        "min_sec": 0.0014860257506370544,
+        "total_sec": 0.010402180254459381
+      },
+      "generic_scene_prepare": {
+        "count": 7,
+        "max_sec": 0.8756002187728882,
+        "median_sec": 0.8756002187728882,
+        "min_sec": 0.8756002187728882,
+        "total_sec": 6.129201531410217
+      },
+      "native_call_wall": {
+        "count": 7,
+        "max_sec": 0.005388185381889343,
+        "median_sec": 0.0053592249751091,
+        "min_sec": 0.005343042314052582,
+        "total_sec": 0.03754052519798279
+      },
+      "prepare_build": {
+        "count": 7,
+        "max_sec": 0.2592085599899292,
+        "median_sec": 0.2592085599899292,
+        "min_sec": 0.2592085599899292,
+        "total_sec": 1.8144599199295044
+      },
+      "prepared_ray_batch_prepare": {
+        "count": 7,
+        "max_sec": 0.9178941920399666,
+        "median_sec": 0.9178941920399666,
+        "min_sec": 0.9178941920399666,
+        "total_sec": 6.425259344279766
+      },
+      "primitive_payload_prepare": {
+        "count": 7,
+        "max_sec": 0.001328781247138977,
+        "median_sec": 0.001328781247138977,
+        "min_sec": 0.001328781247138977,
+        "total_sec": 0.00930146872997284
+      },
+      "query_pack": {
+        "count": 7,
+        "max_sec": 0.0,
+        "median_sec": 0.0,
+        "min_sec": 0.0,
+        "total_sec": 0.0
+      },
+      "row_presentation": {
+        "count": 7,
+        "max_sec": 0.0001776367425918579,
+        "median_sec": 0.00017052516341209412,
+        "min_sec": 0.0001692064106464386,
+        "total_sec": 0.0012019574642181396
+      },
+      "traversal": {
+        "count": 7,
+        "max_sec": 0.005037227,
+        "median_sec": 0.005033215,
+        "min_sec": 0.005026202,
+        "total_sec": 0.035228639
+      }
+    },
+    "prepared_primitive_payload_reused": true,
+    "prepared_ray_batch_reused": true,
+    "prepared_steady_state": true,
+    "prepared_table_descriptor_used": true,
+    "primitive_contract_required_for_native": "generic_ray_triangle_primitive_grouped_i64_reduction_3d",
+    "query_scan_value_count": 140,
+    "ray_count": 36986880,
+    "raydb_reference_branch": "fin",
+    "raydb_reference_commit": "a610c00d7334d8907435cc0a124f9ca8392ee456",
+    "raydb_reference_repo": "https://github.com/rubaolee/RayDB-i0",
+    "row_count": 131072,
+    "rt_core_accelerated": true,
+    "rt_core_claim_authorized": false,
+    "scan_fields": [
+      "ship_year",
+      "discount",
+      "quantity"
+    ],
+    "timings": {
+      "cold_prepare_total": 4.630738582462072,
+      "elapsed_sec": 0.005533222109079361,
+      "generic_payload_prepare": 0.0014860257506370544,
+      "generic_scene_prepare": 0.8756002187728882,
+      "native_call_wall": 0.0053592249751091,
+      "prepare_build": 0.2592085599899292,
+      "prepared_native_total": 0.8771691583096981,
+      "prepared_ray_batch": 0.917935200035572,
+      "prepared_ray_batch_prepare": 0.9178941920399666,
+      "primitive_payload_prepare": 0.001328781247138977,
+      "query_pack": 0.0,
+      "row_presentation": 0.00017052516341209412,
+      "traversal": 0.005033215,
+      "workload_build": 2.8356292843818665
+    },
+    "transfer_metadata": {
+      "group_rows_downloaded_to_host": true,
+      "per_ray_records_downloaded_to_host": false,
+      "prepared_primitive_payload_on_device": true,
+      "prepared_rays_resident_on_device": true,
+      "primitive_group_ids_uploaded_each_run": false,
+      "primitive_values_uploaded_each_run": false,
+      "query_rays_uploaded_each_run": false,
+      "ray_batch_created_from": "host_packed_rays",
+      "ray_columns_partner_owned": false,
+      "static_scene_prepared_on_device": true,
+      "true_zero_copy_authorized": false
+    },
+    "triangle_count": 131072,
+    "true_zero_copy_authorized": false,
+    "v2_4_phase_timing": {
+      "phase_contract_version": "rtdl.partner.v2.4",
+      "phases_sec": {
+        "materialization": 0.0005000071090793612,
+        "query_preparation": 0.0,
+        "rt_traversal": 0.005033215,
+        "scene_build": 0.0
+      },
+      "promoted_performance_path": false,
+      "same_phase_contract_as_basis": true,
+      "source": "raydb_style.paper_rt_prepared_grouped_reduction.optix.sum",
+      "validation": {
+        "errors": [],
+        "known_phases": [
+          "scene_build",
+          "query_preparation",
+          "rt_traversal",
+          "materialization"
+        ],
+        "status": "accept"
+      }
+    },
+    "v2_4_prepared_session": {
+      "app_owned_lowering": "RayDB predicate/group encoding remains Python app code. RTDL sees only generic rays, triangles, primitive group ids, primitive values, and a reduction.",
+      "app_specific_native_vocab_allowed": false,
+      "backend": "optix",
+      "descriptor_only": true,
+      "input_buffers": [
+        {
+          "access_mode": "read",
+          "alignment_bytes": 1,
+          "byte_offset": 0,
+          "capacity_elements": 36986880,
+          "data_ptr_observed": true,
+          "device": "cpu:0",
+          "dtype": "rtdl_packed_ray_3d",
+          "element_count": 36986880,
+          "lifetime": "session_retained",
+          "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+          "mutability": "immutable",
+          "name": "rays",
+          "scope": "rtdl_primitive_handoff_only",
+          "shape": [
+            36986880
+          ],
+          "source_protocol": "rtdl_packed_host_buffer",
+          "stream_handle": 0,
+          "strides_bytes": [
+            60
+          ]
+        },
+        {
+          "access_mode": "read",
+          "alignment_bytes": 1,
+          "byte_offset": 0,
+          "capacity_elements": 131072,
+          "data_ptr_observed": true,
+          "device": "cpu:0",
+          "dtype": "rtdl_packed_triangle_3d",
+          "element_count": 131072,
+          "lifetime": "session_retained",
+          "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+          "mutability": "immutable",
+          "name": "triangles",
+          "scope": "rtdl_primitive_handoff_only",
+          "shape": [
+            131072
+          ],
+          "source_protocol": "rtdl_packed_host_buffer",
+          "stream_handle": 0,
+          "strides_bytes": [
+            76
+          ]
+        },
+        {
+          "access_mode": "read",
+          "alignment_bytes": 1,
+          "byte_offset": 0,
+          "capacity_elements": 131072,
+          "data_ptr_observed": true,
+          "device": "cpu:0",
+          "dtype": "uint32",
+          "element_count": 131072,
+          "lifetime": "session_retained",
+          "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+          "mutability": "immutable",
+          "name": "primitive_group_ids",
+          "scope": "rtdl_primitive_handoff_only",
+          "shape": [
+            131072
+          ],
+          "source_protocol": "numpy_or_python_host",
+          "stream_handle": 0,
+          "strides_bytes": [
+            4
+          ]
+        },
+        {
+          "access_mode": "read",
+          "alignment_bytes": 1,
+          "byte_offset": 0,
+          "capacity_elements": 131072,
+          "data_ptr_observed": true,
+          "device": "cpu:0",
+          "dtype": "uint64",
+          "element_count": 131072,
+          "lifetime": "session_retained",
+          "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+          "mutability": "immutable",
+          "name": "primitive_values",
+          "scope": "rtdl_primitive_handoff_only",
+          "shape": [
+            131072
+          ],
+          "source_protocol": "numpy_or_python_host",
+          "stream_handle": 0,
+          "strides_bytes": [
+            8
+          ]
+        }
+      ],
+      "native_engine_boundary": "app_agnostic_native_engine",
+      "native_symbols": [
+        "rtdl_optix_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction"
+      ],
+      "output_buffers": [],
+      "performance_basis_hardware": "NVIDIA RTX A5000 pod evidence",
+      "phase_contract": "prepared_query",
+      "primitive": "ray_triangle_grouped_i64_reduction_3d",
+      "protocol_overhead_audit_required": false,
+      "requires_phase_timing": true,
+      "reusable_output_buffers": false,
+      "reusable_query_buffers": true,
+      "reusable_scene": true,
+      "same_phase_contract_as_basis_required": true,
+      "session_id": "generic_ray_triangle_grouped_i64_reduction_3d_optix_sum",
+      "status": "protocol_descriptor_only",
+      "v2_4_protocol_version": "rtdl.partner.v2.4"
+    },
+    "v2_5_partner_continuation": {
+      "adapter_front_door_integrated": true,
+      "app_owned_lowering": "RayDB predicate encoding and result interpretation remain app code. The v2.5 partner continuation sees only group ids and numeric values.",
+      "benchmark_path_integrated": true,
+      "blocked_reason": null,
+      "continuation_phase": "partner_continuation",
+      "contract_version": "rtdl.partner_continuation.v2.5",
+      "descriptor_only": false,
+      "fallback_partner": "numba",
+      "front_door_api": [
+        "partner_group_count_by_key",
+        "partner_group_sum_by_key",
+        "partner_group_min_by_key",
+        "partner_group_max_by_key"
+      ],
+      "mode": "sum",
+      "numba_descriptors": [
+        {
+          "claim_boundary": "Numba executes only generic grouped continuation over device arrays; RTDL/OptiX traversal remains separate",
+          "contract_version": "rtdl.partner_continuation.v2.5",
+          "group_id_validation_mode": "device_resident_error_flag",
+          "input_columns": [
+            "group_ids:int64",
+            "values:float64"
+          ],
+          "operation": "segmented_sum_f64",
+          "output_columns": [
+            "sums:float64"
+          ],
+          "partner": "numba",
+          "phase": "partner_continuation",
+          "promoted_performance_path": false,
+          "raw_kernel_required": false,
+          "replaces_rt_traversal": false,
+          "requires_cuda": true,
+          "requires_numba_cuda_device_arrays": true,
+          "rt_traversal_contract_version": "rtdl.partner.v2.4",
+          "status": "preview_not_promoted"
+        }
+      ],
+      "operations": [
+        "segmented_sum_f64"
+      ],
+      "post_rt_continuation_only": true,
+      "preferred_partner": "triton",
+      "promoted_performance_path": false,
+      "raw_kernel_required": false,
+      "replaces_rt_traversal": false,
+      "rt_core_speedup_claim_authorized": false,
+      "status": "adapter_front_door_preview_not_promoted",
+      "tensor_carrier": "torch_cuda_tensor_for_triton_launch",
+      "tensor_carrier_is_partner": false,
+      "triton_descriptors": [
+        {
+          "claim_boundary": "Triton executes only a generic post-RT continuation over tensor carriers used for launch; Torch is a carrier here, not the v2.5 partner. RTDL/OptiX traversal remains separate.",
+          "contract_version": "rtdl.partner_continuation.v2.5",
+          "cupy_required": false,
+          "group_id_bounds_validation": {
+            "checked_before_kernel_launch": true,
+            "claim_boundary": "v2.5 Triton preview kernels reject out-of-range group ids before launch via a Torch CUDA predicate and host scalar sync. A separate device-error-flag helper is available, but the default strict Python exception path still reads a host scalar.",
+            "device_error_flag_available": true,
+            "device_error_flag_mode": "triton_device_error_flag_no_host_read",
+            "device_error_flag_used_by_default": false,
+            "mode": "torch_cuda_precheck_host_scalar_sync",
+            "true_zero_copy_claim_authorized": false,
+            "uses_host_scalar_sync": true
+          },
+          "input_columns": [
+            "group_ids:int64",
+            "values:float64"
+          ],
+          "operation": "segmented_sum_f64",
+          "output_columns": [
+            "sums:float64"
+          ],
+          "partner": "triton",
+          "phase": "partner_continuation",
+          "promoted_performance_path": false,
+          "pytorch_partner_required": false,
+          "raw_kernel_required": false,
+          "replaces_rt_traversal": false,
+          "requires_cuda": true,
+          "requires_torch_tensor_inputs": true,
+          "rt_traversal_contract_version": "rtdl.partner.v2.4",
+          "status": "preview_not_promoted",
+          "tensor_carrier": "torch_cuda_tensor_for_triton_launch",
+          "tensor_carrier_is_partner": false,
+          "triton_kernel_available": true
+        }
+      ],
+      "triton_executable_preview_available": true,
+      "uses_cupy_partner": false,
+      "uses_pytorch_partner": false
+    }
+  },
+  "mode": "sum",
+  "row_count": 131072,
+  "rows": [
+    {
+      "region_id": 0,
+      "sum": 22
+    },
+    {
+      "region_id": 1,
+      "sum": 22
+    },
+    {
+      "region_id": 2,
+      "sum": 64
+    },
+    {
+      "region_id": 8,
+      "sum": 15
+    },
+    {
+      "region_id": 9,
+      "sum": 59
+    },
+    {
+      "region_id": 10,
+      "sum": 13
+    },
+    {
+      "region_id": 16,
+      "sum": 27
+    },
+    {
+      "region_id": 17,
+      "sum": 60
+    },
+    {
+      "region_id": 18,
+      "sum": 6
+    },
+    {
+      "region_id": 24,
+      "sum": 20
+    },
+    {
+      "region_id": 32,
+      "sum": 2
+    },
+    {
+      "region_id": 38,
+      "sum": 16
+    },
+    {
+      "region_id": 39,
+      "sum": 109
+    },
+    {
+      "region_id": 46,
+      "sum": 38
+    },
+    {
+      "region_id": 48,
+      "sum": 7
+    },
+    {
+      "region_id": 54,
+      "sum": 22
+    },
+    {
+      "region_id": 55,
+      "sum": 2
+    },
+    {
+      "region_id": 56,
+      "sum": 10
+    },
+    {
+      "region_id": 62,
+      "sum": 15
+    },
+    {
+      "region_id": 64,
+      "sum": 3
+    },
+    {
+      "region_id": 68,
+      "sum": 62
+    },
+    {
+      "region_id": 72,
+      "sum": 15
+    },
+    {
+      "region_id": 76,
+      "sum": 11
+    },
+    {
+      "region_id": 77,
+      "sum": 9
+    },
+    {
+      "region_id": 80,
+      "sum": 8
+    },
+    {
+      "region_id": 84,
+      "sum": 4
+    },
+    {
+      "region_id": 92,
+      "sum": 16
+    },
+    {
+      "region_id": 94,
+      "sum": 4
+    },
+    {
+      "region_id": 101,
+      "sum": 17
+    },
+    {
+      "region_id": 102,
+      "sum": 61
+    },
+    {
+      "region_id": 108,
+      "sum": 12
+    },
+    {
+      "region_id": 110,
+      "sum": 64
+    },
+    {
+      "region_id": 117,
+      "sum": 27
+    },
+    {
+      "region_id": 118,
+      "sum": 3
+    },
+    {
+      "region_id": 131,
+      "sum": 18
+    },
+    {
+      "region_id": 132,
+      "sum": 63
+    },
+    {
+      "region_id": 138,
+      "sum": 13
+    },
+    {
+      "region_id": 139,
+      "sum": 42
+    },
+    {
+      "region_id": 140,
+      "sum": 56
+    },
+    {
+      "region_id": 146,
+      "sum": 6
+    },
+    {
+      "region_id": 147,
+      "sum": 24
+    },
+    {
+      "region_id": 148,
+      "sum": 4
+    },
+    {
+      "region_id": 154,
+      "sum": 19
+    },
+    {
+      "region_id": 155,
+      "sum": 80
+    },
+    {
+      "region_id": 156,
+      "sum": 61
+    },
+    {
+      "region_id": 168,
+      "sum": 15
+    },
+    {
+      "region_id": 169,
+      "sum": 13
+    },
+    {
+      "region_id": 170,
+      "sum": 68
+    },
+    {
+      "region_id": 175,
+      "sum": 27
+    },
+    {
+      "region_id": 176,
+      "sum": 8
+    },
+    {
+      "region_id": 177,
+      "sum": 31
+    },
+    {
+      "region_id": 184,
+      "sum": 21
+    },
+    {
+      "region_id": 185,
+      "sum": 18
+    },
+    {
+      "region_id": 192,
+      "sum": 13
+    },
+    {
+      "region_id": 193,
+      "sum": 58
+    },
+    {
+      "region_id": 206,
+      "sum": 9
+    },
+    {
+      "region_id": 207,
+      "sum": 7
+    },
+    {
+      "region_id": 210,
+      "sum": 7
+    },
+    {
+      "region_id": 214,
+      "sum": 2
+    },
+    {
+      "region_id": 215,
+      "sum": 20
+    },
+    {
+      "region_id": 223,
+      "sum": 13
+    },
+    {
+      "region_id": 230,
+      "sum": 8
+    },
+    {
+      "region_id": 231,
+      "sum": 15
+    },
+    {
+      "region_id": 239,
+      "sum": 8
+    },
+    {
+      "region_id": 240,
+      "sum": 53
+    },
+    {
+      "region_id": 246,
+      "sum": 3
+    },
+    {
+      "region_id": 247,
+      "sum": 21
+    },
+    {
+      "region_id": 248,
+      "sum": 47
+    },
+    {
+      "region_id": 252,
+      "sum": 14
+    },
+    {
+      "region_id": 255,
+      "sum": 14
+    },
+    {
+      "region_id": 269,
+      "sum": 10
+    },
+    {
+      "region_id": 270,
+      "sum": 27
+    },
+    {
+      "region_id": 276,
+      "sum": 5
+    },
+    {
+      "region_id": 277,
+      "sum": 25
+    },
+    {
+      "region_id": 284,
+      "sum": 79
+    },
+    {
+      "region_id": 285,
+      "sum": 15
+    },
+    {
+      "region_id": 286,
+      "sum": 60
+    },
+    {
+      "region_id": 292,
+      "sum": 10
+    },
+    {
+      "region_id": 293,
+      "sum": 8
+    },
+    {
+      "region_id": 306,
+      "sum": 24
+    },
+    {
+      "region_id": 307,
+      "sum": 4
+    },
+    {
+      "region_id": 308,
+      "sum": 22
+    },
+    {
+      "region_id": 313,
+      "sum": 19
+    },
+    {
+      "region_id": 314,
+      "sum": 99
+    },
+    {
+      "region_id": 315,
+      "sum": 78
+    },
+    {
+      "region_id": 322,
+      "sum": 68
+    },
+    {
+      "region_id": 323,
+      "sum": 10
+    },
+    {
+      "region_id": 329,
+      "sum": 24
+    },
+    {
+      "region_id": 330,
+      "sum": 5
+    },
+    {
+      "region_id": 331,
+      "sum": 3
+    },
+    {
+      "region_id": 339,
+      "sum": 5
+    },
+    {
+      "region_id": 344,
+      "sum": 19
+    },
+    {
+      "region_id": 345,
+      "sum": 63
+    },
+    {
+      "region_id": 346,
+      "sum": 16
+    },
+    {
+      "region_id": 348,
+      "sum": 62
+    },
+    {
+      "region_id": 352,
+      "sum": 100
+    },
+    {
+      "region_id": 359,
+      "sum": 6
+    },
+    {
+      "region_id": 368,
+      "sum": 63
+    },
+    {
+      "region_id": 369,
+      "sum": 7
+    },
+    {
+      "region_id": 377,
+      "sum": 64
+    },
+    {
+      "region_id": 382,
+      "sum": 13
+    },
+    {
+      "region_id": 385,
+      "sum": 12
+    },
+    {
+      "region_id": 386,
+      "sum": 57
+    },
+    {
+      "region_id": 406,
+      "sum": 21
+    },
+    {
+      "region_id": 407,
+      "sum": 1
+    },
+    {
+      "region_id": 415,
+      "sum": 72
+    },
+    {
+      "region_id": 421,
+      "sum": 9
+    },
+    {
+      "region_id": 422,
+      "sum": 26
+    },
+    {
+      "region_id": 423,
+      "sum": 58
+    },
+    {
+      "region_id": 430,
+      "sum": 19
+    },
+    {
+      "region_id": 437,
+      "sum": 3
+    },
+    {
+      "region_id": 443,
+      "sum": 17
+    },
+    {
+      "region_id": 444,
+      "sum": 15
+    },
+    {
+      "region_id": 445,
+      "sum": 73
+    },
+    {
+      "region_id": 451,
+      "sum": 10
+    },
+    {
+      "region_id": 452,
+      "sum": 36
+    },
+    {
+      "region_id": 454,
+      "sum": 6
+    },
+    {
+      "region_id": 459,
+      "sum": 26
+    },
+    {
+      "region_id": 460,
+      "sum": 69
+    },
+    {
+      "region_id": 461,
+      "sum": 1
+    },
+    {
+      "region_id": 467,
+      "sum": 16
+    },
+    {
+      "region_id": 474,
+      "sum": 61
+    },
+    {
+      "region_id": 481,
+      "sum": 29
+    },
+    {
+      "region_id": 482,
+      "sum": 10
+    },
+    {
+      "region_id": 483,
+      "sum": 8
+    },
+    {
+      "region_id": 489,
+      "sum": 5
+    },
+    {
+      "region_id": 490,
+      "sum": 25
+    },
+    {
+      "region_id": 497,
+      "sum": 62
+    },
+    {
+      "region_id": 498,
+      "sum": 15
+    },
+    {
+      "region_id": 514,
+      "sum": 11
+    },
+    {
+      "region_id": 519,
+      "sum": 24
+    },
+    {
+      "region_id": 520,
+      "sum": 4
+    },
+    {
+      "region_id": 523,
+      "sum": 4
+    },
+    {
+      "region_id": 528,
+      "sum": 17
+    },
+    {
+      "region_id": 537,
+      "sum": 17
+    },
+    {
+      "region_id": 544,
+      "sum": 12
+    },
+    {
+      "region_id": 545,
+      "sum": 30
+    },
+    {
+      "region_id": 552,
+      "sum": 5
+    },
+    {
+      "region_id": 553,
+      "sum": 73
+    },
+    {
+      "region_id": 557,
+      "sum": 18
+    },
+    {
+      "region_id": 559,
+      "sum": 64
+    },
+    {
+      "region_id": 560,
+      "sum": 18
+    },
+    {
+      "region_id": 561,
+      "sum": 62
+    },
+    {
+      "region_id": 574,
+      "sum": 14
+    },
+    {
+      "region_id": 575,
+      "sum": 12
+    },
+    {
+      "region_id": 581,
+      "sum": 26
+    },
+    {
+      "region_id": 582,
+      "sum": 7
+    },
+    {
+      "region_id": 583,
+      "sum": 80
+    },
+    {
+      "region_id": 589,
+      "sum": 2
+    },
+    {
+      "region_id": 590,
+      "sum": 83
+    },
+    {
+      "region_id": 591,
+      "sum": 17
+    },
+    {
+      "region_id": 597,
+      "sum": 73
+    },
+    {
+      "region_id": 598,
+      "sum": 12
+    },
+    {
+      "region_id": 599,
+      "sum": 57
+    },
+    {
+      "region_id": 612,
+      "sum": 8
+    },
+    {
+      "region_id": 613,
+      "sum": 6
+    },
+    {
+      "region_id": 619,
+      "sum": 21
+    },
+    {
+      "region_id": 620,
+      "sum": 1
+    },
+    {
+      "region_id": 621,
+      "sum": 19
+    },
+    {
+      "region_id": 627,
+      "sum": 93
+    },
+    {
+      "region_id": 628,
+      "sum": 14
+    },
+    {
+      "region_id": 635,
+      "sum": 53
+    },
+    {
+      "region_id": 636,
+      "sum": 7
+    },
+    {
+      "region_id": 650,
+      "sum": 3
+    },
+    {
+      "region_id": 652,
+      "sum": 2
+    },
+    {
+      "region_id": 657,
+      "sum": 50
+    },
+    {
+      "region_id": 659,
+      "sum": 13
+    },
+    {
+      "region_id": 666,
+      "sum": 8
+    },
+    {
+      "region_id": 682,
+      "sum": 4
+    },
+    {
+      "region_id": 683,
+      "sum": 21
+    },
+    {
+      "region_id": 690,
+      "sum": 77
+    },
+    {
+      "region_id": 691,
+      "sum": 14
+    },
+    {
+      "region_id": 695,
+      "sum": 10
+    },
+    {
+      "region_id": 698,
+      "sum": 9
+    },
+    {
+      "region_id": 712,
+      "sum": 28
+    },
+    {
+      "region_id": 713,
+      "sum": 3
+    },
+    {
+      "region_id": 719,
+      "sum": 18
+    },
+    {
+      "region_id": 720,
+      "sum": 97
+    },
+    {
+      "region_id": 721,
+      "sum": 76
+    },
+    {
+      "region_id": 726,
+      "sum": 13
+    },
+    {
+      "region_id": 728,
+      "sum": 66
+    },
+    {
+      "region_id": 729,
+      "sum": 9
+    },
+    {
+      "region_id": 735,
+      "sum": 29
+    },
+    {
+      "region_id": 736,
+      "sum": 4
+    },
+    {
+      "region_id": 737,
+      "sum": 2
+    },
+    {
+      "region_id": 749,
+      "sum": 19
+    },
+    {
+      "region_id": 750,
+      "sum": 81
+    },
+    {
+      "region_id": 751,
+      "sum": 62
+    },
+    {
+      "region_id": 757,
+      "sum": 44
+    },
+    {
+      "region_id": 758,
+      "sum": 57
+    },
+    {
+      "region_id": 759,
+      "sum": 10
+    },
+    {
+      "region_id": 765,
+      "sum": 25
+    },
+    {
+      "region_id": 766,
+      "sum": 5
+    },
+    {
+      "region_id": 773,
+      "sum": 18
+    },
+    {
+      "region_id": 774,
+      "sum": 62
+    },
+    {
+      "region_id": 787,
+      "sum": 14
+    },
+    {
+      "region_id": 788,
+      "sum": 70
+    },
+    {
+      "region_id": 795,
+      "sum": 33
+    },
+    {
+      "region_id": 803,
+      "sum": 19
+    },
+    {
+      "region_id": 811,
+      "sum": 12
+    },
+    {
+      "region_id": 812,
+      "sum": 20
+    },
+    {
+      "region_id": 821,
+      "sum": 13
+    },
+    {
+      "region_id": 825,
+      "sum": 8
+    },
+    {
+      "region_id": 828,
+      "sum": 85
+    },
+    {
+      "region_id": 832,
+      "sum": 21
+    },
+    {
+      "region_id": 841,
+      "sum": 14
+    },
+    {
+      "region_id": 843,
+      "sum": 2
+    },
+    {
+      "region_id": 849,
+      "sum": 16
+    },
+    {
+      "region_id": 850,
+      "sum": 14
+    },
+    {
+      "region_id": 851,
+      "sum": 59
+    },
+    {
+      "region_id": 857,
+      "sum": 9
+    },
+    {
+      "region_id": 858,
+      "sum": 27
+    },
+    {
+      "region_id": 859,
+      "sum": 7
+    },
+    {
+      "region_id": 865,
+      "sum": 22
+    },
+    {
+      "region_id": 866,
+      "sum": 69
+    },
+    {
+      "region_id": 867,
+      "sum": 64
+    },
+    {
+      "region_id": 873,
+      "sum": 15
+    },
+    {
+      "region_id": 881,
+      "sum": 60
+    },
+    {
+      "region_id": 887,
+      "sum": 11
+    },
+    {
+      "region_id": 888,
+      "sum": 37
+    },
+    {
+      "region_id": 894,
+      "sum": 23
+    },
+    {
+      "region_id": 895,
+      "sum": 4
+    },
+    {
+      "region_id": 896,
+      "sum": 23
+    },
+    {
+      "region_id": 903,
+      "sum": 77
+    },
+    {
+      "region_id": 911,
+      "sum": 9
+    },
+    {
+      "region_id": 924,
+      "sum": 25
+    },
+    {
+      "region_id": 925,
+      "sum": 28
+    },
+    {
+      "region_id": 926,
+      "sum": 3
+    },
+    {
+      "region_id": 932,
+      "sum": 55
+    },
+    {
+      "region_id": 933,
+      "sum": 62
+    },
+    {
+      "region_id": 934,
+      "sum": 16
+    },
+    {
+      "region_id": 940,
+      "sum": 30
+    },
+    {
+      "region_id": 941,
+      "sum": 11
+    },
+    {
+      "region_id": 949,
+      "sum": 4
+    },
+    {
+      "region_id": 950,
+      "sum": 11
+    },
+    {
+      "region_id": 957,
+      "sum": 6
+    },
+    {
+      "region_id": 962,
+      "sum": 19
+    },
+    {
+      "region_id": 963,
+      "sum": 81
+    },
+    {
+      "region_id": 966,
+      "sum": 80
+    },
+    {
+      "region_id": 970,
+      "sum": 12
+    },
+    {
+      "region_id": 980,
+      "sum": 13
+    },
+    {
+      "region_id": 988,
+      "sum": 31
+    },
+    {
+      "region_id": 995,
+      "sum": 1
+    },
+    {
+      "region_id": 996,
+      "sum": 81
+    },
+    {
+      "region_id": 1003,
+      "sum": 71
+    },
+    {
+      "region_id": 1004,
+      "sum": 11
+    },
+    {
+      "region_id": 1005,
+      "sum": 56
+    },
+    {
+      "region_id": 1018,
+      "sum": 7
+    },
+    {
+      "region_id": 1019,
+      "sum": 52
+    }
+  ]
+}

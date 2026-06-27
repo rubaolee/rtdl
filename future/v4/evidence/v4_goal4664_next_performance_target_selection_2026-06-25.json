@@ -1,0 +1,82 @@
+{
+  "candidates": [
+    {
+      "app": "rt_dbscan",
+      "current_v4_vs_v2": 1.0699852108253372,
+      "current_v4_vs_v3": 1.083655334769324,
+      "reading": "below formal bar; Goal4658 Numba direct signature improves a subroute only 1.068x vs CuPy and remains below target"
+    },
+    {
+      "app": "raydb_style",
+      "current_v4_vs_v2": 0.994360133689628,
+      "current_v4_vs_v3": 0.9995495756910683,
+      "reading": "parity; no current lever"
+    },
+    {
+      "app": "triangle_counting",
+      "current_v4_vs_v2": 15.547729710404004,
+      "current_v4_vs_v3": 1.1166329003297184,
+      "reading": "V4/V3 below 1.20 and V2 delta is historical route evolution; not clean next target"
+    },
+    {
+      "app": "librts_spatial_index",
+      "current_v4_vs_v2": 0.9985407593071016,
+      "current_v4_vs_v3": 1.0010930413474715,
+      "reading": "parity; no current lever"
+    },
+    {
+      "app": "rtnn",
+      "current_v4_vs_v2_serious": 0.9938654084870772,
+      "current_v4_vs_v3_serious": 0.992565851297169,
+      "reading": "candidate route exists but 1M serious hot path is slower than V2/V3; reject as next performance target"
+    },
+    {
+      "app": "hausdorff_xhd",
+      "current_1m_boundary": "coordinate-normalized V4 passes correctness; unnormalized V3/V4 fail exactness",
+      "current_v4_vs_v2_262144_hot": 326053.05205408717,
+      "current_v4_vs_v3_262144_hot": 1.2595460279287984,
+      "reading": "best next target: real V4 route, generic composition, correctness-passing 262k speed over V3, but needs fresh frozen focused protocol before claim"
+    }
+  ],
+  "date": "2026-06-25",
+  "decision": {
+    "full_all_app_rerun_authorized": false,
+    "label": "select_hausdorff_for_goal4665_focused_formal_candidate_run",
+    "public_speed_claim_authorized": false,
+    "release_authorized": false,
+    "why_not_all_app": "Current changed rows are insufficient to alter full-suite decision; run a focused frozen target first.",
+    "why_not_rtnn": "RTNN serious rows are parity/slower and would be fake progress."
+  },
+  "frozen_goal4665_protocol": {
+    "app": "hausdorff_xhd",
+    "correctness_required": true,
+    "denominator_boundary": "V2.14 Embree directed-summary primary metric, V3.0.2 CuPy optix_device_max_nearest hot metric, V4 Torch official V4 route hot metric; do not mix cold and hot claims.",
+    "forbidden_shortcut": "no Hausdorff-specific native kernel",
+    "large_scale_correctness_probe": {
+      "claim_class": "correctness_boundary_not_speed_claim",
+      "mode": "coordinate-normalized V4 only plus previous V3/V4 unnormalized failure boundary as context",
+      "points_per_side": 1048576
+    },
+    "minimum_bars": {
+      "no_regression_floor_for_prepare_where_comparable": 0.8,
+      "v4_vs_v2_14_primary_metric_speedup_min": 1.2,
+      "v4_vs_v3_0_2_hot_speedup_min": 1.2
+    },
+    "primary_metric": "hot_device_sec for prepared/reuse route",
+    "route": "official V4 point-group nearest-witness plus Torch global_argmax_u32_f64 continuation",
+    "scales": [
+      65536,
+      262144
+    ],
+    "secondary_metrics": [
+      "scene_prepare_sec",
+      "materialize_sec",
+      "wall/cold if available"
+    ]
+  },
+  "purpose": "Select one next app-level performance target after Goal4663 without rerunning the whole suite or pursuing parity-only rows.",
+  "schema": "rtdl.v4.goal4664.next_performance_target_selection.v1",
+  "selected_app": "hausdorff_xhd",
+  "selection_reason": "Hausdorff is the only changed/current app row with a plausible generic V4 lever and existing correctness-passing evidence above the 1.20x V4/V3 hot-path bar at serious scale. Existing results are treated as exploratory; a fresh Goal4665 run under a frozen protocol is required before any claim.",
+  "status": "goal4664_select_hausdorff_xhd_for_focused_formal_candidate_protocol"
+}

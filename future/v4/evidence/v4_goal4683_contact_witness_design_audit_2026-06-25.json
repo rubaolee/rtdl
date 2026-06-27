@@ -1,0 +1,38 @@
+{
+  "goal": 4683,
+  "date": "2026-06-25",
+  "status": "goal4683_no_go_contact_witness_target_reuses_v2_14_collect_k_and_partner_witness",
+  "audited_target": "AABB_PAIR_EXACT_WITNESS_DEVICE_COLUMNS_2D",
+  "decision": "no_go",
+  "target_killed_for_v4_0_performance_path": true,
+  "implementation_authorized": false,
+  "pod_authorized": false,
+  "release_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "whole_app_speedup_claim_authorized": false,
+  "app_identity_kernel_authorized": false,
+  "partner_migration_speed_credit_authorized": false,
+  "v2_14_preexisting_surfaces": [
+    "rtdl_optix_collect_k_bounded_i64",
+    "rtdl_optix_collect_k_bounded_i64_device",
+    "rtdl_embree_collect_k_bounded_i64",
+    "collect_native_i64_rows_with_backend_symbol",
+    "collect_native_i64_rows_into_prepared_output_buffer",
+    "run_native_collect_k_bounded_rows_with_prepared_result_buffer"
+  ],
+  "current_preexisting_surfaces": [
+    "allocate_segment_polygon_witness_partner_device_output_columns",
+    "segment_polygon_exact_witness_pair_page_optix_partner_columns",
+    "segment_polygon_exact_witness_pair_page_optix_prepared_partner_columns",
+    "ray_primitive_witness_pair_page_optix_prepared_partner_columns",
+    "bounded_collect_finalize_i64_partner_columns",
+    "collect_k_bounded_i64_device"
+  ],
+  "blocking_reasons": [
+    "The generic bounded candidate collection core is preexisting V2.14 work, not a new V4 lever.",
+    "The exact-witness device-column continuation exists as partner adapter work, so promoting it would be partner/productization credit unless a new fused native operator is designed.",
+    "A contact-specific fused witness route would violate the V4 app-identity-kernel lock unless restated as a generic operator with fresh design and bars.",
+    "No POD run is authorized because the design audit already fails the absent-lever gate."
+  ],
+  "next_goal": "Goal4684 must reset the high-performance V4 search: either identify one genuinely absent, app-name-free Tier-2 fused primitive with a material-speed hypothesis, or stop the formal high-performance V4 path and keep the current bounded-operator/productization truth."
+}

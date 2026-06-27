@@ -1,0 +1,37 @@
+{
+  "goal": 4682,
+  "date": "2026-06-25",
+  "status": "goal4682_shape_pair_no_promotion_select_contact_witness_design_gate_no_pod",
+  "closed_route": {
+    "surface": "v4_shape_pair_relation_active_count_2d_prepared_left_executor",
+    "reason": "Goal4681 passed correctness but failed speed bars",
+    "ratios": {
+      "v4_hot_over_v2_14_same_primitive": 0.9631953985515683,
+      "v4_wall_over_v2_14_same_primitive": 0.6048911657172009,
+      "v4_hot_over_v3_0_2_control": 0.9769985795123769
+    },
+    "promote_to_measured_catalog_authorized": false
+  },
+  "selected_next_gate": {
+    "goal": 4683,
+    "design_target": "AABB_PAIR_EXACT_WITNESS_DEVICE_COLUMNS_2D",
+    "target_class": "design_audit_gate_only",
+    "required_question": "Can V4 create a generic device-column pipeline that combines AABB candidate discovery and exact witness refinement without merely rewrapping V2.14 bounded collect-k?",
+    "implementation_authorized": false,
+    "pod_authorized": false
+  },
+  "selection_rationale": {
+    "why_not_shape_pair": "same primitive existed in V2.14 and measured V4 was slower",
+    "why_not_robot_librts_rtnn_raydb_triangle": "V2.14 already had the relevant primitive-first routes; prior audits classify them as parity/productization or already measured operator coverage",
+    "why_contact_witness_gate": "contact/manifold still has a possible new full generic route only if exact witness refinement can stay in a generic device-column pipeline rather than host candidate/witness materialization",
+    "risk": "V2.14 already had bounded collect-k; Goal4683 must kill the target if the proposed route is just collect-k with a new name"
+  },
+  "claim_boundary": {
+    "release_authorized": false,
+    "public_speedup_wording_authorized": false,
+    "whole_app_high_performance_wording_authorized": false,
+    "pod_spend_authorized": false,
+    "implementation_authorized": false,
+    "app_identity_kernel_authorized": false
+  }
+}

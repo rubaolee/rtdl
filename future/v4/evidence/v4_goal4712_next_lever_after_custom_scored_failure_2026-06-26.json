@@ -1,0 +1,54 @@
+{
+  "missing_or_invalid": [],
+  "selection": {
+    "app_level_speed_claim_authorized": false,
+    "arbitrary_callback_authorized": false,
+    "failure_fact": {
+      "classification": "fail_focused_app_gate_not_high_performance",
+      "failed_target": "ray_triangle_custom_scored_accumulation",
+      "min_primary_v3_speedup": 1.0144917291107025,
+      "primary_geomean_v3_speedup": 1.0289410940907995,
+      "reason": "Post-hit scalar scoring only removes a small amount of materialization or callback-placement cost. It does not reduce traversal work, candidate count, or high-volume hit attribute movement enough to support formal high-performance V4.",
+      "source_goal": "Goal4711"
+    },
+    "formal_high_performance_authorized": false,
+    "next_goal": "Goal4713 custom predicate early-exit multi-hit protocol freeze",
+    "pod_authorized": false,
+    "raw_optix_callback_authorized": false,
+    "rejected_patterns": [
+      {
+        "pattern": "post_hit_scalar_accumulation_polish",
+        "reason": "Goal4711 already measured this shape at about 1.029x geomean; more wording or minor polish is not a new lever."
+      },
+      {
+        "pattern": "weighted_sum_or_existing_operator_control",
+        "reason": "Weighted sum exists in V2/V3 and is control-only, not V4-specific app evidence."
+      },
+      {
+        "pattern": "global_atomic_scalar_accumulation",
+        "reason": "Goal4711 smoke showed global atomic accumulation is a diagnostic control, not a performance route."
+      },
+      {
+        "pattern": "same_target_rerun_without_changed_cost_model",
+        "reason": "Rerunning the same custom-scored app cannot move the frozen bar unless the mechanism changes."
+      }
+    ],
+    "release_authorized": false,
+    "selected_target": "custom_predicate_early_exit_multi_hit",
+    "selected_target_contract": {
+      "allowed_callback_shape": "pure scalar/boolean Numba C-ABI device function with no side effects",
+      "app_family": "ray/triangle multi-hit custom predicate early-exit",
+      "engine_owned_action": "RTDL applies terminate_on_first_accept or count_until_threshold; user callback does not mutate external state",
+      "generic_feature_under_test": "constrained custom predicate callback in any-hit with RTDL-owned early-exit policy",
+      "minimum_bar_to_consider_formal_hp": "Goal4713 must freeze numeric bars; expected bar should require material speedup in high-candidate regimes, not a 1.03x polish win",
+      "must_freeze_before_pod": "correctness oracle, candidate density, scales, callback variants, V2/V3 fallback, numeric bars, kill conditions, and public-claim boundaries",
+      "not_app_specific_kernel": true,
+      "required_scene_shape": "multi-hit rays with frozen candidate densities, e.g. >=8 and >=32 possible hits per ray, plus sparse/no-hit controls",
+      "v2_v3_denominator": "same OptiX hit discovery with device materialization of all candidate IDs/attributes, followed by separate device predicate/filter/reduction",
+      "v4_route": "callback predicate evaluated inside any-hit with early termination/filtering controlled by RTDL",
+      "why_this_can_win": "Unlike post-hit accumulation, a predicate callback can affect traversal-side control flow. V4 can reject or terminate inside any-hit before materializing every candidate, while V2/V3 fallback must materialize all hit IDs or hit attributes and then run a separate device predicate/filter."
+    },
+    "status": "goal4712_next_lever_after_custom_scored_failure_selected_protocol_required"
+  },
+  "status": "passed"
+}

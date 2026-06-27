@@ -4864,6 +4864,1092 @@ extern "C" void rtdl_optix_destroy_aggregate_tree_fused_weighted_vector_sum_2d(v
     delete reinterpret_cast<AggregateTreeFusedWeightedVectorSumPrepared2D*>(prepared);
 }
 
+constexpr uint32_t kRtBarnesHutAuthorImplementationStatusHostFallback = 2u;
+constexpr uint32_t kRtBarnesHutAuthorImplementationStatusRtCore = 3u;
+constexpr double kRtBarnesHutAuthorThreshold = 0.5;
+constexpr double kRtBarnesHutAuthorGravitationalConstant = 0.1;
+constexpr size_t kRtBarnesHutAuthorBucketSize = 32;
+
+struct RtBarnesHutAuthorHostPoint3D {
+    float mass = 0.0f;
+    float x = 0.0f;
+    float y = 0.0f;
+    float z = 0.0f;
+    uint64_t original_id = 0;
+    uint64_t normalized_id = 0;
+};
+
+struct RtBarnesHutAuthorHostNode3D {
+    double cofm_x = 0.0;
+    double cofm_y = 0.0;
+    double cofm_z = 0.0;
+    double s = 0.0;
+    double mass = 0.0;
+    bool is_leaf = true;
+    int32_t dfs_index = -1;
+    float triangle_x = 0.0f;
+    float triangle_y = 0.0f;
+    float next_ray_x = 0.0f;
+    float next_ray_y = 0.0f;
+    int32_t next_prim_id = 0;
+    float auto_rope_ray_x = 0.0f;
+    float auto_rope_ray_y = 0.0f;
+    int32_t auto_rope_prim_id = 0;
+    std::array<RtBarnesHutAuthorHostNode3D*, 8> children{};
+    std::vector<uint64_t> particles;
+
+    RtBarnesHutAuthorHostNode3D() {
+        children.fill(nullptr);
+    }
+};
+
+struct RtBarnesHutAuthorPhaseProfile {
+    bool enabled = false;
+    std::string path;
+    uint64_t point_count = 0;
+    uint64_t node_count = 0;
+    uint64_t leaf_count = 0;
+    double input_download_seconds = 0.0;
+    double point_pack_seconds = 0.0;
+    double sort_seconds = 0.0;
+    double grid_seconds = 0.0;
+    double bucket_build_seconds = 0.0;
+    double insert_seconds = 0.0;
+    double compute_com_seconds = 0.0;
+    double count_nodes_seconds = 0.0;
+    double dfs_metadata_seconds = 0.0;
+    double auto_rope_seconds = 0.0;
+    double pipeline_init_seconds = 0.0;
+    double device_pack_seconds = 0.0;
+    double aabb_seconds = 0.0;
+    double upload_seconds = 0.0;
+    double accel_build_seconds = 0.0;
+    double launch_seconds = 0.0;
+
+    RtBarnesHutAuthorPhaseProfile() {
+        const char* raw_path = std::getenv("RTDL_RT_BARNESHUT_AUTHOR_PROFILE_JSONL");
+        if (raw_path && raw_path[0] != '\0') {
+            enabled = true;
+            path = raw_path;
+        }
+    }
+
+    static double seconds_since(std::chrono::steady_clock::time_point start) {
+        return std::chrono::duration<double>(std::chrono::steady_clock::now() - start).count();
+    }
+
+    void append(uint32_t implementation_status) const {
+        if (!enabled)
+            return;
+        try {
+            std::ofstream out(path, std::ios::app);
+            if (!out)
+                return;
+            out << "{"
+                << "\"event\":\"rt_barneshut_author_phase_profile\","
+                << "\"point_count\":" << point_count << ","
+                << "\"node_count\":" << node_count << ","
+                << "\"leaf_count\":" << leaf_count << ","
+                << "\"implementation_status_code\":" << implementation_status << ","
+                << "\"input_download_seconds\":" << input_download_seconds << ","
+                << "\"point_pack_seconds\":" << point_pack_seconds << ","
+                << "\"sort_seconds\":" << sort_seconds << ","
+                << "\"grid_seconds\":" << grid_seconds << ","
+                << "\"bucket_build_seconds\":" << bucket_build_seconds << ","
+                << "\"insert_seconds\":" << insert_seconds << ","
+                << "\"compute_com_seconds\":" << compute_com_seconds << ","
+                << "\"count_nodes_seconds\":" << count_nodes_seconds << ","
+                << "\"dfs_metadata_seconds\":" << dfs_metadata_seconds << ","
+                << "\"auto_rope_seconds\":" << auto_rope_seconds << ","
+                << "\"pipeline_init_seconds\":" << pipeline_init_seconds << ","
+                << "\"device_pack_seconds\":" << device_pack_seconds << ","
+                << "\"aabb_seconds\":" << aabb_seconds << ","
+                << "\"upload_seconds\":" << upload_seconds << ","
+                << "\"accel_build_seconds\":" << accel_build_seconds << ","
+                << "\"launch_seconds\":" << launch_seconds
+                << "}\n";
+        } catch (...) {
+        }
+    }
+};
+
+struct RtBarnesHutAuthorHostTree3D {
+    std::vector<RtBarnesHutAuthorHostPoint3D> points;
+    std::vector<std::unique_ptr<RtBarnesHutAuthorHostNode3D>> nodes;
+    RtBarnesHutAuthorHostNode3D* root = nullptr;
+    double grid_size = 0.0;
+    uint64_t node_count = 0;
+    uint64_t leaf_count = 0;
+    RtBarnesHutAuthorPhaseProfile profile;
+};
+
+struct RtBarnesHutAuthorOutput3D {
+    CUdeviceptr point_ids = 0;
+    CUdeviceptr forces = 0;
+
+    ~RtBarnesHutAuthorOutput3D() {
+        if (forces) cuMemFree(forces);
+        if (point_ids) cuMemFree(point_ids);
+    }
+};
+
+struct RtBarnesHutAuthorDevicePoint3D {
+    float mass = 0.0f;
+    float x = 0.0f;
+    float y = 0.0f;
+    float z = 0.0f;
+    uint64_t id = 0;
+};
+
+struct RtBarnesHutAuthorDeviceNode3D {
+    float mass = 0.0f;
+    float center_of_mass_x = 0.0f;
+    float center_of_mass_y = 0.0f;
+    float center_of_mass_z = 0.0f;
+    float node_size = 0.0f;
+    float triangle_x = 0.0f;
+    float triangle_y = 0.0f;
+    float next_ray_x = 0.0f;
+    float next_ray_y = 0.0f;
+    int32_t next_prim_id = 0;
+    float auto_rope_ray_x = 0.0f;
+    float auto_rope_ray_y = 0.0f;
+    int32_t auto_rope_prim_id = 0;
+    int32_t particles[32] = {};
+    int32_t num_particles = 0;
+    uint32_t is_leaf = 0;
+};
+
+struct RtBarnesHutAuthor3DLaunchParams {
+    OptixTraversableHandle traversable = 0;
+    const RtBarnesHutAuthorDeviceNode3D* nodes = nullptr;
+    const RtBarnesHutAuthorDevicePoint3D* points = nullptr;
+    float* forces = nullptr;
+    uint32_t point_count = 0;
+    uint32_t node_count = 0;
+};
+
+struct RtBarnesHutAuthorPipeline {
+    std::once_flag init;
+    PipelineHolder* pipe = nullptr;
+};
+
+static RtBarnesHutAuthorPipeline g_rt_barneshut_author3d;
+
+static const char* kRtBarnesHutAuthor3DKernelSrc = R"CUDA(
+#include <optix_device.h>
+#include <stdint.h>
+#include <math.h>
+
+struct RtBarnesHutAuthorDevicePoint3D {
+    float mass;
+    float x;
+    float y;
+    float z;
+    unsigned long long id;
+};
+
+struct RtBarnesHutAuthorDeviceNode3D {
+    float mass;
+    float center_of_mass_x;
+    float center_of_mass_y;
+    float center_of_mass_z;
+    float node_size;
+    float triangle_x;
+    float triangle_y;
+    float next_ray_x;
+    float next_ray_y;
+    int next_prim_id;
+    float auto_rope_ray_x;
+    float auto_rope_ray_y;
+    int auto_rope_prim_id;
+    int particles[32];
+    int num_particles;
+    unsigned int is_leaf;
+};
+
+struct RtBarnesHutAuthor3DLaunchParams {
+    OptixTraversableHandle traversable;
+    const RtBarnesHutAuthorDeviceNode3D* nodes;
+    const RtBarnesHutAuthorDevicePoint3D* points;
+    float* forces;
+    unsigned int point_count;
+    unsigned int node_count;
+};
+
+extern "C" {
+__constant__ RtBarnesHutAuthor3DLaunchParams params;
+}
+
+static __forceinline__ __device__ float rtbh_pair_force(
+        const RtBarnesHutAuthorDevicePoint3D& target,
+        const RtBarnesHutAuthorDevicePoint3D& other)
+{
+    const float dx = other.x - target.x;
+    const float dy = other.y - target.y;
+    const float dz = other.z - target.z;
+    const float r2 = (dx * dx) + (dy * dy) + (dz * dz);
+    if (r2 == 0.0f) return 0.0f;
+    return ((target.mass * other.mass) / r2) * 0.1f;
+}
+
+static __forceinline__ __device__ float rtbh_leaf_force(
+        const RtBarnesHutAuthorDevicePoint3D& target,
+        const RtBarnesHutAuthorDeviceNode3D& node,
+        unsigned int point_id)
+{
+    float force = 0.0f;
+    for (int i = 0; i < node.num_particles && i < 32; ++i) {
+        const int particle_id = node.particles[i];
+        if (particle_id < 0 || static_cast<unsigned int>(particle_id) >= params.point_count)
+            continue;
+        if (static_cast<unsigned int>(particle_id) == point_id)
+            continue;
+        force += rtbh_pair_force(target, params.points[particle_id]);
+    }
+    return force;
+}
+
+static __forceinline__ __device__ float rtbh_aggregate_force(
+        const RtBarnesHutAuthorDevicePoint3D& target,
+        const RtBarnesHutAuthorDeviceNode3D& node,
+        float r2)
+{
+    if (r2 == 0.0f) return 0.0f;
+    return ((target.mass * node.mass) / r2) * 0.1f;
+}
+
+extern "C" __global__ void __intersection__rt_barneshut_author3d_isect()
+{
+    const unsigned int prim = optixGetPrimitiveIndex();
+    if (prim >= params.node_count) return;
+    const RtBarnesHutAuthorDeviceNode3D node = params.nodes[prim];
+    const float3 origin = optixGetWorldRayOrigin();
+    const float3 direction = optixGetWorldRayDirection();
+    if (fabsf(direction.x) < 1.0e-12f) return;
+
+    const float t = (node.triangle_x - origin.x) / direction.x;
+    if (t < optixGetRayTmin() || t > optixGetRayTmax()) return;
+    const float y = origin.y + (t * direction.y);
+    if (y < node.triangle_y - 0.5001f || y > node.triangle_y + 0.5001f) return;
+    optixReportIntersection(t, 0u);
+}
+
+extern "C" __global__ void __closesthit__rt_barneshut_author3d_ch()
+{
+    const unsigned int point_id = optixGetPayload_3();
+    const unsigned int node_id = optixGetPayload_4();
+    if (point_id >= params.point_count || node_id >= params.node_count) return;
+
+    const RtBarnesHutAuthorDevicePoint3D target = params.points[point_id];
+    const RtBarnesHutAuthorDeviceNode3D node = params.nodes[node_id];
+    float current_force = __uint_as_float(optixGetPayload_1());
+    if (node.is_leaf == 1u) {
+        current_force += rtbh_leaf_force(target, node, point_id);
+    } else {
+        current_force += rtbh_aggregate_force(target, node, __uint_as_float(optixGetPayload_7()));
+    }
+
+    optixSetPayload_1(__float_as_uint(current_force));
+    optixSetPayload_4(static_cast<unsigned int>(node.auto_rope_prim_id));
+    optixSetPayload_5(__float_as_uint(node.auto_rope_ray_x));
+    optixSetPayload_6(__float_as_uint(node.auto_rope_ray_y));
+}
+
+extern "C" __global__ void __miss__rt_barneshut_author3d_miss()
+{
+    const unsigned int point_id = optixGetPayload_3();
+    const unsigned int node_id = optixGetPayload_4();
+    if (point_id >= params.point_count || node_id >= params.node_count) return;
+
+    const RtBarnesHutAuthorDevicePoint3D target = params.points[point_id];
+    const RtBarnesHutAuthorDeviceNode3D node = params.nodes[node_id];
+    float current_force = __uint_as_float(optixGetPayload_1());
+    if (node.is_leaf == 1u && optixGetPayload_0() == 0u) {
+        current_force += rtbh_leaf_force(target, node, point_id);
+        optixSetPayload_1(__float_as_uint(current_force));
+    }
+    optixSetPayload_4(static_cast<unsigned int>(node.next_prim_id));
+    optixSetPayload_5(__float_as_uint(node.next_ray_x));
+    optixSetPayload_6(__float_as_uint(node.next_ray_y));
+}
+
+extern "C" __global__ void __raygen__rt_barneshut_author3d()
+{
+    const unsigned int point_id = optixGetLaunchIndex().x;
+    if (point_id >= params.point_count) return;
+
+    const RtBarnesHutAuthorDevicePoint3D target = params.points[point_id];
+    unsigned int p0 = 0u;
+    unsigned int p1 = __float_as_uint(0.0f);
+    unsigned int p2 = 0u;
+    unsigned int p3 = point_id;
+    unsigned int p4 = 0u;
+    unsigned int p5 = __float_as_uint(0.0f);
+    unsigned int p6 = __float_as_uint(0.0f);
+    unsigned int p7 = __float_as_uint(0.0f);
+
+    for (unsigned int iteration = 0u; iteration < (params.node_count * 4u + 8u); ++iteration) {
+        if (p4 >= params.node_count) break;
+        const RtBarnesHutAuthorDeviceNode3D node = params.nodes[p4];
+        const float dx = target.x - node.center_of_mass_x;
+        const float dy = target.y - node.center_of_mass_y;
+        const float dz = target.z - node.center_of_mass_z;
+        const float r2 = (dx * dx) + (dy * dy) + (dz * dz);
+        const float ray_length = sqrtf(r2) * 0.5f;
+        p0 = (ray_length == 0.0f) ? 1u : 0u;
+        p7 = __float_as_uint(r2);
+
+        optixTrace(params.traversable,
+                   make_float3(__uint_as_float(p5), __uint_as_float(p6), 0.0f),
+                   make_float3(1.0f, 0.0f, 0.0f),
+                   0.0f, ray_length, 0.0f,
+                   OptixVisibilityMask(255),
+                   OPTIX_RAY_FLAG_DISABLE_ANYHIT,
+                   0, 1, 0,
+                   p0, p1, p2, p3, p4, p5, p6, p7);
+
+        if (p4 >= params.node_count || p4 == 0u) break;
+    }
+    params.forces[point_id] = __uint_as_float(p1);
+}
+)CUDA";
+
+static void ensure_rt_barneshut_author3d_pipeline()
+{
+    std::call_once(g_rt_barneshut_author3d.init, [&]() {
+        std::string ptx = compile_to_ptx(
+            kRtBarnesHutAuthor3DKernelSrc,
+            "rt_barneshut_author3d_kernel.cu");
+        g_rt_barneshut_author3d.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__rt_barneshut_author3d",
+            "__miss__rt_barneshut_author3d_miss",
+            "__intersection__rt_barneshut_author3d_isect",
+            nullptr,
+            "__closesthit__rt_barneshut_author3d_ch",
+            8).release();
+    });
+}
+
+static uint32_t rtdl_rt_barneshut_author_float_bits(float value)
+{
+    uint32_t bits = 0;
+    std::memcpy(&bits, &value, sizeof(bits));
+    return bits;
+}
+
+static int rtdl_rt_barneshut_author_uint_log2(uint32_t value)
+{
+    if (value == 0u)
+        throw std::runtime_error("RT-BarnesHut author uint_log2 requires a positive integer");
+    int result = -1;
+    while (value != 0u) {
+        ++result;
+        value >>= 1u;
+    }
+    return result;
+}
+
+static int rtdl_rt_barneshut_author_float_exp(uint32_t bits)
+{
+    uint32_t raw = bits & 0x7fffffffu;
+    if (raw == 0u || raw >= 0x7f800000u)
+        return 0;
+    raw >>= 23u;
+    return raw == 0u ? -126 : static_cast<int>(raw) - 127;
+}
+
+static int rtdl_rt_barneshut_author_float_xor_msb(float p, float q)
+{
+    if (p == q || p == -q)
+        return std::numeric_limits<int>::min();
+    const uint32_t p_bits = rtdl_rt_barneshut_author_float_bits(p);
+    const uint32_t q_bits = rtdl_rt_barneshut_author_float_bits(q);
+    const int p_exp = rtdl_rt_barneshut_author_float_exp(p_bits);
+    const int q_exp = rtdl_rt_barneshut_author_float_exp(q_bits);
+    if (p_exp == q_exp) {
+        const uint32_t sig_xor = (p_bits & 0x007fffffu) ^ (q_bits & 0x007fffffu);
+        if (sig_xor > 0u)
+            return p_exp + rtdl_rt_barneshut_author_uint_log2(sig_xor) - 23;
+        return p_exp;
+    }
+    return std::max(p_exp, q_exp);
+}
+
+static int rtdl_rt_barneshut_author_zorder_compare(
+        const RtBarnesHutAuthorHostPoint3D& left,
+        const RtBarnesHutAuthorHostPoint3D& right)
+{
+    const float p[3] = {left.x, left.y, left.z};
+    const float q[3] = {right.x, right.y, right.z};
+    int differing_exp = std::numeric_limits<int>::min();
+    int axis = 0;
+    for (int j = 2; j >= 0; --j) {
+        if ((p[j] < 0.0f) != (q[j] < 0.0f))
+            return p[j] < q[j] ? -1 : 1;
+        const int current = rtdl_rt_barneshut_author_float_xor_msb(p[j], q[j]);
+        if (differing_exp < current) {
+            differing_exp = current;
+            axis = j;
+        }
+    }
+    if (p[axis] < q[axis])
+        return -1;
+    if (p[axis] > q[axis])
+        return 1;
+    if (left.original_id < right.original_id)
+        return -1;
+    if (left.original_id > right.original_id)
+        return 1;
+    return 0;
+}
+
+static RtBarnesHutAuthorHostNode3D* rtdl_rt_barneshut_author_make_node(
+        std::vector<std::unique_ptr<RtBarnesHutAuthorHostNode3D>>& nodes,
+        double cofm_x,
+        double cofm_y,
+        double cofm_z,
+        double s,
+        bool is_leaf)
+{
+    auto node = std::make_unique<RtBarnesHutAuthorHostNode3D>();
+    node->cofm_x = cofm_x;
+    node->cofm_y = cofm_y;
+    node->cofm_z = cofm_z;
+    node->s = s;
+    node->is_leaf = is_leaf;
+    RtBarnesHutAuthorHostNode3D* raw = node.get();
+    nodes.push_back(std::move(node));
+    return raw;
+}
+
+static void rtdl_rt_barneshut_author_insert_node(
+        RtBarnesHutAuthorHostNode3D* parent,
+        RtBarnesHutAuthorHostNode3D* point,
+        double s,
+        std::vector<std::unique_ptr<RtBarnesHutAuthorHostNode3D>>& nodes)
+{
+    double offset_x = 0.0;
+    double offset_y = 0.0;
+    double offset_z = 0.0;
+    int octant = 0;
+    if (parent->cofm_z < point->cofm_z) {
+        octant = 4;
+        offset_z = s;
+    }
+    if (parent->cofm_y < point->cofm_y) {
+        octant += 2;
+        offset_y = s;
+    }
+    if (parent->cofm_x < point->cofm_x) {
+        octant += 1;
+        offset_x = s;
+    }
+    RtBarnesHutAuthorHostNode3D* child = parent->children[static_cast<size_t>(octant)];
+    if (child == nullptr) {
+        point->s = s;
+        parent->children[static_cast<size_t>(octant)] = point;
+        return;
+    }
+    const double half_r = 0.5 * s;
+    if (child->is_leaf) {
+        RtBarnesHutAuthorHostNode3D* inner = rtdl_rt_barneshut_author_make_node(
+            nodes,
+            (parent->cofm_x - half_r) + offset_x,
+            (parent->cofm_y - half_r) + offset_y,
+            (parent->cofm_z - half_r) + offset_z,
+            half_r,
+            false);
+        rtdl_rt_barneshut_author_insert_node(inner, point, half_r, nodes);
+        rtdl_rt_barneshut_author_insert_node(inner, child, half_r, nodes);
+        parent->children[static_cast<size_t>(octant)] = inner;
+    } else {
+        rtdl_rt_barneshut_author_insert_node(child, point, half_r, nodes);
+    }
+}
+
+static void rtdl_rt_barneshut_author_compute_com(RtBarnesHutAuthorHostNode3D* node)
+{
+    if (node->is_leaf)
+        return;
+    double total_mass = 0.0;
+    double x = 0.0;
+    double y = 0.0;
+    double z = 0.0;
+    for (RtBarnesHutAuthorHostNode3D* child : node->children) {
+        if (child == nullptr)
+            continue;
+        rtdl_rt_barneshut_author_compute_com(child);
+        total_mass += child->mass;
+        x += child->cofm_x * child->mass;
+        y += child->cofm_y * child->mass;
+        z += child->cofm_z * child->mass;
+    }
+    if (total_mass != 0.0) {
+        node->mass = total_mass;
+        node->cofm_x = x / total_mass;
+        node->cofm_y = y / total_mass;
+        node->cofm_z = z / total_mass;
+    }
+}
+
+static std::pair<uint64_t, uint64_t> rtdl_rt_barneshut_author_count_nodes(
+        const RtBarnesHutAuthorHostNode3D* node)
+{
+    uint64_t total = 1;
+    uint64_t leaves = node->is_leaf ? 1u : 0u;
+    for (const RtBarnesHutAuthorHostNode3D* child : node->children) {
+        if (child == nullptr)
+            continue;
+        const auto child_counts = rtdl_rt_barneshut_author_count_nodes(child);
+        total += child_counts.first;
+        leaves += child_counts.second;
+    }
+    return {total, leaves};
+}
+
+static RtBarnesHutAuthorHostTree3D rtdl_rt_barneshut_author_build_host_tree(
+        const std::vector<uint64_t>& ids,
+        const std::vector<float>& x,
+        const std::vector<float>& y,
+        const std::vector<float>& z,
+        const std::vector<float>& mass)
+{
+    if (ids.size() != x.size() || ids.size() != y.size() || ids.size() != z.size() || ids.size() != mass.size())
+        throw std::runtime_error("RT-BarnesHut author host columns have inconsistent lengths");
+    RtBarnesHutAuthorHostTree3D tree;
+    tree.profile.point_count = static_cast<uint64_t>(ids.size());
+    const auto point_pack_start = std::chrono::steady_clock::now();
+    tree.points.reserve(ids.size());
+    for (size_t index = 0; index < ids.size(); ++index) {
+        tree.points.push_back({
+            mass[index],
+            x[index],
+            y[index],
+            z[index],
+            ids[index],
+            static_cast<uint64_t>(index),
+        });
+    }
+    tree.profile.point_pack_seconds = RtBarnesHutAuthorPhaseProfile::seconds_since(point_pack_start);
+    const auto sort_start = std::chrono::steady_clock::now();
+    std::sort(
+        tree.points.begin(),
+        tree.points.end(),
+        [](const RtBarnesHutAuthorHostPoint3D& left, const RtBarnesHutAuthorHostPoint3D& right) {
+            return rtdl_rt_barneshut_author_zorder_compare(left, right) < 0;
+        });
+    tree.profile.sort_seconds = RtBarnesHutAuthorPhaseProfile::seconds_since(sort_start);
+    const auto grid_start = std::chrono::steady_clock::now();
+    double max_abs = 0.0;
+    for (size_t index = 0; index < tree.points.size(); ++index) {
+        tree.points[index].normalized_id = static_cast<uint64_t>(index);
+        max_abs = std::max(max_abs, static_cast<double>(std::fabs(tree.points[index].x)));
+        max_abs = std::max(max_abs, static_cast<double>(std::fabs(tree.points[index].y)));
+        max_abs = std::max(max_abs, static_cast<double>(std::fabs(tree.points[index].z)));
+    }
+    tree.grid_size = std::ceil(max_abs) * 2.0;
+    if (tree.grid_size <= 0.0)
+        tree.grid_size = 2.0;
+    tree.profile.grid_seconds = RtBarnesHutAuthorPhaseProfile::seconds_since(grid_start);
+    tree.root = rtdl_rt_barneshut_author_make_node(
+        tree.nodes, 0.0, 0.0, 0.0, tree.grid_size, false);
+
+    const auto bucket_start = std::chrono::steady_clock::now();
+    for (size_t start = 0; start < tree.points.size(); start += kRtBarnesHutAuthorBucketSize) {
+        const size_t end = std::min(start + kRtBarnesHutAuthorBucketSize, tree.points.size());
+        double chunk_mass = 0.0;
+        double cofm_x = 0.0;
+        double cofm_y = 0.0;
+        double cofm_z = 0.0;
+        for (size_t point_index = start; point_index < end; ++point_index) {
+            const auto& point = tree.points[point_index];
+            chunk_mass += point.mass;
+            cofm_x += static_cast<double>(point.x) * point.mass;
+            cofm_y += static_cast<double>(point.y) * point.mass;
+            cofm_z += static_cast<double>(point.z) * point.mass;
+        }
+        if (chunk_mass == 0.0)
+            throw std::runtime_error("RT-BarnesHut author bucket has zero mass");
+        RtBarnesHutAuthorHostNode3D* leaf = rtdl_rt_barneshut_author_make_node(
+            tree.nodes,
+            cofm_x / chunk_mass,
+            cofm_y / chunk_mass,
+            cofm_z / chunk_mass,
+            tree.grid_size * 0.5,
+            true);
+        leaf->mass = chunk_mass;
+        leaf->particles.reserve(end - start);
+        for (size_t point_index = start; point_index < end; ++point_index)
+            leaf->particles.push_back(tree.points[point_index].normalized_id);
+        const auto insert_start = std::chrono::steady_clock::now();
+        rtdl_rt_barneshut_author_insert_node(
+            tree.root, leaf, tree.grid_size * 0.5, tree.nodes);
+        tree.profile.insert_seconds += RtBarnesHutAuthorPhaseProfile::seconds_since(insert_start);
+    }
+    tree.profile.bucket_build_seconds = RtBarnesHutAuthorPhaseProfile::seconds_since(bucket_start)
+        - tree.profile.insert_seconds;
+    const auto compute_com_start = std::chrono::steady_clock::now();
+    rtdl_rt_barneshut_author_compute_com(tree.root);
+    tree.profile.compute_com_seconds = RtBarnesHutAuthorPhaseProfile::seconds_since(compute_com_start);
+    const auto count_start = std::chrono::steady_clock::now();
+    const auto counts = rtdl_rt_barneshut_author_count_nodes(tree.root);
+    tree.profile.count_nodes_seconds = RtBarnesHutAuthorPhaseProfile::seconds_since(count_start);
+    tree.node_count = counts.first;
+    tree.leaf_count = counts.second;
+    tree.profile.node_count = tree.node_count;
+    tree.profile.leaf_count = tree.leaf_count;
+    return tree;
+}
+
+static double rtdl_rt_barneshut_author_distance(
+        const RtBarnesHutAuthorHostPoint3D& point,
+        const RtBarnesHutAuthorHostNode3D* node)
+{
+    const double dx = static_cast<double>(point.x) - node->cofm_x;
+    const double dy = static_cast<double>(point.y) - node->cofm_y;
+    const double dz = static_cast<double>(point.z) - node->cofm_z;
+    return std::sqrt((dx * dx) + (dy * dy) + (dz * dz));
+}
+
+static double rtdl_rt_barneshut_author_force_contribution(
+        const RtBarnesHutAuthorHostPoint3D& point,
+        const RtBarnesHutAuthorHostNode3D* node,
+        const std::vector<RtBarnesHutAuthorHostPoint3D>& points)
+{
+    double result = 0.0;
+    if (node->is_leaf) {
+        for (uint64_t particle_id : node->particles) {
+            if (particle_id == point.normalized_id)
+                continue;
+            const auto& other = points[static_cast<size_t>(particle_id)];
+            const double dx = static_cast<double>(point.x) - other.x;
+            const double dy = static_cast<double>(point.y) - other.y;
+            const double dz = static_cast<double>(point.z) - other.z;
+            const double r2 = (dx * dx) + (dy * dy) + (dz * dz);
+            if (r2 != 0.0)
+                result += ((static_cast<double>(point.mass) * other.mass) / r2)
+                    * kRtBarnesHutAuthorGravitationalConstant;
+        }
+        return result;
+    }
+
+    const double dx = static_cast<double>(point.x) - node->cofm_x;
+    const double dy = static_cast<double>(point.y) - node->cofm_y;
+    const double dz = static_cast<double>(point.z) - node->cofm_z;
+    const double r2 = (dx * dx) + (dy * dy) + (dz * dz);
+    if (r2 == 0.0)
+        return 0.0;
+    return ((static_cast<double>(point.mass) * node->mass) / r2)
+        * kRtBarnesHutAuthorGravitationalConstant;
+}
+
+static double rtdl_rt_barneshut_author_force_on(
+        const RtBarnesHutAuthorHostPoint3D& point,
+        const RtBarnesHutAuthorHostNode3D* node,
+        const std::vector<RtBarnesHutAuthorHostPoint3D>& points,
+        double theta)
+{
+    if (node->is_leaf) {
+        if (node->mass != 0.0
+                && !(point.x == node->cofm_x && point.y == node->cofm_y && point.z == node->cofm_z)) {
+            return rtdl_rt_barneshut_author_force_contribution(point, node, points);
+        }
+        return 0.0;
+    }
+
+    if (node->s < rtdl_rt_barneshut_author_distance(point, node) * theta)
+        return rtdl_rt_barneshut_author_force_contribution(point, node, points);
+
+    double total = 0.0;
+    for (const RtBarnesHutAuthorHostNode3D* child : node->children) {
+        if (child != nullptr)
+            total += rtdl_rt_barneshut_author_force_on(point, child, points, theta);
+    }
+    return total;
+}
+
+static std::vector<float> rtdl_rt_barneshut_author_host_fallback_forces(
+        const RtBarnesHutAuthorHostTree3D& tree,
+        double theta)
+{
+    std::vector<float> forces;
+    forces.reserve(tree.points.size());
+    for (const auto& point : tree.points) {
+        forces.push_back(static_cast<float>(
+            rtdl_rt_barneshut_author_force_on(point, tree.root, tree.points, theta)));
+    }
+    return forces;
+}
+
+static std::vector<RtBarnesHutAuthorHostNode3D*> rtdl_rt_barneshut_author_assign_dfs_metadata(
+        RtBarnesHutAuthorHostTree3D& tree)
+{
+    std::vector<RtBarnesHutAuthorHostNode3D*> dfs_nodes;
+    if (!tree.root)
+        return dfs_nodes;
+
+    std::vector<RtBarnesHutAuthorHostNode3D*> stack;
+    stack.push_back(tree.root);
+    int32_t dfs_index = 0;
+    int32_t prim_id_index = 1;
+    int32_t level = 0;
+    constexpr float triangle_x_offset = 0.0f;
+
+    while (!stack.empty()) {
+        RtBarnesHutAuthorHostNode3D* node = stack.back();
+        stack.pop_back();
+        node->triangle_x = static_cast<float>(node->s) + triangle_x_offset;
+        node->triangle_y = static_cast<float>(level);
+        ++level;
+        node->next_ray_x = triangle_x_offset;
+        node->next_ray_y = static_cast<float>(level);
+        node->next_prim_id = prim_id_index;
+        node->dfs_index = dfs_index;
+        dfs_nodes.push_back(node);
+        ++dfs_index;
+        ++prim_id_index;
+
+        for (int child_index = 7; child_index >= 0; --child_index) {
+            RtBarnesHutAuthorHostNode3D* child = node->children[static_cast<size_t>(child_index)];
+            if (child != nullptr)
+                stack.push_back(child);
+        }
+    }
+    return dfs_nodes;
+}
+
+static void rtdl_rt_barneshut_author_install_auto_ropes(
+        RtBarnesHutAuthorHostTree3D& tree,
+        const std::vector<RtBarnesHutAuthorHostNode3D*>& dfs_nodes)
+{
+    if (!tree.root)
+        return;
+    std::vector<RtBarnesHutAuthorHostNode3D*> stack;
+    stack.push_back(tree.root);
+    bool initial = false;
+    while (!stack.empty()) {
+        RtBarnesHutAuthorHostNode3D* node = stack.back();
+        stack.pop_back();
+        if (initial) {
+            if (!stack.empty()) {
+                RtBarnesHutAuthorHostNode3D* auto_rope_node = stack.back();
+                const int32_t rope_index = auto_rope_node->dfs_index;
+                if (rope_index > 0 && static_cast<size_t>(rope_index - 1) < dfs_nodes.size()) {
+                    RtBarnesHutAuthorHostNode3D* source = dfs_nodes[static_cast<size_t>(rope_index - 1)];
+                    node->auto_rope_ray_x = source->next_ray_x;
+                    node->auto_rope_ray_y = source->next_ray_y;
+                    node->auto_rope_prim_id = source->next_prim_id;
+                } else {
+                    node->auto_rope_ray_x = 0.0f;
+                    node->auto_rope_ray_y = 0.0f;
+                    node->auto_rope_prim_id = 0;
+                }
+            } else {
+                node->auto_rope_ray_x = 0.0f;
+                node->auto_rope_ray_y = 0.0f;
+                node->auto_rope_prim_id = 0;
+            }
+        } else {
+            initial = true;
+        }
+
+        for (int child_index = 7; child_index >= 0; --child_index) {
+            RtBarnesHutAuthorHostNode3D* child = node->children[static_cast<size_t>(child_index)];
+            if (child != nullptr)
+                stack.push_back(child);
+        }
+    }
+}
+
+static std::vector<RtBarnesHutAuthorDevicePoint3D> rtdl_rt_barneshut_author_make_device_points(
+        const RtBarnesHutAuthorHostTree3D& tree)
+{
+    std::vector<RtBarnesHutAuthorDevicePoint3D> device_points;
+    device_points.reserve(tree.points.size());
+    for (const auto& point : tree.points) {
+        device_points.push_back({
+            point.mass,
+            point.x,
+            point.y,
+            point.z,
+            point.normalized_id,
+        });
+    }
+    return device_points;
+}
+
+static std::vector<RtBarnesHutAuthorDeviceNode3D> rtdl_rt_barneshut_author_make_device_nodes(
+        const std::vector<RtBarnesHutAuthorHostNode3D*>& dfs_nodes)
+{
+    std::vector<RtBarnesHutAuthorDeviceNode3D> device_nodes;
+    device_nodes.reserve(dfs_nodes.size());
+    for (const RtBarnesHutAuthorHostNode3D* node : dfs_nodes) {
+        if (node->particles.size() > kRtBarnesHutAuthorBucketSize)
+            throw std::runtime_error("RT-BarnesHut author leaf exceeds bucket-size-32 contract");
+        RtBarnesHutAuthorDeviceNode3D current = {};
+        current.mass = static_cast<float>(node->mass);
+        current.center_of_mass_x = static_cast<float>(node->cofm_x);
+        current.center_of_mass_y = static_cast<float>(node->cofm_y);
+        current.center_of_mass_z = static_cast<float>(node->cofm_z);
+        current.node_size = static_cast<float>(node->s);
+        current.triangle_x = node->triangle_x;
+        current.triangle_y = node->triangle_y;
+        current.next_ray_x = node->next_ray_x;
+        current.next_ray_y = node->next_ray_y;
+        current.next_prim_id = node->next_prim_id;
+        current.auto_rope_ray_x = node->auto_rope_ray_x;
+        current.auto_rope_ray_y = node->auto_rope_ray_y;
+        current.auto_rope_prim_id = node->auto_rope_prim_id;
+        current.num_particles = static_cast<int32_t>(node->particles.size());
+        current.is_leaf = node->is_leaf ? 1u : 0u;
+        for (size_t index = 0; index < node->particles.size(); ++index) {
+            const uint64_t particle_id = node->particles[index];
+            if (particle_id > static_cast<uint64_t>(std::numeric_limits<int32_t>::max()))
+                throw std::runtime_error("RT-BarnesHut author particle id exceeds int32 device payload");
+            current.particles[index] = static_cast<int32_t>(particle_id);
+        }
+        device_nodes.push_back(current);
+    }
+    return device_nodes;
+}
+
+static std::vector<OptixAabb> rtdl_rt_barneshut_author_make_control_aabbs(
+        const std::vector<RtBarnesHutAuthorHostNode3D*>& dfs_nodes)
+{
+    std::vector<OptixAabb> aabbs;
+    aabbs.reserve(dfs_nodes.size());
+    constexpr float x_pad = 1.0e-3f;
+    constexpr float y_pad = 0.5001f;
+    constexpr float z_pad = 0.5001f;
+    for (const RtBarnesHutAuthorHostNode3D* node : dfs_nodes) {
+        OptixAabb aabb = {};
+        aabb.minX = node->triangle_x - x_pad;
+        aabb.maxX = node->triangle_x + x_pad;
+        aabb.minY = node->triangle_y - y_pad;
+        aabb.maxY = node->triangle_y + y_pad;
+        aabb.minZ = -z_pad;
+        aabb.maxZ = z_pad;
+        aabbs.push_back(aabb);
+    }
+    return aabbs;
+}
+
+static void rtdl_rt_barneshut_author_rt_core_forces(
+        RtBarnesHutAuthorHostTree3D& tree,
+        RtBarnesHutAuthorOutput3D& output)
+{
+    if (tree.points.size() > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("RT-BarnesHut author point count exceeds uint32 launch capacity");
+    const auto dfs_start = std::chrono::steady_clock::now();
+    auto dfs_nodes = rtdl_rt_barneshut_author_assign_dfs_metadata(tree);
+    tree.profile.dfs_metadata_seconds = RtBarnesHutAuthorPhaseProfile::seconds_since(dfs_start);
+    const auto rope_start = std::chrono::steady_clock::now();
+    rtdl_rt_barneshut_author_install_auto_ropes(tree, dfs_nodes);
+    tree.profile.auto_rope_seconds = RtBarnesHutAuthorPhaseProfile::seconds_since(rope_start);
+    if (dfs_nodes.empty())
+        return;
+    if (dfs_nodes.size() > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("RT-BarnesHut author node count exceeds uint32 primitive capacity");
+
+    const auto pipeline_start = std::chrono::steady_clock::now();
+    ensure_rt_barneshut_author3d_pipeline();
+    tree.profile.pipeline_init_seconds = RtBarnesHutAuthorPhaseProfile::seconds_since(pipeline_start);
+    const auto device_pack_start = std::chrono::steady_clock::now();
+    std::vector<RtBarnesHutAuthorDevicePoint3D> device_points =
+        rtdl_rt_barneshut_author_make_device_points(tree);
+    std::vector<RtBarnesHutAuthorDeviceNode3D> device_nodes =
+        rtdl_rt_barneshut_author_make_device_nodes(dfs_nodes);
+    tree.profile.device_pack_seconds = RtBarnesHutAuthorPhaseProfile::seconds_since(device_pack_start);
+    const auto aabb_start = std::chrono::steady_clock::now();
+    std::vector<OptixAabb> aabbs = rtdl_rt_barneshut_author_make_control_aabbs(dfs_nodes);
+    tree.profile.aabb_seconds = RtBarnesHutAuthorPhaseProfile::seconds_since(aabb_start);
+
+    const auto upload_start = std::chrono::steady_clock::now();
+    DevPtr d_points(sizeof(RtBarnesHutAuthorDevicePoint3D) * device_points.size());
+    DevPtr d_nodes(sizeof(RtBarnesHutAuthorDeviceNode3D) * device_nodes.size());
+    upload(d_points.ptr, device_points.data(), device_points.size());
+    upload(d_nodes.ptr, device_nodes.data(), device_nodes.size());
+    tree.profile.upload_seconds = RtBarnesHutAuthorPhaseProfile::seconds_since(upload_start);
+
+    const auto accel_start = std::chrono::steady_clock::now();
+    AccelHolder accel = build_custom_accel(get_optix_context(), aabbs);
+    tree.profile.accel_build_seconds = RtBarnesHutAuthorPhaseProfile::seconds_since(accel_start);
+
+    RtBarnesHutAuthor3DLaunchParams lp = {};
+    lp.traversable = accel.handle;
+    lp.nodes = reinterpret_cast<const RtBarnesHutAuthorDeviceNode3D*>(d_nodes.ptr);
+    lp.points = reinterpret_cast<const RtBarnesHutAuthorDevicePoint3D*>(d_points.ptr);
+    lp.forces = reinterpret_cast<float*>(output.forces);
+    lp.point_count = static_cast<uint32_t>(device_points.size());
+    lp.node_count = static_cast<uint32_t>(device_nodes.size());
+
+    DevPtr d_params(sizeof(RtBarnesHutAuthor3DLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    CUstream stream = 0;
+    const auto launch_start = std::chrono::steady_clock::now();
+    OPTIX_CHECK(optixLaunch(
+        g_rt_barneshut_author3d.pipe->pipeline,
+        stream,
+        d_params.ptr,
+        sizeof(RtBarnesHutAuthor3DLaunchParams),
+        &g_rt_barneshut_author3d.pipe->sbt,
+        static_cast<unsigned int>(device_points.size()), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+    tree.profile.launch_seconds = RtBarnesHutAuthorPhaseProfile::seconds_since(launch_start);
+}
+
+struct RtBarnesHutAuthorPrepared3D {
+    CUdeviceptr point_ids = 0;
+    CUdeviceptr point_x = 0;
+    CUdeviceptr point_y = 0;
+    CUdeviceptr point_z = 0;
+    CUdeviceptr point_mass = 0;
+    std::vector<uint64_t> host_point_ids;
+    std::vector<float> host_point_x;
+    std::vector<float> host_point_y;
+    std::vector<float> host_point_z;
+    std::vector<float> host_point_mass;
+    std::unique_ptr<RtBarnesHutAuthorOutput3D> last_output;
+    uint64_t point_count = 0;
+    int32_t device_ordinal = -1;
+    double input_copy_seconds = 0.0;
+    std::mutex mutex;
+};
+
+extern "C" int rtdl_optix_prepare_rt_barneshut_author_3d(
+        uint64_t point_ids_device_ptr,
+        uint64_t point_x_device_ptr,
+        uint64_t point_y_device_ptr,
+        uint64_t point_z_device_ptr,
+        uint64_t point_mass_device_ptr,
+        size_t point_count,
+        void** prepared_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared_out)
+            throw std::runtime_error("RT-BarnesHut author 3D prepared_out must not be null");
+        *prepared_out = nullptr;
+        if (point_count != 0 && (
+                    point_ids_device_ptr == 0
+                    || point_x_device_ptr == 0
+                    || point_y_device_ptr == 0
+                    || point_z_device_ptr == 0
+                    || point_mass_device_ptr == 0))
+            throw std::runtime_error("RT-BarnesHut author 3D device pointers must be nonzero when point_count is nonzero");
+        (void)get_optix_context();
+        auto prepared = std::make_unique<RtBarnesHutAuthorPrepared3D>();
+        prepared->point_ids = static_cast<CUdeviceptr>(point_ids_device_ptr);
+        prepared->point_x = static_cast<CUdeviceptr>(point_x_device_ptr);
+        prepared->point_y = static_cast<CUdeviceptr>(point_y_device_ptr);
+        prepared->point_z = static_cast<CUdeviceptr>(point_z_device_ptr);
+        prepared->point_mass = static_cast<CUdeviceptr>(point_mass_device_ptr);
+        prepared->point_count = static_cast<uint64_t>(point_count);
+        CUdevice current_device = 0;
+        CU_CHECK(cuCtxGetDevice(&current_device));
+        prepared->device_ordinal = static_cast<int32_t>(current_device);
+        const auto copy_start = std::chrono::steady_clock::now();
+        prepared->host_point_ids.resize(point_count);
+        prepared->host_point_x.resize(point_count);
+        prepared->host_point_y.resize(point_count);
+        prepared->host_point_z.resize(point_count);
+        prepared->host_point_mass.resize(point_count);
+        if (point_count != 0) {
+            download(prepared->host_point_ids.data(), prepared->point_ids, point_count);
+            download(prepared->host_point_x.data(), prepared->point_x, point_count);
+            download(prepared->host_point_y.data(), prepared->point_y, point_count);
+            download(prepared->host_point_z.data(), prepared->point_z, point_count);
+            download(prepared->host_point_mass.data(), prepared->point_mass, point_count);
+        }
+        prepared->input_copy_seconds = std::chrono::duration<double>(
+            std::chrono::steady_clock::now() - copy_start).count();
+        *prepared_out = prepared.release();
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_run_rt_barneshut_author_3d(
+        void* prepared,
+        double theta,
+        RtdlRtBarnesHutAuthor3DOutput* columns_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!columns_out)
+            throw std::runtime_error("RT-BarnesHut author 3D columns_out must not be null");
+        *columns_out = {};
+        if (!prepared)
+            throw std::runtime_error("RT-BarnesHut author 3D prepared handle must not be null");
+        if (theta <= 0.0 || !std::isfinite(theta))
+            throw std::runtime_error("RT-BarnesHut author 3D theta must be positive and finite");
+        if (std::fabs(theta - kRtBarnesHutAuthorThreshold) > 1.0e-9)
+            throw std::runtime_error("RT-BarnesHut author 3D fallback only supports theta=0.5 author contract");
+        auto* prepared_owner = reinterpret_cast<RtBarnesHutAuthorPrepared3D*>(prepared);
+        std::lock_guard<std::mutex> lock(prepared_owner->mutex);
+        (void)get_optix_context();
+
+        const auto preprocessing_start = std::chrono::steady_clock::now();
+        RtBarnesHutAuthorHostTree3D tree = rtdl_rt_barneshut_author_build_host_tree(
+            prepared_owner->host_point_ids,
+            prepared_owner->host_point_x,
+            prepared_owner->host_point_y,
+            prepared_owner->host_point_z,
+            prepared_owner->host_point_mass);
+        tree.profile.input_download_seconds = prepared_owner->input_copy_seconds;
+        const auto preprocessing_end = std::chrono::steady_clock::now();
+
+        auto output = std::make_unique<RtBarnesHutAuthorOutput3D>();
+        std::vector<uint64_t> sorted_ids(static_cast<size_t>(prepared_owner->point_count));
+        for (size_t index = 0; index < sorted_ids.size(); ++index)
+            sorted_ids[index] = static_cast<uint64_t>(index);
+        const auto output_copy_start = std::chrono::steady_clock::now();
+        if (!sorted_ids.empty()) {
+            CU_CHECK(cuMemAlloc(&output->point_ids, sizeof(uint64_t) * sorted_ids.size()));
+            CU_CHECK(cuMemAlloc(&output->forces, sizeof(float) * sorted_ids.size()));
+            upload(output->point_ids, sorted_ids.data(), sorted_ids.size());
+        }
+        const auto output_copy_end = std::chrono::steady_clock::now();
+        const bool force_host_fallback =
+            std::getenv("RTDL_RT_BARNESHUT_AUTHOR_FORCE_FALLBACK") != nullptr;
+        uint32_t implementation_status = kRtBarnesHutAuthorImplementationStatusRtCore;
+        const auto force_start = std::chrono::steady_clock::now();
+        if (force_host_fallback) {
+            std::vector<float> forces = rtdl_rt_barneshut_author_host_fallback_forces(tree, theta);
+            if (!forces.empty())
+                upload(output->forces, forces.data(), forces.size());
+            implementation_status = kRtBarnesHutAuthorImplementationStatusHostFallback;
+        } else {
+            rtdl_rt_barneshut_author_rt_core_forces(tree, *output);
+        }
+        const auto force_end = std::chrono::steady_clock::now();
+
+        columns_out->point_ids_device_ptr = static_cast<uint64_t>(output->point_ids);
+        columns_out->force_device_ptr = static_cast<uint64_t>(output->forces);
+        columns_out->point_count = prepared_owner->point_count;
+        columns_out->diagnostic_status_code = 0;
+        columns_out->implementation_status_code = implementation_status;
+        columns_out->device_ordinal = prepared_owner->device_ordinal;
+        columns_out->owner_handle = prepared_owner;
+        columns_out->preprocessing_seconds = std::chrono::duration<double>(
+            preprocessing_end - preprocessing_start).count();
+        columns_out->rt_force_seconds = std::chrono::duration<double>(
+            force_end - force_start).count();
+        columns_out->execution_seconds = std::chrono::duration<double>(
+            force_end - preprocessing_start).count();
+        columns_out->copy_seconds = prepared_owner->input_copy_seconds + std::chrono::duration<double>(
+            output_copy_end - output_copy_start).count();
+        tree.profile.append(implementation_status);
+        prepared_owner->last_output = std::move(output);
+    }, error_out, error_size);
+}
+
+extern "C" void rtdl_optix_destroy_rt_barneshut_author_3d(void* prepared)
+{
+    delete reinterpret_cast<RtBarnesHutAuthorPrepared3D*>(prepared);
+}
+
 struct CollectKStageProfile {
     using Clock = std::chrono::steady_clock;
 

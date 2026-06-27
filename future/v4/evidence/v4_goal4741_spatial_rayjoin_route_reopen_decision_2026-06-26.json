@@ -1,0 +1,65 @@
+{
+  "goal": "Goal4741",
+  "title": "spatial rayjoin route reopen decision",
+  "date": "2026-06-26",
+  "status": "complete_pending_external_review_debt",
+  "decision": "do_not_reopen_spatial_rayjoin_without_new_relation_topology_route",
+  "source_context": [
+    "future/v4/v4_goal4728_spatial_rayjoin_no_route_blocker_row_2026-06-26.md",
+    "future/v4/evidence/v4_goal4728_spatial_rayjoin_no_route_blocker_row_2026-06-26.json",
+    "future/v4/v4_goal4681_shape_pair_relation_pod_benchmark_2026-06-25.md",
+    "future/v4/evidence/v4_goal4681_shape_pair_serious_2026-06-25/summary.json",
+    "src/rtdsl/v4_app_route_binding.py"
+  ],
+  "route_inventory": {
+    "current_route_class": "no_v4_app_route_blocker",
+    "full_current_v4_app_route_bound": false,
+    "route_actually_uses_v4_code": false,
+    "dry_run_possible": false,
+    "old_symbols_present": true,
+    "old_symbols_are_not_complete_v4_app_route": true
+  },
+  "shape_pair_subprobe": {
+    "correctness_companion_ok": true,
+    "serious_active_count_parity": true,
+    "v4_hot_over_v2_14_same_primitive": 0.9631953985515683,
+    "v4_wall_over_v2_14_same_primitive": 0.6048911657172009,
+    "v4_hot_over_v3_0_2_control": 0.9769985795123769,
+    "speed_credit_pass": false,
+    "subprobe_is_complete_spatial_rayjoin_app_route": false
+  },
+  "classification": {
+    "matrix_row": "closed_no_current_v4_app_route_blocker",
+    "reopen_now": false,
+    "pod_rerun_authorized": false,
+    "reason": "No complete current V4 relation-topology app route exists, and the only measured same-primitive shape-pair subprobe already failed frozen speed-credit bars."
+  },
+  "reopen_condition": [
+    "complete_v4_app_route_not_only_subprobe",
+    "frozen_v2_14_denominator",
+    "correctness_parity_requirements",
+    "material_speed_bars",
+    "generic_relation_topology_no_app_identity_kernel"
+  ],
+  "next_goal": {
+    "id": "Goal4742",
+    "target": "current_matrix_and_release_framing",
+    "objective": "assemble post-repair matrix and release framing with Robot/Spatial closed and custom predicate early-exit recorded as measured V4 eDSL workflow"
+  },
+  "claim_boundary": {
+    "release_authorized": false,
+    "final_v4_tag_authorized": false,
+    "spatial_rayjoin_speedup_claim_authorized": false,
+    "rayjoin_paper_reproduction_claim_authorized": false,
+    "all_benchmark_speedup_claim_authorized": false,
+    "app_specific_native_kernel_authorized": false,
+    "hidden_v2_v3_fallback_authorized": false,
+    "true_zero_copy_wording_authorized": false
+  },
+  "goal_level_decision_audit": {
+    "was_i_being_foolish": false,
+    "foolish_action_if_yes": "Rerunning the already-failed shape-pair subprobe without a new full relation-topology route would be foolish.",
+    "alternative_path": "Design a complete generic relation-topology V4 app route before POD.",
+    "different_path_now": "Converge current V4 release framing honestly and preserve the reopen condition for future relation-topology work."
+  }
+}

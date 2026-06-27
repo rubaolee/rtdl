@@ -1,0 +1,101 @@
+{
+  "status": "same_semantics_route_matrix_after_goal4760",
+  "date": "2026-06-26",
+  "author_source": {
+    "repository": "https://github.com/vani-nag/OWLRayTracing",
+    "branch": "BarnesHutRT",
+    "commit": "2a3c60da0bbbd00ff1777cb57ec2089cb0029cf7",
+    "pod_path": "/root/external/RT-BarnesHut-author",
+    "binary": "/root/external/RT-BarnesHut-author/build/rtbarneshut",
+    "runs_completed": {
+      "treelogy_1m": {
+        "execution_seconds": 0.639937,
+        "rt_force_seconds": 0.136
+      },
+      "treelogy_10m": {
+        "execution_seconds": 3.08818,
+        "rt_force_seconds": 1.01835
+      },
+      "synthetic25m_csv": {
+        "execution_seconds": 4.57178,
+        "rt_force_seconds": 2.40888
+      }
+    }
+  },
+  "goal4760_contract_gate": {
+    "module": "src/rtdsl/rt_barneshut_author_contract.py",
+    "probe": "scripts/rt_barneshut_author_contract_probe.py",
+    "tests": "tests/v4_goal4760_rt_barneshut_author_contract_test.py",
+    "local_tests": "5 OK",
+    "pod_tests": "5 OK",
+    "purpose": "same-input author-format parser, author-compatible 3D bucket-tree CPU oracle, and author binary timing parser",
+    "performance_route": false,
+    "checksum_validation": {
+      "author_patch": "tools/rtbarneshut_author_force_checksum_audit.patch",
+      "changes_algorithm_or_timing_regions": false,
+      "probes": [
+        {
+          "evidence": "rtdl_author_contract_4096_checksum.json",
+          "point_count": 4096,
+          "author_rt_force_checksum": 0.00000895407,
+          "rtdl_cpu_oracle_checksum": 0.000008954052688202874,
+          "relative_error": 0.000001933403535816373
+        },
+        {
+          "evidence": "rtdl_author_contract_8192_checksum.json",
+          "point_count": 8192,
+          "author_rt_force_checksum": 0.0000360157,
+          "rtdl_cpu_oracle_checksum": 0.000036015691175709494,
+          "relative_error": 0.0000002450123881979025
+        }
+      ]
+    }
+  },
+  "version_routes": [
+    {
+      "version": "v2.14",
+      "pod_root": "/root/rtdl_v2_14_tag",
+      "same_semantics_author_contract_gate": "not_implemented_in_version",
+      "same_semantics_rt_core_performance_route": "not_implemented_in_version",
+      "existing_barnes_hut_route": "2d_rtdl_reconstruction_style_only",
+      "fair_author_binary_speed_comparison_allowed": false,
+      "reason": "The tag has no RT-BarnesHut paper-route entry and no author-contract gate."
+    },
+    {
+      "version": "v3.0.2",
+      "pod_root": "/root/rtdl_v3_0_2_tag",
+      "same_semantics_author_contract_gate": "not_implemented_in_version",
+      "same_semantics_rt_core_performance_route": "not_implemented_in_version",
+      "existing_barnes_hut_route": "2d_rtdl_reconstruction_style_with_device_resident_continuation",
+      "fair_author_binary_speed_comparison_allowed": false,
+      "reason": "The tag has no RT-BarnesHut paper-route entry and no author-contract gate."
+    },
+    {
+      "version": "v4.0_candidate_after_goal4760",
+      "pod_root": "/root/rtdl_v4_candidate_pod",
+      "same_semantics_author_contract_gate": "implemented_cpu_oracle",
+      "same_semantics_rt_core_performance_route": "not_yet_implemented",
+      "existing_barnes_hut_route": "2d_rtdl_reconstruction_style_with_v4_runner_continuation",
+      "fair_author_binary_speed_comparison_allowed": false,
+      "reason": "Goal4760 validates the same input/tree/force contract but does not yet implement the V4 RT-core performance route."
+    }
+  ],
+  "next_required_engineering_step": {
+    "goal": "Goal4761",
+    "name": "RT-BarnesHut V4 same-semantics RT-core route",
+    "requirements": [
+      "consume the Goal4760 author-format dataset path",
+      "preserve the author 3D bucket-tree and phase schema",
+      "run an RT-core route instead of the CPU oracle",
+      "emit preprocessing, rt_force, execution, and wall timings",
+      "compare against the authors' binary on the same trimmed dataset first",
+      "only after this route exists, run a fair V2.14/V3.0.2/V4.0/author matrix"
+    ]
+  },
+  "claim_boundary": {
+    "public_paper_reproduction_claim_authorized": false,
+    "v2_v3_v4_author_speed_table_authorized": false,
+    "old_2d_rtdl_route_may_be_divided_by_author_binary": false,
+    "goal4760_semantic_gate_statement_authorized": true
+  }
+}

@@ -1,0 +1,131 @@
+{
+  "schema": "rtdl.v4.goal4675.aggregate_frontier_prepared_runner.v1",
+  "date": "2026-06-25",
+  "status": "goal4675_local_runner_productization_complete_pod_not_authorized",
+  "decision_label": "aggregate_frontier_device_columns_v4_candidate_runner_productized__goal4676_focused_pod_protocol_may_be_prepared__pod_not_yet_authorized",
+  "purpose": "Productize a local V4 candidate runner for AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D without making a POD, release, or public speed claim.",
+  "input_gate": {
+    "goal4674_report": "future/v4/v4_goal4674_aggregate_frontier_device_columns_static_protocol_gate_2026-06-25.md",
+    "goal4674_evidence": "future/v4/evidence/v4_goal4674_aggregate_frontier_device_columns_static_protocol_gate_2026-06-25.json",
+    "authorized_by_goal4674": "local runner productization only",
+    "pod_authorized_by_goal4674": false
+  },
+  "implementation": {
+    "new_runner_module": "src/rtdsl/v4_aggregate_frontier.py",
+    "new_v4_api_surface": "v4_aggregate_frontier_device_columns_2d_prepared_runner",
+    "prepare_function": "prepare_aggregate_frontier_device_columns_2d_prepared_runner_v4",
+    "runner_class": "V4AggregateFrontierDeviceColumns2DPreparedRunner",
+    "claim_boundary_function": "aggregate_frontier_device_columns_2d_prepared_runner_claim_boundary_v4",
+    "native_prepared_route": "prepare_aggregate_frontier_device_columns_2d_optix",
+    "native_run_route": "PreparedOptixAggregateFrontierDeviceColumns2D.run_device_columns",
+    "generic_primitive": "AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D",
+    "continuation_class": "aggregate_frontier_device_columns",
+    "allowed_backend": [
+      "optix"
+    ],
+    "allowed_downstream_partners": [
+      "none",
+      "cupy",
+      "numba"
+    ],
+    "app_identity_symbols_added": false,
+    "old_aggregate_tree_fused_weighted_vector_sum_promoted": false
+  },
+  "frontdoor_and_catalog": {
+    "unified_frontdoor_file": "src/rtdsl/v4.py",
+    "operator_catalog_file": "src/rtdsl/v4_operator_catalog.py",
+    "scope_gate_file": "src/rtdsl/v4_scope.py",
+    "readme_file": "future/v4/README.md",
+    "static_scope_gate_doc": "future/v4/v4_0_scope_gate.md",
+    "generated_scope_gate_evidence": "future/v4/evidence/v4_0_scope_gate_current.json",
+    "candidate_surface_registered": true,
+    "measured_surface_registered": false,
+    "candidate_surface_count_after_goal4675": 2,
+    "measured_surface_count_after_goal4675": 8,
+    "planner_aliases": [
+      "aggregate_frontier",
+      "aggregate_frontier_columns",
+      "aggregate_frontier_device_columns",
+      "aggregate_frontier_device_columns_2d",
+      "frontier_device_columns"
+    ],
+    "recognizer_status": "pushdown_recognized_candidate_tier2_not_measured"
+  },
+  "runtime_metadata_contract": {
+    "phase_accounting_is_first_class": true,
+    "phase_accounting_fields": [
+      "aggregate_frontier_traversal_seconds",
+      "downstream_partner_seconds",
+      "host_frontier_materialization_seconds",
+      "phase_accounting_is_first_class"
+    ],
+    "host_frontier_materialization_before_partner_forbidden": true,
+    "host_materialized_frontier_fails_closed": true,
+    "host_materialization_in_hot_path": false,
+    "device_resident_frontier_columns_required": true,
+    "small_host_outputs_allowed": [
+      "row_count",
+      "attempted_count",
+      "overflow",
+      "phase_timings"
+    ]
+  },
+  "claim_boundary": {
+    "candidate_surface": true,
+    "measured_v4_release_surface": false,
+    "release_claim_authorized": false,
+    "broad_v4_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "pod_benchmark_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "true_zero_copy_authorized": false,
+    "tier3_callback_claim_authorized": false,
+    "raw_optix_callback_claim_authorized": false,
+    "automatic_partner_selection_authorized": false,
+    "app_specific_native_kernel_authorized": false
+  },
+  "tests": {
+    "goal4675_local_runner": {
+      "command": "py -m unittest tests.v4_goal4675_aggregate_frontier_prepared_runner_test",
+      "result": "passed",
+      "tests_run": 7
+    },
+    "frontdoor_catalog_scope_goal4674_regression": {
+      "command": "py -m unittest tests.v4_frontdoor_test tests.v4_operator_catalog_test tests.v4_scope_gate_test tests.v4_goal4674_aggregate_frontier_device_columns_gate_test",
+      "result": "passed",
+      "tests_run": 29
+    },
+    "notes": [
+      "Tests are local/static/fake-prepared tests; no POD benchmark was run.",
+      "The Python warning 'Could not find platform independent libraries <prefix>' appeared but unittest results passed."
+    ]
+  },
+  "goal4676_authorization": {
+    "may_prepare_focused_pod_protocol": true,
+    "may_run_pod_without_goal4676_protocol": false,
+    "required_goal4676_checks": [
+      "same-hardware V2.14 strongest denominator comparison",
+      "correctness parity",
+      "row_offsets parity",
+      "downstream weighted-vector summary parity",
+      "host frontier materialization remains absent before partner",
+      "phase accounting separates aggregate-frontier traversal and downstream continuation",
+      "partner migration is not counted as V4 speed"
+    ]
+  },
+  "review_state": {
+    "codex_status": "self_audit_complete",
+    "claude_status": "weekly_limit_known_until_2026-06-28_19:00_America_New_York_review_debt_recorded",
+    "antigravity_status": "accept_goal4675_local_runner_continue_goal4676_protocol",
+    "antigravity_review": "future/v4/reviews/antigravity_v4_goal4675_aggregate_frontier_prepared_runner_review_2026-06-25.raw.md",
+    "three_ai_consensus_status": "antigravity_accept_plus_claude_debt_allowed_no_release_authorization"
+  },
+  "goal_level_decision_audit": {
+    "was_i_being_stupid": false,
+    "stupid_action_risk": "The stupid move would have been to run POD or claim speed immediately after local wrapper productization.",
+    "alternative_path": "Keep Goal4675 local, register the runner only as a candidate, and force Goal4676 to carry the first same-hardware performance proof.",
+    "can_try_better_path_now": true,
+    "decision": "Proceed only to Goal4676 focused protocol/benchmark gating; no release or speed wording is authorized."
+  }
+}

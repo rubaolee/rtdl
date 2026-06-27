@@ -18,6 +18,7 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
 import rtdsl as rt
+import rtdsl.v4_ranked_summary as ranked_v4
 from examples.current.apps.ml import rtdl_ann_candidate_app as ann_app
 
 
@@ -507,7 +508,7 @@ def rtnn_prepared_execution_ranked_summary_payload(
         input_load_pack_sec = input_load_sec + input_pack_sec
         cache = rt.ExplicitPreparedSessionCache(max_entries=1)
         runner_started = time.perf_counter()
-        runner_result = rt.run_fixed_radius_ranked_summary_3d_prepared_session(
+        runner_result = ranked_v4.run_fixed_radius_ranked_summary_3d_prepared_runner_v4(
             search_points=packed_points,
             query_points=packed_points,
             radius=radius,
@@ -554,7 +555,9 @@ def rtnn_prepared_execution_ranked_summary_payload(
             "seed": seed,
             "external_point_file_used": bool(external_point_file),
             "prepared_execution_session_runner_used": True,
-            "productized_execution_path": "prepared_execution_session_runner",
+            "productized_execution_path": "v4_fixed_radius_ranked_summary_3d_prepared_runner",
+            "v4_surface": ranked_v4.V4_FIXED_RADIUS_RANKED_SUMMARY_3D_PREPARED_RUNNER_SURFACE,
+            "v4_candidate_status": ranked_v4.V4_FIXED_RADIUS_RANKED_SUMMARY_3D_CANDIDATE_STATUS,
             "runner_payload": runner_result.output,
             "runner_metadata": metadata,
             "timing_sec": {
@@ -585,6 +588,8 @@ def rtnn_prepared_execution_ranked_summary_payload(
                 "external_device_buffer_interop_authorized": False,
                 "v4_embedding_or_external_zero_copy_authorized": False,
                 "full_all_app_rerun_authorized_by_this_packet": False,
+                "v4_ranked_summary_candidate": True,
+                "measured_v4_release_surface": False,
             },
         }
 

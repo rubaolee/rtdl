@@ -1,0 +1,137 @@
+{
+  "app_identity_kernel_authorized": false,
+  "callable_entry_candidates": [
+    "__direct_callable__rtdl_tier3_scalar_reduce"
+  ],
+  "callable_entry_name_selected": "__direct_callable__rtdl_tier3_scalar_reduce",
+  "combined_ptx_generated": true,
+  "combined_ptx_length": 2174,
+  "contract_validation": {
+    "goal_status": "goal4688_tier3_semantic_wrapper_module_link_probe_not_support",
+    "missing_or_invalid": [],
+    "next_goal": "Goal4689 tier3 semantic wrapper minimal launch probe",
+    "pod_authorized": false,
+    "raw_optix_callback_authorized": false,
+    "release_authorized": false,
+    "status": "passed",
+    "tier3_public_support_authorized": false
+  },
+  "dry_run": false,
+  "loader_compile": {
+    "returncode": 0,
+    "stderr": "",
+    "stdout": ""
+  },
+  "module_probe": {
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "optix_module_create_result=0\noptix_module_create_error=Success\noptix_module_log_begin\nInfo: Pipeline parameter \"params\" size is 8 bytes\nWarning: Program is doing double precision computations. No source location available. The input PTX may not contain debug information (nvcc option: -lineinfo), OptixModuleCompileOptions::debugLevel set to OPTIX_COMPILE_DEBUG_LEVEL_NONE, or no useful information is present for the current block.\nWarning: Program is doing double precision computations. No source location available. The input PTX may not contain debug information (nvcc option: -lineinfo), OptixModuleCompileOptions::debugLevel set to OPTIX_COMPILE_DEBUG_LEVEL_NONE, or no useful information is present for the current block.\nInfo: Module Statistics\n\tpayload values        :          0\n\tattribute values      :          0\nInfo: Properties for entry function \"__miss__rtdl_tier3_probe\"\n\tsemantic type                :                   MISS\n\ttrace call(s)                :                      0\n\tcontinuation callable call(s):                      0\n\tbasic block(s)               :                      1\n\tinstruction(s)               :                      1\nInfo: Properties for entry function \"__closesthit__rtdl_tier3_probe\"\n\tsemantic type                :             CLOSESTHIT\n\ttrace call(s)                :                      0\n\tcontinuation callable call(s):                      0\n\tbasic block(s)               :                      1\n\tinstruction(s)               :                      1\nInfo: Properties for entry function \"__direct_callable__rtdl_tier3_scalar_reduce\"\n\tsemantic type                :        DIRECT_CALLABLE\n\ttrace call(s)                :                      0\n\tcontinuation callable call(s):                      0\n\tbasic block(s)               :                      3\n\tinstruction(s)               :                     45\nInfo: Compiled Module Summary\n\tnon-entry function(s):     1\n\tbasic block(s)       :     1\n\tinstruction(s)       :    34\nInfo: Module Statistics\n\tpayload values        :          0\n\tattribute values      :          0\nInfo: Properties for entry function \"__raygen__rtdl_tier3_probe\"\n\tsemantic type                :                 RAYGEN\n\ttrace call(s)                :                      0\n\tcontinuation callable call(s):                      0\n\tbasic block(s)               :                      1\n\tinstruction(s)               :                      1\nInfo: Compiled Module Summary\n\tnon-entry function(s):     0\n\tbasic block(s)       :     0\n\tinstruction(s)       :     0\n\noptix_module_log_end\ncallable_entry_name_used=__direct_callable__rtdl_tier3_scalar_reduce\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\ncallable_program_group_result=0\npipeline_create_result=0\npipeline_log_begin\nInfo: Pipeline statistics\n\tmodule(s)                            :     1\n\tentry function(s)                    :     4\n\ttrace call(s)                        :     0\n\tcontinuation callable call(s)        :     0\n\tdirect callable call(s)              :     0\n\tbasic block(s) in entry functions    :     6\n\tinstruction(s) in entry functions    :    48\n\tnon-entry function(s)                :     1\n\tbasic block(s) in non-entry functions:     1\n\tinstruction(s) in non-entry functions:    34\n\tdebug information                    :    no\n\npipeline_log_end"
+  },
+  "next_stage": "Goal4689 minimal launch probe",
+  "numba_ptx_generated": true,
+  "optix_module_link_attempted": true,
+  "optix_module_link_succeeded": true,
+  "pipeline_create_attempted": true,
+  "pipeline_create_succeeded": true,
+  "pipeline_launch_attempted": false,
+  "pod_authorized": false,
+  "program_group_create_attempted": true,
+  "program_group_create_succeeded": true,
+  "ptx_probe": {
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "{\n  \"app_specific_native_kernel_authorized\": false,\n  \"broad_v4_speedup_claim_authorized\": false,\n  \"contains_callback_name\": true,\n  \"contains_func_directive\": true,\n  \"contains_visible_func_directive\": true,\n  \"cuda_available\": true,\n  \"next_stage\": \"build_a_hole_left_optix_shell_and_attempt_module_link\",\n  \"numba_legacy_nvvm_environment\": {\n    \"numba_legacy_libdevice\": \"/root/rtdl_v4_venv/lib/python3.12/site-packages/nvidia/cuda_nvcc/nvvm/libdevice\",\n    \"numba_legacy_libdevice_env_configured\": true,\n    \"numba_legacy_nvvm\": \"/root/rtdl_v4_venv/lib/python3.12/site-packages/nvidia/cuda_nvcc/nvvm/lib64/libnvvm.so\",\n    \"numba_legacy_nvvm_env_configured\": true\n  },\n  \"numba_nvvm_reexec_environment\": {\n    \"nvvm_lib_dir_in_ld_library_path\": true,\n    \"reexec_required\": false,\n    \"reexec_supported\": true,\n    \"reexeced\": true\n  },\n  \"numba_toolchain_environment\": {\n    \"configured\": true,\n    \"does_not_configure_rtdl_native_optix\": true,\n    \"does_not_install_packages\": true,\n    \"numba_cuda_driver\": \"/lib/x86_64-linux-gnu/libcuda.so.1\",\n    \"numba_cuda_prefix\": \"/root/rtdl_v4_venv/lib/python3.12/site-packages/nvidia/cuda_nvcc\",\n    \"nvvm_lib_dir\": \"/root/rtdl_v4_venv/lib/python3.12/site-packages/nvidia/cuda_nvcc/nvvm/lib64\",\n    \"prepended_ld_library_path\": true,\n    \"prepended_path\": true,\n    \"ptxas\": \"/root/rtdl_v4_venv/lib/python3.12/site-packages/nvidia/cuda_nvcc/bin/ptxas\",\n    \"set_cuda_home\": true,\n    \"set_cuda_path\": true,\n    \"system_cuda_lib_dirs\": [\n      \"/usr/local/cuda-12/targets/x86_64-linux/lib\",\n      \"/usr/local/cuda-12/lib64\"\n    ],\n    \"system_cuda_prefix\": \"/usr/local/cuda-12\"\n  },\n  \"optix_module_link_attempted\": false,\n  \"optix_module_link_succeeded\": null,\n  \"probe\": \"numba_device_scalar_reduce_to_ptx\",\n  \"ptx_abi\": \"c\",\n  \"ptx_generated\": true,\n  \"ptx_header\": \"//\\n// Generated by NVIDIA NVVM Compiler\\n//\\n// Compiler Build ID: CL-35583870\\n// Cuda compilation tools, release 12.8, V12.8.93\\n// Based on NVVM 7.0.1\\n//\\n\",\n  \"ptx_length\": 1082,\n  \"ptx_path\": \"/tmp/rtdl-v4-goal4688-module-link-xlydgj88/callback.ptx\",\n  \"raw_optix_callback_claim_authorized\": false,\n  \"release_claim_authorized\": false,\n  \"return_type\": \"float64\",\n  \"schema\": \"rtdl.v4.tier3_numba_ptx_probe.v1\",\n  \"status\": \"ptx_generated\",\n  \"tier\": \"tier3_spike_only_not_v4_0_release_surface\",\n  \"tier3_callback_claim_authorized\": false,\n  \"whole_app_speedup_claim_authorized\": false\n}"
+  },
+  "ptx_probe_payload": {
+    "app_specific_native_kernel_authorized": false,
+    "broad_v4_speedup_claim_authorized": false,
+    "contains_callback_name": true,
+    "contains_func_directive": true,
+    "contains_visible_func_directive": true,
+    "cuda_available": true,
+    "next_stage": "build_a_hole_left_optix_shell_and_attempt_module_link",
+    "numba_legacy_nvvm_environment": {
+      "numba_legacy_libdevice": "/root/rtdl_v4_venv/lib/python3.12/site-packages/nvidia/cuda_nvcc/nvvm/libdevice",
+      "numba_legacy_libdevice_env_configured": true,
+      "numba_legacy_nvvm": "/root/rtdl_v4_venv/lib/python3.12/site-packages/nvidia/cuda_nvcc/nvvm/lib64/libnvvm.so",
+      "numba_legacy_nvvm_env_configured": true
+    },
+    "numba_nvvm_reexec_environment": {
+      "nvvm_lib_dir_in_ld_library_path": true,
+      "reexec_required": false,
+      "reexec_supported": true,
+      "reexeced": true
+    },
+    "numba_toolchain_environment": {
+      "configured": true,
+      "does_not_configure_rtdl_native_optix": true,
+      "does_not_install_packages": true,
+      "numba_cuda_driver": "/lib/x86_64-linux-gnu/libcuda.so.1",
+      "numba_cuda_prefix": "/root/rtdl_v4_venv/lib/python3.12/site-packages/nvidia/cuda_nvcc",
+      "nvvm_lib_dir": "/root/rtdl_v4_venv/lib/python3.12/site-packages/nvidia/cuda_nvcc/nvvm/lib64",
+      "prepended_ld_library_path": true,
+      "prepended_path": true,
+      "ptxas": "/root/rtdl_v4_venv/lib/python3.12/site-packages/nvidia/cuda_nvcc/bin/ptxas",
+      "set_cuda_home": true,
+      "set_cuda_path": true,
+      "system_cuda_lib_dirs": [
+        "/usr/local/cuda-12/targets/x86_64-linux/lib",
+        "/usr/local/cuda-12/lib64"
+      ],
+      "system_cuda_prefix": "/usr/local/cuda-12"
+    },
+    "optix_module_link_attempted": false,
+    "optix_module_link_succeeded": null,
+    "probe": "numba_device_scalar_reduce_to_ptx",
+    "ptx_abi": "c",
+    "ptx_generated": true,
+    "ptx_header": "//\n// Generated by NVIDIA NVVM Compiler\n//\n// Compiler Build ID: CL-35583870\n// Cuda compilation tools, release 12.8, V12.8.93\n// Based on NVVM 7.0.1\n//\n",
+    "ptx_length": 1082,
+    "ptx_path": "/tmp/rtdl-v4-goal4688-module-link-xlydgj88/callback.ptx",
+    "raw_optix_callback_claim_authorized": false,
+    "release_claim_authorized": false,
+    "return_type": "float64",
+    "schema": "rtdl.v4.tier3_numba_ptx_probe.v1",
+    "status": "ptx_generated",
+    "tier": "tier3_spike_only_not_v4_0_release_surface",
+    "tier3_callback_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "public_speedup_claim_authorized": false,
+  "raw_optix_callback_authorized": false,
+  "release_authorized": false,
+  "schema": "rtdl.v4.goal4688_tier3_module_link_probe.v1",
+  "status": "semantic_module_pipeline_created_no_launch",
+  "symbol_probe": {
+    "c_identifier_compatible": true,
+    "reason": "one PTX .func symbol matched the callback name hint",
+    "status": "symbol_extracted",
+    "symbol": "_custom_scalar_reduce"
+  },
+  "tier3_public_support_authorized": false,
+  "toolchain": {
+    "compiler": "g++",
+    "cuda_lib_dir": "/usr/lib/x86_64-linux-gnu",
+    "cuda_root": "/usr/local/cuda",
+    "nvcc": "/usr/local/cuda/bin/nvcc",
+    "optix_include": "/root/vendor/optix-dev/include"
+  },
+  "whole_app_speedup_claim_authorized": false,
+  "wrapper_compile": {
+    "returncode": 0,
+    "stderr": "nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).",
+    "stdout": ""
+  },
+  "wrapper_compile_args": [
+    "/usr/local/cuda/bin/nvcc",
+    "-ptx",
+    "-std=c++17",
+    "--keep-device-functions",
+    "-I",
+    "/root/vendor/optix-dev/include",
+    "/tmp/rtdl-v4-goal4688-module-link-xlydgj88/tier3_wrapper.cu",
+    "-o",
+    "/tmp/rtdl-v4-goal4688-module-link-xlydgj88/tier3_wrapper.ptx"
+  ],
+  "wrapper_compile_succeeded": true
+}

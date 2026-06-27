@@ -1,0 +1,53 @@
+{
+  "goal": 4684,
+  "date": "2026-06-25",
+  "status": "goal4684_no_clean_existing_tier2_app_target_select_tier3_wrapper_spike_protocol",
+  "decision": "No clean existing Tier-2/app target remains for a near-term formal high-performance V4 release. Continue only by testing a genuinely new V4 architecture lever: the Tier-3 wrapper/direct-callable ABI spike. If that spike fails its protocol, the honest current V4 outcome stays bounded-operator/productization rather than formal high-performance release.",
+  "selected_next_track": "TIER3_WRAPPER_DIRECT_CALLABLE_ABI_SPIKE",
+  "formal_high_performance_release_authorized": false,
+  "pod_authorized": false,
+  "implementation_authorized": false,
+  "tier3_public_support_authorized": false,
+  "raw_optix_callback_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "whole_app_speedup_claim_authorized": false,
+  "app_identity_kernel_authorized": false,
+  "candidate_dispositions": [
+    {
+      "target": "existing benchmark app route selection",
+      "disposition": "no_clean_target",
+      "reason": "Goal4672 found V2.14 already had a primitive or explicit mixed partner route for every promoted benchmark app."
+    },
+    {
+      "target": "RTDBSCAN fixed-radius/grouped-union",
+      "disposition": "no_go",
+      "reason": "Goals4670/4671 found only modest gains; the best true grouped-union probe stayed below the 1.20x second-win bar and V2.14 already had the core route."
+    },
+    {
+      "target": "ranked fixed-radius summary / RTNN",
+      "disposition": "deferred",
+      "reason": "Goal4678 deferred the candidate after serious-scale parity or below-parity evidence."
+    },
+    {
+      "target": "shape-pair relation active count",
+      "disposition": "no_promotion",
+      "reason": "Goal4681 passed correctness but failed speed bars: V4/V2.14 hot 0.963x and wall 0.605x."
+    },
+    {
+      "target": "contact/witness device columns",
+      "disposition": "no_go",
+      "reason": "Goal4683 found the target reuses V2.14 bounded collect-k and current exact-witness partner-column plumbing."
+    },
+    {
+      "target": "aggregate-frontier device columns",
+      "disposition": "measured_productization_win_not_second_v4_over_v3_win",
+      "reason": "Goal4676 removed a V2.14 host-frontier bottleneck but was parity with V3.0.2 hot path at 0.998x."
+    },
+    {
+      "target": "Tier-3 wrapper/direct-callable ABI",
+      "disposition": "selected_as_spike_only_next_track",
+      "reason": "It is the remaining V4 design path that is genuinely absent from V2.14, app-name-free, and directly addresses custom scalar callback logic. It is not a release feature unless the full protocol later passes."
+    }
+  ],
+  "next_goal": "Goal4685 must create a protocol/local gate for a real OptiX traversal shell or direct-callable ABI composition of Numba PTX. It must not repeat the old bare-PTX optixModuleCreate probe."
+}

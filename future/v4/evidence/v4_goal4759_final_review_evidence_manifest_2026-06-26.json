@@ -1,0 +1,269 @@
+{
+  "artifact_count": 27,
+  "artifacts": [
+    {
+      "category": "release_review",
+      "exists": true,
+      "id": "goal4757_release_packet",
+      "path": "future/v4/v4_goal4757_final_v4_0_release_packet_after_goal4756_2026-06-26.md",
+      "sha256": "1d29cc9e398ea99edbd3cbcb98a7aa2d4028c5395abf1526fb92ca1307403963",
+      "size_bytes": 7178
+    },
+    {
+      "category": "release_review",
+      "exists": true,
+      "id": "goal4757_call_for_review",
+      "path": "future/v4/reviews/call_for_review_v4_goal4757_final_v4_0_release_after_goal4756_2026-06-26.md",
+      "sha256": "d7bce0df7f22802275f30f901c629ee5188aa30d41a74f5e42592f93e31234dc",
+      "size_bytes": 3163
+    },
+    {
+      "category": "release_review",
+      "exists": true,
+      "id": "goal4757_forward_message",
+      "path": "future/v4/reviews/v4_goal4757_forward_message_to_external_reviewer_2026-06-26.txt",
+      "sha256": "949f929589f568e6815fa34208f350b0f1bd01d022af41560c1ecc99b005eb12",
+      "size_bytes": 1578
+    },
+    {
+      "category": "release_review",
+      "exists": true,
+      "id": "goal4757_external_review_debt",
+      "path": "future/v4/reviews/v4_goal4757_final_release_external_review_debt_2026-06-26.md",
+      "sha256": "2dd1a0c8730cbe2bb7bde5a79b4b4dfa43a59bae66b3a8c7f0e06912646c0a2c",
+      "size_bytes": 2428
+    },
+    {
+      "category": "completion_audit",
+      "exists": true,
+      "id": "goal4758_completion_audit",
+      "path": "future/v4/v4_goal4758_local_completion_audit_2026-06-26.md",
+      "sha256": "2e47d977b4a92eef131e36fd91c8b53afcd823e690508025fd644fe2dfba29d8",
+      "size_bytes": 4967
+    },
+    {
+      "category": "pod_matrix",
+      "exists": true,
+      "id": "goal4756_matrix_analysis_json",
+      "path": "future/v4/evidence/v4_goal4756_final_rt_core_matrix_analysis_2026-06-26.json",
+      "sha256": "bde4f48b96b7c56cd724d06de870cfff936adc965c4ab513eb874e8e06cc9b92",
+      "size_bytes": 25315
+    },
+    {
+      "category": "pod_matrix",
+      "exists": true,
+      "id": "goal4756_matrix_analysis_md",
+      "path": "future/v4/v4_goal4756_final_rt_core_matrix_analysis_2026-06-26.md",
+      "sha256": "cfaf19ca3716ae8a92101e54d556e2bb6f4618c4eb50f5121a2690c6b6d11d6f",
+      "size_bytes": 2472
+    },
+    {
+      "category": "pod_matrix",
+      "exists": true,
+      "id": "goal4756_matrix_readout",
+      "path": "future/v4/v4_goal4756_final_rt_core_matrix_release_readout_2026-06-26.md",
+      "sha256": "5ab534189261403be28d928ae746ebec7e06b13ee9b85c478a23a4e9aee9e0d1",
+      "size_bytes": 4455
+    },
+    {
+      "category": "local_validation",
+      "exists": true,
+      "id": "goal4758_full_v4_gate_log",
+      "path": "future/v4/evidence/v4_goal4758_full_v4_unittest_discover_with_installed_wheel_script_gate_2026-06-26.log",
+      "sha256": "339c64cf4a90715259af1db6281a66446725c848677c05d83a69c53d33b0ba29",
+      "size_bytes": 3783
+    },
+    {
+      "category": "local_validation",
+      "exists": true,
+      "id": "goal4759_full_v4_gate_log",
+      "path": "future/v4/evidence/v4_goal4759_full_v4_unittest_discover_with_review_manifest_2026-06-26.log",
+      "sha256": "53d3b5f5f596524966f2b1ff984b981f652639d36ab9ceb72d88dc14b91bf96a",
+      "size_bytes": 3787
+    },
+    {
+      "category": "package",
+      "exists": true,
+      "id": "goal4758_wheel",
+      "path": "dist/goal4758_v4_release_candidate/rtdl_source_tree-4.0.0-py3-none-any.whl",
+      "sha256": "4f349985e0daa8e16cbbfe90cab8663c8517815b1f22c8d6be67901a7da2eed5",
+      "size_bytes": 1509259
+    },
+    {
+      "category": "package",
+      "exists": true,
+      "id": "goal4758_wheel_build_log",
+      "path": "future/v4/evidence/v4_goal4758_package_wheel_build_2026-06-26.log",
+      "sha256": "f58cb95555894327a071e09b5f27a45c3f0994fb2c59a78de9b72a0502bc8346",
+      "size_bytes": 1179
+    },
+    {
+      "category": "package",
+      "exists": true,
+      "id": "goal4758_wheel_install_smoke_summary",
+      "path": "future/v4/evidence/v4_goal4758_wheel_install_smoke_2026-06-26/summary.json",
+      "sha256": "0ee74d7c1f44864f121d1231404b93b59ebe75f1375eee0dcae878ef07e358ed",
+      "size_bytes": 1317
+    },
+    {
+      "category": "release_review_delta",
+      "exists": true,
+      "id": "goal4769_barnes_hut_author_phase_report",
+      "path": "future/v4/v4_goal4769_rt_barneshut_author_phase_accounting_2026-06-26.md",
+      "sha256": "ecfae9914bf4dceb97b4eafb3ac9872949770f9ed63bbd8759d59678bc97c595",
+      "size_bytes": 6863
+    },
+    {
+      "category": "release_review_delta",
+      "exists": true,
+      "id": "goal4769_barnes_hut_author_phase_stdout",
+      "path": "future/v4/evidence/rt_barneshut_author_reproduction_2026-06-26/v4_goal4769_author_phase_print_false_10m_stdout.txt",
+      "sha256": "69960357748c4ef47a36e040614913f38c9213067d2a5b13450d4202aad2a676",
+      "size_bytes": 1016
+    },
+    {
+      "category": "release_review_delta",
+      "exists": true,
+      "id": "goal4770_barnes_hut_delta_json",
+      "path": "future/v4/evidence/v4_goal4770_rt_barneshut_release_packet_delta_2026-06-26.json",
+      "sha256": "dd315d5d8e5af6bf132a61c2d7e317e7218b3d5ff92306bd372fc0e4735546c7",
+      "size_bytes": 2988
+    },
+    {
+      "category": "release_review_delta",
+      "exists": true,
+      "id": "goal4770_barnes_hut_delta_md",
+      "path": "future/v4/v4_goal4770_rt_barneshut_release_packet_delta_2026-06-26.md",
+      "sha256": "d752d28b7e064ef700c187b9c70af1fd0fc6a533af7ca5e72048b1373b19c307",
+      "size_bytes": 4094
+    },
+    {
+      "category": "release_review_delta",
+      "exists": true,
+      "id": "goal4770_barnes_hut_delta_review_debt",
+      "path": "future/v4/reviews/v4_goal4770_rt_barneshut_release_packet_delta_review_debt_2026-06-26.md",
+      "sha256": "405f59bc60e2a3abbc8019f7550203b756d211076a46f4932c985892753da12a",
+      "size_bytes": 1940
+    },
+    {
+      "category": "public_docs",
+      "exists": true,
+      "id": "readme",
+      "path": "README.md",
+      "sha256": "c091e908905b954fea8da645afc507e823afdb100ff172775b27b60faf27d1ef",
+      "size_bytes": 5324
+    },
+    {
+      "category": "public_docs",
+      "exists": true,
+      "id": "current_v4_status",
+      "path": "docs/current_v4_status.md",
+      "sha256": "ca839314eb6a7ac134864fe88c00b68337d2ef4695c65d1db220740cb059537b",
+      "size_bytes": 4442
+    },
+    {
+      "category": "public_docs",
+      "exists": true,
+      "id": "app_level_benchmark_summary",
+      "path": "docs/app_level_benchmark_summary.md",
+      "sha256": "25d9be9d5856de3cd0316dd09bce7dd67c872e0919612343a013495f1b733ec2",
+      "size_bytes": 4740
+    },
+    {
+      "category": "public_docs",
+      "exists": true,
+      "id": "performance_wording",
+      "path": "docs/learn/performance_wording.md",
+      "sha256": "fb6aba19dd82f5c492202fd65a2f2751f02f7454d93183b314f6c7ed1e5c742b",
+      "size_bytes": 3182
+    },
+    {
+      "category": "public_docs",
+      "exists": true,
+      "id": "future_v4_readme",
+      "path": "future/v4/README.md",
+      "sha256": "f2dfa76490dd8a94d94397800cb873153885d40f2d525f76db230bca46def378",
+      "size_bytes": 5088
+    },
+    {
+      "category": "public_docs",
+      "exists": true,
+      "id": "tier2_operator_catalog",
+      "path": "future/v4/tier2_operator_catalog.md",
+      "sha256": "e7bb006007331c65f54a7c43bfca3277099c680ca5138063d77b210701bb94f8",
+      "size_bytes": 7203
+    },
+    {
+      "category": "machine_gates",
+      "exists": true,
+      "id": "goal4757_machine_gate",
+      "path": "src/rtdsl/v4_goal4757_final_release_packet.py",
+      "sha256": "fd79fce8f9aa780b5136184139f92a5640a8f71a801ce1970d42913866caa5b1",
+      "size_bytes": 8411
+    },
+    {
+      "category": "machine_gates",
+      "exists": true,
+      "id": "goal4758_machine_gate",
+      "path": "src/rtdsl/v4_goal4758_local_completion_audit.py",
+      "sha256": "2368680ee10584068783c277816d9d531ba5a81b9c9972d27188c1efd651905b",
+      "size_bytes": 16198
+    },
+    {
+      "category": "machine_gates",
+      "exists": true,
+      "id": "goal4758_installed_wheel_smoke_script",
+      "path": "scripts/v4_goal4758_installed_wheel_smoke.py",
+      "sha256": "038a052bab58e250e1a3491a274f80e77d923806c85a7b4633799d87c027c5bc",
+      "size_bytes": 6444
+    }
+  ],
+  "empty_artifacts": [],
+  "external_review_debt_open": true,
+  "forbidden_claims_still_forbidden": [
+    "broad V4 speedup",
+    "whole-application speedup",
+    "all-benchmark speedup",
+    "public true-zero-copy",
+    "Tier-3 callback support",
+    "raw OptiX callback support",
+    "broad CuPy performance",
+    "Barnes-Hut new V4-over-V3 speedup",
+    "Spatial RayJoin speedup"
+  ],
+  "matrix_summary": {
+    "all_rows_have_v2_v3_v4": true,
+    "app_count": 10,
+    "embree_primary_denominator_used": false,
+    "material_candidate_apps": [
+      "triangle_counting",
+      "barnes_hut"
+    ],
+    "regression_apps": [],
+    "v4_over_v2_14_hot_geomean": 2.100691970706828
+  },
+  "missing_artifacts": [],
+  "public_tag_authorized": false,
+  "release_authorized": false,
+  "schema": "rtdl.v4.goal4759.final_review_evidence_manifest.v1",
+  "status": "ready_for_external_review_not_release_authorization",
+  "supplemental_release_review_deltas": [
+    "Goal4769 exposed the authors' full RT-BarnesHut phase table.",
+    "Goal4770 updates Barnes-Hut release-packet interpretation without rewriting the historical Goal4756 matrix."
+  ],
+  "wheel_install_smoke": {
+    "cupy_grouped_vector_sum_status": "certified_partner_measured_ready",
+    "matrix_apps": 10,
+    "matrix_rows": 30,
+    "measured_partners": [
+      "cupy",
+      "numba",
+      "rtdl_native",
+      "torch"
+    ],
+    "numba_component_union_status": "tier2_measured_ready",
+    "public_tag_authorized": false,
+    "release_authorized": false,
+    "status": "passed"
+  }
+}

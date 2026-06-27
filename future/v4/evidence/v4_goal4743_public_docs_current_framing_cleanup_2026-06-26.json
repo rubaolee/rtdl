@@ -1,0 +1,64 @@
+{
+  "goal": "Goal4743",
+  "title": "public docs current framing cleanup",
+  "date": "2026-06-26",
+  "status": "complete_pending_external_review_debt",
+  "decision": "public_docs_updated_to_goal4742_bounded_v4_framing",
+  "updated_files": [
+    "README.md",
+    "docs/README.md",
+    "docs/current_v4_status.md",
+    "docs/app_level_benchmark_summary.md",
+    "docs/learn/performance_wording.md",
+    "docs/public_documentation_map.md",
+    "tutorials/current/README.md",
+    "tutorials/current/05_measurement_boundaries.md",
+    "src/rtdsl/v4.py",
+    "src/rtdsl/v4_scope.py",
+    "src/rtdsl/v4_goal4643_publication_decision.py",
+    "future/v4/README.md",
+    "future/v4/tier2_operator_catalog.md",
+    "future/v4/examples/v4_frontdoor_quickstart.py",
+    "future/v4/v4_0_scope_gate.md",
+    "tests/v4_frontdoor_test.py",
+    "tests/v4_scope_gate_test.py",
+    "tests/v4_goal4643_publication_decision_test.py"
+  ],
+  "required_public_facts": {
+    "decision_label": "bounded_high_performance_python_edsl_release_candidate__not_all_benchmark_apps_faster",
+    "candidate_apps": [
+      "hausdorff_xhd",
+      "triangle_counting",
+      "barnes_hut"
+    ],
+    "custom_predicate_early_exit_geomean": 4.633,
+    "all_10_historical_apps_faster_claim": false
+  },
+  "validation": {
+    "command": "py -m unittest tests.v4_goal4743_public_docs_current_framing_test tests.v4_goal4646_pretag_wording_fixes_test tests.v4_goal4640_public_docs_cleanup_test tests.v4_frontdoor_test tests.v4_scope_gate_test tests.v4_goal4742_current_release_framing_test tests.v4_goal4643_publication_decision_test tests.v4_goal4644_post_release_guardrails_test tests.v4_goal4718_release_matrix_after_custom_predicate_test",
+    "tests_run": 39,
+    "status": "OK",
+    "stale_current_goal_scan_command": "rg -n \"Goal4669|Goal4655|Goal4718 V4 workflow row|bounded_operator_v4_only__app_level_high_performance_not_supported\" README.md docs\\README.md docs\\current_v4_status.md docs\\app_level_benchmark_summary.md docs\\learn\\performance_wording.md future\\v4\\README.md future\\v4\\tier2_operator_catalog.md tutorials\\current\\README.md tutorials\\current\\05_measurement_boundaries.md",
+    "stale_current_goal_scan_matches": 0,
+    "frontdoor_stale_field_scan_command": "rg -n \"goal4655_decision_label|legacy_goal4655_decision_label|front_door_status.*goal4718|v4_python_edsl_operator_pushdown_front_door_goal4718|v4_python_edsl_operator_pushdown_scope_goal4718|goal4669_legacy_app_level_high_performance_not_supported\" src\\rtdsl\\v4.py src\\rtdsl\\v4_scope.py future\\v4\\examples\\v4_frontdoor_quickstart.py future\\v4\\v4_0_scope_gate.md tests\\v4_frontdoor_test.py tests\\v4_scope_gate_test.py README.md docs\\README.md docs\\current_v4_status.md docs\\app_level_benchmark_summary.md docs\\learn\\performance_wording.md future\\v4\\README.md",
+    "frontdoor_stale_field_scan_matches": 0,
+    "remaining_matches_scope": "Only historical review records under docs/reviews contain the old labels in the scanned tree."
+  },
+  "claim_boundary": {
+    "release_authorized": false,
+    "final_v4_tag_authorized": false,
+    "all_benchmark_speedup_claim_authorized": false,
+    "broad_v4_over_v2_14_claim_authorized": false,
+    "arbitrary_callback_support_authorized": false,
+    "raw_optix_callback_support_authorized": false,
+    "true_zero_copy_wording_authorized": false,
+    "non_python_embedding_c_abi_claim_authorized": false,
+    "app_specific_native_kernel_authorized": false
+  },
+  "goal_level_decision_audit": {
+    "was_i_being_foolish": false,
+    "foolish_action_if_yes": "Leaving stale RayDB/Triangle numbers in front-door docs would be foolish.",
+    "alternative_path": "Wait until final review before docs cleanup, which would leave user-facing truth stale.",
+    "different_path_now": "Move to clean gate execution and final release-candidate review packet."
+  }
+}

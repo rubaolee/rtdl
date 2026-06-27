@@ -23,10 +23,11 @@ class V4FrontDoorTest(unittest.TestCase):
     def test_claim_boundary_lists_measured_surfaces_without_release_claims(self) -> None:
         boundary = v4.claim_boundary_v4()
 
-        self.assertEqual("v4_0_0_formal_release_front_door", boundary["status"])
-        self.assertEqual("mixed_torch_numba_and_rtdl_native", boundary["measured_partner"])
-        self.assertEqual(("numba", "rtdl_native", "torch"), boundary["measured_partners"])
-        self.assertEqual(8, len(boundary["measured_surfaces"]))
+        self.assertEqual("v4_python_edsl_operator_pushdown_front_door_goal4756_complete_rt_core_matrix", boundary["status"])
+        self.assertEqual("mixed_torch_numba_cupy_and_rtdl_native", boundary["measured_partner"])
+        self.assertEqual(("cupy", "numba", "rtdl_native", "torch"), boundary["measured_partners"])
+        self.assertEqual(10, len(boundary["measured_surfaces"]))
+        self.assertEqual(10, boundary["measured_surface_count"])
         self.assertIn("v4_fixed_radius_count_threshold_2d_device_arrays", boundary["measured_surfaces"])
         self.assertIn("v4_closest_hit_grouped_argmin_3d_device_arrays", boundary["measured_surfaces"])
         self.assertIn("v4_ray_triangle_any_hit_flags_2d_device_arrays", boundary["measured_surfaces"])
@@ -50,12 +51,39 @@ class V4FrontDoorTest(unittest.TestCase):
             "v4_aabb_index_query_2d_all_ops_count_prepared_runner",
             boundary["measured_surfaces"],
         )
+        self.assertIn(
+            "v4_aggregate_frontier_device_columns_2d_prepared_runner",
+            boundary["measured_surfaces"],
+        )
+        self.assertIn(
+            "v4_ray_triangle_custom_predicate_early_exit_3d_numba",
+            boundary["measured_surfaces"],
+        )
+        self.assertTrue(boundary["v4_python_edsl_release_candidate_supported"])
+        self.assertTrue(boundary["operator_pushdown_workflow_high_performance_supported"])
+        self.assertEqual(
+            "v4_ray_triangle_custom_predicate_early_exit_3d_numba",
+            boundary["custom_predicate_early_exit_surface"],
+        )
+        self.assertGreaterEqual(boundary["custom_predicate_early_exit_serious_scale_v3_geomean"], 1.50)
         self.assertEqual(0, len(boundary["candidate_surfaces"]))
-        self.assertTrue(boundary["formal_release_authorized"])
+        self.assertFalse(boundary["formal_release_authorized"])
         self.assertEqual(
             v4.V4_AUTHORIZED_RELEASE_LABEL,
             boundary["authorized_release_label"],
         )
+        self.assertTrue(boundary["bounded_operator_surface_available"])
+        self.assertFalse(boundary["app_level_high_performance_authorized"])
+        self.assertEqual(
+            "complete_rt_core_app_matrix__bounded_material_wins__no_broad_all_app_speedup_claim",
+            boundary["current_app_level_decision_label"],
+        )
+        self.assertTrue(boundary["complete_rt_core_app_matrix_available"])
+        self.assertEqual(10, boundary["complete_rt_core_app_matrix_app_count"])
+        self.assertEqual(30, boundary["complete_rt_core_app_matrix_row_count"])
+        self.assertEqual(0, boundary["goal4756_hot_path_regression_count"])
+        self.assertFalse(boundary["all_historical_benchmark_apps_faster_claim_authorized"])
+        self.assertFalse(boundary["broad_v4_over_v2_14_speedup_claim_authorized"])
         self.assertFalse(boundary["release_claim_authorized"])
         self.assertFalse(boundary["broad_v4_speedup_claim_authorized"])
         self.assertFalse(boundary["whole_app_speedup_claim_authorized"])
@@ -68,9 +96,12 @@ class V4FrontDoorTest(unittest.TestCase):
 
     def test_frontdoor_catalog_and_planner_are_reachable(self) -> None:
         rows = v4.measured_operator_catalog_v4()
-        self.assertEqual(8, len(rows))
+        self.assertEqual(10, len(rows))
         candidates = v4.candidate_operator_catalog_v4()
         self.assertEqual(0, len(candidates))
+        candidate_names = {row["operator"] for row in candidates}
+        self.assertNotIn("fixed_radius_ranked_summary_3d", candidate_names)
+        self.assertNotIn("aggregate_frontier_device_columns_2d", candidate_names)
 
         plan = v4.plan_operator_request_v4("any-hit", partner="torch")
         self.assertEqual("tier2_measured_ready", plan.status)
@@ -92,18 +123,24 @@ class V4FrontDoorTest(unittest.TestCase):
         aabb_plan = v4.plan_operator_request_v4("aabb_index_query", partner="rtdl_native")
         self.assertEqual("tier2_measured_ready", aabb_plan.status)
         self.assertEqual("v4_aabb_index_query_2d_all_ops_count_prepared_runner", aabb_plan.api_surface)
+        ranked_plan = v4.plan_operator_request_v4("ranked_summary", partner="rtdl_native")
+        self.assertEqual("deferred_goal4678_serious_scale_parity_not_release", ranked_plan.status)
+        self.assertEqual("deferred_v4_x_or_research", ranked_plan.tier)
+        self.assertIsNone(ranked_plan.api_surface)
+        self.assertFalse(ranked_plan.release_claim_authorized)
 
     def test_readme_points_users_at_unified_frontdoor(self) -> None:
         text = README.read_text(encoding="utf-8")
         self.assertIn("import rtdsl.v4 as rtdl_v4", text)
         self.assertIn("V4.0 does not expose raw OptiX callbacks", text)
-        self.assertIn("formal V4.0.0 bounded operator release authorized", text)
-        self.assertIn("CuPy performance claims", text)
+        self.assertIn("complete Goal4756 RT-core app matrix", text)
+        self.assertIn("broad V4-over-V2.14 speedup wording", text)
         self.assertIn("embedding/C-ABI claims", text)
         self.assertIn("non-Python host binding claims", text)
-        self.assertIn("measured Tier-2 surfaces: `8`", text)
-        self.assertIn("measured partners: `numba`, `rtdl_native`, `torch`", text)
-        self.assertIn("candidate Tier-2 surfaces: `0`", text)
+        self.assertIn("Triangle counting", text)
+        self.assertIn("Spatial RayJoin shape-pair", text)
+        self.assertIn("v4_aggregate_frontier_device_columns_2d_prepared_runner", text)
+        self.assertIn("v4_ray_triangle_custom_predicate_early_exit_3d_numba", text)
         self.assertIn("Ray/triangle any-hit weighted sum", text)
         self.assertIn("Fixed-radius graph component union", text)
         self.assertIn("AABB all-ops count", text)
@@ -120,18 +157,33 @@ class V4FrontDoorTest(unittest.TestCase):
         )
         payload = json.loads(proc.stdout)
         self.assertEqual("ok", payload["status"])
-        self.assertEqual("v4_0_0_formal_release_front_door", payload["front_door_status"])
-        self.assertEqual(8, payload["measured_surface_count"])
-        self.assertEqual(8, payload["catalog_operator_count"])
-        self.assertEqual(["numba", "rtdl_native", "torch"], payload["measured_partners"])
+        self.assertEqual(
+            "v4_python_edsl_operator_pushdown_front_door_goal4756_complete_rt_core_matrix",
+            payload["front_door_status"],
+        )
+        self.assertEqual(10, payload["measured_surface_count"])
+        self.assertEqual(10, payload["catalog_operator_count"])
+        self.assertEqual(["cupy", "numba", "rtdl_native", "torch"], payload["measured_partners"])
         self.assertEqual(0, payload["candidate_surface_count"])
         self.assertEqual("tier2_measured_ready", payload["tier2_plan_status"])
         self.assertEqual("tier2_measured_ready", payload["aabb_plan_status"])
-        self.assertTrue(payload["formal_release_authorized"])
+        self.assertFalse(payload["formal_release_authorized"])
         self.assertEqual(
             v4.V4_AUTHORIZED_RELEASE_LABEL,
             payload["authorized_release_label"],
         )
+        self.assertTrue(payload["bounded_operator_surface_available"])
+        self.assertFalse(payload["app_level_high_performance_authorized"])
+        self.assertEqual(
+            "complete_rt_core_app_matrix__bounded_material_wins__no_broad_all_app_speedup_claim",
+            payload["current_app_level_decision_label"],
+        )
+        self.assertTrue(payload["complete_rt_core_app_matrix_available"])
+        self.assertEqual(10, payload["complete_rt_core_app_matrix_app_count"])
+        self.assertEqual(30, payload["complete_rt_core_app_matrix_row_count"])
+        self.assertEqual(0, payload["goal4756_hot_path_regression_count"])
+        self.assertFalse(payload["all_historical_benchmark_apps_faster_claim_authorized"])
+        self.assertFalse(payload["broad_v4_over_v2_14_speedup_claim_authorized"])
         self.assertEqual(
             "v4_aabb_index_query_2d_all_ops_count_prepared_runner",
             payload["aabb_plan_surface"],

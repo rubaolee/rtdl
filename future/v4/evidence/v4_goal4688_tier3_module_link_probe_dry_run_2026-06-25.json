@@ -1,0 +1,33 @@
+{
+  "app_identity_kernel_authorized": false,
+  "combined_ptx_generated": false,
+  "contract_validation": {
+    "goal_status": "goal4688_tier3_semantic_wrapper_module_link_probe_not_support",
+    "missing_or_invalid": [],
+    "next_goal": "Goal4689 tier3 semantic wrapper minimal launch probe",
+    "pod_authorized": false,
+    "raw_optix_callback_authorized": false,
+    "release_authorized": false,
+    "status": "passed",
+    "tier3_public_support_authorized": false
+  },
+  "dry_run": true,
+  "numba_ptx_generated": false,
+  "optix_module_link_attempted": false,
+  "optix_module_link_succeeded": null,
+  "pipeline_create_attempted": false,
+  "pipeline_create_succeeded": null,
+  "pipeline_launch_attempted": false,
+  "pod_authorized": false,
+  "program_group_create_attempted": false,
+  "program_group_create_succeeded": null,
+  "public_speedup_claim_authorized": false,
+  "raw_optix_callback_authorized": false,
+  "release_authorized": false,
+  "schema": "rtdl.v4.goal4688_tier3_module_link_probe.v1",
+  "status": "dry_run_contract_passed",
+  "symbol_probe": null,
+  "tier3_public_support_authorized": false,
+  "whole_app_speedup_claim_authorized": false,
+  "wrapper_compile_succeeded": false
+}

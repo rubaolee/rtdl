@@ -37,6 +37,7 @@ _CUPY_AABB_PAIR_OVERLAP_SUMMARY_2D_KERNEL = None
 _CUPY_SEGMENT_TRIANGLE_EXACT_WITNESS_FILTER_KERNEL = None
 _CUPY_RADIUS_GRAPH_COMPONENTS_3D_GRID_KERNELS = None
 _CUPY_RADIUS_GRAPH_COMPONENTS_3D_MICROCELL_GRAPH_KERNELS = None
+_CUPY_GLOBAL_ARGMAX_U32_F64_KERNEL = None
 _CUPY_GROUPED_VECTOR_SUM_OFFSETS_F64X2_KERNEL = None
 _CUPY_GROUPED_VECTOR_SUM_OFFSETS_WARP_F64X2_KERNEL = None
 _NUMBA_RADIUS_GRAPH_COMPONENTS_3D_GRID_KERNELS = None
@@ -3331,6 +3332,242 @@ def grouped_argmax_f64_partner_columns(
     return columns
 
 
+def _cupy_global_argmax_u32_f64_kernel(cupy):
+    global _CUPY_GLOBAL_ARGMAX_U32_F64_KERNEL
+    if _CUPY_GLOBAL_ARGMAX_U32_F64_KERNEL is None:
+        source = r'''
+        extern "C" __global__
+        void rtdl_cupy_global_argmax_u32_f64(
+            const unsigned int* item_ids,
+            const double* scores,
+            const long long row_count,
+            const unsigned int invalid_item_id,
+            unsigned int* best_item_out,
+            double* best_score_out,
+            long long* best_row_out,
+            long long* valid_count_out
+        ) {
+            __shared__ double s_score[256];
+            __shared__ unsigned int s_item[256];
+            __shared__ long long s_row[256];
+            __shared__ long long s_count[256];
+
+            const int tid = threadIdx.x;
+            double best_score = -1.0 / 0.0;
+            unsigned int best_item = 0xffffffffu;
+            long long best_row = 9223372036854775807LL;
+            long long valid_count = 0LL;
+
+            for (long long row = tid; row < row_count; row += blockDim.x) {
+                const unsigned int item = item_ids[row];
+                const double score = scores[row];
+                const bool valid = (item != invalid_item_id) && isfinite(score);
+                if (!valid) {
+                    continue;
+                }
+                valid_count += 1LL;
+                const bool better =
+                    (score > best_score) ||
+                    ((score == best_score) &&
+                     ((item < best_item) || ((item == best_item) && (row < best_row))));
+                if (better) {
+                    best_score = score;
+                    best_item = item;
+                    best_row = row;
+                }
+            }
+
+            s_score[tid] = best_score;
+            s_item[tid] = best_item;
+            s_row[tid] = best_row;
+            s_count[tid] = valid_count;
+            __syncthreads();
+
+            for (int stride = blockDim.x >> 1; stride > 0; stride >>= 1) {
+                if (tid < stride) {
+                    const double other_score = s_score[tid + stride];
+                    const unsigned int other_item = s_item[tid + stride];
+                    const long long other_row = s_row[tid + stride];
+                    const bool better =
+                        (other_score > s_score[tid]) ||
+                        ((other_score == s_score[tid]) &&
+                         ((other_item < s_item[tid]) ||
+                          ((other_item == s_item[tid]) && (other_row < s_row[tid]))));
+                    if (better) {
+                        s_score[tid] = other_score;
+                        s_item[tid] = other_item;
+                        s_row[tid] = other_row;
+                    }
+                    s_count[tid] += s_count[tid + stride];
+                }
+                __syncthreads();
+            }
+
+            if (tid == 0) {
+                best_item_out[0] = s_item[0];
+                best_score_out[0] = s_score[0];
+                best_row_out[0] = s_row[0];
+                valid_count_out[0] = s_count[0];
+            }
+        }
+
+        extern "C" __global__
+        void rtdl_cupy_global_argmax_u32_f64_blocks(
+            const unsigned int* item_ids,
+            const double* scores,
+            const long long row_count,
+            const unsigned int invalid_item_id,
+            unsigned int* block_best_items,
+            double* block_best_scores,
+            long long* block_best_rows,
+            long long* block_valid_counts
+        ) {
+            __shared__ double s_score[256];
+            __shared__ unsigned int s_item[256];
+            __shared__ long long s_row[256];
+            __shared__ long long s_count[256];
+
+            const int tid = threadIdx.x;
+            const long long stride = (long long)blockDim.x * (long long)gridDim.x;
+            double best_score = -1.0 / 0.0;
+            unsigned int best_item = 0xffffffffu;
+            long long best_row = 9223372036854775807LL;
+            long long valid_count = 0LL;
+
+            for (long long row = (long long)blockIdx.x * blockDim.x + tid; row < row_count; row += stride) {
+                const unsigned int item = item_ids[row];
+                const double score = scores[row];
+                const bool valid = (item != invalid_item_id) && isfinite(score);
+                if (!valid) {
+                    continue;
+                }
+                valid_count += 1LL;
+                const bool better =
+                    (score > best_score) ||
+                    ((score == best_score) &&
+                     ((item < best_item) || ((item == best_item) && (row < best_row))));
+                if (better) {
+                    best_score = score;
+                    best_item = item;
+                    best_row = row;
+                }
+            }
+
+            s_score[tid] = best_score;
+            s_item[tid] = best_item;
+            s_row[tid] = best_row;
+            s_count[tid] = valid_count;
+            __syncthreads();
+
+            for (int stride_reduce = blockDim.x >> 1; stride_reduce > 0; stride_reduce >>= 1) {
+                if (tid < stride_reduce) {
+                    const double other_score = s_score[tid + stride_reduce];
+                    const unsigned int other_item = s_item[tid + stride_reduce];
+                    const long long other_row = s_row[tid + stride_reduce];
+                    const bool better =
+                        (other_score > s_score[tid]) ||
+                        ((other_score == s_score[tid]) &&
+                         ((other_item < s_item[tid]) ||
+                          ((other_item == s_item[tid]) && (other_row < s_row[tid]))));
+                    if (better) {
+                        s_score[tid] = other_score;
+                        s_item[tid] = other_item;
+                        s_row[tid] = other_row;
+                    }
+                    s_count[tid] += s_count[tid + stride_reduce];
+                }
+                __syncthreads();
+            }
+
+            if (tid == 0) {
+                block_best_items[blockIdx.x] = s_item[0];
+                block_best_scores[blockIdx.x] = s_score[0];
+                block_best_rows[blockIdx.x] = s_row[0];
+                block_valid_counts[blockIdx.x] = s_count[0];
+            }
+        }
+
+        extern "C" __global__
+        void rtdl_cupy_global_argmax_u32_f64_final(
+            const unsigned int* block_best_items,
+            const double* block_best_scores,
+            const long long* block_best_rows,
+            const long long* block_valid_counts,
+            const long long block_count,
+            unsigned int* best_item_out,
+            double* best_score_out,
+            long long* best_row_out,
+            long long* valid_count_out
+        ) {
+            __shared__ double s_score[256];
+            __shared__ unsigned int s_item[256];
+            __shared__ long long s_row[256];
+            __shared__ long long s_count[256];
+
+            const int tid = threadIdx.x;
+            double best_score = -1.0 / 0.0;
+            unsigned int best_item = 0xffffffffu;
+            long long best_row = 9223372036854775807LL;
+            long long valid_count = 0LL;
+
+            for (long long block = tid; block < block_count; block += blockDim.x) {
+                valid_count += block_valid_counts[block];
+                const double score = block_best_scores[block];
+                const unsigned int item = block_best_items[block];
+                const long long row = block_best_rows[block];
+                const bool better =
+                    (score > best_score) ||
+                    ((score == best_score) &&
+                     ((item < best_item) || ((item == best_item) && (row < best_row))));
+                if (better) {
+                    best_score = score;
+                    best_item = item;
+                    best_row = row;
+                }
+            }
+
+            s_score[tid] = best_score;
+            s_item[tid] = best_item;
+            s_row[tid] = best_row;
+            s_count[tid] = valid_count;
+            __syncthreads();
+
+            for (int stride = blockDim.x >> 1; stride > 0; stride >>= 1) {
+                if (tid < stride) {
+                    const double other_score = s_score[tid + stride];
+                    const unsigned int other_item = s_item[tid + stride];
+                    const long long other_row = s_row[tid + stride];
+                    const bool better =
+                        (other_score > s_score[tid]) ||
+                        ((other_score == s_score[tid]) &&
+                         ((other_item < s_item[tid]) ||
+                          ((other_item == s_item[tid]) && (other_row < s_row[tid]))));
+                    if (better) {
+                        s_score[tid] = other_score;
+                        s_item[tid] = other_item;
+                        s_row[tid] = other_row;
+                    }
+                    s_count[tid] += s_count[tid + stride];
+                }
+                __syncthreads();
+            }
+
+            if (tid == 0) {
+                best_item_out[0] = s_item[0];
+                best_score_out[0] = s_score[0];
+                best_row_out[0] = s_row[0];
+                valid_count_out[0] = s_count[0];
+            }
+        }
+        '''
+        _CUPY_GLOBAL_ARGMAX_U32_F64_KERNEL = {
+            "single": cupy.RawKernel(source, "rtdl_cupy_global_argmax_u32_f64"),
+            "blocks": cupy.RawKernel(source, "rtdl_cupy_global_argmax_u32_f64_blocks"),
+            "final": cupy.RawKernel(source, "rtdl_cupy_global_argmax_u32_f64_final"),
+        }
+    return _CUPY_GLOBAL_ARGMAX_U32_F64_KERNEL
+
+
 def global_argmax_u32_f64_partner_columns(
     score_columns: dict[str, object],
     *,
@@ -3338,17 +3575,182 @@ def global_argmax_u32_f64_partner_columns(
     invalid_item_id: int = _UINT32_MAX,
     validate_non_empty_on_host: bool = True,
     return_metadata: bool = False,
+    synchronize: bool = True,
 ) -> dict[str, object]:
     """Select the highest-score uint32 item from generic device columns."""
 
-    if partner != "numba":
-        raise ValueError("global_argmax_u32_f64 currently supports partner='numba'")
     if not isinstance(score_columns, dict):
         raise ValueError("score_columns must be a mapping")
     item_ids = score_columns.get("item_ids")
     scores = score_columns.get("scores", score_columns.get("values"))
     if item_ids is None or scores is None:
         raise ValueError("score_columns must contain item_ids and scores/values")
+
+    if partner == "torch":
+        runtime = _partner_module("torch")
+        torch = runtime["module"]
+        start = time.perf_counter()
+        item_ids_i64 = item_ids.to(torch.int64)
+        scores_f64 = scores.to(torch.float64)
+        valid = item_ids_i64.ne(int(invalid_item_id)) & torch.isfinite(scores_f64)
+        if validate_non_empty_on_host and not bool(torch.any(valid).item()):
+            raise ValueError("global_argmax_u32_f64 requires at least one valid item row")
+        safe_scores = torch.where(valid, scores_f64, torch.full_like(scores_f64, -float("inf")))
+        best_score = torch.max(safe_scores)
+        candidate = valid & scores_f64.eq(best_score)
+        max_i64 = torch.full_like(item_ids_i64, int(_UINT32_MAX), dtype=torch.int64)
+        best_item = torch.min(torch.where(candidate, item_ids_i64, max_i64))
+        row_indices = torch.arange(int(item_ids_i64.numel()), dtype=torch.int64, device=item_ids_i64.device)
+        row_sentinel = torch.full_like(row_indices, int(row_indices.numel()))
+        best_row = torch.min(torch.where(candidate & item_ids_i64.eq(best_item), row_indices, row_sentinel))
+        valid_count = torch.sum(valid.to(torch.int64))
+        if synchronize:
+            runtime["sync"]()
+        elapsed = time.perf_counter() - start
+        columns = {
+            "item_ids": best_item.to(torch.uint32).reshape((1,)),
+            "scores": best_score.reshape((1,)),
+            "row_indices": best_row.reshape((1,)),
+            "valid_count": valid_count.reshape((1,)),
+        }
+        metadata = _generic_partner_front_door_metadata(
+            adapter="global_argmax_u32_f64_partner_columns",
+            partner="torch",
+            operation="global_argmax_u32_f64",
+            group_count=1,
+            row_count=int(item_ids_i64.numel()),
+            contract="generic_global_argmax_u32_f64",
+            extra={
+                "operation": "global_argmax_u32_f64",
+                "contract": "generic_global_argmax_u32_f64",
+                "tie_break": "highest_score_then_lowest_item_id_then_lowest_row_index",
+                "reduction_strategy": "torch_masked_reduce",
+                "invalid_item_id": int(invalid_item_id),
+                "host_valid_count_check_used": bool(validate_non_empty_on_host),
+                "partner_elapsed_seconds": elapsed,
+                "torch_elapsed_seconds": elapsed,
+                "partner_synchronized_before_return": bool(synchronize),
+                "host_row_materialization_used": False,
+                "direct_device_handoff_authorized": True,
+                "true_zero_copy_claim_authorized": False,
+            },
+        )
+        if return_metadata:
+            return {"columns": columns, "metadata": metadata}
+        return columns
+
+    if partner == "cupy":
+        runtime = _partner_module("cupy")
+        cupy = runtime["module"]
+        start = time.perf_counter()
+        item_ids_u32 = item_ids.astype(cupy.uint32, copy=False)
+        scores_f64 = scores.astype(cupy.float64, copy=False)
+        row_count = int(item_ids_u32.shape[0])
+        rawkernel_row_threshold = 131072
+        if row_count <= rawkernel_row_threshold:
+            best_item = cupy.empty((1,), dtype=cupy.uint32)
+            best_score = cupy.empty((1,), dtype=cupy.float64)
+            best_row = cupy.empty((1,), dtype=cupy.int64)
+            valid_count = cupy.empty((1,), dtype=cupy.int64)
+            kernels = _cupy_global_argmax_u32_f64_kernel(cupy)
+            kernels["single"](
+                (1,),
+                (256,),
+                (
+                    item_ids_u32,
+                    scores_f64,
+                    row_count,
+                    int(invalid_item_id),
+                    best_item,
+                    best_score,
+                    best_row,
+                    valid_count,
+                ),
+            )
+            reduction_strategy = "cupy_rawkernel_single_block_reduce"
+        else:
+            kernels = _cupy_global_argmax_u32_f64_kernel(cupy)
+            block_count = min(1024, max(1, (row_count + 255) // 256))
+            block_best_items = cupy.empty((block_count,), dtype=cupy.uint32)
+            block_best_scores = cupy.empty((block_count,), dtype=cupy.float64)
+            block_best_rows = cupy.empty((block_count,), dtype=cupy.int64)
+            block_valid_counts = cupy.empty((block_count,), dtype=cupy.int64)
+            best_item = cupy.empty((1,), dtype=cupy.uint32)
+            best_score = cupy.empty((1,), dtype=cupy.float64)
+            best_row = cupy.empty((1,), dtype=cupy.int64)
+            valid_count = cupy.empty((1,), dtype=cupy.int64)
+            kernels["blocks"](
+                (block_count,),
+                (256,),
+                (
+                    item_ids_u32,
+                    scores_f64,
+                    row_count,
+                    int(invalid_item_id),
+                    block_best_items,
+                    block_best_scores,
+                    block_best_rows,
+                    block_valid_counts,
+                ),
+            )
+            kernels["final"](
+                (1,),
+                (256,),
+                (
+                    block_best_items,
+                    block_best_scores,
+                    block_best_rows,
+                    block_valid_counts,
+                    block_count,
+                    best_item,
+                    best_score,
+                    best_row,
+                    valid_count,
+                ),
+            )
+            reduction_strategy = "cupy_rawkernel_multiblock_reduce"
+        if validate_non_empty_on_host:
+            if int(cupy.asnumpy(valid_count)[0]) <= 0:
+                raise ValueError("global_argmax_u32_f64 requires at least one valid item row")
+        elif synchronize:
+            runtime["sync"]()
+        elapsed = time.perf_counter() - start
+        columns = {
+            "item_ids": best_item,
+            "scores": best_score,
+            "row_indices": best_row,
+            "valid_count": valid_count,
+        }
+        metadata = _generic_partner_front_door_metadata(
+            adapter="global_argmax_u32_f64_partner_columns",
+            partner="cupy",
+            operation="global_argmax_u32_f64",
+            group_count=1,
+            row_count=row_count,
+            contract="generic_global_argmax_u32_f64",
+            extra={
+                "operation": "global_argmax_u32_f64",
+                "contract": "generic_global_argmax_u32_f64",
+                "tie_break": "highest_score_then_lowest_item_id_then_lowest_row_index",
+                "reduction_strategy": reduction_strategy,
+                "strategy_selection": "rawkernel_single_block_for_small_rows_else_multiblock_reduce",
+                "rawkernel_row_threshold": rawkernel_row_threshold,
+                "invalid_item_id": int(invalid_item_id),
+                "host_valid_count_check_used": bool(validate_non_empty_on_host),
+                "partner_elapsed_seconds": elapsed,
+                "cupy_elapsed_seconds": elapsed,
+                "partner_synchronized_before_return": bool(synchronize or validate_non_empty_on_host),
+                "host_row_materialization_used": False,
+                "direct_device_handoff_authorized": True,
+                "true_zero_copy_claim_authorized": False,
+            },
+        )
+        if return_metadata:
+            return {"columns": columns, "metadata": metadata}
+        return columns
+
+    if partner != "numba":
+        raise ValueError("global_argmax_u32_f64 currently supports partner='numba', partner='torch', or partner='cupy'")
 
     from .numba_partner_continuation import run_numba_global_argmax_u32_f64
     from .v2_6_neutral_partner_handoff import prepare_v2_6_neutral_partner_handoff

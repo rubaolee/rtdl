@@ -6,10 +6,11 @@ The current V4 public documentation is deliberately short and current-only.
 
 1. [Project README](../README.md)
 2. [Current V4 Status](current_v4_status.md)
-3. [Tutorials](../tutorials/current/README.md)
-4. [Examples](../examples/README.md)
-5. [Measured Operator Catalog](../future/v4/tier2_operator_catalog.md)
-6. [Performance Wording](learn/performance_wording.md)
+3. [App-Level Benchmark Summary](app_level_benchmark_summary.md)
+4. [Tutorials](../tutorials/current/README.md)
+5. [Examples](../examples/README.md)
+6. [Measured Operator Catalog](../future/v4/tier2_operator_catalog.md)
+7. [Performance Wording](learn/performance_wording.md)
 
 ## Quick Check Path
 
@@ -19,9 +20,9 @@ The current V4 public documentation is deliberately short and current-only.
 
 ## Reviewer Path
 
-1. [Goal4638 Formal Scorecard Freeze](../future/v4/v4_goal4638_formal_release_scorecard_freeze_2026-06-25.md)
-2. [Goal4639 Serious Scorecard Decision](../future/v4/v4_goal4639_serious_release_scorecard_pod_gate_decision_2026-06-25.md)
-3. [Goal4639 POD Evidence](../future/v4/evidence/v4_goal4639_release_scorecard_pod_gate_2026-06-25/summary.md)
+Detailed evidence and review packets remain under `future/v4/`,
+`future/v4/evidence/`, and `future/v4/reviews/`. They are intentionally outside
+the first-time user path.
 
-Evidence and reviews remain available for reviewers, but they are not the
-first-time user path.
+The current compact release-review evidence index is
+`future/v4/v4_goal4759_final_review_evidence_manifest_2026-06-26.md`.

@@ -1,0 +1,55 @@
+{
+  "cupy_performance_claim_authorized": false,
+  "gate_status": "goal4649_cupy_frontdoor_certification_gate",
+  "partner_migration_counts_as_v4_speed_win": false,
+  "partner_parity_counts_as_v4_speed_win": false,
+  "pod_spend_authorized_by_this_file": false,
+  "ready_targets": [
+    {
+      "candidate_id": "cupy_grouped_reduction_device_columns_262144",
+      "correctness_parity_required": 1.0,
+      "denominator": "same_contract_numpy_cpu_formula_and_optional_numba_partner_control",
+      "gate_status": "ready_for_pod_certification",
+      "operator": "grouped_vector_sum_f64x2",
+      "partner_migration_counts_as_v4_speed_win": false,
+      "partner_parity_counts_as_v4_speed_win": false,
+      "partner_parity_floor": 0.98,
+      "public_claim_authorized": false,
+      "repeat": 100,
+      "representative_groups": 1024,
+      "representative_rows": 262144,
+      "representative_speedup_floor": 1.2,
+      "v4_frontdoor_route": "prepare_grouped_vector_sum_2d_partner_columns_session(partner='cupy')",
+      "warmup": 3
+    },
+    {
+      "candidate_id": "cupy_grouped_reduction_device_columns_524288",
+      "correctness_parity_required": 1.0,
+      "denominator": "same_contract_numpy_cpu_formula_and_optional_numba_partner_control",
+      "gate_status": "ready_for_pod_certification",
+      "operator": "grouped_vector_sum_f64x2",
+      "partner_migration_counts_as_v4_speed_win": false,
+      "partner_parity_counts_as_v4_speed_win": false,
+      "partner_parity_floor": 0.98,
+      "public_claim_authorized": false,
+      "repeat": 100,
+      "representative_groups": 2048,
+      "representative_rows": 524288,
+      "representative_speedup_floor": 1.2,
+      "v4_frontdoor_route": "prepare_grouped_vector_sum_2d_partner_columns_session(partner='cupy')",
+      "warmup": 3
+    }
+  ],
+  "repeat": 100,
+  "rows_requested": null,
+  "schema": "rtdl.v4.goal4649.cupy_grouped_reduction_gate.v1",
+  "status": "goal4649_cupy_gate_dry_run_no_claims",
+  "summary": {
+    "cupy_performance_claim_authorized": false,
+    "live_rows_passed": 0,
+    "mode": "dry_run",
+    "ready_target_count": 2
+  },
+  "trust_row_offsets": false,
+  "warmup": 3
+}

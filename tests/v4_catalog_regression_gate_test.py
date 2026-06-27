@@ -51,11 +51,17 @@ class V4CatalogRegressionGateTest(unittest.TestCase):
 
         self.assertEqual("passed", payload["status"])
         self.assertEqual("passed", stdout_payload["status"])
-        self.assertTrue(payload["release_authorized"])
+        self.assertFalse(payload["release_authorized"])
         self.assertEqual(V4_AUTHORIZED_RELEASE_LABEL, payload["authorized_release_label"])
-        self.assertIn("brute-force partner/CPU baselines", payload["authorized_release_label"])
+        self.assertIn("Python eDSL/operator-pushdown release candidate", payload["authorized_release_label"])
+        self.assertIn("broad all-benchmark speedup remains unauthorized", payload["authorized_release_label"])
+        self.assertFalse(payload["whole_app_speedup_claim_authorized"])
+        self.assertFalse(payload["all_benchmark_speedup_claim_authorized"])
+        self.assertFalse(payload["true_zero_copy_authorized"])
         self.assertFalse(payload["tier3_callback_claim_authorized"])
-        self.assertEqual(11, len(payload["examples"]))
+        self.assertFalse(payload["raw_optix_callback_claim_authorized"])
+        self.assertFalse(payload["embedding_c_abi_claim_authorized"])
+        self.assertEqual(12, len(payload["examples"]))
         self.assertTrue(all(row["passed"] for row in payload["examples"]))
         rows_by_name = {row["name"]: row for row in payload["examples"]}
         self.assertIn("fixed_radius", rows_by_name)
@@ -63,6 +69,7 @@ class V4CatalogRegressionGateTest(unittest.TestCase):
         self.assertIn("point_group_nearest_witness", rows_by_name)
         self.assertIn("ray_triangle_any_hit_weighted_sum", rows_by_name)
         self.assertIn("aabb_index_all_ops_count", rows_by_name)
+        self.assertIn("custom_predicate_early_exit_planning", rows_by_name)
         self.assertIn("v4_frontdoor_quickstart", rows_by_name)
         self.assertEqual(
             "dry_run",
@@ -78,6 +85,17 @@ class V4CatalogRegressionGateTest(unittest.TestCase):
         self.assertEqual(
             "tier2_measured_v4_0_0_release_surface",
             rows_by_name["ray_triangle_any_hit_weighted_sum"]["payload"]["surface_status"],
+        )
+        self.assertEqual("ok", rows_by_name["custom_predicate_early_exit_planning"]["payload"]["status"])
+        self.assertEqual(
+            "v4_ray_triangle_custom_predicate_early_exit_3d_numba",
+            rows_by_name["custom_predicate_early_exit_planning"]["payload"]["surface"],
+        )
+        self.assertGreaterEqual(
+            rows_by_name["custom_predicate_early_exit_planning"]["payload"][
+                "serious_scale_v4_vs_v3_0_2_geomean"
+            ],
+            4.0,
         )
         self.assertEqual(
             "tier2_measured_ready",
@@ -120,7 +138,7 @@ class V4CatalogRegressionGateTest(unittest.TestCase):
             payload = json.loads(json_out.read_text(encoding="utf-8"))
 
         self.assertEqual("passed", payload["status"])
-        self.assertEqual(11, len(payload["examples"]))
+        self.assertEqual(12, len(payload["examples"]))
         rows_by_name = {row["name"]: row for row in payload["examples"]}
         weighted = rows_by_name["ray_triangle_any_hit_weighted_sum"]["payload"]
         self.assertEqual("dry_run", weighted["status"])

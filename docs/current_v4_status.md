@@ -1,58 +1,138 @@
 # Current V4 Status
 
-V4 is the current RTDL user surface for generic RT-core operator work.
+V4.0 is the current RTDL user surface for Python eDSL/operator-pushdown work on
+generic RT-core operators, V2/V3-compatible benchmark routes, and constrained
+user predicates.
 
-Status: formal V4.0.0 bounded operator release authorized.
+Status:
+
+```text
+complete_rt_core_app_matrix__bounded_material_wins__antigravity_public_tag_approved__clean_wheel_smoke_passed__tag_target_ready
+```
 
 ## User Promise
 
-V4 gives users a clean Python front door for measured, reusable RT-shaped
-operators. The engine may contain fused generic continuation operators such as
-count/threshold, grouped reduction, weighted sum, component union, nearest
-witness, and AABB query count. It must not contain app-identity kernels such as
-"DBSCAN kernel" or "Barnes-Hut kernel" as public V4 features.
+V4 gives users a clean Python front door for reusable RT-shaped GPU work:
 
-## Current Scorecard State
+- V4 is a V2/V3 superset. Existing V2.14/V3 routes remain part of the usable
+  system when they are the best route for a task.
+- V4 adds measured generic operator surfaces that accept GPU arrays and avoid
+  Python row-object hot paths where the surface says so.
+- Users choose partners explicitly. Current measured partner scopes include
+  Torch CUDA, CuPy where explicitly named, Numba for constrained predicates and
+  selected graph/continuation work, and RTDL native prepared runners.
+- Unsupported complex callbacks fail closed or remain V4.1/Tier-3 work.
 
-The frozen Goal4639 scorecard passed on the RTX A5000 POD:
+## 10-App RT-Core Matrix
+
+Goal4756 completed the serious POD matrix on NVIDIA RTX A5000:
 
 | Metric | Result |
 | --- | --- |
-| Measured V4 operator surfaces | `8/8` passed |
-| Strong benchmark families | `4/4` passed |
-| Partial control families | `4/4` passed |
-| Candidate surfaces | `0` |
-| Failed scorecard surfaces | `0` |
-| Public performance wording | distribution + denominator required |
+| Apps | `10/10` |
+| Version rows | `30/30` |
+| V2.14/V3.0.2/V4.0 row for every app | `true` |
+| Primary denominator | NVIDIA OptiX/RT-core only |
+| Embree primary denominator | `false` |
+| Hot-path regressions in Goal4756 table | `0` |
+| Material hot-path candidates over V2.14 | `triangle_counting`, `barnes_hut` |
+| V4/V2.14 hot geomean | `2.10069x`, not a headline |
 
-The public performance wording is intentionally distribution-based:
+The current app-level table is in
+[app_level_benchmark_summary.md](app_level_benchmark_summary.md).
+The compact external-review evidence manifest is in
+[../future/v4/v4_goal4759_final_review_evidence_manifest_2026-06-26.md](../future/v4/v4_goal4759_final_review_evidence_manifest_2026-06-26.md).
 
-- most measured operators are 1.2x-1.7x faster than their stated
-  brute-force partner/CPU baselines;
-- ray/triangle any-hit flags is `5.671x` against its Torch reference baseline;
-- point-group nearest witness and AABB all-ops are large scale-dependent
-  algorithmic-complexity wins where the alternative is brute force or a slower
-  same-contract index control.
+Supplemental Barnes-Hut evidence: the native RT-BarnesHut author-semantics
+route is checksum-valid at 10M and wins on comparable internal program time
+with full phase accounting. This does not authorize public paper-reproduction
+or no-copy tree-build wording.
 
-Do not headline the raw scorecard geomean. These are operator-level scorecard
-rows with denominators, not whole-application speedup claims and not
-near-hand-written-OptiX claims.
+## Operator/Workflow Surfaces
 
-## Measured Surface Summary
+The Goal4639 scorecard passed for the documented operator surfaces: `8/8`
+surfaces and `4/4` strong families passed. In the release wording guide,
+most measured operators are 1.2x-1.7x against their stated brute-force partner/CPU baselines;
+point-group nearest witness and AABB all-ops are large scale-dependent
+algorithmic-complexity wins. These rows do not authorize a whole-application
+speedup claim.
 
-| Surface | Partner scope | Representative result | Baseline / denominator | Scale |
-| --- | --- | ---: | --- | --- |
-| Fixed-radius count-threshold | Torch CUDA | `1.697x` | Torch brute-force/reference | script default fixture; repeat `7`, warmup `1` |
-| Closest-hit grouped argmin | Torch CUDA | `1.257x` | Torch brute-force/reference | script default grouped-argmin fixtures; repeat `7`, warmup `1` |
-| Ray/triangle any-hit flags | Torch CUDA | `5.671x` | Torch brute-force/reference | `max_torch_reference_count=8192`; repeat `5`, warmup `1` |
-| Primitive grouped-i64 reduction | Torch CUDA | `1.384x` | Torch brute-force/reference | ray counts `32768,131072`; group widths `1,16,256`; repeat `7`, warmup `2` |
-| Point-group nearest witness | Torch CUDA | `389.707x` | brute-force nearest-witness reference | query counts `32768,131072`; fixtures `mixed4,mixed6`; repeat `7`, warmup `2`; scale-dependent O(n²)-vs-BVH win |
-| Ray/triangle any-hit weighted sum | Torch CUDA | `1.482x` | Torch brute-force/reference comparable route | Goal4633 shapes `32768,131072,262144,524288` |
-| Fixed-radius graph component union | Numba | `1.203x` | legacy prepared-runner wall route; Embree controls recorded | clustered3d `262144` points; repeat `5`, warmup `1` |
-| AABB all-ops count | RTDL native | `164.716x` | Embree same-contract prepared AABB query control | `1000000` boxes, `1000` queries, all ops, `240` repeats; scale-dependent indexed-control win |
+Baseline / denominator is part of every valid performance statement.
 
-Use [../future/v4/tier2_operator_catalog.md](../future/v4/tier2_operator_catalog.md)
-for the exact API surface, partner scope, and caveats for each row.
+V4 also exposes measured generic operator/workflow surfaces, including:
+
+- fixed-radius count-threshold;
+- closest-hit grouped argmin;
+- ray/triangle any-hit flags;
+- primitive grouped-i64 reduction;
+- point-group nearest witness;
+- ray/triangle any-hit weighted sum;
+- fixed-radius graph component union;
+- AABB all-ops count;
+- aggregate-frontier device columns;
+- constrained Numba Custom predicate early-exit.
+
+These are not blanket all-app claims. Each surface has its own denominator,
+partner scope, scale, and claim boundary.
+
+## Boundary
+
+Allowed:
+
+- "V4.0 is a Python eDSL/operator-pushdown release candidate and V2/V3
+  superset."
+- "The 10-app RT-core matrix is complete for V2.14, V3.0.2, and V4.0."
+- "V4.0 has two material hot-path candidate wins over V2.14 and parity/control
+  elsewhere in Goal4756."
+- "The custom predicate early-exit workflow is a V4-specific bounded workflow
+  win."
+
+Not authorized:
+
+- all benchmark apps are faster;
+- broad all-app speedup wording;
+- broad V4-over-V2.14 speedup wording;
+- broad V4-over-V3 speedup wording;
+- whole-application speedup claim;
+- public true-zero-copy claims;
+- Tier-3 callback/PTX support claims;
+- broad CuPy performance claims beyond explicitly named measurements;
+- raw OptiX callback support claims;
+- app-specific native engine/kernel claims;
+- embedding, C ABI, or non-Python host binding claims.
+
+V4 Python eDSL/operator-pushdown release candidate surface available; the
+current V4 measured operator/workflow surface count is
+`10`.
+
+## External Review Update
+
+Antigravity reviewed the consolidated Gemini-style full-coverage V4 packet and
+returned:
+
+```text
+approve_close_gemini_debt_and_allow_v4_0_public_tag
+```
+
+Review path:
+
+- `future/v4/reviews/antigravity_v4_gemini_full_coverage_review_2026-06-27.md`
+
+The bounded V4.0 public tag is externally authorized under the framing above.
+The release target must be a clean committed tree with clean-checkout and
+installed-wheel smoke validation. Do not tag a dirty or stale `HEAD`.
+
+Packaging progress:
+
+- Goal4774 created the dirty-tree packaging audit.
+- Goal4775 created a file-level staging manifest and pathspec for the intended
+  V4 release commit.
+- Goal4776 clean-checkout installed-wheel smoke passed on the release-candidate
+  commit before tag creation.
+- Current machine status: clean release commit target ready for bounded V4.0
+  public tag creation.
+- Post-Goal4775 full V4 local discovery: `Ran 645 tests in 94.691s`,
+  `OK (skipped=1)`.
 
 ## Start Command
 
@@ -70,23 +150,3 @@ Linux or macOS:
 PYTHONPATH=src:. python examples/v4/v4_frontdoor_quickstart.py
 PYTHONPATH=src:. python scripts/v4_catalog_regression_gate.py --mode dry-run
 ```
-
-## Boundary
-
-Allowed wording:
-
-- RTDL V4.0.0 is a bounded operator release for 8 documented generic RT-core
-  operators that beat their stated brute-force partner/CPU baselines.
-- V4 has eight measured generic Tier-2 operator surfaces.
-- The frozen Goal4639 scorecard passed for those documented surfaces.
-
-Not authorized:
-
-- broad V4 speedup wording;
-- whole-application speedup wording;
-- all-benchmark speedup wording;
-- public true-zero-copy wording;
-- Tier-3 callback/PTX support wording;
-- raw OptiX callback support wording;
-- CuPy performance wording;
-- embedding, C ABI, or non-Python host binding wording.

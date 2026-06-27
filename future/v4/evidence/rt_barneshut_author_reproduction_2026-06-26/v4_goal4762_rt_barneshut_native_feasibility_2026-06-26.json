@@ -1,0 +1,72 @@
+{
+  "author_commit": "2a3c60da0bbbd00ff1777cb57ec2089cb0029cf7",
+  "blocking_reasons": [
+    "Existing RTDL fused aggregate-tree primitive is 2D; author RT-BarnesHut is 3D.",
+    "Existing 2D primitive uses RTDL aggregate-tree rows, not the author z-order/bucket-size-32 tree contract.",
+    "No native V4 prepare/run/destroy ABI exists for author-semantics 3D RT-BarnesHut.",
+    "The external author binary route is a reference/control route and cannot count as a native V4 operator."
+  ],
+  "claim_boundary": {
+    "existing_2d_aggregate_tree_route_is_author_equivalent": false,
+    "external_author_binary_used": false,
+    "goal4762_completion_authorizes_release": false,
+    "native_v4_operator_available": false,
+    "old_2d_rtdl_workflow_may_be_divided_by_author_binary": false,
+    "public_rt_barneshut_paper_reproduction_claim_authorized": false,
+    "purpose": "fail-closed native-route feasibility gate for RT-BarnesHut author semantics",
+    "same_semantics_author_contract_required": true,
+    "v2_v3_v4_author_speed_table_authorized": false
+  },
+  "contract_version": "rtdl.rt_barneshut.author_contract.v1",
+  "existing_2d_aggregate_tree_symbols": {
+    "rtdl_optix_destroy_aggregate_tree_fused_weighted_vector_sum_2d": true,
+    "rtdl_optix_prepare_aggregate_tree_fused_weighted_vector_sum_2d": true,
+    "rtdl_optix_run_aggregate_tree_fused_weighted_vector_sum_2d": true
+  },
+  "goal": "Goal4762",
+  "inspected_files": [
+    "src\\native\\optix\\rtdl_optix_prelude.h",
+    "src\\native\\optix\\rtdl_optix_api.cpp",
+    "src\\rtdsl\\optix_runtime.py",
+    "src\\rtdsl\\aggregate_tree_reference.py",
+    "src\\rtdsl\\rt_barneshut_author_contract.py"
+  ],
+  "missing_native_author_symbols": [
+    "rtdl_optix_prepare_rt_barneshut_author_3d",
+    "rtdl_optix_run_rt_barneshut_author_3d",
+    "rtdl_optix_destroy_rt_barneshut_author_3d"
+  ],
+  "next_implementation_steps": [
+    "Add the three native OptiX ABI symbols listed in required_native_author_symbols.",
+    "Bind 3D x/y/z/mass/id device columns and author-compatible tree metadata to the native ABI.",
+    "Implement the RT-core traversal/force kernel against the Goal4760 checksum oracle on 4096 and 8192 rows first.",
+    "Only after checksum parity, scale to 32768 then 1M author-format points and compare with the author binary.",
+    "Keep this route out of generic V4 operator geomean until an external reviewer accepts the paper-reproduction claim."
+  ],
+  "required_dataflow": [
+    "author_format_input_loader_or_device_column_ingest",
+    "3d_float32_position_columns_x_y_z",
+    "float32_mass_column_with_author_csv_scaling_when_applicable",
+    "author_z_order_or_equivalent_tree_order",
+    "bucket_size_32_leaf_contract",
+    "3d_tree_or_bvh_nodes_with_child_or_rope_resume_metadata",
+    "theta_0_5_author_opening_rule",
+    "author_force_law_checksum_parity",
+    "phase_seconds_preprocessing_rt_force_execution_wall"
+  ],
+  "required_native_author_symbols": [
+    "rtdl_optix_prepare_rt_barneshut_author_3d",
+    "rtdl_optix_run_rt_barneshut_author_3d",
+    "rtdl_optix_destroy_rt_barneshut_author_3d"
+  ],
+  "reusable_assets": [
+    "Goal4760 author-format loader and checksum CPU oracle",
+    "Goal4761 external author RT-core reference route",
+    "existing 2D aggregate-tree fused weighted-vector-sum runner for non-author 2D workflow",
+    "native OptiX/Driver API loading pattern in src/rtdsl/optix_runtime.py"
+  ],
+  "route_version": "rtdl.v4.rt_barneshut.native_author_route.feasibility.v1",
+  "source_root": ".",
+  "status": "blocked_missing_native_3d_author_semantics_rt_core_route",
+  "status_summary": "native route unavailable; existing 2D aggregate-tree route is not author-equivalent"
+}

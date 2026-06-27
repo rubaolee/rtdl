@@ -39,6 +39,18 @@ def main() -> int:
                 "candidate_operator_count": len(candidate_catalog),
                 "formal_release_authorized": boundary["formal_release_authorized"],
                 "authorized_release_label": boundary["authorized_release_label"],
+                "bounded_operator_surface_available": boundary["bounded_operator_surface_available"],
+                "app_level_high_performance_authorized": boundary["app_level_high_performance_authorized"],
+                "current_app_level_decision_label": boundary["current_app_level_decision_label"],
+                "v4_goal4756_decision_label": boundary["v4_goal4756_decision_label"],
+                "complete_rt_core_app_matrix_available": boundary["complete_rt_core_app_matrix_available"],
+                "complete_rt_core_app_matrix_app_count": boundary["complete_rt_core_app_matrix_app_count"],
+                "complete_rt_core_app_matrix_row_count": boundary["complete_rt_core_app_matrix_row_count"],
+                "goal4756_hot_path_regression_count": boundary["goal4756_hot_path_regression_count"],
+                "goal4756_material_hot_path_candidate_apps": list(
+                    boundary["goal4756_material_hot_path_candidate_apps"]
+                ),
+                "goal4756_v4_over_v2_14_hot_geomean": boundary["goal4756_v4_over_v2_14_hot_geomean"],
                 "tier2_plan_status": tier2_plan.status,
                 "tier2_plan_surface": tier2_plan.api_surface,
                 "aabb_plan_status": aabb_plan.status,
@@ -46,6 +58,12 @@ def main() -> int:
                 "complex_callback_status": complex_callback_plan.status,
                 "release_claim_authorized": boundary["release_claim_authorized"],
                 "broad_v4_speedup_claim_authorized": boundary["broad_v4_speedup_claim_authorized"],
+                "broad_v4_over_v2_14_speedup_claim_authorized": boundary[
+                    "broad_v4_over_v2_14_speedup_claim_authorized"
+                ],
+                "all_historical_benchmark_apps_faster_claim_authorized": boundary[
+                    "all_historical_benchmark_apps_faster_claim_authorized"
+                ],
                 "whole_app_speedup_claim_authorized": boundary["whole_app_speedup_claim_authorized"],
                 "true_zero_copy_authorized": boundary["true_zero_copy_authorized"],
                 "tier3_callback_claim_authorized": boundary["tier3_callback_claim_authorized"],

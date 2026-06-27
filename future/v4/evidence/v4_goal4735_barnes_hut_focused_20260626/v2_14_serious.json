@@ -1,0 +1,120 @@
+{
+  "app": "barnes_hut_force_app",
+  "body_count": 32768,
+  "capacity": {
+    "frontier_row_capacity": 22937600
+  },
+  "checksum": {
+    "force_x": -4733.575645891911,
+    "force_y": 46717.65234663441
+  },
+  "claim_flags": {
+    "device_column_contract": false,
+    "frontier_rows_materialized_on_host": true,
+    "host_frontier_materialization_in_hot_path": true,
+    "partner_migration_counts_as_speed": false,
+    "same_logical_frontier_contract": true
+  },
+  "frontier_summary": {
+    "contract": "generic_aggregate_frontier_collect_2d_v1",
+    "frontier_row_count": 12006704,
+    "frontier_rows_materialized_on_host": true,
+    "native_symbol": "rtdl_optix_collect_aggregate_frontier_2d"
+  },
+  "hot_repeats": [
+    {
+      "aggregate_contribution_row_count": 3473415.0,
+      "exact_contribution_row_count": 8533289.0,
+      "frontier_collect_seconds": 29.629063114523888,
+      "frontier_row_count": 12006704.0,
+      "host_numba_vector_wall_seconds": 4.1405209712684155,
+      "hot_seconds": 33.7695840857923,
+      "repeat_index": 0.0,
+      "wall_seconds": 33.7695840857923
+    },
+    {
+      "aggregate_contribution_row_count": 3473415.0,
+      "exact_contribution_row_count": 8533289.0,
+      "frontier_collect_seconds": 26.563609834760427,
+      "frontier_row_count": 12006704.0,
+      "host_numba_vector_wall_seconds": 4.214488387107849,
+      "hot_seconds": 30.778098221868277,
+      "repeat_index": 1.0,
+      "wall_seconds": 30.778098221868277
+    },
+    {
+      "aggregate_contribution_row_count": 3473415.0,
+      "exact_contribution_row_count": 8533289.0,
+      "frontier_collect_seconds": 27.793888989835978,
+      "frontier_row_count": 12006704.0,
+      "host_numba_vector_wall_seconds": 4.11714880168438,
+      "hot_seconds": 31.911037791520357,
+      "repeat_index": 2.0,
+      "wall_seconds": 31.911037791520357
+    },
+    {
+      "aggregate_contribution_row_count": 3473415.0,
+      "exact_contribution_row_count": 8533289.0,
+      "frontier_collect_seconds": 26.692754615098238,
+      "frontier_row_count": 12006704.0,
+      "host_numba_vector_wall_seconds": 4.202535204589367,
+      "hot_seconds": 30.895289819687605,
+      "repeat_index": 3.0,
+      "wall_seconds": 30.895289819687605
+    },
+    {
+      "aggregate_contribution_row_count": 3473415.0,
+      "exact_contribution_row_count": 8533289.0,
+      "frontier_collect_seconds": 27.386208679527044,
+      "frontier_row_count": 12006704.0,
+      "host_numba_vector_wall_seconds": 4.1366380006074905,
+      "hot_seconds": 31.522846680134535,
+      "repeat_index": 4.0,
+      "wall_seconds": 31.522846680134535
+    },
+    {
+      "aggregate_contribution_row_count": 3473415.0,
+      "exact_contribution_row_count": 8533289.0,
+      "frontier_collect_seconds": 27.370308324694633,
+      "frontier_row_count": 12006704.0,
+      "host_numba_vector_wall_seconds": 4.30947370454669,
+      "hot_seconds": 31.679782029241323,
+      "repeat_index": 5.0,
+      "wall_seconds": 31.679782029241323
+    },
+    {
+      "aggregate_contribution_row_count": 3473415.0,
+      "exact_contribution_row_count": 8533289.0,
+      "frontier_collect_seconds": 27.46657609567046,
+      "frontier_row_count": 12006704.0,
+      "host_numba_vector_wall_seconds": 4.1130517944693565,
+      "hot_seconds": 31.579627890139818,
+      "repeat_index": 6.0,
+      "wall_seconds": 31.579627890139818
+    }
+  ],
+  "medians": {
+    "frontier_collect_seconds": 27.386208679527044,
+    "host_numba_vector_wall_seconds": 4.1405209712684155,
+    "hot_seconds": 31.579627890139818,
+    "wall_seconds": 31.579627890139818
+  },
+  "partner": "numba_cpu",
+  "route": "v2_14_optix_host_frontier_numba_cpu_continuation",
+  "schema": "rtdl.v4.goal4676.aggregate_frontier_focused_pod_benchmark.v1",
+  "theta": 0.5,
+  "tree_summary": {
+    "bucket_size": 32,
+    "leaf_node_count": 2260,
+    "max_depth": 6,
+    "max_leaf_member_count": 32,
+    "morton_bits": 16,
+    "source_count": 32768,
+    "tree_node_count": 3013
+  },
+  "validation": {
+    "reason": "user_skip_validation",
+    "skipped": true
+  },
+  "version": "v2_14"
+}

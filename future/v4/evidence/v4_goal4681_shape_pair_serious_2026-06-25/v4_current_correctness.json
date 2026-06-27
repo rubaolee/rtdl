@@ -1,0 +1,104 @@
+{
+  "app": "spatial_rayjoin",
+  "claim_flags": {
+    "app_identity_kernel": false,
+    "host_row_stream_materialization_in_hot_path": false,
+    "partner_migration_counts_as_speed": false,
+    "same_primitive_contract": true,
+    "v4_frontdoor_wrapper": true
+  },
+  "dataset": "/root/rtdl_v4_candidate_pod/future/v4/evidence/v4_goal4681_shape_pair_serious_20260625_021946/datasets/goal4681_correctness_left_grid32.cdb + /root/rtdl_v4_candidate_pod/future/v4/evidence/v4_goal4681_shape_pair_serious_20260625_021946/datasets/goal4681_correctness_right_grid32.cdb",
+  "hot_repeats": [
+    {
+      "active_count": 3969.0,
+      "hot_seconds": 0.0003115162253379822,
+      "repeat_index": 0.0,
+      "wall_seconds": 0.0006226561963558197
+    }
+  ],
+  "medians": {
+    "hot_seconds": 0.0003115162253379822,
+    "wall_seconds": 0.0006226561963558197
+  },
+  "phases_sec": {
+    "active_count_hot_seconds": 0.0003115162253379822,
+    "active_count_wall_seconds": 0.0006226561963558197,
+    "prepare_executor_seconds": 0.0003111399710178375,
+    "prepare_left_set_seconds": 0.007079713046550751,
+    "prepare_right_scene_seconds": 1.4130920618772507,
+    "repeat": 1,
+    "warmup": 0
+  },
+  "route": "v4_shape_pair_relation_active_count_wrapper",
+  "row_count": 3969,
+  "schema": "rtdl.v4.goal4681.shape_pair_relation_focused_pod_benchmark.v1",
+  "summary": {
+    "active_seed_count": 3969
+  },
+  "v4_wrapper_metadata": {
+    "active_count": 3969,
+    "app_specific_native_kernel_authorized": false,
+    "automatic_partner_selection_authorized": false,
+    "backend": "optix",
+    "broad_v4_speedup_claim_authorized": false,
+    "candidate_surface": false,
+    "continuation_class": "relation_topology_active_count",
+    "device_resident_query_stream_required": true,
+    "executor_metadata": {
+      "left_count": 1024,
+      "native_prepare_symbol": "rtdl_optix_prepare_shape_pair_relation_active_device_prepared_left_executor",
+      "native_run_symbol": "rtdl_optix_run_shape_pair_relation_active_device_prepared_left_executor",
+      "prepared_left_owner_closed": false,
+      "prepared_relation_owner_closed": false,
+      "release_authorized": false,
+      "reusable_native_executor": true,
+      "right_count": 1024,
+      "row_stream_materialized": false,
+      "schema": "rtdl.optix.shape_pair_relation_active_count_prepared_left_executor.v1",
+      "true_zero_copy_claim_authorized": false
+    },
+    "generic_primitive": "SHAPE_PAIR_RELATION_ACTIVE_COUNT_2D_PREPARED_LEFT_EXECUTOR",
+    "goal4680_static_gate_passed": true,
+    "goal4681_pod_measured": false,
+    "host_materialization_in_hot_path": false,
+    "measured_v4_operator_surface": false,
+    "measured_v4_release_surface": false,
+    "native_destroy_symbol": "rtdl_optix_destroy_shape_pair_relation_active_device_prepared_left_executor",
+    "native_prepare_symbol": "rtdl_optix_prepare_shape_pair_relation_active_device_prepared_left_executor",
+    "native_run_symbol": "rtdl_optix_run_shape_pair_relation_active_device_prepared_left_executor",
+    "partner_migration_counts_as_speed": false,
+    "phase_timings": {
+      "active_count": 3969,
+      "active_scan": 3.4224e-05,
+      "containment": 0.0,
+      "flag_download": 5.0499e-05,
+      "left_prepare": 0.0,
+      "left_upload": 0.0,
+      "mode": "active_count_device_continuation_prepared_left_executor",
+      "pair_count": 1048576,
+      "traversal": 8.0585e-05
+    },
+    "pod_benchmark_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "raw_optix_callback_claim_authorized": false,
+    "release_claim_authorized": false,
+    "row_stream_materialized_in_hot_path": false,
+    "rt_core_speedup_claim_authorized": false,
+    "runtime_executed": true,
+    "same_primitive_speed_credit_requires_material_improvement": true,
+    "small_host_outputs_allowed": [
+      "active_count",
+      "phase_timings",
+      "executor_metadata"
+    ],
+    "status": "goal4680_local_static_gate_not_pod_measured",
+    "tier3_callback_claim_authorized": false,
+    "true_zero_copy_authorized": false,
+    "v2_14_denominator": "strongest V2.14 prepared shape-pair active-count route, including prepared-left executor/device-continuation mode when available",
+    "v2_14_same_primitive_existed": true,
+    "v4_api_surface": "v4_shape_pair_relation_active_count_2d_prepared_left_executor",
+    "whole_app_speedup_claim_authorized": false
+  },
+  "version": "v4_current",
+  "workload": "overlay_active_count_probe_only"
+}

@@ -1,0 +1,120 @@
+{
+  "changed_apps": {
+    "hausdorff_xhd": {
+      "blocker_or_gap": "Official V4 Hausdorff route exists through generic point-group nearest-witness plus Torch global argmax, but 1M exactness requires coordinate-normalized chunking and the result is a correctness repair, not a broad speed claim.",
+      "claim_class": "official_route_correctness_boundary_not_formal_speed_win",
+      "full_app_route_bound": true,
+      "mapped_v4_operators": [
+        "v4_point_group_nearest_witness_2d_device_arrays",
+        "v4_fixed_radius_count_threshold_2d_device_arrays"
+      ],
+      "next_protocol_action": "Freeze as official V4 route with coordinate-normalized correctness boundary; keep out of formal speed-row claims until protocol is updated with that denominator.",
+      "route_class": "v4_fused_operator_addressable",
+      "route_status": "official_v4_route_with_coordinate_normalized_correctness_boundary"
+    },
+    "rtnn": {
+      "blocker_or_gap": "RTNN ranked fixed-radius/top-k V4 candidate exists and validates, but Goal4660/4661 POD evidence shows hot-path parity at serious scales, so it does not move the app-level bar.",
+      "claim_class": "candidate_route_present_but_does_not_move_app_level_bar",
+      "full_app_route_bound": false,
+      "mapped_v4_operators": [
+        "v4_point_group_nearest_witness_2d_device_arrays",
+        "v4_fixed_radius_ranked_summary_3d_prepared_runner"
+      ],
+      "next_protocol_action": "Freeze as candidate route present but performance-failed; do not count RTNN as formal high-performance V4 evidence.",
+      "route_class": "requires_new_generic_operator",
+      "route_status": "candidate_ranked_summary_present_but_app_bar_not_moved"
+    }
+  },
+  "claim_boundary": {
+    "broad_v4_speedup_claim_authorized": false,
+    "formal_high_performance_v4_authorized": false,
+    "full_all_app_rerun_triggered": false,
+    "posthoc_reclassification_of_goal4652_history": false,
+    "release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "date": "2026-06-25",
+  "protocol_summary_after_sync": {
+    "all_rows_have_pre_frozen_bars": true,
+    "app_count": 10,
+    "app_order": [
+      "rt_dbscan",
+      "raydb_style",
+      "triangle_counting",
+      "librts_spatial_index",
+      "hausdorff_xhd",
+      "robot_collision",
+      "contact_manifold",
+      "rtnn",
+      "spatial_rayjoin",
+      "barnes_hut"
+    ],
+    "app_specific_native_kernel_authorized": false,
+    "broad_v4_speedup_claim_authorized": false,
+    "by_protocol_row_type": {
+      "deferred_excluded_with_reason": 1,
+      "full_app_v4_speed_row_candidate": 4,
+      "no_v4_route_blocker": 1,
+      "partial_operator_control_not_app_claim": 4
+    },
+    "full_app_v4_speed_row_count": 4,
+    "no_naive_whole_suite_geomean_trigger": true,
+    "partial_control_count": 4,
+    "pod_spend_authorized_by_this_goal": false,
+    "posthoc_app_exclusion_forbidden": true,
+    "release_claim_authorized": false,
+    "silent_v2_v3_fallback_authorized": false,
+    "source_inputs": [
+      "future/v4/evidence/v4_goal4652_app_route_binding_matrix_2026-06-25.json",
+      "future/v4/evidence/v4_goal4639_release_scorecard_pod_gate_2026-06-25/summary.json",
+      "scripts/phoenix_v3_serious_paired_v2x_runner.sh"
+    ],
+    "status": "goal4653_full_app_level_protocol_frozen_not_run",
+    "visible_blocker_or_deferred_count": 2,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "purpose": "Update current V4 app-route truth after Goal4659 Hausdorff and Goal4660/4661 RTNN evidence without rewriting the frozen Goal4652 history file.",
+  "status": "goal4662_app_route_binding_after_hausdorff_rtnn_evidence",
+  "summary": {
+    "app_count": 10,
+    "app_order": [
+      "rt_dbscan",
+      "raydb_style",
+      "triangle_counting",
+      "librts_spatial_index",
+      "hausdorff_xhd",
+      "robot_collision",
+      "contact_manifold",
+      "rtnn",
+      "spatial_rayjoin",
+      "barnes_hut"
+    ],
+    "app_specific_native_kernel_authorized": false,
+    "broad_v4_speedup_claim_authorized": false,
+    "by_route_class": {
+      "backend_bound_parity_control": 0,
+      "deferred_excluded_with_reason": 1,
+      "no_v4_app_route_blocker": 1,
+      "partner_migration_or_parity": 0,
+      "requires_cupy_promotion": 0,
+      "requires_fixed_numba_continuation": 0,
+      "requires_new_generic_operator": 3,
+      "v4_fused_operator_addressable": 5
+    },
+    "full_app_route_bound_count": 5,
+    "no_silent_fallback_to_v2_or_v3": true,
+    "partial_or_blocked_count": 5,
+    "release_claim_authorized": false,
+    "route_actually_uses_v4_code_count": 8,
+    "status": "goal4652_app_route_binding_or_blocker_declaration",
+    "whole_app_speedup_claim_authorized": false
+  },
+  "verification": {
+    "broader_v4_gate_command": "py -3 -m unittest tests.v4_goal4660_ranked_summary_candidate_test tests.v4_goal4659_hausdorff_official_route_test tests.v4_goal4652_app_route_binding_test tests.v4_goal4653_app_level_protocol_test tests.v4_goal4655_app_benchmark_analysis_test tests.v4_goal4651_partner_catalog_promotion_test tests.v4_operator_catalog_test tests.v4_frontdoor_test tests.v4_scope_gate_test tests.v4_catalog_regression_gate_test tests.v4_goal4632_release_decision_test tests.v4_goal4643_publication_decision_test tests.v4_goal4644_post_release_guardrails_test",
+    "broader_v4_gate_result": "73 tests OK",
+    "focused_test_command": "py -3 -m unittest tests.v4_goal4660_ranked_summary_candidate_test tests.v4_goal4652_app_route_binding_test tests.v4_goal4653_app_level_protocol_test tests.v4_operator_catalog_test tests.v4_frontdoor_test tests.v4_scope_gate_test",
+    "focused_test_result": "43 tests OK",
+    "test_command": "py -3 -m unittest tests.v4_goal4660_ranked_summary_candidate_test tests.v4_goal4652_app_route_binding_test tests.v4_goal4653_app_level_protocol_test tests.v4_operator_catalog_test tests.v4_frontdoor_test tests.v4_scope_gate_test",
+    "test_result": "43 tests OK"
+  }
+}

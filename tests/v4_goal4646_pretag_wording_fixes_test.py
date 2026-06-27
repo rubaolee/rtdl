@@ -33,8 +33,9 @@ class V4Goal4646PreTagWordingFixesTest(unittest.TestCase):
         publication = validate_v4_goal4643_publication_decision(ROOT)
 
         self.assertEqual(V4_AUTHORIZED_RELEASE_LABEL, publication["authorized_release_label"])
-        self.assertIn("bounded operator release", publication["authorized_release_label"])
-        self.assertIn("brute-force partner/CPU baselines", publication["authorized_release_label"])
+        self.assertIn("Python eDSL/operator-pushdown release candidate", publication["authorized_release_label"])
+        self.assertIn("complete 10-app NVIDIA RT-core", publication["authorized_release_label"])
+        self.assertIn("broad all-benchmark speedup remains unauthorized", publication["authorized_release_label"])
         self.assertNotEqual(OLD_UNQUALIFIED_LABEL, publication["authorized_release_label"])
 
     def test_public_docs_do_not_use_old_unqualified_label(self) -> None:

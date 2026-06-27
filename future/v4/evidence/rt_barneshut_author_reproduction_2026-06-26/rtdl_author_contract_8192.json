@@ -1,0 +1,89 @@
+{
+  "author_binary_run": {
+    "cmd": [
+      "/root/external/RT-BarnesHut-author/build/rtbarneshut",
+      "treelogy",
+      "/root/rtdl_author_rtbarneshut_runs_20260626/trimmed_treelogy_8192.txt"
+    ],
+    "parsed": {
+      "execution_seconds": 1.42578,
+      "point_count": 8192,
+      "preprocessing_seconds": 1.4136,
+      "rt_force_seconds": 0.00542
+    },
+    "returncode": 0,
+    "stderr_tail": [],
+    "stdout_tail": [
+      "\u001b[0;34m#owl.sample(main): Starting run!",
+      "\u001b[0mRead 8192.000000",
+      "Read 1.000000",
+      "Read 0.025000",
+      "Read 0.050000",
+      "Read 0.500000",
+      "Number of points: 8192",
+      "#owl.sample(main): Bulding Non Bucket Tree with # Of Bodies = 8192",
+      "\u001b[0m--------------------------------------------------------------",
+      "Preprocessing Time: 1.4136 seconds.",
+      "RT Cores Force Calculations time: 0.00542 seconds.",
+      "Execution time: 1.42578 seconds.",
+      "--------------------------------------------------------------",
+      "\u001b[0;34m#owl.sample(main): destroying devicegroup ...",
+      "\u001b[0m"
+    ],
+    "wall_seconds": 5.172650653868914
+  },
+  "author_commit": "2a3c60da0bbbd00ff1777cb57ec2089cb0029cf7",
+  "claim_boundary": {
+    "authors_code_speedup_claim_authorized": false,
+    "paper_semantics_contract_gate": true,
+    "public_release_claim_authorized": false,
+    "rt_core_performance_route": false,
+    "v2_v3_v4_speedup_claim_authorized": false
+  },
+  "contract_version": "rtdl.rt_barneshut.author_contract.v1",
+  "fairness": {
+    "performance_comparison_authorized": false,
+    "reason": "The RTDL row here is a CPU semantic oracle. It validates the paper contract and author input path; it is not yet the V4 RT-core performance route.",
+    "same_author_file_parser_contract": true,
+    "same_author_tree_and_force_cpu_contract": true,
+    "same_input_as_author_binary": true
+  },
+  "file_type": "treelogy",
+  "limit": 8192,
+  "rtdl_cpu_author_semantics_oracle": {
+    "bucket_size": 32,
+    "claim_boundary": {
+      "authors_code_comparison_speedup_authorized": false,
+      "paper_semantics_contract": true,
+      "performance_route": false,
+      "public_speedup_claim_authorized": false,
+      "purpose": "same-input CPU oracle for RT-BarnesHut route validation",
+      "rt_core_route": false
+    },
+    "contract_version": "rtdl.rt_barneshut.author_contract.v1",
+    "file_type": "treelogy",
+    "first_forces": [
+      2.191457258603687e-09,
+      2.8105972424194945e-09,
+      2.953969475385324e-09,
+      2.2846003007999468e-09,
+      2.1189275886987502e-09,
+      2.1254010470040284e-09,
+      2.556617008704323e-09,
+      2.5422750609542773e-09
+    ],
+    "force_abs_checksum": 3.6015691175709494e-05,
+    "force_checksum": 3.6015691175709494e-05,
+    "force_max": 2.7639495509852427e-08,
+    "force_min": 1.6366404569078856e-09,
+    "grid_size": 2.0,
+    "leaf_count": 256,
+    "node_count": 353,
+    "point_count": 8192,
+    "source_path": "/root/rtdl_author_rtbarneshut_runs_20260626/trimmed_treelogy_8192.txt",
+    "theta": 0.5
+  },
+  "source_dataset": "/root/external/RT-BarnesHut-author/treelogy_synthetic_1M.txt",
+  "status": "rt_barneshut_author_contract_probe_complete",
+  "trimmed_dataset": "/root/rtdl_author_rtbarneshut_runs_20260626/trimmed_treelogy_8192.txt"
+}

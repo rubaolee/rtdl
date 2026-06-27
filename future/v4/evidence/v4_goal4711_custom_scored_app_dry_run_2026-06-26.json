@@ -1,0 +1,268 @@
+{
+  "app_level_speed_claim_authorized": false,
+  "arbitrary_callback_authorized": false,
+  "classification": null,
+  "denominator_discovery": null,
+  "dry_run": true,
+  "formal_high_performance_authorized": false,
+  "parameters": {
+    "regimes": [
+      "dense_hits",
+      "sparse_hits",
+      "no_hit_empty_reduction"
+    ],
+    "repeat": 7,
+    "scales": [
+      262144,
+      524288
+    ],
+    "warmups": 2
+  },
+  "protocol": {
+    "app": "ray_triangle_custom_scored_accumulation",
+    "app_level_speed_claim_authorized": false,
+    "baselines": [
+      {
+        "name": "v2_14_strongest_available",
+        "required_discovery": "discover strongest semantically comparable route before timing: built-in fixed reduction if exactly equivalent, materialized hit IDs plus partner/device reduction, then host scalar fallback only if no stronger route exists",
+        "root": "/root/rtdl_v2_14_tag"
+      },
+      {
+        "name": "v3_0_2_strongest_available",
+        "required_discovery": "discover strongest semantically comparable current route before timing under the same callback semantics",
+        "root": "/root/rtdl_v3_0_2_tag"
+      },
+      {
+        "name": "v4_specialized_callback_candidate",
+        "required_discovery": "use the Goal4700-4706 specialized direct-device callback path",
+        "root": "/root/rtdl_v4_candidate_pod"
+      },
+      {
+        "name": "v4_tier2_builtin_control",
+        "required_discovery": "weighted_sum only; context/control row, not primary app-level win evidence",
+        "root": "/root/rtdl_v4_candidate_pod"
+      }
+    ],
+    "control_callbacks": [
+      "weighted_sum"
+    ],
+    "kill_conditions": [
+      "any correctness failure kills the goal",
+      "if V2/V3 denominator discovery is missing or only a known-slow fallback is used without proof no stronger route exists, the result is invalid",
+      "if the win comes only from weighted_sum or operator-only rows, the app-level claim is invalid",
+      "if primary custom-callback geomean over V3.0.2 is <1.20x, do not continue toward high-performance wording",
+      "if any primary callback regresses below 0.95x versus V3.0.2, stop and diagnose before more POD spend"
+    ],
+    "next_goal": "Goal4711 ray-triangle custom scored accumulation focused POD benchmark",
+    "pass_conditions": [
+      "correctness must pass for every callback x regime x scale x implementation row",
+      "primary custom-callback geomean speedup over strongest V2.14 baseline must be >=1.50x",
+      "primary custom-callback geomean speedup over strongest V3.0.2 baseline must be >=1.20x",
+      "every primary callback must be >=1.10x over the strongest V3.0.2 baseline in both dense and sparse regimes",
+      "weighted_sum is a control row only and cannot by itself support the app-level claim",
+      "all denominators and fallback selections must be recorded before reading V4 timing"
+    ],
+    "performance_claim_authorized": false,
+    "pod_authorized_for_next_goal": true,
+    "primary_callbacks": [
+      "affine_score",
+      "threshold_score",
+      "minmax_score"
+    ],
+    "regimes": [
+      "dense_hits",
+      "sparse_hits",
+      "no_hit_empty_reduction"
+    ],
+    "release_authorized": false,
+    "scales": [
+      262144,
+      524288
+    ],
+    "status": "goal4710_ray_triangle_custom_scored_app_protocol_frozen_not_run"
+  },
+  "protocol_validation": {
+    "missing_or_invalid": [],
+    "protocol": {
+      "app": "ray_triangle_custom_scored_accumulation",
+      "app_level_speed_claim_authorized": false,
+      "baselines": [
+        {
+          "name": "v2_14_strongest_available",
+          "required_discovery": "discover strongest semantically comparable route before timing: built-in fixed reduction if exactly equivalent, materialized hit IDs plus partner/device reduction, then host scalar fallback only if no stronger route exists",
+          "root": "/root/rtdl_v2_14_tag"
+        },
+        {
+          "name": "v3_0_2_strongest_available",
+          "required_discovery": "discover strongest semantically comparable current route before timing under the same callback semantics",
+          "root": "/root/rtdl_v3_0_2_tag"
+        },
+        {
+          "name": "v4_specialized_callback_candidate",
+          "required_discovery": "use the Goal4700-4706 specialized direct-device callback path",
+          "root": "/root/rtdl_v4_candidate_pod"
+        },
+        {
+          "name": "v4_tier2_builtin_control",
+          "required_discovery": "weighted_sum only; context/control row, not primary app-level win evidence",
+          "root": "/root/rtdl_v4_candidate_pod"
+        }
+      ],
+      "control_callbacks": [
+        "weighted_sum"
+      ],
+      "kill_conditions": [
+        "any correctness failure kills the goal",
+        "if V2/V3 denominator discovery is missing or only a known-slow fallback is used without proof no stronger route exists, the result is invalid",
+        "if the win comes only from weighted_sum or operator-only rows, the app-level claim is invalid",
+        "if primary custom-callback geomean over V3.0.2 is <1.20x, do not continue toward high-performance wording",
+        "if any primary callback regresses below 0.95x versus V3.0.2, stop and diagnose before more POD spend"
+      ],
+      "next_goal": "Goal4711 ray-triangle custom scored accumulation focused POD benchmark",
+      "pass_conditions": [
+        "correctness must pass for every callback x regime x scale x implementation row",
+        "primary custom-callback geomean speedup over strongest V2.14 baseline must be >=1.50x",
+        "primary custom-callback geomean speedup over strongest V3.0.2 baseline must be >=1.20x",
+        "every primary callback must be >=1.10x over the strongest V3.0.2 baseline in both dense and sparse regimes",
+        "weighted_sum is a control row only and cannot by itself support the app-level claim",
+        "all denominators and fallback selections must be recorded before reading V4 timing"
+      ],
+      "performance_claim_authorized": false,
+      "pod_authorized_for_next_goal": true,
+      "primary_callbacks": [
+        "affine_score",
+        "threshold_score",
+        "minmax_score"
+      ],
+      "regimes": [
+        "dense_hits",
+        "sparse_hits",
+        "no_hit_empty_reduction"
+      ],
+      "release_authorized": false,
+      "scales": [
+        262144,
+        524288
+      ],
+      "status": "goal4710_ray_triangle_custom_scored_app_protocol_frozen_not_run"
+    },
+    "status": "passed"
+  },
+  "raw_optix_callback_authorized": false,
+  "release_authorized": false,
+  "result_contract_validation": {
+    "failing_example": {
+      "app_level_speed_claim_authorized": false,
+      "arbitrary_callback_authorized": false,
+      "classification": "fail_focused_app_gate_not_high_performance",
+      "correctness_all_passed": true,
+      "denominator_discovery_complete": true,
+      "denominator_quality": "strong_materialized_device_fallback_after_no_custom_repo_route_found",
+      "formal_high_performance_authorized": false,
+      "min_primary_v3_speedup": 1.01,
+      "next_goal": "Stop custom-scored app as formal high-performance V4 proof; reselect or redesign the runtime lever",
+      "primary_callbacks_min_v3_speedup": [
+        {
+          "min_v3_speedup": 1.01,
+          "passes": false,
+          "protocol_callback": "affine_score"
+        },
+        {
+          "min_v3_speedup": 1.01,
+          "passes": false,
+          "protocol_callback": "minmax_score"
+        },
+        {
+          "min_v3_speedup": 1.01,
+          "passes": false,
+          "protocol_callback": "threshold_score"
+        }
+      ],
+      "primary_geomean_v2_speedup": 1.6,
+      "primary_geomean_v3_speedup": 1.01,
+      "primary_speed_row_count": 12,
+      "raw_optix_callback_authorized": false,
+      "release_authorized": false,
+      "tier3_public_support_authorized": false,
+      "weighted_sum_used_as_claim_evidence": false
+    },
+    "goal_status": "goal4711_ray_triangle_custom_scored_app_focused_result_pending_pod",
+    "missing_or_invalid": [],
+    "passing_example": {
+      "app_level_speed_claim_authorized": false,
+      "arbitrary_callback_authorized": false,
+      "classification": "pass_numeric_gate_pending_external_denominator_review_not_release",
+      "correctness_all_passed": true,
+      "denominator_discovery_complete": true,
+      "denominator_quality": "strong_materialized_device_fallback_after_no_custom_repo_route_found",
+      "formal_high_performance_authorized": false,
+      "min_primary_v3_speedup": 1.3,
+      "next_goal": "Goal4712 external denominator review for custom-scored app and release-hardening decision",
+      "primary_callbacks_min_v3_speedup": [
+        {
+          "min_v3_speedup": 1.3,
+          "passes": true,
+          "protocol_callback": "affine_score"
+        },
+        {
+          "min_v3_speedup": 1.3,
+          "passes": true,
+          "protocol_callback": "minmax_score"
+        },
+        {
+          "min_v3_speedup": 1.3,
+          "passes": true,
+          "protocol_callback": "threshold_score"
+        }
+      ],
+      "primary_geomean_v2_speedup": 1.6,
+      "primary_geomean_v3_speedup": 1.3,
+      "primary_speed_row_count": 12,
+      "raw_optix_callback_authorized": false,
+      "release_authorized": false,
+      "tier3_public_support_authorized": false,
+      "weighted_sum_used_as_claim_evidence": false
+    },
+    "status": "passed",
+    "weighted_control_claim_example": {
+      "app_level_speed_claim_authorized": false,
+      "arbitrary_callback_authorized": false,
+      "classification": "fail_focused_app_gate_not_high_performance",
+      "correctness_all_passed": true,
+      "denominator_discovery_complete": true,
+      "denominator_quality": "strong_materialized_device_fallback_after_no_custom_repo_route_found",
+      "formal_high_performance_authorized": false,
+      "min_primary_v3_speedup": 1.3,
+      "next_goal": "Stop custom-scored app as formal high-performance V4 proof; reselect or redesign the runtime lever",
+      "primary_callbacks_min_v3_speedup": [
+        {
+          "min_v3_speedup": 1.3,
+          "passes": true,
+          "protocol_callback": "affine_score"
+        },
+        {
+          "min_v3_speedup": 1.3,
+          "passes": true,
+          "protocol_callback": "minmax_score"
+        },
+        {
+          "min_v3_speedup": 1.3,
+          "passes": true,
+          "protocol_callback": "threshold_score"
+        }
+      ],
+      "primary_geomean_v2_speedup": 1.6,
+      "primary_geomean_v3_speedup": 1.3,
+      "primary_speed_row_count": 12,
+      "raw_optix_callback_authorized": false,
+      "release_authorized": false,
+      "tier3_public_support_authorized": false,
+      "weighted_sum_used_as_claim_evidence": true
+    }
+  },
+  "rows": [],
+  "schema": "rtdl.v4.goal4711_custom_scored_app_pod.v1",
+  "status": "dry_run_contract_passed",
+  "tier3_public_support_authorized": false,
+  "toolchain": null
+}

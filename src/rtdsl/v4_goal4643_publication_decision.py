@@ -11,8 +11,8 @@ from .v4_scope import validate_v4_0_scope_gate
 from .v4_scope import v4_0_scope_gate
 
 
-V4_GOAL4643_DECISION = "publish_v4_0_0_bounded_operator_release"
-V4_GOAL4643_STATUS = "v4_0_0_published_with_bounded_operator_claims"
+V4_GOAL4643_DECISION = "goal4643_publication_record_superseded_by_goal4720_release_candidate_review_debt"
+V4_GOAL4643_STATUS = "v4_0_0_publication_record_superseded_by_goal4720"
 
 
 def _project_version(pyproject_text: str) -> str:
@@ -33,10 +33,9 @@ def v4_goal4643_publication_decision(root: Path | None = None) -> dict[str, Any]
     pyproject_version = _project_version((repo / "pyproject.toml").read_text(encoding="utf-8"))
     version_file = (repo / "VERSION").read_text(encoding="utf-8").strip()
     required_reviews = (
-        "future/v4/reviews/antigravity_v4_goal4642_final_3ai_release_authorization_review_amended_2026-06-25.md",
-        "future/v4/reviews/antigravity_v4_goal4642_amendment_recheck_2026-06-25.md",
-        "future/v4/reviews/codex_independent_v4_goal4642_final_authorization_review_and_amendment_recheck_2026-06-25.md",
-        "future/v4/reviews/codex_main_v4_goal4642_final_release_owner_authorization_2026-06-25.md",
+        "future/v4/reviews/v4_goal4717_custom_predicate_early_exit_serious_scale_validation_review_debt_2026-06-26.md",
+        "future/v4/reviews/v4_goal4718_release_matrix_after_custom_predicate_review_debt_2026-06-26.md",
+        "future/v4/reviews/v4_goal4719_public_docs_examples_release_candidate_cleanup_review_debt_2026-06-26.md",
     )
     required_docs = (
         "README.md",
@@ -52,8 +51,12 @@ def v4_goal4643_publication_decision(root: Path | None = None) -> dict[str, Any]
         "authorized_release_label": V4_AUTHORIZED_RELEASE_LABEL,
         "version": version_file,
         "pyproject_version": pyproject_version,
-        "release_authorized": True,
-        "formal_release_authorized": True,
+        "release_authorized": False,
+        "formal_release_authorized": False,
+        "bounded_operator_surface_available": front_door["bounded_operator_surface_available"],
+        "app_level_high_performance_authorized": front_door["app_level_high_performance_authorized"],
+        "superseded_by_goal": "Goal4720",
+        "current_decision_label": front_door["current_app_level_decision_label"],
         "front_door_status": front_door["status"],
         "front_door_formal_release_authorized": front_door["formal_release_authorized"],
         "scope_status": scope_gate["status"],
@@ -92,16 +95,20 @@ def validate_v4_goal4643_publication_decision(root: Path | None = None) -> dict[
         raise ValueError("pyproject version must be 4.0.0 for publication")
     if decision["authorized_release_label"] != V4_AUTHORIZED_RELEASE_LABEL:
         raise ValueError("Goal4643 authorized release label drift")
-    if not decision["release_authorized"] or not decision["formal_release_authorized"]:
-        raise ValueError("Goal4643 must authorize the formal V4.0.0 release")
-    if not decision["front_door_formal_release_authorized"]:
-        raise ValueError("V4 front door must expose formal release authorization")
-    if not decision["scope_release_authorized"]:
-        raise ValueError("V4 scope gate must authorize the release scope")
+    if decision["release_authorized"] or decision["formal_release_authorized"]:
+        raise ValueError("Goal4643 current record must not authorize the formal V4.0.0 release")
+    if decision["front_door_formal_release_authorized"]:
+        raise ValueError("V4 front door must not expose formal release authorization")
+    if not decision["bounded_operator_surface_available"]:
+        raise ValueError("Goal4643 current record must preserve bounded operator-surface availability")
+    if decision["app_level_high_performance_authorized"]:
+        raise ValueError("Goal4643 current record must not authorize app-level high performance")
+    if decision["scope_release_authorized"]:
+        raise ValueError("V4 scope gate must not authorize release")
     if decision["scope_validation_status"] != "passed":
         raise ValueError("V4 scope gate must validate")
-    if decision["release_blockers"]:
-        raise ValueError("Goal4643 cannot publish with release blockers")
+    if not decision["release_blockers"]:
+        raise ValueError("Goal4643 current record must carry current release blockers")
     if tuple(decision["required_reviews"]) != tuple(decision["required_reviews_present"]):
         raise ValueError("Goal4643 missing required review records")
     if tuple(decision["required_public_docs"]) != tuple(decision["required_public_docs_present"]):
@@ -116,8 +123,8 @@ def validate_v4_goal4643_publication_decision(root: Path | None = None) -> dict[
         "CuPy performance",
         "C ABI / embedding / non-Python host",
         "app-specific native kernels",
-        "Barnes-Hut covered by V4.0",
-        "Spatial RayJoin covered by V4.0",
+        "Barnes-Hut new V4-over-V3 speedup",
+        "Spatial RayJoin speedup",
         "LibRTS paper reproduction",
     ):
         if claim not in decision["forbidden_claims"]:

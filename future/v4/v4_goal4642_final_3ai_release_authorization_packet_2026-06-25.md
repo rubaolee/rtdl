@@ -227,8 +227,8 @@ them:
 - CuPy performance;
 - C ABI / embedding / non-Python host;
 - app-specific native kernels;
-- Barnes-Hut covered by V4.0;
-- Spatial RayJoin covered by V4.0;
+- Barnes-Hut new V4-over-V3 speedup;
+- Spatial RayJoin speedup;
 - LibRTS paper reproduction.
 
 ## Release Notes

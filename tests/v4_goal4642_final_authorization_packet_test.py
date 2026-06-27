@@ -44,8 +44,8 @@ class V4Goal4642FinalAuthorizationPacketTest(unittest.TestCase):
         for forbidden in packet["forbidden_claims"]:
             self.assertIn(forbidden, text)
         for forbidden in (
-            "Barnes-Hut covered by V4.0",
-            "Spatial RayJoin covered by V4.0",
+            "Barnes-Hut new V4-over-V3 speedup",
+            "Spatial RayJoin speedup",
             "LibRTS paper reproduction",
         ):
             self.assertIn(forbidden, packet["forbidden_claims"])

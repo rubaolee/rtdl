@@ -1,0 +1,37 @@
+{
+  "goal": 4685,
+  "date": "2026-06-25",
+  "status": "goal4685_tier3_wrapper_direct_callable_abi_protocol_gate_no_pod",
+  "protocol_scope": "protocol/local gate only for a future Tier-3 wrapper/direct-callable ABI spike. It upgrades the old blocked bare-PTX probe into a required semantic OptiX module path, but it does not authorize implementation, POD, public support, or release.",
+  "local_protocol_gate_authorized": true,
+  "pod_authorized": false,
+  "implementation_authorized": false,
+  "tier3_public_support_authorized": false,
+  "raw_optix_callback_authorized": false,
+  "release_authorized": false,
+  "public_speedup_claim_authorized": false,
+  "whole_app_speedup_claim_authorized": false,
+  "app_identity_kernel_authorized": false,
+  "required_stages": [
+    "stage0_planner_boundary",
+    "stage1_ptx_generation_reliability",
+    "stage2_semantic_optix_wrapper_or_direct_callable",
+    "stage3_correctness_parity",
+    "stage4_overhead_ceiling"
+  ],
+  "forbidden_paths": [
+    "repeating the old bare Numba helper PTX optixModuleCreate probe as a success path",
+    "raw OptiX callbacks as the user-facing public API",
+    "action-shaped callbacks with shared mutation, dynamic allocation, or variable-length output",
+    "app-identity native kernels",
+    "C ABI / embedding / non-Python-host work",
+    "public Tier-3 callback support wording before all stages pass and external review authorizes it"
+  ],
+  "planner_boundary": {
+    "scalar_numba_device_callback_status": "tier3_spike_only_not_v4_0_release_surface",
+    "action_shaped_callback_status": "rejected_action_shaped_callback_deferred",
+    "tier3_protocol_status": "tier3_protocol_goal4622_spike_only_not_support",
+    "action_protocol_status": "rejected_by_goal4622_action_shape_boundary"
+  },
+  "next_goal": "Goal4686 may implement only a local spike scaffold for the semantic wrapper/direct-callable ABI. POD remains a later gate after local structure and protocol validation."
+}

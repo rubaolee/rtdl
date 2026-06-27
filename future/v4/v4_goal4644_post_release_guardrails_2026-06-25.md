@@ -1,32 +1,32 @@
-# V4 Goal4644 Post-Release Guardrails And Debt Ledger
+# V4 Goal4644 Current Guardrails And Debt Ledger
 
-Status: `v4_0_0_post_release_guardrails_active`
+Status: `v4_bounded_operator_guardrails_active_goal4655_corrected`
 
 Decision:
 
-`activate_post_release_guardrails_and_debt_ledger`
+`activate_current_v4_bounded_operator_guardrails_after_goal4655`
 
 ## Purpose
 
-Goal4644 closes the immediate V4.0.0 publication chain by making the release
-guardrails explicit and machine-checkable after publication. The release is
-already authorized by Goal4642 and published by Goal4643; this goal prevents
-that publication from drifting into broader claims.
+Goal4644 is now the current guardrail record after Goal4654/Goal4655 corrected
+the public truth. The bounded operator surface remains available, but formal
+app-level high-performance V4 release wording is not authorized.
 
-Goal4644 does not reopen V4.0 scope. New partner support, Tier-3 callbacks,
+Goal4644 does not reopen V4 scope. New partner support, Tier-3 callbacks,
 CuPy performance, C ABI/embedding, non-Python host support, or additional
-operator families must be V4.x work unless a later reviewed goal explicitly
-changes that scope.
+operator families require new reviewed goals unless a later reviewed goal
+explicitly changes that scope.
 
 ## Current Release State
 
-- Release label:
-  `RTDL v4.0.0 bounded operator release: 8 generic RT-core operators faster than brute-force partner/CPU baselines`
+- Current label:
+  `RTDL V4 bounded operator surface: 8 generic RT-core operators measured against stated partner/CPU baselines; app-level high-performance release is not authorized by Goal4654/Goal4655`
 - Publication commit:
   `c58642326f57f6326274b448caa8d75b3c7ef9de`
-- Measured V4.0 operator surfaces: `8`
-- Candidate V4.0 release surfaces: `0`
-- Deferred/excluded V4.0 benchmark families: `2`
+- Measured V4 operator surfaces: `8`
+- Candidate V4 release surfaces: `0`
+- Goal4655 decision label:
+  `bounded_operator_v4_only__app_level_high_performance_not_supported`
 
 ## Guardrails
 
@@ -41,17 +41,19 @@ The following claims remain forbidden after publication:
 - CuPy performance;
 - C ABI / embedding / non-Python host;
 - app-specific native kernels;
-- Barnes-Hut covered by V4.0;
-- Spatial RayJoin covered by V4.0;
+- Barnes-Hut new V4-over-V3 speedup;
+- Spatial RayJoin speedup;
 - LibRTS paper reproduction.
 
 The important distinction is:
 
 - allowed: bounded V4.0.0 release wording for the documented measured generic
-  RT-core operator surfaces beating stated brute-force partner/CPU baselines
-  on the frozen Goal4639 scorecard;
+  RT-core operator surfaces measured against stated partner/CPU baselines on
+  the frozen Goal4639 scorecard;
 - forbidden: expanding that wording into whole-application, all-benchmark,
   near-handwritten-OptiX, callback, partner, or host-language claims.
+- forbidden: formal app-level high-performance V4 release wording until a
+  later app-level release gate passes.
 
 ## Required Records
 
@@ -98,8 +100,8 @@ Current post-release review status:
 - The next Antigravity or Claude review is due after another 6 hours of
   continued V4 work or at the next major decision.
 
-This optional debt does not weaken the release label. It only records the next
-review maintenance obligation.
+This optional debt does not weaken the current bounded operator-surface label.
+It only records the next review maintenance obligation.
 
 ## Tests
 
@@ -123,7 +125,8 @@ The tests assert:
 
 Was I stupid?
 
-No. This goal is a guardrail after publication, not a new release expansion.
+No. This goal is now a guardrail after Goal4655 corrected the release boundary,
+not a new release expansion.
 
 If yes, what actions would have made the decision stupid?
 
@@ -133,18 +136,21 @@ publication.
 
 Was there another possibility that avoids getting stuck on a bad path?
 
-Yes. The alternative is to keep V4.0 fixed and require every new capability to
-enter through a new reviewed V4.x goal.
+Yes. The alternative is to keep the bounded operator surface fixed and require
+every formal high-performance claim to enter through a new reviewed app-level
+gate.
 
 Can I start a different path that actually solves the problem?
 
-Yes. The real path is to keep V4.0 bounded and use new goals for future
-operator coverage, partner validation, Tier-3 callback work, or embedding.
+Yes. The real path is to keep current public wording bounded and use new goals
+for app-level V4 performance engineering, partner validation, Tier-3 callback
+work, or embedding.
 
 ## Non-Authorization
 
-Goal4644 does not authorize broad speedup claims, whole-application speedup
-claims, all-benchmark speedup claims, public true-zero-copy claims, Tier-3
-callback support, raw OptiX callback API support, CuPy performance claims, C ABI,
-embedding, non-Python host bindings, app-specific native kernels, Barnes-Hut
-coverage, Spatial RayJoin coverage, or LibRTS paper reproduction.
+Goal4644 does not authorize formal app-level high-performance V4 release
+wording, broad speedup claims, whole-application speedup claims, all-benchmark
+speedup claims, public true-zero-copy claims, Tier-3 callback support, raw OptiX
+callback API support, CuPy performance claims, C ABI, embedding, non-Python host
+bindings, app-specific native kernels, Barnes-Hut coverage, Spatial RayJoin
+coverage, or LibRTS paper reproduction.

@@ -1,0 +1,114 @@
+{
+  "bars": {
+    "correctness_required": true,
+    "prepare_no_regression_floor_where_comparable": 0.8,
+    "v4_vs_v3_hot_speedup_min": 1.2
+  },
+  "claim_boundary": {
+    "app_specific_native_kernel_authorized": false,
+    "broad_v4_speedup_claim_authorized": false,
+    "formal_high_performance_v4_authorized": false,
+    "public_true_zero_copy_claim_authorized": false,
+    "release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "date": "2026-06-25",
+  "decision": {
+    "label": "hausdorff_focused_gate_passes_after_generic_adaptive_argmax__not_release_yet",
+    "may_count_as_formal_high_performance_v4_candidate_row": true,
+    "may_trigger_full_all_app_rerun_request": true,
+    "next_engineering_need": "Refresh the app-level protocol with the changed Hausdorff route and request/record external review debt before any all-app rerun. Do not treat this single app row as final V4 authorization.",
+    "reason": "Both frozen focused rows now pass correctness, V4/V3 hot >= 1.20x, and prepare >= 0.80x after a generic CuPy global-argmax optimization. This authorizes requesting the next full app-level protocol step, not a release or broad V4 claim.",
+    "release_authorized": false
+  },
+  "large_scale_correctness_probe": {
+    "consumer_reduction_strategy": "cupy_rawkernel_multiblock_reduce",
+    "coordinate_normalization_span": 1000000.0,
+    "copies": 262144,
+    "directed_summary_sec": 34.217822179198265,
+    "hot_device_sec": 0.006920769810676575,
+    "passes_correctness": true,
+    "points_per_side": 1048576,
+    "raw_ref": "future/v4/evidence/v4_goal4667_hausdorff_multiblock_argmax_20260625/v4_official_cupy_multiblock_copies262144_normspan1000000.json",
+    "scene_prepare_sec": 10.97800761461258,
+    "speed_claim_authorized": false
+  },
+  "optimization": {
+    "app_specific_native_kernel_authorized": false,
+    "bar_or_protocol_changed": false,
+    "generic_runtime_surface": "global_argmax_u32_f64_partner_columns",
+    "name": "adaptive_cupy_global_argmax_u32_f64",
+    "strategy": "single-block RawKernel for rows <= 131072, multi-block RawKernel otherwise; caller-owned final synchronization via synchronize=False"
+  },
+  "rows": [
+    {
+      "copies": 16384,
+      "initial_raw_ref": "future/v4/evidence/v4_goal4667_hausdorff_multiblock_argmax_20260625/v4_official_cupy_multiblock_copies16384.json",
+      "initial_run_hot_sec": 0.009609319269657135,
+      "passes_correctness": true,
+      "passes_hot_bar_1_20x": true,
+      "passes_prepare_floor_0_80x": true,
+      "points_per_side": 65536,
+      "raw_ref": "future/v4/evidence/v4_goal4667_hausdorff_multiblock_argmax_20260625/v4_official_cupy_multiblock_copies16384_rerun_warmup5.json",
+      "speedup_directed_summary_over_v3_cupy": 1.0775839757911945,
+      "speedup_hot_over_v3_cupy": 1.3388001086768593,
+      "speedup_prepare_over_v3_cupy": 0.9421734158432425,
+      "v3_cupy_baseline": {
+        "directed_summary_sec": 3.1806681975722313,
+        "hot_device_sec": 0.003028884530067444,
+        "scene_prepare_sec": 1.4373558796942234
+      },
+      "v4_adaptive_argmax": {
+        "consumer_adapter": "global_argmax_u32_f64_partner_columns",
+        "consumer_partner": "cupy",
+        "consumer_reduction_strategy": "cupy_rawkernel_single_block_reduce",
+        "directed_summary_sec": 2.951666198670864,
+        "hot_device_sec": 0.0022623874247074127,
+        "materialize_sec": 0.0002259090542793274,
+        "partner_synchronized_before_return": false,
+        "rawkernel_row_threshold": 131072,
+        "scene_prepare_sec": 1.5255746506154537
+      }
+    },
+    {
+      "copies": 65536,
+      "initial_raw_ref": "future/v4/evidence/v4_goal4667_hausdorff_multiblock_argmax_20260625/v4_official_cupy_multiblock_copies65536.json",
+      "initial_run_hot_sec": 0.003690917044878006,
+      "passes_correctness": true,
+      "passes_hot_bar_1_20x": true,
+      "passes_prepare_floor_0_80x": true,
+      "points_per_side": 262144,
+      "raw_ref": "future/v4/evidence/v4_goal4667_hausdorff_multiblock_argmax_20260625/v4_official_cupy_multiblock_copies65536_rerun_warmup5.json",
+      "speedup_directed_summary_over_v3_cupy": 1.1785935266165606,
+      "speedup_hot_over_v3_cupy": 1.8318674443546998,
+      "speedup_prepare_over_v3_cupy": 1.2009358705904305,
+      "v3_cupy_baseline": {
+        "directed_summary_sec": 7.756507556885481,
+        "hot_device_sec": 0.0041230954229831696,
+        "scene_prepare_sec": 4.091465026140213
+      },
+      "v4_adaptive_argmax": {
+        "consumer_adapter": "global_argmax_u32_f64_partner_columns",
+        "consumer_partner": "cupy",
+        "consumer_reduction_strategy": "cupy_rawkernel_multiblock_reduce",
+        "directed_summary_sec": 6.581155743449926,
+        "hot_device_sec": 0.002250760793685913,
+        "materialize_sec": 0.0002154521644115448,
+        "partner_synchronized_before_return": false,
+        "rawkernel_row_threshold": 131072,
+        "scene_prepare_sec": 3.4068971760571003
+      }
+    }
+  ],
+  "same_hardware": {
+    "driver": "570.195.03",
+    "gpu": "NVIDIA RTX A5000",
+    "pod": "root@194.68.245.170:22089"
+  },
+  "schema": "rtdl.v4.goal4667.hausdorff_adaptive_argmax.v1",
+  "source_goals": {
+    "baseline": "future/v4/evidence/v4_goal4665_hausdorff_focused_20260625/summary.json",
+    "official_cupy_route": "future/v4/evidence/v4_goal4666_hausdorff_cupy_official_20260625/summary.json"
+  },
+  "status": "goal4667_hausdorff_adaptive_argmax_focused_gate_passed_no_release_authorization"
+}

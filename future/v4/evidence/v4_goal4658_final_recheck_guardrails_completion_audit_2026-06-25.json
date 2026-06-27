@@ -1,0 +1,1212 @@
+{
+  "app_level_analysis_decision": "bounded_operator_v4_only__app_level_high_performance_not_supported",
+  "checklist": {
+    "AM1_no_formal_claim_relies_on_partner_migration_or_parity": {
+      "evidence": [
+        "Goal4647 partner_migration_counts_as_v4_speed_win=false",
+        "Goal4655 contributing_app_count=0",
+        "partner/historical rows do not contribute to formal high performance"
+      ],
+      "status": "pass"
+    },
+    "AM2_class_aware_bars_not_naive_whole_suite_geomean": {
+      "evidence": [
+        "Goal4653 separates full candidates, partial controls, no-route blockers, and deferred rows",
+        "Goal4663 decision=protocol_refreshed__no_full_all_app_rerun_triggered"
+      ],
+      "status": "pass"
+    },
+    "AM3_routes_bound_or_blocked_before_protocol": {
+      "evidence": [
+        "Goal4652/4662 route matrix precedes protocol refresh",
+        "validate_v4_goal4653_protocol checks route/operator drift"
+      ],
+      "status": "pass"
+    },
+    "AM4_numeric_thresholds_frozen_before_runs": {
+      "evidence": [
+        "Goal4648 default_bars representative_speedup_floor=1.2 partner_parity_floor=0.98",
+        "Goal4653 full speed bars V4/V2.14=1.20 V4/V3=1.05 no_regression=0.98"
+      ],
+      "status": "pass"
+    },
+    "AM5_no_process_only_truth_freeze_as_goal4647": {
+      "evidence": [
+        "Goal4647 artifact is partner inventory with boundary ledger, not standalone truth freeze"
+      ],
+      "status": "pass"
+    },
+    "AM6_expected_outcome_stated_upfront": {
+      "evidence": [
+        "Goal4647 expected_outcome=bounded_operator_v4_only_plus_partner_unification_unless_later_app_gate_proves_more",
+        "Revised chain states bounded operator V4 + partner unification expectation"
+      ],
+      "status": "pass"
+    },
+    "correctness_parity_for_promoted_rows": {
+      "evidence": [
+        "Goal4654 rows all_returncode_zero and correctness parity/skipped oracle true",
+        "Goal4659 Hausdorff exact 1M requires coordinate-normalized boundary",
+        "Goal4660 RTNN candidate validates but performance fails"
+      ],
+      "status": "pass_with_boundaries"
+    },
+    "cupy_claims_surface_specific_only": {
+      "evidence": [
+        "front door cupy_performance_claim_authorized=false",
+        "CuPy blanket performance wording blocked"
+      ],
+      "status": "pass"
+    },
+    "final_3ai_before_broad_release_or_tag": {
+      "evidence": [
+        "Goal4657 review debt: Claude weekly limit and Antigravity empty output",
+        "release/tag remains unauthorized"
+      ],
+      "status": "blocked_debt_no_release"
+    },
+    "no_app_identity_kernels_added_as_v4_claim": {
+      "evidence": [
+        "Barnes-Hut remains deferred; app-specific native kernels unauthorized"
+      ],
+      "status": "pass"
+    },
+    "no_benchmark_app_silently_skipped": {
+      "evidence": [
+        "Goal4662 app_count=10",
+        "all ten apps are visible as full, partial/control, no-route, or deferred"
+      ],
+      "status": "pass"
+    },
+    "numba_claims_fixed_only_not_arbitrary_callbacks": {
+      "evidence": [
+        "Goal4650 fixed continuation certification only",
+        "Tier-3 callback remains spike-only"
+      ],
+      "status": "pass"
+    },
+    "ratios_have_denominator_and_scale": {
+      "evidence": [
+        "Current docs list baseline/denominator/scale per measured surface",
+        "Goal4660 summary records closest old-route denominator, not exact same-runner"
+      ],
+      "status": "pass"
+    }
+  },
+  "claim_boundary": {
+    "app_specific_native_kernel_authorized": false,
+    "arbitrary_numba_callback_claim_authorized": false,
+    "bounded_operator_surface_available": true,
+    "broad_v4_speedup_claim_authorized": false,
+    "c_abi_embedding_non_python_host_claim_authorized": false,
+    "cupy_blanket_performance_claim_authorized": false,
+    "formal_high_performance_v4_authorized": false,
+    "release_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "date": "2026-06-25",
+  "decision_label": "bounded_operator_v4_only__formal_high_performance_not_supported",
+  "front_door": {
+    "app_level_high_performance_authorized": false,
+    "app_specific_native_kernel_authorized": false,
+    "authorized_release_label": "RTDL V4 bounded operator surface: 8 generic RT-core operators measured against stated partner/CPU baselines; app-level high-performance release is not authorized by Goal4654/Goal4655",
+    "bounded_operator_surface_available": true,
+    "broad_v4_speedup_claim_authorized": false,
+    "candidate_surfaces": [
+      "v4_fixed_radius_ranked_summary_3d_prepared_runner"
+    ],
+    "certified_partner_surface_count": 2,
+    "certified_partner_surfaces": [
+      "prepare_grouped_vector_sum_2d_partner_columns_session(partner='cupy')",
+      "v4_fixed_radius_graph_component_union_3d_device_arrays"
+    ],
+    "certified_partners": [
+      "cupy",
+      "numba"
+    ],
+    "cupy_performance_claim_authorized": false,
+    "embedding_c_abi_claim_authorized": false,
+    "formal_release_authorized": false,
+    "goal4655_decision_label": "bounded_operator_v4_only__app_level_high_performance_not_supported",
+    "measured_partner": "mixed_torch_numba_and_rtdl_native",
+    "measured_partners": [
+      "numba",
+      "rtdl_native",
+      "torch"
+    ],
+    "measured_surfaces": [
+      "v4_fixed_radius_count_threshold_2d_device_arrays",
+      "v4_closest_hit_grouped_argmin_3d_device_arrays",
+      "v4_ray_triangle_any_hit_flags_2d_device_arrays",
+      "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays",
+      "v4_point_group_nearest_witness_2d_device_arrays",
+      "v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays",
+      "v4_fixed_radius_graph_component_union_3d_device_arrays",
+      "v4_aabb_index_query_2d_all_ops_count_prepared_runner"
+    ],
+    "non_python_host_binding_claim_authorized": false,
+    "operator_catalog_status": "v4_0_0_formal_release_catalog",
+    "raw_optix_callback_claim_authorized": false,
+    "release_claim_authorized": false,
+    "status": "v4_bounded_operator_front_door_goal4655_corrected",
+    "tier3_callback_claim_authorized": false,
+    "true_zero_copy_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "goal4663_decision": "protocol_refreshed__no_full_all_app_rerun_triggered",
+  "goal_chain_scope": "V4 Goals4647-4658 revised chain plus current Goal4659-4663 route-truth updates",
+  "next_engineering_direction": "Continue app-level performance engineering; do not rerun all-app or tag V4 until a new route materially moves a serious app-level bar and external review authorizes wording.",
+  "post_release_guardrails": {
+    "all_benchmark_speedup_claim_authorized": false,
+    "app_level_high_performance_authorized": false,
+    "app_specific_native_kernel_authorized": false,
+    "bounded_operator_surface_available": true,
+    "broad_v4_speedup_claim_authorized": false,
+    "c_abi_or_embedding_claim_authorized": false,
+    "candidate_surfaces_count": 0,
+    "cupy_performance_claim_authorized": false,
+    "decision": "activate_current_v4_bounded_operator_guardrails_after_goal4655",
+    "external_review_status": "claude_accept_goal4644_post_release_guardrails_no_amendments",
+    "forbidden_claims": [
+      "broad V4 speedup",
+      "whole-application speedup",
+      "all-benchmark speedup",
+      "public true-zero-copy",
+      "Tier-3 callback support",
+      "raw OptiX callback support",
+      "CuPy performance",
+      "C ABI / embedding / non-Python host",
+      "app-specific native kernels",
+      "Barnes-Hut covered by V4.0",
+      "Spatial RayJoin covered by V4.0",
+      "LibRTS paper reproduction"
+    ],
+    "formal_release_authorized": false,
+    "goal4655_decision_label": "bounded_operator_v4_only__app_level_high_performance_not_supported",
+    "guardrail_tests": [
+      "tests.v4_goal4644_post_release_guardrails_test",
+      "tests.v4_goal4643_publication_decision_test",
+      "tests.v4_frontdoor_test",
+      "tests.v4_scope_gate_test",
+      "tests.v4_catalog_regression_gate_test"
+    ],
+    "measured_surfaces_count": 8,
+    "next_scope": [
+      "V4.x may extend partner coverage, Tier-3 callbacks, CuPy, C ABI, or non-Python hosts only through new goals.",
+      "V4.0.0 remains limited to documented measured generic RT-core operator surfaces."
+    ],
+    "non_python_host_claim_authorized": false,
+    "publication_commit": "c58642326f57f6326274b448caa8d75b3c7ef9de",
+    "raw_optix_callback_claim_authorized": false,
+    "release_authorized": false,
+    "release_label": "RTDL V4 bounded operator surface: 8 generic RT-core operators measured against stated partner/CPU baselines; app-level high-performance release is not authorized by Goal4654/Goal4655",
+    "release_scope_reopened": false,
+    "required_decision_records": [
+      "future/v4/v4_goal4642_final_3ai_release_authorization_packet_2026-06-25.md",
+      "future/v4/v4_goal4643_publication_decision_2026-06-25.md",
+      "future/v4/v4_goal4644_post_release_guardrails_2026-06-25.md",
+      "future/v4/reviews/call_for_review_v4_goal4644_post_release_guardrails_2026-06-25.md",
+      "future/v4/reviews/claude_v4_goal4644_post_release_guardrails_review_2026-06-25.md",
+      "future/v4/v4_goal4633_4644_completion_audit_2026-06-25.md",
+      "tests/v4_goal4644_post_release_guardrails_test.py"
+    ],
+    "required_public_docs": [
+      "README.md",
+      "docs/current_v4_status.md",
+      "docs/learn/performance_wording.md",
+      "future/v4/README.md",
+      "future/v4/tier2_operator_catalog.md",
+      "future/v4/v4_0_scope_gate.md"
+    ],
+    "review_cadence_hours": 6,
+    "review_debt": [
+      "Antigravity review is optional debt for Goal4644 because Claude completed the current 6h external review seat.",
+      "The next Antigravity or Claude review is due after another 6h of continued V4 work or at the next major decision.",
+      "No review debt expands or weakens the bounded V4.0.0 release label."
+    ],
+    "status": "v4_bounded_operator_guardrails_active_goal4655_corrected",
+    "three_ai_consensus_cadence_hours": 24,
+    "tier3_callback_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "publication_decision": {
+    "all_benchmark_speedup_claim_authorized": false,
+    "app_level_high_performance_authorized": false,
+    "app_specific_native_kernel_authorized": false,
+    "authorized_release_label": "RTDL V4 bounded operator surface: 8 generic RT-core operators measured against stated partner/CPU baselines; app-level high-performance release is not authorized by Goal4654/Goal4655",
+    "bounded_operator_surface_available": true,
+    "broad_v4_speedup_claim_authorized": false,
+    "c_abi_or_embedding_claim_authorized": false,
+    "candidate_surfaces_count": 0,
+    "cupy_performance_claim_authorized": false,
+    "current_decision_label": "bounded_operator_v4_only__app_level_high_performance_not_supported",
+    "decision": "goal4643_publication_record_superseded_by_goal4655_app_level_no_go",
+    "forbidden_claims": [
+      "broad V4 speedup",
+      "whole-application speedup",
+      "all-benchmark speedup",
+      "public true-zero-copy",
+      "Tier-3 callback support",
+      "raw OptiX callback support",
+      "CuPy performance",
+      "C ABI / embedding / non-Python host",
+      "app-specific native kernels",
+      "Barnes-Hut covered by V4.0",
+      "Spatial RayJoin covered by V4.0",
+      "LibRTS paper reproduction"
+    ],
+    "formal_release_authorized": false,
+    "front_door_formal_release_authorized": false,
+    "front_door_status": "v4_bounded_operator_front_door_goal4655_corrected",
+    "measured_surfaces_count": 8,
+    "non_python_host_claim_authorized": false,
+    "pyproject_version": "4.0.0",
+    "raw_optix_callback_claim_authorized": false,
+    "release_authorized": false,
+    "release_blockers": [
+      "Goal4654/Goal4655 app-level evidence does not support formal app-level high-performance V4 release"
+    ],
+    "release_decision": "preserve_bounded_operator_surface_do_not_authorize_formal_app_level_release",
+    "required_public_docs": [
+      "README.md",
+      "docs/current_v4_status.md",
+      "future/v4/README.md",
+      "future/v4/tier2_operator_catalog.md",
+      "future/v4/v4_0_scope_gate.md"
+    ],
+    "required_public_docs_present": [
+      "README.md",
+      "docs/current_v4_status.md",
+      "future/v4/README.md",
+      "future/v4/tier2_operator_catalog.md",
+      "future/v4/v4_0_scope_gate.md"
+    ],
+    "required_reviews": [
+      "future/v4/reviews/antigravity_v4_goal4642_final_3ai_release_authorization_review_amended_2026-06-25.md",
+      "future/v4/reviews/antigravity_v4_goal4642_amendment_recheck_2026-06-25.md",
+      "future/v4/reviews/codex_independent_v4_goal4642_final_authorization_review_and_amendment_recheck_2026-06-25.md",
+      "future/v4/reviews/codex_main_v4_goal4642_final_release_owner_authorization_2026-06-25.md"
+    ],
+    "required_reviews_present": [
+      "future/v4/reviews/antigravity_v4_goal4642_final_3ai_release_authorization_review_amended_2026-06-25.md",
+      "future/v4/reviews/antigravity_v4_goal4642_amendment_recheck_2026-06-25.md",
+      "future/v4/reviews/codex_independent_v4_goal4642_final_authorization_review_and_amendment_recheck_2026-06-25.md",
+      "future/v4/reviews/codex_main_v4_goal4642_final_release_owner_authorization_2026-06-25.md"
+    ],
+    "scope_limitations": [
+      "tier3_deferred_not_supported",
+      "whole_app_speedup_wording_not_authorized",
+      "cupy_performance_unmeasured",
+      "no_true_zero_copy_public_claim_authorized",
+      "no_c_abi_embedding_or_non_python_host_scope"
+    ],
+    "scope_release_authorized": false,
+    "scope_status": "v4_bounded_operator_scope_goal4655_corrected",
+    "scope_validation_status": "passed",
+    "status": "v4_0_0_publication_record_superseded_by_goal4655",
+    "superseded_by_goal": "Goal4655",
+    "tier3_callback_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "version": "v4.0.0",
+    "whole_app_speedup_claim_authorized": false
+  },
+  "release_decision": {
+    "aabb_frontdoor_decision": {
+      "all_benchmark_speedup_claim_authorized": false,
+      "api_surface": "v4_aabb_index_query_2d_all_ops_count_prepared_runner",
+      "app_specific_native_kernel_authorized": false,
+      "authors_code_comparison_claim_authorized": false,
+      "broad_v4_speedup_claim_authorized": false,
+      "c_abi_or_embedding_claim_authorized": false,
+      "coverage_promoted_to_strong": true,
+      "cupy_performance_claim_authorized": false,
+      "decision": "promote_aabb_index_to_measured_v4_frontdoor_catalog_not_release",
+      "evidence": [
+        "future/v4/evidence/v4_goal4636c_aabb_index_all_ops_pod_gate_2026-06-25/m30_all_ops.json",
+        "future/v4/v4_goal4636c_aabb_index_pod_gate_decision_2026-06-25.md"
+      ],
+      "frontdoor_catalog_surface_added": true,
+      "generic_primitive": "AABB_INDEX_QUERY_2D",
+      "librts_paper_reproduction_claim_authorized": false,
+      "measured_partner": "rtdl_native",
+      "non_python_host_claim_authorized": false,
+      "operator": "aabb_index_query_2d_all_ops_count",
+      "raw_optix_callback_claim_authorized": false,
+      "release_authorized": false,
+      "release_candidate_authorized": false,
+      "same_contract_gate": {
+        "contract_family_match": true,
+        "counts_match": true,
+        "embree_over_optix_query_median": 264.8223871986397,
+        "embree_over_optix_query_total": 115.00724056766381,
+        "floor": 10.0
+      },
+      "status": "goal4637_aabb_frontdoor_catalog_promoted_not_release",
+      "target_coverage_row": "librts_spatial_index",
+      "tier3_callback_claim_authorized": false,
+      "true_zero_copy_claim_authorized": false,
+      "validated_backends": [
+        "optix",
+        "embree"
+      ],
+      "whole_app_speedup_claim_authorized": false
+    },
+    "aabb_index_decision": {
+      "all_benchmark_speedup_claim_authorized": false,
+      "api_surface": "v4_aabb_index_query_2d_all_ops_count_prepared_runner",
+      "app_specific_native_kernel_authorized": false,
+      "broad_v4_speedup_claim_authorized": false,
+      "c_abi_or_embedding_claim_authorized": false,
+      "continuation_class": "aabb_index_all_ops_count",
+      "coverage_effect": {
+        "from": "deferred_or_uncovered_v4_0",
+        "reason": "The large same-RT-hardware AABB all-ops gate passed materially, but the public front-door/catalog surface is intentionally a separate goal before the coverage table can be promoted.",
+        "row": "librts_spatial_index",
+        "to": "pending_strong_measured_operator_coverage_after_frontdoor_catalog_goal"
+      },
+      "cupy_performance_claim_authorized": false,
+      "decision": "accept_aabb_index_pod_gate_require_frontdoor_catalog_goal",
+      "evidence": [
+        "future/v4/evidence/v4_goal4636c_aabb_index_all_ops_pod_gate_2026-06-25/m30_all_ops.json",
+        "future/v4/reviews/goal4636c_aabb_index_target_protocol_review_record_2026-06-25.md"
+      ],
+      "frontdoor_catalog_goal_required": true,
+      "generic_primitive": "AABB_INDEX_QUERY_2D",
+      "measured_catalog_promotion_authorized": false,
+      "next_action": "Start the front-door/catalog goal for v4_aabb_index_query_2d_all_ops_count_prepared_runner; then refresh coverage and release blockers from a measured public surface.",
+      "non_python_host_claim_authorized": false,
+      "operator": "aabb_index_query_2d_all_ops_count",
+      "raw_optix_callback_claim_authorized": false,
+      "release_authorized": false,
+      "release_candidate_authorized": false,
+      "same_contract_gate": {
+        "accepted_contract_family": "generic_prepared_aabb_index_query_2d",
+        "accepted_contracts": [
+          "generic_prepared_aabb_index_query_2d",
+          "generic_prepared_aabb_index_query_2d_count",
+          "generic_prepared_aabb_index_query_2d_optix_prepared_query_set_count"
+        ],
+        "all_counts_match_cross_backend": true,
+        "all_same_contract_family": true,
+        "box_count": 1000000,
+        "correctness_oracle": "cross_backend_count_match_same_fixture",
+        "cpu_reference_skipped_acknowledged": true,
+        "dataset": "uniform",
+        "embree_over_optix_query_median": 264.8223871986397,
+        "embree_over_optix_query_median_floor": 10.0,
+        "embree_over_optix_query_total": 115.00724056766381,
+        "embree_over_optix_query_total_floor": 10.0,
+        "embree_query_median_sec": 0.5198514759540558,
+        "embree_query_total_sec": 130.3403503447771,
+        "embree_repeat": 240,
+        "operation": "all",
+        "optix_query_median_sec": 0.001963019371032715,
+        "optix_query_total_sec": 1.1333229951560497,
+        "optix_repeat": 240,
+        "query_count": 1000,
+        "status": "pass"
+      },
+      "scope": "rtdl_native_prepared_runner",
+      "status": "goal4636c_aabb_index_pod_gate_passed_pending_frontdoor_catalog_not_release",
+      "target_coverage_row": "librts_spatial_index",
+      "tier3_callback_claim_authorized": false,
+      "true_zero_copy_claim_authorized": false,
+      "whole_app_speedup_claim_authorized": false
+    },
+    "all_benchmark_speedup_claim_authorized": false,
+    "allowed_claims": [
+      "RTDL V4 exposes a bounded operator surface for 8 generic RT-core operators.",
+      "The documented operators are measured against stated partner/CPU baselines on the frozen Goal4639 scorecard.",
+      "Goal4654/Goal4655 app-level evidence does not support formal app-level high-performance V4 release wording.",
+      "Torch CUDA measured Tier-2 device-array surfaces exist for the documented measured operators.",
+      "The frozen Goal4639 scorecard passed for 8 measured surfaces and 4 strong benchmark families.",
+      "The public V4 documentation and example entrypoints have been cleaned for Goal4640.",
+      "The Goal4641 clean-tree reproducibility gate passed from a committed-only clean worktree.",
+      "Fixed-radius, grouped-i64, weighted-sum, component-union, and AABB have bounded operator-level performance evidence.",
+      "A minimum push-down recognizer routes known generic operators and fails closed otherwise.",
+      "Tier-3 is spike-only/deferred and not V4.0 support."
+    ],
+    "app_level_high_performance_authorized": false,
+    "app_specific_native_kernel_authorized": false,
+    "authorized_release_label": "RTDL V4 bounded operator surface: 8 generic RT-core operators measured against stated partner/CPU baselines; app-level high-performance release is not authorized by Goal4654/Goal4655",
+    "bounded_operator_surface_available": true,
+    "broad_speedup_claim_authorized": false,
+    "c_abi_or_embedding_claim_authorized": false,
+    "candidate_surfaces_count": 0,
+    "catalog_regression_supporting_evidence": {
+      "aabb_example_backend": "optix",
+      "aabb_example_correctness_passed": true,
+      "aabb_example_status": "measured",
+      "all_benchmark_speedup_claim_authorized": false,
+      "app_specific_native_kernel_authorized": false,
+      "broad_v4_speedup_claim_authorized": false,
+      "c_abi_or_embedding_claim_authorized": false,
+      "cupy_performance_claim_authorized": false,
+      "decision": "accept_catalog_regression_gpu_gate_after_aabb_not_release",
+      "evidence": [
+        "future/v4/evidence/v4_goal4638_catalog_regression_gpu_after_aabb_2026-06-25.json",
+        "future/v4/evidence/v4_goal4638_catalog_regression_gpu_after_aabb_2026-06-25.md"
+      ],
+      "example_count": 11,
+      "failed_examples": [],
+      "mode": "gpu",
+      "non_python_host_claim_authorized": false,
+      "quickstart_candidate_surface_count": 0,
+      "quickstart_measured_partners": [
+        "numba",
+        "rtdl_native",
+        "torch"
+      ],
+      "quickstart_measured_surface_count": 8,
+      "raw_optix_callback_claim_authorized": false,
+      "release_authorized": false,
+      "release_candidate_authorized": false,
+      "status": "goal4638_catalog_regression_gpu_after_aabb_passed_not_release",
+      "tier3_callback_claim_authorized": false,
+      "true_zero_copy_claim_authorized": false,
+      "weighted_sum_example_status": "measured",
+      "whole_app_speedup_claim_authorized": false
+    },
+    "clean_tree_reproducibility_decision": {
+      "broad_v4_speedup_claim_authorized": false,
+      "catalog_dry_run_passed": true,
+      "clean_status_after": true,
+      "clean_status_before": true,
+      "clean_worktree_path": "C:/Users/Lestat/Desktop/work/rtdl_v4_goal4641_clean_tree_check",
+      "cupy_performance_claim_authorized": false,
+      "decision": "complete_clean_tree_reproducibility_gate_pending_external_review",
+      "evidence": [
+        "future/v4/v4_goal4641_clean_tree_reproducibility_gate_2026-06-25.md",
+        "tests/v4_goal4641_clean_tree_reproducibility_test.py"
+      ],
+      "final_revalidation_commit": "884aeda8084d4c84bae8ec858f4b7436461ee783",
+      "full_v4_tests_passed": true,
+      "non_python_host_claim_authorized": false,
+      "quickstart_passed": true,
+      "release_authorized": false,
+      "release_candidate_authorized": false,
+      "review_status": "pending_claude_and_antigravity_review_or_debt",
+      "tests": [
+        "clean worktree: py -3 -m unittest tests.v4*_test.py",
+        "clean worktree: py -3 scripts/v4_catalog_regression_gate.py --mode dry-run --copies 16 --ray-count 16",
+        "clean worktree: py -3 examples/v4/v4_frontdoor_quickstart.py",
+        "tests.v4_goal4641_clean_tree_reproducibility_test"
+      ],
+      "tier3_callback_claim_authorized": false,
+      "true_zero_copy_claim_authorized": false,
+      "validated_commit": "35d04dbf0b1734e7c1fc323c366a046de51edee8",
+      "whole_app_speedup_claim_authorized": false
+    },
+    "component_union_promotion": {
+      "all_benchmark_speedup_claim_authorized": false,
+      "api_surface": "v4_fixed_radius_graph_component_union_3d_device_arrays",
+      "app_specific_native_kernel_authorized": false,
+      "broad_v4_speedup_claim_authorized": false,
+      "c_abi_or_embedding_claim_authorized": false,
+      "continuation_class": "component_union",
+      "coverage_effect": {
+        "from": "partial_measured_operator_coverage",
+        "reason": "RTDBSCAN now maps to measured generic count-threshold plus measured generic component-union operator coverage without adding a DBSCAN-native kernel.",
+        "row": "rt_dbscan",
+        "to": "strong_measured_operator_coverage"
+      },
+      "cupy_performance_claim_authorized": false,
+      "decision": "promote_component_union_to_measured_tier2_operator_coverage_not_release",
+      "declared_unmeasured_partners": [
+        "torch",
+        "cupy"
+      ],
+      "evidence": [
+        "future/v4/evidence/v4_goal4635_component_union_pod_gate_embree_2026-06-25/summary.json",
+        "future/v4/evidence/v4_goal4635_component_union_pod_gate_embree_2026-06-25/README.md",
+        "future/v4/reviews/claude_v4_goal4635_component_union_target_protocol_review_2026-06-25.md"
+      ],
+      "generic_primitive": "FIXED_RADIUS_GRAPH_COMPONENT_UNION_3D",
+      "measured_partners": [
+        "numba"
+      ],
+      "non_python_host_claim_authorized": false,
+      "operator": "fixed_radius_graph_component_union_3d",
+      "raw_optix_callback_claim_authorized": false,
+      "release_authorized": false,
+      "release_candidate_authorized": false,
+      "same_contract_gate": {
+        "all_variant_canonical_component_signatures_match": true,
+        "component_labels_contract": true,
+        "component_signature_shortcut_blocked": true,
+        "failed_checks": [],
+        "legacy_no_regression": true,
+        "runner_vs_embree_hot_floor": 1.2,
+        "runner_vs_embree_hot_speedup": 1.3930791165731065,
+        "runner_vs_embree_wall_floor": 1.2,
+        "runner_vs_embree_wall_speedup": 1.6001250028719352,
+        "runner_vs_legacy_hot_speedup": 1.0009063305938157,
+        "runner_vs_legacy_wall_floor": 0.98,
+        "runner_vs_legacy_wall_speedup": 1.2080037787208602,
+        "status": "pass"
+      },
+      "status": "goal4635_component_union_measured_pod_gate_pass_not_release",
+      "target_coverage_row": "rt_dbscan",
+      "tier3_callback_claim_authorized": false,
+      "torch_component_union_claim_authorized": false,
+      "true_zero_copy_claim_authorized": false,
+      "validated_scope": {
+        "dataset": "clustered3d",
+        "driver": "570.195.03",
+        "gpu": "NVIDIA RTX A5000",
+        "numba": "0.65.1",
+        "optix_abi": "8.0",
+        "point_count": 262144,
+        "python": "3.12.3",
+        "repeat": 5,
+        "warmup": 1
+      },
+      "whole_app_speedup_claim_authorized": false
+    },
+    "coverage_summary": {
+      "app_specific_native_kernel_authorized": false,
+      "broad_speedup_claim_authorized": false,
+      "by_status": {
+        "candidate_not_measured_release_coverage": 0,
+        "deferred_or_uncovered_v4_0": 2,
+        "partial_measured_operator_coverage": 4,
+        "strong_measured_operator_coverage": 4
+      },
+      "fixed_radius_wrapper_prerequisite": "external_review_then_productize_fixed_radius_api_wrapper_before_second_primitive",
+      "latest_refresh_goal": "Goal4637_after_aabb_index_frontdoor_catalog",
+      "recommended_goal4628_apps": [
+        "raydb_style"
+      ],
+      "recommended_goal4628_operator": "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays",
+      "release_claim_authorized": false,
+      "row_count": 10,
+      "status": "goal4627_coverage_audit_not_release",
+      "tier3_callback_claim_authorized": false,
+      "true_zero_copy_claim_authorized": false,
+      "whole_app_speedup_claim_authorized": false
+    },
+    "cupy_performance_claim_authorized": false,
+    "decision": "preserve_bounded_operator_surface_do_not_authorize_formal_app_level_release",
+    "development_state_authorized": false,
+    "forbidden_claims": [
+      "broad V4 speedup",
+      "whole-application speedup",
+      "all-benchmark speedup",
+      "public true-zero-copy",
+      "Tier-3 callback support",
+      "raw OptiX callback support",
+      "CuPy performance",
+      "C ABI / embedding / non-Python host",
+      "app-specific native kernels",
+      "Barnes-Hut covered by V4.0",
+      "Spatial RayJoin covered by V4.0",
+      "LibRTS paper reproduction"
+    ],
+    "formal_release_authorized": false,
+    "formal_scorecard_freeze": {
+      "aggregation": {
+        "compute_deferred_excluded_count": true,
+        "compute_measured_surface_pass_fail": true,
+        "compute_partial_control_pass_fail_blocked": true,
+        "compute_strong_row_pass_fail": true,
+        "geomean_must_exclude_partial_and_deferred": true
+      },
+      "all_benchmark_speedup_claim_authorized": false,
+      "allowed_if_passes": [
+        "measured generic RT-core operator surfaces beat their stated brute-force partner/CPU baselines for documented measured scopes",
+        "bounded by partner/hardware/surface-specific evidence and per-surface denominator metadata"
+      ],
+      "app_specific_native_kernel_authorized": false,
+      "benchmark_families": {
+        "deferred_excluded": [
+          "spatial_rayjoin",
+          "barnes_hut"
+        ],
+        "partial_operator_control": [
+          "hausdorff_xhd",
+          "robot_collision",
+          "contact_manifold",
+          "rtnn"
+        ],
+        "release_in_scope_strong_operator": [
+          "rt_dbscan",
+          "raydb_style",
+          "triangle_counting",
+          "librts_spatial_index"
+        ]
+      },
+      "broad_v4_speedup_claim_authorized": false,
+      "c_abi_or_embedding_claim_authorized": false,
+      "candidate_surfaces": [],
+      "cupy_performance_claim_authorized": false,
+      "decision": "freeze_v4_release_scorecard_before_goal4639_pod_run",
+      "forbidden_wording": [
+        "all benchmark apps are faster",
+        "whole-application speedup",
+        "broad V4 speedup",
+        "public true zero copy",
+        "CuPy performance",
+        "Tier-3 callbacks are supported",
+        "C ABI / embedding / non-Python host support",
+        "LibRTS paper reproduced",
+        "Barnes-Hut / Spatial RayJoin covered by V4.0"
+      ],
+      "hardware_scope": {
+        "driver_family": "570.x",
+        "gpu_class": "NVIDIA RTX A5000 / Ampere",
+        "measured_scopes": [
+          "torch",
+          "numba",
+          "rtdl_native"
+        ],
+        "validated_optix_abi": "8.0"
+      },
+      "measured_surfaces": [
+        "v4_fixed_radius_count_threshold_2d_device_arrays",
+        "v4_closest_hit_grouped_argmin_3d_device_arrays",
+        "v4_ray_triangle_any_hit_flags_2d_device_arrays",
+        "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays",
+        "v4_point_group_nearest_witness_2d_device_arrays",
+        "v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays",
+        "v4_fixed_radius_graph_component_union_3d_device_arrays",
+        "v4_aabb_index_query_2d_all_ops_count_prepared_runner"
+      ],
+      "non_python_host_claim_authorized": false,
+      "performance_floors": [
+        {
+          "canonical_source": "future/v4/evidence/v4_section8_device_array_frontdoor_result_2026-06-24.json",
+          "floor_kind": "fixed_radius_product_boundary_gate",
+          "minimum_floor": ">=2 serious sizes with device_array_to_route_d_rows_gap <=100.0 and gap_reduction_over_prior_summary >=10.0; correctness must pass at all frozen sizes",
+          "observed_anchor": "gap reduction 1022.93x, 3841.66x, 9699.17x; device-array-to-Route-D-row gaps 0.442x, 0.202x, 0.118x",
+          "surface": "v4_fixed_radius_count_threshold_2d_device_arrays"
+        },
+        {
+          "canonical_source": "future/v4/evidence/v4_section8_closest_hit_grouped_argmin_device_frontdoor_result_2026-06-24.json",
+          "floor_kind": "same_contract_host_materialization_boundary",
+          "minimum_floor": "device front door must beat legacy host-materialize route at all 3 frozen ray counts; ratio >=1.0x; correctness must pass",
+          "observed_anchor": "1.542x, 1.575x, 1.729x; summary median ratio 1.575x",
+          "surface": "v4_closest_hit_grouped_argmin_3d_device_arrays"
+        },
+        {
+          "canonical_source": "future/v4/evidence/v4_section8_any_hit_flags_device_frontdoor_result_2026-06-24.json",
+          "floor_kind": "fixture_reference_plus_large_correctness",
+          "minimum_floor": "8192-row torch fixture reference ratio >=1.0x; all 3 frozen ray counts must pass correctness and keep host_materialization_in_hot_path false",
+          "observed_anchor": "8192-row torch-reference ratio 9.379x; 32768 and 131072 correctness pass with reference intentionally skipped by protocol",
+          "surface": "v4_ray_triangle_any_hit_flags_2d_device_arrays"
+        },
+        {
+          "canonical_source": "future/v4/v4_goal4628_second_tier2_same_contract_gate_2026-06-24.md",
+          "floor_kind": "same_contract_multi_width_grouped_reduction",
+          "minimum_floor": "all 6 frozen rows must pass parity and same-contract ratio >=1.0x",
+          "observed_anchor": "166.546x, 411.867x, 11.271x, 21.369x, 1.641x, 2.978x; observed min 1.641x",
+          "surface": "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays"
+        },
+        {
+          "canonical_source": "future/v4/point_group_device_array_frontdoor.md",
+          "floor_kind": "same_contract_device_output_boundary",
+          "minimum_floor": "repeat-gate and mixed6 rows must pass parity and same-contract ratio >=1.0x at both serious sizes",
+          "observed_anchor": "repeat gate 663.143x and 1868.088x; mixed6 509.391x and 1863.097x; observed min 509.391x",
+          "surface": "v4_point_group_nearest_witness_2d_device_arrays"
+        },
+        {
+          "canonical_source": "future/v4/evidence/v4_goal4633_weighted_sum_promotion_gate_2026-06-25.json",
+          "floor_kind": "same_operator_comparable_route",
+          "minimum_floor": "each frozen shape ratio >=1.20x and four-shape geomean >=1.50x; parity must pass at every shape",
+          "observed_anchor": "2.1459x, 1.6329x, 1.3564x, 1.2011x; geomean 1.5457x",
+          "surface": "v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays"
+        },
+        {
+          "canonical_source": "future/v4/evidence/v4_goal4635_component_union_pod_gate_embree_2026-06-25/summary.json",
+          "floor_kind": "component_union_same_fixture_material_gate",
+          "minimum_floor": "runner_vs_embree_hot >=1.20x, runner_vs_embree_wall >=1.20x, runner_vs_legacy_wall >=0.98x, and component signatures match",
+          "observed_anchor": "runner_vs_embree_hot 1.393x; runner_vs_embree_wall 1.600x; runner_vs_legacy_wall 1.208x; all canonical signatures match",
+          "surface": "v4_fixed_radius_graph_component_union_3d_device_arrays"
+        },
+        {
+          "canonical_source": "future/v4/evidence/v4_goal4636c_aabb_index_all_ops_pod_gate_2026-06-25/m30_all_ops.json",
+          "floor_kind": "aabb_same_contract_family_embree_control",
+          "minimum_floor": "cross-backend count parity must pass; accepted contract family must pass; Embree/OptiX query median >=10.0x and query total >=10.0x",
+          "observed_anchor": "query median 264.822x; query total 115.007x; cross-backend count parity true",
+          "surface": "v4_aabb_index_query_2d_all_ops_count_prepared_runner"
+        }
+      ],
+      "raw_optix_callback_claim_authorized": false,
+      "release_authorized": false,
+      "release_candidate_authorized": false,
+      "requires_external_review_before_goal4639": true,
+      "status": "goal4638_formal_release_scorecard_frozen_pending_external_review_not_release",
+      "thresholds": {
+        "deferred_rows_excluded_from_release_geomean": true,
+        "no_silent_skips": true,
+        "partial_rows_excluded_from_release_geomean": true,
+        "strong_rows_require_correctness": true,
+        "strong_rows_require_surface_specific_performance_floor": true
+      },
+      "tier3_callback_claim_authorized": false,
+      "true_zero_copy_claim_authorized": false,
+      "whole_app_speedup_claim_authorized": false
+    },
+    "gates": [
+      {
+        "evidence": [
+          "future/v4/v4_goal4626_section8_release_scorecard_protocol_2026-06-24.md",
+          "future/v4/reviews/goal4626_completion_consensus_and_review_debt_2026-06-24.md"
+        ],
+        "gate": "G1_fixed_radius_anchor",
+        "note": "Fixed-radius has bounded Torch CUDA device-array evidence, not broad release proof.",
+        "passed_for_release": true,
+        "status": "pass_bounded_one_primitive"
+      },
+      {
+        "evidence": [
+          "future/v4/v4_goal4627_tier2_operator_coverage_audit_2026-06-24.md",
+          "future/v4/reviews/goal4627_completion_consensus_and_review_debt_2026-06-24.md",
+          "future/v4/v4_goal4635_component_union_promotion_decision_2026-06-25.md"
+        ],
+        "gate": "G2_operator_coverage_audit",
+        "note": "Coverage audit shows 4 strong measured, 4 partial measured, 0 candidate, and 2 deferred rows; this passes the bounded operator release scope, not broad app coverage.",
+        "passed_for_release": true,
+        "status": "complete_bounded_operator_release_coverage"
+      },
+      {
+        "evidence": [
+          "future/v4/v4_goal4628_second_tier2_same_contract_gate_2026-06-24.md",
+          "future/v4/reviews/goal4628_completion_consensus_2026-06-24.md"
+        ],
+        "gate": "G3_second_tier2_same_contract_gate",
+        "note": "Grouped-i64 passed the second gate with min same-contract ratio 1.641x.",
+        "passed_for_release": true,
+        "status": "pass_grouped_i64_second_gate"
+      },
+      {
+        "evidence": [
+          "future/v4/v4_goal4629_weighted_sum_candidate_decision_2026-06-24.md",
+          "future/v4/reviews/goal4629_completion_consensus_and_review_debt_2026-06-24.md",
+          "future/v4/evidence/v4_goal4633_weighted_sum_promotion_gate_2026-06-25.md",
+          "future/v4/reviews/goal4633_completion_consensus_and_review_debt_2026-06-25.md"
+        ],
+        "gate": "G4_weighted_sum_candidate",
+        "note": "Weighted-sum passed Goal4633 as measured Torch CUDA comparable-route surface; this does not authorize whole-app or broad V4 speedup wording.",
+        "passed_for_release": true,
+        "status": "promote_weighted_sum_measured_torch_v4_tier2"
+      },
+      {
+        "evidence": [
+          "future/v4/v4_goal4630_pushdown_recognizer_minimum_slice_2026-06-24.md",
+          "future/v4/reviews/goal4630_completion_consensus_and_review_debt_2026-06-24.md"
+        ],
+        "gate": "G5_pushdown_recognizer",
+        "note": "Minimum recognizer routes measured/candidate generic operators and fails closed for unsupported logic.",
+        "passed_for_release": true,
+        "status": "pass_minimum_slice"
+      },
+      {
+        "evidence": [
+          "future/v4/v4_goal4631_tier3_spike_execution_decision_2026-06-24.md",
+          "future/v4/reviews/goal4631_completion_consensus_and_review_debt_2026-06-24.md"
+        ],
+        "gate": "G6_tier3_boundary",
+        "note": "Tier-3 is explicitly out of the V4.0 release dependency path.",
+        "passed_for_release": true,
+        "status": "defer_tier3_not_v4_0_supported"
+      },
+      {
+        "evidence": [
+          "future/v4/evidence/v4_goal4636c_aabb_index_all_ops_pod_gate_2026-06-25/m30_all_ops.json",
+          "future/v4/v4_goal4636c_aabb_index_pod_gate_decision_2026-06-25.md"
+        ],
+        "gate": "G7_aabb_index_frontdoor_catalog",
+        "note": "AABB all-ops passed a material same-RT-hardware POD gate and now has a measured V4 front-door/catalog surface. This remains operator-level evidence only.",
+        "passed_for_release": true,
+        "status": "promote_aabb_index_to_measured_v4_frontdoor_catalog_not_release"
+      },
+      {
+        "evidence": [
+          "future/v4/v4_goal4638_formal_release_scorecard_freeze_2026-06-25.md",
+          "future/v4/reviews/goal4638_formal_release_scorecard_freeze_review_record_2026-06-25.md",
+          "future/v4/evidence/v4_goal4638_catalog_regression_gpu_after_aabb_2026-06-25.json",
+          "future/v4/evidence/v4_goal4638_catalog_regression_gpu_after_aabb_2026-06-25.md"
+        ],
+        "gate": "G8_formal_release_scorecard_freeze",
+        "note": "The controlling Goal4638 artifact is the formal release scorecard freeze. The AABB catalog GPU gate is supporting evidence only; Claude closed the required amendment, with Antigravity recorded as review debt.",
+        "passed_for_release": true,
+        "status": "freeze_v4_release_scorecard_before_goal4639_pod_run"
+      },
+      {
+        "evidence": [
+          "future/v4/evidence/v4_goal4639_release_scorecard_pod_gate_2026-06-25/summary.json",
+          "future/v4/evidence/v4_goal4639_release_scorecard_pod_gate_2026-06-25/summary.md",
+          "future/v4/evidence/v4_goal4639_release_scorecard_pod_gate_2026-06-25/run.log"
+        ],
+        "gate": "G9_serious_release_scorecard_pod_gate",
+        "note": "Goal4639 passed the frozen serious scorecard: 8/8 measured surfaces and 4/4 strong families passed. This is still not final release authorization.",
+        "passed_for_release": true,
+        "status": "accept_release_scorecard_continue_to_docs_clean_tree_and_3ai"
+      },
+      {
+        "evidence": [
+          "future/v4/v4_goal4641_clean_tree_reproducibility_gate_2026-06-25.md",
+          "tests/v4_goal4641_clean_tree_reproducibility_test.py"
+        ],
+        "gate": "G10_clean_tree_reproducibility",
+        "note": "Goal4641 validated committed-only V4 tests, catalog dry-run, and quickstart from a clean worktree with clean status before and after.",
+        "passed_for_release": true,
+        "status": "complete_clean_tree_reproducibility_gate_pending_external_review"
+      },
+      {
+        "evidence": [
+          "future/v4/v4_goal4642_final_3ai_release_authorization_packet_2026-06-25.md",
+          "future/v4/reviews/antigravity_v4_goal4642_final_3ai_release_authorization_review_amended_2026-06-25.md",
+          "future/v4/reviews/antigravity_v4_goal4642_amendment_recheck_2026-06-25.md",
+          "future/v4/reviews/codex_independent_v4_goal4642_final_authorization_review_and_amendment_recheck_2026-06-25.md",
+          "future/v4/reviews/codex_main_v4_goal4642_final_release_owner_authorization_2026-06-25.md"
+        ],
+        "gate": "G11_final_release_authorization",
+        "note": "The earlier narrow operator authorization is superseded for current user-facing truth by Goal4654/Goal4655 app-level no-go evidence.",
+        "passed_for_release": true,
+        "status": "preserve_bounded_operator_surface_do_not_authorize_formal_app_level_release"
+      }
+    ],
+    "goal4655_decision_label": "bounded_operator_v4_only__app_level_high_performance_not_supported",
+    "grouped_any_hit_decision": {
+      "all_benchmark_speedup_claim_authorized": false,
+      "api_surface": "v4_ray_triangle_grouped_any_hit_flags_3d_prepared_runner",
+      "app_specific_native_kernel_authorized": false,
+      "broad_v4_speedup_claim_authorized": false,
+      "c_abi_or_embedding_claim_authorized": false,
+      "continuation_class": "grouped_any_hit_flag_stream",
+      "coverage_effect": {
+        "from": "partial_measured_operator_coverage",
+        "reason": "The native grouped any-hit flag stream passed correctness and showed strong tail/traversal ratios, but missed the predeclared wrapper-wall performance floors. Robot collision therefore remains partial operator coverage.",
+        "row": "robot_collision",
+        "to": "partial_measured_operator_coverage"
+      },
+      "cupy_performance_claim_authorized": false,
+      "decision": "reject_grouped_any_hit_promotion_keep_robot_collision_partial",
+      "evidence": [
+        "future/v4/evidence/v4_goal4636b_grouped_any_hit_pod_gate_2026-06-25/summary.json",
+        "future/v4/reviews/goal4636b_grouped_any_hit_target_protocol_review_record_2026-06-25.md"
+      ],
+      "generic_primitive": "RAY_TRIANGLE_GROUPED_ANY_HIT_FLAGS_3D",
+      "measured_catalog_promotion_authorized": false,
+      "next_action": "Do not promote grouped any-hit from this gate. Continue Goal4636 with another predeclared generic target, or return only through a separate front-door/wrapper-hardening goal that explains the wrapper-wall loss.",
+      "non_python_host_claim_authorized": false,
+      "operator": "ray_triangle_grouped_any_hit_flags_3d",
+      "raw_optix_callback_claim_authorized": false,
+      "release_authorized": false,
+      "release_candidate_authorized": false,
+      "same_contract_gate": {
+        "all_timed_pairs_same_contract_shape_signature_counts": true,
+        "dataset": "scaled",
+        "failed_checks": [
+          "wrapper_mean_embree_over_optix_below_floor",
+          "wrapper_min_embree_over_optix_below_floor"
+        ],
+        "link_count": 2,
+        "obstacle_count": 2048,
+        "performance_floor_status": "fail",
+        "pose_count": 8192,
+        "sample_count": 5,
+        "status": "fail",
+        "tail_total_mean_embree_over_optix": 4.127811276781783,
+        "tail_total_mean_embree_over_optix_floor": 3.0,
+        "timed_repeats": 101,
+        "timed_rows_probe_reference_disabled": true,
+        "timed_status": "pass",
+        "timed_warmup": 5,
+        "traversal_mean_embree_over_optix": 30.5146629599939,
+        "traversal_mean_embree_over_optix_floor": 3.0,
+        "validation_and_timed_signatures_overlap": true,
+        "validation_repeats": 5,
+        "validation_status": "pass",
+        "validation_warmup": 1,
+        "wrapper_mean_embree_over_optix": 0.8566591773370428,
+        "wrapper_mean_embree_over_optix_floor": 1.1,
+        "wrapper_min_embree_over_optix": 0.8234887931897568,
+        "wrapper_min_embree_over_optix_floor": 1.0
+      },
+      "scope": "rtdl_native_prepared_runner",
+      "status": "goal4636b_grouped_any_hit_pod_gate_failed_no_promotion_not_release",
+      "target_coverage_row": "robot_collision",
+      "tier3_callback_claim_authorized": false,
+      "true_zero_copy_claim_authorized": false,
+      "whole_app_speedup_claim_authorized": false
+    },
+    "measured_catalog_promotion_authorized": false,
+    "measured_surfaces_count": 8,
+    "non_python_host_claim_authorized": false,
+    "performance_preview_authorized": true,
+    "public_docs_cleanup_decision": {
+      "broad_v4_speedup_claim_authorized": false,
+      "cupy_performance_claim_authorized": false,
+      "decision": "complete_public_v4_docs_cleanup_pending_external_review",
+      "evidence": [
+        "future/v4/v4_goal4640_public_docs_cleanup_decision_2026-06-25.md",
+        "tests/v4_goal4640_public_docs_cleanup_test.py"
+      ],
+      "examples_checked": true,
+      "non_python_host_claim_authorized": false,
+      "public_docs_current": true,
+      "public_paths": [
+        "README.md",
+        "docs/README.md",
+        "docs/current_v4_status.md",
+        "docs/public_documentation_map.md",
+        "docs/learn/README.md",
+        "docs/learn/performance_wording.md",
+        "docs/learn/source_tree_doctor.md",
+        "tutorials/README.md",
+        "tutorials/current/README.md",
+        "examples/README.md",
+        "examples/v4/README.md",
+        "future/v4/README.md",
+        "future/v4/tier2_operator_catalog.md"
+      ],
+      "release_authorized": false,
+      "review_status": "pending_claude_and_antigravity_review_or_debt",
+      "tests": [
+        "tests.v4_goal4640_public_docs_cleanup_test",
+        "tests.v4_frontdoor_test",
+        "tests.v4_fixed_radius_docs_and_example_test",
+        "tests.v4_scope_gate_test",
+        "tests.v4_catalog_regression_gate_test",
+        "all tests/v4*_test.py: 164 tests OK"
+      ],
+      "tier3_callback_claim_authorized": false,
+      "true_zero_copy_claim_authorized": false,
+      "v3_current_doc_archived": true,
+      "whole_app_speedup_claim_authorized": false
+    },
+    "public_wording": "RTDL V4 currently exposes a bounded operator surface with 8 documented generic RT-core operators measured against stated partner/CPU baselines. Goal4654/Goal4655 app-level evidence does not support formal app-level high-performance release wording.",
+    "raw_optix_callback_claim_authorized": false,
+    "release_authorized": false,
+    "release_blockers": [
+      "goal4655_app_level_high_performance_not_supported"
+    ],
+    "release_candidate_authorized": false,
+    "release_claim_authorized": false,
+    "release_scorecard_decision": {
+      "all_benchmark_speedup_claim_authorized": false,
+      "app_specific_native_kernel_authorized": false,
+      "broad_v4_speedup_claim_authorized": false,
+      "c_abi_or_embedding_claim_authorized": false,
+      "cupy_performance_claim_authorized": false,
+      "decision": "accept_release_scorecard_continue_to_docs_clean_tree_and_3ai",
+      "deferred_excluded_rows": 2,
+      "evidence": [
+        "future/v4/evidence/v4_goal4639_release_scorecard_pod_gate_2026-06-25/summary.json",
+        "future/v4/evidence/v4_goal4639_release_scorecard_pod_gate_2026-06-25/summary.md",
+        "future/v4/evidence/v4_goal4639_release_scorecard_pod_gate_2026-06-25/run.log"
+      ],
+      "failed_surfaces": [],
+      "measured_surfaces_passed": 8,
+      "measured_surfaces_total": 8,
+      "non_python_host_claim_authorized": false,
+      "partial_controls_passed": 4,
+      "partial_controls_total": 4,
+      "public_ratio_distribution": {
+        "complexity_outliers": "Point-group nearest witness and AABB all-ops are large scale-dependent wins where the alternative is brute-force or a slower same-contract index control.",
+        "core_operator_cluster": "Most release surfaces are 1.2-1.7x against their stated brute-force partner/CPU baselines.",
+        "headline_rule": "Do not headline the 5.185x geomean; show the distribution and denominators.",
+        "mid_large_operator_win": "Any-hit flags is a larger 5.671x operator win against its stated Torch reference baseline."
+      },
+      "raw_optix_callback_claim_authorized": false,
+      "recommendation_from_scorecard": "release_candidate_possible_pending_3ai",
+      "release_authorized": false,
+      "release_candidate_authorized": false,
+      "status": "goal4639_serious_release_scorecard_pod_gate_passed_not_release",
+      "strong_families_passed": 4,
+      "strong_families_total": 4,
+      "strong_representative_ratio_geomean": 5.1848067367961095,
+      "surface_denominators": {
+        "v4_aabb_index_query_2d_all_ops_count_prepared_runner": {
+          "baseline": "Embree same-contract prepared AABB query control",
+          "presentation_class": "algorithmic_complexity_outlier_indexed_bvh_vs_slower_control",
+          "scale": "box_count=1000000; query_count=1000; operation=all; embree/optix repeats=240"
+        },
+        "v4_closest_hit_grouped_argmin_3d_device_arrays": {
+          "baseline": "torch brute-force/reference",
+          "presentation_class": "core_cluster_1_2_to_1_7x",
+          "scale": "script default grouped-argmin fixtures; repeat=7 warmup=1"
+        },
+        "v4_fixed_radius_count_threshold_2d_device_arrays": {
+          "baseline": "torch brute-force/reference",
+          "presentation_class": "core_cluster_1_2_to_1_7x",
+          "scale": "script default fixture; repeat=7 warmup=1"
+        },
+        "v4_fixed_radius_graph_component_union_3d_device_arrays": {
+          "baseline": "legacy prepared-runner wall route with Embree same-contract controls",
+          "presentation_class": "core_cluster_1_2_to_1_7x",
+          "scale": "clustered3d point_count=262144; repeat=5 warmup=1"
+        },
+        "v4_point_group_nearest_witness_2d_device_arrays": {
+          "baseline": "torch/cpu-style brute-force nearest witness reference",
+          "presentation_class": "algorithmic_complexity_outlier_o_n2_vs_bvh",
+          "scale": "query_counts=32768,131072; fixture_variants=mixed4,mixed6; repeat=7 warmup=2"
+        },
+        "v4_ray_triangle_any_hit_flags_2d_device_arrays": {
+          "baseline": "torch brute-force/reference",
+          "presentation_class": "mid_large_operator_win",
+          "scale": "max_torch_reference_count=8192; repeat=5 warmup=1"
+        },
+        "v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays": {
+          "baseline": "torch brute-force/reference comparable route",
+          "presentation_class": "core_cluster_1_2_to_1_7x",
+          "scale": "Goal4633 promotion gate shapes=32768,131072,262144,524288"
+        },
+        "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays": {
+          "baseline": "torch brute-force/reference",
+          "presentation_class": "core_cluster_1_2_to_1_7x",
+          "scale": "ray_counts=32768,131072; group_widths=1,16,256; repeat=7 warmup=2"
+        }
+      },
+      "surface_representative_ratios": {
+        "v4_aabb_index_query_2d_all_ops_count_prepared_runner": 164.716,
+        "v4_closest_hit_grouped_argmin_3d_device_arrays": 1.25677,
+        "v4_fixed_radius_count_threshold_2d_device_arrays": 1.69721,
+        "v4_fixed_radius_graph_component_union_3d_device_arrays": 1.20294,
+        "v4_point_group_nearest_witness_2d_device_arrays": 389.707,
+        "v4_ray_triangle_any_hit_flags_2d_device_arrays": 5.67055,
+        "v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays": 1.48181,
+        "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays": 1.38362
+      },
+      "tier3_callback_claim_authorized": false,
+      "true_zero_copy_claim_authorized": false,
+      "whole_app_speedup_claim_authorized": false
+    },
+    "scope_limitations": [
+      "tier3_deferred_not_supported",
+      "whole_app_speedup_wording_not_authorized",
+      "cupy_performance_unmeasured",
+      "no_true_zero_copy_public_claim_authorized",
+      "no_c_abi_embedding_or_non_python_host_scope"
+    ],
+    "status": "goal4632_release_decision_superseded_by_goal4655_app_level_no_go",
+    "threshold_summary_decision": {
+      "all_benchmark_speedup_claim_authorized": false,
+      "api_surface": "v4_fixed_radius_threshold_summary_2d_prepared_runner",
+      "app_specific_native_kernel_authorized": false,
+      "broad_v4_speedup_claim_authorized": false,
+      "c_abi_or_embedding_claim_authorized": false,
+      "continuation_class": "threshold_summary",
+      "coverage_effect": {
+        "from": "partial_measured_operator_coverage",
+        "reason": "The productized runner materially beat Embree but missed the predeclared legacy phase-total no-regression floor, so the Hausdorff/XHD row must remain partial.",
+        "row": "hausdorff_xhd",
+        "to": "partial_measured_operator_coverage"
+      },
+      "cupy_performance_claim_authorized": false,
+      "decision": "reject_threshold_summary_promotion_keep_hausdorff_partial",
+      "evidence": [
+        "future/v4/evidence/v4_goal4636_threshold_summary_pod_gate_2026-06-25/summary.json",
+        "future/v4/evidence/v4_goal4636_threshold_summary_pod_gate_2026-06-25/README.md",
+        "future/v4/reviews/goal4636_threshold_summary_target_protocol_review_record_2026-06-25.md"
+      ],
+      "generic_primitive": "FIXED_RADIUS_THRESHOLD_REACHED_COUNT_2D",
+      "measured_catalog_promotion_authorized": false,
+      "next_action": "Do not promote threshold-summary from this gate. Continue Goal4636 by selecting a different predeclared generic target, or return to this target only with a new protocol that explains the legacy phase-total regression before any rerun.",
+      "non_python_host_claim_authorized": false,
+      "operator": "fixed_radius_threshold_summary_2d",
+      "raw_optix_callback_claim_authorized": false,
+      "release_authorized": false,
+      "release_candidate_authorized": false,
+      "same_contract_gate": {
+        "failed_checks": [
+          "runner_regressed_vs_legacy_phase_total"
+        ],
+        "points_per_side": 1048576,
+        "repeat": 5,
+        "runner_step3_residency_default_ready": true,
+        "runner_vs_embree_phase_total_floor": 1.2,
+        "runner_vs_embree_phase_total_speedup": 1.2759701868849942,
+        "runner_vs_embree_wrapper_wall_floor": 1.2,
+        "runner_vs_embree_wrapper_wall_speedup": 1.7376484711304498,
+        "runner_vs_legacy_phase_total_floor": 0.98,
+        "runner_vs_legacy_phase_total_speedup": 0.9693326333237459,
+        "runner_vs_legacy_wrapper_wall_floor": 0.98,
+        "runner_vs_legacy_wrapper_wall_speedup": 0.9898664196438816,
+        "status": "fail",
+        "warmup": 1
+      },
+      "scope": "rtdl_native_prepared_runner",
+      "status": "goal4636_threshold_summary_pod_gate_failed_no_promotion_not_release",
+      "target_coverage_row": "hausdorff_xhd",
+      "tier3_callback_claim_authorized": false,
+      "true_zero_copy_claim_authorized": false,
+      "whole_app_speedup_claim_authorized": false
+    },
+    "tier3_callback_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "review_debt": {
+    "antigravity": "prior empty stdout/stderr behavior is debt not approval; no release authorization claimed",
+    "claude": "known weekly limit until Jun 28 2026 7pm America/New_York; do not retest per runbook",
+    "release_or_tag_authorized": false,
+    "three_ai_consensus_complete": false
+  },
+  "rtnn_decision": "rtnn_candidate_does_not_move_app_level_bar",
+  "schema": "rtdl.v4.goal4658.final_recheck_guardrails_completion_audit.v1",
+  "scope_gate": {
+    "app_specific_native_kernel_authorized": false,
+    "authorized_release_label": "RTDL V4 bounded operator surface: 8 generic RT-core operators measured against stated partner/CPU baselines; app-level high-performance release is not authorized by Goal4654/Goal4655",
+    "blocking_reasons": [
+      "goal4655_app_level_high_performance_not_supported"
+    ],
+    "broad_v4_speedup_claim_authorized": false,
+    "candidate_surfaces": [
+      "v4_fixed_radius_ranked_summary_3d_prepared_runner"
+    ],
+    "cupy_performance_claim_authorized": false,
+    "deferred_capabilities": [
+      "tier3_numba_ptx_generation_spike_only",
+      "tier3_numba_bare_ptx_direct_optix_module_link_blocked",
+      "tier3_wrapper_direct_callable_abi",
+      "raw_optix_callback_public_api",
+      "cupy_measured_performance_claims",
+      "embedding_c_abi",
+      "non_python_host_bindings",
+      "app_specific_native_engine_kernels"
+    ],
+    "embedding_c_abi_claim_authorized": false,
+    "included_capabilities": [
+      "unified_python_frontdoor",
+      "torch_cuda_device_array_input",
+      "torch_cuda_device_array_output",
+      "rtdl_native_prepared_runner",
+      "tier2_fused_generic_rt_operators",
+      "operator_callback_planner"
+    ],
+    "included_surfaces": [
+      "v4_fixed_radius_count_threshold_2d_device_arrays",
+      "v4_closest_hit_grouped_argmin_3d_device_arrays",
+      "v4_ray_triangle_any_hit_flags_2d_device_arrays",
+      "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays",
+      "v4_point_group_nearest_witness_2d_device_arrays",
+      "v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays",
+      "v4_fixed_radius_graph_component_union_3d_device_arrays",
+      "v4_aabb_index_query_2d_all_ops_count_prepared_runner"
+    ],
+    "non_python_host_binding_claim_authorized": false,
+    "raw_optix_callback_claim_authorized": false,
+    "release_authorized": false,
+    "required_next_actions": [
+      "keep current bounded operator guardrails passing",
+      "do not tag or advertise formal app-level high-performance V4 until a new app-level gate passes",
+      "measure or reject the ranked-summary candidate before counting RTNN as a full V4 app route",
+      "treat Tier-3, embedding, and non-Python host work as future scoped work"
+    ],
+    "status": "v4_bounded_operator_scope_goal4655_corrected",
+    "tier3_callback_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "status": "goal4658_final_recheck_complete_no_release_authorization",
+  "verification": {
+    "search_guard_result": "no current authorized broad/app-level/zero-copy/C-ABI/embedding/CuPy/arbitrary-callback claim found; matches are denial or test guard contexts",
+    "search_guard_scope": "current public docs, future/v4 front-door docs/examples, and V4 machine truth modules/tests; historical review artifacts excluded",
+    "v4_boundary_test_command": "py -3 -m unittest tests.v4_goal4658_final_recheck_audit_test tests.v4_goal4660_ranked_summary_candidate_test tests.v4_goal4659_hausdorff_official_route_test tests.v4_goal4652_app_route_binding_test tests.v4_goal4653_app_level_protocol_test tests.v4_goal4655_app_benchmark_analysis_test tests.v4_goal4651_partner_catalog_promotion_test tests.v4_operator_catalog_test tests.v4_frontdoor_test tests.v4_scope_gate_test tests.v4_catalog_regression_gate_test tests.v4_goal4632_release_decision_test tests.v4_goal4643_publication_decision_test tests.v4_goal4644_post_release_guardrails_test",
+    "v4_boundary_test_result": "77 tests OK"
+  }
+}

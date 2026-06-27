@@ -65,6 +65,7 @@ class V4Goal4640PublicDocsCleanupTest(unittest.TestCase):
         commands = (
             ["examples/v4/v4_frontdoor_quickstart.py"],
             ["examples/v4/operator_callback_planning.py", "--case", "complex-callback"],
+            ["examples/v4/custom_predicate_early_exit_planning.py"],
             ["examples/v4/fixed_radius_torch_device_arrays.py", "--dry-run", "--copies", "2"],
             ["examples/v4/ray_triangle_any_hit_weighted_sum_torch_device_arrays.py", "--dry-run", "--ray-count", "16"],
             ["examples/v4/aabb_index_all_ops_count.py", "--dry-run"],
@@ -91,7 +92,10 @@ class V4Goal4640PublicDocsCleanupTest(unittest.TestCase):
         self.assertIn("most measured operators are 1.2x-1.7x", text)
         self.assertIn("Baseline / denominator", text)
         self.assertIn("whole-application speedup claim", text)
-        self.assertIn("formal V4.0.0 bounded operator release authorized", text)
+        self.assertIn("V4 Python eDSL/operator-pushdown release candidate surface available", text)
+        self.assertIn("current V4 measured operator/workflow surface count is\n`10`", text)
+        self.assertIn("Custom predicate early-exit", text)
+        self.assertIn("broad all-app", text)
 
     def test_machine_decision_records_docs_cleanup_without_release_authorization(self) -> None:
         decision = validate_v4_goal4640_public_docs_cleanup(ROOT)

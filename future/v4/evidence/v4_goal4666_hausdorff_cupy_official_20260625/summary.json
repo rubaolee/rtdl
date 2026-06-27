@@ -1,0 +1,123 @@
+{
+  "bars": {
+    "correctness_required": true,
+    "prepare_no_regression_floor_where_comparable": 0.8,
+    "v4_vs_v3_hot_speedup_min": 1.2
+  },
+  "claim_boundary": {
+    "app_specific_native_kernel_authorized": false,
+    "broad_v4_speedup_claim_authorized": false,
+    "cupy_performance_claim_authorized": false,
+    "formal_high_performance_v4_authorized": false,
+    "public_true_zero_copy_claim_authorized": false,
+    "release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "date": "2026-06-25",
+  "decision": {
+    "label": "official_cupy_route_productized__large_row_passes_hot_prepare__focused_bar_not_reopened",
+    "may_count_as_formal_high_performance_v4_evidence": false,
+    "may_trigger_full_all_app_rerun": false,
+    "next_engineering_need": "Either reduce small-scale overhead/stability for the same official CuPy route or select a different app-level target with a stronger V4-specific lever; do not rerun all-app or claim broad V4 speedup from this mixed result.",
+    "reason": "The V4 official CuPy route removes the Torch-route 262k hot-path failure and passes correctness, but the smaller 65k row remains below the frozen hot/prepare bars and the directed-summary app denominator remains parity/slower versus V3 CuPy. This is route productization and a useful performance repair, not formal high-performance V4 evidence."
+  },
+  "large_scale_correctness_probe": {
+    "consumer_adapter": "global_argmax_u32_f64_partner_columns",
+    "consumer_partner": "cupy",
+    "consumer_reduction_strategy": "cupy_masked_reduce",
+    "coordinate_normalization_span": 1000000.0,
+    "copies": 262144,
+    "directed_summary_sec": 34.60904984548688,
+    "hot_device_sec": 0.02356426790356636,
+    "passes_correctness": true,
+    "points_per_side": 1048576,
+    "producer_adapter": "v4_point_group_nearest_witness_2d_device_arrays",
+    "raw_ref": "future/v4/evidence/v4_goal4666_hausdorff_cupy_official_20260625/v4_official_cupy_copies262144_normspan1000000.json",
+    "scene_prepare_sec": 10.66413214430213,
+    "speed_claim_authorized": false
+  },
+  "rows": [
+    {
+      "copies": 16384,
+      "goal4665_v3_0_2_cupy_baseline": {
+        "directed_summary_sec": 3.1806681975722313,
+        "hot_device_sec": 0.003028884530067444,
+        "scene_prepare_sec": 1.4373558796942234
+      },
+      "goal4665_v4_torch_official_baseline": {
+        "directed_summary_sec": 4.59449303150177,
+        "hot_device_sec": 0.0023703835904598236,
+        "scene_prepare_sec": 3.003075137734413
+      },
+      "passes_correctness": true,
+      "passes_prepare_floor_0_80x": false,
+      "passes_v4_vs_v3_hot_bar_1_20x": false,
+      "points_per_side": 65536,
+      "speedup_v4_cupy_directed_summary_over_v3_cupy_directed_summary": 0.8286099153379424,
+      "speedup_v4_cupy_hot_over_v3_cupy_hot": 0.35651394555078875,
+      "speedup_v4_cupy_hot_over_v4_torch_hot": 0.27900528987312023,
+      "speedup_v4_cupy_prepare_over_v3_cupy_prepare": 0.7449572124156489,
+      "v4_official_cupy": {
+        "consumer_adapter": "global_argmax_u32_f64_partner_columns",
+        "consumer_partner": "cupy",
+        "consumer_reduction_strategy": "cupy_masked_reduce",
+        "directed_summary_sec": 3.838559180498123,
+        "hot_device_sec": 0.008495837450027466,
+        "materialize_sec": 0.0002236887812614441,
+        "producer_adapter": "v4_point_group_nearest_witness_2d_device_arrays",
+        "raw_ref": "future/v4/evidence/v4_goal4666_hausdorff_cupy_official_20260625/v4_official_cupy_copies16384.json",
+        "scene_prepare_sec": 1.929447565227747
+      }
+    },
+    {
+      "copies": 65536,
+      "goal4665_v3_0_2_cupy_baseline": {
+        "directed_summary_sec": 7.756507556885481,
+        "hot_device_sec": 0.0041230954229831696,
+        "scene_prepare_sec": 4.091465026140213
+      },
+      "goal4665_v4_torch_official_baseline": {
+        "directed_summary_sec": 9.38266997039318,
+        "hot_device_sec": 0.006350502371788025,
+        "scene_prepare_sec": 5.756751250475645
+      },
+      "passes_correctness": true,
+      "passes_prepare_floor_0_80x": true,
+      "passes_v4_vs_v3_hot_bar_1_20x": true,
+      "points_per_side": 262144,
+      "speedup_v4_cupy_directed_summary_over_v3_cupy_directed_summary": 0.9728256198935324,
+      "speedup_v4_cupy_hot_over_v3_cupy_hot": 1.288360019323334,
+      "speedup_v4_cupy_hot_over_v4_torch_hot": 1.984366724287452,
+      "speedup_v4_cupy_prepare_over_v3_cupy_prepare": 1.0314720971830103,
+      "v4_official_cupy": {
+        "consumer_adapter": "global_argmax_u32_f64_partner_columns",
+        "consumer_partner": "cupy",
+        "consumer_reduction_strategy": "cupy_masked_reduce",
+        "directed_summary_sec": 7.9731736071407795,
+        "hot_device_sec": 0.003200266510248184,
+        "materialize_sec": 0.000216800719499588,
+        "producer_adapter": "v4_point_group_nearest_witness_2d_device_arrays",
+        "raw_ref": "future/v4/evidence/v4_goal4666_hausdorff_cupy_official_20260625/v4_official_cupy_copies65536.json",
+        "scene_prepare_sec": 3.9666269570589066
+      }
+    }
+  ],
+  "same_hardware": {
+    "driver": "570.195.03",
+    "gpu": "NVIDIA RTX A5000",
+    "pod": "root@194.68.245.170:22089"
+  },
+  "schema": "rtdl.v4.goal4666.hausdorff_cupy_official_route.v1",
+  "source_failed_goal": "future/v4/evidence/v4_goal4665_hausdorff_focused_20260625/summary.json",
+  "stability_probe_65536_points_per_side_warmup2": {
+    "directed_summary_sec": 3.2162898778915405,
+    "hot_device_sec": 0.0031511150300502777,
+    "interpretation": "Diagnostic rerun only; it reduces the initial outlier to near-parity but still does not clear the frozen 1.20x hot bar and remains just under the 0.80 prepare floor.",
+    "passes_correctness": true,
+    "raw_ref": "future/v4/evidence/v4_goal4666_hausdorff_cupy_official_20260625/v4_official_cupy_copies16384_rerun_warmup2.json",
+    "scene_prepare_sec": 1.8124012649059296,
+    "speedup_hot_over_v3_cupy_hot": 0.9612103973300894,
+    "speedup_prepare_over_v3_cupy_prepare": 0.793067135587564
+  },
+  "status": "goal4666_hausdorff_cupy_official_route_complete_no_release_authorization"
+}

@@ -4,23 +4,242 @@ from .v4_aabb_index import V4_AABB_INDEX_ALL_OPS_COUNT_PREPARED_RUNNER_SURFACE
 from .v4_aabb_index import V4AabbIndexQuery2DAllOpsCountPreparedRunner
 from .v4_aabb_index import aabb_index_query_2d_all_ops_count_claim_boundary_v4
 from .v4_aabb_index import prepare_aabb_index_query_2d_all_ops_count_prepared_runner_v4
+from .v4_aggregate_frontier import V4_AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D_CANDIDATE_STATUS
+from .v4_aggregate_frontier import V4_AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D_MEASURED_STATUS
+from .v4_aggregate_frontier import V4_AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D_PREPARED_RUNNER_SURFACE
+from .v4_aggregate_frontier import V4AggregateFrontierDeviceColumns2DPreparedRunner
+from .v4_aggregate_frontier import aggregate_frontier_device_columns_2d_prepared_runner_claim_boundary_v4
+from .v4_aggregate_frontier import prepare_aggregate_frontier_device_columns_2d_prepared_runner_v4
+from .v4_custom_predicate_early_exit import V4_RAY_TRIANGLE_CUSTOM_PREDICATE_EARLY_EXIT_PRIMITIVE
+from .v4_custom_predicate_early_exit import V4_RAY_TRIANGLE_CUSTOM_PREDICATE_EARLY_EXIT_STATUS
+from .v4_custom_predicate_early_exit import V4_RAY_TRIANGLE_CUSTOM_PREDICATE_EARLY_EXIT_SURFACE
+from .v4_custom_predicate_early_exit import V4CustomPredicateEarlyExitPlan
+from .v4_custom_predicate_early_exit import V4RayTriangleCustomPredicateEarlyExit3DNumbaSession
+from .v4_custom_predicate_early_exit import plan_ray_triangle_custom_predicate_early_exit_v4
+from .v4_custom_predicate_early_exit import prepare_ray_triangle_custom_predicate_early_exit_3d_numba_v4
+from .v4_custom_predicate_early_exit import ray_triangle_custom_predicate_early_exit_claim_boundary_v4
 from .v4_fixed_radius import V4_FIXED_RADIUS_DEVICE_ARRAY_SURFACE
 from .v4_fixed_radius import V4FixedRadiusCountThreshold2DDeviceArraySession
 from .v4_fixed_radius import allocate_fixed_radius_count_threshold_2d_device_array_outputs_v4
 from .v4_fixed_radius import fixed_radius_count_threshold_2d_device_array_claim_boundary_v4
 from .v4_fixed_radius import prepare_fixed_radius_count_threshold_2d_device_arrays_v4
+from .v4_cupy_certification import V4_GOAL4649_CUPY_CERTIFICATION_STATUS
+from .v4_cupy_certification import v4_goal4649_cupy_certification_targets
+from .v4_cupy_certification import v4_goal4649_ready_cupy_targets
+from .v4_cupy_certification import v4_goal4649_target_by_id
+from .v4_app_route_binding import V4_GOAL4652_APP_ROUTE_BINDING_STATUS
+from .v4_app_route_binding import validate_v4_goal4652_app_route_bindings
+from .v4_app_route_binding import v4_goal4652_app_route_bindings
+from .v4_app_route_binding import v4_goal4652_route_binding_summary
+from .v4_app_compatibility import V4_APP_COMPATIBILITY_STATUS
+from .v4_app_compatibility import plan_v4_app_compatibility
+from .v4_app_compatibility import validate_v4_app_compatibility_catalog
+from .v4_app_compatibility import v4_app_compatibility_rows
+from .v4_goal4676_aggregate_frontier_protocol import V4_GOAL4676_PROTOCOL_STATUS
+from .v4_goal4676_aggregate_frontier_protocol import validate_v4_goal4676_aggregate_frontier_protocol
+from .v4_goal4676_aggregate_frontier_protocol import v4_goal4676_aggregate_frontier_protocol
+from .v4_goal4677_aggregate_frontier_promotion import V4_GOAL4677_AGGREGATE_FRONTIER_PROMOTION_STATUS
+from .v4_goal4677_aggregate_frontier_promotion import validate_v4_goal4677_aggregate_frontier_promotion
+from .v4_goal4677_aggregate_frontier_promotion import v4_goal4677_aggregate_frontier_promotion_decision
+from .v4_goal4678_ranked_summary_disposition import V4_GOAL4678_RANKED_SUMMARY_DISPOSITION_STATUS
+from .v4_goal4678_ranked_summary_disposition import validate_v4_goal4678_ranked_summary_disposition
+from .v4_goal4678_ranked_summary_disposition import v4_goal4678_ranked_summary_disposition
+from .v4_goal4679_relation_topology_target import V4_GOAL4679_RELATION_TOPOLOGY_TARGET_STATUS
+from .v4_goal4679_relation_topology_target import validate_v4_goal4679_relation_topology_target
+from .v4_goal4679_relation_topology_target import v4_goal4679_relation_topology_target
+from .v4_goal4680_shape_pair_relation_protocol import V4_GOAL4680_SHAPE_PAIR_RELATION_PROTOCOL_STATUS
+from .v4_goal4680_shape_pair_relation_protocol import validate_v4_goal4680_shape_pair_relation_protocol
+from .v4_goal4680_shape_pair_relation_protocol import v4_goal4680_shape_pair_relation_protocol
+from .v4_goal4681_shape_pair_relation_result import V4_GOAL4681_SHAPE_PAIR_RELATION_RESULT_STATUS
+from .v4_goal4681_shape_pair_relation_result import validate_v4_goal4681_shape_pair_relation_result
+from .v4_goal4681_shape_pair_relation_result import v4_goal4681_shape_pair_relation_result
+from .v4_goal4682_next_target_after_shape_pair import V4_GOAL4682_NEXT_TARGET_STATUS
+from .v4_goal4682_next_target_after_shape_pair import validate_v4_goal4682_next_target_after_shape_pair
+from .v4_goal4682_next_target_after_shape_pair import v4_goal4682_next_target_after_shape_pair
+from .v4_goal4683_contact_witness_design_audit import V4_GOAL4683_AUDITED_TARGET
+from .v4_goal4683_contact_witness_design_audit import V4_GOAL4683_CONTACT_WITNESS_AUDIT_STATUS
+from .v4_goal4683_contact_witness_design_audit import V4_GOAL4683_NEXT_GOAL
+from .v4_goal4683_contact_witness_design_audit import validate_v4_goal4683_contact_witness_design_audit
+from .v4_goal4683_contact_witness_design_audit import v4_goal4683_contact_witness_design_audit
+from .v4_goal4684_high_performance_target_reset import V4_GOAL4684_NEXT_GOAL
+from .v4_goal4684_high_performance_target_reset import V4_GOAL4684_SELECTED_NEXT_TRACK
+from .v4_goal4684_high_performance_target_reset import V4_GOAL4684_TARGET_RESET_STATUS
+from .v4_goal4684_high_performance_target_reset import validate_v4_goal4684_high_performance_target_reset
+from .v4_goal4684_high_performance_target_reset import v4_goal4684_high_performance_target_reset
+from .v4_goal4685_tier3_wrapper_abi_protocol import V4_GOAL4685_NEXT_GOAL
+from .v4_goal4685_tier3_wrapper_abi_protocol import V4_GOAL4685_TIER3_WRAPPER_ABI_PROTOCOL_STATUS
+from .v4_goal4685_tier3_wrapper_abi_protocol import validate_v4_goal4685_tier3_wrapper_abi_protocol
+from .v4_goal4685_tier3_wrapper_abi_protocol import v4_goal4685_tier3_wrapper_abi_protocol
+from .v4_goal4686_tier3_wrapper_abi_scaffold import V4_GOAL4686_CALLBACK_SYMBOL
+from .v4_goal4686_tier3_wrapper_abi_scaffold import V4_GOAL4686_NEXT_GOAL
+from .v4_goal4686_tier3_wrapper_abi_scaffold import V4_GOAL4686_TIER3_WRAPPER_ABI_SCAFFOLD_STATUS
+from .v4_goal4686_tier3_wrapper_abi_scaffold import validate_v4_goal4686_tier3_wrapper_abi_scaffold
+from .v4_goal4686_tier3_wrapper_abi_scaffold import v4_goal4686_tier3_wrapper_abi_scaffold
+from .v4_goal4687_tier3_wrapper_compile_probe import V4_GOAL4687_NEXT_GOAL
+from .v4_goal4687_tier3_wrapper_compile_probe import V4_GOAL4687_TIER3_WRAPPER_COMPILE_PROBE_STATUS
+from .v4_goal4687_tier3_wrapper_compile_probe import extract_numba_callback_symbol_from_ptx
+from .v4_goal4687_tier3_wrapper_compile_probe import specialize_semantic_wrapper_source
+from .v4_goal4687_tier3_wrapper_compile_probe import validate_v4_goal4687_tier3_wrapper_compile_probe_contract
+from .v4_goal4688_tier3_module_link_probe import V4_GOAL4688_NEXT_GOAL
+from .v4_goal4688_tier3_module_link_probe import V4_GOAL4688_TIER3_MODULE_LINK_PROBE_STATUS
+from .v4_goal4688_tier3_module_link_probe import compose_goal4688_combined_ptx
+from .v4_goal4688_tier3_module_link_probe import validate_v4_goal4688_tier3_module_link_probe_contract
+from .v4_goal4689_tier3_minimal_launch_probe import V4_GOAL4689_EXPECTED_OUTPUT
+from .v4_goal4689_tier3_minimal_launch_probe import V4_GOAL4689_NEXT_GOAL
+from .v4_goal4689_tier3_minimal_launch_probe import V4_GOAL4689_TIER3_MINIMAL_LAUNCH_PROBE_STATUS
+from .v4_goal4689_tier3_minimal_launch_probe import validate_v4_goal4689_tier3_minimal_launch_probe_contract
+from .v4_goal4690_tier3_overhead_protocol import V4_GOAL4690_NEXT_GOAL
+from .v4_goal4690_tier3_overhead_protocol import V4_GOAL4690_TIER3_OVERHEAD_PROTOCOL_STATUS
+from .v4_goal4690_tier3_overhead_protocol import validate_v4_goal4690_tier3_overhead_protocol
+from .v4_goal4690_tier3_overhead_protocol import v4_goal4690_tier3_overhead_protocol
+from .v4_goal4691_tier3_overhead_measurement import V4_GOAL4691_NEXT_GOAL
+from .v4_goal4691_tier3_overhead_measurement import V4_GOAL4691_TIER3_OVERHEAD_MEASUREMENT_STATUS
+from .v4_goal4691_tier3_overhead_measurement import classify_v4_goal4691_overhead_ratio
+from .v4_goal4691_tier3_overhead_measurement import validate_v4_goal4691_tier3_overhead_measurement_contract
+from .v4_goal4692_tier3_support_decision import V4_GOAL4692_NEXT_GOAL
+from .v4_goal4692_tier3_support_decision import V4_GOAL4692_TIER3_SUPPORT_DECISION_STATUS
+from .v4_goal4692_tier3_support_decision import validate_v4_goal4692_tier3_support_decision
+from .v4_goal4692_tier3_support_decision import v4_goal4692_tier3_support_decision
+from .v4_goal4693_specialized_hit_callback_probe import V4_GOAL4693_EXPECTED_OUTPUT
+from .v4_goal4693_specialized_hit_callback_probe import V4_GOAL4693_NEXT_GOAL
+from .v4_goal4693_specialized_hit_callback_probe import V4_GOAL4693_SPECIALIZED_HIT_CALLBACK_PROBE_STATUS
+from .v4_goal4693_specialized_hit_callback_probe import validate_v4_goal4693_specialized_hit_callback_probe_contract
+from .v4_goal4694_specialized_hit_overhead_protocol import V4_GOAL4694_NEXT_GOAL
+from .v4_goal4694_specialized_hit_overhead_protocol import V4_GOAL4694_SPECIALIZED_HIT_OVERHEAD_PROTOCOL_STATUS
+from .v4_goal4694_specialized_hit_overhead_protocol import validate_v4_goal4694_specialized_hit_overhead_protocol
+from .v4_goal4694_specialized_hit_overhead_protocol import v4_goal4694_specialized_hit_overhead_protocol
+from .v4_goal4695_specialized_hit_overhead_measurement import V4_GOAL4695_NEXT_GOAL
+from .v4_goal4695_specialized_hit_overhead_measurement import V4_GOAL4695_SPECIALIZED_HIT_OVERHEAD_MEASUREMENT_STATUS
+from .v4_goal4695_specialized_hit_overhead_measurement import classify_v4_goal4695_hit_overhead_ratio
+from .v4_goal4695_specialized_hit_overhead_measurement import validate_v4_goal4695_specialized_hit_overhead_measurement_contract
+from .v4_goal4696_tier3_productization_decision import V4_GOAL4696_NEXT_GOAL
+from .v4_goal4696_tier3_productization_decision import V4_GOAL4696_TIER3_PRODUCTIZATION_DECISION_STATUS
+from .v4_goal4696_tier3_productization_decision import validate_v4_goal4696_tier3_productization_decision
+from .v4_goal4696_tier3_productization_decision import v4_goal4696_tier3_productization_decision
+from .v4_goal4697_specialized_tier3_api_contract import V4_GOAL4697_ACCEPTED_STATUS
+from .v4_goal4697_specialized_tier3_api_contract import V4_GOAL4697_NEXT_GOAL
+from .v4_goal4697_specialized_tier3_api_contract import V4_GOAL4697_REJECTED_ACTION_STATUS
+from .v4_goal4697_specialized_tier3_api_contract import V4_GOAL4697_REJECTED_ARBITRARY_PYTHON_STATUS
+from .v4_goal4697_specialized_tier3_api_contract import V4_GOAL4697_REJECTED_EXTERNAL_MEMORY_STATUS
+from .v4_goal4697_specialized_tier3_api_contract import V4_GOAL4697_REJECTED_NON_SCALAR_STATUS
+from .v4_goal4697_specialized_tier3_api_contract import V4_GOAL4697_REJECTED_SBT_STATUS
+from .v4_goal4697_specialized_tier3_api_contract import V4_GOAL4697_SPECIALIZED_TIER3_API_CONTRACT_STATUS
+from .v4_goal4697_specialized_tier3_api_contract import plan_v4_goal4697_specialized_tier3_callback_contract
+from .v4_goal4697_specialized_tier3_api_contract import validate_v4_goal4697_specialized_tier3_api_contract
+from .v4_goal4697_specialized_tier3_api_contract import v4_goal4697_specialized_tier3_api_contract
+from .v4_goal4698_specialized_tier3_compile_cache import V4_GOAL4698_COMPILE_READY_STAGE
+from .v4_goal4698_specialized_tier3_compile_cache import V4_GOAL4698_NEXT_GOAL
+from .v4_goal4698_specialized_tier3_compile_cache import V4_GOAL4698_SPECIALIZED_TIER3_COMPILE_CACHE_STATUS
+from .v4_goal4698_specialized_tier3_compile_cache import canonicalize_v4_goal4698_callback_ptx_for_cache
+from .v4_goal4698_specialized_tier3_compile_cache import classify_v4_goal4698_compile_failure
+from .v4_goal4698_specialized_tier3_compile_cache import plan_v4_goal4698_specialized_tier3_compile
+from .v4_goal4698_specialized_tier3_compile_cache import validate_v4_goal4698_specialized_tier3_compile_cache
+from .v4_goal4698_specialized_tier3_compile_cache import v4_goal4698_specialized_tier3_cache_key
+from .v4_goal4699_specialized_tier3_app_route_protocol import V4_GOAL4699_NEXT_GOAL
+from .v4_goal4699_specialized_tier3_app_route_protocol import V4_GOAL4699_SPECIALIZED_TIER3_APP_ROUTE_PROTOCOL_STATUS
+from .v4_goal4699_specialized_tier3_app_route_protocol import validate_v4_goal4699_specialized_tier3_app_route_protocol
+from .v4_goal4699_specialized_tier3_app_route_protocol import v4_goal4699_specialized_tier3_app_route_protocol
+from .v4_goal4700_specialized_tier3_app_route_result import V4_GOAL4700_NEXT_GOAL_IF_FAIL
+from .v4_goal4700_specialized_tier3_app_route_result import V4_GOAL4700_NEXT_GOAL_IF_PASS
+from .v4_goal4700_specialized_tier3_app_route_result import V4_GOAL4700_SPECIALIZED_TIER3_APP_ROUTE_RESULT_STATUS
+from .v4_goal4700_specialized_tier3_app_route_result import classify_v4_goal4700_specialized_tier3_app_route_result
+from .v4_goal4700_specialized_tier3_app_route_result import validate_v4_goal4700_specialized_tier3_app_route_result_contract
+from .v4_goal4701_specialized_tier3_support_candidate import V4_GOAL4701_CANDIDATE_LABEL
+from .v4_goal4701_specialized_tier3_support_candidate import V4_GOAL4701_NEXT_GOAL
+from .v4_goal4701_specialized_tier3_support_candidate import V4_GOAL4701_SPECIALIZED_TIER3_SUPPORT_CANDIDATE_STATUS
+from .v4_goal4701_specialized_tier3_support_candidate import validate_v4_goal4701_specialized_tier3_support_candidate
+from .v4_goal4701_specialized_tier3_support_candidate import v4_goal4701_specialized_tier3_support_candidate
+from .v4_goal4702_specialized_tier3_reliability_protocol import V4_GOAL4702_NEXT_GOAL
+from .v4_goal4702_specialized_tier3_reliability_protocol import V4_GOAL4702_SPECIALIZED_TIER3_RELIABILITY_PROTOCOL_STATUS
+from .v4_goal4702_specialized_tier3_reliability_protocol import validate_v4_goal4702_specialized_tier3_reliability_protocol
+from .v4_goal4702_specialized_tier3_reliability_protocol import v4_goal4702_specialized_tier3_reliability_protocol
+from .v4_goal4703_specialized_tier3_reliability_result import V4_GOAL4703_NEXT_GOAL_IF_FAIL
+from .v4_goal4703_specialized_tier3_reliability_result import V4_GOAL4703_NEXT_GOAL_IF_PASS
+from .v4_goal4703_specialized_tier3_reliability_result import V4_GOAL4703_SPECIALIZED_TIER3_RELIABILITY_RESULT_STATUS
+from .v4_goal4703_specialized_tier3_reliability_result import classify_v4_goal4703_specialized_tier3_reliability_result
+from .v4_goal4703_specialized_tier3_reliability_result import validate_v4_goal4703_specialized_tier3_reliability_result_contract
+from .v4_goal4704_specialized_tier3_support_wording import V4_GOAL4704_CANDIDATE_LABEL
+from .v4_goal4704_specialized_tier3_support_wording import V4_GOAL4704_NEXT_GOAL
+from .v4_goal4704_specialized_tier3_support_wording import V4_GOAL4704_SPECIALIZED_TIER3_SUPPORT_WORDING_STATUS
+from .v4_goal4704_specialized_tier3_support_wording import validate_v4_goal4704_specialized_tier3_support_wording
+from .v4_goal4704_specialized_tier3_support_wording import v4_goal4704_specialized_tier3_support_wording_gate
+from .v4_goal4705_source_ptx_cache_stability import V4_GOAL4705_NEXT_GOAL
+from .v4_goal4705_source_ptx_cache_stability import V4_GOAL4705_SOURCE_PTX_CACHE_STABILITY_STATUS
+from .v4_goal4705_source_ptx_cache_stability import classify_v4_goal4705_source_ptx_cache_stability
+from .v4_goal4705_source_ptx_cache_stability import validate_v4_goal4705_source_ptx_cache_stability_contract
+from .v4_goal4706_negative_validation_docs_gate import V4_GOAL4706_NEGATIVE_VALIDATION_DOCS_STATUS
+from .v4_goal4706_negative_validation_docs_gate import V4_GOAL4706_NEXT_GOAL
+from .v4_goal4706_negative_validation_docs_gate import validate_v4_goal4706_negative_validation_docs_gate
+from .v4_goal4706_negative_validation_docs_gate import v4_goal4706_negative_validation_docs_gate
+from .v4_goal4708_app_value_route_selection import V4_GOAL4708_APP_VALUE_ROUTE_SELECTION_STATUS
+from .v4_goal4708_app_value_route_selection import V4_GOAL4708_NEXT_GOAL
+from .v4_goal4708_app_value_route_selection import validate_v4_goal4708_app_value_route_selection
+from .v4_goal4708_app_value_route_selection import v4_goal4708_app_value_route_selection
+from .v4_goal4709_formal_hp_app_target_selection import V4_GOAL4709_FORMAL_HP_APP_TARGET_SELECTION_STATUS
+from .v4_goal4709_formal_hp_app_target_selection import V4_GOAL4709_NEXT_GOAL
+from .v4_goal4709_formal_hp_app_target_selection import V4_GOAL4709_SELECTED_APP
+from .v4_goal4709_formal_hp_app_target_selection import validate_v4_goal4709_formal_hp_app_target_selection
+from .v4_goal4709_formal_hp_app_target_selection import v4_goal4709_formal_hp_app_target_selection
+from .v4_goal4710_custom_scored_app_protocol import V4_GOAL4710_CUSTOM_SCORED_APP_PROTOCOL_STATUS
+from .v4_goal4710_custom_scored_app_protocol import V4_GOAL4710_NEXT_GOAL
+from .v4_goal4710_custom_scored_app_protocol import validate_v4_goal4710_custom_scored_app_protocol
+from .v4_goal4710_custom_scored_app_protocol import v4_goal4710_custom_scored_app_protocol
+from .v4_goal4711_custom_scored_app_result import V4_GOAL4711_CUSTOM_SCORED_APP_RESULT_STATUS
+from .v4_goal4711_custom_scored_app_result import V4_GOAL4711_NEXT_GOAL_IF_FAIL
+from .v4_goal4711_custom_scored_app_result import V4_GOAL4711_NEXT_GOAL_IF_PASS
+from .v4_goal4711_custom_scored_app_result import classify_v4_goal4711_custom_scored_app_result
+from .v4_goal4711_custom_scored_app_result import validate_v4_goal4711_custom_scored_app_result_contract
+from .v4_goal4712_next_lever_after_custom_scored_failure import V4_GOAL4712_NEXT_GOAL
+from .v4_goal4712_next_lever_after_custom_scored_failure import V4_GOAL4712_NEXT_LEVER_STATUS
+from .v4_goal4712_next_lever_after_custom_scored_failure import V4_GOAL4712_SELECTED_TARGET
+from .v4_goal4712_next_lever_after_custom_scored_failure import validate_v4_goal4712_next_lever_after_custom_scored_failure
+from .v4_goal4712_next_lever_after_custom_scored_failure import v4_goal4712_next_lever_after_custom_scored_failure
+from .v4_goal4713_custom_predicate_early_exit_protocol import V4_GOAL4713_APP
+from .v4_goal4713_custom_predicate_early_exit_protocol import V4_GOAL4713_NEXT_GOAL
+from .v4_goal4713_custom_predicate_early_exit_protocol import V4_GOAL4713_PROTOCOL_STATUS
+from .v4_goal4713_custom_predicate_early_exit_protocol import validate_v4_goal4713_custom_predicate_early_exit_protocol
+from .v4_goal4713_custom_predicate_early_exit_protocol import v4_goal4713_custom_predicate_early_exit_protocol
+from .v4_goal4714_custom_predicate_early_exit_smoke_result import V4_GOAL4714_NEXT_GOAL_IF_FAIL
+from .v4_goal4714_custom_predicate_early_exit_smoke_result import V4_GOAL4714_NEXT_GOAL_IF_PASS
+from .v4_goal4714_custom_predicate_early_exit_smoke_result import V4_GOAL4714_SMOKE_STATUS
+from .v4_goal4714_custom_predicate_early_exit_smoke_result import classify_v4_goal4714_custom_predicate_early_exit_smoke
+from .v4_goal4714_custom_predicate_early_exit_smoke_result import validate_v4_goal4714_custom_predicate_early_exit_smoke_result_contract
+from .v4_goal4715_custom_predicate_early_exit_timing_result import V4_GOAL4715_NEXT_GOAL_IF_FAIL
+from .v4_goal4715_custom_predicate_early_exit_timing_result import V4_GOAL4715_NEXT_GOAL_IF_PASS
+from .v4_goal4715_custom_predicate_early_exit_timing_result import V4_GOAL4715_TIMING_STATUS
+from .v4_goal4715_custom_predicate_early_exit_timing_result import classify_v4_goal4715_custom_predicate_early_exit_timing
+from .v4_goal4715_custom_predicate_early_exit_timing_result import validate_v4_goal4715_custom_predicate_early_exit_timing_result_contract
+from .v4_app_benchmark_protocol import V4_GOAL4653_PROTOCOL_STATUS
+from .v4_app_benchmark_protocol import validate_v4_goal4653_protocol
+from .v4_app_benchmark_protocol import v4_goal4653_protocol_rows
+from .v4_app_benchmark_protocol import v4_goal4653_protocol_summary
+from .v4_app_benchmark_analysis import analyze_goal4654_summary
+from .v4_app_benchmark_analysis import load_goal4654_summary
+from .v4_numba_fixed_continuation_certification import V4_GOAL4650_NUMBA_FIXED_CERTIFICATION_STATUS
+from .v4_numba_fixed_continuation_certification import validate_v4_goal4650_numba_fixed_certification
+from .v4_numba_fixed_continuation_certification import v4_goal4650_numba_fixed_certification
 from .v4_operator_catalog import V4_OPERATOR_CATALOG_STATUS
 from .v4_operator_catalog import V4OperatorPlan
 from .v4_operator_catalog import V4PushdownRecognition
 from .v4_operator_catalog import candidate_v4_tier2_operator_catalog
+from .v4_operator_catalog import certified_v4_partner_operator_catalog
 from .v4_operator_catalog import measured_v4_tier2_operator_catalog
 from .v4_operator_catalog import plan_v4_operator_request
 from .v4_operator_catalog import recognize_v4_pushdown_request
+from .v4_partner_promotion_contract import V4_GOAL4648_PARTNER_PROMOTION_CONTRACT_STATUS
+from .v4_partner_promotion_contract import v4_partner_promotion_candidate_allowed
+from .v4_partner_promotion_contract import v4_partner_promotion_contract
+from .v4_partner_promotion_contract import v4_partner_promotion_contracts
 from .v4_point_group import V4_POINT_GROUP_NEAREST_WITNESS_DEVICE_ARRAY_SURFACE
 from .v4_point_group import V4PointGroupNearestWitness2DDeviceArraySession
 from .v4_point_group import allocate_point_group_nearest_witness_2d_device_array_outputs_v4
 from .v4_point_group import point_group_nearest_witness_2d_device_array_claim_boundary_v4
 from .v4_point_group import prepare_point_group_nearest_witness_2d_device_arrays_v4
+from .v4_ranked_summary import V4_FIXED_RADIUS_RANKED_SUMMARY_3D_CANDIDATE_STATUS
+from .v4_ranked_summary import V4_FIXED_RADIUS_RANKED_SUMMARY_3D_DEFERRED_STATUS
+from .v4_ranked_summary import V4_FIXED_RADIUS_RANKED_SUMMARY_3D_PREPARED_RUNNER_SURFACE
+from .v4_ranked_summary import fixed_radius_ranked_summary_3d_prepared_runner_claim_boundary_v4
+from .v4_ranked_summary import run_fixed_radius_ranked_summary_3d_prepared_runner_v4
 from .v4_ray_triangle import V4_CLOSEST_HIT_GROUPED_ARGMIN_DEVICE_ARRAY_SURFACE
 from .v4_ray_triangle import V4_PRIMITIVE_GROUPED_I64_REDUCTION_DEVICE_ARRAY_SURFACE
 from .v4_ray_triangle import V4_RAY_TRIANGLE_ANY_HIT_FLAGS_DEVICE_ARRAY_SURFACE
@@ -44,13 +263,21 @@ from .v4_ray_triangle import ray_triangle_any_hit_weighted_sum_3d_device_array_c
 from .v4_scope import V4ScopeGate
 from .v4_scope import v4_0_scope_gate
 from .v4_scope import validate_v4_0_scope_gate
+from .v4_shape_pair_relation import V4ShapePairRelationActiveCount2DPreparedLeftExecutor
+from .v4_shape_pair_relation import prepare_shape_pair_relation_active_count_2d_prepared_left_executor_v4
+from .v4_shape_pair_relation import shape_pair_relation_active_count_2d_prepared_left_executor_claim_boundary_v4
 
 
-V4_FRONT_DOOR_STATUS = "v4_0_0_formal_release_front_door"
-V4_FRONT_DOOR_MEASURED_PARTNER = "mixed_torch_numba_and_rtdl_native"
+V4_FRONT_DOOR_STATUS = "v4_python_edsl_operator_pushdown_front_door_goal4756_complete_rt_core_matrix"
+V4_FRONT_DOOR_MEASURED_PARTNER = "mixed_torch_numba_cupy_and_rtdl_native"
+V4_GOAL4756_DECISION_LABEL = (
+    "complete_rt_core_app_matrix__bounded_material_wins__no_broad_all_app_speedup_claim"
+)
 V4_AUTHORIZED_RELEASE_LABEL = (
-    "RTDL v4.0.0 bounded operator release: 8 generic RT-core operators "
-    "faster than brute-force partner/CPU baselines"
+    "RTDL V4.0 Python eDSL/operator-pushdown release candidate and V2/V3 "
+    "superset: complete 10-app NVIDIA RT-core V2.14/V3.0.2/V4.0 matrix, "
+    "bounded material wins, and measured generic operator surfaces; broad "
+    "all-benchmark speedup remains unauthorized"
 )
 
 
@@ -58,24 +285,59 @@ def claim_boundary_v4() -> dict[str, object]:
     """Return the unified V4 front-door claim boundary."""
 
     measured_catalog = measured_v4_tier2_operator_catalog()
+    certified_partner_catalog = certified_v4_partner_operator_catalog()
+    candidate_catalog = candidate_v4_tier2_operator_catalog()
+    app_compatibility = validate_v4_app_compatibility_catalog()
     measured_surfaces = tuple(str(row["api_surface"]) for row in measured_catalog)
+    certified_partner_surfaces = tuple(str(row["api_surface"]) for row in certified_partner_catalog)
+    candidate_surfaces = tuple(str(row["api_surface"]) for row in candidate_catalog)
     measured_partners = tuple(
         sorted({str(partner) for row in measured_catalog for partner in row["measured_partners"]})
+    )
+    certified_partners = tuple(
+        sorted({str(partner) for row in certified_partner_catalog for partner in row["measured_partners"]})
     )
     return {
         "status": V4_FRONT_DOOR_STATUS,
         "measured_partner": V4_FRONT_DOOR_MEASURED_PARTNER,
         "measured_partners": measured_partners,
         "measured_surfaces": measured_surfaces,
+        "certified_partners": certified_partners,
+        "certified_partner_surfaces": certified_partner_surfaces,
+        "certified_partner_surface_count": len(certified_partner_surfaces),
         "operator_catalog_status": V4_OPERATOR_CATALOG_STATUS,
-        "candidate_surfaces": (),
-        "formal_release_authorized": True,
+        "app_compatibility_status": V4_APP_COMPATIBILITY_STATUS,
+        "app_compatibility_row_count": app_compatibility["row_count"],
+        "app_compatibility_repair_required_apps": tuple(app_compatibility["repair_required_apps"]),
+        "candidate_surfaces": candidate_surfaces,
+        "measured_surface_count": len(measured_surfaces),
+        "v4_goal4756_decision_label": V4_GOAL4756_DECISION_LABEL,
+        "current_app_level_decision_label": V4_GOAL4756_DECISION_LABEL,
+        "complete_rt_core_app_matrix_available": True,
+        "complete_rt_core_app_matrix_app_count": 10,
+        "complete_rt_core_app_matrix_row_count": 30,
+        "goal4756_hot_path_regression_count": 0,
+        "goal4756_material_hot_path_candidate_apps": ("triangle_counting", "barnes_hut"),
+        "goal4756_v4_over_v2_14_hot_geomean": 2.10069,
+        "v4_python_edsl_release_candidate_supported": True,
+        "operator_pushdown_workflow_high_performance_supported": True,
+        "custom_predicate_early_exit_surface": V4_RAY_TRIANGLE_CUSTOM_PREDICATE_EARLY_EXIT_SURFACE,
+        "custom_predicate_early_exit_serious_scale_v3_geomean": 4.632757911153888,
+        "custom_predicate_early_exit_serious_scale_min_v3": 2.054686620906942,
+        "formal_release_authorized": False,
         "authorized_release_label": V4_AUTHORIZED_RELEASE_LABEL,
+        "bounded_operator_surface_available": True,
+        "app_level_high_performance_authorized": False,
+        "all_historical_benchmark_apps_faster_claim_authorized": False,
+        "broad_v4_over_v2_14_speedup_claim_authorized": False,
         "release_claim_authorized": False,
         "broad_v4_speedup_claim_authorized": False,
         "whole_app_speedup_claim_authorized": False,
         "true_zero_copy_authorized": False,
         "tier3_callback_claim_authorized": False,
+        "tier3_specialized_callback_candidate_label": V4_GOAL4704_CANDIDATE_LABEL,
+        "tier3_specialized_callback_candidate_status": V4_GOAL4704_SPECIALIZED_TIER3_SUPPORT_WORDING_STATUS,
+        "tier3_specialized_callback_public_support_authorized": False,
         "raw_optix_callback_claim_authorized": False,
         "cupy_performance_claim_authorized": False,
         "embedding_c_abi_claim_authorized": False,
@@ -94,6 +356,12 @@ def candidate_operator_catalog_v4() -> list[dict[str, object]]:
     """Return non-release V4 Tier-2 candidates through the unified front door."""
 
     return candidate_v4_tier2_operator_catalog()
+
+
+def certified_partner_catalog_v4() -> list[dict[str, object]]:
+    """Return V4 certified partner surfaces through the unified front door."""
+
+    return certified_v4_partner_operator_catalog()
 
 
 def plan_operator_request_v4(*args, **kwargs) -> V4OperatorPlan:
@@ -115,9 +383,179 @@ __all__ = [
     "claim_boundary_v4",
     "measured_operator_catalog_v4",
     "candidate_operator_catalog_v4",
+    "certified_partner_catalog_v4",
     "plan_operator_request_v4",
     "recognize_pushdown_request_v4",
+    "V4_GOAL4648_PARTNER_PROMOTION_CONTRACT_STATUS",
+    "v4_partner_promotion_contracts",
+    "v4_partner_promotion_contract",
+    "v4_partner_promotion_candidate_allowed",
+    "V4_GOAL4649_CUPY_CERTIFICATION_STATUS",
+    "v4_goal4649_cupy_certification_targets",
+    "v4_goal4649_ready_cupy_targets",
+    "v4_goal4649_target_by_id",
+    "V4_GOAL4652_APP_ROUTE_BINDING_STATUS",
+    "v4_goal4652_app_route_bindings",
+    "v4_goal4652_route_binding_summary",
+    "validate_v4_goal4652_app_route_bindings",
+    "V4_GOAL4676_PROTOCOL_STATUS",
+    "v4_goal4676_aggregate_frontier_protocol",
+    "validate_v4_goal4676_aggregate_frontier_protocol",
+    "V4_GOAL4677_AGGREGATE_FRONTIER_PROMOTION_STATUS",
+    "v4_goal4677_aggregate_frontier_promotion_decision",
+    "validate_v4_goal4677_aggregate_frontier_promotion",
+    "V4_GOAL4678_RANKED_SUMMARY_DISPOSITION_STATUS",
+    "v4_goal4678_ranked_summary_disposition",
+    "validate_v4_goal4678_ranked_summary_disposition",
+    "V4_GOAL4679_RELATION_TOPOLOGY_TARGET_STATUS",
+    "v4_goal4679_relation_topology_target",
+    "validate_v4_goal4679_relation_topology_target",
+    "V4_GOAL4680_SHAPE_PAIR_RELATION_PROTOCOL_STATUS",
+    "v4_goal4680_shape_pair_relation_protocol",
+    "validate_v4_goal4680_shape_pair_relation_protocol",
+    "V4_GOAL4681_SHAPE_PAIR_RELATION_RESULT_STATUS",
+    "v4_goal4681_shape_pair_relation_result",
+    "validate_v4_goal4681_shape_pair_relation_result",
+    "V4_GOAL4682_NEXT_TARGET_STATUS",
+    "v4_goal4682_next_target_after_shape_pair",
+    "validate_v4_goal4682_next_target_after_shape_pair",
+    "V4_GOAL4683_CONTACT_WITNESS_AUDIT_STATUS",
+    "V4_GOAL4683_AUDITED_TARGET",
+    "V4_GOAL4683_NEXT_GOAL",
+    "v4_goal4683_contact_witness_design_audit",
+    "validate_v4_goal4683_contact_witness_design_audit",
+    "V4_GOAL4684_TARGET_RESET_STATUS",
+    "V4_GOAL4684_SELECTED_NEXT_TRACK",
+    "V4_GOAL4684_NEXT_GOAL",
+    "v4_goal4684_high_performance_target_reset",
+    "validate_v4_goal4684_high_performance_target_reset",
+    "V4_GOAL4685_TIER3_WRAPPER_ABI_PROTOCOL_STATUS",
+    "V4_GOAL4685_NEXT_GOAL",
+    "v4_goal4685_tier3_wrapper_abi_protocol",
+    "validate_v4_goal4685_tier3_wrapper_abi_protocol",
+    "V4_GOAL4686_TIER3_WRAPPER_ABI_SCAFFOLD_STATUS",
+    "V4_GOAL4686_NEXT_GOAL",
+    "V4_GOAL4686_CALLBACK_SYMBOL",
+    "v4_goal4686_tier3_wrapper_abi_scaffold",
+    "validate_v4_goal4686_tier3_wrapper_abi_scaffold",
+    "V4_GOAL4687_TIER3_WRAPPER_COMPILE_PROBE_STATUS",
+    "V4_GOAL4687_NEXT_GOAL",
+    "extract_numba_callback_symbol_from_ptx",
+    "specialize_semantic_wrapper_source",
+    "validate_v4_goal4687_tier3_wrapper_compile_probe_contract",
+    "V4_GOAL4688_TIER3_MODULE_LINK_PROBE_STATUS",
+    "V4_GOAL4688_NEXT_GOAL",
+    "compose_goal4688_combined_ptx",
+    "validate_v4_goal4688_tier3_module_link_probe_contract",
+    "V4_GOAL4689_TIER3_MINIMAL_LAUNCH_PROBE_STATUS",
+    "V4_GOAL4689_NEXT_GOAL",
+    "V4_GOAL4689_EXPECTED_OUTPUT",
+    "validate_v4_goal4689_tier3_minimal_launch_probe_contract",
+    "V4_GOAL4690_TIER3_OVERHEAD_PROTOCOL_STATUS",
+    "V4_GOAL4690_NEXT_GOAL",
+    "v4_goal4690_tier3_overhead_protocol",
+    "validate_v4_goal4690_tier3_overhead_protocol",
+    "V4_GOAL4691_TIER3_OVERHEAD_MEASUREMENT_STATUS",
+    "V4_GOAL4691_NEXT_GOAL",
+    "classify_v4_goal4691_overhead_ratio",
+    "validate_v4_goal4691_tier3_overhead_measurement_contract",
+    "V4_GOAL4692_TIER3_SUPPORT_DECISION_STATUS",
+    "V4_GOAL4692_NEXT_GOAL",
+    "v4_goal4692_tier3_support_decision",
+    "validate_v4_goal4692_tier3_support_decision",
+    "V4_GOAL4693_SPECIALIZED_HIT_CALLBACK_PROBE_STATUS",
+    "V4_GOAL4693_NEXT_GOAL",
+    "V4_GOAL4693_EXPECTED_OUTPUT",
+    "validate_v4_goal4693_specialized_hit_callback_probe_contract",
+    "V4_GOAL4694_SPECIALIZED_HIT_OVERHEAD_PROTOCOL_STATUS",
+    "V4_GOAL4694_NEXT_GOAL",
+    "v4_goal4694_specialized_hit_overhead_protocol",
+    "validate_v4_goal4694_specialized_hit_overhead_protocol",
+    "V4_GOAL4695_SPECIALIZED_HIT_OVERHEAD_MEASUREMENT_STATUS",
+    "V4_GOAL4695_NEXT_GOAL",
+    "classify_v4_goal4695_hit_overhead_ratio",
+    "validate_v4_goal4695_specialized_hit_overhead_measurement_contract",
+    "V4_GOAL4696_TIER3_PRODUCTIZATION_DECISION_STATUS",
+    "V4_GOAL4696_NEXT_GOAL",
+    "v4_goal4696_tier3_productization_decision",
+    "validate_v4_goal4696_tier3_productization_decision",
+    "V4_GOAL4697_SPECIALIZED_TIER3_API_CONTRACT_STATUS",
+    "V4_GOAL4697_NEXT_GOAL",
+    "V4_GOAL4697_ACCEPTED_STATUS",
+    "V4_GOAL4697_REJECTED_ARBITRARY_PYTHON_STATUS",
+    "V4_GOAL4697_REJECTED_ACTION_STATUS",
+    "V4_GOAL4697_REJECTED_EXTERNAL_MEMORY_STATUS",
+    "V4_GOAL4697_REJECTED_SBT_STATUS",
+    "V4_GOAL4697_REJECTED_NON_SCALAR_STATUS",
+    "v4_goal4697_specialized_tier3_api_contract",
+    "plan_v4_goal4697_specialized_tier3_callback_contract",
+    "validate_v4_goal4697_specialized_tier3_api_contract",
+    "V4_GOAL4698_SPECIALIZED_TIER3_COMPILE_CACHE_STATUS",
+    "V4_GOAL4698_NEXT_GOAL",
+    "V4_GOAL4698_COMPILE_READY_STAGE",
+    "v4_goal4698_specialized_tier3_cache_key",
+    "canonicalize_v4_goal4698_callback_ptx_for_cache",
+    "classify_v4_goal4698_compile_failure",
+    "plan_v4_goal4698_specialized_tier3_compile",
+    "validate_v4_goal4698_specialized_tier3_compile_cache",
+    "V4_GOAL4699_SPECIALIZED_TIER3_APP_ROUTE_PROTOCOL_STATUS",
+    "V4_GOAL4699_NEXT_GOAL",
+    "v4_goal4699_specialized_tier3_app_route_protocol",
+    "validate_v4_goal4699_specialized_tier3_app_route_protocol",
+    "V4_GOAL4700_SPECIALIZED_TIER3_APP_ROUTE_RESULT_STATUS",
+    "V4_GOAL4700_NEXT_GOAL_IF_PASS",
+    "V4_GOAL4700_NEXT_GOAL_IF_FAIL",
+    "classify_v4_goal4700_specialized_tier3_app_route_result",
+    "validate_v4_goal4700_specialized_tier3_app_route_result_contract",
+    "V4_GOAL4711_CUSTOM_SCORED_APP_RESULT_STATUS",
+    "V4_GOAL4711_NEXT_GOAL_IF_PASS",
+    "V4_GOAL4711_NEXT_GOAL_IF_FAIL",
+    "classify_v4_goal4711_custom_scored_app_result",
+    "validate_v4_goal4711_custom_scored_app_result_contract",
+    "V4_GOAL4712_NEXT_LEVER_STATUS",
+    "V4_GOAL4712_SELECTED_TARGET",
+    "V4_GOAL4712_NEXT_GOAL",
+    "v4_goal4712_next_lever_after_custom_scored_failure",
+    "validate_v4_goal4712_next_lever_after_custom_scored_failure",
+    "V4_GOAL4713_PROTOCOL_STATUS",
+    "V4_GOAL4713_APP",
+    "V4_GOAL4713_NEXT_GOAL",
+    "v4_goal4713_custom_predicate_early_exit_protocol",
+    "validate_v4_goal4713_custom_predicate_early_exit_protocol",
+    "V4_GOAL4714_SMOKE_STATUS",
+    "V4_GOAL4714_NEXT_GOAL_IF_PASS",
+    "V4_GOAL4714_NEXT_GOAL_IF_FAIL",
+    "classify_v4_goal4714_custom_predicate_early_exit_smoke",
+    "validate_v4_goal4714_custom_predicate_early_exit_smoke_result_contract",
+    "V4_GOAL4715_TIMING_STATUS",
+    "V4_GOAL4715_NEXT_GOAL_IF_PASS",
+    "V4_GOAL4715_NEXT_GOAL_IF_FAIL",
+    "classify_v4_goal4715_custom_predicate_early_exit_timing",
+    "validate_v4_goal4715_custom_predicate_early_exit_timing_result_contract",
+    "V4_RAY_TRIANGLE_CUSTOM_PREDICATE_EARLY_EXIT_SURFACE",
+    "V4_RAY_TRIANGLE_CUSTOM_PREDICATE_EARLY_EXIT_STATUS",
+    "V4_RAY_TRIANGLE_CUSTOM_PREDICATE_EARLY_EXIT_PRIMITIVE",
+    "V4CustomPredicateEarlyExitPlan",
+    "V4RayTriangleCustomPredicateEarlyExit3DNumbaSession",
+    "ray_triangle_custom_predicate_early_exit_claim_boundary_v4",
+    "plan_ray_triangle_custom_predicate_early_exit_v4",
+    "prepare_ray_triangle_custom_predicate_early_exit_3d_numba_v4",
+    "V4_GOAL4701_SPECIALIZED_TIER3_SUPPORT_CANDIDATE_STATUS",
+    "V4_GOAL4701_CANDIDATE_LABEL",
+    "V4_GOAL4701_NEXT_GOAL",
+    "v4_goal4701_specialized_tier3_support_candidate",
+    "validate_v4_goal4701_specialized_tier3_support_candidate",
+    "V4_GOAL4653_PROTOCOL_STATUS",
+    "v4_goal4653_protocol_rows",
+    "v4_goal4653_protocol_summary",
+    "validate_v4_goal4653_protocol",
+    "analyze_goal4654_summary",
+    "load_goal4654_summary",
+    "V4_GOAL4650_NUMBA_FIXED_CERTIFICATION_STATUS",
+    "v4_goal4650_numba_fixed_certification",
+    "validate_v4_goal4650_numba_fixed_certification",
     "V4AabbIndexQuery2DAllOpsCountPreparedRunner",
+    "V4AggregateFrontierDeviceColumns2DPreparedRunner",
     "V4OperatorPlan",
     "V4PushdownRecognition",
     "V4ScopeGate",
@@ -129,9 +567,17 @@ __all__ = [
     "V4PrimitiveGroupedI64Reduction3DDeviceArraySession",
     "V4RayTriangleAnyHitWeightedSum3DDeviceArraySession",
     "V4PointGroupNearestWitness2DDeviceArraySession",
+    "V4ShapePairRelationActiveCount2DPreparedLeftExecutor",
+    "shape_pair_relation_active_count_2d_prepared_left_executor_claim_boundary_v4",
+    "prepare_shape_pair_relation_active_count_2d_prepared_left_executor_v4",
     "V4_AABB_INDEX_ALL_OPS_COUNT_PREPARED_RUNNER_SURFACE",
     "aabb_index_query_2d_all_ops_count_claim_boundary_v4",
     "prepare_aabb_index_query_2d_all_ops_count_prepared_runner_v4",
+    "V4_AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D_CANDIDATE_STATUS",
+    "V4_AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D_MEASURED_STATUS",
+    "V4_AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D_PREPARED_RUNNER_SURFACE",
+    "aggregate_frontier_device_columns_2d_prepared_runner_claim_boundary_v4",
+    "prepare_aggregate_frontier_device_columns_2d_prepared_runner_v4",
     "fixed_radius_count_threshold_2d_device_array_claim_boundary_v4",
     "prepare_fixed_radius_count_threshold_2d_device_arrays_v4",
     "allocate_fixed_radius_count_threshold_2d_device_array_outputs_v4",
@@ -150,4 +596,9 @@ __all__ = [
     "point_group_nearest_witness_2d_device_array_claim_boundary_v4",
     "prepare_point_group_nearest_witness_2d_device_arrays_v4",
     "allocate_point_group_nearest_witness_2d_device_array_outputs_v4",
+    "V4_FIXED_RADIUS_RANKED_SUMMARY_3D_CANDIDATE_STATUS",
+    "V4_FIXED_RADIUS_RANKED_SUMMARY_3D_DEFERRED_STATUS",
+    "V4_FIXED_RADIUS_RANKED_SUMMARY_3D_PREPARED_RUNNER_SURFACE",
+    "fixed_radius_ranked_summary_3d_prepared_runner_claim_boundary_v4",
+    "run_fixed_radius_ranked_summary_3d_prepared_runner_v4",
 ]

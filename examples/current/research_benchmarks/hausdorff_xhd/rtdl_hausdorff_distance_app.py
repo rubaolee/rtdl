@@ -14,6 +14,7 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
 import rtdsl as rt
+import rtdsl.v4_point_group as pg_v4
 from rtdsl.optix_runtime import prepare_optix_point_group_nearest_witness_2d
 from rtdsl.reference import Point
 
@@ -802,37 +803,71 @@ def _points_to_cupy_query_columns(cp, points: tuple[Point, ...]) -> dict[str, ob
     }
 
 
-def _cupy_global_argmax_u32_f64_with_neighbor(cp, item_ids, neighbor_ids, scores) -> dict[str, object]:
-    invalid = cp.uint32(0xFFFFFFFF)
-    valid = (item_ids != invalid) & cp.isfinite(scores)
-    safe_scores = cp.where(valid, scores, cp.asarray(-float("inf"), dtype=cp.float64))
-    best_score = cp.max(safe_scores)
-    candidate = valid & (scores == best_score)
-    item_ids_u64 = item_ids.astype(cp.uint64, copy=False)
-    max_u64 = cp.asarray(0xFFFFFFFFFFFFFFFF, dtype=cp.uint64)
-    best_item = cp.min(cp.where(candidate, item_ids_u64, max_u64))
-    row_indices = cp.arange(item_ids.shape[0], dtype=cp.int64)
-    max_i64 = cp.asarray(0x7FFFFFFFFFFFFFFF, dtype=cp.int64)
-    best_row = cp.min(cp.where(candidate & (item_ids_u64 == best_item), row_indices, max_i64))
+def _points_to_torch_query_columns(torch, points: tuple[Point, ...]) -> dict[str, object]:
+    device = torch.device("cuda:0")
     return {
-        "columns": {
-            "item_ids": best_item.astype(cp.uint32, copy=False).reshape((1,)),
-            "scores": best_score.reshape((1,)),
-            "row_indices": best_row.reshape((1,)),
-            "neighbor_ids": neighbor_ids[best_row].reshape((1,)),
-            "valid_count": cp.sum(valid).astype(cp.int64, copy=False).reshape((1,)),
-        },
-        "metadata": {
-            "adapter": "hausdorff_app_cupy_global_argmax_u32_f64",
-            "partner": "cupy",
-            "operation": "global_argmax_u32_f64",
-            "contract": "generic_global_argmax_u32_f64",
-            "host_valid_count_check_used": False,
-            "host_row_materialization_used": False,
-            "rt_core_speedup_claim_authorized": False,
-            "public_speedup_claim_authorized": False,
-        },
+        "ids": torch.tensor([int(point.id) for point in points], dtype=torch.uint32, device=device),
+        "x": torch.tensor([float(point.x) for point in points], dtype=torch.float64, device=device),
+        "y": torch.tensor([float(point.y) for point in points], dtype=torch.float64, device=device),
     }
+
+
+def _normalize_points(points: tuple[Point, ...], *, origin_x: float, origin_y: float) -> tuple[Point, ...]:
+    return tuple(
+        Point(id=int(point.id), x=float(point.x) - float(origin_x), y=float(point.y) - float(origin_y))
+        for point in points
+    )
+
+
+def _split_source_by_coordinate_span(
+    source: tuple[Point, ...],
+    *,
+    max_span: float,
+) -> tuple[tuple[Point, ...], ...]:
+    if max_span <= 0.0:
+        raise ValueError("coordinate normalization span must be positive")
+    ordered = sorted(source, key=lambda point: (float(point.x), float(point.y), int(point.id)))
+    chunks: list[tuple[Point, ...]] = []
+    start = 0
+    while start < len(ordered):
+        min_x = float(ordered[start].x)
+        end = start + 1
+        while end < len(ordered) and float(ordered[end].x) - min_x <= max_span:
+            end += 1
+        chunk = tuple(sorted(ordered[start:end], key=lambda point: int(point.id)))
+        chunks.append(chunk)
+        start = end
+    return tuple(chunks)
+
+
+def _target_halo_for_source_chunk(
+    target: tuple[Point, ...],
+    source_chunk: tuple[Point, ...],
+    *,
+    radius: float,
+) -> tuple[Point, ...]:
+    min_x = min(float(point.x) for point in source_chunk) - float(radius)
+    max_x = max(float(point.x) for point in source_chunk) + float(radius)
+    min_y = min(float(point.y) for point in source_chunk) - float(radius)
+    max_y = max(float(point.y) for point in source_chunk) + float(radius)
+    return tuple(
+        point
+        for point in target
+        if min_x <= float(point.x) <= max_x and min_y <= float(point.y) <= max_y
+    )
+
+
+def _best_directed_result(rows: list[dict[str, object]]) -> dict[str, object]:
+    if not rows:
+        raise RuntimeError("chunked max-nearest produced no directed rows")
+    return max(
+        rows,
+        key=lambda row: (
+            float(row["distance"]),
+            -int(row["source_id"]),
+            -int(row["target_id"]),
+        ),
+    )
 
 
 def _materialize_device_max_nearest_result(cp, partner: str, consumer: dict[str, object], neighbor_ids) -> dict[str, object]:
@@ -841,8 +876,17 @@ def _materialize_device_max_nearest_result(cp, partner: str, consumer: dict[str,
         query_id = int(cp.asnumpy(columns["item_ids"])[0])
         row_index = int(cp.asnumpy(columns["row_indices"])[0])
         distance = float(cp.asnumpy(columns["scores"])[0])
-        neighbor_id = int(cp.asnumpy(columns["neighbor_ids"])[0])
+        if "neighbor_ids" in columns:
+            neighbor_id = int(cp.asnumpy(columns["neighbor_ids"])[0])
+        else:
+            neighbor_id = int(cp.asnumpy(neighbor_ids[row_index : row_index + 1])[0])
         valid_count = int(cp.asnumpy(columns["valid_count"])[0])
+    elif partner == "torch":
+        query_id = int(columns["item_ids"].detach().cpu()[0].item())
+        row_index = int(columns["row_indices"].detach().cpu()[0].item())
+        distance = float(columns["scores"].detach().cpu()[0].item())
+        valid_count = int(columns["valid_count"].detach().cpu()[0].item())
+        neighbor_id = int(neighbor_ids[row_index : row_index + 1].detach().cpu()[0].item())
     elif partner == "numba":
         query_id = int(columns["item_ids"].copy_to_host()[0])
         row_index = int(columns["row_indices"].copy_to_host()[0])
@@ -869,32 +913,81 @@ def _run_optix_device_max_nearest_directed(
     radius: float,
     query_repeat: int,
     warmup: int,
+    coordinate_normalization_span: float | None = None,
 ) -> dict[str, object]:
-    if partner not in {"cupy", "numba"}:
-        raise ValueError("optix_device_max_nearest partner must be 'cupy' or 'numba'")
+    if partner not in {"cupy", "numba", "torch"}:
+        raise ValueError("optix_device_max_nearest partner must be 'cupy', 'numba', or 'torch'")
     if query_repeat <= 0:
         raise ValueError("query_repeat must be positive")
     if warmup < 0:
         raise ValueError("warmup must be non-negative")
-    try:
-        import cupy as cp
-    except Exception as exc:
-        raise RuntimeError("optix_device_max_nearest requires CuPy for device columns") from exc
-
+    if coordinate_normalization_span is not None:
+        span = float(coordinate_normalization_span)
+        if span <= 0.0:
+            raise ValueError("coordinate_normalization_span must be positive")
+        min_x = min(float(point.x) for point in source)
+        max_x = max(float(point.x) for point in source)
+        if max_x - min_x > span:
+            return _run_optix_device_max_nearest_directed_chunked_normalized(
+                source,
+                target,
+                partner=partner,
+                label=label,
+                radius=radius,
+                query_repeat=query_repeat,
+                warmup=warmup,
+                coordinate_normalization_span=span,
+            )
     ordered_target, groups = _make_spatial_point_groups_for_device_nearest(target, radius=radius)
     prepare_start = time.perf_counter()
-    scene = prepare_optix_point_group_nearest_witness_2d(
-        ordered_target,
-        groups,
-        max_radius=radius,
-    )
-    query_columns = _points_to_cupy_query_columns(cp, source)
-    output_columns = {
-        "query_ids": cp.empty((len(source),), dtype=cp.uint32),
-        "neighbor_ids": cp.empty((len(source),), dtype=cp.uint32),
-        "distances": cp.empty((len(source),), dtype=cp.float64),
-    }
-    cp.cuda.runtime.deviceSynchronize()
+    cp = None
+    torch = None
+    scene = None
+    session = None
+    if partner in {"torch", "cupy"}:
+        if partner == "torch":
+            try:
+                import torch
+            except Exception as exc:
+                raise RuntimeError("optix_device_max_nearest partner='torch' requires Torch CUDA") from exc
+        else:
+            try:
+                import cupy as cp
+            except Exception as exc:
+                raise RuntimeError("optix_device_max_nearest partner='cupy' requires CuPy CUDA") from exc
+        session = pg_v4.prepare_point_group_nearest_witness_2d_device_arrays_v4(
+            ordered_target,
+            groups,
+            max_radius=radius,
+            partner=partner,
+        )
+        if partner == "torch":
+            assert torch is not None
+            query_columns = _points_to_torch_query_columns(torch, source)
+            output_columns = session.allocate_outputs(query_columns)
+            torch.cuda.synchronize()
+        else:
+            assert cp is not None
+            query_columns = _points_to_cupy_query_columns(cp, source)
+            output_columns = session.allocate_outputs(query_columns)
+            cp.cuda.runtime.deviceSynchronize()
+    else:
+        try:
+            import cupy as cp
+        except Exception as exc:
+            raise RuntimeError("optix_device_max_nearest partner='numba' requires CuPy device columns") from exc
+        scene = prepare_optix_point_group_nearest_witness_2d(
+            ordered_target,
+            groups,
+            max_radius=radius,
+        )
+        query_columns = _points_to_cupy_query_columns(cp, source)
+        output_columns = {
+            "query_ids": cp.empty((len(source),), dtype=cp.uint32),
+            "neighbor_ids": cp.empty((len(source),), dtype=cp.uint32),
+            "distances": cp.empty((len(source),), dtype=cp.float64),
+        }
+        cp.cuda.runtime.deviceSynchronize()
     prepare_sec = time.perf_counter() - prepare_start
     hot_samples: list[float] = []
     materialize_samples: list[float] = []
@@ -904,33 +997,68 @@ def _run_optix_device_max_nearest_directed(
     try:
         for iteration in range(warmup + query_repeat):
             hot_start = time.perf_counter()
-            producer = scene.write_device_nearest_witness_columns_from_device_query_columns(
-                query_columns,
-                radius=radius,
-                query_ids_out=output_columns["query_ids"],
-                neighbor_ids_out=output_columns["neighbor_ids"],
-                distances_out=output_columns["distances"],
-            )
-            candidate_item_ids = cp.where(
-                output_columns["neighbor_ids"] != cp.uint32(0xFFFFFFFF),
-                output_columns["query_ids"],
-                cp.uint32(0xFFFFFFFF),
-            ).astype(cp.uint32, copy=False)
-            if partner == "cupy":
-                consumer = _cupy_global_argmax_u32_f64_with_neighbor(
-                    cp,
-                    candidate_item_ids,
-                    output_columns["neighbor_ids"],
-                    output_columns["distances"],
+            if partner in {"torch", "cupy"}:
+                assert session is not None
+                producer = session.run(
+                    query_columns,
+                    radius=radius,
+                    output_columns=output_columns,
+                    return_metadata=True,
                 )
+                if partner == "torch":
+                    assert torch is not None
+                    query_ids_i64 = output_columns["query_ids"].to(torch.int64)
+                    neighbor_ids_i64 = output_columns["neighbor_ids"].to(torch.int64)
+                    candidate_item_ids = torch.where(
+                        neighbor_ids_i64.ne(0xFFFFFFFF),
+                        query_ids_i64,
+                        torch.full_like(query_ids_i64, 0xFFFFFFFF),
+                    )
+                    consumer = rt.global_argmax_u32_f64_partner_columns(
+                        {"item_ids": candidate_item_ids, "scores": output_columns["distances"]},
+                        partner="torch",
+                        validate_non_empty_on_host=False,
+                        return_metadata=True,
+                        synchronize=False,
+                    )
+                    torch.cuda.synchronize()
+                else:
+                    assert cp is not None
+                    candidate_item_ids = cp.where(
+                        output_columns["neighbor_ids"] != cp.uint32(0xFFFFFFFF),
+                        output_columns["query_ids"],
+                        cp.uint32(0xFFFFFFFF),
+                    ).astype(cp.uint32, copy=False)
+                    consumer = rt.global_argmax_u32_f64_partner_columns(
+                        {"item_ids": candidate_item_ids, "scores": output_columns["distances"]},
+                        partner="cupy",
+                        validate_non_empty_on_host=False,
+                        return_metadata=True,
+                        synchronize=False,
+                    )
+                    cp.cuda.runtime.deviceSynchronize()
             else:
+                assert scene is not None
+                assert cp is not None
+                producer = scene.write_device_nearest_witness_columns_from_device_query_columns(
+                    query_columns,
+                    radius=radius,
+                    query_ids_out=output_columns["query_ids"],
+                    neighbor_ids_out=output_columns["neighbor_ids"],
+                    distances_out=output_columns["distances"],
+                )
+                candidate_item_ids = cp.where(
+                    output_columns["neighbor_ids"] != cp.uint32(0xFFFFFFFF),
+                    output_columns["query_ids"],
+                    cp.uint32(0xFFFFFFFF),
+                ).astype(cp.uint32, copy=False)
                 consumer = rt.global_argmax_u32_f64_partner_columns(
                     {"item_ids": candidate_item_ids, "scores": output_columns["distances"]},
                     partner="numba",
                     validate_non_empty_on_host=False,
                     return_metadata=True,
                 )
-            cp.cuda.runtime.deviceSynchronize()
+                cp.cuda.runtime.deviceSynchronize()
             hot_elapsed = time.perf_counter() - hot_start
             materialize_start = time.perf_counter()
             materialized = _materialize_device_max_nearest_result(
@@ -947,7 +1075,10 @@ def _run_optix_device_max_nearest_directed(
                 materialize_samples.append(materialize_elapsed)
                 materialized_rows.append(materialized)
     finally:
-        scene.close()
+        if session is not None:
+            session.close()
+        if scene is not None:
+            scene.close()
     if not materialized_rows:
         raise RuntimeError("optix_device_max_nearest produced no measured rows")
     signatures = {
@@ -987,12 +1118,128 @@ def _run_optix_device_max_nearest_directed(
         "producer_metadata": producer_metadata or {},
         "consumer_metadata": consumer_metadata or {},
         "group_count": len(groups),
+        "coordinate_normalization_used": False,
         "run_phases": {
             "prepare_sec": prepare_sec,
             "hot_device_median_sec": float(statistics.median(hot_samples)),
             "hot_device_total_sec": float(sum(hot_samples)),
             "materialize_median_sec": float(statistics.median(materialize_samples)),
             "materialize_total_sec": float(sum(materialize_samples)),
+            "query_repeat": int(query_repeat),
+            "query_warmup": int(warmup),
+        },
+    }
+
+
+def _run_optix_device_max_nearest_directed_chunked_normalized(
+    source: tuple[Point, ...],
+    target: tuple[Point, ...],
+    *,
+    partner: str,
+    label: str,
+    radius: float,
+    query_repeat: int,
+    warmup: int,
+    coordinate_normalization_span: float,
+) -> dict[str, object]:
+    source_chunks = _split_source_by_coordinate_span(
+        source,
+        max_span=float(coordinate_normalization_span),
+    )
+    chunk_results: list[dict[str, object]] = []
+    missing_chunks: list[int] = []
+    for chunk_index, source_chunk in enumerate(source_chunks):
+        target_halo = _target_halo_for_source_chunk(target, source_chunk, radius=radius)
+        if not target_halo:
+            missing_chunks.append(chunk_index)
+            continue
+        origin_x = min(
+            min(float(point.x) for point in source_chunk),
+            min(float(point.x) for point in target_halo),
+        )
+        origin_y = min(
+            min(float(point.y) for point in source_chunk),
+            min(float(point.y) for point in target_halo),
+        )
+        normalized_source = _normalize_points(source_chunk, origin_x=origin_x, origin_y=origin_y)
+        normalized_target = _normalize_points(target_halo, origin_x=origin_x, origin_y=origin_y)
+        chunk = _run_optix_device_max_nearest_directed(
+            normalized_source,
+            normalized_target,
+            partner=partner,
+            label=f"{label}:chunk{chunk_index}",
+            radius=radius,
+            query_repeat=query_repeat,
+            warmup=warmup,
+            coordinate_normalization_span=None,
+        )
+        chunk["coordinate_normalization_origin"] = {"x": origin_x, "y": origin_y}
+        chunk["source_chunk_count"] = len(source_chunk)
+        chunk["target_halo_count"] = len(target_halo)
+        chunk_results.append(chunk)
+    if missing_chunks:
+        raise RuntimeError(f"coordinate-normalized chunks had no target halo: {missing_chunks}")
+    best = _best_directed_result(chunk_results)
+    valid_count = sum(int(row["valid_count"]) for row in chunk_results)
+    prepare_sec = sum(float(row["run_phases"]["prepare_sec"]) for row in chunk_results)
+    hot_device_median_sec = sum(float(row["run_phases"]["hot_device_median_sec"]) for row in chunk_results)
+    hot_device_total_sec = sum(float(row["run_phases"]["hot_device_total_sec"]) for row in chunk_results)
+    materialize_median_sec = sum(float(row["run_phases"]["materialize_median_sec"]) for row in chunk_results)
+    materialize_total_sec = sum(float(row["run_phases"]["materialize_total_sec"]) for row in chunk_results)
+    return {
+        "label": label,
+        "distance": float(best["distance"]),
+        "source_id": int(best["source_id"]),
+        "target_id": int(best["target_id"]),
+        "row_count": len(source),
+        "valid_count": int(valid_count),
+        "complete_within_radius": int(valid_count) == len(source),
+        "radius": float(radius),
+        "partner": partner,
+        "prepared_scene_used": True,
+        "prepared_query_columns_used": True,
+        "prepared_output_columns_used": True,
+        "device_query_columns_used": True,
+        "device_output_columns_used": True,
+        "device_result_materialization_after_hot_window": True,
+        "host_query_upload_in_hot_window": False,
+        "host_row_materialization_before_consumer": False,
+        "hot_device_synchronized_before_timer_stop": True,
+        "native_engine_row_contract": "generic_point_group_nearest_witness_2d_device_columns",
+        "partner_reference_contract": "generic_global_argmax_u32_f64",
+        "producer_metadata": dict(best.get("producer_metadata") or {}),
+        "consumer_metadata": dict(best.get("consumer_metadata") or {}),
+        "group_count": sum(int(row["group_count"]) for row in chunk_results),
+        "coordinate_normalization_used": True,
+        "coordinate_normalization_span": float(coordinate_normalization_span),
+        "coordinate_normalization_chunk_count": len(chunk_results),
+        "coordinate_normalization_contract": (
+            "Generic spatial chunking with radius halo; each chunk is translated "
+            "to local coordinates before the same V4 point-group nearest-witness "
+            "surface runs."
+        ),
+        "chunk_summaries": tuple(
+            {
+                "chunk_index": index,
+                "distance": float(row["distance"]),
+                "source_id": int(row["source_id"]),
+                "target_id": int(row["target_id"]),
+                "row_count": int(row["row_count"]),
+                "valid_count": int(row["valid_count"]),
+                "source_chunk_count": int(row["source_chunk_count"]),
+                "target_halo_count": int(row["target_halo_count"]),
+                "origin": row["coordinate_normalization_origin"],
+                "hot_device_median_sec": float(row["run_phases"]["hot_device_median_sec"]),
+                "prepare_sec": float(row["run_phases"]["prepare_sec"]),
+            }
+            for index, row in enumerate(chunk_results)
+        ),
+        "run_phases": {
+            "prepare_sec": prepare_sec,
+            "hot_device_median_sec": hot_device_median_sec,
+            "hot_device_total_sec": hot_device_total_sec,
+            "materialize_median_sec": materialize_median_sec,
+            "materialize_total_sec": materialize_total_sec,
             "query_repeat": int(query_repeat),
             "query_warmup": int(warmup),
         },
@@ -1010,6 +1257,7 @@ def run_app(
     partner: str = "cupy",
     query_repeat: int = 1,
     warmup: int = 0,
+    coordinate_normalization_span: float | None = None,
 ) -> dict[str, object]:
     input_start = time.perf_counter()
     case = make_authored_point_sets(copies=copies)
@@ -1050,6 +1298,7 @@ def run_app(
             radius=hausdorff_threshold,
             query_repeat=query_repeat,
             warmup=warmup,
+            coordinate_normalization_span=coordinate_normalization_span,
         )
         directed_ba = _run_optix_device_max_nearest_directed(
             points_b,
@@ -1059,6 +1308,7 @@ def run_app(
             radius=hausdorff_threshold,
             query_repeat=query_repeat,
             warmup=warmup,
+            coordinate_normalization_span=coordinate_normalization_span,
         )
         run_phases["optix_device_max_nearest_directed_summary_sec"] = time.perf_counter() - query_start
         run_phases["scene_prepare_sec"] = float(directed_ab["run_phases"]["prepare_sec"]) + float(
@@ -1108,6 +1358,10 @@ def run_app(
             "native_continuation_backend": native_continuation_backend,
             "rt_core_accelerated": True,
             "partner_reference_contract": "generic_global_argmax_u32_f64",
+            "coordinate_normalization_span": coordinate_normalization_span,
+            "coordinate_normalization_used": bool(
+                directed_ab.get("coordinate_normalization_used") or directed_ba.get("coordinate_normalization_used")
+            ),
             "run_phases": run_phases,
             "repeat_protocol": {
                 "repeat": int(query_repeat),
@@ -1748,6 +2002,15 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--repeat", type=int, default=1, help="Repeat hot prepared-query phase.")
     parser.add_argument("--warmup", type=int, default=0, help="Prepared-query warmup iterations to drop.")
+    parser.add_argument(
+        "--coordinate-normalization-span",
+        type=float,
+        default=None,
+        help=(
+            "OptiX device-max only: split large-coordinate source sets into local-origin chunks "
+            "with this maximum x-span before running the same V4 point-group surface."
+        ),
+    )
     args = parser.parse_args(argv)
     print(
         json.dumps(
@@ -1761,6 +2024,7 @@ def main(argv: list[str] | None = None) -> int:
                 partner=args.partner,
                 query_repeat=args.repeat,
                 warmup=args.warmup,
+                coordinate_normalization_span=args.coordinate_normalization_span,
             ),
             indent=2,
             sort_keys=True,

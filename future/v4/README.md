@@ -1,12 +1,14 @@
 # RTDL V4 Front Door
 
-Status: formal V4.0.0 bounded operator release authorized.
+Status:
 
-V4 is the Python GPU-array RT-core lane. If your program already owns Torch CUDA
-arrays, RTDL accepts those arrays for measured generic fused RT operators and
-writes documented outputs through the selected V4 surface. Python row objects
-and host result-table downloads stay out of the hot path for the measured
-surfaces that say so.
+```text
+V4.0 tag target ready, complete Goal4756 RT-core app matrix, bounded public-tag review approved, clean wheel smoke passed
+```
+
+V4 is the Python GPU-array RT-core lane and a V2/V3 superset. Users can keep
+using mature V2.14/V3 routes through the current system, and V4 adds generic
+operator-pushdown surfaces for workloads that match measured operators.
 
 Use one import:
 
@@ -14,62 +16,60 @@ Use one import:
 import rtdsl.v4 as rtdl_v4
 ```
 
-Current front-door status:
+## Complete App Matrix
 
-- measured Tier-2 surfaces: `8`
-- measured partners: `numba`, `rtdl_native`, `torch`
-- candidate Tier-2 surfaces: `0`
-- Goal4639 scorecard: `8/8` surfaces passed, `4/4` strong families passed
-- final release authorization: complete; Goal4643 published V4.0.0
-- public performance wording: distribution plus denominator, not a raw geomean
-  headline
+Goal4756 is the current app-level benchmark boundary:
 
-## Measured V4 Tier-2 Operators
+| App | V4/V2.14 hot | V4/V3.0.2 hot | Reading |
+| --- | ---: | ---: | --- |
+| RTDBSCAN | `0.998x` | `0.993x` | Parity/control. |
+| RayDB-style | `1.113x` | `1.111x` | Modest hot gain. |
+| Triangle counting | `4.360x` | `1.021x` | Material candidate. |
+| LibRTS spatial index | `0.999x` | `1.002x` | Parity/control. |
+| Hausdorff XHD threshold route | `1.032x` | `0.983x` | Threshold same-primitive parity/control. |
+| Robot collision | `1.020x` | `1.000x` | Parity/control. |
+| Contact manifold | `1.116x` | `1.477x` | Parity/control/modest gain. |
+| RTNN | `1.029x` | `1.024x` | Parity/control. |
+| Spatial RayJoin shape-pair | `1.000x` | `1.004x` | Serious generated-input parity/control. |
+| Barnes-Hut aggregate frontier | `286.142x` | `0.993x` | Material V3/V4-over-V2.14 candidate, not a new V4-over-V3 speed claim. |
 
-| Operator | API surface | Partner scope | Representative Goal4639 ratio | Baseline / denominator | Scale |
-| --- | --- | --- | ---: | --- | --- |
-| Fixed-radius count-threshold | `v4_fixed_radius_count_threshold_2d_device_arrays` | Torch CUDA | `1.697x` | Torch brute-force/reference | script default fixture; repeat `7`, warmup `1` |
-| Closest-hit grouped argmin | `v4_closest_hit_grouped_argmin_3d_device_arrays` | Torch CUDA | `1.257x` | Torch brute-force/reference | script default grouped-argmin fixtures; repeat `7`, warmup `1` |
-| Ray/triangle any-hit flags | `v4_ray_triangle_any_hit_flags_2d_device_arrays` | Torch CUDA | `5.671x` | Torch brute-force/reference | `max_torch_reference_count=8192`; repeat `5`, warmup `1` |
-| Primitive grouped-i64 reduction | `v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays` | Torch CUDA | `1.384x` | Torch brute-force/reference | ray counts `32768,131072`; group widths `1,16,256`; repeat `7`, warmup `2` |
-| Point-group nearest witness | `v4_point_group_nearest_witness_2d_device_arrays` | Torch CUDA | `389.707x` | brute-force nearest-witness reference | query counts `32768,131072`; fixtures `mixed4,mixed6`; repeat `7`, warmup `2`; scale-dependent O(n²)-vs-BVH win |
-| Ray/triangle any-hit weighted sum | `v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays` | Torch CUDA | `1.482x` | Torch brute-force/reference comparable route | Goal4633 shapes `32768,131072,262144,524288` |
-| Fixed-radius graph component union | `v4_fixed_radius_graph_component_union_3d_device_arrays` | Numba | `1.203x` | legacy prepared-runner wall route; Embree controls recorded | clustered3d `262144` points; repeat `5`, warmup `1` |
-| AABB all-ops count | `v4_aabb_index_query_2d_all_ops_count_prepared_runner` | RTDL native | `164.716x` | Embree same-contract prepared AABB query control | `1000000` boxes, `1000` queries, all ops, `240` repeats; scale-dependent indexed-control win |
+Evidence:
 
-most measured operators are 1.2x-1.7x faster than their stated brute-force partner/CPU baselines. Point-group nearest witness and AABB all-ops are large
-scale-dependent algorithmic-complexity wins. These are operator-scorecard rows,
-not whole-application speedup claims and not near-hand-written-OptiX claims.
+- `future/v4/evidence/v4_goal4756_serious_all30_generated_spatial_2026-06-26/`
+- `future/v4/v4_goal4756_final_rt_core_matrix_release_readout_2026-06-26.md`
 
-List them programmatically:
+## Measured V4 Operator/Workflow Surfaces
 
-```python
-for row in rtdl_v4.measured_operator_catalog_v4():
-    print(row["operator"], row["api_surface"], row["measured_partners"])
-```
+| Surface | Partner scope | Representative result | Boundary |
+| --- | --- | ---: | --- |
+| Fixed-radius count-threshold | Torch CUDA | `1.697x` | Operator row, not whole-app claim. |
+| Closest-hit grouped argmin | Torch CUDA | `1.257x` | Operator row. |
+| Ray/triangle any-hit flags | Torch CUDA | `5.671x` | Operator row. |
+| Primitive grouped-i64 reduction | Torch CUDA | `1.384x` | Operator row. |
+| Point-group nearest witness | Torch CUDA | `389.707x` | Scale-dependent algorithmic win. |
+| Ray/triangle any-hit weighted sum | Torch CUDA | `1.482x` | Operator row. |
+| Fixed-radius graph component union | Numba | `1.203x` | Measured constrained route. |
+| AABB all-ops count | RTDL native | `164.716x` | Scale-dependent indexed-control win. |
+| Aggregate-frontier device columns (`v4_aggregate_frontier_device_columns_2d_prepared_runner`) | RTDL native + CuPy continuation | `310.024x` over V2.14; `0.998x` vs V3 | V2.14 host-boundary removal; no V4-over-V3 speed claim. |
+| Custom predicate early-exit (`v4_ray_triangle_custom_predicate_early_exit_3d_numba`) | Numba C-ABI predicate | `4.633x` | V4-specific operator-pushdown workflow win. |
 
-Plan a request before building a route:
+These rows have explicit denominators and partner scopes. Do not turn them into
+a blanket "V4 is faster for everything" claim.
 
-```python
-plan = rtdl_v4.plan_operator_request_v4("any-hit", partner="torch")
-print(plan.status)
-print(plan.api_surface)
-```
+most measured operators are 1.2x-1.7x against their stated brute-force partner/CPU baselines;
+point-group nearest witness and AABB all-ops are large
+scale-dependent algorithmic-complexity wins. Keep those denominators attached to
+the operator rows.
 
 ## Complex Callback Boundary
 
 V4.0 does not expose raw OptiX callbacks. Complex user logic is handled by a
 strict planner:
 
-- recognized generic operators route to measured Tier-2 surfaces;
-- scalar Numba device callbacks remain Tier-3 spike-only, not supported V4.0
-  release surfaces;
-- action-shaped callbacks that mutate shared state, allocate dynamically, or
-  produce variable-length output are rejected/deferred for V4.0.
-
-The falsifiable Tier-3 callback protocol is
-`future/v4/tier3_callback_spike_protocol_2026-06-24.md`. It is a spike protocol,
-not a support announcement.
+- recognized generic operators route to measured V4 surfaces;
+- constrained pure Numba predicates are supported only where measured;
+- arbitrary action callbacks, dynamic allocation, and variable-length mutation
+  remain V4.1/Tier-3 work.
 
 ## Run The Public Examples
 
@@ -79,11 +79,11 @@ PowerShell:
 $env:PYTHONPATH = "src;."
 py -3 examples\v4\v4_frontdoor_quickstart.py
 py -3 examples\v4\operator_callback_planning.py --case complex-callback
+py -3 examples\v4\custom_predicate_early_exit_planning.py
 py -3 examples\v4\primitive_grouped_i64_reduction_torch_device_arrays.py --dry-run
 py -3 examples\v4\point_group_nearest_witness_torch_device_arrays.py --dry-run
 py -3 examples\v4\ray_triangle_any_hit_weighted_sum_torch_device_arrays.py --dry-run
 py -3 examples\v4\aabb_index_all_ops_count.py --dry-run
-py -3 scripts\v4_catalog_regression_gate.py --mode dry-run
 ```
 
 Linux or macOS:
@@ -91,42 +91,42 @@ Linux or macOS:
 ```bash
 PYTHONPATH=src:. python examples/v4/v4_frontdoor_quickstart.py
 PYTHONPATH=src:. python examples/v4/operator_callback_planning.py --case complex-callback
+PYTHONPATH=src:. python examples/v4/custom_predicate_early_exit_planning.py
 PYTHONPATH=src:. python examples/v4/primitive_grouped_i64_reduction_torch_device_arrays.py --dry-run
 PYTHONPATH=src:. python examples/v4/point_group_nearest_witness_torch_device_arrays.py --dry-run
 PYTHONPATH=src:. python examples/v4/ray_triangle_any_hit_weighted_sum_torch_device_arrays.py --dry-run
 PYTHONPATH=src:. python examples/v4/aabb_index_all_ops_count.py --dry-run
-PYTHONPATH=src:. python scripts/v4_catalog_regression_gate.py --mode dry-run
 ```
-
-## Evidence
-
-Reviewer evidence:
-
-- `future/v4/v4_goal4638_formal_release_scorecard_freeze_2026-06-25.md`
-- `future/v4/v4_goal4639_serious_release_scorecard_pod_gate_decision_2026-06-25.md`
-- `future/v4/evidence/v4_goal4639_release_scorecard_pod_gate_2026-06-25/summary.md`
-- `future/v4/reviews/goal4639_serious_release_scorecard_pod_gate_review_record_2026-06-25.md`
-
-Operator details:
-
-- `future/v4/tier2_operator_catalog.md`
-- `future/v4/fixed_radius_device_array_frontdoor.md`
-- `future/v4/ray_triangle_device_array_frontdoor.md`
-- `future/v4/point_group_device_array_frontdoor.md`
-- `future/v4/callback_and_operator_planning.md`
-- `future/v4/v4_0_scope_gate.md`
 
 ## Non-Claims
 
-This page authorizes the V4.0.0 operator release above. It does not authorize:
+## External Review Update
 
-- broad V4 speedup wording;
-- whole-application speedup wording;
-- all-benchmark speedup wording;
+Antigravity reviewed the consolidated Gemini-style full-coverage V4 packet:
+
+- `future/v4/reviews/antigravity_v4_gemini_full_coverage_review_2026-06-27.md`
+
+Verdict:
+
+```text
+approve_close_gemini_debt_and_allow_v4_0_public_tag
+```
+
+This authorizes the bounded V4.0 public tag under the current framing. It does
+not authorize broader speedup, paper-reproduction, Tier-3 callback, raw OptiX
+callback, or no-copy tree-build claims. The git tag target must be a clean
+committed release tree verified by clean checkout and installed-wheel smoke.
+
+This page does not authorize:
+
+- all benchmark apps are faster;
+- broad V4-over-V2.14 speedup wording;
+- broad V4-over-V3 speedup wording;
+- whole-application speedup claims;
 - public true-zero-copy claims;
 - Tier-3 callback/PTX support claims;
-- raw OptiX callback support;
-- CuPy performance claims;
+- broad CuPy performance claims beyond explicitly named measurements;
+- raw OptiX callback support claims;
+- app-specific native engine/kernel claims;
 - embedding/C-ABI claims;
-- non-Python host binding claims;
-- app-specific native engine kernels.
+- non-Python host binding claims.

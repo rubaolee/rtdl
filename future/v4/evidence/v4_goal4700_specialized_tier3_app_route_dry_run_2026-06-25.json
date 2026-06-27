@@ -1,0 +1,87 @@
+{
+  "app_level_speed_claim_authorized": false,
+  "classification": null,
+  "contract_validation": {
+    "goal_status": "goal4700_specialized_tier3_app_route_result_pending_pod",
+    "killed_example": {
+      "app_level_speed_claim_authorized": false,
+      "classification": "no_go_app_route_gate_failed_or_killed",
+      "max_callback_over_tier2_ratio": 1.51,
+      "min_legacy_host_over_callback_ratio": 2.0,
+      "next_goal": "Goal4701 specialized Tier-3 no-go/reframe decision",
+      "parity_all_passed": true,
+      "performance_claim_authorized": false,
+      "release_authorized": false,
+      "tier3_public_support_authorized": false
+    },
+    "missing_or_invalid": [],
+    "parity_fail_example": {
+      "app_level_speed_claim_authorized": false,
+      "classification": "no_go_app_route_gate_failed_or_killed",
+      "max_callback_over_tier2_ratio": 1.01,
+      "min_legacy_host_over_callback_ratio": 2.0,
+      "next_goal": "Goal4701 specialized Tier-3 no-go/reframe decision",
+      "parity_all_passed": false,
+      "performance_claim_authorized": false,
+      "release_authorized": false,
+      "tier3_public_support_authorized": false
+    },
+    "passing_example": {
+      "app_level_speed_claim_authorized": false,
+      "classification": "pass_app_route_gate_not_public_support",
+      "max_callback_over_tier2_ratio": 1.08,
+      "min_legacy_host_over_callback_ratio": 1.3,
+      "next_goal": "Goal4701 specialized Tier-3 support-candidate review packet",
+      "parity_all_passed": true,
+      "performance_claim_authorized": false,
+      "release_authorized": false,
+      "tier3_public_support_authorized": false
+    },
+    "status": "passed"
+  },
+  "dry_run": true,
+  "performance_claim_authorized": false,
+  "protocol": {
+    "app_level_speed_claim_authorized": false,
+    "callback_contract": "Goal4697 module_specialized_direct_device_callback / pure scalar Numba C-ABI callback",
+    "callback_over_context_speedup_min": 1.2,
+    "callback_over_tier2_hard_kill_ratio": 1.5,
+    "callback_over_tier2_pass_ratio_max": 1.2,
+    "context_denominator": "legacy host-scalar/materialized weighted-sum route from Goal4633",
+    "correctness_denominator": "existing Tier-2 built-in weighted-sum device-output route, exact uint64 output",
+    "next_goal": "Goal4700 specialized Tier-3 app-route POD implementation",
+    "parity_requirement": "exact equality to Tier-2 built-in weighted-hit-sum for every tested size",
+    "performance_claim_authorized": false,
+    "pod_required_for_next_goal": true,
+    "primary_performance_denominator": "existing Tier-2 built-in weighted-sum fused route on the same fixture",
+    "ray_counts": [
+      32768,
+      131072,
+      262144
+    ],
+    "release_authorized": false,
+    "repeat": 10,
+    "required_telemetry": [
+      "callback_contract_status",
+      "compile_cache_key",
+      "compile_stage",
+      "tier3_callback_route_median_s",
+      "tier2_builtin_route_median_s",
+      "legacy_host_scalar_route_median_s",
+      "callback_over_tier2_ratio",
+      "legacy_host_over_callback_ratio",
+      "parity_passed",
+      "tier3_public_support_authorized_false"
+    ],
+    "selected_route": "ray_triangle_any_hit_weighted_sum_scalar_reduce",
+    "selected_surface": "v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays",
+    "status": "goal4699_specialized_tier3_app_route_validation_protocol_frozen_not_run",
+    "tier3_public_support_authorized": false,
+    "warmup": 3
+  },
+  "release_authorized": false,
+  "rows": [],
+  "schema": "rtdl.v4.goal4700_specialized_tier3_app_route_pod.v1",
+  "status": "dry_run_contract_passed",
+  "tier3_public_support_authorized": false
+}

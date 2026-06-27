@@ -27,8 +27,8 @@ class V4ScopeGateTest(unittest.TestCase):
         gate = v4_0_scope_gate()
         payload = gate.as_dict()
 
-        self.assertEqual("v4_0_0_formal_release_scope_authorized", payload["status"])
-        self.assertEqual(8, len(payload["included_surfaces"]))
+        self.assertEqual("v4_python_edsl_operator_pushdown_scope_goal4756_complete_rt_core_matrix", payload["status"])
+        self.assertEqual(10, len(payload["included_surfaces"]))
         self.assertEqual(0, len(payload["candidate_surfaces"]))
         self.assertIn(
             "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays",
@@ -50,15 +50,25 @@ class V4ScopeGateTest(unittest.TestCase):
             "v4_aabb_index_query_2d_all_ops_count_prepared_runner",
             payload["included_surfaces"],
         )
+        self.assertIn(
+            "v4_aggregate_frontier_device_columns_2d_prepared_runner",
+            payload["included_surfaces"],
+        )
+        self.assertIn(
+            "v4_ray_triangle_custom_predicate_early_exit_3d_numba",
+            payload["included_surfaces"],
+        )
         self.assertIn("rtdl_native_prepared_runner", payload["included_capabilities"])
         self.assertIn("tier2_fused_generic_rt_operators", payload["included_capabilities"])
+        self.assertIn("constrained_numba_custom_predicate_early_exit", payload["included_capabilities"])
         self.assertIn("tier3_numba_ptx_generation_spike_only", payload["deferred_capabilities"])
         self.assertIn("tier3_numba_bare_ptx_direct_optix_module_link_blocked", payload["deferred_capabilities"])
         self.assertIn("tier3_wrapper_direct_callable_abi", payload["deferred_capabilities"])
         self.assertIn("cupy_measured_performance_claims", payload["deferred_capabilities"])
         self.assertIn("embedding_c_abi", payload["deferred_capabilities"])
         self.assertIn("non_python_host_bindings", payload["deferred_capabilities"])
-        self.assertTrue(payload["release_authorized"])
+        self.assertFalse(payload["release_authorized"])
+        self.assertIn("goal4756_broad_all_benchmark_speedup_claim_not_supported", payload["blocking_reasons"])
         self.assertEqual(
             v4.V4_AUTHORIZED_RELEASE_LABEL,
             payload["authorized_release_label"],
@@ -74,14 +84,14 @@ class V4ScopeGateTest(unittest.TestCase):
 
         self.assertEqual("passed", result["status"])
         self.assertEqual((), result["missing_or_invalid"])
-        self.assertTrue(result["release_authorized"])
+        self.assertFalse(result["release_authorized"])
 
     def test_scope_gate_is_reachable_from_unified_frontdoor(self) -> None:
         gate = v4.v4_0_scope_gate()
         result = v4.validate_v4_0_scope_gate(gate)
 
         self.assertEqual("passed", result["status"])
-        self.assertTrue(gate.release_authorized)
+        self.assertFalse(gate.release_authorized)
 
     def test_scope_gate_script_writes_json_and_markdown(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -101,13 +111,16 @@ class V4ScopeGateTest(unittest.TestCase):
 
         self.assertEqual("passed", payload["validation"]["status"])
         self.assertEqual("passed", stdout_payload["validation"]["status"])
-        self.assertTrue(payload["gate"]["release_authorized"])
-        self.assertIn("Status: generated V4.0.0 formal release scope gate", markdown)
+        self.assertFalse(payload["gate"]["release_authorized"])
+        self.assertIn("Status: generated V4 Python eDSL/operator-pushdown scope gate", markdown)
 
     def test_scope_doc_records_non_claims(self) -> None:
         text = DOC.read_text(encoding="utf-8")
         self.assertIn("Deferred To V4.x", text)
         self.assertIn("Candidate Surfaces", text)
+        self.assertIn("- none", text)
+        self.assertIn("v4_aggregate_frontier_device_columns_2d_prepared_runner", text)
+        self.assertIn("v4_ray_triangle_custom_predicate_early_exit_3d_numba", text)
         self.assertIn("v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays", text)
         self.assertIn("v4_point_group_nearest_witness_2d_device_arrays", text)
         self.assertIn("v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays", text)
@@ -118,7 +131,7 @@ class V4ScopeGateTest(unittest.TestCase):
         self.assertIn("CuPy performance claims", text)
         self.assertIn("embedding/C-ABI", text)
         self.assertIn("non-Python host binding claims", text)
-        self.assertIn("release authorized: `True`", text)
+        self.assertIn("release authorized: `False`", text)
 
 
 if __name__ == "__main__":

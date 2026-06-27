@@ -1,0 +1,45 @@
+{
+  "decision": {
+    "broad_v4_speedup_claim_authorized": false,
+    "cupy_performance_claim_authorized": false,
+    "declared_unmeasured_partners": [
+      "torch",
+      "numba"
+    ],
+    "generic_primitive": "AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D",
+    "measured_partners": [
+      "rtdl_native",
+      "cupy"
+    ],
+    "partner_migration_counts_as_v4_speed_win": false,
+    "pass_fail": {
+      "all_subprocesses_returned_zero": true,
+      "correctness_companion_ok": true,
+      "goal4676_pass": true,
+      "large_run_checksum_parity": true,
+      "partner_migration_counted_as_speed": false,
+      "v4_frontier_only_hot_bar_pass": true,
+      "v4_full_hot_bar_pass": true,
+      "v4_full_wall_bar_pass": true,
+      "v4_host_frontier_materialization_in_hot_path": false
+    },
+    "promoted": true,
+    "promoted_surface": "v4_aggregate_frontier_device_columns_2d_prepared_runner",
+    "ratios": {
+      "v4_frontier_only_hot_over_v2_14": 302.9977973413469,
+      "v4_full_hot_over_v2_14": 310.02390072012497,
+      "v4_full_hot_over_v3_0_2_control": 0.9975684883734833,
+      "v4_full_wall_over_v2_14": 200.82645806332002
+    },
+    "release_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "source_evidence": "future/v4/evidence/v4_goal4676_aggregate_frontier_pod_benchmark_2026-06-25.json",
+    "status": "goal4677_promote_aggregate_frontier_device_columns_measured_route_no_release",
+    "true_zero_copy_authorized": false,
+    "v3_0_2_caveat": "Goal4676 promotes a V2.14 host-frontier bottleneck fix. It does not prove a V4-over-V3 speedup because V3.0.2 already contains the same aggregate-frontier device-column primitive family.",
+    "whole_app_speedup_claim_authorized": false
+  },
+  "missing_or_invalid": [],
+  "release_authorized": false,
+  "status": "passed"
+}

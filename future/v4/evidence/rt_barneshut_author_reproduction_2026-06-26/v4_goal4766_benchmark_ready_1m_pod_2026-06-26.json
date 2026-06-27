@@ -1,0 +1,244 @@
+{
+  "author_binary": {
+    "checksum_validation_against_native_warm_last": {
+      "abs_checksum_relative_error": 1.2294599449624855e-07,
+      "author_rt_force_abs_checksum": 0.539531,
+      "author_rt_force_checksum": 0.539531,
+      "available": true,
+      "checksum_relative_error": 1.2294599449624855e-07,
+      "native_force_abs_checksum": 0.5395308770540055,
+      "native_force_checksum": 0.5395308770540055,
+      "passes_float_output_tolerance": true
+    },
+    "cmd": [
+      "/root/external/RT-BarnesHut-author/build/rtbarneshut",
+      "treelogy",
+      "future/v4/evidence/rt_barneshut_author_reproduction_2026-06-26/goal4766_treelogy_1m.txt"
+    ],
+    "parsed_stdout": {
+      "execution_seconds": 1.04442,
+      "point_count": 1000000,
+      "preprocessing_seconds": 0.890979,
+      "rt_force_abs_checksum": 0.539531,
+      "rt_force_checksum": 0.539531,
+      "rt_force_seconds": 0.094797
+    },
+    "returncode": 0,
+    "stderr_tail": [],
+    "stdout_tail": [
+      "\u001b[0;34m#owl.sample(main): Starting run!",
+      "\u001b[0mRead 1000000.000000",
+      "Read 1.000000",
+      "Read 0.025000",
+      "Read 0.050000",
+      "Read 0.500000",
+      "Number of points: 1000000",
+      "#owl.sample(main): Bulding Non Bucket Tree with # Of Bodies = 1000000",
+      "\u001b[0m--------------------------------------------------------------",
+      "Preprocessing Time: 0.890979 seconds.",
+      "RT Cores Force Calculations time: 0.094797 seconds.",
+      "Execution time: 1.04442 seconds.",
+      "RT Force checksum: 0.539531",
+      "RT Force abs checksum: 0.539531",
+      "--------------------------------------------------------------",
+      "\u001b[0;34m#owl.sample(main): destroying devicegroup ...",
+      "\u001b[0m"
+    ],
+    "wall_seconds": 6.449731435626745
+  },
+  "claim_boundary": {
+    "host_fallback_used": false,
+    "input_columns_downloaded_for_tree_build": true,
+    "native_v4_operator_candidate": true,
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "purpose": "benchmark-readiness evidence, not release authorization",
+    "rt_core_execution": true,
+    "same_input_author_contract": true,
+    "v2_v3_v4_author_speed_table_authorized": false
+  },
+  "dataset": {
+    "author_scaling_applied": false,
+    "file_type": "treelogy",
+    "header_values": [
+      1000000.0,
+      1.0,
+      0.025,
+      0.05,
+      0.5
+    ],
+    "path": "/root/external/RT-BarnesHut-author/treelogy_synthetic_1M.txt",
+    "point_count": 1000000
+  },
+  "goal": "Goal4766",
+  "native_runs": [
+    {
+      "author_commit": "2a3c60da0bbbd00ff1777cb57ec2089cb0029cf7",
+      "claim_boundary": {
+        "external_author_binary_used": false,
+        "host_fallback_used": false,
+        "input_columns_downloaded_for_tree_build": true,
+        "native_v4_abi_symbols_available": true,
+        "native_v4_checksum_route_available": true,
+        "native_v4_operator_available": true,
+        "public_rt_barneshut_paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "purpose": "native ABI author-semantics checksum route with explicit RT-core/fallback status",
+        "rt_core_execution": true,
+        "same_semantics_author_contract_required": true,
+        "v2_v3_v4_author_speed_table_authorized": false
+      },
+      "contract_version": "rtdl.rt_barneshut.author_contract.v1",
+      "device_columns": {
+        "force_device_ptr_nonzero": true,
+        "point_count": 1000000,
+        "point_ids_device_ptr_nonzero": true
+      },
+      "first_forces": [
+        3.8400165180974e-07,
+        2.3467445942060294e-07,
+        2.371928644606669e-07,
+        2.0120532440159877e-07,
+        2.2119688480870536e-07,
+        2.1720856580031978e-07,
+        2.0864460736902402e-07,
+        2.1745205458501005e-07
+      ],
+      "force_abs_checksum": 0.5395308770540055,
+      "force_checksum": 0.5395308770540055,
+      "force_max": 0.0003602638025768101,
+      "force_min": 1.8718374406034854e-07,
+      "implementation_status": "rt_core_author_semantics_candidate_route",
+      "implementation_status_code": 3,
+      "iteration": 1,
+      "phase_seconds": {
+        "copy_seconds": 0.022687744000000003,
+        "execution_seconds": 1.468087617,
+        "preprocessing_seconds": 0.552592271,
+        "rt_force_seconds": 0.901428045
+      },
+      "point_count": 1000000,
+      "python_wall_seconds": 1.949784118682146,
+      "route_version": "rtdl.v4.rt_barneshut.native_author_route.feasibility.v1",
+      "status": "native_3d_author_semantics_rt_core_candidate_available"
+    },
+    {
+      "author_commit": "2a3c60da0bbbd00ff1777cb57ec2089cb0029cf7",
+      "claim_boundary": {
+        "external_author_binary_used": false,
+        "host_fallback_used": false,
+        "input_columns_downloaded_for_tree_build": true,
+        "native_v4_abi_symbols_available": true,
+        "native_v4_checksum_route_available": true,
+        "native_v4_operator_available": true,
+        "public_rt_barneshut_paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "purpose": "native ABI author-semantics checksum route with explicit RT-core/fallback status",
+        "rt_core_execution": true,
+        "same_semantics_author_contract_required": true,
+        "v2_v3_v4_author_speed_table_authorized": false
+      },
+      "contract_version": "rtdl.rt_barneshut.author_contract.v1",
+      "device_columns": {
+        "force_device_ptr_nonzero": true,
+        "point_count": 1000000,
+        "point_ids_device_ptr_nonzero": true
+      },
+      "first_forces": [
+        3.8400165180974e-07,
+        2.3467445942060294e-07,
+        2.371928644606669e-07,
+        2.0120532440159877e-07,
+        2.2119688480870536e-07,
+        2.1720856580031978e-07,
+        2.0864460736902402e-07,
+        2.1745205458501005e-07
+      ],
+      "force_abs_checksum": 0.5395308770540055,
+      "force_checksum": 0.5395308770540055,
+      "force_max": 0.0003602638025768101,
+      "force_min": 1.8718374406034854e-07,
+      "implementation_status": "rt_core_author_semantics_candidate_route",
+      "implementation_status_code": 3,
+      "iteration": 2,
+      "phase_seconds": {
+        "copy_seconds": 0.091041546,
+        "execution_seconds": 0.709368193,
+        "preprocessing_seconds": 0.542767541,
+        "rt_force_seconds": 0.080498396
+      },
+      "point_count": 1000000,
+      "python_wall_seconds": 0.9040770977735519,
+      "route_version": "rtdl.v4.rt_barneshut.native_author_route.feasibility.v1",
+      "status": "native_3d_author_semantics_rt_core_candidate_available"
+    },
+    {
+      "author_commit": "2a3c60da0bbbd00ff1777cb57ec2089cb0029cf7",
+      "claim_boundary": {
+        "external_author_binary_used": false,
+        "host_fallback_used": false,
+        "input_columns_downloaded_for_tree_build": true,
+        "native_v4_abi_symbols_available": true,
+        "native_v4_checksum_route_available": true,
+        "native_v4_operator_available": true,
+        "public_rt_barneshut_paper_reproduction_claim_authorized": false,
+        "public_speedup_claim_authorized": false,
+        "purpose": "native ABI author-semantics checksum route with explicit RT-core/fallback status",
+        "rt_core_execution": true,
+        "same_semantics_author_contract_required": true,
+        "v2_v3_v4_author_speed_table_authorized": false
+      },
+      "contract_version": "rtdl.rt_barneshut.author_contract.v1",
+      "device_columns": {
+        "force_device_ptr_nonzero": true,
+        "point_count": 1000000,
+        "point_ids_device_ptr_nonzero": true
+      },
+      "first_forces": [
+        3.8400165180974e-07,
+        2.3467445942060294e-07,
+        2.371928644606669e-07,
+        2.0120532440159877e-07,
+        2.2119688480870536e-07,
+        2.1720856580031978e-07,
+        2.0864460736902402e-07,
+        2.1745205458501005e-07
+      ],
+      "force_abs_checksum": 0.5395308770540055,
+      "force_checksum": 0.5395308770540055,
+      "force_max": 0.0003602638025768101,
+      "force_min": 1.8718374406034854e-07,
+      "implementation_status": "rt_core_author_semantics_candidate_route",
+      "implementation_status_code": 3,
+      "iteration": 3,
+      "phase_seconds": {
+        "copy_seconds": 0.13526556,
+        "execution_seconds": 0.780919766,
+        "preprocessing_seconds": 0.549518922,
+        "rt_force_seconds": 0.101202726
+      },
+      "point_count": 1000000,
+      "python_wall_seconds": 0.9705631658434868,
+      "route_version": "rtdl.v4.rt_barneshut.native_author_route.feasibility.v1",
+      "status": "native_3d_author_semantics_rt_core_candidate_available"
+    }
+  ],
+  "probe": "native_rt_barneshut_author_benchmark_ready",
+  "repeat": 3,
+  "summary": {
+    "all_native_runs_rt_core": true,
+    "any_native_run_host_fallback": false,
+    "cold_execution_seconds": 1.468087617,
+    "cold_rt_force_seconds": 0.901428045,
+    "implementation_status_codes": [
+      3
+    ],
+    "paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "warm_checksum_stable": true,
+    "warm_execution_seconds_median": 0.7451439795,
+    "warm_execution_seconds_min": 0.709368193,
+    "warm_rt_force_seconds_median": 0.090850561,
+    "warm_rt_force_seconds_min": 0.080498396
+  }
+}

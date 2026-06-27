@@ -1,0 +1,1 @@
+{"backend": "embree", "copies": 65536, "matches_oracle": true, "run_phases": {"native_directed_summary_sec": 100.0}}

@@ -1,0 +1,569 @@
+{
+  "allowed_route_statuses": [
+    "runnable_protocol_template",
+    "v4_0_repair_required_before_final_timing",
+    "command_binding_required_in_goal4750"
+  ],
+  "allowed_v4_support_classes": [
+    "v4_superset_inherited_compatibility",
+    "v4_new_operator_or_workflow",
+    "v4_inherited_compatibility_plus_new_operator"
+  ],
+  "app_order": [
+    "rt_dbscan",
+    "raydb_style",
+    "triangle_counting",
+    "librts_spatial_index",
+    "hausdorff_xhd",
+    "robot_collision",
+    "contact_manifold",
+    "rtnn",
+    "spatial_rayjoin",
+    "barnes_hut"
+  ],
+  "claim_boundary": {
+    "all_benchmark_speedup_claim_authorized": false,
+    "embree_primary_ratio_authorized": false,
+    "public_speed_claim_authorized": false,
+    "release_authorized": false,
+    "v4_1_numba_ray_action_work_in_scope": false,
+    "whole_app_high_performance_claim_authorized": false
+  },
+  "date": "2026-06-26",
+  "decision_label": "final_v4_0_same_semantics_rt_core_protocol_frozen_before_pod_matrix",
+  "global_rules": {
+    "correctness_parity_required_before_speed_credit": true,
+    "embree_control_reference_authorized": true,
+    "embree_primary_denominator_authorized": false,
+    "final_pod_matrix_goal": "Goal4753",
+    "inherited_compatibility_counts_as_support_not_new_speed": true,
+    "no_na_rows_authorized": true,
+    "nvidia_rt_core_primary_required": true,
+    "partner_migration_counts_as_v4_speed_win": false,
+    "pod_authorized_by_goal4749": false,
+    "same_semantics_required": true,
+    "v2_means_v2_14": true,
+    "v3_means_v3_0_2": true,
+    "v4_is_v2_v3_superset_release_line": true,
+    "v4_means_current_v4_0_candidate": true
+  },
+  "purpose": "Freeze the final 10 benchmark-app V2.14/V3.0.2/V4.0 same-semantics NVIDIA RT-core protocol before the complete POD matrix. This replaces older V2-vs-V4-only and Embree-denominator app summaries for final V4.0 release evidence.",
+  "rows": [
+    {
+      "app": "rt_dbscan",
+      "claim_boundary": "no_speed_claim_until_goal4753_4754_matrix",
+      "correctness_oracle": "component-label signature parity and cluster-count parity",
+      "embree_role": "control_only_not_primary_denominator",
+      "partner_contract": {
+        "cupy": "inherited_supported_for_grouped_stream_or_component_work",
+        "numba": "measured_supported_for_v4_component_union"
+      },
+      "primary_metrics": [
+        "hot_median_sec",
+        "wall_median_sec"
+      ],
+      "rt_core_primary_required": true,
+      "same_semantics_required": true,
+      "scale_policy": "serious clustered3d point_count=262144; smoke/parity companion allowed at smaller point_count",
+      "semantic_contract": "fixed-radius count-threshold neighbors plus component labels",
+      "supplemental_notes": [],
+      "v4_superset_obligation": "must expose or inherit V2.14/V3 RT-core capability in V4.0",
+      "v4_support_class": "v4_inherited_compatibility_plus_new_operator",
+      "versions": {
+        "v2_14": {
+          "backend": "optix_rt_core",
+          "blocker": "",
+          "command_hint": "bind_in_goal4750_runner",
+          "partner": "cupy_or_numba",
+          "primary_denominator_allowed": true,
+          "route": "prepared OptiX count-threshold 3D plus grouped-stream CuPy/Numba continuation",
+          "route_status": "runnable_protocol_template"
+        },
+        "v3_0_2": {
+          "backend": "optix_rt_core",
+          "blocker": "",
+          "command_hint": "bind_in_goal4750_runner",
+          "partner": "cupy_or_numba",
+          "primary_denominator_allowed": true,
+          "route": "prepared OptiX count-threshold 3D plus grouped-stream continuation",
+          "route_status": "runnable_protocol_template"
+        },
+        "v4_0": {
+          "backend": "optix_rt_core",
+          "blocker": "",
+          "command_hint": "bind_in_goal4750_runner",
+          "partner": "numba",
+          "primary_denominator_allowed": true,
+          "route": "V4 fixed-radius count-threshold plus Numba component-union surface",
+          "route_status": "runnable_protocol_template"
+        }
+      }
+    },
+    {
+      "app": "raydb_style",
+      "claim_boundary": "no_speed_claim_until_goal4753_4754_matrix",
+      "correctness_oracle": "grouped reduction parity by group id and aggregate value",
+      "embree_role": "control_only_not_primary_denominator",
+      "partner_contract": {
+        "cupy": "measured_supported_for_grouped_vector_sum_and_inherited_reduction",
+        "numba": "declared_unmeasured_for_this_surface"
+      },
+      "primary_metrics": [
+        "hot_median_sec",
+        "wall_median_sec"
+      ],
+      "rt_core_primary_required": true,
+      "same_semantics_required": true,
+      "scale_policy": "rows >=131072; group widths include 1/16/256 where supported",
+      "semantic_contract": "ray/triangle primitive grouped i64 count/sum reduction",
+      "supplemental_notes": [],
+      "v4_superset_obligation": "must expose or inherit V2.14/V3 RT-core capability in V4.0",
+      "v4_support_class": "v4_inherited_compatibility_plus_new_operator",
+      "versions": {
+        "v2_14": {
+          "backend": "optix_rt_core",
+          "blocker": "",
+          "command_hint": "bind_in_goal4750_runner",
+          "partner": "rtdl_native_or_cupy",
+          "primary_denominator_allowed": true,
+          "route": "primitive-first OptiX grouped count/sum reduction",
+          "route_status": "runnable_protocol_template"
+        },
+        "v3_0_2": {
+          "backend": "optix_rt_core",
+          "blocker": "",
+          "command_hint": "bind_in_goal4750_runner",
+          "partner": "rtdl_native_or_cupy",
+          "primary_denominator_allowed": true,
+          "route": "prepared grouped reduction route",
+          "route_status": "runnable_protocol_template"
+        },
+        "v4_0": {
+          "backend": "optix_rt_core",
+          "blocker": "",
+          "command_hint": "bind_in_goal4750_runner",
+          "partner": "rtdl_native_or_cupy",
+          "primary_denominator_allowed": true,
+          "route": "V4 grouped-i64/device-output grouped reduction route",
+          "route_status": "runnable_protocol_template"
+        }
+      }
+    },
+    {
+      "app": "triangle_counting",
+      "claim_boundary": "no_speed_claim_until_goal4753_4754_matrix",
+      "correctness_oracle": "triangle count and weighted any-hit sum parity",
+      "embree_role": "control_only_not_primary_denominator",
+      "partner_contract": {
+        "cupy": "inherited_supported_for_vectorized_continuation",
+        "numba": "inherited_supported_for_triangle_compact_mask_or_ray_output_builders"
+      },
+      "primary_metrics": [
+        "hot_median_sec",
+        "wall_median_sec"
+      ],
+      "rt_core_primary_required": true,
+      "same_semantics_required": true,
+      "scale_policy": "serious k4/graph fixture plus weighted any-hit shapes through 524288 where available",
+      "semantic_contract": "graph triangle/cycle count lowered to ray-triangle weighted any-hit sum",
+      "supplemental_notes": [],
+      "v4_superset_obligation": "must expose or inherit V2.14/V3 RT-core capability in V4.0",
+      "v4_support_class": "v4_inherited_compatibility_plus_new_operator",
+      "versions": {
+        "v2_14": {
+          "backend": "optix_rt_core",
+          "blocker": "",
+          "command_hint": "bind_in_goal4750_runner",
+          "partner": "cupy_or_numba",
+          "primary_denominator_allowed": true,
+          "route": "generic RT graph relationship-count composition using OptiX weighted any-hit sum",
+          "route_status": "runnable_protocol_template"
+        },
+        "v3_0_2": {
+          "backend": "optix_rt_core",
+          "blocker": "",
+          "command_hint": "bind_in_goal4750_runner",
+          "partner": "cupy_or_numba",
+          "primary_denominator_allowed": true,
+          "route": "segmented/prepared RT graph weighted any-hit route",
+          "route_status": "runnable_protocol_template"
+        },
+        "v4_0": {
+          "backend": "optix_rt_core",
+          "blocker": "",
+          "command_hint": "bind_in_goal4750_runner",
+          "partner": "cupy_or_numba_or_rtdl_native",
+          "primary_denominator_allowed": true,
+          "route": "V4 ray-triangle any-hit weighted-sum plus grouped reduction surface",
+          "route_status": "runnable_protocol_template"
+        }
+      }
+    },
+    {
+      "app": "librts_spatial_index",
+      "claim_boundary": "no_speed_claim_until_goal4753_4754_matrix",
+      "correctness_oracle": "AABB query count parity for the same operations",
+      "embree_role": "control_only_not_primary_denominator",
+      "partner_contract": {
+        "cupy": "declared_unmeasured_for_native_aabb_surface",
+        "numba": "declared_unmeasured_for_native_aabb_surface"
+      },
+      "primary_metrics": [
+        "hot_median_sec",
+        "wall_median_sec"
+      ],
+      "rt_core_primary_required": true,
+      "same_semantics_required": true,
+      "scale_policy": "box_count=1000000 query_count=1000 operation=all where available",
+      "semantic_contract": "prepared AABB spatial index query count/all-ops",
+      "supplemental_notes": [],
+      "v4_superset_obligation": "must expose or inherit V2.14/V3 RT-core capability in V4.0",
+      "v4_support_class": "v4_inherited_compatibility_plus_new_operator",
+      "versions": {
+        "v2_14": {
+          "backend": "optix_rt_core",
+          "blocker": "",
+          "command_hint": "bind_in_goal4750_runner",
+          "partner": "rtdl_native",
+          "primary_denominator_allowed": true,
+          "route": "prepared OptiX AABB spatial-index query primitive",
+          "route_status": "runnable_protocol_template"
+        },
+        "v3_0_2": {
+          "backend": "optix_rt_core",
+          "blocker": "",
+          "command_hint": "bind_in_goal4750_runner",
+          "partner": "rtdl_native",
+          "primary_denominator_allowed": true,
+          "route": "prepared OptiX AABB spatial-index query primitive",
+          "route_status": "runnable_protocol_template"
+        },
+        "v4_0": {
+          "backend": "optix_rt_core",
+          "blocker": "",
+          "command_hint": "bind_in_goal4750_runner",
+          "partner": "rtdl_native",
+          "primary_denominator_allowed": true,
+          "route": "V4 prepared AABB all-ops/count route",
+          "route_status": "runnable_protocol_template"
+        }
+      }
+    },
+    {
+      "app": "hausdorff_xhd",
+      "claim_boundary": "no_speed_claim_until_goal4753_4754_matrix",
+      "correctness_oracle": "threshold decision parity and, separately, exact nearest-witness correctness when exact route exists",
+      "embree_role": "control_only_not_primary_denominator",
+      "partner_contract": {
+        "cupy": "measured_supported_for_v4_exact_argmax_supplemental_route",
+        "numba": "declared_unmeasured_for_exact_argmax; possible inherited threshold support"
+      },
+      "primary_metrics": [
+        "hot_median_sec",
+        "wall_median_sec"
+      ],
+      "rt_core_primary_required": true,
+      "same_semantics_required": true,
+      "scale_policy": "primary fair matrix uses threshold-decision semantics; V3/V4 exact nearest-witness is supplemental until V2.14 exact route is bound or implemented",
+      "semantic_contract": "directed Hausdorff threshold-decision RT-core route for three-version fairness",
+      "supplemental_notes": [
+        "The previous V2.14 Embree denominator is forbidden for the primary matrix.",
+        "The V4/V3 exact nearest-witness row may be reported separately, but not divided by the V2.14 threshold route."
+      ],
+      "v4_superset_obligation": "must expose or inherit V2.14/V3 RT-core capability in V4.0",
+      "v4_support_class": "v4_inherited_compatibility_plus_new_operator",
+      "versions": {
+        "v2_14": {
+          "backend": "optix_rt_core",
+          "blocker": "",
+          "command_hint": "--backend optix --optix-summary-mode directed_threshold_prepared --require-rt-core",
+          "partner": "rtdl_native",
+          "primary_denominator_allowed": true,
+          "route": "OptiX directed-threshold-prepared Hausdorff decision route",
+          "route_status": "runnable_protocol_template"
+        },
+        "v3_0_2": {
+          "backend": "optix_rt_core",
+          "blocker": "",
+          "command_hint": "bind_in_goal4750_runner",
+          "partner": "rtdl_native_or_cupy",
+          "primary_denominator_allowed": true,
+          "route": "inherited OptiX directed-threshold-prepared route for fair primary row; exact route is supplemental",
+          "route_status": "runnable_protocol_template"
+        },
+        "v4_0": {
+          "backend": "optix_rt_core",
+          "blocker": "",
+          "command_hint": "bind_in_goal4750_runner",
+          "partner": "rtdl_native_or_cupy",
+          "primary_denominator_allowed": true,
+          "route": "V4 compatibility threshold route for fair primary row; exact nearest-witness route remains supplemental V4-new evidence",
+          "route_status": "runnable_protocol_template"
+        }
+      }
+    },
+    {
+      "app": "robot_collision",
+      "claim_boundary": "no_speed_claim_until_goal4753_4754_matrix",
+      "correctness_oracle": "collision flag vector and scalar count parity",
+      "embree_role": "control_only_not_primary_denominator",
+      "partner_contract": {
+        "cupy": "not_required_for_primary_flag_route",
+        "numba": "not_required_for_primary_flag_route"
+      },
+      "primary_metrics": [
+        "hot_median_sec",
+        "wall_median_sec"
+      ],
+      "rt_core_primary_required": true,
+      "same_semantics_required": true,
+      "scale_policy": "use promoted robot-collision benchmark shape; exact scale to bind in Goal4750",
+      "semantic_contract": "prepared any-hit collision flags/count",
+      "supplemental_notes": [],
+      "v4_superset_obligation": "must expose or inherit V2.14/V3 RT-core capability in V4.0",
+      "v4_support_class": "v4_superset_inherited_compatibility",
+      "versions": {
+        "v2_14": {
+          "backend": "optix_rt_core",
+          "blocker": "",
+          "command_hint": "bind_in_goal4750_runner",
+          "partner": "rtdl_native",
+          "primary_denominator_allowed": true,
+          "route": "prepared OptiX any-hit collision flag primitive including device-buffer modes",
+          "route_status": "runnable_protocol_template"
+        },
+        "v3_0_2": {
+          "backend": "optix_rt_core",
+          "blocker": "",
+          "command_hint": "bind_in_goal4750_runner",
+          "partner": "rtdl_native",
+          "primary_denominator_allowed": true,
+          "route": "prepared OptiX any-hit flag stream family",
+          "route_status": "runnable_protocol_template"
+        },
+        "v4_0": {
+          "backend": "optix_rt_core",
+          "blocker": "",
+          "command_hint": "--mode optix_prepared_device_buffers --dataset scaled --pose-count 8192 --obstacle-count 2048 --link-count 2 --repeats 51 --warmup 5 --lowering-mode numpy_arrays --summary-only-runs --skip-group-metadata",
+          "partner": "rtdl_native",
+          "primary_denominator_allowed": true,
+          "route": "V4 superset compatibility route inherits prepared any-hit collision flags/count",
+          "route_status": "runnable_protocol_template"
+        }
+      }
+    },
+    {
+      "app": "contact_manifold",
+      "claim_boundary": "no_speed_claim_until_goal4753_4754_matrix",
+      "correctness_oracle": "bounded witness rows, cap handling, and fail-closed parity",
+      "embree_role": "control_only_not_primary_denominator",
+      "partner_contract": {
+        "cupy": "not_required_for_primary_collect_route",
+        "numba": "not_required_for_primary_collect_route"
+      },
+      "primary_metrics": [
+        "hot_median_sec",
+        "wall_median_sec"
+      ],
+      "rt_core_primary_required": true,
+      "same_semantics_required": true,
+      "scale_policy": "use promoted contact-manifold benchmark shape; exact scale to bind in Goal4750",
+      "semantic_contract": "bounded contact/witness collect-k route with fail-closed output semantics",
+      "supplemental_notes": [],
+      "v4_superset_obligation": "must expose or inherit V2.14/V3 RT-core capability in V4.0",
+      "v4_support_class": "v4_superset_inherited_compatibility",
+      "versions": {
+        "v2_14": {
+          "backend": "optix_rt_core",
+          "blocker": "",
+          "command_hint": "bind_in_goal4750_runner",
+          "partner": "rtdl_native",
+          "primary_denominator_allowed": true,
+          "route": "prepared bounded OptiX contact-witness collect primitive",
+          "route_status": "runnable_protocol_template"
+        },
+        "v3_0_2": {
+          "backend": "optix_rt_core",
+          "blocker": "",
+          "command_hint": "bind_in_goal4750_runner",
+          "partner": "rtdl_native",
+          "primary_denominator_allowed": true,
+          "route": "prepared bounded collect/witness route family",
+          "route_status": "runnable_protocol_template"
+        },
+        "v4_0": {
+          "backend": "optix_rt_core",
+          "blocker": "",
+          "command_hint": "--mode aabb_broadphase_collect_k --backend optix --discovery-backend optix --dataset grid --witness-capacity 8",
+          "partner": "rtdl_native",
+          "primary_denominator_allowed": true,
+          "route": "V4 superset compatibility route inherits bounded collect-k/contact witness primitive",
+          "route_status": "runnable_protocol_template"
+        }
+      }
+    },
+    {
+      "app": "rtnn",
+      "claim_boundary": "no_speed_claim_until_goal4753_4754_matrix",
+      "correctness_oracle": "ranked-summary signature and distance/value parity",
+      "embree_role": "control_only_not_primary_denominator",
+      "partner_contract": {
+        "cupy": "declared_unmeasured_for_ranked_summary",
+        "numba": "declared_unmeasured_for_ranked_summary"
+      },
+      "primary_metrics": [
+        "hot_median_sec",
+        "wall_median_sec"
+      ],
+      "rt_core_primary_required": true,
+      "same_semantics_required": true,
+      "scale_policy": "point_count=262144 and 1048576 serious rows where available",
+      "semantic_contract": "fixed-radius ranked nearest-summary aggregate",
+      "supplemental_notes": [],
+      "v4_superset_obligation": "must expose or inherit V2.14/V3 RT-core capability in V4.0",
+      "v4_support_class": "v4_inherited_compatibility_plus_new_operator",
+      "versions": {
+        "v2_14": {
+          "backend": "optix_rt_core",
+          "blocker": "",
+          "command_hint": "bind_in_goal4750_runner",
+          "partner": "rtdl_native",
+          "primary_denominator_allowed": true,
+          "route": "prepared OptiX fixed-radius ranked-summary aggregate",
+          "route_status": "runnable_protocol_template"
+        },
+        "v3_0_2": {
+          "backend": "optix_rt_core",
+          "blocker": "",
+          "command_hint": "bind_in_goal4750_runner",
+          "partner": "rtdl_native",
+          "primary_denominator_allowed": true,
+          "route": "prepared ranked-summary/top-k/nearest aggregate family",
+          "route_status": "runnable_protocol_template"
+        },
+        "v4_0": {
+          "backend": "optix_rt_core",
+          "blocker": "",
+          "command_hint": "bind_in_goal4750_runner",
+          "partner": "rtdl_native",
+          "primary_denominator_allowed": true,
+          "route": "V4 ranked-summary prepared runner, currently measured no-win/deferred for speed credit",
+          "route_status": "runnable_protocol_template"
+        }
+      }
+    },
+    {
+      "app": "spatial_rayjoin",
+      "claim_boundary": "no_speed_claim_until_goal4753_4754_matrix",
+      "correctness_oracle": "relation/topology count parity; exact route cannot silently fall back",
+      "embree_role": "control_only_not_primary_denominator",
+      "partner_contract": {
+        "cupy": "inherited_supported_where_old_route_uses_cupy_continuation",
+        "numba": "inherited_supported_where_old_route_uses_fixed_numba_toolchain"
+      },
+      "primary_metrics": [
+        "hot_median_sec",
+        "wall_median_sec"
+      ],
+      "rt_core_primary_required": true,
+      "same_semantics_required": true,
+      "scale_policy": "use promoted spatial-rayjoin benchmark shape; exact scale to bind in Goal4750",
+      "semantic_contract": "relation/topology rayjoin counts using prepared point/shape/segment RT-core primitives",
+      "supplemental_notes": [],
+      "v4_superset_obligation": "must expose or inherit V2.14/V3 RT-core capability in V4.0",
+      "v4_support_class": "v4_superset_inherited_compatibility",
+      "versions": {
+        "v2_14": {
+          "backend": "optix_rt_core",
+          "blocker": "",
+          "command_hint": "bind_in_goal4750_runner",
+          "partner": "cupy_or_numba_or_rtdl_native",
+          "primary_denominator_allowed": true,
+          "route": "mixed explicit OptiX RayJoin route with point/closed-shape batch count, segment-pair exact count, and shape-pair active count",
+          "route_status": "runnable_protocol_template"
+        },
+        "v3_0_2": {
+          "backend": "optix_rt_core",
+          "blocker": "",
+          "command_hint": "bind_in_goal4750_runner",
+          "partner": "cupy_or_numba_or_rtdl_native",
+          "primary_denominator_allowed": true,
+          "route": "topology/runner experiments around the same RT-core route family",
+          "route_status": "runnable_protocol_template"
+        },
+        "v4_0": {
+          "backend": "optix_rt_core",
+          "blocker": "",
+          "command_hint": "--workload overlay_seed --backend optix --execution-route prepared_optix_shape_pair_active_count --result-mode count --repeat 25 --warmup 3 --no-rows",
+          "partner": "cupy_or_numba_or_rtdl_native",
+          "primary_denominator_allowed": true,
+          "route": "V4 superset compatibility route inherits relation/topology RT-core route",
+          "route_status": "runnable_protocol_template"
+        }
+      }
+    },
+    {
+      "app": "barnes_hut",
+      "claim_boundary": "no_speed_claim_until_goal4753_4754_matrix",
+      "correctness_oracle": "frontier membership and weighted vector summary parity",
+      "embree_role": "control_only_not_primary_denominator",
+      "partner_contract": {
+        "cupy": "measured_supported_for_device-column/vector continuation",
+        "numba": "inherited_reference_or_declared_unmeasured_for_current_v4_surface"
+      },
+      "primary_metrics": [
+        "hot_median_sec",
+        "wall_median_sec"
+      ],
+      "rt_core_primary_required": true,
+      "same_semantics_required": true,
+      "scale_policy": "32768 bodies serious focused workflow; larger row optional after parity",
+      "semantic_contract": "aggregate-frontier membership plus weighted vector continuation",
+      "supplemental_notes": [],
+      "v4_superset_obligation": "must expose or inherit V2.14/V3 RT-core capability in V4.0",
+      "v4_support_class": "v4_inherited_compatibility_plus_new_operator",
+      "versions": {
+        "v2_14": {
+          "backend": "optix_rt_core",
+          "blocker": "",
+          "command_hint": "bind_in_goal4750_runner",
+          "partner": "cupy_or_numba_reference",
+          "primary_denominator_allowed": true,
+          "route": "OptiX aggregate-frontier membership with host-materialized frontier and explicit partner continuation",
+          "route_status": "runnable_protocol_template"
+        },
+        "v3_0_2": {
+          "backend": "optix_rt_core",
+          "blocker": "",
+          "command_hint": "bind_in_goal4750_runner",
+          "partner": "cupy",
+          "primary_denominator_allowed": true,
+          "route": "device-column aggregate-frontier/partner continuation family",
+          "route_status": "runnable_protocol_template"
+        },
+        "v4_0": {
+          "backend": "optix_rt_core",
+          "blocker": "",
+          "command_hint": "bind_in_goal4750_runner",
+          "partner": "cupy",
+          "primary_denominator_allowed": true,
+          "route": "V4 aggregate-frontier device-columns prepared workflow with explicit partner continuation",
+          "route_status": "runnable_protocol_template"
+        }
+      }
+    }
+  ],
+  "schema": "rtdl.v4.goal4749.final_same_semantics_rt_core_protocol.v1",
+  "status": "goal4749_final_same_semantics_rt_core_protocol_frozen_not_run",
+  "validation": {
+    "error_count": 0,
+    "errors": [],
+    "schema": "rtdl.v4.goal4749.final_same_semantics_rt_core_protocol.v1.validation",
+    "status": "passed"
+  },
+  "version_order": [
+    "v2_14",
+    "v3_0_2",
+    "v4_0"
+  ]
+}

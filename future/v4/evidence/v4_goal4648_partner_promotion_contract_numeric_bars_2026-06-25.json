@@ -1,0 +1,110 @@
+{
+  "schema": "rtdl.v4.goal4648.partner_promotion_contract.v1",
+  "date": "2026-06-25",
+  "status": "goal4648_contract_candidate_for_review",
+  "source_code": [
+    "src/rtdsl/v4_partner_promotion_contract.py",
+    "src/rtdsl/v4.py"
+  ],
+  "tests": [
+    "tests/v4_goal4648_partner_promotion_contract_test.py",
+    "tests/v4_operator_catalog_test.py",
+    "tests/v4_goal4630_pushdown_recognizer_test.py",
+    "tests/v4_frontdoor_test.py"
+  ],
+  "test_result": {
+    "command": "py -m unittest tests.v4_goal4648_partner_promotion_contract_test tests.v4_operator_catalog_test tests.v4_goal4630_pushdown_recognizer_test tests.v4_frontdoor_test",
+    "tests_run": 31,
+    "status": "OK",
+    "note": "Python printed a local '<prefix>' environment warning, but unittest exited successfully."
+  },
+  "default_bars": {
+    "correctness_parity_required": 1.0,
+    "representative_speedup_floor": 1.2,
+    "partner_parity_floor": 0.98,
+    "host_materialization_in_hot_path_required": false
+  },
+  "claim_boundaries": {
+    "release_claim_authorized": false,
+    "broad_v4_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "cupy_performance_claim_authorized": false,
+    "arbitrary_numba_callback_claim_authorized": false,
+    "partner_migration_counts_as_v4_speed_win": false,
+    "partner_parity_counts_as_v4_speed_win": false,
+    "pod_spend_authorized": false
+  },
+  "contracts": [
+    {
+      "partner": "cupy",
+      "contract_class": "device_array_frontdoor_certification",
+      "candidate_ids": [
+        "cupy_grouped_reduction_device_columns_262144",
+        "cupy_grouped_reduction_device_columns_524288",
+        "cupy_segment_polygon_hitcount_prepared_scaling",
+        "cupy_hausdorff_witness_continuation"
+      ],
+      "generic_operator_fits": [
+        "grouped_sum_or_grouped_reduction",
+        "any_hit_flags_or_hitcount_columns",
+        "group_argmin_then_global_argmax_with_witness",
+        "nearest_witness"
+      ],
+      "accepted_dtypes": [
+        "float32",
+        "float64",
+        "int32",
+        "int64",
+        "uint64",
+        "bool"
+      ],
+      "required_layout": "contiguous_1d_or_column_major_device_columns_no_python_rows",
+      "cuda_device_ownership": "caller_owned_cupy_cuda_device_array_same_device_as_v4_session",
+      "stream_synchronization": "caller declares default-stream or explicit-stream mode before the run; Goal4649 records mode and sync points",
+      "output_ownership": "v4_allocated_or_caller_provided_cupy_device_outputs_no_hot_host_materialization",
+      "telemetry_required": [
+        "correctness_parity",
+        "representative_speedup",
+        "partner_parity",
+        "host_materialization_in_hot_path",
+        "denominator",
+        "scale",
+        "stream_mode",
+        "output_ownership"
+      ]
+    },
+    {
+      "partner": "numba",
+      "contract_class": "fixed_continuation_certification",
+      "candidate_ids": [
+        "numba_component_union_current_v4_surface"
+      ],
+      "generic_operator_fits": [
+        "fixed_radius_graph_component_union"
+      ],
+      "accepted_dtypes": [
+        "float32",
+        "float64",
+        "int32",
+        "int64"
+      ],
+      "required_layout": "fixed_signature_device_columns_no_python_rows",
+      "cuda_device_ownership": "rtdl_prepared_session_or_caller_owned_device_columns_same_cuda_context",
+      "stream_synchronization": "compile/cache timing separated from hot run timing; Goal4650 records synchronization points",
+      "output_ownership": "v4_or_partner_allocated_device_columns_with_canonical_component_signature",
+      "fixed_operator_only": true,
+      "arbitrary_callback_supported": false,
+      "compile_cache_timing_boundary": "compile_time_excluded_from_hot_path_but_reported_as_phase_telemetry",
+      "telemetry_required": [
+        "correctness_parity",
+        "representative_speedup",
+        "partner_parity",
+        "host_materialization_in_hot_path",
+        "compile_time_seconds",
+        "cache_hit",
+        "denominator",
+        "scale"
+      ]
+    }
+  ]
+}

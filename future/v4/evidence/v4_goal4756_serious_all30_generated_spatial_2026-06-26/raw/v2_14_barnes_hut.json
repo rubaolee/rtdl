@@ -1,0 +1,120 @@
+{
+  "app": "barnes_hut_force_app",
+  "body_count": 32768,
+  "capacity": {
+    "frontier_row_capacity": 22937600
+  },
+  "checksum": {
+    "force_x": -4733.575645891911,
+    "force_y": 46717.65234663441
+  },
+  "claim_flags": {
+    "device_column_contract": false,
+    "frontier_rows_materialized_on_host": true,
+    "host_frontier_materialization_in_hot_path": true,
+    "partner_migration_counts_as_speed": false,
+    "same_logical_frontier_contract": true
+  },
+  "frontier_summary": {
+    "contract": "generic_aggregate_frontier_collect_2d_v1",
+    "frontier_row_count": 12006704,
+    "frontier_rows_materialized_on_host": true,
+    "native_symbol": "rtdl_optix_collect_aggregate_frontier_2d"
+  },
+  "hot_repeats": [
+    {
+      "aggregate_contribution_row_count": 3473415.0,
+      "exact_contribution_row_count": 8533289.0,
+      "frontier_collect_seconds": 31.396678008139133,
+      "frontier_row_count": 12006704.0,
+      "host_numba_vector_wall_seconds": 4.992919620126486,
+      "hot_seconds": 36.38959762826562,
+      "repeat_index": 0.0,
+      "wall_seconds": 36.38959762826562
+    },
+    {
+      "aggregate_contribution_row_count": 3473415.0,
+      "exact_contribution_row_count": 8533289.0,
+      "frontier_collect_seconds": 28.6415774859488,
+      "frontier_row_count": 12006704.0,
+      "host_numba_vector_wall_seconds": 4.821953259408474,
+      "hot_seconds": 33.463530745357275,
+      "repeat_index": 1.0,
+      "wall_seconds": 33.463530745357275
+    },
+    {
+      "aggregate_contribution_row_count": 3473415.0,
+      "exact_contribution_row_count": 8533289.0,
+      "frontier_collect_seconds": 28.55548683181405,
+      "frontier_row_count": 12006704.0,
+      "host_numba_vector_wall_seconds": 4.272940304130316,
+      "hot_seconds": 32.82842713594437,
+      "repeat_index": 2.0,
+      "wall_seconds": 32.82842713594437
+    },
+    {
+      "aggregate_contribution_row_count": 3473415.0,
+      "exact_contribution_row_count": 8533289.0,
+      "frontier_collect_seconds": 27.611215226352215,
+      "frontier_row_count": 12006704.0,
+      "host_numba_vector_wall_seconds": 4.215769574046135,
+      "hot_seconds": 31.82698480039835,
+      "repeat_index": 3.0,
+      "wall_seconds": 31.82698480039835
+    },
+    {
+      "aggregate_contribution_row_count": 3473415.0,
+      "exact_contribution_row_count": 8533289.0,
+      "frontier_collect_seconds": 27.38238435983658,
+      "frontier_row_count": 12006704.0,
+      "host_numba_vector_wall_seconds": 4.260714255273342,
+      "hot_seconds": 31.64309861510992,
+      "repeat_index": 4.0,
+      "wall_seconds": 31.64309861510992
+    },
+    {
+      "aggregate_contribution_row_count": 3473415.0,
+      "exact_contribution_row_count": 8533289.0,
+      "frontier_collect_seconds": 27.42353304848075,
+      "frontier_row_count": 12006704.0,
+      "host_numba_vector_wall_seconds": 4.340850334614515,
+      "hot_seconds": 31.764383383095264,
+      "repeat_index": 5.0,
+      "wall_seconds": 31.764383383095264
+    },
+    {
+      "aggregate_contribution_row_count": 3473415.0,
+      "exact_contribution_row_count": 8533289.0,
+      "frontier_collect_seconds": 27.884481143206358,
+      "frontier_row_count": 12006704.0,
+      "host_numba_vector_wall_seconds": 4.2288903221488,
+      "hot_seconds": 32.11337146535516,
+      "repeat_index": 6.0,
+      "wall_seconds": 32.11337146535516
+    }
+  ],
+  "medians": {
+    "frontier_collect_seconds": 27.884481143206358,
+    "host_numba_vector_wall_seconds": 4.272940304130316,
+    "hot_seconds": 32.11337146535516,
+    "wall_seconds": 32.11337146535516
+  },
+  "partner": "numba_cpu",
+  "route": "v2_14_optix_host_frontier_numba_cpu_continuation",
+  "schema": "rtdl.v4.goal4676.aggregate_frontier_focused_pod_benchmark.v1",
+  "theta": 0.5,
+  "tree_summary": {
+    "bucket_size": 32,
+    "leaf_node_count": 2260,
+    "max_depth": 6,
+    "max_leaf_member_count": 32,
+    "morton_bits": 16,
+    "source_count": 32768,
+    "tree_node_count": 3013
+  },
+  "validation": {
+    "reason": "user_skip_validation",
+    "skipped": true
+  },
+  "version": "v2_14"
+}

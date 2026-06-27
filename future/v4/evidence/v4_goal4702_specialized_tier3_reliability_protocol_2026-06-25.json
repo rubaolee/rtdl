@@ -1,0 +1,33 @@
+{
+  "missing_or_invalid": [],
+  "protocol": {
+    "arbitrary_callback_authorized": false,
+    "attempts_per_variant": 5,
+    "cache_requirement": "same callback PTX/toolchain/symbol must reuse the same deterministic cache key; changed PTX or toolchain fingerprint must produce a different key",
+    "callback_variants": [
+      "custom_scalar_reduce_weighted_sum",
+      "custom_score_affine",
+      "custom_threshold_flag",
+      "custom_minmax_score"
+    ],
+    "compile_link_launch_success_floor": 0.95,
+    "correctness_requirement": "100% exact or tolerance-bounded parity for every variant x dataset row",
+    "datasets": [
+      "dense_hits",
+      "sparse_hits",
+      "no_hit_empty_reduction"
+    ],
+    "failure_classification_requirement": "every failed attempt must carry a Goal4698 stage-specific error code before the result can be reviewed",
+    "next_goal": "Goal4703 specialized Tier-3 reliability matrix POD run",
+    "performance_claim_authorized": false,
+    "pod_required_for_next_goal": true,
+    "public_support_authorized": false,
+    "raw_optix_callback_authorized": false,
+    "release_authorized": false,
+    "status": "goal4702_specialized_tier3_reliability_matrix_protocol_frozen_not_run",
+    "total_attempts": 20
+  },
+  "schema": "rtdl.v4.goal4702_specialized_tier3_reliability_protocol.v1",
+  "status": "passed",
+  "validation_status": "passed"
+}

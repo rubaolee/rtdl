@@ -9,8 +9,11 @@ from .v4_goal4643_publication_decision import validate_v4_goal4643_publication_d
 from .v4_release_decision import v4_goal4632_release_decision
 
 
-V4_GOAL4644_DECISION = "activate_post_release_guardrails_and_debt_ledger"
-V4_GOAL4644_STATUS = "v4_0_0_post_release_guardrails_active"
+V4_GOAL4644_DECISION = "activate_current_v4_release_candidate_guardrails_after_goal4719"
+V4_GOAL4644_STATUS = "v4_python_edsl_release_candidate_guardrails_active_goal4744"
+V4_CURRENT_APP_LEVEL_DECISION_LABEL = (
+    "complete_rt_core_app_matrix__bounded_material_wins__no_broad_all_app_speedup_claim"
+)
 
 
 @dataclass(frozen=True)
@@ -48,8 +51,14 @@ class V4Goal4644PostReleaseGuardrails:
             "review_debt": self.review_debt,
             "forbidden_claims": self.forbidden_claims,
             "next_scope": self.next_scope,
-            "release_authorized": True,
-            "formal_release_authorized": True,
+            "release_authorized": False,
+            "formal_release_authorized": False,
+            "bounded_operator_surface_available": True,
+            "app_level_high_performance_authorized": False,
+            "v4_python_edsl_release_candidate_supported": True,
+            "operator_pushdown_workflow_high_performance_supported": True,
+            "legacy_all_app_high_performance_supported": False,
+            "current_app_level_decision_label": V4_CURRENT_APP_LEVEL_DECISION_LABEL,
             "release_scope_reopened": False,
             "broad_v4_speedup_claim_authorized": False,
             "whole_app_speedup_claim_authorized": False,
@@ -81,12 +90,15 @@ def v4_goal4644_post_release_guardrails(root: Path | None = None) -> dict[str, A
     required_decision_records = (
         "future/v4/v4_goal4642_final_3ai_release_authorization_packet_2026-06-25.md",
         "future/v4/v4_goal4643_publication_decision_2026-06-25.md",
-        "future/v4/v4_goal4644_post_release_guardrails_2026-06-25.md",
-        "future/v4/reviews/call_for_review_v4_goal4644_post_release_guardrails_2026-06-25.md",
-        "future/v4/reviews/claude_v4_goal4644_post_release_guardrails_review_2026-06-25.md",
-        "future/v4/v4_goal4633_4644_completion_audit_2026-06-25.md",
-        "tests/v4_goal4644_post_release_guardrails_test.py",
-    )
+            "future/v4/v4_goal4644_post_release_guardrails_2026-06-25.md",
+            "future/v4/reviews/call_for_review_v4_goal4644_post_release_guardrails_2026-06-25.md",
+            "future/v4/reviews/claude_v4_goal4644_post_release_guardrails_review_2026-06-25.md",
+            "future/v4/v4_goal4633_4644_completion_audit_2026-06-25.md",
+            "future/v4/v4_goal4719_public_docs_examples_release_candidate_cleanup_2026-06-26.md",
+            "future/v4/v4_goal4743_public_docs_current_framing_cleanup_2026-06-26.md",
+            "future/v4/v4_goal4744_full_v4_local_gate_after_current_frontdoor_cleanup_2026-06-26.md",
+            "tests/v4_goal4644_post_release_guardrails_test.py",
+        )
     guardrail_tests = (
         "tests.v4_goal4644_post_release_guardrails_test",
         "tests.v4_goal4643_publication_decision_test",
@@ -109,14 +121,14 @@ def v4_goal4644_post_release_guardrails(root: Path | None = None) -> dict[str, A
         three_ai_consensus_cadence_hours=24,
         external_review_status="claude_accept_goal4644_post_release_guardrails_no_amendments",
         review_debt=(
-            "Antigravity review is optional debt for Goal4644 because Claude completed the current 6h external review seat.",
-            "The next Antigravity or Claude review is due after another 6h of continued V4 work or at the next major decision.",
-            "No review debt expands or weakens the bounded V4.0.0 release label.",
+            "Goal4743 and Goal4744 external 3-AI review debt remains open until Claude/Antigravity review is available.",
+            "Do not public-tag without closing or explicitly accepting that debt.",
+            "No review debt expands or weakens the forbidden-claim list.",
         ),
         forbidden_claims=release_decision["forbidden_claims"],
         next_scope=(
             "V4.x may extend partner coverage, Tier-3 callbacks, CuPy, C ABI, or non-Python hosts only through new goals.",
-            "V4.0.0 remains limited to documented measured generic RT-core operator surfaces.",
+            "V4.0.0 remains limited to documented measured generic RT-core operator/workflow surfaces.",
         ),
     ).as_dict()
 
@@ -128,11 +140,21 @@ def validate_v4_goal4644_post_release_guardrails(root: Path | None = None) -> di
         raise ValueError("Goal4644 status drift")
     if decision["decision"] != V4_GOAL4644_DECISION:
         raise ValueError("Goal4644 decision drift")
-    if not decision["release_authorized"] or not decision["formal_release_authorized"]:
-        raise ValueError("Goal4644 must inherit the already-authorized formal V4 release")
+    if decision["release_authorized"] or decision["formal_release_authorized"]:
+        raise ValueError("Goal4644 current guardrails must not authorize formal public tag")
+    if not decision["bounded_operator_surface_available"]:
+        raise ValueError("Goal4644 current guardrails must preserve bounded operator availability")
+    if decision["app_level_high_performance_authorized"]:
+        raise ValueError("Goal4644 current guardrails must not authorize app-level high performance")
+    if not decision["v4_python_edsl_release_candidate_supported"]:
+        raise ValueError("Goal4644 must preserve V4 Python eDSL release candidate state")
+    if not decision["operator_pushdown_workflow_high_performance_supported"]:
+        raise ValueError("Goal4644 must preserve custom predicate early-exit evidence")
+    if decision["legacy_all_app_high_performance_supported"]:
+        raise ValueError("Goal4644 must keep legacy all-app high-performance false")
     if decision["release_scope_reopened"]:
         raise ValueError("Goal4644 must not reopen V4.0 release scope")
-    if decision["measured_surfaces_count"] != 8:
+    if decision["measured_surfaces_count"] != 10:
         raise ValueError("Goal4644 measured surface count drift")
     if decision["candidate_surfaces_count"] != 0:
         raise ValueError("Goal4644 must not count candidates as release surfaces")
@@ -149,8 +171,8 @@ def validate_v4_goal4644_post_release_guardrails(root: Path | None = None) -> di
         "CuPy performance",
         "C ABI / embedding / non-Python host",
         "app-specific native kernels",
-        "Barnes-Hut covered by V4.0",
-        "Spatial RayJoin covered by V4.0",
+        "Barnes-Hut new V4-over-V3 speedup",
+        "Spatial RayJoin speedup",
         "LibRTS paper reproduction",
     ):
         if claim not in decision["forbidden_claims"]:

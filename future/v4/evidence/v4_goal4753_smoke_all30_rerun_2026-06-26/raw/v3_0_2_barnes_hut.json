@@ -1,0 +1,75 @@
+{
+  "app": "barnes_hut_force_app",
+  "body_count": 1024,
+  "capacity": {
+    "capacity_attempts": [
+      {
+        "attempt_index": 0,
+        "attempted_count": 185964,
+        "capacity": 716800,
+        "overflow": false,
+        "row_count": 185964,
+        "traversal_seconds": 0.002940114
+      }
+    ],
+    "final_row_capacity": 186988,
+    "initial_capacity": 716800
+  },
+  "checksum": {
+    "force_x": 6.221133024505957,
+    "force_y": -18.45732110672351
+  },
+  "claim_flags": {
+    "automatic_partner_selection_allowed": false,
+    "device_column_contract": true,
+    "frontier_columns_materialized_on_host": false,
+    "host_frontier_materialization_in_hot_path": false,
+    "partner_migration_counts_as_speed": false,
+    "row_offsets_materialized_on_host": false,
+    "same_logical_frontier_contract": true
+  },
+  "frontier_summary": {
+    "contract": "generic_aggregate_frontier_device_columns_2d_v1",
+    "frontier_columns_materialized_on_host": false,
+    "frontier_row_count": 185964,
+    "partner_contract": "generic_aggregate_frontier_device_columns_prepared_weighted_vector_sum_2d_v1",
+    "row_offsets_materialized_on_host": false,
+    "runner_metadata": {}
+  },
+  "hot_repeats": [
+    {
+      "aggregate_contribution_row_count": 29420.0,
+      "exact_contribution_row_count": 156544.0,
+      "frontier_row_count": 185964.0,
+      "frontier_traversal_seconds": 0.001715913,
+      "hot_seconds": 0.11897622379888344,
+      "partner_seconds": 0.11726031079888344,
+      "repeat_index": 0.0,
+      "wall_seconds": 0.12205493450164795
+    }
+  ],
+  "medians": {
+    "frontier_traversal_seconds": 0.001715913,
+    "hot_seconds": 0.11897622379888344,
+    "partner_seconds": 0.11726031079888344,
+    "wall_seconds": 0.12205493450164795
+  },
+  "partner": "cupy",
+  "route": "v3_0_2_device_columns_explicit_partner_continuation",
+  "schema": "rtdl.v4.goal4676.aggregate_frontier_focused_pod_benchmark.v1",
+  "theta": 0.5,
+  "tree_summary": {
+    "bucket_size": 32,
+    "leaf_node_count": 64,
+    "max_depth": 3,
+    "max_leaf_member_count": 16,
+    "morton_bits": 16,
+    "source_count": 1024,
+    "tree_node_count": 85
+  },
+  "validation": {
+    "reason": "user_skip_validation",
+    "skipped": true
+  },
+  "version": "v3_0_2"
+}

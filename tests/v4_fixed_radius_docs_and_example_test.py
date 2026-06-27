@@ -44,7 +44,7 @@ class V4FixedRadiusDocsAndExampleTest(unittest.TestCase):
         self.assertIn("v4_fixed_radius_count_threshold_2d_device_arrays", text)
         self.assertIn("v4_closest_hit_grouped_argmin_3d_device_arrays", text)
         self.assertIn("v4_ray_triangle_any_hit_flags_2d_device_arrays", text)
-        self.assertIn("V4.0.0 release catalog", text)
+        self.assertIn("V4 Python eDSL/operator-pushdown catalog", text)
         self.assertIn("Not authorized by this catalog", text)
         self.assertIn("Tier-3 callback/PTX claims", text)
         self.assertIn("operator/callback planner", text)

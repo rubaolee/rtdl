@@ -1,0 +1,79 @@
+{
+  "author_commit": "2a3c60da0bbbd00ff1777cb57ec2089cb0029cf7",
+  "checksum_validation": {
+    "abs_checksum_relative_error": 2.9873327390354115e-15,
+    "checksum_relative_error": 2.9873327390354115e-15,
+    "native_force_abs_checksum": 8.954052691190206e-06,
+    "native_force_checksum": 8.954052691190206e-06,
+    "oracle_force_abs_checksum": 8.954052688202874e-06,
+    "oracle_force_checksum": 8.954052688202874e-06,
+    "passes_float_output_tolerance": true
+  },
+  "claim_boundary": {
+    "external_author_binary_used": false,
+    "host_fallback_used": true,
+    "input_columns_downloaded_for_tree_build": true,
+    "native_v4_abi_symbols_available": true,
+    "native_v4_checksum_route_available": true,
+    "native_v4_operator_available": false,
+    "public_rt_barneshut_paper_reproduction_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "purpose": "native ABI author-semantics checksum route with explicit RT-core/fallback status",
+    "rt_core_execution": false,
+    "same_semantics_author_contract_required": true,
+    "v2_v3_v4_author_speed_table_authorized": false
+  },
+  "contract_version": "rtdl.rt_barneshut.author_contract.v1",
+  "dataset": {
+    "author_scaling_applied": false,
+    "file_type": "treelogy",
+    "header_values": [
+      1000000.0,
+      1.0,
+      0.025,
+      0.05,
+      0.5
+    ],
+    "path": "/root/external/RT-BarnesHut-author/treelogy_synthetic_1M.txt",
+    "point_count": 4096
+  },
+  "device_columns": {
+    "force_device_ptr_nonzero": true,
+    "point_count": 4096,
+    "point_ids_device_ptr_nonzero": true
+  },
+  "first_forces": [
+    1.055339149402812e-09,
+    1.0164746822027837e-09,
+    1.1042396996785442e-09,
+    1.0784509951733412e-09,
+    1.1683484180124992e-09,
+    1.6342667219504392e-09,
+    1.7097594451342957e-09,
+    1.6807721880951476e-09
+  ],
+  "force_abs_checksum": 8.954052691190206e-06,
+  "force_checksum": 8.954052691190206e-06,
+  "force_max": 2.5040499451733922e-08,
+  "force_min": 8.164673936938982e-10,
+  "goal": "Goal4764",
+  "goal4765_rt_core_candidate_attempted": false,
+  "implementation_status": "host_fallback_author_semantics_checksum_route",
+  "implementation_status_code": 2,
+  "oracle": {
+    "force_abs_checksum": 8.954052688202874e-06,
+    "force_checksum": 8.954052688202874e-06,
+    "grid_size": 2.0,
+    "leaf_count": 128,
+    "node_count": 200
+  },
+  "phase_seconds": {
+    "copy_seconds": 0.005466077,
+    "execution_seconds": 0.00716561,
+    "preprocessing_seconds": 0.001894561,
+    "rt_force_seconds_field_contains_fallback_force_seconds": 0.005201188
+  },
+  "point_count": 4096,
+  "route_version": "rtdl.v4.rt_barneshut.native_author_route.feasibility.v1",
+  "status": "native_3d_author_semantics_host_fallback_available"
+}

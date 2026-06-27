@@ -25,6 +25,8 @@ PAPER_RT_CPU_REFERENCE_BACKEND = "paper_rt_cpu_reference"
 PAPER_RT_EMBREE_BACKEND = "paper_rt_embree"
 PAPER_RT_OPTIX_BACKEND = "paper_rt_optix"
 PAPER_RT_OPTIX_PREPARED_GROUPED_REDUCTION_BACKEND = "paper_rt_optix_prepared_grouped_reduction"
+PAPER_RT_V4_TORCH_DEVICE_GROUPED_REDUCTION_BACKEND = "paper_rt_v4_torch_device_grouped_reduction"
+PAPER_RT_V4_CUPY_DEVICE_GROUPED_REDUCTION_BACKEND = "paper_rt_v4_cupy_device_grouped_reduction"
 PAPER_RT_OPTIX_V2_5_PRIMITIVE_FIRST_BACKEND = "paper_rt_optix_v2_5_primitive_first"
 PAPER_RT_EMBREE_HIT_STREAM_TRITON_BACKEND = "paper_rt_embree_hit_stream_triton"
 PAPER_RT_OPTIX_HIT_STREAM_TRITON_BACKEND = "paper_rt_optix_hit_stream_triton"
@@ -58,6 +60,8 @@ BACKENDS = (
     PAPER_RT_EMBREE_BACKEND,
     PAPER_RT_OPTIX_BACKEND,
     PAPER_RT_OPTIX_PREPARED_GROUPED_REDUCTION_BACKEND,
+    PAPER_RT_V4_TORCH_DEVICE_GROUPED_REDUCTION_BACKEND,
+    PAPER_RT_V4_CUPY_DEVICE_GROUPED_REDUCTION_BACKEND,
     PAPER_RT_OPTIX_V2_5_PRIMITIVE_FIRST_BACKEND,
     PAPER_RT_EMBREE_HIT_STREAM_TRITON_BACKEND,
     PAPER_RT_OPTIX_HIT_STREAM_TRITON_BACKEND,
@@ -280,6 +284,28 @@ def run_result_mode(
             warmup=warmup,
             summary_only_iterations=summary_only_iterations,
             ray_batch_layout=ray_batch_layout,
+        )
+    if backend == PAPER_RT_V4_TORCH_DEVICE_GROUPED_REDUCTION_BACKEND:
+        return _run_paper_rt_v4_torch_device_grouped_reduction_result_mode(
+            fixture=fixture,
+            plan=plan,
+            mode=mode,
+            copies=copies,
+            repeat=repeat,
+            warmup=warmup,
+            summary_only_iterations=summary_only_iterations,
+            partner="torch",
+        )
+    if backend == PAPER_RT_V4_CUPY_DEVICE_GROUPED_REDUCTION_BACKEND:
+        return _run_paper_rt_v4_torch_device_grouped_reduction_result_mode(
+            fixture=fixture,
+            plan=plan,
+            mode=mode,
+            copies=copies,
+            repeat=repeat,
+            warmup=warmup,
+            summary_only_iterations=summary_only_iterations,
+            partner="cupy",
         )
     if backend == PAPER_RT_OPTIX_V2_5_PRIMITIVE_FIRST_BACKEND:
         return _run_paper_rt_v2_5_primitive_first_result_mode(
@@ -788,6 +814,18 @@ def _make_paper_rt_encoded_packed_workload(
         "query_scan_values": matched_scan_values,
         "primitive_group_ids": group_ids,
         "primitive_values": aggregate_values,
+        "triangle_columns_host": {
+            "ids": row_ids.astype(np.uint32, copy=False),
+            "x0": x0,
+            "y0": y0,
+            "z0": z0,
+            "x1": x0 + float(sx),
+            "y1": y0,
+            "z1": z0,
+            "x2": x0,
+            "y2": y0 + float(sy),
+            "z2": z0,
+        },
         "triangles": triangles,
         "rays": rays,
         "logical_ray_count": int(logical_ray_count),
@@ -905,6 +943,146 @@ def _make_paper_rt_partner_ray_columns(
             "tmax": torch.full((ray_count,), 2.0 * float(workload["z_bias"]), dtype=torch.float64, device=device),
         }
     raise ValueError("paper RT partner ray columns currently support partner='triton', 'cupy', or 'torch'")
+
+
+def _require_v4_device_columns_backend(partner: str):
+    if partner == "torch":
+        try:
+            import torch
+        except ImportError as exc:  # pragma: no cover - optional dependency
+            raise RuntimeError("Torch with CUDA is required for the V4 RayDB device-output route") from exc
+        if not torch.cuda.is_available():
+            raise RuntimeError("Torch CUDA is required for the V4 RayDB device-output route")
+        from rtdsl import v4 as rt_v4
+
+        return torch, rt_v4
+    if partner == "cupy":
+        try:
+            import cupy as cp
+        except ImportError as exc:  # pragma: no cover - optional dependency
+            raise RuntimeError("CuPy with CUDA is required for the V4 RayDB device-output route") from exc
+        if cp.cuda.runtime.getDeviceCount() <= 0:
+            raise RuntimeError("CuPy CUDA device is required for the V4 RayDB device-output route")
+        from rtdsl import v4 as rt_v4
+
+        return cp, rt_v4
+    raise ValueError("V4 RayDB device-output route partner must be torch or cupy")
+
+
+def _device_columns_synchronize(partner_module: Any) -> None:
+    cuda = getattr(partner_module, "cuda", None)
+    if cuda is None:
+        return
+    synchronize = getattr(cuda, "synchronize", None)
+    if callable(synchronize):
+        synchronize()
+        return
+    stream = getattr(cuda, "Stream", None)
+    if stream is not None:
+        null = getattr(stream, "null", None)
+        sync = getattr(null, "synchronize", None)
+        if callable(sync):
+            sync()
+
+
+def _make_paper_rt_device_triangle_columns(
+    workload: dict[str, Any],
+    *,
+    partner: str,
+) -> dict[str, Any]:
+    xp, _ = _require_v4_device_columns_backend(partner)
+    if partner == "torch":
+        device = xp.device("cuda:0")
+        def _tensor(values, dtype):
+            return xp.as_tensor(values, dtype=dtype).to(device=device).contiguous()
+
+        u32 = xp.uint32
+        f64 = xp.float64
+    else:
+        def _tensor(values, dtype):
+            return xp.asarray(values, dtype=dtype)
+
+        u32 = xp.uint32
+        f64 = xp.float64
+    host_columns = workload.get("triangle_columns_host")
+    if not isinstance(host_columns, dict):
+        raise ValueError("workload is missing triangle_columns_host")
+
+    return {
+        "ids": _tensor(host_columns["ids"], u32),
+        "x0": _tensor(host_columns["x0"], f64),
+        "y0": _tensor(host_columns["y0"], f64),
+        "z0": _tensor(host_columns["z0"], f64),
+        "x1": _tensor(host_columns["x1"], f64),
+        "y1": _tensor(host_columns["y1"], f64),
+        "z1": _tensor(host_columns["z1"], f64),
+        "x2": _tensor(host_columns["x2"], f64),
+        "y2": _tensor(host_columns["y2"], f64),
+        "z2": _tensor(host_columns["z2"], f64),
+    }
+
+
+def _device_column_to_numpy(column: Any):
+    value = column
+    detach = getattr(value, "detach", None)
+    if callable(detach):
+        value = detach()
+    cpu = getattr(value, "cpu", None)
+    if callable(cpu):
+        value = cpu()
+    get = getattr(value, "get", None)
+    if callable(get):
+        return get()
+    numpy = getattr(value, "numpy", None)
+    if callable(numpy):
+        return numpy()
+    return value
+
+
+def _paper_rows_from_v4_grouped_output_columns(
+    output_columns: dict[str, Any],
+    *,
+    reduction: str,
+    group_keys: tuple[str, ...],
+    group_tuples: tuple[tuple[int, ...], ...],
+) -> list[dict[str, int]]:
+    counts = _device_column_to_numpy(output_columns["group_counts"])
+    sums = _device_column_to_numpy(output_columns["group_sums"])
+    mins = _device_column_to_numpy(output_columns["group_mins"])
+    maxs = _device_column_to_numpy(output_columns["group_maxs"])
+    rows: list[dict[str, int]] = []
+    for group_id, group_tuple in enumerate(group_tuples):
+        row = {group_keys[index]: int(group_tuple[index]) for index in range(len(group_keys))}
+        if reduction == "count":
+            value = int(counts[group_id])
+            if value == 0:
+                continue
+            row["count"] = value
+        elif reduction == "sum":
+            value = int(sums[group_id])
+            if value == 0:
+                continue
+            row["sum"] = value
+        elif reduction == "min":
+            value = int(mins[group_id])
+            if value == 0xFFFFFFFFFFFFFFFF:
+                continue
+            row["min"] = value
+        elif reduction == "max":
+            value = int(maxs[group_id])
+            if value == 0:
+                continue
+            row["max"] = value
+        elif reduction == "sum_count":
+            count_value = int(counts[group_id])
+            if count_value == 0:
+                continue
+            row["sum"] = int(sums[group_id])
+            row["count"] = count_value
+        else:
+            raise ValueError(f"unsupported V4 grouped output reduction: {reduction}")
+        rows.append(row)
+    return rows
 
 
 def describe_paper_rt_v2_4_prepared_session(
@@ -2162,6 +2340,217 @@ def _run_paper_rt_prepared_grouped_reduction_result_mode(
     }
 
 
+def _run_paper_rt_v4_torch_device_grouped_reduction_result_mode(
+    *,
+    fixture: dict[str, Any],
+    plan: dict[str, Any],
+    mode: str,
+    copies: int,
+    repeat: int,
+    warmup: int,
+    summary_only_iterations: bool = False,
+    partner: str = "torch",
+) -> dict[str, Any]:
+    if mode not in PAPER_RT_RESULT_MODES:
+        raise ValueError(f"unsupported paper RT result mode: {mode}")
+    if repeat <= 0:
+        raise ValueError("repeat must be positive")
+    if warmup < 0:
+        raise ValueError("warmup must be non-negative")
+
+    partner_module, rt_v4 = _require_v4_device_columns_backend(partner)
+    prepare_started = time.perf_counter()
+    table_descriptor = prepare_paper_rt_encoded_table_descriptor(fixture, plan)
+    workload = _make_paper_rt_encoded_packed_workload(
+        fixture,
+        plan,
+        mode,
+        table_descriptor=table_descriptor,
+        materialize_rays=False,
+    )
+    workload_built = time.perf_counter()
+    triangle_columns_started = time.perf_counter()
+    triangle_columns = _make_paper_rt_device_triangle_columns(workload, partner=partner)
+    ray_columns = _make_paper_rt_partner_ray_columns(workload, partner=partner)
+    _device_columns_synchronize(partner_module)
+    device_columns_ready = time.perf_counter()
+    group_count = len(workload["group_tuples"])
+    session_started = time.perf_counter()
+    with rt_v4.prepare_primitive_grouped_i64_reduction_3d_device_arrays_v4(
+        triangle_columns,
+        ray_columns,
+        primitive_group_ids=workload["primitive_group_ids"],
+        primitive_values=workload["primitive_values"],
+        group_count=group_count,
+        partner=partner,
+    ) as session:
+        output_columns = session.allocate_outputs()
+        _device_columns_synchronize(partner_module)
+        session_ready = time.perf_counter()
+        cpu_rows = rt.evaluate_columnar_grouped_aggregate(fixture, plan).rows
+
+        measured_wall: list[float] = []
+        measured_phase_timings: list[dict[str, float]] = []
+        rows: list[dict[str, Any]] = []
+        device_result: dict[str, Any] = {}
+        result_materialization_after_hot_sec = 0.0
+        reduction = "sum_count" if mode == "avg_as_sum_count" else mode
+        try:
+            for iteration in range(warmup + repeat):
+                _device_columns_synchronize(partner_module)
+                iteration_started = time.perf_counter()
+                device_result = session.run(
+                    reduction=reduction,
+                    output_columns=output_columns,
+                    return_metadata=True,
+                )
+                _device_columns_synchronize(partner_module)
+                device_done = time.perf_counter()
+                if summary_only_iterations:
+                    rows_done = device_done
+                    row_presentation_sec = 0.0
+                else:
+                    rows = _paper_rows_from_v4_grouped_output_columns(
+                        output_columns,
+                        reduction=reduction,
+                        group_keys=workload["group_keys"],
+                        group_tuples=workload["group_tuples"],
+                    )
+                    rows_done = time.perf_counter()
+                    row_presentation_sec = rows_done - device_done
+                if iteration >= warmup:
+                    measured_wall.append(rows_done - iteration_started)
+                    metadata = dict(device_result.get("metadata", {}))
+                    phase_timing = dict(metadata.get("phase_timing_seconds", {}))
+                    phase_timing["native_call_wall"] = device_done - iteration_started
+                    phase_timing["row_presentation"] = row_presentation_sec
+                    measured_phase_timings.append(phase_timing)
+        finally:
+            pass
+        if summary_only_iterations:
+            materialize_started = time.perf_counter()
+            rows = _paper_rows_from_v4_grouped_output_columns(
+                output_columns,
+                reduction=reduction,
+                group_keys=workload["group_keys"],
+                group_tuples=workload["group_tuples"],
+            )
+            result_materialization_after_hot_sec = time.perf_counter() - materialize_started
+
+    elapsed_sec = _median_float(measured_wall)
+    timing_medians = {
+        "elapsed_sec": elapsed_sec,
+        "workload_build": workload_built - prepare_started,
+        "device_column_build": device_columns_ready - triangle_columns_started,
+        "prepared_v4_session_total": session_ready - session_started,
+        "cold_prepare_total": session_ready - prepare_started,
+    }
+    phase_keys = sorted({key for timing in measured_phase_timings for key in timing})
+    for key in phase_keys:
+        timing_medians[key] = _median_float(
+            [float(timing[key]) for timing in measured_phase_timings if key in timing]
+        )
+    phase_timing_summaries = {
+        key: _numeric_series_summary(
+            [float(timing[key]) for timing in measured_phase_timings if key in timing]
+        )
+        for key in phase_keys
+    }
+
+    metadata = dict(device_result.get("metadata", {}))
+    rt_traversal_sec = float(
+        timing_medians.get(
+            "traversal_grouped_i64_reduction_and_direct_device_output_write",
+            timing_medians.get("traversal", 0.0),
+        )
+    )
+    materialization_sec = max(0.0, elapsed_sec - rt_traversal_sec)
+    return {
+        "app": "raydb_style_columnar_aggregate",
+        "backend": (
+            PAPER_RT_V4_CUPY_DEVICE_GROUPED_REDUCTION_BACKEND
+            if partner == "cupy"
+            else PAPER_RT_V4_TORCH_DEVICE_GROUPED_REDUCTION_BACKEND
+        ),
+        "mode": mode,
+        "copies": int(copies),
+        "row_count": len(fixture["row_ids"]),
+        "elapsed_sec": elapsed_sec,
+        "rows": rows,
+        "matches_cpu_reference": _rows_match_cpu_reference(rows, cpu_rows),
+        "metadata": {
+            "contract": f"raydb_paper_triangle_scan_v4_{partner}_device_grouped_reduction",
+            "copies": int(copies),
+            "row_count": len(fixture["row_ids"]),
+            "timings": timing_medians,
+            **_fixture_metadata(fixture),
+            **_cpu_reference_match_policy_metadata(),
+            "paper_reproduction": "paper_shaped_rt_v4_device_output_grouped_reduction",
+            "authors_code_comparison": False,
+            "primitive_contract_required_for_native": GENERIC_RAY_TRIANGLE_GROUPED_REDUCTION_3D_SYMBOL,
+            "v4_api_surface": metadata.get("adapter"),
+            "v4_adapter_metadata": metadata,
+            "prepared_steady_state": True,
+            "prepared_internal_repeat": int(repeat),
+            "prepared_internal_warmup": int(warmup),
+            "prepared_iteration_wall_sec": [] if summary_only_iterations else measured_wall,
+            "prepared_iteration_wall_sec_suppressed": bool(summary_only_iterations),
+            "prepared_iteration_wall_summary": _numeric_series_summary(measured_wall),
+            "prepared_phase_timing_summary": phase_timing_summaries,
+            "result_materialization_after_hot_path_sec": result_materialization_after_hot_sec,
+            "result_rows_materialized_after_hot_path": bool(summary_only_iterations),
+            "prepared_table_descriptor_used": bool(workload.get("prepared_table_descriptor_used", False)),
+            "prepared_payload_columns_reused": False,
+            "prepared_primitive_payload_reused": True,
+            "prepared_optix_scene_reused": True,
+            "prepared_ray_batch_reused": True,
+            "prepared_ray_batch_layout": f"{partner}_device_columns",
+            "prepared_ray_batch_column_partner": partner,
+            "prepared_ray_batch_created_from": "partner_device_columns",
+            "native_device_column_path_used": True,
+            "native_direct_device_output_columns": bool(metadata.get("native_direct_device_output_columns")),
+            "host_row_bridge_bypassed": True,
+            "group_rows_downloaded_to_host_in_hot_path": not bool(summary_only_iterations),
+            "host_materialization_in_hot_path": not bool(summary_only_iterations),
+            "v4_goal4732_route_binding": "raydb_app_frontdoor_uses_v4_device_output_surface",
+            "v2_4_phase_timing": rt.v2_4_phase_timing_metadata(
+                {
+                    "query_preparation": 0.0,
+                    "scene_build": 0.0,
+                    "rt_traversal": rt_traversal_sec,
+                    "materialization": materialization_sec,
+                },
+                promoted_performance_path=False,
+                same_phase_contract_as_basis=True,
+                source=f"raydb_style.paper_rt_v4_{partner}_device_grouped_reduction.optix.sum",
+            ),
+            "native_symbol": metadata.get("native_symbol"),
+            "native_rt_core_lowering_path_present": True,
+            "native_rt_core_lowering_ready": True,
+            "native_device_hit_stream_columns_ready": True,
+            "rt_core_accelerated": bool(metadata.get("rt_core_accelerated", True)),
+            "rt_core_claim_authorized": False,
+            "true_zero_copy_authorized": False,
+            "scan_fields": list(workload["scan_fields"]),
+            "group_keys": list(workload["group_keys"]),
+            "triangle_count": _packed_or_sequence_count(workload["triangles"]),
+            "ray_count": int(getattr(session.ray_batch, "ray_count", workload.get("logical_ray_count", 0))),
+            "logical_ray_count": int(workload.get("logical_ray_count", 0)),
+            "host_packed_ray_count": 0,
+            "query_scan_value_count": len(workload["query_scan_values"]),
+            "hit_event_count_before_dedup": metadata.get("hit_event_count_before_dedup"),
+            "generic_primitive_used": "RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
+            "generic_primitive_reduction": reduction,
+            "claim_boundary": (
+                f"V4 RayDB-style app route through the generic {partner} device-array "
+                "primitive grouped-i64 surface. This is not a RayDB-specific native "
+                "API, does not authorize broad V4 speedup wording, and only permits "
+                "performance claims after same-contract POD evidence is recorded."
+            ),
+        },
+    }
+
+
 def _run_paper_rt_v2_5_primitive_first_result_mode(
     *,
     fixture: dict[str, Any],
@@ -3157,6 +3546,9 @@ def run_suite(
         PAPER_RT_CPU_REFERENCE_BACKEND,
         PAPER_RT_EMBREE_BACKEND,
         PAPER_RT_OPTIX_BACKEND,
+        PAPER_RT_OPTIX_PREPARED_GROUPED_REDUCTION_BACKEND,
+        PAPER_RT_V4_TORCH_DEVICE_GROUPED_REDUCTION_BACKEND,
+        PAPER_RT_V4_CUPY_DEVICE_GROUPED_REDUCTION_BACKEND,
         PAPER_RT_EMBREE_HIT_STREAM_TRITON_BACKEND,
         PAPER_RT_OPTIX_HIT_STREAM_TRITON_BACKEND,
         PAPER_RT_OPTIX_DEVICE_HIT_STREAM_TRITON_BACKEND,

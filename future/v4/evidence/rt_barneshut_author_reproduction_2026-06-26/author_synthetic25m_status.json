@@ -1,0 +1,12 @@
+{
+  "cmd": [
+    "./build/rtbarneshut",
+    "csv",
+    "./synthetic25M.csv"
+  ],
+  "returncode": 0,
+  "wall_seconds": 51.503901194781065,
+  "preprocessing_seconds": 1.59359,
+  "rt_force_seconds": 2.40888,
+  "execution_seconds": 4.57178
+}

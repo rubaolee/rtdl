@@ -1,0 +1,85 @@
+{
+  "schema": "rtdl.v4.goal4676.aggregate_frontier_protocol_freeze.v1",
+  "date": "2026-06-25",
+  "status": "goal4676_protocol_frozen_pod_smoke_authorized_serious_after_smoke",
+  "decision_label": "aggregate_frontier_focused_pod_protocol_frozen__same_hardware_smoke_authorized__serious_run_requires_smoke_denominator_success",
+  "purpose": "Freeze the Goal4676 same-hardware focused benchmark protocol before running POD measurements.",
+  "target": {
+    "surface": "v4_aggregate_frontier_device_columns_2d_prepared_runner",
+    "generic_primitive": "AGGREGATE_FRONTIER_DEVICE_COLUMNS_2D",
+    "app_probe": "barnes_hut_force_app_as_probe_only",
+    "app_identity_kernel_authorized": false
+  },
+  "benchmark_entrypoint": {
+    "script": "scripts/v4_goal4676_aggregate_frontier_pod_benchmark.py",
+    "plan_command": "py scripts/v4_goal4676_aggregate_frontier_pod_benchmark.py --print-plan --profile serious --partner cupy",
+    "default_serious_profile": {
+      "body_count": 32768,
+      "repeat": 7,
+      "warmup": 2,
+      "correctness_body_count": 2048,
+      "frontier_capacity_multiplier": 700
+    }
+  },
+  "denominators": {
+    "v2_14": "collect_aggregate_frontier_2d_optix if exported by V2.14 plus host-materialized row_offsets/frontier_i64_rows and explicit Numba CPU weighted-vector continuation; no silent CPU-only fallback allowed",
+    "v3_0_2": "device-column primitive control; V4/V3 parity is not a clean V4 failure or win because the primitive already exists in V3.0.2",
+    "v4_current": "Goal4675 candidate runner plus explicit CuPy or Numba downstream weighted-vector continuation"
+  },
+  "bars": {
+    "v4_frontier_only_hot_over_v2_14_min": 1.2,
+    "v4_full_hot_over_v2_14_min": 1.2,
+    "v4_full_wall_over_v2_14_min": 1.1,
+    "correctness_parity_required": true,
+    "large_run_checksum_parity_required": true,
+    "host_frontier_materialization_in_hot_path_allowed": false,
+    "partner_migration_counts_as_speed": false
+  },
+  "smoke_before_serious": {
+    "authorized": true,
+    "profile": "smoke",
+    "purpose": "Verify POD paths, V2.14 OptiX denominator, V3.0.2 device-column control, V4 runner, and raw JSON parsing before spending serious time.",
+    "serious_run_allowed_if": [
+      "all smoke subprocesses return zero",
+      "V2.14 collect_aggregate_frontier_2d_optix denominator executes or the target is reclassified",
+      "V4 runner returns no host frontier materialization",
+      "correctness companion passes"
+    ]
+  },
+  "tests": {
+    "protocol_test": {
+      "command": "py -m unittest tests.v4_goal4676_aggregate_frontier_protocol_test",
+      "result": "passed",
+      "tests_run": 3
+    },
+    "frontdoor_regression": {
+      "command": "py -m unittest tests.v4_goal4675_aggregate_frontier_prepared_runner_test tests.v4_frontdoor_test tests.v4_operator_catalog_test tests.v4_scope_gate_test",
+      "result": "passed",
+      "tests_run": 29
+    },
+    "compile_check": {
+      "command": "py -m py_compile scripts/v4_goal4676_aggregate_frontier_pod_benchmark.py src/rtdsl/v4_goal4676_aggregate_frontier_protocol.py",
+      "result": "passed"
+    }
+  },
+  "claim_boundary": {
+    "pod_smoke_authorized": true,
+    "serious_pod_run_authorized_after_smoke_success": true,
+    "release_authorized": false,
+    "public_speedup_wording_authorized": false,
+    "whole_app_high_performance_wording_authorized": false,
+    "rt_core_speedup_wording_authorized": false,
+    "true_zero_copy_wording_authorized": false,
+    "tier3_callback_authorized": false,
+    "raw_optix_callback_authorized": false,
+    "c_abi_or_embedding_authorized": false,
+    "non_python_host_authorized": false,
+    "automatic_partner_selection_authorized": false
+  },
+  "review_state": {
+    "codex_status": "self_audit_complete",
+    "antigravity_status": "goal4675_accepted_goal4676_protocol_preparation; protocol-specific review pending_or_debt",
+    "claude_status": "weekly_limit_known_until_2026-06-28_19:00_America_New_York_review_debt_recorded",
+    "three_ai_consensus_status": "pending_or_debt_allowed_no_release_authorization"
+  }
+}

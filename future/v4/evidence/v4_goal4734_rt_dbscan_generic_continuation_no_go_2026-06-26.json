@@ -1,0 +1,62 @@
+{
+  "goal": "Goal4734",
+  "title": "RTDBSCAN generic continuation improvement attempt closure",
+  "date": "2026-06-26",
+  "status": "closed_no_go_pending_external_review_debt",
+  "decision": "rt_dbscan_goal4734_closed_by_existing_grouped_union_no_go__pivot_to_goal4735",
+  "purpose": "Close the Goal4731 RTDBSCAN generic continuation improvement attempt by binding it to existing Goal4670/4671 focused evidence instead of repeating no-go POD probes.",
+  "controlling_evidence": [
+    "future/v4/v4_goal4670_rt_dbscan_second_win_diagnostics_2026-06-25.md",
+    "future/v4/v4_goal4671_rtdbscan_native_grouped_union_feasibility_2026-06-25.md",
+    "future/v4/evidence/v4_goal4671_rtdbscan_grouped_union_telemetry_20260625/summary.json"
+  ],
+  "best_known_true_v4_rows": {
+    "default_grouped_stream_numba_signature": {
+      "v4_vs_v2_14_hot_approx": 1.08,
+      "v4_vs_v3_0_2_hot_approx": 1.08,
+      "classification": "modest_below_formal_bar"
+    },
+    "direct_side_effect_probe": {
+      "v4_vs_v2_14_hot_approx": 1.12,
+      "v4_vs_v3_0_2_hot_approx": 1.11,
+      "classification": "generic_probe_below_formal_bar"
+    },
+    "direct_side_effect_no_same_root_culling_probe": {
+      "v4_vs_v2_14_hot_approx": 1.166,
+      "v4_vs_v3_0_2_hot_approx": 1.163,
+      "classification": "best_generic_grouped_union_probe_below_1_20_bar"
+    }
+  },
+  "no_go_reason": [
+    "Goal4671 telemetry shows root-link depth already about one link per root find in the best variant.",
+    "The dominant remaining work is candidate/root-find volume under the current grouped-union contract.",
+    "No new generic grouped-union algorithm exists in the current tree that plausibly changes that count structure.",
+    "Repeating RTDBSCAN micro-probes without a new algorithm would be churn."
+  ],
+  "reopen_condition": [
+    "new generic grouped-union algorithm that reduces candidate/root work",
+    "new generic app-level contract that is not a DBSCAN identity kernel",
+    "frozen V2.14/V3 denominator and predeclared >=1.20x material-speed hypothesis"
+  ],
+  "next_goal": {
+    "id": "Goal4735",
+    "title": "choose one no-route/deferred app for fresh generic operator",
+    "reason": "RTDBSCAN cannot currently provide the second independent true V4 app-level win."
+  },
+  "claim_boundary": {
+    "release_authorized": false,
+    "final_v4_tag_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rt_dbscan_high_performance_claim_authorized": false,
+    "direct_status_rows_count_as_v4_wins": false,
+    "app_specific_dbscan_kernel_authorized": false,
+    "true_zero_copy_wording_authorized": false
+  },
+  "goal_level_decision_audit": {
+    "decision": "close RTDBSCAN instead of rerunning the same no-go grouped-union lever",
+    "was_i_foolish": "No. Repeating Goal4670/4671 would be foolish; closing RTDBSCAN based on the existing no-go evidence is the disciplined path.",
+    "foolish_actions": "Spend another POD run on the same grouped-union lever without a new generic algorithm or frozen hypothesis.",
+    "other_path": "Ignore Goal4671 and try to polish RTDBSCAN toward 1.20x, which would repeat the process-churn failure mode.",
+    "different_path_now": "Move to Goal4735 and select a fresh generic operator/app target with a real material-speed hypothesis before implementation."
+  }
+}

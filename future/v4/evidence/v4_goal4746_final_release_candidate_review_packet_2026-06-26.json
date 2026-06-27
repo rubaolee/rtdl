@@ -1,0 +1,45 @@
+{
+  "goal": "Goal4746",
+  "title": "final V4 release-candidate review packet",
+  "date": "2026-06-26",
+  "status": "complete_pending_external_review_debt",
+  "decision": "final_v4_release_candidate_packet_ready_for_external_review",
+  "authorized_release_candidate_label": "RTDL V4 Python eDSL/operator-pushdown release candidate: 10 measured generic RT-core operator surfaces including constrained custom predicate early-exit at serious scale; broad legacy all-app speedup remains unauthorized",
+  "current_app_level_decision_label": "bounded_high_performance_python_edsl_release_candidate__not_all_benchmark_apps_faster",
+  "current_product_claim": "Python eDSL/operator-pushdown release candidate for generic RT-core operators and constrained user predicates",
+  "benchmark_app_boundary": {
+    "all_10_historical_apps_faster_than_v2_14": false,
+    "candidate_apps_v2_14_with_v3_no_regression": [
+      "hausdorff_xhd",
+      "triangle_counting",
+      "barnes_hut"
+    ],
+    "v4_only_workflow": "v4_ray_triangle_custom_predicate_early_exit_3d_numba",
+    "v4_only_workflow_v4_over_v2_14": 4.632757911153888,
+    "v4_only_workflow_v4_over_v3_0_2": 4.632757911153888
+  },
+  "local_validation": {
+    "v4_discover_tests_run": 561,
+    "v4_discover_status": "OK",
+    "public_examples_and_catalog_gate_status": "OK",
+    "current_path_stale_goal_label_scan_matches": 0,
+    "front_door_status": "v4_python_edsl_operator_pushdown_front_door_goal4742_current_release_framing",
+    "scope_gate_status": "v4_python_edsl_operator_pushdown_scope_goal4742_current_release_framing"
+  },
+  "evidence_chain": [
+    "future/v4/v4_goal4742_current_release_framing_after_blocker_closure_2026-06-26.md",
+    "future/v4/v4_goal4743_public_docs_current_framing_cleanup_2026-06-26.md",
+    "future/v4/v4_goal4744_full_v4_local_gate_after_current_frontdoor_cleanup_2026-06-26.md",
+    "future/v4/v4_goal4745_machine_release_decision_current_boundary_refresh_2026-06-26.md"
+  ],
+  "claim_boundary": {
+    "final_v4_tag_authorized_by_goal4746": false,
+    "all_benchmark_speedup_claim_authorized": false,
+    "broad_v4_over_v2_14_claim_authorized": false,
+    "arbitrary_callback_support_authorized": false,
+    "raw_optix_callback_support_authorized": false,
+    "true_zero_copy_wording_authorized": false,
+    "non_python_embedding_c_abi_claim_authorized": false,
+    "app_specific_native_kernel_authorized": false
+  }
+}

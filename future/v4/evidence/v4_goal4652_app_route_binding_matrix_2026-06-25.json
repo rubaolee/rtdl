@@ -1,0 +1,153 @@
+{
+  "status": "goal4652_app_route_binding_or_blocker_declaration_evidence",
+  "date": "2026-06-25",
+  "summary": {
+    "app_count": 10,
+    "full_app_route_bound_count": 4,
+    "partial_or_blocked_count": 6,
+    "route_actually_uses_v4_code_count": 8,
+    "by_route_class": {
+      "v4_fused_operator_addressable": 4,
+      "partner_migration_or_parity": 0,
+      "backend_bound_parity_control": 0,
+      "requires_new_generic_operator": 4,
+      "requires_cupy_promotion": 0,
+      "requires_fixed_numba_continuation": 0,
+      "no_v4_app_route_blocker": 1,
+      "deferred_excluded_with_reason": 1
+    }
+  },
+  "route_bindings": [
+    {
+      "app": "rt_dbscan",
+      "route_class": "v4_fused_operator_addressable",
+      "route_status": "route_bound_to_generic_count_threshold_plus_fixed_numba_component_union",
+      "route_actually_uses_v4_code": true,
+      "full_app_route_bound": true,
+      "mapped_v4_operators": [
+        "v4_fixed_radius_count_threshold_2d_device_arrays",
+        "v4_fixed_radius_graph_component_union_3d_device_arrays"
+      ],
+      "planner_dry_runs_verified_by_tests": true,
+      "next_goal4653_protocol_action": "Freeze RTDBSCAN as a V4 fused-operator-addressable row with correctness parity and app-level timing."
+    },
+    {
+      "app": "raydb_style",
+      "route_class": "v4_fused_operator_addressable",
+      "route_status": "route_bound_to_ray_triangle_grouped_and_any_hit_operator_surfaces",
+      "route_actually_uses_v4_code": true,
+      "full_app_route_bound": true,
+      "mapped_v4_operators": [
+        "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays",
+        "v4_closest_hit_grouped_argmin_3d_device_arrays",
+        "v4_ray_triangle_any_hit_flags_2d_device_arrays"
+      ],
+      "planner_dry_runs_verified_by_tests": true,
+      "next_goal4653_protocol_action": "Freeze RayDB-style route with grouped-i64, grouped-argmin, and any-hit operator timings."
+    },
+    {
+      "app": "triangle_counting",
+      "route_class": "v4_fused_operator_addressable",
+      "route_status": "route_bound_to_weighted_sum_plus_grouped_i64_operator_surfaces",
+      "route_actually_uses_v4_code": true,
+      "full_app_route_bound": true,
+      "mapped_v4_operators": [
+        "v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays",
+        "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays"
+      ],
+      "planner_dry_runs_verified_by_tests": true,
+      "next_goal4653_protocol_action": "Freeze triangle-counting route with weighted-sum and grouped-i64 correctness contracts."
+    },
+    {
+      "app": "librts_spatial_index",
+      "route_class": "v4_fused_operator_addressable",
+      "route_status": "route_bound_to_generic_aabb_all_ops_count_operator",
+      "route_actually_uses_v4_code": true,
+      "full_app_route_bound": true,
+      "mapped_v4_operators": [
+        "v4_aabb_index_query_2d_all_ops_count_prepared_runner"
+      ],
+      "planner_dry_runs_verified_by_tests": true,
+      "next_goal4653_protocol_action": "Freeze LibRTS spatial-index as generic AABB all-ops count row with explicit denominator."
+    },
+    {
+      "app": "hausdorff_xhd",
+      "route_class": "requires_new_generic_operator",
+      "route_status": "partial_v4_operator_coverage_no_full_app_route",
+      "route_actually_uses_v4_code": true,
+      "full_app_route_bound": false,
+      "mapped_v4_operators": [
+        "v4_point_group_nearest_witness_2d_device_arrays",
+        "v4_fixed_radius_count_threshold_2d_device_arrays"
+      ],
+      "planner_dry_runs_verified_by_tests": true,
+      "next_goal4653_protocol_action": "Freeze as requires-new-generic-operator unless a full Hausdorff route is implemented before protocol freeze."
+    },
+    {
+      "app": "robot_collision",
+      "route_class": "requires_new_generic_operator",
+      "route_status": "partial_any_hit_flags_coverage_no_full_collision_route",
+      "route_actually_uses_v4_code": true,
+      "full_app_route_bound": false,
+      "mapped_v4_operators": [
+        "v4_ray_triangle_any_hit_flags_2d_device_arrays"
+      ],
+      "planner_dry_runs_verified_by_tests": true,
+      "next_goal4653_protocol_action": "Freeze as partial any-hit coverage with blocker for full collision route."
+    },
+    {
+      "app": "contact_manifold",
+      "route_class": "requires_new_generic_operator",
+      "route_status": "partial_nearest_witness_coverage_no_full_contact_route",
+      "route_actually_uses_v4_code": true,
+      "full_app_route_bound": false,
+      "mapped_v4_operators": [
+        "v4_point_group_nearest_witness_2d_device_arrays"
+      ],
+      "planner_dry_runs_verified_by_tests": true,
+      "next_goal4653_protocol_action": "Freeze as partial nearest-witness coverage with blocker for full contact-manifold route."
+    },
+    {
+      "app": "rtnn",
+      "route_class": "requires_new_generic_operator",
+      "route_status": "partial_nearest_witness_coverage_ranked_summary_missing",
+      "route_actually_uses_v4_code": true,
+      "full_app_route_bound": false,
+      "mapped_v4_operators": [
+        "v4_point_group_nearest_witness_2d_device_arrays"
+      ],
+      "planner_dry_runs_verified_by_tests": true,
+      "next_goal4653_protocol_action": "Freeze as partial nearest-witness coverage with ranked-summary/top-k blocker."
+    },
+    {
+      "app": "spatial_rayjoin",
+      "route_class": "no_v4_app_route_blocker",
+      "route_status": "blocked_no_current_v4_relation_topology_route",
+      "route_actually_uses_v4_code": false,
+      "full_app_route_bound": false,
+      "mapped_v4_operators": [],
+      "planner_dry_runs_verified_by_tests": true,
+      "next_goal4653_protocol_action": "Freeze as no-route blocker; do not silently fall back to V2/V3."
+    },
+    {
+      "app": "barnes_hut",
+      "route_class": "deferred_excluded_with_reason",
+      "route_status": "deferred_app_identity_aggregate_tree_force_law",
+      "route_actually_uses_v4_code": false,
+      "full_app_route_bound": false,
+      "mapped_v4_operators": [],
+      "planner_dry_runs_verified_by_tests": true,
+      "next_goal4653_protocol_action": "Freeze as deferred/excluded with reason; do not add a Barnes-Hut native kernel."
+    }
+  ],
+  "test_command": "py -m unittest tests.v4_goal4652_app_route_binding_test tests.v4_goal4651_partner_catalog_promotion_test tests.v4_operator_catalog_test tests.v4_goal4627_coverage_audit_test",
+  "test_result": "27 tests OK",
+  "claim_boundaries": {
+    "release_claim_authorized": false,
+    "broad_v4_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "cupy_performance_claim_authorized": false,
+    "app_specific_native_kernel_authorized": false,
+    "silent_v2_v3_fallback_authorized": false
+  }
+}

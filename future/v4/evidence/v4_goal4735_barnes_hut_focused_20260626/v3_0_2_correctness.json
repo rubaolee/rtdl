@@ -1,0 +1,80 @@
+{
+  "app": "barnes_hut_force_app",
+  "body_count": 2048,
+  "capacity": {
+    "capacity_attempts": [
+      {
+        "attempt_index": 0,
+        "attempted_count": 514055,
+        "capacity": 1433600,
+        "overflow": false,
+        "row_count": 514055,
+        "traversal_seconds": 0.006544199
+      }
+    ],
+    "final_row_capacity": 515079,
+    "initial_capacity": 1433600
+  },
+  "checksum": {
+    "force_x": 38.45212977864119,
+    "force_y": 605.7933224065863
+  },
+  "claim_flags": {
+    "automatic_partner_selection_allowed": false,
+    "device_column_contract": true,
+    "frontier_columns_materialized_on_host": false,
+    "host_frontier_materialization_in_hot_path": false,
+    "partner_migration_counts_as_speed": false,
+    "row_offsets_materialized_on_host": false,
+    "same_logical_frontier_contract": true
+  },
+  "frontier_summary": {
+    "contract": "generic_aggregate_frontier_device_columns_2d_v1",
+    "frontier_columns_materialized_on_host": false,
+    "frontier_row_count": 514055,
+    "partner_contract": "generic_aggregate_frontier_device_columns_prepared_weighted_vector_sum_2d_v1",
+    "row_offsets_materialized_on_host": false,
+    "runner_metadata": {}
+  },
+  "hot_repeats": [
+    {
+      "aggregate_contribution_row_count": 85411.0,
+      "exact_contribution_row_count": 428644.0,
+      "frontier_row_count": 514055.0,
+      "frontier_traversal_seconds": 0.004218218,
+      "hot_seconds": 0.14487125826007652,
+      "partner_seconds": 0.14065304026007652,
+      "repeat_index": 0.0,
+      "wall_seconds": 0.14865783974528313
+    }
+  ],
+  "medians": {
+    "frontier_traversal_seconds": 0.004218218,
+    "hot_seconds": 0.14487125826007652,
+    "partner_seconds": 0.14065304026007652,
+    "wall_seconds": 0.14865783974528313
+  },
+  "partner": "cupy",
+  "route": "v3_0_2_device_columns_explicit_partner_continuation",
+  "schema": "rtdl.v4.goal4676.aggregate_frontier_focused_pod_benchmark.v1",
+  "theta": 0.5,
+  "tree_summary": {
+    "bucket_size": 32,
+    "leaf_node_count": 151,
+    "max_depth": 4,
+    "max_leaf_member_count": 32,
+    "morton_bits": 16,
+    "source_count": 2048,
+    "tree_node_count": 201
+  },
+  "validation": {
+    "compared_against": "sum_aggregate_frontier_weighted_vectors_2d_cpu_reference",
+    "max_abs_diff_x": 1.8758328224066645e-12,
+    "max_abs_diff_y": 2.2737367544323206e-12,
+    "passed": true,
+    "reference_frontier_row_count": 514055,
+    "skipped": false,
+    "tolerance": 1e-07
+  },
+  "version": "v3_0_2"
+}

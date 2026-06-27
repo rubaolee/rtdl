@@ -1,0 +1,86 @@
+{
+  "app_rows": [
+    {
+      "all_correctness_parity_or_skipped_oracle": true,
+      "all_returncode_zero": true,
+      "app": "rt_dbscan",
+      "claim_class": "modest_runtime_gain_below_formal_bar",
+      "contributes_to_formal_high_performance": false,
+      "explanation": "The row is at parity or modestly faster, but below the frozen formal speed bar.",
+      "pass_frozen_speed_bar": false,
+      "v3_0_2_vs_v2_14_hot_speedup": 1.0027784628897511,
+      "v4_vs_v2_14_hot_speedup": 1.086127902760864,
+      "v4_vs_v3_0_2_hot_speedup": 1.083118498208389
+    },
+    {
+      "all_correctness_parity_or_skipped_oracle": true,
+      "all_returncode_zero": true,
+      "app": "raydb_style",
+      "claim_class": "regression",
+      "contributes_to_formal_high_performance": false,
+      "explanation": "At least one V4 app-level ratio falls below the 0.98 no-regression floor.",
+      "pass_frozen_speed_bar": false,
+      "v3_0_2_vs_v2_14_hot_speedup": 0.970005132412986,
+      "v4_vs_v2_14_hot_speedup": 0.9744073401484975,
+      "v4_vs_v3_0_2_hot_speedup": 1.0045383344772214
+    },
+    {
+      "all_correctness_parity_or_skipped_oracle": true,
+      "all_returncode_zero": true,
+      "app": "triangle_counting",
+      "claim_class": "regression",
+      "contributes_to_formal_high_performance": false,
+      "explanation": "At least one V4 app-level ratio falls below the 0.98 no-regression floor.",
+      "pass_frozen_speed_bar": false,
+      "v3_0_2_vs_v2_14_hot_speedup": 4.277252727739084,
+      "v4_vs_v2_14_hot_speedup": 4.054841666199054,
+      "v4_vs_v3_0_2_hot_speedup": 0.9480014215438715
+    },
+    {
+      "all_correctness_parity_or_skipped_oracle": true,
+      "all_returncode_zero": true,
+      "app": "librts_spatial_index",
+      "claim_class": "parity_not_v4_speed_win",
+      "contributes_to_formal_high_performance": false,
+      "explanation": "The row is effectively parity and does not prove a V4 speed win.",
+      "pass_frozen_speed_bar": false,
+      "v3_0_2_vs_v2_14_hot_speedup": 0.9989452187867004,
+      "v4_vs_v2_14_hot_speedup": 1.002850507944097,
+      "v4_vs_v3_0_2_hot_speedup": 1.0039094127325017
+    },
+    {
+      "all_correctness_parity_or_skipped_oracle": true,
+      "all_returncode_zero": true,
+      "app": "hausdorff_xhd",
+      "claim_class": "true_v4_operator_win_candidate",
+      "contributes_to_formal_high_performance": false,
+      "explanation": "Hausdorff passes its frozen custom bar: V4/V2.14 primary wall >= 1.20x, V4/V3 hot >= 1.20x, prepare >= 0.80x, and 1M correctness-boundary probe passes.",
+      "pass_frozen_speed_bar": true,
+      "v3_0_2_vs_v2_14_hot_speedup": 79183.50523723522,
+      "v4_vs_v2_14_hot_speedup": 201581.8595690473,
+      "v4_vs_v3_0_2_hot_speedup": 2.545755697036957
+    }
+  ],
+  "blocking_reasons": [
+    "old_version_optix_uses_v4_compatibility_native_library",
+    "most_full_app_rows_do_not_pass_frozen_speed_bar",
+    "insufficient_independent_true_v4_app_wins"
+  ],
+  "bounded_operator_v4_only": true,
+  "claim_boundary": {
+    "native_provenance_blocker_must_remain_visible": true,
+    "partner_migration_counts_as_v4_speed_win": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "whole_app_high_performance_claim_authorized": false
+  },
+  "contributing_app_count": 0,
+  "decision_label": "bounded_operator_v4_only__app_level_high_performance_not_supported",
+  "formal_high_performance_v4_supported": false,
+  "native_provenance_blocker": true,
+  "partner_migration_lock_preserved": true,
+  "schema": "rtdl.v4.goal4655.app_benchmark_analysis.v1",
+  "source_schema": "rtdl.v4.goal4669.full_app_level_pod_benchmark_after_hausdorff.v1",
+  "source_status": "goal4669_evidence_collected_not_release",
+  "true_v4_candidate_app_count": 1
+}

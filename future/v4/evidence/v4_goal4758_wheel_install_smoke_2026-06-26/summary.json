@@ -1,0 +1,30 @@
+{
+  "broad_speedup_claim_authorized": false,
+  "cupy_grouped_vector_sum_status": "certified_partner_measured_ready",
+  "cupy_grouped_vector_sum_surface": "prepare_grouped_vector_sum_2d_partner_columns_session(partner='cupy')",
+  "formal_release_authorized": false,
+  "front_door_status": "v4_python_edsl_operator_pushdown_front_door_goal4756_complete_rt_core_matrix",
+  "install_returncode": 0,
+  "install_status": "passed",
+  "matrix_apps": 10,
+  "matrix_rows": 30,
+  "measured_partners": [
+    "cupy",
+    "numba",
+    "rtdl_native",
+    "torch"
+  ],
+  "no_cuda_required": true,
+  "numba_component_union_status": "tier2_measured_ready",
+  "numba_component_union_surface": "v4_fixed_radius_graph_component_union_3d_device_arrays",
+  "out_dir": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\future\\v4\\evidence\\v4_goal4758_wheel_install_smoke_2026-06-26",
+  "public_tag_authorized": false,
+  "release_authorized": false,
+  "schema": "rtdl.v4.goal4758.installed_wheel_smoke.v1",
+  "smoke_returncode": 0,
+  "smoke_status": "passed",
+  "status": "passed",
+  "venv_create_returncode": 0,
+  "venv_removed": true,
+  "wheel": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\dist\\goal4758_v4_release_candidate\\rtdl_source_tree-4.0.0-py3-none-any.whl"
+}

@@ -89,14 +89,23 @@ class V4OperatorCatalogTest(unittest.TestCase):
 
     def test_catalog_rows_keep_release_and_app_kernel_claims_false(self) -> None:
         rows = catalog.measured_v4_tier2_operator_catalog()
-        self.assertEqual(8, len(rows))
+        self.assertEqual(10, len(rows))
         surfaces = {row["api_surface"] for row in rows}
         self.assertIn("v4_ray_triangle_any_hit_flags_2d_device_arrays", surfaces)
         self.assertIn("v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays", surfaces)
         self.assertIn("v4_point_group_nearest_witness_2d_device_arrays", surfaces)
         self.assertIn("v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays", surfaces)
         self.assertIn("v4_fixed_radius_graph_component_union_3d_device_arrays", surfaces)
-        self.assertTrue(all(row["measured_partners"] in {("torch",), ("numba",), ("rtdl_native",)} for row in rows))
+        self.assertIn("v4_aabb_index_query_2d_all_ops_count_prepared_runner", surfaces)
+        self.assertIn("v4_aggregate_frontier_device_columns_2d_prepared_runner", surfaces)
+        self.assertIn("v4_ray_triangle_custom_predicate_early_exit_3d_numba", surfaces)
+        self.assertTrue(
+            all(
+                row["measured_partners"]
+                in {("torch",), ("numba",), ("rtdl_native",), ("rtdl_native", "cupy")}
+                for row in rows
+            )
+        )
         self.assertTrue(all(row["release_claim_authorized"] is False for row in rows))
         self.assertTrue(all(row["app_specific_native_kernel_authorized"] is False for row in rows))
 
@@ -105,7 +114,7 @@ class V4OperatorCatalogTest(unittest.TestCase):
             *catalog.measured_v4_tier2_operator_catalog(),
             *catalog.candidate_v4_tier2_operator_catalog(),
         ]
-        self.assertEqual(8, len(rows))
+        self.assertEqual(10, len(rows))
 
         required_fields = {
             "catalog_class",
@@ -142,10 +151,13 @@ class V4OperatorCatalogTest(unittest.TestCase):
 
         measured = [row for row in rows if row["catalog_class"] == "measured"]
         candidates = [row for row in rows if row["catalog_class"] == "candidate"]
-        self.assertEqual(8, len(measured))
+        self.assertEqual(10, len(measured))
         self.assertEqual(0, len(candidates))
+        candidate_names = {row["operator"] for row in candidates}
+        self.assertNotIn("fixed_radius_ranked_summary_3d", candidate_names)
+        self.assertNotIn("aggregate_frontier_device_columns_2d", candidate_names)
         self.assertTrue(
-            all(row["surface_status"] == "tier2_measured_v4_0_0_release_surface" for row in measured)
+            all(str(row["surface_status"]).startswith("tier2_measured") for row in measured)
         )
 
     def test_grouped_i64_reduction_is_measured_tier2_surface(self) -> None:
@@ -184,6 +196,9 @@ class V4OperatorCatalogTest(unittest.TestCase):
         self.assertFalse(plan.broad_v4_speedup_claim_authorized)
         candidates = catalog.candidate_v4_tier2_operator_catalog()
         self.assertEqual(0, len(candidates))
+        candidate_names = {row["operator"] for row in candidates}
+        self.assertNotIn("fixed_radius_ranked_summary_3d", candidate_names)
+        self.assertNotIn("aggregate_frontier_device_columns_2d", candidate_names)
         rows = catalog.measured_v4_tier2_operator_catalog()
         rows_by_operator = {row["operator"]: row for row in rows}
         point_group = rows_by_operator["point_group_nearest_witness"]
@@ -192,6 +207,18 @@ class V4OperatorCatalogTest(unittest.TestCase):
         self.assertEqual("8.0", point_group["validated_optix_abi"])
         self.assertEqual("float32_computed_float64_output", point_group["distance_precision"])
         self.assertFalse(point_group["optix_9_1_validated"])
+
+    def test_ranked_summary_is_deferred_not_candidate_or_measured_surface(self) -> None:
+        plan = catalog.plan_v4_operator_request("ranked_summary", partner="rtdl_native")
+
+        self.assertEqual("deferred_goal4678_serious_scale_parity_not_release", plan.status)
+        self.assertEqual("deferred_v4_x_or_research", plan.tier)
+        self.assertIsNone(plan.api_surface)
+        self.assertEqual("FIXED_RADIUS_RANKED_SUMMARY_3D", plan.generic_primitive)
+        self.assertEqual("ranked_summary_topk", plan.continuation_class)
+        self.assertFalse(plan.measured_partner)
+        self.assertFalse(plan.release_claim_authorized)
+        self.assertFalse(plan.whole_app_speedup_claim_authorized)
 
     def test_weighted_sum_is_measured_torch_surface_after_goal4633(self) -> None:
         plan = catalog.plan_v4_operator_request("any_hit_weighted_sum", partner="torch")

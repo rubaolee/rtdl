@@ -19,7 +19,7 @@ def _write_markdown(path: Path, payload: dict[str, object], validation: dict[str
     lines = [
         "# V4.0 Scope Gate",
         "",
-        "Status: generated V4.0.0 formal release scope gate",
+        "Status: generated V4 Python eDSL/operator-pushdown scope gate",
         "",
         f"- gate status: `{payload['status']}`",
         f"- validation status: `{validation['status']}`",
@@ -50,7 +50,7 @@ def _write_markdown(path: Path, payload: dict[str, object], validation: dict[str
             "",
             "## Non-Authorization",
             "",
-            "This gate authorizes the narrow V4.0.0 generic operator release. It does not authorize broad V4 speedup wording, whole-application speedups, Tier-3 callback/PTX support, raw OptiX callbacks, CuPy performance claims, embedding/C-ABI, non-Python host binding claims, or app-specific native kernels.",
+            "This gate preserves the V4 Python eDSL/operator-pushdown surface, including constrained custom predicate early-exit. It does not authorize broad legacy all-app high-performance wording, broad V4 speedup wording, whole-application speedups, Tier-3 callback/PTX support, raw OptiX callbacks, CuPy performance claims beyond measured rows, embedding/C-ABI, non-Python host binding claims, or app-specific native kernels.",
             "",
         ]
     )

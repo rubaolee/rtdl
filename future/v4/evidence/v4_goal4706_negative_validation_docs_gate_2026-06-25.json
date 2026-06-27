@@ -1,0 +1,65 @@
+{
+  "example_run": {
+    "payload": {
+      "compile_stage": "compile_cache_ready_not_executed",
+      "internal_compile_allowed": true,
+      "performance_claim_authorized": false,
+      "release_authorized": false,
+      "status": "bounded_candidate_example_not_public_api",
+      "tier3_public_support_authorized": false
+    },
+    "returncode": 0,
+    "stderr": "Could not find platform independent libraries <prefix>",
+    "stdout": "{\n  \"compile_stage\": \"compile_cache_ready_not_executed\",\n  \"internal_compile_allowed\": true,\n  \"performance_claim_authorized\": false,\n  \"release_authorized\": false,\n  \"status\": \"bounded_candidate_example_not_public_api\",\n  \"tier3_public_support_authorized\": false\n}"
+  },
+  "gate": {
+    "accepted_example_status": "compile_cache_ready_not_executed",
+    "example_path": "future/v4/examples/v4_specialized_tier3_scalar_callback_candidate_example.py",
+    "negative_rows": [
+      {
+        "case_id": "arbitrary_python_callback",
+        "error_code": "RTDL_V4_TIER3_CALLBACK_REJECTED_ARBITRARY_PYTHON_CALLBACK",
+        "internal_compile_allowed": false,
+        "stage": "rejected_before_compile",
+        "tier3_public_support_authorized": false
+      },
+      {
+        "case_id": "action_side_effect_callback",
+        "error_code": "RTDL_V4_TIER3_CALLBACK_REJECTED_ACTION_OR_SIDE_EFFECT_CALLBACK",
+        "internal_compile_allowed": false,
+        "stage": "rejected_before_compile",
+        "tier3_public_support_authorized": false
+      },
+      {
+        "case_id": "external_memory_mutation_callback",
+        "error_code": "RTDL_V4_TIER3_CALLBACK_REJECTED_EXTERNAL_MEMORY_MUTATION_CALLBACK",
+        "internal_compile_allowed": false,
+        "stage": "rejected_before_compile",
+        "tier3_public_support_authorized": false
+      },
+      {
+        "case_id": "dynamic_sbt_direct_callable_hot_path",
+        "error_code": "RTDL_V4_TIER3_CALLBACK_REJECTED_DYNAMIC_SBT_DIRECT_CALLABLE_HOT_PATH",
+        "internal_compile_allowed": false,
+        "stage": "rejected_before_compile",
+        "tier3_public_support_authorized": false
+      },
+      {
+        "case_id": "non_scalar_variable_length_output",
+        "error_code": "RTDL_V4_TIER3_CALLBACK_REJECTED_ACTION_OR_SIDE_EFFECT_CALLBACK",
+        "internal_compile_allowed": false,
+        "stage": "rejected_before_compile",
+        "tier3_public_support_authorized": false
+      }
+    ],
+    "next_goal": "Goal4707 specialized Tier-3 external-review packet and debt consolidation",
+    "performance_claim_authorized": false,
+    "release_authorized": false,
+    "status": "goal4706_specialized_tier3_negative_validation_docs_gate_not_public_support",
+    "tier3_public_support_authorized": false
+  },
+  "missing_or_invalid": [],
+  "schema": "rtdl.v4.goal4706_negative_validation_docs_gate.v1",
+  "status": "passed",
+  "validation_status": "passed"
+}

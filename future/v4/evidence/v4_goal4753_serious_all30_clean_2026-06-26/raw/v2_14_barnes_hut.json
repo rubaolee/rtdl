@@ -1,0 +1,120 @@
+{
+  "app": "barnes_hut_force_app",
+  "body_count": 32768,
+  "capacity": {
+    "frontier_row_capacity": 22937600
+  },
+  "checksum": {
+    "force_x": -4733.575645891911,
+    "force_y": 46717.65234663441
+  },
+  "claim_flags": {
+    "device_column_contract": false,
+    "frontier_rows_materialized_on_host": true,
+    "host_frontier_materialization_in_hot_path": true,
+    "partner_migration_counts_as_speed": false,
+    "same_logical_frontier_contract": true
+  },
+  "frontier_summary": {
+    "contract": "generic_aggregate_frontier_collect_2d_v1",
+    "frontier_row_count": 12006704,
+    "frontier_rows_materialized_on_host": true,
+    "native_symbol": "rtdl_optix_collect_aggregate_frontier_2d"
+  },
+  "hot_repeats": [
+    {
+      "aggregate_contribution_row_count": 3473415.0,
+      "exact_contribution_row_count": 8533289.0,
+      "frontier_collect_seconds": 31.421301174908876,
+      "frontier_row_count": 12006704.0,
+      "host_numba_vector_wall_seconds": 4.754375975579023,
+      "hot_seconds": 36.1756771504879,
+      "repeat_index": 0.0,
+      "wall_seconds": 36.1756771504879
+    },
+    {
+      "aggregate_contribution_row_count": 3473415.0,
+      "exact_contribution_row_count": 8533289.0,
+      "frontier_collect_seconds": 28.54318020120263,
+      "frontier_row_count": 12006704.0,
+      "host_numba_vector_wall_seconds": 4.133034955710173,
+      "hot_seconds": 32.676215156912804,
+      "repeat_index": 1.0,
+      "wall_seconds": 32.676215156912804
+    },
+    {
+      "aggregate_contribution_row_count": 3473415.0,
+      "exact_contribution_row_count": 8533289.0,
+      "frontier_collect_seconds": 28.663920786231756,
+      "frontier_row_count": 12006704.0,
+      "host_numba_vector_wall_seconds": 4.144602335989475,
+      "hot_seconds": 32.80852312222123,
+      "repeat_index": 2.0,
+      "wall_seconds": 32.80852312222123
+    },
+    {
+      "aggregate_contribution_row_count": 3473415.0,
+      "exact_contribution_row_count": 8533289.0,
+      "frontier_collect_seconds": 27.313824236392975,
+      "frontier_row_count": 12006704.0,
+      "host_numba_vector_wall_seconds": 4.111619684845209,
+      "hot_seconds": 31.425443921238184,
+      "repeat_index": 3.0,
+      "wall_seconds": 31.425443921238184
+    },
+    {
+      "aggregate_contribution_row_count": 3473415.0,
+      "exact_contribution_row_count": 8533289.0,
+      "frontier_collect_seconds": 27.067822359502316,
+      "frontier_row_count": 12006704.0,
+      "host_numba_vector_wall_seconds": 4.106649186462164,
+      "hot_seconds": 31.17447154596448,
+      "repeat_index": 4.0,
+      "wall_seconds": 31.17447154596448
+    },
+    {
+      "aggregate_contribution_row_count": 3473415.0,
+      "exact_contribution_row_count": 8533289.0,
+      "frontier_collect_seconds": 26.937965158373117,
+      "frontier_row_count": 12006704.0,
+      "host_numba_vector_wall_seconds": 4.218502890318632,
+      "hot_seconds": 31.15646804869175,
+      "repeat_index": 5.0,
+      "wall_seconds": 31.15646804869175
+    },
+    {
+      "aggregate_contribution_row_count": 3473415.0,
+      "exact_contribution_row_count": 8533289.0,
+      "frontier_collect_seconds": 27.428279887884855,
+      "frontier_row_count": 12006704.0,
+      "host_numba_vector_wall_seconds": 4.1003933027386665,
+      "hot_seconds": 31.528673190623522,
+      "repeat_index": 6.0,
+      "wall_seconds": 31.528673190623522
+    }
+  ],
+  "medians": {
+    "frontier_collect_seconds": 27.428279887884855,
+    "host_numba_vector_wall_seconds": 4.133034955710173,
+    "hot_seconds": 31.528673190623522,
+    "wall_seconds": 31.528673190623522
+  },
+  "partner": "numba_cpu",
+  "route": "v2_14_optix_host_frontier_numba_cpu_continuation",
+  "schema": "rtdl.v4.goal4676.aggregate_frontier_focused_pod_benchmark.v1",
+  "theta": 0.5,
+  "tree_summary": {
+    "bucket_size": 32,
+    "leaf_node_count": 2260,
+    "max_depth": 6,
+    "max_leaf_member_count": 32,
+    "morton_bits": 16,
+    "source_count": 32768,
+    "tree_node_count": 3013
+  },
+  "validation": {
+    "reason": "user_skip_validation",
+    "skipped": true
+  },
+  "version": "v2_14"
+}

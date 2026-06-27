@@ -1,0 +1,149 @@
+{
+  "app": "rayjoin_v2_spatial_join",
+  "backend": "optix",
+  "claim_boundary": {
+    "full_rayjoin_reproduction": false,
+    "paper_scale_perf_claim_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "rtdl_beats_rayjoin_claim_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "v2_8_release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "dataset": "/root/v4_goal4753_final_matrix/spatial_shape_pair_serious_left_grid64.cdb + /root/v4_goal4753_final_matrix/spatial_shape_pair_serious_right_grid64.cdb",
+  "dataset_note": "External CDB overlay pair-dependency case using left/right polygon chains.",
+  "device_resident_continuation_status": "shape_pair_active_count_prepared_left_executor_device_continuation_probe: generic shape-pair relation segment flags stay on device, the left closed-shape payload is reused through a prepared-left native handle, reusable native buffers/params back repeated active-count runs, containment and active-count reduction run in a generic CUDA continuation, and only the scalar count is copied back",
+  "execution_route": "prepared_optix_shape_pair_active_count_device_continuation_reuse",
+  "native_engine_boundary": "The engine sees generic prepared shape-pair relation flags and a generic device-side active-count continuation. RayJoin overlay-seed interpretation and repeated-query reuse stay in Python.",
+  "native_phase_timings": {
+    "active_count": 16129,
+    "active_scan": 0.000379598,
+    "containment": 0.0,
+    "flag_download": 7.075e-06,
+    "left_prepare": 0.0,
+    "left_upload": 0.0,
+    "mode": "active_count_device_continuation_prepared_left_executor",
+    "pair_count": 16777216,
+    "traversal": 0.000220964
+  },
+  "packed_left_reuse": {
+    "enabled": true,
+    "left_shape_count": 4096,
+    "left_shape_pack_paid_in_call": false,
+    "native_prepared_left_set_enabled": true,
+    "native_prepared_left_set_paid_once": true,
+    "native_prepared_left_set_seconds": 0.0008258894085884094,
+    "pack_seconds": 0.015779655426740646
+  },
+  "phases_sec": {
+    "active_count_device_continuation_sec": 0.0006169155240058899,
+    "prepare_active_count_executor_sec": 0.10567045211791992,
+    "prepared_query_sec": 0.0006169155240058899,
+    "prepared_query_sec_repeat": 25,
+    "prepared_query_sec_total_sec": 0.015435319393873215,
+    "prepared_query_sec_warmup": 3
+  },
+  "prepared_active_count_executor": {
+    "left_count": 4096,
+    "native_prepare_symbol": "rtdl_optix_prepare_shape_pair_relation_active_device_prepared_left_executor",
+    "native_run_symbol": "rtdl_optix_run_shape_pair_relation_active_device_prepared_left_executor",
+    "prepare_seconds": 0.10567045211791992,
+    "prepared_left_owner_closed": false,
+    "prepared_relation_owner_closed": false,
+    "release_authorized": false,
+    "reusable_native_executor": true,
+    "right_count": 4096,
+    "row_stream_materialized": false,
+    "schema": "rtdl.optix.shape_pair_relation_active_count_prepared_left_executor.v1",
+    "timed_query_uses_executor_run": true,
+    "true_zero_copy_claim_authorized": false
+  },
+  "prepared_reuse": {
+    "enabled": true,
+    "prepare_static_scene_paid_once": true,
+    "prepare_static_scene_sec": 1.5139927864074707,
+    "right_shape_count": 4096
+  },
+  "repeat_protocol": {
+    "measured_query_total_sec": 0.015435319393873215,
+    "repeat": 25,
+    "reported_query_metric": "prepared_query_median",
+    "warmup": 3
+  },
+  "row_count": 16129,
+  "summary": {
+    "active_seed_count": 16129,
+    "output_contract": "overlay_active_pair_dependency_count"
+  },
+  "topology_stream_m3_phase_table": {
+    "contract": "topology_stream_m3_phase_table_v1",
+    "full_m3_phase_table_complete": true,
+    "m7_promotion_authorized": false,
+    "missing_m3_phases_for_public_row": [],
+    "output_contract": "overlay_active_pair_dependency_count",
+    "phase_seconds": {
+      "device_transfer_or_residency_sec": 0.0,
+      "host_return_or_scalar_materialization_sec": 7.075e-06,
+      "query_stream_prepare_sec": 0.12227599695324898,
+      "rt_traversal_sec": 0.000220964,
+      "static_scene_prepare_sec": 1.5139927864074707,
+      "topology_continuation_sec": 0.000379598
+    },
+    "public_speedup_claim_authorized": false,
+    "query_count": 16777216,
+    "query_stream_resident": true,
+    "release_authorized": false,
+    "repeat": 25,
+    "row_scoped_public_speedup_claim_authorized": false,
+    "source_phase_keys": {
+      "app_phases_sec": [
+        "active_count_device_continuation_sec",
+        "left_shape_pack_sec",
+        "prepare_active_count_executor_sec",
+        "prepare_left_set_sec",
+        "prepare_static_scene_sec",
+        "prepared_query_sec",
+        "prepared_query_sec_repeat",
+        "prepared_query_sec_total_sec",
+        "prepared_query_sec_warmup"
+      ],
+      "native_phase_timings": [
+        "active_count",
+        "active_scan",
+        "containment",
+        "flag_download",
+        "left_prepare",
+        "left_upload",
+        "mode",
+        "pair_count",
+        "traversal"
+      ]
+    },
+    "status": "complete_non_authorizing_m3_table",
+    "table_basis": "prepared_optix_shape_pair_active_count_phase_timers_plus_native_last_phase_timings; non-authorizing V3 topology-stream accounting",
+    "true_zero_copy_claim_authorized": false,
+    "warmup": 3
+  },
+  "topology_stream_prepared_handle": {
+    "app_specific_native_engine_logic_allowed": false,
+    "backend": "optix",
+    "contract": "topology_stream_prepared_handle_v1",
+    "full_m3_phase_table_complete": true,
+    "generic_capability": "point_location_topology_stream",
+    "m7_promotion_authorized": false,
+    "output_contract": "overlay_active_pair_dependency_count",
+    "public_speedup_claim_authorized": false,
+    "query_count": 16777216,
+    "query_stream_prepared": true,
+    "query_stream_residency": "device_resident_prepared_left_shape_set_with_reusable_active_count_executor",
+    "release_authorized": false,
+    "reusable_engine_surface": true,
+    "row_scoped_public_speedup_claim_authorized": false,
+    "static_scene_prepared": true,
+    "status": "prepared_topology_stream_handle_non_authorizing",
+    "true_zero_copy_claim_authorized": false,
+    "v4_embedding_claim_authorized": false
+  },
+  "workload": "overlay_seed"
+}

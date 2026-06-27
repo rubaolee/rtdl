@@ -1,0 +1,22 @@
+{
+  "missing_or_invalid": [],
+  "protocol": {
+    "baseline_variant": "hit_inline_formula_trace_loop_context",
+    "correctness_required": true,
+    "hard_kill_ratio_min": 2.0,
+    "measured_launches": 20,
+    "measured_variant": "hit_direct_device_callback_trace_loop",
+    "next_goal": "Goal4695 specialized hit callback overhead POD measurement",
+    "pass_ratio_max": 1.5,
+    "performance_claim_authorized": false,
+    "primary_ratio": "hit_direct_device_callback_trace_loop_median_ms / hit_inline_formula_trace_loop_median_ms",
+    "release_authorized": false,
+    "status": "goal4694_specialized_hit_callback_overhead_protocol_frozen_not_measured",
+    "tier3_public_support_authorized": false,
+    "trace_iterations": 100000,
+    "warmup_launches": 3
+  },
+  "schema": "rtdl.v4.goal4694_specialized_hit_overhead_protocol.v1",
+  "status": "passed",
+  "validation_status": "passed"
+}

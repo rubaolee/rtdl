@@ -1,0 +1,75 @@
+{
+  "matrix": {
+    "allowed_claim_if_goal4719_and_final_review_pass": [
+      "RTDL V4 is a Python eDSL/runtime for measured generic RT-core operator pushdown.",
+      "The V4 front door has 10 measured generic operator/workflow surfaces.",
+      "The constrained Numba custom predicate early-exit workflow measured 4.633x geomean versus V2.14/V3.0.2 materialized-device fallback at serious scale.",
+      "Legacy promoted-app all-suite high-performance remains unsupported by Goal4669."
+    ],
+    "broad_all_benchmark_speedup_supported": false,
+    "decision_label": "v4_python_edsl_operator_pushdown_release_candidate_pending_docs_and_final_review",
+    "forbidden_claims": [
+      "broad all-app speedup",
+      "all benchmark apps are faster",
+      "arbitrary Python callback support",
+      "raw OptiX callback support",
+      "public Tier-3 support",
+      "non-Python embedding/C ABI",
+      "app-specific native kernels"
+    ],
+    "formal_tag_authorized": false,
+    "legacy_all_app_high_performance_supported": false,
+    "legacy_promoted_app_state": {
+      "blocking_reasons": [
+        "old_version_optix_uses_v4_compatibility_native_library",
+        "most_full_app_rows_do_not_pass_frozen_speed_bar",
+        "insufficient_independent_true_v4_app_wins"
+      ],
+      "contributing_app_count": 0,
+      "decision_label": "bounded_operator_v4_only__app_level_high_performance_not_supported",
+      "formal_high_performance_v4_supported": false,
+      "true_v4_candidate_app_count": 1
+    },
+    "measured_surface_count": 10,
+    "measured_surfaces": [
+      "v4_fixed_radius_count_threshold_2d_device_arrays",
+      "v4_closest_hit_grouped_argmin_3d_device_arrays",
+      "v4_ray_triangle_any_hit_flags_2d_device_arrays",
+      "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays",
+      "v4_point_group_nearest_witness_2d_device_arrays",
+      "v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays",
+      "v4_fixed_radius_graph_component_union_3d_device_arrays",
+      "v4_aabb_index_query_2d_all_ops_count_prepared_runner",
+      "v4_aggregate_frontier_device_columns_2d_prepared_runner",
+      "v4_ray_triangle_custom_predicate_early_exit_3d_numba"
+    ],
+    "new_v4_workflow_rows": [
+      {
+        "api_surface": "v4_ray_triangle_custom_predicate_early_exit_3d_numba",
+        "claim_class": "true_v4_operator_pushdown_workflow_win_candidate",
+        "correctness_all_passed": true,
+        "counts_as_legacy_all_app_speedup": false,
+        "counts_as_v4_edsl_value": true,
+        "denominator": "materialized_all_hit_ids_plus_device_predicate_reduce_fallback",
+        "evidence": [
+          "future/v4/evidence/v4_goal4715_custom_predicate_early_exit_timing_pod_2026-06-26.json",
+          "future/v4/v4_goal4715_custom_predicate_early_exit_timing_pod_2026-06-26.md",
+          "future/v4/evidence/v4_goal4717_custom_predicate_early_exit_serious_scale_pod_2026-06-26.json"
+        ],
+        "min_primary_v4_vs_v3_0_2": 2.054686620906942,
+        "v4_vs_v2_14_primary_geomean": 4.632757911153888,
+        "v4_vs_v3_0_2_primary_geomean": 4.632757911153888,
+        "workflow": "ray_triangle_custom_predicate_early_exit_multi_hit"
+      }
+    ],
+    "next_goal": "Goal4719 public docs, tutorials, examples, and release wording cleanup",
+    "public_wording_authorized_before_goal4719": false,
+    "release_authorized": false,
+    "schema": "rtdl.v4.goal4718.release_matrix_after_custom_predicate.v1",
+    "status": "goal4718_v4_release_matrix_after_custom_predicate_early_exit",
+    "v4_operator_pushdown_workflow_high_performance_supported": true,
+    "v4_python_edsl_release_candidate_supported": true
+  },
+  "missing_or_invalid": [],
+  "status": "passed"
+}

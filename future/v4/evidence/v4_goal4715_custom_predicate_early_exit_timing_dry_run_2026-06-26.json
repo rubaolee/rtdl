@@ -1,0 +1,195 @@
+{
+  "app_level_speed_claim_authorized": false,
+  "arbitrary_callback_authorized": false,
+  "classification": null,
+  "denominator_discovery": {
+    "completed_before_v4_timing": true,
+    "v2_14": {
+      "selected_baseline": "materialized_all_hit_ids_plus_device_predicate_reduce_fallback"
+    },
+    "v3_0_2": {
+      "selected_baseline": "materialized_all_hit_ids_plus_device_predicate_reduce_fallback"
+    }
+  },
+  "dry_run": true,
+  "formal_high_performance_authorized": false,
+  "parameters": {
+    "repeat": 7,
+    "scales": [
+      65536,
+      131072
+    ],
+    "warmups": 2
+  },
+  "protocol_validation": {
+    "missing_or_invalid": [],
+    "protocol": {
+      "app": "ray_triangle_custom_predicate_early_exit_multi_hit",
+      "app_level_speed_claim_authorized": false,
+      "arbitrary_callback_authorized": false,
+      "baselines": [
+        {
+          "name": "v2_14_materialized_all_hits_device_predicate",
+          "required_discovery": "confirm no custom predicate any-hit early-exit route exists; fallback materializes all candidate hit IDs/attributes then filters on device",
+          "root": "/root/rtdl_v2_14_tag"
+        },
+        {
+          "name": "v3_0_2_materialized_all_hits_device_predicate",
+          "required_discovery": "confirm no custom predicate any-hit early-exit route exists; fallback materializes all candidate hit IDs/attributes then filters on device",
+          "root": "/root/rtdl_v3_0_2_tag"
+        },
+        {
+          "name": "v4_callback_predicate_early_exit",
+          "required_discovery": "generated OptiX any-hit route evaluates pure predicate callback and RTDL applies terminate_on_first_accept",
+          "root": "/root/rtdl_v4_candidate_pod"
+        }
+      ],
+      "callback_variants": [
+        {
+          "name": "accept_layer_zero",
+          "semantics": "return true when layer index is zero",
+          "shape": "pure_boolean_numba_cabi_device_function"
+        },
+        {
+          "name": "accept_layer_threshold",
+          "semantics": "return true when layer index is less than a frozen scalar threshold",
+          "shape": "pure_boolean_numba_cabi_device_function"
+        }
+      ],
+      "control_regimes": [
+        {
+          "accept_layer": 31,
+          "candidate_hits_per_ray": 32,
+          "name": "dense_late_accept_k32",
+          "purpose": "control: little early-exit opportunity; should not be used as primary speed evidence."
+        },
+        {
+          "accept_layer": null,
+          "candidate_hits_per_ray": 32,
+          "name": "dense_reject_all_k32",
+          "purpose": "control: callback rejects every candidate; verifies no false positives and exposes worst-case predicate cost."
+        },
+        {
+          "candidate_hits_per_ray": 0,
+          "name": "no_hit_empty",
+          "purpose": "control: validates empty traversal and no-hit accounting."
+        }
+      ],
+      "formal_high_performance_authorized": false,
+      "kill_conditions": [
+        "any correctness failure kills the goal",
+        "missing V2/V3 denominator discovery invalidates the run",
+        "if V4 cannot prove early termination occurred in primary regimes, the run is invalid",
+        "if primary early-accept geomean over V3.0.2 is <1.50x, do not continue toward formal high-performance wording",
+        "if any primary early-accept row is below 1.00x over V3.0.2, stop and diagnose before more POD spend",
+        "if control-regime correctness fails, do not promote the route even if primary speed rows pass"
+      ],
+      "next_goal": "Goal4714 custom predicate early-exit local runner and POD smoke gate",
+      "pass_conditions": [
+        "correctness must pass for every callback x regime x scale x implementation row",
+        "primary early-accept regimes geomean V4 over V3.0.2 must be >=1.50x",
+        "primary early-accept regimes geomean V4 over V2.14 must be >=1.50x",
+        "every primary early-accept regime at every scale must be >=1.20x over V3.0.2",
+        "control regimes must preserve correctness and must not regress below 0.95x geomean over V3.0.2",
+        "wins from late-accept, reject-all, no-hit, weighted-sum, or post-hit accumulation controls cannot support the primary claim",
+        "all denominators and fallback selections must be recorded before V4 timing"
+      ],
+      "pod_authorized": false,
+      "primary_regimes": [
+        {
+          "accept_layer": 0,
+          "candidate_hits_per_ray": 8,
+          "expected_v4_advantage": "V4 can terminate on first accepted candidate instead of materializing 8 candidates per ray.",
+          "name": "dense_early_accept_k8"
+        },
+        {
+          "accept_layer": 0,
+          "candidate_hits_per_ray": 32,
+          "expected_v4_advantage": "V4 can terminate on first accepted candidate instead of materializing 32 candidates per ray.",
+          "name": "dense_early_accept_k32"
+        },
+        {
+          "accept_layer": 0,
+          "active_ray_fraction": 0.25,
+          "candidate_hits_per_ray": 32,
+          "expected_v4_advantage": "V4 should still reduce materialization on active rays while preserving sparse correctness.",
+          "name": "sparse_early_accept_k32"
+        }
+      ],
+      "public_tier3_support_authorized": false,
+      "raw_optix_callback_authorized": false,
+      "release_authorized": false,
+      "scales": [
+        65536,
+        131072
+      ],
+      "status": "goal4713_custom_predicate_early_exit_protocol_frozen_not_run"
+    },
+    "status": "passed"
+  },
+  "public_tier3_support_authorized": false,
+  "raw_optix_callback_authorized": false,
+  "release_authorized": false,
+  "result_contract_validation": {
+    "failing_example": {
+      "app_level_speed_claim_authorized": false,
+      "arbitrary_callback_authorized": false,
+      "classification": "fail_focused_timing_gate_not_high_performance",
+      "control_geomean_v3_speedup": 1.05,
+      "correctness_all_passed": true,
+      "denominator_discovery_complete": true,
+      "early_termination_primary_passed": true,
+      "formal_high_performance_authorized": false,
+      "min_primary_v3_speedup": 1.05,
+      "next_goal": "Stop custom predicate early-exit as formal high-performance evidence; diagnose or reselect the runtime lever",
+      "primary_geomean_v2_speedup": 1.05,
+      "primary_geomean_v3_speedup": 1.05,
+      "primary_speed_row_count": 6,
+      "public_tier3_support_authorized": false,
+      "raw_optix_callback_authorized": false,
+      "release_authorized": false
+    },
+    "goal_status": "goal4715_custom_predicate_early_exit_focused_timing_pending_pod",
+    "invalid_example": {
+      "app_level_speed_claim_authorized": false,
+      "arbitrary_callback_authorized": false,
+      "classification": "invalid_or_fail_timing_gate_repair_required",
+      "control_geomean_v3_speedup": 1.0,
+      "correctness_all_passed": true,
+      "denominator_discovery_complete": true,
+      "early_termination_primary_passed": false,
+      "formal_high_performance_authorized": false,
+      "min_primary_v3_speedup": 1.8,
+      "next_goal": "Stop custom predicate early-exit as formal high-performance evidence; diagnose or reselect the runtime lever",
+      "primary_geomean_v2_speedup": 1.8,
+      "primary_geomean_v3_speedup": 1.8,
+      "primary_speed_row_count": 6,
+      "public_tier3_support_authorized": false,
+      "raw_optix_callback_authorized": false,
+      "release_authorized": false
+    },
+    "missing_or_invalid": [],
+    "passing_example": {
+      "app_level_speed_claim_authorized": false,
+      "arbitrary_callback_authorized": false,
+      "classification": "pass_focused_timing_gate_not_release",
+      "control_geomean_v3_speedup": 1.0,
+      "correctness_all_passed": true,
+      "denominator_discovery_complete": true,
+      "early_termination_primary_passed": true,
+      "formal_high_performance_authorized": false,
+      "min_primary_v3_speedup": 1.8,
+      "next_goal": "Productize custom predicate early-exit as a measured V4 route and broaden app-level validation",
+      "primary_geomean_v2_speedup": 1.8,
+      "primary_geomean_v3_speedup": 1.8,
+      "primary_speed_row_count": 6,
+      "public_tier3_support_authorized": false,
+      "raw_optix_callback_authorized": false,
+      "release_authorized": false
+    },
+    "status": "passed"
+  },
+  "rows": [],
+  "schema": "rtdl.v4.goal4715_custom_predicate_early_exit_timing.v1",
+  "status": "dry_run_contract_passed"
+}

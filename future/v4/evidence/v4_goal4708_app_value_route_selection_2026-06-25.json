@@ -1,0 +1,54 @@
+{
+  "missing_or_invalid": [],
+  "schema": "rtdl.v4.goal4708_app_value_route_selection.v1",
+  "selection": {
+    "app_level_speed_claim_authorized": false,
+    "decision": "do_not_count_specialized_tier3_candidate_as_app_level_high_performance_evidence; continue public-support hardening separately and select a real app-level V4 target separately",
+    "next_goal": "Goal4709 formal high-performance V4 app-level target selection outside Tier-3 candidate",
+    "operator_candidate_route": "v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays",
+    "performance_claim_authorized": false,
+    "release_authorized": false,
+    "route_rows": [
+      {
+        "app_level_claim_authorized": false,
+        "classification": "operator_surface_candidate_value",
+        "reason": "Goal4700/4703 prove constrained callback mechanics on weighted-sum route, but this is still an operator surface, not a promoted benchmark app.",
+        "target": "v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays"
+      },
+      {
+        "app_level_claim_authorized": false,
+        "classification": "not_bound_to_specialized_tier3_candidate",
+        "reason": "RTDBSCAN needs component/grouped-union style continuation, not scalar any-hit weighted-sum callback.",
+        "target": "rt_dbscan"
+      },
+      {
+        "app_level_claim_authorized": false,
+        "classification": "not_bound_to_specialized_tier3_candidate",
+        "reason": "Current RayDB-style app rows are parity and not solved by the scalar weighted-sum candidate.",
+        "target": "raydb_style"
+      },
+      {
+        "app_level_claim_authorized": false,
+        "classification": "not_bound_to_specialized_tier3_candidate",
+        "reason": "Triangle counting's app-level win is historical route evolution plus modest V4 increment, not the specialized scalar callback route.",
+        "target": "triangle_counting"
+      },
+      {
+        "app_level_claim_authorized": false,
+        "classification": "not_bound_to_specialized_tier3_candidate",
+        "reason": "Spatial-index app rows are parity and do not use scalar any-hit weighted-sum.",
+        "target": "librts_spatial_index"
+      },
+      {
+        "app_level_claim_authorized": false,
+        "classification": "not_bound_to_specialized_tier3_candidate",
+        "reason": "Current blockers are exactness/parity for their own routes, not scalar any-hit weighted-sum callback support.",
+        "target": "hausdorff_xhd_or_rtnn"
+      }
+    ],
+    "selected_app_level_route": null,
+    "status": "goal4708_specialized_tier3_app_value_route_selection_no_app_level_claim"
+  },
+  "status": "passed",
+  "validation_status": "passed"
+}

@@ -1,0 +1,73 @@
+{
+  "app_rows": [
+    {
+      "all_correctness_parity_or_skipped_oracle": true,
+      "all_returncode_zero": true,
+      "app": "rt_dbscan",
+      "claim_class": "modest_runtime_gain_below_formal_bar",
+      "contributes_to_formal_high_performance": false,
+      "explanation": "The row is at parity or modestly faster, but below the frozen formal speed bar.",
+      "pass_frozen_speed_bar": false,
+      "v3_0_2_vs_v2_14_hot_speedup": 0.9873851735829855,
+      "v4_vs_v2_14_hot_speedup": 1.0699852108253372,
+      "v4_vs_v3_0_2_hot_speedup": 1.083655334769324
+    },
+    {
+      "all_correctness_parity_or_skipped_oracle": true,
+      "all_returncode_zero": true,
+      "app": "raydb_style",
+      "claim_class": "parity_not_v4_speed_win",
+      "contributes_to_formal_high_performance": false,
+      "explanation": "The row is effectively parity and does not prove a V4 speed win.",
+      "pass_frozen_speed_bar": false,
+      "v3_0_2_vs_v2_14_hot_speedup": 0.9948082194944133,
+      "v4_vs_v2_14_hot_speedup": 0.994360133689628,
+      "v4_vs_v3_0_2_hot_speedup": 0.9995495756910683
+    },
+    {
+      "all_correctness_parity_or_skipped_oracle": true,
+      "all_returncode_zero": true,
+      "app": "triangle_counting",
+      "claim_class": "historical_route_evolution_plus_modest_v4_increment",
+      "contributes_to_formal_high_performance": false,
+      "explanation": "The V4/V2.14 row passes numerically, but most of the V2.14 delta already exists in V3.0.2; this cannot be framed as a clean new V4 win.",
+      "pass_frozen_speed_bar": true,
+      "v3_0_2_vs_v2_14_hot_speedup": 13.923761072965954,
+      "v4_vs_v2_14_hot_speedup": 15.547729710404004,
+      "v4_vs_v3_0_2_hot_speedup": 1.1166329003297184
+    },
+    {
+      "all_correctness_parity_or_skipped_oracle": true,
+      "all_returncode_zero": true,
+      "app": "librts_spatial_index",
+      "claim_class": "parity_not_v4_speed_win",
+      "contributes_to_formal_high_performance": false,
+      "explanation": "The row is effectively parity and does not prove a V4 speed win.",
+      "pass_frozen_speed_bar": false,
+      "v3_0_2_vs_v2_14_hot_speedup": 0.9974505046634482,
+      "v4_vs_v2_14_hot_speedup": 0.9985407593071016,
+      "v4_vs_v3_0_2_hot_speedup": 1.0010930413474715
+    }
+  ],
+  "blocking_reasons": [
+    "old_version_optix_uses_v4_compatibility_native_library",
+    "most_full_app_rows_do_not_pass_frozen_speed_bar",
+    "insufficient_independent_true_v4_app_wins"
+  ],
+  "bounded_operator_v4_only": true,
+  "claim_boundary": {
+    "native_provenance_blocker_must_remain_visible": true,
+    "partner_migration_counts_as_v4_speed_win": false,
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "whole_app_high_performance_claim_authorized": false
+  },
+  "contributing_app_count": 0,
+  "decision_label": "bounded_operator_v4_only__app_level_high_performance_not_supported",
+  "formal_high_performance_v4_supported": false,
+  "native_provenance_blocker": true,
+  "partner_migration_lock_preserved": true,
+  "schema": "rtdl.v4.goal4655.app_benchmark_analysis.v1",
+  "source_schema": "rtdl.v4.goal4654.full_app_level_pod_benchmark.v1",
+  "source_status": "goal4654_evidence_collected_not_release"
+}

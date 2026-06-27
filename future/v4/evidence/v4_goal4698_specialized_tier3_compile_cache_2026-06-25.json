@@ -1,0 +1,88 @@
+{
+  "accepted_plan": {
+    "accepted": true,
+    "cache_components": {
+      "callback_ptx_sha256": "f6195fe0d3abe556d6cfb86205af5a1013c96429c7cea45999841cdde5082fa4",
+      "callback_symbol": "_ZN8__main__21_custom_scalar_reduce_sample",
+      "compute_target": "sm_86",
+      "contract_version": "goal4698.specialized_tier3_cache.v1",
+      "optix_abi": "8.0",
+      "toolchain_fingerprint_sha256": "68c8e1be3eb69c496021fceeb94fca9a446a12dde5116d19bb01afcbc3d55dc0",
+      "wrapper_strategy": "specialize_hit_program_module_and_call_callback_as_direct_device_function"
+    },
+    "cache_key": "rtdl-v4-tier3-8277e7aeb3f4b7480b734086861b7808",
+    "callback_shape": "custom_scalar_reduce",
+    "error_code": null,
+    "error_message": null,
+    "internal_compile_allowed": true,
+    "performance_claim_authorized": false,
+    "raw_optix_callback_authorized": false,
+    "release_authorized": false,
+    "stage": "compile_cache_ready_not_executed",
+    "tier3_public_support_authorized": false
+  },
+  "changed_ptx_plan": {
+    "accepted": true,
+    "cache_components": {
+      "callback_ptx_sha256": "c2cae2ca87d286c23cbcb978e50cd4f43cce0b385f893fd1f939ebe37b3242cd",
+      "callback_symbol": "_ZN8__main__21_custom_scalar_reduce_sample",
+      "compute_target": "sm_86",
+      "contract_version": "goal4698.specialized_tier3_cache.v1",
+      "optix_abi": "8.0",
+      "toolchain_fingerprint_sha256": "68c8e1be3eb69c496021fceeb94fca9a446a12dde5116d19bb01afcbc3d55dc0",
+      "wrapper_strategy": "specialize_hit_program_module_and_call_callback_as_direct_device_function"
+    },
+    "cache_key": "rtdl-v4-tier3-cccac995d3ae88de4bb406214f11580d",
+    "callback_shape": "custom_scalar_reduce",
+    "error_code": null,
+    "error_message": null,
+    "internal_compile_allowed": true,
+    "performance_claim_authorized": false,
+    "raw_optix_callback_authorized": false,
+    "release_authorized": false,
+    "stage": "compile_cache_ready_not_executed",
+    "tier3_public_support_authorized": false
+  },
+  "compile_failure_classification": {
+    "error_code": "RTDL_V4_TIER3_COMPILE_STAGE_FAILED_OPTIX_MODULE_CREATE",
+    "message": "No functions with semantic types found",
+    "release_authorized": false,
+    "stage": "optix_module_create",
+    "status": "classified_compile_failure",
+    "tier3_public_support_authorized": false
+  },
+  "goal_status": "goal4698_specialized_tier3_compile_cache_scaffold_not_public_support",
+  "incomplete_plan": {
+    "accepted": true,
+    "cache_components": {},
+    "cache_key": null,
+    "callback_shape": "custom_scalar_reduce",
+    "error_code": "RTDL_V4_TIER3_COMPILE_INPUT_INCOMPLETE",
+    "error_message": "missing required compile inputs: callback_symbol, callback_ptx, toolchain_fingerprint",
+    "internal_compile_allowed": false,
+    "performance_claim_authorized": false,
+    "raw_optix_callback_authorized": false,
+    "release_authorized": false,
+    "stage": "compile_input_incomplete",
+    "tier3_public_support_authorized": false
+  },
+  "missing_or_invalid": [],
+  "next_goal": "Goal4699 specialized Tier-3 app-route validation protocol",
+  "rejected_plan": {
+    "accepted": false,
+    "cache_components": {},
+    "cache_key": null,
+    "callback_shape": "custom_action",
+    "error_code": "RTDL_V4_TIER3_CALLBACK_REJECTED_ACTION_OR_SIDE_EFFECT_CALLBACK",
+    "error_message": "callback has action or side-effect semantics",
+    "internal_compile_allowed": false,
+    "performance_claim_authorized": false,
+    "raw_optix_callback_authorized": false,
+    "release_authorized": false,
+    "stage": "rejected_before_compile",
+    "tier3_public_support_authorized": false
+  },
+  "schema": "rtdl.v4.goal4698_specialized_tier3_compile_cache.v1",
+  "status": "passed",
+  "validation_status": "passed"
+}

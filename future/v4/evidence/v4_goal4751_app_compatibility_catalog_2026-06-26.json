@@ -1,0 +1,149 @@
+{
+  "claim_boundary": {
+    "inherited_compatibility_counts_as_speed": false,
+    "public_speed_claim_authorized": false,
+    "release_authorized": false
+  },
+  "rows": [
+    {
+      "app": "rt_dbscan",
+      "blocker": "",
+      "cupy_status": "inherited_supported_for_grouped_stream_or_component_work",
+      "inherited_compatibility_counts_as_speed": false,
+      "numba_status": "measured_supported_for_v4_component_union",
+      "release_claim_authorized": false,
+      "status": "compatibility_route_protocol_ready",
+      "v4_new_speed_claim_authorized": false,
+      "v4_route": "V4 fixed-radius count-threshold plus Numba component-union surface",
+      "v4_route_status": "runnable_protocol_template",
+      "v4_support_class": "v4_inherited_compatibility_plus_new_operator"
+    },
+    {
+      "app": "raydb_style",
+      "blocker": "",
+      "cupy_status": "measured_supported_for_grouped_vector_sum_and_inherited_reduction",
+      "inherited_compatibility_counts_as_speed": false,
+      "numba_status": "declared_unmeasured_for_this_surface",
+      "release_claim_authorized": false,
+      "status": "compatibility_route_protocol_ready",
+      "v4_new_speed_claim_authorized": false,
+      "v4_route": "V4 grouped-i64/device-output grouped reduction route",
+      "v4_route_status": "runnable_protocol_template",
+      "v4_support_class": "v4_inherited_compatibility_plus_new_operator"
+    },
+    {
+      "app": "triangle_counting",
+      "blocker": "",
+      "cupy_status": "inherited_supported_for_vectorized_continuation",
+      "inherited_compatibility_counts_as_speed": false,
+      "numba_status": "inherited_supported_for_triangle_compact_mask_or_ray_output_builders",
+      "release_claim_authorized": false,
+      "status": "compatibility_route_protocol_ready",
+      "v4_new_speed_claim_authorized": false,
+      "v4_route": "V4 ray-triangle any-hit weighted-sum plus grouped reduction surface",
+      "v4_route_status": "runnable_protocol_template",
+      "v4_support_class": "v4_inherited_compatibility_plus_new_operator"
+    },
+    {
+      "app": "librts_spatial_index",
+      "blocker": "",
+      "cupy_status": "declared_unmeasured_for_native_aabb_surface",
+      "inherited_compatibility_counts_as_speed": false,
+      "numba_status": "declared_unmeasured_for_native_aabb_surface",
+      "release_claim_authorized": false,
+      "status": "compatibility_route_protocol_ready",
+      "v4_new_speed_claim_authorized": false,
+      "v4_route": "V4 prepared AABB all-ops/count route",
+      "v4_route_status": "runnable_protocol_template",
+      "v4_support_class": "v4_inherited_compatibility_plus_new_operator"
+    },
+    {
+      "app": "hausdorff_xhd",
+      "blocker": "",
+      "cupy_status": "measured_supported_for_v4_exact_argmax_supplemental_route",
+      "inherited_compatibility_counts_as_speed": false,
+      "numba_status": "declared_unmeasured_for_exact_argmax; possible inherited threshold support",
+      "release_claim_authorized": false,
+      "status": "compatibility_route_protocol_ready",
+      "v4_new_speed_claim_authorized": false,
+      "v4_route": "V4 compatibility threshold route for fair primary row; exact nearest-witness route remains supplemental V4-new evidence",
+      "v4_route_status": "runnable_protocol_template",
+      "v4_support_class": "v4_inherited_compatibility_plus_new_operator"
+    },
+    {
+      "app": "robot_collision",
+      "blocker": "",
+      "cupy_status": "not_required_for_primary_flag_route",
+      "inherited_compatibility_counts_as_speed": false,
+      "numba_status": "not_required_for_primary_flag_route",
+      "release_claim_authorized": false,
+      "status": "compatibility_route_protocol_ready",
+      "v4_new_speed_claim_authorized": false,
+      "v4_route": "V4 superset compatibility route inherits prepared any-hit collision flags/count",
+      "v4_route_status": "runnable_protocol_template",
+      "v4_support_class": "v4_superset_inherited_compatibility"
+    },
+    {
+      "app": "contact_manifold",
+      "blocker": "",
+      "cupy_status": "not_required_for_primary_collect_route",
+      "inherited_compatibility_counts_as_speed": false,
+      "numba_status": "not_required_for_primary_collect_route",
+      "release_claim_authorized": false,
+      "status": "compatibility_route_protocol_ready",
+      "v4_new_speed_claim_authorized": false,
+      "v4_route": "V4 superset compatibility route inherits bounded collect-k/contact witness primitive",
+      "v4_route_status": "runnable_protocol_template",
+      "v4_support_class": "v4_superset_inherited_compatibility"
+    },
+    {
+      "app": "rtnn",
+      "blocker": "",
+      "cupy_status": "declared_unmeasured_for_ranked_summary",
+      "inherited_compatibility_counts_as_speed": false,
+      "numba_status": "declared_unmeasured_for_ranked_summary",
+      "release_claim_authorized": false,
+      "status": "compatibility_route_protocol_ready",
+      "v4_new_speed_claim_authorized": false,
+      "v4_route": "V4 ranked-summary prepared runner, currently measured no-win/deferred for speed credit",
+      "v4_route_status": "runnable_protocol_template",
+      "v4_support_class": "v4_inherited_compatibility_plus_new_operator"
+    },
+    {
+      "app": "spatial_rayjoin",
+      "blocker": "",
+      "cupy_status": "inherited_supported_where_old_route_uses_cupy_continuation",
+      "inherited_compatibility_counts_as_speed": false,
+      "numba_status": "inherited_supported_where_old_route_uses_fixed_numba_toolchain",
+      "release_claim_authorized": false,
+      "status": "compatibility_route_protocol_ready",
+      "v4_new_speed_claim_authorized": false,
+      "v4_route": "V4 superset compatibility route inherits relation/topology RT-core route",
+      "v4_route_status": "runnable_protocol_template",
+      "v4_support_class": "v4_superset_inherited_compatibility"
+    },
+    {
+      "app": "barnes_hut",
+      "blocker": "",
+      "cupy_status": "measured_supported_for_device-column/vector continuation",
+      "inherited_compatibility_counts_as_speed": false,
+      "numba_status": "inherited_reference_or_declared_unmeasured_for_current_v4_surface",
+      "release_claim_authorized": false,
+      "status": "compatibility_route_protocol_ready",
+      "v4_new_speed_claim_authorized": false,
+      "v4_route": "V4 aggregate-frontier device-columns prepared workflow with explicit partner continuation",
+      "v4_route_status": "runnable_protocol_template",
+      "v4_support_class": "v4_inherited_compatibility_plus_new_operator"
+    }
+  ],
+  "schema": "rtdl.v4.goal4751.app_compatibility_catalog.v1",
+  "status": "goal4751_app_compatibility_catalog_written_repairs_in_progress",
+  "validation": {
+    "catalog_status": "v4_0_app_compatibility_superset_catalog_goal4751_in_progress",
+    "error_count": 0,
+    "errors": [],
+    "repair_required_apps": [],
+    "row_count": 10,
+    "status": "passed"
+  }
+}

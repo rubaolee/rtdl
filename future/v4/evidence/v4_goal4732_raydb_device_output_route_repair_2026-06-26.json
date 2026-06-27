@@ -1,0 +1,84 @@
+{
+  "goal": "Goal4732",
+  "title": "raydb_style regression root-cause and V4 device-output route repair",
+  "date": "2026-06-26",
+  "status": "focused_pod_rerun_complete_pending_external_review_debt",
+  "decision": "bind_raydb_style_v4_current_to_generic_v4_device_output_frontdoor_before_remeasuring",
+  "root_cause": {
+    "observed_goal4669_ratio": {
+      "v4_vs_v2_14_hot": 0.9744073401484975,
+      "v4_vs_v3_0_2_hot": 1.0045383344772214
+    },
+    "finding": "The measured V4 app-level row used the legacy paper_rt_optix_prepared_grouped_reduction backend, not the V4 device-output surface.",
+    "old_backend": "paper_rt_optix_prepared_grouped_reduction",
+    "old_native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64_reduction",
+    "old_route_behavior": [
+      "host_packed ray batch in the Goal4669 raw v4_current row",
+      "native grouped rows returned to host in the hot path",
+      "same prepared grouped-reduction primitive as the V2.14/V3 rows"
+    ],
+    "why_this_matters": "The old row is a valid baseline measurement of the legacy route, but it is not a measurement of the V4 device-array/device-output frontdoor."
+  },
+  "implemented_change": {
+    "new_backend": "paper_rt_v4_cupy_device_grouped_reduction",
+    "alternate_backend": "paper_rt_v4_torch_device_grouped_reduction",
+    "v4_surface": "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays",
+    "generic_primitive": "RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
+    "partner": "cupy",
+    "app_specific_native_kernel_added": false,
+    "changed_files": [
+      "examples/current/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py",
+      "scripts/v4_goal4669_full_app_level_pod_benchmark.py",
+      "src/rtdsl/v4_ray_triangle.py",
+      "tests/v4_goal4669_full_app_runner_test.py",
+      "tests/v4_goal4732_raydb_device_output_route_test.py"
+    ],
+    "properties": {
+      "v2_14_command_unchanged": true,
+      "v3_0_2_command_unchanged": true,
+      "v4_current_raydb_command_uses_new_backend": true,
+      "cupy_device_output_route_enabled_for_pod": true,
+      "native_direct_device_output_columns_expected": true,
+      "host_row_bridge_bypassed_expected": true,
+      "true_zero_copy_authorized": false,
+      "broad_speedup_claim_authorized": false
+    }
+  },
+  "validation": {
+    "local_tests": {
+      "command": "py -m unittest tests.v4_goal4732_raydb_device_output_route_test tests.v4_goal4669_full_app_runner_test tests.v4_goal4730_complete_10_app_matrix_test tests.v4_goal4731_post_matrix_release_decision_test",
+      "result": "passed",
+      "tests_run": 21
+    },
+    "pod_rerun": {
+      "status": "complete",
+      "evidence_dir": "future/v4/evidence/v4_goal4732_raydb_focused_20260626",
+      "summary_json": "future/v4/evidence/v4_goal4732_raydb_focused_20260626/summary.json",
+      "summary_md": "future/v4/evidence/v4_goal4732_raydb_focused_20260626/summary.md",
+      "v4_vs_v2_14_hot": 0.9849335376780338,
+      "v4_vs_v3_0_2_hot": 0.9536526187175722,
+      "v4_route_metadata_pass": true,
+      "interpretation": "The repaired V4 route clears the V2.14 no-regression floor but does not beat V3.0.2; it is a route-binding repair, not a high-performance win."
+    }
+  },
+  "claim_boundary": {
+    "release_authorized": false,
+    "final_v4_tag_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "all_benchmark_speedup_claim_authorized": false,
+    "old_0_974_row_reclassified_as_final_v4_device_route_result": false,
+    "old_0_974_row_superseded_for_v4_route_after_rerun": true
+  },
+  "next_required_action": {
+    "goal": "Goal4732 POD focused rerun",
+    "description": "Run the Goal4669 serious RayDB row after syncing the changed files, then update the 10-app matrix only if correctness and metadata prove the new V4 route executed."
+  },
+  "goal_level_decision_audit": {
+    "decision": "repair the measured route instead of explaining away the 0.974x result",
+    "was_i_foolish": "No for this decision. It would have been foolish to keep treating the legacy-route 0.974x row as the final V4 device-output result.",
+    "foolish_actions": "The earlier weak action was allowing the all-app driver to benchmark the old prepared grouped-reduction route while the V4 device-output surface existed separately.",
+    "other_path": "Only document that RayDB is parity/regression. That would preserve a false benchmark binding and fail the user's demand for app-level V4 evidence.",
+    "different_path_now": "The app frontdoor and serious runner now bind V4 current to the generic device-output surface; the next truth test is a focused same-hardware POD rerun."
+  }
+}

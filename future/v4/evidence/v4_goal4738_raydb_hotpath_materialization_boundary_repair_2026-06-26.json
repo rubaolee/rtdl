@@ -1,0 +1,84 @@
+{
+  "goal": "Goal4738",
+  "title": "RayDB hot-path materialization boundary repair",
+  "date": "2026-06-26",
+  "status": "focused_pod_complete_pending_external_review_debt",
+  "decision": "raydb_v3_regression_cleared_by_device_output_hot_path_boundary_repair",
+  "root_cause": {
+    "v4_native_traversal_was_not_slower": true,
+    "old_issue": "V4 app timing included Python row materialization after device-output execution despite metadata claiming no hot-path host materialization.",
+    "old_goal4732_v4_vs_v3_0_2_hot": 0.9536526187175722,
+    "fixed_boundary": "summary-only V4 route now measures device-output execution and materializes rows once after the hot path for correctness."
+  },
+  "changed_files": [
+    "examples/current/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py",
+    "tests/v4_goal4732_raydb_device_output_route_test.py"
+  ],
+  "focused_pod_rerun": {
+    "evidence_dir": "future/v4/evidence/v4_goal4738_raydb_hotpath_20260626",
+    "summary_json": "future/v4/evidence/v4_goal4738_raydb_hotpath_20260626/summary.json",
+    "summary_md": "future/v4/evidence/v4_goal4738_raydb_hotpath_20260626/summary.md",
+    "generated_rows": 131072,
+    "generated_groups": 1024,
+    "repeat": 7,
+    "warmup": 2,
+    "rows": {
+      "v2_14": {
+        "backend": "paper_rt_optix_prepared_grouped_reduction",
+        "hot_sec": 0.0056826211512088776,
+        "correctness_parity": true
+      },
+      "v3_0_2": {
+        "backend": "paper_rt_optix_prepared_grouped_reduction",
+        "hot_sec": 0.005691319704055786,
+        "correctness_parity": true
+      },
+      "v4_current": {
+        "backend": "paper_rt_v4_cupy_device_grouped_reduction",
+        "hot_sec": 0.005151424556970596,
+        "correctness_parity": true,
+        "adapter": "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays",
+        "partner": "cupy",
+        "native_direct_device_output_columns": true,
+        "host_row_bridge_bypassed": true,
+        "group_rows_downloaded_to_host_in_hot_path": false
+      }
+    },
+    "ratios": {
+      "v4_vs_v2_14_hot": 1.1031164464050043,
+      "v4_vs_v3_0_2_hot": 1.1048050187116953
+    },
+    "v4_hot_path_metadata": {
+      "row_presentation_sec": 0.0,
+      "result_materialization_after_hot_path_sec": 0.0008434988558292389,
+      "result_rows_materialized_after_hot_path": true,
+      "host_materialization_in_hot_path": false,
+      "group_rows_downloaded_to_host_in_hot_path": false
+    },
+    "route_metadata_pass": true
+  },
+  "classification": {
+    "old_row": "v2_no_regression_repair_v3_regression_open",
+    "new_row": "modest_device_output_hot_path_win_not_formal_bar",
+    "formal_candidate_win": false,
+    "may_update_next_matrix": true
+  },
+  "claim_boundary": {
+    "release_authorized": false,
+    "final_v4_tag_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "raydb_high_performance_claim_authorized": false,
+    "all_benchmark_speedup_claim_authorized": false,
+    "geomean_headline_authorized": false,
+    "app_specific_native_kernel_authorized": false,
+    "automatic_partner_selection_authorized": false,
+    "true_zero_copy_wording_authorized": false
+  },
+  "goal_level_decision_audit": {
+    "decision": "repair RayDB timing boundary and rerun focused POD",
+    "was_i_foolish": "No. The repair targeted an actual timing-boundary contradiction rather than tuning the OptiX kernel without evidence.",
+    "foolish_actions": "Allowing V4 metadata to say no hot host materialization while measured timing converted device columns to Python rows inside the hot window.",
+    "other_path": "Keep RayDB as a regression/no-go, leaving a false measurement boundary uncorrected.",
+    "different_path_now": "Update the next matrix to remove RayDB as a V3-regression blocker, while keeping it below the formal high-performance bar."
+  }
+}

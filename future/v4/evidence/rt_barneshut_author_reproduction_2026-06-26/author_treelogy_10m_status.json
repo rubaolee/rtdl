@@ -1,0 +1,12 @@
+{
+  "cmd": [
+    "./build/rtbarneshut",
+    "treelogy",
+    "./treelogy_synthetic_10M.txt"
+  ],
+  "returncode": 0,
+  "wall_seconds": 25.36989790573716,
+  "preprocessing_seconds": 1.77995,
+  "rt_force_seconds": 1.01835,
+  "execution_seconds": 3.08818
+}

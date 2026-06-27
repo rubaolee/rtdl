@@ -1,0 +1,145 @@
+{
+  "goal": "Goal4737",
+  "title": "post-repair app matrix delta",
+  "date": "2026-06-26",
+  "status": "delta_matrix_complete_pending_external_review_debt",
+  "decision": "v4_app_matrix_improved_but_formal_high_performance_tag_still_blocked",
+  "source_context": [
+    "future/v4/evidence/v4_goal4730_complete_10_app_matrix_2026-06-26.json",
+    "future/v4/evidence/v4_goal4732_raydb_device_output_route_repair_2026-06-26.json",
+    "future/v4/evidence/v4_goal4733_triangle_v3_regression_resolution_2026-06-26.json",
+    "future/v4/evidence/v4_goal4734_rt_dbscan_generic_continuation_no_go_2026-06-26.json",
+    "future/v4/evidence/v4_goal4736_barnes_hut_complete_workflow_focused_pod_2026-06-26.json"
+  ],
+  "summary": {
+    "app_count": 10,
+    "candidate_rows_vs_v2_with_v3_no_regression": 3,
+    "candidate_apps": [
+      "hausdorff_xhd",
+      "triangle_counting",
+      "barnes_hut"
+    ],
+    "formal_high_performance_v4_supported": false,
+    "final_tag_authorized": false,
+    "matrix_status": "improved_but_blocked"
+  },
+  "rows": [
+    {
+      "app": "rt_dbscan",
+      "row_status": "modest_gain_no_go_for_second_win",
+      "v4_vs_v2_14_hot": 1.086127902760864,
+      "v4_vs_v3_0_2_hot": 1.083118498208389,
+      "claim_class": "bounded_modest_route_below_formal_bar",
+      "contributes_to_candidate_count": false
+    },
+    {
+      "app": "raydb_style",
+      "row_status": "v2_no_regression_repair_v3_regression_open",
+      "v4_vs_v2_14_hot": 0.9849335376780338,
+      "v4_vs_v3_0_2_hot": 0.9536526187175722,
+      "claim_class": "parity_not_speed_win_v3_regression_open",
+      "contributes_to_candidate_count": false
+    },
+    {
+      "app": "triangle_counting",
+      "row_status": "focused_candidate_win",
+      "v4_vs_v2_14_hot": 6.380727131464089,
+      "v4_vs_v3_0_2_hot": 1.0433948035922396,
+      "claim_class": "clean_app_candidate_after_high_repeat_rerun",
+      "contributes_to_candidate_count": true
+    },
+    {
+      "app": "librts_spatial_index",
+      "row_status": "measured_full_app_parity",
+      "v4_vs_v2_14_hot": 1.002850507944097,
+      "v4_vs_v3_0_2_hot": 1.0039094127325017,
+      "claim_class": "parity_not_v4_speed_win",
+      "contributes_to_candidate_count": false
+    },
+    {
+      "app": "hausdorff_xhd",
+      "row_status": "measured_full_app_true_v4_candidate_win",
+      "v4_vs_v2_14_hot": 201581.8595690473,
+      "v4_vs_v3_0_2_hot": 2.545755697036957,
+      "claim_class": "true_v4_operator_win_candidate_with_denominator_caveat",
+      "contributes_to_candidate_count": true
+    },
+    {
+      "app": "rtnn",
+      "row_status": "closed_measured_no_win_row",
+      "v4_vs_v2_14_hot_serious_262144": 0.9985142636714865,
+      "v4_vs_v2_14_hot_serious_1048576": 0.9938654084870772,
+      "claim_class": "measured_no_win",
+      "contributes_to_candidate_count": false
+    },
+    {
+      "app": "robot_collision",
+      "row_status": "closed_partial_operator_no_go_for_current_high_performance_path",
+      "claim_class": "partial_operator_no_go_wrapper_wall_failed",
+      "contributes_to_candidate_count": false
+    },
+    {
+      "app": "contact_manifold",
+      "row_status": "closed_no_go_for_current_high_performance_path",
+      "claim_class": "design_no_go_rebranded_v2_14_collect_k_and_partner_witness",
+      "contributes_to_candidate_count": false
+    },
+    {
+      "app": "spatial_rayjoin",
+      "row_status": "closed_no_current_v4_app_route_blocker",
+      "shape_pair_subprobe_v4_hot_over_v2_14": 0.9631953985515683,
+      "shape_pair_subprobe_v4_hot_over_v3_0_2": 0.9769985795123769,
+      "claim_class": "no_current_v4_app_route_shape_pair_subprobe_no_speed_credit",
+      "contributes_to_candidate_count": false
+    },
+    {
+      "app": "barnes_hut",
+      "row_status": "complete_app_candidate_win_vs_v2_14__v3_no_regression__not_rt_core_force_law",
+      "v4_vs_v2_14_hot": 282.46785456124815,
+      "v4_vs_v3_0_2_hot": 1.00274877675932,
+      "claim_class": "complete_aggregate_workflow_candidate_not_rt_core_force_law",
+      "contributes_to_candidate_count": true
+    }
+  ],
+  "remaining_blockers": [
+    "raydb_style v4_vs_v3_0_2_hot remains below 0.98",
+    "rt_dbscan grouped-union trunk is no-go for the current formal bar",
+    "librts_spatial_index is parity only",
+    "rtnn is measured no-win",
+    "robot_collision/contact_manifold/spatial_rayjoin remain partial/no-go/no-route rows"
+  ],
+  "next_goals": [
+    {
+      "id": "Goal4738",
+      "target": "raydb_style",
+      "objective": "recover or close the V3 regression using generic grouped-output/device-output levers"
+    },
+    {
+      "id": "Goal4739",
+      "target": "spatial_rayjoin",
+      "objective": "decide whether a real relation-topology V4 route exists for this release or keep no-route blocker"
+    },
+    {
+      "id": "Goal4740",
+      "target": "release_matrix",
+      "objective": "rerun/assemble next full matrix and decide release gate"
+    }
+  ],
+  "claim_boundary": {
+    "release_authorized": false,
+    "final_v4_tag_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "all_benchmark_speedup_claim_authorized": false,
+    "geomean_headline_authorized": false,
+    "broad_v4_over_v3_wording_authorized": false,
+    "app_specific_native_kernel_authorized": false,
+    "true_zero_copy_wording_authorized": false
+  },
+  "goal_level_decision_audit": {
+    "decision": "create post-repair matrix delta without overwriting Goal4730",
+    "was_i_foolish": "No. It would be foolish to leave the old Goal4730 matrix as the current state after several blockers moved.",
+    "foolish_actions": "Overwrite Goal4730 history or pretend the improved delta authorizes final release.",
+    "other_path": "Jump straight to tag from the improved rows, ignoring the remaining blockers.",
+    "different_path_now": "Use Goal4737 to select the next real blocker: RayDB V3 regression first."
+  }
+}

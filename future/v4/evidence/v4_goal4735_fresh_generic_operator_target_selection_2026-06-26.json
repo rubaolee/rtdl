@@ -1,0 +1,64 @@
+{
+  "goal": "Goal4735",
+  "title": "fresh generic operator target selection",
+  "date": "2026-06-26",
+  "status": "target_selected_pending_external_review_debt",
+  "decision": "select_barnes_hut_complete_aggregate_weighted_workflow_for_goal4736",
+  "preconditions": {
+    "goal4732_raydb_status": "route_binding_repaired_v2_no_regression_not_speed_win",
+    "goal4733_triangle_status": "v3_regression_cleared_by_high_repeat_focused_rerun",
+    "goal4734_rt_dbscan_status": "closed_no_go_by_existing_grouped_union_evidence"
+  },
+  "candidate_decision": {
+    "selected": "barnes_hut",
+    "rejected_for_now": "spatial_rayjoin",
+    "selected_reason": [
+      "Barnes-Hut has real aggregate-frontier device-column evidence.",
+      "The app has an existing complete aggregate-frontier plus weighted-vector workflow frontdoor.",
+      "The next run is falsifiable under frozen same-hardware gates.",
+      "The route can remain generic if it uses aggregate-frontier device columns plus explicit partner continuation and not a Barnes-Hut identity native kernel."
+    ],
+    "spatial_rayjoin_rejected_reason": [
+      "No complete current V4 app route is bound.",
+      "The shape-pair subprobe failed speed-credit bars.",
+      "A valid route requires larger relation-topology design before POD."
+    ]
+  },
+  "goal4736_protocol": {
+    "title": "Barnes-Hut complete aggregate weighted workflow focused POD validation",
+    "routes": {
+      "v2_14": "v2_14_optix_host_frontier_numba_cpu_continuation",
+      "v3_0_2": "v3_0_2_device_columns_explicit_partner_continuation",
+      "v4_current": "v4_candidate_runner_explicit_partner_continuation"
+    },
+    "thresholds": {
+      "v4_vs_v2_14_full_hot_min": 1.20,
+      "v4_vs_v2_14_full_wall_min": 1.10,
+      "v4_vs_v3_0_2_full_hot_min": 0.98,
+      "correctness_companion_required": true
+    },
+    "forbidden": [
+      "app-specific Barnes-Hut native kernel",
+      "partner migration counted as V4 speed",
+      "RT-core speedup wording without measured RT-core phase",
+      "hidden V2/V3 fallback",
+      "public release wording before external authorization"
+    ]
+  },
+  "claim_boundary": {
+    "release_authorized": false,
+    "final_v4_tag_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "barnes_hut_speedup_claim_authorized": false,
+    "all_benchmark_speedup_claim_authorized": false,
+    "app_specific_native_kernel_authorized": false,
+    "true_zero_copy_wording_authorized": false
+  },
+  "goal_level_decision_audit": {
+    "decision": "select Barnes-Hut for Goal4736 and freeze gates before reading new evidence",
+    "was_i_foolish": "No. Selecting Barnes-Hut is based on route readiness and a falsifiable generic workflow; selecting Spatial RayJoin now would require inventing a larger app route first.",
+    "foolish_actions": "Choose a no-route app just to look ambitious, or call the aggregate-frontier subprobe a complete app result without the weighted-vector workflow.",
+    "other_path": "Reopen Spatial RayJoin first, which is higher-risk and lacks a complete current route.",
+    "different_path_now": "Goal4736 runs the complete Barnes-Hut workflow under frozen gates."
+  }
+}

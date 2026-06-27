@@ -1,0 +1,193 @@
+{
+  "schema": "rtdl.v4.goal4730.complete_10_app_matrix.v1",
+  "status": "goal4730_complete_10_app_matrix_assembled_not_release_authorizing",
+  "date": "2026-06-26",
+  "decision_label": "complete_10_app_matrix_blocks_formal_high_performance_v4_release",
+  "purpose": "Assemble the complete 10 benchmark-app V2.14-vs-V4 matrix after closing the five previously incomplete rows. This is an app-level release-gate interpretation, not a new POD run.",
+  "source_context": [
+    "future/v4/evidence/v4_goal4669_app_level_benchmark_analysis_2026-06-25.json",
+    "future/v4/evidence/v4_goal4725_rtnn_measured_no_win_row_2026-06-26.json",
+    "future/v4/evidence/v4_goal4726_robot_collision_partial_no_go_row_2026-06-26.json",
+    "future/v4/evidence/v4_goal4727_contact_manifold_no_go_row_2026-06-26.json",
+    "future/v4/evidence/v4_goal4728_spatial_rayjoin_no_route_blocker_row_2026-06-26.json",
+    "future/v4/evidence/v4_goal4729_barnes_hut_deferred_subprobe_row_2026-06-26.json",
+    "future/v4/evidence/v4_goal4723_complete_10_app_protocol_2026-06-26.json"
+  ],
+  "summary": {
+    "app_count": 10,
+    "measured_full_app_row_count": 5,
+    "measured_no_win_row_count": 1,
+    "partial_or_no_go_row_count": 2,
+    "no_route_blocker_count": 1,
+    "deferred_subprobe_row_count": 1,
+    "true_full_app_v4_candidate_win_count": 1,
+    "formal_high_performance_v4_supported": false,
+    "bounded_operator_v4_only": true,
+    "complete_matrix_assembled": true,
+    "final_tag_authorized": false,
+    "public_broad_speedup_claim_authorized": false
+  },
+  "release_gate": {
+    "status": "fail_formal_high_performance_release",
+    "required_for_formal_high_performance": [
+      "complete app-level rows for all promoted apps or explicit no-go rows",
+      "multiple independent true V4 full-app wins",
+      "no unresolved regressions below no-regression floor",
+      "no hidden V2/V3 fallback",
+      "correctness parity for all timed credit",
+      "external 3-AI release authorization"
+    ],
+    "observed": [
+      "complete matrix now exists",
+      "only one full-app true V4 win candidate: hausdorff_xhd",
+      "raydb_style regresses below the 0.98 no-regression floor versus V2.14",
+      "triangle_counting is fast versus V2.14 but regresses versus V3.0.2",
+      "rtnn is measured no-win at serious scales",
+      "robot_collision and contact_manifold are closed as partial/no-go for current path",
+      "spatial_rayjoin has no current V4 app route",
+      "barnes_hut has a real aggregate-frontier operator win but no complete app route"
+    ],
+    "next_decision": "Goal4731 must choose between continued high-performance engineering on generic runtime levers, or a bounded-operator V4 release with this complete matrix visible."
+  },
+  "rows": [
+    {
+      "app": "rt_dbscan",
+      "row_status": "measured_full_app_modest_gain_below_formal_bar",
+      "row_source": "Goal4669",
+      "v4_vs_v2_14_hot": 1.086127902760864,
+      "v4_vs_v3_0_2_hot": 1.083118498208389,
+      "v3_0_2_vs_v2_14_hot": 1.0027784628897511,
+      "claim_class": "modest_runtime_gain_below_formal_bar",
+      "contributes_to_formal_high_performance_v4": false,
+      "performance_claim_authorized": false
+    },
+    {
+      "app": "raydb_style",
+      "row_status": "measured_full_app_regression",
+      "row_source": "Goal4669",
+      "v4_vs_v2_14_hot": 0.9744073401484975,
+      "v4_vs_v3_0_2_hot": 1.0045383344772214,
+      "v3_0_2_vs_v2_14_hot": 0.970005132412986,
+      "claim_class": "regression",
+      "contributes_to_formal_high_performance_v4": false,
+      "performance_claim_authorized": false
+    },
+    {
+      "app": "triangle_counting",
+      "row_status": "measured_full_app_fast_vs_v2_regresses_vs_v3",
+      "row_source": "Goal4669",
+      "v4_vs_v2_14_hot": 4.054841666199054,
+      "v4_vs_v3_0_2_hot": 0.9480014215438715,
+      "v3_0_2_vs_v2_14_hot": 4.277252727739084,
+      "claim_class": "fast_vs_v2_14_but_not_clean_v4_win_until_v3_regression_fixed",
+      "contributes_to_formal_high_performance_v4": false,
+      "performance_claim_authorized": false
+    },
+    {
+      "app": "librts_spatial_index",
+      "row_status": "measured_full_app_parity",
+      "row_source": "Goal4669",
+      "v4_vs_v2_14_hot": 1.002850507944097,
+      "v4_vs_v3_0_2_hot": 1.0039094127325017,
+      "v3_0_2_vs_v2_14_hot": 0.9989452187867004,
+      "claim_class": "parity_not_v4_speed_win",
+      "contributes_to_formal_high_performance_v4": false,
+      "performance_claim_authorized": false
+    },
+    {
+      "app": "hausdorff_xhd",
+      "row_status": "measured_full_app_true_v4_candidate_win",
+      "row_source": "Goal4669",
+      "v4_vs_v2_14_hot": 201581.8595690473,
+      "v4_vs_v3_0_2_hot": 2.545755697036957,
+      "v3_0_2_vs_v2_14_hot": 79183.50523723522,
+      "v4_vs_v2_14_wall": 114.824,
+      "claim_class": "true_v4_operator_win_candidate_with_denominator_caveat",
+      "contributes_to_formal_high_performance_v4": true,
+      "performance_claim_authorized": false
+    },
+    {
+      "app": "rtnn",
+      "row_status": "closed_measured_no_win_row",
+      "row_source": "Goal4725",
+      "v4_vs_v2_14_hot_serious_262144": 0.9985142636714865,
+      "v4_vs_v2_14_hot_serious_1048576": 0.9938654084870772,
+      "v4_vs_v3_0_2_hot_serious_262144": 1.0053613081712485,
+      "v4_vs_v3_0_2_hot_serious_1048576": 0.992565851297169,
+      "claim_class": "measured_no_win_deferred_from_v4_high_performance_release_path",
+      "contributes_to_formal_high_performance_v4": false,
+      "performance_claim_authorized": false
+    },
+    {
+      "app": "robot_collision",
+      "row_status": "closed_partial_operator_no_go_for_current_high_performance_path",
+      "row_source": "Goal4726",
+      "tail_total_mean_embree_over_optix": 4.127811276781783,
+      "traversal_mean_embree_over_optix": 30.5146629599939,
+      "wrapper_mean_embree_over_optix": 0.8566591773370428,
+      "wrapper_min_embree_over_optix": 0.8234887931897568,
+      "claim_class": "partial_operator_no_go_wrapper_wall_failed",
+      "contributes_to_formal_high_performance_v4": false,
+      "performance_claim_authorized": false
+    },
+    {
+      "app": "contact_manifold",
+      "row_status": "closed_no_go_for_current_high_performance_path",
+      "row_source": "Goal4727",
+      "claim_class": "design_no_go_rebranded_v2_14_collect_k_and_partner_witness",
+      "contributes_to_formal_high_performance_v4": false,
+      "performance_claim_authorized": false
+    },
+    {
+      "app": "spatial_rayjoin",
+      "row_status": "closed_no_current_v4_app_route_blocker",
+      "row_source": "Goal4728",
+      "shape_pair_subprobe_v4_hot_over_v2_14": 0.9631953985515683,
+      "shape_pair_subprobe_v4_wall_over_v2_14": 0.6048911657172009,
+      "shape_pair_subprobe_v4_hot_over_v3_0_2": 0.9769985795123769,
+      "claim_class": "no_current_v4_app_route_shape_pair_subprobe_no_speed_credit",
+      "contributes_to_formal_high_performance_v4": false,
+      "performance_claim_authorized": false
+    },
+    {
+      "app": "barnes_hut",
+      "row_status": "closed_deferred_subprobe_not_complete_app_route",
+      "row_source": "Goal4729",
+      "aggregate_frontier_v4_full_hot_over_v2_14": 310.02390072012497,
+      "aggregate_frontier_v4_full_wall_over_v2_14": 200.82645806332002,
+      "aggregate_frontier_v4_full_hot_over_v3_0_2": 0.9975684883734833,
+      "claim_class": "aggregate_frontier_operator_win_not_complete_barnes_hut_app",
+      "contributes_to_formal_high_performance_v4": false,
+      "performance_claim_authorized": false
+    }
+  ],
+  "claim_boundary": {
+    "release_authorized": false,
+    "final_v4_tag_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "whole_app_high_performance_claim_authorized": false,
+    "all_benchmark_speedup_claim_authorized": false,
+    "geomean_headline_authorized": false,
+    "app_specific_native_kernel_authorized": false,
+    "hidden_v2_v3_fallback_authorized": false,
+    "pod_authorized_by_goal4730": false
+  },
+  "next_goal": {
+    "id": "Goal4731",
+    "title": "release decision: continue high-performance engineering or bounded-operator V4 release",
+    "reason": "The complete matrix blocks formal high-performance V4. The project must now decide whether to continue high-performance engineering on generic runtime levers or publish a bounded-operator V4 with the matrix visible."
+  },
+  "goal_level_decision_audit": {
+    "was_i_being_stupid": false,
+    "stupid_action_if_yes": "Not for this goal. The avoided stupid action would be hiding no-go rows or using an outlier/geomean headline to imply broad high-performance V4.",
+    "alternative_path": "Assemble every promoted app exactly once, classify no-go/no-route rows explicitly, and fail the formal high-performance gate honestly.",
+    "can_try_better_path_now": true
+  },
+  "external_review": {
+    "required": true,
+    "status": "review_debt_allowed_not_blocking_engineering",
+    "review_packet": "future/v4/reviews/call_for_review_v4_goal4730_complete_10_app_matrix_2026-06-26.md",
+    "debt_record": "future/v4/reviews/v4_goal4730_complete_10_app_matrix_review_debt_2026-06-26.md"
+  },
+  "test_command": "py -m unittest tests.v4_goal4730_complete_10_app_matrix_test tests.v4_goal4723_complete_app_protocol_test tests.v4_goal4729_barnes_hut_deferred_subprobe_row_test"
+}

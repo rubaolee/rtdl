@@ -262,20 +262,39 @@ def allocate_primitive_grouped_i64_reduction_3d_device_array_outputs_v4(
     group_count = int(group_count)
     if group_count < 0:
         raise ValueError("group_count must be non-negative")
-    if partner != "torch":
-        raise RuntimeError("CuPy output allocation is declared but unmeasured for this V4 surface")
-    try:
-        import torch
-    except Exception as exc:  # pragma: no cover - optional dependency
-        raise RuntimeError("Torch is required for the V4 grouped-i64 reduction surface") from exc
-    if device is None:
-        device = torch.device("cuda")
-    return {
-        "group_counts": torch.zeros((group_count,), dtype=torch.uint64, device=device),
-        "group_sums": torch.zeros((group_count,), dtype=torch.uint64, device=device),
-        "group_mins": torch.empty((group_count,), dtype=torch.uint64, device=device),
-        "group_maxs": torch.zeros((group_count,), dtype=torch.uint64, device=device),
-    }
+    if partner == "torch":
+        try:
+            import torch
+        except Exception as exc:  # pragma: no cover - optional dependency
+            raise RuntimeError("Torch is required for the V4 grouped-i64 reduction surface") from exc
+        if device is None:
+            device = torch.device("cuda")
+        return {
+            "group_counts": torch.zeros((group_count,), dtype=torch.uint64, device=device),
+            "group_sums": torch.zeros((group_count,), dtype=torch.uint64, device=device),
+            "group_mins": torch.empty((group_count,), dtype=torch.uint64, device=device),
+            "group_maxs": torch.zeros((group_count,), dtype=torch.uint64, device=device),
+        }
+    if partner == "cupy":
+        try:
+            import cupy as cp
+        except Exception as exc:  # pragma: no cover - optional dependency
+            raise RuntimeError("CuPy is required for the V4 grouped-i64 reduction surface") from exc
+        if device is not None:
+            with cp.cuda.Device(device):
+                return {
+                    "group_counts": cp.zeros((group_count,), dtype=cp.uint64),
+                    "group_sums": cp.zeros((group_count,), dtype=cp.uint64),
+                    "group_mins": cp.empty((group_count,), dtype=cp.uint64),
+                    "group_maxs": cp.zeros((group_count,), dtype=cp.uint64),
+                }
+        return {
+            "group_counts": cp.zeros((group_count,), dtype=cp.uint64),
+            "group_sums": cp.zeros((group_count,), dtype=cp.uint64),
+            "group_mins": cp.empty((group_count,), dtype=cp.uint64),
+            "group_maxs": cp.zeros((group_count,), dtype=cp.uint64),
+        }
+    raise RuntimeError(f"{partner!r} output allocation is not supported for this V4 surface")
 
 
 def allocate_ray_triangle_any_hit_weighted_sum_3d_device_array_output_v4(
@@ -791,8 +810,6 @@ def prepare_primitive_grouped_i64_reduction_3d_device_arrays_v4(
     """Prepare the V4 primitive grouped-i64 reduction surface over device arrays."""
 
     partner = _require_partner(partner)
-    if partner != "torch":
-        raise RuntimeError("CuPy is declared but unmeasured for this V4 surface")
     prepared_scene = prepare_optix_static_triangle_scene_3d_device_triangles(triangle_columns)
     try:
         ray_batch = prepared_scene.prepare_ray_batch_device_columns(ray_columns)

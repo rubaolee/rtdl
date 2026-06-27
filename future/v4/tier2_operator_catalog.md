@@ -1,6 +1,8 @@
 # V4 Tier-2 Operator Catalog
 
-Status: V4.0.0 release catalog.
+Status: V4 Python eDSL/operator-pushdown catalog with 10 measured generic
+operator/workflow rows. The current app-level boundary still does not authorize
+broad legacy all-app high-performance wording.
 
 V4's performance path is a catalog of generic fused RT operators. These are not
 application-identity kernels. They are reusable continuation operators exposed
@@ -18,13 +20,20 @@ through Python front doors with explicit partner scope and explicit baselines.
 | Ray/triangle any-hit weighted sum | `v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays` | Torch device triangle/ray columns plus Torch device `uint64` ray weights | Torch device `uint64[1]` weighted-hit sum scalar | Torch CUDA | `1.482x` | Torch brute-force/reference comparable route | Goal4633 shapes `32768,131072,262144,524288` |
 | Fixed-radius graph component union | `v4_fixed_radius_graph_component_union_3d_device_arrays` | Numba-scoped prepared 3D clustered point route | Component label columns with canonical component signature | Numba | `1.203x` | legacy prepared-runner wall route; Embree controls recorded | clustered3d `262144` points; repeat `5`, warmup `1` |
 | AABB all-ops count | `v4_aabb_index_query_2d_all_ops_count_prepared_runner` | RTDL native prepared AABB boxes and point/box queries | Count scalars for all AABB query operations | RTDL native | `164.716x` | Embree same-contract prepared AABB query control | `1000000` boxes, `1000` queries, all ops, `240` repeats; scale-dependent indexed-control win |
+| Aggregate-frontier device columns | `v4_aggregate_frontier_device_columns_2d_prepared_runner` | RTDL native prepared aggregate tree and source device columns | Device-resident aggregate-frontier columns for downstream continuation | RTDL native + explicit CuPy continuation | `310.024x` hot over V2.14; `0.998x` hot versus V3.0.2 control | V2.14 OptiX host-materialized frontier plus host continuation | Barnes-Hut-shaped aggregate-frontier probe, `32768` bodies, repeat `7`, warmup `2`; V2.14 host-frontier bottleneck removal, not a V4-over-V3 speed win |
+| Custom predicate early-exit | `v4_ray_triangle_custom_predicate_early_exit_3d_numba` | RTDL-generated OptiX any-hit route plus constrained Numba C-ABI boolean predicate | Accepted flags or first accepted hit under RTDL-owned action | Numba | `4.633x` serious-scale primary geomean; min primary row `2.055x` | V2.14/V3.0.2 materialized-device all-hit fallback | multi-hit ray/triangle custom predicate early-exit, `262144` and `524288` rays, repeat `5`, warmup `2`; V4 operator-pushdown workflow win, not broad all-app speedup |
 
-There are currently no Tier-2 candidate surfaces in the V4 front door.
+There are currently no open Tier-2 candidate surfaces in the V4 front door.
+The former `v4_fixed_radius_ranked_summary_3d_prepared_runner` candidate is
+deferred by Goal4678 after serious-scale parity evidence.
 
 ## Important Caveats
 
 - The ratios above are representative frozen scorecard ratios against the
   named denominators, not whole-application speedup claims.
+- The later app-level V2.14/V3.0.2/V4 check did not support formal app-level
+  high-performance V4 wording; use `docs/app_level_benchmark_summary.md` for
+  that boundary.
 - Most surfaces sit in the `1.2x-1.7x` core cluster. Point-group nearest
   witness and AABB all-ops are large scale-dependent algorithmic-complexity
   wins, not evidence of near-hand-written-OptiX kernel quality.
@@ -37,8 +46,13 @@ There are currently no Tier-2 candidate surfaces in the V4 front door.
   code comparison.
 - Weighted sum is a comparable-route route win, not a pure kernel-vs-kernel
   speedup.
-- CuPy performance is declared unmeasured for V4.
+- Broad CuPy performance wording is not authorized. The aggregate-frontier row
+  has one explicit CuPy downstream-continuation measurement and must not be
+  generalized into a CuPy performance claim.
 - public true-zero-copy wording is not authorized.
+- Custom predicate early-exit is constrained to pure Numba C-ABI predicates and
+  RTDL-owned actions such as `terminate_on_first_accept`; arbitrary Python
+  callbacks and raw OptiX callbacks remain unauthorized.
 
 ## Planner Boundary
 
@@ -59,16 +73,16 @@ rejected/deferred for V4.0.
 
 ## Evidence
 
-- `future/v4/v4_goal4638_formal_release_scorecard_freeze_2026-06-25.md`
-- `future/v4/v4_goal4639_serious_release_scorecard_pod_gate_decision_2026-06-25.md`
-- `future/v4/evidence/v4_goal4639_release_scorecard_pod_gate_2026-06-25/summary.md`
-- `future/v4/reviews/goal4639_serious_release_scorecard_pod_gate_review_record_2026-06-25.md`
+Detailed scorecard and validation evidence lives under `future/v4/` and
+`future/v4/evidence/` for reviewers. This catalog is the current public
+operator surface.
 
 ## Non-Authorization
 
 Not authorized by this catalog:
 
 - broad V4 speedup wording;
+- broad V4-over-V2.14 speedup wording;
 - whole-application speedup wording;
 - all-benchmark speedup wording;
 - Tier-3 callback/PTX claims;

@@ -1,0 +1,811 @@
+{
+  "app": "rt_dbscan_benchmark",
+  "claim_boundary": {
+    "full_dbscan": true,
+    "host_bucket_index_used": false,
+    "native_dbscan_abi_added": false,
+    "paper_dataset_reproduction": false,
+    "paper_speedup_claim_authorized": false,
+    "rt_core_accelerated": true
+  },
+  "dataset": "clustered3d",
+  "elapsed_sec": 1.670247109606862,
+  "matches_reference": null,
+  "metadata": {
+    "adapter": "PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D.run",
+    "adjacency_write_pass_count": 0,
+    "all_core_flags_true": true,
+    "app_specific_engine_logic_allowed": false,
+    "automatic_hidden_dispatcher": false,
+    "automatic_partner_selection_allowed": false,
+    "benchmark_timing_breakdown": {
+      "derived_sec": {
+        "adapter_non_native_estimated_sec": 0.0,
+        "count_native_current_run_sec": 0.0,
+        "elapsed_sec": 1.670247109606862,
+        "grouped_native_sec": 1.5282699279487133,
+        "known_host_phase_sec": 4.000064015388489,
+        "known_native_current_run_sec": 1.5282699279487133,
+        "unattributed_elapsed_sec": 0.0
+      },
+      "host_observed_sec": {
+        "adapter_run_sec": 1.5216679126024246,
+        "column_signature_sec": 0.14857326447963715,
+        "prepare_sec": 2.329822838306427
+      },
+      "notes": [
+        "Host-observed timings are diagnostic and may include async GPU synchronization effects.",
+        "Native elapsed fields come from RTDL native metadata where available.",
+        "This timing packet does not authorize a paper, broad RT-core, or whole-app speedup claim."
+      ],
+      "performance_claim_authorized": false,
+      "schema": "rt_dbscan_grouped_stream_host_overhead_breakdown_v1"
+    },
+    "claim_boundary": "The v2.8 fixed-radius graph component front door exposes an explicit user-selected OptiX+partner grouped-stream contract over an existing generic runtime path. It does not add native engine app logic, choose partners automatically, authorize a release, authorize public speedup wording, authorize broad RT-core wording, authorize whole-app benchmark claims, or authorize true zero-copy wording.",
+    "column_signature_materializes_core_flags": true,
+    "column_signature_materializes_point_ids": true,
+    "column_signature_strategy": "host_column_materialized_signature",
+    "column_signature_uses_numba_direct_component_signature": false,
+    "column_signature_uses_numba_label_count_and_flag_count": false,
+    "column_signature_uses_numba_segmented_count": false,
+    "component_label_policy": "positive_root_index_labels_noise_minus_one",
+    "component_threshold": 4,
+    "component_union_policy": "monotonic_atomic_min_from_rt_hit_stream_without_neighbor_index_materialization",
+    "continuation_contract": "grouped_stream_component_label_columns_3d",
+    "core_flag_cache_reused": true,
+    "core_flag_refresh_runtime_executed": true,
+    "core_flag_threshold": 4,
+    "count_metadata": {
+      "adapter": "fixed_radius_count_threshold_3d_optix_prepared_self_partner_device_columns",
+      "app_count_host_materialization": false,
+      "app_count_materialization": "native_optix_rt_self_query_device_columns",
+      "direct_device_handoff_authorized": true,
+      "host_query_point_repack_avoided": true,
+      "host_query_point_upload_avoided": true,
+      "input_contract": "prepared_native_self_query_device_search_scene",
+      "native_engine_row_contract": "generic_prepared_fixed_radius_count_threshold_3d_self_device_columns",
+      "native_metadata": {
+        "backend": "optix",
+        "direct_device_handoff_authorized": true,
+        "host_query_point_repack_avoided": true,
+        "host_query_point_upload_avoided": true,
+        "materializes_neighbor_rows": false,
+        "native_elapsed_sec": 0.00023353472352027893,
+        "native_engine_row_contract": "generic_prepared_fixed_radius_count_threshold_3d_self_device_columns",
+        "native_execution_path": "prepared_rt_core_count_threshold_3d_self_query",
+        "native_symbol": "rtdl_optix_write_prepared_fixed_radius_count_threshold_3d_self_device_outputs",
+        "output_columns_true_zero_copy_authorized": true,
+        "paper_speedup_claim_authorized": false,
+        "prepared_search_device_buffer_reused_as_query": true,
+        "query_count": 262144,
+        "query_source": "prepared_search_points_self_query_device",
+        "radius": 3.0,
+        "rt_core_accelerated": true,
+        "search_count": 262144,
+        "source_devices": [
+          "cuda:0"
+        ],
+        "source_protocols": [
+          "cupy"
+        ],
+        "threshold": 4,
+        "transfer_mode": "prepared_device_search_points_self_count_threshold_columns",
+        "true_zero_copy_authorized": false,
+        "v2_0_release_authorized": false
+      },
+      "output_columns_reused": true,
+      "paper_speedup_claim_authorized": false,
+      "partner": "cupy",
+      "query_count": 262144,
+      "radius": 3.0,
+      "rt_core_accelerated": true,
+      "rt_core_speedup_claim_authorized": false,
+      "self_query_prepared_search_buffer_reused": true,
+      "threshold": 4,
+      "true_zero_copy_authorized": false,
+      "v2_0_release_authorized": false,
+      "whole_app_speedup_claim_authorized": false
+    },
+    "direct_device_handoff_authorized": true,
+    "fallback_candidate_policy": "not_needed_all_items_satisfy_predicate",
+    "front_door": "v2_8_fixed_radius_graph_component_continuation_3d",
+    "front_door_operation": "fixed_radius_graph_component_size_signature_3d",
+    "front_door_status": "explicit_front_door_over_existing_grouped_stream_contract",
+    "grouped_stream_continuation_pass_count": 1,
+    "grouped_stream_policy": "optix_applies_all_items_grouped_union_without_predicate_or_fallback_workspace",
+    "grouped_union_direct_side_effect_enabled": false,
+    "grouped_union_query_block_count": 1,
+    "grouped_union_query_block_size": null,
+    "grouped_union_query_blocked_candidate": false,
+    "grouped_union_same_root_culling_enabled": true,
+    "hidden_dispatch_allowed": false,
+    "input_contract": "prepared_host_point_rows_self_radius_graph_3d",
+    "lower_adapter": "PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D.run",
+    "lower_partner_reference_contract": "generic_prepared_optix_cupy_grouped_stream_component_labels_3d",
+    "materializes_bounded_directed_adjacency_chunks": false,
+    "materializes_directed_adjacency_stream": false,
+    "materializes_neighbor_rows": false,
+    "materializes_neighbor_summaries": false,
+    "materializes_python_rows": false,
+    "min_neighbors": 4,
+    "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_all_items_self_device_parent_workspace",
+    "native_engine_summary_contract": "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+    "native_execution_path": "prepared_rt_core_grouped_union_3d_self_query",
+    "native_grouped_stream_metadata": {
+      "backend": "optix",
+      "direct_device_handoff_authorized": true,
+      "grouped_union_direct_side_effect_enabled": false,
+      "grouped_union_direct_side_effect_policy": "disabled_by_default_anyhit_side_effect",
+      "grouped_union_extended_telemetry_enabled": false,
+      "grouped_union_intersection_culling_policy": "all_items_target_gt_source_before_anyhit",
+      "grouped_union_root_read_telemetry_enabled": false,
+      "grouped_union_same_root_culling_enabled": true,
+      "grouped_union_same_root_culling_policy": "parent_union_same_root_before_anyhit",
+      "grouped_union_telemetry_buffer_length": 0,
+      "grouped_union_telemetry_contract": null,
+      "grouped_union_telemetry_counter_count": 0,
+      "grouped_union_telemetry_requested": false,
+      "item_count": 262144,
+      "materializes_directed_adjacency_stream": false,
+      "materializes_neighbor_rows": false,
+      "native_elapsed_sec": 1.5282699279487133,
+      "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_all_items_self_device_parent_workspace",
+      "native_execution_path": "prepared_rt_core_grouped_union_3d_all_items_self_query",
+      "native_symbol": "rtdl_optix_apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs",
+      "output_columns_true_zero_copy_authorized": true,
+      "paper_speedup_claim_authorized": false,
+      "predicate_mode": "all_items_true_no_fallback_candidates",
+      "query_count": 262144,
+      "query_index_offset": 0,
+      "query_source": "prepared_search_points_self_query_device",
+      "radius": 3.0,
+      "rt_core_accelerated": true,
+      "search_count": 262144,
+      "source_devices": [
+        "cuda:0"
+      ],
+      "source_protocols": [
+        "cupy"
+      ],
+      "transfer_mode": "prepared_device_search_points_self_grouped_union_all_items_parent_workspace",
+      "true_zero_copy_authorized": false,
+      "v2_0_release_authorized": false
+    },
+    "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+    "operation": "fixed_radius_graph_component_labels_3d",
+    "optix_backend_used": true,
+    "output_columns_reused": true,
+    "output_columns_true_zero_copy_authorized": true,
+    "partner": "cupy",
+    "partner_reference_contract": "generic_prepared_optix_cupy_grouped_stream_component_labels_3d",
+    "path": "optix_rt_grouped_stream_cupy_radius_graph_column_signature_3d",
+    "point_count": 262144,
+    "prepared_execution_session_runner_metadata": {
+      "app_specific_native_engine_logic_allowed": false,
+      "automatic_partner_selection_authorized": false,
+      "broad_v3_faster_than_v2_claim_authorized": false,
+      "claim_boundary": "Prepared execution separates setup, cache/load, warmup, steady-state streaming, planner, executor, and validation timings. It does not authorize release, public speedup wording, broad RT-core speedup wording, true zero-copy wording, RayJoin paper-reproduction wording, `rtdl beats RayJoin` wording, full overlay wording, hidden partner selection, or app-specific native-engine behavior.",
+      "explicit_backend": "optix",
+      "explicit_partner": "cupy",
+      "explicit_partner_choice_required": true,
+      "full_all_app_rerun_authorized_by_this_packet": false,
+      "legacy_aligned_prepare_metric_available": false,
+      "legacy_aligned_prepare_sec": 4.39472496509552e-05,
+      "measured_best_sec": 0.0006522238254547119,
+      "measured_median_sec": 0.0006522238254547119,
+      "measured_output_finalized_once": false,
+      "measured_repeat_count": 1,
+      "measured_repeat_seconds": [
+        0.0006522238254547119
+      ],
+      "measured_run_prepared_override_used": false,
+      "measured_total_sec": 0.0006522238254547119,
+      "native_prepare_sec": null,
+      "native_prepare_seconds_source": null,
+      "outer_cache_load_sec": 0.0,
+      "outer_prepare_or_cache_sec": 4.39472496509552e-05,
+      "outer_prepare_sec": 4.39472496509552e-05,
+      "output_finalize_sec": 0.0,
+      "output_type": "dict",
+      "per_iteration_fingerprint_recompute_avoided": true,
+      "per_iteration_task_reconstruction_avoided": true,
+      "per_repeat_output_finalization_avoided": false,
+      "prepared_execution_report": {
+        "app_specific_engine_logic_allowed": false,
+        "automatic_partner_selection_allowed": false,
+        "claim_boundary": {},
+        "explicit_backend": "optix",
+        "explicit_partner": "cupy",
+        "explicit_partner_choice_required": true,
+        "notes": [
+          "generic fixed-radius self-query primitive routed through Phoenix V3 prepared execution/session runner"
+        ],
+        "phase_timings": [
+          {
+            "best_repeat_seconds": null,
+            "phase": "prepare",
+            "repeat_seconds": [],
+            "role": "prepare_explicit_session_on_cache_miss",
+            "seconds": 4.39472496509552e-05,
+            "setup_candidate": true,
+            "source_keys": [],
+            "steady_state_candidate": false,
+            "validation_candidate": false
+          },
+          {
+            "best_repeat_seconds": null,
+            "phase": "cache_load",
+            "repeat_seconds": [],
+            "role": "load_explicit_prepared_session_from_cache_on_hit",
+            "seconds": 0.0,
+            "setup_candidate": false,
+            "source_keys": [],
+            "steady_state_candidate": false,
+            "validation_candidate": false
+          },
+          {
+            "best_repeat_seconds": null,
+            "phase": "warmup",
+            "repeat_seconds": [],
+            "role": "caller_requested_prepared_session_warmup",
+            "seconds": 0,
+            "setup_candidate": false,
+            "source_keys": [],
+            "steady_state_candidate": false,
+            "validation_candidate": false
+          },
+          {
+            "best_repeat_seconds": null,
+            "phase": "steady_state_stream",
+            "repeat_seconds": [],
+            "role": "no_separate_stream_phase_recorded_by_minimal_runner",
+            "seconds": 0.0,
+            "setup_candidate": false,
+            "source_keys": [],
+            "steady_state_candidate": true,
+            "validation_candidate": false
+          },
+          {
+            "best_repeat_seconds": null,
+            "phase": "planner",
+            "repeat_seconds": [],
+            "role": "caller_preplanned_single_prepared_operation",
+            "seconds": 0.0,
+            "setup_candidate": false,
+            "source_keys": [],
+            "steady_state_candidate": true,
+            "validation_candidate": false
+          },
+          {
+            "best_repeat_seconds": 0.0006522238254547119,
+            "phase": "executor",
+            "repeat_seconds": [
+              0.0006522238254547119
+            ],
+            "role": "execute_explicit_prepared_operation",
+            "seconds": 0.0006522238254547119,
+            "setup_candidate": false,
+            "source_keys": [],
+            "steady_state_candidate": true,
+            "validation_candidate": false
+          },
+          {
+            "best_repeat_seconds": null,
+            "phase": "validation",
+            "repeat_seconds": [],
+            "role": "caller_supplied_validation_after_execution",
+            "seconds": 0.0,
+            "setup_candidate": false,
+            "source_keys": [],
+            "steady_state_candidate": false,
+            "validation_candidate": true
+          }
+        ],
+        "prepared_execution_claim_boundary": "Prepared execution separates setup, cache/load, warmup, steady-state streaming, planner, executor, and validation timings. It does not authorize release, public speedup wording, broad RT-core speedup wording, true zero-copy wording, RayJoin paper-reproduction wording, `rtdl beats RayJoin` wording, full overlay wording, hidden partner selection, or app-specific native-engine behavior.",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "schema": "rtdl.v2_8.prepared_execution_report.v1",
+        "source_commit": null,
+        "source_goal": null,
+        "source_schema": null,
+        "summary_sec": {
+          "setup": 4.39472496509552e-05,
+          "steady_state": 0.0006522238254547119,
+          "validation": 0.0,
+          "warmup": 0.0
+        },
+        "true_zero_copy_claim_authorized": false,
+        "warmup_count": 0,
+        "workflow": [
+          "prepare",
+          "pack_or_cache",
+          "warm",
+          "run_steady_state",
+          "explain_timings"
+        ],
+        "workflow_name": "fixed_radius_count_threshold_3d_self_query_prepared_session"
+      },
+      "prepared_execution_report_validation": {
+        "claim_boundary": "Prepared execution separates setup, cache/load, warmup, steady-state streaming, planner, executor, and validation timings. It does not authorize release, public speedup wording, broad RT-core speedup wording, true zero-copy wording, RayJoin paper-reproduction wording, `rtdl beats RayJoin` wording, full overlay wording, hidden partner selection, or app-specific native-engine behavior.",
+        "errors": [],
+        "phase_count": 7,
+        "schema": "rtdl.v2_8.prepared_execution_report.v1",
+        "status": "accept",
+        "workflow": [
+          "prepare",
+          "pack_or_cache",
+          "warm",
+          "run_steady_state",
+          "explain_timings"
+        ]
+      },
+      "prepared_session": {
+        "automatic_partner_selection_authorized": false,
+        "cache_event_log": [
+          {
+            "event": "miss",
+            "stable_id": "1fcb6a8c1613dc86b1794582"
+          },
+          {
+            "event": "put",
+            "stable_id": "1fcb6a8c1613dc86b1794582"
+          }
+        ],
+        "cache_hit": false,
+        "cache_key": {
+          "app_specific_native_engine_logic_allowed": false,
+          "automatic_partner_selection_authorized": false,
+          "backend": "optix",
+          "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+          "device": "cuda:0",
+          "explicit_key_required": true,
+          "input_fingerprints": [
+            [
+              "search_points",
+              "1779289c8f31d7779d7c216c"
+            ]
+          ],
+          "parameter_fingerprint": [
+            [
+              "radius",
+              "a416ea84421fa7e1351582da"
+            ],
+            [
+              "threshold",
+              "4b227777d4dd1fc61c6f884f"
+            ]
+          ],
+          "partner": "cupy",
+          "primitive": "fixed_radius_count_threshold_self_query",
+          "stable_id": "1fcb6a8c1613dc86b1794582"
+        },
+        "claim_boundary": "Prepared-session residency records explicit cache keys, lifetimes, invalidation events, and cold/hot timing phases. It does not authorize release action, public speedup wording, broad RT-core wording, true-zero-copy wording, automatic partner/backend selection, or app-specific native-engine logic.",
+        "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+        "explicit_cache_lookup": true,
+        "policy": {
+          "app_specific_native_engine_logic_allowed": false,
+          "automatic_partner_selection_authorized": false,
+          "broad_rt_core_claim_authorized": false,
+          "cache_enabled": true,
+          "cache_key": {
+            "app_specific_native_engine_logic_allowed": false,
+            "automatic_partner_selection_authorized": false,
+            "backend": "optix",
+            "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+            "device": "cuda:0",
+            "explicit_key_required": true,
+            "input_fingerprints": [
+              [
+                "search_points",
+                "1779289c8f31d7779d7c216c"
+              ]
+            ],
+            "parameter_fingerprint": [
+              [
+                "radius",
+                "a416ea84421fa7e1351582da"
+              ],
+              [
+                "threshold",
+                "4b227777d4dd1fc61c6f884f"
+              ]
+            ],
+            "partner": "cupy",
+            "primitive": "fixed_radius_count_threshold_self_query",
+            "stable_id": "1fcb6a8c1613dc86b1794582"
+          },
+          "claim_boundary": "Prepared-session residency records explicit cache keys, lifetimes, invalidation events, and cold/hot timing phases. It does not authorize release action, public speedup wording, broad RT-core wording, true-zero-copy wording, automatic partner/backend selection, or app-specific native-engine logic.",
+          "cold_prepare_phase": "prepare_scene_or_payload",
+          "contract_version": "rtdl.v2_10.prepared_session_residency.goal3873.v1",
+          "hot_query_phase": "prepared_query",
+          "invalidation_events": [
+            "explicit_invalidate",
+            "backend_context_reset",
+            "close"
+          ],
+          "lifetime_state": "session_retained",
+          "public_speedup_claim_authorized": false,
+          "release_authorized": false,
+          "reuse_scope": "explicit_user_session",
+          "status": "internal_contract_not_release_authorization",
+          "true_zero_copy_claim_authorized": false
+        },
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "stable_id": "1fcb6a8c1613dc86b1794582",
+        "true_zero_copy_claim_authorized": false
+      },
+      "primitive": "fixed_radius_count_threshold_self_query",
+      "primitive_family": "fixed_radius_count_threshold_self_query",
+      "productized_execution_path": "prepared_execution_session_runner",
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "repeat_outputs_retained": false,
+      "repeated_prepared_session_execution": false,
+      "runtime_executed": true,
+      "schema": "rtdl.v3.phoenix.prepared_execution_session_runner.m3_3",
+      "set_a_probe_candidate": true,
+      "single_cache_lookup_for_measured_repeats": true,
+      "single_report_after_measured_repeats": true,
+      "status": "executed_not_release_authorization",
+      "true_zero_copy_claim_authorized": false,
+      "validate_each_repeat": false,
+      "validation_output_type": "NoneType",
+      "validation_passed": null,
+      "workflow_name": "fixed_radius_count_threshold_3d_self_query_prepared_session"
+    },
+    "prepared_execution_session_runner_used": false,
+    "prepared_grouped_stream_reused": true,
+    "prepared_grouped_stream_run_count": 5,
+    "prepared_optix_scene_reused": true,
+    "prepared_query_repeat_protocol": {
+      "elapsed_sec_median": 1.670247109606862,
+      "elapsed_sec_total": 6.681304670870304,
+      "measured_run_count": 4,
+      "repeat": 5,
+      "signatures_stable": true,
+      "warmup": 1
+    },
+    "producer_contract": "prepared_fixed_radius_graph_hit_stream_3d",
+    "productized_execution_path": "prepared_execution_session_runner",
+    "public_speedup_claim_authorized": false,
+    "query_source": "prepared_search_points_self_query_device",
+    "radius": 3.0,
+    "release_authorized": false,
+    "result_columns": [
+      "point_ids",
+      "component_labels",
+      "is_core",
+      "neighbor_counts"
+    ],
+    "rt_core_accelerated": true,
+    "rt_core_speedup_claim_authorized": false,
+    "signature_source": "partner_column_arrays_no_python_row_dicts",
+    "true_zero_copy_authorized": false,
+    "true_zero_copy_claim_authorized": false,
+    "typed_result_stream": {
+      "app_specific_engine_logic_allowed": false,
+      "automatic_partner_selection_allowed": false,
+      "claim_boundary": "v2.8 typed result streams are an internal generic contract for RTDL runtime development. They do not authorize release, public speedup wording, broad RT-core wording, true-zero-copy wording, hidden dispatch, hidden partner selection, app-specific native-engine behavior, or user-defined shader injection.",
+      "column_names": [
+        "point_ids",
+        "component_labels",
+        "is_core",
+        "neighbor_counts"
+      ],
+      "columns": [
+        {
+          "buffer": {
+            "access_mode": "read",
+            "alignment_bytes": 1,
+            "byte_offset": 0,
+            "capacity_elements": 262144,
+            "data_ptr_observed": true,
+            "device": "cuda:0",
+            "dtype": "uint32",
+            "element_count": 262144,
+            "lifetime": "session_retained",
+            "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+            "mutability": "immutable",
+            "name": "point_ids",
+            "scope": "rtdl_primitive_handoff_only",
+            "shape": [
+              262144
+            ],
+            "source_protocol": "cupy_cuda_array_interface",
+            "stream_handle": 0,
+            "strides_bytes": null
+          },
+          "device_resident": true,
+          "dtype": "uint32",
+          "name": "point_ids",
+          "nullable": false,
+          "required_for_continuation": true,
+          "role": "item_id",
+          "shape": [
+            262144
+          ]
+        },
+        {
+          "buffer": {
+            "access_mode": "read",
+            "alignment_bytes": 1,
+            "byte_offset": 0,
+            "capacity_elements": 262144,
+            "data_ptr_observed": true,
+            "device": "cuda:0",
+            "dtype": "int64",
+            "element_count": 262144,
+            "lifetime": "session_retained",
+            "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+            "mutability": "mutable",
+            "name": "component_labels",
+            "scope": "rtdl_primitive_handoff_only",
+            "shape": [
+              262144
+            ],
+            "source_protocol": "cupy_cuda_array_interface",
+            "stream_handle": 0,
+            "strides_bytes": null
+          },
+          "device_resident": true,
+          "dtype": "int64",
+          "name": "component_labels",
+          "nullable": false,
+          "required_for_continuation": true,
+          "role": "group_key",
+          "shape": [
+            262144
+          ]
+        },
+        {
+          "buffer": {
+            "access_mode": "read",
+            "alignment_bytes": 1,
+            "byte_offset": 0,
+            "capacity_elements": 262144,
+            "data_ptr_observed": true,
+            "device": "cuda:0",
+            "dtype": "uint32",
+            "element_count": 262144,
+            "lifetime": "session_retained",
+            "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+            "mutability": "mutable",
+            "name": "is_core",
+            "scope": "rtdl_primitive_handoff_only",
+            "shape": [
+              262144
+            ],
+            "source_protocol": "cupy_cuda_array_interface",
+            "stream_handle": 0,
+            "strides_bytes": null
+          },
+          "device_resident": true,
+          "dtype": "uint32",
+          "name": "is_core",
+          "nullable": false,
+          "required_for_continuation": true,
+          "role": "mask",
+          "shape": [
+            262144
+          ]
+        },
+        {
+          "buffer": {
+            "access_mode": "read",
+            "alignment_bytes": 1,
+            "byte_offset": 0,
+            "capacity_elements": 262144,
+            "data_ptr_observed": true,
+            "device": "cuda:0",
+            "dtype": "uint32",
+            "element_count": 262144,
+            "lifetime": "session_retained",
+            "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+            "mutability": "mutable",
+            "name": "neighbor_counts",
+            "scope": "rtdl_primitive_handoff_only",
+            "shape": [
+              262144
+            ],
+            "source_protocol": "cupy_cuda_array_interface",
+            "stream_handle": 0,
+            "strides_bytes": null
+          },
+          "device_resident": true,
+          "dtype": "uint32",
+          "name": "neighbor_counts",
+          "nullable": false,
+          "required_for_continuation": true,
+          "role": "payload",
+          "shape": [
+            262144
+          ]
+        }
+      ],
+      "contract_version": "rtdl.v2_8.typed_result_stream.v1",
+      "device_resident_column_count": 4,
+      "event_or_group_ordering_required": true,
+      "grouped_continuation_ready": true,
+      "hidden_dispatch_allowed": false,
+      "ordering": "stable_row_order",
+      "page_capacity": 262144,
+      "producer_primitive": "fixed_radius_graph_component_labels_3d",
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "rt_core_speedup_claim_authorized": false,
+      "segmented_page_failure_mode": "fail_closed_overflow",
+      "status": "internal_contract_no_native_promotion",
+      "status_column_names": [
+        "row_count",
+        "capacity",
+        "overflow",
+        "complete_candidate_coverage"
+      ],
+      "status_columns": [
+        {
+          "buffer": {
+            "access_mode": "read",
+            "alignment_bytes": 1,
+            "byte_offset": 0,
+            "capacity_elements": 1,
+            "data_ptr_observed": false,
+            "device": "cuda:0",
+            "dtype": "uint64",
+            "element_count": 1,
+            "lifetime": "caller_retained",
+            "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+            "mutability": "mutable",
+            "name": "row_count",
+            "scope": "rtdl_primitive_handoff_only",
+            "shape": [
+              1
+            ],
+            "source_protocol": "cupy_cuda_array_interface",
+            "stream_handle": 0,
+            "strides_bytes": null
+          },
+          "device_resident": false,
+          "dtype": "uint64",
+          "name": "row_count",
+          "nullable": false,
+          "required_for_continuation": true,
+          "role": "status",
+          "shape": [
+            1
+          ]
+        },
+        {
+          "buffer": {
+            "access_mode": "read",
+            "alignment_bytes": 1,
+            "byte_offset": 0,
+            "capacity_elements": 1,
+            "data_ptr_observed": false,
+            "device": "cuda:0",
+            "dtype": "uint64",
+            "element_count": 1,
+            "lifetime": "caller_retained",
+            "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+            "mutability": "mutable",
+            "name": "capacity",
+            "scope": "rtdl_primitive_handoff_only",
+            "shape": [
+              1
+            ],
+            "source_protocol": "cupy_cuda_array_interface",
+            "stream_handle": 0,
+            "strides_bytes": null
+          },
+          "device_resident": false,
+          "dtype": "uint64",
+          "name": "capacity",
+          "nullable": false,
+          "required_for_continuation": true,
+          "role": "status",
+          "shape": [
+            1
+          ]
+        },
+        {
+          "buffer": {
+            "access_mode": "read",
+            "alignment_bytes": 1,
+            "byte_offset": 0,
+            "capacity_elements": 1,
+            "data_ptr_observed": false,
+            "device": "cuda:0",
+            "dtype": "uint32",
+            "element_count": 1,
+            "lifetime": "caller_retained",
+            "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+            "mutability": "mutable",
+            "name": "overflow",
+            "scope": "rtdl_primitive_handoff_only",
+            "shape": [
+              1
+            ],
+            "source_protocol": "cupy_cuda_array_interface",
+            "stream_handle": 0,
+            "strides_bytes": null
+          },
+          "device_resident": false,
+          "dtype": "uint32",
+          "name": "overflow",
+          "nullable": false,
+          "required_for_continuation": true,
+          "role": "status",
+          "shape": [
+            1
+          ]
+        },
+        {
+          "buffer": {
+            "access_mode": "read",
+            "alignment_bytes": 1,
+            "byte_offset": 0,
+            "capacity_elements": 1,
+            "data_ptr_observed": false,
+            "device": "cuda:0",
+            "dtype": "uint32",
+            "element_count": 1,
+            "lifetime": "caller_retained",
+            "memory_manager_boundary": "not_a_general_purpose_memory_manager",
+            "mutability": "mutable",
+            "name": "complete_candidate_coverage",
+            "scope": "rtdl_primitive_handoff_only",
+            "shape": [
+              1
+            ],
+            "source_protocol": "cupy_cuda_array_interface",
+            "stream_handle": 0,
+            "strides_bytes": null
+          },
+          "device_resident": false,
+          "dtype": "uint32",
+          "name": "complete_candidate_coverage",
+          "nullable": false,
+          "required_for_continuation": true,
+          "role": "status",
+          "shape": [
+            1
+          ]
+        }
+      ],
+      "stream_id": "fixed_radius_graph_component_labels_3d_runtime",
+      "stream_kind": "adjacency_stream",
+      "target": "typed_device_resident_result_streams_and_grouped_continuation",
+      "true_zero_copy_claim_authorized": false
+    },
+    "user_selected_backend": "optix",
+    "user_selected_partner": "cupy",
+    "user_selected_strategy": "grouped_stream",
+    "v2_0_release_authorized": false,
+    "v2_8_front_door_route": true,
+    "version": "rtdl.v2_8.fixed_radius_graph_component_front_door.v1",
+    "whole_app_speedup_claim_authorized": false
+  },
+  "min_neighbors": 4,
+  "mode": "optix_rt_core_grouped_stream_cupy_column_signature_3d",
+  "paper": {
+    "authors": [
+      "Vani Nagarajan",
+      "Milind Kulkarni"
+    ],
+    "doi": "10.1109/IPDPS54959.2023.00100",
+    "title": "RT-DBSCAN: Accelerating DBSCAN using Ray Tracing Hardware",
+    "venue": "IPDPS 2023"
+  },
+  "point_count": 262144,
+  "radius": 3.0,
+  "reference_signature": null,
+  "seed": 20260519,
+  "signature": {
+    "cluster_sizes": {
+      "1": 262144
+    },
+    "core_count": 262144,
+    "noise_count": 0
+  }
+}

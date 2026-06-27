@@ -1,0 +1,52 @@
+{
+  "goal": 4679,
+  "date": "2026-06-25",
+  "status": "goal4679_select_relation_topology_same_primitive_target_no_pod_no_release",
+  "selected_target": {
+    "operator": "SHAPE_PAIR_RELATION_ACTIVE_COUNT_2D_PREPARED_LEFT_EXECUTOR",
+    "surface": "v4_shape_pair_relation_active_count_2d_prepared_left_executor",
+    "app_probe": "spatial_rayjoin.overlay_active_count",
+    "app_probe_role": "route_coverage_probe_only; the engine target is a generic shape-pair relation/topology operator, not a RayJoin native kernel"
+  },
+  "classification": {
+    "work_class": "same_primitive_productization_or_material_improvement",
+    "v2_14_same_primitive_existed": true,
+    "v2_14_denominator_required": true,
+    "clean_new_v4_lever": false,
+    "same_primitive_speed_credit_requires_material_improvement": true,
+    "partner_migration_counts_as_v4_speed_win": false
+  },
+  "historical_basis": {
+    "v4_design_document": "future/v4/rtdl_v4_0_three_tier_fused_architecture_design_2026-06-24.md",
+    "v2_14_per_app_audit": "future/v4/v4_goal4672_v2_14_per_app_primitive_audit_2026-06-25.md",
+    "historical_goal3737_report": "history/legacy_project_archive_2026-06-24/docs/reports/goal3737_shape_pair_active_count_executor_and_rayjoin_perf_2026-06-07.md",
+    "historical_goal4223_report": "history/legacy_project_archive_2026-06-24/docs/reports/goal4223_rayjoin_public_cdb_contract_scale_map_2026-06-09.md"
+  },
+  "frozen_numeric_bars_for_next_measurement": {
+    "correctness_parity_required": true,
+    "v4_over_v2_14_same_primitive_hot_min_for_speed_credit": 1.2,
+    "v4_over_v2_14_same_primitive_wall_min_for_speed_credit": 1.1,
+    "v4_over_v3_0_2_hot_parity_floor": 0.98,
+    "hot_path_host_row_stream_materialization_allowed": false,
+    "partner_migration_counts_as_speed": false
+  },
+  "claim_boundary": {
+    "pod_run_authorized_by_this_artifact": false,
+    "release_authorized": false,
+    "broad_v4_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "app_identity_native_kernel_authorized": false,
+    "raw_rayjoin_kernel_authorized": false
+  },
+  "next_goal": {
+    "goal": 4680,
+    "name": "local_static_frontdoor_protocol_gate_for_shape_pair_relation_active_count",
+    "required_before_pod": [
+      "V4 wrapper/frontdoor exists or explicit adapter path is named",
+      "native/public surface remains app-name-free",
+      "V2.14 denominator route is identified as strongest same-primitive route",
+      "correctness parity method is named",
+      "POD command protocol is frozen but not yet run"
+    ]
+  }
+}

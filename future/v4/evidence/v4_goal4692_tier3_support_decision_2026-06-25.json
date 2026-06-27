@@ -1,0 +1,18 @@
+{
+  "decision": {
+    "decision": "do_not_promote_sbt_direct_callable_support; continue Tier-3 through module-specialized direct device callback because the same Numba callback denominator ran correctly without OptiX callable SBT overhead",
+    "direct_callable_public_support_authorized": false,
+    "measured_direct_callable_ratio": 1.6705538933080346,
+    "next_goal": "Goal4693 specialized direct-device callback inside OptiX hit-program probe",
+    "performance_claim_authorized": false,
+    "release_authorized": false,
+    "selected_next_track": "module_specialized_direct_device_callback_in_hit_program",
+    "specialized_device_callback_public_support_authorized": false,
+    "status": "goal4692_tier3_direct_callable_yellow_pivot_to_specialized_device_callback",
+    "tier3_public_support_authorized": false
+  },
+  "missing_or_invalid": [],
+  "schema": "rtdl.v4.goal4692_tier3_support_decision.v1",
+  "status": "passed",
+  "validation_status": "passed"
+}

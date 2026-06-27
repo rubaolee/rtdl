@@ -1,0 +1,28 @@
+{
+  "decision": {
+    "broad_v4_speedup_claim_authorized": false,
+    "decision_label": "rtnn_candidate_does_not_move_app_level_bar",
+    "deferred": true,
+    "generic_primitive": "FIXED_RADIUS_RANKED_SUMMARY_3D",
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "removed_from_candidate_frontdoor": true,
+    "serious_scale_ratios": {
+      "1048576": {
+        "v4_over_v2_14_hot": 0.9938654084870772,
+        "v4_over_v3_0_2_hot": 0.992565851297169
+      },
+      "262144": {
+        "v4_over_v2_14_hot": 0.9985142636714865,
+        "v4_over_v3_0_2_hot": 1.0053613081712485
+      }
+    },
+    "source_evidence": "future/v4/evidence/v4_goal4660_rtnn_ranked_summary_20260625/summary.json",
+    "status": "goal4678_defer_ranked_summary_no_open_candidate_no_release",
+    "surface": "v4_fixed_radius_ranked_summary_3d_prepared_runner",
+    "whole_app_speedup_claim_authorized": false
+  },
+  "missing_or_invalid": [],
+  "release_authorized": false,
+  "status": "passed"
+}

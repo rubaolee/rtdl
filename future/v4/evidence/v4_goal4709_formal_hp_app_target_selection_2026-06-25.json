@@ -1,0 +1,60 @@
+{
+  "missing_or_invalid": [],
+  "schema": "rtdl.v4.goal4709_formal_hp_app_target_selection.v1",
+  "selection": {
+    "app_level_speed_claim_authorized": false,
+    "next_goal": "Goal4710 ray-triangle custom scored accumulation app-level protocol freeze",
+    "performance_claim_authorized": false,
+    "pod_authorized": false,
+    "rejected_existing_targets": [
+      {
+        "reason": "Goal4670/4671 found modest/no-go second-win evidence; component union is not solved by scalar callback fusion.",
+        "target": "rt_dbscan"
+      },
+      {
+        "reason": "Goal4655 app row is parity; no clean new V4 runtime lever identified.",
+        "target": "raydb_style"
+      },
+      {
+        "reason": "Large V2.14 ratio is historical route evolution; V4-over-V3 increment is modest and not a clean new V4 feature proof.",
+        "target": "triangle_counting"
+      },
+      {
+        "reason": "Goal4655 app row is parity; no current V4 lever moves it.",
+        "target": "librts_spatial_index"
+      },
+      {
+        "reason": "Current blocker is correctness/normalization, not proven V4 performance.",
+        "target": "hausdorff_xhd"
+      },
+      {
+        "reason": "Ranked-summary/top-k candidate was deferred for serious-scale parity or below-parity rows.",
+        "target": "rtnn"
+      }
+    ],
+    "release_authorized": false,
+    "selected_app": "ray_triangle_custom_scored_accumulation",
+    "selected_target_contract": {
+      "app_family": "ray/triangle custom scored accumulation",
+      "generic_feature_under_test": "specialized Tier-3 scalar callback fusion for ray/triangle hit reduction",
+      "minimum_scale": ">=262144 rays with dense and sparse hit regimes; larger row optional if POD budget allows",
+      "not_app_specific_kernel": true,
+      "pass_condition_to_freeze_in_goal4710": "Goal4710 must freeze numeric bars before POD. No all-app or release claim is allowed from Goal4709.",
+      "required_baselines": [
+        "V2.14 strongest materialized-hit or built-in fixed-reduction route",
+        "V3.0.2 strongest current route",
+        "V4 Tier-2 built-in route where semantically comparable"
+      ],
+      "required_callbacks": [
+        "weighted_sum",
+        "affine_score",
+        "threshold_score",
+        "minmax_score"
+      ],
+      "why_v4_specific": "The app requires user-defined scalar scoring/reduction inside the RT hit path. V2/V3 baselines must materialize hits or use fixed built-in reductions; V4 candidate fuses a constrained Numba C-ABI scalar callback into the RTDL-generated OptiX hit program."
+    },
+    "status": "goal4709_formal_high_performance_app_target_selected_protocol_required"
+  },
+  "status": "passed",
+  "validation_status": "passed"
+}

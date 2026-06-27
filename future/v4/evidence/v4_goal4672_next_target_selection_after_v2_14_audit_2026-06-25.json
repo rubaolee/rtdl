@@ -1,0 +1,113 @@
+{
+  "schema": "rtdl.v4.goal4672.next_target_selection_after_v2_14_audit.v1",
+  "status": "goal4672_target_selection_complete_no_clean_existing_app_target",
+  "date": "2026-06-25",
+  "decision_label": "no_clean_existing_app_second_target_found__new_generic_runtime_lever_required",
+  "purpose": "Select the next V4 performance target after RTDBSCAN no-go and after auditing V2.14 per-app primitive routes.",
+  "inputs": {
+    "v2_14_primitive_audit": "future/v4/evidence/v4_goal4672_v2_14_per_app_primitive_audit_2026-06-25.json",
+    "goal4669_app_analysis": "future/v4/evidence/v4_goal4669_app_level_benchmark_analysis_2026-06-25.json",
+    "goal4670_rt_dbscan_diagnostic": "future/v4/evidence/v4_goal4670_rtdbscan_diag_20260625/summary.json",
+    "goal4671_grouped_union_telemetry": "future/v4/evidence/v4_goal4671_rtdbscan_grouped_union_telemetry_20260625/summary.json",
+    "v4_operator_inventory": "future/v4/v2_primitives_to_v4_tier2_inventory_2026-06-24.md"
+  },
+  "selection_result": {
+    "selected_existing_app_target": null,
+    "selected_existing_app_target_found": false,
+    "selected_next_work_class": "new_generic_runtime_lever_or_material_same_primitive_improvement",
+    "why": "Every plausible existing benchmark app either already had the relevant primitive route in V2.14, failed current app-level bars, was rejected as app-identity/deferred, or has no current V4 route. Selecting one as a clean new V4 speed target would repeat the partner/productization-as-performance error."
+  },
+  "rejected_existing_targets": [
+    {
+      "app": "rt_dbscan",
+      "reason": "Goal4670/4671 no-go: best true grouped-union probe remains below 1.20x and V2.14 already had fixed-radius count-threshold plus grouped-union routes.",
+      "rejected_as": "no_go_after_focused_evidence"
+    },
+    {
+      "app": "robot_collision",
+      "reason": "V2.14 already had prepared RTDL/OptiX any-hit collision flags and scalar count. Existing V4 any-hit evidence can only support a same-primitive improvement experiment, not a clean new V4 win.",
+      "rejected_as": "preexisting_same_primitive_not_clean_new_win"
+    },
+    {
+      "app": "raydb_style",
+      "reason": "Goal4669 shows V4/V2.14 regression, and V2.14 already used RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D.",
+      "rejected_as": "regression_and_preexisting_primitive"
+    },
+    {
+      "app": "triangle_counting",
+      "reason": "Goal4669 shows V4/V3.0.2 regression, and the V2.14 serious row already used ray_triangle_weighted_any_hit_sum_3d.",
+      "rejected_as": "regression_and_preexisting_primitive"
+    },
+    {
+      "app": "librts_spatial_index",
+      "reason": "Goal4669 shows parity, and V2.14 already used prepared AABB index query.",
+      "rejected_as": "parity_and_preexisting_primitive"
+    },
+    {
+      "app": "rtnn",
+      "reason": "Goal4660/4661 serious rows are parity/slower, and V2.14 already had prepared ranked-summary aggregate.",
+      "rejected_as": "performance_failed_candidate"
+    },
+    {
+      "app": "hausdorff_xhd",
+      "reason": "Already the single true V4 app candidate win in Goal4669; it cannot serve as the second independent win.",
+      "rejected_as": "already_counted_single_candidate"
+    },
+    {
+      "app": "barnes_hut",
+      "reason": "Potential true lever would be aggregate-tree fused weighted-vector traversal, but prior V4 inventory and reviews reject the existing implementation for V4.0 as Barnes-Hut/N-body-specific and CUDA-only, not a generic RT-core Tier-2 operator.",
+      "rejected_as": "deferred_app_identity_or_not_generic_enough"
+    },
+    {
+      "app": "spatial_rayjoin",
+      "reason": "Current V4 has no route; V2.14 used mixed explicit Numba/OptiX primitives. A V4 target would first need a new generic relation-topology operator and protocol.",
+      "rejected_as": "no_current_v4_route_new_operator_required"
+    },
+    {
+      "app": "contact_manifold",
+      "reason": "V2.14 already had bounded witness collect and AABB broadphase primitives. A V4 target would require a new full generic contact route or material bounded-collect improvement, not current evidence.",
+      "rejected_as": "preexisting_partial_primitives_new_route_required"
+    }
+  ],
+  "goal4673_candidate_gate": {
+    "required_before_coding": [
+      "name the generic operator or same-primitive improvement target",
+      "prove whether V2.14 already had the same primitive route",
+      "state whether the goal is new-runtime-lever or same-primitive improvement",
+      "freeze V2.14, V3.0.2, and V4 denominators",
+      "freeze correctness parity gate",
+      "freeze numeric material-speed bar before running",
+      "prove the operator is not app-identity",
+      "record why partner migration cannot count"
+    ],
+    "allowed_target_classes": [
+      "new generic relation/topology operator for spatial_rayjoin-like workloads",
+      "new generic contact/witness pipeline that goes beyond V2.14 bounded collect-k",
+      "material same-primitive improvement over V2.14 for an existing primitive, with V2.14 as the explicit denominator",
+      "re-audited hierarchical aggregate operator only if algorithmic genericity and device-input gates pass; existing aggregate-tree fused weighted-vector implementation does not pass as-is"
+    ],
+    "forbidden_target_classes": [
+      "robot_collision clean-new-win claim without same-primitive V2.14 denominator",
+      "RTDBSCAN direct-status special-contract rows",
+      "Barnes-Hut or DBSCAN app-identity kernels",
+      "partner certification or front-door cleanup counted as speed",
+      "fixing 0.98x parity/regression rows as the whole V4 performance story"
+    ]
+  },
+  "claim_boundary": {
+    "release_authorized": false,
+    "public_speed_claim_authorized": false,
+    "whole_app_high_performance_claim_authorized": false,
+    "selected_existing_app_target_authorized": false,
+    "pod_run_authorized_by_this_artifact": false,
+    "app_specific_native_kernel_authorized": false,
+    "bounded_operator_reframe_forced_by_this_artifact": false
+  },
+  "goal_level_decision_audit": {
+    "was_i_being_stupid": true,
+    "stupid_action": "The stupid path was to keep searching for a convenient existing app target after the V2.14 audit showed the plausible candidates mostly reuse V2.14 primitives.",
+    "alternative_path": "Declare that no clean existing app target qualifies, then require Goal4673 to design or select a real new generic runtime lever or a material same-primitive improvement with V2.14 as denominator.",
+    "can_try_better_path_now": true
+  },
+  "next_action": "Goal4673 must not run POD yet. It must first choose one new generic runtime lever or same-primitive improvement target under the candidate gate above."
+}

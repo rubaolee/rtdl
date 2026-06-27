@@ -1,0 +1,145 @@
+{
+  "claim_boundary": {
+    "broad_v4_speedup_claim_authorized": false,
+    "no_copy_tree_build_claim_authorized": false,
+    "paper_reproduction_claim_authorized": false,
+    "public_v4_tag_authorized": false,
+    "v2_v3_v4_public_speed_table_authorized": false
+  },
+  "comparison_policy": {
+    "author_vs_v2_14_allowed": false,
+    "author_vs_v3_0_2_allowed": false,
+    "author_vs_v4_allowed": true,
+    "no_na_policy": "Absent routes are explicit capability verdicts, not n/a.",
+    "reason": "V2.14 and V3.0.2 do not expose the Goal4760 author-semantics contract or native 3D author ABI. Their historical Barnes-Hut routes are different RTDL benchmark contracts."
+  },
+  "contract": {
+    "bucket_size": 32,
+    "forbids_mixing_historical_aggregate_frontier_rows": true,
+    "name": "RT-BarnesHut author-semantics contract",
+    "requires_3d_author_z_order_tree": true,
+    "requires_author_force_checksum": true,
+    "theta": 0.5
+  },
+  "dataset": {
+    "file_type": "treelogy",
+    "path": "/root/external/RT-BarnesHut-author/treelogy_synthetic_10M.txt",
+    "point_count": 10000000,
+    "same_input_for_author_and_v4": true,
+    "v2_v3_same_input_not_run_because_same_semantics_route_absent": true
+  },
+  "evidence": {
+    "author_phase_stdout": "future/v4/evidence/rt_barneshut_author_reproduction_2026-06-26/v4_goal4769_author_phase_print_false_10m_stdout.txt",
+    "v4_benchmark_json": "future/v4/evidence/rt_barneshut_author_reproduction_2026-06-26/v4_goal4768_benchmark_ready_10m_pod_2026-06-26.json",
+    "v4_profile_jsonl": "future/v4/evidence/rt_barneshut_author_reproduction_2026-06-26/v4_goal4768_10m_phase_profile_pod_2026-06-26.jsonl"
+  },
+  "fair_ratios": {
+    "v4_author_rt_force_over_v4_rt_force": 1.27338331384739,
+    "v4_author_sort_over_v4_sort": 1.1147803767658364,
+    "v4_author_sort_tree_over_v4_preprocessing": 1.3200831129438122,
+    "v4_author_total_program_over_v4_internal_program": 1.3894144092875964
+  },
+  "goal": "Goal4772",
+  "rows": [
+    {
+      "phase_seconds": {
+        "install_autoropes": 0.015301,
+        "intersections_setup": 0.484204,
+        "iterative_step": 1.76213,
+        "rt_force": 1.12905,
+        "sort": 6.87096,
+        "total_program": 10.4391,
+        "tree_build": 1.71362,
+        "tree_to_dfs": 0.043701
+      },
+      "ratio_blocker": "Reference denominator, not compared to itself.",
+      "ratio_to_author_allowed": false,
+      "root": "/root/external/RT-BarnesHut-author",
+      "same_semantics_author_route_available": true,
+      "status": "reference_author_binary_full_phase",
+      "version": "author"
+    },
+    {
+      "has_author_contract_module": false,
+      "has_legacy_barnes_hut_adapter": true,
+      "has_native_route_module": false,
+      "has_rt_barneshut_author_text": false,
+      "ratio_blocker": "This version has Barnes-Hut-style routes or scripts, but not the Goal4760 author-semantics contract plus native 3D author ABI. Do not divide its historical Barnes-Hut timings by the authors' RT-BarnesHut program.",
+      "ratio_to_author_allowed": false,
+      "required_native_author_symbols": {
+        "rtdl_optix_destroy_rt_barneshut_author_3d": false,
+        "rtdl_optix_prepare_rt_barneshut_author_3d": false,
+        "rtdl_optix_run_rt_barneshut_author_3d": false
+      },
+      "required_native_author_symbols_in_source": {
+        "rtdl_optix_destroy_rt_barneshut_author_3d": false,
+        "rtdl_optix_prepare_rt_barneshut_author_3d": false,
+        "rtdl_optix_run_rt_barneshut_author_3d": false
+      },
+      "root": "/root/rtdl_v2_14_tag",
+      "same_semantics_author_route_available": false,
+      "status": "no_same_semantics_author_route",
+      "version": "v2_14"
+    },
+    {
+      "has_author_contract_module": false,
+      "has_legacy_barnes_hut_adapter": true,
+      "has_native_route_module": false,
+      "has_rt_barneshut_author_text": false,
+      "ratio_blocker": "This version has Barnes-Hut-style routes or scripts, but not the Goal4760 author-semantics contract plus native 3D author ABI. Do not divide its historical Barnes-Hut timings by the authors' RT-BarnesHut program.",
+      "ratio_to_author_allowed": false,
+      "required_native_author_symbols": {
+        "rtdl_optix_destroy_rt_barneshut_author_3d": false,
+        "rtdl_optix_prepare_rt_barneshut_author_3d": false,
+        "rtdl_optix_run_rt_barneshut_author_3d": false
+      },
+      "required_native_author_symbols_in_source": {
+        "rtdl_optix_destroy_rt_barneshut_author_3d": false,
+        "rtdl_optix_prepare_rt_barneshut_author_3d": false,
+        "rtdl_optix_run_rt_barneshut_author_3d": false
+      },
+      "root": "/root/rtdl_v3_0_2_tag",
+      "same_semantics_author_route_available": false,
+      "status": "no_same_semantics_author_route",
+      "version": "v3_0_2"
+    },
+    {
+      "checksum": {
+        "author_rt_force_checksum": 53.7468,
+        "native_force_checksum": 53.746751351154444,
+        "passes_tolerance": true,
+        "relative_error": 9.051486889720442e-07
+      },
+      "has_author_contract_module": true,
+      "has_legacy_barnes_hut_adapter": true,
+      "has_native_route_module": true,
+      "has_rt_barneshut_author_text": true,
+      "phase_seconds": {
+        "execution": 7.432850354,
+        "input_download": 0.0804588,
+        "internal_program_including_input_download": 7.513309154,
+        "preprocessing": 6.503060236,
+        "rt_force": 0.886653679,
+        "sort": 6.16351
+      },
+      "ratio_blocker": "",
+      "ratio_to_author_allowed": true,
+      "required_native_author_symbols": {
+        "rtdl_optix_destroy_rt_barneshut_author_3d": true,
+        "rtdl_optix_prepare_rt_barneshut_author_3d": true,
+        "rtdl_optix_run_rt_barneshut_author_3d": true
+      },
+      "required_native_author_symbols_in_source": {
+        "rtdl_optix_destroy_rt_barneshut_author_3d": true,
+        "rtdl_optix_prepare_rt_barneshut_author_3d": true,
+        "rtdl_optix_run_rt_barneshut_author_3d": true
+      },
+      "root": "/root/rtdl_v4_candidate_pod",
+      "same_semantics_author_route_available": true,
+      "status": "same_semantics_native_rt_core_route_present",
+      "version": "v4_0"
+    }
+  ],
+  "schema": "rtdl.v4.goal4772.rt_barneshut_four_way_fair_compare.v1",
+  "status": "four_way_protocol_complete_with_absent_v2_v3_author_routes"
+}

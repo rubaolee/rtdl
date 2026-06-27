@@ -17,13 +17,19 @@ from .v4_goal4639_release_scorecard_decision import v4_goal4639_release_scorecar
 from .v4_goal4640_public_docs_cleanup_decision import v4_goal4640_public_docs_cleanup_decision
 from .v4_goal4641_clean_tree_reproducibility_decision import v4_goal4641_clean_tree_reproducibility_decision
 from .v4_weighted_sum_promotion_decision import v4_goal4633_weighted_sum_promotion_decision
+from .v4_operator_catalog import measured_v4_tier2_operator_catalog
 
 
-V4_GOAL4632_STATUS = "goal4643_formal_v4_0_0_publication_authorized"
-V4_GOAL4632_DECISION = "authorize_formal_v4_0_0_bounded_operator_release"
+V4_GOAL4632_STATUS = "goal4744_release_decision_current_frontdoor_local_gate"
+V4_GOAL4632_DECISION = "authorize_v4_python_edsl_operator_pushdown_release_candidate_pending_external_review_debt"
+V4_CURRENT_APP_LEVEL_DECISION_LABEL = (
+    "complete_rt_core_app_matrix__bounded_material_wins__no_broad_all_app_speedup_claim"
+)
 V4_AUTHORIZED_RELEASE_LABEL = (
-    "RTDL v4.0.0 bounded operator release: 8 generic RT-core operators "
-    "faster than brute-force partner/CPU baselines"
+    "RTDL V4.0 Python eDSL/operator-pushdown release candidate and V2/V3 "
+    "superset: complete 10-app NVIDIA RT-core V2.14/V3.0.2/V4.0 matrix, "
+    "bounded material wins, and measured generic operator/workflow surfaces; "
+    "broad all-benchmark speedup remains unauthorized"
 )
 
 
@@ -60,6 +66,7 @@ def v4_goal4632_release_decision() -> dict[str, Any]:
     docs_cleanup_decision = v4_goal4640_public_docs_cleanup_decision()
     clean_tree_decision = v4_goal4641_clean_tree_reproducibility_decision()
     tier3 = v4_goal4631_tier3_spike_decision()
+    measured_surface_count = len(measured_v4_tier2_operator_catalog())
 
     gates = (
         V4ReleaseGate(
@@ -184,15 +191,67 @@ def v4_goal4632_release_decision() -> dict[str, Any]:
                 "future/v4/reviews/codex_independent_v4_goal4642_final_authorization_review_and_amendment_recheck_2026-06-25.md",
                 "future/v4/reviews/codex_main_v4_goal4642_final_release_owner_authorization_2026-06-25.md",
             ),
-            note="Final V4 release authorization is complete for the narrow V4.0.0 generic operator label.",
+            note=(
+                "The earlier bounded operator authorization is superseded for current "
+                "user-facing truth by Goal4756: V4 is a Python eDSL/operator-pushdown "
+                "release candidate and V2/V3 superset with a complete 10-app RT-core "
+                "matrix, while broad all-benchmark speedup remains unauthorized."
+            ),
+        ),
+        V4ReleaseGate(
+            gate="G12_custom_predicate_early_exit_workflow",
+            status=V4_CURRENT_APP_LEVEL_DECISION_LABEL,
+            passed_for_release=True,
+            evidence=(
+                "future/v4/v4_goal4717_custom_predicate_early_exit_serious_scale_validation_2026-06-26.md",
+                "future/v4/v4_goal4718_release_matrix_after_custom_predicate_2026-06-26.md",
+                "future/v4/evidence/v4_goal4718_release_matrix_after_custom_predicate_2026-06-26.json",
+            ),
+            note=(
+                "Custom predicate early-exit is the V4-only workflow win: 4.633x "
+                "serious-scale geomean over V2.14/V3.0.2 materialized-device fallback."
+            ),
+        ),
+        V4ReleaseGate(
+            gate="G13_public_docs_current_frontdoor_cleanup",
+            status="public_v4_docs_examples_match_goal4742_current_boundary",
+            passed_for_release=True,
+            evidence=(
+                "future/v4/v4_goal4743_public_docs_current_framing_cleanup_2026-06-26.md",
+                "future/v4/evidence/v4_goal4743_public_docs_current_framing_cleanup_2026-06-26.json",
+                "examples/v4/custom_predicate_early_exit_planning.py",
+                "docs/current_v4_status.md",
+            ),
+            note=(
+                "Current public docs and runnable examples now describe Goal4756 truth: "
+                "10 measured app rows across V2.14/V3.0.2/V4.0, V4 eDSL/operator-pushdown "
+                "release candidate, and broad all-benchmark speedup forbidden."
+            ),
+        ),
+        V4ReleaseGate(
+            gate="G14_full_v4_local_gate_after_current_frontdoor_cleanup",
+            status="full_v4_local_gate_passes_after_goal4743_current_frontdoor_cleanup",
+            passed_for_release=True,
+            evidence=(
+                "future/v4/v4_goal4744_full_v4_local_gate_after_current_frontdoor_cleanup_2026-06-26.md",
+                "future/v4/evidence/v4_goal4744_full_v4_local_gate_after_current_frontdoor_cleanup_2026-06-26.json",
+                "tests/v4_goal4744_full_v4_local_gate_record_test.py",
+            ),
+            note=(
+                "Goal4744 records a 554-test V4 unittest discover pass plus public examples "
+                "and catalog dry-run gate after the current front-door cleanup."
+            ),
         ),
     )
 
-    release_blockers: tuple[str, ...] = ()
+    release_blockers: tuple[str, ...] = (
+        "external_3ai_review_debt_open_for_goal4743_goal4744_current_release_candidate",
+    )
     scope_limitations = (
-        "tier3_deferred_not_supported",
-        "whole_app_speedup_wording_not_authorized",
-        "cupy_performance_unmeasured",
+        "legacy_all_app_speedup_wording_not_authorized",
+        "arbitrary_python_callback_not_supported",
+        "raw_optix_callback_not_supported",
+        "public_tier3_deferred_not_supported",
         "no_true_zero_copy_public_claim_authorized",
         "no_c_abi_embedding_or_non_python_host_scope",
     )
@@ -200,18 +259,28 @@ def v4_goal4632_release_decision() -> dict[str, Any]:
     return {
         "status": V4_GOAL4632_STATUS,
         "decision": V4_GOAL4632_DECISION,
-        "release_authorized": True,
-        "formal_release_authorized": True,
+        "release_authorized": False,
+        "formal_release_authorized": False,
         "authorized_release_label": V4_AUTHORIZED_RELEASE_LABEL,
-        "release_candidate_authorized": False,
+        "release_candidate_authorized": True,
         "performance_preview_authorized": True,
         "development_state_authorized": False,
+        "bounded_operator_surface_available": True,
+        "app_level_high_performance_authorized": False,
+        "v4_python_edsl_release_candidate_supported": True,
+        "operator_pushdown_workflow_high_performance_supported": True,
+        "legacy_all_app_high_performance_supported": False,
+        "current_app_level_decision_label": V4_CURRENT_APP_LEVEL_DECISION_LABEL,
         "public_wording": (
-            "RTDL v4.0.0 is a bounded operator release: the 8 documented "
-            "generic RT-core operators beat their stated brute-force "
-            "partner/CPU baselines on the frozen Goal4639 scorecard."
+            "RTDL V4 is a Python eDSL/operator-pushdown release candidate with "
+            "10 measured generic operator/workflow surfaces and a complete 10-app "
+            "NVIDIA RT-core V2.14/V3.0.2/V4.0 matrix. The constrained Numba "
+            "custom predicate early-exit workflow measured 4.633x serious-scale "
+            "geomean versus V2.14/V3.0.2 materialized-device fallback. Goal4756 "
+            "shows bounded material wins plus parity/control app rows; it does "
+            "not support broad legacy all-app high-performance wording."
         ),
-        "measured_surfaces_count": 8,
+        "measured_surfaces_count": measured_surface_count,
         "candidate_surfaces_count": 0,
         "component_union_promotion": component_union_promotion,
         "threshold_summary_decision": threshold_summary_decision,
@@ -228,15 +297,18 @@ def v4_goal4632_release_decision() -> dict[str, Any]:
         "release_blockers": release_blockers,
         "scope_limitations": scope_limitations,
         "allowed_claims": (
-            "RTDL v4.0.0 is a bounded operator release for 8 generic RT-core operators.",
-            "The documented operators beat their stated brute-force partner/CPU baselines on the frozen Goal4639 scorecard.",
-            "Torch CUDA measured Tier-2 device-array surfaces exist for the documented measured operators.",
+            "RTDL V4 is a Python eDSL/operator-pushdown release candidate.",
+            "The V4 front door has 10 measured generic operator/workflow surfaces.",
+            "The constrained Numba custom predicate early-exit workflow measured 4.633x serious-scale geomean versus V2.14/V3.0.2 materialized-device fallback.",
+            "Legacy promoted-app all-suite high-performance remains unsupported by the current app-level boundary.",
+            "Torch CUDA, Numba, RTDL native, and explicitly scoped CuPy continuation measurements exist only where named.",
             "The frozen Goal4639 scorecard passed for 8 measured surfaces and 4 strong benchmark families.",
-            "The public V4 documentation and example entrypoints have been cleaned for Goal4640.",
+            "The public V4 documentation and example entrypoints have been cleaned for the current Goal4756 front-door boundary.",
+            "The full V4 local gate passed 554 V4 tests after the current front-door cleanup.",
             "The Goal4641 clean-tree reproducibility gate passed from a committed-only clean worktree.",
-            "Fixed-radius, grouped-i64, weighted-sum, component-union, and AABB have bounded operator-level performance evidence.",
+            "Fixed-radius, grouped-i64, weighted-sum, component-union, AABB, aggregate-frontier, and custom predicate early-exit have bounded performance evidence.",
             "A minimum push-down recognizer routes known generic operators and fails closed otherwise.",
-            "Tier-3 is spike-only/deferred and not V4.0 support.",
+            "Arbitrary callbacks and raw OptiX callbacks remain unsupported.",
         ),
         "forbidden_claims": (
             "broad V4 speedup",
@@ -248,8 +320,8 @@ def v4_goal4632_release_decision() -> dict[str, Any]:
             "CuPy performance",
             "C ABI / embedding / non-Python host",
             "app-specific native kernels",
-            "Barnes-Hut covered by V4.0",
-            "Spatial RayJoin covered by V4.0",
+            "Barnes-Hut new V4-over-V3 speedup",
+            "Spatial RayJoin speedup",
             "LibRTS paper reproduction",
         ),
         "release_claim_authorized": False,
@@ -271,14 +343,24 @@ def validate_v4_goal4632_release_decision() -> dict[str, Any]:
     decision = v4_goal4632_release_decision()
     if decision["decision"] != V4_GOAL4632_DECISION:
         raise ValueError("Goal4632 decision drift")
-    if not decision["release_authorized"]:
-        raise ValueError("V4 release must be authorized after Goal4642 3-AI approval")
-    if not decision["formal_release_authorized"]:
-        raise ValueError("Formal V4.0.0 release must be authorized")
+    if decision["release_authorized"]:
+        raise ValueError("Formal public tag must not be authorized while external review debt is open")
+    if decision["formal_release_authorized"]:
+        raise ValueError("Formal V4.0.0 public tag must not be authorized while external review debt is open")
+    if not decision["bounded_operator_surface_available"]:
+        raise ValueError("Bounded operator surface must remain available")
+    if decision["app_level_high_performance_authorized"]:
+        raise ValueError("App-level high-performance claim must not be authorized")
+    if not decision["v4_python_edsl_release_candidate_supported"]:
+        raise ValueError("Goal4720 must support the V4 Python eDSL release candidate")
+    if not decision["operator_pushdown_workflow_high_performance_supported"]:
+        raise ValueError("Goal4720 must retain the custom predicate workflow win")
+    if decision["legacy_all_app_high_performance_supported"]:
+        raise ValueError("Legacy all-app high-performance wording must remain false")
     if decision["authorized_release_label"] != V4_AUTHORIZED_RELEASE_LABEL:
         raise ValueError("Authorized V4 release label drift")
-    if decision["release_candidate_authorized"]:
-        raise ValueError("Final V4 release must not remain a release candidate")
+    if not decision["release_candidate_authorized"]:
+        raise ValueError("Goal4720 must authorize the release candidate state")
     if not decision["performance_preview_authorized"]:
         raise ValueError("V4 release should preserve bounded performance evidence visibility")
     gate_map = {gate["gate"]: gate for gate in decision["gates"]}
@@ -290,18 +372,25 @@ def validate_v4_goal4632_release_decision() -> dict[str, Any]:
         raise ValueError("Clean-tree reproducibility should pass after Goal4641")
     if not gate_map["G11_final_release_authorization"]["passed_for_release"]:
         raise ValueError("Final release authorization must pass after Goal4642")
+    if not gate_map["G12_custom_predicate_early_exit_workflow"]["passed_for_release"]:
+        raise ValueError("Custom predicate early-exit workflow gate must pass")
+    if not gate_map["G13_public_docs_current_frontdoor_cleanup"]["passed_for_release"]:
+        raise ValueError("Current front-door public docs gate must pass")
+    if not gate_map["G14_full_v4_local_gate_after_current_frontdoor_cleanup"]["passed_for_release"]:
+        raise ValueError("Goal4744 full V4 local gate must pass")
     if "weighted_sum_remains_candidate_not_measured" in decision["release_blockers"]:
         raise ValueError("Weighted-sum blocker must be removed after Goal4633")
     if "goal4636c_aabb_index_gate_passed_pending_frontdoor_catalog_goal" in decision["release_blockers"]:
         raise ValueError("Goal4636C pending front-door blocker must be removed after Goal4637")
     if "goal4641_clean_tree_reproducibility_gate_not_done" in decision["release_blockers"]:
         raise ValueError("Goal4641 clean-tree blocker must be removed after clean-tree validation")
-    if decision["release_blockers"]:
-        raise ValueError("Formal V4.0.0 release must not retain release blockers")
+    if "external_3ai_review_debt_open_for_goal4743_goal4744_current_release_candidate" not in decision["release_blockers"]:
+        raise ValueError("External review debt blocker must be retained before public tag")
     for required_limitation in (
-        "tier3_deferred_not_supported",
-        "whole_app_speedup_wording_not_authorized",
-        "cupy_performance_unmeasured",
+        "legacy_all_app_speedup_wording_not_authorized",
+        "arbitrary_python_callback_not_supported",
+        "raw_optix_callback_not_supported",
+        "public_tier3_deferred_not_supported",
         "no_true_zero_copy_public_claim_authorized",
         "no_c_abi_embedding_or_non_python_host_scope",
     ):
@@ -329,6 +418,7 @@ def validate_v4_goal4632_release_decision() -> dict[str, Any]:
 __all__ = [
     "V4_GOAL4632_STATUS",
     "V4_GOAL4632_DECISION",
+    "V4_CURRENT_APP_LEVEL_DECISION_LABEL",
     "V4_AUTHORIZED_RELEASE_LABEL",
     "V4ReleaseGate",
     "v4_goal4632_release_decision",

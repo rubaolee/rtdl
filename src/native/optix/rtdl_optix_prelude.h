@@ -367,6 +367,20 @@ struct RtdlAggregateTreeFusedWeightedVectorSum2DOutput {
     double copy_seconds;
 };
 
+struct RtdlRtBarnesHutAuthor3DOutput {
+    uint64_t point_ids_device_ptr;
+    uint64_t force_device_ptr;
+    uint64_t point_count;
+    int32_t diagnostic_status_code;
+    uint32_t implementation_status_code;
+    int32_t device_ordinal;
+    void* owner_handle;
+    double preprocessing_seconds;
+    double rt_force_seconds;
+    double execution_seconds;
+    double copy_seconds;
+};
+
 struct RtdlNativeClosedShapeBoundaryEventDeviceColumns {
     uint64_t point_ids_device_ptr;
     uint64_t shape_ids_device_ptr;
@@ -1801,6 +1815,21 @@ int  rtdl_optix_run_aggregate_tree_fused_weighted_vector_sum_2d(
          RtdlAggregateTreeFusedWeightedVectorSum2DOutput* columns_out,
          char* error_out, size_t error_size);
 void rtdl_optix_destroy_aggregate_tree_fused_weighted_vector_sum_2d(void* prepared);
+int  rtdl_optix_prepare_rt_barneshut_author_3d(
+         uint64_t point_ids_device_ptr,
+         uint64_t point_x_device_ptr,
+         uint64_t point_y_device_ptr,
+         uint64_t point_z_device_ptr,
+         uint64_t point_mass_device_ptr,
+         size_t point_count,
+         void** prepared_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_run_rt_barneshut_author_3d(
+         void* prepared,
+         double theta,
+         RtdlRtBarnesHutAuthor3DOutput* columns_out,
+         char* error_out, size_t error_size);
+void rtdl_optix_destroy_rt_barneshut_author_3d(void* prepared);
 int  rtdl_optix_collect_k_bounded_i64_device(
          uint64_t candidate_rows_device_ptr, size_t candidate_count,
          size_t row_width, uint64_t rows_out_device_ptr, size_t row_capacity,

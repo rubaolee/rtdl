@@ -1,33 +1,39 @@
 # V4 Goal4643 Publication Decision
 
-Status: `v4_0_0_published_with_bounded_operator_claims`
+Status: `v4_0_0_publication_record_superseded_by_goal4720`
 
-Decision: `publish_v4_0_0_bounded_operator_release`
+Decision: `goal4643_publication_record_superseded_by_goal4720_release_candidate_review_debt`
 
-Authorized publication label:
+Current label:
 
-`RTDL v4.0.0 bounded operator release: 8 generic RT-core operators faster than brute-force partner/CPU baselines`
+`RTDL V4 Python eDSL/operator-pushdown release candidate: 10 measured generic RT-core operator surfaces including constrained custom predicate early-exit at serious scale; broad legacy all-app speedup remains unauthorized`
+
+Goal4643 is retained as a historical publication record. It is superseded for
+current user-facing truth by Goal4718/Goal4719 and the Goal4720 machine release
+decision: V4 is a Python eDSL/operator-pushdown release candidate, not a broad
+legacy all-app speedup release.
 
 ## What Is Published
 
-RTDL V4.0.0 is now a bounded generic RT-core operator release for the
-documented measured surfaces. Its public performance claim is limited to the
-eight documented operators beating their stated brute-force partner/CPU
-baselines on the frozen Goal4639 scorecard.
+RTDL V4 currently exposes a Python eDSL/operator-pushdown front door for the
+documented measured surfaces. Its public performance wording is limited to the
+10 documented generic operator/workflow rows measured against their stated
+denominators, plus the Goal4669 legacy app-level boundary.
 
 The released surface contains:
 
-- eight measured Tier-2 generic operator surfaces;
-- measured partner scopes: Torch CUDA, Numba, and RTDL native prepared runner;
+- 10 measured Tier-2 generic operator/workflow surfaces;
+- measured partner scopes: Torch CUDA, CuPy, Numba, and RTDL native prepared runner;
 - zero current Tier-2 candidates;
 - a conservative operator/callback planner that routes recognized generic
   operators and fails closed for unsupported logic;
-- the frozen Goal4639 scorecard result: 8/8 measured surfaces and 4/4 strong
-  families passed;
+- the frozen Goal4639 scorecard result: 8/8 original measured surfaces and 4/4 strong
+  families passed, plus the post-scorecard aggregate-frontier and custom-predicate rows;
 - public ratio distribution: most measured operators are 1.2-1.7x against
   their stated brute-force partner/CPU baselines; any-hit flags is 5.671x;
   point-nearest and AABB are large scale-dependent algorithmic-complexity wins
-  against brute-force or slower same-contract index controls.
+  against brute-force or slower same-contract index controls; custom predicate
+  early-exit is a V4-specific operator-pushdown workflow win.
 
 The raw 5.185x operator-scorecard geomean is retained as internal scorecard
 math, but it must not be used as the public headline because it is dominated by
@@ -51,8 +57,22 @@ and it is not a near-handwritten-OptiX claim.
   `future/v4/reviews/codex_independent_v4_goal4642_final_authorization_review_and_amendment_recheck_2026-06-25.md`.
 - Main Codex release-owner authorization:
   `future/v4/reviews/codex_main_v4_goal4642_final_release_owner_authorization_2026-06-25.md`.
+- Goal4717 serious custom-predicate scale validation:
+  `future/v4/v4_goal4717_custom_predicate_early_exit_serious_scale_validation_2026-06-26.md`.
+- Goal4718 release matrix after custom predicate:
+  `future/v4/v4_goal4718_release_matrix_after_custom_predicate_2026-06-26.md`.
+- Goal4719 public docs/examples cleanup:
+  `future/v4/v4_goal4719_public_docs_examples_release_candidate_cleanup_2026-06-26.md`.
+- External review debt records for Goals 4717-4719:
+  `future/v4/reviews/v4_goal4717_custom_predicate_early_exit_serious_scale_validation_review_debt_2026-06-26.md`,
+  `future/v4/reviews/v4_goal4718_release_matrix_after_custom_predicate_review_debt_2026-06-26.md`,
+  `future/v4/reviews/v4_goal4719_public_docs_examples_release_candidate_cleanup_review_debt_2026-06-26.md`.
 
 ## Still Not Authorized
+
+The current Goal4720 boundary blocks the final public tag until external review
+debt is closed. Goal4669 also blocks broad legacy all-app high-performance V4
+release wording.
 
 V4.0.0 does not authorize:
 
@@ -65,8 +85,8 @@ V4.0.0 does not authorize:
 - CuPy performance claims;
 - embedding, C ABI, or non-Python host binding claims;
 - app-specific native engine kernels;
-- Barnes-Hut covered by V4.0;
-- Spatial RayJoin covered by V4.0;
+- Barnes-Hut new V4-over-V3 speedup;
+- Spatial RayJoin speedup;
 - LibRTS paper reproduction.
 
 ## Goal-Level Decision Audit

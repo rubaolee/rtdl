@@ -1,0 +1,211 @@
+{
+  "changed_rows": {
+    "hausdorff_xhd": {
+      "changed_row_decision": "promoted_from_partial_control_to_full_app_candidate_after_goal4667_focused_pass",
+      "focused_gate_label": "hausdorff_focused_gate_passes_after_generic_adaptive_argmax__not_release_yet",
+      "focused_rows": [
+        {
+          "copies": 16384,
+          "initial_raw_ref": "future/v4/evidence/v4_goal4667_hausdorff_multiblock_argmax_20260625/v4_official_cupy_multiblock_copies16384.json",
+          "initial_run_hot_sec": 0.009609319269657135,
+          "passes_correctness": true,
+          "passes_hot_bar_1_20x": true,
+          "passes_prepare_floor_0_80x": true,
+          "points_per_side": 65536,
+          "raw_ref": "future/v4/evidence/v4_goal4667_hausdorff_multiblock_argmax_20260625/v4_official_cupy_multiblock_copies16384_rerun_warmup5.json",
+          "speedup_directed_summary_over_v3_cupy": 1.0775839757911945,
+          "speedup_hot_over_v3_cupy": 1.3388001086768593,
+          "speedup_prepare_over_v3_cupy": 0.9421734158432425,
+          "v3_cupy_baseline": {
+            "directed_summary_sec": 3.1806681975722313,
+            "hot_device_sec": 0.003028884530067444,
+            "scene_prepare_sec": 1.4373558796942234
+          },
+          "v4_adaptive_argmax": {
+            "consumer_adapter": "global_argmax_u32_f64_partner_columns",
+            "consumer_partner": "cupy",
+            "consumer_reduction_strategy": "cupy_rawkernel_single_block_reduce",
+            "directed_summary_sec": 2.951666198670864,
+            "hot_device_sec": 0.0022623874247074127,
+            "materialize_sec": 0.0002259090542793274,
+            "partner_synchronized_before_return": false,
+            "rawkernel_row_threshold": 131072,
+            "scene_prepare_sec": 1.5255746506154537
+          }
+        },
+        {
+          "copies": 65536,
+          "initial_raw_ref": "future/v4/evidence/v4_goal4667_hausdorff_multiblock_argmax_20260625/v4_official_cupy_multiblock_copies65536.json",
+          "initial_run_hot_sec": 0.003690917044878006,
+          "passes_correctness": true,
+          "passes_hot_bar_1_20x": true,
+          "passes_prepare_floor_0_80x": true,
+          "points_per_side": 262144,
+          "raw_ref": "future/v4/evidence/v4_goal4667_hausdorff_multiblock_argmax_20260625/v4_official_cupy_multiblock_copies65536_rerun_warmup5.json",
+          "speedup_directed_summary_over_v3_cupy": 1.1785935266165606,
+          "speedup_hot_over_v3_cupy": 1.8318674443546998,
+          "speedup_prepare_over_v3_cupy": 1.2009358705904305,
+          "v3_cupy_baseline": {
+            "directed_summary_sec": 7.756507556885481,
+            "hot_device_sec": 0.0041230954229831696,
+            "scene_prepare_sec": 4.091465026140213
+          },
+          "v4_adaptive_argmax": {
+            "consumer_adapter": "global_argmax_u32_f64_partner_columns",
+            "consumer_partner": "cupy",
+            "consumer_reduction_strategy": "cupy_rawkernel_multiblock_reduce",
+            "directed_summary_sec": 6.581155743449926,
+            "hot_device_sec": 0.002250760793685913,
+            "materialize_sec": 0.0002154521644115448,
+            "partner_synchronized_before_return": false,
+            "rawkernel_row_threshold": 131072,
+            "scene_prepare_sec": 3.4068971760571003
+          }
+        }
+      ],
+      "protocol": {
+        "app": "hausdorff_xhd",
+        "app_specific_native_kernel_authorized": false,
+        "benchmark_app_frontdoor": "examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+        "blocker_or_gap": "Goal4667 clears the focused Hausdorff gate through a generic adaptive CuPy argmax continuation, but this is one app row and does not authorize V4 release without the full app-level decision protocol.",
+        "broad_v4_speedup_claim_authorized": false,
+        "claim_class_if_pass": "focused_true_v4_runtime_candidate_row_not_release_by_itself",
+        "contributes_to_formal_high_performance": true,
+        "correctness_contract": "directed Hausdorff distance parity; 1M exactness requires measured coordinate-normalization span boundary",
+        "dataset_scale": "Goal4667 focused rows at 65536 and 262144 points/side plus 1048576 coordinate-normalized correctness-boundary probe",
+        "denominator": "V2.14 Embree directed-summary primary denominator plus V3.0.2 CuPy hot/prepare denominator from Goal4665; partner migration alone does not count as a V4 win",
+        "mapped_v4_operators": [
+          "v4_point_group_nearest_witness_2d_device_arrays",
+          "v4_fixed_radius_count_threshold_2d_device_arrays"
+        ],
+        "metric_windows": [
+          "wall_seconds",
+          "hot_phase_seconds",
+          "correctness_parity"
+        ],
+        "pass_fail_bar": {
+          "app_specific_native_kernel_authorized": false,
+          "coordinate_normalized_1m_correctness_probe_required": true,
+          "correctness_parity_required": true,
+          "partner_migration_counts_as_win": false,
+          "prepare_no_regression_floor_where_comparable": 0.8,
+          "v4_vs_v2_14_primary_metric_speedup_min": 1.2,
+          "v4_vs_v2_14_wall_speedup_min": 1.2,
+          "v4_vs_v3_hot_speedup_min": 1.2
+        },
+        "protocol_row_type": "full_app_v4_speed_row_candidate",
+        "release_claim_authorized": false,
+        "repeat": 9,
+        "route_class": "v4_fused_operator_addressable",
+        "silent_v2_v3_fallback_authorized": false,
+        "v2_14_route": "same-app V2.14 incumbent route from scripts/phoenix_v3_serious_paired_v2x_runner.sh",
+        "v3_route": "same-app Phoenix V3/current route from scripts/phoenix_v3_serious_paired_v2x_runner.sh",
+        "v4_route": "official V4 point-group nearest-witness plus adaptive CuPy global-argmax route with coordinate-normalized correctness boundary",
+        "v4_run_required_in_goal4654": true,
+        "warmup": 5,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "source_evidence": "future/v4/evidence/v4_goal4667_hausdorff_multiblock_argmax_20260625/summary.json"
+    }
+  },
+  "claim_boundary": {
+    "app_specific_native_kernel_authorized": false,
+    "broad_v4_speedup_claim_authorized": false,
+    "formal_high_performance_v4_authorized": false,
+    "pod_spend_authorized_by_protocol": true,
+    "public_true_zero_copy_claim_authorized": false,
+    "release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "date": "2026-06-25",
+  "decision": {
+    "formal_high_performance_v4_authorized": false,
+    "full_app_rerun_go": true,
+    "label": "protocol_refreshed__full_app_rerun_go_after_hausdorff_focused_pass__no_release",
+    "next_engineering_need": "Run Goal4669 full app-level same-hardware benchmark under the refreshed protocol, preserving denominators and claim boundaries.",
+    "reason": "Goal4667 converted Hausdorff from a mixed route repair into a focused app-level candidate pass under frozen bars. The protocol now has five full candidate rows and three partial controls. This justifies the next full app-level V2.14/V3/V4 rerun, but does not authorize release or speed wording.",
+    "release_authorized": false
+  },
+  "protocol_summary": {
+    "all_rows_have_pre_frozen_bars": true,
+    "app_count": 10,
+    "app_order": [
+      "rt_dbscan",
+      "raydb_style",
+      "triangle_counting",
+      "librts_spatial_index",
+      "hausdorff_xhd",
+      "robot_collision",
+      "contact_manifold",
+      "rtnn",
+      "spatial_rayjoin",
+      "barnes_hut"
+    ],
+    "app_specific_native_kernel_authorized": false,
+    "broad_v4_speedup_claim_authorized": false,
+    "by_protocol_row_type": {
+      "deferred_excluded_with_reason": 1,
+      "full_app_v4_speed_row_candidate": 5,
+      "no_v4_route_blocker": 1,
+      "partial_operator_control_not_app_claim": 3
+    },
+    "full_app_v4_speed_row_count": 5,
+    "no_naive_whole_suite_geomean_trigger": true,
+    "partial_control_count": 3,
+    "pod_spend_authorized_by_this_goal": false,
+    "posthoc_app_exclusion_forbidden": true,
+    "release_claim_authorized": false,
+    "silent_v2_v3_fallback_authorized": false,
+    "source_inputs": [
+      "future/v4/evidence/v4_goal4652_app_route_binding_matrix_2026-06-25.json",
+      "future/v4/evidence/v4_goal4662_app_route_binding_after_hausdorff_rtnn_2026-06-25.json",
+      "future/v4/evidence/v4_goal4639_release_scorecard_pod_gate_2026-06-25/summary.json",
+      "scripts/phoenix_v3_serious_paired_v2x_runner.sh"
+    ],
+    "status": "goal4653_full_app_level_protocol_frozen_not_run",
+    "visible_blocker_or_deferred_count": 2,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "schema": "rtdl.v4.goal4668.protocol_refresh_after_goal4667.v1",
+  "status": "goal4668_protocol_refreshed_after_hausdorff_focused_pass",
+  "validation_summary": {
+    "all_rows_have_pre_frozen_bars": true,
+    "app_count": 10,
+    "app_order": [
+      "rt_dbscan",
+      "raydb_style",
+      "triangle_counting",
+      "librts_spatial_index",
+      "hausdorff_xhd",
+      "robot_collision",
+      "contact_manifold",
+      "rtnn",
+      "spatial_rayjoin",
+      "barnes_hut"
+    ],
+    "app_specific_native_kernel_authorized": false,
+    "broad_v4_speedup_claim_authorized": false,
+    "by_protocol_row_type": {
+      "deferred_excluded_with_reason": 1,
+      "full_app_v4_speed_row_candidate": 5,
+      "no_v4_route_blocker": 1,
+      "partial_operator_control_not_app_claim": 3
+    },
+    "full_app_v4_speed_row_count": 5,
+    "no_naive_whole_suite_geomean_trigger": true,
+    "partial_control_count": 3,
+    "pod_spend_authorized_by_this_goal": false,
+    "posthoc_app_exclusion_forbidden": true,
+    "release_claim_authorized": false,
+    "silent_v2_v3_fallback_authorized": false,
+    "source_inputs": [
+      "future/v4/evidence/v4_goal4652_app_route_binding_matrix_2026-06-25.json",
+      "future/v4/evidence/v4_goal4662_app_route_binding_after_hausdorff_rtnn_2026-06-25.json",
+      "future/v4/evidence/v4_goal4639_release_scorecard_pod_gate_2026-06-25/summary.json",
+      "scripts/phoenix_v3_serious_paired_v2x_runner.sh"
+    ],
+    "status": "goal4653_full_app_level_protocol_frozen_not_run",
+    "visible_blocker_or_deferred_count": 2,
+    "whole_app_speedup_claim_authorized": false
+  }
+}

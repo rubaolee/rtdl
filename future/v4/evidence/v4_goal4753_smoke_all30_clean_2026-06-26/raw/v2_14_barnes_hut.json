@@ -1,0 +1,60 @@
+{
+  "app": "barnes_hut_force_app",
+  "body_count": 1024,
+  "capacity": {
+    "frontier_row_capacity": 716800
+  },
+  "checksum": {
+    "force_x": 6.22113302451481,
+    "force_y": -18.457321106718606
+  },
+  "claim_flags": {
+    "device_column_contract": false,
+    "frontier_rows_materialized_on_host": true,
+    "host_frontier_materialization_in_hot_path": true,
+    "partner_migration_counts_as_speed": false,
+    "same_logical_frontier_contract": true
+  },
+  "frontier_summary": {
+    "contract": "generic_aggregate_frontier_collect_2d_v1",
+    "frontier_row_count": 185964,
+    "frontier_rows_materialized_on_host": true,
+    "native_symbol": "rtdl_optix_collect_aggregate_frontier_2d"
+  },
+  "hot_repeats": [
+    {
+      "aggregate_contribution_row_count": 29420.0,
+      "exact_contribution_row_count": 156544.0,
+      "frontier_collect_seconds": 1.1020382829010487,
+      "frontier_row_count": 185964.0,
+      "host_numba_vector_wall_seconds": 1.38761667907238,
+      "hot_seconds": 2.4896549619734287,
+      "repeat_index": 0.0,
+      "wall_seconds": 2.4896549619734287
+    }
+  ],
+  "medians": {
+    "frontier_collect_seconds": 1.1020382829010487,
+    "host_numba_vector_wall_seconds": 1.38761667907238,
+    "hot_seconds": 2.4896549619734287,
+    "wall_seconds": 2.4896549619734287
+  },
+  "partner": "numba_cpu",
+  "route": "v2_14_optix_host_frontier_numba_cpu_continuation",
+  "schema": "rtdl.v4.goal4676.aggregate_frontier_focused_pod_benchmark.v1",
+  "theta": 0.5,
+  "tree_summary": {
+    "bucket_size": 32,
+    "leaf_node_count": 64,
+    "max_depth": 3,
+    "max_leaf_member_count": 16,
+    "morton_bits": 16,
+    "source_count": 1024,
+    "tree_node_count": 85
+  },
+  "validation": {
+    "reason": "user_skip_validation",
+    "skipped": true
+  },
+  "version": "v2_14"
+}

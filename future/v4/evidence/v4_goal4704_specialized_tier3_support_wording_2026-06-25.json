@@ -1,0 +1,48 @@
+{
+  "gate": {
+    "allowed_internal_wording": [
+      "specialized Tier-3 support candidate",
+      "module-specialized Numba C-ABI scalar callback route",
+      "passed one app-route gate and one 20-attempt reliability matrix",
+      "not public support and not release wording"
+    ],
+    "app_level_speed_claim_authorized": false,
+    "arbitrary_callback_authorized": false,
+    "candidate_label": "specialized_numba_scalar_callback_support_candidate",
+    "evidence_chain": [
+      "Goal4696 productization decision",
+      "Goal4697 API contract scaffold",
+      "Goal4698 compile/cache/error-reporting scaffold",
+      "Goal4699 app-route validation protocol",
+      "Goal4700 POD app-route pass",
+      "Goal4701 support-candidate packet",
+      "Goal4702 reliability matrix protocol",
+      "Goal4703 POD reliability matrix pass"
+    ],
+    "next_goal": "Goal4705 source-level PTX canonicalization and repeated compile cache-stability gate",
+    "performance_claim_authorized": false,
+    "prohibited_public_wording": [
+      "V4 supports arbitrary callbacks",
+      "V4 supports raw OptiX callbacks",
+      "Tier-3 callbacks are public API",
+      "custom callback path is a V4 performance win",
+      "callback support is release-ready",
+      "app-level high-performance V4 is proven by Tier-3"
+    ],
+    "raw_optix_callback_authorized": false,
+    "release_authorized": false,
+    "remaining_public_support_gates": [
+      "external 3-AI review of Goals4696-4703",
+      "source-level PTX canonicalization or explicit artifact-level cache documentation",
+      "negative user-facing validation for rejected callback shapes",
+      "bounded user docs with examples that compile in a clean environment",
+      "final support authorization separate from V4 release authorization"
+    ],
+    "status": "goal4704_specialized_tier3_support_candidate_wording_gate_not_public_support",
+    "tier3_public_support_authorized": false
+  },
+  "missing_or_invalid": [],
+  "schema": "rtdl.v4.goal4704_specialized_tier3_support_wording.v1",
+  "status": "passed",
+  "validation_status": "passed"
+}

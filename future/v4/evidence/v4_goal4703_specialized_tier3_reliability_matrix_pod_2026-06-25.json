@@ -1,0 +1,3121 @@
+{
+  "arbitrary_callback_authorized": false,
+  "attempts": [
+    {
+      "attempt_index": 0,
+      "cache_check": {
+        "attempt_index": 0,
+        "cache_key": "rtdl-v4-tier3-0eab4c924be96141109bfd16abc35f1e",
+        "callback_ptx_sha256": "4dcef08e8c20a320c9776bdf95887d9b6aa08458d7abb8bce990206437e518e9",
+        "changed_ptx_changes_key": true,
+        "changed_ptx_key": "rtdl-v4-tier3-9d774928cb4d09d909fbded2c2707bde",
+        "changed_toolchain_changes_key": true,
+        "changed_toolchain_key": "rtdl-v4-tier3-acd9e77a58fe7ebe446d83eb147b10df",
+        "same_ptx_repeat_key": "rtdl-v4-tier3-0eab4c924be96141109bfd16abc35f1e",
+        "same_ptx_repeat_key_match": true
+      },
+      "compile_link_launch_success": true,
+      "compile_plan": {
+        "accepted": true,
+        "cache_components": {
+          "callback_ptx_sha256": "4dcef08e8c20a320c9776bdf95887d9b6aa08458d7abb8bce990206437e518e9",
+          "callback_symbol": "custom_scalar_reduce_weighted_sum",
+          "compute_target": "sm_86",
+          "contract_version": "goal4698.specialized_tier3_cache.v1",
+          "optix_abi": "8.0",
+          "toolchain_fingerprint_sha256": "76ebece3deb67b7f168ebd4567eaddd7a663982fa193fd0dc1e8954106c023ca",
+          "wrapper_strategy": "specialize_hit_program_module_and_call_callback_as_direct_device_function"
+        },
+        "cache_key": "rtdl-v4-tier3-0eab4c924be96141109bfd16abc35f1e",
+        "callback_shape": "custom_scalar_reduce",
+        "error_code": null,
+        "error_message": null,
+        "internal_compile_allowed": true,
+        "performance_claim_authorized": false,
+        "raw_optix_callback_authorized": false,
+        "release_authorized": false,
+        "stage": "compile_cache_ready_not_executed",
+        "tier3_public_support_authorized": false
+      },
+      "correctness_passed": true,
+      "dataset_results": [
+        {
+          "correctness_passed": true,
+          "dataset": "dense_hits",
+          "parsed": {
+            "dataset": "dense_hits",
+            "expected_sum": 536887296,
+            "hit_count": 32768,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 536887296,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_scalar_reduce_weighted_sum"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_scalar_reduce_weighted_sum\ndataset=dense_hits\nray_count=32768\nhit_count=32768\noutput_sum=536887296\nexpected_sum=536887296\noutput_matches_expected=1"
+        },
+        {
+          "correctness_passed": true,
+          "dataset": "sparse_hits",
+          "parsed": {
+            "dataset": "sparse_hits",
+            "expected_sum": 33558528,
+            "hit_count": 8192,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 33558528,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_scalar_reduce_weighted_sum"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_scalar_reduce_weighted_sum\ndataset=sparse_hits\nray_count=32768\nhit_count=8192\noutput_sum=33558528\nexpected_sum=33558528\noutput_matches_expected=1"
+        },
+        {
+          "correctness_passed": true,
+          "dataset": "no_hit_empty_reduction",
+          "parsed": {
+            "dataset": "no_hit_empty_reduction",
+            "expected_sum": 0,
+            "hit_count": 0,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 0,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_scalar_reduce_weighted_sum"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_scalar_reduce_weighted_sum\ndataset=no_hit_empty_reduction\nray_count=32768\nhit_count=0\noutput_sum=0\nexpected_sum=0\noutput_matches_expected=1"
+        }
+      ],
+      "failure_classification": null,
+      "ptx_generation": {
+        "numba_legacy_nvvm_environment": {
+          "numba_legacy_libdevice_env_configured": false,
+          "numba_legacy_nvvm_env_configured": false
+        },
+        "numba_nvvm_reexec_environment": {
+          "reason": "nvvm_lib_dir_missing",
+          "reexec_required": false,
+          "reexec_supported": true
+        },
+        "numba_toolchain_environment": {
+          "configured": false,
+          "numba_cuda_prefix": null,
+          "reason": "nvidia_cuda_nvcc_package_not_found"
+        },
+        "ptx_length": 1214,
+        "return_type": "float64",
+        "status": "ptx_generated",
+        "variant": "custom_scalar_reduce_weighted_sum"
+      },
+      "symbol_probe": {
+        "c_identifier_compatible": true,
+        "reason": "one PTX .func symbol matched the callback name hint",
+        "status": "symbol_extracted",
+        "symbol": "custom_scalar_reduce_weighted_sum"
+      },
+      "variant": "custom_scalar_reduce_weighted_sum",
+      "wrapper_compile": {
+        "returncode": 0,
+        "stderr": "nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).",
+        "stdout": ""
+      }
+    },
+    {
+      "attempt_index": 1,
+      "cache_check": {
+        "attempt_index": 1,
+        "cache_key": "rtdl-v4-tier3-2fb07087769df1890cb6e4a33aafc57e",
+        "callback_ptx_sha256": "8c61b766fb1b325f0914134b7fa8195b17c9f2aeca4450415c80b133274a7996",
+        "changed_ptx_changes_key": true,
+        "changed_ptx_key": "rtdl-v4-tier3-5dc966e67b4fc81fcc1a5812c832d404",
+        "changed_toolchain_changes_key": true,
+        "changed_toolchain_key": "rtdl-v4-tier3-09b2be4e6342dd4d186915d98e03f80a",
+        "same_ptx_repeat_key": "rtdl-v4-tier3-2fb07087769df1890cb6e4a33aafc57e",
+        "same_ptx_repeat_key_match": true
+      },
+      "compile_link_launch_success": true,
+      "compile_plan": {
+        "accepted": true,
+        "cache_components": {
+          "callback_ptx_sha256": "8c61b766fb1b325f0914134b7fa8195b17c9f2aeca4450415c80b133274a7996",
+          "callback_symbol": "custom_scalar_reduce_weighted_sum",
+          "compute_target": "sm_86",
+          "contract_version": "goal4698.specialized_tier3_cache.v1",
+          "optix_abi": "8.0",
+          "toolchain_fingerprint_sha256": "76ebece3deb67b7f168ebd4567eaddd7a663982fa193fd0dc1e8954106c023ca",
+          "wrapper_strategy": "specialize_hit_program_module_and_call_callback_as_direct_device_function"
+        },
+        "cache_key": "rtdl-v4-tier3-2fb07087769df1890cb6e4a33aafc57e",
+        "callback_shape": "custom_scalar_reduce",
+        "error_code": null,
+        "error_message": null,
+        "internal_compile_allowed": true,
+        "performance_claim_authorized": false,
+        "raw_optix_callback_authorized": false,
+        "release_authorized": false,
+        "stage": "compile_cache_ready_not_executed",
+        "tier3_public_support_authorized": false
+      },
+      "correctness_passed": true,
+      "dataset_results": [
+        {
+          "correctness_passed": true,
+          "dataset": "dense_hits",
+          "parsed": {
+            "dataset": "dense_hits",
+            "expected_sum": 536887296,
+            "hit_count": 32768,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 536887296,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_scalar_reduce_weighted_sum"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_scalar_reduce_weighted_sum\ndataset=dense_hits\nray_count=32768\nhit_count=32768\noutput_sum=536887296\nexpected_sum=536887296\noutput_matches_expected=1"
+        },
+        {
+          "correctness_passed": true,
+          "dataset": "sparse_hits",
+          "parsed": {
+            "dataset": "sparse_hits",
+            "expected_sum": 33558528,
+            "hit_count": 8192,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 33558528,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_scalar_reduce_weighted_sum"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_scalar_reduce_weighted_sum\ndataset=sparse_hits\nray_count=32768\nhit_count=8192\noutput_sum=33558528\nexpected_sum=33558528\noutput_matches_expected=1"
+        },
+        {
+          "correctness_passed": true,
+          "dataset": "no_hit_empty_reduction",
+          "parsed": {
+            "dataset": "no_hit_empty_reduction",
+            "expected_sum": 0,
+            "hit_count": 0,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 0,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_scalar_reduce_weighted_sum"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_scalar_reduce_weighted_sum\ndataset=no_hit_empty_reduction\nray_count=32768\nhit_count=0\noutput_sum=0\nexpected_sum=0\noutput_matches_expected=1"
+        }
+      ],
+      "failure_classification": null,
+      "ptx_generation": {
+        "numba_legacy_nvvm_environment": {
+          "numba_legacy_libdevice_env_configured": false,
+          "numba_legacy_nvvm_env_configured": false
+        },
+        "numba_nvvm_reexec_environment": {
+          "reason": "nvvm_lib_dir_missing",
+          "reexec_required": false,
+          "reexec_supported": true
+        },
+        "numba_toolchain_environment": {
+          "configured": false,
+          "numba_cuda_prefix": null,
+          "reason": "nvidia_cuda_nvcc_package_not_found"
+        },
+        "ptx_length": 1214,
+        "return_type": "float64",
+        "status": "ptx_generated",
+        "variant": "custom_scalar_reduce_weighted_sum"
+      },
+      "symbol_probe": {
+        "c_identifier_compatible": true,
+        "reason": "one PTX .func symbol matched the callback name hint",
+        "status": "symbol_extracted",
+        "symbol": "custom_scalar_reduce_weighted_sum"
+      },
+      "variant": "custom_scalar_reduce_weighted_sum",
+      "wrapper_compile": {
+        "returncode": 0,
+        "stderr": "nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).",
+        "stdout": ""
+      }
+    },
+    {
+      "attempt_index": 2,
+      "cache_check": {
+        "attempt_index": 2,
+        "cache_key": "rtdl-v4-tier3-bb8c3a7ff7d484134281240d1c6b53c5",
+        "callback_ptx_sha256": "8453b4b7fcd8741595566c494ac2645618d9964a45401e6a6418145f964d7051",
+        "changed_ptx_changes_key": true,
+        "changed_ptx_key": "rtdl-v4-tier3-4259e0de6af79274c73e1c551afa336c",
+        "changed_toolchain_changes_key": true,
+        "changed_toolchain_key": "rtdl-v4-tier3-220cd8fdbf1132d89b23801c9bb4ada6",
+        "same_ptx_repeat_key": "rtdl-v4-tier3-bb8c3a7ff7d484134281240d1c6b53c5",
+        "same_ptx_repeat_key_match": true
+      },
+      "compile_link_launch_success": true,
+      "compile_plan": {
+        "accepted": true,
+        "cache_components": {
+          "callback_ptx_sha256": "8453b4b7fcd8741595566c494ac2645618d9964a45401e6a6418145f964d7051",
+          "callback_symbol": "custom_scalar_reduce_weighted_sum",
+          "compute_target": "sm_86",
+          "contract_version": "goal4698.specialized_tier3_cache.v1",
+          "optix_abi": "8.0",
+          "toolchain_fingerprint_sha256": "76ebece3deb67b7f168ebd4567eaddd7a663982fa193fd0dc1e8954106c023ca",
+          "wrapper_strategy": "specialize_hit_program_module_and_call_callback_as_direct_device_function"
+        },
+        "cache_key": "rtdl-v4-tier3-bb8c3a7ff7d484134281240d1c6b53c5",
+        "callback_shape": "custom_scalar_reduce",
+        "error_code": null,
+        "error_message": null,
+        "internal_compile_allowed": true,
+        "performance_claim_authorized": false,
+        "raw_optix_callback_authorized": false,
+        "release_authorized": false,
+        "stage": "compile_cache_ready_not_executed",
+        "tier3_public_support_authorized": false
+      },
+      "correctness_passed": true,
+      "dataset_results": [
+        {
+          "correctness_passed": true,
+          "dataset": "dense_hits",
+          "parsed": {
+            "dataset": "dense_hits",
+            "expected_sum": 536887296,
+            "hit_count": 32768,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 536887296,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_scalar_reduce_weighted_sum"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_scalar_reduce_weighted_sum\ndataset=dense_hits\nray_count=32768\nhit_count=32768\noutput_sum=536887296\nexpected_sum=536887296\noutput_matches_expected=1"
+        },
+        {
+          "correctness_passed": true,
+          "dataset": "sparse_hits",
+          "parsed": {
+            "dataset": "sparse_hits",
+            "expected_sum": 33558528,
+            "hit_count": 8192,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 33558528,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_scalar_reduce_weighted_sum"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_scalar_reduce_weighted_sum\ndataset=sparse_hits\nray_count=32768\nhit_count=8192\noutput_sum=33558528\nexpected_sum=33558528\noutput_matches_expected=1"
+        },
+        {
+          "correctness_passed": true,
+          "dataset": "no_hit_empty_reduction",
+          "parsed": {
+            "dataset": "no_hit_empty_reduction",
+            "expected_sum": 0,
+            "hit_count": 0,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 0,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_scalar_reduce_weighted_sum"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_scalar_reduce_weighted_sum\ndataset=no_hit_empty_reduction\nray_count=32768\nhit_count=0\noutput_sum=0\nexpected_sum=0\noutput_matches_expected=1"
+        }
+      ],
+      "failure_classification": null,
+      "ptx_generation": {
+        "numba_legacy_nvvm_environment": {
+          "numba_legacy_libdevice_env_configured": false,
+          "numba_legacy_nvvm_env_configured": false
+        },
+        "numba_nvvm_reexec_environment": {
+          "reason": "nvvm_lib_dir_missing",
+          "reexec_required": false,
+          "reexec_supported": true
+        },
+        "numba_toolchain_environment": {
+          "configured": false,
+          "numba_cuda_prefix": null,
+          "reason": "nvidia_cuda_nvcc_package_not_found"
+        },
+        "ptx_length": 1214,
+        "return_type": "float64",
+        "status": "ptx_generated",
+        "variant": "custom_scalar_reduce_weighted_sum"
+      },
+      "symbol_probe": {
+        "c_identifier_compatible": true,
+        "reason": "one PTX .func symbol matched the callback name hint",
+        "status": "symbol_extracted",
+        "symbol": "custom_scalar_reduce_weighted_sum"
+      },
+      "variant": "custom_scalar_reduce_weighted_sum",
+      "wrapper_compile": {
+        "returncode": 0,
+        "stderr": "nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).",
+        "stdout": ""
+      }
+    },
+    {
+      "attempt_index": 3,
+      "cache_check": {
+        "attempt_index": 3,
+        "cache_key": "rtdl-v4-tier3-d0af5c02ca447aacde77b33e19b3634d",
+        "callback_ptx_sha256": "9b41236e06fa671d810c5355ccc0f531aca6a3f3db1aa363eb661681deba1ce4",
+        "changed_ptx_changes_key": true,
+        "changed_ptx_key": "rtdl-v4-tier3-979ead7a013aa67711fa385c83fad51a",
+        "changed_toolchain_changes_key": true,
+        "changed_toolchain_key": "rtdl-v4-tier3-25d43801aa75decac8dfae117bfabadd",
+        "same_ptx_repeat_key": "rtdl-v4-tier3-d0af5c02ca447aacde77b33e19b3634d",
+        "same_ptx_repeat_key_match": true
+      },
+      "compile_link_launch_success": true,
+      "compile_plan": {
+        "accepted": true,
+        "cache_components": {
+          "callback_ptx_sha256": "9b41236e06fa671d810c5355ccc0f531aca6a3f3db1aa363eb661681deba1ce4",
+          "callback_symbol": "custom_scalar_reduce_weighted_sum",
+          "compute_target": "sm_86",
+          "contract_version": "goal4698.specialized_tier3_cache.v1",
+          "optix_abi": "8.0",
+          "toolchain_fingerprint_sha256": "76ebece3deb67b7f168ebd4567eaddd7a663982fa193fd0dc1e8954106c023ca",
+          "wrapper_strategy": "specialize_hit_program_module_and_call_callback_as_direct_device_function"
+        },
+        "cache_key": "rtdl-v4-tier3-d0af5c02ca447aacde77b33e19b3634d",
+        "callback_shape": "custom_scalar_reduce",
+        "error_code": null,
+        "error_message": null,
+        "internal_compile_allowed": true,
+        "performance_claim_authorized": false,
+        "raw_optix_callback_authorized": false,
+        "release_authorized": false,
+        "stage": "compile_cache_ready_not_executed",
+        "tier3_public_support_authorized": false
+      },
+      "correctness_passed": true,
+      "dataset_results": [
+        {
+          "correctness_passed": true,
+          "dataset": "dense_hits",
+          "parsed": {
+            "dataset": "dense_hits",
+            "expected_sum": 536887296,
+            "hit_count": 32768,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 536887296,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_scalar_reduce_weighted_sum"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_scalar_reduce_weighted_sum\ndataset=dense_hits\nray_count=32768\nhit_count=32768\noutput_sum=536887296\nexpected_sum=536887296\noutput_matches_expected=1"
+        },
+        {
+          "correctness_passed": true,
+          "dataset": "sparse_hits",
+          "parsed": {
+            "dataset": "sparse_hits",
+            "expected_sum": 33558528,
+            "hit_count": 8192,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 33558528,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_scalar_reduce_weighted_sum"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_scalar_reduce_weighted_sum\ndataset=sparse_hits\nray_count=32768\nhit_count=8192\noutput_sum=33558528\nexpected_sum=33558528\noutput_matches_expected=1"
+        },
+        {
+          "correctness_passed": true,
+          "dataset": "no_hit_empty_reduction",
+          "parsed": {
+            "dataset": "no_hit_empty_reduction",
+            "expected_sum": 0,
+            "hit_count": 0,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 0,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_scalar_reduce_weighted_sum"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_scalar_reduce_weighted_sum\ndataset=no_hit_empty_reduction\nray_count=32768\nhit_count=0\noutput_sum=0\nexpected_sum=0\noutput_matches_expected=1"
+        }
+      ],
+      "failure_classification": null,
+      "ptx_generation": {
+        "numba_legacy_nvvm_environment": {
+          "numba_legacy_libdevice_env_configured": false,
+          "numba_legacy_nvvm_env_configured": false
+        },
+        "numba_nvvm_reexec_environment": {
+          "reason": "nvvm_lib_dir_missing",
+          "reexec_required": false,
+          "reexec_supported": true
+        },
+        "numba_toolchain_environment": {
+          "configured": false,
+          "numba_cuda_prefix": null,
+          "reason": "nvidia_cuda_nvcc_package_not_found"
+        },
+        "ptx_length": 1214,
+        "return_type": "float64",
+        "status": "ptx_generated",
+        "variant": "custom_scalar_reduce_weighted_sum"
+      },
+      "symbol_probe": {
+        "c_identifier_compatible": true,
+        "reason": "one PTX .func symbol matched the callback name hint",
+        "status": "symbol_extracted",
+        "symbol": "custom_scalar_reduce_weighted_sum"
+      },
+      "variant": "custom_scalar_reduce_weighted_sum",
+      "wrapper_compile": {
+        "returncode": 0,
+        "stderr": "nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).",
+        "stdout": ""
+      }
+    },
+    {
+      "attempt_index": 4,
+      "cache_check": {
+        "attempt_index": 4,
+        "cache_key": "rtdl-v4-tier3-77f63912c787073fee7d8f42e572e8b5",
+        "callback_ptx_sha256": "3fa99e9882d07f101960973e3e6fa0ea36f721cb18265bdadfc137c09f81bfd3",
+        "changed_ptx_changes_key": true,
+        "changed_ptx_key": "rtdl-v4-tier3-a3d3386a40b4c394bab309f60d8295d8",
+        "changed_toolchain_changes_key": true,
+        "changed_toolchain_key": "rtdl-v4-tier3-b66a00a5842c8b4f434ff6f2e157b43d",
+        "same_ptx_repeat_key": "rtdl-v4-tier3-77f63912c787073fee7d8f42e572e8b5",
+        "same_ptx_repeat_key_match": true
+      },
+      "compile_link_launch_success": true,
+      "compile_plan": {
+        "accepted": true,
+        "cache_components": {
+          "callback_ptx_sha256": "3fa99e9882d07f101960973e3e6fa0ea36f721cb18265bdadfc137c09f81bfd3",
+          "callback_symbol": "custom_scalar_reduce_weighted_sum",
+          "compute_target": "sm_86",
+          "contract_version": "goal4698.specialized_tier3_cache.v1",
+          "optix_abi": "8.0",
+          "toolchain_fingerprint_sha256": "76ebece3deb67b7f168ebd4567eaddd7a663982fa193fd0dc1e8954106c023ca",
+          "wrapper_strategy": "specialize_hit_program_module_and_call_callback_as_direct_device_function"
+        },
+        "cache_key": "rtdl-v4-tier3-77f63912c787073fee7d8f42e572e8b5",
+        "callback_shape": "custom_scalar_reduce",
+        "error_code": null,
+        "error_message": null,
+        "internal_compile_allowed": true,
+        "performance_claim_authorized": false,
+        "raw_optix_callback_authorized": false,
+        "release_authorized": false,
+        "stage": "compile_cache_ready_not_executed",
+        "tier3_public_support_authorized": false
+      },
+      "correctness_passed": true,
+      "dataset_results": [
+        {
+          "correctness_passed": true,
+          "dataset": "dense_hits",
+          "parsed": {
+            "dataset": "dense_hits",
+            "expected_sum": 536887296,
+            "hit_count": 32768,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 536887296,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_scalar_reduce_weighted_sum"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_scalar_reduce_weighted_sum\ndataset=dense_hits\nray_count=32768\nhit_count=32768\noutput_sum=536887296\nexpected_sum=536887296\noutput_matches_expected=1"
+        },
+        {
+          "correctness_passed": true,
+          "dataset": "sparse_hits",
+          "parsed": {
+            "dataset": "sparse_hits",
+            "expected_sum": 33558528,
+            "hit_count": 8192,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 33558528,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_scalar_reduce_weighted_sum"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_scalar_reduce_weighted_sum\ndataset=sparse_hits\nray_count=32768\nhit_count=8192\noutput_sum=33558528\nexpected_sum=33558528\noutput_matches_expected=1"
+        },
+        {
+          "correctness_passed": true,
+          "dataset": "no_hit_empty_reduction",
+          "parsed": {
+            "dataset": "no_hit_empty_reduction",
+            "expected_sum": 0,
+            "hit_count": 0,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 0,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_scalar_reduce_weighted_sum"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_scalar_reduce_weighted_sum\ndataset=no_hit_empty_reduction\nray_count=32768\nhit_count=0\noutput_sum=0\nexpected_sum=0\noutput_matches_expected=1"
+        }
+      ],
+      "failure_classification": null,
+      "ptx_generation": {
+        "numba_legacy_nvvm_environment": {
+          "numba_legacy_libdevice_env_configured": false,
+          "numba_legacy_nvvm_env_configured": false
+        },
+        "numba_nvvm_reexec_environment": {
+          "reason": "nvvm_lib_dir_missing",
+          "reexec_required": false,
+          "reexec_supported": true
+        },
+        "numba_toolchain_environment": {
+          "configured": false,
+          "numba_cuda_prefix": null,
+          "reason": "nvidia_cuda_nvcc_package_not_found"
+        },
+        "ptx_length": 1214,
+        "return_type": "float64",
+        "status": "ptx_generated",
+        "variant": "custom_scalar_reduce_weighted_sum"
+      },
+      "symbol_probe": {
+        "c_identifier_compatible": true,
+        "reason": "one PTX .func symbol matched the callback name hint",
+        "status": "symbol_extracted",
+        "symbol": "custom_scalar_reduce_weighted_sum"
+      },
+      "variant": "custom_scalar_reduce_weighted_sum",
+      "wrapper_compile": {
+        "returncode": 0,
+        "stderr": "nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).",
+        "stdout": ""
+      }
+    },
+    {
+      "attempt_index": 0,
+      "cache_check": {
+        "attempt_index": 0,
+        "cache_key": "rtdl-v4-tier3-dbb5a40364cc118cbe908f2a3f7f7466",
+        "callback_ptx_sha256": "4f63b500a5c31eccc5eaf492f40ed7a74630202f42f0699a7d1f229a826ea3b1",
+        "changed_ptx_changes_key": true,
+        "changed_ptx_key": "rtdl-v4-tier3-954032dd0cd7398d2fa823dfa8ca23db",
+        "changed_toolchain_changes_key": true,
+        "changed_toolchain_key": "rtdl-v4-tier3-d20a0befec3c4b671e0048e4ebaf6878",
+        "same_ptx_repeat_key": "rtdl-v4-tier3-dbb5a40364cc118cbe908f2a3f7f7466",
+        "same_ptx_repeat_key_match": true
+      },
+      "compile_link_launch_success": true,
+      "compile_plan": {
+        "accepted": true,
+        "cache_components": {
+          "callback_ptx_sha256": "4f63b500a5c31eccc5eaf492f40ed7a74630202f42f0699a7d1f229a826ea3b1",
+          "callback_symbol": "custom_score_affine",
+          "compute_target": "sm_86",
+          "contract_version": "goal4698.specialized_tier3_cache.v1",
+          "optix_abi": "8.0",
+          "toolchain_fingerprint_sha256": "76ebece3deb67b7f168ebd4567eaddd7a663982fa193fd0dc1e8954106c023ca",
+          "wrapper_strategy": "specialize_hit_program_module_and_call_callback_as_direct_device_function"
+        },
+        "cache_key": "rtdl-v4-tier3-dbb5a40364cc118cbe908f2a3f7f7466",
+        "callback_shape": "custom_score",
+        "error_code": null,
+        "error_message": null,
+        "internal_compile_allowed": true,
+        "performance_claim_authorized": false,
+        "raw_optix_callback_authorized": false,
+        "release_authorized": false,
+        "stage": "compile_cache_ready_not_executed",
+        "tier3_public_support_authorized": false
+      },
+      "correctness_passed": true,
+      "dataset_results": [
+        {
+          "correctness_passed": true,
+          "dataset": "dense_hits",
+          "parsed": {
+            "dataset": "dense_hits",
+            "expected_sum": 1073872896,
+            "hit_count": 32768,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 1073872896,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_score_affine"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_score_affine\ndataset=dense_hits\nray_count=32768\nhit_count=32768\noutput_sum=1073872896\nexpected_sum=1073872896\noutput_matches_expected=1"
+        },
+        {
+          "correctness_passed": true,
+          "dataset": "sparse_hits",
+          "parsed": {
+            "dataset": "sparse_hits",
+            "expected_sum": 67141632,
+            "hit_count": 8192,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 67141632,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_score_affine"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_score_affine\ndataset=sparse_hits\nray_count=32768\nhit_count=8192\noutput_sum=67141632\nexpected_sum=67141632\noutput_matches_expected=1"
+        },
+        {
+          "correctness_passed": true,
+          "dataset": "no_hit_empty_reduction",
+          "parsed": {
+            "dataset": "no_hit_empty_reduction",
+            "expected_sum": 0,
+            "hit_count": 0,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 0,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_score_affine"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_score_affine\ndataset=no_hit_empty_reduction\nray_count=32768\nhit_count=0\noutput_sum=0\nexpected_sum=0\noutput_matches_expected=1"
+        }
+      ],
+      "failure_classification": null,
+      "ptx_generation": {
+        "numba_legacy_nvvm_environment": {
+          "numba_legacy_libdevice_env_configured": false,
+          "numba_legacy_nvvm_env_configured": false
+        },
+        "numba_nvvm_reexec_environment": {
+          "reason": "nvvm_lib_dir_missing",
+          "reexec_required": false,
+          "reexec_supported": true
+        },
+        "numba_toolchain_environment": {
+          "configured": false,
+          "numba_cuda_prefix": null,
+          "reason": "nvidia_cuda_nvcc_package_not_found"
+        },
+        "ptx_length": 1167,
+        "return_type": "float64",
+        "status": "ptx_generated",
+        "variant": "custom_score_affine"
+      },
+      "symbol_probe": {
+        "c_identifier_compatible": true,
+        "reason": "one PTX .func symbol matched the callback name hint",
+        "status": "symbol_extracted",
+        "symbol": "custom_score_affine"
+      },
+      "variant": "custom_score_affine",
+      "wrapper_compile": {
+        "returncode": 0,
+        "stderr": "nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).",
+        "stdout": ""
+      }
+    },
+    {
+      "attempt_index": 1,
+      "cache_check": {
+        "attempt_index": 1,
+        "cache_key": "rtdl-v4-tier3-08b99ebf3187d6138b6c232fa755af16",
+        "callback_ptx_sha256": "bf7983a7a8fb93e89dd0045de13df0a49c3715ab0e3df8271d9e26f0b323bfe5",
+        "changed_ptx_changes_key": true,
+        "changed_ptx_key": "rtdl-v4-tier3-993da53de931efb9875d677bc539c016",
+        "changed_toolchain_changes_key": true,
+        "changed_toolchain_key": "rtdl-v4-tier3-0b3dcf3bffb9c9fa26b397bcad0c08fc",
+        "same_ptx_repeat_key": "rtdl-v4-tier3-08b99ebf3187d6138b6c232fa755af16",
+        "same_ptx_repeat_key_match": true
+      },
+      "compile_link_launch_success": true,
+      "compile_plan": {
+        "accepted": true,
+        "cache_components": {
+          "callback_ptx_sha256": "bf7983a7a8fb93e89dd0045de13df0a49c3715ab0e3df8271d9e26f0b323bfe5",
+          "callback_symbol": "custom_score_affine",
+          "compute_target": "sm_86",
+          "contract_version": "goal4698.specialized_tier3_cache.v1",
+          "optix_abi": "8.0",
+          "toolchain_fingerprint_sha256": "76ebece3deb67b7f168ebd4567eaddd7a663982fa193fd0dc1e8954106c023ca",
+          "wrapper_strategy": "specialize_hit_program_module_and_call_callback_as_direct_device_function"
+        },
+        "cache_key": "rtdl-v4-tier3-08b99ebf3187d6138b6c232fa755af16",
+        "callback_shape": "custom_score",
+        "error_code": null,
+        "error_message": null,
+        "internal_compile_allowed": true,
+        "performance_claim_authorized": false,
+        "raw_optix_callback_authorized": false,
+        "release_authorized": false,
+        "stage": "compile_cache_ready_not_executed",
+        "tier3_public_support_authorized": false
+      },
+      "correctness_passed": true,
+      "dataset_results": [
+        {
+          "correctness_passed": true,
+          "dataset": "dense_hits",
+          "parsed": {
+            "dataset": "dense_hits",
+            "expected_sum": 1073872896,
+            "hit_count": 32768,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 1073872896,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_score_affine"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_score_affine\ndataset=dense_hits\nray_count=32768\nhit_count=32768\noutput_sum=1073872896\nexpected_sum=1073872896\noutput_matches_expected=1"
+        },
+        {
+          "correctness_passed": true,
+          "dataset": "sparse_hits",
+          "parsed": {
+            "dataset": "sparse_hits",
+            "expected_sum": 67141632,
+            "hit_count": 8192,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 67141632,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_score_affine"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_score_affine\ndataset=sparse_hits\nray_count=32768\nhit_count=8192\noutput_sum=67141632\nexpected_sum=67141632\noutput_matches_expected=1"
+        },
+        {
+          "correctness_passed": true,
+          "dataset": "no_hit_empty_reduction",
+          "parsed": {
+            "dataset": "no_hit_empty_reduction",
+            "expected_sum": 0,
+            "hit_count": 0,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 0,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_score_affine"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_score_affine\ndataset=no_hit_empty_reduction\nray_count=32768\nhit_count=0\noutput_sum=0\nexpected_sum=0\noutput_matches_expected=1"
+        }
+      ],
+      "failure_classification": null,
+      "ptx_generation": {
+        "numba_legacy_nvvm_environment": {
+          "numba_legacy_libdevice_env_configured": false,
+          "numba_legacy_nvvm_env_configured": false
+        },
+        "numba_nvvm_reexec_environment": {
+          "reason": "nvvm_lib_dir_missing",
+          "reexec_required": false,
+          "reexec_supported": true
+        },
+        "numba_toolchain_environment": {
+          "configured": false,
+          "numba_cuda_prefix": null,
+          "reason": "nvidia_cuda_nvcc_package_not_found"
+        },
+        "ptx_length": 1167,
+        "return_type": "float64",
+        "status": "ptx_generated",
+        "variant": "custom_score_affine"
+      },
+      "symbol_probe": {
+        "c_identifier_compatible": true,
+        "reason": "one PTX .func symbol matched the callback name hint",
+        "status": "symbol_extracted",
+        "symbol": "custom_score_affine"
+      },
+      "variant": "custom_score_affine",
+      "wrapper_compile": {
+        "returncode": 0,
+        "stderr": "nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).",
+        "stdout": ""
+      }
+    },
+    {
+      "attempt_index": 2,
+      "cache_check": {
+        "attempt_index": 2,
+        "cache_key": "rtdl-v4-tier3-16ee63538605cc50fa59b8137e967dbf",
+        "callback_ptx_sha256": "70a9cc41fe680f47acaae3d31d1ae9bb39db66c1bc3440fa79e293c10fb4bc52",
+        "changed_ptx_changes_key": true,
+        "changed_ptx_key": "rtdl-v4-tier3-de3b7ea1a80673b13dc016322de1c141",
+        "changed_toolchain_changes_key": true,
+        "changed_toolchain_key": "rtdl-v4-tier3-f0283bb8b3b337760fb77f077cba20a1",
+        "same_ptx_repeat_key": "rtdl-v4-tier3-16ee63538605cc50fa59b8137e967dbf",
+        "same_ptx_repeat_key_match": true
+      },
+      "compile_link_launch_success": true,
+      "compile_plan": {
+        "accepted": true,
+        "cache_components": {
+          "callback_ptx_sha256": "70a9cc41fe680f47acaae3d31d1ae9bb39db66c1bc3440fa79e293c10fb4bc52",
+          "callback_symbol": "custom_score_affine",
+          "compute_target": "sm_86",
+          "contract_version": "goal4698.specialized_tier3_cache.v1",
+          "optix_abi": "8.0",
+          "toolchain_fingerprint_sha256": "76ebece3deb67b7f168ebd4567eaddd7a663982fa193fd0dc1e8954106c023ca",
+          "wrapper_strategy": "specialize_hit_program_module_and_call_callback_as_direct_device_function"
+        },
+        "cache_key": "rtdl-v4-tier3-16ee63538605cc50fa59b8137e967dbf",
+        "callback_shape": "custom_score",
+        "error_code": null,
+        "error_message": null,
+        "internal_compile_allowed": true,
+        "performance_claim_authorized": false,
+        "raw_optix_callback_authorized": false,
+        "release_authorized": false,
+        "stage": "compile_cache_ready_not_executed",
+        "tier3_public_support_authorized": false
+      },
+      "correctness_passed": true,
+      "dataset_results": [
+        {
+          "correctness_passed": true,
+          "dataset": "dense_hits",
+          "parsed": {
+            "dataset": "dense_hits",
+            "expected_sum": 1073872896,
+            "hit_count": 32768,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 1073872896,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_score_affine"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_score_affine\ndataset=dense_hits\nray_count=32768\nhit_count=32768\noutput_sum=1073872896\nexpected_sum=1073872896\noutput_matches_expected=1"
+        },
+        {
+          "correctness_passed": true,
+          "dataset": "sparse_hits",
+          "parsed": {
+            "dataset": "sparse_hits",
+            "expected_sum": 67141632,
+            "hit_count": 8192,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 67141632,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_score_affine"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_score_affine\ndataset=sparse_hits\nray_count=32768\nhit_count=8192\noutput_sum=67141632\nexpected_sum=67141632\noutput_matches_expected=1"
+        },
+        {
+          "correctness_passed": true,
+          "dataset": "no_hit_empty_reduction",
+          "parsed": {
+            "dataset": "no_hit_empty_reduction",
+            "expected_sum": 0,
+            "hit_count": 0,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 0,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_score_affine"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_score_affine\ndataset=no_hit_empty_reduction\nray_count=32768\nhit_count=0\noutput_sum=0\nexpected_sum=0\noutput_matches_expected=1"
+        }
+      ],
+      "failure_classification": null,
+      "ptx_generation": {
+        "numba_legacy_nvvm_environment": {
+          "numba_legacy_libdevice_env_configured": false,
+          "numba_legacy_nvvm_env_configured": false
+        },
+        "numba_nvvm_reexec_environment": {
+          "reason": "nvvm_lib_dir_missing",
+          "reexec_required": false,
+          "reexec_supported": true
+        },
+        "numba_toolchain_environment": {
+          "configured": false,
+          "numba_cuda_prefix": null,
+          "reason": "nvidia_cuda_nvcc_package_not_found"
+        },
+        "ptx_length": 1167,
+        "return_type": "float64",
+        "status": "ptx_generated",
+        "variant": "custom_score_affine"
+      },
+      "symbol_probe": {
+        "c_identifier_compatible": true,
+        "reason": "one PTX .func symbol matched the callback name hint",
+        "status": "symbol_extracted",
+        "symbol": "custom_score_affine"
+      },
+      "variant": "custom_score_affine",
+      "wrapper_compile": {
+        "returncode": 0,
+        "stderr": "nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).",
+        "stdout": ""
+      }
+    },
+    {
+      "attempt_index": 3,
+      "cache_check": {
+        "attempt_index": 3,
+        "cache_key": "rtdl-v4-tier3-5918de3929f30917eeea48c1ebc99464",
+        "callback_ptx_sha256": "a5c8c149ec3e4090bcb780ae510f770cd8a89a5e20df2320103db71c1c9fdfc7",
+        "changed_ptx_changes_key": true,
+        "changed_ptx_key": "rtdl-v4-tier3-2ce223307cf61d9007807351c2baf917",
+        "changed_toolchain_changes_key": true,
+        "changed_toolchain_key": "rtdl-v4-tier3-cd28f1179bea504dec3808917f681bb3",
+        "same_ptx_repeat_key": "rtdl-v4-tier3-5918de3929f30917eeea48c1ebc99464",
+        "same_ptx_repeat_key_match": true
+      },
+      "compile_link_launch_success": true,
+      "compile_plan": {
+        "accepted": true,
+        "cache_components": {
+          "callback_ptx_sha256": "a5c8c149ec3e4090bcb780ae510f770cd8a89a5e20df2320103db71c1c9fdfc7",
+          "callback_symbol": "custom_score_affine",
+          "compute_target": "sm_86",
+          "contract_version": "goal4698.specialized_tier3_cache.v1",
+          "optix_abi": "8.0",
+          "toolchain_fingerprint_sha256": "76ebece3deb67b7f168ebd4567eaddd7a663982fa193fd0dc1e8954106c023ca",
+          "wrapper_strategy": "specialize_hit_program_module_and_call_callback_as_direct_device_function"
+        },
+        "cache_key": "rtdl-v4-tier3-5918de3929f30917eeea48c1ebc99464",
+        "callback_shape": "custom_score",
+        "error_code": null,
+        "error_message": null,
+        "internal_compile_allowed": true,
+        "performance_claim_authorized": false,
+        "raw_optix_callback_authorized": false,
+        "release_authorized": false,
+        "stage": "compile_cache_ready_not_executed",
+        "tier3_public_support_authorized": false
+      },
+      "correctness_passed": true,
+      "dataset_results": [
+        {
+          "correctness_passed": true,
+          "dataset": "dense_hits",
+          "parsed": {
+            "dataset": "dense_hits",
+            "expected_sum": 1073872896,
+            "hit_count": 32768,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 1073872896,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_score_affine"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_score_affine\ndataset=dense_hits\nray_count=32768\nhit_count=32768\noutput_sum=1073872896\nexpected_sum=1073872896\noutput_matches_expected=1"
+        },
+        {
+          "correctness_passed": true,
+          "dataset": "sparse_hits",
+          "parsed": {
+            "dataset": "sparse_hits",
+            "expected_sum": 67141632,
+            "hit_count": 8192,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 67141632,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_score_affine"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_score_affine\ndataset=sparse_hits\nray_count=32768\nhit_count=8192\noutput_sum=67141632\nexpected_sum=67141632\noutput_matches_expected=1"
+        },
+        {
+          "correctness_passed": true,
+          "dataset": "no_hit_empty_reduction",
+          "parsed": {
+            "dataset": "no_hit_empty_reduction",
+            "expected_sum": 0,
+            "hit_count": 0,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 0,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_score_affine"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_score_affine\ndataset=no_hit_empty_reduction\nray_count=32768\nhit_count=0\noutput_sum=0\nexpected_sum=0\noutput_matches_expected=1"
+        }
+      ],
+      "failure_classification": null,
+      "ptx_generation": {
+        "numba_legacy_nvvm_environment": {
+          "numba_legacy_libdevice_env_configured": false,
+          "numba_legacy_nvvm_env_configured": false
+        },
+        "numba_nvvm_reexec_environment": {
+          "reason": "nvvm_lib_dir_missing",
+          "reexec_required": false,
+          "reexec_supported": true
+        },
+        "numba_toolchain_environment": {
+          "configured": false,
+          "numba_cuda_prefix": null,
+          "reason": "nvidia_cuda_nvcc_package_not_found"
+        },
+        "ptx_length": 1167,
+        "return_type": "float64",
+        "status": "ptx_generated",
+        "variant": "custom_score_affine"
+      },
+      "symbol_probe": {
+        "c_identifier_compatible": true,
+        "reason": "one PTX .func symbol matched the callback name hint",
+        "status": "symbol_extracted",
+        "symbol": "custom_score_affine"
+      },
+      "variant": "custom_score_affine",
+      "wrapper_compile": {
+        "returncode": 0,
+        "stderr": "nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).",
+        "stdout": ""
+      }
+    },
+    {
+      "attempt_index": 4,
+      "cache_check": {
+        "attempt_index": 4,
+        "cache_key": "rtdl-v4-tier3-89d80a10ed8014a22e0c4292c8e278fe",
+        "callback_ptx_sha256": "582bc5c926c9cf44f657091170cd6dd93841d7387998bc731a72b7abd61e0e9c",
+        "changed_ptx_changes_key": true,
+        "changed_ptx_key": "rtdl-v4-tier3-66942a63f7d4eb1cb16d4dd67114d214",
+        "changed_toolchain_changes_key": true,
+        "changed_toolchain_key": "rtdl-v4-tier3-34ff5d8ceb75aff2521c11b64ca9060c",
+        "same_ptx_repeat_key": "rtdl-v4-tier3-89d80a10ed8014a22e0c4292c8e278fe",
+        "same_ptx_repeat_key_match": true
+      },
+      "compile_link_launch_success": true,
+      "compile_plan": {
+        "accepted": true,
+        "cache_components": {
+          "callback_ptx_sha256": "582bc5c926c9cf44f657091170cd6dd93841d7387998bc731a72b7abd61e0e9c",
+          "callback_symbol": "custom_score_affine",
+          "compute_target": "sm_86",
+          "contract_version": "goal4698.specialized_tier3_cache.v1",
+          "optix_abi": "8.0",
+          "toolchain_fingerprint_sha256": "76ebece3deb67b7f168ebd4567eaddd7a663982fa193fd0dc1e8954106c023ca",
+          "wrapper_strategy": "specialize_hit_program_module_and_call_callback_as_direct_device_function"
+        },
+        "cache_key": "rtdl-v4-tier3-89d80a10ed8014a22e0c4292c8e278fe",
+        "callback_shape": "custom_score",
+        "error_code": null,
+        "error_message": null,
+        "internal_compile_allowed": true,
+        "performance_claim_authorized": false,
+        "raw_optix_callback_authorized": false,
+        "release_authorized": false,
+        "stage": "compile_cache_ready_not_executed",
+        "tier3_public_support_authorized": false
+      },
+      "correctness_passed": true,
+      "dataset_results": [
+        {
+          "correctness_passed": true,
+          "dataset": "dense_hits",
+          "parsed": {
+            "dataset": "dense_hits",
+            "expected_sum": 1073872896,
+            "hit_count": 32768,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 1073872896,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_score_affine"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_score_affine\ndataset=dense_hits\nray_count=32768\nhit_count=32768\noutput_sum=1073872896\nexpected_sum=1073872896\noutput_matches_expected=1"
+        },
+        {
+          "correctness_passed": true,
+          "dataset": "sparse_hits",
+          "parsed": {
+            "dataset": "sparse_hits",
+            "expected_sum": 67141632,
+            "hit_count": 8192,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 67141632,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_score_affine"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_score_affine\ndataset=sparse_hits\nray_count=32768\nhit_count=8192\noutput_sum=67141632\nexpected_sum=67141632\noutput_matches_expected=1"
+        },
+        {
+          "correctness_passed": true,
+          "dataset": "no_hit_empty_reduction",
+          "parsed": {
+            "dataset": "no_hit_empty_reduction",
+            "expected_sum": 0,
+            "hit_count": 0,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 0,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_score_affine"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_score_affine\ndataset=no_hit_empty_reduction\nray_count=32768\nhit_count=0\noutput_sum=0\nexpected_sum=0\noutput_matches_expected=1"
+        }
+      ],
+      "failure_classification": null,
+      "ptx_generation": {
+        "numba_legacy_nvvm_environment": {
+          "numba_legacy_libdevice_env_configured": false,
+          "numba_legacy_nvvm_env_configured": false
+        },
+        "numba_nvvm_reexec_environment": {
+          "reason": "nvvm_lib_dir_missing",
+          "reexec_required": false,
+          "reexec_supported": true
+        },
+        "numba_toolchain_environment": {
+          "configured": false,
+          "numba_cuda_prefix": null,
+          "reason": "nvidia_cuda_nvcc_package_not_found"
+        },
+        "ptx_length": 1168,
+        "return_type": "float64",
+        "status": "ptx_generated",
+        "variant": "custom_score_affine"
+      },
+      "symbol_probe": {
+        "c_identifier_compatible": true,
+        "reason": "one PTX .func symbol matched the callback name hint",
+        "status": "symbol_extracted",
+        "symbol": "custom_score_affine"
+      },
+      "variant": "custom_score_affine",
+      "wrapper_compile": {
+        "returncode": 0,
+        "stderr": "nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).",
+        "stdout": ""
+      }
+    },
+    {
+      "attempt_index": 0,
+      "cache_check": {
+        "attempt_index": 0,
+        "cache_key": "rtdl-v4-tier3-f8e96122d58d3a98ced51ec8a89ff0e0",
+        "callback_ptx_sha256": "f3c16f4b1bd454a957464d04204fa66aebef9cc2ec795d75b7b17c51707a0258",
+        "changed_ptx_changes_key": true,
+        "changed_ptx_key": "rtdl-v4-tier3-17e76f156d255c39900e8c4447a37d9a",
+        "changed_toolchain_changes_key": true,
+        "changed_toolchain_key": "rtdl-v4-tier3-4ae34d46f9288f5bcb3b9d0025211c4d",
+        "same_ptx_repeat_key": "rtdl-v4-tier3-f8e96122d58d3a98ced51ec8a89ff0e0",
+        "same_ptx_repeat_key_match": true
+      },
+      "compile_link_launch_success": true,
+      "compile_plan": {
+        "accepted": true,
+        "cache_components": {
+          "callback_ptx_sha256": "f3c16f4b1bd454a957464d04204fa66aebef9cc2ec795d75b7b17c51707a0258",
+          "callback_symbol": "custom_threshold_flag",
+          "compute_target": "sm_86",
+          "contract_version": "goal4698.specialized_tier3_cache.v1",
+          "optix_abi": "8.0",
+          "toolchain_fingerprint_sha256": "76ebece3deb67b7f168ebd4567eaddd7a663982fa193fd0dc1e8954106c023ca",
+          "wrapper_strategy": "specialize_hit_program_module_and_call_callback_as_direct_device_function"
+        },
+        "cache_key": "rtdl-v4-tier3-f8e96122d58d3a98ced51ec8a89ff0e0",
+        "callback_shape": "custom_threshold",
+        "error_code": null,
+        "error_message": null,
+        "internal_compile_allowed": true,
+        "performance_claim_authorized": false,
+        "raw_optix_callback_authorized": false,
+        "release_authorized": false,
+        "stage": "compile_cache_ready_not_executed",
+        "tier3_public_support_authorized": false
+      },
+      "correctness_passed": true,
+      "dataset_results": [
+        {
+          "correctness_passed": true,
+          "dataset": "dense_hits",
+          "parsed": {
+            "dataset": "dense_hits",
+            "expected_sum": 32768,
+            "hit_count": 32768,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 32768,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_threshold_flag"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_threshold_flag\ndataset=dense_hits\nray_count=32768\nhit_count=32768\noutput_sum=32768\nexpected_sum=32768\noutput_matches_expected=1"
+        },
+        {
+          "correctness_passed": true,
+          "dataset": "sparse_hits",
+          "parsed": {
+            "dataset": "sparse_hits",
+            "expected_sum": 8192,
+            "hit_count": 8192,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 8192,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_threshold_flag"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_threshold_flag\ndataset=sparse_hits\nray_count=32768\nhit_count=8192\noutput_sum=8192\nexpected_sum=8192\noutput_matches_expected=1"
+        },
+        {
+          "correctness_passed": true,
+          "dataset": "no_hit_empty_reduction",
+          "parsed": {
+            "dataset": "no_hit_empty_reduction",
+            "expected_sum": 0,
+            "hit_count": 0,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 0,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_threshold_flag"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_threshold_flag\ndataset=no_hit_empty_reduction\nray_count=32768\nhit_count=0\noutput_sum=0\nexpected_sum=0\noutput_matches_expected=1"
+        }
+      ],
+      "failure_classification": null,
+      "ptx_generation": {
+        "numba_legacy_nvvm_environment": {
+          "numba_legacy_libdevice_env_configured": false,
+          "numba_legacy_nvvm_env_configured": false
+        },
+        "numba_nvvm_reexec_environment": {
+          "reason": "nvvm_lib_dir_missing",
+          "reexec_required": false,
+          "reexec_supported": true
+        },
+        "numba_toolchain_environment": {
+          "configured": false,
+          "numba_cuda_prefix": null,
+          "reason": "nvidia_cuda_nvcc_package_not_found"
+        },
+        "ptx_length": 915,
+        "return_type": "float64",
+        "status": "ptx_generated",
+        "variant": "custom_threshold_flag"
+      },
+      "symbol_probe": {
+        "c_identifier_compatible": true,
+        "reason": "one PTX .func symbol matched the callback name hint",
+        "status": "symbol_extracted",
+        "symbol": "custom_threshold_flag"
+      },
+      "variant": "custom_threshold_flag",
+      "wrapper_compile": {
+        "returncode": 0,
+        "stderr": "nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).",
+        "stdout": ""
+      }
+    },
+    {
+      "attempt_index": 1,
+      "cache_check": {
+        "attempt_index": 1,
+        "cache_key": "rtdl-v4-tier3-f5a2a6481b425ea8aa55f5609c171c48",
+        "callback_ptx_sha256": "258bc65a310cd6aa0d074d7035a5d2cc254d22c4104f935cd82f17719986c6b9",
+        "changed_ptx_changes_key": true,
+        "changed_ptx_key": "rtdl-v4-tier3-1bd39c8b7b99f9fe8e1ea3f29c5e05a3",
+        "changed_toolchain_changes_key": true,
+        "changed_toolchain_key": "rtdl-v4-tier3-f3424d6ac688fa65675bf8d1e7ea38b9",
+        "same_ptx_repeat_key": "rtdl-v4-tier3-f5a2a6481b425ea8aa55f5609c171c48",
+        "same_ptx_repeat_key_match": true
+      },
+      "compile_link_launch_success": true,
+      "compile_plan": {
+        "accepted": true,
+        "cache_components": {
+          "callback_ptx_sha256": "258bc65a310cd6aa0d074d7035a5d2cc254d22c4104f935cd82f17719986c6b9",
+          "callback_symbol": "custom_threshold_flag",
+          "compute_target": "sm_86",
+          "contract_version": "goal4698.specialized_tier3_cache.v1",
+          "optix_abi": "8.0",
+          "toolchain_fingerprint_sha256": "76ebece3deb67b7f168ebd4567eaddd7a663982fa193fd0dc1e8954106c023ca",
+          "wrapper_strategy": "specialize_hit_program_module_and_call_callback_as_direct_device_function"
+        },
+        "cache_key": "rtdl-v4-tier3-f5a2a6481b425ea8aa55f5609c171c48",
+        "callback_shape": "custom_threshold",
+        "error_code": null,
+        "error_message": null,
+        "internal_compile_allowed": true,
+        "performance_claim_authorized": false,
+        "raw_optix_callback_authorized": false,
+        "release_authorized": false,
+        "stage": "compile_cache_ready_not_executed",
+        "tier3_public_support_authorized": false
+      },
+      "correctness_passed": true,
+      "dataset_results": [
+        {
+          "correctness_passed": true,
+          "dataset": "dense_hits",
+          "parsed": {
+            "dataset": "dense_hits",
+            "expected_sum": 32768,
+            "hit_count": 32768,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 32768,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_threshold_flag"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_threshold_flag\ndataset=dense_hits\nray_count=32768\nhit_count=32768\noutput_sum=32768\nexpected_sum=32768\noutput_matches_expected=1"
+        },
+        {
+          "correctness_passed": true,
+          "dataset": "sparse_hits",
+          "parsed": {
+            "dataset": "sparse_hits",
+            "expected_sum": 8192,
+            "hit_count": 8192,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 8192,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_threshold_flag"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_threshold_flag\ndataset=sparse_hits\nray_count=32768\nhit_count=8192\noutput_sum=8192\nexpected_sum=8192\noutput_matches_expected=1"
+        },
+        {
+          "correctness_passed": true,
+          "dataset": "no_hit_empty_reduction",
+          "parsed": {
+            "dataset": "no_hit_empty_reduction",
+            "expected_sum": 0,
+            "hit_count": 0,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 0,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_threshold_flag"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_threshold_flag\ndataset=no_hit_empty_reduction\nray_count=32768\nhit_count=0\noutput_sum=0\nexpected_sum=0\noutput_matches_expected=1"
+        }
+      ],
+      "failure_classification": null,
+      "ptx_generation": {
+        "numba_legacy_nvvm_environment": {
+          "numba_legacy_libdevice_env_configured": false,
+          "numba_legacy_nvvm_env_configured": false
+        },
+        "numba_nvvm_reexec_environment": {
+          "reason": "nvvm_lib_dir_missing",
+          "reexec_required": false,
+          "reexec_supported": true
+        },
+        "numba_toolchain_environment": {
+          "configured": false,
+          "numba_cuda_prefix": null,
+          "reason": "nvidia_cuda_nvcc_package_not_found"
+        },
+        "ptx_length": 915,
+        "return_type": "float64",
+        "status": "ptx_generated",
+        "variant": "custom_threshold_flag"
+      },
+      "symbol_probe": {
+        "c_identifier_compatible": true,
+        "reason": "one PTX .func symbol matched the callback name hint",
+        "status": "symbol_extracted",
+        "symbol": "custom_threshold_flag"
+      },
+      "variant": "custom_threshold_flag",
+      "wrapper_compile": {
+        "returncode": 0,
+        "stderr": "nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).",
+        "stdout": ""
+      }
+    },
+    {
+      "attempt_index": 2,
+      "cache_check": {
+        "attempt_index": 2,
+        "cache_key": "rtdl-v4-tier3-ba826a2de3439f50d7a5fe3aa22d8e47",
+        "callback_ptx_sha256": "16a8ab36acc021fb994a567920e2c8c4870640034124d06c17f9fc90f07ca166",
+        "changed_ptx_changes_key": true,
+        "changed_ptx_key": "rtdl-v4-tier3-2798c1e1ef410d3c2549518b76f2b5c9",
+        "changed_toolchain_changes_key": true,
+        "changed_toolchain_key": "rtdl-v4-tier3-a765cd7db0c8db6703ee76de491ee60c",
+        "same_ptx_repeat_key": "rtdl-v4-tier3-ba826a2de3439f50d7a5fe3aa22d8e47",
+        "same_ptx_repeat_key_match": true
+      },
+      "compile_link_launch_success": true,
+      "compile_plan": {
+        "accepted": true,
+        "cache_components": {
+          "callback_ptx_sha256": "16a8ab36acc021fb994a567920e2c8c4870640034124d06c17f9fc90f07ca166",
+          "callback_symbol": "custom_threshold_flag",
+          "compute_target": "sm_86",
+          "contract_version": "goal4698.specialized_tier3_cache.v1",
+          "optix_abi": "8.0",
+          "toolchain_fingerprint_sha256": "76ebece3deb67b7f168ebd4567eaddd7a663982fa193fd0dc1e8954106c023ca",
+          "wrapper_strategy": "specialize_hit_program_module_and_call_callback_as_direct_device_function"
+        },
+        "cache_key": "rtdl-v4-tier3-ba826a2de3439f50d7a5fe3aa22d8e47",
+        "callback_shape": "custom_threshold",
+        "error_code": null,
+        "error_message": null,
+        "internal_compile_allowed": true,
+        "performance_claim_authorized": false,
+        "raw_optix_callback_authorized": false,
+        "release_authorized": false,
+        "stage": "compile_cache_ready_not_executed",
+        "tier3_public_support_authorized": false
+      },
+      "correctness_passed": true,
+      "dataset_results": [
+        {
+          "correctness_passed": true,
+          "dataset": "dense_hits",
+          "parsed": {
+            "dataset": "dense_hits",
+            "expected_sum": 32768,
+            "hit_count": 32768,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 32768,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_threshold_flag"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_threshold_flag\ndataset=dense_hits\nray_count=32768\nhit_count=32768\noutput_sum=32768\nexpected_sum=32768\noutput_matches_expected=1"
+        },
+        {
+          "correctness_passed": true,
+          "dataset": "sparse_hits",
+          "parsed": {
+            "dataset": "sparse_hits",
+            "expected_sum": 8192,
+            "hit_count": 8192,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 8192,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_threshold_flag"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_threshold_flag\ndataset=sparse_hits\nray_count=32768\nhit_count=8192\noutput_sum=8192\nexpected_sum=8192\noutput_matches_expected=1"
+        },
+        {
+          "correctness_passed": true,
+          "dataset": "no_hit_empty_reduction",
+          "parsed": {
+            "dataset": "no_hit_empty_reduction",
+            "expected_sum": 0,
+            "hit_count": 0,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 0,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_threshold_flag"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_threshold_flag\ndataset=no_hit_empty_reduction\nray_count=32768\nhit_count=0\noutput_sum=0\nexpected_sum=0\noutput_matches_expected=1"
+        }
+      ],
+      "failure_classification": null,
+      "ptx_generation": {
+        "numba_legacy_nvvm_environment": {
+          "numba_legacy_libdevice_env_configured": false,
+          "numba_legacy_nvvm_env_configured": false
+        },
+        "numba_nvvm_reexec_environment": {
+          "reason": "nvvm_lib_dir_missing",
+          "reexec_required": false,
+          "reexec_supported": true
+        },
+        "numba_toolchain_environment": {
+          "configured": false,
+          "numba_cuda_prefix": null,
+          "reason": "nvidia_cuda_nvcc_package_not_found"
+        },
+        "ptx_length": 915,
+        "return_type": "float64",
+        "status": "ptx_generated",
+        "variant": "custom_threshold_flag"
+      },
+      "symbol_probe": {
+        "c_identifier_compatible": true,
+        "reason": "one PTX .func symbol matched the callback name hint",
+        "status": "symbol_extracted",
+        "symbol": "custom_threshold_flag"
+      },
+      "variant": "custom_threshold_flag",
+      "wrapper_compile": {
+        "returncode": 0,
+        "stderr": "nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).",
+        "stdout": ""
+      }
+    },
+    {
+      "attempt_index": 3,
+      "cache_check": {
+        "attempt_index": 3,
+        "cache_key": "rtdl-v4-tier3-92b0e958a7f112158b0d6d2dd20d2411",
+        "callback_ptx_sha256": "f3a2a708dfa14ebffffc72b17593be82fd41e47f02b763e812a21d358f0432a0",
+        "changed_ptx_changes_key": true,
+        "changed_ptx_key": "rtdl-v4-tier3-b452b7c692d058ff07b758dce61c441c",
+        "changed_toolchain_changes_key": true,
+        "changed_toolchain_key": "rtdl-v4-tier3-456c0f6fc1606a21cc0e97da6c2b07d2",
+        "same_ptx_repeat_key": "rtdl-v4-tier3-92b0e958a7f112158b0d6d2dd20d2411",
+        "same_ptx_repeat_key_match": true
+      },
+      "compile_link_launch_success": true,
+      "compile_plan": {
+        "accepted": true,
+        "cache_components": {
+          "callback_ptx_sha256": "f3a2a708dfa14ebffffc72b17593be82fd41e47f02b763e812a21d358f0432a0",
+          "callback_symbol": "custom_threshold_flag",
+          "compute_target": "sm_86",
+          "contract_version": "goal4698.specialized_tier3_cache.v1",
+          "optix_abi": "8.0",
+          "toolchain_fingerprint_sha256": "76ebece3deb67b7f168ebd4567eaddd7a663982fa193fd0dc1e8954106c023ca",
+          "wrapper_strategy": "specialize_hit_program_module_and_call_callback_as_direct_device_function"
+        },
+        "cache_key": "rtdl-v4-tier3-92b0e958a7f112158b0d6d2dd20d2411",
+        "callback_shape": "custom_threshold",
+        "error_code": null,
+        "error_message": null,
+        "internal_compile_allowed": true,
+        "performance_claim_authorized": false,
+        "raw_optix_callback_authorized": false,
+        "release_authorized": false,
+        "stage": "compile_cache_ready_not_executed",
+        "tier3_public_support_authorized": false
+      },
+      "correctness_passed": true,
+      "dataset_results": [
+        {
+          "correctness_passed": true,
+          "dataset": "dense_hits",
+          "parsed": {
+            "dataset": "dense_hits",
+            "expected_sum": 32768,
+            "hit_count": 32768,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 32768,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_threshold_flag"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_threshold_flag\ndataset=dense_hits\nray_count=32768\nhit_count=32768\noutput_sum=32768\nexpected_sum=32768\noutput_matches_expected=1"
+        },
+        {
+          "correctness_passed": true,
+          "dataset": "sparse_hits",
+          "parsed": {
+            "dataset": "sparse_hits",
+            "expected_sum": 8192,
+            "hit_count": 8192,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 8192,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_threshold_flag"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_threshold_flag\ndataset=sparse_hits\nray_count=32768\nhit_count=8192\noutput_sum=8192\nexpected_sum=8192\noutput_matches_expected=1"
+        },
+        {
+          "correctness_passed": true,
+          "dataset": "no_hit_empty_reduction",
+          "parsed": {
+            "dataset": "no_hit_empty_reduction",
+            "expected_sum": 0,
+            "hit_count": 0,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 0,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_threshold_flag"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_threshold_flag\ndataset=no_hit_empty_reduction\nray_count=32768\nhit_count=0\noutput_sum=0\nexpected_sum=0\noutput_matches_expected=1"
+        }
+      ],
+      "failure_classification": null,
+      "ptx_generation": {
+        "numba_legacy_nvvm_environment": {
+          "numba_legacy_libdevice_env_configured": false,
+          "numba_legacy_nvvm_env_configured": false
+        },
+        "numba_nvvm_reexec_environment": {
+          "reason": "nvvm_lib_dir_missing",
+          "reexec_required": false,
+          "reexec_supported": true
+        },
+        "numba_toolchain_environment": {
+          "configured": false,
+          "numba_cuda_prefix": null,
+          "reason": "nvidia_cuda_nvcc_package_not_found"
+        },
+        "ptx_length": 915,
+        "return_type": "float64",
+        "status": "ptx_generated",
+        "variant": "custom_threshold_flag"
+      },
+      "symbol_probe": {
+        "c_identifier_compatible": true,
+        "reason": "one PTX .func symbol matched the callback name hint",
+        "status": "symbol_extracted",
+        "symbol": "custom_threshold_flag"
+      },
+      "variant": "custom_threshold_flag",
+      "wrapper_compile": {
+        "returncode": 0,
+        "stderr": "nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).",
+        "stdout": ""
+      }
+    },
+    {
+      "attempt_index": 4,
+      "cache_check": {
+        "attempt_index": 4,
+        "cache_key": "rtdl-v4-tier3-6a5a5a0812efb762b2f747b2e1821bcf",
+        "callback_ptx_sha256": "a10ebeec759f2118cbc28a2549039b2f0ff17fd65ccee15f22044ae06ac7f5aa",
+        "changed_ptx_changes_key": true,
+        "changed_ptx_key": "rtdl-v4-tier3-24da252ea93b26c9f5da8d7b2242354e",
+        "changed_toolchain_changes_key": true,
+        "changed_toolchain_key": "rtdl-v4-tier3-24c77b67a3765fef7b28e3c65e0f684e",
+        "same_ptx_repeat_key": "rtdl-v4-tier3-6a5a5a0812efb762b2f747b2e1821bcf",
+        "same_ptx_repeat_key_match": true
+      },
+      "compile_link_launch_success": true,
+      "compile_plan": {
+        "accepted": true,
+        "cache_components": {
+          "callback_ptx_sha256": "a10ebeec759f2118cbc28a2549039b2f0ff17fd65ccee15f22044ae06ac7f5aa",
+          "callback_symbol": "custom_threshold_flag",
+          "compute_target": "sm_86",
+          "contract_version": "goal4698.specialized_tier3_cache.v1",
+          "optix_abi": "8.0",
+          "toolchain_fingerprint_sha256": "76ebece3deb67b7f168ebd4567eaddd7a663982fa193fd0dc1e8954106c023ca",
+          "wrapper_strategy": "specialize_hit_program_module_and_call_callback_as_direct_device_function"
+        },
+        "cache_key": "rtdl-v4-tier3-6a5a5a0812efb762b2f747b2e1821bcf",
+        "callback_shape": "custom_threshold",
+        "error_code": null,
+        "error_message": null,
+        "internal_compile_allowed": true,
+        "performance_claim_authorized": false,
+        "raw_optix_callback_authorized": false,
+        "release_authorized": false,
+        "stage": "compile_cache_ready_not_executed",
+        "tier3_public_support_authorized": false
+      },
+      "correctness_passed": true,
+      "dataset_results": [
+        {
+          "correctness_passed": true,
+          "dataset": "dense_hits",
+          "parsed": {
+            "dataset": "dense_hits",
+            "expected_sum": 32768,
+            "hit_count": 32768,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 32768,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_threshold_flag"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_threshold_flag\ndataset=dense_hits\nray_count=32768\nhit_count=32768\noutput_sum=32768\nexpected_sum=32768\noutput_matches_expected=1"
+        },
+        {
+          "correctness_passed": true,
+          "dataset": "sparse_hits",
+          "parsed": {
+            "dataset": "sparse_hits",
+            "expected_sum": 8192,
+            "hit_count": 8192,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 8192,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_threshold_flag"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_threshold_flag\ndataset=sparse_hits\nray_count=32768\nhit_count=8192\noutput_sum=8192\nexpected_sum=8192\noutput_matches_expected=1"
+        },
+        {
+          "correctness_passed": true,
+          "dataset": "no_hit_empty_reduction",
+          "parsed": {
+            "dataset": "no_hit_empty_reduction",
+            "expected_sum": 0,
+            "hit_count": 0,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 0,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_threshold_flag"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_threshold_flag\ndataset=no_hit_empty_reduction\nray_count=32768\nhit_count=0\noutput_sum=0\nexpected_sum=0\noutput_matches_expected=1"
+        }
+      ],
+      "failure_classification": null,
+      "ptx_generation": {
+        "numba_legacy_nvvm_environment": {
+          "numba_legacy_libdevice_env_configured": false,
+          "numba_legacy_nvvm_env_configured": false
+        },
+        "numba_nvvm_reexec_environment": {
+          "reason": "nvvm_lib_dir_missing",
+          "reexec_required": false,
+          "reexec_supported": true
+        },
+        "numba_toolchain_environment": {
+          "configured": false,
+          "numba_cuda_prefix": null,
+          "reason": "nvidia_cuda_nvcc_package_not_found"
+        },
+        "ptx_length": 915,
+        "return_type": "float64",
+        "status": "ptx_generated",
+        "variant": "custom_threshold_flag"
+      },
+      "symbol_probe": {
+        "c_identifier_compatible": true,
+        "reason": "one PTX .func symbol matched the callback name hint",
+        "status": "symbol_extracted",
+        "symbol": "custom_threshold_flag"
+      },
+      "variant": "custom_threshold_flag",
+      "wrapper_compile": {
+        "returncode": 0,
+        "stderr": "nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).",
+        "stdout": ""
+      }
+    },
+    {
+      "attempt_index": 0,
+      "cache_check": {
+        "attempt_index": 0,
+        "cache_key": "rtdl-v4-tier3-1d5db86d56cd27a1e12d77fbbb5d4484",
+        "callback_ptx_sha256": "2b5087401f2d4ae488b417f99b4bddfacfaead03a409523aecc4434c52fe6e58",
+        "changed_ptx_changes_key": true,
+        "changed_ptx_key": "rtdl-v4-tier3-7cb1fe28fc7b1ae5a8d5c72a34e58515",
+        "changed_toolchain_changes_key": true,
+        "changed_toolchain_key": "rtdl-v4-tier3-7e12e372d77f20a847e996f2028afc66",
+        "same_ptx_repeat_key": "rtdl-v4-tier3-1d5db86d56cd27a1e12d77fbbb5d4484",
+        "same_ptx_repeat_key_match": true
+      },
+      "compile_link_launch_success": true,
+      "compile_plan": {
+        "accepted": true,
+        "cache_components": {
+          "callback_ptx_sha256": "2b5087401f2d4ae488b417f99b4bddfacfaead03a409523aecc4434c52fe6e58",
+          "callback_symbol": "custom_minmax_score",
+          "compute_target": "sm_86",
+          "contract_version": "goal4698.specialized_tier3_cache.v1",
+          "optix_abi": "8.0",
+          "toolchain_fingerprint_sha256": "76ebece3deb67b7f168ebd4567eaddd7a663982fa193fd0dc1e8954106c023ca",
+          "wrapper_strategy": "specialize_hit_program_module_and_call_callback_as_direct_device_function"
+        },
+        "cache_key": "rtdl-v4-tier3-1d5db86d56cd27a1e12d77fbbb5d4484",
+        "callback_shape": "custom_minmax",
+        "error_code": null,
+        "error_message": null,
+        "internal_compile_allowed": true,
+        "performance_claim_authorized": false,
+        "raw_optix_callback_authorized": false,
+        "release_authorized": false,
+        "stage": "compile_cache_ready_not_executed",
+        "tier3_public_support_authorized": false
+      },
+      "correctness_passed": true,
+      "dataset_results": [
+        {
+          "correctness_passed": true,
+          "dataset": "dense_hits",
+          "parsed": {
+            "dataset": "dense_hits",
+            "expected_sum": 294876,
+            "hit_count": 32768,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 294876,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_minmax_score"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_minmax_score\ndataset=dense_hits\nray_count=32768\nhit_count=32768\noutput_sum=294876\nexpected_sum=294876\noutput_matches_expected=1"
+        },
+        {
+          "correctness_passed": true,
+          "dataset": "sparse_hits",
+          "parsed": {
+            "dataset": "sparse_hits",
+            "expected_sum": 73713,
+            "hit_count": 8192,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 73713,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_minmax_score"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_minmax_score\ndataset=sparse_hits\nray_count=32768\nhit_count=8192\noutput_sum=73713\nexpected_sum=73713\noutput_matches_expected=1"
+        },
+        {
+          "correctness_passed": true,
+          "dataset": "no_hit_empty_reduction",
+          "parsed": {
+            "dataset": "no_hit_empty_reduction",
+            "expected_sum": 0,
+            "hit_count": 0,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 0,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_minmax_score"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_minmax_score\ndataset=no_hit_empty_reduction\nray_count=32768\nhit_count=0\noutput_sum=0\nexpected_sum=0\noutput_matches_expected=1"
+        }
+      ],
+      "failure_classification": null,
+      "ptx_generation": {
+        "numba_legacy_nvvm_environment": {
+          "numba_legacy_libdevice_env_configured": false,
+          "numba_legacy_nvvm_env_configured": false
+        },
+        "numba_nvvm_reexec_environment": {
+          "reason": "nvvm_lib_dir_missing",
+          "reexec_required": false,
+          "reexec_supported": true
+        },
+        "numba_toolchain_environment": {
+          "configured": false,
+          "numba_cuda_prefix": null,
+          "reason": "nvidia_cuda_nvcc_package_not_found"
+        },
+        "ptx_length": 1329,
+        "return_type": "float64",
+        "status": "ptx_generated",
+        "variant": "custom_minmax_score"
+      },
+      "symbol_probe": {
+        "c_identifier_compatible": true,
+        "reason": "one PTX .func symbol matched the callback name hint",
+        "status": "symbol_extracted",
+        "symbol": "custom_minmax_score"
+      },
+      "variant": "custom_minmax_score",
+      "wrapper_compile": {
+        "returncode": 0,
+        "stderr": "nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).",
+        "stdout": ""
+      }
+    },
+    {
+      "attempt_index": 1,
+      "cache_check": {
+        "attempt_index": 1,
+        "cache_key": "rtdl-v4-tier3-38512e36a83499f1ea564301c13b7d5a",
+        "callback_ptx_sha256": "ca356a7696fda93b8215c5a2829e212e949b766e24b0e230c5b5f1b512d3cc5e",
+        "changed_ptx_changes_key": true,
+        "changed_ptx_key": "rtdl-v4-tier3-debf6438633d80b1a3147c597fc9a796",
+        "changed_toolchain_changes_key": true,
+        "changed_toolchain_key": "rtdl-v4-tier3-749c799cea1282f4a90d19d51a507bdb",
+        "same_ptx_repeat_key": "rtdl-v4-tier3-38512e36a83499f1ea564301c13b7d5a",
+        "same_ptx_repeat_key_match": true
+      },
+      "compile_link_launch_success": true,
+      "compile_plan": {
+        "accepted": true,
+        "cache_components": {
+          "callback_ptx_sha256": "ca356a7696fda93b8215c5a2829e212e949b766e24b0e230c5b5f1b512d3cc5e",
+          "callback_symbol": "custom_minmax_score",
+          "compute_target": "sm_86",
+          "contract_version": "goal4698.specialized_tier3_cache.v1",
+          "optix_abi": "8.0",
+          "toolchain_fingerprint_sha256": "76ebece3deb67b7f168ebd4567eaddd7a663982fa193fd0dc1e8954106c023ca",
+          "wrapper_strategy": "specialize_hit_program_module_and_call_callback_as_direct_device_function"
+        },
+        "cache_key": "rtdl-v4-tier3-38512e36a83499f1ea564301c13b7d5a",
+        "callback_shape": "custom_minmax",
+        "error_code": null,
+        "error_message": null,
+        "internal_compile_allowed": true,
+        "performance_claim_authorized": false,
+        "raw_optix_callback_authorized": false,
+        "release_authorized": false,
+        "stage": "compile_cache_ready_not_executed",
+        "tier3_public_support_authorized": false
+      },
+      "correctness_passed": true,
+      "dataset_results": [
+        {
+          "correctness_passed": true,
+          "dataset": "dense_hits",
+          "parsed": {
+            "dataset": "dense_hits",
+            "expected_sum": 294876,
+            "hit_count": 32768,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 294876,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_minmax_score"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_minmax_score\ndataset=dense_hits\nray_count=32768\nhit_count=32768\noutput_sum=294876\nexpected_sum=294876\noutput_matches_expected=1"
+        },
+        {
+          "correctness_passed": true,
+          "dataset": "sparse_hits",
+          "parsed": {
+            "dataset": "sparse_hits",
+            "expected_sum": 73713,
+            "hit_count": 8192,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 73713,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_minmax_score"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_minmax_score\ndataset=sparse_hits\nray_count=32768\nhit_count=8192\noutput_sum=73713\nexpected_sum=73713\noutput_matches_expected=1"
+        },
+        {
+          "correctness_passed": true,
+          "dataset": "no_hit_empty_reduction",
+          "parsed": {
+            "dataset": "no_hit_empty_reduction",
+            "expected_sum": 0,
+            "hit_count": 0,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 0,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_minmax_score"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_minmax_score\ndataset=no_hit_empty_reduction\nray_count=32768\nhit_count=0\noutput_sum=0\nexpected_sum=0\noutput_matches_expected=1"
+        }
+      ],
+      "failure_classification": null,
+      "ptx_generation": {
+        "numba_legacy_nvvm_environment": {
+          "numba_legacy_libdevice_env_configured": false,
+          "numba_legacy_nvvm_env_configured": false
+        },
+        "numba_nvvm_reexec_environment": {
+          "reason": "nvvm_lib_dir_missing",
+          "reexec_required": false,
+          "reexec_supported": true
+        },
+        "numba_toolchain_environment": {
+          "configured": false,
+          "numba_cuda_prefix": null,
+          "reason": "nvidia_cuda_nvcc_package_not_found"
+        },
+        "ptx_length": 1329,
+        "return_type": "float64",
+        "status": "ptx_generated",
+        "variant": "custom_minmax_score"
+      },
+      "symbol_probe": {
+        "c_identifier_compatible": true,
+        "reason": "one PTX .func symbol matched the callback name hint",
+        "status": "symbol_extracted",
+        "symbol": "custom_minmax_score"
+      },
+      "variant": "custom_minmax_score",
+      "wrapper_compile": {
+        "returncode": 0,
+        "stderr": "nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).",
+        "stdout": ""
+      }
+    },
+    {
+      "attempt_index": 2,
+      "cache_check": {
+        "attempt_index": 2,
+        "cache_key": "rtdl-v4-tier3-82c34d473e8a394d84572fdbb0358f19",
+        "callback_ptx_sha256": "63bc986bfd171d630b2585b913d8d0493c6f1fd6c52271661fa2a7a9c11c6772",
+        "changed_ptx_changes_key": true,
+        "changed_ptx_key": "rtdl-v4-tier3-f2fbc1dc4a77b10d4971f9584bdff24e",
+        "changed_toolchain_changes_key": true,
+        "changed_toolchain_key": "rtdl-v4-tier3-85f4cb7c3a2e44a8298c1398276d29c0",
+        "same_ptx_repeat_key": "rtdl-v4-tier3-82c34d473e8a394d84572fdbb0358f19",
+        "same_ptx_repeat_key_match": true
+      },
+      "compile_link_launch_success": true,
+      "compile_plan": {
+        "accepted": true,
+        "cache_components": {
+          "callback_ptx_sha256": "63bc986bfd171d630b2585b913d8d0493c6f1fd6c52271661fa2a7a9c11c6772",
+          "callback_symbol": "custom_minmax_score",
+          "compute_target": "sm_86",
+          "contract_version": "goal4698.specialized_tier3_cache.v1",
+          "optix_abi": "8.0",
+          "toolchain_fingerprint_sha256": "76ebece3deb67b7f168ebd4567eaddd7a663982fa193fd0dc1e8954106c023ca",
+          "wrapper_strategy": "specialize_hit_program_module_and_call_callback_as_direct_device_function"
+        },
+        "cache_key": "rtdl-v4-tier3-82c34d473e8a394d84572fdbb0358f19",
+        "callback_shape": "custom_minmax",
+        "error_code": null,
+        "error_message": null,
+        "internal_compile_allowed": true,
+        "performance_claim_authorized": false,
+        "raw_optix_callback_authorized": false,
+        "release_authorized": false,
+        "stage": "compile_cache_ready_not_executed",
+        "tier3_public_support_authorized": false
+      },
+      "correctness_passed": true,
+      "dataset_results": [
+        {
+          "correctness_passed": true,
+          "dataset": "dense_hits",
+          "parsed": {
+            "dataset": "dense_hits",
+            "expected_sum": 294876,
+            "hit_count": 32768,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 294876,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_minmax_score"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_minmax_score\ndataset=dense_hits\nray_count=32768\nhit_count=32768\noutput_sum=294876\nexpected_sum=294876\noutput_matches_expected=1"
+        },
+        {
+          "correctness_passed": true,
+          "dataset": "sparse_hits",
+          "parsed": {
+            "dataset": "sparse_hits",
+            "expected_sum": 73713,
+            "hit_count": 8192,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 73713,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_minmax_score"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_minmax_score\ndataset=sparse_hits\nray_count=32768\nhit_count=8192\noutput_sum=73713\nexpected_sum=73713\noutput_matches_expected=1"
+        },
+        {
+          "correctness_passed": true,
+          "dataset": "no_hit_empty_reduction",
+          "parsed": {
+            "dataset": "no_hit_empty_reduction",
+            "expected_sum": 0,
+            "hit_count": 0,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 0,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_minmax_score"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_minmax_score\ndataset=no_hit_empty_reduction\nray_count=32768\nhit_count=0\noutput_sum=0\nexpected_sum=0\noutput_matches_expected=1"
+        }
+      ],
+      "failure_classification": null,
+      "ptx_generation": {
+        "numba_legacy_nvvm_environment": {
+          "numba_legacy_libdevice_env_configured": false,
+          "numba_legacy_nvvm_env_configured": false
+        },
+        "numba_nvvm_reexec_environment": {
+          "reason": "nvvm_lib_dir_missing",
+          "reexec_required": false,
+          "reexec_supported": true
+        },
+        "numba_toolchain_environment": {
+          "configured": false,
+          "numba_cuda_prefix": null,
+          "reason": "nvidia_cuda_nvcc_package_not_found"
+        },
+        "ptx_length": 1329,
+        "return_type": "float64",
+        "status": "ptx_generated",
+        "variant": "custom_minmax_score"
+      },
+      "symbol_probe": {
+        "c_identifier_compatible": true,
+        "reason": "one PTX .func symbol matched the callback name hint",
+        "status": "symbol_extracted",
+        "symbol": "custom_minmax_score"
+      },
+      "variant": "custom_minmax_score",
+      "wrapper_compile": {
+        "returncode": 0,
+        "stderr": "nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).",
+        "stdout": ""
+      }
+    },
+    {
+      "attempt_index": 3,
+      "cache_check": {
+        "attempt_index": 3,
+        "cache_key": "rtdl-v4-tier3-0ecf787f3090028248de2a1f0dcedc89",
+        "callback_ptx_sha256": "25f42a2c57e5cd4d9a4d3dccc768cfa0763431e4a2af8fcf68808690d87a1951",
+        "changed_ptx_changes_key": true,
+        "changed_ptx_key": "rtdl-v4-tier3-0ee5836a68952cd08a5dbb81fc03fda2",
+        "changed_toolchain_changes_key": true,
+        "changed_toolchain_key": "rtdl-v4-tier3-d639cc61451c11ee6fd0770aef0b39f6",
+        "same_ptx_repeat_key": "rtdl-v4-tier3-0ecf787f3090028248de2a1f0dcedc89",
+        "same_ptx_repeat_key_match": true
+      },
+      "compile_link_launch_success": true,
+      "compile_plan": {
+        "accepted": true,
+        "cache_components": {
+          "callback_ptx_sha256": "25f42a2c57e5cd4d9a4d3dccc768cfa0763431e4a2af8fcf68808690d87a1951",
+          "callback_symbol": "custom_minmax_score",
+          "compute_target": "sm_86",
+          "contract_version": "goal4698.specialized_tier3_cache.v1",
+          "optix_abi": "8.0",
+          "toolchain_fingerprint_sha256": "76ebece3deb67b7f168ebd4567eaddd7a663982fa193fd0dc1e8954106c023ca",
+          "wrapper_strategy": "specialize_hit_program_module_and_call_callback_as_direct_device_function"
+        },
+        "cache_key": "rtdl-v4-tier3-0ecf787f3090028248de2a1f0dcedc89",
+        "callback_shape": "custom_minmax",
+        "error_code": null,
+        "error_message": null,
+        "internal_compile_allowed": true,
+        "performance_claim_authorized": false,
+        "raw_optix_callback_authorized": false,
+        "release_authorized": false,
+        "stage": "compile_cache_ready_not_executed",
+        "tier3_public_support_authorized": false
+      },
+      "correctness_passed": true,
+      "dataset_results": [
+        {
+          "correctness_passed": true,
+          "dataset": "dense_hits",
+          "parsed": {
+            "dataset": "dense_hits",
+            "expected_sum": 294876,
+            "hit_count": 32768,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 294876,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_minmax_score"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_minmax_score\ndataset=dense_hits\nray_count=32768\nhit_count=32768\noutput_sum=294876\nexpected_sum=294876\noutput_matches_expected=1"
+        },
+        {
+          "correctness_passed": true,
+          "dataset": "sparse_hits",
+          "parsed": {
+            "dataset": "sparse_hits",
+            "expected_sum": 73713,
+            "hit_count": 8192,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 73713,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_minmax_score"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_minmax_score\ndataset=sparse_hits\nray_count=32768\nhit_count=8192\noutput_sum=73713\nexpected_sum=73713\noutput_matches_expected=1"
+        },
+        {
+          "correctness_passed": true,
+          "dataset": "no_hit_empty_reduction",
+          "parsed": {
+            "dataset": "no_hit_empty_reduction",
+            "expected_sum": 0,
+            "hit_count": 0,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 0,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_minmax_score"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_minmax_score\ndataset=no_hit_empty_reduction\nray_count=32768\nhit_count=0\noutput_sum=0\nexpected_sum=0\noutput_matches_expected=1"
+        }
+      ],
+      "failure_classification": null,
+      "ptx_generation": {
+        "numba_legacy_nvvm_environment": {
+          "numba_legacy_libdevice_env_configured": false,
+          "numba_legacy_nvvm_env_configured": false
+        },
+        "numba_nvvm_reexec_environment": {
+          "reason": "nvvm_lib_dir_missing",
+          "reexec_required": false,
+          "reexec_supported": true
+        },
+        "numba_toolchain_environment": {
+          "configured": false,
+          "numba_cuda_prefix": null,
+          "reason": "nvidia_cuda_nvcc_package_not_found"
+        },
+        "ptx_length": 1329,
+        "return_type": "float64",
+        "status": "ptx_generated",
+        "variant": "custom_minmax_score"
+      },
+      "symbol_probe": {
+        "c_identifier_compatible": true,
+        "reason": "one PTX .func symbol matched the callback name hint",
+        "status": "symbol_extracted",
+        "symbol": "custom_minmax_score"
+      },
+      "variant": "custom_minmax_score",
+      "wrapper_compile": {
+        "returncode": 0,
+        "stderr": "nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).",
+        "stdout": ""
+      }
+    },
+    {
+      "attempt_index": 4,
+      "cache_check": {
+        "attempt_index": 4,
+        "cache_key": "rtdl-v4-tier3-3a51e99e6881945750b05a4bc9c85772",
+        "callback_ptx_sha256": "dabd1a97c97f9b65677970ef953e7729974ded493e17b457fdbc0a1765026256",
+        "changed_ptx_changes_key": true,
+        "changed_ptx_key": "rtdl-v4-tier3-af98a19cc1024b350aa3bb69ae838a14",
+        "changed_toolchain_changes_key": true,
+        "changed_toolchain_key": "rtdl-v4-tier3-8b71efdbb2a4f13fd2f689c425984daa",
+        "same_ptx_repeat_key": "rtdl-v4-tier3-3a51e99e6881945750b05a4bc9c85772",
+        "same_ptx_repeat_key_match": true
+      },
+      "compile_link_launch_success": true,
+      "compile_plan": {
+        "accepted": true,
+        "cache_components": {
+          "callback_ptx_sha256": "dabd1a97c97f9b65677970ef953e7729974ded493e17b457fdbc0a1765026256",
+          "callback_symbol": "custom_minmax_score",
+          "compute_target": "sm_86",
+          "contract_version": "goal4698.specialized_tier3_cache.v1",
+          "optix_abi": "8.0",
+          "toolchain_fingerprint_sha256": "76ebece3deb67b7f168ebd4567eaddd7a663982fa193fd0dc1e8954106c023ca",
+          "wrapper_strategy": "specialize_hit_program_module_and_call_callback_as_direct_device_function"
+        },
+        "cache_key": "rtdl-v4-tier3-3a51e99e6881945750b05a4bc9c85772",
+        "callback_shape": "custom_minmax",
+        "error_code": null,
+        "error_message": null,
+        "internal_compile_allowed": true,
+        "performance_claim_authorized": false,
+        "raw_optix_callback_authorized": false,
+        "release_authorized": false,
+        "stage": "compile_cache_ready_not_executed",
+        "tier3_public_support_authorized": false
+      },
+      "correctness_passed": true,
+      "dataset_results": [
+        {
+          "correctness_passed": true,
+          "dataset": "dense_hits",
+          "parsed": {
+            "dataset": "dense_hits",
+            "expected_sum": 294876,
+            "hit_count": 32768,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 294876,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_minmax_score"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_minmax_score\ndataset=dense_hits\nray_count=32768\nhit_count=32768\noutput_sum=294876\nexpected_sum=294876\noutput_matches_expected=1"
+        },
+        {
+          "correctness_passed": true,
+          "dataset": "sparse_hits",
+          "parsed": {
+            "dataset": "sparse_hits",
+            "expected_sum": 73713,
+            "hit_count": 8192,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 73713,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_minmax_score"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_minmax_score\ndataset=sparse_hits\nray_count=32768\nhit_count=8192\noutput_sum=73713\nexpected_sum=73713\noutput_matches_expected=1"
+        },
+        {
+          "correctness_passed": true,
+          "dataset": "no_hit_empty_reduction",
+          "parsed": {
+            "dataset": "no_hit_empty_reduction",
+            "expected_sum": 0,
+            "hit_count": 0,
+            "hit_program_group_result": "0",
+            "miss_program_group_result": "0",
+            "optix_module_create_result": "0",
+            "output_matches_expected": true,
+            "output_sum": 0,
+            "pipeline_create_result": "0",
+            "ray_count": 32768,
+            "raygen_program_group_result": "0",
+            "variant": "custom_minmax_score"
+          },
+          "returncode": 0,
+          "stderr": "",
+          "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\npipeline_create_result=0\nvariant=custom_minmax_score\ndataset=no_hit_empty_reduction\nray_count=32768\nhit_count=0\noutput_sum=0\nexpected_sum=0\noutput_matches_expected=1"
+        }
+      ],
+      "failure_classification": null,
+      "ptx_generation": {
+        "numba_legacy_nvvm_environment": {
+          "numba_legacy_libdevice_env_configured": false,
+          "numba_legacy_nvvm_env_configured": false
+        },
+        "numba_nvvm_reexec_environment": {
+          "reason": "nvvm_lib_dir_missing",
+          "reexec_required": false,
+          "reexec_supported": true
+        },
+        "numba_toolchain_environment": {
+          "configured": false,
+          "numba_cuda_prefix": null,
+          "reason": "nvidia_cuda_nvcc_package_not_found"
+        },
+        "ptx_length": 1329,
+        "return_type": "float64",
+        "status": "ptx_generated",
+        "variant": "custom_minmax_score"
+      },
+      "symbol_probe": {
+        "c_identifier_compatible": true,
+        "reason": "one PTX .func symbol matched the callback name hint",
+        "status": "symbol_extracted",
+        "symbol": "custom_minmax_score"
+      },
+      "variant": "custom_minmax_score",
+      "wrapper_compile": {
+        "returncode": 0,
+        "stderr": "nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).",
+        "stdout": ""
+      }
+    }
+  ],
+  "cache_checks": {
+    "custom_minmax_score": {
+      "attempt_cache_checks": [
+        {
+          "attempt_index": 0,
+          "cache_key": "rtdl-v4-tier3-1d5db86d56cd27a1e12d77fbbb5d4484",
+          "callback_ptx_sha256": "2b5087401f2d4ae488b417f99b4bddfacfaead03a409523aecc4434c52fe6e58",
+          "changed_ptx_changes_key": true,
+          "changed_ptx_key": "rtdl-v4-tier3-7cb1fe28fc7b1ae5a8d5c72a34e58515",
+          "changed_toolchain_changes_key": true,
+          "changed_toolchain_key": "rtdl-v4-tier3-7e12e372d77f20a847e996f2028afc66",
+          "same_ptx_repeat_key": "rtdl-v4-tier3-1d5db86d56cd27a1e12d77fbbb5d4484",
+          "same_ptx_repeat_key_match": true
+        },
+        {
+          "attempt_index": 1,
+          "cache_key": "rtdl-v4-tier3-38512e36a83499f1ea564301c13b7d5a",
+          "callback_ptx_sha256": "ca356a7696fda93b8215c5a2829e212e949b766e24b0e230c5b5f1b512d3cc5e",
+          "changed_ptx_changes_key": true,
+          "changed_ptx_key": "rtdl-v4-tier3-debf6438633d80b1a3147c597fc9a796",
+          "changed_toolchain_changes_key": true,
+          "changed_toolchain_key": "rtdl-v4-tier3-749c799cea1282f4a90d19d51a507bdb",
+          "same_ptx_repeat_key": "rtdl-v4-tier3-38512e36a83499f1ea564301c13b7d5a",
+          "same_ptx_repeat_key_match": true
+        },
+        {
+          "attempt_index": 2,
+          "cache_key": "rtdl-v4-tier3-82c34d473e8a394d84572fdbb0358f19",
+          "callback_ptx_sha256": "63bc986bfd171d630b2585b913d8d0493c6f1fd6c52271661fa2a7a9c11c6772",
+          "changed_ptx_changes_key": true,
+          "changed_ptx_key": "rtdl-v4-tier3-f2fbc1dc4a77b10d4971f9584bdff24e",
+          "changed_toolchain_changes_key": true,
+          "changed_toolchain_key": "rtdl-v4-tier3-85f4cb7c3a2e44a8298c1398276d29c0",
+          "same_ptx_repeat_key": "rtdl-v4-tier3-82c34d473e8a394d84572fdbb0358f19",
+          "same_ptx_repeat_key_match": true
+        },
+        {
+          "attempt_index": 3,
+          "cache_key": "rtdl-v4-tier3-0ecf787f3090028248de2a1f0dcedc89",
+          "callback_ptx_sha256": "25f42a2c57e5cd4d9a4d3dccc768cfa0763431e4a2af8fcf68808690d87a1951",
+          "changed_ptx_changes_key": true,
+          "changed_ptx_key": "rtdl-v4-tier3-0ee5836a68952cd08a5dbb81fc03fda2",
+          "changed_toolchain_changes_key": true,
+          "changed_toolchain_key": "rtdl-v4-tier3-d639cc61451c11ee6fd0770aef0b39f6",
+          "same_ptx_repeat_key": "rtdl-v4-tier3-0ecf787f3090028248de2a1f0dcedc89",
+          "same_ptx_repeat_key_match": true
+        },
+        {
+          "attempt_index": 4,
+          "cache_key": "rtdl-v4-tier3-3a51e99e6881945750b05a4bc9c85772",
+          "callback_ptx_sha256": "dabd1a97c97f9b65677970ef953e7729974ded493e17b457fdbc0a1765026256",
+          "changed_ptx_changes_key": true,
+          "changed_ptx_key": "rtdl-v4-tier3-af98a19cc1024b350aa3bb69ae838a14",
+          "changed_toolchain_changes_key": true,
+          "changed_toolchain_key": "rtdl-v4-tier3-8b71efdbb2a4f13fd2f689c425984daa",
+          "same_ptx_repeat_key": "rtdl-v4-tier3-3a51e99e6881945750b05a4bc9c85772",
+          "same_ptx_repeat_key_match": true
+        }
+      ],
+      "changed_ptx_changes_key": true,
+      "changed_toolchain_changes_key": true,
+      "compiled_ptx_hash_stable_across_recompile": false,
+      "compiled_ptx_hashes_unique_count": 5,
+      "same_ptx_repeat_key_match": true
+    },
+    "custom_scalar_reduce_weighted_sum": {
+      "attempt_cache_checks": [
+        {
+          "attempt_index": 0,
+          "cache_key": "rtdl-v4-tier3-0eab4c924be96141109bfd16abc35f1e",
+          "callback_ptx_sha256": "4dcef08e8c20a320c9776bdf95887d9b6aa08458d7abb8bce990206437e518e9",
+          "changed_ptx_changes_key": true,
+          "changed_ptx_key": "rtdl-v4-tier3-9d774928cb4d09d909fbded2c2707bde",
+          "changed_toolchain_changes_key": true,
+          "changed_toolchain_key": "rtdl-v4-tier3-acd9e77a58fe7ebe446d83eb147b10df",
+          "same_ptx_repeat_key": "rtdl-v4-tier3-0eab4c924be96141109bfd16abc35f1e",
+          "same_ptx_repeat_key_match": true
+        },
+        {
+          "attempt_index": 1,
+          "cache_key": "rtdl-v4-tier3-2fb07087769df1890cb6e4a33aafc57e",
+          "callback_ptx_sha256": "8c61b766fb1b325f0914134b7fa8195b17c9f2aeca4450415c80b133274a7996",
+          "changed_ptx_changes_key": true,
+          "changed_ptx_key": "rtdl-v4-tier3-5dc966e67b4fc81fcc1a5812c832d404",
+          "changed_toolchain_changes_key": true,
+          "changed_toolchain_key": "rtdl-v4-tier3-09b2be4e6342dd4d186915d98e03f80a",
+          "same_ptx_repeat_key": "rtdl-v4-tier3-2fb07087769df1890cb6e4a33aafc57e",
+          "same_ptx_repeat_key_match": true
+        },
+        {
+          "attempt_index": 2,
+          "cache_key": "rtdl-v4-tier3-bb8c3a7ff7d484134281240d1c6b53c5",
+          "callback_ptx_sha256": "8453b4b7fcd8741595566c494ac2645618d9964a45401e6a6418145f964d7051",
+          "changed_ptx_changes_key": true,
+          "changed_ptx_key": "rtdl-v4-tier3-4259e0de6af79274c73e1c551afa336c",
+          "changed_toolchain_changes_key": true,
+          "changed_toolchain_key": "rtdl-v4-tier3-220cd8fdbf1132d89b23801c9bb4ada6",
+          "same_ptx_repeat_key": "rtdl-v4-tier3-bb8c3a7ff7d484134281240d1c6b53c5",
+          "same_ptx_repeat_key_match": true
+        },
+        {
+          "attempt_index": 3,
+          "cache_key": "rtdl-v4-tier3-d0af5c02ca447aacde77b33e19b3634d",
+          "callback_ptx_sha256": "9b41236e06fa671d810c5355ccc0f531aca6a3f3db1aa363eb661681deba1ce4",
+          "changed_ptx_changes_key": true,
+          "changed_ptx_key": "rtdl-v4-tier3-979ead7a013aa67711fa385c83fad51a",
+          "changed_toolchain_changes_key": true,
+          "changed_toolchain_key": "rtdl-v4-tier3-25d43801aa75decac8dfae117bfabadd",
+          "same_ptx_repeat_key": "rtdl-v4-tier3-d0af5c02ca447aacde77b33e19b3634d",
+          "same_ptx_repeat_key_match": true
+        },
+        {
+          "attempt_index": 4,
+          "cache_key": "rtdl-v4-tier3-77f63912c787073fee7d8f42e572e8b5",
+          "callback_ptx_sha256": "3fa99e9882d07f101960973e3e6fa0ea36f721cb18265bdadfc137c09f81bfd3",
+          "changed_ptx_changes_key": true,
+          "changed_ptx_key": "rtdl-v4-tier3-a3d3386a40b4c394bab309f60d8295d8",
+          "changed_toolchain_changes_key": true,
+          "changed_toolchain_key": "rtdl-v4-tier3-b66a00a5842c8b4f434ff6f2e157b43d",
+          "same_ptx_repeat_key": "rtdl-v4-tier3-77f63912c787073fee7d8f42e572e8b5",
+          "same_ptx_repeat_key_match": true
+        }
+      ],
+      "changed_ptx_changes_key": true,
+      "changed_toolchain_changes_key": true,
+      "compiled_ptx_hash_stable_across_recompile": false,
+      "compiled_ptx_hashes_unique_count": 5,
+      "same_ptx_repeat_key_match": true
+    },
+    "custom_score_affine": {
+      "attempt_cache_checks": [
+        {
+          "attempt_index": 0,
+          "cache_key": "rtdl-v4-tier3-dbb5a40364cc118cbe908f2a3f7f7466",
+          "callback_ptx_sha256": "4f63b500a5c31eccc5eaf492f40ed7a74630202f42f0699a7d1f229a826ea3b1",
+          "changed_ptx_changes_key": true,
+          "changed_ptx_key": "rtdl-v4-tier3-954032dd0cd7398d2fa823dfa8ca23db",
+          "changed_toolchain_changes_key": true,
+          "changed_toolchain_key": "rtdl-v4-tier3-d20a0befec3c4b671e0048e4ebaf6878",
+          "same_ptx_repeat_key": "rtdl-v4-tier3-dbb5a40364cc118cbe908f2a3f7f7466",
+          "same_ptx_repeat_key_match": true
+        },
+        {
+          "attempt_index": 1,
+          "cache_key": "rtdl-v4-tier3-08b99ebf3187d6138b6c232fa755af16",
+          "callback_ptx_sha256": "bf7983a7a8fb93e89dd0045de13df0a49c3715ab0e3df8271d9e26f0b323bfe5",
+          "changed_ptx_changes_key": true,
+          "changed_ptx_key": "rtdl-v4-tier3-993da53de931efb9875d677bc539c016",
+          "changed_toolchain_changes_key": true,
+          "changed_toolchain_key": "rtdl-v4-tier3-0b3dcf3bffb9c9fa26b397bcad0c08fc",
+          "same_ptx_repeat_key": "rtdl-v4-tier3-08b99ebf3187d6138b6c232fa755af16",
+          "same_ptx_repeat_key_match": true
+        },
+        {
+          "attempt_index": 2,
+          "cache_key": "rtdl-v4-tier3-16ee63538605cc50fa59b8137e967dbf",
+          "callback_ptx_sha256": "70a9cc41fe680f47acaae3d31d1ae9bb39db66c1bc3440fa79e293c10fb4bc52",
+          "changed_ptx_changes_key": true,
+          "changed_ptx_key": "rtdl-v4-tier3-de3b7ea1a80673b13dc016322de1c141",
+          "changed_toolchain_changes_key": true,
+          "changed_toolchain_key": "rtdl-v4-tier3-f0283bb8b3b337760fb77f077cba20a1",
+          "same_ptx_repeat_key": "rtdl-v4-tier3-16ee63538605cc50fa59b8137e967dbf",
+          "same_ptx_repeat_key_match": true
+        },
+        {
+          "attempt_index": 3,
+          "cache_key": "rtdl-v4-tier3-5918de3929f30917eeea48c1ebc99464",
+          "callback_ptx_sha256": "a5c8c149ec3e4090bcb780ae510f770cd8a89a5e20df2320103db71c1c9fdfc7",
+          "changed_ptx_changes_key": true,
+          "changed_ptx_key": "rtdl-v4-tier3-2ce223307cf61d9007807351c2baf917",
+          "changed_toolchain_changes_key": true,
+          "changed_toolchain_key": "rtdl-v4-tier3-cd28f1179bea504dec3808917f681bb3",
+          "same_ptx_repeat_key": "rtdl-v4-tier3-5918de3929f30917eeea48c1ebc99464",
+          "same_ptx_repeat_key_match": true
+        },
+        {
+          "attempt_index": 4,
+          "cache_key": "rtdl-v4-tier3-89d80a10ed8014a22e0c4292c8e278fe",
+          "callback_ptx_sha256": "582bc5c926c9cf44f657091170cd6dd93841d7387998bc731a72b7abd61e0e9c",
+          "changed_ptx_changes_key": true,
+          "changed_ptx_key": "rtdl-v4-tier3-66942a63f7d4eb1cb16d4dd67114d214",
+          "changed_toolchain_changes_key": true,
+          "changed_toolchain_key": "rtdl-v4-tier3-34ff5d8ceb75aff2521c11b64ca9060c",
+          "same_ptx_repeat_key": "rtdl-v4-tier3-89d80a10ed8014a22e0c4292c8e278fe",
+          "same_ptx_repeat_key_match": true
+        }
+      ],
+      "changed_ptx_changes_key": true,
+      "changed_toolchain_changes_key": true,
+      "compiled_ptx_hash_stable_across_recompile": false,
+      "compiled_ptx_hashes_unique_count": 5,
+      "same_ptx_repeat_key_match": true
+    },
+    "custom_threshold_flag": {
+      "attempt_cache_checks": [
+        {
+          "attempt_index": 0,
+          "cache_key": "rtdl-v4-tier3-f8e96122d58d3a98ced51ec8a89ff0e0",
+          "callback_ptx_sha256": "f3c16f4b1bd454a957464d04204fa66aebef9cc2ec795d75b7b17c51707a0258",
+          "changed_ptx_changes_key": true,
+          "changed_ptx_key": "rtdl-v4-tier3-17e76f156d255c39900e8c4447a37d9a",
+          "changed_toolchain_changes_key": true,
+          "changed_toolchain_key": "rtdl-v4-tier3-4ae34d46f9288f5bcb3b9d0025211c4d",
+          "same_ptx_repeat_key": "rtdl-v4-tier3-f8e96122d58d3a98ced51ec8a89ff0e0",
+          "same_ptx_repeat_key_match": true
+        },
+        {
+          "attempt_index": 1,
+          "cache_key": "rtdl-v4-tier3-f5a2a6481b425ea8aa55f5609c171c48",
+          "callback_ptx_sha256": "258bc65a310cd6aa0d074d7035a5d2cc254d22c4104f935cd82f17719986c6b9",
+          "changed_ptx_changes_key": true,
+          "changed_ptx_key": "rtdl-v4-tier3-1bd39c8b7b99f9fe8e1ea3f29c5e05a3",
+          "changed_toolchain_changes_key": true,
+          "changed_toolchain_key": "rtdl-v4-tier3-f3424d6ac688fa65675bf8d1e7ea38b9",
+          "same_ptx_repeat_key": "rtdl-v4-tier3-f5a2a6481b425ea8aa55f5609c171c48",
+          "same_ptx_repeat_key_match": true
+        },
+        {
+          "attempt_index": 2,
+          "cache_key": "rtdl-v4-tier3-ba826a2de3439f50d7a5fe3aa22d8e47",
+          "callback_ptx_sha256": "16a8ab36acc021fb994a567920e2c8c4870640034124d06c17f9fc90f07ca166",
+          "changed_ptx_changes_key": true,
+          "changed_ptx_key": "rtdl-v4-tier3-2798c1e1ef410d3c2549518b76f2b5c9",
+          "changed_toolchain_changes_key": true,
+          "changed_toolchain_key": "rtdl-v4-tier3-a765cd7db0c8db6703ee76de491ee60c",
+          "same_ptx_repeat_key": "rtdl-v4-tier3-ba826a2de3439f50d7a5fe3aa22d8e47",
+          "same_ptx_repeat_key_match": true
+        },
+        {
+          "attempt_index": 3,
+          "cache_key": "rtdl-v4-tier3-92b0e958a7f112158b0d6d2dd20d2411",
+          "callback_ptx_sha256": "f3a2a708dfa14ebffffc72b17593be82fd41e47f02b763e812a21d358f0432a0",
+          "changed_ptx_changes_key": true,
+          "changed_ptx_key": "rtdl-v4-tier3-b452b7c692d058ff07b758dce61c441c",
+          "changed_toolchain_changes_key": true,
+          "changed_toolchain_key": "rtdl-v4-tier3-456c0f6fc1606a21cc0e97da6c2b07d2",
+          "same_ptx_repeat_key": "rtdl-v4-tier3-92b0e958a7f112158b0d6d2dd20d2411",
+          "same_ptx_repeat_key_match": true
+        },
+        {
+          "attempt_index": 4,
+          "cache_key": "rtdl-v4-tier3-6a5a5a0812efb762b2f747b2e1821bcf",
+          "callback_ptx_sha256": "a10ebeec759f2118cbc28a2549039b2f0ff17fd65ccee15f22044ae06ac7f5aa",
+          "changed_ptx_changes_key": true,
+          "changed_ptx_key": "rtdl-v4-tier3-24da252ea93b26c9f5da8d7b2242354e",
+          "changed_toolchain_changes_key": true,
+          "changed_toolchain_key": "rtdl-v4-tier3-24c77b67a3765fef7b28e3c65e0f684e",
+          "same_ptx_repeat_key": "rtdl-v4-tier3-6a5a5a0812efb762b2f747b2e1821bcf",
+          "same_ptx_repeat_key_match": true
+        }
+      ],
+      "changed_ptx_changes_key": true,
+      "changed_toolchain_changes_key": true,
+      "compiled_ptx_hash_stable_across_recompile": false,
+      "compiled_ptx_hashes_unique_count": 5,
+      "same_ptx_repeat_key_match": true
+    }
+  },
+  "dry_run": false,
+  "loader_compile": {
+    "returncode": 0,
+    "stderr": "",
+    "stdout": ""
+  },
+  "performance_claim_authorized": false,
+  "protocol": {
+    "arbitrary_callback_authorized": false,
+    "attempts_per_variant": 5,
+    "cache_requirement": "same callback PTX/toolchain/symbol must reuse the same deterministic cache key; changed PTX or toolchain fingerprint must produce a different key",
+    "callback_variants": [
+      "custom_scalar_reduce_weighted_sum",
+      "custom_score_affine",
+      "custom_threshold_flag",
+      "custom_minmax_score"
+    ],
+    "compile_link_launch_success_floor": 0.95,
+    "correctness_requirement": "100% exact or tolerance-bounded parity for every variant x dataset row",
+    "datasets": [
+      "dense_hits",
+      "sparse_hits",
+      "no_hit_empty_reduction"
+    ],
+    "failure_classification_requirement": "every failed attempt must carry a Goal4698 stage-specific error code before the result can be reviewed",
+    "next_goal": "Goal4703 specialized Tier-3 reliability matrix POD run",
+    "performance_claim_authorized": false,
+    "pod_required_for_next_goal": true,
+    "public_support_authorized": false,
+    "raw_optix_callback_authorized": false,
+    "release_authorized": false,
+    "status": "goal4702_specialized_tier3_reliability_matrix_protocol_frozen_not_run",
+    "total_attempts": 20
+  },
+  "protocol_validation": {
+    "missing_or_invalid": [],
+    "protocol": {
+      "arbitrary_callback_authorized": false,
+      "attempts_per_variant": 5,
+      "cache_requirement": "same callback PTX/toolchain/symbol must reuse the same deterministic cache key; changed PTX or toolchain fingerprint must produce a different key",
+      "callback_variants": [
+        "custom_scalar_reduce_weighted_sum",
+        "custom_score_affine",
+        "custom_threshold_flag",
+        "custom_minmax_score"
+      ],
+      "compile_link_launch_success_floor": 0.95,
+      "correctness_requirement": "100% exact or tolerance-bounded parity for every variant x dataset row",
+      "datasets": [
+        "dense_hits",
+        "sparse_hits",
+        "no_hit_empty_reduction"
+      ],
+      "failure_classification_requirement": "every failed attempt must carry a Goal4698 stage-specific error code before the result can be reviewed",
+      "next_goal": "Goal4703 specialized Tier-3 reliability matrix POD run",
+      "performance_claim_authorized": false,
+      "pod_required_for_next_goal": true,
+      "public_support_authorized": false,
+      "raw_optix_callback_authorized": false,
+      "release_authorized": false,
+      "status": "goal4702_specialized_tier3_reliability_matrix_protocol_frozen_not_run",
+      "total_attempts": 20
+    },
+    "status": "passed"
+  },
+  "raw_optix_callback_authorized": false,
+  "ray_count": 32768,
+  "release_authorized": false,
+  "result_contract_validation": {
+    "failing_example": {
+      "arbitrary_callback_authorized": false,
+      "cache_checks_passed": true,
+      "classification": "fail_reliability_gate_repair_before_public_support",
+      "correctness_passed": false,
+      "next_goal": "Stop Tier-3 support promotion; repair failing compile/link/launch stage first",
+      "performance_claim_authorized": false,
+      "raw_optix_callback_authorized": false,
+      "release_authorized": false,
+      "stage_failures": [
+        {
+          "error_code": "RTDL_V4_TIER3_COMPILE_STAGE_FAILED_LAUNCH_VALIDATION",
+          "stage": "launch_validation"
+        },
+        {
+          "error_code": "RTDL_V4_TIER3_COMPILE_STAGE_FAILED_PIPELINE_CREATE",
+          "stage": "pipeline_create"
+        }
+      ],
+      "success_rate": 0.9,
+      "successful_attempts": 18,
+      "tier3_public_support_authorized": false,
+      "total_attempts": 20
+    },
+    "goal_status": "goal4703_specialized_tier3_reliability_matrix_result_not_public_support",
+    "missing_or_invalid": [],
+    "passing_example": {
+      "arbitrary_callback_authorized": false,
+      "cache_checks_passed": true,
+      "classification": "pass_reliability_gate_not_public_support",
+      "correctness_passed": true,
+      "next_goal": "Goal4704 specialized Tier-3 support wording and docs gate",
+      "performance_claim_authorized": false,
+      "raw_optix_callback_authorized": false,
+      "release_authorized": false,
+      "stage_failures": [],
+      "success_rate": 1.0,
+      "successful_attempts": 20,
+      "tier3_public_support_authorized": false,
+      "total_attempts": 20
+    },
+    "status": "passed"
+  },
+  "schema": "rtdl.v4.goal4703_specialized_tier3_reliability_matrix_pod.v1",
+  "status": "specialized_tier3_reliability_matrix_measured_not_public_support",
+  "summary": {
+    "arbitrary_callback_authorized": false,
+    "cache_checks_passed": true,
+    "classification": "pass_reliability_gate_not_public_support",
+    "correctness_passed": true,
+    "next_goal": "Goal4704 specialized Tier-3 support wording and docs gate",
+    "performance_claim_authorized": false,
+    "raw_optix_callback_authorized": false,
+    "release_authorized": false,
+    "stage_failures": [],
+    "success_rate": 1.0,
+    "successful_attempts": 20,
+    "tier3_public_support_authorized": false,
+    "total_attempts": 20
+  },
+  "tier3_public_support_authorized": false,
+  "toolchain": {
+    "compiler": "g++",
+    "cuda_lib_dir": "/usr/lib/x86_64-linux-gnu",
+    "cuda_root": "/usr/local/cuda",
+    "nvcc": "/usr/local/cuda/bin/nvcc",
+    "optix_include": "/root/vendor/optix-dev/include"
+  },
+  "warmups": 1
+}

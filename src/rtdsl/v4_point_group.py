@@ -81,24 +81,32 @@ def allocate_point_group_nearest_witness_2d_device_array_outputs_v4(
     partner: str = "torch",
     device: object | None = None,
 ) -> dict[str, object]:
-    """Allocate Torch CUDA output columns for the nearest-witness surface."""
+    """Allocate partner CUDA output columns for the nearest-witness surface."""
 
     partner = _require_partner(partner)
-    if partner != "torch":
-        raise RuntimeError("CuPy output allocation is declared but unmeasured for this V4 candidate")
     count = int(query_count)
     if count < 0:
         raise ValueError("query_count must be non-negative")
+    if partner == "torch":
+        try:
+            import torch
+        except Exception as exc:  # pragma: no cover - optional dependency
+            raise RuntimeError("Torch is required for the V4 point-group nearest-witness surface") from exc
+        if device is None:
+            device = torch.device("cuda")
+        return {
+            "query_ids": torch.empty((count,), dtype=torch.uint32, device=device),
+            "neighbor_ids": torch.empty((count,), dtype=torch.uint32, device=device),
+            "distances": torch.empty((count,), dtype=torch.float64, device=device),
+        }
     try:
-        import torch
+        import cupy
     except Exception as exc:  # pragma: no cover - optional dependency
-        raise RuntimeError("Torch is required for the V4 point-group nearest-witness surface") from exc
-    if device is None:
-        device = torch.device("cuda")
+        raise RuntimeError("CuPy is required for the V4 point-group nearest-witness surface") from exc
     return {
-        "query_ids": torch.empty((count,), dtype=torch.uint32, device=device),
-        "neighbor_ids": torch.empty((count,), dtype=torch.uint32, device=device),
-        "distances": torch.empty((count,), dtype=torch.float64, device=device),
+        "query_ids": cupy.empty((count,), dtype=cupy.uint32),
+        "neighbor_ids": cupy.empty((count,), dtype=cupy.uint32),
+        "distances": cupy.empty((count,), dtype=cupy.float64),
     }
 
 
@@ -216,8 +224,6 @@ def prepare_point_group_nearest_witness_2d_device_arrays_v4(
     """
 
     partner = _require_partner(partner)
-    if partner != "torch":
-        raise RuntimeError("CuPy is declared but unmeasured for this V4 candidate")
     prepared = prepare_optix_point_group_nearest_witness_2d(
         search_points,
         point_groups,

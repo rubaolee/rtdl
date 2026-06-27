@@ -1,0 +1,87 @@
+{
+  "schema": "rtdl.v4.goal4731.post_matrix_release_decision.v1",
+  "status": "goal4731_continue_high_performance_engineering_no_public_tag_pending_external_review_debt",
+  "date": "2026-06-26",
+  "decision_label": "do_not_tag_bounded_v4_under_high_performance_mandate_continue_generic_runtime_engineering",
+  "purpose": "Record the product/engineering decision after Goal4730. The complete 10-app matrix blocks a formal high-performance V4 release. Because the user mandate is a formal high-performance V4, do not publish a bounded-operator tag as if it satisfied the mandate; continue engineering on generic runtime levers.",
+  "source_context": [
+    "future/v4/evidence/v4_goal4730_complete_10_app_matrix_2026-06-26.json",
+    "future/v4/v4_goal4730_complete_10_app_matrix_2026-06-26.md",
+    "future/v4/evidence/v4_goal4669_app_level_benchmark_analysis_2026-06-25.json"
+  ],
+  "decision": {
+    "formal_high_performance_v4_supported_now": false,
+    "bounded_operator_v4_release_possible_but_not_user_mandate": true,
+    "public_tag_authorized_now": false,
+    "selected_path": "continue_high_performance_engineering",
+    "why": [
+      "The complete 10-app matrix has only one full-app true V4 win candidate.",
+      "Several rows are parity, regression, measured no-win, no-route, or deferred/subprobe.",
+      "Publishing a bounded-operator tag would be honest only if framed as bounded operator/productization, but it would not satisfy the user's formal high-performance V4 mandate.",
+      "The next work must move named app-level blockers through generic runtime/operator improvements, not docs or wording."
+    ]
+  },
+  "next_goals": [
+    {
+      "id": "Goal4732",
+      "title": "raydb_style regression root-cause and generic grouped-route repair",
+      "target_app": "raydb_style",
+      "current_fact": "V4/V2.14 hot is 0.974x, below the 0.98 no-regression floor.",
+      "objective": "Find and fix the generic grouped-i64/grouped-argmin route regression without app-specific kernels. Exit with either >=0.98 no-regression plus explanation, or a formal unresolved regression record.",
+      "why_first": "A release cannot carry a known regression row; fixing generic grouped reductions may also help other ray/primitive workloads."
+    },
+    {
+      "id": "Goal4733",
+      "title": "triangle_counting V4/V3 regression recovery",
+      "target_app": "triangle_counting",
+      "current_fact": "V4/V2.14 hot is 4.055x, but V4/V3.0.2 hot is 0.948x.",
+      "objective": "Recover the generic weighted any-hit / grouped-i64 path to at least V3 parity (>=0.98) while preserving the V2.14 speed row and correctness parity.",
+      "why_second": "This can convert a mixed row into a clean non-regressing app win if the fix is generic and denominator-clean."
+    },
+    {
+      "id": "Goal4734",
+      "title": "rt_dbscan generic continuation improvement attempt",
+      "target_app": "rt_dbscan",
+      "current_fact": "V4/V2.14 hot is 1.086x and V4/V3.0.2 hot is 1.083x, below the 1.20 formal bar.",
+      "objective": "Attempt a generic component/continuation improvement; exit with >=1.20x material gain or no-go, without app-identity kernels or partner migration credit.",
+      "why_third": "It is already a complete app route with modest gain; a true generic continuation improvement could become an independent V4 app win."
+    },
+    {
+      "id": "Goal4735",
+      "title": "choose one no-route/deferred app for fresh generic operator only if Goals4732-4734 still leave gate blocked",
+      "target_app": "spatial_rayjoin_or_barnes_hut",
+      "current_fact": "Spatial RayJoin has no current V4 app route; Barnes-Hut has aggregate-frontier subprobe but no complete weighted workflow.",
+      "objective": "Open a fresh generic operator only with a frozen denominator and falsifiable material-speed hypothesis; otherwise keep the row blocked/deferred.",
+      "why_fourth": "This is higher-risk and should not distract from known measured regressions first."
+    }
+  ],
+  "non_goals": [
+    "no docs-only milestone as progress",
+    "no all-app rerun before a named blocker moves",
+    "no geomean headline",
+    "no app-specific native kernels",
+    "no hidden V2/V3 fallback",
+    "no public tag without external release authorization"
+  ],
+  "claim_boundary": {
+    "release_authorized": false,
+    "final_v4_tag_authorized": false,
+    "public_speedup_claim_authorized": false,
+    "whole_app_high_performance_claim_authorized": false,
+    "all_benchmark_speedup_claim_authorized": false,
+    "pod_authorized_by_goal4731": false
+  },
+  "goal_level_decision_audit": {
+    "was_i_being_stupid": false,
+    "stupid_action_if_yes": "Not for this goal. The avoided stupid action would be tagging bounded V4 under a high-performance mandate or starting another docs/process loop instead of attacking measured blockers.",
+    "alternative_path": "Use the complete matrix to choose measured blocker repair goals in order: regression, regression-vs-V3, modest-below-bar, then fresh generic route.",
+    "can_try_better_path_now": true
+  },
+  "external_review": {
+    "required": true,
+    "status": "review_debt_allowed_not_blocking_engineering",
+    "review_packet": "future/v4/reviews/call_for_review_v4_goal4731_post_matrix_release_decision_2026-06-26.md",
+    "debt_record": "future/v4/reviews/v4_goal4731_post_matrix_release_decision_review_debt_2026-06-26.md"
+  },
+  "test_command": "py -m unittest tests.v4_goal4731_post_matrix_release_decision_test tests.v4_goal4730_complete_10_app_matrix_test"
+}

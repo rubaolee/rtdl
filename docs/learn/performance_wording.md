@@ -19,6 +19,23 @@ When discussing performance, include:
 Good:
 
 ```text
+RTDL V4 is a Python eDSL/operator-pushdown release candidate with 10 measured
+generic operator/workflow surfaces, a complete 10-app V2.14/V3.0.2/V4.0
+NVIDIA RT-core matrix, and a constrained custom predicate early-exit workflow.
+It does not claim that all historical benchmark apps are faster than V2.14.
+```
+
+Good:
+
+```text
+The current Goal4756 app matrix has two material hot-path candidate wins over
+V2.14 and parity/control elsewhere; it does not claim that all historical
+benchmark apps are faster than V2.14.
+```
+
+Good:
+
+```text
 On the frozen Goal4639 scorecard, the measured operator surface passed its
 stated floor against its stated brute-force partner/CPU baseline on the RTX
 A5000 POD.
@@ -41,10 +58,25 @@ scale-dependent wins where the alternative is brute force or a slower
 same-contract index control.
 ```
 
+Good:
+
+```text
+The V4 custom predicate early-exit workflow measured 4.633x serious-scale
+primary geomean versus the V2.14/V3.0.2 materialized-device fallback, with
+correctness passing; this is a V4 operator-pushdown workflow claim, not a broad
+all-app claim.
+```
+
 Too broad:
 
 ```text
 V4 makes every application faster.
+```
+
+Too broad:
+
+```text
+V4 is a formal app-level high-performance release.
 ```
 
 Too broad:
@@ -57,16 +89,21 @@ V4 has zero-copy support.
 
 Allowed for V4.0.0:
 
-- "RTDL V4.0.0 is a bounded operator release for 8 documented generic RT-core
-  operators that beat their stated brute-force partner/CPU baselines";
+- "RTDL V4 is a Python eDSL/operator-pushdown release candidate with 10
+  measured generic operator/workflow surfaces";
 - exact measured operator-surface results;
+- exact constrained custom predicate early-exit workflow results;
 - exact Goal4639 scorecard summary;
+- exact Goal4756 app-level ratios and the current decision label
+  `complete_rt_core_app_matrix__bounded_material_wins__no_broad_all_app_speedup_claim`;
 - exact partner and hardware scope;
 - exact denominator and scale for every representative ratio;
 
 Not allowed:
 
 - broad V4 speedup wording;
+- broad V4-over-V2.14 speedup wording;
+- formal app-level high-performance release wording;
 - whole-application speedup wording;
 - all-benchmark speedup wording;
 - public true-zero-copy wording;

@@ -1,0 +1,1 @@
+{"backend": "optix_device_max_nearest", "copies": 262144, "matches_oracle": true, "coordinate_normalization_used": true, "run_phases": {"hot_device_sec": 0.006, "optix_device_max_nearest_directed_summary_sec": 34.0, "scene_prepare_sec": 11.0}}

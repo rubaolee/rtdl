@@ -1,0 +1,106 @@
+{
+  "bars": {
+    "correctness_required": true,
+    "prepare_no_regression_floor_where_comparable": 0.8,
+    "v4_vs_v3_hot_speedup_min": 1.2
+  },
+  "claim_boundary": {
+    "app_specific_native_kernel_authorized": false,
+    "broad_v4_speedup_claim_authorized": false,
+    "formal_high_performance_v4_authorized": false,
+    "public_true_zero_copy_claim_authorized": false,
+    "release_authorized": false,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "date": "2026-06-25",
+  "decision": {
+    "label": "single_sync_improves_hausdorff_cupy_route_but_focused_bar_still_not_cleared",
+    "may_count_as_formal_high_performance_v4_evidence": false,
+    "may_trigger_full_all_app_rerun": false,
+    "next_engineering_need": "One further generic hot-path optimization may be attempted on the same route; otherwise choose a different focused target. Do not weaken the bar.",
+    "reason": "The generic single-sync optimization improves both focused rows and clears the prepare floor, but the 65,536 points/side row remains below the frozen 1.20x hot bar. The 262,144 row continues to pass. Mixed result does not authorize release or all-app rerun."
+  },
+  "optimization": {
+    "app_specific_native_kernel_authorized": false,
+    "bar_or_protocol_changed": false,
+    "generic_runtime_surface": "global_argmax_u32_f64_partner_columns(..., synchronize=False)",
+    "name": "global_argmax_deferred_partner_sync"
+  },
+  "rows": [
+    {
+      "copies": 16384,
+      "goal4666_v4_cupy_before_single_sync": {
+        "directed_summary_sec": 3.838559180498123,
+        "hot_device_sec": 0.008495837450027466,
+        "scene_prepare_sec": 1.929447565227747
+      },
+      "passes_correctness": true,
+      "passes_hot_bar_1_20x": false,
+      "passes_prepare_floor_0_80x": true,
+      "points_per_side": 65536,
+      "speedup_directed_summary_over_v3_cupy": 1.0271654784826694,
+      "speedup_hot_over_goal4666_v4_cupy": 2.9684320409642853,
+      "speedup_hot_over_v3_cupy": 1.0582874190235578,
+      "speedup_prepare_over_v3_cupy": 0.9005609420400644,
+      "v3_cupy_baseline": {
+        "directed_summary_sec": 3.1806681975722313,
+        "hot_device_sec": 0.003028884530067444,
+        "scene_prepare_sec": 1.4373558796942234
+      },
+      "v4_single_sync": {
+        "consumer_adapter": "global_argmax_u32_f64_partner_columns",
+        "consumer_partner": "cupy",
+        "consumer_reduction_strategy": "cupy_masked_reduce",
+        "directed_summary_sec": 3.0965489633381367,
+        "hot_device_sec": 0.002862062305212021,
+        "materialize_sec": 0.00020479783415794373,
+        "partner_synchronized_before_return": false,
+        "raw_ref": "future/v4/evidence/v4_goal4667_hausdorff_single_sync_20260625/v4_official_cupy_single_sync_copies16384.json",
+        "scene_prepare_sec": 1.5960673093795776
+      }
+    },
+    {
+      "copies": 65536,
+      "goal4666_v4_cupy_before_single_sync": {
+        "directed_summary_sec": 7.9731736071407795,
+        "hot_device_sec": 0.003200266510248184,
+        "scene_prepare_sec": 3.9666269570589066
+      },
+      "passes_correctness": true,
+      "passes_hot_bar_1_20x": true,
+      "passes_prepare_floor_0_80x": true,
+      "points_per_side": 262144,
+      "speedup_directed_summary_over_v3_cupy": 1.0336059432852815,
+      "speedup_hot_over_goal4666_v4_cupy": 1.0650736816526114,
+      "speedup_hot_over_v3_cupy": 1.372198349074733,
+      "speedup_prepare_over_v3_cupy": 1.0662838698964072,
+      "v3_cupy_baseline": {
+        "directed_summary_sec": 7.756507556885481,
+        "hot_device_sec": 0.0041230954229831696,
+        "scene_prepare_sec": 4.091465026140213
+      },
+      "v4_single_sync": {
+        "consumer_adapter": "global_argmax_u32_f64_partner_columns",
+        "consumer_partner": "cupy",
+        "consumer_reduction_strategy": "cupy_masked_reduce",
+        "directed_summary_sec": 7.5043178759515285,
+        "hot_device_sec": 0.0030047371983528137,
+        "materialize_sec": 0.0002047307789325714,
+        "partner_synchronized_before_return": false,
+        "raw_ref": "future/v4/evidence/v4_goal4667_hausdorff_single_sync_20260625/v4_official_cupy_single_sync_copies65536.json",
+        "scene_prepare_sec": 3.83712549880147
+      }
+    }
+  ],
+  "same_hardware": {
+    "driver": "570.195.03",
+    "gpu": "NVIDIA RTX A5000",
+    "pod": "root@194.68.245.170:22089"
+  },
+  "schema": "rtdl.v4.goal4667.hausdorff_single_sync.v1",
+  "source_goals": {
+    "baseline": "future/v4/evidence/v4_goal4665_hausdorff_focused_20260625/summary.json",
+    "previous_v4_cupy": "future/v4/evidence/v4_goal4666_hausdorff_cupy_official_20260625/summary.json"
+  },
+  "status": "goal4667_single_sync_optimization_measured_partial_not_release"
+}

@@ -1,0 +1,56 @@
+{
+  "goal": 4680,
+  "date": "2026-06-25",
+  "status": "goal4680_shape_pair_relation_local_static_frontdoor_protocol_passed_not_pod_run",
+  "target_surface": "v4_shape_pair_relation_active_count_2d_prepared_left_executor",
+  "generic_primitive": "SHAPE_PAIR_RELATION_ACTIVE_COUNT_2D_PREPARED_LEFT_EXECUTOR",
+  "frontdoor": {
+    "code": "src/rtdsl/v4_shape_pair_relation.py",
+    "prepare_function": "prepare_shape_pair_relation_active_count_2d_prepared_left_executor_v4",
+    "runner_class": "V4ShapePairRelationActiveCount2DPreparedLeftExecutor",
+    "claim_boundary": "shape_pair_relation_active_count_2d_prepared_left_executor_claim_boundary_v4",
+    "catalog_candidate_surface": false,
+    "catalog_measured_surface": false
+  },
+  "protocol": {
+    "code": "src/rtdsl/v4_goal4680_shape_pair_relation_protocol.py",
+    "benchmark_script_reserved": "scripts/v4_goal4681_shape_pair_relation_pod_benchmark.py",
+    "app_probe": "spatial_rayjoin.overlay_active_count_probe_only",
+    "left_shape_count": 4096,
+    "right_shape_count": 4096,
+    "repeat": 7,
+    "warmup": 2,
+    "correctness_companion_left_shape_count": 512,
+    "correctness_companion_right_shape_count": 512
+  },
+  "denominator_lock": {
+    "v2_14_denominator": "strongest V2.14 same-primitive route: prepared_optix_shape_pair_active_count_device_continuation_reuse using prepared-left executor/device-continuation mode when present",
+    "silent_fallback_to_weaker_route_allowed": false,
+    "same_primitive_speed_credit_requires_material_improvement": true,
+    "partner_migration_counts_as_speed": false
+  },
+  "frozen_bars": {
+    "correctness_parity_required": true,
+    "v4_hot_over_v2_14_same_primitive_min_for_speed_credit": 1.2,
+    "v4_wall_over_v2_14_same_primitive_min_for_speed_credit": 1.1,
+    "v4_hot_over_v3_0_2_parity_floor": 0.98,
+    "host_row_stream_materialization_in_hot_path_allowed": false,
+    "app_identity_kernel_allowed": false
+  },
+  "claim_boundary": {
+    "pod_run_authorized": false,
+    "release_authorized": false,
+    "public_speedup_wording_authorized": false,
+    "whole_app_high_performance_wording_authorized": false,
+    "broad_v4_over_v2_v3_wording_authorized": false,
+    "app_identity_kernel_authorized": false,
+    "tier3_callback_authorized": false,
+    "c_abi_or_embedding_authorized": false
+  },
+  "next_goal": {
+    "goal": 4681,
+    "name": "implement_and_run_shape_pair_relation_focused_pod_benchmark",
+    "pod_use": "required_after_goal4680_gate",
+    "required_result": "summary.json with v2_14, v3_0_2, v4_current rows and same-primitive ratios"
+  }
+}

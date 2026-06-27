@@ -1,0 +1,53 @@
+[
+  {
+    "version": "v2_14",
+    "mode": "rt_graph_2a1_generic_rt",
+    "repeat": 10000,
+    "warmup": 20,
+    "elapsed_sec": 38.385816,
+    "hot_total_sec": 33.77495862916112,
+    "hot_median_ms": 1.2618396431207657,
+    "hot_mean_ms": 3.377495862916112,
+    "hot_min_ms": 0.7686726748943329,
+    "hot_max_ms": 134.0251974761486,
+    "oracle_triangle_count": 131072,
+    "result": 131072,
+    "parity": true,
+    "stdout_json": "future\\v4\\evidence\\v4_goal4760_triangle_1_10s_scale_2026-06-26\\raw\\v2_14_triangle_counting.json",
+    "stderr": "future\\v4\\evidence\\v4_goal4760_triangle_1_10s_scale_2026-06-26\\raw\\v2_14_triangle_counting.stderr.txt"
+  },
+  {
+    "version": "v3_0_2",
+    "mode": "rt_graph_2a1_segmented_generic_rt",
+    "repeat": 10000,
+    "warmup": 20,
+    "elapsed_sec": 8.2187932,
+    "hot_total_sec": 1.822164610028267,
+    "hot_median_ms": 0.17942115664482117,
+    "hot_mean_ms": 0.18221646100282668,
+    "hot_min_ms": 0.17449259757995605,
+    "hot_max_ms": 0.4546120762825012,
+    "oracle_triangle_count": 131072,
+    "result": 131072,
+    "parity": true,
+    "stdout_json": "future\\v4\\evidence\\v4_goal4760_triangle_1_10s_scale_2026-06-26\\raw\\v3_0_2_triangle_counting.json",
+    "stderr": "future\\v4\\evidence\\v4_goal4760_triangle_1_10s_scale_2026-06-26\\raw\\v3_0_2_triangle_counting.stderr.txt"
+  },
+  {
+    "version": "v4_0",
+    "mode": "rt_graph_2a1_segmented_generic_rt",
+    "repeat": 10000,
+    "warmup": 20,
+    "elapsed_sec": 7.0232097,
+    "hot_total_sec": 1.5834399983286858,
+    "hot_median_ms": 0.1554638147354126,
+    "hot_mean_ms": 0.15834399983286856,
+    "hot_min_ms": 0.15191733837127686,
+    "hot_max_ms": 0.24347752332687378,
+    "oracle_triangle_count": 131072,
+    "result": 131072,
+    "parity": true,
+    "stdout_json": "future\\v4\\evidence\\v4_goal4760_triangle_1_10s_scale_2026-06-26\\raw\\v4_0_triangle_counting.json",
+    "stderr": "future\\v4\\evidence\\v4_goal4760_triangle_1_10s_scale_2026-06-26\\raw\\v4_0_triangle_counting.stderr.txt"
+  }
+]

@@ -1,0 +1,949 @@
+{
+  "app_level_speed_claim_authorized": false,
+  "arbitrary_callback_authorized": false,
+  "classification": {
+    "app_level_speed_claim_authorized": false,
+    "arbitrary_callback_authorized": false,
+    "classification": "pass_focused_timing_gate_not_release",
+    "control_geomean_v3_speedup": 1.6303665522050805,
+    "correctness_all_passed": true,
+    "denominator_discovery_complete": true,
+    "early_termination_primary_passed": true,
+    "formal_high_performance_authorized": false,
+    "min_primary_v3_speedup": 2.054686620906942,
+    "next_goal": "Productize custom predicate early-exit as a measured V4 route and broaden app-level validation",
+    "primary_geomean_v2_speedup": 4.632757911153888,
+    "primary_geomean_v3_speedup": 4.632757911153888,
+    "primary_speed_row_count": 6,
+    "public_tier3_support_authorized": false,
+    "raw_optix_callback_authorized": false,
+    "release_authorized": false
+  },
+  "denominator_discovery": {
+    "completed_before_v4_timing": true,
+    "fallback_description": "The fallback traces the same OptiX geometry, materializes all hit layers on device, then evaluates the predicate and reduces accepted flags in separate device kernels. It does not receive V4 any-hit predicate early termination.",
+    "quality": "strong_materialized_device_fallback_after_no_custom_repo_route_found",
+    "v2_14": {
+      "exists": true,
+      "has_custom_predicate_early_exit_route": false,
+      "matched_files": [],
+      "root": "/root/rtdl_v2_14_tag",
+      "selected_baseline": "materialized_all_hit_ids_plus_device_predicate_reduce_fallback"
+    },
+    "v3_0_2": {
+      "exists": true,
+      "has_custom_predicate_early_exit_route": false,
+      "matched_files": [],
+      "root": "/root/rtdl_v3_0_2_tag",
+      "selected_baseline": "materialized_all_hit_ids_plus_device_predicate_reduce_fallback"
+    }
+  },
+  "dry_run": false,
+  "formal_high_performance_authorized": false,
+  "loader_compile": {
+    "returncode": 0,
+    "stderr": "nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\n/tmp/rtdl-v4-goal4715-timing-djmmyb6n/v4_goal4715_timing.cu(305): warning #68-D: integer conversion resulted in a change of sign\n          pipeline_options.usesPrimitiveTypeFlags = OPTIX_PRIMITIVE_TYPE_FLAGS_TRIANGLE;\n                                                    ^\n\nRemark: The warnings can be suppressed with \"-diag-suppress <warning-number>\"\n\n/tmp/rtdl-v4-goal4715-timing-djmmyb6n/v4_goal4715_timing.cu(305): warning #68-D: integer conversion resulted in a change of sign\n          pipeline_options.usesPrimitiveTypeFlags = OPTIX_PRIMITIVE_TYPE_FLAGS_TRIANGLE;\n                                                    ^\n\nRemark: The warnings can be suppressed with \"-diag-suppress <warning-number>\"\n\nnvlink warning : Skipping incompatible '/usr/lib/x86_64-linux-gnu/libdl.a' when searching for -ldl",
+    "stdout": ""
+  },
+  "parameters": {
+    "repeat": 5,
+    "scales": [
+      262144,
+      524288
+    ],
+    "warmups": 2
+  },
+  "protocol_validation": {
+    "missing_or_invalid": [],
+    "protocol": {
+      "app": "ray_triangle_custom_predicate_early_exit_multi_hit",
+      "app_level_speed_claim_authorized": false,
+      "arbitrary_callback_authorized": false,
+      "baselines": [
+        {
+          "name": "v2_14_materialized_all_hits_device_predicate",
+          "required_discovery": "confirm no custom predicate any-hit early-exit route exists; fallback materializes all candidate hit IDs/attributes then filters on device",
+          "root": "/root/rtdl_v2_14_tag"
+        },
+        {
+          "name": "v3_0_2_materialized_all_hits_device_predicate",
+          "required_discovery": "confirm no custom predicate any-hit early-exit route exists; fallback materializes all candidate hit IDs/attributes then filters on device",
+          "root": "/root/rtdl_v3_0_2_tag"
+        },
+        {
+          "name": "v4_callback_predicate_early_exit",
+          "required_discovery": "generated OptiX any-hit route evaluates pure predicate callback and RTDL applies terminate_on_first_accept",
+          "root": "/root/rtdl_v4_candidate_pod"
+        }
+      ],
+      "callback_variants": [
+        {
+          "name": "accept_layer_zero",
+          "semantics": "return true when layer index is zero",
+          "shape": "pure_boolean_numba_cabi_device_function"
+        },
+        {
+          "name": "accept_layer_threshold",
+          "semantics": "return true when layer index is less than a frozen scalar threshold",
+          "shape": "pure_boolean_numba_cabi_device_function"
+        }
+      ],
+      "control_regimes": [
+        {
+          "accept_layer": 31,
+          "candidate_hits_per_ray": 32,
+          "name": "dense_late_accept_k32",
+          "purpose": "control: little early-exit opportunity; should not be used as primary speed evidence."
+        },
+        {
+          "accept_layer": null,
+          "candidate_hits_per_ray": 32,
+          "name": "dense_reject_all_k32",
+          "purpose": "control: callback rejects every candidate; verifies no false positives and exposes worst-case predicate cost."
+        },
+        {
+          "candidate_hits_per_ray": 0,
+          "name": "no_hit_empty",
+          "purpose": "control: validates empty traversal and no-hit accounting."
+        }
+      ],
+      "formal_high_performance_authorized": false,
+      "kill_conditions": [
+        "any correctness failure kills the goal",
+        "missing V2/V3 denominator discovery invalidates the run",
+        "if V4 cannot prove early termination occurred in primary regimes, the run is invalid",
+        "if primary early-accept geomean over V3.0.2 is <1.50x, do not continue toward formal high-performance wording",
+        "if any primary early-accept row is below 1.00x over V3.0.2, stop and diagnose before more POD spend",
+        "if control-regime correctness fails, do not promote the route even if primary speed rows pass"
+      ],
+      "next_goal": "Goal4714 custom predicate early-exit local runner and POD smoke gate",
+      "pass_conditions": [
+        "correctness must pass for every callback x regime x scale x implementation row",
+        "primary early-accept regimes geomean V4 over V3.0.2 must be >=1.50x",
+        "primary early-accept regimes geomean V4 over V2.14 must be >=1.50x",
+        "every primary early-accept regime at every scale must be >=1.20x over V3.0.2",
+        "control regimes must preserve correctness and must not regress below 0.95x geomean over V3.0.2",
+        "wins from late-accept, reject-all, no-hit, weighted-sum, or post-hit accumulation controls cannot support the primary claim",
+        "all denominators and fallback selections must be recorded before V4 timing"
+      ],
+      "pod_authorized": false,
+      "primary_regimes": [
+        {
+          "accept_layer": 0,
+          "candidate_hits_per_ray": 8,
+          "expected_v4_advantage": "V4 can terminate on first accepted candidate instead of materializing 8 candidates per ray.",
+          "name": "dense_early_accept_k8"
+        },
+        {
+          "accept_layer": 0,
+          "candidate_hits_per_ray": 32,
+          "expected_v4_advantage": "V4 can terminate on first accepted candidate instead of materializing 32 candidates per ray.",
+          "name": "dense_early_accept_k32"
+        },
+        {
+          "accept_layer": 0,
+          "active_ray_fraction": 0.25,
+          "candidate_hits_per_ray": 32,
+          "expected_v4_advantage": "V4 should still reduce materialization on active rays while preserving sparse correctness.",
+          "name": "sparse_early_accept_k32"
+        }
+      ],
+      "public_tier3_support_authorized": false,
+      "raw_optix_callback_authorized": false,
+      "release_authorized": false,
+      "scales": [
+        65536,
+        131072
+      ],
+      "status": "goal4713_custom_predicate_early_exit_protocol_frozen_not_run"
+    },
+    "status": "passed"
+  },
+  "ptx_generation": {
+    "numba_legacy_nvvm_environment": {
+      "numba_legacy_libdevice_env_configured": false,
+      "numba_legacy_nvvm_env_configured": false
+    },
+    "numba_nvvm_reexec_environment": {
+      "reason": "nvvm_lib_dir_missing",
+      "reexec_required": false,
+      "reexec_supported": true
+    },
+    "numba_toolchain_environment": {
+      "configured": false,
+      "numba_cuda_prefix": null,
+      "reason": "nvidia_cuda_nvcc_package_not_found"
+    },
+    "ptx_length": 1752,
+    "return_type": "float64",
+    "status": "ptx_generated",
+    "variant": "accept_layer_predicate"
+  },
+  "public_tier3_support_authorized": false,
+  "raw_optix_callback_authorized": false,
+  "release_authorized": false,
+  "result_contract_validation": {
+    "failing_example": {
+      "app_level_speed_claim_authorized": false,
+      "arbitrary_callback_authorized": false,
+      "classification": "fail_focused_timing_gate_not_high_performance",
+      "control_geomean_v3_speedup": 1.05,
+      "correctness_all_passed": true,
+      "denominator_discovery_complete": true,
+      "early_termination_primary_passed": true,
+      "formal_high_performance_authorized": false,
+      "min_primary_v3_speedup": 1.05,
+      "next_goal": "Stop custom predicate early-exit as formal high-performance evidence; diagnose or reselect the runtime lever",
+      "primary_geomean_v2_speedup": 1.05,
+      "primary_geomean_v3_speedup": 1.05,
+      "primary_speed_row_count": 6,
+      "public_tier3_support_authorized": false,
+      "raw_optix_callback_authorized": false,
+      "release_authorized": false
+    },
+    "goal_status": "goal4715_custom_predicate_early_exit_focused_timing_pending_pod",
+    "invalid_example": {
+      "app_level_speed_claim_authorized": false,
+      "arbitrary_callback_authorized": false,
+      "classification": "invalid_or_fail_timing_gate_repair_required",
+      "control_geomean_v3_speedup": 1.0,
+      "correctness_all_passed": true,
+      "denominator_discovery_complete": true,
+      "early_termination_primary_passed": false,
+      "formal_high_performance_authorized": false,
+      "min_primary_v3_speedup": 1.8,
+      "next_goal": "Stop custom predicate early-exit as formal high-performance evidence; diagnose or reselect the runtime lever",
+      "primary_geomean_v2_speedup": 1.8,
+      "primary_geomean_v3_speedup": 1.8,
+      "primary_speed_row_count": 6,
+      "public_tier3_support_authorized": false,
+      "raw_optix_callback_authorized": false,
+      "release_authorized": false
+    },
+    "missing_or_invalid": [],
+    "passing_example": {
+      "app_level_speed_claim_authorized": false,
+      "arbitrary_callback_authorized": false,
+      "classification": "pass_focused_timing_gate_not_release",
+      "control_geomean_v3_speedup": 1.0,
+      "correctness_all_passed": true,
+      "denominator_discovery_complete": true,
+      "early_termination_primary_passed": true,
+      "formal_high_performance_authorized": false,
+      "min_primary_v3_speedup": 1.8,
+      "next_goal": "Productize custom predicate early-exit as a measured V4 route and broaden app-level validation",
+      "primary_geomean_v2_speedup": 1.8,
+      "primary_geomean_v3_speedup": 1.8,
+      "primary_speed_row_count": 6,
+      "public_tier3_support_authorized": false,
+      "raw_optix_callback_authorized": false,
+      "release_authorized": false
+    },
+    "status": "passed"
+  },
+  "rows": [
+    {
+      "candidates_per_ray": 8,
+      "early_termination_observed": true,
+      "fallback_all_hit_invocations": 2097152,
+      "materialized_fallback_correctness_passed": true,
+      "materialized_fallback_median_s": 0.0005843199999999999,
+      "parsed": {
+        "accept_layer": 0,
+        "active_rays": 262144,
+        "candidates_per_ray": 8,
+        "early_termination_observed": true,
+        "expected_accepted": 262144,
+        "materialized_fallback_accepted_count": 262144,
+        "materialized_fallback_anyhit_invocations": 2097152,
+        "materialized_fallback_correctness_passed": true,
+        "materialized_fallback_median_ms": 0.58432,
+        "materialized_fallback_median_s": 0.0005843199999999999,
+        "materialized_fallback_sample_count": 5,
+        "ray_count": 262144,
+        "samples_ms": {
+          "materialized_fallback": [
+            0.583744,
+            0.586304,
+            0.58432,
+            0.58816,
+            0.582656
+          ],
+          "v4_early_exit": [
+            0.284384,
+            0.285216,
+            0.285504,
+            0.277504,
+            0.274368
+          ]
+        },
+        "v4_correctness_passed": true,
+        "v4_early_exit_accepted_count": 262144,
+        "v4_early_exit_anyhit_invocations": 262144,
+        "v4_early_exit_median_ms": 0.284384,
+        "v4_early_exit_median_s": 0.00028438400000000005,
+        "v4_early_exit_sample_count": 5
+      },
+      "regime": "dense_early_accept_k8",
+      "returncode": 0,
+      "route_boundary": "v4_any_hit_predicate_early_exit_vs_materialized_all_hit_ids_device_predicate_reduce_fallback",
+      "row_role": "primary",
+      "scale": 262144,
+      "stderr": "",
+      "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\nsample_v4_early_exit_ms=0.284384\nsample_v4_early_exit_ms=0.285216\nsample_v4_early_exit_ms=0.285504\nsample_v4_early_exit_ms=0.277504\nsample_v4_early_exit_ms=0.274368\nv4_early_exit_anyhit_invocations=262144\nv4_early_exit_accepted_count=262144\nsample_materialized_fallback_ms=0.583744\nsample_materialized_fallback_ms=0.586304\nsample_materialized_fallback_ms=0.58432\nsample_materialized_fallback_ms=0.58816\nsample_materialized_fallback_ms=0.582656\nmaterialized_fallback_anyhit_invocations=2097152\nmaterialized_fallback_accepted_count=262144\nregime=dense_early_accept_k8\nray_count=262144\ncandidates_per_ray=8\nactive_rays=262144\naccept_layer=0\nexpected_accepted=262144",
+      "v2_baseline_median_s": 0.0005843199999999999,
+      "v2_baseline_over_v4_ratio": 2.054686620906942,
+      "v3_baseline_median_s": 0.0005843199999999999,
+      "v3_baseline_over_v4_ratio": 2.054686620906942,
+      "v4_anyhit_invocations": 262144,
+      "v4_correctness_passed": true,
+      "v4_median_s": 0.00028438400000000005
+    },
+    {
+      "candidates_per_ray": 32,
+      "early_termination_observed": true,
+      "fallback_all_hit_invocations": 8388608,
+      "materialized_fallback_correctness_passed": true,
+      "materialized_fallback_median_s": 0.00293165,
+      "parsed": {
+        "accept_layer": 0,
+        "active_rays": 262144,
+        "candidates_per_ray": 32,
+        "early_termination_observed": true,
+        "expected_accepted": 262144,
+        "materialized_fallback_accepted_count": 262144,
+        "materialized_fallback_anyhit_invocations": 8388608,
+        "materialized_fallback_correctness_passed": true,
+        "materialized_fallback_median_ms": 2.93165,
+        "materialized_fallback_median_s": 0.00293165,
+        "materialized_fallback_sample_count": 5,
+        "ray_count": 262144,
+        "samples_ms": {
+          "materialized_fallback": [
+            2.94509,
+            2.92013,
+            2.93165,
+            2.9511,
+            2.92458
+          ],
+          "v4_early_exit": [
+            0.33088,
+            0.329184,
+            0.329792,
+            0.320512,
+            0.320224
+          ]
+        },
+        "v4_correctness_passed": true,
+        "v4_early_exit_accepted_count": 262144,
+        "v4_early_exit_anyhit_invocations": 262144,
+        "v4_early_exit_median_ms": 0.329184,
+        "v4_early_exit_median_s": 0.000329184,
+        "v4_early_exit_sample_count": 5
+      },
+      "regime": "dense_early_accept_k32",
+      "returncode": 0,
+      "route_boundary": "v4_any_hit_predicate_early_exit_vs_materialized_all_hit_ids_device_predicate_reduce_fallback",
+      "row_role": "primary",
+      "scale": 262144,
+      "stderr": "",
+      "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\nsample_v4_early_exit_ms=0.33088\nsample_v4_early_exit_ms=0.329184\nsample_v4_early_exit_ms=0.329792\nsample_v4_early_exit_ms=0.320512\nsample_v4_early_exit_ms=0.320224\nv4_early_exit_anyhit_invocations=262144\nv4_early_exit_accepted_count=262144\nsample_materialized_fallback_ms=2.94509\nsample_materialized_fallback_ms=2.92013\nsample_materialized_fallback_ms=2.93165\nsample_materialized_fallback_ms=2.9511\nsample_materialized_fallback_ms=2.92458\nmaterialized_fallback_anyhit_invocations=8388608\nmaterialized_fallback_accepted_count=262144\nregime=dense_early_accept_k32\nray_count=262144\ncandidates_per_ray=32\nactive_rays=262144\naccept_layer=0\nexpected_accepted=262144",
+      "v2_baseline_median_s": 0.00293165,
+      "v2_baseline_over_v4_ratio": 8.905809516865947,
+      "v3_baseline_median_s": 0.00293165,
+      "v3_baseline_over_v4_ratio": 8.905809516865947,
+      "v4_anyhit_invocations": 262144,
+      "v4_correctness_passed": true,
+      "v4_median_s": 0.000329184
+    },
+    {
+      "candidates_per_ray": 32,
+      "early_termination_observed": true,
+      "fallback_all_hit_invocations": 2097152,
+      "materialized_fallback_correctness_passed": true,
+      "materialized_fallback_median_s": 0.00060688,
+      "parsed": {
+        "accept_layer": 0,
+        "active_rays": 65536,
+        "candidates_per_ray": 32,
+        "early_termination_observed": true,
+        "expected_accepted": 65536,
+        "materialized_fallback_accepted_count": 65536,
+        "materialized_fallback_anyhit_invocations": 2097152,
+        "materialized_fallback_correctness_passed": true,
+        "materialized_fallback_median_ms": 0.60688,
+        "materialized_fallback_median_s": 0.00060688,
+        "materialized_fallback_sample_count": 5,
+        "ray_count": 262144,
+        "samples_ms": {
+          "materialized_fallback": [
+            0.606432,
+            0.601856,
+            0.60688,
+            0.606912,
+            0.607008
+          ],
+          "v4_early_exit": [
+            0.129888,
+            0.129888,
+            0.127904,
+            0.129056,
+            0.13328
+          ]
+        },
+        "v4_correctness_passed": true,
+        "v4_early_exit_accepted_count": 65536,
+        "v4_early_exit_anyhit_invocations": 65536,
+        "v4_early_exit_median_ms": 0.129888,
+        "v4_early_exit_median_s": 0.00012988800000000001,
+        "v4_early_exit_sample_count": 5
+      },
+      "regime": "sparse_early_accept_k32",
+      "returncode": 0,
+      "route_boundary": "v4_any_hit_predicate_early_exit_vs_materialized_all_hit_ids_device_predicate_reduce_fallback",
+      "row_role": "primary",
+      "scale": 262144,
+      "stderr": "",
+      "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\nsample_v4_early_exit_ms=0.129888\nsample_v4_early_exit_ms=0.129888\nsample_v4_early_exit_ms=0.127904\nsample_v4_early_exit_ms=0.129056\nsample_v4_early_exit_ms=0.13328\nv4_early_exit_anyhit_invocations=65536\nv4_early_exit_accepted_count=65536\nsample_materialized_fallback_ms=0.606432\nsample_materialized_fallback_ms=0.601856\nsample_materialized_fallback_ms=0.60688\nsample_materialized_fallback_ms=0.606912\nsample_materialized_fallback_ms=0.607008\nmaterialized_fallback_anyhit_invocations=2097152\nmaterialized_fallback_accepted_count=65536\nregime=sparse_early_accept_k32\nray_count=262144\ncandidates_per_ray=32\nactive_rays=65536\naccept_layer=0\nexpected_accepted=65536",
+      "v2_baseline_median_s": 0.00060688,
+      "v2_baseline_over_v4_ratio": 4.672333086967233,
+      "v3_baseline_median_s": 0.00060688,
+      "v3_baseline_over_v4_ratio": 4.672333086967233,
+      "v4_anyhit_invocations": 65536,
+      "v4_correctness_passed": true,
+      "v4_median_s": 0.00012988800000000001
+    },
+    {
+      "candidates_per_ray": 32,
+      "early_termination_observed": false,
+      "fallback_all_hit_invocations": 8388608,
+      "materialized_fallback_correctness_passed": true,
+      "materialized_fallback_median_s": 0.0029289900000000002,
+      "parsed": {
+        "accept_layer": 31,
+        "active_rays": 262144,
+        "candidates_per_ray": 32,
+        "early_termination_observed": false,
+        "expected_accepted": 262144,
+        "materialized_fallback_accepted_count": 262144,
+        "materialized_fallback_anyhit_invocations": 8388608,
+        "materialized_fallback_correctness_passed": true,
+        "materialized_fallback_median_ms": 2.92899,
+        "materialized_fallback_median_s": 0.0029289900000000002,
+        "materialized_fallback_sample_count": 5,
+        "ray_count": 262144,
+        "samples_ms": {
+          "materialized_fallback": [
+            2.94621,
+            2.93005,
+            2.92064,
+            2.92899,
+            2.9216
+          ],
+          "v4_early_exit": [
+            1.5495,
+            1.53424,
+            1.54272,
+            1.53309,
+            1.53427
+          ]
+        },
+        "v4_correctness_passed": true,
+        "v4_early_exit_accepted_count": 262144,
+        "v4_early_exit_anyhit_invocations": 8388608,
+        "v4_early_exit_median_ms": 1.53427,
+        "v4_early_exit_median_s": 0.0015342700000000001,
+        "v4_early_exit_sample_count": 5
+      },
+      "regime": "dense_late_accept_k32",
+      "returncode": 0,
+      "route_boundary": "v4_any_hit_predicate_early_exit_vs_materialized_all_hit_ids_device_predicate_reduce_fallback",
+      "row_role": "control",
+      "scale": 262144,
+      "stderr": "",
+      "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\nsample_v4_early_exit_ms=1.5495\nsample_v4_early_exit_ms=1.53424\nsample_v4_early_exit_ms=1.54272\nsample_v4_early_exit_ms=1.53309\nsample_v4_early_exit_ms=1.53427\nv4_early_exit_anyhit_invocations=8388608\nv4_early_exit_accepted_count=262144\nsample_materialized_fallback_ms=2.94621\nsample_materialized_fallback_ms=2.93005\nsample_materialized_fallback_ms=2.92064\nsample_materialized_fallback_ms=2.92899\nsample_materialized_fallback_ms=2.9216\nmaterialized_fallback_anyhit_invocations=8388608\nmaterialized_fallback_accepted_count=262144\nregime=dense_late_accept_k32\nray_count=262144\ncandidates_per_ray=32\nactive_rays=262144\naccept_layer=31\nexpected_accepted=262144",
+      "v2_baseline_median_s": 0.0029289900000000002,
+      "v2_baseline_over_v4_ratio": 1.9090446922640736,
+      "v3_baseline_median_s": 0.0029289900000000002,
+      "v3_baseline_over_v4_ratio": 1.9090446922640736,
+      "v4_anyhit_invocations": 8388608,
+      "v4_correctness_passed": true,
+      "v4_median_s": 0.0015342700000000001
+    },
+    {
+      "candidates_per_ray": 32,
+      "early_termination_observed": false,
+      "fallback_all_hit_invocations": 8388608,
+      "materialized_fallback_correctness_passed": true,
+      "materialized_fallback_median_s": 0.00276435,
+      "parsed": {
+        "accept_layer": -1,
+        "active_rays": 262144,
+        "candidates_per_ray": 32,
+        "early_termination_observed": false,
+        "expected_accepted": 0,
+        "materialized_fallback_accepted_count": 0,
+        "materialized_fallback_anyhit_invocations": 8388608,
+        "materialized_fallback_correctness_passed": true,
+        "materialized_fallback_median_ms": 2.76435,
+        "materialized_fallback_median_s": 0.00276435,
+        "materialized_fallback_sample_count": 5,
+        "ray_count": 262144,
+        "samples_ms": {
+          "materialized_fallback": [
+            2.75293,
+            2.74672,
+            2.7648,
+            2.76918,
+            2.76435
+          ],
+          "v4_early_exit": [
+            1.38829,
+            1.4055,
+            1.40224,
+            1.40698,
+            1.39475
+          ]
+        },
+        "v4_correctness_passed": true,
+        "v4_early_exit_accepted_count": 0,
+        "v4_early_exit_anyhit_invocations": 8388608,
+        "v4_early_exit_median_ms": 1.40224,
+        "v4_early_exit_median_s": 0.00140224,
+        "v4_early_exit_sample_count": 5
+      },
+      "regime": "dense_reject_all_k32",
+      "returncode": 0,
+      "route_boundary": "v4_any_hit_predicate_early_exit_vs_materialized_all_hit_ids_device_predicate_reduce_fallback",
+      "row_role": "control",
+      "scale": 262144,
+      "stderr": "",
+      "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\nsample_v4_early_exit_ms=1.38829\nsample_v4_early_exit_ms=1.4055\nsample_v4_early_exit_ms=1.40224\nsample_v4_early_exit_ms=1.40698\nsample_v4_early_exit_ms=1.39475\nv4_early_exit_anyhit_invocations=8388608\nv4_early_exit_accepted_count=0\nsample_materialized_fallback_ms=2.75293\nsample_materialized_fallback_ms=2.74672\nsample_materialized_fallback_ms=2.7648\nsample_materialized_fallback_ms=2.76918\nsample_materialized_fallback_ms=2.76435\nmaterialized_fallback_anyhit_invocations=8388608\nmaterialized_fallback_accepted_count=0\nregime=dense_reject_all_k32\nray_count=262144\ncandidates_per_ray=32\nactive_rays=262144\naccept_layer=-1\nexpected_accepted=0",
+      "v2_baseline_median_s": 0.00276435,
+      "v2_baseline_over_v4_ratio": 1.9713815038795073,
+      "v3_baseline_median_s": 0.00276435,
+      "v3_baseline_over_v4_ratio": 1.9713815038795073,
+      "v4_anyhit_invocations": 8388608,
+      "v4_correctness_passed": true,
+      "v4_median_s": 0.00140224
+    },
+    {
+      "candidates_per_ray": 0,
+      "early_termination_observed": false,
+      "fallback_all_hit_invocations": 0,
+      "materialized_fallback_correctness_passed": true,
+      "materialized_fallback_median_s": 7.1968e-05,
+      "parsed": {
+        "accept_layer": -1,
+        "active_rays": 0,
+        "candidates_per_ray": 0,
+        "early_termination_observed": false,
+        "expected_accepted": 0,
+        "materialized_fallback_accepted_count": 0,
+        "materialized_fallback_anyhit_invocations": 0,
+        "materialized_fallback_correctness_passed": true,
+        "materialized_fallback_median_ms": 0.071968,
+        "materialized_fallback_median_s": 7.1968e-05,
+        "materialized_fallback_sample_count": 5,
+        "ray_count": 262144,
+        "samples_ms": {
+          "materialized_fallback": [
+            0.072544,
+            0.070624,
+            0.069632,
+            0.1,
+            0.071968
+          ],
+          "v4_early_exit": [
+            0.06416,
+            0.062336,
+            0.061376,
+            0.06272,
+            0.059264
+          ]
+        },
+        "v4_correctness_passed": true,
+        "v4_early_exit_accepted_count": 0,
+        "v4_early_exit_anyhit_invocations": 0,
+        "v4_early_exit_median_ms": 0.062336,
+        "v4_early_exit_median_s": 6.233600000000001e-05,
+        "v4_early_exit_sample_count": 5
+      },
+      "regime": "no_hit_empty",
+      "returncode": 0,
+      "route_boundary": "v4_any_hit_predicate_early_exit_vs_materialized_all_hit_ids_device_predicate_reduce_fallback",
+      "row_role": "control",
+      "scale": 262144,
+      "stderr": "",
+      "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\nsample_v4_early_exit_ms=0.06416\nsample_v4_early_exit_ms=0.062336\nsample_v4_early_exit_ms=0.061376\nsample_v4_early_exit_ms=0.06272\nsample_v4_early_exit_ms=0.059264\nv4_early_exit_anyhit_invocations=0\nv4_early_exit_accepted_count=0\nsample_materialized_fallback_ms=0.072544\nsample_materialized_fallback_ms=0.070624\nsample_materialized_fallback_ms=0.069632\nsample_materialized_fallback_ms=0.1\nsample_materialized_fallback_ms=0.071968\nmaterialized_fallback_anyhit_invocations=0\nmaterialized_fallback_accepted_count=0\nregime=no_hit_empty\nray_count=262144\ncandidates_per_ray=0\nactive_rays=0\naccept_layer=-1\nexpected_accepted=0",
+      "v2_baseline_median_s": 7.1968e-05,
+      "v2_baseline_over_v4_ratio": 1.154517453798768,
+      "v3_baseline_median_s": 7.1968e-05,
+      "v3_baseline_over_v4_ratio": 1.154517453798768,
+      "v4_anyhit_invocations": 0,
+      "v4_correctness_passed": true,
+      "v4_median_s": 6.233600000000001e-05
+    },
+    {
+      "candidates_per_ray": 8,
+      "early_termination_observed": true,
+      "fallback_all_hit_invocations": 4194304,
+      "materialized_fallback_correctness_passed": true,
+      "materialized_fallback_median_s": 0.0011170899999999998,
+      "parsed": {
+        "accept_layer": 0,
+        "active_rays": 524288,
+        "candidates_per_ray": 8,
+        "early_termination_observed": true,
+        "expected_accepted": 524288,
+        "materialized_fallback_accepted_count": 524288,
+        "materialized_fallback_anyhit_invocations": 4194304,
+        "materialized_fallback_correctness_passed": true,
+        "materialized_fallback_median_ms": 1.11709,
+        "materialized_fallback_median_s": 0.0011170899999999998,
+        "materialized_fallback_sample_count": 5,
+        "ray_count": 524288,
+        "samples_ms": {
+          "materialized_fallback": [
+            1.11709,
+            1.12176,
+            1.11469,
+            1.11619,
+            1.11994
+          ],
+          "v4_early_exit": [
+            0.52816,
+            0.50624,
+            0.507808,
+            0.51152,
+            0.50816
+          ]
+        },
+        "v4_correctness_passed": true,
+        "v4_early_exit_accepted_count": 524288,
+        "v4_early_exit_anyhit_invocations": 524288,
+        "v4_early_exit_median_ms": 0.50816,
+        "v4_early_exit_median_s": 0.0005081599999999999,
+        "v4_early_exit_sample_count": 5
+      },
+      "regime": "dense_early_accept_k8",
+      "returncode": 0,
+      "route_boundary": "v4_any_hit_predicate_early_exit_vs_materialized_all_hit_ids_device_predicate_reduce_fallback",
+      "row_role": "primary",
+      "scale": 524288,
+      "stderr": "",
+      "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\nsample_v4_early_exit_ms=0.52816\nsample_v4_early_exit_ms=0.50624\nsample_v4_early_exit_ms=0.507808\nsample_v4_early_exit_ms=0.51152\nsample_v4_early_exit_ms=0.50816\nv4_early_exit_anyhit_invocations=524288\nv4_early_exit_accepted_count=524288\nsample_materialized_fallback_ms=1.11709\nsample_materialized_fallback_ms=1.12176\nsample_materialized_fallback_ms=1.11469\nsample_materialized_fallback_ms=1.11619\nsample_materialized_fallback_ms=1.11994\nmaterialized_fallback_anyhit_invocations=4194304\nmaterialized_fallback_accepted_count=524288\nregime=dense_early_accept_k8\nray_count=524288\ncandidates_per_ray=8\nactive_rays=524288\naccept_layer=0\nexpected_accepted=524288",
+      "v2_baseline_median_s": 0.0011170899999999998,
+      "v2_baseline_over_v4_ratio": 2.1983036838790935,
+      "v3_baseline_median_s": 0.0011170899999999998,
+      "v3_baseline_over_v4_ratio": 2.1983036838790935,
+      "v4_anyhit_invocations": 524288,
+      "v4_correctness_passed": true,
+      "v4_median_s": 0.0005081599999999999
+    },
+    {
+      "candidates_per_ray": 32,
+      "early_termination_observed": true,
+      "fallback_all_hit_invocations": 16777216,
+      "materialized_fallback_correctness_passed": true,
+      "materialized_fallback_median_s": 0.0057204199999999995,
+      "parsed": {
+        "accept_layer": 0,
+        "active_rays": 524288,
+        "candidates_per_ray": 32,
+        "early_termination_observed": true,
+        "expected_accepted": 524288,
+        "materialized_fallback_accepted_count": 524288,
+        "materialized_fallback_anyhit_invocations": 16777216,
+        "materialized_fallback_correctness_passed": true,
+        "materialized_fallback_median_ms": 5.72042,
+        "materialized_fallback_median_s": 0.0057204199999999995,
+        "materialized_fallback_sample_count": 5,
+        "ray_count": 524288,
+        "samples_ms": {
+          "materialized_fallback": [
+            5.72579,
+            5.72042,
+            5.71926,
+            5.69958,
+            5.73082
+          ],
+          "v4_early_exit": [
+            0.611456,
+            0.589248,
+            0.59136,
+            0.590624,
+            0.594272
+          ]
+        },
+        "v4_correctness_passed": true,
+        "v4_early_exit_accepted_count": 524288,
+        "v4_early_exit_anyhit_invocations": 524288,
+        "v4_early_exit_median_ms": 0.59136,
+        "v4_early_exit_median_s": 0.00059136,
+        "v4_early_exit_sample_count": 5
+      },
+      "regime": "dense_early_accept_k32",
+      "returncode": 0,
+      "route_boundary": "v4_any_hit_predicate_early_exit_vs_materialized_all_hit_ids_device_predicate_reduce_fallback",
+      "row_role": "primary",
+      "scale": 524288,
+      "stderr": "",
+      "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\nsample_v4_early_exit_ms=0.611456\nsample_v4_early_exit_ms=0.589248\nsample_v4_early_exit_ms=0.59136\nsample_v4_early_exit_ms=0.590624\nsample_v4_early_exit_ms=0.594272\nv4_early_exit_anyhit_invocations=524288\nv4_early_exit_accepted_count=524288\nsample_materialized_fallback_ms=5.72579\nsample_materialized_fallback_ms=5.72042\nsample_materialized_fallback_ms=5.71926\nsample_materialized_fallback_ms=5.69958\nsample_materialized_fallback_ms=5.73082\nmaterialized_fallback_anyhit_invocations=16777216\nmaterialized_fallback_accepted_count=524288\nregime=dense_early_accept_k32\nray_count=524288\ncandidates_per_ray=32\nactive_rays=524288\naccept_layer=0\nexpected_accepted=524288",
+      "v2_baseline_median_s": 0.0057204199999999995,
+      "v2_baseline_over_v4_ratio": 9.673329274891774,
+      "v3_baseline_median_s": 0.0057204199999999995,
+      "v3_baseline_over_v4_ratio": 9.673329274891774,
+      "v4_anyhit_invocations": 524288,
+      "v4_correctness_passed": true,
+      "v4_median_s": 0.00059136
+    },
+    {
+      "candidates_per_ray": 32,
+      "early_termination_observed": true,
+      "fallback_all_hit_invocations": 4194304,
+      "materialized_fallback_correctness_passed": true,
+      "materialized_fallback_median_s": 0.0010699799999999999,
+      "parsed": {
+        "accept_layer": 0,
+        "active_rays": 131072,
+        "candidates_per_ray": 32,
+        "early_termination_observed": true,
+        "expected_accepted": 131072,
+        "materialized_fallback_accepted_count": 131072,
+        "materialized_fallback_anyhit_invocations": 4194304,
+        "materialized_fallback_correctness_passed": true,
+        "materialized_fallback_median_ms": 1.06998,
+        "materialized_fallback_median_s": 0.0010699799999999999,
+        "materialized_fallback_sample_count": 5,
+        "ray_count": 524288,
+        "samples_ms": {
+          "materialized_fallback": [
+            1.06998,
+            1.0745,
+            1.06944,
+            1.0719,
+            1.06931
+          ],
+          "v4_early_exit": [
+            0.200576,
+            0.207456,
+            0.196768,
+            0.195232,
+            0.195968
+          ]
+        },
+        "v4_correctness_passed": true,
+        "v4_early_exit_accepted_count": 131072,
+        "v4_early_exit_anyhit_invocations": 131072,
+        "v4_early_exit_median_ms": 0.196768,
+        "v4_early_exit_median_s": 0.000196768,
+        "v4_early_exit_sample_count": 5
+      },
+      "regime": "sparse_early_accept_k32",
+      "returncode": 0,
+      "route_boundary": "v4_any_hit_predicate_early_exit_vs_materialized_all_hit_ids_device_predicate_reduce_fallback",
+      "row_role": "primary",
+      "scale": 524288,
+      "stderr": "",
+      "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\nsample_v4_early_exit_ms=0.200576\nsample_v4_early_exit_ms=0.207456\nsample_v4_early_exit_ms=0.196768\nsample_v4_early_exit_ms=0.195232\nsample_v4_early_exit_ms=0.195968\nv4_early_exit_anyhit_invocations=131072\nv4_early_exit_accepted_count=131072\nsample_materialized_fallback_ms=1.06998\nsample_materialized_fallback_ms=1.0745\nsample_materialized_fallback_ms=1.06944\nsample_materialized_fallback_ms=1.0719\nsample_materialized_fallback_ms=1.06931\nmaterialized_fallback_anyhit_invocations=4194304\nmaterialized_fallback_accepted_count=131072\nregime=sparse_early_accept_k32\nray_count=524288\ncandidates_per_ray=32\nactive_rays=131072\naccept_layer=0\nexpected_accepted=131072",
+      "v2_baseline_median_s": 0.0010699799999999999,
+      "v2_baseline_over_v4_ratio": 5.437774434867458,
+      "v3_baseline_median_s": 0.0010699799999999999,
+      "v3_baseline_over_v4_ratio": 5.437774434867458,
+      "v4_anyhit_invocations": 131072,
+      "v4_correctness_passed": true,
+      "v4_median_s": 0.000196768
+    },
+    {
+      "candidates_per_ray": 32,
+      "early_termination_observed": false,
+      "fallback_all_hit_invocations": 16777216,
+      "materialized_fallback_correctness_passed": true,
+      "materialized_fallback_median_s": 0.00572326,
+      "parsed": {
+        "accept_layer": 31,
+        "active_rays": 524288,
+        "candidates_per_ray": 32,
+        "early_termination_observed": false,
+        "expected_accepted": 524288,
+        "materialized_fallback_accepted_count": 524288,
+        "materialized_fallback_anyhit_invocations": 16777216,
+        "materialized_fallback_correctness_passed": true,
+        "materialized_fallback_median_ms": 5.72326,
+        "materialized_fallback_median_s": 0.00572326,
+        "materialized_fallback_sample_count": 5,
+        "ray_count": 524288,
+        "samples_ms": {
+          "materialized_fallback": [
+            5.73117,
+            5.72326,
+            5.72144,
+            5.7209,
+            5.73123
+          ],
+          "v4_early_exit": [
+            2.97859,
+            2.98419,
+            2.96099,
+            2.97018,
+            2.9849
+          ]
+        },
+        "v4_correctness_passed": true,
+        "v4_early_exit_accepted_count": 524288,
+        "v4_early_exit_anyhit_invocations": 16777216,
+        "v4_early_exit_median_ms": 2.97859,
+        "v4_early_exit_median_s": 0.00297859,
+        "v4_early_exit_sample_count": 5
+      },
+      "regime": "dense_late_accept_k32",
+      "returncode": 0,
+      "route_boundary": "v4_any_hit_predicate_early_exit_vs_materialized_all_hit_ids_device_predicate_reduce_fallback",
+      "row_role": "control",
+      "scale": 524288,
+      "stderr": "",
+      "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\nsample_v4_early_exit_ms=2.97859\nsample_v4_early_exit_ms=2.98419\nsample_v4_early_exit_ms=2.96099\nsample_v4_early_exit_ms=2.97018\nsample_v4_early_exit_ms=2.9849\nv4_early_exit_anyhit_invocations=16777216\nv4_early_exit_accepted_count=524288\nsample_materialized_fallback_ms=5.73117\nsample_materialized_fallback_ms=5.72326\nsample_materialized_fallback_ms=5.72144\nsample_materialized_fallback_ms=5.7209\nsample_materialized_fallback_ms=5.73123\nmaterialized_fallback_anyhit_invocations=16777216\nmaterialized_fallback_accepted_count=524288\nregime=dense_late_accept_k32\nray_count=524288\ncandidates_per_ray=32\nactive_rays=524288\naccept_layer=31\nexpected_accepted=524288",
+      "v2_baseline_median_s": 0.00572326,
+      "v2_baseline_over_v4_ratio": 1.9214661970932554,
+      "v3_baseline_median_s": 0.00572326,
+      "v3_baseline_over_v4_ratio": 1.9214661970932554,
+      "v4_anyhit_invocations": 16777216,
+      "v4_correctness_passed": true,
+      "v4_median_s": 0.00297859
+    },
+    {
+      "candidates_per_ray": 32,
+      "early_termination_observed": false,
+      "fallback_all_hit_invocations": 16777216,
+      "materialized_fallback_correctness_passed": true,
+      "materialized_fallback_median_s": 0.0053627200000000005,
+      "parsed": {
+        "accept_layer": -1,
+        "active_rays": 524288,
+        "candidates_per_ray": 32,
+        "early_termination_observed": false,
+        "expected_accepted": 0,
+        "materialized_fallback_accepted_count": 0,
+        "materialized_fallback_anyhit_invocations": 16777216,
+        "materialized_fallback_correctness_passed": true,
+        "materialized_fallback_median_ms": 5.36272,
+        "materialized_fallback_median_s": 0.0053627200000000005,
+        "materialized_fallback_sample_count": 5,
+        "ray_count": 524288,
+        "samples_ms": {
+          "materialized_fallback": [
+            5.35251,
+            5.36272,
+            5.36221,
+            5.36893,
+            5.37181
+          ],
+          "v4_early_exit": [
+            2.67523,
+            2.67174,
+            2.65226,
+            2.65549,
+            2.66566
+          ]
+        },
+        "v4_correctness_passed": true,
+        "v4_early_exit_accepted_count": 0,
+        "v4_early_exit_anyhit_invocations": 16777216,
+        "v4_early_exit_median_ms": 2.66566,
+        "v4_early_exit_median_s": 0.00266566,
+        "v4_early_exit_sample_count": 5
+      },
+      "regime": "dense_reject_all_k32",
+      "returncode": 0,
+      "route_boundary": "v4_any_hit_predicate_early_exit_vs_materialized_all_hit_ids_device_predicate_reduce_fallback",
+      "row_role": "control",
+      "scale": 524288,
+      "stderr": "",
+      "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\nsample_v4_early_exit_ms=2.67523\nsample_v4_early_exit_ms=2.67174\nsample_v4_early_exit_ms=2.65226\nsample_v4_early_exit_ms=2.65549\nsample_v4_early_exit_ms=2.66566\nv4_early_exit_anyhit_invocations=16777216\nv4_early_exit_accepted_count=0\nsample_materialized_fallback_ms=5.35251\nsample_materialized_fallback_ms=5.36272\nsample_materialized_fallback_ms=5.36221\nsample_materialized_fallback_ms=5.36893\nsample_materialized_fallback_ms=5.37181\nmaterialized_fallback_anyhit_invocations=16777216\nmaterialized_fallback_accepted_count=0\nregime=dense_reject_all_k32\nray_count=524288\ncandidates_per_ray=32\nactive_rays=524288\naccept_layer=-1\nexpected_accepted=0",
+      "v2_baseline_median_s": 0.0053627200000000005,
+      "v2_baseline_over_v4_ratio": 2.011779446741145,
+      "v3_baseline_median_s": 0.0053627200000000005,
+      "v3_baseline_over_v4_ratio": 2.011779446741145,
+      "v4_anyhit_invocations": 16777216,
+      "v4_correctness_passed": true,
+      "v4_median_s": 0.00266566
+    },
+    {
+      "candidates_per_ray": 0,
+      "early_termination_observed": false,
+      "fallback_all_hit_invocations": 0,
+      "materialized_fallback_correctness_passed": true,
+      "materialized_fallback_median_s": 9.9008e-05,
+      "parsed": {
+        "accept_layer": -1,
+        "active_rays": 0,
+        "candidates_per_ray": 0,
+        "early_termination_observed": false,
+        "expected_accepted": 0,
+        "materialized_fallback_accepted_count": 0,
+        "materialized_fallback_anyhit_invocations": 0,
+        "materialized_fallback_correctness_passed": true,
+        "materialized_fallback_median_ms": 0.099008,
+        "materialized_fallback_median_s": 9.9008e-05,
+        "materialized_fallback_sample_count": 5,
+        "ray_count": 524288,
+        "samples_ms": {
+          "materialized_fallback": [
+            0.100288,
+            0.100928,
+            0.099008,
+            0.0976,
+            0.098048
+          ],
+          "v4_early_exit": [
+            0.096192,
+            0.088544,
+            0.087168,
+            0.095008,
+            0.086464
+          ]
+        },
+        "v4_correctness_passed": true,
+        "v4_early_exit_accepted_count": 0,
+        "v4_early_exit_anyhit_invocations": 0,
+        "v4_early_exit_median_ms": 0.088544,
+        "v4_early_exit_median_s": 8.8544e-05,
+        "v4_early_exit_sample_count": 5
+      },
+      "regime": "no_hit_empty",
+      "returncode": 0,
+      "route_boundary": "v4_any_hit_predicate_early_exit_vs_materialized_all_hit_ids_device_predicate_reduce_fallback",
+      "row_role": "control",
+      "scale": 524288,
+      "stderr": "",
+      "stdout": "optix_module_create_result=0\nraygen_program_group_result=0\nmiss_program_group_result=0\nhit_program_group_result=0\nsample_v4_early_exit_ms=0.096192\nsample_v4_early_exit_ms=0.088544\nsample_v4_early_exit_ms=0.087168\nsample_v4_early_exit_ms=0.095008\nsample_v4_early_exit_ms=0.086464\nv4_early_exit_anyhit_invocations=0\nv4_early_exit_accepted_count=0\nsample_materialized_fallback_ms=0.100288\nsample_materialized_fallback_ms=0.100928\nsample_materialized_fallback_ms=0.099008\nsample_materialized_fallback_ms=0.0976\nsample_materialized_fallback_ms=0.098048\nmaterialized_fallback_anyhit_invocations=0\nmaterialized_fallback_accepted_count=0\nregime=no_hit_empty\nray_count=524288\ncandidates_per_ray=0\nactive_rays=0\naccept_layer=-1\nexpected_accepted=0",
+      "v2_baseline_median_s": 9.9008e-05,
+      "v2_baseline_over_v4_ratio": 1.1181785327069027,
+      "v3_baseline_median_s": 9.9008e-05,
+      "v3_baseline_over_v4_ratio": 1.1181785327069027,
+      "v4_anyhit_invocations": 0,
+      "v4_correctness_passed": true,
+      "v4_median_s": 8.8544e-05
+    }
+  ],
+  "schema": "rtdl.v4.goal4715_custom_predicate_early_exit_timing.v1",
+  "status": "goal4715_custom_predicate_early_exit_timing_measured_not_release",
+  "symbol_probe": {
+    "c_identifier_compatible": true,
+    "reason": "one PTX .func symbol matched the callback name hint",
+    "status": "symbol_extracted",
+    "symbol": "accept_layer_predicate"
+  },
+  "toolchain": {
+    "cuda_lib_dir": "/usr/lib/x86_64-linux-gnu",
+    "cuda_root": "/usr/local/cuda",
+    "nvcc": "/usr/local/cuda/bin/nvcc",
+    "optix_include": "/root/vendor/optix-dev/include"
+  },
+  "wrapper_compile": {
+    "returncode": 0,
+    "stderr": "nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).",
+    "stdout": ""
+  }
+}

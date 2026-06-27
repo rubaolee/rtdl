@@ -1,0 +1,91 @@
+{
+  "schema": "rtdl.v4.goal4729.barnes_hut_deferred_subprobe_row.v1",
+  "status": "goal4729_barnes_hut_deferred_subprobe_row_complete_pending_external_review_debt",
+  "date": "2026-06-26",
+  "decision_label": "barnes_hut_closed_as_deferred_subprobe_not_complete_app_route",
+  "purpose": "Close the barnes_hut row for the current complete 10-app matrix as a deferred/subprobe row. Aggregate-frontier device columns are a real measured V4 operator route and remove a V2.14 host-frontier bottleneck, but they are not a complete Barnes-Hut app-level force workflow and do not prove V4-over-V3 speedup or RT-core speedup.",
+  "source_context": [
+    "future/v4/evidence/v4_goal4676_serious_2026-06-25/summary.json",
+    "future/v4/v4_goal4677_aggregate_frontier_promotion_2026-06-25.md",
+    "src/rtdsl/v4_goal4677_aggregate_frontier_promotion.py",
+    "src/rtdsl/aggregate_tree_reference.py::aggregate_tree_fused_weighted_vector_sum_2d_rt_native_contract",
+    "src/rtdsl/v4_app_route_binding.py::barnes_hut",
+    "future/v4/evidence/v4_goal4724_remaining_5_app_route_gap_audit_2026-06-26.json"
+  ],
+  "matrix_row": {
+    "app": "barnes_hut",
+    "row_status": "closed_deferred_subprobe_not_complete_app_route",
+    "goal4723_row_class": "deferred_no_app_identity_route",
+    "goal4724_gap_class": "aggregate_frontier_subprobe_not_complete_app_route",
+    "v2_14_route": "RTDL/OptiX aggregate-frontier membership primitive plus explicit force-vector partner continuation; CuPy fastest with Numba reference",
+    "current_v4_subprobe": "v4_aggregate_frontier_device_columns_2d_prepared_runner",
+    "subprobe_result": {
+      "source_evidence": "future/v4/evidence/v4_goal4676_serious_2026-06-25/summary.json",
+      "goal4676_pass": true,
+      "correctness_companion_ok": true,
+      "large_run_checksum_parity": true,
+      "partner_migration_counted_as_speed": false,
+      "v4_host_frontier_materialization_in_hot_path": false,
+      "v4_frontier_only_hot_over_v2_14": 302.9977973413469,
+      "v4_full_hot_over_v2_14": 310.02390072012497,
+      "v4_full_wall_over_v2_14": 200.82645806332002,
+      "v4_full_hot_over_v3_0_2_control": 0.9975684883734833
+    },
+    "fused_weighted_vector_contract_boundary": {
+      "contract": "generic_aggregate_tree_fused_weighted_vector_sum_2d_rt_native_v1",
+      "implemented_runtime_status": "implemented_cuda_device_accumulation_not_rt_core",
+      "uses_optix_trace": false,
+      "device_resident_output_columns": true,
+      "frontier_rows_materialized_on_host": false,
+      "contribution_rows_materialized_on_host": false,
+      "hot_path_host_materialization": false,
+      "rt_core_speedup_claim_authorized": false,
+      "whole_app_speedup_claim_authorized": false
+    },
+    "interpretation": {
+      "real_v4_operator_win_vs_v2_14_host_frontier": true,
+      "clean_v4_over_v3_speed_win": false,
+      "complete_barnes_hut_app_route_bound": false,
+      "force_vector_workflow_measured_as_complete_app": false,
+      "rt_core_speedup_proved": false,
+      "app_identity_kernel_allowed": false,
+      "reason": "Aggregate-frontier device columns are a legitimate measured operator route, but the final Barnes-Hut app requires a complete aggregate-tree weighted-vector force workflow. Existing fused weighted-vector runtime is CUDA device accumulation, not OptiX RT-core traversal, and public whole-app/RT-core claims remain blocked."
+    },
+    "missing_route_or_operator": "complete generic aggregate-tree weighted-vector workflow with parity and no app-identity native engine logic, measured against V2.14/V3 controls",
+    "contributes_to_complete_10_app_matrix": true,
+    "contributes_to_formal_high_performance_v4": false,
+    "rerun_required_before_goal4730": false,
+    "reopen_condition": "Only reopen barnes_hut as a performance row if a complete app-level generic aggregate weighted workflow is bound and measured; aggregate-frontier subprobe alone is insufficient."
+  },
+  "claim_boundary": {
+    "release_authorized": false,
+    "final_v4_tag_authorized": false,
+    "pod_authorized_by_goal4729": false,
+    "public_speedup_claim_authorized": false,
+    "whole_app_high_performance_claim_authorized": false,
+    "barnes_hut_speedup_claim_authorized": false,
+    "broad_v4_over_v2_14_claim_authorized": false,
+    "v4_over_v3_speed_claim_authorized": false,
+    "rt_core_speedup_claim_authorized": false,
+    "paper_reproduction_claim_authorized": false,
+    "app_specific_native_kernel_authorized": false
+  },
+  "next_goal": {
+    "id": "Goal4730",
+    "title": "complete 10-app V2.14-vs-V4 matrix assembly and release-gate interpretation",
+    "reason": "All five previously incomplete app rows now have formal measured no-win, partial/no-go, no-route, or deferred/subprobe closure rows."
+  },
+  "goal_level_decision_audit": {
+    "was_i_being_stupid": false,
+    "stupid_action_if_yes": "Not for this goal. The avoided stupid action would be turning a legitimate aggregate-frontier operator win into a complete Barnes-Hut app or RT-core speed claim.",
+    "alternative_path": "Record aggregate-frontier as real bounded operator evidence while keeping Barnes-Hut app-level claims deferred until a complete generic weighted workflow exists.",
+    "can_try_better_path_now": true
+  },
+  "external_review": {
+    "required": true,
+    "status": "review_debt_allowed_not_blocking_engineering",
+    "review_packet": "future/v4/reviews/call_for_review_v4_goal4729_barnes_hut_deferred_subprobe_row_2026-06-26.md",
+    "debt_record": "future/v4/reviews/v4_goal4729_barnes_hut_deferred_subprobe_row_review_debt_2026-06-26.md"
+  },
+  "test_command": "py -m unittest tests.v4_goal4729_barnes_hut_deferred_subprobe_row_test tests.v4_goal4677_aggregate_frontier_promotion_test tests.v4_goal4724_remaining_app_route_gap_audit_test"
+}

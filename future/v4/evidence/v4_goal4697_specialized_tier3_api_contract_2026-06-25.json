@@ -1,0 +1,128 @@
+{
+  "contract": {
+    "accepted_callback_shapes": [
+      "custom_scalar_reduce",
+      "custom_score",
+      "custom_threshold",
+      "custom_minmax"
+    ],
+    "accepted_scalar_types": [
+      "bool",
+      "int32",
+      "uint32",
+      "int64",
+      "uint64",
+      "float32",
+      "float64"
+    ],
+    "accepted_signature": "one scalar state output from fixed scalar inputs; Goal4695 validated float64 state, uint32 primitive_id, float64 hit_distance, float64 weight",
+    "callback_language": "numba_cuda_device_function_only",
+    "candidate_surface": "module_specialized_direct_device_callback",
+    "compiler_contract": "Numba C-ABI device function PTX composed into an RTDL-generated OptiX module",
+    "next_goal": "Goal4698 specialized Tier-3 compile/cache/error-reporting scaffold",
+    "performance_claim_authorized": false,
+    "raw_optix_callback_authorized": false,
+    "rejected_shapes": [
+      "arbitrary_python_callback",
+      "action_or_side_effect_callback",
+      "external_memory_mutation_callback",
+      "dynamic_sbt_direct_callable_hot_path",
+      "non_scalar_signature"
+    ],
+    "release_authorized": false,
+    "status": "goal4697_constrained_specialized_tier3_api_contract_scaffold_not_public_support",
+    "supported_callback_shape": "pure_scalar_return_numba_cabi_device_function",
+    "tier3_public_support_authorized": false,
+    "wrapper_strategy": "specialize_hit_program_module_and_call_callback_as_direct_device_function"
+  },
+  "missing_or_invalid": [],
+  "plans": {
+    "accepted": {
+      "accepted": true,
+      "app_route_validation_required": true,
+      "callback_shape": "custom_scalar_reduce",
+      "guidance": "Internal productization may compile this candidate through the specialized hit-program path. Public support remains blocked until compile/cache/error handling, app-route validation, and 3-AI review pass.",
+      "internal_candidate_surface": "module_specialized_direct_device_callback",
+      "internal_productization_compile_path_allowed": true,
+      "performance_claim_authorized": false,
+      "raw_optix_callback_authorized": false,
+      "reason": "matches the constrained module-specialized Numba scalar callback contract",
+      "release_authorized": false,
+      "status": "tier3_specialized_candidate_contract_accepted_not_public_support",
+      "tier3_public_support_authorized": false
+    },
+    "rejected_action": {
+      "accepted": false,
+      "app_route_validation_required": true,
+      "callback_shape": "custom_action",
+      "guidance": "Action-shaped callbacks are not V4.0 support; rewrite as a scalar reduce or defer.",
+      "internal_candidate_surface": null,
+      "internal_productization_compile_path_allowed": false,
+      "performance_claim_authorized": false,
+      "raw_optix_callback_authorized": false,
+      "reason": "callback has action or side-effect semantics",
+      "release_authorized": false,
+      "status": "rejected_goal4697_action_or_side_effect_callback",
+      "tier3_public_support_authorized": false
+    },
+    "rejected_external_memory": {
+      "accepted": false,
+      "app_route_validation_required": true,
+      "callback_shape": "custom_scalar_reduce",
+      "guidance": "Return scalar state only; external memory mutation is deferred.",
+      "internal_candidate_surface": null,
+      "internal_productization_compile_path_allowed": false,
+      "performance_claim_authorized": false,
+      "raw_optix_callback_authorized": false,
+      "reason": "callback writes outside RTDL-owned fixed scalar state",
+      "release_authorized": false,
+      "status": "rejected_goal4697_external_memory_mutation_callback",
+      "tier3_public_support_authorized": false
+    },
+    "rejected_non_scalar": {
+      "accepted": false,
+      "app_route_validation_required": true,
+      "callback_shape": "custom_scalar_reduce",
+      "guidance": "Use fixed scalar inputs and one scalar return value for this candidate.",
+      "internal_candidate_surface": null,
+      "internal_productization_compile_path_allowed": false,
+      "performance_claim_authorized": false,
+      "raw_optix_callback_authorized": false,
+      "reason": "callback signature is outside the scalar-only contract",
+      "release_authorized": false,
+      "status": "rejected_goal4697_non_scalar_callback_signature",
+      "tier3_public_support_authorized": false
+    },
+    "rejected_python": {
+      "accepted": false,
+      "app_route_validation_required": true,
+      "callback_shape": "custom_scalar_reduce",
+      "guidance": "Python callbacks, closures, host functions, and dynamic dispatch remain rejected.",
+      "internal_candidate_surface": null,
+      "internal_productization_compile_path_allowed": false,
+      "performance_claim_authorized": false,
+      "raw_optix_callback_authorized": false,
+      "reason": "only Numba C-ABI device functions are accepted by this scaffold",
+      "release_authorized": false,
+      "status": "rejected_goal4697_arbitrary_python_callback",
+      "tier3_public_support_authorized": false
+    },
+    "rejected_sbt": {
+      "accepted": false,
+      "app_route_validation_required": true,
+      "callback_shape": "custom_scalar_reduce",
+      "guidance": "Use the module-specialized hit-program path or keep this as research; do not expose it as support.",
+      "internal_candidate_surface": null,
+      "internal_productization_compile_path_allowed": false,
+      "performance_claim_authorized": false,
+      "raw_optix_callback_authorized": false,
+      "reason": "dynamic SBT direct-callable hot path was yellow in Goal4691",
+      "release_authorized": false,
+      "status": "rejected_goal4697_dynamic_sbt_direct_callable_hot_path",
+      "tier3_public_support_authorized": false
+    }
+  },
+  "schema": "rtdl.v4.goal4697_specialized_tier3_api_contract.v1",
+  "status": "passed",
+  "validation_status": "passed"
+}

@@ -1,10 +1,10 @@
 # V4.0 Scope Gate
 
-Status: generated V4.0.0 formal release scope gate
+Status: generated V4 Python eDSL/operator-pushdown scope gate
 
-- gate status: `v4_0_0_formal_release_scope_authorized`
+- gate status: `v4_python_edsl_operator_pushdown_scope_goal4742_current_release_framing`
 - validation status: `passed`
-- release authorized: `True`
+- release authorized: `False`
 
 ## Included Surfaces
 
@@ -16,6 +16,8 @@ Status: generated V4.0.0 formal release scope gate
 - `v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays`
 - `v4_fixed_radius_graph_component_union_3d_device_arrays`
 - `v4_aabb_index_query_2d_all_ops_count_prepared_runner`
+- `v4_aggregate_frontier_device_columns_2d_prepared_runner`
+- `v4_ray_triangle_custom_predicate_early_exit_3d_numba`
 
 ## Candidate Surfaces
 
@@ -34,8 +36,8 @@ Status: generated V4.0.0 formal release scope gate
 
 ## Blocking Reasons
 
-- none
+- `goal4742_all_historical_benchmark_apps_faster_claim_not_supported`
 
 ## Non-Authorization
 
-This gate authorizes the narrow V4.0.0 generic operator release. It does not authorize broad V4 speedup wording, whole-application speedups, Tier-3 callback/PTX support, raw OptiX callbacks, CuPy performance claims, embedding/C-ABI, non-Python host binding claims, or app-specific native kernels.
+This gate preserves the V4 Python eDSL/operator-pushdown surface, including constrained custom predicate early-exit. It does not authorize broad legacy all-app high-performance wording, broad V4 speedup wording, whole-application speedups, Tier-3 callback/PTX support, raw OptiX callbacks, CuPy performance claims beyond measured rows, embedding/C-ABI, non-Python host binding claims, or app-specific native kernels.

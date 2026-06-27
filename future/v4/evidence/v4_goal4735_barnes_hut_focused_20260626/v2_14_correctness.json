@@ -1,0 +1,65 @@
+{
+  "app": "barnes_hut_force_app",
+  "body_count": 2048,
+  "capacity": {
+    "frontier_row_capacity": 1433600
+  },
+  "checksum": {
+    "force_x": 38.45212977863792,
+    "force_y": 605.7933224066255
+  },
+  "claim_flags": {
+    "device_column_contract": false,
+    "frontier_rows_materialized_on_host": true,
+    "host_frontier_materialization_in_hot_path": true,
+    "partner_migration_counts_as_speed": false,
+    "same_logical_frontier_contract": true
+  },
+  "frontier_summary": {
+    "contract": "generic_aggregate_frontier_collect_2d_v1",
+    "frontier_row_count": 514055,
+    "frontier_rows_materialized_on_host": true,
+    "native_symbol": "rtdl_optix_collect_aggregate_frontier_2d"
+  },
+  "hot_repeats": [
+    {
+      "aggregate_contribution_row_count": 85411.0,
+      "exact_contribution_row_count": 428644.0,
+      "frontier_collect_seconds": 1.9907610081136227,
+      "frontier_row_count": 514055.0,
+      "host_numba_vector_wall_seconds": 1.5340605080127716,
+      "hot_seconds": 3.5248215161263943,
+      "repeat_index": 0.0,
+      "wall_seconds": 3.5248215161263943
+    }
+  ],
+  "medians": {
+    "frontier_collect_seconds": 1.9907610081136227,
+    "host_numba_vector_wall_seconds": 1.5340605080127716,
+    "hot_seconds": 3.5248215161263943,
+    "wall_seconds": 3.5248215161263943
+  },
+  "partner": "numba_cpu",
+  "route": "v2_14_optix_host_frontier_numba_cpu_continuation",
+  "schema": "rtdl.v4.goal4676.aggregate_frontier_focused_pod_benchmark.v1",
+  "theta": 0.5,
+  "tree_summary": {
+    "bucket_size": 32,
+    "leaf_node_count": 151,
+    "max_depth": 4,
+    "max_leaf_member_count": 32,
+    "morton_bits": 16,
+    "source_count": 2048,
+    "tree_node_count": 201
+  },
+  "validation": {
+    "compared_against": "sum_aggregate_frontier_weighted_vectors_2d_cpu_reference",
+    "max_abs_diff_x": 0.0,
+    "max_abs_diff_y": 0.0,
+    "passed": true,
+    "reference_frontier_row_count": 514055,
+    "skipped": false,
+    "tolerance": 1e-07
+  },
+  "version": "v2_14"
+}

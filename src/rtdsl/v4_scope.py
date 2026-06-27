@@ -3,10 +3,12 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 
-V4_0_SCOPE_STATUS = "v4_0_0_formal_release_scope_authorized"
+V4_0_SCOPE_STATUS = "v4_python_edsl_operator_pushdown_scope_goal4756_complete_rt_core_matrix"
 V4_0_AUTHORIZED_RELEASE_LABEL = (
-    "RTDL v4.0.0 bounded operator release: 8 generic RT-core operators "
-    "faster than brute-force partner/CPU baselines"
+    "RTDL V4.0 Python eDSL/operator-pushdown release candidate and V2/V3 "
+    "superset: complete 10-app NVIDIA RT-core V2.14/V3.0.2/V4.0 matrix, "
+    "bounded material wins, and measured generic operator surfaces; broad "
+    "all-benchmark speedup remains unauthorized"
 )
 
 V4_0_INCLUDED_SURFACES = (
@@ -18,9 +20,11 @@ V4_0_INCLUDED_SURFACES = (
     "v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays",
     "v4_fixed_radius_graph_component_union_3d_device_arrays",
     "v4_aabb_index_query_2d_all_ops_count_prepared_runner",
+    "v4_aggregate_frontier_device_columns_2d_prepared_runner",
+    "v4_ray_triangle_custom_predicate_early_exit_3d_numba",
 )
 
-V4_0_CANDIDATE_SURFACES = ()
+V4_0_CANDIDATE_SURFACES: tuple[str, ...] = ()
 
 V4_0_INCLUDED_CAPABILITIES = (
     "unified_python_frontdoor",
@@ -29,6 +33,7 @@ V4_0_INCLUDED_CAPABILITIES = (
     "rtdl_native_prepared_runner",
     "tier2_fused_generic_rt_operators",
     "operator_callback_planner",
+    "constrained_numba_custom_predicate_early_exit",
 )
 
 V4_X_DEFERRED_CAPABILITIES = (
@@ -42,7 +47,9 @@ V4_X_DEFERRED_CAPABILITIES = (
     "app_specific_native_engine_kernels",
 )
 
-V4_RELEASE_BLOCKING_REASONS = ()
+V4_RELEASE_BLOCKING_REASONS = (
+    "goal4756_broad_all_benchmark_speedup_claim_not_supported",
+)
 
 
 @dataclass(frozen=True)
@@ -90,9 +97,10 @@ class V4ScopeGate:
 def v4_0_scope_gate() -> V4ScopeGate:
     """Return the current V4.0 scope gate.
 
-    This gate defines the narrow V4.0.0 release scope. The release is formal
-    for the included generic operator surfaces, while deferred V4.x
-    capabilities and broad speedup claims remain explicitly unauthorized.
+    This gate defines the current bounded V4 operator scope after Goal4756.
+    The included generic operator surfaces remain available, while formal
+    app-level high-performance release wording and deferred V4.x capabilities
+    remain explicitly unauthorized.
     """
 
     return V4ScopeGate(
@@ -101,13 +109,16 @@ def v4_0_scope_gate() -> V4ScopeGate:
         candidate_surfaces=V4_0_CANDIDATE_SURFACES,
         included_capabilities=V4_0_INCLUDED_CAPABILITIES,
         deferred_capabilities=V4_X_DEFERRED_CAPABILITIES,
-        release_authorized=True,
+        release_authorized=False,
         authorized_release_label=V4_0_AUTHORIZED_RELEASE_LABEL,
         blocking_reasons=V4_RELEASE_BLOCKING_REASONS,
         required_next_actions=(
-            "keep post-release guardrails passing",
-            "record deferred Claude review debt when available",
-            "treat Tier-3, CuPy performance, embedding, and whole-app speedups as V4.x work",
+            "keep current bounded operator guardrails passing",
+            "keep Goal4756 public docs/examples wording current before public tag",
+            "do not advertise broad legacy all-app high-performance V4 until a new app-level gate passes",
+            "do not count ranked-summary/RTNN as a V4 measured surface without a new generic lever and new evidence",
+            "treat aggregate-frontier as a measured V2.14 host-frontier bottleneck route, not a V4-over-V3 speed win",
+            "treat arbitrary callbacks, raw OptiX callbacks, embedding, and non-Python host work as future scoped work",
         ),
     )
 
@@ -150,14 +161,14 @@ def validate_v4_0_scope_gate(payload: V4ScopeGate | dict[str, object] | None = N
     ]
     if forbidden_true:
         missing.append("forbidden_claim_flags_false")
-    if payload_dict.get("release_authorized") is not True:
+    if payload_dict.get("release_authorized") is not False:
         missing.append("release_authorized")
     if payload_dict.get("authorized_release_label") != V4_0_AUTHORIZED_RELEASE_LABEL:
         missing.append("authorized_release_label")
     return {
         "status": "passed" if not missing else "failed",
         "missing_or_invalid": tuple(missing),
-        "release_authorized": True,
+        "release_authorized": False,
         "checked_surfaces": V4_0_INCLUDED_SURFACES,
         "checked_candidate_surfaces": V4_0_CANDIDATE_SURFACES,
     }

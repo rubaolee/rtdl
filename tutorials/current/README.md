@@ -12,4 +12,7 @@ This is the current V4 learning path.
 
 Read these in order. They teach the current RTDL V4 contract directly:
 generic fused RT operators, explicit partner scope, conservative callback
-planning, and exact performance wording.
+planning, exact performance wording, the custom predicate early-exit
+operator-pushdown workflow, and the Goal4756 complete RT-core app matrix
+boundary: V4 has bounded material wins and parity/control rows, not a blanket
+claim that every app is faster.
