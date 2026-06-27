@@ -15,7 +15,7 @@ if str(SRC) not in sys.path:
 import rtdsl.v4 as v4
 
 
-README = ROOT / "future" / "v4" / "README.md"
+README = ROOT / "README.md"
 QUICKSTART = ROOT / "future" / "v4" / "examples" / "v4_frontdoor_quickstart.py"
 
 
@@ -23,7 +23,7 @@ class V4FrontDoorTest(unittest.TestCase):
     def test_claim_boundary_lists_measured_surfaces_without_release_claims(self) -> None:
         boundary = v4.claim_boundary_v4()
 
-        self.assertEqual("v4_python_edsl_operator_pushdown_front_door_goal4756_complete_rt_core_matrix", boundary["status"])
+        self.assertEqual("v4_python_edsl_operator_pushdown_front_door_complete_rt_core_matrix", boundary["status"])
         self.assertEqual("mixed_torch_numba_cupy_and_rtdl_native", boundary["measured_partner"])
         self.assertEqual(("cupy", "numba", "rtdl_native", "torch"), boundary["measured_partners"])
         self.assertEqual(10, len(boundary["measured_surfaces"]))
@@ -88,7 +88,7 @@ class V4FrontDoorTest(unittest.TestCase):
         self.assertTrue(boundary["complete_rt_core_app_matrix_available"])
         self.assertEqual(10, boundary["complete_rt_core_app_matrix_app_count"])
         self.assertEqual(30, boundary["complete_rt_core_app_matrix_row_count"])
-        self.assertEqual(0, boundary["goal4756_hot_path_regression_count"])
+        self.assertEqual(0, boundary["app_matrix_hot_path_regression_count"])
         self.assertFalse(boundary["all_historical_benchmark_apps_faster_claim_authorized"])
         self.assertFalse(boundary["broad_v4_over_v2_14_speedup_claim_authorized"])
         self.assertFalse(boundary["release_claim_authorized"])
@@ -131,7 +131,7 @@ class V4FrontDoorTest(unittest.TestCase):
         self.assertEqual("tier2_measured_ready", aabb_plan.status)
         self.assertEqual("v4_aabb_index_query_2d_all_ops_count_prepared_runner", aabb_plan.api_surface)
         ranked_plan = v4.plan_operator_request_v4("ranked_summary", partner="rtdl_native")
-        self.assertEqual("deferred_goal4678_serious_scale_parity_not_release", ranked_plan.status)
+        self.assertEqual("deferred_serious_scale_not_v4_0_release_surface", ranked_plan.status)
         self.assertEqual("deferred_v4_x_or_research", ranked_plan.tier)
         self.assertIsNone(ranked_plan.api_surface)
         self.assertFalse(ranked_plan.release_claim_authorized)
@@ -139,18 +139,14 @@ class V4FrontDoorTest(unittest.TestCase):
     def test_readme_points_users_at_unified_frontdoor(self) -> None:
         text = README.read_text(encoding="utf-8")
         self.assertIn("import rtdsl.v4 as rtdl_v4", text)
-        self.assertIn("V4.0 does not expose raw OptiX callbacks", text)
-        self.assertIn("complete Goal4756 RT-core app matrix", text)
+        self.assertIn("V4 is a V2/V3 superset", text)
+        self.assertIn("complete 10-app RT-core matrix", text)
         self.assertIn("broad V4-over-V2.14 speedup wording", text)
-        self.assertIn("embedding/C-ABI claims", text)
+        self.assertIn("embedding, C ABI, or non-Python host binding claims", text)
         self.assertIn("non-Python host binding claims", text)
-        self.assertIn("Triangle counting", text)
-        self.assertIn("Spatial RayJoin shape-pair", text)
-        self.assertIn("v4_aggregate_frontier_device_columns_2d_prepared_runner", text)
-        self.assertIn("v4_ray_triangle_custom_predicate_early_exit_3d_numba", text)
-        self.assertIn("Ray/triangle any-hit weighted sum", text)
-        self.assertIn("Fixed-radius graph component union", text)
-        self.assertIn("AABB all-ops count", text)
+        self.assertIn("docs/learn/operator_catalog.md", text)
+        self.assertIn("tutorials/current/README.md", text)
+        self.assertIn("examples/README.md", text)
         self.assertNotIn("Current candidate packet", text)
         self.assertNotIn("still needs\nPOD validation and completion review", text)
 
@@ -165,7 +161,7 @@ class V4FrontDoorTest(unittest.TestCase):
         payload = json.loads(proc.stdout)
         self.assertEqual("ok", payload["status"])
         self.assertEqual(
-            "v4_python_edsl_operator_pushdown_front_door_goal4756_complete_rt_core_matrix",
+            "v4_python_edsl_operator_pushdown_front_door_complete_rt_core_matrix",
             payload["front_door_status"],
         )
         self.assertEqual(10, payload["measured_surface_count"])
@@ -195,7 +191,7 @@ class V4FrontDoorTest(unittest.TestCase):
         self.assertTrue(payload["complete_rt_core_app_matrix_available"])
         self.assertEqual(10, payload["complete_rt_core_app_matrix_app_count"])
         self.assertEqual(30, payload["complete_rt_core_app_matrix_row_count"])
-        self.assertEqual(0, payload["goal4756_hot_path_regression_count"])
+        self.assertEqual(0, payload["app_matrix_hot_path_regression_count"])
         self.assertFalse(payload["all_historical_benchmark_apps_faster_claim_authorized"])
         self.assertFalse(payload["broad_v4_over_v2_14_speedup_claim_authorized"])
         self.assertEqual(

@@ -2,7 +2,7 @@
 
 Date: 2026-06-27
 
-Status: `external_review_requested__antigravity_cli_no_output__debt_open`
+Status: `external_review_closed_by_antigravity_rollup__public_surface_approved`
 
 ## Scope
 
@@ -12,7 +12,7 @@ tag while preserving bounded claim wording. It is documented in:
 - `future/v4/v4_goal4777_public_surface_main_release_audit_2026-06-27.md`
 - `future/v4/reviews/call_for_review_v4_goal4777_public_surface_main_release_audit_2026-06-27.md`
 
-## External Review Attempt
+## Original External Review Attempt
 
 Antigravity CLI was available at:
 
@@ -29,8 +29,37 @@ Result:
 
 ```text
 antigravity_review_result: no_output
-external_review_debt: open
+original_external_review_debt_at_attempt_time: open
+current_external_review_debt: closed_by_antigravity_rollup
 ```
+
+## Closure Update - 2026-06-27
+
+The later consolidated Gemini/external review-debt rollup was reviewed by
+Antigravity and closes this Goal4777 public-surface debt.
+
+Reviewed rollup:
+
+- `future/v4/reviews/v4_gemini_review_debt_rollup_for_antigravity_2026-06-27.md`
+
+Antigravity result:
+
+- `future/v4/reviews/antigravity_v4_gemini_review_debt_rollup_2026-06-27.md`
+
+Verdict:
+
+```text
+approve_current_external_debt_closed_except_specific_claim_blocks
+```
+
+Antigravity explicitly approved the two active P0 items:
+
+- the public documentation fix response after the earlier documentation block;
+- the Goal4777 public-surface release audit.
+
+It also confirmed that the Gemini review debt seat remains closed for the
+bounded V4.0 tag and that Barnes-Hut/paper-reproduction issues remain
+specific-claim blockers only, not V4.0 public-tag blockers.
 
 ## Local Gate Status
 
@@ -56,16 +85,8 @@ OK (skipped=1)
 
 ## Debt Handling
 
-This debt does not expand the release scope or authorize any additional claims.
-It means an external reviewer still needs to inspect Goal4777 and return one of
-the verdict labels requested in the call-for-review packet.
-
-Valid future closure labels:
-
-- `approve_goal4777_public_surface_release_audit`
-- `approve_with_required_amendments`
-- `reject_overclaim_or_public_surface_incoherent`
-- `blocked_needs_more_evidence`
+This debt is closed for the bounded V4.0 public tag. It does not expand the
+release scope or authorize any additional claims.
 
 ## Non-Authorization
 

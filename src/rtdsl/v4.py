@@ -268,9 +268,9 @@ from .v4_shape_pair_relation import prepare_shape_pair_relation_active_count_2d_
 from .v4_shape_pair_relation import shape_pair_relation_active_count_2d_prepared_left_executor_claim_boundary_v4
 
 
-V4_FRONT_DOOR_STATUS = "v4_python_edsl_operator_pushdown_front_door_goal4756_complete_rt_core_matrix"
+V4_FRONT_DOOR_STATUS = "v4_python_edsl_operator_pushdown_front_door_complete_rt_core_matrix"
 V4_FRONT_DOOR_MEASURED_PARTNER = "mixed_torch_numba_cupy_and_rtdl_native"
-V4_GOAL4756_DECISION_LABEL = (
+V4_APP_LEVEL_DECISION_LABEL = (
     "complete_rt_core_app_matrix__bounded_material_wins__no_broad_all_app_speedup_claim"
 )
 V4_PUBLIC_RELEASE_TAG = "v4.0.0"
@@ -312,14 +312,13 @@ def claim_boundary_v4() -> dict[str, object]:
         "app_compatibility_repair_required_apps": tuple(app_compatibility["repair_required_apps"]),
         "candidate_surfaces": candidate_surfaces,
         "measured_surface_count": len(measured_surfaces),
-        "v4_goal4756_decision_label": V4_GOAL4756_DECISION_LABEL,
-        "current_app_level_decision_label": V4_GOAL4756_DECISION_LABEL,
+        "current_app_level_decision_label": V4_APP_LEVEL_DECISION_LABEL,
         "complete_rt_core_app_matrix_available": True,
         "complete_rt_core_app_matrix_app_count": 10,
         "complete_rt_core_app_matrix_row_count": 30,
-        "goal4756_hot_path_regression_count": 0,
-        "goal4756_material_hot_path_candidate_apps": ("triangle_counting", "barnes_hut"),
-        "goal4756_v4_over_v2_14_hot_geomean": 2.10069,
+        "app_matrix_hot_path_regression_count": 0,
+        "app_matrix_material_hot_path_candidate_apps": ("triangle_counting", "barnes_hut"),
+        "app_matrix_v4_over_v2_14_hot_geomean": 2.10069,
         "public_release_status": "published",
         "public_release_tag": V4_PUBLIC_RELEASE_TAG,
         "public_release_commit": "1c8f63cbadbb1edfc994c1c2477a94a7f00a8639",

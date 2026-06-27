@@ -13,7 +13,7 @@ V4_FIXED_RADIUS_RANKED_SUMMARY_3D_CANDIDATE_STATUS = (
     "candidate_goal4660_needs_pod_scorecard_not_release"
 )
 V4_FIXED_RADIUS_RANKED_SUMMARY_3D_DEFERRED_STATUS = (
-    "deferred_goal4678_serious_scale_parity_not_release"
+    "deferred_serious_scale_not_v4_0_release_surface"
 )
 
 

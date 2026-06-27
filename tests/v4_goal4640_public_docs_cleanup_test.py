@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 import subprocess
 import sys
 import unittest
@@ -18,8 +19,10 @@ PUBLIC_DOCS = (
     ROOT / "README.md",
     ROOT / "docs" / "README.md",
     ROOT / "docs" / "current_v4_status.md",
+    ROOT / "docs" / "app_level_benchmark_summary.md",
     ROOT / "docs" / "public_documentation_map.md",
     ROOT / "docs" / "learn" / "README.md",
+    ROOT / "docs" / "learn" / "operator_catalog.md",
     ROOT / "docs" / "learn" / "performance_wording.md",
     ROOT / "docs" / "learn" / "source_tree_doctor.md",
     ROOT / "tutorials" / "README.md",
@@ -29,11 +32,35 @@ PUBLIC_DOCS = (
     ROOT / "tutorials" / "current" / "03_backend_choice.md",
     ROOT / "tutorials" / "current" / "04_prepared_runtime.md",
     ROOT / "tutorials" / "current" / "05_measurement_boundaries.md",
+    ROOT / "tutorials" / "current" / "06_benchmark_apps.md",
     ROOT / "examples" / "README.md",
     ROOT / "examples" / "v4" / "README.md",
-    ROOT / "future" / "v4" / "README.md",
-    ROOT / "future" / "v4" / "tier2_operator_catalog.md",
 )
+
+PUBLIC_EXAMPLE_SOURCES = tuple(sorted((ROOT / "examples" / "v4").glob("*.py"))) + (
+    ROOT / "future" / "v4" / "examples" / "v4_frontdoor_quickstart.py",
+)
+
+PUBLIC_SURFACE_FORBIDDEN = (
+    re.compile(r"\bGoal\d+\b", re.IGNORECASE),
+    re.compile(r"\bgoal\d+\b", re.IGNORECASE),
+    re.compile(r"parity/control", re.IGNORECASE),
+    re.compile(r"review debt", re.IGNORECASE),
+    re.compile(r"\bClaude\b|\bGemini\b|\bAntigravity\b"),
+    re.compile(r"release candidate", re.IGNORECASE),
+    re.compile(r"docs/reviews", re.IGNORECASE),
+    re.compile(r"future/v4", re.IGNORECASE),
+)
+
+
+def _json_contains_forbidden_goal(value: object) -> bool:
+    if isinstance(value, dict):
+        return any(_json_contains_forbidden_goal(key) or _json_contains_forbidden_goal(item) for key, item in value.items())
+    if isinstance(value, (list, tuple)):
+        return any(_json_contains_forbidden_goal(item) for item in value)
+    if isinstance(value, str):
+        return re.search(r"goal\d+", value, flags=re.IGNORECASE) is not None
+    return False
 
 
 class V4Goal4640PublicDocsCleanupTest(unittest.TestCase):
@@ -56,6 +83,20 @@ class V4Goal4640PublicDocsCleanupTest(unittest.TestCase):
                 self.assertIn("V4", text)
                 for needle in forbidden:
                     self.assertNotIn(needle, text)
+
+    def test_public_docs_do_not_leak_internal_review_language(self) -> None:
+        for path in PUBLIC_DOCS:
+            with self.subTest(path=path.relative_to(ROOT).as_posix()):
+                text = path.read_text(encoding="utf-8")
+                for pattern in PUBLIC_SURFACE_FORBIDDEN:
+                    self.assertIsNone(pattern.search(text), pattern.pattern)
+
+    def test_public_v4_example_sources_do_not_leak_goal_labels(self) -> None:
+        for path in PUBLIC_EXAMPLE_SOURCES:
+            with self.subTest(path=path.relative_to(ROOT).as_posix()):
+                text = path.read_text(encoding="utf-8")
+                for pattern in PUBLIC_SURFACE_FORBIDDEN[:3]:
+                    self.assertIsNone(pattern.search(text), pattern.pattern)
 
     def test_legacy_current_v3_status_is_not_in_public_docs(self) -> None:
         self.assertFalse((ROOT / "docs" / "current_v3_status.md").exists())
@@ -81,21 +122,22 @@ class V4Goal4640PublicDocsCleanupTest(unittest.TestCase):
                 )
                 payload = json.loads(proc.stdout)
                 self.assertIn(payload["status"], {"ok", "dry_run", "rejected_action_shaped_callback_deferred"})
+                self.assertFalse(_json_contains_forbidden_goal(payload))
                 self.assertFalse(payload["release_claim_authorized"])
                 self.assertFalse(payload["tier3_callback_claim_authorized"])
 
-    def test_goal4639_scorecard_is_visible_without_overclaim(self) -> None:
+    def test_operator_catalog_is_visible_without_overclaim(self) -> None:
         text = (ROOT / "docs" / "current_v4_status.md").read_text(encoding="utf-8")
-        self.assertIn("Goal4639 scorecard passed", text)
-        self.assertIn("8/8", text)
-        self.assertIn("4/4", text)
-        self.assertIn("most measured operators are 1.2x-1.7x", text)
-        self.assertIn("Baseline / denominator", text)
+        catalog = (ROOT / "docs" / "learn" / "operator_catalog.md").read_text(encoding="utf-8")
+        wording = (ROOT / "docs" / "learn" / "performance_wording.md").read_text(encoding="utf-8")
+        self.assertIn("V4 exposes measured generic operator/workflow surfaces", text)
+        self.assertIn("fixed-radius count threshold", text)
+        self.assertIn("custom predicate early-exit", text)
+        self.assertIn("Representative result", catalog)
+        self.assertIn("Most V4.0 measured operators are 1.2x-1.7x", wording)
+        self.assertIn("denominator", wording)
         self.assertIn("whole-application speedup claim", text)
-        self.assertIn("V4.0.0 Python eDSL/operator-pushdown release surface available", text)
-        self.assertIn("current V4 measured operator/workflow surface count is\n`10`", text)
-        self.assertIn("Custom predicate early-exit", text)
-        self.assertIn("broad all-app", text)
+        self.assertIn("broad all-app", wording)
 
     def test_machine_decision_records_docs_cleanup_without_release_authorization(self) -> None:
         decision = validate_v4_goal4640_public_docs_cleanup(ROOT)

@@ -133,8 +133,8 @@ def validate_v4_goal4773_release_authorization_status(
         raise ValueError("Goal4773 owner record must record the published tag target")
     if "published tag is `v4.0.0`" not in public_docs:
         raise ValueError("Goal4773 current docs must expose the published V4.0.0 tag")
-    if "external public-tag review approved under bounded framing" not in public_docs:
-        raise ValueError("Goal4773 public README must expose current review state")
+    if "release claim boundary is\nlocked" not in public_docs:
+        raise ValueError("Goal4773 public docs must expose the locked release claim boundary")
     if "clean wheel smoke passed" not in public_docs:
         raise ValueError("Goal4773 public docs must expose clean wheel smoke success")
     if "Public V4.0 tagging still requires external release authorization" in public_docs:

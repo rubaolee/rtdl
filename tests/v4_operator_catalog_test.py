@@ -53,7 +53,7 @@ class V4OperatorCatalogTest(unittest.TestCase):
             plan.tier3_protocol_status,
         )
         self.assertEqual(catalog.V4_TIER3_CALLBACK_SPIKE_PROTOCOL_DOC, plan.tier3_protocol_doc)
-        self.assertIn("goal4622 spike protocol", plan.guidance)
+        self.assertIn("callback spike protocol", plan.guidance)
         self.assertIn("fixed overhead ceiling", plan.guidance)
         self.assertFalse(plan.tier3_callback_claim_authorized)
         self.assertFalse(plan.raw_optix_callback_claim_authorized)
@@ -211,7 +211,7 @@ class V4OperatorCatalogTest(unittest.TestCase):
     def test_ranked_summary_is_deferred_not_candidate_or_measured_surface(self) -> None:
         plan = catalog.plan_v4_operator_request("ranked_summary", partner="rtdl_native")
 
-        self.assertEqual("deferred_goal4678_serious_scale_parity_not_release", plan.status)
+        self.assertEqual("deferred_serious_scale_not_v4_0_release_surface", plan.status)
         self.assertEqual("deferred_v4_x_or_research", plan.tier)
         self.assertIsNone(plan.api_surface)
         self.assertEqual("FIXED_RADIUS_RANKED_SUMMARY_3D", plan.generic_primitive)

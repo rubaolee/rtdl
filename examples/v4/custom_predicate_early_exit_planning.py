@@ -37,15 +37,9 @@ def main() -> int:
         "action": plan.action,
         "planner_accepts_constrained_predicate": True,
         "unsafe_callback_status": unsafe.status,
-        "serious_scale_v4_vs_v2_14_geomean": boundary[
-            "goal4717_serious_scale_primary_v2_speedup_geomean"
-        ],
-        "serious_scale_v4_vs_v3_0_2_geomean": boundary[
-            "goal4717_serious_scale_primary_v3_speedup_geomean"
-        ],
-        "serious_scale_min_primary_v3_speedup": boundary[
-            "goal4717_serious_scale_min_primary_v3_speedup"
-        ],
+        "serious_scale_v4_vs_v2_14_geomean": boundary["serious_scale_primary_v2_speedup_geomean"],
+        "serious_scale_v4_vs_v3_0_2_geomean": boundary["serious_scale_primary_v3_speedup_geomean"],
+        "serious_scale_min_primary_v3_speedup": boundary["serious_scale_min_primary_v3_speedup"],
         "comparison_class": boundary["comparison_class"],
         "release_claim_authorized": boundary["release_claim_authorized"],
         "whole_app_speedup_claim_authorized": boundary["whole_app_speedup_claim_authorized"],

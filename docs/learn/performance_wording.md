@@ -12,7 +12,7 @@ When discussing performance, include:
 - the measured metric;
 - the hardware and driver scope;
 - whether timing is setup, warmup, hot loop, phase total, or wall time;
-- the partner scope, such as Torch CUDA, Numba, or RTDL native.
+- the partner scope, such as Torch CUDA, CuPy, Numba, or RTDL native.
 
 ## Current V4 Wording
 
@@ -28,25 +28,23 @@ It does not claim that all historical benchmark apps are faster than V2.14.
 Good:
 
 ```text
-The current Goal4756 app matrix has two material hot-path candidate wins over
-V2.14 and parity/control elsewhere; it does not claim that all historical
+The current app matrix has two material hot-path candidate wins over V2.14 and
+similar-speed control rows elsewhere; it does not claim that all historical
 benchmark apps are faster than V2.14.
 ```
 
 Good:
 
 ```text
-On the frozen Goal4639 scorecard, the measured operator surface passed its
-stated floor against its stated brute-force partner/CPU baseline on the RTX
-A5000 POD.
+The measured operator surface passed its stated floor against its stated
+brute-force partner/CPU baseline on the RTX A5000 POD.
 ```
 
 Good:
 
 ```text
 The V4 fixed-radius count-threshold Torch CUDA surface recorded a 1.697x
-representative scorecard ratio against the Torch brute-force/reference baseline
-in the Goal4639 run.
+representative scorecard ratio against the Torch brute-force/reference baseline.
 ```
 
 Good:
@@ -66,6 +64,8 @@ primary geomean versus the V2.14/V3.0.2 materialized-device fallback, with
 correctness passing; this is a V4 operator-pushdown workflow claim, not a broad
 all-app claim.
 ```
+
+The short rule: exact rows are allowed; broad all-app claims are not.
 
 Too broad:
 
@@ -93,11 +93,10 @@ Allowed for V4.0.0:
   measured generic operator/workflow surfaces";
 - exact measured operator-surface results;
 - exact constrained custom predicate early-exit workflow results;
-- exact Goal4639 scorecard summary;
-- exact Goal4756 app-level ratios and the current decision label
+- exact app-level ratios and the current decision label
   `complete_rt_core_app_matrix__bounded_material_wins__no_broad_all_app_speedup_claim`;
 - exact partner and hardware scope;
-- exact denominator and scale for every representative ratio;
+- exact denominator and scale for every representative ratio.
 
 Not allowed:
 
@@ -109,6 +108,6 @@ Not allowed:
 - public true-zero-copy wording;
 - Tier-3 callback/PTX support wording;
 - raw OptiX callback support wording;
-- CuPy performance wording;
-- embedding, C ABI, or non-Python host binding wording.
+- broad CuPy performance wording;
+- embedding, C ABI, or non-Python host binding wording;
 - unqualified "high-performance" or "near-OptiX" wording.

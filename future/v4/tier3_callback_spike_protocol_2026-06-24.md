@@ -1,7 +1,7 @@
 # V4 `goal4622` Tier-3 Callback Spike Protocol
 
 Date: 2026-06-24
-Status: `tier3_protocol_goal4622_spike_only_not_support`
+Status: `tier3_protocol_spike_only_not_public_support`
 
 This protocol defines the only callback shape that may be tested as a future
 Tier-3 spike. It does not authorize Tier-3 support, raw OptiX callbacks, V4
@@ -211,7 +211,7 @@ The V4 planner may expose only the following Tier-3 statuses:
 - scalar reduce candidate:
   `tier3_spike_only_not_v4_0_release_surface`
 - protocol status:
-  `tier3_protocol_goal4622_spike_only_not_support`
+  `tier3_protocol_spike_only_not_public_support`
 - action-shaped rejection:
   `rejected_by_goal4622_action_shape_boundary`
 

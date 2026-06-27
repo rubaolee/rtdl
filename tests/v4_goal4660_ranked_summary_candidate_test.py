@@ -32,7 +32,7 @@ class V4Goal4660RankedSummaryCandidateTest(unittest.TestCase):
     def test_planner_defers_ranked_summary_without_release_claims(self) -> None:
         plan = v4.plan_operator_request_v4("fixed_radius_ranked_summary", partner="rtdl_native")
 
-        self.assertEqual("deferred_goal4678_serious_scale_parity_not_release", plan.status)
+        self.assertEqual("deferred_serious_scale_not_v4_0_release_surface", plan.status)
         self.assertEqual("deferred_v4_x_or_research", plan.tier)
         self.assertIsNone(plan.api_surface)
         self.assertFalse(plan.measured_partner)
@@ -50,7 +50,7 @@ class V4Goal4660RankedSummaryCandidateTest(unittest.TestCase):
     def test_claim_boundary_is_deferred_only(self) -> None:
         boundary = v4_ranked_summary.fixed_radius_ranked_summary_3d_prepared_runner_claim_boundary_v4()
 
-        self.assertEqual("deferred_goal4678_serious_scale_parity_not_release", boundary["status"])
+        self.assertEqual("deferred_serious_scale_not_v4_0_release_surface", boundary["status"])
         self.assertFalse(boundary["candidate_surface"])
         self.assertTrue(boundary["deferred_surface"])
         self.assertFalse(boundary["measured_v4_release_surface"])

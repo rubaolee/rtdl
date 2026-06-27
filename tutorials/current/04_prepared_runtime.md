@@ -30,4 +30,7 @@ py -3 examples\v4\aabb_index_all_ops_count.py --dry-run
 Dry runs prove API reachability and claim-boundary flags. GPU performance
 requires the recorded hardware path and exact benchmark command.
 
+The full current catalog is
+[../../docs/learn/operator_catalog.md](../../docs/learn/operator_catalog.md).
+
 Next: [Measurement Boundaries](05_measurement_boundaries.md)

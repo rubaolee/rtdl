@@ -7,6 +7,31 @@ Status: current working-memory refresh for V4 Goals4647-4720
 
 Read this before any final V4 tag or review-debt decision.
 
+Latest public-surface/Gemini-debt closure:
+
+- rollup:
+  `future/v4/reviews/v4_gemini_review_debt_rollup_for_antigravity_2026-06-27.md`
+- Antigravity rollup review:
+  `future/v4/reviews/antigravity_v4_gemini_review_debt_rollup_2026-06-27.md`
+- closure record:
+  `future/v4/reviews/v4_external_review_debt_closure_record_after_antigravity_rollup_2026-06-27.md`
+
+Latest verdict:
+
+```text
+approve_current_external_debt_closed_except_specific_claim_blocks
+```
+
+Interpretation:
+
+- Do not retry Gemini CLI for this debt.
+- Do not retry Antigravity for Goal4777 unless a future reviewer names a new,
+  exact blocker.
+- The Goal4777 public-surface debt is closed.
+- The public docs/tutorial P0 fixes are externally approved.
+- Remaining Barnes-Hut/paper-reproduction and Tier-3/callback items are
+  specific-claim boundaries only, not V4.0 public-tag blockers.
+
 - Consolidated Gemini/Antigravity review-debt packet:
   `future/v4/reviews/v4_gemini_full_coverage_review_debt_for_antigravity_2026-06-27.md`
 - Antigravity review result:

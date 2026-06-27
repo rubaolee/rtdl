@@ -42,10 +42,16 @@ def main() -> int:
             partner="torch",
         )
 
-    print(json.dumps(plan.as_dict(), indent=2, sort_keys=True))
+    payload = plan.as_dict()
+    if payload.get("tier3_protocol_doc"):
+        payload["callback_protocol"] = "deferred_v4_x_callback_spike"
+        payload.pop("tier3_protocol_doc", None)
+    if payload.get("tier3_protocol_status"):
+        payload["callback_protocol_status"] = "not_public_v4_0_support"
+        payload.pop("tier3_protocol_status", None)
+    print(json.dumps(payload, indent=2, sort_keys=True))
     return 0
 
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

@@ -1,17 +1,17 @@
 # V4 App-Level Benchmark Summary
 
-This page is the current public app-level performance boundary for V4.0.
+This page is the current public app-level performance boundary for V4.0.0.
 
 ## Current Decision
 
-Goal4756 completed a serious NVIDIA RT-core POD matrix for the 10 promoted
-benchmark apps:
+The V4.0.0 release matrix completed a serious NVIDIA RT-core POD run for the 10
+promoted benchmark apps:
 
 - V2.14, V3.0.2, and V4.0 rows are present for every app.
 - All 30 rows returned success and parseable JSON.
 - Embree is not used as a primary denominator.
-- The Spatial RayJoin row uses generated grid64 shape-pair input, not the old
-  tiny overlay smoke input.
+- The Spatial RayJoin row uses generated grid64 shape-pair input, not a tiny
+  overlay smoke input.
 - The table has no `n/a` rows.
 
 Decision label:
@@ -20,24 +20,25 @@ Decision label:
 complete_rt_core_app_matrix__bounded_material_wins__no_broad_all_app_speedup_claim
 ```
 
-V4.0.0 is a published Python eDSL/operator-pushdown release and a V2/V3 superset.
-The complete app matrix supports bounded claims: two material hot-path candidate
-rows over V2.14, broad parity/control elsewhere, and no hot-path regressions in
-the Goal4756 run. It does not authorize "all benchmark apps are faster" wording.
+V4.0.0 is a published Python eDSL/operator-pushdown release and a V2/V3
+superset. The complete app matrix supports bounded claims: two material hot-path
+candidate rows over V2.14, similar-speed control rows elsewhere, and no hot-path
+regressions in this run. It does not authorize "all benchmark apps are faster"
+wording.
 
 ## Current 10-App RT-Core Rows
 
 | App | V4/V2.14 hot | V4/V3.0.2 hot | Current reading |
 | --- | ---: | ---: | --- |
-| RTDBSCAN | `0.998x` | `0.993x` | Parity/control. |
+| RTDBSCAN | `0.998x` | `0.993x` | Similar-speed control row. |
 | RayDB-style | `1.113x` | `1.111x` | Modest RT-core hot gain; below broad-app headline bar. |
 | Triangle counting | `4.360x` | `1.021x` | Material hot-path candidate. |
-| LibRTS spatial index | `0.999x` | `1.002x` | Parity/control. |
-| Hausdorff XHD threshold route | `1.032x` | `0.983x` | Same-primitive threshold row is parity/control. |
-| Robot collision | `1.020x` | `1.000x` | Parity/control; inherited OptiX primitive remains usable in V4. |
-| Contact manifold | `1.116x` | `1.477x` | Parity/control/modest gain on the measured hot subpipeline. |
-| RTNN | `1.029x` | `1.024x` | Parity/control. |
-| Spatial RayJoin shape-pair | `1.000x` | `1.004x` | Serious generated-input parity/control. |
+| LibRTS spatial index | `0.999x` | `1.002x` | Similar-speed control row. |
+| Hausdorff XHD threshold route | `1.032x` | `0.983x` | Same-primitive threshold row with similar speed. |
+| Robot collision | `1.020x` | `1.000x` | Similar-speed row; inherited OptiX primitive remains usable in V4. |
+| Contact manifold | `1.116x` | `1.477x` | Similar-speed to modest gain on the measured hot subpipeline. |
+| RTNN | `1.029x` | `1.024x` | Similar-speed control row. |
+| Spatial RayJoin shape-pair | `1.000x` | `1.004x` | Serious generated-input row with similar speed. |
 | Barnes-Hut aggregate frontier | `286.142x` | `0.993x` | Material V3/V4-over-V2.14 candidate; not a new V4-over-V3 speed claim. |
 
 Hot-path geomean V4/V2.14: `2.10069x`.
@@ -58,18 +59,13 @@ Barnes-Hut:
 The large V4/V2.14 win is a host-frontier bottleneck removal preserved from the
 V3/Phoenix device-continuation direction and packaged into V4. Because V4/V3 is
 near parity, public wording must not describe it as a new V4-only speedup.
-
-Supplemental RT-BarnesHut author-semantics route:
-The newer native V4 RT-BarnesHut route is checksum-valid at 10M and wins on
-comparable internal program time (`~7.513s` RTDL including input download
-versus `10.4391s` author total program) with full phase accounting. This is
-still not public paper-reproduction wording, not a no-copy tree-build claim,
-and not a V2/V3/V4 public RT-BarnesHut speed table.
+RT-BarnesHut paper-reproduction wording remains outside the V4.0.0 public
+claim; this benchmark row is not a public claim that RTDL fully reproduces the
+paper implementation.
 
 Spatial RayJoin:
 The previous smoke-scale overlay row has been replaced in the runner by
-generated grid64 shape-pair input. The result is serious parity, not a speed
-win.
+generated grid64 shape-pair data. The result is serious parity, not a speed win.
 
 ## V4-Only Workflow Row
 
@@ -88,7 +84,7 @@ Use:
 RTDL V4.0.0 is a published Python eDSL/operator-pushdown release and V2/V3
 superset. On the current NVIDIA RT-core 10-app matrix, all apps have V2.14,
 V3.0.2, and V4.0 rows; V4.0 has two material hot-path candidate wins over
-V2.14 and parity/control elsewhere. Separate V4 operator surfaces and the
+V2.14 and similar-speed control rows elsewhere. Separate V4 operator surfaces and the
 custom predicate early-exit workflow show additional bounded V4 value.
 ```
 
@@ -104,10 +100,8 @@ Do not use:
 V4 is broadly faster than V2.14 or V3 across every app.
 ```
 
-## Evidence
+## Audit Evidence
 
-- `future/v4/evidence/v4_goal4756_serious_all30_generated_spatial_2026-06-26/`
-- `future/v4/evidence/v4_goal4756_final_rt_core_matrix_analysis_2026-06-26.json`
-- `future/v4/v4_goal4756_final_rt_core_matrix_analysis_2026-06-26.md`
-- `future/v4/v4_goal4756_final_rt_core_matrix_release_readout_2026-06-26.md`
-- `future/v4/v4_goal4759_final_review_evidence_manifest_2026-06-26.md`
+Raw benchmark JSON, logs, and audit records are retained for
+maintainers under audit-only evidence directories and `history/`. They are not
+part of the first-time user learning path.

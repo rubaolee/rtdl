@@ -15,12 +15,12 @@ V4_OPERATOR_CATALOG_STATUS = "v4_0_0_formal_release_catalog"
 V4_GOAL4630_PUSHDOWN_RECOGNIZER_STATUS = "goal4630_minimum_pushdown_recognizer_not_release"
 V4_TIER2_MEASURED_SURFACE_STATUS = "tier2_measured_v4_0_0_release_surface"
 V4_TIER2_DEFERRED_PARTNER_STATUS = "tier2_declared_unmeasured_partner"
-V4_CERTIFIED_PARTNER_SURFACE_STATUS = "certified_partner_surface_goal4651_not_formal_v4_speed_win"
+V4_CERTIFIED_PARTNER_SURFACE_STATUS = "certified_partner_surface_not_formal_v4_speed_win"
 V4_CERTIFIED_PARTNER_DEFERRED_STATUS = "certified_partner_declared_unmeasured"
-V4_TIER3_CALLBACK_SPIKE_PROTOCOL_STATUS = "tier3_protocol_goal4622_spike_only_not_support"
-V4_TIER3_CALLBACK_SPIKE_PROTOCOL_DOC = "future/v4/tier3_callback_spike_protocol_2026-06-24.md"
-V4_TIER3_ACTION_CALLBACK_REJECTED_STATUS = "rejected_by_goal4622_action_shape_boundary"
-V4_TIER2_DEFERRED_SURFACE_STATUS = "deferred_goal4678_serious_scale_parity_not_release"
+V4_TIER3_CALLBACK_SPIKE_PROTOCOL_STATUS = "tier3_protocol_spike_only_not_public_support"
+V4_TIER3_CALLBACK_SPIKE_PROTOCOL_DOC = "docs/learn/operator_catalog.md"
+V4_TIER3_ACTION_CALLBACK_REJECTED_STATUS = "rejected_action_shape_boundary"
+V4_TIER2_DEFERRED_SURFACE_STATUS = "deferred_serious_scale_not_v4_0_release_surface"
 
 V4_TIER2_FIXED_RADIUS_COUNT_THRESHOLD = "fixed_radius_count_threshold"
 V4_TIER2_CLOSEST_HIT_GROUPED_ARGMIN = "closest_hit_grouped_argmin"
@@ -715,7 +715,7 @@ def plan_v4_operator_request(
             continuation_class=str(surface["continuation_class"]),
             guidance=(
                 f"{surface['api_surface']} executed and validated as a generic runner, "
-                "but Goal4660/4661 serious rows were parity or below parity. It is "
+                "but serious-scale rows did not meet the V4.0 surface bar. It is "
                 "not exposed as a measured or candidate V4 front-door surface."
             ),
         )
@@ -782,7 +782,7 @@ def plan_v4_operator_request(
             guidance=(
                 "This is a scalar per-hit reduce candidate for the Numba->PTX->OptiX spike. "
                 "It is not a V4.0 measured surface and must not be documented as supported until "
-                "the goal4622 spike protocol links, runs, meets correctness parity, meets compile reliability, "
+                "the callback spike protocol links, runs, meets correctness parity, meets compile reliability, "
                 "and stays under the fixed overhead ceiling."
             ),
             tier3_protocol_status=V4_TIER3_CALLBACK_SPIKE_PROTOCOL_STATUS,

@@ -1,6 +1,6 @@
 # V4 Tutorial Path
 
-This is the current V4 learning path.
+This is the current V4 learning path. Read it in order.
 
 ## Lessons
 
@@ -9,10 +9,15 @@ This is the current V4 learning path.
 3. [Operator Choice](03_backend_choice.md)
 4. [Measured Runtime Surfaces](04_prepared_runtime.md)
 5. [Measurement Boundaries](05_measurement_boundaries.md)
+6. [Build the Benchmark Apps](06_benchmark_apps.md)
 
-Read these in order. They teach the current RTDL V4 contract directly:
-generic fused RT operators, explicit partner scope, conservative callback
-planning, exact performance wording, the custom predicate early-exit
-operator-pushdown workflow, and the Goal4756 complete RT-core app matrix
-boundary: V4 has bounded material wins and parity/control rows, not a blanket
-claim that every app is faster.
+The path teaches the current RTDL V4 contract directly:
+
+- one V4 front door;
+- generic RT operators instead of app-specific kernels;
+- explicit partner scope;
+- conservative callback planning;
+- exact performance wording;
+- the constrained custom predicate early-exit workflow;
+- how the 10 promoted benchmark apps are built from the current V4/V3/V2
+  superset.

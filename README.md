@@ -1,48 +1,44 @@
 # RTDL V4
 
-RTDL V4 is the current Python eDSL/operator-pushdown surface for generic
+RTDL V4.0.0 is the current Python eDSL/operator-pushdown surface for generic
 RT-core work on NVIDIA GPUs.
 
 V4 is a V2/V3 superset: existing V2.14 and V3 routes remain part of the usable
 system, and V4 adds measured generic operator surfaces plus constrained
 predicate pushdown.
 
+Use one import:
+
+```python
+import rtdsl.v4 as rtdl_v4
+```
+
 ## Current Status
 
 Status:
 
 ```text
-V4.0.0 published, complete 10-app RT-core matrix, external public-tag review approved under bounded framing, clean wheel smoke passed
+V4.0.0 published, complete 10-app RT-core matrix, bounded material wins, clean wheel smoke passed
 ```
 
-Goal4756 completed the serious NVIDIA RTX A5000 POD matrix:
+The published tag is `v4.0.0` on commit
+`1c8f63cbadbb1edfc994c1c2477a94a7f00a8639`. The release claim boundary is
+locked, and clean wheel smoke passed.
+
+The V4.0.0 NVIDIA RTX A5000 release matrix:
 
 - `10/10` promoted benchmark apps;
 - `30/30` V2.14/V3.0.2/V4.0 rows executed successfully;
 - all rows returned parseable JSON;
 - Embree is not used as a primary denominator;
 - no `n/a` rows;
-- no hot-path regressions in the Goal4756 table;
+- no hot-path regressions in the release table;
 - material hot-path candidates over V2.14: `triangle_counting`,
   `barnes_hut`;
 - V4/V2.14 hot geomean: `2.10069x`, not a headline.
 
 Read [docs/app_level_benchmark_summary.md](docs/app_level_benchmark_summary.md)
 before making any app-level performance claim.
-
-Final release-review evidence is indexed in
-[future/v4/v4_goal4759_final_review_evidence_manifest_2026-06-26.md](future/v4/v4_goal4759_final_review_evidence_manifest_2026-06-26.md).
-The consolidated Antigravity review
-[future/v4/reviews/antigravity_v4_gemini_full_coverage_review_2026-06-27.md](future/v4/reviews/antigravity_v4_gemini_full_coverage_review_2026-06-27.md)
-authorized the bounded public V4.0 tag. The published tag is `v4.0.0` on
-commit `1c8f63cbadbb1edfc994c1c2477a94a7f00a8639`, verified by clean checkout
-and installed-wheel smoke.
-
-Supplemental Barnes-Hut evidence: RTDL V4 has a checksum-valid native
-RT-BarnesHut author-semantics route at 10M and an apples-to-apples
-internal-program win over the authors' binary after full phase accounting. This
-remains bounded evidence: it does not authorize public paper-reproduction
-wording, no-copy tree-build wording, or broad all-app speedup claims.
 
 ## What RTDL Is
 
@@ -54,9 +50,9 @@ The V4 contract is:
 
 ```text
 Python owns the application.
-RTDL owns generic RT-shaped fused operators and prepared routes.
+RTDL owns generic RT-shaped operators and prepared routes.
 Users choose measured partners explicitly.
-Unsupported custom logic fails closed or remains V4.1/Tier-3 work.
+Unsupported custom logic fails closed or remains future work.
 ```
 
 The Python package is `rtdsl`.
@@ -69,17 +65,20 @@ The Python package is `rtdsl`.
 - explicit partner scopes for Torch CUDA, CuPy where named, Numba where named,
   and RTDL native prepared runners;
 - constrained custom predicate early-exit for the measured Numba workflow;
-- clear claim boundaries for app rows, operator rows, and future V4.1 callback
-  work.
+- clear claim boundaries for app rows, operator rows, and future callback work.
 
 V4 does not claim that every historical benchmark app is faster. It does claim
 that the current 10-app RT-core matrix is complete and that V4 has bounded,
 measured value over V2.14 in the documented rows.
 
-For operator surfaces, most measured operators are 1.2x-1.7x against their
-stated brute-force partner/CPU baselines; point-group nearest witness and AABB
-all-ops are large scale-dependent algorithmic-complexity wins. These operator
-rows are separate from the 10-app matrix and must keep their denominators.
+Operator-surface performance is reported against named brute-force partner/CPU baselines:
+most measured operators sit in the `1.2x` to `1.7x` range; larger outliers are
+labeled as scale-dependent algorithmic-complexity wins, not as a blanket
+near-hand-written-OptiX claim.
+
+RT-BarnesHut paper-reproduction wording is not part of the V4.0.0 public
+claim. The Barnes-Hut app row documents a released benchmark route, not a
+public claim that RTDL fully reproduces the paper implementation.
 
 ## Current User Paths
 
@@ -87,10 +86,10 @@ rows are separate from the 10-app matrix and must keep their denominators.
 | --- | --- |
 | [docs/README.md](docs/README.md) | Current V4 documentation index. |
 | [docs/current_v4_status.md](docs/current_v4_status.md) | V4 status, user promise, and boundaries. |
-| [docs/app_level_benchmark_summary.md](docs/app_level_benchmark_summary.md) | Complete Goal4756 V2.14/V3.0.2/V4.0 app matrix summary. |
-| [tutorials/current/README.md](tutorials/current/README.md) | Short V4 learning path. |
-| [examples/README.md](examples/README.md) | Runnable V4 examples. |
-| [future/v4/tier2_operator_catalog.md](future/v4/tier2_operator_catalog.md) | Measured operator catalog and exact scope. |
+| [docs/learn/operator_catalog.md](docs/learn/operator_catalog.md) | Current V4 operator/workflow catalog. |
+| [docs/app_level_benchmark_summary.md](docs/app_level_benchmark_summary.md) | Complete V2.14/V3.0.2/V4.0 app matrix summary. |
+| [tutorials/current/README.md](tutorials/current/README.md) | V4 learning path, including benchmark-app recipes. |
+| [examples/README.md](examples/README.md) | Runnable V4 examples and benchmark-app source map. |
 | [docs/learn/performance_wording.md](docs/learn/performance_wording.md) | Performance wording guide. |
 
 ## Start Here
@@ -135,8 +134,10 @@ This front page does not authorize:
 | --- | --- |
 | `src/rtdsl/` | RTDL Python DSL/runtime source. |
 | `examples/v4/` | Current runnable V4 user examples. |
-| `future/v4/` | Reviewer evidence and V4 operator catalog; not the first-time learning path. |
+| `examples/current/research_benchmarks/` | Source code for the 10 promoted benchmark apps. |
 | `tutorials/current/` | Current V4 tutorial path. |
 | `docs/` | Current V4 public documentation. |
+| `history/` | Archived history and release-review provenance. |
+| `future/` | Audit-only evidence and maintainer working material, not the user learning path. |
 | `scripts/` | Developer and verification tools. |
 | `tests/` | Regression and gate tests. |

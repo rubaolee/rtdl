@@ -291,7 +291,7 @@ _ROUTE_BINDINGS = (
             V4PlannerDryRun(
                 "ranked_summary",
                 "rtdl_native",
-                "deferred_goal4678_serious_scale_parity_not_release",
+                "deferred_serious_scale_not_v4_0_release_surface",
             ),
         ),
         blocker_or_gap=(

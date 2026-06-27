@@ -127,7 +127,7 @@ class V4Goal4652AppRouteBindingTest(unittest.TestCase):
         dry_runs = {(row["operator"], row["partner"]): row for row in rtnn["planner_dry_runs"]}
         ranked = dry_runs[("ranked_summary", "rtdl_native")]
         self.assertEqual(
-            "deferred_goal4678_serious_scale_parity_not_release",
+            "deferred_serious_scale_not_v4_0_release_surface",
             ranked["actual_status"],
         )
         self.assertFalse(ranked["release_claim_authorized"])
