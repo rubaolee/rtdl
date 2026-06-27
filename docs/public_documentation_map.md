@@ -6,11 +6,13 @@ The current V4 public documentation is deliberately short and current-only.
 
 1. [Project README](../README.md)
 2. [Current V4 Status](current_v4_status.md)
-3. [Operator Catalog](learn/operator_catalog.md)
-4. [Tutorials](../tutorials/current/README.md)
-5. [Runnable Examples](../examples/README.md)
-6. [App-Level Benchmark Summary](app_level_benchmark_summary.md)
-7. [Performance Wording](learn/performance_wording.md)
+3. [Release Notes](v4_release_notes.md)
+4. [Operator Catalog](learn/operator_catalog.md)
+5. [Partner Choice](learn/partner_choice.md)
+6. [Tutorials](../tutorials/current/README.md)
+7. [Runnable Examples](../examples/README.md)
+8. [App-Level Benchmark Summary](app_level_benchmark_summary.md)
+9. [Performance Wording](learn/performance_wording.md)
 
 ## Quick Check Path
 

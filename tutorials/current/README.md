@@ -10,6 +10,7 @@ This is the current V4 learning path. Read it in order.
 4. [Measured Runtime Surfaces](04_prepared_runtime.md)
 5. [Measurement Boundaries](05_measurement_boundaries.md)
 6. [Build the Benchmark Apps](06_benchmark_apps.md)
+7. [Partner Choice](07_partner_choice.md)
 
 The path teaches the current RTDL V4 contract directly:
 
@@ -20,4 +21,5 @@ The path teaches the current RTDL V4 contract directly:
 - exact performance wording;
 - the constrained custom predicate early-exit workflow;
 - how the 10 promoted benchmark apps are built through the current V4 front
-  door.
+  door;
+- how to choose Torch, CuPy, Numba, and RTDL native routes explicitly.

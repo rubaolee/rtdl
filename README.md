@@ -86,7 +86,9 @@ public claim that RTDL fully reproduces the paper implementation.
 | --- | --- |
 | [docs/README.md](docs/README.md) | Current V4 documentation index. |
 | [docs/current_v4_status.md](docs/current_v4_status.md) | V4 status, user promise, and boundaries. |
+| [docs/v4_release_notes.md](docs/v4_release_notes.md) | User-facing V4.0.0 release notes. |
 | [docs/learn/operator_catalog.md](docs/learn/operator_catalog.md) | Current V4 operator/workflow catalog. |
+| [docs/learn/partner_choice.md](docs/learn/partner_choice.md) | How to choose Torch, CuPy, Numba, and RTDL native routes. |
 | [docs/app_level_benchmark_summary.md](docs/app_level_benchmark_summary.md) | Complete V2.14/V3.0.2/V4.0 app matrix summary. |
 | [tutorials/current/README.md](tutorials/current/README.md) | V4 learning path, including benchmark-app recipes. |
 | [examples/README.md](examples/README.md) | Runnable V4 examples and benchmark-app learning path. |

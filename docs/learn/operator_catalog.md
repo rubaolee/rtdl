@@ -30,6 +30,29 @@ print(plan.status)
 print(plan.api_surface)
 ```
 
+## Request Names
+
+Use these request names with `plan_operator_request_v4`:
+
+| Request | Typical partner | Public surface |
+| --- | --- | --- |
+| `fixed_radius` | `torch` | `v4_fixed_radius_count_threshold_2d_device_arrays` |
+| `closest_hit_argmin` | `torch` | `v4_closest_hit_grouped_argmin_3d_device_arrays` |
+| `any_hit` | `torch` | `v4_ray_triangle_any_hit_flags_2d_device_arrays` |
+| `grouped_i64` | `torch` | `v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays` |
+| `point_group_nearest` | `torch` | `v4_point_group_nearest_witness_2d_device_arrays` |
+| `weighted_sum` | `torch` | `v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays` |
+| `component_union` | `numba` | `v4_fixed_radius_graph_component_union_3d_device_arrays` |
+| `aabb_index_query` | `rtdl_native` | `v4_aabb_index_query_2d_all_ops_count_prepared_runner` |
+| `aggregate_frontier` | `rtdl_native` | `v4_aggregate_frontier_device_columns_2d_prepared_runner` |
+| `grouped_sum` | `cupy` | `prepare_grouped_vector_sum_2d_partner_columns_session(partner='cupy')` |
+| `custom_predicate_early_exit` | `numba` | `v4_ray_triangle_custom_predicate_early_exit_3d_numba` |
+
+The request name describes the generic relation or continuation. The app name
+stays outside the operator. For example, Triangle counting and Robot collision
+can both ask for `any_hit`, but they interpret the result differently in app
+code.
+
 Unsupported requests fail closed. Raw OptiX callbacks, arbitrary Python
 callbacks, dynamic allocation, variable-length mutation, and Tier-3 PTX/module
 linking are not V4.0 public features.

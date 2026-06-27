@@ -1,0 +1,8 @@
+Please review this V4.0.0 pre-release completion packet:
+
+future/v4/reviews/call_for_review_v4_pre_release_items_1_to_5_completion_2026-06-27.md
+
+The release owner requires items 1-5 to be done before public tagging. Please
+return one of the packet's verdict labels and focus on whether the public docs,
+tutorials, partner-choice path, clean-checkout gate, and tracked evidence gate
+are sufficient for final release validation.

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 import subprocess
 import sys
@@ -20,10 +21,13 @@ PUBLIC_DOCS = (
     ROOT / "README.md",
     ROOT / "docs" / "README.md",
     ROOT / "docs" / "current_v4_status.md",
+    ROOT / "docs" / "v4_release_notes.md",
+    ROOT / "docs" / "v4_engineering_summary.md",
     ROOT / "docs" / "app_level_benchmark_summary.md",
     ROOT / "docs" / "public_documentation_map.md",
     ROOT / "docs" / "learn" / "README.md",
     ROOT / "docs" / "learn" / "operator_catalog.md",
+    ROOT / "docs" / "learn" / "partner_choice.md",
     ROOT / "docs" / "learn" / "performance_wording.md",
     ROOT / "docs" / "learn" / "source_tree_doctor.md",
     ROOT / "tutorials" / "README.md",
@@ -34,6 +38,7 @@ PUBLIC_DOCS = (
     ROOT / "tutorials" / "current" / "04_prepared_runtime.md",
     ROOT / "tutorials" / "current" / "05_measurement_boundaries.md",
     ROOT / "tutorials" / "current" / "06_benchmark_apps.md",
+    ROOT / "tutorials" / "current" / "07_partner_choice.md",
     ROOT / "examples" / "README.md",
     ROOT / "examples" / "current" / "research_benchmarks" / "README.md",
     ROOT / "examples" / "v4" / "README.md",
@@ -215,6 +220,8 @@ class V4Goal4640PublicDocsCleanupTest(unittest.TestCase):
 
     def test_tutorial_python_snippets_are_copy_paste_runnable(self) -> None:
         snippet_count = 0
+        env = os.environ.copy()
+        env["PYTHONPATH"] = str(SRC) + (os.pathsep + env["PYTHONPATH"] if env.get("PYTHONPATH") else "")
         for path in sorted((ROOT / "tutorials" / "current").glob("*.md")):
             text = path.read_text(encoding="utf-8")
             snippets = re.findall(r"```python\n(.*?)\n```", text, flags=re.S)
@@ -227,6 +234,7 @@ class V4Goal4640PublicDocsCleanupTest(unittest.TestCase):
                         text=True,
                         stdout=subprocess.PIPE,
                         stderr=subprocess.PIPE,
+                        env=env,
                     )
                     self.assertEqual(proc.returncode, 0, proc.stderr)
 
