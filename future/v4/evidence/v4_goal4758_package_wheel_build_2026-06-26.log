@@ -1,0 +1,17 @@
+Could not find platform independent libraries <prefix>
+Processing c:\users\lestat\desktop\work\rtdl_v0_4_release_prep_review
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: rtdl-source-tree
+  Building wheel for rtdl-source-tree (pyproject.toml): started
+  Building wheel for rtdl-source-tree (pyproject.toml): finished with status 'done'
+  Created wheel for rtdl-source-tree: filename=rtdl_source_tree-4.0.0-py3-none-any.whl size=1509259 sha256=4f349985e0daa8e16cbbfe90cab8663c8517815b1f22c8d6be67901a7da2eed5
+  Stored in directory: C:\Users\Lestat\AppData\Local\Temp\pip-ephem-wheel-cache-wsw20e1g\wheels\02\c6\d8\f442a3adc2bc2ab04d38aa11914f724f967a529af8b52e3ec9
+Successfully built rtdl-source-tree
+
+[notice] A new release of pip is available: 24.0 -> 26.1.2
+[notice] To update, run: C:\Python311\python.exe -m pip install --upgrade pip
