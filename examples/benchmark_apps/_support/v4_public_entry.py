@@ -1,12 +1,16 @@
 from __future__ import annotations
 
+from examples.benchmark_apps._support._repo_bootstrap import ensure_repo_src_on_path
+
+ensure_repo_src_on_path()
+
 import argparse
 from dataclasses import dataclass
 import json
 from pathlib import Path
 import sys
 
-from examples.benchmark_apps._support.archived_harness_runner import run_archived_harness
+from rtdsl._example_support.benchmark_harness_compat import run_archived_harness
 
 
 ROOT = next(parent for parent in Path(__file__).resolve().parents if (parent / "src" / "rtdsl").exists())

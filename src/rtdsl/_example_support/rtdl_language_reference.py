@@ -1,0 +1,27 @@
+from __future__ import annotations
+
+import rtdsl as rt
+
+
+@rt.kernel(backend="rtdl", precision="float_approx")
+def county_zip_join_reference():
+    left = rt.input("left", rt.Segments, layout=rt.Segment2DLayout, role="probe")
+    right = rt.input("right", rt.Segments, layout=rt.Segment2DLayout, role="build")
+    candidates = rt.traverse(left, right, accel="bvh")
+    hits = rt.refine(candidates, predicate=rt.segment_intersection(exact=False))
+    return rt.emit(
+        hits,
+        fields=["left_id", "right_id", "intersection_point_x", "intersection_point_y"],
+    )
+
+
+@rt.kernel(backend="rtdl", precision="float_approx")
+def county_soil_overlay_reference():
+    left = rt.input("left", rt.Polygons, layout=rt.Polygon2DLayout, role="probe")
+    right = rt.input("right", rt.Polygons, layout=rt.Polygon2DLayout, role="build")
+    candidates = rt.traverse(left, right, accel="bvh")
+    seeds = rt.refine(candidates, predicate=rt.overlay_compose())
+    return rt.emit(
+        seeds,
+        fields=["left_polygon_id", "right_polygon_id", "requires_lsi", "requires_pip"],
+    )

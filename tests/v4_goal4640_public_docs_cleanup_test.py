@@ -45,34 +45,18 @@ PUBLIC_DOCS = (
     ROOT / "examples" / "paper_reproduction" / "README.md",
 )
 
-PUBLIC_EXAMPLE_SOURCES = tuple(sorted((ROOT / "examples" / "simple").glob("*.py")))
-PUBLIC_BENCHMARK_ENTRYPOINTS = (
-    ROOT / "examples" / "benchmark_apps" / "_support" / "v4_public_entry.py",
-    ROOT / "examples" / "benchmark_apps" / "rt_dbscan" / "v4_app.py",
-    ROOT / "examples" / "benchmark_apps" / "rt_dbscan" / "rtdl_rt_dbscan_benchmark_app.py",
-    ROOT / "examples" / "benchmark_apps" / "rtnn" / "v4_app.py",
-    ROOT / "examples" / "benchmark_apps" / "rtnn" / "rtdl_rtnn_benchmark_app.py",
-    ROOT / "examples" / "benchmark_apps" / "triangle_counting" / "v4_app.py",
-    ROOT / "examples" / "benchmark_apps" / "triangle_counting" / "rtdl_triangle_counting_benchmark_app.py",
-    ROOT / "examples" / "benchmark_apps" / "robot_collision" / "v4_app.py",
-    ROOT / "examples" / "benchmark_apps" / "robot_collision" / "rtdl_robot_collision_benchmark_app.py",
-    ROOT / "examples" / "benchmark_apps" / "raydb_style" / "v4_app.py",
-    ROOT / "examples" / "benchmark_apps" / "raydb_style" / "rtdl_raydb_style_benchmark_app.py",
-    ROOT / "examples" / "benchmark_apps" / "librts_spatial_index" / "v4_app.py",
-    ROOT / "examples" / "benchmark_apps" / "librts_spatial_index" / "rtdl_librts_spatial_index_benchmark_app.py",
-    ROOT / "examples" / "benchmark_apps" / "contact_manifold" / "v4_app.py",
-    ROOT / "examples" / "benchmark_apps" / "contact_manifold" / "rtdl_contact_manifold_benchmark_app.py",
-    ROOT / "examples" / "benchmark_apps" / "spatial_rayjoin" / "v4_app.py",
-    ROOT / "examples" / "benchmark_apps" / "spatial_rayjoin" / "rtdl_rayjoin_v2_spatial_join_app.py",
-    ROOT / "examples" / "benchmark_apps" / "barnes_hut" / "v4_app.py",
-    ROOT / "examples" / "benchmark_apps" / "barnes_hut" / "rtdl_barnes_hut_benchmark_app.py",
-    ROOT / "examples" / "benchmark_apps" / "hausdorff_xhd" / "v4_app.py",
-    ROOT / "examples" / "benchmark_apps" / "hausdorff_xhd" / "rtdl_hausdorff_distance_app.py",
-    ROOT / "examples" / "benchmark_apps" / "hausdorff_xhd" / "rtdl_hausdorff_v2_function.py",
-    ROOT / "examples" / "benchmark_apps" / "hausdorff_xhd" / "rtdl_hausdorff_v2_language_lab.py",
-    ROOT / "examples" / "benchmark_apps" / "hausdorff_xhd" / "rtdl_hausdorff_v2_user_benchmark.py",
-    ROOT / "examples" / "paper_reproduction" / "rayjoin.py",
-    ROOT / "examples" / "paper_reproduction" / "rt_barneshut.py",
+PUBLIC_EXAMPLE_SOURCE_SUFFIXES = {".cpp", ".h", ".md", ".py", ".txt"}
+PUBLIC_EXAMPLE_SOURCES = tuple(
+    sorted(
+        path
+        for base in (
+            ROOT / "examples" / "simple",
+            ROOT / "examples" / "benchmark_apps",
+            ROOT / "examples" / "paper_reproduction",
+        )
+        for path in base.rglob("*")
+        if path.is_file() and path.suffix.lower() in PUBLIC_EXAMPLE_SOURCE_SUFFIXES
+    )
 )
 
 BENCHMARK_APP_NAMES = (
@@ -161,7 +145,7 @@ class V4Goal4640PublicDocsCleanupTest(unittest.TestCase):
                     self.assertTrue((path.parent / clean_target).resolve().exists(), target)
 
     def test_public_v4_example_sources_do_not_leak_goal_labels(self) -> None:
-        for path in PUBLIC_EXAMPLE_SOURCES + PUBLIC_BENCHMARK_ENTRYPOINTS:
+        for path in PUBLIC_EXAMPLE_SOURCES:
             with self.subTest(path=path.relative_to(ROOT).as_posix()):
                 text = path.read_text(encoding="utf-8")
                 for pattern in PUBLIC_SURFACE_FORBIDDEN[:3]:

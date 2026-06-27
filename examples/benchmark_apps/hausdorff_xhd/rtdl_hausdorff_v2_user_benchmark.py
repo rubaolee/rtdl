@@ -1,6 +1,10 @@
 from __future__ import annotations
 
-from examples.benchmark_apps._support.archived_harness_runner import (
+from examples.benchmark_apps._support._repo_bootstrap import ensure_repo_src_on_path
+
+ensure_repo_src_on_path()
+
+from rtdsl._example_support.benchmark_harness_compat import (
     load_archived_harness_module,
     run_archived_harness,
 )
