@@ -35,9 +35,10 @@ class V4Goal4773ReleaseAuthorizationStatusTest(unittest.TestCase):
         self.assertTrue(status["git_tag_pushed"])
         self.assertEqual("v4.0.0", status["public_release_tag"])
         self.assertEqual(
-            "1c8f63cbadbb1edfc994c1c2477a94a7f00a8639",
+            "resolved_by_git_tag_object",
             status["public_release_commit"],
         )
+        self.assertEqual("git tag object v4.0.0", status["public_release_commit_source"])
 
     def test_forbidden_claims_remain_blocked(self) -> None:
         status = validate_v4_goal4773_release_authorization_status(ROOT)

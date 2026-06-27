@@ -63,9 +63,9 @@ Public surface:
 
 Tracked repository:
 
-- tracked files: `28349`;
+- tracked files: `28355`;
 - history archive files: `22046`;
-- maintainer provenance files: `1843`;
+- maintainer provenance files: `1849`;
 - current code/gate files: `4356`;
 - public current files: `33`.
 

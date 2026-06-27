@@ -70,9 +70,10 @@ class V4FrontDoorTest(unittest.TestCase):
         self.assertEqual("published", boundary["public_release_status"])
         self.assertEqual("v4.0.0", boundary["public_release_tag"])
         self.assertEqual(
-            "1c8f63cbadbb1edfc994c1c2477a94a7f00a8639",
+            "resolved_by_git_tag_object",
             boundary["public_release_commit"],
         )
+        self.assertEqual("git tag object v4.0.0", boundary["public_release_commit_source"])
         self.assertTrue(boundary["v4_0_0_public_tag_created"])
         self.assertTrue(boundary["bounded_public_release_authorized"])
         self.assertEqual(
@@ -173,9 +174,10 @@ class V4FrontDoorTest(unittest.TestCase):
         self.assertEqual("published", payload["public_release_status"])
         self.assertEqual("v4.0.0", payload["public_release_tag"])
         self.assertEqual(
-            "1c8f63cbadbb1edfc994c1c2477a94a7f00a8639",
+            "resolved_by_git_tag_object",
             payload["public_release_commit"],
         )
+        self.assertEqual("git tag object v4.0.0", payload["public_release_commit_source"])
         self.assertTrue(payload["v4_0_0_public_tag_created"])
         self.assertTrue(payload["bounded_public_release_authorized"])
         self.assertEqual(

@@ -9,9 +9,9 @@ Status:
 v4_0_0_published__complete_rt_core_app_matrix__bounded_material_wins__clean_wheel_smoke_passed
 ```
 
-The published tag is `v4.0.0` on commit
-`1c8f63cbadbb1edfc994c1c2477a94a7f00a8639`. The release claim boundary is
-locked, and clean wheel smoke passed.
+The published tag is `v4.0.0`; its target commit is resolved by the Git tag
+object and release closure record. The release claim boundary is locked, and
+clean wheel smoke passed.
 
 ## User Promise
 

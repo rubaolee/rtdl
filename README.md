@@ -21,9 +21,9 @@ Status:
 V4.0.0 published, complete 10-app RT-core matrix, bounded material wins, clean wheel smoke passed
 ```
 
-The published tag is `v4.0.0` on commit
-`1c8f63cbadbb1edfc994c1c2477a94a7f00a8639`. The release claim boundary is
-locked, and clean wheel smoke passed.
+The published tag is `v4.0.0`; its target commit is resolved by the Git tag
+object and release closure record. The release claim boundary is locked, and
+clean wheel smoke passed.
 
 The V4.0.0 NVIDIA RTX A5000 release matrix:
 

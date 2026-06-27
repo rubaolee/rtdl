@@ -29,6 +29,7 @@ class V4Goal4773AuthorizationStatus:
     git_tag_pushed: bool
     public_release_tag: str
     public_release_commit: str
+    public_release_commit_source: str
     broad_speedup_authorized: bool
     paper_reproduction_authorized: bool
     tier3_callback_authorized: bool
@@ -51,6 +52,7 @@ class V4Goal4773AuthorizationStatus:
             "git_tag_pushed": self.git_tag_pushed,
             "public_release_tag": self.public_release_tag,
             "public_release_commit": self.public_release_commit,
+            "public_release_commit_source": self.public_release_commit_source,
             "broad_speedup_authorized": self.broad_speedup_authorized,
             "paper_reproduction_authorized": self.paper_reproduction_authorized,
             "tier3_callback_authorized": self.tier3_callback_authorized,
@@ -87,7 +89,8 @@ def v4_goal4773_release_authorization_status(root: Path | None = None) -> dict[s
         tag_target_ready=True,
         git_tag_pushed=True,
         public_release_tag="v4.0.0",
-        public_release_commit="1c8f63cbadbb1edfc994c1c2477a94a7f00a8639",
+        public_release_commit="resolved_by_git_tag_object",
+        public_release_commit_source="git tag object v4.0.0",
         broad_speedup_authorized=False,
         paper_reproduction_authorized=False,
         tier3_callback_authorized=False,
@@ -129,11 +132,11 @@ def validate_v4_goal4773_release_authorization_status(
         raise ValueError("Goal4773 packet must be the Gemini review-debt packet")
     if "Clean smoke summary" not in owner or "status: passed" not in owner:
         raise ValueError("Goal4773 owner record must record clean-smoke success")
-    if "v4.0.0 -> 1c8f63cbadbb1edfc994c1c2477a94a7f00a8639" not in owner:
-        raise ValueError("Goal4773 owner record must record the published tag target")
+    if "v4.0.0 target is resolved by the Git tag object" not in owner:
+        raise ValueError("Goal4773 owner record must record tag-object target authority")
     if "published tag is `v4.0.0`" not in public_docs:
         raise ValueError("Goal4773 current docs must expose the published V4.0.0 tag")
-    if "release claim boundary is\nlocked" not in public_docs:
+    if "release claim boundary is locked" not in public_docs:
         raise ValueError("Goal4773 public docs must expose the locked release claim boundary")
     if "clean wheel smoke passed" not in public_docs:
         raise ValueError("Goal4773 public docs must expose clean wheel smoke success")
@@ -165,8 +168,10 @@ def validate_v4_goal4773_release_authorization_status(
         raise ValueError("Goal4773 must record pushed public tag state")
     if status["public_release_tag"] != "v4.0.0":
         raise ValueError("Goal4773 public release tag drift")
-    if status["public_release_commit"] != "1c8f63cbadbb1edfc994c1c2477a94a7f00a8639":
+    if status["public_release_commit"] != "resolved_by_git_tag_object":
         raise ValueError("Goal4773 public release commit drift")
+    if status["public_release_commit_source"] != "git tag object v4.0.0":
+        raise ValueError("Goal4773 public release commit source drift")
     for flag in (
         "broad_speedup_authorized",
         "paper_reproduction_authorized",

@@ -193,6 +193,17 @@ Published tag:
 v4.0.0 -> 1c8f63cbadbb1edfc994c1c2477a94a7f00a8639
 ```
 
+Post-public-surface hardening update:
+
+```text
+v4.0.0 target is resolved by the Git tag object.
+```
+
+The public docs/API no longer hard-code the release commit hash because the tag
+was refreshed after additional public-surface, Linux clean-checkout, and wheel
+smoke hardening. The tag object and final release closure record are the target
+authority.
+
 ## What Is Now Closed
 
 - Gemini review debt for the current V4.0 release candidate.

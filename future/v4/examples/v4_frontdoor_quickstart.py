@@ -40,6 +40,7 @@ def main() -> int:
                 "public_release_status": boundary["public_release_status"],
                 "public_release_tag": boundary["public_release_tag"],
                 "public_release_commit": boundary["public_release_commit"],
+                "public_release_commit_source": boundary["public_release_commit_source"],
                 "v4_0_0_public_tag_created": boundary["v4_0_0_public_tag_created"],
                 "bounded_public_release_authorized": boundary["bounded_public_release_authorized"],
                 "authorized_release_label": boundary["authorized_release_label"],
