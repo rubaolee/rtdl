@@ -14,6 +14,7 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 from rtdsl.v4_goal4640_public_docs_cleanup_decision import validate_v4_goal4640_public_docs_cleanup
+import rtdsl.v4 as v4
 
 PUBLIC_DOCS = (
     ROOT / "README.md",
@@ -101,6 +102,18 @@ class V4Goal4640PublicDocsCleanupTest(unittest.TestCase):
                 text = path.read_text(encoding="utf-8")
                 for pattern in PUBLIC_SURFACE_FORBIDDEN[:3]:
                     self.assertIsNone(pattern.search(text), pattern.pattern)
+
+    def test_public_v4_star_import_api_does_not_export_maintainer_goal_symbols(self) -> None:
+        for symbol in v4.__all__:
+            with self.subTest(symbol=symbol):
+                self.assertIsNone(re.search(r"goal\d+", symbol, flags=re.IGNORECASE))
+                self.assertNotIn("AUDIT", symbol.upper())
+                self.assertNotIn("REVIEW", symbol.upper())
+
+        self.assertEqual(tuple(v4.__all__), v4.PUBLIC_API_SYMBOLS_V4)
+        self.assertIn("plan_operator_request_v4", v4.__all__)
+        self.assertIn("prepare_ray_triangle_any_hit_weighted_sum_3d_device_arrays_v4", v4.__all__)
+        self.assertNotIn("v4_goal4686_tier3_wrapper_abi_scaffold", v4.__all__)
 
     def test_legacy_current_v3_status_is_not_in_public_docs(self) -> None:
         self.assertFalse((ROOT / "docs" / "current_v3_status.md").exists())
