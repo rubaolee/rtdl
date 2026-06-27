@@ -19,5 +19,5 @@ The path teaches the current RTDL V4 contract directly:
 - conservative callback planning;
 - exact performance wording;
 - the constrained custom predicate early-exit workflow;
-- how the 10 promoted benchmark apps are built from the current V4/V3/V2
-  superset.
+- how the 10 promoted benchmark apps are built through the current V4 front
+  door.
