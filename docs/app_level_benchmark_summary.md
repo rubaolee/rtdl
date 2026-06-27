@@ -1,107 +1,74 @@
 # V4 App-Level Benchmark Summary
 
-This page is the current public app-level performance boundary for V4.0.0.
+This page gives the current app-level performance table for RTDL V4.0.0 on
+NVIDIA RT-core hardware.
 
-## Current Decision
+## How To Read The Table
 
-The V4.0.0 release matrix completed a serious NVIDIA RT-core POD run for the 10
-promoted benchmark apps:
+- Each promoted benchmark app has V2.14, V3.0.2, and V4.0 rows.
+- The comparison uses NVIDIA OptiX / RT-core rows as the primary hardware path.
+- Embree is a CPU control in this project, not the primary denominator for this
+  table.
+- A ratio above `1.0x` means the V4 row is faster for the measured hot path.
+- A ratio near `1.0x` means the row is similar-speed on this measurement.
+- The table supports row-by-row reading. It does not say every benchmark app is
+  faster in V4.
 
-- V2.14, V3.0.2, and V4.0 rows are present for every app.
-- All 30 rows returned success and parseable JSON.
-- Embree is not used as a primary denominator.
-- The Spatial RayJoin row uses generated grid64 shape-pair input, not a tiny
-  overlay smoke input.
-- The table has no `n/a` rows.
+## 10-App RT-Core Table
 
-Decision label:
-
-```text
-complete_rt_core_app_matrix__bounded_material_wins__no_broad_all_app_speedup_claim
-```
-
-V4.0.0 is a published Python eDSL/operator-pushdown release and a V2/V3
-superset. The complete app matrix supports bounded claims: two material hot-path
-rows over V2.14, similar-speed control rows elsewhere, and no hot-path
-regressions in this run. The supported reading is the distribution of rows
-below, not "all benchmark apps are faster."
-
-## Current 10-App RT-Core Rows
-
-| App | V4/V2.14 hot | V4/V3.0.2 hot | Current reading |
+| App | V4/V2.14 hot | V4/V3.0.2 hot | Reading |
 | --- | ---: | ---: | --- |
-| RTDBSCAN | `0.998x` | `0.993x` | Similar-speed control row. |
-| RayDB-style | `1.113x` | `1.111x` | Modest RT-core hot gain; below broad-app headline bar. |
-| Triangle counting | `4.360x` | `1.021x` | Material hot-path row. |
-| LibRTS spatial index | `0.999x` | `1.002x` | Similar-speed control row. |
+| RTDBSCAN | `0.998x` | `0.993x` | Similar speed. |
+| RayDB-style | `1.113x` | `1.111x` | Modest hot-path gain. |
+| Triangle counting | `4.360x` | `1.021x` | Material hot-path gain over V2.14. |
+| LibRTS spatial index | `0.999x` | `1.002x` | Similar speed. |
 | Hausdorff XHD threshold route | `1.032x` | `0.983x` | Same-primitive threshold row with similar speed. |
-| Robot collision | `1.020x` | `1.000x` | Similar-speed row; inherited OptiX primitive remains usable in V4. |
-| Contact manifold | `1.116x` | `1.477x` | Similar-speed to modest gain on the measured hot subpipeline. |
-| RTNN | `1.029x` | `1.024x` | Similar-speed control row. |
+| Robot collision | `1.020x` | `1.000x` | Similar speed; the inherited OptiX primitive remains usable in V4. |
+| Contact manifold | `1.116x` | `1.477x` | Similar speed to modest gain on the measured hot subpipeline. |
+| RTNN | `1.029x` | `1.024x` | Similar speed. |
 | Spatial RayJoin shape-pair | `1.000x` | `1.004x` | Serious generated-input row with similar speed. |
-| Barnes-Hut aggregate frontier | `286.142x` | `0.993x` | Material V3/V4-over-V2.14 row; not a new V4-over-V3 speed claim. |
+| Barnes-Hut aggregate frontier | `286.142x` | `0.993x` | Material V3/V4-over-V2.14 row; V4 is similar-speed to V3 on this route. |
 
-Hot-path geomean V4/V2.14: `2.10069x`.
+The V4/V2.14 hot-path geomean for this table is `2.10069x`. Treat it as a
+summary statistic, not as the headline result, because Triangle counting and
+Barnes-Hut dominate it. The table distribution is more informative.
 
-Do not headline that geomean. It is dominated by Barnes-Hut and Triangle. The
-honest public reading is the distribution above.
+In short: two material hot-path rows over V2.14, with similar-speed or
+modest-gain rows elsewhere.
 
-## Supplemental Semantic Notes
+## Notes On Specific Rows
 
-Hausdorff exact nearest-witness:
-V2.14 does not expose an RT-core exact nearest-witness route. Its RT-core
-Hausdorff path is the threshold-decision route. V3 and V4 do expose exact
-nearest-witness; current V4 exact hot is `0.005547s` versus V3 exact hot
-`0.006413s`, or `1.156x`. This is a V3/V4 exact capability comparison, not a
-same-primitive V2/V3/V4 row.
+### Hausdorff
 
-Barnes-Hut:
-The large V4/V2.14 win is a host-frontier bottleneck removal preserved from the
-V3/Phoenix device-continuation direction and packaged into V4. Because V4/V3 is
-near parity, public wording must not describe it as a new V4-only speedup.
-RT-BarnesHut paper-reproduction wording remains outside the V4.0.0 public
-claim; this benchmark row is not a public claim that RTDL fully reproduces the
-paper implementation.
+The table row uses the threshold route because that is the same RT-core
+primitive family available across the compared versions. V3 and V4 also expose
+an exact nearest-witness route. That exact route is useful, but it is a richer
+query than the V2.14 threshold route, so it is reported separately.
 
-Spatial RayJoin:
-The previous smoke-scale overlay row has been replaced in the runner by
-generated grid64 shape-pair data. The result is serious parity, not a speed win.
+### Barnes-Hut
 
-## V4-Only Workflow Row
+The large V4/V2.14 number comes from removing a V2.14 host-frontier bottleneck
+that was already addressed by the V3 device-continuation direction and is now
+available through the V4 system. Because V4 and V3 are similar on this row, read
+it as a V3/V4-over-V2.14 result, not as a new V4-over-V3 speedup.
 
-The V4 custom predicate early-exit workflow is not part of the legacy 10-app
-matrix. It is the clearest V4-specific eDSL/operator-pushdown workflow win:
+### Spatial RayJoin
 
-| Workflow | V4/V2.14 | V4/V3.0.2 | Current reading |
+This row uses generated grid64 shape-pair input rather than a tiny smoke input.
+The current result is a serious similar-speed row, not a speed win.
+
+## V4-Specific Workflow
+
+The custom predicate early-exit workflow is separate from the legacy 10-app
+matrix. It shows V4-specific operator pushdown for a constrained Numba
+predicate:
+
+| Workflow | V4/V2.14 | V4/V3.0.2 | Reading |
 | --- | ---: | ---: | --- |
-| Custom predicate early-exit | `4.633x` | `4.633x` | RTDL evaluates a constrained Numba predicate inside the OptiX any-hit path and owns the early-exit action, avoiding all-hit materialization. |
+| Custom predicate early-exit | `4.633x` | `4.633x` | RTDL evaluates a constrained Numba predicate inside the any-hit path and avoids materializing all hits. |
 
-## Allowed Wording
+## Next Reading
 
-Use:
-
-```text
-RTDL V4.0.0 is a published Python eDSL/operator-pushdown release and V2/V3
-superset. On the current NVIDIA RT-core 10-app matrix, all apps have V2.14,
-V3.0.2, and V4.0 rows; V4.0 has two material hot-path rows over
-V2.14 and similar-speed control rows elsewhere. Separate V4 operator surfaces and the
-custom predicate early-exit workflow show additional bounded V4 value.
-```
-
-Do not use:
-
-```text
-All benchmark apps are faster in V4.
-```
-
-Do not use:
-
-```text
-V4 is broadly faster than V2.14 or V3 across every app.
-```
-
-## Evidence Path
-
-The first-time user path is the table above plus the runnable examples. Compact
-machine-readable evidence is retained with the release files for maintainers who
-need to reproduce the numbers.
+- Operator surfaces: [learn/operator_catalog.md](learn/operator_catalog.md)
+- Benchmark-app recipes: [../examples/benchmark_apps/README.md](../examples/benchmark_apps/README.md)
+- Tutorial path: [../tutorials/current/README.md](../tutorials/current/README.md)

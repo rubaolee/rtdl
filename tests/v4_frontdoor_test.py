@@ -141,15 +141,16 @@ class V4FrontDoorTest(unittest.TestCase):
         text = README.read_text(encoding="utf-8")
         self.assertIn("import rtdsl.v4 as rtdl_v4", text)
         self.assertIn("V4 is a V2/V3 superset", text)
-        self.assertIn("complete 10-app RT-core matrix", text)
-        self.assertIn("broad V4-over-V2.14 speedup wording", text)
-        self.assertIn("embedding, C ABI, or non-Python host binding claims", text)
-        self.assertIn("non-Python host binding claims", text)
+        self.assertIn("current NVIDIA RT-core benchmark table", text)
+        self.assertIn("Triangle counting and Barnes-Hut show material hot-path gains", text)
+        self.assertIn("similar-speed or\n  modest-gain rows", text)
         self.assertIn("docs/learn/operator_catalog.md", text)
         self.assertIn("tutorials/current/README.md", text)
         self.assertIn("examples/README.md", text)
         self.assertNotIn("Current candidate packet", text)
         self.assertNotIn("still needs\nPOD validation and completion review", text)
+        self.assertNotIn("broad V4-over-V2.14 speedup wording", text)
+        self.assertNotIn("embedding, C ABI, or non-Python host binding claims", text)
 
     def test_quickstart_runs_without_cuda(self) -> None:
         proc = subprocess.run(

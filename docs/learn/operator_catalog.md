@@ -1,26 +1,27 @@
 # V4 Operator Catalog
 
-This is the current public catalog for V4.0.0. These are generic RT-shaped
-operator and workflow surfaces, not app-identity kernels.
+This is the current V4.0.0 catalog. These measured operators and workflows are
+generic RT-shaped surfaces. Apps compose these operators; they do not call
+app-identity kernels.
+
+Most measured operators sit around 1.2x-1.7x against their stated brute-force partner/CPU baselines. Larger rows are scale-dependent algorithmic-complexity wins and should be read with their denominator.
 
 ## Measured Surfaces
 
-| Operator/workflow | API surface | Partner scope | Representative result | Boundary |
+| Operator/workflow | API surface | Partner scope | Representative result | How to read it |
 | --- | --- | --- | ---: | --- |
-| Fixed-radius count threshold | `v4_fixed_radius_count_threshold_2d_device_arrays` | Torch CUDA | `1.697x` | Operator row, not whole-app claim. |
-| Closest-hit grouped argmin | `v4_closest_hit_grouped_argmin_3d_device_arrays` | Torch CUDA | `1.257x` | Operator row. |
-| Ray/triangle any-hit flags | `v4_ray_triangle_any_hit_flags_2d_device_arrays` | Torch CUDA | `5.671x` | Operator row. |
-| Primitive grouped-i64 reduction | `v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays` | Torch CUDA | `1.384x` | Operator row. |
-| Point-group nearest witness | `v4_point_group_nearest_witness_2d_device_arrays` | Torch CUDA | `389.707x` | Scale-dependent O(n^2)-vs-BVH win. |
+| Fixed-radius count threshold | `v4_fixed_radius_count_threshold_2d_device_arrays` | Torch CUDA | `1.697x` | Operator-level row. |
+| Closest-hit grouped argmin | `v4_closest_hit_grouped_argmin_3d_device_arrays` | Torch CUDA | `1.257x` | Operator-level row. |
+| Ray/triangle any-hit flags | `v4_ray_triangle_any_hit_flags_2d_device_arrays` | Torch CUDA | `5.671x` | Operator-level row. |
+| Primitive grouped-i64 reduction | `v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays` | Torch CUDA | `1.384x` | Operator-level row. |
+| Point-group nearest witness | `v4_point_group_nearest_witness_2d_device_arrays` | Torch CUDA | `389.707x` | Large scale-dependent indexed-search win. |
 | Ray/triangle any-hit weighted sum | `v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays` | Torch CUDA | `1.482x` | Comparable-route operator row. |
 | Fixed-radius graph component union | `v4_fixed_radius_graph_component_union_3d_device_arrays` | Numba | `1.203x` | Constrained component-union route. |
-| AABB all-ops count | `v4_aabb_index_query_2d_all_ops_count_prepared_runner` | RTDL native | `164.716x` | Scale-dependent indexed-control win. |
-| Aggregate-frontier device columns | `v4_aggregate_frontier_device_columns_2d_prepared_runner` | RTDL native + explicit CuPy continuation | `310.024x` hot over V2.14; `0.998x` hot versus V3.0.2 control | V2.14 host-frontier bottleneck removal; no V4-over-V3 speed claim. |
-| Custom predicate early-exit | `v4_ray_triangle_custom_predicate_early_exit_3d_numba` | Numba C-ABI predicate | `4.633x` | V4-specific workflow win; constrained predicates only. |
+| AABB all-ops count | `v4_aabb_index_query_2d_all_ops_count_prepared_runner` | RTDL native | `164.716x` | Large scale-dependent indexed-control win. |
+| Aggregate-frontier device columns | `v4_aggregate_frontier_device_columns_2d_prepared_runner` | RTDL native + explicit CuPy continuation | `310.024x` over the V2.14 hot path; `0.998x` versus V3.0.2 | V2.14 host-frontier bottleneck removal; similar speed to V3. |
+| Custom predicate early-exit | `v4_ray_triangle_custom_predicate_early_exit_3d_numba` | Numba C-ABI predicate | `4.633x` | V4-specific workflow for constrained predicates. |
 
-## Planner
-
-Plan before you run:
+## Plan Before Running
 
 ```python
 import rtdsl.v4 as rtdl_v4
@@ -50,13 +51,11 @@ Use these request names with `plan_operator_request_v4`:
 
 The request name describes the generic relation or continuation. The app name
 stays outside the operator. For example, Triangle counting and Robot collision
-can both ask for `any_hit`, but they interpret the result differently in app
-code.
+can both ask for `any_hit`, then interpret the result differently in app code.
 
-Requests outside the current V4.0 surface return a bounded planner result. Raw
-OptiX callbacks, arbitrary Python callbacks, dynamic allocation, variable-length
-mutation, and Tier-3 PTX/module linking are roadmap topics rather than V4.0
-public APIs.
+Requests outside the current V4.0 surface return a bounded planner result.
+Arbitrary Python callbacks, dynamic allocation, variable-length mutation, raw
+OptiX callbacks, and PTX/module linking are not V4.0 public APIs.
 
 ## Examples
 
@@ -86,9 +85,3 @@ PYTHONPATH=src:. python examples/simple/ray_triangle_any_hit_weighted_sum_torch_
 PYTHONPATH=src:. python examples/simple/aabb_index_all_ops_count.py --dry-run
 PYTHONPATH=src:. python examples/simple/custom_predicate_early_exit_planning.py
 ```
-
-## Reading Results
-
-Keep every ratio attached to its denominator. The operator catalog does not
-authorize whole-application speedup wording or a claim that all benchmark apps
-are faster.

@@ -48,17 +48,17 @@ class V4Goal4646PreTagWordingFixesTest(unittest.TestCase):
 
     def test_current_release_docs_report_distribution_not_geomean_headline(self) -> None:
         for path in (
-            ROOT / "README.md",
-            ROOT / "docs" / "current_v4_status.md",
+            ROOT / "docs" / "learn" / "performance_wording.md",
+            ROOT / "docs" / "learn" / "operator_catalog.md",
             ROOT / "future" / "v4" / "README.md",
             ROOT / "future" / "v4" / "v4_goal4643_publication_decision_2026-06-25.md",
         ):
             with self.subTest(path=path.relative_to(ROOT).as_posix()):
                 text = path.read_text(encoding="utf-8")
-                self.assertIn("most measured operators", text)
+                self.assertIn("measured operators", text)
                 self.assertIn("1.2", text)
                 self.assertIn("1.7x", text)
-                self.assertIn("algorithmic-complexity", text)
+                self.assertRegex(text, r"algorithmic[- ]complexity")
                 self.assertIn("brute-force partner/CPU baselines", text)
 
     def test_each_scorecard_surface_has_denominator_and_scale(self) -> None:

@@ -1,25 +1,29 @@
 # RTDL V4 Documentation
 
-This directory is the current public documentation surface for RTDL V4.0.0.
-A new user should be able to learn and run the current system from this page
-without detouring through working notes.
+This directory contains the current V4.0.0 documentation. It is intentionally
+short: users should not need to read old release notes, working records, or
+internal project history to learn the current system.
 
-## Current Docs
+## Start Here
+
+1. [V4 release notes](v4_release_notes.md)
+2. [Current V4 status](current_v4_status.md)
+3. [Operator catalog](learn/operator_catalog.md)
+4. [Partner choice](learn/partner_choice.md)
+5. [App-level benchmark summary](app_level_benchmark_summary.md)
+6. [Tutorials](../tutorials/current/README.md)
+7. [Examples](../examples/README.md)
+
+## Reference Notes
 
 | File | Purpose |
 | --- | --- |
-| [current_v4_status.md](current_v4_status.md) | Current V4.0.0 promise, scope, and boundaries. |
-| [v4_release_notes.md](v4_release_notes.md) | User-facing V4.0.0 release notes. |
-| [v4_engineering_summary.md](v4_engineering_summary.md) | Maintainer-facing engineering summary for the current release shape. |
-| [app_level_benchmark_summary.md](app_level_benchmark_summary.md) | Complete V2.14/V3.0.2/V4.0 app-level RT-core matrix. |
-| [learn/operator_catalog.md](learn/operator_catalog.md) | Current V4 operator/workflow catalog and API surfaces. |
+| [learn/operator_catalog.md](learn/operator_catalog.md) | Current V4 operator and workflow surfaces. |
 | [learn/partner_choice.md](learn/partner_choice.md) | How to choose Torch, CuPy, Numba, and RTDL native routes. |
-| [learn/performance_wording.md](learn/performance_wording.md) | How to describe performance without over-claiming. |
-| [learn/source_tree_doctor.md](learn/source_tree_doctor.md) | Checkout sanity checks and V4 dry-run gate. |
-| [public_documentation_map.md](public_documentation_map.md) | Current public documentation map. |
+| [learn/performance_wording.md](learn/performance_wording.md) | How to read RTDL performance numbers. |
+| [learn/source_tree_doctor.md](learn/source_tree_doctor.md) | Quick checkout checks. |
+| [v4_engineering_summary.md](v4_engineering_summary.md) | Compact maintainer summary of the current release shape. |
+| [public_documentation_map.md](public_documentation_map.md) | Map of the current public documentation path. |
 
-Tutorials live in [../tutorials/current/README.md](../tutorials/current/README.md).
-Runnable examples live in [../examples/README.md](../examples/README.md).
-
-Compact evidence and release files are kept outside the first-time learning
-path. Start with the current docs and runnable examples above.
+Historical material is archived under [../history](../history). It is kept for
+project memory, not as the starting point for V4 users.

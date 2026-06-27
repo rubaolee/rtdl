@@ -258,8 +258,8 @@ class V4Goal4640PublicDocsCleanupTest(unittest.TestCase):
         self.assertIn("Representative result", catalog)
         self.assertIn("Most V4.0 measured operators are 1.2x-1.7x", wording)
         self.assertIn("denominator", wording)
-        self.assertIn("whole-application speedup claim", text)
-        self.assertIn("broad all-app", wording)
+        self.assertIn("It does not say every benchmark app is\n  faster in V4", (ROOT / "docs" / "app_level_benchmark_summary.md").read_text(encoding="utf-8"))
+        self.assertIn("Avoid summarizing the release as if every row has the same behavior", wording)
 
     def test_machine_decision_records_docs_cleanup_without_release_authorization(self) -> None:
         decision = validate_v4_goal4640_public_docs_cleanup(ROOT)

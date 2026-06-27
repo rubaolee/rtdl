@@ -1,11 +1,7 @@
 # RTDL V4
 
-RTDL V4.0.0 is the current Python eDSL/operator-pushdown surface for generic
-RT-core work on NVIDIA GPUs.
-
-V4 is a V2/V3 superset: existing V2.14 and V3 routes remain part of the usable
-system, and V4 adds measured generic operator surfaces plus constrained
-predicate pushdown.
+RTDL V4.0.0 is the current Python eDSL for writing reusable RT-core GPU
+operators from Python.
 
 Use one import:
 
@@ -13,133 +9,88 @@ Use one import:
 import rtdsl.v4 as rtdl_v4
 ```
 
-## Current Status
+V4 is a V2/V3 superset: it includes the useful V2.14 and V3 routes, adds V4
+operator planning, and presents the system as one current Python package
+instead of a stack of old releases.
 
-Status:
+## What RTDL Does
 
-```text
-V4.0.0 published, complete 10-app RT-core matrix, bounded material wins, clean wheel smoke passed
-```
+RTDL helps Python programs express RT-shaped work:
 
-The published tag is `v4.0.0`; its target commit is resolved by the Git tag
-object and release closure record. The release claim boundary is locked, and
-clean wheel smoke passed.
+- fixed-radius neighbor queries;
+- nearest-witness search;
+- ray/triangle hit predicates;
+- grouped reductions over hit streams;
+- AABB and aggregate-frontier queries;
+- constrained custom predicate early-exit for supported Numba predicates.
 
-The V4.0.0 NVIDIA RTX A5000 release matrix:
+The application stays in Python. RTDL plans generic RT-shaped operators and
+hands device-array work to an explicit partner such as Torch CUDA, CuPy, Numba,
+or an RTDL native prepared runner.
 
-- `10/10` promoted benchmark apps;
-- `30/30` V2.14/V3.0.2/V4.0 rows executed successfully;
-- all rows returned parseable JSON;
-- Embree is not used as a primary denominator;
-- no `n/a` rows;
-- no hot-path regressions in the release table;
-- material hot-path rows over V2.14: `triangle_counting`,
-  `barnes_hut`;
-- V4/V2.14 hot geomean: `2.10069x`, not a headline.
-
-Read [docs/app_level_benchmark_summary.md](docs/app_level_benchmark_summary.md)
-before making any app-level performance claim.
-
-## What RTDL Is
-
-RTDL is a Python-hosted ray-tracing DSL/runtime for non-graphical workloads:
-spatial search, nearest-neighbor screening, collision checks, graph-style
-queries, and database-like summaries.
-
-The V4 contract is:
-
-```text
-Python owns the application.
-RTDL owns generic RT-shaped operators and prepared routes.
-Users choose measured partners explicitly.
-Callback shapes are explicit: supported shapes plan cleanly, and shapes outside
-V4.0 return a bounded planner result instead of guessing.
-```
-
-The Python package is `rtdsl`.
-
-## What V4 Adds
-
-- one import: `import rtdsl.v4 as rtdl_v4`;
-- V2/V3-compatible app routes under a single current front door;
-- measured generic RT-core operator/workflow surfaces;
-- explicit partner scopes for Torch CUDA, CuPy where named, Numba where named,
-  and RTDL native prepared runners;
-- constrained custom predicate early-exit for the measured Numba workflow;
-- clear claim boundaries for app rows, operator rows, and future callback work.
-
-The current 10-app RT-core matrix is complete. The app table has two material
-hot-path rows over V2.14 and similar-speed rows elsewhere; use that distribution
-when describing performance.
-
-Operator-surface performance is reported against named brute-force partner/CPU baselines:
-most measured operators sit in the `1.2x` to `1.7x` range; larger outliers are
-labeled as scale-dependent algorithmic-complexity wins, not as a blanket
-near-hand-written-OptiX claim.
-
-RT-BarnesHut paper-reproduction wording is not part of the V4.0.0 public
-claim. The Barnes-Hut app row documents a released benchmark route, not a
-public claim that RTDL fully reproduces the paper implementation.
-
-## Current User Paths
-
-| Path | Purpose |
-| --- | --- |
-| [docs/README.md](docs/README.md) | Current V4 documentation index. |
-| [docs/current_v4_status.md](docs/current_v4_status.md) | V4 status, user promise, and boundaries. |
-| [docs/v4_release_notes.md](docs/v4_release_notes.md) | User-facing V4.0.0 release notes. |
-| [docs/learn/operator_catalog.md](docs/learn/operator_catalog.md) | Current V4 operator/workflow catalog. |
-| [docs/learn/partner_choice.md](docs/learn/partner_choice.md) | How to choose Torch, CuPy, Numba, and RTDL native routes. |
-| [docs/app_level_benchmark_summary.md](docs/app_level_benchmark_summary.md) | Complete V2.14/V3.0.2/V4.0 app matrix summary. |
-| [tutorials/current/README.md](tutorials/current/README.md) | V4 learning path, including benchmark-app recipes. |
-| [examples/README.md](examples/README.md) | Runnable V4 examples and benchmark-app learning path. |
-| [docs/learn/performance_wording.md](docs/learn/performance_wording.md) | Performance wording guide. |
-
-## Start Here
+## Quick Start
 
 PowerShell:
 
 ```powershell
 $env:PYTHONPATH = "src;."
 py -3 examples\simple\v4_frontdoor_quickstart.py
-py -3 examples\simple\operator_callback_planning.py --case complex-callback
-py -3 examples\simple\custom_predicate_early_exit_planning.py
-py -3 scripts\v4_catalog_regression_gate.py --mode dry-run
+py -3 examples\simple\benchmark_app_recipes.py
 ```
 
 Linux or macOS:
 
 ```bash
 PYTHONPATH=src:. python examples/simple/v4_frontdoor_quickstart.py
-PYTHONPATH=src:. python examples/simple/operator_callback_planning.py --case complex-callback
-PYTHONPATH=src:. python examples/simple/custom_predicate_early_exit_planning.py
-PYTHONPATH=src:. python scripts/v4_catalog_regression_gate.py --mode dry-run
+PYTHONPATH=src:. python examples/simple/benchmark_app_recipes.py
 ```
 
-## Claim Boundaries
+The quickstart prints the current V4 import, supported measured partners, and
+the next files to open.
 
-Use exact row-level wording. Keep these phrases out of broad public claims:
+## Current User Paths
 
-- "all benchmark apps are faster";
-- broad V4-over-V2.14 speedup wording;
-- broad V4-over-V3 speedup wording;
-- public true-zero-copy claims;
-- whole-application speedup claims;
-- Tier-3 callback/PTX support claims;
-- broad CuPy performance claims beyond explicitly named measurements;
-- raw OptiX callback support claims;
-- app-specific native engine/kernel claims;
-- embedding, C ABI, or non-Python host binding claims.
+| Path | Purpose |
+| --- | --- |
+| [docs/README.md](docs/README.md) | Current V4 documentation index. |
+| [docs/v4_release_notes.md](docs/v4_release_notes.md) | What changed in V4.0.0. |
+| [docs/current_v4_status.md](docs/current_v4_status.md) | Current feature and performance snapshot. |
+| [docs/learn/operator_catalog.md](docs/learn/operator_catalog.md) | Current operator and workflow surfaces. |
+| [docs/learn/partner_choice.md](docs/learn/partner_choice.md) | How to choose Torch, CuPy, Numba, or RTDL native routes. |
+| [docs/app_level_benchmark_summary.md](docs/app_level_benchmark_summary.md) | Complete 10-app RT-core benchmark table. |
+| [tutorials/current/README.md](tutorials/current/README.md) | Step-by-step learning path. |
+| [examples/README.md](examples/README.md) | Runnable simple examples, benchmark apps, and paper-reproduction entrypoints. |
+
+## Performance Snapshot
+
+The current NVIDIA RT-core benchmark table has rows for all 10 promoted
+benchmark apps across V2.14, V3.0.2, and V4.0.
+
+The table has two material hot-path rows over V2.14 and similar-speed or
+modest-gain rows elsewhere.
+
+The short reading is:
+
+- Triangle counting and Barnes-Hut show material hot-path gains over V2.14.
+- RayDB-style, Contact manifold, Hausdorff threshold, Robot collision, RTNN,
+  LibRTS spatial index, Spatial RayJoin, and RTDBSCAN are similar-speed or
+  modest-gain rows on the current table.
+- The V4 custom predicate early-exit workflow is a separate V4-specific
+  workflow win, not one of the legacy 10-app rows.
+
+Read the full table before summarizing performance:
+[docs/app_level_benchmark_summary.md](docs/app_level_benchmark_summary.md).
 
 ## Repository Layout
 
 | Path | Purpose |
 | --- | --- |
 | `src/rtdsl/` | RTDL Python DSL/runtime source. |
-| `examples/simple/` | Current runnable V4 user examples. |
+| `examples/simple/` | Current runnable V4 examples. |
 | `examples/benchmark_apps/` | Source for the 10 benchmark apps. |
 | `examples/paper_reproduction/` | Paper-oriented app entrypoints. |
 | `tutorials/current/` | Current V4 tutorial path. |
-| `docs/` | Current V4 public documentation. |
+| `docs/` | Current V4 documentation. |
+| `history/` | Archived old layouts and historical material. |
 | `scripts/` | Developer and verification tools. |
-| `tests/` | Regression and gate tests. |
+| `tests/` | Regression and release gate tests. |

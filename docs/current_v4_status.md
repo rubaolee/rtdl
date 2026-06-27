@@ -3,50 +3,20 @@
 RTDL V4.0.0 is the current Python eDSL/operator-pushdown surface for generic
 RT-core work on NVIDIA GPUs.
 
-Status:
+## What V4 Gives Users
 
-```text
-v4_0_0_published__complete_rt_core_app_matrix__bounded_material_wins__clean_wheel_smoke_passed
-```
+- One current import: `import rtdsl.v4 as rtdl_v4`.
+- A V2/V3-compatible system surface: mature earlier routes remain usable
+  through V4 when they are the right implementation.
+- Generic operator planning for fixed-radius, nearest-witness, ray/triangle,
+  AABB, aggregate-frontier, grouped-reduction, and constrained predicate
+  workflows.
+- Explicit partner selection for Torch CUDA, CuPy, Numba, and RTDL native
+  prepared runners where a surface names that partner.
+- Bounded planner responses for callback shapes outside V4.0 instead of silent
+  guessing.
 
-The published tag is `v4.0.0`; its target commit is resolved by the Git tag
-object and release closure record. The release claim boundary is locked, and
-clean wheel smoke passed.
-
-## User Promise
-
-V4 gives users one current Python front door for reusable RT-shaped GPU work:
-
-- V4 is a V2/V3 superset. Existing V2.14 and V3 routes remain part of the
-  usable system when they are the best route for a task.
-- V4 adds measured generic operator and workflow surfaces that avoid Python
-  row-object hot paths where the surface says so.
-- Users choose partners explicitly. Current measured partner scopes include
-  Torch CUDA, CuPy where explicitly named, Numba where explicitly named, and
-  RTDL native prepared runners.
-- Callback shapes are explicit: supported shapes plan cleanly, and shapes outside
-  V4.0 return a bounded planner result instead of guessing.
-
-## Complete 10-App RT-Core Matrix
-
-The V4.0.0 release matrix was run on NVIDIA RTX A5000 with NVIDIA RT-core/OptiX
-rows as the primary denominator.
-
-| Metric | Result |
-| --- | --- |
-| Apps | `10/10` |
-| Version rows | `30/30` |
-| V2.14/V3.0.2/V4.0 row for every app | `true` |
-| Primary denominator | NVIDIA OptiX/RT-core only |
-| Embree primary denominator | `false` |
-| Hot-path regressions in the release table | `0` |
-| Material hot-path rows over V2.14 | `triangle_counting`, `barnes_hut` |
-| V4/V2.14 hot geomean | `2.10069x`, not a headline |
-
-The current app-level table is in
-[app_level_benchmark_summary.md](app_level_benchmark_summary.md).
-
-## Operator/Workflow Surfaces
+## Current Measured Surfaces
 
 V4 exposes measured generic operator/workflow surfaces, including:
 
@@ -62,42 +32,41 @@ V4 exposes measured generic operator/workflow surfaces, including:
 - constrained Numba custom predicate early-exit.
 
 The public catalog is [learn/operator_catalog.md](learn/operator_catalog.md).
-Each surface has its own denominator, partner scope, scale, and claim boundary.
-Operator-surface performance is reported against named brute-force partner/CPU baselines:
-most measured operators sit in the `1.2x` to `1.7x` range; larger outliers are
-labeled as scale-dependent algorithmic-complexity wins.
+Each surface lists its partner and representative denominator.
 
-RT-BarnesHut paper-reproduction wording is not part of the V4.0.0 public
-claim. The Barnes-Hut app row documents a released benchmark route, not a
-public claim that RTDL fully reproduces the paper implementation.
+## Benchmark Snapshot
 
-## Boundary
+The current NVIDIA RT-core table covers all 10 promoted benchmark apps across
+V2.14, V3.0.2, and V4.0 rows.
 
-Allowed:
+| Metric | Result |
+| --- | --- |
+| Apps | `10/10` |
+| Version rows | `30/30` |
+| Primary hardware path | NVIDIA OptiX / RT cores |
+| Embree primary denominator | no |
+| Missing app rows | `0` |
+| Hot-path regressions in the table | `0` |
+| Material hot-path rows over V2.14 | Triangle counting, Barnes-Hut |
+| Similar-speed or modest-gain rows | RTDBSCAN, RayDB-style, LibRTS spatial index, Hausdorff threshold, Robot collision, Contact manifold, RTNN, Spatial RayJoin |
 
-- "V4.0.0 is a published Python eDSL/operator-pushdown release and V2/V3
-  superset."
-- "The 10-app RT-core matrix is complete for V2.14, V3.0.2, and V4.0."
-- "V4.0 has two material hot-path rows over V2.14 and similar-speed
-  control rows elsewhere in the release matrix."
-- "The custom predicate early-exit workflow is a V4-specific bounded workflow
-  win."
+The detailed table is in
+[app_level_benchmark_summary.md](app_level_benchmark_summary.md).
 
-Keep these phrases out of broad public claims:
+## What V4.0 Does Not Include
 
-- all benchmark apps are faster;
-- broad all-app speedup wording;
-- broad V4-over-V2.14 speedup wording;
-- broad V4-over-V3 speedup wording;
-- whole-application speedup claim;
-- public true-zero-copy claims;
-- Tier-3 callback/PTX support claims;
-- broad CuPy performance claims beyond explicitly named measurements;
-- raw OptiX callback support claims;
-- app-specific native engine/kernel claims;
-- embedding, C ABI, or non-Python host binding claims.
+These remain outside the V4.0 public API:
 
-## Start Command
+- arbitrary Python callbacks inside OptiX;
+- raw OptiX callback APIs;
+- Tier-3 PTX/module-linking callback support;
+- public true-zero-copy or external embedding APIs;
+- C ABI or non-Python host bindings.
+
+For supported custom logic, use the constrained Numba predicate workflow shown
+in the operator catalog and examples.
+
+## Quick Check
 
 PowerShell:
 
