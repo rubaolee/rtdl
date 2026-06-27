@@ -201,7 +201,7 @@ COMPOSITION_RECIPES = (
         ),
         claim_boundary="Not SQL, not a paper-system reproduction, and not a broad RT-core or whole-app claim.",
         boundary="Primitive-to-group mapping, payload values, predicates, and app rows remain app or partner code.",
-        evidence_paths=("examples/current/research_benchmarks/raydb_style/README.md",),
+        evidence_paths=("examples/benchmark_apps/raydb_style/README.md",),
     ),
     CompositionRecipe(
         id="recipe.aabb_candidate_rows_to_refinement",

@@ -60,10 +60,10 @@ def main() -> int:
 
     numba_cuda_home = _apply_numba_cuda_home(args.numba_cuda_home)
 
-    from examples.current.research_benchmarks.triangle_counting import (
+    from examples.benchmark_apps.triangle_counting import (
         rtdl_triangle_counting_benchmark_app as app,
     )
-    from examples.current.research_benchmarks.triangle_counting.rt_graph_contract import (
+    from examples.benchmark_apps.triangle_counting.rt_graph_contract import (
         write_binary_edges,
     )
 

@@ -8,11 +8,11 @@ import unittest
 import numpy as np
 import rtdsl as rt
 
-from examples.current.research_benchmarks.triangle_counting import rt_graph_contract as contract_mod
+from examples.benchmark_apps.triangle_counting import rt_graph_contract as contract_mod
 
 
 ROOT = Path(__file__).resolve().parents[1]
-CONTRACT = ROOT / "examples/current/research_benchmarks/triangle_counting/rt_graph_contract.py"
+CONTRACT = ROOT / "examples/benchmark_apps/triangle_counting/rt_graph_contract.py"
 RUNNER = ROOT / "scripts/v3_0_m27_triangle_partner_dual_measure.py"
 REPORT = ROOT / "docs/reports/goal4444_v3_0_m48_triangle_numba_direct_binary_summary_2026-06-16.md"
 OLD_EVIDENCE = {

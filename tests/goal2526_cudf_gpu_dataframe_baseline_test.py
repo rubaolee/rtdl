@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts/goal2526_cudf_gpu_dataframe_baseline.py"
 REPORT = ROOT / "docs/reports/goal2526_cudf_gpu_dataframe_baseline_2026-05-23.md"
 ARTIFACT = ROOT / "docs/reports/goal2526_cudf_gpu_dataframe_baseline_pod_2026-05-23.json"
-README = ROOT / "examples/current/research_benchmarks/raydb_style/README.md"
+README = ROOT / "examples/benchmark_apps/raydb_style/README.md"
 GOAL2525_REPORT = ROOT / "docs/reports/goal2525_gpu_database_candidate_gate_2026-05-23.md"
 
 

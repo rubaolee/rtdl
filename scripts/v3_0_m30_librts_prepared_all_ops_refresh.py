@@ -98,7 +98,7 @@ def main() -> int:
         print(json.dumps({"status": payload["status"], "planned_rows": planned_rows}, indent=2))
         return 0
 
-    from examples.current.research_benchmarks.librts_spatial_index import (
+    from examples.benchmark_apps.librts_spatial_index import (
         rtdl_librts_spatial_index_benchmark_app as librts,
     )
 

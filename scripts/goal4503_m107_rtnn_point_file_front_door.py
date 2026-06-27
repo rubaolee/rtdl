@@ -106,7 +106,7 @@ def write_report(packet: dict[str, Any], path: Path) -> None:
         "",
         "```bash",
         (
-            "PYTHONPATH=src:. python examples/current/research_benchmarks/rtnn/"
+            "PYTHONPATH=src:. python examples/benchmark_apps/rtnn/"
             "rtdl_rtnn_benchmark_app.py --mode prepared_optix_ranked_summary "
             "--point-file /workspace/data/kitti/rtdl_goal4500/kitti_1m_points.csv "
             "--radius 1.0 --k 50 --repeat 5 --query-batch-size 1000000"

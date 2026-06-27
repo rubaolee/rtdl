@@ -8,12 +8,12 @@ import tempfile
 import unittest
 from unittest import mock
 
-from examples.current.research_benchmarks.rtnn import rtdl_rtnn_benchmark_app as app
+from examples.benchmark_apps.rtnn import rtdl_rtnn_benchmark_app as app
 
 
 ROOT = Path(__file__).resolve().parents[1]
-APP = ROOT / "examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py"
-README = ROOT / "examples/current/research_benchmarks/rtnn/README.md"
+APP = ROOT / "examples/benchmark_apps/rtnn/rtdl_rtnn_benchmark_app.py"
+README = ROOT / "examples/benchmark_apps/rtnn/README.md"
 REPORT = ROOT / "docs/reports/goal4503_v3_0_m107_rtnn_point_file_front_door_2026-06-17.md"
 
 

@@ -19,7 +19,7 @@ sys.path.insert(0, str(ROOT))
 
 import rtdsl as rt
 import rtdsl.v4_ranked_summary as ranked_v4
-from examples.current.apps.ml import rtdl_ann_candidate_app as ann_app
+from examples.benchmark_apps._support import rtdl_ann_candidate_app as ann_app
 
 
 BENCHMARK_NAME = "rtnn_neighbor_search"
@@ -31,13 +31,13 @@ RTNN_V2_8_RANKED_SUMMARY_EXECUTION_PATH = "generic_ranked_summary_typed_stream_p
 SUPPORTED_CONTRACTS = (
     {
         "name": "ann_candidate_quality_2d",
-        "owner": "examples/current/apps/ml/rtdl_ann_candidate_app.py",
+        "owner": "examples/benchmark_apps/_support/rtdl_ann_candidate_app.py",
         "contract": "candidate-subset exact top-1 rerank compared with exact full-set top-1",
         "runtime_shape": "Python-selected candidate set plus RTDL or partner exact top-k rows",
     },
     {
         "name": "ann_candidate_threshold_2d",
-        "owner": "examples/current/apps/ml/rtdl_ann_candidate_app.py",
+        "owner": "examples/benchmark_apps/_support/rtdl_ann_candidate_app.py",
         "contract": "prepared fixed-radius candidate-coverage threshold",
         "runtime_shape": "generic prepared 2-D fixed-radius threshold-reached count",
     },

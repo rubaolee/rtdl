@@ -3,13 +3,13 @@ from __future__ import annotations
 from pathlib import Path
 import unittest
 
-from examples.current.research_benchmarks.rt_dbscan.rtdl_rt_dbscan_benchmark_app import (
+from examples.benchmark_apps.rt_dbscan.rtdl_rt_dbscan_benchmark_app import (
     _cluster_signature_from_nonnegative_label_counts,
 )
 
 
 ROOT = Path(__file__).resolve().parents[1]
-APP = ROOT / "examples/current/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py"
+APP = ROOT / "examples/benchmark_apps/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py"
 
 
 class Goal3898RtDbscanNumbaSegmentedCountSignatureTest(unittest.TestCase):

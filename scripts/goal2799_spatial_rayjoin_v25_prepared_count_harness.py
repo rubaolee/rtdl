@@ -14,7 +14,7 @@ ROOT = next(parent for parent in Path(__file__).resolve().parents if (parent / "
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
-from examples.current.research_benchmarks.spatial_rayjoin import (  # noqa: E402
+from examples.benchmark_apps.spatial_rayjoin import (  # noqa: E402
     rtdl_rayjoin_v2_spatial_join_app as rayjoin_app,
 )
 

@@ -6,7 +6,7 @@ import pathlib
 import subprocess
 from typing import Any
 
-from examples.current.research_benchmarks.rt_dbscan.rtdl_rt_dbscan_benchmark_app import (
+from examples.benchmark_apps.rt_dbscan.rtdl_rt_dbscan_benchmark_app import (
     run_rt_dbscan_benchmark,
 )
 

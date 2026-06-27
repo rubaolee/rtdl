@@ -67,7 +67,7 @@ def _run_one(
 ) -> dict[str, Any]:
     command = [
         python,
-        "examples/current/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py",
+        "examples/benchmark_apps/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py",
         "--workload",
         workload,
         "--execution-route",

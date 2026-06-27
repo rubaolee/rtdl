@@ -35,7 +35,7 @@ COMMANDS: list[dict[str, Any]] = [
     _cmd("graph_visibility_edges", "examples/current/apps/analytics/rtdl_graph_analytics_app.py", "--backend", "embree", "--scenario", "visibility_edges", "--copies", "20000", "--output-mode", "summary"),
     _cmd("graph_bfs", "examples/current/apps/analytics/rtdl_graph_analytics_app.py", "--backend", "embree", "--scenario", "bfs", "--copies", "20000", "--output-mode", "summary"),
     _cmd("graph_triangle_count", "examples/current/apps/analytics/rtdl_graph_analytics_app.py", "--backend", "embree", "--scenario", "triangle_count", "--copies", "20000", "--output-mode", "summary"),
-    _cmd("hausdorff_distance", "examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py", "--backend", "embree", "--copies", "20000", "--embree-result-mode", "directed_summary"),
+    _cmd("hausdorff_distance", "examples/benchmark_apps/hausdorff_xhd/rtdl_hausdorff_distance_app.py", "--backend", "embree", "--copies", "20000", "--embree-result-mode", "directed_summary"),
     _cmd("ann_candidate_search", "examples/current/apps/ml/rtdl_ann_candidate_app.py", "--backend", "embree", "--copies", "20000", "--output-mode", "rerank_summary"),
     _cmd("barnes_hut_force_app", "examples/current/apps/simulation/rtdl_barnes_hut_force_app.py", "--backend", "embree", "--body-count", "200000", "--output-mode", "candidate_summary"),
     _cmd("polygon_pair_overlap_area_rows", "examples/current/features/spatial/rtdl_polygon_pair_overlap_area_rows.py", "--backend", "embree", "--copies", "20000", "--output-mode", "summary"),

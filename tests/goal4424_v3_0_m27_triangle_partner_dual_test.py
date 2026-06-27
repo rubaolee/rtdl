@@ -4,14 +4,14 @@ import json
 from pathlib import Path
 import unittest
 
-from examples.current.research_benchmarks.triangle_counting import (
+from examples.benchmark_apps.triangle_counting import (
     rtdl_triangle_counting_benchmark_app as app,
 )
 
 
 ROOT = Path(__file__).resolve().parents[1]
-APP = ROOT / "examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py"
-CONTRACT = ROOT / "examples/current/research_benchmarks/triangle_counting/rt_graph_contract.py"
+APP = ROOT / "examples/benchmark_apps/triangle_counting/rtdl_triangle_counting_benchmark_app.py"
+CONTRACT = ROOT / "examples/benchmark_apps/triangle_counting/rt_graph_contract.py"
 RUNNER = ROOT / "scripts/v3_0_m27_triangle_partner_dual_measure.py"
 REPORT = ROOT / "docs/reports/goal4424_v3_0_m27_triangle_partner_dual_2026-06-15.md"
 EVIDENCE_JSONS = {

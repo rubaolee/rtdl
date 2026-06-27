@@ -14,7 +14,7 @@ GOAL2525_REPORT = ROOT / "docs/reports/goal2525_gpu_database_candidate_gate_2026
 GOAL2523_ARTIFACT = ROOT / "docs/reports/goal2523_postgresql_diagnostic_timing_pod_2026-05-23.json"
 GOAL2524_ARTIFACT = ROOT / "docs/reports/goal2524_duckdb_quick_baseline_pod_2026-05-23.json"
 GOAL2525_ARTIFACT = ROOT / "docs/reports/goal2525_gpu_database_candidate_gate_pod_2026-05-23.json"
-README = ROOT / "examples/current/research_benchmarks/raydb_style/README.md"
+README = ROOT / "examples/benchmark_apps/raydb_style/README.md"
 
 
 def _load_module(path: Path, name: str):

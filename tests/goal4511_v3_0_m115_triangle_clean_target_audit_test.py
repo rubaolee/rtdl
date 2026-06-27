@@ -9,7 +9,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 PACKET = ROOT / "docs/reports/goal4511_v3_0_m115_triangle_clean_target_audit_2026-06-17.json"
 REPORT = ROOT / "docs/reports/goal4511_v3_0_m115_triangle_clean_target_audit_2026-06-17.md"
-README = ROOT / "examples/current/research_benchmarks/triangle_counting/README.md"
+README = ROOT / "examples/benchmark_apps/triangle_counting/README.md"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
 SCRIPT = ROOT / "scripts/goal4511_m115_triangle_clean_target_audit.py"
 

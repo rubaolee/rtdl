@@ -138,8 +138,8 @@ def build_rows(scale: str) -> tuple[RowSpec, ...]:
         RowSpec(
             "hausdorff_distance",
             f"copies={fixed_copies}",
-            _py("examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py", "--backend", "embree", "--copies", fixed_copies, "--embree-result-mode", "directed_summary"),
-            _py("examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py", "--backend", "embree", "--copies", fixed_copies, "--embree-result-mode", "directed_summary"),
+            _py("examples/benchmark_apps/hausdorff_xhd/rtdl_hausdorff_distance_app.py", "--backend", "embree", "--copies", fixed_copies, "--embree-result-mode", "directed_summary"),
+            _py("examples/benchmark_apps/hausdorff_xhd/rtdl_hausdorff_distance_app.py", "--backend", "embree", "--copies", fixed_copies, "--embree-result-mode", "directed_summary"),
             "Embree directed summary",
             "exact directed summary, not a GPU partner threshold proxy in this Embree table",
         ),

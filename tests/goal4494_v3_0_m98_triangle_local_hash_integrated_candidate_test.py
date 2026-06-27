@@ -14,7 +14,7 @@ JSONL = ROOT / "docs/reports/goal4494_v3_0_m98_triangle_local_hash_integrated_ca
 RAW_DIR = ROOT / "docs/reports/goal4494_v3_0_m98_triangle_local_hash_integrated_candidate_2026-06-17"
 REPORT = ROOT / "docs/reports/goal4494_v3_0_m98_triangle_local_hash_integrated_candidate_2026-06-17.md"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
-APP = ROOT / "examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py"
+APP = ROOT / "examples/benchmark_apps/triangle_counting/rtdl_triangle_counting_benchmark_app.py"
 
 
 class Goal4494M98TriangleLocalHashIntegratedCandidateTest(unittest.TestCase):

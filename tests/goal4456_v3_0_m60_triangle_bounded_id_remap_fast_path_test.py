@@ -7,7 +7,7 @@ import unittest
 
 import numpy as np
 
-from examples.current.research_benchmarks.triangle_counting import rt_graph_contract as contract_mod
+from examples.benchmark_apps.triangle_counting import rt_graph_contract as contract_mod
 
 
 ROOT = Path(__file__).resolve().parents[1]

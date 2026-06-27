@@ -36,7 +36,7 @@ Run the quickstart script:
 
 ```powershell
 $env:PYTHONPATH = "src;."
-py -3 examples\v4\v4_frontdoor_quickstart.py
+py -3 examples\simple\v4_frontdoor_quickstart.py
 ```
 
 Next: [Relations and Operators](03_backend_choice.md)

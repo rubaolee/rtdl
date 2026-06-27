@@ -16,7 +16,7 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
 import rtdsl as rt
-from examples.current.research_benchmarks.hausdorff_xhd import rtdl_hausdorff_v2_user_benchmark as lab
+from examples.benchmark_apps.hausdorff_xhd import rtdl_hausdorff_v2_user_benchmark as lab
 from rtdsl.reference import Point
 
 

@@ -18,7 +18,7 @@ EVIDENCE_JSON = (
 
 class Goal4429V30M32BarnesHutGroupedVectorPartnerDualTest(unittest.TestCase):
     def test_barnes_hut_descriptor_promotes_numba_as_no_cpp_reference_partner(self) -> None:
-        from examples.current.research_benchmarks.barnes_hut import (
+        from examples.benchmark_apps.barnes_hut import (
             rtdl_barnes_hut_benchmark_app as barnes_hut,
         )
 

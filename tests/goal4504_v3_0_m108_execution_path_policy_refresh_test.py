@@ -13,7 +13,7 @@ PACKET = ROOT / "docs/reports/goal4504_v3_0_m108_execution_path_policy_refresh_2
 REPORT = ROOT / "docs/reports/goal4504_v3_0_m108_execution_path_policy_refresh_2026-06-17.md"
 SCRIPT = ROOT / "scripts/goal4504_m108_execution_path_policy_refresh.py"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
-README = ROOT / "examples/current/research_benchmarks/rtnn/README.md"
+README = ROOT / "examples/benchmark_apps/rtnn/README.md"
 
 
 class Goal4504V30M108ExecutionPathPolicyRefreshTest(unittest.TestCase):

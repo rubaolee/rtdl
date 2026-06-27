@@ -101,18 +101,18 @@ PowerShell:
 
 ```powershell
 $env:PYTHONPATH = "src;."
-py -3 examples\v4\v4_frontdoor_quickstart.py
-py -3 examples\v4\operator_callback_planning.py --case complex-callback
-py -3 examples\v4\custom_predicate_early_exit_planning.py
+py -3 examples\simple\v4_frontdoor_quickstart.py
+py -3 examples\simple\operator_callback_planning.py --case complex-callback
+py -3 examples\simple\custom_predicate_early_exit_planning.py
 py -3 scripts\v4_catalog_regression_gate.py --mode dry-run
 ```
 
 Linux or macOS:
 
 ```bash
-PYTHONPATH=src:. python examples/v4/v4_frontdoor_quickstart.py
-PYTHONPATH=src:. python examples/v4/operator_callback_planning.py --case complex-callback
-PYTHONPATH=src:. python examples/v4/custom_predicate_early_exit_planning.py
+PYTHONPATH=src:. python examples/simple/v4_frontdoor_quickstart.py
+PYTHONPATH=src:. python examples/simple/operator_callback_planning.py --case complex-callback
+PYTHONPATH=src:. python examples/simple/custom_predicate_early_exit_planning.py
 PYTHONPATH=src:. python scripts/v4_catalog_regression_gate.py --mode dry-run
 ```
 
@@ -136,8 +136,9 @@ Use exact row-level wording. Keep these phrases out of broad public claims:
 | Path | Purpose |
 | --- | --- |
 | `src/rtdsl/` | RTDL Python DSL/runtime source. |
-| `examples/v4/` | Current runnable V4 user examples. |
-| `examples/current/research_benchmarks/` | Maintainer benchmark harness for the 10 promoted apps; learn from `examples/v4/benchmark_app_recipes.py` first. |
+| `examples/simple/` | Current runnable V4 user examples. |
+| `examples/benchmark_apps/` | Source for the 10 benchmark apps. |
+| `examples/paper_reproduction/` | Paper-oriented app entrypoints. |
 | `tutorials/current/` | Current V4 tutorial path. |
 | `docs/` | Current V4 public documentation. |
 | `scripts/` | Developer and verification tools. |

@@ -200,7 +200,7 @@ def _run_embree(*, left_shapes: tuple[object, ...], right_shapes: tuple[object, 
 
 
 def _run_optix(*, left_shapes: tuple[object, ...], right_shapes: tuple[object, ...], args: argparse.Namespace) -> dict[str, object]:
-    from examples.current.research_benchmarks.spatial_rayjoin.rtdl_rayjoin_v2_spatial_join_app import (
+    from examples.benchmark_apps.spatial_rayjoin.rtdl_rayjoin_v2_spatial_join_app import (
         pack_rayjoin_optix_shape_pair_active_count_left_shapes,
         prepare_rayjoin_optix_shape_pair_active_count,
     )

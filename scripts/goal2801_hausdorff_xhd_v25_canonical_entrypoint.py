@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
-from examples.current.research_benchmarks.hausdorff_xhd import (  # noqa: E402
+from examples.benchmark_apps.hausdorff_xhd import (  # noqa: E402
     rtdl_hausdorff_v2_function as hd,
 )
 

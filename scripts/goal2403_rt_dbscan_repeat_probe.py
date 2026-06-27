@@ -12,7 +12,7 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
 import rtdsl as rt  # noqa: E402
-from examples.current.research_benchmarks.rt_dbscan.rtdl_rt_dbscan_benchmark_app import (  # noqa: E402
+from examples.benchmark_apps.rt_dbscan.rtdl_rt_dbscan_benchmark_app import (  # noqa: E402
     DEFAULT_DATASET_CONFIG,
     _densify_cluster_labels,
     _rows_from_partner_columns,

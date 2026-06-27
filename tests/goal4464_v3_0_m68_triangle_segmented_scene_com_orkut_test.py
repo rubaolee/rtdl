@@ -22,7 +22,7 @@ EVIDENCE = (
 SNAP_PREP = ROOT / "docs" / "reports" / "goal4464_snap_prepare_com_orkut_2026-06-16.json"
 OLD_RTDL = ROOT / "docs" / "reports" / "goal2593_paper_dataset_raw" / "goal2593_eval_com_orkut_rtdl.json"
 OLD_CUGRAPH = ROOT / "docs" / "reports" / "goal2593_paper_dataset_raw" / "goal2593_eval_com_orkut_cugraph.json"
-APP = ROOT / "examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py"
+APP = ROOT / "examples/benchmark_apps/triangle_counting/rtdl_triangle_counting_benchmark_app.py"
 SCRIPT = ROOT / "scripts" / "v3_0_m66_triangle_segmented_paper_dataset_measure.py"
 
 routes = importlib.import_module("rtdsl.current_benchmark_route_decisions")

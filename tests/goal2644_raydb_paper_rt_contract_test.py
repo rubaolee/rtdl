@@ -2,12 +2,12 @@ from pathlib import Path
 import unittest
 
 import rtdsl as rt
-from examples.current.research_benchmarks.raydb_style import rtdl_raydb_style_benchmark_app as app
+from examples.benchmark_apps.raydb_style import rtdl_raydb_style_benchmark_app as app
 
 
 ROOT = Path(__file__).resolve().parents[1]
-RAYDB_APP = ROOT / "examples/current/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py"
-README = ROOT / "examples/current/research_benchmarks/raydb_style/README.md"
+RAYDB_APP = ROOT / "examples/benchmark_apps/raydb_style/rtdl_raydb_style_benchmark_app.py"
+README = ROOT / "examples/benchmark_apps/raydb_style/README.md"
 REPORT = ROOT / "docs/reports/goal2644_raydb_paper_rt_core_rewrite_2026-05-27.md"
 OPTIX_API = ROOT / "src/native/optix/rtdl_optix_api.cpp"
 OPTIX_PRELUDE = ROOT / "src/native/optix/rtdl_optix_prelude.h"

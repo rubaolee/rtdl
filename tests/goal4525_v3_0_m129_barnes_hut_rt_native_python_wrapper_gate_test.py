@@ -11,7 +11,7 @@ import rtdsl as rt
 ROOT = Path(__file__).resolve().parents[1]
 PACKET = ROOT / "docs/reports/goal4525_v3_0_m129_barnes_hut_rt_native_python_wrapper_gate_2026-06-17.json"
 REPORT = ROOT / "docs/reports/goal4525_v3_0_m129_barnes_hut_rt_native_python_wrapper_gate_2026-06-17.md"
-README = ROOT / "examples/current/research_benchmarks/barnes_hut/README.md"
+README = ROOT / "examples/benchmark_apps/barnes_hut/README.md"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
 SCRIPT = ROOT / "scripts/goal4525_m129_barnes_hut_rt_native_python_wrapper_gate.py"
 

@@ -12,7 +12,7 @@ PACKET_VERSION = "rtdl.v3_0.triangle_local_hash_integrated_candidate.goal4494.v1
 OUT_DIR = Path("docs/reports/goal4494_v3_0_m98_triangle_local_hash_integrated_candidate_2026-06-17")
 OUT_JSON = Path("docs/reports/goal4494_v3_0_m98_triangle_local_hash_integrated_candidate_2026-06-17.json")
 OUT_JSONL = Path("docs/reports/goal4494_v3_0_m98_triangle_local_hash_integrated_candidate_2026-06-17.jsonl")
-APP = Path("examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py")
+APP = Path("examples/benchmark_apps/triangle_counting/rtdl_triangle_counting_benchmark_app.py")
 DATASETS = {
     "com_lj": {
         "edge_file": "build/goal2593_snap_edges/com-lj.edge",

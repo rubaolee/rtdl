@@ -4,7 +4,7 @@ import unittest
 
 import numpy as np
 
-from examples.current.research_benchmarks.robot_collision import (
+from examples.benchmark_apps.robot_collision import (
     rtdl_robot_collision_benchmark_app as robot,
 )
 from rtdsl import prepare_grouped_segment_query_3d

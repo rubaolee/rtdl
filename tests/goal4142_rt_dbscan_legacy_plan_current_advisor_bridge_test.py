@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 import unittest
 
-from examples.current.research_benchmarks.rt_dbscan.rtdl_rt_dbscan_benchmark_app import (
+from examples.benchmark_apps.rt_dbscan.rtdl_rt_dbscan_benchmark_app import (
     RT_DBSCAN_DIRECT_STATUS_APP_MODE,
     plan_rt_dbscan_execution,
 )

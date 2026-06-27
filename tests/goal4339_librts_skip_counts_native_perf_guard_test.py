@@ -22,7 +22,7 @@ REPORT = (
     / "goal4339_librts_skip_counts_for_native_aabb_perf_2026-06-11.md"
 )
 APP = importlib.import_module(
-    "examples.current.research_benchmarks.librts_spatial_index.rtdl_librts_spatial_index_benchmark_app"
+    "examples.benchmark_apps.librts_spatial_index.rtdl_librts_spatial_index_benchmark_app"
 )
 
 

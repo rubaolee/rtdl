@@ -7,8 +7,8 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-APP = ROOT / "examples/current/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py"
-README = ROOT / "examples/current/research_benchmarks/barnes_hut/README.md"
+APP = ROOT / "examples/benchmark_apps/barnes_hut/rtdl_barnes_hut_benchmark_app.py"
+README = ROOT / "examples/benchmark_apps/barnes_hut/README.md"
 REPORT = ROOT / "docs/reports/goal4440_v3_0_m43_barnes_hut_host_baselines_2026-06-16.md"
 CPU_SMOKE = ROOT / "docs/reports/goal4440_v3_0_m43_barnes_hut_cpu_host_128_smoke_2026-06-16.json"
 EMBREE_SMOKE = ROOT / "docs/reports/goal4440_v3_0_m43_barnes_hut_embree_host_128_smoke_2026-06-16.json"
@@ -22,7 +22,7 @@ sys.path.insert(0, str(ROOT))
 
 class Goal4440V30M43BarnesHutHostBaselinesTest(unittest.TestCase):
     def test_app_exposes_cpu_and_embree_host_baseline_modes(self) -> None:
-        from examples.current.research_benchmarks.barnes_hut import (
+        from examples.benchmark_apps.barnes_hut import (
             rtdl_barnes_hut_benchmark_app as barnes_hut,
         )
 
@@ -146,7 +146,7 @@ class Goal4440V30M43BarnesHutHostBaselinesTest(unittest.TestCase):
         self.assertFalse(route["public_speedup_claim_authorized"])
 
     def test_live_cpu_host_mode_matches_reference_on_small_case(self) -> None:
-        from examples.current.research_benchmarks.barnes_hut import (
+        from examples.benchmark_apps.barnes_hut import (
             rtdl_barnes_hut_benchmark_app as barnes_hut,
         )
 

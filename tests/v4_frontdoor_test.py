@@ -16,7 +16,7 @@ import rtdsl.v4 as v4
 
 
 README = ROOT / "README.md"
-QUICKSTART = ROOT / "future" / "v4" / "examples" / "v4_frontdoor_quickstart.py"
+QUICKSTART = ROOT / "examples" / "simple" / "v4_frontdoor_quickstart.py"
 
 
 class V4FrontDoorTest(unittest.TestCase):
@@ -161,57 +161,25 @@ class V4FrontDoorTest(unittest.TestCase):
         )
         payload = json.loads(proc.stdout)
         self.assertEqual("ok", payload["status"])
-        self.assertEqual(
-            "v4_python_edsl_operator_pushdown_front_door_complete_rt_core_matrix",
-            payload["front_door_status"],
-        )
+        self.assertEqual("v4.0.0", payload["release"])
+        self.assertEqual("import rtdsl.v4 as rtdl_v4", payload["import"])
         self.assertEqual(10, payload["measured_surface_count"])
-        self.assertEqual(10, payload["catalog_operator_count"])
         self.assertEqual(["cupy", "numba", "rtdl_native", "torch"], payload["measured_partners"])
-        self.assertEqual(0, payload["candidate_surface_count"])
-        self.assertEqual("tier2_measured_ready", payload["tier2_plan_status"])
-        self.assertEqual("tier2_measured_ready", payload["aabb_plan_status"])
-        self.assertEqual("published", payload["public_release_status"])
-        self.assertEqual("v4.0.0", payload["public_release_tag"])
+        self.assertEqual(10, payload["benchmark_app_count"])
+        self.assertEqual(30, payload["benchmark_matrix_rows"])
         self.assertEqual(
-            "resolved_by_git_tag_object",
-            payload["public_release_commit"],
+            "v4_ray_triangle_any_hit_flags_2d_device_arrays",
+            payload["example_operator_plans"]["ray_triangle_any_hit"],
         )
-        self.assertEqual("git tag object v4.0.0", payload["public_release_commit_source"])
-        self.assertTrue(payload["v4_0_0_public_tag_created"])
-        self.assertTrue(payload["bounded_public_release_authorized"])
-        self.assertEqual(
-            v4.V4_AUTHORIZED_RELEASE_LABEL,
-            payload["authorized_release_label"],
-        )
-        self.assertTrue(payload["bounded_operator_surface_available"])
-        self.assertFalse(payload["app_level_high_performance_authorized"])
-        self.assertEqual(
-            "complete_rt_core_app_matrix__bounded_material_wins__no_broad_all_app_speedup_claim",
-            payload["current_app_level_decision_label"],
-        )
-        self.assertTrue(payload["complete_rt_core_app_matrix_available"])
-        self.assertEqual(10, payload["complete_rt_core_app_matrix_app_count"])
-        self.assertEqual(30, payload["complete_rt_core_app_matrix_row_count"])
-        self.assertEqual(0, payload["app_matrix_hot_path_regression_count"])
-        self.assertEqual(["triangle_counting", "barnes_hut"], payload["app_matrix_material_hot_path_apps"])
-        self.assertFalse(payload["all_historical_benchmark_apps_faster_claim_authorized"])
-        self.assertFalse(payload["broad_v4_over_v2_14_speedup_claim_authorized"])
         self.assertEqual(
             "v4_aabb_index_query_2d_all_ops_count_prepared_runner",
-            payload["aabb_plan_surface"],
+            payload["example_operator_plans"]["aabb_index_query"],
         )
-        self.assertEqual("rejected_action_shaped_callback_deferred", payload["complex_callback_status"])
-        self.assertFalse(payload["release_claim_authorized"])
-        self.assertFalse(payload["broad_v4_speedup_claim_authorized"])
-        self.assertFalse(payload["whole_app_speedup_claim_authorized"])
-        self.assertFalse(payload["true_zero_copy_authorized"])
-        self.assertFalse(payload["tier3_callback_claim_authorized"])
-        self.assertFalse(payload["raw_optix_callback_claim_authorized"])
-        self.assertFalse(payload["cupy_performance_claim_authorized"])
-        self.assertFalse(payload["embedding_c_abi_claim_authorized"])
-        self.assertFalse(payload["non_python_host_binding_claim_authorized"])
-        self.assertFalse(payload["app_specific_native_kernel_authorized"])
+        self.assertEqual(
+            "v4_ray_triangle_custom_predicate_early_exit_3d_numba",
+            payload["example_operator_plans"]["custom_predicate_early_exit"],
+        )
+        self.assertIn("python examples/simple/benchmark_app_recipes.py", payload["next_steps"])
 
 
 if __name__ == "__main__":

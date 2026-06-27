@@ -6,7 +6,7 @@ import subprocess
 import sys
 import unittest
 
-from examples.current.research_benchmarks.rt_dbscan.rtdl_rt_dbscan_benchmark_app import (
+from examples.benchmark_apps.rt_dbscan.rtdl_rt_dbscan_benchmark_app import (
     RT_DBSCAN_DIRECT_STATUS_APP_MODE,
     RT_DBSCAN_GROUPED_STREAM_NUMBA_APP_MODE,
     explain_rt_dbscan_explicit_route_choice,

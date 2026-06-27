@@ -23,7 +23,7 @@ def main() -> int:
     sys.path.insert(0, str(repo))
 
     import torch
-    from examples.current.research_benchmarks.raydb_style import rtdl_raydb_style_benchmark_app as app
+    from examples.benchmark_apps.raydb_style import rtdl_raydb_style_benchmark_app as app
 
     output_path = repo / "docs/reports/goal2514_partner_resident_compact_output_pod_2026-05-22.json"
     source = (repo / "src/native/optix/rtdl_optix_workloads.cpp").read_text(encoding="utf-8")

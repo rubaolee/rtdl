@@ -7,7 +7,7 @@ import rtdsl as rt
 from rtdsl.reference import Ray3D
 from rtdsl.reference import Triangle3D
 
-from examples.current.research_benchmarks.raydb_style import rtdl_raydb_style_benchmark_app as raydb
+from examples.benchmark_apps.raydb_style import rtdl_raydb_style_benchmark_app as raydb
 
 
 ROOT = Path(__file__).resolve().parents[1]

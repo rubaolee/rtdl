@@ -13,19 +13,19 @@ ROOT = next(parent for parent in Path(__file__).resolve().parents if (parent / "
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
-from examples.current.features.graph import rtdl_graph_triangle_count
-from examples.current.research_benchmarks.triangle_counting.rt_graph_contract import (
+from examples.benchmark_apps._support import rtdl_graph_triangle_count
+from examples.benchmark_apps.triangle_counting.rt_graph_contract import (
     build_rt_graph_triangle_contract,
 )
-from examples.current.research_benchmarks.triangle_counting.rt_graph_contract import (
+from examples.benchmark_apps.triangle_counting.rt_graph_contract import (
     build_rt_graph_triangle_summary_contract_cupy_binary,
 )
-from examples.current.research_benchmarks.triangle_counting.rt_graph_contract import (
+from examples.benchmark_apps.triangle_counting.rt_graph_contract import (
     build_rt_graph_triangle_summary_contract_numba_binary,
 )
-from examples.current.research_benchmarks.triangle_counting.rt_graph_contract import fixture_edges
-from examples.current.research_benchmarks.triangle_counting.rt_graph_contract import read_binary_edges
-from examples.current.research_benchmarks.triangle_counting.rt_graph_contract import read_text_edges
+from examples.benchmark_apps.triangle_counting.rt_graph_contract import fixture_edges
+from examples.benchmark_apps.triangle_counting.rt_graph_contract import read_binary_edges
+from examples.benchmark_apps.triangle_counting.rt_graph_contract import read_text_edges
 import rtdsl as rt
 
 
@@ -146,67 +146,67 @@ def command_plan_payload() -> dict[str, Any]:
         "app": BENCHMARK_NAME,
         "mode": "command_plan",
         "local_correctness": (
-            "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
+            "PYTHONPATH=src:. python3 examples/benchmark_apps/"
             "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
             "--mode run --backend cpu_python_reference --copies 2 --output-mode summary"
         ),
         "rt_graph_contract_oracle": (
-            "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
+            "PYTHONPATH=src:. python3 examples/benchmark_apps/"
             "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
             "--mode rt_graph_contract --fixture degree_oriented_two_triangles"
         ),
         "rt_graph_rtdl_adapter_cpu": (
-            "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
+            "PYTHONPATH=src:. python3 examples/benchmark_apps/"
             "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
             "--mode rt_graph_rtdl_adapter --fixture degree_oriented_two_triangles "
             "--backend cpu_python_reference"
         ),
         "rt_graph_2a1_generic_rt_cpu": (
-            "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
+            "PYTHONPATH=src:. python3 examples/benchmark_apps/"
             "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
             "--mode rt_graph_2a1_generic_rt --fixture degree_oriented_two_triangles "
             "--backend cpu"
         ),
         "rt_graph_1a2_generic_rt_cpu": (
-            "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
+            "PYTHONPATH=src:. python3 examples/benchmark_apps/"
             "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
             "--mode rt_graph_1a2_generic_rt --fixture degree_oriented_two_triangles "
             "--backend cpu"
         ),
         "rt_graph_2a1_generic_rt_optix": (
-            "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
+            "PYTHONPATH=src:. python3 examples/benchmark_apps/"
             "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
             "--mode rt_graph_2a1_generic_rt --fixture degree_oriented_two_triangles "
             "--rt-graph-copies 2048 --backend optix --detail summary --warmup 1 --repeat 3"
         ),
         "rt_graph_2a1_generic_rt_optix_cupy_partner": (
-            "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
+            "PYTHONPATH=src:. python3 examples/benchmark_apps/"
             "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
             "--mode rt_graph_2a1_generic_rt --edge-file graph.edge --edge-format binary "
             "--backend optix --detail summary --partner cupy"
         ),
         "rt_graph_2a1_segmented_generic_rt_optix_cupy_partner": (
-            "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
+            "PYTHONPATH=src:. python3 examples/benchmark_apps/"
             "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
             "--mode rt_graph_2a1_segmented_generic_rt --edge-file graph.edge --edge-format binary "
             "--backend optix --detail summary --partner cupy --segment-max-two-hop-rows 1000000"
         ),
         "rt_graph_2a1_segmented_unique_weighted_generic_rt_optix_cupy_partner": (
-            "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
+            "PYTHONPATH=src:. python3 examples/benchmark_apps/"
             "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
             "--mode rt_graph_2a1_segmented_generic_rt --edge-file graph.edge --edge-format binary "
             "--backend optix --detail summary --partner cupy --segment-max-two-hop-rows 1000000 "
             "--segment-ray-representation unique_weighted"
         ),
         "rt_graph_2a1_segmented_prepared_unique_weighted_generic_rt_optix_cupy_partner": (
-            "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
+            "PYTHONPATH=src:. python3 examples/benchmark_apps/"
             "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
             "--mode rt_graph_2a1_segmented_generic_rt --edge-file graph.edge --edge-format binary "
             "--backend optix --detail summary --partner cupy --segment-max-two-hop-rows 1000000 "
             "--segment-ray-representation unique_weighted --segment-query-schedule prepared_segment_replay"
         ),
         "rt_graph_2a1_segmented_prepared_compact_constant_ray_generic_rt_optix_cupy_partner": (
-            "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
+            "PYTHONPATH=src:. python3 examples/benchmark_apps/"
             "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
             "--mode rt_graph_2a1_segmented_generic_rt --edge-file graph.edge --edge-format binary "
             "--backend optix --detail summary --partner cupy --segment-max-two-hop-rows 1000000 "
@@ -214,7 +214,7 @@ def command_plan_payload() -> dict[str, Any]:
             "--segment-ray-column-layout xz_constant_y_direction"
         ),
         "rt_graph_2a1_segmented_prepared_segment_build_telemetry": (
-            "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
+            "PYTHONPATH=src:. python3 examples/benchmark_apps/"
             "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
             "--mode rt_graph_2a1_segmented_generic_rt --edge-file graph.edge --edge-format binary "
             "--backend optix --detail summary --partner cupy --segment-max-two-hop-rows 1000000 "
@@ -222,7 +222,7 @@ def command_plan_payload() -> dict[str, Any]:
             "--segment-unique-key-builder numba_direct --segment-ray-build-telemetry sync_subphases"
         ),
         "rt_graph_2a1_segmented_prepared_sort_rle_unique_counts_candidate": (
-            "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
+            "PYTHONPATH=src:. python3 examples/benchmark_apps/"
             "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
             "--mode rt_graph_2a1_segmented_generic_rt --edge-file graph.edge --edge-format binary "
             "--backend optix --detail summary --partner cupy --segment-max-two-hop-rows 1000000 "
@@ -230,7 +230,7 @@ def command_plan_payload() -> dict[str, Any]:
             "--segment-unique-key-builder numba_direct_sort_rle"
         ),
         "rt_graph_2a1_segmented_prepared_fused_output_candidate": (
-            "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
+            "PYTHONPATH=src:. python3 examples/benchmark_apps/"
             "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
             "--mode rt_graph_2a1_segmented_generic_rt --edge-file graph.edge --edge-format binary "
             "--backend optix --detail summary --partner cupy --segment-max-two-hop-rows 1000000 "
@@ -239,21 +239,21 @@ def command_plan_payload() -> dict[str, Any]:
             "--segment-ray-output-builder numba_fused_decode_project"
         ),
         "rt_graph_2a1_segmented_scene_generic_rt_optix_cupy_partner": (
-            "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
+            "PYTHONPATH=src:. python3 examples/benchmark_apps/"
             "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
             "--mode rt_graph_2a1_segmented_scene_generic_rt --edge-file graph.edge --edge-format binary "
             "--backend optix --detail summary --partner cupy --scene-max-directed-edges 2000000 "
             "--segment-max-two-hop-rows 5000000"
         ),
         "rt_graph_2a1_segmented_scene_unique_weighted_generic_rt_optix_cupy_partner": (
-            "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
+            "PYTHONPATH=src:. python3 examples/benchmark_apps/"
             "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
             "--mode rt_graph_2a1_segmented_scene_generic_rt --edge-file graph.edge --edge-format binary "
             "--backend optix --detail summary --partner cupy --scene-max-directed-edges 2000000 "
             "--segment-max-two-hop-rows 5000000 --segment-ray-representation unique_weighted"
         ),
         "rt_graph_2a1_segmented_scene_prepared_unique_weighted_generic_rt_optix_cupy_partner": (
-            "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
+            "PYTHONPATH=src:. python3 examples/benchmark_apps/"
             "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
             "--mode rt_graph_2a1_segmented_scene_generic_rt --edge-file graph.edge --edge-format binary "
             "--backend optix --detail summary --partner cupy --scene-max-directed-edges 2000000 "
@@ -261,19 +261,19 @@ def command_plan_payload() -> dict[str, Any]:
             "--segment-query-schedule prepared_segment_replay"
         ),
         "rt_graph_1a2_generic_rt_optix": (
-            "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
+            "PYTHONPATH=src:. python3 examples/benchmark_apps/"
             "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
             "--mode rt_graph_1a2_generic_rt --fixture degree_oriented_two_triangles "
             "--rt-graph-copies 2048 --backend optix --detail summary --warmup 1 --repeat 3"
         ),
         "rt_graph_1a2_generic_rt_optix_cupy_partner": (
-            "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
+            "PYTHONPATH=src:. python3 examples/benchmark_apps/"
             "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
             "--mode rt_graph_1a2_generic_rt --edge-file graph.edge --edge-format binary "
             "--backend optix --detail summary --partner cupy"
         ),
         "embree_contract_check": (
-            "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
+            "PYTHONPATH=src:. python3 examples/benchmark_apps/"
             "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
             "--mode run --backend embree --copies 1000 --output-mode summary"
         ),

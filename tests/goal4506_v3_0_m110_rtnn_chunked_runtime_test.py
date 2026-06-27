@@ -7,18 +7,18 @@ from unittest import mock
 import unittest
 
 import rtdsl as rt
-from examples.current.research_benchmarks.rtnn import rtdl_rtnn_benchmark_app as app
+from examples.benchmark_apps.rtnn import rtdl_rtnn_benchmark_app as app
 from rtdsl.v3_0_execution_graph import GraphValidationError
 
 
 ROOT = Path(__file__).resolve().parents[1]
-APP = ROOT / "examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py"
+APP = ROOT / "examples/benchmark_apps/rtnn/rtdl_rtnn_benchmark_app.py"
 MODULE = ROOT / "src/rtdsl/v3_0_m19_ranked_summary_bridge.py"
 RUNNER = ROOT / "scripts/v3_0_m110_rtnn_chunked_bridge_measure.py"
 PACKET = ROOT / "docs/reports/goal4506_v3_0_m110_rtnn_chunked_runtime_2026-06-17.json"
 REPORT = ROOT / "docs/reports/goal4506_v3_0_m110_rtnn_chunked_runtime_2026-06-17.md"
 RAW = ROOT / "docs/reports/goal4506_rtnn_chunked_uniform_1048576q1048576_w1r3_2026-06-17.json"
-README = ROOT / "examples/current/research_benchmarks/rtnn/README.md"
+README = ROOT / "examples/benchmark_apps/rtnn/README.md"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
 
 

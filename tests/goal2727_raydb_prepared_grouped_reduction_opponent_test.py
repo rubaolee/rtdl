@@ -3,7 +3,7 @@ import json
 import unittest
 from pathlib import Path
 
-from examples.current.research_benchmarks.raydb_style import rtdl_raydb_style_benchmark_app as raydb
+from examples.benchmark_apps.raydb_style import rtdl_raydb_style_benchmark_app as raydb
 from scripts import goal2685_raydb_device_hit_stream_handoff_pod_runner as runner
 
 

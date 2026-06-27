@@ -16,7 +16,7 @@ PACKET = ROOT / "docs/reports/goal4499_v3_0_m103_rtnn_kitti_paper_family_recipe_
 JSONL = ROOT / "docs/reports/goal4499_v3_0_m103_rtnn_kitti_paper_family_recipe_2026-06-17.jsonl"
 REPORT = ROOT / "docs/reports/goal4499_v3_0_m103_rtnn_kitti_paper_family_recipe_2026-06-17.md"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
-README = ROOT / "examples/current/research_benchmarks/rtnn/README.md"
+README = ROOT / "examples/benchmark_apps/rtnn/README.md"
 SCRIPT = ROOT / "scripts/goal4499_m103_rtnn_kitti_paper_family_recipe.py"
 
 

@@ -46,7 +46,7 @@ def main() -> int:
     if args.scene_max_directed_edges < 1:
         raise ValueError("--scene-max-directed-edges must be at least 1")
 
-    from examples.current.research_benchmarks.triangle_counting import (
+    from examples.benchmark_apps.triangle_counting import (
         rtdl_triangle_counting_benchmark_app as app,
     )
 

@@ -14,10 +14,10 @@ ROOT = next(parent for parent in Path(__file__).resolve().parents if (parent / "
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
-from examples.current.research_benchmarks.triangle_counting import (  # noqa: E402
+from examples.benchmark_apps.triangle_counting import (  # noqa: E402
     rtdl_triangle_counting_benchmark_app as triangle_app,
 )
-from examples.current.research_benchmarks.triangle_counting.rt_graph_contract import (  # noqa: E402
+from examples.benchmark_apps.triangle_counting.rt_graph_contract import (  # noqa: E402
     write_binary_edges,
 )
 

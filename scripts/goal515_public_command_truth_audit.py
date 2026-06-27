@@ -39,7 +39,7 @@ GOAL513_COMMANDS = [
     "python examples/current/features/database/rtdl_db_conjunctive_scan.py --backend cpu_python_reference",
     "python examples/current/features/database/rtdl_db_grouped_count.py --backend cpu_python_reference",
     "python examples/current/features/database/rtdl_db_grouped_sum.py --backend cpu_python_reference",
-    "python examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py --backend cpu_python_reference",
+    "python examples/benchmark_apps/hausdorff_xhd/rtdl_hausdorff_distance_app.py --backend cpu_python_reference",
     "python examples/current/apps/robotics/rtdl_robot_collision_screening_app.py --backend cpu_python_reference",
     "python examples/current/apps/simulation/rtdl_barnes_hut_force_app.py --backend cpu_python_reference",
 ]
@@ -61,7 +61,7 @@ GOAL942_COMMANDS = [
     "python examples/current/apps/geospatial/rtdl_road_hazard_screening.py --backend optix --output-mode summary --optix-mode native --require-rt-core",
     "python scripts/goal933_prepared_segment_polygon_optix_profiler.py --backend optix --scenario segment_polygon_hitcount_prepared",
     "python scripts/goal934_prepared_segment_polygon_pair_rows_optix_profiler.py --backend optix --scenario segment_polygon_anyhit_rows_prepared_bounded",
-    "python examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py --backend optix --optix-summary-mode directed_threshold_prepared --require-rt-core",
+    "python examples/benchmark_apps/hausdorff_xhd/rtdl_hausdorff_distance_app.py --backend optix --optix-summary-mode directed_threshold_prepared --require-rt-core",
     "python examples/current/apps/ml/rtdl_ann_candidate_app.py --backend optix --optix-summary-mode candidate_threshold_prepared --require-rt-core",
     "python examples/current/apps/simulation/rtdl_barnes_hut_force_app.py --backend optix --optix-summary-mode node_coverage_prepared --require-rt-core",
 ]

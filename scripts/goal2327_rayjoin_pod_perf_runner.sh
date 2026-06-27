@@ -34,12 +34,12 @@ if command -v nvidia-smi >/dev/null 2>&1; then
 fi
 
 run_step "fixture prepared_optix lsi count" \
-  "${PYTHON_BIN:-python3}" examples/current/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py \
+  "${PYTHON_BIN:-python3}" examples/benchmark_apps/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py \
     --workload lsi --execution-route prepared_optix --result-mode count --no-rows \
     > "${OUTPUT_DIR}/fixture_lsi_prepared_count.json"
 
 run_step "fixture prepared_optix pip rows-no-materialization" \
-  "${PYTHON_BIN:-python3}" examples/current/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py \
+  "${PYTHON_BIN:-python3}" examples/benchmark_apps/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py \
     --workload pip --execution-route prepared_optix --result-mode rows --no-rows \
     > "${OUTPUT_DIR}/fixture_pip_prepared_rows_nomaterialize.json"
 

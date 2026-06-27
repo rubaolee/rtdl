@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any
 
 import rtdsl as rt
-from examples.current.research_benchmarks.rtnn import rtdl_rtnn_benchmark_app as app
+from examples.benchmark_apps.rtnn import rtdl_rtnn_benchmark_app as app
 
 
 PACKET_VERSION = "rtdl.v3_0.rtnn_partner_chunk_plan.goal4505.v1"

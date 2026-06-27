@@ -114,7 +114,7 @@ CURRENT_BENCHMARK_SCALE_PROFILES: tuple[CurrentBenchmarkScaleProfile, ...] = (
         profile_kind="default_scale",
         command=(
             "python",
-            "examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+            "examples/benchmark_apps/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
             "--backend",
             "optix",
             "--require-rt-core",
@@ -174,7 +174,7 @@ CURRENT_BENCHMARK_SCALE_PROFILES: tuple[CurrentBenchmarkScaleProfile, ...] = (
         profile_kind="default_scale",
         command=(
             "python",
-            "examples/current/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py",
+            "examples/benchmark_apps/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py",
             "--mode",
             "optix_rt_core_grouped_stream_numba_column_signature_3d",
             "--dataset",
@@ -200,7 +200,7 @@ CURRENT_BENCHMARK_SCALE_PROFILES: tuple[CurrentBenchmarkScaleProfile, ...] = (
         profile_kind="default_scale",
         command=(
             "python",
-            "examples/current/research_benchmarks/robot_collision/rtdl_robot_collision_benchmark_app.py",
+            "examples/benchmark_apps/robot_collision/rtdl_robot_collision_benchmark_app.py",
             "--mode",
             "optix_prepared_device_count",
             "--dataset",
@@ -232,7 +232,7 @@ CURRENT_BENCHMARK_SCALE_PROFILES: tuple[CurrentBenchmarkScaleProfile, ...] = (
         profile_kind="default_scale",
         command=(
             "python",
-            "examples/current/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py",
+            "examples/benchmark_apps/contact_manifold/rtdl_contact_manifold_benchmark_app.py",
             "--mode",
             "native_collect_k",
             "--backend",
@@ -258,7 +258,7 @@ CURRENT_BENCHMARK_SCALE_PROFILES: tuple[CurrentBenchmarkScaleProfile, ...] = (
         profile_kind="default_scale",
         command=(
             "python",
-            "examples/current/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py",
+            "examples/benchmark_apps/raydb_style/rtdl_raydb_style_benchmark_app.py",
             "--mode",
             "count",
             "--backend",
@@ -292,7 +292,7 @@ CURRENT_BENCHMARK_SCALE_PROFILES: tuple[CurrentBenchmarkScaleProfile, ...] = (
         profile_kind="default_scale",
         command=(
             "python",
-            "examples/current/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py",
+            "examples/benchmark_apps/barnes_hut/rtdl_barnes_hut_benchmark_app.py",
             "--mode",
             "partner_exact_force",
             "--partner",
@@ -320,7 +320,7 @@ CURRENT_BENCHMARK_SCALE_PROFILES: tuple[CurrentBenchmarkScaleProfile, ...] = (
         profile_kind="default_scale",
         command=(
             "python",
-            "examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+            "examples/benchmark_apps/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
             "--mode",
             "optix_aabb_index",
             "--dataset",
@@ -349,7 +349,7 @@ CURRENT_BENCHMARK_SCALE_PROFILES: tuple[CurrentBenchmarkScaleProfile, ...] = (
         profile_kind="default_scale",
         command=(
             "python",
-            "examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py",
+            "examples/benchmark_apps/rtnn/rtdl_rtnn_benchmark_app.py",
             "--mode",
             "prepared_optix_ranked_summary",
             "--point-count",
@@ -377,7 +377,7 @@ CURRENT_BENCHMARK_SCALE_PROFILES: tuple[CurrentBenchmarkScaleProfile, ...] = (
         profile_kind="default_scale",
         command=(
             "python",
-            "examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py",
+            "examples/benchmark_apps/triangle_counting/rtdl_triangle_counting_benchmark_app.py",
             "--mode",
             "rt_graph_2a1_generic_rt",
             "--backend",

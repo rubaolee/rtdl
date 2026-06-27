@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 REPORT = ROOT / "docs/reports/goal2519_partner_resident_grouped_i64_dispatch_boundary_2026-05-23.md"
 POD_SCRIPT = ROOT / "scripts/goal2519_partner_resident_grouped_i64_dispatch_boundary_pod.py"
 POD_ARTIFACT = ROOT / "docs/reports/goal2519_partner_resident_grouped_i64_dispatch_boundary_pod_2026-05-23.json"
-RAYDB_APP = ROOT / "examples/current/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py"
+RAYDB_APP = ROOT / "examples/benchmark_apps/raydb_style/rtdl_raydb_style_benchmark_app.py"
 OPTIX_RUNTIME = ROOT / "src/rtdsl/optix_runtime.py"
 
 

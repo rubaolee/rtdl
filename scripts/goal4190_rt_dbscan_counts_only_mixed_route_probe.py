@@ -7,7 +7,7 @@ import subprocess
 import time
 from typing import Any
 
-from examples.current.research_benchmarks.rt_dbscan import rtdl_rt_dbscan_benchmark_app as app
+from examples.benchmark_apps.rt_dbscan import rtdl_rt_dbscan_benchmark_app as app
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]

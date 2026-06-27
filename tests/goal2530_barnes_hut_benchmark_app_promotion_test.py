@@ -22,7 +22,7 @@ SCRIPT = (
 sys.path.insert(0, str(REPO_ROOT / "src"))
 sys.path.insert(0, str(REPO_ROOT))
 
-from examples.current.research_benchmarks.barnes_hut import rtdl_barnes_hut_benchmark_app as bench
+from examples.benchmark_apps.barnes_hut import rtdl_barnes_hut_benchmark_app as bench
 
 
 class Goal2530BarnesHutBenchmarkPromotionTest(unittest.TestCase):

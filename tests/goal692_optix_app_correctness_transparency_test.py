@@ -61,7 +61,7 @@ class Goal692OptixAppCorrectnessTransparencyTest(unittest.TestCase):
 
     def test_spatial_compute_apps_expose_prepared_summary_classification(self) -> None:
         cases = (
-            ("examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py", ("--backend", "cpu_python_reference")),
+            ("examples/benchmark_apps/hausdorff_xhd/rtdl_hausdorff_distance_app.py", ("--backend", "cpu_python_reference")),
             ("examples/current/apps/ml/rtdl_ann_candidate_app.py", ("--backend", "cpu_python_reference", "--output-mode", "rerank_summary")),
             ("examples/current/apps/simulation/rtdl_barnes_hut_force_app.py", ("--backend", "cpu_python_reference", "--output-mode", "candidate_summary")),
         )

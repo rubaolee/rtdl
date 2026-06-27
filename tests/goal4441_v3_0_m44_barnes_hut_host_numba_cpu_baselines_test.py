@@ -7,8 +7,8 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-APP = ROOT / "examples/current/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py"
-README = ROOT / "examples/current/research_benchmarks/barnes_hut/README.md"
+APP = ROOT / "examples/benchmark_apps/barnes_hut/rtdl_barnes_hut_benchmark_app.py"
+README = ROOT / "examples/benchmark_apps/barnes_hut/README.md"
 REPORT = ROOT / "docs/reports/goal4441_v3_0_m44_barnes_hut_host_numba_cpu_baselines_2026-06-16.md"
 CPU_SMOKE = ROOT / "docs/reports/goal4441_v3_0_m44_barnes_hut_cpu_host_numba_128_smoke_2026-06-16.json"
 EMBREE_SMOKE = ROOT / "docs/reports/goal4441_v3_0_m44_barnes_hut_embree_host_numba_128_smoke_2026-06-16.json"
@@ -33,7 +33,7 @@ def _has_numba_cpu() -> bool:
 
 class Goal4441V30M44BarnesHutHostNumbaCpuBaselinesTest(unittest.TestCase):
     def test_app_exposes_host_numba_cpu_modes(self) -> None:
-        from examples.current.research_benchmarks.barnes_hut import (
+        from examples.benchmark_apps.barnes_hut import (
             rtdl_barnes_hut_benchmark_app as barnes_hut,
         )
 
@@ -148,7 +148,7 @@ class Goal4441V30M44BarnesHutHostNumbaCpuBaselinesTest(unittest.TestCase):
 
     @unittest.skipUnless(_has_numba_cpu(), "Numba CPU is required for live host+Numba smoke")
     def test_live_cpu_host_numba_mode_matches_reference_on_small_case(self) -> None:
-        from examples.current.research_benchmarks.barnes_hut import (
+        from examples.benchmark_apps.barnes_hut import (
             rtdl_barnes_hut_benchmark_app as barnes_hut,
         )
 

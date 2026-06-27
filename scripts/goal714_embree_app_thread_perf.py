@@ -94,7 +94,7 @@ APP_CASES: tuple[AppCase, ...] = (
     ),
     AppCase(
         "hausdorff_distance",
-        ("examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py", "--copies", "{copies}", "--embree-result-mode", "directed_summary"),
+        ("examples/benchmark_apps/hausdorff_xhd/rtdl_hausdorff_distance_app.py", "--copies", "{copies}", "--embree-result-mode", "directed_summary"),
         "spatial_point",
         True,
         "copy-scaled nearest-neighbor app fixture with Embree directed-summary mode",

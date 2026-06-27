@@ -50,7 +50,7 @@ class Goal687AppEngineSupportMatrixTest(unittest.TestCase):
             "examples/current/features/spatial/rtdl_segment_polygon_anyhit_rows.py": "segment_polygon_anyhit_rows",
             "examples/current/features/spatial/rtdl_polygon_pair_overlap_area_rows.py": "polygon_pair_overlap_area_rows",
             "examples/current/features/spatial/rtdl_polygon_set_jaccard.py": "polygon_set_jaccard",
-            "examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py": "hausdorff_distance",
+            "examples/benchmark_apps/hausdorff_xhd/rtdl_hausdorff_distance_app.py": "hausdorff_distance",
             "examples/current/apps/ml/rtdl_ann_candidate_app.py": "ann_candidate_search",
             "examples/current/apps/ml/rtdl_outlier_detection_app.py": "outlier_detection",
             "examples/current/apps/ml/rtdl_dbscan_clustering_app.py": "dbscan_clustering",

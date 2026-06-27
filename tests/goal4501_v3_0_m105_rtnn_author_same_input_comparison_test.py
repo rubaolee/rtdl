@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PACKET = ROOT / "docs/reports/goal4501_v3_0_m105_rtnn_author_same_input_comparison_2026-06-17.json"
 REPORT = ROOT / "docs/reports/goal4501_v3_0_m105_rtnn_author_same_input_comparison_2026-06-17.md"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
-README = ROOT / "examples/current/research_benchmarks/rtnn/README.md"
+README = ROOT / "examples/benchmark_apps/rtnn/README.md"
 SCRIPT = ROOT / "scripts/goal4501_m105_rtnn_author_same_input_comparison.py"
 
 

@@ -34,12 +34,13 @@ PUBLIC_DOCS = (
     "tutorials/current/06_benchmark_apps.md",
     "tutorials/current/07_partner_choice.md",
     "examples/README.md",
-    "examples/current/research_benchmarks/README.md",
-    "examples/v4/README.md",
+    "examples/benchmark_apps/README.md",
+    "examples/paper_reproduction/README.md",
+    "examples/simple/README.md",
 )
 
 PUBLIC_CODE_PREFIXES = (
-    "examples/v4/",
+    "examples/simple/",
 )
 
 CURRENT_CODE_PREFIXES = (
@@ -49,8 +50,8 @@ CURRENT_CODE_PREFIXES = (
     "scripts/",
     "tests/",
     "tools/",
-    "examples/v4/",
-    "examples/current/research_benchmarks/",
+    "examples/simple/",
+    "examples/benchmark_apps/",
 )
 
 ROOT_RELEASE_FILES = {

@@ -27,7 +27,7 @@ APP_COMMANDS = (
     ),
     ("polygon_pair_overlap_area_rows", ("examples/current/features/spatial/rtdl_polygon_pair_overlap_area_rows.py",)),
     ("polygon_set_jaccard", ("examples/current/features/spatial/rtdl_polygon_set_jaccard.py",)),
-    ("hausdorff_distance", ("examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py", "--copies", "16")),
+    ("hausdorff_distance", ("examples/benchmark_apps/hausdorff_xhd/rtdl_hausdorff_distance_app.py", "--copies", "16")),
     ("ann_candidate_search", ("examples/current/apps/ml/rtdl_ann_candidate_app.py", "--copies", "16")),
     ("outlier_detection", ("examples/current/apps/ml/rtdl_outlier_detection_app.py", "--copies", "16")),
     ("dbscan_clustering", ("examples/current/apps/ml/rtdl_dbscan_clustering_app.py", "--copies", "16")),

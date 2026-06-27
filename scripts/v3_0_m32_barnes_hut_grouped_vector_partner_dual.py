@@ -210,7 +210,7 @@ def _run_partner(
     repeat: int,
     validate_row_offsets: bool,
 ) -> dict[str, object]:
-    from examples.current.research_benchmarks.barnes_hut import (
+    from examples.benchmark_apps.barnes_hut import (
         rtdl_barnes_hut_benchmark_app as barnes_hut,
     )
 
@@ -397,7 +397,7 @@ def _global_atomic_add_used(metadata: dict[str, Any]) -> bool | None:
 
 
 def _descriptor_policy_snapshot(partners: tuple[str, ...]) -> tuple[dict[str, object], ...]:
-    from examples.current.research_benchmarks.barnes_hut import (
+    from examples.benchmark_apps.barnes_hut import (
         rtdl_barnes_hut_benchmark_app as barnes_hut,
     )
 

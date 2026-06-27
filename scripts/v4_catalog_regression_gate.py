@@ -89,7 +89,7 @@ def _example_commands(
             "fixed_radius",
             [
                 python,
-                "examples/v4/fixed_radius_torch_device_arrays.py",
+                "examples/simple/fixed_radius_torch_device_arrays.py",
                 "--copies",
                 str(copies),
             ],
@@ -98,7 +98,7 @@ def _example_commands(
             "closest_hit_grouped_argmin",
             [
                 python,
-                "examples/v4/closest_hit_grouped_argmin_torch_device_arrays.py",
+                "examples/simple/closest_hit_grouped_argmin_torch_device_arrays.py",
                 "--ray-count",
                 str(ray_count),
             ],
@@ -107,7 +107,7 @@ def _example_commands(
             "ray_triangle_any_hit_flags",
             [
                 python,
-                "examples/v4/ray_triangle_any_hit_flags_torch_device_arrays.py",
+                "examples/simple/ray_triangle_any_hit_flags_torch_device_arrays.py",
                 "--ray-count",
                 str(ray_count),
             ],
@@ -116,7 +116,7 @@ def _example_commands(
             "primitive_grouped_i64_reduction",
             [
                 python,
-                "examples/v4/primitive_grouped_i64_reduction_torch_device_arrays.py",
+                "examples/simple/primitive_grouped_i64_reduction_torch_device_arrays.py",
                 "--ray-count",
                 str(ray_count),
             ],
@@ -125,7 +125,7 @@ def _example_commands(
             "point_group_nearest_witness",
             [
                 python,
-                "examples/v4/point_group_nearest_witness_torch_device_arrays.py",
+                "examples/simple/point_group_nearest_witness_torch_device_arrays.py",
                 "--query-count",
                 str(ray_count),
             ],
@@ -134,7 +134,7 @@ def _example_commands(
             "ray_triangle_any_hit_weighted_sum",
             [
                 python,
-                "examples/v4/ray_triangle_any_hit_weighted_sum_torch_device_arrays.py",
+                "examples/simple/ray_triangle_any_hit_weighted_sum_torch_device_arrays.py",
                 "--ray-count",
                 str(ray_count),
             ],
@@ -143,28 +143,28 @@ def _example_commands(
             "aabb_index_all_ops_count",
             [
                 python,
-                "examples/v4/aabb_index_all_ops_count.py",
+                "examples/simple/aabb_index_all_ops_count.py",
             ],
         ),
         (
             "v4_frontdoor_quickstart",
-            [python, "examples/v4/v4_frontdoor_quickstart.py"],
+            [python, "examples/simple/v4_frontdoor_quickstart.py"],
         ),
         (
             "custom_predicate_early_exit_planning",
-            [python, "examples/v4/custom_predicate_early_exit_planning.py"],
+            [python, "examples/simple/custom_predicate_early_exit_planning.py"],
         ),
         (
             "operator_callback_planning_tier2",
-            [python, "examples/v4/operator_callback_planning.py", "--case", "tier2"],
+            [python, "examples/simple/operator_callback_planning.py", "--case", "tier2"],
         ),
         (
             "operator_callback_planning_scalar_callback",
-            [python, "examples/v4/operator_callback_planning.py", "--case", "scalar-callback"],
+            [python, "examples/simple/operator_callback_planning.py", "--case", "scalar-callback"],
         ),
         (
             "operator_callback_planning_complex_callback",
-            [python, "examples/v4/operator_callback_planning.py", "--case", "complex-callback"],
+            [python, "examples/simple/operator_callback_planning.py", "--case", "complex-callback"],
         ),
     ]
     if dry:

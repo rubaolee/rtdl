@@ -8,7 +8,7 @@ import subprocess
 from pathlib import Path
 from time import perf_counter
 
-from examples.current.research_benchmarks.raydb_style import rtdl_raydb_style_benchmark_app as raydb
+from examples.benchmark_apps.raydb_style import rtdl_raydb_style_benchmark_app as raydb
 
 
 ROOT = Path(__file__).resolve().parents[1]

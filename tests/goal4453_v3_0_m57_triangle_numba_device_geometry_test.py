@@ -7,14 +7,14 @@ import unittest
 
 import numpy as np
 
-from examples.current.research_benchmarks.triangle_counting import rt_graph_contract as contract_mod
-from examples.current.research_benchmarks.triangle_counting import rtdl_triangle_counting_benchmark_app as app
+from examples.benchmark_apps.triangle_counting import rt_graph_contract as contract_mod
+from examples.benchmark_apps.triangle_counting import rtdl_triangle_counting_benchmark_app as app
 
 routes = importlib.import_module("rtdsl.current_benchmark_route_decisions")
 
 
 ROOT = Path(__file__).resolve().parents[1]
-APP = ROOT / "examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py"
+APP = ROOT / "examples/benchmark_apps/triangle_counting/rtdl_triangle_counting_benchmark_app.py"
 REPORT = ROOT / "docs" / "reports" / "goal4453_v3_0_m57_triangle_numba_device_geometry_2026-06-16.md"
 EVIDENCE = ROOT / "docs" / "reports" / "goal4453_v3_0_m57_triangle_numba_device_geometry_200000_2026-06-16.json"
 

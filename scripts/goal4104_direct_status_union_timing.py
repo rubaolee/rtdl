@@ -10,7 +10,7 @@ import time
 from typing import Any
 
 import rtdsl as rt
-from examples.current.research_benchmarks.rt_dbscan.rtdl_rt_dbscan_benchmark_app import (
+from examples.benchmark_apps.rt_dbscan.rtdl_rt_dbscan_benchmark_app import (
     make_rt_dbscan_points,
 )
 from scripts.goal4085_partition_summary_build_feasibility import PROFILE_RADII

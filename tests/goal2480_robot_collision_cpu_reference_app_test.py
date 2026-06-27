@@ -34,7 +34,7 @@ NATIVE_DIR = ROOT / "src" / "native"
 
 class Goal2480RobotCollisionCpuReferenceAppTest(unittest.TestCase):
     def test_tiny_cpu_reference_matches_expected_compact_flags(self) -> None:
-        from examples.current.research_benchmarks.robot_collision.rtdl_robot_collision_benchmark_app import (
+        from examples.benchmark_apps.robot_collision.rtdl_robot_collision_benchmark_app import (
             run_robot_collision_benchmark,
         )
 
@@ -54,7 +54,7 @@ class Goal2480RobotCollisionCpuReferenceAppTest(unittest.TestCase):
         self.assertGreater(len(payload["hit_pairs"]), 0)
 
     def test_scaled_cpu_reference_is_configurable_and_keeps_compact_contract(self) -> None:
-        from examples.current.research_benchmarks.robot_collision.rtdl_robot_collision_benchmark_app import (
+        from examples.benchmark_apps.robot_collision.rtdl_robot_collision_benchmark_app import (
             run_robot_collision_benchmark,
         )
 

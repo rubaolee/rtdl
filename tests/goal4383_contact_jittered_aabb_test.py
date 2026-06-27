@@ -6,7 +6,7 @@ import unittest
 
 
 ROOT = Path(__file__).resolve().parents[1]
-APP = ROOT / "examples/current/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py"
+APP = ROOT / "examples/benchmark_apps/contact_manifold/rtdl_contact_manifold_benchmark_app.py"
 REPORT = ROOT / "docs/reports/goal4383_contact_jittered_aabb_2026-06-14.md"
 ARTIFACT_DIR = ROOT / "docs/reports/goal4383_contact_jittered_aabb_2026-06-14"
 

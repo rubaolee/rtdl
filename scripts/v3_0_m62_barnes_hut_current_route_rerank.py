@@ -12,7 +12,7 @@ ROOT = next(parent for parent in Path(__file__).resolve().parents if (parent / "
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
-from examples.current.research_benchmarks.barnes_hut import (  # noqa: E402
+from examples.benchmark_apps.barnes_hut import (  # noqa: E402
     rtdl_barnes_hut_benchmark_app as barnes_hut,
 )
 from rtdsl.numba_partner_continuation import (  # noqa: E402

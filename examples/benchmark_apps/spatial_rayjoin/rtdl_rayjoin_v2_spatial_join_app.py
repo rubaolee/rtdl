@@ -15,8 +15,8 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
 import rtdsl as rt
-from examples.reference.rtdl_language_reference import county_soil_overlay_reference
-from examples.reference.rtdl_language_reference import county_zip_join_reference
+from examples.benchmark_apps._support.rtdl_language_reference import county_soil_overlay_reference
+from examples.benchmark_apps._support.rtdl_language_reference import county_zip_join_reference
 from rtdsl.baseline_runner import DatasetCase
 from rtdsl.baseline_runner import load_representative_case
 from rtdsl.baseline_runner import segments_from_records

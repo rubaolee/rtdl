@@ -57,7 +57,7 @@ class Goal4279BenchmarkEvidenceIndexTest(unittest.TestCase):
 
         for row in payload["rows"]:
             command_text = row["command_text"]
-            if "examples/current/research_benchmarks/" not in command_text:
+            if "examples/benchmark_apps/" not in command_text:
                 issues.append(f"{row['app']}: command not current benchmark path")
             if "examples/v2_0" in command_text:
                 issues.append(f"{row['app']}: stale examples/v2_0 command")

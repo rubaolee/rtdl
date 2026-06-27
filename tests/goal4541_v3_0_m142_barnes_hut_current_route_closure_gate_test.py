@@ -18,7 +18,7 @@ REPORT = (
     / "docs/reports/goal4541_v3_0_m142_barnes_hut_current_route_closure_gate_2026-06-17.md"
 )
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
-README = ROOT / "examples/current/research_benchmarks/barnes_hut/README.md"
+README = ROOT / "examples/benchmark_apps/barnes_hut/README.md"
 
 
 class Goal4541V30M142BarnesHutCurrentRouteClosureGateTest(unittest.TestCase):

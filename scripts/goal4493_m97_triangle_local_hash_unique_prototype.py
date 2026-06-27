@@ -18,10 +18,10 @@ import cupy as cp
 from numba import cuda
 from numba import int32
 
-from examples.current.research_benchmarks.triangle_counting import (
+from examples.benchmark_apps.triangle_counting import (
     rtdl_triangle_counting_benchmark_app as app,
 )
-from examples.current.research_benchmarks.triangle_counting.rt_graph_contract import (
+from examples.benchmark_apps.triangle_counting.rt_graph_contract import (
     build_rt_graph_triangle_summary_contract_cupy_binary,
 )
 

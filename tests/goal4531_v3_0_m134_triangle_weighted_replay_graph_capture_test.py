@@ -10,7 +10,7 @@ import rtdsl as rt
 ROOT = Path(__file__).resolve().parents[1]
 PACKET = ROOT / "docs/reports/goal4531_v3_0_m134_triangle_weighted_replay_graph_capture_2026-06-17.json"
 REPORT = ROOT / "docs/reports/goal4531_v3_0_m134_triangle_weighted_replay_graph_capture_2026-06-17.md"
-README = ROOT / "examples/current/research_benchmarks/triangle_counting/README.md"
+README = ROOT / "examples/benchmark_apps/triangle_counting/README.md"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
 SCRIPT = ROOT / "scripts/goal4531_m134_triangle_weighted_replay_graph_capture.py"
 PY_SOURCE = ROOT / "src/rtdsl/optix_runtime.py"

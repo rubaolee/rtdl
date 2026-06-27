@@ -4,12 +4,12 @@ import sys
 import unittest
 
 import rtdsl as rt
-from examples.current.research_benchmarks.raydb_style import rtdl_raydb_style_benchmark_app as app
+from examples.benchmark_apps.raydb_style import rtdl_raydb_style_benchmark_app as app
 
 
 ROOT = Path(__file__).resolve().parents[1]
 REPORT = ROOT / "docs/reports/goal2498_raydb_style_optix_count_sum_parity_2026-05-22.md"
-APP = ROOT / "examples/current/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py"
+APP = ROOT / "examples/benchmark_apps/raydb_style/rtdl_raydb_style_benchmark_app.py"
 OPTIX_API = ROOT / "src/native/optix/rtdl_optix_api.cpp"
 OPTIX_RUNTIME = ROOT / "src/rtdsl/optix_runtime.py"
 
@@ -68,7 +68,7 @@ class Goal2498RaydbStyleOptixCountSumParityTest(unittest.TestCase):
         proc = subprocess.run(
             [
                 sys.executable,
-                "examples/current/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py",
+                "examples/benchmark_apps/raydb_style/rtdl_raydb_style_benchmark_app.py",
                 "--backend",
                 "optix",
                 "--mode",

@@ -4,7 +4,7 @@ from pathlib import Path
 import unittest
 
 import rtdsl as rt
-from examples.current.research_benchmarks.raydb_style import rtdl_raydb_style_benchmark_app as app
+from examples.benchmark_apps.raydb_style import rtdl_raydb_style_benchmark_app as app
 
 from tests.goal2505_partner_resident_columnar_descriptor_contract_test import FakeCudaColumn
 from tests.goal2505_partner_resident_columnar_descriptor_contract_test import _record_set
@@ -18,7 +18,7 @@ OPTIX_API = ROOT / "src/native/optix/rtdl_optix_api.cpp"
 OPTIX_PRELUDE = ROOT / "src/native/optix/rtdl_optix_prelude.h"
 OPTIX_WORKLOADS = ROOT / "src/native/optix/rtdl_optix_workloads.cpp"
 OPTIX_RUNTIME = ROOT / "src/rtdsl/optix_runtime.py"
-RAYDB_APP = ROOT / "examples/current/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py"
+RAYDB_APP = ROOT / "examples/benchmark_apps/raydb_style/rtdl_raydb_style_benchmark_app.py"
 
 
 class Goal2517PartnerResidentFusedSumCountI64Test(unittest.TestCase):

@@ -164,7 +164,7 @@ def _command_for(app: str, version: str, profile: dict[str, int]) -> tuple[list[
         return (
             [
                 py,
-                "examples/current/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py",
+                "examples/benchmark_apps/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py",
                 "--mode",
                 mode,
                 "--dataset",
@@ -194,7 +194,7 @@ def _command_for(app: str, version: str, profile: dict[str, int]) -> tuple[list[
         return (
             [
                 py,
-                "examples/current/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py",
+                "examples/benchmark_apps/raydb_style/rtdl_raydb_style_benchmark_app.py",
                 "--mode",
                 "sum",
                 "--backend",
@@ -217,7 +217,7 @@ def _command_for(app: str, version: str, profile: dict[str, int]) -> tuple[list[
         mode = "rt_graph_2a1_segmented_generic_rt" if version != "v2_14" else "rt_graph_2a1_generic_rt"
         command = [
             py,
-            "examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py",
+            "examples/benchmark_apps/triangle_counting/rtdl_triangle_counting_benchmark_app.py",
             "--mode",
             mode,
             "--edge-file",
@@ -250,7 +250,7 @@ def _command_for(app: str, version: str, profile: dict[str, int]) -> tuple[list[
         return (
             [
                 py,
-                "examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+                "examples/benchmark_apps/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
                 "--mode",
                 "optix_aabb_index",
                 "--dataset",
@@ -273,7 +273,7 @@ def _command_for(app: str, version: str, profile: dict[str, int]) -> tuple[list[
         return (
             [
                 py,
-                "examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+                "examples/benchmark_apps/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
                 "--backend",
                 "optix",
                 "--optix-summary-mode",
@@ -293,7 +293,7 @@ def _command_for(app: str, version: str, profile: dict[str, int]) -> tuple[list[
     if app == "robot_collision":
         command = [
                 py,
-                "examples/current/research_benchmarks/robot_collision/rtdl_robot_collision_benchmark_app.py",
+                "examples/benchmark_apps/robot_collision/rtdl_robot_collision_benchmark_app.py",
                 "--mode",
                 "optix_prepared_device_buffers",
                 "--dataset",
@@ -318,7 +318,7 @@ def _command_for(app: str, version: str, profile: dict[str, int]) -> tuple[list[
         return (
             [
                 py,
-                "examples/current/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py",
+                "examples/benchmark_apps/contact_manifold/rtdl_contact_manifold_benchmark_app.py",
                 "--mode",
                 "aabb_broadphase_collect_k",
                 "--dataset",
@@ -344,7 +344,7 @@ def _command_for(app: str, version: str, profile: dict[str, int]) -> tuple[list[
         mode = "prepared_execution_ranked_summary" if version == "v4_0" else "prepared_optix_ranked_summary"
         command = [
                 py,
-                "examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py",
+                "examples/benchmark_apps/rtnn/rtdl_rtnn_benchmark_app.py",
                 "--mode",
                 mode,
                 "--point-count",
@@ -365,7 +365,7 @@ def _command_for(app: str, version: str, profile: dict[str, int]) -> tuple[list[
         return (
             [
                 py,
-                "examples/current/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py",
+                "examples/benchmark_apps/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py",
                 "--workload",
                 "overlay_seed",
                 "--backend",

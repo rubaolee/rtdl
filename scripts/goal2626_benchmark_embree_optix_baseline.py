@@ -87,7 +87,7 @@ def build_cases(scale: str, artifact_dir: Path) -> tuple[BenchmarkCase, ...]:
     )
     contact_grid = _scale_value(scale, quick=64, standard=4096, large=8192)
 
-    app = "examples/current/research_benchmarks"
+    app = "examples/benchmark_apps"
     rtnn_point_file = artifact_dir / f"rtnn_uniform_{rtnn_points}.csv"
     rtnn_gen_json = artifact_dir / f"rtnn_generate_{rtnn_points}.json"
     rtnn_embree_json = artifact_dir / f"rtnn_embree_{rtnn_points}.json"

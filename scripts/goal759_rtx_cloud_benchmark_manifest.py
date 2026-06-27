@@ -661,7 +661,7 @@ def build_manifest() -> dict[str, Any]:
             ),
             _deferred_entry(
                 app="hausdorff_distance",
-                app_path="examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+                app_path="examples/benchmark_apps/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
                 path_name="directed_threshold_prepared",
                 command=[
                     python,

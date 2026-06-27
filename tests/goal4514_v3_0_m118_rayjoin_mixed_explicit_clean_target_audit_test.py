@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PACKET = ROOT / "docs/reports/goal4514_v3_0_m118_rayjoin_mixed_explicit_clean_target_audit_2026-06-17.json"
 REPORT = ROOT / "docs/reports/goal4514_v3_0_m118_rayjoin_mixed_explicit_clean_target_audit_2026-06-17.md"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
-README = ROOT / "examples/current/research_benchmarks/spatial_rayjoin/README.md"
+README = ROOT / "examples/benchmark_apps/spatial_rayjoin/README.md"
 SCRIPT = ROOT / "scripts/goal4514_m118_rayjoin_mixed_explicit_clean_target_audit.py"
 
 

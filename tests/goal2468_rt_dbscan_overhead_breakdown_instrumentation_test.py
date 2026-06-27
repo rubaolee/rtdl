@@ -3,7 +3,7 @@ from __future__ import annotations
 import pathlib
 import unittest
 
-from examples.current.research_benchmarks.rt_dbscan.rtdl_rt_dbscan_benchmark_app import (
+from examples.benchmark_apps.rt_dbscan.rtdl_rt_dbscan_benchmark_app import (
     RT_DBSCAN_GROUPED_STREAM_TIMING_BREAKDOWN_SCHEMA,
     _build_grouped_stream_timing_breakdown,
 )

@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PACKET = ROOT / "docs/reports/goal4500_v3_0_m104_rtnn_kitti_same_input_rtdl_gate_2026-06-17.json"
 REPORT = ROOT / "docs/reports/goal4500_v3_0_m104_rtnn_kitti_same_input_rtdl_gate_2026-06-17.md"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
-README = ROOT / "examples/current/research_benchmarks/rtnn/README.md"
+README = ROOT / "examples/benchmark_apps/rtnn/README.md"
 SCRIPT = ROOT / "scripts/goal4500_m104_rtnn_kitti_same_input_rtdl_gate.py"
 
 

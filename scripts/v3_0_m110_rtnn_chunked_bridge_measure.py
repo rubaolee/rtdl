@@ -132,7 +132,7 @@ def main() -> int:
         else dict(_NUMBA_TOOLCHAIN_BOOTSTRAP)
     )
 
-    from examples.current.research_benchmarks.rtnn import rtdl_rtnn_benchmark_app as app
+    from examples.benchmark_apps.rtnn import rtdl_rtnn_benchmark_app as app
 
     payload = app.run_app(
         "prepared_ranked_summary_graph_partner_bridge_chunked",

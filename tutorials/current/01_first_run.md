@@ -22,13 +22,13 @@ Start from the repository root:
 
 ```powershell
 $env:PYTHONPATH = "src;."
-py -3 examples\v4\v4_frontdoor_quickstart.py
+py -3 examples\simple\v4_frontdoor_quickstart.py
 ```
 
 Linux or macOS:
 
 ```bash
-PYTHONPATH=src:. python examples/v4/v4_frontdoor_quickstart.py
+PYTHONPATH=src:. python examples/simple/v4_frontdoor_quickstart.py
 ```
 
 The same check can be written directly:

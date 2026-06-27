@@ -13,7 +13,7 @@ PACKET = ROOT / "docs/reports/goal4484_v3_0_m88_rtdbscan_compact_signature_matri
 JSONL = ROOT / "docs/reports/goal4484_v3_0_m88_rtdbscan_compact_signature_matrix_2026-06-16.jsonl"
 REPORT = ROOT / "docs/reports/goal4484_v3_0_m88_rtdbscan_compact_signature_matrix_2026-06-16.md"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
-APP = ROOT / "examples/current/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py"
+APP = ROOT / "examples/benchmark_apps/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py"
 
 
 class Goal4484V30M88RtdbscanCompactSignatureMatrixTest(unittest.TestCase):

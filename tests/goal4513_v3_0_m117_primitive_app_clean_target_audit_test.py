@@ -12,11 +12,11 @@ REPORT = ROOT / "docs/reports/goal4513_v3_0_m117_primitive_app_clean_target_audi
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
 SCRIPT = ROOT / "scripts/goal4513_m117_primitive_app_clean_target_audit.py"
 READMES = {
-    "robot_collision": ROOT / "examples/current/research_benchmarks/robot_collision/README.md",
-    "contact_manifold": ROOT / "examples/current/research_benchmarks/contact_manifold/README.md",
-    "raydb_style": ROOT / "examples/current/research_benchmarks/raydb_style/README.md",
-    "librts_spatial_index": ROOT / "examples/current/research_benchmarks/librts_spatial_index/README.md",
-    "hausdorff_xhd": ROOT / "examples/current/research_benchmarks/hausdorff_xhd/README.md",
+    "robot_collision": ROOT / "examples/benchmark_apps/robot_collision/README.md",
+    "contact_manifold": ROOT / "examples/benchmark_apps/contact_manifold/README.md",
+    "raydb_style": ROOT / "examples/benchmark_apps/raydb_style/README.md",
+    "librts_spatial_index": ROOT / "examples/benchmark_apps/librts_spatial_index/README.md",
+    "hausdorff_xhd": ROOT / "examples/benchmark_apps/hausdorff_xhd/README.md",
 }
 
 

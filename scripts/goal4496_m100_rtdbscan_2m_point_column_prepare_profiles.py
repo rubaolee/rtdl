@@ -7,7 +7,7 @@ from pathlib import Path
 import subprocess
 import time
 
-from examples.current.research_benchmarks.rt_dbscan import rtdl_rt_dbscan_benchmark_app as app
+from examples.benchmark_apps.rt_dbscan import rtdl_rt_dbscan_benchmark_app as app
 
 import rtdsl as rt
 

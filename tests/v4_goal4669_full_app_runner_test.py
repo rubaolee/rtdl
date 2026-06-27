@@ -35,7 +35,7 @@ class V4Goal4669FullAppRunnerTest(unittest.TestCase):
         v4 = runner._commands(root, "v4_current", profile, Path("/tmp/k4.edgebin"))["hausdorff_xhd"]
         probe = runner._hausdorff_command(root, "v4_current", profile, correctness_probe=True)
 
-        self.assertIn("examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py", v2)
+        self.assertIn("examples/benchmark_apps/hausdorff_xhd/rtdl_hausdorff_distance_app.py", v2)
         self.assertIn("--backend", v2)
         self.assertIn("embree", v2)
         self.assertIn("--embree-result-mode", v2)

@@ -14,7 +14,7 @@ from scripts import goal507_hausdorff_linux_perf
 class Goal507HausdorffPerfHarnessTest(unittest.TestCase):
     def test_hausdorff_cli_exposes_gpu_backends(self) -> None:
         completed = subprocess.run(
-            [sys.executable, "examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py", "--help"],
+            [sys.executable, "examples/benchmark_apps/hausdorff_xhd/rtdl_hausdorff_distance_app.py", "--help"],
             check=True,
             capture_output=True,
             text=True,

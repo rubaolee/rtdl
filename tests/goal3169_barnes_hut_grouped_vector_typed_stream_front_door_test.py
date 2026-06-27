@@ -6,7 +6,7 @@ import unittest
 import numpy as np
 
 import rtdsl as rt
-from examples.current.research_benchmarks.barnes_hut import rtdl_barnes_hut_benchmark_app as bh
+from examples.benchmark_apps.barnes_hut import rtdl_barnes_hut_benchmark_app as bh
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]

@@ -123,7 +123,7 @@ PROBES: tuple[dict[str, Any], ...] = (
         "app": "hausdorff_distance",
         "command": [
             sys.executable,
-            "examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+            "examples/benchmark_apps/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
             "--backend",
             "embree",
             "--copies",

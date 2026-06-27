@@ -26,10 +26,10 @@ class Goal3547V23MeasurementOverlayRepeatHooksTest(unittest.TestCase):
     def test_patch_contains_expected_measurement_files_and_not_later_modes(self) -> None:
         text = PATCH.read_text(encoding="utf-8")
         for path in (
-            "examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+            "examples/benchmark_apps/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
             "examples/current/apps/simulation/rtdl_barnes_hut_force_app.py",
-            "examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
-            "examples/current/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py",
+            "examples/benchmark_apps/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+            "examples/benchmark_apps/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py",
             "scripts/goal2626_benchmark_embree_optix_baseline.py",
         ):
             self.assertIn(path, text)

@@ -10,7 +10,7 @@ import rtdsl as rt
 ROOT = Path(__file__).resolve().parents[1]
 PACKET = ROOT / "docs/reports/goal4528_v3_0_m132_rtdbscan_prepared_graph_capture_2026-06-17.json"
 REPORT = ROOT / "docs/reports/goal4528_v3_0_m132_rtdbscan_prepared_graph_capture_2026-06-17.md"
-README = ROOT / "examples/current/research_benchmarks/rt_dbscan/README.md"
+README = ROOT / "examples/benchmark_apps/rt_dbscan/README.md"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
 SCRIPT = ROOT / "scripts/goal4528_m132_rtdbscan_prepared_graph_capture.py"
 SOURCE = ROOT / "src/rtdsl/v2_8_fixed_radius_graph_component_front_door.py"

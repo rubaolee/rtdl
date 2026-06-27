@@ -28,7 +28,7 @@ def _has_numba_cuda() -> bool:
 
 class Goal4450V30M54BarnesHutNumbaCudaAppModeTest(unittest.TestCase):
     def test_app_mode_is_front_door_for_reusable_fused_partner(self) -> None:
-        from examples.current.research_benchmarks.barnes_hut import rtdl_barnes_hut_benchmark_app as app
+        from examples.benchmark_apps.barnes_hut import rtdl_barnes_hut_benchmark_app as app
 
         source = APP.read_text(encoding="utf-8")
         block = source[
@@ -82,7 +82,7 @@ class Goal4450V30M54BarnesHutNumbaCudaAppModeTest(unittest.TestCase):
 
     @unittest.skipUnless(_has_numba_cuda(), "Numba CUDA is required for live app-mode smoke")
     def test_live_app_mode_matches_cpu_reference_and_keeps_claim_flags_closed(self) -> None:
-        from examples.current.research_benchmarks.barnes_hut import rtdl_barnes_hut_benchmark_app as app
+        from examples.benchmark_apps.barnes_hut import rtdl_barnes_hut_benchmark_app as app
 
         payload = app.run_benchmark(
             "fused_frontier_force_sum_bucketized_numba_cuda",

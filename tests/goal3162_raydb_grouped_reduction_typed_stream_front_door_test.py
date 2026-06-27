@@ -4,7 +4,7 @@ from pathlib import Path
 import numpy as np
 
 import rtdsl as rt
-from examples.current.research_benchmarks.raydb_style import (
+from examples.benchmark_apps.raydb_style import (
     rtdl_raydb_style_benchmark_app as raydb,
 )
 

@@ -16,7 +16,7 @@ if str(ROOT / "src") not in sys.path:
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from examples.current.research_benchmarks.hausdorff_xhd import rtdl_hausdorff_v2_function as hd
+from examples.benchmark_apps.hausdorff_xhd import rtdl_hausdorff_v2_function as hd
 
 
 METHODS = (

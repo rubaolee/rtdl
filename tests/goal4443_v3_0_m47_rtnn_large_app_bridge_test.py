@@ -16,7 +16,7 @@ OPTIX_1M = GOAL4381_DIR / "rtnn_uniform_1m_optix_aggregate_exact_repeat100.json"
 EVIDENCE_INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
 PARTNER_MATRIX = ROOT / "docs/learn/benchmark_partner_reference_matrix.md"
 RT_CORE_MATRIX = ROOT / "docs/learn/rt_core_evidence_matrix.md"
-RTNN_README = ROOT / "examples/current/research_benchmarks/rtnn/README.md"
+RTNN_README = ROOT / "examples/benchmark_apps/rtnn/README.md"
 
 
 class Goal4443V30M47RtnnLargeAppBridgeTest(unittest.TestCase):

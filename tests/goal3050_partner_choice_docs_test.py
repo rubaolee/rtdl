@@ -65,7 +65,7 @@ class Goal3050PartnerChoiceDocsTest(unittest.TestCase):
 
     def test_learner_and_benchmark_doors_link_guidance(self) -> None:
         learner = self._read("docs/learn/README.md")
-        benchmarks = self._read("examples/current/research_benchmarks/README.md")
+        benchmarks = self._read("examples/benchmark_apps/README.md")
         frontpage = self._read("README.md")
 
         self.assertIn("partner_choice_for_custom_logic.md", learner)

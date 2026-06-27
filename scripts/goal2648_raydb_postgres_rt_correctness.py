@@ -14,7 +14,7 @@ ROOT = next(parent for parent in Path(__file__).resolve().parents if (parent / "
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
-from examples.current.research_benchmarks.raydb_style import rtdl_raydb_style_benchmark_app as raydb
+from examples.benchmark_apps.raydb_style import rtdl_raydb_style_benchmark_app as raydb
 from scripts.goal2645_raydb_rt_perf_pod import _environment_snapshot
 from scripts.goal2645_raydb_rt_perf_pod import _parse_csv_ints
 from scripts.goal2645_raydb_rt_perf_pod import _parse_csv_text

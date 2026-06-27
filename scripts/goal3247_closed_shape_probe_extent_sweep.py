@@ -26,7 +26,7 @@ import json
 import os
 import statistics
 
-from examples.current.research_benchmarks.spatial_rayjoin import (
+from examples.benchmark_apps.spatial_rayjoin import (
     rtdl_rayjoin_v2_spatial_join_app as app,
 )
 

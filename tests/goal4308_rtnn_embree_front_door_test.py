@@ -5,7 +5,7 @@ import json
 import unittest
 
 import rtdsl as rt
-from examples.current.research_benchmarks.rtnn import rtdl_rtnn_benchmark_app as rtnn_app
+from examples.benchmark_apps.rtnn import rtdl_rtnn_benchmark_app as rtnn_app
 
 
 ROOT = Path(__file__).resolve().parents[1]

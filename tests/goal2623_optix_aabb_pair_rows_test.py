@@ -5,7 +5,7 @@ from pathlib import Path
 import unittest
 
 import rtdsl as rt
-from examples.current.research_benchmarks.contact_manifold import (
+from examples.benchmark_apps.contact_manifold import (
     rtdl_contact_manifold_benchmark_app as app,
 )
 from tests._embree_support import embree_available

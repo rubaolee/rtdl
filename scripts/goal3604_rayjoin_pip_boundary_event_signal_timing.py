@@ -305,7 +305,7 @@ def _run_boundary_event_signal_row(*, county_cdb: Path, repeat: int, warmup: int
 
 
 def _run_exact_prepared_row(*, county_cdb: Path, repeat: int, warmup: int) -> dict[str, object]:
-    from examples.current.research_benchmarks.spatial_rayjoin.rtdl_rayjoin_v2_spatial_join_app import (
+    from examples.benchmark_apps.spatial_rayjoin.rtdl_rayjoin_v2_spatial_join_app import (
         run_rayjoin_prepared_optix_workload,
     )
 

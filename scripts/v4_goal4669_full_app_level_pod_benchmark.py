@@ -75,7 +75,7 @@ def _hausdorff_command(root: Path, version: str, profile: dict[str, Any], *, cor
     if version == "v2_14":
         return [
             py,
-            "examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+            "examples/benchmark_apps/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
             "--backend",
             "embree",
             "--embree-result-mode",
@@ -85,7 +85,7 @@ def _hausdorff_command(root: Path, version: str, profile: dict[str, Any], *, cor
         ]
     command = [
         py,
-        "examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+        "examples/benchmark_apps/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
         "--backend",
         "optix_device_max_nearest",
         "--partner",
@@ -114,7 +114,7 @@ def _commands(root: Path, version: str, profile: dict[str, Any], triangle_file: 
         py = _python(root)
         commands["raydb_style"] = [
             py,
-            "examples/current/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py",
+            "examples/benchmark_apps/raydb_style/rtdl_raydb_style_benchmark_app.py",
             "--mode",
             "sum",
             "--backend",

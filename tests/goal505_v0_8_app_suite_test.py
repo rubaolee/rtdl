@@ -62,7 +62,7 @@ class Goal505V08AppSuiteTest(unittest.TestCase):
 
     def test_v0_8_app_building_tutorial_links_examples(self) -> None:
         tutorial = (REPO_ROOT / "docs" / "tutorials" / "v0_8_app_building.md").read_text(encoding="utf-8")
-        self.assertIn("examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py", tutorial)
+        self.assertIn("examples/benchmark_apps/hausdorff_xhd/rtdl_hausdorff_distance_app.py", tutorial)
         self.assertIn("examples/current/apps/ml/rtdl_ann_candidate_app.py", tutorial)
         self.assertIn("examples/current/apps/ml/rtdl_outlier_detection_app.py", tutorial)
         self.assertIn("examples/current/apps/ml/rtdl_dbscan_clustering_app.py", tutorial)
@@ -74,7 +74,7 @@ class Goal505V08AppSuiteTest(unittest.TestCase):
 
     def test_v0_8_app_clis_emit_json(self) -> None:
         scripts = (
-            ("examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py", "hausdorff_distance"),
+            ("examples/benchmark_apps/hausdorff_xhd/rtdl_hausdorff_distance_app.py", "hausdorff_distance"),
             ("examples/current/apps/ml/rtdl_ann_candidate_app.py", "ann_candidate_search"),
             ("examples/current/apps/ml/rtdl_outlier_detection_app.py", "outlier_detection"),
             ("examples/current/apps/ml/rtdl_dbscan_clustering_app.py", "dbscan_clustering"),

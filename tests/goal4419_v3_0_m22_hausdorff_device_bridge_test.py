@@ -8,7 +8,7 @@ from examples import rtdl_hausdorff_distance_app as app
 
 
 ROOT = Path(__file__).resolve().parents[1]
-APP = ROOT / "examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py"
+APP = ROOT / "examples/benchmark_apps/hausdorff_xhd/rtdl_hausdorff_distance_app.py"
 RUNNER = ROOT / "scripts/v3_0_m22_hausdorff_device_bridge_measure.py"
 REPORT = ROOT / "docs/reports/goal4419_v3_0_m22_hausdorff_device_bridge_2026-06-15.md"
 EVIDENCE_JSON = ROOT / "docs/reports/goal4419_v3_0_m22_hausdorff_device_bridge_65536_2026-06-15.json"

@@ -10,7 +10,7 @@ import rtdsl as rt
 ROOT = Path(__file__).resolve().parents[1]
 PACKET = ROOT / "docs/reports/goal4523_v3_0_m127_barnes_hut_rt_native_symbol_gap_2026-06-17.json"
 REPORT = ROOT / "docs/reports/goal4523_v3_0_m127_barnes_hut_rt_native_symbol_gap_2026-06-17.md"
-README = ROOT / "examples/current/research_benchmarks/barnes_hut/README.md"
+README = ROOT / "examples/benchmark_apps/barnes_hut/README.md"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
 SCRIPT = ROOT / "scripts/goal4523_m127_barnes_hut_rt_native_symbol_gap.py"
 

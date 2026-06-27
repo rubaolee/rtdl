@@ -227,7 +227,7 @@ def _rt_dbscan_command(
     warmup = 0 if parity_companion else int(profile["rt_dbscan_warmup"])
     command = [
         py,
-        "examples/current/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py",
+        "examples/benchmark_apps/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py",
         "--mode",
         rt_mode,
         "--dataset",
@@ -259,7 +259,7 @@ def _commands(root: Path, version: str, profile: dict[str, Any], triangle_file: 
     )
     triangle_cmd = [
         py,
-        "examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py",
+        "examples/benchmark_apps/triangle_counting/rtdl_triangle_counting_benchmark_app.py",
         "--mode",
         triangle_mode,
         "--edge-file",
@@ -291,7 +291,7 @@ def _commands(root: Path, version: str, profile: dict[str, Any], triangle_file: 
         "rt_dbscan": _rt_dbscan_command(root, version, profile),
         "raydb_style": [
             py,
-            "examples/current/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py",
+            "examples/benchmark_apps/raydb_style/rtdl_raydb_style_benchmark_app.py",
             "--mode",
             "sum",
             "--backend",
@@ -311,7 +311,7 @@ def _commands(root: Path, version: str, profile: dict[str, Any], triangle_file: 
         "triangle_counting": triangle_cmd,
         "librts_spatial_index": [
             py,
-            "examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+            "examples/benchmark_apps/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
             "--mode",
             "optix_aabb_index",
             "--dataset",

@@ -75,7 +75,7 @@ class Goal208NearestNeighborExamplesTest(unittest.TestCase):
         completed = subprocess.run(
             [
                 PYTHON,
-                "examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+                "examples/benchmark_apps/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
                 "--backend",
                 "cpu_python_reference",
             ],

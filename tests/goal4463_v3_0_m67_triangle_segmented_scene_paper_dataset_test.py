@@ -21,7 +21,7 @@ EVIDENCE = (
 )
 SNAP_PREP = ROOT / "docs" / "reports" / "goal4463_snap_prepare_soc_livejournal1_2026-06-16.json"
 OLD_RTDL = ROOT / "docs" / "reports" / "goal2593_paper_dataset_raw" / "goal2593_eval_soc_lj_rtdl.json"
-APP = ROOT / "examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py"
+APP = ROOT / "examples/benchmark_apps/triangle_counting/rtdl_triangle_counting_benchmark_app.py"
 
 routes = importlib.import_module("rtdsl.current_benchmark_route_decisions")
 adequacy = importlib.import_module("rtdsl.current_benchmark_adequacy")

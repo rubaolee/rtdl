@@ -13,7 +13,7 @@ PACKET = ROOT / "docs/reports/goal4498_v3_0_m102_rtnn_paper_dataset_targets_2026
 JSONL = ROOT / "docs/reports/goal4498_v3_0_m102_rtnn_paper_dataset_targets_2026-06-17.jsonl"
 REPORT = ROOT / "docs/reports/goal4498_v3_0_m102_rtnn_paper_dataset_targets_2026-06-17.md"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
-README = ROOT / "examples/current/research_benchmarks/rtnn/README.md"
+README = ROOT / "examples/benchmark_apps/rtnn/README.md"
 SCRIPT = ROOT / "scripts/goal4498_m102_rtnn_paper_dataset_targets.py"
 
 

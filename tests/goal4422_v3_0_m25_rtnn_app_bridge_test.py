@@ -5,11 +5,11 @@ from pathlib import Path
 from unittest import mock
 import unittest
 
-from examples.current.research_benchmarks.rtnn import rtdl_rtnn_benchmark_app as app
+from examples.benchmark_apps.rtnn import rtdl_rtnn_benchmark_app as app
 
 
 ROOT = Path(__file__).resolve().parents[1]
-APP = ROOT / "examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py"
+APP = ROOT / "examples/benchmark_apps/rtnn/rtdl_rtnn_benchmark_app.py"
 RUNNER = ROOT / "scripts/v3_0_m25_rtnn_app_bridge_measure.py"
 REPORT = ROOT / "docs/reports/goal4422_v3_0_m25_rtnn_app_bridge_2026-06-15.md"
 EVIDENCE_JSON = ROOT / "docs/reports/goal4422_v3_0_m25_rtnn_app_bridge_uniform_65536_2026-06-15.json"

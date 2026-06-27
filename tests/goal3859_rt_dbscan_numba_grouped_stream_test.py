@@ -8,7 +8,7 @@ import rtdsl as rt
 
 
 ROOT = Path(__file__).resolve().parents[1]
-APP = ROOT / "examples/current/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py"
+APP = ROOT / "examples/benchmark_apps/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py"
 FRONT_DOOR = ROOT / "src/rtdsl/v2_8_fixed_radius_graph_component_front_door.py"
 REPORT = ROOT / "docs/reports/goal3859_rt_dbscan_numba_grouped_stream_2026-06-08.md"
 ARTIFACT_DIR = ROOT / "docs/reports/goal3859_rt_dbscan_numba_grouped_stream_a5000"

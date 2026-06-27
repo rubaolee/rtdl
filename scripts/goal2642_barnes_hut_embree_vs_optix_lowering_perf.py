@@ -9,7 +9,7 @@ import time
 from pathlib import Path
 from typing import Any, Callable
 
-from examples.current.research_benchmarks.barnes_hut import (
+from examples.benchmark_apps.barnes_hut import (
     rtdl_barnes_hut_benchmark_app as bench,
 )
 

@@ -18,7 +18,7 @@ def _row_by_mode(rows: list[dict[str, object]], mode: str) -> dict[str, object]:
 
 class Goal2485RobotCollisionPerformanceMatrixTest(unittest.TestCase):
     def test_matrix_helper_collects_cpu_and_embree_rows_locally(self) -> None:
-        from examples.current.research_benchmarks.robot_collision.rtdl_robot_collision_benchmark_app import (
+        from examples.benchmark_apps.robot_collision.rtdl_robot_collision_benchmark_app import (
             run_performance_matrix,
         )
 

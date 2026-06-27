@@ -23,7 +23,7 @@ EXPECTED_TINY_FLAGS = [0, 0, 0, 1, 1, 1, 0, 0, 0, 1]
 
 class Goal2484RobotCollisionPreparedReuseTest(unittest.TestCase):
     def test_probe_lowering_matches_tiny_exact_fixture(self) -> None:
-        from examples.current.research_benchmarks.robot_collision.rtdl_robot_collision_benchmark_app import (
+        from examples.benchmark_apps.robot_collision.rtdl_robot_collision_benchmark_app import (
             _probe_reference_flags,
             build_segment_probe_contract,
             make_tiny_case,
@@ -38,7 +38,7 @@ class Goal2484RobotCollisionPreparedReuseTest(unittest.TestCase):
         self.assertEqual(_probe_reference_flags(contract), EXPECTED_TINY_FLAGS)
 
     def test_embree_prepared_reuse_probe_records_warmup_and_tail_medians(self) -> None:
-        from examples.current.research_benchmarks.robot_collision.rtdl_robot_collision_benchmark_app import (
+        from examples.benchmark_apps.robot_collision.rtdl_robot_collision_benchmark_app import (
             run_prepared_reuse_probe,
         )
 

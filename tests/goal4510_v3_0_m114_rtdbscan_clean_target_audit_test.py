@@ -9,7 +9,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 PACKET = ROOT / "docs/reports/goal4510_v3_0_m114_rtdbscan_clean_target_audit_2026-06-17.json"
 REPORT = ROOT / "docs/reports/goal4510_v3_0_m114_rtdbscan_clean_target_audit_2026-06-17.md"
-README = ROOT / "examples/current/research_benchmarks/rt_dbscan/README.md"
+README = ROOT / "examples/benchmark_apps/rt_dbscan/README.md"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
 SCRIPT = ROOT / "scripts/goal4510_m114_rtdbscan_clean_target_audit.py"
 

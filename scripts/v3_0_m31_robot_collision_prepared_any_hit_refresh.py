@@ -99,7 +99,7 @@ def main() -> int:
         print(json.dumps({"status": payload["status"], "planned_rows": planned_rows}, indent=2))
         return 0
 
-    from examples.current.research_benchmarks.robot_collision import (
+    from examples.benchmark_apps.robot_collision import (
         rtdl_robot_collision_benchmark_app as robot,
     )
 

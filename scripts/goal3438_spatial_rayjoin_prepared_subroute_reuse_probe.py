@@ -12,7 +12,7 @@ ROOT = next(parent for parent in Path(__file__).resolve().parents if (parent / "
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
-from examples.current.research_benchmarks.spatial_rayjoin.rtdl_rayjoin_v2_spatial_join_app import (  # noqa: E402
+from examples.benchmark_apps.spatial_rayjoin.rtdl_rayjoin_v2_spatial_join_app import (  # noqa: E402
     pack_rayjoin_optix_compact_grouped_count_left_segments,
     pack_rayjoin_optix_shape_pair_active_count_left_shapes,
     prepare_rayjoin_optix_compact_grouped_count_segments,

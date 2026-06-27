@@ -124,7 +124,7 @@ RECOVERABLE_ROWS: list[dict[str, Any]] = [
     ),
     _cmd(
         "hausdorff_distance",
-        "examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+        "examples/benchmark_apps/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
         "--backend",
         "embree",
         "--copies",

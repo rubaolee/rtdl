@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 
 import rtdsl as rt
-from examples.current.research_benchmarks.hausdorff_xhd import rtdl_hausdorff_v2_function as hd
+from examples.benchmark_apps.hausdorff_xhd import rtdl_hausdorff_v2_function as hd
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]

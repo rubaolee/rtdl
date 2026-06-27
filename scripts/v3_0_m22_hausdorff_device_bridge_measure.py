@@ -32,7 +32,7 @@ def main() -> int:
 
     numba_cuda_home = _apply_numba_cuda_home(args.numba_cuda_home)
 
-    from examples.current.research_benchmarks.hausdorff_xhd import rtdl_hausdorff_distance_app as app
+    from examples.benchmark_apps.hausdorff_xhd import rtdl_hausdorff_distance_app as app
 
     rows = []
     for partner in ("cupy", "numba"):

@@ -4,7 +4,7 @@ import importlib.util
 from pathlib import Path
 import unittest
 
-from examples.current.research_benchmarks.rt_dbscan.rtdl_rt_dbscan_benchmark_app import (
+from examples.benchmark_apps.rt_dbscan.rtdl_rt_dbscan_benchmark_app import (
     run_rt_dbscan_benchmark,
 )
 

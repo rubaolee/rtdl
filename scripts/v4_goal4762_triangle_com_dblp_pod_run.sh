@@ -27,7 +27,7 @@ run_one() {
     export NUMBA_CUDA_NVVM="$CUDA/nvvm/lib64/libnvvm.so" &&
     export LD_LIBRARY_PATH="$CUDA/nvvm/lib64:${LD_LIBRARY_PATH:-}" &&
     export RTDL_OPTIX_LIBRARY="$optix" RTDL_OPTIX_LIB="$optix" &&
-    timeout 2400 "$PY" examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py \
+    timeout 2400 "$PY" examples/benchmark_apps/triangle_counting/rtdl_triangle_counting_benchmark_app.py \
       --mode "$mode" \
       --edge-file "$DATA" \
       --edge-format binary \

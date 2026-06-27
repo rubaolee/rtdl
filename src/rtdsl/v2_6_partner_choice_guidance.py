@@ -205,7 +205,7 @@ V2_6_PARTNER_CHOICE_ROWS: tuple[V26PartnerChoiceGuidanceRow, ...] = (
         cupy_role="possible app-owned flag reduction path, not promoted",
         numba_role="Numba future candidate, not promoted",
         evidence_goal="Goal2480 lineage",
-        evidence_artifact="examples/current/research_benchmarks/robot_collision/README.md",
+        evidence_artifact="examples/benchmark_apps/robot_collision/README.md",
         user_advice="Keep primitive parity first; do not claim a promoted custom partner path yet.",
     ),
     V26PartnerChoiceGuidanceRow(
@@ -217,7 +217,7 @@ V2_6_PARTNER_CHOICE_ROWS: tuple[V26PartnerChoiceGuidanceRow, ...] = (
         cupy_role="possible witness filtering reference, not promoted",
         numba_role="Numba future candidate, not promoted",
         evidence_goal="Goal2510 lineage",
-        evidence_artifact="examples/current/research_benchmarks/contact_manifold/README.md",
+        evidence_artifact="examples/benchmark_apps/contact_manifold/README.md",
         user_advice="Preserve the bounded witness contract first; custom partner filtering needs new same-contract evidence.",
     ),
     V26PartnerChoiceGuidanceRow(
@@ -261,7 +261,7 @@ V2_6_PARTNER_CHOICE_ROWS: tuple[V26PartnerChoiceGuidanceRow, ...] = (
         cupy_role="possible app-owned continuation, not promoted",
         numba_role="Numba future candidate, not promoted",
         evidence_goal="Goal2570 lineage",
-        evidence_artifact="examples/current/research_benchmarks/librts_spatial_index/README.md",
+        evidence_artifact="examples/benchmark_apps/librts_spatial_index/README.md",
         user_advice="Treat this as a no-regression/index-policy study until a custom partner continuation is measured.",
     ),
     V26PartnerChoiceGuidanceRow(
@@ -273,7 +273,7 @@ V2_6_PARTNER_CHOICE_ROWS: tuple[V26PartnerChoiceGuidanceRow, ...] = (
         cupy_role="CUDA-core all-pairs baseline and quality reference",
         numba_role="Numba future candidate for custom ranking reductions, not promoted",
         evidence_goal="Goal2821/Goal2822 lineage",
-        evidence_artifact="examples/current/research_benchmarks/rtnn/README.md",
+        evidence_artifact="examples/benchmark_apps/rtnn/README.md",
         user_advice="Use prepared RTDL ranked summaries first; keep CuPy for all-pairs baseline comparisons.",
     ),
     V26PartnerChoiceGuidanceRow(

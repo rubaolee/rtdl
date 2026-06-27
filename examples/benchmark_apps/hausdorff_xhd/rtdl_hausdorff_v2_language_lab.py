@@ -8,7 +8,7 @@ from dataclasses import asdict
 from pathlib import Path
 from typing import Iterable
 
-from examples.current.research_benchmarks.hausdorff_xhd import rtdl_hausdorff_v2_function as hd
+from examples.benchmark_apps.hausdorff_xhd import rtdl_hausdorff_v2_function as hd
 
 
 METHODS = (

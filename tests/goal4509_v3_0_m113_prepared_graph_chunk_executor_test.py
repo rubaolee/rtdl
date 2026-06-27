@@ -12,7 +12,7 @@ from rtdsl.v3_0_execution_graph import GraphValidationError
 ROOT = Path(__file__).resolve().parents[1]
 PACKET = ROOT / "docs/reports/goal4509_v3_0_m113_prepared_graph_chunk_executor_2026-06-17.json"
 REPORT = ROOT / "docs/reports/goal4509_v3_0_m113_prepared_graph_chunk_executor_2026-06-17.md"
-README = ROOT / "examples/current/research_benchmarks/rtnn/README.md"
+README = ROOT / "examples/benchmark_apps/rtnn/README.md"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
 
 

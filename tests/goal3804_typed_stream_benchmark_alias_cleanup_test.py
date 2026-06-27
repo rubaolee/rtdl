@@ -6,10 +6,10 @@ import sys
 import unittest
 from pathlib import Path
 
-from examples.current.research_benchmarks.barnes_hut import (
+from examples.benchmark_apps.barnes_hut import (
     rtdl_barnes_hut_benchmark_app as barnes_hut,
 )
-from examples.current.research_benchmarks.rtnn import rtdl_rtnn_benchmark_app as rtnn
+from examples.benchmark_apps.rtnn import rtdl_rtnn_benchmark_app as rtnn
 
 
 ROOT = Path(__file__).resolve().parents[1]

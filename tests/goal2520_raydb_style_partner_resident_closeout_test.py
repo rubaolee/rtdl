@@ -5,7 +5,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 REPORT = ROOT / "docs/reports/goal2520_raydb_style_partner_resident_closeout_2026-05-23.md"
-README = ROOT / "examples/current/research_benchmarks/raydb_style/README.md"
+README = ROOT / "examples/benchmark_apps/raydb_style/README.md"
 GOAL2519_ARTIFACT = ROOT / "docs/reports/goal2519_partner_resident_grouped_i64_dispatch_boundary_pod_2026-05-23.json"
 GOAL2518_ARTIFACT = ROOT / "docs/reports/goal2518_partner_resident_fused_sum_count_timing_pod_2026-05-23.json"
 

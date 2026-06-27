@@ -1,0 +1,890 @@
+from __future__ import annotations
+
+import argparse
+from dataclasses import dataclass
+import json
+import math
+import statistics
+import sys
+import time
+from pathlib import Path
+
+ROOT = next(parent for parent in Path(__file__).resolve().parents if (parent / "src" / "rtdsl").exists())
+sys.path.insert(0, str(ROOT / "src"))
+sys.path.insert(0, str(ROOT))
+
+import rtdsl as rt
+
+
+THETA = 0.75
+SOFTENING = 0.05
+NODE_DISCOVERY_RADIUS = 10.0
+K_MAX = 16
+NODE_TOPOLOGIES = ("one_level", "fixed_depth_cells")
+
+
+@dataclass(frozen=True)
+class Body:
+    id: int
+    x: float
+    y: float
+    mass: float
+
+
+@dataclass(frozen=True)
+class QuadNode:
+    id: int
+    cx: float
+    cy: float
+    half_size: float
+    mass: float
+    body_ids: tuple[int, ...]
+
+
+@rt.kernel(backend="rtdl", precision="float_approx")
+def barnes_hut_node_candidate_kernel():
+    bodies = rt.input("bodies", rt.Points, role="probe")
+    nodes = rt.input("nodes", rt.Points, role="build")
+    candidates = rt.traverse(bodies, nodes, accel="bvh")
+    hits = rt.refine(candidates, predicate=rt.fixed_radius_neighbors(radius=NODE_DISCOVERY_RADIUS, k_max=K_MAX))
+    return rt.emit(hits, fields=["query_id", "neighbor_id", "distance"])
+
+
+def make_bodies() -> tuple[Body, ...]:
+    return (
+        Body(id=1, x=-1.40, y=-0.45, mass=2.0),
+        Body(id=2, x=-1.10, y=0.15, mass=1.0),
+        Body(id=3, x=-0.65, y=0.70, mass=1.5),
+        Body(id=4, x=0.80, y=-0.60, mass=2.5),
+        Body(id=5, x=1.15, y=0.10, mass=1.2),
+        Body(id=6, x=1.55, y=0.65, mass=1.7),
+    )
+
+
+def make_generated_bodies(body_count: int) -> tuple[Body, ...]:
+    if body_count < 1:
+        raise ValueError("body_count must be positive")
+    grid = int(math.ceil(math.sqrt(body_count)))
+    bodies: list[Body] = []
+    for index in range(body_count):
+        gx = index % grid
+        gy = index // grid
+        x = (gx / max(1, grid - 1)) * 4.0 - 2.0
+        y = (gy / max(1, grid - 1)) * 4.0 - 2.0
+        # Deterministic perturbation prevents exact distance ties in perf runs.
+        x += ((index * 17) % 11 - 5) * 0.001
+        y += ((index * 31) % 13 - 6) * 0.001
+        mass = 1.0 + (index % 7) * 0.1
+        bodies.append(Body(id=index + 1, x=x, y=y, mass=mass))
+    return tuple(bodies)
+
+
+def build_one_level_quadtree(bodies: tuple[Body, ...]) -> tuple[QuadNode, ...]:
+    if not bodies:
+        raise ValueError("Barnes-Hut app requires at least one body")
+
+    min_x = min(body.x for body in bodies)
+    max_x = max(body.x for body in bodies)
+    min_y = min(body.y for body in bodies)
+    max_y = max(body.y for body in bodies)
+    center_x = (min_x + max_x) / 2.0
+    center_y = (min_y + max_y) / 2.0
+    half_size = max(max_x - min_x, max_y - min_y) / 2.0 + 0.25
+
+    buckets: dict[int, list[Body]] = {10: [], 11: [], 12: [], 13: []}
+    for body in bodies:
+        east = body.x >= center_x
+        north = body.y >= center_y
+        node_id = 10 + (1 if east else 0) + (2 if north else 0)
+        buckets[node_id].append(body)
+
+    nodes: list[QuadNode] = []
+    child_half_size = half_size / 2.0
+    offsets = {
+        10: (-child_half_size, -child_half_size),
+        11: (child_half_size, -child_half_size),
+        12: (-child_half_size, child_half_size),
+        13: (child_half_size, child_half_size),
+    }
+    for node_id, node_bodies in buckets.items():
+        if not node_bodies:
+            continue
+        mass = sum(body.mass for body in node_bodies)
+        com_x = sum(body.x * body.mass for body in node_bodies) / mass
+        com_y = sum(body.y * body.mass for body in node_bodies) / mass
+        nodes.append(
+            QuadNode(
+                id=node_id,
+                cx=com_x,
+                cy=com_y,
+                half_size=child_half_size,
+                mass=mass,
+                body_ids=tuple(body.id for body in node_bodies),
+            )
+        )
+    nodes.sort(key=lambda node: node.id)
+    return tuple(nodes)
+
+
+def build_fixed_depth_quadtree_cells(
+    bodies: tuple[Body, ...],
+    *,
+    depth: int,
+) -> tuple[QuadNode, ...]:
+    if depth < 1:
+        raise ValueError("depth must be at least 1")
+    if not bodies:
+        raise ValueError("Barnes-Hut app requires at least one body")
+
+    min_x = min(body.x for body in bodies)
+    max_x = max(body.x for body in bodies)
+    min_y = min(body.y for body in bodies)
+    max_y = max(body.y for body in bodies)
+    center_x = (min_x + max_x) / 2.0
+    center_y = (min_y + max_y) / 2.0
+    half_size = max(max_x - min_x, max_y - min_y) / 2.0 + 0.25
+    cells_per_axis = 1 << depth
+    cell_size = (2.0 * half_size) / cells_per_axis
+    child_half_size = cell_size / 2.0
+
+    nodes: list[QuadNode] = []
+    node_id = 1
+    min_square_x = center_x - half_size
+    min_square_y = center_y - half_size
+    for y_index in range(cells_per_axis):
+        cy = min_square_y + (y_index + 0.5) * cell_size
+        for x_index in range(cells_per_axis):
+            cx = min_square_x + (x_index + 0.5) * cell_size
+            nodes.append(
+                QuadNode(
+                    id=node_id,
+                    cx=cx,
+                    cy=cy,
+                    half_size=child_half_size,
+                    mass=0.0,
+                    body_ids=(),
+                )
+            )
+            node_id += 1
+    return tuple(nodes)
+
+
+def _body_points(bodies: tuple[Body, ...]) -> tuple[rt.Point, ...]:
+    return tuple(rt.Point(id=body.id, x=body.x, y=body.y) for body in bodies)
+
+
+def _node_points(nodes: tuple[QuadNode, ...]) -> tuple[rt.Point, ...]:
+    return tuple(rt.Point(id=node.id, x=node.cx, y=node.cy) for node in nodes)
+
+
+def _run_node_candidates(backend: str, bodies: tuple[Body, ...], nodes: tuple[QuadNode, ...]):
+    inputs = {"bodies": _body_points(bodies), "nodes": _node_points(nodes)}
+    if backend == "cpu_python_reference":
+        return tuple(rt.run_cpu_python_reference(barnes_hut_node_candidate_kernel, **inputs))
+    if backend == "cpu":
+        return tuple(rt.run_cpu(barnes_hut_node_candidate_kernel, **inputs))
+    if backend == "embree":
+        return tuple(rt.run_embree(barnes_hut_node_candidate_kernel, **inputs))
+    if backend == "optix":
+        return tuple(rt.run_optix(barnes_hut_node_candidate_kernel, **inputs))
+    if backend == "vulkan":
+        return tuple(rt.run_vulkan(barnes_hut_node_candidate_kernel, **inputs))
+    raise ValueError(f"unsupported backend `{backend}`")
+
+
+def _optix_performance() -> dict[str, str]:
+    support = rt.optix_app_performance_support("barnes_hut_force_app")
+    return {"class": support.performance_class, "note": support.note}
+
+
+def _enforce_rt_core_requirement(backend: str, optix_summary_mode: str, require_rt_core: bool) -> None:
+    if not require_rt_core:
+        return
+    if backend != "optix":
+        raise ValueError("--require-rt-core is only meaningful with --backend optix")
+    if optix_summary_mode != "node_coverage_prepared":
+        raise RuntimeError(
+            "barnes_hut_force_app RT-core path requires --backend optix "
+            "--optix-summary-mode node_coverage_prepared"
+        )
+
+
+def _force_from_mass(body: Body, mass: float, cx: float, cy: float) -> tuple[float, float]:
+    dx = cx - body.x
+    dy = cy - body.y
+    dist_sq = dx * dx + dy * dy + SOFTENING * SOFTENING
+    inv_dist = 1.0 / math.sqrt(dist_sq)
+    scale = body.mass * mass * inv_dist * inv_dist * inv_dist
+    return dx * scale, dy * scale
+
+
+def brute_force_forces(bodies: tuple[Body, ...]) -> dict[int, tuple[float, float]]:
+    forces: dict[int, tuple[float, float]] = {}
+    for body in bodies:
+        fx = 0.0
+        fy = 0.0
+        for other in bodies:
+            if other.id == body.id:
+                continue
+            dfx, dfy = _force_from_mass(body, other.mass, other.x, other.y)
+            fx += dfx
+            fy += dfy
+        forces[body.id] = (fx, fy)
+    return forces
+
+
+def approximate_forces_from_candidates(
+    bodies: tuple[Body, ...],
+    nodes: tuple[QuadNode, ...],
+    candidate_rows: tuple[dict[str, object], ...],
+    *,
+    theta: float,
+) -> tuple[dict[str, object], ...]:
+    body_by_id = {body.id: body for body in bodies}
+    node_by_id = {node.id: node for node in nodes}
+    candidate_node_ids: dict[int, set[int]] = {body.id: set() for body in bodies}
+    for row in candidate_rows:
+        candidate_node_ids[int(row["query_id"])].add(int(row["neighbor_id"]))
+
+    rows: list[dict[str, object]] = []
+    for body in bodies:
+        fx = 0.0
+        fy = 0.0
+        accepted_nodes: list[int] = []
+        exact_body_ids: list[int] = []
+        for node_id in sorted(candidate_node_ids[body.id]):
+            node = node_by_id[node_id]
+            contains_self = body.id in node.body_ids
+            dx = node.cx - body.x
+            dy = node.cy - body.y
+            distance = math.sqrt(dx * dx + dy * dy)
+            opening_ratio = math.inf if distance == 0.0 else (2.0 * node.half_size) / distance
+            if not contains_self and opening_ratio < theta:
+                dfx, dfy = _force_from_mass(body, node.mass, node.cx, node.cy)
+                fx += dfx
+                fy += dfy
+                accepted_nodes.append(node.id)
+                continue
+
+            for other_id in node.body_ids:
+                if other_id == body.id:
+                    continue
+                other = body_by_id[other_id]
+                dfx, dfy = _force_from_mass(body, other.mass, other.x, other.y)
+                fx += dfx
+                fy += dfy
+                exact_body_ids.append(other.id)
+        rows.append(
+            {
+                "body_id": body.id,
+                "force_x": fx,
+                "force_y": fy,
+                "accepted_node_ids": accepted_nodes,
+                "exact_body_ids": sorted(exact_body_ids),
+            }
+        )
+    return tuple(rows)
+
+
+def _force_error_rows(
+    approximate_rows: tuple[dict[str, object], ...],
+    exact_forces: dict[int, tuple[float, float]],
+) -> tuple[dict[str, object], ...]:
+    errors: list[dict[str, object]] = []
+    for row in approximate_rows:
+        body_id = int(row["body_id"])
+        exact_x, exact_y = exact_forces[body_id]
+        approx_x = float(row["force_x"])
+        approx_y = float(row["force_y"])
+        abs_error = math.hypot(approx_x - exact_x, approx_y - exact_y)
+        exact_norm = max(math.hypot(exact_x, exact_y), 1.0e-12)
+        errors.append(
+            {
+                "body_id": body_id,
+                "abs_error": abs_error,
+                "relative_error": abs_error / exact_norm,
+            }
+        )
+    return tuple(errors)
+
+
+def _candidate_summary(candidate_rows: tuple[dict[str, object], ...]) -> dict[str, object]:
+    summary = rt.summarize_fixed_radius_rows(candidate_rows)
+    return {
+        "candidate_row_count": summary["candidate_row_count"],
+        "body_count_with_candidates": summary["query_count_with_candidate"],
+        "node_count_seen": summary["neighbor_count_seen"],
+    }
+
+
+def node_coverage_oracle(
+    bodies: tuple[Body, ...],
+    nodes: tuple[QuadNode, ...],
+    *,
+    radius: float,
+    threshold: int = 1,
+) -> dict[str, object]:
+    if threshold < 1:
+        raise ValueError("threshold must be at least 1")
+    uncovered: list[int] = []
+    min_candidate_count: int | None = None
+    max_candidate_count = 0
+    for body in bodies:
+        candidate_count = sum(
+            1 for node in nodes if math.hypot(body.x - node.cx, body.y - node.cy) <= radius
+        )
+        min_candidate_count = (
+            candidate_count if min_candidate_count is None else min(min_candidate_count, candidate_count)
+        )
+        max_candidate_count = max(max_candidate_count, candidate_count)
+        if candidate_count < threshold:
+            uncovered.append(body.id)
+    return {
+        "radius": radius,
+        "threshold": threshold,
+        "body_count": len(bodies),
+        "covered_body_count": len(bodies) - len(uncovered),
+        "all_bodies_have_node_candidate": not uncovered,
+        "min_candidate_count": 0 if min_candidate_count is None else min_candidate_count,
+        "max_candidate_count": max_candidate_count,
+        "uncovered_body_ids": uncovered,
+    }
+
+
+def _node_coverage_from_count_rows(
+    rows: tuple[dict[str, object], ...],
+    *,
+    bodies: tuple[Body, ...],
+    radius: float,
+) -> dict[str, object]:
+    by_query = {int(row["query_id"]): row for row in rows}
+    uncovered = [
+        body.id
+        for body in bodies
+        if int(by_query.get(body.id, {}).get("threshold_reached", 0)) == 0
+    ]
+    return {
+        "radius": radius,
+        "body_count": len(bodies),
+        "covered_body_count": len(bodies) - len(uncovered),
+        "all_bodies_have_node_candidate": not uncovered,
+        "uncovered_body_ids": uncovered,
+        "row_count": len(by_query),
+    }
+
+
+def _run_prepared_node_coverage(
+    bodies: tuple[Body, ...],
+    nodes: tuple[QuadNode, ...],
+    *,
+    backend: str,
+    radius: float,
+    query_repeat: int = 1,
+    warmup: int = 0,
+) -> dict[str, object]:
+    if backend not in {"embree", "optix"}:
+        raise ValueError("prepared node coverage currently supports backend='embree' or backend='optix'")
+    if query_repeat <= 0:
+        raise ValueError("query_repeat must be positive")
+    if warmup < 0:
+        raise ValueError("warmup must be non-negative")
+    kwargs: dict[str, object] = {
+        "search_points": _node_points(nodes),
+        "backend": backend,
+    }
+    if backend == "optix":
+        kwargs["max_radius"] = radius
+    query_runs: list[dict[str, object]] = []
+    with rt.prepare_generic_fixed_radius_count_threshold_2d(**kwargs) as prepared:
+        query_prepare_start = time.perf_counter()
+        prepared_query_points = prepared.prepare_query_points(_body_points(bodies))
+        query_points_prepare_sec = time.perf_counter() - query_prepare_start
+        for iteration in range(warmup + query_repeat):
+            result = prepared.count_threshold_reached(prepared_query_points, radius=radius, threshold=1)
+            query_runs.append(
+                {
+                    "iteration": iteration,
+                    "is_warmup": iteration < warmup,
+                    "threshold_reached_count": int(result["threshold_reached_count"]),
+                    "query_sec": float(
+                        result["run_phases"]["query_fixed_radius_threshold_reached_count_sec"]
+                    ),
+                }
+            )
+        prepare_sec = float(prepared.scene_prepare_sec)
+    measured = [row for row in query_runs if not bool(row["is_warmup"])]
+    if not measured:
+        raise RuntimeError("prepared Barnes-Hut node-coverage repeat produced no measured rows")
+    covered_counts = {int(row["threshold_reached_count"]) for row in measured}
+    if len(covered_counts) != 1:
+        raise RuntimeError("prepared Barnes-Hut node-coverage repeat changed covered-body count")
+    covered_count = next(iter(covered_counts))
+    query_secs = [float(row["query_sec"]) for row in measured]
+    query_median_sec = float(statistics.median(query_secs))
+    return {
+        "radius": radius,
+        "backend": backend,
+        "body_count": len(bodies),
+        "covered_body_count": covered_count,
+        "all_bodies_have_node_candidate": covered_count == len(bodies),
+        "uncovered_body_ids": [] if covered_count == len(bodies) else None,
+        "identity_parity_available": covered_count == len(bodies),
+        "row_count": None,
+        "summary_mode": "scalar_threshold_count",
+        "generic_primitive": "FIXED_RADIUS_COUNT_THRESHOLD_2D",
+        "summary_primitive": "REDUCE_INT(COUNT)",
+        "run_phases": {
+            "scene_prepare_sec": prepare_sec,
+            "query_points_prepare_sec": query_points_prepare_sec,
+            "query_fixed_radius_threshold_reached_count_sec": query_median_sec,
+            "query_fixed_radius_threshold_reached_count_total_sec": float(sum(query_secs)),
+            "query_repeat": int(query_repeat),
+            "query_warmup": int(warmup),
+        },
+        "query_points_prepared_once": True,
+        "query_points_prepacked_by_caller": True,
+        "query_repeat_protocol": {
+            "repeat": int(query_repeat),
+            "warmup": int(warmup),
+            "measured_run_count": len(measured),
+            "query_sec_median": query_median_sec,
+            "query_sec_total": float(sum(query_secs)),
+        },
+    }
+
+
+def _force_summary(force_rows: tuple[dict[str, object], ...]) -> dict[str, object]:
+    return {
+        "force_row_count": len(force_rows),
+        "accepted_node_total": sum(len(row["accepted_node_ids"]) for row in force_rows),
+        "exact_body_total": sum(len(row["exact_body_ids"]) for row in force_rows),
+    }
+
+
+def _partner_column_to_list(column, partner: str) -> list[object]:
+    if partner == "torch":
+        return column.detach().cpu().tolist()
+    if partner == "cupy":
+        import cupy
+
+        return cupy.asnumpy(column).tolist()
+    if partner == "numba":
+        return column.copy_to_host().tolist()
+    raise ValueError("partner must be 'torch', 'cupy', or 'numba'")
+
+
+def _run_partner_exact_forces(
+    bodies: tuple[Body, ...],
+    *,
+    partner: str,
+) -> tuple[tuple[dict[str, object], ...], dict[str, object]]:
+    columns = rt.weighted_point_rows_to_partner_columns(bodies, partner=partner)
+    result = rt.pairwise_inverse_square_force_2d_partner_columns(
+        columns,
+        columns,
+        softening=SOFTENING,
+        partner=partner,
+        exclude_equal_ids=True,
+        return_metadata=True,
+    )
+    force_columns = result["columns"]
+    ids = _partner_column_to_list(force_columns["source_ids"], partner)
+    force_x = _partner_column_to_list(force_columns["force_x"], partner)
+    force_y = _partner_column_to_list(force_columns["force_y"], partner)
+    rows = tuple(
+        {
+            "body_id": int(body_id),
+            "force_x": float(fx),
+            "force_y": float(fy),
+        }
+        for body_id, fx, fy in zip(ids, force_x, force_y)
+    )
+    return rows, result["metadata"]
+
+
+def _sum_partner_column(column, partner: str) -> float:
+    if partner == "torch":
+        return float(column.detach().sum().cpu().item())
+    if partner == "cupy":
+        import cupy
+
+        return float(cupy.sum(column).item())
+    if partner == "numba":
+        values = column.copy_to_host()
+        return float(values.sum())
+    raise ValueError("partner must be 'torch', 'cupy', or 'numba'")
+
+
+def _run_partner_exact_force_summary(
+    bodies: tuple[Body, ...],
+    *,
+    partner: str,
+    query_repeat: int,
+    warmup: int,
+) -> tuple[dict[str, object], dict[str, object]]:
+    columns = rt.weighted_point_rows_to_partner_columns(bodies, partner=partner)
+    runs: list[dict[str, object]] = []
+    final_result: dict[str, object] | None = None
+    reusable_force_columns: dict[str, object] | None = None
+    for iteration in range(warmup + query_repeat):
+        start = time.perf_counter()
+        result = rt.pairwise_inverse_square_force_2d_partner_columns(
+            columns,
+            columns,
+            softening=SOFTENING,
+            partner=partner,
+            exclude_equal_ids=True,
+            output_columns=reusable_force_columns,
+            return_metadata=True,
+        )
+        elapsed = time.perf_counter() - start
+        final_result = result
+        reusable_force_columns = {
+            "force_x": result["columns"]["force_x"],
+            "force_y": result["columns"]["force_y"],
+        }
+        runs.append(
+            {
+                "iteration": iteration,
+                "is_warmup": iteration < warmup,
+                "elapsed_sec": elapsed,
+            }
+        )
+    measured = [row for row in runs if not bool(row["is_warmup"])]
+    if not measured:
+        raise RuntimeError("partner exact-force repeat produced no measured rows")
+    measured_elapsed_sec = tuple(float(row["elapsed_sec"]) for row in measured)
+    assert final_result is not None
+    summary_start = time.perf_counter()
+    force_columns = final_result["columns"]
+    checksum_force_x = _sum_partner_column(force_columns["force_x"], partner)
+    checksum_force_y = _sum_partner_column(force_columns["force_y"], partner)
+    summary_sec = time.perf_counter() - summary_start
+    metadata = dict(final_result["metadata"])
+    metadata.update(
+        {
+            "prepared_partner_columns_reused": True,
+            "prepared_force_output_columns_reused": True,
+            "materializes_python_force_rows": False,
+            "force_summary_materialization_sec": summary_sec,
+            "prepared_force_repeat_protocol": {
+                "repeat": int(query_repeat),
+                "warmup": int(warmup),
+                "measured_iterations": len(measured),
+                "force_kernel_runs_sec": measured_elapsed_sec,
+                "force_kernel_total_sec": float(sum(measured_elapsed_sec)),
+                "median_force_kernel_sec": float(statistics.median(measured_elapsed_sec)),
+            },
+        }
+    )
+    return (
+        {
+            "force_row_count": int(metadata["source_count"]),
+            "checksum_force_x": checksum_force_x,
+            "checksum_force_y": checksum_force_y,
+        },
+        metadata,
+    )
+
+
+def run_app(
+    backend: str = "cpu_python_reference",
+    *,
+    theta: float = THETA,
+    body_count: int | None = None,
+    output_mode: str = "full",
+    optix_summary_mode: str = "rows",
+    node_radius: float = NODE_DISCOVERY_RADIUS,
+    node_topology: str = "one_level",
+    node_depth: int = 1,
+    partner: str = "cupy",
+    skip_validation: bool = False,
+    require_rt_core: bool = False,
+    query_repeat: int = 1,
+    warmup: int = 0,
+) -> dict[str, object]:
+    if output_mode not in {"full", "candidate_summary", "force_summary"}:
+        raise ValueError("output_mode must be 'full', 'candidate_summary', or 'force_summary'")
+    if optix_summary_mode not in {"rows", "node_coverage_prepared"}:
+        raise ValueError("optix_summary_mode must be 'rows' or 'node_coverage_prepared'")
+    if node_topology not in NODE_TOPOLOGIES:
+        raise ValueError("node_topology must be 'one_level' or 'fixed_depth_cells'")
+    if node_depth < 1:
+        raise ValueError("node_depth must be at least 1")
+    if node_radius < 0:
+        raise ValueError("node_radius must be non-negative")
+    if query_repeat <= 0:
+        raise ValueError("query_repeat must be positive")
+    if warmup < 0:
+        raise ValueError("warmup must be non-negative")
+    _enforce_rt_core_requirement(backend, optix_summary_mode, require_rt_core)
+    bodies = make_bodies() if body_count is None else make_generated_bodies(body_count)
+    if node_topology == "fixed_depth_cells":
+        nodes = build_fixed_depth_quadtree_cells(bodies, depth=node_depth)
+    else:
+        nodes = build_one_level_quadtree(bodies)
+    if backend == "partner_exact_force":
+        if output_mode == "force_summary" and skip_validation:
+            force_summary, partner_metadata = _run_partner_exact_force_summary(
+                bodies,
+                partner=partner,
+                query_repeat=query_repeat,
+                warmup=warmup,
+            )
+            return {
+                "app": "barnes_hut_force_app",
+                "backend": backend,
+                "partner": partner,
+                "theta": theta,
+                "body_count": len(bodies),
+                "node_count": len(nodes),
+                "output_mode": output_mode,
+                "optix_summary_mode": None,
+                "node_radius": None,
+                **force_summary,
+                "partner_reference_contract": partner_metadata["partner_reference_contract"],
+                "partner_metadata": partner_metadata,
+                "validation_skipped": skip_validation,
+                "native_continuation_active": False,
+                "native_continuation_backend": "none",
+                "rtdl_role": "Partner exact-force mode computes generic weighted-point pairwise inverse-square force vectors outside the native engine.",
+                "rt_core_accelerated": False,
+                "boundary": (
+                    "Exact all-pairs force-vector reference path only; this is not "
+                    "Barnes-Hut tree opening acceleration and not an RT-core claim."
+                ),
+            }
+        force_rows, partner_metadata = _run_partner_exact_forces(bodies, partner=partner)
+        exact_forces = None if skip_validation else brute_force_forces(bodies)
+        error_rows = _force_error_rows(force_rows, exact_forces) if exact_forces is not None else ()
+        payload = {
+            "app": "barnes_hut_force_app",
+            "backend": backend,
+            "partner": partner,
+            "theta": theta,
+            "body_count": len(bodies),
+            "node_count": len(nodes),
+            "output_mode": output_mode,
+            "optix_summary_mode": None,
+            "node_radius": None,
+            "force_row_count": len(force_rows),
+            "partner_reference_contract": partner_metadata["partner_reference_contract"],
+            "partner_metadata": partner_metadata,
+            "validation_skipped": skip_validation,
+            "native_continuation_active": False,
+            "native_continuation_backend": "none",
+            "rtdl_role": "Partner exact-force mode computes generic weighted-point pairwise inverse-square force vectors outside the native engine.",
+            "rt_core_accelerated": False,
+            "boundary": (
+                "Exact all-pairs force-vector reference path only; this is not "
+                "Barnes-Hut tree opening acceleration and not an RT-core claim."
+            ),
+        }
+        payload["checksum_force_x"] = sum(float(row["force_x"]) for row in force_rows)
+        payload["checksum_force_y"] = sum(float(row["force_y"]) for row in force_rows)
+        if exact_forces is not None:
+            payload["max_relative_error"] = max((row["relative_error"] for row in error_rows), default=0.0)
+            payload["matches_oracle"] = payload["max_relative_error"] < 1.0e-12
+        if output_mode == "full":
+            payload["force_rows"] = force_rows
+            if exact_forces is not None:
+                payload["exact_force_rows"] = [
+                    {"body_id": body_id, "force_x": force[0], "force_y": force[1]}
+                    for body_id, force in sorted(exact_forces.items())
+                ]
+                payload["error_rows"] = error_rows
+        return payload
+    if backend in {"embree", "optix"} and optix_summary_mode == "node_coverage_prepared":
+        coverage = _run_prepared_node_coverage(
+            bodies,
+            nodes,
+            backend=backend,
+            radius=node_radius,
+            query_repeat=query_repeat,
+            warmup=warmup,
+        )
+        oracle = None if skip_validation else node_coverage_oracle(bodies, nodes, radius=node_radius)
+        oracle_decision_matches = (
+            None
+            if oracle is None
+            else coverage["all_bodies_have_node_candidate"] == oracle["all_bodies_have_node_candidate"]
+        )
+        oracle_identity_matches = (
+            None
+            if oracle is None or not coverage["identity_parity_available"]
+            else coverage["uncovered_body_ids"] == oracle["uncovered_body_ids"]
+        )
+        matches_oracle = (
+            None
+            if oracle is None
+            else oracle_decision_matches
+            if oracle_identity_matches is None
+            else oracle_decision_matches and oracle_identity_matches
+        )
+        return {
+            "app": "barnes_hut_force_app",
+            "backend": backend,
+            "theta": theta,
+            "body_count": len(bodies),
+            "node_count": len(nodes),
+            "node_topology": node_topology,
+            "node_depth": node_depth,
+            "output_mode": output_mode,
+            "optix_summary_mode": optix_summary_mode,
+            "node_radius": node_radius,
+            "node_coverage": coverage,
+            "oracle_node_coverage": oracle,
+            "matches_oracle": matches_oracle,
+            "oracle_decision_matches": oracle_decision_matches,
+            "oracle_identity_matches": oracle_identity_matches,
+            "validation_skipped": skip_validation,
+            "rtdl_role": (
+                f"RTDL/{backend} uses prepared fixed-radius threshold traversal to answer "
+                "the bounded Barnes-Hut node-coverage decision: every body has at "
+                "least one quadtree node candidate within the discovery radius."
+            ),
+            "optix_performance": _optix_performance(),
+            "rt_core_accelerated": backend == "optix",
+            "boundary": (
+                "Node-coverage decision only; this is not Barnes-Hut opening-rule "
+                "evaluation, not force-vector reduction, and not a fully native "
+                "N-body solver."
+            ),
+            "repeat_protocol": {
+                "repeat": int(query_repeat),
+                "warmup": int(warmup),
+                "measured_query_total_sec": float(
+                    coverage["run_phases"]["query_fixed_radius_threshold_reached_count_total_sec"]
+                ),
+                "reported_query_metric": "query_median",
+            },
+        }
+
+    candidate_rows = _run_node_candidates(backend, bodies, nodes)
+    candidate_summary = _candidate_summary(tuple(candidate_rows))
+    base_payload = {
+        "app": "barnes_hut_force_app",
+        "backend": backend,
+        "theta": theta,
+        "body_count": len(bodies),
+        "node_count": len(nodes),
+        "optix_summary_mode": optix_summary_mode if backend == "optix" else None,
+        "node_radius": None,
+        **candidate_summary,
+        "output_mode": output_mode,
+        "native_continuation_active": output_mode in {"candidate_summary", "force_summary"},
+        "native_continuation_backend": (
+            "native_fixed_radius_candidate_summary"
+            if output_mode in {"candidate_summary", "force_summary"}
+            else None
+        ),
+        "rtdl_role": "RTDL emits body-to-quadtree-node candidate rows; native fixed-radius candidate-summary continuation summarizes candidate rows; Python applies the Barnes-Hut opening rule and computes force vectors.",
+        "optix_performance": _optix_performance(),
+        "rt_core_accelerated": False,
+        "boundary": "Bounded one-level 2D approximation only; RTDL does not yet expose hierarchical tree-node primitives, Barnes-Hut opening predicates, or vector force reductions. Compact output modes characterize the RTDL candidate-generation slice separately from Python force rows.",
+    }
+    if output_mode == "candidate_summary":
+        return base_payload
+
+    approximate_rows = approximate_forces_from_candidates(bodies, nodes, candidate_rows, theta=theta)
+    base_payload.update(_force_summary(approximate_rows))
+    if output_mode == "force_summary":
+        return base_payload
+
+    exact_forces = brute_force_forces(bodies)
+    error_rows = _force_error_rows(approximate_rows, exact_forces)
+
+    return {
+        **base_payload,
+        "candidate_rows": candidate_rows,
+        "force_rows": approximate_rows,
+        "exact_force_rows": [
+            {"body_id": body_id, "force_x": force[0], "force_y": force[1]}
+            for body_id, force in sorted(exact_forces.items())
+        ],
+        "error_rows": error_rows,
+        "max_relative_error": max(row["relative_error"] for row in error_rows),
+    }
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description="Paper-derived Barnes-Hut force app using RTDL node candidate rows plus Python force reduction."
+    )
+    parser.add_argument(
+        "--backend",
+        choices=("cpu_python_reference", "cpu", "embree", "optix", "vulkan", "partner_exact_force"),
+        default="cpu_python_reference",
+    )
+    parser.add_argument("--partner", choices=("torch", "cupy", "numba"), default="cupy")
+    parser.add_argument("--theta", type=float, default=THETA)
+    parser.add_argument("--body-count", type=int, default=None, help="use a generated scalable body fixture")
+    parser.add_argument(
+        "--output-mode",
+        choices=("full", "candidate_summary", "force_summary"),
+        default="full",
+        help="choose full rows, RTDL candidate summary only, or force-reduction summary",
+    )
+    parser.add_argument(
+        "--optix-summary-mode",
+        choices=("rows", "node_coverage_prepared"),
+        default="rows",
+        help="Embree/OptiX: use prepared fixed-radius threshold traversal for node-coverage decisions",
+    )
+    parser.add_argument(
+        "--node-radius",
+        type=float,
+        default=NODE_DISCOVERY_RADIUS,
+        help="node discovery radius for --optix-summary-mode node_coverage_prepared",
+    )
+    parser.add_argument(
+        "--node-topology",
+        choices=NODE_TOPOLOGIES,
+        default="one_level",
+        help="node fixture topology for prepared node-coverage mode",
+    )
+    parser.add_argument(
+        "--node-depth",
+        type=int,
+        default=1,
+        help="depth for --node-topology fixed_depth_cells",
+    )
+    parser.add_argument(
+        "--require-rt-core",
+        action="store_true",
+        help="Fail if the selected path is not a true NVIDIA RT-core traversal path.",
+    )
+    parser.add_argument(
+        "--skip-validation",
+        action="store_true",
+        help="Skip CPU oracle validation for large partner_exact_force timing runs.",
+    )
+    parser.add_argument("--repeat", type=int, default=1, help="Repeat hot prepared-query phase.")
+    parser.add_argument("--warmup", type=int, default=0, help="Prepared-query warmup iterations to drop.")
+    args = parser.parse_args(argv)
+    print(
+        json.dumps(
+            run_app(
+                args.backend,
+                theta=args.theta,
+                body_count=args.body_count,
+                output_mode=args.output_mode,
+                optix_summary_mode=args.optix_summary_mode,
+                node_radius=args.node_radius,
+                node_topology=args.node_topology,
+                node_depth=args.node_depth,
+                partner=args.partner,
+                skip_validation=args.skip_validation,
+                require_rt_core=args.require_rt_core,
+                query_repeat=args.repeat,
+                warmup=args.warmup,
+            ),
+            indent=2,
+            sort_keys=True,
+        )
+    )
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

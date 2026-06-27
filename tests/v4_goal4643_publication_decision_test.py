@@ -72,9 +72,9 @@ class V4Goal4643PublicationDecisionTest(unittest.TestCase):
         ):
             self.assertFalse(decision[flag])
 
-    def test_public_quickstart_reports_current_goal4742_boundary_without_overclaim(self) -> None:
+    def test_public_quickstart_reports_current_user_summary(self) -> None:
         proc = subprocess.run(
-            [sys.executable, "examples/v4/v4_frontdoor_quickstart.py"],
+            [sys.executable, "examples/simple/v4_frontdoor_quickstart.py"],
             cwd=ROOT,
             check=True,
             text=True,
@@ -83,26 +83,14 @@ class V4Goal4643PublicationDecisionTest(unittest.TestCase):
         payload = json.loads(proc.stdout)
 
         self.assertEqual("ok", payload["status"])
-        self.assertEqual("published", payload["public_release_status"])
-        self.assertEqual("v4.0.0", payload["public_release_tag"])
-        self.assertTrue(payload["v4_0_0_public_tag_created"])
-        self.assertTrue(payload["bounded_public_release_authorized"])
-        self.assertEqual(
-            V4_AUTHORIZED_RELEASE_LABEL,
-            payload["authorized_release_label"],
-        )
-        self.assertTrue(payload["bounded_operator_surface_available"])
-        self.assertFalse(payload["app_level_high_performance_authorized"])
-        self.assertEqual(
-            "complete_rt_core_app_matrix__bounded_material_wins__no_broad_all_app_speedup_claim",
-            payload["current_app_level_decision_label"],
-        )
-        self.assertFalse(payload["all_historical_benchmark_apps_faster_claim_authorized"])
-        self.assertFalse(payload["broad_v4_over_v2_14_speedup_claim_authorized"])
-        self.assertFalse(payload["release_claim_authorized"])
-        self.assertFalse(payload["whole_app_speedup_claim_authorized"])
-        self.assertFalse(payload["true_zero_copy_authorized"])
-        self.assertFalse(payload["tier3_callback_claim_authorized"])
+        self.assertEqual("v4.0.0", payload["release"])
+        self.assertEqual("import rtdsl.v4 as rtdl_v4", payload["import"])
+        self.assertEqual(10, payload["measured_surface_count"])
+        self.assertEqual(10, payload["benchmark_app_count"])
+        self.assertEqual(30, payload["benchmark_matrix_rows"])
+        self.assertIn("ray_triangle_any_hit", payload["example_operator_plans"])
+        self.assertIn("python examples/simple/benchmark_app_recipes.py", payload["next_steps"])
+        self.assertNotIn("release_claim_authorized", payload)
 
 
 if __name__ == "__main__":

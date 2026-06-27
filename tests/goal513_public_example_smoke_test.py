@@ -43,7 +43,7 @@ class Goal513PublicExampleSmokeTest(unittest.TestCase):
             ("examples/current/features/database/rtdl_db_conjunctive_scan.py", "--backend", "cpu_python_reference"),
             ("examples/current/features/database/rtdl_db_grouped_count.py", "--backend", "cpu_python_reference"),
             ("examples/current/features/database/rtdl_db_grouped_sum.py", "--backend", "cpu_python_reference"),
-            ("examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py", "--backend", "cpu_python_reference"),
+            ("examples/benchmark_apps/hausdorff_xhd/rtdl_hausdorff_distance_app.py", "--backend", "cpu_python_reference"),
             ("examples/current/apps/trajectory/rtdl_continuous_frechet_distance_app.py", "--backend", "cpu_python_reference", "--iterations", "12"),
             ("examples/current/apps/ml/rtdl_ann_candidate_app.py", "--backend", "cpu_python_reference"),
             ("examples/current/apps/ml/rtdl_outlier_detection_app.py", "--backend", "cpu_python_reference"),
@@ -58,7 +58,7 @@ class Goal513PublicExampleSmokeTest(unittest.TestCase):
                 self.assertTrue("app" in payload or "rows" in payload or "workload" in payload)
 
     def test_front_page_v08_examples_report_oracle_or_boundary(self) -> None:
-        hausdorff = run_json_example("examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py", "--backend", "cpu_python_reference")
+        hausdorff = run_json_example("examples/benchmark_apps/hausdorff_xhd/rtdl_hausdorff_distance_app.py", "--backend", "cpu_python_reference")
         frechet = run_json_example(
             "examples/current/apps/trajectory/rtdl_continuous_frechet_distance_app.py",
             "--backend",

@@ -103,7 +103,7 @@ def main() -> int:
 
     numba_cuda_home = _apply_numba_cuda_home(args.numba_cuda_home)
 
-    from examples.current.research_benchmarks.rtnn import rtdl_rtnn_benchmark_app as app
+    from examples.benchmark_apps.rtnn import rtdl_rtnn_benchmark_app as app
 
     payload = app.run_app(
         "prepared_ranked_summary_graph_partner_bridge",

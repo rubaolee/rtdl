@@ -8,16 +8,16 @@ import sys
 import unittest
 
 import rtdsl as rt
-from examples.current.research_benchmarks.rtnn import rtdl_rtnn_benchmark_app as app
+from examples.benchmark_apps.rtnn import rtdl_rtnn_benchmark_app as app
 from rtdsl.v3_0_execution_graph import GraphValidationError
 
 
 ROOT = Path(__file__).resolve().parents[1]
-APP = ROOT / "examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py"
+APP = ROOT / "examples/benchmark_apps/rtnn/rtdl_rtnn_benchmark_app.py"
 PACKET = ROOT / "docs/reports/goal4505_v3_0_m109_rtnn_partner_chunk_plan_2026-06-17.json"
 REPORT = ROOT / "docs/reports/goal4505_v3_0_m109_rtnn_partner_chunk_plan_2026-06-17.md"
 SCRIPT = ROOT / "scripts/goal4505_m109_rtnn_partner_chunk_plan.py"
-README = ROOT / "examples/current/research_benchmarks/rtnn/README.md"
+README = ROOT / "examples/benchmark_apps/rtnn/README.md"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
 
 

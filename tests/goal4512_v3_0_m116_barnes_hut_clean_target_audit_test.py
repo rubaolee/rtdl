@@ -9,7 +9,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 PACKET = ROOT / "docs/reports/goal4512_v3_0_m116_barnes_hut_clean_target_audit_2026-06-17.json"
 REPORT = ROOT / "docs/reports/goal4512_v3_0_m116_barnes_hut_clean_target_audit_2026-06-17.md"
-README = ROOT / "examples/current/research_benchmarks/barnes_hut/README.md"
+README = ROOT / "examples/benchmark_apps/barnes_hut/README.md"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
 SCRIPT = ROOT / "scripts/goal4512_m116_barnes_hut_clean_target_audit.py"
 

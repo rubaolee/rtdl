@@ -10,7 +10,7 @@ import rtdsl as rt
 ROOT = Path(__file__).resolve().parents[1]
 PACKET = ROOT / "docs/reports/goal4519_v3_0_m123_rtdbscan_chunk_handle_gate_2026-06-17.json"
 REPORT = ROOT / "docs/reports/goal4519_v3_0_m123_rtdbscan_chunk_handle_gate_2026-06-17.md"
-README = ROOT / "examples/current/research_benchmarks/rt_dbscan/README.md"
+README = ROOT / "examples/benchmark_apps/rt_dbscan/README.md"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
 SCRIPT = ROOT / "scripts/goal4519_m123_rtdbscan_chunk_handle_gate.py"
 SOURCE = ROOT / "src/rtdsl/v3_0_prepared_graph_chunk_executor.py"

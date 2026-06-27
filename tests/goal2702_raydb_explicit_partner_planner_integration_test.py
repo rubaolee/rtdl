@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import unittest
 
-from examples.current.research_benchmarks.raydb_style import rtdl_raydb_style_benchmark_app as raydb
+from examples.benchmark_apps.raydb_style import rtdl_raydb_style_benchmark_app as raydb
 
 import rtdsl as rt
 

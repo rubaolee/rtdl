@@ -2,7 +2,7 @@ import unittest
 
 import rtdsl as rt
 from rtdsl.partner import RtdlTensorDescriptor
-from examples.current.research_benchmarks.raydb_style import rtdl_raydb_style_benchmark_app as raydb
+from examples.benchmark_apps.raydb_style import rtdl_raydb_style_benchmark_app as raydb
 
 
 class Goal2658V24PartnerProtocolTest(unittest.TestCase):

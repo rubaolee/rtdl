@@ -14,7 +14,7 @@ ROOT = next(parent for parent in Path(__file__).resolve().parents if (parent / "
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
-from examples.current.research_benchmarks.librts_spatial_index import (  # noqa: E402
+from examples.benchmark_apps.librts_spatial_index import (  # noqa: E402
     rtdl_librts_spatial_index_benchmark_app as librts_app,
 )
 import rtdsl as rt  # noqa: E402

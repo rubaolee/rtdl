@@ -22,7 +22,7 @@ def main() -> int:
     sys.path.insert(0, str(repo / "src"))
     sys.path.insert(0, str(repo))
 
-    from examples.current.research_benchmarks.raydb_style import rtdl_raydb_style_benchmark_app as app
+    from examples.benchmark_apps.raydb_style import rtdl_raydb_style_benchmark_app as app
     from scripts import goal2500_raydb_style_backend_matrix as matrix
 
     output_path = repo / "docs/reports/goal2512_raydb_style_partner_resident_backend_pod_2026-05-22.json"

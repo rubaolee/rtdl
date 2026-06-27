@@ -7,12 +7,12 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from examples.current.research_benchmarks.triangle_counting import rt_graph_contract as contract_mod
-from examples.current.research_benchmarks.triangle_counting import rtdl_triangle_counting_benchmark_app as app
+from examples.benchmark_apps.triangle_counting import rt_graph_contract as contract_mod
+from examples.benchmark_apps.triangle_counting import rtdl_triangle_counting_benchmark_app as app
 
 
 ROOT = Path(__file__).resolve().parents[1]
-APP = ROOT / "examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py"
+APP = ROOT / "examples/benchmark_apps/triangle_counting/rtdl_triangle_counting_benchmark_app.py"
 REPORT = ROOT / "docs" / "reports" / "goal4473_v3_0_m77_triangle_query_phase_packet_2026-06-16.md"
 PACKET = ROOT / "docs" / "reports" / "goal4473_v3_0_m77_triangle_query_phase_packet_2026-06-16.json"
 

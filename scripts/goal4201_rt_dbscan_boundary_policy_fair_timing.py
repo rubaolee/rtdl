@@ -17,7 +17,7 @@ from pathlib import Path
 from typing import Iterable
 
 import rtdsl as rt
-from examples.current.research_benchmarks.rt_dbscan import rtdl_rt_dbscan_benchmark_app as app
+from examples.benchmark_apps.rt_dbscan import rtdl_rt_dbscan_benchmark_app as app
 
 
 POLICIES = ("single_pass_candidate_root_rebased", "lowest_component_root_two_pass")

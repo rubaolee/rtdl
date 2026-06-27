@@ -13,10 +13,10 @@ OUT_REPORT = Path("docs/reports/goal4535_v3_0_m137_v3_completion_readiness_audit
 
 CURRENT_AUDIT_FILES = (
     Path("docs/learn/benchmark_evidence_index.md"),
-    Path("examples/current/research_benchmarks/barnes_hut/README.md"),
-    Path("examples/current/research_benchmarks/triangle_counting/README.md"),
-    Path("examples/current/research_benchmarks/rtnn/README.md"),
-    Path("examples/current/research_benchmarks/spatial_rayjoin/README.md"),
+    Path("examples/benchmark_apps/barnes_hut/README.md"),
+    Path("examples/benchmark_apps/triangle_counting/README.md"),
+    Path("examples/benchmark_apps/rtnn/README.md"),
+    Path("examples/benchmark_apps/spatial_rayjoin/README.md"),
     Path("src/rtdsl/v3_0_benchmark_implementation_queue.py"),
     Path("scripts/goal4524_m128_benchmark_implementation_queue.py"),
     Path("scripts/goal4527_m131_barnes_hut_rt_native_traversal_semantic_gate.py"),

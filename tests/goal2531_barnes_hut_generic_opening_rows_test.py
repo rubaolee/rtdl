@@ -22,7 +22,7 @@ sys.path.insert(0, str(REPO_ROOT))
 
 import rtdsl as rt
 from examples.current.apps.simulation import rtdl_barnes_hut_force_app as app
-from examples.current.research_benchmarks.barnes_hut import rtdl_barnes_hut_benchmark_app as bench
+from examples.benchmark_apps.barnes_hut import rtdl_barnes_hut_benchmark_app as bench
 
 
 class Goal2531BarnesHutGenericOpeningRowsTest(unittest.TestCase):

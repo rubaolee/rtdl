@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 import unittest
 
-from examples.current.research_benchmarks.spatial_rayjoin import rtdl_rayjoin_v2_spatial_join_app as app
+from examples.benchmark_apps.spatial_rayjoin import rtdl_rayjoin_v2_spatial_join_app as app
 
 
 ROOT = Path(__file__).resolve().parents[1]

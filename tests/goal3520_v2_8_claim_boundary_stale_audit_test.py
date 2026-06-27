@@ -12,11 +12,11 @@ ACTIVE_MARKDOWN_DIRS = (
 )
 
 ALLOWED_VERSIONED_PYTHON_FILES = {
-    Path("examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py"),
-    Path("examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py"),
-    Path("examples/current/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py"),
-    Path("examples/current/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py"),
-    Path("examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py"),
+    Path("examples/benchmark_apps/hausdorff_xhd/rtdl_hausdorff_distance_app.py"),
+    Path("examples/benchmark_apps/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py"),
+    Path("examples/benchmark_apps/raydb_style/rtdl_raydb_style_benchmark_app.py"),
+    Path("examples/benchmark_apps/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py"),
+    Path("examples/benchmark_apps/triangle_counting/rtdl_triangle_counting_benchmark_app.py"),
 }
 
 STALE_VERSION_RE = re.compile(r"\bv2\.(?:3|5|6|7|x)\b|\bv2_[567]\b|release package", re.IGNORECASE)

@@ -6,7 +6,7 @@ from types import SimpleNamespace
 import unittest
 from unittest import mock
 
-from examples.current.research_benchmarks.spatial_rayjoin import (
+from examples.benchmark_apps.spatial_rayjoin import (
     rtdl_rayjoin_v2_spatial_join_app as rayjoin_app,
 )
 

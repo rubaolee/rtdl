@@ -5,10 +5,10 @@ from unittest import mock
 import unittest
 
 import rtdsl as rt
-from examples.current.research_benchmarks.spatial_rayjoin import (
+from examples.benchmark_apps.spatial_rayjoin import (
     rtdl_rayjoin_v2_spatial_join_app as rayjoin,
 )
-from examples.current.research_benchmarks.triangle_counting import (
+from examples.benchmark_apps.triangle_counting import (
     rtdl_triangle_counting_benchmark_app as triangle,
 )
 

@@ -4,7 +4,7 @@ from pathlib import Path
 import unittest
 
 import rtdsl as rt
-from examples.current.research_benchmarks.raydb_style import rtdl_raydb_style_benchmark_app as app
+from examples.benchmark_apps.raydb_style import rtdl_raydb_style_benchmark_app as app
 
 from tests.goal2505_partner_resident_columnar_descriptor_contract_test import _record_set
 

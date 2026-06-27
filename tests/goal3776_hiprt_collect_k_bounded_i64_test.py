@@ -6,7 +6,7 @@ import pathlib
 import unittest
 
 import rtdsl as rt
-from examples.current.research_benchmarks.contact_manifold import (
+from examples.benchmark_apps.contact_manifold import (
     rtdl_contact_manifold_benchmark_app as contact_app,
 )
 from rtdsl import hiprt_runtime

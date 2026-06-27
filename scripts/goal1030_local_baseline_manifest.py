@@ -149,8 +149,8 @@ ENTRIES: list[dict[str, Any]] = [
         "local_status": "baseline_partial",
         "reason": "CPU and Embree exact summaries exist, but threshold-decision parity needs dedicated extraction.",
         "commands": [
-            _cmd("examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py", "--backend", "cpu", "--copies", "20000", "--embree-result-mode", "directed_summary"),
-            _cmd("examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py", "--backend", "embree", "--copies", "20000", "--embree-result-mode", "directed_summary"),
+            _cmd("examples/benchmark_apps/hausdorff_xhd/rtdl_hausdorff_distance_app.py", "--backend", "cpu", "--copies", "20000", "--embree-result-mode", "directed_summary"),
+            _cmd("examples/benchmark_apps/hausdorff_xhd/rtdl_hausdorff_distance_app.py", "--backend", "embree", "--copies", "20000", "--embree-result-mode", "directed_summary"),
         ],
     },
     {

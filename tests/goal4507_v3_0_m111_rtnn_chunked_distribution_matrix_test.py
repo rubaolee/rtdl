@@ -11,7 +11,7 @@ import rtdsl as rt
 ROOT = Path(__file__).resolve().parents[1]
 PACKET = ROOT / "docs/reports/goal4507_v3_0_m111_rtnn_chunked_distribution_matrix_2026-06-17.json"
 REPORT = ROOT / "docs/reports/goal4507_v3_0_m111_rtnn_chunked_distribution_matrix_2026-06-17.md"
-README = ROOT / "examples/current/research_benchmarks/rtnn/README.md"
+README = ROOT / "examples/benchmark_apps/rtnn/README.md"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
 
 

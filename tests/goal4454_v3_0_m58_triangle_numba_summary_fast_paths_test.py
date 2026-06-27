@@ -8,11 +8,11 @@ import unittest
 
 import numpy as np
 
-from examples.current.research_benchmarks.triangle_counting import rt_graph_contract as contract_mod
+from examples.benchmark_apps.triangle_counting import rt_graph_contract as contract_mod
 
 
 ROOT = Path(__file__).resolve().parents[1]
-CONTRACT = ROOT / "examples/current/research_benchmarks/triangle_counting/rt_graph_contract.py"
+CONTRACT = ROOT / "examples/benchmark_apps/triangle_counting/rt_graph_contract.py"
 REPORT = ROOT / "docs" / "reports" / "goal4454_v3_0_m58_triangle_numba_summary_fast_paths_2026-06-16.md"
 EVIDENCE = (
     ROOT

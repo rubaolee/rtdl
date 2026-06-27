@@ -95,7 +95,7 @@ def main() -> int:
         print(json.dumps({"status": payload["status"], "planned_rows": planned_rows}, indent=2))
         return 0
 
-    from examples.current.research_benchmarks.contact_manifold import (
+    from examples.benchmark_apps.contact_manifold import (
         rtdl_contact_manifold_benchmark_app as contact,
     )
 

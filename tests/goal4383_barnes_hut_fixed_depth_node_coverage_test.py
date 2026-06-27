@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 REPORT = ROOT / "docs/reports/goal4383_barnes_hut_fixed_depth_node_coverage_2026-06-14.md"
 ARTIFACT_DIR = ROOT / "docs/reports/goal4383_barnes_hut_fixed_depth_node_coverage_2026-06-14"
 APP = ROOT / "examples/current/apps/simulation/rtdl_barnes_hut_force_app.py"
-BENCH = ROOT / "examples/current/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py"
+BENCH = ROOT / "examples/benchmark_apps/barnes_hut/rtdl_barnes_hut_benchmark_app.py"
 
 
 def _load(name: str) -> dict[str, object]:

@@ -126,7 +126,7 @@ CURRENT_EMBREE_CPU_PARTNER_REFERENCE_ROWS: tuple[CurrentEmbreeCpuPartnerReferenc
         route_class="embree_cpu_rt_primitive",
         command=(
             "python",
-            "examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+            "examples/benchmark_apps/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
             "--backend",
             "embree",
             "--embree-result-mode",
@@ -149,7 +149,7 @@ CURRENT_EMBREE_CPU_PARTNER_REFERENCE_ROWS: tuple[CurrentEmbreeCpuPartnerReferenc
         route_class="embree_cpu_rt_plus_python_continuation",
         command=(
             "python",
-            "examples/current/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py",
+            "examples/benchmark_apps/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py",
             "--workload",
             "pip",
             "--backend",
@@ -175,7 +175,7 @@ CURRENT_EMBREE_CPU_PARTNER_REFERENCE_ROWS: tuple[CurrentEmbreeCpuPartnerReferenc
         route_class="embree_cpu_rt_plus_python_continuation",
         command=(
             "python",
-            "examples/current/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py",
+            "examples/benchmark_apps/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py",
             "--mode",
             "embree_prepared_rows",
             "--dataset",
@@ -196,7 +196,7 @@ CURRENT_EMBREE_CPU_PARTNER_REFERENCE_ROWS: tuple[CurrentEmbreeCpuPartnerReferenc
         route_class="embree_cpu_rt_primitive",
         command=(
             "python",
-            "examples/current/research_benchmarks/robot_collision/rtdl_robot_collision_benchmark_app.py",
+            "examples/benchmark_apps/robot_collision/rtdl_robot_collision_benchmark_app.py",
             "--mode",
             "embree_prepared_buffers",
             "--dataset",
@@ -217,7 +217,7 @@ CURRENT_EMBREE_CPU_PARTNER_REFERENCE_ROWS: tuple[CurrentEmbreeCpuPartnerReferenc
         route_class="embree_cpu_rt_primitive",
         command=(
             "python",
-            "examples/current/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py",
+            "examples/benchmark_apps/contact_manifold/rtdl_contact_manifold_benchmark_app.py",
             "--mode",
             "native_collect_k",
             "--backend",
@@ -240,7 +240,7 @@ CURRENT_EMBREE_CPU_PARTNER_REFERENCE_ROWS: tuple[CurrentEmbreeCpuPartnerReferenc
         route_class="embree_cpu_rt_primitive",
         command=(
             "python",
-            "examples/current/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py",
+            "examples/benchmark_apps/raydb_style/rtdl_raydb_style_benchmark_app.py",
             "--mode",
             "count",
             "--backend",
@@ -268,7 +268,7 @@ CURRENT_EMBREE_CPU_PARTNER_REFERENCE_ROWS: tuple[CurrentEmbreeCpuPartnerReferenc
         route_class="embree_cpu_rt_plus_python_continuation",
         command=(
             "python",
-            "examples/current/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py",
+            "examples/benchmark_apps/barnes_hut/rtdl_barnes_hut_benchmark_app.py",
             "--mode",
             "embree_node_coverage_prepared",
             "--body-count",
@@ -289,7 +289,7 @@ CURRENT_EMBREE_CPU_PARTNER_REFERENCE_ROWS: tuple[CurrentEmbreeCpuPartnerReferenc
         route_class="embree_cpu_rt_primitive",
         command=(
             "python",
-            "examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+            "examples/benchmark_apps/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
             "--mode",
             "embree_aabb_index",
             "--dataset",
@@ -316,7 +316,7 @@ CURRENT_EMBREE_CPU_PARTNER_REFERENCE_ROWS: tuple[CurrentEmbreeCpuPartnerReferenc
         route_class="embree_cpu_rt_plus_python_continuation",
         command=(
             "python",
-            "examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py",
+            "examples/benchmark_apps/rtnn/rtdl_rtnn_benchmark_app.py",
             "--mode",
             "ann_embree_quality",
             "--copies",
@@ -333,7 +333,7 @@ CURRENT_EMBREE_CPU_PARTNER_REFERENCE_ROWS: tuple[CurrentEmbreeCpuPartnerReferenc
         route_class="embree_cpu_rt_primitive",
         command=(
             "python",
-            "examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py",
+            "examples/benchmark_apps/triangle_counting/rtdl_triangle_counting_benchmark_app.py",
             "--mode",
             "run",
             "--backend",

@@ -14,7 +14,7 @@ from typing import Any
 
 VERSION = "rtdl.v4.goal4681.shape_pair_relation_focused_pod_benchmark.v1"
 ROOT = Path(__file__).resolve().parents[1]
-APP_MODULE = "examples.current.research_benchmarks.spatial_rayjoin.rtdl_rayjoin_v2_spatial_join_app"
+APP_MODULE = "examples.benchmark_apps.spatial_rayjoin.rtdl_rayjoin_v2_spatial_join_app"
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 

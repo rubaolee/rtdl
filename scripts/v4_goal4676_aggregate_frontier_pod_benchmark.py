@@ -16,7 +16,7 @@ from typing import Any
 
 VERSION = "rtdl.v4.goal4676.aggregate_frontier_focused_pod_benchmark.v1"
 ROOT = Path(__file__).resolve().parents[1]
-APP_MODULE = "examples.current.research_benchmarks.barnes_hut.rtdl_barnes_hut_benchmark_app"
+APP_MODULE = "examples.benchmark_apps.barnes_hut.rtdl_barnes_hut_benchmark_app"
 _CURRENT_BARNES_HELPER_MODULE = None
 
 

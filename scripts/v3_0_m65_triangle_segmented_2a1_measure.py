@@ -37,10 +37,10 @@ def main() -> int:
     if args.segment_max_two_hop_rows < 1:
         raise ValueError("--segment-max-two-hop-rows must be at least 1")
 
-    from examples.current.research_benchmarks.triangle_counting import (
+    from examples.benchmark_apps.triangle_counting import (
         rtdl_triangle_counting_benchmark_app as app,
     )
-    from examples.current.research_benchmarks.triangle_counting.rt_graph_contract import (
+    from examples.benchmark_apps.triangle_counting.rt_graph_contract import (
         write_binary_edges,
     )
 

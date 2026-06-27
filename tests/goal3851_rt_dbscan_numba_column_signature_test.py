@@ -8,8 +8,8 @@ import rtdsl as rt
 
 
 ROOT = Path(__file__).resolve().parents[1]
-APP = ROOT / "examples/current/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py"
-README = ROOT / "examples/current/research_benchmarks/rt_dbscan/README.md"
+APP = ROOT / "examples/benchmark_apps/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py"
+README = ROOT / "examples/benchmark_apps/rt_dbscan/README.md"
 REPORT = ROOT / "docs/reports/goal3851_rt_dbscan_numba_column_signature_2026-06-08.md"
 OLD_ARTIFACT = (
     ROOT

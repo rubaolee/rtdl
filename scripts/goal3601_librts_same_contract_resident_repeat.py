@@ -14,7 +14,7 @@ from typing import Any
 
 SCHEMA = "rtdl.goal3601.librts_same_contract_resident_repeat.v1"
 APP_MODULE = (
-    "examples.current.research_benchmarks.librts_spatial_index."
+    "examples.benchmark_apps.librts_spatial_index."
     "rtdl_librts_spatial_index_benchmark_app"
 )
 

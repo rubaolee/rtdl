@@ -4,7 +4,7 @@ import pathlib
 import unittest
 import json
 
-from examples.current.research_benchmarks.rt_dbscan.rtdl_rt_dbscan_benchmark_app import (
+from examples.benchmark_apps.rt_dbscan.rtdl_rt_dbscan_benchmark_app import (
     DEFAULT_BLOCKED_GROUPED_SEGMENT_TARGET_HITS,
     cluster_signature,
     cpu_spatial_bucket_dbscan,

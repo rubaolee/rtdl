@@ -7,7 +7,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 APP = ROOT / "examples/current/apps/simulation/rtdl_barnes_hut_force_app.py"
-BENCHMARK = ROOT / "examples/current/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py"
+BENCHMARK = ROOT / "examples/benchmark_apps/barnes_hut/rtdl_barnes_hut_benchmark_app.py"
 REPORT = ROOT / "docs/reports/goal3853_barnes_hut_numba_force_summary_2026-06-08.md"
 ARTIFACT_DIR = ROOT / "docs/reports/goal3853_barnes_hut_numba_force_summary_a5000"
 DIRECT_ARTIFACT = ARTIFACT_DIR / "barnes_hut_numba_force_summary_8192.json"

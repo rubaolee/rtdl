@@ -59,7 +59,7 @@ class Goal4298V211EmbreeCpuPartnerReferencePacketTest(unittest.TestCase):
             self.assertNotIn("optix", command_text, app)
             self.assertNotIn("cupy", command_text, app)
             self.assertNotIn("--require-rt-core", command_text, app)
-            self.assertIn("examples/current/research_benchmarks/", command_text, app)
+            self.assertIn("examples/benchmark_apps/", command_text, app)
 
     def test_runner_dry_run_outputs_machine_readable_packet(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

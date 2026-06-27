@@ -11,11 +11,11 @@ class Goal514TutorialExampleHarnessRefreshTest(unittest.TestCase):
 
         self.assertEqual(
             cases["hausdorff_distance_app_optix"]["args"],
-            ["examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py", "--backend", "optix"],
+            ["examples/benchmark_apps/hausdorff_xhd/rtdl_hausdorff_distance_app.py", "--backend", "optix"],
         )
         self.assertEqual(
             cases["hausdorff_distance_app_vulkan"]["args"],
-            ["examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py", "--backend", "vulkan"],
+            ["examples/benchmark_apps/hausdorff_xhd/rtdl_hausdorff_distance_app.py", "--backend", "vulkan"],
         )
         self.assertEqual(
             cases["ann_candidate_app_optix"]["args"],

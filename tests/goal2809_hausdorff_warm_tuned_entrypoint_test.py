@@ -4,7 +4,7 @@ import json
 import unittest
 from pathlib import Path
 
-from examples.current.research_benchmarks.hausdorff_xhd import rtdl_hausdorff_v2_function as hd
+from examples.benchmark_apps.hausdorff_xhd import rtdl_hausdorff_v2_function as hd
 
 
 ROOT = Path(__file__).resolve().parents[1]

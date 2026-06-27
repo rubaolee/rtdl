@@ -8,7 +8,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 PACKET = ROOT / "docs/reports/goal4520_v3_0_m124_rtdbscan_chunk_handle_smoke_2026-06-17.json"
 REPORT = ROOT / "docs/reports/goal4520_v3_0_m124_rtdbscan_chunk_handle_smoke_2026-06-17.md"
-README = ROOT / "examples/current/research_benchmarks/rt_dbscan/README.md"
+README = ROOT / "examples/benchmark_apps/rt_dbscan/README.md"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
 SCRIPT = ROOT / "scripts/goal4520_m124_rtdbscan_chunk_handle_smoke.py"
 

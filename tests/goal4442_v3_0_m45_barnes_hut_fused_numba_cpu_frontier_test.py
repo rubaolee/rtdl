@@ -7,8 +7,8 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-APP = ROOT / "examples/current/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py"
-README = ROOT / "examples/current/research_benchmarks/barnes_hut/README.md"
+APP = ROOT / "examples/benchmark_apps/barnes_hut/rtdl_barnes_hut_benchmark_app.py"
+README = ROOT / "examples/benchmark_apps/barnes_hut/README.md"
 EVIDENCE_INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
 PARTNER_CHOICE = ROOT / "docs/learn/partner_choice_for_custom_logic.md"
 AUTHOR_STRATEGY = ROOT / "docs/learn/v2_14_app_author_implementation_strategy.md"
@@ -35,7 +35,7 @@ def _has_numba_cpu() -> bool:
 
 class Goal4442V30M45BarnesHutFusedNumbaCpuFrontierTest(unittest.TestCase):
     def test_app_exposes_fused_numba_cpu_mode(self) -> None:
-        from examples.current.research_benchmarks.barnes_hut import (
+        from examples.benchmark_apps.barnes_hut import (
             rtdl_barnes_hut_benchmark_app as barnes_hut,
         )
 
@@ -170,7 +170,7 @@ class Goal4442V30M45BarnesHutFusedNumbaCpuFrontierTest(unittest.TestCase):
 
     @unittest.skipUnless(_has_numba_cpu(), "Numba CPU is required for live fused CPU smoke")
     def test_live_fused_numba_cpu_mode_matches_reference_on_small_case(self) -> None:
-        from examples.current.research_benchmarks.barnes_hut import (
+        from examples.benchmark_apps.barnes_hut import (
             rtdl_barnes_hut_benchmark_app as barnes_hut,
         )
 

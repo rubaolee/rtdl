@@ -9,7 +9,7 @@ from unittest import mock
 import numpy as np
 
 import rtdsl as rt
-from examples.current.research_benchmarks.rt_dbscan import rtdl_rt_dbscan_benchmark_app as app
+from examples.benchmark_apps.rt_dbscan import rtdl_rt_dbscan_benchmark_app as app
 
 
 class _FakeStream:

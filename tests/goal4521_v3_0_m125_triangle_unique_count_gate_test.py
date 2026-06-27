@@ -10,7 +10,7 @@ import rtdsl as rt
 ROOT = Path(__file__).resolve().parents[1]
 PACKET = ROOT / "docs/reports/goal4521_v3_0_m125_triangle_unique_count_gate_2026-06-17.json"
 REPORT = ROOT / "docs/reports/goal4521_v3_0_m125_triangle_unique_count_gate_2026-06-17.md"
-README = ROOT / "examples/current/research_benchmarks/triangle_counting/README.md"
+README = ROOT / "examples/benchmark_apps/triangle_counting/README.md"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
 SCRIPT = ROOT / "scripts/goal4521_m125_triangle_unique_count_gate.py"
 SOURCE = ROOT / "src/rtdsl/v3_0_prepared_graph_chunk_executor.py"

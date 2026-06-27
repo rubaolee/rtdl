@@ -70,7 +70,7 @@ ROWS: tuple[dict[str, Any], ...] = (
         "phase_to_compare": "prepared threshold query phase versus Embree directed_summary traversal/reduction",
         "scale_choice": {"copies": 200000, "iterations": 10, "radius": 0.4, "watch_item": "may still be below timing floor; local dry-run must adjust if needed"},
         "optix_command": "python3 scripts/goal887_prepared_decision_phase_profiler.py --scenario hausdorff_threshold --mode optix --copies 200000 --iterations 10 --radius 0.4 --output-json docs/reports/goal1190_next_rtx_pod_contract_batch/hausdorff_threshold_prepared_optix.json",
-        "baseline_command": "python3 examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py --backend embree --copies 200000 --embree-result-mode directed_summary --hausdorff-threshold 0.4 > docs/reports/goal1190_next_rtx_pod_contract_batch/hausdorff_threshold_prepared_embree.json",
+        "baseline_command": "python3 examples/benchmark_apps/hausdorff_xhd/rtdl_hausdorff_distance_app.py --backend embree --copies 200000 --embree-result-mode directed_summary --hausdorff-threshold 0.4 > docs/reports/goal1190_next_rtx_pod_contract_batch/hausdorff_threshold_prepared_embree.json",
         "boundary": "no whole-app speedup claim, exact Hausdorff distance, nearest-neighbor ranking, or KNN-row claim",
     },
 )

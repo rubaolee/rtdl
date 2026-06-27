@@ -9,7 +9,7 @@ OPTIX_SDK_TAG="${OPTIX_SDK_TAG:-v8.0.0}"
 OPTIX_PREFIX="${OPTIX_PREFIX:-${VENDOR_ROOT}/optix-sdk}"
 INSTALL_CUPY_IF_MISSING="${INSTALL_CUPY_IF_MISSING:-1}"
 INSTALL_OPTIX_SDK_IF_MISSING="${INSTALL_OPTIX_SDK_IF_MISSING:-1}"
-APP="examples/current/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py"
+APP="examples/benchmark_apps/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py"
 
 mkdir -p "${ARTIFACT_DIR}"
 

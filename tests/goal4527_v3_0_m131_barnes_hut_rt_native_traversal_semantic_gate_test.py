@@ -17,7 +17,7 @@ REPORT = (
     ROOT
     / "docs/reports/goal4527_v3_0_m131_barnes_hut_rt_native_traversal_semantic_gate_2026-06-17.md"
 )
-README = ROOT / "examples/current/research_benchmarks/barnes_hut/README.md"
+README = ROOT / "examples/benchmark_apps/barnes_hut/README.md"
 INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
 SCRIPT = ROOT / "scripts/goal4527_m131_barnes_hut_rt_native_traversal_semantic_gate.py"
 

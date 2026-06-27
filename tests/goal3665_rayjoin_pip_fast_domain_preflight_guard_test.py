@@ -8,7 +8,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 REPORT = ROOT / "docs/reports/goal3665_rayjoin_pip_fast_domain_preflight_guard_2026-06-06.md"
 SUMMARY = ROOT / "docs/reports/goal3665_rayjoin_pip_fast_domain_preflight_guard_a5000/summary.json"
-APP = ROOT / "examples/current/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py"
+APP = ROOT / "examples/benchmark_apps/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py"
 RUNNER = ROOT / "scripts/goal3244_rayjoin_same_slice_repeated_count_runner.py"
 
 

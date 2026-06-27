@@ -89,7 +89,7 @@ def build_manifest() -> dict[str, Any]:
                 "requires_pod": False,
                 "requires_optix": False,
                 "command": _python_command(
-                    "examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+                    "examples/benchmark_apps/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
                     "--backend",
                     "cpu_python_reference",
                 ),

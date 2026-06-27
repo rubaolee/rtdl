@@ -5,11 +5,11 @@ from pathlib import Path
 import unittest
 from unittest import mock
 
-from examples.current.research_benchmarks.hausdorff_xhd import rtdl_hausdorff_distance_app as hd
-from examples.current.research_benchmarks.librts_spatial_index import (
+from examples.benchmark_apps.hausdorff_xhd import rtdl_hausdorff_distance_app as hd
+from examples.benchmark_apps.librts_spatial_index import (
     rtdl_librts_spatial_index_benchmark_app as librts,
 )
-from examples.current.research_benchmarks.triangle_counting import (
+from examples.benchmark_apps.triangle_counting import (
     rtdl_triangle_counting_benchmark_app as triangles,
 )
 

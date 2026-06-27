@@ -12,7 +12,7 @@ from typing import Any, Iterator
 
 import rtdsl as rt
 import rtdsl.v2_8_fixed_radius_graph_component_front_door as frontdoor
-from examples.current.research_benchmarks.rt_dbscan.rtdl_rt_dbscan_benchmark_app import (
+from examples.benchmark_apps.rt_dbscan.rtdl_rt_dbscan_benchmark_app import (
     make_rt_dbscan_points,
 )
 from scripts.goal4085_partition_summary_build_feasibility import PROFILE_RADII

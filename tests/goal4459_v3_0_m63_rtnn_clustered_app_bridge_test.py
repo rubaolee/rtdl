@@ -13,7 +13,7 @@ EVIDENCE = (
     ROOT
     / "docs/reports/goal4459_v3_0_m63_rtnn_app_bridge_clustered_1048576q65536_r1000_2026-06-16.json"
 )
-RTNN_README = ROOT / "examples/current/research_benchmarks/rtnn/README.md"
+RTNN_README = ROOT / "examples/benchmark_apps/rtnn/README.md"
 EVIDENCE_INDEX = ROOT / "docs/learn/benchmark_evidence_index.md"
 PARTNER_MATRIX = ROOT / "docs/learn/benchmark_partner_reference_matrix.md"
 RT_CORE_MATRIX = ROOT / "docs/learn/rt_core_evidence_matrix.md"

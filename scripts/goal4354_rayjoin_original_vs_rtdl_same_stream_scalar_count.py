@@ -17,7 +17,7 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "src"))
 
 import rtdsl as rt  # noqa: E402
-from examples.current.research_benchmarks.spatial_rayjoin.rtdl_rayjoin_v2_spatial_join_app import (  # noqa: E402
+from examples.benchmark_apps.spatial_rayjoin.rtdl_rayjoin_v2_spatial_join_app import (  # noqa: E402
     rayjoin_point_location_positive_hits_reference,
 )
 from examples.reference.rtdl_language_reference import county_zip_join_reference  # noqa: E402

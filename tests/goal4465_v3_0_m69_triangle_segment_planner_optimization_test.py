@@ -5,11 +5,11 @@ import json
 from pathlib import Path
 import unittest
 
-from examples.current.research_benchmarks.triangle_counting import rtdl_triangle_counting_benchmark_app as app
+from examples.benchmark_apps.triangle_counting import rtdl_triangle_counting_benchmark_app as app
 
 
 ROOT = Path(__file__).resolve().parents[1]
-APP = ROOT / "examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py"
+APP = ROOT / "examples/benchmark_apps/triangle_counting/rtdl_triangle_counting_benchmark_app.py"
 REPORT = ROOT / "docs" / "reports" / "goal4465_v3_0_m69_triangle_segment_planner_com_orkut_2026-06-16.md"
 PLANNER_EVIDENCE = (
     ROOT

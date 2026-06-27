@@ -57,7 +57,7 @@ EMBREE_CPU_SCALE_COMMANDS: tuple[EmbreeCpuScaleCommand, ...] = (
         bucket="clean_internal_query_ratio",
         command=(
             "python",
-            "examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+            "examples/benchmark_apps/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
             "--backend",
             "embree",
             "--optix-summary-mode",
@@ -80,7 +80,7 @@ EMBREE_CPU_SCALE_COMMANDS: tuple[EmbreeCpuScaleCommand, ...] = (
         bucket="clean_internal_query_ratio",
         command=(
             "python",
-            "examples/current/research_benchmarks/robot_collision/rtdl_robot_collision_benchmark_app.py",
+            "examples/benchmark_apps/robot_collision/rtdl_robot_collision_benchmark_app.py",
             "--mode",
             "embree_prepared_buffers",
             "--dataset",
@@ -107,7 +107,7 @@ EMBREE_CPU_SCALE_COMMANDS: tuple[EmbreeCpuScaleCommand, ...] = (
         bucket="clean_internal_query_ratio",
         command=(
             "python",
-            "examples/current/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py",
+            "examples/benchmark_apps/contact_manifold/rtdl_contact_manifold_benchmark_app.py",
             "--mode",
             "native_collect_k",
             "--backend",
@@ -130,7 +130,7 @@ EMBREE_CPU_SCALE_COMMANDS: tuple[EmbreeCpuScaleCommand, ...] = (
         bucket="clean_internal_query_ratio",
         command=(
             "python",
-            "examples/current/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py",
+            "examples/benchmark_apps/raydb_style/rtdl_raydb_style_benchmark_app.py",
             "--mode",
             "count",
             "--backend",
@@ -156,7 +156,7 @@ EMBREE_CPU_SCALE_COMMANDS: tuple[EmbreeCpuScaleCommand, ...] = (
         bucket="fully_optimized_measured_pair",
         command=(
             "python",
-            "examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
+            "examples/benchmark_apps/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py",
             "--mode",
             "embree_aabb_index",
             "--dataset",
@@ -182,7 +182,7 @@ EMBREE_CPU_SCALE_COMMANDS: tuple[EmbreeCpuScaleCommand, ...] = (
         bucket="clean_internal_query_ratio",
         command=(
             "python",
-            "examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py",
+            "examples/benchmark_apps/triangle_counting/rtdl_triangle_counting_benchmark_app.py",
             "--mode",
             "rt_graph_2a1_generic_rt",
             "--backend",

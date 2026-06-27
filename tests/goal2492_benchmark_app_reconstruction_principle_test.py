@@ -4,7 +4,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 REPORT = ROOT / "docs/reports/goal2492_benchmark_app_reconstruction_principle_and_raydb_scope_2026-05-22.md"
-BENCHMARK_README = ROOT / "examples/current/research_benchmarks/README.md"
+BENCHMARK_README = ROOT / "examples/benchmark_apps/README.md"
 CLAUDE_REVIEW = ROOT / "docs/reviews/goal2492_claude_review_benchmark_app_reconstruction_principle_2026-05-22.md"
 CONSENSUS = ROOT / "docs/reviews/goal2492_codex_claude_consensus_benchmark_app_reconstruction_principle_2026-05-22.md"
 

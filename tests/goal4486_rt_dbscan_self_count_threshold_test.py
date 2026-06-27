@@ -27,7 +27,7 @@ class Goal4486RtDbscanSelfCountThresholdTest(unittest.TestCase):
     def test_rt_dbscan_predicate_route_uses_self_query_adapter(self) -> None:
         app = (
             ROOT
-            / "examples/current/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py"
+            / "examples/benchmark_apps/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py"
         ).read_text(encoding="utf-8")
 
         self.assertIn("fixed_radius_count_threshold_3d_optix_prepared_self_partner_device_columns", app)

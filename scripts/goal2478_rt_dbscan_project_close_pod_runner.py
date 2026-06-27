@@ -12,7 +12,7 @@ ROOT = next(parent for parent in pathlib.Path(__file__).resolve().parents if (pa
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
-from examples.current.research_benchmarks.rt_dbscan.rtdl_rt_dbscan_benchmark_app import (  # noqa: E402
+from examples.benchmark_apps.rt_dbscan.rtdl_rt_dbscan_benchmark_app import (  # noqa: E402
     plan_rt_dbscan_continuation_execution,
     plan_rt_dbscan_execution,
     run_rt_dbscan_benchmark,

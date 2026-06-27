@@ -10,7 +10,7 @@ from typing import Callable, Iterable
 
 import numpy as np
 
-from examples.current.research_benchmarks.hausdorff_xhd import rtdl_hausdorff_v2_function as hd
+from examples.benchmark_apps.hausdorff_xhd import rtdl_hausdorff_v2_function as hd
 
 
 DatasetFactory = Callable[[int], tuple[np.ndarray, np.ndarray]]

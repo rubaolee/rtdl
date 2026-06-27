@@ -7,8 +7,8 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-APP = ROOT / "examples/current/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py"
-README = ROOT / "examples/current/research_benchmarks/barnes_hut/README.md"
+APP = ROOT / "examples/benchmark_apps/barnes_hut/rtdl_barnes_hut_benchmark_app.py"
+README = ROOT / "examples/benchmark_apps/barnes_hut/README.md"
 REPORT = ROOT / "docs/reports/goal4439_v3_0_m42_barnes_hut_prepared_frontier_app_mode_2026-06-16.md"
 NUMBA_8192 = ROOT / "docs/reports/goal4439_v3_0_m42_barnes_hut_app_mode_numba_8192_2026-06-16.json"
 CUPY_8192 = ROOT / "docs/reports/goal4439_v3_0_m42_barnes_hut_app_mode_cupy_8192_2026-06-16.json"
@@ -35,7 +35,7 @@ def _has_cupy_numba_cuda() -> bool:
 
 class Goal4439V30M42BarnesHutPreparedFrontierAppModeTest(unittest.TestCase):
     def test_app_exposes_explicit_prepared_frontier_mode(self) -> None:
-        from examples.current.research_benchmarks.barnes_hut import (
+        from examples.benchmark_apps.barnes_hut import (
             rtdl_barnes_hut_benchmark_app as barnes_hut,
         )
 
@@ -145,7 +145,7 @@ class Goal4439V30M42BarnesHutPreparedFrontierAppModeTest(unittest.TestCase):
 
     @unittest.skipUnless(_has_cupy_numba_cuda(), "CuPy and Numba CUDA are required for live app-mode smoke")
     def test_live_numba_app_mode_matches_cpu_reference_when_optix_is_available(self) -> None:
-        from examples.current.research_benchmarks.barnes_hut import (
+        from examples.benchmark_apps.barnes_hut import (
             rtdl_barnes_hut_benchmark_app as barnes_hut,
         )
 

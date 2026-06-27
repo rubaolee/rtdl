@@ -92,7 +92,7 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
     V28BenchmarkRuntimeGapRow(
         benchmark_app="hausdorff_xhd",
         display_name="Hausdorff / X-HD style",
-        benchmark_path="examples/current/research_benchmarks/hausdorff_xhd/",
+        benchmark_path="examples/benchmark_apps/hausdorff_xhd/",
         current_best_path=(
             "generic directed max-of-nearest-distance partner front door for exact partner "
             "continuation; active-frontier RTDL/OptiX path remains the RT-core research harness"
@@ -115,7 +115,7 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
     V28BenchmarkRuntimeGapRow(
         benchmark_app="spatial_rayjoin",
         display_name="Spatial RayJoin",
-        benchmark_path="examples/current/research_benchmarks/spatial_rayjoin/",
+        benchmark_path="examples/benchmark_apps/spatial_rayjoin/",
         current_best_path=(
             "primitive-first scalar count/parity and first-hit paths; direct v2.8 compact-mask "
             "typed-stream front door for explicit candidate-row filtering; generic 2-D relation-row "
@@ -287,7 +287,7 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
     V28BenchmarkRuntimeGapRow(
         benchmark_app="rt_dbscan",
         display_name="RT-DBSCAN",
-        benchmark_path="examples/current/research_benchmarks/rt_dbscan/",
+        benchmark_path="examples/benchmark_apps/rt_dbscan/",
         current_best_path=(
             "fixed-radius/core-summary primitives plus v2.8 fixed-radius graph component front door "
             "over the measured OptiX+CuPy grouped-stream path, with typed adjacency/grouped-stream "
@@ -310,7 +310,7 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
     V28BenchmarkRuntimeGapRow(
         benchmark_app="robot_collision",
         display_name="Robot collision",
-        benchmark_path="examples/current/research_benchmarks/robot_collision/",
+        benchmark_path="examples/benchmark_apps/robot_collision/",
         current_best_path=(
             "generic any-hit/collision flag primitive over prepared static scenes; direct v2.8 bounded-collect "
             "typed-stream front door for optional grouped witness rows"
@@ -329,7 +329,7 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
     V28BenchmarkRuntimeGapRow(
         benchmark_app="contact_manifold",
         display_name="Contact manifold",
-        benchmark_path="examples/current/research_benchmarks/contact_manifold/",
+        benchmark_path="examples/benchmark_apps/contact_manifold/",
         current_best_path=(
             "bounded witness collection with fail-closed overflow behavior; direct v2.8 bounded-collect "
             "typed-stream front door over grouped item rows"
@@ -348,7 +348,7 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
     V28BenchmarkRuntimeGapRow(
         benchmark_app="raydb_style",
         display_name="RayDB-style grouped aggregates",
-        benchmark_path="examples/current/research_benchmarks/raydb_style/",
+        benchmark_path="examples/benchmark_apps/raydb_style/",
         current_best_path=(
             "fused columnar grouped reductions when the primitive exactly matches; "
             "v2.8 grouped-reduction typed-stream front door for explicit unfused partner continuation; "
@@ -368,7 +368,7 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
     V28BenchmarkRuntimeGapRow(
         benchmark_app="barnes_hut",
         display_name="Barnes-Hut / RT-BarnesHut style",
-        benchmark_path="examples/current/research_benchmarks/barnes_hut/",
+        benchmark_path="examples/benchmark_apps/barnes_hut/",
         current_best_path=(
             "aggregate-frontier collect primitive plus v2.8 grouped-vector typed-stream "
             "front door for app-owned force/vector continuation"
@@ -390,7 +390,7 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
     V28BenchmarkRuntimeGapRow(
         benchmark_app="librts_spatial_index",
         display_name="LibRTS-style spatial index",
-        benchmark_path="examples/current/research_benchmarks/librts_spatial_index/",
+        benchmark_path="examples/benchmark_apps/librts_spatial_index/",
         current_best_path="generic point/range query rows and count-oriented no-regression evidence",
         partner_position="no promoted v2.6 custom partner path",
         current_bottleneck="mutable index/update policy remains app-owned; v2.8 should avoid treating this as the first runtime extension.",
@@ -402,7 +402,7 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
     V28BenchmarkRuntimeGapRow(
         benchmark_app="rtnn",
         display_name="RTNN neighbor search",
-        benchmark_path="examples/current/research_benchmarks/rtnn/",
+        benchmark_path="examples/benchmark_apps/rtnn/",
         current_best_path=(
             "prepared fixed-radius ranked-summary primitives with batched request hardening; "
             "v2.8 ranked-summary typed-stream front door for explicit grouped top-k/arg continuation"
@@ -423,7 +423,7 @@ V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
     V28BenchmarkRuntimeGapRow(
         benchmark_app="triangle_counting",
         display_name="Triangle counting",
-        benchmark_path="examples/current/research_benchmarks/triangle_counting/",
+        benchmark_path="examples/benchmark_apps/triangle_counting/",
         current_best_path=(
             "generic RT graph relationship-count composition for scalar answers; direct v2.8 "
             "compact-mask typed-stream front door for explicit candidate-row interpretation; "
