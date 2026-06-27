@@ -22,6 +22,4 @@ range against named brute-force partner/CPU baselines; larger outliers are
 labeled as scale-dependent algorithmic-complexity wins. RT-BarnesHut
 paper-reproduction wording remains outside the V4.0.0 public claim.
 
-Release claim boundary: V4.0.0 does not claim that all benchmark apps are faster,
-does not authorize broad V4-over-V2.14 speedup wording, does not publish Tier-3
-callback/PTX support claims, and does not make public true-zero-copy claims.
+Release claim boundary: V4.0.0 does not claim that all benchmark apps are faster, does not authorize broad V4-over-V2.14 speedup wording, does not publish Tier-3 callback/PTX support claims, and does not make public true-zero-copy claims.
