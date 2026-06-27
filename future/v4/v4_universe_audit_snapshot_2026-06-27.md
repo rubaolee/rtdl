@@ -6,13 +6,13 @@ Status: `pass_with_known_local_debris`
 
 ## Counts
 
-- tracked files: `27669`
-- untracked files: `979`
+- tracked files: `27672`
+- untracked files: `977`
 - public current files scanned: `31`
 
 ## Tracked Buckets
 
-- `audit_provenance`: `1168`
+- `audit_provenance`: `1171`
 - `current_code_or_gate`: `4313`
 - `history_archive`: `22045`
 - `other_tracked`: `112`
@@ -20,7 +20,7 @@ Status: `pass_with_known_local_debris`
 
 ## Tracked Documentation Buckets
 
-- `audit_provenance`: `556`
+- `audit_provenance`: `559`
 - `current_code_or_gate`: `3`
 - `history_archive`: `14342`
 - `other_tracked`: `8`
@@ -48,7 +48,7 @@ Status: `pass_with_known_local_debris`
 - `local_v3_phoenix_review_helper`: `18`
 - `local_v3_phoenix_script_debris`: `105`
 - `local_v3_phoenix_test_debris`: `179`
-- `local_v4_review_working_record`: `341`
+- `local_v4_review_working_record`: `339`
 
 ## Untracked Samples
 
@@ -117,7 +117,6 @@ Status: `pass_with_known_local_debris`
 - `tests/v3_phoenix_aabb_native_query_handle_stability_evidence_test.py`
 ### `local_v4_review_working_record`
 - `future/v4/reviews/antigravity_prompt_v4_goal4720_4722_release_candidate_review_2026-06-26.txt`
-- `future/v4/reviews/antigravity_v4_gemini_review_debt_rollup_2026-06-27.md`
 - `future/v4/reviews/antigravity_v4_goal4616_status_ledger_completion_review_2026-06-24.stderr.txt`
 - `future/v4/reviews/antigravity_v4_goal4617_grouped_i64_completion_review_2026-06-24.stderr.txt`
 - `future/v4/reviews/antigravity_v4_goal4617_grouped_i64_promotion_decision_review_2026-06-24.stderr.txt`
@@ -128,6 +127,7 @@ Status: `pass_with_known_local_debris`
 - `future/v4/reviews/antigravity_v4_goal4622_tier3_callback_protocol_completion_review_2026-06-24.stderr.txt`
 - `future/v4/reviews/antigravity_v4_goal4623_development_state_decision_review_2026-06-24.stderr.txt`
 - `future/v4/reviews/antigravity_v4_goal4624_development_state_naming_cleanup_review_2026-06-24.stderr.txt`
+- `future/v4/reviews/antigravity_v4_goal4625_design_status_and_next_goals_amended_review_2026-06-24.stderr.txt`
 
 ## Interpretation
 
