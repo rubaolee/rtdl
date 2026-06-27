@@ -22,15 +22,16 @@ Good:
 RTDL V4.0.0 is a published Python eDSL/operator-pushdown release with 10 measured
 generic operator/workflow surfaces, a complete 10-app V2.14/V3.0.2/V4.0
 NVIDIA RT-core matrix, and a constrained custom predicate early-exit workflow.
-It does not claim that all historical benchmark apps are faster than V2.14.
+The app matrix has two material hot-path rows over V2.14 and similar-speed rows
+elsewhere.
 ```
 
 Good:
 
 ```text
 The current app matrix has two material hot-path rows over V2.14 and
-similar-speed control rows elsewhere; it does not claim that all historical
-benchmark apps are faster than V2.14.
+similar-speed control rows elsewhere; use the table distribution rather than a
+blanket all-app phrase.
 ```
 
 Good:
@@ -98,7 +99,7 @@ Allowed for V4.0.0:
 - exact partner and hardware scope;
 - exact denominator and scale for every representative ratio.
 
-Not allowed:
+Keep these phrases out of broad public claims:
 
 - broad V4 speedup wording;
 - broad V4-over-V2.14 speedup wording;

@@ -4,8 +4,8 @@ Status: `release_staging_manifest_created__pathspec_ready__tag_still_requires_cl
 
 ## Summary
 
-- dirty file entries from `git status -uall`: `1`
-- stage for V4 release commit: `1`
+- dirty file entries from `git status -uall`: `17`
+- stage for V4 release commit: `17`
 - exclude from V4 release commit: `0`
 - hold V3 history out of V4 tag: `0`
 - manual review required: `0`
@@ -19,7 +19,7 @@ Status: `release_staging_manifest_created__pathspec_ready__tag_still_requires_cl
 
 | Bucket | Count |
 | --- | ---: |
-| `stage_for_v4_release_commit` | `1` |
+| `stage_for_v4_release_commit` | `17` |
 
 ## Pathspec
 

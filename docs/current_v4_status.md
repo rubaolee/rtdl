@@ -24,7 +24,8 @@ V4 gives users one current Python front door for reusable RT-shaped GPU work:
 - Users choose partners explicitly. Current measured partner scopes include
   Torch CUDA, CuPy where explicitly named, Numba where explicitly named, and
   RTDL native prepared runners.
-- Unsupported complex callbacks fail closed or remain future work.
+- Callback shapes are explicit: supported shapes plan cleanly, and shapes outside
+  V4.0 return a bounded planner result instead of guessing.
 
 ## Complete 10-App RT-Core Matrix
 
@@ -82,7 +83,7 @@ Allowed:
 - "The custom predicate early-exit workflow is a V4-specific bounded workflow
   win."
 
-Not authorized:
+Keep these phrases out of broad public claims:
 
 - all benchmark apps are faster;
 - broad all-app speedup wording;

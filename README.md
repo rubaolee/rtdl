@@ -52,7 +52,8 @@ The V4 contract is:
 Python owns the application.
 RTDL owns generic RT-shaped operators and prepared routes.
 Users choose measured partners explicitly.
-Unsupported custom logic fails closed or remains future work.
+Callback shapes are explicit: supported shapes plan cleanly, and shapes outside
+V4.0 return a bounded planner result instead of guessing.
 ```
 
 The Python package is `rtdsl`.
@@ -67,9 +68,9 @@ The Python package is `rtdsl`.
 - constrained custom predicate early-exit for the measured Numba workflow;
 - clear claim boundaries for app rows, operator rows, and future callback work.
 
-V4 does not claim that every historical benchmark app is faster. It does claim
-that the current 10-app RT-core matrix is complete and that V4 has bounded,
-measured value over V2.14 in the documented rows.
+The current 10-app RT-core matrix is complete. The app table has two material
+hot-path rows over V2.14 and similar-speed rows elsewhere; use that distribution
+when describing performance.
 
 Operator-surface performance is reported against named brute-force partner/CPU baselines:
 most measured operators sit in the `1.2x` to `1.7x` range; larger outliers are
@@ -115,9 +116,9 @@ PYTHONPATH=src:. python examples/v4/custom_predicate_early_exit_planning.py
 PYTHONPATH=src:. python scripts/v4_catalog_regression_gate.py --mode dry-run
 ```
 
-## Non-Claims
+## Claim Boundaries
 
-This front page does not authorize:
+Use exact row-level wording. Keep these phrases out of broad public claims:
 
 - "all benchmark apps are faster";
 - broad V4-over-V2.14 speedup wording;
@@ -139,7 +140,5 @@ This front page does not authorize:
 | `examples/current/research_benchmarks/` | Maintainer benchmark harness for the 10 promoted apps; learn from `examples/v4/benchmark_app_recipes.py` first. |
 | `tutorials/current/` | Current V4 tutorial path. |
 | `docs/` | Current V4 public documentation. |
-| `history/` | Archived history and maintainer provenance. |
-| `future/` | Maintainer evidence and working material, not the user learning path. |
 | `scripts/` | Developer and verification tools. |
 | `tests/` | Regression and gate tests. |

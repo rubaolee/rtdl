@@ -25,11 +25,12 @@ for request, partner in [
 | Numba | You need a measured Numba continuation or a constrained pure predicate workflow. | `component_union`, `custom_predicate_early_exit` |
 | RTDL native | RTDL owns the prepared index/frontier route. | `aabb_index_query`, `aggregate_frontier` |
 
-## Closed Requests
+## Bounded Requests
 
-Unsupported callback shapes fail closed. For example, arbitrary Python actions,
-shared-state mutation, dynamic allocation, variable-length output, raw OptiX
-callbacks, and Tier-3 PTX/module linking are not V4.0 public features.
+Callback shapes outside the current surface return a bounded planner result.
+For example, arbitrary Python actions, shared-state mutation, dynamic
+allocation, variable-length output, raw OptiX callbacks, and Tier-3 PTX/module
+linking are roadmap topics rather than V4.0 public APIs.
 
 ```python
 import rtdsl.v4 as rt
@@ -54,6 +55,5 @@ Start with the data you already own:
   shapes.
 - Spatial indexes/frontiers: let RTDL native prepared runners own the route.
 
-If the planner does not return a supported surface, keep the logic outside the
-operator or use an inherited benchmark route that already implements the task.
-
+If the planner does not return a supported surface, keep that logic in ordinary
+app code or use an inherited benchmark route that already implements the task.

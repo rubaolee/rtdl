@@ -28,7 +28,7 @@ pure predicate workflow.
 
 Use RTDL native when the route is an RTDL-owned prepared index or frontier.
 
-Unsupported requests fail closed:
+Requests outside the current surface return a bounded planner result:
 
 ```python
 import rtdsl.v4 as rt
@@ -43,6 +43,6 @@ plan = rt.plan_operator_request_v4(
 print(plan.status)
 ```
 
-That closed result is part of the contract: V4.0 supports constrained predicate
-early-exit, not arbitrary actions inside the RT traversal.
-
+That bounded result is part of the contract: V4.0 supports constrained
+predicate early-exit and keeps arbitrary RT-traversal actions outside the
+current public surface.

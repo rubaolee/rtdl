@@ -23,7 +23,7 @@ The current app-level V2.14/V3.0.2/V4 comparison is complete for the 10 promoted
 benchmark apps on NVIDIA RT-core rows. It supports bounded wording: two material
 hot-path rows over V2.14 and similar-speed control rows elsewhere.
 Treat V4.0.0 as a published eDSL/operator-pushdown release and V2/V3 superset,
-not as a claim that every old benchmark app is faster.
+not as a blanket claim that every promoted benchmark app is faster.
 
 Do not say:
 

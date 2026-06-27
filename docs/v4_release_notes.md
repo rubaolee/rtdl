@@ -34,10 +34,9 @@ V4.0 has two material hot-path rows over V2.14:
 - Triangle counting;
 - Barnes-Hut aggregate frontier.
 
-Most other app rows are similar-speed control rows. Do not describe V4.0.0 as
-"all apps are faster." Use the distribution in
+Most other app rows are similar-speed control rows. Use the distribution in
 [app_level_benchmark_summary.md](app_level_benchmark_summary.md) when discussing
-whole-app results.
+whole-app results instead of reducing the release to one blanket phrase.
 
 Operator-surface results live in
 [learn/operator_catalog.md](learn/operator_catalog.md). Each operator row names
@@ -53,7 +52,7 @@ V4.0.0 supports:
 - bounded Torch, CuPy, Numba, and RTDL native partner scopes;
 - constrained custom predicate early-exit planning.
 
-V4.0.0 does not claim:
+Keep these phrases out of broad public claims:
 
 - every benchmark app is faster;
 - broad V4-over-V2.14 or V4-over-V3 speedup;
@@ -72,4 +71,3 @@ Start with:
 3. [Partner Choice](learn/partner_choice.md)
 4. [Tutorials](../tutorials/current/README.md)
 5. [App-Level Benchmark Summary](app_level_benchmark_summary.md)
-

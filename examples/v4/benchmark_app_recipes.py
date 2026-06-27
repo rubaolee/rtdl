@@ -92,7 +92,7 @@ def build_rtnn_recipe() -> AppRecipe:
         "rtdl_native",
         "candidate scores per query group",
         "run_fixed_radius_ranked_summary_3d_prepared_runner_v4(...)",
-        "This route is intentionally deferred in V4.0, so the planner tells the user that.",
+        "The planner returns the current bounded status for this route.",
     )
     return AppRecipe(
         app="RTNN",

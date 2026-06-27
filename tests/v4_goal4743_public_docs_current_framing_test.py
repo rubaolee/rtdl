@@ -18,7 +18,9 @@ class V4Goal4743PublicDocsCurrentFramingTest(unittest.TestCase):
     def test_public_docs_use_goal4756_bounded_decision(self) -> None:
         combined = "\n".join(path.read_text(encoding="utf-8") for path in PUBLIC_DOCS)
         self.assertIn("complete_rt_core_app_matrix__bounded_material_wins__no_broad_all_app_speedup_claim", combined)
-        self.assertIn("does not claim that all historical benchmark apps are faster than V2.14", combined)
+        self.assertIn("two material hot-path rows over V2.14", combined)
+        self.assertIn("similar-speed rows elsewhere", combined)
+        self.assertIn("blanket all-app phrase", combined)
 
     def test_current_app_table_has_repaired_rows(self) -> None:
         summary = (ROOT / "docs" / "app_level_benchmark_summary.md").read_text(encoding="utf-8")

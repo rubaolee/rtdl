@@ -19,7 +19,7 @@ print(plan.status)
 print(plan.api_surface)
 ```
 
-Unsupported requests fail closed:
+Requests outside the current surface return a bounded planner result:
 
 ```powershell
 py -3 examples\v4\operator_callback_planning.py --case complex-callback

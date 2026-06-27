@@ -1,7 +1,8 @@
 # RTDL V4.0.0 Engineering Summary
 
 This page gives maintainers a compact technical view of the V4.0.0 release
-shape without sending first-time users into old working notes.
+shape while keeping the first-time user path focused on current docs and
+examples.
 
 ## Architecture
 
@@ -20,9 +21,9 @@ argmin, grouped reduction, component union, aggregate-frontier columns, and
 pure predicate early-exit. It must not expose app-identity kernels such as
 "DBSCAN kernel" or "Barnes-Hut kernel" as the public programming model.
 
-## Release Checks
+## Release Checks Used For V4.0.0
 
-Before publishing V4.0.0, maintainers should confirm:
+The V4.0.0 release path used these checks:
 
 - clean public docs and examples;
 - copy-paste runnable tutorial snippets;
@@ -34,9 +35,9 @@ Before publishing V4.0.0, maintainers should confirm:
 
 ## Evidence Policy
 
-The public path stays short and current. Historical material and raw evidence
-remain in maintainer-only locations. Public pages should link to the current
-docs and examples, not to old planning packets.
+The public path stays short and current. Public pages should link to the current
+docs and examples. Compact release evidence stays available for maintainers who
+need to reproduce the checks.
 
 ## Current Matrix Facts
 
@@ -65,4 +66,3 @@ Partners are explicit:
 
 Do not turn partner availability into broad partner performance wording. Each
 claim needs its own denominator and scale.
-

@@ -1,8 +1,8 @@
 # RTDL V4 Documentation
 
 This directory is the current public documentation surface for RTDL V4.0.0.
-A new user should be able to learn the current system without reading old
-handoffs, historical design debates, or benchmark working notes.
+A new user should be able to learn and run the current system from this page
+without detouring through working notes.
 
 ## Current Docs
 
@@ -21,5 +21,5 @@ handoffs, historical design debates, or benchmark working notes.
 Tutorials live in [../tutorials/current/README.md](../tutorials/current/README.md).
 Runnable examples live in [../examples/README.md](../examples/README.md).
 
-Historical planning and raw evidence are retained outside the public learning
-path under `history/` and maintainer evidence directories.
+Compact evidence and release files are kept outside the first-time learning
+path. Start with the current docs and runnable examples above.

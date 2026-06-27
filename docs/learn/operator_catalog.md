@@ -53,9 +53,10 @@ stays outside the operator. For example, Triangle counting and Robot collision
 can both ask for `any_hit`, but they interpret the result differently in app
 code.
 
-Unsupported requests fail closed. Raw OptiX callbacks, arbitrary Python
-callbacks, dynamic allocation, variable-length mutation, and Tier-3 PTX/module
-linking are not V4.0 public features.
+Requests outside the current V4.0 surface return a bounded planner result. Raw
+OptiX callbacks, arbitrary Python callbacks, dynamic allocation, variable-length
+mutation, and Tier-3 PTX/module linking are roadmap topics rather than V4.0
+public APIs.
 
 ## Examples
 

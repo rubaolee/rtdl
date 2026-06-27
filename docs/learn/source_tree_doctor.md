@@ -24,11 +24,11 @@ These checks run without CUDA by using dry-run paths for GPU examples. They
 verify that the V4 front door, benchmark-app recipe planner, operator catalog,
 callback planner, and example commands are reachable from a clean checkout.
 
-For deeper maintainer checks, use the broader V4 tests:
+For deeper checks, use the broader V4 tests:
 
 ```bash
 PYTHONPATH=src:. python -m unittest tests.v4_frontdoor_test tests.v4_catalog_regression_gate_test
 ```
 
-The older `scripts/rtdl_source_tree_doctor.py` remains a V3 compatibility
-doctor. It is not the V4 public readiness gate.
+For release readiness, use `scripts/v4_release_clean_checkout_gate.py` after
+the tree is committed and the release tag is in place.

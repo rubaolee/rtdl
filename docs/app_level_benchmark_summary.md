@@ -23,8 +23,8 @@ complete_rt_core_app_matrix__bounded_material_wins__no_broad_all_app_speedup_cla
 V4.0.0 is a published Python eDSL/operator-pushdown release and a V2/V3
 superset. The complete app matrix supports bounded claims: two material hot-path
 rows over V2.14, similar-speed control rows elsewhere, and no hot-path
-regressions in this run. It does not authorize "all benchmark apps are faster"
-wording.
+regressions in this run. The supported reading is the distribution of rows
+below, not "all benchmark apps are faster."
 
 ## Current 10-App RT-Core Rows
 
@@ -100,8 +100,8 @@ Do not use:
 V4 is broadly faster than V2.14 or V3 across every app.
 ```
 
-## Maintainer Evidence
+## Evidence Path
 
-Raw benchmark JSON, logs, and provenance records are retained for maintainers
-under evidence directories and `history/`. They are not part of the first-time
-user learning path.
+The first-time user path is the table above plus the runnable examples. Compact
+machine-readable evidence is retained with the release files for maintainers who
+need to reproduce the numbers.
