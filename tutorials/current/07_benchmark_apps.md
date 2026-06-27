@@ -13,17 +13,23 @@ Run the recipe program first:
 
 ```powershell
 $env:PYTHONPATH = "src;."
-py -3 examples\simple\benchmark_app_recipes.py
+py -3 examples\tutorial_programs\point_in_polygon.py
+py -3 examples\tutorial_programs\spatial_join_lsi.py
+py -3 examples\tutorial_programs\benchmark_app_recipes.py
 ```
 
 Linux or macOS:
 
 ```bash
-PYTHONPATH=src:. python examples/simple/benchmark_app_recipes.py
+PYTHONPATH=src:. python examples/tutorial_programs/point_in_polygon.py
+PYTHONPATH=src:. python examples/tutorial_programs/spatial_join_lsi.py
+PYTHONPATH=src:. python examples/tutorial_programs/benchmark_app_recipes.py
 ```
 
-The recipes below are copy-paste runnable planner examples. They teach the
-shape of each app before you open the full harness.
+The PIP and LSI scripts are small tutorial programs for two concepts that show
+up in spatial apps: broadphase candidate discovery, exact containment, and
+join refinement. The recipes below are copy-paste runnable planner examples.
+They teach the shape of each app before you open the full app source.
 
 ## Common Helper
 

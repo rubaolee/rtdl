@@ -11,7 +11,7 @@ import rtdsl.v4 as rtdl_v4
 
 V4 is a V2/V3 superset: it includes the useful V2.14 and V3 routes, adds V4
 operator planning, and presents the system as one current Python package
-instead of a stack of old releases.
+instead of separate release tracks.
 
 ## What RTDL Does
 
@@ -34,17 +34,19 @@ PowerShell:
 
 ```powershell
 $env:PYTHONPATH = "src;."
-py -3 examples\simple\v4_frontdoor_quickstart.py
-py -3 examples\simple\sorting_rows.py
-py -3 examples\simple\benchmark_app_recipes.py
+py -3 examples\tutorial_programs\hello_world.py
+py -3 examples\tutorial_programs\v4_frontdoor_quickstart.py
+py -3 examples\tutorial_programs\sorting_rows.py
+py -3 examples\tutorial_programs\benchmark_app_recipes.py
 ```
 
 Linux or macOS:
 
 ```bash
-PYTHONPATH=src:. python examples/simple/v4_frontdoor_quickstart.py
-PYTHONPATH=src:. python examples/simple/sorting_rows.py
-PYTHONPATH=src:. python examples/simple/benchmark_app_recipes.py
+PYTHONPATH=src:. python examples/tutorial_programs/hello_world.py
+PYTHONPATH=src:. python examples/tutorial_programs/v4_frontdoor_quickstart.py
+PYTHONPATH=src:. python examples/tutorial_programs/sorting_rows.py
+PYTHONPATH=src:. python examples/tutorial_programs/benchmark_app_recipes.py
 ```
 
 The quickstart prints the current V4 import, supported measured partners, and
@@ -61,7 +63,7 @@ the next files to open.
 | [docs/learn/partner_choice.md](docs/learn/partner_choice.md) | How to choose Torch, CuPy, Numba, or RTDL native routes. |
 | [docs/app_level_benchmark_summary.md](docs/app_level_benchmark_summary.md) | Complete 10-app RT-core benchmark table. |
 | [tutorials/current/README.md](tutorials/current/README.md) | Step-by-step learning path. |
-| [examples/README.md](examples/README.md) | Runnable simple examples, benchmark apps, and paper-reproduction entrypoints. |
+| [examples/README.md](examples/README.md) | Runnable tutorial programs, benchmark apps, and paper-reproduction entrypoints. |
 
 ## Performance Snapshot
 
@@ -78,7 +80,7 @@ The short reading is:
   LibRTS spatial index, Spatial RayJoin, and RTDBSCAN are similar-speed or
   modest-gain rows on the current table.
 - The V4 custom predicate early-exit workflow is a separate V4-specific
-  workflow win, not one of the legacy 10-app rows.
+  workflow win, not one of the standard 10-app rows.
 
 Read the full table before summarizing performance:
 [docs/app_level_benchmark_summary.md](docs/app_level_benchmark_summary.md).
@@ -88,7 +90,7 @@ Read the full table before summarizing performance:
 | Path | Purpose |
 | --- | --- |
 | `src/rtdsl/` | RTDL Python DSL/runtime source. |
-| `examples/simple/` | Current runnable V4 examples. |
+| `examples/tutorial_programs/` | Current runnable V4 tutorial programs. |
 | `examples/benchmark_apps/` | Source for the 10 benchmark apps. |
 | `examples/paper_reproduction/` | Paper-oriented app entrypoints. |
 | `tutorials/current/` | Current V4 tutorial path. |

@@ -69,7 +69,7 @@ def v4_goal4641_clean_tree_reproducibility_decision(root: Path | None = None) ->
         tests=(
             "clean worktree: py -3 -m unittest tests.v4*_test.py",
             "clean worktree: py -3 scripts/v4_catalog_regression_gate.py --mode dry-run --copies 16 --ray-count 16",
-            "clean worktree: py -3 examples/simple/v4_frontdoor_quickstart.py",
+            "clean worktree: py -3 examples/tutorial_programs/v4_frontdoor_quickstart.py",
             "tests.v4_goal4641_clean_tree_reproducibility_test",
         ),
         evidence=evidence if evidence_exists else (),

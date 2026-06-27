@@ -1,8 +1,8 @@
 # RTDL V4 Documentation
 
 This directory contains the current V4.0.0 documentation. It is intentionally
-short: users should not need to read old release notes, working records, or
-internal project history to learn the current system.
+short: users should be able to learn the current system without sorting through
+prior release notes or internal project records.
 
 ## Start Here
 

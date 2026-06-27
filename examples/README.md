@@ -1,10 +1,13 @@
 # RTDL Examples
 
-This directory has three current entrypoints.
+This directory has three current entrypoints. They are meant to coexist:
+tutorial programs teach the language one concept at a time, benchmark apps show
+the promoted 10-app suite, and paper-reproduction apps track paper-oriented
+work separately.
 
 | Path | What to use it for |
 | --- | --- |
-| `simple/` | Small runnable V4 programs for learning the language. Start here. |
+| `tutorial_programs/` | Small runnable V4 programs for learning the language. Start here. |
 | `benchmark_apps/` | The 10 benchmark apps used to evaluate RTDL. |
 | `paper_reproduction/` | Paper-oriented app entrypoints and notes. |
 
@@ -14,17 +17,23 @@ PowerShell:
 
 ```powershell
 $env:PYTHONPATH = "src;."
-py -3 examples\simple\v4_frontdoor_quickstart.py
-py -3 examples\simple\sorting_rows.py
-py -3 examples\simple\benchmark_app_recipes.py
+py -3 examples\tutorial_programs\hello_world.py
+py -3 examples\tutorial_programs\v4_frontdoor_quickstart.py
+py -3 examples\tutorial_programs\sorting_rows.py
+py -3 examples\tutorial_programs\point_in_polygon.py
+py -3 examples\tutorial_programs\spatial_join_lsi.py
+py -3 examples\tutorial_programs\benchmark_app_recipes.py
 ```
 
 Linux or macOS:
 
 ```bash
-PYTHONPATH=src:. python examples/simple/v4_frontdoor_quickstart.py
-PYTHONPATH=src:. python examples/simple/sorting_rows.py
-PYTHONPATH=src:. python examples/simple/benchmark_app_recipes.py
+PYTHONPATH=src:. python examples/tutorial_programs/hello_world.py
+PYTHONPATH=src:. python examples/tutorial_programs/v4_frontdoor_quickstart.py
+PYTHONPATH=src:. python examples/tutorial_programs/sorting_rows.py
+PYTHONPATH=src:. python examples/tutorial_programs/point_in_polygon.py
+PYTHONPATH=src:. python examples/tutorial_programs/spatial_join_lsi.py
+PYTHONPATH=src:. python examples/tutorial_programs/benchmark_app_recipes.py
 ```
 
 ## Learn the Benchmark Apps

@@ -38,7 +38,7 @@ def main() -> int:
             "custom_predicate_early_exit": callback.api_surface,
         },
         "next_steps": [
-            "python examples/simple/benchmark_app_recipes.py",
+            "python examples/tutorial_programs/benchmark_app_recipes.py",
             "open tutorials/current/README.md",
             "open examples/benchmark_apps/README.md",
         ],

@@ -29,8 +29,8 @@ scale-dependent algorithmic-complexity wins because they compare indexed
 RT-style work against much less favorable alternatives.
 
 The V4 custom predicate early-exit workflow measured `4.633x` against the
-legacy materialized-device fallback for that workflow. It is a V4
-operator-pushdown workflow result, separate from the legacy 10-app table.
+earlier materialized-device fallback for that workflow. It is a V4
+operator-pushdown workflow result, separate from the standard 10-app table.
 
 ## Practical Rule
 

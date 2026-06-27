@@ -59,7 +59,7 @@ The current result is a serious similar-speed row, not a speed win.
 
 ## V4-Specific Workflow
 
-The custom predicate early-exit workflow is separate from the legacy 10-app
+The custom predicate early-exit workflow is separate from the standard 10-app
 matrix. It shows V4-specific operator pushdown for a constrained Numba
 predicate:
 

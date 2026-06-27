@@ -219,7 +219,7 @@ def v4_goal4632_release_decision() -> dict[str, Any]:
             evidence=(
                 "tools/_archive/future/v4/v4_goal4743_public_docs_current_framing_cleanup_2026-06-26.md",
                 "tools/_archive/future/v4/evidence/v4_goal4743_public_docs_current_framing_cleanup_2026-06-26.json",
-                "examples/simple/custom_predicate_early_exit_planning.py",
+                "examples/tutorial_programs/custom_predicate_early_exit_planning.py",
                 "docs/current_v4_status.md",
             ),
             note=(

@@ -41,7 +41,7 @@ PUBLIC_DOCS = (
     ROOT / "tutorials" / "current" / "07_benchmark_apps.md",
     ROOT / "tutorials" / "current" / "08_choose_a_partner.md",
     ROOT / "examples" / "README.md",
-    ROOT / "examples" / "simple" / "README.md",
+    ROOT / "examples" / "tutorial_programs" / "README.md",
     ROOT / "examples" / "benchmark_apps" / "README.md",
     ROOT / "examples" / "paper_reproduction" / "README.md",
 )
@@ -51,7 +51,7 @@ PUBLIC_EXAMPLE_SOURCES = tuple(
     sorted(
         path
         for base in (
-            ROOT / "examples" / "simple",
+            ROOT / "examples" / "tutorial_programs",
             ROOT / "examples" / "benchmark_apps",
             ROOT / "examples" / "paper_reproduction",
         )
@@ -208,18 +208,21 @@ class V4Goal4640PublicDocsCleanupTest(unittest.TestCase):
 
     def test_clean_v4_example_entrypoints_run_without_cuda(self) -> None:
         commands = (
-            ["examples/simple/v4_frontdoor_quickstart.py"],
-            ["examples/simple/sorting_rows.py"],
-            ["examples/simple/benchmark_app_recipes.py"],
-            ["examples/simple/operator_callback_planning.py", "--case", "complex-callback"],
-            ["examples/simple/custom_predicate_early_exit_planning.py"],
-            ["examples/simple/fixed_radius_torch_device_arrays.py", "--dry-run", "--copies", "2"],
-            ["examples/simple/closest_hit_grouped_argmin_torch_device_arrays.py", "--dry-run"],
-            ["examples/simple/ray_triangle_any_hit_flags_torch_device_arrays.py", "--dry-run", "--ray-count", "16"],
-            ["examples/simple/primitive_grouped_i64_reduction_torch_device_arrays.py", "--dry-run"],
-            ["examples/simple/point_group_nearest_witness_torch_device_arrays.py", "--dry-run"],
-            ["examples/simple/ray_triangle_any_hit_weighted_sum_torch_device_arrays.py", "--dry-run", "--ray-count", "16"],
-            ["examples/simple/aabb_index_all_ops_count.py", "--dry-run"],
+            ["examples/tutorial_programs/hello_world.py"],
+            ["examples/tutorial_programs/v4_frontdoor_quickstart.py"],
+            ["examples/tutorial_programs/sorting_rows.py"],
+            ["examples/tutorial_programs/point_in_polygon.py"],
+            ["examples/tutorial_programs/spatial_join_lsi.py"],
+            ["examples/tutorial_programs/benchmark_app_recipes.py"],
+            ["examples/tutorial_programs/operator_callback_planning.py", "--case", "complex-callback"],
+            ["examples/tutorial_programs/custom_predicate_early_exit_planning.py"],
+            ["examples/tutorial_programs/fixed_radius_torch_device_arrays.py", "--dry-run", "--copies", "2"],
+            ["examples/tutorial_programs/closest_hit_grouped_argmin_torch_device_arrays.py", "--dry-run"],
+            ["examples/tutorial_programs/ray_triangle_any_hit_flags_torch_device_arrays.py", "--dry-run", "--ray-count", "16"],
+            ["examples/tutorial_programs/primitive_grouped_i64_reduction_torch_device_arrays.py", "--dry-run"],
+            ["examples/tutorial_programs/point_group_nearest_witness_torch_device_arrays.py", "--dry-run"],
+            ["examples/tutorial_programs/ray_triangle_any_hit_weighted_sum_torch_device_arrays.py", "--dry-run", "--ray-count", "16"],
+            ["examples/tutorial_programs/aabb_index_all_ops_count.py", "--dry-run"],
         )
         for command in commands:
             with self.subTest(command=" ".join(command)):

@@ -64,10 +64,11 @@ STAGE_PREFIXES = (
     "docs/public_documentation_map.md",
     "docs/reviews/claude_v4",
     "examples/README.md",
+    "examples/__init__.py",
     "examples/benchmark_apps/",
     "examples/current/",
     "examples/paper_reproduction/",
-    "examples/simple/",
+    "examples/tutorial_programs/",
     "tools/_archive/future/README.md",
     "tools/_archive/future/v4/",
     "tools/_archive/history/v4_0_benchmark_harness_archive_2026-06-27/",
@@ -117,8 +118,13 @@ REQUIRED_STAGE_PATHS = (
     "docs/learn/partner_choice.md",
     "docs/public_documentation_map.md",
     "examples/README.md",
+    "examples/__init__.py",
     "examples/benchmark_apps/README.md",
-    "examples/simple/sorting_rows.py",
+    "examples/tutorial_programs/README.md",
+    "examples/tutorial_programs/hello_world.py",
+    "examples/tutorial_programs/point_in_polygon.py",
+    "examples/tutorial_programs/spatial_join_lsi.py",
+    "examples/tutorial_programs/sorting_rows.py",
     "examples/benchmark_apps/_support/_repo_bootstrap.py",
     "examples/benchmark_apps/_support/v4_public_entry.py",
     "examples/benchmark_apps/_support/rtdl_ann_candidate_app.py",
@@ -186,7 +192,10 @@ def _git_status_uall(repo: Path) -> list[tuple[str, str]]:
     for line in output.splitlines():
         if not line:
             continue
-        rows.append((line[:2], line[3:].replace("\\", "/")))
+        path = line[3:].replace("\\", "/")
+        if " -> " in path:
+            path = path.split(" -> ", 1)[1]
+        rows.append((line[:2], path))
     return rows
 
 

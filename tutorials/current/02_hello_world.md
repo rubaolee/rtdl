@@ -36,7 +36,8 @@ Run the quickstart script:
 
 ```powershell
 $env:PYTHONPATH = "src;."
-py -3 examples\simple\v4_frontdoor_quickstart.py
+py -3 examples\tutorial_programs\hello_world.py
+py -3 examples\tutorial_programs\v4_frontdoor_quickstart.py
 ```
 
 Next: [Sorting Rows](03_sorting_rows.md)

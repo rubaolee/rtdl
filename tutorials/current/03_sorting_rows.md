@@ -53,13 +53,13 @@ Run the complete sorting example:
 
 ```powershell
 $env:PYTHONPATH = "src;."
-py -3 examples\simple\sorting_rows.py
+py -3 examples\tutorial_programs\sorting_rows.py
 ```
 
 Linux or macOS:
 
 ```bash
-PYTHONPATH=src:. python examples/simple/sorting_rows.py
+PYTHONPATH=src:. python examples/tutorial_programs/sorting_rows.py
 ```
 
 You will see sorted rows, the nearest candidate for each query, and a grouped

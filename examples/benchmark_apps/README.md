@@ -27,5 +27,5 @@ For a quick learning map, run:
 
 ```powershell
 $env:PYTHONPATH = "src;."
-py -3 examples\simple\benchmark_app_recipes.py
+py -3 examples\tutorial_programs\benchmark_app_recipes.py
 ```

@@ -74,7 +74,7 @@ class V4Goal4643PublicationDecisionTest(unittest.TestCase):
 
     def test_public_quickstart_reports_current_user_summary(self) -> None:
         proc = subprocess.run(
-            [sys.executable, "examples/simple/v4_frontdoor_quickstart.py"],
+            [sys.executable, "examples/tutorial_programs/v4_frontdoor_quickstart.py"],
             cwd=ROOT,
             check=True,
             text=True,
@@ -89,7 +89,7 @@ class V4Goal4643PublicationDecisionTest(unittest.TestCase):
         self.assertEqual(10, payload["benchmark_app_count"])
         self.assertEqual(30, payload["benchmark_matrix_rows"])
         self.assertIn("ray_triangle_any_hit", payload["example_operator_plans"])
-        self.assertIn("python examples/simple/benchmark_app_recipes.py", payload["next_steps"])
+        self.assertIn("python examples/tutorial_programs/benchmark_app_recipes.py", payload["next_steps"])
         self.assertNotIn("release_claim_authorized", payload)
 
 

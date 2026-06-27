@@ -74,17 +74,23 @@ PowerShell:
 
 ```powershell
 $env:PYTHONPATH = "src;."
-py -3 examples\simple\v4_frontdoor_quickstart.py
-py -3 examples\simple\sorting_rows.py
-py -3 examples\simple\operator_callback_planning.py --case complex-callback
+py -3 examples\tutorial_programs\hello_world.py
+py -3 examples\tutorial_programs\v4_frontdoor_quickstart.py
+py -3 examples\tutorial_programs\sorting_rows.py
+py -3 examples\tutorial_programs\point_in_polygon.py
+py -3 examples\tutorial_programs\spatial_join_lsi.py
+py -3 examples\tutorial_programs\operator_callback_planning.py --case complex-callback
 py -3 scripts\v4_catalog_regression_gate.py --mode dry-run
 ```
 
 Linux or macOS:
 
 ```bash
-PYTHONPATH=src:. python examples/simple/v4_frontdoor_quickstart.py
-PYTHONPATH=src:. python examples/simple/sorting_rows.py
-PYTHONPATH=src:. python examples/simple/operator_callback_planning.py --case complex-callback
+PYTHONPATH=src:. python examples/tutorial_programs/hello_world.py
+PYTHONPATH=src:. python examples/tutorial_programs/v4_frontdoor_quickstart.py
+PYTHONPATH=src:. python examples/tutorial_programs/sorting_rows.py
+PYTHONPATH=src:. python examples/tutorial_programs/point_in_polygon.py
+PYTHONPATH=src:. python examples/tutorial_programs/spatial_join_lsi.py
+PYTHONPATH=src:. python examples/tutorial_programs/operator_callback_planning.py --case complex-callback
 PYTHONPATH=src:. python scripts/v4_catalog_regression_gate.py --mode dry-run
 ```

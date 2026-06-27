@@ -120,7 +120,7 @@ def _payload(entry: BenchmarkPublicEntry) -> dict[str, object]:
         "current_entry": entry.current_entry,
         "learn_more": "tutorials/current/07_benchmark_apps.md",
         "full_harness_policy": (
-            "The full harness is available for benchmark reproduction. Start with "
+            "The full benchmark runner is available for reproduction. Start with "
             "this V4 entrypoint when learning or browsing the app."
         ),
     }
@@ -137,7 +137,7 @@ def _render(entry: BenchmarkPublicEntry) -> str:
         f"  current entry: {entry.current_entry}",
         f"  learn more: {payload['learn_more']}",
         "",
-        "Run the full benchmark harness only when you need reproduction details:",
+        "Run the full benchmark runner only when you need reproduction details:",
         f"  py -3 {entry.current_entry} --run-harness -- --help",
     ]
     return "\n".join(lines)

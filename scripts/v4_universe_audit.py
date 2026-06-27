@@ -38,11 +38,11 @@ PUBLIC_DOCS = (
     "examples/README.md",
     "examples/benchmark_apps/README.md",
     "examples/paper_reproduction/README.md",
-    "examples/simple/README.md",
+    "examples/tutorial_programs/README.md",
 )
 
 PUBLIC_CODE_PREFIXES = (
-    "examples/simple/",
+    "examples/tutorial_programs/",
     "examples/benchmark_apps/",
     "examples/paper_reproduction/",
 )
@@ -58,7 +58,7 @@ CURRENT_CODE_PREFIXES = (
     "scripts/",
     "tests/",
     "tools/",
-    "examples/simple/",
+    "examples/tutorial_programs/",
     "examples/benchmark_apps/",
 )
 

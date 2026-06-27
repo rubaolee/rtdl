@@ -22,4 +22,5 @@ By the end you should understand how to:
 - choose Torch, CuPy, Numba, or RTDL native explicitly;
 - keep application meaning outside the generic operator;
 - combine an RT relation with a continuation step;
-- read the benchmark app recipes before opening the full harnesses.
+- run small tutorial programs before opening the full benchmark apps;
+- read the benchmark app recipes before opening the full app sources.

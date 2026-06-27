@@ -321,7 +321,7 @@ def render_recipe(recipe: AppRecipe) -> str:
 
 def main() -> int:
     print("RTDL V4 benchmark app recipes")
-    print("Use these as planner-level starting points before opening the full harness.\n")
+    print("Use these as planner-level starting points before opening the full app source.\n")
     for recipe in benchmark_app_recipes():
         print(render_recipe(recipe))
         print()

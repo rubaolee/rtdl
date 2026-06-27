@@ -52,7 +52,7 @@ def v4_goal4640_public_docs_cleanup_decision(root: Path | None = None) -> dict[s
         "tutorials/README.md",
         "tutorials/current/README.md",
         "examples/README.md",
-        "examples/simple/README.md",
+        "examples/tutorial_programs/README.md",
         "tools/_archive/future/v4/README.md",
         "tools/_archive/future/v4/tier2_operator_catalog.md",
     )

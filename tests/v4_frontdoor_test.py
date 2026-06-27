@@ -16,7 +16,7 @@ import rtdsl.v4 as v4
 
 
 README = ROOT / "README.md"
-QUICKSTART = ROOT / "examples" / "simple" / "v4_frontdoor_quickstart.py"
+QUICKSTART = ROOT / "examples" / "tutorial_programs" / "v4_frontdoor_quickstart.py"
 
 
 class V4FrontDoorTest(unittest.TestCase):
@@ -180,7 +180,7 @@ class V4FrontDoorTest(unittest.TestCase):
             "v4_ray_triangle_custom_predicate_early_exit_3d_numba",
             payload["example_operator_plans"]["custom_predicate_early_exit"],
         )
-        self.assertIn("python examples/simple/benchmark_app_recipes.py", payload["next_steps"])
+        self.assertIn("python examples/tutorial_programs/benchmark_app_recipes.py", payload["next_steps"])
 
 
 if __name__ == "__main__":
