@@ -1,8 +1,17 @@
-# Partner Choice
+# Choose a Partner
 
-V4 does not hide partner choice. The app author chooses the partner, and RTDL
-returns the matching operator plan when the route is part of the current public
-surface.
+V4 keeps partner choice explicit.
+
+RTDL owns the RT-shaped operator. The app author chooses the array ecosystem
+that should feed or consume that operator.
+
+Use this mental model:
+
+- **Torch**: your tensors and model pipeline already live in Torch CUDA;
+- **CuPy**: you want explicit CUDA-array continuation code in Python;
+- **Numba**: you need a compiled Python device function for a constrained
+  predicate or continuation;
+- **RTDL native**: RTDL owns the prepared index, frontier, or traversal state.
 
 ```python
 import rtdsl.v4 as rt
@@ -18,17 +27,10 @@ print(numba_plan.status, numba_plan.api_surface)
 print(native_plan.status, native_plan.api_surface)
 ```
 
-Use Torch when your app already keeps device columns as Torch tensors and the
-operator catalog names a Torch surface.
-
-Use CuPy when you explicitly want a CuPy continuation over device columns.
-
-Use Numba when the current surface names a Numba continuation or a constrained
-pure predicate workflow.
-
-Use RTDL native when the route is an RTDL-owned prepared index or frontier.
-
-Requests outside the current surface return a bounded planner result:
+For custom logic, first ask whether the logic can be expressed as a generic
+operator such as filter, count, any-hit, argmin, grouped sum, or component
+union. If it can, use the operator. If it is a pure boolean predicate over one
+hit candidate, use the constrained Numba predicate path:
 
 ```python
 import rtdsl.v4 as rt
@@ -36,13 +38,17 @@ import rtdsl.v4 as rt
 plan = rt.plan_operator_request_v4(
     "custom_predicate_early_exit",
     partner="numba",
-    callback_shape="custom_action",
-    mutates_shared_state=True,
+    callback_shape="pure_boolean_numba_cabi_device_function",
+    numba_device_function=True,
 )
 
 print(plan.status)
+print(plan.api_surface)
 ```
 
-That bounded result is part of the contract: V4.0 supports constrained
-predicate early-exit and keeps arbitrary RT-traversal actions outside the
-current public surface.
+If your logic needs shared mutation, dynamic allocation, or variable-length
+output during traversal, split the program: use RTDL for the relation, then run
+the custom work as an explicit continuation.
+
+Next: open [Build the Benchmark Apps](06_benchmark_apps.md) again and identify
+which partner each app chooses.

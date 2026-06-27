@@ -1,33 +1,15 @@
 # Build the Benchmark Apps
 
-This tutorial shows how the 10 benchmark apps are built from the current V4
-front door. The apps look different, but they reuse a small set of RT-shaped
-relations and continuation operators.
+The 10 benchmark apps are not 10 unrelated special cases. They are examples of
+the same V4 programming style:
 
-The repeated pattern is:
+1. name the RT-shaped relation;
+2. choose a generic operator;
+3. choose a partner;
+4. keep app meaning in normal Python;
+5. validate the result.
 
-1. describe the relation that RT cores should traverse;
-2. choose the generic V4 operator surface;
-3. choose an explicit measured partner;
-4. keep the app-specific meaning outside the operator;
-5. validate the result against the app reference.
-
-The snippets below are runnable planner examples. They do not allocate GPU
-memory. They teach which V4 surface you would use before moving to the full
-benchmark script.
-
-```python
-import rtdsl.v4 as rt
-
-
-def show(name, plan):
-    print(name, plan.status, plan.api_surface)
-
-
-show("ray/triangle any-hit", rt.plan_operator_request_v4("any_hit", partner="torch"))
-```
-
-You can run the full recipe list as one command:
+Run the recipe program first:
 
 ```powershell
 $env:PYTHONPATH = "src;."
@@ -40,33 +22,52 @@ Linux or macOS:
 PYTHONPATH=src:. python examples/v4/benchmark_app_recipes.py
 ```
 
-## 1. Neighborhood Apps
+The recipes below are copy-paste runnable planner examples. They teach the
+shape of each app before you open the full harness.
 
-RTDBSCAN and RTNN both start with "which points are near this point?" The app
-logic differs after that relation is formed.
+## Common Helper
 
-### RTDBSCAN
-
-RTDBSCAN needs fixed-radius neighbor evidence and a connected-component style
-continuation.
+Each recipe uses the same helper.
 
 ```python
 import rtdsl.v4 as rt
 
-neighbor_count = rt.plan_operator_request_v4("fixed_radius", partner="torch")
-component_union = rt.plan_operator_request_v4("component_union", partner="numba")
 
-print(neighbor_count.api_surface)
-print(component_union.api_surface)
+def choose(operator, partner):
+    plan = rt.plan_operator_request_v4(operator, partner=partner)
+    print(operator, partner, plan.status, plan.api_surface)
+    return plan
 ```
 
-Full workload source:
+## 1. RTDBSCAN
+
+RTDBSCAN clusters points by density. In RTDL terms, it first asks for a
+fixed-radius neighbor relation, then merges points that are density-connected.
+
+```python
+import rtdsl.v4 as rt
+
+neighbors = rt.plan_operator_request_v4("fixed_radius", partner="torch")
+components = rt.plan_operator_request_v4("component_union", partner="numba")
+
+print(neighbors.api_surface)
+print(components.api_surface)
+```
+
+App structure:
+
+- input: point columns and a radius;
+- RT relation: points within radius;
+- continuation: component union;
+- validation: cluster labels match the reference.
+
+Full harness:
 `examples/current/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py`
 
-### RTNN
+## 2. RTNN
 
-RTNN uses a neighbor or nearest-witness relation, then ranks or summarizes the
-candidate set.
+RTNN asks for nearest-neighbor evidence. The RTDL part is the nearest-witness
+relation; the app decides how to rank or summarize the witnesses.
 
 ```python
 import rtdsl.v4 as rt
@@ -74,98 +75,125 @@ import rtdsl.v4 as rt
 nearest = rt.plan_operator_request_v4("point_group_nearest", partner="torch")
 ranked = rt.plan_operator_request_v4("ranked_summary", partner="rtdl_native")
 
-print(nearest.status, nearest.api_surface)
-print(ranked.status, ranked.guidance)
+print(nearest.api_surface)
+print(ranked.status)
 ```
 
-Full workload source:
+App structure:
+
+- input: query points and reference points;
+- RT relation: nearest witness per query or group;
+- continuation: ranked summary;
+- validation: nearest IDs and distances match the reference.
+
+Full harness:
 `examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py`
 
-## 2. Ray/Triangle Apps
+## 3. Triangle Counting
 
-Triangle counting, robot collision, and RayDB-style summaries all lower part of
-their work to ray/triangle hits. The app meaning is different; the RT relation
-is shared.
-
-### Triangle Counting
-
-Triangle counting lowers graph contracts to ray/triangle relations and then
-uses a compact grouped summary.
+Triangle counting turns graph structure into geometric hit tests. RTDL handles
+the any-hit relation and grouped integer reduction; the app owns the graph
+meaning.
 
 ```python
 import rtdsl.v4 as rt
 
-hit_flags = rt.plan_operator_request_v4("any_hit", partner="torch")
-primitive_counts = rt.plan_operator_request_v4("grouped_i64", partner="torch")
+hits = rt.plan_operator_request_v4("any_hit", partner="torch")
+counts = rt.plan_operator_request_v4("grouped_i64", partner="torch")
 
-print(hit_flags.api_surface)
-print(primitive_counts.api_surface)
+print(hits.api_surface)
+print(counts.api_surface)
 ```
 
-Full workload source:
+App structure:
+
+- input: graph-derived rays and triangle primitives;
+- RT relation: ray/triangle hit flags;
+- continuation: grouped integer counts;
+- validation: triangle counts match the graph reference.
+
+Full harness:
 `examples/current/research_benchmarks/triangle_counting/rtdl_triangle_counting_benchmark_app.py`
 
-### Robot Collision
+## 4. Robot Collision
 
-Robot collision asks whether a link path intersects an obstacle primitive.
+Robot collision asks whether a motion segment intersects an obstacle primitive.
+This is an any-hit question with robotics data around it.
 
 ```python
 import rtdsl.v4 as rt
 
-collision_flags = rt.plan_operator_request_v4("any_hit", partner="torch")
+collision = rt.plan_operator_request_v4("any_hit", partner="torch")
 
-print(collision_flags.status)
-print(collision_flags.api_surface)
+print(collision.status)
+print(collision.api_surface)
 ```
 
-Full workload source:
+App structure:
+
+- input: robot link paths and obstacle primitives;
+- RT relation: any collision hit;
+- continuation: one collision flag per motion query;
+- validation: collision flags match the reference.
+
+Full harness:
 `examples/current/research_benchmarks/robot_collision/rtdl_robot_collision_benchmark_app.py`
 
-### RayDB-Style Summaries
+## 5. RayDB-Style Query
 
-RayDB-style workloads use hit rows as a relation and summarize them by group.
+A RayDB-style app treats hits as a relation, then runs a database-like summary
+over the relation.
 
 ```python
 import rtdsl.v4 as rt
 
-hit_flags = rt.plan_operator_request_v4("any_hit", partner="torch")
-weighted_sum = rt.plan_operator_request_v4("weighted_sum", partner="torch")
-grouped_sum = rt.plan_operator_request_v4("grouped_sum", partner="cupy")
+hits = rt.plan_operator_request_v4("any_hit", partner="torch")
+weighted = rt.plan_operator_request_v4("weighted_sum", partner="torch")
+grouped = rt.plan_operator_request_v4("grouped_sum", partner="cupy")
 
-print(hit_flags.api_surface)
-print(weighted_sum.api_surface)
-print(grouped_sum.status, grouped_sum.api_surface)
+print(hits.api_surface)
+print(weighted.api_surface)
+print(grouped.api_surface)
 ```
 
-Full workload source:
+App structure:
+
+- input: ray table, primitive table, and value columns;
+- RT relation: hit rows;
+- continuation: weighted or grouped summary;
+- validation: query result matches the relational reference.
+
+Full harness:
 `examples/current/research_benchmarks/raydb_style/rtdl_raydb_style_benchmark_app.py`
 
-## 3. Spatial Index Apps
+## 6. LibRTS Spatial Index
 
-LibRTS spatial index, Contact manifold, and Spatial RayJoin use broadphase
-candidate discovery before app-specific refinement.
-
-### LibRTS Spatial Index
-
-The spatial index app uses AABB-style operations for point, box, and overlap
-queries.
+The spatial index app is about AABB-style predicates: point queries, box
+queries, and overlap counts.
 
 ```python
 import rtdsl.v4 as rt
 
-aabb_ops = rt.plan_operator_request_v4("aabb_index_query", partner="rtdl_native")
+aabb = rt.plan_operator_request_v4("aabb_index_query", partner="rtdl_native")
 
-print(aabb_ops.status)
-print(aabb_ops.api_surface)
+print(aabb.status)
+print(aabb.api_surface)
 ```
 
-Full workload source:
+App structure:
+
+- input: AABB min/max columns and query columns;
+- RT relation: candidate boxes or overlap counts;
+- continuation: compact count or row summary;
+- validation: index answers match the reference.
+
+Full harness:
 `examples/current/research_benchmarks/librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py`
 
-### Contact Manifold
+## 7. Contact Manifold
 
-Contact manifold first finds broadphase candidates, then keeps exact contact
-refinement as explicit app logic.
+Contact manifold starts with broadphase candidate discovery. It then refines
+candidate pairs into closest witnesses or contact data.
 
 ```python
 import rtdsl.v4 as rt
@@ -177,131 +205,104 @@ print(broadphase.api_surface)
 print(closest.api_surface)
 ```
 
-Full workload source:
+App structure:
+
+- input: shape bounds and candidate primitives;
+- RT relation: broadphase pairs and closest-hit witnesses;
+- continuation: contact-specific refinement;
+- validation: contact candidates match the reference.
+
+Full harness:
 `examples/current/research_benchmarks/contact_manifold/rtdl_contact_manifold_benchmark_app.py`
 
-### Spatial RayJoin
+## 8. Spatial RayJoin
 
-Spatial RayJoin builds candidate shape pairs or point-location rows, then
-performs join refinement.
+Spatial RayJoin builds candidate pairs, then refines those pairs with RT
+predicates.
 
 ```python
 import rtdsl.v4 as rt
 
-candidate_pairs = rt.plan_operator_request_v4("aabb_index_query", partner="rtdl_native")
-hit_flags = rt.plan_operator_request_v4("any_hit", partner="torch")
+pairs = rt.plan_operator_request_v4("aabb_index_query", partner="rtdl_native")
+hits = rt.plan_operator_request_v4("any_hit", partner="torch")
 
-print(candidate_pairs.api_surface)
-print(hit_flags.api_surface)
+print(pairs.api_surface)
+print(hits.api_surface)
 ```
 
-Full workload source:
+App structure:
+
+- input: two spatial relations;
+- RT relation: candidate pair or hit predicate;
+- continuation: join refinement;
+- validation: joined rows match the reference.
+
+Full harness:
 `examples/current/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py`
 
-## 4. Aggregate and Witness Apps
+## 9. Barnes-Hut
 
-Barnes-Hut and Hausdorff are useful because they show the difference between a
-route that produces a compact decision and a route that produces a witness or
-frontier for later work.
-
-### Barnes-Hut
-
-Barnes-Hut builds an aggregate frontier, then applies a weighted vector
-continuation.
+Barnes-Hut uses a tree-like aggregate frontier. RTDL builds the frontier; the
+continuation computes a weighted vector contribution.
 
 ```python
 import rtdsl.v4 as rt
 
 frontier = rt.plan_operator_request_v4("aggregate_frontier", partner="rtdl_native")
-weighted_sum = rt.plan_operator_request_v4("grouped_sum", partner="cupy")
+weighted = rt.plan_operator_request_v4("grouped_sum", partner="cupy")
 
-print(frontier.status, frontier.api_surface)
-print(weighted_sum.status, weighted_sum.api_surface)
+print(frontier.api_surface)
+print(weighted.api_surface)
 ```
 
-Full workload source:
+App structure:
+
+- input: body positions, masses, and aggregate cell columns;
+- RT relation: aggregate frontier per body;
+- continuation: weighted vector sum;
+- validation: force or contribution vectors match the reference tolerance.
+
+Full harness:
 `examples/current/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py`
 
-### Hausdorff XHD
+## 10. Hausdorff XHD
 
-The threshold route asks whether a distance threshold is exceeded. The exact
-nearest-witness route returns the nearest witness and is a richer V3/V4
-capability.
+Hausdorff-style distance can be written as a threshold decision or as an exact
+nearest-witness problem.
 
 ```python
 import rtdsl.v4 as rt
 
-threshold_decision = rt.plan_operator_request_v4("fixed_radius", partner="torch")
-nearest_witness = rt.plan_operator_request_v4("point_group_nearest", partner="torch")
+threshold = rt.plan_operator_request_v4("fixed_radius", partner="torch")
+witness = rt.plan_operator_request_v4("point_group_nearest", partner="torch")
 
-print(threshold_decision.api_surface)
-print(nearest_witness.api_surface)
+print(threshold.api_surface)
+print(witness.api_surface)
 ```
 
-Full workload source:
+App structure:
+
+- input: two point sets;
+- RT relation: threshold neighbor or nearest witness;
+- continuation: max/min distance summary;
+- validation: distance result matches the reference.
+
+Full harness:
 `examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py`
 
-## 5. Custom Predicate Workflow
+## One-Page Map
 
-V4.0 supports a constrained custom predicate early-exit workflow: the callback
-is a pure boolean Numba device predicate, and RTDL owns the early-exit action.
-Arbitrary Python actions, shared-state mutation, dynamic allocation, and
-variable-length output are intentionally rejected in V4.0.
+| App | Main RTDL relation | Main continuation | Typical partner |
+| --- | --- | --- | --- |
+| RTDBSCAN | fixed-radius neighbors | component union | Torch + Numba |
+| RTNN | nearest witness | ranked summary | Torch + RTDL native |
+| Triangle counting | ray/triangle any-hit | grouped integer count | Torch |
+| Robot collision | ray/triangle any-hit | collision flags | Torch |
+| RayDB-style | hit relation | weighted/grouped summary | Torch + CuPy |
+| LibRTS spatial index | AABB query | count summary | RTDL native |
+| Contact manifold | AABB candidates | closest-hit argmin | RTDL native + Torch |
+| Spatial RayJoin | candidate pairs | join refinement | RTDL native + Torch |
+| Barnes-Hut | aggregate frontier | weighted vector sum | RTDL native + CuPy |
+| Hausdorff XHD | threshold or witness | distance summary | Torch |
 
-```python
-import rtdsl.v4 as rt
-
-accepted = rt.plan_operator_request_v4(
-    "custom_predicate_early_exit",
-    partner="numba",
-    callback_shape="pure_boolean_numba_cabi_device_function",
-    numba_device_function=True,
-)
-
-rejected = rt.plan_operator_request_v4(
-    "custom_predicate_early_exit",
-    partner="numba",
-    callback_shape="custom_action",
-    mutates_shared_state=True,
-)
-
-print(accepted.status, accepted.api_surface)
-print(rejected.status)
-```
-
-Try it:
-
-```powershell
-$env:PYTHONPATH = "src;."
-py -3 examples\v4\custom_predicate_early_exit_planning.py
-```
-
-## 6. Running Small V4 Examples
-
-Start with these dry-run examples before running the full app matrix:
-
-```powershell
-$env:PYTHONPATH = "src;."
-py -3 examples\v4\v4_frontdoor_quickstart.py
-py -3 examples\v4\fixed_radius_torch_device_arrays.py --dry-run
-py -3 examples\v4\ray_triangle_any_hit_weighted_sum_torch_device_arrays.py --dry-run
-py -3 examples\v4\aabb_index_all_ops_count.py --dry-run
-```
-
-Linux or macOS:
-
-```bash
-PYTHONPATH=src:. python examples/v4/v4_frontdoor_quickstart.py
-PYTHONPATH=src:. python examples/v4/fixed_radius_torch_device_arrays.py --dry-run
-PYTHONPATH=src:. python examples/v4/ray_triangle_any_hit_weighted_sum_torch_device_arrays.py --dry-run
-PYTHONPATH=src:. python examples/v4/aabb_index_all_ops_count.py --dry-run
-```
-
-## User Rule
-
-Use V4 as the current system. The V4 front door selects inherited routes when
-they are the right implementation for a task.
-V4 includes the mature routes from V2.14 and V3.0.2 and adds the current
-operator front door. When a route is inherited, the app source can still use it
-through the current benchmark entrypoint. When a route is a V4 operator surface,
-name the surface, partner, denominator, and scale when discussing performance.
+Next: [Choose a Partner](07_partner_choice.md)

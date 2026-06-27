@@ -1,25 +1,24 @@
-# V4 Tutorial Path
+# RTDL V4 Tutorial
 
-This is the current V4 learning path. Read it in order.
+This path teaches RTDL as a programming model. It starts from the idea of ray
+tracing and ends with recipes for the 10 benchmark apps.
 
-## Lessons
+Read the lessons in order:
 
-1. [First Run](01_first_run.md)
-2. [Front-Door Quickstart](02_hello_world.md)
-3. [Operator Choice](03_backend_choice.md)
-4. [Measured Runtime Surfaces](04_prepared_runtime.md)
-5. [Measurement Boundaries](05_measurement_boundaries.md)
+1. [What RTDL Is](01_first_run.md)
+2. [Hello RTDL](02_hello_world.md)
+3. [Relations and Operators](03_backend_choice.md)
+4. [Prepare, Run, Continue](04_prepared_runtime.md)
+5. [Measure a Program](05_measurement_boundaries.md)
 6. [Build the Benchmark Apps](06_benchmark_apps.md)
-7. [Partner Choice](07_partner_choice.md)
+7. [Choose a Partner](07_partner_choice.md)
 
-The path teaches the current RTDL V4 contract directly:
+By the end you should understand how to:
 
-- one V4 front door;
-- generic RT operators instead of app-specific kernels;
-- explicit partner scope;
-- conservative callback planning;
-- exact performance wording;
-- the constrained custom predicate early-exit workflow;
-- how the 10 promoted benchmark apps are built through the current V4 front
-  door;
-- how to choose Torch, CuPy, Numba, and RTDL native routes explicitly.
+- describe an RT-shaped relation such as radius-neighbor, any-hit,
+  nearest-witness, AABB query, or aggregate-frontier;
+- ask the V4 planner for the current operator surface;
+- choose Torch, CuPy, Numba, or RTDL native explicitly;
+- keep application meaning outside the generic operator;
+- combine an RT relation with a continuation step;
+- read the benchmark app recipes before opening the full harnesses.

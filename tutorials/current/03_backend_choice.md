@@ -1,31 +1,54 @@
-# Operator Choice
+# Relations and Operators
 
-V4 keeps partner choice explicit. A partner is measured only inside its recorded
-scope.
+RTDL programs are built from relations. A relation is a table of facts produced
+by traversal:
 
-Current measured partner scopes:
+- point `i` has at least one neighbor inside radius `r`;
+- ray `j` hits triangle `k`;
+- query point `q` has nearest witness `w`;
+- box `a` overlaps box `b`;
+- body `p` should use aggregate cell `c`.
 
-- Torch CUDA for the device-array surfaces;
-- Numba for fixed-radius graph component union;
-- RTDL native prepared runner for AABB all-ops count.
+An operator is the generic RTDL surface that creates or summarizes one of those
+relations. The app name is not the operator. RTDBSCAN, RTNN, triangle counting,
+robot collision, and Barnes-Hut all reuse a smaller set of generic operators.
 
-Plan an operator request before building a route:
+Ask for the operator you need:
 
 ```python
 import rtdsl.v4 as rtdl_v4
 
-plan = rtdl_v4.plan_operator_request_v4("any-hit", partner="torch")
-print(plan.status)
-print(plan.api_surface)
+requests = [
+    ("fixed_radius", "torch"),
+    ("any_hit", "torch"),
+    ("point_group_nearest", "torch"),
+    ("aabb_index_query", "rtdl_native"),
+    ("grouped_sum", "cupy"),
+]
+
+for operator, partner in requests:
+    plan = rtdl_v4.plan_operator_request_v4(operator, partner=partner)
+    print(operator, partner, plan.status, plan.api_surface)
 ```
 
-Requests outside the current surface return a bounded planner result:
+This planner step is valuable even before you have real data. It tells you
+whether your idea maps to a current V4 operator, which partner it uses, and
+which prepare function to open next.
 
-```powershell
-py -3 examples\v4\operator_callback_planning.py --case complex-callback
+RTDL also has a recognizer for small declarative descriptions:
+
+```python
+import rtdsl.v4 as rtdl_v4
+
+expr = {
+    "relation": "any_hit",
+    "input": "rays_and_triangles",
+    "continuation": "flags",
+}
+
+recognized = rtdl_v4.recognize_pushdown_request_v4(expr, partner="torch")
+print(recognized.status)
+print(recognized.plan.api_surface)
 ```
 
-Do not infer performance from a partner name. Use only the measured operator
-surface, partner, hardware, and metric you can point to.
-
-Next: [Measured Runtime Surfaces](04_prepared_runtime.md)
+Next: [Prepare, Run, Continue](04_prepared_runtime.md)

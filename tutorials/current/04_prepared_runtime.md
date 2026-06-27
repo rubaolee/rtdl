@@ -1,36 +1,57 @@
-# Measured Runtime Surfaces
+# Prepare, Run, Continue
 
-V4's important runtime idea is measured generic fused operators.
+In V4, planning and execution are separate steps.
 
-Instead of exposing app-specific kernels, V4 exposes operator surfaces such as:
+Once the planner gives you a surface, a real program moves through three phases:
 
-- fixed-radius count-threshold;
-- closest-hit grouped argmin;
-- ray/triangle any-hit flags;
-- primitive grouped-i64 reduction;
-- point-group nearest witness;
-- ray/triangle any-hit weighted sum;
-- fixed-radius graph component union;
-- AABB all-ops count.
+1. **prepare** reusable state for the operator and data layout;
+2. **run** the RT-shaped relation;
+3. **continue** with a compact summary or app step.
 
-Run the portable catalog check:
+The exact prepare function depends on the operator. You can discover the
+surface first, then open the matching example.
 
-```powershell
-py -3 scripts\v4_catalog_regression_gate.py --mode dry-run
+```python
+import rtdsl.v4 as rt
+
+operators = [
+    "fixed_radius",
+    "any_hit",
+    "weighted_sum",
+    "point_group_nearest",
+    "aabb_index_query",
+    "aggregate_frontier",
+]
+
+for name in operators:
+    partner = "rtdl_native" if name in {"aabb_index_query", "aggregate_frontier"} else "torch"
+    plan = rt.plan_operator_request_v4(name, partner=partner)
+    print(name, "->", plan.api_surface)
 ```
 
-Try dry-run examples without CUDA:
+The examples below run in dry-run mode, so they are safe on a machine without a
+CUDA device:
 
 ```powershell
+$env:PYTHONPATH = "src;."
 py -3 examples\v4\fixed_radius_torch_device_arrays.py --dry-run
-py -3 examples\v4\ray_triangle_any_hit_weighted_sum_torch_device_arrays.py --dry-run
+py -3 examples\v4\ray_triangle_any_hit_flags_torch_device_arrays.py --dry-run
+py -3 examples\v4\point_group_nearest_witness_torch_device_arrays.py --dry-run
 py -3 examples\v4\aabb_index_all_ops_count.py --dry-run
 ```
 
-Dry runs prove API reachability and claim-boundary flags. GPU performance
-requires the recorded hardware path and exact benchmark command.
+Linux or macOS:
 
-The full current catalog is
-[../../docs/learn/operator_catalog.md](../../docs/learn/operator_catalog.md).
+```bash
+PYTHONPATH=src:. python examples/v4/fixed_radius_torch_device_arrays.py --dry-run
+PYTHONPATH=src:. python examples/v4/ray_triangle_any_hit_flags_torch_device_arrays.py --dry-run
+PYTHONPATH=src:. python examples/v4/point_group_nearest_witness_torch_device_arrays.py --dry-run
+PYTHONPATH=src:. python examples/v4/aabb_index_all_ops_count.py --dry-run
+```
 
-Next: [Measurement Boundaries](05_measurement_boundaries.md)
+In a full GPU program, replace dry-run inputs with device arrays from your
+chosen partner. The important design rule stays the same: keep the relation
+generic, and keep app meaning in the code that chooses and consumes the
+relation.
+
+Next: [Measure a Program](05_measurement_boundaries.md)

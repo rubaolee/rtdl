@@ -1,64 +1,58 @@
-# Measurement Boundaries
+# Measure a Program
 
-RTDL V4 performance text must be specific.
+RTDL programs have several phases. If you measure only the final number, you
+will not know whether time was spent in setup, traversal, continuation, or data
+movement.
 
-Use:
+For a V4 app, record at least:
 
-- the exact operator surface or scorecard row;
-- the compared baseline;
-- the measured metric;
-- the hardware and driver;
-- the partner scope;
-- whether timing is setup, warmup, hot loop, phase total, or wall time.
+- the operator surface;
+- the partner;
+- the input size;
+- setup time;
+- hot run time;
+- continuation time;
+- result validation.
 
-The V4 operator scorecard passed for documented operator surfaces. That
-supports exact surface-level wording, not broad whole-application claims.
+A tiny measurement record can be plain Python data:
 
-The custom predicate early-exit workflow supports a real V4 operator-pushdown
-performance claim: constrained Numba predicate, RTDL-owned early-exit action,
-and 4.633x serious-scale primary geomean versus the V2.14/V3.0.2
-materialized-device fallback.
+```python
+record = {
+    "app": "triangle_counting",
+    "operator": "any_hit",
+    "partner": "torch",
+    "input": "rays=1024 triangles=2048",
+    "setup_seconds": 0.0,
+    "hot_seconds": 0.0,
+    "continuation_seconds": 0.0,
+    "validated": True,
+}
 
-The current app-level V2.14/V3.0.2/V4 comparison is complete for the 10 promoted
-benchmark apps on NVIDIA RT-core rows. It supports bounded wording: two material
-hot-path rows over V2.14 and similar-speed control rows elsewhere.
-Treat V4.0.0 as a published eDSL/operator-pushdown release and V2/V3 superset,
-not as a blanket claim that every promoted benchmark app is faster.
-
-Do not say:
-
-```text
-V4 makes all RTDL apps faster.
+print(record["app"], record["operator"], record["partner"], record["validated"])
 ```
 
-Do not say:
+When you build your own benchmark, keep the measured question narrow:
 
-```text
-V4 is a formal app-level high-performance release.
+```python
+import rtdsl.v4 as rt
+
+plan = rt.plan_operator_request_v4("any_hit", partner="torch")
+measurement = {
+    "surface": plan.api_surface,
+    "metric": "hot_seconds",
+    "includes_setup": False,
+    "includes_result_validation": False,
+}
+
+print(measurement["surface"])
+print(measurement["metric"])
 ```
 
-Do say:
+Then keep a separate end-to-end number for the full application. Both numbers
+are useful. The operator number tells you whether the RTDL surface is healthy;
+the app number tells you whether the whole workflow is healthy.
 
-```text
-On the RTX A5000 operator scorecard, the AABB all-ops count surface recorded a
-164.716x representative ratio in its documented same-contract-family gate.
-```
-
-Do say:
-
-```text
-The current app-level summary keeps the public claim bounded: current V4
-evidence supports a complete matrix with bounded material wins, not broad
-all-app high-performance wording.
-```
-
-Do say:
-
-```text
-The V4 custom predicate early-exit workflow measured 4.633x serious-scale
-primary geomean versus the materialized-device fallback, with correctness
-passing.
-```
-
-For the full rule, read
+For public performance wording, use
 [../../docs/learn/performance_wording.md](../../docs/learn/performance_wording.md).
+
+Next: [Build the Benchmark Apps](06_benchmark_apps.md)

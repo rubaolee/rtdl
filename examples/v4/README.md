@@ -27,5 +27,5 @@ PYTHONPATH=src:. python examples/v4/aabb_index_all_ops_count.py --dry-run
 
 `benchmark_app_recipes.py` is the clean first code path for learning how the 10
 benchmark apps are assembled from current V4 operators. Dry-run examples verify
-API reachability and claim-boundary flags without CUDA. Measured GPU results
-require the recorded V4 benchmark gate.
+API reachability and planning metadata without CUDA. Measured GPU results use
+the V4 benchmark harnesses.
