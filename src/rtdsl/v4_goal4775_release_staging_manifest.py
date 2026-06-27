@@ -87,6 +87,7 @@ FUTURE_V4_EVIDENCE_STAGE_SUFFIXES = (
 FUTURE_V4_REVIEW_STAGE_EXACT = (
     "future/v4/reviews/antigravity_v4_gemini_full_coverage_review_2026-06-27.md",
     "future/v4/reviews/antigravity_v4_goal4757_final_v4_0_release_review_2026-06-26.md",
+    "future/v4/reviews/antigravity_v4_pre_release_items_1_to_5_completion_2026-06-27.md",
     "future/v4/reviews/call_for_review_v4_pre_release_items_1_to_5_completion_2026-06-27.md",
     "future/v4/reviews/forward_message_v4_pre_release_items_1_to_5_completion_2026-06-27.txt",
     "future/v4/reviews/claude_v4_0_0_release_review_2026-06-25.md",
@@ -116,6 +117,7 @@ REQUIRED_STAGE_PATHS = (
     "future/v4/reviews/antigravity_v4_gemini_full_coverage_review_2026-06-27.md",
     "future/v4/v4_goal4773_antigravity_review_intake_and_release_owner_status_2026-06-27.md",
     "future/v4/v4_goal4779_pre_release_items_1_to_5_completion_2026-06-27.md",
+    "future/v4/reviews/antigravity_v4_pre_release_items_1_to_5_completion_2026-06-27.md",
     "future/v4/reviews/call_for_review_v4_pre_release_items_1_to_5_completion_2026-06-27.md",
     "future/v4/reviews/forward_message_v4_pre_release_items_1_to_5_completion_2026-06-27.txt",
     "future/v4/evidence/v4_goal4774_release_packaging_audit_2026-06-27.json",

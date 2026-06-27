@@ -2,7 +2,7 @@
 
 Date: 2026-06-27
 
-Status: `implemented_pending_external_pre_release_review_and_final_clean_tree_gate`
+Status: `implemented_and_antigravity_approved_pending_final_tag_head_gate`
 
 This record converts the release-owner instruction "finish items 1-5 before
 release" into concrete files, gates, and validation results. It supersedes any
@@ -62,6 +62,12 @@ The requested Antigravity verdict will decide whether items 1-5 are complete
 enough to proceed to final release tagging. Claude can backfill later if needed,
 but this packet is designed to avoid waiting while Claude is unavailable.
 
+External verdict obtained:
+
+- `future/v4/reviews/antigravity_v4_pre_release_items_1_to_5_completion_2026-06-27.md`
+- verdict: `approve_v4_pre_release_items_1_to_5_complete`
+- authorization: proceed to final Linux tagging and clean-checkout validation.
+
 ## Item 4 - UX Polish
 
 Implemented:
@@ -103,6 +109,7 @@ evidence was ignored by `.gitignore` and therefore absent from clean checkouts.
 - `scripts/v4_release_clean_checkout_gate.py`
 - `tests/v4_release_clean_checkout_gate_test.py`
 - `future/v4/v4_goal4779_pre_release_items_1_to_5_completion_2026-06-27.md`
+- `future/v4/reviews/antigravity_v4_pre_release_items_1_to_5_completion_2026-06-27.md`
 - `future/v4/reviews/call_for_review_v4_pre_release_items_1_to_5_completion_2026-06-27.md`
 - `future/v4/reviews/forward_message_v4_pre_release_items_1_to_5_completion_2026-06-27.txt`
 
@@ -126,12 +133,10 @@ C ABI/embedding, or non-Python host binding claims.
 
 ## Remaining Gates Before Public Tag
 
-1. Antigravity must review this packet or list required fixes.
-2. The tree must be committed.
-3. The Linux clean checkout must pull the final commit and run the focused and
+1. The tree must be committed.
+2. The Linux clean checkout must pull the final commit and run the focused and
    full V4 gates.
-4. The `v4.0.0` tag must be refreshed to the final commit if the final commit
+3. The `v4.0.0` tag must be refreshed to the final commit if the final commit
    changes.
-5. `scripts/v4_release_clean_checkout_gate.py --require-tag-head` must pass on
+4. `scripts/v4_release_clean_checkout_gate.py --require-tag-head` must pass on
    the final tagged tree.
-

@@ -4,8 +4,8 @@ Status: `release_staging_manifest_created__pathspec_ready__tag_still_requires_cl
 
 ## Summary
 
-- dirty file entries from `git status -uall`: `19`
-- stage for V4 release commit: `19`
+- dirty file entries from `git status -uall`: `3`
+- stage for V4 release commit: `3`
 - exclude from V4 release commit: `0`
 - hold V3 history out of V4 tag: `0`
 - manual review required: `0`
@@ -19,7 +19,7 @@ Status: `release_staging_manifest_created__pathspec_ready__tag_still_requires_cl
 
 | Bucket | Count |
 | --- | ---: |
-| `stage_for_v4_release_commit` | `19` |
+| `stage_for_v4_release_commit` | `3` |
 
 ## Pathspec
 
@@ -49,6 +49,7 @@ Status: `release_staging_manifest_created__pathspec_ready__tag_still_requires_cl
 - `future/v4/reviews/antigravity_v4_gemini_full_coverage_review_2026-06-27.md`
 - `future/v4/v4_goal4773_antigravity_review_intake_and_release_owner_status_2026-06-27.md`
 - `future/v4/v4_goal4779_pre_release_items_1_to_5_completion_2026-06-27.md`
+- `future/v4/reviews/antigravity_v4_pre_release_items_1_to_5_completion_2026-06-27.md`
 - `future/v4/reviews/call_for_review_v4_pre_release_items_1_to_5_completion_2026-06-27.md`
 - `future/v4/reviews/forward_message_v4_pre_release_items_1_to_5_completion_2026-06-27.txt`
 - `future/v4/evidence/v4_goal4774_release_packaging_audit_2026-06-27.json`
