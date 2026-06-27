@@ -1,0 +1,16 @@
+Please review this V4.0.0 clean public surface packet:
+
+future/v4/reviews/call_for_review_v4_0_clean_public_surface_report_2026-06-27.md
+
+The branch and tag have been pushed. Both `origin/codex/v4-tier2-section8` and
+`refs/tags/v4.0.0` point to:
+
+a2c661d4f08d97937ddc4e09c0d2bdd75e988027
+
+Please save your verdict to:
+
+future/v4/reviews/antigravity_v4_0_clean_public_surface_review_2026-06-27.md
+
+Focus on whether the user-facing V4 surface is genuinely clean: docs,
+tutorials, examples, benchmark app entrypoints, links, archived old harnesses,
+and claim boundaries.
