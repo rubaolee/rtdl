@@ -140,6 +140,8 @@ planner mode, including the 10-app benchmark recipe planner, fixed-radius,
 closest-hit grouped argmin, ray/triangle any-hit flags, primitive grouped-i64
 reduction, point-group nearest witness, ray/triangle weighted sum, AABB
 all-ops count, callback planning, and the custom predicate early-exit planner.
+It also executes every Python snippet in `tutorials/current/` as a standalone
+copy-paste block.
 
 The complete benchmark-app harness under `examples/current/research_benchmarks/`
 is now presented as a maintainer matrix harness, not the first teaching surface.
@@ -164,7 +166,7 @@ py -3 -m unittest discover -s tests -p "v4*_test.py"
 Result:
 
 ```text
-Ran 651 tests in 98.397s
+Ran 652 tests in 120.321s
 OK (skipped=1)
 ```
 

@@ -9,6 +9,8 @@ import rtdsl.v4 as rtdl_v4
 List measured operators:
 
 ```python
+import rtdsl.v4 as rtdl_v4
+
 for row in rtdl_v4.measured_operator_catalog_v4():
     print(row["operator"], row["api_surface"], row["measured_partners"])
 ```

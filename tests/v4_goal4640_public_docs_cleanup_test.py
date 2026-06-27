@@ -162,6 +162,25 @@ class V4Goal4640PublicDocsCleanupTest(unittest.TestCase):
                 self.assertFalse(payload["release_claim_authorized"])
                 self.assertFalse(payload["tier3_callback_claim_authorized"])
 
+    def test_tutorial_python_snippets_are_copy_paste_runnable(self) -> None:
+        snippet_count = 0
+        for path in sorted((ROOT / "tutorials" / "current").glob("*.md")):
+            text = path.read_text(encoding="utf-8")
+            snippets = re.findall(r"```python\n(.*?)\n```", text, flags=re.S)
+            for index, snippet in enumerate(snippets, 1):
+                snippet_count += 1
+                with self.subTest(path=path.relative_to(ROOT).as_posix(), block=index):
+                    proc = subprocess.run(
+                        [sys.executable, "-c", snippet],
+                        cwd=ROOT,
+                        text=True,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                    )
+                    self.assertEqual(proc.returncode, 0, proc.stderr)
+
+        self.assertGreaterEqual(snippet_count, 10)
+
     def test_operator_catalog_is_visible_without_overclaim(self) -> None:
         text = (ROOT / "docs" / "current_v4_status.md").read_text(encoding="utf-8")
         catalog = (ROOT / "docs" / "learn" / "operator_catalog.md").read_text(encoding="utf-8")
