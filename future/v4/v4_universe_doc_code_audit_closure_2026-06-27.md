@@ -63,9 +63,9 @@ Public surface:
 
 Tracked repository:
 
-- tracked files: `28347`;
+- tracked files: `28349`;
 - history archive files: `22046`;
-- maintainer provenance files: `1841`;
+- maintainer provenance files: `1843`;
 - current code/gate files: `4356`;
 - public current files: `33`.
 
@@ -192,6 +192,13 @@ This closes the two named Antigravity blockers without expanding any V4.0
 performance claim. The public API is clean for static analyzers, and the
 benchmark-app recipe file is again a teaching artifact instead of a test-harness
 payload.
+
+Antigravity re-reviewed the blocker fix in
+`future/v4/reviews/antigravity_v4_public_surface_antigravity_blocker_fix_2026-06-27.md`
+and returned verdict `approve_antigravity_public_surface_blockers_closed`.
+That closes the prior `block_public_surface_until_fixed` review for these two
+items: IDE/static-analysis pollution in `rtdsl.v4` and the fake JSON tutorial
+issue in `examples/v4/benchmark_app_recipes.py`.
 
 Full V4 discovery gate:
 
