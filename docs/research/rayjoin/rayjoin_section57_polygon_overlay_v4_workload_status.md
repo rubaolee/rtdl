@@ -107,7 +107,7 @@ py -3 examples\paper_reproduction\rayjoin.py --section57-compare-v214 --pairs co
 These checks verify the public wrapper surface, the paired V2.14 comparison
 protocol, and the public front-door gate. Maintainers also keep lower-level
 suite, publication-decision, and public-doc cleanup tests for the 8-pair plan
-shape, dry-run recording path, and stale-public-wording checks. Local tests do
+shape, dry-run recording path, and public wording checks. Local tests do
 not replace a real POD run with exact inputs and author binaries.
 
 ## Remaining Work
