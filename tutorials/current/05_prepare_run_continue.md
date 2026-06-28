@@ -29,8 +29,8 @@ for name in operators:
     print(name, "->", plan.api_surface)
 ```
 
-The examples below run in dry-run mode, so they are safe on a machine without a
-CUDA device:
+The examples below are advanced surface examples. They run in dry-run mode, so
+they are safe on a machine without a CUDA device:
 
 ```powershell
 $env:PYTHONPATH = "src;."

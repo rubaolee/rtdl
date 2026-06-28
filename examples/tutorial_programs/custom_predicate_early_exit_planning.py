@@ -30,6 +30,21 @@ def main() -> int:
     )
     payload = {
         "status": "ok",
+        "concept": (
+            "V4.0 supports constrained pure boolean Numba predicates in this "
+            "path; action-shaped callbacks stay outside the public API."
+        ),
+        "accepted_predicate_contract": {
+            "callback_shape": plan.callback_shape,
+            "action": plan.action,
+            "allowed_side_effects": "none",
+            "predicate_result": "true means accept this hit and terminate early",
+        },
+        "rejected_program_shape": {
+            "mutates_shared_state": True,
+            "planner_status": unsafe.status,
+            "lesson": "split traversal from app-owned mutation or continuation work",
+        },
         "surface": boundary["v4_api_surface"],
         "generic_primitive": boundary["generic_primitive"],
         "partner": boundary["partner"],

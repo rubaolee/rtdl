@@ -217,6 +217,7 @@ class V4Goal4640PublicDocsCleanupTest(unittest.TestCase):
             ["examples/tutorial_programs/nearest_neighbor.py"],
             ["examples/tutorial_programs/ray_triangle_hits.py"],
             ["examples/tutorial_programs/continuation_grouped_sum.py"],
+            ["examples/tutorial_programs/measure_phases.py"],
             ["examples/tutorial_programs/point_in_polygon.py"],
             ["examples/tutorial_programs/spatial_join_lsi.py"],
             ["examples/tutorial_programs/benchmark_app_recipes.py"],

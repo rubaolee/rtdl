@@ -11,42 +11,89 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 import rtdsl.v4 as rtdl_v4
-from rtdsl.reference import Point, Polygon, pip_cpu
+
+
+def _polygon_bounds(polygon: dict[str, object]) -> dict[str, float | int]:
+    vertices = polygon["vertices"]
+    xs = [float(vertex[0]) for vertex in vertices]
+    ys = [float(vertex[1]) for vertex in vertices]
+    return {
+        "polygon_id": int(polygon["id"]),
+        "min_x": min(xs),
+        "min_y": min(ys),
+        "max_x": max(xs),
+        "max_y": max(ys),
+    }
+
+
+def _inside_bounds(point: dict[str, float | int], bounds: dict[str, float | int]) -> bool:
+    return (
+        float(bounds["min_x"]) <= float(point["x"]) <= float(bounds["max_x"])
+        and float(bounds["min_y"]) <= float(point["y"]) <= float(bounds["max_y"])
+    )
+
+
+def _contains_point(point: dict[str, float | int], polygon: dict[str, object]) -> bool:
+    x = float(point["x"])
+    y = float(point["y"])
+    inside = False
+    vertices = polygon["vertices"]
+    previous_x, previous_y = vertices[-1]
+    for current_x, current_y in vertices:
+        crosses_y = (float(current_y) > y) != (float(previous_y) > y)
+        if crosses_y:
+            boundary_x = (
+                (float(previous_x) - float(current_x))
+                * (y - float(current_y))
+                / (float(previous_y) - float(current_y))
+                + float(current_x)
+            )
+            if x < boundary_x:
+                inside = not inside
+        previous_x, previous_y = current_x, current_y
+    return inside
 
 
 def main() -> int:
     points = (
-        Point(1, 0.25, 0.25),
-        Point(2, 0.75, 0.75),
-        Point(3, 2.50, 2.50),
+        {"id": 1, "x": 0.25, "y": 0.25},
+        {"id": 2, "x": 0.75, "y": 0.75},
+        {"id": 3, "x": 2.50, "y": 2.50},
+        {"id": 4, "x": 5.00, "y": 5.00},
     )
     polygons = (
-        Polygon(10, ((0.0, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 1.0))),
-        Polygon(20, ((2.0, 2.0), (3.0, 2.0), (3.0, 3.0), (2.0, 3.0))),
+        {"id": 10, "vertices": ((0.0, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 1.0))},
+        {"id": 20, "vertices": ((2.0, 2.0), (3.0, 2.0), (3.0, 3.0), (2.0, 3.0))},
     )
 
-    hits = pip_cpu(points, polygons, result_mode="positive_hits")
-    plan = rtdl_v4.plan_operator_request_v4("aabb_index_query", partner="rtdl_native")
+    bounds_rows = tuple(_polygon_bounds(polygon) for polygon in polygons)
+    candidate_rows = []
+    positive_hits = []
+    for point in points:
+        for polygon, bounds in zip(polygons, bounds_rows):
+            if not _inside_bounds(point, bounds):
+                continue
+            candidate = {"point_id": int(point["id"]), "polygon_id": int(polygon["id"])}
+            candidate_rows.append(candidate)
+            if _contains_point(point, polygon):
+                positive_hits.append({**candidate, "contains": True})
 
+    plan = rtdl_v4.plan_operator_request_v4("aabb_index_query", partner="rtdl_native")
     payload = {
         "status": "ok",
-        "concept": "point-in-polygon uses broadphase candidate discovery plus exact containment logic",
-        "input": {
-            "point_count": len(points),
-            "polygon_count": len(polygons),
-        },
-        "positive_hits": tuple(
-            {
-                "point_id": int(row["point_id"]),
-                "polygon_id": int(row["polygon_id"]),
-            }
-            for row in hits
+        "concept": "PIP is broadphase bounds filtering plus exact containment; RTDL helps produce candidate rows, app logic owns containment meaning",
+        "manual_data_flow": (
+            "polygons -> bounds rows -> point/polygon candidate rows -> exact containment rows"
         ),
-        "planner": {
+        "bounds_rows": bounds_rows,
+        "candidate_rows": tuple(candidate_rows),
+        "positive_hits": tuple(positive_hits),
+        "v4_surface": {
             "operator": "aabb_index_query",
             "partner": "rtdl_native",
             "status": plan.status,
             "surface": plan.api_surface,
+            "generic_primitive": plan.generic_primitive,
         },
     }
     print(json.dumps(payload, indent=2, sort_keys=True))

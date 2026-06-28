@@ -26,6 +26,7 @@ py -3 examples\tutorial_programs\sorting_rows.py
 py -3 examples\tutorial_programs\operator_primitives.py
 py -3 examples\tutorial_programs\partner_choices.py
 py -3 examples\tutorial_programs\nearest_neighbor.py
+py -3 examples\tutorial_programs\measure_phases.py
 py -3 examples\tutorial_programs\point_in_polygon.py
 py -3 examples\tutorial_programs\spatial_join_lsi.py
 py -3 examples\tutorial_programs\benchmark_app_recipes.py
@@ -41,6 +42,7 @@ PYTHONPATH=src:. python examples/tutorial_programs/sorting_rows.py
 PYTHONPATH=src:. python examples/tutorial_programs/operator_primitives.py
 PYTHONPATH=src:. python examples/tutorial_programs/partner_choices.py
 PYTHONPATH=src:. python examples/tutorial_programs/nearest_neighbor.py
+PYTHONPATH=src:. python examples/tutorial_programs/measure_phases.py
 PYTHONPATH=src:. python examples/tutorial_programs/point_in_polygon.py
 PYTHONPATH=src:. python examples/tutorial_programs/spatial_join_lsi.py
 PYTHONPATH=src:. python examples/tutorial_programs/benchmark_app_recipes.py

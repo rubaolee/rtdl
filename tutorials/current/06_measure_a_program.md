@@ -31,6 +31,19 @@ record = {
 print(record["app"], record["operator"], record["partner"], record["validated"])
 ```
 
+Run the measurement tutorial program:
+
+```powershell
+$env:PYTHONPATH = "src;."
+py -3 examples\tutorial_programs\measure_phases.py
+```
+
+Linux or macOS:
+
+```bash
+PYTHONPATH=src:. python examples/tutorial_programs/measure_phases.py
+```
+
 When you build your own benchmark, keep the measured question narrow:
 
 ```python

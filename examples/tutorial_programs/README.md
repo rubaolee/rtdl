@@ -1,8 +1,11 @@
 # RTDL V4 Tutorial Programs
 
 These scripts are small learning programs. They run from the repository root
-with `PYTHONPATH=src:.`. Start with the first four if you are new to RTDL;
-then use the operator examples to connect the ideas to the benchmark apps.
+with `PYTHONPATH=src:.`.
+
+Start with the concept programs. They show the data flow by hand: candidate
+checks, relation rows, and continuation rows. After that, open the advanced
+surface programs that use V4 prepare/run APIs and partner device arrays.
 
 PowerShell:
 
@@ -17,6 +20,7 @@ py -3 examples\tutorial_programs\fixed_radius_neighbors.py
 py -3 examples\tutorial_programs\nearest_neighbor.py
 py -3 examples\tutorial_programs\ray_triangle_hits.py
 py -3 examples\tutorial_programs\continuation_grouped_sum.py
+py -3 examples\tutorial_programs\measure_phases.py
 py -3 examples\tutorial_programs\point_in_polygon.py
 py -3 examples\tutorial_programs\spatial_join_lsi.py
 py -3 examples\tutorial_programs\benchmark_app_recipes.py
@@ -38,6 +42,7 @@ PYTHONPATH=src:. python examples/tutorial_programs/fixed_radius_neighbors.py
 PYTHONPATH=src:. python examples/tutorial_programs/nearest_neighbor.py
 PYTHONPATH=src:. python examples/tutorial_programs/ray_triangle_hits.py
 PYTHONPATH=src:. python examples/tutorial_programs/continuation_grouped_sum.py
+PYTHONPATH=src:. python examples/tutorial_programs/measure_phases.py
 PYTHONPATH=src:. python examples/tutorial_programs/point_in_polygon.py
 PYTHONPATH=src:. python examples/tutorial_programs/spatial_join_lsi.py
 PYTHONPATH=src:. python examples/tutorial_programs/benchmark_app_recipes.py
@@ -56,13 +61,14 @@ PYTHONPATH=src:. python examples/tutorial_programs/aabb_index_all_ops_count.py -
 | `sorting_rows.py` | Sort relation rows, then continue with nearest or grouped summaries. |
 | `operator_primitives.py` | See how operator surfaces map to generic primitives and continuations. |
 | `partner_choices.py` | Compare Torch, CuPy, Numba, and RTDL native planning outcomes. |
-| `fixed_radius_neighbors.py` | Build a radius-neighbor relation. |
-| `nearest_neighbor.py` | Build a nearest-witness relation for NN-style work. |
-| `ray_triangle_hits.py` | Build ray/triangle any-hit rows. |
+| `fixed_radius_neighbors.py` | Build a radius-neighbor relation from visible candidate checks. |
+| `nearest_neighbor.py` | Build a nearest-witness relation from candidate distances and argmin continuation. |
+| `ray_triangle_hits.py` | Build ray/triangle any-hit rows from visible hit tests. |
 | `continuation_grouped_sum.py` | Reduce relation rows into grouped app output. |
-| `point_in_polygon.py` | Use candidate discovery plus exact containment logic. |
+| `measure_phases.py` | Measure setup, hot relation work, continuation, and validation separately. |
+| `point_in_polygon.py` | Use polygon bounds, candidate discovery, and exact containment logic. |
 | `spatial_join_lsi.py` | Build broadphase join rows, then refine them with segment intersections. |
 | `benchmark_app_recipes.py` | Map the tutorial concepts to the 10 benchmark apps. |
 
-The remaining scripts show individual operator surfaces and partner choices.
-They are intentionally smaller than full benchmark apps.
+The remaining device-array scripts are advanced surface examples. Use them
+after you understand the concept programs.

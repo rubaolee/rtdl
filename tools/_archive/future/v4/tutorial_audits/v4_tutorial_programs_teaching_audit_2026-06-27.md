@@ -21,14 +21,14 @@ teaching program.
 
 ## Overall Verdict
 
-Current tutorial organization is improved, but the teaching content is still
-not good enough.
+Current tutorial organization is improved. Rewrite pass 1 fixed the largest
+concept-level failure: NN, fixed-radius, PIP, ray-hit, and spatial join now show
+visible candidate rows, relation rows, and continuations instead of hiding the
+lesson inside reference helpers.
 
-The biggest error is that several concept files use reference helpers such as
-`knn_rows_cpu`, `pip_cpu`, `lsi_cpu`, or `ray_triangle_any_hit_cpu` as black
-boxes. That teaches "call this helper" rather than "here is how RTDL decomposes
-the problem into relation, primitive, and continuation." This is exactly the
-wrong teaching style for a language/runtime.
+The remaining risk is that some advanced surface examples still look like API
+smoke examples unless the tutorial path clearly labels them as the second layer
+after concept programs.
 
 The right direction is to split tutorial programs into three levels:
 
@@ -69,14 +69,15 @@ Concrete rewrite rules:
 | `examples/tutorial_programs/sorting_rows.py` | Relation rows sorted and consumed by nearest/grouped continuations. | User sees relation rows as data and learns continuation by sorting/reducing. | Yes. This is a good small teaching program. | No. It exposes data flow. | Keep; possibly add comments naming relation -> continuation. |
 | `examples/tutorial_programs/operator_primitives.py` | Catalog introspection. | User sees surface, primitive, continuation, partner. | Partial. It names concepts but does not show how data enters. | Partial risk: it can become vocabulary dumping. | Keep as reference-like tutorial; pair it after concrete relation examples. |
 | `examples/tutorial_programs/partner_choices.py` | Partner planning matrix. | User sees explicit partner choice and deferred combinations. | Partial. Good for boundary learning, weak for why each partner is useful. | No deception, but too status-heavy. | Add small examples explaining Torch=device tensors, CuPy=continuation kernels, Numba=compiled predicate/union, RTDL native=prepared traversal/index. |
-| `examples/tutorial_programs/fixed_radius_neighbors.py` | Radius neighbor example. | User should learn radius relation rows. | Weak. It calls `fixed_radius_neighbors_cpu`, hiding the checks. | Yes, partially. It presents an answer without teaching the radius loop. | Rewrite to manually compute squared distances, emit candidate rows, then show `fixed_radius` planner. |
-| `examples/tutorial_programs/nearest_neighbor.py` | NN/nearest-witness example. | User should learn how NN becomes search candidates plus argmin witness. | Weak. It calls `knn_rows_cpu`, hiding the whole NN logic. | Yes. This is the clearest current failure. | Rewrite completely: show query/search points, candidate distances, per-query argmin, witness rows, then V4 `point_group_nearest`. |
-| `examples/tutorial_programs/ray_triangle_hits.py` | Any-hit concept example. | User should learn ray/triangle hit flags. | Weak to partial. It names rays/triangles but calls `ray_triangle_any_hit_cpu`. | Partial. The core geometric predicate is hidden. | Add explicit ray endpoints, triangle vertices, and a simple 2D segment/triangle explanation or intermediate candidate rows. |
+| `examples/tutorial_programs/fixed_radius_neighbors.py` | Radius neighbor data-flow example. | User learns candidate checks, neighbor relation rows, and count-threshold continuation. | Yes after rewrite. | No. The loop is visible. | Keep as concept-level program before the Torch device-array surface. |
+| `examples/tutorial_programs/nearest_neighbor.py` | NN/nearest-witness data-flow example. | User learns search groups, candidate witness rows, and per-query argmin continuation. | Yes after rewrite. | No. It no longer hides NN behind a helper. | Keep as the required first NN lesson before `point_group_nearest_witness_torch_device_arrays.py`. |
+| `examples/tutorial_programs/ray_triangle_hits.py` | Any-hit data-flow example. | User learns ray/primitive candidate hit tests and compact per-ray hit flags. | Yes after rewrite. | No. It shows hit reasons and candidate rows. | Keep as concept-level program before any-hit device-array surfaces. |
 | `examples/tutorial_programs/continuation_grouped_sum.py` | Grouped continuation example. | User learns reducing relation rows into app output. | Yes. The loop is visible and app-owned. | No. It teaches the pattern cleanly. | Keep; later connect it to RayDB/Barnes-Hut examples. |
-| `examples/tutorial_programs/point_in_polygon.py` | PIP concept example. | User should learn broadphase bounds plus exact containment. | Weak. It calls `pip_cpu`, hiding both containment and candidate filtering. | Yes, partially. It says broadphase but does not show broadphase rows. | Rewrite to explicitly compute polygon bounds, candidate point/polygon pairs, and exact containment, then show AABB planner. |
-| `examples/tutorial_programs/spatial_join_lsi.py` | Spatial join broadphase plus LSI refinement. | User sees AABB candidate pairs and exact intersection pairs. | Partial to good. Broadphase is visible; exact LSI is hidden in `lsi_cpu`. | Partial. Better than NN/PIP, but still hides refinement predicate. | Keep structure but add explicit segment bounds table and a small visible refinement function or explanatory rows. |
+| `examples/tutorial_programs/measure_phases.py` | Measurement phase example. | User learns setup/hot/continuation/validation split with runnable code. | Yes. It shows timing sections directly. | No. | Keep and link from `06_measure_a_program.md`. |
+| `examples/tutorial_programs/point_in_polygon.py` | PIP data-flow example. | User learns polygon bounds, candidate point/polygon rows, and exact containment rows. | Yes after rewrite. | No. Candidate filtering and containment are visible. | Keep as spatial concept program before full spatial apps. |
+| `examples/tutorial_programs/spatial_join_lsi.py` | Spatial join broadphase plus LSI refinement. | User sees segment bounds, broadphase candidate pairs, and exact intersection rows. | Yes after rewrite. | No. Broadphase and refinement are visible. | Keep as bridge to Spatial RayJoin. |
 | `examples/tutorial_programs/operator_callback_planning.py` | Callback boundary planner. | User learns supported fused operator vs deferred callback shapes. | Partial. It explains planner boundaries, not how to program a valid callback. | Partial risk: looks like policy output. | Keep as boundary demo; add separate valid predicate tutorial or enrich `custom_predicate_early_exit_planning.py`. |
-| `examples/tutorial_programs/custom_predicate_early_exit_planning.py` | Constrained Numba predicate planning. | User should learn pure boolean predicate shape and why unsafe mutation is rejected. | Partial. It exposes accept/reject, but includes too many claim/performance fields. | Yes, partially. Performance flags distract from programming. | Rewrite public output to focus on predicate signature, accepted action, rejected mutation reason, and app split. |
+| `examples/tutorial_programs/custom_predicate_early_exit_planning.py` | Constrained Numba predicate planning. | User learns pure boolean predicate shape and why unsafe mutation is rejected. | Partial to good after rewrite. It now leads with predicate contract and rejected program shape, though it still carries compact measured context for gates. | Low. It is now mostly programming-oriented. | Keep; later split measured context into a separate non-beginner example if needed. |
 | `examples/tutorial_programs/fixed_radius_torch_device_arrays.py` | Advanced device-array surface example. | User learns prepare/run/continue with Torch device columns. | Good as advanced API example, bad as first tutorial. | No if labeled advanced; yes if presented as beginner lesson. | Keep but move after concept-level fixed-radius example. |
 | `examples/tutorial_programs/point_group_nearest_witness_torch_device_arrays.py` | Advanced NN device-array surface. | User learns prepared point groups and Torch query columns. | Good as advanced surface, not as NN concept teaching. | Partial risk: if used alone, it hides why point groups exist. | Keep as advanced; pair with rewritten transparent NN concept tutorial. |
 | `examples/tutorial_programs/ray_triangle_any_hit_flags_torch_device_arrays.py` | Advanced any-hit device-array surface. | User learns ray/triangle columns and output flags. | Good as API surface example. | No if advanced; weak for concept teaching. | Keep; point beginner users to `ray_triangle_hits.py` first after rewrite. |
@@ -119,3 +120,27 @@ The public tutorial path must teach users how to decompose a problem into RTDL
 relations, primitives, partners, and continuations. If a file only shows a
 black-box helper call, it is not yet a tutorial; it is only an API smoke
 example.
+
+## Rewrite Pass 1 Record
+
+After this audit, the following concept programs were rewritten from black-box
+helper calls into visible data-flow examples:
+
+| File | Original problem | Rewrite result |
+| --- | --- | --- |
+| `fixed_radius_neighbors.py` | Called `fixed_radius_neighbors_cpu`, hiding candidate checks. | Now shows explicit distance checks, neighbor relation rows, and count-threshold continuation rows. |
+| `v4_frontdoor_quickstart.py` | Oriented users but omitted the explicit release-boundary flags required by the catalog gate. | Now keeps the quickstart user-facing while exposing the non-claim boundary fields expected by the release gate. |
+| `nearest_neighbor.py` | Called `knn_rows_cpu`, hiding NN logic. | Now shows search groups, candidate witness rows, and per-query argmin nearest rows. |
+| `point_in_polygon.py` | Called `pip_cpu`, hiding bounds and exact containment. | Now shows polygon bounds, candidate point/polygon rows, and exact containment rows. |
+| `ray_triangle_hits.py` | Called `ray_triangle_any_hit_cpu`, hiding hit tests. | Now shows ray/triangle candidate rows, hit reasons, and per-ray any-hit rows. |
+| `spatial_join_lsi.py` | Used helper calls for broadphase/refinement. | Now shows segment bounds, broadphase pair rows, and exact segment-intersection rows. |
+| `measure_phases.py` | No runnable measurement tutorial existed. | New file shows setup, hot relation work, continuation, validation, and app output timing fields. |
+
+Remaining distinction:
+
+- Device-array files remain advanced surface examples, not beginner concept
+  tutorials.
+- `custom_predicate_early_exit_planning.py` still needs a separate teaching
+  pass only if we want to remove measured context entirely from beginner output.
+- `benchmark_app_recipes.py` remains a map, not a full app-construction
+  tutorial.

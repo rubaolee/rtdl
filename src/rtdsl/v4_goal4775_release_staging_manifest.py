@@ -124,6 +124,7 @@ REQUIRED_STAGE_PATHS = (
     "examples/tutorial_programs/continuation_grouped_sum.py",
     "examples/tutorial_programs/fixed_radius_neighbors.py",
     "examples/tutorial_programs/hello_world.py",
+    "examples/tutorial_programs/measure_phases.py",
     "examples/tutorial_programs/nearest_neighbor.py",
     "examples/tutorial_programs/operator_primitives.py",
     "examples/tutorial_programs/partner_choices.py",

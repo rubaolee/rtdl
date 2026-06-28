@@ -26,10 +26,11 @@ PYTHONPATH=src:. python examples/tutorial_programs/spatial_join_lsi.py
 PYTHONPATH=src:. python examples/tutorial_programs/benchmark_app_recipes.py
 ```
 
-The PIP and LSI scripts are small tutorial programs for two concepts that show
-up in spatial apps: broadphase candidate discovery, exact containment, and
-join refinement. The recipes below are copy-paste runnable planner examples.
-They teach the shape of each app before you open the full app source.
+The concept scripts are small tutorial programs for ideas that appear inside
+the full apps: radius-neighbor rows, NN witness rows, broadphase candidate
+discovery, exact containment, ray-hit flags, and join refinement. The recipes
+below are copy-paste runnable planner examples. They teach the shape of each
+app before you open the full app source.
 
 ## Common Helper
 

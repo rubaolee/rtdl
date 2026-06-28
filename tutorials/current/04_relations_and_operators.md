@@ -38,7 +38,9 @@ which prepare function to open next.
 ## Single-Skill Programs
 
 Before opening full benchmark apps, run the small programs that teach one
-concept at a time:
+concept at a time. Read the JSON fields named `candidate_rows`,
+`neighbor_rows`, `nearest_rows`, `hit_rows`, or `manual_data_flow`; those are
+the programming idea.
 
 ```powershell
 $env:PYTHONPATH = "src;."
@@ -67,7 +69,8 @@ PYTHONPATH=src:. python examples/tutorial_programs/spatial_join_lsi.py
 
 The point is not that every app calls a different primitive. The point is that
 many apps are built from the same few relation-producing operators plus
-different continuation and app code.
+different continuation and app code. The V4 planner tells you which accelerated
+surface matches that relation after you understand the relation itself.
 
 RTDL also has a recognizer for small declarative descriptions:
 
