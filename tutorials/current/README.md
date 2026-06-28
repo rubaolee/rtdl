@@ -13,6 +13,7 @@ Read the lessons in order:
 6. [Measure a Program](06_measure_a_program.md)
 7. [Build the Benchmark Apps](07_benchmark_apps.md)
 8. [Choose a Partner](08_choose_a_partner.md)
+9. [Benchmark Harness Protocol](09_benchmark_harness_protocol.md)
 
 By the end you should understand how to:
 
@@ -25,5 +26,9 @@ By the end you should understand how to:
 - choose Torch, CuPy, Numba, or RTDL native explicitly;
 - keep application meaning outside the generic operator;
 - combine an RT relation with a continuation step;
+- lower graph, robot, Hausdorff, RayDB, RayJoin, and Barnes-Hut app logic into
+  relation rows and continuation rows;
 - run small tutorial programs before opening the full benchmark apps;
-- read the benchmark app recipes before opening the full app sources.
+- read the benchmark app recipes before opening the full app sources;
+- separate tutorial timing, hot-path timing, validation, and full benchmark
+  runner timing.

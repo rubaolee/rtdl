@@ -12,3 +12,7 @@ Current paper-oriented entrypoints:
 
 These scripts forward to the corresponding RTDL app implementation while
 keeping the paper-reproduction label separate from the ordinary benchmark suite.
+
+Read [paper_reproduction_scope.md](paper_reproduction_scope.md) before using
+these wrappers. It explains what each wrapper routes to and which tutorial
+program to study first.

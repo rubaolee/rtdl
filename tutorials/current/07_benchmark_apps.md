@@ -15,6 +15,15 @@ Run the recipe program first:
 $env:PYTHONPATH = "src;."
 py -3 examples\tutorial_programs\point_in_polygon.py
 py -3 examples\tutorial_programs\spatial_join_lsi.py
+py -3 examples\tutorial_programs\aggregate_frontier_rows.py
+py -3 examples\tutorial_programs\component_union_from_radius.py
+py -3 examples\tutorial_programs\ranked_summary_neighbors.py
+py -3 examples\tutorial_programs\bounded_witness_collection.py
+py -3 examples\tutorial_programs\triangle_counting_graph_lowering.py
+py -3 examples\tutorial_programs\robot_collision_lowering.py
+py -3 examples\tutorial_programs\hausdorff_distance_recipe.py
+py -3 examples\tutorial_programs\raydb_table_to_ray.py
+py -3 examples\tutorial_programs\rayjoin_topology_intro.py
 py -3 examples\tutorial_programs\benchmark_app_recipes.py
 ```
 
@@ -23,6 +32,15 @@ Linux or macOS:
 ```bash
 PYTHONPATH=src:. python examples/tutorial_programs/point_in_polygon.py
 PYTHONPATH=src:. python examples/tutorial_programs/spatial_join_lsi.py
+PYTHONPATH=src:. python examples/tutorial_programs/aggregate_frontier_rows.py
+PYTHONPATH=src:. python examples/tutorial_programs/component_union_from_radius.py
+PYTHONPATH=src:. python examples/tutorial_programs/ranked_summary_neighbors.py
+PYTHONPATH=src:. python examples/tutorial_programs/bounded_witness_collection.py
+PYTHONPATH=src:. python examples/tutorial_programs/triangle_counting_graph_lowering.py
+PYTHONPATH=src:. python examples/tutorial_programs/robot_collision_lowering.py
+PYTHONPATH=src:. python examples/tutorial_programs/hausdorff_distance_recipe.py
+PYTHONPATH=src:. python examples/tutorial_programs/raydb_table_to_ray.py
+PYTHONPATH=src:. python examples/tutorial_programs/rayjoin_topology_intro.py
 PYTHONPATH=src:. python examples/tutorial_programs/benchmark_app_recipes.py
 ```
 
@@ -31,6 +49,21 @@ the full apps: radius-neighbor rows, NN witness rows, broadphase candidate
 discovery, exact containment, ray-hit flags, and join refinement. The recipes
 below are copy-paste runnable planner examples. They teach the shape of each
 app before you open the full app source.
+
+The app-lowering scripts add the bridge from a single concept to a full
+benchmark app:
+
+| App idea | Program to run first |
+| --- | --- |
+| Barnes-Hut aggregate frontier | `examples/tutorial_programs/aggregate_frontier_rows.py` |
+| RTDBSCAN components | `examples/tutorial_programs/component_union_from_radius.py` |
+| RTNN ranked summaries | `examples/tutorial_programs/ranked_summary_neighbors.py` |
+| Contact witnesses | `examples/tutorial_programs/bounded_witness_collection.py` |
+| Triangle counting | `examples/tutorial_programs/triangle_counting_graph_lowering.py` |
+| Robot collision | `examples/tutorial_programs/robot_collision_lowering.py` |
+| Hausdorff XHD | `examples/tutorial_programs/hausdorff_distance_recipe.py` |
+| RayDB-style query | `examples/tutorial_programs/raydb_table_to_ray.py` |
+| Spatial RayJoin | `examples/tutorial_programs/rayjoin_topology_intro.py` |
 
 ## Common Helper
 
