@@ -6,6 +6,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -90,6 +91,41 @@ class V4Goal4806RayJoinNumbaAutoPlannerTest(unittest.TestCase):
         self.assertEqual(row["baselines"]["v2_14_exact_suite"]["status"], "blocked_missing_inputs")
         self.assertTrue(row["correctness_gate"]["topology_geometry_hash_required"])
         self.assertFalse(row["correctness_gate"]["row_count_only_sufficient"])
+
+    def test_exact_inputs_and_numba_still_block_without_section57_device_columns(self) -> None:
+        from rtdsl.rayjoin_paper_suite import paper_pairs
+        from rtdsl.rayjoin_numba_auto_planner import section57_polygon_overlay
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pair = paper_pairs()[0]
+            left = root / pair.left_relative_path
+            right = root / pair.right_relative_path
+            left.parent.mkdir(parents=True, exist_ok=True)
+            right.parent.mkdir(parents=True, exist_ok=True)
+            left.write_text("1 2 1 2 1 0\n0 0\n1 0\n", encoding="utf-8")
+            right.write_text("1 2 1 2 1 0\n0 0\n1 0\n", encoding="utf-8")
+
+            with mock.patch("rtdsl.rayjoin_numba_auto_planner.numba_partner_available", return_value=True):
+                blocked = section57_polygon_overlay(
+                    dataset_root=root,
+                    pairs="county_zipcode",
+                    check_runtime=True,
+                    section57_device_columns_ready=False,
+                )
+                ready = section57_polygon_overlay(
+                    dataset_root=root,
+                    pairs="county_zipcode",
+                    check_runtime=True,
+                    section57_device_columns_ready=True,
+                )
+
+        blocked_statuses = {candidate["status"] for candidate in blocked["candidate_scoreboard"]}
+        ready_statuses = {candidate["status"] for candidate in ready["candidate_scoreboard"]}
+        self.assertEqual(blocked_statuses, {"blocked_missing_section57_device_columns"})
+        self.assertEqual(ready_statuses, {"ready_for_measurement"})
+        self.assertIn("section57_device_columns_requirement", blocked["runtime_probe"])
+        self.assertFalse(blocked["runtime_probe"]["section57_device_columns_ready"])
 
     def test_cli_writes_numba_auto_evidence_files(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

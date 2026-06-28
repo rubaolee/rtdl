@@ -42,6 +42,10 @@ scoreboard. It does not count as a full paper-reproduction result until the
 author-code, V2.14 exact-suite, and V4+Numba selected-plan columns all have
 valid correctness and timing evidence.
 
+The V4+Numba selected-plan column has one additional hard gate: the Section 5.7
+candidate/refinement stream must be exposed as device-resident columns. The
+existing host summary path is not enough for a V4+Numba performance claim.
+
 The Section 5.7 matrix runner also accepts `v4_numba` as an implementation:
 
 ```bash
@@ -69,6 +73,8 @@ A full Section 5.7 claim requires all of the following:
   `v4_numba`;
 - for the V4+Numba auto planner, separate result columns for `author_code`,
   `v2_14_exact_suite`, and `v4_numba_selected_plan`;
+- for the V4+Numba selected plan, a device-column producer for the Section 5.7
+  candidate/refinement stream, not host row materialization;
 - correctness/status and timing recorded together;
 - an 8/8 overlay-pair completion summary before any full Section 5.7 claim.
 

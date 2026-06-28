@@ -32,7 +32,7 @@
         "--skip-runtime-probe"
       ],
       "completed": true,
-      "elapsed_sec": 1.3471021999139339,
+      "elapsed_sec": 1.1811373999807984,
       "exit_code": 0,
       "implementation": "v4_numba",
       "output_json": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28\\section57_overlay_county_zipcode_v4_numba.json",
@@ -74,7 +74,7 @@
         "--skip-runtime-probe"
       ],
       "completed": true,
-      "elapsed_sec": 1.3674475001171231,
+      "elapsed_sec": 1.3318459999281913,
       "exit_code": 0,
       "implementation": "v4_numba",
       "output_json": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28\\section57_overlay_block_water_v4_numba.json",
@@ -116,7 +116,7 @@
         "--skip-runtime-probe"
       ],
       "completed": true,
-      "elapsed_sec": 1.3841716998722404,
+      "elapsed_sec": 1.3409651000984013,
       "exit_code": 0,
       "implementation": "v4_numba",
       "output_json": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28\\section57_overlay_lkaf_pkaf_v4_numba.json",
@@ -158,7 +158,7 @@
         "--skip-runtime-probe"
       ],
       "completed": true,
-      "elapsed_sec": 1.373106800019741,
+      "elapsed_sec": 1.3882889000233263,
       "exit_code": 0,
       "implementation": "v4_numba",
       "output_json": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28\\section57_overlay_lkas_pkas_v4_numba.json",
@@ -200,7 +200,7 @@
         "--skip-runtime-probe"
       ],
       "completed": true,
-      "elapsed_sec": 1.3675667999777943,
+      "elapsed_sec": 1.3608708998654038,
       "exit_code": 0,
       "implementation": "v4_numba",
       "output_json": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28\\section57_overlay_lkau_pkau_v4_numba.json",
@@ -242,7 +242,7 @@
         "--skip-runtime-probe"
       ],
       "completed": true,
-      "elapsed_sec": 1.382279000012204,
+      "elapsed_sec": 1.4286006998736411,
       "exit_code": 0,
       "implementation": "v4_numba",
       "output_json": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28\\section57_overlay_lkeu_pkeu_v4_numba.json",
@@ -284,7 +284,7 @@
         "--skip-runtime-probe"
       ],
       "completed": true,
-      "elapsed_sec": 1.3665870998520404,
+      "elapsed_sec": 1.2999822001438588,
       "exit_code": 0,
       "implementation": "v4_numba",
       "output_json": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28\\section57_overlay_lkna_pkna_v4_numba.json",
@@ -326,7 +326,7 @@
         "--skip-runtime-probe"
       ],
       "completed": true,
-      "elapsed_sec": 1.3599837999790907,
+      "elapsed_sec": 1.3478671999182552,
       "exit_code": 0,
       "implementation": "v4_numba",
       "output_json": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28\\section57_overlay_lksa_pksa_v4_numba.json",

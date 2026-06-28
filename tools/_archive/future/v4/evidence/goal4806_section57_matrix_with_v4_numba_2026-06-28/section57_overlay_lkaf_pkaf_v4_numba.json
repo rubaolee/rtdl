@@ -142,7 +142,7 @@
     "v4_numba_selected_plan"
   ],
   "dataset_root": "data\\rayjoin_section57_cdb",
-  "elapsed_planner_sec": 0.002209300175309181,
+  "elapsed_planner_sec": 0.0011031001340597868,
   "input_provenance": "paper_preprocessed_cdb",
   "non_authorizations": {
     "full_paper_reproduction_claim": false,
@@ -345,7 +345,9 @@
   ],
   "runtime_probe": {
     "checked_runtime": false,
-    "numba_cuda_available": false
+    "numba_cuda_available": false,
+    "section57_device_columns_ready": false,
+    "section57_device_columns_requirement": "V4+Numba can be measured only when RTDL exposes Section 5.7 candidate/refinement columns as device-resident arrays. The current overlay runner's host summary path is not sufficient."
   },
   "schema": "rtdl.v4.rayjoin.section57_numba_auto_primitive_planner.v1",
   "selected_plan": null,
@@ -354,7 +356,7 @@
     "measured_candidate_required": true,
     "name": "fastest_valid"
   },
-  "status": "goal4806_candidate_planner_not_release_claim",
+  "status": "candidate_planner_not_release_claim",
   "user_semantics": {
     "partner": "numba",
     "primitive_names_required_from_user": false,

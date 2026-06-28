@@ -161,6 +161,7 @@ def _candidate_status(
     exact_input_ready: bool,
     partner: str,
     numba_available: bool,
+    section57_device_columns_ready: bool,
 ) -> tuple[str, str | None]:
     if partner != "numba":
         return "rejected_partner_not_numba", "This Section 5.7 automatic route is specifically the Numba partner route."
@@ -168,6 +169,11 @@ def _candidate_status(
         return "skipped_missing_inputs", "Section 5.7 exact or same-source CDB inputs are missing."
     if not numba_available:
         return "skipped_numba_cuda_unavailable", "Numba CUDA is not available on this machine."
+    if not section57_device_columns_ready:
+        return (
+            "blocked_missing_section57_device_columns",
+            "Section 5.7 currently exposes host overlay summaries, not a device-resident candidate/refinement column stream for Numba.",
+        )
     return "ready_for_measurement", None
 
 
@@ -176,16 +182,19 @@ def _numba_candidate_plans(
     exact_input_ready: bool,
     partner: str,
     numba_available: bool,
+    section57_device_columns_ready: bool,
 ) -> tuple[Section57CandidatePlan, ...]:
     primary_status, primary_reason = _candidate_status(
         exact_input_ready=exact_input_ready,
         partner=partner,
         numba_available=numba_available,
+        section57_device_columns_ready=section57_device_columns_ready,
     )
     secondary_status, secondary_reason = _candidate_status(
         exact_input_ready=exact_input_ready,
         partner=partner,
         numba_available=numba_available,
+        section57_device_columns_ready=section57_device_columns_ready,
     )
     primary_stages = (
         Section57PlanStage(
@@ -315,6 +324,7 @@ def section57_polygon_overlay(
     warmup: int = 1,
     repeat: int = 3,
     check_runtime: bool = True,
+    section57_device_columns_ready: bool = False,
 ) -> dict[str, object]:
     """Plan the V4+Numba RayJoin Section 5.7 automatic primitive route.
 
@@ -340,6 +350,7 @@ def section57_polygon_overlay(
                 exact_input_ready=bool(row.exact_input_ready),
                 partner=partner,
                 numba_available=numba_available,
+                section57_device_columns_ready=bool(section57_device_columns_ready),
             )
         ]
         for candidate in candidates:
@@ -397,6 +408,12 @@ def section57_polygon_overlay(
         "runtime_probe": {
             "numba_cuda_available": numba_available,
             "checked_runtime": bool(check_runtime),
+            "section57_device_columns_ready": bool(section57_device_columns_ready),
+            "section57_device_columns_requirement": (
+                "V4+Numba can be measured only when RTDL exposes Section 5.7 "
+                "candidate/refinement columns as device-resident arrays. The "
+                "current overlay runner's host summary path is not sufficient."
+            ),
         },
         "columns": ("author_code", "v2_14_exact_suite", "v4_numba_selected_plan"),
         "candidate_scoreboard": all_candidates,

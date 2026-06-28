@@ -15,7 +15,9 @@ Section 5.7 matrix runner, so the same evidence surface can report:
 
 The remaining blocker is external execution state: the real Section 5.7 CDB
 inputs, RayJoin author binaries, and an RT-core NVIDIA machine must be present
-for correctness and performance comparison.
+for correctness and performance comparison. In addition, the V4+Numba route
+requires a Section 5.7 device-column producer; the existing host overlay summary
+path is not sufficient for a V4+Numba performance claim.
 
 ## Author Code Source
 
@@ -153,6 +155,14 @@ The V4+Numba semantic planner remains here:
 src/rtdsl/rayjoin_numba_auto_planner.py
 ```
 
+The planner now refuses to mark candidates as measurable unless exact inputs,
+Numba CUDA, and a Section 5.7 device-column producer are all present. With
+inputs and Numba available but without device columns, candidates are labeled:
+
+```text
+blocked_missing_section57_device_columns
+```
+
 The status note now documents the unified four-column matrix:
 
 ```text
@@ -173,7 +183,7 @@ py -3 -m unittest \
 Result:
 
 ```text
-Ran 32 tests in 13.044s
+Ran 33 tests in 13.124s
 OK
 ```
 
@@ -220,6 +230,8 @@ The result is release-usable only if:
 - all eight overlay pairs are present;
 - author code runs locally;
 - V2.14 exact-suite route and V4+Numba route use the same pair selection;
+- V4+Numba consumes Section 5.7 candidate/refinement device columns rather than
+  host-materialized overlay rows;
 - correctness is topology/geometry-aware, not row-count-only;
 - timings are recorded for author code, V2.14 exact-suite route, and V4+Numba;
 - any missing item remains explicitly blocked rather than converted into a
