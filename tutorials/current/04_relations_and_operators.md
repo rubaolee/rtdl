@@ -35,6 +35,40 @@ This planner step is valuable even before you have real data. It tells you
 whether your idea maps to a current V4 operator, which partner it uses, and
 which prepare function to open next.
 
+## Single-Skill Programs
+
+Before opening full benchmark apps, run the small programs that teach one
+concept at a time:
+
+```powershell
+$env:PYTHONPATH = "src;."
+py -3 examples\tutorial_programs\operator_primitives.py
+py -3 examples\tutorial_programs\partner_choices.py
+py -3 examples\tutorial_programs\fixed_radius_neighbors.py
+py -3 examples\tutorial_programs\nearest_neighbor.py
+py -3 examples\tutorial_programs\ray_triangle_hits.py
+py -3 examples\tutorial_programs\continuation_grouped_sum.py
+py -3 examples\tutorial_programs\point_in_polygon.py
+py -3 examples\tutorial_programs\spatial_join_lsi.py
+```
+
+Linux or macOS:
+
+```bash
+PYTHONPATH=src:. python examples/tutorial_programs/operator_primitives.py
+PYTHONPATH=src:. python examples/tutorial_programs/partner_choices.py
+PYTHONPATH=src:. python examples/tutorial_programs/fixed_radius_neighbors.py
+PYTHONPATH=src:. python examples/tutorial_programs/nearest_neighbor.py
+PYTHONPATH=src:. python examples/tutorial_programs/ray_triangle_hits.py
+PYTHONPATH=src:. python examples/tutorial_programs/continuation_grouped_sum.py
+PYTHONPATH=src:. python examples/tutorial_programs/point_in_polygon.py
+PYTHONPATH=src:. python examples/tutorial_programs/spatial_join_lsi.py
+```
+
+The point is not that every app calls a different primitive. The point is that
+many apps are built from the same few relation-producing operators plus
+different continuation and app code.
+
 RTDL also has a recognizer for small declarative descriptions:
 
 ```python

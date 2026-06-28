@@ -37,6 +37,8 @@ $env:PYTHONPATH = "src;."
 py -3 examples\tutorial_programs\hello_world.py
 py -3 examples\tutorial_programs\v4_frontdoor_quickstart.py
 py -3 examples\tutorial_programs\sorting_rows.py
+py -3 examples\tutorial_programs\nearest_neighbor.py
+py -3 examples\tutorial_programs\partner_choices.py
 py -3 examples\tutorial_programs\benchmark_app_recipes.py
 ```
 
@@ -46,6 +48,8 @@ Linux or macOS:
 PYTHONPATH=src:. python examples/tutorial_programs/hello_world.py
 PYTHONPATH=src:. python examples/tutorial_programs/v4_frontdoor_quickstart.py
 PYTHONPATH=src:. python examples/tutorial_programs/sorting_rows.py
+PYTHONPATH=src:. python examples/tutorial_programs/nearest_neighbor.py
+PYTHONPATH=src:. python examples/tutorial_programs/partner_choices.py
 PYTHONPATH=src:. python examples/tutorial_programs/benchmark_app_recipes.py
 ```
 

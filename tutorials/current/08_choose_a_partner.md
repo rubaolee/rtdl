@@ -27,6 +27,20 @@ print(numba_plan.status, numba_plan.api_surface)
 print(native_plan.status, native_plan.api_surface)
 ```
 
+The runnable partner-choice program prints both accepted and deferred
+combinations, so you can see the planning boundary:
+
+```powershell
+$env:PYTHONPATH = "src;."
+py -3 examples\tutorial_programs\partner_choices.py
+```
+
+Linux or macOS:
+
+```bash
+PYTHONPATH=src:. python examples/tutorial_programs/partner_choices.py
+```
+
 For custom logic, first ask whether the logic can be expressed as a generic
 operator such as filter, count, any-hit, argmin, grouped sum, or component
 union. If it can, use the operator. If it is a pure boolean predicate over one

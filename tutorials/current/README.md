@@ -18,6 +18,8 @@ By the end you should understand how to:
 
 - describe an RT-shaped relation such as radius-neighbor, any-hit,
   nearest-witness, AABB query, or aggregate-frontier;
+- run tutorial programs for NN, radius neighbors, ray hits, PIP, spatial join,
+  partner choice, primitives, and continuations;
 - ask the V4 planner for the current operator surface;
 - choose Torch, CuPy, Numba, or RTDL native explicitly;
 - keep application meaning outside the generic operator;

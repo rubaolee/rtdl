@@ -24,7 +24,7 @@ def main() -> int:
     args = parser.parse_args()
 
     if args.case == "tier2":
-        plan = plan_v4_operator_request("fixed-radius", partner="torch")
+        plan = plan_v4_operator_request("fixed_radius", partner="torch")
     elif args.case == "scalar-callback":
         plan = plan_v4_operator_request(
             "custom-force-score",

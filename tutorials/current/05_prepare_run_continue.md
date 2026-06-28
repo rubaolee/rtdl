@@ -37,6 +37,8 @@ $env:PYTHONPATH = "src;."
 py -3 examples\tutorial_programs\fixed_radius_torch_device_arrays.py --dry-run
 py -3 examples\tutorial_programs\ray_triangle_any_hit_flags_torch_device_arrays.py --dry-run
 py -3 examples\tutorial_programs\point_group_nearest_witness_torch_device_arrays.py --dry-run
+py -3 examples\tutorial_programs\ray_triangle_any_hit_weighted_sum_torch_device_arrays.py --dry-run
+py -3 examples\tutorial_programs\primitive_grouped_i64_reduction_torch_device_arrays.py --dry-run
 py -3 examples\tutorial_programs\aabb_index_all_ops_count.py --dry-run
 ```
 
@@ -46,6 +48,8 @@ Linux or macOS:
 PYTHONPATH=src:. python examples/tutorial_programs/fixed_radius_torch_device_arrays.py --dry-run
 PYTHONPATH=src:. python examples/tutorial_programs/ray_triangle_any_hit_flags_torch_device_arrays.py --dry-run
 PYTHONPATH=src:. python examples/tutorial_programs/point_group_nearest_witness_torch_device_arrays.py --dry-run
+PYTHONPATH=src:. python examples/tutorial_programs/ray_triangle_any_hit_weighted_sum_torch_device_arrays.py --dry-run
+PYTHONPATH=src:. python examples/tutorial_programs/primitive_grouped_i64_reduction_torch_device_arrays.py --dry-run
 PYTHONPATH=src:. python examples/tutorial_programs/aabb_index_all_ops_count.py --dry-run
 ```
 

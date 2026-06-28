@@ -64,6 +64,9 @@ PowerShell:
 ```powershell
 $env:PYTHONPATH = "src;."
 py -3 examples\tutorial_programs\fixed_radius_torch_device_arrays.py --dry-run
+py -3 examples\tutorial_programs\operator_primitives.py
+py -3 examples\tutorial_programs\partner_choices.py
+py -3 examples\tutorial_programs\nearest_neighbor.py
 py -3 examples\tutorial_programs\closest_hit_grouped_argmin_torch_device_arrays.py --dry-run
 py -3 examples\tutorial_programs\ray_triangle_any_hit_flags_torch_device_arrays.py --dry-run
 py -3 examples\tutorial_programs\primitive_grouped_i64_reduction_torch_device_arrays.py --dry-run
@@ -77,6 +80,9 @@ Linux or macOS:
 
 ```bash
 PYTHONPATH=src:. python examples/tutorial_programs/fixed_radius_torch_device_arrays.py --dry-run
+PYTHONPATH=src:. python examples/tutorial_programs/operator_primitives.py
+PYTHONPATH=src:. python examples/tutorial_programs/partner_choices.py
+PYTHONPATH=src:. python examples/tutorial_programs/nearest_neighbor.py
 PYTHONPATH=src:. python examples/tutorial_programs/closest_hit_grouped_argmin_torch_device_arrays.py --dry-run
 PYTHONPATH=src:. python examples/tutorial_programs/ray_triangle_any_hit_flags_torch_device_arrays.py --dry-run
 PYTHONPATH=src:. python examples/tutorial_programs/primitive_grouped_i64_reduction_torch_device_arrays.py --dry-run
