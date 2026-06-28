@@ -18,7 +18,7 @@ from .rayjoin_paper_suite import paper_pairs
 RAYJOIN_SECTION57_NUMBA_AUTO_PLANNER_SCHEMA = (
     "rtdl.v4.rayjoin.section57_numba_auto_primitive_planner.v1"
 )
-RAYJOIN_SECTION57_NUMBA_AUTO_PLAN_STATUS = "goal4806_candidate_planner_not_release_claim"
+RAYJOIN_SECTION57_NUMBA_AUTO_PLAN_STATUS = "candidate_planner_not_release_claim"
 RAYJOIN_SECTION57_NUMBA_PARTNER_SCOPE = (
     "post_traversal_numba_cuda_jit_continuation_on_device_resident_columns"
 )

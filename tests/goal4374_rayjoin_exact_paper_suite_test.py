@@ -228,6 +228,10 @@ class Goal4374RayjoinExactPaperSuiteTest(unittest.TestCase):
         self.assertIn("--backend", first_row["commands"]["rtdl_optix"])
         self.assertIn("optix", first_row["commands"]["rtdl_optix"])
         self.assertIn("embree", first_row["commands"]["rtdl_embree"])
+        self.assertIn("v4_numba", first_row["commands"])
+        self.assertIn("--section57-auto-numba", first_row["commands"]["v4_numba"])
+        self.assertIn("--pairs", first_row["commands"]["v4_numba"])
+        self.assertIn("county_zipcode", first_row["commands"]["v4_numba"])
 
     def test_section57_overlay_matrix_runner_records_timeout_without_crashing(self) -> None:
         script_path = ROOT / "scripts" / "rayjoin_section57_overlay_matrix.py"

@@ -93,6 +93,8 @@ def _section57_common_args(args: argparse.Namespace) -> list[str]:
         command.append("--disable-packed-cache")
     if args.assemble_overlay_output:
         command.append("--assemble-overlay-output")
+    if args.v4_numba_skip_runtime_probe:
+        command.append("--v4-numba-skip-runtime-probe")
     return command
 
 
@@ -255,7 +257,7 @@ def main() -> int:
     parser.add_argument("--pairs", help="Comma-separated overlay pair ids; default is all eight Section 5.7 pairs.")
     parser.add_argument("--partner", default="numba", help="Partner for --section57-auto-numba; this route supports numba.")
     parser.add_argument("--select", default="fastest_valid", help="Selection policy for --section57-auto-numba.")
-    parser.add_argument("--implementations", default="author_rt,rtdl_optix,rtdl_embree")
+    parser.add_argument("--implementations", default="author_rt,rtdl_optix,rtdl_embree,v4_numba")
     parser.add_argument(
         "--input-provenance",
         choices=("paper_preprocessed_cdb", "same_source_regenerated_cdb", "fixture_or_synthetic"),
@@ -273,6 +275,11 @@ def main() -> int:
     parser.add_argument("--allow-missing-inputs", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--skip-runtime-probe", action="store_true", help="Do not probe local Numba CUDA availability.")
+    parser.add_argument(
+        "--v4-numba-skip-runtime-probe",
+        action="store_true",
+        help="Forwarded to the Section 5.7 matrix runner; useful for planning on non-CUDA machines.",
+    )
     parser.add_argument("--timeout-sec", type=int)
     parser.add_argument("--output-json", type=Path)
     parser.add_argument("--output-md", type=Path)

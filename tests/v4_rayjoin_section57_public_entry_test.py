@@ -100,8 +100,10 @@ class V4RayJoinSection57PublicEntryTest(unittest.TestCase):
 
         self.assertEqual(run_payload["schema"], "rtdl.rayjoin.section57_overlay_matrix.run.v1")
         self.assertTrue(any(row["status"] == "dry_run" for row in run_payload["attempts"]))
+        self.assertTrue(any(row.get("implementation") == "v4_numba" for row in run_payload["attempts"]))
         self.assertEqual(summary_payload["coverage"]["overlay_pairs_total"], 8)
         self.assertEqual(summary_payload["coverage"]["overlay_pairs_complete"], 0)
+        self.assertIn("v4_numba_claim_classification", summary_payload["rows"][0])
 
     def test_v214_comparison_protocol_is_same_contract(self) -> None:
         completed = subprocess.run(

@@ -1,0 +1,189 @@
+{
+  "coverage": {
+    "overlay_pairs_complete": 0,
+    "overlay_pairs_incomplete": 8,
+    "overlay_pairs_total": 8
+  },
+  "dataset_root": "data\\rayjoin_section57_cdb",
+  "output_dir": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28",
+  "rows": [
+    {
+      "author_rt_process_sec": null,
+      "complete": false,
+      "pair_id": "county_zipcode",
+      "paper_label": "County x Zipcode",
+      "paper_rayjoin_preprocessing_sec": 0.07,
+      "paper_rayjoin_processing_sec": 0.12,
+      "paths": {
+        "author_rt": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28\\section57_overlay_county_zipcode_author_rt.json",
+        "rtdl_embree": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28\\section57_overlay_county_zipcode_rtdl_embree.json",
+        "rtdl_optix": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28\\section57_overlay_county_zipcode_rtdl_optix.json",
+        "v4_numba": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28\\section57_overlay_county_zipcode_v4_numba.json"
+      },
+      "rtdl_embree_lsi_count": null,
+      "rtdl_embree_total_sec": null,
+      "rtdl_optix_lsi_count": null,
+      "rtdl_optix_total_sec": null,
+      "v4_numba_claim_classification": null,
+      "v4_numba_correctness_status": null,
+      "v4_numba_selected_plan_id": null,
+      "v4_numba_total_sec": null
+    },
+    {
+      "author_rt_process_sec": null,
+      "complete": false,
+      "pair_id": "block_water",
+      "paper_label": "Block x Water",
+      "paper_rayjoin_preprocessing_sec": 0.12,
+      "paper_rayjoin_processing_sec": 0.23,
+      "paths": {
+        "author_rt": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28\\section57_overlay_block_water_author_rt.json",
+        "rtdl_embree": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28\\section57_overlay_block_water_rtdl_embree.json",
+        "rtdl_optix": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28\\section57_overlay_block_water_rtdl_optix.json",
+        "v4_numba": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28\\section57_overlay_block_water_v4_numba.json"
+      },
+      "rtdl_embree_lsi_count": null,
+      "rtdl_embree_total_sec": null,
+      "rtdl_optix_lsi_count": null,
+      "rtdl_optix_total_sec": null,
+      "v4_numba_claim_classification": null,
+      "v4_numba_correctness_status": null,
+      "v4_numba_selected_plan_id": null,
+      "v4_numba_total_sec": null
+    },
+    {
+      "author_rt_process_sec": null,
+      "complete": false,
+      "pair_id": "lkaf_pkaf",
+      "paper_label": "LKAF x PKAF",
+      "paper_rayjoin_preprocessing_sec": 0.01,
+      "paper_rayjoin_processing_sec": 0.01,
+      "paths": {
+        "author_rt": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28\\section57_overlay_lkaf_pkaf_author_rt.json",
+        "rtdl_embree": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28\\section57_overlay_lkaf_pkaf_rtdl_embree.json",
+        "rtdl_optix": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28\\section57_overlay_lkaf_pkaf_rtdl_optix.json",
+        "v4_numba": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28\\section57_overlay_lkaf_pkaf_v4_numba.json"
+      },
+      "rtdl_embree_lsi_count": null,
+      "rtdl_embree_total_sec": null,
+      "rtdl_optix_lsi_count": null,
+      "rtdl_optix_total_sec": null,
+      "v4_numba_claim_classification": null,
+      "v4_numba_correctness_status": null,
+      "v4_numba_selected_plan_id": null,
+      "v4_numba_total_sec": null
+    },
+    {
+      "author_rt_process_sec": null,
+      "complete": false,
+      "pair_id": "lkas_pkas",
+      "paper_label": "LKAS x PKAS",
+      "paper_rayjoin_preprocessing_sec": 0.05,
+      "paper_rayjoin_processing_sec": 0.04,
+      "paths": {
+        "author_rt": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28\\section57_overlay_lkas_pkas_author_rt.json",
+        "rtdl_embree": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28\\section57_overlay_lkas_pkas_rtdl_embree.json",
+        "rtdl_optix": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28\\section57_overlay_lkas_pkas_rtdl_optix.json",
+        "v4_numba": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28\\section57_overlay_lkas_pkas_v4_numba.json"
+      },
+      "rtdl_embree_lsi_count": null,
+      "rtdl_embree_total_sec": null,
+      "rtdl_optix_lsi_count": null,
+      "rtdl_optix_total_sec": null,
+      "v4_numba_claim_classification": null,
+      "v4_numba_correctness_status": null,
+      "v4_numba_selected_plan_id": null,
+      "v4_numba_total_sec": null
+    },
+    {
+      "author_rt_process_sec": null,
+      "complete": false,
+      "pair_id": "lkau_pkau",
+      "paper_label": "LKAU x PKAU",
+      "paper_rayjoin_preprocessing_sec": 0.01,
+      "paper_rayjoin_processing_sec": 0.01,
+      "paths": {
+        "author_rt": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28\\section57_overlay_lkau_pkau_author_rt.json",
+        "rtdl_embree": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28\\section57_overlay_lkau_pkau_rtdl_embree.json",
+        "rtdl_optix": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28\\section57_overlay_lkau_pkau_rtdl_optix.json",
+        "v4_numba": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28\\section57_overlay_lkau_pkau_v4_numba.json"
+      },
+      "rtdl_embree_lsi_count": null,
+      "rtdl_embree_total_sec": null,
+      "rtdl_optix_lsi_count": null,
+      "rtdl_optix_total_sec": null,
+      "v4_numba_claim_classification": null,
+      "v4_numba_correctness_status": null,
+      "v4_numba_selected_plan_id": null,
+      "v4_numba_total_sec": null
+    },
+    {
+      "author_rt_process_sec": null,
+      "complete": false,
+      "pair_id": "lkeu_pkeu",
+      "paper_label": "LKEU x PKEU",
+      "paper_rayjoin_preprocessing_sec": 0.2,
+      "paper_rayjoin_processing_sec": 0.2,
+      "paths": {
+        "author_rt": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28\\section57_overlay_lkeu_pkeu_author_rt.json",
+        "rtdl_embree": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28\\section57_overlay_lkeu_pkeu_rtdl_embree.json",
+        "rtdl_optix": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28\\section57_overlay_lkeu_pkeu_rtdl_optix.json",
+        "v4_numba": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28\\section57_overlay_lkeu_pkeu_v4_numba.json"
+      },
+      "rtdl_embree_lsi_count": null,
+      "rtdl_embree_total_sec": null,
+      "rtdl_optix_lsi_count": null,
+      "rtdl_optix_total_sec": null,
+      "v4_numba_claim_classification": null,
+      "v4_numba_correctness_status": null,
+      "v4_numba_selected_plan_id": null,
+      "v4_numba_total_sec": null
+    },
+    {
+      "author_rt_process_sec": null,
+      "complete": false,
+      "pair_id": "lkna_pkna",
+      "paper_label": "LKNA x PKNA",
+      "paper_rayjoin_preprocessing_sec": 0.21,
+      "paper_rayjoin_processing_sec": 0.25,
+      "paths": {
+        "author_rt": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28\\section57_overlay_lkna_pkna_author_rt.json",
+        "rtdl_embree": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28\\section57_overlay_lkna_pkna_rtdl_embree.json",
+        "rtdl_optix": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28\\section57_overlay_lkna_pkna_rtdl_optix.json",
+        "v4_numba": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28\\section57_overlay_lkna_pkna_v4_numba.json"
+      },
+      "rtdl_embree_lsi_count": null,
+      "rtdl_embree_total_sec": null,
+      "rtdl_optix_lsi_count": null,
+      "rtdl_optix_total_sec": null,
+      "v4_numba_claim_classification": null,
+      "v4_numba_correctness_status": null,
+      "v4_numba_selected_plan_id": null,
+      "v4_numba_total_sec": null
+    },
+    {
+      "author_rt_process_sec": null,
+      "complete": false,
+      "pair_id": "lksa_pksa",
+      "paper_label": "LKSA x PKSA",
+      "paper_rayjoin_preprocessing_sec": 0.01,
+      "paper_rayjoin_processing_sec": 0.02,
+      "paths": {
+        "author_rt": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28\\section57_overlay_lksa_pksa_author_rt.json",
+        "rtdl_embree": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28\\section57_overlay_lksa_pksa_rtdl_embree.json",
+        "rtdl_optix": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28\\section57_overlay_lksa_pksa_rtdl_optix.json",
+        "v4_numba": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28\\section57_overlay_lksa_pksa_v4_numba.json"
+      },
+      "rtdl_embree_lsi_count": null,
+      "rtdl_embree_total_sec": null,
+      "rtdl_optix_lsi_count": null,
+      "rtdl_optix_total_sec": null,
+      "v4_numba_claim_classification": null,
+      "v4_numba_correctness_status": null,
+      "v4_numba_selected_plan_id": null,
+      "v4_numba_total_sec": null
+    }
+  ],
+  "schema": "rtdl.rayjoin.section57_overlay_matrix.summary.v1",
+  "timing_caveat": "Paper Table 4 values are historical reference numbers. Local author_rt rows are measured process wall times. RTDL rows are warm-cache medians under the selected protocol."
+}

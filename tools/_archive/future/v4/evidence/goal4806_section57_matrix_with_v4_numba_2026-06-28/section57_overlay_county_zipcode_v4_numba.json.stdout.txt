@@ -1,0 +1,4 @@
+RayJoin Section 5.7 V4+Numba auto-primitive planner
+  claim classification: blocked_missing_inputs
+  evidence json: tools\_archive\future\v4\evidence\goal4806_section57_matrix_with_v4_numba_2026-06-28\section57_overlay_county_zipcode_v4_numba.json
+  evidence md:   tools\_archive\future\v4\evidence\goal4806_section57_matrix_with_v4_numba_2026-06-28\section57_overlay_county_zipcode_v4_numba.md

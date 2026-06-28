@@ -42,6 +42,19 @@ scoreboard. It does not count as a full paper-reproduction result until the
 author-code, V2.14 exact-suite, and V4+Numba selected-plan columns all have
 valid correctness and timing evidence.
 
+The Section 5.7 matrix runner also accepts `v4_numba` as an implementation:
+
+```bash
+python3 examples/paper_reproduction/rayjoin.py --section57-run \
+  --implementations author_rt,rtdl_optix,rtdl_embree,v4_numba \
+  --dataset-root /path/to/rayjoin_section57_cdb \
+  --query-exec /workspace/RayJoin_fresh/release/bin/query_exec \
+  --polyover-exec /workspace/RayJoin_fresh/release/bin/polyover_exec
+```
+
+This keeps the author-code baseline, RTDL exact-suite baseline, and V4+Numba
+selected plan in one summary table.
+
 ## What Counts
 
 A full Section 5.7 claim requires all of the following:
@@ -52,7 +65,8 @@ A full Section 5.7 claim requires all of the following:
   explicitly labeled as such;
 - the RayJoin author binaries for the author baseline:
   `query_exec` and `polyover_exec`;
-- separate result rows for `author_rt`, `rtdl_optix`, and `rtdl_embree`;
+- separate result rows for `author_rt`, `rtdl_optix`, `rtdl_embree`, and
+  `v4_numba`;
 - for the V4+Numba auto planner, separate result columns for `author_code`,
   `v2_14_exact_suite`, and `v4_numba_selected_plan`;
 - correctness/status and timing recorded together;

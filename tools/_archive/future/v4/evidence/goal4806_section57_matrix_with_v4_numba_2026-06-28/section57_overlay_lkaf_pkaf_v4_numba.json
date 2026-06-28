@@ -1,0 +1,364 @@
+{
+  "candidate_scoreboard": [
+    {
+      "compile_jit_sec": null,
+      "correctness_comparator": "topology_geometry_hash_against_v2_14_and_author_when_available",
+      "correctness_status": "not_run",
+      "expected_output_schema": "overlay_valid_pair_rows_then_optional_chain_assembly",
+      "measured_total_sec": null,
+      "measurement_policy": {
+        "compile_jit_overhead_separated": true,
+        "repeat": 3,
+        "warmup": 1
+      },
+      "pair_id": "lkaf_pkaf",
+      "paper_label": "LKAF x PKAF",
+      "partner": "numba",
+      "plan_id": "v4_numba_post_traversal_mask_compact",
+      "selection_role": "v4_numba_selected_plan",
+      "skip_reason": "Section 5.7 exact or same-source CDB inputs are missing.",
+      "stages": [
+        {
+          "device_resident_input_required": true,
+          "execution_boundary": "pre_traversal_or_native_query",
+          "numba_cuda_jit_required": false,
+          "optix_traversal_callback_injection": false,
+          "owner": "rtdl_v4",
+          "partner": null,
+          "primitive": "shape_pair_relation_or_aabb_index_query",
+          "role": "candidate_pair_generation",
+          "stage_id": "broadphase_candidate_pairs"
+        },
+        {
+          "device_resident_input_required": true,
+          "execution_boundary": "native_rt_traversal",
+          "numba_cuda_jit_required": false,
+          "optix_traversal_callback_injection": false,
+          "owner": "rtdl_v4",
+          "partner": null,
+          "primitive": "ray_segment_intersection_and_point_location",
+          "role": "rayjoin_lsi_pip_refinement",
+          "stage_id": "rt_refinement_lsi_pip"
+        },
+        {
+          "device_resident_input_required": true,
+          "execution_boundary": "post_traversal_refinement",
+          "numba_cuda_jit_required": true,
+          "optix_traversal_callback_injection": false,
+          "owner": "numba_partner",
+          "partner": "numba",
+          "primitive": "section57_overlay_valid_pair_mask",
+          "role": "post_traversal_valid_pair_filter",
+          "stage_id": "numba_valid_pair_mask"
+        },
+        {
+          "device_resident_input_required": true,
+          "execution_boundary": "post_traversal_continuation",
+          "numba_cuda_jit_required": true,
+          "optix_traversal_callback_injection": false,
+          "owner": "numba_partner",
+          "partner": "numba",
+          "primitive": "compact_mask_i64",
+          "role": "post_traversal_compaction",
+          "stage_id": "numba_mask_compaction"
+        }
+      ],
+      "status": "skipped_missing_inputs",
+      "steady_state_sec": null,
+      "user_semantics": "section57_polygon_overlay"
+    },
+    {
+      "compile_jit_sec": null,
+      "correctness_comparator": "topology_geometry_hash_against_v2_14_and_author_when_available",
+      "correctness_status": "not_run",
+      "expected_output_schema": "overlay_grouped_counts_and_witness_summaries",
+      "measured_total_sec": null,
+      "measurement_policy": {
+        "compile_jit_overhead_separated": true,
+        "repeat": 3,
+        "warmup": 1
+      },
+      "pair_id": "lkaf_pkaf",
+      "paper_label": "LKAF x PKAF",
+      "partner": "numba",
+      "plan_id": "v4_numba_post_traversal_segmented_counts",
+      "selection_role": "v4_numba_selected_plan",
+      "skip_reason": "Section 5.7 exact or same-source CDB inputs are missing.",
+      "stages": [
+        {
+          "device_resident_input_required": true,
+          "execution_boundary": "pre_traversal_or_native_query",
+          "numba_cuda_jit_required": false,
+          "optix_traversal_callback_injection": false,
+          "owner": "rtdl_v4",
+          "partner": null,
+          "primitive": "shape_pair_relation_or_aabb_index_query",
+          "role": "candidate_pair_generation",
+          "stage_id": "broadphase_candidate_pairs"
+        },
+        {
+          "device_resident_input_required": true,
+          "execution_boundary": "native_rt_traversal",
+          "numba_cuda_jit_required": false,
+          "optix_traversal_callback_injection": false,
+          "owner": "rtdl_v4",
+          "partner": null,
+          "primitive": "ray_segment_intersection_and_point_location",
+          "role": "rayjoin_lsi_pip_refinement",
+          "stage_id": "rt_refinement_lsi_pip"
+        },
+        {
+          "device_resident_input_required": true,
+          "execution_boundary": "post_traversal_refinement",
+          "numba_cuda_jit_required": true,
+          "optix_traversal_callback_injection": false,
+          "owner": "numba_partner",
+          "partner": "numba",
+          "primitive": "section57_overlay_valid_pair_mask",
+          "role": "post_traversal_valid_pair_filter",
+          "stage_id": "numba_valid_pair_mask"
+        },
+        {
+          "device_resident_input_required": true,
+          "execution_boundary": "post_traversal_continuation",
+          "numba_cuda_jit_required": true,
+          "optix_traversal_callback_injection": false,
+          "owner": "numba_partner",
+          "partner": "numba",
+          "primitive": "segmented_count_i64",
+          "role": "post_traversal_grouped_count",
+          "stage_id": "numba_segmented_overlay_counts"
+        }
+      ],
+      "status": "skipped_missing_inputs",
+      "steady_state_sec": null,
+      "user_semantics": "section57_polygon_overlay"
+    }
+  ],
+  "claim_classification": "blocked_missing_inputs",
+  "columns": [
+    "author_code",
+    "v2_14_exact_suite",
+    "v4_numba_selected_plan"
+  ],
+  "dataset_root": "data\\rayjoin_section57_cdb",
+  "elapsed_planner_sec": 0.002209300175309181,
+  "input_provenance": "paper_preprocessed_cdb",
+  "non_authorizations": {
+    "full_paper_reproduction_claim": false,
+    "public_high_performance_claim": false,
+    "v4_1_arbitrary_callback_claim": false
+  },
+  "numba_partner_contract": {
+    "device_resident_input_required": true,
+    "execution_boundary": "post_traversal_refinement_or_continuation",
+    "existing_numba_continuations": [
+      "compact_mask_i64",
+      "segmented_count_i64"
+    ],
+    "host_materialization_in_hot_path_allowed": false,
+    "not_wrapper_theater_requirement": "A valid runtime execution must compile a Numba CUDA kernel and run it on device-resident columns produced by RTDL/V4 traversal stages.",
+    "numba_cuda_jit_factory": "_numba_section57_overlay_valid_pair_mask_kernel_factory",
+    "numba_cuda_jit_operation": "section57_overlay_valid_pair_mask",
+    "numba_cuda_jit_required": true,
+    "optix_traversal_callback_injection": false,
+    "partner": "numba",
+    "v4_1_arbitrary_callback_scope_creep": false
+  },
+  "output_dir": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_matrix_with_v4_numba_2026-06-28",
+  "pairs": [
+    "lkaf_pkaf"
+  ],
+  "rows": [
+    {
+      "baselines": {
+        "author_code": {
+          "column": "author_code",
+          "correctness_required": "topology_geometry_hash_match_when_available",
+          "performance_required": "same_section57_contract_timing_when_available",
+          "polyover_exec": "C:\\workspace\\RayJoin_fresh\\release\\bin\\polyover_exec",
+          "polyover_exec_exists": false,
+          "query_exec": "C:\\workspace\\RayJoin_fresh\\release\\bin\\query_exec",
+          "query_exec_exists": false,
+          "required_for_full_paper_reproduction_claim": true,
+          "status": "blocked_missing_author_baseline"
+        },
+        "v2_14_exact_suite": {
+          "column": "v2_14_exact_suite",
+          "command": "python scripts/rtdl_v2_14_benchmark_run_plan.py --overlay-dataset-root data\\rayjoin_section57_cdb --overlay-pairs lkaf_pkaf",
+          "correctness_required": "same_section57_contract",
+          "status": "blocked_missing_inputs"
+        }
+      },
+      "blocker": "missing exact CDB input(s): point_cdb/lakes/Africa/lakes_Africa_Point.cdb, point_cdb/parks/Africa/parks_Africa_Point.cdb",
+      "candidate_plans": [
+        {
+          "compile_jit_sec": null,
+          "correctness_comparator": "topology_geometry_hash_against_v2_14_and_author_when_available",
+          "correctness_status": "not_run",
+          "expected_output_schema": "overlay_valid_pair_rows_then_optional_chain_assembly",
+          "measured_total_sec": null,
+          "measurement_policy": {
+            "compile_jit_overhead_separated": true,
+            "repeat": 3,
+            "warmup": 1
+          },
+          "pair_id": "lkaf_pkaf",
+          "paper_label": "LKAF x PKAF",
+          "partner": "numba",
+          "plan_id": "v4_numba_post_traversal_mask_compact",
+          "selection_role": "v4_numba_selected_plan",
+          "skip_reason": "Section 5.7 exact or same-source CDB inputs are missing.",
+          "stages": [
+            {
+              "device_resident_input_required": true,
+              "execution_boundary": "pre_traversal_or_native_query",
+              "numba_cuda_jit_required": false,
+              "optix_traversal_callback_injection": false,
+              "owner": "rtdl_v4",
+              "partner": null,
+              "primitive": "shape_pair_relation_or_aabb_index_query",
+              "role": "candidate_pair_generation",
+              "stage_id": "broadphase_candidate_pairs"
+            },
+            {
+              "device_resident_input_required": true,
+              "execution_boundary": "native_rt_traversal",
+              "numba_cuda_jit_required": false,
+              "optix_traversal_callback_injection": false,
+              "owner": "rtdl_v4",
+              "partner": null,
+              "primitive": "ray_segment_intersection_and_point_location",
+              "role": "rayjoin_lsi_pip_refinement",
+              "stage_id": "rt_refinement_lsi_pip"
+            },
+            {
+              "device_resident_input_required": true,
+              "execution_boundary": "post_traversal_refinement",
+              "numba_cuda_jit_required": true,
+              "optix_traversal_callback_injection": false,
+              "owner": "numba_partner",
+              "partner": "numba",
+              "primitive": "section57_overlay_valid_pair_mask",
+              "role": "post_traversal_valid_pair_filter",
+              "stage_id": "numba_valid_pair_mask"
+            },
+            {
+              "device_resident_input_required": true,
+              "execution_boundary": "post_traversal_continuation",
+              "numba_cuda_jit_required": true,
+              "optix_traversal_callback_injection": false,
+              "owner": "numba_partner",
+              "partner": "numba",
+              "primitive": "compact_mask_i64",
+              "role": "post_traversal_compaction",
+              "stage_id": "numba_mask_compaction"
+            }
+          ],
+          "status": "skipped_missing_inputs",
+          "steady_state_sec": null,
+          "user_semantics": "section57_polygon_overlay"
+        },
+        {
+          "compile_jit_sec": null,
+          "correctness_comparator": "topology_geometry_hash_against_v2_14_and_author_when_available",
+          "correctness_status": "not_run",
+          "expected_output_schema": "overlay_grouped_counts_and_witness_summaries",
+          "measured_total_sec": null,
+          "measurement_policy": {
+            "compile_jit_overhead_separated": true,
+            "repeat": 3,
+            "warmup": 1
+          },
+          "pair_id": "lkaf_pkaf",
+          "paper_label": "LKAF x PKAF",
+          "partner": "numba",
+          "plan_id": "v4_numba_post_traversal_segmented_counts",
+          "selection_role": "v4_numba_selected_plan",
+          "skip_reason": "Section 5.7 exact or same-source CDB inputs are missing.",
+          "stages": [
+            {
+              "device_resident_input_required": true,
+              "execution_boundary": "pre_traversal_or_native_query",
+              "numba_cuda_jit_required": false,
+              "optix_traversal_callback_injection": false,
+              "owner": "rtdl_v4",
+              "partner": null,
+              "primitive": "shape_pair_relation_or_aabb_index_query",
+              "role": "candidate_pair_generation",
+              "stage_id": "broadphase_candidate_pairs"
+            },
+            {
+              "device_resident_input_required": true,
+              "execution_boundary": "native_rt_traversal",
+              "numba_cuda_jit_required": false,
+              "optix_traversal_callback_injection": false,
+              "owner": "rtdl_v4",
+              "partner": null,
+              "primitive": "ray_segment_intersection_and_point_location",
+              "role": "rayjoin_lsi_pip_refinement",
+              "stage_id": "rt_refinement_lsi_pip"
+            },
+            {
+              "device_resident_input_required": true,
+              "execution_boundary": "post_traversal_refinement",
+              "numba_cuda_jit_required": true,
+              "optix_traversal_callback_injection": false,
+              "owner": "numba_partner",
+              "partner": "numba",
+              "primitive": "section57_overlay_valid_pair_mask",
+              "role": "post_traversal_valid_pair_filter",
+              "stage_id": "numba_valid_pair_mask"
+            },
+            {
+              "device_resident_input_required": true,
+              "execution_boundary": "post_traversal_continuation",
+              "numba_cuda_jit_required": true,
+              "optix_traversal_callback_injection": false,
+              "owner": "numba_partner",
+              "partner": "numba",
+              "primitive": "segmented_count_i64",
+              "role": "post_traversal_grouped_count",
+              "stage_id": "numba_segmented_overlay_counts"
+            }
+          ],
+          "status": "skipped_missing_inputs",
+          "steady_state_sec": null,
+          "user_semantics": "section57_polygon_overlay"
+        }
+      ],
+      "correctness_gate": {
+        "row_count_only_sufficient": false,
+        "status": "blocked_missing_inputs",
+        "topology_geometry_hash_required": true
+      },
+      "exact_input_ready": false,
+      "left_path": "data\\rayjoin_section57_cdb\\point_cdb\\lakes\\Africa\\lakes_Africa_Point.cdb",
+      "pair_id": "lkaf_pkaf",
+      "paper_label": "LKAF x PKAF",
+      "paper_rayjoin_table4_seconds": {
+        "preprocessing_sec": 0.01,
+        "processing_sec": 0.01
+      },
+      "right_path": "data\\rayjoin_section57_cdb\\point_cdb\\parks\\Africa\\parks_Africa_Point.cdb"
+    }
+  ],
+  "runtime_probe": {
+    "checked_runtime": false,
+    "numba_cuda_available": false
+  },
+  "schema": "rtdl.v4.rayjoin.section57_numba_auto_primitive_planner.v1",
+  "selected_plan": null,
+  "selection_policy": {
+    "hardcoded_default_allowed": false,
+    "measured_candidate_required": true,
+    "name": "fastest_valid"
+  },
+  "status": "goal4806_candidate_planner_not_release_claim",
+  "user_semantics": {
+    "partner": "numba",
+    "primitive_names_required_from_user": false,
+    "select": "fastest_valid",
+    "workload": "rayjoin_section57_polygon_overlay"
+  }
+}

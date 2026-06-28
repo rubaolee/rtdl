@@ -20,7 +20,7 @@ from rtdsl.rayjoin_paper_suite import paper_cases
 from rtdsl.rayjoin_paper_suite import paper_pairs
 
 
-IMPLEMENTATIONS = ("author_rt", "rtdl_optix", "rtdl_embree")
+IMPLEMENTATIONS = ("author_rt", "rtdl_optix", "rtdl_embree", "v4_numba")
 
 
 def _split_csv(value: str | None, *, default: Iterable[str]) -> tuple[str, ...]:
@@ -60,6 +60,7 @@ def _artifact_paths(output_dir: Path, pair_id: str) -> dict[str, Path]:
         "author_rt": output_dir / f"section57_overlay_{pair_id}_author_rt.json",
         "rtdl_optix": output_dir / f"section57_overlay_{pair_id}_rtdl_optix.json",
         "rtdl_embree": output_dir / f"section57_overlay_{pair_id}_rtdl_embree.json",
+        "v4_numba": output_dir / f"section57_overlay_{pair_id}_v4_numba.json",
     }
 
 
@@ -132,6 +133,41 @@ def _rtdl_command(args: argparse.Namespace, case, backend: str, output_json: Pat
     return command
 
 
+def _v4_numba_command(args: argparse.Namespace, case, output_json: Path) -> list[str]:
+    command = [
+        sys.executable,
+        str(ROOT / "examples" / "paper_reproduction" / "rayjoin.py"),
+        "--section57-auto-numba",
+        "--dataset-root",
+        str(args.dataset_root),
+        "--output-dir",
+        str(args.output_dir),
+        "--pairs",
+        case.pair.pair_id,
+        "--partner",
+        "numba",
+        "--select",
+        args.v4_numba_select,
+        "--input-provenance",
+        args.input_provenance,
+        "--rtdl-warmup",
+        str(args.rtdl_warmup),
+        "--rtdl-repeat",
+        str(args.rtdl_repeat),
+        "--output-json",
+        str(output_json),
+        "--output-md",
+        str(output_json.with_suffix(".md")),
+    ]
+    if args.query_exec is not None:
+        command.extend(["--query-exec", str(args.query_exec)])
+    if args.polyover_exec is not None:
+        command.extend(["--polyover-exec", str(args.polyover_exec)])
+    if args.v4_numba_skip_runtime_probe:
+        command.append("--skip-runtime-probe")
+    return command
+
+
 def _planned_commands(args: argparse.Namespace, case, paths: dict[str, Path]) -> dict[str, list[str] | None]:
     commands: dict[str, list[str] | None] = {}
     for implementation in _split_csv(args.implementations, default=IMPLEMENTATIONS):
@@ -144,6 +180,8 @@ def _planned_commands(args: argparse.Namespace, case, paths: dict[str, Path]) ->
             commands[implementation] = _rtdl_command(args, case, "optix", paths[implementation])
         elif implementation == "rtdl_embree":
             commands[implementation] = _rtdl_command(args, case, "embree", paths[implementation])
+        elif implementation == "v4_numba":
+            commands[implementation] = _v4_numba_command(args, case, paths[implementation])
         else:
             raise ValueError(f"unknown implementation: {implementation}")
     return commands
@@ -339,6 +377,28 @@ def _extract_rtdl_total(payload: dict[str, object] | None, backend: str) -> tupl
     return (None if total is None else float(total), None if count is None else int(count))
 
 
+def _extract_v4_numba(payload: dict[str, object] | None) -> dict[str, object]:
+    if payload is None:
+        return {
+            "present": False,
+            "claim_classification": None,
+            "selected_plan_id": None,
+            "total_sec": None,
+            "correctness_status": None,
+        }
+    selected = payload.get("selected_plan") or {}
+    if not isinstance(selected, dict):
+        selected = {}
+    total = selected.get("measured_total_sec")
+    return {
+        "present": True,
+        "claim_classification": payload.get("claim_classification"),
+        "selected_plan_id": selected.get("plan_id"),
+        "total_sec": None if total is None else float(total),
+        "correctness_status": selected.get("correctness_status"),
+    }
+
+
 def summarize_results(args: argparse.Namespace) -> dict[str, object]:
     pair_ids = _split_csv(args.pairs, default=[pair.pair_id for pair in paper_pairs()])
     rows = []
@@ -347,8 +407,10 @@ def summarize_results(args: argparse.Namespace) -> dict[str, object]:
         author = _read_json(paths["author_rt"])
         optix = _read_json(paths["rtdl_optix"])
         embree = _read_json(paths["rtdl_embree"])
+        v4_numba = _read_json(paths["v4_numba"])
         optix_total, optix_count = _extract_rtdl_total(optix, "optix")
         embree_total, embree_count = _extract_rtdl_total(embree, "embree")
+        v4_numba_summary = _extract_v4_numba(v4_numba)
         rows.append(
             {
                 "pair_id": case.pair.pair_id,
@@ -360,7 +422,17 @@ def summarize_results(args: argparse.Namespace) -> dict[str, object]:
                 "rtdl_optix_lsi_count": optix_count,
                 "rtdl_embree_total_sec": embree_total,
                 "rtdl_embree_lsi_count": embree_count,
-                "complete": author is not None and optix is not None and embree is not None,
+                "v4_numba_total_sec": v4_numba_summary["total_sec"],
+                "v4_numba_claim_classification": v4_numba_summary["claim_classification"],
+                "v4_numba_selected_plan_id": v4_numba_summary["selected_plan_id"],
+                "v4_numba_correctness_status": v4_numba_summary["correctness_status"],
+                "complete": (
+                    author is not None
+                    and optix is not None
+                    and embree is not None
+                    and v4_numba_summary["present"]
+                    and v4_numba_summary["selected_plan_id"] is not None
+                ),
                 "paths": {key: str(value) for key, value in paths.items()},
             }
         )
@@ -433,8 +505,8 @@ def render_summary_markdown(payload: dict[str, object]) -> str:
             "",
             "## Matrix",
             "",
-            "| Pair | Paper RayJoin Processing (Preprocess) | Local Author RT Process | RTDL OptiX Total | RTDL Embree Total | RTDL LSI Count Match | Complete |",
-            "|---|---:|---:|---:|---:|---|---:|",
+            "| Pair | Paper RayJoin Processing (Preprocess) | Local Author RT Process | RTDL OptiX Total | RTDL Embree Total | V4+Numba Total | V4+Numba Status | RTDL LSI Count Match | Complete |",
+            "|---|---:|---:|---:|---:|---:|---|---|---:|",
         ]
     )
     for row in payload["rows"]:
@@ -442,6 +514,8 @@ def render_summary_markdown(payload: dict[str, object]) -> str:
         author = "" if row["author_rt_process_sec"] is None else f"{row['author_rt_process_sec']:.6f}"
         optix = "" if row["rtdl_optix_total_sec"] is None else f"{row['rtdl_optix_total_sec']:.6f}"
         embree = "" if row["rtdl_embree_total_sec"] is None else f"{row['rtdl_embree_total_sec']:.6f}"
+        v4_numba = "" if row["v4_numba_total_sec"] is None else f"{row['v4_numba_total_sec']:.6f}"
+        v4_numba_status = row["v4_numba_claim_classification"] or ""
         count_match = (
             ""
             if row["rtdl_optix_lsi_count"] is None or row["rtdl_embree_lsi_count"] is None
@@ -449,7 +523,7 @@ def render_summary_markdown(payload: dict[str, object]) -> str:
         )
         lines.append(
             f"| {row['paper_label']} | {paper} | {author} | {optix} | {embree} | "
-            f"{count_match} | {row['complete']} |"
+            f"{v4_numba} | `{v4_numba_status}` | {count_match} | {row['complete']} |"
         )
     return "\n".join(lines).rstrip() + "\n"
 
@@ -548,7 +622,7 @@ def _add_common(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--implementations",
         default=",".join(IMPLEMENTATIONS),
-        help="Comma-separated subset of author_rt,rtdl_optix,rtdl_embree.",
+        help="Comma-separated subset of author_rt,rtdl_optix,rtdl_embree,v4_numba.",
     )
     parser.add_argument(
         "--input-provenance",
@@ -569,6 +643,8 @@ def _add_common(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--packed-cache-dir", type=Path)
     parser.add_argument("--disable-packed-cache", action="store_true")
     parser.add_argument("--assemble-overlay-output", action="store_true")
+    parser.add_argument("--v4-numba-select", default="fastest_valid")
+    parser.add_argument("--v4-numba-skip-runtime-probe", action="store_true")
 
 
 def main() -> None:
