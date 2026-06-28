@@ -7,8 +7,8 @@ Current paper-oriented entrypoints:
 
 | Paper-oriented app | Command |
 | --- | --- |
-| RT-BarnesHut | `py -3 examples\paper_reproduction\rt_barneshut.py --help` |
-| RayJoin | `py -3 examples\paper_reproduction\rayjoin.py --help` |
+| RT-BarnesHut | `py -3 examples\paper_reproduction\rt_barneshut.py --json` |
+| RayJoin | `py -3 examples\paper_reproduction\rayjoin.py --json` |
 
 These scripts forward to the corresponding RTDL app implementation while
 keeping the paper-reproduction label separate from the ordinary benchmark suite.

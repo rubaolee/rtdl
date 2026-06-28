@@ -26,6 +26,7 @@ py -3 examples\tutorial_programs\point_in_polygon.py
 py -3 examples\tutorial_programs\spatial_join_lsi.py
 py -3 examples\tutorial_programs\aggregate_frontier_rows.py
 py -3 examples\tutorial_programs\component_union_from_radius.py
+py -3 examples\tutorial_programs\contact_manifold_lowering.py
 py -3 examples\tutorial_programs\raydb_table_to_ray.py
 py -3 examples\tutorial_programs\rayjoin_topology_intro.py
 py -3 examples\tutorial_programs\benchmark_app_recipes.py
@@ -43,6 +44,7 @@ PYTHONPATH=src:. python examples/tutorial_programs/point_in_polygon.py
 PYTHONPATH=src:. python examples/tutorial_programs/spatial_join_lsi.py
 PYTHONPATH=src:. python examples/tutorial_programs/aggregate_frontier_rows.py
 PYTHONPATH=src:. python examples/tutorial_programs/component_union_from_radius.py
+PYTHONPATH=src:. python examples/tutorial_programs/contact_manifold_lowering.py
 PYTHONPATH=src:. python examples/tutorial_programs/raydb_table_to_ray.py
 PYTHONPATH=src:. python examples/tutorial_programs/rayjoin_topology_intro.py
 PYTHONPATH=src:. python examples/tutorial_programs/benchmark_app_recipes.py

@@ -21,7 +21,7 @@ class RecipeStep:
     input_shape: str
     call_pattern: str
     why: str
-    plan: rt.V4OperatorPlan
+    plan: rt.V4OperatorPlan | None
 
 
 @dataclass(frozen=True)
@@ -50,6 +50,27 @@ def choose_operator(
         call_pattern=call_pattern,
         why=why,
         plan=plan,
+    )
+
+
+def describe_app_continuation(
+    name: str,
+    request: str,
+    partner: str,
+    input_shape: str,
+    call_pattern: str,
+    why: str,
+) -> RecipeStep:
+    """Describe app-owned continuation work that follows a V4 relation."""
+
+    return RecipeStep(
+        name=name,
+        request=request,
+        partner=partner,
+        input_shape=input_shape,
+        call_pattern=call_pattern,
+        why=why,
+        plan=None,
     )
 
 
@@ -86,13 +107,13 @@ def build_rtnn_recipe() -> AppRecipe:
         "prepare_point_group_nearest_witness_2d_device_arrays_v4(...)",
         "The nearest-witness relation gives the candidate each query point should keep.",
     )
-    ranked = choose_operator(
+    ranked = describe_app_continuation(
         "Summarize ranked candidates",
         "ranked_summary",
-        "rtdl_native",
+        "app",
         "candidate scores per query group",
-        "run_fixed_radius_ranked_summary_3d_prepared_runner_v4(...)",
-        "The planner returns the current bounded status for this route.",
+        "ranked_summary_neighbors.py",
+        "The app can rank or summarize candidate rows after the V4 nearest-witness relation is available.",
     )
     return AppRecipe(
         app="RTNN",
@@ -303,7 +324,8 @@ def benchmark_app_recipes() -> tuple[AppRecipe, ...]:
 def render_recipe(recipe: AppRecipe) -> str:
     lines = [recipe.app, f"  idea: {recipe.idea}"]
     for index, step in enumerate(recipe.steps, 1):
-        surface = step.plan.api_surface or "<no V4.0 release surface>"
+        surface = step.plan.api_surface if step.plan is not None else "<app-owned continuation>"
+        status = step.plan.status if step.plan is not None else "app_owned_continuation"
         lines.extend(
             [
                 f"  {index}. {step.name}",
@@ -311,7 +333,7 @@ def render_recipe(recipe: AppRecipe) -> str:
                 f"     partner: {step.partner}",
                 f"     input: {step.input_shape}",
                 f"     call: {step.call_pattern}",
-                f"     status: {step.plan.status}",
+                f"     status: {status}",
                 f"     surface: {surface}",
                 f"     why: {step.why}",
             ]

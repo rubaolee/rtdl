@@ -27,11 +27,13 @@ py -3 examples\tutorial_programs\aggregate_frontier_rows.py
 py -3 examples\tutorial_programs\component_union_from_radius.py
 py -3 examples\tutorial_programs\ranked_summary_neighbors.py
 py -3 examples\tutorial_programs\bounded_witness_collection.py
+py -3 examples\tutorial_programs\contact_manifold_lowering.py
 py -3 examples\tutorial_programs\triangle_counting_graph_lowering.py
 py -3 examples\tutorial_programs\robot_collision_lowering.py
 py -3 examples\tutorial_programs\hausdorff_distance_recipe.py
 py -3 examples\tutorial_programs\raydb_table_to_ray.py
 py -3 examples\tutorial_programs\rayjoin_topology_intro.py
+py -3 examples\tutorial_programs\aabb_spatial_index_predicates.py
 py -3 examples\tutorial_programs\benchmark_app_recipes.py
 py -3 examples\tutorial_programs\operator_callback_planning.py --case complex-callback
 py -3 examples\tutorial_programs\fixed_radius_torch_device_arrays.py --dry-run
@@ -58,11 +60,13 @@ PYTHONPATH=src:. python examples/tutorial_programs/aggregate_frontier_rows.py
 PYTHONPATH=src:. python examples/tutorial_programs/component_union_from_radius.py
 PYTHONPATH=src:. python examples/tutorial_programs/ranked_summary_neighbors.py
 PYTHONPATH=src:. python examples/tutorial_programs/bounded_witness_collection.py
+PYTHONPATH=src:. python examples/tutorial_programs/contact_manifold_lowering.py
 PYTHONPATH=src:. python examples/tutorial_programs/triangle_counting_graph_lowering.py
 PYTHONPATH=src:. python examples/tutorial_programs/robot_collision_lowering.py
 PYTHONPATH=src:. python examples/tutorial_programs/hausdorff_distance_recipe.py
 PYTHONPATH=src:. python examples/tutorial_programs/raydb_table_to_ray.py
 PYTHONPATH=src:. python examples/tutorial_programs/rayjoin_topology_intro.py
+PYTHONPATH=src:. python examples/tutorial_programs/aabb_spatial_index_predicates.py
 PYTHONPATH=src:. python examples/tutorial_programs/benchmark_app_recipes.py
 PYTHONPATH=src:. python examples/tutorial_programs/operator_callback_planning.py --case complex-callback
 PYTHONPATH=src:. python examples/tutorial_programs/fixed_radius_torch_device_arrays.py --dry-run
@@ -90,11 +94,13 @@ PYTHONPATH=src:. python examples/tutorial_programs/aabb_index_all_ops_count.py -
 | `component_union_from_radius.py` | Continue radius-neighbor rows into component labels for RTDBSCAN-style clustering. |
 | `ranked_summary_neighbors.py` | Turn candidate rows into bounded ranked summaries for RTNN-style apps. |
 | `bounded_witness_collection.py` | Keep a bounded number of witnesses per group and report overflow. |
+| `contact_manifold_lowering.py` | Connect broadphase shape pairs to bounded contact witnesses. |
 | `triangle_counting_graph_lowering.py` | Lower graph two-hop rows into triangle witness counts. |
 | `robot_collision_lowering.py` | Lower poses and links into grouped collision queries. |
 | `hausdorff_distance_recipe.py` | Compose nearest-witness rows into directed and undirected Hausdorff distance. |
 | `raydb_table_to_ray.py` | Lower table predicates into ray/primitive payload rows and grouped aggregates. |
 | `rayjoin_topology_intro.py` | Add topology and boundary policy to spatial join candidate rows. |
+| `aabb_spatial_index_predicates.py` | Build point/range AABB predicate rows before using the prepared runner. |
 | `benchmark_app_recipes.py` | Map the tutorial concepts to the 10 benchmark apps. |
 
 The remaining device-array scripts are advanced surface examples. Use them
