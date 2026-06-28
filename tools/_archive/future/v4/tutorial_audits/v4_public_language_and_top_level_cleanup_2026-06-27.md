@@ -18,6 +18,8 @@ first impression of the current V4 repository:
 | `docs/current_v4_status.md` | Replaced maintainer-style release-boundary wording with user-facing package, source-tree, and performance-table wording. |
 | `docs/v4_engineering_summary.md` | Replaced installed-wheel smoke wording with installed-package import checks. |
 | `examples/paper_reproduction/README.md` | Clarified that paper-oriented entrypoints are V4 work, added Linux/macOS commands, and kept them separate from the standard benchmark suite. |
+| `examples/paper_reproduction/rt_barneshut.py` | Made the wrapper runnable directly from a fresh clone by adding the repository root to `sys.path` before importing example support. |
+| `examples/paper_reproduction/rayjoin.py` | Made the wrapper runnable directly from a fresh clone by adding the repository root to `sys.path` before importing example support. |
 
 ## Local Workspace Cleanup
 
@@ -36,6 +38,7 @@ These were not tracked public release files.
 - Public forbidden-language scan over `README.md`, `docs`, `tutorials`, and
   `examples`: no hits.
 - Paper-reproduction wrappers: both default JSON commands succeeded.
+- Fresh Linux tag-clone probe caught and then fixed direct wrapper imports.
 - `tests.v4_goal4640_public_docs_cleanup_test`,
   `tests.v4_goal4774_release_packaging_audit_test`,
   `tests.v4_goal4775_release_staging_manifest_test`, and

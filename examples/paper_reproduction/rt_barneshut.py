@@ -2,6 +2,13 @@ from __future__ import annotations
 
 import argparse
 import json
+from pathlib import Path
+import sys
+
+
+ROOT = next(parent for parent in Path(__file__).resolve().parents if (parent / "src" / "rtdsl").exists())
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 from examples.benchmark_apps._support._repo_bootstrap import ensure_repo_src_on_path
 
