@@ -1,7 +1,8 @@
-# RTDL V4.0.0 Engineering Summary
+# RTDL V4.0.0 Architecture Summary
 
-This file is a compact maintainer note for the current V4.0.0 release shape.
-New users should start with the [project README](../README.md).
+This file is a compact architecture note for the current V4.0.0 release shape.
+New users should start with the [project README](../README.md), then return
+here when they want a short map of the runtime.
 
 ## Architecture
 

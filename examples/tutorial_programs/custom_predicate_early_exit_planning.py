@@ -30,6 +30,9 @@ def main() -> int:
     )
     payload = {
         "status": "ok",
+        "tutorial_classification": "operator_companion_after_kernel_first_lesson",
+        "not_first_lesson": True,
+        "kernel_first_requirement": "Read ray_triangle_hits.py before using the callback planner surface.",
         "concept": (
             "V4.0 supports constrained pure boolean Numba predicates in this "
             "path; action-shaped callbacks stay outside the public API."
@@ -56,12 +59,15 @@ def main() -> int:
         "serious_scale_v4_vs_v3_0_2_geomean": boundary["serious_scale_primary_v3_speedup_geomean"],
         "serious_scale_min_primary_v3_speedup": boundary["serious_scale_min_primary_v3_speedup"],
         "comparison_class": boundary["comparison_class"],
-        "release_claim_authorized": boundary["release_claim_authorized"],
-        "whole_app_speedup_claim_authorized": boundary["whole_app_speedup_claim_authorized"],
-        "arbitrary_python_callback_authorized": boundary["arbitrary_python_callback_authorized"],
-        "tier3_callback_claim_authorized": boundary["tier3_callback_claim_authorized"],
-        "raw_optix_callback_claim_authorized": boundary["raw_optix_callback_claim_authorized"],
-        "public_tier3_support_authorized": boundary["public_tier3_support_authorized"],
+        "claim_boundary": {
+            "public_claim": "constrained pure boolean Numba predicate early-exit workflow",
+            "not_claimed": [
+                "whole-application speedup",
+                "arbitrary Python callback support",
+                "Tier-3 callback support",
+                "raw OptiX callback API",
+            ],
+        },
     }
     print(json.dumps(payload, indent=2, sort_keys=True))
     return 0

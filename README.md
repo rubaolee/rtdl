@@ -30,15 +30,20 @@ or an RTDL native prepared runner.
 
 ## Quick Start
 
+The tutorial programs include two kinds of examples: RTDL language-layer
+lessons and V4 runtime/operator-surface lessons. A file in the V4 tutorial path
+does not automatically claim a V4 operator surface.
+
 PowerShell:
 
 ```powershell
 $env:PYTHONPATH = "src;."
 py -3 examples\tutorial_programs\hello_world.py
-py -3 examples\tutorial_programs\v4_frontdoor_quickstart.py
 py -3 examples\tutorial_programs\sorting_rows.py
-py -3 examples\tutorial_programs\nearest_neighbor.py
+py -3 examples\tutorial_programs\fixed_radius_neighbors.py --mode both
+py -3 examples\tutorial_programs\nearest_neighbor.py --mode both
 py -3 examples\tutorial_programs\partner_choices.py
+py -3 examples\tutorial_programs\v4_frontdoor_quickstart.py
 py -3 examples\tutorial_programs\benchmark_app_recipes.py
 ```
 
@@ -46,15 +51,17 @@ Linux or macOS:
 
 ```bash
 PYTHONPATH=src:. python examples/tutorial_programs/hello_world.py
-PYTHONPATH=src:. python examples/tutorial_programs/v4_frontdoor_quickstart.py
 PYTHONPATH=src:. python examples/tutorial_programs/sorting_rows.py
-PYTHONPATH=src:. python examples/tutorial_programs/nearest_neighbor.py
+PYTHONPATH=src:. python examples/tutorial_programs/fixed_radius_neighbors.py --mode both
+PYTHONPATH=src:. python examples/tutorial_programs/nearest_neighbor.py --mode both
 PYTHONPATH=src:. python examples/tutorial_programs/partner_choices.py
+PYTHONPATH=src:. python examples/tutorial_programs/v4_frontdoor_quickstart.py
 PYTHONPATH=src:. python examples/tutorial_programs/benchmark_app_recipes.py
 ```
 
-The quickstart prints the current V4 import, supported measured partners, and
-the next files to open.
+The first programs teach the RTDL kernel/relation model. The V4 front-door
+quickstart is a later check: it prints the current V4 import, supported measured
+partners, and the next files to open.
 
 ## Current User Paths
 

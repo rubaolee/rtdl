@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import json
 from pathlib import Path
 import sys
@@ -25,7 +26,7 @@ def _segment_crosses_vertical(segment: dict[str, float | int], x: float, y0: flo
     return y0 <= y <= y1
 
 
-def main() -> int:
+def _collision_relation() -> dict[str, object]:
     poses = (
         {"pose_id": 1, "base_x": 0.0, "base_y": 0.0, "link_dx": 1.0, "link_dy": 0.0},
         {"pose_id": 2, "base_x": 0.0, "base_y": 0.5, "link_dx": 1.0, "link_dy": 0.0},
@@ -58,21 +59,80 @@ def main() -> int:
         for obs in obstacles
     )
     collision_flags = tuple(
-        {"pose_id": pose["pose_id"], "collision": any(row["pose_id"] == pose["pose_id"] and row["hit"] for row in hit_rows)}
+        {
+            "pose_id": pose["pose_id"],
+            "collision": any(int(row["pose_id"]) == int(pose["pose_id"]) and bool(row["hit"]) for row in hit_rows),
+        }
         for pose in poses
     )
-    plan = rtdl_v4.plan_operator_request_v4("any_hit", partner="torch")
-    payload = {
-        "status": "ok",
-        "concept": "Robot collision lowers each pose and link into grouped segment queries, then reduces hit rows to pose-level flags",
-        "manual_data_flow": "poses + links + obstacles -> link segments -> candidate rows -> hit rows -> pose collision flags",
-        "collision_contract": "sampled pose/link segments, not continuous-time motion",
+    return {
+        "poses": poses,
+        "obstacles": obstacles,
         "link_segments": link_segments,
         "candidate_rows": candidate_rows,
         "hit_rows": hit_rows,
         "collision_flags": collision_flags,
-        "v4_surface": {"request": "any_hit", "partner": "torch", "status": plan.status, "surface": plan.api_surface},
     }
+
+
+def run_relation_mode() -> dict[str, object]:
+    return {
+        "tutorial_classification": "core_tutorial_program_relation_first",
+        "kernel_programming_method": (
+            "Lower robot poses into link segments, emit link/obstacle hit rows, "
+            "then reduce to pose collision flags. The V4 any-hit surface is only "
+            "the execution route for the recognized hit relation."
+        ),
+        "status": "ok",
+        "mode": "relation",
+        "concept": "robot collision lowers sampled poses into link-hit rows and pose-level any-hit flags",
+        "manual_data_flow": "poses + links + obstacles -> link segments -> candidate rows -> hit rows -> pose collision flags",
+        "collision_contract": "sampled pose/link segments, not continuous-time motion",
+        **_collision_relation(),
+    }
+
+
+def run_visible_mode() -> dict[str, object]:
+    return {
+        "status": "ok",
+        "mode": "visible_python_flow",
+        "concept": "a pose collides when any emitted link/obstacle row has hit=true",
+        "pose_id": 1,
+        "candidate_row": {"pose_id": 1, "link_id": 0, "obstacle_id": 10},
+        "hit_row": {"pose_id": 1, "link_id": 0, "obstacle_id": 10, "hit": True},
+        "collision_flag": {"pose_id": 1, "collision": True},
+    }
+
+
+def run_v4_mode() -> dict[str, object]:
+    plan = rtdl_v4.plan_operator_request_v4("any_hit", partner="torch")
+    return {
+        "status": "ok",
+        "mode": "v4",
+        "operator": "any_hit",
+        "partner": "torch",
+        "plan_status": plan.status,
+        "surface": plan.api_surface,
+        "relationship_to_relation": "The relation mode names link segments, obstacle rows, and pose groups. V4 maps the recognized any-hit flag shape to a measured surface.",
+    }
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Robot collision lowering tutorial.")
+    parser.add_argument("--mode", choices=("relation", "v4", "both", "visible"), default="both")
+    args = parser.parse_args(argv)
+
+    payload: dict[str, object] = {
+        "status": "ok",
+        "concept": "robot collision uses RTDL hit rows and grouped any-hit flags",
+    }
+    if args.mode in {"relation", "both"}:
+        payload["relation_mode"] = run_relation_mode()
+    if args.mode in {"v4", "both"}:
+        payload["v4_mode"] = run_v4_mode()
+    if args.mode == "visible":
+        payload["visible_flow"] = run_visible_mode()
+
     print(json.dumps(payload, indent=2, sort_keys=True))
     return 0
 

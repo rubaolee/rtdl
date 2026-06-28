@@ -1,0 +1,40 @@
+Please review Goal4793 in the RTDL workspace.
+
+Workspace:
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review
+
+Call-for-review packet:
+docs/reviews/call_for_review_goal4793_tutorial_tail_partner_measurement_callback_bridge_2026-06-28.md
+
+Completion record:
+docs/engineering/goal4793_tutorial_tail_partner_measurement_callback_bridge_2026-06-28.md
+
+Primary files to inspect:
+- examples/tutorial_programs/partner_choices.py
+- examples/tutorial_programs/measure_phases.py
+- examples/tutorial_programs/operator_callback_planning.py
+- examples/tutorial_programs/custom_predicate_early_exit_planning.py
+- examples/tutorial_programs/benchmark_app_recipes.py
+- tutorials/current/21_partner_choice_device_arrays.md
+- tutorials/current/22_measurement_phases.md
+- tutorials/current/23_callback_planning_boundary.md
+- tutorials/current/24_benchmark_app_bridge.md
+- tutorials/current/README.md
+- examples/tutorial_programs/README.md
+- examples/README.md
+- docs/public_documentation_map.md
+- tests/v4_goal4640_public_docs_cleanup_test.py
+
+Please answer the required questions in the call-for-review packet and write the review result to:
+docs/reviews/antigravity_goal4793_tutorial_tail_review_2026-06-28.md
+
+Allowed verdict labels:
+- approve_goal4793_tutorial_tail_complete
+- approve_with_required_amendments
+- block_goal4793_tutorial_tail
+
+Important review standard:
+The tutorial tail must teach RTDL relation, execution-policy, measurement, and callback-boundary thinking. Do not approve if it turns into black-box V4 API usage, app-specific recipes, or broad release/performance claims.
+
+Non-authorization boundary:
+This review must not authorize a V4 public tag, broad V4 speedup wording, whole-app performance claims, Tier-3 arbitrary callback claims, raw OptiX callback claims, C ABI or embedding claims, paper-reproduction claims, or app-specific native-kernel claims.

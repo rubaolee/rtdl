@@ -7,7 +7,6 @@ PowerShell:
 ```powershell
 $env:PYTHONPATH = "src;."
 py -3 examples\tutorial_programs\hello_world.py
-py -3 examples\tutorial_programs\v4_frontdoor_quickstart.py
 py -3 examples\tutorial_programs\sorting_rows.py
 py -3 examples\tutorial_programs\operator_primitives.py
 py -3 examples\tutorial_programs\partner_choices.py
@@ -19,6 +18,7 @@ py -3 examples\tutorial_programs\aggregate_frontier_rows.py
 py -3 examples\tutorial_programs\raydb_table_to_ray.py
 py -3 examples\tutorial_programs\rayjoin_topology_intro.py
 py -3 examples\tutorial_programs\benchmark_app_recipes.py
+py -3 examples\tutorial_programs\v4_frontdoor_quickstart.py
 py -3 scripts\v4_catalog_regression_gate.py --mode dry-run
 ```
 
@@ -26,7 +26,6 @@ Linux or macOS:
 
 ```bash
 PYTHONPATH=src:. python examples/tutorial_programs/hello_world.py
-PYTHONPATH=src:. python examples/tutorial_programs/v4_frontdoor_quickstart.py
 PYTHONPATH=src:. python examples/tutorial_programs/sorting_rows.py
 PYTHONPATH=src:. python examples/tutorial_programs/operator_primitives.py
 PYTHONPATH=src:. python examples/tutorial_programs/partner_choices.py
@@ -38,12 +37,14 @@ PYTHONPATH=src:. python examples/tutorial_programs/aggregate_frontier_rows.py
 PYTHONPATH=src:. python examples/tutorial_programs/raydb_table_to_ray.py
 PYTHONPATH=src:. python examples/tutorial_programs/rayjoin_topology_intro.py
 PYTHONPATH=src:. python examples/tutorial_programs/benchmark_app_recipes.py
+PYTHONPATH=src:. python examples/tutorial_programs/v4_frontdoor_quickstart.py
 PYTHONPATH=src:. python scripts/v4_catalog_regression_gate.py --mode dry-run
 ```
 
 These checks run without CUDA by using dry-run paths where needed. They confirm
-that the V4 front door, benchmark-app recipes, operator catalog, callback
-planner, and example commands are reachable from a clean checkout.
+that the kernel-first tutorial path, benchmark-app recipes, V4 front door,
+operator catalog, callback planner, and example commands are reachable from a
+clean checkout.
 
 For a broader local check:
 

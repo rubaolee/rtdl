@@ -43,7 +43,14 @@ def main() -> int:
     hit_plan = rtdl_v4.plan_operator_request_v4("any_hit", partner="torch")
     payload = {
         "status": "ok",
+        "tutorial_classification": "core_tutorial_program_relation_first",
         "concept": "RayJoin is not only pair discovery: it also applies topology and boundary policy before rows become join output",
+        "kernel_programming_method": (
+            "Model polygon overlay as edge rows, candidate pair rows, exact "
+            "intersection/topology rows, and boundary-policy filtered output. "
+            "V4 AABB/any-hit surfaces are execution aids after that RTDL row "
+            "contract is defined."
+        ),
         "manual_data_flow": "shape edges -> AABB candidate pairs -> intersection tests -> topology rows -> boundary-policy filtered output",
         "boundary_policy": boundary_policy,
         "candidate_pairs": candidate_pairs,

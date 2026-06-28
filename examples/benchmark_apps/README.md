@@ -2,9 +2,10 @@
 
 These are the 10 RTDL V4 benchmark apps.
 
-Read [../../tutorials/current/07_benchmark_apps.md](../../tutorials/current/07_benchmark_apps.md)
-first. It teaches the relation, operator, partner, and continuation used by
-each app.
+Read [../../tutorials/current/README.md](../../tutorials/current/README.md)
+first, then run `../tutorial_programs/benchmark_app_recipes.py` for the compact
+map from tutorial concepts to the apps. The full benchmark-app bridge will live
+in the later current tutorial sequence after the concept lessons are complete.
 
 | App | Current V4 entry |
 | --- | --- |

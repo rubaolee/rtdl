@@ -1,0 +1,43 @@
+Please review Goal4792 in the RTDL workspace.
+
+Workspace:
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review
+
+Call-for-review packet:
+docs/reviews/call_for_review_goal4792_app_lowering_tutorial_batch_2026-06-28.md
+
+Completion record:
+docs/engineering/goal4792_app_lowering_tutorial_batch_2026-06-28.md
+
+Primary files to inspect:
+- examples/tutorial_programs/ranked_summary_neighbors.py
+- examples/tutorial_programs/contact_manifold_lowering.py
+- examples/tutorial_programs/triangle_counting_graph_lowering.py
+- examples/tutorial_programs/robot_collision_lowering.py
+- examples/tutorial_programs/raydb_table_to_ray.py
+- examples/tutorial_programs/hausdorff_distance_recipe.py
+- tutorials/current/15_ranked_summary_neighbors.md
+- tutorials/current/16_contact_manifold_lowering.md
+- tutorials/current/17_graph_triangle_counting_lowering.md
+- tutorials/current/18_robot_collision_lowering.md
+- tutorials/current/19_raydb_table_to_ray.md
+- tutorials/current/20_hausdorff_composition.md
+- tutorials/current/README.md
+- examples/tutorial_programs/README.md
+- examples/README.md
+- docs/public_documentation_map.md
+- tests/v4_goal4640_public_docs_cleanup_test.py
+
+Please answer the required questions in the call-for-review packet and write the review result to:
+docs/reviews/antigravity_goal4792_app_lowering_tutorial_batch_review_2026-06-28.md
+
+Allowed verdict labels:
+- approve_goal4792_app_lowering_tutorial_batch_complete
+- approve_with_required_amendments
+- block_goal4792_app_lowering_tutorial_batch
+
+Important review standard:
+The tutorials must teach RTDL row/relation/continuation thinking before the V4 operator/runtime wrapper. Do not approve if the lessons turn into app-specific recipes or black-box V4 API usage.
+
+Non-authorization boundary:
+This review must not authorize a V4 public tag, broad V4 speedup wording, whole-app performance claims, Tier-3 arbitrary callback claims, raw OptiX callback claims, C ABI or embedding claims, paper-reproduction claims, or app-specific native-kernel claims.

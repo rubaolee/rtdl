@@ -1,0 +1,37 @@
+Please review Goal4791 in the RTDL workspace.
+
+Workspace:
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review
+
+Call-for-review packet:
+docs/reviews/call_for_review_goal4791_lowering_and_continuation_tutorial_batch_2026-06-28.md
+
+Completion record:
+docs/engineering/goal4791_lowering_and_continuation_tutorial_batch_2026-06-28.md
+
+Primary files to inspect:
+- examples/tutorial_programs/component_union_from_radius.py
+- examples/tutorial_programs/bounded_witness_collection.py
+- examples/tutorial_programs/aggregate_frontier_rows.py
+- tutorials/current/12_component_union_from_radius.md
+- tutorials/current/13_bounded_witness_collection.md
+- tutorials/current/14_aggregate_frontier_rows.md
+- tutorials/current/README.md
+- examples/tutorial_programs/README.md
+- examples/README.md
+- docs/public_documentation_map.md
+- tests/v4_goal4640_public_docs_cleanup_test.py
+
+Please answer the required questions in the call-for-review packet and write the review result to:
+docs/reviews/antigravity_goal4791_lowering_and_continuation_tutorial_batch_review_2026-06-28.md
+
+Allowed verdict labels:
+- approve_goal4791_lowering_and_continuation_tutorial_batch_complete
+- approve_with_required_amendments
+- block_goal4791_lowering_and_continuation_batch
+
+Important review standard:
+The tutorial must teach RTDL row/relation/kernel thinking before the V4 operator/runtime wrapper. Do not approve if the lesson degenerates into black-box V4 API usage.
+
+Non-authorization boundary:
+This review must not authorize a V4 public tag, broad V4 speedup wording, whole-app performance claims, Tier-3 arbitrary callback claims, raw OptiX callback claims, C ABI or embedding claims, paper-reproduction claims, or app-specific native-kernel claims.

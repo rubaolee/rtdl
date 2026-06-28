@@ -13,6 +13,37 @@ if str(SRC) not in sys.path:
 import rtdsl.v4 as rt
 
 
+TUTORIAL_CLASSIFICATION = {
+    "tutorial_classification": "operator_companion_after_kernel_first_lesson",
+    "not_first_lesson": True,
+    "kernel_first_requirement": (
+        "Read the kernel-first tutorial programs first; this file maps those "
+        "small relation and continuation concepts onto full benchmark apps."
+    ),
+}
+
+APP_PREREQUISITES = {
+    "RTDBSCAN": ("fixed_radius_neighbors.py", "component_union_from_radius.py"),
+    "RTNN": ("nearest_neighbor.py", "ranked_summary_neighbors.py"),
+    "Triangle counting": (
+        "ray_triangle_hits.py",
+        "triangle_counting_graph_lowering.py",
+        "continuation_grouped_sum.py",
+    ),
+    "Robot collision": ("ray_triangle_hits.py", "robot_collision_lowering.py"),
+    "RayDB-style": ("raydb_table_to_ray.py", "continuation_grouped_sum.py"),
+    "LibRTS spatial index": ("aabb_spatial_index_predicates.py",),
+    "Contact manifold": (
+        "aabb_spatial_index_predicates.py",
+        "bounded_witness_collection.py",
+        "contact_manifold_lowering.py",
+    ),
+    "Spatial RayJoin": ("spatial_join_lsi.py", "rayjoin_topology_intro.py"),
+    "Barnes-Hut": ("aggregate_frontier_rows.py", "continuation_grouped_sum.py"),
+    "Hausdorff XHD": ("nearest_neighbor.py", "hausdorff_distance_recipe.py"),
+}
+
+
 @dataclass(frozen=True)
 class RecipeStep:
     name: str
@@ -322,7 +353,8 @@ def benchmark_app_recipes() -> tuple[AppRecipe, ...]:
 
 
 def render_recipe(recipe: AppRecipe) -> str:
-    lines = [recipe.app, f"  idea: {recipe.idea}"]
+    prereqs = ", ".join(APP_PREREQUISITES.get(recipe.app, ()))
+    lines = [recipe.app, f"  learn_first: {prereqs}", f"  idea: {recipe.idea}"]
     for index, step in enumerate(recipe.steps, 1):
         surface = step.plan.api_surface if step.plan is not None else "<app-owned continuation>"
         status = step.plan.status if step.plan is not None else "app_owned_continuation"
@@ -343,6 +375,8 @@ def render_recipe(recipe: AppRecipe) -> str:
 
 def main() -> int:
     print("RTDL V4 benchmark app recipes")
+    print(f"classification: {TUTORIAL_CLASSIFICATION['tutorial_classification']}")
+    print(f"kernel-first requirement: {TUTORIAL_CLASSIFICATION['kernel_first_requirement']}")
     print("Use these as planner-level starting points before opening the full app source.\n")
     for recipe in benchmark_app_recipes():
         print(render_recipe(recipe))

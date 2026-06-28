@@ -15,6 +15,9 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 TEACHING_CONTEXT = {
+    "tutorial_classification": "operator_companion_after_kernel_first_lesson",
+    "not_first_lesson": True,
+    "kernel_first_requirement": "Read and run ray_triangle_hits.py before this device-array surface.",
     "concept_tutorial": "examples/tutorial_programs/ray_triangle_hits.py",
     "manual_data_flow": [
         "User supplies triangle AABBs and ray columns on the Torch CUDA device.",
@@ -25,6 +28,12 @@ TEACHING_CONTEXT = {
         "triangle_columns": "triangle ids and 2D vertices",
         "triangle_aabbs": "float32 bounds used by traversal",
         "ray_columns": "ray id, origin, direction, and tmax columns",
+    },
+    "field_map": {
+        "kernel_ray_id": "ray_columns.ids",
+        "kernel_primitive_id": "triangle_columns.ids",
+        "kernel_hit": "ray/triangle predicate result",
+        "output_any_hit_flag": "one boolean flag per ray id",
     },
     "relation_output": "ray/triangle candidate hit rows",
     "continuation": "per-ray any-hit flag",
@@ -96,9 +105,13 @@ def main() -> int:
         "input_contract": "caller_supplied_torch_device_triangle_aabb_and_ray_columns",
         "output_contract": "caller_owned_torch_device_any_hit_flag_column",
         "teaching_context": TEACHING_CONTEXT,
-        "release_claim_authorized": False,
-        "whole_app_speedup_claim_authorized": False,
-        "tier3_callback_claim_authorized": False,
+        "claim_boundary": {
+            "public_claim": "ray/triangle any-hit flags Torch device-array operator example",
+            "not_claimed": [
+                "whole-application speedup",
+                "arbitrary callback support",
+            ],
+        },
     }
     if args.dry_run:
         payload = {"status": "dry_run", **plan}

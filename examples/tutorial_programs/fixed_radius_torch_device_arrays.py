@@ -20,6 +20,9 @@ THRESHOLD = 3
 BASE_POINTS_PER_COPY = 8
 
 TEACHING_CONTEXT = {
+    "tutorial_classification": "operator_companion_after_kernel_first_lesson",
+    "not_first_lesson": True,
+    "kernel_first_requirement": "Read and run fixed_radius_neighbors.py before this device-array surface.",
     "concept_tutorial": "examples/tutorial_programs/fixed_radius_neighbors.py",
     "manual_data_flow": [
         "User supplies point id, x, and y columns already on the Torch CUDA device.",
@@ -30,6 +33,13 @@ TEACHING_CONTEXT = {
         "ids": "uint32 point id column",
         "x": "float64 point x coordinate",
         "y": "float64 point y coordinate",
+    },
+    "field_map": {
+        "kernel_query_id": "ids",
+        "kernel_neighbor_id": "ids from candidate search point",
+        "kernel_distance": "computed from x/y columns",
+        "output_neighbor_count": "neighbor_count per ids row",
+        "output_threshold_flag": "neighbor_count >= threshold",
     },
     "relation_output": "candidate neighbor rows grouped by query point",
     "continuation": "per-point neighbor_count plus threshold_flag",
@@ -70,9 +80,13 @@ def main() -> int:
         "threshold": THRESHOLD,
         "input_contract": "caller_supplied_torch_device_point_columns",
         "teaching_context": TEACHING_CONTEXT,
-        "release_claim_authorized": False,
-        "whole_app_speedup_claim_authorized": False,
-        "tier3_callback_claim_authorized": False,
+        "claim_boundary": {
+            "public_claim": "fixed-radius Torch device-array operator example",
+            "not_claimed": [
+                "whole-application speedup",
+                "arbitrary callback support",
+            ],
+        },
     }
     if args.dry_run:
         payload = {"status": "dry_run", **plan}

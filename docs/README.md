@@ -22,5 +22,5 @@ prior release notes or internal project records.
 | [learn/partner_choice.md](learn/partner_choice.md) | How to choose Torch, CuPy, Numba, and RTDL native routes. |
 | [learn/performance_wording.md](learn/performance_wording.md) | How to read RTDL performance numbers. |
 | [learn/source_tree_doctor.md](learn/source_tree_doctor.md) | Quick checkout checks. |
-| [v4_engineering_summary.md](v4_engineering_summary.md) | Compact maintainer summary of the current release shape. |
+| [v4_engineering_summary.md](v4_engineering_summary.md) | Compact architecture summary of the current release shape. |
 | [public_documentation_map.md](public_documentation_map.md) | Map of the current public documentation path. |

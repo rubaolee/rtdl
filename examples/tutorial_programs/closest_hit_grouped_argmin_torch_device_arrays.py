@@ -18,6 +18,9 @@ if str(SRC) not in sys.path:
 GROUP_WIDTH = 8
 
 TEACHING_CONTEXT = {
+    "tutorial_classification": "operator_companion_after_kernel_first_lesson",
+    "not_first_lesson": True,
+    "kernel_first_requirement": "Read bounded_witness_collection.py and contact_manifold_lowering.py before this surface.",
     "concept_tutorials": [
         "examples/tutorial_programs/bounded_witness_collection.py",
         "examples/tutorial_programs/contact_manifold_lowering.py",
@@ -33,6 +36,17 @@ TEACHING_CONTEXT = {
         "per_ray_group_ids": "uint32 group id per ray",
         "candidate_values": "float64 value used for argmin",
         "candidate_indices": "uint32 witness id to keep for the winning value",
+    },
+    "field_map": {
+        "kernel_ray_id": "ray_columns.ids",
+        "kernel_primitive_id": "triangle_columns.ids",
+        "kernel_group_id": "per_ray_group_ids",
+        "kernel_candidate_value": "candidate_values",
+        "kernel_witness_id": "candidate_indices",
+        "tie_policy": "lower candidate value wins; equal values should use a deterministic app-owned tie-break",
+        "empty_group_policy": "group_has_value is false when no accepted hit exists for the group",
+        "output_group_has_value": "whether a group has at least one accepted hit",
+        "output_group_index": "candidate_indices entry for the argmin winner",
     },
     "relation_output": "accepted hit rows with group id, candidate value, and witness id",
     "continuation": "per-group argmin witness",
@@ -110,9 +124,13 @@ def main() -> int:
         "input_contract": "caller_supplied_torch_device_triangle_ray_and_group_columns",
         "output_contract": "caller_owned_torch_device_grouped_argmin_columns",
         "teaching_context": TEACHING_CONTEXT,
-        "release_claim_authorized": False,
-        "whole_app_speedup_claim_authorized": False,
-        "tier3_callback_claim_authorized": False,
+        "claim_boundary": {
+            "public_claim": "closest-hit grouped-argmin Torch device-array operator example",
+            "not_claimed": [
+                "whole-application speedup",
+                "arbitrary callback support",
+            ],
+        },
     }
     if args.dry_run:
         payload = {"status": "dry_run", **plan}

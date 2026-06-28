@@ -1,91 +1,119 @@
-# Relations and Operators
+# Relations And Operators
 
-RTDL programs are built from relations. A relation is a table of facts produced
-by traversal:
+RTDL starts from relation rows, not from application names and not from a
+runtime catalog call.
 
-- point `i` has at least one neighbor inside radius `r`;
-- ray `j` hits triangle `k`;
-- query point `q` has nearest witness `w`;
+A relation row is a fact produced by traversal and refinement:
+
+- query point `q` is near point `p`;
+- ray `r` hits triangle `t`;
+- point `q` has nearest witness `w`;
 - box `a` overlaps box `b`;
 - body `p` should use aggregate cell `c`.
 
-An operator is the generic RTDL surface that creates or summarizes one of those
-relations. The app name is not the operator. RTDBSCAN, RTNN, triangle counting,
-robot collision, and Barnes-Hut all reuse a smaller set of generic operators.
+The app name is not the operator. RTDBSCAN, RTNN, triangle counting, robot
+collision, and Barnes-Hut reuse a smaller set of generic relation-producing
+operators and continuations.
 
-Ask for the operator you need:
+## Kernel First
+
+The user-facing RTDL shape is:
+
+```python
+import rtdsl as rt
+
+@rt.kernel(backend="rtdl", precision="float_approx")
+def program():
+    probe = rt.input("probe_rows", rt.Points, role="probe")
+    build = rt.input("build_rows", rt.Points, role="build")
+    candidates = rt.traverse(probe, build, accel="bvh")
+    hits = rt.refine(candidates, predicate=rt.fixed_radius_neighbors(radius=0.5, k_max=3))
+    return rt.emit(hits, fields=["query_id", "neighbor_id", "distance"])
+```
+
+This is the language model:
+
+```text
+input objects
+-> candidate relation rows
+-> refined relation rows
+-> continuation rows
+-> application output
+```
+
+The important questions are:
+
+| Question | Example answer |
+| --- | --- |
+| What is the probe side? | Query points, rays, frontier rows. |
+| What is the build side? | Search points, triangles, boxes, aggregate cells. |
+| What does traversal generate? | Candidate pairs. |
+| What does refinement keep? | Hits, neighbors, witnesses, overlaps. |
+| What does emit return? | Rows the application can consume. |
+| What continuation follows? | Count, sum, argmin, union, ranked summary. |
+
+## V4 Second
+
+After the relation is clear, V4 can expose the execution target:
 
 ```python
 import rtdsl.v4 as rtdl_v4
 
-requests = [
-    ("fixed_radius", "torch"),
-    ("any_hit", "torch"),
-    ("point_group_nearest", "torch"),
-    ("aabb_index_query", "rtdl_native"),
-    ("grouped_sum", "cupy"),
-]
-
-for operator, partner in requests:
-    plan = rtdl_v4.plan_operator_request_v4(operator, partner=partner)
-    print(operator, partner, plan.status, plan.api_surface)
+plan = rtdl_v4.plan_operator_request_v4("fixed_radius", partner="torch")
+print(plan.status)
+print(plan.api_surface)
 ```
 
-This planner step is valuable even before you have real data. It tells you
-whether your idea maps to a current V4 operator, which partner it uses, and
-which prepare function to open next.
+This call is not the programming model. It is a planning and execution-surface
+check for a relation that RTDL already knows how to describe.
 
-## Single-Skill Programs
+Use the V4 operator/runtime API when you need to:
 
-Before opening full benchmark apps, run the small programs that teach one
-concept at a time. Read the JSON fields named `candidate_rows`,
-`neighbor_rows`, `nearest_rows`, `hit_rows`, or `manual_data_flow`; those are
-the programming idea.
+- inspect which operator surface a relation maps to;
+- choose a partner such as Torch, CuPy, Numba, or RTDL native;
+- pin a route for benchmark or production reproducibility;
+- pass caller-owned device arrays into a prepared route.
+
+## Run The Concept Programs
+
+PowerShell:
 
 ```powershell
 $env:PYTHONPATH = "src;."
 py -3 examples\tutorial_programs\operator_primitives.py
-py -3 examples\tutorial_programs\partner_choices.py
-py -3 examples\tutorial_programs\fixed_radius_neighbors.py
-py -3 examples\tutorial_programs\nearest_neighbor.py
-py -3 examples\tutorial_programs\ray_triangle_hits.py
-py -3 examples\tutorial_programs\continuation_grouped_sum.py
-py -3 examples\tutorial_programs\point_in_polygon.py
-py -3 examples\tutorial_programs\spatial_join_lsi.py
+py -3 examples\tutorial_programs\fixed_radius_neighbors.py --mode both
+py -3 examples\tutorial_programs\v4_frontdoor_quickstart.py
 ```
 
 Linux or macOS:
 
 ```bash
 PYTHONPATH=src:. python examples/tutorial_programs/operator_primitives.py
-PYTHONPATH=src:. python examples/tutorial_programs/partner_choices.py
-PYTHONPATH=src:. python examples/tutorial_programs/fixed_radius_neighbors.py
-PYTHONPATH=src:. python examples/tutorial_programs/nearest_neighbor.py
-PYTHONPATH=src:. python examples/tutorial_programs/ray_triangle_hits.py
-PYTHONPATH=src:. python examples/tutorial_programs/continuation_grouped_sum.py
-PYTHONPATH=src:. python examples/tutorial_programs/point_in_polygon.py
-PYTHONPATH=src:. python examples/tutorial_programs/spatial_join_lsi.py
+PYTHONPATH=src:. python examples/tutorial_programs/fixed_radius_neighbors.py --mode both
+PYTHONPATH=src:. python examples/tutorial_programs/v4_frontdoor_quickstart.py
 ```
 
-The point is not that every app calls a different primitive. The point is that
-many apps are built from the same few relation-producing operators plus
-different continuation and app code. The V4 planner tells you which accelerated
-surface matches that relation after you understand the relation itself.
+In `operator_primitives.py`, read the vocabulary. In
+`fixed_radius_neighbors.py`, run the kernel/relation shape. Only then use
+`v4_frontdoor_quickstart.py` to inspect the current V4 front door.
 
-RTDL also has a recognizer for small declarative descriptions:
+| Field | Meaning |
+| --- | --- |
+| `relation_row_examples` | Small examples of the row facts RTDL emits. |
+| `operator_catalog_rows` | How V4 names current execution surfaces. |
+| `continuation_classes` | What kind of continuation consumes relation rows. |
 
-```python
-import rtdsl.v4 as rtdl_v4
+## Keep App Meaning Outside The Operator
 
-expr = {
-    "relation": "any_hit",
-    "input": "rays_and_triangles",
-    "continuation": "flags",
-}
+The same neighbor rows can mean several different things:
 
-recognized = rtdl_v4.recognize_pushdown_request_v4(expr, partner="torch")
-print(recognized.status)
-print(recognized.plan.api_surface)
-```
+| Same relation rows | Possible app meaning |
+| --- | --- |
+| `(query_id, neighbor_id, distance)` | local density |
+| `(query_id, neighbor_id, distance)` | graph edges |
+| `(query_id, neighbor_id, distance)` | candidate prefiltering |
+| `(query_id, neighbor_id, distance)` | threshold flags |
 
-Next: [Prepare, Run, Continue](05_prepare_run_continue.md)
+RTDL should produce generic rows. Your application decides what those rows mean.
+
+Next: [Fixed-Radius Neighbors](05_fixed_radius_neighbors.md)

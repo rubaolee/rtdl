@@ -36,11 +36,26 @@ PUBLIC_DOCS = (
     ROOT / "tutorials" / "current" / "02_hello_world.md",
     ROOT / "tutorials" / "current" / "03_sorting_rows.md",
     ROOT / "tutorials" / "current" / "04_relations_and_operators.md",
-    ROOT / "tutorials" / "current" / "05_prepare_run_continue.md",
-    ROOT / "tutorials" / "current" / "06_measure_a_program.md",
-    ROOT / "tutorials" / "current" / "07_benchmark_apps.md",
-    ROOT / "tutorials" / "current" / "08_choose_a_partner.md",
-    ROOT / "tutorials" / "current" / "09_benchmark_harness_protocol.md",
+    ROOT / "tutorials" / "current" / "05_fixed_radius_neighbors.md",
+    ROOT / "tutorials" / "current" / "06_nearest_witness.md",
+    ROOT / "tutorials" / "current" / "07_aabb_predicates.md",
+    ROOT / "tutorials" / "current" / "08_point_in_polygon.md",
+    ROOT / "tutorials" / "current" / "09_line_segment_intersection_spatial_join.md",
+    ROOT / "tutorials" / "current" / "10_ray_triangle_hits.md",
+    ROOT / "tutorials" / "current" / "11_grouped_continuations.md",
+    ROOT / "tutorials" / "current" / "12_component_union_from_radius.md",
+    ROOT / "tutorials" / "current" / "13_bounded_witness_collection.md",
+    ROOT / "tutorials" / "current" / "14_aggregate_frontier_rows.md",
+    ROOT / "tutorials" / "current" / "15_ranked_summary_neighbors.md",
+    ROOT / "tutorials" / "current" / "16_contact_manifold_lowering.md",
+    ROOT / "tutorials" / "current" / "17_graph_triangle_counting_lowering.md",
+    ROOT / "tutorials" / "current" / "18_robot_collision_lowering.md",
+    ROOT / "tutorials" / "current" / "19_raydb_table_to_ray.md",
+    ROOT / "tutorials" / "current" / "20_hausdorff_composition.md",
+    ROOT / "tutorials" / "current" / "21_partner_choice_device_arrays.md",
+    ROOT / "tutorials" / "current" / "22_measurement_phases.md",
+    ROOT / "tutorials" / "current" / "23_callback_planning_boundary.md",
+    ROOT / "tutorials" / "current" / "24_benchmark_app_bridge.md",
     ROOT / "examples" / "README.md",
     ROOT / "examples" / "tutorial_programs" / "README.md",
     ROOT / "examples" / "benchmark_apps" / "README.md",
@@ -99,6 +114,24 @@ def _json_contains_forbidden_goal(value: object) -> bool:
         return any(_json_contains_forbidden_goal(item) for item in value)
     if isinstance(value, str):
         return re.search(r"goal\d+", value, flags=re.IGNORECASE) is not None
+    return False
+
+
+def _json_contains_public_audit_jargon(value: object) -> bool:
+    if isinstance(value, dict):
+        return any(
+            _json_contains_public_audit_jargon(key) or _json_contains_public_audit_jargon(item)
+            for key, item in value.items()
+        )
+    if isinstance(value, (list, tuple)):
+        return any(_json_contains_public_audit_jargon(item) for item in value)
+    if isinstance(value, str):
+        return re.search(
+            r"authorized|release_claim|speedup_claim|tier3_callback_claim|raw_optix_callback_claim|"
+            r"true_zero_copy_authorized|embedding_c_abi|non_python_host_binding|app_specific_native_kernel",
+            value,
+            flags=re.IGNORECASE,
+        ) is not None
     return False
 
 
@@ -263,17 +296,45 @@ class V4Goal4640PublicDocsCleanupTest(unittest.TestCase):
                     self.assertNotIn("json.dumps", (ROOT / command[0]).read_text(encoding="utf-8"))
                     continue
 
+                if command[0].endswith("hello_world.py"):
+                    self.assertEqual("hello, world", proc.stdout.strip())
+                    continue
+
                 payload = json.loads(proc.stdout)
                 self.assertIn(payload["status"], {"ok", "dry_run", "rejected_action_shaped_callback_deferred"})
                 if command[0].endswith("operator_callback_planning.py"):
                     self.assertEqual("rejected_action_shaped_callback_deferred", payload["status"])
                 if command[0].endswith("fixed_radius_torch_device_arrays.py"):
                     self.assertEqual(2, payload["copies"])
+                if command[0].endswith("sorting_rows.py"):
+                    self.assertEqual("rtdl_kernel_relation", payload["lesson_layer"])
+                    self.assertIsNone(payload["v4_operator_surface"])
+                    self.assertIn("no V4 sort", payload["v4_runtime_claim"])
                 self.assertFalse(_json_contains_forbidden_goal(payload))
-                if "release_claim_authorized" in payload:
-                    self.assertFalse(payload["release_claim_authorized"])
-                if "tier3_callback_claim_authorized" in payload:
-                    self.assertFalse(payload["tier3_callback_claim_authorized"])
+                if command[0].startswith("examples/tutorial_programs/"):
+                    self.assertFalse(_json_contains_public_audit_jargon(payload))
+
+    def test_sorting_is_language_layer_not_v4_runtime_surface(self) -> None:
+        tutorial = (ROOT / "tutorials" / "current" / "03_sorting_rows.md").read_text(encoding="utf-8")
+        tutorial_index = (ROOT / "tutorials" / "current" / "README.md").read_text(encoding="utf-8")
+        examples_index = (ROOT / "examples" / "tutorial_programs" / "README.md").read_text(encoding="utf-8")
+
+        self.assertIn("no V4 sorting operator surface", tutorial)
+        self.assertIn("no V4 segment-intersection runtime surface", tutorial)
+        self.assertIn("Do not read \"in the V4 tutorial path\" as \"has a V4 operator surface.\"", tutorial_index)
+        self.assertIn("no V4 sorting operator surface", examples_index)
+
+        proc = subprocess.run(
+            [sys.executable, "examples/tutorial_programs/sorting_rows.py"],
+            cwd=ROOT,
+            check=True,
+            text=True,
+            stdout=subprocess.PIPE,
+        )
+        payload = json.loads(proc.stdout)
+        self.assertEqual("rtdl_kernel_relation", payload["lesson_layer"])
+        self.assertIsNone(payload["v4_operator_surface"])
+        self.assertIn("no V4 sort", payload["v4_runtime_claim"])
 
     def test_tutorial_python_snippets_are_copy_paste_runnable(self) -> None:
         snippet_count = 0
@@ -298,13 +359,14 @@ class V4Goal4640PublicDocsCleanupTest(unittest.TestCase):
         self.assertGreaterEqual(snippet_count, 10)
 
     def test_benchmark_app_tutorial_covers_all_promoted_apps(self) -> None:
-        tutorial = (ROOT / "tutorials" / "current" / "07_benchmark_apps.md").read_text(encoding="utf-8")
+        tutorial = (ROOT / "examples" / "tutorial_programs" / "benchmark_app_recipes.py").read_text(encoding="utf-8")
         readme = (ROOT / "examples" / "benchmark_apps" / "README.md").read_text(encoding="utf-8")
 
         for app_name in BENCHMARK_APP_NAMES:
             with self.subTest(app=app_name):
                 self.assertIn(app_name, tutorial)
         self.assertIn("v4_app.py", readme)
+        self.assertIn("benchmark_app_recipes.py", readme)
         self.assertNotIn("rtdl_rayjoin_v2_spatial_join_app.py", readme)
         self.assertNotIn("rtdl_rt_dbscan_benchmark_app.py", tutorial)
 

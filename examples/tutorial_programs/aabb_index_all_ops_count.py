@@ -16,6 +16,9 @@ from rtdsl.aabb_index import Point2DLike
 import rtdsl.v4 as rtdl_v4
 
 TEACHING_CONTEXT = {
+    "tutorial_classification": "operator_companion_after_kernel_first_lesson",
+    "not_first_lesson": True,
+    "kernel_first_requirement": "Read and run aabb_spatial_index_predicates.py before this device-array surface.",
     "concept_tutorial": "examples/tutorial_programs/aabb_spatial_index_predicates.py",
     "manual_data_flow": [
         "User supplies AABB boxes plus point and box query rows.",
@@ -26,6 +29,15 @@ TEACHING_CONTEXT = {
         "boxes": "indexed AABB rows",
         "point_queries": "points tested against indexed boxes",
         "box_queries": "query boxes tested against indexed boxes",
+    },
+    "field_map": {
+        "kernel_box_id": "boxes index",
+        "kernel_point_query": "point_queries",
+        "kernel_box_query": "box_queries",
+        "predicate_point_contains": "box contains query point",
+        "predicate_range_contains": "indexed box fully contains query box",
+        "predicate_range_intersects": "indexed box intersects query box",
+        "output_counts": "count per selected predicate operation",
     },
     "relation_output": "predicate rows for each selected AABB operation",
     "continuation": "count per operation",
@@ -63,17 +75,19 @@ def main() -> int:
             "teaching_context": TEACHING_CONTEXT,
             "backend": args.backend,
             "measured_backend": boundary["measured_backend"],
-            "release_claim_authorized": False,
-            "broad_v4_speedup_claim_authorized": False,
-            "whole_app_speedup_claim_authorized": False,
-            "all_benchmark_speedup_claim_authorized": False,
-            "true_zero_copy_authorized": False,
-            "tier3_callback_claim_authorized": False,
-            "raw_optix_callback_claim_authorized": False,
-            "cupy_performance_claim_authorized": False,
-            "embedding_c_abi_claim_authorized": False,
-            "non_python_host_binding_claim_authorized": False,
-            "app_specific_native_kernel_authorized": False,
+            "claim_boundary": {
+                "public_claim": "AABB all-ops count prepared-runner example",
+                "not_claimed": [
+                    "broad V4 speedup",
+                    "whole-application speedup",
+                    "all-benchmark speedup",
+                    "public zero-copy claim",
+                    "arbitrary callback support",
+                    "CuPy performance claim for this route",
+                    "C ABI or non-Python host binding",
+                    "application-specific native kernel",
+                ],
+            },
         }
         print(json.dumps(payload, indent=2, sort_keys=True))
         return 0
@@ -98,17 +112,19 @@ def main() -> int:
         "measured_backend": boundary["measured_backend"],
         "counts": result["counts"],
         "correctness_passed": correctness_passed,
-        "release_claim_authorized": False,
-        "broad_v4_speedup_claim_authorized": False,
-        "whole_app_speedup_claim_authorized": False,
-        "all_benchmark_speedup_claim_authorized": False,
-        "true_zero_copy_authorized": False,
-        "tier3_callback_claim_authorized": False,
-        "raw_optix_callback_claim_authorized": False,
-        "cupy_performance_claim_authorized": False,
-        "embedding_c_abi_claim_authorized": False,
-        "non_python_host_binding_claim_authorized": False,
-        "app_specific_native_kernel_authorized": False,
+        "claim_boundary": {
+            "public_claim": "AABB all-ops count prepared-runner example",
+            "not_claimed": [
+                "broad V4 speedup",
+                "whole-application speedup",
+                "all-benchmark speedup",
+                "public zero-copy claim",
+                "arbitrary callback support",
+                "CuPy performance claim for this route",
+                "C ABI or non-Python host binding",
+                "application-specific native kernel",
+            ],
+        },
     }
     print(json.dumps(payload, indent=2, sort_keys=True))
     return 0 if correctness_passed else 1

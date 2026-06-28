@@ -1,0 +1,35 @@
+Please review Goal4795 in the RTDL workspace.
+
+Workspace:
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review
+
+Call-for-review packet:
+docs/reviews/call_for_review_goal4795_v4_tutorial_api_boundary_honesty_2026-06-28.md
+
+Completion record:
+docs/engineering/goal4795_v4_tutorial_api_boundary_honesty_2026-06-28.md
+
+Primary files to inspect:
+- examples/tutorial_programs/sorting_rows.py
+- tutorials/current/03_sorting_rows.md
+- tutorials/current/README.md
+- examples/tutorial_programs/README.md
+- examples/README.md
+- docs/current_v4_status.md
+- docs/public_documentation_map.md
+- README.md
+- tests/v4_goal4640_public_docs_cleanup_test.py
+
+Please answer the required questions in the call-for-review packet and write the review result to:
+docs/reviews/antigravity_goal4795_v4_tutorial_api_boundary_honesty_review_2026-06-28.md
+
+Allowed verdict labels:
+- approve_goal4795_v4_tutorial_api_boundary_honesty_complete
+- approve_with_required_amendments
+- block_goal4795_v4_tutorial_api_boundary_honesty
+
+Important review standard:
+Approve only if users cannot reasonably confuse "sorting is in the V4 tutorial path" with "V4 has a sorting operator/runtime surface." Sorting must remain a language-layer RTDL kernel/relation lesson, not a V4 runtime claim.
+
+Non-authorization boundary:
+This review must not authorize a V4 sorting operator claim, a V4 segment-intersection runtime-surface claim, broad V4 speedup wording, whole-app performance claims, a V4 public tag, Tier-3 arbitrary callback claims, raw OptiX callback claims, C ABI or embedding claims, or paper-reproduction claims.

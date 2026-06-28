@@ -15,6 +15,9 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 TEACHING_CONTEXT = {
+    "tutorial_classification": "operator_companion_after_kernel_first_lesson",
+    "not_first_lesson": True,
+    "kernel_first_requirement": "Read ray_triangle_hits.py, continuation_grouped_sum.py, and raydb_table_to_ray.py before this surface.",
     "concept_tutorials": [
         "examples/tutorial_programs/ray_triangle_hits.py",
         "examples/tutorial_programs/continuation_grouped_sum.py",
@@ -29,6 +32,13 @@ TEACHING_CONTEXT = {
         "triangle_columns": "triangle ids and 3D vertices",
         "ray_columns": "ray id, origin, direction, and tmax columns",
         "ray_weights": "uint64 weight payload per ray",
+    },
+    "field_map": {
+        "kernel_ray_id": "ray_columns.ids",
+        "kernel_primitive_id": "triangle_columns.ids",
+        "kernel_weight_payload": "ray_weights",
+        "logical_unfused_steps": "hit rows -> keep accepted hits -> sum ray_weights",
+        "output_weighted_sum": "single uint64 weighted-hit sum",
     },
     "relation_output": "accepted ray/triangle hit rows",
     "continuation": "one uint64 weighted-hit sum scalar",
@@ -99,11 +109,15 @@ def main() -> int:
         "output_contract": "rtdl_allocated_or_caller_owned_torch_device_uint64_scalar",
         "output_scalar_primary_allocation": "rtdl_allocated_uint64_device_scalar",
         "teaching_context": TEACHING_CONTEXT,
-        "release_claim_authorized": False,
-        "broad_v4_speedup_claim_authorized": False,
-        "whole_app_speedup_claim_authorized": False,
-        "tier3_callback_claim_authorized": False,
-        "true_zero_copy_authorized": False,
+        "claim_boundary": {
+            "public_claim": "ray/triangle any-hit weighted-sum Torch device-array operator example",
+            "not_claimed": [
+                "broad V4 speedup",
+                "whole-application speedup",
+                "arbitrary callback support",
+                "public zero-copy claim",
+            ],
+        },
     }
     if args.dry_run:
         payload = {"status": "dry_run", **plan}

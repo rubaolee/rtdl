@@ -20,6 +20,9 @@ if str(SRC) not in sys.path:
 GROUP_WIDTH = 16
 
 TEACHING_CONTEXT = {
+    "tutorial_classification": "operator_companion_after_kernel_first_lesson",
+    "not_first_lesson": True,
+    "kernel_first_requirement": "Read triangle_counting_graph_lowering.py and continuation_grouped_sum.py before this surface.",
     "concept_tutorials": [
         "examples/tutorial_programs/triangle_counting_graph_lowering.py",
         "examples/tutorial_programs/continuation_grouped_sum.py",
@@ -34,6 +37,15 @@ TEACHING_CONTEXT = {
         "ray_columns": "ray id, origin, direction, and tmax columns",
         "primitive_group_ids": "uint32 group id per primitive",
         "primitive_values": "uint64 payload per primitive",
+    },
+    "field_map": {
+        "kernel_ray_id": "ray_columns.ids",
+        "kernel_primitive_id": "triangle_columns.ids",
+        "kernel_group_id": "primitive_group_ids",
+        "kernel_value": "primitive_values",
+        "group_invariant": "group ids are stable integer buckets for the continuation",
+        "output_group_count": "number of accepted hits per group",
+        "output_group_sum": "sum of primitive_values per group",
     },
     "relation_output": "accepted hit rows annotated with primitive group and payload",
     "continuation": "per-group count and integer sum",
@@ -119,10 +131,14 @@ def main() -> int:
         "validated_gpu_family": "RTX A5000 / Ampere",
         "validated_partner_scope": "torch 2.8.0+cu128",
         "optix_9_1_validated": False,
-        "release_claim_authorized": False,
-        "broad_v4_speedup_claim_authorized": False,
-        "whole_app_speedup_claim_authorized": False,
-        "tier3_callback_claim_authorized": False,
+        "claim_boundary": {
+            "public_claim": "primitive grouped-i64 reduction Torch device-array operator example",
+            "not_claimed": [
+                "broad V4 speedup",
+                "whole-application speedup",
+                "arbitrary callback support",
+            ],
+        },
     }
     if args.dry_run:
         payload = {"status": "dry_run", **plan}

@@ -1,0 +1,32 @@
+Please review Goal4794 in the RTDL workspace.
+
+Workspace:
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review
+
+Call-for-review packet:
+docs/reviews/call_for_review_goal4794_final_tutorial_surface_2026-06-28.md
+
+Audit record:
+docs/engineering/goal4794_final_tutorial_surface_audit_2026-06-28.md
+
+Primary user-facing files:
+- tutorials/current/README.md
+- tutorials/current/01_first_run.md through tutorials/current/24_benchmark_app_bridge.md
+- examples/tutorial_programs/README.md
+- all files under examples/tutorial_programs/
+- examples/README.md
+- docs/public_documentation_map.md
+
+Please answer the required questions in the call-for-review packet and write the review result to:
+docs/reviews/antigravity_goal4794_final_tutorial_surface_review_2026-06-28.md
+
+Allowed verdict labels:
+- approve_goal4794_final_tutorial_surface_complete
+- approve_with_required_amendments
+- block_goal4794_final_tutorial_surface
+
+Important review standard:
+Approve only if the tutorial set is coherent enough to tell the user that the V4 tutorials are complete and ready for personal inspection. Do not approve if old process material leaks into the current tutorial path, if examples are black-box V4 API calls without teaching RTDL relation thinking, or if links/commands are inconsistent.
+
+Non-authorization boundary:
+This review must not authorize a V4 public tag, broad V4 speedup wording, whole-app performance claims, Tier-3 arbitrary callback claims, raw OptiX callback claims, C ABI or embedding claims, paper-reproduction claims, or app-specific native-kernel claims.

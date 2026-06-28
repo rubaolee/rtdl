@@ -14,6 +14,9 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 TEACHING_CONTEXT = {
+    "tutorial_classification": "operator_companion_after_kernel_first_lesson",
+    "not_first_lesson": True,
+    "kernel_first_requirement": "Read nearest_neighbor.py and ranked_summary_neighbors.py before this surface.",
     "concept_tutorials": [
         "examples/tutorial_programs/nearest_neighbor.py",
         "examples/tutorial_programs/ranked_summary_neighbors.py",
@@ -27,6 +30,14 @@ TEACHING_CONTEXT = {
         "ids": "uint32 query id column",
         "x": "float64 query x coordinate",
         "y": "float64 query y coordinate",
+    },
+    "field_map": {
+        "kernel_query_id": "query_columns.ids",
+        "kernel_candidate_group": "point_groups",
+        "kernel_neighbor_id": "search_points.id",
+        "kernel_distance": "distance from query_columns x/y to group point",
+        "output_neighbor_id": "expected_neighbor_ids / runtime neighbor_ids",
+        "output_distance": "expected_distances / runtime distances",
     },
     "relation_output": "one nearest-witness row per query point",
     "continuation": "argmin over candidate distances, with ids and distances kept as output columns",
@@ -101,11 +112,15 @@ def main() -> int:
         "validated_partner_scope": "torch 2.8.0+cu128",
         "distance_precision": "float32_computed_float64_output",
         "optix_9_1_validated": False,
-        "release_claim_authorized": False,
-        "broad_v4_speedup_claim_authorized": False,
-        "whole_app_speedup_claim_authorized": False,
-        "tier3_callback_claim_authorized": False,
-        "true_zero_copy_authorized": False,
+        "claim_boundary": {
+            "public_claim": "point-group nearest-witness Torch device-array operator example",
+            "not_claimed": [
+                "broad V4 speedup",
+                "whole-application speedup",
+                "arbitrary callback support",
+                "public zero-copy claim",
+            ],
+        },
     }
     if args.dry_run:
         payload = {"status": "dry_run", **plan}
