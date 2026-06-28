@@ -71,6 +71,7 @@ from .v4_scope import validate_v4_0_scope_gate
 from .v4_shape_pair_relation import V4ShapePairRelationActiveCount2DPreparedLeftExecutor
 from .v4_shape_pair_relation import prepare_shape_pair_relation_active_count_2d_prepared_left_executor_v4
 from .v4_shape_pair_relation import shape_pair_relation_active_count_2d_prepared_left_executor_claim_boundary_v4
+from .rayjoin_numba_auto_planner import section57_polygon_overlay as _rayjoin_section57_polygon_overlay
 
 
 V4_FRONT_DOOR_STATUS = "v4_python_edsl_operator_pushdown_front_door_complete_rt_core_matrix"
@@ -189,6 +190,25 @@ def recognize_pushdown_request_v4(*args, **kwargs) -> V4PushdownRecognition:
     return recognize_v4_pushdown_request(*args, **kwargs)
 
 
+class _V4PaperRayjoinNamespace:
+    """Paper-reproduction surfaces exposed as semantic V4 workloads."""
+
+    def section57_polygon_overlay(self, *args, **kwargs) -> dict[str, object]:
+        """Plan the RayJoin Section 5.7 V4+Numba automatic primitive route."""
+
+        return _rayjoin_section57_polygon_overlay(*args, **kwargs)
+
+
+class _V4PaperNamespace:
+    """Namespace for V4 paper-reproduction workloads."""
+
+    def __init__(self) -> None:
+        self.rayjoin = _V4PaperRayjoinNamespace()
+
+
+paper = _V4PaperNamespace()
+
+
 PUBLIC_API_SYMBOLS_V4 = (
     "V4_FRONT_DOOR_STATUS",
     "V4_FRONT_DOOR_MEASURED_PARTNER",
@@ -203,6 +223,7 @@ PUBLIC_API_SYMBOLS_V4 = (
     "certified_partner_catalog_v4",
     "plan_operator_request_v4",
     "recognize_pushdown_request_v4",
+    "paper",
     "V4_RAY_TRIANGLE_CUSTOM_PREDICATE_EARLY_EXIT_SURFACE",
     "V4_RAY_TRIANGLE_CUSTOM_PREDICATE_EARLY_EXIT_STATUS",
     "V4_RAY_TRIANGLE_CUSTOM_PREDICATE_EARLY_EXIT_PRIMITIVE",

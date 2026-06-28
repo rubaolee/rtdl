@@ -16,6 +16,8 @@ from examples.benchmark_apps._support._repo_bootstrap import ensure_repo_src_on_
 ensure_repo_src_on_path()
 
 from rtdsl._example_support.benchmark_harness_compat import run_archived_harness
+from rtdsl.rayjoin_numba_auto_planner import section57_polygon_overlay
+from rtdsl.rayjoin_numba_auto_planner import write_section57_numba_auto_evidence
 
 
 DEFAULT_SECTION57_DATASET_ROOT = "data/rayjoin_section57_cdb"
@@ -44,6 +46,10 @@ def _payload() -> dict[str, object]:
         ),
         "v2_14_comparison": (
             "python examples/paper_reproduction/rayjoin.py --section57-compare-v214 --json"
+        ),
+        "v4_numba_auto_planner": (
+            "python examples/paper_reproduction/rayjoin.py --section57-auto-numba "
+            "--dataset-root data/rayjoin_section57_cdb --partner numba --select fastest_valid"
         ),
         "run_harness": "python examples/paper_reproduction/rayjoin.py --run-harness -- --help",
     }
@@ -203,6 +209,38 @@ def _print_comparison(args: argparse.Namespace) -> int:
     return 0
 
 
+def _run_section57_auto_numba(args: argparse.Namespace) -> int:
+    output_dir = Path(args.output_dir)
+    output_json = args.output_json or (output_dir / "section57_numba_auto_evidence.json")
+    output_md = args.output_md or (output_dir / "section57_numba_auto_evidence.md")
+    payload = section57_polygon_overlay(
+        dataset_root=args.dataset_root,
+        partner=args.partner,
+        select=args.select,
+        pairs=args.pairs,
+        query_exec=args.query_exec,
+        polyover_exec=args.polyover_exec,
+        output_dir=args.output_dir,
+        input_provenance=args.input_provenance,
+        warmup=args.rtdl_warmup,
+        repeat=args.rtdl_repeat,
+        check_runtime=not args.skip_runtime_probe,
+    )
+    write_section57_numba_auto_evidence(
+        payload,
+        output_json=output_json,
+        output_md=output_md,
+    )
+    if args.json:
+        print(json.dumps(payload, indent=2, sort_keys=True))
+    else:
+        print("RayJoin Section 5.7 V4+Numba auto-primitive planner")
+        print(f"  claim classification: {payload['claim_classification']}")
+        print(f"  evidence json: {output_json}")
+        print(f"  evidence md:   {output_md}")
+    return 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Explain or run the RayJoin paper-oriented RTDL route.")
     parser.add_argument("--json", action="store_true", help="Print the route description as JSON.")
@@ -211,9 +249,12 @@ def main() -> int:
     parser.add_argument("--section57-run", action="store_true", help="Run the RayJoin Section 5.7 overlay matrix.")
     parser.add_argument("--section57-summary", action="store_true", help="Summarize existing Section 5.7 overlay result files.")
     parser.add_argument("--section57-compare-v214", action="store_true", help="Show the V2.14 vs V4.0 Section 5.7 comparison protocol.")
+    parser.add_argument("--section57-auto-numba", action="store_true", help="Plan the V4+Numba auto-primitive route for Section 5.7.")
     parser.add_argument("--dataset-root", default=DEFAULT_SECTION57_DATASET_ROOT, help="Root containing RayJoin point_cdb inputs.")
     parser.add_argument("--output-dir", default=DEFAULT_SECTION57_OUTPUT_DIR, help="Directory for Section 5.7 artifacts.")
     parser.add_argument("--pairs", help="Comma-separated overlay pair ids; default is all eight Section 5.7 pairs.")
+    parser.add_argument("--partner", default="numba", help="Partner for --section57-auto-numba; this route supports numba.")
+    parser.add_argument("--select", default="fastest_valid", help="Selection policy for --section57-auto-numba.")
     parser.add_argument("--implementations", default="author_rt,rtdl_optix,rtdl_embree")
     parser.add_argument(
         "--input-provenance",
@@ -231,6 +272,7 @@ def main() -> int:
     parser.add_argument("--assemble-overlay-output", action="store_true")
     parser.add_argument("--allow-missing-inputs", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--skip-runtime-probe", action="store_true", help="Do not probe local Numba CUDA availability.")
     parser.add_argument("--timeout-sec", type=int)
     parser.add_argument("--output-json", type=Path)
     parser.add_argument("--output-md", type=Path)
@@ -250,6 +292,8 @@ def main() -> int:
         return _run_section57_summary(args)
     if args.section57_compare_v214:
         return _print_comparison(args)
+    if args.section57_auto_numba:
+        return _run_section57_auto_numba(args)
 
     payload = _payload()
     if args.json:

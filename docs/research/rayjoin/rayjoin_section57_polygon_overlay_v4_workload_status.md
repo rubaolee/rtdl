@@ -15,6 +15,7 @@ workload:
 python3 examples/paper_reproduction/rayjoin.py --section57-plan --dataset-root data/rayjoin_section57_cdb
 python3 examples/paper_reproduction/rayjoin.py --section57-run --dataset-root data/rayjoin_section57_cdb --query-exec /workspace/RayJoin_fresh/release/bin/query_exec --polyover-exec /workspace/RayJoin_fresh/release/bin/polyover_exec
 python3 examples/paper_reproduction/rayjoin.py --section57-compare-v214 --json
+python3 examples/paper_reproduction/rayjoin.py --section57-auto-numba --dataset-root data/rayjoin_section57_cdb --partner numba --select fastest_valid
 ```
 
 The wrapper delegates to the existing Section 5.7 matrix runner:
@@ -29,6 +30,18 @@ The paper suite definition lives in:
 src/rtdsl/rayjoin_paper_suite.py
 ```
 
+The V4+Numba auto-primitive planner lives in:
+
+```text
+src/rtdsl/rayjoin_numba_auto_planner.py
+```
+
+It is a semantic planner/evidence route: users name Section 5.7 and
+`partner="numba"`; RTDL enumerates candidate primitive combinations and writes a
+scoreboard. It does not count as a full paper-reproduction result until the
+author-code, V2.14 exact-suite, and V4+Numba selected-plan columns all have
+valid correctness and timing evidence.
+
 ## What Counts
 
 A full Section 5.7 claim requires all of the following:
@@ -40,6 +53,8 @@ A full Section 5.7 claim requires all of the following:
 - the RayJoin author binaries for the author baseline:
   `query_exec` and `polyover_exec`;
 - separate result rows for `author_rt`, `rtdl_optix`, and `rtdl_embree`;
+- for the V4+Numba auto planner, separate result columns for `author_code`,
+  `v2_14_exact_suite`, and `v4_numba_selected_plan`;
 - correctness/status and timing recorded together;
 - an 8/8 overlay-pair completion summary before any full Section 5.7 claim.
 
