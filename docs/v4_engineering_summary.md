@@ -27,7 +27,7 @@ The current release shape has:
 - runnable tutorial snippets;
 - a complete 10-app NVIDIA RT-core table;
 - named denominators for operator and app rows;
-- wheel build and installed-wheel smoke coverage;
+- wheel build and installed-package import checks;
 - a release tag that matches the committed source tree.
 
 ## Matrix Facts
