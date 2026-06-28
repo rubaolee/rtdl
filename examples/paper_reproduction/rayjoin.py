@@ -16,7 +16,11 @@ from examples.benchmark_apps._support._repo_bootstrap import ensure_repo_src_on_
 ensure_repo_src_on_path()
 
 from rtdsl._example_support.benchmark_harness_compat import run_archived_harness
+from rtdsl.rayjoin_paper_suite import availability_matrix
+from rtdsl.rayjoin_paper_suite import paper_pairs
+from rtdsl.rayjoin_numba_auto_planner import SECTION57_DEVICE_COLUMN_REQUIREMENT
 from rtdsl.rayjoin_numba_auto_planner import section57_polygon_overlay
+from rtdsl.rayjoin_numba_auto_planner import section57_device_column_component_status
 from rtdsl.rayjoin_numba_auto_planner import write_section57_numba_auto_evidence
 
 
@@ -43,6 +47,12 @@ def _payload() -> dict[str, object]:
             "--dataset-root data/rayjoin_section57_cdb "
             "--query-exec /workspace/RayJoin_fresh/release/bin/query_exec "
             "--polyover-exec /workspace/RayJoin_fresh/release/bin/polyover_exec"
+        ),
+        "section57_preflight": (
+            "python examples/paper_reproduction/rayjoin.py --section57-preflight "
+            "--dataset-root data/rayjoin_section57_cdb "
+            "--query-exec /workspace/RayJoin_fresh/release/bin/query_exec "
+            "--polyover-exec /workspace/RayJoin_fresh/release/bin/polyover_exec --json"
         ),
         "v2_14_comparison": (
             "python examples/paper_reproduction/rayjoin.py --section57-compare-v214 --json"
@@ -211,6 +221,153 @@ def _print_comparison(args: argparse.Namespace) -> int:
     return 0
 
 
+def _probe_gpu() -> dict[str, object]:
+    try:
+        completed = subprocess.run(
+            ["nvidia-smi", "--query-gpu=name,driver_version", "--format=csv,noheader"],
+            cwd=ROOT,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=5,
+            check=False,
+        )
+    except (FileNotFoundError, subprocess.TimeoutExpired) as exc:
+        return {
+            "nvidia_smi_available": False,
+            "rt_core_likely": False,
+            "gpu_names": [],
+            "error": str(exc),
+        }
+    rows = [line.strip() for line in completed.stdout.splitlines() if line.strip()]
+    names = [row.split(",", 1)[0].strip() for row in rows]
+    rt_markers = ("RTX", "L4", "L40", "A10", "A16", "A40", "A4000", "A5000", "A6000", "T4")
+    rt_core_likely = any(any(marker in name.upper() for marker in rt_markers) for name in names)
+    return {
+        "nvidia_smi_available": completed.returncode == 0,
+        "rt_core_likely": bool(rt_core_likely),
+        "gpu_names": names,
+        "stdout": completed.stdout,
+        "stderr": completed.stderr,
+    }
+
+
+def _probe_numba_cuda() -> dict[str, object]:
+    try:
+        from rtdsl.numba_partner_continuation import numba_partner_available
+
+        available = bool(numba_partner_available())
+        return {"numba_cuda_available": available, "error": None}
+    except Exception as exc:
+        return {"numba_cuda_available": False, "error": repr(exc)}
+
+
+def _section57_preflight_payload(args: argparse.Namespace) -> dict[str, object]:
+    pair_ids = tuple(part.strip() for part in args.pairs.split(",")) if args.pairs else tuple(
+        pair.pair_id for pair in paper_pairs()
+    )
+    availability = availability_matrix(args.dataset_root, pair_ids=pair_ids, program_ids=("overlay",))
+    exact_ready = sum(1 for row in availability if row.exact_input_ready)
+    query_exec = Path(args.query_exec) if args.query_exec else None
+    polyover_exec = Path(args.polyover_exec) if args.polyover_exec else None
+    author = {
+        "query_exec": None if query_exec is None else str(query_exec),
+        "query_exec_exists": bool(query_exec and query_exec.exists()),
+        "polyover_exec": None if polyover_exec is None else str(polyover_exec),
+        "polyover_exec_exists": bool(polyover_exec and polyover_exec.exists()),
+    }
+    gpu = _probe_gpu()
+    numba = _probe_numba_cuda()
+    blockers: list[str] = []
+    if exact_ready != len(availability):
+        blockers.append("missing_exact_section57_cdb_inputs")
+    if not author["query_exec_exists"] or not author["polyover_exec_exists"]:
+        blockers.append("missing_rayjoin_author_binaries")
+    if not bool(gpu["rt_core_likely"]):
+        blockers.append("rt_core_gpu_not_detected")
+    if not bool(numba["numba_cuda_available"]):
+        blockers.append("numba_cuda_unavailable")
+    device_columns = section57_device_column_component_status()
+    if not bool(device_columns["static_components_declared"]):
+        blockers.append("missing_section57_device_column_component")
+    command = [
+        "python3",
+        "examples/paper_reproduction/rayjoin.py",
+        "--section57-run",
+        "--implementations",
+        args.implementations,
+        "--dataset-root",
+        str(args.dataset_root),
+        "--output-dir",
+        str(args.output_dir),
+        "--query-exec",
+        str(query_exec or "/workspace/RayJoin_fresh/release/bin/query_exec"),
+        "--polyover-exec",
+        str(polyover_exec or "/workspace/RayJoin_fresh/release/bin/polyover_exec"),
+        "--author-warmup",
+        str(args.author_warmup),
+        "--author-repeat",
+        str(args.author_repeat),
+        "--rtdl-warmup",
+        str(args.rtdl_warmup),
+        "--rtdl-repeat",
+        str(args.rtdl_repeat),
+    ]
+    if args.pairs:
+        command.extend(["--pairs", args.pairs])
+    return {
+        "schema": "rtdl.rayjoin.section57_preflight.v1",
+        "ready_for_performance_run": len(blockers) == 0,
+        "blockers": blockers,
+        "dataset_root": str(args.dataset_root),
+        "pairs_requested": pair_ids,
+        "inputs": {
+            "overlay_pairs_total": len(availability),
+            "overlay_pairs_ready": exact_ready,
+            "rows": [
+                {
+                    "pair_id": row.pair_id,
+                    "paper_label": row.paper_label,
+                    "exact_input_ready": row.exact_input_ready,
+                    "blocker": row.blocker,
+                    "left_path": row.left.path,
+                    "right_path": row.right.path,
+                }
+                for row in availability
+            ],
+        },
+        "author_binaries": author,
+        "gpu": gpu,
+        "numba": numba,
+        "section57_device_columns": device_columns | {
+            "requirement": SECTION57_DEVICE_COLUMN_REQUIREMENT,
+            "performance_validation_required_on_pod": True,
+        },
+        "performance_command": command,
+        "claim_boundary": (
+            "Preflight is not performance evidence. It only says whether the "
+            "machine has the required inputs, author binaries, GPU/runtime, and "
+            "device-column route for the Section 5.7 performance run."
+        ),
+    }
+
+
+def _run_section57_preflight(args: argparse.Namespace) -> int:
+    payload = _section57_preflight_payload(args)
+    if args.output_json:
+        args.output_json.parent.mkdir(parents=True, exist_ok=True)
+        args.output_json.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    if args.json:
+        print(json.dumps(payload, indent=2, sort_keys=True))
+        return 0
+    print("RayJoin Section 5.7 preflight")
+    print(f"  ready for performance run: {payload['ready_for_performance_run']}")
+    print(f"  blockers: {', '.join(payload['blockers']) if payload['blockers'] else 'none'}")
+    print("  command:")
+    print("    " + " ".join(str(part) for part in payload["performance_command"]))
+    return 0
+
+
 def _run_section57_auto_numba(args: argparse.Namespace) -> int:
     output_dir = Path(args.output_dir)
     output_json = args.output_json or (output_dir / "section57_numba_auto_evidence.json")
@@ -251,6 +408,7 @@ def main() -> int:
     parser.add_argument("--section57-run", action="store_true", help="Run the RayJoin Section 5.7 overlay matrix.")
     parser.add_argument("--section57-summary", action="store_true", help="Summarize existing Section 5.7 overlay result files.")
     parser.add_argument("--section57-compare-v214", action="store_true", help="Show the V2.14 vs V4.0 Section 5.7 comparison protocol.")
+    parser.add_argument("--section57-preflight", action="store_true", help="Check Section 5.7 data, author binaries, GPU, and Numba readiness.")
     parser.add_argument("--section57-auto-numba", action="store_true", help="Plan the V4+Numba auto-primitive route for Section 5.7.")
     parser.add_argument("--dataset-root", default=DEFAULT_SECTION57_DATASET_ROOT, help="Root containing RayJoin point_cdb inputs.")
     parser.add_argument("--output-dir", default=DEFAULT_SECTION57_OUTPUT_DIR, help="Directory for Section 5.7 artifacts.")
@@ -299,6 +457,8 @@ def main() -> int:
         return _run_section57_summary(args)
     if args.section57_compare_v214:
         return _print_comparison(args)
+    if args.section57_preflight:
+        return _run_section57_preflight(args)
     if args.section57_auto_numba:
         return _run_section57_auto_numba(args)
 

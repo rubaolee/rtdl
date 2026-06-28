@@ -14,10 +14,12 @@ Section 5.7 matrix runner, so the same evidence surface can report:
 4. `v4_numba`
 
 The remaining blocker is external execution state: the real Section 5.7 CDB
-inputs, RayJoin author binaries, and an RT-core NVIDIA machine must be present
-for correctness and performance comparison. In addition, the V4+Numba route
-requires a Section 5.7 device-column producer; the existing host overlay summary
-path is not sufficient for a V4+Numba performance claim.
+inputs, RayJoin author binaries, Numba CUDA, and an RT-core NVIDIA machine must
+be present for correctness and performance comparison. The V4+Numba route also
+requires Section 5.7 device-resident candidate/refinement columns. Static source
+inspection now finds the required segment-pair, closed-shape relation-status,
+and Numba continuation components, but the end-to-end Section 5.7 composition
+still needs POD validation before any performance claim.
 
 ## Author Code Source
 
@@ -135,6 +137,35 @@ V4+Numba status: blocked_missing_inputs
 This is correct for the current workspace because the exact Section 5.7 inputs
 are not present. It is not a performance result.
 
+## Preflight Evidence
+
+New preflight artifact:
+
+```text
+tools/_archive/future/v4/evidence/goal4806_section57_preflight_2026-06-28.json
+```
+
+Observed local blockers:
+
+```text
+missing_exact_section57_cdb_inputs
+missing_rayjoin_author_binaries
+rt_core_gpu_not_detected
+numba_cuda_unavailable
+```
+
+Observed device-column status:
+
+```text
+static_components_declared: true
+end_to_end_composition_status: components_present_pod_validation_required
+performance_evidence_status: not_measured
+```
+
+This means the current local stop point is not a missing tutorial or wrapper. It
+is the need for a real RT-core POD with exact Section 5.7 inputs, author
+binaries, and Numba CUDA to validate the route and measure performance.
+
 ## Code Changes
 
 The Section 5.7 matrix runner now recognizes `v4_numba`:
@@ -156,8 +187,8 @@ src/rtdsl/rayjoin_numba_auto_planner.py
 ```
 
 The planner now refuses to mark candidates as measurable unless exact inputs,
-Numba CUDA, and a Section 5.7 device-column producer are all present. With
-inputs and Numba available but without device columns, candidates are labeled:
+Numba CUDA, and a Section 5.7 device-column route are all present. With inputs
+and Numba available but without the device-column route, candidates are labeled:
 
 ```text
 blocked_missing_section57_device_columns
@@ -175,15 +206,15 @@ Tests run:
 
 ```bash
 py -3 -m unittest \
-  tests.goal4374_rayjoin_exact_paper_suite_test \
-  tests.v4_rayjoin_section57_public_entry_test \
-  tests.v4_goal4806_rayjoin_numba_auto_planner_test
+tests.goal4374_rayjoin_exact_paper_suite_test \
+tests.v4_rayjoin_section57_public_entry_test \
+tests.v4_goal4806_rayjoin_numba_auto_planner_test
 ```
 
 Result:
 
 ```text
-Ran 33 tests in 13.124s
+Ran 34 tests in 14.234s
 OK
 ```
 

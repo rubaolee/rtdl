@@ -22,6 +22,11 @@ RAYJOIN_SECTION57_NUMBA_AUTO_PLAN_STATUS = "candidate_planner_not_release_claim"
 RAYJOIN_SECTION57_NUMBA_PARTNER_SCOPE = (
     "post_traversal_numba_cuda_jit_continuation_on_device_resident_columns"
 )
+SECTION57_DEVICE_COLUMN_REQUIREMENT = (
+    "V4+Numba Section 5.7 performance measurement requires RTDL to expose "
+    "overlay candidate/refinement streams as device-resident columns. Host "
+    "overlay summaries are not sufficient for this route."
+)
 
 
 @dataclass(frozen=True)
@@ -112,6 +117,80 @@ def numba_section57_partner_contract() -> dict[str, object]:
             "A valid runtime execution must compile a Numba CUDA kernel and run it "
             "on device-resident columns produced by RTDL/V4 traversal stages."
         ),
+    }
+
+
+def section57_device_column_component_status() -> dict[str, object]:
+    """Report whether the codebase exposes the components needed by the route.
+
+    This is a static capability audit, not performance evidence. It is used to
+    distinguish "the repository lacks the route pieces" from "the route pieces
+    exist and still require NVIDIA RT-core POD validation on real Section 5.7
+    inputs."
+    """
+
+    from . import closed_shape_topology
+    from . import optix_runtime
+
+    required_symbols = {
+        "segment_pair_candidate_device_columns": (
+            "OPTIX_SEGMENT_PAIR_CANDIDATE_DEVICE_COLUMNS_SYMBOL",
+            "PreparedOptixSegmentPairIntersection.candidate_device_columns",
+        ),
+        "segment_pair_grouped_count_device_columns": (
+            "OPTIX_SEGMENT_PAIR_LEFT_ID_COUNT_DEVICE_COLUMNS_SYMBOL",
+            "PreparedOptixSegmentPairIntersection.left_id_count_device_columns",
+        ),
+        "closed_shape_relation_status_device_columns": (
+            "OPTIX_CLOSED_SHAPE_MEMBERSHIP_RELATION_STATUS_CANDIDATE_DEVICE_COLUMNS_PREPARED_POINTS_SYMBOL",
+            "PreparedOptixPointClosedShapeMembership2D.relation_status_candidate_device_columns_prepared_points",
+        ),
+    }
+    components: dict[str, dict[str, object]] = {}
+    for name, (symbol_name, method_path) in required_symbols.items():
+        class_name, method_name = method_path.split(".", 1)
+        owner_class = getattr(optix_runtime, class_name, None)
+        components[name] = {
+            "symbol_constant": symbol_name,
+            "symbol_declared": hasattr(optix_runtime, symbol_name),
+            "method": method_path,
+            "python_method_declared": bool(owner_class is not None and hasattr(owner_class, method_name)),
+        }
+    relation_status_numba_owner = getattr(
+        closed_shape_topology,
+        "PreparedClosedShapeMembershipCandidateRefinerCupy",
+        None,
+    )
+    relation_status_numba = bool(
+        relation_status_numba_owner is not None
+        and hasattr(
+            relation_status_numba_owner,
+            "count_relation_status_corrected_prepared_points_numba",
+        )
+    )
+    components["numba_relation_status_continuation"] = {
+        "method": (
+            "PreparedClosedShapeMembershipCandidateRefinerCupy."
+            "count_relation_status_corrected_prepared_points_numba"
+        ),
+        "python_method_declared": relation_status_numba,
+        "partner": "numba",
+    }
+    all_declared = all(
+        bool(row.get("symbol_declared", True)) and bool(row.get("python_method_declared", False))
+        for row in components.values()
+    )
+    return {
+        "required": True,
+        "static_components_declared": bool(all_declared),
+        "components": components,
+        "end_to_end_composition_status": (
+            "components_present_pod_validation_required"
+            if all_declared
+            else "missing_required_component_declaration"
+        ),
+        "performance_evidence_status": "not_measured",
+        "claim_boundary": "Static component presence is not a paper-reproduction or speedup claim.",
     }
 
 
@@ -409,11 +488,8 @@ def section57_polygon_overlay(
             "numba_cuda_available": numba_available,
             "checked_runtime": bool(check_runtime),
             "section57_device_columns_ready": bool(section57_device_columns_ready),
-            "section57_device_columns_requirement": (
-                "V4+Numba can be measured only when RTDL exposes Section 5.7 "
-                "candidate/refinement columns as device-resident arrays. The "
-                "current overlay runner's host summary path is not sufficient."
-            ),
+            "section57_device_columns_requirement": SECTION57_DEVICE_COLUMN_REQUIREMENT,
+            "section57_device_column_components": section57_device_column_component_status(),
         },
         "columns": ("author_code", "v2_14_exact_suite", "v4_numba_selected_plan"),
         "candidate_scoreboard": all_candidates,

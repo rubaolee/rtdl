@@ -15,6 +15,7 @@ workload:
 python3 examples/paper_reproduction/rayjoin.py --section57-plan --dataset-root data/rayjoin_section57_cdb
 python3 examples/paper_reproduction/rayjoin.py --section57-run --dataset-root data/rayjoin_section57_cdb --query-exec /workspace/RayJoin_fresh/release/bin/query_exec --polyover-exec /workspace/RayJoin_fresh/release/bin/polyover_exec
 python3 examples/paper_reproduction/rayjoin.py --section57-compare-v214 --json
+python3 examples/paper_reproduction/rayjoin.py --section57-preflight --dataset-root data/rayjoin_section57_cdb --query-exec /workspace/RayJoin_fresh/release/bin/query_exec --polyover-exec /workspace/RayJoin_fresh/release/bin/polyover_exec --json
 python3 examples/paper_reproduction/rayjoin.py --section57-auto-numba --dataset-root data/rayjoin_section57_cdb --partner numba --select fastest_valid
 ```
 
@@ -43,8 +44,11 @@ author-code, V2.14 exact-suite, and V4+Numba selected-plan columns all have
 valid correctness and timing evidence.
 
 The V4+Numba selected-plan column has one additional hard gate: the Section 5.7
-candidate/refinement stream must be exposed as device-resident columns. The
-existing host summary path is not enough for a V4+Numba performance claim.
+candidate/refinement stream must be exposed as device-resident columns. Static
+source inspection now finds the required LSI/PIP device-column components and
+Numba continuation pieces, but that is not performance evidence. A real
+Section 5.7 POD run must still validate the end-to-end composition on exact
+inputs and the author baseline.
 
 The Section 5.7 matrix runner also accepts `v4_numba` as an implementation:
 
@@ -115,6 +119,8 @@ A real POD run needs:
 Recommended sequence:
 
 ```bash
+python3 examples/paper_reproduction/rayjoin.py --section57-preflight --dataset-root /path/to/rayjoin_section57_cdb --query-exec /workspace/RayJoin_fresh/release/bin/query_exec --polyover-exec /workspace/RayJoin_fresh/release/bin/polyover_exec --json
+
 python3 examples/paper_reproduction/rayjoin.py --section57-plan --dataset-root /path/to/rayjoin_section57_cdb --output-dir artifacts/rayjoin_section57
 
 python3 examples/paper_reproduction/rayjoin.py --section57-run --dataset-root /path/to/rayjoin_section57_cdb --output-dir artifacts/rayjoin_section57 --query-exec /workspace/RayJoin_fresh/release/bin/query_exec --polyover-exec /workspace/RayJoin_fresh/release/bin/polyover_exec
@@ -144,6 +150,16 @@ protocol, and the public front-door gate. Maintainers also keep lower-level
 suite, publication-decision, and public-doc cleanup tests for the 8-pair plan
 shape, dry-run recording path, and public wording checks. Local tests do
 not replace a real POD run with exact inputs and author binaries.
+
+The local preflight command is:
+
+```bash
+python3 examples/paper_reproduction/rayjoin.py --section57-preflight --dataset-root data/rayjoin_section57_cdb --query-exec /workspace/RayJoin_fresh/release/bin/query_exec --polyover-exec /workspace/RayJoin_fresh/release/bin/polyover_exec --json
+```
+
+It shows the Section 5.7 device-column components are statically declared, while
+the local Windows workspace is still missing exact CDB inputs, author binaries,
+Numba CUDA, and an RT-core GPU.
 
 ## Remaining Work
 

@@ -26,6 +26,7 @@ class V4RayJoinSection57PublicEntryTest(unittest.TestCase):
         self.assertEqual(payload["paper_entry"], "RayJoin")
         self.assertIn("--section57-plan", payload["section57_overlay_plan"])
         self.assertIn("--section57-run", payload["section57_overlay_run"])
+        self.assertIn("--section57-preflight", payload["section57_preflight"])
         self.assertIn("rayjoin_paper_suite.py", payload["paper_suite"])
 
     def test_section57_plan_lists_all_eight_overlay_pairs(self) -> None:
@@ -127,6 +128,48 @@ class V4RayJoinSection57PublicEntryTest(unittest.TestCase):
         self.assertIn("same dataset root", payload["important_boundary"])
         self.assertIn("--overlay-pairs", payload["v2_14_plan_command"])
         self.assertIn("--section57-run", payload["v4_0_command"])
+
+    def test_section57_preflight_separates_local_requirements_from_pod_run(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            output_json = root / "preflight.json"
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    "examples/paper_reproduction/rayjoin.py",
+                    "--section57-preflight",
+                    "--dataset-root",
+                    str(root / "missing_inputs"),
+                    "--query-exec",
+                    str(root / "missing_author" / "query_exec"),
+                    "--polyover-exec",
+                    str(root / "missing_author" / "polyover_exec"),
+                    "--output-json",
+                    str(output_json),
+                    "--json",
+                ],
+                cwd=ROOT,
+                text=True,
+                stdout=subprocess.PIPE,
+                check=True,
+            )
+            payload = json.loads(completed.stdout)
+            file_payload = json.loads(output_json.read_text(encoding="utf-8"))
+
+        self.assertEqual(payload["schema"], "rtdl.rayjoin.section57_preflight.v1")
+        self.assertEqual(file_payload["schema"], payload["schema"])
+        self.assertFalse(payload["ready_for_performance_run"])
+        self.assertIn("missing_exact_section57_cdb_inputs", payload["blockers"])
+        self.assertIn("missing_rayjoin_author_binaries", payload["blockers"])
+        self.assertNotIn("section57_device_column_producer_not_yet_proven", payload["blockers"])
+        self.assertIn("section57_device_columns", payload)
+        self.assertTrue(payload["section57_device_columns"]["static_components_declared"])
+        self.assertEqual(
+            payload["section57_device_columns"]["end_to_end_composition_status"],
+            "components_present_pod_validation_required",
+        )
+        self.assertTrue(payload["section57_device_columns"]["performance_validation_required_on_pod"])
+        self.assertIn("--section57-run", payload["performance_command"])
 
 
 if __name__ == "__main__":
