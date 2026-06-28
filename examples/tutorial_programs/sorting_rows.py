@@ -2,6 +2,14 @@ from __future__ import annotations
 
 import json
 from collections import defaultdict
+from pathlib import Path
+import sys
+
+
+ROOT = next(parent for parent in Path(__file__).resolve().parents if (parent / "src" / "rtdsl").exists())
+SRC = ROOT / "src"
+if str(SRC) not in sys.path:
+    sys.path.insert(0, str(SRC))
 
 import rtdsl.v4 as rtdl_v4
 

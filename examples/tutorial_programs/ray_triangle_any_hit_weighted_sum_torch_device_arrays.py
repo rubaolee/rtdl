@@ -14,6 +14,27 @@ SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
+TEACHING_CONTEXT = {
+    "concept_tutorials": [
+        "examples/tutorial_programs/ray_triangle_hits.py",
+        "examples/tutorial_programs/continuation_grouped_sum.py",
+        "examples/tutorial_programs/raydb_table_to_ray.py",
+    ],
+    "manual_data_flow": [
+        "User supplies triangle, ray, and weight columns on the Torch CUDA device.",
+        "RTDL traverses rays against triangle primitives.",
+        "The fused continuation sums the weight for accepted hits without a separate Python loop.",
+    ],
+    "input_columns": {
+        "triangle_columns": "triangle ids and 3D vertices",
+        "ray_columns": "ray id, origin, direction, and tmax columns",
+        "ray_weights": "uint64 weight payload per ray",
+    },
+    "relation_output": "accepted ray/triangle hit rows",
+    "continuation": "one uint64 weighted-hit sum scalar",
+    "benchmark_bridge": "RayDB and aggregation-after-hit patterns",
+}
+
 
 def make_torch_fixture(torch, ray_count: int) -> dict[str, object]:
     if ray_count <= 0:
@@ -77,6 +98,7 @@ def main() -> int:
         "input_contract": "caller_supplied_torch_device_triangle_ray_and_weight_columns",
         "output_contract": "rtdl_allocated_or_caller_owned_torch_device_uint64_scalar",
         "output_scalar_primary_allocation": "rtdl_allocated_uint64_device_scalar",
+        "teaching_context": TEACHING_CONTEXT,
         "release_claim_authorized": False,
         "broad_v4_speedup_claim_authorized": False,
         "whole_app_speedup_claim_authorized": False,

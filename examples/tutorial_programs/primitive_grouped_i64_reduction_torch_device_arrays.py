@@ -19,6 +19,27 @@ if str(SRC) not in sys.path:
 
 GROUP_WIDTH = 16
 
+TEACHING_CONTEXT = {
+    "concept_tutorials": [
+        "examples/tutorial_programs/triangle_counting_graph_lowering.py",
+        "examples/tutorial_programs/continuation_grouped_sum.py",
+    ],
+    "manual_data_flow": [
+        "User supplies ray and triangle columns on the Torch CUDA device.",
+        "Each primitive also carries a group id and an integer payload.",
+        "RTDL emits hit rows and reduces count plus sum per group.",
+    ],
+    "input_columns": {
+        "triangle_columns": "triangle ids and 3D vertices",
+        "ray_columns": "ray id, origin, direction, and tmax columns",
+        "primitive_group_ids": "uint32 group id per primitive",
+        "primitive_values": "uint64 payload per primitive",
+    },
+    "relation_output": "accepted hit rows annotated with primitive group and payload",
+    "continuation": "per-group count and integer sum",
+    "benchmark_bridge": "triangle-counting and grouped graph/geometry reductions",
+}
+
 
 def make_torch_fixture(torch, ray_count: int) -> dict[str, object]:
     if ray_count <= 0:
@@ -93,6 +114,7 @@ def main() -> int:
         "group_count": int(args.ray_count) // GROUP_WIDTH,
         "input_contract": "caller_supplied_torch_device_triangle_and_ray_columns_prepared_primitive_payload",
         "output_contract": "caller_owned_torch_device_grouped_i64_columns",
+        "teaching_context": TEACHING_CONTEXT,
         "validated_optix_abi": "8.0",
         "validated_gpu_family": "RTX A5000 / Ampere",
         "validated_partner_scope": "torch 2.8.0+cu128",

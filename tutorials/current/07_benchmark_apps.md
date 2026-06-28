@@ -350,5 +350,22 @@ Current V4 entry:
 | Barnes-Hut | aggregate frontier | weighted vector sum | RTDL native + CuPy |
 | Hausdorff XHD | threshold or witness | distance summary | Torch |
 
+## From Concept Program To Surface Program
+
+The files in `examples/tutorial_programs/` come in two layers:
+
+- concept programs such as `fixed_radius_neighbors.py`,
+  `ray_triangle_hits.py`, and `continuation_grouped_sum.py` show the data flow
+  by hand;
+- advanced surface programs such as
+  `fixed_radius_torch_device_arrays.py` and
+  `ray_triangle_any_hit_weighted_sum_torch_device_arrays.py` show the same
+  relation and continuation shape through V4 prepare/run APIs.
+
+Run the advanced programs with `--dry-run` first. Their output includes a
+`teaching_context` section that names the concept program, input columns,
+relation rows, and continuation. That lets you connect the public API call back
+to the RTDL idea it implements.
+
 Next: [Choose a Partner](08_choose_a_partner.md)
 

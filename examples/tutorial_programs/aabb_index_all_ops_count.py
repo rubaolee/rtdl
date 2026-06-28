@@ -15,6 +15,23 @@ from rtdsl.aabb_index import Aabb2D
 from rtdsl.aabb_index import Point2DLike
 import rtdsl.v4 as rtdl_v4
 
+TEACHING_CONTEXT = {
+    "concept_tutorial": "examples/tutorial_programs/aabb_spatial_index_predicates.py",
+    "manual_data_flow": [
+        "User supplies AABB boxes plus point and box query rows.",
+        "RTDL builds the prepared AABB index once.",
+        "The runner evaluates point-contains, range-contains, and range-intersects counts.",
+    ],
+    "input_rows": {
+        "boxes": "indexed AABB rows",
+        "point_queries": "points tested against indexed boxes",
+        "box_queries": "query boxes tested against indexed boxes",
+    },
+    "relation_output": "predicate rows for each selected AABB operation",
+    "continuation": "count per operation",
+    "benchmark_bridge": "AABB spatial-index query workloads",
+}
+
 
 def _tiny_fixture():
     boxes = (
@@ -43,6 +60,7 @@ def main() -> int:
             "surface_status": "tier2_measured_v4_0_0_release_surface",
             "api_surface": boundary["v4_api_surface"],
             "generic_primitive": "AABB_INDEX_QUERY_2D",
+            "teaching_context": TEACHING_CONTEXT,
             "backend": args.backend,
             "measured_backend": boundary["measured_backend"],
             "release_claim_authorized": False,
@@ -75,6 +93,7 @@ def main() -> int:
         "surface_status": "tier2_measured_v4_0_0_release_surface",
         "api_surface": boundary["v4_api_surface"],
         "generic_primitive": "AABB_INDEX_QUERY_2D",
+        "teaching_context": TEACHING_CONTEXT,
         "backend": args.backend,
         "measured_backend": boundary["measured_backend"],
         "counts": result["counts"],

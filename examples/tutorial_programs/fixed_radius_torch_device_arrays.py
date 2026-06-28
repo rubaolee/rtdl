@@ -19,6 +19,23 @@ RADIUS = 0.35
 THRESHOLD = 3
 BASE_POINTS_PER_COPY = 8
 
+TEACHING_CONTEXT = {
+    "concept_tutorial": "examples/tutorial_programs/fixed_radius_neighbors.py",
+    "manual_data_flow": [
+        "User supplies point id, x, and y columns already on the Torch CUDA device.",
+        "RTDL builds candidate point pairs whose distance is within the radius.",
+        "The continuation counts neighbors per query point and marks threshold flags.",
+    ],
+    "input_columns": {
+        "ids": "uint32 point id column",
+        "x": "float64 point x coordinate",
+        "y": "float64 point y coordinate",
+    },
+    "relation_output": "candidate neighbor rows grouped by query point",
+    "continuation": "per-point neighbor_count plus threshold_flag",
+    "benchmark_bridge": "RTDBSCAN-style radius-neighbor discovery before component continuation",
+}
+
 
 def make_torch_columns(torch, copies: int) -> dict[str, object]:
     if copies < 1:
@@ -52,6 +69,7 @@ def main() -> int:
         "radius": RADIUS,
         "threshold": THRESHOLD,
         "input_contract": "caller_supplied_torch_device_point_columns",
+        "teaching_context": TEACHING_CONTEXT,
         "release_claim_authorized": False,
         "whole_app_speedup_claim_authorized": False,
         "tier3_callback_claim_authorized": False,

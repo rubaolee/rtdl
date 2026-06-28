@@ -104,4 +104,19 @@ PYTHONPATH=src:. python examples/tutorial_programs/aabb_index_all_ops_count.py -
 | `benchmark_app_recipes.py` | Map the tutorial concepts to the 10 benchmark apps. |
 
 The remaining device-array scripts are advanced surface examples. Use them
-after you understand the concept programs.
+after you understand the concept programs. They are not meant to hide the
+application logic behind one magic call: each script prints a `teaching_context`
+section that names the concept program it builds on, the input columns, the RT
+relation rows, and the continuation.
+
+## Advanced Surface Bridge
+
+| Advanced program | Concept program to read first | What becomes device-array backed |
+| --- | --- | --- |
+| `fixed_radius_torch_device_arrays.py` | `fixed_radius_neighbors.py` | Radius-neighbor rows and threshold counts. |
+| `point_group_nearest_witness_torch_device_arrays.py` | `nearest_neighbor.py`, `ranked_summary_neighbors.py` | Nearest witness rows and argmin output columns. |
+| `ray_triangle_any_hit_flags_torch_device_arrays.py` | `ray_triangle_hits.py` | Ray/triangle hit rows and any-hit flags. |
+| `ray_triangle_any_hit_weighted_sum_torch_device_arrays.py` | `ray_triangle_hits.py`, `continuation_grouped_sum.py` | Hit rows plus fused weighted-sum continuation. |
+| `primitive_grouped_i64_reduction_torch_device_arrays.py` | `triangle_counting_graph_lowering.py`, `continuation_grouped_sum.py` | Primitive payload rows plus per-group count/sum output. |
+| `closest_hit_grouped_argmin_torch_device_arrays.py` | `bounded_witness_collection.py`, `contact_manifold_lowering.py` | Candidate hit rows plus per-group closest witness. |
+| `aabb_index_all_ops_count.py` | `aabb_spatial_index_predicates.py` | AABB predicate rows plus operation counts. |

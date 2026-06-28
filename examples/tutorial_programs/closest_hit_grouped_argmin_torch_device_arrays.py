@@ -17,6 +17,28 @@ if str(SRC) not in sys.path:
 
 GROUP_WIDTH = 8
 
+TEACHING_CONTEXT = {
+    "concept_tutorials": [
+        "examples/tutorial_programs/bounded_witness_collection.py",
+        "examples/tutorial_programs/contact_manifold_lowering.py",
+    ],
+    "manual_data_flow": [
+        "User supplies ray, triangle, group, value, and candidate-index columns on the Torch CUDA device.",
+        "RTDL keeps the closest accepted hit per group.",
+        "The continuation emits group_has_value and group_index columns.",
+    ],
+    "input_columns": {
+        "triangle_columns": "triangle ids and 3D vertices",
+        "ray_columns": "ray id, origin, direction, and tmax columns",
+        "per_ray_group_ids": "uint32 group id per ray",
+        "candidate_values": "float64 value used for argmin",
+        "candidate_indices": "uint32 witness id to keep for the winning value",
+    },
+    "relation_output": "accepted hit rows with group id, candidate value, and witness id",
+    "continuation": "per-group argmin witness",
+    "benchmark_bridge": "contact and bounded-witness collection stages",
+}
+
 
 def make_torch_fixture(torch, ray_count: int) -> dict[str, object]:
     if ray_count <= 0:
@@ -87,6 +109,7 @@ def main() -> int:
         "group_count": int(args.ray_count) // GROUP_WIDTH,
         "input_contract": "caller_supplied_torch_device_triangle_ray_and_group_columns",
         "output_contract": "caller_owned_torch_device_grouped_argmin_columns",
+        "teaching_context": TEACHING_CONTEXT,
         "release_claim_authorized": False,
         "whole_app_speedup_claim_authorized": False,
         "tier3_callback_claim_authorized": False,

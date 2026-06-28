@@ -14,6 +14,23 @@ SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
+TEACHING_CONTEXT = {
+    "concept_tutorial": "examples/tutorial_programs/ray_triangle_hits.py",
+    "manual_data_flow": [
+        "User supplies triangle AABBs and ray columns on the Torch CUDA device.",
+        "RTDL traverses ray candidates against triangle bounds.",
+        "The continuation writes one any-hit flag per ray.",
+    ],
+    "input_columns": {
+        "triangle_columns": "triangle ids and 2D vertices",
+        "triangle_aabbs": "float32 bounds used by traversal",
+        "ray_columns": "ray id, origin, direction, and tmax columns",
+    },
+    "relation_output": "ray/triangle candidate hit rows",
+    "continuation": "per-ray any-hit flag",
+    "benchmark_bridge": "collision, visibility, and triangle-query decision stages",
+}
+
 
 def make_torch_fixture(torch, ray_count: int) -> dict[str, object]:
     if ray_count <= 0:
@@ -78,6 +95,7 @@ def main() -> int:
         "triangle_count": int(args.ray_count),
         "input_contract": "caller_supplied_torch_device_triangle_aabb_and_ray_columns",
         "output_contract": "caller_owned_torch_device_any_hit_flag_column",
+        "teaching_context": TEACHING_CONTEXT,
         "release_claim_authorized": False,
         "whole_app_speedup_claim_authorized": False,
         "tier3_callback_claim_authorized": False,

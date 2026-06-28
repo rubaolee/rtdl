@@ -13,6 +13,27 @@ SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
+TEACHING_CONTEXT = {
+    "concept_tutorials": [
+        "examples/tutorial_programs/nearest_neighbor.py",
+        "examples/tutorial_programs/ranked_summary_neighbors.py",
+    ],
+    "manual_data_flow": [
+        "User supplies query point columns on the Torch CUDA device.",
+        "RTDL uses prepared point groups as the search structure.",
+        "The operator emits the nearest witness id and distance for each query.",
+    ],
+    "input_columns": {
+        "ids": "uint32 query id column",
+        "x": "float64 query x coordinate",
+        "y": "float64 query y coordinate",
+    },
+    "relation_output": "one nearest-witness row per query point",
+    "continuation": "argmin over candidate distances, with ids and distances kept as output columns",
+    "benchmark_bridge": "RTNN and Hausdorff-style nearest witness stages",
+}
+
+
 def make_fixture(torch, query_count: int) -> dict[str, object]:
     if query_count <= 0:
         raise ValueError("query_count must be positive")
@@ -74,6 +95,7 @@ def main() -> int:
         "radius": float(args.radius),
         "input_contract": "native_prepared_point_groups_plus_torch_device_query_columns",
         "output_contract": "caller_owned_torch_device_nearest_witness_columns",
+        "teaching_context": TEACHING_CONTEXT,
         "validated_optix_abi": "8.0",
         "validated_gpu_family": "RTX A5000 / Ampere",
         "validated_partner_scope": "torch 2.8.0+cu128",
