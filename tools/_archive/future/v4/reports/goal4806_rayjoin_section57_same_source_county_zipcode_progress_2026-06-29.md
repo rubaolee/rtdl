@@ -20,6 +20,8 @@ Included evidence:
 - `section57_same_source_county_zipcode_preflight.json`
 - `section57_overlay_county_zipcode_author_rt_iter0.json`
 - `section57_overlay_county_zipcode_rtdl_optix_retry_fixed.json`
+- `section57_overlay_county_zipcode_rtdl_optix_after_midpoint_fix.json`
+- `section57_overlay_county_zipcode_rtdl_optix_after_midpoint_fix.overlay_optix.digest.txt`
 - `section57_v4_numba_candidate_measurements.json`
 - `section57_v4_numba_candidate_measurements_exact_columns.json`
 - `section57_v4_numba_candidate_measurements_exact_xy_columns_nohash.json`
@@ -103,15 +105,57 @@ The RTDL overlay path initially failed on the same-source data because generated
 Fix:
 
 - `_midpoint_points_from_lsi_rows_numpy` now drops non-finite midpoint coordinates before point-location classification.
+- `_midpoints_for_sorted_xsects` now applies the same non-finite midpoint filter during full output-chain assembly.
 - The drop counts are recorded in the result JSON:
   - `map0_nonfinite_midpoints_dropped`
   - `map1_nonfinite_midpoints_dropped`
 
 Validation:
 
-- Local focused tests passed: `28 tests OK`.
-- POD focused gate passed: `6 tests OK`.
-- Full POD RTDL OptiX retry then completed.
+- Local focused tests passed: `38 tests OK`.
+- POD focused gate passed: `14 tests OK`.
+- Full POD RTDL OptiX output-assembly retry then completed.
+
+### RTDL Full Output Assembly Probe
+
+After the output-chain midpoint fix, the RTDL OptiX route completed full overlay output assembly on the same-source County x Zipcode CDB.
+
+File:
+
+- `section57_overlay_county_zipcode_rtdl_optix_after_midpoint_fix.json`
+
+Remote output artifact:
+
+- `/workspace/rtdl_goal4806_fast_min/artifacts/section57_same_source_county_zipcode_output_digest/section57_overlay_county_zipcode_rtdl_optix_after_midpoint_fix.overlay_optix.txt`
+
+Output digest:
+
+- size: `2.3G`
+- line count: `87667107`
+- sha256: `0b19a536144b628ff59623146a271759f00df9a0a7bbd9ada5ed997318d54ae8`
+- output chains: `29253799`
+- face count: `119729`
+
+Timing:
+
+- total: `389.2522244974971 sec`
+- load/pack: `54.44365684688091 sec`
+- compute without load/pack: `334.80856765061617 sec`
+- LSI native hot call: `11.482726581394672 sec`
+- point-location prepare: `5.287372961640358 sec`
+- LSI row materialization: `3.169036753475666 sec`
+- LSI row sort: `2.4750871509313583 sec`
+- output-chain assembly: `225.46251025795937 sec`
+- output-chain write: `77.58183673769236 sec`
+
+Interpretation:
+
+This is a real full-output RTDL run on serious same-source data, not a toy run. It also shows that the full paper-reproduction output path is now dominated by Python-side output construction and file writing, not by RT-core traversal. That bottleneck must be treated as an engineering fact, not hidden under the faster no-output hot-path timings.
+
+Author output-mode boundary:
+
+- The author `polyover_exec -output` run on the same-source CDB failed after `20.602055735886097 sec` with `SIGABRT`.
+- Therefore the current evidence does not establish output equality against author output on this regenerated input. It establishes that RTDL can produce a large full overlay output where the author output-mode executable aborts on this input.
 
 ## Result: V4 + Numba
 
@@ -228,7 +272,7 @@ This stack successfully ran a minimal Numba CUDA kernel on the POD. V4+Numba tes
 1. Exact RayJoin paper preprocessed CDB inputs are not available from the public Dryad share.
 2. Same-source regenerated CDB is serious and useful, but it is not the exact paper input.
 3. RTDL OptiX compute runs and is much faster than the author run on this same-source input, but the author timing is dominated by CDB read time and RTDL used a packed cache path.
-4. RTDL full-overlay output equality against author output has not yet been established for this same-source run.
+4. RTDL now produces a full overlay output on this same-source run, but output equality against author output has not been established because the author `polyover_exec -output` path aborts on the same regenerated input.
 5. V4+Numba now has a valid exact RayJoin LSI device-column primitive with ids and intersection x/y, but it has not yet used those columns to produce a full overlay output/topology digest for end-to-end author/V2.14 comparison.
 6. Older segment-pair count surfaces still disagree across contracts on this same-source run:
    - RTDL overlay emitted rows: `965844`

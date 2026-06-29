@@ -513,6 +513,23 @@ class Goal4374RayjoinExactPaperSuiteTest(unittest.TestCase):
         self.assertTrue(np.all(np.isfinite(packed.owner["x"])))
         self.assertTrue(np.all(np.isfinite(packed.owner["y"])))
 
+    def test_output_chain_midpoint_projection_drops_nonfinite_points_with_telemetry(self) -> None:
+        import rtdsl.rayjoin_overlay as overlay
+
+        rows = [
+            overlay.RayjoinOverlayIntersection(eid0=0, eid1=0, x=0.0, y=0.0),
+            overlay.RayjoinOverlayIntersection(eid0=0, eid1=1, x=2.0, y=0.0),
+            overlay.RayjoinOverlayIntersection(eid0=1, eid1=0, x=float("nan"), y=0.0),
+            overlay.RayjoinOverlayIntersection(eid0=1, eid1=1, x=2.0, y=0.0),
+        ]
+        stats: dict[str, int] = {}
+
+        midpoints, owners = overlay._midpoints_for_sorted_xsects(rows, 0, stats=stats)
+
+        self.assertEqual(midpoints, [(1.0, 0.0)])
+        self.assertEqual(len(owners), 1)
+        self.assertEqual(stats["map0_nonfinite_midpoints_dropped"], 1)
+
     def test_large_point_location_stream_auto_uses_generic_adaptive_grouping(self) -> None:
         from rtdsl.rayjoin_overlay import _directed_segment_point_location_grouping_env
 

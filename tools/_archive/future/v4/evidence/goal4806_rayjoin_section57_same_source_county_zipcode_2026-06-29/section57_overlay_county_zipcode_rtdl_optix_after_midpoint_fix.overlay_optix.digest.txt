@@ -1,0 +1,6 @@
+remote_path: /workspace/rtdl_goal4806_fast_min/artifacts/section57_same_source_county_zipcode_output_digest/section57_overlay_county_zipcode_rtdl_optix_after_midpoint_fix.overlay_optix.txt
+size: 2.3G
+line_count: 87667107
+sha256: 0b19a536144b628ff59623146a271759f00df9a0a7bbd9ada5ed997318d54ae8
+first_header_line: 1 2 0 1 1 2
+first_coordinate_line: -86.439632 32.708213

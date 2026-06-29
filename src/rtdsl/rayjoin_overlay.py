@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import ctypes
 import json
+import math
 import os
 import re
 import tempfile
@@ -1111,10 +1112,13 @@ def _sort_xsects_for_map(
 def _midpoints_for_sorted_xsects(
     xsects: list[RayjoinOverlayIntersection],
     map_index: int,
+    *,
+    stats: dict[str, int] | None = None,
 ) -> tuple[list[tuple[float, float]], list[RayjoinOverlayIntersection]]:
     edge_attr = "eid0" if map_index == 0 else "eid1"
     midpoints: list[tuple[float, float]] = []
     owners: list[RayjoinOverlayIntersection] = []
+    dropped = 0
     index = 0
     while index < len(xsects):
         edge_id = int(getattr(xsects[index], edge_attr))
@@ -1123,9 +1127,18 @@ def _midpoints_for_sorted_xsects(
             end += 1
         group = xsects[index:end]
         for left, right in zip(group, group[1:]):
-            midpoints.append(((left.x + right.x) * 0.5, (left.y + right.y) * 0.5))
-            owners.append(left)
+            midpoint_x = (left.x + right.x) * 0.5
+            midpoint_y = (left.y + right.y) * 0.5
+            if math.isfinite(midpoint_x) and math.isfinite(midpoint_y):
+                midpoints.append((midpoint_x, midpoint_y))
+                owners.append(left)
+            else:
+                dropped += 1
         index = end
+    if stats is not None:
+        stats[f"map{map_index}_nonfinite_midpoints_dropped"] = (
+            int(stats.get(f"map{map_index}_nonfinite_midpoints_dropped", 0)) + dropped
+        )
     return midpoints, owners
 
 
@@ -1361,7 +1374,11 @@ def _run_rayjoin_overlay_packed(
             if xsects_sorted is None:
                 raise RuntimeError("overlay output-chain assembly requires sorted LSI rows")
             for map_index, locator in ((0, map0_in_map1), (1, map1_in_map0)):
-                midpoints, owners = _midpoints_for_sorted_xsects(xsects_sorted[map_index], map_index)
+                midpoints, owners = _midpoints_for_sorted_xsects(
+                    xsects_sorted[map_index],
+                    map_index,
+                    stats=midpoint_filter_stats,
+                )
                 midpoint_counts.append(len(midpoints))
                 if midpoints:
                     midpoint_points = _packed_points_from_xy(midpoints)
