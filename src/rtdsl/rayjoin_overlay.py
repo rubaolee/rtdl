@@ -28,6 +28,8 @@ class RayjoinOverlayIntersection:
     eid1: int
     x: float
     y: float
+    scaled_x: float | None = None
+    scaled_y: float | None = None
     mid_point_polygon_id: int = EXTERIOR_FACE_ID
 
 
@@ -738,6 +740,7 @@ def _rows_from_segment_pair_ids(
     left_coords=None,
     right_coords=None,
     *,
+    scale_bounds: tuple[float, float, float, float] | None = None,
     binary_u64_pairs: bool = False,
 ):
     import numpy as np
@@ -772,19 +775,31 @@ def _rows_from_segment_pair_ids(
     left_index = pairs[:, 0].astype(np.int64, copy=False) - 1
     right_index = pairs[:, 1].astype(np.int64, copy=False) - 1
 
-    px = left_x0[left_index]
-    py = left_y0[left_index]
-    rx = left_x1[left_index] - px
-    ry = left_y1[left_index] - py
-    qx = right_x0[right_index]
-    qy = right_y0[right_index]
-    sx = right_x1[right_index] - qx
-    sy = right_y1[right_index] - qy
-    denom = rx * sy - ry * sx
-    qpx = qx - px
-    qpy = qy - py
-    with np.errstate(divide="ignore", invalid="ignore"):
-        t = (qpx * sy - qpy * sx) / denom
+    if scale_bounds is not None:
+        ix, iy, scaled_ix, scaled_iy = _rayjoin_scaled_intersection_points_for_pairs(
+            left_x0[left_index],
+            left_y0[left_index],
+            left_x1[left_index],
+            left_y1[left_index],
+            right_x0[right_index],
+            right_y0[right_index],
+            right_x1[right_index],
+            right_y1[right_index],
+            scale_bounds=scale_bounds,
+        )
+    else:
+        ix, iy = _double_intersection_points_for_pairs(
+            left_x0[left_index],
+            left_y0[left_index],
+            left_x1[left_index],
+            left_y1[left_index],
+            right_x0[right_index],
+            right_y0[right_index],
+            right_x1[right_index],
+            right_y1[right_index],
+        )
+        scaled_ix = np.full(ix.shape, np.nan, dtype=np.float64)
+        scaled_iy = np.full(iy.shape, np.nan, dtype=np.float64)
 
     rows = np.empty(
         pairs.shape[0],
@@ -793,13 +808,211 @@ def _rows_from_segment_pair_ids(
             ("right_id", np.uint32),
             ("intersection_point_x", np.float64),
             ("intersection_point_y", np.float64),
+            ("intersection_scaled_x", np.float64),
+            ("intersection_scaled_y", np.float64),
         ],
     )
     rows["left_id"] = pairs[:, 0]
     rows["right_id"] = pairs[:, 1]
-    rows["intersection_point_x"] = px + t * rx
-    rows["intersection_point_y"] = py + t * ry
+    rows["intersection_point_x"] = ix
+    rows["intersection_point_y"] = iy
+    rows["intersection_scaled_x"] = scaled_ix
+    rows["intersection_scaled_y"] = scaled_iy
     return rows
+
+
+def _double_intersection_points_for_pairs(left_x0, left_y0, left_x1, left_y1, right_x0, right_y0, right_x1, right_y1):
+    import numpy as np
+
+    px = left_x0
+    py = left_y0
+    rx = left_x1 - px
+    ry = left_y1 - py
+    qx = right_x0
+    qy = right_y0
+    sx = right_x1 - qx
+    sy = right_y1 - qy
+    denom = rx * sy - ry * sx
+    qpx = qx - px
+    qpy = qy - py
+    scale = np.sqrt(rx * rx + ry * ry) * np.sqrt(sx * sx + sy * sy)
+    threshold = 64.0 * np.finfo(np.float64).eps * np.maximum(1.0, scale)
+    degenerate = (~np.isfinite(denom)) | (np.abs(denom) <= threshold)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        t = (qpx * sy - qpy * sx) / denom
+    ix = px + t * rx
+    iy = py + t * ry
+    finite = np.isfinite(ix) & np.isfinite(iy)
+    fallback = degenerate | (~finite)
+    if np.any(fallback):
+        fallback_x, fallback_y = _overlap_midpoint_fallback(
+            left_x0,
+            left_y0,
+            left_x1,
+            left_y1,
+            right_x0,
+            right_y0,
+            right_x1,
+            right_y1,
+        )
+        ix = np.where(fallback, fallback_x, ix)
+        iy = np.where(fallback, fallback_y, iy)
+    return ix, iy
+
+
+def _overlap_midpoint_fallback(left_x0, left_y0, left_x1, left_y1, right_x0, right_y0, right_x1, right_y1):
+    import numpy as np
+
+    left_min_x = np.minimum(left_x0, left_x1)
+    left_max_x = np.maximum(left_x0, left_x1)
+    left_min_y = np.minimum(left_y0, left_y1)
+    left_max_y = np.maximum(left_y0, left_y1)
+    right_min_x = np.minimum(right_x0, right_x1)
+    right_max_x = np.maximum(right_x0, right_x1)
+    right_min_y = np.minimum(right_y0, right_y1)
+    right_max_y = np.maximum(right_y0, right_y1)
+    overlap_min_x = np.maximum(left_min_x, right_min_x)
+    overlap_max_x = np.minimum(left_max_x, right_max_x)
+    overlap_min_y = np.maximum(left_min_y, right_min_y)
+    overlap_max_y = np.minimum(left_max_y, right_max_y)
+    has_overlap = (overlap_min_x <= overlap_max_x) & (overlap_min_y <= overlap_max_y)
+    fallback_x = np.where(has_overlap, (overlap_min_x + overlap_max_x) * 0.5, (left_x0 + left_x1) * 0.5)
+    fallback_y = np.where(has_overlap, (overlap_min_y + overlap_max_y) * 0.5, (left_y0 + left_y1) * 0.5)
+    return fallback_x, fallback_y
+
+
+def _rayjoin_scaled_intersection_points_for_pairs(
+    left_x0,
+    left_y0,
+    left_x1,
+    left_y1,
+    right_x0,
+    right_y0,
+    right_x1,
+    right_y1,
+    *,
+    scale_bounds: tuple[float, float, float, float],
+):
+    import numpy as np
+
+    min_x, max_x, min_y, max_y = (float(value) for value in scale_bounds)
+    internal_max = (1 << 46) - 1
+    internal_min = -(1 << 46)
+    margin = 1.0
+    box_max_x = max_x + margin
+    box_min_x = min_x - margin
+    box_max_y = max_y + margin
+    box_min_y = min_y - margin
+    internal_range = float(internal_max - internal_min)
+    rx_scale = internal_range / (box_max_x - box_min_x)
+    ry_scale = internal_range / (box_max_y - box_min_y)
+    rrx = 1.0 / rx_scale
+    rry = 1.0 / ry_scale
+    deltax = 0.5 * (float(internal_max + internal_min) - (box_max_x + box_min_x) * rx_scale)
+    deltay = 0.5 * (float(internal_max + internal_min) - (box_max_y + box_min_y) * ry_scale)
+    ddeltax = 0.5 * ((box_max_x + box_min_x) - float(internal_max + internal_min) * rrx)
+    ddeltay = 0.5 * ((box_max_y + box_min_y) - float(internal_max + internal_min) * rry)
+
+    def scale_x(values):
+        return (np.asarray(values, dtype=np.float64) * rx_scale + deltax).astype(np.int64)
+
+    def scale_y(values):
+        return (np.asarray(values, dtype=np.float64) * ry_scale + deltay).astype(np.int64)
+
+    lx0 = scale_x(left_x0)
+    ly0 = scale_y(left_y0)
+    lx1 = scale_x(left_x1)
+    ly1 = scale_y(left_y1)
+    rx0 = scale_x(right_x0)
+    ry0 = scale_y(right_y0)
+    rx1 = scale_x(right_x1)
+    ry1 = scale_y(right_y1)
+
+    out_x = np.empty(lx0.shape[0], dtype=np.float64)
+    out_y = np.empty(lx0.shape[0], dtype=np.float64)
+    out_scaled_x = np.empty(lx0.shape[0], dtype=np.float64)
+    out_scaled_y = np.empty(lx0.shape[0], dtype=np.float64)
+    fallback_x, fallback_y = _overlap_midpoint_fallback(
+        left_x0,
+        left_y0,
+        left_x1,
+        left_y1,
+        right_x0,
+        right_y0,
+        right_x1,
+        right_y1,
+    )
+
+    for index in range(int(lx0.shape[0])):
+        left_a = int(ly0[index]) - int(ly1[index])
+        left_b = int(lx1[index]) - int(lx0[index])
+        left_c = -(int(lx0[index]) * left_a) - (int(ly0[index]) * left_b)
+        if left_b < 0:
+            left_a = -left_a
+            left_b = -left_b
+            left_c = -left_c
+        right_a = int(ry0[index]) - int(ry1[index])
+        right_b = int(rx1[index]) - int(rx0[index])
+        right_c = -(int(rx0[index]) * right_a) - (int(ry0[index]) * right_b)
+        if right_b < 0:
+            right_a = -right_a
+            right_b = -right_b
+            right_c = -right_c
+
+        denom = right_a * left_b - left_a * right_b
+        if denom == 0:
+            out_x[index] = float(fallback_x[index])
+            out_y[index] = float(fallback_y[index])
+            out_scaled_x[index] = float(scale_x([fallback_x[index]])[0])
+            out_scaled_y[index] = float(scale_y([fallback_y[index]])[0])
+            continue
+        numx = left_c * right_b - right_c * left_b
+        numy = left_a * right_c - right_a * left_c
+        x_scaled = numx / denom
+        y_scaled = numy / denom
+        min_scaled_x = min(int(rx0[index]), int(rx1[index]), int(lx0[index]), int(lx1[index]))
+        max_scaled_x = max(int(rx0[index]), int(rx1[index]), int(lx0[index]), int(lx1[index]))
+        min_scaled_y = min(int(ry0[index]), int(ry1[index]), int(ly0[index]), int(ly1[index]))
+        max_scaled_y = max(int(ry0[index]), int(ry1[index]), int(ly0[index]), int(ly1[index]))
+        if x_scaled < min_scaled_x:
+            x_scaled = float(min_scaled_x)
+        elif x_scaled > max_scaled_x:
+            x_scaled = float(max_scaled_x)
+        if y_scaled < min_scaled_y:
+            y_scaled = float(min_scaled_y)
+        elif y_scaled > max_scaled_y:
+            y_scaled = float(max_scaled_y)
+        out_scaled_x[index] = float(x_scaled)
+        out_scaled_y[index] = float(y_scaled)
+        out_x[index] = float(x_scaled) * rrx + ddeltax
+        out_y[index] = float(y_scaled) * rry + ddeltay
+    return out_x, out_y, out_scaled_x, out_scaled_y
+
+
+def _rayjoin_unscale_constants(scale_bounds: tuple[float, float, float, float]) -> tuple[float, float, float, float]:
+    min_x, max_x, min_y, max_y = (float(value) for value in scale_bounds)
+    internal_max = (1 << 46) - 1
+    internal_min = -(1 << 46)
+    margin = 1.0
+    box_max_x = max_x + margin
+    box_min_x = min_x - margin
+    box_max_y = max_y + margin
+    box_min_y = min_y - margin
+    internal_range = float(internal_max - internal_min)
+    rx_scale = internal_range / (box_max_x - box_min_x)
+    ry_scale = internal_range / (box_max_y - box_min_y)
+    rrx = 1.0 / rx_scale
+    rry = 1.0 / ry_scale
+    ddeltax = 0.5 * ((box_max_x + box_min_x) - float(internal_max + internal_min) * rrx)
+    ddeltay = 0.5 * ((box_max_y + box_min_y) - float(internal_max + internal_min) * rry)
+    return rrx, rry, ddeltax, ddeltay
+
+
+def _rayjoin_unscale_scaled_arrays(scaled_x, scaled_y, scale_bounds: tuple[float, float, float, float]):
+    import numpy as np
+
+    rrx, rry, ddeltax, ddeltay = _rayjoin_unscale_constants(scale_bounds)
+    return np.asarray(scaled_x, dtype=np.float64) * rrx + ddeltax, np.asarray(scaled_y, dtype=np.float64) * rry + ddeltay
 
 
 def _run_lsi_rows(
@@ -810,6 +1023,7 @@ def _run_lsi_rows(
     right: CdbDataset,
     left_coords=None,
     right_coords=None,
+    scale_bounds: tuple[float, float, float, float] | None = None,
 ) -> tuple[object, dict[str, object]]:
     start = time.perf_counter()
     with _rayjoin_lsi_predicate_env(backend):
@@ -841,6 +1055,7 @@ def _run_lsi_rows(
                     right,
                     left_coords=left_coords,
                     right_coords=right_coords,
+                    scale_bounds=scale_bounds,
                     binary_u64_pairs=True,
                 )
                 if len(row_array) != expected_count:
@@ -1067,12 +1282,16 @@ def _prepared_point_location_pair(
 
 
 def _intersections_from_lsi_rows(rows) -> list[RayjoinOverlayIntersection]:
+    names = set(rows.dtype.names or ())
+    has_scaled = {"intersection_scaled_x", "intersection_scaled_y"}.issubset(names)
     return [
         RayjoinOverlayIntersection(
             eid0=int(row["left_id"]) - 1,
             eid1=int(row["right_id"]) - 1,
             x=float(row["intersection_point_x"]),
             y=float(row["intersection_point_y"]),
+            scaled_x=float(row["intersection_scaled_x"]) if has_scaled and math.isfinite(float(row["intersection_scaled_x"])) else None,
+            scaled_y=float(row["intersection_scaled_y"]) if has_scaled and math.isfinite(float(row["intersection_scaled_y"])) else None,
         )
         for row in rows
     ]
@@ -1113,12 +1332,14 @@ def _midpoints_for_sorted_xsects(
     xsects: list[RayjoinOverlayIntersection],
     map_index: int,
     *,
+    scale_bounds: tuple[float, float, float, float] | None = None,
     stats: dict[str, int] | None = None,
 ) -> tuple[list[tuple[float, float]], list[RayjoinOverlayIntersection]]:
     edge_attr = "eid0" if map_index == 0 else "eid1"
     midpoints: list[tuple[float, float]] = []
     owners: list[RayjoinOverlayIntersection] = []
     dropped = 0
+    unscale_constants = _rayjoin_unscale_constants(scale_bounds) if scale_bounds is not None else None
     index = 0
     while index < len(xsects):
         edge_id = int(getattr(xsects[index], edge_attr))
@@ -1127,8 +1348,19 @@ def _midpoints_for_sorted_xsects(
             end += 1
         group = xsects[index:end]
         for left, right in zip(group, group[1:]):
-            midpoint_x = (left.x + right.x) * 0.5
-            midpoint_y = (left.y + right.y) * 0.5
+            if (
+                unscale_constants is not None
+                and left.scaled_x is not None
+                and left.scaled_y is not None
+                and right.scaled_x is not None
+                and right.scaled_y is not None
+            ):
+                rrx, rry, ddeltax, ddeltay = unscale_constants
+                midpoint_x = ((float(left.scaled_x) + float(right.scaled_x)) * 0.5) * rrx + ddeltax
+                midpoint_y = ((float(left.scaled_y) + float(right.scaled_y)) * 0.5) * rry + ddeltay
+            else:
+                midpoint_x = (left.x + right.x) * 0.5
+                midpoint_y = (left.y + right.y) * 0.5
             if math.isfinite(midpoint_x) and math.isfinite(midpoint_y):
                 midpoints.append((midpoint_x, midpoint_y))
                 owners.append(left)
@@ -1305,6 +1537,7 @@ def _run_rayjoin_overlay_packed(
         right,
         left_coords=left_inputs.segment_coords,
         right_coords=right_inputs.segment_coords,
+        scale_bounds=scale_bounds,
     )
     native_timings["lsi"] = lsi_timings
 
@@ -1377,6 +1610,7 @@ def _run_rayjoin_overlay_packed(
                 midpoints, owners = _midpoints_for_sorted_xsects(
                     xsects_sorted[map_index],
                     map_index,
+                    scale_bounds=scale_bounds,
                     stats=midpoint_filter_stats,
                 )
                 midpoint_counts.append(len(midpoints))

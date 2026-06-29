@@ -594,6 +594,73 @@ class Goal4374RayjoinExactPaperSuiteTest(unittest.TestCase):
         self.assertAlmostEqual(float(rows["intersection_point_x"][0]), 1.0)
         self.assertAlmostEqual(float(rows["intersection_point_y"][0]), 0.0)
 
+    def test_overlay_lsi_pair_reader_emits_finite_collinear_overlap_point(self) -> None:
+        import numpy as np
+        from rtdsl.rayjoin_overlay import _rows_from_segment_pair_ids
+
+        with tempfile.TemporaryDirectory() as tmp:
+            pair_path = Path(tmp) / "pairs.bin"
+            encoded = np.array([(np.uint64(1) << np.uint64(32)) | np.uint64(1)], dtype=np.uint64)
+            encoded.tofile(pair_path)
+            rows = _rows_from_segment_pair_ids(
+                pair_path,
+                None,
+                None,
+                left_coords=(
+                    np.array([0.0], dtype=np.float64),
+                    np.array([0.0], dtype=np.float64),
+                    np.array([4.0], dtype=np.float64),
+                    np.array([0.0], dtype=np.float64),
+                ),
+                right_coords=(
+                    np.array([2.0], dtype=np.float64),
+                    np.array([0.0], dtype=np.float64),
+                    np.array([6.0], dtype=np.float64),
+                    np.array([0.0], dtype=np.float64),
+                ),
+                binary_u64_pairs=True,
+            )
+
+        self.assertEqual(len(rows), 1)
+        self.assertTrue(np.isfinite(rows["intersection_point_x"][0]))
+        self.assertTrue(np.isfinite(rows["intersection_point_y"][0]))
+        self.assertAlmostEqual(float(rows["intersection_point_x"][0]), 3.0)
+        self.assertAlmostEqual(float(rows["intersection_point_y"][0]), 0.0)
+
+    def test_overlay_lsi_pair_reader_uses_rayjoin_scaled_intersections(self) -> None:
+        import numpy as np
+        from rtdsl.rayjoin_overlay import _rows_from_segment_pair_ids
+
+        with tempfile.TemporaryDirectory() as tmp:
+            pair_path = Path(tmp) / "pairs.bin"
+            encoded = np.array([(np.uint64(1) << np.uint64(32)) | np.uint64(1)], dtype=np.uint64)
+            encoded.tofile(pair_path)
+            rows = _rows_from_segment_pair_ids(
+                pair_path,
+                None,
+                None,
+                left_coords=(
+                    np.array([0.0], dtype=np.float64),
+                    np.array([0.0], dtype=np.float64),
+                    np.array([4.0], dtype=np.float64),
+                    np.array([4.0], dtype=np.float64),
+                ),
+                right_coords=(
+                    np.array([0.0], dtype=np.float64),
+                    np.array([4.0], dtype=np.float64),
+                    np.array([4.0], dtype=np.float64),
+                    np.array([0.0], dtype=np.float64),
+                ),
+                scale_bounds=(-1.0, 5.0, -1.0, 5.0),
+                binary_u64_pairs=True,
+            )
+
+        self.assertEqual(len(rows), 1)
+        self.assertTrue(np.isfinite(rows["intersection_point_x"][0]))
+        self.assertTrue(np.isfinite(rows["intersection_point_y"][0]))
+        self.assertAlmostEqual(float(rows["intersection_point_x"][0]), 2.0, places=6)
+        self.assertAlmostEqual(float(rows["intersection_point_y"][0]), 2.0, places=6)
+
     def test_embree_rayjoin_lsi_defaults_aabb_scene_build_quality_low(self) -> None:
         from rtdsl.rayjoin_overlay import _rayjoin_lsi_predicate_env
 

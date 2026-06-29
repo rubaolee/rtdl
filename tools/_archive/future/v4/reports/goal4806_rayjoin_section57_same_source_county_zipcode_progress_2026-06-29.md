@@ -24,6 +24,9 @@ Included evidence:
 - `section57_overlay_county_zipcode_rtdl_optix_retry_fixed.json`
 - `section57_overlay_county_zipcode_rtdl_optix_after_midpoint_fix.json`
 - `section57_overlay_county_zipcode_rtdl_optix_after_midpoint_fix.overlay_optix.digest.txt`
+- `section57_overlay_county_zipcode_rtdl_optix_after_python_fallback.json`
+- `section57_overlay_county_zipcode_rtdl_optix_after_scaled_rational.json`
+- `section57_overlay_county_zipcode_rtdl_optix_after_scaled_midpoints_fast.json`
 - `section57_v4_numba_candidate_measurements.json`
 - `section57_v4_numba_candidate_measurements_exact_columns.json`
 - `section57_v4_numba_candidate_measurements_exact_xy_columns_nohash.json`
@@ -116,8 +119,8 @@ Fix:
 
 Validation:
 
-- Local focused tests passed: `38 tests OK`.
-- POD focused gate passed: `14 tests OK`.
+- Local focused tests passed: `40 tests OK` after the scaled-intersection row-field and scaled-midpoint output-path changes.
+- POD focused gate passed: `14 tests OK` on the same implementation slice.
 - Full POD RTDL OptiX output-assembly retry then completed.
 
 ### RTDL Full Output Assembly Probe
@@ -168,6 +171,38 @@ Author output-mode boundary:
   - RTDL output chains: `29253799`
   - RTDL face count: `119729`
 - Therefore output equality against author output is not established. The current evidence now exposes a real full-output correctness gap rather than an author-output availability gap.
+
+### Output-Semantics Repair Probes After Author Direct Output Became Available
+
+The direct author `polyover_exec -output` run completed, so RTDL output is now compared against an actual author overlay file instead of treating author output as unavailable.
+
+Author output baseline:
+
+- output file size: `2,390,767,769` bytes
+- author-reported chains: `29,254,027`
+- author-reported faces: `115,490`
+- author-reported write time: `132,119 ms`
+
+RTDL repair sequence:
+
+| RTDL probe | output chains | faces | midpoint drops | first author diff | interpretation |
+| --- | ---: | ---: | --- | --- | --- |
+| midpoint-filter output path | `29,253,799` | `119,729` | map0 `26`, map1 `24` | line `25` | completed full output but collapsed/omitted non-finite intersection-derived midpoint cases |
+| Python finite-overlap fallback | `29,253,849` | `119,730` | map0 `0`, map1 `0` | line `25` | fixed non-finite midpoint loss but still used double intersection reconstruction |
+| RayJoin scaled-rational intersection reconstruction | `29,253,844` | `119,708` | map0 `0`, map1 `0` | line `30,783` | matched the author output through the early duplicate-looking intersection chain; LSI coordinate semantics moved much closer to author |
+| scaled-rational intersection plus scaled-space midpoint generation | `29,253,843` | `119,708` | map0 `0`, map1 `0` | line `30,783` | did not remove the remaining first mismatch; the first difference is now a face-id/header mismatch, not a coordinate mismatch |
+
+The first remaining mismatch after the scaled reconstruction probes is:
+
+```text
+line 30783
+author: 10262 2 10809 10810 66 71
+RTDL:   10262 2 10809 10810 72 73
+```
+
+The two following coordinate lines still match exactly at six printed decimals. That narrows the remaining issue: the LSI row count and early output coordinates are aligned much better, but RTDL's point-location/face-id semantics still diverge from author code on at least one boundary/tie case.
+
+The scaled-rational probe is useful progress, not completion. It moved the first mismatch from the first few output chains to a much later face-id divergence, but it did not establish full output equality.
 
 ## Result: V4 + Numba
 
@@ -329,7 +364,7 @@ This stack successfully ran a minimal Numba CUDA kernel on the POD when the CUDA
 1. Exact RayJoin paper preprocessed CDB inputs are not available from the public Dryad share.
 2. Same-source regenerated CDB is serious and useful, but it is not the exact paper input.
 3. RTDL OptiX compute runs and is much faster than the author run on this same-source input, but the author timing is dominated by CDB read time and RTDL used a packed cache path.
-4. RTDL and direct author output both produce full overlay files on this same-source run, but they disagree in output chain and face counts (`29253799/119729` for RTDL versus `29254027/115490` for author).
+4. RTDL and direct author output both produce full overlay files on this same-source run, but they disagree in output chain and face counts. The latest scaled-rational/interior-midpoint RTDL probe reports `29253843/119708` versus author `29254027/115490`; the first remaining diff is a face-id/header mismatch at line `30783`.
 5. V4+Numba now has a valid exact RayJoin LSI device-column primitive with ids and finite intersection x/y plus a Numba stream digest, but it has not yet produced a full overlay output/topology digest for end-to-end author/V2.14 comparison.
 6. Older segment-pair count surfaces still disagree across contracts on this same-source run:
    - RTDL overlay emitted rows: `965844`
