@@ -63,21 +63,43 @@ def _pkg_config_status(name: str) -> dict[str, object]:
 
 def _optix_status() -> dict[str, object]:
     candidates: list[Path] = []
+    skipped_roots: list[dict[str, str]] = []
     for key in ("OPTIX_ROOT", "OptiX_INSTALL_DIR", "NVIDIA_OPTIX_SDK", "OPTIX_SDK_DIR"):
         value = os.environ.get(key)
         if value:
             candidates.append(Path(value))
     for parent in (Path("/usr/local"), Path("/opt"), Path("/root/vendor")):
-        if parent.exists():
-            candidates.extend(parent.glob("*OptiX*"))
-            candidates.extend(parent.glob("optix*"))
+        try:
+            parent_exists = parent.exists()
+        except OSError as exc:
+            skipped_roots.append({"root": str(parent), "reason": repr(exc)})
+            continue
+        if parent_exists:
+            try:
+                candidates.extend(parent.glob("*OptiX*"))
+                candidates.extend(parent.glob("optix*"))
+            except OSError as exc:
+                skipped_roots.append({"root": str(parent), "reason": repr(exc)})
     rows = []
     for candidate in candidates:
         include = candidate / "include" / "optix.h"
-        rows.append({"root": str(candidate), "include_optix_h": str(include), "exists": include.exists()})
+        try:
+            exists = include.exists()
+        except OSError as exc:
+            rows.append(
+                {
+                    "root": str(candidate),
+                    "include_optix_h": str(include),
+                    "exists": False,
+                    "error": repr(exc),
+                }
+            )
+        else:
+            rows.append({"root": str(candidate), "include_optix_h": str(include), "exists": exists})
     return {
         "available": any(row["exists"] for row in rows),
         "candidates": rows,
+        "skipped_roots": skipped_roots,
         "env_checked": ("OPTIX_ROOT", "OptiX_INSTALL_DIR", "NVIDIA_OPTIX_SDK", "OPTIX_SDK_DIR"),
     }
 
