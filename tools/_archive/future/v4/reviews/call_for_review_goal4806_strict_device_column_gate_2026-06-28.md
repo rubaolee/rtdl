@@ -16,6 +16,7 @@ Relevant commits:
 79a178437 Integrate Goal4806 V4 Numba into RayJoin matrix
 2ac5bb4a9 Tighten Goal4806 device-column measurement gate
 <pending> Add Section 5.7 preflight and static device-column component audit
+<pending> Add Goal4806 POD runbook wrapper
 ```
 
 ## Context
@@ -83,13 +84,25 @@ performance_evidence_status: not_measured
 That means the route pieces are present in source, but a real RT-core POD run is
 still required before correctness/performance evidence exists.
 
+The POD execution entrypoint is now:
+
+```bash
+python3 scripts/rayjoin_section57_pod_runbook.py --dataset-root /path/to/rayjoin_section57_cdb --query-exec /path/to/query_exec --polyover-exec /path/to/polyover_exec --output-dir /path/to/goal4806_section57_full_run
+```
+
+It always runs preflight first, writes machine-readable artifacts, refuses a
+real performance run when preflight is blocked, and supports `--preflight-only`
+or `--dry-run` for non-POD validation.
+
 ## Files To Inspect
 
 ```text
 src/rtdsl/rayjoin_numba_auto_planner.py
 scripts/rayjoin_section57_overlay_matrix.py
+scripts/rayjoin_section57_pod_runbook.py
 examples/paper_reproduction/rayjoin.py
 tests/v4_goal4806_rayjoin_numba_auto_planner_test.py
+tests/v4_goal4806_rayjoin_section57_pod_runbook_test.py
 tests/v4_rayjoin_section57_public_entry_test.py
 tests/goal4374_rayjoin_exact_paper_suite_test.py
 docs/research/rayjoin/rayjoin_section57_polygon_overlay_v4_workload_status.md
@@ -126,6 +139,7 @@ Focused Windows retest after the preflight/static-component update:
 
 ```bash
 py -3 -m unittest \
+  tests.v4_goal4806_rayjoin_section57_pod_runbook_test \
   tests.v4_rayjoin_section57_public_entry_test \
   tests.v4_goal4806_rayjoin_numba_auto_planner_test \
   tests.goal4374_rayjoin_exact_paper_suite_test
@@ -134,7 +148,7 @@ py -3 -m unittest \
 Result:
 
 ```text
-Ran 34 tests in 14.234s
+Ran 36 tests in 22.891s
 OK
 ```
 
@@ -165,8 +179,10 @@ OK
 5. Does the static component audit correctly distinguish source-level route
    pieces from measured Section 5.7 evidence?
 6. Is the preflight surface the right next handoff point for POD execution?
-7. Are the docs and evidence honest that Goal4806 is still not complete?
-8. What is the next required engineering step to make Goal4806 measurable?
+7. Does the POD runbook correctly refuse real performance runs when preflight
+   is blocked while still allowing dry-run command validation?
+8. Are the docs and evidence honest that Goal4806 is still not complete?
+9. What is the next required engineering step to make Goal4806 measurable?
 
 ## Non-Authorization
 

@@ -37,6 +37,12 @@ The V4+Numba auto-primitive planner lives in:
 src/rtdsl/rayjoin_numba_auto_planner.py
 ```
 
+The POD execution runbook lives in:
+
+```text
+scripts/rayjoin_section57_pod_runbook.py
+```
+
 It is a semantic planner/evidence route: users name Section 5.7 and
 `partner="numba"`; RTDL enumerates candidate primitive combinations and writes a
 scoreboard. It does not count as a full paper-reproduction result until the
@@ -119,6 +125,14 @@ A real POD run needs:
 Recommended sequence:
 
 ```bash
+python3 scripts/rayjoin_section57_pod_runbook.py --preflight-only --dataset-root /path/to/rayjoin_section57_cdb --query-exec /workspace/RayJoin_fresh/release/bin/query_exec --polyover-exec /workspace/RayJoin_fresh/release/bin/polyover_exec --output-dir artifacts/rayjoin_section57
+
+python3 scripts/rayjoin_section57_pod_runbook.py --dataset-root /path/to/rayjoin_section57_cdb --query-exec /workspace/RayJoin_fresh/release/bin/query_exec --polyover-exec /workspace/RayJoin_fresh/release/bin/polyover_exec --output-dir artifacts/rayjoin_section57
+```
+
+The lower-level commands used by that runbook are:
+
+```bash
 python3 examples/paper_reproduction/rayjoin.py --section57-preflight --dataset-root /path/to/rayjoin_section57_cdb --query-exec /workspace/RayJoin_fresh/release/bin/query_exec --polyover-exec /workspace/RayJoin_fresh/release/bin/polyover_exec --json
 
 python3 examples/paper_reproduction/rayjoin.py --section57-plan --dataset-root /path/to/rayjoin_section57_cdb --output-dir artifacts/rayjoin_section57
@@ -131,6 +145,8 @@ python3 examples/paper_reproduction/rayjoin.py --section57-summary --dataset-roo
 The summary artifacts are:
 
 ```text
+artifacts/rayjoin_section57/section57_pod_runbook.json
+artifacts/rayjoin_section57/section57_preflight.json
 artifacts/rayjoin_section57/section57_overlay_summary.json
 artifacts/rayjoin_section57/section57_overlay_summary.md
 ```

@@ -1,0 +1,120 @@
+{
+  "coverage": {
+    "overlay_pairs_blocked": 1,
+    "overlay_pairs_input_ready": 0,
+    "overlay_pairs_total": 1,
+    "required_for_section57_full_reproduction": "8/8 overlay pairs with author_rt, rtdl_optix, and rtdl_embree results"
+  },
+  "dataset_root": "data\\rayjoin_section57_cdb",
+  "input_provenance": "paper_preprocessed_cdb",
+  "output_dir": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_pod_runbook_dry_run_2026-06-28",
+  "preprocessed_share_url": "https://datadryad.org/stash/share/aIs0nLs2TsLE_dcWO2qPHiohRKoOI3kx0WGT5BnATtA",
+  "rows": [
+    {
+      "blocker": "missing exact CDB input(s): point_cdb/dtl_cnty/dtl_cnty_Point.cdb, point_cdb/USAZIPCodeArea/USAZIPCodeArea_Point.cdb",
+      "case_id": "overlay_county_zipcode",
+      "commands": {
+        "author_rt": [
+          "C:\\Python311\\python.exe",
+          "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\scripts\\rayjoin_paper_reproduction_suite.py",
+          "run-author",
+          "--dataset-root",
+          "data\\rayjoin_section57_cdb",
+          "--query-exec",
+          "C:\\missing\\query_exec",
+          "--polyover-exec",
+          "C:\\missing\\polyover_exec",
+          "--case-id",
+          "overlay_county_zipcode",
+          "--mode",
+          "rt",
+          "--serialize-prefix",
+          "/dev/shm",
+          "--grid-size",
+          "15000",
+          "--xsect-factor",
+          "0.1",
+          "--enlarge",
+          "3.5",
+          "--warmup",
+          "5",
+          "--repeat",
+          "5",
+          "--output-json",
+          "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_pod_runbook_dry_run_2026-06-28\\section57_overlay_county_zipcode_author_rt.json"
+        ],
+        "v4_numba": [
+          "C:\\Python311\\python.exe",
+          "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\examples\\paper_reproduction\\rayjoin.py",
+          "--section57-auto-numba",
+          "--dataset-root",
+          "data\\rayjoin_section57_cdb",
+          "--output-dir",
+          "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_pod_runbook_dry_run_2026-06-28",
+          "--pairs",
+          "county_zipcode",
+          "--partner",
+          "numba",
+          "--select",
+          "fastest_valid",
+          "--input-provenance",
+          "paper_preprocessed_cdb",
+          "--rtdl-warmup",
+          "1",
+          "--rtdl-repeat",
+          "3",
+          "--output-json",
+          "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_pod_runbook_dry_run_2026-06-28\\section57_overlay_county_zipcode_v4_numba.json",
+          "--output-md",
+          "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_pod_runbook_dry_run_2026-06-28\\section57_overlay_county_zipcode_v4_numba.md",
+          "--query-exec",
+          "C:\\missing\\query_exec",
+          "--polyover-exec",
+          "C:\\missing\\polyover_exec"
+        ]
+      },
+      "exact_input_ready": false,
+      "left_path": "data\\rayjoin_section57_cdb\\point_cdb\\dtl_cnty\\dtl_cnty_Point.cdb",
+      "pair_id": "county_zipcode",
+      "paper_label": "County x Zipcode",
+      "paper_table4_seconds": {
+        "EPUG-Overlay": {
+          "preprocessing_sec": 52.64,
+          "processing_sec": 165.71
+        },
+        "Kinetica": {
+          "preprocessing_sec": null,
+          "processing_sec": 22.81
+        },
+        "LBVH*": {
+          "preprocessing_sec": 0.11,
+          "processing_sec": 8.07
+        },
+        "PostGIS": {
+          "preprocessing_sec": null,
+          "processing_sec": 30.58
+        },
+        "RasterIntervals": {
+          "preprocessing_sec": 580.4,
+          "processing_sec": 2.94
+        },
+        "RayJoin*": {
+          "preprocessing_sec": 0.07,
+          "processing_sec": 0.12
+        },
+        "Uniform Grid*": {
+          "preprocessing_sec": 0.08,
+          "processing_sec": 1.82
+        }
+      },
+      "result_paths": {
+        "author_rt": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_pod_runbook_dry_run_2026-06-28\\section57_overlay_county_zipcode_author_rt.json",
+        "rtdl_embree": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_pod_runbook_dry_run_2026-06-28\\section57_overlay_county_zipcode_rtdl_embree.json",
+        "rtdl_optix": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_pod_runbook_dry_run_2026-06-28\\section57_overlay_county_zipcode_rtdl_optix.json",
+        "v4_numba": "tools\\_archive\\future\\v4\\evidence\\goal4806_section57_pod_runbook_dry_run_2026-06-28\\section57_overlay_county_zipcode_v4_numba.json"
+      },
+      "right_path": "data\\rayjoin_section57_cdb\\point_cdb\\USAZIPCodeArea\\USAZIPCodeArea_Point.cdb"
+    }
+  ],
+  "schema": "rtdl.rayjoin.section57_overlay_matrix.plan.v1"
+}

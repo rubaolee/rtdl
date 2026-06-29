@@ -186,6 +186,26 @@ The V4+Numba semantic planner remains here:
 src/rtdsl/rayjoin_numba_auto_planner.py
 ```
 
+The POD runbook now wraps the full preflight/plan/run sequence:
+
+```text
+scripts/rayjoin_section57_pod_runbook.py
+```
+
+It writes:
+
+```text
+section57_pod_runbook.json
+section57_preflight.json
+section57_overlay_plan.json
+section57_overlay_run.json
+section57_overlay_summary.json
+section57_overlay_summary.md
+```
+
+The runbook refuses a real performance run when preflight is blocked. It can
+still be used with `--preflight-only` or `--dry-run` for non-POD validation.
+
 The planner now refuses to mark candidates as measurable unless exact inputs,
 Numba CUDA, and a Section 5.7 device-column route are all present. With inputs
 and Numba available but without the device-column route, candidates are labeled:
@@ -206,6 +226,7 @@ Tests run:
 
 ```bash
 py -3 -m unittest \
+tests.v4_goal4806_rayjoin_section57_pod_runbook_test \
 tests.goal4374_rayjoin_exact_paper_suite_test \
 tests.v4_rayjoin_section57_public_entry_test \
 tests.v4_goal4806_rayjoin_numba_auto_planner_test
@@ -214,7 +235,7 @@ tests.v4_goal4806_rayjoin_numba_auto_planner_test
 Result:
 
 ```text
-Ran 34 tests in 14.234s
+Ran 36 tests in 22.891s
 OK
 ```
 
@@ -246,8 +267,7 @@ OK
 On an RT-core pod with exact inputs and author binaries:
 
 ```bash
-python3 examples/paper_reproduction/rayjoin.py --section57-run \
-  --implementations author_rt,rtdl_optix,rtdl_embree,v4_numba \
+python3 scripts/rayjoin_section57_pod_runbook.py \
   --dataset-root /path/to/rayjoin_section57_cdb \
   --query-exec /path/to/query_exec \
   --polyover-exec /path/to/polyover_exec \
