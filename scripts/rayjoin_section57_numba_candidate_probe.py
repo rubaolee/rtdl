@@ -108,6 +108,10 @@ def _run_segmented_count_probe(
                         max_rows=expected_count,
                     )
                     cupy_columns = columns.as_cupy_columns()
+                    intersection_point_columns_present = (
+                        "intersection_point_x" in cupy_columns
+                        and "intersection_point_y" in cupy_columns
+                    )
                     left_ids = _as_numba_cuda_vector(
                         cupy_columns["left_id"],
                         name="left_id",
@@ -137,6 +141,7 @@ def _run_segmented_count_probe(
                             "expected_lsi_count": expected_count,
                             "primitive_source": "exact_device_columns_prepared_left",
                             "native_symbol": columns.native_symbol,
+                            "intersection_point_columns_present": intersection_point_columns_present,
                             "segmented_count_sum": count_sum,
                             "stage_counts_pass": (
                                 int(columns.row_count) == expected_count
@@ -177,6 +182,7 @@ def _run_segmented_count_probe(
                             "expected_lsi_count": expected_count,
                             "primitive_source": "exact_device_columns_prepared_left",
                             "native_symbol": columns.native_symbol,
+                            "intersection_point_columns_present": intersection_point_columns_present,
                             "compact_count": compact_count,
                             "stage_counts_pass": compact_count == expected_count,
                             "host_prefix_sum_used": bool(compact.get("host_prefix_sum_used", True)),

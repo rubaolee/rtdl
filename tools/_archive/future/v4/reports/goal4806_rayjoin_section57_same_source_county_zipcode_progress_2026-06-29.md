@@ -22,6 +22,7 @@ Included evidence:
 - `section57_overlay_county_zipcode_rtdl_optix_retry_fixed.json`
 - `section57_v4_numba_candidate_measurements.json`
 - `section57_v4_numba_candidate_measurements_exact_columns.json`
+- `section57_v4_numba_candidate_measurements_exact_xy_columns_nohash.json`
 - `section57_overlay_county_zipcode_v4_numba.json`
 - `section57_overlay_county_zipcode_v4_numba.md`
 - `section57_overlay_summary_refreshed.json`
@@ -137,46 +138,53 @@ Implemented surface:
 - Native C ABI: `rtdl_optix_prepared_segment_pair_exact_device_columns_prepared_left`
 - Python wrapper: `PreparedOptixSegmentPairIntersection.exact_device_columns_prepared_left(...)`
 - Predicate lock: the Section 5.7 probe runs inside `_rayjoin_lsi_predicate_env("optix")`, so it measures RayJoin LSI semantics rather than generic segment-pair intersection.
+- Device-column payload: `left_id`, `right_id`, `intersection_point_x`, and `intersection_point_y`.
 
 POD validation:
 
-- Local focused tests: `39 tests OK`.
-- POD focused tests: `13 tests OK` before measurement; planner tests: `9 tests OK` after the label fix.
+- Local focused tests: `37 tests OK` after the x/y column extension.
+- POD focused tests: `12 tests OK` after the x/y column extension.
 - OptiX backend rebuilt successfully on the RTX 4000 Ada POD.
 
 ### V4+Numba Exact-Column Measurement
 
-File: `section57_v4_numba_candidate_measurements_exact_columns.json`
+Files:
+
+- `section57_v4_numba_candidate_measurements_exact_columns.json`
+- `section57_v4_numba_candidate_measurements_exact_xy_columns_nohash.json`
 
 Rows:
 
 - `v4_numba_post_traversal_segmented_counts`
-  - `correctness_status`: `pass`
+  - `correctness_status`: `stage_count_pass_full_overlay_hash_not_confirmed`
   - `candidate_row_count`: `965844`
   - `expected_lsi_count`: `965844`
   - `segmented_count_sum`: `965844`
+  - `intersection_point_columns_present`: `true`
   - `host_materialization_in_hot_path`: `false`
-  - `measured_total_sec`: `0.17502714693546295`
-  - `candidate_column_traversal_sec`: `0.005780157`
-  - `numba_elapsed_sec`: `0.16379033029079437`
+  - `measured_total_sec`: `0.22065869718790054`
+  - `candidate_column_traversal_sec`: `0.006589513`
+  - `numba_elapsed_sec`: `0.2079133614897728`
   - `native_symbol`: `rtdl_optix_prepared_segment_pair_exact_device_columns_prepared_left`
 - `v4_numba_post_traversal_mask_compact`
-  - `correctness_status`: `pass`
+  - `correctness_status`: `stage_count_pass_full_overlay_hash_not_confirmed`
   - `compact_count`: `965844`
+  - `intersection_point_columns_present`: `true`
   - `host_materialization_in_hot_path`: `true`
-  - `measured_total_sec`: `0.21405694633722305`
-  - rejected by the selector because the hot path uses a host prefix sum.
+  - `measured_total_sec`: `0.12310758978128433`
+  - rejected by the selector because the full overlay hash is not confirmed; it would also be unsafe as a hot-path route because it uses a host prefix sum.
 
 Selector result:
 
 - File: `section57_overlay_county_zipcode_v4_numba.json`
-- selected plan: `v4_numba_post_traversal_segmented_counts`
+- selected plan: `null`
 - selection policy: `fastest_valid`
-- claim classification: `candidate_stage_measured_no_app_speedup_claim`
+- claim classification: `not_release_ready`
+- rejection reasons: both measured rows are rejected as `correctness_not_pass` because the full overlay topology/geometry hash has not been produced yet.
 
 Interpretation:
 
-This is real V4+Numba progress: RTDL now emits the same exact RayJoin LSI row count as the full RTDL OptiX route (`965844`) into device-resident columns, and Numba consumes that stream without hot-path host materialization. It is not yet a full app-level speedup claim because it measures the post-traversal continuation stage, not the complete Section 5.7 polygon-overlay output assembly.
+This is real V4+Numba progress: RTDL now emits the same exact RayJoin LSI row count as the full RTDL OptiX route (`965844`) into device-resident columns, including intersection x/y columns, and Numba consumes that stream without hot-path host materialization on the segmented-count route. It is not yet a full app-level speedup claim because the end-to-end overlay output/topology digest has not been produced. The selector correctly remains fail-closed.
 
 ### Exact Grouped-Count Probe
 
@@ -221,20 +229,20 @@ This stack successfully ran a minimal Numba CUDA kernel on the POD. V4+Numba tes
 2. Same-source regenerated CDB is serious and useful, but it is not the exact paper input.
 3. RTDL OptiX compute runs and is much faster than the author run on this same-source input, but the author timing is dominated by CDB read time and RTDL used a packed cache path.
 4. RTDL full-overlay output equality against author output has not yet been established for this same-source run.
-5. V4+Numba now has a valid exact RayJoin LSI id-column primitive, but it does not yet expose enough device data to produce a full overlay output/topology digest for end-to-end author/V2.14 comparison.
+5. V4+Numba now has a valid exact RayJoin LSI device-column primitive with ids and intersection x/y, but it has not yet used those columns to produce a full overlay output/topology digest for end-to-end author/V2.14 comparison.
 6. Older segment-pair count surfaces still disagree across contracts on this same-source run:
    - RTDL overlay emitted rows: `965844`
    - scalar exact count probe: `1152144`
    - grouped-count device-column source rows: `382946`
-7. The automatic V4+Numba primitive selector now opens only for the new exact LSI device-column measurement and rejects the compact candidate because it uses host prefix sum in the hot path.
+7. The automatic V4+Numba primitive selector remains fail-closed because the measured rows are stage-count correct but do not yet carry a full overlay topology/geometry hash.
 
 ## Non-Stupid Next Step
 
 Do not publish a V4+Numba full RayJoin Section 5.7 success claim from the current evidence.
 
-The correct next engineering step is to extend the exact LSI device-column route so it can support an end-to-end overlay correctness artifact. There are two honest options:
+The correct next engineering step is to consume the exact `(left_id, right_id, x, y)` device stream in an end-to-end overlay correctness artifact. There are two honest options:
 
-1. expose the actual exact `(left_id, right_id, x, y)` row stream and let Numba compute the topology/geometry digest or output assembly, or
+1. let Numba compute the topology/geometry digest or output assembly from the device stream, or
 2. implement a fused exact overlay continuation that avoids materializing that row stream but still emits a digest/output comparable with author code and the V2.14 exact-suite route.
 
 Only after that end-to-end artifact exists should Goal4806 be considered complete.

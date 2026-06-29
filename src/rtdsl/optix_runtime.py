@@ -1108,6 +1108,8 @@ class _RtdlNativeDevicePairColumns(ctypes.Structure):
         ("right_ordinals_device_ptr", ctypes.c_uint64),
         ("relation_status_device_ptr", ctypes.c_uint64),
         ("relation_boundary_ordinals_device_ptr", ctypes.c_uint64),
+        ("intersection_x_device_ptr", ctypes.c_uint64),
+        ("intersection_y_device_ptr", ctypes.c_uint64),
     ]
 
 
@@ -2924,6 +2926,9 @@ class OptixNativeDevicePairColumnOutput:
     relation_status_field_name: str = "relation_status"
     relation_boundary_ordinals_device_ptr: int = 0
     relation_boundary_ordinal_field_name: str = "relation_boundary_ordinal"
+    intersection_x_device_ptr: int = 0
+    intersection_y_device_ptr: int = 0
+    intersection_point_field_names: tuple[str, str] = ("intersection_point_x", "intersection_point_y")
     relation_status_filter: int | None = None
 
     @property
@@ -2956,6 +2961,15 @@ class OptixNativeDevicePairColumnOutput:
     def has_relation_boundary_ordinal_column(self) -> bool:
         return (
             self.relation_boundary_ordinals_device_ptr > 0
+            and self.capacity > 0
+            and not self.overflow
+        )
+
+    @property
+    def has_intersection_point_columns(self) -> bool:
+        return (
+            self.intersection_x_device_ptr > 0
+            and self.intersection_y_device_ptr > 0
             and self.capacity > 0
             and not self.overflow
         )
@@ -3096,7 +3110,7 @@ class OptixNativeDevicePairColumnOutput:
     def raise_if_overflowed(self, *, operation: str) -> None:
         self.capacity_status.raise_if_overflowed(operation=operation)
 
-    def _cupy_column(self, device_ptr: int):
+    def _cupy_column_typed(self, device_ptr: int, *, dtype, itemsize: int):
         if self.overflow:
             raise RuntimeError(
                 "cannot wrap an overflowed device pair-column stream; "
@@ -3109,11 +3123,20 @@ class OptixNativeDevicePairColumnOutput:
 
         memory = cp.cuda.UnownedMemory(
             int(device_ptr),
-            int(self.capacity) * ctypes.sizeof(ctypes.c_int64),
+            int(self.capacity) * int(itemsize),
             self.owner,
         )
         memory_pointer = cp.cuda.MemoryPointer(memory, 0)
-        return cp.ndarray((int(self.row_count),), dtype=cp.int64, memptr=memory_pointer)
+        return cp.ndarray((int(self.row_count),), dtype=dtype, memptr=memory_pointer)
+
+    def _cupy_column(self, device_ptr: int):
+        import cupy as cp  # type: ignore
+
+        return self._cupy_column_typed(
+            device_ptr,
+            dtype=cp.int64,
+            itemsize=ctypes.sizeof(ctypes.c_int64),
+        )
 
     def as_cupy_columns(self) -> dict[str, object]:
         """Wrap the device-resident id columns as CuPy arrays without copying.
@@ -3135,6 +3158,19 @@ class OptixNativeDevicePairColumnOutput:
         if self.has_relation_boundary_ordinal_column:
             columns[self.relation_boundary_ordinal_field_name] = self._cupy_column(
                 self.relation_boundary_ordinals_device_ptr
+            )
+        if self.has_intersection_point_columns:
+            import cupy as cp  # type: ignore
+
+            columns[self.intersection_point_field_names[0]] = self._cupy_column_typed(
+                self.intersection_x_device_ptr,
+                dtype=cp.float64,
+                itemsize=ctypes.sizeof(ctypes.c_double),
+            )
+            columns[self.intersection_point_field_names[1]] = self._cupy_column_typed(
+                self.intersection_y_device_ptr,
+                dtype=cp.float64,
+                itemsize=ctypes.sizeof(ctypes.c_double),
             )
         return columns
 
@@ -4371,6 +4407,8 @@ class PreparedOptixSegmentPairIntersection:
             device_ordinal=int(columns.device_ordinal),
             traversal_seconds=float(columns.traversal_seconds),
             native_symbol=OPTIX_SEGMENT_PAIR_CANDIDATE_DEVICE_COLUMNS_SYMBOL,
+            intersection_x_device_ptr=int(columns.intersection_x_device_ptr),
+            intersection_y_device_ptr=int(columns.intersection_y_device_ptr),
         )
 
     def exact_device_columns_prepared_left(
@@ -4432,6 +4470,8 @@ class PreparedOptixSegmentPairIntersection:
             device_ordinal=int(columns.device_ordinal),
             traversal_seconds=float(columns.traversal_seconds),
             native_symbol=OPTIX_SEGMENT_PAIR_EXACT_DEVICE_COLUMNS_PREPARED_LEFT_SYMBOL,
+            intersection_x_device_ptr=int(columns.intersection_x_device_ptr),
+            intersection_y_device_ptr=int(columns.intersection_y_device_ptr),
         )
 
     def left_id_count_device_columns(

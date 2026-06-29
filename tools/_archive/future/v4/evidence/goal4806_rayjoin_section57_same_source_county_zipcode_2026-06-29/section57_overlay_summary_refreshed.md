@@ -18,4 +18,4 @@ Correctness caveat: Raw overlay-output digest matches are byte-level checks for 
 
 | Pair | Paper RayJoin Processing (Preprocess) | Local Author RT Process | RTDL OptiX Total | RTDL Embree Total | V4+Numba Total | V4+Numba Status | RTDL LSI Count Match | OptiX Raw Output = Author | Embree Raw Output = Author | OptiX Raw Output = Embree | Complete |
 |---|---:|---:|---:|---:|---:|---|---|---|---|---|---:|
-| County x Zipcode | 0.12 (0.07) | 827.591929 | 100.594386 |  | 0.175027 | `candidate_stage_measured_no_app_speedup_claim` |  |  |  |  | False |
+| County x Zipcode | 0.12 (0.07) | 827.591929 | 100.594386 |  |  | `not_release_ready` |  |  |  |  | False |

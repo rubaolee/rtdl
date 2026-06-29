@@ -290,6 +290,8 @@ struct RtdlNativeDevicePairColumns {
     uint64_t right_ordinals_device_ptr;
     uint64_t relation_status_device_ptr;
     uint64_t relation_boundary_ordinals_device_ptr;
+    uint64_t intersection_x_device_ptr;
+    uint64_t intersection_y_device_ptr;
 };
 
 struct RtdlNativeClosedShapeScalarCountSummary {

@@ -628,6 +628,10 @@ class Goal4374RayjoinExactPaperSuiteTest(unittest.TestCase):
         self.assertIn("run_prepared_segment_pair_exact_device_columns_prepared_left_optix", native)
         self.assertIn("left_id_output", native)
         self.assertIn("right_id_output", native)
+        self.assertIn("intersection_x_output", native)
+        self.assertIn("intersection_y_output", native)
+        self.assertIn("intersection_x_device_ptr", prelude)
+        self.assertIn("intersection_y_device_ptr", runtime)
         self.assertIn("def exact_device_columns_prepared_left", runtime)
         self.assertIn("OPTIX_SEGMENT_PAIR_EXACT_DEVICE_COLUMNS_PREPARED_LEFT_SYMBOL", runtime)
 

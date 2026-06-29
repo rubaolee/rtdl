@@ -4162,6 +4162,8 @@ struct SegmentPairGroupedRangeExactCountLaunchParams {
     unsigned long long pair_output_capacity;
     unsigned long long* left_id_output;
     unsigned long long* right_id_output;
+    double* intersection_x_output;
+    double* intersection_y_output;
     unsigned long long id_output_capacity;
     uint32_t probe_count;
     uint32_t left_offset;
@@ -4171,10 +4173,14 @@ struct SegmentPairGroupedRangeExactCountLaunchParams {
 struct NativeSegmentPairCandidateDeviceColumnsOwner {
     CUdeviceptr left_ids = 0;
     CUdeviceptr right_ids = 0;
+    CUdeviceptr intersection_x = 0;
+    CUdeviceptr intersection_y = 0;
 
     ~NativeSegmentPairCandidateDeviceColumnsOwner() {
         if (left_ids) cuMemFree(left_ids);
         if (right_ids) cuMemFree(right_ids);
+        if (intersection_x) cuMemFree(intersection_x);
+        if (intersection_y) cuMemFree(intersection_y);
     }
 };
 
@@ -4541,6 +4547,8 @@ struct SegmentPairGroupedRangeExactCountLaunchParams {
     unsigned long long pair_output_capacity;
     unsigned long long* left_id_output;
     unsigned long long* right_id_output;
+    double* intersection_x_output;
+    double* intersection_y_output;
     unsigned long long id_output_capacity;
     unsigned int probe_count;
     unsigned int left_offset;
@@ -4572,6 +4580,28 @@ static __forceinline__ __device__ bool exact_segment_intersection_device(
     const double t = (qpx * sy - qpy * sx) / denom;
     const double u = (qpx * ry - qpy * rx) / denom;
     return 0.0 <= t && t <= 1.0 && 0.0 <= u && u <= 1.0;
+}
+
+static __forceinline__ __device__ void segment_intersection_point_device(
+    const RtdlSegment left,
+    const RtdlSegment right,
+    double* out_x,
+    double* out_y)
+{
+    const double px = left.x0;
+    const double py = left.y0;
+    const double rx = left.x1 - left.x0;
+    const double ry = left.y1 - left.y0;
+    const double qx = right.x0;
+    const double qy = right.y0;
+    const double sx = right.x1 - right.x0;
+    const double sy = right.y1 - right.y0;
+    const double denom = rx * sy - ry * sx;
+    const double qpx = qx - px;
+    const double qpy = qy - py;
+    const double t = (qpx * sy - qpy * sx) / denom;
+    *out_x = px + t * rx;
+    *out_y = py + t * ry;
 }
 
 struct RayjoinLine {
@@ -4719,6 +4749,14 @@ extern "C" __global__ void __intersection__segment_pair_grouped_range_direct_int
                 out_index < params.id_output_capacity) {
                 params.left_id_output[out_index] = (unsigned long long)left.id;
                 params.right_id_output[out_index] = (unsigned long long)right.id;
+                if (params.intersection_x_output != nullptr &&
+                    params.intersection_y_output != nullptr) {
+                    segment_intersection_point_device(
+                        left,
+                        right,
+                        &params.intersection_x_output[out_index],
+                        &params.intersection_y_output[out_index]);
+                }
             }
         }
     }
@@ -7030,6 +7068,8 @@ static size_t count_segment_pair_intersection_grouped_range_direct_is_exact_one_
         bool record_group_candidate_events,
         CUdeviceptr d_left_ids_output = 0,
         CUdeviceptr d_right_ids_output = 0,
+        CUdeviceptr d_intersection_x_output = 0,
+        CUdeviceptr d_intersection_y_output = 0,
         unsigned long long id_output_capacity = 0ull)
 {
     if (!prepared) {
@@ -7087,6 +7127,8 @@ static size_t count_segment_pair_intersection_grouped_range_direct_is_exact_one_
     lp.pair_output_capacity = pair_dump_capacity;
     lp.left_id_output = reinterpret_cast<unsigned long long*>(d_left_ids_output);
     lp.right_id_output = reinterpret_cast<unsigned long long*>(d_right_ids_output);
+    lp.intersection_x_output = reinterpret_cast<double*>(d_intersection_x_output);
+    lp.intersection_y_output = reinterpret_cast<double*>(d_intersection_y_output);
     lp.id_output_capacity = id_output_capacity;
     lp.probe_count = static_cast<uint32_t>(left_count);
     lp.left_offset = 0u;
@@ -7317,12 +7359,18 @@ static void run_prepared_segment_pair_exact_device_columns_prepared_left_optix(
     std::unique_ptr<NativeSegmentPairCandidateDeviceColumnsOwner> owner;
     CUdeviceptr left_ids_output = 0;
     CUdeviceptr right_ids_output = 0;
+    CUdeviceptr intersection_x_output = 0;
+    CUdeviceptr intersection_y_output = 0;
     if (max_rows != 0) {
         owner = std::make_unique<NativeSegmentPairCandidateDeviceColumnsOwner>();
         CU_CHECK(cuMemAlloc(&owner->left_ids, sizeof(unsigned long long) * max_rows));
         CU_CHECK(cuMemAlloc(&owner->right_ids, sizeof(unsigned long long) * max_rows));
+        CU_CHECK(cuMemAlloc(&owner->intersection_x, sizeof(double) * max_rows));
+        CU_CHECK(cuMemAlloc(&owner->intersection_y, sizeof(double) * max_rows));
         left_ids_output = owner->left_ids;
         right_ids_output = owner->right_ids;
+        intersection_x_output = owner->intersection_x;
+        intersection_y_output = owner->intersection_y;
     }
 
     const auto traversal_start = std::chrono::steady_clock::now();
@@ -7337,6 +7385,8 @@ static void run_prepared_segment_pair_exact_device_columns_prepared_left_optix(
         false,
         left_ids_output,
         right_ids_output,
+        intersection_x_output,
+        intersection_y_output,
         static_cast<unsigned long long>(max_rows));
     const auto traversal_end = std::chrono::steady_clock::now();
 
@@ -7351,6 +7401,8 @@ static void run_prepared_segment_pair_exact_device_columns_prepared_left_optix(
 
     columns_out->left_ids_device_ptr = static_cast<uint64_t>(left_ids_output);
     columns_out->right_ids_device_ptr = static_cast<uint64_t>(right_ids_output);
+    columns_out->intersection_x_device_ptr = static_cast<uint64_t>(intersection_x_output);
+    columns_out->intersection_y_device_ptr = static_cast<uint64_t>(intersection_y_output);
     columns_out->row_count = static_cast<uint64_t>(exact_count);
     columns_out->overflow = 0u;
     if (owner)

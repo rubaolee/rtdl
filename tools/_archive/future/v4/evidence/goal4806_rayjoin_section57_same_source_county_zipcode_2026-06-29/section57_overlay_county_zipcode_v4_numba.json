@@ -12,7 +12,7 @@
         "warmup": 1
       },
       "measurement_rejections": [
-        "host_materialization_in_hot_path_not_rejected"
+        "correctness_not_pass"
       ],
       "pair_id": "county_zipcode",
       "paper_label": "County x Zipcode",
@@ -73,18 +73,17 @@
     {
       "compile_jit_sec": null,
       "correctness_comparator": "topology_geometry_hash_against_v2_14_and_author_when_available",
-      "correctness_status": "pass",
-      "device_column_route": true,
+      "correctness_status": "not_run",
       "expected_output_schema": "overlay_grouped_counts_and_witness_summaries",
-      "host_materialization_in_hot_path": false,
-      "measured_total_sec": 0.17502714693546295,
-      "measurement_artifact": {},
+      "measured_total_sec": null,
       "measurement_policy": {
         "compile_jit_overhead_separated": true,
         "repeat": 3,
         "warmup": 1
       },
-      "measurement_source": "pod_runtime",
+      "measurement_rejections": [
+        "correctness_not_pass"
+      ],
       "pair_id": "county_zipcode",
       "paper_label": "County x Zipcode",
       "partner": "numba",
@@ -137,32 +136,35 @@
           "stage_id": "numba_segmented_overlay_counts"
         }
       ],
-      "status": "measured",
-      "steady_state_sec": 0.17502714693546295,
-      "topology_geometry_hash_match": true,
-      "user_semantics": "section57_polygon_overlay",
-      "v4_vs_v2_14_speedup": null
+      "status": "ready_for_measurement",
+      "steady_state_sec": null,
+      "user_semantics": "section57_polygon_overlay"
     }
   ],
-  "claim_classification": "candidate_stage_measured_no_app_speedup_claim",
+  "claim_classification": "not_release_ready",
   "columns": [
     "author_code",
     "v2_14_exact_suite",
     "v4_numba_selected_plan"
   ],
   "dataset_root": "/workspace/rayjoin_section57_same_source_cdb",
-  "elapsed_planner_sec": 0.2354341223835945,
+  "elapsed_planner_sec": 0.21530885994434357,
   "input_provenance": "same_source_regenerated_cdb",
   "measurement_import": {
-    "accepted_count": 1,
-    "path": "artifacts/section57_same_source_county_zipcode_onepass/section57_v4_numba_candidate_measurements_exact_columns.json",
+    "accepted_count": 0,
+    "path": "artifacts/section57_same_source_county_zipcode_onepass/section57_v4_numba_candidate_measurements_exact_xy_columns_nohash.json",
     "provided": true,
-    "rejected_count": 1,
+    "rejected_count": 2,
     "rejections": [
       {
         "pair_id": "county_zipcode",
+        "plan_id": "v4_numba_post_traversal_segmented_counts",
+        "reason": "correctness_not_pass"
+      },
+      {
+        "pair_id": "county_zipcode",
         "plan_id": "v4_numba_post_traversal_mask_compact",
-        "reason": "host_materialization_in_hot_path_not_rejected"
+        "reason": "correctness_not_pass"
       }
     ],
     "schema": "rtdl.v4.rayjoin.section57_numba_measured_candidates.v1"
@@ -227,7 +229,7 @@
             "warmup": 1
           },
           "measurement_rejections": [
-            "host_materialization_in_hot_path_not_rejected"
+            "correctness_not_pass"
           ],
           "pair_id": "county_zipcode",
           "paper_label": "County x Zipcode",
@@ -288,18 +290,17 @@
         {
           "compile_jit_sec": null,
           "correctness_comparator": "topology_geometry_hash_against_v2_14_and_author_when_available",
-          "correctness_status": "pass",
-          "device_column_route": true,
+          "correctness_status": "not_run",
           "expected_output_schema": "overlay_grouped_counts_and_witness_summaries",
-          "host_materialization_in_hot_path": false,
-          "measured_total_sec": 0.17502714693546295,
-          "measurement_artifact": {},
+          "measured_total_sec": null,
           "measurement_policy": {
             "compile_jit_overhead_separated": true,
             "repeat": 3,
             "warmup": 1
           },
-          "measurement_source": "pod_runtime",
+          "measurement_rejections": [
+            "correctness_not_pass"
+          ],
           "pair_id": "county_zipcode",
           "paper_label": "County x Zipcode",
           "partner": "numba",
@@ -352,11 +353,9 @@
               "stage_id": "numba_segmented_overlay_counts"
             }
           ],
-          "status": "measured",
-          "steady_state_sec": 0.17502714693546295,
-          "topology_geometry_hash_match": true,
-          "user_semantics": "section57_polygon_overlay",
-          "v4_vs_v2_14_speedup": null
+          "status": "ready_for_measurement",
+          "steady_state_sec": null,
+          "user_semantics": "section57_polygon_overlay"
         }
       ],
       "correctness_gate": {
@@ -420,79 +419,7 @@
     "section57_device_columns_requirement": "V4+Numba Section 5.7 performance measurement requires RTDL to expose overlay candidate/refinement streams as device-resident columns. Host overlay summaries are not sufficient for this route."
   },
   "schema": "rtdl.v4.rayjoin.section57_numba_auto_primitive_planner.v1",
-  "selected_plan": {
-    "compile_jit_sec": null,
-    "correctness_comparator": "topology_geometry_hash_against_v2_14_and_author_when_available",
-    "correctness_status": "pass",
-    "device_column_route": true,
-    "expected_output_schema": "overlay_grouped_counts_and_witness_summaries",
-    "host_materialization_in_hot_path": false,
-    "measured_total_sec": 0.17502714693546295,
-    "measurement_artifact": {},
-    "measurement_policy": {
-      "compile_jit_overhead_separated": true,
-      "repeat": 3,
-      "warmup": 1
-    },
-    "measurement_source": "pod_runtime",
-    "pair_id": "county_zipcode",
-    "paper_label": "County x Zipcode",
-    "partner": "numba",
-    "plan_id": "v4_numba_post_traversal_segmented_counts",
-    "selection_role": "v4_numba_selected_plan",
-    "skip_reason": null,
-    "stages": [
-      {
-        "device_resident_input_required": true,
-        "execution_boundary": "pre_traversal_or_native_query",
-        "numba_cuda_jit_required": false,
-        "optix_traversal_callback_injection": false,
-        "owner": "rtdl_v4",
-        "partner": null,
-        "primitive": "shape_pair_relation_or_aabb_index_query",
-        "role": "candidate_pair_generation",
-        "stage_id": "broadphase_candidate_pairs"
-      },
-      {
-        "device_resident_input_required": true,
-        "execution_boundary": "native_rt_traversal",
-        "numba_cuda_jit_required": false,
-        "optix_traversal_callback_injection": false,
-        "owner": "rtdl_v4",
-        "partner": null,
-        "primitive": "ray_segment_intersection_and_point_location",
-        "role": "rayjoin_lsi_pip_refinement",
-        "stage_id": "rt_refinement_lsi_pip"
-      },
-      {
-        "device_resident_input_required": true,
-        "execution_boundary": "post_traversal_refinement",
-        "numba_cuda_jit_required": true,
-        "optix_traversal_callback_injection": false,
-        "owner": "numba_partner",
-        "partner": "numba",
-        "primitive": "section57_overlay_valid_pair_mask",
-        "role": "post_traversal_valid_pair_filter",
-        "stage_id": "numba_valid_pair_mask"
-      },
-      {
-        "device_resident_input_required": true,
-        "execution_boundary": "post_traversal_continuation",
-        "numba_cuda_jit_required": true,
-        "optix_traversal_callback_injection": false,
-        "owner": "numba_partner",
-        "partner": "numba",
-        "primitive": "segmented_count_i64",
-        "role": "post_traversal_grouped_count",
-        "stage_id": "numba_segmented_overlay_counts"
-      }
-    ],
-    "status": "measured",
-    "steady_state_sec": 0.17502714693546295,
-    "topology_geometry_hash_match": true,
-    "user_semantics": "section57_polygon_overlay",
-    "v4_vs_v2_14_speedup": null
-  },
+  "selected_plan": null,
   "selection_policy": {
     "hardcoded_default_allowed": false,
     "measured_candidate_required": true,

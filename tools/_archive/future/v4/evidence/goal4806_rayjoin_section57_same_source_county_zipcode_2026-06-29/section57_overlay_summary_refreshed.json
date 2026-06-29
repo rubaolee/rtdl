@@ -31,10 +31,10 @@
       "rtdl_optix_lsi_count": 965844,
       "rtdl_optix_overlay_output_digest": null,
       "rtdl_optix_total_sec": 100.59438601136208,
-      "v4_numba_claim_classification": "candidate_stage_measured_no_app_speedup_claim",
-      "v4_numba_correctness_status": "pass",
-      "v4_numba_selected_plan_id": "v4_numba_post_traversal_segmented_counts",
-      "v4_numba_total_sec": 0.17502714693546295
+      "v4_numba_claim_classification": "not_release_ready",
+      "v4_numba_correctness_status": null,
+      "v4_numba_selected_plan_id": null,
+      "v4_numba_total_sec": null
     }
   ],
   "schema": "rtdl.rayjoin.section57_overlay_matrix.summary.v1",
