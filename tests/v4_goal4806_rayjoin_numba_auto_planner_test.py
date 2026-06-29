@@ -127,6 +127,150 @@ class V4Goal4806RayJoinNumbaAutoPlannerTest(unittest.TestCase):
         self.assertIn("section57_device_columns_requirement", blocked["runtime_probe"])
         self.assertFalse(blocked["runtime_probe"]["section57_device_columns_ready"])
 
+    def test_measured_candidate_import_selects_fastest_valid_plan(self) -> None:
+        from rtdsl.rayjoin_paper_suite import paper_pairs
+        from rtdsl.rayjoin_numba_auto_planner import RAYJOIN_SECTION57_NUMBA_MEASURED_CANDIDATES_SCHEMA
+        from rtdsl.rayjoin_numba_auto_planner import section57_polygon_overlay
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pair = paper_pairs()[0]
+            left = root / pair.left_relative_path
+            right = root / pair.right_relative_path
+            left.parent.mkdir(parents=True, exist_ok=True)
+            right.parent.mkdir(parents=True, exist_ok=True)
+            left.write_text("1 2 1 2 1 0\n0 0\n1 0\n", encoding="utf-8")
+            right.write_text("1 2 1 2 1 0\n0 0\n1 0\n", encoding="utf-8")
+            query_exec = root / "RayJoin" / "query_exec"
+            polyover_exec = root / "RayJoin" / "polyover_exec"
+            query_exec.parent.mkdir(parents=True, exist_ok=True)
+            query_exec.write_text("", encoding="utf-8")
+            polyover_exec.write_text("", encoding="utf-8")
+            measurements = root / "measurements.json"
+            measurements.write_text(
+                json.dumps(
+                    {
+                        "schema": RAYJOIN_SECTION57_NUMBA_MEASURED_CANDIDATES_SCHEMA,
+                        "rows": [
+                            {
+                                "pair_id": "county_zipcode",
+                                "plan_id": "v4_numba_post_traversal_mask_compact",
+                                "correctness_status": "pass",
+                                "measured_total_sec": 0.22,
+                                "steady_state_sec": 0.20,
+                                "compile_jit_sec": 0.02,
+                                "v4_vs_v2_14_speedup": 1.10,
+                                "measurement_source": "pod_runtime",
+                                "topology_geometry_hash_match": True,
+                                "device_column_route": True,
+                                "host_materialization_in_hot_path": False,
+                            },
+                            {
+                                "pair_id": "county_zipcode",
+                                "plan_id": "v4_numba_post_traversal_segmented_counts",
+                                "correctness_status": "pass",
+                                "measured_total_sec": 0.10,
+                                "steady_state_sec": 0.09,
+                                "compile_jit_sec": 0.01,
+                                "v4_vs_v2_14_speedup": 1.45,
+                                "measurement_source": "pod_runtime",
+                                "topology_geometry_hash_match": True,
+                                "device_column_route": True,
+                                "host_materialization_in_hot_path": False,
+                            },
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            with mock.patch("rtdsl.rayjoin_numba_auto_planner.numba_partner_available", return_value=True):
+                payload = section57_polygon_overlay(
+                    dataset_root=root,
+                    pairs="county_zipcode",
+                    query_exec=query_exec,
+                    polyover_exec=polyover_exec,
+                    check_runtime=True,
+                    section57_device_columns_ready=True,
+                    measured_candidates_path=measurements,
+                )
+
+        self.assertEqual(payload["measurement_import"]["accepted_count"], 2)
+        self.assertEqual(payload["measurement_import"]["rejected_count"], 0)
+        self.assertEqual(payload["selected_plan"]["plan_id"], "v4_numba_post_traversal_segmented_counts")
+        self.assertEqual(payload["selected_plan"]["correctness_status"], "pass")
+        self.assertEqual(payload["selected_plan"]["measurement_source"], "pod_runtime")
+        self.assertEqual(payload["claim_classification"], "high_performance")
+
+    def test_measured_candidate_import_rejects_unsafe_rows(self) -> None:
+        from rtdsl.rayjoin_paper_suite import paper_pairs
+        from rtdsl.rayjoin_numba_auto_planner import RAYJOIN_SECTION57_NUMBA_MEASURED_CANDIDATES_SCHEMA
+        from rtdsl.rayjoin_numba_auto_planner import section57_polygon_overlay
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pair = paper_pairs()[0]
+            left = root / pair.left_relative_path
+            right = root / pair.right_relative_path
+            left.parent.mkdir(parents=True, exist_ok=True)
+            right.parent.mkdir(parents=True, exist_ok=True)
+            left.write_text("1 2 1 2 1 0\n0 0\n1 0\n", encoding="utf-8")
+            right.write_text("1 2 1 2 1 0\n0 0\n1 0\n", encoding="utf-8")
+            query_exec = root / "RayJoin" / "query_exec"
+            polyover_exec = root / "RayJoin" / "polyover_exec"
+            query_exec.parent.mkdir(parents=True, exist_ok=True)
+            query_exec.write_text("", encoding="utf-8")
+            polyover_exec.write_text("", encoding="utf-8")
+            measurements = root / "measurements.json"
+            measurements.write_text(
+                json.dumps(
+                    {
+                        "schema": RAYJOIN_SECTION57_NUMBA_MEASURED_CANDIDATES_SCHEMA,
+                        "rows": [
+                            {
+                                "pair_id": "county_zipcode",
+                                "plan_id": "v4_numba_post_traversal_mask_compact",
+                                "correctness_status": "pass",
+                                "measured_total_sec": 0.10,
+                                "measurement_source": "pod_runtime",
+                                "topology_geometry_hash_match": True,
+                                "device_column_route": True,
+                                "host_materialization_in_hot_path": True,
+                            },
+                            {
+                                "pair_id": "wrong_pair",
+                                "plan_id": "v4_numba_post_traversal_segmented_counts",
+                                "correctness_status": "pass",
+                                "measured_total_sec": 0.08,
+                                "measurement_source": "pod_runtime",
+                                "topology_geometry_hash_match": True,
+                                "device_column_route": True,
+                                "host_materialization_in_hot_path": False,
+                            },
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            with mock.patch("rtdsl.rayjoin_numba_auto_planner.numba_partner_available", return_value=True):
+                payload = section57_polygon_overlay(
+                    dataset_root=root,
+                    pairs="county_zipcode",
+                    query_exec=query_exec,
+                    polyover_exec=polyover_exec,
+                    check_runtime=True,
+                    section57_device_columns_ready=True,
+                    measured_candidates_path=measurements,
+                )
+
+        self.assertIsNone(payload["selected_plan"])
+        self.assertEqual(payload["measurement_import"]["accepted_count"], 0)
+        reasons = {row["reason"] for row in payload["measurement_import"]["rejections"]}
+        self.assertIn("host_materialization_in_hot_path_not_rejected", reasons)
+        self.assertIn("candidate_not_found_for_pair_and_plan", reasons)
+        self.assertEqual(payload["claim_classification"], "not_release_ready")
+
     def test_cli_writes_numba_auto_evidence_files(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

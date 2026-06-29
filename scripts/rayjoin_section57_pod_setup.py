@@ -211,6 +211,7 @@ def build_payload(args: argparse.Namespace) -> dict[str, object]:
         author["polyover_exec"] or str(args.author_root / "release" / "bin" / "polyover_exec"),
         "--output-dir",
         str(args.output_dir),
+        "--v4-numba-section57-device-columns-ready",
     ]
     blockers: list[str] = []
     for tool in ("git", "cmake", "nvcc"):

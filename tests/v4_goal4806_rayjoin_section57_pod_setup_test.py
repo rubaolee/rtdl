@@ -49,6 +49,7 @@ class V4Goal4806RayJoinSection57PodSetupTest(unittest.TestCase):
         self.assertIn("missing_exact_section57_cdb_inputs", payload["blockers"])
         self.assertIn("https://github.com/pwrliang/RayJoin", payload["author_repo"]["url"])
         self.assertIn("scripts/rayjoin_section57_pod_runbook.py", payload["next_command"])
+        self.assertIn("--v4-numba-section57-device-columns-ready", payload["next_command"])
 
     def test_setup_recognizes_fake_author_binaries_and_all_eight_input_paths(self) -> None:
         from rtdsl.rayjoin_paper_suite import paper_pairs
@@ -94,6 +95,7 @@ class V4Goal4806RayJoinSection57PodSetupTest(unittest.TestCase):
         self.assertNotIn("missing_exact_section57_cdb_inputs", payload["blockers"])
         self.assertIn(str(bin_dir / "query_exec"), payload["next_command"])
         self.assertIn(str(bin_dir / "polyover_exec"), payload["next_command"])
+        self.assertIn("--v4-numba-section57-device-columns-ready", payload["next_command"])
         self.assertFalse(payload["ready_for_section57_runbook"])
         self.assertIn("Setup readiness is not performance evidence", payload["claim_boundary"])
 

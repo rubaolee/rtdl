@@ -74,6 +74,9 @@ class V4Goal4806RayJoinSection57PodRunbookTest(unittest.TestCase):
                     "county_zipcode",
                     "--implementations",
                     "author_rt,v4_numba",
+                    "--v4-numba-section57-device-columns-ready",
+                    "--v4-numba-measurements",
+                    str(root / "candidate_measurements.json"),
                 ],
                 cwd=ROOT,
                 text=True,
@@ -91,6 +94,13 @@ class V4Goal4806RayJoinSection57PodRunbookTest(unittest.TestCase):
         self.assertTrue(any(row["status"] == "dry_run" for row in run_payload["attempts"]))
         self.assertEqual(summary_payload["coverage"]["overlay_pairs_total"], 1)
         self.assertEqual(summary_payload["coverage"]["overlay_pairs_complete"], 0)
+        run_command = next(
+            row["command"]
+            for row in run_payload["attempts"]
+            if row.get("implementation") == "v4_numba"
+        )
+        self.assertIn("--section57-device-columns-ready", run_command)
+        self.assertIn("--v4-numba-measurements", run_command)
 
 
 if __name__ == "__main__":

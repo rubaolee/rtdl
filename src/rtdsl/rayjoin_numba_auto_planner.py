@@ -18,6 +18,9 @@ from .rayjoin_paper_suite import paper_pairs
 RAYJOIN_SECTION57_NUMBA_AUTO_PLANNER_SCHEMA = (
     "rtdl.v4.rayjoin.section57_numba_auto_primitive_planner.v1"
 )
+RAYJOIN_SECTION57_NUMBA_MEASURED_CANDIDATES_SCHEMA = (
+    "rtdl.v4.rayjoin.section57_numba_measured_candidates.v1"
+)
 RAYJOIN_SECTION57_NUMBA_AUTO_PLAN_STATUS = "candidate_planner_not_release_claim"
 RAYJOIN_SECTION57_NUMBA_PARTNER_SCOPE = (
     "post_traversal_numba_cuda_jit_continuation_on_device_resident_columns"
@@ -371,6 +374,152 @@ def _select_candidate(candidates: Iterable[dict[str, object]], *, select: str) -
     return min(measured, key=lambda row: float(row["measured_total_sec"]))
 
 
+def _positive_float(value: object) -> float | None:
+    if not isinstance(value, (int, float)):
+        return None
+    value = float(value)
+    if value <= 0.0:
+        return None
+    return value
+
+
+def _load_measured_candidate_rows(path: str | Path | None) -> tuple[list[dict[str, object]], dict[str, object]]:
+    if path is None:
+        return [], {
+            "provided": False,
+            "schema": RAYJOIN_SECTION57_NUMBA_MEASURED_CANDIDATES_SCHEMA,
+            "accepted_count": 0,
+            "rejected_count": 0,
+            "rejections": [],
+        }
+    measurement_path = Path(path)
+    try:
+        payload = json.loads(measurement_path.read_text(encoding="utf-8"))
+    except OSError as exc:
+        return [], {
+            "provided": True,
+            "path": str(measurement_path),
+            "schema": RAYJOIN_SECTION57_NUMBA_MEASURED_CANDIDATES_SCHEMA,
+            "accepted_count": 0,
+            "rejected_count": 1,
+            "rejections": [{"reason": "measurement_file_unreadable", "detail": str(exc)}],
+        }
+    if not isinstance(payload, dict):
+        return [], {
+            "provided": True,
+            "path": str(measurement_path),
+            "schema": RAYJOIN_SECTION57_NUMBA_MEASURED_CANDIDATES_SCHEMA,
+            "accepted_count": 0,
+            "rejected_count": 1,
+            "rejections": [{"reason": "measurement_payload_not_object"}],
+        }
+    rows = payload.get("rows")
+    if payload.get("schema") != RAYJOIN_SECTION57_NUMBA_MEASURED_CANDIDATES_SCHEMA or not isinstance(rows, list):
+        return [], {
+            "provided": True,
+            "path": str(measurement_path),
+            "schema": RAYJOIN_SECTION57_NUMBA_MEASURED_CANDIDATES_SCHEMA,
+            "observed_schema": payload.get("schema"),
+            "accepted_count": 0,
+            "rejected_count": 1,
+            "rejections": [{"reason": "measurement_schema_or_rows_invalid"}],
+        }
+    return [row for row in rows if isinstance(row, dict)], {
+        "provided": True,
+        "path": str(measurement_path),
+        "schema": RAYJOIN_SECTION57_NUMBA_MEASURED_CANDIDATES_SCHEMA,
+        "accepted_count": 0,
+        "rejected_count": 0,
+        "rejections": [],
+    }
+
+
+def _measurement_rejection_reason(
+    row: dict[str, object],
+    *,
+    candidate: dict[str, object] | None,
+) -> str | None:
+    if candidate is None:
+        return "candidate_not_found_for_pair_and_plan"
+    if candidate.get("status") != "ready_for_measurement":
+        return "candidate_not_ready_for_measurement"
+    if row.get("correctness_status") != "pass":
+        return "correctness_not_pass"
+    if _positive_float(row.get("measured_total_sec")) is None:
+        return "missing_positive_measured_total_sec"
+    if row.get("measurement_source") != "pod_runtime":
+        return "measurement_source_not_pod_runtime"
+    if row.get("topology_geometry_hash_match") is not True:
+        return "topology_geometry_hash_not_confirmed"
+    if row.get("device_column_route") is not True:
+        return "device_column_route_not_confirmed"
+    if row.get("host_materialization_in_hot_path") is not False:
+        return "host_materialization_in_hot_path_not_rejected"
+    return None
+
+
+def _apply_measured_candidates(
+    candidates: list[dict[str, object]],
+    *,
+    measured_candidates_path: str | Path | None,
+) -> dict[str, object]:
+    rows, summary = _load_measured_candidate_rows(measured_candidates_path)
+    if not rows:
+        return summary
+    by_key = {
+        (candidate.get("pair_id"), candidate.get("plan_id")): candidate
+        for candidate in candidates
+    }
+    accepted_count = 0
+    rejections: list[dict[str, object]] = list(summary.get("rejections", []))
+    for row in rows:
+        key = (row.get("pair_id"), row.get("plan_id"))
+        candidate = by_key.get(key)
+        reason = _measurement_rejection_reason(row, candidate=candidate)
+        if reason is not None:
+            rejections.append(
+                {
+                    "pair_id": row.get("pair_id"),
+                    "plan_id": row.get("plan_id"),
+                    "reason": reason,
+                }
+            )
+            if candidate is not None:
+                candidate.setdefault("measurement_rejections", []).append(reason)
+            continue
+        assert candidate is not None
+        candidate["status"] = "measured"
+        candidate["correctness_status"] = "pass"
+        candidate["skip_reason"] = None
+        candidate["measured_total_sec"] = _positive_float(row.get("measured_total_sec"))
+        candidate["steady_state_sec"] = _positive_float(row.get("steady_state_sec"))
+        compile_jit_sec = row.get("compile_jit_sec")
+        candidate["compile_jit_sec"] = (
+            None
+            if not isinstance(compile_jit_sec, (int, float))
+            else max(0.0, float(compile_jit_sec))
+        )
+        candidate["v4_vs_v2_14_speedup"] = row.get("v4_vs_v2_14_speedup")
+        candidate["measurement_source"] = row.get("measurement_source")
+        candidate["topology_geometry_hash_match"] = True
+        candidate["device_column_route"] = True
+        candidate["host_materialization_in_hot_path"] = False
+        candidate["measurement_artifact"] = {
+            key: row[key]
+            for key in (
+                "v2_14_total_sec",
+                "author_rt_process_sec",
+                "notes",
+            )
+            if key in row
+        }
+        accepted_count += 1
+    summary["accepted_count"] = accepted_count
+    summary["rejected_count"] = len(rejections)
+    summary["rejections"] = rejections
+    return summary
+
+
 def _claim_classification(
     *,
     rows: list[dict[str, object]],
@@ -404,6 +553,7 @@ def section57_polygon_overlay(
     repeat: int = 3,
     check_runtime: bool = True,
     section57_device_columns_ready: bool = False,
+    measured_candidates_path: str | Path | None = None,
 ) -> dict[str, object]:
     """Plan the V4+Numba RayJoin Section 5.7 automatic primitive route.
 
@@ -469,6 +619,10 @@ def section57_polygon_overlay(
                 },
             }
         )
+    measurement_import = _apply_measured_candidates(
+        all_candidates,
+        measured_candidates_path=measured_candidates_path,
+    )
     selected = _select_candidate(all_candidates, select=select)
     payload = {
         "schema": RAYJOIN_SECTION57_NUMBA_AUTO_PLANNER_SCHEMA,
@@ -494,10 +648,19 @@ def section57_polygon_overlay(
         "columns": ("author_code", "v2_14_exact_suite", "v4_numba_selected_plan"),
         "candidate_scoreboard": all_candidates,
         "selected_plan": selected,
+        "measurement_import": measurement_import,
         "selection_policy": {
             "name": select,
             "measured_candidate_required": True,
             "hardcoded_default_allowed": False,
+            "valid_measurement_required": {
+                "schema": RAYJOIN_SECTION57_NUMBA_MEASURED_CANDIDATES_SCHEMA,
+                "measurement_source": "pod_runtime",
+                "correctness_status": "pass",
+                "topology_geometry_hash_match": True,
+                "device_column_route": True,
+                "host_materialization_in_hot_path": False,
+            },
         },
         "rows": rows,
         "claim_classification": _claim_classification(rows=rows, selected_plan=selected),
@@ -563,6 +726,14 @@ def render_section57_numba_auto_markdown(payload: dict[str, object]) -> str:
     lines.extend(
         [
             "",
+            "## Measurement Import",
+            "",
+            "| Field | Value |",
+            "|---|---|",
+            f"| Provided | `{payload['measurement_import'].get('provided')}` |",
+            f"| Accepted rows | `{payload['measurement_import'].get('accepted_count')}` |",
+            f"| Rejected rows | `{payload['measurement_import'].get('rejected_count')}` |",
+            "",
             "## Author / V2.14 / V4 Columns",
             "",
             "| Pair | Author Code | V2.14 Exact Suite | V4+Numba Candidates |",
@@ -591,6 +762,7 @@ def render_section57_numba_auto_markdown(payload: dict[str, object]) -> str:
 
 __all__ = [
     "RAYJOIN_SECTION57_NUMBA_AUTO_PLANNER_SCHEMA",
+    "RAYJOIN_SECTION57_NUMBA_MEASURED_CANDIDATES_SCHEMA",
     "RAYJOIN_SECTION57_NUMBA_AUTO_PLAN_STATUS",
     "RAYJOIN_SECTION57_NUMBA_PARTNER_SCOPE",
     "Section57CandidatePlan",

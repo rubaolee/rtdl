@@ -105,6 +105,10 @@ def _section57_common_args(args: argparse.Namespace) -> list[str]:
         command.append("--assemble-overlay-output")
     if args.v4_numba_skip_runtime_probe:
         command.append("--v4-numba-skip-runtime-probe")
+    if args.v4_numba_measurements:
+        command.extend(["--v4-numba-measurements", str(args.v4_numba_measurements)])
+    if args.v4_numba_section57_device_columns_ready:
+        command.append("--v4-numba-section57-device-columns-ready")
     return command
 
 
@@ -304,6 +308,7 @@ def _section57_preflight_payload(args: argparse.Namespace) -> dict[str, object]:
         str(query_exec or "/workspace/RayJoin_fresh/release/bin/query_exec"),
         "--polyover-exec",
         str(polyover_exec or "/workspace/RayJoin_fresh/release/bin/polyover_exec"),
+        "--v4-numba-section57-device-columns-ready",
         "--author-warmup",
         str(args.author_warmup),
         "--author-repeat",
@@ -384,6 +389,8 @@ def _run_section57_auto_numba(args: argparse.Namespace) -> int:
         warmup=args.rtdl_warmup,
         repeat=args.rtdl_repeat,
         check_runtime=not args.skip_runtime_probe,
+        section57_device_columns_ready=args.section57_device_columns_ready,
+        measured_candidates_path=args.v4_numba_measurements,
     )
     write_section57_numba_auto_evidence(
         payload,
@@ -434,9 +441,24 @@ def main() -> int:
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--skip-runtime-probe", action="store_true", help="Do not probe local Numba CUDA availability.")
     parser.add_argument(
+        "--section57-device-columns-ready",
+        action="store_true",
+        help="Allow Section 5.7 V4+Numba candidates to enter measurement selection when the device-column route is available.",
+    )
+    parser.add_argument(
+        "--v4-numba-measurements",
+        type=Path,
+        help="Import POD-measured V4+Numba candidate timings for --section57-auto-numba or --section57-run.",
+    )
+    parser.add_argument(
         "--v4-numba-skip-runtime-probe",
         action="store_true",
         help="Forwarded to the Section 5.7 matrix runner; useful for planning on non-CUDA machines.",
+    )
+    parser.add_argument(
+        "--v4-numba-section57-device-columns-ready",
+        action="store_true",
+        help="Forwarded to the Section 5.7 matrix runner when the device-column route should be measured.",
     )
     parser.add_argument("--timeout-sec", type=int)
     parser.add_argument("--output-json", type=Path)

@@ -170,6 +170,7 @@ class V4RayJoinSection57PublicEntryTest(unittest.TestCase):
         )
         self.assertTrue(payload["section57_device_columns"]["performance_validation_required_on_pod"])
         self.assertIn("--section57-run", payload["performance_command"])
+        self.assertIn("--v4-numba-section57-device-columns-ready", payload["performance_command"])
 
 
 if __name__ == "__main__":

@@ -165,6 +165,10 @@ def _v4_numba_command(args: argparse.Namespace, case, output_json: Path) -> list
         command.extend(["--polyover-exec", str(args.polyover_exec)])
     if args.v4_numba_skip_runtime_probe:
         command.append("--skip-runtime-probe")
+    if args.v4_numba_section57_device_columns_ready:
+        command.append("--section57-device-columns-ready")
+    if args.v4_numba_measurements is not None:
+        command.extend(["--v4-numba-measurements", str(args.v4_numba_measurements)])
     return command
 
 
@@ -645,6 +649,8 @@ def _add_common(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--assemble-overlay-output", action="store_true")
     parser.add_argument("--v4-numba-select", default="fastest_valid")
     parser.add_argument("--v4-numba-skip-runtime-probe", action="store_true")
+    parser.add_argument("--v4-numba-section57-device-columns-ready", action="store_true")
+    parser.add_argument("--v4-numba-measurements", type=Path)
 
 
 def main() -> None:

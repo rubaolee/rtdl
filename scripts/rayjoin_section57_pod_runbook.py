@@ -60,6 +60,10 @@ def _base_args(args: argparse.Namespace) -> list[str]:
     ]
     if args.pairs:
         command.extend(["--pairs", args.pairs])
+    if args.v4_numba_measurements:
+        command.extend(["--v4-numba-measurements", str(args.v4_numba_measurements)])
+    if args.v4_numba_section57_device_columns_ready:
+        command.append("--v4-numba-section57-device-columns-ready")
     return command
 
 
@@ -134,6 +138,16 @@ def main() -> int:
     parser.add_argument("--author-repeat", type=int, default=5)
     parser.add_argument("--rtdl-warmup", type=int, default=1)
     parser.add_argument("--rtdl-repeat", type=int, default=3)
+    parser.add_argument(
+        "--v4-numba-measurements",
+        type=Path,
+        help="POD-measured V4+Numba candidate timing file to import into the matrix.",
+    )
+    parser.add_argument(
+        "--v4-numba-section57-device-columns-ready",
+        action="store_true",
+        help="Pass through when the Section 5.7 device-column route should enter measurement selection.",
+    )
     parser.add_argument("--preflight-only", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--allow-missing-inputs", action="store_true")
