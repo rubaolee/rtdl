@@ -101,6 +101,56 @@ class V4Goal4806RayJoinSection57PodRunbookTest(unittest.TestCase):
         )
         self.assertIn("--section57-device-columns-ready", run_command)
         self.assertIn("--v4-numba-measurements", run_command)
+        self.assertTrue(
+            any(
+                row.get("step") == "candidate_probe"
+                and row.get("status") == "skipped_existing_v4_numba_measurements"
+                for row in payload["steps"]
+            )
+        )
+
+    def test_dry_run_generates_default_candidate_measurement_file_when_missing(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            output_dir = root / "out"
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    "scripts/rayjoin_section57_pod_runbook.py",
+                    "--dry-run",
+                    "--dataset-root",
+                    str(root / "missing_inputs"),
+                    "--query-exec",
+                    str(root / "missing_author" / "query_exec"),
+                    "--polyover-exec",
+                    str(root / "missing_author" / "polyover_exec"),
+                    "--output-dir",
+                    str(output_dir),
+                    "--pairs",
+                    "county_zipcode",
+                    "--implementations",
+                    "v4_numba",
+                    "--v4-numba-section57-device-columns-ready",
+                ],
+                cwd=ROOT,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=True,
+            )
+            payload = json.loads(completed.stdout)
+            measurements = json.loads(
+                (output_dir / "section57_v4_numba_candidate_measurements.json").read_text(encoding="utf-8")
+            )
+
+        self.assertEqual(payload["status"], "dry_run_complete")
+        self.assertTrue(any(row.get("step") == "candidate_probe" for row in payload["steps"]))
+        self.assertEqual(measurements["schema"], "rtdl.v4.rayjoin.section57_numba_measured_candidates.v1")
+        self.assertEqual(measurements["status"], "dry_run")
+        self.assertIn(
+            "section57_v4_numba_candidate_measurements.json",
+            payload["artifacts"]["v4_numba_candidate_measurements_json"],
+        )
 
 
 if __name__ == "__main__":

@@ -71,10 +71,15 @@ def _entry_command(args: argparse.Namespace, mode: str, *extra: str) -> list[str
     return [sys.executable, str(RAYJOIN_ENTRY), mode, *_base_args(args), *extra]
 
 
-def build_commands(args: argparse.Namespace) -> dict[str, list[str]]:
+def build_commands(args: argparse.Namespace) -> dict[str, list[str] | None]:
     preflight_json = args.output_dir / "section57_preflight.json"
     plan_json = args.output_dir / "section57_overlay_plan.json"
     plan_md = args.output_dir / "section57_overlay_plan.md"
+    supplied_candidate_measurements = args.v4_numba_measurements is not None
+    candidate_measurements_json = args.v4_numba_measurements or (
+        args.output_dir / "section57_v4_numba_candidate_measurements.json"
+    )
+    args.v4_numba_measurements = candidate_measurements_json
     run_json = args.output_dir / "section57_overlay_run.json"
     summary_json = args.output_dir / "section57_overlay_summary.json"
     summary_md = args.output_dir / "section57_overlay_summary.md"
@@ -99,6 +104,26 @@ def build_commands(args: argparse.Namespace) -> dict[str, list[str]]:
         run_extra.append("--dry-run")
     if args.allow_missing_inputs or args.dry_run:
         run_extra.append("--allow-missing-inputs")
+    candidate_probe = None
+    if not supplied_candidate_measurements:
+        candidate_probe = [
+            sys.executable,
+            str(ROOT / "scripts" / "rayjoin_section57_numba_candidate_probe.py"),
+            "--dataset-root",
+            str(args.dataset_root),
+            "--output-json",
+            str(candidate_measurements_json),
+            "--warmup",
+            str(args.rtdl_warmup),
+            "--repeat",
+            str(args.rtdl_repeat),
+        ]
+        if args.pairs:
+            candidate_probe.extend(["--pairs", args.pairs])
+        if args.dry_run:
+            candidate_probe.append("--dry-run")
+        if args.v4_numba_topology_geometry_hash_match_confirmed:
+            candidate_probe.append("--topology-geometry-hash-match-confirmed")
     return {
         "preflight": _entry_command(
             args,
@@ -108,6 +133,7 @@ def build_commands(args: argparse.Namespace) -> dict[str, list[str]]:
             "--json",
         ),
         "plan": plan_command,
+        "candidate_probe": candidate_probe,
         "run": _entry_command(args, "--section57-run", *run_extra),
         "summary": _entry_command(
             args,
@@ -147,6 +173,11 @@ def main() -> int:
         "--v4-numba-section57-device-columns-ready",
         action="store_true",
         help="Pass through when the Section 5.7 device-column route should enter measurement selection.",
+    )
+    parser.add_argument(
+        "--v4-numba-topology-geometry-hash-match-confirmed",
+        action="store_true",
+        help="Forward only after independent full-overlay correctness comparison is available.",
     )
     parser.add_argument("--preflight-only", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
@@ -188,9 +219,18 @@ def main() -> int:
         exit_code = 2
         status = "blocked_before_performance_run"
     else:
-        for name in ("plan", "run"):
+        for name in ("plan", "candidate_probe", "run"):
+            command = commands[name]
+            if command is None:
+                steps.append(
+                    {
+                        "step": name,
+                        "status": "skipped_existing_v4_numba_measurements",
+                    }
+                )
+                continue
             completed = subprocess.run(
-                commands[name],
+                command,
                 cwd=ROOT,
                 text=True,
                 stdout=subprocess.PIPE,
@@ -204,7 +244,7 @@ def main() -> int:
                 {
                     "step": name,
                     "returncode": completed.returncode,
-                    "command": commands[name],
+                    "command": command,
                     "stdout_path": str(stdout_path),
                     "stderr_path": str(stderr_path),
                 }
@@ -234,6 +274,7 @@ def main() -> int:
             "run_json": str(args.output_dir / "section57_overlay_run.json"),
             "summary_json": str(args.output_dir / "section57_overlay_summary.json"),
             "summary_md": str(args.output_dir / "section57_overlay_summary.md"),
+            "v4_numba_candidate_measurements_json": str(args.v4_numba_measurements),
         },
         "claim_boundary": (
             "This runbook is execution plumbing. A release claim requires the "
