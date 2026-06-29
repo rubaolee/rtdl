@@ -19,6 +19,8 @@ Included evidence:
 - `section57_same_source_cdb_tree.json`
 - `section57_same_source_county_zipcode_preflight.json`
 - `section57_overlay_county_zipcode_author_rt_iter0.json`
+- `section57_author_direct_output_debug.stderr.txt`
+- `section57_author_direct_output_debug.manifest.txt`
 - `section57_overlay_county_zipcode_rtdl_optix_retry_fixed.json`
 - `section57_overlay_county_zipcode_rtdl_optix_after_midpoint_fix.json`
 - `section57_overlay_county_zipcode_rtdl_optix_after_midpoint_fix.overlay_optix.digest.txt`
@@ -156,8 +158,16 @@ This is a real full-output RTDL run on serious same-source data, not a toy run. 
 
 Author output-mode boundary:
 
-- The author `polyover_exec -output` run on the same-source CDB failed after `20.602055735886097 sec` with `SIGABRT`.
-- Therefore the current evidence does not establish output equality against author output on this regenerated input. It establishes that RTDL can produce a large full overlay output where the author output-mode executable aborts on this input.
+- The first author `run-author --overlay-output` wrapper attempt failed after `20.602055735886097 sec` with `SIGABRT`.
+- A direct `polyover_exec -output` run on the same-source CDB later completed and produced an overlay file:
+  - size: `2390767769` bytes
+  - author-reported total chains: `29254027`
+  - author-reported total faces: `115490`
+  - author-reported write time: `132119 ms`
+- RTDL output differs on the same regenerated input:
+  - RTDL output chains: `29253799`
+  - RTDL face count: `119729`
+- Therefore output equality against author output is not established. The current evidence now exposes a real full-output correctness gap rather than an author-output availability gap.
 
 ## Result: V4 + Numba
 
@@ -319,7 +329,7 @@ This stack successfully ran a minimal Numba CUDA kernel on the POD when the CUDA
 1. Exact RayJoin paper preprocessed CDB inputs are not available from the public Dryad share.
 2. Same-source regenerated CDB is serious and useful, but it is not the exact paper input.
 3. RTDL OptiX compute runs and is much faster than the author run on this same-source input, but the author timing is dominated by CDB read time and RTDL used a packed cache path.
-4. RTDL now produces a full overlay output on this same-source run, but output equality against author output has not been established because the author `polyover_exec -output` path aborts on the same regenerated input.
+4. RTDL and direct author output both produce full overlay files on this same-source run, but they disagree in output chain and face counts (`29253799/119729` for RTDL versus `29254027/115490` for author).
 5. V4+Numba now has a valid exact RayJoin LSI device-column primitive with ids and finite intersection x/y plus a Numba stream digest, but it has not yet produced a full overlay output/topology digest for end-to-end author/V2.14 comparison.
 6. Older segment-pair count surfaces still disagree across contracts on this same-source run:
    - RTDL overlay emitted rows: `965844`

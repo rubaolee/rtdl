@@ -1,0 +1,73 @@
+I20260629 04:57:11.994923 17173 run_overlay.cu:148] Reading map 0 from /workspace/rayjoin_section57_same_source_cdb/point_cdb/dtl_cnty/dtl_cnty_Point.cdb
+I20260629 04:57:16.504067 17173 planar_graph.h:215] Map /dev/shm/-workspace-rayjoin_section57_same_source_cdb-point_cdb-dtl_cnty-dtl_cnty_Point.cdb.bin is deserialized, chains: 8662896 points: 17325792 edges: 8662896
+I20260629 04:57:16.504329 17173 run_overlay.cu:152] Reading map 1 from /workspace/rayjoin_section57_same_source_cdb/point_cdb/USAZIPCodeArea/USAZIPCodeArea_Point.cdb
+I20260629 04:57:28.235991 17173 planar_graph.h:215] Map /dev/shm/-workspace-rayjoin_section57_same_source_cdb-point_cdb-USAZIPCodeArea-USAZIPCodeArea_Point.cdb.bin is deserialized, chains: 23931046 points: 47862092 edges: 23931046
+I20260629 04:57:28.236313 17173 context.h:51] Bounding Box, Bottom-left: (-179.149, -14.5487), Top-right: (179.778, 71.3905)
+I20260629 04:57:28.236495 17173 context.h:58] Scaled Bounding Box, Bottom-left: (-69978811192544, -68768348336382), Top-right: (69978811192543, 68768348336381)
+I20260629 04:57:28.236639 17173 context.h:61] Unscaled Bounding Box, Bottom-left: (-179.149, -14.5487), Top-right: (179.778, 71.3905)
+I20260629 04:57:29.142684 17173 rt_engine.cu:282] Info: Pipeline statistics
+	module(s)                            :     1
+	entry function(s)                    :     2
+	trace call(s)                        :     1
+	continuation callable call(s)        :     0
+	direct callable call(s)              :     0
+	basic block(s) in entry functions    :    23
+	instruction(s) in entry functions    :   646
+	non-entry function(s)                :     1
+	basic block(s) in non-entry functions:     1
+	instruction(s) in non-entry functions:     1
+	debug information                    :    no
+I20260629 04:57:29.163844 17173 rt_engine.cu:282] Info: Pipeline statistics
+	module(s)                            :     1
+	entry function(s)                    :     2
+	trace call(s)                        :     1
+	continuation callable call(s)        :     0
+	direct callable call(s)              :     0
+	basic block(s) in entry functions    :    51
+	instruction(s) in entry functions    :   775
+	non-entry function(s)                :     1
+	basic block(s) in non-entry functions:     1
+	instruction(s) in non-entry functions:     1
+	debug information                    :    no
+I20260629 04:57:29.164278 17173 lsi.h:22] Queue size: 149 MB
+I20260629 04:57:29.173882 17173 primitive.h:256] Enlarge limit: 3.5 max iter:5 ne: 8662896 aabbs: 1233757 Compress ratio: 0.857581 Time: 7.231 ms
+I20260629 04:57:29.174242 17173 rt_engine.cu:397] Building AS, num prims: 1233757, Required Temp Size: 93960576 Output Size: 46161664
+I20260629 04:57:29.202637 17173 primitive.h:256] Enlarge limit: 3.5 max iter:5 ne: 23931046 aabbs: 3380340 Compress ratio: 0.858747 Time: 20.629 ms
+I20260629 04:57:29.202844 17173 rt_engine.cu:397] Building AS, num prims: 3380340, Required Temp Size: 257436288 Output Size: 126474496
+I20260629 04:57:29.221630 17173 lsi_rt.h:50] queries: 8662896
+I20260629 04:57:29.221860 17173 rt_engine.h:159] Parm size: 176
+I20260629 04:57:29.222035 17173 rt_engine.cu:554] optixLaunch, [w,h,d] = 8662896,1,1
+I20260629 04:57:29.239866 17173 rt_engine.h:159] Parm size: 152
+I20260629 04:57:29.240037 17173 rt_engine.cu:554] optixLaunch, [w,h,d] = 17325792,1,1
+I20260629 04:57:29.270009 17173 rt_engine.h:159] Parm size: 152
+I20260629 04:57:29.270180 17173 rt_engine.cu:554] optixLaunch, [w,h,d] = 47862092,1,1
+I20260629 04:57:29.369655 17173 rt_engine.h:159] Parm size: 152
+I20260629 04:57:29.369848 17173 rt_engine.cu:554] optixLaunch, [w,h,d] = 123082,1,1
+I20260629 04:57:29.418885 17173 rt_engine.h:159] Parm size: 152
+I20260629 04:57:29.419070 17173 rt_engine.cu:554] optixLaunch, [w,h,d] = 141510,1,1
+I20260629 04:57:29.845738 17173 output_chain.h:91] Map 0, Xsect: 965844 842762
+I20260629 04:57:32.685081 17173 output_chain.h:91] Map 1, Xsect: 965844 824334
+I20260629 04:58:01.059636 17173 output_chain.h:199] Total chains: 29254027 Total faces: 115490
+Timing results:
+ - Read map 0: 4509.42 ms
+
+ - Read map 1: 11731.9 ms
+
+ - Create App: 4.71711 ms
+
+ - Load Data: 346.085 ms
+
+ - Init: 579.568 ms
+
+ - Build Index: 54.9879 ms
+
+ - Intersection edges: 17.858 ms
+
+ - Map 0: Locate vertices in other map: 29.64 ms
+
+ - Map 1: Locate vertices in other map: 53.1571 ms
+
+ - Computer output polygons: 99.3621 ms
+
+ - Write to file: 132119 ms
+

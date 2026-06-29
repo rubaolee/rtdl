@@ -1,0 +1,9 @@
+remote_path: /workspace/rtdl_goal4806_fast_min/artifacts/section57_author_output_debug/author_overlay_debug.overlay.txt
+size_bytes: 2390767769
+first_header_line: 1 2 0 1 1 2
+first_coordinate_line: -86.439632 32.708213
+author_reported_total_chains: 29254027
+author_reported_total_faces: 115490
+author_reported_write_to_file_ms: 132119
+sha256: not_recorded_remote_io_too_slow_after_107s_at_0.5_percent_cpu
+note: Direct polyover_exec -output completed and produced an overlay file. The earlier Python wrapper run recorded a SIGABRT, so wrapper failure is not a valid statement about direct author output availability.
