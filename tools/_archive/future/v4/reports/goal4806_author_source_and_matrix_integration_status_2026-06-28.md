@@ -139,6 +139,12 @@ are not present. It is not a performance result.
 
 ## Preflight Evidence
 
+New setup artifact:
+
+```text
+tools/_archive/future/v4/evidence/goal4806_section57_pod_setup_2026-06-28.json
+```
+
 New preflight artifact:
 
 ```text
@@ -148,6 +154,7 @@ tools/_archive/future/v4/evidence/goal4806_section57_preflight_2026-06-28.json
 Observed local blockers:
 
 ```text
+missing_author_source
 missing_exact_section57_cdb_inputs
 missing_rayjoin_author_binaries
 rt_core_gpu_not_detected
@@ -189,10 +196,12 @@ src/rtdsl/rayjoin_numba_auto_planner.py
 The POD runbook now wraps the full preflight/plan/run sequence:
 
 ```text
+scripts/rayjoin_section57_pod_setup.py
 scripts/rayjoin_section57_pod_runbook.py
 ```
 
-It writes:
+The setup script reports author-source build dependencies, exact input coverage,
+author binary presence, and the next runbook command. The runbook writes:
 
 ```text
 section57_pod_runbook.json
@@ -227,6 +236,7 @@ Tests run:
 ```bash
 py -3 -m unittest \
 tests.v4_goal4806_rayjoin_section57_pod_runbook_test \
+tests.v4_goal4806_rayjoin_section57_pod_setup_test \
 tests.goal4374_rayjoin_exact_paper_suite_test \
 tests.v4_rayjoin_section57_public_entry_test \
 tests.v4_goal4806_rayjoin_numba_auto_planner_test
@@ -235,7 +245,7 @@ tests.v4_goal4806_rayjoin_numba_auto_planner_test
 Result:
 
 ```text
-Ran 36 tests in 22.891s
+Ran 15 focused setup/runbook/planner tests in 24.281s
 OK
 ```
 
@@ -267,6 +277,12 @@ OK
 On an RT-core pod with exact inputs and author binaries:
 
 ```bash
+python3 scripts/rayjoin_section57_pod_setup.py \
+  --author-root /workspace/RayJoin_fresh \
+  --dataset-root /path/to/rayjoin_section57_cdb \
+  --output-dir /path/to/goal4806_section57_full_run \
+  --output-json /path/to/goal4806_section57_full_run/section57_pod_setup.json
+
 python3 scripts/rayjoin_section57_pod_runbook.py \
   --dataset-root /path/to/rayjoin_section57_cdb \
   --query-exec /path/to/query_exec \

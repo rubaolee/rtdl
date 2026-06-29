@@ -17,6 +17,7 @@ Relevant commits:
 2ac5bb4a9 Tighten Goal4806 device-column measurement gate
 <pending> Add Section 5.7 preflight and static device-column component audit
 <pending> Add Goal4806 POD runbook wrapper
+<pending> Add Section 5.7 POD setup preflight
 ```
 
 ## Context
@@ -87,21 +88,27 @@ still required before correctness/performance evidence exists.
 The POD execution entrypoint is now:
 
 ```bash
+python3 scripts/rayjoin_section57_pod_setup.py --author-root /workspace/RayJoin_fresh --dataset-root /path/to/rayjoin_section57_cdb --output-dir /path/to/goal4806_section57_full_run --output-json /path/to/goal4806_section57_full_run/section57_pod_setup.json
+
 python3 scripts/rayjoin_section57_pod_runbook.py --dataset-root /path/to/rayjoin_section57_cdb --query-exec /path/to/query_exec --polyover-exec /path/to/polyover_exec --output-dir /path/to/goal4806_section57_full_run
 ```
 
-It always runs preflight first, writes machine-readable artifacts, refuses a
-real performance run when preflight is blocked, and supports `--preflight-only`
-or `--dry-run` for non-POD validation.
+The setup script checks author-source build dependencies, exact input coverage,
+author binary presence, RT-core GPU visibility, and emits the next runbook
+command. The runbook always runs preflight first, writes machine-readable
+artifacts, refuses a real performance run when preflight is blocked, and
+supports `--preflight-only` or `--dry-run` for non-POD validation.
 
 ## Files To Inspect
 
 ```text
 src/rtdsl/rayjoin_numba_auto_planner.py
 scripts/rayjoin_section57_overlay_matrix.py
+scripts/rayjoin_section57_pod_setup.py
 scripts/rayjoin_section57_pod_runbook.py
 examples/paper_reproduction/rayjoin.py
 tests/v4_goal4806_rayjoin_numba_auto_planner_test.py
+tests/v4_goal4806_rayjoin_section57_pod_setup_test.py
 tests/v4_goal4806_rayjoin_section57_pod_runbook_test.py
 tests/v4_rayjoin_section57_public_entry_test.py
 tests/goal4374_rayjoin_exact_paper_suite_test.py
@@ -140,6 +147,7 @@ Focused Windows retest after the preflight/static-component update:
 ```bash
 py -3 -m unittest \
   tests.v4_goal4806_rayjoin_section57_pod_runbook_test \
+  tests.v4_goal4806_rayjoin_section57_pod_setup_test \
   tests.v4_rayjoin_section57_public_entry_test \
   tests.v4_goal4806_rayjoin_numba_auto_planner_test \
   tests.goal4374_rayjoin_exact_paper_suite_test
@@ -148,7 +156,7 @@ py -3 -m unittest \
 Result:
 
 ```text
-Ran 36 tests in 22.891s
+Ran 15 focused setup/runbook/planner tests in 24.281s
 OK
 ```
 
@@ -181,8 +189,10 @@ OK
 6. Is the preflight surface the right next handoff point for POD execution?
 7. Does the POD runbook correctly refuse real performance runs when preflight
    is blocked while still allowing dry-run command validation?
-8. Are the docs and evidence honest that Goal4806 is still not complete?
-9. What is the next required engineering step to make Goal4806 measurable?
+8. Does the setup preflight report missing author source/binaries, dependencies,
+   exact CDB coverage, and RT-core GPU state without claiming performance?
+9. Are the docs and evidence honest that Goal4806 is still not complete?
+10. What is the next required engineering step to make Goal4806 measurable?
 
 ## Non-Authorization
 

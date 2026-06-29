@@ -1,0 +1,203 @@
+{
+  "author": {
+    "binaries_ready": false,
+    "exists": false,
+    "git_commit": null,
+    "known_probe_commit": "02bf6220d6d20b04af77ee20364eced75cc029c9",
+    "polyover_exec": null,
+    "polyover_exec_exists": false,
+    "query_exec": null,
+    "query_exec_exists": false,
+    "root": "C:\\missing\\RayJoin_fresh"
+  },
+  "author_repo": {
+    "build_command": [
+      "cmake",
+      "--build",
+      "C:\\missing\\RayJoin_fresh\\release",
+      "-j",
+      "8"
+    ],
+    "clone_command": [
+      "git",
+      "clone",
+      "https://github.com/pwrliang/RayJoin",
+      "C:\\missing\\RayJoin_fresh"
+    ],
+    "configure_command": [
+      "cmake",
+      "-S",
+      "C:\\missing\\RayJoin_fresh",
+      "-B",
+      "C:\\missing\\RayJoin_fresh\\release",
+      "-DCMAKE_BUILD_TYPE=Release"
+    ],
+    "known_probe_commit": "02bf6220d6d20b04af77ee20364eced75cc029c9",
+    "url": "https://github.com/pwrliang/RayJoin"
+  },
+  "blockers": [
+    "missing_tool_nvcc",
+    "missing_pkg_config_glog",
+    "missing_pkg_config_gflags",
+    "missing_optix_headers",
+    "rt_core_gpu_not_detected",
+    "missing_author_source",
+    "missing_author_binaries",
+    "missing_exact_section57_cdb_inputs"
+  ],
+  "claim_boundary": "Setup readiness is not performance evidence. It only reports whether the author code, exact inputs, and POD runtime look ready for the Section 5.7 runbook.",
+  "dataset": {
+    "all_overlay_pairs_ready": false,
+    "overlay_pairs_ready": 0,
+    "overlay_pairs_total": 8,
+    "preprocessed_share_url": "https://datadryad.org/stash/share/aIs0nLs2TsLE_dcWO2qPHiohRKoOI3kx0WGT5BnATtA",
+    "root": "data\\rayjoin_section57_cdb",
+    "rows": [
+      {
+        "blocker": "missing exact CDB input(s): point_cdb/dtl_cnty/dtl_cnty_Point.cdb, point_cdb/USAZIPCodeArea/USAZIPCodeArea_Point.cdb",
+        "exact_input_ready": false,
+        "left_path": "data\\rayjoin_section57_cdb\\point_cdb\\dtl_cnty\\dtl_cnty_Point.cdb",
+        "pair_id": "county_zipcode",
+        "paper_label": "County x Zipcode",
+        "right_path": "data\\rayjoin_section57_cdb\\point_cdb\\USAZIPCodeArea\\USAZIPCodeArea_Point.cdb"
+      },
+      {
+        "blocker": "missing exact CDB input(s): point_cdb/USACensusBlockGroupBoundaries/USACensusBlockGroupBoundaries_Point.cdb, point_cdb/USADetailedWaterBodies/USADetailedWaterBodies_Point.cdb",
+        "exact_input_ready": false,
+        "left_path": "data\\rayjoin_section57_cdb\\point_cdb\\USACensusBlockGroupBoundaries\\USACensusBlockGroupBoundaries_Point.cdb",
+        "pair_id": "block_water",
+        "paper_label": "Block x Water",
+        "right_path": "data\\rayjoin_section57_cdb\\point_cdb\\USADetailedWaterBodies\\USADetailedWaterBodies_Point.cdb"
+      },
+      {
+        "blocker": "missing exact CDB input(s): point_cdb/lakes/Africa/lakes_Africa_Point.cdb, point_cdb/parks/Africa/parks_Africa_Point.cdb",
+        "exact_input_ready": false,
+        "left_path": "data\\rayjoin_section57_cdb\\point_cdb\\lakes\\Africa\\lakes_Africa_Point.cdb",
+        "pair_id": "lkaf_pkaf",
+        "paper_label": "LKAF x PKAF",
+        "right_path": "data\\rayjoin_section57_cdb\\point_cdb\\parks\\Africa\\parks_Africa_Point.cdb"
+      },
+      {
+        "blocker": "missing exact CDB input(s): point_cdb/lakes/Asia/lakes_Asia_Point.cdb, point_cdb/parks/Asia/parks_Asia_Point.cdb",
+        "exact_input_ready": false,
+        "left_path": "data\\rayjoin_section57_cdb\\point_cdb\\lakes\\Asia\\lakes_Asia_Point.cdb",
+        "pair_id": "lkas_pkas",
+        "paper_label": "LKAS x PKAS",
+        "right_path": "data\\rayjoin_section57_cdb\\point_cdb\\parks\\Asia\\parks_Asia_Point.cdb"
+      },
+      {
+        "blocker": "missing exact CDB input(s): point_cdb/lakes/Australia/lakes_Australia_Point.cdb, point_cdb/parks/Australia/parks_Australia_Point.cdb",
+        "exact_input_ready": false,
+        "left_path": "data\\rayjoin_section57_cdb\\point_cdb\\lakes\\Australia\\lakes_Australia_Point.cdb",
+        "pair_id": "lkau_pkau",
+        "paper_label": "LKAU x PKAU",
+        "right_path": "data\\rayjoin_section57_cdb\\point_cdb\\parks\\Australia\\parks_Australia_Point.cdb"
+      },
+      {
+        "blocker": "missing exact CDB input(s): point_cdb/lakes/Europe/lakes_Europe_Point.cdb, point_cdb/parks/Europe/parks_Europe_Point.cdb",
+        "exact_input_ready": false,
+        "left_path": "data\\rayjoin_section57_cdb\\point_cdb\\lakes\\Europe\\lakes_Europe_Point.cdb",
+        "pair_id": "lkeu_pkeu",
+        "paper_label": "LKEU x PKEU",
+        "right_path": "data\\rayjoin_section57_cdb\\point_cdb\\parks\\Europe\\parks_Europe_Point.cdb"
+      },
+      {
+        "blocker": "missing exact CDB input(s): point_cdb/lakes/North_America/lakes_North_America_Point.cdb, point_cdb/parks/North_America/parks_North_America_Point.cdb",
+        "exact_input_ready": false,
+        "left_path": "data\\rayjoin_section57_cdb\\point_cdb\\lakes\\North_America\\lakes_North_America_Point.cdb",
+        "pair_id": "lkna_pkna",
+        "paper_label": "LKNA x PKNA",
+        "right_path": "data\\rayjoin_section57_cdb\\point_cdb\\parks\\North_America\\parks_North_America_Point.cdb"
+      },
+      {
+        "blocker": "missing exact CDB input(s): point_cdb/lakes/South_America/lakes_South_America_Point.cdb, point_cdb/parks/South_America/parks_South_America_Point.cdb",
+        "exact_input_ready": false,
+        "left_path": "data\\rayjoin_section57_cdb\\point_cdb\\lakes\\South_America\\lakes_South_America_Point.cdb",
+        "pair_id": "lksa_pksa",
+        "paper_label": "LKSA x PKSA",
+        "right_path": "data\\rayjoin_section57_cdb\\point_cdb\\parks\\South_America\\parks_South_America_Point.cdb"
+      }
+    ]
+  },
+  "gpu": {
+    "gpu_names": [],
+    "nvidia_smi_available": false,
+    "rt_core_likely": false
+  },
+  "next_command": [
+    "python3",
+    "scripts/rayjoin_section57_pod_runbook.py",
+    "--dataset-root",
+    "data\\rayjoin_section57_cdb",
+    "--query-exec",
+    "C:\\missing\\RayJoin_fresh\\release\\bin\\query_exec",
+    "--polyover-exec",
+    "C:\\missing\\RayJoin_fresh\\release\\bin\\polyover_exec",
+    "--output-dir",
+    "artifacts\\rayjoin_section57"
+  ],
+  "optix": {
+    "available": false,
+    "candidates": [],
+    "env_checked": [
+      "OPTIX_ROOT",
+      "OptiX_INSTALL_DIR",
+      "NVIDIA_OPTIX_SDK",
+      "OPTIX_SDK_DIR"
+    ]
+  },
+  "packages": {
+    "gflags": {
+      "available": false,
+      "name": "gflags",
+      "probe": "pkg-config unavailable"
+    },
+    "glog": {
+      "available": false,
+      "name": "libglog",
+      "probe": "pkg-config unavailable"
+    }
+  },
+  "ready_for_section57_runbook": false,
+  "schema": "rtdl.rayjoin.section57_pod_setup.v1",
+  "tools": {
+    "cmake": {
+      "available": true,
+      "name": "cmake",
+      "path": "C:\\Program Files\\CMake\\bin\\cmake.EXE",
+      "version_probe": {
+        "available": true,
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "cmake version 4.3.1\n\nCMake suite maintained and supported by Kitware (kitware.com/cmake)."
+      }
+    },
+    "git": {
+      "available": true,
+      "name": "git",
+      "path": "C:\\Program Files\\Git\\cmd\\git.EXE",
+      "version_probe": {
+        "available": true,
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "git version 2.53.0.windows.2"
+      }
+    },
+    "nvcc": {
+      "available": false,
+      "name": "nvcc",
+      "path": null
+    },
+    "python": {
+      "available": true,
+      "name": "python3",
+      "path": "C:\\Users\\Lestat\\AppData\\Local\\Microsoft\\WindowsApps\\python3.EXE",
+      "version_probe": {
+        "available": false,
+        "returncode": 9009,
+        "stderr": "Python was not found; run without arguments to install from the Microsoft Store, or disable this shortcut from Settings > Apps > Advanced app settings > App execution aliases.",
+        "stdout": ""
+      }
+    }
+  }
+}
