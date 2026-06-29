@@ -551,6 +551,14 @@ class Goal4374RayjoinExactPaperSuiteTest(unittest.TestCase):
         self.assertEqual(len(owners), 1)
         self.assertEqual(scaled_midpoints, [(200.0, 200.0)])
 
+    def test_native_scaled_point_location_keeps_integral_points_on_exact_path(self) -> None:
+        native = (ROOT / "src" / "native" / "optix" / "rtdl_optix_workloads.cpp").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn("integral_scaled_point", native)
+        self.assertIn("has_fractional_scaled = integral_scaled_point ? 0u : 1u", native)
+
     def test_large_point_location_stream_auto_uses_generic_adaptive_grouping(self) -> None:
         from rtdsl.rayjoin_overlay import _directed_segment_point_location_grouping_env
 

@@ -193,16 +193,17 @@ RTDL repair sequence:
 | scaled-rational intersection plus scaled-space midpoint generation | `29,253,843` | `119,708` | map0 `0`, map1 `0` | line `30,783` | did not remove the remaining first mismatch; the first difference is now a face-id/header mismatch, not a coordinate mismatch |
 | native fractional scaled midpoint PIP | `29,253,843` | `119,709` | map0 `0`, map1 `0` | line `30,733` | changed the midpoint PIP input contract from world-double packed points to `rayjoin_scaled_fractional_point_coordinates`; proved the V4 path can keep author-style internal midpoint coordinates through native point-location, but full output equality still fails |
 | scaled internal-distance sort hypothesis | `29,253,843` | `119,709` | map0 `0`, map1 `0` | line `30,733` | falsified; counts and first diff did not move, and `lsi_row_sort_sec` worsened from about `2.54s` to `6.09s`; this experiment was reverted and is not part of the retained implementation |
+| integral scaled midpoint exact-path repair | `29,253,851` | `119,714` | map0 `0`, map1 `0` | line `30,783` | fixed a real native bug: scaled midpoint points whose scaled coordinates are exactly integral must reuse the exact integer PIP path instead of the double fractional path; moved the first diff from the zero-length chain at line `30,733` back to the next fractional-boundary face-id mismatch |
 
-The first remaining mismatch after the retained fractional-scaled midpoint probe is:
+The first remaining mismatch after the retained integral scaled midpoint repair is:
 
 ```text
-line 30733
-author: 10245 1 10793 10793 68 70
-RTDL:   10245 1 10793 10793 66 71
+line 30783
+author: 10262 2 10809 10810 66 71
+RTDL:   10262 2 10809 10810 72 73
 ```
 
-The coordinate line immediately around this chain still matches at six printed decimals, and the mismatch is a one-point/zero-length output-chain header. That narrows the remaining issue: the LSI coordinate path and scaled midpoint path are much closer to author semantics, but RTDL's point-location/face-id or zero-length-chain inheritance semantics still diverge from author code on at least one boundary/tie case.
+The two following coordinate lines still match at six printed decimals. The earlier zero-length-chain mismatch at line `30,733` was fixed by keeping integral scaled midpoint points on the exact integer path. The current remaining issue is a fractional-boundary face-id mismatch, not a coordinate mismatch and not the previously fixed integral-point problem.
 
 The scaled-rational and fractional-scaled midpoint probes are useful progress, not completion. They moved the first mismatch from the first few output chains to a much later face-id divergence and removed non-finite midpoint loss, but they did not establish full output equality.
 
@@ -215,6 +216,7 @@ Retained implementation changes:
 - Python wrapper: `PreparedOptixRayjoinCdbPointLocation2D.run_scaled_raw(...)`.
 - Overlay assembly route: `_midpoints_for_sorted_xsects(...)` now carries scaled midpoint coordinates when the LSI row includes RayJoin scaled intersection columns, and the OptiX output path uses `faces_scaled(...)`.
 - Runtime telemetry marks this path as `mode: scaled_rows` with `point_input_contract: rayjoin_scaled_fractional_point_coordinates`.
+- Integral scaled query points in the scaled midpoint route now keep `has_fractional_scaled = 0`, so they reuse the exact integer scaled PIP predicate. Only genuinely fractional scaled midpoints take the double fractional branch.
 
 POD validation:
 
@@ -243,6 +245,41 @@ Full same-source County x Zipcode run after this repair:
   - RTDL line count: `87,757,769`
   - `cmp_exit`: `1`
   - first difference: byte `655866`, line `30733`
+
+Full same-source County x Zipcode run after the integral-scaled exact-path repair:
+
+- remote JSON: `/workspace/rtdl_goal4806_fast_min/artifacts/section57_same_source_county_zipcode_output_digest_after_integral_scaled_midpoints/section57_overlay_county_zipcode_rtdl_optix_after_integral_scaled_midpoints.json`
+- remote overlay: `/workspace/rtdl_goal4806_fast_min/artifacts/section57_same_source_county_zipcode_output_digest_after_integral_scaled_midpoints/section57_overlay_county_zipcode_rtdl_optix_after_integral_scaled_midpoints.overlay_optix.txt`
+- total: `406.01843375712633 sec`
+- compute without load/pack: `351.27596055716276 sec`
+- load/pack: `54.74247319996357 sec`
+- output chains: `29,253,851`
+- face count: `119,714`
+- midpoint PIP:
+  - map0 midpoints: `123,082`
+  - map1 midpoints: `141,510`
+  - non-finite midpoint drops: `0` / `0`
+  - map0 native midpoint mode: `scaled_rows`, `hot_call_sec 0.21595177054405212`
+  - map1 native midpoint mode: `scaled_rows`, `hot_call_sec 0.230206698179245`
+- output comparison against author:
+  - author line count: `87,758,310`
+  - RTDL line count: `87,757,785`
+  - `cmp_exit`: `1`
+  - first difference: byte `657000`, line `30783`
+
+Local diagnostic for the fixed line `30,733`:
+
+- target edge: map0 `eid0=14137`, map1 `eid1=8959134`
+- target midpoint scaled coordinate: `(-34345270034057.0, 4603460218049.0)`
+- before repair: `faces_scaled` returned raw face `11397`
+- after repair: `faces_scaled` returns raw face `11369`, matching the normal exact integer point-location route for the same vertex coordinate
+
+Local diagnostic for the new first diff at line `30,783`:
+
+- target midpoint around the mismatching two-point chain maps to map0 `eid0=14149`, map1 `eid1=8959129`
+- scaled midpoint is genuinely fractional: `(-34343456350058.28, 4603681277331.465)`
+- V4 `faces_scaled` returns raw face `11397`
+- This confirms the remaining mismatch is a fractional-boundary/tie semantic difference, not the integral-point bug fixed above.
 
 Failed/reverted hypothesis:
 

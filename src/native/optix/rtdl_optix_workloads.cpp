@@ -5100,8 +5100,13 @@ static std::vector<GpuRayjoinCdbPoint> make_rayjoin_cdb_gpu_points_from_scaled(
         }
         const double x = points[i].sx * prepared->scale.rrx + prepared->scale.ddeltax;
         const double y = points[i].sy * prepared->scale.rry + prepared->scale.ddeltay;
-        const int64_t sx_i = static_cast<int64_t>(points[i].sx);
-        const int64_t sy_i = static_cast<int64_t>(points[i].sy);
+        const double sx_nearest = std::nearbyint(points[i].sx);
+        const double sy_nearest = std::nearbyint(points[i].sy);
+        const bool integral_scaled_point =
+            points[i].sx == sx_nearest && points[i].sy == sy_nearest;
+        const int64_t sx_i = static_cast<int64_t>(sx_nearest);
+        const int64_t sy_i = static_cast<int64_t>(sy_nearest);
+        const uint32_t has_fractional_scaled = integral_scaled_point ? 0u : 1u;
         gpu_points[i] = {
             static_cast<float>(x),
             static_cast<float>(y),
@@ -5111,7 +5116,7 @@ static std::vector<GpuRayjoinCdbPoint> make_rayjoin_cdb_gpu_points_from_scaled(
             sy_i,
             points[i].sx,
             points[i].sy,
-            1u,
+            has_fractional_scaled,
             0u,
         };
     }
