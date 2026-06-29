@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import statistics
 import subprocess
@@ -55,6 +56,30 @@ def _read_json(path: Path) -> dict[str, object] | None:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _overlay_output_digest(path: Path | None) -> dict[str, object] | None:
+    if path is None or not path.exists():
+        return None
+    data = path.read_bytes()
+    lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+    return {
+        "path": str(path),
+        "sha256": hashlib.sha256(data).hexdigest(),
+        "bytes": len(data),
+        "line_count": len(lines),
+    }
+
+
+def _overlay_output_path_from_command(command: list[str]) -> Path | None:
+    for flag in ("--overlay-output", "-output"):
+        if flag not in command:
+            continue
+        index = command.index(flag)
+        if index + 1 >= len(command):
+            raise ValueError(f"command has {flag} without a following path")
+        return Path(command[index + 1])
+    return None
+
+
 def _artifact_paths(output_dir: Path, pair_id: str) -> dict[str, Path]:
     return {
         "author_rt": output_dir / f"section57_overlay_{pair_id}_author_rt.json",
@@ -72,7 +97,7 @@ def _availability_by_pair(dataset_root: Path, pair_ids: Iterable[str]) -> dict[s
 def _author_command(args: argparse.Namespace, case, output_json: Path) -> list[str]:
     if args.query_exec is None or args.polyover_exec is None:
         raise ValueError("author_rt requires --query-exec and --polyover-exec")
-    return [
+    command = [
         sys.executable,
         str(ROOT / "scripts" / "rayjoin_paper_reproduction_suite.py"),
         "run-author",
@@ -101,6 +126,9 @@ def _author_command(args: argparse.Namespace, case, output_json: Path) -> list[s
         "--output-json",
         str(output_json),
     ]
+    if args.assemble_overlay_output:
+        command.extend(["--overlay-output", str(output_json.with_suffix(".overlay.txt"))])
+    return command
 
 
 def _rtdl_command(args: argparse.Namespace, case, backend: str, output_json: Path) -> list[str]:
@@ -295,6 +323,13 @@ def _command_with_output_json(command: list[str], output_json: Path) -> list[str
     if index + 1 >= len(updated):
         raise ValueError("command has --output-json without a following path")
     updated[index + 1] = str(output_json)
+    for flag in ("--overlay-output", "-output"):
+        if flag not in updated:
+            continue
+        overlay_index = updated.index(flag)
+        if overlay_index + 1 >= len(updated):
+            raise ValueError(f"command has {flag} without a following path")
+        updated[overlay_index + 1] = str(output_json.with_suffix(".overlay.txt"))
     return updated
 
 
@@ -310,8 +345,9 @@ def _run_author_repeated(
     for iteration in range(int(warmup) + int(repeat)):
         is_warmup = iteration < int(warmup)
         iteration_json = output_json.with_name(f"{output_json.stem}_iter{iteration}{output_json.suffix}")
+        iteration_command = _command_with_output_json(command, iteration_json)
         run_result = _run_one(
-            _command_with_output_json(command, iteration_json),
+            iteration_command,
             output_json=iteration_json,
             timeout_sec=timeout_sec,
         )
@@ -323,6 +359,7 @@ def _run_author_repeated(
                 "is_warmup": is_warmup,
                 "run_result": run_result,
                 "elapsed_sec": None if elapsed is None else float(elapsed),
+                "overlay_output_digest": _overlay_output_digest(_overlay_output_path_from_command(iteration_command)),
             }
         )
     hot_elapsed = [
@@ -330,6 +367,12 @@ def _run_author_repeated(
         for run in runs
         if not run["is_warmup"] and run["elapsed_sec"] is not None and run["run_result"]["completed"]
     ]
+    hot_overlay_digests = [
+        run["overlay_output_digest"]
+        for run in runs
+        if not run["is_warmup"] and run["run_result"]["completed"] and run.get("overlay_output_digest") is not None
+    ]
+    hot_overlay_shas = [str(digest["sha256"]) for digest in hot_overlay_digests if isinstance(digest, dict)]
     payload = {
         "schema": "rtdl.rayjoin.section57_overlay_matrix.author_repeated.v1",
         "command_template": command,
@@ -339,6 +382,8 @@ def _run_author_repeated(
         "hot_median_sec": statistics.median(hot_elapsed) if hot_elapsed else None,
         "hot_min_sec": min(hot_elapsed) if hot_elapsed else None,
         "hot_max_sec": max(hot_elapsed) if hot_elapsed else None,
+        "overlay_output_digest": hot_overlay_digests[0] if hot_overlay_digests else None,
+        "overlay_output_digest_stable": len(set(hot_overlay_shas)) <= 1 if hot_overlay_shas else None,
         "runs": runs,
     }
     _write_json(output_json, payload)
@@ -365,6 +410,13 @@ def _extract_author_total(payload: dict[str, object] | None) -> float | None:
     return None if value is None else float(value)
 
 
+def _extract_author_overlay_digest(payload: dict[str, object] | None) -> dict[str, object] | None:
+    if payload is None:
+        return None
+    digest = payload.get("overlay_output_digest")
+    return digest if isinstance(digest, dict) else None
+
+
 def _extract_rtdl_total(payload: dict[str, object] | None, backend: str) -> tuple[float | None, int | None]:
     if payload is None:
         return None, None
@@ -379,6 +431,30 @@ def _extract_rtdl_total(payload: dict[str, object] | None, backend: str) -> tupl
     lsi = result.get("lsi") or {}
     count = lsi.get("intersection_count")
     return (None if total is None else float(total), None if count is None else int(count))
+
+
+def _extract_rtdl_overlay_digest(payload: dict[str, object] | None, backend: str) -> dict[str, object] | None:
+    if payload is None:
+        return None
+    if "results" in payload:
+        result = (payload.get("results") or {}).get(backend) or {}
+    else:
+        result = payload
+    output = result.get("output") or {}
+    if not isinstance(output, dict):
+        return None
+    path = output.get("path")
+    if not path:
+        return None
+    return _overlay_output_digest(Path(str(path)))
+
+
+def _digest_match(left: dict[str, object] | None, right: dict[str, object] | None) -> bool | None:
+    left_sha = None if left is None else left.get("sha256")
+    right_sha = None if right is None else right.get("sha256")
+    if left_sha is None or right_sha is None:
+        return None
+    return str(left_sha) == str(right_sha)
 
 
 def _extract_v4_numba(payload: dict[str, object] | None) -> dict[str, object]:
@@ -415,6 +491,9 @@ def summarize_results(args: argparse.Namespace) -> dict[str, object]:
         optix_total, optix_count = _extract_rtdl_total(optix, "optix")
         embree_total, embree_count = _extract_rtdl_total(embree, "embree")
         v4_numba_summary = _extract_v4_numba(v4_numba)
+        author_overlay_digest = _extract_author_overlay_digest(author)
+        optix_overlay_digest = _extract_rtdl_overlay_digest(optix, "optix")
+        embree_overlay_digest = _extract_rtdl_overlay_digest(embree, "embree")
         rows.append(
             {
                 "pair_id": case.pair.pair_id,
@@ -430,6 +509,12 @@ def summarize_results(args: argparse.Namespace) -> dict[str, object]:
                 "v4_numba_claim_classification": v4_numba_summary["claim_classification"],
                 "v4_numba_selected_plan_id": v4_numba_summary["selected_plan_id"],
                 "v4_numba_correctness_status": v4_numba_summary["correctness_status"],
+                "author_overlay_output_digest": author_overlay_digest,
+                "rtdl_optix_overlay_output_digest": optix_overlay_digest,
+                "rtdl_embree_overlay_output_digest": embree_overlay_digest,
+                "rtdl_optix_author_raw_output_digest_match": _digest_match(author_overlay_digest, optix_overlay_digest),
+                "rtdl_embree_author_raw_output_digest_match": _digest_match(author_overlay_digest, embree_overlay_digest),
+                "rtdl_optix_embree_raw_output_digest_match": _digest_match(optix_overlay_digest, embree_overlay_digest),
                 "complete": (
                     author is not None
                     and optix is not None
@@ -453,6 +538,12 @@ def summarize_results(args: argparse.Namespace) -> dict[str, object]:
         "timing_caveat": (
             "Paper Table 4 values are historical reference numbers. Local author_rt rows are "
             "measured process wall times. RTDL rows are warm-cache medians under the selected protocol."
+        ),
+        "correctness_caveat": (
+            "Raw overlay-output digest matches are byte-level checks for runs that requested "
+            "--assemble-overlay-output. They are stronger than count-only checks, but they are "
+            "not a substitute for a geometry/topology equivalence proof when output order or "
+            "format intentionally differs."
         ),
         "rows": rows,
     }
@@ -497,6 +588,8 @@ def render_summary_markdown(payload: dict[str, object]) -> str:
         "",
         "Timing caveat: " + str(payload["timing_caveat"]),
         "",
+        "Correctness caveat: " + str(payload["correctness_caveat"]),
+        "",
         "## Coverage",
         "",
         "| Metric | Value |",
@@ -509,8 +602,8 @@ def render_summary_markdown(payload: dict[str, object]) -> str:
             "",
             "## Matrix",
             "",
-            "| Pair | Paper RayJoin Processing (Preprocess) | Local Author RT Process | RTDL OptiX Total | RTDL Embree Total | V4+Numba Total | V4+Numba Status | RTDL LSI Count Match | Complete |",
-            "|---|---:|---:|---:|---:|---:|---|---|---:|",
+            "| Pair | Paper RayJoin Processing (Preprocess) | Local Author RT Process | RTDL OptiX Total | RTDL Embree Total | V4+Numba Total | V4+Numba Status | RTDL LSI Count Match | OptiX Raw Output = Author | Embree Raw Output = Author | OptiX Raw Output = Embree | Complete |",
+            "|---|---:|---:|---:|---:|---:|---|---|---|---|---|---:|",
         ]
     )
     for row in payload["rows"]:
@@ -525,9 +618,13 @@ def render_summary_markdown(payload: dict[str, object]) -> str:
             if row["rtdl_optix_lsi_count"] is None or row["rtdl_embree_lsi_count"] is None
             else str(row["rtdl_optix_lsi_count"] == row["rtdl_embree_lsi_count"])
         )
+        optix_author_digest = "" if row["rtdl_optix_author_raw_output_digest_match"] is None else str(row["rtdl_optix_author_raw_output_digest_match"])
+        embree_author_digest = "" if row["rtdl_embree_author_raw_output_digest_match"] is None else str(row["rtdl_embree_author_raw_output_digest_match"])
+        optix_embree_digest = "" if row["rtdl_optix_embree_raw_output_digest_match"] is None else str(row["rtdl_optix_embree_raw_output_digest_match"])
         lines.append(
             f"| {row['paper_label']} | {paper} | {author} | {optix} | {embree} | "
-            f"{v4_numba} | `{v4_numba_status}` | {count_match} | {row['complete']} |"
+            f"{v4_numba} | `{v4_numba_status}` | {count_match} | {optix_author_digest} | "
+            f"{embree_author_digest} | {optix_embree_digest} | {row['complete']} |"
         )
     return "\n".join(lines).rstrip() + "\n"
 
