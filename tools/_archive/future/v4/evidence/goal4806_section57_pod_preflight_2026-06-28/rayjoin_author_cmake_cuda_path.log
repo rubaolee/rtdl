@@ -1,0 +1,84 @@
+CMake Warning (dev) at CMakeLists.txt:21 (project):
+  cmake_minimum_required() should be called prior to this top-level project()
+  call.  Please see the cmake-commands(7) manual for usage documentation of
+  both commands.
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+-- The CUDA compiler identification is NVIDIA 12.8.93
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting CUDA compiler ABI info
+-- Detecting CUDA compiler ABI info - done
+-- Check for working CUDA compiler: /usr/local/cuda-12.8/bin/nvcc - skipped
+-- Detecting CUDA compile features
+-- Detecting CUDA compile features - done
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- OptiX headers (optix.h and friends) not found.  Please locate before proceeding.
+CMake Warning (dev) at CMakeLists.txt:75 (find_package):
+  Policy CMP0146 is not set: The FindCUDA module is removed.  Run "cmake
+  --help-policy CMP0146" for policy details.  Use the cmake_policy command to
+  set the policy and suppress this warning.
+
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE  
+-- Found CUDA: /usr/local/cuda-12.8 (found suitable version "12.8", minimum required is "11.8") 
+-- Found GFlags: /usr/include  
+-- Found gflags  (include: /usr/include, library: /usr/lib/x86_64-linux-gnu/libgflags.so)
+-- Found Glog: /usr/include  
+-- Found glog    (include: /usr/include, library: /usr/lib/x86_64-linux-gnu/libglog.so)
+-- Build type: Release
+/workspace/RayJoin_fresh/release/bin/ptx/rt_lsi_custom.ptx;/workspace/RayJoin_fresh/release/bin/ptx/rt_pip_custom.ptx
+PROGRAM_MODULES: /workspace/RayJoin_fresh/release/bin/ptx/rt_lsi_custom.ptx;/workspace/RayJoin_fresh/release/bin/ptx/rt_pip_custom.ptx
+-- Configuring done (16.1s)
+CMake Error: The following variables are used in this project, but they are set to NOTFOUND.
+Please set them or make sure they are set and tested correctly in the CMake files:
+OptiX_INCLUDE
+   used as include directory in directory /workspace/RayJoin_fresh/src
+   used as include directory in directory /workspace/RayJoin_fresh/src
+   used as include directory in directory /workspace/RayJoin_fresh/src
+   used as include directory in directory /workspace/RayJoin_fresh/src
+
+CMake Error in src/CMakeLists.txt:
+  Found relative path while evaluating include directories of
+  "polyover_exec":
+
+    "OptiX_INCLUDE-NOTFOUND"
+
+
+
+CMake Error in src/CMakeLists.txt:
+  Found relative path while evaluating include directories of
+  "polyover_exec":
+
+    "OptiX_INCLUDE-NOTFOUND"
+
+
+
+CMake Error in src/CMakeLists.txt:
+  Found relative path while evaluating include directories of "query_exec":
+
+    "OptiX_INCLUDE-NOTFOUND"
+
+
+
+CMake Error in src/CMakeLists.txt:
+  Found relative path while evaluating include directories of "query_exec":
+
+    "OptiX_INCLUDE-NOTFOUND"
+
+
+
+-- Generating done (0.7s)
+CMake Generate step failed.  Build files cannot be regenerated correctly.
