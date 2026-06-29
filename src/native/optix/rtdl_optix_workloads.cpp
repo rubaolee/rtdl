@@ -4160,6 +4160,9 @@ struct SegmentPairGroupedRangeExactCountLaunchParams {
     unsigned long long* group_candidate_count;
     unsigned long long* pair_output;
     unsigned long long pair_output_capacity;
+    unsigned long long* left_id_output;
+    unsigned long long* right_id_output;
+    unsigned long long id_output_capacity;
     uint32_t probe_count;
     uint32_t left_offset;
     uint32_t predicate_mode;
@@ -4536,6 +4539,9 @@ struct SegmentPairGroupedRangeExactCountLaunchParams {
     unsigned long long* group_candidate_count;
     unsigned long long* pair_output;
     unsigned long long pair_output_capacity;
+    unsigned long long* left_id_output;
+    unsigned long long* right_id_output;
+    unsigned long long id_output_capacity;
     unsigned int probe_count;
     unsigned int left_offset;
     unsigned int predicate_mode;
@@ -4707,6 +4713,12 @@ extern "C" __global__ void __intersection__segment_pair_grouped_range_direct_int
             if (params.pair_output != nullptr && out_index < params.pair_output_capacity) {
                 params.pair_output[out_index] =
                     ((unsigned long long)left.id << 32) | (unsigned long long)right.id;
+            }
+            if (params.left_id_output != nullptr &&
+                params.right_id_output != nullptr &&
+                out_index < params.id_output_capacity) {
+                params.left_id_output[out_index] = (unsigned long long)left.id;
+                params.right_id_output[out_index] = (unsigned long long)right.id;
             }
         }
     }
@@ -7015,7 +7027,10 @@ static size_t count_segment_pair_intersection_grouped_range_direct_is_exact_one_
         CUdeviceptr d_left_rayjoin_lsi_ptr,
         CUdeviceptr d_right_rayjoin_lsi_ptr,
         uint32_t predicate_mode,
-        bool record_group_candidate_events)
+        bool record_group_candidate_events,
+        CUdeviceptr d_left_ids_output = 0,
+        CUdeviceptr d_right_ids_output = 0,
+        unsigned long long id_output_capacity = 0ull)
 {
     if (!prepared) {
         throw std::runtime_error("prepared segment-pair handle must not be null");
@@ -7070,6 +7085,9 @@ static size_t count_segment_pair_intersection_grouped_range_direct_is_exact_one_
     lp.group_candidate_count = reinterpret_cast<unsigned long long*>(d_group_candidate_count.ptr);
     lp.pair_output = reinterpret_cast<unsigned long long*>(d_pair_output.ptr);
     lp.pair_output_capacity = pair_dump_capacity;
+    lp.left_id_output = reinterpret_cast<unsigned long long*>(d_left_ids_output);
+    lp.right_id_output = reinterpret_cast<unsigned long long*>(d_right_ids_output);
+    lp.id_output_capacity = id_output_capacity;
     lp.probe_count = static_cast<uint32_t>(left_count);
     lp.left_offset = 0u;
     lp.predicate_mode = predicate_mode;
@@ -7261,6 +7279,79 @@ static void run_prepared_segment_pair_candidate_device_columns_optix(
     columns_out->left_ids_device_ptr = static_cast<uint64_t>(left_ids_output);
     columns_out->right_ids_device_ptr = static_cast<uint64_t>(right_ids_output);
     columns_out->row_count = static_cast<uint64_t>(attempted_rows);
+    columns_out->overflow = 0u;
+    if (owner)
+        columns_out->owner_handle = owner.release();
+}
+
+static void run_prepared_segment_pair_exact_device_columns_prepared_left_optix(
+        PreparedSegmentPairIntersectionBuild* prepared,
+        PreparedSegmentPairLeftSet* prepared_left,
+        size_t max_rows,
+        RtdlNativeDevicePairColumns* columns_out)
+{
+    if (!prepared)
+        throw std::runtime_error("prepared segment-pair handle must not be null");
+    if (!prepared_left)
+        throw std::runtime_error("prepared segment-pair left-set handle must not be null");
+    if (!columns_out)
+        throw std::runtime_error("segment-pair exact device columns_out pointer must not be null");
+    if (prepared_left->left_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("segment-pair exact device columns left count exceeds uint32 launch capacity");
+    if (prepared->right_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("segment-pair exact device columns right count exceeds uint32 primitive capacity");
+    *columns_out = {};
+    columns_out->capacity = static_cast<uint64_t>(max_rows);
+    CUdevice current_device = 0;
+    CU_CHECK(cuCtxGetDevice(&current_device));
+    columns_out->device_ordinal = static_cast<int32_t>(current_device);
+    if (prepared_left->left_count == 0 || prepared->right_count == 0) {
+        return;
+    }
+
+    const uint32_t predicate_mode = segment_pair_predicate_mode_from_env();
+    if (predicate_mode == 1u) {
+        ensure_rayjoin_lsi_scaled_segment_caches(prepared, prepared_left);
+    }
+
+    std::unique_ptr<NativeSegmentPairCandidateDeviceColumnsOwner> owner;
+    CUdeviceptr left_ids_output = 0;
+    CUdeviceptr right_ids_output = 0;
+    if (max_rows != 0) {
+        owner = std::make_unique<NativeSegmentPairCandidateDeviceColumnsOwner>();
+        CU_CHECK(cuMemAlloc(&owner->left_ids, sizeof(unsigned long long) * max_rows));
+        CU_CHECK(cuMemAlloc(&owner->right_ids, sizeof(unsigned long long) * max_rows));
+        left_ids_output = owner->left_ids;
+        right_ids_output = owner->right_ids;
+    }
+
+    const auto traversal_start = std::chrono::steady_clock::now();
+    const size_t exact_count = count_segment_pair_intersection_grouped_range_direct_is_exact_one_pass_optix(
+        prepared,
+        prepared_left->left_count,
+        prepared_left->d_left.ptr,
+        prepared_left->d_left_exact.ptr,
+        predicate_mode == 1u ? prepared_left->d_rayjoin_lsi_left->ptr : 0,
+        predicate_mode == 1u ? prepared->d_rayjoin_lsi_right->ptr : 0,
+        predicate_mode,
+        false,
+        left_ids_output,
+        right_ids_output,
+        static_cast<unsigned long long>(max_rows));
+    const auto traversal_end = std::chrono::steady_clock::now();
+
+    columns_out->candidate_event_count = static_cast<uint64_t>(exact_count);
+    columns_out->traversal_seconds = std::chrono::duration<double>(
+        traversal_end - traversal_start).count();
+    if (exact_count > max_rows) {
+        columns_out->row_count = 0u;
+        columns_out->overflow = 1u;
+        return;
+    }
+
+    columns_out->left_ids_device_ptr = static_cast<uint64_t>(left_ids_output);
+    columns_out->right_ids_device_ptr = static_cast<uint64_t>(right_ids_output);
+    columns_out->row_count = static_cast<uint64_t>(exact_count);
     columns_out->overflow = 0u;
     if (owner)
         columns_out->owner_handle = owner.release();

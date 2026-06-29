@@ -616,6 +616,21 @@ class Goal4374RayjoinExactPaperSuiteTest(unittest.TestCase):
         self.assertIn("RTDL_OPTIX_SEGMENT_PAIR_DUMP_PATH", native)
         self.assertIn("prepared_left->rayjoin_lsi_scale_key.valid", native)
 
+    def test_optix_segment_pair_exact_device_columns_prepared_left_surface_exists(self) -> None:
+        prelude = (ROOT / "src" / "native" / "optix" / "rtdl_optix_prelude.h").read_text(encoding="utf-8")
+        api = (ROOT / "src" / "native" / "optix" / "rtdl_optix_api.cpp").read_text(encoding="utf-8")
+        native = (ROOT / "src" / "native" / "optix" / "rtdl_optix_workloads.cpp").read_text(encoding="utf-8")
+        runtime = (ROOT / "src" / "rtdsl" / "optix_runtime.py").read_text(encoding="utf-8")
+
+        symbol = "rtdl_optix_prepared_segment_pair_exact_device_columns_prepared_left"
+        self.assertIn(symbol, prelude)
+        self.assertIn(symbol, api)
+        self.assertIn("run_prepared_segment_pair_exact_device_columns_prepared_left_optix", native)
+        self.assertIn("left_id_output", native)
+        self.assertIn("right_id_output", native)
+        self.assertIn("def exact_device_columns_prepared_left", runtime)
+        self.assertIn("OPTIX_SEGMENT_PAIR_EXACT_DEVICE_COLUMNS_PREPARED_LEFT_SYMBOL", runtime)
+
     def test_native_embree_has_opt_in_rayjoin_lsi_predicate(self) -> None:
         geometry = (ROOT / "src" / "native" / "embree" / "rtdl_embree_geometry.cpp").read_text(
             encoding="utf-8"

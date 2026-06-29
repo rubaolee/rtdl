@@ -223,6 +223,9 @@ OPTIX_RAY_BATCH_TRIANGLE_HIT_STREAM_3D_INTO_DEVICE_COLUMNS_WITH_STATUS_ON_STREAM
 OPTIX_SEGMENT_PAIR_CANDIDATE_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_prepared_segment_pair_candidate_device_columns"
 )
+OPTIX_SEGMENT_PAIR_EXACT_DEVICE_COLUMNS_PREPARED_LEFT_SYMBOL = (
+    "rtdl_optix_prepared_segment_pair_exact_device_columns_prepared_left"
+)
 OPTIX_RELEASE_SEGMENT_PAIR_CANDIDATE_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_release_segment_pair_candidate_device_columns"
 )
@@ -4368,6 +4371,67 @@ class PreparedOptixSegmentPairIntersection:
             device_ordinal=int(columns.device_ordinal),
             traversal_seconds=float(columns.traversal_seconds),
             native_symbol=OPTIX_SEGMENT_PAIR_CANDIDATE_DEVICE_COLUMNS_SYMBOL,
+        )
+
+    def exact_device_columns_prepared_left(
+        self,
+        prepared_left: PreparedOptixSegmentPairLeftSet,
+        *,
+        max_rows: int,
+    ) -> OptixNativeDevicePairColumnOutput:
+        """Return exact segment-pair id columns for a reusable prepared-left segment set."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX segment-pair handle is closed")
+        if prepared_left._closed:
+            raise RuntimeError("prepared OptiX segment-pair left-set handle is closed")
+        if prepared_left.library is not self.library:
+            raise ValueError("prepared left-set handle must come from the same OptiX library")
+        capacity = int(max_rows)
+        if capacity < 0:
+            raise ValueError("max_rows must be non-negative")
+        run_symbol = _find_optional_backend_symbol(
+            self.library,
+            OPTIX_SEGMENT_PAIR_EXACT_DEVICE_COLUMNS_PREPARED_LEFT_SYMBOL,
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_SEGMENT_PAIR_EXACT_DEVICE_COLUMNS_PREPARED_LEFT_SYMBOL}; "
+                "rebuild the OptiX backend from current main"
+            )
+        release_symbol = _find_optional_backend_symbol(
+            self.library,
+            OPTIX_RELEASE_SEGMENT_PAIR_CANDIDATE_DEVICE_COLUMNS_SYMBOL,
+        )
+        if release_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_RELEASE_SEGMENT_PAIR_CANDIDATE_DEVICE_COLUMNS_SYMBOL}; rebuild the OptiX backend from current main"
+            )
+        columns = _RtdlNativeDevicePairColumns()
+        error = ctypes.create_string_buffer(4096)
+        status = run_symbol(
+            self.prepared_handle,
+            prepared_left.prepared_left_handle,
+            ctypes.c_size_t(capacity),
+            ctypes.byref(columns),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        owner = _OptixNativeDevicePairColumnsOwner(self.library, columns.owner_handle)
+        return OptixNativeDevicePairColumnOutput(
+            library=self.library,
+            owner=owner,
+            left_ids_device_ptr=int(columns.left_ids_device_ptr),
+            right_ids_device_ptr=int(columns.right_ids_device_ptr),
+            row_count=int(columns.row_count),
+            capacity=int(columns.capacity),
+            candidate_event_count=int(columns.candidate_event_count),
+            overflow=bool(columns.overflow),
+            device_ordinal=int(columns.device_ordinal),
+            traversal_seconds=float(columns.traversal_seconds),
+            native_symbol=OPTIX_SEGMENT_PAIR_EXACT_DEVICE_COLUMNS_PREPARED_LEFT_SYMBOL,
         )
 
     def left_id_count_device_columns(
@@ -25286,6 +25350,20 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_segment_pair_candidate_device_columns.restype = ctypes.c_int
+    optional_segment_pair_exact_device_columns_prepared_left = _find_optional_backend_symbol(
+        lib,
+        OPTIX_SEGMENT_PAIR_EXACT_DEVICE_COLUMNS_PREPARED_LEFT_SYMBOL,
+    )
+    if optional_segment_pair_exact_device_columns_prepared_left is not None:
+        optional_segment_pair_exact_device_columns_prepared_left.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlNativeDevicePairColumns),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_segment_pair_exact_device_columns_prepared_left.restype = ctypes.c_int
     optional_release_segment_pair_candidate_device_columns = _find_optional_backend_symbol(
         lib,
         OPTIX_RELEASE_SEGMENT_PAIR_CANDIDATE_DEVICE_COLUMNS_SYMBOL,

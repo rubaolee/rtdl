@@ -79,6 +79,7 @@ def _run_segmented_count_probe(
     from rtdsl.numba_partner_continuation import run_numba_segmented_count_i64
     from rtdsl.optix_runtime import prepare_segment_pair_intersection_optix
     from rtdsl.optix_runtime import prepare_segment_pair_left_set_optix
+    from rtdsl.rayjoin_overlay import _rayjoin_lsi_predicate_env
     from rtdsl.rayjoin_overlay import load_cdb_overlay_packed_inputs
 
     pair = next(pair for pair in paper_pairs() if pair.pair_id == pair_id)
@@ -87,91 +88,103 @@ def _run_segmented_count_probe(
     cuda, np = _import_numba_stack()
     import cupy as cp  # type: ignore
 
-    prepared = prepare_segment_pair_intersection_optix(right_inputs.segments)
+    prepared = None
     prepared_left = None
     try:
-        prepared_left = prepare_segment_pair_left_set_optix(left_inputs.segments)
-        expected = prepared.count_prepared_left_exact_intersections(prepared_left)
-        expected_count = int(expected["count"])
-        segmented_runs: list[dict[str, object]] = []
-        compact_runs: list[dict[str, object]] = []
-        for iteration in range(int(warmup) + int(repeat)):
-            is_warmup = iteration < int(warmup)
-            columns = None
-            try:
-                start = time.perf_counter()
-                columns = prepared.candidate_device_columns(
-                    left_inputs.segments,
-                    max_rows=expected_count,
-                )
-                cupy_columns = columns.as_cupy_columns()
-                left_ids = _as_numba_cuda_vector(
-                    cupy_columns["left_id"],
-                    name="left_id",
-                    dtype=np.int64,
-                    cuda=cuda,
-                    np=np,
-                )
-                segmented = run_numba_segmented_count_i64(
-                    left_ids,
-                    group_count=int(left_inputs.edge_count) + 1,
-                    validate_group_ids=False,
-                )
-                cuda.synchronize()
-                segmented_wall = time.perf_counter() - start
-                counts = segmented["outputs"]["counts"].copy_to_host()
-                count_sum = int(counts.sum())
-                segmented_runs.append(
-                    {
-                        "iteration": iteration,
-                        "is_warmup": is_warmup,
-                        "wall_sec": segmented_wall,
-                        "candidate_column_traversal_sec": float(columns.traversal_seconds),
-                        "numba_elapsed_sec": float(
-                            segmented["phase_timing"]["phases_sec"]["partner_continuation"]
-                        ),
-                        "candidate_row_count": int(columns.row_count),
-                        "expected_lsi_count": expected_count,
-                        "segmented_count_sum": count_sum,
-                        "stage_counts_pass": (
-                            int(columns.row_count) == expected_count
-                            and count_sum == expected_count
-                            and not bool(columns.overflow)
-                        ),
-                    }
-                )
+        with _rayjoin_lsi_predicate_env("optix"):
+            prepared = prepare_segment_pair_intersection_optix(right_inputs.segments)
+            prepared_left = prepare_segment_pair_left_set_optix(left_inputs.segments)
+            expected = prepared.count_prepared_left_exact_intersections(prepared_left)
+            expected_count = int(expected["count"])
+            segmented_runs: list[dict[str, object]] = []
+            compact_runs: list[dict[str, object]] = []
+            for iteration in range(int(warmup) + int(repeat)):
+                is_warmup = iteration < int(warmup)
+                columns = None
+                try:
+                    start = time.perf_counter()
+                    columns = prepared.exact_device_columns_prepared_left(
+                        prepared_left,
+                        max_rows=expected_count,
+                    )
+                    cupy_columns = columns.as_cupy_columns()
+                    left_ids = _as_numba_cuda_vector(
+                        cupy_columns["left_id"],
+                        name="left_id",
+                        dtype=np.int64,
+                        cuda=cuda,
+                        np=np,
+                    )
+                    segmented = run_numba_segmented_count_i64(
+                        left_ids,
+                        group_count=int(left_inputs.edge_count) + 1,
+                        validate_group_ids=False,
+                    )
+                    cuda.synchronize()
+                    segmented_wall = time.perf_counter() - start
+                    counts = segmented["outputs"]["counts"].copy_to_host()
+                    count_sum = int(counts.sum())
+                    segmented_runs.append(
+                        {
+                            "iteration": iteration,
+                            "is_warmup": is_warmup,
+                            "wall_sec": segmented_wall,
+                            "candidate_column_traversal_sec": float(columns.traversal_seconds),
+                            "numba_elapsed_sec": float(
+                                segmented["phase_timing"]["phases_sec"]["partner_continuation"]
+                            ),
+                            "candidate_row_count": int(columns.row_count),
+                            "expected_lsi_count": expected_count,
+                            "primitive_source": "exact_device_columns_prepared_left",
+                            "native_symbol": columns.native_symbol,
+                            "segmented_count_sum": count_sum,
+                            "stage_counts_pass": (
+                                int(columns.row_count) == expected_count
+                                and count_sum == expected_count
+                                and not bool(columns.overflow)
+                            ),
+                        }
+                    )
 
-                mask = cp.ones((int(columns.row_count),), dtype=cp.bool_)
-                right_ids = _as_numba_cuda_vector(
-                    cupy_columns["right_id"],
-                    name="right_id",
-                    dtype=np.int64,
-                    cuda=cuda,
-                    np=np,
-                )
-                compact_start = time.perf_counter()
-                compact = run_numba_compact_mask_i64(right_ids, mask)
-                cuda.synchronize()
-                compact_wall = time.perf_counter() - compact_start
-                compact_count = int(compact["outputs"]["values"].shape[0])
-                compact_runs.append(
-                    {
-                        "iteration": iteration,
-                        "is_warmup": is_warmup,
-                        "wall_sec": compact_wall,
-                        "numba_elapsed_sec": float(
-                            compact["phase_timing"]["phases_sec"]["partner_continuation"]
-                        ),
-                        "candidate_row_count": int(columns.row_count),
-                        "expected_lsi_count": expected_count,
-                        "compact_count": compact_count,
-                        "stage_counts_pass": compact_count == expected_count,
-                        "host_prefix_sum_used": bool(compact.get("host_prefix_sum_used", True)),
-                    }
-                )
-            finally:
-                if columns is not None:
-                    columns.close()
+                    mask = _as_numba_cuda_vector(
+                        cp.ones((int(columns.row_count),), dtype=cp.bool_),
+                        name="mask",
+                        dtype=np.bool_,
+                        cuda=cuda,
+                        np=np,
+                    )
+                    right_ids = _as_numba_cuda_vector(
+                        cupy_columns["right_id"],
+                        name="right_id",
+                        dtype=np.int64,
+                        cuda=cuda,
+                        np=np,
+                    )
+                    compact_start = time.perf_counter()
+                    compact = run_numba_compact_mask_i64(right_ids, mask)
+                    cuda.synchronize()
+                    compact_wall = time.perf_counter() - compact_start
+                    compact_count = int(compact["outputs"]["values"].shape[0])
+                    compact_runs.append(
+                        {
+                            "iteration": iteration,
+                            "is_warmup": is_warmup,
+                            "wall_sec": compact_wall,
+                            "numba_elapsed_sec": float(
+                                compact["phase_timing"]["phases_sec"]["partner_continuation"]
+                            ),
+                            "candidate_row_count": int(columns.row_count),
+                            "expected_lsi_count": expected_count,
+                            "primitive_source": "exact_device_columns_prepared_left",
+                            "native_symbol": columns.native_symbol,
+                            "compact_count": compact_count,
+                            "stage_counts_pass": compact_count == expected_count,
+                            "host_prefix_sum_used": bool(compact.get("host_prefix_sum_used", True)),
+                        }
+                    )
+                finally:
+                    if columns is not None:
+                        columns.close()
         hot_segmented = [run for run in segmented_runs if not run["is_warmup"]]
         hot_compact = [run for run in compact_runs if not run["is_warmup"]]
         segmented_pass = all(bool(run["stage_counts_pass"]) for run in hot_segmented)
@@ -220,7 +233,8 @@ def _run_segmented_count_probe(
     finally:
         if prepared_left is not None:
             prepared_left.close()
-        prepared.close()
+        if prepared is not None:
+            prepared.close()
 
 
 def build_dry_run_payload(args: argparse.Namespace) -> dict[str, object]:

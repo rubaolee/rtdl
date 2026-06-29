@@ -12,6 +12,13 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class V4Goal4806RayJoinNumbaCandidateProbeTest(unittest.TestCase):
+    def test_real_probe_uses_exact_device_columns_not_candidate_stream(self) -> None:
+        script = (ROOT / "scripts" / "rayjoin_section57_numba_candidate_probe.py").read_text(encoding="utf-8")
+        self.assertIn("prepared.exact_device_columns_prepared_left(", script)
+        self.assertIn('with _rayjoin_lsi_predicate_env("optix"):', script)
+        self.assertIn('"primitive_source": "exact_device_columns_prepared_left"', script)
+        self.assertNotIn("prepared.candidate_device_columns(", script)
+
     def test_dry_run_writes_measured_candidate_schema_without_perf_rows(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

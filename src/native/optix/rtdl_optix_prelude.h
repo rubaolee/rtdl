@@ -739,6 +739,12 @@ int  rtdl_optix_prepared_segment_pair_candidate_device_columns(
          size_t max_rows,
          RtdlNativeDevicePairColumns* columns_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_prepared_segment_pair_exact_device_columns_prepared_left(
+         void* prepared,
+         void* prepared_left,
+         size_t max_rows,
+         RtdlNativeDevicePairColumns* columns_out,
+         char* error_out, size_t error_size);
 int  rtdl_optix_release_segment_pair_candidate_device_columns(
          void* owner_handle,
          char* error_out, size_t error_size);

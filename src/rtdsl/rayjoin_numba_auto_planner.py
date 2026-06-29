@@ -144,6 +144,10 @@ def section57_device_column_component_status() -> dict[str, object]:
             "OPTIX_SEGMENT_PAIR_LEFT_ID_COUNT_DEVICE_COLUMNS_SYMBOL",
             "PreparedOptixSegmentPairIntersection.left_id_count_device_columns",
         ),
+        "segment_pair_exact_device_columns_prepared_left": (
+            "OPTIX_SEGMENT_PAIR_EXACT_DEVICE_COLUMNS_PREPARED_LEFT_SYMBOL",
+            "PreparedOptixSegmentPairIntersection.exact_device_columns_prepared_left",
+        ),
         "closed_shape_relation_status_device_columns": (
             "OPTIX_CLOSED_SHAPE_MEMBERSHIP_RELATION_STATUS_CANDIDATE_DEVICE_COLUMNS_PREPARED_POINTS_SYMBOL",
             "PreparedOptixPointClosedShapeMembership2D.relation_status_candidate_device_columns_prepared_points",
@@ -532,6 +536,8 @@ def _claim_classification(
     if selected_plan is None:
         return "not_release_ready"
     speedup = selected_plan.get("v4_vs_v2_14_speedup")
+    if speedup is None:
+        return "candidate_stage_measured_no_app_speedup_claim"
     if isinstance(speedup, (int, float)) and float(speedup) >= 1.2:
         return "high_performance"
     if isinstance(speedup, (int, float)) and float(speedup) >= 0.98:
