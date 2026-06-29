@@ -581,9 +581,12 @@ def _edge_start_arrays_for_ids(edge_starts, edge_ids):
     )
 
 
-def _midpoint_points_from_lsi_rows_numpy(lsi_rows, edge_starts, map_index: int):
+def _midpoint_points_from_lsi_rows_numpy(lsi_rows, edge_starts, map_index: int, *, stats: dict[str, int] | None = None):
     import numpy as np
 
+    dropped_key = f"map{map_index}_nonfinite_midpoints_dropped"
+    if stats is not None:
+        stats.setdefault(dropped_key, 0)
     if len(lsi_rows) < 2:
         return _packed_points_from_arrays(np.empty(0, dtype=np.float64), np.empty(0, dtype=np.float64))
     edge_field = "left_id" if map_index == 0 else "right_id"
@@ -603,6 +606,13 @@ def _midpoint_points_from_lsi_rows_numpy(lsi_rows, edge_starts, map_index: int):
     sorted_y = y[order]
     midpoint_x = (sorted_x[:-1][same_edge] + sorted_x[1:][same_edge]) * 0.5
     midpoint_y = (sorted_y[:-1][same_edge] + sorted_y[1:][same_edge]) * 0.5
+    finite = np.isfinite(midpoint_x) & np.isfinite(midpoint_y)
+    dropped = int(midpoint_x.size - int(np.count_nonzero(finite)))
+    if dropped:
+        midpoint_x = midpoint_x[finite]
+        midpoint_y = midpoint_y[finite]
+    if stats is not None:
+        stats[dropped_key] = stats.get(dropped_key, 0) + dropped
     return _packed_points_from_arrays(midpoint_x, midpoint_y)
 
 
@@ -1290,6 +1300,10 @@ def _run_rayjoin_overlay_packed(
     xsects = None
     xsects_sorted = None
     midpoint_point_inputs = None
+    midpoint_filter_stats = {
+        "map0_nonfinite_midpoints_dropped": 0,
+        "map1_nonfinite_midpoints_dropped": 0,
+    }
     if needs_output_faces:
         materialize_start = time.perf_counter()
         xsects = _intersections_from_lsi_rows(lsi_rows)
@@ -1303,8 +1317,8 @@ def _run_rayjoin_overlay_packed(
     else:
         midpoint_start = time.perf_counter()
         midpoint_point_inputs = (
-            _midpoint_points_from_lsi_rows_numpy(lsi_rows, edge_starts[0], 0),
-            _midpoint_points_from_lsi_rows_numpy(lsi_rows, edge_starts[1], 1),
+            _midpoint_points_from_lsi_rows_numpy(lsi_rows, edge_starts[0], 0, stats=midpoint_filter_stats),
+            _midpoint_points_from_lsi_rows_numpy(lsi_rows, edge_starts[1], 1, stats=midpoint_filter_stats),
         )
         phase_seconds["lsi_midpoint_projection_sec"] = time.perf_counter() - midpoint_start
 
@@ -1442,8 +1456,10 @@ def _run_rayjoin_overlay_packed(
         "midpoint_pip": {
             "map0_midpoints_in_map1": int(midpoint_counts[0]),
             "map0_positive_faces": None if midpoint_positive_counts[0] is None else int(midpoint_positive_counts[0]),
+            "map0_nonfinite_midpoints_dropped": int(midpoint_filter_stats["map0_nonfinite_midpoints_dropped"]),
             "map1_midpoints_in_map0": int(midpoint_counts[1]),
             "map1_positive_faces": None if midpoint_positive_counts[1] is None else int(midpoint_positive_counts[1]),
+            "map1_nonfinite_midpoints_dropped": int(midpoint_filter_stats["map1_nonfinite_midpoints_dropped"]),
         },
         "output": output_payload,
         "phase_seconds": phase_seconds,

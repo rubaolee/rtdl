@@ -1,0 +1,4 @@
+[ 12%] Building CUDA object src/CMakeFiles/polyover_exec.dir/run_overlay.cu.o
+[ 25%] Linking CUDA device code CMakeFiles/polyover_exec.dir/cmake_device_link.o
+[ 37%] Linking CXX executable ../bin/polyover_exec
+[100%] Built target polyover_exec

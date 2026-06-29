@@ -1,0 +1,48 @@
+{
+  "dataset_root": "/workspace/rayjoin_section57_same_source_cdb",
+  "input_provenance": "same_source_regenerated_cdb",
+  "rows": [
+    {
+      "output_path": "/workspace/rayjoin_section57_same_source_cdb/point_cdb/dtl_cnty/dtl_cnty_Point.cdb",
+      "source_root": "/workspace/rayjoin_section57_arcgis_stage/uscounty_feature_layer",
+      "stats": {
+        "bytes": 904529353,
+        "chains": 8662896,
+        "nonzero_faces": 3144,
+        "path": "/workspace/rayjoin_section57_same_source_cdb/point_cdb/dtl_cnty/dtl_cnty_Point.cdb",
+        "points": 17325792,
+        "segments": 8662896
+      },
+      "target": {
+        "cdb_name": "dtl_cnty",
+        "feature_id_field": "OBJECTID",
+        "output_relative_path": "point_cdb/dtl_cnty/dtl_cnty_Point.cdb",
+        "source_asset_id": "uscounty_feature_layer",
+        "target_id": "county",
+        "topology_contract": "same_source_regenerated_cdb_from_arcgis_rings; not a recovered paper_preprocessed Polygon-To-Line neighbor CDB"
+      }
+    },
+    {
+      "output_path": "/workspace/rayjoin_section57_same_source_cdb/point_cdb/USAZIPCodeArea/USAZIPCodeArea_Point.cdb",
+      "source_root": "/workspace/rayjoin_section57_arcgis_stage/zipcode_feature_layer",
+      "stats": {
+        "bytes": 2603929396,
+        "chains": 23931046,
+        "nonzero_faces": 32294,
+        "path": "/workspace/rayjoin_section57_same_source_cdb/point_cdb/USAZIPCodeArea/USAZIPCodeArea_Point.cdb",
+        "points": 47862092,
+        "segments": 23931046
+      },
+      "target": {
+        "cdb_name": "USAZIPCodeArea",
+        "feature_id_field": "OBJECTID",
+        "output_relative_path": "point_cdb/USAZIPCodeArea/USAZIPCodeArea_Point.cdb",
+        "source_asset_id": "zipcode_feature_layer",
+        "target_id": "zipcode",
+        "topology_contract": "same_source_regenerated_cdb_from_arcgis_rings; not a recovered paper_preprocessed Polygon-To-Line neighbor CDB"
+      }
+    }
+  ],
+  "schema": "rtdl.rayjoin_paper_suite.same_source_arcgis_cdb_tree.v1",
+  "staged_root": "/workspace/rayjoin_section57_arcgis_stage"
+}

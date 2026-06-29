@@ -1,0 +1,24 @@
+{
+  "blockers": [
+    {
+      "error": "RuntimeError('cannot wrap an overflowed device pair-column stream; capacity=1152144 required_capacity=10142618; overflow_policy=fail_closed; retry explicitly with max_rows>=required_capacity')",
+      "pair_id": "county_zipcode",
+      "reason": "candidate_probe_failed"
+    }
+  ],
+  "claim_boundary": "Rows are candidate-stage V4+Numba measurements. The selector accepts only rows with correctness_status='pass', confirmed topology/geometry hash match, device-column route, and no host materialization in the hot path.",
+  "dataset_root": "/workspace/rayjoin_section57_same_source_cdb",
+  "repeat": 1,
+  "rows": [],
+  "rt_core": {
+    "gpu_names": [
+      "NVIDIA RTX 4000 Ada Generation"
+    ],
+    "rt_core_likely": true,
+    "stderr": "",
+    "stdout": "NVIDIA RTX 4000 Ada Generation, 550.127.05\n"
+  },
+  "schema": "rtdl.v4.rayjoin.section57_numba_measured_candidates.v1",
+  "status": "no_rows_measured",
+  "warmup": 0
+}

@@ -474,10 +474,44 @@ class Goal4374RayjoinExactPaperSuiteTest(unittest.TestCase):
         self.assertIsNone(result["vertex_pip"]["map1_positive_faces"])
         self.assertIsNone(result["midpoint_pip"]["map0_positive_faces"])
         self.assertIsNone(result["midpoint_pip"]["map1_positive_faces"])
+        self.assertEqual(result["midpoint_pip"]["map0_nonfinite_midpoints_dropped"], 0)
+        self.assertEqual(result["midpoint_pip"]["map1_nonfinite_midpoints_dropped"], 0)
         self.assertEqual(result["native_timings"]["vertex_pip_map0_in_map1"]["mode"], "face_ids_device_points")
         self.assertIn("no_positive_count_atomic", result["native_timings"]["vertex_pip_map0_in_map1"]["output_contract"])
         self.assertIn("point_location_prepare_wall_sec", result["phase_seconds"])
         self.assertFalse(result["output"]["assembled"])
+
+    def test_lsi_midpoint_projection_drops_nonfinite_points_with_telemetry(self) -> None:
+        import numpy as np
+        import rtdsl.rayjoin_overlay as overlay
+
+        lsi_rows = np.array(
+            [
+                (1, 1, 0.0, 0.0),
+                (1, 2, 2.0, 0.0),
+                (2, 1, np.nan, 0.0),
+                (2, 2, 2.0, 0.0),
+            ],
+            dtype=[
+                ("left_id", np.uint32),
+                ("right_id", np.uint32),
+                ("intersection_point_x", np.float64),
+                ("intersection_point_y", np.float64),
+            ],
+        )
+        stats: dict[str, int] = {}
+
+        packed = overlay._midpoint_points_from_lsi_rows_numpy(
+            lsi_rows,
+            (np.array([0.0, 0.0]), np.array([0.0, 0.0])),
+            0,
+            stats=stats,
+        )
+
+        self.assertEqual(packed.count, 1)
+        self.assertEqual(stats["map0_nonfinite_midpoints_dropped"], 1)
+        self.assertTrue(np.all(np.isfinite(packed.owner["x"])))
+        self.assertTrue(np.all(np.isfinite(packed.owner["y"])))
 
     def test_large_point_location_stream_auto_uses_generic_adaptive_grouping(self) -> None:
         from rtdsl.rayjoin_overlay import _directed_segment_point_location_grouping_env

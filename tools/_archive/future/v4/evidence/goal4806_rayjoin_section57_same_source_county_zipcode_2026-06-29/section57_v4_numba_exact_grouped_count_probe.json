@@ -1,0 +1,49 @@
+{
+  "claim_boundary": "exact grouped-count continuation evidence only; not full Section 5.7 polygon-overlay output equality",
+  "correctness_status": "fail",
+  "device_resident": true,
+  "expected_count_sec": 1.8336381539702415,
+  "expected_exact_lsi_count": 1152144,
+  "expected_route": {
+    "backend": "optix",
+    "claim_boundary": {
+      "experimental_front_door": true,
+      "public_speedup_claim_authorized": false,
+      "rayjoin_paper_reproduction_claim_authorized": false,
+      "release_authorized": false,
+      "rt_core_speedup_claim_authorized": false,
+      "rtdl_beats_rayjoin_claim_authorized": false,
+      "true_zero_copy_claim_authorized": false,
+      "whole_app_acceleration_claim_authorized": false
+    },
+    "count": 1152144,
+    "implementation_contract": "SEGMENT_PAIR_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_EXACT_COUNT_V1",
+    "native_symbol": "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection",
+    "output_contract": "scalar_exact_count",
+    "primitive": "SEGMENT_PAIR_INTERSECTION_ROWS_2D",
+    "right_group_count": 23931046,
+    "route": "intersection_program_identity_or_ranged_primitive_records",
+    "route_selection": {
+      "default_right_range_policy": "identity_range",
+      "fallback_route": "count_prepared_left",
+      "native_policy_env": {
+        "area_enlarge": "RTDL_OPTIX_SEGMENT_PAIR_GROUPED_RANGE_AREA_ENLARGE",
+        "max_size": "RTDL_OPTIX_SEGMENT_PAIR_GROUPED_RANGE_MAX_SIZE"
+      }
+    },
+    "schema": "rtdl.optix.segment_pair_prepared_left_exact_intersection_count.front_door.v1"
+  },
+  "group_capacity": 8662897,
+  "input_provenance": "same_source_regenerated_cdb",
+  "native_symbol": "rtdl_optix_prepared_segment_pair_left_id_count_prepared_left_device_columns",
+  "numba_cuda_env": "python3.11_numba0.60_cuda12.4_nvvm_driver550",
+  "numba_sum": 382946,
+  "numba_sum_sec": 0.26569657772779465,
+  "optix_grouped_count_reduction_sec": 0.003811683,
+  "optix_grouped_count_wall_sec": 0.06614872813224792,
+  "overflow": false,
+  "pair_id": "county_zipcode",
+  "python_env": "/tmp/rtdl_goal4806_numba311_compat",
+  "schema": "rtdl.v4.goal4806.section57_numba_exact_grouped_count_probe.v1",
+  "source_row_count": 382946
+}
