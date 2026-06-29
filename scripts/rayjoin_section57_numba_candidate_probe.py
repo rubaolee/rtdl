@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import statistics
 import subprocess
 import sys
@@ -65,6 +66,96 @@ def _candidate_status_from_stage(
     return "fail", False
 
 
+def _numba_lsi_stream_digest_kernel():
+    from numba import cuda  # type: ignore
+
+    @cuda.jit
+    def _kernel(left_ids, right_ids, xs, ys, partials, row_count, scale):
+        worker = cuda.grid(1)
+        stride = cuda.gridsize(1)
+        local_count = 0
+        local_left_sum = 0
+        local_right_sum = 0
+        local_x_micro_sum = 0
+        local_y_micro_sum = 0
+        local_nonfinite = 0
+        for index in range(worker, row_count, stride):
+            x_value = xs[index]
+            y_value = ys[index]
+            local_count += 1
+            local_left_sum += left_ids[index]
+            local_right_sum += right_ids[index]
+            if (
+                x_value == x_value
+                and y_value == y_value
+                and math.fabs(x_value) < 1.0e300
+                and math.fabs(y_value) < 1.0e300
+            ):
+                local_x_micro_sum += int(x_value * scale)
+                local_y_micro_sum += int(y_value * scale)
+            else:
+                local_nonfinite += 1
+        partials[worker, 0] = local_count
+        partials[worker, 1] = local_left_sum
+        partials[worker, 2] = local_right_sum
+        partials[worker, 3] = local_x_micro_sum
+        partials[worker, 4] = local_y_micro_sum
+        partials[worker, 5] = local_nonfinite
+
+    return _kernel
+
+
+def _run_numba_lsi_stream_digest(
+    *,
+    left_ids,
+    right_ids,
+    intersection_x,
+    intersection_y,
+    row_count: int,
+    cuda,
+    np,
+    block_size: int = 128,
+    worker_blocks: int = 256,
+    coordinate_scale: int = 1_000_000,
+) -> dict[str, object]:
+    row_count = int(row_count)
+    if row_count < 0:
+        raise ValueError("row_count must be non-negative")
+    worker_count = max(1, min(int(worker_blocks) * int(block_size), max(1, row_count)))
+    partials = cuda.device_array((worker_count, 6), dtype=np.int64)
+    partials.copy_to_device(np.zeros((worker_count, 6), dtype=np.int64))
+    cuda.synchronize()
+    started = time.perf_counter()
+    if row_count:
+        grid = ((worker_count + int(block_size) - 1) // int(block_size),)
+        _numba_lsi_stream_digest_kernel()[grid, int(block_size)](
+            left_ids,
+            right_ids,
+            intersection_x,
+            intersection_y,
+            partials,
+            row_count,
+            int(coordinate_scale),
+        )
+    cuda.synchronize()
+    elapsed = time.perf_counter() - started
+    partial_host = partials.copy_to_host()
+    totals = partial_host.sum(axis=0)
+    return {
+        "elapsed_sec": elapsed,
+        "coordinate_scale": int(coordinate_scale),
+        "worker_count": int(worker_count),
+        "row_count": int(totals[0]),
+        "left_id_sum": int(totals[1]),
+        "right_id_sum": int(totals[2]),
+        "intersection_x_micro_sum": int(totals[3]),
+        "intersection_y_micro_sum": int(totals[4]),
+        "nonfinite_intersection_points": int(totals[5]),
+        "host_row_materialization_used": False,
+        "host_digest_result_materialization_used": True,
+    }
+
+
 def _run_segmented_count_probe(
     *,
     pair_id: str,
@@ -72,7 +163,7 @@ def _run_segmented_count_probe(
     warmup: int,
     repeat: int,
     topology_geometry_hash_match_confirmed: bool,
-) -> tuple[dict[str, object], dict[str, object]]:
+) -> tuple[dict[str, object], dict[str, object], dict[str, object]]:
     from rtdsl.numba_partner_continuation import _as_numba_cuda_vector
     from rtdsl.numba_partner_continuation import _import_numba_stack
     from rtdsl.numba_partner_continuation import run_numba_compact_mask_i64
@@ -98,6 +189,7 @@ def _run_segmented_count_probe(
             expected_count = int(expected["count"])
             segmented_runs: list[dict[str, object]] = []
             compact_runs: list[dict[str, object]] = []
+            digest_runs: list[dict[str, object]] = []
             for iteration in range(int(warmup) + int(repeat)):
                 is_warmup = iteration < int(warmup)
                 columns = None
@@ -116,6 +208,27 @@ def _run_segmented_count_probe(
                         cupy_columns["left_id"],
                         name="left_id",
                         dtype=np.int64,
+                        cuda=cuda,
+                        np=np,
+                    )
+                    right_ids = _as_numba_cuda_vector(
+                        cupy_columns["right_id"],
+                        name="right_id",
+                        dtype=np.int64,
+                        cuda=cuda,
+                        np=np,
+                    )
+                    intersection_x = _as_numba_cuda_vector(
+                        cupy_columns["intersection_point_x"],
+                        name="intersection_point_x",
+                        dtype=np.float64,
+                        cuda=cuda,
+                        np=np,
+                    )
+                    intersection_y = _as_numba_cuda_vector(
+                        cupy_columns["intersection_point_y"],
+                        name="intersection_point_y",
+                        dtype=np.float64,
                         cuda=cuda,
                         np=np,
                     )
@@ -150,18 +263,40 @@ def _run_segmented_count_probe(
                             ),
                         }
                     )
+                    digest = _run_numba_lsi_stream_digest(
+                        left_ids=left_ids,
+                        right_ids=right_ids,
+                        intersection_x=intersection_x,
+                        intersection_y=intersection_y,
+                        row_count=int(columns.row_count),
+                        cuda=cuda,
+                        np=np,
+                    )
+                    digest_runs.append(
+                        {
+                            "iteration": iteration,
+                            "is_warmup": is_warmup,
+                            "wall_sec": float(digest["elapsed_sec"]),
+                            "candidate_column_traversal_sec": float(columns.traversal_seconds),
+                            "candidate_row_count": int(columns.row_count),
+                            "expected_lsi_count": expected_count,
+                            "primitive_source": "exact_device_columns_prepared_left",
+                            "native_symbol": columns.native_symbol,
+                            "intersection_point_columns_present": intersection_point_columns_present,
+                            "stream_digest": digest,
+                            "stage_counts_pass": (
+                                int(columns.row_count) == expected_count
+                                and int(digest["row_count"]) == expected_count
+                                and int(digest["nonfinite_intersection_points"]) == 0
+                                and not bool(columns.overflow)
+                            ),
+                        }
+                    )
 
                     mask = _as_numba_cuda_vector(
                         cp.ones((int(columns.row_count),), dtype=cp.bool_),
                         name="mask",
                         dtype=np.bool_,
-                        cuda=cuda,
-                        np=np,
-                    )
-                    right_ids = _as_numba_cuda_vector(
-                        cupy_columns["right_id"],
-                        name="right_id",
-                        dtype=np.int64,
                         cuda=cuda,
                         np=np,
                     )
@@ -193,8 +328,10 @@ def _run_segmented_count_probe(
                         columns.close()
         hot_segmented = [run for run in segmented_runs if not run["is_warmup"]]
         hot_compact = [run for run in compact_runs if not run["is_warmup"]]
+        hot_digest = [run for run in digest_runs if not run["is_warmup"]]
         segmented_pass = all(bool(run["stage_counts_pass"]) for run in hot_segmented)
         compact_pass = all(bool(run["stage_counts_pass"]) for run in hot_compact)
+        digest_pass = all(bool(run["stage_counts_pass"]) for run in hot_digest)
         segmented_correctness, segmented_hash = _candidate_status_from_stage(
             stage_counts_pass=segmented_pass,
             topology_geometry_hash_match_confirmed=topology_geometry_hash_match_confirmed,
@@ -203,8 +340,13 @@ def _run_segmented_count_probe(
             stage_counts_pass=compact_pass,
             topology_geometry_hash_match_confirmed=topology_geometry_hash_match_confirmed,
         )
+        digest_correctness, digest_hash = _candidate_status_from_stage(
+            stage_counts_pass=digest_pass,
+            topology_geometry_hash_match_confirmed=topology_geometry_hash_match_confirmed,
+        )
         segmented_total = _median([float(run["wall_sec"]) for run in hot_segmented])
         compact_total = _median([float(run["wall_sec"]) for run in hot_compact])
+        digest_total = _median([float(run["wall_sec"]) for run in hot_digest])
         common = {
             "pair_id": pair_id,
             "measurement_source": "pod_runtime",
@@ -235,7 +377,20 @@ def _run_segmented_count_probe(
             "host_materialization_in_hot_path": True,
             "runs": compact_runs,
         }
-        return segmented_row, compact_row
+        digest_row = {
+            **common,
+            "plan_id": "v4_numba_post_traversal_lsi_stream_digest",
+            "correctness_status": digest_correctness,
+            "measured_total_sec": digest_total,
+            "steady_state_sec": digest_total,
+            "compile_jit_sec": None,
+            "topology_geometry_hash_match": digest_hash,
+            "host_materialization_in_hot_path": False,
+            "host_row_materialization_used": False,
+            "host_digest_result_materialization_used": True,
+            "runs": digest_runs,
+        }
+        return segmented_row, compact_row, digest_row
     finally:
         if prepared_left is not None:
             prepared_left.close()
@@ -262,6 +417,7 @@ def build_dry_run_payload(args: argparse.Namespace) -> dict[str, object]:
                 "candidate_plans": (
                     "v4_numba_post_traversal_segmented_counts",
                     "v4_numba_post_traversal_mask_compact",
+                    "v4_numba_post_traversal_lsi_stream_digest",
                 ),
             }
             for row in availability
@@ -299,7 +455,7 @@ def build_probe_payload(args: argparse.Namespace) -> dict[str, object]:
             )
             continue
         try:
-            segmented, compact = _run_segmented_count_probe(
+            segmented, compact, digest = _run_segmented_count_probe(
                 pair_id=available.pair_id,
                 dataset_root=args.dataset_root,
                 warmup=args.warmup,
@@ -315,7 +471,7 @@ def build_probe_payload(args: argparse.Namespace) -> dict[str, object]:
                 }
             )
             continue
-        rows.extend([segmented, compact])
+        rows.extend([segmented, compact, digest])
     return {
         "schema": RAYJOIN_SECTION57_NUMBA_MEASURED_CANDIDATES_SCHEMA,
         "status": "measured" if rows else "no_rows_measured",

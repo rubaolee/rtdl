@@ -282,6 +282,12 @@ def _numba_candidate_plans(
         numba_available=numba_available,
         section57_device_columns_ready=section57_device_columns_ready,
     )
+    digest_status, digest_reason = _candidate_status(
+        exact_input_ready=exact_input_ready,
+        partner=partner,
+        numba_available=numba_available,
+        section57_device_columns_ready=section57_device_columns_ready,
+    )
     primary_stages = (
         Section57PlanStage(
             stage_id="broadphase_candidate_pairs",
@@ -337,6 +343,19 @@ def _numba_candidate_plans(
             optix_traversal_callback_injection=False,
         ),
     )
+    digest_stages = primary_stages[:-1] + (
+        Section57PlanStage(
+            stage_id="numba_exact_lsi_stream_digest",
+            role="post_traversal_geometry_digest",
+            owner="numba_partner",
+            primitive="exact_lsi_id_xy_stream_digest",
+            partner="numba",
+            execution_boundary="post_traversal_continuation",
+            device_resident_input_required=True,
+            numba_cuda_jit_required=True,
+            optix_traversal_callback_injection=False,
+        ),
+    )
     return (
         Section57CandidatePlan(
             plan_id="v4_numba_post_traversal_mask_compact",
@@ -359,6 +378,17 @@ def _numba_candidate_plans(
             stages=secondary_stages,
             status=secondary_status,
             skip_reason=secondary_reason,
+        ),
+        Section57CandidatePlan(
+            plan_id="v4_numba_post_traversal_lsi_stream_digest",
+            user_semantics="section57_polygon_overlay",
+            partner=partner,
+            selection_role="v4_numba_selected_plan",
+            expected_output_schema="exact_lsi_id_xy_stream_digest_not_full_overlay_output",
+            correctness_comparator="topology_geometry_hash_against_v2_14_and_author_when_available",
+            stages=digest_stages,
+            status=digest_status,
+            skip_reason=digest_reason,
         ),
     )
 
@@ -445,8 +475,6 @@ def _measurement_rejection_reason(
 ) -> str | None:
     if candidate is None:
         return "candidate_not_found_for_pair_and_plan"
-    if candidate.get("status") != "ready_for_measurement":
-        return "candidate_not_ready_for_measurement"
     if row.get("correctness_status") != "pass":
         return "correctness_not_pass"
     if _positive_float(row.get("measured_total_sec")) is None:
@@ -490,6 +518,15 @@ def _apply_measured_candidates(
             )
             if candidate is not None:
                 candidate.setdefault("measurement_rejections", []).append(reason)
+                candidate["status"] = "measured_rejected"
+                candidate["correctness_status"] = row.get("correctness_status", "not_pass")
+                candidate["rejection_reason"] = reason
+                candidate["measured_total_sec"] = _positive_float(row.get("measured_total_sec"))
+                candidate["steady_state_sec"] = _positive_float(row.get("steady_state_sec"))
+                candidate["measurement_source"] = row.get("measurement_source")
+                candidate["topology_geometry_hash_match"] = row.get("topology_geometry_hash_match")
+                candidate["device_column_route"] = row.get("device_column_route")
+                candidate["host_materialization_in_hot_path"] = row.get("host_materialization_in_hot_path")
             continue
         assert candidate is not None
         candidate["status"] = "measured"

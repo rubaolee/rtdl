@@ -2257,14 +2257,20 @@ def _numba_label_validation_kernel(cuda: Any):
 def _import_numba_stack() -> tuple[Any, Any]:
     try:
         import numpy as np
-        _activate_numba_cuda_redirector()
         from numba import cuda
     except ImportError as exc:
         raise ModuleNotFoundError(
             "Numba continuation execution requires numba, numpy, and CUDA; "
             "use an NVIDIA pod for validation"
         ) from exc
-    if not cuda.is_available():
+    # Driver visibility is more fragile than compiler-bit discovery on some
+    # pods. Import and validate numba.cuda before adjusting NVVM/PTX paths so a
+    # working driver context is not hidden by toolchain-only library paths.
+    driver_available = bool(cuda.is_available())
+    _activate_numba_cuda_redirector()
+    if not driver_available:
+        driver_available = bool(cuda.is_available())
+    if not driver_available:
         raise RuntimeError("Numba continuation execution requires CUDA; use an NVIDIA pod")
     return cuda, np
 

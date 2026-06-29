@@ -19,6 +19,10 @@ class V4Goal4806RayJoinNumbaCandidateProbeTest(unittest.TestCase):
         self.assertIn('"primitive_source": "exact_device_columns_prepared_left"', script)
         self.assertIn('"intersection_point_x"', script)
         self.assertIn('"intersection_point_columns_present"', script)
+        self.assertIn("v4_numba_post_traversal_lsi_stream_digest", script)
+        self.assertIn('"intersection_x_micro_sum"', script)
+        self.assertIn('"intersection_y_micro_sum"', script)
+        self.assertIn('"nonfinite_intersection_points"', script)
         self.assertNotIn("prepared.candidate_device_columns(", script)
 
     def test_stage_count_pass_without_full_hash_is_not_selector_pass(self) -> None:
@@ -63,6 +67,7 @@ class V4Goal4806RayJoinNumbaCandidateProbeTest(unittest.TestCase):
         self.assertEqual(payload["rows"], [])
         self.assertEqual(payload["planned_pairs"][0]["pair_id"], "county_zipcode")
         self.assertIn("v4_numba_post_traversal_segmented_counts", payload["planned_pairs"][0]["candidate_plans"])
+        self.assertIn("v4_numba_post_traversal_lsi_stream_digest", payload["planned_pairs"][0]["candidate_plans"])
 
 
 if __name__ == "__main__":

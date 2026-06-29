@@ -4599,9 +4599,37 @@ static __forceinline__ __device__ void segment_intersection_point_device(
     const double denom = rx * sy - ry * sx;
     const double qpx = qx - px;
     const double qpy = qy - py;
+    const double scale = sqrt(rx * rx + ry * ry) * sqrt(sx * sx + sy * sy);
+    const double threshold = 64.0 * 2.2204460492503131e-16 * fmax(1.0, scale);
+    if (!(denom == denom) || fabs(denom) <= threshold) {
+        const double min_left_x = fmin(left.x0, left.x1);
+        const double max_left_x = fmax(left.x0, left.x1);
+        const double min_left_y = fmin(left.y0, left.y1);
+        const double max_left_y = fmax(left.y0, left.y1);
+        const double min_right_x = fmin(right.x0, right.x1);
+        const double max_right_x = fmax(right.x0, right.x1);
+        const double min_right_y = fmin(right.y0, right.y1);
+        const double max_right_y = fmax(right.y0, right.y1);
+        const double overlap_min_x = fmax(min_left_x, min_right_x);
+        const double overlap_max_x = fmin(max_left_x, max_right_x);
+        const double overlap_min_y = fmax(min_left_y, min_right_y);
+        const double overlap_max_y = fmin(max_left_y, max_right_y);
+        if (overlap_min_x <= overlap_max_x && overlap_min_y <= overlap_max_y) {
+            *out_x = 0.5 * (overlap_min_x + overlap_max_x);
+            *out_y = 0.5 * (overlap_min_y + overlap_max_y);
+            return;
+        }
+        *out_x = 0.5 * (left.x0 + left.x1);
+        *out_y = 0.5 * (left.y0 + left.y1);
+        return;
+    }
     const double t = (qpx * sy - qpy * sx) / denom;
     *out_x = px + t * rx;
     *out_y = py + t * ry;
+    if (!(*out_x == *out_x) || !(*out_y == *out_y)) {
+        *out_x = 0.5 * (left.x0 + left.x1);
+        *out_y = 0.5 * (left.y0 + left.y1);
+    }
 }
 
 struct RayjoinLine {

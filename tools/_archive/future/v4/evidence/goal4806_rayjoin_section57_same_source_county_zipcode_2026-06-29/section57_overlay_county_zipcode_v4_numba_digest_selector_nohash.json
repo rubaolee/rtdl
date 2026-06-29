@@ -1,0 +1,618 @@
+{
+  "candidate_scoreboard": [
+    {
+      "compile_jit_sec": null,
+      "correctness_comparator": "topology_geometry_hash_against_v2_14_and_author_when_available",
+      "correctness_status": "stage_count_pass_full_overlay_hash_not_confirmed",
+      "device_column_route": true,
+      "expected_output_schema": "overlay_valid_pair_rows_then_optional_chain_assembly",
+      "host_materialization_in_hot_path": true,
+      "measured_total_sec": 0.12148618698120117,
+      "measurement_policy": {
+        "compile_jit_overhead_separated": true,
+        "repeat": 3,
+        "warmup": 1
+      },
+      "measurement_rejections": [
+        "correctness_not_pass"
+      ],
+      "measurement_source": "pod_runtime",
+      "pair_id": "county_zipcode",
+      "paper_label": "County x Zipcode",
+      "partner": "numba",
+      "plan_id": "v4_numba_post_traversal_mask_compact",
+      "rejection_reason": "correctness_not_pass",
+      "selection_role": "v4_numba_selected_plan",
+      "skip_reason": "Numba CUDA is not available on this machine.",
+      "stages": [
+        {
+          "device_resident_input_required": true,
+          "execution_boundary": "pre_traversal_or_native_query",
+          "numba_cuda_jit_required": false,
+          "optix_traversal_callback_injection": false,
+          "owner": "rtdl_v4",
+          "partner": null,
+          "primitive": "shape_pair_relation_or_aabb_index_query",
+          "role": "candidate_pair_generation",
+          "stage_id": "broadphase_candidate_pairs"
+        },
+        {
+          "device_resident_input_required": true,
+          "execution_boundary": "native_rt_traversal",
+          "numba_cuda_jit_required": false,
+          "optix_traversal_callback_injection": false,
+          "owner": "rtdl_v4",
+          "partner": null,
+          "primitive": "ray_segment_intersection_and_point_location",
+          "role": "rayjoin_lsi_pip_refinement",
+          "stage_id": "rt_refinement_lsi_pip"
+        },
+        {
+          "device_resident_input_required": true,
+          "execution_boundary": "post_traversal_refinement",
+          "numba_cuda_jit_required": true,
+          "optix_traversal_callback_injection": false,
+          "owner": "numba_partner",
+          "partner": "numba",
+          "primitive": "section57_overlay_valid_pair_mask",
+          "role": "post_traversal_valid_pair_filter",
+          "stage_id": "numba_valid_pair_mask"
+        },
+        {
+          "device_resident_input_required": true,
+          "execution_boundary": "post_traversal_continuation",
+          "numba_cuda_jit_required": true,
+          "optix_traversal_callback_injection": false,
+          "owner": "numba_partner",
+          "partner": "numba",
+          "primitive": "compact_mask_i64",
+          "role": "post_traversal_compaction",
+          "stage_id": "numba_mask_compaction"
+        }
+      ],
+      "status": "measured_rejected",
+      "steady_state_sec": 0.12148618698120117,
+      "topology_geometry_hash_match": false,
+      "user_semantics": "section57_polygon_overlay"
+    },
+    {
+      "compile_jit_sec": null,
+      "correctness_comparator": "topology_geometry_hash_against_v2_14_and_author_when_available",
+      "correctness_status": "stage_count_pass_full_overlay_hash_not_confirmed",
+      "device_column_route": true,
+      "expected_output_schema": "overlay_grouped_counts_and_witness_summaries",
+      "host_materialization_in_hot_path": false,
+      "measured_total_sec": 0.18558117002248764,
+      "measurement_policy": {
+        "compile_jit_overhead_separated": true,
+        "repeat": 3,
+        "warmup": 1
+      },
+      "measurement_rejections": [
+        "correctness_not_pass"
+      ],
+      "measurement_source": "pod_runtime",
+      "pair_id": "county_zipcode",
+      "paper_label": "County x Zipcode",
+      "partner": "numba",
+      "plan_id": "v4_numba_post_traversal_segmented_counts",
+      "rejection_reason": "correctness_not_pass",
+      "selection_role": "v4_numba_selected_plan",
+      "skip_reason": "Numba CUDA is not available on this machine.",
+      "stages": [
+        {
+          "device_resident_input_required": true,
+          "execution_boundary": "pre_traversal_or_native_query",
+          "numba_cuda_jit_required": false,
+          "optix_traversal_callback_injection": false,
+          "owner": "rtdl_v4",
+          "partner": null,
+          "primitive": "shape_pair_relation_or_aabb_index_query",
+          "role": "candidate_pair_generation",
+          "stage_id": "broadphase_candidate_pairs"
+        },
+        {
+          "device_resident_input_required": true,
+          "execution_boundary": "native_rt_traversal",
+          "numba_cuda_jit_required": false,
+          "optix_traversal_callback_injection": false,
+          "owner": "rtdl_v4",
+          "partner": null,
+          "primitive": "ray_segment_intersection_and_point_location",
+          "role": "rayjoin_lsi_pip_refinement",
+          "stage_id": "rt_refinement_lsi_pip"
+        },
+        {
+          "device_resident_input_required": true,
+          "execution_boundary": "post_traversal_refinement",
+          "numba_cuda_jit_required": true,
+          "optix_traversal_callback_injection": false,
+          "owner": "numba_partner",
+          "partner": "numba",
+          "primitive": "section57_overlay_valid_pair_mask",
+          "role": "post_traversal_valid_pair_filter",
+          "stage_id": "numba_valid_pair_mask"
+        },
+        {
+          "device_resident_input_required": true,
+          "execution_boundary": "post_traversal_continuation",
+          "numba_cuda_jit_required": true,
+          "optix_traversal_callback_injection": false,
+          "owner": "numba_partner",
+          "partner": "numba",
+          "primitive": "segmented_count_i64",
+          "role": "post_traversal_grouped_count",
+          "stage_id": "numba_segmented_overlay_counts"
+        }
+      ],
+      "status": "measured_rejected",
+      "steady_state_sec": 0.18558117002248764,
+      "topology_geometry_hash_match": false,
+      "user_semantics": "section57_polygon_overlay"
+    },
+    {
+      "compile_jit_sec": null,
+      "correctness_comparator": "topology_geometry_hash_against_v2_14_and_author_when_available",
+      "correctness_status": "stage_count_pass_full_overlay_hash_not_confirmed",
+      "device_column_route": true,
+      "expected_output_schema": "exact_lsi_id_xy_stream_digest_not_full_overlay_output",
+      "host_materialization_in_hot_path": false,
+      "measured_total_sec": 0.16212832927703857,
+      "measurement_policy": {
+        "compile_jit_overhead_separated": true,
+        "repeat": 3,
+        "warmup": 1
+      },
+      "measurement_rejections": [
+        "correctness_not_pass"
+      ],
+      "measurement_source": "pod_runtime",
+      "pair_id": "county_zipcode",
+      "paper_label": "County x Zipcode",
+      "partner": "numba",
+      "plan_id": "v4_numba_post_traversal_lsi_stream_digest",
+      "rejection_reason": "correctness_not_pass",
+      "selection_role": "v4_numba_selected_plan",
+      "skip_reason": "Numba CUDA is not available on this machine.",
+      "stages": [
+        {
+          "device_resident_input_required": true,
+          "execution_boundary": "pre_traversal_or_native_query",
+          "numba_cuda_jit_required": false,
+          "optix_traversal_callback_injection": false,
+          "owner": "rtdl_v4",
+          "partner": null,
+          "primitive": "shape_pair_relation_or_aabb_index_query",
+          "role": "candidate_pair_generation",
+          "stage_id": "broadphase_candidate_pairs"
+        },
+        {
+          "device_resident_input_required": true,
+          "execution_boundary": "native_rt_traversal",
+          "numba_cuda_jit_required": false,
+          "optix_traversal_callback_injection": false,
+          "owner": "rtdl_v4",
+          "partner": null,
+          "primitive": "ray_segment_intersection_and_point_location",
+          "role": "rayjoin_lsi_pip_refinement",
+          "stage_id": "rt_refinement_lsi_pip"
+        },
+        {
+          "device_resident_input_required": true,
+          "execution_boundary": "post_traversal_refinement",
+          "numba_cuda_jit_required": true,
+          "optix_traversal_callback_injection": false,
+          "owner": "numba_partner",
+          "partner": "numba",
+          "primitive": "section57_overlay_valid_pair_mask",
+          "role": "post_traversal_valid_pair_filter",
+          "stage_id": "numba_valid_pair_mask"
+        },
+        {
+          "device_resident_input_required": true,
+          "execution_boundary": "post_traversal_continuation",
+          "numba_cuda_jit_required": true,
+          "optix_traversal_callback_injection": false,
+          "owner": "numba_partner",
+          "partner": "numba",
+          "primitive": "exact_lsi_id_xy_stream_digest",
+          "role": "post_traversal_geometry_digest",
+          "stage_id": "numba_exact_lsi_stream_digest"
+        }
+      ],
+      "status": "measured_rejected",
+      "steady_state_sec": 0.16212832927703857,
+      "topology_geometry_hash_match": false,
+      "user_semantics": "section57_polygon_overlay"
+    }
+  ],
+  "claim_classification": "blocked_missing_author_baseline",
+  "columns": [
+    "author_code",
+    "v2_14_exact_suite",
+    "v4_numba_selected_plan"
+  ],
+  "dataset_root": "/workspace/rayjoin_section57_same_source_cdb",
+  "elapsed_planner_sec": 0.006834454834461212,
+  "input_provenance": "same_source_regenerated_cdb",
+  "measurement_import": {
+    "accepted_count": 0,
+    "path": "artifacts/section57_same_source_county_zipcode_v4_numba_digest/section57_v4_numba_candidate_measurements_exact_xy_digest_after_native_fallback_nohash.json",
+    "provided": true,
+    "rejected_count": 3,
+    "rejections": [
+      {
+        "pair_id": "county_zipcode",
+        "plan_id": "v4_numba_post_traversal_segmented_counts",
+        "reason": "correctness_not_pass"
+      },
+      {
+        "pair_id": "county_zipcode",
+        "plan_id": "v4_numba_post_traversal_mask_compact",
+        "reason": "correctness_not_pass"
+      },
+      {
+        "pair_id": "county_zipcode",
+        "plan_id": "v4_numba_post_traversal_lsi_stream_digest",
+        "reason": "correctness_not_pass"
+      }
+    ],
+    "schema": "rtdl.v4.rayjoin.section57_numba_measured_candidates.v1"
+  },
+  "non_authorizations": {
+    "full_paper_reproduction_claim": false,
+    "public_high_performance_claim": false,
+    "v4_1_arbitrary_callback_claim": false
+  },
+  "numba_partner_contract": {
+    "device_resident_input_required": true,
+    "execution_boundary": "post_traversal_refinement_or_continuation",
+    "existing_numba_continuations": [
+      "compact_mask_i64",
+      "segmented_count_i64"
+    ],
+    "host_materialization_in_hot_path_allowed": false,
+    "not_wrapper_theater_requirement": "A valid runtime execution must compile a Numba CUDA kernel and run it on device-resident columns produced by RTDL/V4 traversal stages.",
+    "numba_cuda_jit_factory": "_numba_section57_overlay_valid_pair_mask_kernel_factory",
+    "numba_cuda_jit_operation": "section57_overlay_valid_pair_mask",
+    "numba_cuda_jit_required": true,
+    "optix_traversal_callback_injection": false,
+    "partner": "numba",
+    "v4_1_arbitrary_callback_scope_creep": false
+  },
+  "output_dir": "artifacts/rayjoin_section57_numba_auto",
+  "pairs": [
+    "county_zipcode"
+  ],
+  "rows": [
+    {
+      "baselines": {
+        "author_code": {
+          "column": "author_code",
+          "correctness_required": "topology_geometry_hash_match_when_available",
+          "performance_required": "same_section57_contract_timing_when_available",
+          "polyover_exec": null,
+          "polyover_exec_exists": false,
+          "query_exec": null,
+          "query_exec_exists": false,
+          "required_for_full_paper_reproduction_claim": true,
+          "status": "blocked_missing_author_baseline"
+        },
+        "v2_14_exact_suite": {
+          "column": "v2_14_exact_suite",
+          "command": "python scripts/rtdl_v2_14_benchmark_run_plan.py --overlay-dataset-root /workspace/rayjoin_section57_same_source_cdb --overlay-pairs county_zipcode",
+          "correctness_required": "same_section57_contract",
+          "status": "ready"
+        }
+      },
+      "blocker": null,
+      "candidate_plans": [
+        {
+          "compile_jit_sec": null,
+          "correctness_comparator": "topology_geometry_hash_against_v2_14_and_author_when_available",
+          "correctness_status": "stage_count_pass_full_overlay_hash_not_confirmed",
+          "device_column_route": true,
+          "expected_output_schema": "overlay_valid_pair_rows_then_optional_chain_assembly",
+          "host_materialization_in_hot_path": true,
+          "measured_total_sec": 0.12148618698120117,
+          "measurement_policy": {
+            "compile_jit_overhead_separated": true,
+            "repeat": 3,
+            "warmup": 1
+          },
+          "measurement_rejections": [
+            "correctness_not_pass"
+          ],
+          "measurement_source": "pod_runtime",
+          "pair_id": "county_zipcode",
+          "paper_label": "County x Zipcode",
+          "partner": "numba",
+          "plan_id": "v4_numba_post_traversal_mask_compact",
+          "rejection_reason": "correctness_not_pass",
+          "selection_role": "v4_numba_selected_plan",
+          "skip_reason": "Numba CUDA is not available on this machine.",
+          "stages": [
+            {
+              "device_resident_input_required": true,
+              "execution_boundary": "pre_traversal_or_native_query",
+              "numba_cuda_jit_required": false,
+              "optix_traversal_callback_injection": false,
+              "owner": "rtdl_v4",
+              "partner": null,
+              "primitive": "shape_pair_relation_or_aabb_index_query",
+              "role": "candidate_pair_generation",
+              "stage_id": "broadphase_candidate_pairs"
+            },
+            {
+              "device_resident_input_required": true,
+              "execution_boundary": "native_rt_traversal",
+              "numba_cuda_jit_required": false,
+              "optix_traversal_callback_injection": false,
+              "owner": "rtdl_v4",
+              "partner": null,
+              "primitive": "ray_segment_intersection_and_point_location",
+              "role": "rayjoin_lsi_pip_refinement",
+              "stage_id": "rt_refinement_lsi_pip"
+            },
+            {
+              "device_resident_input_required": true,
+              "execution_boundary": "post_traversal_refinement",
+              "numba_cuda_jit_required": true,
+              "optix_traversal_callback_injection": false,
+              "owner": "numba_partner",
+              "partner": "numba",
+              "primitive": "section57_overlay_valid_pair_mask",
+              "role": "post_traversal_valid_pair_filter",
+              "stage_id": "numba_valid_pair_mask"
+            },
+            {
+              "device_resident_input_required": true,
+              "execution_boundary": "post_traversal_continuation",
+              "numba_cuda_jit_required": true,
+              "optix_traversal_callback_injection": false,
+              "owner": "numba_partner",
+              "partner": "numba",
+              "primitive": "compact_mask_i64",
+              "role": "post_traversal_compaction",
+              "stage_id": "numba_mask_compaction"
+            }
+          ],
+          "status": "measured_rejected",
+          "steady_state_sec": 0.12148618698120117,
+          "topology_geometry_hash_match": false,
+          "user_semantics": "section57_polygon_overlay"
+        },
+        {
+          "compile_jit_sec": null,
+          "correctness_comparator": "topology_geometry_hash_against_v2_14_and_author_when_available",
+          "correctness_status": "stage_count_pass_full_overlay_hash_not_confirmed",
+          "device_column_route": true,
+          "expected_output_schema": "overlay_grouped_counts_and_witness_summaries",
+          "host_materialization_in_hot_path": false,
+          "measured_total_sec": 0.18558117002248764,
+          "measurement_policy": {
+            "compile_jit_overhead_separated": true,
+            "repeat": 3,
+            "warmup": 1
+          },
+          "measurement_rejections": [
+            "correctness_not_pass"
+          ],
+          "measurement_source": "pod_runtime",
+          "pair_id": "county_zipcode",
+          "paper_label": "County x Zipcode",
+          "partner": "numba",
+          "plan_id": "v4_numba_post_traversal_segmented_counts",
+          "rejection_reason": "correctness_not_pass",
+          "selection_role": "v4_numba_selected_plan",
+          "skip_reason": "Numba CUDA is not available on this machine.",
+          "stages": [
+            {
+              "device_resident_input_required": true,
+              "execution_boundary": "pre_traversal_or_native_query",
+              "numba_cuda_jit_required": false,
+              "optix_traversal_callback_injection": false,
+              "owner": "rtdl_v4",
+              "partner": null,
+              "primitive": "shape_pair_relation_or_aabb_index_query",
+              "role": "candidate_pair_generation",
+              "stage_id": "broadphase_candidate_pairs"
+            },
+            {
+              "device_resident_input_required": true,
+              "execution_boundary": "native_rt_traversal",
+              "numba_cuda_jit_required": false,
+              "optix_traversal_callback_injection": false,
+              "owner": "rtdl_v4",
+              "partner": null,
+              "primitive": "ray_segment_intersection_and_point_location",
+              "role": "rayjoin_lsi_pip_refinement",
+              "stage_id": "rt_refinement_lsi_pip"
+            },
+            {
+              "device_resident_input_required": true,
+              "execution_boundary": "post_traversal_refinement",
+              "numba_cuda_jit_required": true,
+              "optix_traversal_callback_injection": false,
+              "owner": "numba_partner",
+              "partner": "numba",
+              "primitive": "section57_overlay_valid_pair_mask",
+              "role": "post_traversal_valid_pair_filter",
+              "stage_id": "numba_valid_pair_mask"
+            },
+            {
+              "device_resident_input_required": true,
+              "execution_boundary": "post_traversal_continuation",
+              "numba_cuda_jit_required": true,
+              "optix_traversal_callback_injection": false,
+              "owner": "numba_partner",
+              "partner": "numba",
+              "primitive": "segmented_count_i64",
+              "role": "post_traversal_grouped_count",
+              "stage_id": "numba_segmented_overlay_counts"
+            }
+          ],
+          "status": "measured_rejected",
+          "steady_state_sec": 0.18558117002248764,
+          "topology_geometry_hash_match": false,
+          "user_semantics": "section57_polygon_overlay"
+        },
+        {
+          "compile_jit_sec": null,
+          "correctness_comparator": "topology_geometry_hash_against_v2_14_and_author_when_available",
+          "correctness_status": "stage_count_pass_full_overlay_hash_not_confirmed",
+          "device_column_route": true,
+          "expected_output_schema": "exact_lsi_id_xy_stream_digest_not_full_overlay_output",
+          "host_materialization_in_hot_path": false,
+          "measured_total_sec": 0.16212832927703857,
+          "measurement_policy": {
+            "compile_jit_overhead_separated": true,
+            "repeat": 3,
+            "warmup": 1
+          },
+          "measurement_rejections": [
+            "correctness_not_pass"
+          ],
+          "measurement_source": "pod_runtime",
+          "pair_id": "county_zipcode",
+          "paper_label": "County x Zipcode",
+          "partner": "numba",
+          "plan_id": "v4_numba_post_traversal_lsi_stream_digest",
+          "rejection_reason": "correctness_not_pass",
+          "selection_role": "v4_numba_selected_plan",
+          "skip_reason": "Numba CUDA is not available on this machine.",
+          "stages": [
+            {
+              "device_resident_input_required": true,
+              "execution_boundary": "pre_traversal_or_native_query",
+              "numba_cuda_jit_required": false,
+              "optix_traversal_callback_injection": false,
+              "owner": "rtdl_v4",
+              "partner": null,
+              "primitive": "shape_pair_relation_or_aabb_index_query",
+              "role": "candidate_pair_generation",
+              "stage_id": "broadphase_candidate_pairs"
+            },
+            {
+              "device_resident_input_required": true,
+              "execution_boundary": "native_rt_traversal",
+              "numba_cuda_jit_required": false,
+              "optix_traversal_callback_injection": false,
+              "owner": "rtdl_v4",
+              "partner": null,
+              "primitive": "ray_segment_intersection_and_point_location",
+              "role": "rayjoin_lsi_pip_refinement",
+              "stage_id": "rt_refinement_lsi_pip"
+            },
+            {
+              "device_resident_input_required": true,
+              "execution_boundary": "post_traversal_refinement",
+              "numba_cuda_jit_required": true,
+              "optix_traversal_callback_injection": false,
+              "owner": "numba_partner",
+              "partner": "numba",
+              "primitive": "section57_overlay_valid_pair_mask",
+              "role": "post_traversal_valid_pair_filter",
+              "stage_id": "numba_valid_pair_mask"
+            },
+            {
+              "device_resident_input_required": true,
+              "execution_boundary": "post_traversal_continuation",
+              "numba_cuda_jit_required": true,
+              "optix_traversal_callback_injection": false,
+              "owner": "numba_partner",
+              "partner": "numba",
+              "primitive": "exact_lsi_id_xy_stream_digest",
+              "role": "post_traversal_geometry_digest",
+              "stage_id": "numba_exact_lsi_stream_digest"
+            }
+          ],
+          "status": "measured_rejected",
+          "steady_state_sec": 0.16212832927703857,
+          "topology_geometry_hash_match": false,
+          "user_semantics": "section57_polygon_overlay"
+        }
+      ],
+      "correctness_gate": {
+        "row_count_only_sufficient": false,
+        "status": "not_run",
+        "topology_geometry_hash_required": true
+      },
+      "exact_input_ready": true,
+      "left_path": "/workspace/rayjoin_section57_same_source_cdb/point_cdb/dtl_cnty/dtl_cnty_Point.cdb",
+      "pair_id": "county_zipcode",
+      "paper_label": "County x Zipcode",
+      "paper_rayjoin_table4_seconds": {
+        "preprocessing_sec": 0.07,
+        "processing_sec": 0.12
+      },
+      "right_path": "/workspace/rayjoin_section57_same_source_cdb/point_cdb/USAZIPCodeArea/USAZIPCodeArea_Point.cdb"
+    }
+  ],
+  "runtime_probe": {
+    "checked_runtime": false,
+    "numba_cuda_available": false,
+    "section57_device_column_components": {
+      "claim_boundary": "Static component presence is not a paper-reproduction or speedup claim.",
+      "components": {
+        "closed_shape_relation_status_device_columns": {
+          "method": "PreparedOptixPointClosedShapeMembership2D.relation_status_candidate_device_columns_prepared_points",
+          "python_method_declared": true,
+          "symbol_constant": "OPTIX_CLOSED_SHAPE_MEMBERSHIP_RELATION_STATUS_CANDIDATE_DEVICE_COLUMNS_PREPARED_POINTS_SYMBOL",
+          "symbol_declared": true
+        },
+        "numba_relation_status_continuation": {
+          "method": "PreparedClosedShapeMembershipCandidateRefinerCupy.count_relation_status_corrected_prepared_points_numba",
+          "partner": "numba",
+          "python_method_declared": true
+        },
+        "segment_pair_candidate_device_columns": {
+          "method": "PreparedOptixSegmentPairIntersection.candidate_device_columns",
+          "python_method_declared": true,
+          "symbol_constant": "OPTIX_SEGMENT_PAIR_CANDIDATE_DEVICE_COLUMNS_SYMBOL",
+          "symbol_declared": true
+        },
+        "segment_pair_exact_device_columns_prepared_left": {
+          "method": "PreparedOptixSegmentPairIntersection.exact_device_columns_prepared_left",
+          "python_method_declared": true,
+          "symbol_constant": "OPTIX_SEGMENT_PAIR_EXACT_DEVICE_COLUMNS_PREPARED_LEFT_SYMBOL",
+          "symbol_declared": true
+        },
+        "segment_pair_grouped_count_device_columns": {
+          "method": "PreparedOptixSegmentPairIntersection.left_id_count_device_columns",
+          "python_method_declared": true,
+          "symbol_constant": "OPTIX_SEGMENT_PAIR_LEFT_ID_COUNT_DEVICE_COLUMNS_SYMBOL",
+          "symbol_declared": true
+        }
+      },
+      "end_to_end_composition_status": "components_present_pod_validation_required",
+      "performance_evidence_status": "not_measured",
+      "required": true,
+      "static_components_declared": true
+    },
+    "section57_device_columns_ready": true,
+    "section57_device_columns_requirement": "V4+Numba Section 5.7 performance measurement requires RTDL to expose overlay candidate/refinement streams as device-resident columns. Host overlay summaries are not sufficient for this route."
+  },
+  "schema": "rtdl.v4.rayjoin.section57_numba_auto_primitive_planner.v1",
+  "selected_plan": null,
+  "selection_policy": {
+    "hardcoded_default_allowed": false,
+    "measured_candidate_required": true,
+    "name": "fastest_valid",
+    "valid_measurement_required": {
+      "correctness_status": "pass",
+      "device_column_route": true,
+      "host_materialization_in_hot_path": false,
+      "measurement_source": "pod_runtime",
+      "schema": "rtdl.v4.rayjoin.section57_numba_measured_candidates.v1",
+      "topology_geometry_hash_match": true
+    }
+  },
+  "status": "candidate_planner_not_release_claim",
+  "user_semantics": {
+    "partner": "numba",
+    "primitive_names_required_from_user": false,
+    "select": "fastest_valid",
+    "workload": "rayjoin_section57_polygon_overlay"
+  }
+}

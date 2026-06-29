@@ -1,0 +1,125 @@
+{
+  "blockers": [],
+  "claim_boundary": "Rows are candidate-stage V4+Numba measurements. The selector accepts only rows with correctness_status='pass', confirmed topology/geometry hash match, device-column route, and no host materialization in the hot path.",
+  "dataset_root": "/workspace/rayjoin_section57_same_source_cdb",
+  "repeat": 1,
+  "rows": [
+    {
+      "compile_jit_sec": null,
+      "correctness_status": "stage_count_pass_full_overlay_hash_not_confirmed",
+      "device_column_route": true,
+      "full_polygon_overlay_hash_required_for_selector_pass": true,
+      "host_materialization_in_hot_path": false,
+      "measured_total_sec": 0.18558117002248764,
+      "measurement_scope": "v4_numba_post_traversal_candidate_stage",
+      "measurement_source": "pod_runtime",
+      "pair_id": "county_zipcode",
+      "plan_id": "v4_numba_post_traversal_segmented_counts",
+      "runs": [
+        {
+          "candidate_column_traversal_sec": 0.007678389,
+          "candidate_row_count": 965844,
+          "expected_lsi_count": 965844,
+          "intersection_point_columns_present": true,
+          "is_warmup": false,
+          "iteration": 0,
+          "native_symbol": "rtdl_optix_prepared_segment_pair_exact_device_columns_prepared_left",
+          "numba_elapsed_sec": 0.16195452958345413,
+          "primitive_source": "exact_device_columns_prepared_left",
+          "segmented_count_sum": 965844,
+          "stage_counts_pass": true,
+          "wall_sec": 0.18558117002248764
+        }
+      ],
+      "steady_state_sec": 0.18558117002248764,
+      "topology_geometry_hash_match": false,
+      "v2_14_lsi_count": 965844
+    },
+    {
+      "compile_jit_sec": null,
+      "correctness_status": "stage_count_pass_full_overlay_hash_not_confirmed",
+      "device_column_route": true,
+      "full_polygon_overlay_hash_required_for_selector_pass": true,
+      "host_materialization_in_hot_path": true,
+      "measured_total_sec": 0.12148618698120117,
+      "measurement_scope": "v4_numba_post_traversal_candidate_stage",
+      "measurement_source": "pod_runtime",
+      "pair_id": "county_zipcode",
+      "plan_id": "v4_numba_post_traversal_mask_compact",
+      "runs": [
+        {
+          "candidate_row_count": 965844,
+          "compact_count": 965844,
+          "expected_lsi_count": 965844,
+          "host_prefix_sum_used": true,
+          "intersection_point_columns_present": true,
+          "is_warmup": false,
+          "iteration": 0,
+          "native_symbol": "rtdl_optix_prepared_segment_pair_exact_device_columns_prepared_left",
+          "numba_elapsed_sec": 0.12056930363178253,
+          "primitive_source": "exact_device_columns_prepared_left",
+          "stage_counts_pass": true,
+          "wall_sec": 0.12148618698120117
+        }
+      ],
+      "steady_state_sec": 0.12148618698120117,
+      "topology_geometry_hash_match": false,
+      "v2_14_lsi_count": 965844
+    },
+    {
+      "compile_jit_sec": null,
+      "correctness_status": "stage_count_pass_full_overlay_hash_not_confirmed",
+      "device_column_route": true,
+      "full_polygon_overlay_hash_required_for_selector_pass": true,
+      "host_digest_result_materialization_used": true,
+      "host_materialization_in_hot_path": false,
+      "host_row_materialization_used": false,
+      "measured_total_sec": 0.16212832927703857,
+      "measurement_scope": "v4_numba_post_traversal_candidate_stage",
+      "measurement_source": "pod_runtime",
+      "pair_id": "county_zipcode",
+      "plan_id": "v4_numba_post_traversal_lsi_stream_digest",
+      "runs": [
+        {
+          "candidate_column_traversal_sec": 0.007678389,
+          "candidate_row_count": 965844,
+          "expected_lsi_count": 965844,
+          "intersection_point_columns_present": true,
+          "is_warmup": false,
+          "iteration": 0,
+          "native_symbol": "rtdl_optix_prepared_segment_pair_exact_device_columns_prepared_left",
+          "primitive_source": "exact_device_columns_prepared_left",
+          "stage_counts_pass": true,
+          "stream_digest": {
+            "coordinate_scale": 1000000,
+            "elapsed_sec": 0.16212832927703857,
+            "host_digest_result_materialization_used": true,
+            "host_row_materialization_used": false,
+            "intersection_x_micro_sum": -89909278587144,
+            "intersection_y_micro_sum": 36405147849366,
+            "left_id_sum": 3997578913974,
+            "nonfinite_intersection_points": 0,
+            "right_id_sum": 10977120967318,
+            "row_count": 965844,
+            "worker_count": 32768
+          },
+          "wall_sec": 0.16212832927703857
+        }
+      ],
+      "steady_state_sec": 0.16212832927703857,
+      "topology_geometry_hash_match": false,
+      "v2_14_lsi_count": 965844
+    }
+  ],
+  "rt_core": {
+    "gpu_names": [
+      "NVIDIA RTX 4000 Ada Generation"
+    ],
+    "rt_core_likely": true,
+    "stderr": "",
+    "stdout": "NVIDIA RTX 4000 Ada Generation, 550.127.05\n"
+  },
+  "schema": "rtdl.v4.rayjoin.section57_numba_measured_candidates.v1",
+  "status": "measured",
+  "warmup": 0
+}

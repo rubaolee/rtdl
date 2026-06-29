@@ -47,7 +47,9 @@ class V4Goal4806RayJoinNumbaAutoPlannerTest(unittest.TestCase):
         )
         scoreboard = payload["candidate_scoreboard"]
 
-        self.assertGreaterEqual(len(scoreboard), 2)
+        plan_ids = {candidate["plan_id"] for candidate in scoreboard}
+        self.assertGreaterEqual(len(scoreboard), 3)
+        self.assertIn("v4_numba_post_traversal_lsi_stream_digest", plan_ids)
         self.assertIsNone(payload["selected_plan"])
         self.assertTrue(payload["selection_policy"]["measured_candidate_required"])
         self.assertFalse(payload["selection_policy"]["hardcoded_default_allowed"])
