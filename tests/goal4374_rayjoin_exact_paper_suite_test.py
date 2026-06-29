@@ -1,6 +1,7 @@
 from pathlib import Path
 import importlib.util
 import json
+import math
 import os
 import subprocess
 import sys
@@ -524,11 +525,31 @@ class Goal4374RayjoinExactPaperSuiteTest(unittest.TestCase):
         ]
         stats: dict[str, int] = {}
 
-        midpoints, owners = overlay._midpoints_for_sorted_xsects(rows, 0, stats=stats)
+        midpoints, owners, scaled_midpoints = overlay._midpoints_for_sorted_xsects(rows, 0, stats=stats)
 
         self.assertEqual(midpoints, [(1.0, 0.0)])
+        self.assertEqual(len(scaled_midpoints), 1)
+        self.assertFalse(math.isfinite(scaled_midpoints[0][0]))
         self.assertEqual(len(owners), 1)
         self.assertEqual(stats["map0_nonfinite_midpoints_dropped"], 1)
+
+    def test_output_chain_midpoint_projection_exports_scaled_midpoints(self) -> None:
+        import rtdsl.rayjoin_overlay as overlay
+
+        rows = [
+            overlay.RayjoinOverlayIntersection(eid0=0, eid1=0, x=0.0, y=0.0, scaled_x=100.0, scaled_y=200.0),
+            overlay.RayjoinOverlayIntersection(eid0=0, eid1=1, x=2.0, y=0.0, scaled_x=300.0, scaled_y=200.0),
+        ]
+        midpoints, owners, scaled_midpoints = overlay._midpoints_for_sorted_xsects(
+            rows,
+            0,
+            scale_bounds=(-1.0, 3.0, -1.0, 1.0),
+            stats={},
+        )
+
+        self.assertEqual(len(midpoints), 1)
+        self.assertEqual(len(owners), 1)
+        self.assertEqual(scaled_midpoints, [(200.0, 200.0)])
 
     def test_large_point_location_stream_auto_uses_generic_adaptive_grouping(self) -> None:
         from rtdsl.rayjoin_overlay import _directed_segment_point_location_grouping_env

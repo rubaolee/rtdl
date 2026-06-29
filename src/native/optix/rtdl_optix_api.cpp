@@ -498,6 +498,28 @@ extern "C" int rtdl_optix_run_prepared_rayjoin_cdb_point_location_2d(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_run_prepared_rayjoin_cdb_point_location_scaled_2d(
+        void* prepared,
+        const RtdlRayjoinCdbScaledPoint* points, size_t point_count,
+        RtdlRayjoinCdbPointLocationRow** rows_out, size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared)
+            throw std::runtime_error("prepared CDB point-location handle must not be null");
+        if (!points && point_count != 0)
+            throw std::runtime_error("scaled points pointer must not be null when point_count is nonzero");
+        if (!rows_out || !row_count_out)
+            throw std::runtime_error("row output pointers must not be null");
+        run_prepared_rayjoin_cdb_point_location_scaled_2d_optix(
+            reinterpret_cast<PreparedRayjoinCdbPointLocation2D*>(prepared),
+            points,
+            point_count,
+            rows_out,
+            row_count_out);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_prepare_rayjoin_cdb_point_location_points_2d(
         void* prepared,
         const RtdlPoint* points, size_t point_count,

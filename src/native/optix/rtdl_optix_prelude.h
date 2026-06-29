@@ -125,6 +125,11 @@ struct RtdlPoint {
     double x, y;
 };
 
+struct RtdlRayjoinCdbScaledPoint {
+    uint32_t id;
+    double sx, sy;
+};
+
 struct RtdlAabb2D {
     uint32_t id;
     double min_x, min_y, max_x, max_y;
@@ -826,6 +831,11 @@ int  rtdl_optix_prepare_rayjoin_cdb_point_location_2d(
 int  rtdl_optix_run_prepared_rayjoin_cdb_point_location_2d(
          void* prepared,
          const RtdlPoint* points, size_t point_count,
+         RtdlRayjoinCdbPointLocationRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_run_prepared_rayjoin_cdb_point_location_scaled_2d(
+         void* prepared,
+         const RtdlRayjoinCdbScaledPoint* points, size_t point_count,
          RtdlRayjoinCdbPointLocationRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_prepare_rayjoin_cdb_point_location_points_2d(

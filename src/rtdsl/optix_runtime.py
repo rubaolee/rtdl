@@ -165,6 +165,14 @@ from .aggregate_tree_reference import _tree_node_rows
 from .aggregate_tree_reference import normalize_weighted_point_rows
 
 
+class _RtdlRayjoinCdbScaledPoint(ctypes.Structure):
+    _fields_ = [
+        ("id", ctypes.c_uint32),
+        ("sx", ctypes.c_double),
+        ("sy", ctypes.c_double),
+    ]
+
+
 _PREPARED_CACHE_MAX_ENTRIES = 8
 _prepared_optix_execution_cache: OrderedDict[tuple[object, ...], "PreparedOptixExecution"] = OrderedDict()
 _DB_MAX_ROWS_PER_JOB = 1_000_000
@@ -290,6 +298,9 @@ OPTIX_RAYJOIN_CDB_POINT_LOCATION_PREPARE_SYMBOL = (
 )
 OPTIX_RAYJOIN_CDB_POINT_LOCATION_RUN_SYMBOL = (
     "rtdl_optix_run_prepared_rayjoin_cdb_point_location_2d"
+)
+OPTIX_RAYJOIN_CDB_POINT_LOCATION_RUN_SCALED_SYMBOL = (
+    "rtdl_optix_run_prepared_rayjoin_cdb_point_location_scaled_2d"
 )
 OPTIX_RAYJOIN_CDB_POINT_LOCATION_COUNT_SYMBOL = (
     "rtdl_optix_count_prepared_rayjoin_cdb_point_location_2d"
@@ -4804,6 +4815,51 @@ class PreparedOptixRayjoinCdbPointLocation2D:
             return rows.to_dict_rows()
         finally:
             rows.close()
+
+    def run_scaled_raw(self, scaled_points) -> OptixRowView:
+        if self._closed:
+            raise RuntimeError("prepared OptiX RayJoin CDB point-location handle is closed")
+        import numpy as np
+
+        points = np.asarray(scaled_points, dtype=np.float64)
+        if points.ndim != 2 or points.shape[1] != 2:
+            raise ValueError("scaled_points must be an Nx2 array of scaled x/y coordinates")
+        count = int(points.shape[0])
+        records = (_RtdlRayjoinCdbScaledPoint * count)(
+            *(
+                _RtdlRayjoinCdbScaledPoint(index + 1, float(points[index, 0]), float(points[index, 1]))
+                for index in range(count)
+            )
+        )
+        run_symbol = _find_optional_backend_symbol(
+            self.library,
+            OPTIX_RAYJOIN_CDB_POINT_LOCATION_RUN_SCALED_SYMBOL,
+        )
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_RAYJOIN_CDB_POINT_LOCATION_RUN_SCALED_SYMBOL}; rebuild the OptiX backend"
+            )
+        rows_ptr = ctypes.POINTER(_RtdlRayjoinCdbPointLocationRow)()
+        row_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = run_symbol(
+            self.prepared_handle,
+            records,
+            count,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return OptixRowView(
+            library=self.library,
+            rows_ptr=rows_ptr,
+            row_count=row_count.value,
+            row_type=_RtdlRayjoinCdbPointLocationRow,
+            field_names=("point_id", "face_id", "segment_id", "hit_t"),
+        )
 
     def count_positive_faces(self, points) -> int:
         if self._closed:
@@ -10558,6 +10614,7 @@ def _get_last_rayjoin_cdb_point_location_phase_timings_from_library(
         3: "count_device_points",
         4: "segment_ids_device_points",
         5: "face_ids_device_points",
+        6: "scaled_rows",
     }.get(int(mode.value), "none")
     return {
         "mode": mode_name,
@@ -25522,6 +25579,15 @@ def _register_argtypes(lib) -> None:
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
+    point_location_scaled_run_argtypes = [
+        ctypes.c_void_p,
+        ctypes.POINTER(_RtdlRayjoinCdbScaledPoint),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(_RtdlRayjoinCdbPointLocationRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
     point_location_count_argtypes = [
         ctypes.c_void_p,
         ctypes.POINTER(_RtdlPoint),
@@ -25563,6 +25629,10 @@ def _register_argtypes(lib) -> None:
         OPTIX_RAYJOIN_CDB_POINT_LOCATION_RUN_SYMBOL,
     ):
         _register_optional(symbol_name, point_location_run_argtypes)
+    _register_optional(
+        OPTIX_RAYJOIN_CDB_POINT_LOCATION_RUN_SCALED_SYMBOL,
+        point_location_scaled_run_argtypes,
+    )
     for symbol_name in (
         OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_COUNT_SYMBOL,
         OPTIX_RAYJOIN_CDB_POINT_LOCATION_COUNT_SYMBOL,

@@ -1188,6 +1188,37 @@ class _PreparedPointLocationRunner:
         timings["hot_call_sec"] = time.perf_counter() - start
         return faces, timings
 
+    def faces_scaled(self, scaled_points):
+        import numpy as np
+
+        if self.prepared is None:
+            raise RuntimeError("prepared point-location runner is not open")
+        if self.backend != "optix" or not hasattr(self.prepared, "run_scaled_raw"):
+            raise RuntimeError("scaled point-location faces are available only on the OptiX RayJoin CDB route")
+        scaled = np.asarray(scaled_points, dtype=np.float64)
+        if scaled.ndim != 2 or scaled.shape[1] != 2:
+            raise ValueError("scaled_points must be an Nx2 array")
+        point_count = int(scaled.shape[0])
+        start = time.perf_counter()
+        rows = None
+        try:
+            with _rayjoin_cdb_point_location_env(self.query_map_id, self.scale_bounds):
+                rows = self.prepared.run_scaled_raw(scaled)
+                columns = rows.to_numpy_columns(copy=True)
+                timings = self.prepared.last_phase_timings() or {}
+        finally:
+            if rows is not None:
+                rows.close()
+
+        faces = np.zeros(point_count, dtype=np.uint32)
+        if point_count:
+            point_ids = columns["point_id"].astype(np.int64, copy=False)
+            faces[point_ids - 1] = columns["face_id"].astype(np.uint32, copy=False)
+        timings = dict(timings)
+        timings["hot_call_sec"] = time.perf_counter() - start
+        timings["point_input_contract"] = "rayjoin_scaled_fractional_point_coordinates"
+        return faces, timings
+
     def classify(self, points) -> tuple[int | None, dict[str, object]]:
         if self.prepared is None:
             raise RuntimeError("prepared point-location runner is not open")
@@ -1334,9 +1365,10 @@ def _midpoints_for_sorted_xsects(
     *,
     scale_bounds: tuple[float, float, float, float] | None = None,
     stats: dict[str, int] | None = None,
-) -> tuple[list[tuple[float, float]], list[RayjoinOverlayIntersection]]:
+) -> tuple[list[tuple[float, float]], list[RayjoinOverlayIntersection], list[tuple[float, float]]]:
     edge_attr = "eid0" if map_index == 0 else "eid1"
     midpoints: list[tuple[float, float]] = []
+    scaled_midpoints: list[tuple[float, float]] = []
     owners: list[RayjoinOverlayIntersection] = []
     dropped = 0
     unscale_constants = _rayjoin_unscale_constants(scale_bounds) if scale_bounds is not None else None
@@ -1356,13 +1388,18 @@ def _midpoints_for_sorted_xsects(
                 and right.scaled_y is not None
             ):
                 rrx, rry, ddeltax, ddeltay = unscale_constants
-                midpoint_x = ((float(left.scaled_x) + float(right.scaled_x)) * 0.5) * rrx + ddeltax
-                midpoint_y = ((float(left.scaled_y) + float(right.scaled_y)) * 0.5) * rry + ddeltay
+                scaled_midpoint_x = (float(left.scaled_x) + float(right.scaled_x)) * 0.5
+                scaled_midpoint_y = (float(left.scaled_y) + float(right.scaled_y)) * 0.5
+                midpoint_x = scaled_midpoint_x * rrx + ddeltax
+                midpoint_y = scaled_midpoint_y * rry + ddeltay
             else:
+                scaled_midpoint_x = float("nan")
+                scaled_midpoint_y = float("nan")
                 midpoint_x = (left.x + right.x) * 0.5
                 midpoint_y = (left.y + right.y) * 0.5
             if math.isfinite(midpoint_x) and math.isfinite(midpoint_y):
                 midpoints.append((midpoint_x, midpoint_y))
+                scaled_midpoints.append((scaled_midpoint_x, scaled_midpoint_y))
                 owners.append(left)
             else:
                 dropped += 1
@@ -1371,7 +1408,7 @@ def _midpoints_for_sorted_xsects(
         stats[f"map{map_index}_nonfinite_midpoints_dropped"] = (
             int(stats.get(f"map{map_index}_nonfinite_midpoints_dropped", 0)) + dropped
         )
-    return midpoints, owners
+    return midpoints, owners, scaled_midpoints
 
 
 def _assign_midpoint_faces(
@@ -1607,7 +1644,7 @@ def _run_rayjoin_overlay_packed(
             if xsects_sorted is None:
                 raise RuntimeError("overlay output-chain assembly requires sorted LSI rows")
             for map_index, locator in ((0, map0_in_map1), (1, map1_in_map0)):
-                midpoints, owners = _midpoints_for_sorted_xsects(
+                midpoints, owners, scaled_midpoints = _midpoints_for_sorted_xsects(
                     xsects_sorted[map_index],
                     map_index,
                     scale_bounds=scale_bounds,
@@ -1615,8 +1652,16 @@ def _run_rayjoin_overlay_packed(
                 )
                 midpoint_counts.append(len(midpoints))
                 if midpoints:
-                    midpoint_points = _packed_points_from_xy(midpoints)
-                    faces, midpoint_timings = locator.faces(midpoint_points, int(midpoint_points.count))
+                    use_scaled_points = (
+                        backend == "optix"
+                        and len(scaled_midpoints) == len(midpoints)
+                        and all(math.isfinite(x) and math.isfinite(y) for x, y in scaled_midpoints)
+                    )
+                    if use_scaled_points:
+                        faces, midpoint_timings = locator.faces_scaled(scaled_midpoints)
+                    else:
+                        midpoint_points = _packed_points_from_xy(midpoints)
+                        faces, midpoint_timings = locator.faces(midpoint_points, int(midpoint_points.count))
                     positive_count = _assign_midpoint_faces(owners, faces)
                 else:
                     positive_count = 0

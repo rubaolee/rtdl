@@ -191,18 +191,70 @@ RTDL repair sequence:
 | Python finite-overlap fallback | `29,253,849` | `119,730` | map0 `0`, map1 `0` | line `25` | fixed non-finite midpoint loss but still used double intersection reconstruction |
 | RayJoin scaled-rational intersection reconstruction | `29,253,844` | `119,708` | map0 `0`, map1 `0` | line `30,783` | matched the author output through the early duplicate-looking intersection chain; LSI coordinate semantics moved much closer to author |
 | scaled-rational intersection plus scaled-space midpoint generation | `29,253,843` | `119,708` | map0 `0`, map1 `0` | line `30,783` | did not remove the remaining first mismatch; the first difference is now a face-id/header mismatch, not a coordinate mismatch |
+| native fractional scaled midpoint PIP | `29,253,843` | `119,709` | map0 `0`, map1 `0` | line `30,733` | changed the midpoint PIP input contract from world-double packed points to `rayjoin_scaled_fractional_point_coordinates`; proved the V4 path can keep author-style internal midpoint coordinates through native point-location, but full output equality still fails |
+| scaled internal-distance sort hypothesis | `29,253,843` | `119,709` | map0 `0`, map1 `0` | line `30,733` | falsified; counts and first diff did not move, and `lsi_row_sort_sec` worsened from about `2.54s` to `6.09s`; this experiment was reverted and is not part of the retained implementation |
 
-The first remaining mismatch after the scaled reconstruction probes is:
+The first remaining mismatch after the retained fractional-scaled midpoint probe is:
 
 ```text
-line 30783
-author: 10262 2 10809 10810 66 71
-RTDL:   10262 2 10809 10810 72 73
+line 30733
+author: 10245 1 10793 10793 68 70
+RTDL:   10245 1 10793 10793 66 71
 ```
 
-The two following coordinate lines still match exactly at six printed decimals. That narrows the remaining issue: the LSI row count and early output coordinates are aligned much better, but RTDL's point-location/face-id semantics still diverge from author code on at least one boundary/tie case.
+The coordinate line immediately around this chain still matches at six printed decimals, and the mismatch is a one-point/zero-length output-chain header. That narrows the remaining issue: the LSI coordinate path and scaled midpoint path are much closer to author semantics, but RTDL's point-location/face-id or zero-length-chain inheritance semantics still diverge from author code on at least one boundary/tie case.
 
-The scaled-rational probe is useful progress, not completion. It moved the first mismatch from the first few output chains to a much later face-id divergence, but it did not establish full output equality.
+The scaled-rational and fractional-scaled midpoint probes are useful progress, not completion. They moved the first mismatch from the first few output chains to a much later face-id divergence and removed non-finite midpoint loss, but they did not establish full output equality.
+
+### Native Fractional Scaled Midpoint PIP Repair
+
+Retained implementation changes:
+
+- Native input surface: `RtdlRayjoinCdbScaledPoint`.
+- Native C ABI: `rtdl_optix_run_prepared_rayjoin_cdb_point_location_scaled_2d`.
+- Python wrapper: `PreparedOptixRayjoinCdbPointLocation2D.run_scaled_raw(...)`.
+- Overlay assembly route: `_midpoints_for_sorted_xsects(...)` now carries scaled midpoint coordinates when the LSI row includes RayJoin scaled intersection columns, and the OptiX output path uses `faces_scaled(...)`.
+- Runtime telemetry marks this path as `mode: scaled_rows` with `point_input_contract: rayjoin_scaled_fractional_point_coordinates`.
+
+POD validation:
+
+- OptiX native library rebuilt on the RTX 4000 Ada POD.
+- Export check: `rtdl_optix_run_prepared_rayjoin_cdb_point_location_scaled_2d` is present in `build/librtdl_optix.so`.
+- Local focused tests after the retained implementation: `41 tests OK`.
+- POD focused tests after the retained implementation and after reverting the falsified scaled-sort experiment: `16 tests OK`.
+
+Full same-source County x Zipcode run after this repair:
+
+- remote JSON: `/workspace/rtdl_goal4806_fast_min/artifacts/section57_same_source_county_zipcode_output_digest_after_fractional_scaled_midpoints/section57_overlay_county_zipcode_rtdl_optix_after_fractional_scaled_midpoints.json`
+- remote overlay: `/workspace/rtdl_goal4806_fast_min/artifacts/section57_same_source_county_zipcode_output_digest_after_fractional_scaled_midpoints/section57_overlay_county_zipcode_rtdl_optix_after_fractional_scaled_midpoints.overlay_optix.txt`
+- total: `406.7556656822562 sec`
+- compute without load/pack: `351.7736942842603 sec`
+- load/pack: `54.98197139799595 sec`
+- output chains: `29,253,843`
+- face count: `119,709`
+- midpoint PIP:
+  - map0 midpoints: `123,082`
+  - map1 midpoints: `141,510`
+  - non-finite midpoint drops: `0` / `0`
+  - map0 native midpoint mode: `scaled_rows`, `hot_call_sec 0.22088534384965897`
+  - map1 native midpoint mode: `scaled_rows`, `hot_call_sec 0.2320992350578308`
+- output comparison against author:
+  - author line count: `87,758,310`
+  - RTDL line count: `87,757,769`
+  - `cmp_exit`: `1`
+  - first difference: byte `655866`, line `30733`
+
+Failed/reverted hypothesis:
+
+- Hypothesis: output mismatch was caused by sorting intersections by world-double distance rather than internal/scaled distance along the edge.
+- Result: falsified on full data. Counts stayed `29,253,843` chains / `119,709` faces, first diff stayed line `30,733`, and sorting slowed materially.
+- Action: the scaled-sort code and its test were removed; it is not retained.
+
+Stopped diagnostic:
+
+- A temporary author-code instrumentation attempt was made to print the raw `mid_point_polygon_id` for the first mismatching intersection (`eid0=14137`, `eid1=8959134`).
+- The author source and binary were restored cleanly afterward.
+- The instrumented author run was stopped after it remained CPU-bound without reaching the debug output; this diagnostic did not produce evidence and is not used as a claim.
 
 ## Result: V4 + Numba
 

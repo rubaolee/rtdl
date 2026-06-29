@@ -1308,6 +1308,10 @@ struct GpuRayjoinCdbPoint {
     unsigned int has_scaled;
     long long sx;
     long long sy;
+    double sx_value;
+    double sy_value;
+    unsigned int has_fractional_scaled;
+    unsigned int pad;
 };
 
 struct GpuRayjoinCdbSegment {
@@ -1430,10 +1434,20 @@ static __forceinline__ __device__ bool vertical_ray_segment_scaled(
     if (point.has_scaled == 0u || segment.has_scaled == 0u) {
         return false;
     }
-    const long long x_min = segment.sx0 < segment.sx1 ? segment.sx0 : segment.sx1;
-    const long long x_max = segment.sx0 > segment.sx1 ? segment.sx0 : segment.sx1;
-    const long long excluded_x = query_map_id == 0u ? x_min : x_max;
-    if (point.sx < x_min || point.sx > x_max || point.sx == excluded_x) {
+    const long long x_min_i = segment.sx0 < segment.sx1 ? segment.sx0 : segment.sx1;
+    const long long x_max_i = segment.sx0 > segment.sx1 ? segment.sx0 : segment.sx1;
+    const long long excluded_x_i = query_map_id == 0u ? x_min_i : x_max_i;
+    const double point_sx = point.has_fractional_scaled != 0u ? point.sx_value : static_cast<double>(point.sx);
+    const double point_sy = point.has_fractional_scaled != 0u ? point.sy_value : static_cast<double>(point.sy);
+    if (point.has_fractional_scaled == 0u &&
+        (point.sx < x_min_i || point.sx > x_max_i || point.sx == excluded_x_i)) {
+        return false;
+    }
+    const double x_min = static_cast<double>(x_min_i);
+    const double x_max = static_cast<double>(x_max_i);
+    const double excluded_x = static_cast<double>(excluded_x_i);
+    if (point.has_fractional_scaled != 0u &&
+        (point_sx < x_min || point_sx > x_max || point_sx == excluded_x)) {
         return false;
     }
 
@@ -1441,10 +1455,18 @@ static __forceinline__ __device__ bool vertical_ray_segment_scaled(
     if (line.b == 0) {
         return false;
     }
-    const __int128 numerator =
-        -(line.a * static_cast<__int128>(point.sx)) - line.c;
-    const double xsect_y = static_cast<double>(numerator) / static_cast<double>(line.b);
-    double diff_y = static_cast<double>(point.sy) - xsect_y;
+    double xsect_y = 0.0;
+    if (point.has_fractional_scaled == 0u) {
+        const __int128 numerator =
+            -(line.a * static_cast<__int128>(point.sx)) - line.c;
+        xsect_y = static_cast<double>(numerator) / static_cast<double>(line.b);
+    } else {
+        xsect_y = (
+            -static_cast<double>(line.a) * point_sx -
+            static_cast<double>(line.c)
+        ) / static_cast<double>(line.b);
+    }
+    double diff_y = point_sy - xsect_y;
     if (diff_y == 0.0) {
         diff_y = query_map_id == 0u ? -static_cast<double>(line.a) : static_cast<double>(line.a);
     }
@@ -1455,7 +1477,7 @@ static __forceinline__ __device__ bool vertical_ray_segment_scaled(
         return false;
     }
     *hit_y_out = xsect_y;
-    *report_t_out = fmaxf(0.0f, static_cast<float>(xsect_y - static_cast<double>(point.sy)));
+    *report_t_out = fmaxf(0.0f, static_cast<float>(xsect_y - point_sy));
     *slope_out = static_cast<double>(line.a) / static_cast<double>(line.b);
     return true;
 }
@@ -1602,7 +1624,8 @@ extern "C" __global__ void __raygen__rayjoin_cdb_point_location() {
             params.output[idx].face_id = face_id;
             params.output[idx].segment_id = segment.id;
             params.output[idx].hit_t = point.has_scaled
-                ? fmaxf(0.0f, static_cast<float>(best_y - static_cast<double>(point.sy)))
+                ? fmaxf(0.0f, static_cast<float>(best_y - (
+                    point.has_fractional_scaled != 0u ? point.sy_value : static_cast<double>(point.sy))))
                 : static_cast<float>(best_y);
         }
         if (params.segment_id_output != nullptr) {
@@ -8328,6 +8351,10 @@ struct GpuRayjoinCdbPoint {
     uint32_t has_scaled;
     int64_t sx;
     int64_t sy;
+    double sx_value;
+    double sy_value;
+    uint32_t has_fractional_scaled;
+    uint32_t pad;
 };
 struct GpuPoint     { float x, y;           uint32_t id; uint32_t pad; };
 struct GpuPoint3DHost { float x, y, z;      uint32_t id; };

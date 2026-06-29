@@ -5067,6 +5067,52 @@ static std::vector<GpuRayjoinCdbPoint> make_rayjoin_cdb_gpu_points(
             prepared->scale.valid ? 1u : 0u,
             sx,
             sy,
+            static_cast<double>(sx),
+            static_cast<double>(sy),
+            0u,
+            0u,
+        };
+    }
+    return gpu_points;
+}
+
+static std::vector<GpuRayjoinCdbPoint> make_rayjoin_cdb_gpu_points_from_scaled(
+        const PreparedRayjoinCdbPointLocation2D* prepared,
+        const RtdlRayjoinCdbScaledPoint* points,
+        size_t point_count)
+{
+    if (!prepared) {
+        throw std::runtime_error("prepared CDB point-location handle must not be null");
+    }
+    if (!prepared->scale.valid) {
+        throw std::runtime_error("scaled RayJoin CDB point-location queries require prepared scale bounds");
+    }
+    if (!points && point_count != 0) {
+        throw std::runtime_error("scaled point pointer must not be null when point_count is nonzero");
+    }
+    if (point_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+        throw std::runtime_error("RayJoin CDB scaled point-location point count exceeds uint32 launch capacity");
+    }
+    std::vector<GpuRayjoinCdbPoint> gpu_points(point_count);
+    for (size_t i = 0; i < point_count; ++i) {
+        if (!std::isfinite(points[i].sx) || !std::isfinite(points[i].sy)) {
+            throw std::runtime_error("RayJoin CDB scaled query points must be finite");
+        }
+        const double x = points[i].sx * prepared->scale.rrx + prepared->scale.ddeltax;
+        const double y = points[i].sy * prepared->scale.rry + prepared->scale.ddeltay;
+        const int64_t sx_i = static_cast<int64_t>(points[i].sx);
+        const int64_t sy_i = static_cast<int64_t>(points[i].sy);
+        gpu_points[i] = {
+            static_cast<float>(x),
+            static_cast<float>(y),
+            points[i].id,
+            1u,
+            sx_i,
+            sy_i,
+            points[i].sx,
+            points[i].sy,
+            1u,
+            0u,
         };
     }
     return gpu_points;
@@ -6475,6 +6521,39 @@ static void launch_rayjoin_cdb_point_location_optix(
         d_positive_count_ptr);
 }
 
+static void launch_rayjoin_cdb_point_location_scaled_optix(
+        const PreparedRayjoinCdbPointLocation2D* prepared,
+        const RtdlRayjoinCdbScaledPoint* points,
+        size_t point_count,
+        CUdeviceptr d_output_ptr,
+        CUdeviceptr d_segment_id_output_ptr,
+        CUdeviceptr d_face_id_output_ptr,
+        CUdeviceptr d_positive_count_ptr)
+{
+    if (!points && point_count != 0) {
+        throw std::runtime_error("scaled point pointer must not be null when point_count is nonzero");
+    }
+    if (point_count == 0 || !prepared || prepared->segment_count == 0) {
+        return;
+    }
+    const std::vector<GpuRayjoinCdbPoint> gpu_points =
+        make_rayjoin_cdb_gpu_points_from_scaled(prepared, points, point_count);
+    const auto t_upload_start = std::chrono::steady_clock::now();
+    DevPtr d_points(sizeof(GpuRayjoinCdbPoint) * point_count);
+    upload(d_points.ptr, gpu_points.data(), gpu_points.size());
+    const auto t_upload_end = std::chrono::steady_clock::now();
+    g_optix_last_rayjoin_cdb_point_upload_s += seconds_between(t_upload_start, t_upload_end);
+
+    launch_rayjoin_cdb_point_location_optix(
+        prepared,
+        d_points.ptr,
+        point_count,
+        d_output_ptr,
+        d_segment_id_output_ptr,
+        d_face_id_output_ptr,
+        d_positive_count_ptr);
+}
+
 static PreparedRayjoinCdbPointLocation2D* prepare_rayjoin_cdb_point_location_2d_optix(
         const RtdlRayjoinCdbSegment* segments,
         size_t segment_count)
@@ -6640,6 +6719,61 @@ static void run_prepared_rayjoin_cdb_point_location_2d_optix(
     DevPtr d_output(sizeof(GpuRayjoinCdbPointLocationRecord) * point_count);
     DevPtr d_positive_count(sizeof(unsigned long long));
     launch_rayjoin_cdb_point_location_optix(
+        prepared,
+        points,
+        point_count,
+        d_output.ptr,
+        0,
+        0,
+        d_positive_count.ptr);
+
+    std::vector<GpuRayjoinCdbPointLocationRecord> gpu_rows(point_count);
+    unsigned long long host_count = 0ull;
+    const auto t_download_start = std::chrono::steady_clock::now();
+    download(gpu_rows.data(), d_output.ptr, point_count);
+    download<unsigned long long>(&host_count, d_positive_count.ptr, 1);
+    const auto t_download_end = std::chrono::steady_clock::now();
+    g_optix_last_rayjoin_cdb_row_download_s += seconds_between(t_download_start, t_download_end);
+    g_optix_last_rayjoin_cdb_positive_face_count = static_cast<size_t>(host_count);
+
+    auto* out = static_cast<RtdlRayjoinCdbPointLocationRow*>(
+        std::malloc(sizeof(RtdlRayjoinCdbPointLocationRow) * point_count));
+    if (!out && point_count != 0) {
+        throw std::bad_alloc();
+    }
+    for (size_t i = 0; i < point_count; ++i) {
+        out[i] = RtdlRayjoinCdbPointLocationRow{
+            gpu_rows[i].point_id,
+            gpu_rows[i].face_id,
+            gpu_rows[i].segment_id,
+            static_cast<double>(gpu_rows[i].hit_t),
+        };
+    }
+    *rows_out = out;
+    *row_count_out = point_count;
+}
+
+static void run_prepared_rayjoin_cdb_point_location_scaled_2d_optix(
+        PreparedRayjoinCdbPointLocation2D* prepared,
+        const RtdlRayjoinCdbScaledPoint* points,
+        size_t point_count,
+        RtdlRayjoinCdbPointLocationRow** rows_out,
+        size_t* row_count_out)
+{
+    if (!rows_out || !row_count_out) {
+        throw std::runtime_error("row output pointers must not be null");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+    reset_rayjoin_cdb_point_location_phase_timings(6u);
+    g_optix_last_rayjoin_cdb_point_count = point_count;
+    if (point_count == 0 || !prepared || prepared->segment_count == 0) {
+        return;
+    }
+
+    DevPtr d_output(sizeof(GpuRayjoinCdbPointLocationRecord) * point_count);
+    DevPtr d_positive_count(sizeof(unsigned long long));
+    launch_rayjoin_cdb_point_location_scaled_optix(
         prepared,
         points,
         point_count,
