@@ -1,0 +1,167 @@
+{
+  "author_binaries": {
+    "polyover_exec": "/workspace/RayJoin_fresh/release/bin/polyover_exec",
+    "polyover_exec_exists": false,
+    "query_exec": "/workspace/RayJoin_fresh/release/bin/query_exec",
+    "query_exec_exists": false
+  },
+  "blockers": [
+    "missing_exact_section57_cdb_inputs",
+    "missing_rayjoin_author_binaries"
+  ],
+  "claim_boundary": "Preflight is not performance evidence. It only says whether the machine has the required inputs, author binaries, GPU/runtime, and device-column route for the Section 5.7 performance run.",
+  "dataset_root": "/workspace/rayjoin_section57_cdb",
+  "gpu": {
+    "gpu_names": [
+      "NVIDIA RTX 4000 Ada Generation"
+    ],
+    "nvidia_smi_available": true,
+    "rt_core_likely": true,
+    "stderr": "",
+    "stdout": "NVIDIA RTX 4000 Ada Generation, 550.127.05\n"
+  },
+  "inputs": {
+    "overlay_pairs_ready": 0,
+    "overlay_pairs_total": 8,
+    "rows": [
+      {
+        "blocker": "missing exact CDB input(s): point_cdb/dtl_cnty/dtl_cnty_Point.cdb, point_cdb/USAZIPCodeArea/USAZIPCodeArea_Point.cdb",
+        "exact_input_ready": false,
+        "left_path": "/workspace/rayjoin_section57_cdb/point_cdb/dtl_cnty/dtl_cnty_Point.cdb",
+        "pair_id": "county_zipcode",
+        "paper_label": "County x Zipcode",
+        "right_path": "/workspace/rayjoin_section57_cdb/point_cdb/USAZIPCodeArea/USAZIPCodeArea_Point.cdb"
+      },
+      {
+        "blocker": "missing exact CDB input(s): point_cdb/USACensusBlockGroupBoundaries/USACensusBlockGroupBoundaries_Point.cdb, point_cdb/USADetailedWaterBodies/USADetailedWaterBodies_Point.cdb",
+        "exact_input_ready": false,
+        "left_path": "/workspace/rayjoin_section57_cdb/point_cdb/USACensusBlockGroupBoundaries/USACensusBlockGroupBoundaries_Point.cdb",
+        "pair_id": "block_water",
+        "paper_label": "Block x Water",
+        "right_path": "/workspace/rayjoin_section57_cdb/point_cdb/USADetailedWaterBodies/USADetailedWaterBodies_Point.cdb"
+      },
+      {
+        "blocker": "missing exact CDB input(s): point_cdb/lakes/Africa/lakes_Africa_Point.cdb, point_cdb/parks/Africa/parks_Africa_Point.cdb",
+        "exact_input_ready": false,
+        "left_path": "/workspace/rayjoin_section57_cdb/point_cdb/lakes/Africa/lakes_Africa_Point.cdb",
+        "pair_id": "lkaf_pkaf",
+        "paper_label": "LKAF x PKAF",
+        "right_path": "/workspace/rayjoin_section57_cdb/point_cdb/parks/Africa/parks_Africa_Point.cdb"
+      },
+      {
+        "blocker": "missing exact CDB input(s): point_cdb/lakes/Asia/lakes_Asia_Point.cdb, point_cdb/parks/Asia/parks_Asia_Point.cdb",
+        "exact_input_ready": false,
+        "left_path": "/workspace/rayjoin_section57_cdb/point_cdb/lakes/Asia/lakes_Asia_Point.cdb",
+        "pair_id": "lkas_pkas",
+        "paper_label": "LKAS x PKAS",
+        "right_path": "/workspace/rayjoin_section57_cdb/point_cdb/parks/Asia/parks_Asia_Point.cdb"
+      },
+      {
+        "blocker": "missing exact CDB input(s): point_cdb/lakes/Australia/lakes_Australia_Point.cdb, point_cdb/parks/Australia/parks_Australia_Point.cdb",
+        "exact_input_ready": false,
+        "left_path": "/workspace/rayjoin_section57_cdb/point_cdb/lakes/Australia/lakes_Australia_Point.cdb",
+        "pair_id": "lkau_pkau",
+        "paper_label": "LKAU x PKAU",
+        "right_path": "/workspace/rayjoin_section57_cdb/point_cdb/parks/Australia/parks_Australia_Point.cdb"
+      },
+      {
+        "blocker": "missing exact CDB input(s): point_cdb/lakes/Europe/lakes_Europe_Point.cdb, point_cdb/parks/Europe/parks_Europe_Point.cdb",
+        "exact_input_ready": false,
+        "left_path": "/workspace/rayjoin_section57_cdb/point_cdb/lakes/Europe/lakes_Europe_Point.cdb",
+        "pair_id": "lkeu_pkeu",
+        "paper_label": "LKEU x PKEU",
+        "right_path": "/workspace/rayjoin_section57_cdb/point_cdb/parks/Europe/parks_Europe_Point.cdb"
+      },
+      {
+        "blocker": "missing exact CDB input(s): point_cdb/lakes/North_America/lakes_North_America_Point.cdb, point_cdb/parks/North_America/parks_North_America_Point.cdb",
+        "exact_input_ready": false,
+        "left_path": "/workspace/rayjoin_section57_cdb/point_cdb/lakes/North_America/lakes_North_America_Point.cdb",
+        "pair_id": "lkna_pkna",
+        "paper_label": "LKNA x PKNA",
+        "right_path": "/workspace/rayjoin_section57_cdb/point_cdb/parks/North_America/parks_North_America_Point.cdb"
+      },
+      {
+        "blocker": "missing exact CDB input(s): point_cdb/lakes/South_America/lakes_South_America_Point.cdb, point_cdb/parks/South_America/parks_South_America_Point.cdb",
+        "exact_input_ready": false,
+        "left_path": "/workspace/rayjoin_section57_cdb/point_cdb/lakes/South_America/lakes_South_America_Point.cdb",
+        "pair_id": "lksa_pksa",
+        "paper_label": "LKSA x PKSA",
+        "right_path": "/workspace/rayjoin_section57_cdb/point_cdb/parks/South_America/parks_South_America_Point.cdb"
+      }
+    ]
+  },
+  "numba": {
+    "error": null,
+    "numba_cuda_available": true
+  },
+  "pairs_requested": [
+    "county_zipcode",
+    "block_water",
+    "lkaf_pkaf",
+    "lkas_pkas",
+    "lkau_pkau",
+    "lkeu_pkeu",
+    "lkna_pkna",
+    "lksa_pksa"
+  ],
+  "performance_command": [
+    "python3",
+    "examples/paper_reproduction/rayjoin.py",
+    "--section57-run",
+    "--implementations",
+    "author_rt,rtdl_optix,rtdl_embree,v4_numba",
+    "--dataset-root",
+    "/workspace/rayjoin_section57_cdb",
+    "--output-dir",
+    "artifacts/rayjoin_section57",
+    "--query-exec",
+    "/workspace/RayJoin_fresh/release/bin/query_exec",
+    "--polyover-exec",
+    "/workspace/RayJoin_fresh/release/bin/polyover_exec",
+    "--v4-numba-section57-device-columns-ready",
+    "--author-warmup",
+    "5",
+    "--author-repeat",
+    "5",
+    "--rtdl-warmup",
+    "1",
+    "--rtdl-repeat",
+    "3"
+  ],
+  "ready_for_performance_run": false,
+  "schema": "rtdl.rayjoin.section57_preflight.v1",
+  "section57_device_columns": {
+    "claim_boundary": "Static component presence is not a paper-reproduction or speedup claim.",
+    "components": {
+      "closed_shape_relation_status_device_columns": {
+        "method": "PreparedOptixPointClosedShapeMembership2D.relation_status_candidate_device_columns_prepared_points",
+        "python_method_declared": true,
+        "symbol_constant": "OPTIX_CLOSED_SHAPE_MEMBERSHIP_RELATION_STATUS_CANDIDATE_DEVICE_COLUMNS_PREPARED_POINTS_SYMBOL",
+        "symbol_declared": true
+      },
+      "numba_relation_status_continuation": {
+        "method": "PreparedClosedShapeMembershipCandidateRefinerCupy.count_relation_status_corrected_prepared_points_numba",
+        "partner": "numba",
+        "python_method_declared": true
+      },
+      "segment_pair_candidate_device_columns": {
+        "method": "PreparedOptixSegmentPairIntersection.candidate_device_columns",
+        "python_method_declared": true,
+        "symbol_constant": "OPTIX_SEGMENT_PAIR_CANDIDATE_DEVICE_COLUMNS_SYMBOL",
+        "symbol_declared": true
+      },
+      "segment_pair_grouped_count_device_columns": {
+        "method": "PreparedOptixSegmentPairIntersection.left_id_count_device_columns",
+        "python_method_declared": true,
+        "symbol_constant": "OPTIX_SEGMENT_PAIR_LEFT_ID_COUNT_DEVICE_COLUMNS_SYMBOL",
+        "symbol_declared": true
+      }
+    },
+    "end_to_end_composition_status": "components_present_pod_validation_required",
+    "performance_evidence_status": "not_measured",
+    "performance_validation_required_on_pod": true,
+    "required": true,
+    "requirement": "V4+Numba Section 5.7 performance measurement requires RTDL to expose overlay candidate/refinement streams as device-resident columns. Host overlay summaries are not sufficient for this route.",
+    "static_components_declared": true
+  }
+}
