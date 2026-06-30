@@ -22,7 +22,8 @@ Overlay** using:
 
 - RTDL **v2.14** as the current released system baseline.
 - **Numba** as the explicit partner for user/application continuation code.
-- Existing RTDL v2.14 primitives and prepared routes only.
+- Existing RTDL v2.14 generic primitives, prepared routes, and explicitly
+  classified bundled helper routes only.
 - The RayJoin authors' original paper and source program as the correctness and
 protocol authority.
 
@@ -36,11 +37,30 @@ by wording. The intended end state is:
 3. state honestly whether the result is full paper reproduction, bounded
    available-input reproduction, or blocked by input/semantic/runtime gaps.
 
+Goal4816 must keep two evidence standards separate:
+
+- **Generic-primitive + Numba reproduction:** the app is built from generic RTDL
+  v2.14 primitives plus user/application Numba continuation. This is the
+  strongest language-capability claim. If v2.14 lacks a needed generic LSI, PIP,
+  point-location, or overlay surface, the correct result is
+  `missing_v2_14_capability`, not a runtime patch.
+- **Bundled-helper reproduction:** the app uses v2.14's bundled RayJoin helper
+  code such as `rayjoin_overlay`. This may prove that RTDL ships a RayJoin helper
+  for the available input slice, but it does not prove that a user composed
+  Section 5.7 from generic RTDL primitives.
+
+Hard rule: **do not present a `bundled_rayjoin_helper` result as
+generic-primitive or user-language reproduction.**
+
 ## Non-Negotiable Boundaries
 
 - Do not modify `src/rtdsl/**` or `src/native/**` to make this reproduction pass.
 - Do not modify the v2.14 release surface.
 - Do not add a RayJoin-specific RTDL runtime primitive.
+- Do not describe RayJoin-specific bundled helper code as a generic RTDL
+  primitive.
+- Do not present bundled-helper output as generic-primitive or user-language
+  reproduction.
 - Do not count scalar LSI/PIP rows as full polygon-overlay reproduction.
 - Do not claim full Section 5.7 reproduction from the current known 2/8
   exact-ready subset.
@@ -57,6 +77,8 @@ Goal4816 implementation must begin by reading and recording notes from:
    - Required sections: Section 3.2 for the ray/RT execution contract and
      Section 5.7 for Polygon Overlay workload details, datasets, parameters,
      metrics, and Table/Figure references.
+   - Goal4816-A must copy the relevant contract facts into an in-repo notes
+     file; a user-local Downloads path is not durable evidence.
 2. **Author original program/source**
    - Existing artifact paths show the old pod ran
      `/workspace/RayJoin_fresh/release/bin/polyover_exec`.
@@ -92,30 +114,39 @@ Known results:
 Therefore Goal4816 starts from "2/8 available-input reproduction evidence
 exists", not from zero.
 
-## Existing v2.14 Primitives And Code To Reuse
+## Existing v2.14 Assets To Map And Reuse
 
 The implementation must first map and reuse existing v2.14 assets:
 
-- LSI/segment-pair intersection prepared primitive:
+- **Bundled RayJoin helper** for LSI/segment-pair intersection:
   `src/rtdsl/rayjoin_overlay.py::_run_lsi_rows`.
-- Directed segment point-location / PIP prepared primitive:
+  Classification: `bundled_rayjoin_helper`, not generic RTDL primitive.
+- **Bundled RayJoin helper** for directed segment point-location / PIP:
   `src/rtdsl/rayjoin_overlay.py::_run_point_location_faces` and
   `src/rtdsl/rayjoin_overlay.py::_PreparedPointLocationRunner`.
-- Current v2.14 RayJoin benchmark front door:
+  Classification: `bundled_rayjoin_helper`, not generic RTDL primitive.
+- **Bundled benchmark app front door**:
   `examples/current/research_benchmarks/spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py`.
+  Classification: `bundled_rayjoin_helper` or `paper_app_logic` depending on the
+  phase under review.
 - Numba compact-mask continuation plan:
   `describe_rayjoin_v2_6_numba_compact_mask_continuation`.
+  Classification: `numba_partner_continuation`.
 - Numba segmented compact-mask preview:
   `run_rayjoin_v2_6_numba_compact_mask_preview` /
   `run_rayjoin_segmented_compact_mask_numba_preview`.
+  Classification: `numba_partner_continuation`.
 - Numba side-aware topology continuation:
   `run_rayjoin_v2_9_numba_side_aware_topology_reference`.
+  Classification: `numba_partner_continuation` plus `paper_app_logic`.
 - Generic Numba owner-face/side filter:
   `src/rtdsl/closed_shape_topology.py::filter_closed_shape_membership_candidate_columns_by_owner_face_side_numba`.
+  Classification: `numba_partner_continuation` over generic topology columns.
 
 The key design rule is: application logic may live in the paper-reproduction app,
 and Numba may implement the application continuation, but RTDL runtime/native
-code must stay unchanged.
+code must stay unchanged. Any route through `rayjoin_overlay` must be reported
+as a bundled-helper route, not as a generic primitive composition.
 
 ## Author-Reply / Determinism Principle To Carry Forward
 
@@ -139,6 +170,8 @@ Principle:
 
 Goal4816 must not "fix" this by silently inventing a new RTDL policy. The policy
 must come from the paper, the author source, or an explicit author clarification.
+Goal4816-A must copy the relevant determinism principle into its in-repo notes so
+future work does not depend on a local Downloads file.
 
 ## Planned Work After This Preparation Document
 
@@ -170,9 +203,9 @@ Work:
 - Inventory the current v2.14 RayJoin app, LSI primitive, PIP primitive, overlay
   helper route, and Numba continuation functions.
 - Classify each required Section 5.7 phase as:
-  `existing_v2_14_primitive`, `numba_partner_continuation`,
-  `paper_app_logic`, `author_baseline_only`, `missing_input`, or
-  `missing_v2_14_capability`.
+  `existing_v2_14_primitive`, `bundled_rayjoin_helper`,
+  `numba_partner_continuation`, `paper_app_logic`, `author_baseline_only`,
+  `missing_input`, or `missing_v2_14_capability`.
 
 Exit evidence:
 
@@ -192,7 +225,8 @@ Work:
   logic, and output-chain assembly flow through existing RTDL primitives and
   Numba continuations.
 - Mark any use of `rayjoin_overlay` bundled helpers honestly; if they are used,
-  separate "RTDL shipped helper path" from "user-composed primitives path".
+  separate "RTDL shipped helper path" from "generic primitive + Numba
+  user-composed path".
 
 Exit evidence:
 
@@ -234,7 +268,10 @@ Exit evidence:
 - Per-pair artifact table with raw logs.
 - Correctness table and performance table.
 - Clear final label:
-  `full_section57_reproduction`, `bounded_2_of_8_available_input_reproduction`,
+  `generic_primitive_numba_full_section57_reproduction`,
+  `generic_primitive_numba_bounded_available_input_reproduction`,
+  `bundled_helper_full_section57_reproduction_not_generic`,
+  `bundled_helper_bounded_available_input_reproduction_not_generic`,
   `blocked_by_missing_exact_inputs`, `blocked_by_author_source_gap`,
   `blocked_by_pip_tie_break_gap`, or `blocked_by_v2_14_capability_gap`.
 
@@ -249,7 +286,10 @@ The eventual implementation goal can only be considered successful if:
 - v2.14 runtime/native code remains unchanged.
 - Numba is used only as explicit partner continuation, not as a hidden runtime
   patch.
-- Existing RTDL primitives are named and used directly.
+- Existing RTDL primitives and bundled RayJoin helpers are named and classified
+  separately.
+- Any final claim states whether it used generic primitives or bundled RayJoin
+  helper code.
 - Correctness uses byte-equivalent output or topology-equivalent output with
   diagnostic evidence; count-only is not enough for full reproduction.
 - Performance numbers include baseline, denominator, scale, hardware, protocol,
@@ -275,4 +315,3 @@ The eventual implementation goal can only be considered successful if:
    Yes. The correct path is paper/source first, then existing primitive map, then
    app-only v2.14 + Numba reproduction, then POD only after correctness is
    meaningful.
-
