@@ -2,26 +2,31 @@
 
 Date: 2026-06-30
 
-Status: `external_review_pending_manual_forward`
+Status: `external_review_resolved`
 
-Update after user-forwarded Antigravity review:
+Update after user-forwarded Antigravity reviews:
 
 - Goal4818 correctness-gap diagnosis is now reviewed and approved by
   Antigravity with verdict
   `approve_goal4818_gap_diagnosis_authorize_closure_packet`.
 - Recorded review:
   `history/internal_docs/antigravity_goal4818_rayjoin_correctness_gap_review_2026-06-30.md`
-- Remaining external review debt: Goal4819 closure decision.
+- Goal4819 closure decision is now reviewed and approved by Antigravity with
+  verdict
+  `approve_goal4819_close_user_mode_reproduction_as_released_rtdl_pip_sos_gap`.
+- Recorded review:
+  `history/internal_docs/antigravity_goal4819_rayjoin_user_mode_reproduction_closure_review_2026-06-30.md`
+- Remaining external review debt for this closure line: none.
 
 ## Why This Exists
 
 Goal4819 is the closure packet for the current RayJoin user-mode reproduction
-attempt. It recommends closing the current line as:
+attempt. It closes the current line as:
 
 `blocked_by_released_rtdl_pip_sos_contract_gap`
 
-This is a significant decision, so it needs independent review before the thread
-goal can be considered closed.
+This was a significant decision and has now received independent Antigravity
+review.
 
 ## Local Reviewer CLI Status
 
@@ -43,8 +48,11 @@ Result:
 - stdout: empty
 - requested log file: not created
 
-Therefore the local Antigravity CLI is not currently a reliable review channel
-from this Codex session. No external verdict has been obtained for Goal4819.
+Therefore the local Antigravity CLI was not a reliable review channel from this
+Codex session. The eventual Goal4819 external verdict was obtained through a
+user-forwarded Antigravity review and recorded in:
+
+`history/internal_docs/antigravity_goal4819_rayjoin_user_mode_reproduction_closure_review_2026-06-30.md`
 
 ## Files For Reviewer
 
@@ -62,10 +70,14 @@ Supporting files:
 - `history/internal_docs/goal4818_rayjoin_public_sample_correctness_gap_diagnosis_2026-06-30.md`
 - `history/internal_docs/goal4818_numba_partner_support_audit_2026-06-30.md`
 - `history/internal_docs/antigravity_goal4818_rayjoin_correctness_gap_review_2026-06-30.md`
+- `history/internal_docs/antigravity_goal4819_rayjoin_user_mode_reproduction_closure_review_2026-06-30.md`
 - `history/internal_docs/goal4817_artifacts_2026-06-30/`
 - `history/internal_docs/goal4818_artifacts_2026-06-30/`
 
-## Message To Forward To Claude Or Antigravity
+## Historical Message To Forward To Claude Or Antigravity
+
+This message is retained for audit history. It no longer represents an open
+review request.
 
 Please review Goal4819:
 
@@ -79,6 +91,10 @@ should close as:
 Goal4818's correctness-gap diagnosis has already received Antigravity approval:
 
 `history/internal_docs/antigravity_goal4818_rayjoin_correctness_gap_review_2026-06-30.md`
+
+Goal4819 closure has now also received Antigravity approval:
+
+`history/internal_docs/antigravity_goal4819_rayjoin_user_mode_reproduction_closure_review_2026-06-30.md`
 
 Context:
 
