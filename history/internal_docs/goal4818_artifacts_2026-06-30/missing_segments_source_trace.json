@@ -1,0 +1,110 @@
+[
+  {
+    "missing_output_chain": {
+      "author_chain_id": 1687,
+      "header": [
+        1687,
+        2,
+        17444,
+        17445,
+        0,
+        1041
+      ],
+      "points_head": [
+        "-46.412457 -1.020858",
+        "-46.412193 -1.038026"
+      ]
+    },
+    "source_hits": []
+  },
+  {
+    "missing_output_chain": {
+      "author_chain_id": 1693,
+      "header": [
+        1693,
+        2,
+        17462,
+        17463,
+        0,
+        1041
+      ],
+      "points_head": [
+        "-46.407160 -1.030654",
+        "-46.407400 -1.027414"
+      ]
+    },
+    "source_hits": []
+  },
+  {
+    "missing_output_chain": {
+      "author_chain_id": 5771,
+      "header": [
+        5771,
+        2,
+        55158,
+        55159,
+        0,
+        3217
+      ],
+      "points_head": [
+        "-45.470318 -1.527257",
+        "-45.455877 -1.535485"
+      ]
+    },
+    "source_hits": []
+  },
+  {
+    "missing_output_chain": {
+      "author_chain_id": 5788,
+      "header": [
+        5788,
+        2,
+        55294,
+        55295,
+        0,
+        3220
+      ],
+      "points_head": [
+        "-45.353996 -1.468331",
+        "-45.351390 -1.467832"
+      ]
+    },
+    "source_hits": []
+  },
+  {
+    "missing_output_chain": {
+      "author_chain_id": 36694,
+      "header": [
+        36694,
+        2,
+        335485,
+        335486,
+        0,
+        18805
+      ],
+      "points_head": [
+        "-44.763734 -1.484424",
+        "-44.778429 -1.506087"
+      ]
+    },
+    "source_hits": []
+  },
+  {
+    "missing_output_chain": {
+      "author_chain_id": 36733,
+      "header": [
+        36733,
+        2,
+        335692,
+        335693,
+        0,
+        2721
+      ],
+      "points_head": [
+        "-45.695607 -1.356995",
+        "-45.680061 -1.351905"
+      ]
+    },
+    "source_hits": []
+  }
+]

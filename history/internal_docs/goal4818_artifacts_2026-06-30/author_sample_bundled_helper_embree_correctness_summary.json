@@ -1,0 +1,10 @@
+{
+  "exception": "Embree is not installed at the configured prefix. Set RTDL_EMBREE_PREFIX to a prefix with include/embree4 or include/embree3, or install Embree first.",
+  "exception_type": "RuntimeError",
+  "git_status_after": [],
+  "repo": "/workspace/rtdl_goal4817_user_smoke_20260630_102224",
+  "route_label": "bundled_helper_embree_correctness_not_generic",
+  "scope": "author_public_sample_correctness_embree_not_performance",
+  "status": "failed",
+  "traceback": "Traceback (most recent call last):\n  File \"<stdin>\", line 21, in <module>\n  File \"/workspace/rtdl_goal4817_user_smoke_20260630_102224/src/rtdsl/rayjoin_overlay.py\", line 1499, in run_rayjoin_overlay_rtdl_from_cdb_paths\n    return run_rayjoin_overlay_rtdl(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/rtdl_goal4817_user_smoke_20260630_102224/src/rtdsl/rayjoin_overlay.py\", line 1474, in run_rayjoin_overlay_rtdl\n    return _run_rayjoin_overlay_packed(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/rtdl_goal4817_user_smoke_20260630_102224/src/rtdsl/rayjoin_overlay.py\", line 1277, in _run_rayjoin_overlay_packed\n    lsi_rows, lsi_timings = _run_lsi_rows(\n                            ^^^^^^^^^^^^^^\n  File \"/workspace/rtdl_goal4817_user_smoke_20260630_102224/src/rtdsl/rayjoin_overlay.py\", line 863, in _run_lsi_rows\n    library = _load_embree_library()\n              ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/rtdl_goal4817_user_smoke_20260630_102224/src/rtdsl/embree_runtime.py\", line 6754, in _load_embree_library\n    library_path = _ensure_embree_library()\n                   ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/rtdl_goal4817_user_smoke_20260630_102224/src/rtdsl/embree_runtime.py\", line 7815, in _ensure_embree_library\n    raise RuntimeError(\nRuntimeError: Embree is not installed at the configured prefix. Set RTDL_EMBREE_PREFIX to a prefix with include/embree4 or include/embree3, or install Embree first.\n"
+}
