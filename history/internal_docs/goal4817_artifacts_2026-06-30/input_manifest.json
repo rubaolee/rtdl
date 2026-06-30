@@ -1,0 +1,44 @@
+{
+  "author_root": {
+    "bytes": null,
+    "exists": true,
+    "is_dir": true,
+    "is_file": false,
+    "path": "/workspace/RayJoin_fresh"
+  },
+  "old_exact_root": {
+    "bytes": null,
+    "exists": false,
+    "is_dir": false,
+    "is_file": false,
+    "path": "/workspace/rayjoin_section57_data/cdb_topology"
+  },
+  "same_source_block_left": {
+    "bytes": 3146767020,
+    "exists": true,
+    "is_dir": false,
+    "is_file": true,
+    "path": "/workspace/rtdl_goal4806_fast_min/artifacts/goal4806_section57_arcgis_full_us_20260630/dataset/point_cdb/USACensusBlockGroupBoundaries/USACensusBlockGroupBoundaries_Point.cdb"
+  },
+  "same_source_block_right": {
+    "bytes": 2402941772,
+    "exists": true,
+    "is_dir": false,
+    "is_file": true,
+    "path": "/workspace/rtdl_goal4806_fast_min/artifacts/goal4806_section57_arcgis_full_us_20260630/dataset/point_cdb/USADetailedWaterBodies/USADetailedWaterBodies_Point.cdb"
+  },
+  "same_source_county_left": {
+    "bytes": 904529353,
+    "exists": true,
+    "is_dir": false,
+    "is_file": true,
+    "path": "/workspace/rayjoin_section57_same_source_cdb/point_cdb/dtl_cnty/dtl_cnty_Point.cdb"
+  },
+  "same_source_county_right": {
+    "bytes": 2603929396,
+    "exists": true,
+    "is_dir": false,
+    "is_file": true,
+    "path": "/workspace/rayjoin_section57_same_source_cdb/point_cdb/USAZIPCodeArea/USAZIPCodeArea_Point.cdb"
+  }
+}

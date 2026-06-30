@@ -1,0 +1,156 @@
+{
+  "artifact_dir": "/workspace/rtdl_goal4817_user_smoke_artifacts_20260630",
+  "checks": {
+    "author_head": {
+      "cmd": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "02bf6220d6d20b04af77ee20364eced75cc029c9\n"
+    },
+    "author_status": {
+      "cmd": [
+        "git",
+        "status",
+        "--short"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": " M src/app/lsi_rt.h\n M src/app/map_overlay_rt.h\n M src/app/output_chain.h\n M src/util/markers.h\n?? release/\n?? src/algo/rt_pip_custom.cu.goal4806_pipdebug_bak\n?? src/app/lsi_rt.h.goal4806_lsidebug_bak\n?? src/app/map_overlay_rt.h.goal4806_middebug_bak\n?? src/app/output_chain.h.goal4806_rawdebug_bak\n"
+    },
+    "git_head": {
+      "cmd": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "293883ce12e4663ed80c2a07c166a5b22286f7ef\n"
+    },
+    "git_status": {
+      "cmd": [
+        "git",
+        "status",
+        "--short"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    "import_numba": {
+      "cmd": [
+        "/usr/bin/python3",
+        "-c",
+        "import numba; print(numba.__version__)"
+      ],
+      "returncode": 1,
+      "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\nModuleNotFoundError: No module named 'numba'\n",
+      "stdout": ""
+    },
+    "import_primitives": {
+      "cmd": [
+        "/usr/bin/python3",
+        "-c",
+        "from rtdsl.optix_runtime import prepare_segment_pair_intersection_optix, prepare_segment_pair_left_set_optix, prepare_directed_segment_point_location_2d_optix; print(\"optix primitive imports ok\")"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "optix primitive imports ok\n"
+    },
+    "import_rayjoin_helper": {
+      "cmd": [
+        "/usr/bin/python3",
+        "-c",
+        "from rtdsl.rayjoin_overlay import run_rayjoin_overlay_rtdl_from_cdb_paths; print(\"bundled helper import ok\")"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "bundled helper import ok\n"
+    },
+    "import_rtdsl": {
+      "cmd": [
+        "/usr/bin/python3",
+        "-c",
+        "import rtdsl, inspect; print(rtdsl.__file__); print(getattr(rtdsl, \"__version__\", \"no_version_attr\"))"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "/workspace/rtdl_goal4817_user_smoke_20260630_102224/src/rtdsl/__init__.py\nno_version_attr\n"
+    },
+    "nvidia_smi": {
+      "cmd": [
+        "nvidia-smi",
+        "--query-gpu=name,driver_version",
+        "--format=csv,noheader"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "NVIDIA RTX 4000 Ada Generation, 550.127.05\n"
+    },
+    "version_file": {
+      "value": "v2.14"
+    }
+  },
+  "goal": "Goal4817 user-mode correctness smoke preflight",
+  "inputs": {
+    "author_root": {
+      "bytes": null,
+      "exists": true,
+      "is_dir": true,
+      "is_file": false,
+      "path": "/workspace/RayJoin_fresh"
+    },
+    "old_exact_root": {
+      "bytes": null,
+      "exists": false,
+      "is_dir": false,
+      "is_file": false,
+      "path": "/workspace/rayjoin_section57_data/cdb_topology"
+    },
+    "same_source_block_left": {
+      "bytes": 3146767020,
+      "exists": true,
+      "is_dir": false,
+      "is_file": true,
+      "path": "/workspace/rtdl_goal4806_fast_min/artifacts/goal4806_section57_arcgis_full_us_20260630/dataset/point_cdb/USACensusBlockGroupBoundaries/USACensusBlockGroupBoundaries_Point.cdb"
+    },
+    "same_source_block_right": {
+      "bytes": 2402941772,
+      "exists": true,
+      "is_dir": false,
+      "is_file": true,
+      "path": "/workspace/rtdl_goal4806_fast_min/artifacts/goal4806_section57_arcgis_full_us_20260630/dataset/point_cdb/USADetailedWaterBodies/USADetailedWaterBodies_Point.cdb"
+    },
+    "same_source_county_left": {
+      "bytes": 904529353,
+      "exists": true,
+      "is_dir": false,
+      "is_file": true,
+      "path": "/workspace/rayjoin_section57_same_source_cdb/point_cdb/dtl_cnty/dtl_cnty_Point.cdb"
+    },
+    "same_source_county_right": {
+      "bytes": 2603929396,
+      "exists": true,
+      "is_dir": false,
+      "is_file": true,
+      "path": "/workspace/rayjoin_section57_same_source_cdb/point_cdb/USAZIPCodeArea/USAZIPCodeArea_Point.cdb"
+    }
+  },
+  "non_authorization": [
+    "no performance run",
+    "no RTDL source modification",
+    "no generic claim from bundled helper"
+  ],
+  "repo": "/workspace/rtdl_goal4817_user_smoke_20260630_102224",
+  "route_label": "preflight_only_no_execution",
+  "system": {
+    "executable": "/usr/bin/python3",
+    "platform": "Linux-6.8.0-40-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3 (main, Aug 14 2025, 17:47:21) [GCC 13.3.0]"
+  },
+  "timestamp": "2026-06-30T10:31:26Z"
+}

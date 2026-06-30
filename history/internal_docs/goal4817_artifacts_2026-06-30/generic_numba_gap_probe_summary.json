@@ -1,0 +1,55 @@
+{
+  "assessment": {
+    "generic_overlay_status": "blocked_or_unproven_without_private_helpers",
+    "reasons": [
+      "Numba is not installed in this clean user Python environment",
+      "public optix_runtime primitives are visible, but this probe has not identified a public overlay assembly API equivalent to rayjoin_overlay",
+      "private/bundled rayjoin_overlay helpers are intentionally not used in this generic probe"
+    ]
+  },
+  "git_status_after": [],
+  "load_cdb_public_attrs": [
+    "chains",
+    "face_ids",
+    "name"
+  ],
+  "load_cdb_type": "CdbDataset",
+  "numba_available": false,
+  "numba_error": "ModuleNotFoundError: No module named 'numba'",
+  "optix_runtime_public_functions": {
+    "prepare_directed_segment_point_location_2d_optix": {
+      "doc_head": [
+        "Prepare a directed-segment point-location primitive on the OptiX backend.",
+        "",
+        "This is the app-agnostic public name for the primitive used by the RayJoin",
+        "CDB PIP route. Segment records carry left/right face payloads; RayJoin's",
+        "scale and tie policy are supplied by the app through the existing execution",
+        "environment."
+      ],
+      "present": true,
+      "signature": "(segments) -> 'PreparedOptixDirectedSegmentPointLocation2D'"
+    },
+    "prepare_segment_pair_intersection_optix": {
+      "doc_head": [],
+      "present": true,
+      "signature": "(right_segments) -> 'PreparedOptixSegmentPairIntersection'"
+    },
+    "prepare_segment_pair_left_set_optix": {
+      "doc_head": [],
+      "present": true,
+      "signature": "(left_segments) -> 'PreparedOptixSegmentPairLeftSet'"
+    }
+  },
+  "repo": "/workspace/rtdl_goal4817_user_smoke_20260630_102224",
+  "route_label": "generic_primitive_numba_attempt",
+  "rtdsl_file": "/workspace/rtdl_goal4817_user_smoke_20260630_102224/src/rtdsl/__init__.py",
+  "rtdsl_public_rayjoin_names": [
+    "SegmentColumns2D",
+    "emit_segmented_row_stream",
+    "segment_columns_2d",
+    "segment_columns_with_ids",
+    "spatial_order_points_2d",
+    "spatial_order_segments_2d"
+  ],
+  "scope": "public_api_capability_probe_no_private_helpers_no_performance"
+}

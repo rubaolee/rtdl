@@ -1,0 +1,54 @@
+{
+  "answer": "/workspace/RayJoin_fresh/test/dataset/br_countyXbr_soil_answer.txt",
+  "answer_bytes": 16631243,
+  "answer_sha256": "464f87a59cc2428f63cbfe5068965d7bc7adb8eee51e9c1e3a5960ae8b76019e",
+  "author_root": "/workspace/RayJoin_fresh",
+  "byte_equal_to_author_answer": false,
+  "diff_head_line_count": 200,
+  "diff_head_path": "/workspace/rtdl_goal4817_user_smoke_artifacts_20260630/author_sample_bundled_helper_equal_ties_correctness/diff_head.txt",
+  "env": {
+    "RTDL_RAYJOIN_CDB_ALLOW_EQUAL_TIES": "1"
+  },
+  "git_status_after": [],
+  "left": "/workspace/RayJoin_fresh/test/dataset/br_county_clean_25_odyssey_final.txt",
+  "output_bytes": 16631122,
+  "output_sha256": "296ad11acb39cd6c54ca6d95aab16598a44d56bb14d960a370b629c9ea5289c7",
+  "raw_elapsed_sec_debug_not_perf_claim": 6.0274790823459625,
+  "repo": "/workspace/rtdl_goal4817_user_smoke_20260630_102224",
+  "result_summary": {
+    "input_shape": {
+      "map0_chains": 16545,
+      "map0_edges": 326193,
+      "map0_points": 342738,
+      "map1_chains": 7950,
+      "map1_edges": 251011,
+      "map1_points": 258961
+    },
+    "lsi": {
+      "intersection_count": 20860,
+      "predicate_contract": "rayjoin_author_lsi_intersect_test_endpoint_collinear_contract"
+    },
+    "midpoint_pip": {
+      "map0_midpoints_in_map1": 944,
+      "map0_positive_faces": 934,
+      "map1_midpoints_in_map0": 3594,
+      "map1_positive_faces": 3189
+    },
+    "output": {
+      "assembled": true,
+      "chain_count": 64453,
+      "face_count": 19504,
+      "path": "/workspace/rtdl_goal4817_user_smoke_artifacts_20260630/author_sample_bundled_helper_equal_ties_correctness/rtdl_overlay_output.txt"
+    },
+    "vertex_pip": {
+      "map0_points_in_map1": 342738,
+      "map0_positive_faces": 337691,
+      "map1_points_in_map0": 258961,
+      "map1_positive_faces": 255272
+    }
+  },
+  "right": "/workspace/RayJoin_fresh/test/dataset/br_soil_ascii_odyssey_final.txt",
+  "route_label": "bundled_helper_bounded_available_input_reproduction_not_generic",
+  "scope": "author_public_sample_correctness_smoke_equal_ties_existing_env_not_section57_not_performance",
+  "status": "completed"
+}

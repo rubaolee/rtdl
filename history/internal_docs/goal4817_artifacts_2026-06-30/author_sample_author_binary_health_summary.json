@@ -1,0 +1,25 @@
+{
+  "answer_bytes": 16631243,
+  "answer_sha256": "464f87a59cc2428f63cbfe5068965d7bc7adb8eee51e9c1e3a5960ae8b76019e",
+  "author_root": "/workspace/RayJoin_fresh",
+  "byte_equal_to_answer": true,
+  "cmd": [
+    "/workspace/RayJoin_fresh/release/bin/polyover_exec",
+    "-poly1",
+    "/workspace/RayJoin_fresh/test/dataset/br_county_clean_25_odyssey_final.txt",
+    "-poly2",
+    "/workspace/RayJoin_fresh/test/dataset/br_soil_ascii_odyssey_final.txt",
+    "-output",
+    "/workspace/rtdl_goal4817_user_smoke_artifacts_20260630/author_sample_author_binary_health/author_polyover_rt_output.txt",
+    "-mode=rt",
+    "-check=false"
+  ],
+  "diff_head_path": "/workspace/rtdl_goal4817_user_smoke_artifacts_20260630/author_sample_author_binary_health/diff_head.txt",
+  "log_path": "/workspace/rtdl_goal4817_user_smoke_artifacts_20260630/author_sample_author_binary_health/author_polyover_rt.log",
+  "output_bytes": 16631243,
+  "output_exists": true,
+  "output_sha256": "464f87a59cc2428f63cbfe5068965d7bc7adb8eee51e9c1e3a5960ae8b76019e",
+  "raw_elapsed_sec_debug_not_perf_claim": 8.859745122492313,
+  "returncode": 0,
+  "scope": "author_binary_health_on_public_sample_not_performance"
+}

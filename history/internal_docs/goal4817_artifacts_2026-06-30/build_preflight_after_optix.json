@@ -1,0 +1,27 @@
+{
+  "built_lib_exists": {
+    "bytes": 3102000,
+    "exists": true,
+    "path": "/workspace/rtdl_goal4817_user_smoke_20260630_102224/build/librtdl_optix.so"
+  },
+  "git_status_after_build": {
+    "cmd": [
+      "git",
+      "status",
+      "--short"
+    ],
+    "returncode": 0,
+    "stderr": "",
+    "stdout": ""
+  },
+  "load_optix_library": {
+    "cmd": [
+      "/usr/bin/python3",
+      "-c",
+      "from rtdsl.optix_runtime import _load_optix_library; lib=_load_optix_library(); print(lib._name if hasattr(lib,\"_name\") else lib)"
+    ],
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "/workspace/rtdl_goal4817_user_smoke_20260630_102224/build/librtdl_optix.so\n"
+  }
+}
