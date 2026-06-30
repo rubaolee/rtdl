@@ -99,7 +99,7 @@ flags, counts, summaries, bounded witnesses, typed columns, or candidate rows.
 
 | App pattern | Primitive contribution | Partner contribution | Boundary note |
 | --- | --- | --- | --- |
-| RTDBSCAN | Fixed-radius count threshold / core flags | Component labeling or convergence | For OptiX-vs-Embree backend comparison, fix Numba as the continuation lock; for partner comparison, Goal4389 separately shows Numba is the current 524K large-scale winner over same-contract CuPy. |
+| RTDBSCAN | Fixed-radius count threshold / core flags | Component labeling or convergence | For OptiX-vs-Embree backend comparison, fix Numba as the continuation lock; for partner comparison, current large-scale evidence shows Numba as the measured 524K winner over same-contract CuPy. |
 | RayJoin overlay | LSI, point-location, PIP, bounded counts | Topology and output assembly | Overlay claims are limited to the available 2/8 exact Section 5.7 CDB subset; full 8/8 reproduction is blocked. |
 | Barnes-Hut | Node coverage / threshold frontier | Force-vector accumulation | v2.14 reports node coverage only, not full force-solver acceleration. |
 | Contact manifold | AABB broadphase / witness candidates | Exact contact refinement | v2.14 reports broadphase/contact-witness evidence, not full physics-engine contact generation. |
@@ -113,7 +113,7 @@ the report must name them.
 
 | Partner | Choose when | Notes |
 | --- | --- | --- |
-| Numba | You need Python-source custom kernels, no CUDA C++ build, loops, union-find, label propagation, component labeling, segmented reductions, or block reductions. | Required as the accessibility/reference path for partner-dependent claims. It can also win, as RTDBSCAN Goal4389 showed. |
+| Numba | You need Python-source custom kernels, no CUDA C++ build, loops, union-find, label propagation, component labeling, segmented reductions, or block reductions. | Required as the accessibility/reference path for partner-dependent claims. It can also win on some measured contracts. |
 | CuPy | Your continuation is naturally expressed as device-array operations, scans, masks, reductions, RawKernel experiments, or CUDA graph replay around array work. | Often strong for dense CUDA-core baselines, but not automatically better than Numba. |
 | Torch | Your data already lives in Torch tensors or the app is ML-pipeline-native. | Treat as an explicit partner, not an automatic RTDL route. |
 | NumPy / CPU / Shapely / GEOS | You need correctness or exact topology or a small-scale oracle. | Usually not a GPU performance partner. |
@@ -277,4 +277,5 @@ performance-ready.
 - [Benchmark Partner Reference Matrix](benchmark_partner_reference_matrix.md)
 - [v2.14 Public RT-vs-Embree Comparison](../release_reports/v2_14/public_rt_vs_embree_comparison.md)
 - [v2.14 Public Wording Boundaries](../release_reports/v2_14/public_wording_boundaries.md)
-- [Goal4389 RTDBSCAN Partner Dual Implementation Supplement](../reports/goal4389_rtdbscan_partner_dual_implementation_2026-06-15.md)
+- Historical partner-evidence supplements are archived under the top-level
+  [history](../../history/README.md) directory.

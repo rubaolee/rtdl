@@ -20,7 +20,7 @@ from examples.current.apps.ml import rtdl_ann_candidate_app as ann_app
 
 
 BENCHMARK_NAME = "rtnn_neighbor_search"
-ARTIFACT_DIR = ROOT / "docs" / "reports" / "goal2388_rtnn_fair_fight_pod"
+ARTIFACT_DIR = ROOT / "docs" / "reports" / "archived_evidence_rtnn_fair_fight_pod"
 RTNN_V2_8_RANKED_SUMMARY_TYPED_STREAM_VERSION = "rtdl.rtnn.v2_8.ranked_summary_typed_stream.v1"
 RTNN_V2_8_RANKED_SUMMARY_EXECUTION_PATH = "generic_ranked_summary_typed_stream_partner_columns"
 
@@ -40,7 +40,7 @@ SUPPORTED_CONTRACTS = (
     },
     {
         "name": "rtnn_ranked_summary_3d",
-        "owner": "scripts/goal2348_rtnn_v2_2_external_runner.py",
+        "owner": "scripts/archived_evidence_rtnn_v2_2_external_runner.py",
         "contract": "exact fixed-radius bounded ranked-neighbor summary row per query",
         "runtime_shape": "packed columns, prepared OptiX or Embree 3-D search structure, explicit query batches",
     },
@@ -96,9 +96,9 @@ def scope_payload() -> dict[str, Any]:
         ),
         "claim_boundary": CLAIM_BOUNDARY,
         "primary_reports": (
-            "docs/reports/goal1983_exact_ann_candidate_quality_partner_reference_2026-05-14.md",
-            "docs/reports/goal2388_rtnn_fair_fight_benchmark_2026-05-19.md",
-            "docs/reports/goal2585_rtnn_benchmark_front_door_2026-05-24.md",
+            "history/internal_docs/docs_reports/archived_evidence_exact_ann_candidate_quality_partner_reference_2026-05-14.md",
+            "history/internal_docs/docs_reports/archived_evidence_rtnn_fair_fight_benchmark_2026-05-19.md",
+            "history/internal_docs/docs_reports/archived_evidence_rtnn_benchmark_front_door_2026-05-24.md",
         ),
     }
 
@@ -228,7 +228,7 @@ def rtnn_known_results_payload() -> dict[str, Any]:
 
 
 def rtnn_command_plan_payload() -> dict[str, Any]:
-    runner = "scripts/goal2348_rtnn_v2_2_external_runner.py"
+    runner = "scripts/archived_evidence_rtnn_v2_2_external_runner.py"
     return {
         "app": BENCHMARK_NAME,
         "mode": "rtnn_command_plan",
@@ -259,7 +259,7 @@ def rtnn_prepared_optix_ranked_summary_payload(
 ) -> dict[str, Any]:
     """Run the current prepared OptiX ranked-summary aggregate front door.
 
-    This wraps the existing generic Goal2348 RTNN runner so benchmark users can
+    This wraps the existing generic archived_evidence RTNN runner so benchmark users can
     execute the promoted RTDL/OptiX ranked-summary contract from this app
     directory instead of jumping to a historical goal script.
     """
@@ -302,7 +302,7 @@ def rtnn_prepared_optix_ranked_summary_payload(
         invalidation_events=("explicit_invalidate", "backend_context_reset", "close"),
     )
 
-    from scripts import goal2348_rtnn_v2_2_external_runner as rtnn_runner
+    from scripts import archived_evidence_rtnn_v2_2_external_runner as rtnn_runner
 
     with tempfile.TemporaryDirectory(prefix="rtdl_rtnn_current_") as tmp:
         point_file = Path(tmp) / f"rtnn_{distribution}_{point_count}.csv"
@@ -423,7 +423,7 @@ def rtnn_prepared_ranked_summary_raw_payload(
         invalidation_events=("explicit_invalidate", "backend_context_reset", "close"),
     )
 
-    from scripts import goal2348_rtnn_v2_2_external_runner as rtnn_runner
+    from scripts import archived_evidence_rtnn_v2_2_external_runner as rtnn_runner
 
     with tempfile.TemporaryDirectory(prefix="rtdl_rtnn_same_contract_") as tmp:
         point_file = Path(tmp) / f"rtnn_{distribution}_{point_count}.csv"

@@ -1028,7 +1028,7 @@ def run_all_control_apps(
         for app in CONTROL_APPS
     ]
     return {
-        "goal": "Goal1953",
+        "goal": "archived_evidence",
         "status": "rawkernel-control-app-v2-contract",
         "partner": partner,
         "copies": copies,

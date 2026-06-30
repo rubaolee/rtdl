@@ -33,44 +33,44 @@ DIRECTED_ADJACENCY_INDEX_BYTES = 4
 DIRECTED_ADJACENCY_OFFSET_BYTES = 8
 RT_DBSCAN_TESTED_DIRECT_STATUS_PARTITION_CELL_FACTOR_OPTIONS = {
     "clustered3d": (
-        {"point_count": 65536, "factor": 0.25, "replay_speedup": 2.961, "one_shot_total_speedup": 2.506, "evidence_refs": ("Goal4117", "Goal4130")},
-        {"point_count": 131072, "factor": 0.25, "replay_speedup": 3.211, "one_shot_total_speedup": 3.110, "evidence_refs": ("Goal4122", "Goal4130")},
-        {"point_count": 262144, "factor": 0.25, "replay_speedup": 3.118, "one_shot_total_speedup": 3.192, "evidence_refs": ("Goal4126", "Goal4130")},
-        {"point_count": 524288, "factor": 0.25, "replay_speedup": 3.291, "one_shot_total_speedup": 3.250, "evidence_refs": ("Goal4134",)},
-        {"point_count": 1048576, "factor": 0.25, "replay_speedup": 3.430, "one_shot_total_speedup": 3.383, "evidence_refs": ("Goal4138",)},
+        {"point_count": 65536, "factor": 0.25, "replay_speedup": 2.961, "one_shot_total_speedup": 2.506, "evidence_refs": ("archived_evidence", "archived_evidence")},
+        {"point_count": 131072, "factor": 0.25, "replay_speedup": 3.211, "one_shot_total_speedup": 3.110, "evidence_refs": ("archived_evidence", "archived_evidence")},
+        {"point_count": 262144, "factor": 0.25, "replay_speedup": 3.118, "one_shot_total_speedup": 3.192, "evidence_refs": ("archived_evidence", "archived_evidence")},
+        {"point_count": 524288, "factor": 0.25, "replay_speedup": 3.291, "one_shot_total_speedup": 3.250, "evidence_refs": ("archived_evidence",)},
+        {"point_count": 1048576, "factor": 0.25, "replay_speedup": 3.430, "one_shot_total_speedup": 3.383, "evidence_refs": ("archived_evidence",)},
     ),
     "road3d": (
-        {"point_count": 65536, "factor": 0.25, "replay_speedup": 1.866, "one_shot_total_speedup": 2.609, "evidence_refs": ("Goal4117", "Goal4130")},
-        {"point_count": 131072, "factor": 0.25, "replay_speedup": 1.545, "one_shot_total_speedup": 2.606, "evidence_refs": ("Goal4122", "Goal4130")},
-        {"point_count": 262144, "factor": 0.25, "replay_speedup": 1.428, "one_shot_total_speedup": 2.272, "evidence_refs": ("Goal4126", "Goal4130")},
-        {"point_count": 524288, "factor": 0.25, "replay_speedup": 1.367, "one_shot_total_speedup": 1.910, "evidence_refs": ("Goal4134",)},
-        {"point_count": 1048576, "factor": 0.25, "replay_speedup": 1.396, "one_shot_total_speedup": 1.705, "evidence_refs": ("Goal4138",)},
+        {"point_count": 65536, "factor": 0.25, "replay_speedup": 1.866, "one_shot_total_speedup": 2.609, "evidence_refs": ("archived_evidence", "archived_evidence")},
+        {"point_count": 131072, "factor": 0.25, "replay_speedup": 1.545, "one_shot_total_speedup": 2.606, "evidence_refs": ("archived_evidence", "archived_evidence")},
+        {"point_count": 262144, "factor": 0.25, "replay_speedup": 1.428, "one_shot_total_speedup": 2.272, "evidence_refs": ("archived_evidence", "archived_evidence")},
+        {"point_count": 524288, "factor": 0.25, "replay_speedup": 1.367, "one_shot_total_speedup": 1.910, "evidence_refs": ("archived_evidence",)},
+        {"point_count": 1048576, "factor": 0.25, "replay_speedup": 1.396, "one_shot_total_speedup": 1.705, "evidence_refs": ("archived_evidence",)},
     ),
     "ngsim_dense": (
-        {"point_count": 65536, "factor": 0.25, "replay_speedup": 0.969, "one_shot_total_speedup": 3.679, "evidence_refs": ("Goal4130",)},
-        {"point_count": 65536, "factor": 0.5, "replay_speedup": 1.312, "one_shot_total_speedup": 1.819, "evidence_refs": ("Goal4117", "Goal4130")},
-        {"point_count": 131072, "factor": 0.25, "replay_speedup": 1.399, "one_shot_total_speedup": 3.410, "evidence_refs": ("Goal4122", "Goal4130")},
-        {"point_count": 262144, "factor": 0.25, "replay_speedup": 1.642, "one_shot_total_speedup": 2.939, "evidence_refs": ("Goal4126", "Goal4130")},
-        {"point_count": 524288, "factor": 0.25, "replay_speedup": 1.769, "one_shot_total_speedup": 2.489, "evidence_refs": ("Goal4134",)},
-        {"point_count": 1048576, "factor": 0.25, "replay_speedup": 1.790, "one_shot_total_speedup": 2.432, "evidence_refs": ("Goal4138",)},
+        {"point_count": 65536, "factor": 0.25, "replay_speedup": 0.969, "one_shot_total_speedup": 3.679, "evidence_refs": ("archived_evidence",)},
+        {"point_count": 65536, "factor": 0.5, "replay_speedup": 1.312, "one_shot_total_speedup": 1.819, "evidence_refs": ("archived_evidence", "archived_evidence")},
+        {"point_count": 131072, "factor": 0.25, "replay_speedup": 1.399, "one_shot_total_speedup": 3.410, "evidence_refs": ("archived_evidence", "archived_evidence")},
+        {"point_count": 262144, "factor": 0.25, "replay_speedup": 1.642, "one_shot_total_speedup": 2.939, "evidence_refs": ("archived_evidence", "archived_evidence")},
+        {"point_count": 524288, "factor": 0.25, "replay_speedup": 1.769, "one_shot_total_speedup": 2.489, "evidence_refs": ("archived_evidence",)},
+        {"point_count": 1048576, "factor": 0.25, "replay_speedup": 1.790, "one_shot_total_speedup": 2.432, "evidence_refs": ("archived_evidence",)},
     ),
 }
 RT_DBSCAN_TESTED_DIRECT_STATUS_SINGLE_PASS_CONVERGENCE_OPTIONS = {
-    ("clustered3d", 65536, 0.25): {"replay_speedup_vs_until_stable": 1.945, "total_speedup_vs_until_stable": 8.851, "evidence_refs": ("Goal4150",)},
-    ("road3d", 65536, 0.25): {"replay_speedup_vs_until_stable": 2.017, "total_speedup_vs_until_stable": 1.654, "evidence_refs": ("Goal4150",)},
-    ("ngsim_dense", 65536, 0.25): {"replay_speedup_vs_until_stable": 1.944, "total_speedup_vs_until_stable": 1.111, "evidence_refs": ("Goal4150",)},
-    ("clustered3d", 131072, 0.25): {"replay_speedup_vs_until_stable": 2.121, "total_speedup_vs_until_stable": 1.308, "evidence_refs": ("Goal4150",)},
-    ("road3d", 131072, 0.25): {"replay_speedup_vs_until_stable": 2.069, "total_speedup_vs_until_stable": 1.255, "evidence_refs": ("Goal4150",)},
-    ("ngsim_dense", 131072, 0.25): {"replay_speedup_vs_until_stable": 1.849, "total_speedup_vs_until_stable": 1.117, "evidence_refs": ("Goal4150",)},
-    ("clustered3d", 262144, 0.25): {"replay_speedup_vs_until_stable": 2.046, "total_speedup_vs_until_stable": 1.506, "evidence_refs": ("Goal4150",)},
-    ("road3d", 262144, 0.25): {"replay_speedup_vs_until_stable": 2.102, "total_speedup_vs_until_stable": 1.502, "evidence_refs": ("Goal4150",)},
-    ("ngsim_dense", 262144, 0.25): {"replay_speedup_vs_until_stable": 1.996, "total_speedup_vs_until_stable": 1.176, "evidence_refs": ("Goal4150",)},
-    ("clustered3d", 524288, 0.25): {"replay_speedup_vs_until_stable": 2.076, "total_speedup_vs_until_stable": 1.659, "evidence_refs": ("Goal4150",)},
-    ("road3d", 524288, 0.25): {"replay_speedup_vs_until_stable": 2.086, "total_speedup_vs_until_stable": 1.681, "evidence_refs": ("Goal4150",)},
-    ("ngsim_dense", 524288, 0.25): {"replay_speedup_vs_until_stable": 2.010, "total_speedup_vs_until_stable": 1.218, "evidence_refs": ("Goal4150",)},
-    ("clustered3d", 1048576, 0.25): {"replay_speedup_vs_until_stable": 1.987, "total_speedup_vs_until_stable": 1.857, "evidence_refs": ("Goal4149",)},
-    ("road3d", 1048576, 0.25): {"replay_speedup_vs_until_stable": 2.080, "total_speedup_vs_until_stable": 1.817, "evidence_refs": ("Goal4149",)},
-    ("ngsim_dense", 1048576, 0.25): {"replay_speedup_vs_until_stable": 2.010, "total_speedup_vs_until_stable": 1.381, "evidence_refs": ("Goal4149",)},
+    ("clustered3d", 65536, 0.25): {"replay_speedup_vs_until_stable": 1.945, "total_speedup_vs_until_stable": 8.851, "evidence_refs": ("archived_evidence",)},
+    ("road3d", 65536, 0.25): {"replay_speedup_vs_until_stable": 2.017, "total_speedup_vs_until_stable": 1.654, "evidence_refs": ("archived_evidence",)},
+    ("ngsim_dense", 65536, 0.25): {"replay_speedup_vs_until_stable": 1.944, "total_speedup_vs_until_stable": 1.111, "evidence_refs": ("archived_evidence",)},
+    ("clustered3d", 131072, 0.25): {"replay_speedup_vs_until_stable": 2.121, "total_speedup_vs_until_stable": 1.308, "evidence_refs": ("archived_evidence",)},
+    ("road3d", 131072, 0.25): {"replay_speedup_vs_until_stable": 2.069, "total_speedup_vs_until_stable": 1.255, "evidence_refs": ("archived_evidence",)},
+    ("ngsim_dense", 131072, 0.25): {"replay_speedup_vs_until_stable": 1.849, "total_speedup_vs_until_stable": 1.117, "evidence_refs": ("archived_evidence",)},
+    ("clustered3d", 262144, 0.25): {"replay_speedup_vs_until_stable": 2.046, "total_speedup_vs_until_stable": 1.506, "evidence_refs": ("archived_evidence",)},
+    ("road3d", 262144, 0.25): {"replay_speedup_vs_until_stable": 2.102, "total_speedup_vs_until_stable": 1.502, "evidence_refs": ("archived_evidence",)},
+    ("ngsim_dense", 262144, 0.25): {"replay_speedup_vs_until_stable": 1.996, "total_speedup_vs_until_stable": 1.176, "evidence_refs": ("archived_evidence",)},
+    ("clustered3d", 524288, 0.25): {"replay_speedup_vs_until_stable": 2.076, "total_speedup_vs_until_stable": 1.659, "evidence_refs": ("archived_evidence",)},
+    ("road3d", 524288, 0.25): {"replay_speedup_vs_until_stable": 2.086, "total_speedup_vs_until_stable": 1.681, "evidence_refs": ("archived_evidence",)},
+    ("ngsim_dense", 524288, 0.25): {"replay_speedup_vs_until_stable": 2.010, "total_speedup_vs_until_stable": 1.218, "evidence_refs": ("archived_evidence",)},
+    ("clustered3d", 1048576, 0.25): {"replay_speedup_vs_until_stable": 1.987, "total_speedup_vs_until_stable": 1.857, "evidence_refs": ("archived_evidence",)},
+    ("road3d", 1048576, 0.25): {"replay_speedup_vs_until_stable": 2.080, "total_speedup_vs_until_stable": 1.817, "evidence_refs": ("archived_evidence",)},
+    ("ngsim_dense", 1048576, 0.25): {"replay_speedup_vs_until_stable": 2.010, "total_speedup_vs_until_stable": 1.381, "evidence_refs": ("archived_evidence",)},
 }
 RT_DBSCAN_DIRECT_STATUS_APP_MODE = "partner_cupy_prepared_direct_status_union_component_signature_3d"
 RT_DBSCAN_GROUPED_STREAM_NUMBA_APP_MODE = "optix_rt_core_grouped_stream_numba_column_signature_3d"
@@ -117,7 +117,7 @@ def plan_rt_dbscan_execution(dataset: str, point_count: int) -> dict[str, object
         reason = "tiny correctness fixture; no GPU performance claim"
     elif dataset == "ngsim_dense":
         selected_mode = "partner_cupy_prepared_grid_components_3d"
-        reason = "Goal2425 showed compact ngsim_dense rows favor the prepared pure-CuPy continuation through 262k"
+        reason = "archived_evidence showed compact ngsim_dense rows favor the prepared pure-CuPy continuation through 262k"
         current_route_advisor = explain_rt_dbscan_explicit_route_choice(
             dataset,
             repeated_component_signature=False,
@@ -125,7 +125,7 @@ def plan_rt_dbscan_execution(dataset: str, point_count: int) -> dict[str, object
         )
     elif dataset == "road3d" and point_count < 524288:
         selected_mode = "partner_cupy_prepared_grid_components_3d"
-        reason = "Goal2425 showed road3d favors the prepared pure-CuPy continuation below the 524k crossover"
+        reason = "archived_evidence showed road3d favors the prepared pure-CuPy continuation below the 524k crossover"
         current_route_advisor = explain_rt_dbscan_explicit_route_choice(
             dataset,
             repeated_component_signature=False,
@@ -133,7 +133,7 @@ def plan_rt_dbscan_execution(dataset: str, point_count: int) -> dict[str, object
         )
     elif dataset == "clustered3d" and point_count < 65536:
         selected_mode = "partner_cupy_prepared_grid_components_3d"
-        reason = "Goal2425 showed clustered3d needs at least the 65k scale before prepared RT wins over prepared pure CuPy"
+        reason = "archived_evidence showed clustered3d needs at least the 65k scale before prepared RT wins over prepared pure CuPy"
         current_route_advisor = explain_rt_dbscan_explicit_route_choice(
             dataset,
             repeated_component_signature=False,
@@ -141,7 +141,7 @@ def plan_rt_dbscan_execution(dataset: str, point_count: int) -> dict[str, object
         )
     else:
         selected_mode = "optix_rt_core_flags_cupy_prepared_grid_components_3d"
-        reason = "Goal2425 showed prepared RT-count plus prepared CuPy grid wins for this measured scale/shape"
+        reason = "archived_evidence showed prepared RT-count plus prepared CuPy grid wins for this measured scale/shape"
         current_route_advisor = explain_rt_dbscan_explicit_route_choice(
             dataset,
             repeated_component_signature=False,
@@ -154,13 +154,13 @@ def plan_rt_dbscan_execution(dataset: str, point_count: int) -> dict[str, object
         "adapter": "plan_rt_dbscan_execution",
         "selected_mode": selected_mode,
         "reason": reason,
-        "policy": "explicit_benchmark_plan_from_goal2425_prepared_fairness_evidence",
+        "policy": "explicit_benchmark_plan_from_archived_evidence_prepared_fairness_evidence",
         "legacy_plan_compatibility_mode": True,
-        "current_route_guidance_source": "explain_rt_dbscan_explicit_route_choice_goal4151",
+        "current_route_guidance_source": "explain_rt_dbscan_explicit_route_choice_archived_evidence",
         "current_route_advisor": current_route_advisor,
         "current_route_first_option": current_route_first_option,
         "selected_mode_boundary": (
-            "planned_rt_dbscan remains a legacy compatibility execution mode from Goal2425. "
+            "planned_rt_dbscan remains a legacy compatibility execution mode from archived_evidence. "
             "Use current_route_advisor for current explicit user-selected route and factor guidance; "
             "the legacy plan does not auto-select partition-cell factors from the advisor."
         ),
@@ -200,15 +200,15 @@ def explain_rt_dbscan_explicit_route_choice(
         "canonical_component_size_signature_comparison": True,
         "policy_aware_semantic_signature_comparison": True,
         "evidence_refs": (
-            "Goal3859",
-            "Goal3936",
-            "Goal4100",
-            "Goal4115",
-            "Goal4118",
-            "Goal4159",
-            "Goal4160",
-            "Goal4165",
-            "Goal4166",
+            "archived_evidence",
+            "archived_evidence",
+            "archived_evidence",
+            "archived_evidence",
+            "archived_evidence",
+            "archived_evidence",
+            "archived_evidence",
+            "archived_evidence",
+            "archived_evidence",
         ),
     }
     options: list[dict[str, object]] = [default_option]
@@ -246,10 +246,10 @@ def explain_rt_dbscan_explicit_route_choice(
                     "mixed predicates are rejected instead of using the current lowest-id border policy"
                 ),
                 "evidence_refs": (
-                    "Goal4158",
-                    "Goal4159",
-                    "Goal4160",
-                    "Goal4162",
+                    "archived_evidence",
+                    "archived_evidence",
+                    "archived_evidence",
+                    "archived_evidence",
                 ),
             }
             declared_all_true_option = {
@@ -271,8 +271,8 @@ def explain_rt_dbscan_explicit_route_choice(
                 "automatic_route_selection_authorized": False,
                 "route_promotion_authorized": False,
                 "evidence_refs": (
-                    "Goal4172",
-                    "Goal4173",
+                    "archived_evidence",
+                    "archived_evidence",
                 ),
             }
             direct_option = {
@@ -288,9 +288,9 @@ def explain_rt_dbscan_explicit_route_choice(
                 "predicate_scope": (
                     "proven for the default benchmark predicate shape; custom mixed-predicate overrides "
                     "remain blocked unless the caller chooses a policy-aware semantic contract; "
-                    "they are not broadly faster in Goal4165"
+                    "they are not broadly faster in archived_evidence"
                 ),
-                "all_predicate_fast_path_evidence": "Goal4158",
+                "all_predicate_fast_path_evidence": "archived_evidence",
                 "border_assignment_policy": "lowest_predicate_true_point_id_within_radius",
                 "border_assignment_policy_status": (
                     "explicit metadata only; reference_grouped_stream_compatible policy not implemented"
@@ -298,7 +298,7 @@ def explain_rt_dbscan_explicit_route_choice(
                 "canonical_component_size_signature_comparison": True,
                 "policy_aware_semantic_signature_comparison": True,
                 "mixed_predicate_performance_status": (
-                    "Goal4165 shows the candidate is not broadly faster on sparse mixed rows"
+                    "archived_evidence shows the candidate is not broadly faster on sparse mixed rows"
                 ),
                 "when": (
                     "explicit repeated component-signature route over reused point/partition columns"
@@ -306,15 +306,15 @@ def explain_rt_dbscan_explicit_route_choice(
                     else "explicit warmed one-shot component-signature route with prepare paid once"
                 ),
                 "evidence_refs": (
-                    "Goal4116",
-                    "Goal4118",
-                    "Goal4158",
-                    "Goal4159",
-                    "Goal4160",
-                    "Goal4161",
-                    "Goal4162",
-                    "Goal4165",
-                    "Goal4166",
+                    "archived_evidence",
+                    "archived_evidence",
+                    "archived_evidence",
+                    "archived_evidence",
+                    "archived_evidence",
+                    "archived_evidence",
+                    "archived_evidence",
+                    "archived_evidence",
+                    "archived_evidence",
                     *tuple(tested["evidence_refs"]),
                 ),
             }
@@ -351,7 +351,7 @@ def explain_rt_dbscan_explicit_route_choice(
                 "partner": "cupy",
                 "partition_cell_factor": None,
                 "when": "requires new same-contract factor evidence for this dataset",
-                "evidence_refs": ("Goal4118",),
+                "evidence_refs": ("archived_evidence",),
             }
         )
     return {
@@ -379,14 +379,14 @@ def explain_rt_dbscan_explicit_route_choice(
             "policy_bound_component_sizes",
             "core_noise_assigned_counts_only",
         ),
-        "mixed_predicate_policy_probe": "Goal4165",
-        "mixed_predicate_policy_aware_contract": "Goal4166",
+        "mixed_predicate_policy_probe": "archived_evidence",
+        "mixed_predicate_policy_aware_contract": "archived_evidence",
         "mixed_predicate_performance_status": (
             "policy-aware counts-only semantics can pass even when component-size policy differs, "
-            "but predicate direct-status is not promoted for mixed rows because Goal4165 does not "
+            "but predicate direct-status is not promoted for mixed rows because archived_evidence does not "
             "show broad performance advantage"
         ),
-        "mixed_predicate_route_promotion_blocked_by": ("Goal4159", "Goal4160"),
+        "mixed_predicate_route_promotion_blocked_by": ("archived_evidence", "archived_evidence"),
         "current_predicate_border_assignment_policy": "lowest_predicate_true_point_id_within_radius",
         "target_predicate_border_assignment_policy": "reference_grouped_stream_compatible",
         "claim_boundary": (
@@ -425,13 +425,13 @@ def plan_rt_dbscan_continuation_execution(
         selected_mode = "optix_rt_core_adjacency_cupy_components_3d"
         reason = (
             "estimated directed adjacency stream fits the explicit budget; "
-            "Goal2431/2435/2452/2457 evidence says the full stream is faster than chunked or grouped when it fits"
+            "archived_evidence/2435/2452/2457 evidence says the full stream is faster than chunked or grouped when it fits"
         )
     else:
         selected_mode = "optix_rt_core_grouped_stream_cupy_components_3d"
         reason = (
             "estimated directed adjacency stream exceeds the explicit budget; "
-            "Goal2457/2461/2463/2465/2475/2476 evidence says the grouped stream avoids the giant "
+            "archived_evidence/2461/2463/2465/2475/2476 evidence says the grouped stream avoids the giant "
             "neighbor-index table, reuses prepared device search points, reduces avoidable anyhit work, "
             "and beats chunked continuation for the measured dense branch"
         )
@@ -440,19 +440,19 @@ def plan_rt_dbscan_continuation_execution(
         "selected_mode": selected_mode,
         "reason": reason,
         "policy": (
-            "explicit_continuation_plan_from_goal2431_2433_2435_2452_2457_2461_2463_2465_2475_2476_evidence"
+            "explicit_continuation_plan_from_archived_evidence_2433_2435_2452_2457_2461_2463_2465_2475_2476_evidence"
         ),
         "evidence_goals": [
-            "Goal2431",
-            "Goal2433",
-            "Goal2435",
-            "Goal2452",
-            "Goal2457",
-            "Goal2461",
-            "Goal2463",
-            "Goal2465",
-            "Goal2475",
-            "Goal2476",
+            "archived_evidence",
+            "archived_evidence",
+            "archived_evidence",
+            "archived_evidence",
+            "archived_evidence",
+            "archived_evidence",
+            "archived_evidence",
+            "archived_evidence",
+            "archived_evidence",
+            "archived_evidence",
         ],
         "estimated_directed_edge_count": estimated_edges,
         "directed_edge_budget": edge_budget,
@@ -471,7 +471,7 @@ def plan_rt_dbscan_blocked_grouped_continuation_design(
     *,
     segment_target_hits: int = DEFAULT_BLOCKED_GROUPED_SEGMENT_TARGET_HITS,
 ) -> dict[str, object]:
-    """Return the Goal2467 non-executable design plan for blocked grouped union.
+    """Return the archived_evidence non-executable design plan for blocked grouped union.
 
     This is deliberately not a runtime dispatcher. It records the next generic
     primitive shape and a sizing estimate so native work can be reviewed before
@@ -491,16 +491,16 @@ def plan_rt_dbscan_blocked_grouped_continuation_design(
         "target_primitive": "generic_fixed_radius_blocked_grouped_component_continuation_3d",
         "candidate_native_contract": "fixed_radius_hit_stream_to_segmented_grouped_union_workspaces",
         "reason": (
-            "Goal2461/2463/2465 removed transfer and all-items avoidable anyhit overhead; "
+            "archived_evidence/2463/2465 removed transfer and all-items avoidable anyhit overhead; "
             "the remaining target is generic grouped-union global atomic pressure"
         ),
-        "policy": "goal2467_design_only_no_hidden_dispatch_no_native_abi_until_review",
+        "policy": "archived_evidence_design_only_no_hidden_dispatch_no_native_abi_until_review",
         "evidence_goals": [
-            "Goal2457",
-            "Goal2459",
-            "Goal2461",
-            "Goal2463",
-            "Goal2465",
+            "archived_evidence",
+            "archived_evidence",
+            "archived_evidence",
+            "archived_evidence",
+            "archived_evidence",
         ],
         "estimated_directed_edge_count": estimated_edges,
         "segment_target_hits": segment_target_hits,
@@ -815,7 +815,7 @@ def simulate_fixed_radius_blocked_grouped_component_continuation_3d(
     segment_target_hits: int = DEFAULT_BLOCKED_GROUPED_SEGMENT_TARGET_HITS,
     segment_capacity_hits: int | None = None,
 ) -> tuple[tuple[dict[str, object], ...], dict[str, object]]:
-    """Local oracle for the Goal2467 blocked grouped-continuation contract."""
+    """Local oracle for the archived_evidence blocked grouped-continuation contract."""
     segment_target_hits = int(segment_target_hits)
     if segment_target_hits < 1:
         raise ValueError("segment_target_hits must be positive")

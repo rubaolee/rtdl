@@ -5,9 +5,9 @@ This directory is organized for current RTDL users first. Start in
 continuation, or research benchmark.
 
 The `current/` tree is the learner-facing source of truth for the current
-v2.10 Python+partner+RTDL surface. Historical version evidence belongs in
-`docs/reports/`, `docs/reviews/`, `docs/history/`, and release notes rather
-than in the first-run examples path.
+v2.14 Python+partner+RTDL surface. Historical examples, generated bundles,
+backend proofs, and internal development artifacts live under `history/`
+rather than in the first-run examples path.
 
 Run examples from the repository root with source-tree usage:
 
@@ -52,11 +52,8 @@ the same `pip` command inside it.
 | `current/learner_apps/` | Learner/research reader | Demoted or design-pressure app-scale examples that are not benchmark claims |
 | `current/research_benchmarks/hausdorff_xhd/` | Research/performance reader | Hausdorff/X-HD-inspired RTDL study and benchmark harnesses |
 | `current/research_benchmarks/spatial_rayjoin/` | Research/performance reader | RayJoin-inspired spatial join study |
-| `legacy_or_backend_proofs/` | Backend maintainer | Backend proof demos that are not the first learner path |
 | `visual_demo/` | Visual demo reader | Rendering/visual query demos |
-| `reference/` | Test/doc maintainer | Canonical reference kernels used by docs and tests |
-| `generated/` | Auditor | Preserved generated bundles |
-| `internal/` | Maintainer | Historical/internal development artifacts |
+| `reference/` | Test/doc maintainer | Canonical reference kernels used by docs, examples, and tests; not the first learner path |
 
 ## v2.x Feature Families
 
@@ -86,7 +83,7 @@ the same `pip` command inside it.
 
 | App | Directory | Boundary |
 | --- | --- | --- |
-| GPU-RMQ | `current/learner_apps/gpu_rmq/` | Demoted after Goal2612; useful for primitive design pressure, not a benchmark app or speedup claim |
+| GPU-RMQ | `current/learner_apps/gpu_rmq/` | Learner/design-pressure app; useful for primitive design pressure, not a benchmark app or speedup claim |
 
 ## Compatibility
 
@@ -102,8 +99,10 @@ the explicit `examples/current/...` paths.
 - Partner examples show user-owned continuation around RTDL outputs; RTDL does
   not claim to accelerate arbitrary NumPy, CuPy, Numba, or user-owned extension
   programs.
-- `legacy_or_backend_proofs/`, `generated/`, `reference/`, and `internal/` are
-  not first-run learner directories.
+- `reference/` is support code for current examples and tests, not the first-run
+  learner directory.
+- Historical generated examples, backend proof demos, and internal examples are
+  archived under `../history/examples_internal/`.
 
 For guided learning and support boundaries, prefer:
 

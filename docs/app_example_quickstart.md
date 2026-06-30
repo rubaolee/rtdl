@@ -55,10 +55,8 @@ What this does not show:
 
 For the full app inventory, read [Application Catalog](application_catalog.md).
 For backend support, read [App Engine Support Matrix](app_engine_support_matrix.md).
-For current design lessons, use
-[Design Insights By Benchmark Apps](research/design_insights_by_benchmark_apps_2026-05-19.md).
-Archived implementation-transition notes live under
-[Research Archive](research/archive/README.md).
+Historical design notes are preserved under the top-level `history/` archive;
+they are not required for this quickstart.
 
 ## Backend Names
 
@@ -83,7 +81,6 @@ the needed local dependencies.
 | App catalog | [Application Catalog](application_catalog.md) | current app inventory and boundaries |
 | All examples | [Examples Index](../examples/README.md) | compact directory inventory |
 | Command archive | [Release-Facing Examples](release_facing_examples.md) | large evidence-oriented command list |
-| Research notes | [Design Insights By Benchmark Apps](research/design_insights_by_benchmark_apps_2026-05-19.md) | current benchmark-driven primitive lessons |
 
 ## OptiX Rule For App Runs
 
@@ -97,8 +94,8 @@ mode is documented and reviewed.
 
 If an app returns full rows, Python labels, force vectors, ranked assignments,
 or cluster labels, that output may include Python-owned continuation work. Only
-claim the exact prepared/native sub-path that the support matrix and review
-reports authorize.
+claim the exact prepared/native sub-path documented by the support matrix and
+current v2.14 release package.
 
 ## Recommended Demo Path
 

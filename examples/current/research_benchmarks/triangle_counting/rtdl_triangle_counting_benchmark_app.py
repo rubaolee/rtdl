@@ -108,9 +108,9 @@ def scope_payload() -> dict[str, Any]:
             "Python graph semantics and app-agnostic engine row contracts"
         ),
         "primary_reports": (
-            "docs/reports/goal2586_graph_analytics_benchmark_promotion_2026-05-24.md",
-            "docs/reports/goal2587_benchmark_apps_milestone_report_2026-05-24.md",
-            "docs/reports/goal2588_rt_graph_triangle_counting_paper_code_intake_2026-05-24.md",
+            "history/internal_docs/docs_reports/archived_evidence_graph_analytics_benchmark_promotion_2026-05-24.md",
+            "history/internal_docs/docs_reports/archived_evidence_benchmark_apps_milestone_report_2026-05-24.md",
+            "history/internal_docs/docs_reports/archived_evidence_rt_graph_triangle_counting_paper_code_intake_2026-05-24.md",
         ),
         "claim_boundary": CLAIM_BOUNDARY,
     }

@@ -29,7 +29,7 @@ PAPER = {
     "authors": ("Lara Kreis", "Justus Henneberg", "Valentin Henkys", "Felix Schuhknecht", "Bertil Schmidt"),
     "relationship": (
         "This research/learner app records the paper's hierarchical/hybrid RMQ "
-        "design pressure for RTDL, but Goal2612 rejected promotion to a closed "
+        "design pressure for RTDL, but archived_evidence rejected promotion to a closed "
         "benchmark app because the RTDL paths were still far slower than a direct "
         "CUDA sparse-query baseline."
     ),
@@ -82,7 +82,7 @@ CLAIM_BOUNDARY = {
     "benchmark_app": False,
     "front_door_only": True,
     "demoted_from_benchmark_candidate": True,
-    "demotion_evidence": "docs/reports/goal2612_gpu_rmq_grouped_candidate_argmin_vs_cuda_2026-05-25.md",
+    "demotion_evidence": "history/internal_docs/docs_reports/archived_evidence_gpu_rmq_grouped_candidate_argmin_vs_cuda_2026-05-25.md",
     "full_gpu_rmq_reproduction": False,
     "paper_code_evidence": False,
     "author_code_available": True,
@@ -2473,7 +2473,7 @@ def scope_payload() -> dict[str, Any]:
         "why_not_benchmark_but_still_useful": (
             "GPU-RMQ was a useful RTDL benchmark candidate because it "
             "forces a hybrid hierarchy-plus-partner-plus-RT execution story rather "
-            "than a single closest-hit geometric trick. Goal2612 demoted it because "
+            "than a single closest-hit geometric trick. archived_evidence demoted it because "
             "the current RTDL paths are not competitive with direct CUDA sparse-query code."
         ),
         "current_local_modes": (
@@ -2499,7 +2499,7 @@ def scope_payload() -> dict[str, Any]:
             "work and RT traversal"
         ),
         "promotion_gate": (
-            "Promotion is closed as rejected for the current RTDL design. Goal2612 "
+            "Promotion is closed as rejected for the current RTDL design. archived_evidence "
             "showed that generic RTDL RMQ paths remain much slower than direct CUDA "
             "sparse-query code on same generated workloads. Keep this app as a "
             "research/learner case unless a future device-resident partner/runtime "

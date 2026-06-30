@@ -33,7 +33,7 @@ Scale-profile pod runner:
 ```bash
 PYTHONPATH=src:. RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so python scripts/goal3828_current_benchmark_scale_profile_runner.py \
   --materialize-rayjoin-public-cdb \
-  --output-dir docs/reports/current_benchmark_scale_profile_rerun
+  --output-dir artifacts/current_benchmark_scale_profile_rerun
 ```
 
 The RayJoin public-CDB fixture is materialized only when the explicit
@@ -44,46 +44,19 @@ data is absent.
 Bounded pod-validation bundle:
 
 ```bash
-PYTHONPATH=src:. RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so python scripts/rtdl_v2_10_pod_validation_bundle.py --run-front-door --run-scale-profile --materialize-rayjoin-public-cdb --output-dir docs/reports/v2_10_pod_validation_bundle_pod
+PYTHONPATH=src:. RTDL_OPTIX_LIBRARY=$PWD/build/librtdl_optix.so python scripts/rtdl_v2_10_pod_validation_bundle.py --run-front-door --run-scale-profile --materialize-rayjoin-public-cdb --output-dir artifacts/v2_14_pod_validation_bundle
 ```
 
-For the full procedure, read
-[v2.10 Pod Validation Bundle](../audit/runbooks/v2_10_pod_validation_bundle.md).
-
-v2.11 closeout evidence:
-
-- [v2.11 release package](../release_reports/v2_11/README.md)
-- [v2.11 Embree CPU + partner reference packet](../reports/goal4298_v2_11_embree_cpu_partner_reference_packet_2026-06-11.md)
-- [Backend comparison campaign closeout](../reports/goal4345_backend_comparison_campaign_closeout_2026-06-11.md)
-- [Human-scale RT-core vs Embree CPU comparison](../reports/goal4353_human_scale_rt_vs_embree_run_20260612_pod_v3/summary.md)
-- [RayJoin original-code same-stream comparison](../reports/goal4354_rayjoin_original_vs_rtdl_pod/goal4354_rayjoin_original_vs_rtdl_same_stream_summary.md)
-
-v2.12 evidence:
-
-- [v2.12 release package](../release_reports/v2_12/README.md)
-- [v2.12 scoped RT-core vs Embree CPU comparison](../release_reports/v2_12/public_rt_vs_embree_comparison.md)
-- [RTX A4000 RayJoin same-stream packet after Embree LSI repair](../reports/goal4358_rtx_a4000_v2_12_rayjoin_same_stream_2026-06-13.md)
-- [Current OptiX-vs-Embree comparability index with all scoped pairs](../reports/goal4359_current_optix_embree_comparison_index_v2_12_2026-06-13.md)
-- [Optimized OptiX-vs-Embree packet with zero active boundary-limited rows](../reports/goal4359_optimized_embree_optix_comparison_packet_v2_12_2026-06-13.md)
-- [Robot Collision same-contract prepared-buffer evidence](../reports/goal4363_rtx_a4000_v2_12_robot_collision_same_contract_2026-06-13.md)
-- [RayDB-style same-contract prepared grouped-reduction evidence](../reports/goal4364_rtx_a4000_v2_12_raydb_same_contract_2026-06-13.md)
-
-v2.13 evidence:
-
-- [v2.13 release package](../release_reports/v2_13/README.md)
-- [v2.13 row-scoped RT-core vs Embree CPU comparison](../release_reports/v2_13/public_rt_vs_embree_comparison.md)
-- [v2.13 public wording packet](../reports/goal4370_v2_13_public_wording_packet_2026-06-13.md)
-- [Refreshed human-scale RT-core vs Embree CPU comparison](../reports/goal4349_human_scale_rt_vs_embree_comparison_2026-06-12.md)
-- [Embree CPU fairness hardening packet](../reports/goal4369_embree_cpu_fairness_hardening_2026-06-13.md)
-- [PIP exact prepared-points executor](../reports/goal4368_pip_exact_prepared_points_executor_2026-06-13.md)
-- [RayJoin authors-code comparison packet](../reports/goal4367_rayjoin_authors_code_comparison_packet_2026-06-13.md)
+For the public release evidence, read the
+[RTDL v2.14 Release Package](../release_reports/v2_14/README.md). Older raw
+reports are archived under the top-level `history/` directory and are not part
+of the first-user path.
 
 v2.14 evidence:
 
 - [v2.14 release package](../release_reports/v2_14/README.md)
 - [v2.14 row-scoped RT-core vs Embree CPU comparison](../release_reports/v2_14/public_rt_vs_embree_comparison.md)
 - [v2.14 public wording boundaries](../release_reports/v2_14/public_wording_boundaries.md)
-- [v2.14 final closeout](../release_reports/v2_14/final_closeout.md)
 - [v2.14 app-author implementation strategy](v2_14_app_author_implementation_strategy.md)
 
 ## Current Ten-App Rows
@@ -103,10 +76,10 @@ v2.14 evidence:
 
 ## Evidence Reports
 
-- [Current benchmark front-door registry](../reports/goal3823_current_benchmark_front_door_registry_2026-06-07.md)
-- [Current benchmark scale-profile registry](../reports/goal3828_current_benchmark_scale_profile_registry_2026-06-07.md)
-- [RTX 4000 Ada scale-profile refresh](../reports/goal4215_current_benchmark_scale_profile_after_rtdbscan_policy_2026-06-09.md)
-- [Large-scale CuPy/Numba partner comparison](../reports/goal4266_large_scale_cupy_numba_partner_comparison_2026-06-09.md)
+- [Current benchmark front-door registry](../../history/internal_docs/docs_reports/goal3823_current_benchmark_front_door_registry_2026-06-07.md)
+- [Current benchmark scale-profile registry](../../history/internal_docs/docs_reports/goal3828_current_benchmark_scale_profile_registry_2026-06-07.md)
+- [RTX 4000 Ada scale-profile refresh](../../history/internal_docs/docs_reports/goal4215_current_benchmark_scale_profile_after_rtdbscan_policy_2026-06-09.md)
+- [Large-scale CuPy/Numba partner comparison](../../history/internal_docs/docs_reports/goal4266_large_scale_cupy_numba_partner_comparison_2026-06-09.md)
 
 ## Reading Rules
 
@@ -116,7 +89,7 @@ v2.14 evidence:
   exact contract before using it as performance evidence.
 - The v2.14 release packet keeps mixed rows explicit: Spatial RayJoin PIP is
   near parity and slightly Embree-faster in the refreshed human-scale slice,
-  Goal4368 separately records an OptiX-over-Embree exact PIP engineering win
+  stricter prepared-executor rows separately show an OptiX-over-Embree exact PIP engineering win
   that still does not beat RayJoin RT, and RTNN remains blocked as RT-core
   neighbor-search speedup wording. RayJoin overlay reports the available 2/8
   exact CDB subset, not a full 8/8 Section 5.7 reproduction.

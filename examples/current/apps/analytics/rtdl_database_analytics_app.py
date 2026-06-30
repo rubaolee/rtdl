@@ -151,7 +151,7 @@ class PreparedDatabaseAnalyticsSession:
                 "Python-owned dashboard or risk-summary JSON",
             ],
             "retired_compatibility_helpers": [
-                "examples/internal/archived_apps/rtdl_v0_7_db_app_demo.py",
+                "history/examples_internal/internal/archived_apps/rtdl_v0_7_db_app_demo.py",
                 "examples/current/apps/geospatial/rtdl_sales_risk_screening.py",
             ],
             "native_continuation_active": native_continuation_backend != "none",
@@ -228,7 +228,7 @@ def run_app(
             "Python-owned dashboard or risk-summary JSON",
         ],
         "retired_compatibility_helpers": [
-            "examples/internal/archived_apps/rtdl_v0_7_db_app_demo.py",
+            "history/examples_internal/internal/archived_apps/rtdl_v0_7_db_app_demo.py",
             "examples/current/apps/geospatial/rtdl_sales_risk_screening.py",
         ],
         "native_continuation_active": native_continuation_backend != "none",

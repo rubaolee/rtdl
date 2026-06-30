@@ -36,7 +36,7 @@ source-tree surface.
 
 ## Current Claim Boundary
 
-The current tutorial track teaches the v2.10 source-tree programming model:
+The current tutorial track teaches the v2.14 source-tree programming model:
 Python+RTDL, explicit CuPy/Numba partner choices where needed, and generic
 app-agnostic engine primitives.
 

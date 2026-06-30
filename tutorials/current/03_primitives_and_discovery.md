@@ -1,6 +1,6 @@
 # Primitive Discovery
 
-Status: current v2.10 source-tree tutorial.
+Status: current v2.14 source-tree tutorial.
 
 Goal: find a reusable RTDL primitive before writing a new app path.
 

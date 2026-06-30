@@ -12,7 +12,6 @@ indicate exact follow-up work.
 
 - canonical kernel pattern:
   - [rtdl_language_reference.py](../../../examples/reference/rtdl_language_reference.py)
-  - [rtdl_codex_authored.py](../../../examples/internal/rtdl_codex_authored.py)
 - language contracts:
   - [dsl_reference.md](../../rtdl/dsl_reference.md)
   - [workload_cookbook.md](../../rtdl/workload_cookbook.md)
@@ -42,7 +41,6 @@ return rt.emit(
 Start here:
 
 - [rtdl_language_reference.py](../../../examples/reference/rtdl_language_reference.py)
-- [rtdl_codex_authored.py](../../../examples/internal/rtdl_codex_authored.py)
 
 ## Best Practices
 

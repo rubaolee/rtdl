@@ -12,8 +12,6 @@ the orthogonal integer-grid unit-cell contract.
 
 - canonical example:
   - [rtdl_polygon_set_jaccard.py](../../../examples/current/features/spatial/rtdl_polygon_set_jaccard.py)
-- generated handoff bundle:
-  - [generated_polygon_set_jaccard_bundle](../../../examples/generated/rtdl_generated_polygon_set_jaccard_bundle/README.md)
 - support contract:
   - [Engine Feature Support Contract](../engine_support_matrix.md)
 - app support:

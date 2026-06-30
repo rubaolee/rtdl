@@ -1,6 +1,6 @@
 # Prepared Execution Pattern
 
-RTDL v2.10 uses a prepared-execution pattern for workloads where setup is large
+RTDL v2.14 uses a prepared-execution pattern for workloads where setup is large
 but repeated queries are small and fast.
 
 The shape is:
@@ -33,7 +33,7 @@ query.
 import json
 import rtdsl as rt
 
-artifact = json.load(open("docs/reports/goal3511_overlay_area_steady_state_relation_stream_pod_2026-06-05.json"))
+artifact = json.load(open("history/internal_docs/docs_reports/goal3511_overlay_area_steady_state_relation_stream_pod_2026-06-05.json"))
 report = rt.prepared_execution_report_from_artifact(
     artifact,
     workflow_name="simple_polygon_overlay_area_prepared_execution",

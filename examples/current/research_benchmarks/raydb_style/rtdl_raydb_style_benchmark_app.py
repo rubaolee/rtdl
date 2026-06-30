@@ -2412,7 +2412,7 @@ def _run_paper_rt_hit_stream_triton_result_mode(
                 "semantics are embedded in the native engine."
             ),
             "claim_boundary": (
-                "This is Goal2684 full RT hit-stream plus Triton continuation evidence. "
+                "This is archived_evidence full RT hit-stream plus Triton continuation evidence. "
                 "It is not a public speedup claim until pod artifacts and external review exist."
             ),
         },

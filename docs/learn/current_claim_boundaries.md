@@ -61,7 +61,7 @@ itself a public RT-core speedup claim.
 The v2.14 evidence supports path-specific wording only. In particular, the
 refreshed packet keeps every speedup tied to a row, contract, direction, and
 caveat. Mixed rows remain explicit: Spatial RayJoin PIP is near parity and
-slightly Embree-faster in the refreshed human-scale public CDB slice, Goal4368
+slightly Embree-faster in the refreshed human-scale public CDB slice, stricter prepared-executor evidence
 separately records an OptiX-over-Embree exact PIP engineering win that still does
 not beat RayJoin RT, RayJoin overlay reports the available 2/8 exact CDB subset,
 and RTNN remains blocked as an RT-core neighbor-search claim.

@@ -170,10 +170,9 @@ that every user program is faster. For the exact positive and negative rule, rea
 [Partner Acceleration Boundaries](docs/partner_acceleration_boundaries.md).
 
 The v2.14 comparison is deliberately mixed where the evidence is mixed: Spatial
-RayJoin PIP is near parity and slightly Embree-faster in the refreshed human-scale
-public CDB slice, while Goal4368 separately records an OptiX-over-Embree win for
-the stricter full same-stream exact prepared-points executor and still does not
-beat RayJoin RT.
+RayJoin PIP is near parity in one public CDB slice, while stricter prepared
+executor rows show a narrow OptiX-over-Embree win and still do not become a
+RayJoin-system speedup claim.
 
 The v2.14 partner rule is still user-chosen and evidence-gated:
 
@@ -227,15 +226,12 @@ Use exact benchmark artifacts before publishing performance wording.
 - [Performance Model](docs/performance_model.md)
 - [IR And Lowering](docs/rtdl/ir_and_lowering.md)
 
-## History And Audit Trail
+## History
 
-User-facing docs describe the current RTDL product surface. Project history,
-release evidence, review records, and goal archives live separately:
-
-- [History Index](docs/history/README.md)
-- [Version Archive Notes](docs/history/version_archive_notes.md)
-- [Release Reports](docs/release_reports/)
-- [Benchmark And Audit Reports](docs/reports/)
+User-facing docs describe the current RTDL v2.14 product surface. Older release
+evidence, internal reviews, handoffs, and exploratory records are preserved
+outside the first-user path under [History](history/README.md). You do not need
+that archive to learn or use the current system.
 
 ## Demo
 
@@ -260,15 +256,20 @@ other examples first and treat the linked 4K video as the reference recording.
 
 ## Repository Layout
 
+Normal users should start with `tutorials/`, `examples/`, and `docs/`.
+Maintainers may also need `scripts/` and `tests/`. The experimental project
+archive is intentionally outside the normal learner path.
+
 | Path | Purpose |
 | --- | --- |
 | `src/rtdsl/` | Python DSL/runtime and backend adapters |
 | `tutorials/` | Ordered teaching path for current learners |
 | `examples/` | Public example apps and demos |
-| `docs/` | Reference docs, architecture docs, API/IR docs, and evidence indexes |
-| `docs/reports/` | Benchmark evidence, audits, reviews, and consensus records |
-| `tests/` | Regression tests for API, docs, release gates, and claim boundaries |
-| `scripts/` | Audits, report generators, benchmark helpers, and intake tools |
+| `docs/` | Current reference docs, architecture docs, API/IR docs, and v2.14 support matrices |
+| `history/` | Archived release evidence, internal reviews, handoffs, and old records |
+| `exp-project-1/` | Isolated post-v2.14 experimental project record; not part of the current user surface |
+| `tests/` | Maintainer regression tests for API, docs, release gates, and claim boundaries |
+| `scripts/` | Maintainer audits, report generators, benchmark helpers, and intake tools |
 
 Root-level generated artifacts, archived proof apps, and schema files are kept
 inside the appropriate source, script, example, or history directories rather

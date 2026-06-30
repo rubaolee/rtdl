@@ -32,7 +32,7 @@ ROW_WIDTH = 3
 ROW_SCHEMA = ("query_group_id", "query_triangle_id", "scene_triangle_id")
 EPSILON = 1.0e-9
 CPP_BASELINE_SOURCE = Path(__file__).with_name("cpp_contact_witness_baseline.cpp")
-CPP_BASELINE_BINARY = ROOT / "build" / "goal2621_contact_witness_cpp_baseline"
+CPP_BASELINE_BINARY = ROOT / "build" / "archived_evidence_contact_witness_cpp_baseline"
 
 
 Point2D = tuple[float, float]

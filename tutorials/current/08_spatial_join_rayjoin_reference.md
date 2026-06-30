@@ -1,6 +1,6 @@
 # Spatial Join Benchmark Reference
 
-Status: current v2.10 source-tree tutorial reference.
+Status: current v2.14 source-tree tutorial reference.
 
 Goal: learn how RTDL expresses RayJoin-style spatial join workloads without
 putting RayJoin-specific code inside the native engine.
@@ -43,11 +43,7 @@ all_match_cpu_python_reference: true
 
 ## What To Read
 
-Read the detailed code walkthrough next:
-
-- [Spatial RayJoin Code Walkthrough](../../examples/current/research_benchmarks/spatial_rayjoin/CODE_WALKTHROUGH.md)
-
-Then use the benchmark README as the route reference:
+Use the benchmark README as the route reference:
 
 - [Spatial / RayJoin-Style Study](../../examples/current/research_benchmarks/spatial_rayjoin/README.md)
 

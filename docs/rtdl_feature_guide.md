@@ -1,9 +1,8 @@
 # RTDL Feature Guide
 
 This is the high-level feature guide for the v2.x-facing RTDL surface. It is
-for learners, users, and reviewers who want the current shape without release
-archaeology. Older version notes live in
-[Learner Doc Version Notes](history/learner_doc_version_notes.md).
+for learners and users who want the current shape without release archaeology.
+Older version notes live under the top-level `history/` archive.
 
 ## Practical Promise
 

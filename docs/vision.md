@@ -66,5 +66,5 @@ The current direction is:
   it into learner docs.
 
 For the active user path, start with [Learn RTDL](learn/README.md). For
-release evidence and archived milestones, use [Audit](audit/README.md) and
-[History](history/README.md).
+release evidence and archived milestones, use the top-level
+[History](../history/README.md) archive.

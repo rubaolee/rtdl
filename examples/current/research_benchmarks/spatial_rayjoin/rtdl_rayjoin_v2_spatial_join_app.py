@@ -1165,7 +1165,7 @@ def run_rayjoin_prepared_optix_cupy_refined_pip(
 ) -> dict[str, object]:
     """Run PIP through generic RT candidates plus a prepared CuPy exact refiner.
 
-    This route is the app-facing counterpart of the Goal3427 prepared refiner
+    This route is the app-facing counterpart of the archived_evidence prepared refiner
     timing probe. Native OptiX produces generic point/closed-shape candidate
     columns with instance ordinals; CuPy owns the exact simple-ring refinement.
     RayJoin interpretation remains Python-side.

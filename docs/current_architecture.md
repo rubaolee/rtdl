@@ -1,13 +1,12 @@
 # RTDL Current Architecture
 
 This page describes the v2.x-facing architecture for learners and users. It
-does not retell archived release history. For that, use
-[Version Archive Notes](history/version_archive_notes.md)
-and the release-report archive.
+does not retell archived release history; older evidence is preserved under the
+top-level `history/` archive.
 
 ## Current Status
 
-RTDL v2.10 is the current source-tree
+RTDL v2.14 is the current source-tree
 Python+partner+RTDL surface. It preserves the v2.x language boundary and adds
 clear user-chosen partner guidance for CuPy and Numba continuations.
 
@@ -54,7 +53,7 @@ the workload, backend, partner, hardware, command shape, and artifact.
 
 ## Partner Architecture
 
-The v2.10 partner design is protocol first and primitive first:
+The v2.14 partner design is protocol first and primitive first:
 
 ```text
 Use a fused generic native RTDL primitive when it exactly expresses the work.
@@ -92,7 +91,7 @@ Python, but user-written kernels remain application code unless RTDL ships and
 reviews that exact generic contract.
 
 Full residency-first, partner-neutral device-memory composition remains future
-roadmap work. v2.10 has selective reduced-transfer/device-resident evidence for
+roadmap work. v2.14 has selective reduced-transfer/device-resident evidence for
 specific paths, not a general zero-copy product guarantee.
 
 ## Read Next

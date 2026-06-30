@@ -1,6 +1,6 @@
 # Partner Columns With CuPy Or Numba
 
-Status: current v2.10 source-tree tutorial.
+Status: current v2.14 source-tree tutorial.
 
 Goal: learn when CuPy or Numba belongs in a Python+RTDL program.
 

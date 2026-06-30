@@ -1,20 +1,20 @@
 # RTDL Documentation
 
-This directory has three doors:
+This directory is the current RTDL v2.14 reference surface.
 
 | Door | Audience | Purpose |
 | --- | --- | --- |
 | [Learn](learn/README.md) | Learners and app builders | Quick path to run examples, write kernels, choose backends, and understand the current v2.14 boundaries. |
-| [Research](research/README.md) | Internal researchers and advanced developers | Architecture notes, backend research, RayJoin/Embree context, future ideas, and design constraints. |
-| [Audit](audit/README.md) | Release reviewers and auditors | Process docs, runbooks, release reports, evidence reports, reviews, and archived goal logs. |
+| [Features](features/README.md) | Users choosing primitives | Current feature families and support boundaries. |
+| [RTDL Reference](rtdl/README.md) | Users who need language details | Programming model, DSL reference, IR, lowering, and workload guide. |
 
 Tutorials live at the repository top level in [Tutorials](../tutorials/README.md).
 Use docs when you need reference material; use tutorials when you want the
 ordered teaching path.
 
-If you are new, start in **Learn**. If you are evaluating design or extending
-the system, start in **Research**. If you are checking evidence, consensus, or
-project history, start in **Audit**.
+If you are new, start in **Learn**. If you are looking for old evidence,
+internal reviews, or exploratory work, use the top-level [History](../history/README.md)
+archive instead of this current docs directory.
 
 Current status: RTDL v2.14 is the active source-tree Python+partner+RTDL
 app-portfolio surface on this branch. It keeps source-tree usage, preserves the
@@ -79,10 +79,9 @@ Read these in order:
 | Benchmark evidence | [Benchmark Evidence Index](learn/benchmark_evidence_index.md) |
 | RT-core evidence interpretation | [RT-Core Evidence Matrix](learn/rt_core_evidence_matrix.md) |
 | Public map | [Public Documentation Map](public_documentation_map.md) |
-| Release Reports | [Release Reports](release_reports/) |
 | Current release package | [RTDL v2.14 Release Package](release_reports/v2_14/README.md) |
 | Current benchmark evidence | [Benchmark Evidence Index](learn/benchmark_evidence_index.md) |
-| History Index | [History Index](history/README.md) |
+| Archived project history | [History](../history/README.md) |
 
 ## Directory Map
 
@@ -91,16 +90,12 @@ Read these in order:
 | `learn/` | Human learning route and curated current-doc links. |
 | `features/` | Current feature homes and engine support contract. |
 | `rtdl/` | DSL, IR, programming model, and workload reference docs. |
-| `research/` | Advanced design, RayJoin/Embree context, technical app notes, proposals, and future research notes. |
-| `audit/` | Process docs, directive snapshots, and runbooks for reviewers. |
-| `release_reports/` | Release evidence and archived release records. |
-| `reports/` | Detailed benchmark, implementation, and audit reports. |
-| `reviews/` | External AI and human-style review records. |
-| `handoff/` | Handoff files used for external review and continuation. |
-| `history/` | Archived docs, release archive entry points, root-level logs, version notes, and preserved project history. |
+| `release_reports/v2_14/` | Current v2.14 release package only. |
+| `assets/` | Images and media used by current docs. |
+| `../history/` | Old release reports, internal audits, reviews, handoffs, research notes, and archived records. |
 
 ## Rule
 
 Current learner docs should explain one coherent v2.14 surface. Previous release
-evidence is preserved for review in history and release-report paths, but it
-should not interrupt the normal learning path.
+evidence is preserved under `history/`, but it should not interrupt the normal
+learning path.

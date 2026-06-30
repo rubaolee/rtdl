@@ -448,7 +448,7 @@ def _sample_link_probe_points(link: LinkMesh2D, pose: Pose2D) -> tuple[Point2, .
 
 
 def build_segment_probe_contract(case: RobotCollisionCase) -> SegmentProbeContract:
-    """Lower app geometry to the Goal2481 app-agnostic segment-probe contract."""
+    """Lower app geometry to the archived_evidence app-agnostic segment-probe contract."""
     starts: list[tuple[float, float, float]] = []
     ends: list[tuple[float, float, float]] = []
     offsets = [0]
@@ -563,7 +563,7 @@ def _claim_boundary(*, mode: str) -> dict[str, object]:
 def _paper_status() -> dict[str, object]:
     return {
         "paper_anchor": "Hardware-Accelerated Ray Tracing for Discrete and Continuous Collision Detection on GPUs",
-        "paper_anchor_status": "tentative_goal2480_web_checked_2026_05_21",
+        "paper_anchor_status": "tentative_archived_evidence_web_checked_2026_05_21",
         "authors": ["Sizhe Sui", "Luis Sentis", "Andrew Bylard"],
         "venue_status": "ICRA 2025 direction; exact citation should be rechecked before paper-facing wording",
         "official_code_verified": False,
@@ -661,7 +661,7 @@ def run_robot_collision_benchmark(
         ),
         "compact_output_format": "uint8_byte_per_query_group" if mode != "cpu_reference" else (
             "cpu_reference_list_of_0_1_flags_in_pose_major_link_order; "
-            "Goal2481_must_choose_native_column_format"
+            "archived_evidence_must_choose_native_column_format"
         ),
         "dynamic_transformed_query_geometry": True,
         "prepared_static_scene_target": True,
@@ -669,12 +669,12 @@ def run_robot_collision_benchmark(
         "claim_boundary": _claim_boundary(mode=mode),
         "metadata": {
             "goal": (
-                "Goal2489"
+                "archived_evidence"
                 if mode == "optix_prepared_device_buffers"
                 else (
-                    "Goal2488"
+                    "archived_evidence"
                     if mode.endswith("_prepared_buffers")
-                    else ("Goal2484" if mode != "cpu_reference" else "Goal2480")
+                    else ("archived_evidence" if mode != "cpu_reference" else "archived_evidence")
                 )
             ),
             "goal_status": (
@@ -687,7 +687,7 @@ def run_robot_collision_benchmark(
                 )
             ),
             "native_work_deferred_until": None if mode != "cpu_reference" else (
-                "Goal2482/Goal2483_after_Goal2481_contract_review"
+                "archived_evidence/archived_evidence_after_archived_evidence_contract_review"
             ),
             "native_forbidden_vocabulary": [
                 "robot",
@@ -1002,11 +1002,11 @@ def run_prepared_reuse_probe(
         {
             "app": "robot_collision_benchmark",
             "goal": (
-                "Goal2490"
+                "archived_evidence"
                 if reuse_native_device_query_count
-                else "Goal2489"
+                else "archived_evidence"
                 if reuse_native_device_query_buffers
-                else ("Goal2488" if reuse_query_buffers else "Goal2484")
+                else ("archived_evidence" if reuse_query_buffers else "archived_evidence")
             ),
             "backend": backend,
             "mode": mode_name,
@@ -1057,7 +1057,7 @@ def run_performance_matrix(
     warmup: int = DEFAULT_WARMUP_COUNT,
     include_optix: bool = True,
     include_extended_modes: bool = False,
-    goal: str = "Goal2485",
+    goal: str = "archived_evidence",
 ) -> dict[str, object]:
     case = make_robot_collision_case(
         dataset,
@@ -1140,7 +1140,7 @@ def run_performance_matrix(
                     "tail_median_total_run_seconds": prepared["tail_medians"]["total_run_seconds"],
                     "tail_median_phase_timing_seconds": prepared["tail_medians"]["phase_timing_seconds"],
                     "flags_signature": prepared["probe_reference_signature"],
-                    "parity_reference": "goal2481_probe_reference",
+                    "parity_reference": "archived_evidence_probe_reference",
                     "all_measured_runs_match_probe_reference": prepared["reuse_metadata"][
                         "all_measured_runs_match_probe_reference"
                     ],
@@ -1180,7 +1180,7 @@ def run_performance_matrix(
             "matrix_scope": (
                 "final_canonical_robot_collision_modes"
                 if include_extended_modes
-                else "goal2485_cpu_embree_optix_prepared_modes"
+                else "archived_evidence_cpu_embree_optix_prepared_modes"
             ),
             "rows": rows,
             "claim_boundary": {
@@ -1236,7 +1236,7 @@ def main(argv: list[str] | None = None) -> int:
             warmup=args.warmup,
             include_optix=not args.skip_optix,
             include_extended_modes=args.final_matrix,
-            goal="Goal2491" if args.final_matrix else "Goal2485",
+            goal="archived_evidence" if args.final_matrix else "archived_evidence",
         )
     elif args.mode == "optix_prepared_device_buffers":
         payload = run_prepared_reuse_probe(

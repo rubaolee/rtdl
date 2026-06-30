@@ -1,8 +1,8 @@
 # RTDL Capability Boundaries
 
 This page states the current v2.x-facing capability boundary for learners and
-users. Older release history is kept separately in
-[Learner Doc Version Notes](history/learner_doc_version_notes.md).
+users. Older release history is kept separately under the top-level `history/`
+archive.
 For the short learner-facing summary, read
 [Current Claim Boundaries](learn/current_claim_boundaries.md).
 

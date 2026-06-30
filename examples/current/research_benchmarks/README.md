@@ -1,80 +1,20 @@
-# RTDL v2.10 Research Benchmarks
+# RTDL Research Benchmarks
 
-This directory is for serious application studies, not first-run examples. Each
-subdirectory shows how a user can write a real RTDL v2.10 program, compare it
-with external baselines, and keep the performance claim boundary precise.
+These are the current benchmark-app entry points for RTDL v2.14. They are serious reconstruction instruments for RTDL language/runtime design, but they are not broad paper-reproduction or whole-application speedup claims.
 
-The benchmark apps are reconstruction instruments. A study can intentionally
-cover only part of a paper or application when that slice is enough to expose a
-missing RTDL primitive, memory contract, partner boundary, prepared execution
-model, or result contract. The success condition is the language/runtime design
-pressure extracted from the app, not full paper-system reproduction.
+Run from the repository root with `PYTHONPATH=src:.`. Start with `--help` or the portable `cpu_python_reference` backend when an app exposes it; use native backends only after local dependencies are configured.
 
-For custom continuation choices, use the current learner guide:
-[Choosing A Partner For Custom Logic](../../../docs/learn/partner_choice_for_custom_logic.md)
-and the
-[Benchmark Partner Reference Matrix](../../../docs/learn/benchmark_partner_reference_matrix.md).
-For the current ten-app row map, pod requirements, and evidence reports, use
-the
-[Benchmark Evidence Index](../../../docs/learn/benchmark_evidence_index.md).
-The short rule is primitive first, explicit partner second: the benchmark apps
-recommend a current path per contract, CuPy remains useful as a CUDA-array
-baseline/opponent, and Numba is the no-RawKernel custom-kernel lane for selected
-generic continuations. Prepared-execution rows should report setup, cache load,
-warmup, steady-state, and validation separately.
+| Benchmark | Directory | Entry point | RTDL-owned kernel shape | Boundary |
+| --- | --- | --- | --- | --- |
+| Hausdorff / X-HD-Style | `hausdorff_xhd/` | `hausdorff_xhd/rtdl_hausdorff_distance_app.py` | prepared nearest/fixed-radius style distance decision | Not exact Hausdorff proof or universal CUDA speedup. |
+| Spatial RayJoin-Style | `spatial_rayjoin/` | `spatial_rayjoin/rtdl_rayjoin_v2_spatial_join_app.py` | segment/polygon and point-in-polygon shaped spatial-query phases | Not full RayJoin paper reproduction or RTDL-beats-RayJoin claim. |
+| RT-DBSCAN-Style | `rt_dbscan/` | `rt_dbscan/rtdl_rt_dbscan_benchmark_app.py` | fixed-radius/core-flag phases plus explicit partner continuation where used | Not DBSCAN-native engine ABI or arbitrary clustering acceleration. |
+| Robot Collision Screening | `robot_collision/` | `robot_collision/rtdl_robot_collision_benchmark_app.py` | prepared static-scene collision flags/counts | Not full robot planner, physics simulator, or swept-collision solver. |
+| Bounded Contact Witness | `contact_manifold/` | `contact_manifold/rtdl_contact_manifold_benchmark_app.py` | AABB broadphase plus bounded witness rows | Not complete contact manifold or solver semantics. |
+| RayDB-Style Grouped Aggregate | `raydb_style/` | `raydb_style/rtdl_raydb_style_benchmark_app.py` | ray/triangle grouped count and grouped sum contracts | Not SQL engine, DBMS, or whole RayDB paper reproduction. |
+| Barnes-Hut / RT-BarnesHut-Style | `barnes_hut/` | `barnes_hut/rtdl_barnes_hut_benchmark_app.py` | aggregate/node-coverage traversal and frontier-style candidates | Not force integration, full N-body solver, or app-specific force primitive. |
+| LibRTS-Style Spatial Index | `librts_spatial_index/` | `librts_spatial_index/rtdl_librts_spatial_index_benchmark_app.py` | AABB/spatial-index shaped point/range query contract | Not full mutable LibRTS reproduction or universal spatial-index replacement. |
+| RTNN Neighbor Search | `rtnn/` | `rtnn/rtdl_rtnn_benchmark_app.py` | prepared fixed-radius and ranked-summary neighbor contracts | Not full RTNN paper reproduction or arbitrary ANN-index acceleration. |
+| Triangle Counting | `triangle_counting/` | `triangle_counting/rtdl_triangle_counting_benchmark_app.py` | RT-Graph-style graph relationship counting over generic traversal/reduction contracts | Not broad graph database or all-dataset triangle-counting speedup. |
 
-Run commands from the repository root with source-tree usage:
-
-```bash
-PYTHONPATH=src:. python examples/current/research_benchmarks/<study>/<script>.py
-```
-
-On Windows PowerShell, use:
-
-```powershell
-$env:PYTHONPATH='src;.'; py -3 examples\current\research_benchmarks\<study>\<script>.py
-```
-
-## Studies
-
-| Directory | Purpose | Start here |
-| --- | --- | --- |
-| `hausdorff_xhd/` | Exact and RT-assisted Hausdorff distance study informed by X-HD techniques; includes current scale-aware grouped traversal defaults | `hausdorff_xhd/README.md` |
-| `spatial_rayjoin/` | RayJoin-style spatial join workloads with current first-hit/nearest-boundary evidence | `spatial_rayjoin/README.md` |
-| `rt_dbscan/` | RT-DBSCAN-style 3-D density clustering study over generic fixed-radius/component contracts | `rt_dbscan/README.md` |
-| `robot_collision/` | Robot-collision-style static-scene plus batched transformed query-geometry study; CPU reference only in Goal2480 | `robot_collision/README.md` |
-| `contact_manifold/` | Bounded contact-witness/contact-manifold benchmark that exercises generic `AABB_INDEX_QUERY_2D` broadphase rows and stable `COLLECT_K_BOUNDED` fail-closed witness rows; local Embree generic-collector parity, RTX A5000 OptiX parity including generic AABB row output, standalone C++ CPU baseline, and 3-AI promotion consensus exist; no public speedup claim | `contact_manifold/README.md` |
-| `raydb_style/` | RayDB-style columnar grouped aggregate contract study; CPU reference plus Embree/OptiX count-sum parity over existing generic columnar payloads | `raydb_style/README.md` |
-| `barnes_hut/` | RT-BarnesHut-style hierarchical N-body reconstruction study; includes bucketized Morton/DFS aggregate tree rows, hierarchical opening frontier, local exact CPU baseline, and guarded OptiX/paper-code boundaries | `barnes_hut/README.md` |
-| `librts_spatial_index/` | LibRTS-style mutable spatial-index study for PPoPP 2025 point/range query semantics, WKT fixture interchange, and first authors-code OptiX evidence | `librts_spatial_index/README.md` |
-| `rtnn/` | RTNN-style neighbor-search study over candidate quality, prepared fixed-radius ranked summaries, CuPy baseline rows, and optional public RTNN diagnostics | `rtnn/README.md` |
-| `triangle_counting/` | Closed bounded RT-Graph/SIGMETRICS 2025 triangle-counting benchmark; paper-dataset evidence exists, with largest-dataset scalability accepted as a segmented/streamed-lowering follow-up | `triangle_counting/README.md` |
-
-## How To Read Results
-
-- Treat these as reproducible research harnesses, not universal speedup claims.
-- CPU-only commands are useful for correctness and contract checks.
-- OptiX timing needs a CUDA-capable machine with `librtdl_optix` built and
-  `RTDL_OPTIX_LIBRARY` set when the library is outside the default path.
-- A result can show an RTDL program is useful for a workload without claiming
-  that every phase is RT-core accelerated.
-- Public performance language should cite the exact script, dataset, backend,
-  method, commit, and hardware.
-
-## Recommended Flow
-
-1. Run the CPU reference command in the study README.
-2. Run the Embree command to check the same RTDL contract on the CPU RT backend.
-3. On an NVIDIA pod or workstation, build OptiX and run the OptiX command.
-4. Compare JSON fields such as `parity_vs_cpu_python_reference`,
-   `matches_exact_reference`, `elapsed_sec`, `rt_core_accelerated`, and
-   `claim_boundary`.
-
-The benchmark directories intentionally keep paper-inspired work separate from
-the ordinary learner examples so new users can learn RTDL without being pulled
-into historical performance debates. Demoted design-pressure apps, including
-GPU-RMQ, live under `../learner_apps/` instead of this benchmark directory.
-
-For the post-robot-collision benchmark-app selection rule and RayDB scoping
-boundary, see
-[`Goal2492 Benchmark-App Reconstruction Principle`](../../../docs/reports/goal2492_benchmark_app_reconstruction_principle_and_raydb_scope_2026-05-22.md).
+Older benchmark notes and development records are archived under `history/examples_internal/research_benchmark_docs_2026-06-30/` and `history/internal_docs/`. They are not required for first-time use.

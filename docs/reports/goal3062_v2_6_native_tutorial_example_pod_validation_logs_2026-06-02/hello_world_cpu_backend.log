@@ -1,6 +1,0 @@
-{
-  "backend": "cpu_python_reference",
-  "triangle_hit_count": 2,
-  "visible_hit_rect_id": 2,
-  "visible_hit_label": "hello, world"
-}

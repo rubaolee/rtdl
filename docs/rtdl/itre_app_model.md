@@ -8,9 +8,8 @@ ITRE is the current RTDL programming model:
 3. **Refine**: apply the rule that turns broad candidates into valid rows.
 4. **Emit**: return rows, summaries, or partner-owned columns.
 
-This page is v2.x-facing and avoids archived release chronology. For archived
-version history, use
-[Version Archive Notes](../history/version_archive_notes.md).
+This page is v2.x-facing and avoids archived release chronology. Older version
+history is preserved under the top-level `history/` archive.
 
 ## The Honest Claim
 

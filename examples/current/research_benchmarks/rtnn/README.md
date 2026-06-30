@@ -1,73 +1,31 @@
-# RTNN Neighbor-Search Benchmark
+# RTNN Neighbor Search Benchmark
 
-This directory is the formal front door for the existing RTNN benchmark
-campaign. It wraps the RTNN scripts and evidence into the research-benchmark
-tree.
+This directory contains the current RTDL v2.14 benchmark app for **RTNN Neighbor Search**.
 
-The ANN candidate-quality example is exposed only as a helper submode
-because it shares top-k quality and candidate-threshold contracts. It is not
-the benchmark identity.
+## Start
 
-The target paper family is RTNN-style hardware ray-tracing neighbor search. The
-public RTNN implementation is treated as an optional diagnostic baseline because
-its materialization pipeline is not the same as RTDL's ranked-summary contract.
-
-## What This Benchmark Owns
-
-| Contract | RTDL surface | Boundary |
-| --- | --- | --- |
-| ANN candidate quality | 2-D candidate-subset top-1 rerank and exact full-set comparison | not an ANN index or training phase |
-| ANN candidate threshold | prepared fixed-radius candidate-coverage decision | not nearest-neighbor ranking |
-| RTNN-shaped ranked summary | prepared 3-D fixed-radius bounded ranked-summary rows | not full RTNN paper reproduction |
-
-## Local Commands
+From the repository root:
 
 ```bash
-PYTHONPATH=src:. python examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py --mode scope
-PYTHONPATH=src:. python examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py --mode ann_cpu_quality --copies 1
-PYTHONPATH=src:. python examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py --mode rtnn_known_results
-PYTHONPATH=src:. python examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py --mode prepared_session_reuse_idiom --point-count 16 --radius 0.02 --k 8
-RTDL_OPTIX_LIBRARY=build/librtdl_optix.so PYTHONPATH=src:. python examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py --mode prepared_optix_ranked_summary --point-count 65536 --radius 0.02 --k 50 --repeat 3 --query-batch-size 65536 --distribution uniform
-RTDL_OPTIX_LIBRARY=build/librtdl_optix.so PYTHONPATH=src:. python examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py --mode prepared_ranked_summary_raw --backend optix --point-count 65536 --radius 0.02 --k 50 --repeat 3 --query-batch-size 65536 --distribution uniform
-RTDL_EMBREE_LIBRARY=build/librtdl_embree.so PYTHONPATH=src:. python examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py --mode prepared_ranked_summary_raw --backend embree --point-count 65536 --radius 0.02 --k 50 --repeat 3 --query-batch-size 65536 --distribution uniform
+PYTHONPATH=src:. python examples/current/research_benchmarks/rtnn/rtdl_rtnn_benchmark_app.py --help
 ```
 
-## GPU Evidence
+When the app exposes `--backend cpu_python_reference`, use that first for a portable smoke run. Use Embree or OptiX only when the native backend is configured on your machine.
 
-The promoted benchmark reuses the completed Goal2388 pod evidence:
+## What RTDL Owns
 
-- RTDL prepared OptiX ranked-summary rows.
-- CuPy CUDA-core all-pairs baseline for the same ranked-summary contract.
-- Optional official RTNN rows on the same RTX A5000 pod.
+RTDL owns the RT-shaped kernel contract for this benchmark: prepared fixed-radius and ranked-summary neighbor contracts.
 
-The current app front door also exposes
-`--mode prepared_optix_ranked_summary`, which runs the generic prepared
-OptiX fixed-radius ranked-summary aggregate through the existing RTNN runner.
-It generates a deterministic synthetic point set and returns pure JSON with the
-runner progress captured in `runner_progress`. This is the command to use when
-you want an executable current RTDL/OptiX ranked-summary app route, not just the
-evidence summary.
+## What The Python App Owns
 
-For backend-to-backend comparison, use `--mode prepared_ranked_summary_raw` with
-`--backend optix` or `--backend embree`. That mode keeps the output contract the
-same on both sides: prepared 3-D fixed-radius bounded ranked-summary raw rows.
-The runner payload includes `raw_ranked_summary_aggregate` with row-count,
-bounded-neighbor, nearest/kth checksum, and distance-sum fields so comparison
-reports can prove they timed equivalent work.
+The Python app owns data setup, benchmark fixtures, policy decisions, labels, final interpretation, and any domain-specific continuation not expressed by a generic RTDL primitive.
 
-The `--mode prepared_session_reuse_idiom` command is a non-performance teaching
-path. It invokes `get_or_prepare_explicit_session` twice against a caller-owned
-`ExplicitPreparedSessionCache` and returns the visible `miss`/`put`/`hit` event
-log. It does not run the OptiX benchmark path and does not authorize speedup,
-general zero-copy/device-residency, or automatic partner/backend-selection claims.
+## Boundary
 
-The important boundary is that the RTDL-vs-CuPy rows are same-contract; the
-official RTNN rows are diagnostic unless a future goal proves output-contract
-equivalence.
+This benchmark is not full RTNN paper reproduction or arbitrary ANN-index acceleration. Treat timing as exact-contract evidence only. For public wording, use the v2.14 release package and support matrices rather than this README alone.
 
-## Engine Boundary
+## Related Current Docs
 
-No ANN-specific or RTNN-specific native ABI is added. The native engine sees
-generic fixed-radius neighbor, ranked-summary, prepared-search, and partner
-top-k contracts. Candidate selection, approximation policy, external-code
-adaptation, and paper-comparison interpretation stay in Python and reports.
+- [Application Catalog](../../../../docs/application_catalog.md)
+- [App Engine Support Matrix](../../../../docs/app_engine_support_matrix.md)
+- [Performance Model](../../../../docs/performance_model.md)

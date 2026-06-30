@@ -234,9 +234,9 @@ and [App Engine Support Matrix](app_engine_support_matrix.md).
 
 Repository paths: `docs/application_catalog.md` and
 `docs/app_engine_support_matrix.md`. Current app entry points include
-`examples/current/apps/analytics/rtdl_database_analytics_app.py` and
-`examples/legacy_or_backend_proofs/rtdl_apple_rt_demo_app.py`; archived scenario-specific DB and Apple RT
-files are compatibility helpers rather than the recommended public start.
+`examples/current/apps/analytics/rtdl_database_analytics_app.py`. Historical
+backend proof demos are archived under `history/examples_internal/` and are not
+the recommended public start.
 
 ## Backend And Claim Boundaries
 
@@ -261,8 +261,7 @@ make build-apple-rt
 
 HIPRT can run through Orochi on NVIDIA development hosts, but that is not AMD
 GPU validation. AMD HIPRT evidence requires an actual AMD host and the
-fail-closed AMD functional runner described in the internal Goal3784/3785
-reports.
+fail-closed AMD functional runner described in the archived development notes.
 
 NVIDIA RT-core claim note:
 

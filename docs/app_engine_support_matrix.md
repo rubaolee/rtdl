@@ -57,8 +57,8 @@ For OptiX performance classification, use
   becoming RTDL engine customization.
 - Full witness rows, compact summaries, and streaming witness pages are
   different contracts. Compare performance only when the contracts match.
-- Backend proof demos live under `examples/legacy_or_backend_proofs/` and are
-  intentionally excluded from this learner-facing app matrix.
+- Historical backend proof demos are archived under `history/examples_internal/`
+  and are intentionally excluded from this learner-facing app matrix.
 
 ## Boundaries
 
