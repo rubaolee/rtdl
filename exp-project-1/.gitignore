@@ -1,0 +1,5 @@
+current-head-source.tar
+untracked-current/**/python/
+untracked-current/**/__pycache__/
+untracked-current/**/*.pyc
+untracked-current/**/RT-BarnesHut-author/

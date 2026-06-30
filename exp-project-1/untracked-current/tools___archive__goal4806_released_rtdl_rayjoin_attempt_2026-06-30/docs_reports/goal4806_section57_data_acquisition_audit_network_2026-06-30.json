@@ -1,0 +1,302 @@
+{
+  "blockers": [
+    "missing_exact_section57_cdb_inputs",
+    "preprocessed_share_not_live",
+    "same_source_generation_missing_lakes_parks_targets"
+  ],
+  "dataset_root": "data\\rayjoin_section57_cdb",
+  "exact_overlay_pairs_ready": 0,
+  "exact_overlay_pairs_total": 8,
+  "network": {
+    "arcgis_layers": [
+      {
+        "asset_id": "uscounty_feature_layer",
+        "count_matches_registry": true,
+        "count_ok": true,
+        "count_probe": {
+          "elapsed_sec": 0.37698950013145804,
+          "final_url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Census_Counties/FeatureServer/0/query?where=1%3D1&f=json&returnCountOnly=true",
+          "ok": true,
+          "status": 200
+        },
+        "expected_feature_count": 3144,
+        "layer_id": 0,
+        "metadata_ok": true,
+        "metadata_probe": {
+          "elapsed_sec": 0.32032259996049106,
+          "final_url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Census_Counties/FeatureServer/0?f=json",
+          "ok": true,
+          "status": 200
+        },
+        "metadata_summary": {
+          "geometryType": "esriGeometryPolygon",
+          "maxRecordCount": 2000,
+          "name": "dtl_cnty",
+          "objectIdField": "OBJECTID",
+          "type": "Feature Layer"
+        },
+        "observed_count": 3144,
+        "service_url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Census_Counties/FeatureServer",
+        "source_url": "https://www.arcgis.com/home/item.html?id=14c5450526a8430298b2fa74da12c2f4",
+        "title": "USA Census Counties Feature Layer"
+      },
+      {
+        "asset_id": "zipcode_feature_layer",
+        "count_matches_registry": true,
+        "count_ok": true,
+        "count_probe": {
+          "elapsed_sec": 0.27512569981627166,
+          "final_url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_ZIP_Code_Areas_anaylsis/FeatureServer/0/query?where=1%3D1&f=json&returnCountOnly=true",
+          "ok": true,
+          "status": 200
+        },
+        "expected_feature_count": 32294,
+        "layer_id": 0,
+        "metadata_ok": true,
+        "metadata_probe": {
+          "elapsed_sec": 0.36105090007185936,
+          "final_url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_ZIP_Code_Areas_anaylsis/FeatureServer/0?f=json",
+          "ok": true,
+          "status": 200
+        },
+        "metadata_summary": {
+          "geometryType": "esriGeometryPolygon",
+          "maxRecordCount": 2000,
+          "name": "zip_poly",
+          "objectIdField": "OBJECTID",
+          "type": "Feature Layer"
+        },
+        "observed_count": 32294,
+        "service_url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_ZIP_Code_Areas_anaylsis/FeatureServer",
+        "source_url": "https://www.arcgis.com/home/item.html?id=d6f7ee6129e241cc9b6f75978e47128b",
+        "title": "USA ZIP Code Boundaries Feature Layer"
+      },
+      {
+        "asset_id": "blockgroup_feature_layer",
+        "count_matches_registry": true,
+        "count_ok": true,
+        "count_probe": {
+          "elapsed_sec": 0.3611465999856591,
+          "final_url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Census_BlockGroups/FeatureServer/0/query?where=1%3D1&f=json&returnCountOnly=true",
+          "ok": true,
+          "status": 200
+        },
+        "expected_feature_count": 239203,
+        "layer_id": 0,
+        "metadata_ok": true,
+        "metadata_probe": {
+          "elapsed_sec": 0.3656832000706345,
+          "final_url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Census_BlockGroups/FeatureServer/0?f=json",
+          "ok": true,
+          "status": 200
+        },
+        "metadata_summary": {
+          "geometryType": "esriGeometryPolygon",
+          "maxRecordCount": 2000,
+          "name": "USA Census BlockGroups",
+          "objectIdField": "OBJECTID",
+          "type": "Feature Layer"
+        },
+        "observed_count": 239203,
+        "service_url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Census_BlockGroups/FeatureServer",
+        "source_url": "https://www.arcgis.com/home/item.html?id=2f5e592494d243b0aa5c253e75e792a4",
+        "title": "USA Census Block Group Boundaries Feature Layer"
+      },
+      {
+        "asset_id": "waterbodies_feature_layer",
+        "count_matches_registry": true,
+        "count_ok": true,
+        "count_probe": {
+          "elapsed_sec": 0.36801530001685023,
+          "final_url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Detailed_Water_Bodies/FeatureServer/0/query?where=1%3D1&f=json&returnCountOnly=true",
+          "ok": true,
+          "status": 200
+        },
+        "expected_feature_count": 463591,
+        "layer_id": 0,
+        "metadata_ok": true,
+        "metadata_probe": {
+          "elapsed_sec": 0.28819230012595654,
+          "final_url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Detailed_Water_Bodies/FeatureServer/0?f=json",
+          "ok": true,
+          "status": 200
+        },
+        "metadata_summary": {
+          "geometryType": "esriGeometryPolygon",
+          "maxRecordCount": 1000,
+          "name": "USA Detailed Water Bodies",
+          "objectIdField": "OBJECTID",
+          "type": "Feature Layer"
+        },
+        "observed_count": 463591,
+        "service_url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Detailed_Water_Bodies/FeatureServer",
+        "source_url": "https://www.arcgis.com/home/item.html?id=48c77cbde9a0470fb371f8c8a8a7421a",
+        "title": "USA Detailed Water Bodies Feature Layer"
+      }
+    ],
+    "checked": true,
+    "preprocessed_share": {
+      "content_type": "text/html; charset=utf-8",
+      "elapsed_sec": 1.0952226999215782,
+      "error": "HTTP Error 404: Not Found",
+      "final_url": "https://datadryad.org/404",
+      "ok": false,
+      "status": 404
+    },
+    "timeout_sec": 25
+  },
+  "next_actions": [
+    "Recover exact paper_preprocessed_cdb files, or regenerate CDBs through an audited topology-preserving preprocessing path.",
+    "For the two U.S. pairs, use the registered ArcGIS FeatureServer targets as the same-source route.",
+    "For the six Lakes/Parks pairs, add source targets and a converter before claiming 8/8 coverage.",
+    "Do not use same_source_regenerated_cdb rows as paper_preprocessed_cdb performance claims without equivalence evidence."
+  ],
+  "pair_rows": [
+    {
+      "exact_blocker": "missing exact CDB input(s): point_cdb/dtl_cnty/dtl_cnty_Point.cdb, point_cdb/USAZIPCodeArea/USAZIPCodeArea_Point.cdb",
+      "exact_input_ready": false,
+      "pair_id": "county_zipcode",
+      "paper_label": "County x Zipcode",
+      "same_source_generation_supported": true,
+      "same_source_registered_targets_present": true,
+      "same_source_required_targets": [
+        "county",
+        "zipcode"
+      ]
+    },
+    {
+      "exact_blocker": "missing exact CDB input(s): point_cdb/USACensusBlockGroupBoundaries/USACensusBlockGroupBoundaries_Point.cdb, point_cdb/USADetailedWaterBodies/USADetailedWaterBodies_Point.cdb",
+      "exact_input_ready": false,
+      "pair_id": "block_water",
+      "paper_label": "Block x Water",
+      "same_source_generation_supported": true,
+      "same_source_registered_targets_present": true,
+      "same_source_required_targets": [
+        "blockgroup",
+        "waterbodies"
+      ]
+    },
+    {
+      "exact_blocker": "missing exact CDB input(s): point_cdb/lakes/Africa/lakes_Africa_Point.cdb, point_cdb/parks/Africa/parks_Africa_Point.cdb",
+      "exact_input_ready": false,
+      "pair_id": "lkaf_pkaf",
+      "paper_label": "LKAF x PKAF",
+      "same_source_generation_supported": false,
+      "same_source_registered_targets_present": false,
+      "same_source_required_targets": [
+        "lakes_africa",
+        "parks_africa"
+      ]
+    },
+    {
+      "exact_blocker": "missing exact CDB input(s): point_cdb/lakes/Asia/lakes_Asia_Point.cdb, point_cdb/parks/Asia/parks_Asia_Point.cdb",
+      "exact_input_ready": false,
+      "pair_id": "lkas_pkas",
+      "paper_label": "LKAS x PKAS",
+      "same_source_generation_supported": false,
+      "same_source_registered_targets_present": false,
+      "same_source_required_targets": [
+        "lakes_asia",
+        "parks_asia"
+      ]
+    },
+    {
+      "exact_blocker": "missing exact CDB input(s): point_cdb/lakes/Australia/lakes_Australia_Point.cdb, point_cdb/parks/Australia/parks_Australia_Point.cdb",
+      "exact_input_ready": false,
+      "pair_id": "lkau_pkau",
+      "paper_label": "LKAU x PKAU",
+      "same_source_generation_supported": false,
+      "same_source_registered_targets_present": false,
+      "same_source_required_targets": [
+        "lakes_australia",
+        "parks_australia"
+      ]
+    },
+    {
+      "exact_blocker": "missing exact CDB input(s): point_cdb/lakes/Europe/lakes_Europe_Point.cdb, point_cdb/parks/Europe/parks_Europe_Point.cdb",
+      "exact_input_ready": false,
+      "pair_id": "lkeu_pkeu",
+      "paper_label": "LKEU x PKEU",
+      "same_source_generation_supported": false,
+      "same_source_registered_targets_present": false,
+      "same_source_required_targets": [
+        "lakes_europe",
+        "parks_europe"
+      ]
+    },
+    {
+      "exact_blocker": "missing exact CDB input(s): point_cdb/lakes/North_America/lakes_North_America_Point.cdb, point_cdb/parks/North_America/parks_North_America_Point.cdb",
+      "exact_input_ready": false,
+      "pair_id": "lkna_pkna",
+      "paper_label": "LKNA x PKNA",
+      "same_source_generation_supported": false,
+      "same_source_registered_targets_present": false,
+      "same_source_required_targets": [
+        "lakes_north_america",
+        "parks_north_america"
+      ]
+    },
+    {
+      "exact_blocker": "missing exact CDB input(s): point_cdb/lakes/South_America/lakes_South_America_Point.cdb, point_cdb/parks/South_America/parks_South_America_Point.cdb",
+      "exact_input_ready": false,
+      "pair_id": "lksa_pksa",
+      "paper_label": "LKSA x PKSA",
+      "same_source_generation_supported": false,
+      "same_source_registered_targets_present": false,
+      "same_source_required_targets": [
+        "lakes_south_america",
+        "parks_south_america"
+      ]
+    }
+  ],
+  "same_source_arcgis_targets": [
+    {
+      "cdb_name": "dtl_cnty",
+      "feature_id_field": "OBJECTID",
+      "output_relative_path": "point_cdb/dtl_cnty/dtl_cnty_Point.cdb",
+      "source_asset_id": "uscounty_feature_layer",
+      "target_id": "county",
+      "topology_contract": "same_source_regenerated_cdb_from_arcgis_rings; not a recovered paper_preprocessed Polygon-To-Line neighbor CDB"
+    },
+    {
+      "cdb_name": "USAZIPCodeArea",
+      "feature_id_field": "OBJECTID",
+      "output_relative_path": "point_cdb/USAZIPCodeArea/USAZIPCodeArea_Point.cdb",
+      "source_asset_id": "zipcode_feature_layer",
+      "target_id": "zipcode",
+      "topology_contract": "same_source_regenerated_cdb_from_arcgis_rings; not a recovered paper_preprocessed Polygon-To-Line neighbor CDB"
+    },
+    {
+      "cdb_name": "USACensusBlockGroupBoundaries",
+      "feature_id_field": "OBJECTID",
+      "output_relative_path": "point_cdb/USACensusBlockGroupBoundaries/USACensusBlockGroupBoundaries_Point.cdb",
+      "source_asset_id": "blockgroup_feature_layer",
+      "target_id": "blockgroup",
+      "topology_contract": "same_source_regenerated_cdb_from_arcgis_rings; not a recovered paper_preprocessed Polygon-To-Line neighbor CDB"
+    },
+    {
+      "cdb_name": "USADetailedWaterBodies",
+      "feature_id_field": "OBJECTID",
+      "output_relative_path": "point_cdb/USADetailedWaterBodies/USADetailedWaterBodies_Point.cdb",
+      "source_asset_id": "waterbodies_feature_layer",
+      "target_id": "waterbodies",
+      "topology_contract": "same_source_regenerated_cdb_from_arcgis_rings; not a recovered paper_preprocessed Polygon-To-Line neighbor CDB"
+    }
+  ],
+  "same_source_generation_scope": {
+    "claim_boundary": "same_source_regenerated_cdb can exercise the RTDL/RayJoin route, but it is not a recovered paper_preprocessed_cdb input unless the generated CDB is separately proven equivalent.",
+    "supported_pairs": [
+      "county_zipcode",
+      "block_water"
+    ],
+    "unsupported_pairs": [
+      "lkaf_pkaf",
+      "lkas_pkas",
+      "lkau_pkau",
+      "lkeu_pkeu",
+      "lkna_pkna",
+      "lksa_pksa"
+    ]
+  },
+  "schema": "rtdl.goal4806.rayjoin_section57_data_acquisition_audit.v1"
+}

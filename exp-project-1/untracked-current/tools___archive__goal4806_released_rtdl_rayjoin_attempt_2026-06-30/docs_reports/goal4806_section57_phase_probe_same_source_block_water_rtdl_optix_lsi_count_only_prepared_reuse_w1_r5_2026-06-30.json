@@ -1,0 +1,225 @@
+{
+  "case_id": "lsi_block_water",
+  "dataset_root": "artifacts/goal4806_section57_arcgis_full_us_20260630/dataset",
+  "input_provenance": "same_source_regenerated_cdb",
+  "input_shape": {
+    "base_chains": 28473338,
+    "base_segments": 28473338,
+    "query_chains": 22431809,
+    "query_segments": 22431809,
+    "query_stream": "all_edges_from_query_map_s"
+  },
+  "pair_id": "block_water",
+  "paper_label": "Block x Water",
+  "partner_cache": {
+    "enabled": true,
+    "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/dataset/.rtdl_rayjoin_overlay_packed_cache",
+    "source": "default_dataset_root"
+  },
+  "program": "lsi",
+  "program_contract": "Base map R is -poly1; query map S is -poly2; the query stream is all line segments/edges from S.",
+  "results": {
+    "optix": {
+      "backend": "rtdl_optix",
+      "count": 649605,
+      "counts_stable": true,
+      "hot_boundary": "prepared_right_and_left_reused; hot time includes exact RT traversal and scalar count",
+      "hot_max_sec": 0.04750416427850723,
+      "hot_median_sec": 0.0473141074180603,
+      "hot_min_sec": 0.0472254678606987,
+      "hot_total_sec": 0.236648328602314,
+      "native_traversal_median_sec": 0.047238265,
+      "predicate_contract": "rayjoin_author_lsi_intersect_test_endpoint_collinear_contract",
+      "prepare_seconds": {
+        "left": 1.4281062260270119,
+        "right": 3.3864147067070007,
+        "total": 4.814625173807144
+      },
+      "repeat": 5,
+      "runs": [
+        {
+          "count": 649605,
+          "elapsed_sec": 4.163660325109959,
+          "is_warmup": true,
+          "iteration": 0,
+          "native_result": {
+            "count": 649605,
+            "route": "rayjoin_lsi_exact_count_prepared_reuse",
+            "row_count": 649605
+          },
+          "native_timings": {
+            "candidate_count_pass": 0.047424138,
+            "candidate_download": 0.0,
+            "candidate_write_pass": 0.0,
+            "count_call_wall_sec": 4.163423120975494,
+            "emitted_count": 649605,
+            "exact_refine": 0.0,
+            "hot_call_sec": 4.163639269769192,
+            "left_upload": 0.0,
+            "mode": "count_prepared_left_grouped_range_direct_intersection",
+            "output_contract": "scalar_exact_count",
+            "pair_dump_decode_sec": 0.0,
+            "pair_dump_expected_count": 649605,
+            "prepare_left_sec": 1.4281062260270119,
+            "prepare_right_sec": 3.3864147067070007,
+            "prepare_total_sec": 4.814625173807144,
+            "prepared_runner_reused": true,
+            "raw_candidate_count": 0
+          }
+        },
+        {
+          "count": 649605,
+          "elapsed_sec": 0.04750416427850723,
+          "is_warmup": false,
+          "iteration": 1,
+          "native_result": {
+            "count": 649605,
+            "route": "rayjoin_lsi_exact_count_prepared_reuse",
+            "row_count": 649605
+          },
+          "native_timings": {
+            "candidate_count_pass": 0.047367841,
+            "candidate_download": 0.0,
+            "candidate_write_pass": 0.0,
+            "count_call_wall_sec": 0.047432780265808105,
+            "emitted_count": 649605,
+            "exact_refine": 0.0,
+            "hot_call_sec": 0.0474979504942894,
+            "left_upload": 0.0,
+            "mode": "count_prepared_left_grouped_range_direct_intersection",
+            "output_contract": "scalar_exact_count",
+            "pair_dump_decode_sec": 0.0,
+            "pair_dump_expected_count": 649605,
+            "prepare_left_sec": 1.4281062260270119,
+            "prepare_right_sec": 3.3864147067070007,
+            "prepare_total_sec": 4.814625173807144,
+            "prepared_runner_reused": true,
+            "raw_candidate_count": 0
+          }
+        },
+        {
+          "count": 649605,
+          "elapsed_sec": 0.0473770946264267,
+          "is_warmup": false,
+          "iteration": 2,
+          "native_result": {
+            "count": 649605,
+            "route": "rayjoin_lsi_exact_count_prepared_reuse",
+            "row_count": 649605
+          },
+          "native_timings": {
+            "candidate_count_pass": 0.047297438,
+            "candidate_download": 0.0,
+            "candidate_write_pass": 0.0,
+            "count_call_wall_sec": 0.047337695956230164,
+            "emitted_count": 649605,
+            "exact_refine": 0.0,
+            "hot_call_sec": 0.047374285757541656,
+            "left_upload": 0.0,
+            "mode": "count_prepared_left_grouped_range_direct_intersection",
+            "output_contract": "scalar_exact_count",
+            "pair_dump_decode_sec": 0.0,
+            "pair_dump_expected_count": 649605,
+            "prepare_left_sec": 1.4281062260270119,
+            "prepare_right_sec": 3.3864147067070007,
+            "prepare_total_sec": 4.814625173807144,
+            "prepared_runner_reused": true,
+            "raw_candidate_count": 0
+          }
+        },
+        {
+          "count": 649605,
+          "elapsed_sec": 0.0473141074180603,
+          "is_warmup": false,
+          "iteration": 3,
+          "native_result": {
+            "count": 649605,
+            "route": "rayjoin_lsi_exact_count_prepared_reuse",
+            "row_count": 649605
+          },
+          "native_timings": {
+            "candidate_count_pass": 0.047238265,
+            "candidate_download": 0.0,
+            "candidate_write_pass": 0.0,
+            "count_call_wall_sec": 0.04727686196565628,
+            "emitted_count": 649605,
+            "exact_refine": 0.0,
+            "hot_call_sec": 0.04731164127588272,
+            "left_upload": 0.0,
+            "mode": "count_prepared_left_grouped_range_direct_intersection",
+            "output_contract": "scalar_exact_count",
+            "pair_dump_decode_sec": 0.0,
+            "pair_dump_expected_count": 649605,
+            "prepare_left_sec": 1.4281062260270119,
+            "prepare_right_sec": 3.3864147067070007,
+            "prepare_total_sec": 4.814625173807144,
+            "prepared_runner_reused": true,
+            "raw_candidate_count": 0
+          }
+        },
+        {
+          "count": 649605,
+          "elapsed_sec": 0.04722749441862106,
+          "is_warmup": false,
+          "iteration": 4,
+          "native_result": {
+            "count": 649605,
+            "route": "rayjoin_lsi_exact_count_prepared_reuse",
+            "row_count": 649605
+          },
+          "native_timings": {
+            "candidate_count_pass": 0.047146551,
+            "candidate_download": 0.0,
+            "candidate_write_pass": 0.0,
+            "count_call_wall_sec": 0.04718993604183197,
+            "emitted_count": 649605,
+            "exact_refine": 0.0,
+            "hot_call_sec": 0.04722481220960617,
+            "left_upload": 0.0,
+            "mode": "count_prepared_left_grouped_range_direct_intersection",
+            "output_contract": "scalar_exact_count",
+            "pair_dump_decode_sec": 0.0,
+            "pair_dump_expected_count": 649605,
+            "prepare_left_sec": 1.4281062260270119,
+            "prepare_right_sec": 3.3864147067070007,
+            "prepare_total_sec": 4.814625173807144,
+            "prepared_runner_reused": true,
+            "raw_candidate_count": 0
+          }
+        },
+        {
+          "count": 649605,
+          "elapsed_sec": 0.0472254678606987,
+          "is_warmup": false,
+          "iteration": 5,
+          "native_result": {
+            "count": 649605,
+            "route": "rayjoin_lsi_exact_count_prepared_reuse",
+            "row_count": 649605
+          },
+          "native_timings": {
+            "candidate_count_pass": 0.047154175,
+            "candidate_download": 0.0,
+            "candidate_write_pass": 0.0,
+            "count_call_wall_sec": 0.04719146341085434,
+            "emitted_count": 649605,
+            "exact_refine": 0.0,
+            "hot_call_sec": 0.047223083674907684,
+            "left_upload": 0.0,
+            "mode": "count_prepared_left_grouped_range_direct_intersection",
+            "output_contract": "scalar_exact_count",
+            "pair_dump_decode_sec": 0.0,
+            "pair_dump_expected_count": 649605,
+            "prepare_left_sec": 1.4281062260270119,
+            "prepare_right_sec": 3.3864147067070007,
+            "prepare_total_sec": 4.814625173807144,
+            "prepared_runner_reused": true,
+            "raw_candidate_count": 0
+          }
+        }
+      ],
+      "warmup": 1
+    }
+  },
+  "schema": "rtdl.rayjoin_paper_suite.rtdl_run.v1"
+}

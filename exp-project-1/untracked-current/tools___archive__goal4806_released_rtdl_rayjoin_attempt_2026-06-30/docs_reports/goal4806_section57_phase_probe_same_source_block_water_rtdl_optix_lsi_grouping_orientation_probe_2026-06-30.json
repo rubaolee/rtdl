@@ -1,0 +1,108 @@
+{
+  "schema": "rtdl.goal4806.lsi_grouping_orientation_probe.v1",
+  "case_id": "lsi_block_water",
+  "env": {
+    "max_size": "32",
+    "area": "3.5"
+  },
+  "input_shape": {
+    "base_segments": 28473338,
+    "query_segments": 22431809
+  },
+  "probes": [
+    {
+      "label": "current_rtdl_orientation_prepared_query_left_base",
+      "prepared_segments": 22431809,
+      "left_segments": 28473338,
+      "prepare_prepared_sec": 3.362932078540325,
+      "prepare_left_sec": 1.3969997763633728,
+      "count_wall_sec": 4.131110742688179,
+      "count_result": {
+        "schema": "rtdl.optix.segment_pair_prepared_left_exact_intersection_count.front_door.v1",
+        "primitive": "SEGMENT_PAIR_INTERSECTION_ROWS_2D",
+        "output_contract": "scalar_exact_count",
+        "backend": "optix",
+        "route": "intersection_program_identity_or_ranged_primitive_records",
+        "route_selection": {
+          "default_right_range_policy": "identity_range",
+          "native_policy_env": {
+            "max_size": "RTDL_OPTIX_SEGMENT_PAIR_GROUPED_RANGE_MAX_SIZE",
+            "area_enlarge": "RTDL_OPTIX_SEGMENT_PAIR_GROUPED_RANGE_AREA_ENLARGE"
+          },
+          "fallback_route": "count_prepared_left"
+        },
+        "count": 649605,
+        "right_group_count": 1510519,
+        "native_symbol": "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection",
+        "implementation_contract": "SEGMENT_PAIR_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_EXACT_COUNT_V1",
+        "claim_boundary": {
+          "experimental_front_door": true,
+          "public_speedup_claim_authorized": false,
+          "rayjoin_paper_reproduction_claim_authorized": false,
+          "rtdl_beats_rayjoin_claim_authorized": false,
+          "release_authorized": false,
+          "rt_core_speedup_claim_authorized": false,
+          "true_zero_copy_claim_authorized": false,
+          "whole_app_acceleration_claim_authorized": false
+        }
+      },
+      "native_timings": {
+        "mode": "count_prepared_left_grouped_range_direct_intersection",
+        "left_upload": 0.0,
+        "candidate_count_pass": 0.047434579,
+        "candidate_write_pass": 0.0,
+        "candidate_download": 0.0,
+        "exact_refine": 0.0,
+        "raw_candidate_count": 0,
+        "emitted_count": 649605
+      }
+    },
+    {
+      "label": "author_orientation_prepared_base_left_query",
+      "prepared_segments": 28473338,
+      "left_segments": 22431809,
+      "prepare_prepared_sec": 3.213433474302292,
+      "prepare_left_sec": 1.0250369980931282,
+      "count_wall_sec": 3.0948364585638046,
+      "count_result": {
+        "schema": "rtdl.optix.segment_pair_prepared_left_exact_intersection_count.front_door.v1",
+        "primitive": "SEGMENT_PAIR_INTERSECTION_ROWS_2D",
+        "output_contract": "scalar_exact_count",
+        "backend": "optix",
+        "route": "intersection_program_identity_or_ranged_primitive_records",
+        "route_selection": {
+          "default_right_range_policy": "identity_range",
+          "native_policy_env": {
+            "max_size": "RTDL_OPTIX_SEGMENT_PAIR_GROUPED_RANGE_MAX_SIZE",
+            "area_enlarge": "RTDL_OPTIX_SEGMENT_PAIR_GROUPED_RANGE_AREA_ENLARGE"
+          },
+          "fallback_route": "count_prepared_left"
+        },
+        "count": 649604,
+        "right_group_count": 1700660,
+        "native_symbol": "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection",
+        "implementation_contract": "SEGMENT_PAIR_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_EXACT_COUNT_V1",
+        "claim_boundary": {
+          "experimental_front_door": true,
+          "public_speedup_claim_authorized": false,
+          "rayjoin_paper_reproduction_claim_authorized": false,
+          "rtdl_beats_rayjoin_claim_authorized": false,
+          "release_authorized": false,
+          "rt_core_speedup_claim_authorized": false,
+          "true_zero_copy_claim_authorized": false,
+          "whole_app_acceleration_claim_authorized": false
+        }
+      },
+      "native_timings": {
+        "mode": "count_prepared_left_grouped_range_direct_intersection",
+        "left_upload": 0.0,
+        "candidate_count_pass": 0.043845018,
+        "candidate_write_pass": 0.0,
+        "candidate_download": 0.0,
+        "exact_refine": 0.0,
+        "raw_candidate_count": 0,
+        "emitted_count": 649604
+      }
+    }
+  ]
+}

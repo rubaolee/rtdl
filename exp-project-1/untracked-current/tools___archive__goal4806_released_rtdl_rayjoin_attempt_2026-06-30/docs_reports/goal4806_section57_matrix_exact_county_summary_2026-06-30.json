@@ -1,0 +1,53 @@
+{
+  "correctness_caveat": "Raw overlay-output digest matches are byte-level checks for runs that requested --assemble-overlay-output. They are stronger than count-only checks, but they are not a substitute for a geometry/topology equivalence proof when output order or format intentionally differs.",
+  "coverage": {
+    "overlay_pairs_complete": 0,
+    "overlay_pairs_full_control_complete": 0,
+    "overlay_pairs_full_control_incomplete": 1,
+    "overlay_pairs_incomplete": 1,
+    "overlay_pairs_selected_implementations_complete": 1,
+    "overlay_pairs_selected_implementations_incomplete": 0,
+    "overlay_pairs_total": 1
+  },
+  "dataset_root": "/workspace/rayjoin_section57_same_source_cdb",
+  "output_dir": "artifacts/goal4806_section57_matrix_exact_county_20260630",
+  "rows": [
+    {
+      "author_overlay_output_digest": null,
+      "author_rt_process_sec": 19.547926127910614,
+      "complete": false,
+      "full_control_complete": false,
+      "pair_id": "county_zipcode",
+      "paper_label": "County x Zipcode",
+      "paper_rayjoin_preprocessing_sec": 0.07,
+      "paper_rayjoin_processing_sec": 0.12,
+      "paths": {
+        "author_rt": "artifacts/goal4806_section57_matrix_exact_county_20260630/section57_overlay_county_zipcode_author_rt.json",
+        "rtdl_embree": "artifacts/goal4806_section57_matrix_exact_county_20260630/section57_overlay_county_zipcode_rtdl_embree.json",
+        "rtdl_optix": "artifacts/goal4806_section57_matrix_exact_county_20260630/section57_overlay_county_zipcode_rtdl_optix.json",
+        "v4_numba": "artifacts/goal4806_section57_matrix_exact_county_20260630/section57_overlay_county_zipcode_v4_numba.json"
+      },
+      "rtdl_embree_author_raw_output_digest_match": null,
+      "rtdl_embree_lsi_count": null,
+      "rtdl_embree_overlay_output_digest": null,
+      "rtdl_embree_total_sec": null,
+      "rtdl_optix_author_raw_output_digest_match": null,
+      "rtdl_optix_embree_raw_output_digest_match": null,
+      "rtdl_optix_lsi_count": 965844,
+      "rtdl_optix_overlay_output_digest": null,
+      "rtdl_optix_total_sec": 92.03112426400185,
+      "selected_implementations_complete": true,
+      "v4_numba_claim_classification": "candidate_stage_measured_no_app_speedup_claim",
+      "v4_numba_correctness_status": "pass",
+      "v4_numba_selected_plan_id": "v4_numba_post_traversal_segmented_counts",
+      "v4_numba_total_sec": 0.01628301292657852
+    }
+  ],
+  "schema": "rtdl.rayjoin.section57_overlay_matrix.summary.v1",
+  "selected_implementations": [
+    "author_rt",
+    "rtdl_optix",
+    "v4_numba"
+  ],
+  "timing_caveat": "Paper Table 4 values are historical reference numbers. Local author_rt rows are measured process wall times. RTDL rows are warm-cache medians under the selected protocol."
+}

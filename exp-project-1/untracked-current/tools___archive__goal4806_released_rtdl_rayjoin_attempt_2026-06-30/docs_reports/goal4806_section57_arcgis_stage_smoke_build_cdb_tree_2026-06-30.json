@@ -1,0 +1,88 @@
+{
+  "dataset_root": "artifacts\\goal4806_section57_arcgis_stage_smoke_20260630\\dataset",
+  "input_provenance": "same_source_regenerated_cdb",
+  "rows": [
+    {
+      "output_path": "artifacts\\goal4806_section57_arcgis_stage_smoke_20260630\\dataset\\point_cdb\\dtl_cnty\\dtl_cnty_Point.cdb",
+      "source_root": "artifacts\\goal4806_section57_arcgis_stage_smoke_20260630\\staged\\uscounty_feature_layer",
+      "stats": {
+        "bytes": 298852571,
+        "chains": 2850811,
+        "nonzero_faces": 1000,
+        "path": "artifacts\\goal4806_section57_arcgis_stage_smoke_20260630\\dataset\\point_cdb\\dtl_cnty\\dtl_cnty_Point.cdb",
+        "points": 5701622,
+        "segments": 2850811
+      },
+      "target": {
+        "cdb_name": "dtl_cnty",
+        "feature_id_field": "OBJECTID",
+        "output_relative_path": "point_cdb/dtl_cnty/dtl_cnty_Point.cdb",
+        "source_asset_id": "uscounty_feature_layer",
+        "target_id": "county",
+        "topology_contract": "same_source_regenerated_cdb_from_arcgis_rings; not a recovered paper_preprocessed Polygon-To-Line neighbor CDB"
+      }
+    },
+    {
+      "output_path": "artifacts\\goal4806_section57_arcgis_stage_smoke_20260630\\dataset\\point_cdb\\USAZIPCodeArea\\USAZIPCodeArea_Point.cdb",
+      "source_root": "artifacts\\goal4806_section57_arcgis_stage_smoke_20260630\\staged\\zipcode_feature_layer",
+      "stats": {
+        "bytes": 117787551,
+        "chains": 1141966,
+        "nonzero_faces": 1000,
+        "path": "artifacts\\goal4806_section57_arcgis_stage_smoke_20260630\\dataset\\point_cdb\\USAZIPCodeArea\\USAZIPCodeArea_Point.cdb",
+        "points": 2283932,
+        "segments": 1141966
+      },
+      "target": {
+        "cdb_name": "USAZIPCodeArea",
+        "feature_id_field": "OBJECTID",
+        "output_relative_path": "point_cdb/USAZIPCodeArea/USAZIPCodeArea_Point.cdb",
+        "source_asset_id": "zipcode_feature_layer",
+        "target_id": "zipcode",
+        "topology_contract": "same_source_regenerated_cdb_from_arcgis_rings; not a recovered paper_preprocessed Polygon-To-Line neighbor CDB"
+      }
+    },
+    {
+      "output_path": "artifacts\\goal4806_section57_arcgis_stage_smoke_20260630\\dataset\\point_cdb\\USACensusBlockGroupBoundaries\\USACensusBlockGroupBoundaries_Point.cdb",
+      "source_root": "artifacts\\goal4806_section57_arcgis_stage_smoke_20260630\\staged\\blockgroup_feature_layer",
+      "stats": {
+        "bytes": 27854842,
+        "chains": 271470,
+        "nonzero_faces": 1000,
+        "path": "artifacts\\goal4806_section57_arcgis_stage_smoke_20260630\\dataset\\point_cdb\\USACensusBlockGroupBoundaries\\USACensusBlockGroupBoundaries_Point.cdb",
+        "points": 542940,
+        "segments": 271470
+      },
+      "target": {
+        "cdb_name": "USACensusBlockGroupBoundaries",
+        "feature_id_field": "OBJECTID",
+        "output_relative_path": "point_cdb/USACensusBlockGroupBoundaries/USACensusBlockGroupBoundaries_Point.cdb",
+        "source_asset_id": "blockgroup_feature_layer",
+        "target_id": "blockgroup",
+        "topology_contract": "same_source_regenerated_cdb_from_arcgis_rings; not a recovered paper_preprocessed Polygon-To-Line neighbor CDB"
+      }
+    },
+    {
+      "output_path": "artifacts\\goal4806_section57_arcgis_stage_smoke_20260630\\dataset\\point_cdb\\USADetailedWaterBodies\\USADetailedWaterBodies_Point.cdb",
+      "source_root": "artifacts\\goal4806_section57_arcgis_stage_smoke_20260630\\staged\\waterbodies_feature_layer",
+      "stats": {
+        "bytes": 8571998,
+        "chains": 86252,
+        "nonzero_faces": 1000,
+        "path": "artifacts\\goal4806_section57_arcgis_stage_smoke_20260630\\dataset\\point_cdb\\USADetailedWaterBodies\\USADetailedWaterBodies_Point.cdb",
+        "points": 172504,
+        "segments": 86252
+      },
+      "target": {
+        "cdb_name": "USADetailedWaterBodies",
+        "feature_id_field": "OBJECTID",
+        "output_relative_path": "point_cdb/USADetailedWaterBodies/USADetailedWaterBodies_Point.cdb",
+        "source_asset_id": "waterbodies_feature_layer",
+        "target_id": "waterbodies",
+        "topology_contract": "same_source_regenerated_cdb_from_arcgis_rings; not a recovered paper_preprocessed Polygon-To-Line neighbor CDB"
+      }
+    }
+  ],
+  "schema": "rtdl.rayjoin_paper_suite.same_source_arcgis_cdb_tree.v1",
+  "staged_root": "artifacts\\goal4806_section57_arcgis_stage_smoke_20260630\\staged"
+}

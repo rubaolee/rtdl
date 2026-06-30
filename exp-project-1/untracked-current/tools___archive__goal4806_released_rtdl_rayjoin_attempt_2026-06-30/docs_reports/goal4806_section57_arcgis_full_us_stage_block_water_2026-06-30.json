@@ -1,0 +1,5007 @@
+{
+  "claim_boundary": "Staged ArcGIS pages are raw same-source inputs. Building CDBs from them creates same_source_regenerated_cdb rows, not recovered paper_preprocessed_cdb evidence.",
+  "dry_run": false,
+  "next_command": [
+    "python",
+    "scripts/rayjoin_paper_reproduction_suite.py",
+    "build-arcgis-cdb-tree",
+    "--staged-root",
+    "artifacts/goal4806_section57_arcgis_full_us_20260630/staged",
+    "--dataset-root",
+    "artifacts/goal4806_section57_arcgis_full_us_20260630/dataset",
+    "--targets",
+    "blockgroup,waterbodies",
+    "--topology-mode",
+    "polygon_to_line"
+  ],
+  "rows": [
+    {
+      "asset": {
+        "asset_id": "blockgroup_feature_layer",
+        "expected_feature_count": 239203,
+        "geometry_type": "esriGeometryPolygon",
+        "layer_id": 0,
+        "max_record_count": 2000,
+        "service_url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Census_BlockGroups/FeatureServer",
+        "title": "USA Census Block Group Boundaries Feature Layer"
+      },
+      "downloaded_feature_count": 239203,
+      "dry_run": false,
+      "max_pages": null,
+      "output_root": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer",
+      "page_size": 1000,
+      "pages": [
+        {
+          "downloaded": 1000,
+          "offset": 0,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_000000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 1000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_001000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 2000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_002000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 3000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_003000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 4000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_004000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 5000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_005000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 6000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_006000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 7000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_007000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 8000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_008000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 9000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_009000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 10000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_010000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 11000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_011000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 12000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_012000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 13000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_013000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 14000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_014000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 15000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_015000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 16000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_016000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 17000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_017000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 18000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_018000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 19000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_019000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 20000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_020000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 21000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_021000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 22000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_022000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 23000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_023000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 24000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_024000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 25000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_025000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 26000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_026000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 27000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_027000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 28000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_028000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 29000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_029000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 30000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_030000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 31000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_031000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 32000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_032000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 33000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_033000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 34000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_034000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 35000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_035000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 36000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_036000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 37000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_037000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 38000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_038000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 39000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_039000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 40000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_040000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 41000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_041000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 42000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_042000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 43000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_043000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 44000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_044000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 45000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_045000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 46000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_046000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 47000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_047000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 48000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_048000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 49000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_049000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 50000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_050000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 51000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_051000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 52000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_052000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 53000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_053000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 54000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_054000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 55000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_055000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 56000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_056000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 57000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_057000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 58000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_058000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 59000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_059000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 60000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_060000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 61000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_061000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 62000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_062000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 63000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_063000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 64000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_064000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 65000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_065000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 66000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_066000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 67000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_067000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 68000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_068000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 69000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_069000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 70000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_070000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 71000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_071000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 72000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_072000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 73000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_073000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 74000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_074000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 75000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_075000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 76000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_076000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 77000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_077000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 78000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_078000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 79000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_079000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 80000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_080000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 81000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_081000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 82000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_082000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 83000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_083000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 84000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_084000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 85000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_085000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 86000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_086000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 87000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_087000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 88000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_088000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 89000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_089000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 90000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_090000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 91000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_091000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 92000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_092000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 93000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_093000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 94000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_094000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 95000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_095000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 96000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_096000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 97000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_097000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 98000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_098000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 99000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_099000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 100000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_100000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 101000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_101000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 102000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_102000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 103000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_103000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 104000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_104000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 105000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_105000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 106000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_106000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 107000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_107000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 108000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_108000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 109000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_109000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 110000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_110000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 111000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_111000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 112000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_112000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 113000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_113000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 114000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_114000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 115000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_115000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 116000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_116000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 117000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_117000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 118000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_118000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 119000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_119000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 120000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_120000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 121000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_121000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 122000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_122000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 123000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_123000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 124000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_124000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 125000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_125000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 126000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_126000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 127000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_127000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 128000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_128000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 129000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_129000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 130000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_130000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 131000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_131000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 132000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_132000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 133000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_133000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 134000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_134000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 135000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_135000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 136000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_136000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 137000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_137000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 138000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_138000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 139000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_139000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 140000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_140000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 141000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_141000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 142000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_142000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 143000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_143000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 144000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_144000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 145000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_145000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 146000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_146000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 147000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_147000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 148000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_148000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 149000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_149000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 150000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_150000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 151000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_151000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 152000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_152000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 153000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_153000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 154000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_154000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 155000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_155000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 156000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_156000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 157000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_157000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 158000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_158000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 159000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_159000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 160000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_160000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 161000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_161000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 162000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_162000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 163000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_163000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 164000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_164000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 165000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_165000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 166000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_166000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 167000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_167000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 168000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_168000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 169000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_169000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 170000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_170000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 171000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_171000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 172000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_172000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 173000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_173000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 174000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_174000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 175000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_175000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 176000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_176000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 177000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_177000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 178000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_178000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 179000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_179000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 180000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_180000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 181000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_181000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 182000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_182000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 183000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_183000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 184000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_184000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 185000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_185000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 186000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_186000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 187000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_187000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 188000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_188000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 189000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_189000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 190000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_190000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 191000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_191000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 192000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_192000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 193000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_193000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 194000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_194000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 195000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_195000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 196000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_196000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 197000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_197000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 198000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_198000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 199000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_199000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 200000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_200000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 201000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_201000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 202000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_202000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 203000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_203000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 204000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_204000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 205000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_205000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 206000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_206000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 207000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_207000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 208000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_208000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 209000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_209000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 210000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_210000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 211000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_211000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 212000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_212000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 213000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_213000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 214000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_214000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 215000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_215000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 216000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_216000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 217000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_217000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 218000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_218000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 219000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_219000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 220000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_220000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 221000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_221000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 222000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_222000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 223000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_223000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 224000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_224000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 225000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_225000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 226000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_226000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 227000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_227000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 228000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_228000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 229000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_229000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 230000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_230000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 231000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_231000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 232000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_232000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 233000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_233000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 234000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_234000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 235000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_235000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 236000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_236000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 237000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_237000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 238000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_238000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 203,
+          "offset": 239000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/blockgroup_feature_layer/page_239000.json.gz",
+          "requested": 203,
+          "status": "downloaded"
+        }
+      ],
+      "status": "complete",
+      "target": {
+        "cdb_name": "USACensusBlockGroupBoundaries",
+        "feature_id_field": "OBJECTID",
+        "output_relative_path": "point_cdb/USACensusBlockGroupBoundaries/USACensusBlockGroupBoundaries_Point.cdb",
+        "source_asset_id": "blockgroup_feature_layer",
+        "target_id": "blockgroup",
+        "topology_contract": "same_source_regenerated_cdb_from_arcgis_rings; not a recovered paper_preprocessed Polygon-To-Line neighbor CDB"
+      }
+    },
+    {
+      "asset": {
+        "asset_id": "waterbodies_feature_layer",
+        "expected_feature_count": 463591,
+        "geometry_type": "esriGeometryPolygon",
+        "layer_id": 0,
+        "max_record_count": 1000,
+        "service_url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Detailed_Water_Bodies/FeatureServer",
+        "title": "USA Detailed Water Bodies Feature Layer"
+      },
+      "downloaded_feature_count": 463591,
+      "dry_run": false,
+      "max_pages": null,
+      "output_root": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer",
+      "page_size": 1000,
+      "pages": [
+        {
+          "downloaded": 1000,
+          "offset": 0,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_000000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 1000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_001000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 2000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_002000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 3000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_003000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 4000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_004000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 5000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_005000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 6000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_006000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 7000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_007000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 8000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_008000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 9000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_009000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 10000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_010000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 11000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_011000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 12000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_012000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 13000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_013000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 14000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_014000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 15000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_015000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 16000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_016000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 17000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_017000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 18000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_018000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 19000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_019000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 20000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_020000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 21000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_021000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 22000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_022000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 23000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_023000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 24000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_024000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 25000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_025000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 26000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_026000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 27000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_027000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 28000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_028000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 29000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_029000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 30000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_030000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 31000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_031000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 32000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_032000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 33000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_033000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 34000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_034000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 35000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_035000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 36000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_036000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 37000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_037000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 38000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_038000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 39000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_039000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 40000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_040000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 41000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_041000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 42000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_042000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 43000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_043000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 44000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_044000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 45000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_045000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 46000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_046000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 47000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_047000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 48000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_048000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 49000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_049000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 50000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_050000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 51000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_051000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 52000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_052000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 53000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_053000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 54000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_054000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 55000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_055000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 56000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_056000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 57000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_057000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 58000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_058000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 59000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_059000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 60000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_060000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 61000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_061000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 62000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_062000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 63000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_063000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 64000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_064000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 65000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_065000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 66000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_066000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 67000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_067000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 68000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_068000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 69000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_069000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 70000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_070000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 71000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_071000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 72000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_072000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 73000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_073000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 74000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_074000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 75000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_075000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 76000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_076000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 77000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_077000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 78000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_078000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 79000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_079000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 80000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_080000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 81000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_081000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 82000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_082000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 83000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_083000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 84000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_084000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 85000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_085000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 86000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_086000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 87000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_087000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 88000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_088000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 89000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_089000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 90000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_090000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 91000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_091000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 92000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_092000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 93000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_093000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 94000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_094000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 95000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_095000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 96000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_096000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 97000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_097000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 98000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_098000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 99000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_099000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 100000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_100000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 101000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_101000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 102000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_102000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 103000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_103000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 104000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_104000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 105000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_105000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 106000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_106000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 107000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_107000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 108000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_108000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 109000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_109000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 110000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_110000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 111000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_111000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 112000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_112000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 113000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_113000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 114000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_114000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 115000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_115000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 116000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_116000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 117000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_117000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 118000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_118000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 119000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_119000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 120000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_120000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 121000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_121000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 122000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_122000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 123000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_123000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 124000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_124000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 125000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_125000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 126000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_126000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 127000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_127000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 128000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_128000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 129000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_129000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 130000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_130000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 131000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_131000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 132000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_132000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 133000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_133000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 134000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_134000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 135000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_135000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 136000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_136000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 137000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_137000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 138000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_138000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 139000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_139000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 140000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_140000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 141000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_141000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 142000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_142000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 143000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_143000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 144000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_144000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 145000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_145000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 146000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_146000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 147000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_147000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 148000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_148000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 149000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_149000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 150000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_150000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 151000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_151000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 152000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_152000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 153000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_153000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 154000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_154000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 155000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_155000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 156000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_156000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 157000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_157000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 158000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_158000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 159000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_159000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 160000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_160000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 161000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_161000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 162000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_162000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 163000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_163000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 164000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_164000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 165000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_165000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 166000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_166000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 167000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_167000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 168000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_168000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 169000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_169000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 170000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_170000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 171000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_171000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 172000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_172000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 173000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_173000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 174000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_174000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 175000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_175000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 176000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_176000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 177000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_177000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 178000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_178000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 179000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_179000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 180000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_180000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 181000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_181000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 182000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_182000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 183000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_183000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 184000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_184000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 185000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_185000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 186000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_186000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 187000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_187000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 188000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_188000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 189000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_189000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 190000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_190000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 191000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_191000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 192000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_192000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 193000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_193000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 194000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_194000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 195000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_195000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 196000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_196000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 197000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_197000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 198000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_198000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 199000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_199000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 200000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_200000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 201000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_201000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 202000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_202000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 203000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_203000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 204000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_204000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 205000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_205000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 206000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_206000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 207000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_207000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 208000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_208000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 209000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_209000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 210000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_210000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 211000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_211000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 212000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_212000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 213000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_213000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 214000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_214000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 215000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_215000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 216000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_216000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 217000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_217000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 218000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_218000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 219000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_219000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 220000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_220000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 221000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_221000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 222000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_222000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 223000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_223000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 224000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_224000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 225000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_225000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 226000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_226000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 227000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_227000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 228000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_228000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 229000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_229000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 230000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_230000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 231000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_231000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 232000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_232000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 233000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_233000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 234000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_234000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 235000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_235000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 236000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_236000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 237000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_237000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 238000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_238000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 239000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_239000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 240000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_240000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 241000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_241000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 242000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_242000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 243000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_243000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 244000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_244000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 245000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_245000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 246000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_246000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 247000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_247000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 248000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_248000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 249000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_249000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 250000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_250000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 251000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_251000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 252000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_252000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 253000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_253000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 254000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_254000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 255000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_255000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 256000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_256000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 257000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_257000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 258000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_258000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 259000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_259000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 260000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_260000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 261000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_261000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 262000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_262000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 263000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_263000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 264000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_264000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 265000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_265000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 266000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_266000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 267000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_267000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 268000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_268000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 269000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_269000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 270000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_270000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 271000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_271000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 272000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_272000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 273000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_273000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 274000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_274000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 275000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_275000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 276000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_276000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 277000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_277000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 278000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_278000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 279000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_279000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 280000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_280000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 281000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_281000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 282000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_282000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 283000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_283000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 284000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_284000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 285000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_285000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 286000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_286000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 287000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_287000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 288000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_288000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 289000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_289000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 290000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_290000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 291000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_291000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 292000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_292000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 293000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_293000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 294000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_294000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 295000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_295000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 296000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_296000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 297000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_297000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 298000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_298000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 299000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_299000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 300000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_300000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 301000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_301000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 302000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_302000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 303000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_303000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 304000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_304000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 305000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_305000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 306000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_306000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 307000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_307000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 308000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_308000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 309000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_309000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 310000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_310000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 311000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_311000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 312000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_312000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 313000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_313000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 314000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_314000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 315000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_315000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 316000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_316000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 317000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_317000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 318000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_318000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 319000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_319000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 320000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_320000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 321000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_321000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 322000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_322000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 323000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_323000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 324000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_324000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 325000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_325000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 326000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_326000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 327000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_327000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 328000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_328000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 329000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_329000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 330000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_330000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 331000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_331000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 332000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_332000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 333000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_333000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 334000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_334000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 335000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_335000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 336000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_336000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 337000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_337000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 338000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_338000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 339000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_339000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 340000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_340000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 341000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_341000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 342000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_342000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 343000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_343000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 344000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_344000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 345000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_345000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 346000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_346000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 347000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_347000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 348000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_348000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 349000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_349000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 350000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_350000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 351000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_351000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 352000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_352000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 353000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_353000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 354000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_354000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 355000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_355000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 356000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_356000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 357000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_357000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 358000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_358000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 359000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_359000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 360000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_360000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 361000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_361000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 362000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_362000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 363000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_363000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 364000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_364000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 365000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_365000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 366000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_366000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 367000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_367000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 368000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_368000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 369000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_369000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 370000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_370000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 371000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_371000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 372000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_372000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 373000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_373000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 374000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_374000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 375000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_375000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 376000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_376000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 377000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_377000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 378000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_378000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 379000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_379000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 380000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_380000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 381000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_381000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 382000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_382000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 383000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_383000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 384000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_384000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 385000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_385000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 386000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_386000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 387000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_387000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 388000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_388000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 389000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_389000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 390000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_390000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 391000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_391000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 392000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_392000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 393000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_393000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 394000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_394000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 395000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_395000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 396000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_396000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 397000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_397000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 398000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_398000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 399000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_399000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 400000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_400000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 401000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_401000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 402000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_402000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 403000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_403000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 404000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_404000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 405000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_405000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 406000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_406000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 407000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_407000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 408000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_408000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 409000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_409000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 410000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_410000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 411000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_411000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 412000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_412000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 413000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_413000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 414000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_414000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 415000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_415000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 416000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_416000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 417000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_417000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 418000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_418000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 419000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_419000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 420000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_420000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 421000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_421000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 422000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_422000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 423000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_423000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 424000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_424000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 425000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_425000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 426000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_426000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 427000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_427000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 428000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_428000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 429000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_429000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 430000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_430000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 431000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_431000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 432000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_432000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 433000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_433000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 434000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_434000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 435000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_435000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 436000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_436000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 437000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_437000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 438000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_438000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 439000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_439000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 440000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_440000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 441000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_441000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 442000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_442000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 443000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_443000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 444000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_444000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 445000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_445000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 446000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_446000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 447000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_447000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 448000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_448000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 449000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_449000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 450000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_450000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 451000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_451000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 452000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_452000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 453000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_453000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 454000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_454000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 455000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_455000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 456000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_456000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 457000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_457000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 458000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_458000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 459000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_459000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 460000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_460000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 461000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_461000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 1000,
+          "offset": 462000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_462000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        },
+        {
+          "downloaded": 591,
+          "offset": 463000,
+          "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged/waterbodies_feature_layer/page_463000.json.gz",
+          "requested": 591,
+          "status": "downloaded"
+        }
+      ],
+      "status": "complete",
+      "target": {
+        "cdb_name": "USADetailedWaterBodies",
+        "feature_id_field": "OBJECTID",
+        "output_relative_path": "point_cdb/USADetailedWaterBodies/USADetailedWaterBodies_Point.cdb",
+        "source_asset_id": "waterbodies_feature_layer",
+        "target_id": "waterbodies",
+        "topology_contract": "same_source_regenerated_cdb_from_arcgis_rings; not a recovered paper_preprocessed Polygon-To-Line neighbor CDB"
+      }
+    }
+  ],
+  "schema": "rtdl.rayjoin_paper_suite.stage_arcgis_sources.v1",
+  "staged_root": "artifacts/goal4806_section57_arcgis_full_us_20260630/staged",
+  "targets": [
+    "blockgroup",
+    "waterbodies"
+  ]
+}

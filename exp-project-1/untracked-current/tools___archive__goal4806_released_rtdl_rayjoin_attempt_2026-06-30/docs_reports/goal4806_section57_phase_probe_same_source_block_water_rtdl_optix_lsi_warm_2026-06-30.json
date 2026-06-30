@@ -1,0 +1,61 @@
+{
+  "case_id": "lsi_block_water",
+  "dataset_root": "artifacts/goal4806_section57_arcgis_full_us_20260630/dataset",
+  "input_provenance": "same_source_regenerated_cdb",
+  "input_shape": {
+    "base_chains": 28473338,
+    "base_segments": 28473338,
+    "query_chains": 22431809,
+    "query_segments": 22431809,
+    "query_stream": "all_edges_from_query_map_s"
+  },
+  "pair_id": "block_water",
+  "paper_label": "Block x Water",
+  "partner_cache": {
+    "enabled": true,
+    "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/dataset/.rtdl_rayjoin_overlay_packed_cache",
+    "source": "default_dataset_root"
+  },
+  "program": "lsi",
+  "program_contract": "Base map R is -poly1; query map S is -poly2; the query stream is all line segments/edges from S.",
+  "results": {
+    "optix": {
+      "backend": "rtdl_optix",
+      "count": 649605,
+      "counts_stable": true,
+      "hot_max_sec": 21.997184455394745,
+      "hot_median_sec": 21.997184455394745,
+      "hot_min_sec": 21.997184455394745,
+      "hot_total_sec": 21.997184455394745,
+      "native_traversal_median_sec": 0.007206304,
+      "predicate_contract": "rayjoin_author_lsi_intersect_test_endpoint_collinear_contract",
+      "repeat": 1,
+      "runs": [
+        {
+          "count": 649605,
+          "elapsed_sec": 21.997184455394745,
+          "is_warmup": false,
+          "iteration": 0,
+          "native_result": {
+            "count": 649605,
+            "route": "rayjoin_overlay_lsi_rows",
+            "row_count": 649605
+          },
+          "native_timings": {
+            "candidate_count_pass": 0.007206304,
+            "candidate_download": 0.0,
+            "candidate_write_pass": 0.0,
+            "emitted_count": 649605,
+            "exact_refine": 0.0,
+            "hot_call_sec": 21.800261422991753,
+            "left_upload": 0.0,
+            "mode": "count_prepared_left_grouped_range_direct_intersection",
+            "raw_candidate_count": 0
+          }
+        }
+      ],
+      "warmup": 0
+    }
+  },
+  "schema": "rtdl.rayjoin_paper_suite.rtdl_run.v1"
+}

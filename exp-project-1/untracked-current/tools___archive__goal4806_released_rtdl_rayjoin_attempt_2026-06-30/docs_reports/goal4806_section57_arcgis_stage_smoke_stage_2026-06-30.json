@@ -1,0 +1,163 @@
+{
+  "claim_boundary": "Staged ArcGIS pages are raw same-source inputs. Building CDBs from them creates same_source_regenerated_cdb rows, not recovered paper_preprocessed_cdb evidence.",
+  "dry_run": false,
+  "next_command": [
+    "python",
+    "scripts/rayjoin_paper_reproduction_suite.py",
+    "build-arcgis-cdb-tree",
+    "--staged-root",
+    "artifacts\\goal4806_section57_arcgis_stage_smoke_20260630\\staged",
+    "--dataset-root",
+    "artifacts/goal4806_section57_arcgis_stage_smoke_20260630/dataset",
+    "--targets",
+    "county,zipcode,blockgroup,waterbodies",
+    "--topology-mode",
+    "polygon_to_line"
+  ],
+  "rows": [
+    {
+      "asset": {
+        "asset_id": "uscounty_feature_layer",
+        "expected_feature_count": 3144,
+        "geometry_type": "esriGeometryPolygon",
+        "layer_id": 0,
+        "max_record_count": 2000,
+        "service_url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Census_Counties/FeatureServer",
+        "title": "USA Census Counties Feature Layer"
+      },
+      "downloaded_feature_count": 1000,
+      "dry_run": false,
+      "max_pages": 1,
+      "output_root": "artifacts\\goal4806_section57_arcgis_stage_smoke_20260630\\staged\\uscounty_feature_layer",
+      "page_size": 1000,
+      "pages": [
+        {
+          "downloaded": 1000,
+          "offset": 0,
+          "path": "artifacts\\goal4806_section57_arcgis_stage_smoke_20260630\\staged\\uscounty_feature_layer\\page_000000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        }
+      ],
+      "status": "partial",
+      "target": {
+        "cdb_name": "dtl_cnty",
+        "feature_id_field": "OBJECTID",
+        "output_relative_path": "point_cdb/dtl_cnty/dtl_cnty_Point.cdb",
+        "source_asset_id": "uscounty_feature_layer",
+        "target_id": "county",
+        "topology_contract": "same_source_regenerated_cdb_from_arcgis_rings; not a recovered paper_preprocessed Polygon-To-Line neighbor CDB"
+      }
+    },
+    {
+      "asset": {
+        "asset_id": "zipcode_feature_layer",
+        "expected_feature_count": 32294,
+        "geometry_type": "esriGeometryPolygon",
+        "layer_id": 0,
+        "max_record_count": 2000,
+        "service_url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_ZIP_Code_Areas_anaylsis/FeatureServer",
+        "title": "USA ZIP Code Boundaries Feature Layer"
+      },
+      "downloaded_feature_count": 1000,
+      "dry_run": false,
+      "max_pages": 1,
+      "output_root": "artifacts\\goal4806_section57_arcgis_stage_smoke_20260630\\staged\\zipcode_feature_layer",
+      "page_size": 1000,
+      "pages": [
+        {
+          "downloaded": 1000,
+          "offset": 0,
+          "path": "artifacts\\goal4806_section57_arcgis_stage_smoke_20260630\\staged\\zipcode_feature_layer\\page_000000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        }
+      ],
+      "status": "partial",
+      "target": {
+        "cdb_name": "USAZIPCodeArea",
+        "feature_id_field": "OBJECTID",
+        "output_relative_path": "point_cdb/USAZIPCodeArea/USAZIPCodeArea_Point.cdb",
+        "source_asset_id": "zipcode_feature_layer",
+        "target_id": "zipcode",
+        "topology_contract": "same_source_regenerated_cdb_from_arcgis_rings; not a recovered paper_preprocessed Polygon-To-Line neighbor CDB"
+      }
+    },
+    {
+      "asset": {
+        "asset_id": "blockgroup_feature_layer",
+        "expected_feature_count": 239203,
+        "geometry_type": "esriGeometryPolygon",
+        "layer_id": 0,
+        "max_record_count": 2000,
+        "service_url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Census_BlockGroups/FeatureServer",
+        "title": "USA Census Block Group Boundaries Feature Layer"
+      },
+      "downloaded_feature_count": 1000,
+      "dry_run": false,
+      "max_pages": 1,
+      "output_root": "artifacts\\goal4806_section57_arcgis_stage_smoke_20260630\\staged\\blockgroup_feature_layer",
+      "page_size": 1000,
+      "pages": [
+        {
+          "downloaded": 1000,
+          "offset": 0,
+          "path": "artifacts\\goal4806_section57_arcgis_stage_smoke_20260630\\staged\\blockgroup_feature_layer\\page_000000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        }
+      ],
+      "status": "partial",
+      "target": {
+        "cdb_name": "USACensusBlockGroupBoundaries",
+        "feature_id_field": "OBJECTID",
+        "output_relative_path": "point_cdb/USACensusBlockGroupBoundaries/USACensusBlockGroupBoundaries_Point.cdb",
+        "source_asset_id": "blockgroup_feature_layer",
+        "target_id": "blockgroup",
+        "topology_contract": "same_source_regenerated_cdb_from_arcgis_rings; not a recovered paper_preprocessed Polygon-To-Line neighbor CDB"
+      }
+    },
+    {
+      "asset": {
+        "asset_id": "waterbodies_feature_layer",
+        "expected_feature_count": 463591,
+        "geometry_type": "esriGeometryPolygon",
+        "layer_id": 0,
+        "max_record_count": 1000,
+        "service_url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Detailed_Water_Bodies/FeatureServer",
+        "title": "USA Detailed Water Bodies Feature Layer"
+      },
+      "downloaded_feature_count": 1000,
+      "dry_run": false,
+      "max_pages": 1,
+      "output_root": "artifacts\\goal4806_section57_arcgis_stage_smoke_20260630\\staged\\waterbodies_feature_layer",
+      "page_size": 1000,
+      "pages": [
+        {
+          "downloaded": 1000,
+          "offset": 0,
+          "path": "artifacts\\goal4806_section57_arcgis_stage_smoke_20260630\\staged\\waterbodies_feature_layer\\page_000000.json.gz",
+          "requested": 1000,
+          "status": "downloaded"
+        }
+      ],
+      "status": "partial",
+      "target": {
+        "cdb_name": "USADetailedWaterBodies",
+        "feature_id_field": "OBJECTID",
+        "output_relative_path": "point_cdb/USADetailedWaterBodies/USADetailedWaterBodies_Point.cdb",
+        "source_asset_id": "waterbodies_feature_layer",
+        "target_id": "waterbodies",
+        "topology_contract": "same_source_regenerated_cdb_from_arcgis_rings; not a recovered paper_preprocessed Polygon-To-Line neighbor CDB"
+      }
+    }
+  ],
+  "schema": "rtdl.rayjoin_paper_suite.stage_arcgis_sources.v1",
+  "staged_root": "artifacts\\goal4806_section57_arcgis_stage_smoke_20260630\\staged",
+  "targets": [
+    "county",
+    "zipcode",
+    "blockgroup",
+    "waterbodies"
+  ]
+}

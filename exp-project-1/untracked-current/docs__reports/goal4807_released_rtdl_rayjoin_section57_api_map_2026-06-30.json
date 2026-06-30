@@ -1,0 +1,107 @@
+{
+  "schema": "rtdl.goal4807.released_v4_rayjoin_section57_api_map.v1",
+  "date": "2026-06-30",
+  "goal": 4807,
+  "parent_goal": 4806,
+  "authorization": "read_only_only",
+  "fresh_checkout": {
+    "path": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_goal4807_v4_0_0_clean_api_map",
+    "head": "6ca0849b9930295f742485cae9a17196216e0dcf",
+    "status_porcelain_full_output": "",
+    "src_rtdsl_src_native_diff_full_output": "",
+    "import_path_proof": {
+      "PYTHONPATH": "src",
+      "cwd": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_goal4807_v4_0_0_clean_api_map",
+      "rtdsl_file": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_goal4807_v4_0_0_clean_api_map\\src\\rtdsl\\__init__.py",
+      "v4_file": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_goal4807_v4_0_0_clean_api_map\\src\\rtdsl\\v4.py",
+      "has_status_v4": false
+    }
+  },
+  "forbidden_edit_paths": [
+    "src/rtdsl/**",
+    "src/native/**",
+    "v4.0.0 tag"
+  ],
+  "forbidden_paths_edited": false,
+  "released_v4_public_surfaces_considered": [
+    "v4_fixed_radius_count_threshold_2d_device_arrays",
+    "v4_closest_hit_grouped_argmin_3d_device_arrays",
+    "v4_ray_triangle_any_hit_flags_2d_device_arrays",
+    "v4_ray_triangle_primitive_grouped_i64_reduction_3d_device_arrays",
+    "v4_point_group_nearest_witness_2d_device_arrays",
+    "v4_ray_triangle_any_hit_weighted_sum_3d_device_arrays",
+    "v4_fixed_radius_graph_component_union_3d_device_arrays",
+    "v4_aabb_index_query_2d_all_ops_count_prepared_runner",
+    "v4_aggregate_frontier_device_columns_2d_prepared_runner",
+    "v4_ray_triangle_custom_predicate_early_exit_3d_numba"
+  ],
+  "bundled_rayjoin_helpers_found": [
+    "src/rtdsl/rayjoin_overlay.py",
+    "src/rtdsl/rayjoin_paper_suite.py",
+    "src/rtdsl/rayjoin_artifacts.py",
+    "src/rtdsl/v2_13_rayjoin_authors_code_packet.py",
+    "scripts/rayjoin_paper_reproduction_suite.py"
+  ],
+  "section57_stage_map": [
+    {
+      "stage": "LSI segment pair intersections",
+      "released_callable_path": "scripts/rayjoin_paper_reproduction_suite.py::_run_rtdl_lsi -> rtdsl.rayjoin_overlay._run_lsi_rows",
+      "classification": "bundled_rayjoin_helper",
+      "supports_generic_language_claim": false,
+      "notes": "Exact Section 5.7 LSI uses RayJoin predicate environment and helper composition."
+    },
+    {
+      "stage": "vertex PIP map0 in map1",
+      "released_callable_path": "rtdsl.rayjoin_overlay._run_point_location_faces / _PreparedPointLocationRunner",
+      "classification": "bundled_rayjoin_helper",
+      "supports_generic_language_claim": false,
+      "notes": "Exact CDB point-location contract is helper-routed, not exposed as V4 public generic PIP."
+    },
+    {
+      "stage": "vertex PIP map1 in map0",
+      "released_callable_path": "rtdsl.rayjoin_overlay._run_point_location_faces / _PreparedPointLocationRunner",
+      "classification": "bundled_rayjoin_helper",
+      "supports_generic_language_claim": false,
+      "notes": "Same helper route with reversed direction."
+    },
+    {
+      "stage": "midpoint PIP",
+      "released_callable_path": "rtdsl.rayjoin_overlay midpoint generation plus bundled point-location pair",
+      "classification": "bundled_rayjoin_helper",
+      "supports_generic_language_claim": false,
+      "notes": "Midpoint stream is derived inside helper from LSI rows before helper point-location."
+    },
+    {
+      "stage": "output-chain construction",
+      "released_callable_path": "rtdsl.rayjoin_overlay._assemble_output_chains / write_output_chains",
+      "classification": "bundled_rayjoin_helper",
+      "supports_generic_language_claim": false,
+      "notes": "RayJoin application-specific output-chain assembly."
+    }
+  ],
+  "numba_released_v4_assessment": {
+    "numba_surfaces_present": [
+      "v4_fixed_radius_graph_component_union_3d_device_arrays",
+      "v4_ray_triangle_custom_predicate_early_exit_3d_numba",
+      "numba_partner_continuation.py generic segmented/grouped helpers"
+    ],
+    "section57_numba_route_found": false,
+    "classification_for_section57_numba": "missing_released_capability",
+    "notes": "No released V4 surface exposes Section 5.7 LSI/PIP/midpoint/output-chain dataflow as generic device columns for a user-level Numba continuation."
+  },
+  "planner_checks": {
+    "rayjoin": "pushdown_fail_closed_app_identity_kernel",
+    "polygon_overlay": "unsupported_no_fused_surface",
+    "line_segment_intersection": "unsupported_no_fused_surface",
+    "point_in_polygon": "unsupported_no_fused_surface",
+    "point_location": "unsupported_no_fused_surface",
+    "directed_segment_point_location": "unsupported_no_fused_surface",
+    "ray_triangle_any_hit_flags": "pushdown_recognized_measured_tier2"
+  },
+  "provisional_outcome": "api_map_complete__released_v4_section57_generic_language_route_not_found",
+  "live_final_labels": [
+    "complete_bounded_available_input_reproduction",
+    "blocked_by_released_rtdl_capability_gap"
+  ],
+  "recommended_next_gate": "external_review_goal4807_before_goal4808"
+}

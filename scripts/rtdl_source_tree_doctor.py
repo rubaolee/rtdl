@@ -82,7 +82,7 @@ def gather_checks(*, run_smoke: bool = False) -> dict[str, Any]:
     checks.append(
         _check(
             "version marker",
-            "pass" if version == "v2.13" else "fail",
+            "pass" if version == "v2.14" else "fail",
             version or "VERSION is missing",
         )
     )
@@ -92,7 +92,7 @@ def gather_checks(*, run_smoke: bool = False) -> dict[str, Any]:
         "front page": ROOT / "README.md",
         "top-level tutorials": ROOT / "tutorials" / "current" / "README.md",
         "current examples": ROOT / "examples" / "current" / "README.md",
-        "v2.13 release package": ROOT / "docs" / "release_reports" / "v2_13" / "README.md",
+        "v2.14 release package": ROOT / "docs" / "release_reports" / "v2_14" / "README.md",
     }
     for name, path in required_paths.items():
         checks.append(_check(name, "pass" if path.exists() else "fail", path.relative_to(ROOT).as_posix()))

@@ -1,0 +1,158 @@
+{
+  "dataset_root": "artifacts/goal4806_section57_arcgis_stage_smoke_20260630/dataset",
+  "rows": [
+    {
+      "blocker": null,
+      "case_id": "overlay_county_zipcode",
+      "exact_input_ready": true,
+      "left": {
+        "bytes": 298852571,
+        "exists": true,
+        "path": "artifacts\\goal4806_section57_arcgis_stage_smoke_20260630\\dataset\\point_cdb\\dtl_cnty\\dtl_cnty_Point.cdb"
+      },
+      "pair_id": "county_zipcode",
+      "paper_label": "County x Zipcode",
+      "program": "overlay",
+      "right": {
+        "bytes": 117787551,
+        "exists": true,
+        "path": "artifacts\\goal4806_section57_arcgis_stage_smoke_20260630\\dataset\\point_cdb\\USAZIPCodeArea\\USAZIPCodeArea_Point.cdb"
+      },
+      "rtdl_status": "implemented_compute_optional_output"
+    },
+    {
+      "blocker": null,
+      "case_id": "overlay_block_water",
+      "exact_input_ready": true,
+      "left": {
+        "bytes": 27854842,
+        "exists": true,
+        "path": "artifacts\\goal4806_section57_arcgis_stage_smoke_20260630\\dataset\\point_cdb\\USACensusBlockGroupBoundaries\\USACensusBlockGroupBoundaries_Point.cdb"
+      },
+      "pair_id": "block_water",
+      "paper_label": "Block x Water",
+      "program": "overlay",
+      "right": {
+        "bytes": 8571998,
+        "exists": true,
+        "path": "artifacts\\goal4806_section57_arcgis_stage_smoke_20260630\\dataset\\point_cdb\\USADetailedWaterBodies\\USADetailedWaterBodies_Point.cdb"
+      },
+      "rtdl_status": "implemented_compute_optional_output"
+    },
+    {
+      "blocker": "missing exact CDB input(s): point_cdb/lakes/Africa/lakes_Africa_Point.cdb, point_cdb/parks/Africa/parks_Africa_Point.cdb",
+      "case_id": "overlay_lkaf_pkaf",
+      "exact_input_ready": false,
+      "left": {
+        "bytes": null,
+        "exists": false,
+        "path": "artifacts\\goal4806_section57_arcgis_stage_smoke_20260630\\dataset\\point_cdb\\lakes\\Africa\\lakes_Africa_Point.cdb"
+      },
+      "pair_id": "lkaf_pkaf",
+      "paper_label": "LKAF x PKAF",
+      "program": "overlay",
+      "right": {
+        "bytes": null,
+        "exists": false,
+        "path": "artifacts\\goal4806_section57_arcgis_stage_smoke_20260630\\dataset\\point_cdb\\parks\\Africa\\parks_Africa_Point.cdb"
+      },
+      "rtdl_status": "implemented_compute_optional_output"
+    },
+    {
+      "blocker": "missing exact CDB input(s): point_cdb/lakes/Asia/lakes_Asia_Point.cdb, point_cdb/parks/Asia/parks_Asia_Point.cdb",
+      "case_id": "overlay_lkas_pkas",
+      "exact_input_ready": false,
+      "left": {
+        "bytes": null,
+        "exists": false,
+        "path": "artifacts\\goal4806_section57_arcgis_stage_smoke_20260630\\dataset\\point_cdb\\lakes\\Asia\\lakes_Asia_Point.cdb"
+      },
+      "pair_id": "lkas_pkas",
+      "paper_label": "LKAS x PKAS",
+      "program": "overlay",
+      "right": {
+        "bytes": null,
+        "exists": false,
+        "path": "artifacts\\goal4806_section57_arcgis_stage_smoke_20260630\\dataset\\point_cdb\\parks\\Asia\\parks_Asia_Point.cdb"
+      },
+      "rtdl_status": "implemented_compute_optional_output"
+    },
+    {
+      "blocker": "missing exact CDB input(s): point_cdb/lakes/Australia/lakes_Australia_Point.cdb, point_cdb/parks/Australia/parks_Australia_Point.cdb",
+      "case_id": "overlay_lkau_pkau",
+      "exact_input_ready": false,
+      "left": {
+        "bytes": null,
+        "exists": false,
+        "path": "artifacts\\goal4806_section57_arcgis_stage_smoke_20260630\\dataset\\point_cdb\\lakes\\Australia\\lakes_Australia_Point.cdb"
+      },
+      "pair_id": "lkau_pkau",
+      "paper_label": "LKAU x PKAU",
+      "program": "overlay",
+      "right": {
+        "bytes": null,
+        "exists": false,
+        "path": "artifacts\\goal4806_section57_arcgis_stage_smoke_20260630\\dataset\\point_cdb\\parks\\Australia\\parks_Australia_Point.cdb"
+      },
+      "rtdl_status": "implemented_compute_optional_output"
+    },
+    {
+      "blocker": "missing exact CDB input(s): point_cdb/lakes/Europe/lakes_Europe_Point.cdb, point_cdb/parks/Europe/parks_Europe_Point.cdb",
+      "case_id": "overlay_lkeu_pkeu",
+      "exact_input_ready": false,
+      "left": {
+        "bytes": null,
+        "exists": false,
+        "path": "artifacts\\goal4806_section57_arcgis_stage_smoke_20260630\\dataset\\point_cdb\\lakes\\Europe\\lakes_Europe_Point.cdb"
+      },
+      "pair_id": "lkeu_pkeu",
+      "paper_label": "LKEU x PKEU",
+      "program": "overlay",
+      "right": {
+        "bytes": null,
+        "exists": false,
+        "path": "artifacts\\goal4806_section57_arcgis_stage_smoke_20260630\\dataset\\point_cdb\\parks\\Europe\\parks_Europe_Point.cdb"
+      },
+      "rtdl_status": "implemented_compute_optional_output"
+    },
+    {
+      "blocker": "missing exact CDB input(s): point_cdb/lakes/North_America/lakes_North_America_Point.cdb, point_cdb/parks/North_America/parks_North_America_Point.cdb",
+      "case_id": "overlay_lkna_pkna",
+      "exact_input_ready": false,
+      "left": {
+        "bytes": null,
+        "exists": false,
+        "path": "artifacts\\goal4806_section57_arcgis_stage_smoke_20260630\\dataset\\point_cdb\\lakes\\North_America\\lakes_North_America_Point.cdb"
+      },
+      "pair_id": "lkna_pkna",
+      "paper_label": "LKNA x PKNA",
+      "program": "overlay",
+      "right": {
+        "bytes": null,
+        "exists": false,
+        "path": "artifacts\\goal4806_section57_arcgis_stage_smoke_20260630\\dataset\\point_cdb\\parks\\North_America\\parks_North_America_Point.cdb"
+      },
+      "rtdl_status": "implemented_compute_optional_output"
+    },
+    {
+      "blocker": "missing exact CDB input(s): point_cdb/lakes/South_America/lakes_South_America_Point.cdb, point_cdb/parks/South_America/parks_South_America_Point.cdb",
+      "case_id": "overlay_lksa_pksa",
+      "exact_input_ready": false,
+      "left": {
+        "bytes": null,
+        "exists": false,
+        "path": "artifacts\\goal4806_section57_arcgis_stage_smoke_20260630\\dataset\\point_cdb\\lakes\\South_America\\lakes_South_America_Point.cdb"
+      },
+      "pair_id": "lksa_pksa",
+      "paper_label": "LKSA x PKSA",
+      "program": "overlay",
+      "right": {
+        "bytes": null,
+        "exists": false,
+        "path": "artifacts\\goal4806_section57_arcgis_stage_smoke_20260630\\dataset\\point_cdb\\parks\\South_America\\parks_South_America_Point.cdb"
+      },
+      "rtdl_status": "implemented_compute_optional_output"
+    }
+  ],
+  "schema": "rtdl.rayjoin_paper_suite.availability.v1"
+}

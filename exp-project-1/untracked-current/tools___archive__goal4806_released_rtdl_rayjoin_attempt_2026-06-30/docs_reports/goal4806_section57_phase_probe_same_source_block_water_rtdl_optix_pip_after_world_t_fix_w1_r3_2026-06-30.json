@@ -1,0 +1,247 @@
+{
+  "case_id": "pip_block_water",
+  "dataset_root": "artifacts/goal4806_section57_arcgis_full_us_20260630/dataset",
+  "input_provenance": "same_source_regenerated_cdb",
+  "input_shape": {
+    "base_cdb_segments": 28473338,
+    "base_chains": 28473338,
+    "query_chains": 22431809,
+    "query_points": 44863618,
+    "query_stream": "all_points_from_query_map_s"
+  },
+  "pair_id": "block_water",
+  "paper_label": "Block x Water",
+  "partner_cache": {
+    "enabled": true,
+    "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/dataset/.rtdl_rayjoin_overlay_packed_cache",
+    "source": "default_dataset_root"
+  },
+  "program": "pip",
+  "program_contract": "Base map R is -poly1; query map S is -poly2; the query point stream is every point returned by S.get_points(), not one representative point per chain.",
+  "results": {
+    "optix": {
+      "backend": "rtdl_optix",
+      "count": 40523587,
+      "counts_stable": true,
+      "hot_max_sec": 2.2097540870308876,
+      "hot_median_sec": 2.206397220492363,
+      "hot_min_sec": 2.2028435692191124,
+      "hot_total_sec": 6.618994876742363,
+      "native_traversal_median_sec": 0.097622598,
+      "repeat": 3,
+      "runs": [
+        {
+          "count": 40523587,
+          "elapsed_sec": 2.205042876303196,
+          "is_warmup": true,
+          "iteration": 0,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 44863618,
+            "point_upload": 0.19897785,
+            "positive_face_count": 40523587,
+            "row_download": 5.4033e-05,
+            "traversal": 0.097603262
+          }
+        },
+        {
+          "count": 40523587,
+          "elapsed_sec": 2.2028435692191124,
+          "is_warmup": false,
+          "iteration": 1,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 44863618,
+            "point_upload": 0.199909037,
+            "positive_face_count": 40523587,
+            "row_download": 4.6529e-05,
+            "traversal": 0.097689025
+          }
+        },
+        {
+          "count": 40523587,
+          "elapsed_sec": 2.2097540870308876,
+          "is_warmup": false,
+          "iteration": 2,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 44863618,
+            "point_upload": 0.200627821,
+            "positive_face_count": 40523587,
+            "row_download": 4.2841e-05,
+            "traversal": 0.097622598
+          }
+        },
+        {
+          "count": 40523587,
+          "elapsed_sec": 2.206397220492363,
+          "is_warmup": false,
+          "iteration": 3,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 44863618,
+            "point_upload": 0.200040988,
+            "positive_face_count": 40523587,
+            "row_download": 4.3312e-05,
+            "traversal": 0.097527949
+          }
+        }
+      ],
+      "warmup": 1
+    },
+    "optix_device_resident": {
+      "backend": "rtdl_optix_device_resident",
+      "count": 40523587,
+      "counts_stable": true,
+      "hot_max_sec": 0.09751187264919281,
+      "hot_median_sec": 0.09748923033475876,
+      "hot_min_sec": 0.097321517765522,
+      "hot_total_sec": 0.29232262074947357,
+      "native_traversal_median_sec": 0.097450772,
+      "repeat": 3,
+      "runs": [
+        {
+          "count": 40523587,
+          "elapsed_sec": 0.09779674559831619,
+          "is_warmup": true,
+          "iteration": 0,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 44863618,
+            "point_upload": 0.0,
+            "positive_face_count": 40523587,
+            "row_download": 1.3455e-05,
+            "traversal": 0.097653989
+          }
+        },
+        {
+          "count": 40523587,
+          "elapsed_sec": 0.09751187264919281,
+          "is_warmup": false,
+          "iteration": 1,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 44863618,
+            "point_upload": 0.0,
+            "positive_face_count": 40523587,
+            "row_download": 9.458e-06,
+            "traversal": 0.097468055
+          }
+        },
+        {
+          "count": 40523587,
+          "elapsed_sec": 0.097321517765522,
+          "is_warmup": false,
+          "iteration": 2,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 44863618,
+            "point_upload": 0.0,
+            "positive_face_count": 40523587,
+            "row_download": 1.063e-05,
+            "traversal": 0.097281181
+          }
+        },
+        {
+          "count": 40523587,
+          "elapsed_sec": 0.09748923033475876,
+          "is_warmup": false,
+          "iteration": 3,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 44863618,
+            "point_upload": 0.0,
+            "positive_face_count": 40523587,
+            "row_download": 8.656e-06,
+            "traversal": 0.097450772
+          }
+        }
+      ],
+      "warmup": 1
+    },
+    "optix_device_segment_ids": {
+      "backend": "rtdl_optix_device_segment_ids",
+      "count": 44863618,
+      "counts_stable": true,
+      "hot_max_sec": 0.09745728224515915,
+      "hot_median_sec": 0.09741278737783432,
+      "hot_min_sec": 0.09736822545528412,
+      "hot_total_sec": 0.2922382950782776,
+      "native_traversal_median_sec": 0.097390238,
+      "output_contract": "author_shape_device_resident_closest_segment_id_column_no_host_download_no_positive_count_atomic",
+      "repeat": 3,
+      "runs": [
+        {
+          "count": 44863618,
+          "elapsed_sec": 0.09744618833065033,
+          "is_warmup": true,
+          "iteration": 0,
+          "native_result": {
+            "row_count": 44863618
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 44863618,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.097413201
+          }
+        },
+        {
+          "count": 44863618,
+          "elapsed_sec": 0.09745728224515915,
+          "is_warmup": false,
+          "iteration": 1,
+          "native_result": {
+            "row_count": 44863618
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 44863618,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.097432108
+          }
+        },
+        {
+          "count": 44863618,
+          "elapsed_sec": 0.09741278737783432,
+          "is_warmup": false,
+          "iteration": 2,
+          "native_result": {
+            "row_count": 44863618
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 44863618,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.097390238
+          }
+        },
+        {
+          "count": 44863618,
+          "elapsed_sec": 0.09736822545528412,
+          "is_warmup": false,
+          "iteration": 3,
+          "native_result": {
+            "row_count": 44863618
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 44863618,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 0.097349821
+          }
+        }
+      ],
+      "warmup": 1
+    }
+  },
+  "schema": "rtdl.rayjoin_paper_suite.rtdl_run.v1"
+}

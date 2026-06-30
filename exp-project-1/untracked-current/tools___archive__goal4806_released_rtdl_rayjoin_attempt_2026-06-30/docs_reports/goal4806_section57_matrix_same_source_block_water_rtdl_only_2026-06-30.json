@@ -1,0 +1,51 @@
+{
+  "correctness_caveat": "Raw overlay-output digest matches are byte-level checks for runs that requested --assemble-overlay-output. They are stronger than count-only checks, but they are not a substitute for a geometry/topology equivalence proof when output order or format intentionally differs.",
+  "coverage": {
+    "overlay_pairs_complete": 0,
+    "overlay_pairs_full_control_complete": 0,
+    "overlay_pairs_full_control_incomplete": 1,
+    "overlay_pairs_incomplete": 1,
+    "overlay_pairs_selected_implementations_complete": 1,
+    "overlay_pairs_selected_implementations_incomplete": 0,
+    "overlay_pairs_total": 1
+  },
+  "dataset_root": "artifacts/goal4806_section57_arcgis_full_us_20260630/dataset",
+  "output_dir": "artifacts/goal4806_section57_matrix_same_source_block_water_20260630",
+  "rows": [
+    {
+      "author_overlay_output_digest": null,
+      "author_rt_process_sec": null,
+      "complete": false,
+      "full_control_complete": false,
+      "pair_id": "block_water",
+      "paper_label": "Block x Water",
+      "paper_rayjoin_preprocessing_sec": 0.12,
+      "paper_rayjoin_processing_sec": 0.23,
+      "paths": {
+        "author_rt": "artifacts/goal4806_section57_matrix_same_source_block_water_20260630/section57_overlay_block_water_author_rt.json",
+        "rtdl_embree": "artifacts/goal4806_section57_matrix_same_source_block_water_20260630/section57_overlay_block_water_rtdl_embree.json",
+        "rtdl_optix": "artifacts/goal4806_section57_matrix_same_source_block_water_20260630/section57_overlay_block_water_rtdl_optix.json",
+        "v4_numba": "artifacts/goal4806_section57_matrix_same_source_block_water_20260630/section57_overlay_block_water_v4_numba.json"
+      },
+      "rtdl_embree_author_raw_output_digest_match": null,
+      "rtdl_embree_lsi_count": null,
+      "rtdl_embree_overlay_output_digest": null,
+      "rtdl_embree_total_sec": null,
+      "rtdl_optix_author_raw_output_digest_match": null,
+      "rtdl_optix_embree_raw_output_digest_match": null,
+      "rtdl_optix_lsi_count": 649605,
+      "rtdl_optix_overlay_output_digest": null,
+      "rtdl_optix_total_sec": 367.23167979717255,
+      "selected_implementations_complete": true,
+      "v4_numba_claim_classification": null,
+      "v4_numba_correctness_status": null,
+      "v4_numba_selected_plan_id": null,
+      "v4_numba_total_sec": null
+    }
+  ],
+  "schema": "rtdl.rayjoin.section57_overlay_matrix.summary.v1",
+  "selected_implementations": [
+    "rtdl_optix"
+  ],
+  "timing_caveat": "Paper Table 4 values are historical reference numbers. Local author_rt rows are measured process wall times. RTDL rows are warm-cache medians under the selected protocol."
+}

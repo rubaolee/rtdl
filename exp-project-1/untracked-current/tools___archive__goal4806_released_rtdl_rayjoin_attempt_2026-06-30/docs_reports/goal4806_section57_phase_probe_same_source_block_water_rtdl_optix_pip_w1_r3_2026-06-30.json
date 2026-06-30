@@ -1,0 +1,247 @@
+{
+  "case_id": "pip_block_water",
+  "dataset_root": "artifacts/goal4806_section57_arcgis_full_us_20260630/dataset",
+  "input_provenance": "same_source_regenerated_cdb",
+  "input_shape": {
+    "base_cdb_segments": 28473338,
+    "base_chains": 28473338,
+    "query_chains": 22431809,
+    "query_points": 44863618,
+    "query_stream": "all_points_from_query_map_s"
+  },
+  "pair_id": "block_water",
+  "paper_label": "Block x Water",
+  "partner_cache": {
+    "enabled": true,
+    "path": "artifacts/goal4806_section57_arcgis_full_us_20260630/dataset/.rtdl_rayjoin_overlay_packed_cache",
+    "source": "default_dataset_root"
+  },
+  "program": "pip",
+  "program_contract": "Base map R is -poly1; query map S is -poly2; the query point stream is every point returned by S.get_points(), not one representative point per chain.",
+  "results": {
+    "optix": {
+      "backend": "rtdl_optix",
+      "count": 40523585,
+      "counts_stable": true,
+      "hot_max_sec": 11.870382629334927,
+      "hot_median_sec": 11.814800947904587,
+      "hot_min_sec": 11.808457978069782,
+      "hot_total_sec": 35.493641555309296,
+      "native_traversal_median_sec": 9.7253393,
+      "repeat": 3,
+      "runs": [
+        {
+          "count": 40523585,
+          "elapsed_sec": 11.812102317810059,
+          "is_warmup": true,
+          "iteration": 0,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 44863618,
+            "point_upload": 0.198872541,
+            "positive_face_count": 40523585,
+            "row_download": 5.8551e-05,
+            "traversal": 9.72918138
+          }
+        },
+        {
+          "count": 40523585,
+          "elapsed_sec": 11.808457978069782,
+          "is_warmup": false,
+          "iteration": 1,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 44863618,
+            "point_upload": 0.199807035,
+            "positive_face_count": 40523585,
+            "row_download": 4.7219e-05,
+            "traversal": 9.724073358
+          }
+        },
+        {
+          "count": 40523585,
+          "elapsed_sec": 11.814800947904587,
+          "is_warmup": false,
+          "iteration": 2,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 44863618,
+            "point_upload": 0.200048693,
+            "positive_face_count": 40523585,
+            "row_download": 4.6498e-05,
+            "traversal": 9.7253393
+          }
+        },
+        {
+          "count": 40523585,
+          "elapsed_sec": 11.870382629334927,
+          "is_warmup": false,
+          "iteration": 3,
+          "native_timings": {
+            "mode": "count",
+            "point_count": 44863618,
+            "point_upload": 0.20018925,
+            "positive_face_count": 40523585,
+            "row_download": 4.719e-05,
+            "traversal": 9.774366109
+          }
+        }
+      ],
+      "warmup": 1
+    },
+    "optix_device_resident": {
+      "backend": "rtdl_optix_device_resident",
+      "count": 40523585,
+      "counts_stable": true,
+      "hot_max_sec": 9.780949227511883,
+      "hot_median_sec": 9.780760914087296,
+      "hot_min_sec": 9.779947318136692,
+      "hot_total_sec": 29.34165745973587,
+      "native_traversal_median_sec": 9.780624925,
+      "repeat": 3,
+      "runs": [
+        {
+          "count": 40523585,
+          "elapsed_sec": 9.78233177959919,
+          "is_warmup": true,
+          "iteration": 0,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 44863618,
+            "point_upload": 0.0,
+            "positive_face_count": 40523585,
+            "row_download": 3.2542e-05,
+            "traversal": 9.782114491
+          }
+        },
+        {
+          "count": 40523585,
+          "elapsed_sec": 9.780949227511883,
+          "is_warmup": false,
+          "iteration": 1,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 44863618,
+            "point_upload": 0.0,
+            "positive_face_count": 40523585,
+            "row_download": 3.0798e-05,
+            "traversal": 9.780803042
+          }
+        },
+        {
+          "count": 40523585,
+          "elapsed_sec": 9.780760914087296,
+          "is_warmup": false,
+          "iteration": 2,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 44863618,
+            "point_upload": 0.0,
+            "positive_face_count": 40523585,
+            "row_download": 3.0227e-05,
+            "traversal": 9.780624925
+          }
+        },
+        {
+          "count": 40523585,
+          "elapsed_sec": 9.779947318136692,
+          "is_warmup": false,
+          "iteration": 3,
+          "native_timings": {
+            "mode": "count_device_points",
+            "point_count": 44863618,
+            "point_upload": 0.0,
+            "positive_face_count": 40523585,
+            "row_download": 2.9867e-05,
+            "traversal": 9.779814767
+          }
+        }
+      ],
+      "warmup": 1
+    },
+    "optix_device_segment_ids": {
+      "backend": "rtdl_optix_device_segment_ids",
+      "count": 44863618,
+      "counts_stable": true,
+      "hot_max_sec": 9.776738949120045,
+      "hot_median_sec": 9.773332193493843,
+      "hot_min_sec": 9.770816273987293,
+      "hot_total_sec": 29.32088741660118,
+      "native_traversal_median_sec": 9.773223881,
+      "output_contract": "author_shape_device_resident_closest_segment_id_column_no_host_download_no_positive_count_atomic",
+      "repeat": 3,
+      "runs": [
+        {
+          "count": 44863618,
+          "elapsed_sec": 9.778549671173096,
+          "is_warmup": true,
+          "iteration": 0,
+          "native_result": {
+            "row_count": 44863618
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 44863618,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 9.778469605
+          }
+        },
+        {
+          "count": 44863618,
+          "elapsed_sec": 9.776738949120045,
+          "is_warmup": false,
+          "iteration": 1,
+          "native_result": {
+            "row_count": 44863618
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 44863618,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 9.776643961
+          }
+        },
+        {
+          "count": 44863618,
+          "elapsed_sec": 9.773332193493843,
+          "is_warmup": false,
+          "iteration": 2,
+          "native_result": {
+            "row_count": 44863618
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 44863618,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 9.773223881
+          }
+        },
+        {
+          "count": 44863618,
+          "elapsed_sec": 9.770816273987293,
+          "is_warmup": false,
+          "iteration": 3,
+          "native_result": {
+            "row_count": 44863618
+          },
+          "native_timings": {
+            "mode": "segment_ids_device_points",
+            "point_count": 44863618,
+            "point_upload": 0.0,
+            "positive_face_count": 0,
+            "row_download": 0.0,
+            "traversal": 9.77070949
+          }
+        }
+      ],
+      "warmup": 1
+    }
+  },
+  "schema": "rtdl.rayjoin_paper_suite.rtdl_run.v1"
+}

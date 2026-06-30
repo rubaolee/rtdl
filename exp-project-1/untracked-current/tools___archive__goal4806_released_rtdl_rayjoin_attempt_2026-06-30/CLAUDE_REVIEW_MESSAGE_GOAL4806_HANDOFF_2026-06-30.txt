@@ -1,0 +1,31 @@
+Claude, please first review this handoff/self-audit document before any new
+Goal4806 implementation work begins:
+
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review\tools\_archive\goal4806_released_rtdl_rayjoin_attempt_2026-06-30\GOAL4806_CLEAN_HANDOFF_AND_SELF_AUDIT_2026-06-30.md
+
+Context: Goal4806 is supposed to reproduce RayJoin paper Section 5.7 Polygon
+Overlay as a normal installed-user application using released RTDL V4.0.0 +
+Python + Numba, then compare against the RayJoin author implementation and the
+existing RTDL V2.14 route. The previous work drifted into dirty runtime/source
+modification and was stopped by the user.
+
+Please check:
+
+1. Is the objective stated correctly?
+2. Are the non-goals strict enough to prevent another runtime-development detour?
+3. Is the self-audit honest about what happened?
+4. Are reusable findings separated from non-completion evidence?
+5. Is the 4807-4815 follow-up sequence the right way to finish or close Goal4806?
+6. Should any archived item be restored, or should future work restart from a
+   clean released V4.0.0 environment plus a user-layer reproduction app?
+7. What first action do you authorize?
+
+Please return a clear verdict label. Suggested labels:
+
+- `approve_handoff_restart_goal4806_from_clean_released_v4_user_app`
+- `approve_with_required_amendments`
+- `block_handoff_until_runtime_modification_path_is_fully_excluded`
+
+Non-authorization: do not authorize editing `src/rtdsl/**`, `src/native/**`, or
+the V4.0.0 release tag as part of Goal4806. If released RTDL lacks a capability,
+that must be reported as a product gap, not patched inside Goal4806.
