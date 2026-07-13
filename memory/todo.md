@@ -11300,8 +11300,8 @@ accepted-equivalence evidence is still absent.
 - [x] Close the current LibRTS engineering line at bounded evidence.
 - [x] Write the final one-shot review packet; no intermediate review is
   requested.
-- [ ] Any full-input mismatch, author pair-row comparator, or capacity retry is
-  a new scope, not a continuation of Goal5501.
+- [x] Record that any full-input mismatch, author pair-row comparator, or
+  capacity retry is new scope, not a continuation of Goal5501.
 
 ## Goal5502 author-validity gate
 
@@ -11309,7 +11309,7 @@ accepted-equivalence evidence is still absent.
 - [x] Run it on both mismatch prefixes and the `parks.bz2` capacity prefix.
 - [x] Preserve the no-author-specific-core and no-full-input-adjudication
   boundaries.
-- [ ] Only open a full-input fix or capacity campaign after a stronger oracle,
+- [x] Freeze full-input fix/capacity campaigns unless a stronger oracle,
   author pair-row output, or an explicitly accepted execution contract exists.
 
 ## LibRTS midterm review gate
@@ -11318,7 +11318,7 @@ accepted-equivalence evidence is still absent.
 - [x] Write the consolidated review packet for Goals5503-5508.
 - [x] Resolve the review before implementing Goal5503.
 - [x] Run contract audit and numerical fixtures after approval.
-- [ ] Run scalable oracle, capacity, and final author-validity decision in order.
+- [x] Run scalable oracle, capacity, and final author-validity decision in order.
 
 ## Goal5503 follow-up
 
@@ -11351,9 +11351,9 @@ accepted-equivalence evidence is still absent.
 - [x] Record CPU/source/author/RTDL counts and separate phase fields.
 - [x] Use Goal5507 to implement the generic float32/two-direction native fix.
 - [x] Verify the fix on Goal5505 and Goal5506 same-input POD probes.
-- [ ] Run focused and nearby regression tests, then consolidate Goal5507 for
-      external review.
-- [ ] Keep official-archive relation/performance/full-paper claims closed.
+- [x] Run focused and nearby regression tests; Goal5507 evidence was absorbed
+      into the externally reviewed final LibRTS ledger and closeout.
+- [x] Keep official-archive relation/performance/full-paper claims closed.
 
 ## Goal5507 follow-up
 
@@ -11373,8 +11373,8 @@ accepted-equivalence evidence is still absent.
 - [x] Record Goal5508 gate, hashes, tests, README, manifest, and memory state.
 - [x] Send Goal5508 for external review; combined Goals5508-5509 review
       approved the bounded fix and next-batch evidence.
-- [ ] Keep the remaining exact range-intersects archive pairs and pair-row
-equality as separate, explicitly authorized work.
+- [x] Freeze remaining exact range-intersects archive pairs and pair-row
+      equality as separate, explicitly authorized future work.
 
 ## Goal5509 follow-up
 
@@ -11385,8 +11385,7 @@ equality as separate, explicitly authorized work.
       termination; do not call them mismatches or matches.
 - [x] Update result JSON, README, manifest, focused tests, and review packet.
 - [x] Send Goal5509 for external review; combined bounded review approved it.
-- [ ] Decide whether to retry the two large cases separately or move to the
-      remaining exact archive pairs with per-case checkpointing.
+- [x] Resolve the two large cases separately and preserve per-case checkpointing.
 
 ## Goal5510 follow-up
 
@@ -11395,8 +11394,8 @@ equality as separate, explicitly authorized work.
 - [x] Add forward `prim` / backward `qidx` behaviorally distinguishable
       regression coverage.
 - [x] Record result JSON and focused verification.
-- [ ] Continue remaining exact range-intersects cases with per-case
-      checkpointing.
+- [x] Continue the authorized bounded range-intersects cases with per-case
+      checkpointing, then stop under the final ledger gate.
 
 ## Goal5511 follow-up
 
@@ -11406,10 +11405,10 @@ equality as separate, explicitly authorized work.
 - [x] Verify four author/RTDL exact-input count matches.
 - [x] Record extraction hashes, gate, manifest, README, focused tests, and
       report/call-for-review.
-- [ ] Obtain external review for Goal5511.
-- [ ] Decide whether to retry Goal5509 parks.bz2/lakes.bz2 separately or move
-      to other exact archive pairs; keep capacity states separate from semantic
-      mismatches.
+- [x] Absorb Goal5511 into the externally reviewed Goal5524 ledger and Goal5525
+      closeout; do not label Goal5511 independently reviewed.
+- [x] Retry Goal5509 parks.bz2/lakes.bz2 separately and keep capacity states
+      separate from semantic mismatches.
 
 ## Goal5512 follow-up
 
@@ -11417,8 +11416,8 @@ equality as separate, explicitly authorized work.
 - [x] Retry lakes.bz2 independently with a temporary serialize directory.
 - [x] Record one exact count match and one author capacity failure.
 - [x] Preserve count-only and no-performance claim boundaries.
-- [ ] Obtain external review for Goal5512.
-- [ ] Keep remaining exact archive pairs as separate, explicitly scoped work.
+- [x] Absorb Goal5512 into the externally reviewed final ledger/closeout.
+- [x] Keep remaining exact archive pairs as separate, explicitly scoped work.
 
 ## Goal5513 follow-up
 
@@ -11427,9 +11426,9 @@ equality as separate, explicitly authorized work.
 - [x] Verify four exact same-input author/RTDL count matches.
 - [x] Record extraction hashes, gate, manifest, README, tests, and review
       packet.
-- [ ] Obtain external review for Goal5513.
-- [ ] Select the next exact query family or stop at an explicitly bounded
-matrix milestone; do not infer relation parity from counts.
+- [x] Absorb Goal5513 into the externally reviewed final ledger/closeout.
+- [x] Stop at the explicitly bounded matrix milestone; do not infer relation
+      parity from counts.
 
 ## Goal5514 follow-up
 
@@ -11437,9 +11436,9 @@ matrix milestone; do not infer relation parity from counts.
 - [x] Resolve parks.bz2 `.01` as an explicit author CUDA capacity failure.
 - [x] Close all six states in the `.01` query family.
 - [x] Record the combined gate, test, manifest, README, and review packet.
-- [ ] Obtain external review for Goal5514.
-- [ ] Decide whether remaining exact query families are worth a new bounded
-      campaign; no full-matrix or relation claim is implied.
+- [x] Absorb Goal5514 into the externally reviewed final ledger/closeout.
+- [x] Close remaining query-family work under the stop-loss gate; no full-matrix
+      or relation claim is implied.
 
 ## Goal5515 follow-up
 
@@ -11448,10 +11447,10 @@ matrix milestone; do not infer relation parity from counts.
 - [x] Keep the five-match/one-author-capacity-boundary state explicit.
 - [x] Add a machine-readable correction gate, focused tests, report, and
       call-for-review.
-- [ ] Obtain external review for Goal5515.
-- [ ] Do not reopen pair-row, full-matrix, Figure 6, performance, or full-paper
+- [x] Absorb Goal5515 into the externally reviewed final ledger/closeout.
+- [x] Do not reopen pair-row, full-matrix, Figure 6, performance, or full-paper
       claims without new evidence and a new bounded goal.
-- [ ] Before any further range-intersects family, verify that the exact query
+- [x] Before any further range-intersects family, verify that the exact query
       members exist in the staged POD extraction; the current `.001 x 10000`
       checkpoint set contains four members, not an inferred six-member set.
 
@@ -11460,9 +11459,9 @@ matrix milestone; do not infer relation parity from counts.
 - [x] Reconcile all 42 inventory pairs into explicit evidence states.
 - [x] Record 14 matches, 2 author capacity failures, and 26 uncheckpointed.
 - [x] Preserve count-only and no-claim boundaries.
-- [ ] Obtain external review for Goal5516.
-- [ ] Select another family only after member availability and resource
-      requirements are verified.
+- [x] Absorb Goal5516 into the externally reviewed final ledger/closeout.
+- [x] Freeze additional families unless member availability and resource
+      requirements are verified under a new authorized scope.
 
 ## Goal5517 follow-up
 
@@ -11470,16 +11469,16 @@ matrix milestone; do not infer relation parity from counts.
 - [x] Run author and RTDL independently per case.
 - [x] Record four exact count matches and separated phase timing.
 - [x] Add gate, tests, report, call-for-review, manifest, and memory updates.
-- [ ] Obtain external review for Goal5517.
-- [ ] Treat the remaining range-contains pairs as separate scope; verify query
-      availability and author capacity before execution.
+- [x] Absorb Goal5517 into the externally reviewed final contains closeout.
+- [x] Treat the remaining range-contains pairs as separate scope and resolve
+      them through the Goal5520-5521 cardinality campaign.
 
 ## Goal5518 follow-up
 
 - [x] Reconcile all 14 exact range-contains pairs.
 - [x] Record four matches and ten not-checkpointed states.
-- [ ] Continue with cardinality families using per-case checkpoints.
-- [ ] Obtain external review with the next major batch.
+- [x] Continue cardinality families with per-case checkpoints through Goal5521.
+- [x] Obtain external review in the Goals5519-5525 final batch.
 
 ## Goal5519 follow-up
 
@@ -11496,7 +11495,7 @@ matrix milestone; do not infer relation parity from counts.
 - [x] Reuse one app-owned AABB cache and one prepared RTDL base.
 - [x] Keep four runtime cases separate from the Goal5517 100K checkpoint.
 - [x] Record five exact count matches and 9/14 total coverage.
-- [ ] Run the five parks.bz2 cardinalities with a smallest-case capacity gate.
+- [x] Run the five parks.bz2 cardinalities with a smallest-case capacity gate.
 - [x] Obtain external review through the Goals5519-5525 final closeout batch.
 
 ## Goal5521 follow-up
@@ -11509,7 +11508,7 @@ matrix milestone; do not infer relation parity from counts.
 - [x] Add machine-readable evidence, tests, report, and call-for-review.
 - [x] Obtain external review for Goal5521 through the Goals5519-5525 final
       closeout review.
-- [ ] Continue with the remaining exact point-contains cardinality pairs while
+- [x] Continue with the remaining exact point-contains cardinality pairs while
       the current parks.bz2 prepared artifacts are reusable; keep WKT/cache
       work app-owned and relation/performance claims closed.
 
@@ -11551,3 +11550,10 @@ matrix milestone; do not infer relation parity from counts.
 - [x] Close the active LibRTS implementation line. Reopen only for a new
       semantic discrepancy, a denominator-aligned paper figure approved as new
       scope, or a reusable generic capability with a non-LibRTS consumer.
+
+## Current Active Work After v2.14.4
+
+There is no active paper-app implementation line. The next paper app begins
+only after the owner selects it. Start from the clean `v2.14.4` source-tree
+tag, preserve the app/core ownership rule, and apply the stop-loss gate before
+author-artifact parity work.

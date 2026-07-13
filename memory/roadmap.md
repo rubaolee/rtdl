@@ -658,3 +658,11 @@ choice is additional exact-family coverage versus a bounded review/closeout
 node. Any next batch must keep per-case checkpoints, use `/tmp` when workspace
 quota interferes, and keep pair-row, performance, Figure 6, and full-paper
 claims closed.
+
+## Post-v2.14.4 Baseline (2026-07-13)
+
+No paper-app line is active. RayJoin, RT-BarnesHut, RT-DBSCAN, X-HD, and LibRTS
+are closed at their reviewed bounded scopes. The next paper app must begin from
+the `v2.14.4` source-tree tag, define input/output and claim boundaries before
+implementation, reuse existing generic APIs first, and pass the stop-loss gate
+before any author-internal artifact parity campaign.

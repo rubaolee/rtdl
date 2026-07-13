@@ -16,7 +16,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
-CURRENT_VERSION_MARKER = "v2.14.1"
+CURRENT_VERSION_MARKER = "v2.14.4"
 
 
 def _status_line(status: str, name: str, detail: str) -> str:

@@ -8047,3 +8047,11 @@ environment records, scripts, and reviewed reports in Git; regenerate packed
 caches from the pinned inputs when needed. The unpublished detailed local
 history remains available on an audit branch, while the public `main` history
 may use a squash commit to avoid transporting oversized historical blobs.
+
+## D229: v2.14.4 is the formal post-portfolio source-tree baseline (2026-07-13)
+
+Use `v2.14.4` as the public source-tree marker after API consolidation and the
+externally reviewed five-app portfolio closeout. This is not a performance
+release, package-distribution promise, broad zero-copy claim, or full-paper
+reproduction claim. `device_group_by` remains internal. Start the next paper
+app from this clean baseline and preserve each app's individual claim boundary.

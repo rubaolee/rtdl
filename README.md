@@ -13,7 +13,7 @@ start from primitive discovery or prepared front doors.
 RTDL is not a renderer or graphics engine. It uses ray-tracing-style
 acceleration structures and traversal for application kernels.
 
-This documentation is written for the current v2.14.1 source-tree RTDL surface:
+This documentation is written for the current v2.14.4 source-tree RTDL surface:
 Python+partner+RTDL over a generic, app-agnostic native engine, with prepared
 execution and a tested 10-app benchmark matrix. Use RTDL from the repository
 source tree either with `PYTHONPATH=src:.` or with the optional local editable
@@ -152,14 +152,21 @@ Backend support varies by feature and platform. Start with the portable
 `cpu_python_reference` backend, then use Embree or OptiX when your host has the
 native dependencies configured.
 
-## v2.14.1 Source-Tree Surface
+## v2.14.4 Source-Tree Surface
 
-RTDL v2.14.1 is the current source-tree surface for this branch. It keeps the
-Python+partner+RTDL language boundary from v2.11/v2.12, preserves the Embree CPU
-plus partner reference lane for the promoted benchmark-app portfolio, and
-publishes the refreshed row-scoped RT-core versus Embree CPU comparison packet.
-It is a v2.14-line closeout release: the main addition over the earlier v2.14
-surface is the packaged RayJoin paper-reproduction app and comparator workflow.
+RTDL v2.14.4 is the current source-tree surface for this branch. It consolidates
+the generic device-column and prepared-pipeline programming model developed
+under paper-app pressure. The reviewed public surface includes
+`DeviceColumnBuffer`, `PreparedGeometrySession`, the bounded
+`device_order_by` contract, and explicit Numba partner continuation. The
+experimental `device_group_by` path remains internal until its device-resident
+reduction contract is independently proven.
+
+Five paper apps now serve as bounded evidence packages: RayJoin,
+RT-BarnesHut, RT-DBSCAN, X-HD, and LibRTS. Their paper-specific inputs,
+comparators, tolerances, wrappers, and output formats remain app-owned. The
+system improvements extracted from them are generic RTDL APIs and contracts,
+not paper-named core primitives.
 
 The current matrix separates promoted benchmark apps from learner/example apps.
 Promoted benchmarks are reconstruction instruments for RTDL language/runtime
@@ -188,7 +195,7 @@ The v2.14 partner rule is still user-chosen and evidence-gated:
 For the current partner-choice guide, read
 [Choosing A Partner For Custom Logic](docs/learn/partner_choice_for_custom_logic.md)
 and the [Benchmark Partner Reference Matrix](docs/learn/benchmark_partner_reference_matrix.md).
-For the current v2.14.1 release boundary and evidence set, see
+For the current v2.14.4 release boundary and evidence set, see
 [RTDL v2.14 Release Package](docs/release_reports/v2_14/README.md).
 
 ## Performance Boundary
@@ -231,7 +238,7 @@ Use exact benchmark artifacts before publishing performance wording.
 
 ## History
 
-User-facing docs describe the current RTDL v2.14.1 product surface. Older release
+User-facing docs describe the current RTDL v2.14.4 product surface. Older release
 evidence, internal reviews, handoffs, and exploratory records are preserved
 outside the first-user path under [History](history/README.md). You do not need
 that archive to learn or use the current system.

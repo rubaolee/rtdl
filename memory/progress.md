@@ -18546,3 +18546,14 @@ the reproducible Goal4971 packed NumPy cache and the 36.7 MB repetitive RT-DBSCA
 16K stdout stream while retaining compact summaries, JSONL results, hashes,
 scripts, and reviewed reports. This is repository hygiene, not a change to any
 correctness or performance claim.
+
+## Goal5526 v2.14.4 Source-Tree Release Alignment (2026-07-13)
+
+The public source marker, project metadata, source-tree doctor, release index,
+claim-boundary page, and front-page documentation now identify `v2.14.4`.
+The release note records the reviewed device-column/prepared-session API
+surface and the five bounded paper-app lines without expanding their claims.
+Stale LibRTS intermediate TODOs were closed as absorbed by the externally
+reviewed Goals5519-5525 ledger rather than mislabeled as independently reviewed.
+No paper-app implementation line is active; the next project starts from this
+tagged baseline.

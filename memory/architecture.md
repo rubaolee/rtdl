@@ -60,12 +60,12 @@ poisoning.
 
 ## Current Paper-App Portfolio Boundary
 
-The completed scoped app lines and the active LibRTS scaffold are recorded in
+The five completed scoped app lines are recorded in
 `Paper-reproduction-apps/paper_app_status_snapshot.json`. Their current app
 status does not change RTDL ownership: app comparators, paper data identity,
 tolerances, format adapters, and performance regimes stay outside core.
 
-## Active LibRTS Architecture
+## Closed LibRTS Architecture
 
 LibRTS remains an app over generic RTDL AABB/index operations:
 

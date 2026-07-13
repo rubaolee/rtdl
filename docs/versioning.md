@@ -1,6 +1,6 @@
 # RTDL Versioning
 
-Status: current v2.14.1 source-tree guidance.
+Status: current v2.14.4 source-tree guidance.
 
 RTDL uses source-tree version markers and Git tags to identify reviewed
 research snapshots. A version tag names the state of the repository and the
@@ -9,10 +9,11 @@ wheel promise, PyPI promise, or automatic partner-selection promise.
 
 ## Current Version
 
-`v2.14.1` is the current source-tree release marker. It covers the Python+RTDL
-plus explicit partner programming surface, the Embree CPU reference lane, the
-bounded row-scoped NVIDIA OptiX/RT-core versus Embree CPU evidence, and the
-packaged RayJoin paper-reproduction app recorded in the v2.14 release packet.
+`v2.14.4` is the current source-tree release marker. It covers the Python+RTDL
+plus explicit partner programming surface, the reviewed device-column and
+prepared-session APIs, bounded `device_order_by`, explicit Numba continuation,
+and the five-app paper-reproduction portfolio recorded in the v2.14 release
+packet. Paper apps remain clients of the generic language/runtime.
 
 Use the source tree directly:
 
@@ -38,8 +39,8 @@ turn RTDL into a distribution package.
 ## Claim Boundary
 
 Version wording does not authorize broad RT-core speedup claims,
-whole-application speedup claims, RTDL-beats-RayJoin wording, paper
-reproduction wording, package-install wording, automatic partner selection,
+whole-application speedup claims, RTDL-beats-RayJoin wording, full-paper or
+all-figure reproduction wording, package-install wording, automatic partner selection,
 general zero-copy/device-residency wording, or Intel/AMD GPU performance
 claims.
 

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "rtdl-source-tree"
-version = "2.14.1"
+version = "2.14.4"
 description = "RTDL source-tree editable development package"
 readme = "README.md"
 requires-python = ">=3.10"

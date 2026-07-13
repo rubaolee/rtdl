@@ -9,7 +9,7 @@ hard-code one paper, but that paper apps force reusable APIs into the system.
 
 ### LibRTS
 
-LibRTS is the active fifth paper-app line. Its paper-specific identity,
+LibRTS is the closed fifth paper-app line. Its paper-specific identity,
 fixtures, author wrapper, comparison policy, and claim boundaries live under
 `Paper-reproduction-apps/librts-paper`.
 
@@ -22,7 +22,7 @@ expanded_aabb_point_membership_rows_2d
 aabb_intersection_pair_rows_2d
 ```
 
-Goal5454 now proves a tiny author/RTDL OptiX same-input point-contains count
+Goal5454 first proved a tiny author/RTDL OptiX same-input point-contains count
 match (`5 == 5`) and RTDL exact fixture rows. The author example does not expose
 pair rows, so author pair-relation equality remains unclaimed. Range queries,
 mutations, paper datasets, and fair performance evidence remain open. Embree is
