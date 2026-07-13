@@ -1,0 +1,115 @@
+{
+  "decision_inputs": {
+    "prepare_left_locator_sec": [
+      0.4447225406765938,
+      0.45343080908060074,
+      0.44392447359859943
+    ],
+    "prepare_right_query_points_sec": [
+      0.30833687633275986,
+      0.31254992634058,
+      0.31190438009798527
+    ],
+    "run_right_vertices_in_left_sec": [
+      0.024734102189540863,
+      0.024511270225048065,
+      0.024613363668322563
+    ],
+    "total_point_location_body_sec": [
+      0.7777935191988945,
+      0.7904920056462288,
+      0.7804422173649073
+    ]
+  },
+  "distinct_left_locator_rows": [
+    {
+      "batch_id": 1,
+      "changed_point_count": 8,
+      "positive_count": 4527305,
+      "prepare_left_locator_native_timings": {
+        "bvh": null,
+        "copy": null,
+        "trav": null
+      },
+      "prepare_left_locator_sec": 0.4447225406765938,
+      "prepare_right_query_points_sec": 0.30833687633275986,
+      "run_native_timings": {
+        "bvh": null,
+        "copy": null,
+        "trav": null
+      },
+      "run_right_vertices_in_left_sec": 0.024734102189540863,
+      "total_point_location_body_sec": 0.7777935191988945
+    },
+    {
+      "batch_id": 2,
+      "changed_point_count": 8,
+      "positive_count": 4527305,
+      "prepare_left_locator_native_timings": {
+        "bvh": null,
+        "copy": null,
+        "trav": null
+      },
+      "prepare_left_locator_sec": 0.45343080908060074,
+      "prepare_right_query_points_sec": 0.31254992634058,
+      "run_native_timings": {
+        "bvh": null,
+        "copy": null,
+        "trav": null
+      },
+      "run_right_vertices_in_left_sec": 0.024511270225048065,
+      "total_point_location_body_sec": 0.7904920056462288
+    },
+    {
+      "batch_id": 3,
+      "changed_point_count": 8,
+      "positive_count": 4527305,
+      "prepare_left_locator_native_timings": {
+        "bvh": null,
+        "copy": null,
+        "trav": null
+      },
+      "prepare_left_locator_sec": 0.44392447359859943,
+      "prepare_right_query_points_sec": 0.31190438009798527,
+      "run_native_timings": {
+        "bvh": null,
+        "copy": null,
+        "trav": null
+      },
+      "run_right_vertices_in_left_sec": 0.024613363668322563,
+      "total_point_location_body_sec": 0.7804422173649073
+    }
+  ],
+  "input_counts": {
+    "left_edges": 1705027,
+    "left_points": 1706639,
+    "right_edges": 9982960,
+    "right_points": 9993104
+  },
+  "left": "Paper-reproduction-apps/rayjoin-paper/_data/top4_arcgis/top4_county.cdb",
+  "left_vertices_in_right_run": {
+    "elapsed_sec": 0.008242327719926834,
+    "native_timings": {
+      "bvh": null,
+      "copy": null,
+      "trav": null
+    },
+    "positive_count": 812721
+  },
+  "load_dataset_arrays_sec": 14.186735164374113,
+  "prepare_left_points_for_reusable_right_locator_sec": 0.05451798252761364,
+  "prepare_reusable_right_locator_sec": 3.8876917958259583,
+  "reusable_right_locator_native_timings": {
+    "bvh": null,
+    "copy": null,
+    "trav": null
+  },
+  "right": "Paper-reproduction-apps/rayjoin-paper/_data/top4_arcgis/top4_zipcode.cdb",
+  "schema": "rtdl.goal5010.point_location_query_many_probe.v1",
+  "shared_bounds": [
+    -124.415163,
+    -71.85615,
+    25.837092,
+    45.015851
+  ]
+}

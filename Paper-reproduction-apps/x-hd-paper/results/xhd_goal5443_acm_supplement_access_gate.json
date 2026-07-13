@@ -1,0 +1,85 @@
+{
+  "allowed_summary": "Goal5443 records that the current unauthenticated environment still cannot inspect the ACM ics26-106.zip supplement: all known URL attempts return forbidden HTML and no zip magic.",
+  "claim_boundary": {
+    "acm_access_gate_claimed": true,
+    "acm_supplement_inspected": false,
+    "exact_equivalence_accepted": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_reopened": false,
+    "external_artifacts_acquired": false,
+    "figure5_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "new_rtdl_route_code_added": false,
+    "performance_ratio_claimed": false,
+    "pod_execution_claimed": false,
+    "route_micro_optimization_goal_authorized": false,
+    "zip_contents_inspected": false
+  },
+  "classification": {
+    "acm_listing_visible": true,
+    "acm_supplement_inspected": false,
+    "current_environment_can_download_zip": false,
+    "exact_input_blocker_removed": false,
+    "pod_expected_next": false,
+    "zip_contents_inspected": false
+  },
+  "date": "2026-07-10",
+  "exit_label": "acm_supplement_access_gate_forbidden__external_access_still_needed",
+  "goal": "Goal5443",
+  "interpretation": {
+    "access_gate_result": "current_environment_forbidden",
+    "next_action": "obtain authorized ACM access/cookie or author artifact; then run the local zip inspector and ingestion pipeline",
+    "reason_pod_not_expected": "POD cannot inspect a forbidden ACM supplement URL and cannot turn listing visibility into exact input provenance."
+  },
+  "not_allowed": [
+    "claiming the ACM supplement contents were inspected",
+    "claiming the ACM supplement contains datasets",
+    "claiming the ACM supplement contains no useful artifacts",
+    "claiming exact paper dataset reproduction",
+    "claiming Figure 5 or full X-HD reproduction",
+    "claiming an author-vs-RTDL performance ratio",
+    "running POD or route work from this access gate"
+  ],
+  "purpose": "Convert the current ACM supplement live-access retry into an explicit paper-reproduction access gate.",
+  "raw_probe_summary": {
+    "all_current_attempts_forbidden": true,
+    "artifact_name": "ics26-106.zip",
+    "classification": "acm_supplement_visible_but_forbidden_from_current_environment",
+    "head_statuses": [
+      403,
+      403,
+      403
+    ],
+    "next_action": "obtain ACM-authorized access/cookie or author artifact; do not infer contents from forbidden response",
+    "range_content_types": [
+      "text/html; charset=UTF-8",
+      "text/html; charset=UTF-8",
+      "text/html; charset=UTF-8"
+    ],
+    "range_get_statuses": [
+      403,
+      403,
+      403
+    ],
+    "schema": "rtdl.paper_reproduction.xhd.acm_supplement_live_access_probe.v1",
+    "url_count": 3,
+    "used_cookie_header": false,
+    "zip_magic_observed": false
+  },
+  "schema": "rtdl.paper_reproduction.xhd.goal5443.acm_supplement_access_gate.v1",
+  "source_artifacts": {
+    "artifact_ingestion_pipeline": "Paper-reproduction-apps/x-hd-paper/scripts/run_xhd_acm_artifact_to_packet_pipeline.py",
+    "goal5442_public_rescan": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5442_public_provenance_rescan.json",
+    "local_zip_inspector": "Paper-reproduction-apps/x-hd-paper/scripts/inspect_xhd_acm_supplement_zip.py",
+    "probe_script": "Paper-reproduction-apps/x-hd-paper/scripts/probe_xhd_acm_supplement_live_access.py",
+    "raw_live_probe": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5443_acm_supplement_live_access_retry.json"
+  },
+  "status": "acm_supplement_access_gate_forbidden__external_access_still_needed",
+  "stop_loss_gate": {
+    "decision": "PASS: access/provenance gate, not app-artifact parity implementation.",
+    "gate_downstream_consumer_reachable": true,
+    "gate_generic_capability_produced": true,
+    "gate_non_app_consumer": "ACM supplement access gate / artifact-intake governance workflow",
+    "gate_requires_app_specific_logic": false
+  }
+}

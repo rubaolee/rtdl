@@ -1,0 +1,98 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5304.county_zcta_author_ingestion.v1",
+  "goal": "Goal5304",
+  "status": "author_hd_exec_ingested_goal5303_county_zcta_wkt__rtdl_not_run__level_b_only",
+  "level": "level_b_bounded_author_ingestion_gate",
+  "pod": {
+    "host": "213.173.108.24",
+    "port": 13502,
+    "hostname": "45c502cfccb5",
+    "gpu": "NVIDIA RTX 4000 Ada Generation",
+    "driver": "550.127.05",
+    "access_method": "scripts/current_pod_ssh.py"
+  },
+  "author": {
+    "binary": "/tmp/xhd-goal5112/build-gcc11-optix77-fast/bin/hd_exec",
+    "command": [
+      "/tmp/xhd-goal5112/build-gcc11-optix77-fast/bin/hd_exec",
+      "-input1",
+      "/tmp/xhd_goal5304/data/dtl_cnty_arcgis_bounded.wkt",
+      "-input2",
+      "/tmp/xhd_goal5304/data/uszipcode_arcgis_bounded.wkt",
+      "-input_type",
+      "wkt",
+      "-n_dims",
+      "2",
+      "-variant",
+      "rt",
+      "-execution",
+      "gpu",
+      "-json",
+      "/tmp/xhd_goal5304/out/author_county_zcta_arcgis_bounded.json",
+      "-overwrite=true",
+      "-check=false",
+      "-normalize=false"
+    ],
+    "returncode": 0,
+    "process_wall_sec": null,
+    "process_wall_note": "Not measured in this ingestion gate; this goal only proves author WKT ingestion and JSON production.",
+    "stdout_path": "Paper-reproduction-apps/x-hd-paper/results/goal5304_raw/author_stdout.txt",
+    "stderr_path": "Paper-reproduction-apps/x-hd-paper/results/goal5304_raw/author_stderr.txt",
+    "json_path": "Paper-reproduction-apps/x-hd-paper/results/goal5304_raw/author_county_zcta_arcgis_bounded.json"
+  },
+  "input_fixture": {
+    "source_manifest": "Paper-reproduction-apps/x-hd-paper/data/generated/goal5303_arcgis_county_zcta_bounded/manifest.json",
+    "remote_data_dir": "/tmp/xhd_goal5304/data",
+    "county": {
+      "local_path": "Paper-reproduction-apps/x-hd-paper/data/generated/goal5303_arcgis_county_zcta_bounded/dtl_cnty_arcgis_bounded.wkt",
+      "remote_path": "/tmp/xhd_goal5304/data/dtl_cnty_arcgis_bounded.wkt",
+      "sha256": "204551e901d3695cffcf0701993e037dcd805494d0e6518c3ec6e3f01f7526aa",
+      "line_count": 3,
+      "goal5303_author_loader_point_estimate": 38034
+    },
+    "zipcode": {
+      "local_path": "Paper-reproduction-apps/x-hd-paper/data/generated/goal5303_arcgis_county_zcta_bounded/uszipcode_arcgis_bounded.wkt",
+      "remote_path": "/tmp/xhd_goal5304/data/uszipcode_arcgis_bounded.wkt",
+      "sha256": "5cc9ee7fee44348f1ba1110d1e6e07bb490b762df1c5e5e5a3e55b8cf9903e91",
+      "line_count": 5,
+      "goal5303_author_loader_point_estimate": 50272
+    },
+    "fixture_caveat": "The first County OBJECTIDs are Alabama counties, while the first ZIP/ZCTA OBJECTIDs are Alaska ZCTAs. This is an ingestion/conversion gate, not geographic representativeness evidence."
+  },
+  "author_result": {
+    "HDResult": 65.44752502441406,
+    "input_type": "wkt",
+    "num_dims": 2,
+    "normalize": false,
+    "input_point_counts": [
+      38034,
+      50272
+    ],
+    "running_avg_time_ms": 6.169,
+    "running_reported_time_ms": 6.169,
+    "grid_resolution": [
+      12,
+      8
+    ],
+    "large_cells": 40,
+    "iterations": 2,
+    "stderr_points_line": "Points A: 38034 Points B: 50272",
+    "stderr_distance_line": "HausdorffDistance: distance is 65.4475"
+  },
+  "readiness": {
+    "author_hd_exec_ingestion_passed": true,
+    "author_json_produced": true,
+    "rtdl_route_run": false,
+    "next_step": "Run a separate RTDL bounded WKT route only after this author-ingestion result is reviewed or accepted."
+  },
+  "claim_boundary": {
+    "level_b_author_ingestion_claimed": true,
+    "rtdl_route_claimed": false,
+    "author_rtdl_correctness_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "geo_correctness_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "performance_ratio_claimed": false,
+    "full_paper_reproduction_claimed": false
+  }
+}

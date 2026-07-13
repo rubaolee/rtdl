@@ -1,0 +1,71 @@
+{
+  "allowed_next_step": {
+    "fallback_bundled_helper_compare": true,
+    "fallback_label_required": "bounded_bundled_helper_reproduction",
+    "must_not_claim": [
+      "generic public-language Section 5.7 reproduction",
+      "Section 5.7 performance",
+      "full 8/8 paper reproduction"
+    ]
+  },
+  "blocker_analysis": {
+    "exit_label": "blocked_by_output_chain_app_logic_gap",
+    "preferred_route_status": "blocked_after_public_lsi_and_pip",
+    "reason": "Public LSI rows and County x Zipcode PIP consistency are available, but the public user surface does not expose an output-chain assembler and the public LSI row surface does not expose scaled/rational intersection coordinates needed for an author-compatible byte-equality output-chain implementation."
+  },
+  "claim_boundary": {
+    "bundled_helper_route": false,
+    "section52_lsi_rows": true,
+    "section53_pip_consistency_for_county_zipcode": true,
+    "section57_overlay_correctness": false,
+    "section57_performance": false
+  },
+  "lsi_stage": {
+    "australia_representative": {
+      "count": 13622,
+      "expected": 13622,
+      "pass": true,
+      "rows": 13622
+    },
+    "county_zipcode": {
+      "count": 961165,
+      "expected": 961165,
+      "pass": true,
+      "rows": 961165
+    },
+    "first_row_keys": [
+      "intersection_point_x",
+      "intersection_point_y",
+      "left_id",
+      "right_id"
+    ],
+    "has_scaled_or_rational_row_fields": false,
+    "pass": true
+  },
+  "pip_stage": {
+    "county_zipcode": {
+      "author_closest_eids_fnv64": 17585803063680255704,
+      "author_positive_count": 47327744,
+      "author_query_points": 47862092,
+      "count_match": true,
+      "hash_match": true,
+      "rtdl_segment_found_count": 47327744,
+      "rtdl_segment_hash_minus1_fnv64": 17585803063680255704,
+      "rtdl_total_points": 47862092
+    },
+    "pass": true
+  },
+  "public_surface": {
+    "exports": {
+      "assemble_output_chains": false,
+      "prepare_planar_map_lsi_2d_optix": true,
+      "prepare_planar_map_point_location_2d_optix": true,
+      "write_output_chains": false
+    },
+    "optix_runtime_has_private_rayjoin_overlay_import": false,
+    "public_lsi_and_pip_available": true,
+    "public_output_chain_assembler_available": false
+  },
+  "route_label": "generic_public_primitives_plus_app_layer",
+  "schema": "rtdl.goal4861.section57_public_route_reentry_gate.v1"
+}

@@ -1,0 +1,159 @@
+{
+  "author_repo": {
+    "audit_method": "git object access; no checkout required",
+    "branches": [
+      "paper",
+      "main",
+      "hybrid"
+    ],
+    "repository": "https://github.com/pwrliang/X-HD.git"
+  },
+  "branches": {
+    "hybrid": {
+      "figure9_files": {
+        "checked_in_pdf": null,
+        "plot_script": null,
+        "runner_script": null,
+        "train_script": null
+      },
+      "head": "4d9046a9e55d87f35daf81dd718444029fab56ce",
+      "run_all_auto_tune": {
+        "all_expected_figure9_variants_present": false,
+        "by_category": {},
+        "config_set_size_histogram": {},
+        "configs": {},
+        "missing_expected_figure9_variants": [
+          "n_points_cell_false_max_hit_false",
+          "n_points_cell_true_max_hit_false",
+          "n_points_cell_false_max_hit_true",
+          "n_points_cell_true_max_hit_true"
+        ],
+        "observed_configs": [],
+        "record_count": 0,
+        "unique_pair_count": 0
+      }
+    },
+    "main": {
+      "figure9_files": {
+        "checked_in_pdf": null,
+        "plot_script": null,
+        "runner_script": null,
+        "train_script": null
+      },
+      "head": "7bf41c8442d059c94f4178355c6d5a10571d9658",
+      "run_all_auto_tune": {
+        "all_expected_figure9_variants_present": false,
+        "by_category": {},
+        "config_set_size_histogram": {},
+        "configs": {},
+        "missing_expected_figure9_variants": [
+          "n_points_cell_false_max_hit_false",
+          "n_points_cell_true_max_hit_false",
+          "n_points_cell_false_max_hit_true",
+          "n_points_cell_true_max_hit_true"
+        ],
+        "observed_configs": [],
+        "record_count": 0,
+        "unique_pair_count": 0
+      }
+    },
+    "paper": {
+      "figure9_files": {
+        "checked_in_pdf": {
+          "mode": "100644",
+          "object": "61ac4ce6c705f15255914e8bde4e0e5c79716152",
+          "path": "expr/for_the_paper/auto-tune.pdf",
+          "size_bytes": 15869,
+          "type": "blob"
+        },
+        "plot_script": {
+          "mode": "100644",
+          "object": "dd21df281bc50ab2b580efc7106f6297ce924bf9",
+          "path": "expr/for_the_paper/effective_autoune.py",
+          "size_bytes": 12034,
+          "type": "blob"
+        },
+        "runner_script": {
+          "mode": "100755",
+          "object": "8af6e40c32d13838d914be6c1e27df239b6feaf3",
+          "path": "expr/for_the_paper/effective_autotune.sh",
+          "size_bytes": 5989,
+          "type": "blob"
+        },
+        "train_script": {
+          "mode": "100644",
+          "object": "7cfc510f479f5c5ab6f2d2c1fcee172bc89a19ae",
+          "path": "expr/for_the_paper/gen_train.sh",
+          "size_bytes": 5498,
+          "type": "blob"
+        }
+      },
+      "head": "8c3846866052e1e8755210021f23fac2cbe8c3d6",
+      "run_all_auto_tune": {
+        "all_expected_figure9_variants_present": false,
+        "by_category": {
+          "BraTS2020_ValidationData": {
+            "n_points_cell_false_max_hit_false": 500,
+            "n_points_cell_true_max_hit_true": 500
+          },
+          "ModelNet40": {
+            "n_points_cell_false_max_hit_false": 400,
+            "n_points_cell_true_max_hit_true": 400
+          },
+          "geo": {
+            "n_points_cell_false_max_hit_false": 3,
+            "n_points_cell_true_max_hit_true": 3
+          },
+          "graphics": {
+            "n_points_cell_false_max_hit_false": 4,
+            "n_points_cell_true_max_hit_true": 4
+          }
+        },
+        "config_set_size_histogram": {
+          "2": 907
+        },
+        "configs": {
+          "n_points_cell_false_max_hit_false": 907,
+          "n_points_cell_true_max_hit_true": 907
+        },
+        "missing_expected_figure9_variants": [
+          "n_points_cell_true_max_hit_false",
+          "n_points_cell_false_max_hit_true"
+        ],
+        "observed_configs": [
+          "n_points_cell_false_max_hit_false",
+          "n_points_cell_true_max_hit_true"
+        ],
+        "record_count": 1814,
+        "unique_pair_count": 907
+      }
+    }
+  },
+  "claim_boundary": {
+    "figure9_reproduced": false,
+    "full_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false,
+    "rtdl_route_result_claimed": false
+  },
+  "decision": {
+    "any_branch_has_all_expected_figure9_variants": false,
+    "checked_in_pdf_is_reproduction_evidence_only": true,
+    "figure9_reproduced": false,
+    "forbidden_summaries": [
+      "Figure 9 reproduced",
+      "missing variants recovered from main or hybrid",
+      "checked-in PDF equals reproducible Figure 9",
+      "RTDL Figure 9 speedup or parity"
+    ],
+    "reason": "The pinned author branches do not provide all four expected run_all auto_tune variants. The paper branch contains a checked-in auto-tune.pdf artifact, but a PDF artifact is not a reproducible denominator for RTDL/author comparison.",
+    "status": "missing_figure9_variants_not_found_on_pinned_branches__figure9_not_reproduced"
+  },
+  "expected_figure9_variants": [
+    "n_points_cell_false_max_hit_false",
+    "n_points_cell_true_max_hit_false",
+    "n_points_cell_false_max_hit_true",
+    "n_points_cell_true_max_hit_true"
+  ],
+  "goal": "Goal5286",
+  "schema": "rtdl.paper_reproduction.xhd.figure9_branch_availability_audit.v1"
+}

@@ -1,0 +1,97 @@
+{
+  "author_oracle": {
+    "active_count": 437645,
+    "feedback_update_count": 294,
+    "raw_offload_row_hash": 4333109858711462591,
+    "raw_offload_rows_before_sort_reduce": 27133990,
+    "rows_per_active": 62,
+    "rows_per_active_remainder": 0,
+    "status_count_offloading": 27133990
+  },
+  "claim_boundary": {
+    "author_rt_core_algorithm_parity_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "existing_native_v6_parity_claimed": false,
+    "explicit_lb_support_claimed": false,
+    "figure11_reproduction_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "hash_sample_parity_claimed": false,
+    "native_backend_completion_claimed": false,
+    "performance_ratio_claimed": false,
+    "row_count_parity_claimed": false,
+    "same_denominator_memory_claimed": false,
+    "v6_column_remap_claimed_sufficient": false
+  },
+  "date": "2026-07-10",
+  "decision": {
+    "explicit_lb_remains_fail_closed": true,
+    "explicit_lb_support_claimed": false,
+    "native_status_stream_backend_implemented_by_goal5396": false,
+    "pod_required_for_next_goal": true,
+    "real_v7_backend_required": true,
+    "real_v7_definition": "A new generic native active-query status stream emitted at the traversal/status transition point, with current-best before/after, transition phase, and feedback/miss/completed/aborted telemetry. It cannot be a post-hoc relabeling of v6 frontier rows.",
+    "recommended_next_action": "Implement a real generic v7 native status-stream backend in the OptiX payload/any-hit status path, or keep explicit -lb fail-closed if that would require app-specific constants.",
+    "recommended_next_goal": "Goal5397",
+    "v6_column_remap_authorized": false
+  },
+  "exit_label": "v6_remap_no_go__implement_real_v7_or_keep_lb_fail_closed",
+  "goal": "Goal5396",
+  "goal5395_abi_gap": {
+    "contract": "generic_active_query_status_stream_native_abi_v1",
+    "current_surface_is_single_launch_frontier_probe": true,
+    "current_surface_satisfies_goal5394_native_probe": false,
+    "current_v6_symbol": "rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v6",
+    "existing_native_v6_is_sufficient": false,
+    "missing_required_output_columns": [
+      "active_queue_index",
+      "source_id",
+      "status_code",
+      "transition_phase_code",
+      "current_best_before_sq",
+      "current_best_after_sq"
+    ],
+    "missing_required_semantics": [
+      "multi-round feedback state",
+      "transition_phase_code",
+      "current_best_before_sq per status row",
+      "current_best_after_sq per status row",
+      "miss/completed/aborted row counts from the same native status stream",
+      "feedback update count or explicit not-applicable evidence from the native stream"
+    ]
+  },
+  "input_artifacts": {
+    "goal5387_author_trace_v2": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5387_author_trace_v2_execution.json",
+    "goal5392_denominator_surfaces": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5392_lb_denominator_surface_reconciliation.json",
+    "goal5395_native_status_stream_abi_gate": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5395_native_status_stream_abi_gate.json"
+  },
+  "known_rtdl_surfaces": {
+    "any_surface_has_hash_parity": false,
+    "any_surface_has_row_count_parity": false,
+    "bridge_rows": 2188225,
+    "bridge_rows_per_active": 5.0,
+    "full_cover_rows": 24508120,
+    "full_cover_rows_per_active": 56.0,
+    "overcount_rows": 304981889,
+    "overcount_rows_per_active": 696.8704977778793,
+    "raw_kind2_rows": 21006960,
+    "raw_kind2_rows_per_active": 48.0
+  },
+  "purpose": "Decide whether the current v6 native frontier collector can be safely promoted to the Goal5395 native status-stream ABI by a column remap. It cannot.",
+  "schema": "rtdl.paper_reproduction.xhd.goal5396.v6_remap_no_go.v1",
+  "status": "v6_remap_rejected__real_generic_native_status_stream_required",
+  "v6_remap_assessment": {
+    "author_rows": 27133990,
+    "known_best_v6_like_rows": 24508120,
+    "row_delta_author_minus_best_v6_like": 2625870,
+    "row_delta_per_active": 6,
+    "row_delta_remainder": 0,
+    "verdict": "reject_v6_remap_as_native_status_stream_backend",
+    "would_add_before_after_current_best_per_row": false,
+    "would_add_feedback_semantics": false,
+    "would_add_missing_rows": false,
+    "would_add_transition_semantics": false,
+    "would_change_denominator": false,
+    "would_only_relabel_existing_rows": true
+  }
+}

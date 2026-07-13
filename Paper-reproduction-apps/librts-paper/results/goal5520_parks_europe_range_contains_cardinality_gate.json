@@ -1,0 +1,264 @@
+{
+  "case_count": 5,
+  "cases": [
+    {
+      "author": {
+        "command": [
+          "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+          "-geom",
+          "/tmp/goal5520-target/PPoPPAE/datasets/polygons/parks_Europe.wkt",
+          "-query",
+          "/tmp/goal5520-target/PPoPPAE/datasets/queries/range-contains_queries_50000/parks_Europe.wkt",
+          "-serialize",
+          "/tmp/goal5520-stage/serialize/50000",
+          "-query_type",
+          "range-contains",
+          "-index_type",
+          "rtspatial",
+          "-load_factor",
+          "0.0001"
+        ],
+        "geometry_count": 1856318,
+        "loading_ms_diagnostic": 7.2476,
+        "query_count": 50000,
+        "query_ms_internal": 0.0672,
+        "result_count": 52245,
+        "stdout": "Loaded polygons 1856318\nLoaded queries 50000\nQueue size 70 MB\nBVH 385 MB, Geometries 28 MB, AABBs 42 MB, Total 455 MB\nLoading Time 7.2476 ms\nGeoms 1856318\nQueries 50000\nQuery Time 0.0672 ms\nResults 52245\nSelectivity: 5.62888e-07\n"
+      },
+      "case_id": "parks_Europe_range_contains_50000",
+      "input_identity": {
+        "geometry_sha256": "fd77bf8294dfb9dfe45e49fc4aec99427ebd9ac4f370697b0c908d635d643aed",
+        "query_sha256": "34298f675fcfa86062d12663735294385082a6cb82717d3ea14061046c5ccbae",
+        "same_files_passed_to_author_and_rtdl": true
+      },
+      "matched": true,
+      "query_cardinality": 50000,
+      "rtdl": {
+        "prepared_query_wall_sec": 1.2425962859997526,
+        "primitive_query_sec": 1.1245742529863492,
+        "query_load_sec": 0.510569714999292,
+        "result_count": 52245
+      }
+    },
+    {
+      "author": {
+        "command": [
+          "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+          "-geom",
+          "/tmp/goal5517-target/PPoPPAE/datasets/polygons/parks_Europe.wkt",
+          "-query",
+          "/tmp/goal5517-target/PPoPPAE/datasets/queries/range-contains_queries_100000/parks_Europe.wkt",
+          "-serialize",
+          "/tmp/librts-serialize/goal5517/parks_Europe_range_contains_100000",
+          "-query_type",
+          "range-contains",
+          "-index_type",
+          "rtspatial",
+          "-load_factor",
+          "0.0001"
+        ],
+        "geometry_count": 1856318,
+        "loading_ms_diagnostic": 7.2608,
+        "pair_rows_exposed": false,
+        "query_count": 100000,
+        "query_metric": "internal Query Time; index Loading Time excluded",
+        "query_ms_internal": 0.0822,
+        "result_count": 104426,
+        "stdout": "Loaded polygons 1856318\nLoaded queries 100000\nQueue size 141 MB\nBVH 385 MB, Geometries 28 MB, AABBs 42 MB, Total 455 MB\nLoading Time 7.2608 ms\nGeoms 1856318\nQueries 100000\nQuery Time 0.0822 ms\nResults 104426\nSelectivity: 5.62544e-07\n"
+      },
+      "case_id": "parks_Europe_range_contains_100000",
+      "evidence_source": "Goal5517 independent checkpoint",
+      "input_identity": {
+        "geometry_path": "/tmp/goal5517-target/PPoPPAE/datasets/polygons/parks_Europe.wkt",
+        "geometry_sha256": "fd77bf8294dfb9dfe45e49fc4aec99427ebd9ac4f370697b0c908d635d643aed",
+        "query_path": "/tmp/goal5517-target/PPoPPAE/datasets/queries/range-contains_queries_100000/parks_Europe.wkt",
+        "query_sha256": "b76e901cf41dc1fa2d3073fd88adc7c9327db8620fa221a0e21b00df0ca211f6",
+        "same_files_passed_to_author_and_rtdl": true,
+        "verified_extraction_root": "/tmp/goal5517-target"
+      },
+      "matched": true,
+      "query_cardinality": 100000,
+      "rtdl": {
+        "backend": "optix",
+        "input_contract": "generic_host_aabb_2d_columns",
+        "load_wkt_sec": 142.24388604797423,
+        "native_engine_customization": false,
+        "operation": "range_contains",
+        "prepare_index_sec": 0.5702299739932641,
+        "prepared_query_wall_sec": 0.6114596069674008,
+        "primitive_query_sec": 0.36395793897099793,
+        "public_api": "Aabb2DColumns + prepare_aabb_index_2d_columns + prepared.count",
+        "result_count": 104426,
+        "row_output_requested": false,
+        "rt_core_accelerated": true
+      }
+    },
+    {
+      "author": {
+        "command": [
+          "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+          "-geom",
+          "/tmp/goal5520-target/PPoPPAE/datasets/polygons/parks_Europe.wkt",
+          "-query",
+          "/tmp/goal5520-target/PPoPPAE/datasets/queries/range-contains_queries_200000/parks_Europe.wkt",
+          "-serialize",
+          "/tmp/goal5520-stage/serialize/200000",
+          "-query_type",
+          "range-contains",
+          "-index_type",
+          "rtspatial",
+          "-load_factor",
+          "0.0001"
+        ],
+        "geometry_count": 1856318,
+        "loading_ms_diagnostic": 7.263,
+        "query_count": 200000,
+        "query_ms_internal": 0.1232,
+        "result_count": 208918,
+        "stdout": "Loaded polygons 1856318\nLoaded queries 200000\nQueue size 283 MB\nBVH 385 MB, Geometries 28 MB, AABBs 42 MB, Total 455 MB\nLoading Time 7.263 ms\nGeoms 1856318\nQueries 200000\nQuery Time 0.1232 ms\nResults 208918\nSelectivity: 5.62721e-07\n"
+      },
+      "case_id": "parks_Europe_range_contains_200000",
+      "input_identity": {
+        "geometry_sha256": "fd77bf8294dfb9dfe45e49fc4aec99427ebd9ac4f370697b0c908d635d643aed",
+        "query_sha256": "a3665be38dbde6c050d0623ce848ac93961bea46b94e861e599755cdb412adf7",
+        "same_files_passed_to_author_and_rtdl": true
+      },
+      "matched": true,
+      "query_cardinality": 200000,
+      "rtdl": {
+        "prepared_query_wall_sec": 1.0645937059889548,
+        "primitive_query_sec": 0.5663535799831152,
+        "query_load_sec": 1.8560810439521447,
+        "result_count": 208918
+      }
+    },
+    {
+      "author": {
+        "command": [
+          "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+          "-geom",
+          "/tmp/goal5520-target/PPoPPAE/datasets/polygons/parks_Europe.wkt",
+          "-query",
+          "/tmp/goal5520-target/PPoPPAE/datasets/queries/range-contains_queries_400000/parks_Europe.wkt",
+          "-serialize",
+          "/tmp/goal5520-stage/serialize/400000",
+          "-query_type",
+          "range-contains",
+          "-index_type",
+          "rtspatial",
+          "-load_factor",
+          "0.0001"
+        ],
+        "geometry_count": 1856318,
+        "loading_ms_diagnostic": 7.239,
+        "query_count": 400000,
+        "query_ms_internal": 0.1882,
+        "result_count": 417968,
+        "stdout": "Loaded polygons 1856318\nLoaded queries 400000\nQueue size 566 MB\nBVH 385 MB, Geometries 28 MB, AABBs 42 MB, Total 455 MB\nLoading Time 7.239 ms\nGeoms 1856318\nQueries 400000\nQuery Time 0.1882 ms\nResults 417968\nSelectivity: 5.62899e-07\n"
+      },
+      "case_id": "parks_Europe_range_contains_400000",
+      "input_identity": {
+        "geometry_sha256": "fd77bf8294dfb9dfe45e49fc4aec99427ebd9ac4f370697b0c908d635d643aed",
+        "query_sha256": "44d3ff16cdc9943b2a90333bd55124fb6f73ea595ce54164b107c6ad1d51c0c1",
+        "same_files_passed_to_author_and_rtdl": true
+      },
+      "matched": true,
+      "query_cardinality": 400000,
+      "rtdl": {
+        "prepared_query_wall_sec": 2.2128499840036966,
+        "primitive_query_sec": 1.0892350189969875,
+        "query_load_sec": 3.738519778009504,
+        "result_count": 417968
+      }
+    },
+    {
+      "author": {
+        "command": [
+          "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+          "-geom",
+          "/tmp/goal5520-target/PPoPPAE/datasets/polygons/parks_Europe.wkt",
+          "-query",
+          "/tmp/goal5520-target/PPoPPAE/datasets/queries/range-contains_queries_800000/parks_Europe.wkt",
+          "-serialize",
+          "/tmp/goal5520-stage/serialize/800000",
+          "-query_type",
+          "range-contains",
+          "-index_type",
+          "rtspatial",
+          "-load_factor",
+          "0.0001"
+        ],
+        "geometry_count": 1856318,
+        "loading_ms_diagnostic": 7.251,
+        "query_count": 800000,
+        "query_ms_internal": 0.3544,
+        "result_count": 835864,
+        "stdout": "Loaded polygons 1856318\nLoaded queries 800000\nQueue size 1133 MB\nBVH 385 MB, Geometries 28 MB, AABBs 42 MB, Total 455 MB\nLoading Time 7.251 ms\nGeoms 1856318\nQueries 800000\nQuery Time 0.3544 ms\nResults 835864\nSelectivity: 5.62851e-07\n"
+      },
+      "case_id": "parks_Europe_range_contains_800000",
+      "input_identity": {
+        "geometry_sha256": "fd77bf8294dfb9dfe45e49fc4aec99427ebd9ac4f370697b0c908d635d643aed",
+        "query_sha256": "46e3667c678029c74ac1ff0ab97a5996c144f6ae53325a0194f7f5ad9102daea",
+        "same_files_passed_to_author_and_rtdl": true
+      },
+      "matched": true,
+      "query_cardinality": 800000,
+      "rtdl": {
+        "prepared_query_wall_sec": 4.493941254972015,
+        "primitive_query_sec": 2.1494563079904765,
+        "query_load_sec": 7.4019772979663685,
+        "result_count": 835864
+      }
+    }
+  ],
+  "claim_boundary": {
+    "author_specific_rtdl_core_behavior_authorized": false,
+    "complete_paper_reproduction_claimed": false,
+    "complete_range_contains_matrix_claimed": false,
+    "embree_in_scope": false,
+    "exact_archive_same_input_count_evidence": true,
+    "figure_reproduction_claimed": false,
+    "performance_ratio_authorized": false,
+    "pointwise_containment_equivalence_claimed": false,
+    "prepared_base_distinct_query_batches": true,
+    "prepared_base_runtime_case_count": 4,
+    "prior_independent_checkpoint_case_count": 1,
+    "same_input_replay_claimed": false
+  },
+  "coverage": {
+    "complete_range_contains_matrix_claimed": false,
+    "exact_archive_range_contains_pair_count": 14,
+    "matched_after_goal5520": 9,
+    "matched_before_goal5520": 5,
+    "new_goal5520_matches": 4,
+    "remaining_not_checkpointed": 5
+  },
+  "evidence_accounting": {
+    "all_query_files_distinct": true,
+    "cache_is_app_owned": true,
+    "extraction_selected_member_count": 5,
+    "prior_goal5517_checkpoint_cardinality": 100000,
+    "runtime_new_query_cardinalities": [
+      50000,
+      200000,
+      400000,
+      800000
+    ]
+  },
+  "matched_case_count": 5,
+  "operation": "range_contains",
+  "prepared_base": {
+    "cache_contract": "rtdl.paper_reproduction.librts.exact_aabb_column_cache.v1",
+    "geometry_member": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+    "geometry_sha256": "fd77bf8294dfb9dfe45e49fc4aec99427ebd9ac4f370697b0c908d635d643aed",
+    "indexed_count": 1856318,
+    "matrix_distinct_query_batches": 5,
+    "prepare_index_sec": 0.4436795079964213,
+    "prior_checkpoint_cardinality": 100000,
+    "prior_checkpoint_case_count": 1,
+    "runtime_distinct_query_batches": 4,
+    "same_input_replay_used": false
+  },
+  "schema": "rtdl.paper_reproduction.librts.goal5520_parks_europe_cardinality_gate.v2",
+  "status": "parks_europe_exact_range_contains_five_cardinality_matrix_matched"
+}

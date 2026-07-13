@@ -1,0 +1,204 @@
+{
+    "Check": {
+        "Diff": 0.0,
+        "HDAnswer": 52.453487396240234,
+        "Pass": true
+    },
+    "DateTime": "2026-07-10 04:04:19",
+    "GPU": {
+        "Device": 0,
+        "name": "NVIDIA RTX 4000 Ada Generation"
+    },
+    "HDResult": 52.453487396240234,
+    "Input": {
+        "Files": [
+            {
+                "Density": 161400144.0,
+                "MBR": [
+                    {
+                        "Lower": 0.0,
+                        "Upper": 0.2048902064561844
+                    },
+                    {
+                        "Lower": 0.0,
+                        "Upper": 0.14444349706172943
+                    },
+                    {
+                        "Lower": 0.0,
+                        "Upper": 0.09162180125713348
+                    }
+                ],
+                "NumPoints": 437645,
+                "Path": "/tmp/xhd_goal5234/data/dragon.ply"
+            },
+            {
+                "Density": 1.1900925636291504,
+                "MBR": [
+                    {
+                        "Lower": 0.0,
+                        "Upper": 201.7435302734375
+                    },
+                    {
+                        "Lower": 0.0,
+                        "Upper": 112.0262680053711
+                    },
+                    {
+                        "Lower": 0.0,
+                        "Upper": 134.2019500732422
+                    }
+                ],
+                "NumPoints": 3609600,
+                "Path": "/tmp/xhd_goal5234/data/asian_dragon.ply"
+            }
+        ],
+        "Limit": 2147483647,
+        "Normalize": false,
+        "NumDims": 3,
+        "SerializationPrefix": "/tmp/xhd_goal5374/ser",
+        "Translate": 0.0,
+        "Type": "Float"
+    },
+    "Running": {
+        "AvgTime": 136.251,
+        "EB": true,
+        "FastBuildBVH": false,
+        "LB": 256,
+        "NumPointsPerCell": 15,
+        "Prune": true,
+        "RebuildBVH": false,
+        "Repeats": [
+            {
+                "Algorithm": "XHD",
+                "BVHBuildTime": 0.754,
+                "Cells": 7466,
+                "Execution": "GPU",
+                "GridResolution": [
+                    74,
+                    41,
+                    50
+                ],
+                "HDLowerBound": 0.0,
+                "HDUpperBound": 242.3027801513672,
+                "InitRadius": 3.9947454929351807,
+                "Iterations": [
+                    {
+                        "AdjustBVHTime": 0.118,
+                        "CMax2": 0.0,
+                        "CUDATime": 0.096,
+                        "ComparedPoints": 0,
+                        "Hits": 0,
+                        "Iteration": 1,
+                        "LBTrace": {
+                            "ActiveInQueueSize": 437645,
+                            "Batches": [
+                                {
+                                    "ActiveInQueueSize": 437645,
+                                    "Batch": 0,
+                                    "RawOffloadRowsAuthorWidthBytes": 0,
+                                    "RawOffloadRowsBeforeSortReduce": 0,
+                                    "StatusCmax2MbrAbortCount": 0,
+                                    "StatusInitCount": 437645,
+                                    "StatusOffloadingAppendCount": 0,
+                                    "StatusPointLoopEarlyBreakCount": 0
+                                }
+                            ],
+                            "RawOffloadRowsAuthorWidthBytes": 0,
+                            "RawOffloadRowsBeforeSortReduce": 0,
+                            "Schema": "rtdl.goal5374.author.lb_status_trace.v1",
+                            "StatusCmax2MbrAbortCount": 0,
+                            "StatusInitCount": 437645,
+                            "StatusOffloadingAppendCount": 0,
+                            "StatusPointLoopEarlyBreakCount": 0
+                        },
+                        "NumInputPoints": 437645,
+                        "NumOutputPoints": 437645,
+                        "OffloadingSize": 0,
+                        "RTTime": 3.033,
+                        "Radius": 3.9947454929351807
+                    },
+                    {
+                        "AdjustBVHTime": 0.089,
+                        "CMax2": 0.0,
+                        "CUDATime": 0.069,
+                        "ComparedPoints": 0,
+                        "Hits": 14004640,
+                        "Iteration": 2,
+                        "LBTrace": {
+                            "ActiveInQueueSize": 437645,
+                            "Batches": [
+                                {
+                                    "ActiveInQueueSize": 437645,
+                                    "Batch": 0,
+                                    "RawOffloadRowsAuthorWidthBytes": 0,
+                                    "RawOffloadRowsBeforeSortReduce": 0,
+                                    "StatusCmax2MbrAbortCount": 0,
+                                    "StatusInitCount": 437645,
+                                    "StatusOffloadingAppendCount": 0,
+                                    "StatusPointLoopEarlyBreakCount": 0
+                                }
+                            ],
+                            "RawOffloadRowsAuthorWidthBytes": 0,
+                            "RawOffloadRowsBeforeSortReduce": 0,
+                            "Schema": "rtdl.goal5374.author.lb_status_trace.v1",
+                            "StatusCmax2MbrAbortCount": 0,
+                            "StatusInitCount": 437645,
+                            "StatusOffloadingAppendCount": 0,
+                            "StatusPointLoopEarlyBreakCount": 0
+                        },
+                        "NumInputPoints": 437645,
+                        "NumOutputPoints": 437645,
+                        "OffloadingSize": 0,
+                        "RTTime": 0.736,
+                        "Radius": 41.605220794677734
+                    },
+                    {
+                        "CMax2": 2751.368408203125,
+                        "CUDATime": 77.58,
+                        "ComparedPoints": 1241945719,
+                        "Hits": 896287932,
+                        "Iteration": 3,
+                        "LBTrace": {
+                            "ActiveInQueueSize": 437645,
+                            "Batches": [
+                                {
+                                    "ActiveInQueueSize": 437645,
+                                    "Batch": 0,
+                                    "RawOffloadRowsAuthorWidthBytes": 217071920,
+                                    "RawOffloadRowsBeforeSortReduce": 27133990,
+                                    "StatusCmax2MbrAbortCount": 0,
+                                    "StatusInitCount": 437645,
+                                    "StatusOffloadingAppendCount": 27133990,
+                                    "StatusPointLoopEarlyBreakCount": 0
+                                }
+                            ],
+                            "RawOffloadRowsAuthorWidthBytes": 217071920,
+                            "RawOffloadRowsBeforeSortReduce": 27133990,
+                            "Schema": "rtdl.goal5374.author.lb_status_trace.v1",
+                            "StatusCmax2MbrAbortCount": 0,
+                            "StatusInitCount": 437645,
+                            "StatusOffloadingAppendCount": 27133990,
+                            "StatusPointLoopEarlyBreakCount": 0
+                        },
+                        "NumInputPoints": 437645,
+                        "NumOutputPoints": 0,
+                        "OffloadingSize": 27133990,
+                        "RTTime": 46.679,
+                        "Radius": 79.2156982421875
+                    }
+                ],
+                "LargeCells": 5060,
+                "Memory": {
+                    "BVH": 367872,
+                    "Grid": 14527996,
+                    "MBRs B": 179184,
+                    "WL": 3501160,
+                    "WL Heavy Peak": 217071920
+                },
+                "Profiling": true,
+                "Repeat": 1,
+                "ReportedTime": 136.251
+            }
+        ],
+        "Seed": 0
+    }
+}

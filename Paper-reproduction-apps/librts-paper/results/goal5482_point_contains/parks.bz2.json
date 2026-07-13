@@ -1,0 +1,59 @@
+{
+  "author": {
+    "command": [
+      "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+      "-geom",
+      "/workspace/librts-targets/point-contains-real-remaining/PPoPPAE/datasets/polygons/parks.bz2.wkt",
+      "-query",
+      "/workspace/librts-targets/point-contains-real-remaining/PPoPPAE/datasets/queries/point-contains_queries_100000/parks.bz2.wkt",
+      "-serialize",
+      "/workspace/librts-serialize/goal5483/parks",
+      "-query_type",
+      "point-contains",
+      "-index_type",
+      "rtspatial",
+      "-load_factor",
+      "0.0001"
+    ],
+    "geometry_count": 11544398,
+    "loading_ms_diagnostic": 50.8448,
+    "pair_rows_exposed": false,
+    "query_count": 100000,
+    "query_ms_internal": 0.0914,
+    "result_count": 112729,
+    "stdout": "Loaded polygons 11544398\nLoaded queries 100000\nLoading Time 50.8448 ms\nGeoms 11544398\nQueries 100000\nQuery Time 0.0914 ms\nResults 112729\nSelectivity: 9.76482e-08\n"
+  },
+      "claim_boundary": {
+        "author_pair_relation_agreement_claimed": false,
+        "complete_paper_reproduction_claimed": false,
+        "embree_in_scope": false,
+        "exact_archive_and_extracted_input_identity_used": true,
+        "pointwise_containment_equivalence_claimed": false,
+        "relation_level_evidence_reference": "Paper-reproduction-apps/librts-paper/results/librts_goal5467_representative_same_input_pip.json",
+        "figure6_reproduced": false,
+    "performance_ratio_authorized": false,
+    "same_input_result_count_agreement": true
+  },
+  "input_identity": {
+    "geometry_path": "/workspace/librts-targets/point-contains-real-remaining/PPoPPAE/datasets/polygons/parks.bz2.wkt",
+    "query_path": "/workspace/librts-targets/point-contains-real-remaining/PPoPPAE/datasets/queries/point-contains_queries_100000/parks.bz2.wkt",
+    "same_files_passed_to_author_and_rtdl": true,
+    "verified_extraction_root": "/workspace/librts-targets/point-contains-real-remaining"
+  },
+  "matched": true,
+  "rtdl": {
+    "backend": "optix",
+    "count_only": true,
+    "load_wkt_sec": 1221.5477847179864,
+    "native_engine_customization": false,
+    "operation": "point_contains",
+    "primitive_query_sec": 0.4544691169867292,
+    "public_api": "query_aabb_index_2d",
+    "result_count": 112729,
+    "route_wall_sec": 94.67039187904447,
+    "row_output_requested": false,
+    "rt_core_accelerated": true
+  },
+  "schema": "rtdl.paper_reproduction.librts.exact_point_contains_count_only.v1",
+  "status": "exact_input_point_contains_count_matched"
+}

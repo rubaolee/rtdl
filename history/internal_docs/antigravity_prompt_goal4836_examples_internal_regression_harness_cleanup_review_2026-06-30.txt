@@ -1,0 +1,24 @@
+Please critically review the following Goal4836 cleanup packet:
+
+history/internal_docs/call_for_review_goal4836_examples_internal_regression_harness_cleanup_2026-06-30.md
+history/internal_docs/goal4836_examples_internal_regression_harness_cleanup_2026-06-30.md
+
+Focus on:
+
+1. Whether the cleanup preserves the clean v2.14 public user surface.
+2. Whether moving old `examples.internal` imports to `history.examples_internal` is correct.
+3. Whether the zero stale-path scan and targeted tests are sufficient for this cleanup goal.
+4. Whether Windows Embree linker failures should remain separate from the no-Embree RayJoin OptiX line.
+5. Whether the next work should continue with Linux/OptiX RayJoin confirmation and County x Zipcode mismatch analysis.
+
+Write the verdict to:
+
+history/internal_docs/antigravity_goal4836_examples_internal_regression_harness_cleanup_review_2026-06-30.md
+
+Use one of these verdict labels:
+
+- approve_goal4836_cleanup_and_continue_rayjoin_optix_line
+- approve_with_required_amendments
+- block_goal4836_public_surface_or_regression_issue
+
+Do not authorize broad RayJoin Section 5.7 claims, broad performance claims, Embree evidence in the current line, V3/V4 resurrection, or release/push.

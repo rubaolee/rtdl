@@ -1,0 +1,399 @@
+{
+  "author_repeats": {
+    "all_matched": true,
+    "files": [
+      "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5217_author_repeat1_summary_graphics_dragon_happy_buddha_2026-07-09.json",
+      "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5217_author_repeat2_summary_graphics_dragon_happy_buddha_2026-07-09.json",
+      "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5217_author_repeat3_summary_graphics_dragon_happy_buddha_2026-07-09.json",
+      "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5217_author_repeat4_summary_graphics_dragon_happy_buddha_2026-07-09.json",
+      "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5217_author_repeat5_summary_graphics_dragon_happy_buddha_2026-07-09.json"
+    ],
+    "hd_result": {
+      "count": 5,
+      "max": 0.12572988867759705,
+      "mean": 0.12572988867759705,
+      "median": 0.12572988867759705,
+      "min": 0.12572988867759705,
+      "values": [
+        0.12572988867759705,
+        0.12572988867759705,
+        0.12572988867759705,
+        0.12572988867759705,
+        0.12572988867759705
+      ]
+    },
+    "phase_boundary": "author internal Running.AvgTime ms and author binary process wall are separate denominators",
+    "process_wall_sec": {
+      "count": 5,
+      "max": 1.915292240679264,
+      "mean": 1.9081461995840072,
+      "median": 1.9058002084493637,
+      "min": 1.9026815667748451,
+      "values": [
+        1.914122723042965,
+        1.9026815667748451,
+        1.9058002084493637,
+        1.915292240679264,
+        1.9028342589735985
+      ]
+    },
+    "running_avg_time_ms": {
+      "count": 5,
+      "max": 7.737,
+      "mean": 7.7072,
+      "median": 7.722,
+      "min": 7.673,
+      "values": [
+        7.723,
+        7.737,
+        7.722,
+        7.673,
+        7.681
+      ]
+    }
+  },
+  "claim_boundary": {
+    "author_parity_claimed": false,
+    "author_performance_ratio_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "level_b_same_source_representative_claimed": true,
+    "warm_only_headline_claimed": false,
+    "xhd_specific_rtdl_primitive_claimed": false
+  },
+  "created_utc": "2026-07-09T02:33:54.079563+00:00",
+  "denominator_alignment": {
+    "author_process_wall_sec": "author binary process invocation wall",
+    "author_running_avg_time_ms": "author internal timing only",
+    "ratio_authorized": false,
+    "reason": "author internal time, author process wall, RTDL route wall, RTDL full gate, and RTDL explicit-warm route are different denominators; exact paper dataset identity is also unproved",
+    "rtdl_explicit_warm_measured_route_sec": "RTDL measured route after an explicit warmup case; warmup cost separate",
+    "rtdl_fresh_route_wall_sec": "RTDL route wall excluding input load",
+    "rtdl_full_total_including_load_sec": "RTDL runner wall including public input load"
+  },
+  "goal": "Goal5217",
+  "input_pair": {
+    "exact_paper_dataset_identity_proved": false,
+    "point_counts": [
+      437645,
+      543652
+    ],
+    "source": "public Stanford Dragon / dragon_vrip.ply",
+    "target": "public Stanford HappyBuddha / happy_vrip.ply"
+  },
+  "level": "level_b_same_source_representative_only",
+  "pod": {
+    "driver": "550.127.05",
+    "gpu": "NVIDIA RTX 4000 Ada Generation",
+    "host": "213.173.108.24",
+    "hostname": "45c502cfccb5",
+    "port": 13502
+  },
+  "rtdl_explicit_warm_repeats": {
+    "all_measured_matched": true,
+    "all_warmup_matched": true,
+    "files": [
+      "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5217_rtdl_warm_repeat1_graphics_dragon_happy_buddha_2026-07-09.json",
+      "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5217_rtdl_warm_repeat2_graphics_dragon_happy_buddha_2026-07-09.json",
+      "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5217_rtdl_warm_repeat3_graphics_dragon_happy_buddha_2026-07-09.json",
+      "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5217_rtdl_warm_repeat4_graphics_dragon_happy_buddha_2026-07-09.json",
+      "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5217_rtdl_warm_repeat5_graphics_dragon_happy_buddha_2026-07-09.json"
+    ],
+    "full_total_including_load_warmup_and_measured_sec": {
+      "count": 5,
+      "max": 1.8423508331179619,
+      "mean": 1.8174913838505744,
+      "median": 1.812147118151188,
+      "min": 1.8079214543104172,
+      "values": [
+        1.812147118151188,
+        1.8079214543104172,
+        1.8423508331179619,
+        1.809689074754715,
+        1.8153484389185905
+      ]
+    },
+    "load_full_inputs_sec": {
+      "count": 5,
+      "max": 0.6829066053032875,
+      "mean": 0.6804580539464951,
+      "median": 0.6798860281705856,
+      "min": 0.6780674904584885,
+      "values": [
+        0.6780674904584885,
+        0.6798860281705856,
+        0.6798382326960564,
+        0.6829066053032875,
+        0.6815919131040573
+      ]
+    },
+    "measured_case_total_sec": {
+      "count": 5,
+      "max": 0.3021760433912277,
+      "mean": 0.2899395257234573,
+      "median": 0.28965315222740173,
+      "min": 0.2815279886126518,
+      "values": [
+        0.28967251628637314,
+        0.2815279886126518,
+        0.3021760433912277,
+        0.28666792809963226,
+        0.28965315222740173
+      ]
+    },
+    "measured_global_bound_early_break_count": {
+      "count": 5,
+      "max": 409694.0,
+      "mean": 409551.4,
+      "median": 409591.0,
+      "min": 409351.0,
+      "values": [
+        409626.0,
+        409694.0,
+        409351.0,
+        409495.0,
+        409591.0
+      ]
+    },
+    "measured_route_wall_sec": {
+      "count": 5,
+      "max": 0.30216243863105774,
+      "mean": 0.289925628900528,
+      "median": 0.2896384373307228,
+      "min": 0.2815154120326042,
+      "values": [
+        0.28965792804956436,
+        0.2815154120326042,
+        0.30216243863105774,
+        0.28665392845869064,
+        0.2896384373307228
+      ]
+    },
+    "phase_boundary": "RTDL explicit-warm protocol; warmup recorded separately and measured route excludes warmup",
+    "warmup_case_total_sec": {
+      "count": 5,
+      "max": 0.8596243262290955,
+      "mean": 0.8464070990681648,
+      "median": 0.8437308073043823,
+      "min": 0.8394391611218452,
+      "values": [
+        0.8437308073043823,
+        0.845844954252243,
+        0.8596243262290955,
+        0.8394391611218452,
+        0.8433962464332581
+      ]
+    },
+    "warmup_excluded_from_summary_statistics": true,
+    "warmup_route_wall_sec": {
+      "count": 5,
+      "max": 0.8596115410327911,
+      "mean": 0.8463946610689164,
+      "median": 0.8437184691429138,
+      "min": 0.8394275307655334,
+      "values": [
+        0.8437184691429138,
+        0.8458329141139984,
+        0.8596115410327911,
+        0.8394275307655334,
+        0.8433828502893448
+      ]
+    }
+  },
+  "rtdl_fresh_repeats": {
+    "all_matched": true,
+    "author_abs_diff": {
+      "count": 5,
+      "max": 2.3848857610975216e-09,
+      "mean": 2.3848857610975216e-09,
+      "median": 2.3848857610975216e-09,
+      "min": 2.3848857610975216e-09,
+      "values": [
+        2.3848857610975216e-09,
+        2.3848857610975216e-09,
+        2.3848857610975216e-09,
+        2.3848857610975216e-09,
+        2.3848857610975216e-09
+      ]
+    },
+    "case_total_sec": {
+      "count": 5,
+      "max": 0.8920616284012794,
+      "mean": 0.8460413873195648,
+      "median": 0.8396550938487053,
+      "min": 0.82844427973032,
+      "values": [
+        0.8396550938487053,
+        0.8397518619894981,
+        0.8920616284012794,
+        0.82844427973032,
+        0.8302940726280212
+      ]
+    },
+    "distance": {
+      "count": 5,
+      "max": 0.12572988629271128,
+      "mean": 0.12572988629271128,
+      "median": 0.12572988629271128,
+      "min": 0.12572988629271128,
+      "values": [
+        0.12572988629271128,
+        0.12572988629271128,
+        0.12572988629271128,
+        0.12572988629271128,
+        0.12572988629271128
+      ]
+    },
+    "files": [
+      "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5217_rtdl_fresh_repeat1_graphics_dragon_happy_buddha_2026-07-09.json",
+      "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5217_rtdl_fresh_repeat2_graphics_dragon_happy_buddha_2026-07-09.json",
+      "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5217_rtdl_fresh_repeat3_graphics_dragon_happy_buddha_2026-07-09.json",
+      "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5217_rtdl_fresh_repeat4_graphics_dragon_happy_buddha_2026-07-09.json",
+      "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5217_rtdl_fresh_repeat5_graphics_dragon_happy_buddha_2026-07-09.json"
+    ],
+    "frontier_rows_sec": {
+      "count": 5,
+      "max": 0.47220470756292343,
+      "mean": 0.42581121772527697,
+      "median": 0.4163782075047493,
+      "min": 0.4110003113746643,
+      "values": [
+        0.4163782075047493,
+        0.4181044399738312,
+        0.47220470756292343,
+        0.4110003113746643,
+        0.4113684222102165
+      ]
+    },
+    "full_total_including_load_sec": {
+      "count": 5,
+      "max": 1.572220340371132,
+      "mean": 1.526426649093628,
+      "median": 1.5200408399105072,
+      "min": 1.506724826991558,
+      "values": [
+        1.5200408399105072,
+        1.5216159522533417,
+        1.572220340371132,
+        1.506724826991558,
+        1.5115312859416008
+      ]
+    },
+    "global_bound_early_break_count": {
+      "count": 5,
+      "max": 410024.0,
+      "mean": 409718.6,
+      "median": 409593.0,
+      "min": 409429.0,
+      "values": [
+        409429.0,
+        410020.0,
+        410024.0,
+        409527.0,
+        409593.0
+      ]
+    },
+    "initial_state_seed_sec": {
+      "count": 5,
+      "max": 0.21832575649023056,
+      "mean": 0.21695322096347808,
+      "median": 0.21734220534563065,
+      "min": 0.21403568238019943,
+      "values": [
+        0.21832575649023056,
+        0.2178891897201538,
+        0.21734220534563065,
+        0.21403568238019943,
+        0.217173270881176
+      ]
+    },
+    "load_full_inputs_sec": {
+      "count": 5,
+      "max": 0.6811827272176743,
+      "mean": 0.6797139436006546,
+      "median": 0.6797084361314774,
+      "min": 0.6776172742247581,
+      "values": [
+        0.6797084361314774,
+        0.6811827272176743,
+        0.6795039996504784,
+        0.6776172742247581,
+        0.6805572807788849
+      ]
+    },
+    "native_total_sec": {
+      "count": 5,
+      "max": 0.322239654,
+      "mean": 0.2802457982,
+      "median": 0.270072124,
+      "min": 0.268851268,
+      "values": [
+        0.269075344,
+        0.270990601,
+        0.322239654,
+        0.270072124,
+        0.268851268
+      ]
+    },
+    "optix_launch_sec": {
+      "count": 5,
+      "max": 0.040788569,
+      "mean": 0.0391869808,
+      "median": 0.038705099,
+      "min": 0.03840561,
+      "values": [
+        0.038692148,
+        0.039343478,
+        0.040788569,
+        0.03840561,
+        0.038705099
+      ]
+    },
+    "per_source_witness_exact_values": [
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
+    "phase_boundary": "RTDL fresh long-lived-process route and full gate including input load; no explicit warmup case",
+    "query_pack_sec": {
+      "count": 5,
+      "max": 0.015369979,
+      "mean": 0.015174670400000001,
+      "median": 0.015209613,
+      "min": 0.014840172,
+      "values": [
+        0.014840172,
+        0.015280375,
+        0.015209613,
+        0.015369979,
+        0.015173213
+      ]
+    },
+    "route_wall_sec": {
+      "count": 5,
+      "max": 0.8920498341321945,
+      "mean": 0.8460293024778366,
+      "median": 0.8396428748965263,
+      "min": 0.8284313380718231,
+      "values": [
+        0.8396428748965263,
+        0.8397393301129341,
+        0.8920498341321945,
+        0.8284313380718231,
+        0.830283135175705
+      ]
+    },
+    "source_subset_materialized_values": [
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "schema": "rtdl.paper_reproduction.xhd.level_b_same_pod_performance_matrix.v1",
+  "status": "level_b_same_pod_phase_matrix_recorded__no_ratio_authorized",
+  "target": "graphics_dragon_happy_buddha"
+}

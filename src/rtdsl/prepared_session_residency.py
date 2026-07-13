@@ -16,6 +16,25 @@ PREPARED_SESSION_RESIDENCY_CLAIM_BOUNDARY = (
     "speedup wording, broad RT-core wording, true-zero-copy wording, automatic "
     "partner/backend selection, or app-specific native-engine logic."
 )
+PREPARED_GEOMETRY_SESSION_CONTRACT_VERSION = (
+    "rtdl.prepared_geometry_session.v2_14_4.public.v1"
+)
+PREPARED_GEOMETRY_SESSION_API_MATURITY = (
+    "public_contract_device_columnar_prepared_pipeline"
+)
+PREPARED_GEOMETRY_SESSION_REGIME_LABELS = (
+    "cold_cli_one_shot",
+    "warm_process_fresh",
+    "prepared_base_distinct_query_batch",
+    "prepared_replay_same_input_diagnostic",
+)
+PREPARED_GEOMETRY_SESSION_CLAIM_BOUNDARY = (
+    "PreparedGeometrySession is the public RTDL contract for a prepared base "
+    "geometry and explicit query batches. It records regime labels, query-batch "
+    "fingerprints, timing fields, and run metadata. It does not run geometry by "
+    "itself, does not authorize replay-only speedup claims, does not allow same-input "
+    "replay to be called query-many, and does not permit app-specific native logic."
+)
 
 PREPARED_SESSION_ALLOWED_BACKENDS = (
     "cpu",
@@ -83,11 +102,32 @@ def _stable_digest(value: Any) -> str:
     return hashlib.sha256(_canonical_json(value).encode("utf-8")).hexdigest()[:24]
 
 
+def _stable_fingerprint(value: Any) -> str:
+    if isinstance(value, str) and value:
+        return value
+    return _stable_digest(value)
+
+
 def _validate_no_app_terms(text: str, *, label: str) -> None:
     lowered = str(text).lower()
     for term in PREPARED_SESSION_APP_SPECIFIC_FORBIDDEN_TERMS:
         if term in lowered:
             raise ValueError(f"{label} must remain generic; found app-shaped term {term!r}")
+
+
+def _coerce_nonnegative_phase_timing(
+    phase_timing: Mapping[str, Any] | None,
+) -> dict[str, float]:
+    timings: dict[str, float] = {}
+    for name, value in dict(phase_timing or {}).items():
+        key = str(name)
+        if not key:
+            raise ValueError("phase timing names must be non-empty")
+        seconds = float(value)
+        if seconds < 0.0:
+            raise ValueError("phase timing values must be non-negative")
+        timings[key] = seconds
+    return timings
 
 
 @dataclass(frozen=True)
@@ -275,6 +315,289 @@ class RtdlPreparedSessionTimingRecord:
             "true_zero_copy_claim_authorized": False,
             "claim_boundary": PREPARED_SESSION_RESIDENCY_CLAIM_BOUNDARY,
         }
+
+
+@dataclass(frozen=True)
+class PreparedQueryBatch:
+    """Public metadata for one query batch against a prepared geometry session."""
+
+    session_id: str
+    batch_id: str
+    query_fingerprint: str
+    query_count: int
+    coordinate_domain_fingerprint: str
+    regime_label: str
+    distinct_query_batch: bool
+    replay_of_batch_id: str | None = None
+    metadata: Mapping[str, Any] = field(default_factory=dict, compare=False)
+
+    def __post_init__(self) -> None:
+        if not str(self.session_id):
+            raise ValueError("PreparedQueryBatch requires a session_id")
+        if not str(self.batch_id):
+            raise ValueError("PreparedQueryBatch requires a batch_id")
+        if not str(self.query_fingerprint):
+            raise ValueError("PreparedQueryBatch requires a query_fingerprint")
+        if int(self.query_count) <= 0:
+            raise ValueError("PreparedQueryBatch query_count must be positive")
+        if self.regime_label not in PREPARED_GEOMETRY_SESSION_REGIME_LABELS:
+            raise ValueError("unsupported prepared-geometry regime label")
+        if self.regime_label == "prepared_base_distinct_query_batch":
+            if not bool(self.distinct_query_batch):
+                raise ValueError("distinct-query regime requires distinct_query_batch=True")
+            if self.replay_of_batch_id is not None:
+                raise ValueError("distinct-query regime cannot replay a prior batch")
+        if self.regime_label == "prepared_replay_same_input_diagnostic":
+            if bool(self.distinct_query_batch):
+                raise ValueError("same-input replay cannot be marked distinct")
+            if not self.replay_of_batch_id:
+                raise ValueError("same-input replay must record replay_of_batch_id")
+        object.__setattr__(self, "session_id", str(self.session_id))
+        object.__setattr__(self, "batch_id", str(self.batch_id))
+        object.__setattr__(self, "query_fingerprint", str(self.query_fingerprint))
+        object.__setattr__(self, "query_count", int(self.query_count))
+        object.__setattr__(
+            self,
+            "coordinate_domain_fingerprint",
+            str(self.coordinate_domain_fingerprint),
+        )
+        object.__setattr__(self, "metadata", dict(self.metadata or {}))
+
+    @property
+    def same_input_replay_diagnostic(self) -> bool:
+        return self.regime_label == "prepared_replay_same_input_diagnostic"
+
+    def to_metadata(self) -> dict[str, Any]:
+        return {
+            "contract_version": PREPARED_GEOMETRY_SESSION_CONTRACT_VERSION,
+            "session_id": self.session_id,
+            "batch_id": self.batch_id,
+            "query_fingerprint": self.query_fingerprint,
+            "query_count": self.query_count,
+            "coordinate_domain_fingerprint": self.coordinate_domain_fingerprint,
+            "regime_label": self.regime_label,
+            "distinct_query_batch": bool(self.distinct_query_batch),
+            "same_input_replay_diagnostic": self.same_input_replay_diagnostic,
+            "replay_of_batch_id": self.replay_of_batch_id,
+            "metadata": dict(self.metadata),
+            "query_many_claim_authorized": (
+                self.regime_label == "prepared_base_distinct_query_batch"
+            ),
+            "replay_only_speedup_claim_authorized": False,
+            "claim_boundary": PREPARED_GEOMETRY_SESSION_CLAIM_BOUNDARY,
+        }
+
+
+@dataclass
+class PreparedGeometrySession:
+    """Public wrapper for explicit prepared-base and query-batch accounting."""
+
+    primitive: str
+    backend: str
+    base_fingerprint: Any
+    parameters: Mapping[str, Any] | None = None
+    partner: str = "none"
+    device: str = "unknown"
+    coordinate_domain_fingerprint: Any = "unknown"
+    base_phase_timing: Mapping[str, Any] | None = None
+    owner: Any = field(default=None, compare=False, repr=False)
+    metadata: Mapping[str, Any] = field(default_factory=dict, compare=False)
+    _seen_query_batches: dict[str, str] = field(default_factory=dict, init=False, repr=False)
+    _query_batches: list[PreparedQueryBatch] = field(default_factory=list, init=False, repr=False)
+    _closed: bool = field(default=False, init=False, repr=False)
+
+    def __post_init__(self) -> None:
+        primitive = str(self.primitive).strip()
+        backend = str(self.backend).strip().lower()
+        partner = str(self.partner).strip().lower()
+        device = str(self.device).strip().lower()
+        if not primitive:
+            raise ValueError("PreparedGeometrySession requires a primitive")
+        _validate_no_app_terms(primitive, label="primitive")
+        if backend not in PREPARED_SESSION_ALLOWED_BACKENDS:
+            raise ValueError("PreparedGeometrySession backend is not supported")
+        if not partner:
+            raise ValueError("PreparedGeometrySession partner must be explicit, or 'none'")
+        if not device:
+            raise ValueError("PreparedGeometrySession device must be explicit, or 'unknown'")
+        self.primitive = primitive
+        self.backend = backend
+        self.partner = partner
+        self.device = device
+        self.base_fingerprint = _stable_fingerprint(self.base_fingerprint)
+        self.coordinate_domain_fingerprint = _stable_fingerprint(
+            self.coordinate_domain_fingerprint
+        )
+        self.parameters = dict(self.parameters or {})
+        self.base_phase_timing = _coerce_nonnegative_phase_timing(self.base_phase_timing)
+        self.metadata = dict(self.metadata or {})
+
+    def __enter__(self) -> "PreparedGeometrySession":
+        if self._closed:
+            raise ValueError("cannot enter a closed PreparedGeometrySession")
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    @property
+    def cache_key(self) -> RtdlPreparedSessionCacheKey:
+        return make_prepared_session_cache_key(
+            primitive=self.primitive,
+            backend=self.backend,
+            input_fingerprints={"base": self.base_fingerprint},
+            parameters=self.parameters,
+            partner=self.partner,
+            device=self.device,
+        )
+
+    @property
+    def session_id(self) -> str:
+        return self.cache_key.stable_id
+
+    @property
+    def query_batch_count(self) -> int:
+        return len(self._query_batches)
+
+    @property
+    def distinct_query_batch_count(self) -> int:
+        return sum(1 for batch in self._query_batches if batch.distinct_query_batch)
+
+    @property
+    def replay_batch_count(self) -> int:
+        return sum(1 for batch in self._query_batches if batch.same_input_replay_diagnostic)
+
+    @property
+    def closed(self) -> bool:
+        return self._closed
+
+    def prepare_query_batch(
+        self,
+        query_fingerprint: Any,
+        *,
+        query_count: int = 1,
+        batch_id: str | None = None,
+        coordinate_domain_fingerprint: Any | None = None,
+        require_distinct: bool = False,
+        metadata: Mapping[str, Any] | None = None,
+    ) -> PreparedQueryBatch:
+        if self._closed:
+            raise ValueError("cannot prepare a query batch on a closed session")
+        query_digest = _stable_fingerprint(query_fingerprint)
+        prior_batch_id = self._seen_query_batches.get(query_digest)
+        if prior_batch_id is not None:
+            if require_distinct:
+                raise ValueError(
+                    "same-input replay cannot be labeled prepared-base query-many"
+                )
+            regime_label = "prepared_replay_same_input_diagnostic"
+            distinct = False
+            replay_of = prior_batch_id
+        else:
+            regime_label = "prepared_base_distinct_query_batch"
+            distinct = True
+            replay_of = None
+        resolved_batch_id = str(batch_id or f"query_batch_{len(self._query_batches)}")
+        domain = (
+            self.coordinate_domain_fingerprint
+            if coordinate_domain_fingerprint is None
+            else _stable_fingerprint(coordinate_domain_fingerprint)
+        )
+        batch = PreparedQueryBatch(
+            session_id=self.session_id,
+            batch_id=resolved_batch_id,
+            query_fingerprint=query_digest,
+            query_count=int(query_count),
+            coordinate_domain_fingerprint=domain,
+            regime_label=regime_label,
+            distinct_query_batch=distinct,
+            replay_of_batch_id=replay_of,
+            metadata=dict(metadata or {}),
+        )
+        self._query_batches.append(batch)
+        if prior_batch_id is None:
+            self._seen_query_batches[query_digest] = resolved_batch_id
+        return batch
+
+    def run_metadata(
+        self,
+        query_batch: PreparedQueryBatch,
+        *,
+        output: str = "device_columns",
+        phase_timing: Mapping[str, Any] | None = None,
+        device_residency: Mapping[str, Any] | None = None,
+        result_metadata: Mapping[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        if query_batch.session_id != self.session_id:
+            raise ValueError("query batch does not belong to this prepared session")
+        if not str(output):
+            raise ValueError("prepared-session run output must be named")
+        timings = _coerce_nonnegative_phase_timing(phase_timing)
+        residency = dict(device_residency or {})
+        if residency.get("materializes_host_rows_for_bridge"):
+            residency.setdefault("device_resident_candidate", False)
+        return {
+            "contract_version": PREPARED_GEOMETRY_SESSION_CONTRACT_VERSION,
+            "api_maturity": PREPARED_GEOMETRY_SESSION_API_MATURITY,
+            "session": self.to_metadata(include_batches=False),
+            "query_batch": query_batch.to_metadata(),
+            "output": str(output),
+            "phase_timing": timings,
+            "device_residency": residency,
+            "result_metadata": dict(result_metadata or {}),
+            "regime_label": query_batch.regime_label,
+            "same_input_replay_is_diagnostic": query_batch.same_input_replay_diagnostic,
+            "query_many_claim_authorized": (
+                query_batch.regime_label == "prepared_base_distinct_query_batch"
+            ),
+            "public_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "app_specific_native_engine_logic_allowed": False,
+            "claim_boundary": PREPARED_GEOMETRY_SESSION_CLAIM_BOUNDARY,
+        }
+
+    def to_metadata(self, *, include_batches: bool = True) -> dict[str, Any]:
+        metadata = {
+            "contract_version": PREPARED_GEOMETRY_SESSION_CONTRACT_VERSION,
+            "api_maturity": PREPARED_GEOMETRY_SESSION_API_MATURITY,
+            "session_id": self.session_id,
+            "primitive": self.primitive,
+            "backend": self.backend,
+            "partner": self.partner,
+            "device": self.device,
+            "base_fingerprint": self.base_fingerprint,
+            "coordinate_domain_fingerprint": self.coordinate_domain_fingerprint,
+            "parameters": dict(self.parameters),
+            "base_phase_timing": dict(self.base_phase_timing),
+            "query_batch_count": self.query_batch_count,
+            "distinct_query_batch_count": self.distinct_query_batch_count,
+            "replay_batch_count": self.replay_batch_count,
+            "regime_labels": PREPARED_GEOMETRY_SESSION_REGIME_LABELS,
+            "same_input_replay_must_be_diagnostic": True,
+            "distinct_query_batch_required_for_query_many": True,
+            "cold_cli_one_shot_is_separate_from_warm_process_fresh": True,
+            "release_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "automatic_partner_selection_authorized": False,
+            "app_specific_native_engine_logic_allowed": False,
+            "metadata": dict(self.metadata),
+            "closed": self._closed,
+            "claim_boundary": PREPARED_GEOMETRY_SESSION_CLAIM_BOUNDARY,
+        }
+        if include_batches:
+            metadata["query_batches"] = tuple(
+                batch.to_metadata() for batch in self._query_batches
+            )
+        return metadata
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        close = getattr(self.owner, "close", None)
+        if callable(close):
+            close()
+        self._closed = True
 
 
 class ExplicitPreparedSessionCache:
@@ -491,6 +814,54 @@ def describe_prepared_session_residency_contract() -> dict[str, Any]:
     }
 
 
+def describe_prepared_geometry_session_contract() -> dict[str, Any]:
+    return {
+        "contract_version": PREPARED_GEOMETRY_SESSION_CONTRACT_VERSION,
+        "api_maturity": PREPARED_GEOMETRY_SESSION_API_MATURITY,
+        "regime_labels": PREPARED_GEOMETRY_SESSION_REGIME_LABELS,
+        "wraps_existing_prepared_session_residency_substrate": True,
+        "requires_explicit_base_fingerprint": True,
+        "requires_explicit_query_batch_fingerprint": True,
+        "same_input_replay_must_be_diagnostic": True,
+        "distinct_query_batch_required_for_query_many": True,
+        "cold_cli_one_shot_is_separate_from_warm_process_fresh": True,
+        "phase_timing_fields_are_metadata_not_measurements": True,
+        "release_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "automatic_partner_selection_authorized": False,
+        "app_specific_native_engine_logic_allowed": False,
+        "claim_boundary": PREPARED_GEOMETRY_SESSION_CLAIM_BOUNDARY,
+    }
+
+
+def prepared_geometry_session(
+    *,
+    primitive: str,
+    backend: str,
+    base_fingerprint: Any,
+    parameters: Mapping[str, Any] | None = None,
+    partner: str = "none",
+    device: str = "unknown",
+    coordinate_domain_fingerprint: Any = "unknown",
+    base_phase_timing: Mapping[str, Any] | None = None,
+    owner: Any = None,
+    metadata: Mapping[str, Any] | None = None,
+) -> PreparedGeometrySession:
+    return PreparedGeometrySession(
+        primitive=primitive,
+        backend=backend,
+        base_fingerprint=base_fingerprint,
+        parameters=parameters,
+        partner=partner,
+        device=device,
+        coordinate_domain_fingerprint=coordinate_domain_fingerprint,
+        base_phase_timing=base_phase_timing,
+        owner=owner,
+        metadata=dict(metadata or {}),
+    )
+
+
 def validate_prepared_session_residency_contract(
     contract: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
@@ -524,6 +895,38 @@ def validate_prepared_session_residency_contract(
     }
 
 
+def validate_prepared_geometry_session_contract(
+    contract: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    metadata = dict(contract or describe_prepared_geometry_session_contract())
+    errors: list[str] = []
+    if metadata.get("contract_version") != PREPARED_GEOMETRY_SESSION_CONTRACT_VERSION:
+        errors.append("unexpected prepared-geometry-session contract version")
+    if tuple(metadata.get("regime_labels", ())) != PREPARED_GEOMETRY_SESSION_REGIME_LABELS:
+        errors.append("prepared-geometry-session regime labels changed")
+    for flag in (
+        "release_authorized",
+        "public_speedup_claim_authorized",
+        "true_zero_copy_claim_authorized",
+        "automatic_partner_selection_authorized",
+        "app_specific_native_engine_logic_allowed",
+    ):
+        if metadata.get(flag):
+            errors.append(f"{flag} must remain false")
+    if not metadata.get("same_input_replay_must_be_diagnostic"):
+        errors.append("same-input replay must remain diagnostic")
+    if not metadata.get("distinct_query_batch_required_for_query_many"):
+        errors.append("query-many must require distinct query batches")
+    if not metadata.get("cold_cli_one_shot_is_separate_from_warm_process_fresh"):
+        errors.append("cold CLI and warm-process fresh regimes must stay separate")
+    return {
+        "contract_version": PREPARED_GEOMETRY_SESSION_CONTRACT_VERSION,
+        "status": "accept" if not errors else "reject",
+        "errors": tuple(errors),
+        "claim_boundary": PREPARED_GEOMETRY_SESSION_CLAIM_BOUNDARY,
+    }
+
+
 def summarize_prepared_session_timing_records(
     records: Iterable[RtdlPreparedSessionTimingRecord],
 ) -> dict[str, Any]:
@@ -545,6 +948,10 @@ def summarize_prepared_session_timing_records(
 
 __all__ = [
     "ExplicitPreparedSessionCache",
+    "PREPARED_GEOMETRY_SESSION_API_MATURITY",
+    "PREPARED_GEOMETRY_SESSION_CLAIM_BOUNDARY",
+    "PREPARED_GEOMETRY_SESSION_CONTRACT_VERSION",
+    "PREPARED_GEOMETRY_SESSION_REGIME_LABELS",
     "PREPARED_SESSION_ALLOWED_BACKENDS",
     "PREPARED_SESSION_ALLOWED_LIFETIME_STATES",
     "PREPARED_SESSION_APP_SPECIFIC_FORBIDDEN_TERMS",
@@ -552,13 +959,18 @@ __all__ = [
     "PREPARED_SESSION_RESIDENCY_CLAIM_BOUNDARY",
     "PREPARED_SESSION_RESIDENCY_STATUS",
     "PREPARED_SESSION_RESIDENCY_VERSION",
+    "PreparedGeometrySession",
+    "PreparedQueryBatch",
     "RtdlPreparedSessionCacheKey",
     "RtdlPreparedSessionResidencyPolicy",
     "RtdlPreparedSessionReuseResult",
     "RtdlPreparedSessionTimingRecord",
+    "describe_prepared_geometry_session_contract",
     "describe_prepared_session_residency_contract",
     "get_or_prepare_explicit_session",
     "make_prepared_session_cache_key",
+    "prepared_geometry_session",
     "summarize_prepared_session_timing_records",
+    "validate_prepared_geometry_session_contract",
     "validate_prepared_session_residency_contract",
 ]

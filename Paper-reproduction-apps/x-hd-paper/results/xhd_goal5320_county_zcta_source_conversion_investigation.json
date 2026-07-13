@@ -1,0 +1,167 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5320.county_zcta_source_conversion_investigation.v1",
+  "goal": "Goal5320",
+  "date": "2026-07-09",
+  "purpose": "Investigate whether the X-HD Figure-5 County-ZCTA row has an available public County source or conversion rule close enough to justify execution beyond bounded Level-B fixtures.",
+  "claim_boundary": {
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "author_rtdl_correctness_claimed": false,
+    "performance_ratio_claimed": false,
+    "new_rtdl_route_code_added": false,
+    "source_conversion_investigation_claimed": true
+  },
+  "paper_target": {
+    "pair": "dtl_cnty.wkt -> uszipcode.wkt",
+    "category": "geo",
+    "author_log_points": {
+      "dtl_cnty.wkt": 9438045,
+      "uszipcode.wkt": 43952878
+    },
+    "author_log_hdresult": 0.4093780517578125,
+    "paper_log_path": "expr/for_the_paper/logs/run_all/rt_gpu/geo/dtl_cnty.wkt_uszipcode.wkt.json"
+  },
+  "exact_dataset_rule": {
+    "sufficient": [
+      "author-provided dtl_cnty.wkt / uszipcode.wkt bytes",
+      "author-provided hashes for those WKT files",
+      "byte-identical deterministic regeneration from a documented author conversion pipeline",
+      "external review accepting a public-source regeneration as exact-equivalent"
+    ],
+    "not_sufficient": [
+      "matching MBR alone",
+      "matching point count alone",
+      "matching HDResult alone",
+      "related RayJoin CDB/topology assets",
+      "current public services with different point counts"
+    ]
+  },
+  "evidence_inputs": [
+    "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5309_full_public_arcgis_probe_summary_2026-07-09.json",
+    "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5302_census_tiger_source_resolution_plan_2026-07-09.json",
+    "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5317_figure5_exact_input_acquisition_gap_matrix.json",
+    "src/rtdsl/datasets.py",
+    "history/internal_docs/docs_reports/goal4374_cleanup_bigtest_2026-06-14/rayjoin_author_call_for_review_2026-06-14.md",
+    "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Census_Counties/FeatureServer/0?f=pjson",
+    "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_ZIP_Code_Areas_anaylsis/FeatureServer/0?f=pjson",
+    "https://www2.census.gov/geo/tiger/TIGER2023/COUNTY/tl_2023_us_county.zip"
+  ],
+  "county_candidates": [
+    {
+      "candidate_id": "arcgis_usa_census_counties_current_service",
+      "source_url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Census_Counties/FeatureServer",
+      "service_item_id": "14c5450526a8430298b2fa74da12c2f4",
+      "layer_name": "dtl_cnty",
+      "feature_count": 3144,
+      "service_description_summary": "2020 U.S. Census County boundaries; sourced from U.S. Census Bureau 2020 TIGER FGDB National Sub-State and TIGER Hydrography to add detailed coastline for cartographic purposes; updated annually.",
+      "has_static_data": true,
+      "data_last_edit_date_epoch_ms": 1732215944128,
+      "author_loader_point_count": 12477179,
+      "paper_point_count": 9438045,
+      "point_count_delta": 3039134,
+      "relative_delta": 0.32200884823075115,
+      "mbr_matches_paper_like": true,
+      "classification": "not_exact__too_many_points_current_service"
+    },
+    {
+      "candidate_id": "census_tiger2023_county_direct_zip_all_records",
+      "source_url": "https://www2.census.gov/geo/tiger/TIGER2023/COUNTY/tl_2023_us_county.zip",
+      "zip_sha256": "692e12c30c83adcaabdbac0d3954fafa55e1c89a24b36d95e72e02dff938652e",
+      "records": 3235,
+      "parts": 3417,
+      "points_all_parts": 8201082,
+      "paper_point_count": 9438045,
+      "point_count_delta": -1236963,
+      "relative_delta": -0.13106135857584914,
+      "mbr": [
+        -179.231086,
+        179.859681,
+        -14.601813,
+        71.439786
+      ],
+      "classification": "not_exact__too_few_points_and_extent_includes_territories"
+    },
+    {
+      "candidate_id": "census_tiger2023_county_direct_zip_50_states_dc_filter",
+      "source_url": "https://www2.census.gov/geo/tiger/TIGER2023/COUNTY/tl_2023_us_county.zip",
+      "filter": "STATEFP in 50 states plus District of Columbia",
+      "records": 3144,
+      "parts": 3315,
+      "points_all_parts": 8081061,
+      "paper_point_count": 9438045,
+      "point_count_delta": -1356984,
+      "relative_delta": -0.14377808115981647,
+      "mbr": [
+        -179.231086,
+        179.859681,
+        18.86546,
+        71.439786
+      ],
+      "classification": "not_exact__same_feature_count_as_arcgis_but_too_few_points"
+    },
+    {
+      "candidate_id": "prior_rayjoin_dtl_cnty_point_cdb",
+      "source": "history/internal_docs/docs_reports/goal4374_cleanup_bigtest_2026-06-14/rayjoin_author_call_for_review_2026-06-14.md",
+      "cdb_name": "dtl_cnty_Point.cdb",
+      "chains": 8662896,
+      "segments": 8662896,
+      "points": 17325792,
+      "paper_point_count": 9438045,
+      "point_count_delta": 7887747,
+      "relative_delta": 0.8357404480008114,
+      "classification": "related_rayjoin_topology_not_xhd_wkt_provenance"
+    }
+  ],
+  "zcta_context": {
+    "arcgis_usa_zip_code_areas_current_service": {
+      "source_url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_ZIP_Code_Areas_anaylsis/FeatureServer",
+      "service_item_id": "d6f7ee6129e241cc9b6f75978e47128b",
+      "layer_name": "zip_poly",
+      "feature_count": 32294,
+      "service_description_summary": "U.S. ZIP Code Boundaries; sourced from TomTom March 2023 and USPS/Esri Demographics; updated annually.",
+      "has_static_data": true,
+      "data_last_edit_date_epoch_ms": 1743641221479,
+      "author_loader_point_count": 43984131,
+      "paper_point_count": 43952878,
+      "point_count_delta": 31253,
+      "relative_delta": 0.0007110569642333773,
+      "classification": "near_paper_count_but_no_hash__not_primary_blocker"
+    }
+  },
+  "interpretation": {
+    "primary_blocker": "County source or conversion rule, not ZCTA and not RTDL execution.",
+    "why": [
+      "The current ArcGIS County service has paper-like MBR but +32.2% more author-loader points than the paper log.",
+      "Direct TIGER2023 County has far fewer points than the paper log, even after filtering to 50 states plus DC.",
+      "The old RayJoin dtl_cnty CDB is a topology/CDB artifact with 17.3M points and is not X-HD WKT provenance.",
+      "ZCTA current public service is comparatively close to the paper count (+0.0711%), so running the pair before resolving County would not solve exact-input identity."
+    ],
+    "county_source_hypotheses_not_yet_proven": [
+      "author used an older Esri/TIGER vintage between direct TIGER2023 and current ArcGIS detailed-coastline point counts",
+      "author used a specific ArcGIS export or simplification tolerance not captured by current service metadata",
+      "author used a WKT conversion/precision rule that drops or merges some current ArcGIS vertices",
+      "author used a preprocessed file from a private HDDatasets snapshot"
+    ]
+  },
+  "exit_label": "county_zcta_exact_provenance_not_found__source_conversion_blocked",
+  "allowed_next_actions": [
+    "seek author dtl_cnty.wkt/uszipcode.wkt files or hashes",
+    "seek archived ArcGIS County export package or older Esri item that could produce about 9.44M loaded points",
+    "search for author conversion scripts or coordinate precision / simplification settings",
+    "keep County-ZCTA as bounded Level-B only until a source/conversion candidate matches the paper count"
+  ],
+  "not_allowed": [
+    "claim County-ZCTA exact paper input recovery",
+    "claim current ArcGIS County service is an exact author input",
+    "claim direct TIGER2023 County is an exact author input",
+    "claim old RayJoin CDB is X-HD WKT provenance",
+    "run a full-public County-ZCTA author/RTDL route as Figure-5 evidence before source/conversion identity changes",
+    "report an author-vs-RTDL performance ratio for this row"
+  ],
+  "pod_usage": {
+    "used": false,
+    "expected_next": false,
+    "reason": "Goal5320 is a source/provenance investigation. POD is only needed if a concrete new County source/conversion candidate appears and requires author/RTDL verification."
+  }
+}

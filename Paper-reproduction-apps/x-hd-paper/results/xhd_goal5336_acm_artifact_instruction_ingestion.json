@@ -1,0 +1,55 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5336.acm_artifact_instruction_ingestion.v1",
+  "goal": "Goal5336",
+  "date": "2026-07-09",
+  "purpose": "Add an app-owned ACM artifact-instruction ingestion manifest builder that computes hashes for artifact-like zip entries and selects the next follow-up gate without running POD.",
+  "status": "acm_artifact_instruction_ingestion_ready__await_real_artifact_zip",
+  "script": {
+    "path": "Paper-reproduction-apps/x-hd-paper/scripts/ingest_xhd_acm_artifact_instructions.py",
+    "input": "local ACM supplement zip",
+    "output_schema": "rtdl.paper_reproduction.xhd.acm_artifact_instruction_ingestion_manifest.v1"
+  },
+  "classification_statuses": [
+    "candidate_bytes_and_hash_material_found",
+    "candidate_bytes_without_hash_material_found",
+    "script_or_instruction_material_found",
+    "no_actionable_artifact_material_found"
+  ],
+  "follow_up_goal_types": [
+    "acm_candidate_bytes_hash_mapping_gate",
+    "acm_candidate_bytes_identity_review",
+    "acm_regeneration_or_instruction_review",
+    "record_acm_no_actionable_artifact"
+  ],
+  "behavior_locked_by_tests": [
+    "candidate bytes plus hash material choose acm_candidate_bytes_hash_mapping_gate",
+    "script/instruction-only material chooses acm_regeneration_or_instruction_review",
+    "manuscript-only zip chooses record_acm_no_actionable_artifact",
+    "invalid zip fails closed",
+    "summary forbids exact/full/performance claims"
+  ],
+  "pod_usage": {
+    "used": false,
+    "expected_next": false,
+    "reason": "Local artifact-instruction classification only. POD is used only in a later provenance gate after artifact entries are mapped to paper workloads and reviewed."
+  },
+  "claim_boundary": {
+    "real_acm_zip_inspected": false,
+    "external_artifacts_acquired": false,
+    "exact_equivalence_accepted": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false
+  },
+  "allowed_summary": "Goal5336 adds an app-owned ACM artifact-instruction ingestion manifest builder for a future real ACM supplement zip. It computes per-entry hashes for artifact-like files and selects a follow-up gate without running POD.",
+  "not_allowed": [
+    "claiming the real ACM supplement has been inspected from synthetic tests",
+    "claiming exact paper dataset reproduction from this manifest alone",
+    "claiming Figure 5 reproduction from this manifest alone",
+    "claiming full X-HD paper reproduction from this manifest alone",
+    "claiming author-vs-RTDL performance ratio from this manifest alone",
+    "running POD directly from this manifest"
+  ],
+  "exit_label": "acm_artifact_instruction_ingestion_ready__await_real_artifact_zip"
+}

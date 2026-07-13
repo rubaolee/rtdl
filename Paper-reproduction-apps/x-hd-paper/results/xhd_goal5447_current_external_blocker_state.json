@@ -1,0 +1,93 @@
+{
+  "allowed_summary": "The X-HD external chain is ready for owner action: requests can be sent and artifacts can be dropped into a fixed gate, but no request is sent, no artifact/response is present, exact input remains blocked, and POD is not next.",
+  "claim_boundary": {
+    "current_external_blocker_state_claimed": true,
+    "exact_equivalence_accepted": false,
+    "exact_input_blocker_removed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_reopened": false,
+    "external_artifacts_acquired": false,
+    "external_response_received": false,
+    "figure5_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "new_rtdl_route_code_added": false,
+    "performance_ratio_claimed": false,
+    "pod_execution_claimed": false,
+    "request_sent_claimed": false,
+    "route_micro_optimization_goal_authorized": false
+  },
+  "current_interfaces": [
+    {
+      "claim_boundary": "prepared_not_sent; request_sent_claimed=false",
+      "interface": "sendable external request bundle",
+      "path": "Paper-reproduction-apps/x-hd-paper/requests/send_bundle",
+      "ready_count": 4,
+      "status": "external_action_dispatch_bundle_ready__not_sent"
+    },
+    {
+      "artifact_candidate_count": 0,
+      "claim_boundary": "hash-and-route only; pod_expected_next=false",
+      "interface": "external artifact dropbox",
+      "path": "Paper-reproduction-apps/x-hd-paper/requests/artifacts",
+      "status": "external_artifact_dropbox_empty__await_authorized_artifact"
+    }
+  ],
+  "date": "2026-07-10",
+  "exit_label": "current_external_blocker_waiting_on_owner_or_external_action",
+  "goal": "Goal5447",
+  "next_action": "owner_send_request_or_place_authorized_artifact_or_wait_for_response",
+  "not_allowed": [
+    "claiming request_sent from prepared requests or stubs",
+    "claiming external artifact acquisition from an empty dropbox",
+    "claiming ACM supplement inspection from file presence alone",
+    "claiming exact paper dataset reproduction",
+    "claiming Figure 5 or full X-HD reproduction",
+    "claiming author-vs-RTDL performance ratio",
+    "running POD or route work from this state",
+    "reopening explicit -lb or route micro-optimization as paper-reproduction progress"
+  ],
+  "not_recommended_next_actions": [
+    "POD execution from the current state",
+    "route micro-optimization",
+    "explicit -lb or row/hash parity work",
+    "performance ratio work",
+    "promoting Level-B scalar evidence to exact paper reproduction"
+  ],
+  "pod_usage": {
+    "expected_next": false,
+    "reason": "Current state has no sent request, no incoming response, no artifact candidate, and no exact-equivalence evidence.",
+    "used": false
+  },
+  "purpose": "Consolidate the post-ACM blocker, external dispatch bundle, and artifact dropbox gate into the current X-HD external blocker node.",
+  "recommended_next_actions": [
+    "owner sends selected request and records a real receipt",
+    "owner places authorized ACM zip / author archive / response JSON in the artifact dropbox and reruns Goal5446",
+    "authorized ACM access or local zip is inspected with the ACM zip inspector",
+    "real external response is normalized and classified with Goal5435/Goal5437"
+  ],
+  "schema": "rtdl.paper_reproduction.xhd.goal5447.current_external_blocker_state.v1",
+  "source_artifacts": {
+    "external_action_dispatch_bundle": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5445_external_action_dispatch_bundle.json",
+    "external_artifact_dropbox_gate": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5446_external_artifact_dropbox_gate.json",
+    "post_acm_blocker_packet": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5444_post_acm_exact_input_blocker_packet.json"
+  },
+  "status": "current_external_blocker_waiting_on_owner_or_external_action",
+  "stop_loss_gate": {
+    "decision": "PASS: blocker governance, not app-artifact parity implementation.",
+    "gate_downstream_consumer_reachable": true,
+    "gate_generic_capability_produced": true,
+    "gate_non_app_consumer": "current external blocker state packet / reproduction-governance workflow",
+    "gate_requires_app_specific_logic": false
+  },
+  "summary": {
+    "exact_input_blocker_removed": false,
+    "external_artifact_candidate_count": 0,
+    "external_artifacts_acquired": false,
+    "external_response_received": false,
+    "full_objective_complete": false,
+    "pod_expected_next": false,
+    "ready_external_request_count": 4,
+    "receipt_stub_count": 4,
+    "request_sent_claimed": false
+  }
+}

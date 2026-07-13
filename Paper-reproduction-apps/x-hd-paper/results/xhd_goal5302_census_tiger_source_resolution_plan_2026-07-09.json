@@ -1,0 +1,243 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5302.census_tiger_source_resolution.v1",
+  "goal": "Goal5302",
+  "generated_on": "2026-07-09",
+  "status": "census_tiger_source_resolution_ready__county_zcta_first__conversion_not_yet_executed",
+  "purpose": "Resolve concrete public-source candidates and conversion requirements for the X-HD non-graphics Census/TIGER-like geo path before any author/RTDL execution.",
+  "scope": {
+    "runs_pod": false,
+    "downloads_large_data": false,
+    "runs_author": false,
+    "runs_rtdl": false,
+    "reason": "This is a source-resolution and conversion-planning gate. Execution should wait until input artifacts exist and claim boundaries are fixed."
+  },
+  "author_geo_contract": {
+    "source_files": [
+      ".codex_tmp/xhd_author_repo/expr/run_fig5.sh",
+      ".codex_tmp/xhd_author_repo/src/loaders/loader.h",
+      "Paper-reproduction-apps/x-hd-paper/results/xhd_author_log_workload_manifest_goal5175_2026-07-08.json"
+    ],
+    "run_fig5_geo_pairs": [
+      {
+        "input1": "dtl_cnty.wkt",
+        "input2": "uszipcode.wkt",
+        "input_type": "wkt",
+        "n_dims": 2,
+        "normalize": false,
+        "pair_role": "County -> ZCTA/zipcode",
+        "first_target": true
+      },
+      {
+        "input1": "USADetailedWaterBodies.wkt",
+        "input2": "USACensusBlockGroupBoundaries.wkt",
+        "input_type": "wkt",
+        "n_dims": 2,
+        "normalize": false,
+        "pair_role": "Water bodies -> Census block groups",
+        "first_target": false
+      },
+      {
+        "input1": "lakes.bz2.wkt",
+        "input2": "parks.bz2.wkt",
+        "input_type": "wkt",
+        "n_dims": 2,
+        "normalize": false,
+        "pair_role": "OSM lakes -> parks",
+        "first_target": false
+      }
+    ],
+    "wkt_loader_semantics": {
+      "accepted_geometry_prefixes": [
+        "MULTIPOLYGON",
+        "POLYGON",
+        "LINESTRING",
+        "MULTILINESTRING",
+        "POINT"
+      ],
+      "polygon_handling": "outer ring vertices only; holes/interior rings are not emitted by author loader",
+      "linestring_handling": "all line vertices are emitted",
+      "point_handling": "one point is emitted",
+      "bad_geometry_behavior": "abort",
+      "implication": "A shapefile-to-WKT converter must preserve one geometry per line and must validate that author loader point counts match expected author-log counts before any comparison."
+    },
+    "author_log_reference_values": [
+      {
+        "pair": "dtl_cnty.wkt -> uszipcode.wkt",
+        "variant": "rt_gpu",
+        "hd_result": 0.4093780517578125,
+        "running_avg_time_ms": 100.604,
+        "input1_points": 9438045,
+        "input2_points": 43952878,
+        "exact_files_available": false
+      },
+      {
+        "pair": "USADetailedWaterBodies.wkt -> USACensusBlockGroupBoundaries.wkt",
+        "variant": "rt_gpu",
+        "hd_result": 0.8964367508888245,
+        "running_avg_time_ms": 84.4008,
+        "input1_points": 22818694,
+        "input2_points": 52271340,
+        "exact_files_available": false
+      }
+    ]
+  },
+  "official_source_evidence": {
+    "census_tiger_2023_page": {
+      "url": "https://www.census.gov/geographies/mapping-files/2023/geo/tiger-line-file.html",
+      "evidence": "Official Census 2023 TIGER/Line page; 2023 shapefiles released Nov. 22, 2023; legal boundaries/names as of Jan. 1, 2023."
+    },
+    "tiger_line_general_page": {
+      "url": "https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html",
+      "evidence": "Official TIGER/Line page; shapefile format is available for 2007 to present and core files contain geographic entity codes."
+    },
+    "zcta_guidance_page": {
+      "url": "https://www.census.gov/programs-surveys/geography/guidance/geo-areas/zctas.html",
+      "evidence": "Official ZCTA guidance; 2020 ZCTA TIGER/Line shapefiles are the relevant Census ZIP-code-area product."
+    },
+    "cartographic_boundary_page": {
+      "url": "https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html",
+      "evidence": "Official cartographic boundary page says cartographic boundary files are simplified representations for small-scale thematic mapping; not preferred for high-point-count X-HD author matching."
+    }
+  },
+  "head_probe_results": [
+    {
+      "url": "https://www2.census.gov/geo/tiger/TIGER2023/COUNTY/tl_2023_us_county.zip",
+      "status": 200,
+      "content_length": 83451409,
+      "interpretation": "national county TIGER candidate exists"
+    },
+    {
+      "url": "https://www2.census.gov/geo/tiger/TIGER2023/ZCTA520/tl_2023_us_zcta520.zip",
+      "status": 200,
+      "content_length": 528313293,
+      "interpretation": "national 2020 ZCTA5 TIGER candidate exists"
+    },
+    {
+      "url": "https://www2.census.gov/geo/tiger/TIGER2023/BG/tl_2023_us_bg.zip",
+      "status": "timeout",
+      "interpretation": "do not assume national BG single-file availability from this probe"
+    },
+    {
+      "url": "https://www2.census.gov/geo/tiger/TIGER2023/BG/tl_2023_01_bg.zip",
+      "status": 200,
+      "content_length": 18774920,
+      "interpretation": "state-based block group shard exists for Alabama"
+    },
+    {
+      "url": "https://www2.census.gov/geo/tiger/TIGER2023/BG/tl_2023_06_bg.zip",
+      "status": 200,
+      "content_length": 52688458,
+      "interpretation": "state-based block group shard exists for California"
+    },
+    {
+      "url": "https://www2.census.gov/geo/tiger/TIGER2023/AREAWATER/tl_2023_01001_areawater.zip",
+      "status": 200,
+      "content_length": 404240,
+      "interpretation": "county-FIPS-based area-water shard exists"
+    }
+  ],
+  "dataset_resolution": [
+    {
+      "author_basename": "dtl_cnty.wkt",
+      "paper_name": "USCounty",
+      "author_log_points": 9438045,
+      "author_log_gini": 0.7746439576148987,
+      "preferred_level_b_candidate": "TIGER2023 national COUNTY shapefile",
+      "preferred_url": "https://www2.census.gov/geo/tiger/TIGER2023/COUNTY/tl_2023_us_county.zip",
+      "alternative_name_matched_source": "ArcGIS USA Census Counties item/service already tracked by RTDL RayJoin assets",
+      "unresolved": [
+        "exact author source year",
+        "whether author used TIGER direct or ArcGIS export",
+        "WKT conversion emits author-log point count",
+        "coordinate precision and one-line geometry formatting"
+      ],
+      "next_step": "Download/convert only after Goal5302 review; first verify point count against author log before author/RTDL comparison."
+    },
+    {
+      "author_basename": "uszipcode.wkt",
+      "paper_name": "USZipcode",
+      "author_log_points": 43952878,
+      "author_log_gini": 0.6120831966400146,
+      "preferred_level_b_candidate": "TIGER2023 national ZCTA520 shapefile",
+      "preferred_url": "https://www2.census.gov/geo/tiger/TIGER2023/ZCTA520/tl_2023_us_zcta520.zip",
+      "alternative_name_matched_source": "ArcGIS USA ZIP Code Boundaries item/service already tracked by RTDL RayJoin assets",
+      "unresolved": [
+        "ZCTA vs commercial ZIP boundary distinction",
+        "exact author source year",
+        "WKT conversion emits author-log point count",
+        "coordinate precision and one-line geometry formatting"
+      ],
+      "next_step": "Pair with dtl_cnty for the first Level-B geo executable candidate after conversion plan is accepted."
+    },
+    {
+      "author_basename": "USADetailedWaterBodies.wkt",
+      "paper_name": "USWater",
+      "author_log_points": 22818694,
+      "author_log_gini": 0.6148413419723511,
+      "preferred_level_b_candidate": "ArcGIS USA Detailed Water Bodies name-matched source, with TIGER2023 AREAWATER shards as official-Census alternative",
+      "preferred_url": "https://hub.arcgis.com/datasets/esri::usa-detailed-water-bodies/about",
+      "official_tiger_alternative_pattern": "https://www2.census.gov/geo/tiger/TIGER2023/AREAWATER/tl_2023_<county_fips>_areawater.zip",
+      "unresolved": [
+        "ArcGIS vs TIGER source identity",
+        "state/county shard aggregation",
+        "author exact export date/snapshot",
+        "WKT conversion emits author-log point count"
+      ],
+      "next_step": "Defer until County-ZCTA path is resolved unless reviewer chooses the water/blockgroup pair first."
+    },
+    {
+      "author_basename": "USACensusBlockGroupBoundaries.wkt",
+      "paper_name": "USCensus",
+      "author_log_points": 52271340,
+      "author_log_gini": 0.6507980823516846,
+      "preferred_level_b_candidate": "TIGER2023 state-based BG shapefiles or ArcGIS USA Census Block Group Boundaries name-matched source",
+      "preferred_url_pattern": "https://www2.census.gov/geo/tiger/TIGER2023/BG/tl_2023_<state_fips>_bg.zip",
+      "alternative_name_matched_source": "ArcGIS USA Census Block Group Boundaries item/service already tracked by RTDL RayJoin assets",
+      "unresolved": [
+        "national aggregation of state BG shards",
+        "exact author source year",
+        "WKT conversion emits author-log point count",
+        "coordinate precision and one-line geometry formatting"
+      ],
+      "next_step": "Defer until County-ZCTA path is resolved unless reviewer chooses the water/blockgroup pair first."
+    }
+  ],
+  "conversion_plan": {
+    "required_converter_contract": [
+      "Read shapefile polygon/line/point geometries and write one WKT geometry per line.",
+      "Prefer detailed TIGER/Line geometry, not simplified cartographic boundary files, unless explicitly marked as a smaller diagnostic.",
+      "For author-equivalent loading, remember author extracts only polygon outer rings and line vertices.",
+      "Record source URL, retrieval date, archive hash, shapefile component hashes, converter version, WKT hash, point count, bounding box, and Gini before execution.",
+      "Fail closed if converted point count differs materially from author-log point count."
+    ],
+    "first_executable_candidate": "dtl_cnty.wkt -> uszipcode.wkt from TIGER2023 COUNTY + ZCTA520 or name-matched ArcGIS exports",
+    "first_gate_type": "Level-B same-source representative only, not exact paper dataset reproduction",
+    "why_first": "National COUNTY and ZCTA520 ZIPs are directly probe-verified and finite; the author log pair is the smaller of the two Census/TIGER-like geo pairs."
+  },
+  "decisions": {
+    "recommended_next_goal": "Goal5303_county_zcta_conversion_probe_plan_or_bounded_fixture",
+    "do_not_run_pod_yet": true,
+    "do_not_claim_exact": true,
+    "do_not_claim_performance_ratio": true,
+    "open_review_questions": [
+      "Should the first executable path use official TIGER2023 files or the older ArcGIS name-matched services tracked by RTDL assets?",
+      "Is point-count matching enough to proceed as Level-B, while still refusing exact status?",
+      "Should WaterBodies/BlockGroups stay deferred until County-ZCTA produces a working conversion gate?"
+    ]
+  },
+  "claim_boundary": {
+    "full_paper_reproduction_claimed": false,
+    "exact_dataset_recovery_claimed": false,
+    "executable_input_artifact_created": false,
+    "author_rtdl_geo_comparison_claimed": false,
+    "performance_ratio_claimed": false,
+    "allowed_summary": "Goal5302 resolves concrete source candidates and conversion contracts for the Census/TIGER-like X-HD geo path; County-ZCTA is the recommended first executable Level-B candidate, but no geo input artifact or comparison exists yet.",
+    "forbidden_summaries": [
+      "Census/TIGER exact paper inputs are recovered",
+      "USCounty/USZipcode comparison is ready to run",
+      "Geo Figure 5 is reproduced",
+      "ArcGIS or TIGER source identity is proven exact",
+      "Performance ratio is available"
+    ]
+  }
+}

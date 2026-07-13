@@ -1,0 +1,80 @@
+{
+  "author": {
+    "command": [
+      "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+      "-geom",
+      "/tmp/goal5519/lakes_collapsed_subset.wkt",
+      "-query",
+      "/tmp/goal5519-lakes/PPoPPAE/datasets/queries/range-contains_queries_100000/lakes.bz2.wkt",
+      "-serialize",
+      "/tmp/librts-serialize/goal5519/lakes_collapsed_subset",
+      "-query_type",
+      "range-contains",
+      "-index_type",
+      "rtspatial",
+      "-load_factor",
+      "0.0001"
+    ],
+    "geometry_count": 2,
+    "loading_ms_diagnostic": 0.2038,
+    "query_count": 100000,
+    "query_ms_internal": 0.0584,
+    "result_count": 0,
+    "stdout": "Loaded polygons 2\nLoaded queries 100000\nQueue size 0 MB\nBVH 149 MB, Geometries 0 MB, AABBs 0 MB, Total 149 MB\nLoading Time 0.2038 ms\nGeoms 2\nQueries 100000\nQuery Time 0.0584 ms\nResults 0\nSelectivity: 0\n"
+  },
+  "claim_boundary": {
+    "core_behavior_changed": false,
+    "embree_in_scope": false,
+    "full_input_result_repaired": false,
+    "generic_operation_semantics_diagnostic": true,
+    "paper_reproduction_claimed": false,
+    "performance_ratio_authorized": false
+  },
+  "diagnosis": {
+    "author_matches_float32_inclusive_oracle": false,
+    "rtdl_strict_validity_filter_drops_all_subset_hits": true,
+    "subset_explains_full_goal5519_delta": false
+  },
+  "float32_boxes": [
+    [
+      -69.73983764648438,
+      -89.96784210205078,
+      -69.73445129394531,
+      -89.96784210205078
+    ],
+    [
+      -67.26188659667969,
+      -89.96714782714844,
+      -67.25595092773438,
+      -89.96714782714844
+    ]
+  ],
+  "float32_inclusive_containment_oracle_count": 79,
+  "float64_boxes": [
+    [
+      -69.73984,
+      -89.967841,
+      -69.734454,
+      -89.967839
+    ],
+    [
+      -67.261889,
+      -89.96715,
+      -67.255948,
+      -89.967146
+    ]
+  ],
+  "query_count": 100000,
+  "rows": [
+    5783378,
+    6569581
+  ],
+  "rtdl": {
+    "backend": "optix",
+    "operation": "range_contains",
+    "optix_library": "/workspace/rtdl-goal5481/build5508degenerate2/librtdl_optix.so",
+    "result_count": 0
+  },
+  "schema": "rtdl.paper_reproduction.librts.goal5519_collapsed_subset_gate.v1",
+  "status": "collapsed_indexed_box_operation_semantics_discriminated"
+}

@@ -1,0 +1,21 @@
+Please review RTDL Goal4900 critically.
+
+Repository:
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review
+
+Primary review request:
+history/internal_docs/call_for_review_goal4900_planar_map_cdb_cache_load_optimization_2026-07-03.md
+
+Main report:
+history/internal_docs/goal4900_planar_map_cdb_cache_load_optimization_report_2026-07-03.md
+
+Please inspect the evidence files and code surfaces named in the call-for-review, then write your review to:
+history/internal_docs/antigravity_goal4900_planar_map_cdb_cache_load_optimization_review_2026-07-03.md
+
+Requested verdict labels:
+- approve_goal4900_generic_cache_load_optimization
+- approve_with_required_amendments
+- block_due_to_overclaim
+- block_due_to_correctness_or_semantics_regression
+
+Be strict about boundaries. Approve only if this is genuinely a generic CDB packed-cache/load optimization, not a hidden RayJoin shortcut, and only if the report avoids claiming RT traversal or broad RayJoin speedups. Pay special attention to the new unexplained ~9.8s gap and whether the proposed next measurement is the right next step.

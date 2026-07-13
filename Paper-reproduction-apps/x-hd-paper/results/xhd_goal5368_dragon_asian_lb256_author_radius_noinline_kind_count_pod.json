@@ -1,0 +1,101 @@
+{
+  "claim_boundary": {
+    "author_rt_core_algorithm_parity_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_support_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "performance_claimed": false,
+    "row_count_parity_claimed": false,
+    "same_denominator_memory_claimed": false
+  },
+  "comparison_to_author": {
+    "author_offloading_size_rows": 27133990,
+    "row_count_parity": false,
+    "row_delta_author_minus_rtdl_kind2": -277847899,
+    "row_ratio_rtdl_kind2_div_author": 11.239846738352892,
+    "rtdl_raw_frontier_kind2_rows": 304981889
+  },
+  "emit_pruned_rows": false,
+  "execution_n_dims": 3,
+  "frontier": {
+    "attempted_count": 589961522,
+    "frontier_row_order": "overflow_telemetry_only",
+    "native_memory_telemetry": {
+      "accel_aabb_input_bytes": 353040,
+      "accel_compacted_output_bytes": 0,
+      "accel_output_bytes": 552064,
+      "accel_temp_build_bytes": 1122560,
+      "attempted_count": 589961522,
+      "cell_buffer_bytes": 1059120,
+      "device_buffer_bytes_excluding_accel": 22066304,
+      "emitted_count": 0,
+      "heavy_offload_current_rows": 0,
+      "heavy_offload_peak_rows": 0,
+      "heavy_offload_queue_current_bytes": 0,
+      "heavy_offload_queue_peak_bytes": 0,
+      "heavy_offload_row_capacity": 0,
+      "heavy_offload_semantics": "Generic cell-MBR offload frontier row telemetry. heavy_offload_* counts rows whose frontier kind is offload; this is a same-shape RTDL worklist candidate, not an author Figure 11 parity claim.",
+      "in_queue_capacity": 589961522,
+      "miss_queue_capacity": 0,
+      "mode_bits": 0,
+      "nearest_buffer_bytes": 0,
+      "query_buffer_bytes": 21006960,
+      "raw_frontier_kind1_rows": 284979633,
+      "raw_frontier_kind2_rows": 304981889,
+      "raw_frontier_kind3_rows": 0,
+      "raw_frontier_kind_counts": {
+        "1": 284979633,
+        "2": 304981889,
+        "3": 0
+      },
+      "raw_frontier_kind_counts_semantics": "Counts attempted generic frontier rows by kind before host row download and host sort/unique. These counters remain available for overflow/count-only diagnostics and do not assert app- or author-specific denominator parity.",
+      "row_buffer_bytes": 0,
+      "schema": "rtdl.optix.cell_mbr_nearest_frontier_3d.memory_telemetry.v3",
+      "semantics": "Native OptiX/CUDA allocation telemetry for the generic cell-MBR nearest-frontier producer. accel_output_bytes is the OptiX GAS output buffer size; accel_temp_build_bytes is a transient build workspace; row/device buffers are route workspace, not author Figure 11 parity.",
+      "target_buffer_bytes": 0
+    },
+    "native_memory_telemetry_collected": true,
+    "native_symbol": "rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v2",
+    "overflow_failure_mode": "fail_closed_overflow_no_rows_returned",
+    "overflow_telemetry_only": true,
+    "overflowed": true,
+    "raw_frontier_kind1_rows": 284979633,
+    "raw_frontier_kind2_rows": 304981889,
+    "raw_frontier_kind3_rows": 0,
+    "raw_frontier_kind_counts": {
+      "1": 284979633,
+      "2": 304981889,
+      "3": 0
+    },
+    "row_capacity": 0,
+    "row_count": 0
+  },
+  "frontier_row_capacity": 0,
+  "grid_cell_builder": "native_cuda",
+  "grid_cell_point_order": "point-id",
+  "grid_shape": [
+    96,
+    60,
+    72
+  ],
+  "input1": "/tmp/xhd_goal5234/data/dragon.ply",
+  "input2": "/tmp/xhd_goal5234/data/asian_dragon.ply",
+  "input_n_dims": 3,
+  "input_type": "ply",
+  "max_inline_points": 256,
+  "paper_app": "x-hd-paper",
+  "point_count_a": 437645,
+  "point_count_b": 3609600,
+  "preprocessing": [
+    "translate_each_input_to_min_bound"
+  ],
+  "purpose": "Generic cell-MBR frontier count-only diagnostic. Counts raw frontier rows by generic kind before host row download/materialization.",
+  "radius": 79.2156982421875,
+  "schema": "rtdl.paper_reproduction.xhd.cell_mbr_frontier_kind_count_probe.v1",
+  "timings_sec": {
+    "frontier_probe": 0.6584436520934105,
+    "grid_cell_mbrs": 0.4719676375389099,
+    "load_inputs": 0.4935736879706383,
+    "total": 1.6275051608681679
+  }
+}

@@ -1,0 +1,61 @@
+diff --git a/src/algo/rt_pip_custom.cu b/src/algo/rt_pip_custom.cu
+index 0dd86e9e..38b0d3c8 100644
+--- a/src/algo/rt_pip_custom.cu
++++ b/src/algo/rt_pip_custom.cu
+@@ -15,6 +15,23 @@ enum { SURFACE_RAY_TYPE = 0, RAY_TYPE_COUNT };
+
+ extern "C" __constant__ rayjoin::LaunchParamsPIP params;
+
++static __forceinline__ __device__ double rayjoin_pip_sos_tie_breaker(
++    double slope, unsigned int query_map_id) {
++  const double pi = 3.141592653589793238462643383279502884;
++  const double half_pi = 1.570796326794896619231321691639751442;
++  double norm_slope = (atan(slope) + half_pi) / pi;
++  if (norm_slope < 0.0) norm_slope = 0.0;
++  if (norm_slope > 1.0) norm_slope = 1.0;
++  return query_map_id == 0 ? norm_slope : (1.0 - norm_slope);
++}
++
++static __forceinline__ __device__ double rayjoin_pip_sos_report_t(
++    double t_edge, double slope, unsigned int query_map_id) {
++  const double factor = t_edge > 1.0 ? t_edge : 1.0;
++  const double tie_breaker = rayjoin_pip_sos_tie_breaker(slope, query_map_id);
++  return t_edge + factor * (1.0 - tie_breaker) * 1.0e-14;
++}
++
+ extern "C" __global__ void __intersection__pip_custom() {
+   using coefficient_t = rayjoin::coefficient_t;
+   using internal_coord_t = typename rayjoin::LaunchParamsPIP::internal_coord_t;
+@@ -38,6 +55,7 @@ extern "C" __global__ void __intersection__pip_custom() {
+ #endif
+
+   auto t = std::numeric_limits<double>::max();
++  auto t_reported = std::numeric_limits<double>::max();
+   rayjoin::index_t best_e_eid = optixGetPayload_3();
+   bool report_xsect = false;
+
+@@ -94,12 +112,13 @@ extern "C" __global__ void __intersection__pip_custom() {
+       bool flag = current_e_slope > best_e_slope;
+
+       /* If im==0 we want the bigger slope, if im==1, the smaller. */
+-      if ((query_map_id && !flag) || (flag && !query_map_id)) {
++      if ((!query_map_id && !flag) || (query_map_id && flag)) {
+         continue;
+       }
+     }
+
+-    t = std::min(t, (scaling.UnscaleY(xsect_y) - scaling.UnscaleY(y_src_p)));
++    t = (scaling.UnscaleY(xsect_y) - scaling.UnscaleY(y_src_p));
++    t_reported = rayjoin_pip_sos_report_t(t, (double)e.a / e.b, query_map_id);
+     best_y = xsect_y;
+     best_e_eid = eid;
+     report_xsect = true;
+@@ -111,7 +130,7 @@ extern "C" __global__ void __intersection__pip_custom() {
+     optixSetPayload_2(best_y_storage.y);
+     optixSetPayload_3(best_e_eid);
+     // we must report intersection to narrow down searching
+-    optixReportIntersection(t, 0);
++    optixReportIntersection(t_reported, 0);
+   }
+ #ifndef NDEBUG
+   params.closer_count[point_idx]++;

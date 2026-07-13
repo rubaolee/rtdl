@@ -1,0 +1,106 @@
+diff --git a/src/algo/launch_parameters.h b/src/algo/launch_parameters.h
+--- a/src/algo/launch_parameters.h
++++ b/src/algo/launch_parameters.h
+@@
+ #ifndef NDEBUG
+   uint32_t *n_tests;
+ #endif
++  unsigned long long* goal4890_total_tests;
+ };
+@@
+ #ifndef NDEBUG
+   uint32_t* hit_count;
+   uint32_t* closer_count;
+   uint32_t* last_update_count;
+   uint32_t* fail_update_count;
+ #endif
++  unsigned long long* goal4890_total_tests;
+ };
+ }  // namespace rayjoin
+ #endif  // RT_LAUNCH_PARAMETERS_H
+diff --git a/src/algo/rt_lsi_custom.cu b/src/algo/rt_lsi_custom.cu
+--- a/src/algo/rt_lsi_custom.cu
++++ b/src/algo/rt_lsi_custom.cu
+@@
+   auto begin_eid = params.eid_range[prim_idx].first;
+   auto end_eid = params.eid_range[prim_idx].second;
++  if (params.goal4890_total_tests != nullptr) {
++    atomicAdd(params.goal4890_total_tests,
++              static_cast<unsigned long long>(end_eid - begin_eid));
++  }
+
+   for (auto base_eid = begin_eid; base_eid < end_eid; base_eid++) {
+diff --git a/src/algo/rt_pip_custom.cu b/src/algo/rt_pip_custom.cu
+--- a/src/algo/rt_pip_custom.cu
++++ b/src/algo/rt_pip_custom.cu
+@@
+   auto begin_eid = params.eid_range[prim_idx].first;
+   auto end_eid = params.eid_range[prim_idx].second;
++  if (params.goal4890_total_tests != nullptr) {
++    atomicAdd(params.goal4890_total_tests,
++              static_cast<unsigned long long>(end_eid - begin_eid));
++  }
+
+   unpack64(best_y_storage.x, best_y_storage.y, &best_y);
+diff --git a/src/app/lsi_rt.h b/src/app/lsi_rt.h
+--- a/src/app/lsi_rt.h
++++ b/src/app/lsi_rt.h
+@@
+ #ifndef NDEBUG
+     params.n_tests = n_tests_.data();
+     n_tests_.set(0, stream);
+ #endif
++    goal4890_total_tests_.resize(1, 0);
++    thrust::fill(goal4890_total_tests_.begin(), goal4890_total_tests_.end(), 0ull);
++    params.goal4890_total_tests =
++        thrust::raw_pointer_cast(goal4890_total_tests_.data());
+     xsects_queue.Clear(stream);
+@@
+ #endif
++    thrust::host_vector<unsigned long long> goal4890_total_tests =
++        goal4890_total_tests_;
++    LOG(INFO) << "GOAL4890_AUTHOR_LSI_TOTAL_TESTS query_map_id="
++              << query_map_id
++              << " query_edges=" << d_query_map.get_edges().size()
++              << " emitted_xsects=" << n_xsects
++              << " total_tests=" << goal4890_total_tests[0];
+   }
+@@
+   QueryConfigRT config_;
+   SharedValue<uint32_t> n_tests_;
++  thrust::device_vector<unsigned long long> goal4890_total_tests_;
+ };
+ }  // namespace rayjoin
+diff --git a/src/app/pip_rt.h b/src/app/pip_rt.h
+--- a/src/app/pip_rt.h
++++ b/src/app/pip_rt.h
+@@
+ #ifndef NDEBUG
+     hit_count_.resize(points_num, 0);
+     closer_count_.resize(points_num, 0);
+@@
+     params.last_update_count = ArrayView<uint32_t>(last_update_count_).data();
+     params.fail_update_count = ArrayView<uint32_t>(fail_update_count_).data();
+ #endif
++    goal4890_total_tests_.resize(1, 0);
++    thrust::fill(goal4890_total_tests_.begin(), goal4890_total_tests_.end(), 0ull);
++    params.goal4890_total_tests =
++        thrust::raw_pointer_cast(goal4890_total_tests_.data());
+     rt_engine_->CopyLaunchParams(stream, params);
+@@
+ #endif
++    thrust::host_vector<unsigned long long> goal4890_total_tests =
++        goal4890_total_tests_;
++    LOG(INFO) << "GOAL4890_AUTHOR_PIP_TOTAL_TESTS query_map_id="
++              << query_map_id
++              << " point_count=" << points_num
++              << " total_tests=" << goal4890_total_tests[0];
+   }
+@@
+   thrust::device_vector<uint32_t> last_update_count_;
+   thrust::device_vector<uint32_t> fail_update_count_;
+ #endif
++  thrust::device_vector<unsigned long long> goal4890_total_tests_;
+ };
+
+ }  // namespace rayjoin

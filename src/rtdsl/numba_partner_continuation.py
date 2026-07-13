@@ -19,6 +19,12 @@ NUMBA_GROUPED_VECTOR_SUM_F64X2_OPERATION = "grouped_vector_sum_f64x2"
 NUMBA_SEGMENTED_MIN_F64_OPERATION = "segmented_min_f64"
 NUMBA_SEGMENTED_MAX_F64_OPERATION = "segmented_max_f64"
 NUMBA_COMPACT_MASK_I64_OPERATION = "compact_mask_i64"
+NUMBA_ADJACENT_MIDPOINT_CANDIDATES_I64X2_BY_KEY_OPERATION = (
+    "adjacent_midpoint_candidates_i64x2_by_key"
+)
+NUMBA_CONSECUTIVE_DEDUPE_MASK_F64X2_OPERATION = "consecutive_dedupe_mask_f64x2"
+NUMBA_RANGE_HAS_SORTED_VALUES_I64_OPERATION = "range_has_sorted_values_i64"
+NUMBA_UINT32_EQUAL_MASK_OPERATION = "uint32_equal_mask"
 NUMBA_GROUPED_ARGMIN_F64_OPERATION = "grouped_argmin_f64"
 NUMBA_GROUPED_ARGMAX_F64_OPERATION = "grouped_argmax_f64"
 NUMBA_GROUPED_TOPK_F64_OPERATION = "grouped_topk_f64"
@@ -98,6 +104,56 @@ def describe_numba_compact_mask_i64() -> dict[str, object]:
     descriptor["output_columns"] = ("values:int64", "original_indices:int64")
     descriptor["stable_input_order"] = True
     descriptor["host_prefix_sum_used"] = True
+    return descriptor
+
+
+def describe_numba_adjacent_midpoint_candidates_i64x2_by_key() -> dict[str, object]:
+    descriptor = _base_numba_descriptor(NUMBA_ADJACENT_MIDPOINT_CANDIDATES_I64X2_BY_KEY_OPERATION)
+    descriptor["input_columns"] = ("keys:int64", "values_x:int64", "values_y:int64")
+    descriptor["output_columns"] = (
+        "mid_x:int64",
+        "mid_y:int64",
+        "left_indices:int64",
+        "valid_mask:bool",
+    )
+    descriptor["requires_sorted_by_key"] = True
+    descriptor["same_key_pair_policy"] = "adjacent_rows_only"
+    descriptor["midpoint_policy"] = "integer_truncating_divide_by_two"
+    descriptor["app_specific_semantics_allowed"] = False
+    descriptor["host_column_materialization_used"] = False
+    return descriptor
+
+
+def describe_numba_consecutive_dedupe_mask_f64x2() -> dict[str, object]:
+    descriptor = _base_numba_descriptor(NUMBA_CONSECUTIVE_DEDUPE_MASK_F64X2_OPERATION)
+    descriptor["input_columns"] = ("values_x:float64", "values_y:float64")
+    descriptor["output_columns"] = ("keep_mask:bool",)
+    descriptor["comparison_policy"] = "exact_float64_pair_equality_against_previous_row"
+    descriptor["stable_input_order"] = True
+    descriptor["app_specific_semantics_allowed"] = False
+    descriptor["host_column_materialization_used"] = False
+    return descriptor
+
+
+def describe_numba_range_has_sorted_values_i64() -> dict[str, object]:
+    descriptor = _base_numba_descriptor(NUMBA_RANGE_HAS_SORTED_VALUES_I64_OPERATION)
+    descriptor["input_columns"] = ("range_starts:int64", "range_lengths:int64", "sorted_values:int64")
+    descriptor["output_columns"] = ("has_value:bool",)
+    descriptor["range_contract"] = "half_open_start_start_plus_length"
+    descriptor["requires_sorted_values"] = True
+    descriptor["app_specific_semantics_allowed"] = False
+    descriptor["host_column_materialization_used"] = False
+    return descriptor
+
+
+def describe_numba_uint32_equal_mask() -> dict[str, object]:
+    descriptor = _base_numba_descriptor(NUMBA_UINT32_EQUAL_MASK_OPERATION)
+    descriptor["input_columns"] = ("values:uint32",)
+    descriptor["scalar_inputs"] = ("target:uint32",)
+    descriptor["output_columns"] = ("mask:bool",)
+    descriptor["comparison_policy"] = "exact_uint32_equality_against_scalar_target"
+    descriptor["app_specific_semantics_allowed"] = False
+    descriptor["host_column_materialization_used"] = False
     return descriptor
 
 
@@ -233,7 +289,7 @@ def run_numba_segmented_count_i64(
     """Run the v2.5 Numba segmented-count continuation pilot."""
 
     cuda, np = _import_numba_stack()
-    _validate_numba_cuda_vector(group_ids, name="group_ids", dtype=np.int64)
+    group_ids = _as_numba_cuda_vector(group_ids, name="group_ids", dtype=np.int64, cuda=cuda, np=np)
     group_count, block_size, row_count = _validate_group_run_shape(
         group_ids,
         group_count=group_count,
@@ -1226,6 +1282,249 @@ def run_numba_mask_indices_i64(
     return run_numba_compact_mask_i64(values, mask, block_size=block_size)
 
 
+def run_numba_adjacent_midpoint_candidates_i64x2_by_key(
+    keys: Any,
+    values_x: Any,
+    values_y: Any,
+    *,
+    block_size: int = 256,
+) -> dict[str, object]:
+    """Emit same-key adjacent integer midpoint candidates over CUDA columns.
+
+    This is a generic Layer-2 numeric continuation. It assumes callers have
+    already sorted rows by key and any app-specific tie keys. The output keeps a
+    candidate row for every adjacent pair position and uses ``valid_mask`` to
+    mark positions where ``keys[i] == keys[i + 1]``.
+    """
+
+    cuda, np = _import_numba_stack()
+    keys = _as_numba_cuda_vector(keys, name="keys", dtype=np.int64, cuda=cuda, np=np)
+    values_x = _as_numba_cuda_vector(values_x, name="values_x", dtype=np.int64, cuda=cuda, np=np)
+    values_y = _as_numba_cuda_vector(values_y, name="values_y", dtype=np.int64, cuda=cuda, np=np)
+    if not (tuple(keys.shape) == tuple(values_x.shape) == tuple(values_y.shape)):
+        raise ValueError("keys, values_x, and values_y must have the same shape")
+    block_size = int(block_size)
+    if block_size <= 0:
+        raise ValueError("block_size must be positive")
+    row_count = int(keys.shape[0])
+    candidate_count = max(0, row_count - 1)
+
+    cuda.synchronize()
+    started = perf_counter()
+    mid_x = cuda.device_array((candidate_count,), dtype=np.int64)
+    mid_y = cuda.device_array((candidate_count,), dtype=np.int64)
+    left_indices = cuda.device_array((candidate_count,), dtype=np.int64)
+    valid_mask = cuda.device_array((candidate_count,), dtype=np.bool_)
+    if candidate_count:
+        grid = ((candidate_count + block_size - 1) // block_size,)
+        _cached_numba_kernel(cuda, _numba_adjacent_midpoint_candidates_i64x2_by_key_kernel)[
+            grid,
+            block_size,
+        ](
+            keys,
+            values_x,
+            values_y,
+            mid_x,
+            mid_y,
+            left_indices,
+            valid_mask,
+            candidate_count,
+        )
+    cuda.synchronize()
+    elapsed = perf_counter() - started
+    return _numba_run_result(
+        operation=NUMBA_ADJACENT_MIDPOINT_CANDIDATES_I64X2_BY_KEY_OPERATION,
+        outputs={
+            "mid_x": mid_x,
+            "mid_y": mid_y,
+            "left_indices": left_indices,
+            "valid_mask": valid_mask,
+        },
+        elapsed=elapsed,
+        source="run_numba_adjacent_midpoint_candidates_i64x2_by_key",
+        extra_metadata={
+            "row_count": row_count,
+            "candidate_count": candidate_count,
+            "requires_sorted_by_key": True,
+            "same_key_pair_policy": "adjacent_rows_only",
+            "midpoint_policy": "integer_truncating_divide_by_two",
+            "host_column_materialization_used": False,
+            "app_specific_semantics_allowed": False,
+        },
+    )
+
+
+def run_numba_consecutive_dedupe_mask_f64x2(
+    values_x: Any,
+    values_y: Any,
+    *,
+    block_size: int = 256,
+) -> dict[str, object]:
+    """Mark exact consecutive duplicate float64 x/y rows over CUDA columns."""
+
+    cuda, np = _import_numba_stack()
+    values_x = _as_numba_cuda_vector(values_x, name="values_x", dtype=np.float64, cuda=cuda, np=np)
+    values_y = _as_numba_cuda_vector(values_y, name="values_y", dtype=np.float64, cuda=cuda, np=np)
+    if tuple(values_x.shape) != tuple(values_y.shape):
+        raise ValueError("values_x and values_y must have the same shape")
+    block_size = int(block_size)
+    if block_size <= 0:
+        raise ValueError("block_size must be positive")
+    row_count = int(values_x.shape[0])
+
+    cuda.synchronize()
+    started = perf_counter()
+    keep_mask = cuda.device_array((row_count,), dtype=np.bool_)
+    if row_count:
+        grid = ((row_count + block_size - 1) // block_size,)
+        _cached_numba_kernel(cuda, _numba_consecutive_dedupe_mask_f64x2_kernel)[grid, block_size](
+            values_x,
+            values_y,
+            keep_mask,
+            row_count,
+        )
+    cuda.synchronize()
+    elapsed = perf_counter() - started
+    return _numba_run_result(
+        operation=NUMBA_CONSECUTIVE_DEDUPE_MASK_F64X2_OPERATION,
+        outputs={"keep_mask": keep_mask},
+        elapsed=elapsed,
+        source="run_numba_consecutive_dedupe_mask_f64x2",
+        extra_metadata={
+            "row_count": row_count,
+            "comparison_policy": "exact_float64_pair_equality_against_previous_row",
+            "stable_input_order": True,
+            "host_column_materialization_used": False,
+            "app_specific_semantics_allowed": False,
+        },
+    )
+
+
+def run_numba_range_has_sorted_values_i64(
+    range_starts: Any,
+    range_lengths: Any,
+    sorted_values: Any,
+    *,
+    block_size: int = 256,
+    validate_inputs: bool = True,
+) -> dict[str, object]:
+    """Report whether sorted int64 values intersect each half-open range."""
+
+    cuda, np = _import_numba_stack()
+    range_starts = _as_numba_cuda_vector(
+        range_starts,
+        name="range_starts",
+        dtype=np.int64,
+        cuda=cuda,
+        np=np,
+    )
+    range_lengths = _as_numba_cuda_vector(
+        range_lengths,
+        name="range_lengths",
+        dtype=np.int64,
+        cuda=cuda,
+        np=np,
+    )
+    sorted_values = _as_numba_cuda_vector(
+        sorted_values,
+        name="sorted_values",
+        dtype=np.int64,
+        cuda=cuda,
+        np=np,
+    )
+    if tuple(range_starts.shape) != tuple(range_lengths.shape):
+        raise ValueError("range_starts and range_lengths must have the same shape")
+    if validate_inputs:
+        host_lengths = range_lengths.copy_to_host()
+        if bool((host_lengths < 0).any()):
+            raise ValueError("range_lengths must be non-negative")
+        host_values = sorted_values.copy_to_host()
+        if int(host_values.size) > 1 and bool((host_values[1:] < host_values[:-1]).any()):
+            raise ValueError("sorted_values must be sorted in nondecreasing order")
+    block_size = int(block_size)
+    if block_size <= 0:
+        raise ValueError("block_size must be positive")
+    range_count = int(range_starts.shape[0])
+    value_count = int(sorted_values.shape[0])
+
+    cuda.synchronize()
+    started = perf_counter()
+    has_value = cuda.device_array((range_count,), dtype=np.bool_)
+    if range_count:
+        grid = ((range_count + block_size - 1) // block_size,)
+        _cached_numba_kernel(cuda, _numba_range_has_sorted_values_i64_kernel)[grid, block_size](
+            range_starts,
+            range_lengths,
+            sorted_values,
+            has_value,
+            range_count,
+            value_count,
+        )
+    cuda.synchronize()
+    elapsed = perf_counter() - started
+    return _numba_run_result(
+        operation=NUMBA_RANGE_HAS_SORTED_VALUES_I64_OPERATION,
+        outputs={"has_value": has_value},
+        elapsed=elapsed,
+        source="run_numba_range_has_sorted_values_i64",
+        extra_metadata={
+            "range_count": range_count,
+            "value_count": value_count,
+            "range_contract": "half_open_start_start_plus_length",
+            "requires_sorted_values": True,
+            "input_validation_host_sync_used": bool(validate_inputs),
+            "host_column_materialization_used": False,
+            "app_specific_semantics_allowed": False,
+        },
+    )
+
+
+def run_numba_uint32_equal_mask(
+    values: Any,
+    *,
+    target: int,
+    block_size: int = 256,
+) -> dict[str, object]:
+    """Mark uint32 device rows equal to a scalar target."""
+
+    cuda, np = _import_numba_stack()
+    values = _as_numba_cuda_vector(values, name="values", dtype=np.uint32, cuda=cuda, np=np)
+    target = int(target)
+    if target < 0 or target > 0xFFFFFFFF:
+        raise ValueError("target must fit uint32")
+    block_size = int(block_size)
+    if block_size <= 0:
+        raise ValueError("block_size must be positive")
+    row_count = int(values.shape[0])
+
+    cuda.synchronize()
+    started = perf_counter()
+    mask = cuda.device_array((row_count,), dtype=np.bool_)
+    if row_count:
+        grid = ((row_count + block_size - 1) // block_size,)
+        _cached_numba_kernel(cuda, _numba_uint32_equal_mask_kernel)[grid, block_size](
+            values,
+            target,
+            mask,
+            row_count,
+        )
+    cuda.synchronize()
+    elapsed = perf_counter() - started
+    return _numba_run_result(
+        operation=NUMBA_UINT32_EQUAL_MASK_OPERATION,
+        outputs={"mask": mask},
+        elapsed=elapsed,
+        source="run_numba_uint32_equal_mask",
+        extra_metadata={
+            "row_count": row_count,
+            "target": target,
+            "comparison_policy": "exact_uint32_equality_against_scalar_target",
+            "host_column_materialization_used": False,
+            "app_specific_semantics_allowed": False,
+        },
+    )
+
+
 def _run_numba_segmented_extreme_f64(
     group_ids: Any,
     values: Any,
@@ -1965,6 +2264,77 @@ def _numba_compact_scatter_i64_kernel(cuda: Any):
         output_index = block_offsets[block] + local_rank
         compact_values[output_index] = values[index]
         original_indices[output_index] = index
+
+    return kernel
+
+
+def _numba_adjacent_midpoint_candidates_i64x2_by_key_kernel(cuda: Any):
+    @cuda.jit(device=True)
+    def trunc_div2(value):
+        if value >= 0:
+            return value // 2
+        return -((-value) // 2)
+
+    @cuda.jit
+    def kernel(keys, values_x, values_y, mid_x, mid_y, left_indices, valid_mask, candidate_count):
+        index = cuda.grid(1)
+        if index < candidate_count:
+            left_indices[index] = index
+            same_key = keys[index] == keys[index + 1]
+            valid_mask[index] = same_key
+            if same_key:
+                mid_x[index] = trunc_div2(int(values_x[index]) + int(values_x[index + 1]))
+                mid_y[index] = trunc_div2(int(values_y[index]) + int(values_y[index + 1]))
+            else:
+                mid_x[index] = 0
+                mid_y[index] = 0
+
+    return kernel
+
+
+def _numba_consecutive_dedupe_mask_f64x2_kernel(cuda: Any):
+    @cuda.jit
+    def kernel(values_x, values_y, keep_mask, row_count):
+        index = cuda.grid(1)
+        if index < row_count:
+            if index == 0:
+                keep_mask[index] = True
+            else:
+                keep_mask[index] = (
+                    values_x[index] != values_x[index - 1]
+                    or values_y[index] != values_y[index - 1]
+                )
+
+    return kernel
+
+
+def _numba_range_has_sorted_values_i64_kernel(cuda: Any):
+    @cuda.jit
+    def kernel(range_starts, range_lengths, sorted_values, has_value, range_count, value_count):
+        index = cuda.grid(1)
+        if index >= range_count:
+            return
+        start = range_starts[index]
+        stop = start + range_lengths[index]
+        lo = 0
+        hi = value_count
+        while lo < hi:
+            mid = (lo + hi) // 2
+            if sorted_values[mid] < start:
+                lo = mid + 1
+            else:
+                hi = mid
+        has_value[index] = lo < value_count and sorted_values[lo] < stop
+
+    return kernel
+
+
+def _numba_uint32_equal_mask_kernel(cuda: Any):
+    @cuda.jit
+    def kernel(values, target, mask, row_count):
+        index = cuda.grid(1)
+        if index < row_count:
+            mask[index] = values[index] == target
 
     return kernel
 

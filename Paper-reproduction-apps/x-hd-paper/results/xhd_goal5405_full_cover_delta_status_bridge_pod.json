@@ -1,0 +1,270 @@
+{
+  "claim_boundary": {
+    "author_rt_core_algorithm_parity_claimed": false,
+    "bounded_full_cover_delta_bridge_claimed": true,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_support_claimed": false,
+    "figure11_reproduction_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "generic_multiround_reference_shape_reused": true,
+    "generic_native_status_state_smoke_reused": true,
+    "goal5387_feedback_parity_claimed": false,
+    "goal5387_hash_sample_parity_claimed": false,
+    "goal5387_row_count_parity_claimed": false,
+    "performance_ratio_claimed": false,
+    "same_denominator_memory_claimed": false
+  },
+  "comparisons": {
+    "goal5394_shape_matches_target": true,
+    "multiround_reference_total_rows_matched": true,
+    "native_current_best_after_matched": true,
+    "native_feedback_count_zero_matched": true,
+    "native_hash_matched_expected": true,
+    "native_row_count_matched_expected": true,
+    "native_sample_matched_expected": true,
+    "native_status_count_matched_expected": true,
+    "overflow_fail_closed_matched": true
+  },
+  "expected_rows": {
+    "active_count": 2,
+    "base_rows_per_active": 56,
+    "delta_rows_per_active": 6,
+    "expected_total_rows": 124,
+    "total_rows_per_active": 62
+  },
+  "expected_trace_summary": {
+    "active_query_count": 2,
+    "app_semantics": "none",
+    "contract": "generic_active_query_status_trace_summary_v1",
+    "hash_columns": [
+      "source_ids",
+      "cell_ids"
+    ],
+    "metadata": {
+      "adapter": "active_query_status_trace_summary_numpy_columns",
+      "app_semantics": "none",
+      "contract": "generic_active_query_status_trace_summary_v1",
+      "default_hash_offset": 1469598103934665603,
+      "explicit_app_option_support_claimed": false,
+      "hash_contract": "fnv1a_u64_over_selected_int64_columns",
+      "native_engine_row_contract": "not_called_cpu_reference_only",
+      "partner": "numpy",
+      "rt_core_speedup_claim_authorized": false,
+      "whole_app_speedup_claim_authorized": false
+    },
+    "raw_offload_row_hash": 3623014471670323363,
+    "row_count": 124,
+    "sample_columns": [
+      "source_ids",
+      "cell_ids",
+      "active_queue_indices",
+      "query_row_ids",
+      "status_codes",
+      "transition_phase_codes"
+    ],
+    "sample_indices": [
+      0,
+      62,
+      123
+    ],
+    "samples": {
+      "active_queue_indices": [
+        0,
+        1,
+        1
+      ],
+      "cell_ids": [
+        100000,
+        101006,
+        901005
+      ],
+      "query_row_ids": [
+        0,
+        1,
+        1
+      ],
+      "source_ids": [
+        11168,
+        210712,
+        210712
+      ],
+      "status_codes": [
+        2,
+        2,
+        2
+      ],
+      "transition_phase_codes": [
+        1,
+        1,
+        1
+      ]
+    },
+    "schema": "rtdl.generic.active_query_status_trace_summary.v1",
+    "status_count_offloading": 124
+  },
+  "fixture": "bounded_two_active_queries_56_base_plus_6_delta_rows_per_active",
+  "goal": "Goal5405",
+  "matched": true,
+  "multiround_reference_shape": {
+    "app_semantics": "none",
+    "contract": "generic_active_query_multiround_status_reference_v1",
+    "expected_base_rows": 112,
+    "expected_delta_rows": 12,
+    "expected_total_rows": 124,
+    "raw_offload_rows_before_sort_reduce": 124,
+    "rounds": [
+      {
+        "aborted_row_count": 0,
+        "active_query_count": 2,
+        "candidate_row_count": 112,
+        "completed_row_count": 0,
+        "feedback_row_count": 0,
+        "feedback_updates_applied": 0,
+        "miss_row_count": 0,
+        "next_active_query_count": 2,
+        "offload_row_count": 112,
+        "round_index": 0
+      },
+      {
+        "aborted_row_count": 0,
+        "active_query_count": 2,
+        "candidate_row_count": 12,
+        "completed_row_count": 0,
+        "feedback_row_count": 0,
+        "feedback_updates_applied": 0,
+        "miss_row_count": 0,
+        "next_active_query_count": 2,
+        "offload_row_count": 12,
+        "round_index": 1
+      }
+    ],
+    "total_feedback_updates": 0
+  },
+  "native_result_metadata": {
+    "attempted_count": 124,
+    "backend": "native",
+    "claim_boundary": "Generic native active-query status-state smoke. This is not an application option implementation, not a row/hash parity claim, and not a paper performance claim.",
+    "contract": "generic_active_query_status_state_machine_native_spike_v1",
+    "explicit_app_option_support_claimed": false,
+    "native_backend_complete": false,
+    "native_engine_customization": false,
+    "native_generic_symbol": "rtdl_optix_active_query_status_state_machine_smoke_v1",
+    "overflowed": false,
+    "primitive": "ACTIVE_QUERY_STATUS_STATE_MACHINE_SMOKE",
+    "row_capacity": 124,
+    "row_schema": [
+      "active_queue_indices",
+      "query_row_ids",
+      "source_ids",
+      "cell_ids",
+      "status_codes",
+      "transition_phase_codes",
+      "current_best_before_sq",
+      "current_best_after_sq"
+    ],
+    "rt_core_accelerated": false,
+    "telemetry": {
+      "active_query_count": 2,
+      "candidate_row_count": 124,
+      "feedback_row_count": 0,
+      "feedback_update_count": 0,
+      "overflowed": false,
+      "raw_offload_row_count": 124,
+      "status_count_offloading": 124
+    },
+    "valid_count": 124
+  },
+  "next_gate_decision": {
+    "bounded_full_cover_delta_bridge_passed": true,
+    "full_goal5387_gate_authorized_by_goal5405": false,
+    "reason_full_gate_still_pending": "The bounded 56+6 rows/active bridge matches a small full-cover-delta-shaped fixture. Full Goal5387 parity still requires generating the real full-public row stream and comparing 27,133,990 rows plus hash/status/feedback against the author oracle.",
+    "recommended_next_goal_if_passed": "Goal5406_real_full_cover_surface_or_full_goal5387_stream_gate"
+  },
+  "observed_trace_summary": {
+    "active_query_count": 2,
+    "app_semantics": "none",
+    "contract": "generic_active_query_status_trace_summary_v1",
+    "hash_columns": [
+      "source_ids",
+      "cell_ids"
+    ],
+    "metadata": {
+      "adapter": "active_query_status_trace_summary_numpy_columns",
+      "app_semantics": "none",
+      "contract": "generic_active_query_status_trace_summary_v1",
+      "default_hash_offset": 1469598103934665603,
+      "explicit_app_option_support_claimed": false,
+      "hash_contract": "fnv1a_u64_over_selected_int64_columns",
+      "native_engine_row_contract": "not_called_cpu_reference_only",
+      "partner": "numpy",
+      "rt_core_speedup_claim_authorized": false,
+      "whole_app_speedup_claim_authorized": false
+    },
+    "raw_offload_row_hash": 3623014471670323363,
+    "row_count": 124,
+    "sample_columns": [
+      "source_ids",
+      "cell_ids",
+      "active_queue_indices",
+      "query_row_ids",
+      "status_codes",
+      "transition_phase_codes"
+    ],
+    "sample_indices": [
+      0,
+      62,
+      123
+    ],
+    "samples": {
+      "active_queue_indices": [
+        0,
+        1,
+        1
+      ],
+      "cell_ids": [
+        100000,
+        101006,
+        901005
+      ],
+      "query_row_ids": [
+        0,
+        1,
+        1
+      ],
+      "source_ids": [
+        11168,
+        210712,
+        210712
+      ],
+      "status_codes": [
+        2,
+        2,
+        2
+      ],
+      "transition_phase_codes": [
+        1,
+        1,
+        1
+      ]
+    },
+    "schema": "rtdl.generic.active_query_status_trace_summary.v1",
+    "status_count_offloading": 124
+  },
+  "overflow_probe": {
+    "capacity": 123,
+    "message": "Native active-query status-state smoke output overflowed; attempted 124; capacity 123; failure_mode=fail_closed_overflow; partial_result_returned=False",
+    "message_contains_fail_closed_overflow": true,
+    "raised": true
+  },
+  "schema": "rtdl.paper_reproduction.xhd.goal5405.full_cover_delta_status_bridge.v1",
+  "status": "bounded_full_cover_delta_status_bridge_passed",
+  "target_shape": {
+    "author_rows_per_active": 62,
+    "goal5394_shape_matches_target": true,
+    "missing_rows_per_active": 6,
+    "missing_rows_to_author": 2625870,
+    "selected_rows_per_active": 56,
+    "selected_surface_rows": 24508120
+  }
+}

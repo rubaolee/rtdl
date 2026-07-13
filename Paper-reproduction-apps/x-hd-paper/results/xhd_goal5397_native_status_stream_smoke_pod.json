@@ -1,0 +1,117 @@
+{
+  "claim_boundary": {
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_support_claimed": false,
+    "figure11_reproduction_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "hash_sample_parity_claimed": false,
+    "native_v7_symbol_smoke_claimed": true,
+    "performance_ratio_claimed": false,
+    "row_count_parity_claimed": false
+  },
+  "columns": {
+    "active_queue_indices": [
+      0,
+      1,
+      0,
+      1
+    ],
+    "cell_ids": [
+      10,
+      10,
+      11,
+      11
+    ],
+    "current_best_after_sq": [
+      NaN,
+      NaN,
+      NaN,
+      NaN
+    ],
+    "current_best_before_sq": [
+      NaN,
+      NaN,
+      NaN,
+      NaN
+    ],
+    "query_row_ids": [
+      0,
+      1,
+      0,
+      1
+    ],
+    "source_ids": [
+      100,
+      101,
+      100,
+      101
+    ],
+    "status_codes": [
+      2,
+      2,
+      2,
+      2
+    ],
+    "transition_phase_codes": [
+      2,
+      2,
+      2,
+      2
+    ]
+  },
+  "fixture": "synthetic_two_query_two_cell_status_stream",
+  "goal": "Goal5397",
+  "matched": true,
+  "native_result_metadata": {
+    "attempted_count": 4,
+    "backend": "optix",
+    "claim_boundary": "Generic native active-query status-stream rows. This is not an application option implementation, not a row/hash parity claim, and not a paper performance claim.",
+    "contract": "generic_active_query_status_stream_native_abi_v1",
+    "emit_pruned_rows": true,
+    "explicit_app_option_support_claimed": false,
+    "frontier_status_probe_mode": "default",
+    "frontier_status_probe_mode_code": 0,
+    "inline_nearest": false,
+    "native_backend_complete": false,
+    "native_engine_customization": false,
+    "native_generic_symbol": "rtdl_optix_collect_active_query_status_stream_3d_v1",
+    "overflowed": false,
+    "primitive": "ACTIVE_QUERY_STATUS_STREAM_3D",
+    "row_capacity": 16,
+    "row_schema": [
+      "active_queue_indices",
+      "query_row_ids",
+      "source_ids",
+      "cell_ids",
+      "status_codes",
+      "transition_phase_codes",
+      "current_best_before_sq",
+      "current_best_after_sq"
+    ],
+    "rt_core_accelerated": true,
+    "valid_count": 4
+  },
+  "observed": {
+    "active_queue_indices": [
+      0,
+      1
+    ],
+    "attempted_count": 4,
+    "cell_ids": [
+      10,
+      11
+    ],
+    "source_ids": [
+      100,
+      101
+    ],
+    "status_codes": [
+      2
+    ],
+    "status_codes_are_offload": true,
+    "valid_count": 4
+  },
+  "schema": "rtdl.paper_reproduction.xhd.goal5397.native_status_stream_smoke.v1",
+  "status": "native_v7_status_stream_smoke_passed"
+}

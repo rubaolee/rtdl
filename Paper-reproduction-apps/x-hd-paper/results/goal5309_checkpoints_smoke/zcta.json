@@ -1,0 +1,51 @@
+{
+  "author_loader_point_count": 513559,
+  "complete": false,
+  "features_seen": 100,
+  "geometry_types": {
+    "MultiPolygon": 20,
+    "Polygon": 80
+  },
+  "key": "zcta",
+  "mbr": [
+    -178.332237,
+    179.778465,
+    23.05702,
+    70.4082487
+  ],
+  "mbr_delta": {
+    "x_lower": 0.8151018671875079,
+    "x_upper": 7.358398448786829e-06,
+    "y_lower": 37.605711749572755,
+    "y_upper": -0.9822313415039048
+  },
+  "object_id_max": 100,
+  "object_id_min": 1,
+  "pages_seen": 1,
+  "paper_basename": "uszipcode.wkt",
+  "paper_mbr": {
+    "x": [
+      -179.1473388671875,
+      179.77845764160156
+    ],
+    "y": [
+      -14.548691749572754,
+      71.3904800415039
+    ]
+  },
+  "paper_point_count": 43952878,
+  "point_count_delta": -43439319,
+  "point_count_relative_delta": -0.9883156911818152,
+  "sample_labels": [
+    "00001",
+    "00002",
+    "00003",
+    "00004",
+    "00005",
+    "00006",
+    "00007",
+    "00008"
+  ],
+  "service_feature_count": 32294,
+  "service_url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_ZIP_Code_Areas_anaylsis/FeatureServer"
+}

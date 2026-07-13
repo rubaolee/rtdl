@@ -1,0 +1,36 @@
+{
+  "claim_boundary": {
+    "device_resident_carrier": false,
+    "fresh_one_shot_headline": false,
+    "prewarm_time_excluded_from_route_window": false,
+    "route": "fast_pack_writer_free_binary",
+    "ten_x_claim_authorized": false,
+    "true_query_many_measurement": false
+  },
+  "prewarm_enabled": false,
+  "prewarm_result": null,
+  "regime": "warm_process_fresh_fastpack_route_window",
+  "route_elapsed_sec": 24.793032117187977,
+  "schema": "rtdl.goal5007.p3_fastpack_fresh_probe.v1",
+  "summary_compact": {
+    "descriptor_pair_count": 15014,
+    "downstream_floor_sec": 1.6196485199034214,
+    "key_phase_seconds": {
+      "grouped_compiled_columnar_carrier_construction_sec": 0.169885179027915,
+      "grouped_descriptor_pair_count_consumer_sec": 0.0176753718405962,
+      "intersection_reprojection_device_columnar_sec": 0.6068557240068913,
+      "lsi_bounded_exact_pair_id_device_columns_sec": 2.6750498097389936,
+      "midpoint_pip_map0_sec": 0.00394962914288044,
+      "midpoint_pip_map1_sec": 0.004552099853754044,
+      "midpoint_points_map0_columnar_sec": 0.018391720950603485,
+      "midpoint_points_map1_columnar_sec": 0.011563250795006752,
+      "sort_map0_device_columnar_sec": 0.2828625310212374,
+      "sort_map1_device_columnar_sec": 0.09884942881762981,
+      "vertex_pip_map0_in_map1_sec": 0.06072348728775978,
+      "vertex_pip_map1_in_map0_sec": 0.3432426042854786
+    },
+    "lsi_phase_sec": 2.6750498097389936,
+    "lsi_row_count": 428322,
+    "writer_free_hot_sec": 4.294698329642415
+  }
+}

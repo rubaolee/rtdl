@@ -21,7 +21,7 @@ from examples.current.apps.analytics import rtdl_graph_analytics_app
 from examples.current.features.spatial import rtdl_polygon_pair_overlap_area_rows
 from examples.current.features.spatial import rtdl_polygon_set_jaccard
 from examples.current.apps.geospatial import rtdl_sales_risk_screening
-from examples.internal.archived_apps import rtdl_v0_7_db_app_demo
+from history.examples_internal.internal.archived_apps import rtdl_v0_7_db_app_demo
 from rtdsl.partner_adapters import metric_table_payload_to_partner_columns
 from rtdsl.partner_adapters import partner_metric_table_reduce_batch
 from rtdsl.partner_adapters import partner_metric_table_reduce_repeated_pattern

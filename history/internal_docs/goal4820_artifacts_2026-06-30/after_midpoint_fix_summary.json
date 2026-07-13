@@ -1,0 +1,110 @@
+{
+  "answer_bytes": 16631243,
+  "answer_sha256": "464f87a59cc2428f63cbfe5068965d7bc7adb8eee51e9c1e3a5960ae8b76019e",
+  "byte_equal": true,
+  "elapsed_sec": 6.219067253172398,
+  "output_bytes": 16631243,
+  "output_sha256": "464f87a59cc2428f63cbfe5068965d7bc7adb8eee51e9c1e3a5960ae8b76019e",
+  "result": {
+    "backend": "optix",
+    "input_shape": {
+      "map0_chains": 16545,
+      "map0_edges": 326193,
+      "map0_points": 342738,
+      "map1_chains": 7950,
+      "map1_edges": 251011,
+      "map1_points": 258961
+    },
+    "lsi": {
+      "intersection_count": 20860,
+      "predicate_contract": "rayjoin_author_lsi_intersect_test_endpoint_collinear_contract"
+    },
+    "midpoint_pip": {
+      "map0_midpoints_in_map1": 944,
+      "map0_positive_faces": 934,
+      "map1_midpoints_in_map0": 3594,
+      "map1_positive_faces": 3189
+    },
+    "native_timings": {
+      "lsi": {
+        "candidate_count_pass": 0.000213735,
+        "candidate_download": 0.0,
+        "candidate_write_pass": 0.0,
+        "emitted_count": 20860,
+        "exact_refine": 0.0,
+        "hot_call_sec": 0.9044910818338394,
+        "left_upload": 0.0,
+        "mode": "count_prepared_left_grouped_range_direct_intersection",
+        "raw_candidate_count": 0
+      },
+      "midpoint_pip_map0_in_map1": {
+        "hot_call_sec": 0.008660778403282166,
+        "mode": "rows",
+        "point_count": 944,
+        "point_upload": 3.4555e-05,
+        "positive_face_count": 934,
+        "row_download": 2.0619e-05,
+        "traversal": 0.008271132
+      },
+      "midpoint_pip_map1_in_map0": {
+        "hot_call_sec": 0.00654178112745285,
+        "mode": "rows",
+        "point_count": 3594,
+        "point_upload": 2.3044e-05,
+        "positive_face_count": 3189,
+        "row_download": 2.2422e-05,
+        "traversal": 0.006163132
+      },
+      "point_location_prepare_map0_in_map1": {
+        "hot_call_sec": 0.5514039769768715,
+        "mode": "prepare"
+      },
+      "point_location_prepare_map1_in_map0": {
+        "hot_call_sec": 0.033064015209674835,
+        "mode": "prepare"
+      },
+      "vertex_pip_map0_in_map1": {
+        "hot_call_sec": 0.08897348493337631,
+        "mode": "rows",
+        "point_count": 342738,
+        "point_upload": 0.001310496,
+        "positive_face_count": 337691,
+        "row_download": 0.000512382,
+        "traversal": 0.072020726
+      },
+      "vertex_pip_map1_in_map0": {
+        "hot_call_sec": 0.0393264964222908,
+        "mode": "rows",
+        "point_count": 258961,
+        "point_upload": 0.000986803,
+        "positive_face_count": 255272,
+        "row_download": 0.000397835,
+        "traversal": 0.032043312
+      }
+    },
+    "output": {
+      "assembled": true,
+      "chain_count": 64459,
+      "face_count": 19399,
+      "path": "/workspace/rtdl_goal4820_artifacts/after_midpoint_fix/rtdl_overlay_output.txt"
+    },
+    "phase_seconds": {
+      "lsi_row_object_materialize_sec": 0.06466201692819595,
+      "lsi_row_sort_sec": 0.04412000626325607,
+      "output_chain_assembly_sec": 1.0420779511332512,
+      "output_chain_write_sec": 0.6370981708168983,
+      "pack_inputs_sec": 0.6638376489281654,
+      "point_location_prepare_sec": 0.5844679921865463,
+      "point_location_prepare_wall_sec": 0.5845410451292992,
+      "total_sec": 4.126685306429863
+    },
+    "program": "overlay",
+    "schema": "rtdl.rayjoin.overlay_rtdl_run.v1",
+    "vertex_pip": {
+      "map0_points_in_map1": 342738,
+      "map0_positive_faces": 337691,
+      "map1_points_in_map0": 258961,
+      "map1_positive_faces": 255272
+    }
+  }
+}

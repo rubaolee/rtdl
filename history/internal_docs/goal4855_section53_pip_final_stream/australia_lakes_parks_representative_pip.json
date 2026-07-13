@@ -1,0 +1,144 @@
+{
+  "authorpatch": {
+    "command": [
+      "/workspace/RayJoin_goal4834_patched_author/release/bin/query_exec",
+      "-poly1",
+      "/workspace/goal4848_rep/current_osm_au/lakes_Australia_current_osm_Point.cdb",
+      "-poly2",
+      "/workspace/goal4848_rep/current_osm_au/parks_Australia_current_osm_Point.cdb",
+      "-serialize=/dev/shm",
+      "-grid_size=15000",
+      "-mode=rt",
+      "-v=1",
+      "-fau",
+      "-xsect_factor",
+      "0.1",
+      "-enlarge=3.5",
+      "-check=false",
+      "-warmup=0",
+      "-repeat=1",
+      "-query=pip"
+    ],
+    "elapsed_sec": 1.739043913781643,
+    "returncode": 0,
+    "stderr_path": "/tmp/goal4855_section53_pip_final_stream/australia_lakes_parks_representative.authorpatch.stderr",
+    "stderr_tail": "I20260701 19:19:28.278702 109556 planar_graph.h:215] Map /dev/shm/-workspace-goal4848_rep-current_osm_au-lakes_Australia_current_osm_Point.cdb.bin is deserialized, chains: 357910 points: 14788065 edges: 14430155\nI20260701 19:19:28.362784 109556 planar_graph.h:215] Map /dev/shm/-workspace-goal4848_rep-current_osm_au-parks_Australia_current_osm_Point.cdb.bin is deserialized, chains: 51130 points: 992505 edges: 941375\nI20260701 19:19:28.362934 109556 context.h:51] Bounding Box, Bottom-left: (73.3779, -54.7704), Top-right: (167.97, -9.23206)\nI20260701 19:19:28.362978 109556 context.h:58] Scaled Bounding Box, Bottom-left: (-68911715173538, -67408242083296), Top-right: (68911715173537, 67408242083295)\nI20260701 19:19:28.362991 109556 context.h:61] Unscaled Bounding Box, Bottom-left: (73.3779, -54.7704), Top-right: (167.97, -9.23206)\nI20260701 19:19:28.514214 109556 rt_engine.cu:282] Info: Pipeline statistics\n\tmodule(s)                            :     1\n\tentry function(s)                    :     2\n\ttrace call(s)                        :     1\n\tcontinuation callable call(s)        :     0\n\tdirect callable call(s)              :     0\n\tbasic block(s) in entry functions    :    23\n\tinstruction(s) in entry functions    :   646\n\tnon-entry function(s)                :     1\n\tbasic block(s) in non-entry functions:     1\n\tinstruction(s) in non-entry functions:     1\n\tdebug information                    :    no\nI20260701 19:19:28.523799 109556 rt_engine.cu:282] Info: Pipeline statistics\n\tmodule(s)                            :     1\n\tentry function(s)                    :     2\n\ttrace call(s)                        :     1\n\tcontinuation callable call(s)        :     0\n\tdirect callable call(s)              :     0\n\tbasic block(s) in entry functions    :    61\n\tinstruction(s) in entry functions    :   966\n\tnon-entry function(s)                :     1\n\tbasic block(s) in non-entry functions:     1\n\tinstruction(s) in non-entry functions:     1\n\tdebug information                    :    no\nI20260701 19:19:28.537086 109556 primitive.h:256] Enlarge limit: 3.5 max iter:5 ne: 14430155 aabbs: 2640424 Compress ratio: 0.81702 Time: 11.882 ms\nI20260701 19:19:28.537196 109556 rt_engine.cu:397] Building AS, num prims: 2640424, Required Temp Size: 201086976 Output Size: 98791040\nI20260701 19:19:28.550097 109556 rt_engine.h:159] Parm size: 152\nI20260701 19:19:28.550136 109556 rt_engine.cu:554] optixLaunch, [w,h,d] = 992505,1,1\nTiming results:\n - Read map 0: 1252.6 ms\n\n - Read map 1: 83.8571 ms\n\n - Load Data: 39.8841 ms\n\n - Create App: 121.478 ms\n\n - Init: 0.813007 ms\n\n - Adaptive Grouping: 11.935 ms\n\n - Build Index: 12.882 ms\n\n - Warmup: 0.00119209 ms\n\n - Query: 6.73485 ms\n\n - Cleanup: 8.02302 ms\n",
+    "stdout_path": "/tmp/goal4855_section53_pip_final_stream/australia_lakes_parks_representative.authorpatch.stdout",
+    "stdout_tail": ""
+  },
+  "authorpatch_command_shape": "query_exec -query=pip -mode=rt -grid_size=15000 -xsect_factor 0.1 -enlarge=3.5",
+  "claim_boundary": {
+    "all_eight_exact_paper_pairs_claim": false,
+    "broad_speedup_claim": false,
+    "bundled_rayjoin_helper_used": false,
+    "directed_point_location_public_primitive_used": true,
+    "section53_pip_count_only": true,
+    "section57_overlay_claim": false,
+    "streaming_packer_uses_internal_layout_for_memory_safety": true
+  },
+  "direction_mode": "section53_poly2_in_poly1",
+  "directions": {
+    "section53_poly2_vertices_in_poly1": {
+      "base_dataset": "/workspace/goal4848_rep/current_osm_au/lakes_Australia_current_osm_Point.cdb",
+      "base_segments": 14430155,
+      "chunk_count": 2,
+      "chunk_size": 500000,
+      "chunks": [
+        {
+          "chunk_elapsed_sec": 0.8115785047411919,
+          "chunk_index": 1,
+          "count_wall_sec": 0.8115713372826576,
+          "first_point_id": 1,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.0018711,
+            "positive_face_count": 15989,
+            "row_download": 3.6489e-05,
+            "traversal": 0.795375589
+          },
+          "pack_points_sec": 0.0041489750146865845,
+          "point_count": 500000,
+          "positive_face_count": 15989
+        },
+        {
+          "chunk_elapsed_sec": 0.8125837445259094,
+          "chunk_index": 2,
+          "count_wall_sec": 0.8125784024596214,
+          "first_point_id": 500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 492505,
+            "point_upload": 0.001831865,
+            "positive_face_count": 13730,
+            "row_download": 2.1361e-05,
+            "traversal": 0.797696202
+          },
+          "pack_points_sec": 0.00396515429019928,
+          "point_count": 492505,
+          "positive_face_count": 13730
+        }
+      ],
+      "env_values": {
+        "RTDL_RAYJOIN_CDB_QUERY_MAP_ID": "1",
+        "RTDL_RAYJOIN_CDB_SCALE_MAX_X": "167.9699741",
+        "RTDL_RAYJOIN_CDB_SCALE_MAX_Y": "-9.2320578",
+        "RTDL_RAYJOIN_CDB_SCALE_MIN_X": "73.3778761",
+        "RTDL_RAYJOIN_CDB_SCALE_MIN_Y": "-54.7704428"
+      },
+      "positive_face_count": 29719,
+      "query_dataset": "/workspace/goal4848_rep/current_osm_au/parks_Australia_current_osm_Point.cdb",
+      "query_map_id": 1,
+      "query_points": 992505,
+      "timings_sec": {
+        "count_total_wall": 1.624149739742279,
+        "native_traversal_total": 1.593071791,
+        "pack_base_segments_stream": 40.932340770959854,
+        "pack_query_points_stream": 0.008114129304885864,
+        "prepare": 2.413695029914379,
+        "total_direction_observed": 44.97018554061651
+      }
+    }
+  },
+  "input_stats": {
+    "poly1": {
+      "chain_count": 357910,
+      "max_x": 167.9699741,
+      "max_y": -9.2320578,
+      "min_x": 73.3778761,
+      "min_y": -54.7704428,
+      "path": "/workspace/goal4848_rep/current_osm_au/lakes_Australia_current_osm_Point.cdb",
+      "point_count": 14788065,
+      "segment_count": 14430155
+    },
+    "poly2": {
+      "chain_count": 51130,
+      "max_x": 167.9654646,
+      "max_y": -10.430788,
+      "min_x": 105.6713281,
+      "min_y": -43.3160294,
+      "path": "/workspace/goal4848_rep/current_osm_au/parks_Australia_current_osm_Point.cdb",
+      "point_count": 992505,
+      "segment_count": 941375
+    },
+    "scan_timings_sec": {
+      "poly1": 22.102195017039776,
+      "poly2": 1.516329862177372
+    }
+  },
+  "label": "australia_lakes_parks_representative",
+  "paper_section": "5.3 PIP Performance",
+  "poly1": "/workspace/goal4848_rep/current_osm_au/lakes_Australia_current_osm_Point.cdb",
+  "poly2": "/workspace/goal4848_rep/current_osm_au/parks_Australia_current_osm_Point.cdb",
+  "rtdl_public_api": "prepare_directed_segment_point_location_2d_optix",
+  "scale_bounds": [
+    73.3778761,
+    167.9699741,
+    -54.7704428,
+    -9.2320578
+  ],
+  "schema": "rtdl.goal4855.section53_pip_streaming_front_door.v2",
+  "section53_direction_contract": "query_exec -query=pip probes poly2/map1 vertices against poly1/map0",
+  "section53_positive_faces": 29719,
+  "streaming_adapter": "user-side CDB streaming packer for large public inputs"
+}

@@ -1,0 +1,254 @@
+{
+  "author_rt_summary": {
+    "algorithm_equivalence_claimed": false,
+    "author_algorithm_semantics": [
+      "X-HD ray-tracing route over uniform-grid tight cell MBRs.",
+      "Uses radius-growing iterations, OptiX custom primitives, early-break and prune flags, load-balance threshold lb, and heavy-cell offload queues.",
+      "Records Grid/BVH/MBRs/WL/WL Heavy Peak memory and iteration RTTime/CUDATime/OffloadingSize."
+    ],
+    "author_flag": "rt",
+    "author_impl": "HausdorffDistanceRT",
+    "author_reported_algorithm": "XHD",
+    "current_rtdl_status_from_goal5351": "partial_level_b_value_route",
+    "performance_equivalence_claimed": false
+  },
+  "claim_boundary": {
+    "author_rt_core_algorithm_parity_claimed": false,
+    "author_rt_option_surface_complete_claimed": false,
+    "figure11_reproduction_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "figure8_reproduction_claimed": false,
+    "figure9_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false
+  },
+  "current_wrapper_surface": {
+    "all_author_rt_options_observed": false,
+    "author_rt_option_surface_observed": {
+      "eb": false,
+      "fast_build_bvh": false,
+      "lb": false,
+      "n_points_cell": false,
+      "prune": false,
+      "rebuild_bvh": false,
+      "tune_grid": false,
+      "tune_radius": false
+    },
+    "author_variant_names_supported": [
+      "eb",
+      "nn",
+      "itk",
+      "clover",
+      "rt"
+    ],
+    "interpretation": "The wrapper accepts author variant names and RTDL route controls, but it does not yet expose the author RT option surface for BVH build/update policy, early-break, prune, load-balance, n_points_cell, tune_grid, or tune_radius.",
+    "path": "Paper-reproduction-apps\\x-hd-paper\\scripts\\run_xhd_rtdl_hd_exec.py",
+    "rtdl_route_labels": [
+      "auto",
+      "public-columnar",
+      "cell-mbr-fast-scalar",
+      "cell-mbr-exact-witness"
+    ]
+  },
+  "date": "2026-07-09",
+  "exit_label": "rt_core_feature_parity_matrix_ready__next_target_author_rt_option_surface",
+  "feature_matrix": [
+    {
+      "author_semantics": "Author -variant rt selects the X-HD RT implementation.",
+      "blocking_for_full_functionality": true,
+      "current_rtdl": "RTDL accepts -variant rt and returns directed HDResult through a selected RTDL route.",
+      "evidence": [
+        "Goal5349",
+        "Goal5351",
+        "run_xhd_rtdl_hd_exec.py"
+      ],
+      "key": "rt_variant_value_surface",
+      "next_action": "Keep value compatibility, but do not treat this as author RT-core algorithm identity.",
+      "same_functionality_status": "partial_value_route_only"
+    },
+    {
+      "author_semantics": "Author RT supports RT-specific controls such as radius, eb/prune, lb, n_points_cell, and tune_radius.",
+      "blocking_for_full_functionality": true,
+      "current_rtdl": "The wrapper accepts author variant names and RTDL route controls, but it does not yet expose the author RT option surface for BVH build/update policy, early-break, prune, load-balance, n_points_cell, tune_grid, or tune_radius.",
+      "evidence": [
+        "Goal5351",
+        "run_xhd_rtdl_hd_exec.py"
+      ],
+      "key": "author_rt_option_surface",
+      "next_action": "Add an app-owned author RT option-surface gate: either implement semantics for each flag, map it to a generic RTDL control with evidence, or fail closed with an explicit unsupported status.",
+      "same_functionality_status": "not_reproduced"
+    },
+    {
+      "author_semantics": "Author RT organizes target points into a uniform grid and tight cell MBRs used as OptiX custom primitives.",
+      "blocking_for_full_functionality": true,
+      "current_rtdl": "Generic grid/cell descriptors and native cell-MBR traversal exist and are used by the Level-B route, but exact author grid sizing and kernel/SBT identity are not claimed.",
+      "evidence": [
+        "Goals5138-5150",
+        "Goal5216",
+        "Goal5350"
+      ],
+      "key": "uniform_grid_and_cell_mbr_target_structure",
+      "next_action": "Keep the generic cell-MBR substrate; compare author grid sizing and n_points_cell semantics before claiming RT-core equivalence.",
+      "same_functionality_status": "partial_generic_route"
+    },
+    {
+      "author_semantics": "Author RT uses radius-growing iterations and tune_radius / n_points_cell decisions in the X-HD route.",
+      "blocking_for_full_functionality": true,
+      "current_rtdl": "RTDL has grid-shape and seed controls, but no proven author-equivalent radius growth or tune-radius policy.",
+      "evidence": [
+        "Goal5284",
+        "Goal5351"
+      ],
+      "key": "radius_growth_and_tune_radius",
+      "next_action": "Open a focused radius-growth semantics goal: extract author iteration inputs/counters and decide whether a generic radius schedule API is needed.",
+      "same_functionality_status": "not_reproduced"
+    },
+    {
+      "author_semantics": "Author EB/prune controls point-level culling and RT pruning behavior.",
+      "blocking_for_full_functionality": true,
+      "current_rtdl": "RTDL has a generic global-bound early break that preserves exact directed-HD scalar values but may make per-source witnesses approximate.",
+      "evidence": [
+        "Goal5211",
+        "Goal5350"
+      ],
+      "key": "early_break_prune_scalar_contract",
+      "next_action": "Separate exact-scalar and exact-witness contracts. Do not use the fast scalar route as witness parity evidence.",
+      "same_functionality_status": "partial_scalar_value_only"
+    },
+    {
+      "author_semantics": "Author RT uses lb-controlled load balancing and heavy-cell CUDA offload, with OffloadingSize / RTTime / CUDATime iteration fields.",
+      "blocking_for_full_functionality": true,
+      "current_rtdl": "RTDL has generic heavy-offload row shape and telemetry, but the author queue byte denominator and Figure 7 matrix are not aligned.",
+      "evidence": [
+        "Goal5279",
+        "Goal5281",
+        "Goal5282",
+        "Goal5292"
+      ],
+      "key": "load_balance_and_heavy_cell_offload",
+      "next_action": "Target a denominator-aligned load-balance/offload gate before any Figure 7 or heavy-offload performance claim.",
+      "same_functionality_status": "partial_shape_and_telemetry_only"
+    },
+    {
+      "author_semantics": "Author reports Grid, BVH, MBRs, WL, and WL Heavy Peak memory fields.",
+      "blocking_for_full_functionality": true,
+      "current_rtdl": "RTDL status-bearing memory accounting exists for selected routes, but Goal5282 shows WL and WL Heavy Peak denominators are not fully aligned.",
+      "evidence": [
+        "Goal5273",
+        "Goal5275",
+        "Goal5282"
+      ],
+      "key": "figure11_memory_fields",
+      "next_action": "Do not claim Figure 11 reproduction until byte denominators and field semantics are matched or explicitly accepted as different.",
+      "same_functionality_status": "partial_not_same_denominator"
+    },
+    {
+      "author_semantics": "Figure 5 compares X-HD with EB, NN-KD, NN-Clover, ITK, and RT-HDIST baselines over paper workload families.",
+      "blocking_for_full_functionality": true,
+      "current_rtdl": "RTDL accepts variant names as value requests only; non-rt algorithms and RT-HDIST external baseline are not reproduced.",
+      "evidence": [
+        "Goal5288",
+        "Goal5351"
+      ],
+      "key": "figure5_author_variant_performance_matrix",
+      "next_action": "Decide which Figure 5 baselines are external comparisons and which, if any, RTDL intentionally implements as generic algorithms.",
+      "same_functionality_status": "not_reproduced"
+    },
+    {
+      "author_semantics": "Full paper reproduction requires exact paper input bytes or accepted exact-equivalence provenance.",
+      "blocking_for_full_functionality": true,
+      "current_rtdl": "Current best evidence is Level-B same-source representative; exact paper input identity remains blocked.",
+      "evidence": [
+        "Goal5345",
+        "Goal5346",
+        "Goal5350"
+      ],
+      "key": "exact_paper_input_identity",
+      "next_action": "Resume exact-input execution only if Goal5345 readiness changes and a command-ready real artifact packet exists.",
+      "same_functionality_status": "blocking_gap"
+    }
+  ],
+  "goal": "Goal5352",
+  "input_artifacts": {
+    "goal5282_offload_mapping": {
+      "exit_label": null,
+      "goal": "Goal5282",
+      "path": "Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5282_author_offload_mapping_2026-07-09.json",
+      "schema": "rtdl.paper_reproduction.xhd.goal5282.author_offload_mapping.v1",
+      "status": "xhd_bounded_offload_mapping_ready__figure11_same_denominator_not_met"
+    },
+    "goal5284_auto_tune_matrix": {
+      "exit_label": null,
+      "goal": "Goal5284",
+      "path": "Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5284_figure9_auto_tune_semantics_matrix_2026-07-09.json",
+      "schema": "rtdl.paper_reproduction.xhd.figure9_auto_tune_semantics.v1",
+      "status": "figure9_auto_tune_mapping_ready__figure9_not_reproduced"
+    },
+    "goal5288_figure5_timing": {
+      "exit_label": null,
+      "goal": "Goal5288",
+      "path": "Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5288_figure5_timing_denominator_audit_2026-07-09.json",
+      "schema": "rtdl.paper_reproduction.xhd.goal5288.figure5_timing_denominator_audit.v1",
+      "status": "figure5_author_timing_denominator_audit_ready__figure5_not_reproduced"
+    },
+    "goal5292_figure7_load_balance": {
+      "exit_label": null,
+      "goal": "Goal5292",
+      "path": "Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5292_figure7_load_balance_audit_2026-07-09.json",
+      "schema": "rtdl.paper_reproduction.xhd.figure7_load_balance_audit.v1",
+      "status": "figure7_load_balance_source_audit_ready__figure7_not_reproduced__lb_comparison_logs_missing"
+    },
+    "goal5350_functional_matrix": {
+      "exit_label": "functional_parity_matrix_amended_after_witness_and_variant_audits__full_parity_still_false",
+      "goal": "Goal5350",
+      "path": "Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5350_functional_parity_matrix_amendment.json",
+      "schema": "rtdl.paper_reproduction.xhd.goal5350.functional_parity_matrix_amendment.v1",
+      "status": "implemented_review_pending"
+    },
+    "goal5351_variant_semantics": {
+      "exit_label": "author_variant_semantics_audit_ready__non_rt_algorithm_parity_not_closed",
+      "goal": "Goal5351",
+      "path": "Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5351_author_variant_semantics_audit.json",
+      "schema": "rtdl.paper_reproduction.xhd.goal5351.author_variant_semantics_audit.v1",
+      "status": "author_variant_semantics_audit_ready__algorithm_parity_not_closed"
+    }
+  },
+  "purpose": "Convert the author X-HD RT-core semantics and existing RTDL evidence into a concrete same-functionality gap matrix.",
+  "recommended_next_targets": [
+    {
+      "priority": 1,
+      "reason": "The user-facing author RT flag surface is not reproduced. A gate should classify each option as implemented, mapped, or fail-closed unsupported.",
+      "target": "author_rt_option_surface_gate"
+    },
+    {
+      "priority": 2,
+      "reason": "This is central to the author X-HD RT algorithm and Figure 8/9 behavior; current RTDL has grid/seed controls but no proven author-equivalent policy.",
+      "target": "radius_growth_and_tune_radius_semantics"
+    },
+    {
+      "priority": 3,
+      "reason": "RTDL has generic offload shape and telemetry, but Figure 7/11 denominators remain non-aligned.",
+      "target": "load_balance_heavy_offload_denominator_gate"
+    }
+  ],
+  "same_functionality_rollup": {
+    "author_rt_core_algorithm_parity_ready": false,
+    "blocking_feature_count": 9,
+    "closed_features": [],
+    "full_xhd_paper_reproduction_ready": false,
+    "not_closed_features": [
+      "rt_variant_value_surface",
+      "author_rt_option_surface",
+      "uniform_grid_and_cell_mbr_target_structure",
+      "radius_growth_and_tune_radius",
+      "early_break_prune_scalar_contract",
+      "load_balance_and_heavy_cell_offload",
+      "figure11_memory_fields",
+      "figure5_author_variant_performance_matrix",
+      "exact_paper_input_identity"
+    ]
+  },
+  "schema": "rtdl.paper_reproduction.xhd.goal5352.rt_core_feature_parity_matrix.v1",
+  "status": "rt_core_feature_parity_matrix_ready__author_rt_algorithm_parity_not_closed"
+}

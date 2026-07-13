@@ -1,0 +1,27 @@
+Please perform an independent technical review of Goal4941 in the RTDL workspace.
+
+Read:
+
+- history/internal_docs/call_for_review_goal4941_layer2_numba_columnar_continuations_2026-07-04.md
+- history/internal_docs/goal4941_layer2_numba_columnar_continuations_2026-07-04.md
+- history/internal_docs/goal4941_pod_artifacts/layer2_numba_continuations_smoke.json
+- src/rtdsl/partner_continuation_protocol.py
+- src/rtdsl/numba_partner_continuation.py
+- src/rtdsl/__init__.py
+- tests/goal4941_layer2_numba_columnar_continuations_test.py
+
+Answer all six review questions from the call-for-review file.
+
+Write the review to:
+
+history/internal_docs/antigravity_goal4941_layer2_numba_columnar_continuations_review_2026-07-04.md
+
+Use one of these verdict labels:
+
+- approve_goal4941_layer2_generic_numba_continuations
+- redo_goal4941_due_to_genericity_or_execution_gap
+- reject_goal4941_as_duplicate_or_wrong_layer
+
+Be strict: Goal4941 is not allowed to claim RayJoin speedup. It only succeeds if
+the operations are genuinely generic Layer 2 Numba continuations and the POD
+evidence proves real CUDA execution.

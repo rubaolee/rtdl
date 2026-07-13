@@ -1,0 +1,33 @@
+{
+  "cmd": [
+    "python3",
+    "Paper-reproduction-apps/x-hd-paper/scripts/run_xhd_rtdl_hd_exec.py",
+    "-input1",
+    "/tmp/xhd_goal5298/data/thai_statuette_scaled_1e-3.ply",
+    "-input2",
+    "/tmp/xhd_goal5298/data/happy_buddha.ply",
+    "-input_type",
+    "ply",
+    "-n_dims",
+    "3",
+    "-variant",
+    "rt",
+    "-execution",
+    "gpu",
+    "-json",
+    "/tmp/xhd_goal5299/results/thai_happy_rtdl_fast_scalar.json",
+    "-overwrite=true",
+    "-check=false",
+    "--rtdl-route",
+    "cell-mbr-fast-scalar",
+    "--translate-each-input-to-min-bound",
+    "--grid-shape",
+    "32,32,32",
+    "--max-inline-points",
+    "512"
+  ],
+  "returncode": 0,
+  "process_wall_sec": 2.927066244184971,
+  "stdout_tail": "",
+  "stderr_tail": ""
+}

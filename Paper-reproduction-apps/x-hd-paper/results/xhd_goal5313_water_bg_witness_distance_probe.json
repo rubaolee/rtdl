@@ -1,0 +1,33 @@
+{
+  "author_goal5311_same_public_hd_result": 0.8970130085945129,
+  "diff_float32_vs_paper_log": 0.0,
+  "diff_float64_vs_author_same_public": -0.0005749519255028313,
+  "diff_float64_vs_rtdl": 0.0,
+  "distance_after_float32_rounding": 0.8964367528460481,
+  "distance_after_float32_rounding_sq": 0.8035988518531667,
+  "distance_float32_numpy": 0.8964367508888245,
+  "distance_float64": 0.8964380566690101,
+  "distance_float64_sq": 0.8036011894445114,
+  "goal": "Goal5313",
+  "interpretation": {
+    "author_same_public_mismatch_not_explained_by_this_witness_pair": true,
+    "full_public_author_scalar_match_closed": false,
+    "rtdl_witness_pair_float32_matches_paper_log": true,
+    "rtdl_witness_pair_is_self_consistent": true
+  },
+  "paper_branch_log_hd_result": 0.8964367508888245,
+  "rtdl_goal5312_hd_result": 0.8964380566690101,
+  "schema": "rtdl.paper_reproduction.xhd.goal5313.water_bg_witness_distance_probe.v1",
+  "source_artifact": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5313_water_source_13579843.json",
+  "source_coordinate_float64": [
+    -81.9999084473,
+    44.5000190735
+  ],
+  "source_index": 13579843,
+  "target_artifact": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5313_bg_target_22441127.json",
+  "target_coordinate_float64": [
+    -82.7264814704,
+    43.974954476
+  ],
+  "target_index": 22441127
+}

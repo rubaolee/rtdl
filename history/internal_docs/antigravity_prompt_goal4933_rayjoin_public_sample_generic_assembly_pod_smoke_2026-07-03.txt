@@ -1,0 +1,26 @@
+Please review the following RTDL Goal4933 packet.
+
+Call for review:
+history/internal_docs/call_for_review_goal4933_rayjoin_public_sample_generic_assembly_pod_smoke_2026-07-03.md
+
+Primary report:
+history/internal_docs/goal4933_rayjoin_public_sample_generic_assembly_pod_smoke_2026-07-03.md
+
+POD artifacts:
+history/internal_docs/goal4933_pod_artifacts/summary.json
+history/internal_docs/goal4933_pod_artifacts/section57_overlay.json
+history/internal_docs/goal4933_pod_artifacts/section57_overlay_numba.json
+history/internal_docs/goal4933_pod_artifacts/section52_lsi.json
+history/internal_docs/goal4933_pod_artifacts/section53_pip.json
+
+Please answer the review questions in the call-for-review file and write the result to:
+
+history/internal_docs/antigravity_goal4933_rayjoin_public_sample_generic_assembly_pod_smoke_review_2026-07-03.md
+
+Important:
+
+- Be strict.
+- Do not approve any broad RayJoin speedup.
+- The expected honest outcome may be "correct but not faster".
+- Verify that the generic assembly layer is actually on path.
+- Verify that the timing interpretation does not misuse the cache-state total elapsed number.

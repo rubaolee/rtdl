@@ -1,0 +1,344 @@
+{
+  "answer": "/workspace/RayJoin_fresh/test/dataset/br_countyXbr_soil_answer.txt",
+  "answer_sha256": "464f87a59cc2428f63cbfe5068965d7bc7adb8eee51e9c1e3a5960ae8b76019e",
+  "author_binary": "/workspace/RayJoin_goal4834_patched_author/release/bin/polyover_exec",
+  "author_patched_median_sec": 3.722452186048031,
+  "claim_boundary": "County x Soil public sample only; correctness-gated; not full Section 5.7 or broad performance claim",
+  "goal": "Goal4834 patched-author intended SoS vs rebuilt RTDL public sample smoke",
+  "left": "/workspace/RayJoin_fresh/test/dataset/br_county_clean_25_odyssey_final.txt",
+  "right": "/workspace/RayJoin_fresh/test/dataset/br_soil_ascii_odyssey_final.txt",
+  "rtdl_optix_lib": "/workspace/rtdl_goal4817_user_smoke_20260630_102224/build/librtdl_optix.so",
+  "rtdl_rebuilt_median_sec": 6.272514246404171,
+  "rtdl_repo": "/workspace/rtdl_goal4817_user_smoke_20260630_102224",
+  "runs": {
+    "author_patched": [
+      {
+        "byte_equal": true,
+        "bytes": 16631243,
+        "elapsed_sec": 7.7924724817276,
+        "iteration": 0,
+        "output": "/workspace/goal4834_public_sample_perf/author_patched_iter0.txt",
+        "returncode": 0,
+        "sha256": "464f87a59cc2428f63cbfe5068965d7bc7adb8eee51e9c1e3a5960ae8b76019e",
+        "stderr_tail": [
+          " - Read map 1: 2315.41 ms",
+          "",
+          " - Create App: 5.84912 ms",
+          "",
+          " - Load Data: 2.35796 ms",
+          "",
+          " - Init: 380.121 ms",
+          "",
+          " - Build Index: 4.45986 ms",
+          "",
+          " - Intersection edges: 0.984192 ms",
+          "",
+          " - Map 0: Locate vertices in other map: 2.15197 ms",
+          "",
+          " - Map 1: Locate vertices in other map: 1.74284 ms",
+          "",
+          " - Computer output polygons: 11.2631 ms",
+          "",
+          " - Write to file: 1548.71 ms",
+          ""
+        ]
+      },
+      {
+        "byte_equal": true,
+        "bytes": 16631243,
+        "elapsed_sec": 3.722452186048031,
+        "iteration": 1,
+        "output": "/workspace/goal4834_public_sample_perf/author_patched_iter1.txt",
+        "returncode": 0,
+        "sha256": "464f87a59cc2428f63cbfe5068965d7bc7adb8eee51e9c1e3a5960ae8b76019e",
+        "stderr_tail": [
+          " - Read map 1: 19.6891 ms",
+          "",
+          " - Create App: 1.50204 ms",
+          "",
+          " - Load Data: 2.43688 ms",
+          "",
+          " - Init: 139.802 ms",
+          "",
+          " - Build Index: 3.12686 ms",
+          "",
+          " - Intersection edges: 0.862122 ms",
+          "",
+          " - Map 0: Locate vertices in other map: 2.07496 ms",
+          "",
+          " - Map 1: Locate vertices in other map: 1.68085 ms",
+          "",
+          " - Computer output polygons: 8.47316 ms",
+          "",
+          " - Write to file: 1274.58 ms",
+          ""
+        ]
+      },
+      {
+        "byte_equal": true,
+        "bytes": 16631243,
+        "elapsed_sec": 2.633976250886917,
+        "iteration": 2,
+        "output": "/workspace/goal4834_public_sample_perf/author_patched_iter2.txt",
+        "returncode": 0,
+        "sha256": "464f87a59cc2428f63cbfe5068965d7bc7adb8eee51e9c1e3a5960ae8b76019e",
+        "stderr_tail": [
+          " - Read map 1: 19.073 ms",
+          "",
+          " - Create App: 1.52278 ms",
+          "",
+          " - Load Data: 2.35915 ms",
+          "",
+          " - Init: 136.354 ms",
+          "",
+          " - Build Index: 3.17001 ms",
+          "",
+          " - Intersection edges: 0.87595 ms",
+          "",
+          " - Map 0: Locate vertices in other map: 2.10214 ms",
+          "",
+          " - Map 1: Locate vertices in other map: 1.69897 ms",
+          "",
+          " - Computer output polygons: 8.47197 ms",
+          "",
+          " - Write to file: 1638.66 ms",
+          ""
+        ]
+      }
+    ],
+    "rtdl_rebuilt": [
+      {
+        "byte_equal": true,
+        "bytes": 16631243,
+        "elapsed_sec": 6.945052087306976,
+        "intersection_count": 20860,
+        "iteration": 0,
+        "native_timings": {
+          "lsi": {
+            "candidate_count_pass": 0.000213385,
+            "candidate_download": 0.0,
+            "candidate_write_pass": 0.0,
+            "emitted_count": 20860,
+            "exact_refine": 0.0,
+            "hot_call_sec": 1.236551746726036,
+            "left_upload": 0.0,
+            "mode": "count_prepared_left_grouped_range_direct_intersection",
+            "raw_candidate_count": 0,
+            "scaled_intersection_materialization_enabled": true
+          },
+          "midpoint_pip_map0_in_map1": {
+            "hot_call_sec": 0.008655443787574768,
+            "mode": "rows",
+            "point_count": 944,
+            "point_upload": 3.5017e-05,
+            "positive_face_count": 934,
+            "row_download": 2.0249e-05,
+            "traversal": 0.008258621
+          },
+          "midpoint_pip_map1_in_map0": {
+            "hot_call_sec": 0.006603315472602844,
+            "mode": "rows",
+            "point_count": 3594,
+            "point_upload": 3.2722e-05,
+            "positive_face_count": 3189,
+            "row_download": 2.4417e-05,
+            "traversal": 0.006187661
+          },
+          "point_location_prepare_map0_in_map1": {
+            "hot_call_sec": 0.5456586703658104,
+            "mode": "prepare"
+          },
+          "point_location_prepare_map1_in_map0": {
+            "hot_call_sec": 0.030155546963214874,
+            "mode": "prepare"
+          },
+          "vertex_pip_map0_in_map1": {
+            "hot_call_sec": 0.0889706239104271,
+            "mode": "rows",
+            "point_count": 342738,
+            "point_upload": 0.001771141,
+            "positive_face_count": 337691,
+            "row_download": 0.00053203,
+            "traversal": 0.071823326
+          },
+          "vertex_pip_map1_in_map0": {
+            "hot_call_sec": 0.04015686362981796,
+            "mode": "rows",
+            "point_count": 258961,
+            "point_upload": 0.000996932,
+            "positive_face_count": 255272,
+            "row_download": 0.000402384,
+            "traversal": 0.033321068
+          }
+        },
+        "output": "/workspace/goal4834_public_sample_perf/rtdl_rebuilt_iter0.txt",
+        "phase_seconds": {
+          "lsi_row_object_materialize_sec": 0.1638479083776474,
+          "lsi_row_sort_sec": 0.4908077195286751,
+          "output_chain_assembly_sec": 1.0303660556674004,
+          "output_chain_write_sec": 0.8122408241033554,
+          "pack_inputs_sec": 0.6611335054039955,
+          "point_location_prepare_sec": 0.5758142173290253,
+          "point_location_prepare_wall_sec": 0.575885146856308,
+          "total_sec": 5.2180144265294075
+        },
+        "sha256": "464f87a59cc2428f63cbfe5068965d7bc7adb8eee51e9c1e3a5960ae8b76019e"
+      },
+      {
+        "byte_equal": true,
+        "bytes": 16631243,
+        "elapsed_sec": 5.320985674858093,
+        "intersection_count": 20860,
+        "iteration": 1,
+        "native_timings": {
+          "lsi": {
+            "candidate_count_pass": 0.000213074,
+            "candidate_download": 0.0,
+            "candidate_write_pass": 0.0,
+            "emitted_count": 20860,
+            "exact_refine": 0.0,
+            "hot_call_sec": 0.5253893882036209,
+            "left_upload": 0.0,
+            "mode": "count_prepared_left_grouped_range_direct_intersection",
+            "raw_candidate_count": 0,
+            "scaled_intersection_materialization_enabled": true
+          },
+          "midpoint_pip_map0_in_map1": {
+            "hot_call_sec": 0.008623957633972168,
+            "mode": "rows",
+            "point_count": 944,
+            "point_upload": 3.5597e-05,
+            "positive_face_count": 934,
+            "row_download": 2.0288e-05,
+            "traversal": 0.008269672
+          },
+          "midpoint_pip_map1_in_map0": {
+            "hot_call_sec": 0.006250716745853424,
+            "mode": "rows",
+            "point_count": 3594,
+            "point_upload": 3.2893e-05,
+            "positive_face_count": 3189,
+            "row_download": 2.9395e-05,
+            "traversal": 0.005895066
+          },
+          "point_location_prepare_map0_in_map1": {
+            "hot_call_sec": 0.010280564427375793,
+            "mode": "prepare"
+          },
+          "point_location_prepare_map1_in_map0": {
+            "hot_call_sec": 0.021774880588054657,
+            "mode": "prepare"
+          },
+          "vertex_pip_map0_in_map1": {
+            "hot_call_sec": 0.08643436431884766,
+            "mode": "rows",
+            "point_count": 342738,
+            "point_upload": 0.001332459,
+            "positive_face_count": 337691,
+            "row_download": 0.000513024,
+            "traversal": 0.071653624
+          },
+          "vertex_pip_map1_in_map0": {
+            "hot_call_sec": 0.03899358958005905,
+            "mode": "rows",
+            "point_count": 258961,
+            "point_upload": 0.001516838,
+            "positive_face_count": 255272,
+            "row_download": 0.000407283,
+            "traversal": 0.031526492
+          }
+        },
+        "output": "/workspace/goal4834_public_sample_perf/rtdl_rebuilt_iter1.txt",
+        "phase_seconds": {
+          "lsi_row_object_materialize_sec": 0.16258295625448227,
+          "lsi_row_sort_sec": 0.48679717630147934,
+          "output_chain_assembly_sec": 1.0246383249759674,
+          "output_chain_write_sec": 0.687403991818428,
+          "pack_inputs_sec": 0.6580271869897842,
+          "point_location_prepare_sec": 0.03205544501543045,
+          "point_location_prepare_wall_sec": 0.032091863453388214,
+          "total_sec": 3.818163111805916
+        },
+        "sha256": "464f87a59cc2428f63cbfe5068965d7bc7adb8eee51e9c1e3a5960ae8b76019e"
+      },
+      {
+        "byte_equal": true,
+        "bytes": 16631243,
+        "elapsed_sec": 6.272514246404171,
+        "intersection_count": 20860,
+        "iteration": 2,
+        "native_timings": {
+          "lsi": {
+            "candidate_count_pass": 0.00021093,
+            "candidate_download": 0.0,
+            "candidate_write_pass": 0.0,
+            "emitted_count": 20860,
+            "exact_refine": 0.0,
+            "hot_call_sec": 0.39817678928375244,
+            "left_upload": 0.0,
+            "mode": "count_prepared_left_grouped_range_direct_intersection",
+            "raw_candidate_count": 0,
+            "scaled_intersection_materialization_enabled": true
+          },
+          "midpoint_pip_map0_in_map1": {
+            "hot_call_sec": 0.00862303376197815,
+            "mode": "rows",
+            "point_count": 944,
+            "point_upload": 3.5587e-05,
+            "positive_face_count": 934,
+            "row_download": 2.0208e-05,
+            "traversal": 0.00826347
+          },
+          "midpoint_pip_map1_in_map0": {
+            "hot_call_sec": 0.006202913820743561,
+            "mode": "rows",
+            "point_count": 3594,
+            "point_upload": 3.3554e-05,
+            "positive_face_count": 3189,
+            "row_download": 2.5428e-05,
+            "traversal": 0.005850051
+          },
+          "point_location_prepare_map0_in_map1": {
+            "hot_call_sec": 0.010283850133419037,
+            "mode": "prepare"
+          },
+          "point_location_prepare_map1_in_map0": {
+            "hot_call_sec": 0.03071928769350052,
+            "mode": "prepare"
+          },
+          "vertex_pip_map0_in_map1": {
+            "hot_call_sec": 0.08617571741342545,
+            "mode": "rows",
+            "point_count": 342738,
+            "point_upload": 0.001319203,
+            "positive_face_count": 337691,
+            "row_download": 0.000515709,
+            "traversal": 0.072011102
+          },
+          "vertex_pip_map1_in_map0": {
+            "hot_call_sec": 0.03853868693113327,
+            "mode": "rows",
+            "point_count": 258961,
+            "point_upload": 0.000962737,
+            "positive_face_count": 255272,
+            "row_download": 0.000401983,
+            "traversal": 0.03204683
+          }
+        },
+        "output": "/workspace/goal4834_public_sample_perf/rtdl_rebuilt_iter2.txt",
+        "phase_seconds": {
+          "lsi_row_object_materialize_sec": 0.30441223084926605,
+          "lsi_row_sort_sec": 0.4763375222682953,
+          "output_chain_assembly_sec": 1.041948713362217,
+          "output_chain_write_sec": 1.5666769072413445,
+          "pack_inputs_sec": 0.6500092893838882,
+          "point_location_prepare_sec": 0.041003137826919556,
+          "point_location_prepare_wall_sec": 0.04103449732065201,
+          "total_sec": 4.718724861741066
+        },
+        "sha256": "464f87a59cc2428f63cbfe5068965d7bc7adb8eee51e9c1e3a5960ae8b76019e"
+      }
+    ]
+  },
+  "speedup_author_over_rtdl": 0.5934545606145083
+}

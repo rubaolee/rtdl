@@ -1,0 +1,1254 @@
+{
+  "author_context": [
+    {
+      "line": 1035,
+      "text": "-86.479714 32.364666"
+    },
+    {
+      "line": 1036,
+      "text": "346 2 345 346 15 16"
+    },
+    {
+      "line": 1037,
+      "text": "-86.479714 32.364666"
+    },
+    {
+      "line": 1038,
+      "text": "-86.479924 32.364776"
+    },
+    {
+      "line": 1039,
+      "text": "347 2 346 347 15 16"
+    },
+    {
+      "line": 1040,
+      "text": "-86.479924 32.364776"
+    },
+    {
+      "line": 1041,
+      "text": "-86.480229 32.364967"
+    },
+    {
+      "line": 1042,
+      "text": "348 2 347 348 15 16"
+    },
+    {
+      "line": 1043,
+      "text": "-86.480229 32.364967"
+    },
+    {
+      "line": 1044,
+      "text": "-86.480534 32.365159"
+    },
+    {
+      "line": 1045,
+      "text": "349 2 348 349 15 16"
+    },
+    {
+      "line": 1046,
+      "text": "-86.480534 32.365159"
+    },
+    {
+      "line": 1047,
+      "text": "-86.480855 32.365333"
+    },
+    {
+      "line": 1048,
+      "text": "350 2 349 350 15 16"
+    },
+    {
+      "line": 1049,
+      "text": "-86.480855 32.365333"
+    },
+    {
+      "line": 1050,
+      "text": "-86.481160 32.365516"
+    },
+    {
+      "line": 1051,
+      "text": "351 2 350 351 15 16"
+    },
+    {
+      "line": 1052,
+      "text": "-86.481160 32.365516"
+    },
+    {
+      "line": 1053,
+      "text": "-86.481465 32.365693"
+    },
+    {
+      "line": 1054,
+      "text": "352 2 351 352 15 16"
+    },
+    {
+      "line": 1055,
+      "text": "-86.481465 32.365693"
+    },
+    {
+      "line": 1056,
+      "text": "-86.481786 32.365868"
+    },
+    {
+      "line": 1057,
+      "text": "353 2 352 353 15 16"
+    },
+    {
+      "line": 1058,
+      "text": "-86.481786 32.365868"
+    },
+    {
+      "line": 1059,
+      "text": "-86.482106 32.366036"
+    },
+    {
+      "line": 1060,
+      "text": "354 2 353 354 15 16"
+    },
+    {
+      "line": 1061,
+      "text": "-86.482106 32.366036"
+    },
+    {
+      "line": 1062,
+      "text": "-86.482426 32.366204"
+    },
+    {
+      "line": 1063,
+      "text": "355 2 354 355 15 16"
+    },
+    {
+      "line": 1064,
+      "text": "-86.482426 32.366204"
+    },
+    {
+      "line": 1065,
+      "text": "-86.482747 32.366372"
+    }
+  ],
+  "chain_end": 360,
+  "chain_start": 340,
+  "chains": [
+    {
+      "chain_no": 340,
+      "header": {
+        "first_point_idx": 339,
+        "last_point_idx": 340,
+        "left_polygon_id": 15,
+        "other_map_polygon_id": 11254,
+        "point_count": 2,
+        "raw_left_polygon_id": 1,
+        "raw_right_polygon_id": 51,
+        "right_polygon_id": 16
+      },
+      "points": [
+        {
+          "formatted": "-86.478933 32.364383",
+          "point_id": 339,
+          "raw": [
+            -86.47893348385927,
+            32.3643828064486
+          ],
+          "tag": {
+            "edge_id": 322,
+            "eid0": 322,
+            "eid1": 8858714,
+            "formatted": "-86.478933 32.364383",
+            "kind": "xsect",
+            "map_index": 0,
+            "mid_point_polygon_id_map0": 0,
+            "mid_point_polygon_id_map1": 0,
+            "role": "last_xsect_on_edge",
+            "scaled_x": -33843731008542.0,
+            "scaled_x_rational": "-1178500952526521930126511562/34821839005547",
+            "scaled_y": 6311141485584.0,
+            "scaled_y_rational": "219765552752260094207707248/34821839005547",
+            "x": -86.47893348385927,
+            "y": 32.3643828064486
+          }
+        },
+        {
+          "formatted": "-86.479060 32.364421",
+          "point_id": 340,
+          "raw": [
+            -86.47906,
+            32.364421
+          ],
+          "tag": {
+            "chain_index": 322,
+            "edge_id_before_point": 323,
+            "global_point_index": 645,
+            "kind": "chain_point",
+            "local_point_index": 1,
+            "map_index": 0,
+            "pip_face": 11254
+          }
+        }
+      ]
+    },
+    {
+      "chain_no": 341,
+      "header": {
+        "first_point_idx": 340,
+        "last_point_idx": 341,
+        "left_polygon_id": 15,
+        "other_map_polygon_id": 11254,
+        "point_count": 2,
+        "raw_left_polygon_id": 1,
+        "raw_right_polygon_id": 51,
+        "right_polygon_id": 16
+      },
+      "points": [
+        {
+          "formatted": "-86.479060 32.364421",
+          "point_id": 340,
+          "raw": [
+            -86.47906,
+            32.364421
+          ],
+          "tag": {
+            "chain_index": 323,
+            "edge_id_before_point": 323,
+            "global_point_index": 646,
+            "kind": "chain_point",
+            "local_point_index": 0,
+            "map_index": 0,
+            "pip_face": 11254
+          }
+        },
+        {
+          "formatted": "-86.479267 32.364486",
+          "point_id": 341,
+          "raw": [
+            -86.479267,
+            32.364486
+          ],
+          "tag": {
+            "chain_index": 323,
+            "edge_id_before_point": 324,
+            "global_point_index": 647,
+            "kind": "chain_point",
+            "local_point_index": 1,
+            "map_index": 0,
+            "pip_face": 11254
+          }
+        }
+      ]
+    },
+    {
+      "chain_no": 342,
+      "header": {
+        "first_point_idx": 341,
+        "last_point_idx": 342,
+        "left_polygon_id": 15,
+        "other_map_polygon_id": 11254,
+        "point_count": 2,
+        "raw_left_polygon_id": 1,
+        "raw_right_polygon_id": 51,
+        "right_polygon_id": 16
+      },
+      "points": [
+        {
+          "formatted": "-86.479267 32.364486",
+          "point_id": 341,
+          "raw": [
+            -86.479267,
+            32.364486
+          ],
+          "tag": {
+            "chain_index": 324,
+            "edge_id_before_point": 324,
+            "global_point_index": 648,
+            "kind": "chain_point",
+            "local_point_index": 0,
+            "map_index": 0,
+            "pip_face": 11254
+          }
+        },
+        {
+          "formatted": "-86.479339 32.364513",
+          "point_id": 342,
+          "raw": [
+            -86.47933891801343,
+            32.36451274999359
+          ],
+          "tag": {
+            "edge_id": 324,
+            "eid0": 324,
+            "eid1": 8858715,
+            "formatted": "-86.479339 32.364513",
+            "kind": "xsect",
+            "map_index": 0,
+            "mid_point_polygon_id_map0": 0,
+            "mid_point_polygon_id_map1": 0,
+            "role": "first_xsect_on_edge",
+            "scaled_x": -33843889100692.0,
+            "scaled_x_rational": "-5153326187551012959082563014/152267553300945",
+            "scaled_y": 6311349446693.0,
+            "scaled_y_rational": "19688033701728837842/3119465",
+            "x": -86.47933891801343,
+            "y": 32.36451274999359
+          }
+        }
+      ]
+    },
+    {
+      "chain_no": 343,
+      "header": {
+        "first_point_idx": 342,
+        "last_point_idx": 343,
+        "left_polygon_id": 9,
+        "other_map_polygon_id": 11223,
+        "point_count": 2,
+        "raw_left_polygon_id": 1,
+        "raw_right_polygon_id": 51,
+        "right_polygon_id": 18
+      },
+      "points": [
+        {
+          "formatted": "-86.479339 32.364513",
+          "point_id": 342,
+          "raw": [
+            -86.47933891801343,
+            32.36451274999359
+          ],
+          "tag": {
+            "edge_id": 324,
+            "eid0": 324,
+            "eid1": 8858715,
+            "formatted": "-86.479339 32.364513",
+            "kind": "xsect",
+            "map_index": 0,
+            "mid_point_polygon_id_map0": 0,
+            "mid_point_polygon_id_map1": 0,
+            "role": "last_xsect_on_edge",
+            "scaled_x": -33843889100692.0,
+            "scaled_x_rational": "-5153326187551012959082563014/152267553300945",
+            "scaled_y": 6311349446693.0,
+            "scaled_y_rational": "19688033701728837842/3119465",
+            "x": -86.47933891801343,
+            "y": 32.36451274999359
+          }
+        },
+        {
+          "formatted": "-86.479431 32.364547",
+          "point_id": 343,
+          "raw": [
+            -86.479431,
+            32.364547
+          ],
+          "tag": {
+            "chain_index": 324,
+            "edge_id_before_point": 325,
+            "global_point_index": 649,
+            "kind": "chain_point",
+            "local_point_index": 1,
+            "map_index": 0,
+            "pip_face": 11223
+          }
+        }
+      ]
+    },
+    {
+      "chain_no": 344,
+      "header": {
+        "first_point_idx": 343,
+        "last_point_idx": 344,
+        "left_polygon_id": 9,
+        "other_map_polygon_id": 11223,
+        "point_count": 2,
+        "raw_left_polygon_id": 1,
+        "raw_right_polygon_id": 51,
+        "right_polygon_id": 18
+      },
+      "points": [
+        {
+          "formatted": "-86.479431 32.364547",
+          "point_id": 343,
+          "raw": [
+            -86.479431,
+            32.364547
+          ],
+          "tag": {
+            "chain_index": 325,
+            "edge_id_before_point": 325,
+            "global_point_index": 650,
+            "kind": "chain_point",
+            "local_point_index": 0,
+            "map_index": 0,
+            "pip_face": 11223
+          }
+        },
+        {
+          "formatted": "-86.479603 32.364609",
+          "point_id": 344,
+          "raw": [
+            -86.479603,
+            32.364609
+          ],
+          "tag": {
+            "chain_index": 325,
+            "edge_id_before_point": 326,
+            "global_point_index": 651,
+            "kind": "chain_point",
+            "local_point_index": 1,
+            "map_index": 0,
+            "pip_face": 11223
+          }
+        }
+      ]
+    },
+    {
+      "chain_no": 345,
+      "header": {
+        "first_point_idx": 344,
+        "last_point_idx": 345,
+        "left_polygon_id": 9,
+        "other_map_polygon_id": 11223,
+        "point_count": 2,
+        "raw_left_polygon_id": 1,
+        "raw_right_polygon_id": 51,
+        "right_polygon_id": 18
+      },
+      "points": [
+        {
+          "formatted": "-86.479603 32.364609",
+          "point_id": 344,
+          "raw": [
+            -86.479603,
+            32.364609
+          ],
+          "tag": {
+            "chain_index": 326,
+            "edge_id_before_point": 326,
+            "global_point_index": 652,
+            "kind": "chain_point",
+            "local_point_index": 0,
+            "map_index": 0,
+            "pip_face": 11223
+          }
+        },
+        {
+          "formatted": "-86.479714 32.364666",
+          "point_id": 345,
+          "raw": [
+            -86.47971350819064,
+            32.36466649180024
+          ],
+          "tag": {
+            "edge_id": 326,
+            "eid0": 326,
+            "eid1": 8858716,
+            "formatted": "-86.479714 32.364666",
+            "kind": "xsect",
+            "map_index": 0,
+            "mid_point_polygon_id_map0": 0,
+            "mid_point_polygon_id_map1": 0,
+            "role": "first_xsect_on_edge",
+            "scaled_x": -33844035165758.0,
+            "scaled_x_rational": "-5153346997430471655402466041/152267511016073",
+            "scaled_y": 6311595494441.0,
+            "scaled_y_rational": "961050936478887971386291944/152267511016073",
+            "x": -86.47971350819064,
+            "y": 32.36466649180024
+          }
+        }
+      ]
+    },
+    {
+      "chain_no": 346,
+      "header": {
+        "first_point_idx": 345,
+        "last_point_idx": 346,
+        "left_polygon_id": 15,
+        "other_map_polygon_id": 11254,
+        "point_count": 2,
+        "raw_left_polygon_id": 1,
+        "raw_right_polygon_id": 51,
+        "right_polygon_id": 16
+      },
+      "points": [
+        {
+          "formatted": "-86.479714 32.364666",
+          "point_id": 345,
+          "raw": [
+            -86.47971350819064,
+            32.36466649180024
+          ],
+          "tag": {
+            "edge_id": 326,
+            "eid0": 326,
+            "eid1": 8858716,
+            "formatted": "-86.479714 32.364666",
+            "kind": "xsect",
+            "map_index": 0,
+            "mid_point_polygon_id_map0": 0,
+            "mid_point_polygon_id_map1": 0,
+            "role": "last_xsect_on_edge",
+            "scaled_x": -33844035165758.0,
+            "scaled_x_rational": "-5153346997430471655402466041/152267511016073",
+            "scaled_y": 6311595494441.0,
+            "scaled_y_rational": "961050936478887971386291944/152267511016073",
+            "x": -86.47971350819064,
+            "y": 32.36466649180024
+          }
+        },
+        {
+          "formatted": "-86.479924 32.364776",
+          "point_id": 346,
+          "raw": [
+            -86.479924,
+            32.364776
+          ],
+          "tag": {
+            "chain_index": 326,
+            "edge_id_before_point": 327,
+            "global_point_index": 653,
+            "kind": "chain_point",
+            "local_point_index": 1,
+            "map_index": 0,
+            "pip_face": 11254
+          }
+        }
+      ]
+    },
+    {
+      "chain_no": 347,
+      "header": {
+        "first_point_idx": 346,
+        "last_point_idx": 347,
+        "left_polygon_id": 15,
+        "other_map_polygon_id": 11254,
+        "point_count": 2,
+        "raw_left_polygon_id": 1,
+        "raw_right_polygon_id": 51,
+        "right_polygon_id": 16
+      },
+      "points": [
+        {
+          "formatted": "-86.479924 32.364776",
+          "point_id": 346,
+          "raw": [
+            -86.479924,
+            32.364776
+          ],
+          "tag": {
+            "chain_index": 327,
+            "edge_id_before_point": 327,
+            "global_point_index": 654,
+            "kind": "chain_point",
+            "local_point_index": 0,
+            "map_index": 0,
+            "pip_face": 11254
+          }
+        },
+        {
+          "formatted": "-86.480229 32.364967",
+          "point_id": 347,
+          "raw": [
+            -86.480229,
+            32.364967
+          ],
+          "tag": {
+            "chain_index": 327,
+            "edge_id_before_point": 328,
+            "global_point_index": 655,
+            "kind": "chain_point",
+            "local_point_index": 1,
+            "map_index": 0,
+            "pip_face": 11254
+          }
+        }
+      ]
+    },
+    {
+      "chain_no": 348,
+      "header": {
+        "first_point_idx": 347,
+        "last_point_idx": 348,
+        "left_polygon_id": 15,
+        "other_map_polygon_id": 11254,
+        "point_count": 2,
+        "raw_left_polygon_id": 1,
+        "raw_right_polygon_id": 51,
+        "right_polygon_id": 16
+      },
+      "points": [
+        {
+          "formatted": "-86.480229 32.364967",
+          "point_id": 347,
+          "raw": [
+            -86.480229,
+            32.364967
+          ],
+          "tag": {
+            "chain_index": 328,
+            "edge_id_before_point": 328,
+            "global_point_index": 656,
+            "kind": "chain_point",
+            "local_point_index": 0,
+            "map_index": 0,
+            "pip_face": 11254
+          }
+        },
+        {
+          "formatted": "-86.480534 32.365159",
+          "point_id": 348,
+          "raw": [
+            -86.48053399999874,
+            32.36515899999957
+          ],
+          "tag": {
+            "edge_id": 328,
+            "eid0": 328,
+            "eid1": 8858718,
+            "formatted": "-86.480534 32.365159",
+            "kind": "xsect",
+            "map_index": 0,
+            "mid_point_polygon_id_map0": 0,
+            "mid_point_polygon_id_map1": 0,
+            "role": "first_xsect_on_edge",
+            "scaled_x": -33844355102578.0,
+            "scaled_x_rational": "-33844355102578",
+            "scaled_y": 6312383702515.0,
+            "scaled_y_rational": "6312383702515",
+            "x": -86.48053399999874,
+            "y": 32.36515899999957
+          }
+        }
+      ]
+    },
+    {
+      "chain_no": 349,
+      "header": {
+        "first_point_idx": 348,
+        "last_point_idx": 349,
+        "left_polygon_id": 15,
+        "other_map_polygon_id": 11254,
+        "point_count": 2,
+        "raw_left_polygon_id": 1,
+        "raw_right_polygon_id": 51,
+        "right_polygon_id": 16
+      },
+      "points": [
+        {
+          "formatted": "-86.480534 32.365159",
+          "point_id": 348,
+          "raw": [
+            -86.48053399999874,
+            32.36515899999957
+          ],
+          "tag": {
+            "edge_id": 328,
+            "eid0": 328,
+            "eid1": 8858718,
+            "formatted": "-86.480534 32.365159",
+            "kind": "xsect",
+            "map_index": 0,
+            "mid_point_polygon_id_map0": 0,
+            "mid_point_polygon_id_map1": 0,
+            "role": "last_xsect_on_edge",
+            "scaled_x": -33844355102578.0,
+            "scaled_x_rational": "-33844355102578",
+            "scaled_y": 6312383702515.0,
+            "scaled_y_rational": "6312383702515",
+            "x": -86.48053399999874,
+            "y": 32.36515899999957
+          }
+        },
+        {
+          "formatted": "-86.480534 32.365159",
+          "point_id": 349,
+          "raw": [
+            -86.480534,
+            32.365159
+          ],
+          "tag": {
+            "chain_index": 328,
+            "edge_id_before_point": 329,
+            "global_point_index": 657,
+            "kind": "chain_point",
+            "local_point_index": 1,
+            "map_index": 0,
+            "pip_face": 11254
+          }
+        }
+      ]
+    },
+    {
+      "chain_no": 350,
+      "header": {
+        "first_point_idx": 349,
+        "last_point_idx": 348,
+        "left_polygon_id": 15,
+        "other_map_polygon_id": 11254,
+        "point_count": 2,
+        "raw_left_polygon_id": 1,
+        "raw_right_polygon_id": 51,
+        "right_polygon_id": 16
+      },
+      "points": [
+        {
+          "formatted": "-86.480534 32.365159",
+          "point_id": 349,
+          "raw": [
+            -86.480534,
+            32.365159
+          ],
+          "tag": {
+            "chain_index": 329,
+            "edge_id_before_point": 329,
+            "global_point_index": 658,
+            "kind": "chain_point",
+            "local_point_index": 0,
+            "map_index": 0,
+            "pip_face": 11254
+          }
+        },
+        {
+          "formatted": "-86.480534 32.365159",
+          "point_id": 348,
+          "raw": [
+            -86.48053399999874,
+            32.36515899999957
+          ],
+          "tag": {
+            "edge_id": 329,
+            "eid0": 329,
+            "eid1": 8858719,
+            "formatted": "-86.480534 32.365159",
+            "kind": "xsect",
+            "map_index": 0,
+            "mid_point_polygon_id_map0": 0,
+            "mid_point_polygon_id_map1": 0,
+            "role": "first_xsect_on_edge",
+            "scaled_x": -33844355102578.0,
+            "scaled_x_rational": "-33844355102578",
+            "scaled_y": 6312383702515.0,
+            "scaled_y_rational": "6312383702515",
+            "x": -86.48053399999874,
+            "y": 32.36515899999957
+          }
+        }
+      ]
+    },
+    {
+      "chain_no": 351,
+      "header": {
+        "first_point_idx": 348,
+        "last_point_idx": 350,
+        "left_polygon_id": 15,
+        "other_map_polygon_id": 11254,
+        "point_count": 2,
+        "raw_left_polygon_id": 1,
+        "raw_right_polygon_id": 51,
+        "right_polygon_id": 16
+      },
+      "points": [
+        {
+          "formatted": "-86.480534 32.365159",
+          "point_id": 348,
+          "raw": [
+            -86.48053399999874,
+            32.36515899999957
+          ],
+          "tag": {
+            "edge_id": 329,
+            "eid0": 329,
+            "eid1": 8858719,
+            "formatted": "-86.480534 32.365159",
+            "kind": "xsect",
+            "map_index": 0,
+            "mid_point_polygon_id_map0": 0,
+            "mid_point_polygon_id_map1": 0,
+            "role": "last_xsect_on_edge",
+            "scaled_x": -33844355102578.0,
+            "scaled_x_rational": "-33844355102578",
+            "scaled_y": 6312383702515.0,
+            "scaled_y_rational": "6312383702515",
+            "x": -86.48053399999874,
+            "y": 32.36515899999957
+          }
+        },
+        {
+          "formatted": "-86.480855 32.365333",
+          "point_id": 350,
+          "raw": [
+            -86.480855,
+            32.365333
+          ],
+          "tag": {
+            "chain_index": 329,
+            "edge_id_before_point": 330,
+            "global_point_index": 659,
+            "kind": "chain_point",
+            "local_point_index": 1,
+            "map_index": 0,
+            "pip_face": 11254
+          }
+        }
+      ]
+    },
+    {
+      "chain_no": 352,
+      "header": {
+        "first_point_idx": 350,
+        "last_point_idx": 351,
+        "left_polygon_id": 15,
+        "other_map_polygon_id": 11254,
+        "point_count": 2,
+        "raw_left_polygon_id": 1,
+        "raw_right_polygon_id": 51,
+        "right_polygon_id": 16
+      },
+      "points": [
+        {
+          "formatted": "-86.480855 32.365333",
+          "point_id": 350,
+          "raw": [
+            -86.480855,
+            32.365333
+          ],
+          "tag": {
+            "chain_index": 330,
+            "edge_id_before_point": 330,
+            "global_point_index": 660,
+            "kind": "chain_point",
+            "local_point_index": 0,
+            "map_index": 0,
+            "pip_face": 11254
+          }
+        },
+        {
+          "formatted": "-86.481160 32.365516",
+          "point_id": 351,
+          "raw": [
+            -86.48116,
+            32.365516
+          ],
+          "tag": {
+            "chain_index": 330,
+            "edge_id_before_point": 331,
+            "global_point_index": 661,
+            "kind": "chain_point",
+            "local_point_index": 1,
+            "map_index": 0,
+            "pip_face": 11254
+          }
+        }
+      ]
+    },
+    {
+      "chain_no": 353,
+      "header": {
+        "first_point_idx": 351,
+        "last_point_idx": 352,
+        "left_polygon_id": 15,
+        "other_map_polygon_id": 11254,
+        "point_count": 2,
+        "raw_left_polygon_id": 1,
+        "raw_right_polygon_id": 51,
+        "right_polygon_id": 16
+      },
+      "points": [
+        {
+          "formatted": "-86.481160 32.365516",
+          "point_id": 351,
+          "raw": [
+            -86.48116,
+            32.365516
+          ],
+          "tag": {
+            "chain_index": 331,
+            "edge_id_before_point": 331,
+            "global_point_index": 662,
+            "kind": "chain_point",
+            "local_point_index": 0,
+            "map_index": 0,
+            "pip_face": 11254
+          }
+        },
+        {
+          "formatted": "-86.481465 32.365693",
+          "point_id": 352,
+          "raw": [
+            -86.48146499999837,
+            32.36569299999942
+          ],
+          "tag": {
+            "edge_id": 331,
+            "eid0": 331,
+            "eid1": 8858721,
+            "formatted": "-86.481465 32.365693",
+            "kind": "xsect",
+            "map_index": 0,
+            "mid_point_polygon_id_map0": 0,
+            "mid_point_polygon_id_map1": 0,
+            "role": "first_xsect_on_edge",
+            "scaled_x": -33844718130187.0,
+            "scaled_x_rational": "-33844718130187",
+            "scaled_y": 6313238313894.0,
+            "scaled_y_rational": "6313238313894",
+            "x": -86.48146499999837,
+            "y": 32.36569299999942
+          }
+        }
+      ]
+    },
+    {
+      "chain_no": 354,
+      "header": {
+        "first_point_idx": 352,
+        "last_point_idx": 353,
+        "left_polygon_id": 15,
+        "other_map_polygon_id": 11254,
+        "point_count": 2,
+        "raw_left_polygon_id": 1,
+        "raw_right_polygon_id": 51,
+        "right_polygon_id": 16
+      },
+      "points": [
+        {
+          "formatted": "-86.481465 32.365693",
+          "point_id": 352,
+          "raw": [
+            -86.48146499999837,
+            32.36569299999942
+          ],
+          "tag": {
+            "edge_id": 331,
+            "eid0": 331,
+            "eid1": 8858721,
+            "formatted": "-86.481465 32.365693",
+            "kind": "xsect",
+            "map_index": 0,
+            "mid_point_polygon_id_map0": 0,
+            "mid_point_polygon_id_map1": 0,
+            "role": "last_xsect_on_edge",
+            "scaled_x": -33844718130187.0,
+            "scaled_x_rational": "-33844718130187",
+            "scaled_y": 6313238313894.0,
+            "scaled_y_rational": "6313238313894",
+            "x": -86.48146499999837,
+            "y": 32.36569299999942
+          }
+        },
+        {
+          "formatted": "-86.481465 32.365693",
+          "point_id": 353,
+          "raw": [
+            -86.481465,
+            32.365693
+          ],
+          "tag": {
+            "chain_index": 331,
+            "edge_id_before_point": 332,
+            "global_point_index": 663,
+            "kind": "chain_point",
+            "local_point_index": 1,
+            "map_index": 0,
+            "pip_face": 11254
+          }
+        }
+      ]
+    },
+    {
+      "chain_no": 355,
+      "header": {
+        "first_point_idx": 353,
+        "last_point_idx": 354,
+        "left_polygon_id": 15,
+        "other_map_polygon_id": 11254,
+        "point_count": 2,
+        "raw_left_polygon_id": 1,
+        "raw_right_polygon_id": 51,
+        "right_polygon_id": 16
+      },
+      "points": [
+        {
+          "formatted": "-86.481465 32.365693",
+          "point_id": 353,
+          "raw": [
+            -86.481465,
+            32.365693
+          ],
+          "tag": {
+            "chain_index": 332,
+            "edge_id_before_point": 332,
+            "global_point_index": 664,
+            "kind": "chain_point",
+            "local_point_index": 0,
+            "map_index": 0,
+            "pip_face": 11254
+          }
+        },
+        {
+          "formatted": "-86.481786 32.365868",
+          "point_id": 354,
+          "raw": [
+            -86.481786,
+            32.365868
+          ],
+          "tag": {
+            "chain_index": 332,
+            "edge_id_before_point": 333,
+            "global_point_index": 665,
+            "kind": "chain_point",
+            "local_point_index": 1,
+            "map_index": 0,
+            "pip_face": 11254
+          }
+        }
+      ]
+    },
+    {
+      "chain_no": 356,
+      "header": {
+        "first_point_idx": 354,
+        "last_point_idx": 355,
+        "left_polygon_id": 15,
+        "other_map_polygon_id": 11254,
+        "point_count": 2,
+        "raw_left_polygon_id": 1,
+        "raw_right_polygon_id": 51,
+        "right_polygon_id": 16
+      },
+      "points": [
+        {
+          "formatted": "-86.481786 32.365868",
+          "point_id": 354,
+          "raw": [
+            -86.481786,
+            32.365868
+          ],
+          "tag": {
+            "chain_index": 333,
+            "edge_id_before_point": 333,
+            "global_point_index": 666,
+            "kind": "chain_point",
+            "local_point_index": 0,
+            "map_index": 0,
+            "pip_face": 11254
+          }
+        },
+        {
+          "formatted": "-86.482106 32.366036",
+          "point_id": 355,
+          "raw": [
+            -86.482106,
+            32.366036
+          ],
+          "tag": {
+            "chain_index": 333,
+            "edge_id_before_point": 334,
+            "global_point_index": 667,
+            "kind": "chain_point",
+            "local_point_index": 1,
+            "map_index": 0,
+            "pip_face": 11254
+          }
+        }
+      ]
+    },
+    {
+      "chain_no": 357,
+      "header": {
+        "first_point_idx": 355,
+        "last_point_idx": 356,
+        "left_polygon_id": 15,
+        "other_map_polygon_id": 11254,
+        "point_count": 2,
+        "raw_left_polygon_id": 1,
+        "raw_right_polygon_id": 51,
+        "right_polygon_id": 16
+      },
+      "points": [
+        {
+          "formatted": "-86.482106 32.366036",
+          "point_id": 355,
+          "raw": [
+            -86.482106,
+            32.366036
+          ],
+          "tag": {
+            "chain_index": 334,
+            "edge_id_before_point": 334,
+            "global_point_index": 668,
+            "kind": "chain_point",
+            "local_point_index": 0,
+            "map_index": 0,
+            "pip_face": 11254
+          }
+        },
+        {
+          "formatted": "-86.482426 32.366204",
+          "point_id": 356,
+          "raw": [
+            -86.482426,
+            32.366204
+          ],
+          "tag": {
+            "chain_index": 334,
+            "edge_id_before_point": 335,
+            "global_point_index": 669,
+            "kind": "chain_point",
+            "local_point_index": 1,
+            "map_index": 0,
+            "pip_face": 11254
+          }
+        }
+      ]
+    },
+    {
+      "chain_no": 358,
+      "header": {
+        "first_point_idx": 356,
+        "last_point_idx": 357,
+        "left_polygon_id": 15,
+        "other_map_polygon_id": 11254,
+        "point_count": 2,
+        "raw_left_polygon_id": 1,
+        "raw_right_polygon_id": 51,
+        "right_polygon_id": 16
+      },
+      "points": [
+        {
+          "formatted": "-86.482426 32.366204",
+          "point_id": 356,
+          "raw": [
+            -86.482426,
+            32.366204
+          ],
+          "tag": {
+            "chain_index": 335,
+            "edge_id_before_point": 335,
+            "global_point_index": 670,
+            "kind": "chain_point",
+            "local_point_index": 0,
+            "map_index": 0,
+            "pip_face": 11254
+          }
+        },
+        {
+          "formatted": "-86.482747 32.366372",
+          "point_id": 357,
+          "raw": [
+            -86.482747,
+            32.366372
+          ],
+          "tag": {
+            "chain_index": 335,
+            "edge_id_before_point": 336,
+            "global_point_index": 671,
+            "kind": "chain_point",
+            "local_point_index": 1,
+            "map_index": 0,
+            "pip_face": 11254
+          }
+        }
+      ]
+    },
+    {
+      "chain_no": 359,
+      "header": {
+        "first_point_idx": 357,
+        "last_point_idx": 358,
+        "left_polygon_id": 15,
+        "other_map_polygon_id": 11254,
+        "point_count": 2,
+        "raw_left_polygon_id": 1,
+        "raw_right_polygon_id": 51,
+        "right_polygon_id": 16
+      },
+      "points": [
+        {
+          "formatted": "-86.482747 32.366372",
+          "point_id": 357,
+          "raw": [
+            -86.482747,
+            32.366372
+          ],
+          "tag": {
+            "chain_index": 336,
+            "edge_id_before_point": 336,
+            "global_point_index": 672,
+            "kind": "chain_point",
+            "local_point_index": 0,
+            "map_index": 0,
+            "pip_face": 11254
+          }
+        },
+        {
+          "formatted": "-86.483083 32.366532",
+          "point_id": 358,
+          "raw": [
+            -86.483083,
+            32.366532
+          ],
+          "tag": {
+            "chain_index": 336,
+            "edge_id_before_point": 337,
+            "global_point_index": 673,
+            "kind": "chain_point",
+            "local_point_index": 1,
+            "map_index": 0,
+            "pip_face": 11254
+          }
+        }
+      ]
+    },
+    {
+      "chain_no": 360,
+      "header": {
+        "first_point_idx": 358,
+        "last_point_idx": 359,
+        "left_polygon_id": 15,
+        "other_map_polygon_id": 11254,
+        "point_count": 2,
+        "raw_left_polygon_id": 1,
+        "raw_right_polygon_id": 51,
+        "right_polygon_id": 16
+      },
+      "points": [
+        {
+          "formatted": "-86.483083 32.366532",
+          "point_id": 358,
+          "raw": [
+            -86.483083,
+            32.366532
+          ],
+          "tag": {
+            "chain_index": 337,
+            "edge_id_before_point": 337,
+            "global_point_index": 674,
+            "kind": "chain_point",
+            "local_point_index": 0,
+            "map_index": 0,
+            "pip_face": 11254
+          }
+        },
+        {
+          "formatted": "-86.483418 32.366669",
+          "point_id": 359,
+          "raw": [
+            -86.483418,
+            32.366669
+          ],
+          "tag": {
+            "chain_index": 337,
+            "edge_id_before_point": 338,
+            "global_point_index": 675,
+            "kind": "chain_point",
+            "local_point_index": 1,
+            "map_index": 0,
+            "pip_face": 11254
+          }
+        }
+      ]
+    }
+  ],
+  "schema": "rtdl.goal4865.output_chain_trace.v1",
+  "stopped_after_requested_chain_window": true,
+  "streamed_chain_count_at_stop": 360,
+  "streamed_face_count_at_stop": 18,
+  "streamed_point_count_at_stop": 360
+}

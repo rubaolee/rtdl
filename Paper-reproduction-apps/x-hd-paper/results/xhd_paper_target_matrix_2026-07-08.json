@@ -1,0 +1,245 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.paper_target_matrix.v1",
+  "goal": "Goal5130",
+  "status": "xhd_paper_target_matrix_ready",
+  "date": "2026-07-08",
+  "sources": {
+    "paper_pdf": "https://rubaolee.github.io/paper_pdfs/2026-xhd.pdf",
+    "paper_page": "https://gengl.me/publications/ics26/",
+    "author_repository": "https://github.com/pwrliang/X-HD",
+    "author_commit": "7bf41c8442d059c94f4178355c6d5a10571d9658"
+  },
+  "measurement_contract": {
+    "paper_gpu_boundary": "For GPU algorithms, paper timing starts after datasets are loaded onto GPU and stops when HD is produced.",
+    "author_json_fields_seen_in_prior_goals": [
+      "HDResult",
+      "Running.AvgTime",
+      "Repeats",
+      "Iterations"
+    ],
+    "rtdl_policy": "Keep author Running.AvgTime, process wall, RTDL route time, setup/preprocess/load, and comparator/output separated. Do not report a speedup ratio without aligned denominator, hardware, dataset, and regime."
+  },
+  "dataset_table_targets": [
+    {
+      "name": "BraTS",
+      "category": "MRI",
+      "dimension": 3,
+      "paper_count": "494 images",
+      "paper_points": {
+        "max": "1.9M",
+        "average": "1.5M",
+        "median": "1.5M"
+      },
+      "paper_gini": {
+        "max": 0.17,
+        "average": 0.14,
+        "median": 0.14
+      },
+      "source_family": "BraTS 2020 non-empty voxel coordinates",
+      "target_level": "Level B if same-source BraTS access is obtained; Level C only with exact author image list/conversion hashes"
+    },
+    {
+      "name": "USCounty",
+      "category": "Geospatial",
+      "dimension": 2,
+      "paper_points": "9.4M",
+      "paper_gini": 0.77,
+      "source_family": "US county polygon boundaries, likely Census/TIGER-derived",
+      "target_level": "Level B candidate; exact author converted point files absent"
+    },
+    {
+      "name": "USZipcode",
+      "category": "Geospatial",
+      "dimension": 2,
+      "paper_points": "43.9M",
+      "paper_gini": 0.61,
+      "source_family": "US zipcode or ZCTA polygon boundaries, likely Census/TIGER-derived",
+      "target_level": "Level B candidate; exact author converted point files absent"
+    },
+    {
+      "name": "Lakes",
+      "category": "Geospatial",
+      "dimension": 2,
+      "paper_points": "301.7M",
+      "paper_gini": 0.76,
+      "source_family": "OSM lakes / water polygons",
+      "target_level": "Large Level B candidate; exact snapshot and conversion absent"
+    },
+    {
+      "name": "Parks",
+      "category": "Geospatial",
+      "dimension": 2,
+      "paper_points": "403.7M",
+      "paper_gini": 0.76,
+      "source_family": "OSM parks polygons",
+      "target_level": "Large Level B candidate; exact snapshot and conversion absent"
+    },
+    {
+      "name": "USWater",
+      "category": "Geospatial",
+      "dimension": 2,
+      "paper_points": "22.8M",
+      "paper_gini": 0.61,
+      "source_family": "US water-area polygons, likely Census/TIGER-derived",
+      "target_level": "Level B candidate; exact author converted point files absent"
+    },
+    {
+      "name": "USCensus",
+      "category": "Geospatial",
+      "dimension": 2,
+      "paper_points": "52.3M",
+      "paper_gini": 0.65,
+      "source_family": "US census block or census polygon data",
+      "target_level": "Level B candidate; exact author converted point files absent"
+    },
+    {
+      "name": "All Nodes",
+      "category": "Geospatial",
+      "dimension": 2,
+      "paper_points": "2.7B partially used",
+      "paper_gini": null,
+      "source_family": "OSM all nodes / large geospatial node set",
+      "target_level": "Not a first target; exact subset and preprocessing unknown"
+    },
+    {
+      "name": "Dragon",
+      "category": "Graphics",
+      "dimension": 3,
+      "paper_points": "0.4M",
+      "paper_gini": 0.42,
+      "source_family": "Stanford 3D Scanning Repository mesh",
+      "target_level": "Strong first Level B candidate; Level C requires mesh hash/conversion proof"
+    },
+    {
+      "name": "AsianDragon",
+      "category": "Graphics",
+      "dimension": 3,
+      "paper_points": "3.6M",
+      "paper_gini": 0.38,
+      "source_family": "Stanford 3D Scanning Repository mesh",
+      "target_level": "Level B candidate; exact author converted point files absent"
+    },
+    {
+      "name": "HappyBuddha",
+      "category": "Graphics",
+      "dimension": 3,
+      "paper_points": "0.5M",
+      "paper_gini": 0.46,
+      "source_family": "Stanford 3D Scanning Repository mesh",
+      "target_level": "Strong first Level B candidate; Level C requires mesh hash/conversion proof"
+    },
+    {
+      "name": "ThaiStatuette",
+      "category": "Graphics",
+      "dimension": 3,
+      "paper_points": "4.9M",
+      "paper_gini": 0.47,
+      "source_family": "Stanford 3D Scanning Repository mesh",
+      "target_level": "Level B candidate; exact author converted point files absent"
+    }
+  ],
+  "figure_targets": [
+    {
+      "figure": "Figure 5",
+      "subject": "Overall performance across MRI, geospatial, and graphics datasets",
+      "required_inputs": [
+        "BraTS 250 random image pairs",
+        "geospatial pairs including USWater-USBlock / USCounty-USZipcode style pairs",
+        "graphics pairs including Dragon-AsianDragon, Dragon-HappyBuddha, ThaiStatuette-AsianDragon, ThaiStatuette-HappyBuddha"
+      ],
+      "required_metrics": [
+        "running time",
+        "author Running.AvgTime / ReportedTime where available",
+        "process wall",
+        "baseline times"
+      ],
+      "status": "blocked_on_dataset_and_baseline_provenance"
+    },
+    {
+      "figure": "Figure 6",
+      "subject": "Pruning effectiveness",
+      "required_inputs": [
+        "Dragon-AsianDragon"
+      ],
+      "required_metrics": [
+        "No-Opt time",
+        "EB time",
+        "EB+Prune time",
+        "RT-HDIST time",
+        "intersection counts",
+        "visited point pairs"
+      ],
+      "status": "blocked_on_author_script_mapping_and_exact_or_same_source_graphics_inputs"
+    },
+    {
+      "figure": "Figure 7",
+      "subject": "Load balance / heavy-cell offload effectiveness",
+      "required_inputs": [
+        "OSMLakes-OSMParks",
+        "selected graphics pairs"
+      ],
+      "required_metrics": [
+        "RT shader time",
+        "CUDA kernel offload time",
+        "total with and without load balancing"
+      ],
+      "status": "blocked_on_algorithmic_phase_mapping_and_large_geospatial_inputs"
+    },
+    {
+      "figure": "Figure 8",
+      "subject": "Radius-growing strategy",
+      "required_inputs": [
+        "paper-selected datasets for radius strategy"
+      ],
+      "required_metrics": [
+        "running time by strategy",
+        "iteration or radius-growth diagnostics where available"
+      ],
+      "status": "blocked_on_author_script_mapping"
+    },
+    {
+      "figure": "Figure 9",
+      "subject": "Adaptive grid sizing",
+      "required_inputs": [
+        "paper-selected MRI/geospatial/graphics workloads"
+      ],
+      "required_metrics": [
+        "running time across grid-size choices",
+        "grid configuration"
+      ],
+      "status": "blocked_on_author_script_mapping"
+    },
+    {
+      "figure": "Figure 10",
+      "subject": "Scalability and overlap sensitivity",
+      "required_inputs": [
+        "paper scalability inputs and overlap-controlled inputs"
+      ],
+      "required_metrics": [
+        "running time",
+        "input scale",
+        "overlap or selectivity diagnostics"
+      ],
+      "status": "blocked_on_dataset_generation_details"
+    },
+    {
+      "figure": "Figure 11",
+      "subject": "Memory footprint",
+      "required_inputs": [
+        "paper-selected workloads"
+      ],
+      "required_metrics": [
+        "GPU memory footprint",
+        "author memory accounting boundary"
+      ],
+      "status": "blocked_on_author_script_mapping_and_instrumentation"
+    }
+  ],
+  "exit_label": "xhd_paper_target_matrix_ready",
+  "claim_boundary": {
+    "full_paper_reproduction_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure_reproduction_claimed": false,
+    "performance_ratio_claimed": false
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.same_source_graphics_acquisition.v1",
+  "goal": "Goal5132",
+  "status": "xhd_stanford_graphics_same_source_acquired__gate_not_yet_run",
+  "date": "2026-07-08",
+  "source": {
+    "repository_page": "https://graphics.stanford.edu/data/3Dscanrep/",
+    "claim_level": "Level B same-source candidate only"
+  },
+  "archives": [
+    {
+      "dataset": "Dragon",
+      "url": "https://graphics.stanford.edu/pub/3Dscanrep/dragon/dragon_recon.tar.gz",
+      "bytes": 11197764,
+      "sha256": "74AC1D90989C9B1732EDEE82D57E9CE71452144CF4355F108D8C9C616D28D02F",
+      "reachable_by_head_request": true
+    },
+    {
+      "dataset": "HappyBuddha",
+      "url": "https://graphics.stanford.edu/pub/3Dscanrep/happy/happy_recon.tar.gz",
+      "bytes": 14456495,
+      "sha256": "409CD294EFBFD8244E15A382B95A9423F153B7776E736C9B09F19EC9D3C10ED0",
+      "reachable_by_head_request": true
+    }
+  ],
+  "extracted_ply_files": [
+    {
+      "dataset": "Dragon",
+      "path": "Paper-reproduction-apps/x-hd-paper/data/external/stanford/dragon_recon/dragon_vrip.ply",
+      "bytes": 33831477,
+      "vertices": 437645,
+      "faces": 871414,
+      "sha256": "FEA87FF48F2ABA22FB53E7B67C3FF3F7B8C2A3B3A0653AF62C48BBA67C6D5744"
+    },
+    {
+      "dataset": "HappyBuddha",
+      "path": "Paper-reproduction-apps/x-hd-paper/data/external/stanford/happy_recon/happy_vrip.ply",
+      "bytes": 42619420,
+      "vertices": 543652,
+      "faces": 1087716,
+      "sha256": "2283371216D748A08376A3C88698E283CC8F18D10CED348D6D133051BCF217AB"
+    }
+  ],
+  "reduced_resolution_files_seen": [
+    {
+      "dataset": "Dragon",
+      "file": "dragon_vrip_res2.ply",
+      "vertices": 100250,
+      "faces": 202520
+    },
+    {
+      "dataset": "Dragon",
+      "file": "dragon_vrip_res3.ply",
+      "vertices": 22998,
+      "faces": 47794
+    },
+    {
+      "dataset": "Dragon",
+      "file": "dragon_vrip_res4.ply",
+      "vertices": 5205,
+      "faces": 11102
+    },
+    {
+      "dataset": "HappyBuddha",
+      "file": "happy_vrip_res2.ply",
+      "vertices": 144647,
+      "faces": 293232
+    },
+    {
+      "dataset": "HappyBuddha",
+      "file": "happy_vrip_res3.ply",
+      "vertices": 32328,
+      "faces": 67240
+    },
+    {
+      "dataset": "HappyBuddha",
+      "file": "happy_vrip_res4.ply",
+      "vertices": 7108,
+      "faces": 15536
+    }
+  ],
+  "gate_status": {
+    "author_hd_exec_run": false,
+    "rtdl_route_run": false,
+    "reason": "Current X-HD gate scripts consume WKT fixtures. Stanford source data is PLY. Full-resolution exact RTDL route would materialize approximately 238 billion pairwise candidate rows, so a naive exact route is not a viable full-scale gate."
+  },
+  "next_required_work": [
+    "Add an app-owned PLY vertex input bridge for author and RTDL gates.",
+    "Run author hd_exec on the same PLY inputs on POD.",
+    "Run RTDL exact/reference route only on a bounded reduced-resolution or sampled gate unless a scalable generic route is introduced.",
+    "Keep the result labeled Level B same-source representative unless exact paper file/hash/provenance is found."
+  ],
+  "claim_boundary": {
+    "same_source_source_acquired": true,
+    "representative_gate_matched": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "paper_figure_reproduction_claimed": false,
+    "performance_ratio_claimed": false
+  }
+}

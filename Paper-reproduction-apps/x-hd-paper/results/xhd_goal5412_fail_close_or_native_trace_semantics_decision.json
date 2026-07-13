@@ -1,0 +1,144 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5412.fail_close_or_native_trace_semantics_decision.v1",
+  "goal": "Goal5412",
+  "status": "current_statused_bridge_fail_closed__generic_native_payload_transition_trace_design_authorized",
+  "matched": true,
+  "decision": {
+    "explicit_lb_support_authorized": false,
+    "explicit_lb_current_model_fail_closed": true,
+    "recommended_current_branch": "fail_close_current_explicit_lb",
+    "full_goal5387_row_identity_gate_authorized": false,
+    "direct_native_fix_authorized": false,
+    "new_generic_native_trace_semantics_design_authorized": true,
+    "new_generic_native_trace_implementation_authorized": false,
+    "recommended_next_goal": "Goal5413_generic_native_payload_transition_trace_contract"
+  },
+  "evidence_inputs": {
+    "goal5387_author_trace_v2": {
+      "active_query_count": 437645,
+      "raw_offload_rows_before_sort_reduce": 27133990,
+      "raw_offload_rows_per_active_if_uniform": 62,
+      "raw_offload_row_hash": 4333109858711462591,
+      "sample_source_ids": [
+        11168,
+        210712,
+        437119
+      ],
+      "sample_cell_ids": [
+        2924,
+        17,
+        17
+      ],
+      "feedback_update_count": 294
+    },
+    "goal5406_full_cover_surface": {
+      "rtdl_full_cover_rows": 24508120,
+      "rtdl_full_cover_rows_per_active": 56,
+      "author_raw_rows": 27133990,
+      "row_count_parity": false,
+      "row_hash_parity": false
+    },
+    "goal5407_sample_membership": {
+      "classification": "author_sample_rows_not_subset_of_rtdl_full_cover__row_identity_gap",
+      "all_author_sample_pairs_present": false
+    },
+    "goal5408_cell_namespace": {
+      "classification": "author_sample_cell_ids_exist_globally_but_not_for_author_sources",
+      "compact_original_namespace_remap_explains_author_samples": false
+    },
+    "goal5410_synthetic_statused_deferral": {
+      "status": "synthetic_app_neutral_status_stream_gate_passed__bounded_xhd_gate_pending",
+      "synthetic_app_neutral_gate_passed": true,
+      "offload_rows": 2,
+      "completed_rows": 2,
+      "miss_rows": 1,
+      "aborted_rows": 1,
+      "pruned_rows": 1
+    },
+    "goal5411_bounded_statused_deferral": {
+      "status": "bounded_xhd_statused_deferral_sample_row_gate_failed__sample_rows_not_recovered",
+      "bounded_xhd_author_sample_row_gate_passed": false,
+      "observed_offload_row_count": 3,
+      "observed_statused_deferral_cells": [
+        1554,
+        1554,
+        1554
+      ],
+      "author_sample_cells_recovered": [
+        false,
+        false,
+        false
+      ]
+    }
+  },
+  "why_current_model_fails": [
+    "The current RTDL full-cover surface has the wrong row identity, not just the wrong row count.",
+    "Simple compact/original cell-id remapping does not recover the sampled author source/cell rows.",
+    "The current generic statused deferral bridge emits one statused cell per sampled source, but all three are cell 1554 rather than the author sample cells 2924, 17, and 17.",
+    "Proceeding to full Goal5387 row/hash parity under the current bridge would be a known false path."
+  ],
+  "authorized_generic_design": {
+    "name": "native_payload_transition_trace_stream",
+    "app_semantics": "none",
+    "design_only": true,
+    "description": "A generic native trace stream emitted at traversal payload transition points before frontier lowering, row collapse, sort/unique, or continuation feedback.",
+    "continuation_condition": "Design may continue only as a generic RTDL contract with a synthetic non-XHD/non-paper behavior gate before any X-HD bounded sample-row comparison.",
+    "required_row_schema": [
+      "active_queue_index",
+      "query_row_id",
+      "source_id",
+      "primitive_or_cell_id",
+      "cell_namespace_code",
+      "status_code",
+      "transition_phase_code",
+      "current_best_before_sq",
+      "current_best_after_sq",
+      "lower_bound_sq",
+      "upper_bound_sq",
+      "work_count",
+      "payload_event_ordinal"
+    ],
+    "required_telemetry": [
+      "active_query_count",
+      "raw_transition_row_count",
+      "raw_transition_row_hash_or_deterministic_samples",
+      "status_count_offloading",
+      "status_count_completed",
+      "status_count_miss",
+      "status_count_aborted",
+      "feedback_update_count_or_not_applicable",
+      "row_capacity",
+      "overflowed"
+    ],
+    "required_contract_points": [
+      "rows are emitted at native traversal or payload state-transition time",
+      "rows are emitted before app-level continuation, grouped reduction, or row collapse",
+      "cell namespace is explicit and app-neutral",
+      "row ordering is either deterministic or accompanied by deterministic hash/sample policy",
+      "overflow fails closed with no partial success claim",
+      "synthetic non-app fixture must pass before any X-HD comparison",
+      "bounded X-HD sample-row gate must pass before full Goal5387 row/hash parity",
+      "full Goal5387 gate must include row count, row hash/sample, status counts, and feedback counters"
+    ]
+  },
+  "forbidden_shortcuts": [
+    "hard-code 6 rows per active query",
+    "hard-code 62 rows per active query",
+    "hard-code Goal5387 sample source/cell pairs",
+    "hard-code author raw offload hash",
+    "add xhd, paper, figure, or lb option names to RTDL core/native symbols",
+    "declare explicit -lb support from a design-only contract",
+    "run full Goal5387 row identity parity before a bounded sample-row gate passes"
+  ],
+  "claim_boundary": {
+    "decision_claimed": true,
+    "explicit_lb_support_claimed": false,
+    "new_native_backend_implemented": false,
+    "full_goal5387_row_identity_parity_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "figure11_reproduction_claimed": false,
+    "performance_ratio_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false
+  }
+}

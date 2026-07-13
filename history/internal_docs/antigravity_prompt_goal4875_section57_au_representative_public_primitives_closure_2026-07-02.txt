@@ -1,0 +1,27 @@
+Please review this RTDL Goal4875 closure as an external critical reviewer.
+
+Review packet:
+- history/internal_docs/call_for_review_goal4875_section57_au_representative_public_primitives_closure_2026-07-02.md
+- history/internal_docs/goal4875_section57_au_representative_public_primitive_closure_2026-07-02.md
+- history/internal_docs/goal4875_section57_au_representative_status_2026-07-02.md
+- history/internal_docs/goal4875_public_primitives_au_overlay.py
+- src/rtdsl/rayjoin_overlay.py
+
+You must decide whether the closure is acceptable.
+
+Focus on:
+1. byte-for-byte equality between public RTDL route and Author+RTDLContractPatch;
+2. whether unpatched AuthorPatch is no longer the fair comparator after the duplicate-half-edge contract;
+3. small-case duplicate-half-edge evidence;
+4. whether removing the display-coordinate nudge is only a formatting repair;
+5. no import of rtdsl.rayjoin_overlay in the public route;
+6. clear boundaries: representative current-OSM Australia pair only, not exact eight-pair Section 5.7, no broad performance, no Embree, Numba not on correctness-critical path;
+7. focused tests.
+
+Write your result to:
+history/internal_docs/antigravity_goal4875_section57_au_representative_public_primitives_closure_review_2026-07-02.md
+
+Use one verdict label:
+- approve_goal4875_bounded_representative_section57_public_primitives_closed
+- approve_with_required_amendments
+- block_goal4875_closure

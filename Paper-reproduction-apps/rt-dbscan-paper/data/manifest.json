@@ -1,0 +1,124 @@
+{
+  "paper": {
+    "title": "RT-DBSCAN: Accelerating DBSCAN using Ray Tracing Hardware",
+    "venue": "IPDPS 2023",
+    "doi": "10.1109/IPDPS54959.2023.00100"
+  },
+  "author_artifact": {
+    "repository": "https://github.com/vani-nag/OWLRayTracing",
+    "branch": "rt-dbscan",
+    "commit": "92749fe82ed001e5b7303265d4a2a73aa1bbf529",
+    "sample_path": "samples/cmdline/s02-rtdbscan",
+    "build_notes": "Candidate author artifact located through public repository metadata. A bounded AuthorOfficial core-count output patch and POD setup runner exist. Goal5093 built and executed the patched sample02-rtdbscan binary on a CUDA/OptiX POD for the tiny same-input core-count gate."
+  },
+  "rtdl_program": {
+    "entrypoints": [
+      "examples/current/research_benchmarks/rt_dbscan/rtdl_rt_dbscan_benchmark_app.py",
+      "examples/current/apps/ml/rtdl_dbscan_clustering_app.py"
+    ],
+    "public_apis_exercised": [
+      "fixed_radius_neighbors",
+      "prepare_generic_fixed_radius_count_threshold_2d",
+      "run_generic_fixed_radius_count_threshold_2d",
+      "run_generic_prepared_fixed_radius_threshold_reached_count_2d"
+    ],
+    "experimental_apis_exercised": [
+      "prepare_optix_fixed_radius_count_threshold_2d",
+      "prepare_optix_fixed_radius_count_threshold_3d",
+      "fixed_radius_count_threshold_2d_partner_columns",
+      "fixed_radius_count_threshold_3d_partner_columns",
+      "v2_8_fixed_radius_graph_component_front_door"
+    ],
+    "app_owned_assets": [
+      "DBSCAN epsilon and min-points policy",
+      "paper workload selection",
+      "cluster expansion and label interpretation",
+      "component-partition comparator",
+      "route-choice policy",
+      "performance-regime selection"
+    ]
+  },
+  "reproduction_scope": {
+    "status": "bounded_component_partition_gate_executed_on_pod__uci_3droad_same_source_author_contract_gap_confirmed",
+    "workloads": [
+      "local fixed-radius core-count smoke candidate",
+      "prepared fixed-radius core-count candidate",
+      "prepared fixed-radius core-flag candidate",
+      "bounded component-partition candidate",
+      "representative_medium_two_clusters3d synthetic partition candidate",
+      "representative_border_shell3d synthetic partition candidate",
+      "representative_three_components_noise3d synthetic partition candidate"
+    ],
+    "comparator": "bounded tiny 3D core-count and component-partition gates executed against patched AuthorOfficial on POD; CPU-reference and RTDL OptiX/Numba summaries match author core_count=7 and canonical component partition [0,0,0,0,1,1,1,-1]. A second border/noise fixture also matches AuthorOfficial with canonical component partition [0,0,0,0,0,0,1,1,1,1,1,-1], core flags, and signature {core_count=10, component_sizes=[5,6], noise_count=1}. Goal5107 diagnoses the 1K UCI 3DRoad same-source mismatch as an author directional border-assignment contract: conventional DBSCAN mismatch_count=12, author-directional mismatch_count=0. Goal5108 adds an app-owned author_directional_cpu_reference runner backend and matches the clean 1K AuthorOfficial payload exactly. Goal5109 runs the existing generic RTDL OptiX+CuPy grouped-stream route on the same 1K input; it executes but matches the conventional signature, not the author-directional signature, so the remaining 3DRoad gap is semantic-contract mismatch rather than only a Numba/PTX environment issue. Owner decision: do not reopen RTDL SoS or border-assignment protocols for this app; the author directional rule is not a new RTDL language contract.",
+    "input_policy": "tiny and representative synthetic 3D fixtures for bounded same-input gates; Goal5105 records candidate paper dataset provenance, but exact paper inputs are not pinned",
+    "output_policy": "core_count integer, canonical point partition modulo label renaming, component signature {component_sizes, noise_count}, and core flags when available; exact author label IDs and full DBSCAN output-format parity not claimed",
+    "tolerance": "exact integer equality for core_count/component_count/component_sizes/noise_count and exact canonical point-partition equality; matched=true in AuthorOfficial CPU-reference and RTDL OptiX+Numba POD summaries"
+  },
+  "performance": {
+    "status": "no paper-app performance claim",
+    "regimes": [
+      {
+        "name": "requirements_only",
+        "claim": "historical benchmark evidence may guide target selection but is not a paper-app performance result",
+        "includes_prepare": false,
+        "includes_writer": false,
+        "includes_author_preprocessing": false,
+        "baseline": "none"
+      }
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests.goal5092_rt_dbscan_authorofficial_gate_packet_test"
+    ],
+    "result_artifacts": [
+      "Paper-reproduction-apps/rt-dbscan-paper/results/authorofficial_core_count_gate_local_cpu_summary.json",
+      "Paper-reproduction-apps/rt-dbscan-paper/results/authorofficial_core_count_gate_pod_cpu_summary.json",
+      "Paper-reproduction-apps/rt-dbscan-paper/results/authorofficial_core_count_gate_pod_optix_summary.json",
+      "Paper-reproduction-apps/rt-dbscan-paper/results/component_signature_gate_local_cpu_summary.json",
+      "Paper-reproduction-apps/rt-dbscan-paper/results/authorofficial_component_signature_gate_pod_cpu_summary.json",
+      "Paper-reproduction-apps/rt-dbscan-paper/results/authorofficial_component_signature_gate_pod_optix_summary.json",
+      "Paper-reproduction-apps/rt-dbscan-paper/results/component_signature_border_noise_local_cpu_summary.json",
+      "Paper-reproduction-apps/rt-dbscan-paper/results/authorofficial_component_signature_border_noise_pod_optix_summary.json",
+      "Paper-reproduction-apps/rt-dbscan-paper/results/representative_partition_matrix_local_cpu_summary.json",
+      "Paper-reproduction-apps/rt-dbscan-paper/results/representative_partition_matrix_pod_optix_summary.json",
+      "Paper-reproduction-apps/rt-dbscan-paper/results/representative_partition_matrix_representative_medium_two_clusters3d_cold_pod_optix_summary.json",
+      "Paper-reproduction-apps/rt-dbscan-paper/results/representative_partition_matrix_representative_border_shell3d_cold_pod_optix_summary.json",
+      "Paper-reproduction-apps/rt-dbscan-paper/results/representative_partition_matrix_representative_three_components_noise3d_cold_pod_optix_summary.json",
+      "Paper-reproduction-apps/rt-dbscan-paper/results/authorofficial_warm_loop_matrix_pod_summary.json",
+      "Paper-reproduction-apps/rt-dbscan-paper/results/authorofficial_warm_loop_outputs/",
+      "Paper-reproduction-apps/rt-dbscan-paper/data/paper_dataset_candidates.json",
+      "Paper-reproduction-apps/rt-dbscan-paper/data/source/uci_3droad/3d_road_network_north_jutland_denmark.zip",
+      "Paper-reproduction-apps/rt-dbscan-paper/data/source/uci_3droad/3D_spatial_network.txt",
+      "Paper-reproduction-apps/rt-dbscan-paper/data/fixtures/uci_3droad_1k_author_2d_zero_z.csv",
+      "Paper-reproduction-apps/rt-dbscan-paper/data/fixtures/uci_3droad_16k_author_2d_zero_z.csv",
+      "Paper-reproduction-apps/rt-dbscan-paper/data/fixtures/uci_3droad_full_author_2d_zero_z.csv",
+      "Paper-reproduction-apps/rt-dbscan-paper/results/uci_3droad_1k_cpu_author_payload_compare_summary.json",
+      "Paper-reproduction-apps/rt-dbscan-paper/author_patches/goal5107_authorofficial_skip_context_destroy_after_payload.patch",
+      "Paper-reproduction-apps/rt-dbscan-paper/scripts/analyze_uci_3droad_author_contract.py",
+      "Paper-reproduction-apps/rt-dbscan-paper/results/uci_3droad_1k_goal5107_contract_analysis.json",
+      "Paper-reproduction-apps/rt-dbscan-paper/results/uci_3droad_1k_author_goal5107_clean.jsonl",
+      "Paper-reproduction-apps/rt-dbscan-paper/results/uci_3droad_1k_author_goal5107_clean_stdout.txt",
+      "Paper-reproduction-apps/rt-dbscan-paper/results/uci_3droad_16k_author_goal5107_clean.jsonl",
+      "Paper-reproduction-apps/rt-dbscan-paper/results/uci_3droad_1k_author_directional_gate_summary.json",
+      "Paper-reproduction-apps/rt-dbscan-paper/results/uci_3droad_1k_optix_cupy_author_directional_gate_summary.json",
+      "examples/current/research_benchmarks/rt_dbscan/",
+      "examples/current/apps/ml/rtdl_dbscan_clustering_app.py"
+    ]
+  },
+  "boundaries": {
+    "full_paper_reproduction_claimed": false,
+    "independent_author_pipeline_reconstruction_claimed": false,
+    "whole_program_speedup_claimed": false,
+    "author_performance_parity_claimed": false,
+    "native_backend_completion_claimed": false,
+    "forbidden_claims": [
+      "full RT-DBSCAN paper reproduction",
+      "exact paper dataset reproduction",
+      "whole-program DBSCAN speedup",
+      "DBSCAN-native RTDL engine ABI",
+      "automatic partner or route selection",
+      "arbitrary clustering acceleration"
+    ]
+  }
+}

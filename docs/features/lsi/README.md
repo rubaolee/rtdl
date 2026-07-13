@@ -7,6 +7,34 @@
 Use it when both sides of the query are segment sets and you want one emitted
 row per accepted segment/segment intersection.
 
+For CDB/planar-map workloads that only need the scalar LSI count, use the
+prepared count front door:
+
+```python
+from rtdsl import load_cdb, prepare_planar_map_lsi_2d_optix
+
+base = load_cdb("base_Point.cdb")
+query = load_cdb("query_Point.cdb")
+
+with prepare_planar_map_lsi_2d_optix(base) as lsi:
+    count = lsi.count(query)
+```
+
+This is a count-only planar-map contract. It is distinct from raw segment-pair
+row materialization because planar-map LSI has endpoint/boundary rules for
+CDB-like topology. It does not perform polygon overlay and does not imply a
+paper-reproduction or speedup claim.
+
+The companion CDB/planar-map point-location/PIP primitive is
+`prepare_planar_map_point_location_2d_optix`; use it when the probe side is
+points rather than segments.
+
+When an application needs both planar-map LSI and point-location on the same
+two maps, prefer the reusable
+`prepare_planar_map_workspace_2d_optix` lifecycle helper. It prepares the public
+LSI and point-location sessions once and leaves application continuation outside
+RTDL core.
+
 `lsi` is one of RTDL's root workloads. The newer segment/polygon and bounded
 polygon-overlap applications build on the same idea: use ray-tracing-style
 candidate discovery for spatial pairs, then emit or refine only the rows the
@@ -37,6 +65,10 @@ return rt.emit(
 
 - predicate:
   - `rt.segment_intersection(exact=False)`
+- prepared CDB/planar-map count front door:
+  - `prepare_planar_map_lsi_2d_optix(base).count(query)`
+- reusable CDB/planar-map workspace:
+  - `prepare_planar_map_workspace_2d_optix(left, right).run_lsi_pair_id_rows()`
 - canonical reference kernel:
   - [county_zip_join_reference](../../../examples/reference/rtdl_language_reference.py)
 - current support contract:
@@ -72,6 +104,8 @@ This file contains the current minimal language-reference `lsi` kernel.
 ## Best Practices
 
 - use `Segments` on both sides and keep roles explicit
+- use `prepare_planar_map_lsi_2d_optix` when the desired output is only a
+  CDB/planar-map scalar count
 - treat `lsi` as a row-materialization workload, not an aggregate
 - validate new kernels through `rt.run_cpu(...)` before backend comparisons
 - compare accepted larger packages against PostGIS on Linux when the goal is external correctness

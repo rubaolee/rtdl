@@ -1,0 +1,100 @@
+{
+  "bundle_dir": "Paper-reproduction-apps/x-hd-paper/requests/send_bundle",
+  "bundle_index": "Paper-reproduction-apps/x-hd-paper/requests/send_bundle/request_index.json",
+  "bundle_readme": "Paper-reproduction-apps/x-hd-paper/requests/send_bundle/README.md",
+  "claim_boundary": {
+    "exact_equivalence_accepted": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_reopened": false,
+    "external_action_dispatch_bundle_claimed": true,
+    "external_artifacts_acquired": false,
+    "external_response_received": false,
+    "figure5_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "new_rtdl_route_code_added": false,
+    "performance_ratio_claimed": false,
+    "pod_execution_claimed": false,
+    "request_sent_claimed": false,
+    "route_micro_optimization_goal_authorized": false
+  },
+  "date": "2026-07-10",
+  "exact_input_blocker_removed": false,
+  "external_response_received": false,
+  "goal": "Goal5445",
+  "next_action": "owner_send_selected_request_then_record_real_receipt_or_wait_for_authorized_acm_access",
+  "not_allowed": [
+    "claiming any request was sent from this bundle alone",
+    "claiming any response arrived from this bundle alone",
+    "claiming external artifacts were acquired",
+    "claiming exact-equivalence accepted",
+    "claiming exact paper dataset reproduction",
+    "claiming Figure 5 or full X-HD reproduction",
+    "claiming author-vs-RTDL performance ratio",
+    "running POD or route work from this bundle alone"
+  ],
+  "pod_expected_next": false,
+  "pod_usage": {
+    "expected_next": false,
+    "reason": "Dispatch bundle only. POD is gated by a later classified response and reviewed next gate.",
+    "used": false
+  },
+  "ready_external_request_count": 4,
+  "receipt_stub_count": 4,
+  "request_sent_claimed": false,
+  "schema": "rtdl.paper_reproduction.xhd.goal5445.external_action_dispatch_bundle.v1",
+  "sendable_requests": [
+    {
+      "audience": "X-HD authors / artifact owner",
+      "id": "general_author_input_provenance_request",
+      "path": "Paper-reproduction-apps/x-hd-paper/requests/author_input_provenance_request.md",
+      "purpose": "Ask for exact paper input provenance across X-HD datasets.",
+      "ready_to_send_or_review": true,
+      "receipt_stub_path": "Paper-reproduction-apps/x-hd-paper/requests/send_bundle/receipts/general_author_input_provenance_request_receipt_stub.json",
+      "sent_claimed": false,
+      "sha256": "f3d0af4d7157c06fa0abeb0a9a3d235a8d84e20a53a316a69e239b22f2736b38",
+      "status": "prepared_not_sent"
+    },
+    {
+      "audience": "ACM supplement access holder / owner",
+      "id": "general_acm_supplement_inspection_request",
+      "path": "Paper-reproduction-apps/x-hd-paper/requests/acm_supplement_inspection_request.md",
+      "purpose": "Ask for authorized inspection of ACM supplement contents.",
+      "ready_to_send_or_review": true,
+      "receipt_stub_path": "Paper-reproduction-apps/x-hd-paper/requests/send_bundle/receipts/general_acm_supplement_inspection_request_receipt_stub.json",
+      "sent_claimed": false,
+      "sha256": "013f646400945f88c9ca1744dfd5973201102ffc7124c875c7a7cf9a12789423",
+      "status": "prepared_not_sent"
+    },
+    {
+      "audience": "X-HD authors / artifact owner",
+      "id": "water_bg_author_hash_request",
+      "path": "Paper-reproduction-apps/x-hd-paper/requests/author_water_bg_input_hash_request.md",
+      "purpose": "Ask specifically for WaterBodies/BG paper-run WKT hashes, bytes, or regeneration provenance.",
+      "ready_to_send_or_review": true,
+      "receipt_stub_path": "Paper-reproduction-apps/x-hd-paper/requests/send_bundle/receipts/water_bg_author_hash_request_receipt_stub.json",
+      "sent_claimed": false,
+      "sha256": "8a48cb4ed38f7291b7e0677c5f71d88fbd8688f3604a60d5224b5448e6de3d12",
+      "status": "prepared_not_sent"
+    },
+    {
+      "audience": "owner or external reviewer",
+      "id": "water_bg_exact_equivalence_review_request",
+      "path": "Paper-reproduction-apps/x-hd-paper/requests/water_bg_exact_equivalence_review_request.md",
+      "purpose": "Ask whether the current Water/BG public reconstruction can be accepted under a bounded renamed claim.",
+      "ready_to_send_or_review": true,
+      "receipt_stub_path": "Paper-reproduction-apps/x-hd-paper/requests/send_bundle/receipts/water_bg_exact_equivalence_review_request_receipt_stub.json",
+      "sent_claimed": false,
+      "sha256": "075f54412c7187aa003df85cf8eaf1f892b06fd0f895a0c2946d046bf5671875",
+      "status": "prepared_not_sent"
+    }
+  ],
+  "source_manifest": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5438_external_request_send_manifest.json",
+  "status": "external_action_dispatch_bundle_ready__not_sent",
+  "stop_loss_gate": {
+    "decision": "PASS: outbound governance, not app-artifact parity implementation.",
+    "gate_downstream_consumer_reachable": true,
+    "gate_generic_capability_produced": true,
+    "gate_non_app_consumer": "external action dispatch bundle / receipt workflow",
+    "gate_requires_app_specific_logic": false
+  }
+}

@@ -1,0 +1,304 @@
+{
+  "author_rt_option_specs": {
+    "eb": {
+      "author_default": true,
+      "author_flag": "eb",
+      "meaning": "Use early-break optimization in author RT mode.",
+      "type": "bool"
+    },
+    "fast_build_bvh": {
+      "author_default": false,
+      "author_flag": "fast_build_bvh",
+      "meaning": "Prefer fast-build BVH in author RT mode.",
+      "type": "bool"
+    },
+    "lb": {
+      "author_default": 256,
+      "author_flag": "lb",
+      "meaning": "Author load-balance threshold; 0 disables load balance.",
+      "type": "int"
+    },
+    "n_points_cell": {
+      "author_default": 15,
+      "author_flag": "n_points_cell",
+      "meaning": "Expected points per cell used for author grid/radius setup.",
+      "type": "int"
+    },
+    "prune": {
+      "author_default": true,
+      "author_flag": "prune",
+      "meaning": "Use upper/lower-bound pruning in author RT mode.",
+      "type": "bool"
+    },
+    "rebuild_bvh": {
+      "author_default": false,
+      "author_flag": "rebuild_bvh",
+      "meaning": "Rebuild BVH on each author RT radius iteration instead of updating.",
+      "type": "bool"
+    },
+    "tune_grid": {
+      "author_default": false,
+      "author_flag": "tune_grid",
+      "meaning": "Author brute-force grid-size tuning mode.",
+      "type": "bool"
+    },
+    "tune_radius": {
+      "author_default": "adaptive",
+      "author_flag": "tune_radius",
+      "choices": [
+        "adaptive",
+        "double",
+        "add"
+      ],
+      "meaning": "Author radius growth policy between RT iterations.",
+      "type": "choice"
+    }
+  },
+  "claim_boundary": {
+    "author_rt_core_algorithm_equivalence_claimed": false,
+    "author_rt_option_surface_complete_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "performance_parity_claimed": false
+  },
+  "date": "2026-07-09",
+  "default_surface": {
+    "all_explicit_author_rt_options_supported": null,
+    "boundary": "These are author RT option-surface records. Omitted defaults are recorded for audit only. Explicit author RT options fail closed until a separate goal maps each option to generic RTDL behavior with evidence.",
+    "claim_boundary": {
+      "author_rt_core_algorithm_equivalence_claimed": false,
+      "author_rt_option_surface_complete_claimed": false,
+      "performance_parity_claimed": false
+    },
+    "explicit_author_rt_options": [],
+    "options": {
+      "eb": {
+        "author_default": true,
+        "author_flag": "eb",
+        "author_semantics_equivalence_claimed": false,
+        "current_rtdl_support_status": "author_default_recorded_not_algorithm_parity",
+        "effective_value": true,
+        "explicitly_requested": false,
+        "mapped_to_rtdl_control": null,
+        "meaning": "Use early-break optimization in author RT mode.",
+        "type": "bool"
+      },
+      "fast_build_bvh": {
+        "author_default": false,
+        "author_flag": "fast_build_bvh",
+        "author_semantics_equivalence_claimed": false,
+        "current_rtdl_support_status": "author_default_recorded_not_algorithm_parity",
+        "effective_value": false,
+        "explicitly_requested": false,
+        "mapped_to_rtdl_control": null,
+        "meaning": "Prefer fast-build BVH in author RT mode.",
+        "type": "bool"
+      },
+      "lb": {
+        "author_default": 256,
+        "author_flag": "lb",
+        "author_semantics_equivalence_claimed": false,
+        "current_rtdl_support_status": "author_default_recorded_not_algorithm_parity",
+        "effective_value": 256,
+        "explicitly_requested": false,
+        "mapped_to_rtdl_control": null,
+        "meaning": "Author load-balance threshold; 0 disables load balance.",
+        "type": "int"
+      },
+      "n_points_cell": {
+        "author_default": 15,
+        "author_flag": "n_points_cell",
+        "author_semantics_equivalence_claimed": false,
+        "current_rtdl_support_status": "author_default_recorded_not_algorithm_parity",
+        "effective_value": 15,
+        "explicitly_requested": false,
+        "mapped_to_rtdl_control": null,
+        "meaning": "Expected points per cell used for author grid/radius setup.",
+        "type": "int"
+      },
+      "prune": {
+        "author_default": true,
+        "author_flag": "prune",
+        "author_semantics_equivalence_claimed": false,
+        "current_rtdl_support_status": "author_default_recorded_not_algorithm_parity",
+        "effective_value": true,
+        "explicitly_requested": false,
+        "mapped_to_rtdl_control": null,
+        "meaning": "Use upper/lower-bound pruning in author RT mode.",
+        "type": "bool"
+      },
+      "rebuild_bvh": {
+        "author_default": false,
+        "author_flag": "rebuild_bvh",
+        "author_semantics_equivalence_claimed": false,
+        "current_rtdl_support_status": "author_default_recorded_not_algorithm_parity",
+        "effective_value": false,
+        "explicitly_requested": false,
+        "mapped_to_rtdl_control": null,
+        "meaning": "Rebuild BVH on each author RT radius iteration instead of updating.",
+        "type": "bool"
+      },
+      "tune_grid": {
+        "author_default": false,
+        "author_flag": "tune_grid",
+        "author_semantics_equivalence_claimed": false,
+        "current_rtdl_support_status": "author_default_recorded_not_algorithm_parity",
+        "effective_value": false,
+        "explicitly_requested": false,
+        "mapped_to_rtdl_control": null,
+        "meaning": "Author brute-force grid-size tuning mode.",
+        "type": "bool"
+      },
+      "tune_radius": {
+        "author_default": "adaptive",
+        "author_flag": "tune_radius",
+        "author_semantics_equivalence_claimed": false,
+        "current_rtdl_support_status": "author_default_recorded_not_algorithm_parity",
+        "effective_value": "adaptive",
+        "explicitly_requested": false,
+        "mapped_to_rtdl_control": null,
+        "meaning": "Author radius growth policy between RT iterations.",
+        "type": "choice"
+      }
+    },
+    "schema": "rtdl.paper_reproduction.xhd.author_rt_option_surface.v1",
+    "selected_route_label": "cell-mbr-exact-witness",
+    "selected_variant": "rt",
+    "status": "no_explicit_author_rt_options__author_defaults_recorded_only"
+  },
+  "exit_label": "author_rt_option_surface_gate_ready__next_target_semantic_mapping",
+  "explicit_surface": {
+    "all_explicit_author_rt_options_supported": false,
+    "boundary": "These are author RT option-surface records. Omitted defaults are recorded for audit only. Explicit author RT options fail closed until a separate goal maps each option to generic RTDL behavior with evidence.",
+    "claim_boundary": {
+      "author_rt_core_algorithm_equivalence_claimed": false,
+      "author_rt_option_surface_complete_claimed": false,
+      "performance_parity_claimed": false
+    },
+    "explicit_author_rt_options": [
+      "fast_build_bvh",
+      "rebuild_bvh",
+      "eb",
+      "prune",
+      "lb",
+      "n_points_cell",
+      "tune_grid",
+      "tune_radius"
+    ],
+    "options": {
+      "eb": {
+        "author_default": true,
+        "author_flag": "eb",
+        "author_semantics_equivalence_claimed": false,
+        "current_rtdl_support_status": "unsupported_explicit_author_rt_option_fail_closed",
+        "effective_value": false,
+        "explicitly_requested": true,
+        "mapped_to_rtdl_control": null,
+        "meaning": "Use early-break optimization in author RT mode.",
+        "type": "bool"
+      },
+      "fast_build_bvh": {
+        "author_default": false,
+        "author_flag": "fast_build_bvh",
+        "author_semantics_equivalence_claimed": false,
+        "current_rtdl_support_status": "unsupported_explicit_author_rt_option_fail_closed",
+        "effective_value": true,
+        "explicitly_requested": true,
+        "mapped_to_rtdl_control": null,
+        "meaning": "Prefer fast-build BVH in author RT mode.",
+        "type": "bool"
+      },
+      "lb": {
+        "author_default": 256,
+        "author_flag": "lb",
+        "author_semantics_equivalence_claimed": false,
+        "current_rtdl_support_status": "unsupported_explicit_author_rt_option_fail_closed",
+        "effective_value": 0,
+        "explicitly_requested": true,
+        "mapped_to_rtdl_control": null,
+        "meaning": "Author load-balance threshold; 0 disables load balance.",
+        "type": "int"
+      },
+      "n_points_cell": {
+        "author_default": 15,
+        "author_flag": "n_points_cell",
+        "author_semantics_equivalence_claimed": false,
+        "current_rtdl_support_status": "unsupported_explicit_author_rt_option_fail_closed",
+        "effective_value": 8,
+        "explicitly_requested": true,
+        "mapped_to_rtdl_control": null,
+        "meaning": "Expected points per cell used for author grid/radius setup.",
+        "type": "int"
+      },
+      "prune": {
+        "author_default": true,
+        "author_flag": "prune",
+        "author_semantics_equivalence_claimed": false,
+        "current_rtdl_support_status": "unsupported_explicit_author_rt_option_fail_closed",
+        "effective_value": false,
+        "explicitly_requested": true,
+        "mapped_to_rtdl_control": null,
+        "meaning": "Use upper/lower-bound pruning in author RT mode.",
+        "type": "bool"
+      },
+      "rebuild_bvh": {
+        "author_default": false,
+        "author_flag": "rebuild_bvh",
+        "author_semantics_equivalence_claimed": false,
+        "current_rtdl_support_status": "unsupported_explicit_author_rt_option_fail_closed",
+        "effective_value": true,
+        "explicitly_requested": true,
+        "mapped_to_rtdl_control": null,
+        "meaning": "Rebuild BVH on each author RT radius iteration instead of updating.",
+        "type": "bool"
+      },
+      "tune_grid": {
+        "author_default": false,
+        "author_flag": "tune_grid",
+        "author_semantics_equivalence_claimed": false,
+        "current_rtdl_support_status": "unsupported_explicit_author_rt_option_fail_closed",
+        "effective_value": true,
+        "explicitly_requested": true,
+        "mapped_to_rtdl_control": null,
+        "meaning": "Author brute-force grid-size tuning mode.",
+        "type": "bool"
+      },
+      "tune_radius": {
+        "author_default": "adaptive",
+        "author_flag": "tune_radius",
+        "author_semantics_equivalence_claimed": false,
+        "current_rtdl_support_status": "unsupported_explicit_author_rt_option_fail_closed",
+        "effective_value": "double",
+        "explicitly_requested": true,
+        "mapped_to_rtdl_control": null,
+        "meaning": "Author radius growth policy between RT iterations.",
+        "type": "choice"
+      }
+    },
+    "schema": "rtdl.paper_reproduction.xhd.author_rt_option_surface.v1",
+    "selected_route_label": "cell-mbr-exact-witness",
+    "selected_variant": "rt",
+    "status": "unsupported_explicit_author_rt_options"
+  },
+  "fail_closed_payload_claim_boundary": {
+    "author_performance_parity_claimed": false,
+    "author_rt_core_algorithm_equivalence_claim_authorized": false,
+    "author_rt_option_surface_complete_claimed": false,
+    "author_variant_algorithm_equivalence_claimed": false,
+    "exact_paper_dataset_identity_claimed": false,
+    "full_xhd_paper_reproduction_claim_authorized": false,
+    "performance_claim_authorized": false
+  },
+  "fail_closed_payload_status": "unsupported_author_rt_options_fail_closed",
+  "goal": "Goal5353",
+  "interpretation": "Omitted author RT defaults are recorded for audit only. Explicit author RT options fail closed until a later goal maps each option to generic RTDL behavior with evidence. This improves user-facing correctness over argparse rejection or silent ignore, but it does not close author RT-core parity.",
+  "purpose": "Expose the author RT option surface in the RTDL hd_exec-compatible wrapper as an auditable fail-closed gate instead of silently ignoring author RT flags.",
+  "radius_cli_flag_present": false,
+  "recommended_next_targets": [
+    "map_tune_radius_to_generic_radius_schedule_or_keep_unsupported",
+    "map_lb_heavy_offload_to_generic_worklist_denominator_or_keep_unsupported",
+    "map_eb_prune_to_exact_scalar_vs_exact_witness_contracts_or_keep_unsupported"
+  ],
+  "runner": "Paper-reproduction-apps\\x-hd-paper\\scripts\\run_xhd_rtdl_hd_exec.py",
+  "schema": "rtdl.paper_reproduction.xhd.goal5353.author_rt_option_surface_gate.v1",
+  "status": "author_rt_option_surface_gate_ready__explicit_options_fail_closed"
+}

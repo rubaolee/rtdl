@@ -1,0 +1,156 @@
+{
+  "claim_boundary": {
+    "author_rt_core_algorithm_parity_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_support_claimed": false,
+    "figure11_reproduction_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "row_count_parity_claimed": false,
+    "rtdl_author_performance_ratio_claimed": false,
+    "same_denominator_memory_claimed": false,
+    "telemetry_surface_audit_claimed": true
+  },
+  "coverage_summary": {
+    "available_count": 0,
+    "missing_count": 8,
+    "missing_fields": [
+      "active_in_queue_size",
+      "raw_offload_rows_author_width_bytes",
+      "status_count_init",
+      "status_count_offloading",
+      "status_count_aborted",
+      "miss_queue_count",
+      "cmax2_mbr_abort_count",
+      "row_count_parity_against_author_offloading_size"
+    ],
+    "partial_count": 3,
+    "partial_fields": [
+      "raw_offload_rows_before_sort_reduce",
+      "point_loop_early_break_count",
+      "current_best_state_source"
+    ],
+    "ready_for_author_shader_status_machine_lb_trace": false
+  },
+  "current_available_surface": {
+    "global_bound_distance": true,
+    "global_bound_early_break_count": true,
+    "inline_cell_hit_count": true,
+    "inline_point_evaluation_count": true,
+    "native_memory_telemetry": true,
+    "native_phase_timings": true,
+    "raw_frontier_kind2_rows": true,
+    "raw_frontier_kind_counts": true
+  },
+  "date": "2026-07-09",
+  "decision": {
+    "explicit_lb_support_authorized": false,
+    "next_options": [
+      "add a generic experimental native status-machine probe that emits the missing fields",
+      "instrument the author code to dump raw queue/status/cmin2 oracle rows"
+    ],
+    "recommended_next_goal": "Goal5374 author_shader_status_machine_lb_trace implementation_or_author_instrumentation",
+    "why": "The current RTDL surface can report generic kind counts and generic global-bound diagnostics, but it cannot report the author active queue/status/cmin2/miss/load-balance denominator required by Goal5372."
+  },
+  "exit_label": "current_surface_insufficient__native_status_probe_or_author_instrumentation_required",
+  "field_coverage": {
+    "active_in_queue_size": {
+      "evidence": "generic query_count exists, but current rows are indexed by query_row_id, not the author's active in_queue namespace",
+      "missing": "active queue indices and active queue size under author iteration state",
+      "status": "missing"
+    },
+    "cmax2_mbr_abort_count": {
+      "evidence": "current generic global-bound flag is max-nearest early break, not author max_dist2 <= cmax2 MBR abort",
+      "missing": "separate cmax2 MBR abort counter",
+      "status": "missing"
+    },
+    "current_best_state_source": {
+      "evidence": "front door accepts current_best_distances/current_best_item_ids and inline nearest updates them",
+      "missing": "author cmin2 state source, restoration by in_q_idx, and load-balance propagation",
+      "status": "partial"
+    },
+    "miss_queue_count": {
+      "evidence": "current generic frontier collector does not model author miss_queue append semantics",
+      "missing": "source count appended to author miss_queue",
+      "status": "missing"
+    },
+    "point_loop_early_break_count": {
+      "evidence": "global_bound_early_break_count can count RTDL inline point-loop early termination for the generic max-nearest flag",
+      "missing": "author point-loop early-break count tied to ShaderStatus::kAborted and cmax2",
+      "status": "partial"
+    },
+    "raw_offload_rows_author_width_bytes": {
+      "evidence": "Goal5282 can compute shape-level candidate bytes after the fact, but the current frontier API does not emit this field",
+      "missing": "author-width byte field tied to status-machine raw rows",
+      "status": "missing"
+    },
+    "raw_offload_rows_before_sort_reduce": {
+      "evidence": "raw_frontier_kind2_rows counts generic offload-kind rows before Python materialization",
+      "missing": "author status-machine pruning/abort and in_q_idx namespace before sort/reduce",
+      "status": "partial"
+    },
+    "row_count_parity_against_author_offloading_size": {
+      "evidence": "Goal5371 records 21,006,960 RTDL inline kind2 rows vs 27,133,990 author OffloadingSize rows",
+      "missing": "row parity or reviewed denominator explanation",
+      "status": "missing"
+    },
+    "status_count_aborted": {
+      "evidence": "existing global_bound_early_break_count is not author kAborted and was zero in Goal5371",
+      "missing": "author kAborted status count",
+      "status": "missing"
+    },
+    "status_count_init": {
+      "evidence": "no native or Python telemetry surface exposes author ShaderStatus::kInit counts",
+      "missing": "status payload accounting",
+      "status": "missing"
+    },
+    "status_count_offloading": {
+      "evidence": "kind2/offload rows are not equivalent to kOffloading status after author abort/prune semantics",
+      "missing": "author kOffloading status count",
+      "status": "missing"
+    }
+  },
+  "goal": "Goal5373",
+  "input_artifacts": {
+    "goal5372": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5372_author_shader_status_machine_gap.json"
+  },
+  "purpose": "Audit the current generic RTDL cell-MBR frontier telemetry surface against Goal5372's author_shader_status_machine_lb_trace minimum fields before attempting explicit -lb support.",
+  "required_gate_fields": [
+    "active_in_queue_size",
+    "raw_offload_rows_before_sort_reduce",
+    "raw_offload_rows_author_width_bytes",
+    "status_count_init",
+    "status_count_offloading",
+    "status_count_aborted",
+    "miss_queue_count",
+    "cmax2_mbr_abort_count",
+    "point_loop_early_break_count",
+    "current_best_state_source",
+    "row_count_parity_against_author_offloading_size"
+  ],
+  "schema": "rtdl.paper_reproduction.xhd.goal5373.rtdl_status_machine_telemetry_surface.v1",
+  "source_evidence": {
+    "missing_status_machine_tokens": {
+      "author_like_active_in_queue_size": true,
+      "author_like_cmax2_abort_count": true,
+      "author_like_miss_queue_count": true,
+      "author_like_raw_offload_author_width": true,
+      "author_like_status_count_aborted": true,
+      "author_like_status_count_init": true,
+      "author_like_status_count_offloading": true
+    },
+    "native_prelude": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\src\\native\\optix\\rtdl_optix_prelude.h",
+    "native_workloads": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\src\\native\\optix\\rtdl_optix_workloads.cpp",
+    "optix_runtime": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\src\\rtdsl\\optix_runtime.py",
+    "partner_continuations": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\src\\rtdsl\\partner_continuations.py",
+    "surface_checks": {
+      "global_bound_early_break": true,
+      "inline_stats": true,
+      "native_v3_memory_telemetry_symbol": true,
+      "python_exposes_global_bound": true,
+      "python_exposes_raw_kind_counts": true,
+      "raw_frontier_kind_counts": true
+    }
+  },
+  "status": "rtdl_status_machine_telemetry_surface_audited__author_lb_trace_fields_missing"
+}

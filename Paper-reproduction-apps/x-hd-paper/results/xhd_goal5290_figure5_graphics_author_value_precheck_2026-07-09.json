@@ -1,0 +1,74 @@
+{
+  "candidate_author_runs": [
+    {
+      "abs_diff_vs_paper_log": 52.38813188409805,
+      "json_files": [],
+      "label": "unscaled",
+      "matches_paper_log_value": false,
+      "returncode": 0,
+      "stdout_avg_time_ms": 133.165,
+      "stdout_hd_result": 52.4535,
+      "wall_sec": 2.656467668712139
+    },
+    {
+      "abs_diff_vs_paper_log": 8.718409805297256e-05,
+      "json_files": [],
+      "label": "scaled_1e-3",
+      "matches_paper_log_value": false,
+      "returncode": 0,
+      "stdout_avg_time_ms": 18.236,
+      "stdout_hd_result": 0.0654553,
+      "wall_sec": 2.017522342503071
+    }
+  ],
+  "claim_boundary": {
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_reproduced": false,
+    "full_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false,
+    "rtdl_timing_claimed": false
+  },
+  "date": "2026-07-09",
+  "decision": {
+    "candidate_count": 2,
+    "continue_to_rtdl_timing": false,
+    "matching_candidate_labels": [],
+    "next_options": [
+      "recover the exact author graphics input files or conversion provenance",
+      "find another Figure 5 pair with available value-matched inputs",
+      "move to another figure/blocker rather than timing a value-mismatched candidate"
+    ],
+    "why": "No available POD author input variant reproduced the paper-log HDResult within tolerance."
+  },
+  "goal": "Goal5290",
+  "inputs": {
+    "log_index": "Paper-reproduction-apps\\x-hd-paper\\results\\xhd_paper_branch_log_index_goal5176_2026-07-08.json",
+    "raw_pod_author_probe": "Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5290_author_value_probe_raw_pod_2026-07-09.json"
+  },
+  "matched": true,
+  "paper_log_target": {
+    "category": "graphics",
+    "pair": [
+      "dragon.ply",
+      "asian_dragon.ply"
+    ],
+    "paper_log_hd_result": 0.06536811590194702,
+    "paths": [
+      "/local/storage/shared/HDDatasets/graphics/dragon.ply",
+      "/local/storage/shared/HDDatasets/graphics/asian_dragon.ply"
+    ],
+    "point_counts": [
+      437645,
+      3609600
+    ],
+    "record_count": 5,
+    "sections": [
+      "auto_tune",
+      "eb_gpu",
+      "hybrid_gpu",
+      "rt_gpu"
+    ]
+  },
+  "schema": "rtdl.paper_reproduction.xhd.goal5290.figure5_graphics_author_value_precheck.v1",
+  "status": "figure5_graphics_author_value_precheck_ready__no_available_candidate_matches_paper_log"
+}

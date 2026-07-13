@@ -1,0 +1,51 @@
+{
+  "abs_diff": 0.0,
+  "author_comparison_reference": "directed_a_to_b",
+  "author_comparison_reference_value": 1.0,
+  "author_hd_result": 1.0,
+  "author_json": "/tmp/xhd-goal5112/xhd_author_tiny2d_optix77.json",
+  "author_run": {
+    "cmd": [
+      "/tmp/xhd-goal5112/build-gcc11-optix77-fast/bin/hd_exec",
+      "-input1",
+      "/tmp/xhd-goal5112/x-hd-paper/data/fixtures/tiny2d_a.wkt",
+      "-input2",
+      "/tmp/xhd-goal5112/x-hd-paper/data/fixtures/tiny2d_b.wkt",
+      "-n_dims",
+      "2",
+      "-input_type",
+      "wkt",
+      "-variant",
+      "rt",
+      "-execution",
+      "gpu",
+      "-json",
+      "/tmp/xhd-goal5112/xhd_author_tiny2d_optix77.json",
+      "-overwrite=true",
+      "-check=false"
+    ],
+    "returncode": 0,
+    "stderr": "I20260708 03:21:35.424246 127880649879552 run_hausdorff_distance.cu:259] Points A: 3 Points B: 3\nW20260708 03:21:35.424895 127880649879552 hausdorff_distance_rt.h:168] \u001b[33mHD lower bound is zero, setting radius to the digonal length of a grid with number of points = 15\u001b[0m\nI20260708 03:21:35.428488 127880649879552 run_hausdorff_distance.cu:287] \u001b[31mAvg Running Time 3.901 ms\u001b[0m\nI20260708 03:21:35.720996 127880649879552 run_hausdorff_distance.cu:71] HausdorffDistance: distance is 1\n",
+    "stdout": "avg aabb cycles 1150, avg point cycles 130\n"
+  },
+  "boundary": "Tiny same-input author JSON gate. This compares author HDResult to a deterministic exact Hausdorff reference for POINT WKT fixtures. It is not exact paper input reproduction and not a performance claim.",
+  "execution": "gpu",
+  "input1": "/tmp/xhd-goal5112/x-hd-paper/data/fixtures/tiny2d_a.wkt",
+  "input2": "/tmp/xhd-goal5112/x-hd-paper/data/fixtures/tiny2d_b.wkt",
+  "input_type": "wkt",
+  "matched": true,
+  "n_dims": 2,
+  "paper_app": "x-hd-paper",
+  "paper_reproduction_claim_authorized": false,
+  "performance_claim_authorized": false,
+  "point_count_a": 3,
+  "point_count_b": 3,
+  "rtdl_reference": {
+    "directed_a_to_b": 1.0,
+    "directed_b_to_a": 1.0,
+    "hausdorff": 1.0
+  },
+  "schema": "rtdl.paper_reproduction.xhd.author_json_gate.v1",
+  "tolerance": 1e-09,
+  "variant": "rt"
+}

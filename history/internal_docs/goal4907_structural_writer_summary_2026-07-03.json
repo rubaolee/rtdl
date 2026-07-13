@@ -1,0 +1,240 @@
+{
+  "claim_boundary": {
+    "broad_performance_claim": false,
+    "bundled_rayjoin_overlay_imported": false,
+    "lsi_prepared_query_reused": true,
+    "numba_on_app_continuation_path": true,
+    "numba_on_rtdl_primitive_path": false,
+    "point_location_base_sessions_reused": true,
+    "public_lsi_used": true,
+    "public_point_location_used": true,
+    "single_run_speedup_claim": false
+  },
+  "runs": [
+    {
+      "author_output": {
+        "bytes": 6189260,
+        "lines": 276320,
+        "path": "/workspace/goal4875_section57_au_representative/author_contract_full/author_contract_au_overlay.txt",
+        "sha256": "a15e0dd4f3a4ffa6a4f8595a317cb53f31979aed02c78f4de243bb40ef40493e"
+      },
+      "byte_equal_to_author": true,
+      "counts": {
+        "lsi_row_count": 13452,
+        "vertex_positive_map0_in_map1": 193846,
+        "vertex_positive_map1_in_map0": 30538,
+        "xsects_map0": 13452,
+        "xsects_map1": 13452
+      },
+      "elapsed_sec": 11.590586766600609,
+      "generated_output": {
+        "bytes": 6189260,
+        "lines": 276320,
+        "path": "history/internal_docs/goal4907_structural_writer_repeat0.txt",
+        "sha256": "a15e0dd4f3a4ffa6a4f8595a317cb53f31979aed02c78f4de243bb40ef40493e"
+      },
+      "native_point_location_timings": {
+        "midpoint_pip_map0": {
+          "mode": "none",
+          "point_count": 1707,
+          "point_upload": 0.0,
+          "positive_face_count": 920,
+          "row_download": 2.103e-05,
+          "traversal": 0.000158921
+        },
+        "midpoint_pip_map1": {
+          "mode": "none",
+          "point_count": 2752,
+          "point_upload": 0.0,
+          "positive_face_count": 1824,
+          "row_download": 2.2002e-05,
+          "traversal": 0.000148642
+        },
+        "vertex_pip_map0_in_map1": {
+          "mode": "rows",
+          "point_count": 14788065,
+          "point_upload": 0.040492503,
+          "positive_face_count": 193846,
+          "row_download": 0.023046714,
+          "traversal": 0.010353823
+        },
+        "vertex_pip_map1_in_map0": {
+          "mode": "rows",
+          "point_count": 992505,
+          "point_upload": 0.003733763,
+          "positive_face_count": 30538,
+          "row_download": 0.001514483,
+          "traversal": 0.002564846
+        }
+      },
+      "phase_seconds": {
+        "assign_midpoint_faces_map0_sec": 0.0006117522716522217,
+        "assign_midpoint_faces_map1_sec": 0.0008010193705558777,
+        "file_summary_author_sec": 0.02968476712703705,
+        "file_summary_generated_sec": 0.027264364063739777,
+        "intersection_reprojection_sec": 0.44567403942346573,
+        "lsi_public_pair_id_rows_sec": 1.60531135648489,
+        "midpoint_pip_map0_sec": 0.0005512535572052002,
+        "midpoint_pip_map1_sec": 0.00048498064279556274,
+        "midpoint_points_map0_sec": 0.1654893308877945,
+        "midpoint_points_map1_sec": 0.011099390685558319,
+        "output_chain_write_sec": 2.129383407533169,
+        "pack_midpoint_points_map0_sec": 0.0034843534231185913,
+        "pack_midpoint_points_map1_sec": 0.005390360951423645,
+        "sort_map0_sec": 0.20837024599313736,
+        "sort_map1_sec": 0.23374032974243164,
+        "vertex_pip_map0_in_map1_sec": 6.139679037034512,
+        "vertex_pip_map1_in_map0_sec": 0.5831768289208412
+      },
+      "repeat": 0,
+      "timed_sum_sec": 11.590196818113327,
+      "unattributed_sec": 0.0003899484872817993,
+      "writer_result": {
+        "buffered_output_line_count": 276320,
+        "chain_count": 19820,
+        "face_count": 8229,
+        "goal4886_writer_skip_plan": {
+          "numba_available": true,
+          "processed_chains": 9621,
+          "skipped_no_xsect_chains": 399419,
+          "skipped_no_xsect_points": 14996199
+        },
+        "goal4905_writer_phase_seconds": {
+          "bulk_writelines_sec": 0.04667860269546509,
+          "chain_loop_map0_sec": 1.554049402475357,
+          "chain_loop_map1_sec": 0.3390829339623451,
+          "group_xsects_map0_sec": 0.05548346787691116,
+          "group_xsects_map1_sec": 0.005734853446483612,
+          "skip_plan_sec": 0.0889965295791626
+        },
+        "goal4907_writer_cache_counts": {
+          "unique_display_lines": 0,
+          "unique_point_records": 203630
+        },
+        "line_count": 276320,
+        "path": "history/internal_docs/goal4907_structural_writer_repeat0.txt",
+        "point_count": 256500
+      }
+    },
+    {
+      "author_output": {
+        "bytes": 6189260,
+        "lines": 276320,
+        "path": "/workspace/goal4875_section57_au_representative/author_contract_full/author_contract_au_overlay.txt",
+        "sha256": "a15e0dd4f3a4ffa6a4f8595a317cb53f31979aed02c78f4de243bb40ef40493e"
+      },
+      "byte_equal_to_author": true,
+      "counts": {
+        "lsi_row_count": 13452,
+        "vertex_positive_map0_in_map1": 193846,
+        "vertex_positive_map1_in_map0": 30538,
+        "xsects_map0": 13452,
+        "xsects_map1": 13452
+      },
+      "elapsed_sec": 4.0133767277002335,
+      "generated_output": {
+        "bytes": 6189260,
+        "lines": 276320,
+        "path": "history/internal_docs/goal4907_structural_writer_repeat1.txt",
+        "sha256": "a15e0dd4f3a4ffa6a4f8595a317cb53f31979aed02c78f4de243bb40ef40493e"
+      },
+      "native_point_location_timings": {
+        "midpoint_pip_map0": {
+          "mode": "none",
+          "point_count": 1707,
+          "point_upload": 0.0,
+          "positive_face_count": 920,
+          "row_download": 2.112e-05,
+          "traversal": 0.000195831
+        },
+        "midpoint_pip_map1": {
+          "mode": "none",
+          "point_count": 2752,
+          "point_upload": 0.0,
+          "positive_face_count": 1824,
+          "row_download": 2.111e-05,
+          "traversal": 0.000138973
+        },
+        "vertex_pip_map0_in_map1": {
+          "mode": "rows",
+          "point_count": 14788065,
+          "point_upload": 0.037866681,
+          "positive_face_count": 193846,
+          "row_download": 0.023559488,
+          "traversal": 0.01032551
+        },
+        "vertex_pip_map1_in_map0": {
+          "mode": "rows",
+          "point_count": 992505,
+          "point_upload": 0.003222434,
+          "positive_face_count": 30538,
+          "row_download": 0.001358547,
+          "traversal": 0.002539407
+        }
+      },
+      "phase_seconds": {
+        "assign_midpoint_faces_map0_sec": 0.000496596097946167,
+        "assign_midpoint_faces_map1_sec": 0.0007843226194381714,
+        "file_summary_author_sec": 0.012762337923049927,
+        "file_summary_generated_sec": 0.020642109215259552,
+        "intersection_reprojection_sec": 0.46796759217977524,
+        "lsi_public_pair_id_rows_sec": 0.006159208714962006,
+        "midpoint_pip_map0_sec": 0.0005604922771453857,
+        "midpoint_pip_map1_sec": 0.00041512399911880493,
+        "midpoint_points_map0_sec": 0.010122381150722504,
+        "midpoint_points_map1_sec": 0.008563235402107239,
+        "output_chain_write_sec": 1.9455014988780022,
+        "pack_midpoint_points_map0_sec": 0.0030389800667762756,
+        "pack_midpoint_points_map1_sec": 0.004748381674289703,
+        "sort_map0_sec": 0.20643556118011475,
+        "sort_map1_sec": 0.19734343886375427,
+        "vertex_pip_map0_in_map1_sec": 1.0968877896666527,
+        "vertex_pip_map1_in_map0_sec": 0.03064824640750885
+      },
+      "repeat": 1,
+      "timed_sum_sec": 4.013077296316624,
+      "unattributed_sec": 0.00029943138360977173,
+      "writer_result": {
+        "buffered_output_line_count": 276320,
+        "chain_count": 19820,
+        "face_count": 8229,
+        "goal4886_writer_skip_plan": {
+          "numba_available": true,
+          "processed_chains": 9621,
+          "skipped_no_xsect_chains": 399419,
+          "skipped_no_xsect_points": 14996199
+        },
+        "goal4905_writer_phase_seconds": {
+          "bulk_writelines_sec": 0.04830753058195114,
+          "chain_loop_map0_sec": 1.4907625019550323,
+          "chain_loop_map1_sec": 0.331866092979908,
+          "group_xsects_map0_sec": 0.0044108182191848755,
+          "group_xsects_map1_sec": 0.005951888859272003,
+          "skip_plan_sec": 0.013627834618091583
+        },
+        "goal4907_writer_cache_counts": {
+          "unique_display_lines": 0,
+          "unique_point_records": 203630
+        },
+        "line_count": 276320,
+        "path": "history/internal_docs/goal4907_structural_writer_repeat1.txt",
+        "point_count": 256500
+      }
+    }
+  ],
+  "schema": "rtdl.goal4904.prepared_lsi_and_point_location_replay_probe.v1",
+  "setup_phase_seconds": {
+    "destroy_reused_sessions_sec": 0.3311880752444267,
+    "load_pack_left_sec": 4.17347164452076,
+    "load_pack_right_sec": 1.0068117082118988,
+    "prepare_lsi_base_sec": 0.5964223295450211,
+    "prepare_lsi_query_sec": 0.6895092576742172,
+    "prepare_point_location_map0_in_map1_sec": 1.7456272318959236,
+    "prepare_point_location_map1_in_map0_sec": 7.441445104777813,
+    "shared_bounds_sec": 8.93324613571167e-06
+  },
+  "startup_phase_seconds": {
+    "import_goal4886_wrapper_sec": 4.864989742636681,
+    "install_numba_app_continuation_sec": 1.1324882507324219e-05
+  }
+}

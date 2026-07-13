@@ -1,0 +1,196 @@
+{
+  "bounded_geo_rows": [
+    {
+      "abs_diff_vs_author": 5.2616073986655465e-06,
+      "author_hd_result": 65.44752502441406,
+      "author_process_wall_sec": 1.2626526355743408,
+      "author_running_avg_time_ms": 6.506,
+      "case_id": "county_zcta_bounded",
+      "category": "geo_bounded",
+      "figure5_reproduction_claimed": false,
+      "input_identity_level": "level_b_bounded_geo_fixture",
+      "matched_author": true,
+      "paper_pair": "dtl_cnty.wkt -> uszipcode.wkt",
+      "partner": "triton",
+      "per_source_witness_exact": true,
+      "point_counts": [
+        38034,
+        50272
+      ],
+      "ratio_authorized": false,
+      "route": "directed_max_of_nearest_distance_2d_partner_columns",
+      "rtdl_hd_result": 65.44751976280666,
+      "rtdl_route_sec": 0.6388622000813484,
+      "rtdl_total_sec": 3.674895405769348,
+      "tolerance": 1e-05,
+      "triton_strategy": "dense_point_nearest_tiled"
+    },
+    {
+      "abs_diff_vs_author": 4.925300871150284e-06,
+      "author_hd_result": 72.38665008544922,
+      "author_process_wall_sec": 1.1073951125144958,
+      "author_running_avg_time_ms": 4.423,
+      "case_id": "water_bg_bounded",
+      "category": "geo_bounded",
+      "figure5_reproduction_claimed": false,
+      "input_identity_level": "level_b_bounded_geo_fixture",
+      "matched_author": true,
+      "paper_pair": "USADetailedWaterBodies.wkt -> USACensusBlockGroupBoundaries.wkt",
+      "partner": "triton",
+      "per_source_witness_exact": true,
+      "point_counts": [
+        124,
+        894
+      ],
+      "ratio_authorized": false,
+      "route": "directed_max_of_nearest_distance_2d_partner_columns",
+      "rtdl_hd_result": 72.38664516014835,
+      "rtdl_route_sec": 0.5364696383476257,
+      "rtdl_total_sec": 2.08864938467741,
+      "tolerance": 1e-05,
+      "triton_strategy": "dense_point_nearest_tiled"
+    }
+  ],
+  "claim_boundary": {
+    "author_rt_core_algorithm_equivalence_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_reopened": false,
+    "figure5_reproduction_claimed": false,
+    "full_figure5_matrix_claimed": false,
+    "full_public_geo_scalar_row_claimed": true,
+    "full_xhd_paper_reproduction_claimed": false,
+    "level_b_same_pod_scalar_matrix_claimed": true,
+    "performance_ratio_claimed": false,
+    "route_micro_optimization_goal_authorized": false
+  },
+  "coverage": {
+    "bounded_geo_case_count": 2,
+    "bounded_geo_route_result_count": 2,
+    "full_public_geo_case_count": 1,
+    "full_public_geo_route_result_count": 1,
+    "graphics_case_count": 3,
+    "graphics_route_result_count": 6,
+    "total_case_count": 6,
+    "total_route_result_count": 9
+  },
+  "full_public_geo_rows": [
+    {
+      "abs_diff_vs_author": 1.305780185645311e-06,
+      "author_denominator": "goal5314_paper_config_n_points_cell_8",
+      "author_hd_result": 0.8964367508888245,
+      "author_matches_paper_log": true,
+      "author_running_avg_time_ms": 110.167,
+      "case_id": "geo_water_bg_full_public_paper_config",
+      "category": "geo_full_public",
+      "distance_float32_matches_paper_log": true,
+      "exact_paper_dataset_reproduction_claimed": false,
+      "figure5_reproduction_claimed": false,
+      "input_identity_level": "level_b_full_public_same_source_geo_not_exact_file_hash",
+      "matched_author": true,
+      "new_execution_claimed": false,
+      "paper_pair": "USADetailedWaterBodies.wkt -> USACensusBlockGroupBoundaries.wkt",
+      "per_source_witness_exact": true,
+      "point_counts": [
+        22824823,
+        52271467
+      ],
+      "ratio_authorized": false,
+      "rtdl_hd_result_float64": 0.8964380566690101,
+      "rtdl_route_sec": 61.562113016843796,
+      "rtdl_total_sec": 873.2409668043256,
+      "same_witness_float32_distance": 0.8964367508888245,
+      "tolerance": 2e-06
+    }
+  ],
+  "goal": "Goal5428",
+  "graphics_rows": [
+    {
+      "all_routes_match_author": true,
+      "author_hd_result": 0.12572988867759705,
+      "author_process_wall_sec": 1.9343201890587807,
+      "author_rerun_matches_paper_log": true,
+      "author_running_avg_time_ms": 8.128,
+      "case_id": "dragon_happy",
+      "category": "graphics",
+      "exact_witness_route_labels": [
+        "cell-mbr-exact-witness"
+      ],
+      "figure5_reproduction_claimed": false,
+      "input_identity_level": "level_b_same_source_public_graphics",
+      "ratio_authorized": false,
+      "route_count": 2,
+      "scalar_only_route_labels": [
+        "cell-mbr-fast-scalar"
+      ]
+    },
+    {
+      "all_routes_match_author": true,
+      "author_hd_result": 0.21912431716918945,
+      "author_process_wall_sec": 2.345173105597496,
+      "author_rerun_matches_paper_log": true,
+      "author_running_avg_time_ms": 26.817,
+      "case_id": "thai_happy_scaled",
+      "category": "graphics",
+      "exact_witness_route_labels": [
+        "cell-mbr-exact-witness"
+      ],
+      "figure5_reproduction_claimed": false,
+      "input_identity_level": "level_b_same_source_public_graphics",
+      "ratio_authorized": false,
+      "route_count": 2,
+      "scalar_only_route_labels": [
+        "cell-mbr-fast-scalar"
+      ]
+    },
+    {
+      "all_routes_match_author": true,
+      "author_hd_result": 0.28763842582702637,
+      "author_process_wall_sec": 2.4374816194176674,
+      "author_rerun_matches_paper_log": true,
+      "author_running_avg_time_ms": 19.281,
+      "case_id": "thai_asian_scaled",
+      "category": "graphics",
+      "exact_witness_route_labels": [
+        "cell-mbr-exact-witness"
+      ],
+      "figure5_reproduction_claimed": false,
+      "input_identity_level": "level_b_same_source_public_graphics",
+      "ratio_authorized": false,
+      "route_count": 2,
+      "scalar_only_route_labels": [
+        "cell-mbr-fast-scalar"
+      ]
+    }
+  ],
+  "matched": true,
+  "next_recommendation": {
+    "explicit_lb": false,
+    "preferred_next_goal": "strict_review_goals5424_5428_or_exact_dataset_provenance",
+    "route_micro_optimization": false,
+    "strict_review_packet": true
+  },
+  "remaining_blockers": [
+    {
+      "blocker": "exact_paper_dataset_files_or_hashes_missing",
+      "impact": "WaterBodies/BG is full-public and close to paper logs, but lacks exact file/hash provenance."
+    },
+    {
+      "blocker": "figures_5_to_11_denominators_not_aligned",
+      "impact": "No author-vs-RTDL performance ratio is authorized."
+    },
+    {
+      "blocker": "fast_scalar_routes_are_scalar_only_when_per_source_witness_exact_false",
+      "impact": "Fast-scalar rows cannot claim exact per-source witnesses."
+    },
+    {
+      "blocker": "explicit_lb_row_identity_fail_closed",
+      "impact": "Figure 7 implementation-artifact parity remains stopped."
+    }
+  ],
+  "schema": "rtdl.paper_reproduction.xhd.goal5428.level_b_matrix_with_water_bg_full_public.v1",
+  "source_artifacts": {
+    "goal5423": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5423_level_b_matrix_consolidation_after_geo.json",
+    "goal5427": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5427_water_bg_paper_config_consolidation.json"
+  },
+  "status": "level_b_matrix_updated_with_water_bg_full_public_paper_config__review_node__no_ratio"
+}

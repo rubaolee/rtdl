@@ -1,0 +1,71 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.generic_grid_cell_api_contract.v1",
+  "goal": "Goal5138",
+  "status": "generic_grid_cell_candidate_api_reference_ready",
+  "scope": "generic RTDL system API reference surface",
+  "implemented_symbols": [
+    "point_grid_cell_mbrs_numpy_columns",
+    "radius_cell_mbr_candidate_rows_numpy_columns"
+  ],
+  "contracts": {
+    "point_grid_cell_mbrs_numpy_columns": {
+      "contract": "generic_point_grid_cell_mbr_columns",
+      "input": "caller-supplied point columns with ids and coordinate fields",
+      "parameters": [
+        "coordinate_fields",
+        "grid_shape"
+      ],
+      "output": [
+        "compact cell_ids",
+        "original_cell_ids",
+        "point_begin_offsets",
+        "point_counts",
+        "point_ids",
+        "point_row_indices",
+        "tight per-coordinate min/max MBR columns"
+      ],
+      "cell_id_contract": "compact_zero_based_with_original_cell_ids",
+      "mbr_contract": "tight_mbr_over_points_in_cell"
+    },
+    "radius_cell_mbr_candidate_rows_numpy_columns": {
+      "contract": "generic_radius_cell_mbr_candidate_rows",
+      "input": "query point columns plus generic point-grid cell MBR columns",
+      "parameters": [
+        "coordinate_fields",
+        "radius",
+        "squared"
+      ],
+      "output": [
+        "PartnerCandidateRows(query_row_id, cell_id, min_distance)",
+        "query_point_ids",
+        "query_row_ids",
+        "cell_ids",
+        "min_distances",
+        "max_distances"
+      ],
+      "candidate_rule": "point-to-tight-cell-MBR min distance <= radius"
+    }
+  },
+  "evidence": {
+    "tests": [
+      "tests.goal5138_generic_grid_cell_candidate_api_test",
+      "tests.goal5127_xhd_generic_nearest_pipeline_extraction_test",
+      "tests.goal5128_non_hausdorff_max_nearest_consumer_test"
+    ],
+    "test_result": "Ran 9 tests OK",
+    "non_xhd_fixture": "facility/demand coverage against generic grid-cell MBR candidates",
+    "public_exports": [
+      "rtdsl.point_grid_cell_mbrs_numpy_columns",
+      "rtdsl.radius_cell_mbr_candidate_rows_numpy_columns"
+    ]
+  },
+  "claim_boundary": {
+    "xhd_algorithmic_route_implemented": false,
+    "native_or_optix_backend_implemented": false,
+    "performance_claim_authorized": false,
+    "paper_figure_reproduction_claimed": false,
+    "app_specific_core_primitive_added": false,
+    "app_semantics": "none"
+  },
+  "recommended_next_goal": "Goal5139 generic nearest-state reducer and offload-frontier contract design"
+}

@@ -1,0 +1,15 @@
+Please review:
+
+history/internal_docs/call_for_review_goal4863_chain41230_midpoint_contract_repair_2026-07-02.md
+
+Please write your review result to:
+
+history/internal_docs/antigravity_goal4863_chain41230_midpoint_contract_repair_review_2026-07-02.md
+
+Use one of these verdict labels:
+
+- approve_goal4863_chain41230_midpoint_contract_repaired_authorize_streaming_compare
+- approve_with_required_amendments_before_streaming_compare
+- reject_goal4863_repair_as_overfit_or_insufficient
+
+Please answer all review questions in the call-for-review file.

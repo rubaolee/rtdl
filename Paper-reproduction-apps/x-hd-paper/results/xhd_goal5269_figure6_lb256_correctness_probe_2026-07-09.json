@@ -1,0 +1,420 @@
+{
+  "author_paper_branch_log": {
+    "cells": 3314,
+    "eb": true,
+    "hd_result": 0.06536811590194702,
+    "input_mbr_a": [
+      [
+        0.0,
+        0.20489001274108887
+      ],
+      [
+        0.0,
+        0.14444351196289062
+      ],
+      [
+        0.0,
+        0.09162180870771408
+      ]
+    ],
+    "input_mbr_b": [
+      [
+        0.0,
+        0.20174401998519897
+      ],
+      [
+        0.0,
+        0.11202627420425415
+      ],
+      [
+        0.0,
+        0.13420195877552032
+      ]
+    ],
+    "input_num_points": [
+      437645,
+      3609600
+    ],
+    "iterations": 5,
+    "large_cells": 2617,
+    "lb": 256,
+    "path": "/tmp/xhd-goal5112/author/expr/logs/end2end/rt_gpu/graphics/dragon.ply_asian_dragon.ply.json",
+    "prune": true,
+    "repeat_algorithm": "Hybrid",
+    "repeat_reported_time_ms": 21.068,
+    "running_avg_time_ms": 17.260399999999997,
+    "sum_offloading_size": 2366254
+  },
+  "claim_boundary": {
+    "author_rt_core_equivalence_claimed": false,
+    "exact_paper_dataset_identity_claimed": false,
+    "figure6_reproduced": false,
+    "lb2048_substitute_authorized_as_figure6": false,
+    "performance_ratio_claimed": false
+  },
+  "current_level_b_candidate_lb256": {
+    "check_true_error": "Wrong HausdorffDistance. Result: 0.06545527 Answer: 0.06536787 Diff: -0.00008740",
+    "check_true_status": "aborts_with_wrong_hausdorff_distance",
+    "hd_result": 0.06545527279376984,
+    "input_mbr_a": [
+      [
+        0.0,
+        0.2048902064561844
+      ],
+      [
+        0.0,
+        0.14444349706172943
+      ],
+      [
+        0.0,
+        0.09162180125713348
+      ]
+    ],
+    "input_mbr_b": [
+      [
+        0.0,
+        0.20174352824687958
+      ],
+      [
+        0.0,
+        0.11202625930309296
+      ],
+      [
+        0.0,
+        0.13420194387435913
+      ]
+    ],
+    "input_num_points": [
+      437645,
+      3609600
+    ],
+    "lb": 256,
+    "matches_lb0_reference": false,
+    "running_avg_time_ms": 18.566
+  },
+  "date": "2026-07-09",
+  "derived_findings": {
+    "classification": "Author Figure 6 script records LB=256 on exact paths, but current public/scaled candidate lacks exact byte identity and fails LB=256 check. A higher LB threshold such as 2048 is correctness-clean on the candidate but is not the Figure 6 script setting.",
+    "lb_0_is_correct": true,
+    "lb_1024_check_true_aborts": true,
+    "lb_1280_and_above_in_refined_scan_correct": true,
+    "lb_2048_check_true_passes": true,
+    "lb_32_to_1152_wrong_same_hd": true
+  },
+  "goal": "Goal5269",
+  "lb_threshold_scan": {
+    "refine_rows": [
+      {
+        "avg_time_ms": 43.784,
+        "hd_result": 0.06545527279376984,
+        "iteration_count": 5,
+        "json": "/tmp/xhd_goal5269_lb_matrix/lb_1152_check_false_refine.json",
+        "large_cells": 1455,
+        "lb": 1152,
+        "offloading_sum": 989291,
+        "returncode": 0,
+        "wall_sec": 2.027863025665283
+      },
+      {
+        "avg_time_ms": 51.204,
+        "hd_result": 0.06536787003278732,
+        "iteration_count": 6,
+        "json": "/tmp/xhd_goal5269_lb_matrix/lb_1280_check_false_refine.json",
+        "large_cells": 1358,
+        "lb": 1280,
+        "offloading_sum": 928325,
+        "returncode": 0,
+        "wall_sec": 2.02520751953125
+      },
+      {
+        "avg_time_ms": 57.168,
+        "hd_result": 0.06536787003278732,
+        "iteration_count": 6,
+        "json": "/tmp/xhd_goal5269_lb_matrix/lb_1408_check_false_refine.json",
+        "large_cells": 1273,
+        "lb": 1408,
+        "offloading_sum": 833575,
+        "returncode": 0,
+        "wall_sec": 2.017813205718994
+      },
+      {
+        "avg_time_ms": 61.98,
+        "hd_result": 0.06536787003278732,
+        "iteration_count": 6,
+        "json": "/tmp/xhd_goal5269_lb_matrix/lb_1536_check_false_refine.json",
+        "large_cells": 1204,
+        "lb": 1536,
+        "offloading_sum": 782651,
+        "returncode": 0,
+        "wall_sec": 2.035754919052124
+      },
+      {
+        "avg_time_ms": 62.182,
+        "hd_result": 0.06536787003278732,
+        "iteration_count": 6,
+        "json": "/tmp/xhd_goal5269_lb_matrix/lb_1664_check_false_refine.json",
+        "large_cells": 1125,
+        "lb": 1664,
+        "offloading_sum": 723374,
+        "returncode": 0,
+        "wall_sec": 2.0212748050689697
+      },
+      {
+        "avg_time_ms": 67.756,
+        "hd_result": 0.06536787003278732,
+        "iteration_count": 6,
+        "json": "/tmp/xhd_goal5269_lb_matrix/lb_1792_check_false_refine.json",
+        "large_cells": 1031,
+        "lb": 1792,
+        "offloading_sum": 679376,
+        "returncode": 0,
+        "wall_sec": 2.036027431488037
+      },
+      {
+        "avg_time_ms": 76.998,
+        "hd_result": 0.06536787003278732,
+        "iteration_count": 6,
+        "json": "/tmp/xhd_goal5269_lb_matrix/lb_1920_check_false_refine.json",
+        "large_cells": 936,
+        "lb": 1920,
+        "offloading_sum": 607618,
+        "returncode": 0,
+        "wall_sec": 2.0269901752471924
+      },
+      {
+        "avg_time_ms": 74.736,
+        "hd_result": 0.06536787003278732,
+        "iteration_count": 6,
+        "json": "/tmp/xhd_goal5269_lb_matrix/lb_1984_check_false_refine.json",
+        "large_cells": 885,
+        "lb": 1984,
+        "offloading_sum": 581951,
+        "returncode": 0,
+        "wall_sec": 2.0123512744903564
+      },
+      {
+        "avg_time_ms": 76.965,
+        "hd_result": 0.06536787003278732,
+        "iteration_count": 6,
+        "json": "/tmp/xhd_goal5269_lb_matrix/lb_2016_check_false_refine.json",
+        "large_cells": 864,
+        "lb": 2016,
+        "offloading_sum": 550230,
+        "returncode": 0,
+        "wall_sec": 2.025378942489624
+      },
+      {
+        "check": true,
+        "fatal_answer": 0.06536787,
+        "fatal_diff": -8.74e-05,
+        "fatal_result": 0.06545527,
+        "json": "/tmp/xhd_goal5269_lb_matrix/lb_1024_check_true.json",
+        "lb": 1024,
+        "returncode": -6,
+        "stderr_tail": "I20260709 11:22:57.406699 136013928480768 run_hausdorff_distance.cu:259] Points A: 437645 Points B: 3609600\nI20260709 11:22:57.450435 136013928480768 run_hausdorff_distance.cu:287] \u001b[31mAvg Running Time 42.816 ms\u001b[0m\nF20260709 11:22:57.944621 136013928480768 run_hausdorff_distance.cu:305] \u001b[31mWrong HausdorffDistance. Result: 0.06545527 Answer: 0.06536787 Diff: -0.00008740\u001b[0m\n    @     0x60c83c7ecdc0  google::LogMessage::Fail()\n    @     0x60c83c7ee637  google::LogMessageFatal::~LogMessageFatal()\n    @     0x60c83c77740c  float hd::RunHausdorffDistanceImpl<float, 3>(hd::RunConfig)\n    @     0x60c83c6d16e5  hd::RunHausdorffDistance(hd::RunConfig const&)\n    @     0x60c83c6bce13  main\n    @     0x7bb435f6d1ca  (/usr/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9)\n    @     0x7bb435f6d28b  __libc_start_main\n    @     0x60c83c6c28a5  _start\n",
+        "wall_sec": 2.4013421535491943
+      },
+      {
+        "avg_time_ms": 81.316,
+        "check": true,
+        "check_obj": {
+          "Diff": 0.0,
+          "HDAnswer": 0.06536787003278732,
+          "Pass": true
+        },
+        "hd_result": 0.06536787003278732,
+        "json": "/tmp/xhd_goal5269_lb_matrix/lb_2048_check_true.json",
+        "lb": 2048,
+        "returncode": 0,
+        "stderr_tail": "I20260709 11:22:59.861133 128698090369024 run_hausdorff_distance.cu:259] Points A: 437645 Points B: 3609600\nI20260709 11:22:59.943352 128698090369024 run_hausdorff_distance.cu:287] \u001b[31mAvg Running Time 81.316 ms\u001b[0m\nI20260709 11:23:00.466152 128698090369024 run_hausdorff_distance.cu:309] \u001b[32mHausdorffDistance is checked\u001b[0m\nI20260709 11:23:00.765123 128698090369024 run_hausdorff_distance.cu:71] HausdorffDistance: distance is 0.0653679\n",
+        "wall_sec": 2.6201627254486084
+      }
+    ],
+    "rows": [
+      {
+        "algorithm": "XHD",
+        "avg_time_ms": 139.791,
+        "cells": 2617,
+        "hd_result": 0.06536787003278732,
+        "iteration_count": 6,
+        "json": "/tmp/xhd_goal5269_lb_matrix/lb_0_check_false.json",
+        "large_cells": 0,
+        "lb": 0,
+        "offloading_sum": 0,
+        "returncode": 0,
+        "stderr_tail": "I20260709 11:21:48.154510 123804771581952 run_hausdorff_distance.cu:259] Points A: 437645 Points B: 3609600\nW20260709 11:21:48.159885 123804771581952 hausdorff_distance_rt.h:238] \u001b[33mProcessing threshold is set to zero. Load-balancing is disabled.\u001b[0m\nI20260709 11:21:48.295247 123804771581952 run_hausdorff_distance.cu:287] \u001b[31mAvg Running Time 139.791 ms\u001b[0m\nI20260709 11:21:48.592537 123804771581952 run_hausdorff_distance.cu:71] HausdorffDistance: distance is 0.0653679\n",
+        "wall_sec": 2.1336591243743896
+      },
+      {
+        "algorithm": "XHD",
+        "avg_time_ms": 17.011,
+        "cells": 2617,
+        "hd_result": 0.06545527279376984,
+        "iteration_count": 5,
+        "json": "/tmp/xhd_goal5269_lb_matrix/lb_32_check_false.json",
+        "large_cells": 2441,
+        "lb": 32,
+        "offloading_sum": 2653392,
+        "returncode": 0,
+        "stderr_tail": "I20260709 11:21:50.267612 134620731412480 run_hausdorff_distance.cu:259] Points A: 437645 Points B: 3609600\nI20260709 11:21:50.285547 134620731412480 run_hausdorff_distance.cu:287] \u001b[31mAvg Running Time 17.011 ms\u001b[0m\nI20260709 11:21:50.582264 134620731412480 run_hausdorff_distance.cu:71] HausdorffDistance: distance is 0.0654553\n",
+        "wall_sec": 1.992828130722046
+      },
+      {
+        "algorithm": "XHD",
+        "avg_time_ms": 17.216,
+        "cells": 2617,
+        "hd_result": 0.06545527279376984,
+        "iteration_count": 5,
+        "json": "/tmp/xhd_goal5269_lb_matrix/lb_64_check_false.json",
+        "large_cells": 2372,
+        "lb": 64,
+        "offloading_sum": 2540257,
+        "returncode": 0,
+        "stderr_tail": "I20260709 11:21:52.252104 125399215255552 run_hausdorff_distance.cu:259] Points A: 437645 Points B: 3609600\nI20260709 11:21:52.270233 125399215255552 run_hausdorff_distance.cu:287] \u001b[31mAvg Running Time 17.216 ms\u001b[0m\nI20260709 11:21:52.566659 125399215255552 run_hausdorff_distance.cu:71] HausdorffDistance: distance is 0.0654553\n",
+        "wall_sec": 1.9809629917144775
+      },
+      {
+        "algorithm": "XHD",
+        "avg_time_ms": 17.509,
+        "cells": 2617,
+        "hd_result": 0.06545527279376984,
+        "iteration_count": 5,
+        "json": "/tmp/xhd_goal5269_lb_matrix/lb_128_check_false.json",
+        "large_cells": 2276,
+        "lb": 128,
+        "offloading_sum": 2439482,
+        "returncode": 0,
+        "stderr_tail": "I20260709 11:21:54.233480 127797624311808 run_hausdorff_distance.cu:259] Points A: 437645 Points B: 3609600\nI20260709 11:21:54.251931 127797624311808 run_hausdorff_distance.cu:287] \u001b[31mAvg Running Time 17.509 ms\u001b[0m\nI20260709 11:21:54.548231 127797624311808 run_hausdorff_distance.cu:71] HausdorffDistance: distance is 0.0654553\n",
+        "wall_sec": 1.9812159538269043
+      },
+      {
+        "algorithm": "XHD",
+        "avg_time_ms": 18.706,
+        "cells": 2617,
+        "hd_result": 0.06545527279376984,
+        "iteration_count": 5,
+        "json": "/tmp/xhd_goal5269_lb_matrix/lb_192_check_false.json",
+        "large_cells": 2206,
+        "lb": 192,
+        "offloading_sum": 2345801,
+        "returncode": 0,
+        "stderr_tail": "I20260709 11:21:56.236192 138326039191552 run_hausdorff_distance.cu:259] Points A: 437645 Points B: 3609600\nI20260709 11:21:56.256679 138326039191552 run_hausdorff_distance.cu:287] \u001b[31mAvg Running Time 18.706 ms\u001b[0m\nI20260709 11:21:56.553891 138326039191552 run_hausdorff_distance.cu:71] HausdorffDistance: distance is 0.0654553\n",
+        "wall_sec": 2.0047528743743896
+      },
+      {
+        "algorithm": "XHD",
+        "avg_time_ms": 18.566,
+        "cells": 2617,
+        "hd_result": 0.06545527279376984,
+        "iteration_count": 5,
+        "json": "/tmp/xhd_goal5269_lb_matrix/lb_256_check_false.json",
+        "large_cells": 2145,
+        "lb": 256,
+        "offloading_sum": 2241985,
+        "returncode": 0,
+        "stderr_tail": "I20260709 11:21:58.245528 139124957511680 run_hausdorff_distance.cu:259] Points A: 437645 Points B: 3609600\nI20260709 11:21:58.265160 139124957511680 run_hausdorff_distance.cu:287] \u001b[31mAvg Running Time 18.566 ms\u001b[0m\nI20260709 11:21:58.562260 139124957511680 run_hausdorff_distance.cu:71] HausdorffDistance: distance is 0.0654553\n",
+        "wall_sec": 2.006660223007202
+      },
+      {
+        "algorithm": "XHD",
+        "avg_time_ms": 25.783,
+        "cells": 2617,
+        "hd_result": 0.06545527279376984,
+        "iteration_count": 5,
+        "json": "/tmp/xhd_goal5269_lb_matrix/lb_384_check_false.json",
+        "large_cells": 2035,
+        "lb": 384,
+        "offloading_sum": 1942205,
+        "returncode": 0,
+        "stderr_tail": "I20260709 11:22:00.235728 132863774572544 run_hausdorff_distance.cu:259] Points A: 437645 Points B: 3609600\nI20260709 11:22:00.262474 132863774572544 run_hausdorff_distance.cu:287] \u001b[31mAvg Running Time 25.783 ms\u001b[0m\nI20260709 11:22:00.559907 132863774572544 run_hausdorff_distance.cu:71] HausdorffDistance: distance is 0.0654553\n",
+        "wall_sec": 1.9971957206726074
+      },
+      {
+        "algorithm": "XHD",
+        "avg_time_ms": 27.502,
+        "cells": 2617,
+        "hd_result": 0.06545527279376984,
+        "iteration_count": 5,
+        "json": "/tmp/xhd_goal5269_lb_matrix/lb_512_check_false.json",
+        "large_cells": 1919,
+        "lb": 512,
+        "offloading_sum": 1754299,
+        "returncode": 0,
+        "stderr_tail": "I20260709 11:22:02.240862 132659630211072 run_hausdorff_distance.cu:259] Points A: 437645 Points B: 3609600\nI20260709 11:22:02.269276 132659630211072 run_hausdorff_distance.cu:287] \u001b[31mAvg Running Time 27.502 ms\u001b[0m\nI20260709 11:22:02.566479 132659630211072 run_hausdorff_distance.cu:71] HausdorffDistance: distance is 0.0654553\n",
+        "wall_sec": 2.0071678161621094
+      },
+      {
+        "algorithm": "XHD",
+        "avg_time_ms": 40.073,
+        "cells": 2617,
+        "hd_result": 0.06545527279376984,
+        "iteration_count": 5,
+        "json": "/tmp/xhd_goal5269_lb_matrix/lb_1024_check_false.json",
+        "large_cells": 1531,
+        "lb": 1024,
+        "offloading_sum": 1072269,
+        "returncode": 0,
+        "stderr_tail": "I20260709 11:22:04.248860 125538444640256 run_hausdorff_distance.cu:259] Points A: 437645 Points B: 3609600\nI20260709 11:22:04.289826 125538444640256 run_hausdorff_distance.cu:287] \u001b[31mAvg Running Time 40.073 ms\u001b[0m\nI20260709 11:22:04.587447 125538444640256 run_hausdorff_distance.cu:71] HausdorffDistance: distance is 0.0654553\n",
+        "wall_sec": 2.02107834815979
+      },
+      {
+        "algorithm": "XHD",
+        "avg_time_ms": 83.409,
+        "cells": 2617,
+        "hd_result": 0.06536787003278732,
+        "iteration_count": 6,
+        "json": "/tmp/xhd_goal5269_lb_matrix/lb_2048_check_false.json",
+        "large_cells": 838,
+        "lb": 2048,
+        "offloading_sum": 548899,
+        "returncode": 0,
+        "stderr_tail": "I20260709 11:22:06.289779 134258405339136 run_hausdorff_distance.cu:259] Points A: 437645 Points B: 3609600\nI20260709 11:22:06.374133 134258405339136 run_hausdorff_distance.cu:287] \u001b[31mAvg Running Time 83.409 ms\u001b[0m\nI20260709 11:22:06.674762 134258405339136 run_hausdorff_distance.cu:71] HausdorffDistance: distance is 0.0653679\n",
+        "wall_sec": 2.087698221206665
+      },
+      {
+        "algorithm": "XHD",
+        "avg_time_ms": 142.158,
+        "cells": 2617,
+        "hd_result": 0.06536787003278732,
+        "iteration_count": 6,
+        "json": "/tmp/xhd_goal5269_lb_matrix/lb_4096_check_false.json",
+        "large_cells": 4,
+        "lb": 4096,
+        "offloading_sum": 343,
+        "returncode": 0,
+        "stderr_tail": "I20260709 11:22:08.371942 135502415417344 run_hausdorff_distance.cu:259] Points A: 437645 Points B: 3609600\nI20260709 11:22:08.515125 135502415417344 run_hausdorff_distance.cu:287] \u001b[31mAvg Running Time 142.158 ms\u001b[0m\nI20260709 11:22:08.813557 135502415417344 run_hausdorff_distance.cu:71] HausdorffDistance: distance is 0.0653679\n",
+        "wall_sec": 2.139265298843384
+      }
+    ],
+    "schema": "rtdl.paper_reproduction.xhd.goal5269.lb_threshold_scan.v1"
+  },
+  "mbr_differences": {
+    "a_upper_abs_diffs": [
+      1.9371509552001953e-07,
+      1.4901161193847656e-08,
+      7.450580596923828e-09
+    ],
+    "b_upper_abs_diffs": [
+      4.917383193969727e-07,
+      1.4901161193847656e-08,
+      1.4901161193847656e-08
+    ]
+  },
+  "recommended_next": "Do not publish Figure 6 from the Level-B candidate. If exact /local/storage/shared/HDDatasets graphics files become available, rerun author run_rt_comparison.sh. Otherwise treat Figure 6 as blocked on exact input provenance or create a separate, explicitly non-Figure-6 Level-B pruning diagnostic.",
+  "schema": "rtdl.paper_reproduction.xhd.figure6_lb256_correctness_probe.v1",
+  "status": "lb256_failure_classified_as_level_b_candidate_provenance_gap__figure6_still_not_reproduced",
+  "target": {
+    "author_script": "/tmp/xhd-goal5112/author/expr/run_rt_comparison.sh",
+    "current_candidate_paths": [
+      "/tmp/rtdl_goal5236/Paper-reproduction-apps/x-hd-paper/data/external/stanford/dragon_recon/dragon_vrip.ply",
+      "/tmp/rtdl_goal5236/Paper-reproduction-apps/x-hd-paper/data/external/stanford/asian_dragon_scaled_1e-3.ply"
+    ],
+    "figure": "Figure 6",
+    "script_exact_paths": [
+      "/local/storage/shared/HDDatasets/graphics/dragon.ply",
+      "/local/storage/shared/HDDatasets/graphics/asian_dragon.ply"
+    ],
+    "script_exact_paths_available_on_current_pod": false,
+    "workload": "Dragon -> AsianDragon"
+  }
+}

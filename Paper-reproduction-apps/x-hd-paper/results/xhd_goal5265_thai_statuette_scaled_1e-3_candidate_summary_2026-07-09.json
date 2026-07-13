@@ -1,0 +1,25 @@
+{
+  "claim_boundary": {
+    "app_owned_input_preprocessing": true,
+    "exact_paper_dataset_identity_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "paper_figure_reproduction_claimed": false,
+    "performance_ratio_claimed": false
+  },
+  "coordinate_extents_after_scale": [
+    0.2352239456176758,
+    0.39604121398925785,
+    0.20316127014160157
+  ],
+  "faces_preserved": false,
+  "goal": "Goal5265",
+  "input": "Paper-reproduction-apps\\x-hd-paper\\data\\external\\stanford\\thai_statuette.ply",
+  "input_sha256": "01470DA9FC1241DCB4B075CC057FF6BF88D8DC721CE24B5847B9EFDFBB8C0345",
+  "n_dims": 3,
+  "output": "Paper-reproduction-apps\\x-hd-paper\\data\\external\\stanford\\thai_statuette_scaled_1e-3.ply",
+  "output_format": "binary_big_endian 1.0",
+  "output_sha256": "047024CF12FC541634D02612F0D72EA03EF9BABB8239F4CA6A1A6A9422DA272E",
+  "scale": 0.001,
+  "schema": "rtdl.paper_reproduction.xhd.scaled_ply_candidate.v1",
+  "vertex_count": 4999996
+}

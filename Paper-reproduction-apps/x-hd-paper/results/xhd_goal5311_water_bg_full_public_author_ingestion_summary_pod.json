@@ -1,0 +1,68 @@
+{
+  "author_command_contract": {
+    "check": false,
+    "execution": "gpu",
+    "input_type": "wkt",
+    "n_dims": 2,
+    "normalize": false,
+    "variant": "rt"
+  },
+  "author_result": {
+    "expected_goal5310_point_counts": [
+      22824823,
+      52271467
+    ],
+    "grid_resolution": [
+      2304,
+      1078
+    ],
+    "hd_result": 0.8970130085945129,
+    "hd_result_abs_delta_vs_paper_log": 0.0005762577056884766,
+    "hd_result_delta_vs_paper_log": 0.0005762577056884766,
+    "input_point_counts": [
+      22824823,
+      52271467
+    ],
+    "iterations": 12,
+    "json_path": "Paper-reproduction-apps/x-hd-paper/results/goal5311_raw/author_water_bg_full_public.json",
+    "large_cells": 61275,
+    "paper_log_hd_result": 0.8964367508888245,
+    "reported_time_ms": 103.564,
+    "running_avg_time_ms": 103.564
+  },
+  "claim_boundary": {
+    "author_rtdl_correctness_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "full_public_author_ingestion_claimed": true,
+    "geo_figure5_reproduction_claimed": false,
+    "paper_value_match_claimed": false,
+    "performance_ratio_claimed": false
+  },
+  "decision": {
+    "author_ingestion_passed": true,
+    "exact_paper_dataset_reproduction_blocked": true,
+    "next_allowed_action": "RTDL may run on the same full-public candidate as Level-B full-public author/RTDL scalar comparison, but the paper-log mismatch must remain visible.",
+    "paper_value_matched": false,
+    "reason": "Author hd_exec succeeds on the full-public ArcGIS candidate, but HDResult differs from the paper log by about 5.76e-4, so this candidate cannot be promoted to exact Figure-5 reproduction."
+  },
+  "goal": "Goal5311",
+  "input_candidate": {
+    "blockgroups_bytes": 1560257609,
+    "blockgroups_sha256": "8a1d3cd848083e5182de81521f07d8850c597910320250066d850928b017e66e",
+    "pair": "USADetailedWaterBodies.wkt -> USACensusBlockGroupBoundaries.wkt",
+    "remote_dir": "/tmp/xhd_goal5311/data",
+    "source_manifest": "Paper-reproduction-apps/x-hd-paper/data/generated/goal5310_water_bg_full_public_wkt_candidate/manifest.json",
+    "waterbodies_bytes": 741925630,
+    "waterbodies_sha256": "0c4ad7d7c1953364478d4940a8eb1696cca24d0dfd6422aafc532b1983f3dd39"
+  },
+  "pod": {
+    "author_binary": "/tmp/xhd-goal5112/build-gcc11-optix77-fast/bin/hd_exec",
+    "gpu": "NVIDIA RTX 4000 Ada Generation",
+    "host": "213.173.108.24",
+    "hostname": "45c502cfccb5",
+    "port": 13502
+  },
+  "schema": "rtdl.paper_reproduction.xhd.goal5311.water_bg_full_public_author_ingestion.v1",
+  "status": "author_hd_exec_full_public_water_bg_succeeded__not_paper_value_match"
+}

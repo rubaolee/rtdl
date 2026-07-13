@@ -1,0 +1,131 @@
+{
+  "author_output": "/workspace/goal4868_author_rtdl_contract_block_water/author_rtdl_contract_block_water_overlay.txt",
+  "elapsed_sec": 1448.1226254478097,
+  "first_diff": null,
+  "left": "/workspace/rtdl_goal4806_fast_min/artifacts/goal4806_section57_arcgis_full_us_20260630/dataset/point_cdb/USACensusBlockGroupBoundaries/USACensusBlockGroupBoundaries_Point.cdb",
+  "left_shape": {
+    "chain_count": 28473338,
+    "edge_count": 28473338,
+    "point_count": 56946676
+  },
+  "result": {
+    "backend": "optix",
+    "input_shape": {
+      "map0_chains": 28473338,
+      "map0_edges": 28473338,
+      "map0_points": 56946676,
+      "map1_chains": 22431809,
+      "map1_edges": 22431809,
+      "map1_points": 44863618
+    },
+    "lsi": {
+      "intersection_count": 649605,
+      "predicate_contract": "rayjoin_author_lsi_intersect_test_endpoint_collinear_contract"
+    },
+    "midpoint_pip": {
+      "map0_midpoints_in_map1": 131495,
+      "map0_nonfinite_midpoints_dropped": 0,
+      "map0_positive_faces": 68813,
+      "map1_midpoints_in_map0": 120074,
+      "map1_nonfinite_midpoints_dropped": 0,
+      "map1_positive_faces": 72862
+    },
+    "native_timings": {
+      "lsi": {
+        "candidate_count_pass": 0.008378495,
+        "candidate_download": 0.0,
+        "candidate_write_pass": 0.0,
+        "emitted_count": 649605,
+        "exact_refine": 0.0,
+        "hot_call_sec": 55.585379399359226,
+        "left_upload": 0.0,
+        "mode": "count_prepared_left_grouped_range_direct_intersection",
+        "raw_candidate_count": 0,
+        "row_materialization_contract": "planar_map_lsi_public_run_raw_pairs_reprojected_for_overlay",
+        "scaled_intersection_materialization_enabled": true
+      },
+      "midpoint_pip_map0_in_map1": {
+        "hot_call_sec": 0.0066986605525016785,
+        "mode": "none",
+        "point_count": 131495,
+        "point_upload": 0.0,
+        "positive_face_count": 68813,
+        "row_download": 0.000260575,
+        "traversal": 0.001598423
+      },
+      "midpoint_pip_map1_in_map0": {
+        "hot_call_sec": 0.005316741764545441,
+        "mode": "none",
+        "point_count": 120074,
+        "point_upload": 0.0,
+        "positive_face_count": 72862,
+        "row_download": 0.000262819,
+        "traversal": 0.001110968
+      },
+      "point_location_prepare_map0_in_map1": {
+        "hot_call_sec": 17.79335743933916,
+        "mode": "prepare"
+      },
+      "point_location_prepare_map1_in_map0": {
+        "hot_call_sec": 44.88840200006962,
+        "mode": "prepare"
+      },
+      "vertex_pip_map0_in_map1": {
+        "hot_call_sec": 4.204399041831493,
+        "mode": "rows",
+        "point_count": 56946676,
+        "point_upload": 0.144625731,
+        "positive_face_count": 50325704,
+        "row_download": 0.087610421,
+        "traversal": 0.133548428
+      },
+      "vertex_pip_map1_in_map0": {
+        "hot_call_sec": 3.2797089964151382,
+        "mode": "rows",
+        "point_count": 44863618,
+        "point_upload": 0.113853335,
+        "positive_face_count": 40523581,
+        "row_download": 0.068574439,
+        "traversal": 0.076382161
+      }
+    },
+    "output": {
+      "assembled": true,
+      "chain_count": 46224916,
+      "face_count": 2581495,
+      "line_count": 138674679,
+      "path": "/workspace/goal4871_rtdl_vs_author_contract_block_water_full_stream/rtdl_full_stream_compare_no_output.txt",
+      "point_count": 92449763,
+      "streaming": true
+    },
+    "phase_seconds": {
+      "load_cached_packed_inputs_sec": 1.7265353500843048,
+      "lsi_row_object_materialize_sec": 6.294593192636967,
+      "lsi_row_sort_sec": 30.312007151544094,
+      "output_chain_stream_write_sec": 1273.0161385759711,
+      "point_location_prepare_sec": 62.68175943940878,
+      "point_location_prepare_wall_sec": 62.6818917542696,
+      "total_sec": 1447.6409585624933
+    },
+    "program": "overlay",
+    "schema": "rtdl.rayjoin.overlay_rtdl_run.v1",
+    "vertex_pip": {
+      "map0_points_in_map1": 56946676,
+      "map0_positive_faces": 50325704,
+      "map1_points_in_map0": 44863618,
+      "map1_positive_faces": 40523581
+    }
+  },
+  "right": "/workspace/rtdl_goal4806_fast_min/artifacts/goal4806_section57_arcgis_full_us_20260630/dataset/point_cdb/USADetailedWaterBodies/USADetailedWaterBodies_Point.cdb",
+  "right_shape": {
+    "chain_count": 22431809,
+    "edge_count": 22431809,
+    "point_count": 44863618
+  },
+  "schema": "rtdl.goal4871.block_water.full_stream_compare.v1",
+  "stream_match": true,
+  "streamed_chain_count": 46224916,
+  "streamed_face_count": 2581495,
+  "streamed_line_count": 138674679,
+  "streamed_point_count": 92449763
+}

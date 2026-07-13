@@ -1,0 +1,55 @@
+{
+  "author_main_rt_current_comparator": {
+    "algorithms": [
+      "XHD"
+    ],
+    "binary": "/tmp/xhd-goal5112/build-gcc11-optix77-fast/bin/hd_exec",
+    "branch_head": "7bf41c8442d059c94f4178355c6d5a10571d9658",
+    "hd_result": 0.466653436422348,
+    "json": "/root/rtdl_goal5093/Paper-reproduction-apps/x-hd-paper/results/goal5222/range_hood_rt_repeat5_probe.json",
+    "matches_paper_log": false,
+    "paper_abs_diff": 0.0016771256923675537,
+    "variant": "rt"
+  },
+  "author_paper_branch_hybrid_comparator": {
+    "algorithms": [
+      "Hybrid"
+    ],
+    "binary": "/tmp/xhd-goal5222_build_paper/bin/hd_exec",
+    "branch_head": "8c3846866052e1e8755210021f23fac2cbe8c3d6",
+    "hd_result": 0.46497631072998047,
+    "json": "/root/rtdl_goal5093/Paper-reproduction-apps/x-hd-paper/results/goal5222/range_hood_paper_branch_hybrid_repeat5_probe.json",
+    "matches_paper_log": true,
+    "paper_abs_diff": 0.0,
+    "running_avg_time_ms": 2.9842,
+    "variant": "hybrid"
+  },
+  "case": "range_hood_0124.off -> range_hood_0004.off",
+  "claim_boundary": {
+    "does_not_claim_all_modelnet40": true,
+    "does_not_claim_performance_ratio": true,
+    "does_not_claim_raw_author_main_rt_is_paper_comparator_for_hybrid_logs": true,
+    "does_not_modify_rtdl_core": true
+  },
+  "conclusion": "Goal5221 range_hood failure is a comparator-regime mismatch: paper log uses Hybrid; current main/rt reports XHD and differs; paper-branch variant=hybrid matches paper log exactly; RTDL normalized route matches paper log and paper-branch Hybrid within tolerance.",
+  "goal": "Goal5222",
+  "paper_log": {
+    "algorithm_in_log": "Hybrid",
+    "hd_result": 0.46497631072998047,
+    "max_hit": 256,
+    "normalize": true,
+    "num_points_per_cell": 8,
+    "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/ModelNet40/n_points_cell_false_max_hit_false/range_hood_0124.off_range_hood_0004.off.json"
+  },
+  "purpose": "resolve Goal5221 single ModelNet40 failure by testing paper-branch Hybrid comparator regime",
+  "rtdl_normalized_route_from_goal5221": {
+    "json": "/root/rtdl_goal5093/Paper-reproduction-apps/x-hd-paper/results/goal5221/modelnet40_normalized_batch20_paper_params/rtdl/06_range_hood_0124__range_hood_0004.json",
+    "main_rt_abs_diff": 0.001677142245633978,
+    "matches_main_rt": false,
+    "matches_paper_hybrid": true,
+    "matches_paper_log": true,
+    "paper_abs_diff": 1.655326642424626e-08,
+    "paper_hybrid_abs_diff": 1.655326642424626e-08,
+    "route_distance": 0.46497629417671404
+  }
+}

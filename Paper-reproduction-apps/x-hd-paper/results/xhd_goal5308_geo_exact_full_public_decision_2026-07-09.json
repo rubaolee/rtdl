@@ -1,0 +1,139 @@
+{
+  "bounded_level_b_current_evidence": [
+    {
+      "abs_diff": 5.2616073986655465e-06,
+      "author_hd_result": 65.44752502441406,
+      "bounded_point_counts": [
+        38034,
+        50272
+      ],
+      "matched": true,
+      "pair": "dtl_cnty.wkt -> uszipcode.wkt",
+      "rtdl_hd_result": 65.44751976280666
+    },
+    {
+      "abs_diff": 4.925300871150284e-06,
+      "author_hd_result": 72.38665008544922,
+      "bounded_point_counts": [
+        124,
+        894
+      ],
+      "matched": true,
+      "pair": "USADetailedWaterBodies.wkt -> USACensusBlockGroupBoundaries.wkt",
+      "rtdl_hd_result": 72.38664516014835
+    }
+  ],
+  "claim_boundary": {
+    "bounded_level_b_complete_for_two_geo_pair_names": true,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "geo_figure5_reproduction_claimed": false,
+    "performance_ratio_claimed": false
+  },
+  "created_unix": 1783618105.3086672,
+  "decision": {
+    "blocker": "Exact paper WKT files are path-known from author logs but unavailable locally and on the current POD.",
+    "level_b_bounded_geo_packet_ready_for_review": true,
+    "level_c_exact_paper_geo_reproduction_blocked": true,
+    "next_allowed_goal": "full_public_arcgis_point_count_mbr_probe_before_any_figure5_claim",
+    "why": "A full-public reconstruction must first show point counts, MBRs, and author-loader point-stream semantics close to the paper logs. Bounded first-OBJECTID fixtures are too small and non-representative."
+  },
+  "exact_file_probe": {
+    "known_author_paths_available_on_current_pod": false,
+    "known_author_paths_root": "/local/storage/shared/HDDatasets/geo",
+    "local_generated_exact_files": false,
+    "pod_exact_paths_found": false,
+    "source_evidence": [
+      "Goal5214 exact dataset availability refresh",
+      "Goal5295 POD dataset availability",
+      "Goal5308 local/POD path probe"
+    ]
+  },
+  "goal": "Goal5308",
+  "paper_log_geo_pairs": [
+    {
+      "file_name": "dtl_cnty.wkt_uszipcode.wkt.json",
+      "input_files": [
+        {
+          "basename": "dtl_cnty.wkt",
+          "exact_status": "author_log_path_known__input_file_not_available",
+          "mbr": [
+            {
+              "Lower": -179.14891052246094,
+              "Upper": -66.9496078491211
+            },
+            {
+              "Lower": 18.91069221496582,
+              "Upper": 71.36516571044922
+            }
+          ],
+          "num_points": 9438045,
+          "path": "/local/storage/shared/HDDatasets/geo/dtl_cnty.wkt"
+        },
+        {
+          "basename": "uszipcode.wkt",
+          "exact_status": "author_log_path_known__input_file_not_available",
+          "mbr": [
+            {
+              "Lower": -179.1473388671875,
+              "Upper": 179.77845764160156
+            },
+            {
+              "Lower": -14.548691749572754,
+              "Upper": 71.3904800415039
+            }
+          ],
+          "num_points": 43952878,
+          "path": "/local/storage/shared/HDDatasets/geo/uszipcode.wkt"
+        }
+      ],
+      "paper_log_hd_result": 0.4093780517578125,
+      "paper_log_reported_time_median_ms": 80.925,
+      "paper_log_running_avg_time_ms": 80.566,
+      "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/geo/n_points_cell_true_max_hit_true/dtl_cnty.wkt_uszipcode.wkt.json"
+    },
+    {
+      "file_name": "USADetailedWaterBodies.wkt_USACensusBlockGroupBoundaries.wkt.json",
+      "input_files": [
+        {
+          "basename": "USADetailedWaterBodies.wkt",
+          "exact_status": "author_log_path_known__input_file_not_available",
+          "mbr": [
+            {
+              "Lower": -160.23110961914062,
+              "Upper": -66.99786376953125
+            },
+            {
+              "Lower": 19.203998565673828,
+              "Upper": 49.384334564208984
+            }
+          ],
+          "num_points": 22818694,
+          "path": "/local/storage/shared/HDDatasets/geo/USADetailedWaterBodies.wkt"
+        },
+        {
+          "basename": "USACensusBlockGroupBoundaries.wkt",
+          "exact_status": "author_log_path_known__input_file_not_available",
+          "mbr": [
+            {
+              "Lower": -179.14891052246094,
+              "Upper": -66.9496078491211
+            },
+            {
+              "Lower": 18.91069221496582,
+              "Upper": 71.36516571044922
+            }
+          ],
+          "num_points": 52271340,
+          "path": "/local/storage/shared/HDDatasets/geo/USACensusBlockGroupBoundaries.wkt"
+        }
+      ],
+      "paper_log_hd_result": 0.8964367508888245,
+      "paper_log_reported_time_median_ms": 86.755,
+      "paper_log_running_avg_time_ms": 86.345,
+      "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/geo/n_points_cell_true_max_hit_true/USADetailedWaterBodies.wkt_USACensusBlockGroupBoundaries.wkt.json"
+    }
+  ],
+  "schema": "rtdl.paper_reproduction.xhd.goal5308.geo_exact_full_public_decision.v1",
+  "status": "exact_geo_wkt_files_missing__bounded_level_b_complete__full_public_probe_required"
+}

@@ -1,0 +1,213 @@
+{
+  "claim_boundary": {
+    "broad_performance_claim": false,
+    "bundled_rayjoin_overlay_imported": false,
+    "numba_on_app_continuation_path": true,
+    "numba_on_rtdl_primitive_path": false,
+    "public_lsi_used": true,
+    "public_point_location_used": true
+  },
+  "runs": [
+    {
+      "author_output": {
+        "bytes": 6189260,
+        "lines": 276320,
+        "path": "/workspace/goal4875_section57_au_representative/author_contract_full/author_contract_au_overlay.txt",
+        "sha256": "a15e0dd4f3a4ffa6a4f8595a317cb53f31979aed02c78f4de243bb40ef40493e"
+      },
+      "byte_equal_to_author": true,
+      "counts": {
+        "lsi_row_count": 13452,
+        "vertex_positive_map0_in_map1": 193846,
+        "vertex_positive_map1_in_map0": 30538,
+        "xsects_map0": 13452,
+        "xsects_map1": 13452
+      },
+      "elapsed_sec": 42.36937473714352,
+      "generated_output": {
+        "bytes": 6189260,
+        "lines": 276320,
+        "path": "goal4901_phase_accounting_repeat0.txt",
+        "sha256": "a15e0dd4f3a4ffa6a4f8595a317cb53f31979aed02c78f4de243bb40ef40493e"
+      },
+      "native_point_location_timings": {
+        "midpoint_pip_map0": {
+          "mode": "none",
+          "point_count": 1707,
+          "point_upload": 0.0,
+          "positive_face_count": 920,
+          "row_download": 2.1811e-05,
+          "traversal": 0.000160906
+        },
+        "midpoint_pip_map1": {
+          "mode": "none",
+          "point_count": 2752,
+          "point_upload": 0.0,
+          "positive_face_count": 1824,
+          "row_download": 2.4647e-05,
+          "traversal": 0.000165604
+        },
+        "vertex_pip_map0_in_map1": {
+          "mode": "rows",
+          "point_count": 14788065,
+          "point_upload": 0.04073862,
+          "positive_face_count": 193846,
+          "row_download": 0.022752417,
+          "traversal": 0.010417484
+        },
+        "vertex_pip_map1_in_map0": {
+          "mode": "rows",
+          "point_count": 992505,
+          "point_upload": 0.003422213,
+          "positive_face_count": 30538,
+          "row_download": 0.001431456,
+          "traversal": 0.002552092
+        }
+      },
+      "phase_seconds": {
+        "assign_midpoint_faces_map0_sec": 0.001035735011100769,
+        "assign_midpoint_faces_map1_sec": 0.001190677285194397,
+        "destroy_point_location_sessions_sec": 0.23337014019489288,
+        "file_summary_author_sec": 0.03208418935537338,
+        "file_summary_generated_sec": 0.019635699689388275,
+        "intersection_reprojection_sec": 0.4450130760669708,
+        "load_pack_left_sec": 3.8727164268493652,
+        "load_pack_right_sec": 3.426568940281868,
+        "lsi_public_pair_id_rows_sec": 2.9110835269093513,
+        "midpoint_pip_map0_sec": 0.0005622729659080505,
+        "midpoint_pip_map1_sec": 0.0006414651870727539,
+        "midpoint_points_map0_sec": 0.19361746311187744,
+        "midpoint_points_map1_sec": 0.014594398438930511,
+        "output_chain_write_sec": 4.107341207563877,
+        "pack_midpoint_points_map0_sec": 0.0036109238862991333,
+        "pack_midpoint_points_map1_sec": 0.0057246387004852295,
+        "prepare_point_location_map0_in_map1_sec": 3.288137026131153,
+        "prepare_point_location_map1_in_map0_sec": 15.77485553920269,
+        "shared_bounds_sec": 9.112060070037842e-06,
+        "sort_map0_sec": 0.2121295928955078,
+        "sort_map1_sec": 0.23644748330116272,
+        "vertex_pip_map0_in_map1_sec": 6.417624689638615,
+        "vertex_pip_map1_in_map0_sec": 1.1707438230514526
+      },
+      "repeat": 0,
+      "timed_sum_sec": 42.368738047778606,
+      "unattributed_sec": 0.0006366893649101257,
+      "writer_result": {
+        "chain_count": 19820,
+        "face_count": 8229,
+        "goal4886_writer_skip_plan": {
+          "numba_available": true,
+          "processed_chains": 9621,
+          "skipped_no_xsect_chains": 399419,
+          "skipped_no_xsect_points": 14996199
+        },
+        "line_count": 276320,
+        "path": "goal4901_phase_accounting_repeat0.txt",
+        "point_count": 256500
+      }
+    },
+    {
+      "author_output": {
+        "bytes": 6189260,
+        "lines": 276320,
+        "path": "/workspace/goal4875_section57_au_representative/author_contract_full/author_contract_au_overlay.txt",
+        "sha256": "a15e0dd4f3a4ffa6a4f8595a317cb53f31979aed02c78f4de243bb40ef40493e"
+      },
+      "byte_equal_to_author": true,
+      "counts": {
+        "lsi_row_count": 13452,
+        "vertex_positive_map0_in_map1": 193846,
+        "vertex_positive_map1_in_map0": 30538,
+        "xsects_map0": 13452,
+        "xsects_map1": 13452
+      },
+      "elapsed_sec": 11.320307672023773,
+      "generated_output": {
+        "bytes": 6189260,
+        "lines": 276320,
+        "path": "goal4901_phase_accounting_repeat1.txt",
+        "sha256": "a15e0dd4f3a4ffa6a4f8595a317cb53f31979aed02c78f4de243bb40ef40493e"
+      },
+      "native_point_location_timings": {
+        "midpoint_pip_map0": {
+          "mode": "none",
+          "point_count": 1707,
+          "point_upload": 0.0,
+          "positive_face_count": 920,
+          "row_download": 2.2383e-05,
+          "traversal": 0.000154243
+        },
+        "midpoint_pip_map1": {
+          "mode": "none",
+          "point_count": 2752,
+          "point_upload": 0.0,
+          "positive_face_count": 1824,
+          "row_download": 2.0869e-05,
+          "traversal": 0.000135317
+        },
+        "vertex_pip_map0_in_map1": {
+          "mode": "rows",
+          "point_count": 14788065,
+          "point_upload": 0.038284905,
+          "positive_face_count": 193846,
+          "row_download": 0.022939642,
+          "traversal": 0.009902728
+        },
+        "vertex_pip_map1_in_map0": {
+          "mode": "rows",
+          "point_count": 992505,
+          "point_upload": 0.00393708,
+          "positive_face_count": 30538,
+          "row_download": 0.001318662,
+          "traversal": 0.002417757
+        }
+      },
+      "phase_seconds": {
+        "assign_midpoint_faces_map0_sec": 0.0004910752177238464,
+        "assign_midpoint_faces_map1_sec": 0.0007692649960517883,
+        "destroy_point_location_sessions_sec": 0.24265561997890472,
+        "file_summary_author_sec": 0.01350945234298706,
+        "file_summary_generated_sec": 0.02254500240087509,
+        "intersection_reprojection_sec": 0.4717955142259598,
+        "load_pack_left_sec": 0.1460128352046013,
+        "load_pack_right_sec": 0.041333869099617004,
+        "lsi_public_pair_id_rows_sec": 1.907526157796383,
+        "midpoint_pip_map0_sec": 0.0005277618765830994,
+        "midpoint_pip_map1_sec": 0.0004181787371635437,
+        "midpoint_points_map0_sec": 0.01043381541967392,
+        "midpoint_points_map1_sec": 0.008639693260192871,
+        "output_chain_write_sec": 2.528797075152397,
+        "pack_midpoint_points_map0_sec": 0.0030229687690734863,
+        "pack_midpoint_points_map1_sec": 0.004806704819202423,
+        "prepare_point_location_map0_in_map1_sec": 0.235701285302639,
+        "prepare_point_location_map1_in_map0_sec": 4.1230438351631165,
+        "shared_bounds_sec": 1.0699033737182617e-05,
+        "sort_map0_sec": 0.20910123735666275,
+        "sort_map1_sec": 0.2000846490263939,
+        "vertex_pip_map0_in_map1_sec": 1.1166385784745216,
+        "vertex_pip_map1_in_map0_sec": 0.031987376511096954
+      },
+      "repeat": 1,
+      "timed_sum_sec": 11.319852650165558,
+      "unattributed_sec": 0.00045502185821533203,
+      "writer_result": {
+        "chain_count": 19820,
+        "face_count": 8229,
+        "goal4886_writer_skip_plan": {
+          "numba_available": true,
+          "processed_chains": 9621,
+          "skipped_no_xsect_chains": 399419,
+          "skipped_no_xsect_points": 14996199
+        },
+        "line_count": 276320,
+        "path": "goal4901_phase_accounting_repeat1.txt",
+        "point_count": 256500
+      }
+    }
+  ],
+  "schema": "rtdl.goal4901.same_process_phase_accounting.v1",
+  "startup_phase_seconds": {
+    "import_goal4886_section57_public_primitives_overlay_numba_harness_sec": 4.276932924985886,
+    "install_numba_app_continuation_sec": 9.834766387939453e-06
+  }
+}

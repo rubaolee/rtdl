@@ -19,7 +19,7 @@ class RootScriptsTestsOrganizationAuditTest(unittest.TestCase):
 
     def test_relocated_material_has_clear_homes(self) -> None:
         required = (
-            "examples/internal/rtdsl_python_demo.py",
+            "history/examples_internal/internal/rtdsl_python_demo.py",
             "docs/history/source_archive/apps/embree_remote_validation.cpp",
             "docs/history/source_archive/apps/goal15_lsi_native.cpp",
             "docs/history/source_archive/apps/goal15_pip_native.cpp",
@@ -51,4 +51,3 @@ class RootScriptsTestsOrganizationAuditTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

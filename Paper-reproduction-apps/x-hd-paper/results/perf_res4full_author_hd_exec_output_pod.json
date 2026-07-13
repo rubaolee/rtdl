@@ -1,0 +1,116 @@
+{
+    "DateTime": "2026-07-08 16:50:14",
+    "GPU": {
+        "Device": 0,
+        "name": "NVIDIA RTX 4000 Ada Generation"
+    },
+    "HDResult": 0.1241602823138237,
+    "Input": {
+        "Files": [
+            {
+                "Density": 1972575.5,
+                "MBR": [
+                    {
+                        "Lower": 0.0,
+                        "Upper": 0.20282070338726044
+                    },
+                    {
+                        "Lower": 0.0,
+                        "Upper": 0.14349889755249023
+                    },
+                    {
+                        "Lower": 0.0,
+                        "Upper": 0.09066219627857208
+                    }
+                ],
+                "NumPoints": 5205,
+                "Path": "/root/rtdl_goal5093/Paper-reproduction-apps/x-hd-paper/data/fixtures/stanford_dragon_res4_full.ply"
+            },
+            {
+                "Density": 5481604.0,
+                "MBR": [
+                    {
+                        "Lower": 0.0,
+                        "Upper": 0.08099090307950974
+                    },
+                    {
+                        "Lower": 0.0,
+                        "Upper": 0.19752110540866852
+                    },
+                    {
+                        "Lower": 0.0,
+                        "Upper": 0.08105690032243729
+                    }
+                ],
+                "NumPoints": 7108,
+                "Path": "/root/rtdl_goal5093/Paper-reproduction-apps/x-hd-paper/data/fixtures/stanford_happy_res4_full.ply"
+            }
+        ],
+        "Limit": 2147483647,
+        "Normalize": false,
+        "NumDims": 3,
+        "SerializationPrefix": "",
+        "Translate": 0.0,
+        "Type": "Float"
+    },
+    "Running": {
+        "AvgTime": 4.548,
+        "EB": true,
+        "FastBuildBVH": false,
+        "LB": 256,
+        "NumPointsPerCell": 15,
+        "Prune": true,
+        "RebuildBVH": false,
+        "Repeats": [
+            {
+                "Algorithm": "XHD",
+                "BVHBuildTime": 0.251,
+                "Cells": 111,
+                "Execution": "GPU",
+                "GridResolution": [
+                    4,
+                    9,
+                    4
+                ],
+                "HDLowerBound": 0.1218298003077507,
+                "HDUpperBound": 0.264476478099823,
+                "InitRadius": 0.1218298003077507,
+                "Iterations": [
+                    {
+                        "AdjustBVHTime": 0.102,
+                        "CMax2": 0.014842499978840351,
+                        "CUDATime": 0.074,
+                        "Iteration": 1,
+                        "NumInputPoints": 5205,
+                        "NumOutputPoints": 4,
+                        "OffloadingSize": 0,
+                        "RTTime": 2.447,
+                        "Radius": 0.1218298003077507
+                    },
+                    {
+                        "CMax2": 0.015415775589644909,
+                        "CUDATime": 0.042,
+                        "Iteration": 2,
+                        "NumInputPoints": 4,
+                        "NumOutputPoints": 0,
+                        "OffloadingSize": 0,
+                        "RTTime": 0.204,
+                        "Radius": 0.15791678428649902
+                    }
+                ],
+                "LargeCells": 0,
+                "Memory": {
+                    "BVH": 8192,
+                    "Grid": 29768,
+                    "MBRs B": 2664,
+                    "WL": 41640,
+                    "WL Heavy Peak": 0
+                },
+                "Profiling": false,
+                "Repeat": 1,
+                "ReportedTime": 4.548
+            }
+        ],
+        "Seed": 0
+    }
+}

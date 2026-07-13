@@ -1,0 +1,165 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5329.external_response_intake_protocol.v1",
+  "goal": "Goal5329",
+  "date": "2026-07-09",
+  "purpose": "Define how future author, ACM-access, or external-review responses should be normalized, validated, and mapped to the next X-HD reproduction action.",
+  "status": "external_response_intake_protocol_ready__await_external_response",
+  "inputs": [
+    "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5326_external_artifact_request_package.json",
+    "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5328_external_request_outbox.json"
+  ],
+  "new_files": [
+    "Paper-reproduction-apps/x-hd-paper/requests/external_response_intake_template.json",
+    "Paper-reproduction-apps/x-hd-paper/requests/incoming/README.md"
+  ],
+  "supported_response_types": [
+    {
+      "response_type": "author_hash_manifest",
+      "minimum_fields": [
+        "actor identity or role",
+        "received date",
+        "paper input path or logical workload row",
+        "hash algorithm",
+        "hash value",
+        "whether input bytes are available locally"
+      ],
+      "sufficient_to_run_pod_gate": "only after at least one matching input file is available or can be regenerated",
+      "sufficient_to_claim_exact_input": "not by itself; exact status requires hash verification against bytes or accepted regeneration"
+    },
+    {
+      "response_type": "author_input_archive",
+      "minimum_fields": [
+        "archive filename",
+        "archive sha256",
+        "sender/source",
+        "redistribution/privacy boundary",
+        "extraction policy",
+        "contained file listing or manifest"
+      ],
+      "sufficient_to_run_pod_gate": "yes, after archive hash is recorded and inputs are extracted under the stated boundary",
+      "sufficient_to_claim_exact_input": "only after extracted file hashes are recorded and mapped to paper workloads"
+    },
+    {
+      "response_type": "byte_identical_regeneration_script",
+      "minimum_fields": [
+        "script or repository reference",
+        "commit or archive hash",
+        "source snapshot identifiers",
+        "commands and environment",
+        "expected output hashes"
+      ],
+      "sufficient_to_run_pod_gate": "yes, after regeneration output hashes are produced and compared",
+      "sufficient_to_claim_exact_input": "only if regenerated outputs match expected paper hashes or external review accepts byte identity"
+    },
+    {
+      "response_type": "acm_supplement_artifact_instructions",
+      "minimum_fields": [
+        "zip sha256 if downloadable",
+        "top-level listing",
+        "artifact README or appendix text",
+        "dataset/hash/script entries if any"
+      ],
+      "sufficient_to_run_pod_gate": "only if supplement contains usable data, hashes, or regeneration instructions",
+      "sufficient_to_claim_exact_input": "not until supplement contents are mapped to paper workloads and verified"
+    },
+    {
+      "response_type": "exact_equivalence_verdict",
+      "minimum_fields": [
+        "reviewer identity or role",
+        "reviewed reconstruction",
+        "accepted claim name",
+        "accepted denominator",
+        "explicit limitations",
+        "whether exact-paper wording is allowed"
+      ],
+      "sufficient_to_run_pod_gate": "yes, if a bounded matrix under the accepted claim is requested",
+      "sufficient_to_claim_exact_input": "only if the verdict explicitly authorizes exact-equivalent wording; otherwise keep Level-B or renamed bounded claim"
+    },
+    {
+      "response_type": "explicit_non_availability_statement",
+      "minimum_fields": [
+        "actor identity or role",
+        "scope of non-availability",
+        "whether hashes or regeneration notes are also unavailable"
+      ],
+      "sufficient_to_run_pod_gate": "no",
+      "sufficient_to_claim_exact_input": "no"
+    },
+    {
+      "response_type": "other",
+      "minimum_fields": [
+        "actor identity or role",
+        "freeform notes",
+        "why it does or does not fit known response types"
+      ],
+      "sufficient_to_run_pod_gate": "no by default",
+      "sufficient_to_claim_exact_input": "no by default"
+    }
+  ],
+  "intake_decision_rules": [
+    {
+      "condition": "response provides verified author input bytes or archive",
+      "next_action": "create a new provenance-ingestion goal; record archive/file hashes; run smallest author/RTDL same-input gate on POD",
+      "pod_expected": true
+    },
+    {
+      "condition": "response provides hashes but no bytes",
+      "next_action": "compare hashes against local/public candidate files if possible; request missing bytes or regeneration path if no match",
+      "pod_expected": false
+    },
+    {
+      "condition": "response provides byte-identical regeneration procedure",
+      "next_action": "run regeneration locally or on POD, record output hashes, then run same-input gates",
+      "pod_expected": true
+    },
+    {
+      "condition": "response provides ACM supplement artifact instructions",
+      "next_action": "ingest supplement listing and artifact instructions; map to paper workloads before any route run",
+      "pod_expected": false
+    },
+    {
+      "condition": "response accepts WaterBodies/BG exact-equivalence with a named boundary",
+      "next_action": "run the accepted bounded matrix and label it using the accepted claim name, not stronger wording",
+      "pod_expected": true
+    },
+    {
+      "condition": "response rejects exact-equivalence or says artifacts unavailable",
+      "next_action": "keep full-paper claims blocked and stop at Level-B for the affected scope",
+      "pod_expected": false
+    }
+  ],
+  "privacy_and_repository_boundary": {
+    "raw_private_messages_should_not_be_committed": true,
+    "allowed_repo_record": "minimal metadata, hashes, permissions, claim boundary, and next-action classification",
+    "requires_sender_permission_for_raw_content": true
+  },
+  "claim_boundary": {
+    "intake_protocol_claimed": true,
+    "external_response_received": false,
+    "external_artifacts_acquired": false,
+    "acm_supplement_inspected": false,
+    "exact_equivalence_accepted": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false,
+    "pod_execution_claimed": false
+  },
+  "pod_usage": {
+    "used": false,
+    "expected_next": false,
+    "reason": "This is an intake protocol. POD becomes relevant only after a concrete positive response supplies artifacts, regeneration instructions, or accepted reconstruction criteria."
+  },
+  "exit_label": "external_response_intake_protocol_ready__await_response",
+  "allowed_summary": "Goal5329 defines how future author, ACM, or exact-equivalence responses will be normalized and mapped to next actions. It does not claim any response has arrived.",
+  "not_allowed": [
+    "claiming a response has arrived",
+    "claiming external artifacts have been acquired",
+    "claiming ACM supplement has been inspected",
+    "claiming exact-equivalence has been accepted",
+    "claiming exact paper dataset reproduction",
+    "claiming Figure 5 reproduction",
+    "claiming full X-HD paper reproduction",
+    "claiming author-vs-RTDL performance ratio"
+  ]
+}

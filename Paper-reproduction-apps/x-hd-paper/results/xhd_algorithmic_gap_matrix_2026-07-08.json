@@ -1,0 +1,128 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.algorithmic_gap_matrix.v1",
+  "goal": "Goal5137",
+  "status": "xhd_algorithmic_gap_matrix_ready__generic_api_path_identified",
+  "date": "2026-07-08",
+  "author_source_evidence": {
+    "repository": "https://github.com/pwrliang/X-HD",
+    "local_pod_checkout": "/tmp/xhd-goal5112/author",
+    "key_files": [
+      "src/hd_impl/hausdorff_distance_rt.h",
+      "src/index/uniform_grid.h",
+      "src/rt/shaders/shaders_nn_uniform_grid.cu",
+      "src/loaders/ply_loader.h",
+      "src/loaders/translate_points.h",
+      "src/run_hausdorff_distance.cu",
+      "src/rt/rt_engine.h"
+    ],
+    "root_license_file_found": false,
+    "copy_policy": "Do not copy author app implementation into RTDL core. Use source as behavioral evidence and implement generic RTDL APIs with independent tests."
+  },
+  "phases": [
+    {
+      "phase": "input_load_and_preprocess",
+      "author_evidence": [
+        "src/loaders/ply_loader.h loads PLY vertices and subtracts per-input vmin",
+        "src/run_hausdorff_distance.cu records Input MBR/Normalize/Translate"
+      ],
+      "rtdl_current": "App-owned PLY bridge supports explicit translate_each_input_to_min_bound and matches author on sample256/1024/2048.",
+      "classification": "done_for_level_b_app_bridge",
+      "next": "Keep as app-owned input contract; do not promote to RTDL core unless needed by multiple apps."
+    },
+    {
+      "phase": "initial_hd_bounds",
+      "author_evidence": [
+        "hausdorff_distance_rt.h computes HDLowerBound and HDUpperBound from input MBRs"
+      ],
+      "rtdl_current": "No public generic HD bound API exposed.",
+      "classification": "new_generic_api_candidate",
+      "next": "Add generic MBR distance bound helper for point sets / bounding boxes."
+    },
+    {
+      "phase": "target_uniform_grid",
+      "author_evidence": [
+        "uniform_grid.h implements grid resolution, cell encoding, point insertion, prefix sums, tight cell MBRs"
+      ],
+      "rtdl_current": "No generic public device uniform-grid point index with tight-cell MBR output for partner routes.",
+      "classification": "new_generic_api_required",
+      "next": "Design app-neutral PointGridIndex2D/3D or cell-MBR descriptor API."
+    },
+    {
+      "phase": "cell_mbr_bvh_or_rt_index",
+      "author_evidence": [
+        "hausdorff_distance_rt.h builds/updates OptiX BVH over grid cell MBRs expanded by radius",
+        "primitive_utils.h maps MBR + radius to OptixAabb"
+      ],
+      "rtdl_current": "RTDL has RT primitives, but not a public generic cell-MBR radius traversal primitive for nearest-cell search.",
+      "classification": "new_generic_rt_primitive_required",
+      "next": "Expose generic radius-expanded MBR candidate traversal over cell descriptors, not an X-HD primitive."
+    },
+    {
+      "phase": "payload_nearest_search",
+      "author_evidence": [
+        "shaders_nn_uniform_grid.cu maintains cmin2 in OptiX payload",
+        "shader prunes cells using min distance to cell MBR and current cmin2",
+        "shader updates cmax2 / miss queue / status"
+      ],
+      "rtdl_current": "Current RTDL X-HD route is exact pairwise reference after traversal, not in-traversal nearest-state search.",
+      "classification": "layer4_like_generic_fusion_required",
+      "next": "Define generic nearest-with-bounds traversal contract: per-query state cmin, global bound cmax, prune predicate, and miss frontier."
+    },
+    {
+      "phase": "early_break_and_prune",
+      "author_evidence": [
+        "shaders_nn_uniform_grid.cu checks min_dist2 > radius^2, min_dist2 >= cmin2, max_dist2 <= cmax2, and early-break distance <= cmax2"
+      ],
+      "rtdl_current": "No public generic in-traversal early-break nearest reducer.",
+      "classification": "new_generic_fused_reducer_required",
+      "next": "Implement as dataflow pushdown/reducer API if it can stay app-neutral."
+    },
+    {
+      "phase": "heavy_cell_offload",
+      "author_evidence": [
+        "hausdorff_distance_rt.h identifies large cells by processing_threshold",
+        "shader appends offloading point/cell ids",
+        "loadBalanceProcessing handles heavy cells in CUDA"
+      ],
+      "rtdl_current": "No generic heavy-cell offload queue API tied to RT traversal output.",
+      "classification": "new_generic_queue_and_cuda_continuation_required",
+      "next": "Design generic continuation queue: (query_id, cell_id) -> partner exact processing."
+    },
+    {
+      "phase": "iterative_radius_growth",
+      "author_evidence": [
+        "hausdorff_distance_rt.h iterates miss queue and grows radius by adaptive/double/add policies",
+        "BVH is updated or rebuilt after radius changes"
+      ],
+      "rtdl_current": "No generic iterative frontier controller for radius-expanded spatial search.",
+      "classification": "new_generic_controller_required",
+      "next": "Expose loop contract around frontier, radius policy, and rebuild/update strategy."
+    },
+    {
+      "phase": "phase_metrics_and_memory",
+      "author_evidence": [
+        "run_hausdorff_distance.cu writes HDResult, Running.AvgTime, Repeats, Iterations",
+        "hausdorff_distance_rt.h records RTTime, CUDATime, OffloadingSize, Radius, CMax2, Memory"
+      ],
+      "rtdl_current": "Paper app keeps phase fields separated, but no unified RTDL X-HD-style metrics schema exists.",
+      "classification": "instrumentation_api_candidate",
+      "next": "If implementing scalable route, expose app-neutral phase counters and memory accounting."
+    }
+  ],
+  "decision": {
+    "can_copy_author_code_directly": false,
+    "can_reproduce_algorithm_behavior": true,
+    "recommended_next_goal": "Goal5138 generic grid-cell candidate API design",
+    "do_not_continue": [
+      "Do not push exact pairwise route to full resolution.",
+      "Do not add an XHD-named primitive to RTDL core.",
+      "Do not claim Figure 5 performance until generic algorithmic route exists and denominators align."
+    ]
+  },
+  "claim_boundary": {
+    "algorithmic_route_implemented": false,
+    "full_resolution_reproduction_claimed": false,
+    "performance_ratio_claimed": false,
+    "author_code_copied_into_rtdl_core": false
+  }
+}

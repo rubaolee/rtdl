@@ -1,0 +1,64 @@
+{
+  "author_hd_result": 0.12572988867759705,
+  "author_input_point_counts": [
+    437645,
+    543652
+  ],
+  "author_json": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5217_author_repeat5_raw_graphics_dragon_happy_buddha_2026-07-09.json",
+  "author_run": {
+    "cmd": [
+      "/tmp/xhd-goal5112/build-gcc11-optix77-fast/bin/hd_exec",
+      "-input1",
+      "Paper-reproduction-apps/x-hd-paper/data/external/stanford/dragon_recon/dragon_vrip.ply",
+      "-input2",
+      "Paper-reproduction-apps/x-hd-paper/data/external/stanford/happy_recon/happy_vrip.ply",
+      "-n_dims",
+      "3",
+      "-input_type",
+      "ply",
+      "-variant",
+      "rt",
+      "-execution",
+      "gpu",
+      "-json",
+      "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5217_author_repeat5_raw_graphics_dragon_happy_buddha_2026-07-09.json",
+      "-overwrite=true",
+      "-check=false"
+    ],
+    "returncode": 0,
+    "stderr": "I20260709 02:29:09.272329 125999063670784 run_hausdorff_distance.cu:259] Points A: 437645 Points B: 543652\nI20260709 02:29:09.280705 125999063670784 run_hausdorff_distance.cu:287] \u001b[31mAvg Running Time 7.681 ms\u001b[0m\nI20260709 02:29:09.572929 125999063670784 run_hausdorff_distance.cu:71] HausdorffDistance: distance is 0.12573\n",
+    "stdout": "avg aabb cycles 1493, avg point cycles 179\n",
+    "wall_sec": 1.9028342589735985
+  },
+  "author_run_failed": false,
+  "author_running_avg_time_ms": 7.681,
+  "boundary_note": "This gate runs author hd_exec on the full public Stanford Dragon/HappyBuddha Level-B candidate and compares HDResult to the paper-branch author log value. It does not compute an RTDL exact reference and does not prove exact paper input identity.",
+  "bridge": "Paper-reproduction-apps/x-hd-paper/results/xhd_priority_input_bridge_goal5178_graphics_dragon_happy_buddha_2026-07-08.json",
+  "claim_boundary": {
+    "author_full_public_candidate_run_claimed": true,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "level_b_same_source_candidate_claimed": true,
+    "performance_ratio_claimed": false,
+    "rtdl_all_source_route_run_claimed": false,
+    "rtdl_exact_reference_claimed": false
+  },
+  "execution": "gpu",
+  "goal": "Goal5217",
+  "input1": "Paper-reproduction-apps/x-hd-paper/data/external/stanford/dragon_recon/dragon_vrip.ply",
+  "input2": "Paper-reproduction-apps/x-hd-paper/data/external/stanford/happy_recon/happy_vrip.ply",
+  "input_type": "ply",
+  "level": "level_b_same_source_candidate_only",
+  "matched": true,
+  "n_dims": 3,
+  "paper_log_hd_results": [
+    0.12572969496250153
+  ],
+  "paper_log_min_abs_diff": 1.9371509552001953e-07,
+  "schema": "rtdl.paper_reproduction.xhd.full_public_author_gate.v1",
+  "status": "full_public_level_b_author_hd_exec_checked",
+  "target": "graphics_dragon_happy_buddha",
+  "tolerance": 1e-06,
+  "variant": "rt"
+}

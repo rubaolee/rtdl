@@ -1,0 +1,203 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5322.brats2020_access_conversion_provenance.v1",
+  "goal": "Goal5322",
+  "date": "2026-07-09",
+  "purpose": "Classify the BraTS2020 ValidationData X-HD Figure-5 family after the geo/graphics/OSM exact-provenance searches.",
+  "status": "brats2020_exact_provenance_not_found__access_and_conversion_blocked",
+  "claim_boundary": {
+    "provenance_search_claimed": true,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "author_rtdl_correctness_claimed": false,
+    "performance_ratio_claimed": false,
+    "new_rtdl_route_code_added": false,
+    "pod_execution_claimed": false
+  },
+  "official_braTS2020_sources_checked": {
+    "cbica_data_page": {
+      "url": "https://www.med.upenn.edu/cbica/brats2020/data.html",
+      "classification": "official_source_confirms_registration_required_and_validation_data_characteristics",
+      "facts_used": [
+        "BraTS 2020 data access points users to the Registration/Data Request page.",
+        "Validation data was released through CBICA IPP, without ground-truth labels for participants.",
+        "All BraTS multimodal scans are distributed as NIfTI files and include T1, T1Gd/T1ce, T2, and T2-FLAIR volumes.",
+        "Provided data are preprocessed, co-registered, interpolated to 1 mm^3, and skull-stripped."
+      ]
+    },
+    "cbica_registration_page": {
+      "url": "https://www.med.upenn.edu/cbica/brats2020/registration.html",
+      "classification": "official_source_confirms_ipp_account_and_data_request_workflow",
+      "facts_used": [
+        "Training and validation data require a CBICA Image Processing Portal account and BraTS'20 Data Request.",
+        "Account approval requires manual review.",
+        "After request approval, download links are provided through a Results.zip / REGISTRATION_STATUS workflow.",
+        "Training data include labels; validation data include the four modalities but not annotations."
+      ]
+    }
+  },
+  "author_log_evidence": {
+    "source_artifacts": [
+      "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5288_figure5_timing_denominator_audit_2026-07-09.json",
+      "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5214_exact_dataset_availability_refresh_2026-07-09.json",
+      "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5317_figure5_exact_input_acquisition_gap_matrix.json",
+      "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5301_non_graphics_dataset_provenance_matrix_2026-07-09.json"
+    ],
+    "category": "BraTS2020_ValidationData",
+    "unique_pair_count": 500,
+    "record_count": 2500,
+    "repeat_counts": [
+      5
+    ],
+    "gpu_names": [
+      "NVIDIA GeForce RTX 3090"
+    ],
+    "point_count_min": 887826,
+    "point_count_max": 1964247,
+    "sections": {
+      "auto_tune": {
+        "record_count": 1000,
+        "unique_pair_count": 500,
+        "running_avg_time_median_ms": 10.2166,
+        "reported_time_median_median_ms": 9.967
+      },
+      "eb_gpu": {
+        "record_count": 500,
+        "unique_pair_count": 500,
+        "running_avg_time_median_ms": 23.484099999999998,
+        "reported_time_median_median_ms": 23.366
+      },
+      "hybrid_gpu": {
+        "record_count": 500,
+        "unique_pair_count": 500,
+        "running_avg_time_median_ms": 9.740200000000002,
+        "reported_time_median_median_ms": 9.505
+      },
+      "rt_gpu": {
+        "record_count": 500,
+        "unique_pair_count": 500,
+        "running_avg_time_median_ms": 10.0323,
+        "reported_time_median_median_ms": 9.7785
+      }
+    },
+    "representative_pair_from_goal5214": {
+      "file_name": "BraTS20_Validation_001_flair.nii_BraTS20_Validation_033_flair.nii.json",
+      "hd_result": 26.645824432373047,
+      "input_paths": [
+        "/local/storage/shared/HDDatasets/BraTS2020_ValidationData/MICCAI_BraTS2020_ValidationData/BraTS20_Validation_001/BraTS20_Validation_001_flair.nii",
+        "/local/storage/shared/HDDatasets/BraTS2020_ValidationData/MICCAI_BraTS2020_ValidationData/BraTS20_Validation_033/BraTS20_Validation_033_flair.nii"
+      ],
+      "input_point_counts": [
+        1589257,
+        1145851
+      ],
+      "exact_statuses": [
+        "author_log_path_known__input_file_not_available",
+        "author_log_path_known__input_file_not_available"
+      ]
+    },
+    "first_goal5288_examples": [
+      "BraTS20_Validation_001_flair.nii -> BraTS20_Validation_033_flair.nii",
+      "BraTS20_Validation_001_t1.nii -> BraTS20_Validation_123_flair.nii",
+      "BraTS20_Validation_001_t1ce.nii -> BraTS20_Validation_116_flair.nii",
+      "BraTS20_Validation_001_t2.nii -> BraTS20_Validation_078_flair.nii"
+    ]
+  },
+  "availability": {
+    "local_workspace_assets": "absent",
+    "current_pod_assets": "absent",
+    "current_pod_hddatasets_root_exists": false,
+    "evidence": [
+      "Goal5301 records BraTS local_workspace_assets=absent and current_pod_assets=absent.",
+      "Goal5214 records /local/storage/shared/HDDatasets missing on the current POD.",
+      "Goal5214 sample BraTS log paths are known but not resolvable in the current POD."
+    ]
+  },
+  "conversion_provenance": {
+    "author_nifti_to_point_pipeline_found": false,
+    "author_converted_point_hashes_found": false,
+    "byte_identical_regeneration_proven": false,
+    "known_uncertainties": [
+      "The author logs expose NIfTI path names and point counts, but not the conversion rule from voxel data to point sets.",
+      "The official BraTS source provides MRI volumes, not X-HD-ready point clouds.",
+      "Exact reproduction needs the author conversion code, parameters, or hashes of the converted point representation.",
+      "Validation data include modalities but no annotations, so any point-selection rule must be inferred from author code/provenance rather than labels."
+    ]
+  },
+  "blocking_gaps": [
+    "No authorized BraTS2020 validation NIfTI files are present locally or on the current POD.",
+    "No author BraTS input file hashes are present.",
+    "No author converted point-set hashes are present.",
+    "No deterministic author NIfTI-to-point conversion pipeline has been identified.",
+    "No proof exists that a newly downloaded BraTS2020 package would have the same bytes/order/conversion outputs as the author's /local/storage/shared/HDDatasets copy.",
+    "No denominator-aligned author/RTDL BraTS timing matrix exists."
+  ],
+  "classification": {
+    "current_level": "paper_log_paths_known__access_and_conversion_blocked",
+    "level_b_possible_after": [
+      "authorized BraTS2020 validation data access",
+      "file hashes for the downloaded NIfTI inputs",
+      "an app-owned conversion script from NIfTI volume to X-HD point arrays",
+      "a same-input author hd_exec run on one paper-log pair",
+      "a same-input RTDL route run on the same converted point arrays"
+    ],
+    "level_c_exact_requires_one_of": [
+      "author-provided BraTS input files or hashes",
+      "author-provided converted point-set files or hashes",
+      "byte-identical regeneration from pinned BraTS source files plus documented author conversion",
+      "external review accepting a deterministic public/authorized regeneration as exact-equivalent"
+    ],
+    "statistics_or_path_names_sufficient_for_exact": false
+  },
+  "pod_usage": {
+    "used": false,
+    "expected_next": false,
+    "reason": "The current blocker is data access and conversion provenance, not GPU execution. Use POD only after authorized data and a concrete conversion/verification input exist."
+  },
+  "recommended_next_actions": [
+    {
+      "rank": 1,
+      "action": "Obtain authorized BraTS2020 validation data through CBICA IPP / BraTS'20 Data Request, if project policy permits.",
+      "required_evidence": [
+        "download package identity",
+        "file list",
+        "file hashes",
+        "license/access note"
+      ],
+      "requires_pod": false
+    },
+    {
+      "rank": 2,
+      "action": "Search author source/history for the NIfTI-to-point conversion rule used before hd_exec.",
+      "required_evidence": [
+        "conversion script or source function",
+        "threshold/mask/intensity rule",
+        "coordinate convention",
+        "float/integer precision policy"
+      ],
+      "requires_pod": false
+    },
+    {
+      "rank": 3,
+      "action": "After data and conversion are available, reproduce one listed author-log pair as a Level-B same-source gate before attempting the full 500-pair BraTS matrix.",
+      "required_evidence": [
+        "author hd_exec HDResult",
+        "RTDL HDResult",
+        "input point counts",
+        "explicit tolerance",
+        "separate phase/timing denominators"
+      ],
+      "requires_pod": true
+    }
+  ],
+  "exit_label": "brats2020_exact_provenance_not_found__access_and_conversion_blocked",
+  "allowed_summary": "BraTS2020 has strong author-log workload evidence (500 unique pairs / 2500 records), but exact reproduction is blocked on authorized NIfTI access and the author NIfTI-to-point conversion provenance. No BraTS route or performance claim is authorized yet.",
+  "not_allowed": [
+    "claiming BraTS2020 exact paper input recovery",
+    "claiming BraTS Figure-5 reproduction",
+    "claiming full X-HD paper reproduction",
+    "running route/performance work before authorized data and conversion provenance exist",
+    "using author log path names or point counts as exact input proof",
+    "claiming author-vs-RTDL performance ratio"
+  ]
+}

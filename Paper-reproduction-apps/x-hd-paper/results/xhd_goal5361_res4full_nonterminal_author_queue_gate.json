@@ -1,0 +1,207 @@
+{
+  "author_artifact": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\perf_res4full_author_hd_exec_output_pod.json",
+  "claim_boundary": {
+    "author_rt_core_algorithm_equivalence_claimed": false,
+    "author_tune_radius_route_mapping_claimed": false,
+    "figure8_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "performance_claimed": false
+  },
+  "comparison": {
+    "author_hd_result": 0.1241602823138237,
+    "author_rows": [
+      {
+        "CMax2": 0.014842499978840351,
+        "Iteration": 1,
+        "NumInputPoints": 5205,
+        "NumOutputPoints": 4,
+        "Radius": 0.1218298003077507
+      },
+      {
+        "CMax2": 0.015415775589644909,
+        "Iteration": 2,
+        "NumInputPoints": 4,
+        "NumOutputPoints": 0,
+        "Radius": 0.15791678428649902
+      }
+    ],
+    "hd_abs_diff": 4.440050771492565e-09,
+    "matched": true,
+    "row_comparison": {
+      "matched": true,
+      "mismatch_count": 0,
+      "mismatches": []
+    },
+    "tolerance": 1e-06,
+    "wrapper_hd_result": 0.12416027787377293,
+    "wrapper_rows": [
+      {
+        "CMax2": 0.014842500243026413,
+        "Iteration": 1,
+        "NumInputPoints": 5205,
+        "NumOutputPoints": 4,
+        "Radius": 0.1218298003077507
+      },
+      {
+        "CMax2": 0.015415774601692507,
+        "Iteration": 2,
+        "NumInputPoints": 4,
+        "NumOutputPoints": 0,
+        "Radius": 0.15791678945732696
+      }
+    ]
+  },
+  "date": "2026-07-09",
+  "exit_label": "res4full_nonterminal_queue_trace_matches__explicit_tune_radius_still_unmapped",
+  "goal": "Goal5361",
+  "input_pair": "stanford_dragon_res4_full.ply -> stanford_happy_res4_full.ply",
+  "preprocessing_contract": {
+    "reason": "The author JSON input MBR starts at zero and matches the translated local PLY bounds.",
+    "required": [
+      "translate_each_input_to_min_bound"
+    ],
+    "wrapper_reference_preprocessing": [
+      "translate_each_input_to_min_bound"
+    ]
+  },
+  "purpose": "Verify that the hd_exec-compatible RTDL wrapper can reproduce a nonterminal author radius-queue trace on the res4full Dragon -> HappyBuddha case. This exercises generic radius_growth_step in a case with NumOutputPoints > 0 before terminal convergence.",
+  "route": {
+    "author_tune_radius_supported": false,
+    "has_nonterminal_iteration": true,
+    "iteration_count": 2,
+    "route": {
+      "author_like_queue_iterations": [
+        {
+          "CMax2": 0.014842500243026413,
+          "Iteration": 1,
+          "NumInputPoints": 5205,
+          "NumOutputPoints": 4,
+          "Radius": 0.1218298003077507
+        },
+        {
+          "CMax2": 0.015415774601692507,
+          "Iteration": 2,
+          "NumInputPoints": 4,
+          "NumOutputPoints": 0,
+          "Radius": 0.15791678945732696
+        }
+      ],
+      "author_trace_json": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\perf_res4full_author_hd_exec_output_pod.json",
+      "directed_a_to_b": {
+        "distance": 0.12416027787377293,
+        "queue_rows": [
+          {
+            "CMax2": 0.014842500243026413,
+            "Iteration": 1,
+            "NumInputPoints": 5205,
+            "NumOutputPoints": 4,
+            "Radius": 0.1218298003077507
+          },
+          {
+            "CMax2": 0.015415774601692507,
+            "Iteration": 2,
+            "NumInputPoints": 4,
+            "NumOutputPoints": 0,
+            "Radius": 0.15791678945732696
+          }
+        ],
+        "route_iterations": [
+          {
+            "candidate_distance_evaluations": 27957725,
+            "cmax2_state_model": "author_like_global_cmax2_state_confirmed_points_only",
+            "frontier_row_count": 424692,
+            "nearest_columns_app_semantics": "none",
+            "nearest_columns_contract": "generic_nearest_witness_from_cell_mbr_frontier",
+            "nearest_missing_fallback_candidate_rows": 14216,
+            "nearest_missing_fallback_count": 2,
+            "queue_row": {
+              "CMax2": 0.014842500243026413,
+              "Iteration": 1,
+              "NumInputPoints": 5205,
+              "NumOutputPoints": 4,
+              "Radius": 0.1218298003077507
+            },
+            "route_contract": "generic_cell_mbr_nearest_frontier_reference",
+            "route_distance": 0.12416027787377293
+          },
+          {
+            "candidate_distance_evaluations": 13899,
+            "cmax2_state_model": "author_like_global_cmax2_state_confirmed_points_only",
+            "frontier_row_count": 200,
+            "nearest_columns_app_semantics": "none",
+            "nearest_columns_contract": "generic_nearest_witness_from_cell_mbr_frontier",
+            "nearest_missing_fallback_candidate_rows": 0,
+            "nearest_missing_fallback_count": 0,
+            "queue_row": {
+              "CMax2": 0.015415774601692507,
+              "Iteration": 2,
+              "NumInputPoints": 4,
+              "NumOutputPoints": 0,
+              "Radius": 0.15791678945732696
+            },
+            "route_contract": "generic_cell_mbr_nearest_frontier_reference",
+            "route_distance": 0.12416027787377293
+          }
+        ]
+      },
+      "hd_result": 0.12416027787377293,
+      "per_source_witness_exact": true,
+      "point_count_a": 5205,
+      "point_count_b": 7108,
+      "radius_trace_metadata": {
+        "author_queue_semantics_aligned_for_bounded_trace": true,
+        "author_tune_radius_supported": false,
+        "claim_boundary": {
+          "author_rt_core_algorithm_equivalence_claimed": false,
+          "author_tune_radius_route_mapping_claimed": false,
+          "figure8_reproduction_claimed": false,
+          "full_xhd_paper_reproduction_claimed": false,
+          "performance_claimed": false
+        },
+        "directions": [
+          {
+            "iterations": [
+              {
+                "CMax2": 0.014842500243026413,
+                "Iteration": 1,
+                "NumInputPoints": 5205,
+                "NumOutputPoints": 4,
+                "Radius": 0.1218298003077507
+              },
+              {
+                "CMax2": 0.015415774601692507,
+                "Iteration": 2,
+                "NumInputPoints": 4,
+                "NumOutputPoints": 0,
+                "Radius": 0.15791678945732696
+              }
+            ],
+            "label": "a_to_b"
+          }
+        ],
+        "route_iteration_model": "cell_mbr_author_like_radius_queue_route",
+        "schema": "rtdl.paper_reproduction.xhd.author_like_queue_trace.v1",
+        "status": "author_like_queue_trace_available_from_cell_mbr_diagnostic_route",
+        "uses_radius_growth_step": true
+      },
+      "reference_preprocessing": [
+        "translate_each_input_to_min_bound"
+      ],
+      "route": "rtdl_cell_mbr_author_like_queue_diagnostic_numpy_3d",
+      "route_contract": "App-owned bounded diagnostic route that emits author-like radius queue rows from the generic cell-MBR route and emitted nearest columns. This is not the author RT-core implementation.",
+      "route_label": "cell-mbr-author-queue-diagnostic",
+      "run_phases": {
+        "load_input_sec": 0.02401920035481453,
+        "rtdl_route_sec": 4.9975413996726274,
+        "total_sec": 5.021560600027442
+      },
+      "witness_contract": "directed_input1_to_input2_author_like_queue_trace_bounded_diagnostic"
+    },
+    "route_iteration_model": "cell_mbr_author_like_radius_queue_route",
+    "route_label": "cell-mbr-author-queue-diagnostic",
+    "uses_radius_growth_step": true
+  },
+  "schema": "rtdl.paper_reproduction.xhd.goal5361.res4full_nonterminal_author_queue_gate.v1",
+  "status": "res4full_nonterminal_author_like_queue_trace_matches",
+  "wrapper_output": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5361_res4full_nonterminal_author_queue_wrapper_output.json"
+}

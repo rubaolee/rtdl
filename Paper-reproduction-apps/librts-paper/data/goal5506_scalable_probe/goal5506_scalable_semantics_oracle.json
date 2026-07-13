@@ -1,0 +1,25 @@
+{
+  "boundary_cases": [
+    "exact_box",
+    "shared_edge",
+    "one_ulp_gap",
+    "shared_corner"
+  ],
+  "claim_boundary": {
+    "author_gpu_runtime_executed": false,
+    "full_input_adjudication": false,
+    "performance_ratio_authorized": false,
+    "rtdl_core_change_authorized": false,
+    "rtdl_runtime_executed": false
+  },
+  "cpu_inclusive_count": 20,
+  "geometry_count": 128,
+  "geometry_path": "Paper-reproduction-apps\\librts-paper\\data\\goal5506_scalable_probe\\goal5506_geometry.wkt",
+  "pair_count": 8192,
+  "query_count": 64,
+  "query_path": "Paper-reproduction-apps\\librts-paper\\data\\goal5506_scalable_probe\\goal5506_queries.wkt",
+  "schema": "rtdl.paper_reproduction.librts.goal5506_scalable_semantics_oracle.v1",
+  "seed": 5506,
+  "source_rayparams_model_count": 21,
+  "status": "deterministic_scalable_probe_generated"
+}

@@ -1,0 +1,139 @@
+{
+  "chain_has_xsects_match": true,
+  "chain_has_xsects_numba": [
+    1,
+    0,
+    0,
+    1
+  ],
+  "chain_has_xsects_reference": [
+    1,
+    0,
+    0,
+    1
+  ],
+  "chain_keep_match": true,
+  "chain_keep_numba": [
+    0,
+    1,
+    0,
+    1,
+    1,
+    1
+  ],
+  "chain_keep_reference": [
+    0,
+    1,
+    0,
+    1,
+    1,
+    1
+  ],
+  "dedupe_mask_match": true,
+  "dedupe_mask_numba": [
+    1,
+    0,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1
+  ],
+  "dedupe_mask_reference": [
+    1,
+    0,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1
+  ],
+  "midpoint_pairs_match": true,
+  "midpoint_pairs_numba": [
+    [
+      10,
+      -1,
+      -7,
+      21,
+      22,
+      0
+    ],
+    [
+      0,
+      -1,
+      0,
+      -31,
+      0,
+      33
+    ],
+    [
+      0,
+      1,
+      4,
+      6,
+      7,
+      8
+    ]
+  ],
+  "midpoint_pairs_reference": [
+    [
+      10,
+      -1,
+      -7,
+      21,
+      22,
+      0
+    ],
+    [
+      0,
+      -1,
+      0,
+      -31,
+      0,
+      33
+    ],
+    [
+      0,
+      1,
+      4,
+      6,
+      7,
+      8
+    ]
+  ],
+  "numba_available": true,
+  "schema": "rtdl.goal4886.numba_overlay_kernel_synthetic_parity.v1",
+  "timings_sec": {
+    "chain_has_xsects_numba_or_fallback": 0.254920557141304,
+    "chain_has_xsects_reference": 0.0039922744035720825,
+    "chain_keep_numba_or_fallback": 0.20319197326898575,
+    "chain_keep_reference": 3.0472874641418457e-05,
+    "dedupe_numba_or_fallback": 0.22464796155691147,
+    "dedupe_reference": 2.6866793632507324e-05,
+    "midpoint_numba_or_fallback": 5.513755328953266,
+    "midpoint_reference": 5.193054676055908e-05,
+    "writer_skip_decision_numba_or_fallback": 0.09825192391872406,
+    "writer_skip_decision_reference": 2.047419548034668e-05
+  },
+  "writer_skip_decision_cases": {
+    "case0_has_xsect_do_not_skip": true,
+    "case1_no_xsect_terminal_drop_skip": true,
+    "case2_no_xsect_terminal_keep_do_not_skip": true,
+    "case3_has_xsect_do_not_skip": true
+  },
+  "writer_skip_decision_match": true,
+  "writer_skip_decision_numba": [
+    0,
+    1,
+    0,
+    0
+  ],
+  "writer_skip_decision_reference": [
+    0,
+    1,
+    0,
+    0
+  ]
+}

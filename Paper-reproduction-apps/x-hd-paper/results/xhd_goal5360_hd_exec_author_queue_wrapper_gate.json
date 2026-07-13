@@ -1,0 +1,60 @@
+{
+  "author_artifact": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\bounded3d_author_hd_exec_output_pod.json",
+  "claim_boundary": {
+    "author_rt_core_algorithm_equivalence_claimed": false,
+    "author_tune_radius_route_mapping_claimed": false,
+    "figure8_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "performance_claimed": false
+  },
+  "comparison": {
+    "author_rows": [
+      {
+        "CMax2": 4.0,
+        "Iteration": 1,
+        "NumInputPoints": 9,
+        "NumOutputPoints": 0,
+        "Radius": 2.0
+      }
+    ],
+    "matched": true,
+    "wrapper_rows": [
+      {
+        "CMax2": 4.0,
+        "Iteration": 1,
+        "NumInputPoints": 9,
+        "NumOutputPoints": 0,
+        "Radius": 2.0
+      }
+    ]
+  },
+  "date": "2026-07-09",
+  "exit_label": "hd_exec_wrapper_bounded_queue_trace_matches__explicit_tune_radius_still_fail_closed",
+  "explicit_tune_radius_fail_closed": {
+    "exit_code": 2,
+    "explicit_author_rt_options": [
+      "tune_radius"
+    ],
+    "route_executed": false,
+    "status": "unsupported_author_rt_options_fail_closed"
+  },
+  "fail_closed_output": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5360_hd_exec_author_queue_explicit_tune_radius_fail_closed.json",
+  "goal": "Goal5360",
+  "purpose": "Verify that the hd_exec-compatible RTDL wrapper can expose the bounded cell-MBR author-like queue route under an explicit internal route label while preserving fail-closed behavior for explicit author -tune_radius.",
+  "recommended_next_targets": [
+    "find_or_construct_nonterminal_trace_case_with_NumOutputPoints_gt_zero",
+    "run_wrapper_route_on_nonterminal_case_to_exercise_radius_growth_step",
+    "only_then_consider_explicit_author_tune_radius_support"
+  ],
+  "schema": "rtdl.paper_reproduction.xhd.goal5360.hd_exec_author_queue_wrapper_gate.v1",
+  "status": "hd_exec_wrapper_author_like_queue_route_matches_bounded3d_author_trace",
+  "wrapper": {
+    "author_tune_radius_supported": false,
+    "exit_code": 0,
+    "hd_result": 2.0,
+    "radius_trace_status": "author_like_queue_trace_available_from_cell_mbr_diagnostic_route",
+    "route_label": "cell-mbr-author-queue-diagnostic",
+    "running_iteration_semantics": "RTDL author-like radius queue rows emitted by the selected diagnostic route; not author internal timing parity"
+  },
+  "wrapper_output": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5360_hd_exec_author_queue_wrapper_output.json"
+}

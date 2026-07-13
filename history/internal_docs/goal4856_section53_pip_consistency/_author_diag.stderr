@@ -1,0 +1,13 @@
+F20260701 23:04:57.350050 110010 planar_graph.h:45] Check failed: ifs.is_open() Cannot open file -poly2
+*** Check failure stack trace: ***
+    @     0x75a8c3b5c031  google::LogMessage::Fail()
+    @     0x75a8c3b63463  google::LogMessage::SendToLog()
+    @     0x75a8c3b5bb78  google::LogMessage::Flush()
+    @     0x75a8c3b6866d  google::LogMessageFatal::~LogMessageFatal()
+    @     0x613146b43add  rayjoin::read_pgraph<>()
+    @     0x613146b4584e  rayjoin::load_from<>()
+    @     0x613146b1ef0c  rayjoin::RunPIPQuery()
+    @     0x613146b12c8b  main
+    @     0x75a8c199a1ca  (unknown)
+    @     0x75a8c199a28b  __libc_start_main
+    @     0x613146b138d5  _start

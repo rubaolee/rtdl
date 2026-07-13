@@ -1,0 +1,30 @@
+{
+  "schema": "rtdl.paper_reproduction.librts.goal5510_bidirectional_degenerate_validity_regression.v1",
+  "status": "generic_aabb_degenerate_validity_contract_documented_and_regression_passed",
+  "contract": {
+    "native_indexed_box_validity": "min_x < max_x and min_y < max_y after numeric packing",
+    "forward_index": "prim",
+    "backward_index": "qidx",
+    "degenerate_padding_is_not_a_match_contract": true,
+    "app_specific_behavior": false
+  },
+  "fixture": {
+    "primitive_record": [1.0, 0.0, 1.0, 2.0],
+    "query_record": [0.0, 0.0, 2.0, 2.0],
+    "forward_prim_valid": false,
+    "backward_qidx_valid": true,
+    "distinguishes_prim_from_qidx": true
+  },
+  "verification": {
+    "focused_tests": 6,
+    "focused_tests_passed": true,
+    "generic_core_identity_scan_passed": true
+  },
+  "claim_boundary": {
+    "full_matrix_claimed": false,
+    "paper_reproduction_claimed": false,
+    "performance_ratio_authorized": false,
+    "pointwise_relation_claimed": false,
+    "embree_in_scope": false
+  }
+}

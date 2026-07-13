@@ -1,0 +1,82 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5330.external_response_intake_validator.v1",
+  "goal": "Goal5330",
+  "date": "2026-07-09",
+  "purpose": "Provide an executable validator/dispatcher for future X-HD external response intake JSON, so author/ACM/reviewer replies are classified fail-closed before any POD gate or reproduction claim.",
+  "status": "external_response_intake_validator_ready__await_response",
+  "script": "Paper-reproduction-apps/x-hd-paper/scripts/validate_xhd_external_response_intake.py",
+  "inputs": [
+    "Paper-reproduction-apps/x-hd-paper/requests/external_response_intake_template.json",
+    "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5329_external_response_intake_protocol.json"
+  ],
+  "validator_contract": {
+    "input_schema": "rtdl.paper_reproduction.xhd.external_response_intake.v1",
+    "output_schema": "rtdl.paper_reproduction.xhd.external_response_intake.validation_result.v1",
+    "valid_exit_code": 0,
+    "invalid_exit_code": 2,
+    "default_behavior": "fail_closed",
+    "sufficient_to_claim_exact_input": "always false; exact claims require a later provenance-ingestion/review goal"
+  },
+  "covered_response_types": [
+    "author_hash_manifest",
+    "author_input_archive",
+    "byte_identical_regeneration_script",
+    "acm_supplement_artifact_instructions",
+    "exact_equivalence_verdict",
+    "explicit_non_availability_statement",
+    "other"
+  ],
+  "classification_outputs": [
+    "valid",
+    "errors",
+    "warnings",
+    "response_type",
+    "next_action",
+    "pod_expected",
+    "sufficient_to_claim_exact_input",
+    "requires_review_before_claim",
+    "claim_boundary",
+    "not_allowed"
+  ],
+  "claim_boundary": {
+    "validator_claimed": true,
+    "external_response_received": false,
+    "external_artifacts_acquired": false,
+    "acm_supplement_inspected": false,
+    "exact_equivalence_accepted": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false,
+    "pod_execution_claimed": false
+  },
+  "pod_usage": {
+    "used": false,
+    "expected_next": false,
+    "reason": "The validator is local intake tooling. POD is triggered only by a future valid positive response classification."
+  },
+  "validation": {
+    "commands": [
+      "py -m unittest tests.goal5330_xhd_external_response_intake_validator_test",
+      "py -m unittest tests.goal5329_xhd_external_response_intake_protocol_test tests.goal5330_xhd_external_response_intake_validator_test",
+      "py Paper-reproduction-apps\\\\x-hd-paper\\\\scripts\\\\validate_xhd_external_response_intake.py Paper-reproduction-apps\\\\x-hd-paper\\\\requests\\\\external_response_intake_template.json"
+    ],
+    "observed": [
+      "Ran 7 tests OK",
+      "Ran 14 tests OK",
+      "template command exits 2 and reports valid=false"
+    ]
+  },
+  "exit_label": "external_response_intake_validator_ready__await_response",
+  "allowed_summary": "Goal5330 adds an executable app-owned validator for future X-HD external response intake JSON. It classifies responses fail-closed and never by itself authorizes exact-paper, Figure 5, full-paper, or performance claims.",
+  "not_allowed": [
+    "claiming a response has arrived",
+    "claiming external artifacts have been acquired",
+    "claiming ACM supplement has been inspected",
+    "claiming exact-equivalence has been accepted",
+    "claiming exact paper dataset reproduction",
+    "claiming Figure 5 reproduction",
+    "claiming full X-HD paper reproduction",
+    "claiming author-vs-RTDL performance ratio"
+  ]
+}

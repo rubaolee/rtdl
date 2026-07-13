@@ -1,0 +1,223 @@
+{
+  "author_draw_script": "/tmp/xhd-goal5112/author/expr/draw_mem.py",
+  "author_mem_log_root": "/tmp/xhd-goal5112/author/expr/logs/mem",
+  "claim_boundary": {
+    "exact_paper_dataset_identity_claimed": false,
+    "figure11_reproduced": false,
+    "full_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false,
+    "rtdl_memory_parity_claimed": false
+  },
+  "datasets": {
+    "geo": {
+      "mean_total_memory_mb": {
+        "NN-Clover": 3613.531836191813,
+        "NN-KD": 1271.3435516357422,
+        "X-HD": 1548.5944684346516
+      },
+      "row_count": 3,
+      "rows": {
+        "OSMLakes\nOSMParks": {
+          "NN-Clover": 8861.175407409668,
+          "NN-KD": 3079.8981323242188,
+          "X-HD": 3928.523635864258,
+          "_hd_results": {
+            "NN-Clover": 0.11786647886037827,
+            "NN-KD": 55.73149871826172,
+            "X-HD": 55.734275817871094
+          },
+          "_paths": {
+            "NN-Clover": "/tmp/xhd-goal5112/author/expr/logs/mem/clover_gpu/geo/lakes.bz2.wkt_parks.bz2.wkt.json",
+            "NN-KD": "/tmp/xhd-goal5112/author/expr/logs/mem/nn_gpu/geo/lakes.bz2.wkt_parks.bz2.wkt.json",
+            "X-HD": "/tmp/xhd-goal5112/author/expr/logs/mem/rt_gpu/geo/lakes.bz2.wkt_parks.bz2.wkt.json"
+          }
+        },
+        "USCounty\nUSZipcode": {
+          "NN-Clover": 884.8574523925781,
+          "NN-KD": 335.33384704589844,
+          "X-HD": 298.25086975097656,
+          "_hd_results": {
+            "NN-Clover": 0.035060636699199677,
+            "NN-KD": 0.0,
+            "X-HD": 0.4093780517578125
+          },
+          "_paths": {
+            "NN-Clover": "/tmp/xhd-goal5112/author/expr/logs/mem/clover_gpu/geo/dtl_cnty.wkt_uszipcode.wkt.json",
+            "NN-KD": "/tmp/xhd-goal5112/author/expr/logs/mem/nn_gpu/geo/dtl_cnty.wkt_uszipcode.wkt.json",
+            "X-HD": "/tmp/xhd-goal5112/author/expr/logs/mem/rt_gpu/geo/dtl_cnty.wkt_uszipcode.wkt.json"
+          }
+        },
+        "USWater\nUSBlock": {
+          "NN-Clover": 1094.5626487731934,
+          "NN-KD": 398.7986755371094,
+          "X-HD": 419.0088996887207,
+          "_hd_results": {
+            "NN-Clover": 0.06910043209791183,
+            "NN-KD": 0.0,
+            "X-HD": 0.8964367508888245
+          },
+          "_paths": {
+            "NN-Clover": "/tmp/xhd-goal5112/author/expr/logs/mem/clover_gpu/geo/USADetailedWaterBodies.wkt_USACensusBlockGroupBoundaries.wkt.json",
+            "NN-KD": "/tmp/xhd-goal5112/author/expr/logs/mem/nn_gpu/geo/USADetailedWaterBodies.wkt_USACensusBlockGroupBoundaries.wkt.json",
+            "X-HD": "/tmp/xhd-goal5112/author/expr/logs/mem/rt_gpu/geo/USADetailedWaterBodies.wkt_USACensusBlockGroupBoundaries.wkt.json"
+          }
+        }
+      },
+      "xhd_breakdown_mb": {
+        "OSMLakes\nOSMParks": {
+          "BVH": 9.5164794921875,
+          "Grid": 1542.2825775146484,
+          "MBRs B": 3.1113433837890625,
+          "WL": 2301.8210525512695,
+          "WL Heavy Peak": 71.79218292236328
+        },
+        "USCounty\nUSZipcode": {
+          "BVH": 25.963134765625,
+          "Grid": 174.03447723388672,
+          "MBRs B": 8.490066528320312,
+          "WL": 72.0065689086914,
+          "WL Heavy Peak": 17.756622314453125
+        },
+        "USWater\nUSBlock": {
+          "BVH": 12.1773681640625,
+          "Grid": 202.3856086730957,
+          "MBRs B": 3.981689453125,
+          "WL": 174.0928192138672,
+          "WL Heavy Peak": 26.371414184570312
+        }
+      },
+      "xhd_mean_breakdown_mb": {
+        "BVH": 15.885660807291666,
+        "Grid": 639.567554473877,
+        "MBRs B": 5.194366455078125,
+        "WL": 849.3068135579427,
+        "WL Heavy Peak": 38.64007314046224
+      }
+    },
+    "graphics": {
+      "mean_total_memory_mb": {
+        "NN-Clover": 60.49952507019043,
+        "NN-KD": 23.765098571777344,
+        "X-HD": 46.01456356048584
+      },
+      "row_count": 4,
+      "rows": {
+        "Dragon\nAsian Dragon": {
+          "NN-Clover": 81.03668975830078,
+          "NN-KD": 41.30859375,
+          "X-HD": 29.61847686767578,
+          "_hd_results": {
+            "NN-Clover": 0.04535682499408722,
+            "NN-KD": 0.0,
+            "X-HD": 0.06536811590194702
+          },
+          "_paths": {
+            "NN-Clover": "/tmp/xhd-goal5112/author/expr/logs/mem/clover_gpu/graphics/dragon.ply_asian_dragon.ply.json",
+            "NN-KD": "/tmp/xhd-goal5112/author/expr/logs/mem/nn_gpu/graphics/dragon.ply_asian_dragon.ply.json",
+            "X-HD": "/tmp/xhd-goal5112/author/expr/logs/mem/rt_gpu/graphics/dragon.ply_asian_dragon.ply.json"
+          }
+        },
+        "Dragon\nBuddha": {
+          "NN-Clover": 22.558372497558594,
+          "NN-KD": 6.2216033935546875,
+          "X-HD": 6.185779571533203,
+          "_hd_results": {
+            "NN-Clover": 0.07327304780483246,
+            "NN-KD": 0.0,
+            "X-HD": 0.12572969496250153
+          },
+          "_paths": {
+            "NN-Clover": "/tmp/xhd-goal5112/author/expr/logs/mem/clover_gpu/graphics/dragon.ply_happy_buddha.ply.json",
+            "NN-KD": "/tmp/xhd-goal5112/author/expr/logs/mem/nn_gpu/graphics/dragon.ply_happy_buddha.ply.json",
+            "X-HD": "/tmp/xhd-goal5112/author/expr/logs/mem/rt_gpu/graphics/dragon.ply_happy_buddha.ply.json"
+          }
+        },
+        "Thai\nAsian Dragon": {
+          "NN-Clover": 98.44067764282227,
+          "NN-KD": 41.30859375,
+          "X-HD": 72.64557647705078,
+          "_hd_results": {
+            "NN-Clover": 0.09042197465896606,
+            "NN-KD": 0.0,
+            "X-HD": 0.28763845562934875
+          },
+          "_paths": {
+            "NN-Clover": "/tmp/xhd-goal5112/author/expr/logs/mem/clover_gpu/graphics/thai_statuette.ply_asian_dragon.ply.json",
+            "NN-KD": "/tmp/xhd-goal5112/author/expr/logs/mem/nn_gpu/graphics/thai_statuette.ply_asian_dragon.ply.json",
+            "X-HD": "/tmp/xhd-goal5112/author/expr/logs/mem/rt_gpu/graphics/thai_statuette.ply_asian_dragon.ply.json"
+          }
+        },
+        "Thai\nBuddha": {
+          "NN-Clover": 39.96236038208008,
+          "NN-KD": 6.2216033935546875,
+          "X-HD": 75.6084213256836,
+          "_hd_results": {
+            "NN-Clover": 0.049049362540245056,
+            "NN-KD": 0.0,
+            "X-HD": 0.21912434697151184
+          },
+          "_paths": {
+            "NN-Clover": "/tmp/xhd-goal5112/author/expr/logs/mem/clover_gpu/graphics/thai_statuette.ply_happy_buddha.ply.json",
+            "NN-KD": "/tmp/xhd-goal5112/author/expr/logs/mem/nn_gpu/graphics/thai_statuette.ply_happy_buddha.ply.json",
+            "X-HD": "/tmp/xhd-goal5112/author/expr/logs/mem/rt_gpu/graphics/thai_statuette.ply_happy_buddha.ply.json"
+          }
+        }
+      },
+      "xhd_breakdown_mb": {
+        "Dragon\nAsian Dragon": {
+          "BVH": 0.1575927734375,
+          "Grid": 13.807609558105469,
+          "MBRs B": 0.07614898681640625,
+          "WL": 3.3389663696289062,
+          "WL Heavy Peak": 12.2381591796875
+        },
+        "Dragon\nBuddha": {
+          "BVH": 0.058349609375,
+          "Grid": 2.087512969970703,
+          "MBRs B": 0.02728271484375,
+          "WL": 3.3389663696289062,
+          "WL Heavy Peak": 0.6736679077148438
+        },
+        "Thai\nAsian Dragon": {
+          "BVH": 0.0501708984375,
+          "Grid": 13.781242370605469,
+          "MBRs B": 0.02341461181640625,
+          "WL": 38.146942138671875,
+          "WL Heavy Peak": 20.64380645751953
+        },
+        "Thai\nBuddha": {
+          "BVH": 0.0469970703125,
+          "Grid": 2.0848007202148438,
+          "MBRs B": 0.02185821533203125,
+          "WL": 38.146942138671875,
+          "WL Heavy Peak": 35.307823181152344
+        }
+      },
+      "xhd_mean_breakdown_mb": {
+        "BVH": 0.078277587890625,
+        "Grid": 7.940291404724121,
+        "MBRs B": 0.03717613220214844,
+        "WL": 20.74295425415039,
+        "WL Heavy Peak": 17.215864181518555
+      }
+    }
+  },
+  "date": "2026-07-09",
+  "goal": "Goal5272",
+  "methods": [
+    {
+      "folder": "nn_gpu",
+      "label": "NN-KD"
+    },
+    {
+      "folder": "clover_gpu",
+      "label": "NN-Clover"
+    },
+    {
+      "folder": "rt_gpu",
+      "label": "X-HD"
+    }
+  ],
+  "schema": "rtdl.paper_reproduction.xhd.figure11_author_memory_log_matrix.v1",
+  "status": "figure11_author_memory_log_matrix_ready__rtdl_memory_instrumentation_missing"
+}

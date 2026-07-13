@@ -1,0 +1,765 @@
+{
+  "author_overlay_compute_sec": null,
+  "bounded_exact_lsi_repeat_diagnostic": null,
+  "claim_boundary": {
+    "bounded_exact_lsi_capacity": 600000,
+    "bounded_exact_lsi_device_columns_requested": true,
+    "bounded_exact_lsi_downstream_numpy_copy_used": false,
+    "bounded_exact_lsi_numba_direct_handoff_used": true,
+    "bundled_rayjoin_overlay_imported": false,
+    "columnar_xsect_arrays": true,
+    "compiled_group_side_order": [
+      0,
+      1
+    ],
+    "compiled_group_side_order_scope": "writer_free_binary_descriptor_route_only",
+    "device_columnar_requested": true,
+    "device_resident_carrier_requested": false,
+    "device_resident_carrier_used": false,
+    "device_resident_descriptor_consumer_used": false,
+    "exact_lsi_device_columns_downstream_numpy_copy_used": false,
+    "exact_lsi_device_columns_numba_direct_handoff_used": false,
+    "exact_lsi_device_columns_requested": false,
+    "fast_scaled_point_pack_device_resident_claim_authorized": false,
+    "fast_scaled_point_pack_requested": true,
+    "fast_scaled_point_pack_scope": "vectorized_host_pack_same_scaled_point_abi",
+    "full_carrier_geometry_payload_columns_materialized": false,
+    "generic_contract_goal": true,
+    "implementation_change": "internal_app_owned_measurement_script_only",
+    "layer4_claim_authorized": false,
+    "layer4_fusion": false,
+    "lsi_pair_host_to_device_copy_used": false,
+    "lsi_pair_input_device_resident": true,
+    "lsi_pair_row_buffer_contract": {
+      "api_maturity": "experimental_reuse_adapter_no_release_claim",
+      "app_specific_schema_allowed": false,
+      "claim_boundary": "This row-buffer adapter reuses the v2.5/v2.6 device-column and neutral partner handoff contracts. It validates named primitive-output columns for explicit CuPy/Numba continuation planning. It does not execute the partner continuation, authorize true-zero-copy wording, authorize speedup wording, or promote any app-specific output schema into RTDL core.",
+      "column_count": 2,
+      "column_records": [
+        {
+          "device_resident_candidate": true,
+          "has_cuda_array_interface": true,
+          "has_dlpack": false,
+          "length": 428322,
+          "name": "left_id",
+          "source_protocol": "cuda_array_interface"
+        },
+        {
+          "device_resident_candidate": true,
+          "has_cuda_array_interface": true,
+          "has_dlpack": false,
+          "length": 428322,
+          "name": "right_id",
+          "source_protocol": "cuda_array_interface"
+        }
+      ],
+      "columns": [
+        "left_id",
+        "right_id"
+      ],
+      "contract_version": "rtdl.device_column_row_buffer.v2_14_2.layer1",
+      "device_resident_candidate": true,
+      "engine_boundary": "generic_app_agnostic_primitive_output_columns",
+      "host_rows_materialized_before_partner_handoff": false,
+      "materializes_host_rows_for_bridge": false,
+      "native_device_column_output_proven_on_hardware": true,
+      "neutral_partner_handoff_version": "rtdl.v2_6.neutral_partner_handoff.v1",
+      "phase_timing_seconds": {
+        "rt_traversal": 0.00223893
+      },
+      "producer": "rtdl_optix_run_prepared_segment_pair_bounded_exact_pair_id_device_columns_prepared_left_grouped_range_direct_intersection_with_predicate_mode",
+      "producer_consumer_stream_ordering": "host_synchronized_before_consumer",
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "reuses_v2_5_device_column_contract": true,
+      "row_count": 428322,
+      "source_mode": "native_device_columns",
+      "stream_synchronization_proven": true,
+      "true_zero_copy_claim_authorized": false,
+      "whole_app_speedup_claim_authorized": false
+    },
+    "midpoint_face_ids_copied_to_host": true,
+    "midpoint_face_ids_device_scatter_used": false,
+    "midpoint_query_points_device_resident": false,
+    "midpoint_query_points_host_pack_used": true,
+    "numba_compiled_group": true,
+    "numba_cuda_reprojection": true,
+    "numba_cuda_sort": true,
+    "numeric_binary_route": true,
+    "paper_byte_equal_route": false,
+    "paper_byte_equality_claim_authorized_for_numeric_route": false,
+    "paper_exact_sink_separate": true,
+    "paper_text_order_claim_authorized": false,
+    "point_location_device_face_columns_downstream_numpy_copy_used": true,
+    "point_location_device_face_columns_requested": true,
+    "point_location_device_face_columns_true_zero_copy_claim_authorized": false,
+    "prepared_lsi_replay_cached_diagnostic_only": false,
+    "prepared_lsi_replay_requested": false,
+    "prepared_operator_session_used": false,
+    "projection_pushdown": true,
+    "public_high_performance_claim_authorized": false,
+    "rayjoin_app_adapter_used": true,
+    "rayjoin_specific_core_primitive": false,
+    "rtdl_core_change": true,
+    "rtdl_core_change_scope": "generic_planar_map_point_location_device_column_wrapper",
+    "sort_order_validated_against_cpu_reference": false,
+    "transient_display_point_tuples_used_for_dedupe_count": true
+  },
+  "device_order_validation": null,
+  "downstream_consumer": {
+    "cuda_device_resident_continuation": false,
+    "numba_available": true,
+    "numba_execution_mode": "cpu_njit",
+    "pair_count": 15014,
+    "partner": "numba_sorted_pair_scan",
+    "top_pairs_by_point_rows": [
+      {
+        "group_count": 2074,
+        "label_a": 26523,
+        "label_b": 2529,
+        "point_row_count": 19141
+      },
+      {
+        "group_count": 2389,
+        "label_a": 26171,
+        "label_b": 2686,
+        "point_row_count": 15168
+      },
+      {
+        "group_count": 118,
+        "label_a": 33,
+        "label_b": 232,
+        "point_row_count": 12485
+      },
+      {
+        "group_count": 1073,
+        "label_a": 27029,
+        "label_b": 2714,
+        "point_row_count": 12103
+      },
+      {
+        "group_count": 1726,
+        "label_a": 2529,
+        "label_b": 26523,
+        "point_row_count": 11841
+      },
+      {
+        "group_count": 627,
+        "label_a": 50,
+        "label_b": 229,
+        "point_row_count": 11399
+      },
+      {
+        "group_count": 2031,
+        "label_a": 2686,
+        "label_b": 26171,
+        "point_row_count": 11132
+      },
+      {
+        "group_count": 1,
+        "label_a": 30624,
+        "label_b": 199,
+        "point_row_count": 10747
+      },
+      {
+        "group_count": 21,
+        "label_a": 30533,
+        "label_b": 192,
+        "point_row_count": 10157
+      },
+      {
+        "group_count": 1,
+        "label_a": 30900,
+        "label_b": 199,
+        "point_row_count": 9688
+      }
+    ],
+    "total_groups": 428974,
+    "total_point_rows": 5902562
+  },
+  "downstream_floor_breakdown": {
+    "claim_boundary": {
+      "author_comparison_authorized": false,
+      "steady_state_floor_measurement": true,
+      "writer_excluded": true
+    },
+    "copy_key": null,
+    "copy_sec": 0.0,
+    "downstream_components_sec": {
+      "assign_midpoint_faces_map0_columnar_sec": 0.0005557667464017868,
+      "assign_midpoint_faces_map1_columnar_sec": 0.0005455333739519119,
+      "grouped_compiled_columnar_carrier_construction_sec": 0.1068918127566576,
+      "grouped_descriptor_pair_count_consumer_sec": 0.01812361367046833,
+      "intersection_reprojection_device_columnar_sec": 0.2584870681166649,
+      "midpoint_pip_map0_sec": 0.004096467047929764,
+      "midpoint_pip_map1_sec": 0.0037385374307632446,
+      "midpoint_points_map0_columnar_sec": 0.019012780860066414,
+      "midpoint_points_map1_columnar_sec": 0.01227944903075695,
+      "sort_map0_device_columnar_sec": 0.0327101219445467,
+      "sort_map1_device_columnar_sec": 0.0941041111946106,
+      "vertex_pip_map0_in_map1_sec": 0.07062317058444023,
+      "vertex_pip_map1_in_map0_sec": 6.80584017932415
+    },
+    "downstream_floor_sec": 7.4270086120814085,
+    "downstream_keys": [
+      "intersection_reprojection_device_columnar_sec",
+      "sort_map0_device_columnar_sec",
+      "sort_map1_device_columnar_sec",
+      "vertex_pip_map0_in_map1_sec",
+      "vertex_pip_map1_in_map0_sec",
+      "midpoint_points_map0_columnar_sec",
+      "midpoint_points_map1_columnar_sec",
+      "midpoint_pip_map0_sec",
+      "midpoint_pip_map1_sec",
+      "assign_midpoint_faces_map0_columnar_sec",
+      "assign_midpoint_faces_map1_columnar_sec",
+      "grouped_compiled_columnar_carrier_construction_sec",
+      "grouped_descriptor_pair_count_consumer_sec"
+    ],
+    "largest_downstream_component": [
+      "vertex_pip_map1_in_map0_sec",
+      6.80584017932415
+    ],
+    "lsi_phase_key": "lsi_bounded_exact_pair_id_device_columns_sec",
+    "lsi_phase_sec": 2.980284444987774,
+    "schema": "rtdl.paper_reproduction.rayjoin.section57.downstream_floor_breakdown.v1",
+    "writer_free_hot_recomputed_sec": 10.407293057069182
+  },
+  "grouped_carrier": {
+    "columnar_xsect_arrays": true,
+    "compiled_columnar_group_builder": true,
+    "compiled_group_execution_mode": "numba_cpu_njit",
+    "compiled_group_side_order": [
+      0,
+      1
+    ],
+    "full_geometry_payload_columns_materialized": false,
+    "group_count": 428974,
+    "point_row_count": 5902562,
+    "projected_out_columns": [
+      "x",
+      "y",
+      "alt_label",
+      "source_side_id",
+      "source_element_id"
+    ],
+    "projection_pushdown": true,
+    "schema": "rtdl.paper_reproduction.rayjoin.section57_columnar_binary_carrier.v1",
+    "side_work_metrics": {
+      "side0": {
+        "chain_count": 1612,
+        "chain_final_flush_count": 1612,
+        "chain_points_scanned": 1706639,
+        "dedupe_append_calls": 2563283,
+        "edge_slots_scanned": 1705027,
+        "emitted_point_row_count": 1136678,
+        "intersection_display_point_appends": 856644,
+        "intersection_row_count": 428322,
+        "intersection_run_count": 218763,
+        "kept_group_count": 215786,
+        "run_start_count": 1705027,
+        "skipped_group_count": 214148,
+        "sorted_intersection_order_count": 428322,
+        "split_flush_count": 428322
+      },
+      "side1": {
+        "chain_count": 10144,
+        "chain_final_flush_count": 10144,
+        "chain_points_scanned": 9993104,
+        "dedupe_append_calls": 10849748,
+        "edge_slots_scanned": 9982960,
+        "emitted_point_row_count": 4765884,
+        "intersection_display_point_appends": 856644,
+        "intersection_row_count": 428322,
+        "intersection_run_count": 224381,
+        "kept_group_count": 213188,
+        "run_start_count": 9982960,
+        "skipped_group_count": 225278,
+        "sorted_intersection_order_count": 428322,
+        "split_flush_count": 428322
+      }
+    },
+    "side_work_metrics_total": {
+      "chain_count": 11756,
+      "chain_final_flush_count": 11756,
+      "chain_points_scanned": 11699743,
+      "dedupe_append_calls": 13413031,
+      "edge_slots_scanned": 11687987,
+      "emitted_point_row_count": 5902562,
+      "intersection_display_point_appends": 1713288,
+      "intersection_row_count": 856644,
+      "intersection_run_count": 443144,
+      "kept_group_count": 428974,
+      "run_start_count": 11687987,
+      "skipped_group_count": 439426,
+      "sorted_intersection_order_count": 856644,
+      "split_flush_count": 856644
+    },
+    "skipped_group_count": 439426,
+    "transient_display_point_tuples_used_for_dedupe_count": true
+  },
+  "left": {
+    "chains": 1612,
+    "edges": 1705027,
+    "path": "Paper-reproduction-apps/rayjoin-paper/_data/top4_arcgis/top4_county.cdb",
+    "points": 1706639
+  },
+  "lsi_cost_decomposition": {
+    "copy_key": null,
+    "copy_sec": 0.0,
+    "lsi_phase_key": "lsi_bounded_exact_pair_id_device_columns_sec",
+    "lsi_phase_sec": 2.980284444987774,
+    "native_timing_label": "bounded_exact_pair_id_device_columns",
+    "native_timings": {
+      "candidate_count_pass": 0.0,
+      "candidate_download": 0.0,
+      "candidate_write_pass": 0.002236886,
+      "emitted_count": 428322,
+      "exact_refine": 0.0,
+      "extended": {
+        "count_download": 1.6822e-05,
+        "device_alloc": 0.001466854,
+        "emitted_count": 428322,
+        "exact_pipeline_ensure": 0.607998997,
+        "grouped_range_ensure": 1.083389444,
+        "mode": "pair_id_rows_prepared_left_grouped_range_direct_intersection",
+        "optix_launch": 0.002219924,
+        "param_upload": 4.839e-06,
+        "raw_candidate_count": 0,
+        "scaled_cache_ensure": 0.824507198,
+        "schema": "rtdl.optix.segment_pair.extended_phase_timings.v1",
+        "split_kernel_ensure": 0.460182018,
+        "split_kernel_launch": 1.9948e-05,
+        "total_native": 2.979847573
+      },
+      "left_upload": 0.0,
+      "mode": "pair_id_rows_prepared_left_grouped_range_direct_intersection",
+      "native_output_candidate_event_count": 428322,
+      "native_output_capacity": 600000,
+      "native_output_overflow": false,
+      "native_output_row_count": 428322,
+      "native_output_traversal_seconds": 0.00223893,
+      "raw_candidate_count": 0
+    },
+    "native_total_sec": 2.979847573,
+    "python_wrapper_or_unaccounted_sec": 0.0004368719877740901,
+    "schema": "rtdl.paper_reproduction.rayjoin.section57.lsi_cost_decomposition.v1"
+  },
+  "lsi_row_count": 428322,
+  "native_lsi_timings": {
+    "bounded_exact_pair_id_device_columns": {
+      "candidate_count_pass": 0.0,
+      "candidate_download": 0.0,
+      "candidate_write_pass": 0.002236886,
+      "emitted_count": 428322,
+      "exact_refine": 0.0,
+      "extended": {
+        "count_download": 1.6822e-05,
+        "device_alloc": 0.001466854,
+        "emitted_count": 428322,
+        "exact_pipeline_ensure": 0.607998997,
+        "grouped_range_ensure": 1.083389444,
+        "mode": "pair_id_rows_prepared_left_grouped_range_direct_intersection",
+        "optix_launch": 0.002219924,
+        "param_upload": 4.839e-06,
+        "raw_candidate_count": 0,
+        "scaled_cache_ensure": 0.824507198,
+        "schema": "rtdl.optix.segment_pair.extended_phase_timings.v1",
+        "split_kernel_ensure": 0.460182018,
+        "split_kernel_launch": 1.9948e-05,
+        "total_native": 2.979847573
+      },
+      "left_upload": 0.0,
+      "mode": "pair_id_rows_prepared_left_grouped_range_direct_intersection",
+      "native_output_candidate_event_count": 428322,
+      "native_output_capacity": 600000,
+      "native_output_overflow": false,
+      "native_output_row_count": 428322,
+      "native_output_traversal_seconds": 0.00223893,
+      "raw_candidate_count": 0
+    }
+  },
+  "native_point_location_timings": {
+    "midpoint_pip_map0": {
+      "mode": "face_ids_device_points",
+      "point_count": 209559,
+      "point_upload": 0.0,
+      "positive_face_count": 0,
+      "row_download": 0.0,
+      "traversal": 0.000986132
+    },
+    "midpoint_pip_map1": {
+      "mode": "face_ids_device_points",
+      "point_count": 203941,
+      "point_upload": 0.0,
+      "positive_face_count": 0,
+      "row_download": 0.0,
+      "traversal": 0.000955804
+    },
+    "vertex_pip_map0_in_map1": {
+      "mode": "face_ids_device_points",
+      "point_count": 1706639,
+      "point_upload": 0.0,
+      "positive_face_count": 0,
+      "row_download": 0.0,
+      "traversal": 0.004425601
+    },
+    "vertex_pip_map1_in_map0": {
+      "mode": "face_ids_device_points",
+      "point_count": 9993104,
+      "point_upload": 0.0,
+      "positive_face_count": 0,
+      "row_download": 0.0,
+      "traversal": 0.015234188
+    }
+  },
+  "pair_name": "top4_county_zipcode",
+  "phase_seconds": {
+    "assign_midpoint_faces_map0_columnar_sec": 0.0005557667464017868,
+    "assign_midpoint_faces_map1_columnar_sec": 0.0005455333739519119,
+    "destroy_point_location_sessions_sec": 0.21860120445489883,
+    "grouped_compiled_carrier_concatenate_sec": 0.0011885948479175568,
+    "grouped_compiled_carrier_group_offset_cumsum_sec": 0.0016237832605838776,
+    "grouped_compiled_carrier_side0_numba_builder_sec": 0.03005462884902954,
+    "grouped_compiled_carrier_side0_prepare_inputs_sec": 8.284859359264374e-05,
+    "grouped_compiled_carrier_side0_slice_copy_sec": 0.0005398951470851898,
+    "grouped_compiled_carrier_side0_total_sec": 0.030708981677889824,
+    "grouped_compiled_carrier_side1_numba_builder_sec": 0.07254417613148689,
+    "grouped_compiled_carrier_side1_prepare_inputs_sec": 5.779042840003967e-05,
+    "grouped_compiled_carrier_side1_slice_copy_sec": 0.0005976539105176926,
+    "grouped_compiled_carrier_side1_total_sec": 0.07326628640294075,
+    "grouped_compiled_carrier_stats_packaging_sec": 6.694905459880829e-05,
+    "grouped_compiled_columnar_carrier_construction_sec": 0.1068918127566576,
+    "grouped_descriptor_pair_count_consumer_sec": 0.01812361367046833,
+    "intersection_reprojection_device_columnar_sec": 0.2584870681166649,
+    "load_pack_left_sec": 33.33585508167744,
+    "load_pack_right_sec": 62.02731680497527,
+    "lsi_bounded_exact_pair_id_device_columns_sec": 2.980284444987774,
+    "midpoint_pip_map0_face_id_device_columns_sec": 0.001107543706893921,
+    "midpoint_pip_map0_face_id_device_columns_to_numpy_sec": 0.0003569796681404114,
+    "midpoint_pip_map0_prepare_device_points_sec": 0.0022448617964982986,
+    "midpoint_pip_map0_sec": 0.004096467047929764,
+    "midpoint_pip_map1_face_id_device_columns_sec": 0.0010616369545459747,
+    "midpoint_pip_map1_face_id_device_columns_to_numpy_sec": 0.0002395864576101303,
+    "midpoint_pip_map1_prepare_device_points_sec": 0.0020596887916326523,
+    "midpoint_pip_map1_sec": 0.0037385374307632446,
+    "midpoint_points_map0_adjacent_owner_scan_sec": 0.003822648897767067,
+    "midpoint_points_map0_columnar_sec": 0.019012780860066414,
+    "midpoint_points_map0_pack_scaled_points_sec": 0.003949228674173355,
+    "midpoint_points_map0_scaled_midpoint_arrays_sec": 0.010386114940047264,
+    "midpoint_points_map0_world_and_finite_filter_sec": 0.0008174106478691101,
+    "midpoint_points_map1_adjacent_owner_scan_sec": 0.0013310667127370834,
+    "midpoint_points_map1_columnar_sec": 0.01227944903075695,
+    "midpoint_points_map1_pack_scaled_points_sec": 0.005084991455078125,
+    "midpoint_points_map1_scaled_midpoint_arrays_sec": 0.005291644483804703,
+    "midpoint_points_map1_world_and_finite_filter_sec": 0.000547340139746666,
+    "prepare_point_location_map0_in_map1_sec": 3.834675407037139,
+    "prepare_point_location_map1_in_map0_sec": 0.5092598013579845,
+    "shared_bounds_sec": 1.3476237654685974e-05,
+    "sort_map0_device_columnar_sec": 0.0327101219445467,
+    "sort_map1_device_columnar_sec": 0.0941041111946106,
+    "vertex_pip_map0_in_map1_face_id_device_columns_sec": 0.004621332511305809,
+    "vertex_pip_map0_in_map1_face_id_device_columns_to_numpy_sec": 0.0026206430047750473,
+    "vertex_pip_map0_in_map1_prepare_device_points_sec": 0.06233738921582699,
+    "vertex_pip_map0_in_map1_sec": 0.07062317058444023,
+    "vertex_pip_map1_in_map0_face_id_device_columns_sec": 0.01540212519466877,
+    "vertex_pip_map1_in_map0_face_id_device_columns_to_numpy_sec": 6.461517445743084,
+    "vertex_pip_map1_in_map0_prepare_device_points_sec": 0.32632783241569996,
+    "vertex_pip_map1_in_map0_sec": 6.80584017932415
+  },
+  "point_location_device_face_column_metadata": {
+    "midpoint_pip_map0": {
+      "device_columns": {
+        "app_specific_schema_allowed": false,
+        "capacity": 209559,
+        "device_ordinal": 0,
+        "device_resident": true,
+        "dtype": "uint32",
+        "engine_boundary": "generic_directed_point_location_id_column",
+        "field_name": "face_id",
+        "ids_device_ptr_observed": true,
+        "native_symbol": "rtdl_optix_prepared_directed_segment_point_location_2d_device_face_id_columns",
+        "overflow": false,
+        "owner": "prepared_point_location_query_points",
+        "producer_primitive": "directed_segment_point_location_2d",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "row_count": 209559,
+        "schema": "rtdl.optix.directed_point_location_device_id_column.v1",
+        "traversal_seconds": 0.000986132,
+        "true_zero_copy_claim_authorized": false
+      },
+      "downstream_numpy_copy_used": true,
+      "row_buffer": {
+        "api_maturity": "experimental_reuse_adapter_no_release_claim",
+        "app_specific_schema_allowed": false,
+        "claim_boundary": "This row-buffer adapter reuses the v2.5/v2.6 device-column and neutral partner handoff contracts. It validates named primitive-output columns for explicit CuPy/Numba continuation planning. It does not execute the partner continuation, authorize true-zero-copy wording, authorize speedup wording, or promote any app-specific output schema into RTDL core.",
+        "column_count": 1,
+        "column_records": [
+          {
+            "device_resident_candidate": true,
+            "has_cuda_array_interface": true,
+            "has_dlpack": false,
+            "length": 209559,
+            "name": "face_id",
+            "source_protocol": "cuda_array_interface"
+          }
+        ],
+        "columns": [
+          "face_id"
+        ],
+        "contract_version": "rtdl.device_column_row_buffer.v2_14_2.layer1",
+        "device_resident_candidate": true,
+        "engine_boundary": "generic_app_agnostic_primitive_output_columns",
+        "host_rows_materialized_before_partner_handoff": false,
+        "materializes_host_rows_for_bridge": false,
+        "native_device_column_output_proven_on_hardware": true,
+        "neutral_partner_handoff_version": "rtdl.v2_6.neutral_partner_handoff.v1",
+        "phase_timing_seconds": {
+          "rt_traversal": 0.000986132
+        },
+        "producer": "rtdl_optix_prepared_directed_segment_point_location_2d_device_face_id_columns",
+        "producer_consumer_stream_ordering": "host_synchronized_before_consumer",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "reuses_v2_5_device_column_contract": true,
+        "row_count": 209559,
+        "source_mode": "native_device_columns",
+        "stream_synchronization_proven": true,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "true_zero_copy_claim_authorized": false
+    },
+    "midpoint_pip_map1": {
+      "device_columns": {
+        "app_specific_schema_allowed": false,
+        "capacity": 203941,
+        "device_ordinal": 0,
+        "device_resident": true,
+        "dtype": "uint32",
+        "engine_boundary": "generic_directed_point_location_id_column",
+        "field_name": "face_id",
+        "ids_device_ptr_observed": true,
+        "native_symbol": "rtdl_optix_prepared_directed_segment_point_location_2d_device_face_id_columns",
+        "overflow": false,
+        "owner": "prepared_point_location_query_points",
+        "producer_primitive": "directed_segment_point_location_2d",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "row_count": 203941,
+        "schema": "rtdl.optix.directed_point_location_device_id_column.v1",
+        "traversal_seconds": 0.000955804,
+        "true_zero_copy_claim_authorized": false
+      },
+      "downstream_numpy_copy_used": true,
+      "row_buffer": {
+        "api_maturity": "experimental_reuse_adapter_no_release_claim",
+        "app_specific_schema_allowed": false,
+        "claim_boundary": "This row-buffer adapter reuses the v2.5/v2.6 device-column and neutral partner handoff contracts. It validates named primitive-output columns for explicit CuPy/Numba continuation planning. It does not execute the partner continuation, authorize true-zero-copy wording, authorize speedup wording, or promote any app-specific output schema into RTDL core.",
+        "column_count": 1,
+        "column_records": [
+          {
+            "device_resident_candidate": true,
+            "has_cuda_array_interface": true,
+            "has_dlpack": false,
+            "length": 203941,
+            "name": "face_id",
+            "source_protocol": "cuda_array_interface"
+          }
+        ],
+        "columns": [
+          "face_id"
+        ],
+        "contract_version": "rtdl.device_column_row_buffer.v2_14_2.layer1",
+        "device_resident_candidate": true,
+        "engine_boundary": "generic_app_agnostic_primitive_output_columns",
+        "host_rows_materialized_before_partner_handoff": false,
+        "materializes_host_rows_for_bridge": false,
+        "native_device_column_output_proven_on_hardware": true,
+        "neutral_partner_handoff_version": "rtdl.v2_6.neutral_partner_handoff.v1",
+        "phase_timing_seconds": {
+          "rt_traversal": 0.000955804
+        },
+        "producer": "rtdl_optix_prepared_directed_segment_point_location_2d_device_face_id_columns",
+        "producer_consumer_stream_ordering": "host_synchronized_before_consumer",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "reuses_v2_5_device_column_contract": true,
+        "row_count": 203941,
+        "source_mode": "native_device_columns",
+        "stream_synchronization_proven": true,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "true_zero_copy_claim_authorized": false
+    },
+    "vertex_pip_map0_in_map1": {
+      "device_columns": {
+        "app_specific_schema_allowed": false,
+        "capacity": 1706639,
+        "device_ordinal": 0,
+        "device_resident": true,
+        "dtype": "uint32",
+        "engine_boundary": "generic_directed_point_location_id_column",
+        "field_name": "face_id",
+        "ids_device_ptr_observed": true,
+        "native_symbol": "rtdl_optix_prepared_directed_segment_point_location_2d_device_face_id_columns",
+        "overflow": false,
+        "owner": "prepared_point_location_query_points",
+        "producer_primitive": "directed_segment_point_location_2d",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "row_count": 1706639,
+        "schema": "rtdl.optix.directed_point_location_device_id_column.v1",
+        "traversal_seconds": 0.004425601,
+        "true_zero_copy_claim_authorized": false
+      },
+      "downstream_numpy_copy_used": true,
+      "row_buffer": {
+        "api_maturity": "experimental_reuse_adapter_no_release_claim",
+        "app_specific_schema_allowed": false,
+        "claim_boundary": "This row-buffer adapter reuses the v2.5/v2.6 device-column and neutral partner handoff contracts. It validates named primitive-output columns for explicit CuPy/Numba continuation planning. It does not execute the partner continuation, authorize true-zero-copy wording, authorize speedup wording, or promote any app-specific output schema into RTDL core.",
+        "column_count": 1,
+        "column_records": [
+          {
+            "device_resident_candidate": true,
+            "has_cuda_array_interface": true,
+            "has_dlpack": false,
+            "length": 1706639,
+            "name": "face_id",
+            "source_protocol": "cuda_array_interface"
+          }
+        ],
+        "columns": [
+          "face_id"
+        ],
+        "contract_version": "rtdl.device_column_row_buffer.v2_14_2.layer1",
+        "device_resident_candidate": true,
+        "engine_boundary": "generic_app_agnostic_primitive_output_columns",
+        "host_rows_materialized_before_partner_handoff": false,
+        "materializes_host_rows_for_bridge": false,
+        "native_device_column_output_proven_on_hardware": true,
+        "neutral_partner_handoff_version": "rtdl.v2_6.neutral_partner_handoff.v1",
+        "phase_timing_seconds": {
+          "rt_traversal": 0.004425601
+        },
+        "producer": "rtdl_optix_prepared_directed_segment_point_location_2d_device_face_id_columns",
+        "producer_consumer_stream_ordering": "host_synchronized_before_consumer",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "reuses_v2_5_device_column_contract": true,
+        "row_count": 1706639,
+        "source_mode": "native_device_columns",
+        "stream_synchronization_proven": true,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "true_zero_copy_claim_authorized": false
+    },
+    "vertex_pip_map1_in_map0": {
+      "device_columns": {
+        "app_specific_schema_allowed": false,
+        "capacity": 9993104,
+        "device_ordinal": 0,
+        "device_resident": true,
+        "dtype": "uint32",
+        "engine_boundary": "generic_directed_point_location_id_column",
+        "field_name": "face_id",
+        "ids_device_ptr_observed": true,
+        "native_symbol": "rtdl_optix_prepared_directed_segment_point_location_2d_device_face_id_columns",
+        "overflow": false,
+        "owner": "prepared_point_location_query_points",
+        "producer_primitive": "directed_segment_point_location_2d",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "row_count": 9993104,
+        "schema": "rtdl.optix.directed_point_location_device_id_column.v1",
+        "traversal_seconds": 0.015234188,
+        "true_zero_copy_claim_authorized": false
+      },
+      "downstream_numpy_copy_used": true,
+      "row_buffer": {
+        "api_maturity": "experimental_reuse_adapter_no_release_claim",
+        "app_specific_schema_allowed": false,
+        "claim_boundary": "This row-buffer adapter reuses the v2.5/v2.6 device-column and neutral partner handoff contracts. It validates named primitive-output columns for explicit CuPy/Numba continuation planning. It does not execute the partner continuation, authorize true-zero-copy wording, authorize speedup wording, or promote any app-specific output schema into RTDL core.",
+        "column_count": 1,
+        "column_records": [
+          {
+            "device_resident_candidate": true,
+            "has_cuda_array_interface": true,
+            "has_dlpack": false,
+            "length": 9993104,
+            "name": "face_id",
+            "source_protocol": "cuda_array_interface"
+          }
+        ],
+        "columns": [
+          "face_id"
+        ],
+        "contract_version": "rtdl.device_column_row_buffer.v2_14_2.layer1",
+        "device_resident_candidate": true,
+        "engine_boundary": "generic_app_agnostic_primitive_output_columns",
+        "host_rows_materialized_before_partner_handoff": false,
+        "materializes_host_rows_for_bridge": false,
+        "native_device_column_output_proven_on_hardware": true,
+        "neutral_partner_handoff_version": "rtdl.v2_6.neutral_partner_handoff.v1",
+        "phase_timing_seconds": {
+          "rt_traversal": 0.015234188
+        },
+        "producer": "rtdl_optix_prepared_directed_segment_point_location_2d_device_face_id_columns",
+        "producer_consumer_stream_ordering": "host_synchronized_before_consumer",
+        "public_speedup_claim_authorized": false,
+        "release_authorized": false,
+        "reuses_v2_5_device_column_contract": true,
+        "row_count": 9993104,
+        "source_mode": "native_device_columns",
+        "stream_synchronization_proven": true,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "true_zero_copy_claim_authorized": false
+    }
+  },
+  "right": {
+    "chains": 10144,
+    "edges": 9982960,
+    "path": "Paper-reproduction-apps/rayjoin-paper/_data/top4_arcgis/top4_zipcode.cdb",
+    "points": 9993104
+  },
+  "route": "device_columnar_xsect_numeric_binary_descriptor_route_public_lsi_pip_numba_consumer",
+  "scale_bounds": [
+    -124.415163,
+    -71.85615,
+    25.837092,
+    45.015851
+  ],
+  "schema": "rtdl.paper_reproduction.rayjoin.section57_columnar_binary.v1",
+  "vertex_positive_counts": {
+    "side0_in_side1": 812721,
+    "side1_in_side0": 4527305
+  },
+  "writer_free_hot_keys": [
+    "lsi_bounded_exact_pair_id_device_columns_sec",
+    "",
+    "intersection_reprojection_device_columnar_sec",
+    "sort_map0_device_columnar_sec",
+    "sort_map1_device_columnar_sec",
+    "vertex_pip_map0_in_map1_sec",
+    "vertex_pip_map1_in_map0_sec",
+    "midpoint_points_map0_columnar_sec",
+    "midpoint_points_map1_columnar_sec",
+    "midpoint_pip_map0_sec",
+    "midpoint_pip_map1_sec",
+    "assign_midpoint_faces_map0_columnar_sec",
+    "assign_midpoint_faces_map1_columnar_sec",
+    "grouped_compiled_columnar_carrier_construction_sec",
+    "grouped_descriptor_pair_count_consumer_sec"
+  ],
+  "writer_free_hot_sec": 10.407293057069182,
+  "writer_free_hot_vs_author_overlay_compute_ratio": null,
+  "xsect_sorted_counts": {
+    "side0": 428322,
+    "side1": 428322
+  }
+}

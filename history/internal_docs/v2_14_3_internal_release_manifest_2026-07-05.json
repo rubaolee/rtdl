@@ -1,0 +1,55 @@
+{
+  "schema": "rtdl.v2_14_3.internal_release_manifest.v1",
+  "date": "2026-07-05",
+  "status": "internal_release_staged",
+  "release_label": "internal_release_v2_14_3_staged_with_bounded_rayjoin_performance",
+  "scope": {
+    "included": [
+      "RayJoin writer-free binary overlay route",
+      "top4 County x Zipcode representative performance evidence",
+      "prepared-base same-domain distinct-query evidence",
+      "generic RTDL LSI and point-location route boundaries",
+      "internal reports, probes, JSON artifacts, and tests"
+    ],
+    "not_included": [
+      "author performance parity",
+      "10x performance claim",
+      "full device-resident execution claim",
+      "zero-copy claim",
+      "same-input replay as query-many",
+      "top4 author ratio"
+    ]
+  },
+  "canonical_numbers": {
+    "cold_cli_one_shot_median_sec_observed_noisy": 11.6,
+    "warm_process_fresh_fast_pack_sec": 4.22,
+    "prepared_same_domain_distinct_query_sec_per_query": 1.22,
+    "left_locator_prepare_floor_sec_per_query": 0.46
+  },
+  "stopped_tracks": {
+    "device_resident_carrier": "stopped_for_v2_14_3_performance",
+    "ten_x_target": "not_achieved_in_v2_14_3"
+  },
+  "cleanup": {
+    "final_pycache_removed": 0,
+    "public_surface_leak_scan": "no_matches",
+    "dirty_tree_policy": "project_state_retained_not_cache"
+  },
+  "primary_documents": [
+    "history/internal_docs/v2_14_3_internal_release_packet_2026-07-05.md",
+    "history/internal_docs/goal5014_v2_14_3_performance_stabilization_closeout_2026-07-05.md",
+    "history/internal_docs/v2_14_3_rayjoin_performance_canonical_numbers_2026-07-05.json",
+    "history/internal_docs/goal5013_point_location_locator_prepare_result_2026-07-05.md",
+    "history/internal_docs/goal5010_5012_point_location_query_many_result_2026-07-05.md",
+    "history/internal_docs/goal5005_owner_directive_fresh_headline_and_device_resident_gate_2026-07-05.md"
+  ],
+  "allowed_summary": "v2.14.3 internally stabilizes the RayJoin writer-free binary route at about 4.22s warm-process fresh top4 overlay and about 1.22s/query for prepared-base same-domain distinct-query batches; 10x is not achieved.",
+  "forbidden_claims": [
+    "author parity",
+    "10x",
+    "zero-copy",
+    "full device-resident",
+    "same-input replay as query-many",
+    "top4 author ratio"
+  ]
+}

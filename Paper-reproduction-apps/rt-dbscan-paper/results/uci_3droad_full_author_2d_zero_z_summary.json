@@ -1,0 +1,31 @@
+{
+  "author_input_contract": "sample02-rtdbscan [inFile] [size] [eps] [minPts] [outFile]",
+  "bounds": {
+    "x": [
+      8.1461259,
+      11.1993265
+    ],
+    "y": [
+      56.5824856,
+      57.750511
+    ],
+    "z": [
+      0.0,
+      0.0
+    ]
+  },
+  "claim_boundary": [
+    "UCI 3DRoad same-source candidate only.",
+    "Not the author's packaged 3droad_full.csv.",
+    "Not exact RT-DBSCAN paper input provenance."
+  ],
+  "limit": null,
+  "mode": "paper_2d_zero_z",
+  "output": "Paper-reproduction-apps\\rt-dbscan-paper\\data\\fixtures\\uci_3droad_full_author_2d_zero_z.csv",
+  "output_sha256": "609cb1fba1268645f8b94c59fb4e250c151ad9573a7bd4dc5c088208d87ead84",
+  "row_count": 434874,
+  "schema": "rtdl.paper_reproduction.rt_dbscan.uci_3droad_author_input_candidate.v1",
+  "source": "Paper-reproduction-apps\\rt-dbscan-paper\\data\\source\\uci_3droad\\3D_spatial_network.txt",
+  "source_sha256": "d83303a61dc3c9d0842df2c7e5b496ec29aafa2080a430253acb8411cae789dc",
+  "status": "same_source_candidate_not_exact_paper_input"
+}

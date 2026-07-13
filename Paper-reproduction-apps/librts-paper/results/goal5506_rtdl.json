@@ -1,0 +1,1 @@
+{"schema": "rtdl.paper_reproduction.librts.goal5506_rtdl_runtime_observation.v1", "geometry_count": 128, "query_count": 64, "result_count": 20, "prepare_sec": 1.0791493600117974, "query_wall_sec": 0.3867072170251049, "primitive_query_sec": 0.38653205399168655, "backend": "optix", "rt_core_accelerated": true}

@@ -1,0 +1,329 @@
+{
+    "Check": {
+        "Diff": 0.0,
+        "HDAnswer": 52.453487396240234,
+        "Pass": true
+    },
+    "DateTime": "2026-07-10 06:58:01",
+    "GPU": {
+        "Device": 0,
+        "name": "NVIDIA RTX 4000 Ada Generation"
+    },
+    "HDResult": 52.453487396240234,
+    "Input": {
+        "Files": [
+            {
+                "Density": 161400144.0,
+                "MBR": [
+                    {
+                        "Lower": 0.0,
+                        "Upper": 0.2048902064561844
+                    },
+                    {
+                        "Lower": 0.0,
+                        "Upper": 0.14444349706172943
+                    },
+                    {
+                        "Lower": 0.0,
+                        "Upper": 0.09162180125713348
+                    }
+                ],
+                "NumPoints": 437645,
+                "Path": "/tmp/xhd_goal5234/data/dragon.ply"
+            },
+            {
+                "Density": 1.1900925636291504,
+                "MBR": [
+                    {
+                        "Lower": 0.0,
+                        "Upper": 201.7435302734375
+                    },
+                    {
+                        "Lower": 0.0,
+                        "Upper": 112.0262680053711
+                    },
+                    {
+                        "Lower": 0.0,
+                        "Upper": 134.2019500732422
+                    }
+                ],
+                "NumPoints": 3609600,
+                "Path": "/tmp/xhd_goal5234/data/asian_dragon.ply"
+            }
+        ],
+        "Limit": 2147483647,
+        "Normalize": false,
+        "NumDims": 3,
+        "SerializationPrefix": "/tmp/xhd-goal5387/ser",
+        "Translate": 0.0,
+        "Type": "Float"
+    },
+    "Running": {
+        "AvgTime": 608.585,
+        "EB": true,
+        "FastBuildBVH": false,
+        "LB": 256,
+        "NumPointsPerCell": 15,
+        "Prune": true,
+        "RebuildBVH": false,
+        "Repeats": [
+            {
+                "Algorithm": "XHD",
+                "BVHBuildTime": 0.725,
+                "Cells": 7466,
+                "Execution": "GPU",
+                "GridResolution": [
+                    74,
+                    41,
+                    50
+                ],
+                "HDLowerBound": 0.0,
+                "HDUpperBound": 242.3027801513672,
+                "InitRadius": 3.9947454929351807,
+                "Iterations": [
+                    {
+                        "AdjustBVHTime": 0.133,
+                        "CMax2": 0.0,
+                        "CUDATime": 7.366,
+                        "ComparedPoints": 0,
+                        "Hits": 0,
+                        "Iteration": 1,
+                        "LBTraceV2": {
+                            "ActiveInQueueSize": 437645,
+                            "Batches": [
+                                {
+                                    "active_in_queue_size": 437645,
+                                    "batch_index": 0,
+                                    "cmax2_after_load_balance": 0.0,
+                                    "cmax2_after_ray": 0.0,
+                                    "cmax2_before_ray": 0.0,
+                                    "cmax2_mbr_abort_count": 0,
+                                    "cmin2_after_load_balance_hash": 5369460447013261471,
+                                    "cmin2_after_load_balance_samples": [
+                                        3.4028234663852886e+38,
+                                        3.4028234663852886e+38,
+                                        3.4028234663852886e+38
+                                    ],
+                                    "cmin2_after_ray_hash": 5369460447013261471,
+                                    "cmin2_after_ray_samples": [
+                                        3.4028234663852886e+38,
+                                        3.4028234663852886e+38,
+                                        3.4028234663852886e+38
+                                    ],
+                                    "cmin2_initial_hash": 5369460447013261471,
+                                    "cmin2_initial_samples": [
+                                        3.4028234663852886e+38,
+                                        3.4028234663852886e+38,
+                                        3.4028234663852886e+38
+                                    ],
+                                    "cmin2_sample_indices": [
+                                        0,
+                                        218822,
+                                        437644
+                                    ],
+                                    "iteration_index": 1,
+                                    "load_balance_feedback_update_count": 0,
+                                    "load_balance_group_count": 0,
+                                    "load_balance_input_row_count": 0,
+                                    "point_loop_early_break_count": 0,
+                                    "radius": 3.9947454929351807,
+                                    "raw_offload_row_hash": 1469598103934665603,
+                                    "raw_offload_row_sample_cell_ids": [],
+                                    "raw_offload_row_sample_point_ids": [],
+                                    "raw_offload_rows_before_sort_reduce": 0,
+                                    "status_count_aborted": 0,
+                                    "status_count_completed": 0,
+                                    "status_count_init": 437645,
+                                    "status_count_miss": 437645,
+                                    "status_count_offloading": 0
+                                }
+                            ],
+                            "LoadBalanceFeedbackUpdateCount": 0,
+                            "RawOffloadRowsBeforeSortReduce": 0,
+                            "Schema": "rtdl.goal5385.author.lb_status_trace.v2",
+                            "StatusAbortedCount": 0,
+                            "StatusCmax2MbrAbortCount": 0,
+                            "StatusCompletedCount": 0,
+                            "StatusInitCount": 437645,
+                            "StatusMissCount": 437645,
+                            "StatusOffloadingAppendCount": 0,
+                            "StatusPointLoopEarlyBreakCount": 0
+                        },
+                        "NumInputPoints": 437645,
+                        "NumOutputPoints": 437645,
+                        "OffloadingSize": 0,
+                        "RTTime": 3.358,
+                        "Radius": 3.9947454929351807
+                    },
+                    {
+                        "AdjustBVHTime": 0.089,
+                        "CMax2": 0.0,
+                        "CUDATime": 7.161,
+                        "ComparedPoints": 0,
+                        "Hits": 14004640,
+                        "Iteration": 2,
+                        "LBTraceV2": {
+                            "ActiveInQueueSize": 437645,
+                            "Batches": [
+                                {
+                                    "active_in_queue_size": 437645,
+                                    "batch_index": 0,
+                                    "cmax2_after_load_balance": 0.0,
+                                    "cmax2_after_ray": 0.0,
+                                    "cmax2_before_ray": 0.0,
+                                    "cmax2_mbr_abort_count": 0,
+                                    "cmin2_after_load_balance_hash": 5369460447013261471,
+                                    "cmin2_after_load_balance_samples": [
+                                        3.4028234663852886e+38,
+                                        3.4028234663852886e+38,
+                                        3.4028234663852886e+38
+                                    ],
+                                    "cmin2_after_ray_hash": 5369460447013261471,
+                                    "cmin2_after_ray_samples": [
+                                        3.4028234663852886e+38,
+                                        3.4028234663852886e+38,
+                                        3.4028234663852886e+38
+                                    ],
+                                    "cmin2_initial_hash": 5369460447013261471,
+                                    "cmin2_initial_samples": [
+                                        3.4028234663852886e+38,
+                                        3.4028234663852886e+38,
+                                        3.4028234663852886e+38
+                                    ],
+                                    "cmin2_sample_indices": [
+                                        0,
+                                        218822,
+                                        437644
+                                    ],
+                                    "iteration_index": 2,
+                                    "load_balance_feedback_update_count": 0,
+                                    "load_balance_group_count": 0,
+                                    "load_balance_input_row_count": 0,
+                                    "point_loop_early_break_count": 0,
+                                    "radius": 41.605220794677734,
+                                    "raw_offload_row_hash": 1469598103934665603,
+                                    "raw_offload_row_sample_cell_ids": [],
+                                    "raw_offload_row_sample_point_ids": [],
+                                    "raw_offload_rows_before_sort_reduce": 0,
+                                    "status_count_aborted": 0,
+                                    "status_count_completed": 0,
+                                    "status_count_init": 437645,
+                                    "status_count_miss": 437645,
+                                    "status_count_offloading": 0
+                                }
+                            ],
+                            "LoadBalanceFeedbackUpdateCount": 0,
+                            "RawOffloadRowsBeforeSortReduce": 0,
+                            "Schema": "rtdl.goal5385.author.lb_status_trace.v2",
+                            "StatusAbortedCount": 0,
+                            "StatusCmax2MbrAbortCount": 0,
+                            "StatusCompletedCount": 0,
+                            "StatusInitCount": 437645,
+                            "StatusMissCount": 437645,
+                            "StatusOffloadingAppendCount": 0,
+                            "StatusPointLoopEarlyBreakCount": 0
+                        },
+                        "NumInputPoints": 437645,
+                        "NumOutputPoints": 437645,
+                        "OffloadingSize": 0,
+                        "RTTime": 0.968,
+                        "Radius": 41.605220794677734
+                    },
+                    {
+                        "CMax2": 2751.368408203125,
+                        "CUDATime": 511.578,
+                        "ComparedPoints": 1242781559,
+                        "Hits": 896287932,
+                        "Iteration": 3,
+                        "LBTraceV2": {
+                            "ActiveInQueueSize": 437645,
+                            "Batches": [
+                                {
+                                    "active_in_queue_size": 437645,
+                                    "batch_index": 0,
+                                    "cmax2_after_load_balance": 2751.368408203125,
+                                    "cmax2_after_ray": 0.0,
+                                    "cmax2_before_ray": 0.0,
+                                    "cmax2_mbr_abort_count": 0,
+                                    "cmin2_after_load_balance_hash": 10400538358226239013,
+                                    "cmin2_after_load_balance_samples": [
+                                        2765.849853515625,
+                                        2762.239501953125,
+                                        2764.1494140625
+                                    ],
+                                    "cmin2_after_ray_hash": 10400538358226239013,
+                                    "cmin2_after_ray_samples": [
+                                        2765.849853515625,
+                                        2762.239501953125,
+                                        2764.1494140625
+                                    ],
+                                    "cmin2_initial_hash": 5369460447013261471,
+                                    "cmin2_initial_samples": [
+                                        3.4028234663852886e+38,
+                                        3.4028234663852886e+38,
+                                        3.4028234663852886e+38
+                                    ],
+                                    "cmin2_sample_indices": [
+                                        0,
+                                        218822,
+                                        437644
+                                    ],
+                                    "iteration_index": 3,
+                                    "load_balance_feedback_update_count": 294,
+                                    "load_balance_group_count": 437645,
+                                    "load_balance_input_row_count": 27133990,
+                                    "point_loop_early_break_count": 0,
+                                    "radius": 79.2156982421875,
+                                    "raw_offload_row_hash": 4333109858711462591,
+                                    "raw_offload_row_sample_cell_ids": [
+                                        2924,
+                                        17,
+                                        17
+                                    ],
+                                    "raw_offload_row_sample_point_ids": [
+                                        11168,
+                                        210712,
+                                        437119
+                                    ],
+                                    "raw_offload_rows_before_sort_reduce": 27133990,
+                                    "status_count_aborted": 0,
+                                    "status_count_completed": 0,
+                                    "status_count_init": 437645,
+                                    "status_count_miss": 0,
+                                    "status_count_offloading": 27133990
+                                }
+                            ],
+                            "LoadBalanceFeedbackUpdateCount": 294,
+                            "RawOffloadRowsBeforeSortReduce": 27133990,
+                            "Schema": "rtdl.goal5385.author.lb_status_trace.v2",
+                            "StatusAbortedCount": 0,
+                            "StatusCmax2MbrAbortCount": 0,
+                            "StatusCompletedCount": 0,
+                            "StatusInitCount": 437645,
+                            "StatusMissCount": 0,
+                            "StatusOffloadingAppendCount": 27133990,
+                            "StatusPointLoopEarlyBreakCount": 0
+                        },
+                        "NumInputPoints": 437645,
+                        "NumOutputPoints": 0,
+                        "OffloadingSize": 27133990,
+                        "RTTime": 46.212,
+                        "Radius": 79.2156982421875
+                    }
+                ],
+                "LargeCells": 5060,
+                "Memory": {
+                    "BVH": 367872,
+                    "Grid": 14527996,
+                    "MBRs B": 179184,
+                    "WL": 3501160,
+                    "WL Heavy Peak": 217071920
+                },
+                "Profiling": true,
+                "Repeat": 1,
+                "ReportedTime": 608.585
+            }
+        ],
+        "Seed": 0
+    }
+}

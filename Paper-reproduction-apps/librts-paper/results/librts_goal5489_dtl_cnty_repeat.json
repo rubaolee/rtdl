@@ -1,0 +1,103 @@
+{
+  "author": {
+    "command": [
+      "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+      "-geom",
+      "/workspace/librts-targets/point-contains-dtl-cnty/PPoPPAE/datasets/polygons/dtl_cnty.wkt",
+      "-query",
+      "/workspace/librts-targets/point-contains-dtl-cnty/PPoPPAE/datasets/queries/point-contains_queries_100000/dtl_cnty.wkt",
+      "-serialize",
+      "/workspace/librts-serialize/goal5489/dtl_cnty",
+      "-query_type",
+      "point-contains",
+      "-index_type",
+      "rtspatial",
+      "-load_factor",
+      "0.0001"
+    ],
+    "geometry_count": 12234,
+    "loading_ms_diagnostic": 0.4252,
+    "pair_rows_exposed": false,
+    "query_count": 100000,
+    "query_metric": "internal Query Time; index Loading Time excluded",
+    "query_ms_internal": 0.0852,
+    "result_count": 136475,
+    "stdout": "Loaded polygons 12234\nLoaded queries 100000\nLoading Time 0.4252 ms\nGeoms 12234\nQueries 100000\nQuery Time 0.0852 ms\nResults 136475\nSelectivity: 0.000111554\n"
+  },
+  "claim_boundary": {
+    "complete_paper_reproduction_claimed": false,
+    "device_zero_copy_claimed": false,
+    "embree_in_scope": false,
+    "exact_archive_and_extracted_input_identity_used": true,
+    "figure6_reproduced": false,
+    "generic_columnar_frontdoor_used": true,
+    "performance_ratio_authorized": false,
+    "pointwise_containment_equivalence_claimed": false,
+    "same_input_result_count_agreement": true,
+    "same_process_reuse_diagnostic": true
+  },
+  "input_identity": {
+    "geometry_path": "/workspace/librts-targets/point-contains-dtl-cnty/PPoPPAE/datasets/polygons/dtl_cnty.wkt",
+    "geometry_sha256": "9177fdff45f24488f22157a2a1428a7cdb9d5a66a7287d4013ead52de1c7973f",
+    "query_path": "/workspace/librts-targets/point-contains-dtl-cnty/PPoPPAE/datasets/queries/point-contains_queries_100000/dtl_cnty.wkt",
+    "query_sha256": "95241f4e3f03c6dcea31b80e785a9729d4a4aaefeb82302e761b59d9c4fe39d3",
+    "same_files_passed_to_author_and_rtdl": true,
+    "verified_extraction_root": "/workspace/librts-targets/point-contains-dtl-cnty"
+  },
+  "matched": true,
+  "phase_boundary": {
+    "author_query_excludes_loading": true,
+    "performance_ratio_authorized": false,
+    "rtdl_repeated_queries_exclude_wkt_load_and_index_prepare": true,
+    "same_process_reuse_only": true
+  },
+  "repeat": 3,
+  "rtdl": {
+    "input_contract": "generic_host_aabb_2d_columns",
+    "load_wkt_sec": 27.99431311499211,
+    "operation": "point_contains",
+    "prepare_index_sec": 0.44322872400516644,
+    "primitive_query_summary": {
+      "all_median_sec": 0.07046397001249716,
+      "first_sec": 0.20187769600306638,
+      "subsequent_median_sec": 0.06975913001224399
+    },
+    "public_api": "Aabb2DColumns + prepare_aabb_index_2d_columns + prepared.count",
+    "queries": [
+      {
+        "backend": "optix",
+        "iteration": 1,
+        "matched_author_count": true,
+        "prepared_query_wall_sec": 0.36920273897703737,
+        "primitive_query_sec": 0.20187769600306638,
+        "result_count": 136475,
+        "rt_core_accelerated": true
+      },
+      {
+        "backend": "optix",
+        "iteration": 2,
+        "matched_author_count": true,
+        "prepared_query_wall_sec": 0.21972898597596213,
+        "primitive_query_sec": 0.07046397001249716,
+        "result_count": 136475,
+        "rt_core_accelerated": true
+      },
+      {
+        "backend": "optix",
+        "iteration": 3,
+        "matched_author_count": true,
+        "prepared_query_wall_sec": 0.21774402100709267,
+        "primitive_query_sec": 0.06905429001199082,
+        "result_count": 136475,
+        "rt_core_accelerated": true
+      }
+    ],
+    "query_wall_summary": {
+      "all_median_sec": 0.21972898597596213,
+      "first_sec": 0.36920273897703737,
+      "subsequent_median_sec": 0.2187365034915274
+    }
+  },
+  "schema": "rtdl.paper_reproduction.librts.exact_point_contains_prepared_phase_columns_repeat.v1",
+  "status": "exact_input_point_contains_prepared_phase_columns_repeat_matched"
+}

@@ -1,0 +1,119 @@
+{
+  "claim_boundary": {
+    "author_rtdl_correctness_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "full_public_wkt_candidate_claimed": true,
+    "geo_figure5_reproduction_claimed": false,
+    "performance_ratio_claimed": false
+  },
+  "comparison_readiness": {
+    "author_hd_exec_ready": true,
+    "reason": "Full-public WKT materialization only; author/RTDL execution must be a separate reviewed gate.",
+    "rtdl_route_ready": true
+  },
+  "elapsed_sec": 1259.5752560999244,
+  "goal": "Goal5310",
+  "max_pages": null,
+  "page_size_requested": 2000,
+  "pair": "USADetailedWaterBodies.wkt -> USACensusBlockGroupBoundaries.wkt",
+  "schema": "rtdl.paper_reproduction.xhd.goal5310.water_bg_full_public_wkt_candidate.v1",
+  "services": {
+    "blockgroups": {
+      "author_loader_point_count": 52271467,
+      "checkpoint_features_seen_at_start": 0,
+      "complete": true,
+      "elapsed_sec": 777.3617318999022,
+      "features_seen": 239203,
+      "geometry_types": {
+        "MultiPolygon": 2237,
+        "Polygon": 236966
+      },
+      "key": "blockgroups",
+      "mbr": [
+        -179.148909000445,
+        -66.9496079221226,
+        18.9106929999612,
+        71.3651620001228
+      ],
+      "mbr_delta": {
+        "x_lower": 1.5220159355067153e-06,
+        "x_upper": -7.300150173250586e-08,
+        "y_lower": 7.849953789218489e-07,
+        "y_upper": -3.7103264247662082e-06
+      },
+      "object_id_max": 239203,
+      "object_id_min": 1,
+      "output_bytes": 1560257609,
+      "output_wkt": "Paper-reproduction-apps\\x-hd-paper\\data\\generated\\goal5310_water_bg_full_public_wkt_candidate\\USACensusBlockGroupBoundaries.wkt.full_public_arcgis_candidate.wkt",
+      "pages_seen": 120,
+      "paper_basename": "USACensusBlockGroupBoundaries.wkt",
+      "paper_mbr": {
+        "x": [
+          -179.14891052246094,
+          -66.9496078491211
+        ],
+        "y": [
+          18.91069221496582,
+          71.36516571044922
+        ]
+      },
+      "paper_point_count": 52271340,
+      "point_count_delta": 127,
+      "point_count_relative_delta": 2.4296296976507585e-06,
+      "resumed_from_checkpoint": false,
+      "service_feature_count": 239203,
+      "service_url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Census_BlockGroups/FeatureServer",
+      "sha256": "8a1d3cd848083e5182de81521f07d8850c597910320250066d850928b017e66e"
+    },
+    "waterbodies": {
+      "author_loader_point_count": 22824823,
+      "checkpoint_features_seen_at_start": 0,
+      "complete": true,
+      "elapsed_sec": 482.2134894002229,
+      "features_seen": 463591,
+      "geometry_types": {
+        "MultiPolygon": 1,
+        "Polygon": 463590
+      },
+      "key": "waterbodies",
+      "mbr": [
+        -160.231107166363,
+        -66.997866677705,
+        19.2039983241634,
+        49.384333060713
+      ],
+      "mbr_delta": {
+        "x_lower": 2.4527776361082942e-06,
+        "x_upper": -2.9081737551450715e-06,
+        "y_lower": -2.4151042765652164e-07,
+        "y_upper": -1.5034959872650688e-06
+      },
+      "object_id_max": 463591,
+      "object_id_min": 1,
+      "output_bytes": 741925630,
+      "output_wkt": "Paper-reproduction-apps\\x-hd-paper\\data\\generated\\goal5310_water_bg_full_public_wkt_candidate\\USADetailedWaterBodies.wkt.full_public_arcgis_candidate.wkt",
+      "pages_seen": 464,
+      "paper_basename": "USADetailedWaterBodies.wkt",
+      "paper_mbr": {
+        "x": [
+          -160.23110961914062,
+          -66.99786376953125
+        ],
+        "y": [
+          19.203998565673828,
+          49.384334564208984
+        ]
+      },
+      "paper_point_count": 22818694,
+      "point_count_delta": 6129,
+      "point_count_relative_delta": 0.0002685955646716679,
+      "resumed_from_checkpoint": false,
+      "service_feature_count": 463591,
+      "service_url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Detailed_Water_Bodies/FeatureServer",
+      "sha256": "0c4ad7d7c1953364478d4940a8eb1696cca24d0dfd6422aafc532b1983f3dd39"
+    }
+  },
+  "source_basis": "Goal5309 strong full-public candidate, not exact paper file/hash provenance",
+  "status": "water_bg_full_public_wkt_candidate_complete"
+}

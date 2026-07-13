@@ -1,0 +1,56 @@
+I20260701 23:05:46.839758 110030 planar_graph.h:215] Map /dev/shm/-workspace-rtdl_goal4806_fast_min-artifacts-goal4806_section57_arcgis_full_us_20260630-dataset-point_cdb-USACensusBlockGroupBoundaries-USACensusBlockGroupBoundaries_Point.cdb.bin is deserialized, chains: 28473338 points: 56946676 edges: 28473338
+I20260701 23:05:57.781551 110030 planar_graph.h:215] Map /dev/shm/-workspace-rtdl_goal4806_fast_min-artifacts-goal4806_section57_arcgis_full_us_20260630-dataset-point_cdb-USADetailedWaterBodies-USADetailedWaterBodies_Point.cdb.bin is deserialized, chains: 22431809 points: 44863618 edges: 22431809
+I20260701 23:05:57.781684 110030 context.h:51] Bounding Box, Bottom-left: (-179.149, 18.9107), Top-right: (-66.9496, 71.3652)
+I20260701 23:05:57.781734 110030 context.h:58] Scaled Bounding Box, Bottom-left: (-69136359329185, -67784245771200), Top-right: (69136359329184, 67784245771199)
+I20260701 23:05:57.781749 110030 context.h:61] Unscaled Bounding Box, Bottom-left: (-179.149, 18.9107), Top-right: (-66.9496, 71.3652)
+I20260701 23:05:58.457916 110030 rt_engine.cu:282] Info: Pipeline statistics
+	module(s)                            :     1
+	entry function(s)                    :     2
+	trace call(s)                        :     1
+	continuation callable call(s)        :     0
+	direct callable call(s)              :     0
+	basic block(s) in entry functions    :    23
+	instruction(s) in entry functions    :   646
+	non-entry function(s)                :     1
+	basic block(s) in non-entry functions:     1
+	instruction(s) in non-entry functions:     1
+	debug information                    :    no
+I20260701 23:05:58.467655 110030 rt_engine.cu:282] Info: Pipeline statistics
+	module(s)                            :     1
+	entry function(s)                    :     2
+	trace call(s)                        :     1
+	continuation callable call(s)        :     0
+	direct callable call(s)              :     0
+	basic block(s) in entry functions    :    61
+	instruction(s) in entry functions    :   966
+	non-entry function(s)                :     1
+	basic block(s) in non-entry functions:     1
+	instruction(s) in non-entry functions:     1
+	debug information                    :    no
+I20260701 23:05:58.494184 110030 primitive.h:256] Enlarge limit: 3.5 max iter:5 ne: 28473338 aabbs: 4219474 Compress ratio: 0.85181 Time: 23.082 ms
+I20260701 23:05:58.494314 110030 rt_engine.cu:397] Building AS, num prims: 4219474, Required Temp Size: 321341696 Output Size: 157870080
+I20260701 23:05:58.516835 110030 rt_engine.h:159] Parm size: 152
+I20260701 23:05:58.516875 110030 rt_engine.cu:554] optixLaunch, [w,h,d] = 44863618,1,1
+I20260701 23:05:58.844584 110030 run_query.cu:475] AUTHORPATCH_PIP_DIAG query_points=44863618 positive_count=44841020 closest_eids_fnv64=13878963590670293968 dontknow_value=4294967295
+Timing results:
+ - Read map 0: 14105.4 ms
+
+ - Read map 1: 10941.6 ms
+
+ - Load Data: 561.431 ms
+
+ - Create App: 127.009 ms
+
+ - Init: 0.870943 ms
+
+ - Adaptive Grouping: 23.155 ms
+
+ - Build Index: 21.3182 ms
+
+ - Warmup: 0 ms
+
+ - Query: 115.92 ms
+
+ - Diagnostic: 213.205 ms
+
+ - Cleanup: 11.009 ms

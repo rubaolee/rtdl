@@ -1,0 +1,97 @@
+{
+  "author_phase_evidence": {
+    "bvh_build_time_ms": 0.336,
+    "grid_resolution": [
+      10,
+      24,
+      10
+    ],
+    "iterations": [
+      {
+        "cuda_time_ms": 0.799,
+        "iteration": 1,
+        "num_input_points": 437645,
+        "num_output_points": 150,
+        "offloading_size": 58994,
+        "radius": 0.12356820702552795,
+        "rt_time_ms": 2.667
+      },
+      {
+        "cuda_time_ms": 0.196,
+        "iteration": 2,
+        "num_input_points": 150,
+        "num_output_points": 0,
+        "offloading_size": 4427,
+        "radius": 0.1377279907464981,
+        "rt_time_ms": 0.463
+      }
+    ],
+    "large_cells": 674,
+    "process_wall_sec": 1.973201423883438,
+    "reported_time_ms": 7.603,
+    "running_avg_time_ms": 7.603,
+    "source": "Paper-reproduction-apps\\x-hd-paper\\results\\xhd_full_public_author_hd_exec_goal5188_graphics_dragon_happy_buddha_2026-07-08.json",
+    "summary": "Paper-reproduction-apps\\x-hd-paper\\results\\xhd_full_public_author_gate_summary_goal5188_graphics_dragon_happy_buddha_2026-07-08.json"
+  },
+  "claim_boundary": {
+    "author_parity_claimed": false,
+    "exact_oracle_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "full_public_author_run_claimed": true,
+    "full_public_rtdl_all_source_route_claimed": true,
+    "level_b_same_source_candidate_claimed": true,
+    "performance_ratio_claimed": false,
+    "phase_matrix_claimed": true
+  },
+  "comparison_policy": {
+    "author_process_wall_vs_rtdl_total_ratio_computed": false,
+    "author_running_avg_vs_rtdl_route_ratio_computed": false,
+    "ratio_forbidden_reason": "Author Running.AvgTime is an internal author algorithm phase; RTDL route_wall_sec and total_sec include different Python/RTDL phase boundaries. A ratio requires a separate denominator review.",
+    "ratio_reported": false
+  },
+  "correctness_anchor": {
+    "author_abs_diff": 2.3848857610975216e-09,
+    "author_hd_result": 0.12572988867759705,
+    "author_tolerance": 1e-06,
+    "exact_oracle_used": false,
+    "matched": true,
+    "rtdl_route_distance": 0.12572988629271128
+  },
+  "goal": "Goal5188",
+  "inputs": {
+    "input1": "Paper-reproduction-apps/x-hd-paper/data/external/stanford/dragon_recon/dragon_vrip.ply",
+    "input2": "Paper-reproduction-apps/x-hd-paper/data/external/stanford/happy_recon/happy_vrip.ply",
+    "source_points": 437645,
+    "target_points": 543652
+  },
+  "level": "level_b_same_source_candidate_only",
+  "rtdl_phase_evidence": {
+    "case_total_sec": 7.490384787321091,
+    "frontier_native_symbol": "rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v3",
+    "frontier_row_capacity": 4000000,
+    "frontier_row_count": 2052249,
+    "initial_cell_mbr_tests": 2824560830,
+    "load_full_inputs_sec": 2.5199945867061615,
+    "route_wall_sec": 7.303133897483349,
+    "select_source_subset_sec": 0.1872325986623764,
+    "source": "Paper-reproduction-apps\\x-hd-paper\\results\\xhd_full_public_all_source_route_only_goal5187_graphics_dragon_happy_buddha_2026-07-08.json",
+    "subphases_sec": {
+      "direction_total": 6.962371997535229,
+      "frontier_rows": 1.9368688240647316,
+      "grid_cell_mbrs": 0.18383577466011047,
+      "initial_state_seed": 4.041994109749794,
+      "max_nearest_reduction": 0.07290426641702652,
+      "nearest_continuation": 0.5595467016100883,
+      "radius_selection": 0.02942413091659546,
+      "source_columns": 0.060262925922870636,
+      "target_columns": 0.07752387970685959
+    },
+    "total_candidate_distance_evaluations": 342424979,
+    "total_sec": 10.011082544922829
+  },
+  "schema": "rtdl.paper_reproduction.xhd.full_public_phase_matrix.v1",
+  "status": "full_public_level_b_phase_boundary_matrix_ready",
+  "target": "graphics_dragon_happy_buddha"
+}

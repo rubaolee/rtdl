@@ -1,0 +1,99 @@
+{
+  "authorpatch_command_shape": "query_exec -poly1 poly1 -poly2 poly2 -query=lsi",
+  "claim_boundary": {
+    "all_eight_exact_paper_pairs_claim": false,
+    "broad_speedup_claim": false,
+    "bundled_rayjoin_helper_used": false,
+    "full_overlay_claim": false,
+    "public_generic_rtdl_primitive": true,
+    "section52_lsi_count_only": true
+  },
+  "count": 961165,
+  "expected_count": 961165,
+  "expected_count_provenance": "authorpatch_goal4845_exact_count",
+  "front_door_result": {
+    "backend": "optix",
+    "base_segment_count": 8662896,
+    "claim_boundary": {
+      "broad_speedup_claim_authorized": false,
+      "bundled_rayjoin_helper_used": false,
+      "full_overlay_supported": false,
+      "paper_eight_pair_claim_authorized": false,
+      "public_generic_rtdl_primitive": true,
+      "section52_lsi_count_supported": true
+    },
+    "count": 961165,
+    "native_predicate_contract": "author_style_planar_map_lsi_endpoint_boundary_predicate",
+    "native_predicate_legacy_alias": "rayjoin_lsi",
+    "native_predicate_mode": "planar_map_lsi",
+    "native_predicate_mode_id": 1,
+    "native_timings": {
+      "candidate_count_pass": 0.00914454,
+      "candidate_download": 0.0,
+      "candidate_write_pass": 0.0,
+      "emitted_count": 961165,
+      "exact_refine": 0.0,
+      "left_upload": 0.0,
+      "mode": "count_prepared_left_grouped_range_direct_intersection",
+      "raw_candidate_count": 0
+    },
+    "output_contract": "scalar_exact_count",
+    "predicate_selection": {
+      "concurrency_note": "Predicate selection is passed to the native count call, not through process-global environment state.",
+      "legacy_native_alias": "rayjoin_lsi",
+      "mechanism": "native_abi_explicit_parameter",
+      "mode_id": 1,
+      "public_mode": "planar_map_lsi"
+    },
+    "primitive": "PLANAR_MAP_LSI_2D",
+    "query_segment_count": 23931046,
+    "raw_segment_pair_result": {
+      "backend": "optix",
+      "claim_boundary": {
+        "experimental_front_door": true,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_acceleration_claim_authorized": false
+      },
+      "count": 961165,
+      "implementation_contract": "SEGMENT_PAIR_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_EXACT_COUNT_V1",
+      "native_symbol": "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection_with_predicate_mode",
+      "output_contract": "scalar_exact_count",
+      "predicate_mode": 1,
+      "predicate_selection": {
+        "mechanism": "native_abi_explicit_parameter",
+        "mode_id": 1
+      },
+      "primitive": "SEGMENT_PAIR_INTERSECTION_ROWS_2D",
+      "right_group_count": 8662896,
+      "route": "intersection_program_identity_or_ranged_primitive_records",
+      "route_selection": {
+        "default_right_range_policy": "identity_range",
+        "fallback_route": "count_prepared_left",
+        "native_policy_env": {
+          "area_enlarge": "RTDL_OPTIX_SEGMENT_PAIR_GROUPED_RANGE_AREA_ENLARGE",
+          "max_size": "RTDL_OPTIX_SEGMENT_PAIR_GROUPED_RANGE_MAX_SIZE"
+        }
+      },
+      "schema": "rtdl.optix.segment_pair_prepared_left_exact_intersection_count.front_door.v1"
+    },
+    "schema": "rtdl.optix.planar_map_lsi_2d.count.v1"
+  },
+  "label": "county_zipcode_final",
+  "matched_expected": true,
+  "poly1": "/workspace/rayjoin_section57_same_source_cdb/point_cdb/dtl_cnty/dtl_cnty_Point.cdb",
+  "poly2": "/workspace/rayjoin_section57_same_source_cdb/point_cdb/USAZIPCodeArea/USAZIPCodeArea_Point.cdb",
+  "rtdl_public_api": "prepare_planar_map_lsi_2d_optix",
+  "schema": "rtdl.goal4851.section52_lsi_public_front_door.v1",
+  "timings_sec": {
+    "count": 56.86630602180958,
+    "load_poly1": 85.48370557278395,
+    "load_poly2": 236.1714637503028,
+    "prepare": 19.980284467339516,
+    "total_observed": 398.50175981223583
+  }
+}

@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import gzip
 import json
+import os
+import re
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
@@ -67,6 +69,46 @@ class CdbDataset:
             if chain.right_face_id != 0:
                 face_ids.add(chain.right_face_id)
         return tuple(sorted(face_ids))
+
+
+@dataclass(frozen=True)
+class PlanarMapCdbPackedInputs:
+    """Packed CDB/planar-map inputs usable by public RTDL primitives.
+
+    This is a data-loading utility, not a RayJoin overlay helper.  It carries
+    both generic segment/point buffers for LSI and directed face-segment buffers
+    for point-location, plus chain metadata needed by applications that assemble
+    downstream topology.
+    """
+
+    path: str
+    name: str
+    chain_count: int
+    point_count: int
+    edge_count: int
+    min_x: float
+    max_x: float
+    min_y: float
+    max_y: float
+    chain_offsets: object
+    chain_point_counts: object
+    chain_left_faces: object
+    chain_right_faces: object
+    point_x: object
+    point_y: object
+    seg_ids: object
+    x0: object
+    y0: object
+    x1: object
+    y1: object
+    left_face_ids: object
+    right_face_ids: object
+    lsi_segments: object
+    cdb_segments: object
+    points: object
+
+
+PLANAR_MAP_CDB_PACKED_CACHE_VERSION = "planar_map_cdb_packed_v1"
 
 
 @dataclass(frozen=True)
@@ -350,6 +392,359 @@ def build_arcgis_geojson_query_url(
 def load_cdb(path: str | Path) -> CdbDataset:
     path = Path(path)
     return parse_cdb_text(path.read_text(encoding="utf-8"), name=path.stem)
+
+
+def _planar_map_cdb_segment_dtype(np):
+    from .embree_runtime import _RtdlSegment
+
+    dtype = np.dtype(
+        [
+            ("id", np.uint32),
+            ("x0", np.float64),
+            ("y0", np.float64),
+            ("x1", np.float64),
+            ("y1", np.float64),
+        ],
+        align=True,
+    )
+    if dtype.itemsize != __import__("ctypes").sizeof(_RtdlSegment):
+        raise RuntimeError("NumPy planar-map segment dtype does not match native ABI layout")
+    return dtype
+
+
+def _planar_map_cdb_face_segment_dtype(np):
+    from .embree_runtime import _RtdlRayjoinCdbSegment
+
+    dtype = np.dtype(
+        [
+            ("id", np.uint32),
+            ("x0", np.float64),
+            ("y0", np.float64),
+            ("x1", np.float64),
+            ("y1", np.float64),
+            ("left_face_id", np.uint32),
+            ("right_face_id", np.uint32),
+        ],
+        align=True,
+    )
+    if dtype.itemsize != __import__("ctypes").sizeof(_RtdlRayjoinCdbSegment):
+        raise RuntimeError("NumPy planar-map face-segment dtype does not match native ABI layout")
+    return dtype
+
+
+def _planar_map_cdb_point_dtype(np):
+    from .embree_runtime import _RtdlPoint
+
+    dtype = np.dtype(
+        [
+            ("id", np.uint32),
+            ("x", np.float64),
+            ("y", np.float64),
+        ],
+        align=True,
+    )
+    if dtype.itemsize != __import__("ctypes").sizeof(_RtdlPoint):
+        raise RuntimeError("NumPy planar-map point dtype does not match native ABI layout")
+    return dtype
+
+
+def _packed_planar_map_inputs_from_arrays(
+    *,
+    path: Path,
+    name: str,
+    chain_count: int,
+    chain_offsets,
+    chain_point_counts,
+    chain_left_faces,
+    chain_right_faces,
+    segment_array,
+    face_segment_array,
+    point_array,
+    bounds: tuple[float, float, float, float] | None = None,
+) -> PlanarMapCdbPackedInputs:
+    import ctypes
+
+    from .embree_runtime import PackedPoints
+    from .embree_runtime import PackedRayjoinCdbSegments
+    from .embree_runtime import PackedSegments
+    from .embree_runtime import _RtdlPoint
+    from .embree_runtime import _RtdlRayjoinCdbSegment
+    from .embree_runtime import _RtdlSegment
+
+    owner = (
+        chain_offsets,
+        chain_point_counts,
+        chain_left_faces,
+        chain_right_faces,
+        segment_array,
+        face_segment_array,
+        point_array,
+    )
+    lsi_records = segment_array.ctypes.data_as(ctypes.POINTER(_RtdlSegment))
+    cdb_records = face_segment_array.ctypes.data_as(ctypes.POINTER(_RtdlRayjoinCdbSegment))
+    point_records = point_array.ctypes.data_as(ctypes.POINTER(_RtdlPoint))
+    point_count = int(point_array.size)
+    edge_count = int(segment_array.size)
+    if bounds is not None:
+        min_x, max_x, min_y, max_y = bounds
+    elif point_count:
+        min_x = float(point_array["x"].min())
+        max_x = float(point_array["x"].max())
+        min_y = float(point_array["y"].min())
+        max_y = float(point_array["y"].max())
+    else:
+        min_x = max_x = min_y = max_y = 0.0
+    return PlanarMapCdbPackedInputs(
+        path=str(path),
+        name=name,
+        chain_count=int(chain_count),
+        point_count=point_count,
+        edge_count=edge_count,
+        min_x=min_x,
+        max_x=max_x,
+        min_y=min_y,
+        max_y=max_y,
+        chain_offsets=chain_offsets,
+        chain_point_counts=chain_point_counts,
+        chain_left_faces=chain_left_faces,
+        chain_right_faces=chain_right_faces,
+        point_x=point_array["x"],
+        point_y=point_array["y"],
+        seg_ids=segment_array["id"].astype("int64", copy=False),
+        x0=segment_array["x0"],
+        y0=segment_array["y0"],
+        x1=segment_array["x1"],
+        y1=segment_array["y1"],
+        left_face_ids=face_segment_array["left_face_id"],
+        right_face_ids=face_segment_array["right_face_id"],
+        lsi_segments=PackedSegments(records=lsi_records, count=edge_count, owner=owner),
+        cdb_segments=PackedRayjoinCdbSegments(records=cdb_records, count=edge_count, owner=owner),
+        points=PackedPoints(records=point_records, count=point_count, dimension=2, owner=owner),
+    )
+
+
+def _planar_map_cdb_cache_root() -> Path | None:
+    raw = os.environ.get("RTDL_PLANAR_MAP_CDB_PACKED_CACHE_DIR")
+    if raw is None or raw.strip() == "":
+        raw = os.environ.get("RTDL_RAYJOIN_OVERLAY_PACKED_CACHE_DIR")
+    if raw is None or raw.strip() == "":
+        return None
+    return Path(raw)
+
+
+def _planar_map_cdb_cache_path(path: Path) -> Path | None:
+    root = _planar_map_cdb_cache_root()
+    if root is None:
+        return None
+    stat = path.stat()
+    safe_stem = re.sub(r"[^A-Za-z0-9_.-]+", "_", path.stem)
+    return root / f"{safe_stem}_{stat.st_size}_{stat.st_mtime_ns}_{PLANAR_MAP_CDB_PACKED_CACHE_VERSION}"
+
+
+def _try_load_planar_map_cdb_packed_cache(path: Path) -> PlanarMapCdbPackedInputs | None:
+    import numpy as np
+
+    cache_path = _planar_map_cdb_cache_path(path)
+    if cache_path is None:
+        return None
+    meta_path = cache_path / "meta.json"
+    if not meta_path.exists():
+        return None
+    try:
+        meta = json.loads(meta_path.read_text(encoding="utf-8"))
+        stat = path.stat()
+        if meta.get("version") != PLANAR_MAP_CDB_PACKED_CACHE_VERSION:
+            return None
+        if int(meta.get("source_size", -1)) != stat.st_size:
+            return None
+        if int(meta.get("source_mtime_ns", -1)) != stat.st_mtime_ns:
+            return None
+        segment_array = np.load(cache_path / "segments.npy", mmap_mode="r")
+        face_segment_array = np.load(cache_path / "face_segments.npy", mmap_mode="r")
+        point_array = np.load(cache_path / "points.npy", mmap_mode="r")
+        chain_offsets = np.load(cache_path / "chain_offsets.npy", mmap_mode="r")
+        chain_point_counts = np.load(cache_path / "chain_point_counts.npy", mmap_mode="r")
+        chain_left_faces = np.load(cache_path / "chain_left_faces.npy", mmap_mode="r")
+        chain_right_faces = np.load(cache_path / "chain_right_faces.npy", mmap_mode="r")
+        if segment_array.dtype != _planar_map_cdb_segment_dtype(np):
+            return None
+        if face_segment_array.dtype != _planar_map_cdb_face_segment_dtype(np):
+            return None
+        if point_array.dtype != _planar_map_cdb_point_dtype(np):
+            return None
+        bounds = None
+        if all(key in meta for key in ("min_x", "max_x", "min_y", "max_y")):
+            bounds = (
+                float(meta["min_x"]),
+                float(meta["max_x"]),
+                float(meta["min_y"]),
+                float(meta["max_y"]),
+            )
+        packed = _packed_planar_map_inputs_from_arrays(
+            path=path,
+            name=str(meta.get("name", path.stem)),
+            chain_count=int(meta["chain_count"]),
+            chain_offsets=chain_offsets,
+            chain_point_counts=chain_point_counts,
+            chain_left_faces=chain_left_faces,
+            chain_right_faces=chain_right_faces,
+            segment_array=segment_array,
+            face_segment_array=face_segment_array,
+            point_array=point_array,
+            bounds=bounds,
+        )
+        if bounds is None:
+            meta.update(
+                {
+                    "min_x": packed.min_x,
+                    "max_x": packed.max_x,
+                    "min_y": packed.min_y,
+                    "max_y": packed.max_y,
+                }
+            )
+            meta_path.write_text(json.dumps(meta, sort_keys=True) + "\n", encoding="utf-8")
+        return packed
+    except Exception:
+        return None
+
+
+def _write_planar_map_cdb_packed_cache(path: Path, packed: PlanarMapCdbPackedInputs) -> None:
+    import numpy as np
+
+    cache_path = _planar_map_cdb_cache_path(path)
+    if cache_path is None:
+        return
+    cache_path.mkdir(parents=True, exist_ok=True)
+    np.save(cache_path / "segments.npy", packed.lsi_segments.owner[4])
+    np.save(cache_path / "face_segments.npy", packed.cdb_segments.owner[5])
+    np.save(cache_path / "points.npy", packed.points.owner[6])
+    np.save(cache_path / "chain_offsets.npy", packed.chain_offsets)
+    np.save(cache_path / "chain_point_counts.npy", packed.chain_point_counts)
+    np.save(cache_path / "chain_left_faces.npy", packed.chain_left_faces)
+    np.save(cache_path / "chain_right_faces.npy", packed.chain_right_faces)
+    stat = path.stat()
+    meta = {
+        "version": PLANAR_MAP_CDB_PACKED_CACHE_VERSION,
+        "name": packed.name,
+        "chain_count": int(packed.chain_count),
+        "edge_count": int(packed.edge_count),
+        "point_count": int(packed.point_count),
+        "min_x": float(packed.min_x),
+        "max_x": float(packed.max_x),
+        "min_y": float(packed.min_y),
+        "max_y": float(packed.max_y),
+        "source": str(path),
+        "source_size": int(stat.st_size),
+        "source_mtime_ns": int(stat.st_mtime_ns),
+    }
+    (cache_path / "meta.json").write_text(json.dumps(meta, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def load_planar_map_cdb_packed_inputs(path: str | Path) -> PlanarMapCdbPackedInputs:
+    """Load a CDB text file into reusable packed RTDL planar-map buffers.
+
+    Set ``RTDL_PLANAR_MAP_CDB_PACKED_CACHE_DIR`` to persist the packed native
+    arrays and reuse them across runs.  The cache key includes source size,
+    mtime, and a format version.
+    """
+
+    import numpy as np
+
+    path = Path(path)
+    cached = _try_load_planar_map_cdb_packed_cache(path)
+    if cached is not None:
+        return cached
+
+    values = np.fromfile(path, dtype=np.float64, sep=" ")
+    if values.size == 0:
+        raise ValueError(f"empty CDB file: {path}")
+    headers: list[tuple[int, int, int, int]] = []
+    index = 0
+    chain_count = 0
+    point_count = 0
+    edge_count = 0
+    value_count = int(values.size)
+    while index < value_count:
+        if index + 6 > value_count:
+            raise ValueError(f"invalid CDB numeric stream near value {index} in {path}")
+        chain_points = int(values[index + 1])
+        left_face = int(values[index + 4])
+        right_face = int(values[index + 5])
+        if chain_points < 0:
+            raise ValueError(f"invalid negative CDB point count near value {index} in {path}")
+        next_index = index + 6 + chain_points * 2
+        if next_index > value_count:
+            raise ValueError(f"unexpected EOF in numeric CDB stream near value {index} in {path}")
+        headers.append((chain_points, max(0, chain_points - 1), left_face, right_face))
+        point_count += chain_points
+        edge_count += max(0, chain_points - 1)
+        chain_count += 1
+        index = next_index
+    if index != value_count:
+        raise ValueError(f"trailing numeric values in CDB stream for {path}")
+
+    segment_array = np.empty(edge_count, dtype=_planar_map_cdb_segment_dtype(np))
+    face_segment_array = np.empty(edge_count, dtype=_planar_map_cdb_face_segment_dtype(np))
+    point_array = np.empty(point_count, dtype=_planar_map_cdb_point_dtype(np))
+    chain_offsets = np.empty(chain_count, dtype=np.int64)
+    chain_point_counts = np.empty(chain_count, dtype=np.int64)
+    chain_left_faces = np.empty(chain_count, dtype=np.uint32)
+    chain_right_faces = np.empty(chain_count, dtype=np.uint32)
+
+    value_index = 0
+    point_offset = 0
+    edge_offset = 0
+    segment_id = 1
+    for chain_index, (chain_points, chain_edges, left_face, right_face) in enumerate(headers):
+        coord_start = value_index + 6
+        coord_end = coord_start + chain_points * 2
+        coords = values[coord_start:coord_end].reshape((-1, 2))
+        chain_offsets[chain_index] = point_offset
+        chain_point_counts[chain_index] = chain_points
+        chain_left_faces[chain_index] = np.uint32(left_face)
+        chain_right_faces[chain_index] = np.uint32(right_face)
+        point_end = point_offset + chain_points
+        point_array["id"][point_offset:point_end] = np.arange(
+            point_offset + 1,
+            point_end + 1,
+            dtype=np.uint32,
+        )
+        point_array["x"][point_offset:point_end] = coords[:, 0]
+        point_array["y"][point_offset:point_end] = coords[:, 1]
+        if chain_edges:
+            edge_end = edge_offset + chain_edges
+            ids = np.arange(segment_id, segment_id + chain_edges, dtype=np.uint32)
+            segment_array["id"][edge_offset:edge_end] = ids
+            segment_array["x0"][edge_offset:edge_end] = coords[:-1, 0]
+            segment_array["y0"][edge_offset:edge_end] = coords[:-1, 1]
+            segment_array["x1"][edge_offset:edge_end] = coords[1:, 0]
+            segment_array["y1"][edge_offset:edge_end] = coords[1:, 1]
+            face_segment_array["id"][edge_offset:edge_end] = ids
+            face_segment_array["x0"][edge_offset:edge_end] = coords[:-1, 0]
+            face_segment_array["y0"][edge_offset:edge_end] = coords[:-1, 1]
+            face_segment_array["x1"][edge_offset:edge_end] = coords[1:, 0]
+            face_segment_array["y1"][edge_offset:edge_end] = coords[1:, 1]
+            face_segment_array["left_face_id"][edge_offset:edge_end] = np.uint32(left_face)
+            face_segment_array["right_face_id"][edge_offset:edge_end] = np.uint32(right_face)
+            segment_id += chain_edges
+            edge_offset = edge_end
+        point_offset = point_end
+        value_index = coord_end
+
+    packed = _packed_planar_map_inputs_from_arrays(
+        path=path,
+        name=path.stem,
+        chain_count=chain_count,
+        chain_offsets=chain_offsets,
+        chain_point_counts=chain_point_counts,
+        chain_left_faces=chain_left_faces,
+        chain_right_faces=chain_right_faces,
+        segment_array=segment_array,
+        face_segment_array=face_segment_array,
+        point_array=point_array,
+    )
+    _write_planar_map_cdb_packed_cache(path, packed)
+    return packed
 
 
 def parse_cdb_text(text: str, *, name: str) -> CdbDataset:
@@ -814,6 +1209,22 @@ def chains_to_rayjoin_cdb_segments(
     return tuple(records)
 
 
+def chains_to_planar_map_segments(
+    dataset: CdbDataset,
+    *,
+    limit_chains: int | None = None,
+) -> tuple[dict[str, float | int], ...]:
+    """Convert CDB chains to directed planar-map edges with adjacent face ids.
+
+    This is the public, application-neutral name for the edge payload required
+    by planar-map point-location/PIP and LSI primitives.  The legacy
+    ``chains_to_rayjoin_cdb_segments`` name is retained for compatibility with
+    old RayJoin reproduction helpers.
+    """
+
+    return chains_to_rayjoin_cdb_segments(dataset, limit_chains=limit_chains)
+
+
 def chains_to_segment_columns(dataset: CdbDataset, *, limit_chains: int | None = None) -> "SegmentColumns2D":
     """Convert CDB chain edges directly to generic 2-D segment columns."""
 
@@ -923,6 +1334,12 @@ def chains_to_all_points(dataset: CdbDataset, *, limit_chains: int | None = None
 
         payload._rtdl_packed_points = pack_points(records=payload)
     return payload
+
+
+def chains_to_planar_map_points(dataset: CdbDataset, *, limit_chains: int | None = None) -> tuple[Point, ...]:
+    """Return all CDB points in file order for planar-map point-location probes."""
+
+    return chains_to_all_points(dataset, limit_chains=limit_chains)
 
 
 def chains_to_polygon_refs(dataset: CdbDataset) -> tuple[dict[str, int], ...]:

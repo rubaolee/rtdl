@@ -7,8 +7,8 @@ sys.path.insert(0, "src")
 sys.path.insert(0, ".")
 
 import rtdsl as rt
-from examples.internal.rtdl_codex_authored import CODEX_AUTHORED_KERNELS
-from examples.internal.rtdl_gemini_authored import GEMINI_AUTHORED_KERNELS
+from history.examples_internal.internal.rtdl_codex_authored import CODEX_AUTHORED_KERNELS
+from history.examples_internal.internal.rtdl_gemini_authored import GEMINI_AUTHORED_KERNELS
 from examples.reference.rtdl_fixed_radius_neighbors_reference import fixed_radius_neighbors_reference
 from examples.reference.rtdl_knn_rows_reference import knn_rows_reference
 from examples.reference.rtdl_workload_reference import point_nearest_segment_reference

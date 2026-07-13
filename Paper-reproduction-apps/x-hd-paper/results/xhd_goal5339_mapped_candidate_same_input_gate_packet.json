@@ -1,0 +1,52 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5339.mapped_candidate_same_input_gate_packet.v1",
+  "goal": "Goal5339",
+  "date": "2026-07-09",
+  "purpose": "Add an app-owned mapped-candidate same-input gate packet builder that turns an accepted clean workload mapping and materialized candidate files into author hd_exec and RTDL hd_exec-compatible command plans for a later POD gate.",
+  "status": "mapped_candidate_same_input_gate_packet_ready__await_real_accepted_mapping_and_files",
+  "script": {
+    "path": "Paper-reproduction-apps/x-hd-paper/scripts/build_xhd_mapped_candidate_same_input_gate_packet.py",
+    "inputs": [
+      "Goal5338 candidate workload mapping review JSON",
+      "materialized candidate input root",
+      "POD output directory",
+      "author hd_exec path or command name"
+    ],
+    "output_schema": "rtdl.paper_reproduction.xhd.mapped_candidate_same_input_gate_packet.v1"
+  },
+  "classification_statuses": [
+    "mapped_candidate_same_input_gate_commands_ready",
+    "accepted_mapping_but_candidate_files_not_materialized",
+    "mapping_review_not_ready_for_same_input_gate"
+  ],
+  "behavior_locked_by_tests": [
+    "accepted mapping plus materialized files builds author and RTDL command plans",
+    "accepted mapping without materialized files is not POD-ready",
+    "proposed mapping is not command-ready",
+    "summary forbids exact/full/performance claims"
+  ],
+  "pod_usage": {
+    "used": false,
+    "expected_next": false,
+    "reason": "This goal builds a command packet only. A later mapped same-input POD gate must execute the commands with scripts/current_pod_ssh.py after real accepted mapping and staged files exist."
+  },
+  "claim_boundary": {
+    "commands_executed": false,
+    "same_input_gate_passed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false
+  },
+  "allowed_summary": "Goal5339 adds an app-owned command-packet builder for a future mapped-candidate same-input POD gate. It does not execute commands and does not claim reproduction.",
+  "not_allowed": [
+    "claiming commands were executed by this packet",
+    "claiming same-input correctness from this packet alone",
+    "claiming exact paper dataset reproduction from this packet alone",
+    "claiming Figure 5 reproduction from this packet alone",
+    "claiming full X-HD paper reproduction from this packet alone",
+    "claiming author-vs-RTDL performance ratio from this packet alone",
+    "running POD without scripts/current_pod_ssh.py"
+  ],
+  "exit_label": "mapped_candidate_same_input_gate_packet_ready__await_real_accepted_mapping_and_files"
+}

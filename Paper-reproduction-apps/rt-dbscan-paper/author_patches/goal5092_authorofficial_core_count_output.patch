@@ -1,0 +1,113 @@
+diff --git a/owl/DeviceContext.cpp b/owl/DeviceContext.cpp
+index 92e08b4..2cf00fc 100644
+--- a/owl/DeviceContext.cpp
++++ b/owl/DeviceContext.cpp
+@@ -332,6 +332,7 @@ namespace owl {
+ #if OWL_CAN_DO_SPHERES
+    pipelineCompileOptions.usesPrimitiveTypeFlags |= OPTIX_PRIMITIVE_TYPE_FLAGS_SPHERE;
+ #endif
++   pipelineCompileOptions.usesPrimitiveTypeFlags |= OPTIX_PRIMITIVE_TYPE_FLAGS_CUSTOM;
+
+ // #if 1
+ //     std::cout << "HACK: FORCE-ENABLE CURVES!" << std::endl;
+diff --git a/samples/cmdline/s02-rtdbscan/deviceCode.cu b/samples/cmdline/s02-rtdbscan/deviceCode.cu
+index 6672135..f7a937f 100644
+--- a/samples/cmdline/s02-rtdbscan/deviceCode.cu
++++ b/samples/cmdline/s02-rtdbscan/deviceCode.cu
+@@ -16,7 +16,7 @@
+
+ #include "GeomTypes.h"
+ #include <optix_device.h>
+-#include</home/min/a/nagara16/Downloads/owl/owl/include/owl/common/parallel/parallel_for.h>
++
+
+ using namespace owl;
+ #define NUM_SAMPLES_PER_PIXEL 16
+diff --git a/samples/cmdline/s02-rtdbscan/hostCode.cpp b/samples/cmdline/s02-rtdbscan/hostCode.cpp
+index 93f4152..6f75a8c 100644
+--- a/samples/cmdline/s02-rtdbscan/hostCode.cpp
++++ b/samples/cmdline/s02-rtdbscan/hostCode.cpp
+@@ -345,8 +345,74 @@ int main(int ac, char **av) {
+           //cout<<i<<'\t'<<find(fb[i].parent,fb)<<'\n';
+   }*/
+
+-  //Write execution time
+-  ofile << tot << std::endl;
++  int pointCount = Spheres.size();
++  int coreCount = 0;
++  std::vector<int> roots(pointCount, 0);
++  std::vector<int> coreFlags(pointCount, 0);
++  std::vector<int> rootHasCore(pointCount, 0);
++  for (int i = 0; i < pointCount; i++) {
++    roots[i] = find(i, fb);
++    if (fb[i].neighCount >= minPts) {
++      coreFlags[i] = 1;
++      coreCount++;
++      rootHasCore[roots[i]] = 1;
++    }
++  }
++
++  std::vector<int> rootToLabel(pointCount, -1);
++  std::vector<int> componentLabels(pointCount, -1);
++  std::vector<int> componentSizes;
++  int noiseCount = 0;
++  for (int i = 0; i < pointCount; i++) {
++    int root = roots[i];
++    if (root < 0 || root >= pointCount || rootHasCore[root] == 0) {
++      componentLabels[i] = -1;
++      noiseCount++;
++      continue;
++    }
++    if (rootToLabel[root] < 0) {
++      rootToLabel[root] = componentSizes.size();
++      componentSizes.push_back(0);
++    }
++    componentLabels[i] = rootToLabel[root];
++    componentSizes[componentLabels[i]]++;
++  }
++
++  // Write the original total time together with a bounded AuthorOfficial
++  // comparator payload. This patch does not change the RT-DBSCAN kernels; it
++  // only exposes call-1 core counts and the post call-2 component signature for
++  // same-input RTDL comparison.
++  ofile << "{\"schema\":\"rtdl.paper_reproduction.rt_dbscan.authorofficial_core_count.v1\","
++        << "\"point_count\":" << pointCount << ","
++        << "\"epsilon\":" << radius << ","
++        << "\"min_points\":" << minPts << ","
++        << "\"core_count\":" << coreCount << ",";
++  ofile << "\"component_labels\":[";
++  for (int i = 0; i < pointCount; i++) {
++    if (i) ofile << ",";
++    ofile << componentLabels[i];
++  }
++  ofile << "],\"component_sizes\":[";
++  for (int i = 0; i < componentSizes.size(); i++) {
++    if (i) ofile << ",";
++    ofile << componentSizes[i];
++  }
++  ofile << "],\"noise_count\":" << noiseCount << ",";
++  ofile << "\"core_flags\":[";
++  for (int i = 0; i < pointCount; i++) {
++    if (i) ofile << ",";
++    ofile << coreFlags[i];
++  }
++  ofile << "],\"parent_roots\":[";
++  for (int i = 0; i < pointCount; i++) {
++    if (i) ofile << ",";
++    ofile << roots[i];
++  }
++  ofile << "],";
++  ofile << "\"core_points_time_sec\":" << (elapsed1.count() / 1000000.0) << ","
++        << "\"cluster_formation_time_sec\":" << (elapsed.count() / 1000000.0) << ","
++        << "\"build_time_sec\":" << (elapsed_b.count() / 1000000.0) << ","
++        << "\"total_time_sec\":" << tot << "}" << std::endl;
+
+   // ##################################################################
+   // and finally, clean up
+@@ -356,4 +422,4 @@ int main(int ac, char **av) {
+   owlContextDestroy(context);
+
+
+-}
+\ No newline at end of file
++}

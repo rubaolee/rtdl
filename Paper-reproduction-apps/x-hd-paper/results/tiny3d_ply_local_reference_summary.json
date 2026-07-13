@@ -1,0 +1,29 @@
+{
+  "abs_diff": null,
+  "author_comparison_reference": "directed_a_to_b",
+  "author_comparison_reference_value": 2.0,
+  "author_hd_result": null,
+  "author_json": null,
+  "author_run": null,
+  "author_run_failed": false,
+  "boundary": "Tiny same-input author JSON gate. This compares author HDResult to a deterministic exact Hausdorff reference for bounded WKT or ASCII PLY fixtures. It is not exact paper input reproduction and not a performance claim.",
+  "execution": "gpu",
+  "input1": "Paper-reproduction-apps\\x-hd-paper\\data\\fixtures\\tiny3d_ply_a.ply",
+  "input2": "Paper-reproduction-apps\\x-hd-paper\\data\\fixtures\\tiny3d_ply_b.ply",
+  "input_type": "ply",
+  "matched": null,
+  "n_dims": 3,
+  "paper_app": "x-hd-paper",
+  "paper_reproduction_claim_authorized": false,
+  "performance_claim_authorized": false,
+  "point_count_a": 2,
+  "point_count_b": 1,
+  "rtdl_reference": {
+    "directed_a_to_b": 2.0,
+    "directed_b_to_a": 0.0,
+    "hausdorff": 2.0
+  },
+  "schema": "rtdl.paper_reproduction.xhd.author_json_gate.v1",
+  "tolerance": 1e-09,
+  "variant": "rt"
+}

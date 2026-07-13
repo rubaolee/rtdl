@@ -1,0 +1,59 @@
+{
+  "allowed_positive_classifications": [
+    "author_hashes_match_current_public_reconstruction__run_same_input_gate_before_claim",
+    "author_input_archive_contains_required_paths__extract_hash_then_run_pod_gate",
+    "byte_identical_regeneration_available__run_regeneration_then_hash_gate",
+    "acm_supplement_contains_possible_provenance__map_before_route",
+    "exact_equivalence_accepted_for_bounded_public_reconstruction__run_accepted_matrix"
+  ],
+  "claim_boundary": {
+    "classifier_contract_claimed": true,
+    "exact_equivalence_accepted": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_reopened": false,
+    "external_artifacts_acquired": false,
+    "external_response_received": false,
+    "figure5_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "new_rtdl_route_code_added": false,
+    "performance_ratio_claimed": false,
+    "pod_execution_claimed": false,
+    "route_micro_optimization_goal_authorized": false
+  },
+  "current_public_hashes": {
+    "USACensusBlockGroupBoundaries.wkt": "8a1d3cd848083e5182de81521f07d8850c597910320250066d850928b017e66e",
+    "USADetailedWaterBodies.wkt": "0c4ad7d7c1953364478d4940a8eb1696cca24d0dfd6422aafc532b1983f3dd39"
+  },
+  "current_required_paths": [
+    "USACensusBlockGroupBoundaries.wkt",
+    "USADetailedWaterBodies.wkt"
+  ],
+  "date": "2026-07-10",
+  "default_classification": "fail_closed_keep_level_b",
+  "goal": "Goal5433",
+  "next_action": "await_external_response_then_classify_before_action",
+  "pod_usage": {
+    "expected_next": false,
+    "reason": "Classifier contract only. POD becomes useful only for positive classifications that require same-input gates.",
+    "used": false
+  },
+  "purpose": "Make WaterBodies/BG external response intake fail-closed and machine-classified before any exact/full-paper claim or POD gate.",
+  "schema": "rtdl.paper_reproduction.xhd.goal5433.water_bg_external_response_classifier_contract.v1",
+  "status": "water_bg_external_response_classifier_ready__await_response",
+  "stop_loss_gate": {
+    "decision": "PASS: intake governance, not app-artifact parity implementation.",
+    "gate_downstream_consumer_reachable": true,
+    "gate_generic_capability_produced": true,
+    "gate_non_app_consumer": "external response classifier / provenance intake decision gate",
+    "gate_requires_app_specific_logic": false
+  },
+  "supported_response_types": [
+    "author_hash_manifest",
+    "author_input_archive",
+    "byte_identical_regeneration_script",
+    "acm_supplement_artifact_instructions",
+    "exact_equivalence_verdict",
+    "explicit_non_availability_statement",
+    "other"
+  ]
+}

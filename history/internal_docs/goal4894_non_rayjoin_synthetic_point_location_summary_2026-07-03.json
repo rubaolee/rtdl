@@ -1,0 +1,48 @@
+{
+  "base_segment_count": 4,
+  "claim_boundary": {
+    "broad_speedup_claim_authorized": false,
+    "bundled_rayjoin_helper_used": false,
+    "full_overlay_supported": false,
+    "public_generic_rtdl_primitive": true,
+    "section53_pip_closest_edge_supported": true
+  },
+  "located_segment_count": 2,
+  "native_timings": {
+    "mode": "rows",
+    "point_count": 4,
+    "point_upload": 9.118e-06,
+    "positive_face_count": 2,
+    "row_download": 1.3566e-05,
+    "traversal": 2.9847e-05
+  },
+  "positive_face_count": 2,
+  "row_count": 4,
+  "rows": [
+    {
+      "face_id": 10,
+      "hit_t": 0.5,
+      "point_id": 1,
+      "segment_id": 3
+    },
+    {
+      "face_id": 0,
+      "hit_t": 3.4028234663852886e+38,
+      "point_id": 2,
+      "segment_id": 4294967295
+    },
+    {
+      "face_id": 10,
+      "hit_t": 0.75,
+      "point_id": 3,
+      "segment_id": 3
+    },
+    {
+      "face_id": 0,
+      "hit_t": 3.4028234663852886e+38,
+      "point_id": 4,
+      "segment_id": 4294967295
+    }
+  ],
+  "schema": "rtdl.goal4894.non_rayjoin_synthetic_point_location.v1"
+}

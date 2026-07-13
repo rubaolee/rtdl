@@ -1,0 +1,128 @@
+{
+  "claim_boundary": {
+    "author_rtdl_correctness_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_reopened": false,
+    "feasibility_plan_claimed": true,
+    "figure5_reproduction_claimed": false,
+    "full_public_wkt_generated": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false,
+    "route_micro_optimization_goal_authorized": false
+  },
+  "feasibility": {
+    "author_or_rtdl_execution_claimed": false,
+    "estimated_generation_time_note": "Probe time is a floor because full WKT generation must also format and write geometries.",
+    "estimated_generation_time_sec_from_probe_floor": 1569.7351152002811,
+    "estimated_total_wkt_bytes": 2248869515,
+    "estimated_total_wkt_gib": 2.0944229466840625,
+    "estimated_total_wkt_mib": 2144.68909740448,
+    "full_public_candidate_level": "Level-B full-public candidate, not exact paper input",
+    "recommended_free_disk_gib": 6.283268840052187,
+    "safety_factor": 3.0,
+    "wkt_generation_executed": false
+  },
+  "generation_plan": {
+    "author_loader_semantics": {
+      "close_polygon_outer_rings_if_needed": true,
+      "ignore_holes": true,
+      "input_type": "wkt",
+      "n_dims": 2,
+      "normalize": false,
+      "one_geometry_per_line": true,
+      "polygon_outer_ring_only_for_author_point_count": true
+    },
+    "checkpoint_files": [
+      "USADetailedWaterBodies_full_public.checkpoint.json",
+      "USACensusBlockGroupBoundaries_full_public.checkpoint.json"
+    ],
+    "local_generation_allowed": false,
+    "next_goal": "Goal5426_full_public_water_bg_wkt_generation_dry_run_or_execute_if_resources_pass",
+    "output_files": [
+      "USADetailedWaterBodies_full_public.wkt",
+      "USACensusBlockGroupBoundaries_full_public.wkt",
+      "manifest.json"
+    ],
+    "preferred_generation_location": "POD /tmp/xhd_goal5426/full_public_water_bg",
+    "reason_for_pod_generation": "Full WKT artifacts are large and the next author/RTDL gates run on POD; avoid local disk churn and upload costs if POD disk is sufficient.",
+    "resource_preflight_required": [
+      "POD wrapper preflight",
+      "df -BG /tmp",
+      "verify ArcGIS service reachability",
+      "write permission for /tmp/xhd_goal5426/full_public_water_bg"
+    ]
+  },
+  "goal": "Goal5425",
+  "kill_conditions": [
+    {
+      "condition": "free_disk_below_recommended_gib",
+      "threshold_gib": 6.283268840052187
+    },
+    {
+      "blockgroups_expected": 52271467,
+      "condition": "generated_author_loader_point_count_differs_from_goal5309_probe",
+      "waterbodies_expected": 22824823
+    },
+    {
+      "condition": "ArcGIS export becomes non-deterministic or service schema changes",
+      "required_order": "OBJECTID",
+      "required_out_sr": 4326
+    },
+    {
+      "condition": "generation cannot checkpoint/resume after interruption",
+      "required": "atomic checkpoint and output writes"
+    }
+  ],
+  "matched": true,
+  "schema": "rtdl.paper_reproduction.xhd.goal5425.full_public_water_bg_wkt_generation_feasibility.v1",
+  "selected_candidate": "full_public_waterbodies_blockgroups",
+  "services": {
+    "blockgroups": {
+      "author_loader_point_count": 52271467,
+      "bounded_author_loader_points": 894,
+      "bounded_bytes": 26682,
+      "bounded_bytes_per_point": 29.845637583892618,
+      "estimated_full_wkt_bytes": 1560075260,
+      "estimated_full_wkt_gib": 1.452933307737112,
+      "estimated_full_wkt_mib": 1487.8037071228027,
+      "features": 239203,
+      "max_abs_mbr_delta": 3.7103264247662082e-06,
+      "pages": 120,
+      "paper_basename": "USACensusBlockGroupBoundaries.wkt",
+      "paper_point_count": 52271340,
+      "point_count_delta": 127,
+      "point_count_relative_delta": 2.4296296976507585e-06,
+      "probe_elapsed_sec": 929.2135376003571
+    },
+    "waterbodies": {
+      "author_loader_point_count": 22824823,
+      "bounded_author_loader_points": 124,
+      "bounded_bytes": 3742,
+      "bounded_bytes_per_point": 30.177419354838708,
+      "estimated_full_wkt_bytes": 688794255,
+      "estimated_full_wkt_gib": 0.6414896389469504,
+      "estimated_full_wkt_mib": 656.8853902816772,
+      "features": 463591,
+      "max_abs_mbr_delta": 2.9081737551450715e-06,
+      "pages": 464,
+      "paper_basename": "USADetailedWaterBodies.wkt",
+      "paper_point_count": 22818694,
+      "point_count_delta": 6129,
+      "point_count_relative_delta": 0.0002685955646716679,
+      "probe_elapsed_sec": 640.5215775999241
+    }
+  },
+  "source_artifacts": {
+    "goal5306_manifest": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\data\\generated\\goal5306_arcgis_water_bg_bounded\\manifest.json",
+    "goal5309": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5309_full_public_arcgis_probe_summary_2026-07-09.json",
+    "goal5424": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5424_post_level_b_blocker_priority.json"
+  },
+  "status": "full_public_water_bg_wkt_generation_feasible_with_checkpoint_gate__no_execution",
+  "stop_loss_gate": {
+    "decision": "pass_no_app_artifact_parity_work_authorized",
+    "gate_downstream_consumer_reachable": true,
+    "gate_generic_capability_produced": true,
+    "gate_non_app_consumer": "dataset_generation_feasibility / no app-artifact parity work",
+    "gate_requires_app_specific_logic": false
+  }
+}

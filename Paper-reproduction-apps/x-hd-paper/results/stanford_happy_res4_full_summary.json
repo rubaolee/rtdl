@@ -1,0 +1,15 @@
+{
+  "claim_boundary": {
+    "exact_paper_dataset_reproduction_claimed": false,
+    "performance_claimed": false,
+    "same_source_sample": true
+  },
+  "input": "Paper-reproduction-apps\\x-hd-paper\\data\\external\\stanford\\happy_recon\\happy_vrip_res4.ply",
+  "input_point_count": 7108,
+  "n_dims": 3,
+  "output": "Paper-reproduction-apps\\x-hd-paper\\data\\fixtures\\stanford_happy_res4_full.ply",
+  "output_sha256": "FDF8E9EA42C02A1A6C385024B18D5A925E2D6633E6E0D7B889EAAE7549CE8DD3",
+  "sample_point_count": 7108,
+  "sampling": "deterministic_even_index_sample_including_first_and_last",
+  "schema": "rtdl.paper_reproduction.xhd.ply_sample.v1"
+}

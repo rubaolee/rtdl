@@ -1,0 +1,22 @@
+{
+  "returncode": 0,
+  "wall_sec": 113.01091830525547,
+  "cmd": [
+    "/root/rtdl_goal5036/Paper-reproduction-apps/rayjoin-paper/_work/author_official/release/bin/polyover_exec",
+    "-poly1",
+    "/root/rtdl_goal5036/Paper-reproduction-apps/rayjoin-paper/_data/top4_arcgis/top4_county.cdb",
+    "-poly2",
+    "/root/rtdl_goal5036/Paper-reproduction-apps/rayjoin-paper/_data/top4_arcgis/top4_zipcode.cdb",
+    "-serialize=/root/rtdl_goal5036/history/internal_docs/author_top4_fair_1/serialize",
+    "-grid_size=15000",
+    "-mode=rt",
+    "-v=1",
+    "-fau",
+    "-xsect_factor=0.1",
+    "-enlarge=3.5",
+    "-check=false",
+    "-output=/root/rtdl_goal5036/history/internal_docs/author_top4_fair_1/overlay.txt"
+  ],
+  "output_exists": true,
+  "output_bytes": 139098488
+}

@@ -1,0 +1,56 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.pod_optix_gate_result.v1",
+  "goal": "Goal5144",
+  "date": "2026-07-08",
+  "status": "pod_optix_gate_matched",
+  "matched": true,
+  "pod": {
+    "host": "213.173.108.24",
+    "port": 13502,
+    "hostname": "45c502cfccb5",
+    "gpu": "NVIDIA RTX 4000 Ada Generation",
+    "driver": "550.127.05",
+    "workspace": "/tmp/rtdl_goal5144"
+  },
+  "authentication_note": "Earlier Goal5144 auth-blocked evidence was superseded after using the current POD key id_ed25519_rtdl_codex_current_pod.",
+  "build": {
+    "command": "make build-optix",
+    "result": "exit_code_0",
+    "library": "/tmp/rtdl_goal5144/build/librtdl_optix.so",
+    "optix_prefix": "/root/vendor/optix-dev"
+  },
+  "validation": [
+    {
+      "command": "python3 Paper-reproduction-apps/x-hd-paper/scripts/run_cell_mbr_backend_assisted_gate.py --backend cpu --summary Paper-reproduction-apps/x-hd-paper/results/cell_mbr_backend_assisted_cpu_gate_summary_pod.json",
+      "result": "matched=true",
+      "summary": "Paper-reproduction-apps/x-hd-paper/results/cell_mbr_backend_assisted_cpu_gate_summary_pod.json"
+    },
+    {
+      "command": "RTDL_OPTIX_LIB=/tmp/rtdl_goal5144/build/librtdl_optix.so python3 Paper-reproduction-apps/x-hd-paper/scripts/run_cell_mbr_backend_assisted_gate.py --backend optix --summary Paper-reproduction-apps/x-hd-paper/results/cell_mbr_backend_assisted_optix_gate_summary_pod.json",
+      "result": "matched=true",
+      "summary": "Paper-reproduction-apps/x-hd-paper/results/cell_mbr_backend_assisted_optix_gate_summary_pod.json"
+    }
+  ],
+  "optix_gate_summary": {
+    "schema": "rtdl.paper_reproduction.xhd.cell_mbr_backend_assisted_gate.v1",
+    "status": "cell_mbr_backend_assisted_gate_completed",
+    "backend": "optix",
+    "matched": true,
+    "row_count": 6,
+    "broadphase_row_count": 6,
+    "exact_candidate_row_count": 6,
+    "broadphase_native_symbol": "rtdl_optix_collect_prepared_aabb_index_2d_point_contains_rows",
+    "native_abi_contract": "generic_cell_mbr_nearest_frontier_native_abi_v1",
+    "assisted_contract": "generic_cell_mbr_nearest_frontier_aabb_membership_2d",
+    "broadphase_contract": "generic_expanded_aabb_point_membership_rows_2d_v1",
+    "elapsed_sec": 0.47659672051668167
+  },
+  "claim_boundary": {
+    "backend_assisted_correctness_gate": true,
+    "optix_correctness_claim": true,
+    "native_goal5140_backend_claim": false,
+    "xhd_performance_claim": false,
+    "paper_reproduction_claim": false,
+    "full_xhd_algorithm_claim": false
+  }
+}

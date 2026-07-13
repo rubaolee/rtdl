@@ -1,0 +1,76 @@
+{
+  "author_source_evidence": {
+    "file": "/tmp/xhd-goal5112/author/src/hd_impl/hausdorff_distance_rt.h",
+    "observed_on_pod": "45c502cfccb5",
+    "fields": {
+      "WL": {
+        "lines": [
+          140,
+          143,
+          222,
+          223,
+          445
+        ],
+        "semantics": "Author Figure 11 WL is in_queue + miss_queue, initialized as 2 * n_points_a * sizeof(uint32_t)."
+      },
+      "WL Heavy Peak": {
+        "lines": [
+          140,
+          348,
+          349,
+          350,
+          351,
+          446
+        ],
+        "semantics": "Author Figure 11 WL Heavy Peak is the peak heavy-cell offload queue size, computed as offloading_size * 2 * sizeof(uint32_t) for offloading_point_ids_ and offloading_cell_ids_."
+      }
+    }
+  },
+  "claim_boundary": {
+    "author_memory_parity_claimed": false,
+    "figure11_reproduced": false,
+    "performance_ratio_claimed": false,
+    "same_denominator_author_figure11_claimed": false,
+    "wl_heavy_peak_measured_by_rtdl": false,
+    "wl_same_denominator_author_claimed": false
+  },
+  "date": "2026-07-09",
+  "decision": {
+    "figure11_reproduced": false,
+    "next_required_for_figure11_reproduction": [
+      "A generic heavy-cell/offload worklist API tied to RT traversal output, if RTDL chooses to model the author X-HD heavy offload path.",
+      "Native peak queue telemetry for author-like in/miss queues and heavy offload queues, if a denominator-aligned RTDL route is implemented.",
+      "Paper-exact or explicitly accepted same-source input provenance before any Figure 11 parity or ratio claim."
+    ],
+    "rtdl_bounded_matrix_is_reviewable_evidence": true,
+    "same_denominator_author_figure11": false
+  },
+  "goal": "Goal5277",
+  "inputs": {
+    "rtdl_bounded_memory_matrix": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5276_rtdl_bounded_memory_matrix_2026-07-09.json",
+    "rtdl_native_telemetry_artifacts": [
+      "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5275_tiny3d_native_memory_telemetry_pod_2026-07-09.json",
+      "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5275_stanford_sample256_native_memory_telemetry_pod_2026-07-09.json"
+    ]
+  },
+  "rtdl_current": {
+    "BVH": {
+      "available": true,
+      "same_denominator_author_figure11": false,
+      "semantics": "RTDL native telemetry reports OptiX GAS output buffer bytes for the generic cell-MBR frontier route. This excludes transient build workspace and does not prove author Figure 11 BVH parity."
+    },
+    "WL": {
+      "same_denominator_author_figure11": false,
+      "status": "estimated_rtdl_frontier_row_capacity_not_author_in_miss_queue",
+      "semantics": "RTDL current route estimates generic frontier row-table capacity: frontier_row_capacity * 8 generic 64-bit frontier row columns. This is not the author's in_queue + miss_queue denominator."
+    },
+    "WL Heavy Peak": {
+      "available": false,
+      "same_denominator_author_figure11": false,
+      "status": "unavailable_no_author_heavy_offload_equivalent_in_current_rtdl_route",
+      "semantics": "RTDL current route has no author-like heavy-cell offload worklist peak and exposes no equivalent peak queue telemetry."
+    }
+  },
+  "schema": "rtdl.paper_reproduction.xhd.memory_denominator_alignment_decision.v1",
+  "status": "figure11_denominator_alignment_not_met__heavy_worklist_api_required"
+}

@@ -1,0 +1,72 @@
+I20260704 12:00:30.653189 20732 run_overlay.cu:148] Reading map 0 from /root/rtdl_goal4955/Paper-reproduction-apps/rayjoin-paper/_data/goal4970_top4_arcgis/top4_county.cdb
+I20260704 12:00:45.845476 20732 planar_graph.h:117] Map /root/rtdl_goal4955/Paper-reproduction-apps/rayjoin-paper/_data/goal4970_top4_arcgis/top4_county.cdb is loaded, chains: 1612 points: 1706639 edges: 1705027, min seg len: 1.58001e-06, max seg len: 0.086198, avg seg len: 0.000747877, stdev: 0.00183065
+I20260704 12:00:45.941129 20732 run_overlay.cu:152] Reading map 1 from /root/rtdl_goal4955/Paper-reproduction-apps/rayjoin-paper/_data/goal4970_top4_arcgis/top4_zipcode.cdb
+I20260704 12:02:13.810091 20732 planar_graph.h:117] Map /root/rtdl_goal4955/Paper-reproduction-apps/rayjoin-paper/_data/goal4970_top4_arcgis/top4_zipcode.cdb is loaded, chains: 10144 points: 9993104 edges: 9982960, min seg len: 1e-06, max seg len: 0.0615079, avg seg len: 0.000498034, stdev: 0.00109998
+I20260704 12:02:14.369802 20732 context.h:51] Bounding Box, Bottom-left: (-124.415, 25.8371), Top-right: (-71.8561, 45.0159)
+I20260704 12:02:14.369874 20732 context.h:58] Scaled Bounding Box, Bottom-left: (-67789198093219, -63723525335741), Top-right: (67789198093218, 63723525335740)
+I20260704 12:02:14.369889 20732 context.h:61] Unscaled Bounding Box, Bottom-left: (-124.415, 25.8371), Top-right: (-71.8562, 45.0159)
+I20260704 12:02:17.243681 20732 rt_engine.cu:282] Info: Pipeline statistics
+	module(s)                            :     1
+	entry function(s)                    :     2
+	trace call(s)                        :     1
+	continuation callable call(s)        :     0
+	direct callable call(s)              :     0
+	basic block(s) in entry functions    :    23
+	instruction(s) in entry functions    :   646
+	non-entry function(s)                :     1
+	basic block(s) in non-entry functions:     1
+	instruction(s) in non-entry functions:     1
+	debug information                    :    no
+I20260704 12:02:17.255286 20732 rt_engine.cu:282] Info: Pipeline statistics
+	module(s)                            :     1
+	entry function(s)                    :     2
+	trace call(s)                        :     1
+	continuation callable call(s)        :     0
+	direct callable call(s)              :     0
+	basic block(s) in entry functions    :    61
+	instruction(s) in entry functions    :   966
+	non-entry function(s)                :     1
+	basic block(s) in non-entry functions:     1
+	instruction(s) in non-entry functions:     1
+	debug information                    :    no
+I20260704 12:02:17.255419 20732 lsi.h:22] Queue size: 53 MB
+I20260704 12:02:17.257993 20732 primitive.h:256] Enlarge limit: 3.5 max iter:5 ne: 1705027 aabbs: 223296 Compress ratio: 0.869037 Time: 1.569 ms
+I20260704 12:02:17.258112 20732 rt_engine.cu:397] Building AS, num prims: 223296, Required Temp Size: 17007488 Output Size: 8356096
+I20260704 12:02:17.269284 20732 primitive.h:256] Enlarge limit: 3.5 max iter:5 ne: 9982960 aabbs: 1344099 Compress ratio: 0.865361 Time: 9.536 ms
+I20260704 12:02:17.269332 20732 rt_engine.cu:397] Building AS, num prims: 1344099, Required Temp Size: 102363904 Output Size: 50290176
+I20260704 12:02:17.275130 20732 lsi_rt.h:50] queries: 1705027
+I20260704 12:02:17.275209 20732 rt_engine.h:159] Parm size: 176
+I20260704 12:02:17.275239 20732 rt_engine.cu:554] optixLaunch, [w,h,d] = 1705027,1,1
+I20260704 12:02:17.282403 20732 rt_engine.h:159] Parm size: 152
+I20260704 12:02:17.282441 20732 rt_engine.cu:554] optixLaunch, [w,h,d] = 1706639,1,1
+I20260704 12:02:17.297421 20732 rt_engine.h:159] Parm size: 152
+I20260704 12:02:17.297452 20732 rt_engine.cu:554] optixLaunch, [w,h,d] = 9993104,1,1
+I20260704 12:02:17.405624 20732 rt_engine.h:159] Parm size: 152
+I20260704 12:02:17.405666 20732 rt_engine.cu:554] optixLaunch, [w,h,d] = 209559,1,1
+I20260704 12:02:17.454421 20732 rt_engine.h:159] Parm size: 152
+I20260704 12:02:17.454460 20732 rt_engine.cu:554] optixLaunch, [w,h,d] = 203941,1,1
+I20260704 12:02:17.551534 20732 output_chain.h:91] Map 0, Xsect: 428322 218763
+I20260704 12:02:17.797396 20732 output_chain.h:91] Map 1, Xsect: 428322 224381
+I20260704 12:02:20.540211 20732 output_chain.h:199] Total chains: 426180 Total faces: 12039
+Timing results:
+ - Read map 0: 15287.9 ms
+
+ - Read map 1: 88428.6 ms
+
+ - Create App: 1.12104 ms
+
+ - Load Data: 2736.75 ms
+
+ - Init: 148.776 ms
+
+ - Build Index: 18.7099 ms
+
+ - Intersection edges: 7.22313 ms
+
+ - Map 0: Locate vertices in other map: 14.9 ms
+
+ - Map 1: Locate vertices in other map: 57.8511 ms
+
+ - Computer output polygons: 103.549 ms
+
+ - Write to file: 9082.12 ms

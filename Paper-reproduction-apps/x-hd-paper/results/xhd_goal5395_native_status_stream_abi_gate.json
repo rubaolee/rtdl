@@ -1,0 +1,114 @@
+{
+  "claim_boundary": {
+    "author_rt_core_algorithm_parity_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "existing_native_v6_parity_claimed": false,
+    "explicit_lb_support_claimed": false,
+    "figure11_reproduction_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "generic_native_abi_contract_claimed": true,
+    "hash_sample_parity_claimed": false,
+    "native_backend_completion_claimed": false,
+    "performance_ratio_claimed": false,
+    "row_count_parity_claimed": false,
+    "same_denominator_memory_claimed": false
+  },
+  "current_native_surface_audit": {
+    "current_surface_is_single_launch_frontier_probe": true,
+    "current_surface_satisfies_goal5394_native_probe": false,
+    "future_multiround_status_symbol": "rtdl_optix_collect_active_query_status_stream_3d_v1",
+    "future_symbol_already_present": true,
+    "latest_cell_mbr_status_probe_symbol": "rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v6",
+    "latest_symbol_present_in_python_and_native_sources": true,
+    "missing_required_output_columns": [
+      "active_queue_index",
+      "source_id",
+      "status_code",
+      "transition_phase_code",
+      "current_best_before_sq",
+      "current_best_after_sq"
+    ],
+    "missing_required_semantics": [
+      "multi-round feedback state",
+      "transition_phase_code",
+      "current_best_before_sq per status row",
+      "current_best_after_sq per status row",
+      "miss/completed/aborted row counts from the same native status stream",
+      "feedback update count or explicit not-applicable evidence from the native stream"
+    ],
+    "supported_probe_modes": [
+      "default",
+      "heavy-before-inline-prune",
+      "active-initial-best-prune"
+    ],
+    "v6_available_columns": [
+      "frontier_kind_code",
+      "query_row_id",
+      "query_point_id",
+      "cell_id",
+      "point_begin_offset",
+      "point_count",
+      "min_distance",
+      "max_distance",
+      "nearest_distance",
+      "nearest_item_id"
+    ]
+  },
+  "date": "2026-07-10",
+  "decision": {
+    "existing_native_v6_is_sufficient": false,
+    "explicit_lb_support_remains_unsupported": true,
+    "generic_native_abi_contract_added": true,
+    "native_code_implemented_by_goal5395": false,
+    "next_gate_requires_pod": true,
+    "recommended_next_action": "Implement a new generic native active-query status-stream backend matching the ABI contract, or fail-close explicit load-balance support if that requires app-specific constants.",
+    "recommended_next_goal": "Goal5396"
+  },
+  "exit_label": "native_status_stream_abi_gate_ready__implement_v7_or_fail_closed_next",
+  "generic_native_abi_contract": {
+    "app_generic": true,
+    "contract": "generic_active_query_status_stream_native_abi_v1",
+    "executable": false,
+    "explicit_app_option_support_claimed": false,
+    "output_row_schema": [
+      "active_queue_index",
+      "query_row_id",
+      "source_id",
+      "cell_id",
+      "status_code",
+      "transition_phase_code",
+      "current_best_before_sq",
+      "current_best_after_sq"
+    ],
+    "overflow_policy": "fail_closed_no_partial_rows",
+    "reference_contract": "generic_active_query_multiround_status_reference_v1",
+    "status": "specified_native_abi_no_backend_implementation",
+    "telemetry_schema": [
+      "raw_offload_rows_before_sort_reduce",
+      "raw_offload_row_hash_or_sample_rows",
+      "status_count_offloading",
+      "feedback_update_count_or_not_applicable",
+      "miss_count",
+      "completed_count",
+      "aborted_count"
+    ],
+    "validation_status": "accept"
+  },
+  "goal": "Goal5395",
+  "goal5394_target": {
+    "author_rows": 27133990,
+    "author_rows_per_active": 62,
+    "full_cover_is_correctness_claim": false,
+    "full_cover_rows": 24508120,
+    "full_cover_rows_per_active": 56,
+    "missing_rows": 2625870,
+    "missing_rows_per_active": 6
+  },
+  "input_artifacts": {
+    "goal5394_full_cover_delta_status_probe": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5394_full_cover_delta_status_probe.json"
+  },
+  "purpose": "Turn the Goal5394 native probe requirements into a public generic RTDL ABI contract and audit whether the current native surface can satisfy it before writing backend code.",
+  "schema": "rtdl.paper_reproduction.xhd.goal5395.native_status_stream_abi_gate.v1",
+  "status": "native_status_stream_abi_contract_ready__native_backend_not_implemented"
+}

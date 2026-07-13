@@ -1,0 +1,118 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5328.external_request_outbox.v1",
+  "goal": "Goal5328",
+  "date": "2026-07-09",
+  "purpose": "Turn Goal5326 request text and Goal5327 ACM follow-up into send-ready local outbox drafts with public contact/provenance metadata while preserving the not-sent claim boundary.",
+  "status": "external_request_outbox_ready__not_sent_by_codex",
+  "contact_sources": [
+    {
+      "source": "X-HD paper PDF first page",
+      "url": "https://rubaolee.github.io/paper_pdfs/2026-xhd.pdf",
+      "evidence": "Author emails appear on the first page under the author list."
+    },
+    {
+      "source": "Liang Geng publication page",
+      "url": "https://gengl.me/publications/ics26/",
+      "evidence": "Confirms the X-HD paper entry and author list."
+    }
+  ],
+  "author_recipients": [
+    {
+      "name": "Liang Geng",
+      "email": "liang.geng@case.edu",
+      "source": "paper_pdf_first_page"
+    },
+    {
+      "name": "Zhehu Yuan",
+      "email": "yuan.1203@osu.edu",
+      "source": "paper_pdf_first_page"
+    },
+    {
+      "name": "Rubao Lee",
+      "email": "liru@cse.ohio-state.edu",
+      "source": "paper_pdf_first_page"
+    },
+    {
+      "name": "Fusheng Wang",
+      "email": "fusheng.wang@stonybrook.edu",
+      "source": "paper_pdf_first_page"
+    },
+    {
+      "name": "Xiaodong Zhang",
+      "email": "zhang.574@osu.edu",
+      "source": "paper_pdf_first_page"
+    }
+  ],
+  "outbox_files": [
+    {
+      "message_id": "author_input_provenance_request",
+      "path": "Paper-reproduction-apps/x-hd-paper/requests/author_input_provenance_request.md",
+      "target": "paper_authors",
+      "send_status": "prepared_not_sent"
+    },
+    {
+      "message_id": "acm_supplement_inspection_request",
+      "path": "Paper-reproduction-apps/x-hd-paper/requests/acm_supplement_inspection_request.md",
+      "target": "acm_access_reviewer_or_authors",
+      "send_status": "prepared_not_sent"
+    },
+    {
+      "message_id": "water_bg_exact_equivalence_review_request",
+      "path": "Paper-reproduction-apps/x-hd-paper/requests/water_bg_exact_equivalence_review_request.md",
+      "target": "owner_or_external_reviewer",
+      "send_status": "prepared_not_sent"
+    }
+  ],
+  "claim_boundary": {
+    "outbox_prepared": true,
+    "request_sent_claimed": false,
+    "external_artifacts_acquired": false,
+    "acm_supplement_inspected": false,
+    "exact_equivalence_accepted": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false,
+    "pod_execution_claimed": false
+  },
+  "next_action_after_send": [
+    {
+      "response_type": "author_hash_manifest_or_input_archive",
+      "action": "Record hashes, verify or extract inputs, then run one author/RTDL same-input gate."
+    },
+    {
+      "response_type": "byte_identical_regeneration_script",
+      "action": "Run regeneration, record output hashes, then run author/RTDL gates."
+    },
+    {
+      "response_type": "acm_supplement_artifact_instructions",
+      "action": "Ingest supplement instructions/hashes into a new provenance goal."
+    },
+    {
+      "response_type": "exact_equivalence_acceptance",
+      "action": "Rename the claim exactly as accepted and run the accepted bounded matrix."
+    },
+    {
+      "response_type": "no_artifacts_or_rejection",
+      "action": "Keep full-paper claims blocked and stop at Level-B."
+    }
+  ],
+  "pod_usage": {
+    "used": false,
+    "expected_next": false,
+    "reason": "This goal prepares local outbox drafts. POD becomes relevant only after a positive external response provides artifacts or accepted reconstruction criteria."
+  },
+  "exit_label": "external_request_outbox_ready__await_owner_send",
+  "allowed_summary": "Goal5328 prepares local send-ready request drafts and public author contact metadata. It does not claim that any request was sent or that artifacts were acquired.",
+  "not_allowed": [
+    "claiming the author request has been sent",
+    "claiming any recipient has responded",
+    "claiming external artifacts have been acquired",
+    "claiming ACM supplement contents are known",
+    "claiming exact-equivalence has been accepted",
+    "claiming exact paper dataset reproduction",
+    "claiming Figure 5 reproduction",
+    "claiming full X-HD paper reproduction",
+    "claiming author-vs-RTDL performance ratio"
+  ]
+}

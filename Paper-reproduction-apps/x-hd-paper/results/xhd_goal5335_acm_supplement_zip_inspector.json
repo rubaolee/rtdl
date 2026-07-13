@@ -1,0 +1,48 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5335.acm_supplement_zip_inspector.v1",
+  "goal": "Goal5335",
+  "date": "2026-07-09",
+  "purpose": "Add an app-owned ACM supplement zip inspector that emits normalized Goal5329 intake JSON if an ACM-access reviewer obtains ics26-106.zip.",
+  "status": "acm_supplement_zip_inspector_ready__await_real_zip",
+  "inspector": {
+    "path": "Paper-reproduction-apps/x-hd-paper/scripts/inspect_xhd_acm_supplement_zip.py",
+    "input": "local zip file obtained by owner or ACM-access reviewer",
+    "output": "normalized rtdl.paper_reproduction.xhd.external_response_intake.v1 JSON",
+    "heuristics": [
+      "dataset/hash-like entries by dataset suffixes, archive suffixes, hash tokens, or dataset tokens",
+      "script/instruction-like entries by script suffixes or README/artifact/reproduce/download tokens"
+    ]
+  },
+  "behavior_locked_by_tests": [
+    "camera-ready-only synthetic zip emits no-artifact ACM listing and validator keeps blocked",
+    "artifact-bearing synthetic zip emits dataset/hash and script entries, validator records ACM inspected with ingest-before-POD action",
+    "Goal5333 planner maps artifact-bearing ACM case to separate acm_artifact_instruction_ingestion_gate with pod_allowed_next=false",
+    "invalid zip fails without output claim",
+    "summary forbids exact/full/performance claims"
+  ],
+  "pod_usage": {
+    "used": false,
+    "expected_next": false,
+    "reason": "Local zip inspection and intake JSON generation only. POD is used only after a later artifact-instruction ingestion goal justifies it."
+  },
+  "claim_boundary": {
+    "real_acm_zip_inspected": false,
+    "external_artifacts_acquired": false,
+    "exact_equivalence_accepted": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false
+  },
+  "allowed_summary": "Goal5335 adds an app-owned local inspector for a future ACM supplement zip. It can generate normalized intake JSON for the existing validator/ingest/planner chain.",
+  "not_allowed": [
+    "claiming the real ACM supplement has been inspected from synthetic tests",
+    "claiming the real ACM supplement contains datasets",
+    "claiming the real ACM supplement contains no useful artifacts",
+    "claiming exact paper dataset reproduction",
+    "claiming Figure 5 reproduction",
+    "claiming full X-HD paper reproduction",
+    "claiming author-vs-RTDL performance ratio"
+  ],
+  "exit_label": "acm_supplement_zip_inspector_ready__await_real_zip"
+}

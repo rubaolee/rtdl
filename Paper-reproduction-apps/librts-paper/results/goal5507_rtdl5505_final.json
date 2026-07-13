@@ -1,0 +1,56 @@
+{
+  "claim_boundary": {
+    "author_specific_rtdl_core_behavior_authorized": false,
+    "embree_in_scope": false,
+    "full_input_adjudication": false,
+    "generic_native_patch_probe_only": true,
+    "paper_reproduction_claimed": false,
+    "performance_ratio_authorized": false
+  },
+  "input_identity": {
+    "geometry_path": "/workspace/rtdl-goal5481/goal5507/data/goal5505_boundary_boxes.wkt",
+    "geometry_sha256": "2256d450210f56d7032284e87fae70b46ed1686a441f1bf4fad9ed8fba544ba2",
+    "query_path": "/workspace/rtdl-goal5481/goal5507/data/goal5505_boundary_queries.wkt",
+    "query_sha256": "d427b5164a23be371779550b0b368b2fd8a4e2f08b449765ccdc74ef46002b95",
+    "same_input_files": true
+  },
+  "rtdl": {
+    "backend": "optix",
+    "intersection_duplicate_row_count": 0,
+    "intersection_rows": [
+      [
+        0,
+        0
+      ],
+      [
+        1,
+        0
+      ],
+      [
+        2,
+        0
+      ],
+      [
+        3,
+        0
+      ],
+      [
+        4,
+        0
+      ]
+    ],
+    "intersection_rows_count": 5,
+    "intersection_rows_sec": 0.0004790920065715909,
+    "intersection_unique_rows_count": 5,
+    "native_engine_customization": false,
+    "operation": "range_intersects",
+    "prepare_sec": 0.37870085396571085,
+    "primitive_query_sec": 0.11767856200458482,
+    "public_api": "Aabb2DColumns + prepare_aabb_index_2d_columns + prepared.count",
+    "query_wall_sec": 0.11776485602604225,
+    "result_count": 5,
+    "rt_core_accelerated": true
+  },
+  "schema": "rtdl.paper_reproduction.librts.goal5507_rtdl_range_intersects_probe.v1",
+  "status": "rtdl_probe_completed"
+}

@@ -1,0 +1,255 @@
+{
+  "allowed_summary": "X-HD same-input directed-HDResult reproduction is complete for the current owner-approved scope: the tested author hd_exec and RTDL routes agree on directed input1-to-input2 HDResult within tolerance.",
+  "claim_boundary": {
+    "all_paper_figures_reproduced": false,
+    "author_internal_worklist_or_row_hash_parity_claimed": false,
+    "author_rt_core_algorithm_equivalence_claimed": false,
+    "exact_original_paper_artifacts_recovered": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "new_public_artifact_search_authorized": false,
+    "new_route_optimization_authorized": false,
+    "performance_parity_or_speedup_claimed": false,
+    "same_input_directed_hdresult_reproduction_complete": true
+  },
+  "date": "2026-07-10",
+  "directed_definition_gate": {
+    "author_comparison_reference": "directed_a_to_b",
+    "author_hd_result": 0.5,
+    "distinguishes_directed_from_symmetric": true,
+    "matched": true,
+    "reverse_directed_hd_result": 9.0,
+    "rtdl_hd_result": 0.5,
+    "symmetric_hd_result": 9.0
+  },
+  "evidence_matrix": {
+    "additional_fast_scalar_routes": [
+      {
+        "abs_diff": 2.3848857610975216e-09,
+        "author_hd_result": 0.12572988867759705,
+        "case_id": "dragon_happy",
+        "claim": "directed scalar HDResult only",
+        "matched": true,
+        "per_source_witness_exact": false,
+        "route": "cell-mbr-fast-scalar",
+        "rtdl_hd_result": 0.12572988629271128,
+        "tolerance": 1e-06
+      },
+      {
+        "abs_diff": 6.335011043523409e-09,
+        "author_hd_result": 0.21912431716918945,
+        "case_id": "thai_happy_scaled",
+        "claim": "directed scalar HDResult only",
+        "matched": true,
+        "per_source_witness_exact": false,
+        "route": "cell-mbr-fast-scalar",
+        "rtdl_hd_result": 0.2191243235042005,
+        "tolerance": 1e-06
+      },
+      {
+        "abs_diff": 1.0956085760849277e-08,
+        "author_hd_result": 0.28763842582702637,
+        "case_id": "thai_asian_scaled",
+        "claim": "directed scalar HDResult only",
+        "matched": true,
+        "per_source_witness_exact": false,
+        "route": "cell-mbr-fast-scalar",
+        "rtdl_hd_result": 0.2876384148709406,
+        "tolerance": 1e-06
+      }
+    ],
+    "additional_scalar_only_matched_count": 3,
+    "additional_scalar_only_route_count": 3,
+    "categories": [
+      "definition_discriminator_2d",
+      "geo_2d_bounded",
+      "geo_2d_full_public",
+      "graphics_3d"
+    ],
+    "primary_case_count": 7,
+    "primary_cases": [
+      {
+        "abs_diff": 0.0,
+        "author_hd_result": 0.5,
+        "case_id": "directed2d_asymmetric",
+        "category": "definition_discriminator_2d",
+        "directed_contract": "input1_to_input2",
+        "input_identity_level": "bounded_checked_in_fixture",
+        "matched": true,
+        "per_source_witness_exact": true,
+        "point_counts": [
+          2,
+          2
+        ],
+        "reverse_directed_hd_result": 9.0,
+        "route": "rtdl_numpy_columns_2d",
+        "rtdl_hd_result": 0.5,
+        "same_input_author_and_rtdl": true,
+        "symmetric_hd_result": 9.0,
+        "tolerance": 1e-06
+      },
+      {
+        "abs_diff": 2.3848857610975216e-09,
+        "author_hd_result": 0.12572988867759705,
+        "case_id": "dragon_happy",
+        "category": "graphics_3d",
+        "directed_contract": "input1_to_input2",
+        "input_identity_level": "level_b_same_source_public_graphics",
+        "matched": true,
+        "per_source_witness_exact": true,
+        "point_counts": [
+          437645,
+          543652
+        ],
+        "route": "cell-mbr-exact-witness",
+        "rtdl_hd_result": 0.12572988629271128,
+        "same_input_author_and_rtdl": true,
+        "tolerance": 1e-06
+      },
+      {
+        "abs_diff": 6.335011043523409e-09,
+        "author_hd_result": 0.21912431716918945,
+        "case_id": "thai_happy_scaled",
+        "category": "graphics_3d",
+        "directed_contract": "input1_to_input2",
+        "input_identity_level": "level_b_same_source_public_graphics",
+        "matched": true,
+        "per_source_witness_exact": true,
+        "point_counts": [
+          4999996,
+          543652
+        ],
+        "route": "cell-mbr-exact-witness",
+        "rtdl_hd_result": 0.2191243235042005,
+        "same_input_author_and_rtdl": true,
+        "tolerance": 1e-06
+      },
+      {
+        "abs_diff": 1.0956085760849277e-08,
+        "author_hd_result": 0.28763842582702637,
+        "case_id": "thai_asian_scaled",
+        "category": "graphics_3d",
+        "directed_contract": "input1_to_input2",
+        "input_identity_level": "level_b_same_source_public_graphics",
+        "matched": true,
+        "per_source_witness_exact": true,
+        "point_counts": [
+          4999996,
+          3609600
+        ],
+        "route": "cell-mbr-exact-witness",
+        "rtdl_hd_result": 0.2876384148709406,
+        "same_input_author_and_rtdl": true,
+        "tolerance": 1e-06
+      },
+      {
+        "abs_diff": 5.2616073986655465e-06,
+        "author_hd_result": 65.44752502441406,
+        "case_id": "county_zcta_bounded",
+        "category": "geo_2d_bounded",
+        "directed_contract": "directed_input1_to_input2",
+        "input_identity_level": "level_b_bounded_geo_fixture",
+        "matched": true,
+        "per_source_witness_exact": true,
+        "point_counts": [
+          38034,
+          50272
+        ],
+        "route": "directed_max_of_nearest_distance_2d_partner_columns",
+        "rtdl_hd_result": 65.44751976280666,
+        "same_input_author_and_rtdl": true,
+        "tolerance": 1e-05
+      },
+      {
+        "abs_diff": 4.925300871150284e-06,
+        "author_hd_result": 72.38665008544922,
+        "case_id": "water_bg_bounded",
+        "category": "geo_2d_bounded",
+        "directed_contract": "directed_input1_to_input2",
+        "input_identity_level": "level_b_bounded_geo_fixture",
+        "matched": true,
+        "per_source_witness_exact": true,
+        "point_counts": [
+          124,
+          894
+        ],
+        "route": "directed_max_of_nearest_distance_2d_partner_columns",
+        "rtdl_hd_result": 72.38664516014835,
+        "same_input_author_and_rtdl": true,
+        "tolerance": 1e-05
+      },
+      {
+        "abs_diff": 1.305780185645311e-06,
+        "author_hd_result": 0.8964367508888245,
+        "case_id": "water_bg_full_public_paper_config",
+        "category": "geo_2d_full_public",
+        "directed_contract": "input1_to_input2",
+        "input_identity_level": "level_b_full_public_same_source_geo_not_exact_file_hash",
+        "matched": true,
+        "per_source_witness_exact": true,
+        "point_counts": [
+          22824823,
+          52271467
+        ],
+        "route": "existing_goal5314_exact_witness",
+        "rtdl_hd_result": 0.8964380566690101,
+        "same_input_author_and_rtdl": true,
+        "tolerance": 2e-06
+      }
+    ],
+    "primary_matched_case_count": 7
+  },
+  "exit_label": "xhd_same_input_directed_hdresult_reproduction_complete__externally_reviewed_and_approved",
+  "forbidden_summaries": [
+    "the original paper datasets were recovered",
+    "all X-HD paper figures were reproduced",
+    "RTDL reproduces the author's internal RT-core algorithm or worklists",
+    "RTDL performance parity or speedup against the author is proven",
+    "fast-scalar per-source witnesses are exact"
+  ],
+  "goal": "Goal5451",
+  "next_action": "stop the current X-HD implementation line; no more route tuning or artifact search is required",
+  "owner_acceptance_criterion": "For the same input files, RTDL/Python/partner and author C++/CUDA/OptiX hd_exec produce the same directed input1-to-input2 HDResult within the declared tolerance.",
+  "performance_appendix": {
+    "author_internal_running_avg_time_ms_median": 7.722,
+    "author_process_wall_sec_median": 1.9058002084493637,
+    "fresh_per_source_witness_exact": false,
+    "fresh_scalar_hdresult_matched": true,
+    "performance_ratio_authorized": false,
+    "rtdl_explicit_warm_full_total_including_load_warmup_and_measured_sec_median": 1.812147118151188,
+    "rtdl_explicit_warm_route_sec_median": 0.2896384373307228,
+    "rtdl_fresh_route_wall_sec_median": 0.8396428748965263,
+    "rtdl_fresh_total_including_load_sec_median": 1.5200408399105072,
+    "warm_is_diagnostic_only": true,
+    "why_no_ratio": "author internal time, author process wall, RTDL route wall, RTDL full gate, and RTDL explicit-warm route are different denominators; exact paper dataset identity is also unproved",
+    "workload": "public Stanford Dragon to HappyBuddha, same POD, same input pair"
+  },
+  "review_status": {
+    "external_review_approved": true,
+    "external_review_present": true,
+    "verdict_label": "approve_goal5451_xhd_same_input_directed_hdresult_closeout"
+  },
+  "schema": "rtdl.paper_reproduction.xhd.goal5451.same_input_hdresult_closeout.v1",
+  "source_artifacts": {
+    "bounded_geo_same_pod_matrix": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5422_bounded_geo_same_pod_packet_execution.json",
+    "directed_author_gate": "Paper-reproduction-apps/x-hd-paper/results/directed2d_asymmetric_author_gate_summary_pod.json",
+    "directed_rtdl_gate": "Paper-reproduction-apps/x-hd-paper/results/directed2d_asymmetric_rtdl_route_gate_summary.json",
+    "external_review": "history/internal_docs/review_goal5451_xhd_same_input_hdresult_closeout_verified_2026-07-10.md",
+    "full_public_geo_consolidation": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5427_water_bg_paper_config_consolidation.json",
+    "graphics_same_pod_matrix": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5419_figure5_level_b_same_pod_graphics_matrix.json",
+    "performance_regime_matrix": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5217_level_b_same_pod_performance_matrix_2026-07-09.json"
+  },
+  "status": "xhd_same_input_directed_hdresult_reproduction_complete__externally_reviewed_and_approved",
+  "system_value": {
+    "generic_rtdl_assets": [
+      "pairwise L2 candidate rows",
+      "nearest witness reduction",
+      "max-nearest scalar reduction",
+      "generic grid/cell-MBR descriptors and nearest frontier execution",
+      "partner-facing 2D directed max-of-nearest route"
+    ],
+    "hausdorff_is_an_app_composition": true,
+    "non_xhd_consumer_proof": "Goal5128 facility-service-radius / worst-served-demand consumer",
+    "xhd_specific_core_primitive_added": false
+  }
+}

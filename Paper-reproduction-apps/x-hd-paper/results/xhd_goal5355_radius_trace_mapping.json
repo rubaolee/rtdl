@@ -1,0 +1,168 @@
+{
+  "all_transition_cases_matched": true,
+  "case_count": 3,
+  "cases": [
+    {
+      "all_transitions_matched": true,
+      "author_json": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_full_public_author_hd_exec_goal5186_graphics_dragon_happy_buddha_2026-07-08.json",
+      "case_id": "full_public_dragon_happy_buddha_goal5186",
+      "cell_diagonal_source": "Input.Files[1].MBR / Running.Repeats[0].GridResolution",
+      "derived_target_cell_diagonal": 0.014159784669663477,
+      "grid_resolution": [
+        10,
+        24,
+        10
+      ],
+      "hd_result": 0.12572988867759705,
+      "hd_upper_bound": 0.26690536737442017,
+      "iteration_count": 2,
+      "mode": "adaptive",
+      "terminal": {
+        "iteration": 2,
+        "num_output_points": 0,
+        "predicted_next_radius": 0.1377279907464981,
+        "reason": "No following author iteration exists. When NumOutputPoints is zero, the generic helper also stops updating.",
+        "step_update_applied": false
+      },
+      "transition_count": 1,
+      "transitions": [
+        {
+          "abs_diff": 9.48693318347793e-10,
+          "cell_diagonal": 0.014159784669663477,
+          "from_iteration": 1,
+          "matched": true,
+          "mode": "adaptive",
+          "observed_next_radius": 0.1377279907464981,
+          "predicted_next_radius": 0.13772799169519143,
+          "previous_radius": 0.12356820702552795,
+          "step": {
+            "app_semantics": "none",
+            "cell_diagonal": 0.014159784669663477,
+            "clamp_applied": false,
+            "contract": "rtdl.radius_growth_schedule.v1",
+            "expanded_by": 0.014159784669663477,
+            "hd_upper_bound": 0.26690536737442017,
+            "last_input_count": 437645,
+            "mode": "adaptive",
+            "next_input_count": 150,
+            "next_radius": 0.13772799169519143,
+            "previous_radius": 0.12356820702552795,
+            "reduced_factor": 0.9996572564521473,
+            "update_applied": true
+          },
+          "to_iteration": 2
+        }
+      ]
+    },
+    {
+      "all_transitions_matched": true,
+      "author_json": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\perf_res4full_author_hd_exec_output_pod.json",
+      "case_id": "res4full_dragon_happy_buddha_perf",
+      "cell_diagonal_source": "Input.Files[1].MBR / Running.Repeats[0].GridResolution",
+      "derived_target_cell_diagonal": 0.03608698914957627,
+      "grid_resolution": [
+        4,
+        9,
+        4
+      ],
+      "hd_result": 0.1241602823138237,
+      "hd_upper_bound": 0.264476478099823,
+      "iteration_count": 2,
+      "mode": "adaptive",
+      "terminal": {
+        "iteration": 2,
+        "num_output_points": 0,
+        "predicted_next_radius": 0.15791678428649902,
+        "reason": "No following author iteration exists. When NumOutputPoints is zero, the generic helper also stops updating.",
+        "step_update_applied": false
+      },
+      "transition_count": 1,
+      "transitions": [
+        {
+          "abs_diff": 5.1708279324991224e-09,
+          "cell_diagonal": 0.03608698914957627,
+          "from_iteration": 1,
+          "matched": true,
+          "mode": "adaptive",
+          "observed_next_radius": 0.15791678428649902,
+          "predicted_next_radius": 0.15791678945732696,
+          "previous_radius": 0.1218298003077507,
+          "step": {
+            "app_semantics": "none",
+            "cell_diagonal": 0.03608698914957627,
+            "clamp_applied": false,
+            "contract": "rtdl.radius_growth_schedule.v1",
+            "expanded_by": 0.03608698914957627,
+            "hd_upper_bound": 0.264476478099823,
+            "last_input_count": 5205,
+            "mode": "adaptive",
+            "next_input_count": 4,
+            "next_radius": 0.15791678945732696,
+            "previous_radius": 0.1218298003077507,
+            "reduced_factor": 0.9992315081652258,
+            "update_applied": true
+          },
+          "to_iteration": 2
+        }
+      ]
+    },
+    {
+      "all_transitions_matched": true,
+      "author_json": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\bounded3d_author_hd_exec_output_pod.json",
+      "case_id": "bounded3d_author_gate",
+      "cell_diagonal_source": "Input.Files[1].MBR / Running.Repeats[0].GridResolution",
+      "derived_target_cell_diagonal": 1.7320508075688772,
+      "grid_resolution": [
+        1,
+        1,
+        1
+      ],
+      "hd_result": 2.0,
+      "hd_upper_bound": 3.316624879837036,
+      "iteration_count": 1,
+      "mode": "adaptive",
+      "terminal": {
+        "iteration": 1,
+        "num_output_points": 0,
+        "predicted_next_radius": 2.0,
+        "reason": "No following author iteration exists. When NumOutputPoints is zero, the generic helper also stops updating.",
+        "step_update_applied": false
+      },
+      "transition_count": 0,
+      "transitions": []
+    }
+  ],
+  "claim_boundary": {
+    "author_rt_core_algorithm_equivalence_claimed": false,
+    "author_tune_radius_route_mapping_claimed": false,
+    "figure8_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "performance_claimed": false
+  },
+  "current_xhd_mapping_status": {
+    "author_json_trace_mapping_available": true,
+    "reason": "Existing author JSON traces validate the schedule transition math, but RTDL route behavior still needs a separate bounded/Level-B trace gate before explicit author -tune_radius can be accepted.",
+    "route_uses_tune_radius_helper": false,
+    "run_xhd_rtdl_hd_exec_explicit_tune_radius_still_fail_closed": true
+  },
+  "date": "2026-07-09",
+  "exit_label": "radius_trace_mapping_verified_for_available_author_json__await_route_trace_gate",
+  "goal": "Goal5355",
+  "purpose": "Compare available author hd_exec radius iteration traces against the generic RTDL radius_growth_step helper, without enabling explicit author tune_radius route behavior.",
+  "recommended_next_targets": [
+    "add_app_owned_radius_trace_metadata_to_cell_mbr_route_under_internal_flag",
+    "compare_author_and_rtdl_radius_iteration_trace_on_bounded_or_level_b_input",
+    "only_then_consider_accepting_explicit_author_tune_radius"
+  ],
+  "rtdl_api": {
+    "app_semantics": "none",
+    "contract": "rtdl.radius_growth_schedule.v1",
+    "helper": "radius_growth_step",
+    "module": "src/rtdsl/radius_schedule.py"
+  },
+  "schema": "rtdl.paper_reproduction.xhd.goal5355.radius_trace_mapping.v1",
+  "status": "radius_trace_mapping_matches_available_author_json__route_still_fail_closed",
+  "tolerance": 1e-06,
+  "total_transition_count": 2,
+  "transition_case_count": 2
+}

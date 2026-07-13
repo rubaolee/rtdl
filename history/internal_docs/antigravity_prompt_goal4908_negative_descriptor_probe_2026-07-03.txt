@@ -1,0 +1,22 @@
+Please review Goal4908 as an independent critical reviewer.
+
+Read:
+
+1. `history/internal_docs/goal4908_compiled_descriptor_probe_negative_result_2026-07-03.md`
+2. `history/internal_docs/call_for_review_goal4908_negative_descriptor_probe_2026-07-03.md`
+3. `history/internal_docs/goal4908_descriptor_writer_summary_2026-07-03.json`
+4. `history/internal_docs/goal4907_structural_writer_summary_2026-07-03.json`
+
+Be strict: this is a negative result. Check that the report does not hide the
+slowdown, that it preserves byte equality, and that reverting to the Goal4907
+writer is correct.
+
+Write the review to:
+
+`history/internal_docs/antigravity_goal4908_negative_descriptor_probe_review_2026-07-03.md`
+
+Use one of these verdict labels:
+
+- `approve_goal4908_negative_probe_and_keep_goal4907`
+- `approve_with_required_amendments`
+- `block_revert_or_interpretation`

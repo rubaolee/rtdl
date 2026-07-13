@@ -1,0 +1,115 @@
+{
+  "artifact_name": "ics26-106.zip",
+  "claim_boundary": {
+    "acm_supplement_inspected": false,
+    "candidate_workload_mapping_accepted": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false,
+    "pod_execution_claimed": false,
+    "same_input_gate_passed": false,
+    "zip_contents_inspected": false
+  },
+  "classification": "acm_supplement_visible_but_forbidden_from_current_environment",
+  "doi": "10.1145/3797905.3800509",
+  "next_action": "obtain ACM-authorized access/cookie or author artifact; do not infer contents from forbidden response",
+  "pod_usage": {
+    "expected_next": false,
+    "reason": "Live access/provenance probe only. POD is useful only after inspected artifacts, accepted workload mapping, and command packet readiness.",
+    "used": false
+  },
+  "schema": "rtdl.paper_reproduction.xhd.acm_supplement_live_access_probe.v1",
+  "url_checks": [
+    {
+      "head": {
+        "content_length": "5781",
+        "content_range": null,
+        "content_type": "text/html; charset=UTF-8",
+        "elapsed_sec": 0.1651904582977295,
+        "error": "HTTPError: 403",
+        "method": "HEAD",
+        "ok": false,
+        "status": 403,
+        "url": "https://dl.acm.org/action/downloadSupplement?doi=10.1145%2F3797905.3800509&file=ics26-106.zip"
+      },
+      "range_get": {
+        "content_length": "5781",
+        "content_range": null,
+        "content_type": "text/html; charset=UTF-8",
+        "elapsed_sec": 0.11135053634643555,
+        "error": "HTTPError: 403",
+        "method": "GET",
+        "ok": false,
+        "sample_hex": "3c21444f43545950452068746d6c3e3c",
+        "sample_len": 4096,
+        "status": 403,
+        "url": "https://dl.acm.org/action/downloadSupplement?doi=10.1145%2F3797905.3800509&file=ics26-106.zip",
+        "zip_magic": false
+      },
+      "url": "https://dl.acm.org/action/downloadSupplement?doi=10.1145%2F3797905.3800509&file=ics26-106.zip"
+    },
+    {
+      "head": {
+        "content_length": "5682",
+        "content_range": null,
+        "content_type": "text/html; charset=UTF-8",
+        "elapsed_sec": 0.12202787399291992,
+        "error": "HTTPError: 403",
+        "method": "HEAD",
+        "ok": false,
+        "status": 403,
+        "url": "https://dl.acm.org/doi/suppl/10.1145/3797905.3800509/suppl_file/ics26-106.zip"
+      },
+      "range_get": {
+        "content_length": "5682",
+        "content_range": null,
+        "content_type": "text/html; charset=UTF-8",
+        "elapsed_sec": 0.1057898998260498,
+        "error": "HTTPError: 403",
+        "method": "GET",
+        "ok": false,
+        "sample_hex": "3c21444f43545950452068746d6c3e3c",
+        "sample_len": 4096,
+        "status": 403,
+        "url": "https://dl.acm.org/doi/suppl/10.1145/3797905.3800509/suppl_file/ics26-106.zip",
+        "zip_magic": false
+      },
+      "url": "https://dl.acm.org/doi/suppl/10.1145/3797905.3800509/suppl_file/ics26-106.zip"
+    },
+    {
+      "head": {
+        "content_length": "5760",
+        "content_range": null,
+        "content_type": "text/html; charset=UTF-8",
+        "elapsed_sec": 0.10668134689331055,
+        "error": "HTTPError: 403",
+        "method": "HEAD",
+        "ok": false,
+        "status": 403,
+        "url": "https://dl.acm.org/doi/suppl/10.1145/3797905.3800509/suppl_file/ics26-106.zip?download=true"
+      },
+      "range_get": {
+        "content_length": "5760",
+        "content_range": null,
+        "content_type": "text/html; charset=UTF-8",
+        "elapsed_sec": 0.10472607612609863,
+        "error": "HTTPError: 403",
+        "method": "GET",
+        "ok": false,
+        "sample_hex": "3c21444f43545950452068746d6c3e3c",
+        "sample_len": 4096,
+        "status": 403,
+        "url": "https://dl.acm.org/doi/suppl/10.1145/3797905.3800509/suppl_file/ics26-106.zip?download=true",
+        "zip_magic": false
+      },
+      "url": "https://dl.acm.org/doi/suppl/10.1145/3797905.3800509/suppl_file/ics26-106.zip?download=true"
+    }
+  ],
+  "urls": [
+    "https://dl.acm.org/action/downloadSupplement?doi=10.1145%2F3797905.3800509&file=ics26-106.zip",
+    "https://dl.acm.org/doi/suppl/10.1145/3797905.3800509/suppl_file/ics26-106.zip",
+    "https://dl.acm.org/doi/suppl/10.1145/3797905.3800509/suppl_file/ics26-106.zip?download=true"
+  ],
+  "used_cookie_header": false
+}

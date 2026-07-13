@@ -1,0 +1,36 @@
+{
+  "claim_boundary": {
+    "app_specific_core_behavior_authorized": false,
+    "embree_in_scope": false,
+    "generic_operation_contract_probe": true,
+    "paper_input_used": false,
+    "performance_ratio_authorized": false
+  },
+  "counts": {
+    "point_contains": 1,
+    "range_contains": 1,
+    "range_intersects": 0
+  },
+  "expected_counts": {
+    "point_contains": 1,
+    "range_contains": 1,
+    "range_intersects": 0
+  },
+  "float32_box": [
+    -69.73983764648438,
+    -89.96784210205078,
+    -69.73445129394531,
+    -89.96784210205078
+  ],
+  "float32_collapsed": true,
+  "float64_box": [
+    -69.73984,
+    -89.967841,
+    -69.734454,
+    -89.967839
+  ],
+  "matched": true,
+  "optix_library": "/tmp/rtdl-goal5519/build5519/librtdl_optix.so",
+  "schema": "rtdl.paper_reproduction.librts.goal5519_operation_scoped_validity_probe.v1",
+  "status": "operation_scoped_validity_contract_matched"
+}

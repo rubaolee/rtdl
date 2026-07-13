@@ -1,0 +1,11 @@
+{
+  "elapsed_sec": 481.4263310432434,
+  "first_diff": {
+    "author": "41230 2 42104 42105 280 290",
+    "line": 123678,
+    "rtdl": "41230 2 42104 42105 294 295"
+  },
+  "result": null,
+  "schema": "rtdl.goal4830.streaming_compare.v1",
+  "stream_match": false
+}

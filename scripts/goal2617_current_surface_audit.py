@@ -23,9 +23,9 @@ HISTORICAL_DIRS = {
 
 SUPPORT_EXAMPLE_DIRS = {
     "examples/generated",
-    "examples/internal",
     "examples/legacy_or_backend_proofs",
     "examples/reference",
+    "history/examples_internal",
 }
 
 CURRENT_TOP_LEVEL_DOCS = {

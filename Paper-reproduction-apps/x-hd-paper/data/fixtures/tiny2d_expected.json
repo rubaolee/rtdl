@@ -1,0 +1,10 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.tiny2d_expected.v1",
+  "input1": "tiny2d_a.wkt",
+  "input2": "tiny2d_b.wkt",
+  "n_dims": 2,
+  "directed_a_to_b": 1.0,
+  "directed_b_to_a": 1.0,
+  "hausdorff": 1.0,
+  "tolerance": 1e-9
+}

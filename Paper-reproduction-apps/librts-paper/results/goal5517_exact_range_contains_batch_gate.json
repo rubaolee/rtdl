@@ -1,0 +1,342 @@
+{
+  "archive_extraction": {
+    "result_path": "Paper-reproduction-apps/librts-paper/results/librts_goal5517_range_contains_batch_extraction.json",
+    "selected_member_count": 8,
+    "selected_pair_count": 4,
+    "verified_md5": "89e589f086038f1cd3af9e3ed67da8c8",
+    "workspace_quota_fallback": "extracted under /tmp after /workspace quota failure"
+  },
+  "case_count": 4,
+  "cases": [
+    {
+      "author": {
+        "command": [
+          "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+          "-geom",
+          "/tmp/goal5517-target/PPoPPAE/datasets/polygons/parks_Europe.wkt",
+          "-query",
+          "/tmp/goal5517-target/PPoPPAE/datasets/queries/range-contains_queries_100000/parks_Europe.wkt",
+          "-serialize",
+          "/tmp/librts-serialize/goal5517/parks_Europe_range_contains_100000",
+          "-query_type",
+          "range-contains",
+          "-index_type",
+          "rtspatial",
+          "-load_factor",
+          "0.0001"
+        ],
+        "geometry_count": 1856318,
+        "loading_ms_diagnostic": 7.2608,
+        "pair_rows_exposed": false,
+        "query_count": 100000,
+        "query_metric": "internal Query Time; index Loading Time excluded",
+        "query_ms_internal": 0.0822,
+        "result_count": 104426,
+        "stdout": "Loaded polygons 1856318\nLoaded queries 100000\nQueue size 141 MB\nBVH 385 MB, Geometries 28 MB, AABBs 42 MB, Total 455 MB\nLoading Time 7.2608 ms\nGeoms 1856318\nQueries 100000\nQuery Time 0.0822 ms\nResults 104426\nSelectivity: 5.62544e-07\n"
+      },
+      "case_id": "parks_Europe_range_contains_100000",
+      "claim_boundary": {
+        "complete_paper_reproduction_claimed": false,
+        "device_zero_copy_claimed": false,
+        "embree_in_scope": false,
+        "exact_archive_and_extracted_input_identity_used": true,
+        "figure6_reproduced": false,
+        "generic_columnar_frontdoor_used": true,
+        "performance_ratio_authorized": false,
+        "pointwise_containment_equivalence_claimed": false,
+        "same_input_result_count_agreement": true
+      },
+      "input_identity": {
+        "geometry_path": "/tmp/goal5517-target/PPoPPAE/datasets/polygons/parks_Europe.wkt",
+        "geometry_sha256": "fd77bf8294dfb9dfe45e49fc4aec99427ebd9ac4f370697b0c908d635d643aed",
+        "query_path": "/tmp/goal5517-target/PPoPPAE/datasets/queries/range-contains_queries_100000/parks_Europe.wkt",
+        "query_sha256": "b76e901cf41dc1fa2d3073fd88adc7c9327db8620fa221a0e21b00df0ca211f6",
+        "same_files_passed_to_author_and_rtdl": true,
+        "verified_extraction_root": "/tmp/goal5517-target"
+      },
+      "matched": true,
+      "phase_boundary": {
+        "author_query_excludes_loading": true,
+        "performance_ratio_authorized": false,
+        "rtdl_prepared_query_excludes_wkt_load_and_index_prepare": true
+      },
+      "rtdl": {
+        "backend": "optix",
+        "input_contract": "generic_host_aabb_2d_columns",
+        "load_wkt_sec": 142.24388604797423,
+        "native_engine_customization": false,
+        "operation": "range_contains",
+        "prepare_index_sec": 0.5702299739932641,
+        "prepared_query_wall_sec": 0.6114596069674008,
+        "primitive_query_sec": 0.36395793897099793,
+        "public_api": "Aabb2DColumns + prepare_aabb_index_2d_columns + prepared.count",
+        "result_count": 104426,
+        "row_output_requested": false,
+        "rt_core_accelerated": true
+      },
+      "schema": "rtdl.paper_reproduction.librts.exact_range_contains_count_gate.v1",
+      "status": "exact_input_range_contains_count_matched"
+    },
+    {
+      "author": {
+        "command": [
+          "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+          "-geom",
+          "/tmp/goal5517-target/PPoPPAE/datasets/polygons/dtl_cnty.wkt",
+          "-query",
+          "/tmp/goal5517-target/PPoPPAE/datasets/queries/range-contains_queries_100000/dtl_cnty.wkt",
+          "-serialize",
+          "/tmp/librts-serialize/goal5517/dtl_cnty_range_contains_100000",
+          "-query_type",
+          "range-contains",
+          "-index_type",
+          "rtspatial",
+          "-load_factor",
+          "0.0001"
+        ],
+        "geometry_count": 12234,
+        "loading_ms_diagnostic": 0.4262,
+        "pair_rows_exposed": false,
+        "query_count": 100000,
+        "query_metric": "internal Query Time; index Loading Time excluded",
+        "query_ms_internal": 0.0844,
+        "result_count": 117314,
+        "stdout": "Loaded polygons 12234\nLoaded queries 100000\nQueue size 0 MB\nBVH 151 MB, Geometries 0 MB, AABBs 0 MB, Total 151 MB\nLoading Time 0.4262 ms\nGeoms 12234\nQueries 100000\nQuery Time 0.0844 ms\nResults 117314\nSelectivity: 9.58918e-05\n"
+      },
+      "case_id": "dtl_cnty_range_contains_100000",
+      "claim_boundary": {
+        "complete_paper_reproduction_claimed": false,
+        "device_zero_copy_claimed": false,
+        "embree_in_scope": false,
+        "exact_archive_and_extracted_input_identity_used": true,
+        "figure6_reproduced": false,
+        "generic_columnar_frontdoor_used": true,
+        "performance_ratio_authorized": false,
+        "pointwise_containment_equivalence_claimed": false,
+        "same_input_result_count_agreement": true
+      },
+      "input_identity": {
+        "geometry_path": "/tmp/goal5517-target/PPoPPAE/datasets/polygons/dtl_cnty.wkt",
+        "geometry_sha256": "9177fdff45f24488f22157a2a1428a7cdb9d5a66a7287d4013ead52de1c7973f",
+        "query_path": "/tmp/goal5517-target/PPoPPAE/datasets/queries/range-contains_queries_100000/dtl_cnty.wkt",
+        "query_sha256": "b6b388481f3c27a14adacb36e6a4acfbe56a2c0cd012dcf853e753eed3adb9a4",
+        "same_files_passed_to_author_and_rtdl": true,
+        "verified_extraction_root": "/tmp/goal5517-target"
+      },
+      "matched": true,
+      "phase_boundary": {
+        "author_query_excludes_loading": true,
+        "performance_ratio_authorized": false,
+        "rtdl_prepared_query_excludes_wkt_load_and_index_prepare": true
+      },
+      "rtdl": {
+        "backend": "optix",
+        "input_contract": "generic_host_aabb_2d_columns",
+        "load_wkt_sec": 29.47255679697264,
+        "native_engine_customization": false,
+        "operation": "range_contains",
+        "prepare_index_sec": 0.36800959397805855,
+        "prepared_query_wall_sec": 0.6188335210317746,
+        "primitive_query_sec": 0.3768928889767267,
+        "public_api": "Aabb2DColumns + prepare_aabb_index_2d_columns + prepared.count",
+        "result_count": 117314,
+        "row_output_requested": false,
+        "rt_core_accelerated": true
+      },
+      "schema": "rtdl.paper_reproduction.librts.exact_range_contains_count_gate.v1",
+      "status": "exact_input_range_contains_count_matched"
+    },
+    {
+      "author": {
+        "command": [
+          "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+          "-geom",
+          "/tmp/goal5517-target/PPoPPAE/datasets/polygons/USACensusBlockGroupBoundaries.wkt",
+          "-query",
+          "/tmp/goal5517-target/PPoPPAE/datasets/queries/range-contains_queries_100000/USACensusBlockGroupBoundaries.wkt",
+          "-serialize",
+          "/tmp/librts-serialize/goal5517/USACensusBlockGroupBoundaries_range_contains_100000",
+          "-query_type",
+          "range-contains",
+          "-index_type",
+          "rtspatial",
+          "-load_factor",
+          "0.0001"
+        ],
+        "geometry_count": 248954,
+        "loading_ms_diagnostic": 1.1704,
+        "pair_rows_exposed": false,
+        "query_count": 100000,
+        "query_metric": "internal Query Time; index Loading Time excluded",
+        "query_ms_internal": 0.103,
+        "result_count": 120457,
+        "stdout": "Loaded polygons 248954\nLoaded queries 100000\nQueue size 18 MB\nBVH 181 MB, Geometries 3 MB, AABBs 5 MB, Total 189 MB\nLoading Time 1.1704 ms\nGeoms 248954\nQueries 100000\nQuery Time 0.103 ms\nResults 120457\nSelectivity: 4.83852e-06\n"
+      },
+      "case_id": "USACensusBlockGroupBoundaries_range_contains_100000",
+      "claim_boundary": {
+        "complete_paper_reproduction_claimed": false,
+        "device_zero_copy_claimed": false,
+        "embree_in_scope": false,
+        "exact_archive_and_extracted_input_identity_used": true,
+        "figure6_reproduced": false,
+        "generic_columnar_frontdoor_used": true,
+        "performance_ratio_authorized": false,
+        "pointwise_containment_equivalence_claimed": false,
+        "same_input_result_count_agreement": true
+      },
+      "input_identity": {
+        "geometry_path": "/tmp/goal5517-target/PPoPPAE/datasets/polygons/USACensusBlockGroupBoundaries.wkt",
+        "geometry_sha256": "a5ead9c7bf5adac34a256e54ead58e6e100ca5321ddeb5268699a58a82b7b8da",
+        "query_path": "/tmp/goal5517-target/PPoPPAE/datasets/queries/range-contains_queries_100000/USACensusBlockGroupBoundaries.wkt",
+        "query_sha256": "d714bcda17f18bce46f0e0428ad7977e2abb4edd241397fa6cc91d36b97b9bc9",
+        "same_files_passed_to_author_and_rtdl": true,
+        "verified_extraction_root": "/tmp/goal5517-target"
+      },
+      "matched": true,
+      "phase_boundary": {
+        "author_query_excludes_loading": true,
+        "performance_ratio_authorized": false,
+        "rtdl_prepared_query_excludes_wkt_load_and_index_prepare": true
+      },
+      "rtdl": {
+        "backend": "optix",
+        "input_contract": "generic_host_aabb_2d_columns",
+        "load_wkt_sec": 101.15040249901358,
+        "native_engine_customization": false,
+        "operation": "range_contains",
+        "prepare_index_sec": 0.4214111230103299,
+        "prepared_query_wall_sec": 0.6675516379764304,
+        "primitive_query_sec": 0.3642216580337845,
+        "public_api": "Aabb2DColumns + prepare_aabb_index_2d_columns + prepared.count",
+        "result_count": 120457,
+        "row_output_requested": false,
+        "rt_core_accelerated": true
+      },
+      "schema": "rtdl.paper_reproduction.librts.exact_range_contains_count_gate.v1",
+      "status": "exact_input_range_contains_count_matched"
+    },
+    {
+      "author": {
+        "command": [
+          "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+          "-geom",
+          "/tmp/goal5517-target/PPoPPAE/datasets/polygons/USADetailedWaterBodies.wkt",
+          "-query",
+          "/tmp/goal5517-target/PPoPPAE/datasets/queries/range-contains_queries_100000/USADetailedWaterBodies.wkt",
+          "-serialize",
+          "/tmp/librts-serialize/goal5517/USADetailedWaterBodies_range_contains_100000",
+          "-query_type",
+          "range-contains",
+          "-index_type",
+          "rtspatial",
+          "-load_factor",
+          "0.0001"
+        ],
+        "geometry_count": 463595,
+        "loading_ms_diagnostic": 1.8168,
+        "pair_rows_exposed": false,
+        "query_count": 100000,
+        "query_metric": "internal Query Time; index Loading Time excluded",
+        "query_ms_internal": 0.098,
+        "result_count": 112637,
+        "stdout": "Loaded polygons 463595\nLoaded queries 100000\nQueue size 35 MB\nBVH 208 MB, Geometries 7 MB, AABBs 10 MB, Total 225 MB\nLoading Time 1.8168 ms\nGeoms 463595\nQueries 100000\nQuery Time 0.098 ms\nResults 112637\nSelectivity: 2.42964e-06\n"
+      },
+      "case_id": "USADetailedWaterBodies_range_contains_100000",
+      "claim_boundary": {
+        "complete_paper_reproduction_claimed": false,
+        "device_zero_copy_claimed": false,
+        "embree_in_scope": false,
+        "exact_archive_and_extracted_input_identity_used": true,
+        "figure6_reproduced": false,
+        "generic_columnar_frontdoor_used": true,
+        "performance_ratio_authorized": false,
+        "pointwise_containment_equivalence_claimed": false,
+        "same_input_result_count_agreement": true
+      },
+      "input_identity": {
+        "geometry_path": "/tmp/goal5517-target/PPoPPAE/datasets/polygons/USADetailedWaterBodies.wkt",
+        "geometry_sha256": "bbdf49e4e2484f7d2994aea40bf772ce5418bacb58ade8efc63ab9e8dc703dfe",
+        "query_path": "/tmp/goal5517-target/PPoPPAE/datasets/queries/range-contains_queries_100000/USADetailedWaterBodies.wkt",
+        "query_sha256": "62d62a9b68bf93ca54b9dd5df187875f815c4fe0f5c343ed5772e459dce4fc85",
+        "same_files_passed_to_author_and_rtdl": true,
+        "verified_extraction_root": "/tmp/goal5517-target"
+      },
+      "matched": true,
+      "phase_boundary": {
+        "author_query_excludes_loading": true,
+        "performance_ratio_authorized": false,
+        "rtdl_prepared_query_excludes_wkt_load_and_index_prepare": true
+      },
+      "rtdl": {
+        "backend": "optix",
+        "input_contract": "generic_host_aabb_2d_columns",
+        "load_wkt_sec": 35.95892411802197,
+        "native_engine_customization": false,
+        "operation": "range_contains",
+        "prepare_index_sec": 0.45157151500461623,
+        "prepared_query_wall_sec": 0.6592199019505642,
+        "primitive_query_sec": 0.37424103304510936,
+        "public_api": "Aabb2DColumns + prepare_aabb_index_2d_columns + prepared.count",
+        "result_count": 112637,
+        "row_output_requested": false,
+        "rt_core_accelerated": true
+      },
+      "schema": "rtdl.paper_reproduction.librts.exact_range_contains_count_gate.v1",
+      "status": "exact_input_range_contains_count_matched"
+    }
+  ],
+  "claim_boundary": {
+    "author_performance_parity_claimed": false,
+    "author_specific_rtdl_core_behavior_authorized": false,
+    "complete_paper_reproduction_claimed": false,
+    "complete_range_contains_matrix_claimed": false,
+    "device_zero_copy_claimed": false,
+    "embree_in_scope": false,
+    "figure6_reproduced": false,
+    "performance_ratio_authorized": false,
+    "pointwise_containment_equivalence_claimed": false,
+    "same_input_count_level_evidence_only": true
+  },
+  "coverage": {
+    "complete_range_contains_matrix_claimed": false,
+    "exact_range_contains_archive_pair_count": 14,
+    "remaining_exact_archive_pairs_not_attempted": true,
+    "this_batch_checkpointed_case_count": 4
+  },
+  "evidence_integrity": {
+    "checkpoint_case_sha256": {
+      "USACensusBlockGroupBoundaries_range_contains_100000": "f9e590a79f51c701dea7f1ef0aecefebd13e97459501dcfb65c49e76a1fc67b6",
+      "USADetailedWaterBodies_range_contains_100000": "735eaa6c1c582502e9ec7d3943aa2c9f56ef6c4cc57f6e1055972ae926fd6668",
+      "dtl_cnty_range_contains_100000": "09e8972bf2d386f9012524b8bd463118a83a9a2a2951542e929c763099810a42",
+      "parks_Europe_range_contains_100000": "ba9d3f22bba2239752a629cd68526a140547e3120c1d260e5862535a8d180641"
+    },
+    "input_identity": {
+      "USACensusBlockGroupBoundaries_range_contains_100000": {
+        "geometry_sha256": "a5ead9c7bf5adac34a256e54ead58e6e100ca5321ddeb5268699a58a82b7b8da",
+        "query_sha256": "d714bcda17f18bce46f0e0428ad7977e2abb4edd241397fa6cc91d36b97b9bc9",
+        "same_files_passed_to_author_and_rtdl": true
+      },
+      "USADetailedWaterBodies_range_contains_100000": {
+        "geometry_sha256": "bbdf49e4e2484f7d2994aea40bf772ce5418bacb58ade8efc63ab9e8dc703dfe",
+        "query_sha256": "62d62a9b68bf93ca54b9dd5df187875f815c4fe0f5c343ed5772e459dce4fc85",
+        "same_files_passed_to_author_and_rtdl": true
+      },
+      "dtl_cnty_range_contains_100000": {
+        "geometry_sha256": "9177fdff45f24488f22157a2a1428a7cdb9d5a66a7287d4013ead52de1c7973f",
+        "query_sha256": "b6b388481f3c27a14adacb36e6a4acfbe56a2c0cd012dcf853e753eed3adb9a4",
+        "same_files_passed_to_author_and_rtdl": true
+      },
+      "parks_Europe_range_contains_100000": {
+        "geometry_sha256": "fd77bf8294dfb9dfe45e49fc4aec99427ebd9ac4f370697b0c908d635d643aed",
+        "query_sha256": "b76e901cf41dc1fa2d3073fd88adc7c9327db8620fa221a0e21b00df0ca211f6",
+        "same_files_passed_to_author_and_rtdl": true
+      }
+    },
+    "same_files_passed_to_author_and_rtdl": true
+  },
+  "matched_case_count": 4,
+  "operation": "range_contains",
+  "query_family": "range-contains_queries_100000",
+  "schema": "rtdl.paper_reproduction.librts.goal5517_exact_range_contains_batch.v1",
+  "status": "exact_input_range_contains_four_case_batch_matched"
+}

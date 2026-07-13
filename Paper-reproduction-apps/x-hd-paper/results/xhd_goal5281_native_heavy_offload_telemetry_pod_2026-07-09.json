@@ -1,0 +1,59 @@
+{
+  "attempted_count": 6,
+  "boundary": {
+    "author_memory_parity_claimed": false,
+    "figure11_reproduced": false,
+    "note": "This is native/POD telemetry ABI evidence for generic offload frontier rows, not X-HD Figure 11 reproduction.",
+    "performance_claim_authorized": false
+  },
+  "checks": {
+    "offload_rows_positive": true,
+    "schema_v2": true,
+    "telemetry_peak_bytes_matches_rows": true,
+    "telemetry_peak_rows_matches_rows": true
+  },
+  "frontier_kind_codes": [
+    2,
+    2,
+    2,
+    2,
+    2,
+    2
+  ],
+  "goal": "Goal5281",
+  "gpu": "NVIDIA RTX 4000 Ada Generation",
+  "matched": true,
+  "native_generic_symbol": "rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v2",
+  "native_memory_telemetry": {
+    "accel_aabb_input_bytes": 48,
+    "accel_compacted_output_bytes": 0,
+    "accel_output_bytes": 896,
+    "accel_temp_build_bytes": 2688,
+    "attempted_count": 6,
+    "cell_buffer_bytes": 144,
+    "device_buffer_bytes_excluding_accel": 856,
+    "emitted_count": 6,
+    "heavy_offload_current_rows": 6,
+    "heavy_offload_peak_rows": 6,
+    "heavy_offload_queue_current_bytes": 96,
+    "heavy_offload_queue_peak_bytes": 96,
+    "heavy_offload_row_capacity": 6,
+    "heavy_offload_semantics": "Generic cell-MBR offload frontier row telemetry. heavy_offload_* counts rows whose frontier kind is offload; this is a same-shape RTDL worklist candidate, not an author Figure 11 parity claim.",
+    "in_queue_capacity": 6,
+    "miss_queue_capacity": 0,
+    "mode_bits": 6,
+    "nearest_buffer_bytes": 0,
+    "query_buffer_bytes": 144,
+    "row_buffer_bytes": 384,
+    "schema": "rtdl.optix.cell_mbr_nearest_frontier_3d.memory_telemetry.v2",
+    "semantics": "Native OptiX/CUDA allocation telemetry for the generic cell-MBR nearest-frontier producer. accel_output_bytes is the OptiX GAS output buffer size; accel_temp_build_bytes is a transient build workspace; row/device buffers are route workspace, not author Figure 11 parity.",
+    "target_buffer_bytes": 0
+  },
+  "native_memory_telemetry_collected": true,
+  "offload_row_count_from_rows": 6,
+  "pod": "213.173.108.24:13502",
+  "route": "generic_cell_mbr_nearest_frontier_native_3d_optix",
+  "row_capacity": 6,
+  "row_count": 6,
+  "schema": "rtdl.paper_reproduction.xhd.goal5281.native_heavy_offload_telemetry_pod.v1"
+}

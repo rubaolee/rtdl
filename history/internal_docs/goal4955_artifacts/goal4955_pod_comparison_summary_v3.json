@@ -1,0 +1,59 @@
+{
+  "decision": {
+    "conclusion": "minimal descriptor projection is a real but sub-threshold improvement; do not claim v2.14.3 performance goal complete",
+    "frozen_useful_bar_speedup": 1.15,
+    "minimal_descriptor_meets_useful_bar": false,
+    "minimal_descriptor_speedup_vs_baseline": 1.1347857058910038
+  },
+  "schema": "rtdl.internal.goal4955.pod_comparison_summary.v3",
+  "sets": {
+    "baseline_goal4954e_rerun": {
+      "count": 3,
+      "missing": [],
+      "phase_medians": {},
+      "speedup_vs_baseline_median": 1.0,
+      "writer_free_hot_sec_median": 2.9474522853270173,
+      "writer_free_hot_sec_values": [
+        3.21989952493459,
+        2.9474522853270173,
+        2.9278068859130144
+      ]
+    },
+    "projected_descriptor_full_descriptor": {
+      "count": 3,
+      "missing": [],
+      "phase_medians": {},
+      "speedup_vs_baseline_median": 1.1337859319092312,
+      "writer_free_hot_sec_median": 2.599655016325414,
+      "writer_free_hot_sec_values": [
+        2.599655016325414,
+        2.563420015387237,
+        2.604885091073811
+      ]
+    },
+    "projected_descriptor_minimal_descriptor": {
+      "count": 3,
+      "missing": [],
+      "phase_medians": {},
+      "speedup_vs_baseline_median": 1.1347857058910038,
+      "writer_free_hot_sec_median": 2.597364656627178,
+      "writer_free_hot_sec_values": [
+        2.63047890458256,
+        2.597364656627178,
+        2.576425670646131
+      ]
+    },
+    "projected_descriptor_online_dedupe": {
+      "count": 3,
+      "missing": [],
+      "phase_medians": {},
+      "speedup_vs_baseline_median": 1.1135481792791535,
+      "writer_free_hot_sec_median": 2.6469014454632998,
+      "writer_free_hot_sec_values": [
+        2.67921113781631,
+        2.6469014454632998,
+        2.58939640969038
+      ]
+    }
+  }
+}

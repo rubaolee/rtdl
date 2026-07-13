@@ -1,0 +1,280 @@
+{
+  "capacity": 1000000,
+  "compact_runs": [
+    {
+      "elapsed_sec": 1.7112967353314161,
+      "exact_pipeline_ensure": 3.91e-07,
+      "grouped_range_ensure": 1.001105642,
+      "label": "full_first_run_build_workspace",
+      "optix_launch": 0.002195558,
+      "row_count": 428322,
+      "scaled_cache_ensure": 0.706035736,
+      "split_kernel_ensure": 1.41e-07,
+      "total_native": 1.711015131
+    },
+    {
+      "elapsed_sec": 0.0031141247600317,
+      "exact_pipeline_ensure": 9.1e-08,
+      "grouped_range_ensure": 2.6e-07,
+      "label": "full_same_prepared_query_replay",
+      "optix_launch": 0.002149249,
+      "row_count": 428322,
+      "scaled_cache_ensure": 6.62e-07,
+      "split_kernel_ensure": 4e-08,
+      "total_native": 0.002928319
+    },
+    {
+      "elapsed_sec": 0.14165538735687733,
+      "exact_pipeline_ensure": 5.71e-07,
+      "grouped_range_ensure": 5.11e-07,
+      "label": "full_new_query_same_input_same_base",
+      "optix_launch": 0.002161573,
+      "row_count": 428322,
+      "scaled_cache_ensure": 0.13803166,
+      "split_kernel_ensure": 4e-08,
+      "total_native": 0.141387058
+    },
+    {
+      "elapsed_sec": 1.4734994433820248,
+      "exact_pipeline_ensure": 5.71e-07,
+      "grouped_range_ensure": 0.857943114,
+      "label": "far_query_changed_scale_same_base",
+      "optix_launch": 7.3289e-05,
+      "row_count": 0,
+      "scaled_cache_ensure": 0.613669387,
+      "split_kernel_ensure": 4e-08,
+      "total_native": 1.473255349
+    },
+    {
+      "elapsed_sec": 1.5729598347097635,
+      "exact_pipeline_ensure": 3.91e-07,
+      "grouped_range_ensure": 0.862789162,
+      "label": "full_query_after_far_scale_change",
+      "optix_launch": 0.0021445,
+      "row_count": 428322,
+      "scaled_cache_ensure": 0.706045484,
+      "split_kernel_ensure": 8e-08,
+      "total_native": 1.572690617
+    }
+  ],
+  "generic_tiny_prewarm": {
+    "elapsed_sec": 1.3812838811427355,
+    "native_timings": {
+      "candidate_count_pass": 0.0,
+      "candidate_download": 0.0,
+      "candidate_write_pass": 0.00012625,
+      "emitted_count": 1,
+      "exact_refine": 0.0,
+      "extended": {
+        "count_download": 1.5089e-05,
+        "device_alloc": 6.2028e-05,
+        "emitted_count": 1,
+        "exact_pipeline_ensure": 0.464986901,
+        "grouped_range_ensure": 0.000159763,
+        "mode": "pair_id_rows_prepared_left_grouped_range_direct_intersection",
+        "optix_launch": 0.000111041,
+        "param_upload": 3.376e-06,
+        "raw_candidate_count": 0,
+        "scaled_cache_ensure": 1.9788e-05,
+        "schema": "rtdl.optix.segment_pair.extended_phase_timings.v1",
+        "split_kernel_ensure": 0.344437917,
+        "split_kernel_launch": 9.488e-06,
+        "total_native": 0.809838843
+      },
+      "left_upload": 0.0,
+      "mode": "pair_id_rows_prepared_left_grouped_range_direct_intersection",
+      "raw_candidate_count": 0
+    },
+    "row_count": 1
+  },
+  "input_counts": {
+    "left_lsi_segments": 1705027,
+    "right_lsi_segments": 9982960
+  },
+  "left": "Paper-reproduction-apps/rayjoin-paper/_data/top4_arcgis/top4_county.cdb",
+  "load_dataset_arrays_sec": 14.069703005254269,
+  "prepare_far_query_same_base_sec": 4.474632441997528e-05,
+  "prepare_full_query_after_far_scale_change_sec": 0.08285796083509922,
+  "prepare_full_query_sec": 0.08277007192373276,
+  "prepare_new_full_query_same_input_sec": 0.08281630650162697,
+  "prepare_right_base_sec": 1.2240695171058178,
+  "right": "Paper-reproduction-apps/rayjoin-paper/_data/top4_arcgis/top4_zipcode.cdb",
+  "runs": [
+    {
+      "candidate_event_count": 428322,
+      "capacity": 1000000,
+      "elapsed_sec": 1.7112967353314161,
+      "label": "full_first_run_build_workspace",
+      "native_timings": {
+        "candidate_count_pass": 0.0,
+        "candidate_download": 0.0,
+        "candidate_write_pass": 0.00220702,
+        "emitted_count": 428322,
+        "exact_refine": 0.0,
+        "extended": {
+          "count_download": 1.1342e-05,
+          "device_alloc": 0.001615075,
+          "emitted_count": 428322,
+          "exact_pipeline_ensure": 3.91e-07,
+          "grouped_range_ensure": 1.001105642,
+          "mode": "pair_id_rows_prepared_left_grouped_range_direct_intersection",
+          "optix_launch": 0.002195558,
+          "param_upload": 3.286e-06,
+          "raw_candidate_count": 0,
+          "scaled_cache_ensure": 0.706035736,
+          "schema": "rtdl.optix.segment_pair.extended_phase_timings.v1",
+          "split_kernel_ensure": 1.41e-07,
+          "split_kernel_launch": 2.0268e-05,
+          "total_native": 1.711015131
+        },
+        "left_upload": 0.0,
+        "mode": "pair_id_rows_prepared_left_grouped_range_direct_intersection",
+        "raw_candidate_count": 0
+      },
+      "overflow": false,
+      "row_count": 428322,
+      "traversal_seconds": 0.002207581
+    },
+    {
+      "candidate_event_count": 428322,
+      "capacity": 1000000,
+      "elapsed_sec": 0.0031141247600317,
+      "label": "full_same_prepared_query_replay",
+      "native_timings": {
+        "candidate_count_pass": 0.0,
+        "candidate_download": 0.0,
+        "candidate_write_pass": 0.002157575,
+        "emitted_count": 428322,
+        "exact_refine": 0.0,
+        "extended": {
+          "count_download": 8.195e-06,
+          "device_alloc": 0.000738051,
+          "emitted_count": 428322,
+          "exact_pipeline_ensure": 9.1e-08,
+          "grouped_range_ensure": 2.6e-07,
+          "mode": "pair_id_rows_prepared_left_grouped_range_direct_intersection",
+          "optix_launch": 0.002149249,
+          "param_upload": 3.076e-06,
+          "raw_candidate_count": 0,
+          "scaled_cache_ensure": 6.62e-07,
+          "schema": "rtdl.optix.segment_pair.extended_phase_timings.v1",
+          "split_kernel_ensure": 4e-08,
+          "split_kernel_launch": 1.7494e-05,
+          "total_native": 0.002928319
+        },
+        "left_upload": 0.0,
+        "mode": "pair_id_rows_prepared_left_grouped_range_direct_intersection",
+        "raw_candidate_count": 0
+      },
+      "overflow": false,
+      "row_count": 428322,
+      "traversal_seconds": 0.002157605
+    },
+    {
+      "candidate_event_count": 428322,
+      "capacity": 1000000,
+      "elapsed_sec": 0.14165538735687733,
+      "label": "full_new_query_same_input_same_base",
+      "native_timings": {
+        "candidate_count_pass": 0.0,
+        "candidate_download": 0.0,
+        "candidate_write_pass": 0.002172554,
+        "emitted_count": 428322,
+        "exact_refine": 0.0,
+        "extended": {
+          "count_download": 1.0831e-05,
+          "device_alloc": 0.001133501,
+          "emitted_count": 428322,
+          "exact_pipeline_ensure": 5.71e-07,
+          "grouped_range_ensure": 5.11e-07,
+          "mode": "pair_id_rows_prepared_left_grouped_range_direct_intersection",
+          "optix_launch": 0.002161573,
+          "param_upload": 2.675e-06,
+          "raw_candidate_count": 0,
+          "scaled_cache_ensure": 0.13803166,
+          "schema": "rtdl.optix.segment_pair.extended_phase_timings.v1",
+          "split_kernel_ensure": 4e-08,
+          "split_kernel_launch": 1.9186e-05,
+          "total_native": 0.141387058
+        },
+        "left_upload": 0.0,
+        "mode": "pair_id_rows_prepared_left_grouped_range_direct_intersection",
+        "raw_candidate_count": 0
+      },
+      "overflow": false,
+      "row_count": 428322,
+      "traversal_seconds": 0.002172594
+    },
+    {
+      "candidate_event_count": 0,
+      "capacity": 1000000,
+      "elapsed_sec": 1.4734994433820248,
+      "label": "far_query_changed_scale_same_base",
+      "native_timings": {
+        "candidate_count_pass": 0.0,
+        "candidate_download": 0.0,
+        "candidate_write_pass": 8.5252e-05,
+        "emitted_count": 0,
+        "exact_refine": 0.0,
+        "extended": {
+          "count_download": 1.1843e-05,
+          "device_alloc": 0.00152257,
+          "emitted_count": 0,
+          "exact_pipeline_ensure": 5.71e-07,
+          "grouped_range_ensure": 0.857943114,
+          "mode": "pair_id_rows_prepared_left_grouped_range_direct_intersection",
+          "optix_launch": 7.3289e-05,
+          "param_upload": 3.386e-06,
+          "raw_candidate_count": 0,
+          "scaled_cache_ensure": 0.613669387,
+          "schema": "rtdl.optix.segment_pair.extended_phase_timings.v1",
+          "split_kernel_ensure": 4e-08,
+          "split_kernel_launch": 0.0,
+          "total_native": 1.473255349
+        },
+        "left_upload": 0.0,
+        "mode": "pair_id_rows_prepared_left_grouped_range_direct_intersection",
+        "raw_candidate_count": 0
+      },
+      "overflow": false,
+      "row_count": 0,
+      "traversal_seconds": 8.5512e-05
+    },
+    {
+      "candidate_event_count": 428322,
+      "capacity": 1000000,
+      "elapsed_sec": 1.5729598347097635,
+      "label": "full_query_after_far_scale_change",
+      "native_timings": {
+        "candidate_count_pass": 0.0,
+        "candidate_download": 0.0,
+        "candidate_write_pass": 0.002156173,
+        "emitted_count": 428322,
+        "exact_refine": 0.0,
+        "extended": {
+          "count_download": 1.1541e-05,
+          "device_alloc": 0.001643159,
+          "emitted_count": 428322,
+          "exact_pipeline_ensure": 3.91e-07,
+          "grouped_range_ensure": 0.862789162,
+          "mode": "pair_id_rows_prepared_left_grouped_range_direct_intersection",
+          "optix_launch": 0.0021445,
+          "param_upload": 3.196e-06,
+          "raw_candidate_count": 0,
+          "scaled_cache_ensure": 0.706045484,
+          "schema": "rtdl.optix.segment_pair.extended_phase_timings.v1",
+          "split_kernel_ensure": 8e-08,
+          "split_kernel_launch": 1.9668e-05,
+          "total_native": 1.572690617
+        },
+        "left_upload": 0.0,
+        "mode": "pair_id_rows_prepared_left_grouped_range_direct_intersection",
+        "raw_candidate_count": 0
+      },
+      "overflow": false,
+      "row_count": 428322,
+      "traversal_seconds": 0.002156433
+    }
+  ],
+  "schema": "rtdl.paper_reproduction.rayjoin.goal5003.lsi_workspace_floor_probe.v1"
+}

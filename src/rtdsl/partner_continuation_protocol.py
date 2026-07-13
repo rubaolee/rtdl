@@ -135,6 +135,44 @@ V2_5_PARTNER_CONTINUATION_OPERATIONS: tuple[RtdlPartnerContinuationOperation, ..
         behavior="compact int64 values by a boolean mask while preserving source indices",
     ),
     RtdlPartnerContinuationOperation(
+        name="adjacent_midpoint_candidates_i64x2_by_key",
+        category="columnar_numeric_map",
+        input_names=("keys", "values_x", "values_y"),
+        output_names=("mid_x", "mid_y", "left_indices", "valid_mask"),
+        behavior=(
+            "for adjacent sorted rows with equal int64 keys, emit truncating "
+            "integer midpoints of paired x/y columns plus the left row index; "
+            "valid_mask marks candidate rows that correspond to same-key pairs"
+        ),
+    ),
+    RtdlPartnerContinuationOperation(
+        name="consecutive_dedupe_mask_f64x2",
+        category="columnar_numeric_filter",
+        input_names=("values_x", "values_y"),
+        output_names=("keep_mask",),
+        behavior="mark rows whose paired float64 x/y values differ from the previous row",
+    ),
+    RtdlPartnerContinuationOperation(
+        name="range_has_sorted_values_i64",
+        category="columnar_numeric_filter",
+        input_names=("range_starts", "range_lengths", "sorted_values"),
+        output_names=("has_value",),
+        behavior=(
+            "for each half-open int64 range [start, start + length), report "
+            "whether any sorted value lies inside the range"
+        ),
+    ),
+    RtdlPartnerContinuationOperation(
+        name="uint32_equal_mask",
+        category="columnar_numeric_filter",
+        input_names=("values", "target"),
+        output_names=("mask",),
+        behavior=(
+            "mark uint32 rows whose value equals a caller-supplied uint32 target; "
+            "this is a generic id-column filter and carries no application semantics"
+        ),
+    ),
+    RtdlPartnerContinuationOperation(
         name="edge_list_components_i64",
         category="component_labeling",
         input_names=("source_ids", "target_ids", "node_count", "max_iterations"),
@@ -243,6 +281,10 @@ V2_5_PARTNER_PREVIEW_KERNEL_OPERATIONS = (
     "segmented_min_f64",
     "segmented_max_f64",
     "compact_mask_i64",
+    "adjacent_midpoint_candidates_i64x2_by_key",
+    "consecutive_dedupe_mask_f64x2",
+    "range_has_sorted_values_i64",
+    "uint32_equal_mask",
     "edge_list_components_i64",
     "grouped_argmin_f64",
     "grouped_argmax_f64",
@@ -254,6 +296,10 @@ V2_5_NUMBA_PREVIEW_OPERATIONS = (
     "segmented_sum_f64",
     "grouped_vector_sum_f64x2",
     "grouped_topk_f64",
+    "adjacent_midpoint_candidates_i64x2_by_key",
+    "consecutive_dedupe_mask_f64x2",
+    "range_has_sorted_values_i64",
+    "uint32_equal_mask",
 )
 V2_5_CUPY_PREVIEW_OPERATIONS = (
     "grouped_vector_sum_f64x2",
@@ -576,6 +622,10 @@ def execute_v2_5_partner_continuation_reference(
         compact_values = [value for value, keep in zip(values, mask) if keep]
         original_indices = [index for index, keep in enumerate(mask) if keep]
         outputs = {"values": compact_values, "original_indices": original_indices}
+    elif operation == "uint32_equal_mask":
+        values = _required_u32_sequence(inputs, "values")
+        target = _required_uint32(inputs, "target")
+        outputs = {"mask": [value == target for value in values]}
     elif operation == "edge_list_components_i64":
         node_count = _required_int(inputs, "node_count")
         max_iterations = _required_int(inputs, "max_iterations")
@@ -1091,12 +1141,31 @@ def _required_bool_sequence(inputs: Mapping[str, object], name: str) -> list[boo
     return [bool(item) for item in value]  # type: ignore[arg-type]
 
 
+def _required_u32_sequence(inputs: Mapping[str, object], name: str) -> list[int]:
+    if name not in inputs:
+        raise ValueError(f"missing required input `{name}`")
+    value = inputs[name]
+    if isinstance(value, (str, bytes)):
+        raise ValueError(f"{name} must be a sequence of uint32 integers")
+    output = [int(item) for item in value]  # type: ignore[arg-type]
+    if any(item < 0 or item > 0xFFFFFFFF for item in output):
+        raise ValueError(f"{name} values must fit uint32")
+    return output
+
+
 def _required_int(inputs: Mapping[str, object], name: str) -> int:
     if name not in inputs:
         raise ValueError(f"missing required input `{name}`")
     value = int(inputs[name])  # type: ignore[arg-type]
     if value < 0:
         raise ValueError(f"{name} must be non-negative")
+    return value
+
+
+def _required_uint32(inputs: Mapping[str, object], name: str) -> int:
+    value = _required_int(inputs, name)
+    if value > 0xFFFFFFFF:
+        raise ValueError(f"{name} must fit uint32")
     return value
 
 

@@ -1,0 +1,40 @@
+{
+  "author_output": "/workspace/goal4868_author_rtdl_contract_block_water/author_rtdl_contract_block_water_overlay_head250k.txt",
+  "elapsed_sec": 162.69292152673006,
+  "first_diff": {
+    "author": "<eof>",
+    "context": {
+      "chain_index": 97662,
+      "chain_no": 83334,
+      "display_point": [
+        -85.819223608,
+        33.635622357
+      ],
+      "line_kind": "point",
+      "map_index": 0,
+      "point_id": 84140,
+      "point_index_in_chain": 0,
+      "raw_point": [
+        -85.819223608,
+        33.635622357
+      ]
+    },
+    "line": 250001,
+    "rtdl": "-85.819224 33.635622"
+  },
+  "left": "/workspace/rtdl_goal4806_fast_min/artifacts/goal4806_section57_arcgis_full_us_20260630/dataset/point_cdb/USACensusBlockGroupBoundaries/USACensusBlockGroupBoundaries_Point.cdb",
+  "left_shape": {
+    "chain_count": 28473338,
+    "edge_count": 28473338,
+    "point_count": 56946676
+  },
+  "result": null,
+  "right": "/workspace/rtdl_goal4806_fast_min/artifacts/goal4806_section57_arcgis_full_us_20260630/dataset/point_cdb/USADetailedWaterBodies/USADetailedWaterBodies_Point.cdb",
+  "right_shape": {
+    "chain_count": 22431809,
+    "edge_count": 22431809,
+    "point_count": 44863618
+  },
+  "schema": "rtdl.goal4867.block_water.packed_streaming_compare.v1",
+  "stream_match": false
+}

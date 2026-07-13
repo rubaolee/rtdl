@@ -1,0 +1,19 @@
+Please review the Goal4896 report and call-for-review in this repository:
+
+- history/internal_docs/call_for_review_goal4896_lsi_pair_id_rows_optimization_2026-07-03.md
+- history/internal_docs/goal4896_lsi_pair_id_rows_optimization_report_2026-07-03.md
+
+Please inspect the relevant code changes and evidence JSON named in the call-for-review.
+
+Write your review result to:
+
+history/internal_docs/antigravity_goal4896_lsi_pair_id_rows_optimization_review_2026-07-03.md
+
+Use one of these verdict labels:
+
+- approve_goal4896_generic_lsi_pair_id_rows_optimization
+- approve_with_required_amendments
+- block_as_rayjoin_specific_or_claim_overreach
+- fail_redo
+
+Please answer all eight review questions in the call-for-review and preserve all non-authorization boundaries.

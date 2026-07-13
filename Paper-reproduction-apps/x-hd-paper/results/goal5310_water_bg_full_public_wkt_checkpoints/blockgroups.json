@@ -1,0 +1,46 @@
+{
+  "author_loader_point_count": 52271467,
+  "checkpoint_features_seen_at_start": 0,
+  "complete": true,
+  "features_seen": 239203,
+  "geometry_types": {
+    "MultiPolygon": 2237,
+    "Polygon": 236966
+  },
+  "key": "blockgroups",
+  "mbr": [
+    -179.148909000445,
+    -66.9496079221226,
+    18.9106929999612,
+    71.3651620001228
+  ],
+  "mbr_delta": {
+    "x_lower": 1.5220159355067153e-06,
+    "x_upper": -7.300150173250586e-08,
+    "y_lower": 7.849953789218489e-07,
+    "y_upper": -3.7103264247662082e-06
+  },
+  "object_id_max": 239203,
+  "object_id_min": 1,
+  "output_bytes": 1560257609,
+  "output_wkt": "Paper-reproduction-apps\\x-hd-paper\\data\\generated\\goal5310_water_bg_full_public_wkt_candidate\\USACensusBlockGroupBoundaries.wkt.full_public_arcgis_candidate.wkt",
+  "pages_seen": 120,
+  "paper_basename": "USACensusBlockGroupBoundaries.wkt",
+  "paper_mbr": {
+    "x": [
+      -179.14891052246094,
+      -66.9496078491211
+    ],
+    "y": [
+      18.91069221496582,
+      71.36516571044922
+    ]
+  },
+  "paper_point_count": 52271340,
+  "point_count_delta": 127,
+  "point_count_relative_delta": 2.4296296976507585e-06,
+  "resumed_from_checkpoint": false,
+  "service_feature_count": 239203,
+  "service_url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Census_BlockGroups/FeatureServer",
+  "sha256": "8a1d3cd848083e5182de81521f07d8850c597910320250066d850928b017e66e"
+}

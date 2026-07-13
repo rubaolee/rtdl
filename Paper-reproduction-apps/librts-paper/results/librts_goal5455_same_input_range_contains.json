@@ -1,0 +1,94 @@
+{
+  "author": {
+    "backend": "optix",
+    "command": [
+      "/tmp/rtdl_librts_goal5454_author_20260710/build-goal5454/bin/rtspatial_exec",
+      "--box=/tmp/rtdl_librts_goal5453_20260710/Paper-reproduction-apps/librts-paper/data/fixtures/tiny_boxes.wkt",
+      "--box_query=/tmp/rtdl_librts_goal5453_20260710/Paper-reproduction-apps/librts-paper/data/fixtures/tiny_range_queries.wkt",
+      "--predicate=contains",
+      "--load_factor=1",
+      "--parallelism=1"
+    ],
+    "commit": "52509e8022abeab722f5a9a89d1917e8b481defe",
+    "commit_matches_pin": true,
+    "implementation": "RTSpatial rtspatial_exec at pinned commit",
+    "load_ms_diagnostic_only": 2.436,
+    "pair_rows_exposed": false,
+    "query_ms_diagnostic_only": 0.083,
+    "result_count": 5,
+    "stdout": "Loaded boxes 4\nLoaded box queries 5\nRT, load 2.436 ms, query 0.083 ms, results: 5\n"
+  },
+  "claim_boundary": {
+    "author_pair_relation_agreement_claimed": false,
+    "bounded_same_input_result_count_agreement": true,
+    "direction_semantics_discriminated": true,
+    "embree_evidence_used": false,
+    "full_paper_reproduction_claimed": false,
+    "mutable_index_parity_claimed": false,
+    "performance_claimed": false,
+    "range_intersects_claimed": false
+  },
+  "environment": {
+    "gpu": "NVIDIA GeForce GTX 1070",
+    "host": "lx1",
+    "label": "local-linux-lx1-functional-only",
+    "performance_evidence_authorized": false,
+    "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39"
+  },
+  "input_identity": {
+    "boxes_path": "/tmp/rtdl_librts_goal5453_20260710/Paper-reproduction-apps/librts-paper/data/fixtures/tiny_boxes.wkt",
+    "boxes_sha256": "12629026e7323d795d00407a3ac7b11206eca18b442ac8357b2870e57922e3f2",
+    "expected_path": "/tmp/rtdl_librts_goal5453_20260710/Paper-reproduction-apps/librts-paper/data/fixtures/tiny_range_contains_expected.json",
+    "expected_sha256": "1377ac9edcd091a5e0ffe0f5c999ca1926985b0db4a86a0cd80509e880081f58",
+    "queries_path": "/tmp/rtdl_librts_goal5453_20260710/Paper-reproduction-apps/librts-paper/data/fixtures/tiny_range_queries.wkt",
+    "queries_sha256": "72a363f6394d69cc1d508ac12854d43300f526d1eb662365621548c3633f86df",
+    "same_files_passed_to_author_and_rtdl": true
+  },
+  "matched": true,
+  "rtdl": {
+    "backend": "optix",
+    "contract": "generic_prepared_aabb_index_query_2d",
+    "exact_fixture_oracle": {
+      "boundary_policy": "inclusive_min_max",
+      "candidate_id_rows": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          4,
+          3
+        ]
+      ],
+      "semantics": "indexed_box_contains_query_box",
+      "valid_count": 5
+    },
+    "native_engine_customization": false,
+    "pair_rows_exposed": false,
+    "public_api": "query_aabb_index_2d",
+    "result_count": 5,
+    "rt_core_accelerated": true
+  },
+  "schema": "rtdl.paper_reproduction.librts.same_input_range_contains.v1",
+  "semantics": {
+    "boundary_policy": "inclusive_min_max",
+    "direction": "indexed_box_contains_query_box",
+    "direction_discriminating": true,
+    "expected_count": 5,
+    "operation": "range_contains",
+    "reverse_direction_count": 2
+  },
+  "status": "bounded_same_input_range_contains_count_matched"
+}

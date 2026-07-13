@@ -1,0 +1,11 @@
+{
+  "elapsed_sec": 476.06923365592957,
+  "first_diff": {
+    "author": "52183 1 53009 53009 582 586",
+    "line": 156531,
+    "rtdl": "52183 1 53009 53009 578 587"
+  },
+  "result": null,
+  "schema": "rtdl.goal4830.streaming_compare.v1",
+  "stream_match": false
+}

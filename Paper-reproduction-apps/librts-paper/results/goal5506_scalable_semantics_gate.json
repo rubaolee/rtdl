@@ -1,0 +1,44 @@
+{
+  "claim_boundary": {
+    "author_specific_rtdl_core_behavior_authorized": false,
+    "embree_in_scope": false,
+    "full_input_adjudication": false,
+    "full_input_root_cause_resolved": false,
+    "paper_reproduction_claimed": false,
+    "performance_ratio_authorized": false,
+    "rtdl_core_change_authorized": false,
+    "scalable_probe_only": true
+  },
+  "classification": {
+    "author_matches_source_model": true,
+    "author_rtdl_counts_match": false,
+    "rtdl_generic_contract_matches_cpu_oracle": true,
+    "rtdl_matches_cpu_inclusive_oracle": true,
+    "source_model_explains_author_count": true
+  },
+  "counts": {
+    "author_gpu_runtime": 21,
+    "cpu_inclusive_oracle": 20,
+    "rtdl_optix_runtime": 20,
+    "source_rayparams_model": 21
+  },
+  "input_identity": {
+    "geometry_count": 128,
+    "geometry_sha256": "e20d7e10ecad952f055d6c08a16c8a9360d32de41d08c4de8a757ca972d3f9cd",
+    "pair_count": 8192,
+    "query_count": 64,
+    "query_sha256": "2df5c405ce828e241ee9a5cc7ecf12f59086194899ad82f0774443c505f46784",
+    "same_input_author_and_rtdl": true,
+    "seed": 5506
+  },
+  "phase_observations": {
+    "author_loading_ms": null,
+    "author_query_ms_internal": null,
+    "performance_ratio_authorized": false,
+    "rtdl_prepare_sec": 1.0791493600117974,
+    "rtdl_primitive_query_sec": 0.38653205399168655,
+    "rtdl_query_wall_sec": 0.3867072170251049
+  },
+  "schema": "rtdl.paper_reproduction.librts.goal5506_scalable_semantics_gate.v1",
+  "status": "scalable_runtime_semantics_gate_completed"
+}

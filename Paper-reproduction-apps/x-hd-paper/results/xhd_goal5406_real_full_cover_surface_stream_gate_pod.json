@@ -1,0 +1,347 @@
+{
+  "author_trace_v2": {
+    "active_in_queue_size": 437645,
+    "batch_0": {
+      "raw_offload_row_hash": 4333109858711462591,
+      "raw_offload_row_sample_cell_ids": [
+        2924,
+        17,
+        17
+      ],
+      "raw_offload_row_sample_point_ids": [
+        11168,
+        210712,
+        437119
+      ]
+    },
+    "feedback_update_count": 294,
+    "raw_offload_rows_before_sort_reduce": 27133990,
+    "status_count_offloading_append": 27133990
+  },
+  "claim_boundary": {
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_support_claimed": false,
+    "feedback_parity_claimed": false,
+    "figure11_reproduction_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "hash_sample_parity_with_author_claimed": false,
+    "performance_ratio_claimed": false,
+    "real_full_cover_surface_count_claimed": true,
+    "row_count_parity_with_author_claimed": false
+  },
+  "comparison": {
+    "active_query_count_author": 437645,
+    "active_query_count_parity": true,
+    "active_query_count_rtdl": 437645,
+    "author_raw_offload_row_hash": 4333109858711462591,
+    "author_raw_offload_rows": 27133990,
+    "author_sample_cell_ids": [
+      2924,
+      17,
+      17
+    ],
+    "author_sample_point_ids": [
+      11168,
+      210712,
+      437119
+    ],
+    "feedback_update_count_author": 294,
+    "feedback_update_count_parity": null,
+    "feedback_update_count_rtdl": null,
+    "full_cover_count_matched_goal5365": true,
+    "goal5365_full_cover_rows": 24508120,
+    "hash_parity_with_author": false,
+    "row_count_parity_with_author": false,
+    "row_delta_author_minus_rtdl_full_cover": 2625870,
+    "row_ratio_rtdl_full_cover_div_author": 0.9032258064516129,
+    "rtdl_full_cover_row_hash": 9732286907904247845,
+    "rtdl_full_cover_rows": 24508120,
+    "rtdl_sample_cell_ids": [
+      785,
+      1554,
+      2307
+    ],
+    "rtdl_sample_source_ids": [
+      0,
+      218822,
+      437644
+    ],
+    "status_count_offloading_author": 27133990,
+    "status_count_offloading_parity": false,
+    "status_count_offloading_rtdl": 24508120
+  },
+  "decision": {
+    "direct_full_goal5387_stream_parity_passed": false,
+    "explicit_lb_support_authorized": false,
+    "next_goal_if_delta_remaining": "Goal5407_isolate_real_full_cover_to_author_delta_or_fail_close_explicit_lb",
+    "real_full_cover_surface_generated": true,
+    "remaining_delta_rows_if_full_cover_only": 2625870
+  },
+  "frontier_metadata": {
+    "adapter": "cell_mbr_nearest_frontier_native_3d_optix_columns",
+    "allow_overflow_telemetry": false,
+    "anyhit_row_distance_computation": "lazy_row_output_only",
+    "app_semantics": "none",
+    "attempted_count": 24508120,
+    "cell_count": 14710,
+    "claim_boundary": "Bounded 3-D OptiX backend for generic cell-MBR frontier rows. It is not the full 2-D/3-D native ABI backend and not an application benchmark-performance claim.",
+    "contract": "generic_cell_mbr_nearest_frontier_native_3d_optix",
+    "distance_filter": "native_exact_point_to_cell_mbr_min_distance_lte_radius",
+    "emit_pruned_rows": false,
+    "frontier_row_order": "sorted_unique",
+    "frontier_status_probe_contract": null,
+    "frontier_status_probe_mode": "default",
+    "frontier_status_probe_mode_code": 0,
+    "full_row_capacity": 6437757950,
+    "global_bound_contract": null,
+    "global_bound_distance": null,
+    "global_bound_early_break": false,
+    "global_bound_early_break_count": null,
+    "inline_cell_hit_count": null,
+    "inline_nearest": true,
+    "inline_nearest_contract": "native_exact_inline_cell_point_nearest_for_inline_frontier_rows",
+    "inline_nearest_pruning": "payload_current_best_min_cell_distance_gt_best",
+    "inline_nearest_state_available": true,
+    "inline_point_evaluation_count": null,
+    "inline_stats_collected": false,
+    "intersection_attribute_min_distance_sq": "reported_by_intersection_reused_by_anyhit",
+    "intersection_pruning": "payload_current_best_before_report_intersection",
+    "max_inline_points": 256,
+    "native_abi_contract": "generic_cell_mbr_nearest_frontier_native_abi_v1",
+    "native_backend_complete": false,
+    "native_generic_symbol": "rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v3",
+    "native_memory_telemetry": {
+      "accel_aabb_input_bytes": 353040,
+      "accel_compacted_output_bytes": 0,
+      "accel_output_bytes": 552064,
+      "accel_temp_build_bytes": 1122560,
+      "attempted_count": 24508120,
+      "cell_buffer_bytes": 1059120,
+      "device_buffer_bytes_excluding_accel": 1966046552,
+      "emitted_count": 24508120,
+      "heavy_offload_current_rows": 24508120,
+      "heavy_offload_peak_rows": 24508120,
+      "heavy_offload_queue_current_bytes": 392129920,
+      "heavy_offload_queue_peak_bytes": 392129920,
+      "heavy_offload_row_capacity": 28009280,
+      "heavy_offload_semantics": "Generic cell-MBR offload frontier row telemetry. heavy_offload_* counts rows whose frontier kind is offload; this is a same-shape RTDL worklist candidate, not an author Figure 11 parity claim.",
+      "in_queue_capacity": 24508120,
+      "miss_queue_capacity": 0,
+      "mode_bits": 5,
+      "nearest_buffer_bytes": 7002320,
+      "query_buffer_bytes": 21006960,
+      "raw_frontier_kind1_rows": 0,
+      "raw_frontier_kind2_rows": 24508120,
+      "raw_frontier_kind3_rows": 0,
+      "raw_frontier_kind_counts": {
+        "1": 0,
+        "2": 24508120,
+        "3": 0
+      },
+      "raw_frontier_kind_counts_semantics": "Counts attempted generic frontier rows by kind before host row download and host sort/unique. These counters remain available for overflow/count-only diagnostics and do not assert app- or author-specific denominator parity.",
+      "row_buffer_bytes": 1792593920,
+      "schema": "rtdl.optix.cell_mbr_nearest_frontier_3d.memory_telemetry.v3",
+      "semantics": "Native OptiX/CUDA allocation telemetry for the generic cell-MBR nearest-frontier producer. accel_output_bytes is the OptiX GAS output buffer size; accel_temp_build_bytes is a transient build workspace; row/device buffers are route workspace, not author Figure 11 parity.",
+      "status_machine_candidate_telemetry": {
+        "active_in_queue_semantics": "generic active query count for this launch; not the author's iteration-local in_q_idx namespace",
+        "active_in_queue_size": 437645,
+        "cmax2_mbr_abort_count": null,
+        "contract": "generic_cell_mbr_frontier_status_machine_candidate",
+        "current_best_state_source": "rtdl_inline_payload_initial_none_not_author_cmin2_restore",
+        "explicit_lb_support_claimed": false,
+        "frontier_status_probe_contract": null,
+        "frontier_status_probe_mode": "default",
+        "miss_queue_count": null,
+        "point_loop_early_break_count": null,
+        "raw_offload_rows_author_width_bytes": 196064960,
+        "raw_offload_rows_before_sort_reduce": 24508120,
+        "required_author_lb_fields_missing_or_analog": [
+          "status_count_aborted",
+          "miss_queue_count",
+          "cmax2_mbr_abort_count",
+          "author cmin2/current-best restoration by in_q_idx",
+          "author loadBalanceProcessing sort/reduce feedback into later state",
+          "row-count parity against author OffloadingSize requires an author oracle"
+        ],
+        "row_count_parity_against_author_offloading_size": null,
+        "row_count_parity_claimed": false,
+        "rtdl_pruned_frontier_kind3_rows": 0,
+        "same_denominator_memory_claimed": false,
+        "schema": "rtdl.optix.cell_mbr_nearest_frontier_3d.status_machine_candidate_telemetry.v1",
+        "semantics": "RTDL generic frontier/status-shaped telemetry for comparison against an external oracle. It is intentionally not an author X-HD -lb implementation claim.",
+        "source_memory_telemetry_schema": "rtdl.optix.cell_mbr_nearest_frontier_3d.memory_telemetry.v3",
+        "status_count_aborted": null,
+        "status_count_init": 437645,
+        "status_count_offloading": 24508120
+      },
+      "target_buffer_bytes": 144384000
+    },
+    "native_memory_telemetry_collected": true,
+    "native_phase_timings": {
+      "accel_build_sec": 0.001444936,
+      "attempted_count": 24508120,
+      "cell_pack_aabb_sec": 0.000215617,
+      "count_download_sec": 1.7931e-05,
+      "device_alloc_upload_sec": 0.023437459,
+      "emitted_count": 24508120,
+      "host_sort_pack_sec": 3.253836576,
+      "mode": {
+        "emit_pruned_rows": false,
+        "inline_nearest": true,
+        "inline_stats": false,
+        "sort_rows": true
+      },
+      "mode_bits": 5,
+      "nearest_download_sec": 0.00064276,
+      "optix_launch_sec": 0.563356526,
+      "query_pack_sec": 0.003567994,
+      "row_download_sec": 0.159069064,
+      "stats_download_sec": 0.0,
+      "total_native_sec": 4.961233316
+    },
+    "native_phase_timings_collected": true,
+    "overflow_failure_mode": null,
+    "overflow_telemetry_only": false,
+    "overflowed": false,
+    "partner": "optix",
+    "per_source_witness_exact": true,
+    "query_coordinate_matrix_reused": true,
+    "query_count": 437645,
+    "radius": 266.9466183641096,
+    "row_capacity": 28009280,
+    "row_capacity_attempts": [
+      3501160,
+      7002320,
+      14004640,
+      28009280
+    ],
+    "row_capacity_policy": "streaming_inferred_retry",
+    "row_count": 24508120,
+    "row_table_contract": "generic_cell_mbr_nearest_frontier_row_table",
+    "rt_core_speedup_claim_authorized": false,
+    "sort_rows": true,
+    "split_frontiers_returned": false,
+    "state_split_location": "native_optix_anyhit_inline_nearest_and_offload_rows",
+    "status_machine_telemetry": {
+      "active_in_queue_semantics": "generic active query count for this launch; not the author's iteration-local in_q_idx namespace",
+      "active_in_queue_size": 437645,
+      "cmax2_mbr_abort_count": null,
+      "contract": "generic_cell_mbr_frontier_status_machine_candidate",
+      "current_best_state_source": "rtdl_inline_payload_initial_none_not_author_cmin2_restore",
+      "explicit_lb_support_claimed": false,
+      "frontier_status_probe_contract": null,
+      "frontier_status_probe_mode": "default",
+      "miss_queue_count": null,
+      "point_loop_early_break_count": null,
+      "raw_offload_rows_author_width_bytes": 196064960,
+      "raw_offload_rows_before_sort_reduce": 24508120,
+      "required_author_lb_fields_missing_or_analog": [
+        "status_count_aborted",
+        "miss_queue_count",
+        "cmax2_mbr_abort_count",
+        "author cmin2/current-best restoration by in_q_idx",
+        "author loadBalanceProcessing sort/reduce feedback into later state",
+        "row-count parity against author OffloadingSize requires an author oracle"
+      ],
+      "row_count_parity_against_author_offloading_size": null,
+      "row_count_parity_claimed": false,
+      "rtdl_pruned_frontier_kind3_rows": 0,
+      "same_denominator_memory_claimed": false,
+      "schema": "rtdl.optix.cell_mbr_nearest_frontier_3d.status_machine_candidate_telemetry.v1",
+      "semantics": "RTDL generic frontier/status-shaped telemetry for comparison against an external oracle. It is intentionally not an author X-HD -lb implementation claim.",
+      "source_memory_telemetry_schema": "rtdl.optix.cell_mbr_nearest_frontier_3d.memory_telemetry.v3",
+      "status_count_aborted": null,
+      "status_count_init": 437645,
+      "status_count_offloading": 24508120
+    },
+    "status_machine_telemetry_collected": true,
+    "target_coordinate_matrix_reused": true,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "frontier_row_capacity_requested": null,
+  "goal": "Goal5406",
+  "grid_cell_builder": "native_cuda",
+  "grid_cell_point_order": "point-id",
+  "grid_shape": [
+    96,
+    60,
+    72
+  ],
+  "input1": "/tmp/xhd_goal5234/data/dragon.ply",
+  "input2": "/tmp/xhd_goal5234/data/asian_dragon.ply",
+  "input_type": "ply",
+  "matched": true,
+  "max_inline_points": 256,
+  "n_dims": 3,
+  "paper_app": "x-hd-paper",
+  "point_count_a": 437645,
+  "point_count_b": 3609600,
+  "preprocessing": [
+    "translate_each_input_to_min_bound"
+  ],
+  "purpose": "Generate the real full-public RTDL full-cover cell-MBR offload row surface and summarize row count/hash/sample before any claim about explicit -lb parity.",
+  "radius": 266.9466183641096,
+  "schema": "rtdl.paper_reproduction.xhd.goal5406.real_full_cover_surface_stream_gate.v1",
+  "sort_rows": true,
+  "status": "real_full_cover_surface_generated__author_delta_remaining",
+  "timings_sec": {
+    "frontier_rows": 7.486002504825592,
+    "grid_cell_mbrs": 0.4574571028351784,
+    "load_inputs": 0.5063766986131668,
+    "total": 30.65055101364851,
+    "trace_summary": 21.940963946282864
+  },
+  "trace_summary": {
+    "active_query_count": 437645,
+    "app_semantics": "none",
+    "contract": "generic_active_query_status_trace_summary_v1",
+    "hash_columns": [
+      "source_ids",
+      "cell_ids"
+    ],
+    "metadata": {
+      "adapter": "active_query_status_trace_summary_numpy_columns",
+      "app_semantics": "none",
+      "contract": "generic_active_query_status_trace_summary_v1",
+      "default_hash_offset": 1469598103934665603,
+      "explicit_app_option_support_claimed": false,
+      "hash_contract": "fnv1a_u64_over_selected_int64_columns",
+      "native_engine_row_contract": "not_called_cpu_reference_only",
+      "partner": "numpy",
+      "rt_core_speedup_claim_authorized": false,
+      "whole_app_speedup_claim_authorized": false
+    },
+    "raw_offload_row_hash": 9732286907904247845,
+    "row_count": 24508120,
+    "sample_columns": [
+      "source_ids",
+      "cell_ids",
+      "query_row_ids"
+    ],
+    "sample_indices": [
+      0,
+      12254060,
+      24508119
+    ],
+    "samples": {
+      "cell_ids": [
+        785,
+        1554,
+        2307
+      ],
+      "query_row_ids": [
+        0,
+        218822,
+        437644
+      ],
+      "source_ids": [
+        0,
+        218822,
+        437644
+      ]
+    },
+    "schema": "rtdl.generic.active_query_status_trace_summary.v1",
+    "status_count_offloading": 24508120
+  }
+}

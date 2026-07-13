@@ -1,0 +1,44 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5343.mapped_candidate_pod_execution_plan.v1",
+  "goal": "Goal5343",
+  "date": "2026-07-09",
+  "purpose": "Add an app-owned POD execution-plan builder for a Goal5339 command-ready mapped-candidate packet. The plan rewrites local packet paths into remote POD paths and emits wrapper-only upload/execute/download/comparator steps.",
+  "script": {
+    "path": "Paper-reproduction-apps/x-hd-paper/scripts/build_xhd_mapped_candidate_pod_execution_plan.py",
+    "input_schema": "rtdl.paper_reproduction.xhd.mapped_candidate_same_input_gate_packet.v1",
+    "output_schema": "rtdl.paper_reproduction.xhd.mapped_candidate_pod_execution_plan.v1",
+    "uses_required_wrapper": "scripts/current_pod_ssh.py"
+  },
+  "status": "mapped_candidate_pod_execution_plan_ready__await_real_command_ready_packet",
+  "current_real_command_ready_packet_available": false,
+  "pod_usage": {
+    "used": false,
+    "expected_next": false,
+    "reason": "This goal builds an execution plan only. It does not run preflight, upload, remote commands, downloads, or comparison."
+  },
+  "claim_boundary": {
+    "pod_preflight_ran": false,
+    "uploads_executed": false,
+    "remote_commands_executed": false,
+    "downloads_executed": false,
+    "outputs_compared": false,
+    "same_input_gate_passed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false
+  },
+  "allowed_summary": "Goal5343 adds a wrapper-only POD execution-plan builder for future mapped-candidate command-ready packets. It prevents naked SSH/SCP drift and keeps execution/comparison in later goals.",
+  "not_allowed": [
+    "claiming POD preflight ran",
+    "claiming files were uploaded",
+    "claiming author or RTDL commands were executed",
+    "claiming outputs were downloaded or compared",
+    "claiming same-input correctness",
+    "claiming exact paper dataset reproduction",
+    "claiming Figure 5 reproduction",
+    "claiming full X-HD paper reproduction",
+    "claiming author-vs-RTDL performance ratio"
+  ],
+  "exit_label": "mapped_candidate_pod_execution_plan_ready__await_real_command_ready_packet"
+}

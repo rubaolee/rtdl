@@ -1,0 +1,51 @@
+{
+  "author_loader_point_count": 344085,
+  "complete": false,
+  "features_seen": 100,
+  "geometry_types": {
+    "MultiPolygon": 25,
+    "Polygon": 75
+  },
+  "key": "county",
+  "mbr": [
+    -179.148909,
+    -84.888246,
+    30.2209285380001,
+    71.3651620000001
+  ],
+  "mbr_delta": {
+    "x_lower": 1.5224609342112672e-06,
+    "x_upper": -17.9386381508789,
+    "y_lower": 11.310236323034278,
+    "y_upper": -3.7104491212858193e-06
+  },
+  "object_id_max": 100,
+  "object_id_min": 1,
+  "pages_seen": 1,
+  "paper_basename": "dtl_cnty.wkt",
+  "paper_mbr": {
+    "x": [
+      -179.14891052246094,
+      -66.9496078491211
+    ],
+    "y": [
+      18.91069221496582,
+      71.36516571044922
+    ]
+  },
+  "paper_point_count": 9438045,
+  "point_count_delta": -9093960,
+  "point_count_relative_delta": -0.9635427675964673,
+  "sample_labels": [
+    "Autauga County",
+    "Baldwin County",
+    "Barbour County",
+    "Bibb County",
+    "Blount County",
+    "Bullock County",
+    "Butler County",
+    "Calhoun County"
+  ],
+  "service_feature_count": 3144,
+  "service_url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Census_Counties/FeatureServer"
+}

@@ -1,0 +1,44 @@
+{
+  "author": {
+    "build_time_sec": 0.002838,
+    "cluster_formation_time_sec": 0.000213,
+    "command": [
+      "/tmp/rt_dbscan_authorofficial_goal5093/build/sample02-rtdbscan",
+      "/root/rtdl_goal5093/Paper-reproduction-apps/rt-dbscan-paper/data/fixtures/tiny3d_core_count.csv",
+      "8",
+      "0.35",
+      "3",
+      "Paper-reproduction-apps/rt-dbscan-paper/results/authorofficial_core_count_gate_pod_author_output.jsonl"
+    ],
+    "core_count": 7,
+    "core_points_time_sec": 0.002628,
+    "epsilon": 0.35,
+    "min_points": 3,
+    "point_count": 8,
+    "schema": "rtdl.paper_reproduction.rt_dbscan.authorofficial_core_count.v1",
+    "stderr_tail": "",
+    "stdout_tail": "\u001b[1;34m#owl.sample(main):  Executing DBSCAN\n\u001b[0m\u001b[1;34m#owl.sample(main):  dataset size: 8\n\u001b[0m\u001b[1;34m#owl.sample(main): BUILD prog DONE\n\n\u001b[0m\u001b[1;34m#owl.sample(main): Geoms and Params DONE\n\n\u001b[0m\u001b[1;34m#owl.sample(main): Group build DONE\n\n\u001b[0mBuild time: 0.002838 seconds.\ncallNum = 1\ncallNum = 1\ncallNum = 1\ncallNum = 1\ncallNum = 1\ncallNum = 1\ncallNum = 1\ncallNum = 1\ncallNum = 1\ncallNum = 1\ncallNum = 1\ncallNum = 1\ncallNum = 1\ncallNum = 1\ncallNum = 1\ncallNum = 1\ncallNum = 1\ncallNum = 1\ncallNum = 1\ncallNum = 1\ncallNum = 1\ncallNum = 1\ncallNum = 1\ncallNum = 1\ncallNum = 1\ncallNum = 1\nCore points time: 0.002628 seconds.\ncallNum = 2\ncallNum = 2\ncallNum = 2\ncallNum = 2\ncallNum = 2\ncallNum = 2\ncallNum = 2\ncallNum = 2\ncallNum = 2\ncallNum = 2\ncallNum = 2\ncallNum = 2\ncallNum = 2\ncallNum = 2\ncallNum = 2\ncallNum = 2\ncallNum = 2\ncallNum = 2\ncallNum = 2\ncallNum = 2\ncallNum = 2\ncallNum = 2\ncallNum = 2\ncallNum = 2\ncallNum = 2\ncallNum = 2\nExecution time: 0.000213 seconds.\nTotal time = 0.005679\n\u001b[0;34m#owl.sample(main): destroying devicegroup ...\n\u001b[0m",
+    "total_time_sec": 0.005679
+  },
+  "author_comparator_used": true,
+  "boundary": "Bounded same-input RT-DBSCAN core-count comparator gate. It covers the call-1 fixed-radius core predicate count only; it does not claim full DBSCAN labels, exact paper dataset reproduction, or performance.",
+  "bounded_core_count_reproduction_claim_authorized": true,
+  "epsilon": 0.35,
+  "input_path": "/root/rtdl_goal5093/Paper-reproduction-apps/rt-dbscan-paper/data/fixtures/tiny3d_core_count.csv",
+  "matched": true,
+  "min_points": 3,
+  "paper_app": "rt-dbscan-paper",
+  "paper_reproduction_claim_authorized": false,
+  "performance_claim_authorized": false,
+  "point_count": 8,
+  "rtdl": {
+    "backend": "cpu_reference",
+    "core_count": 7,
+    "metadata": {
+      "native_engine_row_contract": "not_called_cpu_reference_only",
+      "rt_core_accelerated": false
+    }
+  },
+  "schema": "rtdl.paper_reproduction.rt_dbscan.authorofficial_core_count_gate.v1",
+  "whole_program_speedup_claim_authorized": false
+}

@@ -1,0 +1,47 @@
+{
+  "author": {
+    "geometry_count": 11544398,
+    "loading_ms_diagnostic": 51.786,
+    "query_count": 50000,
+    "query_ms_internal": 0.076,
+    "result_count": 52849
+  },
+  "capacity_failure": false,
+  "claim_boundary": {
+    "author_capacity_precheck_only": true,
+    "embree_in_scope": false,
+    "matrix_completed": false,
+    "paper_reproduction_claimed": false,
+    "performance_ratio_authorized": false,
+    "rtdl_executed": false
+  },
+  "command": [
+    "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+    "-geom",
+    "/tmp/goal5521-target/PPoPPAE/datasets/polygons/parks.bz2.wkt",
+    "-query",
+    "/tmp/goal5521-target/PPoPPAE/datasets/queries/range-contains_queries_50000/parks.bz2.wkt",
+    "-serialize",
+    "/tmp/goal5521-stage/serialize/shared",
+    "-query_type",
+    "range-contains",
+    "-index_type",
+    "rtspatial",
+    "-load_factor",
+    "0.0001"
+  ],
+  "decision": {
+    "authorize_rtdl_cache_and_matrix": true,
+    "stop_before_rtdl_if_author_fails": false
+  },
+  "input_identity": {
+    "exact_archive_members": true,
+    "geometry_sha256": "ca133e4456b20c4baae1027d64a373d23083973ae042a3b6025dcc51eb3073a0",
+    "query_sha256": "c36199bdb042601ad7519cfb9e3a7a4e92f0137951cd751c089f1f9c25c89724"
+  },
+  "returncode": 0,
+  "schema": "rtdl.paper_reproduction.librts.goal5521_parks_bz2_author_capacity_precheck.v1",
+  "status": "parks_bz2_author_50000_completed",
+  "stderr": "",
+  "stdout": "Loaded polygons 11544398\nLoaded queries 50000\nQueue size 440 MB\nBVH 1614 MB, Geometries 176 MB, AABBs 264 MB, Total 2054 MB\nLoading Time 51.786 ms\nGeoms 11544398\nQueries 50000\nQuery Time 0.076 ms\nResults 52849\nSelectivity: 9.15578e-08\n"
+}

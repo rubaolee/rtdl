@@ -11,10 +11,15 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
-from examples.internal.rtdl_v0_4_nearest_neighbor_scaling_note import run_scaling_note
+from history.examples_internal.internal.rtdl_v0_4_nearest_neighbor_scaling_note import run_scaling_note
+from tests._embree_support import embree_available
 
 
 class Goal209NearestNeighborScalingNoteTest(unittest.TestCase):
+    def setUp(self):
+        if not embree_available():
+            self.skipTest("Embree is not available in the current environment")
+
     def test_run_scaling_note_returns_contract_shaped_payload(self):
         payload = run_scaling_note(repeats=1, case_names=("fixture",))
         self.assertEqual(payload["repeats"], 1)
@@ -36,7 +41,13 @@ class Goal209NearestNeighborScalingNoteTest(unittest.TestCase):
             output = Path(tmpdir) / "scaling.json"
             command = [
                 sys.executable,
-                str(ROOT / "examples" / "internal" / "rtdl_v0_4_nearest_neighbor_scaling_note.py"),
+                str(
+                    ROOT
+                    / "history"
+                    / "examples_internal"
+                    / "internal"
+                    / "rtdl_v0_4_nearest_neighbor_scaling_note.py"
+                ),
                 "--repeats",
                 "1",
                 "--case",

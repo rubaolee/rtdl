@@ -1,0 +1,22 @@
+[
+  {
+    "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+    "query": "PPoPPAE/datasets/queries/point-contains_queries_50000/parks_Europe.wkt"
+  },
+  {
+    "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+    "query": "PPoPPAE/datasets/queries/point-contains_queries_100000/parks_Europe.wkt"
+  },
+  {
+    "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+    "query": "PPoPPAE/datasets/queries/point-contains_queries_200000/parks_Europe.wkt"
+  },
+  {
+    "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+    "query": "PPoPPAE/datasets/queries/point-contains_queries_400000/parks_Europe.wkt"
+  },
+  {
+    "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+    "query": "PPoPPAE/datasets/queries/point-contains_queries_800000/parks_Europe.wkt"
+  }
+]

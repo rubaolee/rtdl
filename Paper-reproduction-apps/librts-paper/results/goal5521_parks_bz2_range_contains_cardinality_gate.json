@@ -1,0 +1,254 @@
+{
+  "case_count": 5,
+  "cases": [
+    {
+      "author": {
+        "command": [
+          "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+          "-geom",
+          "/tmp/goal5521-target/PPoPPAE/datasets/polygons/parks.bz2.wkt",
+          "-query",
+          "/tmp/goal5521-target/PPoPPAE/datasets/queries/range-contains_queries_50000/parks.bz2.wkt",
+          "-serialize",
+          "/tmp/goal5521-stage/serialize/shared",
+          "-query_type",
+          "range-contains",
+          "-index_type",
+          "rtspatial",
+          "-load_factor",
+          "0.0001"
+        ],
+        "evidence_source": "Goal5521 capacity precheck",
+        "geometry_count": 11544398,
+        "loading_ms_diagnostic": 51.786,
+        "query_count": 50000,
+        "query_ms_internal": 0.076,
+        "result_count": 52849,
+        "stdout": "Loaded polygons 11544398\nLoaded queries 50000\nQueue size 440 MB\nBVH 1614 MB, Geometries 176 MB, AABBs 264 MB, Total 2054 MB\nLoading Time 51.786 ms\nGeoms 11544398\nQueries 50000\nQuery Time 0.076 ms\nResults 52849\nSelectivity: 9.15578e-08\n"
+      },
+      "case_id": "parks_bz2_range_contains_50000",
+      "input_identity": {
+        "geometry_sha256": "ca133e4456b20c4baae1027d64a373d23083973ae042a3b6025dcc51eb3073a0",
+        "query_sha256": "c36199bdb042601ad7519cfb9e3a7a4e92f0137951cd751c089f1f9c25c89724",
+        "same_files_passed_to_author_and_rtdl": true
+      },
+      "matched": true,
+      "query_cardinality": 50000,
+      "rtdl": {
+        "prepared_query_wall_sec": 1.239877621002961,
+        "primitive_query_sec": 1.1209249299718067,
+        "query_load_sec": 0.46995446702931076,
+        "result_count": 52849
+      }
+    },
+    {
+      "author": {
+        "command": [
+          "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+          "-geom",
+          "/tmp/goal5521-target/PPoPPAE/datasets/polygons/parks.bz2.wkt",
+          "-query",
+          "/tmp/goal5521-target/PPoPPAE/datasets/queries/range-contains_queries_100000/parks.bz2.wkt",
+          "-serialize",
+          "/tmp/goal5521-stage/serialize/shared",
+          "-query_type",
+          "range-contains",
+          "-index_type",
+          "rtspatial",
+          "-load_factor",
+          "0.0001"
+        ],
+        "evidence_source": "Goal5521 shared prepared-base follow-up",
+        "geometry_count": 11544398,
+        "loading_ms_diagnostic": 51.7852,
+        "query_count": 100000,
+        "query_ms_internal": 0.09,
+        "result_count": 105826,
+        "stdout": "Loaded polygons 11544398\nLoaded queries 100000\nQueue size 880 MB\nBVH 1614 MB, Geometries 176 MB, AABBs 264 MB, Total 2054 MB\nLoading Time 51.7852 ms\nGeoms 11544398\nQueries 100000\nQuery Time 0.09 ms\nResults 105826\nSelectivity: 9.16687e-08\n"
+      },
+      "case_id": "parks_bz2_range_contains_100000",
+      "input_identity": {
+        "geometry_sha256": "ca133e4456b20c4baae1027d64a373d23083973ae042a3b6025dcc51eb3073a0",
+        "query_sha256": "0b7f2e6e21f3dca821f8913823cd59a20c47be0c5c0426268d4c42b38acf2c46",
+        "same_files_passed_to_author_and_rtdl": true
+      },
+      "matched": true,
+      "query_cardinality": 100000,
+      "rtdl": {
+        "prepared_query_wall_sec": 0.49648236902430654,
+        "primitive_query_sec": 0.2620932739810087,
+        "query_load_sec": 0.9677974230144173,
+        "result_count": 105826
+      }
+    },
+    {
+      "author": {
+        "command": [
+          "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+          "-geom",
+          "/tmp/goal5521-target/PPoPPAE/datasets/polygons/parks.bz2.wkt",
+          "-query",
+          "/tmp/goal5521-target/PPoPPAE/datasets/queries/range-contains_queries_200000/parks.bz2.wkt",
+          "-serialize",
+          "/tmp/goal5521-stage/serialize/shared",
+          "-query_type",
+          "range-contains",
+          "-index_type",
+          "rtspatial",
+          "-load_factor",
+          "0.0001"
+        ],
+        "evidence_source": "Goal5521 shared prepared-base follow-up",
+        "geometry_count": 11544398,
+        "loading_ms_diagnostic": 51.8264,
+        "query_count": 200000,
+        "query_ms_internal": 0.1318,
+        "result_count": 211714,
+        "stdout": "Loaded polygons 11544398\nLoaded queries 200000\nQueue size 1761 MB\nBVH 1614 MB, Geometries 176 MB, AABBs 264 MB, Total 2054 MB\nLoading Time 51.8264 ms\nGeoms 11544398\nQueries 200000\nQuery Time 0.1318 ms\nResults 211714\nSelectivity: 9.16956e-08\n"
+      },
+      "case_id": "parks_bz2_range_contains_200000",
+      "input_identity": {
+        "geometry_sha256": "ca133e4456b20c4baae1027d64a373d23083973ae042a3b6025dcc51eb3073a0",
+        "query_sha256": "09595a60d8fa05f06fcf6278317ff8ca95c4efa7c3a5c6686e0f4b7b84d7fcec",
+        "same_files_passed_to_author_and_rtdl": true
+      },
+      "matched": true,
+      "query_cardinality": 200000,
+      "rtdl": {
+        "prepared_query_wall_sec": 1.10110181896016,
+        "primitive_query_sec": 0.5854272690485232,
+        "query_load_sec": 1.9591216309927404,
+        "result_count": 211714
+      }
+    },
+    {
+      "author": {
+        "command": [
+          "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+          "-geom",
+          "/tmp/goal5521-target/PPoPPAE/datasets/polygons/parks.bz2.wkt",
+          "-query",
+          "/tmp/goal5521-target/PPoPPAE/datasets/queries/range-contains_queries_400000/parks.bz2.wkt",
+          "-serialize",
+          "/tmp/goal5521-stage/serialize/shared",
+          "-query_type",
+          "range-contains",
+          "-index_type",
+          "rtspatial",
+          "-load_factor",
+          "0.0001"
+        ],
+        "evidence_source": "Goal5521 shared prepared-base follow-up",
+        "geometry_count": 11544398,
+        "loading_ms_diagnostic": 51.9002,
+        "query_count": 400000,
+        "query_ms_internal": 0.2074,
+        "result_count": 423396,
+        "stdout": "Loaded polygons 11544398\nLoaded queries 400000\nQueue size 3523 MB\nBVH 1614 MB, Geometries 176 MB, AABBs 264 MB, Total 2054 MB\nLoading Time 51.9002 ms\nGeoms 11544398\nQueries 400000\nQuery Time 0.2074 ms\nResults 423396\nSelectivity: 9.16886e-08\n"
+      },
+      "case_id": "parks_bz2_range_contains_400000",
+      "input_identity": {
+        "geometry_sha256": "ca133e4456b20c4baae1027d64a373d23083973ae042a3b6025dcc51eb3073a0",
+        "query_sha256": "400c9f2aec91c8324c1032e056002a7fc2c477b83c6409b9f1f93b735f9537eb",
+        "same_files_passed_to_author_and_rtdl": true
+      },
+      "matched": true,
+      "query_cardinality": 400000,
+      "rtdl": {
+        "prepared_query_wall_sec": 2.3104205920244567,
+        "primitive_query_sec": 1.1784494030289352,
+        "query_load_sec": 3.9256708889734,
+        "result_count": 423396
+      }
+    },
+    {
+      "author": {
+        "command": [
+          "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+          "-geom",
+          "/tmp/goal5521-target/PPoPPAE/datasets/polygons/parks.bz2.wkt",
+          "-query",
+          "/tmp/goal5521-target/PPoPPAE/datasets/queries/range-contains_queries_800000/parks.bz2.wkt",
+          "-serialize",
+          "/tmp/goal5521-stage/serialize/shared",
+          "-query_type",
+          "range-contains",
+          "-index_type",
+          "rtspatial",
+          "-load_factor",
+          "0.0001"
+        ],
+        "evidence_source": "Goal5521 shared prepared-base follow-up",
+        "geometry_count": 11544398,
+        "loading_ms_diagnostic": 51.8382,
+        "query_count": 800000,
+        "query_ms_internal": 0.416,
+        "result_count": 846860,
+        "stdout": "Loaded polygons 11544398\nLoaded queries 800000\nQueue size 7046 MB\nBVH 1614 MB, Geometries 176 MB, AABBs 264 MB, Total 2054 MB\nLoading Time 51.8382 ms\nGeoms 11544398\nQueries 800000\nQuery Time 0.416 ms\nResults 846860\nSelectivity: 9.1696e-08\n"
+      },
+      "case_id": "parks_bz2_range_contains_800000",
+      "input_identity": {
+        "geometry_sha256": "ca133e4456b20c4baae1027d64a373d23083973ae042a3b6025dcc51eb3073a0",
+        "query_sha256": "c86b00f2d7c387bd6ddcdbe7a69c72ef7d717cf496cceef7da7b31075ac36371",
+        "same_files_passed_to_author_and_rtdl": true
+      },
+      "matched": true,
+      "query_cardinality": 800000,
+      "rtdl": {
+        "prepared_query_wall_sec": 4.4738000219804235,
+        "primitive_query_sec": 2.129081982013304,
+        "query_load_sec": 7.739077484991867,
+        "result_count": 846860
+      }
+    }
+  ],
+  "claim_boundary": {
+    "author_specific_rtdl_core_behavior_authorized": false,
+    "complete_paper_reproduction_claimed": false,
+    "complete_range_contains_count_matrix_only": true,
+    "complete_range_contains_matrix_claimed": true,
+    "embree_in_scope": false,
+    "exact_archive_same_input_count_evidence": true,
+    "figure_reproduction_claimed": false,
+    "performance_ratio_authorized": false,
+    "pointwise_containment_equivalence_claimed": false,
+    "prepared_base_distinct_query_batches": true,
+    "same_input_replay_claimed": false
+  },
+  "coverage": {
+    "complete_range_contains_matrix_claimed": true,
+    "exact_archive_range_contains_pair_count": 14,
+    "matched_after_goal5521": 14,
+    "matched_before_goal5521": 9,
+    "new_goal5521_matches": 5,
+    "remaining_not_checkpointed": 0
+  },
+  "evidence_accounting": {
+    "all_author_counts_match_pinned_paper_logs": true,
+    "all_query_files_distinct": true,
+    "author_capacity_precheck_completed": true,
+    "cache_is_app_owned": true,
+    "extraction_selected_member_count": 6,
+    "runtime_query_cardinalities": [
+      50000,
+      100000,
+      200000,
+      400000,
+      800000
+    ]
+  },
+  "matched_case_count": 5,
+  "operation": "range_contains",
+  "prepared_base": {
+    "cache_contract": "rtdl.paper_reproduction.librts.exact_aabb_column_cache.v1",
+    "geometry_member": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+    "geometry_sha256": "ca133e4456b20c4baae1027d64a373d23083973ae042a3b6025dcc51eb3073a0",
+    "indexed_count": 11544398,
+    "prepare_index_sec": 1.0396954730385914,
+    "runtime_distinct_query_batches": 5,
+    "same_input_replay_used": false,
+    "shared_author_serialization_base": true
+  },
+  "schema": "rtdl.paper_reproduction.librts.goal5521_parks_bz2_cardinality_gate.v2",
+  "status": "parks_bz2_exact_range_contains_five_cardinality_matrix_matched"
+}

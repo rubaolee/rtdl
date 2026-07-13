@@ -1,0 +1,48 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5333.provenance_ingestion_action_planner.v1",
+  "goal": "Goal5333",
+  "date": "2026-07-09",
+  "purpose": "Add an app-owned planner that reads a Goal5332 intake case and emits the next provenance-ingestion action without running POD or changing claims.",
+  "status": "provenance_action_planner_ready__await_real_ingested_case",
+  "planner": {
+    "path": "Paper-reproduction-apps/x-hd-paper/scripts/plan_xhd_provenance_ingestion_from_case.py",
+    "input": "case directory produced by ingest_xhd_external_response.py",
+    "outputs_when_write_enabled": [
+      "provenance_action_plan.json",
+      "provenance_action_plan.md"
+    ],
+    "plans": [
+      "ready_for_separate_provenance_ingestion_goal",
+      "valid_response_but_no_pod_gate__keep_blocked_or_request_missing_material",
+      "invalid_response__keep_blocked",
+      "invalid_case_record__repair_before_use"
+    ]
+  },
+  "behavior_locked_by_tests": [
+    "positive archive case maps to author_archive_provenance_ingestion_gate and pod_allowed_next=true",
+    "hash-only case stays blocked and pod_allowed_next=false",
+    "invalid template case requests corrected response",
+    "inconsistent case manifest fails closed",
+    "summary forbids exact/full/performance claims"
+  ],
+  "pod_usage": {
+    "used": false,
+    "expected_next": false,
+    "reason": "Local action planner only. POD is used only in a later provenance-ingestion goal after a real valid positive ingested case."
+  },
+  "claim_boundary": {
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false
+  },
+  "allowed_summary": "Goal5333 adds an app-owned provenance action planner for ingested X-HD external response cases. It maps validated cases to follow-up goal types and POD eligibility without running POD.",
+  "not_allowed": [
+    "running POD directly from the planner",
+    "claiming exact paper dataset reproduction from a plan alone",
+    "claiming Figure 5 reproduction from a plan alone",
+    "claiming full X-HD paper reproduction from a plan alone",
+    "claiming author-vs-RTDL performance ratio from a plan alone"
+  ],
+  "exit_label": "provenance_action_planner_ready__await_real_ingested_case"
+}

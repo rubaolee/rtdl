@@ -1,0 +1,468 @@
+{
+  "all_cases_matched": true,
+  "author_comparator_used": true,
+  "backend": "optix_numba_component_signature",
+  "regime": "warm_in_process_diagnostic",
+  "regime_boundary": "RTDL repeats run inside one long-lived Python process; author comparator invocations are still separate process calls. This is diagnostic only and not a public speedup claim.",
+  "cases": [
+    {
+      "all_matched": true,
+      "backend": "optix_numba_component_signature",
+      "epsilon": 0.09,
+      "first_repeat": {
+        "author_reported_build_time_sec": 0.002807,
+        "author_reported_cluster_formation_time_sec": 0.020253,
+        "author_reported_core_points_time_sec": 0.0235,
+        "author_reported_total_time_sec": 0.04656,
+        "author_wall_sec": 0.3841281607747078,
+        "component_partition_matched": true,
+        "core_flags_matched": true,
+        "matched": true,
+        "repeat_index": 0,
+        "rtdl_phase_metadata": {
+          "component_label_policy": "positive_root_index_labels_noise_minus_one",
+          "count_threshold_native_elapsed_sec": 0.00010263174772262573,
+          "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+          "grouped_union_native_elapsed_sec": 0.4416542798280716,
+          "materializes_directed_adjacency_stream": false,
+          "materializes_neighbor_rows": false,
+          "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+          "partner_reference_contract": "generic_prepared_optix_numba_grouped_stream_component_labels_3d",
+          "rt_core_accelerated": true
+        },
+        "rtdl_signature": {
+          "component_count": 2,
+          "component_sizes": [
+            48,
+            48
+          ],
+          "core_count": 96,
+          "noise_count": 4
+        },
+        "rtdl_wall_sec": 1.5931686088442802,
+        "signature_matched": true
+      },
+      "input_path": "/root/rtdl_goal5093/Paper-reproduction-apps/rt-dbscan-paper/data/fixtures/representative_medium_two_clusters3d.csv",
+      "median_author_process_wall_sec": 0.33936382085084915,
+      "median_author_reported_total_time_sec": 0.048403,
+      "median_rtdl_wall_sec": 0.005739256739616394,
+      "min_points": 6,
+      "name": "representative_medium_two_clusters3d",
+      "point_count": 100,
+      "repeat": 3,
+      "repeats": [
+        {
+          "author_reported_build_time_sec": 0.002807,
+          "author_reported_cluster_formation_time_sec": 0.020253,
+          "author_reported_core_points_time_sec": 0.0235,
+          "author_reported_total_time_sec": 0.04656,
+          "author_wall_sec": 0.3841281607747078,
+          "component_partition_matched": true,
+          "core_flags_matched": true,
+          "matched": true,
+          "repeat_index": 0,
+          "rtdl_phase_metadata": {
+            "component_label_policy": "positive_root_index_labels_noise_minus_one",
+            "count_threshold_native_elapsed_sec": 0.00010263174772262573,
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_native_elapsed_sec": 0.4416542798280716,
+            "materializes_directed_adjacency_stream": false,
+            "materializes_neighbor_rows": false,
+            "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+            "partner_reference_contract": "generic_prepared_optix_numba_grouped_stream_component_labels_3d",
+            "rt_core_accelerated": true
+          },
+          "rtdl_signature": {
+            "component_count": 2,
+            "component_sizes": [
+              48,
+              48
+            ],
+            "core_count": 96,
+            "noise_count": 4
+          },
+          "rtdl_wall_sec": 1.5931686088442802,
+          "signature_matched": true
+        },
+        {
+          "author_reported_build_time_sec": 0.002899,
+          "author_reported_cluster_formation_time_sec": 0.021482,
+          "author_reported_core_points_time_sec": 0.024022,
+          "author_reported_total_time_sec": 0.048403,
+          "author_wall_sec": 0.33773716539144516,
+          "component_partition_matched": true,
+          "core_flags_matched": true,
+          "matched": true,
+          "repeat_index": 1,
+          "rtdl_phase_metadata": {
+            "component_label_policy": "positive_root_index_labels_noise_minus_one",
+            "count_threshold_native_elapsed_sec": 0.00010907649993896484,
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_native_elapsed_sec": 0.00011387467384338379,
+            "materializes_directed_adjacency_stream": false,
+            "materializes_neighbor_rows": false,
+            "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+            "partner_reference_contract": "generic_prepared_optix_numba_grouped_stream_component_labels_3d",
+            "rt_core_accelerated": true
+          },
+          "rtdl_signature": {
+            "component_count": 2,
+            "component_sizes": [
+              48,
+              48
+            ],
+            "core_count": 96,
+            "noise_count": 4
+          },
+          "rtdl_wall_sec": 0.005739256739616394,
+          "signature_matched": true
+        },
+        {
+          "author_reported_build_time_sec": 0.002835,
+          "author_reported_cluster_formation_time_sec": 0.022392,
+          "author_reported_core_points_time_sec": 0.02455,
+          "author_reported_total_time_sec": 0.049777,
+          "author_wall_sec": 0.33936382085084915,
+          "component_partition_matched": true,
+          "core_flags_matched": true,
+          "matched": true,
+          "repeat_index": 2,
+          "rtdl_phase_metadata": {
+            "component_label_policy": "positive_root_index_labels_noise_minus_one",
+            "count_threshold_native_elapsed_sec": 0.00010352581739425659,
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_native_elapsed_sec": 0.00011792033910751343,
+            "materializes_directed_adjacency_stream": false,
+            "materializes_neighbor_rows": false,
+            "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+            "partner_reference_contract": "generic_prepared_optix_numba_grouped_stream_component_labels_3d",
+            "rt_core_accelerated": true
+          },
+          "rtdl_signature": {
+            "component_count": 2,
+            "component_sizes": [
+              48,
+              48
+            ],
+            "core_count": 96,
+            "noise_count": 4
+          },
+          "rtdl_wall_sec": 0.004403412342071533,
+          "signature_matched": true
+        }
+      ],
+      "rtdl_vs_author_process_wall_ratio": 0.016911810826584266,
+      "rtdl_vs_author_reported_total_ratio": 0.11857233517791033
+    },
+    {
+      "all_matched": true,
+      "backend": "optix_numba_component_signature",
+      "epsilon": 0.085,
+      "first_repeat": {
+        "author_reported_build_time_sec": 0.003108,
+        "author_reported_cluster_formation_time_sec": 0.010195,
+        "author_reported_core_points_time_sec": 0.012609,
+        "author_reported_total_time_sec": 0.025912,
+        "author_wall_sec": 0.3063197582960129,
+        "component_partition_matched": true,
+        "core_flags_matched": true,
+        "matched": true,
+        "repeat_index": 0,
+        "rtdl_phase_metadata": {
+          "component_label_policy": "positive_root_index_labels_noise_minus_one",
+          "count_threshold_native_elapsed_sec": 0.00012712925672531128,
+          "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+          "grouped_union_native_elapsed_sec": 0.00011803954839706421,
+          "materializes_directed_adjacency_stream": false,
+          "materializes_neighbor_rows": false,
+          "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+          "partner_reference_contract": "generic_prepared_optix_numba_grouped_stream_component_labels_3d",
+          "rt_core_accelerated": true
+        },
+        "rtdl_signature": {
+          "component_count": 2,
+          "component_sizes": [
+            29,
+            29
+          ],
+          "core_count": 54,
+          "noise_count": 2
+        },
+        "rtdl_wall_sec": 0.004853449761867523,
+        "signature_matched": true
+      },
+      "input_path": "/root/rtdl_goal5093/Paper-reproduction-apps/rt-dbscan-paper/data/fixtures/representative_border_shell3d.csv",
+      "median_author_process_wall_sec": 0.3077011853456497,
+      "median_author_reported_total_time_sec": 0.025299,
+      "median_rtdl_wall_sec": 0.004120588302612305,
+      "min_points": 8,
+      "name": "representative_border_shell3d",
+      "point_count": 60,
+      "repeat": 3,
+      "repeats": [
+        {
+          "author_reported_build_time_sec": 0.003108,
+          "author_reported_cluster_formation_time_sec": 0.010195,
+          "author_reported_core_points_time_sec": 0.012609,
+          "author_reported_total_time_sec": 0.025912,
+          "author_wall_sec": 0.3063197582960129,
+          "component_partition_matched": true,
+          "core_flags_matched": true,
+          "matched": true,
+          "repeat_index": 0,
+          "rtdl_phase_metadata": {
+            "component_label_policy": "positive_root_index_labels_noise_minus_one",
+            "count_threshold_native_elapsed_sec": 0.00012712925672531128,
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_native_elapsed_sec": 0.00011803954839706421,
+            "materializes_directed_adjacency_stream": false,
+            "materializes_neighbor_rows": false,
+            "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+            "partner_reference_contract": "generic_prepared_optix_numba_grouped_stream_component_labels_3d",
+            "rt_core_accelerated": true
+          },
+          "rtdl_signature": {
+            "component_count": 2,
+            "component_sizes": [
+              29,
+              29
+            ],
+            "core_count": 54,
+            "noise_count": 2
+          },
+          "rtdl_wall_sec": 0.004853449761867523,
+          "signature_matched": true
+        },
+        {
+          "author_reported_build_time_sec": 0.002933,
+          "author_reported_cluster_formation_time_sec": 0.010426,
+          "author_reported_core_points_time_sec": 0.011453,
+          "author_reported_total_time_sec": 0.024812,
+          "author_wall_sec": 0.3077011853456497,
+          "component_partition_matched": true,
+          "core_flags_matched": true,
+          "matched": true,
+          "repeat_index": 1,
+          "rtdl_phase_metadata": {
+            "component_label_policy": "positive_root_index_labels_noise_minus_one",
+            "count_threshold_native_elapsed_sec": 0.0001238211989402771,
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_native_elapsed_sec": 0.00011166185140609741,
+            "materializes_directed_adjacency_stream": false,
+            "materializes_neighbor_rows": false,
+            "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+            "partner_reference_contract": "generic_prepared_optix_numba_grouped_stream_component_labels_3d",
+            "rt_core_accelerated": true
+          },
+          "rtdl_signature": {
+            "component_count": 2,
+            "component_sizes": [
+              29,
+              29
+            ],
+            "core_count": 54,
+            "noise_count": 2
+          },
+          "rtdl_wall_sec": 0.004120588302612305,
+          "signature_matched": true
+        },
+        {
+          "author_reported_build_time_sec": 0.002823,
+          "author_reported_cluster_formation_time_sec": 0.010334,
+          "author_reported_core_points_time_sec": 0.012142,
+          "author_reported_total_time_sec": 0.025299,
+          "author_wall_sec": 0.3112492486834526,
+          "component_partition_matched": true,
+          "core_flags_matched": true,
+          "matched": true,
+          "repeat_index": 2,
+          "rtdl_phase_metadata": {
+            "component_label_policy": "positive_root_index_labels_noise_minus_one",
+            "count_threshold_native_elapsed_sec": 0.00011383742094039917,
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_native_elapsed_sec": 0.00011245161294937134,
+            "materializes_directed_adjacency_stream": false,
+            "materializes_neighbor_rows": false,
+            "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+            "partner_reference_contract": "generic_prepared_optix_numba_grouped_stream_component_labels_3d",
+            "rt_core_accelerated": true
+          },
+          "rtdl_signature": {
+            "component_count": 2,
+            "component_sizes": [
+              29,
+              29
+            ],
+            "core_count": 54,
+            "noise_count": 2
+          },
+          "rtdl_wall_sec": 0.004076182842254639,
+          "signature_matched": true
+        }
+      ],
+      "rtdl_vs_author_process_wall_ratio": 0.013391525606193319,
+      "rtdl_vs_author_reported_total_ratio": 0.16287554063845627
+    },
+    {
+      "all_matched": true,
+      "backend": "optix_numba_component_signature",
+      "epsilon": 0.095,
+      "first_repeat": {
+        "author_reported_build_time_sec": 0.002815,
+        "author_reported_cluster_formation_time_sec": 0.008565,
+        "author_reported_core_points_time_sec": 0.009718,
+        "author_reported_total_time_sec": 0.021098,
+        "author_wall_sec": 0.31134912371635437,
+        "component_partition_matched": true,
+        "core_flags_matched": true,
+        "matched": true,
+        "repeat_index": 0,
+        "rtdl_phase_metadata": {
+          "component_label_policy": "positive_root_index_labels_noise_minus_one",
+          "count_threshold_native_elapsed_sec": 0.00010266155004501343,
+          "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+          "grouped_union_native_elapsed_sec": 9.144097566604614e-05,
+          "materializes_directed_adjacency_stream": false,
+          "materializes_neighbor_rows": false,
+          "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+          "partner_reference_contract": "generic_prepared_optix_numba_grouped_stream_component_labels_3d",
+          "rt_core_accelerated": true
+        },
+        "rtdl_signature": {
+          "component_count": 3,
+          "component_sizes": [
+            16,
+            18,
+            27
+          ],
+          "core_count": 61,
+          "noise_count": 3
+        },
+        "rtdl_wall_sec": 0.004083164036273956,
+        "signature_matched": true
+      },
+      "input_path": "/root/rtdl_goal5093/Paper-reproduction-apps/rt-dbscan-paper/data/fixtures/representative_three_components_noise3d.csv",
+      "median_author_process_wall_sec": 0.3127853274345398,
+      "median_author_reported_total_time_sec": 0.021747,
+      "median_rtdl_wall_sec": 0.004083164036273956,
+      "min_points": 6,
+      "name": "representative_three_components_noise3d",
+      "point_count": 64,
+      "repeat": 3,
+      "repeats": [
+        {
+          "author_reported_build_time_sec": 0.002815,
+          "author_reported_cluster_formation_time_sec": 0.008565,
+          "author_reported_core_points_time_sec": 0.009718,
+          "author_reported_total_time_sec": 0.021098,
+          "author_wall_sec": 0.31134912371635437,
+          "component_partition_matched": true,
+          "core_flags_matched": true,
+          "matched": true,
+          "repeat_index": 0,
+          "rtdl_phase_metadata": {
+            "component_label_policy": "positive_root_index_labels_noise_minus_one",
+            "count_threshold_native_elapsed_sec": 0.00010266155004501343,
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_native_elapsed_sec": 9.144097566604614e-05,
+            "materializes_directed_adjacency_stream": false,
+            "materializes_neighbor_rows": false,
+            "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+            "partner_reference_contract": "generic_prepared_optix_numba_grouped_stream_component_labels_3d",
+            "rt_core_accelerated": true
+          },
+          "rtdl_signature": {
+            "component_count": 3,
+            "component_sizes": [
+              16,
+              18,
+              27
+            ],
+            "core_count": 61,
+            "noise_count": 3
+          },
+          "rtdl_wall_sec": 0.004083164036273956,
+          "signature_matched": true
+        },
+        {
+          "author_reported_build_time_sec": 0.002815,
+          "author_reported_cluster_formation_time_sec": 0.00889,
+          "author_reported_core_points_time_sec": 0.011048,
+          "author_reported_total_time_sec": 0.022753,
+          "author_wall_sec": 0.3127853274345398,
+          "component_partition_matched": true,
+          "core_flags_matched": true,
+          "matched": true,
+          "repeat_index": 1,
+          "rtdl_phase_metadata": {
+            "component_label_policy": "positive_root_index_labels_noise_minus_one",
+            "count_threshold_native_elapsed_sec": 0.00010167807340621948,
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_native_elapsed_sec": 9.059160947799683e-05,
+            "materializes_directed_adjacency_stream": false,
+            "materializes_neighbor_rows": false,
+            "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+            "partner_reference_contract": "generic_prepared_optix_numba_grouped_stream_component_labels_3d",
+            "rt_core_accelerated": true
+          },
+          "rtdl_signature": {
+            "component_count": 3,
+            "component_sizes": [
+              16,
+              18,
+              27
+            ],
+            "core_count": 61,
+            "noise_count": 3
+          },
+          "rtdl_wall_sec": 0.004056721925735474,
+          "signature_matched": true
+        },
+        {
+          "author_reported_build_time_sec": 0.002848,
+          "author_reported_cluster_formation_time_sec": 0.00832,
+          "author_reported_core_points_time_sec": 0.010579,
+          "author_reported_total_time_sec": 0.021747,
+          "author_wall_sec": 0.34213773906230927,
+          "component_partition_matched": true,
+          "core_flags_matched": true,
+          "matched": true,
+          "repeat_index": 2,
+          "rtdl_phase_metadata": {
+            "component_label_policy": "positive_root_index_labels_noise_minus_one",
+            "count_threshold_native_elapsed_sec": 9.585171937942505e-05,
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_native_elapsed_sec": 9.305775165557861e-05,
+            "materializes_directed_adjacency_stream": false,
+            "materializes_neighbor_rows": false,
+            "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+            "partner_reference_contract": "generic_prepared_optix_numba_grouped_stream_component_labels_3d",
+            "rt_core_accelerated": true
+          },
+          "rtdl_signature": {
+            "component_count": 3,
+            "component_sizes": [
+              16,
+              18,
+              27
+            ],
+            "core_count": 61,
+            "noise_count": 3
+          },
+          "rtdl_wall_sec": 0.004243351519107819,
+          "signature_matched": true
+        }
+      ],
+      "rtdl_vs_author_process_wall_ratio": 0.01305420580231177,
+      "rtdl_vs_author_reported_total_ratio": 0.18775757742557395
+    }
+  ],
+  "claim_boundary": "Bounded same-input representative correctness and diagnostic timing matrix. Synthetic fixtures only; not exact paper datasets and not a public speedup claim.",
+  "manifest_path": "/root/rtdl_goal5093/Paper-reproduction-apps/rt-dbscan-paper/data/fixtures/representative_fixtures_manifest.json",
+  "paper_app": "rt-dbscan-paper",
+  "paper_reproduction_claim_authorized": false,
+  "performance_claim_authorized": false,
+  "repeat": 3,
+  "schema": "rtdl.paper_reproduction.rt_dbscan.partition_matrix.v1",
+  "whole_program_speedup_claim_authorized": false
+}

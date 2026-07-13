@@ -93,9 +93,11 @@ class LibRTSSpatialIndexBenchmarkAppTest(unittest.TestCase):
         readme = (ROOT / "examples/current/research_benchmarks/librts_spatial_index/README.md").read_text(
             encoding="utf-8"
         )
-        report = (ROOT / "docs/reports/goal2574_librts_spatial_index_benchmark_intake_2026-05-24.md").read_text(
-            encoding="utf-8"
-        )
+        report = (
+            ROOT
+            / "history/internal_docs/docs_reports"
+            / "goal2574_librts_spatial_index_benchmark_intake_2026-05-24.md"
+        ).read_text(encoding="utf-8")
         for text in (readme, report):
             self.assertIn("LibRTS: A Spatial Indexing Library by Ray Tracing", text)
             self.assertIn("10.1145/3710848.3710850", text)

@@ -1,0 +1,68 @@
+{
+  "backend": "optix",
+  "claim_boundary": {
+    "generic_3d_aabb_point_membership_gate": true,
+    "native_goal5140_backend_claim": false,
+    "paper_reproduction_claim": false,
+    "xhd_performance_claim": false
+  },
+  "contract": "generic_aabb_point_membership_pair_rows_3d",
+  "elapsed_sec": 0.6971321627497673,
+  "expected_rows": [
+    [
+      100,
+      10
+    ],
+    [
+      101,
+      10
+    ],
+    [
+      101,
+      11
+    ],
+    [
+      102,
+      11
+    ],
+    [
+      103,
+      12
+    ]
+  ],
+  "fixture": "goal5146_synthetic_3d_aabb_point_membership",
+  "goal": "Goal5146",
+  "matched": true,
+  "native_generic_symbol": "rtdl_optix_collect_prepared_aabb_index_3d_point_contains_rows",
+  "observed_rows": [
+    [
+      100,
+      10
+    ],
+    [
+      101,
+      10
+    ],
+    [
+      101,
+      11
+    ],
+    [
+      102,
+      11
+    ],
+    [
+      103,
+      12
+    ]
+  ],
+  "primitive": "AABB_INDEX_QUERY_3D",
+  "row_capacity": 16,
+  "row_schema": [
+    "query_id",
+    "indexed_id"
+  ],
+  "schema": "rtdl.paper_reproduction.xhd.aabb_index_3d_point_membership_gate.v1",
+  "status": "aabb_index_3d_point_membership_gate_completed",
+  "valid_count": 5
+}

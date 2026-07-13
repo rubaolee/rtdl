@@ -1,0 +1,89 @@
+{
+  "author": {
+    "first_repeat_bvh_build_time_ms": 0.656,
+    "first_repeat_grid_build_time_ms": 1.51,
+    "first_repeat_iteration_count": 8,
+    "first_repeat_sum_rt_time_ms": 81.019,
+    "grid": {
+      "BuildTime": 1.51,
+      "CellDiagonalLength": 0.0032427143305540085,
+      "GiniIndex": 0.38537219166755676,
+      "GridSize": [
+        107,
+        60,
+        72
+      ],
+      "MaxPoints": 813,
+      "MedianPointsPerCell": 228,
+      "NonEmptyCells": 0,
+      "TotalCells": 462240
+    },
+    "internal_avg_time_ms": 83.49680000000001,
+    "internal_avg_time_sec": 0.08349680000000001,
+    "json_path": "xhd_goal5239_author_dragon_asian_scaled_rt_gpu_rerun_2026-07-09.json",
+    "process_wall_sec": 2.6587867364287376,
+    "repeat_count": 5,
+    "summary_path": "xhd_goal5239_author_dragon_asian_scaled_perf_summary_2026-07-09.json"
+  },
+  "correctness": {
+    "author_abs_diff": 2.3747470656587666e-09,
+    "author_hd_result": 0.06536787003278732,
+    "matched": true,
+    "paper_log_hd_result": 0.06536811590194702,
+    "rtdl_route_distance": 0.06536787240753439,
+    "rtdl_vs_paper_log_abs_diff": 2.4349441263282756e-07
+  },
+  "diagnostic_ratios": {
+    "rtdl_full_app_wall_div_author_process_wall": 11.75434696735015,
+    "rtdl_nearest_continuation_div_author_internal_avg_time": 336.83875436406305,
+    "rtdl_route_direction_div_author_internal_avg_time": 365.1670028379467
+  },
+  "goal": "Goal5239",
+  "interpretation": {
+    "author_internal_work_is_fused_rt_iterations": true,
+    "primary_rtdl_bottleneck": "nearest_continuation",
+    "primary_rtdl_bottleneck_sec": 28.124958105385303,
+    "rtdl_route_is_generic_cell_mbr_frontier_plus_numba_nearest_continuation": true
+  },
+  "level": "level_b_same_source_candidate_only",
+  "ratio_claim_boundary": {
+    "author_speedup_claimed": false,
+    "diagnostic_ratios_allowed_with_denominator_labels": true,
+    "exact_paper_input_identity_claimed": false,
+    "figure_6_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "same_denominator_performance_parity_claimed": false
+  },
+  "rtdl": {
+    "candidate_distance_evaluations": 6417800660,
+    "frontier_row_count": 3306122,
+    "full_app_wall_sec": 31.252301812171936,
+    "global_bound_early_break": false,
+    "load_full_inputs_sec": 0.5014200136065483,
+    "per_source_witness_exact": true,
+    "phase_timings_sec": {
+      "direction_total": 30.49027620255947,
+      "frontier_rows": 0.8221020475029945,
+      "grid_cell_mbrs": 0.5977412909269333,
+      "initial_state_seed": 0.9031352773308754,
+      "max_nearest_reduction": 0.0007915198802947998,
+      "nearest_continuation": 28.124958105385303,
+      "radius_selection": 0.03792461007833481,
+      "source_columns": 0.00029561668634414673,
+      "target_columns": 0.003311760723590851
+    },
+    "route_direction_total_sec": 30.49027620255947,
+    "summary_path": "xhd_goal5237_graphics_dragon_asian_dragon_scaled_all_source_optix_route_only_translated_no_global_early_break_pod_2026-07-09.json"
+  },
+  "same_input_contract": {
+    "author_ply_loader_min_bound_translation_contract": true,
+    "rtdl_translate_each_input_to_min_bound": true,
+    "source": "dragon.ply",
+    "source_count": 437645,
+    "target": "asian_dragon_scaled_1e-3.ply",
+    "target_count": 3609600
+  },
+  "same_pod": true,
+  "schema": "rtdl.paper_reproduction.xhd.performance_matrix.v1",
+  "target": "graphics_dragon_asian_dragon_scaled_1e-3"
+}

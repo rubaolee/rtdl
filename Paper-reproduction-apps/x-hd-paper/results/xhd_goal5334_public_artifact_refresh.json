@@ -1,0 +1,101 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5334.public_artifact_refresh.v1",
+  "goal": "Goal5334",
+  "date": "2026-07-09",
+  "purpose": "Refresh public artifact metadata after the external-response tooling was completed, to check whether exact X-HD input artifacts became publicly discoverable before waiting on owner/external replies.",
+  "status": "public_artifact_refresh_no_new_exact_input_path",
+  "public_search_refresh": {
+    "queries": [
+      "\"ics26-106.zip\"",
+      "\"X-HD\" \"HDDatasets\" \"hd_exec\"",
+      "\"X-HD: Fast Hausdorff Distance Computation with Ray Tracing\" dataset",
+      "\"10.1145/3797905.3800509\" supplement"
+    ],
+    "new_exact_input_dataset_found": false,
+    "new_public_dataset_mirror_found": false,
+    "new_author_hosted_hddatasets_found": false,
+    "result_summary": "Search still surfaces the ACM proceedings/supplement listing, ACM DOI page, author PDF/publication pages, GitHub source repository, NSF PAR, ResearchGate, and related publication pages. No exact input dataset, hash manifest, byte-identical regeneration script, or public mirror was found."
+  },
+  "direct_url_refresh": [
+    {
+      "url": "https://dl.acm.org/action/downloadSupplement?doi=10.1145%2F3797905.3800509&file=ics26-106.zip",
+      "method": "HEAD",
+      "observed_status": 403,
+      "downloaded": false
+    },
+    {
+      "url": "https://dl.acm.org/doi/suppl/10.1145/3797905.3800509/suppl_file/ics26-106.zip",
+      "method": "HEAD",
+      "observed_status": 403,
+      "downloaded": false
+    }
+  ],
+  "crossref_refresh": {
+    "url": "https://api.crossref.org/works/10.1145/3797905.3800509",
+    "status": 200,
+    "title": "X-HD: Fast Hausdorff Distance Computation with Ray Tracing",
+    "doi": "10.1145/3797905.3800509",
+    "link_count": 1,
+    "links": [
+      "https://dl.acm.org/doi/abs/10.1145/3797905.3800509"
+    ],
+    "relation_keys": [],
+    "archive": [],
+    "dataset_or_artifact_link_found": false
+  },
+  "github_refresh": {
+    "repo": "https://github.com/pwrliang/X-HD",
+    "api_releases_url": "https://api.github.com/repos/pwrliang/X-HD/releases",
+    "release_count": 0,
+    "api_contents_url": "https://api.github.com/repos/pwrliang/X-HD/contents",
+    "root_entries": [
+      ".clang-format",
+      ".gitignore",
+      ".gitmodules",
+      "CMakeLists.txt",
+      "README.md",
+      "cmake",
+      "expr",
+      "src",
+      "thirdparty",
+      "vcpkg.json"
+    ],
+    "root_data_directory_found": false,
+    "dataset_archive_release_found": false,
+    "recursive_tree_dataset_like_matches_interpretation": "Repository tree still exposes source/scripts/log JSON paths, including expr/logs, but no input dataset archive or HDDatasets bundle was found."
+  },
+  "interpretation": {
+    "exact_input_provenance_status": "still_blocked",
+    "acm_supplement_status": "visible_but_not_publicly_downloadable_from_current_environment",
+    "external_request_outbox_still_needed": true,
+    "response_intake_chain_still_needed": true,
+    "next_real_actor": "owner_or_external_reviewer_with_author_or_acm_access"
+  },
+  "pod_usage": {
+    "used": false,
+    "expected_next": false,
+    "reason": "Public metadata refresh only. POD is useful only after concrete input/provenance artifacts appear."
+  },
+  "claim_boundary": {
+    "acm_supplement_inspected": false,
+    "external_artifacts_acquired": false,
+    "exact_equivalence_accepted": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false,
+    "pod_execution_claimed": false
+  },
+  "allowed_summary": "Goal5334 refreshes public artifact metadata and finds no new public exact X-HD input path. The ACM supplement remains visible but unresolved; external requests and the intake chain remain necessary.",
+  "not_allowed": [
+    "claiming the ACM supplement has been inspected",
+    "claiming the ACM supplement contains datasets",
+    "claiming the ACM supplement contains no useful artifacts",
+    "claiming all public publication-adjacent artifacts are exhausted while ACM access remains unresolved",
+    "claiming exact paper dataset reproduction",
+    "claiming Figure 5 reproduction",
+    "claiming full X-HD paper reproduction",
+    "claiming author-vs-RTDL performance ratio"
+  ],
+  "exit_label": "public_artifact_refresh_no_new_exact_input_path__external_response_chain_still_needed"
+}

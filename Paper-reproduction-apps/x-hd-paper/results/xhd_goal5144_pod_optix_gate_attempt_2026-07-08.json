@@ -1,0 +1,69 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.pod_optix_gate_attempt.v1",
+  "goal": "Goal5144",
+  "date": "2026-07-08",
+  "status": "superseded__pod_optix_gate_blocked_by_wrong_ssh_key__cpu_gate_ready",
+  "matched": null,
+  "pod_attempts": [
+    {
+      "host": "213.173.108.24",
+      "port": 13502,
+      "result": "ssh_auth_failed",
+      "message": "Permission denied (publickey,password)."
+    },
+    {
+      "host": "157.157.221.29",
+      "port": 57582,
+      "result": "connection_refused"
+    },
+    {
+      "host": "157.157.221.29",
+      "port": 22051,
+      "result": "connection_refused"
+    },
+    {
+      "host": "213.173.108.6",
+      "port": 10626,
+      "result": "connection_refused"
+    }
+  ],
+  "local_artifacts": {
+    "runner": "Paper-reproduction-apps/x-hd-paper/scripts/run_cell_mbr_backend_assisted_gate.py",
+    "cpu_gate_summary": "Paper-reproduction-apps/x-hd-paper/results/cell_mbr_backend_assisted_cpu_gate_summary.json",
+    "cpu_gate_matched": true,
+    "cpu_gate_row_count": 6
+  },
+  "superseded_by": {
+    "result": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5144_pod_optix_gate_result_2026-07-08.json",
+    "optix_summary": "Paper-reproduction-apps/x-hd-paper/results/cell_mbr_backend_assisted_optix_gate_summary_pod.json",
+    "reason": "The first attempt used the wrong local SSH key. The current POD key id_ed25519_rtdl_codex_current_pod authenticated successfully and the OptiX gate matched."
+  },
+  "validation": [
+    {
+      "command": "py Paper-reproduction-apps/x-hd-paper/scripts/run_cell_mbr_backend_assisted_gate.py --backend cpu --summary Paper-reproduction-apps/x-hd-paper/results/cell_mbr_backend_assisted_cpu_gate_summary.json",
+      "result": "exit_code_0"
+    },
+    {
+      "command": "py -m unittest tests.goal5144_cell_mbr_backend_assisted_gate_runner_test tests.goal5142_generic_cell_mbr_backend_assisted_frontdoor_test",
+      "result": "Ran 5 tests OK"
+    },
+    {
+      "command": "py -m unittest tests.goal5140_generic_cell_mbr_traversal_abi_test tests.goal5139_generic_nearest_state_frontier_api_test tests.goal5138_generic_grid_cell_candidate_api_test tests.goal5142_generic_cell_mbr_backend_assisted_frontdoor_test tests.goal5144_cell_mbr_backend_assisted_gate_runner_test",
+      "result": "Ran 16 tests OK"
+    }
+  ],
+  "claim_boundary": {
+    "optix_correctness_claim": false,
+    "native_goal5140_backend_claim": false,
+    "xhd_performance_claim": false,
+    "paper_reproduction_claim": false,
+    "cpu_reference_gate_ready": true,
+    "pod_gate_still_required": false
+  },
+  "next_step": {
+    "goal": "Goal5145",
+    "name": "Run the prepared Goal5144 runner on an authenticated CUDA/OptiX POD",
+    "command": "py Paper-reproduction-apps/x-hd-paper/scripts/run_cell_mbr_backend_assisted_gate.py --backend optix --summary Paper-reproduction-apps/x-hd-paper/results/cell_mbr_backend_assisted_optix_gate_summary_pod.json",
+    "success_condition": "matched=true and broadphase_native_symbol records rtdl_optix_collect_prepared_aabb_index_2d_point_contains_rows"
+  }
+}

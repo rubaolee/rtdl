@@ -12,9 +12,10 @@ Decision: restore the public repository root to the RTDL v2.14 line and isolate 
 
 ## Archived Inputs
 
-- `current-head-source.tar` is a tracked-source snapshot of the pre-migration HEAD:
+- The tracked-source snapshot of the pre-migration HEAD is recoverable from git:
   - branch: `codex/v4-tier2-section8`
   - HEAD at archive time: `35e295a83`
+  - local-only `current-head-source.tar` was intentionally ignored and was removed during cleanup on 2026-07-04 because the git commit is the durable source of truth.
 - `untracked-current/` contains untracked reports, reviews, and Goal4806 material present before the root was restored.
 
 ## Restore Target

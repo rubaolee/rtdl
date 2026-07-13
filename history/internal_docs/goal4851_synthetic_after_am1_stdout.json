@@ -1,0 +1,85 @@
+{
+  "claim_boundary": "synthetic semantic-delta probe only; no paper performance claim",
+  "differing_case_count": 6,
+  "rows": [
+    {
+      "differs": false,
+      "name": "proper_crossing",
+      "planar_map_lsi_count": 1,
+      "raw_segment_pair_count": 1
+    },
+    {
+      "differs": false,
+      "name": "identical_same_direction",
+      "planar_map_lsi_count": 0,
+      "raw_segment_pair_count": 0
+    },
+    {
+      "differs": false,
+      "name": "identical_reverse_direction",
+      "planar_map_lsi_count": 0,
+      "raw_segment_pair_count": 0
+    },
+    {
+      "differs": true,
+      "name": "shared_left_endpoint",
+      "planar_map_lsi_count": 0,
+      "raw_segment_pair_count": 1
+    },
+    {
+      "differs": true,
+      "name": "shared_left_endpoint_diagonal_up",
+      "planar_map_lsi_count": 0,
+      "raw_segment_pair_count": 1
+    },
+    {
+      "differs": true,
+      "name": "shared_left_endpoint_diagonal_down",
+      "planar_map_lsi_count": 0,
+      "raw_segment_pair_count": 1
+    },
+    {
+      "differs": true,
+      "name": "vertical_base_shared_bottom_endpoint_right",
+      "planar_map_lsi_count": 0,
+      "raw_segment_pair_count": 1
+    },
+    {
+      "differs": true,
+      "name": "vertical_base_shared_bottom_endpoint_left",
+      "planar_map_lsi_count": 0,
+      "raw_segment_pair_count": 1
+    },
+    {
+      "differs": true,
+      "name": "reversed_base_shared_endpoint",
+      "planar_map_lsi_count": 0,
+      "raw_segment_pair_count": 1
+    },
+    {
+      "differs": false,
+      "name": "shared_right_endpoint",
+      "planar_map_lsi_count": 1,
+      "raw_segment_pair_count": 1
+    },
+    {
+      "differs": false,
+      "name": "shared_right_endpoint_diagonal",
+      "planar_map_lsi_count": 1,
+      "raw_segment_pair_count": 1
+    },
+    {
+      "differs": false,
+      "name": "collinear_partial_overlap",
+      "planar_map_lsi_count": 0,
+      "raw_segment_pair_count": 0
+    },
+    {
+      "differs": false,
+      "name": "collinear_touching_endpoint",
+      "planar_map_lsi_count": 0,
+      "raw_segment_pair_count": 0
+    }
+  ],
+  "schema": "rtdl.goal4851.synthetic_planar_map_lsi_probe.v1"
+}

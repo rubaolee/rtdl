@@ -1,0 +1,115 @@
+{
+  "author_output": {
+    "bytes": 2096449,
+    "lines": 97893,
+    "path": "/workspace/goal4881_section57_south_america/author_official_sa_bounded_overlay.txt",
+    "sha256": "8b4e80a50fedb77120781e8bf39c9f2db1df3a1f823716f7dab9c1f9eed1862d"
+  },
+  "byte_equal_to_author": true,
+  "claim_boundary": {
+    "broad_performance_claim": false,
+    "bundled_rayjoin_overlay_imported": false,
+    "dataset_label": "representative_current_source",
+    "exact_old_paper_input_claim": false,
+    "full_eight_pair_paper_claim": false,
+    "numba_on_correctness_critical_path": false,
+    "public_lsi_used": true,
+    "public_point_location_used": true
+  },
+  "elapsed_sec": 58.38456058502197,
+  "generated_output": {
+    "bytes": 2096449,
+    "lines": 97893,
+    "path": "/workspace/goal4881_section57_south_america/rtdl_public_sa_bounded_overlay.txt",
+    "sha256": "8b4e80a50fedb77120781e8bf39c9f2db1df3a1f823716f7dab9c1f9eed1862d"
+  },
+  "left": {
+    "chains": 159346,
+    "edges": 7057592,
+    "path": "/workspace/goal4881_section57_south_america/cdb_bounded_150k_50k/lakes_South_America_current_osm_bounded150k_Point.cdb",
+    "points": 7216938
+  },
+  "lsi_row_count": 1856,
+  "native_point_location_timings": {
+    "midpoint_pip_map0": {
+      "mode": "none",
+      "point_count": 235,
+      "point_upload": 0.0,
+      "positive_face_count": 141,
+      "row_download": 2.1571e-05,
+      "traversal": 0.03435317
+    },
+    "midpoint_pip_map1": {
+      "mode": "none",
+      "point_count": 373,
+      "point_upload": 0.0,
+      "positive_face_count": 240,
+      "row_download": 2.122e-05,
+      "traversal": 0.047826758
+    },
+    "vertex_pip_map0_in_map1": {
+      "mode": "rows",
+      "point_count": 7216938,
+      "point_upload": 0.018815986,
+      "positive_face_count": 84944,
+      "row_download": 0.00909527,
+      "traversal": 4.447319842
+    },
+    "vertex_pip_map1_in_map0": {
+      "mode": "rows",
+      "point_count": 654694,
+      "point_upload": 0.00228188,
+      "positive_face_count": 5574,
+      "row_download": 0.000906069,
+      "traversal": 0.830136863
+    }
+  },
+  "pair_name": "LKSA_x_PKSA_current_osm_bounded150k_50k",
+  "phase_seconds": {
+    "intersection_reprojection_sec": 0.07172085344791412,
+    "load_pack_left_sec": 33.9731382727623,
+    "load_pack_right_sec": 3.662502698600292,
+    "lsi_public_rows_sec": 3.8626305758953094,
+    "midpoint_pip_map0_sec": 0.034758277237415314,
+    "midpoint_pip_map1_sec": 0.048094891011714935,
+    "output_chain_write_sec": 8.464535750448704,
+    "sort_map0_sec": 0.027828432619571686,
+    "sort_map1_sec": 0.026357941329479218,
+    "vertex_pip_map0_in_map1_sec": 4.909174278378487,
+    "vertex_pip_map1_in_map0_sec": 0.850948803126812
+  },
+  "query_map_ids": {
+    "map0_in_map1": 0,
+    "map1_in_map0": 1,
+    "swapped": false
+  },
+  "right": {
+    "chains": 50487,
+    "edges": 604207,
+    "path": "/workspace/goal4881_section57_south_america/cdb_bounded_150k_50k/parks_South_America_current_osm_bounded50k_Point.cdb",
+    "points": 654694
+  },
+  "route": "public_planar_map_lsi_and_point_location_plus_python_app_overlay_writer",
+  "scale_bounds": [
+    -109.4548678,
+    -29.3456097,
+    -55.9760441,
+    13.3963421
+  ],
+  "schema": "rtdl.goal4880.section57_public_primitives_overlay_harness.v1",
+  "vertex_positive_counts": {
+    "map0_in_map1": 84944,
+    "map1_in_map0": 5574
+  },
+  "writer_result": {
+    "chain_count": 3909,
+    "face_count": 1880,
+    "line_count": 97893,
+    "path": "/workspace/goal4881_section57_south_america/rtdl_public_sa_bounded_overlay.txt",
+    "point_count": 93984
+  },
+  "xsect_sorted_counts": {
+    "map0": 1856,
+    "map1": 1856
+  }
+}

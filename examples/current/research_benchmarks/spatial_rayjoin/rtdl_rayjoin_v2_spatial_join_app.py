@@ -2808,7 +2808,7 @@ def describe_rayjoin_v2_6_numba_compact_mask_continuation(
         ),
         "integration_decision": (
             "Keep prepared generic RTDL count/parity primitives as the recommended "
-            "fast path when scalar counts are enough. Use the v2.6 Numba compact-mask "
+            "fast path when scalar counts are enough. Use the legacy Numba compact-mask "
             "path for retained row streams or downstream tensor post-processing."
         ),
     }
@@ -2817,7 +2817,7 @@ def describe_rayjoin_v2_6_numba_compact_mask_continuation(
 def describe_rayjoin_segmented_compact_mask_numba_continuation(
     workload: str = "pip",
 ) -> dict[str, object]:
-    """Current alias for the legacy v2.6 Numba compact-mask continuation."""
+    """Current alias for the legacy Numba compact-mask continuation."""
 
     plan = describe_rayjoin_v2_6_numba_compact_mask_continuation(workload)
     return {
@@ -2835,7 +2835,7 @@ def v2_6_numba_compact_mask_plan_payload(workload: str = "pip") -> dict[str, obj
         "command_shape": (
             "Use run_rayjoin_v2_6_numba_compact_mask_preview(...) from Python with "
             "Numba CUDA device arrays for candidate_row_ids:int64 and keep_mask:bool. "
-            "The legacy v2.6 app helper now routes through the generic v2.8 "
+            "The legacy app helper now routes through the generic segmented "
             "segmented typed-stream partner front door."
         ),
         "claim_boundary": {
@@ -2853,7 +2853,7 @@ def v2_6_numba_compact_mask_plan_payload(workload: str = "pip") -> dict[str, obj
 
 
 def segmented_compact_mask_numba_plan_payload(workload: str = "pip") -> dict[str, object]:
-    """Current alias for the legacy v2.6 Numba compact-mask plan payload."""
+    """Current alias for the legacy Numba compact-mask plan payload."""
 
     plan = describe_rayjoin_segmented_compact_mask_numba_continuation(workload)
     return {
@@ -2864,7 +2864,7 @@ def segmented_compact_mask_numba_plan_payload(workload: str = "pip") -> dict[str
         "command_shape": (
             "Use run_rayjoin_segmented_compact_mask_numba_preview(...) from Python "
             "with Numba CUDA device arrays for candidate_row_ids:int64 and "
-            "keep_mask:bool. The legacy v2.6 helper remains available as a "
+            "keep_mask:bool. The legacy helper remains available as a "
             "compatibility alias."
         ),
     }
@@ -2891,7 +2891,7 @@ def run_rayjoin_v2_6_numba_compact_mask_preview(
     handoff_validation = rt.validate_v2_6_neutral_partner_handoff(handoff)
     if handoff_validation["status"] != "accept":
         raise RuntimeError(
-            "RayJoin v2.6 Numba neutral handoff rejected: "
+            "RayJoin legacy Numba neutral handoff rejected: "
             f"{handoff_validation['errors']}"
         )
 
@@ -2962,7 +2962,7 @@ def run_rayjoin_segmented_compact_mask_numba_preview(
     workload: str = "pip",
     block_size: int = 256,
 ) -> dict[str, object]:
-    """Current alias for the legacy v2.6 compact-mask preview runner."""
+    """Current alias for the legacy compact-mask preview runner."""
 
     payload = run_rayjoin_v2_6_numba_compact_mask_preview(
         inputs,

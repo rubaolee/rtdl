@@ -1,0 +1,33 @@
+{
+  "schema": "rtdl.paper_reproduction.rayjoin.public_sample_manifest.v1",
+  "dataset": "RayJoin public County x Soil sample",
+  "description": "Public sample distributed by the RayJoin repository. This is the bounded public validation pair used for the runnable reproduction package.",
+  "files": [
+    {
+      "role": "poly1_county",
+      "filename": "br_county_clean_25_odyssey_final.txt",
+      "url": "https://raw.githubusercontent.com/pwrliang/RayJoin/main/test/dataset/br_county_clean_25_odyssey_final.txt",
+      "bytes": 12826522,
+      "sha256": "cee9f41da48c6f072b0692843cc23804517e8928f46c6c84675fc9a3b1e5a0e7"
+    },
+    {
+      "role": "poly2_soil",
+      "filename": "br_soil_ascii_odyssey_final.txt",
+      "url": "https://raw.githubusercontent.com/pwrliang/RayJoin/main/test/dataset/br_soil_ascii_odyssey_final.txt",
+      "bytes": 9543616,
+      "sha256": "525a6dda0e42c1ed63f30cd5ffe8e9283697f3c53076837a122ba098ad530d9f"
+    },
+    {
+      "role": "section57_answer",
+      "filename": "br_countyXbr_soil_answer.txt",
+      "url": "https://raw.githubusercontent.com/pwrliang/RayJoin/main/test/dataset/br_countyXbr_soil_answer.txt",
+      "bytes": 16631243,
+      "sha256": "464f87a59cc2428f63cbfe5068965d7bc7adb8eee51e9c1e3a5960ae8b76019e"
+    }
+  ],
+  "claim_boundary": {
+    "public_sample": true,
+    "exact_old_hidden_eight_pair_inputs": false,
+    "full_section57_eight_pair_claim": false
+  }
+}

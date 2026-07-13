@@ -100,7 +100,7 @@ flags, counts, summaries, bounded witnesses, typed columns, or candidate rows.
 | App pattern | Primitive contribution | Partner contribution | Boundary note |
 | --- | --- | --- | --- |
 | RTDBSCAN | Fixed-radius count threshold / core flags | Component labeling or convergence | For OptiX-vs-Embree backend comparison, fix Numba as the continuation lock; for partner comparison, current large-scale evidence shows Numba as the measured 524K winner over same-contract CuPy. |
-| RayJoin overlay | LSI, point-location, PIP, bounded counts | Topology and output assembly | Overlay claims are limited to the available 2/8 exact Section 5.7 CDB subset; full 8/8 reproduction is blocked. |
+| RayJoin overlay | LSI, point-location, PIP, bounded counts | Topology and output assembly | Overlay claims are bounded: two available full-stream pairs plus two current-source representative Lakes/Parks pairs are documented separately; full hidden-input 8/8 reproduction is not claimed. |
 | Barnes-Hut | Node coverage / threshold frontier | Force-vector accumulation | v2.14 reports node coverage only, not full force-solver acceleration. |
 | Contact manifold | AABB broadphase / witness candidates | Exact contact refinement | v2.14 reports broadphase/contact-witness evidence, not full physics-engine contact generation. |
 | Hausdorff exact witness | Threshold decision or frontier | Exact nearest-witness continuation | v2.14 reports threshold decision only, not exact witness-distance acceleration. |
@@ -231,8 +231,9 @@ Status scope:
   the shared continuation, and the 524K total speedup is small because
   continuation dominates.
 - RayJoin PIP is a modest scalar-count row, not a broad RT-core win.
-- RayJoin overlay is public-review-ready only for the available 2/8 exact CDB
-  subset, not a full 8/8 Section 5.7 reproduction.
+- RayJoin overlay has a bounded Section 5.7 reproduction page: two available
+  full-stream pairs plus two current-source representative Lakes/Parks pairs;
+  full hidden-input 8/8 reproduction is not claimed.
 
 | Benchmark family | User lesson |
 | --- | --- |
@@ -240,7 +241,7 @@ Status scope:
 | RTDBSCAN | RT threshold helps, but at 524K the continuation phase is about 6.9s and the RT threshold stage is about 1.2s of an 8.9s total; public wording must stay narrow, and Numba is currently the best measured prepared-grid partner for this contract. |
 | RayJoin LSI | Scalar count is a strong primitive-first row. |
 | RayJoin PIP | Current scalar count is modest; do not overclaim. |
-| RayJoin overlay | The available 2/8 exact Section 5.7 subset is public-review-ready, but full 8/8 reproduction remains blocked. |
+| RayJoin overlay | Use the bounded Section 5.7 page for the current claim: two available full-stream pairs plus two current-source representative Lakes/Parks pairs, not a full hidden-input 8/8 paper-dataset claim. |
 | RayDB-style | Use fused grouped reductions when they exactly answer the query. |
 | LibRTS AABB | Prepared AABB index is a strong RTDL spatial-index pattern. |
 | Triangle counting | Any-hit hot query can be excellent, but graph lowering and prepare affect total time. |

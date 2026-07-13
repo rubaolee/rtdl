@@ -1,0 +1,50 @@
+{
+  "schema": "rtdl.paper_reproduction.librts.representative_pip_dataset.v1",
+  "goal": "Goal5466",
+  "identity_level": "level_b_public_source_representative_subset",
+  "paper_workload_alignment": {
+    "author_dataset_basename": "USACensusBlockGroupBoundaries.wkt",
+    "paper_query_count": 100000,
+    "representative_query_count": 100000,
+    "same_query_generator_source": true,
+    "exact_paper_file_identity": false
+  },
+  "public_source": {
+    "service_url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Census_BlockGroups/FeatureServer",
+    "source_artifact": "Paper-reproduction-apps/x-hd-paper/data/generated/goal5310_water_bg_full_public_wkt_smoke/USACensusBlockGroupBoundaries.wkt.full_public_arcgis_candidate.wkt",
+    "source_artifact_sha256": "7c3add96c84d236f7a8d91347fc6c0985a0c6c77730bd1799dfb531cf28f360f",
+    "source_feature_count": 100,
+    "source_complete": false,
+    "source_note": "First ArcGIS page from an earlier provenance-recorded public-data acquisition; not the author paper WKT file."
+  },
+  "polygon_selection": {
+    "rule": "preserve source order; keep the first 64 POLYGON records with one outer ring and no holes; exclude MULTIPOLYGON and inner-ring records",
+    "polygon_count": 64,
+    "vertex_count": 30635,
+    "mbr": [-87.9864580803, 30.5735866367, -86.4111767118, 32.708219136],
+    "output_file": "blockgroups_simple64_arcgis.wkt",
+    "output_sha256": "979829aaf538a52ac61331ba39b855e5eaac93362ca69e40be7367c3e199e62f"
+  },
+  "query_generation": {
+    "source_commit": "9140ad997519713bb5fdceba639a357afa4609ad",
+    "source_file": "SpatialQueryBenchmark/src/gen/gen.cpp",
+    "algorithm_source": "SpatialQueryBenchmark/src/gen/generator.h::GeneratePointQueries",
+    "query_type": "point-contains",
+    "seed": 0,
+    "query_count": 100000,
+    "output_file": "blockgroups_simple64_queries_seed0_100k.wkt",
+    "output_sha256": "6b8d2c553ee0a7c3280e9c23e21dbf506846b3f36e0351194c31ab110731b543",
+    "command": "librts_author_gen --input=blockgroups_simple64_arcgis.wkt --output=blockgroups_simple64_queries_seed0_100k.wkt --query_type=point-contains --num_queries=100000 --seed=0 --serialize="
+  },
+  "polygon_count": 64,
+  "query_count": 100000,
+  "claim_boundary": {
+    "level_b_representative_input_claimed": true,
+    "same_public_dataset_family_as_author_pip_script": true,
+    "paper_query_cardinality_matched": true,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "full_public_dataset_claimed": false,
+    "paper_figure_reproduction_claimed": false,
+    "performance_claimed": false
+  }
+}

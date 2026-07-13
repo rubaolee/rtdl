@@ -1,0 +1,31 @@
+Please review this packet:
+
+history/internal_docs/call_for_review_goal4885_public_surface_audit_after_rayjoin_page_2026-07-03.md
+history/internal_docs/goal4885_public_surface_audit_after_rayjoin_page_2026-07-03.md
+
+Write your review result to:
+
+history/internal_docs/antigravity_goal4885_public_surface_audit_after_rayjoin_page_review_2026-07-03.md
+
+Requested verdict label if approved:
+
+approve_goal4885_public_surface_audit_after_rayjoin_page
+
+Please independently inspect representative public files and verify the claims:
+
+- README.md
+- docs/README.md
+- docs/public_documentation_map.md
+- docs/release_reports/v2_14/rayjoin_section57_bounded_reproduction.md
+- docs/release_reports/v2_14/public_rt_vs_embree_comparison.md
+- docs/learn/v2_14_app_author_implementation_strategy.md
+- docs/rtdl_primitive_catalog.md
+- examples/current/research_benchmarks/README.md
+
+Be strict about:
+
+- no internal goal IDs or reviewer/process language in the public surface;
+- no V3/V4/experimental project leakage in the first-user path;
+- no direct `history/internal_docs`, `docs/reports`, `docs/reviews`, `docs/handoff`, or `future/v4` links in public docs/examples/tutorials;
+- no overclaiming RayJoin Section 5.7 beyond the bounded page;
+- links and current v2.14 navigation staying coherent.

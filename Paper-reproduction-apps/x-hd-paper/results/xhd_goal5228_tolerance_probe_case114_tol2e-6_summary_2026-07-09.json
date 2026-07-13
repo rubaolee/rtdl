@@ -1,0 +1,98 @@
+{
+  "all_cases_matched": true,
+  "cases": [
+    {
+      "author_log": {
+        "algorithm": "Hybrid",
+        "hd_result": 0.4707379639148712,
+        "max_hit": null,
+        "normalize": true,
+        "num_points_per_cell": 8,
+        "point_counts": [
+          118868,
+          54005
+        ],
+        "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/ModelNet40/n_points_cell_false_max_hit_false/curtain_0125.off_curtain_0081.off.json",
+        "translate": 0.0,
+        "type": "Float"
+      },
+      "author_normalized": {
+        "algorithm_matched": true,
+        "author_bin": "/tmp/xhd-goal5222_build_paper/bin/hd_exec",
+        "expected_algorithm": "Hybrid",
+        "hd_result": 0.4707379639148712,
+        "json": "/tmp/xhd-goal5228/tolerance_probe/author/0114_curtain_0125__curtain_0081.json",
+        "mbr_matched": true,
+        "observed_algorithms": [
+          "Hybrid"
+        ],
+        "paper_abs_diff": 0.0,
+        "paper_hd_matched": true,
+        "process_wall_sec": 0.6464884281158447,
+        "running_avg_time_ms": 7.827,
+        "variant": "hybrid"
+      },
+      "case_index": 114,
+      "case_matched": true,
+      "case_name": "0114_curtain_0125__curtain_0081",
+      "category": "curtain",
+      "members": [
+        "ModelNet40/curtain/train/curtain_0125.off",
+        "ModelNet40/curtain/train/curtain_0081.off"
+      ],
+      "public_paths": [
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/curtain/train/curtain_0125.off",
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/curtain/train/curtain_0081.off"
+      ],
+      "public_sha256": [
+        "fe5cb85b64ad077d32eee9253d683c2b557ae25a0d7684bbcb4b454f8fdad121",
+        "3a7a00140f58d1f7ecba668d2e358e20b425b872ca34354dac2e7ec2b60a6569"
+      ],
+      "rtdl_normalized_route": {
+        "author_abs_diff": 1.0085423763905865e-06,
+        "json": "/tmp/xhd-goal5228/tolerance_probe/rtdl/0114_curtain_0125__curtain_0081.json",
+        "matched_author": true,
+        "reference_preprocessing": [
+          "normalize_each_input_to_author_unit_box"
+        ],
+        "route_distance": 0.4707389724572476,
+        "route_wall_sec": 1.135890081524849,
+        "total_sec": 1.5358092486858368
+      },
+      "total_points": 172873
+    }
+  ],
+  "claim_boundary": {
+    "algorithm_aware_author_comparator_selection": true,
+    "author_vs_rtdl_ratio_claimed": false,
+    "exact_paper_dataset_identity_proved": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "modelnet40_all_pairs_reproduced": false,
+    "modelnet40_batch_normalized_contract_claimed": true
+  },
+  "elapsed_sec": 2.1970601454377174,
+  "extract_root": "/tmp/xhd-modelnet40/extracted",
+  "failed_case_count": 0,
+  "goal": "Goal5228",
+  "log_index": "Paper-reproduction-apps/x-hd-paper/results/xhd_paper_branch_log_index_goal5176_2026-07-08.json",
+  "matched_case_count": 1,
+  "modelnet_zip": "/tmp/xhd-modelnet40/ModelNet40.zip",
+  "schema": "rtdl.paper_reproduction.xhd.modelnet40_normalized_batch_gate.v2",
+  "selection": {
+    "chunk": {
+      "chunk_index": null,
+      "chunk_size": null,
+      "end_index_exclusive": 115,
+      "mode": "range",
+      "selected_count_after_chunk": 1,
+      "start_index": 114,
+      "total_selected_before_chunk": 400
+    },
+    "requested_max_pairs": 400,
+    "selected_count": 1,
+    "strategy": "all_unique_pairs",
+    "total_points_max": 172873,
+    "total_points_min": 172873
+  },
+  "status": "modelnet40_normalized_public_off_batch_checked"
+}

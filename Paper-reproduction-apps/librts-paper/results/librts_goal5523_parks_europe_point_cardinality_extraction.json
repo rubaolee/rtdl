@@ -1,0 +1,79 @@
+{
+  "archive": {
+    "path": "/workspace/librts-data/PPoPPAE-v2.tar.gz",
+    "verified_md5": "89e589f086038f1cd3af9e3ed67da8c8",
+    "verified_size_bytes": 23062425365
+  },
+  "claim_boundary": {
+    "archive_subset_extracted": true,
+    "archive_verified": true,
+    "complete_paper_reproduction_claimed": false,
+    "embree_in_scope": false,
+    "exact_input_files_identified": true,
+    "paper_figure_reproduced": false,
+    "performance_ratio_authorized": false
+  },
+  "extraction": {
+    "atomic_directory_promotion": true,
+    "final_path": "/tmp/goal5523-target",
+    "selected_member_count": 6,
+    "selected_members": [
+      {
+        "relative_path": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+        "sha256": "fd77bf8294dfb9dfe45e49fc4aec99427ebd9ac4f370697b0c908d635d643aed",
+        "size_bytes": 2962689351
+      },
+      {
+        "relative_path": "PPoPPAE/datasets/queries/point-contains_queries_100000/parks_Europe.wkt",
+        "sha256": "b955fe9e33cee4dbe599fc1d125e06f3d4bb5a916799363b69ef7f4139612f66",
+        "size_bytes": 3910647
+      },
+      {
+        "relative_path": "PPoPPAE/datasets/queries/point-contains_queries_50000/parks_Europe.wkt",
+        "sha256": "e48d7d2dbc9825335575d5dd2955359f38c591139adb81577ac3ed6741ea8b1a",
+        "size_bytes": 1955539
+      },
+      {
+        "relative_path": "PPoPPAE/datasets/queries/point-contains_queries_400000/parks_Europe.wkt",
+        "sha256": "e15f19cbe72fc08e0bcf27a27f1e17c1652ac637447ff942c34034657e4ad019",
+        "size_bytes": 15641980
+      },
+      {
+        "relative_path": "PPoPPAE/datasets/queries/point-contains_queries_200000/parks_Europe.wkt",
+        "sha256": "31ae13290bca380e40eec5d9cb887f56acca32c1dff8cf3aad48765ac2cfae88",
+        "size_bytes": 7821287
+      },
+      {
+        "relative_path": "PPoPPAE/datasets/queries/point-contains_queries_800000/parks_Europe.wkt",
+        "sha256": "55573b2f48e6401e725740d1eef9f2282f82df5e95e591ab7e6364e346ad2ba2",
+        "size_bytes": 31284011
+      }
+    ],
+    "selected_pair_count": 5,
+    "selected_pairs": [
+      {
+        "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+        "query": "PPoPPAE/datasets/queries/point-contains_queries_50000/parks_Europe.wkt"
+      },
+      {
+        "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+        "query": "PPoPPAE/datasets/queries/point-contains_queries_100000/parks_Europe.wkt"
+      },
+      {
+        "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+        "query": "PPoPPAE/datasets/queries/point-contains_queries_200000/parks_Europe.wkt"
+      },
+      {
+        "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+        "query": "PPoPPAE/datasets/queries/point-contains_queries_400000/parks_Europe.wkt"
+      },
+      {
+        "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+        "query": "PPoPPAE/datasets/queries/point-contains_queries_800000/parks_Europe.wkt"
+      }
+    ]
+  },
+  "operation": "point_contains",
+  "schema": "rtdl.paper_reproduction.librts.verified_operation_batch.v1",
+  "status": "exact_archive_operation_batch_safely_extracted"
+}

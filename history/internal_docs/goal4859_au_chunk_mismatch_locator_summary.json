@@ -1,0 +1,261 @@
+{
+  "base": "/workspace/goal4848_rep/current_osm_au/lakes_Australia_current_osm_Point.cdb",
+  "base_segments": 14430155,
+  "chunk_size": 10000,
+  "first_mismatch_chunk": {
+    "count": 269,
+    "delta": 25,
+    "end": 10000,
+    "rows": 244,
+    "start": 0
+  },
+  "full_count": 13622,
+  "full_delta": 1114,
+  "full_hidden_rows": 12508,
+  "query": "/workspace/goal4848_rep/current_osm_au/parks_Australia_current_osm_Point.cdb",
+  "query_segments": 941375,
+  "refine_steps": [
+    {
+      "count": 269,
+      "end": 10000,
+      "rows": 244,
+      "start": 0
+    },
+    {
+      "left": {
+        "count": 142,
+        "delta": 11,
+        "end": 5000,
+        "rows": 131,
+        "start": 0
+      },
+      "right": {
+        "count": 127,
+        "delta": 14,
+        "end": 10000,
+        "rows": 113,
+        "start": 5000
+      }
+    },
+    {
+      "left": {
+        "count": 94,
+        "delta": 4,
+        "end": 2500,
+        "rows": 90,
+        "start": 0
+      },
+      "right": {
+        "count": 48,
+        "delta": 7,
+        "end": 5000,
+        "rows": 41,
+        "start": 2500
+      }
+    },
+    {
+      "left": {
+        "count": 46,
+        "delta": 4,
+        "end": 1250,
+        "rows": 42,
+        "start": 0
+      },
+      "right": {
+        "count": 48,
+        "delta": 0,
+        "end": 2500,
+        "rows": 48,
+        "start": 1250
+      }
+    },
+    {
+      "left": {
+        "count": 18,
+        "delta": 0,
+        "end": 625,
+        "rows": 18,
+        "start": 0
+      },
+      "right": {
+        "count": 28,
+        "delta": 4,
+        "end": 1250,
+        "rows": 24,
+        "start": 625
+      }
+    },
+    {
+      "left": {
+        "count": 24,
+        "delta": 4,
+        "end": 937,
+        "rows": 20,
+        "start": 625
+      },
+      "right": {
+        "count": 4,
+        "delta": 0,
+        "end": 1250,
+        "rows": 4,
+        "start": 937
+      }
+    },
+    {
+      "left": {
+        "count": 20,
+        "delta": 2,
+        "end": 781,
+        "rows": 18,
+        "start": 625
+      },
+      "right": {
+        "count": 4,
+        "delta": 2,
+        "end": 937,
+        "rows": 2,
+        "start": 781
+      }
+    },
+    {
+      "left": {
+        "count": 8,
+        "delta": 2,
+        "end": 703,
+        "rows": 6,
+        "start": 625
+      },
+      "right": {
+        "count": 12,
+        "delta": 0,
+        "end": 781,
+        "rows": 12,
+        "start": 703
+      }
+    },
+    {
+      "left": {
+        "count": 4,
+        "delta": 2,
+        "end": 664,
+        "rows": 2,
+        "start": 625
+      },
+      "right": {
+        "count": 4,
+        "delta": 0,
+        "end": 703,
+        "rows": 4,
+        "start": 664
+      }
+    },
+    {
+      "left": {
+        "count": 4,
+        "delta": 2,
+        "end": 644,
+        "rows": 2,
+        "start": 625
+      },
+      "right": {
+        "count": 0,
+        "delta": 0,
+        "end": 664,
+        "rows": 0,
+        "start": 644
+      }
+    },
+    {
+      "left": {
+        "count": 0,
+        "delta": 0,
+        "end": 634,
+        "rows": 0,
+        "start": 625
+      },
+      "right": {
+        "count": 4,
+        "delta": 2,
+        "end": 644,
+        "rows": 2,
+        "start": 634
+      }
+    },
+    {
+      "left": {
+        "count": 2,
+        "delta": 0,
+        "end": 639,
+        "rows": 2,
+        "start": 634
+      },
+      "right": {
+        "count": 2,
+        "delta": 2,
+        "end": 644,
+        "rows": 0,
+        "start": 639
+      }
+    },
+    {
+      "left": {
+        "count": 2,
+        "delta": 2,
+        "end": 641,
+        "rows": 0,
+        "start": 639
+      },
+      "right": {
+        "count": 0,
+        "delta": 0,
+        "end": 644,
+        "rows": 0,
+        "start": 641
+      }
+    },
+    {
+      "left": {
+        "count": 2,
+        "delta": 2,
+        "end": 640,
+        "rows": 0,
+        "start": 639
+      },
+      "right": {
+        "count": 0,
+        "delta": 0,
+        "end": 641,
+        "rows": 0,
+        "start": 640
+      }
+    }
+  ],
+  "refined_mismatch": {
+    "count": 2,
+    "delta": 2,
+    "end": 640,
+    "rows": 0,
+    "start": 639
+  },
+  "schema": "rtdl.goal4859.chunk_mismatch_locator.v1",
+  "timings_seconds": {
+    "chunk_scan": 0.9213317707180977,
+    "full_count_and_rows": 39.7557889521122,
+    "load_and_segment": 51.291124530136585,
+    "refine": 24.016465708613396,
+    "total": 115.98471096158028
+  },
+  "witness_query_segments": [
+    {
+      "chain_id": 28,
+      "id": 640,
+      "left_face_id": 29,
+      "query_index": 639,
+      "right_face_id": 0,
+      "x0": 151.2776856,
+      "x1": 151.2772023,
+      "y0": -33.8511451,
+      "y1": -33.8513923
+    }
+  ]
+}

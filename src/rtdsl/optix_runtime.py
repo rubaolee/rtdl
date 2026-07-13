@@ -35,6 +35,7 @@ import ctypes.util
 import functools
 import os
 import platform
+import threading
 import time
 import warnings
 from collections import OrderedDict
@@ -44,6 +45,7 @@ from typing import Iterable, Mapping
 
 from .embree_runtime import _RtdlSegment
 from .embree_runtime import _RtdlRayjoinCdbSegment
+from .embree_runtime import _RtdlRayjoinCdbScaledPoint
 from .embree_runtime import _RtdlRayjoinCdbPointLocationRow
 from .embree_runtime import _RtdlPoint
 from .embree_runtime import _RtdlPoint3D
@@ -76,12 +78,14 @@ from .oracle_runtime import _RtdlGroupedCountRow
 from .oracle_runtime import _RtdlColumnRowIdRow
 from .oracle_runtime import _RtdlDbField  # legacy compatibility marker
 from .oracle_runtime import _RtdlDbGroupedCountRow  # legacy compatibility marker
+from .aabb_columns import Aabb2DColumns
 from .oracle_runtime import _RtdlDbRowIdRow  # legacy compatibility marker
 from .oracle_runtime import _encode_db_clauses
 from .oracle_runtime import _encode_db_table
 from .oracle_runtime import _encode_db_text_clause_values
 from .oracle_runtime import _encode_db_text_fields
 from .embree_runtime import PackedPoints
+from .embree_runtime import PackedRayjoinCdbScaledPoints
 from .embree_runtime import PackedPolygons
 from .embree_runtime import PackedRays
 from .embree_runtime import PackedRayjoinCdbSegments
@@ -235,6 +239,21 @@ OPTIX_SEGMENT_PAIR_COUNT_PREPARED_LEFT_DIRECT_INTERSECTION_SYMBOL = (
 OPTIX_SEGMENT_PAIR_COUNT_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_SYMBOL = (
     "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection"
 )
+OPTIX_SEGMENT_PAIR_COUNT_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_WITH_PREDICATE_MODE_SYMBOL = (
+    "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection_with_predicate_mode"
+)
+OPTIX_SEGMENT_PAIR_RUN_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_WITH_PREDICATE_MODE_SYMBOL = (
+    "rtdl_optix_run_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection_with_predicate_mode"
+)
+OPTIX_SEGMENT_PAIR_RUN_PREPARED_LEFT_GROUPED_RANGE_DIRECT_PAIR_ID_ROWS_WITH_PREDICATE_MODE_SYMBOL = (
+    "rtdl_optix_run_prepared_segment_pair_id_rows_prepared_left_grouped_range_direct_intersection_with_predicate_mode"
+)
+OPTIX_SEGMENT_PAIR_EXACT_PAIR_ID_DEVICE_COLUMNS_PREPARED_LEFT_SYMBOL = (
+    "rtdl_optix_run_prepared_segment_pair_exact_pair_id_device_columns_prepared_left_grouped_range_direct_intersection_with_predicate_mode"
+)
+OPTIX_SEGMENT_PAIR_BOUNDED_EXACT_PAIR_ID_DEVICE_COLUMNS_PREPARED_LEFT_SYMBOL = (
+    "rtdl_optix_run_prepared_segment_pair_bounded_exact_pair_id_device_columns_prepared_left_grouped_range_direct_intersection_with_predicate_mode"
+)
 OPTIX_SEGMENT_PAIR_LEFT_ID_COUNT_PREPARED_LEFT_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_prepared_segment_pair_left_id_count_prepared_left_device_columns"
 )
@@ -254,6 +273,9 @@ OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_COUNT_SYMBOL = (
 OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_PREPARE_POINTS_SYMBOL = (
     "rtdl_optix_prepare_directed_segment_point_location_points_2d"
 )
+OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_PREPARE_DEVICE_QUERY_POINTS_SYMBOL = (
+    "rtdl_optix_prepare_directed_segment_point_location_device_query_points_2d"
+)
 OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_COUNT_DEVICE_POINTS_SYMBOL = (
     "rtdl_optix_count_prepared_directed_segment_point_location_2d_device_points"
 )
@@ -262,6 +284,12 @@ OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_WRITE_DEVICE_SEGMENT_IDS_SYMBOL = (
 )
 OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_WRITE_DEVICE_FACE_IDS_SYMBOL = (
     "rtdl_optix_write_prepared_directed_segment_point_location_2d_device_face_ids"
+)
+OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_DEVICE_SEGMENT_ID_COLUMNS_SYMBOL = (
+    "rtdl_optix_prepared_directed_segment_point_location_2d_device_segment_id_columns"
+)
+OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_DEVICE_FACE_ID_COLUMNS_SYMBOL = (
+    "rtdl_optix_prepared_directed_segment_point_location_2d_device_face_id_columns"
 )
 OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_DESTROY_SYMBOL = (
     "rtdl_optix_destroy_prepared_directed_segment_point_location_2d"
@@ -272,17 +300,26 @@ OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_DESTROY_POINTS_SYMBOL = (
 OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_TIMINGS_SYMBOL = (
     "rtdl_optix_directed_segment_point_location_get_last_phase_timings"
 )
+OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_EXTENDED_TIMINGS_SYMBOL = (
+    "rtdl_optix_directed_segment_point_location_get_last_extended_phase_timings"
+)
 OPTIX_RAYJOIN_CDB_POINT_LOCATION_PREPARE_SYMBOL = (
     "rtdl_optix_prepare_rayjoin_cdb_point_location_2d"
 )
 OPTIX_RAYJOIN_CDB_POINT_LOCATION_RUN_SYMBOL = (
     "rtdl_optix_run_prepared_rayjoin_cdb_point_location_2d"
 )
+OPTIX_RAYJOIN_CDB_POINT_LOCATION_RUN_SCALED_POINTS_SYMBOL = (
+    "rtdl_optix_run_prepared_rayjoin_cdb_point_location_scaled_points_2d"
+)
 OPTIX_RAYJOIN_CDB_POINT_LOCATION_COUNT_SYMBOL = (
     "rtdl_optix_count_prepared_rayjoin_cdb_point_location_2d"
 )
 OPTIX_RAYJOIN_CDB_POINT_LOCATION_PREPARE_POINTS_SYMBOL = (
     "rtdl_optix_prepare_rayjoin_cdb_point_location_points_2d"
+)
+OPTIX_RAYJOIN_CDB_POINT_LOCATION_PREPARE_SCALED_POINTS_SYMBOL = (
+    "rtdl_optix_prepare_rayjoin_cdb_point_location_scaled_points_2d"
 )
 OPTIX_RAYJOIN_CDB_POINT_LOCATION_COUNT_DEVICE_POINTS_SYMBOL = (
     "rtdl_optix_count_prepared_rayjoin_cdb_point_location_2d_device_points"
@@ -293,6 +330,12 @@ OPTIX_RAYJOIN_CDB_POINT_LOCATION_WRITE_DEVICE_SEGMENT_IDS_SYMBOL = (
 OPTIX_RAYJOIN_CDB_POINT_LOCATION_WRITE_DEVICE_FACE_IDS_SYMBOL = (
     "rtdl_optix_write_prepared_rayjoin_cdb_point_location_2d_device_face_ids"
 )
+OPTIX_RAYJOIN_CDB_POINT_LOCATION_DEVICE_SEGMENT_ID_COLUMNS_SYMBOL = (
+    "rtdl_optix_prepared_rayjoin_cdb_point_location_2d_device_segment_id_columns"
+)
+OPTIX_RAYJOIN_CDB_POINT_LOCATION_DEVICE_FACE_ID_COLUMNS_SYMBOL = (
+    "rtdl_optix_prepared_rayjoin_cdb_point_location_2d_device_face_id_columns"
+)
 OPTIX_RAYJOIN_CDB_POINT_LOCATION_DESTROY_SYMBOL = (
     "rtdl_optix_destroy_prepared_rayjoin_cdb_point_location_2d"
 )
@@ -301,6 +344,9 @@ OPTIX_RAYJOIN_CDB_POINT_LOCATION_DESTROY_POINTS_SYMBOL = (
 )
 OPTIX_RAYJOIN_CDB_POINT_LOCATION_TIMINGS_SYMBOL = (
     "rtdl_optix_rayjoin_cdb_point_location_get_last_phase_timings"
+)
+OPTIX_RAYJOIN_CDB_POINT_LOCATION_EXTENDED_TIMINGS_SYMBOL = (
+    "rtdl_optix_rayjoin_cdb_point_location_get_last_extended_phase_timings"
 )
 OPTIX_SHAPE_PAIR_RELATION_ACTIVE_DEVICE_COLUMNS_SYMBOL = (
     "rtdl_optix_prepared_shape_pair_relation_active_device_columns"
@@ -650,6 +696,18 @@ class _RtdlAabb2D(ctypes.Structure):
     ]
 
 
+class _RtdlAabb3D(ctypes.Structure):
+    _fields_ = [
+        ("id", ctypes.c_uint32),
+        ("min_x", ctypes.c_double),
+        ("min_y", ctypes.c_double),
+        ("min_z", ctypes.c_double),
+        ("max_x", ctypes.c_double),
+        ("max_y", ctypes.c_double),
+        ("max_z", ctypes.c_double),
+    ]
+
+
 class _RtdlAabbPairRow(ctypes.Structure):
     _fields_ = [
         ("query_id", ctypes.c_uint32),
@@ -659,6 +717,13 @@ class _RtdlAabbPairRow(ctypes.Structure):
 
 @dataclass(frozen=True)
 class PackedAabbs2D:
+    records: object
+    count: int
+    owner: object | None = None
+
+
+@dataclass(frozen=True)
+class PackedAabbs3D:
     records: object
     count: int
 
@@ -935,6 +1000,13 @@ class _RtdlLsiRow(ctypes.Structure):
     ]
 
 
+class _RtdlSegmentPairIdRow(ctypes.Structure):
+    _fields_ = [
+        ("left_id",  ctypes.c_uint32),
+        ("right_id", ctypes.c_uint32),
+    ]
+
+
 class _RtdlSegmentFirstHitRow(ctypes.Structure):
     _fields_ = [
         ("probe_id",     ctypes.c_uint32),
@@ -1047,6 +1119,17 @@ class _RtdlNativeDevicePairColumns(ctypes.Structure):
         ("right_ordinals_device_ptr", ctypes.c_uint64),
         ("relation_status_device_ptr", ctypes.c_uint64),
         ("relation_boundary_ordinals_device_ptr", ctypes.c_uint64),
+    ]
+
+
+class _RtdlNativePointLocationDeviceIdColumns(ctypes.Structure):
+    _fields_ = [
+        ("ids_device_ptr", ctypes.c_uint64),
+        ("row_count", ctypes.c_uint64),
+        ("capacity", ctypes.c_uint64),
+        ("overflow", ctypes.c_uint32),
+        ("device_ordinal", ctypes.c_int32),
+        ("traversal_seconds", ctypes.c_double),
     ]
 
 
@@ -3416,6 +3499,8 @@ class PreparedOptixSegmentPairIntersection:
     def count_prepared_left_grouped_range_direct_intersection(
         self,
         prepared_left: PreparedOptixSegmentPairLeftSet,
+        *,
+        predicate_mode: int | None = None,
     ) -> dict[str, object]:
         if self._closed:
             raise RuntimeError("prepared OptiX segment-pair handle is closed")
@@ -3423,33 +3508,59 @@ class PreparedOptixSegmentPairIntersection:
             raise RuntimeError("prepared OptiX segment-pair left-set handle is closed")
         if prepared_left.library is not self.library:
             raise ValueError("prepared left-set handle must come from the same OptiX library")
-        count_symbol = _find_optional_backend_symbol(
-            self.library,
-            OPTIX_SEGMENT_PAIR_COUNT_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_SYMBOL,
-        )
+        native_symbol = OPTIX_SEGMENT_PAIR_COUNT_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_SYMBOL
+        count_symbol = _find_optional_backend_symbol(self.library, native_symbol)
+        explicit_predicate_mode = predicate_mode is not None
+        if explicit_predicate_mode:
+            if predicate_mode not in (0, 1):
+                raise ValueError("predicate_mode must be 0 (raw exact) or 1 (planar_map_lsi)")
+            native_symbol = (
+                OPTIX_SEGMENT_PAIR_COUNT_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_WITH_PREDICATE_MODE_SYMBOL
+            )
+            count_symbol = _find_optional_backend_symbol(self.library, native_symbol)
         if count_symbol is None:
             raise RuntimeError(
                 "Loaded OptiX backend library does not export "
-                f"{OPTIX_SEGMENT_PAIR_COUNT_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_SYMBOL}; "
+                f"{native_symbol}; "
                 "rebuild the OptiX backend from current main"
             )
         count = ctypes.c_size_t()
         group_count = ctypes.c_size_t()
         error = ctypes.create_string_buffer(4096)
-        status = count_symbol(
-            self.prepared_handle,
-            prepared_left.prepared_left_handle,
-            ctypes.byref(count),
-            ctypes.byref(group_count),
-            error,
-            len(error),
-        )
+        if explicit_predicate_mode:
+            status = count_symbol(
+                self.prepared_handle,
+                prepared_left.prepared_left_handle,
+                ctypes.c_uint32(int(predicate_mode)),
+                ctypes.byref(count),
+                ctypes.byref(group_count),
+                error,
+                len(error),
+            )
+        else:
+            status = count_symbol(
+                self.prepared_handle,
+                prepared_left.prepared_left_handle,
+                ctypes.byref(count),
+                ctypes.byref(group_count),
+                error,
+                len(error),
+            )
         _check_status(status, error)
         return {
             "schema": "rtdl.optix.segment_pair_prepared_left_grouped_range_direct_intersection_exact_count.v1",
             "count": int(count.value),
             "right_group_count": int(group_count.value),
-            "native_symbol": OPTIX_SEGMENT_PAIR_COUNT_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_SYMBOL,
+            "native_symbol": native_symbol,
+            "predicate_mode": None if predicate_mode is None else int(predicate_mode),
+            "predicate_selection": {
+                "mechanism": (
+                    "native_abi_explicit_parameter"
+                    if explicit_predicate_mode
+                    else "native_default_or_legacy_env"
+                ),
+                "mode_id": None if predicate_mode is None else int(predicate_mode),
+            },
             "contract": "SEGMENT_PAIR_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_EXACT_COUNT_V1",
             "implementation_note": (
                 "generic grouped/ranged right-primitive direct custom-intersection exact count; "
@@ -3465,12 +3576,209 @@ class PreparedOptixSegmentPairIntersection:
             },
         }
 
+    def run_prepared_left_grouped_range_direct_intersection(
+        self,
+        prepared_left: PreparedOptixSegmentPairLeftSet,
+        *,
+        predicate_mode: int,
+    ) -> OptixRowView:
+        if self._closed:
+            raise RuntimeError("prepared OptiX segment-pair handle is closed")
+        if prepared_left._closed:
+            raise RuntimeError("prepared OptiX segment-pair left-set handle is closed")
+        if prepared_left.library is not self.library:
+            raise ValueError("prepared left-set handle must come from the same OptiX library")
+        if predicate_mode not in (0, 1):
+            raise ValueError("predicate_mode must be 0 (raw exact) or 1 (planar_map_lsi)")
+        native_symbol = OPTIX_SEGMENT_PAIR_RUN_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_WITH_PREDICATE_MODE_SYMBOL
+        run_symbol = _find_optional_backend_symbol(self.library, native_symbol)
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{native_symbol}; rebuild the OptiX backend from current main"
+            )
+        rows_ptr = ctypes.POINTER(_RtdlLsiRow)()
+        row_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = run_symbol(
+            self.prepared_handle,
+            prepared_left.prepared_left_handle,
+            ctypes.c_uint32(int(predicate_mode)),
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return OptixRowView(
+            library=self.library,
+            rows_ptr=rows_ptr,
+            row_count=row_count.value,
+            row_type=_RtdlLsiRow,
+            field_names=("left_id", "right_id", "intersection_point_x", "intersection_point_y"),
+        )
+
+    def run_prepared_left_grouped_range_direct_pair_id_rows(
+        self,
+        prepared_left: PreparedOptixSegmentPairLeftSet,
+        *,
+        predicate_mode: int,
+    ) -> OptixRowView:
+        if self._closed:
+            raise RuntimeError("prepared OptiX segment-pair handle is closed")
+        if prepared_left._closed:
+            raise RuntimeError("prepared OptiX segment-pair left-set handle is closed")
+        if prepared_left.library is not self.library:
+            raise ValueError("prepared left-set handle must come from the same OptiX library")
+        if predicate_mode not in (0, 1):
+            raise ValueError("predicate_mode must be 0 (raw exact) or 1 (planar_map_lsi)")
+        native_symbol = (
+            OPTIX_SEGMENT_PAIR_RUN_PREPARED_LEFT_GROUPED_RANGE_DIRECT_PAIR_ID_ROWS_WITH_PREDICATE_MODE_SYMBOL
+        )
+        run_symbol = _find_optional_backend_symbol(self.library, native_symbol)
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{native_symbol}; rebuild the OptiX backend from current main"
+            )
+        rows_ptr = ctypes.POINTER(_RtdlSegmentPairIdRow)()
+        row_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = run_symbol(
+            self.prepared_handle,
+            prepared_left.prepared_left_handle,
+            ctypes.c_uint32(int(predicate_mode)),
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return OptixRowView(
+            library=self.library,
+            rows_ptr=rows_ptr,
+            row_count=row_count.value,
+            row_type=_RtdlSegmentPairIdRow,
+            field_names=("left_id", "right_id"),
+        )
+
+    def exact_pair_id_device_columns_prepared_left(
+        self,
+        prepared_left: PreparedOptixSegmentPairLeftSet,
+        *,
+        predicate_mode: int,
+    ) -> OptixNativeDevicePairColumnOutput:
+        if self._closed:
+            raise RuntimeError("prepared OptiX segment-pair handle is closed")
+        if prepared_left._closed:
+            raise RuntimeError("prepared OptiX segment-pair left-set handle is closed")
+        if prepared_left.library is not self.library:
+            raise ValueError("prepared left-set handle must come from the same OptiX library")
+        if predicate_mode not in (0, 1):
+            raise ValueError("predicate_mode must be 0 (raw exact) or 1 (planar_map_lsi)")
+        native_symbol = OPTIX_SEGMENT_PAIR_EXACT_PAIR_ID_DEVICE_COLUMNS_PREPARED_LEFT_SYMBOL
+        run_symbol = _find_optional_backend_symbol(self.library, native_symbol)
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{native_symbol}; rebuild the OptiX backend from current main"
+            )
+        columns = _RtdlNativeDevicePairColumns()
+        error = ctypes.create_string_buffer(4096)
+        status = run_symbol(
+            self.prepared_handle,
+            prepared_left.prepared_left_handle,
+            ctypes.c_uint32(int(predicate_mode)),
+            ctypes.byref(columns),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        owner = _OptixNativeDevicePairColumnsOwner(
+            self.library,
+            columns.owner_handle,
+            release_symbol_name=OPTIX_RELEASE_SEGMENT_PAIR_CANDIDATE_DEVICE_COLUMNS_SYMBOL,
+        )
+        return OptixNativeDevicePairColumnOutput(
+            library=self.library,
+            owner=owner,
+            left_ids_device_ptr=int(columns.left_ids_device_ptr),
+            right_ids_device_ptr=int(columns.right_ids_device_ptr),
+            row_count=int(columns.row_count),
+            capacity=int(columns.capacity),
+            candidate_event_count=int(columns.candidate_event_count),
+            overflow=bool(columns.overflow),
+            device_ordinal=int(columns.device_ordinal),
+            traversal_seconds=float(columns.traversal_seconds),
+            native_symbol=native_symbol,
+        )
+
+    def bounded_exact_pair_id_device_columns_prepared_left(
+        self,
+        prepared_left: PreparedOptixSegmentPairLeftSet,
+        *,
+        predicate_mode: int,
+        max_rows: int,
+    ) -> OptixNativeDevicePairColumnOutput:
+        if self._closed:
+            raise RuntimeError("prepared OptiX segment-pair handle is closed")
+        if prepared_left._closed:
+            raise RuntimeError("prepared OptiX segment-pair left-set handle is closed")
+        if prepared_left.library is not self.library:
+            raise ValueError("prepared left-set handle must come from the same OptiX library")
+        if predicate_mode not in (0, 1):
+            raise ValueError("predicate_mode must be 0 (raw exact) or 1 (planar_map_lsi)")
+        if max_rows < 0:
+            raise ValueError("max_rows must be non-negative")
+        native_symbol = OPTIX_SEGMENT_PAIR_BOUNDED_EXACT_PAIR_ID_DEVICE_COLUMNS_PREPARED_LEFT_SYMBOL
+        run_symbol = _find_optional_backend_symbol(self.library, native_symbol)
+        if run_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{native_symbol}; rebuild the OptiX backend from current main"
+            )
+        columns = _RtdlNativeDevicePairColumns()
+        error = ctypes.create_string_buffer(4096)
+        status = run_symbol(
+            self.prepared_handle,
+            prepared_left.prepared_left_handle,
+            ctypes.c_uint32(int(predicate_mode)),
+            ctypes.c_size_t(int(max_rows)),
+            ctypes.byref(columns),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        owner = _OptixNativeDevicePairColumnsOwner(
+            self.library,
+            columns.owner_handle,
+            release_symbol_name=OPTIX_RELEASE_SEGMENT_PAIR_CANDIDATE_DEVICE_COLUMNS_SYMBOL,
+        )
+        return OptixNativeDevicePairColumnOutput(
+            library=self.library,
+            owner=owner,
+            left_ids_device_ptr=int(columns.left_ids_device_ptr),
+            right_ids_device_ptr=int(columns.right_ids_device_ptr),
+            row_count=int(columns.row_count),
+            capacity=int(columns.capacity),
+            candidate_event_count=int(columns.candidate_event_count),
+            overflow=bool(columns.overflow),
+            device_ordinal=int(columns.device_ordinal),
+            traversal_seconds=float(columns.traversal_seconds),
+            native_symbol=native_symbol,
+        )
+
     def count_prepared_left_exact_intersections(
         self,
         prepared_left: PreparedOptixSegmentPairLeftSet,
+        *,
+        predicate_mode: int | None = None,
     ) -> dict[str, object]:
         """Count exact 2-D segment-pair intersections through the fastest measured generic route."""
-        result = self.count_prepared_left_grouped_range_direct_intersection(prepared_left)
+        result = self.count_prepared_left_grouped_range_direct_intersection(
+            prepared_left,
+            predicate_mode=predicate_mode,
+        )
         return {
             "schema": "rtdl.optix.segment_pair_prepared_left_exact_intersection_count.front_door.v1",
             "primitive": "SEGMENT_PAIR_INTERSECTION_ROWS_2D",
@@ -3488,6 +3796,8 @@ class PreparedOptixSegmentPairIntersection:
             "count": int(result["count"]),
             "right_group_count": int(result["right_group_count"]),
             "native_symbol": result["native_symbol"],
+            "predicate_mode": result.get("predicate_mode"),
+            "predicate_selection": result.get("predicate_selection"),
             "implementation_contract": result["contract"],
             "claim_boundary": {
                 "experimental_front_door": True,
@@ -3747,6 +4057,9 @@ class PreparedOptixSegmentPairIntersection:
     def last_phase_timings(self) -> dict[str, float | int | str] | None:
         return _get_last_segment_pair_phase_timings_from_library(self.library)
 
+    def last_extended_phase_timings(self) -> dict[str, float | int | str] | None:
+        return _get_last_segment_pair_extended_phase_timings_from_library(self.library)
+
     def close(self) -> None:
         if not self._closed:
             destroy = _find_optional_backend_symbol(
@@ -3755,6 +4068,307 @@ class PreparedOptixSegmentPairIntersection:
             )
             if destroy is not None:
                 destroy(self.prepared_handle)
+            self._closed = True
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+_PLANAR_MAP_LSI_PREDICATE_MODE = "planar_map_lsi"
+_PLANAR_MAP_LSI_PREDICATE_ID = 1
+_PLANAR_MAP_LSI_LEGACY_NATIVE_ALIAS = "rayjoin_lsi"
+_PLANAR_MAP_POINT_LOCATION_ENV_LOCK = threading.RLock()
+
+
+def _coerce_planar_map_lsi_segments_2d(records_or_cdb):
+    if isinstance(records_or_cdb, PackedSegments):
+        return records_or_cdb
+    if isinstance(records_or_cdb, (str, Path)):
+        from .datasets import chains_to_planar_map_segments
+        from .datasets import load_cdb
+
+        return chains_to_planar_map_segments(load_cdb(records_or_cdb))
+    if hasattr(records_or_cdb, "chains"):
+        from .datasets import chains_to_planar_map_segments
+
+        return chains_to_planar_map_segments(records_or_cdb)
+    return tuple(records_or_cdb)
+
+
+def _segment_record_count(records_or_packed) -> int:
+    return (
+        int(records_or_packed.count)
+        if isinstance(records_or_packed, (PackedSegments, PackedRayjoinCdbSegments))
+        else int(len(records_or_packed))
+    )
+
+
+@dataclass
+class PreparedOptixPlanarMapLsi2DQuery:
+    """Prepared query-side handle for repeated planar-map LSI probes.
+
+    The plain ``run_*`` methods on :class:`PreparedOptixPlanarMapLsi2D` are
+    convenient one-shot helpers.  This object exposes the same public LSI
+    contract while letting applications prepare the query side once and reuse
+    it across count/row operations.
+    """
+
+    parent: "PreparedOptixPlanarMapLsi2D"
+    prepared_left: PreparedOptixSegmentPairLeftSet
+    query_segment_count: int = 0
+    _closed: bool = False
+
+    def _check_open(self) -> None:
+        if self._closed:
+            raise RuntimeError("prepared OptiX planar-map LSI query handle is closed")
+        if self.parent._closed:
+            raise RuntimeError("prepared OptiX planar-map LSI base handle is closed")
+
+    def run_raw(self) -> OptixRowView:
+        self._check_open()
+        return self.parent.prepared.run_prepared_left_grouped_range_direct_intersection(
+            self.prepared_left,
+            predicate_mode=_PLANAR_MAP_LSI_PREDICATE_ID,
+        )
+
+    def run_pair_id_rows(self) -> OptixRowView:
+        self._check_open()
+        return self.parent.prepared.run_prepared_left_grouped_range_direct_pair_id_rows(
+            self.prepared_left,
+            predicate_mode=_PLANAR_MAP_LSI_PREDICATE_ID,
+        )
+
+    def run_pair_id_device_columns(self) -> OptixNativeDevicePairColumnOutput:
+        self._check_open()
+        return self.parent.prepared.exact_pair_id_device_columns_prepared_left(
+            self.prepared_left,
+            predicate_mode=_PLANAR_MAP_LSI_PREDICATE_ID,
+        )
+
+    def run_bounded_pair_id_device_columns(self, *, max_rows: int) -> OptixNativeDevicePairColumnOutput:
+        self._check_open()
+        return self.parent.prepared.bounded_exact_pair_id_device_columns_prepared_left(
+            self.prepared_left,
+            predicate_mode=_PLANAR_MAP_LSI_PREDICATE_ID,
+            max_rows=int(max_rows),
+        )
+
+    def count_with_metadata(self) -> dict[str, object]:
+        self._check_open()
+        raw = self.parent.prepared.count_prepared_left_exact_intersections(
+            self.prepared_left,
+            predicate_mode=_PLANAR_MAP_LSI_PREDICATE_ID,
+        )
+        timings = self.parent.prepared.last_phase_timings() or {}
+        count = int(raw["count"] if isinstance(raw, dict) else raw)
+        return self.parent._metadata_for_count(
+            count=count,
+            raw=raw,
+            timings=timings,
+            query_segment_count=self.query_segment_count,
+            prepared_query_reused=True,
+        )
+
+    def count(self) -> int:
+        return int(self.count_with_metadata()["count"])
+
+    def prepare_workspace(self) -> dict[str, object]:
+        """Build the reusable planar-map LSI workspace for this base/query pair.
+
+        The first exact LSI call may lazily construct scaled planar-map segment
+        caches and grouped-range acceleration structures. This method makes
+        that warmup boundary explicit while preserving the same generic
+        planar-map LSI contract. It does not expose or encode application
+        workflow semantics.
+        """
+        self._check_open()
+        start = time.perf_counter()
+        raw = self.parent.prepared.count_prepared_left_exact_intersections(
+            self.prepared_left,
+            predicate_mode=_PLANAR_MAP_LSI_PREDICATE_ID,
+        )
+        elapsed = time.perf_counter() - start
+        timings = self.parent.prepared.last_phase_timings() or {}
+        count = int(raw["count"] if isinstance(raw, dict) else raw)
+        return {
+            "schema": "rtdl.optix.planar_map_lsi_2d.prepared_workspace.v1",
+            "primitive": "PLANAR_MAP_LSI_2D",
+            "backend": "optix",
+            "output_contract": "prepared_workspace_metadata",
+            "count": count,
+            "prepare_workspace_sec": float(elapsed),
+            "base_segment_count": int(self.parent.base_segment_count),
+            "query_segment_count": int(self.query_segment_count),
+            "native_timings": timings,
+            "claim_boundary": {
+                "public_generic_rtdl_primitive": True,
+                "bundled_rayjoin_helper_used": False,
+                "workspace_depends_on_base_and_query": True,
+                "workspace_reuse_contract": "subsequent run_pair_id_rows/count calls on this prepared query may reuse native caches",
+                "full_application_supported": False,
+                "rayjoin_specific_core_primitive": False,
+                "broad_speedup_claim_authorized": False,
+            },
+        }
+
+    def close(self) -> None:
+        if not self._closed:
+            self.prepared_left.close()
+            self._closed = True
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+@dataclass
+class PreparedOptixPlanarMapLsi2D:
+    """Prepared 2-D planar-map line-segment-intersection count.
+
+    This is the public front door for CDB/planar-map LSI count semantics.  It is
+    intentionally separate from the lower-level raw segment-pair primitive:
+    raw segment-pair intersection counts every exact pair, while planar-map LSI
+    uses the author-style endpoint/boundary predicate used by RTDL's existing
+    CDB LSI route.  The public API uses the generic predicate name
+    ``planar_map_lsi``; older native libraries may still recognize the legacy
+    alias ``rayjoin_lsi`` for the same predicate.  This class does not import or
+    call ``rtdsl.rayjoin_overlay``.
+    """
+
+    prepared: PreparedOptixSegmentPairIntersection
+    base_segment_count: int = 0
+    _closed: bool = False
+
+    def run_raw(self, query_records_or_cdb) -> OptixRowView:
+        if self._closed:
+            raise RuntimeError("prepared OptiX planar-map LSI handle is closed")
+        with self.prepare_query(query_records_or_cdb) as prepared_query:
+            return prepared_query.run_raw()
+
+    def run_pair_id_rows(self, query_records_or_cdb) -> OptixRowView:
+        """Return exact planar-map LSI matches as lightweight ``left_id/right_id`` rows.
+
+        This is the right public result shape for downstream code that only
+        needs the intersecting segment ids and will compute any app-specific
+        geometry payload itself. It uses the same planar-map LSI predicate as
+        ``run_raw`` but deliberately avoids materializing intersection-point
+        coordinates in the native bridge.
+        """
+        if self._closed:
+            raise RuntimeError("prepared OptiX planar-map LSI handle is closed")
+        with self.prepare_query(query_records_or_cdb) as prepared_query:
+            return prepared_query.run_pair_id_rows()
+
+    def run_pair_id_device_columns(self, query_records_or_cdb) -> OptixNativeDevicePairColumnOutput:
+        """Return exact planar-map LSI matches as device-resident pair-id columns."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX planar-map LSI handle is closed")
+        with self.prepare_query(query_records_or_cdb) as prepared_query:
+            return prepared_query.run_pair_id_device_columns()
+
+    def run_bounded_pair_id_device_columns(
+        self,
+        query_records_or_cdb,
+        *,
+        max_rows: int,
+    ) -> OptixNativeDevicePairColumnOutput:
+        """Return exact planar-map LSI matches as bounded device-resident pair-id columns."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX planar-map LSI handle is closed")
+        with self.prepare_query(query_records_or_cdb) as prepared_query:
+            return prepared_query.run_bounded_pair_id_device_columns(max_rows=int(max_rows))
+
+    def run(self, query_records_or_cdb) -> tuple:
+        rows = self.run_raw(query_records_or_cdb)
+        try:
+            return rows.to_dict_rows()
+        finally:
+            rows.close()
+
+    def count(self, query_records_or_cdb) -> int:
+        return int(self.count_with_metadata(query_records_or_cdb)["count"])
+
+    def count_with_metadata(self, query_records_or_cdb) -> dict[str, object]:
+        if self._closed:
+            raise RuntimeError("prepared OptiX planar-map LSI handle is closed")
+        with self.prepare_query(query_records_or_cdb) as prepared_query:
+            return prepared_query.count_with_metadata()
+
+    def prepare_query(self, query_records_or_cdb) -> PreparedOptixPlanarMapLsi2DQuery:
+        if self._closed:
+            raise RuntimeError("prepared OptiX planar-map LSI handle is closed")
+        query_segments = _coerce_planar_map_lsi_segments_2d(query_records_or_cdb)
+        prepared_left = prepare_segment_pair_left_set_optix(query_segments)
+        return PreparedOptixPlanarMapLsi2DQuery(
+            parent=self,
+            prepared_left=prepared_left,
+            query_segment_count=_segment_record_count(query_segments),
+        )
+
+    def _metadata_for_count(
+        self,
+        *,
+        count: int,
+        raw,
+        timings: Mapping[str, object],
+        query_segment_count: int,
+        prepared_query_reused: bool,
+    ) -> dict[str, object]:
+        return {
+            "schema": "rtdl.optix.planar_map_lsi_2d.count.v1",
+            "primitive": "PLANAR_MAP_LSI_2D",
+            "backend": "optix",
+            "output_contract": "scalar_exact_count",
+            "count": count,
+            "base_segment_count": int(self.base_segment_count),
+            "query_segment_count": int(query_segment_count),
+            "native_predicate_contract": "author_style_planar_map_lsi_endpoint_boundary_predicate",
+            "native_predicate_mode": _PLANAR_MAP_LSI_PREDICATE_MODE,
+            "native_predicate_mode_id": _PLANAR_MAP_LSI_PREDICATE_ID,
+            "native_predicate_legacy_alias": _PLANAR_MAP_LSI_LEGACY_NATIVE_ALIAS,
+            "predicate_selection": {
+                "mechanism": "native_abi_explicit_parameter",
+                "public_mode": _PLANAR_MAP_LSI_PREDICATE_MODE,
+                "mode_id": _PLANAR_MAP_LSI_PREDICATE_ID,
+                "legacy_native_alias": _PLANAR_MAP_LSI_LEGACY_NATIVE_ALIAS,
+                "concurrency_note": "Predicate selection is passed to the native count call, not through process-global environment state.",
+            },
+            "query_prepare": {
+                "prepared_query_reused": bool(prepared_query_reused),
+                "public_session_api": "PreparedOptixPlanarMapLsi2D.prepare_query",
+            },
+            "raw_segment_pair_result": raw,
+            "native_timings": timings,
+            "claim_boundary": {
+                "public_generic_rtdl_primitive": True,
+                "bundled_rayjoin_helper_used": False,
+                "section52_lsi_count_supported": True,
+                "full_overlay_supported": False,
+                "paper_eight_pair_claim_authorized": False,
+                "broad_speedup_claim_authorized": False,
+            },
+        }
+
+    def close(self) -> None:
+        if not self._closed:
+            self.prepared.close()
             self._closed = True
 
     def __enter__(self):
@@ -3813,11 +4427,707 @@ def prepare_segment_pair_intersection_optix(right_segments) -> PreparedOptixSegm
     )
 
 
+def prepare_planar_map_lsi_2d_optix(base_records_or_cdb) -> PreparedOptixPlanarMapLsi2D:
+    """Prepare a reusable OptiX planar-map/CDB LSI count primitive.
+
+    ``base_records_or_cdb`` may be an iterable of segment records, a
+    ``CdbDataset``, or a CDB path.  Query inputs passed to ``count`` /
+    ``count_with_metadata`` accept the same forms.
+    """
+
+    base_segments = _coerce_planar_map_lsi_segments_2d(base_records_or_cdb)
+    prepared = prepare_segment_pair_intersection_optix(base_segments)
+    return PreparedOptixPlanarMapLsi2D(
+        prepared=prepared,
+        base_segment_count=_segment_record_count(base_segments),
+    )
+
+
+def _normalize_planar_map_scale_bounds(scale_bounds) -> tuple[float, float, float, float] | None:
+    if scale_bounds is None:
+        return None
+    if isinstance(scale_bounds, Mapping):
+        try:
+            return (
+                float(scale_bounds["min_x"]),
+                float(scale_bounds["max_x"]),
+                float(scale_bounds["min_y"]),
+                float(scale_bounds["max_y"]),
+            )
+        except KeyError as exc:
+            raise ValueError(
+                "scale_bounds mapping must contain min_x, max_x, min_y, and max_y"
+            ) from exc
+    values = tuple(float(value) for value in scale_bounds)
+    if len(values) != 4:
+        raise ValueError("scale_bounds must contain exactly four values: min_x, max_x, min_y, max_y")
+    return values
+
+
+def _set_planar_map_point_location_env(
+    *,
+    query_map_id: int,
+    scale_bounds: tuple[float, float, float, float] | None,
+) -> dict[str, str | None]:
+    values = {"RTDL_RAYJOIN_CDB_QUERY_MAP_ID": str(int(query_map_id))}
+    if scale_bounds is not None:
+        min_x, max_x, min_y, max_y = scale_bounds
+        values.update(
+            {
+                "RTDL_RAYJOIN_CDB_SCALE_MIN_X": repr(float(min_x)),
+                "RTDL_RAYJOIN_CDB_SCALE_MAX_X": repr(float(max_x)),
+                "RTDL_RAYJOIN_CDB_SCALE_MIN_Y": repr(float(min_y)),
+                "RTDL_RAYJOIN_CDB_SCALE_MAX_Y": repr(float(max_y)),
+            }
+        )
+    old = {key: os.environ.get(key) for key in values}
+    os.environ.update(values)
+    return old
+
+
+def _restore_planar_map_point_location_env(old: Mapping[str, str | None]) -> None:
+    for key, value in old.items():
+        if value is None:
+            os.environ.pop(key, None)
+        else:
+            os.environ[key] = value
+
+
+@dataclass
+class PreparedOptixPlanarMapPointLocation2D:
+    """Prepared 2-D planar-map point-location/PIP primitive.
+
+    This is the public front door for CDB/planar-map point-location.  It wraps
+    the historical directed-segment implementation but keeps the RayJoin-era
+    environment bridge inside RTDL instead of exposing it to application code.
+    """
+
+    prepared: "PreparedOptixRayjoinCdbPointLocation2D"
+    query_map_id: int = 1
+    scale_bounds: tuple[float, float, float, float] | None = None
+    base_segment_count: int = 0
+    _closed: bool = False
+
+    def _with_env(self, func):
+        if self._closed:
+            raise RuntimeError("prepared OptiX planar-map point-location handle is closed")
+        with _PLANAR_MAP_POINT_LOCATION_ENV_LOCK:
+            old = _set_planar_map_point_location_env(
+                query_map_id=self.query_map_id,
+                scale_bounds=self.scale_bounds,
+            )
+            try:
+                return func()
+            finally:
+                _restore_planar_map_point_location_env(old)
+
+    def run_raw(self, points) -> OptixRowView:
+        """Return raw point-location rows with point, face, segment, and hit-t fields."""
+
+        return self._with_env(lambda: self.prepared.run_raw(points))
+
+    def run(self, points) -> tuple:
+        rows = self.run_raw(points)
+        try:
+            return rows.to_dict_rows()
+        finally:
+            rows.close()
+
+    def count_positive_faces(self, points) -> int:
+        """Return the native count of non-exterior face assignments."""
+
+        return int(self._with_env(lambda: self.prepared.count_positive_faces(points)))
+
+    def prepare_query_points(self, points) -> "PreparedOptixRayjoinCdbPointLocationPoints2D":
+        """Prepare query points for device-resident point-location continuations."""
+
+        return self._with_env(lambda: self.prepared.prepare_query_points(points))
+
+    def prepare_device_query_points(
+        self,
+        device_points_ptr: int,
+        point_count: int,
+        *,
+        owner: object | None = None,
+    ) -> "PreparedOptixRayjoinCdbPointLocationPoints2D":
+        """Prepare device-resident query points for point-location continuations."""
+
+        return self._with_env(
+            lambda: self.prepared.prepare_device_query_points(
+                device_points_ptr,
+                point_count,
+                owner=owner,
+            )
+        )
+
+    def face_id_device_columns(
+        self,
+        prepared_points: "PreparedOptixRayjoinCdbPointLocationPoints2D",
+    ) -> "OptixPointLocationDeviceIdColumnOutput":
+        """Return the directed point-location ``face_id`` device column."""
+
+        return self._with_env(lambda: self.prepared.face_id_device_columns(prepared_points))
+
+    def segment_id_device_columns(
+        self,
+        prepared_points: "PreparedOptixRayjoinCdbPointLocationPoints2D",
+    ) -> "OptixPointLocationDeviceIdColumnOutput":
+        """Return the directed point-location ``segment_id`` device column."""
+
+        return self._with_env(lambda: self.prepared.segment_id_device_columns(prepared_points))
+
+    def count_with_metadata(self, points) -> dict[str, object]:
+        rows = self.run_raw(points)
+        located_segments = 0
+        positive_faces = 0
+        try:
+            for row_index in range(rows.row_count):
+                row = rows.rows_ptr[row_index]
+                if int(row.segment_id) != 0xFFFFFFFF:
+                    located_segments += 1
+                if int(row.face_id) not in (0xFFFFFFFF, 0):
+                    positive_faces += 1
+        finally:
+            rows.close()
+        timings = self.prepared.last_phase_timings() or {}
+        return {
+            "schema": "rtdl.optix.planar_map_point_location_2d.count.v1",
+            "primitive": "PLANAR_MAP_POINT_LOCATION_2D",
+            "backend": "optix",
+            "output_contract": "point_location_rows_and_counts",
+            "located_segment_count": int(located_segments),
+            "positive_face_count": int(positive_faces),
+            "query_map_id": int(self.query_map_id),
+            "scale_bounds": self.scale_bounds,
+            "base_segment_count": int(self.base_segment_count),
+            "native_timings": timings,
+            "claim_boundary": {
+                "public_generic_rtdl_primitive": True,
+                "bundled_rayjoin_helper_used": False,
+                "section53_pip_closest_edge_supported": True,
+                "full_overlay_supported": False,
+                "broad_speedup_claim_authorized": False,
+            },
+            "implementation_note": (
+                "The public planar-map point-location primitive hides the legacy "
+                "RayJoin CDB environment bridge inside RTDL; application code should "
+                "not set RTDL_RAYJOIN_CDB_* variables directly."
+            ),
+        }
+
+    def count_located_segments(self, points) -> int:
+        return int(self.count_with_metadata(points)["located_segment_count"])
+
+    def last_phase_timings(self) -> dict[str, float | int | str] | None:
+        return self.prepared.last_phase_timings()
+
+    def close(self) -> None:
+        if not self._closed:
+            self.prepared.close()
+            self._closed = True
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+def prepare_planar_map_point_location_2d_optix(
+    base_records_or_cdb,
+    *,
+    query_map_id: int = 1,
+    scale_bounds=None,
+) -> PreparedOptixPlanarMapPointLocation2D:
+    """Prepare a reusable OptiX planar-map point-location/PIP primitive.
+
+    ``base_records_or_cdb`` may be an iterable of directed planar-map segment
+    records, a ``CdbDataset``, or a CDB path.  Query points are supplied later
+    to ``run_raw`` / ``run`` / ``count_with_metadata``.  ``query_map_id`` selects
+    the directed tie-break side for the vertical ray contract.
+    """
+
+    base_segments = (
+        base_records_or_cdb
+        if isinstance(base_records_or_cdb, PackedRayjoinCdbSegments)
+        else _coerce_planar_map_lsi_segments_2d(base_records_or_cdb)
+    )
+    normalized_scale_bounds = _normalize_planar_map_scale_bounds(scale_bounds)
+    with _PLANAR_MAP_POINT_LOCATION_ENV_LOCK:
+        old = _set_planar_map_point_location_env(
+            query_map_id=int(query_map_id),
+            scale_bounds=normalized_scale_bounds,
+        )
+        try:
+            prepared = prepare_rayjoin_cdb_point_location_2d_optix(base_segments)
+        finally:
+            _restore_planar_map_point_location_env(old)
+    return PreparedOptixPlanarMapPointLocation2D(
+        prepared=prepared,
+        query_map_id=int(query_map_id),
+        scale_bounds=normalized_scale_bounds,
+        base_segment_count=_segment_record_count(base_segments),
+    )
+
+
+def _looks_like_planar_map_packed_inputs(value: object) -> bool:
+    return all(
+        hasattr(value, name)
+        for name in (
+            "lsi_segments",
+            "cdb_segments",
+            "points",
+            "point_count",
+            "min_x",
+            "max_x",
+            "min_y",
+            "max_y",
+        )
+    )
+
+
+def _load_planar_map_workspace_input(value, cache_dir: str | Path | None):
+    if _looks_like_planar_map_packed_inputs(value):
+        return value
+    from .datasets import load_planar_map_cdb_packed_inputs
+
+    if cache_dir is None:
+        return load_planar_map_cdb_packed_inputs(value)
+
+    old_cache_dir = os.environ.get("RTDL_PLANAR_MAP_CDB_PACKED_CACHE_DIR")
+    os.environ["RTDL_PLANAR_MAP_CDB_PACKED_CACHE_DIR"] = str(cache_dir)
+    try:
+        return load_planar_map_cdb_packed_inputs(value)
+    finally:
+        if old_cache_dir is None:
+            os.environ.pop("RTDL_PLANAR_MAP_CDB_PACKED_CACHE_DIR", None)
+        else:
+            os.environ["RTDL_PLANAR_MAP_CDB_PACKED_CACHE_DIR"] = old_cache_dir
+
+
+def _planar_map_workspace_shared_bounds(left, right) -> tuple[float, float, float, float]:
+    return (
+        min(float(left.min_x), float(right.min_x)),
+        max(float(left.max_x), float(right.max_x)),
+        min(float(left.min_y), float(right.min_y)),
+        max(float(left.max_y), float(right.max_y)),
+    )
+
+
+def _time_workspace_phase(label: str, timings: dict[str, float], fn):
+    start = time.perf_counter()
+    value = fn()
+    timings[label] = time.perf_counter() - start
+    return value
+
+
+@dataclass
+class PlanarMapWorkspace2DOptix:
+    """Reusable in-process workspace for a pair of planar-map/CDB inputs.
+
+    The workspace productizes the prepared-session pattern used by the public
+    planar-map LSI and point-location primitives. It is intentionally a generic
+    lifecycle object: it owns loaded/packed inputs and prepared public primitive
+    handles, while application-specific continuation and output assembly remain
+    outside RTDL core.
+    """
+
+    left: object
+    right: object
+    bounds: tuple[float, float, float, float]
+    lsi: PreparedOptixPlanarMapLsi2D | None = None
+    lsi_query: PreparedOptixPlanarMapLsi2DQuery | None = None
+    left_in_right: PreparedOptixPlanarMapPointLocation2D | None = None
+    right_in_left: PreparedOptixPlanarMapPointLocation2D | None = None
+    setup_phase_seconds: Mapping[str, float] | None = None
+    left_query_map_id: int = 0
+    right_query_map_id: int = 1
+    _closed: bool = False
+
+    def _check_open(self) -> None:
+        if self._closed:
+            raise RuntimeError("prepared OptiX planar-map workspace is closed")
+
+    def run_lsi_pair_id_rows(self) -> OptixRowView:
+        """Run the prepared left-vs-right planar-map LSI query as id-pair rows."""
+
+        self._check_open()
+        if self.lsi_query is None:
+            if self.lsi is None:
+                raise RuntimeError("workspace was created without LSI preparation")
+            return self.lsi.run_pair_id_rows(self.left.lsi_segments)
+        return self.lsi_query.run_pair_id_rows()
+
+    def run_lsi_raw(self) -> OptixRowView:
+        """Run the prepared left-vs-right planar-map LSI query as full rows."""
+
+        self._check_open()
+        if self.lsi_query is None:
+            if self.lsi is None:
+                raise RuntimeError("workspace was created without LSI preparation")
+            return self.lsi.run_raw(self.left.lsi_segments)
+        return self.lsi_query.run_raw()
+
+    def run_left_points_in_right(self):
+        """Locate left-map points in the right-map prepared locator."""
+
+        self._check_open()
+        if self.left_in_right is None:
+            raise RuntimeError("workspace was created without point-location preparation")
+        return self.left_in_right.run(self.left.points)
+
+    def run_right_points_in_left(self):
+        """Locate right-map points in the left-map prepared locator."""
+
+        self._check_open()
+        if self.right_in_left is None:
+            raise RuntimeError("workspace was created without point-location preparation")
+        return self.right_in_left.run(self.right.points)
+
+    def prepare_base_points_for_queries(self) -> "PreparedOptixRayjoinCdbPointLocationPoints2D":
+        """Prepare base-map points once for reuse by same-domain query locators."""
+
+        self._check_open()
+        if self.left_in_right is None:
+            raise RuntimeError("workspace was created without point-location preparation")
+        return self.left_in_right.prepare_query_points(self.right.points)
+
+    def prepare_query(
+        self,
+        query_cdb_or_inputs,
+        *,
+        cache_dir: str | Path | None = None,
+        prepare_lsi: bool = True,
+        prepare_point_location: bool = True,
+    ) -> "PlanarMapWorkspace2DOptixQuery":
+        """Prepare a distinct query map against this reusable base workspace.
+
+        This formalizes the prepared-base/query-many lifecycle without adding
+        overlay semantics to RTDL core. The query-specific point-location locator
+        is still prepared here and its timing remains visible.
+        """
+
+        self._check_open()
+        timings: dict[str, float] = {}
+        query = _time_workspace_phase(
+            "load_pack_query_sec",
+            timings,
+            lambda: _load_planar_map_workspace_input(query_cdb_or_inputs, cache_dir),
+        )
+
+        lsi_query = None
+        if prepare_lsi:
+            if self.lsi is None:
+                raise RuntimeError("workspace was created without LSI preparation")
+            lsi_query = _time_workspace_phase(
+                "prepare_lsi_query_sec",
+                timings,
+                lambda: self.lsi.prepare_query(query.lsi_segments),
+            )
+
+        base_points_in_query = None
+        if prepare_point_location:
+            base_points_in_query = _time_workspace_phase(
+                "prepare_point_location_base_in_query_sec",
+                timings,
+                lambda: prepare_planar_map_point_location_2d_optix(
+                    query.cdb_segments,
+                    query_map_id=self.right_query_map_id,
+                    scale_bounds=self.bounds,
+                ),
+            )
+
+        return PlanarMapWorkspace2DOptixQuery(
+            workspace=self,
+            query=query,
+            lsi_query=lsi_query,
+            base_points_in_query=base_points_in_query,
+            setup_phase_seconds=timings,
+        )
+
+    def metadata(self) -> dict[str, object]:
+        return {
+            "schema": "rtdl.optix.planar_map_workspace_2d.v1",
+            "backend": "optix",
+            "workspace": "PLANAR_MAP_WORKSPACE_2D",
+            "left_point_count": int(self.left.point_count),
+            "right_point_count": int(self.right.point_count),
+            "left_edge_count": int(getattr(self.left, "edge_count", 0)),
+            "right_edge_count": int(getattr(self.right, "edge_count", 0)),
+            "bounds": self.bounds,
+            "setup_phase_seconds": dict(self.setup_phase_seconds or {}),
+            "prepared": {
+                "lsi_base": self.lsi is not None,
+                "lsi_query": self.lsi_query is not None,
+                "left_in_right_point_location": self.left_in_right is not None,
+                "right_in_left_point_location": self.right_in_left is not None,
+            },
+            "claim_boundary": {
+                "public_generic_rtdl_workspace": True,
+                "bundled_rayjoin_helper_used": False,
+                "raw_optix_callback_exposed": False,
+                "cross_process_gas_cache": False,
+                "application_continuation_inside_rtdl_core": False,
+                "broad_speedup_claim_authorized": False,
+            },
+        }
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        for handle in (self.lsi_query, self.lsi, self.left_in_right, self.right_in_left):
+            if handle is not None:
+                handle.close()
+        self._closed = True
+
+    def __enter__(self):
+        self._check_open()
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+def prepare_planar_map_workspace_2d_optix(
+    left_cdb_or_inputs,
+    right_cdb_or_inputs,
+    *,
+    cache_dir: str | Path | None = None,
+    prepare_lsi: bool = True,
+    prepare_point_location: bool = True,
+    left_query_map_id: int = 0,
+    right_query_map_id: int = 1,
+    scale_bounds=None,
+) -> PlanarMapWorkspace2DOptix:
+    """Prepare an in-process reusable planar-map workspace.
+
+    This is a lifecycle convenience around public RTDL primitives.  It prepares
+    reusable LSI and point-location handles for applications that issue repeated
+    queries against the same pair of planar maps. It does not import the bundled
+    RayJoin overlay helper and does not expose raw OptiX callback hooks.
+    """
+
+    timings: dict[str, float] = {}
+    left = _time_workspace_phase(
+        "load_pack_left_sec",
+        timings,
+        lambda: _load_planar_map_workspace_input(left_cdb_or_inputs, cache_dir),
+    )
+    right = _time_workspace_phase(
+        "load_pack_right_sec",
+        timings,
+        lambda: _load_planar_map_workspace_input(right_cdb_or_inputs, cache_dir),
+    )
+    bounds = _normalize_planar_map_scale_bounds(scale_bounds)
+    if bounds is None:
+        bounds = _time_workspace_phase(
+            "shared_bounds_sec",
+            timings,
+            lambda: _planar_map_workspace_shared_bounds(left, right),
+        )
+
+    lsi = None
+    lsi_query = None
+    if prepare_lsi:
+        lsi = _time_workspace_phase(
+            "prepare_lsi_base_sec",
+            timings,
+            lambda: prepare_planar_map_lsi_2d_optix(right.lsi_segments),
+        )
+        lsi_query = _time_workspace_phase(
+            "prepare_lsi_query_sec",
+            timings,
+            lambda: lsi.prepare_query(left.lsi_segments),
+        )
+
+    left_in_right = None
+    right_in_left = None
+    if prepare_point_location:
+        left_in_right = _time_workspace_phase(
+            "prepare_point_location_left_in_right_sec",
+            timings,
+            lambda: prepare_planar_map_point_location_2d_optix(
+                right.cdb_segments,
+                query_map_id=left_query_map_id,
+                scale_bounds=bounds,
+            ),
+        )
+        right_in_left = _time_workspace_phase(
+            "prepare_point_location_right_in_left_sec",
+            timings,
+            lambda: prepare_planar_map_point_location_2d_optix(
+                left.cdb_segments,
+                query_map_id=right_query_map_id,
+                scale_bounds=bounds,
+            ),
+        )
+
+    return PlanarMapWorkspace2DOptix(
+        left=left,
+        right=right,
+        bounds=bounds,
+        lsi=lsi,
+        lsi_query=lsi_query,
+        left_in_right=left_in_right,
+        right_in_left=right_in_left,
+        setup_phase_seconds=timings,
+        left_query_map_id=int(left_query_map_id),
+        right_query_map_id=int(right_query_map_id),
+    )
+
+
+@dataclass
+class PlanarMapWorkspace2DOptixQuery:
+    """Prepared query-side lifecycle for :class:`PlanarMapWorkspace2DOptix`."""
+
+    workspace: PlanarMapWorkspace2DOptix
+    query: object
+    lsi_query: PreparedOptixPlanarMapLsi2DQuery | None = None
+    base_points_in_query: PreparedOptixPlanarMapPointLocation2D | None = None
+    setup_phase_seconds: Mapping[str, float] | None = None
+    _closed: bool = False
+
+    def _check_open(self) -> None:
+        if self._closed:
+            raise RuntimeError("prepared OptiX planar-map workspace query is closed")
+        self.workspace._check_open()
+
+    def run_lsi_pair_id_rows(self) -> OptixRowView:
+        """Run query-vs-base planar-map LSI as id-pair rows."""
+
+        self._check_open()
+        if self.lsi_query is None:
+            raise RuntimeError("workspace query was created without LSI preparation")
+        return self.lsi_query.run_pair_id_rows()
+
+    def run_lsi_raw(self) -> OptixRowView:
+        """Run query-vs-base planar-map LSI as full rows."""
+
+        self._check_open()
+        if self.lsi_query is None:
+            raise RuntimeError("workspace query was created without LSI preparation")
+        return self.lsi_query.run_raw()
+
+    def run_query_points_in_base(self):
+        """Locate query-map points in the base-map prepared locator."""
+
+        self._check_open()
+        if self.workspace.left_in_right is None:
+            raise RuntimeError("base workspace was created without point-location preparation")
+        return self.workspace.left_in_right.run(self.query.points)
+
+    def run_base_points_in_query(self):
+        """Locate base-map points in the query-map prepared locator."""
+
+        self._check_open()
+        if self.base_points_in_query is None:
+            raise RuntimeError("workspace query was created without query point-location preparation")
+        return self.base_points_in_query.run(self.workspace.right.points)
+
+    def prepare_query_points_in_base(self) -> "PreparedOptixRayjoinCdbPointLocationPoints2D":
+        """Prepare query-map points for device-column point-location in the base map."""
+
+        self._check_open()
+        if self.workspace.left_in_right is None:
+            raise RuntimeError("base workspace was created without point-location preparation")
+        return self.workspace.left_in_right.prepare_query_points(self.query.points)
+
+    def prepare_base_points_in_query(self) -> "PreparedOptixRayjoinCdbPointLocationPoints2D":
+        """Prepare base-map points for device-column point-location in the query map."""
+
+        self._check_open()
+        if self.base_points_in_query is None:
+            raise RuntimeError("workspace query was created without query point-location preparation")
+        return self.base_points_in_query.prepare_query_points(self.workspace.right.points)
+
+    def query_points_in_base_face_id_device_columns(
+        self,
+        prepared_points: "PreparedOptixRayjoinCdbPointLocationPoints2D",
+    ) -> "OptixPointLocationDeviceIdColumnOutput":
+        """Return device-resident face ids for query-map points in the base map."""
+
+        self._check_open()
+        if self.workspace.left_in_right is None:
+            raise RuntimeError("base workspace was created without point-location preparation")
+        return self.workspace.left_in_right.face_id_device_columns(prepared_points)
+
+    def base_points_in_query_face_id_device_columns(
+        self,
+        prepared_points: "PreparedOptixRayjoinCdbPointLocationPoints2D",
+    ) -> "OptixPointLocationDeviceIdColumnOutput":
+        """Return device-resident face ids for base-map points in the query map."""
+
+        self._check_open()
+        if self.base_points_in_query is None:
+            raise RuntimeError("workspace query was created without query point-location preparation")
+        return self.base_points_in_query.face_id_device_columns(prepared_points)
+
+    def metadata(self) -> dict[str, object]:
+        return {
+            "schema": "rtdl.optix.planar_map_workspace_2d.query.v1",
+            "backend": "optix",
+            "workspace": "PLANAR_MAP_WORKSPACE_2D_QUERY",
+            "query_point_count": int(self.query.point_count),
+            "query_edge_count": int(getattr(self.query, "edge_count", 0)),
+            "base_point_count": int(self.workspace.right.point_count),
+            "base_edge_count": int(getattr(self.workspace.right, "edge_count", 0)),
+            "bounds": self.workspace.bounds,
+            "setup_phase_seconds": dict(self.setup_phase_seconds or {}),
+            "prepared": {
+                "lsi_query": self.lsi_query is not None,
+                "base_points_in_query_point_location": self.base_points_in_query is not None,
+                "query_points_in_base_uses_base_workspace_locator": self.workspace.left_in_right is not None,
+            },
+            "claim_boundary": {
+                "public_generic_rtdl_workspace_query": True,
+                "bundled_rayjoin_helper_used": False,
+                "raw_optix_callback_exposed": False,
+                "query_specific_locator_prepare_still_paid": self.base_points_in_query is not None,
+                "application_continuation_inside_rtdl_core": False,
+                "broad_speedup_claim_authorized": False,
+            },
+        }
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        for handle in (self.lsi_query, self.base_points_in_query):
+            if handle is not None:
+                handle.close()
+        self._closed = True
+
+    def __enter__(self):
+        self._check_open()
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
 @dataclass
 class PreparedOptixRayjoinCdbPointLocationPoints2D:
     library: object
     prepared_points_handle: ctypes.c_void_p
     point_count: int = 0
+    owner: object | None = None
     _closed: bool = False
 
     def close(self) -> None:
@@ -3845,22 +5155,85 @@ class PreparedOptixRayjoinCdbPointLocationPoints2D:
 
 
 @dataclass
+class OptixPointLocationDeviceIdColumnOutput:
+    library: object
+    owner: PreparedOptixRayjoinCdbPointLocationPoints2D
+    ids_device_ptr: int
+    row_count: int
+    capacity: int
+    overflow: bool
+    device_ordinal: int
+    traversal_seconds: float
+    native_symbol: str
+    field_name: str
+    dtype: str = "uint32"
+
+    @property
+    def device_resident(self) -> bool:
+        return self.ids_device_ptr > 0 and self.capacity > 0 and not self.overflow
+
+    @property
+    def true_zero_copy_authorized(self) -> bool:
+        return False
+
+    def to_metadata(self) -> dict[str, object]:
+        return {
+            "schema": "rtdl.optix.directed_point_location_device_id_column.v1",
+            "producer_primitive": "directed_segment_point_location_2d",
+            "field_name": self.field_name,
+            "dtype": self.dtype,
+            "row_count": int(self.row_count),
+            "capacity": int(self.capacity),
+            "overflow": bool(self.overflow),
+            "device_ordinal": int(self.device_ordinal),
+            "ids_device_ptr_observed": int(self.ids_device_ptr) > 0,
+            "device_resident": self.device_resident,
+            "native_symbol": self.native_symbol,
+            "traversal_seconds": float(self.traversal_seconds),
+            "owner": "prepared_point_location_query_points",
+            "engine_boundary": "generic_directed_point_location_id_column",
+            "app_specific_schema_allowed": False,
+            "release_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+        }
+
+
+@dataclass
 class PreparedOptixRayjoinCdbPointLocation2D:
     library: object
     prepared_handle: ctypes.c_void_p
     segment_count: int = 0
+    prepare_phase_timings: dict[str, object] | None = None
     _closed: bool = False
 
     def run_raw(self, points) -> OptixRowView:
         if self._closed:
             raise RuntimeError("prepared OptiX RayJoin CDB point-location handle is closed")
-        packed_points = points if isinstance(points, PackedPoints) else pack_points(records=points, dimension=2)
-        run_symbol = _find_first_optional_backend_symbol(
-            self.library,
-            OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_RUN_SYMBOL,
-            OPTIX_RAYJOIN_CDB_POINT_LOCATION_RUN_SYMBOL,
+        uses_scaled_points = isinstance(points, PackedRayjoinCdbScaledPoints)
+        packed_points = (
+            points
+            if uses_scaled_points
+            else points if isinstance(points, PackedPoints) else pack_points(records=points, dimension=2)
         )
+        if uses_scaled_points:
+            run_symbol = _find_first_optional_backend_symbol(
+                self.library,
+                OPTIX_RAYJOIN_CDB_POINT_LOCATION_RUN_SCALED_POINTS_SYMBOL,
+            )
+        else:
+            run_symbol = _find_first_optional_backend_symbol(
+                self.library,
+                OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_RUN_SYMBOL,
+                OPTIX_RAYJOIN_CDB_POINT_LOCATION_RUN_SYMBOL,
+            )
         if run_symbol is None:
+            if uses_scaled_points:
+                raise RuntimeError(
+                    "Loaded OptiX backend library does not export "
+                    f"{OPTIX_RAYJOIN_CDB_POINT_LOCATION_RUN_SCALED_POINTS_SYMBOL}; "
+                    "rebuild the OptiX backend from current main"
+                )
             raise RuntimeError(
                 "Loaded OptiX backend library does not export "
                 f"{OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_RUN_SYMBOL} or "
@@ -3925,13 +5298,30 @@ class PreparedOptixRayjoinCdbPointLocation2D:
     def prepare_query_points(self, points) -> PreparedOptixRayjoinCdbPointLocationPoints2D:
         if self._closed:
             raise RuntimeError("prepared OptiX RayJoin CDB point-location handle is closed")
-        packed_points = points if isinstance(points, PackedPoints) else pack_points(records=points, dimension=2)
-        prepare_symbol = _find_first_optional_backend_symbol(
-            self.library,
-            OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_PREPARE_POINTS_SYMBOL,
-            OPTIX_RAYJOIN_CDB_POINT_LOCATION_PREPARE_POINTS_SYMBOL,
+        uses_scaled_points = isinstance(points, PackedRayjoinCdbScaledPoints)
+        packed_points = (
+            points
+            if uses_scaled_points
+            else points if isinstance(points, PackedPoints) else pack_points(records=points, dimension=2)
         )
+        if uses_scaled_points:
+            prepare_symbol = _find_first_optional_backend_symbol(
+                self.library,
+                OPTIX_RAYJOIN_CDB_POINT_LOCATION_PREPARE_SCALED_POINTS_SYMBOL,
+            )
+        else:
+            prepare_symbol = _find_first_optional_backend_symbol(
+                self.library,
+                OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_PREPARE_POINTS_SYMBOL,
+                OPTIX_RAYJOIN_CDB_POINT_LOCATION_PREPARE_POINTS_SYMBOL,
+            )
         if prepare_symbol is None:
+            if uses_scaled_points:
+                raise RuntimeError(
+                    "Loaded OptiX backend library does not export "
+                    f"{OPTIX_RAYJOIN_CDB_POINT_LOCATION_PREPARE_SCALED_POINTS_SYMBOL}; "
+                    "rebuild the OptiX backend from current main"
+                )
             raise RuntimeError(
                 "Loaded OptiX backend library does not export "
                 f"{OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_PREPARE_POINTS_SYMBOL} or "
@@ -3952,6 +5342,43 @@ class PreparedOptixRayjoinCdbPointLocation2D:
             library=self.library,
             prepared_points_handle=prepared_points,
             point_count=int(packed_points.count),
+        )
+
+    def prepare_device_query_points(
+        self,
+        device_points_ptr: int,
+        point_count: int,
+        *,
+        owner: object | None = None,
+    ) -> PreparedOptixRayjoinCdbPointLocationPoints2D:
+        if self._closed:
+            raise RuntimeError("prepared OptiX RayJoin CDB point-location handle is closed")
+        prepare_symbol = _find_first_optional_backend_symbol(
+            self.library,
+            OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_PREPARE_DEVICE_QUERY_POINTS_SYMBOL,
+        )
+        if prepare_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_PREPARE_DEVICE_QUERY_POINTS_SYMBOL}; "
+                "rebuild the OptiX backend from current main"
+            )
+        prepared_points = ctypes.c_void_p()
+        error = ctypes.create_string_buffer(4096)
+        status = prepare_symbol(
+            self.prepared_handle,
+            ctypes.c_uint64(int(device_points_ptr)),
+            int(point_count),
+            ctypes.byref(prepared_points),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return PreparedOptixRayjoinCdbPointLocationPoints2D(
+            library=self.library,
+            prepared_points_handle=prepared_points,
+            point_count=int(point_count),
+            owner=owner,
         )
 
     def count_positive_faces_device_points(
@@ -4047,8 +5474,85 @@ class PreparedOptixRayjoinCdbPointLocation2D:
         _check_status(status, error)
         return {"row_count": int(point_count.value)}
 
-    def last_phase_timings(self) -> dict[str, float | int | str] | None:
-        return _get_last_rayjoin_cdb_point_location_phase_timings_from_library(self.library)
+    def _device_id_columns(
+        self,
+        prepared_points: PreparedOptixRayjoinCdbPointLocationPoints2D,
+        *,
+        field_name: str,
+        directed_symbol: str,
+        legacy_symbol: str,
+    ) -> OptixPointLocationDeviceIdColumnOutput:
+        if self._closed:
+            raise RuntimeError("prepared OptiX RayJoin CDB point-location handle is closed")
+        if prepared_points._closed:
+            raise RuntimeError("prepared OptiX RayJoin CDB query points handle is closed")
+        symbol = _find_first_optional_backend_symbol(
+            self.library,
+            directed_symbol,
+            legacy_symbol,
+        )
+        if symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                f"{directed_symbol} or {legacy_symbol}; rebuild the OptiX backend from current main"
+            )
+        columns = _RtdlNativePointLocationDeviceIdColumns()
+        error = ctypes.create_string_buffer(4096)
+        status = symbol(
+            self.prepared_handle,
+            prepared_points.prepared_points_handle,
+            ctypes.byref(columns),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        return OptixPointLocationDeviceIdColumnOutput(
+            library=self.library,
+            owner=prepared_points,
+            ids_device_ptr=int(columns.ids_device_ptr),
+            row_count=int(columns.row_count),
+            capacity=int(columns.capacity),
+            overflow=bool(columns.overflow),
+            device_ordinal=int(columns.device_ordinal),
+            traversal_seconds=float(columns.traversal_seconds),
+            native_symbol=directed_symbol,
+            field_name=str(field_name),
+        )
+
+    def segment_id_device_columns(
+        self,
+        prepared_points: PreparedOptixRayjoinCdbPointLocationPoints2D,
+    ) -> OptixPointLocationDeviceIdColumnOutput:
+        return self._device_id_columns(
+            prepared_points,
+            field_name="segment_id",
+            directed_symbol=OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_DEVICE_SEGMENT_ID_COLUMNS_SYMBOL,
+            legacy_symbol=OPTIX_RAYJOIN_CDB_POINT_LOCATION_DEVICE_SEGMENT_ID_COLUMNS_SYMBOL,
+        )
+
+    def face_id_device_columns(
+        self,
+        prepared_points: PreparedOptixRayjoinCdbPointLocationPoints2D,
+    ) -> OptixPointLocationDeviceIdColumnOutput:
+        return self._device_id_columns(
+            prepared_points,
+            field_name="face_id",
+            directed_symbol=OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_DEVICE_FACE_ID_COLUMNS_SYMBOL,
+            legacy_symbol=OPTIX_RAYJOIN_CDB_POINT_LOCATION_DEVICE_FACE_ID_COLUMNS_SYMBOL,
+        )
+
+    def last_phase_timings(self) -> dict[str, object] | None:
+        timings = _get_last_rayjoin_cdb_point_location_phase_timings_from_library(self.library)
+        if timings is None:
+            return self.prepare_phase_timings
+        if self.prepare_phase_timings and "extended" in self.prepare_phase_timings:
+            # The native timing API is process/thread-local. Run phases update it
+            # after prepare, so keep the prepare decomposition owned by this
+            # prepared handle rather than reading whichever locator was prepared
+            # most recently on the thread.
+            timings = dict(timings)
+            timings["extended"] = self.prepare_phase_timings["extended"]
+        return timings
 
     def close(self) -> None:
         if not self._closed:
@@ -4112,10 +5616,12 @@ def prepare_rayjoin_cdb_point_location_2d_optix(segments) -> PreparedOptixRayjoi
         len(error),
     )
     _check_status(status, error)
+    prepare_phase_timings = _get_last_rayjoin_cdb_point_location_phase_timings_from_library(lib)
     return PreparedOptixRayjoinCdbPointLocation2D(
         library=lib,
         prepared_handle=prepared,
         segment_count=int(packed_segments.count),
+        prepare_phase_timings=prepare_phase_timings,
     )
 
 
@@ -8529,6 +10035,10 @@ def get_last_segment_pair_phase_timings() -> dict[str, float | int | str] | None
     return _get_last_segment_pair_phase_timings_from_library(_load_optix_library())
 
 
+def get_last_segment_pair_extended_phase_timings() -> dict[str, float | int | str] | None:
+    return _get_last_segment_pair_extended_phase_timings_from_library(_load_optix_library())
+
+
 def get_last_shape_pair_relation_phase_timings() -> dict[str, float | int | str] | None:
     return _get_last_shape_pair_relation_phase_timings_from_library(_load_optix_library())
 
@@ -8586,6 +10096,8 @@ def _get_last_segment_pair_phase_timings_from_library(lib) -> dict[str, float | 
         6: "count_prepared_left",
         7: "count_prepared_left_direct_intersection",
         8: "count_prepared_left_grouped_range_direct_intersection",
+        9: "rows_prepared_left_grouped_range_direct_intersection",
+        10: "pair_id_rows_prepared_left_grouped_range_direct_intersection",
     }.get(mode_value, "none")
     result = {
         "mode": mode_name,
@@ -8597,14 +10109,103 @@ def _get_last_segment_pair_phase_timings_from_library(lib) -> dict[str, float | 
         "raw_candidate_count": int(raw_candidates.value),
         "emitted_count": int(emitted.value),
     }
+    extended = _get_last_segment_pair_extended_phase_timings_from_library(lib)
+    if extended is not None:
+        result["extended"] = extended
     if mode_name.startswith("first_hit"):
         result["device_witness_materialize"] = float(exact_refine.value)
     return result
 
 
-def _get_last_rayjoin_cdb_point_location_phase_timings_from_library(
+def _get_last_segment_pair_extended_phase_timings_from_library(
     lib,
 ) -> dict[str, float | int | str] | None:
+    symbol = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_segment_pair_intersection_get_last_extended_phase_timings",
+    )
+    if symbol is None:
+        return None
+    symbol.argtypes = (
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.POINTER(ctypes.c_uint32),
+    )
+    symbol.restype = ctypes.c_int
+    total_native = ctypes.c_double(0.0)
+    scaled_cache = ctypes.c_double(0.0)
+    grouped_range = ctypes.c_double(0.0)
+    exact_pipeline = ctypes.c_double(0.0)
+    split_kernel = ctypes.c_double(0.0)
+    device_alloc = ctypes.c_double(0.0)
+    param_upload = ctypes.c_double(0.0)
+    optix_launch = ctypes.c_double(0.0)
+    count_download = ctypes.c_double(0.0)
+    split_kernel_launch = ctypes.c_double(0.0)
+    raw_candidates = ctypes.c_size_t(0)
+    emitted = ctypes.c_size_t(0)
+    mode = ctypes.c_uint32(0)
+    status = symbol(
+        ctypes.byref(total_native),
+        ctypes.byref(scaled_cache),
+        ctypes.byref(grouped_range),
+        ctypes.byref(exact_pipeline),
+        ctypes.byref(split_kernel),
+        ctypes.byref(device_alloc),
+        ctypes.byref(param_upload),
+        ctypes.byref(optix_launch),
+        ctypes.byref(count_download),
+        ctypes.byref(split_kernel_launch),
+        ctypes.byref(raw_candidates),
+        ctypes.byref(emitted),
+        ctypes.byref(mode),
+    )
+    if status != 0:
+        return None
+    mode_value = int(mode.value)
+    mode_name = {
+        1: "rows",
+        2: "count",
+        3: "first_hit_rows",
+        4: "first_hit_count",
+        5: "boundary_event_rows",
+        6: "count_prepared_left",
+        7: "count_prepared_left_direct_intersection",
+        8: "count_prepared_left_grouped_range_direct_intersection",
+        9: "rows_prepared_left_grouped_range_direct_intersection",
+        10: "pair_id_rows_prepared_left_grouped_range_direct_intersection",
+    }.get(mode_value, "none")
+    return {
+        "schema": "rtdl.optix.segment_pair.extended_phase_timings.v1",
+        "mode": mode_name,
+        "total_native": float(total_native.value),
+        "scaled_cache_ensure": float(scaled_cache.value),
+        "grouped_range_ensure": float(grouped_range.value),
+        "exact_pipeline_ensure": float(exact_pipeline.value),
+        "split_kernel_ensure": float(split_kernel.value),
+        "device_alloc": float(device_alloc.value),
+        "param_upload": float(param_upload.value),
+        "optix_launch": float(optix_launch.value),
+        "count_download": float(count_download.value),
+        "split_kernel_launch": float(split_kernel_launch.value),
+        "raw_candidate_count": int(raw_candidates.value),
+        "emitted_count": int(emitted.value),
+    }
+
+
+def _get_last_rayjoin_cdb_point_location_phase_timings_from_library(
+    lib,
+) -> dict[str, object] | None:
     symbol = _find_first_optional_backend_symbol(
         lib,
         OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_TIMINGS_SYMBOL,
@@ -8643,14 +10244,97 @@ def _get_last_rayjoin_cdb_point_location_phase_timings_from_library(
         3: "count_device_points",
         4: "segment_ids_device_points",
         5: "face_ids_device_points",
+        7: "prepare",
     }.get(int(mode.value), "none")
-    return {
+    result: dict[str, object] = {
         "mode": mode_name,
         "point_upload": float(point_upload.value),
         "traversal": float(traversal.value),
         "row_download": float(row_download.value),
         "point_count": int(point_count.value),
         "positive_face_count": int(positive_face_count.value),
+    }
+    extended = _get_last_rayjoin_cdb_point_location_extended_phase_timings_from_library(lib)
+    if extended is not None:
+        result["extended"] = extended
+    return result
+
+
+def _get_last_rayjoin_cdb_point_location_extended_phase_timings_from_library(
+    lib,
+) -> dict[str, float | int | str] | None:
+    symbol = _find_first_optional_backend_symbol(
+        lib,
+        OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_EXTENDED_TIMINGS_SYMBOL,
+        OPTIX_RAYJOIN_CDB_POINT_LOCATION_EXTENDED_TIMINGS_SYMBOL,
+    )
+    if symbol is None:
+        return None
+    symbol.argtypes = (
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.POINTER(ctypes.c_uint32),
+    )
+    symbol.restype = ctypes.c_int
+    prepare_total = ctypes.c_double(0.0)
+    prepare_pipeline_ensure = ctypes.c_double(0.0)
+    prepare_host_copy = ctypes.c_double(0.0)
+    prepare_segment_pack = ctypes.c_double(0.0)
+    prepare_duplicate_canonicalize = ctypes.c_double(0.0)
+    prepare_device_upload = ctypes.c_double(0.0)
+    prepare_range_build = ctypes.c_double(0.0)
+    prepare_range_upload = ctypes.c_double(0.0)
+    prepare_accel_build = ctypes.c_double(0.0)
+    prepare_segment_count = ctypes.c_size_t(0)
+    prepare_range_count = ctypes.c_size_t(0)
+    mode = ctypes.c_uint32(0)
+    status = symbol(
+        ctypes.byref(prepare_total),
+        ctypes.byref(prepare_pipeline_ensure),
+        ctypes.byref(prepare_host_copy),
+        ctypes.byref(prepare_segment_pack),
+        ctypes.byref(prepare_duplicate_canonicalize),
+        ctypes.byref(prepare_device_upload),
+        ctypes.byref(prepare_range_build),
+        ctypes.byref(prepare_range_upload),
+        ctypes.byref(prepare_accel_build),
+        ctypes.byref(prepare_segment_count),
+        ctypes.byref(prepare_range_count),
+        ctypes.byref(mode),
+    )
+    if status != 0:
+        return None
+    mode_name = {
+        1: "count",
+        2: "rows",
+        3: "count_device_points",
+        4: "segment_ids_device_points",
+        5: "face_ids_device_points",
+        7: "prepare",
+    }.get(int(mode.value), "none")
+    return {
+        "schema": "rtdl.optix.directed_segment_point_location.extended_phase_timings.v1",
+        "mode": mode_name,
+        "prepare_total": float(prepare_total.value),
+        "prepare_pipeline_ensure": float(prepare_pipeline_ensure.value),
+        "prepare_host_copy": float(prepare_host_copy.value),
+        "prepare_segment_pack": float(prepare_segment_pack.value),
+        "prepare_duplicate_canonicalize": float(prepare_duplicate_canonicalize.value),
+        "prepare_device_upload": float(prepare_device_upload.value),
+        "prepare_range_build": float(prepare_range_build.value),
+        "prepare_range_upload": float(prepare_range_upload.value),
+        "prepare_accel_build": float(prepare_accel_build.value),
+        "prepare_segment_count": int(prepare_segment_count.value),
+        "prepare_range_count": int(prepare_range_count.value),
     }
 
 
@@ -14112,6 +15796,8 @@ def _normalize_aabb2d_record(box, fallback_id: int) -> tuple[int, float, float, 
 def pack_aabbs_2d(boxes) -> PackedAabbs2D:
     if isinstance(boxes, PackedAabbs2D):
         return boxes
+    if isinstance(boxes, Aabb2DColumns):
+        return pack_aabbs_2d_columns(boxes)
     normalized = tuple(_normalize_aabb2d_record(box, index) for index, box in enumerate(boxes))
     arr = (_RtdlAabb2D * len(normalized))(
         *[
@@ -14120,6 +15806,93 @@ def pack_aabbs_2d(boxes) -> PackedAabbs2D:
         ]
     )
     return PackedAabbs2D(records=arr, count=len(normalized))
+
+
+def pack_aabbs_2d_columns(columns: Aabb2DColumns) -> PackedAabbs2D:
+    """Pack validated host columns into the native AABB ABI in one pass."""
+    if not isinstance(columns, Aabb2DColumns):
+        raise TypeError("pack_aabbs_2d_columns requires Aabb2DColumns")
+    import numpy as _np
+
+    dtype = _np.dtype(
+        [
+            ("id", _np.uint32),
+            ("min_x", _np.float64),
+            ("min_y", _np.float64),
+            ("max_x", _np.float64),
+            ("max_y", _np.float64),
+        ],
+        align=True,
+    )
+    if dtype.itemsize != ctypes.sizeof(_RtdlAabb2D):
+        raise RuntimeError("Aabb2DColumns dtype does not match the native AABB ABI size")
+    expected_offsets = {
+        name: getattr(_RtdlAabb2D, name).offset
+        for name in ("id", "min_x", "min_y", "max_x", "max_y")
+    }
+    if any(dtype.fields[name][1] != offset for name, offset in expected_offsets.items()):
+        raise RuntimeError("Aabb2DColumns dtype does not match the native AABB ABI offsets")
+    packed = _np.empty(len(columns), dtype=dtype)
+    packed["id"] = columns.ids
+    packed["min_x"] = columns.min_x
+    packed["min_y"] = columns.min_y
+    packed["max_x"] = columns.max_x
+    packed["max_y"] = columns.max_y
+    records = (_RtdlAabb2D * len(columns)).from_buffer(packed)
+    return PackedAabbs2D(records=records, count=len(columns), owner=packed)
+
+
+def _normalize_aabb3d_record(box, default_id: int) -> tuple[int, float, float, float, float, float, float]:
+    try:
+        box_id = int(box.id)
+    except AttributeError:
+        box_id = int(default_id)
+    try:
+        min_x = float(box.min_x)
+        min_y = float(box.min_y)
+        min_z = float(box.min_z)
+        max_x = float(box.max_x)
+        max_y = float(box.max_y)
+        max_z = float(box.max_z)
+    except AttributeError:
+        try:
+            if len(box) == 7:
+                box_id = int(box[0])
+                min_x = float(box[1])
+                min_y = float(box[2])
+                min_z = float(box[3])
+                max_x = float(box[4])
+                max_y = float(box[5])
+                max_z = float(box[6])
+            elif len(box) == 6:
+                min_x = float(box[0])
+                min_y = float(box[1])
+                min_z = float(box[2])
+                max_x = float(box[3])
+                max_y = float(box[4])
+                max_z = float(box[5])
+            else:
+                raise TypeError
+        except TypeError as exc:
+            raise TypeError(
+                "AABB_INDEX_QUERY_3D requires boxes with min_x/min_y/min_z/max_x/max_y/max_z or 6/7-tuples"
+            ) from exc
+    if max_x < min_x or max_y < min_y or max_z < min_z:
+        raise ValueError("3D AABB max bounds must be greater than or equal to min bounds")
+    return box_id, min_x, min_y, min_z, max_x, max_y, max_z
+
+
+def pack_aabbs_3d(boxes) -> PackedAabbs3D:
+    if isinstance(boxes, PackedAabbs3D):
+        return boxes
+    normalized = tuple(_normalize_aabb3d_record(box, index) for index, box in enumerate(boxes))
+    arr = (_RtdlAabb3D * len(normalized))(
+        *[
+            _RtdlAabb3D(box_id, min_x, min_y, min_z, max_x, max_y, max_z)
+            for box_id, min_x, min_y, min_z, max_x, max_y, max_z in normalized
+        ]
+    )
+    return PackedAabbs3D(records=arr, count=len(normalized))
 
 
 def _normalize_point2d_xy(point) -> tuple[float, float]:
@@ -14132,6 +15905,51 @@ def _normalize_point2d_xy(point) -> tuple[float, float]:
         except TypeError:
             pass
     raise TypeError("AABB_INDEX_QUERY_2D requires point-like inputs with x/y attributes or 2-tuples")
+
+
+def _pack_aabb_index_point_queries_3d(point_queries) -> PackedPoints:
+    if isinstance(point_queries, PackedPoints):
+        if point_queries.dimension != 3:
+            raise ValueError("OptiX AABB_INDEX_QUERY_3D point row output requires 3-D point queries")
+        return point_queries
+    try:
+        packed = pack_points(records=point_queries, dimension=3)
+        if packed.dimension != 3:
+            raise ValueError("OptiX AABB_INDEX_QUERY_3D point row output requires 3-D point queries")
+        return packed
+    except (TypeError, ValueError):
+        point_tuple = tuple(point_queries)
+        ids: list[int] = []
+        xs: list[float] = []
+        ys: list[float] = []
+        zs: list[float] = []
+        for index, point in enumerate(point_tuple):
+            try:
+                ids.append(int(point.id))
+                xs.append(float(point.x))
+                ys.append(float(point.y))
+                zs.append(float(point.z))
+                continue
+            except AttributeError:
+                pass
+            try:
+                if len(point) == 4:
+                    ids.append(int(point[0]))
+                    xs.append(float(point[1]))
+                    ys.append(float(point[2]))
+                    zs.append(float(point[3]))
+                elif len(point) == 3:
+                    ids.append(int(index))
+                    xs.append(float(point[0]))
+                    ys.append(float(point[1]))
+                    zs.append(float(point[2]))
+                else:
+                    raise TypeError
+            except TypeError as exc:
+                raise TypeError(
+                    "AABB_INDEX_QUERY_3D requires point-like inputs with x/y/z attributes or 3/4-tuples"
+                ) from exc
+        return pack_points(ids=ids, x=xs, y=ys, z=zs, dimension=3)
 
 
 class PreparedOptixAabbQueries2D:
@@ -14211,19 +16029,25 @@ class PreparedOptixAabbIndex2D:
 
     supported_operations = OPTIX_AABB_INDEX_SUPPORTED_OPERATIONS
 
-    def __init__(self, boxes):
+    def __init__(self, boxes, *, allow_update: bool = False):
         packed = pack_aabbs_2d(boxes)
         if packed.count == 0:
             raise ValueError("prepare_optix_aabb_index_2d requires at least one indexed box")
         self._packed_boxes = packed
         self._handle = ctypes.c_void_p()
         self._closed = False
+        self._allow_update = bool(allow_update)
 
         lib = _load_optix_library()
-        prepare_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_prepare_aabb_index_2d")
+        prepare_symbol_name = (
+            "rtdl_optix_prepare_mutable_aabb_index_2d"
+            if self._allow_update
+            else "rtdl_optix_prepare_aabb_index_2d"
+        )
+        prepare_symbol = _find_optional_backend_symbol(lib, prepare_symbol_name)
         if prepare_symbol is None:
             raise RuntimeError(
-                "Loaded OptiX backend library does not export rtdl_optix_prepare_aabb_index_2d. "
+                f"Loaded OptiX backend library does not export {prepare_symbol_name}. "
                 "Rebuild it with 'make build-optix' from current main."
             )
         error = ctypes.create_string_buffer(4096)
@@ -14235,6 +16059,107 @@ class PreparedOptixAabbIndex2D:
             len(error),
         )
         _check_status(status, error)
+
+    def refit(self, boxes) -> dict[str, object]:
+        """Refit unchanged prepared slots after validating cardinality and ids."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX AABB index handle is closed")
+        if not self._allow_update:
+            raise RuntimeError("immutable prepared OptiX AABB index does not allow refit")
+        packed = pack_aabbs_2d(boxes)
+        if packed.count != self._packed_boxes.count:
+            raise ValueError("native OptiX AABB refit requires unchanged box_count")
+        old_ids = tuple(
+            int(self._packed_boxes.records[index].id)
+            for index in range(self._packed_boxes.count)
+        )
+        new_ids = tuple(int(packed.records[index].id) for index in range(packed.count))
+        if new_ids != old_ids:
+            raise ValueError("native OptiX AABB refit requires stable ids in prepared slot order")
+        lib = _load_optix_library()
+        refit_symbol = _find_optional_backend_symbol(
+            lib, "rtdl_optix_refit_prepared_aabb_index_2d"
+        )
+        if refit_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                "rtdl_optix_refit_prepared_aabb_index_2d. Rebuild it from current main."
+            )
+        error = ctypes.create_string_buffer(4096)
+        status = refit_symbol(
+            self._handle,
+            packed.records,
+            packed.count,
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        self._packed_boxes = packed
+        return {
+            "contract": "generic_prepared_aabb_index_2d_fixed_cardinality_refit_v1",
+            "native_symbol": "rtdl_optix_refit_prepared_aabb_index_2d",
+            "box_count": packed.count,
+            "stable_ids": list(new_ids),
+            "execution_model": "native_fixed_cardinality_refit_with_rollback",
+            "native_incremental_update": True,
+            "native_incremental_insert_delete": False,
+            "app_semantics": "none",
+        }
+
+    def refit_slots(self, slot_indices, boxes) -> dict[str, object]:
+        """Refit selected stable slots without repacking the unchanged index."""
+        if self._closed:
+            raise RuntimeError("prepared OptiX AABB index handle is closed")
+        if not self._allow_update:
+            raise RuntimeError("immutable prepared OptiX AABB index does not allow sparse refit")
+        slots = tuple(int(value) for value in slot_indices)
+        if len(set(slots)) != len(slots):
+            raise ValueError("native OptiX AABB sparse refit slots must be unique")
+        if any(value < 0 or value >= self._packed_boxes.count for value in slots):
+            raise ValueError("native OptiX AABB sparse refit slot is outside box_count")
+        packed = pack_aabbs_2d(boxes)
+        if packed.count != len(slots):
+            raise ValueError("native OptiX AABB sparse refit boxes must match slot count")
+        expected_ids = tuple(
+            int(self._packed_boxes.records[slot].id) for slot in slots
+        )
+        update_ids = tuple(int(packed.records[index].id) for index in range(packed.count))
+        if update_ids != expected_ids:
+            raise ValueError("native OptiX AABB sparse refit requires stable ids for updated slots")
+
+        slot_array = (ctypes.c_uint32 * len(slots))(*slots)
+        lib = _load_optix_library()
+        symbol_name = "rtdl_optix_refit_prepared_aabb_index_2d_slots"
+        refit_symbol = _find_optional_backend_symbol(lib, symbol_name)
+        if refit_symbol is None:
+            raise RuntimeError(
+                f"Loaded OptiX backend library does not export {symbol_name}. "
+                "Rebuild it from current main."
+            )
+        error = ctypes.create_string_buffer(4096)
+        status = refit_symbol(
+            self._handle,
+            slot_array,
+            packed.records,
+            packed.count,
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        for index, slot in enumerate(slots):
+            self._packed_boxes.records[slot] = packed.records[index]
+        return {
+            "contract": "generic_prepared_aabb_index_2d_sparse_slot_refit_v1",
+            "native_symbol": symbol_name,
+            "box_count": self._packed_boxes.count,
+            "updated_slot_count": len(slots),
+            "updated_slots": list(slots),
+            "stable_ids": list(update_ids),
+            "execution_model": "native_sparse_slot_refit_with_rollback",
+            "native_incremental_update": True,
+            "native_incremental_insert_delete": False,
+            "app_semantics": "none",
+        }
 
     def count(
         self,
@@ -14575,8 +16500,10 @@ class PreparedOptixAabbIndex2D:
             pass
 
 
-def prepare_optix_aabb_index_2d(boxes) -> PreparedOptixAabbIndex2D:
-    return PreparedOptixAabbIndex2D(boxes)
+def prepare_optix_aabb_index_2d(
+    boxes, *, allow_update: bool = False
+) -> PreparedOptixAabbIndex2D:
+    return PreparedOptixAabbIndex2D(boxes, allow_update=allow_update)
 
 
 def collect_aabb_intersection_pair_rows_2d_optix(
@@ -14603,6 +16530,1633 @@ def collect_aabb_point_membership_pair_rows_2d_optix(
             point_queries,
             row_capacity=row_capacity,
         )
+
+
+class PreparedOptixAabbIndex3D:
+    """Prepared generic 3-D AABB index using OptiX RT traversal."""
+
+    def __init__(self, boxes):
+        packed = pack_aabbs_3d(boxes)
+        if packed.count == 0:
+            raise ValueError("prepare_optix_aabb_index_3d requires at least one indexed box")
+        self._packed_boxes = packed
+        self._handle = ctypes.c_void_p()
+        self._closed = False
+
+        lib = _load_optix_library()
+        prepare_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_prepare_aabb_index_3d")
+        if prepare_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export rtdl_optix_prepare_aabb_index_3d. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+        error = ctypes.create_string_buffer(4096)
+        status = prepare_symbol(
+            packed.records,
+            packed.count,
+            ctypes.byref(self._handle),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+
+    def collect_point_contains_rows(self, point_queries, *, row_capacity: int) -> dict[str, object]:
+        if self._closed:
+            raise RuntimeError("prepared OptiX 3-D AABB index handle is closed")
+        if row_capacity < 0:
+            raise ValueError("row_capacity must be non-negative")
+        packed_points = _pack_aabb_index_point_queries_3d(point_queries)
+        row_array = (
+            (_RtdlAabbPairRow * int(row_capacity))()
+            if int(row_capacity) != 0
+            else None
+        )
+        emitted_count = ctypes.c_size_t()
+        overflowed = ctypes.c_uint32()
+        lib = _load_optix_library()
+        collect_symbol = _find_optional_backend_symbol(
+            lib,
+            "rtdl_optix_collect_prepared_aabb_index_3d_point_contains_rows",
+        )
+        if collect_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                "rtdl_optix_collect_prepared_aabb_index_3d_point_contains_rows. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+        error = ctypes.create_string_buffer(4096)
+        status = collect_symbol(
+            self._handle,
+            packed_points.records,
+            packed_points.count,
+            row_array,
+            int(row_capacity),
+            ctypes.byref(emitted_count),
+            ctypes.byref(overflowed),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        emitted = int(emitted_count.value)
+        if int(overflowed.value) != 0:
+            raise RuntimeError(
+                "OptiX AABB_INDEX_QUERY_3D point_contains_rows overflowed "
+                f"capacity {int(row_capacity)}; emitted at least {emitted}; "
+                "failure_mode=fail_closed_overflow"
+            )
+        if emitted > int(row_capacity):
+            raise RuntimeError(
+                "OptiX AABB_INDEX_QUERY_3D point_contains_rows reported "
+                f"emitted_count {emitted} beyond capacity {int(row_capacity)}; "
+                "failure_mode=fail_closed_overflow"
+            )
+        rows = tuple(
+            (int(row_array[index].query_id), int(row_array[index].indexed_id))
+            for index in range(emitted)
+        )
+        return {
+            "primitive": "AABB_INDEX_QUERY_3D",
+            "contract": "generic_aabb_point_membership_pair_rows_3d",
+            "backend": "optix",
+            "operation": "point_contains_rows",
+            "row_schema": ("query_id", "indexed_id"),
+            "candidate_id_rows": rows,
+            "valid_count": len(rows),
+            "row_capacity": int(row_capacity),
+            "overflowed": False,
+            "complete_candidate_coverage": True,
+            "rt_core_accelerated": True,
+            "native_engine_customization": False,
+            "native_generic_symbol": (
+                "rtdl_optix_collect_prepared_aabb_index_3d_point_contains_rows"
+            ),
+            "claim_boundary": (
+                "Generic OptiX AABB_INDEX_QUERY_3D point_contains_rows output; "
+                "returns app-name-free point/indexed-box id pairs only. Exact app "
+                "semantics remain outside the engine."
+            ),
+        }
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        handle = self._handle
+        self._handle = ctypes.c_void_p()
+        self._closed = True
+        if handle.value:
+            lib = _load_optix_library()
+            destroy_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_aabb_index_3d")
+            if destroy_symbol is not None:
+                destroy_symbol(handle)
+
+    def __enter__(self) -> "PreparedOptixAabbIndex3D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+def prepare_optix_aabb_index_3d(boxes) -> PreparedOptixAabbIndex3D:
+    return PreparedOptixAabbIndex3D(boxes)
+
+
+def collect_aabb_point_membership_pair_rows_3d_optix(
+    indexed_boxes,
+    point_queries,
+    *,
+    row_capacity: int,
+) -> dict[str, object]:
+    with PreparedOptixAabbIndex3D(indexed_boxes) as prepared:
+        return prepared.collect_point_contains_rows(
+            point_queries,
+            row_capacity=row_capacity,
+        )
+
+
+def collect_cell_mbr_nearest_frontier_3d_optix(
+    *,
+    query_coords,
+    query_point_ids,
+    cell_ids,
+    point_begin_offsets,
+    point_counts,
+    cell_mbr_min,
+    cell_mbr_max,
+    radius: float,
+    current_best_distances,
+    current_best_item_ids,
+    max_inline_points: int,
+    row_capacity: int,
+    emit_pruned_rows: bool = True,
+    sort_rows: bool = True,
+    inline_nearest: bool = False,
+    collect_inline_stats: bool = False,
+    global_bound_early_break: bool = False,
+    frontier_status_probe_mode: str | int = "default",
+    target_coords=None,
+    target_point_ids=None,
+    point_row_indices=None,
+    collect_native_phase_timings: bool = False,
+    allow_overflow_telemetry: bool = False,
+) -> dict[str, object]:
+    """Collect generic 3-D cell-MBR nearest-frontier rows with OptiX.
+
+    This is a bounded 3-D backend step for the generic cell-MBR frontier ABI.
+    It is not an application algorithm and does not encode Hausdorff/X-HD
+    semantics.
+    """
+
+    import numpy as _np
+
+    def _status_machine_candidate_telemetry(
+        *,
+        raw_kind2_rows: int,
+        raw_kind3_rows: int,
+        memory_schema: str | None,
+    ) -> dict[str, object]:
+        has_input_best = bool(_np.any(_np.isfinite(best_arr) & (best_ids_arr >= 0)))
+        if not inline_nearest:
+            current_best_source = "none_no_inline_nearest_payload"
+        elif has_input_best:
+            current_best_source = (
+                "rtdl_current_best_arrays_plus_inline_payload_not_author_cmin2_restore"
+            )
+        else:
+            current_best_source = "rtdl_inline_payload_initial_none_not_author_cmin2_restore"
+        point_loop_early_break = (
+            int(global_bound_early_break_count.value) if global_bound_early_break else None
+        )
+        missing_or_analog = [
+            "status_count_aborted",
+            "miss_queue_count",
+            "cmax2_mbr_abort_count",
+            "author cmin2/current-best restoration by in_q_idx",
+            "author loadBalanceProcessing sort/reduce feedback into later state",
+            "row-count parity against author OffloadingSize requires an author oracle",
+        ]
+        if point_loop_early_break is not None:
+            missing_or_analog.append(
+                "point_loop_early_break_count is RTDL global-bound early-break analog, "
+                "not author ShaderStatus::kAborted"
+            )
+        return {
+            "schema": (
+                "rtdl.optix.cell_mbr_nearest_frontier_3d."
+                "status_machine_candidate_telemetry.v1"
+            ),
+            "contract": "generic_cell_mbr_frontier_status_machine_candidate",
+            "source_memory_telemetry_schema": memory_schema,
+            "frontier_status_probe_mode": frontier_status_probe_mode_name,
+            "frontier_status_probe_contract": frontier_status_probe_contract,
+            "active_in_queue_size": query_count,
+            "active_in_queue_semantics": (
+                "generic active query count for this launch; not the author's "
+                "iteration-local in_q_idx namespace"
+            ),
+            "raw_offload_rows_before_sort_reduce": int(raw_kind2_rows),
+            "raw_offload_rows_author_width_bytes": int(raw_kind2_rows) * 2 * 4,
+            "status_count_init": query_count,
+            "status_count_offloading": int(raw_kind2_rows),
+            "status_count_aborted": None,
+            "miss_queue_count": None,
+            "cmax2_mbr_abort_count": None,
+            "point_loop_early_break_count": point_loop_early_break,
+            "rtdl_pruned_frontier_kind3_rows": int(raw_kind3_rows),
+            "current_best_state_source": current_best_source,
+            "row_count_parity_against_author_offloading_size": None,
+            "required_author_lb_fields_missing_or_analog": missing_or_analog,
+            "explicit_lb_support_claimed": False,
+            "row_count_parity_claimed": False,
+            "same_denominator_memory_claimed": False,
+            "semantics": (
+                "RTDL generic frontier/status-shaped telemetry for comparison "
+                "against an external oracle. It is intentionally not an "
+                "author X-HD -lb implementation claim."
+            ),
+        }
+
+    query_coords_arr = _np.ascontiguousarray(query_coords, dtype=_np.float64)
+    if query_coords_arr.ndim != 2 or query_coords_arr.shape[1] != 3:
+        raise ValueError("query_coords must be float64[query_count][3]")
+    query_count = int(query_coords_arr.shape[0])
+    query_ids_arr = _np.ascontiguousarray(query_point_ids, dtype=_np.int64)
+    best_arr = _np.ascontiguousarray(current_best_distances, dtype=_np.float64)
+    best_ids_arr = _np.ascontiguousarray(current_best_item_ids, dtype=_np.int64)
+    if query_ids_arr.shape != (query_count,):
+        raise ValueError("query_point_ids must have shape [query_count]")
+    if best_arr.shape != (query_count,):
+        raise ValueError("current_best_distances must have shape [query_count]")
+    if best_ids_arr.shape != (query_count,):
+        raise ValueError("current_best_item_ids must have shape [query_count]")
+
+    cell_ids_arr = _np.ascontiguousarray(cell_ids, dtype=_np.int64)
+    cell_count = int(cell_ids_arr.size)
+    begin_arr = _np.ascontiguousarray(point_begin_offsets, dtype=_np.uint64)
+    count_arr = _np.ascontiguousarray(point_counts, dtype=_np.uint64)
+    mins_arr = _np.ascontiguousarray(cell_mbr_min, dtype=_np.float64)
+    maxs_arr = _np.ascontiguousarray(cell_mbr_max, dtype=_np.float64)
+    if begin_arr.shape != (cell_count,) or count_arr.shape != (cell_count,):
+        raise ValueError("point_begin_offsets and point_counts must have shape [cell_count]")
+    if mins_arr.shape != (cell_count, 3) or maxs_arr.shape != (cell_count, 3):
+        raise ValueError("cell_mbr_min and cell_mbr_max must be float64[cell_count][3]")
+    resolved_capacity = int(row_capacity)
+    if resolved_capacity < 0:
+        raise ValueError("row_capacity must be non-negative")
+    inline_nearest = bool(inline_nearest)
+    collect_inline_stats = bool(collect_inline_stats)
+    global_bound_early_break = bool(global_bound_early_break)
+    probe_mode_map = {
+        "default": 0,
+        "heavy-before-inline-prune": 1,
+        "offload-before-inline-prune": 1,
+        "active-initial-best-prune": 2,
+        "initial-best-status-prune": 2,
+    }
+    if isinstance(frontier_status_probe_mode, str):
+        try:
+            frontier_status_probe_mode_code = probe_mode_map[frontier_status_probe_mode]
+        except KeyError as exc:
+            raise ValueError(
+                "frontier_status_probe_mode must be 'default', "
+                "'heavy-before-inline-prune', or 'active-initial-best-prune'"
+            ) from exc
+        frontier_status_probe_mode_name = frontier_status_probe_mode
+    else:
+        frontier_status_probe_mode_code = int(frontier_status_probe_mode)
+        if frontier_status_probe_mode_code == 0:
+            frontier_status_probe_mode_name = "default"
+        elif frontier_status_probe_mode_code == 1:
+            frontier_status_probe_mode_name = "heavy-before-inline-prune"
+        elif frontier_status_probe_mode_code == 2:
+            frontier_status_probe_mode_name = "active-initial-best-prune"
+        else:
+            raise ValueError("frontier_status_probe_mode code must be 0, 1, or 2")
+    frontier_status_probe_contract_map = {
+        1: "generic_heavy_cell_status_classification_before_inline_prune_probe",
+        2: "generic_active_query_initial_best_status_probe",
+    }
+    frontier_status_probe_contract = frontier_status_probe_contract_map.get(
+        int(frontier_status_probe_mode_code)
+    )
+    if collect_inline_stats and not inline_nearest:
+        raise ValueError("collect_inline_stats requires inline_nearest=True")
+    if global_bound_early_break and not inline_nearest:
+        raise ValueError("global_bound_early_break requires inline_nearest=True")
+    if frontier_status_probe_mode_code != 0 and not inline_nearest:
+        raise ValueError("frontier_status_probe_mode requires inline_nearest=True")
+    target_coords_arr = None
+    target_ids_arr = None
+    point_row_indices_arr = None
+    nearest_distances_out = None
+    nearest_item_ids_out = None
+    if inline_nearest:
+        if target_coords is None or target_point_ids is None or point_row_indices is None:
+            raise ValueError(
+                "target_coords, target_point_ids, and point_row_indices are required when inline_nearest=True"
+            )
+        target_coords_arr = _np.ascontiguousarray(target_coords, dtype=_np.float64)
+        if target_coords_arr.ndim != 2 or target_coords_arr.shape[1] != 3:
+            raise ValueError("target_coords must be float64[target_count][3] when inline_nearest=True")
+        target_count = int(target_coords_arr.shape[0])
+        target_ids_arr = _np.ascontiguousarray(target_point_ids, dtype=_np.int64)
+        if target_ids_arr.shape != (target_count,):
+            raise ValueError("target_point_ids must have shape [target_count] when inline_nearest=True")
+        point_row_indices_arr = _np.ascontiguousarray(point_row_indices, dtype=_np.uint64)
+        if point_row_indices_arr.ndim != 1:
+            raise ValueError("point_row_indices must be uint64[point_row_index_count] when inline_nearest=True")
+        nearest_distances_out = _np.empty(query_count, dtype=_np.float64)
+        nearest_item_ids_out = _np.empty(query_count, dtype=_np.int64)
+    else:
+        target_count = 0
+
+    kind_out = _np.empty(resolved_capacity, dtype=_np.int64)
+    query_row_out = _np.empty(resolved_capacity, dtype=_np.int64)
+    query_point_out = _np.empty(resolved_capacity, dtype=_np.int64)
+    cell_out = _np.empty(resolved_capacity, dtype=_np.int64)
+    begin_out = _np.empty(resolved_capacity, dtype=_np.uint64)
+    count_out = _np.empty(resolved_capacity, dtype=_np.uint64)
+    min_out = _np.empty(resolved_capacity, dtype=_np.float64)
+    max_out = _np.empty(resolved_capacity, dtype=_np.float64)
+
+    lib = _load_optix_library()
+    if frontier_status_probe_mode_code != 0:
+        symbol_name = "rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v6"
+        collect_symbol = _find_optional_backend_symbol(lib, symbol_name)
+        if collect_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                "rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v6, which is "
+                "required when frontier_status_probe_mode is non-default. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+    elif inline_nearest and global_bound_early_break:
+        symbol_name = "rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v5"
+        collect_symbol = _find_optional_backend_symbol(lib, symbol_name)
+        if collect_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                "rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v5, which is "
+                "required when global_bound_early_break=True. Rebuild it with 'make build-optix' "
+                "from current main."
+            )
+    elif inline_nearest and collect_inline_stats:
+        symbol_name = "rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v4"
+        collect_symbol = _find_optional_backend_symbol(lib, symbol_name)
+        if collect_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                "rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v4, which is "
+                "required when collect_inline_stats=True. Rebuild it with 'make build-optix' "
+                "from current main."
+            )
+    elif inline_nearest:
+        symbol_name = "rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v3"
+        collect_symbol = _find_optional_backend_symbol(lib, symbol_name)
+        if collect_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                "rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v3, which is "
+                "required when inline_nearest=True. Rebuild it with 'make build-optix' "
+                "from current main."
+            )
+    else:
+        symbol_name = "rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v2"
+        collect_symbol = _find_optional_backend_symbol(
+            lib,
+            symbol_name,
+        )
+    uses_v2 = (not inline_nearest) and collect_symbol is not None
+    if collect_symbol is None:
+        if not bool(sort_rows):
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                "rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v2, which is "
+                "required when sort_rows=False. Rebuild it with 'make build-optix' "
+                "from current main."
+            )
+        symbol_name = "rtdl_optix_collect_cell_mbr_nearest_frontier_3d"
+        collect_symbol = _find_optional_backend_symbol(
+            lib,
+            symbol_name,
+        )
+    if collect_symbol is None:
+        raise RuntimeError(
+            "Loaded OptiX backend library does not export "
+            "rtdl_optix_collect_cell_mbr_nearest_frontier_3d. "
+            "Rebuild it with 'make build-optix' from current main."
+        )
+    emitted_count = ctypes.c_uint64()
+    attempted_count = ctypes.c_uint64()
+    inline_cell_hit_count = ctypes.c_uint64()
+    inline_point_eval_count = ctypes.c_uint64()
+    global_bound_early_break_count = ctypes.c_uint64()
+    global_bound_distance = ctypes.c_double()
+    overflowed = ctypes.c_uint32()
+    error = ctypes.create_string_buffer(4096)
+    if frontier_status_probe_mode_code != 0:
+        status = collect_symbol(
+            query_coords_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            query_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+            ctypes.c_size_t(query_count),
+            cell_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+            begin_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_uint64)),
+            count_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_uint64)),
+            mins_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            maxs_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            ctypes.c_size_t(cell_count),
+            ctypes.c_double(float(radius)),
+            best_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            best_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+            target_coords_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            target_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+            ctypes.c_size_t(target_count),
+            point_row_indices_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_uint64)),
+            ctypes.c_size_t(int(point_row_indices_arr.size)),
+            ctypes.c_uint64(int(max_inline_points)),
+            ctypes.c_uint32(1 if emit_pruned_rows else 0),
+            ctypes.c_uint32(1 if sort_rows else 0),
+            ctypes.c_uint32(1),
+            ctypes.c_uint64(resolved_capacity),
+            kind_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)) if resolved_capacity else None,
+            query_row_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)) if resolved_capacity else None,
+            query_point_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)) if resolved_capacity else None,
+            cell_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)) if resolved_capacity else None,
+            begin_out.ctypes.data_as(ctypes.POINTER(ctypes.c_uint64)) if resolved_capacity else None,
+            count_out.ctypes.data_as(ctypes.POINTER(ctypes.c_uint64)) if resolved_capacity else None,
+            min_out.ctypes.data_as(ctypes.POINTER(ctypes.c_double)) if resolved_capacity else None,
+            max_out.ctypes.data_as(ctypes.POINTER(ctypes.c_double)) if resolved_capacity else None,
+            nearest_distances_out.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            nearest_item_ids_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+            ctypes.byref(inline_cell_hit_count) if collect_inline_stats else None,
+            ctypes.byref(inline_point_eval_count) if collect_inline_stats else None,
+            ctypes.c_uint32(1 if global_bound_early_break else 0),
+            ctypes.c_uint32(frontier_status_probe_mode_code),
+            ctypes.byref(global_bound_early_break_count) if global_bound_early_break else None,
+            ctypes.byref(global_bound_distance) if global_bound_early_break else None,
+            ctypes.byref(emitted_count),
+            ctypes.byref(attempted_count),
+            ctypes.byref(overflowed),
+            error,
+            len(error),
+        )
+    elif inline_nearest and global_bound_early_break:
+        status = collect_symbol(
+            query_coords_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            query_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+            ctypes.c_size_t(query_count),
+            cell_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+            begin_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_uint64)),
+            count_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_uint64)),
+            mins_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            maxs_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            ctypes.c_size_t(cell_count),
+            ctypes.c_double(float(radius)),
+            best_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            best_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+            target_coords_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            target_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+            ctypes.c_size_t(target_count),
+            point_row_indices_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_uint64)),
+            ctypes.c_size_t(int(point_row_indices_arr.size)),
+            ctypes.c_uint64(int(max_inline_points)),
+            ctypes.c_uint32(1 if emit_pruned_rows else 0),
+            ctypes.c_uint32(1 if sort_rows else 0),
+            ctypes.c_uint32(1),
+            ctypes.c_uint64(resolved_capacity),
+            kind_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)) if resolved_capacity else None,
+            query_row_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)) if resolved_capacity else None,
+            query_point_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)) if resolved_capacity else None,
+            cell_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)) if resolved_capacity else None,
+            begin_out.ctypes.data_as(ctypes.POINTER(ctypes.c_uint64)) if resolved_capacity else None,
+            count_out.ctypes.data_as(ctypes.POINTER(ctypes.c_uint64)) if resolved_capacity else None,
+            min_out.ctypes.data_as(ctypes.POINTER(ctypes.c_double)) if resolved_capacity else None,
+            max_out.ctypes.data_as(ctypes.POINTER(ctypes.c_double)) if resolved_capacity else None,
+            nearest_distances_out.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            nearest_item_ids_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+            ctypes.byref(inline_cell_hit_count) if collect_inline_stats else None,
+            ctypes.byref(inline_point_eval_count) if collect_inline_stats else None,
+            ctypes.c_uint32(1),
+            ctypes.byref(global_bound_early_break_count),
+            ctypes.byref(global_bound_distance),
+            ctypes.byref(emitted_count),
+            ctypes.byref(attempted_count),
+            ctypes.byref(overflowed),
+            error,
+            len(error),
+        )
+    elif inline_nearest and collect_inline_stats:
+        status = collect_symbol(
+            query_coords_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            query_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+            ctypes.c_size_t(query_count),
+            cell_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+            begin_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_uint64)),
+            count_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_uint64)),
+            mins_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            maxs_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            ctypes.c_size_t(cell_count),
+            ctypes.c_double(float(radius)),
+            best_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            best_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+            target_coords_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            target_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+            ctypes.c_size_t(target_count),
+            point_row_indices_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_uint64)),
+            ctypes.c_size_t(int(point_row_indices_arr.size)),
+            ctypes.c_uint64(int(max_inline_points)),
+            ctypes.c_uint32(1 if emit_pruned_rows else 0),
+            ctypes.c_uint32(1 if sort_rows else 0),
+            ctypes.c_uint32(1),
+            ctypes.c_uint64(resolved_capacity),
+            kind_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)) if resolved_capacity else None,
+            query_row_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)) if resolved_capacity else None,
+            query_point_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)) if resolved_capacity else None,
+            cell_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)) if resolved_capacity else None,
+            begin_out.ctypes.data_as(ctypes.POINTER(ctypes.c_uint64)) if resolved_capacity else None,
+            count_out.ctypes.data_as(ctypes.POINTER(ctypes.c_uint64)) if resolved_capacity else None,
+            min_out.ctypes.data_as(ctypes.POINTER(ctypes.c_double)) if resolved_capacity else None,
+            max_out.ctypes.data_as(ctypes.POINTER(ctypes.c_double)) if resolved_capacity else None,
+            nearest_distances_out.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            nearest_item_ids_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+            ctypes.byref(inline_cell_hit_count),
+            ctypes.byref(inline_point_eval_count),
+            ctypes.byref(emitted_count),
+            ctypes.byref(attempted_count),
+            ctypes.byref(overflowed),
+            error,
+            len(error),
+        )
+    elif inline_nearest:
+        status = collect_symbol(
+            query_coords_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            query_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+            ctypes.c_size_t(query_count),
+            cell_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+            begin_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_uint64)),
+            count_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_uint64)),
+            mins_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            maxs_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            ctypes.c_size_t(cell_count),
+            ctypes.c_double(float(radius)),
+            best_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            best_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+            target_coords_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            target_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+            ctypes.c_size_t(target_count),
+            point_row_indices_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_uint64)),
+            ctypes.c_size_t(int(point_row_indices_arr.size)),
+            ctypes.c_uint64(int(max_inline_points)),
+            ctypes.c_uint32(1 if emit_pruned_rows else 0),
+            ctypes.c_uint32(1 if sort_rows else 0),
+            ctypes.c_uint32(1),
+            ctypes.c_uint64(resolved_capacity),
+            kind_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)) if resolved_capacity else None,
+            query_row_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)) if resolved_capacity else None,
+            query_point_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)) if resolved_capacity else None,
+            cell_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)) if resolved_capacity else None,
+            begin_out.ctypes.data_as(ctypes.POINTER(ctypes.c_uint64)) if resolved_capacity else None,
+            count_out.ctypes.data_as(ctypes.POINTER(ctypes.c_uint64)) if resolved_capacity else None,
+            min_out.ctypes.data_as(ctypes.POINTER(ctypes.c_double)) if resolved_capacity else None,
+            max_out.ctypes.data_as(ctypes.POINTER(ctypes.c_double)) if resolved_capacity else None,
+            nearest_distances_out.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            nearest_item_ids_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+            ctypes.byref(emitted_count),
+            ctypes.byref(attempted_count),
+            ctypes.byref(overflowed),
+            error,
+            len(error),
+        )
+    elif uses_v2:
+        status = collect_symbol(
+            query_coords_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            query_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+            ctypes.c_size_t(query_count),
+            cell_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+            begin_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_uint64)),
+            count_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_uint64)),
+            mins_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            maxs_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            ctypes.c_size_t(cell_count),
+            ctypes.c_double(float(radius)),
+            best_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            best_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+            ctypes.c_uint64(int(max_inline_points)),
+            ctypes.c_uint32(1 if emit_pruned_rows else 0),
+            ctypes.c_uint32(1 if sort_rows else 0),
+            ctypes.c_uint64(resolved_capacity),
+            kind_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)) if resolved_capacity else None,
+            query_row_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)) if resolved_capacity else None,
+            query_point_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)) if resolved_capacity else None,
+            cell_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)) if resolved_capacity else None,
+            begin_out.ctypes.data_as(ctypes.POINTER(ctypes.c_uint64)) if resolved_capacity else None,
+            count_out.ctypes.data_as(ctypes.POINTER(ctypes.c_uint64)) if resolved_capacity else None,
+            min_out.ctypes.data_as(ctypes.POINTER(ctypes.c_double)) if resolved_capacity else None,
+            max_out.ctypes.data_as(ctypes.POINTER(ctypes.c_double)) if resolved_capacity else None,
+            ctypes.byref(emitted_count),
+            ctypes.byref(attempted_count),
+            ctypes.byref(overflowed),
+            error,
+            len(error),
+        )
+    else:
+        status = collect_symbol(
+            query_coords_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            query_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+            ctypes.c_size_t(query_count),
+            cell_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+            begin_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_uint64)),
+            count_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_uint64)),
+            mins_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            maxs_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            ctypes.c_size_t(cell_count),
+            ctypes.c_double(float(radius)),
+            best_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            best_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+            ctypes.c_uint64(int(max_inline_points)),
+            ctypes.c_uint32(1 if emit_pruned_rows else 0),
+            ctypes.c_uint64(resolved_capacity),
+            kind_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)) if resolved_capacity else None,
+            query_row_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)) if resolved_capacity else None,
+            query_point_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)) if resolved_capacity else None,
+            cell_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)) if resolved_capacity else None,
+            begin_out.ctypes.data_as(ctypes.POINTER(ctypes.c_uint64)) if resolved_capacity else None,
+            count_out.ctypes.data_as(ctypes.POINTER(ctypes.c_uint64)) if resolved_capacity else None,
+            min_out.ctypes.data_as(ctypes.POINTER(ctypes.c_double)) if resolved_capacity else None,
+            max_out.ctypes.data_as(ctypes.POINTER(ctypes.c_double)) if resolved_capacity else None,
+            ctypes.byref(emitted_count),
+            ctypes.byref(attempted_count),
+            ctypes.byref(overflowed),
+            error,
+            len(error),
+        )
+    _check_status(status, error)
+    native_phase_timings = None
+    if bool(collect_native_phase_timings):
+        timings_symbol = _find_optional_backend_symbol(
+            lib,
+            "rtdl_optix_cell_mbr_nearest_frontier_3d_get_last_phase_timings",
+        )
+        if timings_symbol is None:
+            raise RuntimeError(
+                "Loaded OptiX backend library does not export "
+                "rtdl_optix_cell_mbr_nearest_frontier_3d_get_last_phase_timings. "
+                "Rebuild it with 'make build-optix' from current main."
+            )
+        total = ctypes.c_double()
+        query_pack = ctypes.c_double()
+        cell_pack = ctypes.c_double()
+        accel_build = ctypes.c_double()
+        device_upload = ctypes.c_double()
+        optix_launch = ctypes.c_double()
+        nearest_download = ctypes.c_double()
+        stats_download = ctypes.c_double()
+        count_download = ctypes.c_double()
+        row_download = ctypes.c_double()
+        host_sort_pack = ctypes.c_double()
+        timing_attempted_count = ctypes.c_uint64()
+        timing_emitted_count = ctypes.c_uint64()
+        timing_mode = ctypes.c_uint32()
+        timing_status = timings_symbol(
+            ctypes.byref(total),
+            ctypes.byref(query_pack),
+            ctypes.byref(cell_pack),
+            ctypes.byref(accel_build),
+            ctypes.byref(device_upload),
+            ctypes.byref(optix_launch),
+            ctypes.byref(nearest_download),
+            ctypes.byref(stats_download),
+            ctypes.byref(count_download),
+            ctypes.byref(row_download),
+            ctypes.byref(host_sort_pack),
+            ctypes.byref(timing_attempted_count),
+            ctypes.byref(timing_emitted_count),
+            ctypes.byref(timing_mode),
+        )
+        _check_status(timing_status, error)
+        native_phase_timings = {
+            "total_native_sec": float(total.value),
+            "query_pack_sec": float(query_pack.value),
+            "cell_pack_aabb_sec": float(cell_pack.value),
+            "accel_build_sec": float(accel_build.value),
+            "device_alloc_upload_sec": float(device_upload.value),
+            "optix_launch_sec": float(optix_launch.value),
+            "nearest_download_sec": float(nearest_download.value),
+            "stats_download_sec": float(stats_download.value),
+            "count_download_sec": float(count_download.value),
+            "row_download_sec": float(row_download.value),
+            "host_sort_pack_sec": float(host_sort_pack.value),
+            "attempted_count": int(timing_attempted_count.value),
+            "emitted_count": int(timing_emitted_count.value),
+            "mode_bits": int(timing_mode.value),
+            "mode": {
+                "inline_nearest": bool(int(timing_mode.value) & 1),
+                "emit_pruned_rows": bool(int(timing_mode.value) & 2),
+                "sort_rows": bool(int(timing_mode.value) & 4),
+                "inline_stats": bool(int(timing_mode.value) & 8),
+            },
+        }
+    native_memory_telemetry = None
+    status_machine_telemetry = None
+    memory_symbol_v3 = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_cell_mbr_nearest_frontier_3d_get_last_memory_telemetry_v3",
+    )
+    memory_symbol_v2 = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_cell_mbr_nearest_frontier_3d_get_last_memory_telemetry_v2",
+    )
+    memory_symbol = memory_symbol_v3 or memory_symbol_v2 or _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_cell_mbr_nearest_frontier_3d_get_last_memory_telemetry",
+    )
+    if memory_symbol is not None:
+        accel_output_bytes = ctypes.c_uint64()
+        accel_temp_bytes = ctypes.c_uint64()
+        accel_aabb_bytes = ctypes.c_uint64()
+        accel_compacted_output_bytes = ctypes.c_uint64()
+        device_buffer_bytes = ctypes.c_uint64()
+        row_buffer_bytes = ctypes.c_uint64()
+        query_buffer_bytes = ctypes.c_uint64()
+        cell_buffer_bytes = ctypes.c_uint64()
+        target_buffer_bytes = ctypes.c_uint64()
+        nearest_buffer_bytes = ctypes.c_uint64()
+        memory_attempted_count = ctypes.c_uint64()
+        memory_emitted_count = ctypes.c_uint64()
+        memory_mode = ctypes.c_uint32()
+        in_queue_capacity = ctypes.c_uint64()
+        miss_queue_capacity = ctypes.c_uint64()
+        heavy_offload_row_capacity = ctypes.c_uint64()
+        heavy_offload_current_rows = ctypes.c_uint64()
+        heavy_offload_peak_rows = ctypes.c_uint64()
+        heavy_offload_queue_current_bytes = ctypes.c_uint64()
+        heavy_offload_queue_peak_bytes = ctypes.c_uint64()
+        raw_frontier_kind1_rows = ctypes.c_uint64()
+        raw_frontier_kind2_rows = ctypes.c_uint64()
+        raw_frontier_kind3_rows = ctypes.c_uint64()
+        if memory_symbol_v3 is not None:
+            memory_status = memory_symbol(
+                ctypes.byref(accel_output_bytes),
+                ctypes.byref(accel_temp_bytes),
+                ctypes.byref(accel_aabb_bytes),
+                ctypes.byref(accel_compacted_output_bytes),
+                ctypes.byref(device_buffer_bytes),
+                ctypes.byref(row_buffer_bytes),
+                ctypes.byref(query_buffer_bytes),
+                ctypes.byref(cell_buffer_bytes),
+                ctypes.byref(target_buffer_bytes),
+                ctypes.byref(nearest_buffer_bytes),
+                ctypes.byref(memory_attempted_count),
+                ctypes.byref(memory_emitted_count),
+                ctypes.byref(memory_mode),
+                ctypes.byref(in_queue_capacity),
+                ctypes.byref(miss_queue_capacity),
+                ctypes.byref(heavy_offload_row_capacity),
+                ctypes.byref(heavy_offload_current_rows),
+                ctypes.byref(heavy_offload_peak_rows),
+                ctypes.byref(heavy_offload_queue_current_bytes),
+                ctypes.byref(heavy_offload_queue_peak_bytes),
+                ctypes.byref(raw_frontier_kind1_rows),
+                ctypes.byref(raw_frontier_kind2_rows),
+                ctypes.byref(raw_frontier_kind3_rows),
+            )
+        elif memory_symbol_v2 is not None:
+            memory_status = memory_symbol(
+                ctypes.byref(accel_output_bytes),
+                ctypes.byref(accel_temp_bytes),
+                ctypes.byref(accel_aabb_bytes),
+                ctypes.byref(accel_compacted_output_bytes),
+                ctypes.byref(device_buffer_bytes),
+                ctypes.byref(row_buffer_bytes),
+                ctypes.byref(query_buffer_bytes),
+                ctypes.byref(cell_buffer_bytes),
+                ctypes.byref(target_buffer_bytes),
+                ctypes.byref(nearest_buffer_bytes),
+                ctypes.byref(memory_attempted_count),
+                ctypes.byref(memory_emitted_count),
+                ctypes.byref(memory_mode),
+                ctypes.byref(in_queue_capacity),
+                ctypes.byref(miss_queue_capacity),
+                ctypes.byref(heavy_offload_row_capacity),
+                ctypes.byref(heavy_offload_current_rows),
+                ctypes.byref(heavy_offload_peak_rows),
+                ctypes.byref(heavy_offload_queue_current_bytes),
+                ctypes.byref(heavy_offload_queue_peak_bytes),
+            )
+        else:
+            memory_status = memory_symbol(
+                ctypes.byref(accel_output_bytes),
+                ctypes.byref(accel_temp_bytes),
+                ctypes.byref(accel_aabb_bytes),
+                ctypes.byref(accel_compacted_output_bytes),
+                ctypes.byref(device_buffer_bytes),
+                ctypes.byref(row_buffer_bytes),
+                ctypes.byref(query_buffer_bytes),
+                ctypes.byref(cell_buffer_bytes),
+                ctypes.byref(target_buffer_bytes),
+                ctypes.byref(nearest_buffer_bytes),
+                ctypes.byref(memory_attempted_count),
+                ctypes.byref(memory_emitted_count),
+                ctypes.byref(memory_mode),
+            )
+        _check_status(memory_status, error)
+        native_memory_telemetry = {
+            "schema": (
+                "rtdl.optix.cell_mbr_nearest_frontier_3d.memory_telemetry.v3"
+                if memory_symbol_v3 is not None
+                else "rtdl.optix.cell_mbr_nearest_frontier_3d.memory_telemetry.v2"
+                if memory_symbol_v2 is not None
+                else "rtdl.optix.cell_mbr_nearest_frontier_3d.memory_telemetry.v1"
+            ),
+            "accel_output_bytes": int(accel_output_bytes.value),
+            "accel_temp_build_bytes": int(accel_temp_bytes.value),
+            "accel_aabb_input_bytes": int(accel_aabb_bytes.value),
+            "accel_compacted_output_bytes": int(accel_compacted_output_bytes.value),
+            "device_buffer_bytes_excluding_accel": int(device_buffer_bytes.value),
+            "row_buffer_bytes": int(row_buffer_bytes.value),
+            "query_buffer_bytes": int(query_buffer_bytes.value),
+            "cell_buffer_bytes": int(cell_buffer_bytes.value),
+            "target_buffer_bytes": int(target_buffer_bytes.value),
+            "nearest_buffer_bytes": int(nearest_buffer_bytes.value),
+            "attempted_count": int(memory_attempted_count.value),
+            "emitted_count": int(memory_emitted_count.value),
+            "mode_bits": int(memory_mode.value),
+            "semantics": (
+                "Native OptiX/CUDA allocation telemetry for the generic "
+                "cell-MBR nearest-frontier producer. accel_output_bytes is the "
+                "OptiX GAS output buffer size; accel_temp_build_bytes is a "
+                "transient build workspace; row/device buffers are route "
+                "workspace, not author Figure 11 parity."
+            ),
+        }
+        if memory_symbol_v2 is not None or memory_symbol_v3 is not None:
+            native_memory_telemetry.update(
+                {
+                    "in_queue_capacity": int(in_queue_capacity.value),
+                    "miss_queue_capacity": int(miss_queue_capacity.value),
+                    "heavy_offload_row_capacity": int(heavy_offload_row_capacity.value),
+                    "heavy_offload_current_rows": int(heavy_offload_current_rows.value),
+                    "heavy_offload_peak_rows": int(heavy_offload_peak_rows.value),
+                    "heavy_offload_queue_current_bytes": int(heavy_offload_queue_current_bytes.value),
+                    "heavy_offload_queue_peak_bytes": int(heavy_offload_queue_peak_bytes.value),
+                    "heavy_offload_semantics": (
+                        "Generic cell-MBR offload frontier row telemetry. "
+                        "heavy_offload_* counts rows whose frontier kind is offload; "
+                        "this is a same-shape RTDL worklist candidate, not an "
+                        "author Figure 11 parity claim."
+                    ),
+                }
+            )
+        if memory_symbol_v3 is not None:
+            raw_kind_counts = {
+                "1": int(raw_frontier_kind1_rows.value),
+                "2": int(raw_frontier_kind2_rows.value),
+                "3": int(raw_frontier_kind3_rows.value),
+            }
+            native_memory_telemetry.update(
+                {
+                    "raw_frontier_kind_counts": raw_kind_counts,
+                    "raw_frontier_kind1_rows": int(raw_frontier_kind1_rows.value),
+                    "raw_frontier_kind2_rows": int(raw_frontier_kind2_rows.value),
+                    "raw_frontier_kind3_rows": int(raw_frontier_kind3_rows.value),
+                    "raw_frontier_kind_counts_semantics": (
+                        "Counts attempted generic frontier rows by kind before "
+                        "host row download and host sort/unique. These counters "
+                        "remain available for overflow/count-only diagnostics and "
+                        "do not assert app- or author-specific denominator parity."
+                    ),
+                }
+            )
+        raw_kind2_for_status = int(native_memory_telemetry.get("raw_frontier_kind2_rows", 0) or 0)
+        raw_kind3_for_status = int(native_memory_telemetry.get("raw_frontier_kind3_rows", 0) or 0)
+        status_machine_telemetry = _status_machine_candidate_telemetry(
+            raw_kind2_rows=raw_kind2_for_status,
+            raw_kind3_rows=raw_kind3_for_status,
+            memory_schema=str(native_memory_telemetry.get("schema")),
+        )
+        native_memory_telemetry["status_machine_candidate_telemetry"] = status_machine_telemetry
+    nearest_columns = None
+    if int(overflowed.value) != 0:
+        if allow_overflow_telemetry:
+            empty_columns = {
+                "frontier_kind_codes": _np.asarray([], dtype=_np.int64),
+                "query_row_ids": _np.asarray([], dtype=_np.int64),
+                "query_point_ids": _np.asarray([], dtype=_np.int64),
+                "cell_ids": _np.asarray([], dtype=_np.int64),
+                "point_begin_offsets": _np.asarray([], dtype=_np.uint64),
+                "point_counts": _np.asarray([], dtype=_np.uint64),
+                "min_distances": _np.asarray([], dtype=_np.float64),
+                "max_distances": _np.asarray([], dtype=_np.float64),
+            }
+            return {
+                "primitive": "CELL_MBR_NEAREST_FRONTIER_3D",
+                "contract": "generic_cell_mbr_nearest_frontier_native_3d_optix",
+                "backend": "optix",
+                "row_schema": (
+                    "frontier_kind_codes",
+                    "query_row_ids",
+                    "query_point_ids",
+                    "cell_ids",
+                    "point_begin_offsets",
+                    "point_counts",
+                    "min_distances",
+                    "max_distances",
+                ),
+                "columns": empty_columns,
+                "valid_count": 0,
+                "attempted_count": int(attempted_count.value),
+                "row_capacity": resolved_capacity,
+                "emit_pruned_rows": bool(emit_pruned_rows),
+                "sort_rows": bool(sort_rows),
+                "frontier_row_order": "overflow_telemetry_only",
+                "inline_nearest": inline_nearest,
+                "inline_stats_collected": bool(inline_nearest and collect_inline_stats),
+                "inline_cell_hit_count": (
+                    int(inline_cell_hit_count.value)
+                    if inline_nearest and collect_inline_stats
+                    else None
+                ),
+                "inline_point_evaluation_count": (
+                    int(inline_point_eval_count.value)
+                    if inline_nearest and collect_inline_stats
+                    else None
+                ),
+                "global_bound_early_break": bool(global_bound_early_break),
+                "global_bound_early_break_count": (
+                    int(global_bound_early_break_count.value) if global_bound_early_break else None
+                ),
+                "global_bound_distance": (
+                    float(global_bound_distance.value) if global_bound_early_break else None
+                ),
+                "global_bound_contract": (
+                    "generic_max_nearest_global_bound_early_break"
+                    if global_bound_early_break
+                    else None
+                ),
+                "frontier_status_probe_mode": frontier_status_probe_mode_name,
+                "frontier_status_probe_mode_code": int(frontier_status_probe_mode_code),
+                "frontier_status_probe_contract": (
+                    frontier_status_probe_contract
+                ),
+                "per_source_witness_exact": None,
+                "inline_nearest_contract": (
+                    "native_inline_cell_point_nearest_with_global_bound_early_break_for_max_nearest_reductions"
+                    if global_bound_early_break
+                    else
+                    "native_exact_inline_cell_point_nearest_for_inline_frontier_rows"
+                    if inline_nearest
+                    else None
+                ),
+                "intersection_pruning": (
+                    "payload_current_best_before_report_intersection"
+                    if inline_nearest and not emit_pruned_rows
+                    else None
+                ),
+                "intersection_attribute_min_distance_sq": (
+                    "reported_by_intersection_reused_by_anyhit"
+                    if inline_nearest
+                    else None
+                ),
+                "anyhit_row_distance_computation": "lazy_row_output_only",
+                "nearest_columns": nearest_columns,
+                "overflowed": True,
+                "overflow_telemetry_only": True,
+                "overflow_failure_mode": "fail_closed_overflow_no_rows_returned",
+                "native_generic_symbol": symbol_name,
+                "native_phase_timings_collected": bool(native_phase_timings is not None),
+                "native_phase_timings": native_phase_timings,
+                "native_memory_telemetry_collected": bool(native_memory_telemetry is not None),
+                "native_memory_telemetry": native_memory_telemetry,
+                "status_machine_telemetry_collected": bool(status_machine_telemetry is not None),
+                "status_machine_telemetry": status_machine_telemetry,
+                "native_backend_complete": False,
+                "rt_core_accelerated": True,
+                "native_engine_customization": False,
+                "claim_boundary": (
+                    "Generic OptiX cell-MBR frontier overflow telemetry. No rows "
+                    "are returned, and the counters are diagnostics rather than "
+                    "an app-specific denominator-parity claim."
+                ),
+            }
+        raise RuntimeError(
+            "OptiX cell-MBR nearest frontier 3D output overflowed; "
+            f"attempted {int(attempted_count.value)}; capacity {resolved_capacity}; "
+            "failure_mode=fail_closed_overflow; partial_result_returned=False"
+        )
+    emitted = int(emitted_count.value)
+    if emitted > resolved_capacity:
+        raise RuntimeError(
+            "OptiX cell-MBR nearest frontier 3D reported emitted_count beyond capacity; "
+            "failure_mode=fail_closed_overflow"
+        )
+    columns = {
+        "frontier_kind_codes": kind_out[:emitted].copy(),
+        "query_row_ids": query_row_out[:emitted].copy(),
+        "query_point_ids": query_point_out[:emitted].copy(),
+        "cell_ids": cell_out[:emitted].copy(),
+        "point_begin_offsets": begin_out[:emitted].copy(),
+        "point_counts": count_out[:emitted].copy(),
+        "min_distances": min_out[:emitted].copy(),
+        "max_distances": max_out[:emitted].copy(),
+    }
+    if inline_nearest:
+        nearest_columns = {
+            "source_ids": query_ids_arr.copy(),
+            "nearest_distances": nearest_distances_out.copy(),
+            "nearest_item_ids": nearest_item_ids_out.copy(),
+        }
+    return {
+        "primitive": "CELL_MBR_NEAREST_FRONTIER_3D",
+        "contract": "generic_cell_mbr_nearest_frontier_native_3d_optix",
+        "backend": "optix",
+        "row_schema": (
+            "frontier_kind_codes",
+            "query_row_ids",
+            "query_point_ids",
+            "cell_ids",
+            "point_begin_offsets",
+            "point_counts",
+            "min_distances",
+            "max_distances",
+        ),
+        "columns": columns,
+        "valid_count": emitted,
+        "attempted_count": int(attempted_count.value),
+        "row_capacity": resolved_capacity,
+        "emit_pruned_rows": bool(emit_pruned_rows),
+        "sort_rows": bool(sort_rows),
+        "frontier_row_order": "sorted_unique" if sort_rows else "native_unsorted",
+        "inline_nearest": inline_nearest,
+        "inline_stats_collected": bool(inline_nearest and collect_inline_stats),
+        "inline_cell_hit_count": int(inline_cell_hit_count.value)
+        if inline_nearest and collect_inline_stats
+        else None,
+        "inline_point_evaluation_count": int(inline_point_eval_count.value)
+        if inline_nearest and collect_inline_stats
+        else None,
+        "global_bound_early_break": bool(global_bound_early_break),
+        "global_bound_early_break_count": (
+            int(global_bound_early_break_count.value) if global_bound_early_break else None
+        ),
+        "global_bound_distance": (
+            float(global_bound_distance.value) if global_bound_early_break else None
+        ),
+        "global_bound_contract": (
+            "generic_max_nearest_global_bound_early_break"
+            if global_bound_early_break
+            else None
+        ),
+        "frontier_status_probe_mode": frontier_status_probe_mode_name,
+        "frontier_status_probe_mode_code": int(frontier_status_probe_mode_code),
+        "frontier_status_probe_contract": (
+            frontier_status_probe_contract
+        ),
+        "per_source_witness_exact": (
+            False if global_bound_early_break and int(global_bound_early_break_count.value) > 0 else True
+        )
+        if inline_nearest
+        else None,
+        "inline_nearest_contract": (
+            "native_inline_cell_point_nearest_with_global_bound_early_break_for_max_nearest_reductions"
+            if global_bound_early_break
+            else
+            "native_exact_inline_cell_point_nearest_for_inline_frontier_rows"
+            if inline_nearest
+            else None
+        ),
+        "intersection_pruning": (
+            "payload_current_best_before_report_intersection"
+            if inline_nearest and not emit_pruned_rows
+            else None
+        ),
+        "intersection_attribute_min_distance_sq": (
+            "reported_by_intersection_reused_by_anyhit"
+            if inline_nearest
+            else None
+        ),
+        "anyhit_row_distance_computation": "lazy_row_output_only",
+        "nearest_columns": nearest_columns,
+        "overflowed": False,
+        "native_generic_symbol": symbol_name,
+        "native_phase_timings_collected": bool(native_phase_timings is not None),
+        "native_phase_timings": native_phase_timings,
+        "native_memory_telemetry_collected": bool(native_memory_telemetry is not None),
+        "native_memory_telemetry": native_memory_telemetry,
+        "status_machine_telemetry_collected": bool(status_machine_telemetry is not None),
+        "status_machine_telemetry": status_machine_telemetry,
+        "native_backend_complete": False,
+        "rt_core_accelerated": True,
+        "native_engine_customization": False,
+        "claim_boundary": (
+            "Generic bounded OptiX 3-D cell-MBR nearest-frontier row producer. "
+            "It emits app-name-free Goal5140-shaped rows; it is not a full "
+            "2-D/3-D native ABI backend and not a paper performance claim."
+        ),
+    }
+
+
+def collect_active_query_status_stream_3d_optix(
+    *,
+    query_coords,
+    query_point_ids,
+    cell_ids,
+    point_begin_offsets,
+    point_counts,
+    cell_mbr_min,
+    cell_mbr_max,
+    radius: float,
+    current_best_distances,
+    current_best_item_ids,
+    max_inline_points: int,
+    row_capacity: int,
+    emit_pruned_rows: bool = True,
+    inline_nearest: bool = False,
+    frontier_status_probe_mode: str | int = "default",
+    target_coords=None,
+    target_point_ids=None,
+    point_row_indices=None,
+) -> dict[str, object]:
+    """Collect generic native active-query status-stream rows with OptiX.
+
+    This is an app-neutral native status-stream front door.  It is not an
+    application option implementation and does not claim parity with any
+    external oracle by itself.
+    """
+
+    import numpy as _np
+
+    query_coords_arr = _np.ascontiguousarray(query_coords, dtype=_np.float64)
+    if query_coords_arr.ndim != 2 or query_coords_arr.shape[1] != 3:
+        raise ValueError("query_coords must be float64[query_count][3]")
+    query_count = int(query_coords_arr.shape[0])
+    query_ids_arr = _np.ascontiguousarray(query_point_ids, dtype=_np.int64)
+    best_arr = _np.ascontiguousarray(current_best_distances, dtype=_np.float64)
+    best_ids_arr = _np.ascontiguousarray(current_best_item_ids, dtype=_np.int64)
+    if query_ids_arr.shape != (query_count,):
+        raise ValueError("query_point_ids must have shape [query_count]")
+    if best_arr.shape != (query_count,):
+        raise ValueError("current_best_distances must have shape [query_count]")
+    if best_ids_arr.shape != (query_count,):
+        raise ValueError("current_best_item_ids must have shape [query_count]")
+
+    cell_ids_arr = _np.ascontiguousarray(cell_ids, dtype=_np.int64)
+    cell_count = int(cell_ids_arr.size)
+    begin_arr = _np.ascontiguousarray(point_begin_offsets, dtype=_np.uint64)
+    count_arr = _np.ascontiguousarray(point_counts, dtype=_np.uint64)
+    mins_arr = _np.ascontiguousarray(cell_mbr_min, dtype=_np.float64)
+    maxs_arr = _np.ascontiguousarray(cell_mbr_max, dtype=_np.float64)
+    if begin_arr.shape != (cell_count,) or count_arr.shape != (cell_count,):
+        raise ValueError("point_begin_offsets and point_counts must have shape [cell_count]")
+    if mins_arr.shape != (cell_count, 3) or maxs_arr.shape != (cell_count, 3):
+        raise ValueError("cell_mbr_min and cell_mbr_max must be float64[cell_count][3]")
+    resolved_capacity = int(row_capacity)
+    if resolved_capacity < 0:
+        raise ValueError("row_capacity must be non-negative")
+
+    probe_mode_map = {
+        "default": 0,
+        "heavy-before-inline-prune": 1,
+        "offload-before-inline-prune": 1,
+        "active-initial-best-prune": 2,
+        "initial-best-status-prune": 2,
+    }
+    if isinstance(frontier_status_probe_mode, str):
+        try:
+            frontier_status_probe_mode_code = probe_mode_map[frontier_status_probe_mode]
+        except KeyError as exc:
+            raise ValueError(
+                "frontier_status_probe_mode must be 'default', "
+                "'heavy-before-inline-prune', or 'active-initial-best-prune'"
+            ) from exc
+        frontier_status_probe_mode_name = frontier_status_probe_mode
+    else:
+        frontier_status_probe_mode_code = int(frontier_status_probe_mode)
+        if frontier_status_probe_mode_code == 0:
+            frontier_status_probe_mode_name = "default"
+        elif frontier_status_probe_mode_code == 1:
+            frontier_status_probe_mode_name = "heavy-before-inline-prune"
+        elif frontier_status_probe_mode_code == 2:
+            frontier_status_probe_mode_name = "active-initial-best-prune"
+        else:
+            raise ValueError("frontier_status_probe_mode code must be 0, 1, or 2")
+    inline_nearest = bool(inline_nearest)
+    if frontier_status_probe_mode_code != 0 and not inline_nearest:
+        raise ValueError("frontier_status_probe_mode requires inline_nearest=True")
+
+    target_coords_arr = None
+    target_ids_arr = None
+    point_row_indices_arr = None
+    if inline_nearest:
+        if target_coords is None or target_point_ids is None or point_row_indices is None:
+            raise ValueError(
+                "target_coords, target_point_ids, and point_row_indices are required when inline_nearest=True"
+            )
+        target_coords_arr = _np.ascontiguousarray(target_coords, dtype=_np.float64)
+        if target_coords_arr.ndim != 2 or target_coords_arr.shape[1] != 3:
+            raise ValueError("target_coords must be float64[target_count][3] when inline_nearest=True")
+        target_count = int(target_coords_arr.shape[0])
+        target_ids_arr = _np.ascontiguousarray(target_point_ids, dtype=_np.int64)
+        if target_ids_arr.shape != (target_count,):
+            raise ValueError("target_point_ids must have shape [target_count] when inline_nearest=True")
+        point_row_indices_arr = _np.ascontiguousarray(point_row_indices, dtype=_np.uint64)
+        if point_row_indices_arr.ndim != 1:
+            raise ValueError("point_row_indices must be uint64[point_row_index_count] when inline_nearest=True")
+    else:
+        target_count = 0
+        target_coords_arr = _np.ascontiguousarray(_np.empty((0, 3), dtype=_np.float64))
+        target_ids_arr = _np.ascontiguousarray(_np.empty((0,), dtype=_np.int64))
+        point_row_indices_arr = _np.ascontiguousarray(_np.empty((0,), dtype=_np.uint64))
+
+    active_queue_out = _np.empty(resolved_capacity, dtype=_np.int64)
+    query_row_out = _np.empty(resolved_capacity, dtype=_np.int64)
+    source_out = _np.empty(resolved_capacity, dtype=_np.int64)
+    cell_out = _np.empty(resolved_capacity, dtype=_np.int64)
+    status_out = _np.empty(resolved_capacity, dtype=_np.int64)
+    phase_out = _np.empty(resolved_capacity, dtype=_np.int64)
+    best_before_out = _np.empty(resolved_capacity, dtype=_np.float64)
+    best_after_out = _np.empty(resolved_capacity, dtype=_np.float64)
+
+    lib = _load_optix_library()
+    symbol_name = "rtdl_optix_collect_active_query_status_stream_3d_v1"
+    collect_symbol = _find_optional_backend_symbol(lib, symbol_name)
+    if collect_symbol is None:
+        raise RuntimeError(
+            "Loaded OptiX backend library does not export "
+            "rtdl_optix_collect_active_query_status_stream_3d_v1. "
+            "Rebuild it with 'make build-optix' from current main."
+        )
+    collect_symbol.argtypes = [
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_uint64),
+        ctypes.POINTER(ctypes.c_uint64),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.c_size_t,
+        ctypes.c_double,
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_uint64),
+        ctypes.c_size_t,
+        ctypes.c_uint64,
+        ctypes.c_uint32,
+        ctypes.c_uint32,
+        ctypes.c_uint32,
+        ctypes.c_uint64,
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_uint64),
+        ctypes.POINTER(ctypes.c_uint64),
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    collect_symbol.restype = ctypes.c_int
+
+    emitted_count = ctypes.c_uint64()
+    attempted_count = ctypes.c_uint64()
+    overflowed = ctypes.c_uint32()
+    error = ctypes.create_string_buffer(4096)
+    status = collect_symbol(
+        query_coords_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+        query_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        ctypes.c_size_t(query_count),
+        cell_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        begin_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_uint64)),
+        count_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_uint64)),
+        mins_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+        maxs_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+        ctypes.c_size_t(cell_count),
+        ctypes.c_double(float(radius)),
+        best_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+        best_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        target_coords_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+        target_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        ctypes.c_size_t(target_count),
+        point_row_indices_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_uint64)),
+        ctypes.c_size_t(int(point_row_indices_arr.size)),
+        ctypes.c_uint64(int(max_inline_points)),
+        ctypes.c_uint32(1 if emit_pruned_rows else 0),
+        ctypes.c_uint32(1 if inline_nearest else 0),
+        ctypes.c_uint32(frontier_status_probe_mode_code),
+        ctypes.c_uint64(resolved_capacity),
+        active_queue_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)) if resolved_capacity else None,
+        query_row_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)) if resolved_capacity else None,
+        source_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)) if resolved_capacity else None,
+        cell_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)) if resolved_capacity else None,
+        status_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)) if resolved_capacity else None,
+        phase_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)) if resolved_capacity else None,
+        best_before_out.ctypes.data_as(ctypes.POINTER(ctypes.c_double)) if resolved_capacity else None,
+        best_after_out.ctypes.data_as(ctypes.POINTER(ctypes.c_double)) if resolved_capacity else None,
+        ctypes.byref(emitted_count),
+        ctypes.byref(attempted_count),
+        ctypes.byref(overflowed),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    emitted = int(emitted_count.value)
+    if int(overflowed.value) != 0:
+        raise RuntimeError(
+            "OptiX active-query status stream 3D output overflowed; "
+            f"attempted {int(attempted_count.value)}; capacity {resolved_capacity}; "
+            "failure_mode=fail_closed_overflow; partial_result_returned=False"
+        )
+    return {
+        "primitive": "ACTIVE_QUERY_STATUS_STREAM_3D",
+        "contract": "generic_active_query_status_stream_native_abi_v1",
+        "backend": "optix",
+        "native_generic_symbol": symbol_name,
+        "row_schema": (
+            "active_queue_indices",
+            "query_row_ids",
+            "source_ids",
+            "cell_ids",
+            "status_codes",
+            "transition_phase_codes",
+            "current_best_before_sq",
+            "current_best_after_sq",
+        ),
+        "columns": {
+            "active_queue_indices": active_queue_out[:emitted].copy(),
+            "query_row_ids": query_row_out[:emitted].copy(),
+            "source_ids": source_out[:emitted].copy(),
+            "cell_ids": cell_out[:emitted].copy(),
+            "status_codes": status_out[:emitted].copy(),
+            "transition_phase_codes": phase_out[:emitted].copy(),
+            "current_best_before_sq": best_before_out[:emitted].copy(),
+            "current_best_after_sq": best_after_out[:emitted].copy(),
+        },
+        "valid_count": emitted,
+        "attempted_count": int(attempted_count.value),
+        "row_capacity": resolved_capacity,
+        "emit_pruned_rows": bool(emit_pruned_rows),
+        "inline_nearest": bool(inline_nearest),
+        "frontier_status_probe_mode": frontier_status_probe_mode_name,
+        "frontier_status_probe_mode_code": int(frontier_status_probe_mode_code),
+        "overflowed": False,
+        "native_backend_complete": False,
+        "explicit_app_option_support_claimed": False,
+        "rt_core_accelerated": True,
+        "native_engine_customization": False,
+        "claim_boundary": (
+            "Generic native active-query status-stream rows. This is not an "
+            "application option implementation, not a row/hash parity claim, "
+            "and not a paper performance claim."
+        ),
+    }
+
+
+def active_query_status_state_machine_smoke_native(
+    *,
+    query_row_ids,
+    active_queue_indices,
+    source_ids,
+    current_best_sq,
+    current_best_item_ids,
+    candidate_query_row_ids,
+    candidate_cell_ids,
+    candidate_min_sq,
+    candidate_max_sq,
+    candidate_work_counts,
+    heavy_threshold: int,
+    row_capacity: int,
+    feedback_active_queue_indices=None,
+    feedback_best_sq=None,
+    feedback_item_ids=None,
+) -> dict[str, object]:
+    """Run a generic native active-query status-state smoke.
+
+    This is a narrow native front door for the Goal5401 spike contract. It
+    emits raw offload rows for heavy candidate rows before continuation/reduce
+    and reports feedback update telemetry. It is not an application option
+    implementation and does not claim parity with any external oracle.
+    """
+
+    import numpy as _np
+
+    query_row_ids_arr = _np.ascontiguousarray(query_row_ids, dtype=_np.int64)
+    active_queue_arr = _np.ascontiguousarray(active_queue_indices, dtype=_np.int64)
+    source_ids_arr = _np.ascontiguousarray(source_ids, dtype=_np.int64)
+    current_best_arr = _np.ascontiguousarray(current_best_sq, dtype=_np.float64)
+    current_best_item_arr = _np.ascontiguousarray(current_best_item_ids, dtype=_np.int64)
+    active_count = int(query_row_ids_arr.size)
+    for name, array in (
+        ("active_queue_indices", active_queue_arr),
+        ("source_ids", source_ids_arr),
+        ("current_best_sq", current_best_arr),
+        ("current_best_item_ids", current_best_item_arr),
+    ):
+        if array.shape != (active_count,):
+            raise ValueError(f"{name} must have shape [active_count]")
+
+    cand_query_arr = _np.ascontiguousarray(candidate_query_row_ids, dtype=_np.int64)
+    cand_cell_arr = _np.ascontiguousarray(candidate_cell_ids, dtype=_np.int64)
+    cand_min_arr = _np.ascontiguousarray(candidate_min_sq, dtype=_np.float64)
+    cand_max_arr = _np.ascontiguousarray(candidate_max_sq, dtype=_np.float64)
+    cand_work_arr = _np.ascontiguousarray(candidate_work_counts, dtype=_np.uint64)
+    candidate_count = int(cand_query_arr.size)
+    for name, array in (
+        ("candidate_cell_ids", cand_cell_arr),
+        ("candidate_min_sq", cand_min_arr),
+        ("candidate_max_sq", cand_max_arr),
+        ("candidate_work_counts", cand_work_arr),
+    ):
+        if array.shape != (candidate_count,):
+            raise ValueError(f"{name} must have shape [candidate_count]")
+
+    if feedback_active_queue_indices is None:
+        feedback_queue_arr = _np.ascontiguousarray(_np.empty((0,), dtype=_np.int64))
+        feedback_best_arr = _np.ascontiguousarray(_np.empty((0,), dtype=_np.float64))
+        feedback_item_arr = _np.ascontiguousarray(_np.empty((0,), dtype=_np.int64))
+    else:
+        if feedback_best_sq is None or feedback_item_ids is None:
+            raise ValueError("feedback_best_sq and feedback_item_ids are required with feedback rows")
+        feedback_queue_arr = _np.ascontiguousarray(feedback_active_queue_indices, dtype=_np.int64)
+        feedback_best_arr = _np.ascontiguousarray(feedback_best_sq, dtype=_np.float64)
+        feedback_item_arr = _np.ascontiguousarray(feedback_item_ids, dtype=_np.int64)
+    feedback_count = int(feedback_queue_arr.size)
+    if feedback_best_arr.shape != (feedback_count,):
+        raise ValueError("feedback_best_sq must have shape [feedback_count]")
+    if feedback_item_arr.shape != (feedback_count,):
+        raise ValueError("feedback_item_ids must have shape [feedback_count]")
+
+    resolved_capacity = int(row_capacity)
+    if resolved_capacity < 0:
+        raise ValueError("row_capacity must be non-negative")
+    heavy_threshold = int(heavy_threshold)
+    if heavy_threshold < 0:
+        raise ValueError("heavy_threshold must be non-negative")
+
+    active_queue_out = _np.empty(resolved_capacity, dtype=_np.int64)
+    query_row_out = _np.empty(resolved_capacity, dtype=_np.int64)
+    source_out = _np.empty(resolved_capacity, dtype=_np.int64)
+    cell_out = _np.empty(resolved_capacity, dtype=_np.int64)
+    status_out = _np.empty(resolved_capacity, dtype=_np.int64)
+    phase_out = _np.empty(resolved_capacity, dtype=_np.int64)
+    best_before_out = _np.empty(resolved_capacity, dtype=_np.float64)
+    best_after_out = _np.empty(resolved_capacity, dtype=_np.float64)
+
+    lib = _load_optix_library()
+    symbol_name = "rtdl_optix_active_query_status_state_machine_smoke_v1"
+    symbol = _find_optional_backend_symbol(lib, symbol_name)
+    if symbol is None:
+        raise RuntimeError(
+            "Loaded OptiX backend library does not export "
+            "rtdl_optix_active_query_status_state_machine_smoke_v1. "
+            "Rebuild it with 'make build-optix' from current main."
+        )
+
+    symbol.argtypes = [
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_uint64),
+        ctypes.c_size_t,
+        ctypes.c_uint64,
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.c_size_t,
+        ctypes.c_uint64,
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_uint64),
+        ctypes.POINTER(ctypes.c_uint64),
+        ctypes.POINTER(ctypes.c_uint64),
+        ctypes.POINTER(ctypes.c_uint64),
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    symbol.restype = ctypes.c_int
+
+    emitted_count = ctypes.c_uint64()
+    attempted_count = ctypes.c_uint64()
+    offloading_count = ctypes.c_uint64()
+    feedback_update_count = ctypes.c_uint64()
+    overflowed = ctypes.c_uint32()
+    error = ctypes.create_string_buffer(4096)
+    status = symbol(
+        query_row_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        active_queue_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        source_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        current_best_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+        current_best_item_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        ctypes.c_size_t(active_count),
+        cand_query_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        cand_cell_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        cand_min_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+        cand_max_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+        cand_work_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_uint64)),
+        ctypes.c_size_t(candidate_count),
+        ctypes.c_uint64(heavy_threshold),
+        feedback_queue_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        feedback_best_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+        feedback_item_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        ctypes.c_size_t(feedback_count),
+        ctypes.c_uint64(resolved_capacity),
+        active_queue_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)) if resolved_capacity else None,
+        query_row_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)) if resolved_capacity else None,
+        source_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)) if resolved_capacity else None,
+        cell_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)) if resolved_capacity else None,
+        status_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)) if resolved_capacity else None,
+        phase_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)) if resolved_capacity else None,
+        best_before_out.ctypes.data_as(ctypes.POINTER(ctypes.c_double)) if resolved_capacity else None,
+        best_after_out.ctypes.data_as(ctypes.POINTER(ctypes.c_double)) if resolved_capacity else None,
+        ctypes.byref(emitted_count),
+        ctypes.byref(attempted_count),
+        ctypes.byref(offloading_count),
+        ctypes.byref(feedback_update_count),
+        ctypes.byref(overflowed),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    emitted = int(emitted_count.value)
+    if int(overflowed.value) != 0:
+        raise RuntimeError(
+            "Native active-query status-state smoke output overflowed; "
+            f"attempted {int(attempted_count.value)}; capacity {resolved_capacity}; "
+            "failure_mode=fail_closed_overflow; partial_result_returned=False"
+        )
+    return {
+        "primitive": "ACTIVE_QUERY_STATUS_STATE_MACHINE_SMOKE",
+        "contract": "generic_active_query_status_state_machine_native_spike_v1",
+        "backend": "native",
+        "native_generic_symbol": symbol_name,
+        "row_schema": (
+            "active_queue_indices",
+            "query_row_ids",
+            "source_ids",
+            "cell_ids",
+            "status_codes",
+            "transition_phase_codes",
+            "current_best_before_sq",
+            "current_best_after_sq",
+        ),
+        "columns": {
+            "active_queue_indices": active_queue_out[:emitted].copy(),
+            "query_row_ids": query_row_out[:emitted].copy(),
+            "source_ids": source_out[:emitted].copy(),
+            "cell_ids": cell_out[:emitted].copy(),
+            "status_codes": status_out[:emitted].copy(),
+            "transition_phase_codes": phase_out[:emitted].copy(),
+            "current_best_before_sq": best_before_out[:emitted].copy(),
+            "current_best_after_sq": best_after_out[:emitted].copy(),
+        },
+        "valid_count": emitted,
+        "attempted_count": int(attempted_count.value),
+        "row_capacity": resolved_capacity,
+        "overflowed": False,
+        "telemetry": {
+            "active_query_count": active_count,
+            "candidate_row_count": candidate_count,
+            "raw_offload_row_count": int(offloading_count.value),
+            "status_count_offloading": int(offloading_count.value),
+            "feedback_update_count": int(feedback_update_count.value),
+            "feedback_row_count": feedback_count,
+            "overflowed": False,
+        },
+        "native_backend_complete": False,
+        "explicit_app_option_support_claimed": False,
+        "rt_core_accelerated": False,
+        "native_engine_customization": False,
+        "claim_boundary": (
+            "Generic native active-query status-state smoke. This is not an "
+            "application option implementation, not a row/hash parity claim, "
+            "and not a paper performance claim."
+        ),
+    }
 
 
 @dataclass(frozen=True)
@@ -21529,6 +25083,80 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_count_prepared_segment_pair_prepared_left_grouped_range_direct_intersection.restype = ctypes.c_int
+    optional_count_prepared_segment_pair_prepared_left_grouped_range_direct_intersection_with_predicate_mode = _find_optional_backend_symbol(
+        lib,
+        OPTIX_SEGMENT_PAIR_COUNT_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_WITH_PREDICATE_MODE_SYMBOL,
+    )
+    if optional_count_prepared_segment_pair_prepared_left_grouped_range_direct_intersection_with_predicate_mode is not None:
+        optional_count_prepared_segment_pair_prepared_left_grouped_range_direct_intersection_with_predicate_mode.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_uint32,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_count_prepared_segment_pair_prepared_left_grouped_range_direct_intersection_with_predicate_mode.restype = ctypes.c_int
+    optional_run_prepared_segment_pair_prepared_left_grouped_range_direct_intersection_with_predicate_mode = _find_optional_backend_symbol(
+        lib,
+        OPTIX_SEGMENT_PAIR_RUN_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_WITH_PREDICATE_MODE_SYMBOL,
+    )
+    if optional_run_prepared_segment_pair_prepared_left_grouped_range_direct_intersection_with_predicate_mode is not None:
+        optional_run_prepared_segment_pair_prepared_left_grouped_range_direct_intersection_with_predicate_mode.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_uint32,
+            ctypes.POINTER(ctypes.POINTER(_RtdlLsiRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_run_prepared_segment_pair_prepared_left_grouped_range_direct_intersection_with_predicate_mode.restype = ctypes.c_int
+    optional_run_prepared_segment_pair_prepared_left_grouped_range_direct_pair_id_rows_with_predicate_mode = _find_optional_backend_symbol(
+        lib,
+        OPTIX_SEGMENT_PAIR_RUN_PREPARED_LEFT_GROUPED_RANGE_DIRECT_PAIR_ID_ROWS_WITH_PREDICATE_MODE_SYMBOL,
+    )
+    if optional_run_prepared_segment_pair_prepared_left_grouped_range_direct_pair_id_rows_with_predicate_mode is not None:
+        optional_run_prepared_segment_pair_prepared_left_grouped_range_direct_pair_id_rows_with_predicate_mode.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_uint32,
+            ctypes.POINTER(ctypes.POINTER(_RtdlSegmentPairIdRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_run_prepared_segment_pair_prepared_left_grouped_range_direct_pair_id_rows_with_predicate_mode.restype = ctypes.c_int
+    optional_segment_pair_exact_pair_id_device_columns_prepared_left = _find_optional_backend_symbol(
+        lib,
+        OPTIX_SEGMENT_PAIR_EXACT_PAIR_ID_DEVICE_COLUMNS_PREPARED_LEFT_SYMBOL,
+    )
+    if optional_segment_pair_exact_pair_id_device_columns_prepared_left is not None:
+        optional_segment_pair_exact_pair_id_device_columns_prepared_left.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_uint32,
+            ctypes.POINTER(_RtdlNativeDevicePairColumns),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_segment_pair_exact_pair_id_device_columns_prepared_left.restype = ctypes.c_int
+    optional_segment_pair_bounded_exact_pair_id_device_columns_prepared_left = _find_optional_backend_symbol(
+        lib,
+        OPTIX_SEGMENT_PAIR_BOUNDED_EXACT_PAIR_ID_DEVICE_COLUMNS_PREPARED_LEFT_SYMBOL,
+    )
+    if optional_segment_pair_bounded_exact_pair_id_device_columns_prepared_left is not None:
+        optional_segment_pair_bounded_exact_pair_id_device_columns_prepared_left.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_uint32,
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlNativeDevicePairColumns),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_segment_pair_bounded_exact_pair_id_device_columns_prepared_left.restype = ctypes.c_int
     optional_segment_pair_candidate_device_columns = _find_optional_backend_symbol(
         lib,
         OPTIX_SEGMENT_PAIR_CANDIDATE_DEVICE_COLUMNS_SYMBOL,
@@ -21678,10 +25306,42 @@ def _register_argtypes(lib) -> None:
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
+    point_location_run_scaled_points_argtypes = [
+        ctypes.c_void_p,
+        ctypes.POINTER(_RtdlRayjoinCdbScaledPoint),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(_RtdlRayjoinCdbPointLocationRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    point_location_prepare_scaled_points_argtypes = [
+        ctypes.c_void_p,
+        ctypes.POINTER(_RtdlRayjoinCdbScaledPoint),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_void_p),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    point_location_prepare_device_query_points_argtypes = [
+        ctypes.c_void_p,
+        ctypes.c_uint64,
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_void_p),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
     point_location_device_count_argtypes = [
         ctypes.c_void_p,
         ctypes.c_void_p,
         ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    point_location_device_columns_argtypes = [
+        ctypes.c_void_p,
+        ctypes.c_void_p,
+        ctypes.POINTER(_RtdlNativePointLocationDeviceIdColumns),
         ctypes.c_char_p,
         ctypes.c_size_t,
     ]
@@ -21703,6 +25363,10 @@ def _register_argtypes(lib) -> None:
         OPTIX_RAYJOIN_CDB_POINT_LOCATION_RUN_SYMBOL,
     ):
         _register_optional(symbol_name, point_location_run_argtypes)
+    _register_optional(
+        OPTIX_RAYJOIN_CDB_POINT_LOCATION_RUN_SCALED_POINTS_SYMBOL,
+        point_location_run_scaled_points_argtypes,
+    )
     for symbol_name in (
         OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_COUNT_SYMBOL,
         OPTIX_RAYJOIN_CDB_POINT_LOCATION_COUNT_SYMBOL,
@@ -21713,6 +25377,14 @@ def _register_argtypes(lib) -> None:
         OPTIX_RAYJOIN_CDB_POINT_LOCATION_PREPARE_POINTS_SYMBOL,
     ):
         _register_optional(symbol_name, point_location_prepare_points_argtypes)
+    _register_optional(
+        OPTIX_RAYJOIN_CDB_POINT_LOCATION_PREPARE_SCALED_POINTS_SYMBOL,
+        point_location_prepare_scaled_points_argtypes,
+    )
+    _register_optional(
+        OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_PREPARE_DEVICE_QUERY_POINTS_SYMBOL,
+        point_location_prepare_device_query_points_argtypes,
+    )
     for symbol_name in (
         OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_COUNT_DEVICE_POINTS_SYMBOL,
         OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_WRITE_DEVICE_SEGMENT_IDS_SYMBOL,
@@ -21722,6 +25394,13 @@ def _register_argtypes(lib) -> None:
         OPTIX_RAYJOIN_CDB_POINT_LOCATION_WRITE_DEVICE_FACE_IDS_SYMBOL,
     ):
         _register_optional(symbol_name, point_location_device_count_argtypes)
+    for symbol_name in (
+        OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_DEVICE_SEGMENT_ID_COLUMNS_SYMBOL,
+        OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_DEVICE_FACE_ID_COLUMNS_SYMBOL,
+        OPTIX_RAYJOIN_CDB_POINT_LOCATION_DEVICE_SEGMENT_ID_COLUMNS_SYMBOL,
+        OPTIX_RAYJOIN_CDB_POINT_LOCATION_DEVICE_FACE_ID_COLUMNS_SYMBOL,
+    ):
+        _register_optional(symbol_name, point_location_device_columns_argtypes)
     for symbol_name in (
         OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_TIMINGS_SYMBOL,
         OPTIX_RAYJOIN_CDB_POINT_LOCATION_TIMINGS_SYMBOL,
@@ -23311,6 +26990,18 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_prepare_aabb_index2d.restype = ctypes.c_int
+    optional_prepare_mutable_aabb_index2d = _find_optional_backend_symbol(
+        lib, "rtdl_optix_prepare_mutable_aabb_index_2d"
+    )
+    if optional_prepare_mutable_aabb_index2d is not None:
+        optional_prepare_mutable_aabb_index2d.argtypes = [
+            ctypes.POINTER(_RtdlAabb2D),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_prepare_mutable_aabb_index2d.restype = ctypes.c_int
     optional_count_aabb_index2d = _find_optional_backend_symbol(lib, "rtdl_optix_count_prepared_aabb_index_2d")
     if optional_count_aabb_index2d is not None:
         optional_count_aabb_index2d.argtypes = [
@@ -23325,6 +27016,31 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_count_aabb_index2d.restype = ctypes.c_int
+    optional_refit_aabb_index2d = _find_optional_backend_symbol(
+        lib, "rtdl_optix_refit_prepared_aabb_index_2d"
+    )
+    if optional_refit_aabb_index2d is not None:
+        optional_refit_aabb_index2d.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlAabb2D),
+            ctypes.c_size_t,
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_refit_aabb_index2d.restype = ctypes.c_int
+    optional_refit_aabb_index2d_slots = _find_optional_backend_symbol(
+        lib, "rtdl_optix_refit_prepared_aabb_index_2d_slots"
+    )
+    if optional_refit_aabb_index2d_slots is not None:
+        optional_refit_aabb_index2d_slots.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.POINTER(_RtdlAabb2D),
+            ctypes.c_size_t,
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_refit_aabb_index2d_slots.restype = ctypes.c_int
     optional_prepare_aabb_point_queries2d = _find_optional_backend_symbol(
         lib,
         "rtdl_optix_prepare_aabb_point_queries_2d",
@@ -23426,6 +27142,405 @@ def _register_argtypes(lib) -> None:
     if optional_destroy_aabb_index2d is not None:
         optional_destroy_aabb_index2d.argtypes = [ctypes.c_void_p]
         optional_destroy_aabb_index2d.restype = None
+    optional_prepare_aabb_index3d = _find_optional_backend_symbol(lib, "rtdl_optix_prepare_aabb_index_3d")
+    if optional_prepare_aabb_index3d is not None:
+        optional_prepare_aabb_index3d.argtypes = [
+            ctypes.POINTER(_RtdlAabb3D),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_prepare_aabb_index3d.restype = ctypes.c_int
+    optional_collect_aabb_index3d_point_rows = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_collect_prepared_aabb_index_3d_point_contains_rows",
+    )
+    if optional_collect_aabb_index3d_point_rows is not None:
+        optional_collect_aabb_index3d_point_rows.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPoint3D),
+            ctypes.c_size_t,
+            ctypes.POINTER(_RtdlAabbPairRow),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_collect_aabb_index3d_point_rows.restype = ctypes.c_int
+    optional_destroy_aabb_index3d = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_aabb_index_3d")
+    if optional_destroy_aabb_index3d is not None:
+        optional_destroy_aabb_index3d.argtypes = [ctypes.c_void_p]
+        optional_destroy_aabb_index3d.restype = None
+    optional_collect_cell_mbr_frontier3d = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_collect_cell_mbr_nearest_frontier_3d",
+    )
+    if optional_collect_cell_mbr_frontier3d is not None:
+        optional_collect_cell_mbr_frontier3d.argtypes = [
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.c_uint64,
+            ctypes.c_uint32,
+            ctypes.c_uint64,
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_collect_cell_mbr_frontier3d.restype = ctypes.c_int
+    optional_collect_cell_mbr_frontier3d_v2 = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v2",
+    )
+    if optional_collect_cell_mbr_frontier3d_v2 is not None:
+        optional_collect_cell_mbr_frontier3d_v2.argtypes = [
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.c_uint64,
+            ctypes.c_uint32,
+            ctypes.c_uint32,
+            ctypes.c_uint64,
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_collect_cell_mbr_frontier3d_v2.restype = ctypes.c_int
+    optional_collect_cell_mbr_frontier3d_v3 = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v3",
+    )
+    if optional_collect_cell_mbr_frontier3d_v3 is not None:
+        optional_collect_cell_mbr_frontier3d_v3.argtypes = [
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.c_size_t,
+            ctypes.c_uint64,
+            ctypes.c_uint32,
+            ctypes.c_uint32,
+            ctypes.c_uint32,
+            ctypes.c_uint64,
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_collect_cell_mbr_frontier3d_v3.restype = ctypes.c_int
+    optional_collect_cell_mbr_frontier3d_v4 = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v4",
+    )
+    if optional_collect_cell_mbr_frontier3d_v4 is not None:
+        optional_collect_cell_mbr_frontier3d_v4.argtypes = [
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.c_size_t,
+            ctypes.c_uint64,
+            ctypes.c_uint32,
+            ctypes.c_uint32,
+            ctypes.c_uint32,
+            ctypes.c_uint64,
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_collect_cell_mbr_frontier3d_v4.restype = ctypes.c_int
+    optional_collect_cell_mbr_frontier3d_v5 = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v5",
+    )
+    if optional_collect_cell_mbr_frontier3d_v5 is not None:
+        optional_collect_cell_mbr_frontier3d_v5.argtypes = [
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.c_size_t,
+            ctypes.c_uint64,
+            ctypes.c_uint32,
+            ctypes.c_uint32,
+            ctypes.c_uint32,
+            ctypes.c_uint64,
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.c_uint32,
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_collect_cell_mbr_frontier3d_v5.restype = ctypes.c_int
+    optional_collect_cell_mbr_frontier3d_v6 = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v6",
+    )
+    if optional_collect_cell_mbr_frontier3d_v6 is not None:
+        optional_collect_cell_mbr_frontier3d_v6.argtypes = [
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.c_size_t,
+            ctypes.c_uint64,
+            ctypes.c_uint32,
+            ctypes.c_uint32,
+            ctypes.c_uint32,
+            ctypes.c_uint64,
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.c_uint32,
+            ctypes.c_uint32,
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_collect_cell_mbr_frontier3d_v6.restype = ctypes.c_int
+    optional_cell_mbr_frontier3d_timings = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_cell_mbr_nearest_frontier_3d_get_last_phase_timings",
+    )
+    if optional_cell_mbr_frontier3d_timings is not None:
+        optional_cell_mbr_frontier3d_timings.argtypes = [
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint32),
+        ]
+        optional_cell_mbr_frontier3d_timings.restype = ctypes.c_int
+    optional_cell_mbr_frontier3d_memory = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_cell_mbr_nearest_frontier_3d_get_last_memory_telemetry",
+    )
+    if optional_cell_mbr_frontier3d_memory is not None:
+        optional_cell_mbr_frontier3d_memory.argtypes = [
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint32),
+        ]
+        optional_cell_mbr_frontier3d_memory.restype = ctypes.c_int
+    optional_cell_mbr_frontier3d_memory_v2 = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_cell_mbr_nearest_frontier_3d_get_last_memory_telemetry_v2",
+    )
+    if optional_cell_mbr_frontier3d_memory_v2 is not None:
+        optional_cell_mbr_frontier3d_memory_v2.argtypes = [
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+        ]
+        optional_cell_mbr_frontier3d_memory_v2.restype = ctypes.c_int
+    optional_cell_mbr_frontier3d_memory_v3 = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_cell_mbr_nearest_frontier_3d_get_last_memory_telemetry_v3",
+    )
+    if optional_cell_mbr_frontier3d_memory_v3 is not None:
+        optional_cell_mbr_frontier3d_memory_v3.argtypes = [
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+        ]
+        optional_cell_mbr_frontier3d_memory_v3.restype = ctypes.c_int
     optional_prepare_rays2d = _find_optional_backend_symbol(lib, "rtdl_optix_prepare_rays_2d")
     if optional_prepare_rays2d is not None:
         optional_prepare_rays2d.argtypes = [
@@ -24847,6 +28962,704 @@ def _check_status(status: int, error=None) -> None:
             "RTDL_OPTIX_PTX_ARCH=compute_XX to target the GPU architecture explicitly."
         )
     raise RuntimeError(msg)
+
+
+def run_cuda_lexsort_i64_f64_i64_i64_device(
+    *,
+    edge_key_device_ptr: int,
+    dist_key_device_ptr: int,
+    tie_key_device_ptr: int,
+    order_key_device_ptr: int,
+    count: int,
+) -> dict:
+    """Sort four device-resident key columns lexicographically in place.
+
+    This is a generic CUDA/Thrust helper for columnar continuation code. It
+    knows only the key-column types and ordering contract; application
+    semantics such as overlay, chains, or output records remain outside RTDL
+    core.
+    """
+    if int(count) < 0:
+        raise ValueError("count must be non-negative")
+    lib = _load_optix_library()
+    symbol = _find_optional_backend_symbol(lib, "rtdl_cuda_sort_i64_f64_i64_i64_lex")
+    if symbol is None:
+        path = getattr(lib, "_rtdl_library_path", "<unknown>")
+        raise RuntimeError(
+            f"Loaded OptiX library {path!r} does not export "
+            "'rtdl_cuda_sort_i64_f64_i64_i64_lex'. Rebuild it with a CUDA toolkit "
+            "that provides Thrust/CUB headers before using native lexsort."
+        )
+    symbol.argtypes = [
+        ctypes.c_uint64,
+        ctypes.c_uint64,
+        ctypes.c_uint64,
+        ctypes.c_uint64,
+        ctypes.c_uint64,
+        ctypes.c_char_p,
+        ctypes.c_uint64,
+    ]
+    symbol.restype = ctypes.c_int
+    error = ctypes.create_string_buffer(4096)
+    status = symbol(
+        ctypes.c_uint64(int(edge_key_device_ptr)),
+        ctypes.c_uint64(int(dist_key_device_ptr)),
+        ctypes.c_uint64(int(tie_key_device_ptr)),
+        ctypes.c_uint64(int(order_key_device_ptr)),
+        ctypes.c_uint64(int(count)),
+        error,
+        ctypes.c_uint64(len(error)),
+    )
+    _check_status(status, error)
+    return {
+        "backend": "native_thrust_lexsort_i64_f64_i64_i64",
+        "row_count": int(count),
+        "device_resident": True,
+    }
+
+
+def point_grid_cell_mbrs_3d_cuda(
+    *,
+    coords,
+    point_ids,
+    grid_shape,
+    grid_lower_bounds,
+    grid_upper_bounds,
+    cell_point_order: str = "point-id",
+) -> dict[str, object]:
+    """Build generic 3-D point-grid cell MBR columns with native CUDA/Thrust.
+
+    This helper mirrors the app-neutral column contract of
+    ``point_grid_cell_mbrs_numpy_columns``. It is deliberately a generic grid
+    grouping primitive: no Hausdorff, X-HD, paper, or route semantics are
+    encoded in the native layer.
+    """
+    import numpy as _np
+
+    coords_arr = _np.ascontiguousarray(coords, dtype=_np.float64)
+    if coords_arr.ndim != 2 or coords_arr.shape[1] != 3:
+        raise ValueError("coords must be float64[point_count][3]")
+    point_count = int(coords_arr.shape[0])
+    if point_count <= 0:
+        raise ValueError("point grid cell MBRs require at least one point")
+    point_ids_arr = _np.ascontiguousarray(point_ids, dtype=_np.int64)
+    if point_ids_arr.shape != (point_count,):
+        raise ValueError("point_ids must have shape [point_count]")
+    grid_shape_arr = _np.ascontiguousarray(grid_shape, dtype=_np.int64)
+    lower_arr = _np.ascontiguousarray(grid_lower_bounds, dtype=_np.float64)
+    upper_arr = _np.ascontiguousarray(grid_upper_bounds, dtype=_np.float64)
+    if grid_shape_arr.shape != (3,) or lower_arr.shape != (3,) or upper_arr.shape != (3,):
+        raise ValueError("grid_shape and grid bounds must be 3-element arrays")
+    if _np.any(grid_shape_arr <= 0):
+        raise ValueError("grid_shape entries must be positive")
+    if _np.any(upper_arr < lower_arr):
+        raise ValueError("grid bounds are invalid")
+    order = str(cell_point_order)
+    if order == "point-id":
+        order_code = 0
+        order_contract = "cell_id_then_point_id"
+    elif order == "input-stable":
+        order_code = 1
+        order_contract = "cell_id_then_input_order"
+    else:
+        raise ValueError("cell_point_order must be 'point-id' or 'input-stable'")
+
+    cell_capacity = point_count
+    cell_ids = _np.empty(cell_capacity, dtype=_np.int64)
+    original_cell_ids = _np.empty(cell_capacity, dtype=_np.int64)
+    point_begin_offsets = _np.empty(cell_capacity, dtype=_np.int64)
+    point_counts = _np.empty(cell_capacity, dtype=_np.int64)
+    sorted_point_ids = _np.empty(point_count, dtype=_np.int64)
+    point_row_indices = _np.empty(point_count, dtype=_np.int64)
+    min_x = _np.empty(cell_capacity, dtype=_np.float64)
+    min_y = _np.empty(cell_capacity, dtype=_np.float64)
+    min_z = _np.empty(cell_capacity, dtype=_np.float64)
+    max_x = _np.empty(cell_capacity, dtype=_np.float64)
+    max_y = _np.empty(cell_capacity, dtype=_np.float64)
+    max_z = _np.empty(cell_capacity, dtype=_np.float64)
+    cell_count = ctypes.c_uint64()
+
+    lib = _load_optix_library()
+    symbol_name = "rtdl_cuda_point_grid_cell_mbrs_3d"
+    symbol = _find_optional_backend_symbol(lib, symbol_name)
+    if symbol is None:
+        path = getattr(lib, "_rtdl_library_path", "<unknown>")
+        raise RuntimeError(
+            f"Loaded OptiX backend library {path!r} does not export {symbol_name!r}. "
+            "Rebuild it with 'make build-optix' before using native CUDA point-grid MBR builder."
+        )
+    symbol.argtypes = [
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.c_uint64,
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.c_uint32,
+        ctypes.c_uint64,
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_uint64),
+        ctypes.c_char_p,
+        ctypes.c_uint64,
+    ]
+    symbol.restype = ctypes.c_int
+    error = ctypes.create_string_buffer(4096)
+    status = symbol(
+        coords_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+        point_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        ctypes.c_uint64(point_count),
+        grid_shape_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        lower_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+        upper_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+        ctypes.c_uint32(order_code),
+        ctypes.c_uint64(cell_capacity),
+        cell_ids.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        original_cell_ids.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        point_begin_offsets.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        point_counts.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        sorted_point_ids.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        point_row_indices.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        min_x.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+        min_y.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+        min_z.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+        max_x.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+        max_y.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+        max_z.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+        ctypes.byref(cell_count),
+        error,
+        ctypes.c_uint64(len(error)),
+    )
+    _check_status(status, error)
+    n_cells = int(cell_count.value)
+    return {
+        "cell_columns": {
+            "cell_ids": cell_ids[:n_cells],
+            "original_cell_ids": original_cell_ids[:n_cells],
+            "point_begin_offsets": point_begin_offsets[:n_cells],
+            "point_counts": point_counts[:n_cells],
+            "point_ids": sorted_point_ids,
+            "point_row_indices": point_row_indices,
+            "grid_shape": grid_shape_arr,
+            "grid_lower_bounds": lower_arr,
+            "grid_upper_bounds": upper_arr,
+            "min_x": min_x[:n_cells],
+            "min_y": min_y[:n_cells],
+            "min_z": min_z[:n_cells],
+            "max_x": max_x[:n_cells],
+            "max_y": max_y[:n_cells],
+            "max_z": max_z[:n_cells],
+        },
+        "metadata": {
+            "adapter": "point_grid_cell_mbrs_3d_cuda",
+            "partner": "native_cuda_thrust",
+            "contract": "generic_point_grid_cell_mbr_columns",
+            "coordinate_fields": ("x", "y", "z"),
+            "grid_shape": tuple(int(value) for value in grid_shape_arr.tolist()),
+            "point_count": point_count,
+            "cell_count": n_cells,
+            "cell_id_contract": "compact_zero_based_with_original_cell_ids",
+            "cell_mbr_contract": "tight_mbr_over_points_in_cell",
+            "cell_mbr_reduction": "native_cuda_thrust_reduce_by_key",
+            "cell_point_order": order,
+            "cell_point_order_contract": order_contract,
+            "native_generic_symbol": symbol_name,
+            "app_semantics": "none",
+            "native_engine_row_contract": "native_cuda_generic_point_grid_cell_mbrs_3d",
+            "rt_core_speedup_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        },
+    }
+
+
+def seed_nearest_witness_local_grid_cell_3d_cuda(
+    *,
+    query_coords,
+    query_point_ids,
+    target_coords,
+    target_point_ids,
+    cell_ids,
+    original_cell_ids,
+    dense_cell_positions,
+    point_begin_offsets,
+    point_counts,
+    point_row_indices,
+    grid_shape,
+    grid_lower_bounds,
+    grid_upper_bounds,
+) -> dict[str, object]:
+    """Run the generic local-grid nearest-state seed with a native CUDA kernel.
+
+    The backend sees only point columns, compact grid-cell spans, a dense
+    encoded-cell lookup table, and grid bounds. It returns the same generic
+    nearest-state columns as the NumPy/Numba reference helper.
+    """
+    import numpy as _np
+
+    query_coords_arr = _np.ascontiguousarray(query_coords, dtype=_np.float64)
+    if query_coords_arr.ndim != 2 or query_coords_arr.shape[1] != 3:
+        raise ValueError("query_coords must be float64[query_count][3]")
+    query_count = int(query_coords_arr.shape[0])
+    query_ids_arr = _np.ascontiguousarray(query_point_ids, dtype=_np.int64)
+    if query_ids_arr.shape != (query_count,):
+        raise ValueError("query_point_ids must have shape [query_count]")
+
+    target_coords_arr = _np.ascontiguousarray(target_coords, dtype=_np.float64)
+    if target_coords_arr.ndim != 2 or target_coords_arr.shape[1] != 3:
+        raise ValueError("target_coords must be float64[target_count][3]")
+    target_count = int(target_coords_arr.shape[0])
+    target_ids_arr = _np.ascontiguousarray(target_point_ids, dtype=_np.int64)
+    if target_ids_arr.shape != (target_count,):
+        raise ValueError("target_point_ids must have shape [target_count]")
+
+    cell_ids_arr = _np.ascontiguousarray(cell_ids, dtype=_np.int64)
+    original_cell_ids_arr = _np.ascontiguousarray(original_cell_ids, dtype=_np.int64)
+    if cell_ids_arr.ndim != 1 or original_cell_ids_arr.shape != cell_ids_arr.shape:
+        raise ValueError("cell_ids and original_cell_ids must be 1-D columns with matching shape")
+    cell_count = int(cell_ids_arr.size)
+    dense_cell_positions_arr = _np.ascontiguousarray(dense_cell_positions, dtype=_np.int64)
+    if dense_cell_positions_arr.ndim != 1:
+        raise ValueError("dense_cell_positions must be an int64 1-D dense encoded-cell table")
+    begins_arr = _np.ascontiguousarray(point_begin_offsets, dtype=_np.int64)
+    counts_arr = _np.ascontiguousarray(point_counts, dtype=_np.int64)
+    if begins_arr.shape != cell_ids_arr.shape or counts_arr.shape != cell_ids_arr.shape:
+        raise ValueError("point_begin_offsets and point_counts must match cell_ids")
+    point_row_indices_arr = _np.ascontiguousarray(point_row_indices, dtype=_np.int64)
+    if point_row_indices_arr.ndim != 1:
+        raise ValueError("point_row_indices must be a 1-D int64 column")
+    grid_shape_arr = _np.ascontiguousarray(grid_shape, dtype=_np.int64)
+    lower_arr = _np.ascontiguousarray(grid_lower_bounds, dtype=_np.float64)
+    upper_arr = _np.ascontiguousarray(grid_upper_bounds, dtype=_np.float64)
+    if grid_shape_arr.shape != (3,) or lower_arr.shape != (3,) or upper_arr.shape != (3,):
+        raise ValueError("grid_shape and grid bounds must be 3-element arrays")
+    expected_dense = int(grid_shape_arr[0]) * int(grid_shape_arr[1]) * int(grid_shape_arr[2])
+    if expected_dense != int(dense_cell_positions_arr.size):
+        raise ValueError("native CUDA local-grid seed requires a full dense lookup table")
+
+    nearest_distances = _np.empty(query_count, dtype=_np.float64)
+    nearest_item_ids = _np.empty(query_count, dtype=_np.int64)
+    seed_cell_ids = _np.empty(query_count, dtype=_np.int64)
+    seed_cell_point_counts = _np.empty(query_count, dtype=_np.int64)
+    grid_cell_probe_counts = _np.empty(query_count, dtype=_np.int64)
+
+    lib = _load_optix_library()
+    symbol_name = "rtdl_optix_seed_nearest_witness_local_grid_3d"
+    symbol = _find_optional_backend_symbol(lib, symbol_name)
+    if symbol is None:
+        path = getattr(lib, "_rtdl_library_path", "<unknown>")
+        raise RuntimeError(
+            f"Loaded OptiX backend library {path!r} does not export {symbol_name!r}. "
+            "Rebuild it with 'make build-optix' from current main before using native CUDA local-grid seed."
+        )
+    symbol.argtypes = [
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.c_size_t,
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    symbol.restype = ctypes.c_int
+    error = ctypes.create_string_buffer(4096)
+    status = symbol(
+        query_coords_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+        query_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        ctypes.c_size_t(query_count),
+        target_coords_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+        target_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        ctypes.c_size_t(target_count),
+        cell_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        original_cell_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        dense_cell_positions_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        ctypes.c_size_t(int(dense_cell_positions_arr.size)),
+        begins_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        counts_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        point_row_indices_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        ctypes.c_size_t(int(point_row_indices_arr.size)),
+        ctypes.c_size_t(cell_count),
+        grid_shape_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        lower_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+        upper_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+        nearest_distances.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+        nearest_item_ids.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        seed_cell_ids.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        seed_cell_point_counts.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        grid_cell_probe_counts.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        error,
+        ctypes.c_size_t(len(error)),
+    )
+    _check_status(status, error)
+    phase_timings: dict[str, object] | None = None
+    timing_symbol = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_seed_nearest_witness_local_grid_3d_get_last_phase_timings",
+    )
+    if timing_symbol is not None:
+        timing_symbol.argtypes = [
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.POINTER(ctypes.c_size_t),
+        ]
+        timing_symbol.restype = ctypes.c_int
+        total = ctypes.c_double()
+        context_ensure = ctypes.c_double()
+        module_ensure = ctypes.c_double()
+        device_alloc = ctypes.c_double()
+        upload_sec = ctypes.c_double()
+        kernel_sec = ctypes.c_double()
+        download_sec = ctypes.c_double()
+        timing_query_count = ctypes.c_size_t()
+        timing_target_count = ctypes.c_size_t()
+        timing_cell_count = ctypes.c_size_t()
+        timing_dense_count = ctypes.c_size_t()
+        timing_point_index_count = ctypes.c_size_t()
+        timing_status = timing_symbol(
+            ctypes.byref(total),
+            ctypes.byref(context_ensure),
+            ctypes.byref(module_ensure),
+            ctypes.byref(device_alloc),
+            ctypes.byref(upload_sec),
+            ctypes.byref(kernel_sec),
+            ctypes.byref(download_sec),
+            ctypes.byref(timing_query_count),
+            ctypes.byref(timing_target_count),
+            ctypes.byref(timing_cell_count),
+            ctypes.byref(timing_dense_count),
+            ctypes.byref(timing_point_index_count),
+        )
+        if timing_status == 0:
+            phase_timings = {
+                "total_native_sec": float(total.value),
+                "context_ensure_sec": float(context_ensure.value),
+                "module_ensure_sec": float(module_ensure.value),
+                "device_alloc_sec": float(device_alloc.value),
+                "upload_sec": float(upload_sec.value),
+                "kernel_sec": float(kernel_sec.value),
+                "download_sec": float(download_sec.value),
+                "query_count": int(timing_query_count.value),
+                "target_count": int(timing_target_count.value),
+                "cell_count": int(timing_cell_count.value),
+                "dense_cell_position_count": int(timing_dense_count.value),
+                "point_row_index_count": int(timing_point_index_count.value),
+            }
+    return {
+        "columns": {
+            "source_ids": query_ids_arr.copy(),
+            "nearest_item_ids": nearest_item_ids,
+            "nearest_distances": nearest_distances,
+            "seed_cell_ids": seed_cell_ids,
+        },
+        "metadata": {
+            "adapter": "seed_nearest_witness_local_grid_cell_3d_cuda",
+            "partner": "optix_cuda",
+            "contract": "generic_seed_nearest_witness_from_local_grid_cell",
+            "native_generic_symbol": symbol_name,
+            "query_count": query_count,
+            "target_count": target_count,
+            "cell_count": cell_count,
+            "grid_shape": tuple(int(value) for value in grid_shape_arr.tolist()),
+            "grid_cell_probes": int(grid_cell_probe_counts.sum()),
+            "max_grid_cell_probes_per_query": int(grid_cell_probe_counts.max()) if grid_cell_probe_counts.size else 0,
+            "native_phase_timings_collected": phase_timings is not None,
+            "native_phase_timings": phase_timings,
+            "cell_lookup_strategy": "dense_grid_cell_position_table",
+            "dense_lookup_cell_capacity": int(dense_cell_positions_arr.size),
+            "executor": "native_cuda",
+            "cell_selection": "local_grid_first_occupied_shell_min_grid_cell_distance_then_cell_id",
+            "seed_point_reduction_strategy": "native_cuda_loop_min_distance_then_item_id",
+            "candidate_distance_evaluations": int(seed_cell_point_counts.sum()),
+            "max_seed_cell_point_count": int(seed_cell_point_counts.max()) if seed_cell_point_counts.size else 0,
+            "seed_quality": "valid_upper_bound_not_nearest_cell_mbr",
+            "app_semantics": "none",
+            "native_engine_row_contract": "generic_local_grid_nearest_seed_native_cuda",
+            "rt_core_speedup_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        },
+    }
+
+
+def seed_nearest_witness_grid_branch_bound_3d_cuda(
+    *,
+    query_coords,
+    query_point_ids,
+    target_coords,
+    target_point_ids,
+    cell_ids,
+    original_cell_ids,
+    dense_cell_positions,
+    point_begin_offsets,
+    point_counts,
+    point_row_indices,
+    grid_shape,
+    grid_lower_bounds,
+    grid_upper_bounds,
+) -> dict[str, object]:
+    """Run exact generic grid branch-bound nearest-state search in native CUDA.
+
+    The backend consumes app-neutral point columns and compact grid-cell spans.
+    It returns the same nearest-state columns as the NumPy/Numba branch-bound
+    reference helper, plus per-query work counters.
+    """
+    import numpy as _np
+
+    query_coords_arr = _np.ascontiguousarray(query_coords, dtype=_np.float64)
+    if query_coords_arr.ndim != 2 or query_coords_arr.shape[1] != 3:
+        raise ValueError("query_coords must be float64[query_count][3]")
+    query_count = int(query_coords_arr.shape[0])
+    query_ids_arr = _np.ascontiguousarray(query_point_ids, dtype=_np.int64)
+    if query_ids_arr.shape != (query_count,):
+        raise ValueError("query_point_ids must have shape [query_count]")
+
+    target_coords_arr = _np.ascontiguousarray(target_coords, dtype=_np.float64)
+    if target_coords_arr.ndim != 2 or target_coords_arr.shape[1] != 3:
+        raise ValueError("target_coords must be float64[target_count][3]")
+    target_count = int(target_coords_arr.shape[0])
+    target_ids_arr = _np.ascontiguousarray(target_point_ids, dtype=_np.int64)
+    if target_ids_arr.shape != (target_count,):
+        raise ValueError("target_point_ids must have shape [target_count]")
+
+    cell_ids_arr = _np.ascontiguousarray(cell_ids, dtype=_np.int64)
+    original_cell_ids_arr = _np.ascontiguousarray(original_cell_ids, dtype=_np.int64)
+    if cell_ids_arr.ndim != 1 or original_cell_ids_arr.shape != cell_ids_arr.shape:
+        raise ValueError("cell_ids and original_cell_ids must be 1-D columns with matching shape")
+    cell_count = int(cell_ids_arr.size)
+    dense_cell_positions_arr = _np.ascontiguousarray(dense_cell_positions, dtype=_np.int64)
+    if dense_cell_positions_arr.ndim != 1:
+        raise ValueError("dense_cell_positions must be an int64 1-D dense encoded-cell table")
+    begins_arr = _np.ascontiguousarray(point_begin_offsets, dtype=_np.int64)
+    counts_arr = _np.ascontiguousarray(point_counts, dtype=_np.int64)
+    if begins_arr.shape != cell_ids_arr.shape or counts_arr.shape != cell_ids_arr.shape:
+        raise ValueError("point_begin_offsets and point_counts must match cell_ids")
+    point_row_indices_arr = _np.ascontiguousarray(point_row_indices, dtype=_np.int64)
+    if point_row_indices_arr.ndim != 1:
+        raise ValueError("point_row_indices must be a 1-D int64 column")
+    grid_shape_arr = _np.ascontiguousarray(grid_shape, dtype=_np.int64)
+    lower_arr = _np.ascontiguousarray(grid_lower_bounds, dtype=_np.float64)
+    upper_arr = _np.ascontiguousarray(grid_upper_bounds, dtype=_np.float64)
+    if grid_shape_arr.shape != (3,) or lower_arr.shape != (3,) or upper_arr.shape != (3,):
+        raise ValueError("grid_shape and grid bounds must be 3-element arrays")
+    expected_dense = int(grid_shape_arr[0]) * int(grid_shape_arr[1]) * int(grid_shape_arr[2])
+    if expected_dense != int(dense_cell_positions_arr.size):
+        raise ValueError("native CUDA grid branch-bound seed requires a full dense lookup table")
+
+    nearest_distances = _np.empty(query_count, dtype=_np.float64)
+    nearest_item_ids = _np.empty(query_count, dtype=_np.int64)
+    seed_cell_ids = _np.empty(query_count, dtype=_np.int64)
+    seed_cell_point_counts = _np.empty(query_count, dtype=_np.int64)
+    grid_cell_probe_counts = _np.empty(query_count, dtype=_np.int64)
+    scanned_cell_counts = _np.empty(query_count, dtype=_np.int64)
+    scanned_point_counts = _np.empty(query_count, dtype=_np.int64)
+    shell_counts = _np.empty(query_count, dtype=_np.int64)
+
+    lib = _load_optix_library()
+    symbol_name = "rtdl_optix_seed_nearest_witness_grid_branch_bound_3d"
+    symbol = _find_optional_backend_symbol(lib, symbol_name)
+    if symbol is None:
+        path = getattr(lib, "_rtdl_library_path", "<unknown>")
+        raise RuntimeError(
+            f"Loaded OptiX backend library {path!r} does not export {symbol_name!r}. "
+            "Rebuild it with 'make build-optix' from current main before using native CUDA grid branch-bound seed."
+        )
+    symbol.argtypes = [
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.c_size_t,
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    symbol.restype = ctypes.c_int
+    error = ctypes.create_string_buffer(4096)
+    status = symbol(
+        query_coords_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+        query_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        ctypes.c_size_t(query_count),
+        target_coords_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+        target_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        ctypes.c_size_t(target_count),
+        cell_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        original_cell_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        dense_cell_positions_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        ctypes.c_size_t(int(dense_cell_positions_arr.size)),
+        begins_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        counts_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        point_row_indices_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        ctypes.c_size_t(int(point_row_indices_arr.size)),
+        ctypes.c_size_t(cell_count),
+        grid_shape_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        lower_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+        upper_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+        nearest_distances.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+        nearest_item_ids.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        seed_cell_ids.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        seed_cell_point_counts.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        grid_cell_probe_counts.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        scanned_cell_counts.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        scanned_point_counts.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        shell_counts.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+        error,
+        ctypes.c_size_t(len(error)),
+    )
+    _check_status(status, error)
+    phase_timings: dict[str, object] | None = None
+    timing_symbol = _find_optional_backend_symbol(
+        lib,
+        "rtdl_optix_seed_nearest_witness_local_grid_3d_get_last_phase_timings",
+    )
+    if timing_symbol is not None:
+        timing_symbol.argtypes = [
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.POINTER(ctypes.c_size_t),
+        ]
+        timing_symbol.restype = ctypes.c_int
+        total = ctypes.c_double()
+        context_ensure = ctypes.c_double()
+        module_ensure = ctypes.c_double()
+        device_alloc = ctypes.c_double()
+        upload_sec = ctypes.c_double()
+        kernel_sec = ctypes.c_double()
+        download_sec = ctypes.c_double()
+        timing_query_count = ctypes.c_size_t()
+        timing_target_count = ctypes.c_size_t()
+        timing_cell_count = ctypes.c_size_t()
+        timing_dense_count = ctypes.c_size_t()
+        timing_point_index_count = ctypes.c_size_t()
+        timing_status = timing_symbol(
+            ctypes.byref(total),
+            ctypes.byref(context_ensure),
+            ctypes.byref(module_ensure),
+            ctypes.byref(device_alloc),
+            ctypes.byref(upload_sec),
+            ctypes.byref(kernel_sec),
+            ctypes.byref(download_sec),
+            ctypes.byref(timing_query_count),
+            ctypes.byref(timing_target_count),
+            ctypes.byref(timing_cell_count),
+            ctypes.byref(timing_dense_count),
+            ctypes.byref(timing_point_index_count),
+        )
+        if timing_status == 0:
+            phase_timings = {
+                "total_native_sec": float(total.value),
+                "context_ensure_sec": float(context_ensure.value),
+                "module_ensure_sec": float(module_ensure.value),
+                "device_alloc_sec": float(device_alloc.value),
+                "upload_sec": float(upload_sec.value),
+                "kernel_sec": float(kernel_sec.value),
+                "download_sec": float(download_sec.value),
+                "query_count": int(timing_query_count.value),
+                "target_count": int(timing_target_count.value),
+                "cell_count": int(timing_cell_count.value),
+                "dense_cell_position_count": int(timing_dense_count.value),
+                "point_row_index_count": int(timing_point_index_count.value),
+            }
+    return {
+        "columns": {
+            "source_ids": query_ids_arr.copy(),
+            "nearest_item_ids": nearest_item_ids,
+            "nearest_distances": nearest_distances,
+            "seed_cell_ids": seed_cell_ids,
+        },
+        "metadata": {
+            "adapter": "seed_nearest_witness_grid_branch_bound_3d_cuda",
+            "partner": "optix_cuda",
+            "contract": "generic_seed_nearest_witness_from_grid_branch_bound",
+            "native_generic_symbol": symbol_name,
+            "query_count": query_count,
+            "target_count": target_count,
+            "cell_count": cell_count,
+            "grid_shape": tuple(int(value) for value in grid_shape_arr.tolist()),
+            "grid_cell_probes": int(grid_cell_probe_counts.sum()),
+            "max_grid_cell_probes_per_query": int(grid_cell_probe_counts.max()) if grid_cell_probe_counts.size else 0,
+            "scanned_cell_count": int(scanned_cell_counts.sum()),
+            "max_scanned_cells_per_query": int(scanned_cell_counts.max()) if scanned_cell_counts.size else 0,
+            "candidate_distance_evaluations": int(scanned_point_counts.sum()),
+            "max_shells_per_query": int(shell_counts.max()) if shell_counts.size else 0,
+            "max_seed_cell_point_count": int(seed_cell_point_counts.max()) if seed_cell_point_counts.size else 0,
+            "native_phase_timings_collected": phase_timings is not None,
+            "native_phase_timings": phase_timings,
+            "cell_lookup_strategy": "dense_grid_cell_position_table",
+            "dense_lookup_cell_capacity": int(dense_cell_positions_arr.size),
+            "executor": "native_cuda",
+            "cell_selection": "grid_shell_branch_bound_until_lower_bound_exceeds_best_point",
+            "seed_point_reduction_strategy": "native_cuda_branch_bound_min_distance_then_item_id",
+            "seed_quality": "exact_nearest_witness_under_grid_cell_branch_bound",
+            "app_semantics": "none",
+            "native_engine_row_contract": "generic_grid_branch_bound_nearest_seed_native_cuda",
+            "rt_core_speedup_claim_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        },
+    }
 
 
 def _coerce_list(name: str, values):

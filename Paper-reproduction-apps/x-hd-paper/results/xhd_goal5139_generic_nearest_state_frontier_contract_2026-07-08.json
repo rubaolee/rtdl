@@ -1,0 +1,60 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.generic_nearest_state_frontier_contract.v1",
+  "goal": "Goal5139",
+  "status": "generic_nearest_state_frontier_reference_ready",
+  "scope": "generic RTDL system API reference surface",
+  "implemented_symbols": [
+    "nearest_state_frontier_from_cell_candidates_numpy_columns"
+  ],
+  "contract": {
+    "nearest_state_frontier_from_cell_candidates_numpy_columns": {
+      "contract": "generic_nearest_state_cell_frontier",
+      "input": [
+        "generic radius cell-MBR candidate columns",
+        "generic point-grid cell columns with point_counts and point spans",
+        "query_point_ids",
+        "optional current_best_distances",
+        "optional current_best_item_ids",
+        "max_inline_points"
+      ],
+      "output": [
+        "nearest_state columns",
+        "inline_frontier rows",
+        "offload_frontier rows",
+        "pruned_frontier rows"
+      ],
+      "prune_rule": "candidate_min_distance >= current_best_distance",
+      "offload_rule": "cell_point_count > max_inline_points",
+      "frontier_row_schema": [
+        "query_row_ids",
+        "query_point_ids",
+        "cell_ids",
+        "point_begin_offsets",
+        "point_counts",
+        "min_distances",
+        "max_distances"
+      ]
+    }
+  },
+  "evidence": {
+    "tests": [
+      "tests.goal5139_generic_nearest_state_frontier_api_test",
+      "tests.goal5138_generic_grid_cell_candidate_api_test"
+    ],
+    "test_result": "Ran 7 tests OK",
+    "non_xhd_fixture": "facility/demand coverage cells with current-best pruning and large-cell offload",
+    "public_exports": [
+      "rtdsl.nearest_state_frontier_from_cell_candidates_numpy_columns"
+    ]
+  },
+  "claim_boundary": {
+    "xhd_algorithmic_route_implemented": false,
+    "native_or_optix_backend_implemented": false,
+    "payload_shader_implemented": false,
+    "performance_claim_authorized": false,
+    "paper_figure_reproduction_claimed": false,
+    "app_specific_core_primitive_added": false,
+    "app_semantics": "none"
+  },
+  "recommended_next_goal": "Goal5140 generic RT cell-MBR traversal ABI design"
+}

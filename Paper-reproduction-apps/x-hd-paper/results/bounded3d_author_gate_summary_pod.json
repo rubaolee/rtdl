@@ -1,0 +1,52 @@
+{
+  "abs_diff": 0.0,
+  "author_comparison_reference": "directed_a_to_b",
+  "author_comparison_reference_value": 2.0,
+  "author_hd_result": 2.0,
+  "author_json": "/tmp/xhd-goal5112/xhd_author_bounded3d_optix77.json",
+  "author_run": {
+    "cmd": [
+      "/tmp/xhd-goal5112/build-gcc11-optix77-fast/bin/hd_exec",
+      "-input1",
+      "/tmp/xhd-goal5112/x-hd-paper/data/fixtures/bounded3d_a.wkt",
+      "-input2",
+      "/tmp/xhd-goal5112/x-hd-paper/data/fixtures/bounded3d_b.wkt",
+      "-n_dims",
+      "3",
+      "-input_type",
+      "wkt",
+      "-variant",
+      "rt",
+      "-execution",
+      "gpu",
+      "-json",
+      "/tmp/xhd-goal5112/xhd_author_bounded3d_optix77.json",
+      "-overwrite=true",
+      "-check=false"
+    ],
+    "returncode": 0,
+    "stderr": "I20260708 07:37:33.061052 139965974241280 run_hausdorff_distance.cu:259] Points A: 9 Points B: 8\nI20260708 07:37:33.065706 139965974241280 run_hausdorff_distance.cu:287] \u001b[31mAvg Running Time 4.235 ms\u001b[0m\nI20260708 07:37:33.359645 139965974241280 run_hausdorff_distance.cu:71] HausdorffDistance: distance is 2\n",
+    "stdout": "avg aabb cycles 1491, avg point cycles 179\n"
+  },
+  "author_run_failed": false,
+  "boundary": "Tiny same-input author JSON gate. This compares author HDResult to a deterministic exact Hausdorff reference for POINT WKT fixtures. It is not exact paper input reproduction and not a performance claim.",
+  "execution": "gpu",
+  "input1": "/tmp/xhd-goal5112/x-hd-paper/data/fixtures/bounded3d_a.wkt",
+  "input2": "/tmp/xhd-goal5112/x-hd-paper/data/fixtures/bounded3d_b.wkt",
+  "input_type": "wkt",
+  "matched": true,
+  "n_dims": 3,
+  "paper_app": "x-hd-paper",
+  "paper_reproduction_claim_authorized": false,
+  "performance_claim_authorized": false,
+  "point_count_a": 9,
+  "point_count_b": 8,
+  "rtdl_reference": {
+    "directed_a_to_b": 2.0,
+    "directed_b_to_a": 0.1,
+    "hausdorff": 2.0
+  },
+  "schema": "rtdl.paper_reproduction.xhd.author_json_gate.v1",
+  "tolerance": 1e-06,
+  "variant": "rt"
+}

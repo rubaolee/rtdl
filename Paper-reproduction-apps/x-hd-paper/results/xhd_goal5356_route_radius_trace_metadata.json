@@ -1,0 +1,96 @@
+{
+  "claim_boundary": {
+    "author_rt_core_algorithm_equivalence_claimed": false,
+    "author_tune_radius_route_mapping_claimed": false,
+    "figure8_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "performance_claimed": false
+  },
+  "date": "2026-07-09",
+  "exit_label": "route_radius_trace_metadata_ready__await_author_rtdl_trace_comparison",
+  "explicit_tune_radius_fail_closed_check": {
+    "explicit_author_rt_options": [
+      "tune_radius"
+    ],
+    "explicit_tune_radius_status": "unsupported_author_rt_options_fail_closed",
+    "route_executed": false,
+    "tune_radius_effective_value": "adaptive"
+  },
+  "goal": "Goal5356",
+  "purpose": "Verify that the X-HD app-owned cell-MBR route can emit internal radius trace metadata under an explicit flag, while preserving the boundary that author tune_radius route semantics are not enabled.",
+  "radius_trace_metadata": {
+    "author_queue_semantics_aligned": false,
+    "author_trace_comparison_ready": false,
+    "author_tune_radius_supported": false,
+    "claim_boundary": {
+      "author_rt_core_algorithm_equivalence_claimed": false,
+      "author_tune_radius_route_mapping_claimed": false,
+      "figure8_reproduction_claimed": false,
+      "full_xhd_paper_reproduction_claimed": false,
+      "performance_claimed": false
+    },
+    "direction_mode": "directed-a-to-b",
+    "directions": [
+      {
+        "frontier_row_count": 9,
+        "global_bound_early_break": false,
+        "global_bound_early_break_count": null,
+        "grid_shape": [
+          1,
+          1,
+          1
+        ],
+        "initial_state": "none",
+        "input_count_semantics": "source_point_count_before_single_pass_not_author_in_queue",
+        "iteration": 1,
+        "label": "a_to_b",
+        "num_input_points": 9,
+        "num_output_points": 9,
+        "output_count_semantics": "frontier_row_count_after_single_pass_not_author_out_queue",
+        "per_source_witness_exact": null,
+        "radius": 3.3166247913554,
+        "radius_source": "route_auto_selected_radius",
+        "target_point_count": 8
+      }
+    ],
+    "fallback_full_cover_radius": 3.3166247913554,
+    "next_required_gate": "compare this RTDL route trace against author hd_exec iteration traces only after a route variant emits author-like radius/input/output iterations; this single-pass diagnostic is not itself trace parity.",
+    "route_iteration_model": "single_pass_cell_mbr_route_not_author_radius_loop",
+    "route_uses_radius_growth_helper": false,
+    "schema": "rtdl.paper_reproduction.xhd.route_radius_trace_metadata.v1",
+    "source": "app_owned_internal_diagnostic",
+    "status": "single_pass_cell_mbr_radius_trace_metadata_available__author_queue_semantics_not_aligned"
+  },
+  "recommended_next_targets": [
+    "compare_author_and_rtdl_radius_trace_on_bounded_or_level_b_input",
+    "only_if_trace_gate_passes_consider_accepting_explicit_author_tune_radius"
+  ],
+  "route_probe": {
+    "backend": "numpy",
+    "direction_mode": "directed-a-to-b",
+    "emit_radius_trace_metadata": true,
+    "grid_shape": [
+      1,
+      1,
+      1
+    ],
+    "hd_result": 2.0,
+    "input_fixture": "bounded3d_a.wkt -> bounded3d_b.wkt",
+    "point_count_a": 9,
+    "point_count_b": 8,
+    "route": "rtdl_cell_mbr_frontier_numpy_3d"
+  },
+  "schema": "rtdl.paper_reproduction.xhd.goal5356.route_radius_trace_metadata.v1",
+  "status": "route_radius_trace_metadata_available__single_pass_not_author_queue_aligned",
+  "trace_probe_summary": {
+    "author_queue_semantics_aligned": false,
+    "author_trace_comparison_ready": false,
+    "direction_count": 1,
+    "first_direction_num_input_points": 9,
+    "first_direction_num_output_points": 9,
+    "first_direction_radius": 3.3166247913554,
+    "route_iteration_model": "single_pass_cell_mbr_route_not_author_radius_loop",
+    "route_uses_radius_growth_helper": false,
+    "status": "single_pass_cell_mbr_radius_trace_metadata_available__author_queue_semantics_not_aligned"
+  }
+}

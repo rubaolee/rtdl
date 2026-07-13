@@ -13,7 +13,7 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
 from examples.current.apps.geospatial import rtdl_sales_risk_screening
-from examples.internal.archived_apps import rtdl_v0_7_db_app_demo
+from history.examples_internal.internal.archived_apps import rtdl_v0_7_db_app_demo
 import rtdsl as rt
 
 

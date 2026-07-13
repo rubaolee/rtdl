@@ -1,0 +1,93 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.figures7_8_10_pod_dataset_availability.v1",
+  "goal": "Goal5295",
+  "date": "2026-07-09",
+  "status": "pod_dataset_availability_checked__exact_hddatasets_missing__figures7_8_10_regeneration_blocked",
+  "pod": {
+    "host": "213.173.108.24",
+    "port": 13502,
+    "wrapper_preflight": "POD_OK",
+    "hostname": "45c502cfccb5",
+    "gpu": "NVIDIA RTX 4000 Ada Generation",
+    "driver": "550.127.05"
+  },
+  "author_environment": {
+    "author_repo": "/tmp/xhd-goal5112/author",
+    "author_build_hd_exec": "/tmp/xhd-goal5112/build-gcc11-optix77-fast/bin/hd_exec",
+    "author_common_dataset_root": "/local/storage/shared/HDDatasets",
+    "author_common_serialize_root": "/local/storage/shared/HDDatasets/ser",
+    "dataset_root_exists": false,
+    "shared_root_exists": false
+  },
+  "figure7_load_balance_required_paths": {
+    "script": "/tmp/xhd-goal5112/author/expr/run_lb.sh",
+    "required_files": {
+      "/local/storage/shared/HDDatasets/graphics/dragon.ply": false,
+      "/local/storage/shared/HDDatasets/graphics/asian_dragon.ply": false,
+      "/local/storage/shared/HDDatasets/graphics/thai_statuette.ply": false,
+      "/local/storage/shared/HDDatasets/graphics/happy_buddha.ply": false
+    },
+    "complete_for_author_regeneration_on_current_pod": false,
+    "expected_matrix": "graphics lb=0/lb=256 for four author graphics pairs"
+  },
+  "figure8_radius_strategy_required_paths": {
+    "script": "/tmp/xhd-goal5112/author/expr/run_radius_tuning.sh",
+    "required_files": {
+      "/local/storage/shared/HDDatasets/geo/dtl_cnty.wkt": false,
+      "/local/storage/shared/HDDatasets/geo/uszipcode.wkt": false,
+      "/local/storage/shared/HDDatasets/geo/USADetailedWaterBodies.wkt": false,
+      "/local/storage/shared/HDDatasets/geo/USACensusBlockGroupBoundaries.wkt": false,
+      "/local/storage/shared/HDDatasets/geo/lakes.bz2.wkt": false,
+      "/local/storage/shared/HDDatasets/geo/parks.bz2.wkt": false,
+      "/local/storage/shared/HDDatasets/graphics/dragon.ply": false,
+      "/local/storage/shared/HDDatasets/graphics/asian_dragon.ply": false,
+      "/local/storage/shared/HDDatasets/graphics/thai_statuette.ply": false,
+      "/local/storage/shared/HDDatasets/graphics/happy_buddha.ply": false
+    },
+    "complete_for_author_regeneration_on_current_pod": false,
+    "expected_matrix": "geo and graphics add/double/adaptive radius-strategy runs"
+  },
+  "figure10_scalability_required_paths": {
+    "script": "/tmp/xhd-goal5112/author/expr/run_scalability.sh",
+    "required_files": {
+      "/local/storage/shared/HDDatasets/geo/all_nodes.wkt": false
+    },
+    "complete_for_author_regeneration_on_current_pod": false,
+    "expected_matrix": "all_nodes.wkt size sweep and translate/overlap sweep for eb/nn/clover/rt gpu variants"
+  },
+  "partial_tmp_inputs_on_current_pod": {
+    "/tmp/xhd_goal5234/data/dragon.ply": true,
+    "/tmp/xhd_goal5234/data/asian_dragon.ply": true,
+    "/tmp/xhd_goal5234/data/asian_dragon_scaled_1e-3.ply": true,
+    "/tmp/xhd_goal5234/data/thai_statuette.ply": false,
+    "/tmp/xhd_goal5234/data/happy_buddha.ply": false,
+    "interpretation": "The current POD has only a partial Dragon/Asian temporary graphics subset. It is not enough to regenerate the full author Figure 7 or Figure 8 graphics matrices and does not cover Figure 10 all_nodes.wkt."
+  },
+  "decision": {
+    "figures7_8_10_exact_author_regeneration_possible_on_current_pod": false,
+    "figure7_reproduced": false,
+    "figure8_reproduced": false,
+    "figure10_reproduced": false,
+    "current_blocker": "The current POD has the author build and scripts but does not have /local/storage/shared/HDDatasets or the required graphics/geo/all_nodes input files used by the author Figure 7, Figure 8, and Figure 10 scripts.",
+    "next_allowed_steps": [
+      "Mount or recover /local/storage/shared/HDDatasets on a POD, then rerun the author scripts or equivalent commands to regenerate the missing matrices.",
+      "If exact inputs remain unavailable, define separately named Level-B diagnostics using explicitly available public or temporary inputs; do not call those diagnostics Figure 7, Figure 8, or Figure 10 reproduction.",
+      "Do not spend RTDL comparison work on Figures 7/8/10 until an author-side numeric denominator exists."
+    ]
+  },
+  "claim_boundary": {
+    "figure7_reproduction_claimed": false,
+    "figure8_reproduction_claimed": false,
+    "figure10_reproduction_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "author_matrix_regenerated": false,
+    "rtdl_author_performance_ratio_claimed": false,
+    "partial_tmp_inputs_claimed_as_paper_inputs": false
+  },
+  "commands": [
+    "py scripts/current_pod_ssh.py --host 213.173.108.24 --port 13502 preflight",
+    "py scripts/current_pod_ssh.py --host 213.173.108.24 --port 13502 exec \"hostname; pwd; ls -ld /local/storage/shared/HDDatasets /local/storage/shared /tmp/xhd-goal5112 /tmp/xhd_goal5234 /tmp/rtdl_goal5281 2>&1\"",
+    "py scripts/current_pod_ssh.py --host 213.173.108.24 --port 13502 exec \"cd /tmp/xhd-goal5112/author && sed -n '1,220p' expr/run_lb.sh && sed -n '1,220p' expr/run_radius_tuning.sh && sed -n '1,220p' expr/run_scalability.sh\"",
+    "py scripts/current_pod_ssh.py --host 213.173.108.24 --port 13502 exec \"test -e ... required paths ...\""
+  ]
+}

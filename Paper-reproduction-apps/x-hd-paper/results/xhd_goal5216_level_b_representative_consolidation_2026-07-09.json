@@ -1,0 +1,86 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.level_b_representative_consolidation.v1",
+  "goal": "Goal5216",
+  "date": "2026-07-09",
+  "status": "level_b_representative_packet_ready__full_paper_still_blocked_on_exact_inputs",
+  "workload": {
+    "label": "graphics_dragon_happy_buddha",
+    "source": "public Stanford Dragon / HappyBuddha same-source candidate",
+    "input1": "Paper-reproduction-apps\\x-hd-paper\\data\\external\\stanford\\dragon_recon\\dragon_vrip.ply",
+    "input2": "Paper-reproduction-apps\\x-hd-paper\\data\\external\\stanford\\happy_recon\\happy_vrip.ply",
+    "point_counts": [
+      437645,
+      543652
+    ],
+    "level": "Level B same-source representative",
+    "exact_paper_dataset_identity_proved": false
+  },
+  "author_reference": {
+    "goal": "Goal5186",
+    "hd_result": 0.12572988867759705,
+    "paper_log_hd_result": 0.12572969496250153,
+    "paper_log_min_abs_diff": 1.9371509552001953e-07,
+    "matched_paper_log": true,
+    "tolerance": 1e-06,
+    "running_avg_time_ms": 7.823,
+    "artifact": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_author_gate_summary_goal5186_graphics_dragon_happy_buddha_2026-07-08.json"
+  },
+  "rtdl_current_route_fresh": {
+    "goal": "Goal5212 with Goal5211 route",
+    "matched_author_hd_result": true,
+    "distance": 0.12572988629271128,
+    "author_abs_diff": 2.3848857610975216e-09,
+    "route_wall_sec": 0.8517371863126755,
+    "case_total_sec": 0.851749412715435,
+    "full_total_including_load_sec": 1.5306707620620728,
+    "load_full_inputs_sec": 0.6782490611076355,
+    "initial_state_seed_sec": 0.21856994181871414,
+    "frontier_rows_sec": 0.4279836565256119,
+    "native_total_sec": 0.269847296,
+    "optix_launch_sec": 0.038939636,
+    "global_bound_early_break": true,
+    "global_bound_early_break_count": 409376,
+    "source_subset_materialized": false,
+    "source_subset_selection_contract": "all_source_no_copy_view",
+    "per_source_witness_exact": false,
+    "artifact": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_goal5212_all_source_no_copy_fresh_graphics_dragon_happy_buddha_2026-07-09.json"
+  },
+  "rtdl_current_route_explicit_warm": {
+    "goal": "Goal5212 with explicit warm protocol",
+    "measured_case_matched_author_hd_result": true,
+    "measured_route_wall_sec": 0.2880803421139717,
+    "measured_case_total_sec": 0.2880931422114372,
+    "measured_source_subset_materialized": false,
+    "measured_source_subset_selection_contract": "all_source_no_copy_view",
+    "warmup_excluded_from_summary_statistics": true,
+    "full_total_including_load_warmup_and_measured_sec": 1.8082116544246674,
+    "artifact": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_goal5212_all_source_no_copy_warm_protocol_graphics_dragon_happy_buddha_2026-07-09.json"
+  },
+  "exact_dataset_status": {
+    "goal5214_current_pod_has_hddatasets": false,
+    "goal5214_level_c_supported": false,
+    "goal5215_public_repo_exact_input_bytes_available": false,
+    "goal5215_deterministic_public_reconstruction_provenance_available": false,
+    "goal5215_level_c_supported": false
+  },
+  "current_default_route_recommendation": {
+    "initial_state": "local-grid-cell",
+    "max_inline_points": 512,
+    "global_bound_early_break": true,
+    "all_source_no_copy_selection": true,
+    "note": "Goals5211-5213 are review pending; do not treat this as release default until reviewed."
+  },
+  "claim_boundary": {
+    "level_b_representative_reproduction_claimed": true,
+    "full_paper_reproduction_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "author_performance_ratio_claimed": false,
+    "author_parity_claimed": false,
+    "xhd_specific_rtdl_primitive_claimed": false
+  },
+  "review_status": {
+    "bounded_goals_5111_5126": "externally reviewed and approved",
+    "system_extraction_goals_5127_5128": "externally reviewed and approved",
+    "route_goals_5211_5215": "implemented; external review pending"
+  }
+}

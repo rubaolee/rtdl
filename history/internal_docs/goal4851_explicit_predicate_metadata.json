@@ -1,0 +1,18 @@
+{
+  "count": 1,
+  "env_after": null,
+  "native_predicate_mode": "planar_map_lsi",
+  "native_predicate_mode_id": 1,
+  "predicate_selection": {
+    "concurrency_note": "Predicate selection is passed to the native count call, not through process-global environment state.",
+    "legacy_native_alias": "rayjoin_lsi",
+    "mechanism": "native_abi_explicit_parameter",
+    "mode_id": 1,
+    "public_mode": "planar_map_lsi"
+  },
+  "raw_native_symbol": "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection_with_predicate_mode",
+  "raw_predicate_selection": {
+    "mechanism": "native_abi_explicit_parameter",
+    "mode_id": 1
+  }
+}

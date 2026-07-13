@@ -1,0 +1,503 @@
+{
+  "author_figure5_log_denominator": {
+    "categories": [
+      "BraTS2020_ValidationData",
+      "geo",
+      "graphics"
+    ],
+    "category_summary": {
+      "BraTS2020_ValidationData": {
+        "by_section": {
+          "auto_tune": {
+            "gpu_names": [
+              "NVIDIA GeForce RTX 3090"
+            ],
+            "point_count_max": 1964247,
+            "point_count_min": 887826,
+            "record_count": 1000,
+            "repeat_counts": [
+              5
+            ],
+            "reported_time_median_median": 9.967,
+            "running_avg_time_median": 10.2166,
+            "unique_pair_count": 500
+          },
+          "eb_gpu": {
+            "gpu_names": [
+              "NVIDIA GeForce RTX 3090"
+            ],
+            "point_count_max": 1964247,
+            "point_count_min": 887826,
+            "record_count": 500,
+            "repeat_counts": [
+              5
+            ],
+            "reported_time_median_median": 23.366,
+            "running_avg_time_median": 23.484099999999998,
+            "unique_pair_count": 500
+          },
+          "hybrid_gpu": {
+            "gpu_names": [
+              "NVIDIA GeForce RTX 3090"
+            ],
+            "point_count_max": 1964247,
+            "point_count_min": 887826,
+            "record_count": 500,
+            "repeat_counts": [
+              5
+            ],
+            "reported_time_median_median": 9.505,
+            "running_avg_time_median": 9.740200000000002,
+            "unique_pair_count": 500
+          },
+          "rt_gpu": {
+            "gpu_names": [
+              "NVIDIA GeForce RTX 3090"
+            ],
+            "point_count_max": 1964247,
+            "point_count_min": 887826,
+            "record_count": 500,
+            "repeat_counts": [
+              5
+            ],
+            "reported_time_median_median": 9.7785,
+            "running_avg_time_median": 10.0323,
+            "unique_pair_count": 500
+          }
+        },
+        "gpu_names": [
+          "NVIDIA GeForce RTX 3090"
+        ],
+        "point_count_max": 1964247,
+        "point_count_min": 887826,
+        "record_count": 2500,
+        "repeat_counts": [
+          5
+        ],
+        "reported_time_median_median": 10.6365,
+        "running_avg_time_median": 10.8683,
+        "unique_pair_count": 500
+      },
+      "geo": {
+        "by_section": {
+          "auto_tune": {
+            "gpu_names": [
+              "NVIDIA GeForce RTX 3090"
+            ],
+            "point_count_max": 403688408,
+            "point_count_min": 9438045,
+            "record_count": 6,
+            "repeat_counts": [
+              5
+            ],
+            "reported_time_median_median": 93.203,
+            "running_avg_time_median": 92.7466,
+            "unique_pair_count": 3
+          },
+          "eb_gpu": {
+            "gpu_names": [
+              "NVIDIA GeForce RTX 3090"
+            ],
+            "point_count_max": 403688408,
+            "point_count_min": 9438045,
+            "record_count": 3,
+            "repeat_counts": [
+              5
+            ],
+            "reported_time_median_median": 539.684,
+            "running_avg_time_median": 538.9875999999999,
+            "unique_pair_count": 3
+          },
+          "hybrid_gpu": {
+            "gpu_names": [
+              "NVIDIA GeForce RTX 3090"
+            ],
+            "point_count_max": 403688408,
+            "point_count_min": 9438045,
+            "record_count": 3,
+            "repeat_counts": [
+              5
+            ],
+            "reported_time_median_median": 87.143,
+            "running_avg_time_median": 86.827,
+            "unique_pair_count": 3
+          },
+          "rt_gpu": {
+            "gpu_names": [
+              "NVIDIA GeForce RTX 3090"
+            ],
+            "point_count_max": 403688408,
+            "point_count_min": 9438045,
+            "record_count": 3,
+            "repeat_counts": [
+              5
+            ],
+            "reported_time_median_median": 96.427,
+            "running_avg_time_median": 97.3264,
+            "unique_pair_count": 3
+          }
+        },
+        "gpu_names": [
+          "NVIDIA GeForce RTX 3090"
+        ],
+        "point_count_max": 403688408,
+        "point_count_min": 9438045,
+        "record_count": 15,
+        "repeat_counts": [
+          5
+        ],
+        "reported_time_median_median": 99.651,
+        "running_avg_time_median": 99.1482,
+        "unique_pair_count": 3
+      },
+      "graphics": {
+        "by_section": {
+          "auto_tune": {
+            "gpu_names": [
+              "NVIDIA GeForce RTX 3090"
+            ],
+            "point_count_max": 4999996,
+            "point_count_min": 437645,
+            "record_count": 8,
+            "repeat_counts": [
+              5
+            ],
+            "reported_time_median_median": 14.974,
+            "running_avg_time_median": 15.149899999999999,
+            "unique_pair_count": 4
+          },
+          "eb_gpu": {
+            "gpu_names": [
+              "NVIDIA GeForce RTX 3090"
+            ],
+            "point_count_max": 4999996,
+            "point_count_min": 437645,
+            "record_count": 4,
+            "repeat_counts": [
+              5
+            ],
+            "reported_time_median_median": 21.319,
+            "running_avg_time_median": 21.898000000000003,
+            "unique_pair_count": 4
+          },
+          "hybrid_gpu": {
+            "gpu_names": [
+              "NVIDIA GeForce RTX 3090"
+            ],
+            "point_count_max": 4999996,
+            "point_count_min": 437645,
+            "record_count": 4,
+            "repeat_counts": [
+              5
+            ],
+            "reported_time_median_median": 14.963,
+            "running_avg_time_median": 15.2375,
+            "unique_pair_count": 4
+          },
+          "rt_gpu": {
+            "gpu_names": [
+              "NVIDIA GeForce RTX 3090"
+            ],
+            "point_count_max": 4999996,
+            "point_count_min": 437645,
+            "record_count": 4,
+            "repeat_counts": [
+              5
+            ],
+            "reported_time_median_median": 24.198,
+            "running_avg_time_median": 24.4217,
+            "unique_pair_count": 4
+          }
+        },
+        "gpu_names": [
+          "NVIDIA GeForce RTX 3090"
+        ],
+        "point_count_max": 4999996,
+        "point_count_min": 437645,
+        "record_count": 20,
+        "repeat_counts": [
+          5
+        ],
+        "reported_time_median_median": 17.298,
+        "running_avg_time_median": 17.841,
+        "unique_pair_count": 4
+      }
+    },
+    "complete_author_pair_count": 507,
+    "example_pairs": [
+      {
+        "category": "BraTS2020_ValidationData",
+        "config_counts": {
+          "BraTS20_Validation_001_flair.nii_BraTS20_Validation_033_flair.nii.json": 3,
+          "n_points_cell_false_max_hit_false": 1,
+          "n_points_cell_true_max_hit_true": 1
+        },
+        "exact_statuses": [
+          "author_log_path_known__input_file_not_available"
+        ],
+        "file_pair": "BraTS20_Validation_001_flair.nii -> BraTS20_Validation_033_flair.nii",
+        "section_counts": {
+          "auto_tune": 2,
+          "eb_gpu": 1,
+          "hybrid_gpu": 1,
+          "rt_gpu": 1
+        }
+      },
+      {
+        "category": "BraTS2020_ValidationData",
+        "config_counts": {
+          "BraTS20_Validation_001_t1.nii_BraTS20_Validation_123_flair.nii.json": 3,
+          "n_points_cell_false_max_hit_false": 1,
+          "n_points_cell_true_max_hit_true": 1
+        },
+        "exact_statuses": [
+          "author_log_path_known__input_file_not_available"
+        ],
+        "file_pair": "BraTS20_Validation_001_t1.nii -> BraTS20_Validation_123_flair.nii",
+        "section_counts": {
+          "auto_tune": 2,
+          "eb_gpu": 1,
+          "hybrid_gpu": 1,
+          "rt_gpu": 1
+        }
+      },
+      {
+        "category": "BraTS2020_ValidationData",
+        "config_counts": {
+          "BraTS20_Validation_001_t1ce.nii_BraTS20_Validation_116_flair.nii.json": 3,
+          "n_points_cell_false_max_hit_false": 1,
+          "n_points_cell_true_max_hit_true": 1
+        },
+        "exact_statuses": [
+          "author_log_path_known__input_file_not_available"
+        ],
+        "file_pair": "BraTS20_Validation_001_t1ce.nii -> BraTS20_Validation_116_flair.nii",
+        "section_counts": {
+          "auto_tune": 2,
+          "eb_gpu": 1,
+          "hybrid_gpu": 1,
+          "rt_gpu": 1
+        }
+      },
+      {
+        "category": "BraTS2020_ValidationData",
+        "config_counts": {
+          "BraTS20_Validation_001_t2.nii_BraTS20_Validation_078_flair.nii.json": 3,
+          "n_points_cell_false_max_hit_false": 1,
+          "n_points_cell_true_max_hit_true": 1
+        },
+        "exact_statuses": [
+          "author_log_path_known__input_file_not_available"
+        ],
+        "file_pair": "BraTS20_Validation_001_t2.nii -> BraTS20_Validation_078_flair.nii",
+        "section_counts": {
+          "auto_tune": 2,
+          "eb_gpu": 1,
+          "hybrid_gpu": 1,
+          "rt_gpu": 1
+        }
+      },
+      {
+        "category": "BraTS2020_ValidationData",
+        "config_counts": {
+          "BraTS20_Validation_001_t2.nii_BraTS20_Validation_090_flair.nii.json": 3,
+          "n_points_cell_false_max_hit_false": 1,
+          "n_points_cell_true_max_hit_true": 1
+        },
+        "exact_statuses": [
+          "author_log_path_known__input_file_not_available"
+        ],
+        "file_pair": "BraTS20_Validation_001_t2.nii -> BraTS20_Validation_090_flair.nii",
+        "section_counts": {
+          "auto_tune": 2,
+          "eb_gpu": 1,
+          "hybrid_gpu": 1,
+          "rt_gpu": 1
+        }
+      },
+      {
+        "category": "BraTS2020_ValidationData",
+        "config_counts": {
+          "BraTS20_Validation_001_t2.nii_BraTS20_Validation_109_flair.nii.json": 3,
+          "n_points_cell_false_max_hit_false": 1,
+          "n_points_cell_true_max_hit_true": 1
+        },
+        "exact_statuses": [
+          "author_log_path_known__input_file_not_available"
+        ],
+        "file_pair": "BraTS20_Validation_001_t2.nii -> BraTS20_Validation_109_flair.nii",
+        "section_counts": {
+          "auto_tune": 2,
+          "eb_gpu": 1,
+          "hybrid_gpu": 1,
+          "rt_gpu": 1
+        }
+      },
+      {
+        "category": "BraTS2020_ValidationData",
+        "config_counts": {
+          "BraTS20_Validation_002_flair.nii_BraTS20_Validation_087_t1.nii.json": 3,
+          "n_points_cell_false_max_hit_false": 1,
+          "n_points_cell_true_max_hit_true": 1
+        },
+        "exact_statuses": [
+          "author_log_path_known__input_file_not_available"
+        ],
+        "file_pair": "BraTS20_Validation_002_flair.nii -> BraTS20_Validation_087_t1.nii",
+        "section_counts": {
+          "auto_tune": 2,
+          "eb_gpu": 1,
+          "hybrid_gpu": 1,
+          "rt_gpu": 1
+        }
+      },
+      {
+        "category": "BraTS2020_ValidationData",
+        "config_counts": {
+          "BraTS20_Validation_002_t1.nii_BraTS20_Validation_017_t2.nii.json": 3,
+          "n_points_cell_false_max_hit_false": 1,
+          "n_points_cell_true_max_hit_true": 1
+        },
+        "exact_statuses": [
+          "author_log_path_known__input_file_not_available"
+        ],
+        "file_pair": "BraTS20_Validation_002_t1.nii -> BraTS20_Validation_017_t2.nii",
+        "section_counts": {
+          "auto_tune": 2,
+          "eb_gpu": 1,
+          "hybrid_gpu": 1,
+          "rt_gpu": 1
+        }
+      }
+    ],
+    "incomplete_author_pair_count": 0,
+    "record_count": 2535,
+    "section_summary": {
+      "auto_tune": {
+        "gpu_names": [
+          "NVIDIA GeForce RTX 3090"
+        ],
+        "point_count_max": 403688408,
+        "point_count_min": 437645,
+        "record_count": 1014,
+        "repeat_counts": [
+          5
+        ],
+        "reported_time_median_median": 10.0185,
+        "running_avg_time_median": 10.2461,
+        "unique_pair_count": 507
+      },
+      "eb_gpu": {
+        "gpu_names": [
+          "NVIDIA GeForce RTX 3090"
+        ],
+        "point_count_max": 403688408,
+        "point_count_min": 437645,
+        "record_count": 507,
+        "repeat_counts": [
+          5
+        ],
+        "reported_time_median_median": 23.394,
+        "running_avg_time_median": 23.562000000000005,
+        "unique_pair_count": 507
+      },
+      "hybrid_gpu": {
+        "gpu_names": [
+          "NVIDIA GeForce RTX 3090"
+        ],
+        "point_count_max": 403688408,
+        "point_count_min": 437645,
+        "record_count": 507,
+        "repeat_counts": [
+          5
+        ],
+        "reported_time_median_median": 9.554,
+        "running_avg_time_median": 9.7664,
+        "unique_pair_count": 507
+      },
+      "rt_gpu": {
+        "gpu_names": [
+          "NVIDIA GeForce RTX 3090"
+        ],
+        "point_count_max": 403688408,
+        "point_count_min": 437645,
+        "record_count": 507,
+        "repeat_counts": [
+          5
+        ],
+        "reported_time_median_median": 9.808,
+        "running_avg_time_median": 10.054400000000001,
+        "unique_pair_count": 507
+      }
+    },
+    "sections": [
+      "auto_tune",
+      "eb_gpu",
+      "hybrid_gpu",
+      "rt_gpu"
+    ],
+    "unique_pair_count": 507
+  },
+  "claim_boundary": {
+    "author_rt_core_parity_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_reproduced": false,
+    "full_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false
+  },
+  "date": "2026-07-09",
+  "decision": {
+    "figure5_reproduced": false,
+    "forbidden_summaries": [
+      "Figure 5 reproduced",
+      "RTDL/author Figure 5 speedup",
+      "author Running.AvgTime equals RTDL route wall",
+      "ModelNet40 all400 proves Figure 5"
+    ],
+    "next_options": [
+      "Acquire or reconstruct Figure 5 inputs with provenance for BraTS, geo, and graphics.",
+      "Run author hd_exec and RTDL hd_exec-compatible routes on the same POD for a bounded Figure 5 subset.",
+      "Build a denominator-aligned Figure 5 matrix only after matching input provenance and timing phases."
+    ],
+    "performance_ratio_allowed": false,
+    "why_not_reproduced": [
+      "Author logs cover Figure 5 workload families but do not provide exact input bytes or hashes.",
+      "Current RTDL evidence covers ModelNet40 and selected graphics representatives, not BraTS and geospatial Figure 5 full workloads.",
+      "Author internal Running.AvgTime / ReportedTime medians are not the same denominator as RTDL route wall or process wall.",
+      "No denominator-aligned RTDL/author performance matrix exists for all Figure 5 categories."
+    ]
+  },
+  "goal": "Goal5288",
+  "inputs": {
+    "coverage_gap_matrix": "Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5267_full_paper_coverage_gap_matrix_2026-07-09.json",
+    "log_index": "Paper-reproduction-apps\\x-hd-paper\\results\\xhd_paper_branch_log_index_goal5176_2026-07-08.json"
+  },
+  "matched": true,
+  "schema": "rtdl.paper_reproduction.xhd.goal5288.figure5_timing_denominator_audit.v1",
+  "status": "figure5_author_timing_denominator_audit_ready__figure5_not_reproduced",
+  "timing_denominator": {
+    "author_available_fields": [
+      "Running.AvgTime",
+      "Running.ReportedTime median",
+      "Running.repeat_count",
+      "GPU name in author log"
+    ],
+    "author_gpu_names": [
+      "NVIDIA GeForce RTX 3090"
+    ],
+    "author_missing_fields_for_fair_wall_ratio": [
+      "author process wall time under current reproducible build",
+      "same hardware RTDL route timing for every Figure 5 category",
+      "exact input file bytes/hashes or externally accepted same-source provenance"
+    ],
+    "rtdl_current_coverage": {
+      "brats_full_workload_gate_present": false,
+      "figure5_full_matrix_gate_present": false,
+      "geo_full_workload_gate_present": false,
+      "graphics_representative_count": 4,
+      "modelnet40_all400_present_but_not_figure5_category": true,
+      "source_artifact": "Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5267_full_paper_coverage_gap_matrix_2026-07-09.json"
+    },
+    "same_denominator_author_rtdl_performance": false
+  }
+}

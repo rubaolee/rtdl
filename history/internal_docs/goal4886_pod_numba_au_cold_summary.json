@@ -1,0 +1,120 @@
+{
+  "author_output": {
+    "bytes": 6189260,
+    "lines": 276320,
+    "path": "/workspace/goal4875_section57_au_representative/author_contract_full/author_contract_au_overlay.txt",
+    "sha256": "a15e0dd4f3a4ffa6a4f8595a317cb53f31979aed02c78f4de243bb40ef40493e"
+  },
+  "byte_equal_to_author": true,
+  "claim_boundary": {
+    "broad_performance_claim": false,
+    "bundled_rayjoin_overlay_imported": false,
+    "dataset_label": "representative_current_source",
+    "exact_old_paper_input_claim": false,
+    "full_eight_pair_paper_claim": false,
+    "numba_available": true,
+    "numba_kernel_module": "/workspace/goal4886_numba_au/goal4886_rayjoin_numba_overlay_kernels.py",
+    "numba_on_app_continuation_path": true,
+    "numba_on_correctness_critical_path": false,
+    "numba_on_rtdl_primitive_path": false,
+    "public_lsi_used": true,
+    "public_point_location_used": true
+  },
+  "elapsed_sec": 119.77255041897297,
+  "generated_output": {
+    "bytes": 6189260,
+    "lines": 276320,
+    "path": "/workspace/goal4886_numba_au/rtdl_numba_overlay.txt",
+    "sha256": "a15e0dd4f3a4ffa6a4f8595a317cb53f31979aed02c78f4de243bb40ef40493e"
+  },
+  "left": {
+    "chains": 357910,
+    "edges": 14430155,
+    "path": "/workspace/goal4848_rep/current_osm_au/lakes_Australia_current_osm_Point.cdb",
+    "points": 14788065
+  },
+  "lsi_row_count": 13452,
+  "native_point_location_timings": {
+    "midpoint_pip_map0": {
+      "mode": "none",
+      "point_count": 1707,
+      "point_upload": 0.0,
+      "positive_face_count": 920,
+      "row_download": 2.3074e-05,
+      "traversal": 0.063735807
+    },
+    "midpoint_pip_map1": {
+      "mode": "none",
+      "point_count": 2752,
+      "point_upload": 0.0,
+      "positive_face_count": 1824,
+      "row_download": 2.3845e-05,
+      "traversal": 0.056508997
+    },
+    "vertex_pip_map0_in_map1": {
+      "mode": "rows",
+      "point_count": 14788065,
+      "point_upload": 0.03793601,
+      "positive_face_count": 193846,
+      "row_download": 0.018516869,
+      "traversal": 9.77731259
+    },
+    "vertex_pip_map1_in_map0": {
+      "mode": "rows",
+      "point_count": 992505,
+      "point_upload": 0.002986566,
+      "positive_face_count": 30538,
+      "row_download": 0.00133352,
+      "traversal": 1.529615334
+    }
+  },
+  "pair_name": "LKAU_x_PKAU_goal4886_numba_cold",
+  "phase_seconds": {
+    "goal4886_wrapper_total_sec": 120.93706700205803,
+    "intersection_reprojection_sec": 0.43520423769950867,
+    "load_pack_left_sec": 71.7839549779892,
+    "load_pack_right_sec": 5.642886273562908,
+    "lsi_public_rows_sec": 6.5151237398386,
+    "midpoint_pip_map0_sec": 0.06427433341741562,
+    "midpoint_pip_map1_sec": 0.05691108852624893,
+    "output_chain_write_sec": 16.91922887414694,
+    "sort_map0_sec": 0.19738346338272095,
+    "sort_map1_sec": 0.18855499476194382,
+    "vertex_pip_map0_in_map1_sec": 10.69053540378809,
+    "vertex_pip_map1_in_map0_sec": 1.558198630809784
+  },
+  "query_map_ids": {
+    "map0_in_map1": 0,
+    "map1_in_map0": 1,
+    "swapped": false
+  },
+  "right": {
+    "chains": 51130,
+    "edges": 941375,
+    "path": "/workspace/goal4848_rep/current_osm_au/parks_Australia_current_osm_Point.cdb",
+    "points": 992505
+  },
+  "route": "public_rtdl_lsi_pip_plus_numba_partner_app_continuation",
+  "scale_bounds": [
+    73.3778761,
+    167.9699741,
+    -54.7704428,
+    -9.2320578
+  ],
+  "schema": "rtdl.goal4886.section57_public_primitives_overlay_numba_harness.v1",
+  "vertex_positive_counts": {
+    "map0_in_map1": 193846,
+    "map1_in_map0": 30538
+  },
+  "writer_result": {
+    "chain_count": 19820,
+    "face_count": 8229,
+    "line_count": 276320,
+    "path": "/workspace/goal4886_numba_au/rtdl_numba_overlay.txt",
+    "point_count": 256500
+  },
+  "xsect_sorted_counts": {
+    "map0": 13452,
+    "map1": 13452
+  }
+}

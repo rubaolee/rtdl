@@ -24,7 +24,7 @@ class ExamplesDirectoryOrganizationAuditTest(unittest.TestCase):
         self.assertEqual([], bad_names)
 
     def test_archived_example_helpers_are_internal(self) -> None:
-        archived = EXAMPLES / "internal" / "archived_apps"
+        archived = ROOT / "history" / "examples_internal" / "internal" / "archived_apps"
         self.assertTrue((archived / "README.md").exists())
         self.assertTrue((archived / "rtdl_v0_7_db_app_demo.py").exists())
         self.assertTrue((archived / "rtdl_v0_7_db_kernel_app_demo.py").exists())
@@ -61,14 +61,28 @@ class ExamplesDirectoryOrganizationAuditTest(unittest.TestCase):
         self.assertEqual([], broken)
 
     def test_current_wrappers_import_internal_archived_helpers(self) -> None:
-        database = (EXAMPLES / "rtdl_database_analytics_app.py").read_text(encoding="utf-8")
-        apple = (EXAMPLES / "rtdl_apple_rt_demo_app.py").read_text(encoding="utf-8")
-        rawkernel = (EXAMPLES / "rtdl_control_apps_cupy_rawkernel.py").read_text(encoding="utf-8")
-        self.assertIn("from examples.internal.archived_apps import rtdl_v0_7_db_app_demo", database)
-        self.assertIn("from examples.internal.archived_apps import rtdl_v0_7_db_app_demo", rawkernel)
-        self.assertIn("from examples.internal.archived_apps import rtdl_apple_rt_closest_hit", apple)
+        database = (
+            EXAMPLES / "current" / "apps" / "analytics" / "rtdl_database_analytics_app.py"
+        ).read_text(encoding="utf-8")
+        apple = (
+            ROOT / "history" / "examples_internal" / "legacy_or_backend_proofs" / "rtdl_apple_rt_demo_app.py"
+        ).read_text(encoding="utf-8")
+        rawkernel = (
+            EXAMPLES / "current" / "partners" / "rtdl_control_apps_cupy_rawkernel.py"
+        ).read_text(encoding="utf-8")
+        self.assertIn(
+            "from history.examples_internal.internal.archived_apps import rtdl_v0_7_db_app_demo",
+            database,
+        )
+        self.assertIn(
+            "from history.examples_internal.internal.archived_apps import rtdl_v0_7_db_app_demo",
+            rawkernel,
+        )
+        self.assertIn(
+            "from history.examples_internal.internal.archived_apps import rtdl_apple_rt_closest_hit",
+            apple,
+        )
 
 
 if __name__ == "__main__":
     unittest.main()
-

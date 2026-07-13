@@ -1,0 +1,1 @@
+{"backend": "optix", "result_count": 4, "run_phases": {"query_aabb_index_2d_sec": 0.1511904319631867}, "rt_core_accelerated": true}

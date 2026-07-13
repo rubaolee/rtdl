@@ -1,0 +1,211 @@
+{
+  "claim_boundary": {
+    "broad_performance_claim": false,
+    "bundled_rayjoin_overlay_imported": false,
+    "numba_on_app_continuation_path": true,
+    "numba_on_rtdl_primitive_path": false,
+    "point_location_base_sessions_reused": true,
+    "public_lsi_used": true,
+    "public_point_location_used": true,
+    "single_run_speedup_claim": false
+  },
+  "runs": [
+    {
+      "author_output": {
+        "bytes": 6189260,
+        "lines": 276320,
+        "path": "/workspace/goal4875_section57_au_representative/author_contract_full/author_contract_au_overlay.txt",
+        "sha256": "a15e0dd4f3a4ffa6a4f8595a317cb53f31979aed02c78f4de243bb40ef40493e"
+      },
+      "byte_equal_to_author": true,
+      "counts": {
+        "lsi_row_count": 13452,
+        "vertex_positive_map0_in_map1": 193846,
+        "vertex_positive_map1_in_map0": 30538,
+        "xsects_map0": 13452,
+        "xsects_map1": 13452
+      },
+      "elapsed_sec": 14.024791270494461,
+      "generated_output": {
+        "bytes": 6189260,
+        "lines": 276320,
+        "path": "goal4903_buffered_writer_repeat0.txt",
+        "sha256": "a15e0dd4f3a4ffa6a4f8595a317cb53f31979aed02c78f4de243bb40ef40493e"
+      },
+      "native_point_location_timings": {
+        "midpoint_pip_map0": {
+          "mode": "none",
+          "point_count": 1707,
+          "point_upload": 0.0,
+          "positive_face_count": 920,
+          "row_download": 2.1281e-05,
+          "traversal": 0.000158882
+        },
+        "midpoint_pip_map1": {
+          "mode": "none",
+          "point_count": 2752,
+          "point_upload": 0.0,
+          "positive_face_count": 1824,
+          "row_download": 2.121e-05,
+          "traversal": 0.000151307
+        },
+        "vertex_pip_map0_in_map1": {
+          "mode": "rows",
+          "point_count": 14788065,
+          "point_upload": 0.042324218,
+          "positive_face_count": 193846,
+          "row_download": 0.0229546,
+          "traversal": 0.010366307
+        },
+        "vertex_pip_map1_in_map0": {
+          "mode": "rows",
+          "point_count": 992505,
+          "point_upload": 0.003961806,
+          "positive_face_count": 30538,
+          "row_download": 0.001458597,
+          "traversal": 0.002554677
+        }
+      },
+      "phase_seconds": {
+        "assign_midpoint_faces_map0_sec": 0.0006152167916297913,
+        "assign_midpoint_faces_map1_sec": 0.0008044913411140442,
+        "file_summary_author_sec": 0.03595958650112152,
+        "file_summary_generated_sec": 0.23666314780712128,
+        "intersection_reprojection_sec": 0.4319046139717102,
+        "lsi_public_pair_id_rows_sec": 2.5623317137360573,
+        "midpoint_pip_map0_sec": 0.0005379244685173035,
+        "midpoint_pip_map1_sec": 0.0004894360899925232,
+        "midpoint_points_map0_sec": 0.17107798904180527,
+        "midpoint_points_map1_sec": 0.011108063161373138,
+        "output_chain_write_sec": 2.8724146336317062,
+        "pack_midpoint_points_map0_sec": 0.003442317247390747,
+        "pack_midpoint_points_map1_sec": 0.005414493381977081,
+        "sort_map0_sec": 0.20595676451921463,
+        "sort_map1_sec": 0.23360822349786758,
+        "vertex_pip_map0_in_map1_sec": 7.111153289675713,
+        "vertex_pip_map1_in_map0_sec": 0.14092445373535156
+      },
+      "repeat": 0,
+      "timed_sum_sec": 14.024406358599663,
+      "unattributed_sec": 0.0003849118947982788,
+      "writer_result": {
+        "chain_count": 19820,
+        "face_count": 8229,
+        "goal4886_writer_skip_plan": {
+          "numba_available": true,
+          "processed_chains": 9621,
+          "skipped_no_xsect_chains": 399419,
+          "skipped_no_xsect_points": 14996199
+        },
+        "line_count": 276320,
+        "path": "goal4903_buffered_writer_repeat0.txt",
+        "point_count": 256500
+      }
+    },
+    {
+      "author_output": {
+        "bytes": 6189260,
+        "lines": 276320,
+        "path": "/workspace/goal4875_section57_au_representative/author_contract_full/author_contract_au_overlay.txt",
+        "sha256": "a15e0dd4f3a4ffa6a4f8595a317cb53f31979aed02c78f4de243bb40ef40493e"
+      },
+      "byte_equal_to_author": true,
+      "counts": {
+        "lsi_row_count": 13452,
+        "vertex_positive_map0_in_map1": 193846,
+        "vertex_positive_map1_in_map0": 30538,
+        "xsects_map0": 13452,
+        "xsects_map1": 13452
+      },
+      "elapsed_sec": 6.450378529727459,
+      "generated_output": {
+        "bytes": 6189260,
+        "lines": 276320,
+        "path": "goal4903_buffered_writer_repeat1.txt",
+        "sha256": "a15e0dd4f3a4ffa6a4f8595a317cb53f31979aed02c78f4de243bb40ef40493e"
+      },
+      "native_point_location_timings": {
+        "midpoint_pip_map0": {
+          "mode": "none",
+          "point_count": 1707,
+          "point_upload": 0.0,
+          "positive_face_count": 920,
+          "row_download": 2.0869e-05,
+          "traversal": 0.000157979
+        },
+        "midpoint_pip_map1": {
+          "mode": "none",
+          "point_count": 2752,
+          "point_upload": 0.0,
+          "positive_face_count": 1824,
+          "row_download": 2.1341e-05,
+          "traversal": 0.000143532
+        },
+        "vertex_pip_map0_in_map1": {
+          "mode": "rows",
+          "point_count": 14788065,
+          "point_upload": 0.037805606,
+          "positive_face_count": 193846,
+          "row_download": 0.022757626,
+          "traversal": 0.010323787
+        },
+        "vertex_pip_map1_in_map0": {
+          "mode": "rows",
+          "point_count": 992505,
+          "point_upload": 0.003129928,
+          "positive_face_count": 30538,
+          "row_download": 0.001318692,
+          "traversal": 0.002538096
+        }
+      },
+      "phase_seconds": {
+        "assign_midpoint_faces_map0_sec": 0.0004992261528968811,
+        "assign_midpoint_faces_map1_sec": 0.0007752105593681335,
+        "file_summary_author_sec": 0.013216637074947357,
+        "file_summary_generated_sec": 0.019802145659923553,
+        "intersection_reprojection_sec": 0.46566682308912277,
+        "lsi_public_pair_id_rows_sec": 1.81376214325428,
+        "midpoint_pip_map0_sec": 0.0005327984690666199,
+        "midpoint_pip_map1_sec": 0.00043182820081710815,
+        "midpoint_points_map0_sec": 0.010421372950077057,
+        "midpoint_points_map1_sec": 0.008826851844787598,
+        "output_chain_write_sec": 2.5867165625095367,
+        "pack_midpoint_points_map0_sec": 0.0030115991830825806,
+        "pack_midpoint_points_map1_sec": 0.004713147878646851,
+        "sort_map0_sec": 0.20688161998987198,
+        "sort_map1_sec": 0.19739526510238647,
+        "vertex_pip_map0_in_map1_sec": 1.0888917744159698,
+        "vertex_pip_map1_in_map0_sec": 0.028508074581623077
+      },
+      "repeat": 1,
+      "timed_sum_sec": 6.450053080916405,
+      "unattributed_sec": 0.00032544881105422974,
+      "writer_result": {
+        "chain_count": 19820,
+        "face_count": 8229,
+        "goal4886_writer_skip_plan": {
+          "numba_available": true,
+          "processed_chains": 9621,
+          "skipped_no_xsect_chains": 399419,
+          "skipped_no_xsect_points": 14996199
+        },
+        "line_count": 276320,
+        "path": "goal4903_buffered_writer_repeat1.txt",
+        "point_count": 256500
+      }
+    }
+  ],
+  "schema": "rtdl.goal4902.reusable_point_location_session_probe.v1",
+  "setup_phase_seconds": {
+    "destroy_reused_point_location_sessions_sec": 0.22772500663995743,
+    "load_pack_left_sec": 3.756551966071129,
+    "load_pack_right_sec": 2.6415280401706696,
+    "prepare_point_location_map0_in_map1_sec": 2.1929949671030045,
+    "prepare_point_location_map1_in_map0_sec": 10.936799101531506,
+    "shared_bounds_sec": 9.037554264068604e-06
+  },
+  "startup_phase_seconds": {
+    "import_goal4886_wrapper_sec": 2.8095576241612434,
+    "install_numba_app_continuation_sec": 1.11311674118042e-05
+  }
+}

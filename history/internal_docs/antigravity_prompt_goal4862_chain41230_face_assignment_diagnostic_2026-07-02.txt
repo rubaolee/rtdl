@@ -1,0 +1,15 @@
+Please review:
+
+history/internal_docs/call_for_review_goal4862_chain41230_face_assignment_diagnostic_2026-07-02.md
+
+Please write your review result to:
+
+history/internal_docs/antigravity_goal4862_chain41230_face_assignment_diagnostic_review_2026-07-02.md
+
+Use one of these verdict labels:
+
+- approve_goal4862_diagnosed_midpoint_face_selection_mismatch_authorize_goal4863
+- approve_with_required_amendments_before_goal4863
+- reject_goal4862_diagnosis_and_require_more_evidence
+
+Please answer all review questions in the call-for-review file.

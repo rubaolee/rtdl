@@ -1,0 +1,19 @@
+{
+  "cache_json": "/workspace/librts-cache/goal5491/lakes_bz2_mbr.json",
+  "cache_npz": "/workspace/librts-cache/goal5491/lakes_bz2_mbr.npz",
+  "column_dtypes": {
+    "ids": "uint32",
+    "max_x": "float64",
+    "max_y": "float64",
+    "min_x": "float64",
+    "min_y": "float64"
+  },
+  "row_count": 8327448,
+  "rtdl_core_wkt_semantics": false,
+  "schema": "rtdl.paper_reproduction.librts.exact_aabb_column_cache.v1",
+  "source_format": "app-owned WKT MBR derivation",
+  "source_name": "lakes.bz2.wkt",
+  "source_path": "/workspace/librts-targets/point-contains-real-remaining/PPoPPAE/datasets/polygons/lakes.bz2.wkt",
+  "source_sha256": "0cde2245faf03cb0cf48cf9f8ffb0e31a7391300d947fa9de2110a46006e2f03",
+  "source_size_bytes": 6557960529
+}

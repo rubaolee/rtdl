@@ -1,0 +1,140 @@
+{
+  "allowed_summary": "Goal5442 rescans public X-HD provenance surfaces. Public pages expose source/proceedings/source-candidate signals, but no exact input artifact or accepted exact-equivalence evidence is acquired unless the classification explicitly says otherwise.",
+  "claim_boundary": {
+    "acm_supplement_inspected": false,
+    "exact_equivalence_accepted": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_reopened": false,
+    "external_artifacts_acquired": false,
+    "figure5_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "new_rtdl_route_code_added": false,
+    "performance_ratio_claimed": false,
+    "pod_execution_claimed": false,
+    "public_provenance_rescan_claimed": true,
+    "route_micro_optimization_goal_authorized": false
+  },
+  "classification": {
+    "acm_supplement_inspected": false,
+    "acm_zip_listing_observed": true,
+    "arcgis_source_candidates_are_exact_author_inputs": false,
+    "arcgis_source_candidates_present": true,
+    "crossref_exact_input_link_found": false,
+    "exact_input_blocker_removed": false,
+    "github_exact_input_archive_found": false,
+    "github_public_source_repo_present": true,
+    "new_public_exact_input_artifact_found": false
+  },
+  "date": "2026-07-10",
+  "exit_label": "public_provenance_rescan_no_new_exact_input_path__external_chain_still_needed",
+  "goal": "Goal5442",
+  "interpretation": {
+    "acm_supplement_status": "listed_but_not_inspected",
+    "next_action": "continue_external_request_chain_or_record_real_response",
+    "pod_expected_next": false,
+    "public_provenance_status_changed": false,
+    "reason_pod_not_expected": "POD execution cannot create missing public provenance. It becomes useful only after an exact artifact, hash manifest, byte-identical regeneration recipe, inspectable supplement, or accepted exact-equivalence response creates a strict same-input gate.",
+    "why_arcgis_does_not_close_blocker": "ArcGIS public services can support Level-B public reconstruction, but exact paper reproduction requires author WKT bytes/hashes, byte-identical regeneration, inspectable supplement contents, or external exact-equivalence acceptance."
+  },
+  "live_refresh_embedded": {
+    "acm_supplement": {
+      "artifact_name": "ics26-106.zip",
+      "classification": "acm_supplement_visible_but_not_downloaded_from_current_environment",
+      "downloaded_or_zip_magic_observed": false,
+      "statuses": [
+        403,
+        403,
+        403,
+        403,
+        403,
+        403
+      ],
+      "zip_entry_visible_from_known_urls": true
+    },
+    "classification": {
+      "acm_supplement_inspected": false,
+      "crossref_has_dataset_or_artifact_link": false,
+      "exact_input_blocker_removed": false,
+      "external_artifacts_acquired": false,
+      "github_has_dataset_archive_release": false,
+      "github_has_likely_input_dataset_blob": false,
+      "github_has_release_assets": false,
+      "github_has_root_data_directory": false,
+      "new_public_exact_input_artifact_found": false
+    },
+    "crossref": {
+      "artifact_like_links": [],
+      "dataset_or_artifact_link_found": false,
+      "title": "X-HD: Fast Hausdorff Distance Computation with Ray Tracing"
+    },
+    "github": {
+      "branches": {
+        "hybrid": "4d9046a9e55d87f35daf81dd718444029fab56ce",
+        "main": "7bf41c8442d059c94f4178355c6d5a10571d9658",
+        "paper": "8c3846866052e1e8755210021f23fac2cbe8c3d6"
+      },
+      "dataset_archive_release_found": false,
+      "full_name": "pwrliang/X-HD",
+      "interpretation": "source_scripts_logs_only_no_input_dataset_blob_or_release",
+      "release_count": 0,
+      "root_data_directory_found": false,
+      "tree_likely_input_dataset_blob_found": false
+    },
+    "schema": "rtdl.paper_reproduction.xhd.goal5432.public_artifact_live_refresh.v1",
+    "status": "public_artifact_refresh_no_new_exact_input_path__acm_supplement_still_uninspected"
+  },
+  "not_allowed": [
+    "claiming the ACM supplement was inspected without zip bytes or extracted contents",
+    "claiming public ArcGIS source candidates are exact author WKT inputs",
+    "claiming exact paper dataset reproduction",
+    "claiming Figure 5 or full X-HD reproduction",
+    "claiming an author-vs-RTDL performance ratio",
+    "running POD, route tuning, or explicit -lb work as a substitute for missing provenance"
+  ],
+  "public_web_observations": [
+    {
+      "exact_input_evidence": false,
+      "observation": "The proceedings listing exposes an X-HD supplement entry named ics26-106.zip.",
+      "reason_not_exact": "Listing visibility is not zip-byte inspection and does not reveal dataset files or hashes.",
+      "surface": "ACM proceedings page",
+      "url": "https://dl.acm.org/doi/proceedings/10.1145/3797905?tocHeading=heading19"
+    },
+    {
+      "exact_input_evidence": false,
+      "observation": "The public repository is the pinned source/script/log provenance root.",
+      "reason_not_exact": "Goal5432 found source/scripts/logs but no input dataset archive, release asset, or root data directory.",
+      "surface": "GitHub repository",
+      "url": "https://github.com/pwrliang/X-HD"
+    },
+    {
+      "exact_input_evidence": false,
+      "observation": "A public WaterBodies source candidate exists and remains useful for Level-B public reconstruction.",
+      "reason_not_exact": "A source candidate is not the author's exact WKT bytes or hash-provenance.",
+      "surface": "ArcGIS USA Detailed Water Bodies",
+      "url": "https://hub.arcgis.com/datasets/esri::usa-detailed-water-bodies/about"
+    },
+    {
+      "exact_input_evidence": false,
+      "observation": "The public paper confirms the X-HD topic and high-level datasets/figures.",
+      "reason_not_exact": "The PDF is not an input archive and does not provide exact local HDDatasets bytes.",
+      "surface": "X-HD public PDF",
+      "url": "https://rubaolee.github.io/paper_pdfs/2026-xhd.pdf"
+    }
+  ],
+  "purpose": "Rescan public X-HD provenance surfaces after the full-objective gap matrix, without substituting route/POD work for missing exact input evidence.",
+  "schema": "rtdl.paper_reproduction.xhd.goal5442.public_provenance_rescan.v1",
+  "source_artifacts": {
+    "goal5432_live_refresh_result": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5432_public_artifact_live_refresh.json",
+    "goal5432_live_refresh_script": "Paper-reproduction-apps/x-hd-paper/scripts/run_xhd_goal5432_public_artifact_live_refresh.py",
+    "goal5440_external_chain_packet": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5440_external_evidence_chain_review_packet.json",
+    "goal5441_functional_gap_matrix": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5441_full_objective_functional_gap_matrix.json"
+  },
+  "status": "public_provenance_rescan_no_new_exact_input_path__external_chain_still_needed",
+  "stop_loss_gate": {
+    "decision": "PASS: evidence/provenance governance, not app-artifact parity implementation.",
+    "gate_downstream_consumer_reachable": true,
+    "gate_generic_capability_produced": true,
+    "gate_non_app_consumer": "public provenance rescan / exact-input blocker governance workflow",
+    "gate_requires_app_specific_logic": false
+  }
+}

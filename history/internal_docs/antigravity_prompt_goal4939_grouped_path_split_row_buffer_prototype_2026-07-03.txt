@@ -1,0 +1,25 @@
+Please perform an independent technical review of Goal4939 in the RTDL workspace.
+
+Read:
+
+- history/internal_docs/call_for_review_goal4939_grouped_path_split_row_buffer_prototype_2026-07-03.md
+- history/internal_docs/goal4939_grouped_path_split_row_buffer_prototype_2026-07-03.md
+- src/rtdsl/output_assembly.py
+- src/rtdsl/__init__.py
+- tests/goal4939_grouped_path_split_records_test.py
+- history/internal_docs/goal4938_layer3_boundary_relocation_report_2026-07-03.md
+- history/internal_docs/antigravity_goal4938_layer3_boundary_relocation_review_2026-07-03.md
+
+Please answer all seven review questions from the call-for-review file.
+
+Write the review to:
+
+history/internal_docs/antigravity_goal4939_grouped_path_split_row_buffer_prototype_review_2026-07-03.md
+
+Use one of these verdict labels:
+
+- approve_goal4939_generic_path_split_prototype_authorize_goal4940
+- redo_goal4939_due_to_genericity_or_test_gap
+- reject_goal4939_as_hidden_app_specific_route
+
+Be strict about app-identity leakage. Goal4939 should be accepted only if the new core function remains generic and the tests prove a non-RayJoin path segmentation fixture before any RayJoin wiring.

@@ -1,0 +1,77 @@
+{
+  "claim_boundary": {
+    "downloads_executed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "outputs_compared": false,
+    "performance_ratio_claimed": false,
+    "pod_preflight_ran": false,
+    "remote_commands_executed": false,
+    "same_input_gate_passed": false,
+    "uploads_executed": false
+  },
+  "classification": "exact_reproduction_not_pod_ready__await_artifact_access",
+  "next_action": "obtain authorized ACM access or real artifact bytes, then run Goal5341 and Goal5342",
+  "not_allowed": [
+    "running POD from URL visibility or 403 HTML responses",
+    "running Goal5344 --execute without a real command-ready packet and ready plan",
+    "claiming dry-run readiness is execution evidence",
+    "claiming same-input correctness before Goal5340 compares real outputs",
+    "claiming exact paper dataset reproduction from readiness status",
+    "claiming Figure 5 or full-paper reproduction from readiness status",
+    "claiming author-vs-RTDL performance ratio from readiness status"
+  ],
+  "pod_execution_allowed_now": false,
+  "pod_usage": {
+    "expected_next": false,
+    "reason": "POD is allowed only after a real command-ready packet and ready POD execution plan exist.",
+    "used": false
+  },
+  "readiness": {
+    "artifact_access_or_zip_ready": false,
+    "command_ready_packet_ready": false,
+    "pod_execution_plan_ready": false,
+    "pod_runner_capability_ready": true,
+    "status_artifacts_loaded": true
+  },
+  "schema": "rtdl.paper_reproduction.xhd.exact_reproduction_readiness.v1",
+  "status_artifacts": {
+    "acm_probe": {
+      "classification": null,
+      "error": null,
+      "exit_label": "acm_supplement_live_access_probe_ready__current_environment_still_not_exact_input",
+      "loaded": true,
+      "path": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5341_acm_supplement_live_access_probe.json",
+      "schema": "rtdl.paper_reproduction.xhd.goal5341.acm_supplement_live_access_probe.v1",
+      "status": null
+    },
+    "artifact_to_packet_pipeline": {
+      "classification": null,
+      "error": null,
+      "exit_label": "acm_artifact_to_packet_pipeline_ready__await_real_zip_and_mapping",
+      "loaded": true,
+      "path": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5342_acm_artifact_to_packet_pipeline.json",
+      "schema": "rtdl.paper_reproduction.xhd.goal5342.acm_artifact_to_packet_pipeline.v1",
+      "status": "acm_artifact_to_packet_pipeline_ready__await_real_zip_and_mapping"
+    },
+    "pod_execution_plan": {
+      "classification": null,
+      "error": null,
+      "exit_label": "mapped_candidate_pod_execution_plan_ready__await_real_command_ready_packet",
+      "loaded": true,
+      "path": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5343_mapped_candidate_pod_execution_plan.json",
+      "schema": "rtdl.paper_reproduction.xhd.goal5343.mapped_candidate_pod_execution_plan.v1",
+      "status": "mapped_candidate_pod_execution_plan_ready__await_real_command_ready_packet"
+    },
+    "pod_execution_runner": {
+      "classification": null,
+      "error": null,
+      "exit_label": "mapped_candidate_pod_execution_runner_ready__dry_run_only_until_real_plan",
+      "loaded": true,
+      "path": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5344_mapped_candidate_pod_execution_runner.json",
+      "schema": "rtdl.paper_reproduction.xhd.goal5344.mapped_candidate_pod_execution_runner.v1",
+      "status": "mapped_candidate_pod_execution_runner_ready__dry_run_only_until_real_plan"
+    }
+  }
+}

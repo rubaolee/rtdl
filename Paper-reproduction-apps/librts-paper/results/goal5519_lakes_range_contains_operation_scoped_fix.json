@@ -1,0 +1,22 @@
+{
+  "claim_boundary": {
+    "app_specific_core_behavior_authorized": false,
+    "diagnostic_only": true,
+    "embree_in_scope": false,
+    "performance_ratio_authorized": false
+  },
+  "indexed_count": 8327448,
+  "input_identity": {
+    "app_owned_cache_contract": "rtdl.paper_reproduction.librts.exact_aabb_column_cache.v1",
+    "cache_row_count_matches": true,
+    "geometry_sha256": "0cde2245faf03cb0cf48cf9f8ffb0e31a7391300d947fa9de2110a46006e2f03",
+    "query_sha256": "f4119e7d429ab8cd9355f0b1ef1f3594e28fb6b6e1ce70fcdaff1a557c13c3b8"
+  },
+  "optix_library": "/tmp/rtdl-goal5519/build5519/librtdl_optix.so",
+  "optix_library_sha256": "75e7d0dea9f10e98e179c2617a3401f872ca09de0a54adbb57792cb8675120df",
+  "prepare_sec": 0.808031486987602,
+  "query_count": 100000,
+  "query_sec": 0.6018221490085125,
+  "result_count": 101418,
+  "schema": "rtdl.paper_reproduction.librts.goal5519_cached_range_contains_probe.v1"
+}

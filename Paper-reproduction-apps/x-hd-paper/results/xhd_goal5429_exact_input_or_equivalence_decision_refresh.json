@@ -1,0 +1,165 @@
+{
+  "allowed_summary": "Goal5429 refreshes the post-Level-B decision: after Goal5428 the X-HD matrix has 6 cases and 9 route results, but full paper reproduction is still blocked on exact input artifacts or explicit exact-equivalence acceptance. The next useful work is review/provenance/equivalence, not route tuning.",
+  "blocked_or_rejected_paths": [
+    {
+      "allowed": false,
+      "path": "route_micro_optimization",
+      "reason": "Goal5428 already has broad Level-B scalar evidence; the blocker is input identity, not route timing."
+    },
+    {
+      "allowed": false,
+      "path": "explicit_lb_or_row_identity_work",
+      "reason": "The implementation-artifact parity line remains fail-closed under the stop-loss rule."
+    },
+    {
+      "allowed": false,
+      "path": "water_bg_exact_promotion_by_statistics_only",
+      "reason": "Matching point counts, MBRs, and HDResult are not sufficient without file/hash or accepted exact-equivalence evidence."
+    },
+    {
+      "allowed": false,
+      "path": "performance_ratio_from_goal5428",
+      "reason": "Author AvgTime, process wall, RTDL route wall, and RTDL total are separate denominators."
+    }
+  ],
+  "branch_ranking": [
+    {
+      "branch": "strict_review_goals5424_5428_packet",
+      "rank": 1,
+      "reason": "The expanded Level-B matrix should be reviewed before using it as a public status baseline.",
+      "requires_pod": false
+    },
+    {
+      "branch": "author_artifact_or_hash_acquisition",
+      "rank": 2,
+      "reason": "Exact paper status requires input files, hashes, or byte-identical regeneration evidence.",
+      "requires_pod": false
+    },
+    {
+      "branch": "water_bg_public_reconstruction_exact_equivalence_review_packet",
+      "rank": 3,
+      "reason": "WaterBodies->BlockGroups is the strongest public candidate, but only an explicit external decision can promote the claim beyond Level-B.",
+      "requires_pod": false
+    },
+    {
+      "branch": "same_input_author_rtdl_gate_after_new_artifacts",
+      "rank": 4,
+      "reason": "POD becomes useful only after new exact artifacts or an accepted reconstruction require verification.",
+      "requires_pod": true
+    }
+  ],
+  "claim_boundary": {
+    "author_rt_core_algorithm_equivalence_claimed": false,
+    "decision_refresh_claimed": true,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_reopened": false,
+    "figure5_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "level_b_matrix_current_claimed": true,
+    "new_pod_execution_claimed": false,
+    "new_rtdl_route_code_added": false,
+    "performance_ratio_claimed": false,
+    "route_micro_optimization_goal_authorized": false
+  },
+  "current_best_exact_equivalence_candidate": {
+    "evidence_level": "level_b_full_public_same_source_geo_not_exact_file_hash",
+    "goal5428_row_id": "geo_water_bg_full_public_paper_config",
+    "recommended_decision": "Send for external exact-equivalence review only if owner wants a bounded public-reconstruction claim; do not self-promote to exact.",
+    "row_id": "geo_waterbodies_blockgroups",
+    "why_best": [
+      "WaterBodies and BlockGroups full-public MBRs match paper logs.",
+      "Point-count deltas are small compared with other geo rows.",
+      "Author paper-config rerun with n_points_cell=8 reproduces paper-log HDResult.",
+      "RTDL exact-witness float64 aligns with author/paper float32 within the declared numeric boundary."
+    ],
+    "why_not_exact_yet": [
+      "No author WKT file hashes.",
+      "No proof that current ArcGIS services are the author's exact snapshot.",
+      "No byte-identical regeneration proof.",
+      "Remaining point-count deltas are nonzero."
+    ]
+  },
+  "date": "2026-07-10",
+  "exact_or_equivalence_requirements": {
+    "allowed_outcomes": [
+      "exact_equivalent_accepted_by_external_review",
+      "bounded_public_reconstruction_only",
+      "not_accepted_keep_level_b"
+    ],
+    "not_sufficient": [
+      "matching point counts",
+      "matching MBRs",
+      "matching Gini/statistics",
+      "matching HDResult alone",
+      "matching author rerun on current public service snapshot",
+      "checked-in author logs",
+      "public repository source code without input hashes"
+    ],
+    "required_before_exact_equivalence_can_be_considered": [
+      "pinned public source URL or archive identifier",
+      "source snapshot date/version/hash where applicable",
+      "deterministic conversion/export script in the repository",
+      "explicit geometry filtering/simplification/precision policy",
+      "generated input file sha256 recorded in artifact",
+      "author `hd_exec` rerun on generated inputs matches paper-log scalar within declared tolerance",
+      "RTDL route on the same generated inputs matches the author rerun within declared tolerance",
+      "external review explicitly accepts the generated public inputs as exact-equivalent or accepts a renamed bounded public-reconstruction claim"
+    ],
+    "valid_next_paths": [
+      "obtain author input files/hashes or converted point-set artifacts",
+      "obtain byte-identical regeneration scripts and source snapshots",
+      "obtain external review accepting a deterministic public reconstruction as exact-equivalent for a bounded claim",
+      "otherwise keep the project at Level-B for these rows"
+    ]
+  },
+  "full_reproduction_decision": {
+    "explicit_lb_authorized": false,
+    "full_reproduction_next_blocker": "exact_input_artifacts_or_explicit_exact_equivalence_acceptance",
+    "more_route_performance_work_is_next": false,
+    "reason": "Goal5428 makes Level-B scalar evidence broader, but it does not change the exact-input identity blocker. Full paper progress now requires author files/hashes, byte-identical regeneration, or an externally accepted exact-equivalence claim.",
+    "route_micro_optimization_authorized": false
+  },
+  "goal": "Goal5429",
+  "level_b_matrix_status": {
+    "bounded_geo_case_count": 2,
+    "bounded_geo_route_result_count": 2,
+    "full_public_geo_case_count": 1,
+    "full_public_geo_route_result_count": 1,
+    "graphics_case_count": 3,
+    "graphics_route_result_count": 6,
+    "matched": true,
+    "source_goal": "Goal5428",
+    "strongest_new_row": "geo_water_bg_full_public_paper_config",
+    "total_case_count": 6,
+    "total_route_result_count": 9
+  },
+  "not_allowed": [
+    "claiming exact paper dataset recovery",
+    "claiming Figure 5 reproduction",
+    "claiming full X-HD paper reproduction",
+    "claiming author-vs-RTDL performance ratio",
+    "claiming public reconstruction is exact from point counts, MBRs, or HDResult alone",
+    "reopening explicit -lb or row identity work",
+    "starting route micro-optimization as paper-reproduction progress"
+  ],
+  "pod_usage": {
+    "expected_next": false,
+    "reason": "No new input artifact or accepted exact-equivalence claim exists yet; POD execution would not advance the blocker.",
+    "used": false
+  },
+  "purpose": "Refresh the full-paper blocker after the expanded Goal5428 Level-B matrix. The goal is to decide what can legally move the X-HD line beyond Level-B.",
+  "recommended_next_goal": "Goal5430_water_bg_exact_equivalence_review_packet_or_author_artifact_request",
+  "schema": "rtdl.paper_reproduction.xhd.goal5429.exact_input_or_equivalence_decision_refresh.v1",
+  "source_artifacts": {
+    "goal5324": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5324_exact_input_acquisition_and_equivalence_decision_packet.json",
+    "goal5428": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5428_level_b_matrix_with_water_bg_full_public.json"
+  },
+  "status": "exact_input_or_equivalence_decision_refreshed_after_goal5428__no_route_work",
+  "stop_loss_gate": {
+    "decision": "PASS: this goal keeps app-artifact parity fail-closed and redirects to provenance/equivalence.",
+    "gate_downstream_consumer_reachable": true,
+    "gate_generic_capability_produced": true,
+    "gate_non_app_consumer": "exact-input / exact-equivalence decision packet; no app-artifact parity implementation",
+    "gate_requires_app_specific_logic": false
+  }
+}

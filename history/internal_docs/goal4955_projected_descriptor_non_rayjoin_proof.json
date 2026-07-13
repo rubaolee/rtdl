@@ -1,0 +1,71 @@
+{
+  "authorofficial_required": false,
+  "carrier_columns": [
+    "group_length",
+    "group_offset",
+    "label_a",
+    "label_b"
+  ],
+  "cdb_required": false,
+  "expected": {
+    "pair_count": 3,
+    "pairs": [
+      {
+        "group_count": 2,
+        "label_a": 10,
+        "label_b": 100,
+        "point_row_count": 5
+      },
+      {
+        "group_count": 1,
+        "label_a": 20,
+        "label_b": 200,
+        "point_row_count": 4
+      },
+      {
+        "group_count": 2,
+        "label_a": 20,
+        "label_b": 300,
+        "point_row_count": 7
+      }
+    ],
+    "total_groups": 5,
+    "total_point_rows": 16
+  },
+  "geometry_payload_materialized": false,
+  "pass": true,
+  "projected_out_columns": [
+    "x",
+    "y",
+    "alt_label",
+    "source_side_id",
+    "source_element_id"
+  ],
+  "rayjoin_imported": false,
+  "result": {
+    "pair_count": 3,
+    "pairs": [
+      {
+        "group_count": 2,
+        "label_a": 10,
+        "label_b": 100,
+        "point_row_count": 5
+      },
+      {
+        "group_count": 1,
+        "label_a": 20,
+        "label_b": 200,
+        "point_row_count": 4
+      },
+      {
+        "group_count": 2,
+        "label_a": 20,
+        "label_b": 300,
+        "point_row_count": 7
+      }
+    ],
+    "total_groups": 5,
+    "total_point_rows": 16
+  },
+  "schema": "rtdl.internal.goal4955.projected_descriptor_non_rayjoin_proof.v1"
+}

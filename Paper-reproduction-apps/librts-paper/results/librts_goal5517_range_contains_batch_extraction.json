@@ -1,0 +1,85 @@
+{
+  "archive": {
+    "path": "/workspace/librts-data/PPoPPAE-v2.tar.gz",
+    "verified_md5": "89e589f086038f1cd3af9e3ed67da8c8",
+    "verified_size_bytes": 23062425365
+  },
+  "claim_boundary": {
+    "archive_subset_extracted": true,
+    "archive_verified": true,
+    "complete_paper_reproduction_claimed": false,
+    "embree_in_scope": false,
+    "exact_input_files_identified": true,
+    "paper_figure_reproduced": false,
+    "performance_ratio_authorized": false
+  },
+  "extraction": {
+    "atomic_directory_promotion": true,
+    "final_path": "/tmp/goal5517-target",
+    "selected_member_count": 8,
+    "selected_members": [
+      {
+        "relative_path": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+        "sha256": "fd77bf8294dfb9dfe45e49fc4aec99427ebd9ac4f370697b0c908d635d643aed",
+        "size_bytes": 2962689351
+      },
+      {
+        "relative_path": "PPoPPAE/datasets/polygons/dtl_cnty.wkt",
+        "sha256": "9177fdff45f24488f22157a2a1428a7cdb9d5a66a7287d4013ead52de1c7973f",
+        "size_bytes": 363987023
+      },
+      {
+        "relative_path": "PPoPPAE/datasets/polygons/USACensusBlockGroupBoundaries.wkt",
+        "sha256": "a5ead9c7bf5adac34a256e54ead58e6e100ca5321ddeb5268699a58a82b7b8da",
+        "size_bytes": 2012101367
+      },
+      {
+        "relative_path": "PPoPPAE/datasets/polygons/USADetailedWaterBodies.wkt",
+        "sha256": "bbdf49e4e2484f7d2994aea40bf772ce5418bacb58ade8efc63ab9e8dc703dfe",
+        "size_bytes": 890353369
+      },
+      {
+        "relative_path": "PPoPPAE/datasets/queries/range-contains_queries_100000/parks_Europe.wkt",
+        "sha256": "b76e901cf41dc1fa2d3073fd88adc7c9327db8620fa221a0e21b00df0ca211f6",
+        "size_bytes": 17149956
+      },
+      {
+        "relative_path": "PPoPPAE/datasets/queries/range-contains_queries_100000/dtl_cnty.wkt",
+        "sha256": "b6b388481f3c27a14adacb36e6a4acfbe56a2c0cd012dcf853e753eed3adb9a4",
+        "size_bytes": 17480708
+      },
+      {
+        "relative_path": "PPoPPAE/datasets/queries/range-contains_queries_100000/USACensusBlockGroupBoundaries.wkt",
+        "sha256": "d714bcda17f18bce46f0e0428ad7977e2abb4edd241397fa6cc91d36b97b9bc9",
+        "size_bytes": 17480392
+      },
+      {
+        "relative_path": "PPoPPAE/datasets/queries/range-contains_queries_100000/USADetailedWaterBodies.wkt",
+        "sha256": "62d62a9b68bf93ca54b9dd5df187875f815c4fe0f5c343ed5772e459dce4fc85",
+        "size_bytes": 17481700
+      }
+    ],
+    "selected_pair_count": 4,
+    "selected_pairs": [
+      {
+        "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+        "query": "PPoPPAE/datasets/queries/range-contains_queries_100000/parks_Europe.wkt"
+      },
+      {
+        "geometry": "PPoPPAE/datasets/polygons/dtl_cnty.wkt",
+        "query": "PPoPPAE/datasets/queries/range-contains_queries_100000/dtl_cnty.wkt"
+      },
+      {
+        "geometry": "PPoPPAE/datasets/polygons/USACensusBlockGroupBoundaries.wkt",
+        "query": "PPoPPAE/datasets/queries/range-contains_queries_100000/USACensusBlockGroupBoundaries.wkt"
+      },
+      {
+        "geometry": "PPoPPAE/datasets/polygons/USADetailedWaterBodies.wkt",
+        "query": "PPoPPAE/datasets/queries/range-contains_queries_100000/USADetailedWaterBodies.wkt"
+      }
+    ]
+  },
+  "operation": "range_contains",
+  "schema": "rtdl.paper_reproduction.librts.verified_operation_batch.v1",
+  "status": "exact_archive_operation_batch_safely_extracted"
+}

@@ -1,0 +1,256 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5317.figure5_exact_input_acquisition_gap_matrix.v1",
+  "goal": "Goal5317",
+  "date": "2026-07-09",
+  "purpose": "Convert the remaining X-HD Figure-5 blocker from vague missing-data status into row-level exact-input acquisition requirements.",
+  "claim_boundary": {
+    "figure5_reproduction_complete": false,
+    "exact_paper_dataset_reproduction_complete": false,
+    "full_paper_reproduction_complete": false,
+    "author_vs_rtdl_performance_ratio_authorized": false,
+    "new_rtdl_route_code_added": false,
+    "dataset_acquisition_plan_claimed": true
+  },
+  "inputs": [
+    "Paper-reproduction-apps/x-hd-paper/results/xhd_paper_target_log_mapping_goal5177_2026-07-08.json",
+    "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5267_full_paper_coverage_gap_matrix_2026-07-09.json",
+    "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5288_figure5_timing_denominator_audit_2026-07-09.json",
+    "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5297_dataset_acquisition_manifest_2026-07-09.json",
+    "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5309_full_public_arcgis_probe_summary_2026-07-09.json",
+    "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5316_figure5_level_b_status_matrix.json"
+  ],
+  "exact_dataset_rule": {
+    "level_c_requires_one_of": [
+      "author-provided input files or archives",
+      "author-provided hashes for converted point files",
+      "byte-identical regenerated point files from a documented author conversion pipeline",
+      "external review accepting a deterministic public-source regeneration as equivalent"
+    ],
+    "not_sufficient": [
+      "matching point counts",
+      "matching MBRs",
+      "matching Gini or other aggregate statistics",
+      "matching HDResult alone",
+      "matching author rerun on a public same-source candidate",
+      "paper-log path names without bytes or hashes"
+    ]
+  },
+  "figure5_author_log_scope": {
+    "complete_author_pair_count": 507,
+    "categories": {
+      "BraTS2020_ValidationData": {
+        "unique_pair_count": 500,
+        "record_count": 2500,
+        "gpu": "NVIDIA GeForce RTX 3090"
+      },
+      "geo": {
+        "unique_pair_count": 3,
+        "record_count": 15,
+        "gpu": "NVIDIA GeForce RTX 3090"
+      },
+      "graphics": {
+        "unique_pair_count": 4,
+        "record_count": 20,
+        "gpu": "NVIDIA GeForce RTX 3090"
+      }
+    }
+  },
+  "rows": [
+    {
+      "row_id": "brats2020_validation",
+      "category": "BraTS2020_ValidationData",
+      "paper_log_pair_count": 500,
+      "current_level": "paper_log_paths_known__input_bytes_absent",
+      "exact_input_status": "blocked",
+      "level_b_status": "not_started",
+      "available_evidence": [
+        "paper-branch author logs contain 500 unique BraTS validation pairs",
+        "paper logs include HDResult, point counts, Running.AvgTime and ReportedTime medians",
+        "Goal5288 records point-count range 887826 to 1964247"
+      ],
+      "missing_for_exact": [
+        "authorized BraTS 2020 validation image files",
+        "the exact author validation image list/order",
+        "author conversion pipeline from NIfTI to point sets",
+        "hashes or deterministic regeneration proof for converted point files"
+      ],
+      "candidate_next_action": "Acquire authorized BraTS 2020 access and reproduce one listed author-log pair as a Level-B same-source gate; do not call it exact until author image-list and conversion hashes are available.",
+      "pod_expected": false,
+      "why_not_next_default": "Access/licensing and conversion provenance are unresolved; starting here is mostly administrative before it is a route problem.",
+      "forbidden_claim": "BraTS Figure-5 reproduction or exact image input recovery."
+    },
+    {
+      "row_id": "graphics_stanford",
+      "category": "graphics",
+      "paper_log_pair_count": 4,
+      "current_level": "level_b_public_same_source_candidates",
+      "exact_input_status": "not_proven",
+      "level_b_status": "partially_value_matched",
+      "available_evidence": [
+        "public Stanford Dragon, HappyBuddha, AsianDragon, and ThaiStatuette files or app-owned scaled variants are present locally",
+        "Goal5298 author precheck value-matched 3 of 4 graphics pairs within 1e-6",
+        "Goal5316 classifies Dragon->HappyBuddha as the strongest current graphics Level-B row",
+        "Goal5316 classifies Dragon->Asian scaled as an author-value no-go under the current mapping"
+      ],
+      "value_matched_level_b_pairs": [
+        "dragon.ply -> happy_buddha.ply",
+        "thai_statuette_scaled_1e-3.ply -> happy_buddha.ply",
+        "thai_statuette_scaled_1e-3.ply -> asian_dragon_scaled_1e-3.ply"
+      ],
+      "no_go_pairs": [
+        "dragon.ply -> asian_dragon_scaled_1e-3.ply"
+      ],
+      "missing_for_exact": [
+        "author input file hashes or bytes for the paper's graphics files",
+        "proof that author used the exact same Stanford public archives and local transformations",
+        "proof for any scaling/translation convention used by paper-log basenames",
+        "paper-branch conversion or preprocessing script that deterministically regenerates the author point files"
+      ],
+      "candidate_next_action": "Search the author repository / paper branch / logs for graphics preprocessing or serialized input hashes; if none exist, keep graphics at Level-B and do not spend more route work on Dragon->Asian until a value-matched input variant appears.",
+      "pod_expected": false,
+      "why_not_exact_yet": "Public Stanford source and value matching are not file/hash provenance.",
+      "forbidden_claim": "Stanford public files are exact paper inputs."
+    },
+    {
+      "row_id": "geo_county_zcta",
+      "category": "geo",
+      "paper_pair": "dtl_cnty.wkt -> uszipcode.wkt",
+      "current_level": "bounded_scalar_match_plus_full_public_probe_no_go",
+      "exact_input_status": "blocked",
+      "level_b_status": "bounded_match_only",
+      "available_evidence": [
+        "Goal5305 bounded County->ZCTA fixture matches author scalar within 1e-5",
+        "Goal5309 full-public County/ZCTA probe has paper-like MBRs",
+        "Goal5309 observed County point count is 12477179 vs paper 9438045"
+      ],
+      "full_public_probe": {
+        "county_paper_point_count": 9438045,
+        "county_observed_point_count": 12477179,
+        "county_point_count_delta": 3039134,
+        "county_relative_delta": 0.32200884823075115,
+        "zcta_paper_point_count": 43952878,
+        "zcta_observed_point_count": 43984131,
+        "zcta_point_count_delta": 31253
+      },
+      "missing_for_exact": [
+        "author dtl_cnty.wkt file/hash",
+        "author uszipcode.wkt file/hash",
+        "exact source year/product and simplification/conversion rule for County",
+        "a public County source or conversion that reproduces the paper point count while preserving paper MBR"
+      ],
+      "candidate_next_action": "Investigate alternate County source, simplification, geometry precision, or conversion rule before any full-public author/RTDL route run.",
+      "pod_expected": false,
+      "why_not_next_default": "The full-public County candidate is already a point-count no-go; route execution would not solve input identity.",
+      "forbidden_claim": "County->ZCTA exact or Figure-5 reproduction."
+    },
+    {
+      "row_id": "geo_waterbodies_blockgroups",
+      "category": "geo",
+      "paper_pair": "USADetailedWaterBodies.wkt -> USACensusBlockGroupBoundaries.wkt",
+      "current_level": "level_b_full_public_author_paper_config_and_rtdl_witness_match",
+      "exact_input_status": "not_proven",
+      "level_b_status": "strongest_geo_candidate",
+      "available_evidence": [
+        "Goal5309 full-public services match paper MBRs and point counts closely",
+        "Goal5310 materialized full-public WKT files",
+        "Goal5313 author rerun with n_points_cell=8 matches paper-log HDResult exactly",
+        "Goal5314 RTDL exact-witness float64 matches author/paper float32 within 2e-6"
+      ],
+      "full_public_probe": {
+        "waterbodies_paper_point_count": 22818694,
+        "waterbodies_observed_point_count": 22824823,
+        "waterbodies_point_count_delta": 6129,
+        "waterbodies_relative_delta": 0.0002685955646716679,
+        "blockgroups_paper_point_count": 52271340,
+        "blockgroups_observed_point_count": 52271467,
+        "blockgroups_point_count_delta": 127,
+        "blockgroups_relative_delta": 0.0000024296296976507585
+      },
+      "missing_for_exact": [
+        "author USADetailedWaterBodies.wkt file/hash",
+        "author USACensusBlockGroupBoundaries.wkt file/hash",
+        "proof that the current ArcGIS services are the exact snapshots used by the author",
+        "precision/export settings that account for the remaining point-count deltas",
+        "external review accepting the full-public candidate as exact-equivalent"
+      ],
+      "candidate_next_action": "Focus exact-input search here first among geo rows: it has the closest point counts, paper-like MBRs, author paper-config scalar reproduction, and RTDL witness agreement. Search for service vintage/export metadata or author-side file hashes before more performance work.",
+      "pod_expected": false,
+      "why_best_geo_next": "This is the closest non-exact geo candidate; remaining work is provenance rather than route correctness.",
+      "forbidden_claim": "Exact WKT recovery, Figure-5 completion, or identical RTDL/author numeric precision."
+    },
+    {
+      "row_id": "geo_osm_lakes_parks_allnodes",
+      "category": "geo",
+      "paper_pair": "Lakes/Parks/AllNodes OSM-derived workloads",
+      "current_level": "author_log_paths_known__source_snapshot_missing",
+      "exact_input_status": "blocked",
+      "level_b_status": "not_started",
+      "available_evidence": [
+        "author logs and scripts refer to large OSM-derived workloads",
+        "Goal5295 records that /local/storage/shared/HDDatasets is absent on the current POD"
+      ],
+      "missing_for_exact": [
+        "OSM snapshot date",
+        "extract/filter rules",
+        "conversion rules to WKT or point files",
+        "author files or hashes",
+        "feasible large-input execution plan"
+      ],
+      "candidate_next_action": "Do not target as the immediate Figure-5 exact input goal unless the author snapshot or converted files appear.",
+      "pod_expected": false,
+      "why_not_next_default": "No snapshot/filter provenance and very large inputs make this lower leverage than WaterBodies/BG exact-provenance search.",
+      "forbidden_claim": "OSM Figure-5 reproduction from a current public extract."
+    }
+  ],
+  "ranked_next_actions": [
+    {
+      "rank": 1,
+      "action": "Search for exact WaterBodies/BG WKT provenance or export metadata",
+      "row_id": "geo_waterbodies_blockgroups",
+      "reason": "Closest full-public geo candidate; author paper-config scalar reproduces paper log and RTDL witness matches within declared numeric boundary.",
+      "requires_pod": false
+    },
+    {
+      "rank": 2,
+      "action": "Search author repository / paper branch for graphics preprocessing or serialized input hashes",
+      "row_id": "graphics_stanford",
+      "reason": "Three graphics pairs are value-matched Level-B, but exact status needs file/hash or deterministic preprocessing proof.",
+      "requires_pod": false
+    },
+    {
+      "rank": 3,
+      "action": "Investigate alternate County source or conversion rule",
+      "row_id": "geo_county_zcta",
+      "reason": "Current full-public County candidate has a 32.2% point-count mismatch; route execution is premature.",
+      "requires_pod": false
+    },
+    {
+      "rank": 4,
+      "action": "Acquire authorized BraTS data and author image-list/conversion details",
+      "row_id": "brats2020_validation",
+      "reason": "Needed for full Figure 5, but access and conversion provenance are administrative blockers.",
+      "requires_pod": false
+    },
+    {
+      "rank": 5,
+      "action": "Recover OSM snapshot/filter provenance",
+      "row_id": "geo_osm_lakes_parks_allnodes",
+      "reason": "Large OSM-derived workloads remain blocked until snapshot/conversion identity is known.",
+      "requires_pod": false
+    }
+  ],
+  "recommended_next_goal": {
+    "goal": "Goal5318",
+    "title": "WaterBodies/BG exact-provenance search before any new performance work",
+    "scope": [
+      "Search author repository, paper branch, generated manifests, result logs, and available metadata for WKT file hashes or export provenance.",
+      "Search local generated WKT metadata and ArcGIS service metadata for source vintage / last edit / export parameters that could explain remaining point-count deltas.",
+      "Do not rerun author or RTDL unless the search finds a concrete provenance lead requiring verification.",
+      "Keep output as exact-provenance search result, not Figure-5 reproduction."
+    ],
+    "success_labels": [
+      "water_bg_exact_provenance_found",
+      "water_bg_exact_provenance_not_found_keep_level_b"
+    ]
+  }
+}

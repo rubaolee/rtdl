@@ -1,0 +1,59 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.external_response_intake.v1",
+  "status": "filled_synthetic_example",
+  "received_from": {
+    "actor_type": "paper_author",
+    "name_or_role": "synthetic author example",
+    "contact_or_source": "synthetic@example.invalid",
+    "received_date": "2026-07-09"
+  },
+  "response_type": "byte_identical_regeneration_script",
+  "scope": {
+    "paper": "X-HD",
+    "families": ["geo_wkt"],
+    "paper_paths_or_figures": ["Figure 5"],
+    "claim_boundary_requested": "exact_input"
+  },
+  "artifacts": {
+    "hash_manifest_entries": [],
+    "archive": null,
+    "regeneration_script": {
+      "reference": "synthetic://xhd/rebuild_geo_inputs.py",
+      "commit_or_archive_hash": "3333333333333333333333333333333333333333333333333333333333333333",
+      "source_snapshots": [
+        "synthetic ArcGIS export snapshot 2026-07-09"
+      ],
+      "commands": [
+        "python rebuild_geo_inputs.py --out HDDatasets/geo"
+      ],
+      "expected_output_hashes": [
+        {
+          "path": "geo/USADetailedWaterBodies.wkt",
+          "sha256": "4444444444444444444444444444444444444444444444444444444444444444"
+        }
+      ]
+    },
+    "acm_supplement_listing": null,
+    "exact_equivalence_verdict": null,
+    "freeform_notes": "Synthetic example: byte-identical regeneration instructions."
+  },
+  "validation_status": {
+    "validated_by_codex": false,
+    "sufficient_to_run_pod_gate": false,
+    "sufficient_to_claim_exact_input": false,
+    "requires_external_review_before_use": true,
+    "failure_or_missing_items": []
+  },
+  "next_action": "classify_response_before_action",
+  "claim_boundary": {
+    "request_sent_claimed": false,
+    "external_response_received": false,
+    "external_artifacts_acquired": false,
+    "acm_supplement_inspected": false,
+    "exact_equivalence_accepted": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false
+  }
+}

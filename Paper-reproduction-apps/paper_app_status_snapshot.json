@@ -1,0 +1,87 @@
+{
+  "schema": "rtdl.paper_reproduction.portfolio_status.v1",
+  "as_of": "2026-07-13",
+  "portfolio_rule": "Each paper app is a scoped evidence package and system pressure test. No app may promote paper-specific semantics into RTDL core.",
+  "full_all_dataset_all_figure_reproduction_claimed": false,
+  "apps": {
+    "rayjoin-paper": {
+      "scoped_status": "bounded_available_pair_sections_5_2_5_3_and_bounded_5_7_complete",
+      "externally_reviewed_closeout": true,
+      "reviewer": "Antigravity for scientific reproduction; Gemini 3.1 Pro for the v2.14.4 API and release boundary",
+      "full_paper_reproduction_claimed": false,
+      "strongest_correctness": "Public-sample Section 5.7 text output is byte-equal to the AuthorOfficial answer; prepared binary descriptors have stable structural anchors.",
+      "performance": "Top4 prepared-binary six-batch median is 0.328842s versus 0.187042s AuthorOfficial core phases, or about 1.76x slower under the bounded comparison.",
+      "boundary": "The binary route emits descriptors while AuthorOfficial emits output polygons; this is not whole-app semantic or performance parity.",
+      "primary_doc": "Paper-reproduction-apps/rayjoin-paper/README.md",
+      "review_evidence": "history/internal_docs/antigravity_goal4877_section52_lsi_authorofficial_revalidation_review_2026-07-02.md",
+      "additional_review_evidence": [
+        "history/internal_docs/antigravity_goal4878_section53_pip_authorofficial_reproduction_review_2026-07-02.md",
+        "history/internal_docs/antigravity_goal4859_rayjoin_section57_county_zipcode_byte_equal_review_2026-07-02.md",
+        "history/internal_docs/antigravity_goal4866_rayjoin_section57_regression_hardening_review_2026-07-02.md",
+        "history/internal_docs/review_v2_14_4_all_open_review_debt_2026-07-06.md"
+      ],
+      "review_identity_terms": [
+        "rayjoin",
+        "section 5.2",
+        "section 5.3",
+        "section 5.7",
+        "approve"
+      ]
+    },
+    "rt-barneshut-paper": {
+      "scoped_status": "bounded_same_input_prepared_state_force_output_complete",
+      "externally_reviewed_closeout": true,
+      "reviewer": "Claude external review captured in the verified sign-off",
+      "full_paper_reproduction_claimed": false,
+      "strongest_correctness": "A 32768-body prepared-state run matches AuthorOfficial with mismatch_count=0 and max_rel_error about 2.11e-6.",
+      "performance": "The narrow resident kernel is 0.8565ms minimum and 0.9283ms mean versus the 2.083ms author force phase, but the broader RTDL envelope is about 2.53x slower.",
+      "boundary": "RTDL consumes author prepared-state arrays; independent tree construction and the full paper matrix are not reproduced.",
+      "primary_doc": "Paper-reproduction-apps/rt-barneshut-paper/README.md",
+      "review_evidence": "history/internal_docs/review_goal5083_rt_barneshut_bounded_same_input_closeout_verified_2026-07-07.md",
+      "review_identity_terms": ["rt-barneshut", "approve_goal5083"]
+    },
+    "rt-dbscan-paper": {
+      "scoped_status": "bounded_authorofficial_and_representative_synthetic_partition_gates_complete",
+      "externally_reviewed_closeout": true,
+      "reviewer": "Claude external review captured in verified sign-offs",
+      "full_paper_reproduction_claimed": false,
+      "strongest_correctness": "Bounded AuthorOfficial component partitions, core flags, and signatures match; three representative synthetic partition fixtures also match.",
+      "performance": "Cold and warm diagnostics exist, but no paper-performance ratio or speedup is authorized.",
+      "boundary": "Exact paper preprocessing is unavailable; the UCI 3DRoad path exposes author index-directional border semantics that RTDL intentionally does not adopt.",
+      "primary_doc": "Paper-reproduction-apps/rt-dbscan-paper/README.md",
+      "review_evidence": "history/internal_docs/review_goal5095_amended_component_partition_gate_verified_2026-07-07.md",
+      "additional_review_evidence": [
+        "history/internal_docs/review_goals5097_5103_rt_dbscan_representative_partition_packet_verified_2026-07-07.md"
+      ],
+      "review_identity_terms": [
+        "rt-dbscan",
+        "approve_goal5095",
+        "approve_goals5097_5103"
+      ]
+    },
+    "x-hd-paper": {
+      "scoped_status": "same_input_directed_hdresult_complete_and_externally_approved",
+      "externally_reviewed_closeout": true,
+      "reviewer": "Claude external review captured in the verified sign-off",
+      "full_paper_reproduction_claimed": false,
+      "strongest_correctness": "Seven primary exact-witness cases and three secondary fast-scalar cases match author hd_exec directed input1-to-input2 HDResult within explicit tolerances.",
+      "performance": "Author internal, author process wall, RTDL fresh route/total, and RTDL warm route timings are separate; no author-versus-RTDL ratio is authorized.",
+      "boundary": "Exact original paper bytes, all figures, author RT-core algorithm equivalence, and performance parity are not claimed.",
+      "primary_doc": "Paper-reproduction-apps/x-hd-paper/README.md",
+      "review_evidence": "history/internal_docs/review_goal5451_xhd_same_input_hdresult_closeout_verified_2026-07-10.md",
+      "review_identity_terms": ["x-hd", "approve_goal5451"]
+    },
+    "librts-paper": {
+      "scoped_status": "scoped_correctness_and_system_extraction_complete__externally_reviewed_and_approved",
+      "externally_reviewed_closeout": true,
+      "reviewer": "Claude external review captured in the final verified sign-off",
+      "full_paper_reproduction_claimed": false,
+      "strongest_correctness": "Official-archive point-contains and range-contains count matrices each match author RTSpatial at 14/14; a separate representative PIP gate has 71,626 canonical relation rows equal, and bounded mutation counts match at [2,1,0,1,0].",
+      "performance": "No author-versus-RTDL paper-performance ratio is authorized; sparse-refit measurements are RTDL system diagnostics only.",
+      "boundary": "Range-intersects is explicitly frozen at 14 count matches, 2 pinned-author capacity failures, and 26 not checkpointed. Full-paper and Figure reproduction, complete range-intersects coverage, author algorithm equivalence, count-case pointwise equivalence, zero-copy, and Embree are not claimed.",
+      "primary_doc": "Paper-reproduction-apps/librts-paper/README.md",
+      "review_evidence": "history/internal_docs/review_goals5519_5525_librts_final_closeout_verified_2026-07-13.md",
+      "review_identity_terms": ["librts", "goal5519", "approve"]
+    }
+  }
+}

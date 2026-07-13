@@ -1,0 +1,43 @@
+{
+  "schema": "rtdl.paper_reproduction.librts.mutation_contract_audit.v1",
+  "status": "requires_new_generic_mutable_aabb_api",
+  "author_contract": {
+    "insert": "append batches with implicit stable slot ids",
+    "update": "replace existing envelopes and refit touched GAS plus IAS",
+    "delete": "invalidate existing slot ids and update touched GAS plus IAS",
+    "clear": "remove all geometry and reset index state"
+  },
+  "current_rtdl_contract": {
+    "prepared_aabb_handles_are_immutable": true,
+    "optix_native_symbols": [
+      "rtdl_optix_prepare_aabb_index_2d",
+      "rtdl_optix_count_prepared_aabb_index_2d",
+      "rtdl_optix_collect_prepared_aabb_index_2d_point_contains_rows",
+      "rtdl_optix_collect_prepared_aabb_index_2d_range_intersection_rows",
+      "rtdl_optix_destroy_prepared_aabb_index_2d"
+    ],
+    "optix_native_mutation_symbols": [],
+    "historical_mutation_cpu_reference_is_offline_rebuild": true,
+    "same_shape_query_buffer_update_is_geometry_mutation": false
+  },
+  "decision": {
+    "label": "requires_new_generic_api",
+    "first_implementation": "transactional stable-id mutable AABB front door using atomic snapshot rebuild",
+    "native_incremental_refit_claimed": false,
+    "author_mutation_performance_parity_claimed": false,
+    "non_librts_consumer_required": true,
+    "non_librts_consumer": "dynamic obstacle/contact broadphase"
+  },
+  "backend_scope": {
+    "cpu_reference": true,
+    "optix_snapshot_rebuild": true,
+    "embree": false,
+    "hiprt": false
+  },
+  "claim_boundary": {
+    "mutation_correctness_complete": false,
+    "native_incremental_mutation_complete": false,
+    "paper_mutation_figure_reproduced": false,
+    "performance_claimed": false
+  }
+}

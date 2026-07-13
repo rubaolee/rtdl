@@ -78,6 +78,71 @@ void rtdl_cuda_pack_ray3d_device_columns_precompiled(
         void* rays_out,
         uint32_t ray_count);
 
+void rtdl_cuda_local_grid_nearest_seed_3d_precompiled(
+        const double* query_coords,
+        const int64_t* query_ids,
+        uint32_t query_count,
+        const double* target_coords,
+        const int64_t* target_ids,
+        uint32_t target_count,
+        const int64_t* cell_ids,
+        const int64_t* original_cell_ids,
+        const int64_t* dense_cell_positions,
+        uint32_t dense_cell_position_count,
+        const int64_t* point_begin_offsets,
+        const int64_t* point_counts,
+        const int64_t* point_row_indices,
+        uint32_t point_row_index_count,
+        uint32_t cell_count,
+        int dim_x,
+        int dim_y,
+        int dim_z,
+        double lower_x,
+        double lower_y,
+        double lower_z,
+        double upper_x,
+        double upper_y,
+        double upper_z,
+        double* nearest_distances_out,
+        int64_t* nearest_item_ids_out,
+        int64_t* seed_cell_ids_out,
+        int64_t* seed_cell_point_counts_out,
+        int64_t* grid_cell_probe_counts_out);
+
+void rtdl_cuda_grid_branch_bound_nearest_seed_3d_precompiled(
+        const double* query_coords,
+        const int64_t* query_ids,
+        uint32_t query_count,
+        const double* target_coords,
+        const int64_t* target_ids,
+        uint32_t target_count,
+        const int64_t* cell_ids,
+        const int64_t* original_cell_ids,
+        const int64_t* dense_cell_positions,
+        uint32_t dense_cell_position_count,
+        const int64_t* point_begin_offsets,
+        const int64_t* point_counts,
+        const int64_t* point_row_indices,
+        uint32_t point_row_index_count,
+        uint32_t cell_count,
+        int dim_x,
+        int dim_y,
+        int dim_z,
+        double lower_x,
+        double lower_y,
+        double lower_z,
+        double upper_x,
+        double upper_y,
+        double upper_z,
+        double* nearest_distances_out,
+        int64_t* nearest_item_ids_out,
+        int64_t* seed_cell_ids_out,
+        int64_t* seed_cell_point_counts_out,
+        int64_t* grid_cell_probe_counts_out,
+        int64_t* scanned_cell_counts_out,
+        int64_t* scanned_point_counts_out,
+        int64_t* shell_counts_out);
+
 #if defined(__has_include)
 #  if __has_include(<geos_c.h>)
 #    include <geos_c.h>
@@ -118,6 +183,11 @@ struct RtdlAabb2D {
     double min_x, min_y, max_x, max_y;
 };
 
+struct RtdlAabb3D {
+    uint32_t id;
+    double min_x, min_y, min_z, max_x, max_y, max_z;
+};
+
 struct RtdlAabbPairRow {
     uint32_t query_id;
     uint32_t indexed_id;
@@ -125,6 +195,28 @@ struct RtdlAabbPairRow {
 static_assert(offsetof(RtdlAabbPairRow, query_id) == 0, "RtdlAabbPairRow query offset mismatch");
 static_assert(offsetof(RtdlAabbPairRow, indexed_id) == 4, "RtdlAabbPairRow indexed offset mismatch");
 static_assert(sizeof(RtdlAabbPairRow) == 8, "RtdlAabbPairRow size mismatch");
+
+struct RtdlCellMbrFrontierRow {
+    int64_t frontier_kind_code;
+    int64_t query_row_id;
+    int64_t query_point_id;
+    int64_t cell_id;
+    uint64_t point_begin_offset;
+    uint64_t point_count;
+    double min_distance;
+    double max_distance;
+};
+
+struct RtdlActiveQueryStatusStreamRow {
+    int64_t active_queue_index;
+    int64_t query_row_id;
+    int64_t source_id;
+    int64_t cell_id;
+    int64_t status_code;
+    int64_t transition_phase_code;
+    double current_best_before_sq;
+    double current_best_after_sq;
+};
 
 struct RtdlAggregateFrontierSource2D {
     int64_t id;
@@ -197,6 +289,10 @@ struct RtdlSegmentPairIntersectionRow {
     double intersection_point_x, intersection_point_y;
 };
 
+struct RtdlSegmentPairIdRow {
+    uint32_t left_id, right_id;
+};
+
 struct RtdlSegmentFirstHitRow {
     uint32_t probe_id, primitive_id;
     double hit_x, hit_y, hit_t;
@@ -209,6 +305,19 @@ struct RtdlRayjoinCdbPointLocationRow {
     double hit_t;
 };
 typedef RtdlRayjoinCdbPointLocationRow RtdlDirectedSegmentPointLocationRow2D;
+
+struct RtdlRayjoinCdbScaledPoint {
+    uint32_t id;
+    double x, y;
+    int64_t sx, sy;
+};
+typedef RtdlRayjoinCdbScaledPoint RtdlDirectedSegmentScaledPoint2D;
+struct RtdlDirectedSegmentDeviceQueryPoint2D {
+    float x, y;
+    uint32_t id;
+    uint32_t has_scaled;
+    int64_t sx, sy;
+};
 
 struct RtdlPipRow {
     uint32_t point_id, polygon_id, contains;
@@ -278,6 +387,15 @@ struct RtdlNativeDevicePairColumns {
     uint64_t right_ordinals_device_ptr;
     uint64_t relation_status_device_ptr;
     uint64_t relation_boundary_ordinals_device_ptr;
+};
+
+struct RtdlNativePointLocationDeviceIdColumns {
+    uint64_t ids_device_ptr;
+    uint64_t row_count;
+    uint64_t capacity;
+    uint32_t overflow;
+    int32_t device_ordinal;
+    double traversal_seconds;
 };
 
 struct RtdlNativeClosedShapeScalarCountSummary {
@@ -667,6 +785,40 @@ int  rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_r
          size_t* count_out,
          size_t* group_count_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection_with_predicate_mode(
+         void* prepared,
+         void* prepared_left,
+         uint32_t predicate_mode,
+         size_t* count_out,
+         size_t* group_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_run_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection_with_predicate_mode(
+         void* prepared,
+         void* prepared_left,
+         uint32_t predicate_mode,
+         RtdlSegmentPairIntersectionRow** rows_out,
+         size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_run_prepared_segment_pair_id_rows_prepared_left_grouped_range_direct_intersection_with_predicate_mode(
+         void* prepared,
+         void* prepared_left,
+         uint32_t predicate_mode,
+         RtdlSegmentPairIdRow** rows_out,
+         size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_run_prepared_segment_pair_exact_pair_id_device_columns_prepared_left_grouped_range_direct_intersection_with_predicate_mode(
+         void* prepared,
+         void* prepared_left,
+         uint32_t predicate_mode,
+         RtdlNativeDevicePairColumns* columns_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_run_prepared_segment_pair_bounded_exact_pair_id_device_columns_prepared_left_grouped_range_direct_intersection_with_predicate_mode(
+         void* prepared,
+         void* prepared_left,
+         uint32_t predicate_mode,
+         size_t max_rows,
+         RtdlNativeDevicePairColumns* columns_out,
+         char* error_out, size_t error_size);
 int  rtdl_optix_prepared_segment_pair_candidate_device_columns(
          void* prepared,
          const RtdlSegment* left, size_t left_count,
@@ -722,6 +874,11 @@ int  rtdl_optix_prepare_directed_segment_point_location_points_2d(
          const RtdlPoint* points, size_t point_count,
          void** prepared_points_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_prepare_directed_segment_point_location_device_query_points_2d(
+         void* prepared,
+         uint64_t device_points_ptr, size_t point_count,
+         void** prepared_points_out,
+         char* error_out, size_t error_size);
 int  rtdl_optix_count_prepared_directed_segment_point_location_2d_device_points(
          void* prepared,
          void* prepared_points,
@@ -736,6 +893,16 @@ int  rtdl_optix_write_prepared_directed_segment_point_location_2d_device_face_id
          void* prepared,
          void* prepared_points,
          size_t* point_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_prepared_directed_segment_point_location_2d_device_segment_id_columns(
+         void* prepared,
+         void* prepared_points,
+         RtdlNativePointLocationDeviceIdColumns* columns_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_prepared_directed_segment_point_location_2d_device_face_id_columns(
+         void* prepared,
+         void* prepared_points,
+         RtdlNativePointLocationDeviceIdColumns* columns_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_count_prepared_directed_segment_point_location_2d(
          void* prepared,
@@ -754,9 +921,19 @@ int  rtdl_optix_run_prepared_rayjoin_cdb_point_location_2d(
          const RtdlPoint* points, size_t point_count,
          RtdlRayjoinCdbPointLocationRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_run_prepared_rayjoin_cdb_point_location_scaled_points_2d(
+         void* prepared,
+         const RtdlRayjoinCdbScaledPoint* points, size_t point_count,
+         RtdlRayjoinCdbPointLocationRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
 int  rtdl_optix_prepare_rayjoin_cdb_point_location_points_2d(
          void* prepared,
          const RtdlPoint* points, size_t point_count,
+         void** prepared_points_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_prepare_rayjoin_cdb_point_location_scaled_points_2d(
+         void* prepared,
+         const RtdlRayjoinCdbScaledPoint* points, size_t point_count,
          void** prepared_points_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_count_prepared_rayjoin_cdb_point_location_2d_device_points(
@@ -773,6 +950,16 @@ int  rtdl_optix_write_prepared_rayjoin_cdb_point_location_2d_device_face_ids(
          void* prepared,
          void* prepared_points,
          size_t* point_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_prepared_rayjoin_cdb_point_location_2d_device_segment_id_columns(
+         void* prepared,
+         void* prepared_points,
+         RtdlNativePointLocationDeviceIdColumns* columns_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_prepared_rayjoin_cdb_point_location_2d_device_face_id_columns(
+         void* prepared,
+         void* prepared_points,
+         RtdlNativePointLocationDeviceIdColumns* columns_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_count_prepared_rayjoin_cdb_point_location_2d(
          void* prepared,
@@ -1457,8 +1644,379 @@ int  rtdl_optix_collect_prepared_aabb_index_2d_point_contains_rows(
          size_t* emitted_count_out,
          uint32_t* overflowed_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_prepare_mutable_aabb_index_2d(
+         const RtdlAabb2D* boxes, size_t box_count,
+         void** prepared_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_refit_prepared_aabb_index_2d(
+         void* prepared,
+         const RtdlAabb2D* boxes, size_t box_count,
+         char* error_out, size_t error_size);
+int  rtdl_optix_refit_prepared_aabb_index_2d_slots(
+         void* prepared,
+         const uint32_t* slot_indices,
+         const RtdlAabb2D* boxes,
+         size_t update_count,
+         char* error_out, size_t error_size);
 void rtdl_optix_destroy_prepared_aabb_queries_2d(void* prepared_queries);
 void rtdl_optix_destroy_prepared_aabb_index_2d(void* prepared);
+int  rtdl_optix_prepare_aabb_index_3d(
+         const RtdlAabb3D* boxes, size_t box_count,
+         void** prepared_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_collect_prepared_aabb_index_3d_point_contains_rows(
+         void* prepared,
+         const RtdlPoint3D* point_queries, size_t point_query_count,
+         RtdlAabbPairRow* rows_out, size_t row_capacity,
+         size_t* emitted_count_out,
+         uint32_t* overflowed_out,
+         char* error_out, size_t error_size);
+void rtdl_optix_destroy_prepared_aabb_index_3d(void* prepared);
+int  rtdl_optix_collect_cell_mbr_nearest_frontier_3d(
+         const double* query_coords,
+         const int64_t* query_point_ids,
+         size_t query_count,
+         const int64_t* cell_ids,
+         const uint64_t* point_begin_offsets,
+         const uint64_t* point_counts,
+         const double* cell_mbr_min,
+         const double* cell_mbr_max,
+         size_t cell_count,
+         double radius,
+         const double* current_best_distances,
+         const int64_t* current_best_item_ids,
+         uint64_t max_inline_points,
+         uint32_t emit_pruned_rows,
+         uint64_t row_capacity,
+         int64_t* frontier_kind_codes_out,
+         int64_t* query_row_ids_out,
+         int64_t* query_point_ids_out,
+         int64_t* cell_ids_out,
+         uint64_t* point_begin_offsets_out,
+         uint64_t* point_counts_out,
+         double* min_distances_out,
+         double* max_distances_out,
+         uint64_t* emitted_count_out,
+         uint64_t* attempted_count_out,
+         uint32_t* overflowed_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v2(
+         const double* query_coords,
+         const int64_t* query_point_ids,
+         size_t query_count,
+         const int64_t* cell_ids,
+         const uint64_t* point_begin_offsets,
+         const uint64_t* point_counts,
+         const double* cell_mbr_min,
+         const double* cell_mbr_max,
+         size_t cell_count,
+         double radius,
+         const double* current_best_distances,
+         const int64_t* current_best_item_ids,
+         uint64_t max_inline_points,
+         uint32_t emit_pruned_rows,
+         uint32_t sort_rows,
+         uint64_t row_capacity,
+         int64_t* frontier_kind_codes_out,
+         int64_t* query_row_ids_out,
+         int64_t* query_point_ids_out,
+         int64_t* cell_ids_out,
+         uint64_t* point_begin_offsets_out,
+         uint64_t* point_counts_out,
+         double* min_distances_out,
+         double* max_distances_out,
+         uint64_t* emitted_count_out,
+         uint64_t* attempted_count_out,
+         uint32_t* overflowed_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v3(
+         const double* query_coords,
+         const int64_t* query_point_ids,
+         size_t query_count,
+         const int64_t* cell_ids,
+         const uint64_t* point_begin_offsets,
+         const uint64_t* point_counts,
+         const double* cell_mbr_min,
+         const double* cell_mbr_max,
+         size_t cell_count,
+         double radius,
+         const double* current_best_distances,
+         const int64_t* current_best_item_ids,
+         const double* target_coords,
+         const int64_t* target_point_ids,
+         size_t target_count,
+         const uint64_t* point_row_indices,
+         size_t point_row_index_count,
+         uint64_t max_inline_points,
+         uint32_t emit_pruned_rows,
+         uint32_t sort_rows,
+         uint32_t inline_nearest,
+         uint64_t row_capacity,
+         int64_t* frontier_kind_codes_out,
+         int64_t* query_row_ids_out,
+         int64_t* query_point_ids_out,
+         int64_t* cell_ids_out,
+         uint64_t* point_begin_offsets_out,
+         uint64_t* point_counts_out,
+         double* min_distances_out,
+         double* max_distances_out,
+         double* nearest_distances_out,
+         int64_t* nearest_item_ids_out,
+         uint64_t* emitted_count_out,
+         uint64_t* attempted_count_out,
+         uint32_t* overflowed_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v4(
+         const double* query_coords,
+         const int64_t* query_point_ids,
+         size_t query_count,
+         const int64_t* cell_ids,
+         const uint64_t* point_begin_offsets,
+         const uint64_t* point_counts,
+         const double* cell_mbr_min,
+         const double* cell_mbr_max,
+         size_t cell_count,
+         double radius,
+         const double* current_best_distances,
+         const int64_t* current_best_item_ids,
+         const double* target_coords,
+         const int64_t* target_point_ids,
+         size_t target_count,
+         const uint64_t* point_row_indices,
+         size_t point_row_index_count,
+         uint64_t max_inline_points,
+         uint32_t emit_pruned_rows,
+         uint32_t sort_rows,
+         uint32_t inline_nearest,
+         uint64_t row_capacity,
+         int64_t* frontier_kind_codes_out,
+         int64_t* query_row_ids_out,
+         int64_t* query_point_ids_out,
+         int64_t* cell_ids_out,
+         uint64_t* point_begin_offsets_out,
+         uint64_t* point_counts_out,
+         double* min_distances_out,
+         double* max_distances_out,
+         double* nearest_distances_out,
+         int64_t* nearest_item_ids_out,
+         uint64_t* inline_cell_hit_count_out,
+         uint64_t* inline_point_eval_count_out,
+         uint64_t* emitted_count_out,
+         uint64_t* attempted_count_out,
+         uint32_t* overflowed_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v5(
+         const double* query_coords,
+         const int64_t* query_point_ids,
+         size_t query_count,
+         const int64_t* cell_ids,
+         const uint64_t* point_begin_offsets,
+         const uint64_t* point_counts,
+         const double* cell_mbr_min,
+         const double* cell_mbr_max,
+         size_t cell_count,
+         double radius,
+         const double* current_best_distances,
+         const int64_t* current_best_item_ids,
+         const double* target_coords,
+         const int64_t* target_point_ids,
+         size_t target_count,
+         const uint64_t* point_row_indices,
+         size_t point_row_index_count,
+         uint64_t max_inline_points,
+         uint32_t emit_pruned_rows,
+         uint32_t sort_rows,
+         uint32_t inline_nearest,
+         uint64_t row_capacity,
+         int64_t* frontier_kind_codes_out,
+         int64_t* query_row_ids_out,
+         int64_t* query_point_ids_out,
+         int64_t* cell_ids_out,
+         uint64_t* point_begin_offsets_out,
+         uint64_t* point_counts_out,
+         double* min_distances_out,
+         double* max_distances_out,
+         double* nearest_distances_out,
+         int64_t* nearest_item_ids_out,
+         uint64_t* inline_cell_hit_count_out,
+         uint64_t* inline_point_eval_count_out,
+         uint32_t global_bound_early_break,
+         uint64_t* global_bound_early_break_count_out,
+         double* global_bound_distance_out,
+         uint64_t* emitted_count_out,
+         uint64_t* attempted_count_out,
+         uint32_t* overflowed_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v6(
+         const double* query_coords,
+         const int64_t* query_point_ids,
+         size_t query_count,
+         const int64_t* cell_ids,
+         const uint64_t* point_begin_offsets,
+         const uint64_t* point_counts,
+         const double* cell_mbr_min,
+         const double* cell_mbr_max,
+         size_t cell_count,
+         double radius,
+         const double* current_best_distances,
+         const int64_t* current_best_item_ids,
+         const double* target_coords,
+         const int64_t* target_point_ids,
+         size_t target_count,
+         const uint64_t* point_row_indices,
+         size_t point_row_index_count,
+         uint64_t max_inline_points,
+         uint32_t emit_pruned_rows,
+         uint32_t sort_rows,
+         uint32_t inline_nearest,
+         uint64_t row_capacity,
+         int64_t* frontier_kind_codes_out,
+         int64_t* query_row_ids_out,
+         int64_t* query_point_ids_out,
+         int64_t* cell_ids_out,
+         uint64_t* point_begin_offsets_out,
+         uint64_t* point_counts_out,
+         double* min_distances_out,
+         double* max_distances_out,
+         double* nearest_distances_out,
+         int64_t* nearest_item_ids_out,
+         uint64_t* inline_cell_hit_count_out,
+         uint64_t* inline_point_eval_count_out,
+         uint32_t global_bound_early_break,
+         uint32_t frontier_status_probe_mode,
+         uint64_t* global_bound_early_break_count_out,
+         double* global_bound_distance_out,
+         uint64_t* emitted_count_out,
+         uint64_t* attempted_count_out,
+         uint32_t* overflowed_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_collect_active_query_status_stream_3d_v1(
+         const double* query_coords,
+         const int64_t* query_point_ids,
+         size_t query_count,
+         const int64_t* cell_ids,
+         const uint64_t* point_begin_offsets,
+         const uint64_t* point_counts,
+         const double* cell_mbr_min,
+         const double* cell_mbr_max,
+         size_t cell_count,
+         double radius,
+         const double* current_best_distances,
+         const int64_t* current_best_item_ids,
+         const double* target_coords,
+         const int64_t* target_point_ids,
+         size_t target_count,
+         const uint64_t* point_row_indices,
+         size_t point_row_index_count,
+         uint64_t max_inline_points,
+         uint32_t emit_pruned_rows,
+         uint32_t inline_nearest,
+         uint32_t frontier_status_probe_mode,
+         uint64_t row_capacity,
+         int64_t* active_queue_indices_out,
+         int64_t* query_row_ids_out,
+         int64_t* source_ids_out,
+         int64_t* cell_ids_out,
+         int64_t* status_codes_out,
+         int64_t* transition_phase_codes_out,
+         double* current_best_before_sq_out,
+         double* current_best_after_sq_out,
+         uint64_t* emitted_count_out,
+         uint64_t* attempted_count_out,
+         uint32_t* overflowed_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_active_query_status_state_machine_smoke_v1(
+         const int64_t* query_row_ids,
+         const int64_t* active_queue_indices,
+         const int64_t* source_ids,
+         const double* current_best_sq,
+         const int64_t* current_best_item_ids,
+         size_t active_count,
+         const int64_t* candidate_query_row_ids,
+         const int64_t* candidate_cell_ids,
+         const double* candidate_min_sq,
+         const double* candidate_max_sq,
+         const uint64_t* candidate_work_counts,
+         size_t candidate_count,
+         uint64_t heavy_threshold,
+         const int64_t* feedback_active_queue_indices,
+         const double* feedback_best_sq,
+         const int64_t* feedback_item_ids,
+         size_t feedback_count,
+         uint64_t row_capacity,
+         int64_t* active_queue_indices_out,
+         int64_t* query_row_ids_out,
+         int64_t* source_ids_out,
+         int64_t* cell_ids_out,
+         int64_t* status_codes_out,
+         int64_t* transition_phase_codes_out,
+         double* current_best_before_sq_out,
+         double* current_best_after_sq_out,
+         uint64_t* emitted_count_out,
+         uint64_t* attempted_count_out,
+         uint64_t* status_count_offloading_out,
+         uint64_t* feedback_update_count_out,
+         uint32_t* overflowed_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_cell_mbr_nearest_frontier_3d_get_last_memory_telemetry(
+         uint64_t* accel_output_bytes,
+         uint64_t* accel_temp_bytes,
+         uint64_t* accel_aabb_bytes,
+         uint64_t* accel_compacted_output_bytes,
+         uint64_t* device_buffer_bytes,
+         uint64_t* row_buffer_bytes,
+         uint64_t* query_buffer_bytes,
+         uint64_t* cell_buffer_bytes,
+         uint64_t* target_buffer_bytes,
+         uint64_t* nearest_buffer_bytes,
+         uint64_t* attempted_count,
+         uint64_t* emitted_count,
+         uint32_t* mode);
+int  rtdl_optix_cell_mbr_nearest_frontier_3d_get_last_memory_telemetry_v2(
+         uint64_t* accel_output_bytes,
+         uint64_t* accel_temp_bytes,
+         uint64_t* accel_aabb_bytes,
+         uint64_t* accel_compacted_output_bytes,
+         uint64_t* device_buffer_bytes,
+         uint64_t* row_buffer_bytes,
+         uint64_t* query_buffer_bytes,
+         uint64_t* cell_buffer_bytes,
+         uint64_t* target_buffer_bytes,
+         uint64_t* nearest_buffer_bytes,
+         uint64_t* attempted_count,
+         uint64_t* emitted_count,
+         uint32_t* mode,
+         uint64_t* in_queue_capacity,
+         uint64_t* miss_queue_capacity,
+         uint64_t* heavy_offload_row_capacity,
+         uint64_t* heavy_offload_current_rows,
+         uint64_t* heavy_offload_peak_rows,
+         uint64_t* heavy_offload_queue_current_bytes,
+         uint64_t* heavy_offload_queue_peak_bytes);
+int  rtdl_optix_cell_mbr_nearest_frontier_3d_get_last_memory_telemetry_v3(
+         uint64_t* accel_output_bytes,
+         uint64_t* accel_temp_bytes,
+         uint64_t* accel_aabb_bytes,
+         uint64_t* accel_compacted_output_bytes,
+         uint64_t* device_buffer_bytes,
+         uint64_t* row_buffer_bytes,
+         uint64_t* query_buffer_bytes,
+         uint64_t* cell_buffer_bytes,
+         uint64_t* target_buffer_bytes,
+         uint64_t* nearest_buffer_bytes,
+         uint64_t* attempted_count,
+         uint64_t* emitted_count,
+         uint32_t* mode,
+         uint64_t* in_queue_capacity,
+         uint64_t* miss_queue_capacity,
+         uint64_t* heavy_offload_row_capacity,
+         uint64_t* heavy_offload_current_rows,
+         uint64_t* heavy_offload_peak_rows,
+         uint64_t* heavy_offload_queue_current_bytes,
+         uint64_t* heavy_offload_queue_peak_bytes,
+         uint64_t* raw_frontier_kind1_rows,
+         uint64_t* raw_frontier_kind2_rows,
+         uint64_t* raw_frontier_kind3_rows);
 int  rtdl_optix_prepare_rays_2d(
          const RtdlRay2D* rays, size_t ray_count,
          void** rays_out,
@@ -2231,6 +2789,20 @@ int  rtdl_optix_segment_pair_intersection_get_last_phase_timings(
          size_t* raw_candidate_count_out,
          size_t* emitted_count_out,
          uint32_t* mode_out);
+int  rtdl_optix_segment_pair_intersection_get_last_extended_phase_timings(
+         double* total_native_out,
+         double* scaled_cache_ensure_out,
+         double* grouped_range_ensure_out,
+         double* exact_pipeline_ensure_out,
+         double* split_kernel_ensure_out,
+         double* device_alloc_out,
+         double* param_upload_out,
+         double* optix_launch_out,
+         double* count_download_out,
+         double* split_kernel_launch_out,
+         size_t* raw_candidate_count_out,
+         size_t* emitted_count_out,
+         uint32_t* mode_out);
 int  rtdl_optix_rayjoin_cdb_point_location_get_last_phase_timings(
          double* point_upload_out,
          double* traversal_out,
@@ -2244,6 +2816,32 @@ int  rtdl_optix_directed_segment_point_location_get_last_phase_timings(
          double* row_download_out,
          size_t* point_count_out,
          size_t* positive_face_count_out,
+         uint32_t* mode_out);
+int  rtdl_optix_rayjoin_cdb_point_location_get_last_extended_phase_timings(
+         double* prepare_total_out,
+         double* prepare_pipeline_ensure_out,
+         double* prepare_host_copy_out,
+         double* prepare_segment_pack_out,
+         double* prepare_duplicate_canonicalize_out,
+         double* prepare_device_upload_out,
+         double* prepare_range_build_out,
+         double* prepare_range_upload_out,
+         double* prepare_accel_build_out,
+         size_t* prepare_segment_count_out,
+         size_t* prepare_range_count_out,
+         uint32_t* mode_out);
+int  rtdl_optix_directed_segment_point_location_get_last_extended_phase_timings(
+         double* prepare_total_out,
+         double* prepare_pipeline_ensure_out,
+         double* prepare_host_copy_out,
+         double* prepare_segment_pack_out,
+         double* prepare_duplicate_canonicalize_out,
+         double* prepare_device_upload_out,
+         double* prepare_range_build_out,
+         double* prepare_range_upload_out,
+         double* prepare_accel_build_out,
+         size_t* prepare_segment_count_out,
+         size_t* prepare_range_count_out,
          uint32_t* mode_out);
 int  rtdl_optix_fixed_radius_neighbors_3d_get_last_phase_timings(
          double* prepare_out,

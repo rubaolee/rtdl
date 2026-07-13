@@ -1,0 +1,115 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5409.status_machine_semantics_decision.v1",
+  "goal": "Goal5409",
+  "status": "generic_statused_hit_stream_probe_authorized__explicit_lb_still_unsupported",
+  "matched": true,
+  "decision": {
+    "branch": "branch_a_one_more_generic_semantic_probe",
+    "authorized_next_goal": "Goal5410_generic_statused_large_cell_deferral_stream_probe",
+    "explicit_lb_support_authorized": false,
+    "direct_native_fix_authorized": false,
+    "fail_closed_now": false
+  },
+  "generic_semantic_candidate": {
+    "name": "statused_large_cell_deferral_stream",
+    "app_semantics": "none",
+    "description": "A traversal-stage stream of deferred large-cell hits emitted under a generic payload status machine: active query id, cell id, current-best state, prune/abort/completed/miss status, and optional post-stream grouped continuation.",
+    "why_generic": [
+      "It describes a backend traversal/control-flow pattern rather than X-HD, Figure 7, or author option names.",
+      "The same shape applies to any spatial nearest/coverage pipeline that defers oversized cells from traversal to a continuation pass.",
+      "It can be validated by synthetic app-neutral fixtures before using X-HD author traces."
+    ]
+  },
+  "evidence_inputs": {
+    "goal5387_author_trace_v2": {
+      "active_in_queue_size": 437645,
+      "raw_offload_rows_before_sort_reduce": 27133990,
+      "rows_per_active_if_uniform": 62,
+      "raw_offload_row_hash": 4333109858711462591,
+      "raw_offload_row_sample_point_ids": [
+        11168,
+        210712,
+        437119
+      ],
+      "raw_offload_row_sample_cell_ids": [
+        2924,
+        17,
+        17
+      ],
+      "feedback_update_count": 294,
+      "cmin2_after_ray_equals_after_load_balance": true
+    },
+    "goal5406_rtdl_full_cover": {
+      "rtdl_full_cover_rows": 24508120,
+      "rows_per_active_if_uniform": 56,
+      "rtdl_full_cover_row_hash": 9732286907904247845,
+      "author_raw_offload_rows": 27133990,
+      "row_count_parity": false,
+      "row_hash_parity": false
+    },
+    "goal5407_membership_probe": {
+      "classification": "author_sample_rows_not_subset_of_rtdl_full_cover__row_identity_gap",
+      "all_author_sample_pairs_present_in_rtdl_full_cover": false
+    },
+    "goal5408_namespace_reconciliation": {
+      "classification": "author_sample_cell_ids_exist_globally_but_not_for_author_sources",
+      "compact_original_namespace_remap_explains_author_samples": false
+    }
+  },
+  "author_source_semantics_observed": {
+    "shader_file": "/tmp/xhd-goal5387/author/src/rt/shaders/shaders_nn_uniform_grid.cu",
+    "host_file": "/tmp/xhd-goal5387/author/src/hd_impl/hausdorff_distance_rt.h",
+    "raw_stream_stage": "OptiX shader appends offloading_point_ids/offloading_cell_ids before loadBalanceProcessing sort/reduce.",
+    "large_cell_append_condition": "A cell is appended when it survives prune/current-best checks and its point count is greater than processing_threshold.",
+    "status_payloads": [
+      "init",
+      "offloading",
+      "aborted",
+      "miss",
+      "completed"
+    ],
+    "post_stream_continuation": "loadBalanceProcessing groups offload rows by active query, restores cmin2, scans deferred cells, and may update global cmax2.",
+    "why_full_cover_is_not_equivalent": "RTDL full-cover is a deterministic geometric surface; author raw offload is a traversal-status stream affected by prune/current-best/abort/offload payload state and traversal-hit semantics."
+  },
+  "goal5410_required_gates": [
+    {
+      "gate": "synthetic_app_neutral_status_stream",
+      "required": true,
+      "description": "A non-X-HD fixture must prove the statused deferral stream contract without paper names, author constants, or X-HD option semantics."
+    },
+    {
+      "gate": "bounded_xhd_author_sample_row_gate",
+      "required": true,
+      "description": "A bounded X-HD trace must recover sampled author rows by semantics, not by hard-coded cell ids or row counts."
+    },
+    {
+      "gate": "full_goal5387_row_identity_gate",
+      "required": true,
+      "description": "A full-public gate must compare row count, row hash, sampled point/cell ids, status counts, feedback count, and cmin2 hashes against Goal5387."
+    },
+    {
+      "gate": "fail_closed_exit",
+      "required": true,
+      "description": "If the candidate requires X-HD-only constants or cannot recover row identity, explicit -lb remains unsupported and the status stream line stops."
+    }
+  ],
+  "forbidden_shortcuts": [
+    "hard-code 6 rows per active",
+    "hard-code 62 rows per active",
+    "hard-code author sample source/cell pairs",
+    "add X-HD option names to RTDL core/native",
+    "claim explicit -lb support before full row-count/hash/sample/status parity",
+    "claim Figure 7 or Figure 11 reproduction from a semantic probe"
+  ],
+  "claim_boundary": {
+    "status_machine_decision_claimed": true,
+    "explicit_lb_support_claimed": false,
+    "row_count_parity_with_author_claimed": false,
+    "hash_sample_parity_with_author_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "figure11_reproduction_claimed": false,
+    "performance_ratio_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false
+  }
+}

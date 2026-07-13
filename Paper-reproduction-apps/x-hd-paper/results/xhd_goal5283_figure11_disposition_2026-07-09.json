@@ -1,0 +1,125 @@
+{
+  "author_figure11_reference": {
+    "datasets": {
+      "geo": {
+        "row_count": 3,
+        "xhd_mean_breakdown_mb": {
+          "BVH": 15.885660807291666,
+          "Grid": 639.567554473877,
+          "MBRs B": 5.194366455078125,
+          "WL": 849.3068135579427,
+          "WL Heavy Peak": 38.64007314046224
+        },
+        "xhd_mean_total_memory_mb": 1548.5944684346516
+      },
+      "graphics": {
+        "row_count": 4,
+        "xhd_mean_breakdown_mb": {
+          "BVH": 0.078277587890625,
+          "Grid": 7.940291404724121,
+          "MBRs B": 0.03717613220214844,
+          "WL": 20.74295425415039,
+          "WL Heavy Peak": 17.215864181518555
+        },
+        "xhd_mean_total_memory_mb": 46.01456356048584
+      }
+    },
+    "schema": "rtdl.paper_reproduction.xhd.figure11_author_memory_log_matrix.v1",
+    "status": "figure11_author_memory_log_matrix_ready__rtdl_memory_instrumentation_missing"
+  },
+  "claim_boundary": {
+    "author_memory_parity_claimed": false,
+    "figure11_reproduced": false,
+    "full_paper_reproduction_claimed": false,
+    "memory_ratio_claimed": false,
+    "same_denominator_author_figure11_claimed": false
+  },
+  "date": "2026-07-09",
+  "decision": {
+    "close_current_figure11_line": true,
+    "figure11_reproduced": false,
+    "next_if_reopened": "Implement a denominator-aligned generic native worklist that uses author-compatible queue id width and an author-like in_queue + miss_queue denominator, or obtain external review accepting a different memory question.",
+    "offloading_size_shape_mapped": true,
+    "same_byte_denominator_author_figure11": false,
+    "same_denominator_author_figure11": false,
+    "wl_heavy_peak_author_width_candidate_available": true
+  },
+  "goal": "Goal5283",
+  "inputs": {
+    "author_matrix": "Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5272_figure11_author_memory_log_matrix_2026-07-09.json",
+    "offload_mapping": "Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5282_author_offload_mapping_2026-07-09.json",
+    "rtdl_bounded_memory_matrix": "Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5276_rtdl_bounded_memory_matrix_2026-07-09.json"
+  },
+  "matched": true,
+  "remaining_gaps": [
+    "exact Figure 11 paper input identity is not available in the current POD",
+    "RTDL measured queue bytes are not author uint32 queue bytes",
+    "RTDL WL is not author in_queue + miss_queue",
+    "the shape-only candidate is not a paper Figure 11 row"
+  ],
+  "rtdl_current_memory_matrix": {
+    "claim_boundary": {
+      "author_memory_parity_claimed": false,
+      "exact_gpu_allocator_measurement_claimed": false,
+      "figure11_reproduced": false,
+      "performance_ratio_claimed": false,
+      "same_denominator_author_figure11_claimed": false
+    },
+    "coverage": {
+      "all_rows_same_denominator_author_figure11": false,
+      "measured_bvh_rows": 2,
+      "wl_heavy_peak_unavailable_rows": 2
+    },
+    "row_count": 2,
+    "schema": "rtdl.paper_reproduction.xhd.rtdl_memory_matrix.v1",
+    "status": "rtdl_bounded_memory_matrix_ready__figure11_not_reproduced"
+  },
+  "schema": "rtdl.paper_reproduction.xhd.goal5283.figure11_disposition.v1",
+  "shape_only_candidate": {
+    "author_shaped_fields": {
+      "OffloadingSize": {
+        "method": "Maps generic heavy_offload_peak_rows to the author's OffloadingSize row-count concept. This is a bounded shape mapping, not proof of paper Figure 11 parity.",
+        "status": "mapped_from_generic_heavy_offload_peak_rows",
+        "value": 6
+      },
+      "WL": {
+        "bytes": null,
+        "mb": null,
+        "method": "Author WL is in_queue + miss_queue over source points. Current RTDL native v2 telemetry reports in_queue_capacity=6 attempted frontier hits and miss_queue_capacity=0; this is not the same author queue denominator.",
+        "status": "not_aligned_native_in_queue_capacity_is_not_author_in_plus_miss_queue"
+      },
+      "WL Heavy Peak": {
+        "bytes": 48,
+        "mb": 4.57763671875e-05,
+        "method": "Author formula: OffloadingSize * 2 * sizeof(uint32_t). The row-count shape comes from generic heavy_offload_peak_rows; this is author-width equivalent accounting, not measured RTDL queue allocation bytes.",
+        "status": "author_uint32_width_equivalent_from_generic_offload_rows"
+      }
+    },
+    "figure11_row": false,
+    "label": "Goal5282 shape-only offload candidate",
+    "paper_dataset_identity": false,
+    "rtdl_measured_fields": {
+      "expected_rtdl_uint64_pair_queue_peak": {
+        "bytes": 96,
+        "mb": 9.1552734375e-05,
+        "method": "heavy_offload_peak_rows * 2 * sizeof(uint64_t).",
+        "status": "computed_from_generic_offload_rows_for_consistency_check"
+      },
+      "generic_heavy_offload_queue_peak": {
+        "bytes": 96,
+        "mb": 9.1552734375e-05,
+        "method": "Native RTDL v2 telemetry reports heavy_offload_queue_peak_bytes for a generic two-id offload row using RTDL's current 64-bit id queue shape.",
+        "status": "measured_native_rtdl_uint64_pair_queue_bytes"
+      }
+    },
+    "same_denominator_author_figure11": false,
+    "source_artifact": "Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5282_author_offload_mapping_2026-07-09.json",
+    "why_not_figure11_row": [
+      "The source is a generic tiny native telemetry probe, not a Figure 11 paper input.",
+      "RTDL measured queue bytes use 64-bit id pairs; author WL Heavy Peak uses uint32 id pairs.",
+      "RTDL WL remains unaligned because native in_queue_capacity is attempted frontier hits, not author in_queue + miss_queue.",
+      "No author-vs-RTDL Figure 11 memory ratio has a same-denominator basis."
+    ]
+  },
+  "status": "figure11_closed_denominator_not_aligned_after_native_mapping"
+}

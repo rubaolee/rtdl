@@ -1,0 +1,70 @@
+{
+  "author": {
+    "command": [
+      "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+      "-geom",
+      "/workspace/librts-targets/goal5500-range-intersects/PPoPPAE/datasets/polygons/USADetailedWaterBodies.wkt",
+      "-query",
+      "/workspace/librts-targets/goal5500-range-intersects/PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_10000/USADetailedWaterBodies.wkt",
+      "-serialize",
+      "/tmp/librts-serialize/goal5513/USADetailedWaterBodies_select_0.01_10000",
+      "-query_type",
+      "range-intersects",
+      "-index_type",
+      "rtspatial",
+      "-load_factor",
+      "1"
+    ],
+    "geometry_count": 463595,
+    "load_factor": "1",
+    "loading_ms_diagnostic": 1.82,
+    "pair_rows_exposed": false,
+    "query_count": 10000,
+    "query_metric": "internal Query Time; index Loading Time excluded",
+    "query_ms_internal": 9.2196,
+    "result_count": 55205607,
+    "stdout": "Loaded polygons 463595\nLoaded queries 10000\nQueue size 35369 MB\nBVH 208 MB, Geometries 7 MB, AABBs 10 MB, Total 225 MB\nLoading Time 1.82 ms\nGeoms 463595\nQueries 10000\nQuery Time 9.2196 ms\nResults 55205607\nSelectivity: 0.0119082\n"
+  },
+  "case_id": "USADetailedWaterBodies_select_0.01_10000",
+  "claim_boundary": {
+    "complete_paper_reproduction_claimed": false,
+    "device_zero_copy_claimed": false,
+    "embree_in_scope": false,
+    "exact_archive_and_extracted_input_identity_used": true,
+    "figure6_reproduced": false,
+    "generic_columnar_frontdoor_used": true,
+    "performance_ratio_authorized": false,
+    "pointwise_intersection_equivalence_claimed": false,
+    "same_input_result_count_agreement": true
+  },
+  "input_identity": {
+    "geometry_path": "/workspace/librts-targets/goal5500-range-intersects/PPoPPAE/datasets/polygons/USADetailedWaterBodies.wkt",
+    "geometry_sha256": "bbdf49e4e2484f7d2994aea40bf772ce5418bacb58ade8efc63ab9e8dc703dfe",
+    "query_path": "/workspace/librts-targets/goal5500-range-intersects/PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_10000/USADetailedWaterBodies.wkt",
+    "query_sha256": "2103f88f94f5ba3dcffe19ad0fcde18449566efeff42f9d37417ef766a27185e",
+    "same_files_passed_to_author_and_rtdl": true,
+    "verified_extraction_root": "/workspace/librts-targets/goal5500-range-intersects"
+  },
+  "matched": true,
+  "phase_boundary": {
+    "author_query_excludes_loading": true,
+    "performance_ratio_authorized": false,
+    "rtdl_prepared_query_excludes_wkt_load_and_index_prepare": true
+  },
+  "rtdl": {
+    "backend": "optix",
+    "input_contract": "generic_host_aabb_2d_columns",
+    "load_wkt_sec": 35.14627850300167,
+    "native_engine_customization": false,
+    "operation": "range_intersects",
+    "prepare_index_sec": 0.41589190100785345,
+    "prepared_query_wall_sec": 0.1823169519775547,
+    "primitive_query_sec": 0.14520071004517376,
+    "public_api": "Aabb2DColumns + prepare_aabb_index_2d_columns + prepared.count",
+    "result_count": 55205607,
+    "row_output_requested": false,
+    "rt_core_accelerated": true
+  },
+  "schema": "rtdl.paper_reproduction.librts.exact_range_intersects_count_gate.v1",
+  "status": "exact_input_range_intersects_count_matched"
+}

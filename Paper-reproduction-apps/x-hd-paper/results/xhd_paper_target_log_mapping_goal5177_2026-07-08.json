@@ -1,0 +1,1719 @@
+{
+  "authorized_next_steps": [
+    "Use priority_subsets to decide the first exact-input acquisition target.",
+    "Do not implement more route code for figures whose blockers are input provenance or missing author phase counters.",
+    "If inputs are reconstructed from public sources, label them Level B unless file/hash provenance proves Level C."
+  ],
+  "claim_boundary": {
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "paper_input_bytes_available": false,
+    "performance_ratio_claimed": false
+  },
+  "coverage_status_counts": {
+    "not_covered_by_run_all_timing_logs": 2,
+    "partially_covered_by_auto_tune_logs__grid_sweep_semantics_missing": 1,
+    "partially_covered_by_run_all_timing_logs__phase_counters_missing": 1,
+    "partially_covered_by_run_all_workloads__load_balance_metrics_missing": 1,
+    "run_all_timing_logs_cover_required_workload_families__inputs_missing": 1,
+    "workload_families_present__scale_overlap_labels_missing": 1
+  },
+  "exact_dataset_rule": {
+    "logs_do_not_provide": [
+      "input file bytes",
+      "input file hashes",
+      "public source snapshot hashes",
+      "proof that reconstructed public data are exact paper inputs"
+    ],
+    "logs_provide": [
+      "author path names",
+      "dataset basenames",
+      "HDResult",
+      "Running.AvgTime",
+      "ReportedTime medians",
+      "point counts and MBRs when logged"
+    ],
+    "statistics_matching_is_not_exact_identity": true
+  },
+  "figure_mappings": [
+    {
+      "available_evidence": [
+        "run_all records for BraTS, geospatial, and Stanford graphics workloads",
+        "author HDResult",
+        "author Running.AvgTime and per-repeat ReportedTime median",
+        "GPU name",
+        "logged point counts and MBRs"
+      ],
+      "coverage_status": "run_all_timing_logs_cover_required_workload_families__inputs_missing",
+      "figure": "Figure 5",
+      "interpretation": "Figure 5 has the strongest paper-log workload coverage, but it remains blocked from figure reproduction by missing exact input files and fair RTDL/author denominator alignment.",
+      "missing_evidence": [
+        "input file bytes and hashes",
+        "proof reconstructed public data are exact paper inputs",
+        "process wall time under a reproducible local build",
+        "denominator-aligned RTDL route matrix on the same hardware"
+      ],
+      "record_summary": {
+        "by_category": {
+          "BraTS2020_ValidationData": 2500,
+          "geo": 15,
+          "graphics": 20
+        },
+        "by_section": {
+          "auto_tune": 1014,
+          "eb_gpu": 507,
+          "hybrid_gpu": 507,
+          "rt_gpu": 507
+        },
+        "examples": [
+          {
+            "category": "BraTS2020_ValidationData",
+            "config": "n_points_cell_false_max_hit_false",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "BraTS20_Validation_001_flair.nii -> BraTS20_Validation_033_flair.nii",
+            "hd_result": 26.645824432373047,
+            "input_point_counts": [
+              1589257,
+              1145851
+            ],
+            "num_dims": 3,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/BraTS2020_ValidationData/n_points_cell_false_max_hit_false/BraTS20_Validation_001_flair.nii_BraTS20_Validation_033_flair.nii.json",
+            "reported_time_median": 17.485,
+            "running_avg_time": 17.974,
+            "section": "auto_tune"
+          },
+          {
+            "category": "BraTS2020_ValidationData",
+            "config": "n_points_cell_false_max_hit_false",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "BraTS20_Validation_001_t1.nii -> BraTS20_Validation_123_flair.nii",
+            "hd_result": 12.529964447021484,
+            "input_point_counts": [
+              1589594,
+              1574924
+            ],
+            "num_dims": 3,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/BraTS2020_ValidationData/n_points_cell_false_max_hit_false/BraTS20_Validation_001_t1.nii_BraTS20_Validation_123_flair.nii.json",
+            "reported_time_median": 10.664,
+            "running_avg_time": 10.9222,
+            "section": "auto_tune"
+          },
+          {
+            "category": "BraTS2020_ValidationData",
+            "config": "n_points_cell_false_max_hit_false",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "BraTS20_Validation_001_t1ce.nii -> BraTS20_Validation_116_flair.nii",
+            "hd_result": 12.328827857971191,
+            "input_point_counts": [
+              1591145,
+              1614491
+            ],
+            "num_dims": 3,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/BraTS2020_ValidationData/n_points_cell_false_max_hit_false/BraTS20_Validation_001_t1ce.nii_BraTS20_Validation_116_flair.nii.json",
+            "reported_time_median": 11.978,
+            "running_avg_time": 12.1218,
+            "section": "auto_tune"
+          },
+          {
+            "category": "BraTS2020_ValidationData",
+            "config": "n_points_cell_false_max_hit_false",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "BraTS20_Validation_001_t2.nii -> BraTS20_Validation_078_flair.nii",
+            "hd_result": 13.152946472167969,
+            "input_point_counts": [
+              1591815,
+              1407962
+            ],
+            "num_dims": 3,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/BraTS2020_ValidationData/n_points_cell_false_max_hit_false/BraTS20_Validation_001_t2.nii_BraTS20_Validation_078_flair.nii.json",
+            "reported_time_median": 10.474,
+            "running_avg_time": 10.675999999999998,
+            "section": "auto_tune"
+          },
+          {
+            "category": "BraTS2020_ValidationData",
+            "config": "n_points_cell_false_max_hit_false",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "BraTS20_Validation_001_t2.nii -> BraTS20_Validation_090_flair.nii",
+            "hd_result": 16.911535263061523,
+            "input_point_counts": [
+              1591815,
+              1369590
+            ],
+            "num_dims": 3,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/BraTS2020_ValidationData/n_points_cell_false_max_hit_false/BraTS20_Validation_001_t2.nii_BraTS20_Validation_090_flair.nii.json",
+            "reported_time_median": 14.343,
+            "running_avg_time": 14.745,
+            "section": "auto_tune"
+          }
+        ],
+        "record_count": 2535,
+        "top_configs": [
+          {
+            "config": "n_points_cell_false_max_hit_false",
+            "record_count": 507
+          },
+          {
+            "config": "n_points_cell_true_max_hit_true",
+            "record_count": 507
+          },
+          {
+            "config": "BraTS20_Validation_001_flair.nii_BraTS20_Validation_033_flair.nii.json",
+            "record_count": 3
+          },
+          {
+            "config": "BraTS20_Validation_001_t1.nii_BraTS20_Validation_123_flair.nii.json",
+            "record_count": 3
+          },
+          {
+            "config": "BraTS20_Validation_001_t1ce.nii_BraTS20_Validation_116_flair.nii.json",
+            "record_count": 3
+          }
+        ],
+        "top_pairs": [
+          {
+            "file_pair": "BraTS20_Validation_001_flair.nii -> BraTS20_Validation_033_flair.nii",
+            "record_count": 5,
+            "sections": [
+              "auto_tune",
+              "eb_gpu",
+              "hybrid_gpu",
+              "rt_gpu"
+            ]
+          },
+          {
+            "file_pair": "BraTS20_Validation_001_t1.nii -> BraTS20_Validation_123_flair.nii",
+            "record_count": 5,
+            "sections": [
+              "auto_tune",
+              "eb_gpu",
+              "hybrid_gpu",
+              "rt_gpu"
+            ]
+          },
+          {
+            "file_pair": "BraTS20_Validation_001_t1ce.nii -> BraTS20_Validation_116_flair.nii",
+            "record_count": 5,
+            "sections": [
+              "auto_tune",
+              "eb_gpu",
+              "hybrid_gpu",
+              "rt_gpu"
+            ]
+          },
+          {
+            "file_pair": "BraTS20_Validation_001_t2.nii -> BraTS20_Validation_078_flair.nii",
+            "record_count": 5,
+            "sections": [
+              "auto_tune",
+              "eb_gpu",
+              "hybrid_gpu",
+              "rt_gpu"
+            ]
+          },
+          {
+            "file_pair": "BraTS20_Validation_001_t2.nii -> BraTS20_Validation_090_flair.nii",
+            "record_count": 5,
+            "sections": [
+              "auto_tune",
+              "eb_gpu",
+              "hybrid_gpu",
+              "rt_gpu"
+            ]
+          }
+        ],
+        "unique_pair_count": 507
+      },
+      "subject": "Overall performance across MRI, geospatial, and graphics datasets"
+    },
+    {
+      "available_evidence": [
+        "Dragon-AsianDragon run_all records across rt_gpu, eb_gpu, hybrid_gpu, and auto_tune sections",
+        "author HDResult and Running.AvgTime for those records"
+      ],
+      "coverage_status": "partially_covered_by_run_all_timing_logs__phase_counters_missing",
+      "figure": "Figure 6",
+      "interpretation": "The target pair is present, but Figure 6 cannot be reproduced from run_all timing logs alone because required pruning counters and phase semantics are absent.",
+      "missing_evidence": [
+        "No-Opt / EB / EB+Prune / RT-HDIST phase mapping",
+        "intersection counts",
+        "visited point-pair counts",
+        "input file bytes and hashes"
+      ],
+      "record_summary": {
+        "by_category": {
+          "graphics": 5
+        },
+        "by_section": {
+          "auto_tune": 2,
+          "eb_gpu": 1,
+          "hybrid_gpu": 1,
+          "rt_gpu": 1
+        },
+        "examples": [
+          {
+            "category": "graphics",
+            "config": "n_points_cell_false_max_hit_false",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "dragon.ply -> asian_dragon.ply",
+            "hd_result": 0.06536811590194702,
+            "input_point_counts": [
+              437645,
+              3609600
+            ],
+            "num_dims": 3,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/graphics/n_points_cell_false_max_hit_false/dragon.ply_asian_dragon.ply.json",
+            "reported_time_median": 46.22,
+            "running_avg_time": 46.28779999999999,
+            "section": "auto_tune"
+          },
+          {
+            "category": "graphics",
+            "config": "n_points_cell_true_max_hit_true",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "dragon.ply -> asian_dragon.ply",
+            "hd_result": 0.06536811590194702,
+            "input_point_counts": [
+              437645,
+              3609600
+            ],
+            "num_dims": 3,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/graphics/n_points_cell_true_max_hit_true/dragon.ply_asian_dragon.ply.json",
+            "reported_time_median": 40.639,
+            "running_avg_time": 40.626999999999995,
+            "section": "auto_tune"
+          },
+          {
+            "category": "graphics",
+            "config": "dragon.ply_asian_dragon.ply.json",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "dragon.ply -> asian_dragon.ply",
+            "hd_result": 0.06536811590194702,
+            "input_point_counts": [
+              437645,
+              3609600
+            ],
+            "num_dims": 3,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/eb_gpu/graphics/dragon.ply_asian_dragon.ply.json",
+            "reported_time_median": 15.914,
+            "running_avg_time": 16.8364,
+            "section": "eb_gpu"
+          },
+          {
+            "category": "graphics",
+            "config": "dragon.ply_asian_dragon.ply.json",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "dragon.ply -> asian_dragon.ply",
+            "hd_result": 0.06536811590194702,
+            "input_point_counts": [
+              437645,
+              3609600
+            ],
+            "num_dims": 3,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/hybrid_gpu/graphics/dragon.ply_asian_dragon.ply.json",
+            "reported_time_median": 41.616,
+            "running_avg_time": 41.930600000000005,
+            "section": "hybrid_gpu"
+          },
+          {
+            "category": "graphics",
+            "config": "dragon.ply_asian_dragon.ply.json",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "dragon.ply -> asian_dragon.ply",
+            "hd_result": 0.06536811590194702,
+            "input_point_counts": [
+              437645,
+              3609600
+            ],
+            "num_dims": 3,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/rt_gpu/graphics/dragon.ply_asian_dragon.ply.json",
+            "reported_time_median": 89.996,
+            "running_avg_time": 87.26679999999999,
+            "section": "rt_gpu"
+          }
+        ],
+        "record_count": 5,
+        "top_configs": [
+          {
+            "config": "dragon.ply_asian_dragon.ply.json",
+            "record_count": 3
+          },
+          {
+            "config": "n_points_cell_false_max_hit_false",
+            "record_count": 1
+          },
+          {
+            "config": "n_points_cell_true_max_hit_true",
+            "record_count": 1
+          }
+        ],
+        "top_pairs": [
+          {
+            "file_pair": "dragon.ply -> asian_dragon.ply",
+            "record_count": 5,
+            "sections": [
+              "auto_tune",
+              "eb_gpu",
+              "hybrid_gpu",
+              "rt_gpu"
+            ]
+          }
+        ],
+        "unique_pair_count": 1
+      },
+      "subject": "Pruning effectiveness on Dragon-AsianDragon"
+    },
+    {
+      "available_evidence": [
+        "OSM Lakes-Parks run_all records",
+        "selected graphics run_all records",
+        "author HDResult and Running.AvgTime"
+      ],
+      "coverage_status": "partially_covered_by_run_all_workloads__load_balance_metrics_missing",
+      "figure": "Figure 7",
+      "interpretation": "The large Lakes-Parks workload exists in run_all logs, but load-balance phase metrics are not present in the extracted records.",
+      "missing_evidence": [
+        "RT shader time",
+        "CUDA offload kernel time",
+        "with/without load-balancing phase split",
+        "large geospatial input bytes and hashes"
+      ],
+      "record_summary": {
+        "by_category": {
+          "geo": 5,
+          "graphics": 20
+        },
+        "by_section": {
+          "auto_tune": 10,
+          "eb_gpu": 5,
+          "hybrid_gpu": 5,
+          "rt_gpu": 5
+        },
+        "examples": [
+          {
+            "category": "geo",
+            "config": "n_points_cell_false_max_hit_false",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "lakes.bz2.wkt -> parks.bz2.wkt",
+            "hd_result": 55.734275817871094,
+            "input_point_counts": [
+              301704289,
+              403688408
+            ],
+            "num_dims": 2,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/geo/n_points_cell_false_max_hit_false/lakes.bz2.wkt_parks.bz2.wkt.json",
+            "reported_time_median": 1469.257,
+            "running_avg_time": 1467.5124,
+            "section": "auto_tune"
+          },
+          {
+            "category": "geo",
+            "config": "n_points_cell_true_max_hit_true",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "lakes.bz2.wkt -> parks.bz2.wkt",
+            "hd_result": 55.734275817871094,
+            "input_point_counts": [
+              301704289,
+              403688408
+            ],
+            "num_dims": 2,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/geo/n_points_cell_true_max_hit_true/lakes.bz2.wkt_parks.bz2.wkt.json",
+            "reported_time_median": 1277.414,
+            "running_avg_time": 1279.2266,
+            "section": "auto_tune"
+          },
+          {
+            "category": "geo",
+            "config": "lakes.bz2.wkt_parks.bz2.wkt.json",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "lakes.bz2.wkt -> parks.bz2.wkt",
+            "hd_result": 55.734275817871094,
+            "input_point_counts": [
+              301704289,
+              403688408
+            ],
+            "num_dims": 2,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/eb_gpu/geo/lakes.bz2.wkt_parks.bz2.wkt.json",
+            "reported_time_median": 3379.993,
+            "running_avg_time": 3288.1046,
+            "section": "eb_gpu"
+          },
+          {
+            "category": "geo",
+            "config": "lakes.bz2.wkt_parks.bz2.wkt.json",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "lakes.bz2.wkt -> parks.bz2.wkt",
+            "hd_result": 55.734275817871094,
+            "input_point_counts": [
+              301704289,
+              403688408
+            ],
+            "num_dims": 2,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/hybrid_gpu/geo/lakes.bz2.wkt_parks.bz2.wkt.json",
+            "reported_time_median": 1277.654,
+            "running_avg_time": 1277.0038,
+            "section": "hybrid_gpu"
+          },
+          {
+            "category": "geo",
+            "config": "lakes.bz2.wkt_parks.bz2.wkt.json",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "lakes.bz2.wkt -> parks.bz2.wkt",
+            "hd_result": 55.734275817871094,
+            "input_point_counts": [
+              301704289,
+              403688408
+            ],
+            "num_dims": 2,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/rt_gpu/geo/lakes.bz2.wkt_parks.bz2.wkt.json",
+            "reported_time_median": 3031.674,
+            "running_avg_time": 3036.1838,
+            "section": "rt_gpu"
+          }
+        ],
+        "record_count": 25,
+        "top_configs": [
+          {
+            "config": "n_points_cell_false_max_hit_false",
+            "record_count": 5
+          },
+          {
+            "config": "n_points_cell_true_max_hit_true",
+            "record_count": 5
+          },
+          {
+            "config": "lakes.bz2.wkt_parks.bz2.wkt.json",
+            "record_count": 3
+          },
+          {
+            "config": "dragon.ply_asian_dragon.ply.json",
+            "record_count": 3
+          },
+          {
+            "config": "dragon.ply_happy_buddha.ply.json",
+            "record_count": 3
+          }
+        ],
+        "top_pairs": [
+          {
+            "file_pair": "lakes.bz2.wkt -> parks.bz2.wkt",
+            "record_count": 5,
+            "sections": [
+              "auto_tune",
+              "eb_gpu",
+              "hybrid_gpu",
+              "rt_gpu"
+            ]
+          },
+          {
+            "file_pair": "dragon.ply -> asian_dragon.ply",
+            "record_count": 5,
+            "sections": [
+              "auto_tune",
+              "eb_gpu",
+              "hybrid_gpu",
+              "rt_gpu"
+            ]
+          },
+          {
+            "file_pair": "dragon.ply -> happy_buddha.ply",
+            "record_count": 5,
+            "sections": [
+              "auto_tune",
+              "eb_gpu",
+              "hybrid_gpu",
+              "rt_gpu"
+            ]
+          },
+          {
+            "file_pair": "thai_statuette.ply -> asian_dragon.ply",
+            "record_count": 5,
+            "sections": [
+              "auto_tune",
+              "eb_gpu",
+              "hybrid_gpu",
+              "rt_gpu"
+            ]
+          },
+          {
+            "file_pair": "thai_statuette.ply -> happy_buddha.ply",
+            "record_count": 5,
+            "sections": [
+              "auto_tune",
+              "eb_gpu",
+              "hybrid_gpu",
+              "rt_gpu"
+            ]
+          }
+        ],
+        "unique_pair_count": 5
+      },
+      "subject": "Load balance / heavy-cell offload effectiveness"
+    },
+    {
+      "available_evidence": [],
+      "coverage_status": "not_covered_by_run_all_timing_logs",
+      "figure": "Figure 8",
+      "interpretation": "No explicit radius-growing strategy evidence was identified in the run_all log index; this target remains script/algorithm mapping work.",
+      "missing_evidence": [
+        "paper-selected radius strategy workloads",
+        "radius-growth strategy labels",
+        "iteration or radius diagnostics",
+        "input file bytes and hashes"
+      ],
+      "record_summary": {
+        "by_category": {},
+        "by_section": {},
+        "examples": [],
+        "record_count": 0,
+        "top_configs": [],
+        "top_pairs": [],
+        "unique_pair_count": 0
+      },
+      "subject": "Radius-growing strategy"
+    },
+    {
+      "available_evidence": [
+        "auto_tune run_all records for BraTS, ModelNet40, geo, and graphics categories",
+        "two observed configs: n_points_cell_false_max_hit_false and n_points_cell_true_max_hit_true",
+        "NumPointsPerCell value recorded in Running"
+      ],
+      "coverage_status": "partially_covered_by_auto_tune_logs__grid_sweep_semantics_missing",
+      "figure": "Figure 9",
+      "interpretation": "Auto-tune logs are present and useful, but their config labels are not yet a full Figure 9 adaptive-grid semantics map.",
+      "missing_evidence": [
+        "full adaptive-grid parameter sweep semantics",
+        "paper's exact selected grid-size choices",
+        "input file bytes and hashes"
+      ],
+      "record_summary": {
+        "by_category": {
+          "BraTS2020_ValidationData": 1000,
+          "ModelNet40": 800,
+          "geo": 6,
+          "graphics": 8
+        },
+        "by_section": {
+          "auto_tune": 1814
+        },
+        "examples": [
+          {
+            "category": "BraTS2020_ValidationData",
+            "config": "n_points_cell_false_max_hit_false",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "BraTS20_Validation_001_flair.nii -> BraTS20_Validation_033_flair.nii",
+            "hd_result": 26.645824432373047,
+            "input_point_counts": [
+              1589257,
+              1145851
+            ],
+            "num_dims": 3,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/BraTS2020_ValidationData/n_points_cell_false_max_hit_false/BraTS20_Validation_001_flair.nii_BraTS20_Validation_033_flair.nii.json",
+            "reported_time_median": 17.485,
+            "running_avg_time": 17.974,
+            "section": "auto_tune"
+          },
+          {
+            "category": "BraTS2020_ValidationData",
+            "config": "n_points_cell_false_max_hit_false",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "BraTS20_Validation_001_t1.nii -> BraTS20_Validation_123_flair.nii",
+            "hd_result": 12.529964447021484,
+            "input_point_counts": [
+              1589594,
+              1574924
+            ],
+            "num_dims": 3,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/BraTS2020_ValidationData/n_points_cell_false_max_hit_false/BraTS20_Validation_001_t1.nii_BraTS20_Validation_123_flair.nii.json",
+            "reported_time_median": 10.664,
+            "running_avg_time": 10.9222,
+            "section": "auto_tune"
+          },
+          {
+            "category": "BraTS2020_ValidationData",
+            "config": "n_points_cell_false_max_hit_false",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "BraTS20_Validation_001_t1ce.nii -> BraTS20_Validation_116_flair.nii",
+            "hd_result": 12.328827857971191,
+            "input_point_counts": [
+              1591145,
+              1614491
+            ],
+            "num_dims": 3,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/BraTS2020_ValidationData/n_points_cell_false_max_hit_false/BraTS20_Validation_001_t1ce.nii_BraTS20_Validation_116_flair.nii.json",
+            "reported_time_median": 11.978,
+            "running_avg_time": 12.1218,
+            "section": "auto_tune"
+          },
+          {
+            "category": "BraTS2020_ValidationData",
+            "config": "n_points_cell_false_max_hit_false",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "BraTS20_Validation_001_t2.nii -> BraTS20_Validation_078_flair.nii",
+            "hd_result": 13.152946472167969,
+            "input_point_counts": [
+              1591815,
+              1407962
+            ],
+            "num_dims": 3,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/BraTS2020_ValidationData/n_points_cell_false_max_hit_false/BraTS20_Validation_001_t2.nii_BraTS20_Validation_078_flair.nii.json",
+            "reported_time_median": 10.474,
+            "running_avg_time": 10.675999999999998,
+            "section": "auto_tune"
+          },
+          {
+            "category": "BraTS2020_ValidationData",
+            "config": "n_points_cell_false_max_hit_false",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "BraTS20_Validation_001_t2.nii -> BraTS20_Validation_090_flair.nii",
+            "hd_result": 16.911535263061523,
+            "input_point_counts": [
+              1591815,
+              1369590
+            ],
+            "num_dims": 3,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/BraTS2020_ValidationData/n_points_cell_false_max_hit_false/BraTS20_Validation_001_t2.nii_BraTS20_Validation_090_flair.nii.json",
+            "reported_time_median": 14.343,
+            "running_avg_time": 14.745,
+            "section": "auto_tune"
+          }
+        ],
+        "record_count": 1814,
+        "top_configs": [
+          {
+            "config": "n_points_cell_false_max_hit_false",
+            "record_count": 907
+          },
+          {
+            "config": "n_points_cell_true_max_hit_true",
+            "record_count": 907
+          }
+        ],
+        "top_pairs": [
+          {
+            "file_pair": "BraTS20_Validation_001_flair.nii -> BraTS20_Validation_033_flair.nii",
+            "record_count": 2,
+            "sections": [
+              "auto_tune"
+            ]
+          },
+          {
+            "file_pair": "BraTS20_Validation_001_t1.nii -> BraTS20_Validation_123_flair.nii",
+            "record_count": 2,
+            "sections": [
+              "auto_tune"
+            ]
+          },
+          {
+            "file_pair": "BraTS20_Validation_001_t1ce.nii -> BraTS20_Validation_116_flair.nii",
+            "record_count": 2,
+            "sections": [
+              "auto_tune"
+            ]
+          },
+          {
+            "file_pair": "BraTS20_Validation_001_t2.nii -> BraTS20_Validation_078_flair.nii",
+            "record_count": 2,
+            "sections": [
+              "auto_tune"
+            ]
+          },
+          {
+            "file_pair": "BraTS20_Validation_001_t2.nii -> BraTS20_Validation_090_flair.nii",
+            "record_count": 2,
+            "sections": [
+              "auto_tune"
+            ]
+          }
+        ],
+        "unique_pair_count": 907
+      },
+      "subject": "Adaptive grid sizing"
+    },
+    {
+      "available_evidence": [
+        "many BraTS and ModelNet40 run_all pairs plus smaller geo/graphics sets",
+        "logged point counts for every input file",
+        "author HDResult and Running.AvgTime"
+      ],
+      "coverage_status": "workload_families_present__scale_overlap_labels_missing",
+      "figure": "Figure 10",
+      "interpretation": "The log index contains enough records to choose scale candidates, but it does not identify the paper's overlap/scalability subsets.",
+      "missing_evidence": [
+        "paper scalability subset selection",
+        "overlap-controlled input generation details",
+        "overlap/selectivity diagnostics",
+        "input file bytes and hashes"
+      ],
+      "record_summary": {
+        "by_category": {
+          "BraTS2020_ValidationData": 2500,
+          "ModelNet40": 2000,
+          "geo": 15,
+          "graphics": 20
+        },
+        "by_section": {
+          "auto_tune": 1814,
+          "eb_gpu": 907,
+          "hybrid_gpu": 907,
+          "rt_gpu": 907
+        },
+        "examples": [
+          {
+            "category": "BraTS2020_ValidationData",
+            "config": "n_points_cell_false_max_hit_false",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "BraTS20_Validation_001_flair.nii -> BraTS20_Validation_033_flair.nii",
+            "hd_result": 26.645824432373047,
+            "input_point_counts": [
+              1589257,
+              1145851
+            ],
+            "num_dims": 3,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/BraTS2020_ValidationData/n_points_cell_false_max_hit_false/BraTS20_Validation_001_flair.nii_BraTS20_Validation_033_flair.nii.json",
+            "reported_time_median": 17.485,
+            "running_avg_time": 17.974,
+            "section": "auto_tune"
+          },
+          {
+            "category": "BraTS2020_ValidationData",
+            "config": "n_points_cell_false_max_hit_false",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "BraTS20_Validation_001_t1.nii -> BraTS20_Validation_123_flair.nii",
+            "hd_result": 12.529964447021484,
+            "input_point_counts": [
+              1589594,
+              1574924
+            ],
+            "num_dims": 3,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/BraTS2020_ValidationData/n_points_cell_false_max_hit_false/BraTS20_Validation_001_t1.nii_BraTS20_Validation_123_flair.nii.json",
+            "reported_time_median": 10.664,
+            "running_avg_time": 10.9222,
+            "section": "auto_tune"
+          },
+          {
+            "category": "BraTS2020_ValidationData",
+            "config": "n_points_cell_false_max_hit_false",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "BraTS20_Validation_001_t1ce.nii -> BraTS20_Validation_116_flair.nii",
+            "hd_result": 12.328827857971191,
+            "input_point_counts": [
+              1591145,
+              1614491
+            ],
+            "num_dims": 3,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/BraTS2020_ValidationData/n_points_cell_false_max_hit_false/BraTS20_Validation_001_t1ce.nii_BraTS20_Validation_116_flair.nii.json",
+            "reported_time_median": 11.978,
+            "running_avg_time": 12.1218,
+            "section": "auto_tune"
+          },
+          {
+            "category": "BraTS2020_ValidationData",
+            "config": "n_points_cell_false_max_hit_false",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "BraTS20_Validation_001_t2.nii -> BraTS20_Validation_078_flair.nii",
+            "hd_result": 13.152946472167969,
+            "input_point_counts": [
+              1591815,
+              1407962
+            ],
+            "num_dims": 3,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/BraTS2020_ValidationData/n_points_cell_false_max_hit_false/BraTS20_Validation_001_t2.nii_BraTS20_Validation_078_flair.nii.json",
+            "reported_time_median": 10.474,
+            "running_avg_time": 10.675999999999998,
+            "section": "auto_tune"
+          },
+          {
+            "category": "BraTS2020_ValidationData",
+            "config": "n_points_cell_false_max_hit_false",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "BraTS20_Validation_001_t2.nii -> BraTS20_Validation_090_flair.nii",
+            "hd_result": 16.911535263061523,
+            "input_point_counts": [
+              1591815,
+              1369590
+            ],
+            "num_dims": 3,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/BraTS2020_ValidationData/n_points_cell_false_max_hit_false/BraTS20_Validation_001_t2.nii_BraTS20_Validation_090_flair.nii.json",
+            "reported_time_median": 14.343,
+            "running_avg_time": 14.745,
+            "section": "auto_tune"
+          }
+        ],
+        "record_count": 4535,
+        "top_configs": [
+          {
+            "config": "n_points_cell_false_max_hit_false",
+            "record_count": 907
+          },
+          {
+            "config": "n_points_cell_true_max_hit_true",
+            "record_count": 907
+          },
+          {
+            "config": "BraTS20_Validation_001_flair.nii_BraTS20_Validation_033_flair.nii.json",
+            "record_count": 3
+          },
+          {
+            "config": "BraTS20_Validation_001_t1.nii_BraTS20_Validation_123_flair.nii.json",
+            "record_count": 3
+          },
+          {
+            "config": "BraTS20_Validation_001_t1ce.nii_BraTS20_Validation_116_flair.nii.json",
+            "record_count": 3
+          }
+        ],
+        "top_pairs": [
+          {
+            "file_pair": "BraTS20_Validation_001_flair.nii -> BraTS20_Validation_033_flair.nii",
+            "record_count": 5,
+            "sections": [
+              "auto_tune",
+              "eb_gpu",
+              "hybrid_gpu",
+              "rt_gpu"
+            ]
+          },
+          {
+            "file_pair": "BraTS20_Validation_001_t1.nii -> BraTS20_Validation_123_flair.nii",
+            "record_count": 5,
+            "sections": [
+              "auto_tune",
+              "eb_gpu",
+              "hybrid_gpu",
+              "rt_gpu"
+            ]
+          },
+          {
+            "file_pair": "BraTS20_Validation_001_t1ce.nii -> BraTS20_Validation_116_flair.nii",
+            "record_count": 5,
+            "sections": [
+              "auto_tune",
+              "eb_gpu",
+              "hybrid_gpu",
+              "rt_gpu"
+            ]
+          },
+          {
+            "file_pair": "BraTS20_Validation_001_t2.nii -> BraTS20_Validation_078_flair.nii",
+            "record_count": 5,
+            "sections": [
+              "auto_tune",
+              "eb_gpu",
+              "hybrid_gpu",
+              "rt_gpu"
+            ]
+          },
+          {
+            "file_pair": "BraTS20_Validation_001_t2.nii -> BraTS20_Validation_090_flair.nii",
+            "record_count": 5,
+            "sections": [
+              "auto_tune",
+              "eb_gpu",
+              "hybrid_gpu",
+              "rt_gpu"
+            ]
+          }
+        ],
+        "unique_pair_count": 907
+      },
+      "subject": "Scalability and overlap sensitivity"
+    },
+    {
+      "available_evidence": [],
+      "coverage_status": "not_covered_by_run_all_timing_logs",
+      "figure": "Figure 11",
+      "interpretation": "The extracted run_all records do not contain memory metrics, so Figure 11 remains blocked on instrumentation or author-script evidence.",
+      "missing_evidence": [
+        "GPU memory footprint measurements",
+        "author memory accounting boundary",
+        "paper-selected workloads"
+      ],
+      "record_summary": {
+        "by_category": {},
+        "by_section": {},
+        "examples": [],
+        "record_count": 0,
+        "top_configs": [],
+        "top_pairs": [],
+        "unique_pair_count": 0
+      },
+      "subject": "Memory footprint"
+    }
+  ],
+  "goal": "Goal5177",
+  "priority_subsets": [
+    {
+      "authorized_next_step": "Acquire or reconstruct the named input files only as Level B unless file/hash provenance proves Level C exact dataset identity.",
+      "blocker": "Need author/exact converted dragon.ply and happy_buddha.ply bytes or documented same-source reconstruction; current logs only provide paths/statistics/HDResult.",
+      "name": "graphics_dragon_happy_buddha",
+      "purpose": "Small Stanford graphics Level B workload already used by the RTDL representative route; useful for first end-to-end paper-log-to-route rehearsal.",
+      "record_summary": {
+        "by_category": {
+          "graphics": 5
+        },
+        "by_section": {
+          "auto_tune": 2,
+          "eb_gpu": 1,
+          "hybrid_gpu": 1,
+          "rt_gpu": 1
+        },
+        "examples": [
+          {
+            "category": "graphics",
+            "config": "n_points_cell_false_max_hit_false",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "dragon.ply -> happy_buddha.ply",
+            "hd_result": 0.12572969496250153,
+            "input_point_counts": [
+              437645,
+              543652
+            ],
+            "num_dims": 3,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/graphics/n_points_cell_false_max_hit_false/dragon.ply_happy_buddha.ply.json",
+            "reported_time_median": 5.519,
+            "running_avg_time": 5.7734,
+            "section": "auto_tune"
+          },
+          {
+            "category": "graphics",
+            "config": "n_points_cell_true_max_hit_true",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "dragon.ply -> happy_buddha.ply",
+            "hd_result": 0.12572969496250153,
+            "input_point_counts": [
+              437645,
+              543652
+            ],
+            "num_dims": 3,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/graphics/n_points_cell_true_max_hit_true/dragon.ply_happy_buddha.ply.json",
+            "reported_time_median": 4.399,
+            "running_avg_time": 4.6558,
+            "section": "auto_tune"
+          },
+          {
+            "category": "graphics",
+            "config": "dragon.ply_happy_buddha.ply.json",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "dragon.ply -> happy_buddha.ply",
+            "hd_result": 0.12572969496250153,
+            "input_point_counts": [
+              437645,
+              543652
+            ],
+            "num_dims": 3,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/eb_gpu/graphics/dragon.ply_happy_buddha.ply.json",
+            "reported_time_median": 4.607,
+            "running_avg_time": 4.4662,
+            "section": "eb_gpu"
+          },
+          {
+            "category": "graphics",
+            "config": "dragon.ply_happy_buddha.ply.json",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "dragon.ply -> happy_buddha.ply",
+            "hd_result": 0.12572969496250153,
+            "input_point_counts": [
+              437645,
+              543652
+            ],
+            "num_dims": 3,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/hybrid_gpu/graphics/dragon.ply_happy_buddha.ply.json",
+            "reported_time_median": 4.429,
+            "running_avg_time": 4.675400000000001,
+            "section": "hybrid_gpu"
+          },
+          {
+            "category": "graphics",
+            "config": "dragon.ply_happy_buddha.ply.json",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "dragon.ply -> happy_buddha.ply",
+            "hd_result": 0.12572969496250153,
+            "input_point_counts": [
+              437645,
+              543652
+            ],
+            "num_dims": 3,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/rt_gpu/graphics/dragon.ply_happy_buddha.ply.json",
+            "reported_time_median": 8.034,
+            "running_avg_time": 8.2398,
+            "section": "rt_gpu"
+          }
+        ],
+        "record_count": 5,
+        "top_configs": [
+          {
+            "config": "dragon.ply_happy_buddha.ply.json",
+            "record_count": 3
+          },
+          {
+            "config": "n_points_cell_false_max_hit_false",
+            "record_count": 1
+          },
+          {
+            "config": "n_points_cell_true_max_hit_true",
+            "record_count": 1
+          }
+        ],
+        "top_pairs": [
+          {
+            "file_pair": "dragon.ply -> happy_buddha.ply",
+            "record_count": 5,
+            "sections": [
+              "auto_tune",
+              "eb_gpu",
+              "hybrid_gpu",
+              "rt_gpu"
+            ]
+          }
+        ],
+        "unique_pair_count": 1
+      },
+      "status": "paper_log_workload_identified__input_files_missing"
+    },
+    {
+      "authorized_next_step": "Acquire or reconstruct the named input files only as Level B unless file/hash provenance proves Level C exact dataset identity.",
+      "blocker": "Need phase counter semantics plus input bytes/hashes; timing logs alone do not reproduce Figure 6.",
+      "name": "graphics_dragon_asian_dragon",
+      "purpose": "Figure 6 pruning-effectiveness target pair; smallest direct bridge from paper target matrix to a named run_all pair.",
+      "record_summary": {
+        "by_category": {
+          "graphics": 5
+        },
+        "by_section": {
+          "auto_tune": 2,
+          "eb_gpu": 1,
+          "hybrid_gpu": 1,
+          "rt_gpu": 1
+        },
+        "examples": [
+          {
+            "category": "graphics",
+            "config": "n_points_cell_false_max_hit_false",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "dragon.ply -> asian_dragon.ply",
+            "hd_result": 0.06536811590194702,
+            "input_point_counts": [
+              437645,
+              3609600
+            ],
+            "num_dims": 3,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/graphics/n_points_cell_false_max_hit_false/dragon.ply_asian_dragon.ply.json",
+            "reported_time_median": 46.22,
+            "running_avg_time": 46.28779999999999,
+            "section": "auto_tune"
+          },
+          {
+            "category": "graphics",
+            "config": "n_points_cell_true_max_hit_true",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "dragon.ply -> asian_dragon.ply",
+            "hd_result": 0.06536811590194702,
+            "input_point_counts": [
+              437645,
+              3609600
+            ],
+            "num_dims": 3,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/graphics/n_points_cell_true_max_hit_true/dragon.ply_asian_dragon.ply.json",
+            "reported_time_median": 40.639,
+            "running_avg_time": 40.626999999999995,
+            "section": "auto_tune"
+          },
+          {
+            "category": "graphics",
+            "config": "dragon.ply_asian_dragon.ply.json",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "dragon.ply -> asian_dragon.ply",
+            "hd_result": 0.06536811590194702,
+            "input_point_counts": [
+              437645,
+              3609600
+            ],
+            "num_dims": 3,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/eb_gpu/graphics/dragon.ply_asian_dragon.ply.json",
+            "reported_time_median": 15.914,
+            "running_avg_time": 16.8364,
+            "section": "eb_gpu"
+          },
+          {
+            "category": "graphics",
+            "config": "dragon.ply_asian_dragon.ply.json",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "dragon.ply -> asian_dragon.ply",
+            "hd_result": 0.06536811590194702,
+            "input_point_counts": [
+              437645,
+              3609600
+            ],
+            "num_dims": 3,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/hybrid_gpu/graphics/dragon.ply_asian_dragon.ply.json",
+            "reported_time_median": 41.616,
+            "running_avg_time": 41.930600000000005,
+            "section": "hybrid_gpu"
+          },
+          {
+            "category": "graphics",
+            "config": "dragon.ply_asian_dragon.ply.json",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "dragon.ply -> asian_dragon.ply",
+            "hd_result": 0.06536811590194702,
+            "input_point_counts": [
+              437645,
+              3609600
+            ],
+            "num_dims": 3,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/rt_gpu/graphics/dragon.ply_asian_dragon.ply.json",
+            "reported_time_median": 89.996,
+            "running_avg_time": 87.26679999999999,
+            "section": "rt_gpu"
+          }
+        ],
+        "record_count": 5,
+        "top_configs": [
+          {
+            "config": "dragon.ply_asian_dragon.ply.json",
+            "record_count": 3
+          },
+          {
+            "config": "n_points_cell_false_max_hit_false",
+            "record_count": 1
+          },
+          {
+            "config": "n_points_cell_true_max_hit_true",
+            "record_count": 1
+          }
+        ],
+        "top_pairs": [
+          {
+            "file_pair": "dragon.ply -> asian_dragon.ply",
+            "record_count": 5,
+            "sections": [
+              "auto_tune",
+              "eb_gpu",
+              "hybrid_gpu",
+              "rt_gpu"
+            ]
+          }
+        ],
+        "unique_pair_count": 1
+      },
+      "status": "paper_log_workload_identified__input_files_missing"
+    },
+    {
+      "authorized_next_step": "Acquire or reconstruct the named input files only as Level B unless file/hash provenance proves Level C exact dataset identity.",
+      "blocker": "Need WKT source snapshot/conversion proof; count/statistics alone are not exact paper input identity.",
+      "name": "geo_county_zipcode",
+      "purpose": "Moderate geospatial Figure 5 family target with explicit run_all path names.",
+      "record_summary": {
+        "by_category": {
+          "geo": 5
+        },
+        "by_section": {
+          "auto_tune": 2,
+          "eb_gpu": 1,
+          "hybrid_gpu": 1,
+          "rt_gpu": 1
+        },
+        "examples": [
+          {
+            "category": "geo",
+            "config": "n_points_cell_false_max_hit_false",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "dtl_cnty.wkt -> uszipcode.wkt",
+            "hd_result": 0.4093780517578125,
+            "input_point_counts": [
+              9438045,
+              43952878
+            ],
+            "num_dims": 2,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/geo/n_points_cell_false_max_hit_false/dtl_cnty.wkt_uszipcode.wkt.json",
+            "reported_time_median": 99.651,
+            "running_avg_time": 99.1482,
+            "section": "auto_tune"
+          },
+          {
+            "category": "geo",
+            "config": "n_points_cell_true_max_hit_true",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "dtl_cnty.wkt -> uszipcode.wkt",
+            "hd_result": 0.4093780517578125,
+            "input_point_counts": [
+              9438045,
+              43952878
+            ],
+            "num_dims": 2,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/geo/n_points_cell_true_max_hit_true/dtl_cnty.wkt_uszipcode.wkt.json",
+            "reported_time_median": 80.925,
+            "running_avg_time": 80.566,
+            "section": "auto_tune"
+          },
+          {
+            "category": "geo",
+            "config": "dtl_cnty.wkt_uszipcode.wkt.json",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "dtl_cnty.wkt -> uszipcode.wkt",
+            "hd_result": 0.4093780517578125,
+            "input_point_counts": [
+              9438045,
+              43952878
+            ],
+            "num_dims": 2,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/eb_gpu/geo/dtl_cnty.wkt_uszipcode.wkt.json",
+            "reported_time_median": 374.928,
+            "running_avg_time": 378.6634,
+            "section": "eb_gpu"
+          },
+          {
+            "category": "geo",
+            "config": "dtl_cnty.wkt_uszipcode.wkt.json",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "dtl_cnty.wkt -> uszipcode.wkt",
+            "hd_result": 0.4093780517578125,
+            "input_point_counts": [
+              9438045,
+              43952878
+            ],
+            "num_dims": 2,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/hybrid_gpu/geo/dtl_cnty.wkt_uszipcode.wkt.json",
+            "reported_time_median": 80.069,
+            "running_avg_time": 79.48219999999999,
+            "section": "hybrid_gpu"
+          },
+          {
+            "category": "geo",
+            "config": "dtl_cnty.wkt_uszipcode.wkt.json",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "dtl_cnty.wkt -> uszipcode.wkt",
+            "hd_result": 0.4093780517578125,
+            "input_point_counts": [
+              9438045,
+              43952878
+            ],
+            "num_dims": 2,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/rt_gpu/geo/dtl_cnty.wkt_uszipcode.wkt.json",
+            "reported_time_median": 96.427,
+            "running_avg_time": 97.3264,
+            "section": "rt_gpu"
+          }
+        ],
+        "record_count": 5,
+        "top_configs": [
+          {
+            "config": "dtl_cnty.wkt_uszipcode.wkt.json",
+            "record_count": 3
+          },
+          {
+            "config": "n_points_cell_false_max_hit_false",
+            "record_count": 1
+          },
+          {
+            "config": "n_points_cell_true_max_hit_true",
+            "record_count": 1
+          }
+        ],
+        "top_pairs": [
+          {
+            "file_pair": "dtl_cnty.wkt -> uszipcode.wkt",
+            "record_count": 5,
+            "sections": [
+              "auto_tune",
+              "eb_gpu",
+              "hybrid_gpu",
+              "rt_gpu"
+            ]
+          }
+        ],
+        "unique_pair_count": 1
+      },
+      "status": "paper_log_workload_identified__input_files_missing"
+    },
+    {
+      "authorized_next_step": "Acquire or reconstruct the named input files only as Level B unless file/hash provenance proves Level C exact dataset identity.",
+      "blocker": "Need large WKT input files and load-balance phase metrics before any Figure 7 reproduction claim.",
+      "name": "geo_lakes_parks",
+      "purpose": "Large Figure 7 / Figure 5 geospatial stress target present in run_all logs.",
+      "record_summary": {
+        "by_category": {
+          "geo": 5
+        },
+        "by_section": {
+          "auto_tune": 2,
+          "eb_gpu": 1,
+          "hybrid_gpu": 1,
+          "rt_gpu": 1
+        },
+        "examples": [
+          {
+            "category": "geo",
+            "config": "n_points_cell_false_max_hit_false",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "lakes.bz2.wkt -> parks.bz2.wkt",
+            "hd_result": 55.734275817871094,
+            "input_point_counts": [
+              301704289,
+              403688408
+            ],
+            "num_dims": 2,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/geo/n_points_cell_false_max_hit_false/lakes.bz2.wkt_parks.bz2.wkt.json",
+            "reported_time_median": 1469.257,
+            "running_avg_time": 1467.5124,
+            "section": "auto_tune"
+          },
+          {
+            "category": "geo",
+            "config": "n_points_cell_true_max_hit_true",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "lakes.bz2.wkt -> parks.bz2.wkt",
+            "hd_result": 55.734275817871094,
+            "input_point_counts": [
+              301704289,
+              403688408
+            ],
+            "num_dims": 2,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/geo/n_points_cell_true_max_hit_true/lakes.bz2.wkt_parks.bz2.wkt.json",
+            "reported_time_median": 1277.414,
+            "running_avg_time": 1279.2266,
+            "section": "auto_tune"
+          },
+          {
+            "category": "geo",
+            "config": "lakes.bz2.wkt_parks.bz2.wkt.json",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "lakes.bz2.wkt -> parks.bz2.wkt",
+            "hd_result": 55.734275817871094,
+            "input_point_counts": [
+              301704289,
+              403688408
+            ],
+            "num_dims": 2,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/eb_gpu/geo/lakes.bz2.wkt_parks.bz2.wkt.json",
+            "reported_time_median": 3379.993,
+            "running_avg_time": 3288.1046,
+            "section": "eb_gpu"
+          },
+          {
+            "category": "geo",
+            "config": "lakes.bz2.wkt_parks.bz2.wkt.json",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "lakes.bz2.wkt -> parks.bz2.wkt",
+            "hd_result": 55.734275817871094,
+            "input_point_counts": [
+              301704289,
+              403688408
+            ],
+            "num_dims": 2,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/hybrid_gpu/geo/lakes.bz2.wkt_parks.bz2.wkt.json",
+            "reported_time_median": 1277.654,
+            "running_avg_time": 1277.0038,
+            "section": "hybrid_gpu"
+          },
+          {
+            "category": "geo",
+            "config": "lakes.bz2.wkt_parks.bz2.wkt.json",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "lakes.bz2.wkt -> parks.bz2.wkt",
+            "hd_result": 55.734275817871094,
+            "input_point_counts": [
+              301704289,
+              403688408
+            ],
+            "num_dims": 2,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/rt_gpu/geo/lakes.bz2.wkt_parks.bz2.wkt.json",
+            "reported_time_median": 3031.674,
+            "running_avg_time": 3036.1838,
+            "section": "rt_gpu"
+          }
+        ],
+        "record_count": 5,
+        "top_configs": [
+          {
+            "config": "lakes.bz2.wkt_parks.bz2.wkt.json",
+            "record_count": 3
+          },
+          {
+            "config": "n_points_cell_false_max_hit_false",
+            "record_count": 1
+          },
+          {
+            "config": "n_points_cell_true_max_hit_true",
+            "record_count": 1
+          }
+        ],
+        "top_pairs": [
+          {
+            "file_pair": "lakes.bz2.wkt -> parks.bz2.wkt",
+            "record_count": 5,
+            "sections": [
+              "auto_tune",
+              "eb_gpu",
+              "hybrid_gpu",
+              "rt_gpu"
+            ]
+          }
+        ],
+        "unique_pair_count": 1
+      },
+      "status": "paper_log_workload_identified__input_files_missing"
+    },
+    {
+      "authorized_next_step": "Acquire or reconstruct the named input files only as Level B unless file/hash provenance proves Level C exact dataset identity.",
+      "blocker": "Need BraTS access/license plus exact validation image list or same-source labeling.",
+      "name": "brats_first_logged_pair",
+      "purpose": "MRI Figure 5 family smoke target; choose the first paper-branch logged BraTS pair only after access/licensing is resolved.",
+      "record_summary": {
+        "by_category": {
+          "BraTS2020_ValidationData": 5
+        },
+        "by_section": {
+          "auto_tune": 2,
+          "eb_gpu": 1,
+          "hybrid_gpu": 1,
+          "rt_gpu": 1
+        },
+        "examples": [
+          {
+            "category": "BraTS2020_ValidationData",
+            "config": "n_points_cell_false_max_hit_false",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "BraTS20_Validation_001_flair.nii -> BraTS20_Validation_033_flair.nii",
+            "hd_result": 26.645824432373047,
+            "input_point_counts": [
+              1589257,
+              1145851
+            ],
+            "num_dims": 3,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/BraTS2020_ValidationData/n_points_cell_false_max_hit_false/BraTS20_Validation_001_flair.nii_BraTS20_Validation_033_flair.nii.json",
+            "reported_time_median": 17.485,
+            "running_avg_time": 17.974,
+            "section": "auto_tune"
+          },
+          {
+            "category": "BraTS2020_ValidationData",
+            "config": "n_points_cell_true_max_hit_true",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "BraTS20_Validation_001_flair.nii -> BraTS20_Validation_033_flair.nii",
+            "hd_result": 26.645824432373047,
+            "input_point_counts": [
+              1589257,
+              1145851
+            ],
+            "num_dims": 3,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/BraTS2020_ValidationData/n_points_cell_true_max_hit_true/BraTS20_Validation_001_flair.nii_BraTS20_Validation_033_flair.nii.json",
+            "reported_time_median": 14.159,
+            "running_avg_time": 14.5596,
+            "section": "auto_tune"
+          },
+          {
+            "category": "BraTS2020_ValidationData",
+            "config": "BraTS20_Validation_001_flair.nii_BraTS20_Validation_033_flair.nii.json",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "BraTS20_Validation_001_flair.nii -> BraTS20_Validation_033_flair.nii",
+            "hd_result": 26.645824432373047,
+            "input_point_counts": [
+              1589257,
+              1145851
+            ],
+            "num_dims": 3,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/eb_gpu/BraTS2020_ValidationData/BraTS20_Validation_001_flair.nii_BraTS20_Validation_033_flair.nii.json",
+            "reported_time_median": 13.001,
+            "running_avg_time": 13.275199999999998,
+            "section": "eb_gpu"
+          },
+          {
+            "category": "BraTS2020_ValidationData",
+            "config": "BraTS20_Validation_001_flair.nii_BraTS20_Validation_033_flair.nii.json",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "BraTS20_Validation_001_flair.nii -> BraTS20_Validation_033_flair.nii",
+            "hd_result": 26.645824432373047,
+            "input_point_counts": [
+              1589257,
+              1145851
+            ],
+            "num_dims": 3,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/hybrid_gpu/BraTS2020_ValidationData/BraTS20_Validation_001_flair.nii_BraTS20_Validation_033_flair.nii.json",
+            "reported_time_median": 14.175,
+            "running_avg_time": 14.373600000000001,
+            "section": "hybrid_gpu"
+          },
+          {
+            "category": "BraTS2020_ValidationData",
+            "config": "BraTS20_Validation_001_flair.nii_BraTS20_Validation_033_flair.nii.json",
+            "exact_status": [
+              "author_log_path_known__input_file_not_available"
+            ],
+            "file_pair": "BraTS20_Validation_001_flair.nii -> BraTS20_Validation_033_flair.nii",
+            "hd_result": 26.645824432373047,
+            "input_point_counts": [
+              1589257,
+              1145851
+            ],
+            "num_dims": 3,
+            "relative_log_path": "expr/for_the_paper/logs/run_all/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_001_flair.nii_BraTS20_Validation_033_flair.nii.json",
+            "reported_time_median": 17.126,
+            "running_avg_time": 17.3388,
+            "section": "rt_gpu"
+          }
+        ],
+        "record_count": 5,
+        "top_configs": [
+          {
+            "config": "BraTS20_Validation_001_flair.nii_BraTS20_Validation_033_flair.nii.json",
+            "record_count": 3
+          },
+          {
+            "config": "n_points_cell_false_max_hit_false",
+            "record_count": 1
+          },
+          {
+            "config": "n_points_cell_true_max_hit_true",
+            "record_count": 1
+          }
+        ],
+        "top_pairs": [
+          {
+            "file_pair": "BraTS20_Validation_001_flair.nii -> BraTS20_Validation_033_flair.nii",
+            "record_count": 5,
+            "sections": [
+              "auto_tune",
+              "eb_gpu",
+              "hybrid_gpu",
+              "rt_gpu"
+            ]
+          }
+        ],
+        "unique_pair_count": 1
+      },
+      "status": "paper_log_workload_identified__input_files_missing"
+    }
+  ],
+  "run_all_summary": {
+    "by_category": {
+      "BraTS2020_ValidationData": 2500,
+      "ModelNet40": 2000,
+      "geo": 15,
+      "graphics": 20
+    },
+    "by_section": {
+      "auto_tune": 1814,
+      "eb_gpu": 907,
+      "hybrid_gpu": 907,
+      "rt_gpu": 907
+    },
+    "modelnet_note": "ModelNet40 appears in paper-branch run_all logs but was not a named Goal5130 Table 1 target; keep it as paper-branch workload evidence until target matrix is revised.",
+    "record_count": 4535,
+    "sections_present": [
+      "auto_tune",
+      "eb_gpu",
+      "hybrid_gpu",
+      "rt_gpu"
+    ],
+    "unique_pair_count": 907
+  },
+  "schema": "rtdl.paper_reproduction.xhd.paper_target_log_mapping.v1",
+  "sources": {
+    "log_index_goal": "Goal5176",
+    "paper_branch_commit": "8c3846866052e1e8755210021f23fac2cbe8c3d6",
+    "target_matrix_goal": "Goal5130",
+    "target_matrix_status": "xhd_paper_target_matrix_ready"
+  },
+  "status": "xhd_paper_target_log_mapping_ready__no_figure_reproduction_claim"
+}

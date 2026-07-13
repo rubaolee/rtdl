@@ -72,7 +72,8 @@ else
 NVCC ?= /usr/bin/nvcc
 endif
 CXX_OPTIX ?= $(NVCC)
-OPTIX_CUDA_ARCH ?=
+OPTIX_CUDA_ARCH_DETECTED := $(shell nvidia-smi --query-gpu=compute_cap --format=csv,noheader 2>/dev/null | head -n 1 | tr -d '.' | sed 's/^/sm_/')
+OPTIX_CUDA_ARCH ?= $(OPTIX_CUDA_ARCH_DETECTED)
 OPTIX_CUDA_ARCH_FLAGS := $(if $(OPTIX_CUDA_ARCH),-arch=$(OPTIX_CUDA_ARCH),)
 GEOS_CFLAGS := $(shell (pkg-config --cflags geos-c || pkg-config --cflags geos) 2>/dev/null)
 GEOS_LIBS := $(shell (pkg-config --libs geos-c || pkg-config --libs geos || if [ -f /usr/lib/x86_64-linux-gnu/libgeos_c.so ]; then echo -lgeos_c; fi) 2>/dev/null)

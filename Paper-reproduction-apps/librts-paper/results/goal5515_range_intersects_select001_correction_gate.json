@@ -1,0 +1,55 @@
+{
+  "claim_boundary": {
+    "author_performance_parity_claimed": false,
+    "author_specific_rtdl_core_behavior_authorized": false,
+    "complete_paper_reproduction_claimed": false,
+    "complete_range_intersects_matrix_claimed": false,
+    "device_zero_copy_claimed": false,
+    "embree_in_scope": false,
+    "figure6_reproduced": false,
+    "historical_mismatch_resolution_evidence_only": true,
+    "performance_ratio_authorized": false,
+    "pointwise_intersection_equivalence_claimed": false
+  },
+  "current_author_capacity_failure_count": 1,
+  "current_case_count": 6,
+  "current_gate": "Paper-reproduction-apps/librts-paper/results/goal5514_exact_range_intersects_select001_resolution_gate.json",
+  "current_match_count": 5,
+  "generic_fix_evidence": {
+    "app_specific_behavior_added": false,
+    "contract": "indexed AABBs that are not strictly valid after float32 packing are non-matchable in the generic OptiX intersection kernel",
+    "source_gate": "Paper-reproduction-apps/librts-paper/results/goal5508_generic_float32_degenerate_aabb_validity_fix_gate.json"
+  },
+  "historical_mismatch_recheck": {
+    "cases": [
+      {
+        "author_count": 216977211,
+        "case_id": "parks_Europe_select_0.01_10000",
+        "current_delta": 0,
+        "current_rtdl_count": 216977211,
+        "historical_delta": 3791,
+        "historical_rtdl_count": 216981002
+      },
+      {
+        "author_count": 1113229623,
+        "case_id": "lakes_bz2_select_0.01_10000",
+        "current_delta": 0,
+        "current_rtdl_count": 1113229623,
+        "historical_delta": 54695,
+        "historical_rtdl_count": 1113284318
+      }
+    ],
+    "interpretation": "The two historical count disagreements do not reproduce on the same official query family after the generic indexed-AABB validity correction. This closes the observed mismatch at the evidence level; it does not claim that every possible range-intersects discrepancy has a single proven cause.",
+    "source_report": "history/internal_docs/goal5500_librts_exact_range_intersects_six_geometry_batch_result_2026-07-12.md"
+  },
+  "not_closed": [
+    "the full 42-pair range-intersects inventory",
+    "pair-row equality because the author binary exposes counts only",
+    "the parks.bz2 author CUDA capacity boundary",
+    "Figure 6 and performance comparison"
+  ],
+  "operation": "range_intersects",
+  "query_family": "range-intersects_select_0.01_queries_10000",
+  "schema": "rtdl.paper_reproduction.librts.goal5515_range_intersects_select001_correction.v1",
+  "status": "historical_select001_count_mismatches_no_longer_reproduced"
+}

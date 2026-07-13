@@ -1,0 +1,96 @@
+{
+    "DateTime": "2026-07-08 03:23:41",
+    "GPU": {
+        "Device": 0,
+        "name": "NVIDIA RTX 4000 Ada Generation"
+    },
+    "HDResult": 1.0,
+    "Input": {
+        "Files": [
+            {
+                "Density": 0.75,
+                "MBR": [
+                    {
+                        "Lower": 0.0,
+                        "Upper": 2.0
+                    },
+                    {
+                        "Lower": 0.0,
+                        "Upper": 2.0
+                    }
+                ],
+                "NumPoints": 3,
+                "Path": "/tmp/xhd-goal5112/x-hd-paper/data/fixtures/tiny2d_a.wkt"
+            },
+            {
+                "Density": 0.5,
+                "MBR": [
+                    {
+                        "Lower": 0.0,
+                        "Upper": 2.0
+                    },
+                    {
+                        "Lower": 0.0,
+                        "Upper": 3.0
+                    }
+                ],
+                "NumPoints": 3,
+                "Path": "/tmp/xhd-goal5112/x-hd-paper/data/fixtures/tiny2d_b.wkt"
+            }
+        ],
+        "Limit": 2147483647,
+        "Normalize": false,
+        "NumDims": 2,
+        "SerializationPrefix": "",
+        "Translate": 0.0,
+        "Type": "Float"
+    },
+    "Running": {
+        "AvgTime": 3.888,
+        "EB": true,
+        "FastBuildBVH": false,
+        "LB": 256,
+        "NumPointsPerCell": 15,
+        "Prune": true,
+        "RebuildBVH": false,
+        "Repeats": [
+            {
+                "Algorithm": "XHD",
+                "BVHBuildTime": 0.213,
+                "Cells": 1,
+                "Execution": "GPU",
+                "GridResolution": [
+                    1,
+                    1
+                ],
+                "HDLowerBound": 0.0,
+                "HDUpperBound": 2.8284270763397217,
+                "InitRadius": 3.605551242828369,
+                "Iterations": [
+                    {
+                        "CMax2": 1.0,
+                        "CUDATime": 0.076,
+                        "Iteration": 1,
+                        "NumInputPoints": 3,
+                        "NumOutputPoints": 0,
+                        "OffloadingSize": 0,
+                        "RTTime": 2.371,
+                        "Radius": 3.605551242828369
+                    }
+                ],
+                "LargeCells": 0,
+                "Memory": {
+                    "BVH": 1920,
+                    "Grid": 28,
+                    "MBRs B": 16,
+                    "WL": 24,
+                    "WL Heavy Peak": 0
+                },
+                "Profiling": false,
+                "Repeat": 1,
+                "ReportedTime": 3.888
+            }
+        ],
+        "Seed": 0
+    }
+}

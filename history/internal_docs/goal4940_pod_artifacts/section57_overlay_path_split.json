@@ -1,0 +1,224 @@
+{
+  "author_output": {
+    "bytes": 16631243,
+    "lines": 737830,
+    "path": "/root/rtdl_goal4937/Paper-reproduction-apps/rayjoin-paper/_data/public_sample/br_countyXbr_soil_answer.txt",
+    "sha256": "464f87a59cc2428f63cbfe5068965d7bc7adb8eee51e9c1e3a5960ae8b76019e"
+  },
+  "byte_equal_to_author": true,
+  "claim_boundary": {
+    "broad_performance_claim": false,
+    "bundled_rayjoin_overlay_imported": false,
+    "dataset_label": "available_bounded_pair",
+    "exact_old_paper_input_claim": false,
+    "full_eight_pair_paper_claim": false,
+    "numba_available": false,
+    "numba_kernel_module": "/root/rtdl_goal4937/Paper-reproduction-apps/rayjoin-paper/rayjoin_numba_overlay_kernels.py",
+    "numba_on_app_continuation_path": false,
+    "numba_on_correctness_critical_path": false,
+    "numba_on_rtdl_primitive_path": false,
+    "public_lsi_used": true,
+    "public_point_location_used": true
+  },
+  "elapsed_sec": 7.753230803995393,
+  "generated_output": {
+    "bytes": 16631243,
+    "lines": 737830,
+    "path": "Paper-reproduction-apps/rayjoin-paper/_runs/goal4940/rtdl/section57_overlay_numba.txt",
+    "sha256": "464f87a59cc2428f63cbfe5068965d7bc7adb8eee51e9c1e3a5960ae8b76019e"
+  },
+  "left": {
+    "chains": 16545,
+    "edges": 326193,
+    "path": "/root/rtdl_goal4937/Paper-reproduction-apps/rayjoin-paper/_data/public_sample/br_county_clean_25_odyssey_final.txt",
+    "points": 342738
+  },
+  "lsi_row_count": 20860,
+  "native_point_location_timings": {
+    "midpoint_pip_map0": {
+      "mode": "none",
+      "point_count": 944,
+      "point_upload": 0.0,
+      "positive_face_count": 934,
+      "row_download": 2.1261e-05,
+      "traversal": 0.000106132
+    },
+    "midpoint_pip_map1": {
+      "mode": "none",
+      "point_count": 3594,
+      "point_upload": 0.0,
+      "positive_face_count": 3189,
+      "row_download": 2.609e-05,
+      "traversal": 0.000101253
+    },
+    "vertex_pip_map0_in_map1": {
+      "mode": "rows",
+      "point_count": 342738,
+      "point_upload": 0.001248284,
+      "positive_face_count": 337691,
+      "row_download": 0.0005524,
+      "traversal": 0.000505851
+    },
+    "vertex_pip_map1_in_map0": {
+      "mode": "rows",
+      "point_count": 258961,
+      "point_upload": 0.000989161,
+      "positive_face_count": 255272,
+      "row_download": 0.000423015,
+      "traversal": 0.000383859
+    }
+  },
+  "packed_cache": {
+    "enabled": true,
+    "path": "Paper-reproduction-apps/rayjoin-paper/_runs/goal4937/cache"
+  },
+  "pair_name": "br_county_soil",
+  "phase_seconds": {
+    "assign_midpoint_faces_map0_sec": 0.000876626989338547,
+    "assign_midpoint_faces_map1_sec": 0.0016599360096734017,
+    "destroy_point_location_sessions_sec": 0.007741719979094341,
+    "file_summary_author_sec": 0.023808630008716136,
+    "file_summary_generated_sec": 0.02511851000599563,
+    "intersection_reprojection_sec": 0.7123213359736837,
+    "load_pack_left_sec": 0.005586801999015734,
+    "load_pack_right_sec": 0.004231005004839972,
+    "lsi_public_rows_sec": 1.100396426016232,
+    "midpoint_pip_map0_sec": 0.0005278940079733729,
+    "midpoint_pip_map1_sec": 0.0005766169924754649,
+    "midpoint_points_map0_sec": 0.02982443801010959,
+    "midpoint_points_map1_sec": 0.05634298000950366,
+    "numba_wrapper_total_sec": 7.767618320998736,
+    "output_chain_write_sec": 4.175830024993047,
+    "pack_midpoint_points_map0_sec": 0.0018387259915471077,
+    "pack_midpoint_points_map1_sec": 0.007678249996388331,
+    "prepare_point_location_map0_in_map1_sec": 0.6985372670169454,
+    "prepare_point_location_map1_in_map0_sec": 0.07658607899793424,
+    "shared_bounds_sec": 2.995977411046624e-06,
+    "sort_map0_sec": 0.4159958579984959,
+    "sort_map1_sec": 0.3868196520197671,
+    "vertex_pip_map0_in_map1_sec": 0.012196871015476063,
+    "vertex_pip_map1_in_map0_sec": 0.007430908997775987
+  },
+  "query_map_ids": {
+    "map0_in_map1": 0,
+    "map1_in_map0": 1,
+    "swapped": false
+  },
+  "right": {
+    "chains": 7950,
+    "edges": 251011,
+    "path": "/root/rtdl_goal4937/Paper-reproduction-apps/rayjoin-paper/_data/public_sample/br_soil_ascii_odyssey_final.txt",
+    "points": 258961
+  },
+  "route": "public_rtdl_lsi_pip_plus_numba_partner_app_continuation",
+  "scale_bounds": [
+    -73.990943647,
+    -25.7463,
+    -35.8075,
+    7.0518
+  ],
+  "schema": "rtdl.paper_reproduction.rayjoin.section57_overlay_numba.v1",
+  "vertex_positive_counts": {
+    "map0_in_map1": 337691,
+    "map1_in_map0": 255272
+  },
+  "writer_result": {
+    "chain_count": 64459,
+    "face_count": 19399,
+    "generic_path_split": {
+      "enabled": true,
+      "materializer_stats": [
+        {
+          "dedupe_enabled": false,
+          "descriptor_column_count": 3,
+          "group_count": 36833,
+          "group_policy": "skip_empty",
+          "input_rows": 378372,
+          "item_payload_column_count": 2,
+          "item_rows": 378372,
+          "map_index": 0,
+          "output_shape": "descriptors_and_items",
+          "row_buffer": {
+            "chain_count": 16536,
+            "column_count": 7,
+            "dedupe_consecutive_points": true,
+            "dedupe_enabled": false,
+            "descriptor_column_count": 3,
+            "emitted_group_count": 36833,
+            "group_key_count": 1,
+            "has_validity": false,
+            "interval_count": 37396,
+            "item_payload_column_count": 2,
+            "producer_schema": "rtdl.grouped_path_split_records.v1",
+            "row_count": 378372,
+            "schema": "rtdl.grouped_output_row_buffer.v1",
+            "split_event_count": 20860
+          },
+          "schema": "rtdl.grouped_output_materialization.v1",
+          "valid_rows": 378372
+        },
+        {
+          "dedupe_enabled": false,
+          "descriptor_column_count": 3,
+          "group_count": 27626,
+          "group_policy": "skip_empty",
+          "input_rows": 294999,
+          "item_payload_column_count": 2,
+          "item_rows": 294999,
+          "map_index": 1,
+          "output_shape": "descriptors_and_items",
+          "row_buffer": {
+            "chain_count": 7882,
+            "column_count": 7,
+            "dedupe_consecutive_points": true,
+            "dedupe_enabled": false,
+            "descriptor_column_count": 3,
+            "emitted_group_count": 27626,
+            "group_key_count": 1,
+            "has_validity": false,
+            "interval_count": 28742,
+            "item_payload_column_count": 2,
+            "producer_schema": "rtdl.grouped_path_split_records.v1",
+            "row_count": 294999,
+            "schema": "rtdl.grouped_output_row_buffer.v1",
+            "split_event_count": 20860
+          },
+          "schema": "rtdl.grouped_output_materialization.v1",
+          "valid_rows": 294999
+        }
+      ],
+      "schema": "rtdl.paper_reproduction.rayjoin.path_split_adapter.v1"
+    },
+    "line_count": 737830,
+    "numba_writer_skip_plan": {
+      "descriptor_direct_chains": 11263,
+      "descriptor_direct_points": 166245,
+      "numba_available": false,
+      "processed_chains": 24418,
+      "skipped_no_xsect_chains": 77,
+      "skipped_no_xsect_points": 2170
+    },
+    "path": "Paper-reproduction-apps/rayjoin-paper/_runs/goal4940/rtdl/section57_overlay_numba.txt",
+    "point_count": 673371,
+    "writer_cache_counts": {
+      "unique_display_lines": 0,
+      "unique_point_records": 581554
+    },
+    "writer_phase_seconds": {
+      "bulk_writelines_sec": 4.060156695020851,
+      "group_xsects_map0_sec": 0.007265354011906311,
+      "group_xsects_map1_sec": 0.014033023006049916,
+      "path_split_descriptor_build_map0_sec": 0.16232022299664095,
+      "path_split_descriptor_build_map1_sec": 0.11806559801334515,
+      "path_split_format_map0_sec": 0.7722308769880328,
+      "path_split_format_map1_sec": 0.58257390599465,
+      "path_split_materialize_map0_sec": 1.362667553999927,
+      "path_split_materialize_map1_sec": 1.0258794100082014,
+      "skip_plan_sec": 0.06558725601644255
+    }
+  },
+  "xsect_sorted_counts": {
+    "map0": 20860,
+    "map1": 20860
+  }
+}

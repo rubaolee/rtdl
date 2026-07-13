@@ -1,0 +1,131 @@
+{
+  "author_output": "/workspace/goal4861_author_intended_baseline/author_intended_county_zipcode_overlay.txt",
+  "elapsed_sec": 593.9219101071358,
+  "first_diff": null,
+  "left": "/workspace/rayjoin_section57_same_source_cdb/point_cdb/dtl_cnty/dtl_cnty_Point.cdb",
+  "left_shape": {
+    "chain_count": 8662896,
+    "edge_count": 8662896,
+    "point_count": 17325792
+  },
+  "result": {
+    "backend": "optix",
+    "input_shape": {
+      "map0_chains": 8662896,
+      "map0_edges": 8662896,
+      "map0_points": 17325792,
+      "map1_chains": 23931046,
+      "map1_edges": 23931046,
+      "map1_points": 47862092
+    },
+    "lsi": {
+      "intersection_count": 965844,
+      "predicate_contract": "rayjoin_author_lsi_intersect_test_endpoint_collinear_contract"
+    },
+    "midpoint_pip": {
+      "map0_midpoints_in_map1": 123082,
+      "map0_nonfinite_midpoints_dropped": 0,
+      "map0_positive_faces": 97967,
+      "map1_midpoints_in_map0": 141510,
+      "map1_nonfinite_midpoints_dropped": 0,
+      "map1_positive_faces": 109470
+    },
+    "native_timings": {
+      "lsi": {
+        "candidate_count_pass": 0.005862772,
+        "candidate_download": 0.0,
+        "candidate_write_pass": 0.0,
+        "emitted_count": 965844,
+        "exact_refine": 0.0,
+        "hot_call_sec": 53.2343890145421,
+        "left_upload": 0.0,
+        "mode": "count_prepared_left_grouped_range_direct_intersection",
+        "raw_candidate_count": 0,
+        "row_materialization_contract": "planar_map_lsi_public_run_raw_pairs_reprojected_for_overlay",
+        "scaled_intersection_materialization_enabled": true
+      },
+      "midpoint_pip_map0_in_map1": {
+        "hot_call_sec": 0.008348293602466583,
+        "mode": "none",
+        "point_count": 123082,
+        "point_upload": 0.0,
+        "positive_face_count": 97967,
+        "row_download": 0.000254903,
+        "traversal": 0.001013763
+      },
+      "midpoint_pip_map1_in_map0": {
+        "hot_call_sec": 0.0060509368777275085,
+        "mode": "none",
+        "point_count": 141510,
+        "point_upload": 0.0,
+        "positive_face_count": 109470,
+        "row_download": 0.000278698,
+        "traversal": 0.001094236
+      },
+      "point_location_prepare_map0_in_map1": {
+        "hot_call_sec": 6.685564838349819,
+        "mode": "prepare"
+      },
+      "point_location_prepare_map1_in_map0": {
+        "hot_call_sec": 1.8132904022932053,
+        "mode": "prepare"
+      },
+      "vertex_pip_map0_in_map1": {
+        "hot_call_sec": 1.0635624080896378,
+        "mode": "rows",
+        "point_count": 17325792,
+        "point_upload": 0.044286837,
+        "positive_face_count": 14129335,
+        "row_download": 0.021473898,
+        "traversal": 0.040711244
+      },
+      "vertex_pip_map1_in_map0": {
+        "hot_call_sec": 3.724435657262802,
+        "mode": "rows",
+        "point_count": 47862092,
+        "point_upload": 0.121553772,
+        "positive_face_count": 41352916,
+        "row_download": 0.073415578,
+        "traversal": 0.069797043
+      }
+    },
+    "output": {
+      "assembled": true,
+      "chain_count": 29253961,
+      "face_count": 115515,
+      "line_count": 87758114,
+      "path": "/workspace/goal4872_county_zipcode_current_after_duplicate_contract_full_stream/rtdl_full_stream_compare_no_output.txt",
+      "point_count": 58504153,
+      "streaming": true
+    },
+    "phase_seconds": {
+      "load_cached_packed_inputs_sec": 188.64966413378716,
+      "lsi_row_object_materialize_sec": 9.324819460511208,
+      "lsi_row_sort_sec": 45.78160282969475,
+      "output_chain_stream_write_sec": 467.61298881471157,
+      "point_location_prepare_sec": 8.498855240643024,
+      "point_location_prepare_wall_sec": 8.498992122709751,
+      "total_sec": 593.2380827963352
+    },
+    "program": "overlay",
+    "schema": "rtdl.rayjoin.overlay_rtdl_run.v1",
+    "vertex_pip": {
+      "map0_points_in_map1": 17325792,
+      "map0_positive_faces": 14129335,
+      "map1_points_in_map0": 47862092,
+      "map1_positive_faces": 41352916
+    }
+  },
+  "right": "/workspace/rayjoin_section57_same_source_cdb/point_cdb/USAZIPCodeArea/USAZIPCodeArea_Point.cdb",
+  "right_shape": {
+    "chain_count": 23931046,
+    "edge_count": 23931046,
+    "point_count": 47862092
+  },
+  "schema": "rtdl.goal4871.block_water.full_stream_compare.v1",
+  "stream_match": true,
+  "streamed_chain_count": 29253961,
+  "streamed_face_count": 115515,
+  "streamed_line_count": 87758114,
+  "streamed_point_count": 58504153
+}

@@ -1,0 +1,159 @@
+{
+  "claim_boundary": {
+    "author_rt_core_algorithm_parity_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_support_claimed": false,
+    "figure11_reproduction_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "row_count_parity_claimed": false,
+    "rtdl_author_performance_ratio_claimed": false,
+    "same_denominator_memory_claimed": false
+  },
+  "date": "2026-07-09",
+  "decision": {
+    "explicit_lb_support_authorized_now": false,
+    "next_gate": "Build an author-iteration-aligned RTDL lb trace or add raw author-denominator telemetry to the native collector before claiming -lb row-count / memory parity.",
+    "reason": "Goal5365 proves value preservation and offload sign behavior, and Goal5366 shows the byte formulas are compatible. It does not prove that RTDL and author count the same offload rows.",
+    "row_count_or_byte_parity_authorized_now": false
+  },
+  "denominator_interpretation": {
+    "author_denominator": "Raw offloading queue rows appended by the author shader as (in_queue_idx, cell_id), accumulated across batches within the reported iteration. The CUDA load-balance stage later sorts and reduces rows by point, but OffloadingSize records the queue size before that grouped processing.",
+    "current_mismatch_reason": "The byte formula is shape-aligned under an author-width uint32 view, but row-count parity is not established because the current RTDL run is a single-pass full-cover cell-MBR frontier route while the author field is an iterative radius/in_queue offload counter. The author iteration radius and RTDL route radius are different, and RTDL is not yet emitting an author-iteration offload queue denominator.",
+    "rtdl_denominator": "Generic cell-MBR frontier rows with frontier_kind_code=2 after the native collector's row download / sort / unique path. In the Goal5365 artifact raw attempted_count equals emitted_count and equals heavy_offload_peak_rows, so the observed delta is not explained by an RTDL duplicate-collapse delta in that run.",
+    "support_level": "behavior_level_only"
+  },
+  "exit_label": "lb_denominator_reconciled_shape_aligned__row_count_parity_not_established",
+  "goal": "Goal5366",
+  "input_artifacts": {
+    "goal5363_lb_semantics_audit": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5363_lb_heavy_offload_semantics_audit.json",
+    "goal5365_rtdl_lb_counterpart_gate": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5365_rtdl_lb_counterpart_gate.json",
+    "rtdl_lb256_raw_summary": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5365_rtdl_lb256_raw_dragon_asian_translated_initial_none_pod.json"
+  },
+  "prior_context": {
+    "goal5363_threshold_rule_shape_aligned": true,
+    "goal5365_behavior_gate_passed": true
+  },
+  "purpose": "Reconcile the author OffloadingSize / WL Heavy Peak denominator with RTDL generic heavy-offload telemetry before accepting explicit -lb support or making Figure 7/11 claims.",
+  "quantitative_reconciliation": {
+    "author": {
+      "bytes_formula": "OffloadingSize * 2 * sizeof(uint32_t)",
+      "bytes_formula_holds": true,
+      "iteration_field": "iteration_3",
+      "lb": 256,
+      "num_input_points": 437645,
+      "offloading_size_rows": 27133990,
+      "radius": 79.2156982421875,
+      "wl_heavy_peak_bytes": 217071920
+    },
+    "byte_parity_author_width": false,
+    "deltas": {
+      "author_width_byte_delta_author_minus_rtdl": 21006960,
+      "author_width_byte_ratio_rtdl_div_author": 0.9032258064516129,
+      "row_delta_author_minus_rtdl": 2625870,
+      "row_ratio_rtdl_div_author": 0.9032258064516129
+    },
+    "formula_denominator_aligned": true,
+    "route_regime_aligned": false,
+    "row_count_parity": false,
+    "rtdl": {
+      "author_width_candidate_bytes": 196064960,
+      "author_width_formula": "heavy_offload_peak_rows * 2 * sizeof(uint32_t)",
+      "author_width_formula_holds": true,
+      "emitted_count_after_native_sort_unique": 24508120,
+      "generic_formula": "heavy_offload_peak_rows * 2 * sizeof(uint64_t)",
+      "generic_formula_holds": true,
+      "generic_uint64_queue_peak_bytes": 392129920,
+      "heavy_offload_peak_rows": 24508120,
+      "max_inline_points": 256,
+      "radius": 266.9466183641096,
+      "raw_attempted_count": 24508120,
+      "raw_attempted_equals_emitted_equals_offload_rows": true
+    }
+  },
+  "schema": "rtdl.paper_reproduction.xhd.goal5366.lb_denominator_reconciliation.v1",
+  "source_evidence": {
+    "author": {
+      "author_radius_field": {
+        "file": "C:\\Users\\Lestat\\AppData\\Local\\Temp\\xhd-author-src\\src\\hd_impl\\hausdorff_distance_rt.h",
+        "line": 378,
+        "text": "json_iter[\"Radius\"] = radius;"
+      },
+      "json_offloading_size": {
+        "file": "C:\\Users\\Lestat\\AppData\\Local\\Temp\\xhd-author-src\\src\\hd_impl\\hausdorff_distance_rt.h",
+        "line": 376,
+        "text": "json_iter[\"OffloadingSize\"] = total_offloading_size;"
+      },
+      "load_balance_reduce_by_point": {
+        "file": "C:\\Users\\Lestat\\AppData\\Local\\Temp\\xhd-author-src\\src\\hd_impl\\hausdorff_distance_rt.h",
+        "line": 492,
+        "text": "thrust::reduce_by_key(rmm::exec_policy_nosync(stream), offloading_point_ids.begin(),"
+      },
+      "load_balance_sort_by_point": {
+        "file": "C:\\Users\\Lestat\\AppData\\Local\\Temp\\xhd-author-src\\src\\hd_impl\\hausdorff_distance_rt.h",
+        "line": 484,
+        "text": "thrust::sort_by_key(rmm::exec_policy_nosync(stream), offloading_point_ids.begin(),"
+      },
+      "offload_append_cell_id": {
+        "file": "C:\\Users\\Lestat\\AppData\\Local\\Temp\\xhd-author-src\\src\\rt\\shaders\\shaders_nn_uniform_grid.cu",
+        "line": 101,
+        "text": "params.offloading_cell_ids[tail] = mbr_id;"
+      },
+      "offload_append_point_id": {
+        "file": "C:\\Users\\Lestat\\AppData\\Local\\Temp\\xhd-author-src\\src\\rt\\shaders\\shaders_nn_uniform_grid.cu",
+        "line": 100,
+        "text": "auto tail = params.offloading_point_ids.Append(in_q_idx);"
+      },
+      "offload_size_read": {
+        "file": "C:\\Users\\Lestat\\AppData\\Local\\Temp\\xhd-author-src\\src\\hd_impl\\hausdorff_distance_rt.h",
+        "line": 348,
+        "text": "auto offloading_size = offloading_point_ids_.size(stream);"
+      },
+      "total_offloading_size_accumulates_batches": {
+        "file": "C:\\Users\\Lestat\\AppData\\Local\\Temp\\xhd-author-src\\src\\hd_impl\\hausdorff_distance_rt.h",
+        "line": 353,
+        "text": "total_offloading_size += offloading_size;"
+      },
+      "wl_heavy_peak_formula": {
+        "file": "C:\\Users\\Lestat\\AppData\\Local\\Temp\\xhd-author-src\\src\\hd_impl\\hausdorff_distance_rt.h",
+        "line": 351,
+        "text": "(uint32_t)(offloading_size * 2 *"
+      }
+    },
+    "author_root": "C:\\Users\\Lestat\\AppData\\Local\\Temp\\xhd-author-src",
+    "author_source_available": true,
+    "rtdl": {
+      "generic_uint64_byte_formula": {
+        "file": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\src\\native\\optix\\rtdl_optix_workloads.cpp",
+        "line": 19162,
+        "text": "offload_row_count * 2ULL * static_cast<uint64_t>(sizeof(uint64_t));"
+      },
+      "kind_threshold": {
+        "file": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\src\\native\\optix\\rtdl_optix_workloads.cpp",
+        "line": 18715,
+        "text": "} else if (cell.point_count > params.max_inline_points) {"
+      },
+      "kind_two_payload": {
+        "file": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\src\\native\\optix\\rtdl_optix_workloads.cpp",
+        "line": 18779,
+        "text": "optixSetPayload_6(2u);"
+      },
+      "offload_row_counter": {
+        "file": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\src\\native\\optix\\rtdl_optix_workloads.cpp",
+        "line": 19157,
+        "text": "if (row.frontier_kind_code == 2) {"
+      },
+      "row_sort": {
+        "file": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\src\\native\\optix\\rtdl_optix_workloads.cpp",
+        "line": 19142,
+        "text": "std::sort(rows.begin(), rows.end(), [](const RtdlCellMbrFrontierRow& a, const RtdlCellMbrFrontierRow& b) {"
+      },
+      "row_unique": {
+        "file": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\src\\native\\optix\\rtdl_optix_workloads.cpp",
+        "line": 19149,
+        "text": "rows.erase(std::unique(rows.begin(), rows.end(), [](const RtdlCellMbrFrontierRow& a, const RtdlCellMbrFrontierRow& b) {"
+      }
+    }
+  },
+  "status": "lb_denominator_reconciliation_ready__row_count_parity_not_established"
+}

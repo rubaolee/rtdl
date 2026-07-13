@@ -1,0 +1,11 @@
+diff --git a/include/rtspatial/details/rt_engine.h b/include/rtspatial/details/rt_engine.h
+index 2c71836..930dfce 100644
+--- a/include/rtspatial/details/rt_engine.h
++++ b/include/rtspatial/details/rt_engine.h
+@@ -982,5 +982,5 @@ class RTEngine {
+     OPTIX_CHECK(optixAccelBuild(
+         optix_context_, cuda_stream, &accelOptions, &build_input, 1,
+-        THRUST_TO_CUPTR(temp_buf), blas_buffer_sizes.tempSizeInBytes,
++        THRUST_TO_CUPTR(temp_buf), blas_buffer_sizes.tempUpdateSizeInBytes,
+         THRUST_TO_CUPTR(out_buf), blas_buffer_sizes.outputSizeInBytes,
+         &traversable, nullptr, 0));

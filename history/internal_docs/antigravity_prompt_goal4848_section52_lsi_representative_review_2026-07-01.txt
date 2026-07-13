@@ -1,0 +1,27 @@
+Please review the following RTDL internal result packet and write your review to:
+
+history/internal_docs/antigravity_goal4848_section52_lsi_representative_route_review_2026-07-01.md
+
+Primary packet:
+
+history/internal_docs/goal4848_section52_lsi_representative_lkau_pkau_current_osm_result_2026-07-01.md
+
+Review request:
+
+history/internal_docs/call_for_review_goal4848_section52_lsi_representative_route_2026-07-01.md
+
+Please answer every question in the call-for-review and choose exactly one verdict label:
+
+- approve_goal4848_representative_route_complete_no_broad_claim
+- approve_with_amendments
+- block_goal4848_result_due_to_semantic_or_provenance_error
+
+Focus especially on:
+
+1. whether the pivot from six remaining pairs to one representative is consistent with the user instruction;
+2. whether the provenance label `current_osm_geofabrik_representative_cdb` is honest;
+3. whether the AuthorPatch-vs-RTDL direction contract is correctly interpreted;
+4. whether rejecting the generic RTDL segment kernel as wrong semantics is correct;
+5. whether the report avoids broad Section 5.2, Section 5.7, V3/V4, and generic-language claims.
+
+Do not authorize runtime edits, V3/V4 claims, exact paper CDB claims, full six-pair claims, full overlay/PIP claims, or broad speedup claims.

@@ -1,0 +1,116 @@
+{
+  "claim_boundary": {
+    "author_memory_parity_claim_authorized": false,
+    "figure11_reproduced": false,
+    "native_backend_complete": false,
+    "requires_goal5281_native_telemetry_for_pod_memory_evidence": true,
+    "xhd_specific_core_behavior": false
+  },
+  "columns": {
+    "lower_bounds": [
+      0.2,
+      0.3,
+      0.4
+    ],
+    "upper_bounds": [
+      2.0,
+      3.0,
+      4.0
+    ],
+    "work_begin_offsets": [
+      4,
+      8,
+      10
+    ],
+    "work_cost_estimates": [
+      9.0,
+      1.0,
+      7.0
+    ],
+    "work_counts": [
+      9,
+      1,
+      7
+    ],
+    "work_kind_codes": [
+      1,
+      2,
+      1
+    ],
+    "work_primitive_ids": [
+      11,
+      12,
+      13
+    ],
+    "work_source_ids": [
+      101,
+      102,
+      103
+    ]
+  },
+  "contract": "generic_heavy_offload_worklist_v1",
+  "goal": 5279,
+  "metadata": {
+    "adapter": "heavy_offload_worklist_numpy_columns",
+    "app_semantics": "none",
+    "attempted_row_count": 3,
+    "contract": "generic_heavy_offload_worklist_v1",
+    "heavy_threshold": 5,
+    "native_engine_row_contract": "not_called_partner_reference_only",
+    "overflow_policy": "fail_closed_no_partial_rows",
+    "overflowed": false,
+    "partner": "numpy",
+    "row_capacity": null,
+    "row_count": 3,
+    "row_schema": [
+      "work_source_id",
+      "work_primitive_id",
+      "work_begin_offset",
+      "work_count",
+      "work_kind_code",
+      "work_cost_estimate",
+      "lower_bound",
+      "upper_bound"
+    ],
+    "rt_core_speedup_claim_authorized": false,
+    "whole_app_speedup_claim_authorized": false,
+    "work_kind_codes": {
+      "active": 1,
+      "deferred": 3,
+      "miss": 2
+    }
+  },
+  "row_schema": [
+    "work_source_id",
+    "work_primitive_id",
+    "work_begin_offset",
+    "work_count",
+    "work_kind_code",
+    "work_cost_estimate",
+    "lower_bound",
+    "upper_bound"
+  ],
+  "status": "implemented_review_pending",
+  "telemetry": {
+    "deferred_queue_bytes": 0,
+    "deferred_queue_capacity": 0,
+    "device_buffer_bytes_excluding_accel": 192,
+    "heavy_offload_attempted_rows": 3,
+    "heavy_offload_current_rows": 3,
+    "heavy_offload_peak_rows": 3,
+    "heavy_offload_queue_current_bytes": 48,
+    "heavy_offload_queue_peak_bytes": 48,
+    "heavy_offload_row_capacity": 3,
+    "in_queue_bytes": 32,
+    "in_queue_capacity": 4,
+    "miss_queue_bytes": 8,
+    "miss_queue_capacity": 1,
+    "native_accel_bytes_if_applicable": null,
+    "schema": "rtdl.generic.heavy_offload_worklist.memory_telemetry.v1"
+  },
+  "work_kind_codes": {
+    "active": 1,
+    "deferred": 3,
+    "miss": 2
+  }
+}

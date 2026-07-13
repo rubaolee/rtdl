@@ -23,6 +23,8 @@ evidence.
 | --- | --- |
 | Kernel shape | `input -> traverse -> refine -> emit` |
 | Geometry rows | segment intersections, point/polygon containment, ray/triangle rows |
+| Planar-map LSI counts | prepared CDB/planar-map line-segment-intersection count through `prepare_planar_map_lsi_2d_optix` |
+| Planar-map point location | prepared CDB/planar-map point-location/PIP rows and counts through `prepare_planar_map_point_location_2d_optix` |
 | Hit outputs | any-hit flags, hit counts, bounded witness columns |
 | Neighbor rows | fixed-radius rows, nearest-neighbor rows, bounded KNN-style rows |
 | Compact summaries | counts, sums, min/max-style summaries where documented |
@@ -68,6 +70,8 @@ The examples demonstrate:
 - service coverage and hotspot screening;
 - facility assignment and nearest-neighbor screening;
 - road hazard and segment/polygon summaries;
+- planar-map LSI count checks for CDB-like spatial workloads;
+- planar-map point-location/PIP checks for CDB-like spatial workloads;
 - Hausdorff and Frechet-style candidate discovery;
 - ANN candidate reranking surfaces;
 - DBSCAN/outlier core-count surfaces;

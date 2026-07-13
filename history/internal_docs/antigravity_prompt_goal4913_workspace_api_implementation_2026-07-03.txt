@@ -1,0 +1,43 @@
+Please review Goal4913, the implementation of the RTDL planar-map workspace API.
+
+Workspace root:
+
+```text
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review
+```
+
+Completion report:
+
+```text
+history/internal_docs/goal4913_planar_map_workspace_api_implementation_2026-07-03.md
+```
+
+Call-for-review:
+
+```text
+history/internal_docs/call_for_review_goal4913_workspace_api_implementation_2026-07-03.md
+```
+
+Implementation files:
+
+```text
+src/rtdsl/optix_runtime.py
+src/rtdsl/__init__.py
+tests/goal4913_planar_map_workspace_api_test.py
+```
+
+Please write your review to:
+
+```text
+history/internal_docs/antigravity_goal4913_workspace_api_implementation_review_2026-07-03.md
+```
+
+Requested verdict labels:
+
+- `approve_goal4913_workspace_api_implemented`
+- `approve_with_required_amendments`
+- `block_goal4913_as_rayjoin_specific`
+- `block_goal4913_as_unverified_or_too_broad`
+
+Please answer all 8 review questions and preserve the non-authorization
+boundary.

@@ -1,0 +1,21 @@
+Please review Goal4876 as an external critical reviewer.
+
+Review these files:
+- history/internal_docs/goal4876_author_official_baseline_definition_2026-07-02.md
+- history/internal_docs/call_for_review_goal4876_author_official_baseline_definition_2026-07-02.md
+- history/internal_docs/goal4876_4885_rayjoin_official_authorpatch_reproduction_goal_series_2026-07-02.md
+- history/internal_docs/antigravity_goal4875_section57_au_representative_public_primitives_closure_review_2026-07-02.md
+- history/internal_docs/goal4834_author_sos_t_reported.patch
+- history/internal_docs/goal4868_author_rtdl_contract_patch.diff
+
+Assess whether Goal4876 correctly defines AuthorOfficial = Author+RTDLContractPatch as the official updated RayJoin comparator and properly reclassifies older 5.2/5.3/5.7 evidence.
+
+Answer the eight questions in the call-for-review file.
+
+Use one verdict label:
+- approve_goal4876_authorofficial_baseline_defined
+- approve_with_required_amendments
+- block_goal4876_baseline_definition
+
+Write your review to:
+history/internal_docs/antigravity_goal4876_authorofficial_baseline_definition_review_2026-07-02.md

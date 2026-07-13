@@ -1,0 +1,180 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5323.external_author_artifact_availability_sweep.v1",
+  "goal": "Goal5323",
+  "date": "2026-07-09",
+  "purpose": "Classify whether the public X-HD author repository and adjacent public GitHub artifacts contain exact paper input datasets, hashes, dataset releases, LFS pointers, or download instructions sufficient to unblock full paper reproduction.",
+  "status": "external_author_dataset_artifacts_not_found__repo_source_logs_only",
+  "claim_boundary": {
+    "external_author_availability_search_claimed": true,
+    "external_author_dataset_artifacts_found": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "author_rtdl_correctness_claimed": false,
+    "performance_ratio_claimed": false,
+    "new_rtdl_route_code_added": false,
+    "pod_execution_claimed": false
+  },
+  "github_repository_checked": {
+    "full_name": "pwrliang/X-HD",
+    "html_url": "https://github.com/pwrliang/X-HD",
+    "default_branch": "main",
+    "metadata_snapshot": {
+      "stargazers_count": 1,
+      "forks_count": 1,
+      "has_downloads": true,
+      "has_wiki": false,
+      "has_pages": false,
+      "created_at": "2024-12-13T21:31:34Z",
+      "updated_at": "2026-06-13T20:59:49Z",
+      "pushed_at": "2026-06-13T20:59:45Z"
+    },
+    "branches": {
+      "main": "7bf41c8442d059c94f4178355c6d5a10571d9658",
+      "paper": "8c3846866052e1e8755210021f23fac2cbe8c3d6",
+      "hybrid": "4d9046a9e55d87f35daf81dd718444029fab56ce"
+    },
+    "release_count": 0,
+    "top_level_contents": [
+      ".clang-format",
+      ".gitignore",
+      ".gitmodules",
+      "CMakeLists.txt",
+      "README.md",
+      "cmake/",
+      "expr/",
+      "src/",
+      "thirdparty/",
+      "vcpkg.json"
+    ],
+    "top_level_data_directories_found": [],
+    "gitattributes_status": "absent_404_no_lfs_pointer_manifest_found",
+    "gitignore_ignores": [
+      "*.log",
+      "*.pdf",
+      "*.zip",
+      "*.pkl"
+    ],
+    "readme_contract": {
+      "contains_hd_exec_cli_example": true,
+      "states_variant_rt_is_xhd_algorithm": true,
+      "contains_dataset_download_links": false,
+      "contains_hddatasets_download_instructions": false,
+      "notes": [
+        "README documents hd_exec arguments and says more options are in flags.cc.",
+        "README does not provide paper input archives, hashes, or dataset download instructions."
+      ]
+    }
+  },
+  "github_tree_recursive_sweep": {
+    "ref": "main",
+    "total_paths": 416,
+    "data_like_paths": [],
+    "input_dataset_blob_extensions_found": [],
+    "expr_log_json_count": 281,
+    "expr_directory_contents": [
+      "expr/common.sh",
+      "expr/draw/",
+      "expr/draw_breakdown.py",
+      "expr/draw_end2end.py",
+      "expr/draw_lb.py",
+      "expr/draw_mem.py",
+      "expr/draw_scalability.py",
+      "expr/draw_translate.py",
+      "expr/draw_tune_grid.py",
+      "expr/draw_tune_radius.py",
+      "expr/for_the_paper/",
+      "expr/logs/",
+      "expr/run_fig5.sh",
+      "expr/run_grid_tuning.sh",
+      "expr/run_lb.sh",
+      "expr/run_mem.sh",
+      "expr/run_radius_tuning.sh",
+      "expr/run_rt_comparison.sh",
+      "expr/run_scalability.sh",
+      "expr/run_translate.sh",
+      "expr/shp2wkt.py"
+    ],
+    "classification": "source_scripts_and_checked_in_logs_present__exact_input_dataset_blobs_absent"
+  },
+  "local_workspace_artifacts_checked": {
+    "xhd_data_root": "Paper-reproduction-apps/x-hd-paper/data",
+    "external_stanford_assets_present": true,
+    "external_stanford_assets_are_author_hddatasets": false,
+    "external_stanford_assets_classification": "public_same_source_level_b_assets_or_app_generated_scaled_files_not_author_exact_inputs",
+    "generated_wkt_assets_present": true,
+    "generated_wkt_assets_are_author_hddatasets": false,
+    "current_pod_hddatasets_root_present": false,
+    "evidence": [
+      "Paper-reproduction-apps/x-hd-paper/data/external/stanford contains public Stanford graphics archives and app-owned scaled PLY candidates used for Level-B graphics gates.",
+      "Paper-reproduction-apps/x-hd-paper/data/generated contains generated bounded/full-public WKT candidates used for Level-B geo gates.",
+      "Goal5214 and later provenance goals record /local/storage/shared/HDDatasets missing on the current POD.",
+      "No local author HDDatasets root, exact paper input hashes, or author-provided dataset bundle was found in the project evidence."
+    ]
+  },
+  "relationship_to_goals5318_5322": {
+    "goal5318_water_bg": "No author WKT files or hashes found; current ArcGIS public services remain Level-B.",
+    "goal5319_graphics": "No author graphics input files, hashes, or preprocessing proof found; public Stanford assets remain Level-B.",
+    "goal5320_county_zcta": "County source/conversion remains blocked; current ArcGIS/TIGER/RayJoin-CDB alternatives do not prove author WKT identity.",
+    "goal5321_osm": "OSM remains snapshot/filter/conversion blocked; public SpatialHadoop catalog entries are not author files/hashes.",
+    "goal5322_brats": "BraTS remains access/conversion blocked; official data are NIfTI volumes and author conversion provenance is missing."
+  },
+  "blocking_gaps": [
+    "No GitHub release or package contains author paper input datasets.",
+    "No .gitattributes file or LFS pointer manifest was found in the checked public repository.",
+    "No top-level data/HDDatasets/datasets directory exists in the checked public repository.",
+    "No recursive-tree input blobs with typical X-HD paper input extensions were found in the checked main branch.",
+    "The public repository contains source, scripts, and checked-in JSON logs, but not the exact input files or hashes needed for Level-C exact dataset reproduction.",
+    "Current local/POD Level-B assets do not establish byte identity with the author's /local/storage/shared/HDDatasets inputs."
+  ],
+  "classification": {
+    "current_level": "public_author_repo_source_logs_only__exact_input_artifacts_absent",
+    "level_b_supported_by_current_public_assets": true,
+    "level_c_exact_requires_one_of": [
+      "author-provided input files or hashes",
+      "author-provided archived HDDatasets bundle",
+      "author-provided converted point-set files or hashes",
+      "byte-identical regeneration from pinned public sources plus documented author conversion/export pipeline",
+      "external review accepting deterministic public-source reconstruction as exact-equivalent"
+    ],
+    "statistics_logs_paths_or_public_repo_presence_sufficient_for_exact": false
+  },
+  "pod_usage": {
+    "used": false,
+    "expected_next": false,
+    "reason": "This goal is an external artifact availability and repository-provenance sweep. GPU/POD execution cannot create missing author input provenance."
+  },
+  "recommended_next_actions": [
+    {
+      "rank": 1,
+      "action": "Send Goals5318-5323 as one exact-provenance blocker packet for strict review.",
+      "requires_pod": false
+    },
+    {
+      "rank": 2,
+      "action": "Seek external author HDDatasets files, hashes, archived exports, or converted point-set bundles.",
+      "requires_pod": false
+    },
+    {
+      "rank": 3,
+      "action": "If no exact artifacts can be obtained, ask review/owner to choose between stopping full-paper claims at Level-B or defining an explicitly bounded public-reconstruction claim.",
+      "requires_pod": false
+    },
+    {
+      "rank": 4,
+      "action": "Use POD only after a concrete new input/provenance artifact appears and needs author hd_exec or RTDL verification.",
+      "requires_pod": true
+    }
+  ],
+  "exit_label": "external_author_dataset_artifacts_not_found__repo_source_logs_only",
+  "allowed_summary": "The public X-HD author repository currently provides source code, scripts, and checked-in logs, but no releases, LFS manifest, dataset directory, input blobs, author input hashes, or HDDatasets bundle. This strengthens the exact-input blocker: current evidence supports Level-B public/source-matched work, not full paper dataset reproduction.",
+  "not_allowed": [
+    "claiming the public GitHub repository contains exact paper input datasets",
+    "claiming GitHub releases or LFS provide the missing datasets",
+    "claiming checked-in author logs are exact input files",
+    "promoting current Level-B public Stanford, ArcGIS, SpatialHadoop, or BraTS source references to exact paper inputs",
+    "claiming Figure 5 reproduction",
+    "claiming full X-HD paper reproduction",
+    "claiming author-vs-RTDL performance ratio from this provenance sweep"
+  ]
+}

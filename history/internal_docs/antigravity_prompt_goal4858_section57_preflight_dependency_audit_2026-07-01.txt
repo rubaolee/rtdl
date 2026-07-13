@@ -1,0 +1,42 @@
+Please act as an external reviewer for RTDL Goal4858.
+
+Workspace:
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review
+
+Review request:
+history/internal_docs/call_for_review_goal4858_section57_preflight_dependency_audit_2026-07-01.md
+
+Primary artifacts:
+history/internal_docs/goal4858_rayjoin_section57_preflight_dependency_audit_2026-07-01.md
+history/internal_docs/goal4859_rayjoin_section57_overlay_correctness_execution_plan_2026-07-01.md
+
+Please inspect the referenced files and, where useful, verify against:
+- history/internal_docs/goal4816_A_rayjoin_section57_paper_source_contract_extraction_2026-06-30.md
+- history/internal_docs/goal4853_section52_lsi_final_reproduction_closure_2026-07-01.md
+- history/internal_docs/goal4856_section53_pip_result_consistency_2026-07-01.md
+- history/internal_docs/goal4857_planar_map_point_location_public_front_door_cleanup_2026-07-01.md
+- src/rtdsl/optix_runtime.py
+- src/rtdsl/datasets.py
+- src/rtdsl/rayjoin_overlay.py
+- src/rtdsl/rayjoin_paper_suite.py
+- scripts/rayjoin_section57_overlay_matrix.py
+- scripts/rayjoin_paper_reproduction_suite.py
+
+Required output:
+Write your review result to:
+history/internal_docs/antigravity_goal4858_section57_preflight_dependency_audit_review_2026-07-01.md
+
+Use one of these verdict labels:
+- approve_goal4858_go_directly_to_section57
+- approve_with_required_amendments
+- reject_goal4858_must_reproduce_54_before_57
+- reject_goal4858_must_reproduce_55_before_57
+- reject_goal4858_must_reproduce_56_before_57
+- reject_goal4858_redo
+
+Answer all 10 review questions in the call-for-review file. Be strict about:
+- whether 5.4/5.5/5.6 really can be treated as dependency-only/deferred;
+- whether 3.2/5.4 precision and SoS contracts are carried into Goal4859;
+- whether Goal4859 clearly separates generic-public route vs bundled-helper route;
+- whether performance is blocked until correctness;
+- whether the report avoids runtime/native edits and overclaims.

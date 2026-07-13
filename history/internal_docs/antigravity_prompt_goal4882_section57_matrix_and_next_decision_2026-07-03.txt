@@ -1,0 +1,20 @@
+Please review the Goal4882 Section 5.7 reproduction matrix and next-decision packet.
+
+Read:
+
+history/internal_docs/goal4882_section57_reproduction_matrix_and_next_decision_2026-07-03.md
+history/internal_docs/call_for_review_goal4882_section57_matrix_and_next_decision_2026-07-03.md
+
+Reference evidence if needed:
+
+history/internal_docs/goal4873_section57_two_pair_bounded_closure_2026-07-02.md
+history/internal_docs/goal4875_section57_au_representative_public_primitive_closure_2026-07-02.md
+history/internal_docs/goal4881_section57_south_america_representative_public_primitives_2026-07-03.md
+
+Please answer the seven questions and issue one verdict label:
+
+- approve_goal4882_matrix_and_recommend_goal4883_final_packet
+- approve_but_require_africa_before_closure
+- block_goal4882_due_to_matrix_or_claim_error
+
+Focus on whether the matrix honestly separates exact/available pairs from representative current-source pairs, whether another immediate Africa run is really necessary, and whether Goal4883 final bounded packet is the correct next goal.

@@ -1,0 +1,7 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 7c7c820..0069406 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -15 +15 @@
+-set(ENABLED_ARCHS "75")
++set(ENABLED_ARCHS "61")

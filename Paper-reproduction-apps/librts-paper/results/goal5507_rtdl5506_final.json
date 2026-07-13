@@ -1,0 +1,120 @@
+{
+  "claim_boundary": {
+    "author_specific_rtdl_core_behavior_authorized": false,
+    "embree_in_scope": false,
+    "full_input_adjudication": false,
+    "generic_native_patch_probe_only": true,
+    "paper_reproduction_claimed": false,
+    "performance_ratio_authorized": false
+  },
+  "input_identity": {
+    "geometry_path": "/workspace/rtdl-goal5481/goal5507/data/goal5506_geometry.wkt",
+    "geometry_sha256": "e20d7e10ecad952f055d6c08a16c8a9360d32de41d08c4de8a757ca972d3f9cd",
+    "query_path": "/workspace/rtdl-goal5481/goal5507/data/goal5506_queries.wkt",
+    "query_sha256": "2df5c405ce828e241ee9a5cc7ecf12f59086194899ad82f0774443c505f46784",
+    "same_input_files": true
+  },
+  "rtdl": {
+    "backend": "optix",
+    "intersection_duplicate_row_count": 0,
+    "intersection_rows": [
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        13
+      ],
+      [
+        1,
+        1
+      ],
+      [
+        2,
+        2
+      ],
+      [
+        3,
+        3
+      ],
+      [
+        6,
+        26
+      ],
+      [
+        11,
+        53
+      ],
+      [
+        13,
+        22
+      ],
+      [
+        16,
+        94
+      ],
+      [
+        19,
+        89
+      ],
+      [
+        24,
+        9
+      ],
+      [
+        24,
+        26
+      ],
+      [
+        34,
+        21
+      ],
+      [
+        37,
+        58
+      ],
+      [
+        41,
+        124
+      ],
+      [
+        44,
+        97
+      ],
+      [
+        45,
+        52
+      ],
+      [
+        45,
+        102
+      ],
+      [
+        47,
+        56
+      ],
+      [
+        48,
+        89
+      ],
+      [
+        56,
+        47
+      ]
+    ],
+    "intersection_rows_count": 21,
+    "intersection_rows_sec": 0.0007597850053571165,
+    "intersection_unique_rows_count": 21,
+    "native_engine_customization": false,
+    "operation": "range_intersects",
+    "prepare_sec": 0.3343052130076103,
+    "primitive_query_sec": 0.11964765598531812,
+    "public_api": "Aabb2DColumns + prepare_aabb_index_2d_columns + prepared.count",
+    "query_wall_sec": 0.11986546003026888,
+    "result_count": 21,
+    "rt_core_accelerated": true
+  },
+  "schema": "rtdl.paper_reproduction.librts.goal5507_rtdl_range_intersects_probe.v1",
+  "status": "rtdl_probe_completed"
+}

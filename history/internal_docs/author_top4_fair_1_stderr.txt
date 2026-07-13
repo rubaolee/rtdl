@@ -1,0 +1,88 @@
+I20260706 01:03:26.467170 13847 run_overlay.cu:148] Reading map 0 from /root/rtdl_goal5036/Paper-reproduction-apps/rayjoin-paper/_data/top4_arcgis/top4_county.cdb
+I20260706 01:03:41.231613 13847 planar_graph.h:117] Map /root/rtdl_goal5036/Paper-reproduction-apps/rayjoin-paper/_data/top4_arcgis/top4_county.cdb is loaded, chains: 1612 points: 1706639 edges: 1705027, min seg len: 1.58001e-06, max seg len: 0.086198, avg seg len: 0.000747877, stdev: 0.00183065
+I20260706 01:03:41.325851 13847 run_overlay.cu:152] Reading map 1 from /root/rtdl_goal5036/Paper-reproduction-apps/rayjoin-paper/_data/top4_arcgis/top4_zipcode.cdb
+I20260706 01:05:06.472223 13847 planar_graph.h:117] Map /root/rtdl_goal5036/Paper-reproduction-apps/rayjoin-paper/_data/top4_arcgis/top4_zipcode.cdb is loaded, chains: 10144 points: 9993104 edges: 9982960, min seg len: 1e-06, max seg len: 0.0615079, avg seg len: 0.000498034, stdev: 0.00109998
+I20260706 01:05:07.022204 13847 context.h:51] Bounding Box, Bottom-left: (-124.415, 25.8371), Top-right: (-71.8561, 45.0159)
+I20260706 01:05:07.022277 13847 context.h:58] Scaled Bounding Box, Bottom-left: (-67789198093219, -63723525335741), Top-right: (67789198093218, 63723525335740)
+I20260706 01:05:07.022290 13847 context.h:61] Unscaled Bounding Box, Bottom-left: (-124.415, 25.8371), Top-right: (-71.8562, 45.0159)
+I20260706 01:05:10.042824 13847 rt_engine.cu:133] Info: Pipeline parameter "params" size is 176 bytes
+Warning: Program is doing double precision computations. No source location available. The input PTX may not contain debug information (nvcc option: -lineinfo), OptixModuleCompileOptions::debugLevel set to OPTIX_COMPILE_DEBUG_LEVEL_NONE, or no useful information is present for the current block.
+Warning: Program is doing double precision computations. No source location available. The input PTX may not contain debug information (nvcc option: -lineinfo), OptixModuleCompileOptions::debugLevel set to OPTIX_COMPILE_DEBUG_LEVEL_NONE, or no useful information is present for the current block.
+Warning: Program is doing double precision computations. No source location available. The input PTX may not contain debug information (nvcc option: -lineinfo), OptixModuleCompileOptions::debugLevel set to OPTIX_COMPILE_DEBUG_LEVEL_NONE, or no useful information is present for the current block.
+Warning: Program is doing double precision computations. No source location available. The input PTX may not contain debug information (nvcc option: -lineinfo), OptixModuleCompileOptions::debugLevel set to OPTIX_COMPILE_DEBUG_LEVEL_NONE, or no useful information is present for the current block.
+Warning: Program is doing double precision computations. No source location available. The input PTX may not contain debug information (nvcc option: -lineinfo), OptixModuleCompileOptions::debugLevel set to OPTIX_COMPILE_DEBUG_LEVEL_NONE, or no useful information is present for the current block.
+Warning: Program is doing double precision computations. No source location available. The input PTX may not contain debug information (nvcc option: -lineinfo), OptixModuleCompileOptions::debugLevel set to OPTIX_COMPILE_DEBUG_LEVEL_NONE, or no useful information is present for the current block.
+Warning: Program is doing double precision computations. No source location available. The input PTX may not contain debug information (nvcc option: -lineinfo), OptixModuleCompileOptions::debugLevel set to OPTIX_C
+I20260706 01:05:10.201462 13847 rt_engine.cu:133] Info: Pipeline parameter "params" size is 152 bytes
+Warning: Program is doing double precision computations. No source location available. The input PTX may not contain debug information (nvcc option: -lineinfo), OptixModuleCompileOptions::debugLevel set to OPTIX_COMPILE_DEBUG_LEVEL_NONE, or no useful information is present for the current block.
+Warning: Program is doing double precision computations. No source location available. The input PTX may not contain debug information (nvcc option: -lineinfo), OptixModuleCompileOptions::debugLevel set to OPTIX_COMPILE_DEBUG_LEVEL_NONE, or no useful information is present for the current block.
+Warning: Program is doing double precision computations. No source location available. The input PTX may not contain debug information (nvcc option: -lineinfo), OptixModuleCompileOptions::debugLevel set to OPTIX_COMPILE_DEBUG_LEVEL_NONE, or no useful information is present for the current block.
+Warning: Program is doing double precision computations. No source location available. The input PTX may not contain debug information (nvcc option: -lineinfo), OptixModuleCompileOptions::debugLevel set to OPTIX_COMPILE_DEBUG_LEVEL_NONE, or no useful information is present for the current block.
+Warning: Program is doing double precision computations. No source location available. The input PTX may not contain debug information (nvcc option: -lineinfo), OptixModuleCompileOptions::debugLevel set to OPTIX_COMPILE_DEBUG_LEVEL_NONE, or no useful information is present for the current block.
+Warning: Program is doing double precision computations. No source location available. The input PTX may not contain debug information (nvcc option: -lineinfo), OptixModuleCompileOptions::debugLevel set to OPTIX_COMPILE_DEBUG_LEVEL_NONE, or no useful information is present for the current block.
+Warning: Program is doing double precision computations. No source location available. The input PTX may not contain debug information (nvcc option: -lineinfo), OptixModuleCompileOptions::debugLevel set to OPTIX_C
+I20260706 01:05:10.210695 13847 rt_engine.cu:282] Info: Pipeline statistics
+	module(s)                            :     1
+	entry function(s)                    :     2
+	trace call(s)                        :     1
+	continuation callable call(s)        :     0
+	direct callable call(s)              :     0
+	basic block(s) in entry functions    :    23
+	instruction(s) in entry functions    :   646
+	non-entry function(s)                :     1
+	basic block(s) in non-entry functions:     1
+	instruction(s) in non-entry functions:     1
+	debug information                    :    no
+I20260706 01:05:10.219812 13847 rt_engine.cu:282] Info: Pipeline statistics
+	module(s)                            :     1
+	entry function(s)                    :     2
+	trace call(s)                        :     1
+	continuation callable call(s)        :     0
+	direct callable call(s)              :     0
+	basic block(s) in entry functions    :    61
+	instruction(s) in entry functions    :   966
+	non-entry function(s)                :     1
+	basic block(s) in non-entry functions:     1
+	instruction(s) in non-entry functions:     1
+	debug information                    :    no
+I20260706 01:05:10.219925 13847 lsi.h:22] Queue size: 53 MB
+I20260706 01:05:10.222940 13847 primitive.h:256] Enlarge limit: 3.5 max iter:5 ne: 1705027 aabbs: 223296 Compress ratio: 0.869037 Time: 1.562 ms
+I20260706 01:05:10.223024 13847 rt_engine.cu:397] Building AS, num prims: 223296, Required Temp Size: 17007488 Output Size: 8356096
+I20260706 01:05:10.351636 13847 primitive.h:256] Enlarge limit: 3.5 max iter:5 ne: 9982960 aabbs: 1344099 Compress ratio: 0.865361 Time: 9.502 ms
+I20260706 01:05:10.351693 13847 rt_engine.cu:397] Building AS, num prims: 1344099, Required Temp Size: 102363904 Output Size: 50290176
+I20260706 01:05:10.357561 13847 lsi_rt.h:50] queries: 1705027
+I20260706 01:05:10.357640 13847 rt_engine.h:159] Parm size: 176
+I20260706 01:05:10.357677 13847 rt_engine.cu:554] optixLaunch, [w,h,d] = 1705027,1,1
+I20260706 01:05:10.364579 13847 rt_engine.h:159] Parm size: 152
+I20260706 01:05:10.364610 13847 rt_engine.cu:554] optixLaunch, [w,h,d] = 1706639,1,1
+I20260706 01:05:10.380275 13847 rt_engine.h:159] Parm size: 152
+I20260706 01:05:10.380303 13847 rt_engine.cu:554] optixLaunch, [w,h,d] = 9993104,1,1
+I20260706 01:05:10.488983 13847 rt_engine.h:159] Parm size: 152
+I20260706 01:05:10.489027 13847 rt_engine.cu:554] optixLaunch, [w,h,d] = 209559,1,1
+I20260706 01:05:10.540017 13847 rt_engine.h:159] Parm size: 152
+I20260706 01:05:10.540053 13847 rt_engine.cu:554] optixLaunch, [w,h,d] = 203941,1,1
+I20260706 01:05:10.638314 13847 output_chain.h:91] Map 0, Xsect: 428322 218763
+I20260706 01:05:10.884012 13847 output_chain.h:91] Map 1, Xsect: 428322 224381
+I20260706 01:05:13.529843 13847 output_chain.h:199] Total chains: 426180 Total faces: 12039
+Timing results:
+ - Read map 0: 14858.7 ms
+
+ - Read map 1: 85696.3 ms
+
+ - Create App: 0.762939 ms
+
+ - Load Data: 2822.7 ms
+
+ - Init: 375.749 ms
+
+ - Build Index: 136.188 ms
+
+ - Intersection edges: 6.97207 ms
+
+ - Map 0: Locate vertices in other map: 15.573 ms
+
+ - Map 1: Locate vertices in other map: 60.183 ms
+
+ - Computer output polygons: 104.314 ms
+
+ - Write to file: 8660.27 ms

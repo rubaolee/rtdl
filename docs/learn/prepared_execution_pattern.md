@@ -33,7 +33,7 @@ query.
 import json
 import rtdsl as rt
 
-artifact = json.load(open("history/internal_docs/docs_reports/goal3511_overlay_area_steady_state_relation_stream_pod_2026-06-05.json"))
+artifact = json.load(open("artifacts/my_prepared_run_summary.json"))
 report = rt.prepared_execution_report_from_artifact(
     artifact,
     workflow_name="simple_polygon_overlay_area_prepared_execution",

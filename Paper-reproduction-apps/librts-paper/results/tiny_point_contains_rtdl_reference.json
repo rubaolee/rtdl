@@ -1,0 +1,76 @@
+{
+  "author_comparator_used": false,
+  "claim_boundary": {
+    "author_same_input_agreement_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "local_reference_only": true,
+    "mutable_index_parity_claimed": false,
+    "performance_claimed": false
+  },
+  "expected": {
+    "candidate_id_rows": [
+      [
+        0,
+        0
+      ],
+      [
+        1,
+        0
+      ],
+      [
+        1,
+        1
+      ],
+      [
+        2,
+        1
+      ],
+      [
+        3,
+        2
+      ]
+    ],
+    "valid_count": 5
+  },
+  "fixture": {
+    "boxes_path": "Paper-reproduction-apps\\librts-paper\\data\\fixtures\\tiny_boxes.wkt",
+    "expected_path": "Paper-reproduction-apps\\librts-paper\\data\\fixtures\\tiny_point_contains_expected.json",
+    "indexed_box_count": 4,
+    "points_path": "Paper-reproduction-apps\\librts-paper\\data\\fixtures\\tiny_points.wkt",
+    "query_point_count": 5
+  },
+  "matched": true,
+  "paper_reproduction_complete": false,
+  "rtdl": {
+    "backend": "cpu",
+    "candidate_id_rows": [
+      [
+        0,
+        0
+      ],
+      [
+        1,
+        0
+      ],
+      [
+        1,
+        1
+      ],
+      [
+        2,
+        1
+      ],
+      [
+        3,
+        2
+      ]
+    ],
+    "contract": "generic_expanded_aabb_point_membership_rows_2d_v1",
+    "native_engine_customization": false,
+    "public_api": "expanded_aabb_point_membership_rows_2d",
+    "rt_core_accelerated": false,
+    "valid_count": 5
+  },
+  "schema": "rtdl.paper_reproduction.librts.local_point_contains_gate.v1",
+  "status": "local_rtdl_point_contains_reference_matched"
+}

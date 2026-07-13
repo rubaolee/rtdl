@@ -1,0 +1,176 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5301.non_graphics_dataset_provenance.v1",
+  "goal": "Goal5301",
+  "generated_on": "2026-07-09",
+  "status": "non_graphics_dataset_provenance_ready__no_exact_inputs__census_tiger_next",
+  "scope": {
+    "purpose": "Consolidate X-HD non-graphics dataset availability after graphics Level-B progress.",
+    "this_goal_runs_author": false,
+    "this_goal_runs_rtdl": false,
+    "this_goal_uses_pod": false,
+    "reason_no_pod": "Current blocker is input provenance/acquisition, not GPU execution. Use POD only after exact datasets are mounted or a bounded public candidate dataset is prepared."
+  },
+  "source_evidence": [
+    {
+      "id": "goal5130_target_matrix",
+      "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_paper_target_matrix_2026-07-08.json",
+      "role": "paper target categories, counts, dimensions, Gini values"
+    },
+    {
+      "id": "goal5131_dataset_provenance",
+      "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_dataset_provenance_matrix_2026-07-08.json",
+      "role": "dataset provenance rule and source availability classification"
+    },
+    {
+      "id": "goal5297_acquisition_manifest",
+      "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5297_dataset_acquisition_manifest_2026-07-09.json",
+      "role": "current local/POD availability and exact-identity blockers"
+    },
+    {
+      "id": "goal5288_author_log_denominator",
+      "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5288_figure5_timing_denominator_audit_2026-07-09.json",
+      "role": "author log categories and unique pair counts"
+    },
+    {
+      "id": "goal5295_pod_availability",
+      "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5295_figures7_8_10_pod_dataset_availability_2026-07-09.json",
+      "role": "current POD missing /local/storage/shared/HDDatasets and required paths"
+    }
+  ],
+  "exact_dataset_rule": {
+    "exact_requires": [
+      "actual dataset file hash provenance",
+      "or deterministic author script regeneration with the same source snapshot and conversion parameters"
+    ],
+    "count_or_gini_match_is_sufficient": false,
+    "public_reconstruction_without_hash_is_level": "Level-B same-source representative, not Level-C exact paper dataset"
+  },
+  "author_log_coverage": {
+    "categories_present": [
+      "BraTS2020_ValidationData",
+      "geo",
+      "graphics"
+    ],
+    "brats_records": 2500,
+    "brats_unique_pairs": 500,
+    "geo_records": 15,
+    "geo_unique_pairs": 3,
+    "graphics_records": 20,
+    "graphics_unique_pairs": 4
+  },
+  "families": [
+    {
+      "family_id": "brats_2020",
+      "paper_category": "MRI / BraTS2020 validation",
+      "dimensions": 3,
+      "paper_targets": [
+        "BraTS2020_ValidationData"
+      ],
+      "author_log_role": "Figure 5 category; 500 unique author-log pairs, 2500 records",
+      "access_status": "registration_or_license_required",
+      "local_workspace_assets": "absent",
+      "current_pod_assets": "absent",
+      "exact_paper_identity_status": "blocked_without_author_image_list_and_conversion_hashes",
+      "level_b_candidate": "possible only after authorized access; exact still blocked without image list/conversion hashes",
+      "priority": "medium_after_public_geo",
+      "next_action": "Obtain authorized BraTS access and author image-list/conversion provenance before any RTDL route run.",
+      "pod_needed_now": false
+    },
+    {
+      "family_id": "census_tiger_geo",
+      "paper_category": "2D geographic WKT / Census-TIGER-like",
+      "dimensions": 2,
+      "paper_targets": [
+        "USCounty",
+        "USZipcode",
+        "USWater",
+        "USCensus"
+      ],
+      "paper_counts": {
+        "USCounty": 9438045,
+        "USZipcode": 43900000,
+        "USWater": 22800000,
+        "USCensus": 52300000
+      },
+      "access_status": "public_source_likely_available",
+      "local_workspace_assets": "absent",
+      "current_pod_assets": "absent",
+      "exact_paper_identity_status": "blocked_without_source_year_snapshot_conversion_and_hashes",
+      "level_b_candidate": "best next non-graphics target if product/year and WKT conversion are resolved; remains Level-B unless file/hash provenance matches paper inputs",
+      "priority": "highest_non_graphics_next",
+      "next_action": "Resolve TIGER/Census product, year, layer, coordinate convention, WKT conversion, and bounded subset/full-size feasibility before running route comparisons.",
+      "pod_needed_now": false
+    },
+    {
+      "family_id": "osm_geospatial",
+      "paper_category": "2D OSM-derived large WKT",
+      "dimensions": 2,
+      "paper_targets": [
+        "Lakes",
+        "Parks",
+        "All Nodes"
+      ],
+      "paper_counts": {
+        "Lakes": 301700000,
+        "Parks": 403700000,
+        "AllNodes": 2700000000
+      },
+      "access_status": "public_but_large_snapshot_required",
+      "local_workspace_assets": "absent",
+      "current_pod_assets": "absent",
+      "exact_paper_identity_status": "blocked_without_osm_snapshot_date_extract_filters_conversion_and_hashes",
+      "level_b_candidate": "defer until snapshot/extract/filter/conversion plan accepted; full-size likely storage/time heavy",
+      "priority": "defer_until_census_tiger_resolved",
+      "next_action": "Do not target full Lakes/Parks/AllNodes until an OSM snapshot/extract/filter plan or exact author dataset provenance exists.",
+      "pod_needed_now": false
+    }
+  ],
+  "figure_paths_blocked": {
+    "pod_root": "/local/storage/shared/HDDatasets",
+    "pod_root_exists": false,
+    "figure7_graphics_required": [
+      "graphics/dragon",
+      "graphics/asian_dragon",
+      "graphics/thai_statuette",
+      "graphics/happy_buddha"
+    ],
+    "figure8_required": [
+      "geo/dtl_cnty.wkt",
+      "geo/uszipcode.wkt",
+      "geo/USADetailedWaterBodies.wkt",
+      "geo/USACensusBlockGroupBoundaries.wkt",
+      "geo/lakes.bz2.wkt",
+      "geo/parks.bz2.wkt",
+      "graphics/*"
+    ],
+    "figure10_required": [
+      "geo/all_nodes.wkt"
+    ],
+    "consequence": "author figure matrix regeneration is blocked on current POD; graphics Level-B used public meshes instead of mounted HDDatasets"
+  },
+  "decisions": {
+    "full_paper_reproduction_complete": false,
+    "exact_paper_datasets_available": false,
+    "non_graphics_next_goal": "Goal5302_census_tiger_public_source_resolution_plan",
+    "no_more_rtdl_route_code_until": "at least one non-graphics input provenance/acquisition path is resolved",
+    "recommended_sequence": [
+      "Goal5302: resolve Census/TIGER public source product/year/conversion plan",
+      "Goal5303: build bounded same-source WKT fixture only after Goal5302",
+      "Goal5304+: run author/RTDL comparisons only after input artifact exists"
+    ]
+  },
+  "claim_boundary": {
+    "claims_full_paper_reproduction": false,
+    "claims_exact_dataset_recovery": false,
+    "claims_non_graphics_correctness": false,
+    "claims_performance_ratio": false,
+    "claims_figure_reproduction": false,
+    "allowed_summary": "Non-graphics X-HD full-paper inputs remain unresolved; Census/TIGER public-source provenance is the best next target, while BraTS requires access and OSM requires snapshot/filter decisions.",
+    "forbidden_summaries": [
+      "Full X-HD paper reproduction is complete",
+      "Exact non-graphics datasets recovered",
+      "Count/Gini matching proves exact paper inputs",
+      "Run performance ratios before denominator and input provenance are aligned"
+    ]
+  }
+}

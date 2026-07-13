@@ -1,0 +1,122 @@
+{
+  "abs_diff": 8.740038623544777e-05,
+  "author_hd_result": 0.06545527279376984,
+  "author_json": "/tmp/xhd_goal5289_figure5_bounded_probe/author_dragon_asian_rt_gpu.json",
+  "author_running": {
+    "AvgTime": 18.436,
+    "EB": true,
+    "FastBuildBVH": false,
+    "LB": 256,
+    "NumPointsPerCell": 15,
+    "Prune": true,
+    "RebuildBVH": false,
+    "Repeats": [
+      {
+        "Algorithm": "XHD",
+        "BVHBuildTime": 0.666,
+        "Cells": 2617,
+        "Execution": "GPU",
+        "GridResolution": [
+          44,
+          25,
+          30
+        ],
+        "HDLowerBound": 0.032417237758636475,
+        "HDUpperBound": 0.2843485176563263,
+        "InitRadius": 0.032417237758636475,
+        "Iterations": [
+          {
+            "AdjustBVHTime": 0.105,
+            "CMax2": 0.0013073935406282544,
+            "CUDATime": 1.909,
+            "Iteration": 1,
+            "NumInputPoints": 437645,
+            "NumOutputPoints": 55017,
+            "OffloadingSize": 1450285,
+            "RTTime": 4.943,
+            "Radius": 0.032417237758636475
+          },
+          {
+            "AdjustBVHTime": 0.077,
+            "CMax2": 0.0019170170417055488,
+            "CUDATime": 0.91,
+            "Iteration": 2,
+            "NumInputPoints": 55017,
+            "NumOutputPoints": 26758,
+            "OffloadingSize": 404782,
+            "RTTime": 1.251,
+            "Radius": 0.04023478552699089
+          },
+          {
+            "AdjustBVHTime": 0.07,
+            "CMax2": 0.002410643035545945,
+            "CUDATime": 0.795,
+            "Iteration": 3,
+            "NumInputPoints": 26758,
+            "NumOutputPoints": 8139,
+            "OffloadingSize": 290074,
+            "RTTime": 1.212,
+            "Radius": 0.048052333295345306
+          },
+          {
+            "AdjustBVHTime": 0.071,
+            "CMax2": 0.003273884765803814,
+            "CUDATime": 0.283,
+            "Iteration": 4,
+            "NumInputPoints": 8139,
+            "NumOutputPoints": 2519,
+            "OffloadingSize": 63218,
+            "RTTime": 0.429,
+            "Radius": 0.05586988106369972
+          },
+          {
+            "CMax2": 0.0042843930423259735,
+            "CUDATime": 0.235,
+            "Iteration": 5,
+            "NumInputPoints": 2519,
+            "NumOutputPoints": 0,
+            "OffloadingSize": 33626,
+            "RTTime": 0.587,
+            "Radius": 0.06368742883205414
+          }
+        ],
+        "LargeCells": 2145,
+        "Memory": {
+          "BVH": 130688,
+          "Grid": 14469808,
+          "MBRs B": 62808,
+          "WL": 3501160,
+          "WL Heavy Peak": 11602280
+        },
+        "Profiling": false,
+        "Repeat": 1,
+        "ReportedTime": 18.436
+      }
+    ],
+    "Seed": 0
+  },
+  "author_wall": {
+    "label": "author",
+    "returncode": 0,
+    "wall_sec": 2.0946097671985626
+  },
+  "claim_boundary": {
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_reproduced": false,
+    "full_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false
+  },
+  "dataset": "graphics_dragon_asian_scaled_1e-3_level_b",
+  "goal": "Goal5289",
+  "matched_value": false,
+  "rtdl_hd_result": 0.06536787240753439,
+  "rtdl_json": "/tmp/xhd_goal5289_figure5_bounded_probe/rtdl_dragon_asian_fast_scalar.json",
+  "rtdl_summary": null,
+  "rtdl_wall": {
+    "label": "rtdl",
+    "returncode": 0,
+    "wall_sec": 261.9700261428952
+  },
+  "same_denominator_ratio_allowed": false,
+  "schema": "rtdl.paper_reproduction.xhd.goal5289.figure5_bounded_same_pod_probe.v1"
+}

@@ -1,0 +1,98 @@
+{
+  "all_rtdl_routes_match_author_rerun": true,
+  "all_rtdl_routes_match_paper_log": true,
+  "author": {
+    "artifact": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5298_author_graphics_precheck_summary_pod.json",
+    "hd_result": 0.21912431716918945,
+    "input_point_counts": [
+      4999996,
+      543652
+    ],
+    "matched_paper_log_value": true,
+    "paper_log_abs_diff": 2.9802322387695312e-08,
+    "paper_log_hd_result": 0.21912434697151184,
+    "process_wall_sec": 2.3395375460386276,
+    "raw_author_json": "Paper-reproduction-apps/x-hd-paper/results/goal5298_raw/thai_happy_scaled_author.json",
+    "running_avg_time_ms": 26.57,
+    "source_goal": "Goal5298"
+  },
+  "case_id": "thai_happy_scaled",
+  "claim_boundary": {
+    "author_performance_parity_claimed": false,
+    "author_rt_core_algorithm_equivalence_claimed": false,
+    "author_vs_rtdl_ratio_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "level_b_same_source_rtdl_comparison_claimed": true
+  },
+  "exact_witness_route_available": true,
+  "fast_scalar_route_available": true,
+  "goal": "Goal5299",
+  "input1": "/tmp/xhd_goal5298/data/thai_statuette_scaled_1e-3.ply",
+  "input2": "/tmp/xhd_goal5298/data/happy_buddha.ply",
+  "level": "level_b_same_source_graphics_candidate",
+  "notes": [
+    "cell-mbr-exact-witness matches author rerun and has per_source_witness_exact=true.",
+    "cell-mbr-fast-scalar matches the scalar HDResult but per_source_witness_exact=false because global-bound early break may leave per-source witnesses approximate.",
+    "This is Level-B public Stanford same-source evidence, not exact paper dataset reproduction."
+  ],
+  "ratio_policy": {
+    "ratio_authorized": false,
+    "reason": "Author Running.AvgTime, author process wall, RTDL route wall, RTDL total, and RTDL process wall remain different denominators. Report them side-by-side only."
+  },
+  "rtdl_routes": [
+    {
+      "abs_diff_vs_author_rerun": 6.335011043523409e-09,
+      "abs_diff_vs_paper_log": 2.3467311344171904e-08,
+      "artifact": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5299_thai_happy_rtdl_exact_witness_pod.json",
+      "frontier_row_count": 0,
+      "global_bound_early_break": false,
+      "global_bound_early_break_count": null,
+      "hd_result": 0.2191243235042005,
+      "initial_seed_executor": "native_cuda",
+      "load_input_sec": 0.6467770040035248,
+      "matched_author_rerun": true,
+      "matched_paper_log": true,
+      "per_source_witness_exact": true,
+      "point_count_a": 4999996,
+      "point_count_b": 543652,
+      "process_artifact": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5299_thai_happy_rtdl_exact_witness_process_pod.json",
+      "route_id": "exact_witness",
+      "route_label": "cell-mbr-exact-witness",
+      "rtdl_entrypoint_total_sec": 5.998334564268589,
+      "rtdl_process_wall_sec": 6.952588014304638,
+      "rtdl_route_wall_sec": 5.001549616456032,
+      "rtdl_total_sec": 5.9968723729252815,
+      "total_candidate_distance_evaluations": 20453505663,
+      "witness_contract": "directed_input1_to_input2_per_source_witness_exact_seed_route"
+    },
+    {
+      "abs_diff_vs_author_rerun": 6.335011043523409e-09,
+      "abs_diff_vs_paper_log": 2.3467311344171904e-08,
+      "artifact": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5299_thai_happy_rtdl_fast_scalar_pod.json",
+      "frontier_row_count": 0,
+      "global_bound_early_break": true,
+      "global_bound_early_break_count": 4982182,
+      "hd_result": 0.2191243235042005,
+      "initial_seed_executor": "native_cuda",
+      "load_input_sec": 0.6539161130785942,
+      "matched_author_rerun": true,
+      "matched_paper_log": true,
+      "per_source_witness_exact": false,
+      "point_count_a": 4999996,
+      "point_count_b": 543652,
+      "process_artifact": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5299_thai_happy_rtdl_fast_scalar_process_pod.json",
+      "route_id": "fast_scalar",
+      "route_label": "cell-mbr-fast-scalar",
+      "rtdl_entrypoint_total_sec": 2.0029398277401924,
+      "rtdl_process_wall_sec": 2.927066244184971,
+      "rtdl_route_wall_sec": 1.0029054209589958,
+      "rtdl_total_sec": 2.001423515379429,
+      "total_candidate_distance_evaluations": 182487840,
+      "witness_contract": "directed_input1_to_input2_witness_may_be_approximate_for_fast_scalar"
+    }
+  ],
+  "schema": "rtdl.paper_reproduction.xhd.goal5299.thai_happy_level_b_rtdl_comparison.v1",
+  "status": "level_b_thai_happy_rtdl_comparison_complete__no_ratio"
+}

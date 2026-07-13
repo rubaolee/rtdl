@@ -1,0 +1,102 @@
+{
+  "cases": [
+    {
+      "author_matches_source_emulation": true,
+      "author_rtdl_match": true,
+      "author_runtime_count": 1,
+      "case_id": "interior_overlap",
+      "cpu_inclusive_count": 1,
+      "rtdl_matches_cpu_inclusive": true,
+      "rtdl_runtime_count": 1,
+      "source_emulation_count": 1
+    },
+    {
+      "author_matches_source_emulation": true,
+      "author_rtdl_match": true,
+      "author_runtime_count": 1,
+      "case_id": "edge_touch",
+      "cpu_inclusive_count": 1,
+      "rtdl_matches_cpu_inclusive": true,
+      "rtdl_runtime_count": 1,
+      "source_emulation_count": 1
+    },
+    {
+      "author_matches_source_emulation": true,
+      "author_rtdl_match": true,
+      "author_runtime_count": 1,
+      "case_id": "corner_touch",
+      "cpu_inclusive_count": 1,
+      "rtdl_matches_cpu_inclusive": true,
+      "rtdl_runtime_count": 1,
+      "source_emulation_count": 1
+    },
+    {
+      "author_matches_source_emulation": true,
+      "author_rtdl_match": true,
+      "author_runtime_count": 1,
+      "case_id": "one_ulp_overlap_before_box_max",
+      "cpu_inclusive_count": 1,
+      "rtdl_matches_cpu_inclusive": true,
+      "rtdl_runtime_count": 1,
+      "source_emulation_count": 1
+    },
+    {
+      "author_matches_source_emulation": true,
+      "author_rtdl_match": false,
+      "author_runtime_count": 1,
+      "case_id": "one_ulp_gap_after_box_max",
+      "cpu_inclusive_count": 0,
+      "rtdl_matches_cpu_inclusive": true,
+      "rtdl_runtime_count": 0,
+      "source_emulation_count": 1
+    }
+  ],
+  "claim_boundary": {
+    "author_gpu_runtime_executed": true,
+    "author_specific_rtdl_core_behavior_authorized": false,
+    "author_validity_proven_for_full_inputs": false,
+    "embree_in_scope": false,
+    "full_input_adjudication": false,
+    "paper_reproduction_claimed": false,
+    "performance_ratio_authorized": false,
+    "rtdl_core_change_authorized": false,
+    "same_input_runtime_fixture_agreement": true
+  },
+  "contracts": {
+    "author_runtime": "query -geom -query -serialize -query_type range-intersects -index_type rtspatial -load_factor 1",
+    "cpu_reference": "inclusive_aabb_intersects_float32",
+    "rtdl_runtime": "prepare_aabb_index_2d_columns + prepared.count(operation=range_intersects, backend=optix)",
+    "source_emulation": "RayParams<float,2> forward+backward diagonal shader model"
+  },
+  "input_identity": {
+    "geometry_sha256": "2256d450210f56d7032284e87fae70b46ed1686a441f1bf4fad9ed8fba544ba2",
+    "local_geometry_sha256": "2256d450210f56d7032284e87fae70b46ed1686a441f1bf4fad9ed8fba544ba2",
+    "local_query_sha256": "d427b5164a23be371779550b0b368b2fd8a4e2f08b449765ccdc74ef46002b95",
+    "query_sha256": "d427b5164a23be371779550b0b368b2fd8a4e2f08b449765ccdc74ef46002b95",
+    "runtime_case_order": [
+      "interior_overlap",
+      "edge_touch",
+      "corner_touch",
+      "one_ulp_overlap_before_box_max",
+      "one_ulp_gap_after_box_max"
+    ],
+    "same_input_per_case": true
+  },
+  "interpretation": {
+    "full_input_root_cause_resolved": false,
+    "localized_difference": "one_ulp_gap_after_box_max",
+    "rtdl_matches_independent_cpu_contract": true,
+    "source_emulation_matches_author_runtime": true
+  },
+  "schema": "rtdl.paper_reproduction.librts.goal5505_runtime_semantics_gate.v1",
+  "status": "runtime_semantics_gate_completed",
+  "summary": {
+    "author_matches_cpu_inclusive_count": 4,
+    "author_matches_source_emulation_count": 5,
+    "author_rtdl_mismatch_case_count": 1,
+    "author_runtime_total": 5,
+    "case_count": 5,
+    "rtdl_matches_cpu_inclusive_count": 5,
+    "rtdl_runtime_total": 4
+  }
+}

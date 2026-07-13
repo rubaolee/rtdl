@@ -1,0 +1,151 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5326.external_artifact_request_package.v1",
+  "goal": "Goal5326",
+  "date": "2026-07-09",
+  "purpose": "Prepare a concrete external artifact request package for author/reviewer/ACM-access follow-up after Goals5318-5325 classified exact input provenance as the full-reproduction blocker.",
+  "status": "external_artifact_request_package_ready__not_sent_by_codex",
+  "claim_boundary": {
+    "request_package_claimed": true,
+    "request_sent_claimed": false,
+    "external_artifacts_acquired": false,
+    "acm_supplement_inspected": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false,
+    "new_rtdl_route_code_added": false,
+    "pod_execution_claimed": false
+  },
+  "request_targets": [
+    {
+      "target": "paper_authors",
+      "purpose": "Ask for exact input provenance or an explicit statement of non-availability.",
+      "preferred_evidence": [
+        "sha256 manifest for paper-run /local/storage/shared/HDDatasets inputs",
+        "input files or archive if redistributable",
+        "converted point-set hashes if raw data cannot be shared",
+        "preprocessing/conversion scripts and parameters",
+        "paper command-line/config options not captured by logs"
+      ]
+    },
+    {
+      "target": "acm_access_reviewer",
+      "purpose": "Inspect `ics26-106.zip` and report whether it contains datasets, hashes, scripts, artifact appendix, or only camera-ready manuscript material.",
+      "preferred_evidence": [
+        "zip file listing",
+        "top-level README or artifact appendix if present",
+        "presence/absence of data files, hashes, scripts, or dataset instructions",
+        "sha256 of the zip if downloadable"
+      ]
+    },
+    {
+      "target": "owner_or_external_review",
+      "purpose": "If exact artifacts are not available, decide whether any public reconstruction can be accepted under a renamed bounded claim.",
+      "preferred_evidence": [
+        "explicit acceptance or rejection of WaterBodies/BG public reconstruction as exact-equivalent",
+        "if accepted, exact claim name and required denominator",
+        "if rejected, instruction to stop full-paper claims at Level-B"
+      ]
+    }
+  ],
+  "author_request_message": {
+    "subject": "X-HD reproduction: request for paper input provenance / hashes",
+    "body_lines": [
+      "Hello,",
+      "",
+      "We are attempting an independent RTDL/Python reproduction of the X-HD paper and have reproduced several bounded and public/source-matched scalar cases, but full paper reproduction is currently blocked on exact input provenance.",
+      "",
+      "Could you share, or confirm the availability of, any of the following for the paper-run `/local/storage/shared/HDDatasets` inputs?",
+      "",
+      "1. A sha256 (or other checksum) manifest for the paper input files used in Figure 5 and related experiments.",
+      "2. The input files or an archived HDDatasets bundle, if redistributable.",
+      "3. If raw inputs cannot be shared, the exact source URLs/snapshot identifiers/export parameters and preprocessing scripts needed to regenerate them byte-identically.",
+      "4. For graphics inputs: the exact Dragon/HappyBuddha/AsianDragon/ThaiStatuette files, scaling/translation/preprocessing parameters, and postprocessed point counts/hashes.",
+      "5. For geo inputs: the exact WKT files or hashes for dtl_cnty, uszipcode, USADetailedWaterBodies, USACensusBlockGroupBoundaries, lakes, parks, and all_nodes; plus WKT conversion/export precision and source snapshot details.",
+      "6. For BraTS: the exact validation file list/hashes and the NIfTI-to-point conversion rule used before hd_exec.",
+      "7. Any command-line/config details not fully captured by the checked-in JSON logs, including grid/cell parameters.",
+      "",
+      "If the datasets cannot be shared, a checksum manifest and conversion/provenance notes would still let us classify the reproduction status accurately without overclaiming exact paper reproduction.",
+      "",
+      "Thank you."
+    ]
+  },
+  "acm_supplement_request_message": {
+    "subject": "Request to inspect ACM supplement ics26-106.zip for X-HD artifact contents",
+    "body_lines": [
+      "Hello,",
+      "",
+      "The ACM proceedings page for X-HD lists a supplementary item named `ics26-106.zip`, but our environment receives HTTP 403 when attempting to inspect it.",
+      "",
+      "Could someone with ACM access inspect the zip and report:",
+      "",
+      "1. The top-level file listing.",
+      "2. Whether it contains only camera-ready manuscript/source material or also artifact materials.",
+      "3. Whether it contains any datasets, hashes, input manifests, scripts, or dataset download instructions.",
+      "4. If possible, the sha256 of the zip and any included README/artifact-appendix file.",
+      "",
+      "We will not claim this supplement contains or lacks useful artifacts until it is inspected.",
+      "",
+      "Thank you."
+    ]
+  },
+  "minimum_acceptable_positive_responses": [
+    {
+      "response_type": "author_hash_manifest",
+      "sufficient_to_continue": true,
+      "next_action": "Verify hash manifest against local/public files if available; request missing bytes or regeneration scripts; run one same-input gate."
+    },
+    {
+      "response_type": "author_input_archive",
+      "sufficient_to_continue": true,
+      "next_action": "Record archive hash, extract file hashes, run author hd_exec and RTDL same-input gates."
+    },
+    {
+      "response_type": "byte_identical_regeneration_script",
+      "sufficient_to_continue": true,
+      "next_action": "Run regeneration, record hashes, run author and RTDL gates."
+    },
+    {
+      "response_type": "acm_supplement_contains_artifact_instructions_or_hashes",
+      "sufficient_to_continue": true,
+      "next_action": "Ingest instructions/hashes into a new provenance goal and run the smallest same-input author/RTDL gate."
+    },
+    {
+      "response_type": "explicit_non_availability_statement",
+      "sufficient_to_continue": false,
+      "next_action": "Keep full-paper claims blocked; decide whether to request exact-equivalence review for Level-B public reconstruction."
+    }
+  ],
+  "water_bg_exact_equivalence_question": {
+    "question": "If author files/hashes are unavailable, may the current full-public WaterBodies/BG reconstruction be treated as exact-equivalent for a renamed bounded public-reconstruction claim?",
+    "evidence_to_present": [
+      "paper-like MBRs",
+      "small point-count deltas",
+      "author paper-config n_points_cell=8 reproduces paper-log HDResult",
+      "RTDL exact-witness float64 aligns with author/paper float32 within 2e-6",
+      "no author WKT hashes and nonzero point-count deltas remain"
+    ],
+    "allowed_reviewer_answers": [
+      "accepted_as_exact_equivalent_with_named_boundary",
+      "accepted_only_as_level_b_public_reconstruction",
+      "rejected_keep_level_b"
+    ],
+    "default_without_answer": "rejected_keep_level_b"
+  },
+  "pod_usage": {
+    "used": false,
+    "expected_next": false,
+    "reason": "This package prepares external requests. POD becomes relevant only after a positive response supplies inputs/hashes/regeneration instructions that require author/RTDL verification."
+  },
+  "exit_label": "external_artifact_request_package_ready__await_owner_send_or_external_response",
+  "allowed_summary": "Goal5326 prepares concrete author, ACM-access, and exact-equivalence request text plus response handling rules. It does not claim the requests were sent or that artifacts were acquired.",
+  "not_allowed": [
+    "claiming the author request has been sent by Codex",
+    "claiming external artifacts have been acquired",
+    "claiming ACM supplement contents are known",
+    "claiming exact paper dataset reproduction",
+    "claiming Figure 5 reproduction",
+    "claiming full X-HD paper reproduction",
+    "claiming author-vs-RTDL performance ratio"
+  ]
+}

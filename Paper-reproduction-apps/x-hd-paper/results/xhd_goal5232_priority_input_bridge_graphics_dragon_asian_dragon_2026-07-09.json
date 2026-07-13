@@ -1,0 +1,174 @@
+{
+  "author_basename_order": [
+    "dragon.ply",
+    "asian_dragon.ply"
+  ],
+  "author_log_records": {
+    "files": {
+      "asian_dragon.ply": {
+        "basename": "asian_dragon.ply",
+        "exact_status": [
+          "author_log_path_known__input_file_not_available"
+        ],
+        "gini_index": [],
+        "num_points": [
+          3609600
+        ],
+        "paths": [
+          "/local/storage/shared/HDDatasets/graphics/asian_dragon.ply"
+        ]
+      },
+      "dragon.ply": {
+        "basename": "dragon.ply",
+        "exact_status": [
+          "author_log_path_known__input_file_not_available"
+        ],
+        "gini_index": [],
+        "num_points": [
+          437645
+        ],
+        "paths": [
+          "/local/storage/shared/HDDatasets/graphics/dragon.ply"
+        ]
+      }
+    },
+    "hd_results": [
+      0.06536811590194702
+    ],
+    "record_count": 5,
+    "running_avg_times": [
+      {
+        "avg_time": 46.28779999999999,
+        "config": "n_points_cell_false_max_hit_false",
+        "reported_time_median": 46.22,
+        "section": "auto_tune"
+      },
+      {
+        "avg_time": 40.626999999999995,
+        "config": "n_points_cell_true_max_hit_true",
+        "reported_time_median": 40.639,
+        "section": "auto_tune"
+      },
+      {
+        "avg_time": 16.8364,
+        "config": "dragon.ply_asian_dragon.ply.json",
+        "reported_time_median": 15.914,
+        "section": "eb_gpu"
+      },
+      {
+        "avg_time": 41.930600000000005,
+        "config": "dragon.ply_asian_dragon.ply.json",
+        "reported_time_median": 41.616,
+        "section": "hybrid_gpu"
+      },
+      {
+        "avg_time": 87.26679999999999,
+        "config": "dragon.ply_asian_dragon.ply.json",
+        "reported_time_median": 89.996,
+        "section": "rt_gpu"
+      }
+    ],
+    "sections": [
+      "auto_tune",
+      "eb_gpu",
+      "hybrid_gpu",
+      "rt_gpu"
+    ]
+  },
+  "authorized_next_steps": [
+    "Use the full public Stanford candidate files for an explicitly Level B large-input feasibility plan.",
+    "Do not call this Level C exact paper input unless author file hashes or deterministic conversion provenance appear.",
+    "Avoid pairwise exact route attempts at full 437645 x 543652 scale unless a scalable route is selected."
+  ],
+  "bridge_assessment": {
+    "all_full_public_candidates_present": true,
+    "exact_paper_dataset_identity_proved": false,
+    "full_public_candidate_point_counts_match_author_logs": true,
+    "reason_exact_not_proved": [
+      "author logs provide paths and point counts but not input file hashes",
+      "local public files use Stanford archive names, not the author's /local/storage/shared/HDDatasets/graphics file bytes",
+      "no author conversion script/hash proves byte identity"
+    ],
+    "strong_same_source_candidate": true
+  },
+  "claim_boundary": {
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "level_b_same_source_candidate_claimed": true,
+    "performance_ratio_claimed": false
+  },
+  "goal": "Goal5178",
+  "goal5177_priority_subset": {
+    "blocker": "Need phase counter semantics plus input bytes/hashes; timing logs alone do not reproduce Figure 6.",
+    "name": "graphics_dragon_asian_dragon",
+    "record_count": 5,
+    "status": "paper_log_workload_identified__input_files_missing"
+  },
+  "public_same_source_candidates": {
+    "asian_dragon.ply": {
+      "author_log_num_points": [
+        3609600
+      ],
+      "bytes": 137162963,
+      "exact_paper_identity_proved": false,
+      "exists": true,
+      "kind": "public_stanford_full_ply_candidate",
+      "path": "Paper-reproduction-apps\\x-hd-paper\\data\\external\\stanford\\asian_dragon.ply",
+      "ply_header": {
+        "face_count": 7219045,
+        "format": "binary_big_endian 1.0",
+        "header_line_count": 9,
+        "vertex_count": 3609600
+      },
+      "point_count_matches_author_log": true,
+      "sha256": "4A31C6B8951B0F9F4B351D183CB5D5D27E2D1A5916B27E6516ACFB9A91AD7F85"
+    },
+    "dragon.ply": {
+      "author_log_num_points": [
+        437645
+      ],
+      "bytes": 33831477,
+      "exact_paper_identity_proved": false,
+      "exists": true,
+      "kind": "public_stanford_full_ply_candidate",
+      "path": "Paper-reproduction-apps\\x-hd-paper\\data\\external\\stanford\\dragon_recon\\dragon_vrip.ply",
+      "ply_header": {
+        "face_count": 871414,
+        "format": "ascii 1.0",
+        "header_line_count": 10,
+        "vertex_count": 437645
+      },
+      "point_count_matches_author_log": true,
+      "sha256": "FEA87FF48F2ABA22FB53E7B67C3FF3F7B8C2A3B3A0653AF62C48BBA67C6D5744"
+    }
+  },
+  "public_source_archives": {
+    "asian_dragon.ply": {
+      "bytes": 70527166,
+      "exists": true,
+      "kind": "public_stanford_source_archive",
+      "path": "Paper-reproduction-apps\\x-hd-paper\\data\\external\\stanford\\xyzrgb_dragon.ply.gz",
+      "sha256": "8AA449F1966CBB50E5896ECC32CF57AB5F0CDFD3C3E37D3E6F60B948997DA5C1"
+    },
+    "dragon.ply": {
+      "bytes": 11197764,
+      "exists": true,
+      "kind": "public_stanford_source_archive",
+      "path": "Paper-reproduction-apps\\x-hd-paper\\data\\external\\stanford\\dragon_recon.tar.gz",
+      "sha256": "74AC1D90989C9B1732EDEE82D57E9CE71452144CF4355F108D8C9C616D28D02F"
+    }
+  },
+  "representative_res4_fixtures": {},
+  "representative_res4_summaries": {},
+  "schema": "rtdl.paper_reproduction.xhd.priority_input_bridge.v1",
+  "source_basename": "dragon.ply",
+  "source_urls": {
+    "asian_dragon_archive": "https://graphics.stanford.edu/data/3Dscanrep/xyzrgb/xyzrgb_dragon.ply.gz",
+    "dragon_archive": "https://graphics.stanford.edu/pub/3Dscanrep/dragon/dragon_recon.tar.gz",
+    "happy_archive": "https://graphics.stanford.edu/pub/3Dscanrep/happy/happy_recon.tar.gz"
+  },
+  "status": "graphics_dragon_asian_dragon_public_stanford_candidate_bridged__level_b_only",
+  "target": "graphics_dragon_asian_dragon",
+  "target_basename": "asian_dragon.ply"
+}

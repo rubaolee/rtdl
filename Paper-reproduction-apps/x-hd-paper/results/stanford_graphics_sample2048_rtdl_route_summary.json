@@ -1,0 +1,68 @@
+{
+  "author_abs_diff": null,
+  "author_comparison_distance": 0.12136761603270661,
+  "author_comparison_reference": "directed_a_to_b",
+  "author_hd_result": null,
+  "author_json": null,
+  "author_performance_parity_claimed": false,
+  "boundary": "Bounded same-input RTDL route gate. This compares a generic RTDL 2D or 3D columnar Hausdorff route against an existing author HDResult JSON and a deterministic exact reference for the same bounded WKT or ASCII PLY fixture. It is not full X-HD paper reproduction, not the author RT-core algorithm, and not a performance claim.",
+  "exact_reference": {
+    "directed_a_to_b": 0.12136761603270661,
+    "directed_b_to_a": 0.07051526996112259,
+    "hausdorff": 0.12136761603270661
+  },
+  "existing_hausdorff_xhd_benchmark_reclassified_as_paper_reproduction": false,
+  "input1": "Paper-reproduction-apps\\x-hd-paper\\data\\fixtures\\stanford_dragon_res4_sample2048.ply",
+  "input2": "Paper-reproduction-apps\\x-hd-paper\\data\\fixtures\\stanford_happy_res4_sample2048.ply",
+  "input_type": "ply",
+  "matched": null,
+  "n_dims": 3,
+  "paper_app": "x-hd-paper",
+  "paper_reproduction_claim_authorized": false,
+  "performance_claim_authorized": false,
+  "point_count_a": 2048,
+  "point_count_b": 2048,
+  "reference_preprocessing": [
+    "translate_each_input_to_min_bound"
+  ],
+  "rtdl_exact_abs_diff": 0.0,
+  "rtdl_matches_exact_reference": true,
+  "rtdl_route": {
+    "directed_a_to_b": {
+      "direct_device_handoff_authorized": false,
+      "distance": 0.12136761603270661,
+      "label": "a_to_b",
+      "native_engine_row_contract": "not_called_partner_reference_only",
+      "partner_reference_contract": "generic_group_argmin_then_global_argmax_with_witness",
+      "row_count": 2048,
+      "rt_core_speedup_claim_authorized": false,
+      "source_id": 1097,
+      "target_id": 1144,
+      "whole_app_speedup_claim_authorized": false
+    },
+    "directed_b_to_a": {
+      "direct_device_handoff_authorized": false,
+      "distance": 0.07051526996112259,
+      "label": "b_to_a",
+      "native_engine_row_contract": "not_called_partner_reference_only",
+      "partner_reference_contract": "generic_group_argmin_then_global_argmax_with_witness",
+      "row_count": 2048,
+      "rt_core_speedup_claim_authorized": false,
+      "source_id": 757,
+      "target_id": 564,
+      "whole_app_speedup_claim_authorized": false
+    },
+    "hausdorff": 0.12136761603270661,
+    "route": "rtdl_numpy_columns_3d",
+    "route_contract": "RTDL public 3D columnar Hausdorff route using point_rows_to_numpy_columns_3d and directed_hausdorff_3d_numpy_columns. This is a generic RTDL route, not the author X-HD RT-core implementation and not a performance claim."
+  },
+  "run_phases": {
+    "author_json_load_sec": 2.998858690261841e-07,
+    "exact_reference_sec": 15.075759300030768,
+    "load_input_sec": 0.022626100108027458,
+    "rtdl_route_sec": 33.00111029995605,
+    "total_sec": 48.09953190013766
+  },
+  "schema": "rtdl.paper_reproduction.xhd.rtdl_route_gate.v1",
+  "tolerance": 1e-06
+}

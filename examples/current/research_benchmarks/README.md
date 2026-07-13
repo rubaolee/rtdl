@@ -17,4 +17,4 @@ Run from the repository root with `PYTHONPATH=src:.`. Start with `--help` or the
 | RTNN Neighbor Search | `rtnn/` | `rtnn/rtdl_rtnn_benchmark_app.py` | prepared fixed-radius and ranked-summary neighbor contracts | Not full RTNN paper reproduction or arbitrary ANN-index acceleration. |
 | Triangle Counting | `triangle_counting/` | `triangle_counting/rtdl_triangle_counting_benchmark_app.py` | RT-Graph-style graph relationship counting over generic traversal/reduction contracts | Not broad graph database or all-dataset triangle-counting speedup. |
 
-Older benchmark notes and development records are archived under `history/examples_internal/research_benchmark_docs_2026-06-30/` and `history/internal_docs/`. They are not required for first-time use.
+Older benchmark notes and development records are archived under the top-level `history/` directory. They are not required for first-time use.

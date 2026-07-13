@@ -1,0 +1,189 @@
+{
+  "claim_boundary": {
+    "author_rtdl_correctness_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "full_public_input_candidate_claimed": true,
+    "geo_figure5_reproduction_claimed": false,
+    "performance_ratio_claimed": false
+  },
+  "goal": "Goal5309",
+  "pair_decisions": {
+    "county_zcta": {
+      "classification": "full_public_candidate_but_not_exact_due_county_point_count_mismatch",
+      "next_allowed_action": "investigate alternate County source/simplification before any Figure-5 geo claim",
+      "paper_pair": "dtl_cnty.wkt -> uszipcode.wkt",
+      "reason": "County and ZCTA MBRs match paper logs, and ZCTA point count is very close, but County has 3,039,134 more author-loader points than the paper log (+32.2009%)."
+    },
+    "waterbodies_blockgroups": {
+      "classification": "strong_full_public_candidate_not_exact_without_file_hash",
+      "next_allowed_action": "generate full-public WKT and run author/RTDL only after review accepts full-public candidate boundary",
+      "paper_pair": "USADetailedWaterBodies.wkt -> USACensusBlockGroupBoundaries.wkt",
+      "reason": "Both services match paper MBRs and point counts are extremely close: WaterBodies +6,129 (+0.0269%), BlockGroups +127 (+0.000243%). File/hash provenance is still absent."
+    }
+  },
+  "schema": "rtdl.paper_reproduction.xhd.goal5309.full_public_arcgis_point_count_mbr_probe.summary.v1",
+  "services": {
+    "blockgroups": {
+      "author_loader_point_count": 52271467,
+      "classification": "near_exact_point_count_and_mbr_but_no_file_hash",
+      "complete": true,
+      "features_seen": 239203,
+      "geometry_types": {
+        "MultiPolygon": 2237,
+        "Polygon": 236966
+      },
+      "max_abs_mbr_delta": 3.7103264247662082e-06,
+      "mbr": [
+        -179.148909000445,
+        -66.9496079221226,
+        18.9106929999612,
+        71.3651620001228
+      ],
+      "mbr_delta": {
+        "x_lower": 1.5220159355067153e-06,
+        "x_upper": -7.300150173250586e-08,
+        "y_lower": 7.849953789218489e-07,
+        "y_upper": -3.7103264247662082e-06
+      },
+      "pages_seen": 120,
+      "paper_basename": "USACensusBlockGroupBoundaries.wkt",
+      "paper_mbr": {
+        "x": [
+          -179.14891052246094,
+          -66.9496078491211
+        ],
+        "y": [
+          18.91069221496582,
+          71.36516571044922
+        ]
+      },
+      "paper_point_count": 52271340,
+      "point_count_delta": 127,
+      "point_count_relative_delta": 2.4296296976507585e-06,
+      "service_feature_count": 239203,
+      "source_file": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5309_blockgroups_full_arcgis_probe_2026-07-09.json"
+    },
+    "county": {
+      "author_loader_point_count": 12477179,
+      "classification": "extent_match_point_count_mismatch_not_exact",
+      "complete": true,
+      "features_seen": 3144,
+      "geometry_types": {
+        "MultiPolygon": 329,
+        "Polygon": 2815
+      },
+      "max_abs_mbr_delta": 3.7104491212858193e-06,
+      "mbr": [
+        -179.148909,
+        -66.949607922,
+        18.910693,
+        71.3651620000001
+      ],
+      "mbr_delta": {
+        "x_lower": 1.5224609342112672e-06,
+        "x_upper": -7.287890468887781e-08,
+        "y_lower": 7.850341781079351e-07,
+        "y_upper": -3.7104491212858193e-06
+      },
+      "pages_seen": 2,
+      "paper_basename": "dtl_cnty.wkt",
+      "paper_mbr": {
+        "x": [
+          -179.14891052246094,
+          -66.9496078491211
+        ],
+        "y": [
+          18.91069221496582,
+          71.36516571044922
+        ]
+      },
+      "paper_point_count": 9438045,
+      "point_count_delta": 3039134,
+      "point_count_relative_delta": 0.32200884823075115,
+      "service_feature_count": 3144,
+      "source_file": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5309_county_full_arcgis_probe_2026-07-09.json"
+    },
+    "waterbodies": {
+      "author_loader_point_count": 22824823,
+      "classification": "very_close_point_count_and_mbr_but_no_file_hash",
+      "complete": true,
+      "features_seen": 463591,
+      "geometry_types": {
+        "MultiPolygon": 1,
+        "Polygon": 463590
+      },
+      "max_abs_mbr_delta": 2.9081737551450715e-06,
+      "mbr": [
+        -160.231107166363,
+        -66.997866677705,
+        19.2039983241634,
+        49.384333060713
+      ],
+      "mbr_delta": {
+        "x_lower": 2.4527776361082942e-06,
+        "x_upper": -2.9081737551450715e-06,
+        "y_lower": -2.4151042765652164e-07,
+        "y_upper": -1.5034959872650688e-06
+      },
+      "pages_seen": 464,
+      "paper_basename": "USADetailedWaterBodies.wkt",
+      "paper_mbr": {
+        "x": [
+          -160.23110961914062,
+          -66.99786376953125
+        ],
+        "y": [
+          19.203998565673828,
+          49.384334564208984
+        ]
+      },
+      "paper_point_count": 22818694,
+      "point_count_delta": 6129,
+      "point_count_relative_delta": 0.0002685955646716679,
+      "service_feature_count": 463591,
+      "source_file": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5309_waterbodies_full_arcgis_probe_2026-07-09.json"
+    },
+    "zcta": {
+      "author_loader_point_count": 43984131,
+      "classification": "very_close_point_count_and_mbr_but_no_file_hash",
+      "complete": true,
+      "features_seen": 32294,
+      "geometry_types": {
+        "MultiPolygon": 1585,
+        "Polygon": 30709
+      },
+      "max_abs_mbr_delta": 7.358398448786829e-06,
+      "mbr": [
+        -179.14734,
+        179.778465,
+        -14.548692,
+        71.390482
+      ],
+      "mbr_delta": {
+        "x_lower": -1.1328125140153134e-06,
+        "x_upper": 7.358398448786829e-06,
+        "y_lower": -2.504272469394664e-07,
+        "y_upper": 1.958496099518925e-06
+      },
+      "pages_seen": 57,
+      "paper_basename": "uszipcode.wkt",
+      "paper_mbr": {
+        "x": [
+          -179.1473388671875,
+          179.77845764160156
+        ],
+        "y": [
+          -14.548691749572754,
+          71.3904800415039
+        ]
+      },
+      "paper_point_count": 43952878,
+      "point_count_delta": 31253,
+      "point_count_relative_delta": 0.0007110569642333773,
+      "service_feature_count": 32294,
+      "source_file": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5309_zcta_full_arcgis_probe_2026-07-09.json"
+    }
+  },
+  "status": "full_public_arcgis_probe_complete__county_count_mismatch_blocks_exact_geo_claim"
+}

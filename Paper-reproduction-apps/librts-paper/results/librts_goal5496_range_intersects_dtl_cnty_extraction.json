@@ -1,0 +1,36 @@
+{
+  "archive": {
+    "path": "/workspace/librts-data/PPoPPAE-v2.tar.gz",
+    "verified_md5": "89e589f086038f1cd3af9e3ed67da8c8",
+    "verified_size_bytes": 23062425365
+  },
+  "claim_boundary": {
+    "archive_subset_extracted": true,
+    "archive_verified": true,
+    "complete_paper_reproduction_claimed": false,
+    "embree_in_scope": false,
+    "exact_input_files_identified": true,
+    "paper_figure_reproduced": false,
+    "performance_ratio_authorized": false
+  },
+  "extraction": {
+    "atomic_directory_promotion": true,
+    "final_path": "/workspace/librts-targets/range-intersects-dtl-cnty",
+    "selected_member_count": 2,
+    "selected_members": [
+      {
+        "relative_path": "PPoPPAE/datasets/polygons/dtl_cnty.wkt",
+        "sha256": "9177fdff45f24488f22157a2a1428a7cdb9d5a66a7287d4013ead52de1c7973f",
+        "size_bytes": 363987023
+      },
+      {
+        "relative_path": "PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_10000/dtl_cnty.wkt",
+        "sha256": "f901553c4d9a25f1df567051f5a1f940723d46a7c74e25a02339eb25f185dce7",
+        "size_bytes": 1747909
+      }
+    ]
+  },
+  "operation": "range_intersects",
+  "schema": "rtdl.paper_reproduction.librts.verified_operation_subset.v1",
+  "status": "exact_archive_operation_subset_safely_extracted"
+}

@@ -1,0 +1,79 @@
+{
+  "archive": {
+    "path": "/workspace/librts-data/PPoPPAE-v2.tar.gz",
+    "verified_md5": "89e589f086038f1cd3af9e3ed67da8c8",
+    "verified_size_bytes": 23062425365
+  },
+  "claim_boundary": {
+    "archive_subset_extracted": true,
+    "archive_verified": true,
+    "complete_paper_reproduction_claimed": false,
+    "embree_in_scope": false,
+    "exact_input_files_identified": true,
+    "paper_figure_reproduced": false,
+    "performance_ratio_authorized": false
+  },
+  "extraction": {
+    "atomic_directory_promotion": true,
+    "final_path": "/tmp/goal5521-target",
+    "selected_member_count": 6,
+    "selected_members": [
+      {
+        "relative_path": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+        "sha256": "ca133e4456b20c4baae1027d64a373d23083973ae042a3b6025dcc51eb3073a0",
+        "size_bytes": 8582211935
+      },
+      {
+        "relative_path": "PPoPPAE/datasets/queries/range-contains_queries_50000/parks.bz2.wkt",
+        "sha256": "c36199bdb042601ad7519cfb9e3a7a4e92f0137951cd751c089f1f9c25c89724",
+        "size_bytes": 8749729
+      },
+      {
+        "relative_path": "PPoPPAE/datasets/queries/range-contains_queries_400000/parks.bz2.wkt",
+        "sha256": "400c9f2aec91c8324c1032e056002a7fc2c477b83c6409b9f1f93b735f9537eb",
+        "size_bytes": 69995509
+      },
+      {
+        "relative_path": "PPoPPAE/datasets/queries/range-contains_queries_100000/parks.bz2.wkt",
+        "sha256": "0b7f2e6e21f3dca821f8913823cd59a20c47be0c5c0426268d4c42b38acf2c46",
+        "size_bytes": 17499390
+      },
+      {
+        "relative_path": "PPoPPAE/datasets/queries/range-contains_queries_200000/parks.bz2.wkt",
+        "sha256": "09595a60d8fa05f06fcf6278317ff8ca95c4efa7c3a5c6686e0f4b7b84d7fcec",
+        "size_bytes": 34998726
+      },
+      {
+        "relative_path": "PPoPPAE/datasets/queries/range-contains_queries_800000/parks.bz2.wkt",
+        "sha256": "c86b00f2d7c387bd6ddcdbe7a69c72ef7d717cf496cceef7da7b31075ac36371",
+        "size_bytes": 139994955
+      }
+    ],
+    "selected_pair_count": 5,
+    "selected_pairs": [
+      {
+        "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+        "query": "PPoPPAE/datasets/queries/range-contains_queries_50000/parks.bz2.wkt"
+      },
+      {
+        "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+        "query": "PPoPPAE/datasets/queries/range-contains_queries_100000/parks.bz2.wkt"
+      },
+      {
+        "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+        "query": "PPoPPAE/datasets/queries/range-contains_queries_200000/parks.bz2.wkt"
+      },
+      {
+        "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+        "query": "PPoPPAE/datasets/queries/range-contains_queries_400000/parks.bz2.wkt"
+      },
+      {
+        "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+        "query": "PPoPPAE/datasets/queries/range-contains_queries_800000/parks.bz2.wkt"
+      }
+    ]
+  },
+  "operation": "range_contains",
+  "schema": "rtdl.paper_reproduction.librts.verified_operation_batch.v1",
+  "status": "exact_archive_operation_batch_safely_extracted"
+}

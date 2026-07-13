@@ -1,0 +1,76 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5331.external_response_validation_matrix.v1",
+  "goal": "Goal5331",
+  "date": "2026-07-09",
+  "purpose": "Lock representative external-response examples and expected Goal5330 validator classifications so future real responses can be compared against known fail-closed paths.",
+  "status": "external_response_validation_matrix_ready__synthetic_examples_only",
+  "examples_are_real_external_responses": false,
+  "examples": [
+    {
+      "id": "hash_manifest_hashes_only",
+      "path": "Paper-reproduction-apps/x-hd-paper/requests/examples/hash_manifest_hashes_only.json",
+      "expected_valid": true,
+      "expected_pod": false,
+      "expected_next_action": "hashes_only__compare_or_request_bytes_before_pod"
+    },
+    {
+      "id": "author_input_archive_private",
+      "path": "Paper-reproduction-apps/x-hd-paper/requests/examples/author_input_archive_private.json",
+      "expected_valid": true,
+      "expected_pod": true,
+      "expected_next_action": "archive_present__record_hashes_extract_then_pod_gate"
+    },
+    {
+      "id": "byte_identical_regeneration_script",
+      "path": "Paper-reproduction-apps/x-hd-paper/requests/examples/byte_identical_regeneration_script.json",
+      "expected_valid": true,
+      "expected_pod": true,
+      "expected_next_action": "regeneration_present__run_regeneration_then_pod_gate"
+    },
+    {
+      "id": "acm_listing_no_artifact",
+      "path": "Paper-reproduction-apps/x-hd-paper/requests/examples/acm_listing_no_artifact.json",
+      "expected_valid": true,
+      "expected_pod": false,
+      "expected_next_action": "acm_listing_inspected_no_actionable_artifact__keep_blocked"
+    },
+    {
+      "id": "water_bg_exact_equivalence_accepted",
+      "path": "Paper-reproduction-apps/x-hd-paper/requests/examples/water_bg_exact_equivalence_accepted.json",
+      "expected_valid": true,
+      "expected_pod": true,
+      "expected_next_action": "exact_equivalence_accepted__run_accepted_bounded_matrix"
+    },
+    {
+      "id": "explicit_non_availability_statement",
+      "path": "Paper-reproduction-apps/x-hd-paper/requests/examples/explicit_non_availability_statement.json",
+      "expected_valid": true,
+      "expected_pod": false,
+      "expected_next_action": "non_availability_statement__keep_blocked"
+    }
+  ],
+  "global_expected_claim_boundary": {
+    "sufficient_to_claim_exact_input": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false
+  },
+  "pod_usage": {
+    "used": false,
+    "expected_next": false,
+    "reason": "Synthetic local validator examples. POD is used only after real valid positive response ingestion."
+  },
+  "exit_label": "external_response_validation_matrix_ready__await_real_response",
+  "allowed_summary": "Goal5331 adds synthetic response examples and a validator expectation matrix. It proves the response validator's routing behavior but does not claim any real external response or artifact.",
+  "not_allowed": [
+    "claiming any example is a real external response",
+    "claiming external artifacts have been acquired",
+    "claiming ACM supplement has been inspected in reality",
+    "claiming exact-equivalence has been accepted in reality",
+    "claiming exact paper dataset reproduction",
+    "claiming Figure 5 reproduction",
+    "claiming full X-HD paper reproduction",
+    "claiming author-vs-RTDL performance ratio"
+  ]
+}

@@ -1,0 +1,98 @@
+diff --git a/src/native/optix/rtdl_optix_core.cpp b/src/native/optix/rtdl_optix_core.cpp
+--- a/src/native/optix/rtdl_optix_core.cpp
++++ b/src/native/optix/rtdl_optix_core.cpp
+@@
+     unsigned int* segment_id_output;
+     unsigned int* face_id_output;
+     unsigned long long* positive_face_count;
++    unsigned long long* candidate_test_count;
+     unsigned int point_count;
+     unsigned int query_map_id;
+     unsigned int allow_equal_ties;
+@@
+     const GpuRayjoinCdbPoint point = params.points[point_index];
+     const GpuRayjoinCdbSegmentRange range = params.ranges[optixGetPrimitiveIndex()];
++    if (params.candidate_test_count != nullptr) {
++        atomicAdd(params.candidate_test_count,
++                  static_cast<unsigned long long>(range.end - range.begin));
++    }
+     const float eps = 1.0e-7f;
+     const unsigned int query_map_id = params.query_map_id;
+diff --git a/src/native/optix/rtdl_optix_workloads.cpp b/src/native/optix/rtdl_optix_workloads.cpp
+--- a/src/native/optix/rtdl_optix_workloads.cpp
++++ b/src/native/optix/rtdl_optix_workloads.cpp
+@@
+ thread_local size_t g_optix_last_rayjoin_cdb_point_count = 0;
+ thread_local size_t g_optix_last_rayjoin_cdb_positive_face_count = 0;
++thread_local size_t g_optix_last_rayjoin_cdb_raw_candidate_count = 0;
+ thread_local uint32_t g_optix_last_rayjoin_cdb_mode = 0;
+@@
+ extern "C" int rtdl_optix_rayjoin_cdb_point_location_get_last_phase_timings(
+         double* point_upload,
+         double* traversal,
+@@
+     if (mode) *mode = g_optix_last_rayjoin_cdb_mode;
+     return 0;
+ }
++
++extern "C" int rtdl_optix_rayjoin_cdb_point_location_get_last_work_count(
++        size_t* raw_candidate_count)
++{
++    if (raw_candidate_count) {
++        *raw_candidate_count = g_optix_last_rayjoin_cdb_raw_candidate_count;
++    }
++    return 0;
++}
+
+ extern "C" int rtdl_optix_directed_segment_point_location_get_last_phase_timings(
+@@
+     g_optix_last_rayjoin_cdb_row_download_s = 0.0;
+     g_optix_last_rayjoin_cdb_point_count = 0;
+     g_optix_last_rayjoin_cdb_positive_face_count = 0;
++    g_optix_last_rayjoin_cdb_raw_candidate_count = 0;
+     g_optix_last_rayjoin_cdb_mode = mode;
+ }
+@@
+     uint32_t* segment_id_output;
+     uint32_t* face_id_output;
+     unsigned long long* positive_face_count;
++    unsigned long long* candidate_test_count;
+     uint32_t point_count;
+     uint32_t query_map_id;
+@@
+     if (d_positive_count_ptr) {
+         unsigned long long zero64 = 0ull;
+         upload<unsigned long long>(d_positive_count_ptr, &zero64, 1);
+     }
++    DevPtr d_candidate_test_count(sizeof(unsigned long long));
++    {
++        unsigned long long zero64 = 0ull;
++        upload<unsigned long long>(d_candidate_test_count.ptr, &zero64, 1);
++    }
+
+     RayjoinCdbPointLocationLaunchParams lp;
+@@
+     lp.segment_id_output = reinterpret_cast<uint32_t*>(d_segment_id_output_ptr);
+     lp.face_id_output = reinterpret_cast<uint32_t*>(d_face_id_output_ptr);
+     lp.positive_face_count = reinterpret_cast<unsigned long long*>(d_positive_count_ptr);
++    lp.candidate_test_count = reinterpret_cast<unsigned long long*>(d_candidate_test_count.ptr);
+     lp.point_count = static_cast<uint32_t>(point_count);
+@@
+     CU_CHECK(cuStreamSynchronize(stream));
+     const auto t_launch_end = std::chrono::steady_clock::now();
+     g_optix_last_rayjoin_cdb_traversal_s += seconds_between(t_launch_start, t_launch_end);
++    unsigned long long host_candidate_test_count = 0ull;
++    download<unsigned long long>(&host_candidate_test_count, d_candidate_test_count.ptr, 1);
++    g_optix_last_rayjoin_cdb_raw_candidate_count =
++        static_cast<size_t>(host_candidate_test_count);
+ }
+@@
+         predicate_mode == kSegmentPairPredicatePlanarMapLsi ? prepared->d_rayjoin_lsi_right->ptr : 0,
+         predicate_mode,
+-        false);
++        true);
+@@
+         predicate_mode == kSegmentPairPredicatePlanarMapLsi ? prepared->d_rayjoin_lsi_right->ptr : 0,
+         predicate_mode,
+-        false);
++        true);

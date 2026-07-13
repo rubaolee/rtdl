@@ -1,0 +1,44 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.external_response_intake.v1",
+  "status": "template_not_filled",
+  "received_from": {
+    "actor_type": "paper_author | acm_access_reviewer | external_reviewer | owner",
+    "name_or_role": "",
+    "contact_or_source": "",
+    "received_date": "YYYY-MM-DD"
+  },
+  "response_type": "author_hash_manifest | author_input_archive | byte_identical_regeneration_script | acm_supplement_artifact_instructions | exact_equivalence_verdict | explicit_non_availability_statement | other",
+  "scope": {
+    "paper": "X-HD",
+    "families": [],
+    "paper_paths_or_figures": [],
+    "claim_boundary_requested": "exact_input | bounded_public_reconstruction | level_b_only | unknown"
+  },
+  "artifacts": {
+    "hash_manifest_entries": [],
+    "archive": null,
+    "regeneration_script": null,
+    "acm_supplement_listing": null,
+    "exact_equivalence_verdict": null,
+    "freeform_notes": ""
+  },
+  "validation_status": {
+    "validated_by_codex": false,
+    "sufficient_to_run_pod_gate": false,
+    "sufficient_to_claim_exact_input": false,
+    "requires_external_review_before_use": true,
+    "failure_or_missing_items": []
+  },
+  "next_action": "classify_response_before_action",
+  "claim_boundary": {
+    "request_sent_claimed": false,
+    "external_response_received": false,
+    "external_artifacts_acquired": false,
+    "acm_supplement_inspected": false,
+    "exact_equivalence_accepted": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false
+  }
+}

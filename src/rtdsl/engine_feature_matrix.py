@@ -38,6 +38,20 @@ _FEATURE_MATRIX: dict[str, dict[str, EngineFeatureSupport]] = {
         "hiprt": _support("line_segment_intersection_2d", "hiprt", NATIVE, "HIPRT native 2D segment workload path when the library is available."),
         "apple_rt": _support("line_segment_intersection_2d", "apple_rt", NATIVE_ASSISTED, "Apple MPS/Metal path with exact 2D acceptance where available."),
     },
+    "planar_map_lsi_count_2d": {
+        "embree": _support("planar_map_lsi_count_2d", "embree", UNSUPPORTED_EXPLICIT, "No public Embree planar-map/CDB LSI scalar-count front door."),
+        "optix": _support("planar_map_lsi_count_2d", "optix", NATIVE, "Prepared OptiX CDB/planar-map LSI scalar-count front door."),
+        "vulkan": _support("planar_map_lsi_count_2d", "vulkan", UNSUPPORTED_EXPLICIT, "No public Vulkan planar-map/CDB LSI scalar-count front door."),
+        "hiprt": _support("planar_map_lsi_count_2d", "hiprt", UNSUPPORTED_EXPLICIT, "No public HIPRT planar-map/CDB LSI scalar-count front door."),
+        "apple_rt": _support("planar_map_lsi_count_2d", "apple_rt", UNSUPPORTED_EXPLICIT, "No public Apple RT planar-map/CDB LSI scalar-count front door."),
+    },
+    "planar_map_point_location_2d": {
+        "embree": _support("planar_map_point_location_2d", "embree", UNSUPPORTED_EXPLICIT, "No public Embree planar-map point-location front door."),
+        "optix": _support("planar_map_point_location_2d", "optix", NATIVE, "Prepared OptiX CDB/planar-map point-location/PIP front door."),
+        "vulkan": _support("planar_map_point_location_2d", "vulkan", UNSUPPORTED_EXPLICIT, "No public Vulkan planar-map point-location front door."),
+        "hiprt": _support("planar_map_point_location_2d", "hiprt", UNSUPPORTED_EXPLICIT, "No public HIPRT planar-map point-location front door."),
+        "apple_rt": _support("planar_map_point_location_2d", "apple_rt", UNSUPPORTED_EXPLICIT, "No public Apple RT planar-map point-location front door."),
+    },
     "prepared_segment_pair_exact_count_2d": {
         "embree": _support("prepared_segment_pair_exact_count_2d", "embree", COMPATIBILITY_FALLBACK, "Counts emitted prepared segment-pair rows; no dedicated scalar-count native export."),
         "optix": _support("prepared_segment_pair_exact_count_2d", "optix", NATIVE, "Prepared segment-pair scene plus scalar exact-count native export."),

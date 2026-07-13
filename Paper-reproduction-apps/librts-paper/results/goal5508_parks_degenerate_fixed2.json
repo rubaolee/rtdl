@@ -1,0 +1,79 @@
+{
+  "schema": "rtdl.paper_reproduction.librts.goal5508_degenerate_aabb_probe.v1",
+  "geometry_sha256": "281391d873a0462331bc0d896e4e6e3f990693b87c03e538dc0d149d0e3162e4",
+  "query_sha256": "0ddf5ea567223621ffdd7f0fe9c789dd5c7350941d0a8a8e7bb8b98b308ca499",
+  "subset_wkt_sha256": "d48db3d83bf378a75482754c674fb98a893771373e6c99a543d2022c8684140a",
+  "geometry_count": 250000,
+  "query_count": 10000,
+  "invalid_after_float32_count": 4,
+  "invalid_geometry_indices": [
+    52848,
+    146914,
+    237679,
+    237905
+  ],
+  "invalid_float32_boxes": [
+    [
+      15.078099250793457,
+      49.541988372802734,
+      15.078120231628418,
+      49.541988372802734
+    ],
+    [
+      6.603766441345215,
+      51.487369537353516,
+      6.603766918182373,
+      51.487369537353516
+    ],
+    [
+      15.862984657287598,
+      50.01580047607422,
+      15.862993240356445,
+      50.01580047607422
+    ],
+    [
+      14.021800994873047,
+      50.27054214477539,
+      14.021803855895996,
+      50.27054214477539
+    ]
+  ],
+  "rtdl_count": 0,
+  "rtdl_query_result": {
+    "primitive": "AABB_INDEX_QUERY_2D",
+    "contract": "generic_prepared_aabb_index_query_2d",
+    "backend": "optix",
+    "prepared": true,
+    "operation": "range_intersects",
+    "counts": {
+      "range_intersects": 0
+    },
+    "candidate_checks": null,
+    "query_counts": {
+      "point_queries": 0,
+      "box_queries": 10000
+    },
+    "index": {
+      "indexed_boxes": 4,
+      "native_index": "optix_custom_aabb_gas"
+    },
+    "run_phases": {
+      "query_aabb_index_2d_sec": 0.13353820599149913
+    },
+    "rt_core_accelerated": true,
+    "native_engine_customization": false,
+    "claim_boundary": "Generic OptiX AABB_INDEX_QUERY_2D count-only subpath for point_contains, range_contains, and range_intersects; row output is exposed through aabb_intersection_pair_rows_2d. Not LibRTS-specific."
+  },
+  "rtdl_backend": "optix",
+  "rtdl_library": "/workspace/rtdl-goal5481/build5508degenerate2/librtdl_optix.so",
+  "same_input_files": true,
+  "author_comparison_required": true,
+  "claim_boundary": {
+    "generic_semantic_diagnosis_only": true,
+    "full_input_adjudication": false,
+    "paper_reproduction_claimed": false,
+    "performance_ratio_authorized": false,
+    "author_specific_rtdl_core_behavior_authorized": false,
+    "embree_in_scope": false
+  }
+}

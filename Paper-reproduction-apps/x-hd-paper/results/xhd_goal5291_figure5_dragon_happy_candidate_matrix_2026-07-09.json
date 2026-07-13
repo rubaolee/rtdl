@@ -1,0 +1,246 @@
+{
+  "candidate": {
+    "category": "graphics",
+    "exact_paper_dataset_identity_proven": false,
+    "level": "level_b_same_source_candidate_only",
+    "pair": [
+      "dragon.ply",
+      "happy_buddha.ply"
+    ],
+    "paper_log_paths": [
+      "/local/storage/shared/HDDatasets/graphics/dragon.ply",
+      "/local/storage/shared/HDDatasets/graphics/happy_buddha.ply"
+    ],
+    "point_counts": [
+      437645,
+      543652
+    ]
+  },
+  "claim_boundary": {
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_full_matrix_reproduced": false,
+    "figure5_reproduced": false,
+    "full_paper_reproduction_claimed": false,
+    "level_b_same_source_value_matched_candidate_claimed": true,
+    "performance_ratio_claimed": false
+  },
+  "comparison_policy": {
+    "forbidden_ratio_reasons": [
+      "paper log uses author internal timing on RTX 3090",
+      "author rerun uses author internal AvgTime and process wall on RTX 4000 Ada",
+      "RTDL reports route/case/load totals with different phase boundaries",
+      "exact paper input byte identity is not proven",
+      "this covers one graphics pair, not the full Figure 5 matrix",
+      "Goal5211/Goal5212 global-bound route preserves HDResult but per-source witnesses may be approximate"
+    ],
+    "ratio_reported": false,
+    "same_denominator_ratio_allowed": false
+  },
+  "date": "2026-07-09",
+  "decision": {
+    "candidate_ready_for_review": true,
+    "continue_to_full_figure5_claim": false,
+    "continue_to_ratio": false,
+    "next_options": [
+      "send Goals5288-5291 as the current Figure 5 review packet",
+      "if Figure 5 remains priority, acquire or verify BraTS/geo inputs and exact graphics input provenance",
+      "otherwise move to Figure 6 phase/counter mapping or another paper blocker"
+    ]
+  },
+  "goal": "Goal5291",
+  "inputs": {
+    "author_gate": "Paper-reproduction-apps\\x-hd-paper\\results\\xhd_full_public_author_gate_summary_goal5186_graphics_dragon_happy_buddha_2026-07-08.json",
+    "log_index": "Paper-reproduction-apps\\x-hd-paper\\results\\xhd_paper_branch_log_index_goal5176_2026-07-08.json",
+    "phase_matrix": "Paper-reproduction-apps\\x-hd-paper\\results\\xhd_full_public_phase_matrix_goal5188_graphics_dragon_happy_buddha_2026-07-08.json",
+    "rtdl_explicit_warm_route": "Paper-reproduction-apps\\x-hd-paper\\results\\xhd_full_public_all_source_goal5212_all_source_no_copy_warm_protocol_graphics_dragon_happy_buddha_2026-07-09.json",
+    "rtdl_fresh_route": "Paper-reproduction-apps\\x-hd-paper\\results\\xhd_full_public_all_source_goal5212_all_source_no_copy_fresh_graphics_dragon_happy_buddha_2026-07-09.json"
+  },
+  "matched": true,
+  "paper_log_timing_records": [
+    {
+      "config": "n_points_cell_false_max_hit_false",
+      "gpu": "NVIDIA GeForce RTX 3090",
+      "num_points_per_cell": 8,
+      "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/graphics/n_points_cell_false_max_hit_false/dragon.ply_happy_buddha.ply.json",
+      "repeat_count": 5,
+      "reported_time_median_ms": 5.519,
+      "running_avg_time_ms": 5.7734,
+      "section": "auto_tune"
+    },
+    {
+      "config": "n_points_cell_true_max_hit_true",
+      "gpu": "NVIDIA GeForce RTX 3090",
+      "num_points_per_cell": 8,
+      "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/graphics/n_points_cell_true_max_hit_true/dragon.ply_happy_buddha.ply.json",
+      "repeat_count": 5,
+      "reported_time_median_ms": 4.399,
+      "running_avg_time_ms": 4.6558,
+      "section": "auto_tune"
+    },
+    {
+      "config": "dragon.ply_happy_buddha.ply.json",
+      "gpu": "NVIDIA GeForce RTX 3090",
+      "num_points_per_cell": 8,
+      "relative_log_path": "expr/for_the_paper/logs/run_all/eb_gpu/graphics/dragon.ply_happy_buddha.ply.json",
+      "repeat_count": 5,
+      "reported_time_median_ms": 4.607,
+      "running_avg_time_ms": 4.4662,
+      "section": "eb_gpu"
+    },
+    {
+      "config": "dragon.ply_happy_buddha.ply.json",
+      "gpu": "NVIDIA GeForce RTX 3090",
+      "num_points_per_cell": 8,
+      "relative_log_path": "expr/for_the_paper/logs/run_all/hybrid_gpu/graphics/dragon.ply_happy_buddha.ply.json",
+      "repeat_count": 5,
+      "reported_time_median_ms": 4.429,
+      "running_avg_time_ms": 4.675400000000001,
+      "section": "hybrid_gpu"
+    },
+    {
+      "config": "dragon.ply_happy_buddha.ply.json",
+      "gpu": "NVIDIA GeForce RTX 3090",
+      "num_points_per_cell": 8,
+      "relative_log_path": "expr/for_the_paper/logs/run_all/rt_gpu/graphics/dragon.ply_happy_buddha.ply.json",
+      "repeat_count": 5,
+      "reported_time_median_ms": 8.034,
+      "running_avg_time_ms": 8.2398,
+      "section": "rt_gpu"
+    }
+  ],
+  "schema": "rtdl.paper_reproduction.xhd.goal5291.figure5_dragon_happy_candidate_matrix.v1",
+  "separated_denominators": {
+    "author_rerun": {
+      "bvh_build_time_ms_goal5188": 0.336,
+      "gpu": "NVIDIA RTX 4000 Ada Generation",
+      "phase_matrix_process_wall_sec_goal5188": 1.973201423883438,
+      "phase_matrix_running_avg_time_ms_goal5188": 7.603,
+      "reported_time_ms_goal5188": 7.603,
+      "running_avg_time_ms_goal5186": 7.823,
+      "source": "Paper-reproduction-apps\\x-hd-paper\\results\\xhd_full_public_author_hd_exec_goal5188_graphics_dragon_happy_buddha_2026-07-08.json"
+    },
+    "paper_log": {
+      "gpu": [
+        "NVIDIA GeForce RTX 3090"
+      ],
+      "record_count": 5,
+      "records": [
+        {
+          "config": "n_points_cell_false_max_hit_false",
+          "gpu": "NVIDIA GeForce RTX 3090",
+          "num_points_per_cell": 8,
+          "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/graphics/n_points_cell_false_max_hit_false/dragon.ply_happy_buddha.ply.json",
+          "repeat_count": 5,
+          "reported_time_median_ms": 5.519,
+          "running_avg_time_ms": 5.7734,
+          "section": "auto_tune"
+        },
+        {
+          "config": "n_points_cell_true_max_hit_true",
+          "gpu": "NVIDIA GeForce RTX 3090",
+          "num_points_per_cell": 8,
+          "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/graphics/n_points_cell_true_max_hit_true/dragon.ply_happy_buddha.ply.json",
+          "repeat_count": 5,
+          "reported_time_median_ms": 4.399,
+          "running_avg_time_ms": 4.6558,
+          "section": "auto_tune"
+        },
+        {
+          "config": "dragon.ply_happy_buddha.ply.json",
+          "gpu": "NVIDIA GeForce RTX 3090",
+          "num_points_per_cell": 8,
+          "relative_log_path": "expr/for_the_paper/logs/run_all/eb_gpu/graphics/dragon.ply_happy_buddha.ply.json",
+          "repeat_count": 5,
+          "reported_time_median_ms": 4.607,
+          "running_avg_time_ms": 4.4662,
+          "section": "eb_gpu"
+        },
+        {
+          "config": "dragon.ply_happy_buddha.ply.json",
+          "gpu": "NVIDIA GeForce RTX 3090",
+          "num_points_per_cell": 8,
+          "relative_log_path": "expr/for_the_paper/logs/run_all/hybrid_gpu/graphics/dragon.ply_happy_buddha.ply.json",
+          "repeat_count": 5,
+          "reported_time_median_ms": 4.429,
+          "running_avg_time_ms": 4.675400000000001,
+          "section": "hybrid_gpu"
+        },
+        {
+          "config": "dragon.ply_happy_buddha.ply.json",
+          "gpu": "NVIDIA GeForce RTX 3090",
+          "num_points_per_cell": 8,
+          "relative_log_path": "expr/for_the_paper/logs/run_all/rt_gpu/graphics/dragon.ply_happy_buddha.ply.json",
+          "repeat_count": 5,
+          "reported_time_median_ms": 8.034,
+          "running_avg_time_ms": 8.2398,
+          "section": "rt_gpu"
+        }
+      ],
+      "timing_fields": [
+        "Running.AvgTime",
+        "ReportedTime median"
+      ]
+    },
+    "rtdl_goal5188_baseline_route": {
+      "case_total_sec": 7.490384787321091,
+      "load_full_inputs_sec": 2.5199945867061615,
+      "route_wall_sec": 7.303133897483349,
+      "source": "Paper-reproduction-apps\\x-hd-paper\\results\\xhd_full_public_all_source_route_only_goal5187_graphics_dragon_happy_buddha_2026-07-08.json",
+      "total_sec": 10.011082544922829
+    },
+    "rtdl_goal5212_explicit_warm_route": {
+      "artifact": "Paper-reproduction-apps\\x-hd-paper\\results\\xhd_full_public_all_source_goal5212_all_source_no_copy_warm_protocol_graphics_dragon_happy_buddha_2026-07-09.json",
+      "artifact_total_sec": 1.8082116544246674,
+      "author_abs_diff": 2.3848857610975216e-09,
+      "case_total_sec": 0.2880931422114372,
+      "frontier_row_count": 0,
+      "global_bound_early_break": true,
+      "global_bound_early_break_count": 409627,
+      "goal": "Goal5212",
+      "label": "rtdl_goal5212_explicit_warm",
+      "load_full_inputs_sec": 0.6778018176555634,
+      "matched": true,
+      "native_symbol": "rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v5",
+      "per_source_witness_exact": false,
+      "route_distance": 0.12572988629271128,
+      "route_wall_sec": 0.2880803421139717,
+      "route_warmup_sec": 0.8415441885590553,
+      "route_warmup_used": true,
+      "status": "full_public_candidate_all_source_route_only_checked"
+    },
+    "rtdl_goal5212_fresh_route": {
+      "artifact": "Paper-reproduction-apps\\x-hd-paper\\results\\xhd_full_public_all_source_goal5212_all_source_no_copy_fresh_graphics_dragon_happy_buddha_2026-07-09.json",
+      "artifact_total_sec": 1.5306707620620728,
+      "author_abs_diff": 2.3848857610975216e-09,
+      "case_total_sec": 0.851749412715435,
+      "frontier_row_count": 0,
+      "global_bound_early_break": true,
+      "global_bound_early_break_count": 409376,
+      "goal": "Goal5212",
+      "label": "rtdl_goal5212_fresh",
+      "load_full_inputs_sec": 0.6782490611076355,
+      "matched": true,
+      "native_symbol": "rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v5",
+      "per_source_witness_exact": false,
+      "route_distance": 0.12572988629271128,
+      "route_wall_sec": 0.8517371863126755,
+      "route_warmup_sec": null,
+      "route_warmup_used": false,
+      "status": "full_public_candidate_all_source_route_only_checked"
+    }
+  },
+  "status": "figure5_graphics_dragon_happy_value_matched_candidate_ready__ratio_not_authorized",
+  "value_evidence": {
+    "author_rerun_hd_result": 0.12572988867759705,
+    "author_rerun_vs_paper_log_abs_diff": 1.9371509552001953e-07,
+    "paper_log_hd_result": 0.12572969496250153,
+    "paper_log_match_note": "Author rerun and RTDL match the paper-branch log within tolerance; this does not prove byte-identical paper input files.",
+    "rtdl_explicit_warm_hd_result": 0.12572988629271128,
+    "rtdl_explicit_warm_vs_author_rerun_abs_diff": 2.3848857610975216e-09,
+    "rtdl_fresh_hd_result": 0.12572988629271128,
+    "rtdl_fresh_vs_author_rerun_abs_diff": 2.3848857610975216e-09,
+    "rtdl_fresh_vs_paper_log_abs_diff": 1.91330209758922e-07,
+    "tolerance": 1e-06,
+    "value_matched_candidate": true
+  }
+}

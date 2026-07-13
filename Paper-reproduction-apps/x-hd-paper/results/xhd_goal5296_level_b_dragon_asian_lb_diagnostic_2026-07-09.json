@@ -1,0 +1,125 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.figure7_level_b_dragon_asian_lb_diagnostic.v1",
+  "goal": "Goal5296",
+  "date": "2026-07-09",
+  "status": "level_b_dragon_asian_author_lb_diagnostic_ready__not_figure7_reproduction",
+  "level": "level_b_temporary_input_author_only_diagnostic",
+  "pod": {
+    "host": "213.173.108.24",
+    "port": 13502,
+    "wrapper": "scripts/current_pod_ssh.py",
+    "hostname": "45c502cfccb5",
+    "gpu": "NVIDIA RTX 4000 Ada Generation"
+  },
+  "author_environment": {
+    "author_hd_exec": "/tmp/xhd-goal5112/build-gcc11-optix77-fast/bin/hd_exec",
+    "author_repo": "/tmp/xhd-goal5112/author",
+    "serialization_prefix": "/tmp/xhd_goal5296/ser",
+    "variant": "rt",
+    "execution": "gpu",
+    "profiling": true,
+    "normalize": false,
+    "repeat": 1
+  },
+  "input_scope": {
+    "input1": "/tmp/xhd_goal5234/data/dragon.ply",
+    "input2": "/tmp/xhd_goal5234/data/asian_dragon.ply",
+    "input1_num_points": 437645,
+    "input2_num_points": 3609600,
+    "exact_paper_dataset_identity_proven": false,
+    "source": "partial temporary POD inputs from /tmp/xhd_goal5234, not /local/storage/shared/HDDatasets",
+    "not_full_figure7_matrix_reason": "The current POD lacks /local/storage/shared/HDDatasets and has only Dragon/Asian temporary inputs, not the four graphics pairs or full author lb_comparison matrix required by author run_lb.sh / draw_lb.py."
+  },
+  "author_runs": {
+    "lb_0": {
+      "json_path": "/tmp/xhd_goal5296/results/dragon_asian_lb_0.json",
+      "lb": 0,
+      "hd_result": 52.453487396240234,
+      "running_avg_time_ms": 107.254,
+      "process_wall_sec": 16.25388788431883,
+      "reported_time": null,
+      "iterations_record_count": 3,
+      "large_cells": 0,
+      "memory": {
+        "BVH": 367872,
+        "Grid": 14527996,
+        "MBRs B": 179184,
+        "WL": 3501160,
+        "WL Heavy Peak": 0
+      },
+      "iteration_3": {
+        "rt_time_ms": 96.854,
+        "cuda_time_ms": 0.054,
+        "hits": 746444835,
+        "compared_points": 7969408615,
+        "offloading_size": 0,
+        "num_input_points": 437645,
+        "num_output_points": 0,
+        "radius": 79.2156982421875
+      }
+    },
+    "lb_256": {
+      "json_path": "/tmp/xhd_goal5296/results/dragon_asian_lb_256.json",
+      "lb": 256,
+      "hd_result": 52.453487396240234,
+      "running_avg_time_ms": 131.841,
+      "process_wall_sec": 17.09253077954054,
+      "reported_time": null,
+      "iterations_record_count": 3,
+      "large_cells": 5060,
+      "memory": {
+        "BVH": 367872,
+        "Grid": 14527996,
+        "MBRs B": 179184,
+        "WL": 3501160,
+        "WL Heavy Peak": 217071920
+      },
+      "iteration_3": {
+        "rt_time_ms": 45.519,
+        "cuda_time_ms": 75.923,
+        "hits": 896287932,
+        "compared_points": 1242037623,
+        "offloading_size": 27133990,
+        "num_input_points": 437645,
+        "num_output_points": 0,
+        "radius": 79.2156982421875
+      }
+    }
+  },
+  "comparison": {
+    "hd_result_equal": true,
+    "hd_result_abs_diff": 0.0,
+    "lb256_running_avg_time_div_lb0": 1.22923642754671,
+    "lb256_process_wall_div_lb0": 1.0515952298044044,
+    "lb256_iteration3_compared_points_div_lb0": 0.1558494315665507,
+    "lb256_iteration3_rt_time_div_lb0": 0.4699754279591973,
+    "lb256_iteration3_cuda_time_ms_minus_lb0": 75.869,
+    "interpretation": "On this temporary Dragon->Asian input, author lb=256 preserves HDResult and reduces iteration-3 compared-points and RTTime, but adds heavy offload work and higher CUDATime; the single-run author Running.AvgTime is slower than lb=0. This is a diagnostic only, not a Figure 7 result."
+  },
+  "decision": {
+    "figure7_reproduced": false,
+    "author_lb_comparison_matrix_regenerated": false,
+    "rtdl_comparison_started": false,
+    "same_denominator_performance_ratio_allowed": false,
+    "level_b_diagnostic_usable_for_review": true,
+    "next_allowed_steps": [
+      "Use this only as a separately named Level-B author-side load-balance diagnostic for the currently available temporary Dragon/Asian input.",
+      "Do not call this Figure 7 reproduction, because exact HDDatasets and the full author lb_comparison matrix are absent.",
+      "Do not start RTDL Figure 7 comparison until an author-side numeric denominator is regenerated or a narrower Level-B RTDL diagnostic is explicitly authorized."
+    ]
+  },
+  "claim_boundary": {
+    "figure7_reproduction_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "full_lb_comparison_matrix_claimed": false,
+    "author_matrix_regenerated": false,
+    "rtdl_author_performance_ratio_claimed": false,
+    "rtdl_route_run": false,
+    "partial_tmp_inputs_claimed_as_paper_inputs": false
+  },
+  "commands": [
+    "py scripts/current_pod_ssh.py --host 213.173.108.24 --port 13502 preflight",
+    "py scripts/current_pod_ssh.py --host 213.173.108.24 --port 13502 exec 'set -e; mkdir -p /tmp/xhd_goal5296/results /tmp/xhd_goal5296/ser; HD=/tmp/xhd-goal5112/build-gcc11-optix77-fast/bin/hd_exec; IN1=/tmp/xhd_goal5234/data/dragon.ply; IN2=/tmp/xhd_goal5234/data/asian_dragon.ply; for LB in 0 256; do OUT=/tmp/xhd_goal5296/results/dragon_asian_lb_${LB}.json; $HD -input1 $IN1 -input2 $IN2 -input_type ply -n_dims 3 -serialize /tmp/xhd_goal5296/ser -variant rt -execution gpu -repeat 1 -json $OUT -check=true -normalize=false -lb=$LB -profiling; done'",
+    "py scripts/current_pod_ssh.py --host 213.173.108.24 --port 13502 exec 'python3 - <<\"PY\" ... extract JSON summaries ... PY'"
+  ]
+}

@@ -1,0 +1,175 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.dataset_provenance_matrix.v1",
+  "goal": "Goal5131",
+  "status": "xhd_dataset_provenance_matrix_ready__exact_inputs_not_available__same_source_candidates_identified",
+  "date": "2026-07-08",
+  "exact_dataset_rule": {
+    "level_c_requires": [
+      "author-provided input files",
+      "retained hashes for converted point sets",
+      "byte-identical converted point sets",
+      "or a documented author script that deterministically regenerates the same point sets from pinned public source files"
+    ],
+    "summary_statistics_are_not_sufficient": [
+      "point count",
+      "dimension",
+      "Gini",
+      "bounding box",
+      "dataset name"
+    ]
+  },
+  "datasets": [
+    {
+      "name": "BraTS",
+      "category": "MRI",
+      "dimension": 3,
+      "exact_input_available": false,
+      "same_source_candidate": true,
+      "source_candidate": "BraTS 2020 challenge data",
+      "access_constraints": "registration/license likely required; not bundled in author repository or current workspace",
+      "conversion_path_known": "Paper states non-empty voxels are converted to point coordinates; exact author pair selection and preprocessing are not available",
+      "recommended_status": "blocked_for_exact; possible Level B only after licensed access and documented extraction"
+    },
+    {
+      "name": "USCounty",
+      "category": "Geospatial",
+      "dimension": 2,
+      "exact_input_available": false,
+      "same_source_candidate": true,
+      "source_candidate": "Census/TIGER county polygons",
+      "access_constraints": "public source likely accessible",
+      "conversion_path_known": "Needs author script/log mapping for polygon-to-point conversion and pair selection",
+      "recommended_status": "Level B candidate; Level C blocked without hashes/files"
+    },
+    {
+      "name": "USZipcode",
+      "category": "Geospatial",
+      "dimension": 2,
+      "exact_input_available": false,
+      "same_source_candidate": true,
+      "source_candidate": "Census/TIGER ZCTA or zipcode polygons",
+      "access_constraints": "public source likely accessible",
+      "conversion_path_known": "Needs author script/log mapping for polygon-to-point conversion and pair selection",
+      "recommended_status": "Level B candidate; Level C blocked without hashes/files"
+    },
+    {
+      "name": "USWater",
+      "category": "Geospatial",
+      "dimension": 2,
+      "exact_input_available": false,
+      "same_source_candidate": true,
+      "source_candidate": "US water-area polygons, likely Census/TIGER hydrography or water polygons",
+      "access_constraints": "public source likely accessible",
+      "conversion_path_known": "Needs source citation resolution and conversion details",
+      "recommended_status": "Level B candidate; Level C blocked without hashes/files"
+    },
+    {
+      "name": "USCensus",
+      "category": "Geospatial",
+      "dimension": 2,
+      "exact_input_available": false,
+      "same_source_candidate": true,
+      "source_candidate": "US census block or census polygon data",
+      "access_constraints": "public source likely accessible",
+      "conversion_path_known": "Needs source citation resolution and conversion details",
+      "recommended_status": "Level B candidate; Level C blocked without hashes/files"
+    },
+    {
+      "name": "Lakes",
+      "category": "Geospatial",
+      "dimension": 2,
+      "exact_input_available": false,
+      "same_source_candidate": true,
+      "source_candidate": "OSM lakes / water polygons",
+      "access_constraints": "public but large; exact snapshot date and extraction unknown",
+      "conversion_path_known": "Needs OSM snapshot and author extraction path",
+      "recommended_status": "Large Level B candidate; not first target"
+    },
+    {
+      "name": "Parks",
+      "category": "Geospatial",
+      "dimension": 2,
+      "exact_input_available": false,
+      "same_source_candidate": true,
+      "source_candidate": "OSM parks polygons",
+      "access_constraints": "public but large; exact snapshot date and extraction unknown",
+      "conversion_path_known": "Needs OSM snapshot and author extraction path",
+      "recommended_status": "Large Level B candidate; not first target"
+    },
+    {
+      "name": "All Nodes",
+      "category": "Geospatial",
+      "dimension": 2,
+      "exact_input_available": false,
+      "same_source_candidate": true,
+      "source_candidate": "OSM all-nodes extract",
+      "access_constraints": "very large; paper says partially used",
+      "conversion_path_known": "Unknown subset and preprocessing",
+      "recommended_status": "Do not target until author script/log reconciliation"
+    },
+    {
+      "name": "Dragon",
+      "category": "Graphics",
+      "dimension": 3,
+      "exact_input_available": false,
+      "same_source_candidate": true,
+      "source_candidate": "Stanford 3D Scanning Repository mesh",
+      "access_constraints": "public source likely accessible",
+      "conversion_path_known": "Author binary accepts PLY/OFF; exact mesh hash and conversion path still need recording",
+      "recommended_status": "Best first Level B target"
+    },
+    {
+      "name": "HappyBuddha",
+      "category": "Graphics",
+      "dimension": 3,
+      "exact_input_available": false,
+      "same_source_candidate": true,
+      "source_candidate": "Stanford 3D Scanning Repository mesh",
+      "access_constraints": "public source likely accessible",
+      "conversion_path_known": "Author binary accepts PLY/OFF; exact mesh hash and conversion path still need recording",
+      "recommended_status": "Best first Level B target together with Dragon"
+    },
+    {
+      "name": "AsianDragon",
+      "category": "Graphics",
+      "dimension": 3,
+      "exact_input_available": false,
+      "same_source_candidate": true,
+      "source_candidate": "Stanford 3D Scanning Repository mesh",
+      "access_constraints": "public source likely accessible but larger",
+      "conversion_path_known": "Author binary accepts PLY/OFF; exact mesh hash and conversion path still need recording",
+      "recommended_status": "Second graphics Level B target"
+    },
+    {
+      "name": "ThaiStatuette",
+      "category": "Graphics",
+      "dimension": 3,
+      "exact_input_available": false,
+      "same_source_candidate": true,
+      "source_candidate": "Stanford 3D Scanning Repository mesh",
+      "access_constraints": "public source likely accessible but larger",
+      "conversion_path_known": "Author binary accepts PLY/OFF; exact mesh hash and conversion path still need recording",
+      "recommended_status": "Second graphics Level B target"
+    }
+  ],
+  "recommended_next_gate": {
+    "goal": "Goal5132",
+    "target": "Dragon-HappyBuddha same-source representative gate",
+    "reason": "Graphics meshes are public, smaller than OSMLakes/OSMParks, and avoid BraTS license friction. This can produce a Level B representative gate without claiming exact paper dataset reproduction.",
+    "required_evidence": [
+      "source URL and downloaded file hashes",
+      "converted input hashes if conversion is performed",
+      "author hd_exec JSON",
+      "RTDL exact route JSON",
+      "directed input1-to-input2 comparison",
+      "phase fields kept separate",
+      "explicit label Level B same-source representative, not Level C exact"
+    ]
+  },
+  "exit_label": "same_source_sources_identified__exact_xhd_paper_inputs_not_available",
+  "claim_boundary": {
+    "exact_paper_dataset_reproduction_claimed": false,
+    "same_source_representative_result_claimed": false,
+    "performance_ratio_claimed": false
+  }
+}

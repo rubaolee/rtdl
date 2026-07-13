@@ -1,0 +1,41 @@
+{
+  "bounds": [
+    0.0,
+    10.0,
+    0.0,
+    10.0
+  ],
+  "interpretation": "If the selected face/segment changes when only duplicate half-edge input order changes, the remaining Section 5.7 issue is a missing duplicate-half-edge contract, not LSI or writer formatting. Goal4868 tests source-edge canonicalization as one deterministic contract candidate.",
+  "point": [
+    5.0,
+    1.0
+  ],
+  "query_map_id": 0,
+  "records": [
+    {
+      "case": "forward_then_reverse",
+      "face_id": 0,
+      "goal4868_canonical_segment_id": 100,
+      "hit_t": 46912497516544.0,
+      "input_segment_ids": [
+        100,
+        200
+      ],
+      "native_matches_goal4868_canonical": true,
+      "segment_id": 100
+    },
+    {
+      "case": "reverse_then_forward",
+      "face_id": 0,
+      "goal4868_canonical_segment_id": 100,
+      "hit_t": 46912497516544.0,
+      "input_segment_ids": [
+        200,
+        100
+      ],
+      "native_matches_goal4868_canonical": true,
+      "segment_id": 100
+    }
+  ],
+  "schema": "rtdl.goal4867.duplicate_half_edge_micro_probe.v1"
+}

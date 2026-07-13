@@ -1,0 +1,175 @@
+{
+  "author_script_contract": {
+    "draw_tune_radius": {
+      "expected_labels": [
+        "Add by Diagonal",
+        "Double Radius",
+        "Our Method"
+      ],
+      "expected_log_dirs": [
+        "logs/tune_radius/rt_gpu_radius_add/geo",
+        "logs/tune_radius/rt_gpu_radius_add/graphics",
+        "logs/tune_radius/rt_gpu_radius_double/geo",
+        "logs/tune_radius/rt_gpu_radius_double/graphics",
+        "logs/tune_radius/rt_gpu_radius_adaptive/geo",
+        "logs/tune_radius/rt_gpu_radius_adaptive/graphics"
+      ],
+      "expected_variants": [
+        "rt_gpu_radius_add",
+        "rt_gpu_radius_double",
+        "rt_gpu_radius_adaptive"
+      ],
+      "expects_geo": true,
+      "expects_graphics": true,
+      "metric": "Running.AvgTime",
+      "output_pdf": "tune_radius.pdf"
+    },
+    "run_radius_tuning": {
+      "calls_run_all_geo": true,
+      "calls_run_all_graphics": true,
+      "categories": {
+        "geo": {
+          "pair_count": 3,
+          "pairs": [
+            {
+              "input1": "dtl_cnty.wkt",
+              "input2": "uszipcode.wkt"
+            },
+            {
+              "input1": "USADetailedWaterBodies.wkt",
+              "input2": "USACensusBlockGroupBoundaries.wkt"
+            },
+            {
+              "input1": "lakes.bz2.wkt",
+              "input2": "parks.bz2.wkt"
+            }
+          ]
+        },
+        "graphics": {
+          "pair_count": 4,
+          "pairs": [
+            {
+              "input1": "dragon.ply",
+              "input2": "asian_dragon.ply"
+            },
+            {
+              "input1": "thai_statuette.ply",
+              "input2": "happy_buddha.ply"
+            },
+            {
+              "input1": "dragon.ply",
+              "input2": "happy_buddha.ply"
+            },
+            {
+              "input1": "thai_statuette.ply",
+              "input2": "asian_dragon.ply"
+            }
+          ]
+        }
+      },
+      "check": "false",
+      "execution": "gpu",
+      "normalize": "false",
+      "output_pattern": "logs/tune_radius/${variant}_${execution}_radius_${radius}/{out_prefix}/{name1}_{name2}.json",
+      "radius_values": [
+        "add",
+        "double",
+        "adaptive"
+      ],
+      "repeat": 1,
+      "variant": "rt"
+    },
+    "script_draw_contract_aligned": true
+  },
+  "checked_in_log_evidence": {
+    "run_all_mapping": {
+      "coverage_status": "not_covered_by_run_all_timing_logs",
+      "interpretation": "No explicit radius-growing strategy evidence was identified in the run_all log index; this target remains script/algorithm mapping work.",
+      "record_count": 0
+    },
+    "tune_radius": {
+      "complete_variant_category_matrix_present": false,
+      "example_records": [],
+      "per_expected_dir_json_count": {
+        "expr\\logs\\tune_radius\\rt_gpu_radius_adaptive\\geo": 0,
+        "expr\\logs\\tune_radius\\rt_gpu_radius_adaptive\\graphics": 0,
+        "expr\\logs\\tune_radius\\rt_gpu_radius_add\\geo": 0,
+        "expr\\logs\\tune_radius\\rt_gpu_radius_add\\graphics": 0,
+        "expr\\logs\\tune_radius\\rt_gpu_radius_double\\geo": 0,
+        "expr\\logs\\tune_radius\\rt_gpu_radius_double\\graphics": 0
+      },
+      "root_exists": false,
+      "total_json_count": 0
+    }
+  },
+  "claim_boundary": {
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure8_reproduction_claimed": false,
+    "performance_ratio_claimed": false,
+    "rtdl_author_radius_strategy_parity_claimed": false,
+    "run_all_logs_claimed_as_figure8": false
+  },
+  "date": "2026-07-09",
+  "decision": {
+    "author_script_available": true,
+    "current_blocker": "Author source contains run_radius_tuning.sh and draw_tune_radius.py for add/double/adaptive radius strategies, but checked-in logs/tune_radius has no JSON records. The paper-branch run_all log mapping also identifies no explicit radius-growing strategy records. Figure 8 reproduction requires regenerating or recovering the tune_radius numeric matrix with exact or explicitly Level-B inputs.",
+    "figure8_reproduced": false,
+    "next_allowed_steps": [
+      "If exact HDDatasets inputs are available on a POD, run author run_radius_tuning.sh or equivalent commands to regenerate tune_radius logs.",
+      "If exact inputs are unavailable, define a separately named Level-B radius-strategy diagnostic and do not call it Figure 8 reproduction.",
+      "Only after an author add/double/adaptive numeric matrix exists should RTDL radius-strategy comparison work begin."
+    ],
+    "run_all_radius_strategy_evidence_available": false,
+    "tune_radius_numeric_matrix_available": false
+  },
+  "figure8_prior_mapping": {
+    "available_evidence": [],
+    "coverage_status": "not_covered_by_run_all_timing_logs",
+    "figure": "Figure 8",
+    "interpretation": "No explicit radius-growing strategy evidence was identified in the run_all log index; this target remains script/algorithm mapping work.",
+    "missing_evidence": [
+      "paper-selected radius strategy workloads",
+      "radius-growth strategy labels",
+      "iteration or radius diagnostics",
+      "input file bytes and hashes"
+    ],
+    "record_summary": {
+      "by_category": {},
+      "by_section": {},
+      "examples": [],
+      "record_count": 0,
+      "top_configs": [],
+      "top_pairs": [],
+      "unique_pair_count": 0
+    },
+    "subject": "Radius-growing strategy"
+  },
+  "figure8_target": {
+    "figure": "Figure 8",
+    "required_inputs": [
+      "paper-selected datasets for radius strategy"
+    ],
+    "required_metrics": [
+      "running time by strategy",
+      "iteration or radius-growth diagnostics where available"
+    ],
+    "status": "blocked_on_author_script_mapping",
+    "subject": "Radius-growing strategy"
+  },
+  "goal": "Goal5293",
+  "matched": null,
+  "schema": "rtdl.paper_reproduction.xhd.figure8_radius_strategy_audit.v1",
+  "source_hashes": {
+    "expr/draw_tune_radius.py": "8699945119316dc722ab2c6fa418386dec1468016c7c1ea47eb4febed1d11b3f",
+    "expr/run_radius_tuning.sh": "9630d87c381c0b4fd384958eca1b1bba01cc119326346fa8cd172bbc9a18c804"
+  },
+  "sources": {
+    "author_commit": "7bf41c8442d059c94f4178355c6d5a10571d9658",
+    "author_repo": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\.codex_tmp\\xhd_author_repo",
+    "draw_tune_radius": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\.codex_tmp\\xhd_author_repo\\expr\\draw_tune_radius.py",
+    "paper_target_log_mapping": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_paper_target_log_mapping_goal5177_2026-07-08.json",
+    "paper_target_matrix": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_paper_target_matrix_2026-07-08.json",
+    "run_radius_tuning": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\.codex_tmp\\xhd_author_repo\\expr\\run_radius_tuning.sh"
+  },
+  "status": "figure8_radius_strategy_audit_ready__figure8_not_reproduced__tune_radius_logs_missing"
+}

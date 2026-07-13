@@ -1,0 +1,111 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5378.lb_status_machine_direction_decision.v1",
+  "goal": "Goal5378",
+  "date": "2026-07-10",
+  "purpose": "Decide the next X-HD -lb direction after Goal5377 rejected the heavy-before-inline-prune probe.",
+  "input_evidence": {
+    "goal5372_author_status_machine_requirements": {
+      "required_semantics": [
+        "active in_queue index namespace",
+        "dynamic per-source cmin2/current-best state",
+        "cmax2 abort status",
+        "heavy-cell offload append",
+        "loadBalanceProcessing grouping",
+        "miss queue"
+      ]
+    },
+    "goal5374_author_oracle": {
+      "active_in_queue_size": 437645,
+      "raw_offload_rows_before_sort_reduce": 27133990,
+      "raw_offload_rows_author_width_bytes": 217071920,
+      "status_count_init": 437645,
+      "status_count_offloading_append": 27133990,
+      "status_count_cmax2_mbr_abort": 0,
+      "status_count_point_loop_early_break": 0
+    },
+    "goal5375_current_surface_assessment": {
+      "any_candidate_row_count_parity": false,
+      "best_current_candidate": "goal5365_full_cover_lb256_behavior_gate_surface",
+      "best_current_candidate_row_ratio_rtdl_div_author": 0.9032258064516129,
+      "missing_or_unproven_semantics": [
+        "author cmin2/current-best restoration by in_q_idx",
+        "author cmax2 MBR abort status counter",
+        "author miss_queue append/count semantics",
+        "author loadBalanceProcessing sort/reduce feedback into later state",
+        "row-count parity against Goal5374 OffloadingSize"
+      ]
+    },
+    "goal5376_candidate_contract": {
+      "status_candidate_contract_ready": true,
+      "author_lb_row_parity_established": false,
+      "explicit_lb_support_authorized": false
+    },
+    "goal5377_probe_result": {
+      "default_kind2_rows": 21006960,
+      "heavy_before_inline_prune_kind2_rows": 304981889,
+      "author_offloading_size_rows": 27133990,
+      "heavy_before_inline_prune_row_count_parity": false,
+      "exit_label": "heavy_before_inline_prune_probe_no_go__author_lb_row_parity_still_missing"
+    }
+  },
+  "decision": {
+    "selected_direction": "authorize_generic_active_query_status_machine_design",
+    "why": "Existing scalar-radius, raw-kind2, global-bound, and branch-order probes have all failed the author OffloadingSize oracle. The remaining gap is a stateful active-query/worklist/status-machine problem, not a local classification tweak.",
+    "do_not_continue": [
+      "scalar radius tuning",
+      "raw kind2 counting as author OffloadingSize",
+      "existing global-bound as author cmax2 abort",
+      "heavy-before-inline-prune tuning",
+      "promoting explicit -lb before row parity is established"
+    ]
+  },
+  "recommended_next_goals": [
+    {
+      "goal": "Goal5379",
+      "title": "Generic active-query status-machine CPU reference",
+      "purpose": "Define and test a generic reference executor for active query rows, current-best state, offload rows, miss rows, completed rows, and load-balance feedback before writing native code."
+    },
+    {
+      "goal": "Goal5380",
+      "title": "Native/OptiX status-machine prototype against author oracle",
+      "purpose": "After the reference contract is pinned, compare native RTDL raw offload rows and author-width bytes directly against the Goal5374 Dragon -> AsianDragon oracle."
+    },
+    {
+      "goal": "Goal5381",
+      "title": "Explicit -lb option surface or fail-closed closeout",
+      "purpose": "Only after Goal5380 decide whether a narrow app-owned explicit -lb compatibility surface is allowed, or keep -lb fail-closed."
+    }
+  ],
+  "minimum_goal5379_contract": {
+    "generic_core_names_only": true,
+    "fields": [
+      "query_row_id",
+      "active_queue_index",
+      "source_id",
+      "current_best_sq",
+      "status",
+      "offload_cell_id",
+      "miss_queue_row",
+      "completed_nearest_row"
+    ],
+    "required_behaviors": [
+      "active-query state persists across continuation steps",
+      "offload rows are keyed by active_queue_index",
+      "miss rows remain explicit",
+      "completed rows can update global max-nearest state",
+      "row parity is reported only after comparing against an author oracle"
+    ]
+  },
+  "claim_boundary": {
+    "full_xhd_paper_reproduction_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_support_claimed": false,
+    "row_count_parity_claimed": false,
+    "same_denominator_memory_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "figure11_reproduction_claimed": false,
+    "author_rt_core_algorithm_parity_claimed": false,
+    "performance_claimed": false
+  },
+  "exit_label": "authorize_generic_active_query_status_machine_design__explicit_lb_still_fail_closed"
+}

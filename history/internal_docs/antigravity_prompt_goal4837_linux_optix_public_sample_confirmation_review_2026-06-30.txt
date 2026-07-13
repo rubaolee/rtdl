@@ -1,0 +1,23 @@
+Please critically review Goal4837:
+
+history/internal_docs/call_for_review_goal4837_linux_optix_public_sample_confirmation_2026-06-30.md
+history/internal_docs/goal4837_linux_optix_public_sample_confirmation_2026-06-30.md
+history/internal_docs/goal4837_public_sample_confirm_summary.json
+
+Focus on:
+
+1. Whether the County x Soil public sample correctness evidence is sufficient.
+2. Whether both patched author and RTDL OptiX are byte-equal to the public answer.
+3. Whether the single-run performance ratio is bounded correctly and not overclaimed.
+4. Whether continuing to County x Zipcode same-source / chain-level mismatch work is the correct next step.
+5. Whether the report correctly avoids Embree, V3/V4, full Section 5.7, and broad speedup claims.
+
+Write the review to:
+
+history/internal_docs/antigravity_goal4837_linux_optix_public_sample_confirmation_review_2026-06-30.md
+
+Use one verdict:
+
+- approve_goal4837_public_sample_confirmation_continue_same_source_investigation
+- approve_with_required_amendments
+- block_goal4837_due_to_correctness_or_claim_boundary_issue

@@ -1,0 +1,54 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5379.active_query_status_machine_reference.v1",
+  "goal": "Goal5379",
+  "date": "2026-07-10",
+  "purpose": "Create a generic CPU/NumPy active-query status-machine reference before any native/OptiX -lb implementation.",
+  "implemented_public_api": {
+    "module": "src/rtdsl/active_query_status.py",
+    "contract": "generic_active_query_status_machine_reference_v1",
+    "functions": [
+      "active_query_status_machine_reference_numpy_columns",
+      "apply_active_query_feedback_numpy_columns"
+    ],
+    "exports_added_to_rtdsl_all": true,
+    "app_semantics": "none"
+  },
+  "reference_capabilities": {
+    "active_query_state": true,
+    "current_best_state_by_active_queue_index": true,
+    "offload_rows_keyed_by_active_queue_index": true,
+    "miss_rows": true,
+    "completed_rows": true,
+    "aborted_rows": true,
+    "continuation_feedback_to_current_best_state": true,
+    "overflow_fail_closed_no_partial_rows": true
+  },
+  "focused_test_result": {
+    "command": "py -m unittest tests.goal5379_active_query_status_machine_reference_test tests.goal5279_generic_heavy_offload_worklist_test tests.goal5280_heavy_offload_non_xhd_consumer_gate_test",
+    "tests_run": 13,
+    "status": "OK",
+    "local_python_prefix_warning_observed": true
+  },
+  "claim_boundary": {
+    "full_xhd_paper_reproduction_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_support_claimed": false,
+    "author_offloading_size_row_parity_claimed": false,
+    "same_denominator_memory_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "figure11_reproduction_claimed": false,
+    "author_rt_core_algorithm_parity_claimed": false,
+    "performance_claimed": false,
+    "native_backend_claimed": false
+  },
+  "next_gate": {
+    "recommended_next_goal": "Goal5380 native/OptiX active-query status-machine prototype against Goal5374 author oracle",
+    "requires_pod": true,
+    "must_compare_against": {
+      "author_raw_offload_rows_before_sort_reduce": 27133990,
+      "author_raw_offload_rows_author_width_bytes": 217071920,
+      "author_active_in_queue_size": 437645
+    }
+  },
+  "exit_label": "generic_active_query_status_machine_reference_ready__native_author_oracle_probe_next"
+}

@@ -1,0 +1,92 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5327.acm_supplement_public_metadata_followup.v1",
+  "goal": "Goal5327",
+  "date": "2026-07-09",
+  "purpose": "Follow up the unresolved ACM ics26-106.zip supplement from Goal5325 by checking targeted public search, ACM supplement URLs, and Crossref DOI metadata for any public artifact path or mirror.",
+  "status": "implemented_review_pending",
+  "input_context": {
+    "doi": "10.1145/3797905.3800509",
+    "paper_title": "X-HD: Fast Hausdorff Distance Computation with Ray Tracing",
+    "unresolved_goal5325_item": "ics26-106.zip",
+    "why_this_goal_exists": "Goal5325 found this ACM supplementary zip but direct environment access was HTTP 403. Goal5327 checks whether any public metadata or mirror resolves it before escalating to author/ACM-access request."
+  },
+  "public_search_followup": {
+    "queries": [
+      "\"ics26-106.zip\"",
+      "\"10.1145/3797905.3800509\" \"ics26-106.zip\"",
+      "\"X-HD\" \"ics26-106.zip\"",
+      "\"X-HD\" \"HDDatasets\" \"hd_exec\"",
+      "\"X-HD: Fast Hausdorff Distance Computation with Ray Tracing\"",
+      "\"Camera-Ready Submission\" \"Paper 106\" \"X-HD\""
+    ],
+    "result_summary": "Targeted public search found the ACM proceedings/supplement listing for ics26-106.zip, but no public dataset mirror, no author-hosted HDDatasets bundle, and no alternate downloadable supplement copy.",
+    "public_mirror_found": false,
+    "author_dataset_link_found": false
+  },
+  "acm_supplement_url_checks": [
+    {
+      "url": "https://dl.acm.org/action/downloadSupplement?doi=10.1145%2F3797905.3800509&file=ics26-106.zip",
+      "method": "HEAD",
+      "observed_status": 403,
+      "downloaded": false
+    },
+    {
+      "url": "https://dl.acm.org/doi/suppl/10.1145/3797905.3800509/suppl_file/ics26-106.zip",
+      "method": "HEAD",
+      "observed_status": 403,
+      "downloaded": false
+    }
+  ],
+  "crossref_doi_metadata_check": {
+    "url": "https://api.crossref.org/works/10.1145/3797905.3800509",
+    "status": "readable",
+    "title": "X-HD: Fast Hausdorff Distance Computation with Ray Tracing",
+    "doi": "10.1145/3797905.3800509",
+    "work_url": "https://doi.org/10.1145/3797905.3800509",
+    "link_count": 1,
+    "links": [
+      {
+        "URL": "https://dl.acm.org/doi/abs/10.1145/3797905.3800509",
+        "content_type": "text/html",
+        "content_version": "vor",
+        "intended_application": "syndication"
+      }
+    ],
+    "relation_keys": [],
+    "archive": [],
+    "dataset_or_artifact_link_found": false
+  },
+  "interpretation": {
+    "acm_supplement_status": "visible_but_not_publicly_downloadable_from_current_environment",
+    "public_metadata_status": "no_dataset_or_artifact_path_found",
+    "next_required_actor": "acm_access_reviewer_or_paper_author",
+    "goal5326_request_package_still_needed": true
+  },
+  "claim_boundary": {
+    "acm_supplement_inspected": false,
+    "public_mirror_found": false,
+    "external_artifacts_acquired": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false,
+    "pod_execution_claimed": false
+  },
+  "pod_usage": {
+    "used": false,
+    "expected_next": false,
+    "reason": "This is public metadata / web artifact follow-up. POD is not useful until an artifact or accepted reconstruction exists."
+  },
+  "exit_label": "acm_supplement_still_unresolved__no_public_metadata_or_mirror_path_found",
+  "allowed_summary": "Goal5327 rechecked the ACM supplement and DOI metadata path. The supplement remains visible but inaccessible from this environment, Crossref exposes only the ACM article link, and no public mirror or dataset link was found.",
+  "not_allowed": [
+    "claiming the ACM supplement has been inspected",
+    "claiming the ACM supplement contains datasets",
+    "claiming the ACM supplement contains no useful artifacts",
+    "claiming all publication-adjacent artifacts are exhausted",
+    "claiming exact paper dataset reproduction",
+    "claiming Figure 5 reproduction",
+    "claiming full X-HD paper reproduction",
+    "claiming author-vs-RTDL performance ratio"
+  ]
+}

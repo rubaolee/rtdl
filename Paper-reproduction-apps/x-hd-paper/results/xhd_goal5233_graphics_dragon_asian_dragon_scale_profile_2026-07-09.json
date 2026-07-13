@@ -1,0 +1,19 @@
+{
+  "claim_boundary": {
+    "exact_paper_dataset_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false
+  },
+  "goal": "Goal5233",
+  "pairwise_estimate": {
+    "basis": "bridge PLY vertex counts; profile only for subset gate capacity accounting",
+    "pair_count": 1579723392000,
+    "pairwise_exact_route_allowed": false,
+    "source_count": 437645,
+    "target_count": 3609600
+  },
+  "schema": "rtdl.paper_reproduction.xhd.graphics_pair_scale_profile.v1",
+  "source_basename": "dragon.ply",
+  "target": "graphics_dragon_asian_dragon",
+  "target_basename": "asian_dragon.ply"
+}

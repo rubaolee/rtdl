@@ -1,0 +1,154 @@
+{
+  "author": {
+    "backend": "optix",
+    "command": [
+      "/tmp/librts_pip_only_project_20260710/build/librts_author_pip",
+      "--geom=/tmp/rtdl_librts_goal5453_20260710/Paper-reproduction-apps/librts-paper/data/representative/goal5466_blockgroups_simple64_100k/blockgroups_simple64_arcgis.wkt",
+      "--query=/tmp/rtdl_librts_goal5453_20260710/Paper-reproduction-apps/librts-paper/data/representative/goal5466_blockgroups_simple64_100k/blockgroups_simple64_queries_seed0_100k.wkt",
+      "--query_type=pip",
+      "--index_type=rtspatial",
+      "--load_factor=1.0",
+      "--warmup=0",
+      "--repeat=1",
+      "--serialize="
+    ],
+    "implementation": "AE-pinned SpatialQueryBenchmark integrated RTSpatial PIP",
+    "loading_ms_diagnostic_only": 2.703,
+    "pair_rows_exposed": false,
+    "query_ms_diagnostic_only": 7.523,
+    "result_count": 71626,
+    "stdout": "Loaded polygons 64\nLoaded points 100000\nLoading Time 2.703 ms\nGeoms 64\nQueries 100000\nQuery Time 7.523 ms\nResults 71626\nSelectivity: 0.0111916\n"
+  },
+  "claim_boundary": {
+    "author_pair_relation_agreement_claimed": true,
+    "author_pair_relation_scope": "app-instrumented representative fixture only",
+    "embree_evidence_used": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure12_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "level_b_representative_same_input_relation_agreement": true,
+    "librts_specific_rtdl_primitive_added": false,
+    "performance_ratio_claimed": false,
+    "ray_multicast_equivalence_claimed": false,
+    "robust_exact_arithmetic_pip_claimed": false
+  },
+  "comparison": {
+    "author_pair_rows_available_via_app_instrumentation": true,
+    "author_result_count": 71626,
+    "canonical_row_sha256_equal": true,
+    "count_equal": true,
+    "instrumented_author_result_count": 71626,
+    "pair_rows_equal": true,
+    "rtdl_result_count": 71626
+  },
+  "dataset": {
+    "claim_boundary": {
+      "exact_paper_dataset_reproduction_claimed": false,
+      "full_public_dataset_claimed": false,
+      "level_b_representative_input_claimed": true,
+      "paper_figure_reproduction_claimed": false,
+      "paper_query_cardinality_matched": true,
+      "performance_claimed": false,
+      "same_public_dataset_family_as_author_pip_script": true
+    },
+    "goal": "Goal5466",
+    "identity_level": "level_b_public_source_representative_subset",
+    "manifest_path": "/tmp/rtdl_librts_goal5453_20260710/Paper-reproduction-apps/librts-paper/data/representative/goal5466_blockgroups_simple64_100k/manifest.json",
+    "paper_workload_alignment": {
+      "author_dataset_basename": "USACensusBlockGroupBoundaries.wkt",
+      "exact_paper_file_identity": false,
+      "paper_query_count": 100000,
+      "representative_query_count": 100000,
+      "same_query_generator_source": true
+    },
+    "points_path": "/tmp/rtdl_librts_goal5453_20260710/Paper-reproduction-apps/librts-paper/data/representative/goal5466_blockgroups_simple64_100k/blockgroups_simple64_queries_seed0_100k.wkt",
+    "points_sha256": "6b8d2c553ee0a7c3280e9c23e21dbf506846b3f36e0351194c31ab110731b543",
+    "polygon_count": 64,
+    "polygon_selection": {
+      "mbr": [
+        -87.9864580803,
+        30.5735866367,
+        -86.4111767118,
+        32.708219136
+      ],
+      "output_file": "blockgroups_simple64_arcgis.wkt",
+      "output_sha256": "979829aaf538a52ac61331ba39b855e5eaac93362ca69e40be7367c3e199e62f",
+      "polygon_count": 64,
+      "rule": "preserve source order; keep the first 64 POLYGON records with one outer ring and no holes; exclude MULTIPOLYGON and inner-ring records",
+      "vertex_count": 30635
+    },
+    "polygons_path": "/tmp/rtdl_librts_goal5453_20260710/Paper-reproduction-apps/librts-paper/data/representative/goal5466_blockgroups_simple64_100k/blockgroups_simple64_arcgis.wkt",
+    "polygons_sha256": "979829aaf538a52ac61331ba39b855e5eaac93362ca69e40be7367c3e199e62f",
+    "public_source": {
+      "service_url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Census_BlockGroups/FeatureServer",
+      "source_artifact": "Paper-reproduction-apps/x-hd-paper/data/generated/goal5310_water_bg_full_public_wkt_smoke/USACensusBlockGroupBoundaries.wkt.full_public_arcgis_candidate.wkt",
+      "source_artifact_sha256": "7c3add96c84d236f7a8d91347fc6c0985a0c6c77730bd1799dfb531cf28f360f",
+      "source_complete": false,
+      "source_feature_count": 100,
+      "source_note": "First ArcGIS page from an earlier provenance-recorded public-data acquisition; not the author paper WKT file."
+    },
+    "query_count": 100000,
+    "query_generation": {
+      "algorithm_source": "SpatialQueryBenchmark/src/gen/generator.h::GeneratePointQueries",
+      "command": "librts_author_gen --input=blockgroups_simple64_arcgis.wkt --output=blockgroups_simple64_queries_seed0_100k.wkt --query_type=point-contains --num_queries=100000 --seed=0 --serialize=",
+      "output_file": "blockgroups_simple64_queries_seed0_100k.wkt",
+      "output_sha256": "6b8d2c553ee0a7c3280e9c23e21dbf506846b3f36e0351194c31ab110731b543",
+      "query_count": 100000,
+      "query_type": "point-contains",
+      "seed": 0,
+      "source_commit": "9140ad997519713bb5fdceba639a357afa4609ad",
+      "source_file": "SpatialQueryBenchmark/src/gen/gen.cpp"
+    },
+    "same_files_passed_to_author_and_rtdl": true,
+    "schema": "rtdl.paper_reproduction.librts.representative_pip_dataset.v1"
+  },
+  "environment": {
+    "gpu": "NVIDIA GeForce GTX 1070",
+    "host": "lx1",
+    "label": "lx1_gtx1070_functional_only",
+    "performance_evidence_authorized": false,
+    "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39"
+  },
+  "instrumented_author_comparator": {
+    "canonical_row_sha256": "7d30e35b6f50742aa69b047980a1f5dc7b0d586ce379c83848a4803c17a26c7b",
+    "command": [
+      "/tmp/librts_goal5467_author_rowdump_build_20260710/build/librts_author_pip",
+      "--geom=/tmp/rtdl_librts_goal5453_20260710/Paper-reproduction-apps/librts-paper/data/representative/goal5466_blockgroups_simple64_100k/blockgroups_simple64_arcgis.wkt",
+      "--query=/tmp/rtdl_librts_goal5453_20260710/Paper-reproduction-apps/librts-paper/data/representative/goal5466_blockgroups_simple64_100k/blockgroups_simple64_queries_seed0_100k.wkt",
+      "--query_type=pip",
+      "--index_type=rtspatial",
+      "--load_factor=1.0",
+      "--warmup=0",
+      "--repeat=1",
+      "--serialize="
+    ],
+    "implementation": "AE-pinned author PIP plus app-owned row-dump instrumentation",
+    "instrumentation_changes_predicate_or_queue_append": false,
+    "instrumentation_only_copies_existing_result_queue": true,
+    "loading_ms_diagnostic_only": 2.708,
+    "pair_rows_exposed": true,
+    "query_ms_diagnostic_only": 7.53,
+    "result_count": 71626,
+    "row_count": 71626,
+    "stdout": "Loaded polygons 64\nLoaded points 100000\nLoading Time 2.708 ms\nGeoms 64\nQueries 100000\nQuery Time 7.53 ms\nResults 71626\nSelectivity: 0.0111916\n"
+  },
+  "matched": true,
+  "rtdl": {
+    "app_semantics": "pinned_author_pnpoly_float32_sentinel_layout",
+    "candidate_contract": "generic_expanded_aabb_point_membership_rows_2d_v1",
+    "candidate_count": 154155,
+    "candidate_expansion": 1e-05,
+    "candidate_rows_materialized_for_hash": 71626,
+    "canonical_row_sha256": "7d30e35b6f50742aa69b047980a1f5dc7b0d586ce379c83848a4803c17a26c7b",
+    "fastmath": true,
+    "native_engine_customization": false,
+    "partner": "numba_cuda",
+    "point_count": 100000,
+    "polygon_count": 64,
+    "result_count": 71626,
+    "rt_core_accelerated": true,
+    "schema": "rtdl.paper_reproduction.librts.author_compatible_pip_rows.v1"
+  },
+  "schema": "rtdl.paper_reproduction.librts.representative_pip.v1",
+  "status": "level_b_representative_same_input_pip_relation_matched"
+}

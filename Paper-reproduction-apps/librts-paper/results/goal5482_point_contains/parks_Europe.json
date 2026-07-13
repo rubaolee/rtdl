@@ -1,0 +1,61 @@
+{
+  "author": {
+    "command": [
+      "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+      "-geom",
+      "/workspace/librts-targets/point-contains-real-remaining/PPoPPAE/datasets/polygons/parks_Europe.wkt",
+      "-query",
+      "/workspace/librts-targets/point-contains-real-remaining/PPoPPAE/datasets/queries/point-contains_queries_100000/parks_Europe.wkt",
+      "-serialize",
+      "/workspace/librts-serialize/goal5482/parks_Europe",
+      "-query_type",
+      "point-contains",
+      "-index_type",
+      "rtspatial",
+      "-load_factor",
+      "0.0001"
+    ],
+    "geometry_count": 1856318,
+    "loading_ms_diagnostic": 7.0952,
+    "pair_rows_exposed": false,
+    "query_count": 100000,
+    "query_ms_internal": 0.0754,
+    "result_count": 109279,
+    "stdout": "Loaded polygons 1856318\nLoaded queries 100000\nLoading Time 7.0952 ms\nGeoms 1856318\nQueries 100000\nQuery Time 0.0754 ms\nResults 109279\nSelectivity: 5.88687e-07\n"
+  },
+  "case_id": "parks_Europe",
+      "claim_boundary": {
+        "author_pair_relation_agreement_claimed": false,
+        "complete_paper_reproduction_claimed": false,
+        "embree_in_scope": false,
+        "exact_archive_and_extracted_input_identity_used": true,
+        "pointwise_containment_equivalence_claimed": false,
+        "relation_level_evidence_reference": "Paper-reproduction-apps/librts-paper/results/librts_goal5467_representative_same_input_pip.json",
+        "figure6_reproduced": false,
+    "performance_ratio_authorized": false,
+    "same_input_result_count_agreement": true
+  },
+  "input_identity": {
+    "geometry_path": "/workspace/librts-targets/point-contains-real-remaining/PPoPPAE/datasets/polygons/parks_Europe.wkt",
+    "geometry_sha256": "fd77bf8294dfb9dfe45e49fc4aec99427ebd9ac4f370697b0c908d635d643aed",
+    "query_path": "/workspace/librts-targets/point-contains-real-remaining/PPoPPAE/datasets/queries/point-contains_queries_100000/parks_Europe.wkt",
+    "query_sha256": "b955fe9e33cee4dbe599fc1d125e06f3d4bb5a916799363b69ef7f4139612f66",
+    "same_files_passed_to_author_and_rtdl": true,
+    "verified_extraction_root": "/workspace/librts-targets/point-contains-real-remaining"
+  },
+  "matched": true,
+  "rtdl": {
+    "backend": "optix",
+    "complete_candidate_coverage": true,
+    "load_wkt_sec": 141.70290882699192,
+    "native_engine_customization": false,
+    "primitive_query_sec": 9.364409946021624,
+    "public_api": "expanded_aabb_point_membership_rows_2d",
+    "result_count": 109279,
+    "route_wall_sec": 19.584234084002674,
+    "row_capacity": 131135,
+    "rt_core_accelerated": true
+  },
+  "schema": "rtdl.paper_reproduction.librts.exact_point_contains_count.v1",
+  "status": "exact_input_point_contains_count_matched"
+}

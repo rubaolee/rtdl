@@ -1,0 +1,67 @@
+{
+  "author": {
+    "HDResult": 65.44752502441406,
+    "abs_diff": 5.2616073986655465e-06,
+    "author_json": "/tmp/xhd_goal5422/out/author_county_zcta_bounded.json",
+    "comparison_reference": "directed_input1_to_input2",
+    "matched": true,
+    "tolerance": 1e-05
+  },
+  "boundary": "This bounded gate compares the RTDL generic partner 2-D directed max-nearest route with the Goal5304 author HDResult on the same WKT fixture. It is not the author X-HD RT-core algorithm, not exact paper input recovery, not Figure 5 reproduction, and not a performance-ratio denominator.",
+  "claim_boundary": {
+    "author_performance_parity_claimed": false,
+    "author_rt_core_algorithm_equivalence_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "geo_figure5_reproduction_claimed": false,
+    "level_b_bounded_geo_correctness_claimed": true,
+    "performance_ratio_claimed": false
+  },
+  "goal": "Goal5305",
+  "input": {
+    "input1": "/tmp/xhd_goal5304/data/dtl_cnty_arcgis_bounded.wkt",
+    "input2": "/tmp/xhd_goal5304/data/uszipcode_arcgis_bounded.wkt",
+    "input_type": "wkt",
+    "n_dims": 2,
+    "point_count_a": 38034,
+    "point_count_b": 50272
+  },
+  "rtdl": {
+    "HDResult": 65.44751976280666,
+    "distance_sq": 4283.377843102969,
+    "host_score_row_materialization_used": null,
+    "native_engine_row_contract": "not_called_partner_reference_only",
+    "nearest_distance_column_materialized": null,
+    "numba_block_size": null,
+    "numba_logical_pair_count": null,
+    "numba_score_row_count": null,
+    "numba_score_row_operation": null,
+    "numba_strategy": null,
+    "partner": "triton",
+    "partner_reference_contract": "generic_directed_max_of_nearest_distance_2d",
+    "per_source_witness_exact": true,
+    "route": "directed_max_of_nearest_distance_2d_partner_columns",
+    "rt_core_speedup_claim_authorized": false,
+    "score_rows_generated_on_partner_device": null,
+    "source_id": 35869,
+    "target_id": 15472,
+    "triton_candidate_block_size": null,
+    "triton_candidate_tile_count": null,
+    "triton_strategy": "dense_point_nearest_tiled",
+    "triton_tile_witness_row_count": null,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "run_phases": {
+    "load_input_sec": 1.303458459675312,
+    "numba_grouped_argmax_elapsed_seconds": null,
+    "numba_grouped_argmin_elapsed_seconds": null,
+    "numba_pairwise_elapsed_seconds": null,
+    "partner_column_upload_sec": 1.732411965727806,
+    "rtdl_route_sec": 0.6388622000813484,
+    "total_sec": 3.674895405769348,
+    "triton_dense_point_nearest_elapsed_seconds": null,
+    "triton_grouped_argmax_elapsed_seconds": null
+  },
+  "schema": "rtdl.paper_reproduction.xhd.goal5305.county_zcta_rtdl_partner_gate.v2",
+  "status": "rtdl_partner_route_attempted__level_b_bounded_geo_only"
+}

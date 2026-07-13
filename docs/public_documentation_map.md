@@ -24,7 +24,7 @@ research notes to write their first RTDL program.
 | Programming model | [ITRE App Programming Model](rtdl/itre_app_model.md) | [Programming Guide](rtdl/programming_guide.md), [DSL Reference](rtdl/dsl_reference.md) |
 | IR and lowering | [IR And Lowering](rtdl/ir_and_lowering.md) | `src/rtdsl/ir.py`, `src/rtdsl/lowering.py` |
 | Performance | [Performance Model](performance_model.md) | [App Engine Support Matrix](app_engine_support_matrix.md), [Partner Acceleration Boundaries](partner_acceleration_boundaries.md) |
-| Current release evidence | [RTDL v2.14 Release Package](release_reports/v2_14/README.md) | [Benchmark Evidence Index](learn/benchmark_evidence_index.md) |
+| Current release evidence | [RTDL v2.14 Release Package](release_reports/v2_14/README.md) | [Benchmark Evidence Index](learn/benchmark_evidence_index.md), [RayJoin Reproduction Packet](release_reports/v2_14/rayjoin_reproduction_packet.md) |
 | Archive context | [History](../history/README.md) | Old release reports, internal reviews, handoffs, and research notes |
 
 ## Public Doc Layers

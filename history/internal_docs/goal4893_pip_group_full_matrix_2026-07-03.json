@@ -1,0 +1,1100 @@
+{
+  "left": "/workspace/goal4848_rep/current_osm_au/lakes_Australia_current_osm_Point.cdb",
+  "load_sec": 77.73256924748421,
+  "right": "/workspace/goal4848_rep/current_osm_au/parks_Australia_current_osm_Point.cdb",
+  "rows": [
+    {
+      "env": {},
+      "label": "fixed8_default",
+      "map0_in_map1": {
+        "face_hash_fnv64": "f2d982e19b845172",
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 14788065,
+          "point_upload": 0.039135959,
+          "positive_face_count": 193846,
+          "row_download": 0.022842897,
+          "traversal": 34.477634127
+        },
+        "point_count": 14788065,
+        "positive_face_count": 193846,
+        "prepare_sec": 1.478254221379757,
+        "raw_candidate_count": 511943147571,
+        "run_sec": 35.61660957336426
+      },
+      "map1_in_map0": {
+        "face_hash_fnv64": "217ca910d4b1af08",
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 992505,
+          "point_upload": 0.002985454,
+          "positive_face_count": 30538,
+          "row_download": 0.001347116,
+          "traversal": 2.854909914
+        },
+        "point_count": 992505,
+        "positive_face_count": 30538,
+        "prepare_sec": 3.428976885974407,
+        "raw_candidate_count": 36359368176,
+        "run_sec": 2.9287487491965294
+      }
+    },
+    {
+      "env": {
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_AREA_ENLARGE": "1.5",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MAX_SIZE": "8",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MODE": "adaptive"
+      },
+      "label": "adaptive_ms8_e1.5",
+      "map0_in_map1": {
+        "candidate_reduction_vs_fixed8": 25378.95923860021,
+        "face_hash_fnv64": "f2d982e19b845172",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 14788065,
+          "point_upload": 0.038031002,
+          "positive_face_count": 193846,
+          "row_download": 0.022868216,
+          "traversal": 0.011040766
+        },
+        "point_count": 14788065,
+        "positive_face_count": 193846,
+        "prepare_sec": 0.2549530416727066,
+        "raw_candidate_count": 20171952,
+        "run_sec": 1.1308316439390182
+      },
+      "map1_in_map0": {
+        "candidate_reduction_vs_fixed8": 12321.721877366916,
+        "face_hash_fnv64": "217ca910d4b1af08",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 992505,
+          "point_upload": 0.003312335,
+          "positive_face_count": 30538,
+          "row_download": 0.00169187,
+          "traversal": 0.002706455
+        },
+        "point_count": 992505,
+        "positive_face_count": 30538,
+        "prepare_sec": 4.161273680627346,
+        "raw_candidate_count": 2950835,
+        "run_sec": 0.04198639839887619
+      }
+    },
+    {
+      "env": {
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_AREA_ENLARGE": "2.0",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MAX_SIZE": "8",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MODE": "adaptive"
+      },
+      "label": "adaptive_ms8_e2.0",
+      "map0_in_map1": {
+        "candidate_reduction_vs_fixed8": 14923.583135440289,
+        "face_hash_fnv64": "f2d982e19b845172",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 14788065,
+          "point_upload": 0.037946602,
+          "positive_face_count": 193846,
+          "row_download": 0.022960761,
+          "traversal": 0.012213762
+        },
+        "point_count": 14788065,
+        "positive_face_count": 193846,
+        "prepare_sec": 0.2357475385069847,
+        "raw_candidate_count": 34304305,
+        "run_sec": 1.1541084721684456
+      },
+      "map1_in_map0": {
+        "candidate_reduction_vs_fixed8": 6919.158461948629,
+        "face_hash_fnv64": "217ca910d4b1af08",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 992505,
+          "point_upload": 0.003036882,
+          "positive_face_count": 30538,
+          "row_download": 0.001803422,
+          "traversal": 0.003306653
+        },
+        "point_count": 992505,
+        "positive_face_count": 30538,
+        "prepare_sec": 4.041256256401539,
+        "raw_candidate_count": 5254883,
+        "run_sec": 0.04574009031057358
+      }
+    },
+    {
+      "env": {
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_AREA_ENLARGE": "3.5",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MAX_SIZE": "8",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MODE": "adaptive"
+      },
+      "label": "adaptive_ms8_e3.5",
+      "map0_in_map1": {
+        "candidate_reduction_vs_fixed8": 8674.840848488908,
+        "face_hash_fnv64": "f2d982e19b845172",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 14788065,
+          "point_upload": 0.037955259,
+          "positive_face_count": 193846,
+          "row_download": 0.022823171,
+          "traversal": 0.01410502
+        },
+        "point_count": 14788065,
+        "positive_face_count": 193846,
+        "prepare_sec": 0.22004912793636322,
+        "raw_candidate_count": 59014702,
+        "run_sec": 1.1643677800893784
+      },
+      "map1_in_map0": {
+        "candidate_reduction_vs_fixed8": 3158.3769565816388,
+        "face_hash_fnv64": "217ca910d4b1af08",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 992505,
+          "point_upload": 0.003035419,
+          "positive_face_count": 30538,
+          "row_download": 0.001695657,
+          "traversal": 0.003807874
+        },
+        "point_count": 992505,
+        "positive_face_count": 30538,
+        "prepare_sec": 3.6095656752586365,
+        "raw_candidate_count": 11512042,
+        "run_sec": 0.05083804577589035
+      }
+    },
+    {
+      "env": {
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_AREA_ENLARGE": "1.5",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MAX_SIZE": "16",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MODE": "adaptive"
+      },
+      "label": "adaptive_ms16_e1.5",
+      "map0_in_map1": {
+        "candidate_reduction_vs_fixed8": 19735.011379962398,
+        "face_hash_fnv64": "f2d982e19b845172",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 14788065,
+          "point_upload": 0.037957654,
+          "positive_face_count": 193846,
+          "row_download": 0.022999375,
+          "traversal": 0.01191746
+        },
+        "point_count": 14788065,
+        "positive_face_count": 193846,
+        "prepare_sec": 0.2519635632634163,
+        "raw_candidate_count": 25940859,
+        "run_sec": 1.1542276591062546
+      },
+      "map1_in_map0": {
+        "candidate_reduction_vs_fixed8": 9694.164117371813,
+        "face_hash_fnv64": "217ca910d4b1af08",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 992505,
+          "point_upload": 0.003341579,
+          "positive_face_count": 30538,
+          "row_download": 0.001674527,
+          "traversal": 0.00284081
+        },
+        "point_count": 992505,
+        "positive_face_count": 30538,
+        "prepare_sec": 4.165013901889324,
+        "raw_candidate_count": 3750645,
+        "run_sec": 0.04366222769021988
+      }
+    },
+    {
+      "env": {
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_AREA_ENLARGE": "2.0",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MAX_SIZE": "16",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MODE": "adaptive"
+      },
+      "label": "adaptive_ms16_e2.0",
+      "map0_in_map1": {
+        "candidate_reduction_vs_fixed8": 9632.401555350276,
+        "face_hash_fnv64": "f2d982e19b845172",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 14788065,
+          "point_upload": 0.038205874,
+          "positive_face_count": 193846,
+          "row_download": 0.022723892,
+          "traversal": 0.013348414
+        },
+        "point_count": 14788065,
+        "positive_face_count": 193846,
+        "prepare_sec": 0.23167096823453903,
+        "raw_candidate_count": 53148028,
+        "run_sec": 1.1745268553495407
+      },
+      "map1_in_map0": {
+        "candidate_reduction_vs_fixed8": 3656.6800666138806,
+        "face_hash_fnv64": "217ca910d4b1af08",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 992505,
+          "point_upload": 0.003048063,
+          "positive_face_count": 30538,
+          "row_download": 0.001687221,
+          "traversal": 0.003832761
+        },
+        "point_count": 992505,
+        "positive_face_count": 30538,
+        "prepare_sec": 3.9157505333423615,
+        "raw_candidate_count": 9943273,
+        "run_sec": 0.048103272914886475
+      }
+    },
+    {
+      "env": {
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_AREA_ENLARGE": "3.5",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MAX_SIZE": "16",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MODE": "adaptive"
+      },
+      "label": "adaptive_ms16_e3.5",
+      "map0_in_map1": {
+        "candidate_reduction_vs_fixed8": 5020.163269240368,
+        "face_hash_fnv64": "f2d982e19b845172",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 14788065,
+          "point_upload": 0.038091467,
+          "positive_face_count": 193846,
+          "row_download": 0.022859529,
+          "traversal": 0.015450924
+        },
+        "point_count": 14788065,
+        "positive_face_count": 193846,
+        "prepare_sec": 0.21439073979854584,
+        "raw_candidate_count": 101977390,
+        "run_sec": 1.1781838238239288
+      },
+      "map1_in_map0": {
+        "candidate_reduction_vs_fixed8": 1578.9078638273393,
+        "face_hash_fnv64": "217ca910d4b1af08",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 992505,
+          "point_upload": 0.00305686,
+          "positive_face_count": 30538,
+          "row_download": 0.001711648,
+          "traversal": 0.004770861
+        },
+        "point_count": 992505,
+        "positive_face_count": 30538,
+        "prepare_sec": 3.523747079074383,
+        "raw_candidate_count": 23028176,
+        "run_sec": 0.05339794605970383
+      }
+    },
+    {
+      "env": {
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_AREA_ENLARGE": "1.5",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MAX_SIZE": "32",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MODE": "adaptive"
+      },
+      "label": "adaptive_ms32_e1.5",
+      "map0_in_map1": {
+        "candidate_reduction_vs_fixed8": 15121.341047146872,
+        "face_hash_fnv64": "f2d982e19b845172",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 14788065,
+          "point_upload": 0.058435094,
+          "positive_face_count": 193846,
+          "row_download": 0.022854079,
+          "traversal": 0.012047858
+        },
+        "point_count": 14788065,
+        "positive_face_count": 193846,
+        "prepare_sec": 0.24833393841981888,
+        "raw_candidate_count": 33855671,
+        "run_sec": 1.1970419585704803
+      },
+      "map1_in_map0": {
+        "candidate_reduction_vs_fixed8": 6493.048099036062,
+        "face_hash_fnv64": "217ca910d4b1af08",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 992505,
+          "point_upload": 0.003329076,
+          "positive_face_count": 30538,
+          "row_download": 0.001726986,
+          "traversal": 0.00299954
+        },
+        "point_count": 992505,
+        "positive_face_count": 30538,
+        "prepare_sec": 4.142015650868416,
+        "raw_candidate_count": 5599738,
+        "run_sec": 0.04391101002693176
+      }
+    },
+    {
+      "env": {
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_AREA_ENLARGE": "2.0",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MAX_SIZE": "32",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MODE": "adaptive"
+      },
+      "label": "adaptive_ms32_e2.0",
+      "map0_in_map1": {
+        "candidate_reduction_vs_fixed8": 6096.421777896147,
+        "face_hash_fnv64": "f2d982e19b845172",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 14788065,
+          "point_upload": 0.037915193,
+          "positive_face_count": 193846,
+          "row_download": 0.02310257,
+          "traversal": 0.014723804
+        },
+        "point_count": 14788065,
+        "positive_face_count": 193846,
+        "prepare_sec": 0.23555860668420792,
+        "raw_candidate_count": 83974365,
+        "run_sec": 1.1828681826591492
+      },
+      "map1_in_map0": {
+        "candidate_reduction_vs_fixed8": 1674.7114170598577,
+        "face_hash_fnv64": "217ca910d4b1af08",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 992505,
+          "point_upload": 0.003030129,
+          "positive_face_count": 30538,
+          "row_download": 0.001734791,
+          "traversal": 0.004633821
+        },
+        "point_count": 992505,
+        "positive_face_count": 30538,
+        "prepare_sec": 3.80292259901762,
+        "raw_candidate_count": 21710826,
+        "run_sec": 0.048982106149196625
+      }
+    },
+    {
+      "env": {
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_AREA_ENLARGE": "3.5",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MAX_SIZE": "32",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MODE": "adaptive"
+      },
+      "label": "adaptive_ms32_e3.5",
+      "map0_in_map1": {
+        "candidate_reduction_vs_fixed8": 3255.5194165764033,
+        "face_hash_fnv64": "f2d982e19b845172",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 14788065,
+          "point_upload": 0.037880417,
+          "positive_face_count": 193846,
+          "row_download": 0.022920755,
+          "traversal": 0.017943933
+        },
+        "point_count": 14788065,
+        "positive_face_count": 193846,
+        "prepare_sec": 0.21259930729866028,
+        "raw_candidate_count": 157253907,
+        "run_sec": 1.1510970443487167
+      },
+      "map1_in_map0": {
+        "candidate_reduction_vs_fixed8": 805.50275557179,
+        "face_hash_fnv64": "217ca910d4b1af08",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 992505,
+          "point_upload": 0.003159885,
+          "positive_face_count": 30538,
+          "row_download": 0.001688283,
+          "traversal": 0.005989533
+        },
+        "point_count": 992505,
+        "positive_face_count": 30538,
+        "prepare_sec": 3.4556562453508377,
+        "raw_candidate_count": 45138726,
+        "run_sec": 0.05416189134120941
+      }
+    },
+    {
+      "env": {
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_AREA_ENLARGE": "1.5",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MAX_SIZE": "64",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MODE": "adaptive"
+      },
+      "label": "adaptive_ms64_e1.5",
+      "map0_in_map1": {
+        "candidate_reduction_vs_fixed8": 11424.329525388237,
+        "face_hash_fnv64": "f2d982e19b845172",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 14788065,
+          "point_upload": 0.037894935,
+          "positive_face_count": 193846,
+          "row_download": 0.022940764,
+          "traversal": 0.012449228
+        },
+        "point_count": 14788065,
+        "positive_face_count": 193846,
+        "prepare_sec": 0.2532613202929497,
+        "raw_candidate_count": 44811658,
+        "run_sec": 1.1250253096222878
+      },
+      "map1_in_map0": {
+        "candidate_reduction_vs_fixed8": 3242.60407892079,
+        "face_hash_fnv64": "217ca910d4b1af08",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 992505,
+          "point_upload": 0.00317825,
+          "positive_face_count": 30538,
+          "row_download": 0.001701718,
+          "traversal": 0.003280103
+        },
+        "point_count": 992505,
+        "positive_face_count": 30538,
+        "prepare_sec": 4.1100766733288765,
+        "raw_candidate_count": 11213015,
+        "run_sec": 0.04596414417028427
+      }
+    },
+    {
+      "env": {
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_AREA_ENLARGE": "2.0",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MAX_SIZE": "64",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MODE": "adaptive"
+      },
+      "label": "adaptive_ms64_e2.0",
+      "map0_in_map1": {
+        "candidate_reduction_vs_fixed8": 4115.678751767346,
+        "face_hash_fnv64": "f2d982e19b845172",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 14788065,
+          "point_upload": 0.037927567,
+          "positive_face_count": 193846,
+          "row_download": 0.022674668,
+          "traversal": 0.016001168
+        },
+        "point_count": 14788065,
+        "positive_face_count": 193846,
+        "prepare_sec": 0.22580627351999283,
+        "raw_candidate_count": 124388510,
+        "run_sec": 1.1788810789585114
+      },
+      "map1_in_map0": {
+        "candidate_reduction_vs_fixed8": 749.3216970197376,
+        "face_hash_fnv64": "217ca910d4b1af08",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 992505,
+          "point_upload": 0.003541258,
+          "positive_face_count": 30538,
+          "row_download": 0.001748808,
+          "traversal": 0.005635592
+        },
+        "point_count": 992505,
+        "positive_face_count": 30538,
+        "prepare_sec": 3.73401191085577,
+        "raw_candidate_count": 48523042,
+        "run_sec": 0.05208534747362137
+      }
+    },
+    {
+      "env": {
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_AREA_ENLARGE": "3.5",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MAX_SIZE": "64",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MODE": "adaptive"
+      },
+      "label": "adaptive_ms64_e3.5",
+      "map0_in_map1": {
+        "candidate_reduction_vs_fixed8": 2251.9743554642814,
+        "face_hash_fnv64": "f2d982e19b845172",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 14788065,
+          "point_upload": 0.037901737,
+          "positive_face_count": 193846,
+          "row_download": 0.02276992,
+          "traversal": 0.019151946
+        },
+        "point_count": 14788065,
+        "positive_face_count": 193846,
+        "prepare_sec": 0.20953319221735,
+        "raw_candidate_count": 227330807,
+        "run_sec": 1.1613740101456642
+      },
+      "map1_in_map0": {
+        "candidate_reduction_vs_fixed8": 432.98956955730335,
+        "face_hash_fnv64": "217ca910d4b1af08",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 992505,
+          "point_upload": 0.003111172,
+          "positive_face_count": 30538,
+          "row_download": 0.00166525,
+          "traversal": 0.007200531
+        },
+        "point_count": 992505,
+        "positive_face_count": 30538,
+        "prepare_sec": 3.434771180152893,
+        "raw_candidate_count": 83972850,
+        "run_sec": 0.05547245591878891
+      }
+    },
+    {
+      "env": {
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_AREA_ENLARGE": "1.5",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MAX_ITER": "0",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MODE": "block_merge64"
+      },
+      "label": "block_merge64_i0_e1.5",
+      "map0_in_map1": {
+        "candidate_reduction_vs_fixed8": 53400.503143990834,
+        "face_hash_fnv64": "f2d982e19b845172",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 14788065,
+          "point_upload": 0.037935672,
+          "positive_face_count": 193846,
+          "row_download": 0.022600769,
+          "traversal": 0.010175776
+        },
+        "point_count": 14788065,
+        "positive_face_count": 193846,
+        "prepare_sec": 0.2719990909099579,
+        "raw_candidate_count": 9586860,
+        "run_sec": 1.1481975242495537
+      },
+      "map1_in_map0": {
+        "candidate_reduction_vs_fixed8": 18541.852828370138,
+        "face_hash_fnv64": "217ca910d4b1af08",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 992505,
+          "point_upload": 0.003232283,
+          "positive_face_count": 30538,
+          "row_download": 0.00168627,
+          "traversal": 0.002479494
+        },
+        "point_count": 992505,
+        "positive_face_count": 30538,
+        "prepare_sec": 4.377026557922363,
+        "raw_candidate_count": 1960935,
+        "run_sec": 0.037260279059410095
+      }
+    },
+    {
+      "env": {
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_AREA_ENLARGE": "2.0",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MAX_ITER": "0",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MODE": "block_merge64"
+      },
+      "label": "block_merge64_i0_e2.0",
+      "map0_in_map1": {
+        "candidate_reduction_vs_fixed8": 53400.503143990834,
+        "face_hash_fnv64": "f2d982e19b845172",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 14788065,
+          "point_upload": 0.03805029,
+          "positive_face_count": 193846,
+          "row_download": 0.022836956,
+          "traversal": 0.010084673
+        },
+        "point_count": 14788065,
+        "positive_face_count": 193846,
+        "prepare_sec": 0.273719884455204,
+        "raw_candidate_count": 9586860,
+        "run_sec": 1.1459380984306335
+      },
+      "map1_in_map0": {
+        "candidate_reduction_vs_fixed8": 18541.852828370138,
+        "face_hash_fnv64": "217ca910d4b1af08",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 992505,
+          "point_upload": 0.003636349,
+          "positive_face_count": 30538,
+          "row_download": 0.00168104,
+          "traversal": 0.002547664
+        },
+        "point_count": 992505,
+        "positive_face_count": 30538,
+        "prepare_sec": 4.356928922235966,
+        "raw_candidate_count": 1960935,
+        "run_sec": 0.038310736417770386
+      }
+    },
+    {
+      "env": {
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_AREA_ENLARGE": "3.5",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MAX_ITER": "0",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MODE": "block_merge64"
+      },
+      "label": "block_merge64_i0_e3.5",
+      "map0_in_map1": {
+        "candidate_reduction_vs_fixed8": 53400.503143990834,
+        "face_hash_fnv64": "f2d982e19b845172",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 14788065,
+          "point_upload": 0.038068795,
+          "positive_face_count": 193846,
+          "row_download": 0.022745463,
+          "traversal": 0.010055647
+        },
+        "point_count": 14788065,
+        "positive_face_count": 193846,
+        "prepare_sec": 0.26442379504442215,
+        "raw_candidate_count": 9586860,
+        "run_sec": 1.1612236723303795
+      },
+      "map1_in_map0": {
+        "candidate_reduction_vs_fixed8": 18541.852828370138,
+        "face_hash_fnv64": "217ca910d4b1af08",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 992505,
+          "point_upload": 0.003415039,
+          "positive_face_count": 30538,
+          "row_download": 0.001695016,
+          "traversal": 0.002468143
+        },
+        "point_count": 992505,
+        "positive_face_count": 30538,
+        "prepare_sec": 4.364182353019714,
+        "raw_candidate_count": 1960935,
+        "run_sec": 0.037272848188877106
+      }
+    },
+    {
+      "env": {
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_AREA_ENLARGE": "1.5",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MAX_ITER": "1",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MODE": "block_merge64"
+      },
+      "label": "block_merge64_i1_e1.5",
+      "map0_in_map1": {
+        "candidate_reduction_vs_fixed8": 45129.59251835753,
+        "face_hash_fnv64": "f2d982e19b845172",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 14788065,
+          "point_upload": 0.037924421,
+          "positive_face_count": 193846,
+          "row_download": 0.02290226,
+          "traversal": 0.010321422
+        },
+        "point_count": 14788065,
+        "positive_face_count": 193846,
+        "prepare_sec": 0.26654102653265,
+        "raw_candidate_count": 11343846,
+        "run_sec": 1.1558702066540718
+      },
+      "map1_in_map0": {
+        "candidate_reduction_vs_fixed8": 16940.34536168452,
+        "face_hash_fnv64": "217ca910d4b1af08",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 992505,
+          "point_upload": 0.003725238,
+          "positive_face_count": 30538,
+          "row_download": 0.001676581,
+          "traversal": 0.00266702
+        },
+        "point_count": 992505,
+        "positive_face_count": 30538,
+        "prepare_sec": 4.4577503725886345,
+        "raw_candidate_count": 2146318,
+        "run_sec": 0.040514469146728516
+      }
+    },
+    {
+      "env": {
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_AREA_ENLARGE": "2.0",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MAX_ITER": "1",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MODE": "block_merge64"
+      },
+      "label": "block_merge64_i1_e2.0",
+      "map0_in_map1": {
+        "candidate_reduction_vs_fixed8": 37729.99594880768,
+        "face_hash_fnv64": "f2d982e19b845172",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 14788065,
+          "point_upload": 0.03786638,
+          "positive_face_count": 193846,
+          "row_download": 0.022732078,
+          "traversal": 0.010685593
+        },
+        "point_count": 14788065,
+        "positive_face_count": 193846,
+        "prepare_sec": 0.2747023180127144,
+        "raw_candidate_count": 13568598,
+        "run_sec": 1.1324696317315102
+      },
+      "map1_in_map0": {
+        "candidate_reduction_vs_fixed8": 15366.331586347733,
+        "face_hash_fnv64": "217ca910d4b1af08",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 992505,
+          "point_upload": 0.003212875,
+          "positive_face_count": 30538,
+          "row_download": 0.001669988,
+          "traversal": 0.002727615
+        },
+        "point_count": 992505,
+        "positive_face_count": 30538,
+        "prepare_sec": 4.409212149679661,
+        "raw_candidate_count": 2366171,
+        "run_sec": 0.039999790489673615
+      }
+    },
+    {
+      "env": {
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_AREA_ENLARGE": "3.5",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MAX_ITER": "1",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MODE": "block_merge64"
+      },
+      "label": "block_merge64_i1_e3.5",
+      "map0_in_map1": {
+        "candidate_reduction_vs_fixed8": 30662.894446536782,
+        "face_hash_fnv64": "f2d982e19b845172",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 14788065,
+          "point_upload": 0.037931154,
+          "positive_face_count": 193846,
+          "row_download": 0.022793794,
+          "traversal": 0.011270863
+        },
+        "point_count": 14788065,
+        "positive_face_count": 193846,
+        "prepare_sec": 0.2501588761806488,
+        "raw_candidate_count": 16695852,
+        "run_sec": 1.1598617732524872
+      },
+      "map1_in_map0": {
+        "candidate_reduction_vs_fixed8": 11958.037011359675,
+        "face_hash_fnv64": "217ca910d4b1af08",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 992505,
+          "point_upload": 0.003029107,
+          "positive_face_count": 30538,
+          "row_download": 0.001683955,
+          "traversal": 0.002704692
+        },
+        "point_count": 992505,
+        "positive_face_count": 30538,
+        "prepare_sec": 4.125957764685154,
+        "raw_candidate_count": 3040580,
+        "run_sec": 0.04302520304918289
+      }
+    },
+    {
+      "env": {
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_AREA_ENLARGE": "1.5",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MAX_ITER": "2",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MODE": "block_merge64"
+      },
+      "label": "block_merge64_i2_e1.5",
+      "map0_in_map1": {
+        "candidate_reduction_vs_fixed8": 38239.87321260093,
+        "face_hash_fnv64": "f2d982e19b845172",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 14788065,
+          "point_upload": 0.03803495,
+          "positive_face_count": 193846,
+          "row_download": 0.022827939,
+          "traversal": 0.010568531
+        },
+        "point_count": 14788065,
+        "positive_face_count": 193846,
+        "prepare_sec": 0.2721397653222084,
+        "raw_candidate_count": 13387679,
+        "run_sec": 1.1726410165429115
+      },
+      "map1_in_map0": {
+        "candidate_reduction_vs_fixed8": 15843.020725697905,
+        "face_hash_fnv64": "217ca910d4b1af08",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 992505,
+          "point_upload": 0.003174041,
+          "positive_face_count": 30538,
+          "row_download": 0.001680749,
+          "traversal": 0.002621414
+        },
+        "point_count": 992505,
+        "positive_face_count": 30538,
+        "prepare_sec": 4.5414944887161255,
+        "raw_candidate_count": 2294977,
+        "run_sec": 0.04070716351270676
+      }
+    },
+    {
+      "env": {
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_AREA_ENLARGE": "2.0",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MAX_ITER": "2",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MODE": "block_merge64"
+      },
+      "label": "block_merge64_i2_e2.0",
+      "map0_in_map1": {
+        "candidate_reduction_vs_fixed8": 28404.387099303167,
+        "face_hash_fnv64": "f2d982e19b845172",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 14788065,
+          "point_upload": 0.0379294,
+          "positive_face_count": 193846,
+          "row_download": 0.022873646,
+          "traversal": 0.01121671
+        },
+        "point_count": 14788065,
+        "positive_face_count": 193846,
+        "prepare_sec": 0.2662547901272774,
+        "raw_candidate_count": 18023383,
+        "run_sec": 1.1727649345993996
+      },
+      "map1_in_map0": {
+        "candidate_reduction_vs_fixed8": 12976.562613002627,
+        "face_hash_fnv64": "217ca910d4b1af08",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 992505,
+          "point_upload": 0.003063612,
+          "positive_face_count": 30538,
+          "row_download": 0.001684997,
+          "traversal": 0.002787659
+        },
+        "point_count": 992505,
+        "positive_face_count": 30538,
+        "prepare_sec": 4.450442969799042,
+        "raw_candidate_count": 2801926,
+        "run_sec": 0.04211653769016266
+      }
+    },
+    {
+      "env": {
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_AREA_ENLARGE": "3.5",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MAX_ITER": "2",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MODE": "block_merge64"
+      },
+      "label": "block_merge64_i2_e3.5",
+      "map0_in_map1": {
+        "candidate_reduction_vs_fixed8": 18446.941913029154,
+        "face_hash_fnv64": "f2d982e19b845172",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 14788065,
+          "point_upload": 0.03786057,
+          "positive_face_count": 193846,
+          "row_download": 0.022998603,
+          "traversal": 0.011907841
+        },
+        "point_count": 14788065,
+        "positive_face_count": 193846,
+        "prepare_sec": 0.24355917423963547,
+        "raw_candidate_count": 27752196,
+        "run_sec": 1.153769850730896
+      },
+      "map1_in_map0": {
+        "candidate_reduction_vs_fixed8": 7445.780257199249,
+        "face_hash_fnv64": "217ca910d4b1af08",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 992505,
+          "point_upload": 0.002978411,
+          "positive_face_count": 30538,
+          "row_download": 0.001682221,
+          "traversal": 0.002991095
+        },
+        "point_count": 992505,
+        "positive_face_count": 30538,
+        "prepare_sec": 3.999931000173092,
+        "raw_candidate_count": 4883218,
+        "run_sec": 0.04766778647899628
+      }
+    },
+    {
+      "env": {
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_AREA_ENLARGE": "1.5",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MAX_ITER": "5",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MODE": "block_merge64"
+      },
+      "label": "block_merge64_i5_e1.5",
+      "map0_in_map1": {
+        "candidate_reduction_vs_fixed8": 29935.226750083733,
+        "face_hash_fnv64": "f2d982e19b845172",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 14788065,
+          "point_upload": 0.042019149,
+          "positive_face_count": 193846,
+          "row_download": 0.022774618,
+          "traversal": 0.010914657
+        },
+        "point_count": 14788065,
+        "positive_face_count": 193846,
+        "prepare_sec": 0.28253862261772156,
+        "raw_candidate_count": 17101696,
+        "run_sec": 1.1455205976963043
+      },
+      "map1_in_map0": {
+        "candidate_reduction_vs_fixed8": 13811.500201896037,
+        "face_hash_fnv64": "217ca910d4b1af08",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 992505,
+          "point_upload": 0.003683999,
+          "positive_face_count": 30538,
+          "row_download": 0.001683203,
+          "traversal": 0.002660698
+        },
+        "point_count": 992505,
+        "positive_face_count": 30538,
+        "prepare_sec": 4.60088687390089,
+        "raw_candidate_count": 2632543,
+        "run_sec": 0.04352586716413498
+      }
+    },
+    {
+      "env": {
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_AREA_ENLARGE": "2.0",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MAX_ITER": "5",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MODE": "block_merge64"
+      },
+      "label": "block_merge64_i5_e2.0",
+      "map0_in_map1": {
+        "candidate_reduction_vs_fixed8": 17510.715219113645,
+        "face_hash_fnv64": "f2d982e19b845172",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 14788065,
+          "point_upload": 0.03799771,
+          "positive_face_count": 193846,
+          "row_download": 0.022874829,
+          "traversal": 0.011912711
+        },
+        "point_count": 14788065,
+        "positive_face_count": 193846,
+        "prepare_sec": 0.28400012850761414,
+        "raw_candidate_count": 29235993,
+        "run_sec": 1.15947637706995
+      },
+      "map1_in_map0": {
+        "candidate_reduction_vs_fixed8": 8514.655760723712,
+        "face_hash_fnv64": "217ca910d4b1af08",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 992505,
+          "point_upload": 0.003023987,
+          "positive_face_count": 30538,
+          "row_download": 0.001728199,
+          "traversal": 0.003187948
+        },
+        "point_count": 992505,
+        "positive_face_count": 30538,
+        "prepare_sec": 4.6334695890545845,
+        "raw_candidate_count": 4270210,
+        "run_sec": 0.04460065811872482
+      }
+    },
+    {
+      "env": {
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_AREA_ENLARGE": "3.5",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MAX_ITER": "5",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MODE": "block_merge64"
+      },
+      "label": "block_merge64_i5_e3.5",
+      "map0_in_map1": {
+        "candidate_reduction_vs_fixed8": 6063.825912707739,
+        "face_hash_fnv64": "f2d982e19b845172",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 14788065,
+          "point_upload": 0.037988833,
+          "positive_face_count": 193846,
+          "row_download": 0.022851474,
+          "traversal": 0.01550657
+        },
+        "point_count": 14788065,
+        "positive_face_count": 193846,
+        "prepare_sec": 0.23886238038539886,
+        "raw_candidate_count": 84425766,
+        "run_sec": 1.1509087607264519
+      },
+      "map1_in_map0": {
+        "candidate_reduction_vs_fixed8": 1958.4336339351385,
+        "face_hash_fnv64": "217ca910d4b1af08",
+        "face_hash_matches_fixed8": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 992505,
+          "point_upload": 0.002984513,
+          "positive_face_count": 30538,
+          "row_download": 0.001673786,
+          "traversal": 0.004510106
+        },
+        "point_count": 992505,
+        "positive_face_count": 30538,
+        "prepare_sec": 3.9105670526623726,
+        "raw_candidate_count": 18565535,
+        "run_sec": 0.05163310468196869
+      }
+    }
+  ],
+  "schema": "rtdl.goal4893.pip_group_mode_matrix.v1"
+}

@@ -1,0 +1,731 @@
+{
+  "allowed_summary": "Goal5432 refreshes public X-HD artifact surfaces. No new public exact-input path was found unless the result classification explicitly says otherwise; ACM supplement access remains unresolved if not inspected.",
+  "claim_boundary": {
+    "acm_supplement_inspected": false,
+    "exact_equivalence_accepted": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_reopened": false,
+    "external_artifacts_acquired": false,
+    "figure5_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "new_public_exact_input_artifact_found": false,
+    "new_rtdl_route_code_added": false,
+    "performance_ratio_claimed": false,
+    "pod_execution_claimed": false,
+    "public_artifact_refresh_claimed": true,
+    "route_micro_optimization_goal_authorized": false
+  },
+  "classification": {
+    "acm_supplement_inspected": false,
+    "crossref_has_dataset_or_artifact_link": false,
+    "exact_input_blocker_removed": false,
+    "external_artifacts_acquired": false,
+    "github_has_dataset_archive_release": false,
+    "github_has_likely_input_dataset_blob": false,
+    "github_has_release_assets": false,
+    "github_has_root_data_directory": false,
+    "new_public_exact_input_artifact_found": false
+  },
+  "date": "2026-07-10",
+  "exit_label": "public_artifact_refresh_no_new_exact_input_path__external_response_chain_still_needed",
+  "goal": "Goal5432",
+  "input_context": {
+    "current_outbox_goal": "Goal5431",
+    "current_strongest_candidate": "WaterBodies->BlockGroups Level-B public reconstruction, not exact paper input",
+    "previous_artifact_sweeps": [
+      "Goal5325",
+      "Goal5327",
+      "Goal5334",
+      "Goal5346"
+    ]
+  },
+  "interpretation": {
+    "current_public_artifact_status_changed": false,
+    "next_action": "send_or_review_goal5431_outbox_or_wait_for_external_author_acm_response",
+    "pod_expected_next": false,
+    "reason_pod_not_expected": "POD cannot create missing public provenance. It becomes useful only after exact artifacts, hashes, byte-identical regeneration, or explicit exact-equivalence acceptance appears."
+  },
+  "live_surfaces": {
+    "acm_supplement": {
+      "artifact_name": "ics26-106.zip",
+      "checks": [
+        {
+          "head": {
+            "body_bytes": 0,
+            "body_prefix_hex": "",
+            "content_length_header": "5909",
+            "content_type": "text/html; charset=UTF-8",
+            "elapsed_sec": 0.1654083002358675,
+            "error": "HTTPError: Forbidden",
+            "ok": false,
+            "status": 403,
+            "url": "https://dl.acm.org/action/downloadSupplement?doi=10.1145%2F3797905.3800509&file=ics26-106.zip",
+            "zip_magic_observed": false
+          },
+          "range_get": {
+            "body_bytes": 5887,
+            "body_prefix_hex": "3c21444f43545950452068746d6c3e3c",
+            "content_length_header": "5887",
+            "content_type": "text/html; charset=UTF-8",
+            "elapsed_sec": 0.12151690013706684,
+            "error": "HTTPError: Forbidden",
+            "ok": false,
+            "status": 403,
+            "url": "https://dl.acm.org/action/downloadSupplement?doi=10.1145%2F3797905.3800509&file=ics26-106.zip",
+            "zip_magic_observed": false
+          },
+          "url": "https://dl.acm.org/action/downloadSupplement?doi=10.1145%2F3797905.3800509&file=ics26-106.zip"
+        },
+        {
+          "head": {
+            "body_bytes": 0,
+            "body_prefix_hex": "",
+            "content_length_header": "5810",
+            "content_type": "text/html; charset=UTF-8",
+            "elapsed_sec": 0.12718460010364652,
+            "error": "HTTPError: Forbidden",
+            "ok": false,
+            "status": 403,
+            "url": "https://dl.acm.org/doi/suppl/10.1145/3797905.3800509/suppl_file/ics26-106.zip",
+            "zip_magic_observed": false
+          },
+          "range_get": {
+            "body_bytes": 5788,
+            "body_prefix_hex": "3c21444f43545950452068746d6c3e3c",
+            "content_length_header": "5788",
+            "content_type": "text/html; charset=UTF-8",
+            "elapsed_sec": 0.12330419989302754,
+            "error": "HTTPError: Forbidden",
+            "ok": false,
+            "status": 403,
+            "url": "https://dl.acm.org/doi/suppl/10.1145/3797905.3800509/suppl_file/ics26-106.zip",
+            "zip_magic_observed": false
+          },
+          "url": "https://dl.acm.org/doi/suppl/10.1145/3797905.3800509/suppl_file/ics26-106.zip"
+        },
+        {
+          "head": {
+            "body_bytes": 0,
+            "body_prefix_hex": "",
+            "content_length_header": "5866",
+            "content_type": "text/html; charset=UTF-8",
+            "elapsed_sec": 0.12330939993262291,
+            "error": "HTTPError: Forbidden",
+            "ok": false,
+            "status": 403,
+            "url": "https://dl.acm.org/doi/suppl/10.1145/3797905.3800509/suppl_file/ics26-106.zip?download=true",
+            "zip_magic_observed": false
+          },
+          "range_get": {
+            "body_bytes": 5866,
+            "body_prefix_hex": "3c21444f43545950452068746d6c3e3c",
+            "content_length_header": "5866",
+            "content_type": "text/html; charset=UTF-8",
+            "elapsed_sec": 0.09995310008525848,
+            "error": "HTTPError: Forbidden",
+            "ok": false,
+            "status": 403,
+            "url": "https://dl.acm.org/doi/suppl/10.1145/3797905.3800509/suppl_file/ics26-106.zip?download=true",
+            "zip_magic_observed": false
+          },
+          "url": "https://dl.acm.org/doi/suppl/10.1145/3797905.3800509/suppl_file/ics26-106.zip?download=true"
+        }
+      ],
+      "classification": "acm_supplement_visible_but_not_downloaded_from_current_environment",
+      "downloaded_or_zip_magic_observed": false,
+      "statuses": [
+        403,
+        403,
+        403,
+        403,
+        403,
+        403
+      ]
+    },
+    "author_pages": [
+      {
+        "mentions_dataset_terms_in_prefix": false,
+        "mentions_github_xhd_in_prefix": false,
+        "response": {
+          "body_bytes": 2048,
+          "body_prefix_hex": "255044462d312e350a25d0d5d1990a32",
+          "content_length_header": "2048",
+          "content_type": "application/pdf",
+          "elapsed_sec": 0.29608120024204254,
+          "error": null,
+          "ok": true,
+          "status": 206,
+          "url": "https://rubaolee.github.io/paper_pdfs/2026-xhd.pdf",
+          "zip_magic_observed": false
+        },
+        "url": "https://rubaolee.github.io/paper_pdfs/2026-xhd.pdf"
+      },
+      {
+        "mentions_dataset_terms_in_prefix": false,
+        "mentions_github_xhd_in_prefix": false,
+        "response": {
+          "body_bytes": 2048,
+          "body_prefix_hex": "3c21646f63747970652068746d6c3e0a",
+          "content_length_header": "2048",
+          "content_type": "text/html; charset=utf-8",
+          "elapsed_sec": 11.573094699997455,
+          "error": null,
+          "ok": true,
+          "status": 206,
+          "url": "https://gengl.me/publications/ics26/",
+          "zip_magic_observed": false
+        },
+        "url": "https://gengl.me/publications/ics26/"
+      }
+    ],
+    "crossref": {
+      "archive": [],
+      "artifact_like_links": [],
+      "dataset_or_artifact_link_found": false,
+      "doi": "10.1145/3797905.3800509",
+      "link_count": 1,
+      "links": [
+        {
+          "URL": "https://dl.acm.org/doi/abs/10.1145/3797905.3800509",
+          "content-type": "text/html",
+          "content-version": "vor",
+          "intended-application": "syndication"
+        }
+      ],
+      "relation_keys": [],
+      "response": {
+        "body_bytes": 30916,
+        "body_prefix_hex": "7b22737461747573223a226f6b222c22",
+        "content_length_header": null,
+        "content_type": "application/json",
+        "elapsed_sec": 0.22936540003865957,
+        "error": null,
+        "ok": true,
+        "status": 200,
+        "url": "https://api.crossref.org/works/10.1145/3797905.3800509",
+        "zip_magic_observed": false
+      },
+      "title": "X-HD: Fast Hausdorff Distance Computation with Ray Tracing",
+      "url": "https://api.crossref.org/works/10.1145/3797905.3800509"
+    },
+    "github": {
+      "branches": {
+        "hybrid": "4d9046a9e55d87f35daf81dd718444029fab56ce",
+        "main": "7bf41c8442d059c94f4178355c6d5a10571d9658",
+        "paper": "8c3846866052e1e8755210021f23fac2cbe8c3d6"
+      },
+      "branches_response": {
+        "body_bytes": 586,
+        "body_prefix_hex": "5b7b226e616d65223a22687962726964",
+        "content_length_header": "586",
+        "content_type": "application/json; charset=utf-8",
+        "elapsed_sec": 0.23597830021753907,
+        "error": null,
+        "ok": true,
+        "status": 200,
+        "url": "https://api.github.com/repos/pwrliang/X-HD/branches",
+        "zip_magic_observed": false
+      },
+      "contents_response": {
+        "body_bytes": 6757,
+        "body_prefix_hex": "5b7b226e616d65223a222e636c616e67",
+        "content_length_header": "6757",
+        "content_type": "application/json; charset=utf-8",
+        "elapsed_sec": 0.27110210014507174,
+        "error": null,
+        "ok": true,
+        "status": 200,
+        "url": "https://api.github.com/repos/pwrliang/X-HD/contents",
+        "zip_magic_observed": false
+      },
+      "dataset_archive_release_found": false,
+      "dataset_like_release_assets": [],
+      "default_branch": "main",
+      "full_name": "pwrliang/X-HD",
+      "interpretation": "source_scripts_logs_only_no_input_dataset_blob_or_release",
+      "pushed_at": "2026-06-13T20:59:45Z",
+      "release_assets": [],
+      "release_count": 0,
+      "releases_response": {
+        "body_bytes": 2,
+        "body_prefix_hex": "5b5d",
+        "content_length_header": "2",
+        "content_type": "application/json; charset=utf-8",
+        "elapsed_sec": 0.2247268999926746,
+        "error": null,
+        "ok": true,
+        "status": 200,
+        "url": "https://api.github.com/repos/pwrliang/X-HD/releases",
+        "zip_magic_observed": false
+      },
+      "repo_response": {
+        "body_bytes": 4910,
+        "body_prefix_hex": "7b226964223a3930333036373033362c",
+        "content_length_header": "4910",
+        "content_type": "application/json; charset=utf-8",
+        "elapsed_sec": 0.28603600012138486,
+        "error": null,
+        "ok": true,
+        "status": 200,
+        "url": "https://api.github.com/repos/pwrliang/X-HD",
+        "zip_magic_observed": false
+      },
+      "root_data_directory_found": false,
+      "top_level_contents": [
+        ".clang-format",
+        ".gitignore",
+        ".gitmodules",
+        "CMakeLists.txt",
+        "README.md",
+        "cmake/",
+        "expr/",
+        "src/",
+        "thirdparty/",
+        "vcpkg.json"
+      ],
+      "tree_dataset_like_match_count": 281,
+      "tree_likely_input_dataset_blob_found": false,
+      "tree_likely_input_dataset_blobs": [],
+      "tree_path_count": 416,
+      "tree_paths_matching_dataset_or_archive_terms": [
+        {
+          "path": "expr/logs/end2end/clover_gpu/geo/USADetailedWaterBodies.wkt_USACensusBlockGroupBoundaries.wkt.json",
+          "size": 24185,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/clover_gpu/geo/dtl_cnty.wkt_uszipcode.wkt.json",
+          "size": 21586,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/clover_gpu/geo/lakes.bz2.wkt_parks.bz2.wkt.json",
+          "size": 26367,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_001_flair.nii_BraTS20_Validation_033_flair.nii.json",
+          "size": 20726,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_001_t1ce.nii_BraTS20_Validation_116_flair.nii.json",
+          "size": 24471,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_002_t1.nii_BraTS20_Validation_017_t2.nii.json",
+          "size": 25045,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_002_t1.nii_BraTS20_Validation_059_t2.nii.json",
+          "size": 25091,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_002_t1.nii_BraTS20_Validation_122_flair.nii.json",
+          "size": 24523,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_002_t2.nii_BraTS20_Validation_103_t1ce.nii.json",
+          "size": 23767,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_003_flair.nii_BraTS20_Validation_010_flair.nii.json",
+          "size": 21794,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_003_flair.nii_BraTS20_Validation_094_t1.nii.json",
+          "size": 22745,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_003_flair.nii_BraTS20_Validation_115_t1ce.nii.json",
+          "size": 24283,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_003_t1.nii_BraTS20_Validation_085_t2.nii.json",
+          "size": 21867,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_003_t1ce.nii_BraTS20_Validation_082_t2.nii.json",
+          "size": 23958,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_004_flair.nii_BraTS20_Validation_057_t2.nii.json",
+          "size": 21453,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_005_t1.nii_BraTS20_Validation_064_flair.nii.json",
+          "size": 17680,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_005_t1ce.nii_BraTS20_Validation_120_t1ce.nii.json",
+          "size": 25666,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_005_t1ce.nii_BraTS20_Validation_124_flair.nii.json",
+          "size": 22827,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_006_flair.nii_BraTS20_Validation_002_t1ce.nii.json",
+          "size": 24844,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_006_flair.nii_BraTS20_Validation_042_flair.nii.json",
+          "size": 22962,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_006_t2.nii_BraTS20_Validation_109_t1ce.nii.json",
+          "size": 20894,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_007_flair.nii_BraTS20_Validation_041_flair.nii.json",
+          "size": 21446,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_007_t2.nii_BraTS20_Validation_034_t1ce.nii.json",
+          "size": 23534,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_008_t1ce.nii_BraTS20_Validation_094_t2.nii.json",
+          "size": 22402,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_010_t1.nii_BraTS20_Validation_052_t2.nii.json",
+          "size": 20702,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_010_t1ce.nii_BraTS20_Validation_098_t2.nii.json",
+          "size": 21074,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_011_flair.nii_BraTS20_Validation_092_t1ce.nii.json",
+          "size": 18599,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_011_t1.nii_BraTS20_Validation_085_t1.nii.json",
+          "size": 20522,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_011_t1.nii_BraTS20_Validation_090_flair.nii.json",
+          "size": 21086,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_011_t1ce.nii_BraTS20_Validation_123_t1.nii.json",
+          "size": 20135,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_011_t2.nii_BraTS20_Validation_029_t2.nii.json",
+          "size": 25222,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_011_t2.nii_BraTS20_Validation_038_t1ce.nii.json",
+          "size": 22369,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_011_t2.nii_BraTS20_Validation_041_t1.nii.json",
+          "size": 21990,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_013_t1.nii_BraTS20_Validation_046_flair.nii.json",
+          "size": 19764,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_013_t1ce.nii_BraTS20_Validation_011_t2.nii.json",
+          "size": 19563,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_013_t2.nii_BraTS20_Validation_094_flair.nii.json",
+          "size": 20122,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_014_flair.nii_BraTS20_Validation_090_t1ce.nii.json",
+          "size": 20715,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_014_t1ce.nii_BraTS20_Validation_038_t1.nii.json",
+          "size": 22371,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_014_t2.nii_BraTS20_Validation_002_t1.nii.json",
+          "size": 24455,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_014_t2.nii_BraTS20_Validation_121_t2.nii.json",
+          "size": 22781,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_016_t1.nii_BraTS20_Validation_053_t2.nii.json",
+          "size": 23351,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_016_t1ce.nii_BraTS20_Validation_064_t1.nii.json",
+          "size": 16558,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_016_t2.nii_BraTS20_Validation_086_t1.nii.json",
+          "size": 20530,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_017_t1.nii_BraTS20_Validation_009_t1.nii.json",
+          "size": 23519,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_017_t1ce.nii_BraTS20_Validation_017_t1.nii.json",
+          "size": 19148,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_017_t2.nii_BraTS20_Validation_021_flair.nii.json",
+          "size": 20703,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_018_flair.nii_BraTS20_Validation_050_t2.nii.json",
+          "size": 22048,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_018_t1ce.nii_BraTS20_Validation_125_flair.nii.json",
+          "size": 23756,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_018_t2.nii_BraTS20_Validation_087_flair.nii.json",
+          "size": 20913,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_019_flair.nii_BraTS20_Validation_071_t1ce.nii.json",
+          "size": 26196,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_020_t1.nii_BraTS20_Validation_118_t1.nii.json",
+          "size": 23501,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_021_t1.nii_BraTS20_Validation_060_flair.nii.json",
+          "size": 24493,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_021_t1.nii_BraTS20_Validation_122_t1.nii.json",
+          "size": 22759,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_021_t1ce.nii_BraTS20_Validation_008_flair.nii.json",
+          "size": 19706,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_021_t2.nii_BraTS20_Validation_038_t1ce.nii.json",
+          "size": 20122,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_022_t1ce.nii_BraTS20_Validation_113_t1ce.nii.json",
+          "size": 24287,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_023_t1ce.nii_BraTS20_Validation_082_flair.nii.json",
+          "size": 23211,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_025_flair.nii_BraTS20_Validation_008_flair.nii.json",
+          "size": 24084,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_025_t1ce.nii_BraTS20_Validation_029_flair.nii.json",
+          "size": 27079,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_026_t2.nii_BraTS20_Validation_027_t1ce.nii.json",
+          "size": 22177,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_027_flair.nii_BraTS20_Validation_002_t1.nii.json",
+          "size": 20118,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_027_t1ce.nii_BraTS20_Validation_064_flair.nii.json",
+          "size": 15773,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_027_t1ce.nii_BraTS20_Validation_122_t1.nii.json",
+          "size": 20139,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_028_flair.nii_BraTS20_Validation_008_t2.nii.json",
+          "size": 24665,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_028_flair.nii_BraTS20_Validation_032_flair.nii.json",
+          "size": 23694,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_028_t1ce.nii_BraTS20_Validation_073_t1.nii.json",
+          "size": 24296,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_028_t2.nii_BraTS20_Validation_072_t1ce.nii.json",
+          "size": 26702,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_029_flair.nii_BraTS20_Validation_106_flair.nii.json",
+          "size": 25446,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_029_t1.nii_BraTS20_Validation_057_t1.nii.json",
+          "size": 24161,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_029_t1ce.nii_BraTS20_Validation_046_flair.nii.json",
+          "size": 25255,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_030_t1.nii_BraTS20_Validation_028_t1.nii.json",
+          "size": 21252,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_031_flair.nii_BraTS20_Validation_032_t1.nii.json",
+          "size": 20903,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_032_flair.nii_BraTS20_Validation_063_flair.nii.json",
+          "size": 16699,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_032_t1ce.nii_BraTS20_Validation_028_flair.nii.json",
+          "size": 23527,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_033_t1.nii_BraTS20_Validation_051_t2.nii.json",
+          "size": 20309,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_033_t1ce.nii_BraTS20_Validation_001_t1ce.nii.json",
+          "size": 20692,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_033_t1ce.nii_BraTS20_Validation_099_t1.nii.json",
+          "size": 23559,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_033_t2.nii_BraTS20_Validation_106_flair.nii.json",
+          "size": 20479,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_034_t1.nii_BraTS20_Validation_058_t1.nii.json",
+          "size": 22251,
+          "type": "blob"
+        },
+        {
+          "path": "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/BraTS20_Validation_034_t1ce.nii_BraTS20_Validation_052_t2.nii.json",
+          "size": 24886,
+          "type": "blob"
+        }
+      ],
+      "tree_response": {
+        "body_bytes": 119275,
+        "body_prefix_hex": "7b22736861223a223762663431633834",
+        "content_length_header": null,
+        "content_type": "application/json; charset=utf-8",
+        "elapsed_sec": 0.4608817999251187,
+        "error": null,
+        "ok": true,
+        "status": 200,
+        "url": "https://api.github.com/repos/pwrliang/X-HD/git/trees/main?recursive=1",
+        "zip_magic_observed": false
+      }
+    }
+  },
+  "not_allowed": [
+    "claiming the ACM supplement has been inspected unless zip bytes were downloaded",
+    "claiming the ACM supplement contains datasets without inspection",
+    "claiming the ACM supplement contains no useful artifacts without inspection",
+    "claiming exact paper dataset reproduction",
+    "claiming Figure 5 reproduction",
+    "claiming full X-HD paper reproduction",
+    "claiming author-vs-RTDL performance ratio",
+    "running route/POD work as a substitute for missing provenance"
+  ],
+  "pod_usage": {
+    "expected_next": false,
+    "reason": "Public metadata / artifact refresh only.",
+    "used": false
+  },
+  "purpose": "Live refresh public artifact/provenance surfaces after the Water/BG outbox was prepared, before doing more route or POD work.",
+  "schema": "rtdl.paper_reproduction.xhd.goal5432.public_artifact_live_refresh.v1",
+  "status": "public_artifact_refresh_no_new_exact_input_path__acm_supplement_still_uninspected",
+  "stop_loss_gate": {
+    "decision": "PASS: provenance refresh, not app-artifact parity implementation.",
+    "gate_downstream_consumer_reachable": true,
+    "gate_generic_capability_produced": true,
+    "gate_non_app_consumer": "public artifact availability refresh / external provenance decision",
+    "gate_requires_app_specific_logic": false
+  }
+}

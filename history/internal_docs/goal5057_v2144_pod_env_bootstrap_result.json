@@ -1,0 +1,30 @@
+{
+  "cuda_available": true,
+  "cuda_compute_capability": [
+    8,
+    9
+  ],
+  "cuda_device_name": "NVIDIA RTX 4000 Ada Generation",
+  "cuda_home": "/root/rtdl_goal5055_b5ef0e67f/.venv_v2144_pod/lib/python3.12/site-packages/nvidia/cuda_nvcc",
+  "elapsed_sec": 0.691558837890625,
+  "libdevice": "/root/rtdl_goal5055_b5ef0e67f/.venv_v2144_pod/lib/python3.12/site-packages/nvidia/cuda_nvcc/nvvm/libdevice/libdevice.10.bc",
+  "minimal_cuda_kernel_result": [
+    2
+  ],
+  "not_authorized": {
+    "author_parity_claim": true,
+    "device_group_by_public_ready": true,
+    "public_release_ready": true,
+    "true_zero_copy_claim": true,
+    "v2_14_4_speedup_claim": true
+  },
+  "numba_version": "0.61.2",
+  "numpy_version": "2.2.6",
+  "nvvm": "libnvvm.so",
+  "overall_status": "pass",
+  "ptxas_version": "ptxas: NVIDIA (R) Ptx optimizing assembler\nCopyright (c) 2005-2024 NVIDIA Corporation\nBuilt on Thu_Mar_28_02:14:54_PDT_2024\nCuda compilation tools, release 12.4, V12.4.131\nBuild cuda_12.4.r12.4/compiler.34097967_0",
+  "python_executable": "/root/rtdl_goal5055_b5ef0e67f/.venv_v2144_pod/bin/python",
+  "python_version": "3.12.3 (main, Aug 14 2025, 17:47:21) [GCC 13.3.0]",
+  "schema": "rtdl.goal5057.v2_14_4_pod_env_bootstrap.v1",
+  "venv": ".venv_v2144_pod"
+}

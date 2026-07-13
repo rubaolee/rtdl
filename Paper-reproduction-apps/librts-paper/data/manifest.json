@@ -1,0 +1,672 @@
+{
+  "paper": {
+    "title": "LibRTS: A Spatial Indexing Library by Ray Tracing",
+    "venue": "PPoPP 2025",
+    "doi": "10.1145/3710848.3710850",
+    "url": "https://gengl.me/publications/ppopp25/",
+    "authors": [
+      "Liang Geng",
+      "Rubao Lee",
+      "Xiaodong Zhang"
+    ]
+  },
+  "author_artifact": {
+    "repository": "https://github.com/RTSpatial/RTSpatial",
+    "branch": "main",
+    "commit": "52509e8022abeab722f5a9a89d1917e8b481defe",
+    "release": "Zenodo v2, DOI 10.5281/zenodo.14209767",
+    "archive": "PPoPPAE-v2.tar.gz",
+    "archive_md5": "89e589f086038f1cd3af9e3ed67da8c8",
+    "archive_published_size": "23.1 GB",
+    "build_notes": "Linux; CMake 3.27+; CUDA 12+; OptiX 8.0; NVIDIA driver 535+; repository default CUDA architecture 75"
+  },
+  "author_contract": {
+    "public_type": "rtspatial::SpatialIndex<coord_t, 2>",
+    "lifecycle": [
+      "Init",
+      "Insert",
+      "Query",
+      "Update",
+      "Delete",
+      "Clear"
+    ],
+    "query_operations": [
+      "point_contains",
+      "range_contains",
+      "range_intersects"
+    ],
+    "paper_features_not_yet_gated": [
+      "Ray Multicast load balancing",
+      "paper performance figures"
+    ]
+  },
+  "rtdl_program": {
+    "entrypoints": [
+      "Paper-reproduction-apps/librts-paper/librts_reproduction.py",
+      "Paper-reproduction-apps/librts-paper/run_same_input_point_contains_gate.py",
+      "Paper-reproduction-apps/librts-paper/run_same_input_range_contains_gate.py",
+      "Paper-reproduction-apps/librts-paper/run_same_input_range_intersects_gate.py",
+      "Paper-reproduction-apps/librts-paper/run_same_input_pip_gate.py",
+      "Paper-reproduction-apps/librts-paper/run_same_input_representative_pip_gate.py",
+      "Paper-reproduction-apps/librts-paper/build_full_paper_target_availability_audit.py",
+      "Paper-reproduction-apps/librts-paper/build_author_paper_log_denominator_matrix.py",
+      "Paper-reproduction-apps/librts-paper/build_dataset_acquisition_decision.py",
+      "Paper-reproduction-apps/librts-paper/acquire_exact_ae_archive.py",
+      "Paper-reproduction-apps/librts-paper/extract_verified_ae_archive.py",
+      "Paper-reproduction-apps/librts-paper/build_pod_author_environment_summary.py",
+      "Paper-reproduction-apps/librts-paper/run_exact_point_contains_count_gate.py",
+      "Paper-reproduction-apps/librts-paper/run_exact_point_contains_batch_gate.py",
+      "Paper-reproduction-apps/librts-paper/run_exact_point_contains_count_only_gate.py",
+      "Paper-reproduction-apps/librts-paper/audit_exact_figure6_point_contains_denominator.py",
+      "Paper-reproduction-apps/librts-paper/run_exact_point_contains_prepared_phase_gate.py",
+      "Paper-reproduction-apps/librts-paper/run_exact_point_contains_prepared_phase_batch.py",
+      "Paper-reproduction-apps/librts-paper/run_exact_point_contains_prepared_phase_columns_gate.py",
+      "Paper-reproduction-apps/librts-paper/run_exact_point_contains_prepared_phase_columns_repeat.py",
+      "Paper-reproduction-apps/librts-paper/build_exact_aabb_column_cache.py",
+      "Paper-reproduction-apps/librts-paper/audit_exact_archive_operation_inventory.py",
+      "Paper-reproduction-apps/librts-paper/extract_verified_operation_subset.py",
+      "Paper-reproduction-apps/librts-paper/run_exact_range_contains_count_gate.py",
+      "Paper-reproduction-apps/librts-paper/run_exact_range_intersects_count_gate.py",
+      "Paper-reproduction-apps/librts-paper/extract_verified_operation_batch.py",
+      "Paper-reproduction-apps/librts-paper/run_exact_range_intersects_batch.py",
+      "Paper-reproduction-apps/librts-paper/run_goal5504_librts_range_intersects_semantics_fixtures.py",
+      "Paper-reproduction-apps/librts-paper/build_goal5505_librts_runtime_semantics_gate.py",
+      "Paper-reproduction-apps/librts-paper/generate_goal5506_librts_scalable_semantics_probe.py",
+      "Paper-reproduction-apps/librts-paper/build_goal5506_librts_scalable_semantics_gate.py",
+      "Paper-reproduction-apps/librts-paper/run_goal5507_rtdl_range_intersects_probe.py",
+      "Paper-reproduction-apps/librts-paper/build_goal5507_librts_generic_range_intersects_fix_gate.py",
+      "Paper-reproduction-apps/librts-paper/build_goal5508_librts_degenerate_validity_fix_gate.py",
+      "Paper-reproduction-apps/librts-paper/build_goal5509_librts_range_intersects_next_batch_gate.py",
+      "Paper-reproduction-apps/librts-paper/build_goal5511_librts_range_intersects_select0001_gate.py",
+      "Paper-reproduction-apps/librts-paper/build_goal5512_librts_range_intersects_capacity_resolution_gate.py",
+      "Paper-reproduction-apps/librts-paper/build_goal5513_librts_range_intersects_select001_gate.py",
+      "Paper-reproduction-apps/librts-paper/build_goal5514_librts_range_intersects_select001_resolution_gate.py",
+      "Paper-reproduction-apps/librts-paper/build_goal5516_range_intersects_coverage_ledger.py",
+      "Paper-reproduction-apps/librts-paper/build_goal5515_librts_range_intersects_select001_correction_gate.py",
+      "Paper-reproduction-apps/librts-paper/build_goal5517_librts_range_contains_batch_gate.py",
+      "Paper-reproduction-apps/librts-paper/tools/run_goal5517_range_contains_single_case.py",
+      "Paper-reproduction-apps/librts-paper/tools/run_goal5509_remote_batch.py",
+      "Paper-reproduction-apps/librts-paper/tools/run_goal5509_single_case.py",
+      "Paper-reproduction-apps/librts-paper/tools/extend_goal5511_exact_extraction.py",
+      "Paper-reproduction-apps/librts-paper/tools/goal5508_author_mbr_audit.cpp",
+      "Paper-reproduction-apps/librts-paper/tools/goal5508_rtdl_mbr_audit.py",
+      "Paper-reproduction-apps/librts-paper/tools/goal5508_degenerate_aabb_probe.py"
+    ],
+    "public_apis_exercised": [
+      "prepare_aabb_index_2d",
+      "prepare_aabb_index_2d_columns",
+      "query_aabb_index_2d",
+      "expanded_aabb_point_membership_rows_2d",
+      "aabb_intersection_pair_rows_2d",
+      "prepare_mutable_aabb_index_2d",
+      "RTDL language traverse -> point_in_polygon -> emit",
+      "run_optix"
+    ],
+    "experimental_apis_exercised": [],
+    "app_owned_assets": [
+      "author source checkout/build wrapper",
+      "WKT fixture and dataset provenance",
+      "author output parser/comparator",
+      "author PIP row-dump comparator instrumentation",
+      "author-compatible float32/sentinel PNPOLY Numba adapter",
+      "mutation workload policy",
+      "paper figure and performance-regime selection"
+    ],
+    "historical_asset_mapping": {
+      "benchmark": "examples/current/research_benchmarks/librts_spatial_index/",
+      "generic_core": "src/rtdsl/aabb_index.py",
+      "historical_benchmark_is_paper_reproduction": false
+    },
+    "backend_scope": {
+      "local_semantic_reference": "cpu",
+      "accelerated_pod_backend": "optix",
+      "embree_in_scope": false,
+      "hiprt_in_scope": false
+    }
+  },
+  "reproduction_scope": {
+    "status": "scoped_correctness_and_system_extraction_complete__full_paper_not_reproduced",
+    "detail_status": "bounded_and_representative_gates_matched__official_archive_verified__exact_figure6_point_contains_count_matrix_6_of_6_matched__author_query_time_denominator_audited__goals5482_5484_externally_reviewed_and_approved__goal5485_prepared_phase_pod_probe_matched__goal5486_prepared_phase_matrix_6_of_6_matched__goal5487_generic_columnar_frontdoor_pod_matched__goal5488_dtl_lakes_columnar_count_matched__goals5485_5491_externally_reviewed_and_approved__goal5492_operation_inventory_complete__goal5493_range_contains_dtl_matched__goal5494_cache_app_owned__goal5495_current_line_closed__goal5496_range_intersects_dtl_matched__goal5497_range_intersects_batch_two_cases_matched__goal5498_range_intersects_bounded_closeout_recorded__goal5499_range_intersects_three_cases_matched__goal5500_six_geometry_range_intersects_batch_attempted_3_matched_2_count_mismatch_1_author_oom__goals5492_5500_externally_reviewed_as_bounded_evidence__goal5501_mismatch_diagnostic_completed_rtdl_matches_cpu_float32_prefix_oracle__goal5501_current_range_intersects_line_closed_at_bounded_boundary__goal5502_author_validity_gate_completed_prefix_only_rtdl_matches_selected_generic_contract_in_all_cases__goal5507_generic_float32_range_intersects_fix_matches_author_on_bounded_and_8192_pair_probes__new_full_input_or_pair_capacity_work_is_new_scope__bounded_project_closeout_ready__full_paper_not_reproduced__goal5508_generic_float32_degenerate_indexed_aabb_fix_matches_both_disagreeing_official_prefixes__goal5509_next_exact_range_intersects_batch_four_of_six_checkpointed_two_large_cases_unresolved__goal5510_bidirectional_degenerate_validity_contract_documented__goal5511_exact_range_intersects_select0001_four_of_four_count_matches__goal5512_goal5509_large_case_states_resolved_one_author_capacity_failure_one_count_match__goal5513_exact_range_intersects_select001_four_of_four_count_matches__goal5514_select001_six_geometry_states_resolved_five_matches_one_author_capacity_failure__full_matrix_still_not_claimed__goals5519_5525_externally_reviewed_and_approved__librts_workstream_closed_at_scoped_correctness_and_system_extraction",
+    "workloads": [
+      "tiny point_contains relation/count",
+      "direction-discriminating tiny range_contains count",
+      "predicate-discriminating tiny range_intersects count and RTDL rows",
+      "deterministic insert/update/delete/insert/clear mutation count sequence",
+      "MBR-vs-polygon-refine discriminating tiny PIP count and RTDL exact rows",
+      "Level-B ArcGIS Block Groups simple64 with author-generated 100K point queries and full pair-row equality",
+      "Ray-Multicast paper/source feasibility audit plus app-neutral partitioned-traversal reference contract",
+      "same-host generic partitioned AABB native spike across four deterministic workload shapes; exact rows, no material end-to-end win, prototype reverted",
+      "six official Figure-6 point_contains geometry/query pairs with exact same-input count agreement; pair rows and Figure-6 reproduction remain unclaimed",
+      "six exact official range_intersects geometry/query pairs attempted; three count matches, two count disagreements, one author CUDA OOM; no complete matrix claim",
+      "Goal5502 same-source prefix author-validity decision using an independent inclusive float32 AABB contract",
+      "Goal5507 generic float32 RayParams interval and two-direction range-intersects fix on 5-case and 8,192-pair same-input probes",
+      "Goal5508 generic float32-degenerate indexed AABB diagnosis and two previously disagreeing official range-intersects prefixes",
+      "Goal5509 second exact range-intersects query family: four of six cases checkpointed as count matches; two large cases unresolved after batch resource termination"
+    ],
+    "comparator": "pinned author RTSpatial result counts for public query/mutation gates; app-instrumented author PIP pair rows versus RTDL canonical pair rows for the Goal5467 Level-B representative gate",
+    "input_policy": "app-owned bounded/Level-B fixtures plus exact official archive members identified by verified archive MD5, safe inventory, member path, size, and SHA-256; subset extraction is used because archive plus the full 88.23GB expansion exceeds the POD quota",
+    "output_policy": "compare canonical relation rows when available; for the exact dtl_cnty point-contains gate compare count because the standard author query binary exposes count but not pair rows",
+    "tolerance": "exact integer relation/count equality"
+  },
+  "performance": {
+    "status": "no paper-app performance claim",
+    "regimes": []
+  },
+  "evidence": {
+    "tests": [
+      "tests/goal5453_librts_paper_reproduction_scaffold_test.py",
+      "tests/goal5454_librts_same_input_point_contains_gate_test.py",
+      "tests/goal5455_librts_same_input_range_contains_gate_test.py",
+      "tests/goal5456_librts_same_input_range_intersects_gate_test.py",
+      "tests/goal5457_librts_mutation_contract_audit_test.py",
+      "tests/goal5458_generic_mutable_aabb_index_contract_test.py",
+      "tests/goal5459_generic_mutable_aabb_optix_snapshot_rebuild_test.py",
+      "tests/goal5460_librts_same_input_mutation_gate_test.py",
+      "tests/goal5461_generic_optix_aabb_native_refit_contract_test.py",
+      "tests/goal5462_generic_optix_aabb_sparse_refit_gate_test.py",
+      "tests/goal5463_generic_optix_aabb_refit_rollback_fault_gate_test.py",
+      "tests/goal5464_librts_pip_contract_audit_test.py",
+      "tests/goal5465_librts_same_input_pip_gate_test.py",
+      "tests/goal5466_librts_representative_pip_dataset_test.py",
+      "tests/goal5467_librts_representative_same_input_pip_gate_test.py",
+      "tests/goal5468_librts_ray_multicast_feasibility_audit_test.py",
+      "tests/goal5469_partitioned_traversal_fanout_contract_test.py",
+      "tests/goal5470_partitioned_aabb_native_spike_no_go_test.py",
+      "tests/goal5471_5472_librts_full_target_and_author_log_matrix_test.py",
+      "tests/goal5474_librts_resume_safe_dataset_acquisition_test.py",
+      "tests/goal5475_librts_safe_archive_extraction_test.py",
+      "tests/goal5477_librts_author_pod_environment_test.py",
+      "tests/goal5478_librts_exact_point_contains_runner_contract_test.py",
+      "tests/goal5480_librts_safe_subset_extraction_test.py",
+      "tests/goal5482_librts_exact_point_contains_batch_gate_test.py",
+      "tests/goal5483_librts_exact_point_contains_count_only_gate_test.py",
+      "tests/goal5484_librts_exact_figure6_denominator_audit_test.py",
+      "tests/goal5485_librts_exact_point_contains_prepared_phase_gate_test.py",
+      "tests/goal5486_librts_prepared_phase_batch_test.py",
+      "tests/goal5487_generic_aabb_columnar_frontdoor_test.py",
+      "tests/goal5488_librts_prepared_phase_columnar_gate_test.py",
+      "tests/goal5489_librts_prepared_phase_repeat_test.py",
+      "tests/goal5492_librts_exact_archive_operation_inventory_test.py",
+      "tests/goal5493_librts_verified_operation_subset_test.py",
+      "tests/goal5493_librts_exact_range_contains_count_gate_test.py",
+      "tests/goal5496_librts_exact_range_intersects_count_gate_test.py",
+      "tests/goal5497_librts_exact_range_intersects_batch_evidence_test.py",
+      "tests/goal5498_librts_exact_range_intersects_line_closeout_test.py",
+      "tests/goal5499_librts_exact_range_intersects_three_case_batch_test.py",
+      "tests/goal5500_librts_exact_range_intersects_batch_tools_test.py",
+      "tests/goal5500_librts_exact_range_intersects_batch_result_test.py",
+      "tests/goal5501_librts_range_intersects_mismatch_diagnostic_test.py",
+      "tests/goal5501_librts_mismatch_diagnostic_result_test.py",
+      "tests/goal5502_librts_author_validity_gate_test.py",
+      "tests/goal5502_librts_author_validity_result_test.py",
+      "tests/goal5503_librts_author_contract_audit_test.py",
+      "tests/goal5503_librts_author_contract_audit_result_test.py",
+      "tests/goal5504_librts_range_intersects_semantics_fixture_test.py",
+      "tests/goal5504_librts_range_intersects_semantics_fixture_result_test.py",
+      "tests/goal5505_librts_runtime_semantics_gate_test.py",
+      "tests/goal5506_librts_scalable_semantics_gate_test.py",
+      "tests/goal5507_librts_generic_range_intersects_fix_test.py",
+      "tests/goal5507_librts_generic_range_intersects_fix_result_test.py",
+      "tests/goal5508_librts_generic_float32_degenerate_aabb_validity_fix_test.py",
+      "tests/goal5509_librts_range_intersects_next_batch_test.py",
+      "tests/goal5511_librts_range_intersects_select0001_test.py"
+      ,"tests/goal5512_librts_range_intersects_capacity_resolution_test.py"
+      ,"tests/goal5513_librts_range_intersects_select001_test.py"
+      ,"tests/goal5514_librts_range_intersects_select001_resolution_test.py"
+      ,"tests/goal5515_librts_range_intersects_select001_correction_test.py"
+      ,"tests/goal5516_librts_range_intersects_coverage_ledger_test.py"
+      ,"tests/goal5517_librts_exact_range_contains_batch_test.py"
+      ,"tests/goal5518_librts_range_contains_coverage_ledger_test.py"
+      ,"tests/goal5519_librts_operation_scoped_aabb_validity_fix_test.py"
+      ,"tests/goal5520_librts_parks_europe_range_contains_cardinality_test.py"
+      ,"tests/goal5521_librts_parks_bz2_range_contains_cardinality_test.py"
+      ,"tests/goal5522_librts_verified_batch_extension_test.py"
+      ,"tests/goal5522_librts_parks_bz2_point_contains_cardinality_test.py"
+      ,"tests/goal5523_librts_parks_europe_point_contains_cardinality_test.py"
+      ,"tests/goal5524_librts_system_value_closeout_test.py"
+      ,"tests/goal5525_librts_internal_closeout_packet_test.py"
+    ],
+    "result_artifacts": [
+      "Paper-reproduction-apps/librts-paper/results/tiny_point_contains_rtdl_reference.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5454_same_input_point_contains.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5455_same_input_range_contains.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5456_same_input_range_intersects.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5460_same_input_mutation.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5461_native_refit_mutation.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5462_native_sparse_refit_mutation.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5465_same_input_pip.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5467_representative_same_input_pip.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5467_representative_pip_semantics_diagnostic.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5468_5469_ray_multicast_feasibility.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5470_partitioned_range_probe_sparse_gtx1070.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5470_partitioned_range_probe_gtx1070.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5470_partitioned_range_probe_large_gtx1070.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5470_partitioned_range_probe_dense_gtx1070.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5471_full_paper_target_availability.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5472_author_paper_log_denominators.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5473_dataset_acquisition_decision.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5474_resume_safe_acquisition_plan.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5475_safe_extraction_plan.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5476_pod_acquisition_plan.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5477_author_pod_environment.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5479_pod_download_verified.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5479_archive_inventory.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5480_point_contains_subset_extraction.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5481_exact_point_contains.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5482_point_contains_remaining_subset.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5482_exact_point_contains_remaining_batch.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5484_exact_figure6_point_contains_denominator.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5485_dtl_cnty_prepared_phase.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5486_prepared_phase_batch.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5486_dtl_cnty_prepared_phase.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5486_USACensusBlockGroupBoundaries_prepared_phase.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5486_USADetailedWaterBodies_prepared_phase.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5486_parks_Europe_prepared_phase.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5486_lakes_bz2_prepared_phase.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5486_parks_bz2_prepared_phase.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5487_generic_aabb_columnar_pod_gate.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5488_dtl_cnty_prepared_phase_columns.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5488_lakes_bz2_prepared_phase_columns.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5489_dtl_cnty_repeat.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5489_lakes_bz2_repeat.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5490_dtl_cnty_numeric_loader.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5491_lakes_cache_build.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5491_lakes_bz2_cache_repeat.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5492_exact_archive_operation_inventory.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5493_range_contains_dtl_extraction.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5493_range_contains_dtl_gate.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5496_range_intersects_dtl_cnty_extraction.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5496_range_intersects_dtl_cnty_gate.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5497_range_intersects_dtl_cnty_select0001_extraction.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5497_range_intersects_dtl_cnty_select0001_gate.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5499_range_intersects_dtl_cnty_select0001_extraction.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5499_range_intersects_dtl_cnty_select0001_gate.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5500_range_intersects_batch_extraction.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5500_range_intersects_batch_gate.json",
+      "Paper-reproduction-apps/librts-paper/results/goal5501/mismatch_diagnostic.json",
+      "Paper-reproduction-apps/librts-paper/results/goal5501/parks_bz2_capacity.json",
+      "Paper-reproduction-apps/librts-paper/results/goal5502/author_validity_gate.json",
+      "Paper-reproduction-apps/librts-paper/results/goal5502/mismatch_diagnostic_250k.json",
+      "Paper-reproduction-apps/librts-paper/results/goal5503_author_contract_audit.json",
+      "Paper-reproduction-apps/librts-paper/results/goal5504_range_intersects_semantics_fixtures.json",
+      "Paper-reproduction-apps/librts-paper/results/goal5505_runtime_observations.json",
+      "Paper-reproduction-apps/librts-paper/results/goal5505_runtime_semantics_gate.json",
+      "Paper-reproduction-apps/librts-paper/data/goal5506_scalable_probe/goal5506_scalable_semantics_oracle.json",
+      "Paper-reproduction-apps/librts-paper/results/goal5506_author_stdout.txt",
+      "Paper-reproduction-apps/librts-paper/results/goal5506_rtdl.json",
+      "Paper-reproduction-apps/librts-paper/results/goal5506_scalable_semantics_gate.json",
+      "Paper-reproduction-apps/librts-paper/results/goal5507_author5505.txt",
+      "Paper-reproduction-apps/librts-paper/results/goal5507_author5506.txt",
+      "Paper-reproduction-apps/librts-paper/results/goal5507_rtdl5505_final.json",
+      "Paper-reproduction-apps/librts-paper/results/goal5507_rtdl5506_final.json",
+      "Paper-reproduction-apps/librts-paper/results/goal5507_librtdl_optix.so",
+      "Paper-reproduction-apps/librts-paper/results/goal5507_generic_range_intersects_fix_gate.json",
+      "Paper-reproduction-apps/librts-paper/results/goal5508_generic_float32_degenerate_aabb_validity_fix_gate.json",
+      "Paper-reproduction-apps/librts-paper/results/goal5508_official_parks_Europe_250k_fixed.json",
+      "Paper-reproduction-apps/librts-paper/results/goal5508_official_lakes_bz2_250k_fixed.json",
+      "Paper-reproduction-apps/librts-paper/results/goal5508_parks_degenerate_fixed2.json",
+      "Paper-reproduction-apps/librts-paper/results/goal5508_lakes_degenerate_fixed2.json",
+      "Paper-reproduction-apps/librts-paper/results/goal5508_parks_degenerate.wkt",
+      "Paper-reproduction-apps/librts-paper/results/goal5508_lakes_degenerate.wkt",
+      "Paper-reproduction-apps/librts-paper/results/goal5508_librtdl_optix.so",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5509_range_intersects_batch_extraction.json",
+      "Paper-reproduction-apps/librts-paper/results/goal5509_exact_range_intersects_next_batch_gate.json",
+      "Paper-reproduction-apps/librts-paper/results/goal5509_parks_Europe_select0001_10000.json",
+      "Paper-reproduction-apps/librts-paper/results/goal5509_dtl_cnty_select0001_10000.json",
+      "Paper-reproduction-apps/librts-paper/results/goal5509_USACensusBlockGroupBoundaries_select0001_10000.json",
+      "Paper-reproduction-apps/librts-paper/results/goal5509_USADetailedWaterBodies_select0001_10000.json",
+      "Paper-reproduction-apps/librts-paper/results/goal5510_bidirectional_degenerate_validity_regression.json",
+      "Paper-reproduction-apps/librts-paper/results/librts_goal5511_range_intersects_batch_extraction.json",
+      "Paper-reproduction-apps/librts-paper/results/goal5511_exact_range_intersects_select0001_gate.json",
+      "Paper-reproduction-apps/librts-paper/results/goal5511_parks_Europe_select_0.001_10000.json",
+      "Paper-reproduction-apps/librts-paper/results/goal5511_dtl_cnty_select_0.001_10000.json",
+      "Paper-reproduction-apps/librts-paper/results/goal5511_USACensusBlockGroupBoundaries_select_0.001_10000.json",
+      "Paper-reproduction-apps/librts-paper/results/goal5511_USADetailedWaterBodies_select_0.001_10000.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5512_parks_bz2_select0001_10000.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5512_lakes_bz2_select0001_10000.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5512_range_intersects_capacity_resolution_gate.json"
+      ,"Paper-reproduction-apps/librts-paper/results/librts_goal5513_range_intersects_batch_extraction.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5513_exact_range_intersects_select001_gate.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5513_parks_Europe_select_0.01_10000.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5513_dtl_cnty_select_0.01_10000.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5513_USACensusBlockGroupBoundaries_select_0.01_10000.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5513_USADetailedWaterBodies_select_0.01_10000.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5514_lakes_bz2_select_0.01_10000.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5514_parks_bz2_select001_10000.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5514_exact_range_intersects_select001_resolution_gate.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5515_range_intersects_select001_correction_gate.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5516_range_intersects_coverage_ledger.json"
+      ,"Paper-reproduction-apps/librts-paper/results/librts_goal5517_range_contains_batch_extraction.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5517_parks_Europe_range_contains_100000.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5517_dtl_cnty_range_contains_100000.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5517_USACensusBlockGroupBoundaries_range_contains_100000.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5517_USADetailedWaterBodies_range_contains_100000.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5517_exact_range_contains_batch_gate.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5518_range_contains_coverage_ledger.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5519_lakes_bz2_range_contains_100000.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5519_lakes_range_contains_semantic_audit.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5519_lakes_collapsed_subset_gate.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5519_lakes_cached_pre_strict.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5519_lakes_cached_strict.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5519_lakes_range_contains_operation_scoped_fix.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5519_operation_scoped_validity_probe.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5519_lakes_range_intersects_prefix_regression.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5519_lakes_range_intersects_degenerate_regression.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5519_operation_scoped_aabb_validity_fix_gate.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5520_parks_europe_cardinality_pod_raw.json"
+      ,"Paper-reproduction-apps/librts-paper/results/librts_goal5520_parks_europe_cardinality_extraction.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5520_parks_europe_cache_build.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5520_parks_europe_cache_metadata.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5520_parks_europe_range_contains_cardinality_gate.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5521_parks_bz2_author_capacity_precheck.json"
+      ,"Paper-reproduction-apps/librts-paper/results/librts_goal5521_parks_bz2_cardinality_extraction.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5521_parks_bz2_cache_build.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5521_parks_bz2_cache_metadata.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5521_parks_bz2_cardinality_pod_raw.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5521_parks_bz2_range_contains_cardinality_gate.json"
+      ,"Paper-reproduction-apps/librts-paper/results/librts_goal5522_parks_bz2_point_cardinality_extraction.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5522_parks_bz2_point_cardinality_pod_raw.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5522_parks_bz2_point_contains_cardinality_gate.json"
+      ,"Paper-reproduction-apps/librts-paper/results/librts_goal5523_parks_europe_point_cardinality_extraction.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5523_parks_europe_point_cache_build.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5523_parks_europe_point_cache_metadata.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5523_parks_europe_point_cardinality_pod_raw.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5523_parks_europe_point_contains_cardinality_gate.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5524_librts_system_value_closeout.json"
+      ,"Paper-reproduction-apps/librts-paper/results/goal5525_librts_internal_closeout_packet.json"
+    ]
+  },
+  "boundaries": {
+    "bounded_same_input_point_contains_count_claimed": true,
+    "bounded_same_input_range_contains_count_claimed": true,
+    "bounded_same_input_range_intersects_count_claimed": true,
+    "bounded_same_input_mutation_count_sequence_claimed": true,
+    "bounded_same_input_pip_count_claimed": true,
+    "level_b_representative_same_input_pip_relation_claimed": true,
+    "ray_multicast_source_feasibility_audited": true,
+    "generic_partitioned_traversal_reference_claimed": true,
+    "partitioned_traversal_native_spike_no_go_recorded": true,
+    "full_paper_target_and_author_log_denominators_audited": true,
+    "exact_dataset_download_deferred_to_suitable_host": false,
+    "resume_safe_exact_archive_acquisition_gate_ready": true,
+    "exact_archive_download_executed": true,
+    "exact_archive_verified": true,
+    "exact_archive_extracted": false,
+    "exact_archive_subset_extracted": true,
+    "safe_archive_inventory_and_extraction_contract_ready": true,
+    "real_archive_inventory_completed": true,
+    "acquisition_and_execution_resource_gates_separate": true,
+    "pod_archive_download_launched": true,
+    "pod_archive_download_completed": true,
+    "official_archive_size_and_md5_verified": true,
+    "official_archive_safe_inventory_completed": true,
+    "pinned_author_gpu_environment_ready": true,
+    "complete_paper_matrix_gpu_capacity_claimed": false,
+    "exact_point_contains_runner_contract_ready": true,
+    "exact_point_contains_result_claimed": true,
+    "exact_point_contains_same_input_count_matched": true,
+    "exact_point_contains_input_members_available": true,
+    "exact_point_contains_figure6_count_matrix_case_count": 6,
+    "exact_point_contains_figure6_count_matrix_matched_case_count": 6,
+    "exact_point_contains_count_only_gate_ready": true,
+    "exact_figure6_point_contains_denominator_audited": true,
+    "exact_point_contains_pointwise_relation_claimed": false,
+    "exact_point_contains_relation_evidence_reference": "Paper-reproduction-apps/librts-paper/results/librts_goal5467_representative_same_input_pip.json",
+    "goals5482_5484_externally_reviewed_and_approved": true,
+    "goal5485_prepared_phase_gate_contract_ready": true,
+    "goal5485_prepared_phase_pod_probe_pending": false,
+    "goal5485_prepared_phase_pod_probe_matched": true,
+    "goal5485_prepared_phase_result_artifact_recorded": true,
+    "goal5486_prepared_phase_batch_completed": true,
+    "goal5486_prepared_phase_batch_matched": true,
+    "goal5486_prepared_phase_batch_case_count": 6,
+    "goal5486_prepared_phase_batch_matched_case_count": 6,
+    "goal5486_prepared_phase_batch_result_artifact_recorded": true,
+    "goal5487_generic_aabb_columnar_contract_implemented": true,
+    "goal5487_generic_aabb_columnar_local_tests_passed": true,
+    "goal5487_generic_aabb_columnar_pod_tiny_gate_matched": true,
+    "goal5487_generic_aabb_columnar_result_artifact_recorded": true,
+    "goal5488_columnar_loader_dtl_cnty_matched": true,
+    "goal5488_columnar_loader_lakes_bz2_matched": true,
+    "goal5488_columnar_loader_result_artifacts_recorded": true,
+    "goal5489_same_process_repeat_contract_implemented": true,
+    "goal5489_same_process_repeat_pod_measurement_pending": false,
+    "goal5489_same_process_repeat_matched": true,
+    "goal5489_same_process_repeat_case_count": 2,
+    "goal5489_same_process_repeat_result_artifact_recorded": true,
+    "goal5489_performance_ratio_authorized": false,
+    "goal5490_numeric_wkt_loader_probe_completed": true,
+    "goal5490_numeric_wkt_loader_speedup_demonstrated": false,
+    "goal5490_numeric_wkt_loader_result_artifact_recorded": true,
+    "goal5491_exact_aabb_cache_contract_implemented": true,
+    "goal5491_exact_lakes_cache_reuse_matched": true,
+    "goal5491_cache_result_artifacts_recorded": true,
+    "goal5491_end_to_end_speedup_claimed": false,
+    "goals5485_5491_externally_reviewed_and_approved": true,
+    "goal5492_exact_operation_inventory_completed": true,
+    "goal5492_exact_point_contains_pair_count": 14,
+    "goal5492_exact_range_contains_pair_count": 14,
+    "goal5492_exact_range_intersects_pair_count": 42,
+    "goal5492_exact_pip_pair_count": 0,
+    "goal5492_exact_mutation_pair_count": 0,
+    "goal5493_exact_range_contains_dtl_cnty_matched": true,
+    "goal5493_result_artifacts_recorded": true,
+    "goal5494_cache_system_api_promoted": false,
+    "goal5494_cache_app_owned_decision_recorded": true,
+    "goal5495_current_exact_aabb_line_closeout_recorded": true,
+    "goal5496_exact_range_intersects_dtl_cnty_matched": true,
+    "goal5496_result_artifacts_recorded": true,
+    "goal5497_exact_range_intersects_batch_matched": true,
+    "goal5497_exact_range_intersects_batch_case_count": 2,
+    "goal5497_result_artifacts_recorded": true,
+    "goal5498_range_intersects_bounded_closeout_recorded": true,
+    "goal5499_exact_range_intersects_three_case_batch_matched": true,
+    "goal5499_result_artifacts_recorded": true,
+    "goal5500_exact_range_intersects_six_geometry_batch_attempted": true,
+    "goal5500_exact_range_intersects_six_geometry_pair_count": 6,
+    "goal5500_exact_range_intersects_six_geometry_matched_case_count": 3,
+    "goal5500_exact_range_intersects_six_geometry_count_mismatch_case_count": 2,
+    "goal5500_exact_range_intersects_author_oom_case_count": 1,
+    "goal5500_result_artifacts_recorded": true,
+    "goal5500_complete_range_intersects_matrix_claimed": false,
+    "goals5492_5500_externally_reviewed_as_bounded_evidence": true,
+    "goal5500_range_intersects_line_open_pending_diagnosis": false,
+    "goal5501_range_intersects_mismatch_diagnosis_required": false,
+    "goal5501_mismatch_diagnostic_completed": true,
+    "goal5501_rtdl_matches_cpu_float32_prefix_oracle": true,
+    "goal5501_root_cause_fully_resolved": false,
+    "goal5501_range_intersects_line_closeout_recorded": true,
+    "goal5501_new_scope_required_for_full_input_or_capacity_work": true,
+    "goal5501_bounded_project_closeout_ready": true,
+    "goal5502_author_validity_gate_completed": true,
+    "goal5502_large_prefix_diagnostic_250k_recorded": true,
+    "goal5502_author_validity_gate_case_count": 5,
+    "goal5502_rtdl_matches_selected_generic_contract_case_count": 5,
+    "goal5502_author_diverges_selected_generic_contract_case_count": 4,
+    "goal5502_both_match_selected_generic_contract_case_count": 1,
+    "goal5502_author_validity_proven_for_full_inputs": false,
+    "goal5502_rtdl_full_input_fix_authorized": false,
+    "goal5502_author_specific_rtdl_core_behavior_authorized": false,
+    "goal5502_full_input_adjudication": false,
+    "goal5503_author_contract_source_audited": true,
+    "goal5503_gpu_rayparams_contract_audited": true,
+    "goal5503_cpu_reference_gpu_equivalence_proven": false,
+    "goal5503_rtdl_core_change_authorized": false,
+    "goal5504_semantics_fixture_diagnostic_completed": true,
+    "goal5504_discriminating_case_count": 1,
+    "goal5504_author_gpu_runtime_executed": false,
+    "goal5504_cpu_gpu_equivalence_proven": false,
+    "goal5504_rtdl_core_change_authorized": false,
+    "goal5505_runtime_semantics_gate_completed": true,
+    "goal5505_same_input_pod_fixture_case_count": 5,
+    "goal5505_author_runtime_total": 5,
+    "goal5505_rtdl_runtime_total": 4,
+    "goal5505_author_rtdl_mismatch_case_count": 1,
+    "goal5505_source_emulation_matches_author_runtime": true,
+    "goal5505_full_input_root_cause_resolved": false,
+    "goal5505_rtdl_core_change_authorized": false,
+    "goal5506_scalable_runtime_semantics_gate_completed": true,
+    "goal5506_scalable_probe_pair_count": 8192,
+    "goal5506_cpu_inclusive_count": 20,
+    "goal5506_source_rayparams_model_count": 21,
+    "goal5506_author_runtime_count": 21,
+    "goal5506_rtdl_runtime_count": 20,
+    "goal5506_author_matches_source_model": true,
+    "goal5506_rtdl_matches_cpu_inclusive_oracle": true,
+    "goal5506_full_input_root_cause_resolved": false,
+    "goal5506_rtdl_core_change_authorized": false,
+    "goal5507_generic_float32_range_intersects_fix_completed": true,
+    "goal5507_source_model_matches_author_on_all_cases": true,
+    "goal5507_rtdl_matches_author_on_all_cases": true,
+    "goal5507_rtdl_rows_match_counts_without_duplicates": true,
+    "goal5507_full_official_input_adjudication": false,
+    "goal5507_performance_ratio_authorized": false,
+    "exact_paper_inputs_available": false,
+    "ray_multicast_native_backend_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "independent_author_pipeline_reconstruction_claimed": false,
+    "whole_program_speedup_claimed": false,
+    "author_performance_parity_claimed": false,
+    "native_backend_completion_claimed": false,
+    "forbidden_claims": [
+      "author pair-relation agreement outside the app-instrumented Goal5467 representative fixture",
+      "native-incremental RTDL Insert/Delete/Clear or author mutation performance parity",
+      "paper dataset or figure reproduction",
+      "Ray Multicast equivalence",
+      "author PIP pair-row agreement outside the Goal5467 app-instrumented scope",
+      "Figure 12 PIP performance reproduction",
+      "whole-program speedup",
+      "LibRTS-specific RTDL core primitive",
+      "Embree comparison or Embree-derived paper evidence"
+    ],
+    "goal5508_generic_float32_degenerate_aabb_validity_fix_completed": true,
+    "goal5508_official_prefix_author_match_case_count": 2,
+    "goal5508_degenerate_subset_author_match_case_count": 2,
+    "goal5508_full_official_matrix_claimed": false,
+    "goal5508_official_pair_relation_claimed": false,
+    "goal5508_performance_ratio_authorized": false,
+    "goal5508_author_specific_rtdl_core_behavior_authorized": false,
+    "goal5509_exact_range_intersects_next_batch_checkpointed": true,
+    "goal5509_exact_range_intersects_next_batch_case_count": 6,
+    "goal5509_exact_range_intersects_next_batch_matched_case_count": 4,
+    "goal5509_exact_range_intersects_next_batch_unresolved_case_count": 2,
+    "goal5509_complete_range_intersects_matrix_claimed": false,
+    "goal5509_pointwise_intersection_equivalence_claimed": false,
+    "goal5509_performance_ratio_authorized": false,
+    "goal5510_bidirectional_degenerate_validity_regression_completed": true,
+    "goal5510_native_index_selection_contract_documented": true,
+    "goal5511_exact_range_intersects_select0001_completed": true,
+    "goal5511_exact_range_intersects_select0001_case_count": 4,
+    "goal5511_exact_range_intersects_select0001_matched_case_count": 4,
+    "goal5511_complete_range_intersects_matrix_claimed": false,
+    "goal5511_pointwise_intersection_equivalence_claimed": false,
+    "goal5511_performance_ratio_authorized": false,
+    "goal5512_large_case_capacity_resolution_completed": true,
+    "goal5512_lakes_count_match": true,
+    "goal5512_parks_author_capacity_failure": true,
+    "goal5512_complete_range_intersects_matrix_claimed": false,
+    "goal5512_performance_ratio_authorized": false,
+    "goal5513_exact_range_intersects_select001_completed": true,
+    "goal5513_exact_range_intersects_select001_case_count": 4,
+    "goal5513_exact_range_intersects_select001_matched_case_count": 4,
+    "goal5513_complete_range_intersects_matrix_claimed": false,
+    "goal5513_pointwise_intersection_equivalence_claimed": false,
+    "goal5513_performance_ratio_authorized": false,
+    "goal5514_exact_range_intersects_select001_resolution_completed": true,
+    "goal5514_select001_matched_case_count": 5,
+    "goal5514_select001_author_capacity_failure_case_count": 1,
+    "goal5514_complete_range_intersects_matrix_claimed": false,
+    "goal5514_pointwise_intersection_equivalence_claimed": false,
+    "goal5514_performance_ratio_authorized": false,
+    "goal5515_historical_select001_mismatch_resolution_completed": true,
+    "goal5515_historical_parks_delta_before": 3791,
+    "goal5515_historical_lakes_delta_before": 54695,
+    "goal5515_current_rechecked_delta_count": 0,
+    "goal5515_current_select001_match_count": 5,
+    "goal5515_current_select001_author_capacity_failure_count": 1,
+    "goal5515_complete_range_intersects_matrix_claimed": false,
+    "goal5515_pointwise_intersection_equivalence_claimed": false,
+    "goal5515_performance_ratio_authorized": false,
+    "goal5515_result_artifacts_recorded": true
+    ,"goal5516_range_intersects_coverage_ledger_completed": true
+    ,"goal5516_exact_range_intersects_pair_count": 42
+    ,"goal5516_matched_case_count": 14
+    ,"goal5516_author_capacity_failure_case_count": 2
+    ,"goal5516_not_checkpointed_case_count": 26
+    ,"goal5516_complete_range_intersects_matrix_claimed": false
+    ,"goal5516_pointwise_intersection_equivalence_claimed": false
+    ,"goal5516_performance_ratio_authorized": false
+    ,"goal5516_result_artifacts_recorded": true
+    ,"goal5517_exact_range_contains_batch_completed": true
+    ,"goal5517_exact_range_contains_case_count": 4
+    ,"goal5517_exact_range_contains_matched_case_count": 4
+    ,"goal5517_complete_range_contains_matrix_claimed": false
+    ,"goal5517_pointwise_containment_equivalence_claimed": false
+    ,"goal5517_performance_ratio_authorized": false
+    ,"goal5517_result_artifacts_recorded": true
+    ,"goal5518_range_contains_coverage_ledger_completed": true
+    ,"goal5518_exact_range_contains_pair_count": 14
+    ,"goal5518_matched_case_count": 4
+    ,"goal5518_not_checkpointed_case_count": 10
+    ,"goal5518_complete_range_contains_matrix_claimed": false
+    ,"goal5518_result_artifacts_recorded": true
+    ,"goal5519_operation_scoped_aabb_validity_fix_completed": true
+    ,"goal5519_exact_lakes_range_contains_author_count": 101418
+    ,"goal5519_exact_lakes_range_contains_fixed_rtdl_count": 101418
+    ,"goal5519_range_intersects_prefix_regression_count": 34581812
+    ,"goal5519_generic_operation_contract_probe_matched": true
+    ,"goal5519_complete_range_contains_matrix_claimed": false
+    ,"goal5519_pointwise_containment_equivalence_claimed": false
+    ,"goal5519_performance_ratio_authorized": false
+    ,"goal5519_result_artifacts_recorded": true
+    ,"goal5520_parks_europe_cardinality_matrix_completed": true
+    ,"goal5520_parks_europe_cardinality_case_count": 5
+    ,"goal5520_parks_europe_cardinality_matched_case_count": 5
+    ,"goal5520_runtime_distinct_query_batch_count": 4
+    ,"goal5520_prior_checkpoint_case_count": 1
+    ,"goal5520_range_contains_matched_after": 9
+    ,"goal5520_range_contains_remaining_not_checkpointed": 5
+    ,"goal5520_complete_range_contains_matrix_claimed": false
+    ,"goal5520_pointwise_containment_equivalence_claimed": false
+    ,"goal5520_performance_ratio_authorized": false
+    ,"goal5520_result_artifacts_recorded": true
+    ,"goal5521_parks_bz2_author_capacity_precheck_completed": true
+    ,"goal5521_parks_bz2_cardinality_case_count": 5
+    ,"goal5521_parks_bz2_cardinality_matched_case_count": 5
+    ,"goal5521_runtime_distinct_query_batch_count": 5
+    ,"goal5521_range_contains_matched_after": 14
+    ,"goal5521_range_contains_remaining_not_checkpointed": 0
+    ,"goal5521_complete_range_contains_count_matrix_claimed": true
+    ,"goal5521_pointwise_containment_equivalence_claimed": false
+    ,"goal5521_performance_ratio_authorized": false
+    ,"goal5521_result_artifacts_recorded": true
+    ,"goal5522_parks_bz2_point_cardinality_case_count": 5
+    ,"goal5522_parks_bz2_point_cardinality_matched_case_count": 5
+    ,"goal5522_point_contains_matched_after": 10
+    ,"goal5522_point_contains_remaining_not_checkpointed": 4
+    ,"goal5522_complete_point_contains_matrix_claimed": false
+    ,"goal5522_pointwise_containment_equivalence_claimed": false
+    ,"goal5522_result_artifacts_recorded": true
+    ,"goal5523_parks_europe_point_cardinality_case_count": 5
+    ,"goal5523_parks_europe_point_cardinality_matched_case_count": 5
+    ,"goal5523_point_contains_matched_after": 14
+    ,"goal5523_point_contains_remaining_not_checkpointed": 0
+    ,"goal5523_complete_point_contains_count_matrix_claimed": true
+    ,"goal5523_pointwise_containment_equivalence_claimed": false
+    ,"goal5523_performance_ratio_authorized": false
+    ,"goal5523_result_artifacts_recorded": true
+    ,"goal5524_librts_scoped_correctness_and_system_extraction_complete": true
+    ,"goal5524_full_all_dataset_all_figure_paper_reproduction_complete": false
+    ,"goal5524_range_intersects_exhaustive_enumeration_frozen": true
+    ,"goal5524_performance_ratio_authorized": false
+    ,"goal5524_embree_in_scope": false
+    ,"goal5524_result_artifact_recorded": true
+    ,"goal5525_internal_closeout_ready": true
+    ,"goal5525_local_librts_test_count": 176
+    ,"goal5525_external_review_pending": false
+    ,"goal5525_externally_reviewed_and_approved": true
+    ,"goal5525_external_review_verdict": "approve"
+    ,"goal5525_external_review_record": "history/internal_docs/review_goals5519_5525_librts_final_closeout_verified_2026-07-13.md"
+    ,"goal5525_self_approved": false
+  }
+}

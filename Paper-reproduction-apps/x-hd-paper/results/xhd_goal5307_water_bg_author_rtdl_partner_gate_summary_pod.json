@@ -1,0 +1,74 @@
+{
+  "author": {
+    "HDResult": 72.38665008544922,
+    "Running_AvgTime_ms": 4.209,
+    "command_family": "hd_exec -input_type wkt -n_dims 2 -variant rt -execution gpu -normalize=false",
+    "json": "Paper-reproduction-apps/x-hd-paper/results/goal5307_raw/author_water_bg_arcgis_bounded.json",
+    "point_counts": [
+      124,
+      894
+    ]
+  },
+  "boundary": "This bounded gate compares author hd_exec and RTDL generic partner scalar HD on the same generated WaterBodies->BlockGroups WKT fixture. It is not exact paper input recovery, not Figure 5 reproduction, not author RT-core equivalence, and not a performance-ratio denominator.",
+  "claim_boundary": {
+    "author_performance_parity_claimed": false,
+    "author_rt_core_algorithm_equivalence_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "geo_figure5_reproduction_claimed": false,
+    "level_b_bounded_geo_correctness_claimed": true,
+    "performance_ratio_claimed": false
+  },
+  "comparison": {
+    "abs_diff": 4.925300871150284e-06,
+    "comparison_reference": "directed_input1_to_input2",
+    "matched": true,
+    "tolerance": 1e-05
+  },
+  "created_unix": 1783617648.3683925,
+  "goal": "Goal5307",
+  "input": {
+    "blockgroup_feature_count": 5,
+    "blockgroup_sha256": "01ec10a1cdd3520f3bcc5742a6c7a6430c7e9dbe45f170ec35a5d70d4f7455b9",
+    "input1": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\data\\generated\\goal5306_arcgis_water_bg_bounded\\USADetailedWaterBodies_arcgis_bounded.wkt",
+    "input2": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\data\\generated\\goal5306_arcgis_water_bg_bounded\\USACensusBlockGroupBoundaries_arcgis_bounded.wkt",
+    "input_type": "wkt",
+    "n_dims": 2,
+    "paper_pair": "USADetailedWaterBodies.wkt -> USACensusBlockGroupBoundaries.wkt",
+    "point_count_a": 124,
+    "point_count_b": 894,
+    "source_contract": {
+      "blockgroup_feature_count_requested": 5,
+      "blockgroup_service": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Census_BlockGroups/FeatureServer",
+      "out_sr": 4326,
+      "paper_pair": "USADetailedWaterBodies.wkt -> USACensusBlockGroupBoundaries.wkt",
+      "query_order": "OBJECTID",
+      "source_family": "ArcGIS name-matched services already tracked by RTDL RayJoin assets",
+      "water_feature_count_requested": 5,
+      "waterbodies_service": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Detailed_Water_Bodies/FeatureServer"
+    },
+    "water_feature_count": 5,
+    "water_sha256": "3dda7b9df0655e0070f129625c4cfb7ab9cb40b22c8b71da3994faf0283c1dcb"
+  },
+  "rtdl": {
+    "HDResult": 72.38664516014835,
+    "distance_sq": 5239.826397541229,
+    "native_engine_row_contract": "not_called_partner_reference_only",
+    "partner": "triton",
+    "partner_reference_contract": "generic_directed_max_of_nearest_distance_2d",
+    "per_source_witness_exact": true,
+    "raw_runner_summary": "Paper-reproduction-apps/x-hd-paper/results/goal5307_raw/rtdl_water_bg_arcgis_bounded_triton_summary_raw_goal5305_runner.json",
+    "route": "directed_max_of_nearest_distance_2d_partner_columns",
+    "source_id": 27,
+    "target_id": 136,
+    "triton_strategy": "dense_point_nearest_tiled"
+  },
+  "run_phases": {
+    "rtdl_load_input_sec": 0.00630517303943634,
+    "rtdl_partner_column_upload_sec": 1.5275302082300186,
+    "rtdl_route_sec": 1.3052062913775444,
+    "rtdl_total_sec": 2.839240401983261
+  },
+  "schema": "rtdl.paper_reproduction.xhd.goal5307.water_bg_author_rtdl_partner_gate.v1",
+  "status": "water_bg_author_rtdl_partner_gate_passed__level_b_bounded_geo_only"
+}

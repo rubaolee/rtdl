@@ -14,6 +14,47 @@ from .api import knn_rows
 from .api import overlay_compose
 from .api import point_nearest_segment
 from .api import point_in_polygon
+from .component_partition import canonical_partition_labels
+from .component_partition import component_signature_from_partition
+from .component_partition import partition_equivalent
+from .partitioned_traversal import PARTITIONED_TRAVERSAL_COST_MODEL_CONTRACT
+from .partitioned_traversal import PARTITIONED_TRAVERSAL_FANOUT_CONTRACT
+from .partitioned_traversal import estimate_partitioned_traversal_selectivity
+from .partitioned_traversal import partitioned_traversal_fanout_plan
+from .partitioned_traversal import select_partitioned_traversal_fanout
+from .active_query_status import ACTIVE_QUERY_ABORT_REASON_CODES
+from .active_query_status import ACTIVE_QUERY_FRONTIER_BRIDGE_CONTRACT
+from .active_query_status import ACTIVE_QUERY_MULTIROUND_STATUS_CONTRACT
+from .active_query_status import ACTIVE_QUERY_OFFLOAD_ROW_SCHEMA
+from .active_query_status import ACTIVE_QUERY_PAYLOAD_TRANSITION_TRACE_CONTRACT
+from .active_query_status import ACTIVE_QUERY_PAYLOAD_TRANSITION_TRACE_ROW_SCHEMA
+from .active_query_status import ACTIVE_QUERY_PAYLOAD_TRANSITION_TRACE_SUMMARY_CONTRACT
+from .active_query_status import ACTIVE_QUERY_PAYLOAD_TRANSITION_TRACE_TELEMETRY_SCHEMA
+from .active_query_status import ACTIVE_QUERY_STATUS_KIND_CODES
+from .active_query_status import ACTIVE_QUERY_STATUS_MACHINE_CONTRACT
+from .active_query_status import ACTIVE_QUERY_STATUS_STATE_MACHINE_NATIVE_SPIKE_CONTRACT
+from .active_query_status import ACTIVE_QUERY_STATUS_STREAM_NATIVE_ABI_CONTRACT
+from .active_query_status import ACTIVE_QUERY_STATUS_STREAM_NATIVE_ROW_SCHEMA
+from .active_query_status import ACTIVE_QUERY_STATUS_STREAM_NATIVE_TELEMETRY_SCHEMA
+from .active_query_status import ACTIVE_QUERY_STATUS_TRACE_SUMMARY_CONTRACT
+from .active_query_status import ACTIVE_QUERY_TERMINAL_ROW_SCHEMA
+from .active_query_status import active_query_status_state_machine_native_spike_contract
+from .active_query_status import active_query_status_stream_native_abi_contract
+from .active_query_status import active_query_status_from_frontier_row_table_numpy_columns
+from .active_query_status import active_query_status_machine_reference_numpy_columns
+from .active_query_status import active_query_status_multiround_reference_numpy_columns
+from .active_query_status import active_query_status_trace_summary_numpy_columns
+from .active_query_status import apply_active_query_feedback_numpy_columns
+from .active_query_status import native_payload_transition_trace_stream_contract
+from .active_query_status import payload_transition_trace_summary_numpy_columns
+from .active_query_status import validate_native_payload_transition_trace_stream_contract
+from .active_query_status import validate_active_query_status_state_machine_native_spike_contract
+from .active_query_status import validate_active_query_status_stream_native_abi_contract
+from .radius_schedule import RADIUS_GROWTH_SCHEDULE_CONTRACT_VERSION
+from .radius_schedule import RADIUS_GROWTH_MODES
+from .radius_schedule import RadiusGrowthStep
+from .radius_schedule import radius_growth_step
+from .radius_schedule import radius_growth_trace
 from . import partner
 from .partner import PartnerContext
 from .partner import CuPyAdapter
@@ -116,13 +157,17 @@ from .numba_partner_continuation import NUMBA_GROUPED_TOPK_F64_OPERATION
 from .numba_partner_continuation import NUMBA_GROUPED_VECTOR_SUM_F64X2_OPERATION
 from .numba_partner_continuation import NUMBA_GROUPED_VECTOR_SUM_OFFSETS_SESSION_VERSION
 from .numba_partner_continuation import NUMBA_LABEL_COUNT_AND_FLAG_COUNT_I64_OPERATION
+from .numba_partner_continuation import NUMBA_ADJACENT_MIDPOINT_CANDIDATES_I64X2_BY_KEY_OPERATION
+from .numba_partner_continuation import NUMBA_CONSECUTIVE_DEDUPE_MASK_F64X2_OPERATION
 from .numba_partner_continuation import NUMBA_PAIRWISE_L2_SQ_BLOCK_NEAREST_ROWS_2D_OPERATION
 from .numba_partner_continuation import NUMBA_PAIRWISE_L2_SQ_SCORE_ROWS_2D_OPERATION
+from .numba_partner_continuation import NUMBA_RANGE_HAS_SORTED_VALUES_I64_OPERATION
 from .numba_partner_continuation import NUMBA_SEGMENTED_COUNT_I64_OPERATION
 from .numba_partner_continuation import NUMBA_SEGMENTED_MAX_F64_OPERATION
 from .numba_partner_continuation import NUMBA_SEGMENTED_MIN_F64_OPERATION
 from .numba_partner_continuation import NUMBA_SEGMENTED_SUM_F64_OPERATION
 from .numba_partner_continuation import NUMBA_SQRT_F64_OPERATION
+from .numba_partner_continuation import NUMBA_UINT32_EQUAL_MASK_OPERATION
 from .numba_partner_continuation import describe_numba_compact_mask_i64
 from .numba_partner_continuation import describe_numba_global_argmax_u32_f64
 from .numba_partner_continuation import describe_numba_grouped_argmax_f64
@@ -130,13 +175,17 @@ from .numba_partner_continuation import describe_numba_grouped_argmin_f64
 from .numba_partner_continuation import describe_numba_grouped_topk_f64
 from .numba_partner_continuation import describe_numba_grouped_vector_sum_f64x2
 from .numba_partner_continuation import describe_numba_label_count_and_flag_count_i64
+from .numba_partner_continuation import describe_numba_adjacent_midpoint_candidates_i64x2_by_key
+from .numba_partner_continuation import describe_numba_consecutive_dedupe_mask_f64x2
 from .numba_partner_continuation import describe_numba_pairwise_l2_sq_block_nearest_rows_2d
 from .numba_partner_continuation import describe_numba_pairwise_l2_sq_score_rows_2d
+from .numba_partner_continuation import describe_numba_range_has_sorted_values_i64
 from .numba_partner_continuation import describe_numba_segmented_count_i64
 from .numba_partner_continuation import describe_numba_segmented_max_f64
 from .numba_partner_continuation import describe_numba_segmented_min_f64
 from .numba_partner_continuation import describe_numba_segmented_sum_f64
 from .numba_partner_continuation import describe_numba_sqrt_f64
+from .numba_partner_continuation import describe_numba_uint32_equal_mask
 from .numba_partner_continuation import numba_partner_available
 from .numba_partner_continuation import run_numba_global_argmax_u32_f64
 from .numba_partner_continuation import run_numba_grouped_argmax_f64
@@ -145,17 +194,31 @@ from .numba_partner_continuation import run_numba_grouped_topk_f64
 from .numba_partner_continuation import run_numba_grouped_vector_sum_f64x2
 from .numba_partner_continuation import run_numba_grouped_vector_sum_f64x2_by_offsets
 from .numba_partner_continuation import run_numba_label_count_and_flag_count_i64
+from .numba_partner_continuation import run_numba_adjacent_midpoint_candidates_i64x2_by_key
+from .numba_partner_continuation import run_numba_consecutive_dedupe_mask_f64x2
 from .numba_partner_continuation import prepare_numba_grouped_vector_sum_f64x2_offsets_session
 from .numba_partner_continuation import run_numba_prepared_grouped_vector_sum_f64x2_by_offsets
 from .numba_partner_continuation import run_numba_pairwise_l2_sq_block_nearest_rows_2d
 from .numba_partner_continuation import run_numba_pairwise_l2_sq_score_rows_2d
+from .numba_partner_continuation import run_numba_range_has_sorted_values_i64
 from .numba_partner_continuation import run_numba_segmented_count_i64
 from .numba_partner_continuation import run_numba_segmented_max_f64
 from .numba_partner_continuation import run_numba_segmented_min_f64
 from .numba_partner_continuation import run_numba_segmented_sum_f64
 from .numba_partner_continuation import run_numba_sqrt_f64
+from .numba_partner_continuation import run_numba_uint32_equal_mask
 from .numba_partner_continuation import run_numba_compact_mask_i64
 from .numba_partner_continuation import run_numba_mask_indices_i64
+from .numba_partner_api import NUMBA_PARTNER_CONTINUATION_API_MATURITY
+from .numba_partner_api import NUMBA_PARTNER_CONTINUATION_CLAIM_BOUNDARY
+from .numba_partner_api import NUMBA_PARTNER_CONTINUATION_CONTRACT_VERSION
+from .numba_partner_api import NUMBA_PARTNER_CONTINUATION_PUBLIC_OPERATIONS
+from .numba_partner_api import NumbaPartnerContinuationPlan
+from .numba_partner_api import NumbaPartnerContinuationResult
+from .numba_partner_api import describe_numba_partner_continuation_contract
+from .numba_partner_api import numba_partner_continuation
+from .numba_partner_api import run_numba_partner_continuation
+from .numba_partner_api import validate_numba_partner_continuation_contract
 from .current_prepared_session_residency_profiles import CURRENT_PREPARED_SESSION_RESIDENCY_PROFILE_CLAIM_BOUNDARY
 from .current_prepared_session_residency_profiles import CURRENT_PREPARED_SESSION_RESIDENCY_PROFILE_STATUS
 from .current_prepared_session_residency_profiles import CURRENT_PREPARED_SESSION_RESIDENCY_PROFILE_VERSION
@@ -165,6 +228,10 @@ from .current_prepared_session_residency_profiles import current_prepared_sessio
 from .current_prepared_session_residency_profiles import summarize_current_prepared_session_residency_profiles
 from .current_prepared_session_residency_profiles import validate_current_prepared_session_residency_profiles
 from .prepared_session_residency import ExplicitPreparedSessionCache
+from .prepared_session_residency import PREPARED_GEOMETRY_SESSION_API_MATURITY
+from .prepared_session_residency import PREPARED_GEOMETRY_SESSION_CLAIM_BOUNDARY
+from .prepared_session_residency import PREPARED_GEOMETRY_SESSION_CONTRACT_VERSION
+from .prepared_session_residency import PREPARED_GEOMETRY_SESSION_REGIME_LABELS
 from .prepared_session_residency import PREPARED_SESSION_ALLOWED_BACKENDS
 from .prepared_session_residency import PREPARED_SESSION_ALLOWED_LIFETIME_STATES
 from .prepared_session_residency import PREPARED_SESSION_APP_SPECIFIC_FORBIDDEN_TERMS
@@ -172,14 +239,19 @@ from .prepared_session_residency import PREPARED_SESSION_INVALIDATION_EVENTS
 from .prepared_session_residency import PREPARED_SESSION_RESIDENCY_CLAIM_BOUNDARY
 from .prepared_session_residency import PREPARED_SESSION_RESIDENCY_STATUS
 from .prepared_session_residency import PREPARED_SESSION_RESIDENCY_VERSION
+from .prepared_session_residency import PreparedGeometrySession
+from .prepared_session_residency import PreparedQueryBatch
 from .prepared_session_residency import RtdlPreparedSessionCacheKey
 from .prepared_session_residency import RtdlPreparedSessionResidencyPolicy
 from .prepared_session_residency import RtdlPreparedSessionReuseResult
 from .prepared_session_residency import RtdlPreparedSessionTimingRecord
+from .prepared_session_residency import describe_prepared_geometry_session_contract
 from .prepared_session_residency import describe_prepared_session_residency_contract
 from .prepared_session_residency import get_or_prepare_explicit_session
 from .prepared_session_residency import make_prepared_session_cache_key
+from .prepared_session_residency import prepared_geometry_session
 from .prepared_session_residency import summarize_prepared_session_timing_records
+from .prepared_session_residency import validate_prepared_geometry_session_contract
 from .prepared_session_residency import validate_prepared_session_residency_contract
 from .v2_12_prepared_resident_query_plan import V212PreparedResidentQueryWorkItem
 from .v2_12_prepared_resident_query_plan import V2_12_CROSS_APP_BENCHMARK_APP
@@ -283,6 +355,35 @@ from .hit_stream_handoff import trace_v2_5_hit_stream_torch_carrier_runtime_seam
 from .hit_stream_handoff import validate_v2_5_neutral_seam_closeout_decision
 from .hit_stream_handoff import validate_v2_5_hit_stream_neutral_seam_authority
 from .hit_stream_handoff import v2_5_neutral_seam_closeout_decision
+from .device_column_row_buffer import DEVICE_COLUMN_ROW_BUFFER_API_MATURITY
+from .device_column_row_buffer import DEVICE_COLUMN_ROW_BUFFER_CONTRACT_VERSION
+from .device_column_row_buffer import DEVICE_COLUMN_ROW_BUFFER_SOURCE_MODES
+from .device_column_row_buffer import DEVICE_COLUMN_BUFFER_API_MATURITY
+from .device_column_row_buffer import DEVICE_COLUMN_BUFFER_CLAIM_BOUNDARY
+from .device_column_row_buffer import DEVICE_COLUMN_BUFFER_CONTRACT_VERSION
+from .device_column_row_buffer import DEVICE_COLUMN_BUFFER_OWNER_LIFETIME_STATES
+from .device_column_row_buffer import DeviceColumnBuffer
+from .device_column_row_buffer import RtdlDeviceColumnRowBuffer
+from .device_column_row_buffer import describe_device_column_buffer_contract
+from .device_column_row_buffer import describe_device_column_row_buffer_contract
+from .device_column_row_buffer import device_column_buffer
+from .device_column_row_buffer import device_column_buffer_from_row_buffer
+from .device_column_row_buffer import device_column_row_buffer_from_hit_stream_handoff
+from .device_column_row_buffer import device_column_row_buffer_from_native_pair_columns
+from .device_column_row_buffer import device_column_row_buffer_from_point_location_id_columns
+from .device_column_row_buffer import plan_device_column_row_buffer_partner_handoff
+from .device_column_row_buffer import prepare_device_column_row_buffer
+from .device_column_row_buffer import prepare_device_column_row_buffer_partner_handoff
+from .device_ordering import DEVICE_ORDER_BY_API_MATURITY
+from .device_ordering import DEVICE_ORDER_BY_BACKENDS
+from .device_ordering import DEVICE_ORDER_BY_CLAIM_BOUNDARY
+from .device_ordering import DEVICE_ORDER_BY_CONTRACT_VERSION
+from .device_ordering import DEVICE_ORDER_BY_SUPPORTED_SIGNATURES
+from .device_ordering import DeviceOrderByResult
+from .device_ordering import describe_device_order_by_contract
+from .device_ordering import device_order_by
+from .device_ordering import device_order_by_reference_i64_f64_i64_i64
+from .device_ordering import validate_device_order_by_contract
 from .neutral_buffer_seam import RtdlNeutralBufferLifetimePlan
 from .neutral_buffer_seam import RtdlNeutralBufferLease
 from .neutral_buffer_seam import RtdlNeutralBufferSeamDescriptor
@@ -779,6 +880,45 @@ from .aggregate_tree_reference import normalize_aggregate_node_rows
 from .aggregate_tree_reference import normalize_weighted_point_rows
 from .aggregate_tree_reference import plan_aggregate_frontier_collect_lowering
 from .aggregate_tree_reference import validate_aggregate_frontier_collect_native_abi_contract
+from .aggregate_hierarchy import AGGREGATE_HIERARCHY_3D_API_MATURITY
+from .aggregate_hierarchy import AGGREGATE_HIERARCHY_3D_CLAIM_BOUNDARY
+from .aggregate_hierarchy import AGGREGATE_HIERARCHY_3D_CONTRACT_VERSION
+from .aggregate_hierarchy import AGGREGATE_HIERARCHY_3D_OPENING_CONTINUATION_PAYLOAD
+from .aggregate_hierarchy import AGGREGATE_HIERARCHY_3D_OPENING_LEAF_ONLY
+from .aggregate_hierarchy import AGGREGATE_HIERARCHY_3D_OPENING_SIZE_DISTANCE
+from .aggregate_hierarchy import AGGREGATE_HIERARCHY_3D_REDUCER_AGGREGATE_COUNT
+from .aggregate_hierarchy import AGGREGATE_HIERARCHY_3D_REDUCER_INVERSE_SQUARE_SCALAR_SUM
+from .aggregate_hierarchy import AGGREGATE_HIERARCHY_3D_REDUCER_INVERSE_SQUARE_VECTOR_SUM
+from .aggregate_hierarchy import AGGREGATE_HIERARCHY_3D_SUPPORTED_OPENINGS
+from .aggregate_hierarchy import AGGREGATE_HIERARCHY_3D_SUPPORTED_REDUCERS
+from .aggregate_hierarchy import AGGREGATE_FRONTIER_REDUCE_3D_BACKENDS
+from .aggregate_hierarchy import AGGREGATE_FRONTIER_REDUCE_3D_BACKEND_STATUS
+from .aggregate_hierarchy import AGGREGATE_FRONTIER_REDUCE_3D_BACKEND_STATUS_NOT_IMPLEMENTED
+from .aggregate_hierarchy import AGGREGATE_FRONTIER_REDUCE_3D_BACKEND_STATUS_NUMBA
+from .aggregate_hierarchy import AGGREGATE_FRONTIER_REDUCE_3D_BACKEND_STATUS_REFERENCE
+from .aggregate_hierarchy import AGGREGATE_FRONTIER_REDUCE_3D_EXECUTION_CONTRACT
+from .aggregate_hierarchy import AGGREGATE_FRONTIER_REDUCE_3D_NUMBA_REDUCERS
+from .aggregate_hierarchy import AGGREGATE_FRONTIER_REDUCE_3D_OUTPUT_SCHEMA
+from .aggregate_hierarchy import AGGREGATE_FRONTIER_REDUCE_3D_OVERFLOW_POLICY
+from .aggregate_hierarchy import AGGREGATE_FRONTIER_REDUCE_3D_REFERENCE_REDUCERS
+from .aggregate_hierarchy import AggregateFrontierReduceExecutionContract3D
+from .aggregate_hierarchy import AggregateFrontierReduceSpec3D
+from .aggregate_hierarchy import AggregateHierarchy3D
+from .aggregate_hierarchy import ContinuationPayloadOpening
+from .aggregate_hierarchy import LeafOnlyOpening
+from .aggregate_hierarchy import PreparedAggregateHierarchy3D
+from .aggregate_hierarchy import SizeDistanceOpening
+from .aggregate_hierarchy import aggregate_frontier_reduce_execution_contract_3d
+from .aggregate_hierarchy import aggregate_frontier_reduce_numba_3d
+from .aggregate_hierarchy import aggregate_frontier_reduce_numba_available
+from .aggregate_hierarchy import aggregate_frontier_reduce_reference_3d
+from .aggregate_hierarchy import aggregate_frontier_reduce_spec_3d
+from .aggregate_hierarchy import aggregate_hierarchy_3d
+from .aggregate_hierarchy import describe_aggregate_hierarchy_3d_contract
+from .aggregate_hierarchy import prepare_aggregate_hierarchy_3d
+from .aggregate_hierarchy import run_aggregate_frontier_reduce_numba_3d
+from .aggregate_hierarchy import run_aggregate_frontier_reduce_reference_3d
+from .aggregate_hierarchy import validate_aggregate_hierarchy_3d_contract
 from .spatial_order import SPATIAL_POINT_ORDER_MODES_2D
 from .spatial_order import SPATIAL_SEGMENT_ORDER_MODES_2D
 from .spatial_order import spatial_order_points_2d
@@ -801,6 +941,8 @@ from .datasets import build_arcgis_geojson_query_url
 from .datasets import build_arcgis_query_url
 from .datasets import build_arcgis_layer_url
 from .datasets import chains_to_all_points
+from .datasets import chains_to_planar_map_points
+from .datasets import chains_to_planar_map_segments
 from .datasets import chains_to_polygons
 from .datasets import chains_to_polygon_refs
 from .datasets import chains_to_probe_points
@@ -809,6 +951,8 @@ from .datasets import chains_to_segment_columns
 from .datasets import chains_to_segments
 from .datasets import chains_to_topology_rows
 from .datasets import chains_to_incident_face_candidate_rows
+from .datasets import load_planar_map_cdb_packed_inputs
+from .datasets import PlanarMapCdbPackedInputs
 from .closed_shape_topology import OWNER_FACE_MEMBERSHIP_CONTRACT
 from .closed_shape_topology import OWNER_FACE_PRIORITY_PIPELINE_CONTRACT
 from .closed_shape_topology import OWNER_FACE_SIDE_CODES
@@ -1177,7 +1321,12 @@ from .optix_runtime import prepare_optix_segment_polygon_anyhit_rows_2d
 from .optix_runtime import prepare_optix_segment_polygon_hitcount_2d
 from .optix_runtime import collect_aabb_intersection_pair_rows_2d_optix
 from .optix_runtime import collect_aabb_point_membership_pair_rows_2d_optix
+from .optix_runtime import collect_aabb_point_membership_pair_rows_3d_optix
+from .optix_runtime import collect_cell_mbr_nearest_frontier_3d_optix
+from .optix_runtime import collect_active_query_status_stream_3d_optix
+from .optix_runtime import active_query_status_state_machine_smoke_native
 from .optix_runtime import prepare_optix_aabb_index_2d
+from .optix_runtime import prepare_optix_aabb_index_3d
 from .optix_runtime import prepare_optix_aabb_point_queries_2d
 from .optix_runtime import prepare_optix_aabb_box_queries_2d
 from .optix_runtime import prepare_optix_ray_triangle_any_hit_2d
@@ -1217,6 +1366,11 @@ from .optix_runtime import PreparedOptixDirectedSegmentPointLocation2D
 from .optix_runtime import PreparedOptixDirectedSegmentPointLocationPoints2D
 from .optix_runtime import PreparedOptixRayjoinCdbPointLocation2D
 from .optix_runtime import PreparedOptixRayjoinCdbPointLocationPoints2D
+from .optix_runtime import PreparedOptixPlanarMapLsi2D
+from .optix_runtime import PreparedOptixPlanarMapLsi2DQuery
+from .optix_runtime import PreparedOptixPlanarMapPointLocation2D
+from .optix_runtime import PlanarMapWorkspace2DOptix
+from .optix_runtime import PlanarMapWorkspace2DOptixQuery
 from .optix_runtime import PreparedOptixPointClosedShapeMembership2D
 from .optix_runtime import PreparedOptixPointClosedShapeBatchCountExecutor2D
 from .optix_runtime import PreparedOptixPointClosedShapeBatchCountGraph2D
@@ -1224,7 +1378,20 @@ from .optix_runtime import PreparedOptixPointProbeColumns2D
 from .optix_runtime import closed_shape_membership_2d_optix
 from .optix_runtime import collect_polygon_pair_candidates_bounded_optix
 from .optix_runtime import prepare_directed_segment_point_location_2d_optix
+from .optix_runtime import prepare_planar_map_lsi_2d_optix
+from .optix_runtime import prepare_planar_map_point_location_2d_optix
+from .optix_runtime import prepare_planar_map_workspace_2d_optix
 from .optix_runtime import prepare_rayjoin_cdb_point_location_2d_optix
+from .output_assembly import GroupedOutputMaterializationResult
+from .output_assembly import GroupedOutputRowBuffer
+from .output_assembly import GroupedOutputRowBufferSchema
+from .output_assembly import GroupedSequenceAssemblyPlan
+from .output_assembly import GroupedSequenceAssemblyResult
+from .output_assembly import assemble_grouped_path_split_records
+from .output_assembly import assemble_grouped_output_row_buffer
+from .output_assembly import assemble_grouped_sequences
+from .output_assembly import materialize_grouped_output_row_buffer
+from .output_assembly import prepare_grouped_output_row_buffer
 from .optix_runtime import prepare_point_closed_shape_membership_2d_optix
 from .optix_runtime import prepare_point_probe_columns_2d_optix
 from .optix_runtime import ray_segment_group_count_2d_optix
@@ -1299,17 +1466,46 @@ from .app_adapters import pairwise_inverse_square_force_2d_partner_columns
 from .partner_adapters import directed_hausdorff_2d_partner_columns
 from .partner_adapters import directed_max_of_nearest_distance_2d_partner_columns
 from .partner_adapters import top_k_nearest_points_2d_partner_columns
+from .partner_continuations import CELL_MBR_FRONTIER_KIND_CODES
+from .partner_continuations import CELL_MBR_TRAVERSAL_NATIVE_ABI_CONTRACT
+from .partner_continuations import CELL_MBR_TRAVERSAL_ROW_SCHEMA
+from .partner_continuations import HEAVY_OFFLOAD_WORKLIST_CONTRACT
+from .partner_continuations import HEAVY_OFFLOAD_WORKLIST_KIND_CODES
+from .partner_continuations import HEAVY_OFFLOAD_WORKLIST_ROW_SCHEMA
 from .partner_continuations import PartnerCandidateRows
+from .partner_continuations import cell_mbr_nearest_frontier_aabb_membership_2d_numpy_columns
+from .partner_continuations import cell_mbr_nearest_frontier_aabb_membership_3d_numpy_columns
+from .partner_continuations import cell_mbr_nearest_frontier_native_3d_optix_columns
+from .partner_continuations import cell_mbr_nearest_frontier_numpy_columns
+from .partner_continuations import cell_mbr_frontiers_to_row_table_numpy_columns
+from .partner_continuations import cell_mbr_traversal_native_abi_contract
 from .partner_continuations import cupy_group_argmin_then_global_argmax_with_witness
 from .partner_continuations import cupy_group_topk
 from .partner_continuations import directed_hausdorff_2d_cupy_columns
 from .partner_continuations import directed_hausdorff_2d_numpy_columns
+from .partner_continuations import directed_hausdorff_3d_numpy_columns
+from .partner_continuations import heavy_offload_worklist_numpy_columns
+from .partner_continuations import max_nearest_distance_witness_numpy_columns
+from .partner_continuations import nearest_witness_from_cell_mbr_frontier_numpy_columns
+from .partner_continuations import nearest_witness_numpy_columns
+from .partner_continuations import nearest_state_frontier_from_cell_candidates_numpy_columns
 from .partner_continuations import numpy_group_argmin_then_global_argmax_with_witness
 from .partner_continuations import numpy_group_topk
 from .partner_continuations import numpy_segmented_count
 from .partner_continuations import numpy_segmented_minmax
 from .partner_continuations import numpy_segmented_sum
+from .partner_continuations import pairwise_l2_distance_candidate_rows_numpy_columns
 from .partner_continuations import point_rows_to_numpy_columns
+from .partner_continuations import point_rows_to_numpy_columns_3d
+from .partner_continuations import point_grid_cell_mbrs_native_3d_cuda_columns
+from .partner_continuations import point_grid_cell_mbrs_numpy_columns
+from .partner_continuations import radius_cell_mbr_candidate_rows_numpy_columns
+from .partner_continuations import plan_cell_mbr_traversal_lowering
+from .partner_continuations import seed_nearest_witness_from_grid_branch_bound_numpy_columns
+from .partner_continuations import seed_nearest_witness_from_grid_cell_budget_numpy_columns
+from .partner_continuations import seed_nearest_witness_from_local_grid_cell_numpy_columns
+from .partner_continuations import seed_nearest_witness_from_nearest_cell_mbr_numpy_columns
+from .partner_continuations import validate_cell_mbr_traversal_native_abi_contract
 from .partner_adapters import radius_graph_components_2d_partner_columns
 from .partner_adapters import radius_graph_components_2d_spatial_bucket_partner_columns
 from .partner_adapters import radius_graph_components_3d_spatial_bucket_partner_columns
@@ -1639,6 +1835,7 @@ from .primitive_contract_registry import validate_v1_4_primitive_contract_invent
 from .aabb_index import AABB_INDEX_2D_CONTRACT
 from .aabb_index import AABB_INDEX_2D_OPERATIONS
 from .aabb_index import Aabb2D
+from .aabb_columns import Aabb2DColumns
 from .aabb_index import AabbIndex2D
 from .aabb_index import EmbreeAabbIndex2D
 from .aabb_index import EXPANDED_AABB_POINT_MEMBERSHIP_2D_CONTRACT
@@ -1651,7 +1848,11 @@ from .aabb_index import HiprtAabbIndex2D
 from .aabb_index import aabb_intersection_pair_rows_2d
 from .aabb_index import expanded_aabb_point_membership_rows_2d
 from .aabb_index import prepare_aabb_index_2d
+from .aabb_index import prepare_aabb_index_2d_columns
 from .aabb_index import query_aabb_index_2d
+from .mutable_aabb_index import MUTABLE_AABB_INDEX_2D_CONTRACT
+from .mutable_aabb_index import MutableAabbIndex2D
+from .mutable_aabb_index import prepare_mutable_aabb_index_2d
 from .generic_primitives import ACTIVE_V1_5_GENERIC_PRIMITIVE_BACKENDS
 from .generic_primitives import FROZEN_BEFORE_V2_1_GENERIC_BACKENDS
 from .generic_primitives import GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_CONTRACT
@@ -1927,8 +2128,15 @@ __all__ = [
     "bfs_discover",
     "bfs_discover_apple_rt",
     "bfs_expand_cpu",
+    "canonical_partition_labels",
     "CandidateSet",
     "CompiledKernel",
+    "component_signature_from_partition",
+    "PARTITIONED_TRAVERSAL_COST_MODEL_CONTRACT",
+    "PARTITIONED_TRAVERSAL_FANOUT_CONTRACT",
+    "estimate_partitioned_traversal_selectivity",
+    "partitioned_traversal_fanout_plan",
+    "select_partitioned_traversal_fanout",
     "AGGREGATE_BUCKETIZED_TREE_2D_CONTRACT",
     "AGGREGATE_FRONTIER_COLLECT_2D_CONTRACT",
     "AGGREGATE_FRONTIER_COLLECT_2D_NATIVE_ABI_CONTRACT",
@@ -1939,15 +2147,54 @@ __all__ = [
     "AGGREGATE_FRONTIER_COLLECT_NATIVE_REQUIRED_SYMBOLS",
     "AGGREGATE_OPENING_ROWS_2D_CONTRACT",
     "AGGREGATE_TREE_OPENING_FRONTIER_2D_CONTRACT",
+    "AGGREGATE_HIERARCHY_3D_API_MATURITY",
+    "AGGREGATE_HIERARCHY_3D_CLAIM_BOUNDARY",
+    "AGGREGATE_HIERARCHY_3D_CONTRACT_VERSION",
+    "AGGREGATE_HIERARCHY_3D_OPENING_CONTINUATION_PAYLOAD",
+    "AGGREGATE_HIERARCHY_3D_OPENING_LEAF_ONLY",
+    "AGGREGATE_HIERARCHY_3D_OPENING_SIZE_DISTANCE",
+    "AGGREGATE_HIERARCHY_3D_REDUCER_AGGREGATE_COUNT",
+    "AGGREGATE_HIERARCHY_3D_REDUCER_INVERSE_SQUARE_SCALAR_SUM",
+    "AGGREGATE_HIERARCHY_3D_REDUCER_INVERSE_SQUARE_VECTOR_SUM",
+    "AGGREGATE_HIERARCHY_3D_SUPPORTED_OPENINGS",
+    "AGGREGATE_HIERARCHY_3D_SUPPORTED_REDUCERS",
+    "AGGREGATE_FRONTIER_REDUCE_3D_BACKENDS",
+    "AGGREGATE_FRONTIER_REDUCE_3D_BACKEND_STATUS",
+    "AGGREGATE_FRONTIER_REDUCE_3D_BACKEND_STATUS_NOT_IMPLEMENTED",
+    "AGGREGATE_FRONTIER_REDUCE_3D_BACKEND_STATUS_NUMBA",
+    "AGGREGATE_FRONTIER_REDUCE_3D_BACKEND_STATUS_REFERENCE",
+    "AGGREGATE_FRONTIER_REDUCE_3D_EXECUTION_CONTRACT",
+    "AGGREGATE_FRONTIER_REDUCE_3D_NUMBA_REDUCERS",
+    "AGGREGATE_FRONTIER_REDUCE_3D_OUTPUT_SCHEMA",
+    "AGGREGATE_FRONTIER_REDUCE_3D_OVERFLOW_POLICY",
+    "AGGREGATE_FRONTIER_REDUCE_3D_REFERENCE_REDUCERS",
     "GROUPED_VECTOR_SUM_ROWS_2D_CONTRACT",
     "WEIGHTED_INVERSE_SQUARE_CONTRIBUTION_ROWS_2D_CONTRACT",
     "WEIGHTED_INVERSE_SQUARE_VECTOR_SUM_2D_CONTRACT",
     "VECTOR_SUM_MATERIALIZATION_PRESSURE_2D_CONTRACT",
     "AggregateFrontierOverflowError",
+    "AggregateFrontierReduceExecutionContract3D",
+    "AggregateFrontierReduceSpec3D",
+    "AggregateHierarchy3D",
+    "ContinuationPayloadOpening",
+    "LeafOnlyOpening",
     "AggregateNodeRow",
+    "PreparedAggregateHierarchy3D",
+    "SizeDistanceOpening",
     "AggregateTreeNodeRow",
     "aggregate_frontier_collect_to_columnar_record_set",
     "aggregate_frontier_collect_native_abi_contract",
+    "aggregate_frontier_reduce_execution_contract_3d",
+    "aggregate_frontier_reduce_numba_3d",
+    "aggregate_frontier_reduce_numba_available",
+    "aggregate_frontier_reduce_reference_3d",
+    "aggregate_frontier_reduce_spec_3d",
+    "aggregate_hierarchy_3d",
+    "describe_aggregate_hierarchy_3d_contract",
+    "prepare_aggregate_hierarchy_3d",
+    "run_aggregate_frontier_reduce_numba_3d",
+    "run_aggregate_frontier_reduce_reference_3d",
+    "validate_aggregate_hierarchy_3d_contract",
     "ColumnarAggregateLoweringPlan",
     "ColumnarAggregatePlan",
     "ColumnarAggregateResult",
@@ -1970,6 +2217,43 @@ __all__ = [
     "PARTNER_RESIDENT_COLUMNAR_REQUIRED_OPTIX_SYMBOL",
     "PARTNER_RESIDENT_COLUMNAR_TRANSFER_MODE",
     "DEVICE_COLUMN_DESCRIPTOR_HOST_MATERIALIZATION_BOUNDARY",
+    "DEVICE_COLUMN_BUFFER_API_MATURITY",
+    "DEVICE_COLUMN_BUFFER_CLAIM_BOUNDARY",
+    "DEVICE_COLUMN_BUFFER_CONTRACT_VERSION",
+    "DEVICE_COLUMN_BUFFER_OWNER_LIFETIME_STATES",
+    "DeviceColumnBuffer",
+    "describe_device_column_buffer_contract",
+    "device_column_buffer",
+    "device_column_buffer_from_row_buffer",
+    "PREPARED_GEOMETRY_SESSION_API_MATURITY",
+    "PREPARED_GEOMETRY_SESSION_CLAIM_BOUNDARY",
+    "PREPARED_GEOMETRY_SESSION_CONTRACT_VERSION",
+    "PREPARED_GEOMETRY_SESSION_REGIME_LABELS",
+    "PreparedGeometrySession",
+    "PreparedQueryBatch",
+    "describe_prepared_geometry_session_contract",
+    "prepared_geometry_session",
+    "validate_prepared_geometry_session_contract",
+    "DEVICE_ORDER_BY_API_MATURITY",
+    "DEVICE_ORDER_BY_BACKENDS",
+    "DEVICE_ORDER_BY_CLAIM_BOUNDARY",
+    "DEVICE_ORDER_BY_CONTRACT_VERSION",
+    "DEVICE_ORDER_BY_SUPPORTED_SIGNATURES",
+    "DeviceOrderByResult",
+    "describe_device_order_by_contract",
+    "device_order_by",
+    "device_order_by_reference_i64_f64_i64_i64",
+    "validate_device_order_by_contract",
+    "NUMBA_PARTNER_CONTINUATION_API_MATURITY",
+    "NUMBA_PARTNER_CONTINUATION_CLAIM_BOUNDARY",
+    "NUMBA_PARTNER_CONTINUATION_CONTRACT_VERSION",
+    "NUMBA_PARTNER_CONTINUATION_PUBLIC_OPERATIONS",
+    "NumbaPartnerContinuationPlan",
+    "NumbaPartnerContinuationResult",
+    "describe_numba_partner_continuation_contract",
+    "numba_partner_continuation",
+    "run_numba_partner_continuation",
+    "validate_numba_partner_continuation_contract",
     "DeviceColumnDescriptor",
     "PartnerResidentColumnarRecordSet",
     "PartnerResidentColumnHandoff",
@@ -2208,8 +2492,11 @@ __all__ = [
     "NUMBA_GROUPED_VECTOR_SUM_F64X2_OPERATION",
     "NUMBA_GROUPED_VECTOR_SUM_OFFSETS_SESSION_VERSION",
     "NUMBA_LABEL_COUNT_AND_FLAG_COUNT_I64_OPERATION",
+    "NUMBA_ADJACENT_MIDPOINT_CANDIDATES_I64X2_BY_KEY_OPERATION",
+    "NUMBA_CONSECUTIVE_DEDUPE_MASK_F64X2_OPERATION",
     "NUMBA_PAIRWISE_L2_SQ_BLOCK_NEAREST_ROWS_2D_OPERATION",
     "NUMBA_PAIRWISE_L2_SQ_SCORE_ROWS_2D_OPERATION",
+    "NUMBA_RANGE_HAS_SORTED_VALUES_I64_OPERATION",
     "NUMBA_SEGMENTED_COUNT_I64_OPERATION",
     "NUMBA_SEGMENTED_MAX_F64_OPERATION",
     "NUMBA_SEGMENTED_MIN_F64_OPERATION",
@@ -2222,8 +2509,11 @@ __all__ = [
     "describe_numba_grouped_topk_f64",
     "describe_numba_grouped_vector_sum_f64x2",
     "describe_numba_label_count_and_flag_count_i64",
+    "describe_numba_adjacent_midpoint_candidates_i64x2_by_key",
+    "describe_numba_consecutive_dedupe_mask_f64x2",
     "describe_numba_pairwise_l2_sq_block_nearest_rows_2d",
     "describe_numba_pairwise_l2_sq_score_rows_2d",
+    "describe_numba_range_has_sorted_values_i64",
     "describe_numba_segmented_count_i64",
     "describe_numba_segmented_max_f64",
     "describe_numba_segmented_min_f64",
@@ -2237,10 +2527,13 @@ __all__ = [
     "run_numba_grouped_vector_sum_f64x2",
     "run_numba_grouped_vector_sum_f64x2_by_offsets",
     "run_numba_label_count_and_flag_count_i64",
+    "run_numba_adjacent_midpoint_candidates_i64x2_by_key",
+    "run_numba_consecutive_dedupe_mask_f64x2",
     "prepare_numba_grouped_vector_sum_f64x2_offsets_session",
     "run_numba_prepared_grouped_vector_sum_f64x2_by_offsets",
     "run_numba_pairwise_l2_sq_block_nearest_rows_2d",
     "run_numba_pairwise_l2_sq_score_rows_2d",
+    "run_numba_range_has_sorted_values_i64",
     "run_numba_segmented_count_i64",
     "run_numba_segmented_max_f64",
     "run_numba_segmented_min_f64",
@@ -2537,6 +2830,7 @@ __all__ = [
     "summarize_knn_rows",
     "summarize_triangle_row_view",
     "summarize_triangle_rows",
+    "partition_equivalent",
     "point_nearest_segment",
     "polygon_pair_overlap_area_rows",
     "polygon_set_jaccard",
@@ -2597,6 +2891,7 @@ __all__ = [
     "AABB_INDEX_2D_CONTRACT",
     "AABB_INDEX_2D_OPERATIONS",
     "Aabb2D",
+    "Aabb2DColumns",
     "AabbIndex2D",
     "EmbreeAabbIndex2D",
     "EXPANDED_AABB_POINT_MEMBERSHIP_2D_CONTRACT",
@@ -2609,7 +2904,11 @@ __all__ = [
     "aabb_intersection_pair_rows_2d",
     "expanded_aabb_point_membership_rows_2d",
     "prepare_aabb_index_2d",
+    "prepare_aabb_index_2d_columns",
     "query_aabb_index_2d",
+    "MUTABLE_AABB_INDEX_2D_CONTRACT",
+    "MutableAabbIndex2D",
+    "prepare_mutable_aabb_index_2d",
     "ACTIVE_V1_5_GENERIC_PRIMITIVE_BACKENDS",
     "FROZEN_BEFORE_V2_1_GENERIC_BACKENDS",
     "GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_CONTRACT",
@@ -2801,6 +3100,9 @@ __all__ = [
     "build_arcgis_query_url",
     "build_arcgis_layer_url",
     "chains_to_all_points",
+    "chains_to_planar_map_points",
+    "chains_to_planar_map_segments",
+    "load_planar_map_cdb_packed_inputs",
     "chains_to_polygons",
     "chains_to_polygon_refs",
     "chains_to_probe_points",
@@ -2942,7 +3244,12 @@ __all__ = [
     "prepare_optix_segment_polygon_hitcount_2d",
     "collect_aabb_intersection_pair_rows_2d_optix",
     "collect_aabb_point_membership_pair_rows_2d_optix",
+    "collect_aabb_point_membership_pair_rows_3d_optix",
+    "collect_cell_mbr_nearest_frontier_3d_optix",
+    "collect_active_query_status_stream_3d_optix",
+    "active_query_status_state_machine_smoke_native",
     "prepare_optix_aabb_index_2d",
+    "prepare_optix_aabb_index_3d",
     "prepare_optix_aabb_point_queries_2d",
     "prepare_optix_aabb_box_queries_2d",
     "prepare_optix_ray_triangle_any_hit_2d",
@@ -2990,6 +3297,19 @@ __all__ = [
     "PreparedOptixDirectedSegmentPointLocationPoints2D",
     "PreparedOptixRayjoinCdbPointLocation2D",
     "PreparedOptixRayjoinCdbPointLocationPoints2D",
+    "PreparedOptixPlanarMapLsi2D",
+    "PreparedOptixPlanarMapLsi2DQuery",
+    "PreparedOptixPlanarMapPointLocation2D",
+    "PlanarMapWorkspace2DOptix",
+    "PlanarMapWorkspace2DOptixQuery",
+    "PlanarMapCdbPackedInputs",
+    "GroupedOutputMaterializationResult",
+    "GroupedOutputRowBuffer",
+    "GroupedOutputRowBufferSchema",
+    "GroupedSequenceAssemblyPlan",
+    "GroupedSequenceAssemblyResult",
+    "ContinuationPayloadOpening",
+    "SizeDistanceOpening",
     "PreparedOptixPointClosedShapeMembership2D",
     "PreparedOptixPointClosedShapeBatchCountExecutor2D",
     "PreparedOptixPointClosedShapeBatchCountGraph2D",
@@ -2997,7 +3317,15 @@ __all__ = [
     "closed_shape_membership_2d_optix",
     "collect_polygon_pair_candidates_bounded_optix",
     "prepare_directed_segment_point_location_2d_optix",
+    "prepare_planar_map_lsi_2d_optix",
+    "prepare_planar_map_point_location_2d_optix",
+    "prepare_planar_map_workspace_2d_optix",
     "prepare_rayjoin_cdb_point_location_2d_optix",
+    "assemble_grouped_path_split_records",
+    "assemble_grouped_output_row_buffer",
+    "assemble_grouped_sequences",
+    "materialize_grouped_output_row_buffer",
+    "prepare_grouped_output_row_buffer",
     "prepare_point_closed_shape_membership_2d_optix",
     "prepare_point_probe_columns_2d_optix",
     "ray_segment_group_count_2d_optix",
@@ -3064,17 +3392,74 @@ __all__ = [
     "directed_hausdorff_2d_partner_columns",
     "directed_max_of_nearest_distance_2d_partner_columns",
     "top_k_nearest_points_2d_partner_columns",
+    "ACTIVE_QUERY_ABORT_REASON_CODES",
+    "ACTIVE_QUERY_FRONTIER_BRIDGE_CONTRACT",
+    "ACTIVE_QUERY_MULTIROUND_STATUS_CONTRACT",
+    "ACTIVE_QUERY_OFFLOAD_ROW_SCHEMA",
+    "ACTIVE_QUERY_PAYLOAD_TRANSITION_TRACE_CONTRACT",
+    "ACTIVE_QUERY_PAYLOAD_TRANSITION_TRACE_ROW_SCHEMA",
+    "ACTIVE_QUERY_PAYLOAD_TRANSITION_TRACE_SUMMARY_CONTRACT",
+    "ACTIVE_QUERY_PAYLOAD_TRANSITION_TRACE_TELEMETRY_SCHEMA",
+    "ACTIVE_QUERY_STATUS_KIND_CODES",
+    "ACTIVE_QUERY_STATUS_MACHINE_CONTRACT",
+    "ACTIVE_QUERY_STATUS_STATE_MACHINE_NATIVE_SPIKE_CONTRACT",
+    "ACTIVE_QUERY_STATUS_STREAM_NATIVE_ABI_CONTRACT",
+    "ACTIVE_QUERY_STATUS_STREAM_NATIVE_ROW_SCHEMA",
+    "ACTIVE_QUERY_STATUS_STREAM_NATIVE_TELEMETRY_SCHEMA",
+    "ACTIVE_QUERY_STATUS_TRACE_SUMMARY_CONTRACT",
+    "ACTIVE_QUERY_TERMINAL_ROW_SCHEMA",
+    "active_query_status_state_machine_native_spike_contract",
+    "active_query_status_stream_native_abi_contract",
+    "active_query_status_from_frontier_row_table_numpy_columns",
+    "active_query_status_machine_reference_numpy_columns",
+    "active_query_status_multiround_reference_numpy_columns",
+    "active_query_status_trace_summary_numpy_columns",
+    "apply_active_query_feedback_numpy_columns",
+    "native_payload_transition_trace_stream_contract",
+    "payload_transition_trace_summary_numpy_columns",
+    "validate_native_payload_transition_trace_stream_contract",
+    "validate_active_query_status_state_machine_native_spike_contract",
+    "validate_active_query_status_stream_native_abi_contract",
+    "CELL_MBR_FRONTIER_KIND_CODES",
+    "CELL_MBR_TRAVERSAL_NATIVE_ABI_CONTRACT",
+    "CELL_MBR_TRAVERSAL_ROW_SCHEMA",
+    "HEAVY_OFFLOAD_WORKLIST_CONTRACT",
+    "HEAVY_OFFLOAD_WORKLIST_KIND_CODES",
+    "HEAVY_OFFLOAD_WORKLIST_ROW_SCHEMA",
     "PartnerCandidateRows",
+    "cell_mbr_nearest_frontier_aabb_membership_2d_numpy_columns",
+    "cell_mbr_nearest_frontier_aabb_membership_3d_numpy_columns",
+    "cell_mbr_nearest_frontier_native_3d_optix_columns",
+    "cell_mbr_nearest_frontier_numpy_columns",
+    "cell_mbr_frontiers_to_row_table_numpy_columns",
+    "cell_mbr_traversal_native_abi_contract",
     "cupy_group_argmin_then_global_argmax_with_witness",
     "cupy_group_topk",
     "directed_hausdorff_2d_cupy_columns",
     "directed_hausdorff_2d_numpy_columns",
+    "directed_hausdorff_3d_numpy_columns",
+    "heavy_offload_worklist_numpy_columns",
+    "max_nearest_distance_witness_numpy_columns",
+    "nearest_witness_from_cell_mbr_frontier_numpy_columns",
+    "nearest_witness_numpy_columns",
+    "nearest_state_frontier_from_cell_candidates_numpy_columns",
     "numpy_group_argmin_then_global_argmax_with_witness",
     "numpy_group_topk",
     "numpy_segmented_count",
     "numpy_segmented_minmax",
     "numpy_segmented_sum",
+    "pairwise_l2_distance_candidate_rows_numpy_columns",
     "point_rows_to_numpy_columns",
+    "point_rows_to_numpy_columns_3d",
+    "point_grid_cell_mbrs_native_3d_cuda_columns",
+    "point_grid_cell_mbrs_numpy_columns",
+    "radius_cell_mbr_candidate_rows_numpy_columns",
+    "plan_cell_mbr_traversal_lowering",
+    "seed_nearest_witness_from_grid_branch_bound_numpy_columns",
+    "seed_nearest_witness_from_grid_cell_budget_numpy_columns",
+    "seed_nearest_witness_from_local_grid_cell_numpy_columns",
+    "seed_nearest_witness_from_nearest_cell_mbr_numpy_columns",
+    "validate_cell_mbr_traversal_native_abi_contract",
     "radius_graph_components_2d_partner_columns",
     "radius_graph_components_2d_spatial_bucket_partner_columns",
     "radius_graph_components_3d_spatial_bucket_partner_columns",
@@ -3556,13 +3941,23 @@ _CONTRACT_FIRST_DIR_EXPORTS = (
     "ExecutionReport",
     "ExecutionResult",
     "any_hit",
+    "aggregate_frontier_reduce_execution_contract_3d",
+    "aggregate_frontier_reduce_spec_3d",
+    "aggregate_hierarchy_3d",
     "bounded_nearest",
     "closest_hit",
     "collect_aggregate_frontier_2d",
     "compile_kernel",
+    "describe_aggregate_hierarchy_3d_contract",
     "emit",
     "emit_segmented_row_stream",
     "find_primitive_hierarchy_node",
+    "GroupedOutputMaterializationResult",
+    "GroupedOutputRowBuffer",
+    "GroupedOutputRowBufferSchema",
+    "GroupedSequenceAssemblyPlan",
+    "GroupedSequenceAssemblyResult",
+    "assemble_grouped_path_split_records",
     "grouped_count",
     "grouped_sum",
     "hit_count",
@@ -3570,10 +3965,18 @@ _CONTRACT_FIRST_DIR_EXPORTS = (
     "intersections",
     "kernel",
     "nearest",
+    "partitioned_traversal_fanout_plan",
+    "select_partitioned_traversal_fanout",
+    "prepare_aggregate_hierarchy_3d",
     "primitives",
     "primitive_hierarchy",
     "refine",
     "run",
+    "assemble_grouped_path_split_records",
+    "assemble_grouped_output_row_buffer",
+    "assemble_grouped_sequences",
+    "materialize_grouped_output_row_buffer",
+    "prepare_grouped_output_row_buffer",
     "SegmentColumns2D",
     "shape_any_hit_rows",
     "shape_hit_count",

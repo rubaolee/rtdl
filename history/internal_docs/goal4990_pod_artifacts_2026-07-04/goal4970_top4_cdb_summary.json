@@ -1,0 +1,49 @@
+{
+  "county": {
+    "bytes": 59780073,
+    "chains": 1612,
+    "edges": 1705027,
+    "features": 441,
+    "path": "/root/rtdl_goal4988/Paper-reproduction-apps/rayjoin-paper/_data/top4_arcgis/top4_county.cdb",
+    "points": 1706639
+  },
+  "county_stage": {
+    "asset_id": "uscounty_feature_layer",
+    "downloaded_feature_count": 441,
+    "expected_feature_count": 441,
+    "page_count": 1,
+    "page_paths": [
+      "/root/rtdl_goal4988/Paper-reproduction-apps/rayjoin-paper/_data/top4_arcgis/county/page_000000.json"
+    ],
+    "where": "STATE_ABBR IN ('TX', 'CA', 'NY', 'PA')"
+  },
+  "host_label": "pod_157_157_221_29_25248",
+  "schema": "rtdl.paper_reproduction.rayjoin.goal4970_top4_arcgis_cdb.v1",
+  "states": [
+    "TX",
+    "CA",
+    "NY",
+    "PA"
+  ],
+  "zipcode": {
+    "bytes": 350084995,
+    "chains": 10144,
+    "edges": 9982960,
+    "features": 7035,
+    "path": "/root/rtdl_goal4988/Paper-reproduction-apps/rayjoin-paper/_data/top4_arcgis/top4_zipcode.cdb",
+    "points": 9993104
+  },
+  "zipcode_stage": {
+    "asset_id": "zipcode_feature_layer",
+    "downloaded_feature_count": 7035,
+    "expected_feature_count": 7035,
+    "page_count": 4,
+    "page_paths": [
+      "/root/rtdl_goal4988/Paper-reproduction-apps/rayjoin-paper/_data/top4_arcgis/zipcode/page_000000.json",
+      "/root/rtdl_goal4988/Paper-reproduction-apps/rayjoin-paper/_data/top4_arcgis/zipcode/page_002000.json",
+      "/root/rtdl_goal4988/Paper-reproduction-apps/rayjoin-paper/_data/top4_arcgis/zipcode/page_004000.json",
+      "/root/rtdl_goal4988/Paper-reproduction-apps/rayjoin-paper/_data/top4_arcgis/zipcode/page_006000.json"
+    ],
+    "where": "STATE IN ('TX', 'CA', 'NY', 'PA')"
+  }
+}

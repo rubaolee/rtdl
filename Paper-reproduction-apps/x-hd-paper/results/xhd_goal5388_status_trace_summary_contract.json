@@ -1,0 +1,137 @@
+{
+  "author_trace_v2_target": {
+    "active_in_queue_size": 437645,
+    "cmin2_after_load_balance_hash": 10400538358226239013,
+    "cmin2_after_ray_hash": 10400538358226239013,
+    "cmin2_initial_hash": 5369460447013261471,
+    "load_balance_feedback_update_count": 294,
+    "load_balance_group_count": 437645,
+    "load_balance_input_row_count": 27133990,
+    "raw_offload_row_hash": 4333109858711462591,
+    "raw_offload_row_sample_cell_ids": [
+      2924,
+      17,
+      17
+    ],
+    "raw_offload_row_sample_point_ids": [
+      11168,
+      210712,
+      437119
+    ],
+    "raw_offload_rows_before_sort_reduce": 27133990,
+    "schema": "rtdl.goal5385.author.lb_status_trace.v2",
+    "source": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5387_author_trace_v2_execution.json",
+    "status_count_offloading_append": 27133990
+  },
+  "claim_boundary": {
+    "author_rt_core_algorithm_parity_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_support_claimed": false,
+    "figure11_reproduction_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "generic_status_trace_summary_api_claimed": true,
+    "rtdl_author_performance_ratio_claimed": false,
+    "rtdl_hash_sample_parity_claimed": false,
+    "rtdl_row_count_parity_claimed": false,
+    "same_denominator_memory_claimed": false
+  },
+  "current_rtdl_candidate_gap": {
+    "any_hash_sample_comparable": false,
+    "any_row_count_parity": false,
+    "candidates": [
+      {
+        "active_query_count": 437645,
+        "artifact": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5381_full_bridge_probe_pod.json",
+        "has_raw_row_hash": false,
+        "has_raw_row_samples": false,
+        "hash_sample_comparable": false,
+        "offload_rows": 2188225,
+        "row_count_parity": false,
+        "source": "Goal5381 full bridge probe"
+      },
+      {
+        "active_query_count": 437645,
+        "artifact": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5383_full_seeded_active_initial_best_probe_pod.json",
+        "has_raw_row_hash": false,
+        "has_raw_row_samples": false,
+        "hash_sample_comparable": false,
+        "offload_rows": 2188225,
+        "row_count_parity": false,
+        "source": "Goal5383 active-initial-best full bridge probe"
+      }
+    ],
+    "gap": "Current full probes still under-count the author offload rows and do not preserve a full raw row table hash/sample comparable to Goal5387. The next native stream must emit the generic trace summary from the actual RTDL raw status rows."
+  },
+  "date": "2026-07-10",
+  "exit_label": "status_trace_summary_api_ready__next_native_stream_must_emit_summary",
+  "goal": "Goal5388",
+  "next_native_requirements": {
+    "minimum_fields": [
+      "row_count",
+      "status_count_offloading",
+      "active_query_count",
+      "raw_offload_row_hash",
+      "raw_offload_row_sample_query_or_source_ids",
+      "raw_offload_row_sample_cell_ids",
+      "status miss/completed/aborted counts",
+      "feedback update count"
+    ],
+    "must_compare_hash_or_samples_to_author_v2": true,
+    "must_compare_row_count_to_author_v2": true,
+    "must_emit_generic_trace_summary": true,
+    "must_keep_explicit_lb_fail_closed_until_parity": true
+  },
+  "purpose": "Add a generic active-query status trace summary API so RTDL status streams can be compared to Goal5387 author trace v2 with row counts, hashes, and samples rather than count-only evidence.",
+  "schema": "rtdl.paper_reproduction.xhd.goal5388.status_trace_summary_contract.v1",
+  "status": "generic_trace_summary_contract_ready__native_full_trace_still_missing",
+  "system_api": {
+    "app_semantics": "none",
+    "contract": "generic_active_query_status_trace_summary_v1",
+    "demo_summary": {
+      "active_query_count": 3,
+      "hash_columns": [
+        "source_ids",
+        "cell_ids"
+      ],
+      "raw_offload_row_hash": 18399655321477496161,
+      "row_count": 4,
+      "sample_indices": [
+        0,
+        2,
+        3
+      ],
+      "samples": {
+        "cell_ids": [
+          50,
+          60,
+          70
+        ],
+        "source_ids": [
+          100,
+          101,
+          102
+        ],
+        "work_counts": [
+          7,
+          11,
+          13
+        ]
+      },
+      "status_count_offloading": 4
+    },
+    "function": "active_query_status_trace_summary_numpy_columns",
+    "metadata": {
+      "adapter": "active_query_status_trace_summary_numpy_columns",
+      "app_semantics": "none",
+      "contract": "generic_active_query_status_trace_summary_v1",
+      "default_hash_offset": 1469598103934665603,
+      "explicit_app_option_support_claimed": false,
+      "hash_contract": "fnv1a_u64_over_selected_int64_columns",
+      "native_engine_row_contract": "not_called_cpu_reference_only",
+      "partner": "numpy",
+      "rt_core_speedup_claim_authorized": false,
+      "whole_app_speedup_claim_authorized": false
+    }
+  }
+}

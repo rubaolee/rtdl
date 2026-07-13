@@ -1,0 +1,101 @@
+{
+  "cache_env": {
+    "RTDL_PLANAR_MAP_CDB_PACKED_CACHE_DIR": null,
+    "RTDL_RAYJOIN_OVERLAY_PACKED_CACHE_DIR": null
+  },
+  "runs": [
+    {
+      "loads": [
+        {
+          "bounds": [
+            73.3778761,
+            167.9699741,
+            -54.7704428,
+            -9.2320578
+          ],
+          "edge_count": 14430155,
+          "label": "left",
+          "path": "/workspace/goal4848_rep/current_osm_au/lakes_Australia_current_osm_Point.cdb",
+          "point_count": 14788065,
+          "wall_sec": 23.719194404780865
+        },
+        {
+          "bounds": [
+            105.6713281,
+            167.9654646,
+            -43.3160294,
+            -10.430788
+          ],
+          "edge_count": 941375,
+          "label": "right",
+          "path": "/workspace/goal4848_rep/current_osm_au/parks_Australia_current_osm_Point.cdb",
+          "point_count": 992505,
+          "wall_sec": 2.1784258857369423
+        }
+      ],
+      "repeat": 0
+    },
+    {
+      "loads": [
+        {
+          "bounds": [
+            73.3778761,
+            167.9699741,
+            -54.7704428,
+            -9.2320578
+          ],
+          "edge_count": 14430155,
+          "label": "left",
+          "path": "/workspace/goal4848_rep/current_osm_au/lakes_Australia_current_osm_Point.cdb",
+          "point_count": 14788065,
+          "wall_sec": 22.54993600398302
+        },
+        {
+          "bounds": [
+            105.6713281,
+            167.9654646,
+            -43.3160294,
+            -10.430788
+          ],
+          "edge_count": 941375,
+          "label": "right",
+          "path": "/workspace/goal4848_rep/current_osm_au/parks_Australia_current_osm_Point.cdb",
+          "point_count": 992505,
+          "wall_sec": 2.026136741042137
+        }
+      ],
+      "repeat": 1
+    },
+    {
+      "loads": [
+        {
+          "bounds": [
+            73.3778761,
+            167.9699741,
+            -54.7704428,
+            -9.2320578
+          ],
+          "edge_count": 14430155,
+          "label": "left",
+          "path": "/workspace/goal4848_rep/current_osm_au/lakes_Australia_current_osm_Point.cdb",
+          "point_count": 14788065,
+          "wall_sec": 22.943617187440395
+        },
+        {
+          "bounds": [
+            105.6713281,
+            167.9654646,
+            -43.3160294,
+            -10.430788
+          ],
+          "edge_count": 941375,
+          "label": "right",
+          "path": "/workspace/goal4848_rep/current_osm_au/parks_Australia_current_osm_Point.cdb",
+          "point_count": 992505,
+          "wall_sec": 2.027783542871475
+        }
+      ],
+      "repeat": 2
+    }
+  ]
+}

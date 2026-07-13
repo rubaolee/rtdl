@@ -1,0 +1,35 @@
+{
+  "pairs": 13452,
+  "row_mismatches": [],
+  "row_prefix_equal_checked": true,
+  "sort_results": {
+    "exact_cmp": {
+      "map0": {
+        "first_mismatches": [],
+        "new_count": 13452,
+        "old_count": 13452,
+        "order_equal_prefix_checked": true
+      },
+      "map1": {
+        "first_mismatches": [],
+        "new_count": 13452,
+        "old_count": 13452,
+        "order_equal_prefix_checked": true
+      }
+    },
+    "scaled_int": {
+      "map0": {
+        "first_mismatches": [],
+        "new_count": 13452,
+        "old_count": 13452,
+        "order_equal_prefix_checked": true
+      },
+      "map1": {
+        "first_mismatches": [],
+        "new_count": 13452,
+        "old_count": 13452,
+        "order_equal_prefix_checked": true
+      }
+    }
+  }
+}

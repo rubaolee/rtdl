@@ -1,0 +1,300 @@
+{
+  "cases": [
+    {
+      "author_rtdl_count": 216977211,
+      "case_id": "parks_Europe_range-intersects_select_0.01_queries_10000",
+      "evidence_source": "results/goal5514_exact_range_intersects_select001_resolution_gate.json",
+      "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_10000/parks_Europe.wkt",
+      "status": "matched"
+    },
+    {
+      "case_id": "parks.bz2_range-intersects_select_0.01_queries_10000",
+      "evidence_source": "results/goal5514_parks_bz2_select001_10000.json",
+      "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_10000/parks.bz2.wkt",
+      "status": "author_capacity_failure"
+    },
+    {
+      "author_rtdl_count": 1570285,
+      "case_id": "dtl_cnty_range-intersects_select_0.01_queries_10000",
+      "evidence_source": "results/goal5514_exact_range_intersects_select001_resolution_gate.json",
+      "geometry": "PPoPPAE/datasets/polygons/dtl_cnty.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_10000/dtl_cnty.wkt",
+      "status": "matched"
+    },
+    {
+      "author_rtdl_count": 1113229623,
+      "case_id": "lakes.bz2_range-intersects_select_0.01_queries_10000",
+      "evidence_source": "results/goal5514_exact_range_intersects_select001_resolution_gate.json",
+      "geometry": "PPoPPAE/datasets/polygons/lakes.bz2.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_10000/lakes.bz2.wkt",
+      "status": "matched"
+    },
+    {
+      "author_rtdl_count": 33404355,
+      "case_id": "USACensusBlockGroupBoundaries_range-intersects_select_0.01_queries_10000",
+      "evidence_source": "results/goal5514_exact_range_intersects_select001_resolution_gate.json",
+      "geometry": "PPoPPAE/datasets/polygons/USACensusBlockGroupBoundaries.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_10000/USACensusBlockGroupBoundaries.wkt",
+      "status": "matched"
+    },
+    {
+      "author_rtdl_count": 55205607,
+      "case_id": "USADetailedWaterBodies_range-intersects_select_0.01_queries_10000",
+      "evidence_source": "results/goal5514_exact_range_intersects_select001_resolution_gate.json",
+      "geometry": "PPoPPAE/datasets/polygons/USADetailedWaterBodies.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_10000/USADetailedWaterBodies.wkt",
+      "status": "matched"
+    },
+    {
+      "case_id": "parks_Europe_range-intersects_select_0.0001_queries_10000",
+      "evidence_source": "results/goal5509_exact_range_intersects_next_batch_gate.json",
+      "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.0001_queries_10000/parks_Europe.wkt",
+      "status": "matched"
+    },
+    {
+      "case_id": "parks.bz2_range-intersects_select_0.0001_queries_10000",
+      "evidence_source": "results/goal5512_parks_bz2_select0001_10000.json",
+      "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.0001_queries_10000/parks.bz2.wkt",
+      "status": "author_capacity_failure"
+    },
+    {
+      "case_id": "dtl_cnty_range-intersects_select_0.0001_queries_10000",
+      "evidence_source": "results/goal5509_exact_range_intersects_next_batch_gate.json",
+      "geometry": "PPoPPAE/datasets/polygons/dtl_cnty.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.0001_queries_10000/dtl_cnty.wkt",
+      "status": "matched"
+    },
+    {
+      "author_rtdl_count": 10579596,
+      "case_id": "lakes.bz2_range-intersects_select_0.0001_queries_10000",
+      "evidence_source": "results/goal5512_lakes_bz2_select0001_10000.json",
+      "geometry": "PPoPPAE/datasets/polygons/lakes.bz2.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.0001_queries_10000/lakes.bz2.wkt",
+      "status": "matched"
+    },
+    {
+      "case_id": "USACensusBlockGroupBoundaries_range-intersects_select_0.0001_queries_10000",
+      "evidence_source": "results/goal5509_exact_range_intersects_next_batch_gate.json",
+      "geometry": "PPoPPAE/datasets/polygons/USACensusBlockGroupBoundaries.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.0001_queries_10000/USACensusBlockGroupBoundaries.wkt",
+      "status": "matched"
+    },
+    {
+      "case_id": "USADetailedWaterBodies_range-intersects_select_0.0001_queries_10000",
+      "evidence_source": "results/goal5509_exact_range_intersects_next_batch_gate.json",
+      "geometry": "PPoPPAE/datasets/polygons/USADetailedWaterBodies.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.0001_queries_10000/USADetailedWaterBodies.wkt",
+      "status": "matched"
+    },
+    {
+      "case_id": "parks_Europe_range-intersects_select_0.001_queries_40000",
+      "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_40000/parks_Europe.wkt",
+      "status": "not_checkpointed"
+    },
+    {
+      "case_id": "parks.bz2_range-intersects_select_0.001_queries_40000",
+      "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_40000/parks.bz2.wkt",
+      "status": "not_checkpointed"
+    },
+    {
+      "case_id": "parks_Europe_range-intersects_select_0.01_queries_50000",
+      "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_50000/parks_Europe.wkt",
+      "status": "not_checkpointed"
+    },
+    {
+      "case_id": "parks.bz2_range-intersects_select_0.01_queries_50000",
+      "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_50000/parks.bz2.wkt",
+      "status": "not_checkpointed"
+    },
+    {
+      "case_id": "dtl_cnty_range-intersects_select_0.01_queries_50000",
+      "geometry": "PPoPPAE/datasets/polygons/dtl_cnty.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_50000/dtl_cnty.wkt",
+      "status": "not_checkpointed"
+    },
+    {
+      "case_id": "lakes.bz2_range-intersects_select_0.01_queries_50000",
+      "geometry": "PPoPPAE/datasets/polygons/lakes.bz2.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_50000/lakes.bz2.wkt",
+      "status": "not_checkpointed"
+    },
+    {
+      "case_id": "USACensusBlockGroupBoundaries_range-intersects_select_0.01_queries_50000",
+      "geometry": "PPoPPAE/datasets/polygons/USACensusBlockGroupBoundaries.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_50000/USACensusBlockGroupBoundaries.wkt",
+      "status": "not_checkpointed"
+    },
+    {
+      "case_id": "USADetailedWaterBodies_range-intersects_select_0.01_queries_50000",
+      "geometry": "PPoPPAE/datasets/polygons/USADetailedWaterBodies.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_50000/USADetailedWaterBodies.wkt",
+      "status": "not_checkpointed"
+    },
+    {
+      "case_id": "parks_Europe_range-intersects_select_0.001_queries_10000",
+      "evidence_source": "results/goal5511_exact_range_intersects_select0001_gate.json",
+      "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_10000/parks_Europe.wkt",
+      "status": "matched"
+    },
+    {
+      "case_id": "parks.bz2_range-intersects_select_0.001_queries_10000",
+      "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_10000/parks.bz2.wkt",
+      "status": "not_checkpointed"
+    },
+    {
+      "case_id": "dtl_cnty_range-intersects_select_0.001_queries_10000",
+      "evidence_source": "results/goal5511_exact_range_intersects_select0001_gate.json",
+      "geometry": "PPoPPAE/datasets/polygons/dtl_cnty.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_10000/dtl_cnty.wkt",
+      "status": "matched"
+    },
+    {
+      "case_id": "lakes.bz2_range-intersects_select_0.001_queries_10000",
+      "geometry": "PPoPPAE/datasets/polygons/lakes.bz2.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_10000/lakes.bz2.wkt",
+      "status": "not_checkpointed"
+    },
+    {
+      "case_id": "USACensusBlockGroupBoundaries_range-intersects_select_0.001_queries_10000",
+      "evidence_source": "results/goal5511_exact_range_intersects_select0001_gate.json",
+      "geometry": "PPoPPAE/datasets/polygons/USACensusBlockGroupBoundaries.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_10000/USACensusBlockGroupBoundaries.wkt",
+      "status": "matched"
+    },
+    {
+      "case_id": "USADetailedWaterBodies_range-intersects_select_0.001_queries_10000",
+      "evidence_source": "results/goal5511_exact_range_intersects_select0001_gate.json",
+      "geometry": "PPoPPAE/datasets/polygons/USADetailedWaterBodies.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_10000/USADetailedWaterBodies.wkt",
+      "status": "matched"
+    },
+    {
+      "case_id": "parks_Europe_range-intersects_select_0.001_queries_30000",
+      "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_30000/parks_Europe.wkt",
+      "status": "not_checkpointed"
+    },
+    {
+      "case_id": "parks.bz2_range-intersects_select_0.001_queries_30000",
+      "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_30000/parks.bz2.wkt",
+      "status": "not_checkpointed"
+    },
+    {
+      "case_id": "parks_Europe_range-intersects_select_0.0001_queries_50000",
+      "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.0001_queries_50000/parks_Europe.wkt",
+      "status": "not_checkpointed"
+    },
+    {
+      "case_id": "parks.bz2_range-intersects_select_0.0001_queries_50000",
+      "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.0001_queries_50000/parks.bz2.wkt",
+      "status": "not_checkpointed"
+    },
+    {
+      "case_id": "dtl_cnty_range-intersects_select_0.0001_queries_50000",
+      "geometry": "PPoPPAE/datasets/polygons/dtl_cnty.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.0001_queries_50000/dtl_cnty.wkt",
+      "status": "not_checkpointed"
+    },
+    {
+      "case_id": "lakes.bz2_range-intersects_select_0.0001_queries_50000",
+      "geometry": "PPoPPAE/datasets/polygons/lakes.bz2.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.0001_queries_50000/lakes.bz2.wkt",
+      "status": "not_checkpointed"
+    },
+    {
+      "case_id": "USACensusBlockGroupBoundaries_range-intersects_select_0.0001_queries_50000",
+      "geometry": "PPoPPAE/datasets/polygons/USACensusBlockGroupBoundaries.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.0001_queries_50000/USACensusBlockGroupBoundaries.wkt",
+      "status": "not_checkpointed"
+    },
+    {
+      "case_id": "USADetailedWaterBodies_range-intersects_select_0.0001_queries_50000",
+      "geometry": "PPoPPAE/datasets/polygons/USADetailedWaterBodies.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.0001_queries_50000/USADetailedWaterBodies.wkt",
+      "status": "not_checkpointed"
+    },
+    {
+      "case_id": "parks_Europe_range-intersects_select_0.001_queries_20000",
+      "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_20000/parks_Europe.wkt",
+      "status": "not_checkpointed"
+    },
+    {
+      "case_id": "parks.bz2_range-intersects_select_0.001_queries_20000",
+      "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_20000/parks.bz2.wkt",
+      "status": "not_checkpointed"
+    },
+    {
+      "case_id": "parks_Europe_range-intersects_select_0.001_queries_50000",
+      "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_50000/parks_Europe.wkt",
+      "status": "not_checkpointed"
+    },
+    {
+      "case_id": "parks.bz2_range-intersects_select_0.001_queries_50000",
+      "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_50000/parks.bz2.wkt",
+      "status": "not_checkpointed"
+    },
+    {
+      "case_id": "dtl_cnty_range-intersects_select_0.001_queries_50000",
+      "geometry": "PPoPPAE/datasets/polygons/dtl_cnty.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_50000/dtl_cnty.wkt",
+      "status": "not_checkpointed"
+    },
+    {
+      "case_id": "lakes.bz2_range-intersects_select_0.001_queries_50000",
+      "geometry": "PPoPPAE/datasets/polygons/lakes.bz2.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_50000/lakes.bz2.wkt",
+      "status": "not_checkpointed"
+    },
+    {
+      "case_id": "USACensusBlockGroupBoundaries_range-intersects_select_0.001_queries_50000",
+      "geometry": "PPoPPAE/datasets/polygons/USACensusBlockGroupBoundaries.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_50000/USACensusBlockGroupBoundaries.wkt",
+      "status": "not_checkpointed"
+    },
+    {
+      "case_id": "USADetailedWaterBodies_range-intersects_select_0.001_queries_50000",
+      "geometry": "PPoPPAE/datasets/polygons/USADetailedWaterBodies.wkt",
+      "query": "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_50000/USADetailedWaterBodies.wkt",
+      "status": "not_checkpointed"
+    }
+  ],
+  "claim_boundary": {
+    "author_performance_parity_claimed": false,
+    "complete_paper_reproduction_claimed": false,
+    "complete_range_intersects_matrix_claimed": false,
+    "coverage_ledger_only": true,
+    "device_zero_copy_claimed": false,
+    "embree_in_scope": false,
+    "figure6_reproduced": false,
+    "performance_ratio_authorized": false,
+    "pointwise_intersection_equivalence_claimed": false
+  },
+  "exact_archive_pair_count": 42,
+  "interpretation": "Fourteen exact same-input count matches and two author capacity failures are checkpointed across the inventory; twenty-six pairs remain not checkpointed. The ledger does not infer semantics from absent inputs or from count-only evidence.",
+  "inventory_source": "results/librts_goal5492_exact_archive_operation_inventory.json",
+  "operation": "range_intersects",
+  "schema": "rtdl.paper_reproduction.librts.goal5516_range_intersects_coverage_ledger.v1",
+  "status": "range_intersects_exact_archive_coverage_reconciled",
+  "status_counts": {
+    "author_capacity_failure": 2,
+    "matched": 14,
+    "not_checkpointed": 26
+  }
+}

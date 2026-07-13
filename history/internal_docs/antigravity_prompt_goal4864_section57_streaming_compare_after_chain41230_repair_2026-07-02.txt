@@ -1,0 +1,15 @@
+Please review:
+
+history/internal_docs/call_for_review_goal4864_section57_streaming_compare_after_chain41230_repair_2026-07-02.md
+
+Please write your review result to:
+
+history/internal_docs/antigravity_goal4864_section57_streaming_compare_after_chain41230_repair_review_2026-07-02.md
+
+Use one of these verdict labels:
+
+- approve_goal4864_chain41230_fixed_next_blocker_coordinate_rounding
+- approve_with_required_amendments_before_goal4865
+- reject_goal4864_classification
+
+Please answer all review questions in the call-for-review file.

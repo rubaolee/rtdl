@@ -1,0 +1,104 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.backend_assisted_cell_mbr_frontdoor.v1",
+  "goal": "Goal5142",
+  "date": "2026-07-08",
+  "status": "generic_backend_assisted_2d_cell_mbr_frontdoor_ready",
+  "verdict": "implemented_backend_assisted_2d_frontdoor__native_symbol_still_missing",
+  "scope": {
+    "implemented_public_api": true,
+    "implemented_native_symbol": false,
+    "implemented_complete_optix_backend": false,
+    "performance_claim": false,
+    "xhd_specific_primitive": false,
+    "author_code_copied": false,
+    "review_status": "implemented_review_pending"
+  },
+  "new_public_api": [
+    "rtdsl.cell_mbr_nearest_frontier_aabb_membership_2d_numpy_columns"
+  ],
+  "updated_public_api": [
+    "rtdsl.plan_cell_mbr_traversal_lowering"
+  ],
+  "route": {
+    "contract": "generic_cell_mbr_nearest_frontier_aabb_membership_2d",
+    "native_abi_contract": "generic_cell_mbr_nearest_frontier_native_abi_v1",
+    "broadphase": "generic_expanded_aabb_point_membership_rows_2d_v1",
+    "backend_options": [
+      "cpu",
+      "embree",
+      "optix"
+    ],
+    "exact_filter": "point_to_cell_mbr_min_distance_lte_radius",
+    "state_split": "generic_nearest_state_cell_frontier",
+    "row_table": "generic_cell_mbr_nearest_frontier_row_table",
+    "row_schema": [
+      "frontier_kind_code",
+      "query_row_id",
+      "query_point_id",
+      "cell_id",
+      "point_begin_offset",
+      "point_count",
+      "min_distance",
+      "max_distance"
+    ]
+  },
+  "validation": {
+    "tests": [
+      {
+        "command": "py -m unittest tests.goal5142_generic_cell_mbr_backend_assisted_frontdoor_test",
+        "result": "Ran 4 tests OK",
+        "covers": [
+          "row table equality against Goal5140 NumPy reference",
+          "expanded-AABB broadphase false-positive exact filtering",
+          "fail-closed output row capacity overflow",
+          "public surface and app-neutral source window"
+        ]
+      },
+      {
+        "command": "py -m unittest tests.goal5140_generic_cell_mbr_traversal_abi_test tests.goal5139_generic_nearest_state_frontier_api_test tests.goal5138_generic_grid_cell_candidate_api_test tests.goal5127_xhd_generic_nearest_pipeline_extraction_test tests.goal5128_non_hausdorff_max_nearest_consumer_test",
+        "result": "Ran 16 tests OK",
+        "covers": [
+          "prior cell-MBR ABI/reference contracts remain intact",
+          "nearest-state frontier contract remains intact",
+          "grid-cell and nearest pipeline extraction tests remain intact"
+        ]
+      },
+      {
+        "command": "py -m unittest tests.goal5110_xhd_paper_app_scaffold_test tests.goal5111_xhd_author_json_gate_test tests.goal5113_xhd_bounded2d_author_gate_test tests.goal5114_xhd_bounded3d_author_gate_test tests.goal5115_xhd_rtdl_route_gate_test tests.goal5117_generic_3d_hausdorff_column_route_test tests.goal5118_xhd_bounded3d_rtdl_route_gate_test tests.goal5127_xhd_generic_nearest_pipeline_extraction_test tests.goal5128_non_hausdorff_max_nearest_consumer_test tests.goal5133_xhd_ply_input_bridge_test tests.goal5134_xhd_ply_sample_gate_packet_test tests.goal5138_generic_grid_cell_candidate_api_test tests.goal5139_generic_nearest_state_frontier_api_test tests.goal5140_generic_cell_mbr_traversal_abi_test tests.goal5142_generic_cell_mbr_backend_assisted_frontdoor_test",
+        "result": "Ran 48 tests OK",
+        "covers": [
+          "current X-HD bounded/scaffold/route light regression",
+          "generic nearest extraction and non-Hausdorff consumer",
+          "generic grid-cell, nearest-state, ABI, and backend-assisted front door"
+        ]
+      }
+    ],
+    "local_backend_exercised": "cpu",
+    "optix_backend_runtime_exercised": false,
+    "why_optix_not_exercised_locally": "This local validation is CPU backend correctness over the same AABB-membership contract. A POD/native-library run is required to exercise backend=\"optix\"."
+  },
+  "claim_boundary": {
+    "allowed": [
+      "A generic executable 2-D backend-assisted front door now connects AABB membership rows to the Goal5140 cell-MBR frontier row table.",
+      "The same API can request backend=\"optix\" when a current OptiX AABB row-output library is available.",
+      "The route preserves app-neutral row schema and fail-closed overflow behavior."
+    ],
+    "not_allowed": [
+      "A complete native Goal5140 backend exists.",
+      "The dedicated rtdl_optix_collect_cell_mbr_nearest_frontier symbol exists.",
+      "X-HD RT algorithm is reproduced.",
+      "X-HD performance is improved or comparable to the author.",
+      "The 2-D assisted route is a 3-D graphics-paper performance route."
+    ]
+  },
+  "recommended_next_goal": {
+    "goal": "Goal5143",
+    "name": "POD OptiX execution and 3-D/native-symbol decision gate",
+    "type": "hardware_validation_and_design_gate",
+    "minimum_work": [
+      "Run cell_mbr_nearest_frontier_aabb_membership_2d_numpy_columns with backend=\"optix\" on a POD and verify row-table equality.",
+      "Decide whether to implement a true native symbol next or first extend the assisted front door to 3-D.",
+      "Do not claim X-HD performance from the 2-D smoke."
+    ]
+  }
+}

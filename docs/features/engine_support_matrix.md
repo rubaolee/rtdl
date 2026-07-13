@@ -25,6 +25,8 @@ The machine-readable source of truth is
 | Feature | Embree | OptiX | Vulkan | HIPRT | Apple RT |
 | --- | --- | --- | --- | --- | --- |
 | `line_segment_intersection_2d` | `native` | `native` | `native` | `native` | `native_assisted` |
+| `planar_map_lsi_count_2d` | `unsupported_explicit` | `native` | `unsupported_explicit` | `unsupported_explicit` | `unsupported_explicit` |
+| `planar_map_point_location_2d` | `unsupported_explicit` | `native` | `unsupported_explicit` | `unsupported_explicit` | `unsupported_explicit` |
 | `point_in_polygon_2d` | `native` | `native` | `native` | `native` | `native_assisted` |
 | `overlay_compose_2d` | `native` | `native` | `native` | `native` | `native_assisted` |
 | `point_nearest_segment_2d` | `native` | `native` | `native` | `native` | `native_assisted` |
@@ -58,3 +60,11 @@ The machine-readable source of truth is
   native backend reduction.
 - Local backend libraries may reject a feature or use a compatibility path until
   rebuilt from the current source.
+- `planar_map_lsi_count_2d` is a count-only CDB/planar-map LSI primitive. It is
+  not polygon overlay, not full Section 5.2 8/8 reproduction, and not a speedup
+  claim.
+- `planar_map_point_location_2d` is a CDB/planar-map point-location/PIP
+  primitive. It is not polygon overlay, not a full RayJoin reproduction claim,
+  and not a speedup claim. The current public front door is OptiX-only and wraps
+  a historical native route through a guarded compatibility bridge; it is not a
+  fully generalized native planar-map point-location ABI across all engines.

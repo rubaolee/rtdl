@@ -780,7 +780,7 @@ def run_app(
                 abs_tol=1e-5,
             ),
             "rtdl_role": (
-                "RTDL v2.6 Numba witness mode turns point rows into generic grouped "
+                "RTDL legacy Numba witness mode turns point rows into generic grouped "
                 "score rows on the Numba device, then uses group_argmin_then_global_argmax_partner_columns "
                 "with user-selected partner=\"numba\". The native engine is not "
                 "app-customized and RT traversal is not called in this exact dense path."
@@ -838,7 +838,7 @@ def run_app(
                 abs_tol=1e-5,
             ),
             "rtdl_role": (
-                "RTDL v2.6 Numba block-nearest witness mode summarizes point-pair "
+                "RTDL legacy Numba block-nearest witness mode summarizes point-pair "
                 "tiles into generic nearest score rows on the Numba device, then "
                 "uses group_argmin_then_global_argmax_partner_columns with "
                 "user-selected partner=\"numba\". The native engine is not "

@@ -1,0 +1,57 @@
+{
+  "claim_boundary": {
+    "device_resident_carrier": false,
+    "fresh_one_shot_headline": false,
+    "prewarm_time_excluded_from_route_window": true,
+    "route": "fast_pack_writer_free_binary",
+    "ten_x_claim_authorized": false,
+    "true_query_many_measurement": false
+  },
+  "prewarm_enabled": true,
+  "prewarm_result": {
+    "elapsed_sec": 1.299909496679902,
+    "extended_timings": {
+      "count_download": 1.9107e-05,
+      "device_alloc": 8.0713e-05,
+      "emitted_count": 1,
+      "exact_pipeline_ensure": 0.474305728,
+      "grouped_range_ensure": 0.000177257,
+      "mode": "pair_id_rows_prepared_left_grouped_range_direct_intersection",
+      "optix_launch": 0.000136008,
+      "param_upload": 5.23e-06,
+      "raw_candidate_count": 0,
+      "scaled_cache_ensure": 2.128e-05,
+      "schema": "rtdl.optix.segment_pair.extended_phase_timings.v1",
+      "split_kernel_ensure": 0.341871536,
+      "split_kernel_launch": 1.2784e-05,
+      "total_native": 0.816674558
+    },
+    "row_count": 1,
+    "schema": "rtdl.goal5007.generic_lsi_tiny_prewarm.v1",
+    "traversal_seconds": 0.000158381
+  },
+  "regime": "warm_process_fresh_fastpack_route_window",
+  "route_elapsed_sec": 23.222094541415572,
+  "schema": "rtdl.goal5007.p3_fastpack_fresh_probe.v1",
+  "summary_compact": {
+    "descriptor_pair_count": 15014,
+    "downstream_floor_sec": 1.6218267176300287,
+    "key_phase_seconds": {
+      "grouped_compiled_columnar_carrier_construction_sec": 0.1776164099574089,
+      "grouped_descriptor_pair_count_consumer_sec": 0.017922211438417435,
+      "intersection_reprojection_device_columnar_sec": 0.612529531121254,
+      "lsi_bounded_exact_pair_id_device_columns_sec": 1.7701441962271929,
+      "midpoint_pip_map0_sec": 0.004084225744009018,
+      "midpoint_pip_map1_sec": 0.003875289112329483,
+      "midpoint_points_map0_columnar_sec": 0.01860722154378891,
+      "midpoint_points_map1_columnar_sec": 0.011871416121721268,
+      "sort_map0_device_columnar_sec": 0.27963230200111866,
+      "sort_map1_device_columnar_sec": 0.09541728347539902,
+      "vertex_pip_map0_in_map1_sec": 0.06664876826107502,
+      "vertex_pip_map1_in_map0_sec": 0.33247566036880016
+    },
+    "lsi_phase_sec": 1.7701441962271929,
+    "lsi_row_count": 428322,
+    "writer_free_hot_sec": 3.3919709138572216
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "schema": "rtdl.paper_reproduction.librts.ray_multicast_source_manifest.v1",
+  "paper": {
+    "title": "LibRTS: A Spatial Indexing Library by Ray Tracing",
+    "official_pdf": "https://gengl.me/public/publications/ppopp25.pdf",
+    "section": "3.4 Ray Multicast for Load Balancing",
+    "figure": "Figure 5",
+    "equations": [3, 4, 5],
+    "publication_pages": [401, 402]
+  },
+  "source": {
+    "repository": "https://github.com/RTSpatial/RTSpatial",
+    "commit": "7c54c181b1058c87768767998c00e225cc58666e",
+    "files": [
+      {
+        "path": "include/rtspatial/spatial_index.cuh",
+        "sha256": "93d504254a07721c2ccc20294c2b73a351c27ac728ddc5b9740c40d4d8438e8e",
+        "anchors": [
+          "IntersectsWhatQueryProfiling lines 566-683",
+          "CalculateBestParallelism lines 690-759"
+        ]
+      },
+      {
+        "path": "src/shaders/shaders_intersects_envelope_query_2d.cu",
+        "sha256": "1f1dc0507bfc2abb813d17c23ae39914f358b466caf4a3e9ced52354c91faea2",
+        "anchors": [
+          "backward intersection lines 76-96",
+          "backward raygen lines 98-127"
+        ]
+      },
+      {
+        "path": "examples/spatial_index.cu",
+        "sha256": "20d3e025da57857beedf24682a22b5cdd72aeff69f48cdd02da780859b58f0dd",
+        "anchors": ["parallelism selection and override lines 101-111"]
+      },
+      {
+        "path": "examples/flags.cpp",
+        "sha256": "991b26a9854b06125de1711d83686d3d3a4eebd933e2acc5f041de0e67098165",
+        "anchors": ["parallelism flag line 10"]
+      }
+    ]
+  },
+  "mechanism": {
+    "scope": "range-intersects backward casting only",
+    "primitive_partition": "prepared query AABBs use stable ordinal modulo k",
+    "disjoint_encoding": "query AABBs are placed in z layers equal to ordinal modulo k",
+    "ray_fanout": "each indexed geometry anti-diagonal is launched once per layer",
+    "layer_filter": "payload layer must equal primitive ordinal modulo launch dimension y",
+    "coverage": "every primitive belongs to one layer and every ray visits every layer",
+    "parameter_selection": "sample pair selectivity and search power-of-two k values with a weighted ray-cast/intersection cost model"
+  },
+  "claim_boundary": {
+    "author_behavior_reimplemented": false,
+    "native_backend_implemented": false,
+    "runtime_speedup_measured": false,
+    "figure9_reproduced": false,
+    "full_paper_reproduction_claimed": false,
+    "embree_in_scope": false
+  }
+}

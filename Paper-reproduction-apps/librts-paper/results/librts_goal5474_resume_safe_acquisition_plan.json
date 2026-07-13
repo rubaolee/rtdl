@@ -1,0 +1,60 @@
+{
+  "archive": {
+    "expected_md5": "89e589f086038f1cd3af9e3ed67da8c8",
+    "expected_size_bytes": 23062425365,
+    "final_path": "C:\\rtdl-librts-datasets\\PPoPPAE-v2.tar.gz",
+    "name": "PPoPPAE-v2.tar.gz",
+    "partial_path": "C:\\rtdl-librts-datasets\\PPoPPAE-v2.tar.gz.part",
+    "url": "https://zenodo.org/records/14209767/files/PPoPPAE-v2.tar.gz?download=1"
+  },
+  "claim_boundary": {
+    "archive_extracted": false,
+    "archive_verified": false,
+    "download_executed": false,
+    "embree_in_scope": false,
+    "exact_inputs_acquired": false,
+    "paper_figure_reproduced": false,
+    "performance_ratio_authorized": false
+  },
+  "host": {
+    "acquisition_resource_checks": {
+      "free_disk": false,
+      "linux": false,
+      "ram": false
+    },
+    "download_authorized": false,
+    "free_disk_bytes": 29853442048,
+    "gpu_name": "unavailable",
+    "gpu_vram_mib": 0,
+    "paper_execution_host_suitable": false,
+    "paper_execution_resource_checks": {
+      "free_disk": false,
+      "gpu_vram": false,
+      "linux": false,
+      "ram": false
+    },
+    "platform": "Windows",
+    "ram_bytes": 0
+  },
+  "resume_contract": {
+    "command": [
+      "curl",
+      "--location",
+      "--fail",
+      "--retry",
+      "8",
+      "--retry-all-errors",
+      "--continue-at",
+      "-",
+      "--output",
+      "C:\\rtdl-librts-datasets\\PPoPPAE-v2.tar.gz.part",
+      "https://zenodo.org/records/14209767/files/PPoPPAE-v2.tar.gz?download=1"
+    ],
+    "extract_is_a_separate_gate": true,
+    "partial_file_survives_failed_transfer": true,
+    "promotion_is_atomic_replace": true,
+    "promotion_requires_size_and_md5": true
+  },
+  "schema": "rtdl.paper_reproduction.librts.resume_safe_acquisition.v1",
+  "status": "resume_safe_acquisition_prepared__host_resource_gate_failed"
+}

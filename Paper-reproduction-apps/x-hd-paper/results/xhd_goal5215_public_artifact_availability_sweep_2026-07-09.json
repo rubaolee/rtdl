@@ -1,0 +1,101 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.public_artifact_availability_sweep.v1",
+  "goal": "Goal5215",
+  "date": "2026-07-09",
+  "purpose": "Audit whether public web/repository artifacts provide exact X-HD paper input datasets or deterministic reconstruction provenance.",
+  "public_sources_checked": [
+    {
+      "kind": "github_repository",
+      "url": "https://github.com/pwrliang/X-HD",
+      "finding": "Repository is public source-code release for the X-HD ICS paper. GitHub page reports no releases and no packages."
+    },
+    {
+      "kind": "author_publication_page",
+      "url": "https://gengl.me/publications/ics26/",
+      "finding": "Publication page identifies the X-HD paper but does not expose a dataset download."
+    },
+    {
+      "kind": "paper_pdf",
+      "url": "https://rubaolee.github.io/paper_pdfs/2026-xhd.pdf",
+      "finding": "Paper footnote points to the source-code repository; no dataset archive or hashes were found in the inspected citation context."
+    },
+    {
+      "kind": "web_search",
+      "queries": [
+        "\"X-HD\" \"HDDatasets\"",
+        "\"pwrliang\" \"X-HD\" dataset",
+        "\"X-HD: Fast Hausdorff Distance Computation with Ray Tracing\" dataset",
+        "\"/local/storage/shared/HDDatasets\" \"X-HD\""
+      ],
+      "finding": "Search returned source/paper pages and unrelated HD results, but no public HDDatasets archive or exact paper input bundle."
+    }
+  ],
+  "git_remote_refs": {
+    "repository": "https://github.com/pwrliang/X-HD.git",
+    "heads": {
+      "main": "7bf41c8442d059c94f4178355c6d5a10571d9658",
+      "paper": "8c3846866052e1e8755210021f23fac2cbe8c3d6",
+      "hybrid": "4d9046a9e55d87f35daf81dd718444029fab56ce"
+    },
+    "tags": []
+  },
+  "git_tree_audit": {
+    "main": {
+      "commit": "7bf41c8442d059c94f4178355c6d5a10571d9658",
+      "tracked_path_count": 380,
+      "tracked_dataset_like_asset_count": 0,
+      "tracked_expr_json_log_count": 281,
+      "tracked_hddatasets_path_count": 0,
+      "script_examples": [
+        "expr/run_fig5.sh",
+        "expr/run_grid_tuning.sh",
+        "expr/run_lb.sh",
+        "expr/run_mem.sh",
+        "expr/run_radius_tuning.sh",
+        "expr/run_rt_comparison.sh",
+        "expr/run_scalability.sh",
+        "expr/run_translate.sh"
+      ]
+    },
+    "paper": {
+      "commit": "8c3846866052e1e8755210021f23fac2cbe8c3d6",
+      "tracked_path_count": 41888,
+      "tracked_dataset_like_asset_count": 0,
+      "tracked_expr_json_log_count": 41755,
+      "tracked_hddatasets_path_count": 0,
+      "script_examples": [
+        "expr/for_the_paper/common.sh",
+        "expr/for_the_paper/count_points.py",
+        "expr/for_the_paper/gen_train.sh",
+        "expr/for_the_paper/intro.sh"
+      ]
+    },
+    "hybrid": {
+      "commit": "4d9046a9e55d87f35daf81dd718444029fab56ce",
+      "tracked_path_count": 121,
+      "tracked_dataset_like_asset_count": 0,
+      "tracked_expr_json_log_count": 0,
+      "tracked_hddatasets_path_count": 0,
+      "script_examples": [
+        "expr/for_the_paper/intro.sh",
+        "expr/running_time.sh"
+      ]
+    }
+  },
+  "interpretation": {
+    "source_code_available": true,
+    "author_scripts_available": true,
+    "author_logs_available": true,
+    "exact_input_bytes_available_from_public_repo": false,
+    "release_or_package_dataset_available": false,
+    "deterministic_public_reconstruction_provenance_available": false,
+    "level_c_exact_dataset_reproduction_supported": false,
+    "level_b_same_source_representative_supported": true
+  },
+  "claim_boundary": {
+    "full_paper_reproduction_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "author_performance_ratio_claimed": false,
+    "author_parity_claimed": false
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "schema": "rtdl.paper_reproduction.librts.tiny_point_contains_expected.v1",
+  "indexed_box_count": 4,
+  "query_point_count": 5,
+  "candidate_id_rows": [[0, 0], [1, 0], [1, 1], [2, 1], [3, 2]],
+  "valid_count": 5,
+  "boundary_policy": "interior_only_fixture_no_degenerate_boundary_points"
+}

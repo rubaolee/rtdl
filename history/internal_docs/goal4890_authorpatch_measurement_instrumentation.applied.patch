@@ -1,0 +1,180 @@
+diff --git a/src/algo/launch_parameters.h b/src/algo/launch_parameters.h
+index 0e8b1ff7..2775f905 100644
+--- a/src/algo/launch_parameters.h
++++ b/src/algo/launch_parameters.h
+@@ -40,6 +40,7 @@ struct LaunchParamsLSI {
+ #ifndef NDEBUG
+   uint32_t *n_tests;
+ #endif
++  unsigned long long* goal4890_total_tests;
+ };
+
+ struct LaunchParamsPIP {
+@@ -69,6 +70,7 @@ struct LaunchParamsPIP {
+   uint32_t* last_update_count;
+   uint32_t* fail_update_count;
+ #endif
++  unsigned long long* goal4890_total_tests;
+ };
+ }  // namespace rayjoin
+ #endif  // RT_LAUNCH_PARAMETERS_H
+diff --git a/src/algo/rt_lsi_custom.cu b/src/algo/rt_lsi_custom.cu
+index bd3ff328..da9ff9fa 100644
+--- a/src/algo/rt_lsi_custom.cu
++++ b/src/algo/rt_lsi_custom.cu
+@@ -27,6 +27,10 @@ extern "C" __global__ void __intersection__lsi_custom() {
+   const auto& query_e_p2 = params.query_points[query_e.p2_idx];
+   auto begin_eid = params.eid_range[prim_idx].first;
+   auto end_eid = params.eid_range[prim_idx].second;
++  if (params.goal4890_total_tests != nullptr) {
++    atomicAdd(params.goal4890_total_tests,
++              static_cast<unsigned long long>(end_eid - begin_eid));
++  }
+
+   for (auto base_eid = begin_eid; base_eid < end_eid; base_eid++) {
+     const auto& base_e = params.base_edges[base_eid];
+diff --git a/src/algo/rt_pip_custom.cu b/src/algo/rt_pip_custom.cu
+index 0dd86e9e..8bdd63d3 100644
+--- a/src/algo/rt_pip_custom.cu
++++ b/src/algo/rt_pip_custom.cu
+@@ -15,6 +15,23 @@ enum { SURFACE_RAY_TYPE = 0, RAY_TYPE_COUNT };
+
+ extern "C" __constant__ rayjoin::LaunchParamsPIP params;
+
++static __forceinline__ __device__ double rayjoin_pip_sos_tie_breaker(
++    double slope, unsigned int query_map_id) {
++  const double pi = 3.141592653589793238462643383279502884;
++  const double half_pi = 1.570796326794896619231321691639751442;
++  double norm_slope = (atan(slope) + half_pi) / pi;
++  if (norm_slope < 0.0) norm_slope = 0.0;
++  if (norm_slope > 1.0) norm_slope = 1.0;
++  return query_map_id == 0 ? norm_slope : (1.0 - norm_slope);
++}
++
++static __forceinline__ __device__ double rayjoin_pip_sos_report_t(
++    double t_edge, double slope, unsigned int query_map_id) {
++  const double factor = t_edge > 1.0 ? t_edge : 1.0;
++  const double tie_breaker = rayjoin_pip_sos_tie_breaker(slope, query_map_id);
++  return t_edge + factor * (1.0 - tie_breaker) * 1.0e-14;
++}
++
+ extern "C" __global__ void __intersection__pip_custom() {
+   using coefficient_t = rayjoin::coefficient_t;
+   using internal_coord_t = typename rayjoin::LaunchParamsPIP::internal_coord_t;
+@@ -30,6 +47,10 @@ extern "C" __global__ void __intersection__pip_custom() {
+   auto y_src_p = src_p.y;
+   auto begin_eid = params.eid_range[prim_idx].first;
+   auto end_eid = params.eid_range[prim_idx].second;
++  if (params.goal4890_total_tests != nullptr) {
++    atomicAdd(params.goal4890_total_tests,
++              static_cast<unsigned long long>(end_eid - begin_eid));
++  }
+
+   unpack64(best_y_storage.x, best_y_storage.y, &best_y);
+
+@@ -38,6 +59,7 @@ extern "C" __global__ void __intersection__pip_custom() {
+ #endif
+
+   auto t = std::numeric_limits<double>::max();
++  auto t_reported = std::numeric_limits<double>::max();
+   rayjoin::index_t best_e_eid = optixGetPayload_3();
+   bool report_xsect = false;
+
+@@ -94,12 +116,13 @@ extern "C" __global__ void __intersection__pip_custom() {
+       bool flag = current_e_slope > best_e_slope;
+
+       /* If im==0 we want the bigger slope, if im==1, the smaller. */
+-      if ((query_map_id && !flag) || (flag && !query_map_id)) {
++      if ((!query_map_id && !flag) || (query_map_id && flag)) {
+         continue;
+       }
+     }
+
+-    t = std::min(t, (scaling.UnscaleY(xsect_y) - scaling.UnscaleY(y_src_p)));
++    t = (scaling.UnscaleY(xsect_y) - scaling.UnscaleY(y_src_p));
++    t_reported = rayjoin_pip_sos_report_t(t, (double)e.a / e.b, query_map_id);
+     best_y = xsect_y;
+     best_e_eid = eid;
+     report_xsect = true;
+@@ -111,7 +134,7 @@ extern "C" __global__ void __intersection__pip_custom() {
+     optixSetPayload_2(best_y_storage.y);
+     optixSetPayload_3(best_e_eid);
+     // we must report intersection to narrow down searching
+-    optixReportIntersection(t, 0);
++    optixReportIntersection(t_reported, 0);
+   }
+ #ifndef NDEBUG
+   params.closer_count[point_idx]++;
+diff --git a/src/app/lsi_rt.h b/src/app/lsi_rt.h
+index 4e620341..c6861938 100644
+--- a/src/app/lsi_rt.h
++++ b/src/app/lsi_rt.h
+@@ -53,6 +53,10 @@ class LSIRT : public LSI<CONTEXT_T> {
+     params.n_tests = n_tests_.data();
+     n_tests_.set(0, stream);
+ #endif
++    goal4890_total_tests_.resize(1, 0);
++    thrust::fill(goal4890_total_tests_.begin(), goal4890_total_tests_.end(), 0ull);
++    params.goal4890_total_tests =
++        thrust::raw_pointer_cast(goal4890_total_tests_.data());
+     xsects_queue.Clear(stream);
+
+     rt_engine_->CopyLaunchParams(stream, params);
+@@ -117,6 +121,13 @@ class LSIRT : public LSI<CONTEXT_T> {
+       LOG(INFO) << "Total tests: " << n_tests_.get(stream);
+     }
+ #endif
++    thrust::host_vector<unsigned long long> goal4890_total_tests =
++        goal4890_total_tests_;
++    LOG(INFO) << "GOAL4890_AUTHOR_LSI_TOTAL_TESTS query_map_id="
++              << query_map_id
++              << " query_edges=" << d_query_map.get_edges().size()
++              << " emitted_xsects=" << n_xsects
++              << " total_tests=" << goal4890_total_tests[0];
+   }
+
+   const QueryConfigRT& get_config() const { return config_; }
+@@ -129,6 +140,7 @@ class LSIRT : public LSI<CONTEXT_T> {
+   std::shared_ptr<RTEngine> rt_engine_;
+   QueryConfigRT config_;
+   SharedValue<uint32_t> n_tests_;
++  thrust::device_vector<unsigned long long> goal4890_total_tests_;
+ };
+ }  // namespace rayjoin
+
+diff --git a/src/app/pip_rt.h b/src/app/pip_rt.h
+index 28311cf2..8091f4c6 100644
+--- a/src/app/pip_rt.h
++++ b/src/app/pip_rt.h
+@@ -64,6 +64,10 @@ class PIPRT : public PIP<CONTEXT_T> {
+     params.last_update_count = ArrayView<uint32_t>(last_update_count_).data();
+     params.fail_update_count = ArrayView<uint32_t>(fail_update_count_).data();
+ #endif
++    goal4890_total_tests_.resize(1, 0);
++    thrust::fill(goal4890_total_tests_.begin(), goal4890_total_tests_.end(), 0ull);
++    params.goal4890_total_tests =
++        thrust::raw_pointer_cast(goal4890_total_tests_.data());
+     rt_engine_->CopyLaunchParams(stream, params);
+     rt_engine_->Render(stream, module_id,
+                        dim3{(unsigned int) points_num, 1, 1});
+@@ -79,6 +83,12 @@ class PIPRT : public PIP<CONTEXT_T> {
+       LOG(INFO) << "Total tests: " << n_tests;
+     }
+ #endif
++    thrust::host_vector<unsigned long long> goal4890_total_tests =
++        goal4890_total_tests_;
++    LOG(INFO) << "GOAL4890_AUTHOR_PIP_TOTAL_TESTS query_map_id="
++              << query_map_id
++              << " point_count=" << points_num
++              << " total_tests=" << goal4890_total_tests[0];
+   }
+
+   void DumpStatistics(const char* path) {
+@@ -116,6 +126,7 @@ class PIPRT : public PIP<CONTEXT_T> {
+   thrust::device_vector<uint32_t> last_update_count_;
+   thrust::device_vector<uint32_t> fail_update_count_;
+ #endif
++  thrust::device_vector<unsigned long long> goal4890_total_tests_;
+ };
+
+ }  // namespace rayjoin

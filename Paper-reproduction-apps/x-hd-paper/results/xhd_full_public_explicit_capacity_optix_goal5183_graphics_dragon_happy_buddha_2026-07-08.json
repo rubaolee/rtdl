@@ -1,0 +1,315 @@
+{
+  "backend": "optix",
+  "capacity_planning": {
+    "basis": "ceil(max_observed_frontier_rows * 1.5) for the next bounded POD/OptiX gate",
+    "max_observed_frontier_rows": 528,
+    "max_observed_rows_per_source": 4.125,
+    "source_limit_for_max_rows": 128,
+    "suggested_next_explicit_row_capacity": 792
+  },
+  "cases": [
+    {
+      "exact_subset_reference": {
+        "distance": 0.11575949084515705,
+        "elapsed_sec": 0.13437718152999878,
+        "oracle_strategy": "vectorized_per_source_exact_nearest_full_target_no_pair_matrix",
+        "pair_evaluations": 8698432,
+        "source_count": 16,
+        "source_id": 8,
+        "target_count": 543652,
+        "target_id": 293420
+      },
+      "matched": true,
+      "phase_timings_sec": {
+        "case_total": 1.6444768831133842,
+        "exact_subset_reference": 0.13437718152999878,
+        "rtdl_route_wall": 1.333750069141388,
+        "select_source_subset": 3.553926944732666e-05
+      },
+      "route_abs_diff": 0.0,
+      "rtdl_route": {
+        "continuation_candidate_distance_evaluations": 9559,
+        "distance": 0.11575949084515705,
+        "frontier_attempted_count": 69,
+        "frontier_contract": "generic_cell_mbr_nearest_frontier_native_3d_optix",
+        "frontier_full_row_capacity": 103264,
+        "frontier_inline_nearest": true,
+        "frontier_inline_nearest_requested": true,
+        "frontier_native_symbol": "rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v3",
+        "frontier_row_capacity": 789009,
+        "frontier_row_capacity_attempts": [
+          789009
+        ],
+        "frontier_row_capacity_policy": "explicit",
+        "frontier_row_capacity_requested": 789009,
+        "frontier_row_count": 69,
+        "frontier_row_order": "native_unsorted",
+        "frontier_row_order_requested": "native",
+        "grid_cell_count": 6454,
+        "initial_candidate_distance_evaluations": 2157,
+        "initial_cell_mbr_tests": 103264,
+        "nearest_executor": "numba_parallel",
+        "phase_timings_sec": {
+          "direction_total": 1.1571808978915215,
+          "frontier_rows": 0.447257436811924,
+          "grid_cell_mbrs": 0.17767757922410965,
+          "initial_state_seed": 0.3668140470981598,
+          "max_nearest_reduction": 4.851818084716797e-05,
+          "nearest_continuation": 0.09451037645339966,
+          "radius_selection": 8.068978786468506e-06,
+          "source_columns": 1.7151236534118652e-05,
+          "target_columns": 0.07083968818187714
+        },
+        "source_id": 8,
+        "target_id": 293420,
+        "total_candidate_distance_evaluations": 11716
+      },
+      "selected_indices_head": [
+        0,
+        29176,
+        58353,
+        87529,
+        116705,
+        145881,
+        175058,
+        204234
+      ],
+      "selected_indices_tail": [
+        233410,
+        262586,
+        291763,
+        320939,
+        350115,
+        379291,
+        408468,
+        437644
+      ],
+      "selection_policy": "evenly-spaced",
+      "source_limit": 16
+    },
+    {
+      "exact_subset_reference": {
+        "distance": 0.12396673111072988,
+        "elapsed_sec": 0.4927534759044647,
+        "oracle_strategy": "vectorized_per_source_exact_nearest_full_target_no_pair_matrix",
+        "pair_evaluations": 34793728,
+        "source_count": 64,
+        "source_id": 28,
+        "target_count": 543652,
+        "target_id": 290672
+      },
+      "matched": true,
+      "phase_timings_sec": {
+        "case_total": 1.3399208337068558,
+        "exact_subset_reference": 0.4927534759044647,
+        "rtdl_route_wall": 0.6731821745634079,
+        "select_source_subset": 6.587803363800049e-05
+      },
+      "route_abs_diff": 0.0,
+      "rtdl_route": {
+        "continuation_candidate_distance_evaluations": 41596,
+        "distance": 0.12396673111072988,
+        "frontier_attempted_count": 294,
+        "frontier_contract": "generic_cell_mbr_nearest_frontier_native_3d_optix",
+        "frontier_full_row_capacity": 413056,
+        "frontier_inline_nearest": true,
+        "frontier_inline_nearest_requested": true,
+        "frontier_native_symbol": "rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v3",
+        "frontier_row_capacity": 789009,
+        "frontier_row_capacity_attempts": [
+          789009
+        ],
+        "frontier_row_capacity_policy": "explicit",
+        "frontier_row_capacity_requested": 789009,
+        "frontier_row_count": 294,
+        "frontier_row_order": "native_unsorted",
+        "frontier_row_order_requested": "native",
+        "grid_cell_count": 6454,
+        "initial_candidate_distance_evaluations": 7229,
+        "initial_cell_mbr_tests": 413056,
+        "nearest_executor": "numba_parallel",
+        "phase_timings_sec": {
+          "direction_total": 0.4959583953022957,
+          "frontier_rows": 0.11111829429864883,
+          "grid_cell_mbrs": 0.15316147357225418,
+          "initial_state_seed": 0.08293166011571884,
+          "max_nearest_reduction": 3.618746995925903e-05,
+          "nearest_continuation": 0.0819249302148819,
+          "radius_selection": 2.0176172256469727e-05,
+          "source_columns": 3.0368566513061523e-05,
+          "target_columns": 0.0667278915643692
+        },
+        "source_id": 28,
+        "target_id": 290672,
+        "total_candidate_distance_evaluations": 48825
+      },
+      "selected_indices_head": [
+        0,
+        6947,
+        13893,
+        20840,
+        27787,
+        34734,
+        41680,
+        48627
+      ],
+      "selected_indices_tail": [
+        389017,
+        395964,
+        402910,
+        409857,
+        416804,
+        423751,
+        430697,
+        437644
+      ],
+      "selection_policy": "evenly-spaced",
+      "source_limit": 64
+    },
+    {
+      "exact_subset_reference": {
+        "distance": 0.11388050989910435,
+        "elapsed_sec": 0.9839396923780441,
+        "oracle_strategy": "vectorized_per_source_exact_nearest_full_target_no_pair_matrix",
+        "pair_evaluations": 69587456,
+        "source_count": 128,
+        "source_id": 66,
+        "target_count": 543652,
+        "target_id": 298481
+      },
+      "matched": true,
+      "phase_timings_sec": {
+        "case_total": 1.8336048051714897,
+        "exact_subset_reference": 0.9839396923780441,
+        "rtdl_route_wall": 0.6765436306595802,
+        "select_source_subset": 0.00010608136653900146
+      },
+      "route_abs_diff": 0.0,
+      "rtdl_route": {
+        "continuation_candidate_distance_evaluations": 75098,
+        "distance": 0.11388050989910435,
+        "frontier_attempted_count": 528,
+        "frontier_contract": "generic_cell_mbr_nearest_frontier_native_3d_optix",
+        "frontier_full_row_capacity": 826112,
+        "frontier_inline_nearest": true,
+        "frontier_inline_nearest_requested": true,
+        "frontier_native_symbol": "rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v3",
+        "frontier_row_capacity": 789009,
+        "frontier_row_capacity_attempts": [
+          789009
+        ],
+        "frontier_row_capacity_policy": "explicit",
+        "frontier_row_capacity_requested": 789009,
+        "frontier_row_count": 528,
+        "frontier_row_order": "native_unsorted",
+        "frontier_row_order_requested": "native",
+        "grid_cell_count": 6454,
+        "initial_candidate_distance_evaluations": 16843,
+        "initial_cell_mbr_tests": 826112,
+        "nearest_executor": "numba_parallel",
+        "phase_timings_sec": {
+          "direction_total": 0.4999871253967285,
+          "frontier_rows": 0.11900147795677185,
+          "grid_cell_mbrs": 0.15075747668743134,
+          "initial_state_seed": 0.08279627561569214,
+          "max_nearest_reduction": 4.213303327560425e-05,
+          "nearest_continuation": 0.08169503509998322,
+          "radius_selection": 2.2016465663909912e-05,
+          "source_columns": 5.4717063903808594e-05,
+          "target_columns": 0.06561102718114853
+        },
+        "source_id": 66,
+        "target_id": 298481,
+        "total_candidate_distance_evaluations": 91941
+      },
+      "selected_indices_head": [
+        0,
+        3446,
+        6892,
+        10338,
+        13784,
+        17230,
+        20676,
+        24122
+      ],
+      "selected_indices_tail": [
+        413522,
+        416968,
+        420414,
+        423860,
+        427306,
+        430752,
+        434198,
+        437644
+      ],
+      "selection_policy": "evenly-spaced",
+      "source_limit": 128
+    }
+  ],
+  "claim_boundary": {
+    "bounded_subset_scaling_claimed": true,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure_reproduction_claimed": false,
+    "full_all_source_route_run_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "level_b_same_source_candidate_claimed": true,
+    "performance_ratio_claimed": false
+  },
+  "full_point_counts": {
+    "source": 437645,
+    "target": 543652
+  },
+  "goal": "Goal5183",
+  "goal5179_pairwise_estimate": {
+    "candidate_row_24b_bytes": 5710237908960,
+    "candidate_row_32b_bytes": 7613650545280,
+    "candidate_row_min_16b_bytes": 3806825272640,
+    "distance_float32_bytes": 951706318160,
+    "distance_float64_bytes": 1903412636320,
+    "pair_count": 237926579540,
+    "pair_count_scientific": "2.379266e+11",
+    "pairwise_exact_route_allowed": false,
+    "reason": "Naive pairwise materialization is hundreds of billions of pairs for this target."
+  },
+  "grid_shape": [
+    32,
+    32,
+    32
+  ],
+  "input1": "Paper-reproduction-apps/x-hd-paper/data/external/stanford/dragon_recon/dragon_vrip.ply",
+  "input2": "Paper-reproduction-apps/x-hd-paper/data/external/stanford/happy_recon/happy_vrip.ply",
+  "level": "level_b_same_source_candidate_only",
+  "phase_timings_sec": {
+    "load_full_inputs": 2.5264617055654526,
+    "total": 7.344943515956402
+  },
+  "preprocessing": [
+    "translate_each_input_to_min_bound"
+  ],
+  "route_feasibility": {
+    "frontier_row_capacity_requested": 789009,
+    "full_all_source_route_run": false,
+    "full_pairwise_rows_materialized": false,
+    "full_source_loaded_for_deterministic_subset_selection": true,
+    "full_target_loaded": true,
+    "next_gate_should_be": "run POD/OptiX bounded subset with explicit fail-closed row capacity or increase source subset before any all-source route claim",
+    "pairwise_exact_route_allowed": false,
+    "scalable_route_exercised_on_full_target_with_bounded_source_subsets": true
+  },
+  "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+  "source_limits": [
+    16,
+    64,
+    128
+  ],
+  "status": "full_public_candidate_bounded_subset_scaling_checked",
+  "summary_statistics": {
+    "all_matched": true,
+    "max_exact_subset_reference_sec": 0.9839396923780441,
+    "max_frontier_row_count": 528,
+    "max_route_wall_sec": 1.333750069141388,
+    "median_exact_subset_reference_sec": 0.4927534759044647,
+    "median_route_wall_sec": 0.6765436306595802
+  },
+  "target": "graphics_dragon_happy_buddha"
+}

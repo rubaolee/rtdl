@@ -1,0 +1,109 @@
+{
+  "claim_boundary": {
+    "author_performance_parity_claimed": false,
+    "embree_used": false,
+    "generic_native_refit_functional_claimed": true,
+    "librts_paper_performance_claimed": false,
+    "native_incremental_insert_delete_claimed": false,
+    "same_host_microbenchmark_claimed": true
+  },
+  "correctness": {
+    "expected_counts": [
+      0,
+      1,
+      0,
+      1,
+      0,
+      1,
+      0,
+      1,
+      0,
+      1,
+      0
+    ],
+    "mutation_execution_models": [
+      "native_sparse_slot_refit_with_rollback",
+      "native_sparse_slot_refit_with_rollback",
+      "native_sparse_slot_refit_with_rollback",
+      "native_sparse_slot_refit_with_rollback",
+      "native_sparse_slot_refit_with_rollback",
+      "native_sparse_slot_refit_with_rollback",
+      "native_sparse_slot_refit_with_rollback",
+      "native_sparse_slot_refit_with_rollback",
+      "native_sparse_slot_refit_with_rollback",
+      "native_sparse_slot_refit_with_rollback",
+      "native_sparse_slot_refit_with_rollback"
+    ],
+    "native_refit_counts": [
+      0,
+      1,
+      0,
+      1,
+      0,
+      1,
+      0,
+      1,
+      0,
+      1,
+      0
+    ],
+    "snapshot_rebuild_counts": [
+      0,
+      1,
+      0,
+      1,
+      0,
+      1,
+      0,
+      1,
+      0,
+      1,
+      0
+    ]
+  },
+  "environment": {
+    "gpu": "NVIDIA GeForce GTX 1070",
+    "host": "lx1",
+    "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39"
+  },
+  "matched": true,
+  "schema": "rtdl.generic_optix_aabb_native_refit_gate.v1",
+  "status": "matched",
+  "timing_diagnostic": {
+    "native_refit_median_seconds": 0.0014381649998540524,
+    "native_refit_seconds": [
+      0.0034480759995858534,
+      0.0017504440002085175,
+      0.0013442920007946668,
+      0.0013353070007724455,
+      0.0014381649998540524,
+      0.0014090539998505847,
+      0.0017451539997637155,
+      0.001551600000311737,
+      0.0018177740003011422,
+      0.001393911999912234,
+      0.001358318999336916
+    ],
+    "same_host_microbenchmark_speedup": 12.621501011516537,
+    "snapshot_rebuild_median_seconds": 0.018151801000385603,
+    "snapshot_rebuild_seconds": [
+      0.018887903999711853,
+      0.04361114799939969,
+      0.01765922100003081,
+      0.01725335900027858,
+      0.019075017999966803,
+      0.0187283679997563,
+      0.018151801000385603,
+      0.017145822000202315,
+      0.03613363900058175,
+      0.01732726400041429,
+      0.017329213000266463
+    ]
+  },
+  "workload": {
+    "box_count": 4096,
+    "primitive_cardinality_unchanged": true,
+    "repeats": 11,
+    "updated_slot_count_per_iteration": 1
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "author": {
+    "default_rerun_n_points_cell_15": {
+      "abs_diff_vs_paper_log": 0.0005762577056884766,
+      "avg_time_ms": 103.564,
+      "grid_resolution": [
+        2304,
+        1078
+      ],
+      "hd_result": 0.8970130085945129,
+      "iterations": 12,
+      "matches_paper_log": false,
+      "num_points_per_cell": 15
+    },
+    "paper_config_rerun_n_points_cell_8": {
+      "abs_diff_vs_paper_log": 0.0,
+      "avg_time_ms": 110.167,
+      "grid_resolution": [
+        2557,
+        1196
+      ],
+      "hd_result": 0.8964367508888245,
+      "iterations": 14,
+      "matches_paper_log": true,
+      "num_points_per_cell": 8
+    },
+    "paper_log": {
+      "hd_result": 0.8964367508888245,
+      "num_points_per_cell": 8,
+      "source": "paper-branch run_all log index / rt_gpu and auto_tune entries"
+    }
+  },
+  "claim_boundary": {
+    "allowed": "For the full-public WaterBodies/BG candidate, author hd_exec with the paper-log n_points_cell=8 configuration reproduces the paper-log scalar exactly. RTDL exact-witness reports the corresponding witness in float64; the same witness rounded to float32 equals the author/paper value. Use an explicit 2e-6 scalar tolerance for RTDL float64-vs-author float32 comparison on this candidate.",
+    "forbidden": [
+      "Exact paper WKT files are recovered.",
+      "Figure 5 is fully reproduced.",
+      "Performance parity is established.",
+      "Author and RTDL use identical numeric precision internally.",
+      "The Goal5311 n_points_cell=15 default author rerun is the paper-log denominator."
+    ]
+  },
+  "decision": {
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "goal5311_default_author_mismatch_superseded": true,
+    "performance_ratio_claimed": false,
+    "water_bg_full_public_author_paper_config_value_reproduced": true,
+    "water_bg_full_public_rtdl_exact_witness_exact_float64_equals_author_float32": false,
+    "water_bg_full_public_rtdl_exact_witness_matches_author_float32_with_declared_tolerance": true
+  },
+  "denominator_decision": {
+    "default_author_rerun_retained_as_config_sensitivity_evidence": true,
+    "paper_config_author_denominator": "author_hd_exec_full_public_wkt_n_points_cell_8",
+    "reason": "The paper-branch WaterBodies/BG logs use num_points_cell=8; author hd_exec default n_points_cell=15 produces a different HDResult.",
+    "supersedes_default_author_denominator_for_paper_log_comparison": true
+  },
+  "goal": "Goal5314",
+  "pair": "USADetailedWaterBodies.wkt -> USACensusBlockGroupBoundaries.wkt",
+  "point_counts": [
+    22824823,
+    52271467
+  ],
+  "rtdl": {
+    "exact_witness": {
+      "abs_diff_vs_author_paper_config": 1.305780185645311e-06,
+      "correctness_gate": true,
+      "entrypoint_total_sec": 873.2409668043256,
+      "hd_result_float64": 0.8964380566690101,
+      "per_source_witness_exact": true,
+      "route_sec": 61.562113016843796
+    },
+    "fast_scalar": {
+      "abs_diff_vs_author_paper_config": 1.305780185645311e-06,
+      "correctness_gate": false,
+      "entrypoint_total_sec": 878.4006162211299,
+      "global_bound_early_break": true,
+      "hd_result_float64": 0.8964380566690101,
+      "per_source_witness_exact": false,
+      "reason": "Fast-scalar route uses global-bound early-break and does not guarantee exact per-source witnesses.",
+      "route_sec": 74.4317325502634
+    },
+    "witness_numeric_probe": {
+      "distance_float32_matches_paper_log": true,
+      "distance_float32_numpy": 0.8964367508888245,
+      "distance_float64": 0.8964380566690101,
+      "distance_float64_matches_rtdl": true,
+      "source_coordinate_float64": [
+        -81.9999084473,
+        44.5000190735
+      ],
+      "source_id": 13579843,
+      "target_coordinate_float64": [
+        -82.7264814704,
+        43.974954476
+      ],
+      "target_id": 22441127
+    }
+  },
+  "schema": "rtdl.paper_reproduction.xhd.goal5314.water_bg_corrected_comparison_summary.v1",
+  "tolerance_boundary": {
+    "abs_diff_float64_vs_author_float32": 1.305780185645311e-06,
+    "author_numeric_type": "float32",
+    "exact_float32_match": true,
+    "matches_at_1e_6": false,
+    "matches_at_2e_6": true,
+    "rtdl_reported_distance_type": "float64",
+    "same_witness_float32_distance": 0.8964367508888245,
+    "same_witness_float64_distance": 0.8964380566690101
+  }
+}

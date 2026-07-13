@@ -1,0 +1,58 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5349.hd_exec_variant_value_surface.v1",
+  "goal": "Goal5349",
+  "date": "2026-07-09",
+  "status": "implemented_review_pending",
+  "purpose": "Reduce the hd_exec-compatible option-surface gap by accepting all author variant names for directed HDResult value output while explicitly refusing author variant algorithm or performance equivalence claims.",
+  "implemented_change": {
+    "file": "Paper-reproduction-apps/x-hd-paper/scripts/run_xhd_rtdl_hd_exec.py",
+    "before": "The parser accepted eb/nn/itk/clover/rt choices but run_rtdl_hd_exec raised ValueError unless variant == rt.",
+    "after": "All five author variant names are accepted. Each variant computes the directed input1-to-input2 HDResult through the selected generic RTDL route and records variant_support metadata.",
+    "author_variants_accepted": [
+      "eb",
+      "nn",
+      "itk",
+      "clover",
+      "rt"
+    ]
+  },
+  "value_surface_contract": {
+    "hd_result_semantics": "directed_input1_to_input2",
+    "rt_variant_status": "xhd_rt_value_route",
+    "non_rt_variant_status": "author_variant_value_compatible_route_only",
+    "non_rt_variant_meaning": "The author-style flag is accepted and RTDL returns a directed HDResult, but the author's variant-specific algorithm, timing denominator, and performance behavior are not reproduced.",
+    "route_selection": "unchanged; --rtdl-route still selects the actual RTDL route"
+  },
+  "bounded_fixture_validation": {
+    "fixture_a": "Paper-reproduction-apps/x-hd-paper/data/fixtures/directed2d_asymmetric_a.wkt",
+    "fixture_b": "Paper-reproduction-apps/x-hd-paper/data/fixtures/directed2d_asymmetric_b.wkt",
+    "expected_hd_result": 0.5,
+    "variants_checked_by_test": [
+      "eb",
+      "nn",
+      "itk",
+      "clover",
+      "rt"
+    ],
+    "route": "public-columnar",
+    "per_source_witness_exact": true
+  },
+  "claim_boundary": {
+    "full_xhd_paper_reproduction_claimed": false,
+    "exact_paper_dataset_identity_claimed": false,
+    "author_rt_core_algorithm_equivalence_claimed": false,
+    "author_variant_algorithm_equivalence_claimed": false,
+    "performance_ratio_claimed": false,
+    "non_rt_author_variant_performance_claimed": false
+  },
+  "functional_parity_effect": {
+    "improves": "author-style hd_exec variant option acceptance for value output",
+    "does_not_close": [
+      "author variant-specific algorithm equivalence",
+      "author variant-specific performance behavior",
+      "Figure 5 baseline performance reproduction",
+      "full paper reproduction"
+    ]
+  },
+  "exit_label": "hd_exec_variant_value_surface_implemented__algorithm_parity_not_claimed"
+}

@@ -1,0 +1,98 @@
+{
+  "schema": "rtdl.paper_reproduction.rt_dbscan.paper_dataset_provenance.v1",
+  "status": "exact_paper_inputs_not_pinned",
+  "claim_boundary": [
+    "This file records candidate provenance for the RT-DBSCAN paper datasets.",
+    "It does not claim that exact paper input files are present in this repository.",
+    "It does not authorize exact paper dataset reproduction or paper-performance claims."
+  ],
+  "paper": {
+    "title": "RT-DBSCAN: Accelerating DBSCAN using Ray Tracing Hardware",
+    "venue": "IPDPS 2023",
+    "doi": "10.1109/IPDPS54959.2023.00100",
+    "source_url": "https://par.nsf.gov/servlets/purl/10467236"
+  },
+  "author_artifact": {
+    "repository": "https://github.com/vani-nag/OWLRayTracing",
+    "branch": "rt-dbscan",
+    "commit": "92749fe82ed001e5b7303265d4a2a73aa1bbf529",
+    "sample_path": "samples/cmdline/s02-rtdbscan",
+    "packaged_exact_inputs_found": false,
+    "input_contract": "./sample02-rtdbscan [inFile] [size] [eps] [minPts] [outFile]",
+    "source_observation": "hostCode.cpp reads av[1] and contains commented local developer paths for 3D_iono.txt, porto.txt, and 3droad_full.csv; the repository does not package those files."
+  },
+  "paper_datasets": [
+    {
+      "name": "3DRoad",
+      "paper_description": "3D Road Network (North Jutland, Denmark), used as 2D latitude/longitude input by the paper.",
+      "paper_size_statement": "435K points",
+      "public_source_candidate": "UCI 3D Road Network (North Jutland, Denmark), dataset id 246",
+      "public_source_url": "https://archive.ics.uci.edu/dataset/246/3d+road+network+north+jutland+denmark",
+      "public_source_notes": "UCI lists 434,874 instances and variables OSM_ID, LONGITUDE, LATITUDE, ALTITUDE.",
+      "author_source_hint": "hostCode.cpp commented path: /home/min/a/nagara16/Downloads/owl/samples/cmdline/s01-simpleTriangles/testing/3droad_full.csv",
+      "paper_parameter_hints": [
+        "Small-size study: 16K points, minPts=100, varying epsilon.",
+        "Dataset-size study: first n points, epsilon=0.05, minPts=100."
+      ],
+      "exact_paper_input_status": "candidate_public_source_identified_but_preprocessed_author_file_not_present"
+    },
+    {
+      "name": "Porto",
+      "paper_description": "Taxi Service Trajectory-Prediction Challenge data, using 2D GPS coordinates.",
+      "paper_size_statement": "paper text says just over 1M points, while Table I reports Porto runs up to 8M points; this transformation/point-extraction detail is unresolved.",
+      "public_source_candidate": "UCI Taxi Service Trajectory - Prediction Challenge, ECML PKDD 2015, dataset id 339",
+      "public_source_url": "https://archive.ics.uci.edu/dataset/339/taxi+service+trajectory+prediction+challenge+ecml+pkdd+2015",
+      "public_source_notes": "UCI lists 1,710,671 trajectory records with POLYLINE GPS coordinate lists.",
+      "author_source_hint": "hostCode.cpp commented path: /home/min/a/nagara16/ArborX/build/examples/dbscan/porto.txt",
+      "paper_parameter_hints": [
+        "Impact-of-epsilon study: first 1M points, minPts=100, varying epsilon.",
+        "Dataset-size study: first n points, epsilon=0.5, minPts=1000."
+      ],
+      "exact_paper_input_status": "candidate_public_source_identified_but_author_point_extraction_not_present"
+    },
+    {
+      "name": "3DIono",
+      "paper_description": "3D ionosphere dataset using latitude, longitude, and total electron count.",
+      "paper_size_statement": "just over 1M points",
+      "public_source_candidate": "paper reference [25] plus public TEC products; exact 3DIono processed file not identified",
+      "public_source_url": "https://www.ncei.noaa.gov/products/space-weather/ionospheric-program/total-electron-content",
+      "public_source_notes": "NOAA/NCEI documents total electron content products, but this is not yet the exact processed paper file.",
+      "author_source_hint": "hostCode.cpp commented path: /home/min/a/nagara16/fast-cuda-gpu-dbscan/CUDA_DCLUST_datasets/3D_iono.txt",
+      "paper_parameter_hints": [
+        "Impact-of-epsilon study: first 1M points, minPts=100, varying epsilon.",
+        "Dataset-size study: first n points, epsilon=0.5, minPts=10.",
+        "Runtime breakdown example: first 1M points, epsilon=0.25, minPts=100."
+      ],
+      "exact_paper_input_status": "author_local_filename_identified_but_public_exact_processed_file_not_pinned"
+    },
+    {
+      "name": "NGSIM",
+      "paper_description": "Next Generation Simulation vehicle trajectories, using local coordinates as 2D dense dataset.",
+      "paper_size_statement": "more than 11M points",
+      "public_source_candidate": "U.S. DOT NGSIM Vehicle Trajectories and Supporting Data",
+      "public_source_url": "https://data.transportation.gov/Automobiles/Next-Generation-Simulation-NGSIM-Vehicle-Trajector/8ect-6jqj",
+      "public_source_notes": "Data.gov metadata describes vehicle trajectory data at one-tenth-second resolution across multiple highway/street sites.",
+      "author_source_hint": "no NGSIM path was found in the pinned author hostCode.cpp comments",
+      "paper_parameter_hints": [
+        "Dense dataset study: minPts=100, dataset size=1M for varying epsilon in Table II.",
+        "Dataset-size study reports 500K to 8M points in Table III."
+      ],
+      "exact_paper_input_status": "candidate_public_source_identified_but_site_selection_and_preprocessing_not_pinned"
+    }
+  ],
+  "current_repository_inputs": {
+    "bounded_fixtures": [
+      "fixtures/tiny3d_core_count.csv",
+      "fixtures/border_noise3d_component_signature.csv",
+      "fixtures/representative_medium_two_clusters3d.csv",
+      "fixtures/representative_border_shell3d.csv",
+      "fixtures/representative_three_components_noise3d.csv"
+    ],
+    "status": "synthetic_same_input_fixtures_only_not_exact_paper_datasets"
+  },
+  "next_actions": [
+    "Acquire or reconstruct exact preprocessed author inputs for at least one paper workload, with file hash and transform script.",
+    "If exact author inputs cannot be obtained, explicitly choose a same-source public reproduction route and label it non-exact.",
+    "Do not use generated benchmark datasets such as clustered3d, road3d, or ngsim_dense as exact paper datasets."
+  ]
+}

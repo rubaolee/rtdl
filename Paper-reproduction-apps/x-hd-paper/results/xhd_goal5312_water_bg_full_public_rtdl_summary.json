@@ -1,0 +1,73 @@
+{
+  "author_same_public": {
+    "abs_diff_vs_paper_log": 0.0005762577056884766,
+    "hd_result": 0.8970130085945129,
+    "paper_log_hd_result": 0.8964367508888245,
+    "point_counts": [
+      22824823,
+      52271467
+    ],
+    "running_avg_time_ms": 103.564
+  },
+  "claim_boundary": {
+    "author_rt_core_algorithm_equivalence_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "full_public_level_b_rtdl_author_scalar_comparison_claimed": true,
+    "performance_ratio_claimed": false
+  },
+  "decision": {
+    "author_same_public_scalar_match_passed": false,
+    "exact_paper_dataset_reproduction_blocked": true,
+    "exact_witness_route_for_correctness": "rtdl_exact_witness",
+    "fast_scalar_is_not_correctness_gate": true,
+    "fast_scalar_reason": "fast scalar uses global-bound early break and per-source witnesses are not exact; on this full-public candidate it matches the paper log closely but not the same-public author rerun.",
+    "full_public_rtdl_execution_passed": true,
+    "performance_ratio_claimed": false
+  },
+  "goal": "Goal5312",
+  "pair": "USADetailedWaterBodies.wkt -> USACensusBlockGroupBoundaries.wkt",
+  "rtdl_exact_witness": {
+    "abs_diff_vs_author_same_public": 0.0005749519255028313,
+    "abs_diff_vs_paper_log": 1.305780185645311e-06,
+    "candidate_distance_evaluations": 0,
+    "entrypoint_total_sec": 873.2409668043256,
+    "execution_n_dims": 3,
+    "frontier_row_count": 0,
+    "global_bound_early_break": false,
+    "hd_result": 0.8964380566690101,
+    "input_n_dims": 2,
+    "lift_2d_to_3d_zero_z": true,
+    "load_input_sec": 806.7858745679259,
+    "matched_author_at_1e-6": false,
+    "matched_paper_log_at_1e-6": false,
+    "per_source_witness_exact": true,
+    "point_count_a": 22824823,
+    "point_count_b": 52271467,
+    "route": "rtdl_cell_mbr_frontier_optix_3d",
+    "route_label": "cell-mbr-exact-witness",
+    "rtdl_route_sec": 61.562113016843796
+  },
+  "rtdl_fast_scalar": {
+    "abs_diff_vs_author_same_public": 0.0005749519255028313,
+    "abs_diff_vs_paper_log": 1.305780185645311e-06,
+    "candidate_distance_evaluations": 1768448183,
+    "entrypoint_total_sec": 878.4006162211299,
+    "execution_n_dims": 3,
+    "frontier_row_count": 162583,
+    "global_bound_early_break": true,
+    "hd_result": 0.8964380566690101,
+    "input_n_dims": 2,
+    "lift_2d_to_3d_zero_z": true,
+    "load_input_sec": 799.0501907840371,
+    "matched_author_at_1e-6": false,
+    "matched_paper_log_at_1e-6": false,
+    "per_source_witness_exact": false,
+    "point_count_a": 22824823,
+    "point_count_b": 52271467,
+    "route": "rtdl_cell_mbr_frontier_optix_3d",
+    "route_label": "cell-mbr-fast-scalar",
+    "rtdl_route_sec": 74.4317325502634
+  },
+  "schema": "rtdl.paper_reproduction.xhd.goal5312.water_bg_full_public_rtdl_route_summary.v1"
+}

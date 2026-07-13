@@ -1,0 +1,105 @@
+{
+  "author": {
+    "backend": "optix",
+    "command": [
+      "/tmp/rtdl_librts_goal5454_author_20260710/build-goal5454/bin/rtspatial_exec",
+      "--box=/tmp/rtdl_librts_goal5453_20260710/Paper-reproduction-apps/librts-paper/data/fixtures/tiny_boxes.wkt",
+      "--point_query=/tmp/rtdl_librts_goal5453_20260710/Paper-reproduction-apps/librts-paper/data/fixtures/tiny_points.wkt",
+      "--load_factor=1",
+      "--parallelism=1"
+    ],
+    "commit": "52509e8022abeab722f5a9a89d1917e8b481defe",
+    "commit_matches_pin": true,
+    "implementation": "RTSpatial rtspatial_exec at pinned commit",
+    "load_ms_diagnostic_only": 2.445,
+    "pair_rows_exposed": false,
+    "query_ms_diagnostic_only": 0.081,
+    "result_count": 5,
+    "stdout": "Loaded boxes 4\nLoaded point queries 5\nRT, load 2.445 ms, query 0.081 ms, results: 5\n"
+  },
+  "claim_boundary": {
+    "author_pair_relation_agreement_claimed": false,
+    "bounded_same_input_result_count_agreement": true,
+    "embree_evidence_used": false,
+    "full_paper_reproduction_claimed": false,
+    "mutable_index_parity_claimed": false,
+    "paper_dataset_or_figure_reproduction_claimed": false,
+    "performance_claimed": false,
+    "ray_multicast_equivalence_claimed": false
+  },
+  "environment": {
+    "gpu": "NVIDIA GeForce GTX 1070",
+    "host": "lx1",
+    "label": "local-linux-lx1-functional-only",
+    "performance_evidence_authorized": false,
+    "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39"
+  },
+  "expected": {
+    "candidate_id_rows": [
+      [
+        0,
+        0
+      ],
+      [
+        1,
+        0
+      ],
+      [
+        1,
+        1
+      ],
+      [
+        2,
+        1
+      ],
+      [
+        3,
+        2
+      ]
+    ],
+    "valid_count": 5
+  },
+  "input_identity": {
+    "boxes_path": "/tmp/rtdl_librts_goal5453_20260710/Paper-reproduction-apps/librts-paper/data/fixtures/tiny_boxes.wkt",
+    "boxes_sha256": "12629026e7323d795d00407a3ac7b11206eca18b442ac8357b2870e57922e3f2",
+    "expected_path": "/tmp/rtdl_librts_goal5453_20260710/Paper-reproduction-apps/librts-paper/data/fixtures/tiny_point_contains_expected.json",
+    "expected_sha256": "dfe6beadd8e8d87d99acac8363cf7088e8f5e4072cb2ff06ac53221b8d758e5a",
+    "points_path": "/tmp/rtdl_librts_goal5453_20260710/Paper-reproduction-apps/librts-paper/data/fixtures/tiny_points.wkt",
+    "points_sha256": "70f90a6ed38b627f498bd62d1d94355ce8476190228f4d5ba84a79b5a96537a4",
+    "same_files_passed_to_author_and_rtdl": true
+  },
+  "matched": true,
+  "rtdl": {
+    "backend": "optix",
+    "candidate_id_rows": [
+      [
+        0,
+        0
+      ],
+      [
+        1,
+        0
+      ],
+      [
+        1,
+        1
+      ],
+      [
+        2,
+        1
+      ],
+      [
+        3,
+        2
+      ]
+    ],
+    "contract": "generic_expanded_aabb_point_membership_rows_2d_v1",
+    "native_engine_customization": false,
+    "public_api": "expanded_aabb_point_membership_rows_2d",
+    "result_count": 5,
+    "rows_match_local_exact_fixture": true,
+    "rt_core_accelerated": true
+  },
+  "schema": "rtdl.paper_reproduction.librts.same_input_point_contains.v1",
+  "status": "bounded_same_input_point_contains_count_matched"
+}

@@ -269,8 +269,9 @@ class Goal4374RayjoinExactPaperSuiteTest(unittest.TestCase):
     def test_contract_doc_forbids_seed_overlay_claim(self) -> None:
         doc = (
             ROOT
-            / "docs"
-            / "research"
+            / "history"
+            / "internal_docs"
+            / "docs_research"
             / "rayjoin"
             / "rayjoin_exact_paper_reproduction_contract.md"
         ).read_text(encoding="utf-8")
@@ -282,9 +283,13 @@ class Goal4374RayjoinExactPaperSuiteTest(unittest.TestCase):
         self.assertIn(".rtdl_rayjoin_overlay_packed_cache", doc)
 
     def test_rtdl_performance_principles_define_no_unnecessary_overhead_contract(self) -> None:
-        doc = (ROOT / "docs" / "research" / "rtdl_performance_principles.md").read_text(
-            encoding="utf-8"
-        )
+        doc = (
+            ROOT
+            / "history"
+            / "internal_docs"
+            / "docs_research"
+            / "rtdl_performance_principles.md"
+        ).read_text(encoding="utf-8")
         self.assertIn("not a hand-specialized rewrite", doc)
         self.assertIn("does not promise to beat", doc)
         self.assertIn("avoid unnecessary data movement", doc)
@@ -361,6 +366,19 @@ class Goal4374RayjoinExactPaperSuiteTest(unittest.TestCase):
         self.assertGreaterEqual(len(chains), 2)
         self.assertEqual(face_count, 1)
         self.assertTrue(any(chain.left_polygon_id == 1 for chain in chains))
+
+    def test_overlay_midpoint_faces_are_stored_per_map(self) -> None:
+        from rtdsl.rayjoin_overlay import RayjoinOverlayIntersection
+        from rtdsl.rayjoin_overlay import _assign_midpoint_faces
+        from rtdsl.rayjoin_overlay import _midpoint_face_for_map
+
+        owner = RayjoinOverlayIntersection(eid0=2203, eid1=85627, x=-65.313, y=-9.897)
+
+        _assign_midpoint_faces([owner], [1113], map_index=0)
+        _assign_midpoint_faces([owner], [17], map_index=1)
+
+        self.assertEqual(_midpoint_face_for_map(owner, 0), 1113)
+        self.assertEqual(_midpoint_face_for_map(owner, 1), 17)
 
     def test_overlay_no_output_uses_face_id_device_column_classification(self) -> None:
         import numpy as np
@@ -475,23 +493,191 @@ class Goal4374RayjoinExactPaperSuiteTest(unittest.TestCase):
         self.assertIn("point_location_prepare_wall_sec", result["phase_seconds"])
         self.assertFalse(result["output"]["assembled"])
 
-    def test_large_point_location_stream_auto_uses_generic_adaptive_grouping(self) -> None:
+    def test_lsi_midpoint_projection_drops_nonfinite_points_with_telemetry(self) -> None:
+        import numpy as np
+        import rtdsl.rayjoin_overlay as overlay
+
+        rows = np.array(
+            [
+                (1, 1, 0.0, 0.0),
+                (1, 2, 2.0, 0.0),
+                (1, 3, float("inf"), float("-inf")),
+            ],
+            dtype=[
+                ("left_id", np.uint32),
+                ("right_id", np.uint32),
+                ("intersection_point_x", np.float64),
+                ("intersection_point_y", np.float64),
+            ],
+        )
+        stats: dict[str, int] = {}
+
+        packed = overlay._midpoint_points_from_lsi_rows_numpy(
+            rows,
+            (np.array([0.0]), np.array([0.0])),
+            0,
+            stats=stats,
+        )
+
+        self.assertEqual(int(packed.count), 1)
+        self.assertEqual(stats["map0_nonfinite_midpoints_dropped"], 1)
+        self.assertTrue(np.all(np.isfinite(packed.owner["x"])))
+        self.assertTrue(np.all(np.isfinite(packed.owner["y"])))
+
+    def test_output_chain_midpoint_projection_drops_nonfinite_points_with_telemetry(self) -> None:
+        import rtdsl.rayjoin_overlay as overlay
+
+        xsects = [
+            overlay.RayjoinOverlayIntersection(eid0=0, eid1=0, x=0.0, y=0.0),
+            overlay.RayjoinOverlayIntersection(eid0=0, eid1=1, x=2.0, y=0.0),
+            overlay.RayjoinOverlayIntersection(eid0=0, eid1=2, x=float("nan"), y=float("nan")),
+            overlay.RayjoinOverlayIntersection(eid0=0, eid1=3, x=4.0, y=0.0),
+        ]
+        stats: dict[str, int] = {}
+
+        midpoints, owners = overlay._midpoints_for_sorted_xsects(xsects, 0, stats=stats)
+
+        self.assertEqual(midpoints, [(1.0, 0.0)])
+        self.assertEqual(owners, [xsects[0]])
+        self.assertEqual(stats["map0_nonfinite_midpoints_dropped"], 2)
+
+    def test_output_chain_midpoint_prefers_materialized_scaled_endpoints(self) -> None:
+        from fractions import Fraction
+
+        import rtdsl.rayjoin_overlay as overlay
+
+        scale_bounds = (0.0, 10.0, 0.0, 10.0)
+        *_, rrx, rry, ddeltax, ddeltay = overlay._rayjoin_scaling_constants(scale_bounds)
+        xsects = [
+            overlay.RayjoinOverlayIntersection(
+                eid0=0,
+                eid1=0,
+                x=100.0 * rrx + ddeltax,
+                y=200.0 * rry + ddeltay,
+                scaled_x=100.0,
+                scaled_y=200.0,
+                scaled_x_rational=Fraction(1009, 10),
+                scaled_y_rational=Fraction(200, 1),
+            ),
+            overlay.RayjoinOverlayIntersection(
+                eid0=0,
+                eid1=1,
+                x=101.0 * rrx + ddeltax,
+                y=200.0 * rry + ddeltay,
+                scaled_x=101.0,
+                scaled_y=200.0,
+                scaled_x_rational=Fraction(1011, 10),
+                scaled_y_rational=Fraction(200, 1),
+            ),
+        ]
+
+        midpoints, owners = overlay._midpoints_for_sorted_xsects(
+            xsects,
+            0,
+            scale_bounds=scale_bounds,
+        )
+
+        self.assertEqual(owners, [xsects[0]])
+        self.assertEqual(midpoints, [(100.0 * rrx + ddeltax, 200.0 * rry + ddeltay)])
+
+    def test_output_chain_midpoint_uses_rational_when_scaled_endpoints_absent(self) -> None:
+        from fractions import Fraction
+
+        import rtdsl.rayjoin_overlay as overlay
+
+        scale_bounds = (0.0, 10.0, 0.0, 10.0)
+        *_, rrx, rry, ddeltax, ddeltay = overlay._rayjoin_scaling_constants(scale_bounds)
+        xsects = [
+            overlay.RayjoinOverlayIntersection(
+                eid0=0,
+                eid1=0,
+                x=100.0 * rrx + ddeltax,
+                y=200.0 * rry + ddeltay,
+                scaled_x_rational=Fraction(1009, 10),
+                scaled_y_rational=Fraction(200, 1),
+            ),
+            overlay.RayjoinOverlayIntersection(
+                eid0=0,
+                eid1=1,
+                x=101.0 * rrx + ddeltax,
+                y=200.0 * rry + ddeltay,
+                scaled_x_rational=Fraction(1011, 10),
+                scaled_y_rational=Fraction(200, 1),
+            ),
+        ]
+
+        midpoints, owners = overlay._midpoints_for_sorted_xsects(
+            xsects,
+            0,
+            scale_bounds=scale_bounds,
+        )
+
+        self.assertEqual(owners, [xsects[0]])
+        self.assertEqual(midpoints, [(101.0 * rrx + ddeltax, 200.0 * rry + ddeltay)])
+
+    def test_sort_xsects_prefers_rational_distance_before_truncated_scaled_distance(self) -> None:
+        from fractions import Fraction
+
+        import rtdsl.rayjoin_overlay as overlay
+        from rtdsl.datasets import CdbPoint
+
+        scale_bounds = (0.0, 10.0, 0.0, 10.0)
+        # Both intersections truncate to the same integer-scaled x coordinate.
+        # Author output-chain sorting uses rational distance from the edge start,
+        # so the 100.1 hit must precede the 100.9 hit.
+        farther = overlay.RayjoinOverlayIntersection(
+            eid0=0,
+            eid1=2,
+            x=0.0,
+            y=0.0,
+            scaled_x=100.0,
+            scaled_y=0.0,
+            scaled_x_rational=Fraction(1009, 10),
+            scaled_y_rational=Fraction(0, 1),
+        )
+        nearer = overlay.RayjoinOverlayIntersection(
+            eid0=0,
+            eid1=1,
+            x=0.0,
+            y=0.0,
+            scaled_x=100.0,
+            scaled_y=0.0,
+            scaled_x_rational=Fraction(1001, 10),
+            scaled_y_rational=Fraction(0, 1),
+        )
+
+        sorted_rows = overlay._sort_xsects_for_map(
+            [farther, nearer],
+            [CdbPoint(x=0.0, y=0.0)],
+            0,
+            scale_bounds=scale_bounds,
+        )
+
+        self.assertEqual(sorted_rows, [nearer, farther])
+
+    def test_large_point_location_stream_auto_uses_author_compatible_block_merge_grouping(self) -> None:
         from rtdsl.rayjoin_overlay import _directed_segment_point_location_grouping_env
 
         keys = (
             "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MODE",
             "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MAX_SIZE",
             "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_AREA_ENLARGE",
+            "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MAX_ITER",
             "RTDL_RAYJOIN_CDB_GROUP_MODE",
             "RTDL_RAYJOIN_CDB_GROUP_MAX_SIZE",
             "RTDL_RAYJOIN_CDB_GROUP_AREA_ENLARGE",
+            "RTDL_RAYJOIN_CDB_GROUP_MAX_ITER",
         )
         old = {key: os.environ.pop(key, None) for key in keys}
         try:
             with _directed_segment_point_location_grouping_env("optix", (56_000_000, 44_000_000)):
-                self.assertEqual(os.environ["RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MODE"], "adaptive")
-                self.assertEqual(os.environ["RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MAX_SIZE"], "16")
-                self.assertEqual(os.environ["RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_AREA_ENLARGE"], "1.2")
+                self.assertEqual(
+                    os.environ["RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MODE"],
+                    "block_merge64",
+                )
+                self.assertEqual(os.environ["RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MAX_SIZE"], "64")
+                self.assertEqual(os.environ["RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_AREA_ENLARGE"], "3.5")
+                self.assertEqual(os.environ["RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MAX_ITER"], "0")
             self.assertNotIn("RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MODE", os.environ)
 
             with _directed_segment_point_location_grouping_env("optix", (17_000_000, 5_000_000)):
@@ -538,6 +724,50 @@ class Goal4374RayjoinExactPaperSuiteTest(unittest.TestCase):
         self.assertEqual(int(rows["right_id"][0]), 1)
         self.assertAlmostEqual(float(rows["intersection_point_x"][0]), 1.0)
         self.assertAlmostEqual(float(rows["intersection_point_y"][0]), 0.0)
+
+    def test_overlay_lsi_pair_rows_can_materialize_author_scaled_coordinates(self) -> None:
+        import numpy as np
+        from rtdsl.rayjoin_overlay import _rows_from_segment_pair_ids
+
+        with tempfile.TemporaryDirectory() as tmp:
+            pair_path = Path(tmp) / "pairs.bin"
+            encoded = np.array([(np.uint64(1) << np.uint64(32)) | np.uint64(1)], dtype=np.uint64)
+            encoded.tofile(pair_path)
+            common = dict(
+                left_coords=(
+                    np.array([-1.0], dtype=np.float64),
+                    np.array([0.0], dtype=np.float64),
+                    np.array([1.0], dtype=np.float64),
+                    np.array([0.0], dtype=np.float64),
+                ),
+                right_coords=(
+                    np.array([0.123456789], dtype=np.float64),
+                    np.array([-1.0], dtype=np.float64),
+                    np.array([0.123456789], dtype=np.float64),
+                    np.array([1.0], dtype=np.float64),
+                ),
+                binary_u64_pairs=True,
+            )
+            double_rows = _rows_from_segment_pair_ids(pair_path, None, None, **common)
+            scaled_rows = _rows_from_segment_pair_ids(
+                pair_path,
+                None,
+                None,
+                scale_bounds=(-2.0, 2.0, -2.0, 2.0),
+                **common,
+            )
+
+        self.assertEqual(len(scaled_rows), 1)
+        self.assertNotEqual(
+            float(double_rows["intersection_point_x"][0]),
+            float(scaled_rows["intersection_point_x"][0]),
+        )
+        self.assertNotEqual(
+            float(double_rows["intersection_point_y"][0]),
+            float(scaled_rows["intersection_point_y"][0]),
+        )
+        self.assertAlmostEqual(float(scaled_rows["intersection_point_x"][0]), 0.123456789, places=12)
+        self.assertAlmostEqual(float(scaled_rows["intersection_point_y"][0]), 0.0, places=12)
 
     def test_embree_rayjoin_lsi_defaults_aabb_scene_build_quality_low(self) -> None:
         from rtdsl.rayjoin_overlay import _rayjoin_lsi_predicate_env

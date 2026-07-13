@@ -1,0 +1,20 @@
+{
+  "claim_boundary": {
+    "broad_speedup_claim_authorized": false,
+    "bundled_rayjoin_helper_used": false,
+    "full_overlay_supported": false,
+    "paper_eight_pair_claim_authorized": false,
+    "public_generic_rtdl_primitive": true,
+    "section52_lsi_count_supported": true
+  },
+  "count": 1,
+  "native_predicate_legacy_alias": "rayjoin_lsi",
+  "native_predicate_mode": "planar_map_lsi",
+  "predicate_selection": {
+    "concurrency_note": "The public front door serializes its own predicate-mode selection with a process-local lock. Code that mutates RTDL_OPTIX_SEGMENT_PAIR_PREDICATE outside this API can still interfere; a future native ABI should pass the predicate mode as an explicit parameter.",
+    "env_var": "RTDL_OPTIX_SEGMENT_PAIR_PREDICATE",
+    "legacy_native_alias": "rayjoin_lsi",
+    "mechanism": "process_env_guarded_by_python_lock",
+    "public_mode": "planar_map_lsi"
+  }
+}

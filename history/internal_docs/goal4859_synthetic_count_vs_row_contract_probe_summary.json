@@ -1,0 +1,223 @@
+{
+  "claim_boundary": "small synthetic contract probe only",
+  "mismatch_count": 0,
+  "rows": [
+    {
+      "count_rows_match": true,
+      "hidden_predicate_row_count": 1,
+      "hidden_predicate_rows": [
+        {
+          "intersection_point_x": 0.5,
+          "intersection_point_y": 0.0,
+          "left_id": 1,
+          "right_id": 1
+        }
+      ],
+      "name": "proper_crossing",
+      "native_count_mode": "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection_with_predicate_mode",
+      "public_lsi_count": 1,
+      "raw_row_count": 1,
+      "raw_rows": [
+        {
+          "intersection_point_x": 0.5,
+          "intersection_point_y": 0.0,
+          "left_id": 1,
+          "right_id": 1
+        }
+      ]
+    },
+    {
+      "count_rows_match": true,
+      "hidden_predicate_row_count": 0,
+      "hidden_predicate_rows": [],
+      "name": "shared_left_endpoint",
+      "native_count_mode": "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection_with_predicate_mode",
+      "public_lsi_count": 0,
+      "raw_row_count": 1,
+      "raw_rows": [
+        {
+          "intersection_point_x": 0.0,
+          "intersection_point_y": 0.0,
+          "left_id": 1,
+          "right_id": 1
+        }
+      ]
+    },
+    {
+      "count_rows_match": true,
+      "hidden_predicate_row_count": 1,
+      "hidden_predicate_rows": [
+        {
+          "intersection_point_x": 1.0,
+          "intersection_point_y": 0.0,
+          "left_id": 1,
+          "right_id": 1
+        }
+      ],
+      "name": "shared_right_endpoint",
+      "native_count_mode": "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection_with_predicate_mode",
+      "public_lsi_count": 1,
+      "raw_row_count": 1,
+      "raw_rows": [
+        {
+          "intersection_point_x": 1.0,
+          "intersection_point_y": 0.0,
+          "left_id": 1,
+          "right_id": 1
+        }
+      ]
+    },
+    {
+      "count_rows_match": true,
+      "hidden_predicate_row_count": 0,
+      "hidden_predicate_rows": [],
+      "name": "collinear_partial_overlap",
+      "native_count_mode": "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection_with_predicate_mode",
+      "public_lsi_count": 0,
+      "raw_row_count": 0,
+      "raw_rows": []
+    },
+    {
+      "count_rows_match": true,
+      "hidden_predicate_row_count": 0,
+      "hidden_predicate_rows": [],
+      "name": "collinear_touching_endpoint",
+      "native_count_mode": "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection_with_predicate_mode",
+      "public_lsi_count": 0,
+      "raw_row_count": 0,
+      "raw_rows": []
+    },
+    {
+      "count_rows_match": true,
+      "hidden_predicate_row_count": 1,
+      "hidden_predicate_rows": [
+        {
+          "intersection_point_x": 0.999999999,
+          "intersection_point_y": 0.0,
+          "left_id": 1,
+          "right_id": 1
+        }
+      ],
+      "name": "near_endpoint_inside",
+      "native_count_mode": "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection_with_predicate_mode",
+      "public_lsi_count": 1,
+      "raw_row_count": 1,
+      "raw_rows": [
+        {
+          "intersection_point_x": 0.999999999,
+          "intersection_point_y": 0.0,
+          "left_id": 1,
+          "right_id": 1
+        }
+      ]
+    },
+    {
+      "count_rows_match": true,
+      "hidden_predicate_row_count": 0,
+      "hidden_predicate_rows": [],
+      "name": "query_hits_base_start_from_below",
+      "native_count_mode": "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection_with_predicate_mode",
+      "public_lsi_count": 0,
+      "raw_row_count": 1,
+      "raw_rows": [
+        {
+          "intersection_point_x": 0.0,
+          "intersection_point_y": 0.0,
+          "left_id": 1,
+          "right_id": 1
+        }
+      ]
+    },
+    {
+      "count_rows_match": true,
+      "hidden_predicate_row_count": 1,
+      "hidden_predicate_rows": [
+        {
+          "intersection_point_x": 1.0,
+          "intersection_point_y": 0.0,
+          "left_id": 1,
+          "right_id": 1
+        }
+      ],
+      "name": "query_hits_base_end_from_below",
+      "native_count_mode": "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection_with_predicate_mode",
+      "public_lsi_count": 1,
+      "raw_row_count": 1,
+      "raw_rows": [
+        {
+          "intersection_point_x": 1.0,
+          "intersection_point_y": 0.0,
+          "left_id": 1,
+          "right_id": 1
+        }
+      ]
+    },
+    {
+      "count_rows_match": true,
+      "hidden_predicate_row_count": 1,
+      "hidden_predicate_rows": [
+        {
+          "intersection_point_x": 1.0,
+          "intersection_point_y": 0.0,
+          "left_id": 1,
+          "right_id": 1
+        }
+      ],
+      "name": "two_base_one_query_endpoint_choice",
+      "native_count_mode": "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection_with_predicate_mode",
+      "public_lsi_count": 1,
+      "raw_row_count": 2,
+      "raw_rows": [
+        {
+          "intersection_point_x": 1.0,
+          "intersection_point_y": 0.0,
+          "left_id": 1,
+          "right_id": 2
+        },
+        {
+          "intersection_point_x": 1.0,
+          "intersection_point_y": 0.0,
+          "left_id": 1,
+          "right_id": 1
+        }
+      ]
+    },
+    {
+      "count_rows_match": true,
+      "hidden_predicate_row_count": 2,
+      "hidden_predicate_rows": [
+        {
+          "intersection_point_x": 1.0,
+          "intersection_point_y": 0.0,
+          "left_id": 1,
+          "right_id": 1
+        },
+        {
+          "intersection_point_x": 1.0,
+          "intersection_point_y": 0.0,
+          "left_id": 2,
+          "right_id": 1
+        }
+      ],
+      "name": "two_query_one_base_endpoint_choice",
+      "native_count_mode": "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection_with_predicate_mode",
+      "public_lsi_count": 2,
+      "raw_row_count": 2,
+      "raw_rows": [
+        {
+          "intersection_point_x": 1.0,
+          "intersection_point_y": 0.0,
+          "left_id": 1,
+          "right_id": 1
+        },
+        {
+          "intersection_point_x": 1.0,
+          "intersection_point_y": 0.0,
+          "left_id": 2,
+          "right_id": 1
+        }
+      ]
+    }
+  ],
+  "schema": "rtdl.goal4859.synthetic_count_vs_row_contract_probe.v1"
+}

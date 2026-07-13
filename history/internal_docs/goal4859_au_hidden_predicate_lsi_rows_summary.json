@@ -1,0 +1,52 @@
+{
+  "base": "/workspace/goal4848_rep/current_osm_au/lakes_Australia_current_osm_Point.cdb",
+  "expected": 13622,
+  "first_rows": [
+    {
+      "intersection_point_x": 153.028346,
+      "intersection_point_y": -27.4794543,
+      "left_id": 165,
+      "right_id": 12767832
+    },
+    {
+      "intersection_point_x": 153.0291335,
+      "intersection_point_y": -27.4797141,
+      "left_id": 168,
+      "right_id": 12767830
+    },
+    {
+      "intersection_point_x": 153.0295482,
+      "intersection_point_y": -27.4796667,
+      "left_id": 169,
+      "right_id": 12767829
+    },
+    {
+      "intersection_point_x": 153.0299165,
+      "intersection_point_y": -27.4797262,
+      "left_id": 170,
+      "right_id": 12767828
+    },
+    {
+      "intersection_point_x": 151.2225386,
+      "intersection_point_y": -33.8444179,
+      "left_id": 337,
+      "right_id": 14112762
+    }
+  ],
+  "hidden_predicate_row_count": 12508,
+  "private_bundled_helper_imported": false,
+  "public_api_gap": "No formal prepare_planar_map_lsi_2d_optix.run_raw rows front door yet.",
+  "public_planar_map_lsi_count": 13622,
+  "query": "/workspace/goal4848_rep/current_osm_au/parks_Australia_current_osm_Point.cdb",
+  "route": "public_segment_pair_run_raw_with_hidden_native_predicate_env",
+  "rows_equal_expected": false,
+  "rows_equal_public_count": false,
+  "runtime_or_native_edits": false,
+  "schema": "rtdl.goal4859.hidden_predicate_lsi_row_probe.v1",
+  "timings_seconds": {
+    "hidden_predicate_rows": 20.236151203513145,
+    "load_and_segment": 49.68999158591032,
+    "public_lsi_count": 21.23719223588705,
+    "total": 91.16333502531052
+  }
+}

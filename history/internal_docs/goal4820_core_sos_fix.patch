@@ -1,0 +1,240 @@
+diff --git a/src/native/optix/rtdl_optix_core.cpp b/src/native/optix/rtdl_optix_core.cpp
+index 3862d649d..95f15365c 100644
+--- a/src/native/optix/rtdl_optix_core.cpp
++++ b/src/native/optix/rtdl_optix_core.cpp
+@@ -1161,6 +1161,7 @@ extern "C" __global__ void __anyhit__segment_first_hit_anyhit() {
+
+ static const char* kRayjoinCdbPointLocationKernelSrc = R"CUDA(
+ #include <optix_device.h>
++#include <math.h>
+ #include <stdint.h>
+
+ struct GpuRayjoinCdbPoint {
+@@ -1219,6 +1220,55 @@ static __forceinline__ __device__ double cdb_absd(double x) {
+     return x < 0.0 ? -x : x;
+ }
+
++static __forceinline__ __device__ double cdb_clampd(double x, double lo, double hi) {
++    return x < lo ? lo : (x > hi ? hi : x);
++}
++
++static __forceinline__ __device__ bool directed_segment_sos_slope_is_better(
++        double current_slope,
++        double best_slope,
++        unsigned int query_map_id)
++{
++    if (current_slope == best_slope) {
++        return false;
++    }
++    return query_map_id == 0u ? current_slope > best_slope : current_slope < best_slope;
++}
++
++static __forceinline__ __device__ double directed_segment_sos_tie_breaker(
++        double slope,
++        unsigned int query_map_id)
++{
++    const double pi = 3.141592653589793238462643383279502884;
++    const double half_pi = 1.570796326794896619231321691639751442;
++    const double normalized_slope = cdb_clampd((atan(slope) + half_pi) / pi, 0.0, 1.0);
++    return query_map_id == 0u ? normalized_slope : (1.0 - normalized_slope);
++}
++
++static __forceinline__ __device__ float directed_segment_sos_report_t(
++        float hit_t,
++        double slope,
++        unsigned int query_map_id)
++{
++    const double t_edge = hit_t > 0.0f ? static_cast<double>(hit_t) : 0.0;
++    const double factor = t_edge > 1.0 ? t_edge : 1.0;
++    const double tie_breaker = directed_segment_sos_tie_breaker(slope, query_map_id);
++    const double adjusted = t_edge + factor * (1.0 - tie_breaker) * 1.0e-14;
++    float reported = static_cast<float>(adjusted);
++    if (reported <= hit_t) {
++        const unsigned int max_steps = 32u;
++        const unsigned int steps =
++            1u + static_cast<unsigned int>((1.0 - tie_breaker) * static_cast<double>(max_steps));
++        const unsigned int bits = __float_as_uint(hit_t);
++        if ((bits & 0x80000000u) == 0u && (bits & 0x7f800000u) != 0x7f800000u) {
++            reported = __uint_as_float(bits + steps);
++        } else {
++            reported = nextafterf(hit_t, 3.402823466e38F);
++        }
++    }
++    return reported;
++}
++
+ static __forceinline__ __device__ double unpack_double_payload(unsigned int lo, unsigned int hi) {
+     const unsigned long long bits =
+         (static_cast<unsigned long long>(hi) << 32) | static_cast<unsigned long long>(lo);
+@@ -1493,6 +1543,7 @@ extern "C" __global__ void __intersection__rayjoin_cdb_point_location() {
+     unsigned int best_segment_index = optixGetPayload_3();
+     bool report = false;
+     float report_t = 0.0f;
++    double report_slope = 0.0;
+     for (unsigned int segment_index = range.begin; segment_index < range.end; ++segment_index) {
+         const GpuRayjoinCdbSegment segment = params.segments[segment_index];
+         float t = 0.0f;
+@@ -1512,13 +1563,17 @@ extern "C" __global__ void __intersection__rayjoin_cdb_point_location() {
+                 } else {
+                     const double best_slope =
+                         rayjoin_cdb_segment_slope_scaled(params.segments[best_segment_index]);
+-                    const bool current_slope_gt = exact_slope > best_slope;
+-                    better = query_map_id == 0u ? !current_slope_gt : current_slope_gt;
++                    better = directed_segment_sos_slope_is_better(
++                        exact_slope, best_slope, query_map_id);
++                    if (!better && exact_slope == best_slope) {
++                        better = segment.id < params.segments[best_segment_index].id;
++                    }
+                 }
+             }
+             if (better) {
+                 best_y = hit_y;
+                 report_t = t;
++                report_slope = exact_slope;
+             }
+         } else {
+             if (!vertical_ray_segment_t(point, segment, query_map_id, &t, &slope)) {
+@@ -1530,10 +1585,10 @@ extern "C" __global__ void __intersection__rayjoin_cdb_point_location() {
+                 if (best_segment_index == 0xffffffffu) {
+                     better = true;
+                 } else if (query_map_id == 0u &&
+-                           slope < rayjoin_cdb_segment_slope_world(params.segments[best_segment_index]) - eps) {
++                           slope > rayjoin_cdb_segment_slope_world(params.segments[best_segment_index]) + eps) {
+                     better = true;
+                 } else if (query_map_id != 0u &&
+-                           slope > rayjoin_cdb_segment_slope_world(params.segments[best_segment_index]) + eps) {
++                           slope < rayjoin_cdb_segment_slope_world(params.segments[best_segment_index]) - eps) {
+                     better = true;
+                 } else if (best_segment_index != 0xffffffffu) {
+                     better = segment.id < params.segments[best_segment_index].id;
+@@ -1542,6 +1597,7 @@ extern "C" __global__ void __intersection__rayjoin_cdb_point_location() {
+             if (better) {
+                 best_y = static_cast<double>(t);
+                 report_t = t;
++                report_slope = static_cast<double>(slope);
+             }
+         }
+         if (better) {
+@@ -1554,9 +1610,8 @@ extern "C" __global__ void __intersection__rayjoin_cdb_point_location() {
+         optixSetPayload_1(best_y_lo);
+         optixSetPayload_2(best_y_hi);
+         optixSetPayload_3(best_segment_index);
+-        const float accepted_t = params.allow_equal_ties != 0u
+-            ? nextafterf(report_t, 3.402823466e38F)
+-            : report_t;
++        const float accepted_t =
++            directed_segment_sos_report_t(report_t, report_slope, query_map_id);
+         optixReportIntersection(accepted_t, 0u);
+     }
+ }
+diff --git a/src/rtdsl/rayjoin_overlay.py b/src/rtdsl/rayjoin_overlay.py
+index 13371378e..d7c0a40e4 100644
+--- a/src/rtdsl/rayjoin_overlay.py
++++ b/src/rtdsl/rayjoin_overlay.py
+@@ -27,7 +27,8 @@ class RayjoinOverlayIntersection:
+     eid1: int
+     x: float
+     y: float
+-    mid_point_polygon_id: int = EXTERIOR_FACE_ID
++    mid_point_polygon_id_map0: int = EXTERIOR_FACE_ID
++    mid_point_polygon_id_map1: int = EXTERIOR_FACE_ID
+
+
+ @dataclass
+@@ -1122,16 +1123,33 @@ def _midpoints_for_sorted_xsects(
+ def _assign_midpoint_faces(
+     owners: list[RayjoinOverlayIntersection],
+     faces,
++    map_index: int | None = None,
+ ) -> int:
+     positive = 0
+     for index, owner in enumerate(owners):
+         face = int(faces[index])
+-        owner.mid_point_polygon_id = face
++        if map_index == 0:
++            owner.mid_point_polygon_id_map0 = face
++        elif map_index == 1:
++            owner.mid_point_polygon_id_map1 = face
++        elif map_index is None:
++            owner.mid_point_polygon_id_map0 = face
++            owner.mid_point_polygon_id_map1 = face
++        else:
++            raise ValueError("map_index must be 0, 1, or None")
+         if face != EXTERIOR_FACE_ID:
+             positive += 1
+     return positive
+
+
++def _midpoint_face_for_map(xsect: RayjoinOverlayIntersection, map_index: int) -> int:
++    if map_index == 0:
++        return int(xsect.mid_point_polygon_id_map0)
++    if map_index == 1:
++        return int(xsect.mid_point_polygon_id_map1)
++    raise ValueError("map_index must be 0 or 1")
++
++
+ def _dedupe_consecutive_points(points: list[tuple[float, float]]) -> list[tuple[float, float]]:
+     if not points:
+         return points
+@@ -1192,7 +1210,7 @@ def _assemble_output_chains(
+                     output_chain.points.append((xsects[0].x, xsects[0].y))
+                     for xsect, next_xsect in zip(xsects, xsects[1:]):
+                         flush(output_chain)
+-                        output_chain.other_map_polygon_id = int(xsect.mid_point_polygon_id)
++                        output_chain.other_map_polygon_id = _midpoint_face_for_map(xsect, map_index)
+                         output_chain.points.append((xsect.x, xsect.y))
+                         output_chain.points.append((next_xsect.x, next_xsect.y))
+                     flush(output_chain)
+@@ -1352,7 +1370,7 @@ def _run_rayjoin_overlay_packed(
+                 if midpoints:
+                     midpoint_points = _packed_points_from_xy(midpoints)
+                     faces, midpoint_timings = locator.faces(midpoint_points, int(midpoint_points.count))
+-                    positive_count = _assign_midpoint_faces(owners, faces)
++                    positive_count = _assign_midpoint_faces(owners, faces, map_index=map_index)
+                 else:
+                     positive_count = 0
+                     midpoint_timings = {
+diff --git a/tests/goal4373_rayjoin_cdb_point_location_route_test.py b/tests/goal4373_rayjoin_cdb_point_location_route_test.py
+index 7dfc9658b..fd91cca47 100644
+--- a/tests/goal4373_rayjoin_cdb_point_location_route_test.py
++++ b/tests/goal4373_rayjoin_cdb_point_location_route_test.py
+@@ -38,7 +38,14 @@ class Goal4373RayjoinCdbPointLocationRouteTest(unittest.TestCase):
+         self.assertIn("static __forceinline__ __device__ double cdb_absd", core)
+         self.assertIn("const double point_x = static_cast<double>(point.x);", core)
+         self.assertIn("optixSetPayload_3(best_segment_index)", core)
+-        self.assertIn("slope > best_slope", core)
++        self.assertIn("directed_segment_sos_slope_is_better", core)
++        self.assertIn("directed_segment_sos_tie_breaker", core)
++        self.assertIn("directed_segment_sos_report_t", core)
++        self.assertIn("atan(slope)", core)
++        self.assertIn("query_map_id == 0u ? current_slope > best_slope : current_slope < best_slope", core)
++        self.assertIn("factor * (1.0 - tie_breaker) * 1.0e-14", core)
++        self.assertIn("__uint_as_float(bits + steps)", core)
++        self.assertIn("optixReportIntersection(accepted_t, 0u)", core)
+         self.assertIn("static constexpr size_t kSegmentsPerRange = 8", workloads)
+         self.assertIn("RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MODE", workloads)
+         self.assertIn("RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MAX_SIZE", workloads)
+diff --git a/tests/goal4374_rayjoin_exact_paper_suite_test.py b/tests/goal4374_rayjoin_exact_paper_suite_test.py
+index dd43c9aaa..b2df24e1e 100644
+--- a/tests/goal4374_rayjoin_exact_paper_suite_test.py
++++ b/tests/goal4374_rayjoin_exact_paper_suite_test.py
+@@ -362,6 +362,19 @@ class Goal4374RayjoinExactPaperSuiteTest(unittest.TestCase):
+         self.assertEqual(face_count, 1)
+         self.assertTrue(any(chain.left_polygon_id == 1 for chain in chains))
+
++    def test_overlay_midpoint_faces_are_stored_per_map(self) -> None:
++        from rtdsl.rayjoin_overlay import RayjoinOverlayIntersection
++        from rtdsl.rayjoin_overlay import _assign_midpoint_faces
++        from rtdsl.rayjoin_overlay import _midpoint_face_for_map
++
++        owner = RayjoinOverlayIntersection(eid0=2203, eid1=85627, x=-65.313, y=-9.897)
++
++        _assign_midpoint_faces([owner], [1113], map_index=0)
++        _assign_midpoint_faces([owner], [17], map_index=1)
++
++        self.assertEqual(_midpoint_face_for_map(owner, 0), 1113)
++        self.assertEqual(_midpoint_face_for_map(owner, 1), 17)
++
+     def test_overlay_no_output_uses_face_id_device_column_classification(self) -> None:
+         import numpy as np
+         import rtdsl.rayjoin_overlay as overlay

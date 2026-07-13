@@ -1,0 +1,226 @@
+{
+  "author_performance_parity_claimed": false,
+  "boundary": "Representative same-source performance matrix for the seeded RTDL cell-MBR frontier route. It separates author and RTDL phase boundaries and does not claim paper performance parity.",
+  "cases": [
+    {
+      "author": {
+        "first_reported_time_ms": 4.54,
+        "hd_result": 0.1241602823138237,
+        "iteration_summary": {
+          "cuda_time_ms_sum": 0.11599999999999999,
+          "iteration_count": 2,
+          "offloading_size_sum": 0,
+          "rt_time_ms_sum": 2.548
+        },
+        "json": "/root/rtdl_goal5093/Paper-reproduction-apps/x-hd-paper/results/perf_res4full_author_hd_exec_output_pod.json",
+        "process_wall_sec": 1.1301589831709862,
+        "run": {
+          "cmd": [
+            "/tmp/xhd-goal5112/build-gcc11-optix77-fast/bin/hd_exec",
+            "-input1",
+            "/root/rtdl_goal5093/Paper-reproduction-apps/x-hd-paper/data/fixtures/stanford_dragon_res4_full.ply",
+            "-input2",
+            "/root/rtdl_goal5093/Paper-reproduction-apps/x-hd-paper/data/fixtures/stanford_happy_res4_full.ply",
+            "-n_dims",
+            "3",
+            "-input_type",
+            "ply",
+            "-variant",
+            "rt",
+            "-execution",
+            "gpu",
+            "-json",
+            "/root/rtdl_goal5093/Paper-reproduction-apps/x-hd-paper/results/perf_res4full_author_hd_exec_output_pod.json",
+            "-overwrite=true",
+            "-check=false"
+          ],
+          "returncode": 0,
+          "stderr": "I20260708 17:54:24.616094 131926872510464 run_hausdorff_distance.cu:259] Points A: 5205 Points B: 7108\nI20260708 17:54:24.621031 131926872510464 run_hausdorff_distance.cu:287] \u001b[31mAvg Running Time 4.54 ms\u001b[0m\nI20260708 17:54:24.912494 131926872510464 run_hausdorff_distance.cu:71] HausdorffDistance: distance is 0.12416\n",
+          "stdout": "avg aabb cycles 1491, avg point cycles 179\n"
+        },
+        "running_avg_time_ms": 4.54
+      },
+      "case": "res4full",
+      "input1": "/root/rtdl_goal5093/Paper-reproduction-apps/x-hd-paper/data/fixtures/stanford_dragon_res4_full.ply",
+      "input2": "/root/rtdl_goal5093/Paper-reproduction-apps/x-hd-paper/data/fixtures/stanford_happy_res4_full.ply",
+      "matched": true,
+      "point_count_a": 5205,
+      "point_count_b": 7108,
+      "preprocessing": [
+        "translate_each_input_to_min_bound"
+      ],
+      "ratio_policy": {
+        "author_avg_vs_rtdl_route_ratio": null,
+        "author_wall_vs_rtdl_total_ratio": null,
+        "reason": "No speedup/parity ratio is reported because author Running.AvgTime, author process wall, RTDL route time, and RTDL total time are distinct phase boundaries."
+      },
+      "rtdl": {
+        "author_abs_diff": 4.440050771492565e-09,
+        "author_comparison_distance": 0.12416027787377293,
+        "backend": "optix",
+        "directed_a_to_b": {
+          "continuation_candidate_distance_evaluations": 7354,
+          "distance": 0.12416027787377293,
+          "frontier_inline_nearest": true,
+          "frontier_inline_nearest_requested": true,
+          "frontier_row_count": 98,
+          "frontier_row_order": "native_unsorted",
+          "frontier_row_order_requested": "native",
+          "frontier_sort_rows": false,
+          "initial_candidate_distance_evaluations": 193317,
+          "initial_cell_mbr_selection": "numba_parallel_loop_min_distance_then_cell_id",
+          "initial_cell_mbr_tests": 1478220,
+          "nearest_executor": "numba_parallel",
+          "nearest_executor_requested": "numba_parallel",
+          "nearest_reduction_strategy": "numba_parallel_grouped_query_loop_min_distance_then_item_id",
+          "phase_timings_sec_last_run": {
+            "direction_total": 0.014819562435150146,
+            "frontier_rows": 0.0049969106912612915,
+            "grid_cell_mbrs": 0.0021559223532676697,
+            "initial_state_seed": 0.0032152608036994934,
+            "max_nearest_reduction": 0.0007163286209106445,
+            "nearest_continuation": 0.002146810293197632,
+            "radius_selection": 0.0003830045461654663,
+            "source_columns": 0.0005114972591400146,
+            "target_columns": 0.0006916895508766174
+          },
+          "phase_timings_sec_median": {
+            "direction_total": 0.015217229723930359,
+            "frontier_rows": 0.005270279943943024,
+            "grid_cell_mbrs": 0.0022854208946228027,
+            "initial_state_seed": 0.0032692551612854004,
+            "max_nearest_reduction": 0.0007163286209106445,
+            "nearest_continuation": 0.002146810293197632,
+            "radius_selection": 0.0003830045461654663,
+            "source_columns": 0.0005127713084220886,
+            "target_columns": 0.000714033842086792
+          },
+          "phase_timings_sec_runs": {
+            "direction_total": [
+              0.5685218274593353,
+              0.016006536781787872,
+              0.01482219249010086,
+              0.015217229723930359,
+              0.014819562435150146
+            ],
+            "frontier_rows": [
+              0.3572651222348213,
+              0.0054368674755096436,
+              0.005010239779949188,
+              0.005270279943943024,
+              0.0049969106912612915
+            ],
+            "grid_cell_mbrs": [
+              0.005057133734226227,
+              0.002356193959712982,
+              0.002171926200389862,
+              0.0022854208946228027,
+              0.0021559223532676697
+            ],
+            "initial_state_seed": [
+              0.19455086439847946,
+              0.003554709255695343,
+              0.0032692551612854004,
+              0.0032621920108795166,
+              0.0032152608036994934
+            ],
+            "max_nearest_reduction": [
+              0.0007438808679580688,
+              0.0007285326719284058,
+              0.0007160156965255737,
+              0.000711388885974884,
+              0.0007163286209106445
+            ],
+            "nearest_continuation": [
+              0.008171401917934418,
+              0.002194352447986603,
+              0.0020816773176193237,
+              0.0020933151245117188,
+              0.002146810293197632
+            ],
+            "radius_selection": [
+              0.0003832876682281494,
+              0.0004108324646949768,
+              0.00036926567554473877,
+              0.00036097317934036255,
+              0.0003830045461654663
+            ],
+            "source_columns": [
+              0.0009095966815948486,
+              0.0005127042531967163,
+              0.0005127713084220886,
+              0.0005173683166503906,
+              0.0005114972591400146
+            ],
+            "target_columns": [
+              0.0014354810118675232,
+              0.0008086785674095154,
+              0.0006890147924423218,
+              0.000714033842086792,
+              0.0006916895508766174
+            ]
+          },
+          "total_candidate_distance_evaluations": 200671
+        },
+        "directed_b_to_a": null,
+        "direction_mode": "directed-a-to-b",
+        "exact_reference_sec_median": null,
+        "exact_reference_sec_runs": [
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "frontier_inline_nearest": true,
+        "frontier_native_symbol": "rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v3",
+        "frontier_nearest_executor": "numba_parallel",
+        "frontier_row_order": "native",
+        "initial_state": "nearest-cell-mbr",
+        "load_input_sec_median": 0.03693584352731705,
+        "load_input_sec_runs": [
+          0.08082299679517746,
+          0.03693584352731705,
+          0.036108218133449554,
+          0.0749584212899208,
+          0.035675302147865295
+        ],
+        "route": "rtdl_cell_mbr_frontier_optix_3d",
+        "route_sec_median": 0.01536349207162857,
+        "route_sec_runs": [
+          0.5687102973461151,
+          0.0161687433719635,
+          0.014969781041145325,
+          0.01536349207162857,
+          0.014988593757152557
+        ],
+        "rtdl_matches_exact_reference": null,
+        "total_sec_median": 0.0567256361246109,
+        "total_sec_runs": [
+          0.6557969897985458,
+          0.0567256361246109,
+          0.054587602615356445,
+          0.09392765164375305,
+          0.05418609082698822
+        ],
+        "validation_mode": "author-only"
+      }
+    }
+  ],
+  "paper_app": "x-hd-paper",
+  "paper_reproduction_claim_authorized": false,
+  "performance_claim_authorized": false,
+  "phase_policy": {
+    "author_process_wall_sec": "subprocess wall time around hd_exec",
+    "author_running_avg_time_ms": "author hd_exec JSON Running.AvgTime",
+    "direction_mode": "directed-a-to-b",
+    "frontier_inline_nearest": true,
+    "frontier_nearest_executor": "numba_parallel",
+    "frontier_row_order": "native",
+    "ratios_authorized": false,
+    "rtdl_route_sec": "in-process seeded RTDL route computation",
+    "rtdl_total_sec": "route script total after input load and preprocessing",
+    "validation_mode": "author-only"
+  },
+  "schema": "rtdl.paper_reproduction.xhd.seeded_performance_matrix.v1"
+}

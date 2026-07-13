@@ -1,0 +1,173 @@
+{
+  "assessment": {
+    "any_candidate_author_width_parity": false,
+    "any_candidate_row_count_parity": false,
+    "minimum_gate_passed": false,
+    "missing_or_unproven_semantics": [
+      "author cmin2/current-best restoration by in_q_idx",
+      "author cmax2 MBR abort status counter",
+      "author miss_queue append/count semantics",
+      "author loadBalanceProcessing sort/reduce feedback into later state",
+      "row-count parity against Goal5374 OffloadingSize"
+    ],
+    "rtdl_surface_ready_from_goal5373": false
+  },
+  "author_oracle": {
+    "active_in_queue_size": 437645,
+    "offloading_size_rows": 27133990,
+    "raw_offload_rows_author_width_bytes": 217071920,
+    "raw_offload_rows_before_sort_reduce": 27133990,
+    "status_count_cmax2_mbr_abort": 0,
+    "status_count_init": 437645,
+    "status_count_offloading": 27133990,
+    "status_count_point_loop_early_break": 0
+  },
+  "best_current_candidate": {
+    "absolute_row_delta": 2625870,
+    "name": "goal5365_full_cover_lb256_behavior_gate_surface",
+    "row_count_parity": false,
+    "row_ratio_rtdl_div_author": 0.9032258064516129
+  },
+  "candidate_counterparts": [
+    {
+      "active_in_queue_size": 437645,
+      "author_width_byte_delta_author_minus_rtdl": 49016240,
+      "author_width_byte_parity": false,
+      "cmax2_mbr_abort_count": null,
+      "current_best_state_source": "rtdl_inline_nearest_payload_not_author_cmin2_restore",
+      "miss_queue_count": null,
+      "name": "author_radius_inline_kind2_current_surface",
+      "point_loop_early_break_count": 0,
+      "raw_offload_rows_author_width_bytes": 168055680,
+      "raw_offload_rows_before_sort_reduce": 21006960,
+      "required_field_gaps": [
+        "status_count_aborted",
+        "miss_queue_count",
+        "cmax2_mbr_abort_count"
+      ],
+      "row_count_parity": false,
+      "row_delta_author_minus_rtdl": 6127030,
+      "row_ratio_rtdl_div_author": 0.7741935483870968,
+      "source_artifact": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5371_inline_global_bound_lb_probe.json",
+      "status_count_aborted": null,
+      "status_count_init": 437645,
+      "status_count_offloading": 21006960
+    },
+    {
+      "active_in_queue_size": 437645,
+      "author_width_byte_delta_author_minus_rtdl": 49016240,
+      "author_width_byte_parity": false,
+      "cmax2_mbr_abort_count": null,
+      "current_best_state_source": "rtdl_global_bound_not_author_cmax2_status_machine",
+      "miss_queue_count": null,
+      "name": "author_radius_inline_global_bound_kind2_current_surface",
+      "point_loop_early_break_count": 0,
+      "raw_offload_rows_author_width_bytes": 168055680,
+      "raw_offload_rows_before_sort_reduce": 21006960,
+      "required_field_gaps": [
+        "miss_queue_count",
+        "cmax2_mbr_abort_count"
+      ],
+      "row_count_parity": false,
+      "row_delta_author_minus_rtdl": 6127030,
+      "row_ratio_rtdl_div_author": 0.7741935483870968,
+      "source_artifact": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5371_inline_global_bound_lb_probe.json",
+      "status_count_aborted": 0,
+      "status_count_init": 437645,
+      "status_count_offloading": 21006960
+    },
+    {
+      "active_in_queue_size": 437645,
+      "author_width_byte_delta_author_minus_rtdl": -2222783192,
+      "author_width_byte_parity": false,
+      "cmax2_mbr_abort_count": null,
+      "current_best_state_source": "none_no_inline_nearest_payload",
+      "miss_queue_count": null,
+      "name": "author_radius_noinline_raw_kind2_current_surface",
+      "point_loop_early_break_count": null,
+      "raw_offload_rows_author_width_bytes": 2439855112,
+      "raw_offload_rows_before_sort_reduce": 304981889,
+      "required_field_gaps": [
+        "status_count_aborted",
+        "miss_queue_count",
+        "cmax2_mbr_abort_count",
+        "point_loop_early_break_count"
+      ],
+      "row_count_parity": false,
+      "row_delta_author_minus_rtdl": -277847899,
+      "row_ratio_rtdl_div_author": 11.239846738352892,
+      "source_artifact": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5368_cell_mbr_raw_kind_count_telemetry.json",
+      "status_count_aborted": null,
+      "status_count_init": 437645,
+      "status_count_offloading": 304981889
+    },
+    {
+      "active_in_queue_size": 437645,
+      "author_width_byte_delta_author_minus_rtdl": 21006960,
+      "author_width_byte_parity": false,
+      "cmax2_mbr_abort_count": null,
+      "current_best_state_source": "single_pass_full_cover_not_author_iteration_radius",
+      "miss_queue_count": null,
+      "name": "goal5365_full_cover_lb256_behavior_gate_surface",
+      "point_loop_early_break_count": null,
+      "raw_offload_rows_author_width_bytes": 196064960,
+      "raw_offload_rows_before_sort_reduce": 24508120,
+      "required_field_gaps": [
+        "status_count_aborted",
+        "miss_queue_count",
+        "cmax2_mbr_abort_count",
+        "point_loop_early_break_count"
+      ],
+      "row_count_parity": false,
+      "row_delta_author_minus_rtdl": 2625870,
+      "row_ratio_rtdl_div_author": 0.9032258064516129,
+      "source_artifact": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5365_rtdl_lb_counterpart_gate.json",
+      "status_count_aborted": null,
+      "status_count_init": 437645,
+      "status_count_offloading": 24508120
+    }
+  ],
+  "claim_boundary": {
+    "author_rt_core_algorithm_parity_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_support_claimed": false,
+    "figure11_reproduction_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "row_count_parity_claimed": false,
+    "rtdl_author_performance_ratio_claimed": false,
+    "rtdl_counterpart_assessment_claimed": true,
+    "same_denominator_memory_claimed": false
+  },
+  "date": "2026-07-10",
+  "decision": {
+    "explicit_lb_support_authorized": false,
+    "next_goal": "implement_or_probe_rtdl_status_machine_mode_against_goal5374_oracle",
+    "why": "Current RTDL surfaces can mimic some field shapes, but no current candidate matches the author raw offload row denominator, and key author status-machine fields remain missing or only analogs."
+  },
+  "exit_label": "current_rtdl_surface_fails_author_lb_oracle__need_status_machine_implementation",
+  "goal": "Goal5375",
+  "input_artifacts": {
+    "author_oracle": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5374_author_lb_status_trace_oracle.json",
+    "goal5365_behavior_gate": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5365_rtdl_lb_counterpart_gate.json",
+    "goal5368_raw_kind_count_probe": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5368_cell_mbr_raw_kind_count_telemetry.json",
+    "goal5371_inline_global_bound_probe": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5371_inline_global_bound_lb_probe.json",
+    "goal5373_surface_audit": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5373_rtdl_status_machine_telemetry_surface.json"
+  },
+  "purpose": "Assess current RTDL lb/offload telemetry surfaces against the Goal5374 author status-machine oracle before claiming explicit -lb support.",
+  "required_fields": [
+    "active_in_queue_size",
+    "raw_offload_rows_before_sort_reduce",
+    "raw_offload_rows_author_width_bytes",
+    "status_count_init",
+    "status_count_offloading",
+    "status_count_aborted",
+    "miss_queue_count",
+    "cmax2_mbr_abort_count",
+    "point_loop_early_break_count",
+    "current_best_state_source",
+    "row_count_parity_against_author_offloading_size"
+  ],
+  "schema": "rtdl.paper_reproduction.xhd.goal5375.rtdl_status_machine_counterpart_assessment.v1",
+  "status": "rtdl_status_machine_counterpart_assessed__row_parity_not_established"
+}

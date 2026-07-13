@@ -296,6 +296,140 @@ extern "C" int rtdl_optix_count_prepared_segment_pair_intersection_prepared_left
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection_with_predicate_mode(
+        void* prepared,
+        void* prepared_left,
+        uint32_t predicate_mode,
+        size_t* count_out,
+        size_t* group_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared)
+            throw std::runtime_error("prepared segment-pair handle must not be null");
+        if (!prepared_left)
+            throw std::runtime_error("prepared segment-pair left-set handle must not be null");
+        if (!count_out)
+            throw std::runtime_error("count_out must not be null");
+        if (!group_count_out)
+            throw std::runtime_error("group_count_out must not be null");
+        *count_out = 0;
+        *group_count_out = 0;
+        count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection_with_predicate_mode_optix(
+            reinterpret_cast<PreparedSegmentPairIntersectionBuild*>(prepared),
+            reinterpret_cast<PreparedSegmentPairLeftSet*>(prepared_left),
+            predicate_mode,
+            count_out,
+            group_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_run_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection_with_predicate_mode(
+        void* prepared,
+        void* prepared_left,
+        uint32_t predicate_mode,
+        RtdlSegmentPairIntersectionRow** rows_out,
+        size_t* row_count_out,
+        char* error_out,
+        size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared)
+            throw std::runtime_error("prepared segment-pair handle must not be null");
+        if (!prepared_left)
+            throw std::runtime_error("prepared segment-pair left-set handle must not be null");
+        if (!rows_out)
+            throw std::runtime_error("rows_out must not be null");
+        if (!row_count_out)
+            throw std::runtime_error("row_count_out must not be null");
+        *rows_out = nullptr;
+        *row_count_out = 0;
+        run_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection_with_predicate_mode_optix(
+            reinterpret_cast<PreparedSegmentPairIntersectionBuild*>(prepared),
+            reinterpret_cast<PreparedSegmentPairLeftSet*>(prepared_left),
+            predicate_mode,
+            rows_out,
+            row_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_run_prepared_segment_pair_id_rows_prepared_left_grouped_range_direct_intersection_with_predicate_mode(
+        void* prepared,
+        void* prepared_left,
+        uint32_t predicate_mode,
+        RtdlSegmentPairIdRow** rows_out,
+        size_t* row_count_out,
+        char* error_out,
+        size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared)
+            throw std::runtime_error("prepared segment-pair handle must not be null");
+        if (!prepared_left)
+            throw std::runtime_error("prepared segment-pair left-set handle must not be null");
+        if (!rows_out)
+            throw std::runtime_error("rows_out must not be null");
+        if (!row_count_out)
+            throw std::runtime_error("row_count_out must not be null");
+        *rows_out = nullptr;
+        *row_count_out = 0;
+        run_prepared_segment_pair_id_rows_prepared_left_grouped_range_direct_intersection_with_predicate_mode_optix(
+            reinterpret_cast<PreparedSegmentPairIntersectionBuild*>(prepared),
+            reinterpret_cast<PreparedSegmentPairLeftSet*>(prepared_left),
+            predicate_mode,
+            rows_out,
+            row_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_run_prepared_segment_pair_exact_pair_id_device_columns_prepared_left_grouped_range_direct_intersection_with_predicate_mode(
+        void* prepared,
+        void* prepared_left,
+        uint32_t predicate_mode,
+        RtdlNativeDevicePairColumns* columns_out,
+        char* error_out,
+        size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared)
+            throw std::runtime_error("prepared segment-pair handle must not be null");
+        if (!prepared_left)
+            throw std::runtime_error("prepared segment-pair left-set handle must not be null");
+        if (!columns_out)
+            throw std::runtime_error("segment-pair exact pair-id device columns_out must not be null");
+        run_prepared_segment_pair_exact_pair_id_device_columns_prepared_left_grouped_range_direct_intersection_with_predicate_mode_optix(
+            reinterpret_cast<PreparedSegmentPairIntersectionBuild*>(prepared),
+            reinterpret_cast<PreparedSegmentPairLeftSet*>(prepared_left),
+            predicate_mode,
+            columns_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_run_prepared_segment_pair_bounded_exact_pair_id_device_columns_prepared_left_grouped_range_direct_intersection_with_predicate_mode(
+        void* prepared,
+        void* prepared_left,
+        uint32_t predicate_mode,
+        size_t max_rows,
+        RtdlNativeDevicePairColumns* columns_out,
+        char* error_out,
+        size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared)
+            throw std::runtime_error("prepared segment-pair handle must not be null");
+        if (!prepared_left)
+            throw std::runtime_error("prepared segment-pair left-set handle must not be null");
+        if (!columns_out)
+            throw std::runtime_error("segment-pair bounded exact pair-id device columns_out must not be null");
+        run_prepared_segment_pair_bounded_exact_pair_id_device_columns_prepared_left_grouped_range_direct_intersection_with_predicate_mode_optix(
+            reinterpret_cast<PreparedSegmentPairIntersectionBuild*>(prepared),
+            reinterpret_cast<PreparedSegmentPairLeftSet*>(prepared_left),
+            predicate_mode,
+            max_rows,
+            columns_out);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_prepared_segment_pair_candidate_device_columns(
         void* prepared,
         const RtdlSegment* left, size_t left_count,
@@ -476,6 +610,28 @@ extern "C" int rtdl_optix_run_prepared_rayjoin_cdb_point_location_2d(
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_run_prepared_rayjoin_cdb_point_location_scaled_points_2d(
+        void* prepared,
+        const RtdlRayjoinCdbScaledPoint* points, size_t point_count,
+        RtdlRayjoinCdbPointLocationRow** rows_out, size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared)
+            throw std::runtime_error("prepared CDB point-location handle must not be null");
+        if (!points && point_count != 0)
+            throw std::runtime_error("scaled points pointer must not be null when point_count is nonzero");
+        if (!rows_out || !row_count_out)
+            throw std::runtime_error("row output pointers must not be null");
+        run_prepared_rayjoin_cdb_point_location_scaled_points_2d_optix(
+            reinterpret_cast<PreparedRayjoinCdbPointLocation2D*>(prepared),
+            points,
+            point_count,
+            rows_out,
+            row_count_out);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_prepare_rayjoin_cdb_point_location_points_2d(
         void* prepared,
         const RtdlPoint* points, size_t point_count,
@@ -491,6 +647,27 @@ extern "C" int rtdl_optix_prepare_rayjoin_cdb_point_location_points_2d(
             throw std::runtime_error("prepared_points_out must not be null");
         *prepared_points_out = nullptr;
         *prepared_points_out = prepare_rayjoin_cdb_point_location_points_2d_optix(
+            reinterpret_cast<PreparedRayjoinCdbPointLocation2D*>(prepared),
+            points,
+            point_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_prepare_rayjoin_cdb_point_location_scaled_points_2d(
+        void* prepared,
+        const RtdlRayjoinCdbScaledPoint* points, size_t point_count,
+        void** prepared_points_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared)
+            throw std::runtime_error("prepared CDB point-location handle must not be null");
+        if (!points && point_count != 0)
+            throw std::runtime_error("scaled points pointer must not be null when point_count is nonzero");
+        if (!prepared_points_out)
+            throw std::runtime_error("prepared_points_out must not be null");
+        *prepared_points_out = nullptr;
+        *prepared_points_out = prepare_rayjoin_cdb_point_location_scaled_points_2d_optix(
             reinterpret_cast<PreparedRayjoinCdbPointLocation2D*>(prepared),
             points,
             point_count);
@@ -554,6 +731,36 @@ extern "C" int rtdl_optix_write_prepared_rayjoin_cdb_point_location_2d_device_fa
             reinterpret_cast<PreparedRayjoinCdbPointLocation2D*>(prepared),
             reinterpret_cast<PreparedRayjoinCdbPointLocationPoints2D*>(prepared_points),
             point_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_prepared_rayjoin_cdb_point_location_2d_device_segment_id_columns(
+        void* prepared,
+        void* prepared_points,
+        RtdlNativePointLocationDeviceIdColumns* columns_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        prepared_rayjoin_cdb_point_location_2d_device_id_columns_optix(
+            reinterpret_cast<PreparedRayjoinCdbPointLocation2D*>(prepared),
+            reinterpret_cast<PreparedRayjoinCdbPointLocationPoints2D*>(prepared_points),
+            columns_out,
+            false);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_prepared_rayjoin_cdb_point_location_2d_device_face_id_columns(
+        void* prepared,
+        void* prepared_points,
+        RtdlNativePointLocationDeviceIdColumns* columns_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        prepared_rayjoin_cdb_point_location_2d_device_id_columns_optix(
+            reinterpret_cast<PreparedRayjoinCdbPointLocation2D*>(prepared),
+            reinterpret_cast<PreparedRayjoinCdbPointLocationPoints2D*>(prepared_points),
+            columns_out,
+            true);
     }, error_out, error_size);
 }
 
@@ -633,6 +840,27 @@ extern "C" int rtdl_optix_prepare_directed_segment_point_location_points_2d(
         error_size);
 }
 
+extern "C" int rtdl_optix_prepare_directed_segment_point_location_device_query_points_2d(
+        void* prepared,
+        uint64_t device_points_ptr, size_t point_count,
+        void** prepared_points_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared)
+            throw std::runtime_error("prepared directed point-location handle must not be null");
+        if (device_points_ptr == 0 && point_count != 0)
+            throw std::runtime_error("device query point pointer must not be null when point_count is nonzero");
+        if (!prepared_points_out)
+            throw std::runtime_error("prepared_points_out must not be null");
+        *prepared_points_out = nullptr;
+        *prepared_points_out = prepare_directed_segment_point_location_device_query_points_2d_optix(
+            reinterpret_cast<PreparedRayjoinCdbPointLocation2D*>(prepared),
+            static_cast<CUdeviceptr>(device_points_ptr),
+            point_count);
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_count_prepared_directed_segment_point_location_2d_device_points(
         void* prepared,
         void* prepared_points,
@@ -671,6 +899,34 @@ extern "C" int rtdl_optix_write_prepared_directed_segment_point_location_2d_devi
         prepared,
         prepared_points,
         point_count_out,
+        error_out,
+        error_size);
+}
+
+extern "C" int rtdl_optix_prepared_directed_segment_point_location_2d_device_segment_id_columns(
+        void* prepared,
+        void* prepared_points,
+        RtdlNativePointLocationDeviceIdColumns* columns_out,
+        char* error_out, size_t error_size)
+{
+    return rtdl_optix_prepared_rayjoin_cdb_point_location_2d_device_segment_id_columns(
+        prepared,
+        prepared_points,
+        columns_out,
+        error_out,
+        error_size);
+}
+
+extern "C" int rtdl_optix_prepared_directed_segment_point_location_2d_device_face_id_columns(
+        void* prepared,
+        void* prepared_points,
+        RtdlNativePointLocationDeviceIdColumns* columns_out,
+        char* error_out, size_t error_size)
+{
+    return rtdl_optix_prepared_rayjoin_cdb_point_location_2d_device_face_id_columns(
+        prepared,
+        prepared_points,
+        columns_out,
         error_out,
         error_size);
 }
@@ -2586,7 +2842,22 @@ extern "C" int rtdl_optix_prepare_aabb_index_2d(
         if (!boxes && box_count != 0)
             throw std::runtime_error("boxes pointer must not be null when box_count is nonzero");
         *prepared_out = nullptr;
-        *prepared_out = prepare_aabb_index_2d_optix(boxes, box_count);
+        *prepared_out = prepare_aabb_index_2d_optix(boxes, box_count, false);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_prepare_mutable_aabb_index_2d(
+        const RtdlAabb2D* boxes, size_t box_count,
+        void** prepared_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared_out)
+            throw std::runtime_error("prepared_out must not be null");
+        if (!boxes && box_count != 0)
+            throw std::runtime_error("boxes pointer must not be null when box_count is nonzero");
+        *prepared_out = nullptr;
+        *prepared_out = prepare_aabb_index_2d_optix(boxes, box_count, true);
     }, error_out, error_size);
 }
 
@@ -2728,6 +2999,956 @@ extern "C" void rtdl_optix_destroy_prepared_aabb_queries_2d(void* prepared_queri
 extern "C" void rtdl_optix_destroy_prepared_aabb_index_2d(void* prepared)
 {
     delete reinterpret_cast<PreparedAabbIndex2DOptix*>(prepared);
+}
+
+extern "C" int rtdl_optix_refit_prepared_aabb_index_2d(
+        void* prepared,
+        const RtdlAabb2D* boxes, size_t box_count,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        refit_prepared_aabb_index_2d_optix(
+            reinterpret_cast<PreparedAabbIndex2DOptix*>(prepared),
+            boxes,
+            box_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_refit_prepared_aabb_index_2d_slots(
+        void* prepared,
+        const uint32_t* slot_indices,
+        const RtdlAabb2D* boxes,
+        size_t update_count,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        refit_prepared_aabb_index_2d_slots_optix(
+            reinterpret_cast<PreparedAabbIndex2DOptix*>(prepared),
+            slot_indices,
+            boxes,
+            update_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_prepare_aabb_index_3d(
+        const RtdlAabb3D* boxes, size_t box_count,
+        void** prepared_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared_out)
+            throw std::runtime_error("prepared_out must not be null");
+        if (!boxes && box_count != 0)
+            throw std::runtime_error("3D AABB boxes pointer must not be null when box_count is nonzero");
+        *prepared_out = nullptr;
+        *prepared_out = prepare_aabb_index_3d_optix(boxes, box_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_collect_prepared_aabb_index_3d_point_contains_rows(
+        void* prepared,
+        const RtdlPoint3D* point_queries, size_t point_query_count,
+        RtdlAabbPairRow* rows_out, size_t row_capacity,
+        size_t* emitted_count_out,
+        uint32_t* overflowed_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        collect_prepared_aabb_index_3d_point_contains_rows_optix(
+            reinterpret_cast<PreparedAabbIndex3DOptix*>(prepared),
+            point_queries,
+            point_query_count,
+            rows_out,
+            row_capacity,
+            emitted_count_out,
+            overflowed_out);
+    }, error_out, error_size);
+}
+
+extern "C" void rtdl_optix_destroy_prepared_aabb_index_3d(void* prepared)
+{
+    delete reinterpret_cast<PreparedAabbIndex3DOptix*>(prepared);
+}
+
+extern "C" int rtdl_optix_collect_cell_mbr_nearest_frontier_3d(
+        const double* query_coords,
+        const int64_t* query_point_ids,
+        size_t query_count,
+        const int64_t* cell_ids,
+        const uint64_t* point_begin_offsets,
+        const uint64_t* point_counts,
+        const double* cell_mbr_min,
+        const double* cell_mbr_max,
+        size_t cell_count,
+        double radius,
+        const double* current_best_distances,
+        const int64_t* current_best_item_ids,
+        uint64_t max_inline_points,
+        uint32_t emit_pruned_rows,
+        uint64_t row_capacity,
+        int64_t* frontier_kind_codes_out,
+        int64_t* query_row_ids_out,
+        int64_t* query_point_ids_out,
+        int64_t* cell_ids_out,
+        uint64_t* point_begin_offsets_out,
+        uint64_t* point_counts_out,
+        double* min_distances_out,
+        double* max_distances_out,
+        uint64_t* emitted_count_out,
+        uint64_t* attempted_count_out,
+        uint32_t* overflowed_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        collect_cell_mbr_nearest_frontier_3d_optix(
+            query_coords,
+            query_point_ids,
+            query_count,
+            cell_ids,
+            point_begin_offsets,
+            point_counts,
+            cell_mbr_min,
+            cell_mbr_max,
+            cell_count,
+            radius,
+            current_best_distances,
+            current_best_item_ids,
+            nullptr,
+            nullptr,
+            0,
+            nullptr,
+            0,
+            max_inline_points,
+            emit_pruned_rows,
+            1u,
+            0u,
+            row_capacity,
+            frontier_kind_codes_out,
+            query_row_ids_out,
+            query_point_ids_out,
+            cell_ids_out,
+            point_begin_offsets_out,
+            point_counts_out,
+            min_distances_out,
+            max_distances_out,
+            nullptr,
+            nullptr,
+            nullptr,
+            nullptr,
+            0u,
+            0u,
+            nullptr,
+            nullptr,
+            nullptr,
+            emitted_count_out,
+            attempted_count_out,
+            overflowed_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v2(
+        const double* query_coords,
+        const int64_t* query_point_ids,
+        size_t query_count,
+        const int64_t* cell_ids,
+        const uint64_t* point_begin_offsets,
+        const uint64_t* point_counts,
+        const double* cell_mbr_min,
+        const double* cell_mbr_max,
+        size_t cell_count,
+        double radius,
+        const double* current_best_distances,
+        const int64_t* current_best_item_ids,
+        uint64_t max_inline_points,
+        uint32_t emit_pruned_rows,
+        uint32_t sort_rows,
+        uint64_t row_capacity,
+        int64_t* frontier_kind_codes_out,
+        int64_t* query_row_ids_out,
+        int64_t* query_point_ids_out,
+        int64_t* cell_ids_out,
+        uint64_t* point_begin_offsets_out,
+        uint64_t* point_counts_out,
+        double* min_distances_out,
+        double* max_distances_out,
+        uint64_t* emitted_count_out,
+        uint64_t* attempted_count_out,
+        uint32_t* overflowed_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        collect_cell_mbr_nearest_frontier_3d_optix(
+            query_coords,
+            query_point_ids,
+            query_count,
+            cell_ids,
+            point_begin_offsets,
+            point_counts,
+            cell_mbr_min,
+            cell_mbr_max,
+            cell_count,
+            radius,
+            current_best_distances,
+            current_best_item_ids,
+            nullptr,
+            nullptr,
+            0,
+            nullptr,
+            0,
+            max_inline_points,
+            emit_pruned_rows,
+            sort_rows,
+            0u,
+            row_capacity,
+            frontier_kind_codes_out,
+            query_row_ids_out,
+            query_point_ids_out,
+            cell_ids_out,
+            point_begin_offsets_out,
+            point_counts_out,
+            min_distances_out,
+            max_distances_out,
+            nullptr,
+            nullptr,
+            nullptr,
+            nullptr,
+            0u,
+            0u,
+            nullptr,
+            nullptr,
+            nullptr,
+            emitted_count_out,
+            attempted_count_out,
+            overflowed_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v3(
+        const double* query_coords,
+        const int64_t* query_point_ids,
+        size_t query_count,
+        const int64_t* cell_ids,
+        const uint64_t* point_begin_offsets,
+        const uint64_t* point_counts,
+        const double* cell_mbr_min,
+        const double* cell_mbr_max,
+        size_t cell_count,
+        double radius,
+        const double* current_best_distances,
+        const int64_t* current_best_item_ids,
+        const double* target_coords,
+        const int64_t* target_point_ids,
+        size_t target_count,
+        const uint64_t* point_row_indices,
+        size_t point_row_index_count,
+        uint64_t max_inline_points,
+        uint32_t emit_pruned_rows,
+        uint32_t sort_rows,
+        uint32_t inline_nearest,
+        uint64_t row_capacity,
+        int64_t* frontier_kind_codes_out,
+        int64_t* query_row_ids_out,
+        int64_t* query_point_ids_out,
+        int64_t* cell_ids_out,
+        uint64_t* point_begin_offsets_out,
+        uint64_t* point_counts_out,
+        double* min_distances_out,
+        double* max_distances_out,
+        double* nearest_distances_out,
+        int64_t* nearest_item_ids_out,
+        uint64_t* emitted_count_out,
+        uint64_t* attempted_count_out,
+        uint32_t* overflowed_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        collect_cell_mbr_nearest_frontier_3d_optix(
+            query_coords,
+            query_point_ids,
+            query_count,
+            cell_ids,
+            point_begin_offsets,
+            point_counts,
+            cell_mbr_min,
+            cell_mbr_max,
+            cell_count,
+            radius,
+            current_best_distances,
+            current_best_item_ids,
+            target_coords,
+            target_point_ids,
+            target_count,
+            point_row_indices,
+            point_row_index_count,
+            max_inline_points,
+            emit_pruned_rows,
+            sort_rows,
+            inline_nearest,
+            row_capacity,
+            frontier_kind_codes_out,
+            query_row_ids_out,
+            query_point_ids_out,
+            cell_ids_out,
+            point_begin_offsets_out,
+            point_counts_out,
+            min_distances_out,
+            max_distances_out,
+            nearest_distances_out,
+            nearest_item_ids_out,
+            nullptr,
+            nullptr,
+            0u,
+            0u,
+            nullptr,
+            nullptr,
+            nullptr,
+            emitted_count_out,
+            attempted_count_out,
+            overflowed_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v4(
+        const double* query_coords,
+        const int64_t* query_point_ids,
+        size_t query_count,
+        const int64_t* cell_ids,
+        const uint64_t* point_begin_offsets,
+        const uint64_t* point_counts,
+        const double* cell_mbr_min,
+        const double* cell_mbr_max,
+        size_t cell_count,
+        double radius,
+        const double* current_best_distances,
+        const int64_t* current_best_item_ids,
+        const double* target_coords,
+        const int64_t* target_point_ids,
+        size_t target_count,
+        const uint64_t* point_row_indices,
+        size_t point_row_index_count,
+        uint64_t max_inline_points,
+        uint32_t emit_pruned_rows,
+        uint32_t sort_rows,
+        uint32_t inline_nearest,
+        uint64_t row_capacity,
+        int64_t* frontier_kind_codes_out,
+        int64_t* query_row_ids_out,
+        int64_t* query_point_ids_out,
+        int64_t* cell_ids_out,
+        uint64_t* point_begin_offsets_out,
+        uint64_t* point_counts_out,
+        double* min_distances_out,
+        double* max_distances_out,
+        double* nearest_distances_out,
+        int64_t* nearest_item_ids_out,
+        uint64_t* inline_cell_hit_count_out,
+        uint64_t* inline_point_eval_count_out,
+        uint64_t* emitted_count_out,
+        uint64_t* attempted_count_out,
+        uint32_t* overflowed_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        collect_cell_mbr_nearest_frontier_3d_optix(
+            query_coords,
+            query_point_ids,
+            query_count,
+            cell_ids,
+            point_begin_offsets,
+            point_counts,
+            cell_mbr_min,
+            cell_mbr_max,
+            cell_count,
+            radius,
+            current_best_distances,
+            current_best_item_ids,
+            target_coords,
+            target_point_ids,
+            target_count,
+            point_row_indices,
+            point_row_index_count,
+            max_inline_points,
+            emit_pruned_rows,
+            sort_rows,
+            inline_nearest,
+            row_capacity,
+            frontier_kind_codes_out,
+            query_row_ids_out,
+            query_point_ids_out,
+            cell_ids_out,
+            point_begin_offsets_out,
+            point_counts_out,
+            min_distances_out,
+            max_distances_out,
+            nearest_distances_out,
+            nearest_item_ids_out,
+            inline_cell_hit_count_out,
+            inline_point_eval_count_out,
+            0u,
+            0u,
+            nullptr,
+            nullptr,
+            nullptr,
+            emitted_count_out,
+            attempted_count_out,
+            overflowed_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v5(
+        const double* query_coords,
+        const int64_t* query_point_ids,
+        size_t query_count,
+        const int64_t* cell_ids,
+        const uint64_t* point_begin_offsets,
+        const uint64_t* point_counts,
+        const double* cell_mbr_min,
+        const double* cell_mbr_max,
+        size_t cell_count,
+        double radius,
+        const double* current_best_distances,
+        const int64_t* current_best_item_ids,
+        const double* target_coords,
+        const int64_t* target_point_ids,
+        size_t target_count,
+        const uint64_t* point_row_indices,
+        size_t point_row_index_count,
+        uint64_t max_inline_points,
+        uint32_t emit_pruned_rows,
+        uint32_t sort_rows,
+        uint32_t inline_nearest,
+        uint64_t row_capacity,
+        int64_t* frontier_kind_codes_out,
+        int64_t* query_row_ids_out,
+        int64_t* query_point_ids_out,
+        int64_t* cell_ids_out,
+        uint64_t* point_begin_offsets_out,
+        uint64_t* point_counts_out,
+        double* min_distances_out,
+        double* max_distances_out,
+        double* nearest_distances_out,
+        int64_t* nearest_item_ids_out,
+        uint64_t* inline_cell_hit_count_out,
+        uint64_t* inline_point_eval_count_out,
+        uint32_t global_bound_early_break,
+        uint64_t* global_bound_early_break_count_out,
+        double* global_bound_distance_out,
+        uint64_t* emitted_count_out,
+        uint64_t* attempted_count_out,
+        uint32_t* overflowed_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        collect_cell_mbr_nearest_frontier_3d_optix(
+            query_coords,
+            query_point_ids,
+            query_count,
+            cell_ids,
+            point_begin_offsets,
+            point_counts,
+            cell_mbr_min,
+            cell_mbr_max,
+            cell_count,
+            radius,
+            current_best_distances,
+            current_best_item_ids,
+            target_coords,
+            target_point_ids,
+            target_count,
+            point_row_indices,
+            point_row_index_count,
+            max_inline_points,
+            emit_pruned_rows,
+            sort_rows,
+            inline_nearest,
+            row_capacity,
+            frontier_kind_codes_out,
+            query_row_ids_out,
+            query_point_ids_out,
+            cell_ids_out,
+            point_begin_offsets_out,
+            point_counts_out,
+            min_distances_out,
+            max_distances_out,
+            nearest_distances_out,
+            nearest_item_ids_out,
+            inline_cell_hit_count_out,
+            inline_point_eval_count_out,
+            global_bound_early_break,
+            0u,
+            global_bound_early_break_count_out,
+            global_bound_distance_out,
+            nullptr,
+            emitted_count_out,
+            attempted_count_out,
+            overflowed_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v6(
+        const double* query_coords,
+        const int64_t* query_point_ids,
+        size_t query_count,
+        const int64_t* cell_ids,
+        const uint64_t* point_begin_offsets,
+        const uint64_t* point_counts,
+        const double* cell_mbr_min,
+        const double* cell_mbr_max,
+        size_t cell_count,
+        double radius,
+        const double* current_best_distances,
+        const int64_t* current_best_item_ids,
+        const double* target_coords,
+        const int64_t* target_point_ids,
+        size_t target_count,
+        const uint64_t* point_row_indices,
+        size_t point_row_index_count,
+        uint64_t max_inline_points,
+        uint32_t emit_pruned_rows,
+        uint32_t sort_rows,
+        uint32_t inline_nearest,
+        uint64_t row_capacity,
+        int64_t* frontier_kind_codes_out,
+        int64_t* query_row_ids_out,
+        int64_t* query_point_ids_out,
+        int64_t* cell_ids_out,
+        uint64_t* point_begin_offsets_out,
+        uint64_t* point_counts_out,
+        double* min_distances_out,
+        double* max_distances_out,
+        double* nearest_distances_out,
+        int64_t* nearest_item_ids_out,
+        uint64_t* inline_cell_hit_count_out,
+        uint64_t* inline_point_eval_count_out,
+        uint32_t global_bound_early_break,
+        uint32_t frontier_status_probe_mode,
+        uint64_t* global_bound_early_break_count_out,
+        double* global_bound_distance_out,
+        uint64_t* emitted_count_out,
+        uint64_t* attempted_count_out,
+        uint32_t* overflowed_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        collect_cell_mbr_nearest_frontier_3d_optix(
+            query_coords,
+            query_point_ids,
+            query_count,
+            cell_ids,
+            point_begin_offsets,
+            point_counts,
+            cell_mbr_min,
+            cell_mbr_max,
+            cell_count,
+            radius,
+            current_best_distances,
+            current_best_item_ids,
+            target_coords,
+            target_point_ids,
+            target_count,
+            point_row_indices,
+            point_row_index_count,
+            max_inline_points,
+            emit_pruned_rows,
+            sort_rows,
+            inline_nearest,
+            row_capacity,
+            frontier_kind_codes_out,
+            query_row_ids_out,
+            query_point_ids_out,
+            cell_ids_out,
+            point_begin_offsets_out,
+            point_counts_out,
+            min_distances_out,
+            max_distances_out,
+            nearest_distances_out,
+            nearest_item_ids_out,
+            inline_cell_hit_count_out,
+            inline_point_eval_count_out,
+            global_bound_early_break,
+            frontier_status_probe_mode,
+            global_bound_early_break_count_out,
+            global_bound_distance_out,
+            nullptr,
+            emitted_count_out,
+            attempted_count_out,
+            overflowed_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_collect_active_query_status_stream_3d_v1(
+        const double* query_coords,
+        const int64_t* query_point_ids,
+        size_t query_count,
+        const int64_t* cell_ids,
+        const uint64_t* point_begin_offsets,
+        const uint64_t* point_counts,
+        const double* cell_mbr_min,
+        const double* cell_mbr_max,
+        size_t cell_count,
+        double radius,
+        const double* current_best_distances,
+        const int64_t* current_best_item_ids,
+        const double* target_coords,
+        const int64_t* target_point_ids,
+        size_t target_count,
+        const uint64_t* point_row_indices,
+        size_t point_row_index_count,
+        uint64_t max_inline_points,
+        uint32_t emit_pruned_rows,
+        uint32_t inline_nearest,
+        uint32_t frontier_status_probe_mode,
+        uint64_t row_capacity,
+        int64_t* active_queue_indices_out,
+        int64_t* query_row_ids_out,
+        int64_t* source_ids_out,
+        int64_t* cell_ids_out,
+        int64_t* status_codes_out,
+        int64_t* transition_phase_codes_out,
+        double* current_best_before_sq_out,
+        double* current_best_after_sq_out,
+        uint64_t* emitted_count_out,
+        uint64_t* attempted_count_out,
+        uint32_t* overflowed_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (row_capacity != 0 && (
+                !active_queue_indices_out || !query_row_ids_out || !source_ids_out
+                || !cell_ids_out || !status_codes_out || !transition_phase_codes_out
+                || !current_best_before_sq_out || !current_best_after_sq_out)) {
+            throw std::runtime_error("active-query status stream output arrays must not be null when row_capacity is nonzero");
+        }
+        std::vector<int64_t> frontier_kind_codes(row_capacity);
+        std::vector<int64_t> frontier_query_row_ids(row_capacity);
+        std::vector<int64_t> frontier_query_point_ids(row_capacity);
+        std::vector<int64_t> frontier_cell_ids(row_capacity);
+        std::vector<uint64_t> frontier_point_begin_offsets(row_capacity);
+        std::vector<uint64_t> frontier_point_counts(row_capacity);
+        std::vector<double> frontier_min_distances(row_capacity);
+        std::vector<double> frontier_max_distances(row_capacity);
+        std::vector<double> nearest_distances(query_count);
+        std::vector<int64_t> nearest_item_ids(query_count);
+        std::vector<RtdlActiveQueryStatusStreamRow> status_rows(row_capacity);
+
+        collect_cell_mbr_nearest_frontier_3d_optix(
+            query_coords,
+            query_point_ids,
+            query_count,
+            cell_ids,
+            point_begin_offsets,
+            point_counts,
+            cell_mbr_min,
+            cell_mbr_max,
+            cell_count,
+            radius,
+            current_best_distances,
+            current_best_item_ids,
+            target_coords,
+            target_point_ids,
+            target_count,
+            point_row_indices,
+            point_row_index_count,
+            max_inline_points,
+            emit_pruned_rows,
+            0u,
+            inline_nearest,
+            row_capacity,
+            frontier_kind_codes.data(),
+            frontier_query_row_ids.data(),
+            frontier_query_point_ids.data(),
+            frontier_cell_ids.data(),
+            frontier_point_begin_offsets.data(),
+            frontier_point_counts.data(),
+            frontier_min_distances.data(),
+            frontier_max_distances.data(),
+            nearest_distances.data(),
+            nearest_item_ids.data(),
+            nullptr,
+            nullptr,
+            0u,
+            frontier_status_probe_mode,
+            nullptr,
+            nullptr,
+            status_rows.data(),
+            emitted_count_out,
+            attempted_count_out,
+            overflowed_out);
+
+        const uint64_t emitted = emitted_count_out ? *emitted_count_out : 0ULL;
+        const uint32_t overflowed = overflowed_out ? *overflowed_out : 0u;
+        if (overflowed != 0u) {
+            return;
+        }
+        if (emitted > row_capacity) {
+            throw std::runtime_error("active-query status stream emitted_count exceeds row_capacity");
+        }
+        for (uint64_t i = 0; i < emitted; ++i) {
+            active_queue_indices_out[i] = status_rows[i].active_queue_index;
+            query_row_ids_out[i] = status_rows[i].query_row_id;
+            source_ids_out[i] = status_rows[i].source_id;
+            cell_ids_out[i] = status_rows[i].cell_id;
+            status_codes_out[i] = status_rows[i].status_code;
+            transition_phase_codes_out[i] = status_rows[i].transition_phase_code;
+            current_best_before_sq_out[i] = status_rows[i].current_best_before_sq;
+            current_best_after_sq_out[i] = status_rows[i].current_best_after_sq;
+        }
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_active_query_status_state_machine_smoke_v1(
+        const int64_t* query_row_ids,
+        const int64_t* active_queue_indices,
+        const int64_t* source_ids,
+        const double* current_best_sq,
+        const int64_t* current_best_item_ids,
+        size_t active_count,
+        const int64_t* candidate_query_row_ids,
+        const int64_t* candidate_cell_ids,
+        const double* candidate_min_sq,
+        const double* candidate_max_sq,
+        const uint64_t* candidate_work_counts,
+        size_t candidate_count,
+        uint64_t heavy_threshold,
+        const int64_t* feedback_active_queue_indices,
+        const double* feedback_best_sq,
+        const int64_t* feedback_item_ids,
+        size_t feedback_count,
+        uint64_t row_capacity,
+        int64_t* active_queue_indices_out,
+        int64_t* query_row_ids_out,
+        int64_t* source_ids_out,
+        int64_t* cell_ids_out,
+        int64_t* status_codes_out,
+        int64_t* transition_phase_codes_out,
+        double* current_best_before_sq_out,
+        double* current_best_after_sq_out,
+        uint64_t* emitted_count_out,
+        uint64_t* attempted_count_out,
+        uint64_t* status_count_offloading_out,
+        uint64_t* feedback_update_count_out,
+        uint32_t* overflowed_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (active_count != 0 && (
+                !query_row_ids || !active_queue_indices || !source_ids
+                || !current_best_sq || !current_best_item_ids)) {
+            throw std::runtime_error("active-query state arrays must not be null when active_count is nonzero");
+        }
+        if (candidate_count != 0 && (
+                !candidate_query_row_ids || !candidate_cell_ids || !candidate_min_sq
+                || !candidate_max_sq || !candidate_work_counts)) {
+            throw std::runtime_error("candidate arrays must not be null when candidate_count is nonzero");
+        }
+        if (feedback_count != 0 && (
+                !feedback_active_queue_indices || !feedback_best_sq || !feedback_item_ids)) {
+            throw std::runtime_error("feedback arrays must not be null when feedback_count is nonzero");
+        }
+        if (row_capacity != 0 && (
+                !active_queue_indices_out || !query_row_ids_out || !source_ids_out
+                || !cell_ids_out || !status_codes_out || !transition_phase_codes_out
+                || !current_best_before_sq_out || !current_best_after_sq_out)) {
+            throw std::runtime_error("status-state smoke output arrays must not be null when row_capacity is nonzero");
+        }
+        if (!emitted_count_out || !attempted_count_out || !status_count_offloading_out
+                || !feedback_update_count_out || !overflowed_out) {
+            throw std::runtime_error("status-state smoke telemetry output pointers must not be null");
+        }
+
+        *emitted_count_out = 0ULL;
+        *attempted_count_out = 0ULL;
+        *status_count_offloading_out = 0ULL;
+        *feedback_update_count_out = 0ULL;
+        *overflowed_out = 0u;
+
+        std::vector<double> updated_best(active_count);
+        std::vector<int64_t> updated_item(active_count);
+        for (size_t i = 0; i < active_count; ++i) {
+            updated_best[i] = current_best_sq[i];
+            updated_item[i] = current_best_item_ids[i];
+        }
+
+        for (size_t i = 0; i < feedback_count; ++i) {
+            const int64_t queue_index = feedback_active_queue_indices[i];
+            size_t offset = active_count;
+            for (size_t j = 0; j < active_count; ++j) {
+                if (active_queue_indices[j] == queue_index) {
+                    offset = j;
+                    break;
+                }
+            }
+            if (offset == active_count) {
+                throw std::runtime_error("feedback active queue index is not present in active state");
+            }
+            const double candidate_best = feedback_best_sq[i];
+            const int64_t candidate_item = feedback_item_ids[i];
+            const double previous_best = updated_best[offset];
+            const int64_t previous_item = updated_item[offset];
+            if (candidate_best < previous_best
+                    || (candidate_best == previous_best
+                        && (previous_item < 0
+                            || (candidate_item >= 0 && candidate_item < previous_item)))) {
+                updated_best[offset] = candidate_best;
+                updated_item[offset] = candidate_item;
+                *feedback_update_count_out += 1ULL;
+            }
+        }
+
+        uint64_t attempted = 0ULL;
+        uint64_t emitted = 0ULL;
+        for (size_t i = 0; i < candidate_count; ++i) {
+            if (candidate_work_counts[i] <= heavy_threshold) {
+                continue;
+            }
+            const int64_t query_id = candidate_query_row_ids[i];
+            size_t offset = active_count;
+            for (size_t j = 0; j < active_count; ++j) {
+                if (query_row_ids[j] == query_id) {
+                    offset = j;
+                    break;
+                }
+            }
+            if (offset == active_count) {
+                throw std::runtime_error("candidate query row id is not present in active state");
+            }
+            ++attempted;
+            if (attempted > row_capacity) {
+                *overflowed_out = 1u;
+                continue;
+            }
+            const uint64_t out = emitted++;
+            active_queue_indices_out[out] = active_queue_indices[offset];
+            query_row_ids_out[out] = query_row_ids[offset];
+            source_ids_out[out] = source_ids[offset];
+            cell_ids_out[out] = candidate_cell_ids[i];
+            status_codes_out[out] = 2;
+            transition_phase_codes_out[out] = 1;
+            current_best_before_sq_out[out] = current_best_sq[offset];
+            current_best_after_sq_out[out] = updated_best[offset];
+        }
+
+        if (*overflowed_out != 0u) {
+            emitted = 0ULL;
+        }
+        *emitted_count_out = emitted;
+        *attempted_count_out = attempted;
+        *status_count_offloading_out = attempted;
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_seed_nearest_witness_local_grid_3d(
+        const double* query_coords,
+        const int64_t* query_point_ids,
+        size_t query_count,
+        const double* target_coords,
+        const int64_t* target_point_ids,
+        size_t target_count,
+        const int64_t* cell_ids,
+        const int64_t* original_cell_ids,
+        const int64_t* dense_cell_positions,
+        size_t dense_cell_position_count,
+        const int64_t* point_begin_offsets,
+        const int64_t* point_counts,
+        const int64_t* point_row_indices,
+        size_t point_row_index_count,
+        size_t cell_count,
+        const int64_t* grid_shape,
+        const double* grid_lower_bounds,
+        const double* grid_upper_bounds,
+        double* nearest_distances_out,
+        int64_t* nearest_item_ids_out,
+        int64_t* seed_cell_ids_out,
+        int64_t* seed_cell_point_counts_out,
+        int64_t* grid_cell_probe_counts_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_local_grid_nearest_seed_3d_cuda(
+            query_coords,
+            query_point_ids,
+            query_count,
+            target_coords,
+            target_point_ids,
+            target_count,
+            cell_ids,
+            original_cell_ids,
+            dense_cell_positions,
+            dense_cell_position_count,
+            point_begin_offsets,
+            point_counts,
+            point_row_indices,
+            point_row_index_count,
+            cell_count,
+            grid_shape,
+            grid_lower_bounds,
+            grid_upper_bounds,
+            nearest_distances_out,
+            nearest_item_ids_out,
+            seed_cell_ids_out,
+            seed_cell_point_counts_out,
+            grid_cell_probe_counts_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_seed_nearest_witness_grid_branch_bound_3d(
+        const double* query_coords,
+        const int64_t* query_point_ids,
+        size_t query_count,
+        const double* target_coords,
+        const int64_t* target_point_ids,
+        size_t target_count,
+        const int64_t* cell_ids,
+        const int64_t* original_cell_ids,
+        const int64_t* dense_cell_positions,
+        size_t dense_cell_position_count,
+        const int64_t* point_begin_offsets,
+        const int64_t* point_counts,
+        const int64_t* point_row_indices,
+        size_t point_row_index_count,
+        size_t cell_count,
+        const int64_t* grid_shape,
+        const double* grid_lower_bounds,
+        const double* grid_upper_bounds,
+        double* nearest_distances_out,
+        int64_t* nearest_item_ids_out,
+        int64_t* seed_cell_ids_out,
+        int64_t* seed_cell_point_counts_out,
+        int64_t* grid_cell_probe_counts_out,
+        int64_t* scanned_cell_counts_out,
+        int64_t* scanned_point_counts_out,
+        int64_t* shell_counts_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_grid_branch_bound_nearest_seed_3d_cuda(
+            query_coords,
+            query_point_ids,
+            query_count,
+            target_coords,
+            target_point_ids,
+            target_count,
+            cell_ids,
+            original_cell_ids,
+            dense_cell_positions,
+            dense_cell_position_count,
+            point_begin_offsets,
+            point_counts,
+            point_row_indices,
+            point_row_index_count,
+            cell_count,
+            grid_shape,
+            grid_lower_bounds,
+            grid_upper_bounds,
+            nearest_distances_out,
+            nearest_item_ids_out,
+            seed_cell_ids_out,
+            seed_cell_point_counts_out,
+            grid_cell_probe_counts_out,
+            scanned_cell_counts_out,
+            scanned_point_counts_out,
+            shell_counts_out);
+    }, error_out, error_size);
 }
 
 extern "C" int rtdl_optix_prepare_rays_2d(

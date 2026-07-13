@@ -7,7 +7,7 @@ import rtdsl as rt
 
 
 ROOT = Path(__file__).resolve().parents[1]
-REPORT = ROOT / "docs" / "reports" / "goal2990_v2_6_neutral_partner_handoff_2026-06-01.md"
+REPORT = ROOT / "history" / "internal_docs" / "docs_reports" / "goal2990_v2_6_neutral_partner_handoff_2026-06-01.md"
 
 
 class _FakeCupyInt64Column:

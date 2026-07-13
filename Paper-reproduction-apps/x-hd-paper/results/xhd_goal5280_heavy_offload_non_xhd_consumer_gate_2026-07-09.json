@@ -1,0 +1,103 @@
+{
+  "goal": 5280,
+  "status": "implemented_review_pending",
+  "consumer": {
+    "name": "retry_scheduler_worklist",
+    "domain": "generic_job_retry_and_backlog_scheduling",
+    "uses_xhd_app_assets": false,
+    "uses_hausdorff_semantics": false,
+    "uses_paper_author_artifacts": false
+  },
+  "contract": "generic_heavy_offload_worklist_v1",
+  "columns": {
+    "work_source_ids": [
+      201,
+      202,
+      203,
+      204
+    ],
+    "work_primitive_ids": [
+      11,
+      12,
+      13,
+      14
+    ],
+    "work_begin_offsets": [
+      5,
+      9,
+      12,
+      20
+    ],
+    "work_counts": [
+      1,
+      15,
+      2,
+      13
+    ],
+    "work_kind_codes": [
+      3,
+      1,
+      2,
+      1
+    ],
+    "work_cost_estimates": [
+      100.0,
+      30.0,
+      80.0,
+      26.0
+    ],
+    "lower_bounds": [
+      1.0,
+      2.0,
+      3.0,
+      4.0
+    ],
+    "upper_bounds": [
+      1.5,
+      6.0,
+      4.0,
+      7.0
+    ]
+  },
+  "metadata": {
+    "app_semantics": "none",
+    "row_count": 4,
+    "attempted_row_count": 4,
+    "overflowed": false,
+    "overflow_policy": "fail_closed_no_partial_rows",
+    "work_kind_codes": {
+      "active": 1,
+      "miss": 2,
+      "deferred": 3
+    }
+  },
+  "telemetry": {
+    "schema": "rtdl.generic.heavy_offload_worklist.memory_telemetry.v1",
+    "in_queue_capacity": 5,
+    "miss_queue_capacity": 1,
+    "deferred_queue_capacity": 1,
+    "in_queue_bytes": 40,
+    "miss_queue_bytes": 8,
+    "deferred_queue_bytes": 8,
+    "heavy_offload_current_rows": 4,
+    "heavy_offload_peak_rows": 4,
+    "heavy_offload_queue_current_bytes": 64,
+    "heavy_offload_queue_peak_bytes": 64,
+    "device_buffer_bytes_excluding_accel": 256,
+    "native_accel_bytes_if_applicable": null
+  },
+  "overflow_control": {
+    "row_capacity": 3,
+    "overflowed": true,
+    "attempted_row_count": 4,
+    "row_count": 0,
+    "partial_rows_emitted": false
+  },
+  "claim_boundary": {
+    "figure11_reproduced": false,
+    "author_memory_parity_claim_authorized": false,
+    "native_backend_complete": false,
+    "performance_claim_authorized": false,
+    "xhd_specific_core_behavior": false
+  }
+}

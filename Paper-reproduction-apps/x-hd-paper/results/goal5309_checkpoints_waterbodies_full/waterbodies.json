@@ -1,0 +1,53 @@
+{
+  "author_loader_point_count": 22824823,
+  "checkpoint_features_seen_at_start": 0,
+  "complete": true,
+  "features_seen": 463591,
+  "geometry_types": {
+    "MultiPolygon": 1,
+    "Polygon": 463590
+  },
+  "key": "waterbodies",
+  "mbr": [
+    -160.231107166363,
+    -66.997866677705,
+    19.2039983241634,
+    49.384333060713
+  ],
+  "mbr_delta": {
+    "x_lower": 2.4527776361082942e-06,
+    "x_upper": -2.9081737551450715e-06,
+    "y_lower": -2.4151042765652164e-07,
+    "y_upper": -1.5034959872650688e-06
+  },
+  "object_id_max": 463591,
+  "object_id_min": 1,
+  "pages_seen": 464,
+  "paper_basename": "USADetailedWaterBodies.wkt",
+  "paper_mbr": {
+    "x": [
+      -160.23110961914062,
+      -66.99786376953125
+    ],
+    "y": [
+      19.203998565673828,
+      49.384334564208984
+    ]
+  },
+  "paper_point_count": 22818694,
+  "point_count_delta": 6129,
+  "point_count_relative_delta": 0.0002685955646716679,
+  "resumed_from_checkpoint": false,
+  "sample_labels": [
+    " ",
+    " ",
+    " ",
+    " ",
+    " ",
+    " ",
+    " ",
+    "Salt Lake"
+  ],
+  "service_feature_count": 463591,
+  "service_url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Detailed_Water_Bodies/FeatureServer"
+}

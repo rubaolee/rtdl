@@ -1,0 +1,24 @@
+{
+  "returncode": 0,
+  "wall_sec": 79.93069761898369,
+  "cmd": [
+    "/root/rtdl_goal5036/.venv/bin/python",
+    "/root/rtdl_goal5036/Paper-reproduction-apps/rayjoin-paper/section57_overlay.py",
+    "--left",
+    "/root/rtdl_goal5036/Paper-reproduction-apps/rayjoin-paper/_data/top4_arcgis/top4_county.cdb",
+    "--right",
+    "/root/rtdl_goal5036/Paper-reproduction-apps/rayjoin-paper/_data/top4_arcgis/top4_zipcode.cdb",
+    "--pair-name",
+    "top4_county_zipcode",
+    "--dataset-label",
+    "representative_current_source",
+    "--output",
+    "/root/rtdl_goal5036/history/internal_docs/rtdl_top4_text_fair_1/overlay.txt",
+    "--author-output",
+    "/root/rtdl_goal5036/history/internal_docs/author_top4_fair_1/overlay.txt",
+    "--summary",
+    "/root/rtdl_goal5036/history/internal_docs/rtdl_top4_text_fair_1/summary.json"
+  ],
+  "output_exists": true,
+  "output_bytes": 139098488
+}

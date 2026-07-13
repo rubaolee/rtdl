@@ -1,0 +1,21 @@
+{
+  "left_edge_count": 14430155,
+  "left_path": "/workspace/goal4848_rep/current_osm_au/lakes_Australia_current_osm_Point.cdb",
+  "load_left_sec": 71.79425909370184,
+  "load_right_sec": 4.994368024170399,
+  "lsi_row_count": 13452,
+  "lsi_wall_sec": 6.28831684589386,
+  "native_timings": {
+    "candidate_count_pass": 0.00289391,
+    "candidate_download": 0.0,
+    "candidate_write_pass": 0.002828656,
+    "emitted_count": 13452,
+    "exact_refine": 2.551892339,
+    "left_upload": 0.0,
+    "mode": "none",
+    "raw_candidate_count": 0
+  },
+  "right_edge_count": 941375,
+  "right_path": "/workspace/goal4848_rep/current_osm_au/parks_Australia_current_osm_Point.cdb",
+  "schema": "rtdl.goal4889.lsi_probe.v1"
+}

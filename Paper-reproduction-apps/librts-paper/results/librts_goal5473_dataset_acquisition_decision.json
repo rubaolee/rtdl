@@ -1,0 +1,51 @@
+{
+  "claim_boundary": {
+    "embree_in_scope": false,
+    "exact_inputs_acquired": false,
+    "paper_figure_reproduced": false,
+    "performance_ratio_authorized": false,
+    "sharepoint_permanently_unavailable_claimed": false
+  },
+  "current_host": {
+    "disk_available_bytes": 112937418752,
+    "estimated_full_download_hours": 12.101632827112196,
+    "estimated_full_download_seconds": 43565.8781776039,
+    "gpu": "NVIDIA GeForce GTX 1070",
+    "gpu_vram_mib": 8192,
+    "has_two_archive_sizes_free": true,
+    "meets_paper_hardware_guidance": false,
+    "ram_bytes": 16714764288,
+    "zenodo_probe_bytes_per_sec": 529369.0
+  },
+  "decision": {
+    "download_on_current_host": false,
+    "exact_input_blocker_removed": false,
+    "next_goal": "prepare_resume_safe_zenodo_acquisition_and_smallest_exact_figure_gate",
+    "pod_required_for_exact_dataset_execution": true,
+    "pod_required_for_next_metadata_or_log_work": false
+  },
+  "official_sources": {
+    "author_onedrivedownloader_resolution_verified": false,
+    "sharepoint_archive_count": 3,
+    "sharepoint_direct_head_status": [
+      401,
+      401,
+      401
+    ],
+    "zenodo_download_available": true,
+    "zenodo_file": "PPoPPAE-v2.tar.gz",
+    "zenodo_md5": "89e589f086038f1cd3af9e3ed67da8c8",
+    "zenodo_record": "14209767",
+    "zenodo_size_bytes": 23062425365
+  },
+  "required_acquisition_host": {
+    "gpu_class": "RTX 3090-class or newer RTX with RT cores",
+    "linux_required": true,
+    "minimum_free_disk_gib": 70,
+    "minimum_ram_gib": 64,
+    "minimum_vram_gib": 24,
+    "recommended_sustained_download_mib_per_sec": 10
+  },
+  "schema": "rtdl.paper_reproduction.librts.dataset_acquisition_decision.v1",
+  "status": "exact_dataset_download_deferred_to_suitable_host"
+}

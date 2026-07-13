@@ -1,0 +1,228 @@
+{
+  "author_overlay_compute_sec": 0.0421,
+  "claim_boundary": {
+    "bundled_rayjoin_overlay_imported": false,
+    "columnar_xsect_arrays": true,
+    "device_columnar_requested": true,
+    "exact_lsi_device_columns_downstream_numpy_copy_used": true,
+    "exact_lsi_device_columns_requested": true,
+    "full_carrier_geometry_payload_columns_materialized": false,
+    "generic_contract_goal": true,
+    "implementation_change": "internal_app_owned_measurement_script_only",
+    "layer4_claim_authorized": false,
+    "layer4_fusion": false,
+    "numba_compiled_group": true,
+    "numba_cuda_reprojection": true,
+    "numba_cuda_sort": true,
+    "numeric_binary_route": true,
+    "paper_byte_equal_route": false,
+    "paper_byte_equality_claim_authorized_for_numeric_route": false,
+    "paper_exact_sink_separate": true,
+    "prepared_lsi_replay_cached_diagnostic_only": false,
+    "prepared_lsi_replay_requested": false,
+    "projection_pushdown": true,
+    "public_high_performance_claim_authorized": false,
+    "rayjoin_app_adapter_used": true,
+    "rayjoin_specific_core_primitive": false,
+    "rtdl_core_change": false,
+    "sort_order_validated_against_cpu_reference": false,
+    "transient_display_point_tuples_used_for_dedupe_count": true
+  },
+  "device_order_validation": null,
+  "downstream_consumer": {
+    "cuda_device_resident_continuation": false,
+    "numba_available": true,
+    "numba_execution_mode": "cpu_njit",
+    "pair_count": 28815,
+    "partner": "numba_sorted_pair_scan",
+    "top_pairs_by_point_rows": [
+      {
+        "group_count": 25,
+        "label_a": 933,
+        "label_b": 159,
+        "point_row_count": 2152
+      },
+      {
+        "group_count": 201,
+        "label_a": 0,
+        "label_b": 5,
+        "point_row_count": 1455
+      },
+      {
+        "group_count": 78,
+        "label_a": 0,
+        "label_b": 2115,
+        "point_row_count": 1023
+      },
+      {
+        "group_count": 15,
+        "label_a": 1485,
+        "label_b": 5209,
+        "point_row_count": 725
+      },
+      {
+        "group_count": 5,
+        "label_a": 1988,
+        "label_b": 5264,
+        "point_row_count": 576
+      },
+      {
+        "group_count": 3,
+        "label_a": 1401,
+        "label_b": 5187,
+        "point_row_count": 531
+      },
+      {
+        "group_count": 6,
+        "label_a": 1765,
+        "label_b": 5264,
+        "point_row_count": 519
+      },
+      {
+        "group_count": 4,
+        "label_a": 1843,
+        "label_b": 5301,
+        "point_row_count": 515
+      },
+      {
+        "group_count": 7,
+        "label_a": 1505,
+        "label_b": 270,
+        "point_row_count": 505
+      },
+      {
+        "group_count": 7,
+        "label_a": 374,
+        "label_b": 82,
+        "point_row_count": 489
+      }
+    ],
+    "total_groups": 64459,
+    "total_point_rows": 673371
+  },
+  "grouped_carrier": {
+    "columnar_xsect_arrays": true,
+    "compiled_columnar_group_builder": true,
+    "compiled_group_execution_mode": "numba_cpu_njit",
+    "full_geometry_payload_columns_materialized": false,
+    "group_count": 64459,
+    "point_row_count": 673371,
+    "projected_out_columns": [
+      "x",
+      "y",
+      "alt_label",
+      "source_side_id",
+      "source_element_id"
+    ],
+    "projection_pushdown": true,
+    "schema": "rtdl.paper_reproduction.rayjoin.section57_columnar_binary_carrier.v1",
+    "skipped_group_count": 1756,
+    "transient_display_point_tuples_used_for_dedupe_count": true
+  },
+  "left": {
+    "chains": 16545,
+    "edges": 326193,
+    "path": "Paper-reproduction-apps/rayjoin-paper/_data/public_sample/br_county_clean_25_odyssey_final.txt",
+    "points": 342738
+  },
+  "lsi_row_count": 20860,
+  "native_point_location_timings": {
+    "midpoint_pip_map0": {
+      "mode": "none",
+      "point_count": 944,
+      "point_upload": 0.0,
+      "positive_face_count": 934,
+      "row_download": 2.0831e-05,
+      "traversal": 0.000104743
+    },
+    "midpoint_pip_map1": {
+      "mode": "none",
+      "point_count": 3594,
+      "point_upload": 0.0,
+      "positive_face_count": 3189,
+      "row_download": 2.3051e-05,
+      "traversal": 6.6962e-05
+    },
+    "vertex_pip_map0_in_map1": {
+      "mode": "rows",
+      "point_count": 342738,
+      "point_upload": 0.001066012,
+      "positive_face_count": 337691,
+      "row_download": 0.000459294,
+      "traversal": 0.000490084
+    },
+    "vertex_pip_map1_in_map0": {
+      "mode": "rows",
+      "point_count": 258961,
+      "point_upload": 0.000855066,
+      "positive_face_count": 255272,
+      "row_download": 0.00035219,
+      "traversal": 0.000389031
+    }
+  },
+  "pair_name": "br_county_soil",
+  "phase_seconds": {
+    "assign_midpoint_faces_map0_columnar_sec": 4.800036549568176e-06,
+    "assign_midpoint_faces_map1_columnar_sec": 1.0239891707897186e-05,
+    "destroy_point_location_sessions_sec": 0.007662106305360794,
+    "grouped_compiled_columnar_carrier_construction_sec": 0.010124859400093555,
+    "grouped_descriptor_pair_count_consumer_sec": 0.005863063037395477,
+    "intersection_reprojection_device_columnar_sec": 0.014193488284945488,
+    "load_pack_left_sec": 0.7432735888287425,
+    "load_pack_right_sec": 0.4713252130895853,
+    "lsi_exact_pair_id_device_columns_sec": 0.8959130486473441,
+    "lsi_exact_pair_id_device_columns_to_numpy_sec": 0.0005203448235988617,
+    "midpoint_pip_map0_sec": 0.0004865238443017006,
+    "midpoint_pip_map1_sec": 0.00041218288242816925,
+    "midpoint_points_map0_columnar_sec": 0.0022279461845755577,
+    "midpoint_points_map1_columnar_sec": 0.006371038034558296,
+    "prepare_point_location_map0_in_map1_sec": 0.5661951201036572,
+    "prepare_point_location_map1_in_map0_sec": 0.07788511551916599,
+    "shared_bounds_sec": 8.029863238334656e-06,
+    "sort_map0_device_columnar_sec": 0.011915631592273712,
+    "sort_map1_device_columnar_sec": 0.011662254109978676,
+    "vertex_pip_map0_in_map1_sec": 0.015685491263866425,
+    "vertex_pip_map1_in_map0_sec": 0.006825841963291168
+  },
+  "right": {
+    "chains": 7950,
+    "edges": 251011,
+    "path": "Paper-reproduction-apps/rayjoin-paper/_data/public_sample/br_soil_ascii_odyssey_final.txt",
+    "points": 258961
+  },
+  "route": "device_columnar_xsect_numeric_binary_descriptor_route_public_lsi_pip_numba_consumer",
+  "scale_bounds": [
+    -73.990943647,
+    -25.7463,
+    -35.8075,
+    7.0518
+  ],
+  "schema": "rtdl.paper_reproduction.rayjoin.section57_columnar_binary.v1",
+  "vertex_positive_counts": {
+    "side0_in_side1": 337691,
+    "side1_in_side0": 255272
+  },
+  "writer_free_hot_keys": [
+    "lsi_exact_pair_id_device_columns_sec",
+    "lsi_exact_pair_id_device_columns_to_numpy_sec",
+    "intersection_reprojection_device_columnar_sec",
+    "sort_map0_device_columnar_sec",
+    "sort_map1_device_columnar_sec",
+    "vertex_pip_map0_in_map1_sec",
+    "vertex_pip_map1_in_map0_sec",
+    "midpoint_points_map0_columnar_sec",
+    "midpoint_points_map1_columnar_sec",
+    "midpoint_pip_map0_sec",
+    "midpoint_pip_map1_sec",
+    "assign_midpoint_faces_map0_columnar_sec",
+    "assign_midpoint_faces_map1_columnar_sec",
+    "grouped_compiled_columnar_carrier_construction_sec",
+    "grouped_descriptor_pair_count_consumer_sec"
+  ],
+  "writer_free_hot_sec": 0.9822167539969087,
+  "writer_free_hot_vs_author_overlay_compute_ratio": 23.330564227955076,
+  "xsect_sorted_counts": {
+    "side0": 20860,
+    "side1": 20860
+  }
+}

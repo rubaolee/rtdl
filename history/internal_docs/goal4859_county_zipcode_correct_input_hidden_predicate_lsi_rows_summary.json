@@ -1,0 +1,52 @@
+{
+  "base": "/workspace/rayjoin_section57_same_source_cdb/point_cdb/dtl_cnty/dtl_cnty_Point.cdb",
+  "expected": 961165,
+  "first_rows": [
+    {
+      "intersection_point_x": -157.5223298303399,
+      "intersection_point_y": 60.96597484796994,
+      "left_id": 422,
+      "right_id": 156566
+    },
+    {
+      "intersection_point_x": -157.1694549965769,
+      "intersection_point_y": 60.99283897144303,
+      "left_id": 453,
+      "right_id": 156565
+    },
+    {
+      "intersection_point_x": -157.1674205545325,
+      "intersection_point_y": 60.91218969599712,
+      "left_id": 463,
+      "right_id": 156564
+    },
+    {
+      "intersection_point_x": -158.9419258339502,
+      "intersection_point_y": 60.90410632715164,
+      "left_id": 330,
+      "right_id": 156572
+    },
+    {
+      "intersection_point_x": -159.01585637167324,
+      "intersection_point_y": 60.73284299142875,
+      "left_id": 310,
+      "right_id": 156575
+    }
+  ],
+  "hidden_predicate_row_count": 937391,
+  "private_bundled_helper_imported": false,
+  "public_api_gap": "No formal prepare_planar_map_lsi_2d_optix.run_raw rows front door yet.",
+  "public_planar_map_lsi_count": 961165,
+  "query": "/workspace/rayjoin_section57_same_source_cdb/point_cdb/USAZIPCodeArea/USAZIPCodeArea_Point.cdb",
+  "route": "public_segment_pair_run_raw_with_hidden_native_predicate_env",
+  "rows_equal_expected": false,
+  "rows_equal_public_count": false,
+  "runtime_or_native_edits": false,
+  "schema": "rtdl.goal4859.hidden_predicate_lsi_row_probe.v1",
+  "timings_seconds": {
+    "hidden_predicate_rows": 48.66456922143698,
+    "load_and_segment": 347.03342746943235,
+    "public_lsi_count": 41.17417926341295,
+    "total": 436.8721759542823
+  }
+}

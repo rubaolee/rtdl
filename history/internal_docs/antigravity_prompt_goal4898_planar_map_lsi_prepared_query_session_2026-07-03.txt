@@ -1,0 +1,22 @@
+Please review the RTDL Goal4898 prepared-query session work critically.
+
+Repository:
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review
+
+Primary review request:
+history/internal_docs/call_for_review_goal4898_planar_map_lsi_prepared_query_session_2026-07-03.md
+
+Main report:
+history/internal_docs/goal4898_planar_map_lsi_prepared_query_session_report_2026-07-03.md
+
+Please inspect the code and artifacts named in the call-for-review, then write your review to:
+history/internal_docs/antigravity_goal4898_planar_map_lsi_prepared_query_session_review_2026-07-03.md
+
+Requested verdict labels:
+- approve_goal4898_bounded_prepared_query_session
+- approve_with_required_amendments
+- block_as_not_a_real_generic_runtime_improvement
+- block_due_to_correctness_or_boundary_regression
+
+Be strict about the key boundary:
+This goal should only be approved if it is a genuine generic planar-map LSI prepared-query/session improvement, not a RayJoin-specific shortcut, and if the performance claim is bounded to hot/repeated query reuse rather than broad single-shot overlay speedup.

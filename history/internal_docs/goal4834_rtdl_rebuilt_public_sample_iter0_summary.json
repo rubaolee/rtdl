@@ -1,0 +1,118 @@
+{
+  "answer": "/workspace/RayJoin_fresh/test/dataset/br_countyXbr_soil_answer.txt",
+  "answer_sha256": "464f87a59cc2428f63cbfe5068965d7bc7adb8eee51e9c1e3a5960ae8b76019e",
+  "byte_equal": true,
+  "bytes": 16631243,
+  "elapsed_sec": 9.658747173845768,
+  "goal": "Goal4834 RTDL rebuilt current public sample correctness gate",
+  "left": "/workspace/RayJoin_fresh/test/dataset/br_county_clean_25_odyssey_final.txt",
+  "output": "/workspace/goal4834_rtdl_current_public_sample/rtdl_current_output_iter0.txt",
+  "result": {
+    "backend": "optix",
+    "input_shape": {
+      "map0_chains": 16545,
+      "map0_edges": 326193,
+      "map0_points": 342738,
+      "map1_chains": 7950,
+      "map1_edges": 251011,
+      "map1_points": 258961
+    },
+    "lsi": {
+      "intersection_count": 20860,
+      "predicate_contract": "rayjoin_author_lsi_intersect_test_endpoint_collinear_contract"
+    },
+    "midpoint_pip": {
+      "map0_midpoints_in_map1": 944,
+      "map0_nonfinite_midpoints_dropped": 0,
+      "map0_positive_faces": 934,
+      "map1_midpoints_in_map0": 3594,
+      "map1_nonfinite_midpoints_dropped": 0,
+      "map1_positive_faces": 3189
+    },
+    "native_timings": {
+      "lsi": {
+        "candidate_count_pass": 0.000212133,
+        "candidate_download": 0.0,
+        "candidate_write_pass": 0.0,
+        "emitted_count": 20860,
+        "exact_refine": 0.0,
+        "hot_call_sec": 1.6688348725438118,
+        "left_upload": 0.0,
+        "mode": "count_prepared_left_grouped_range_direct_intersection",
+        "raw_candidate_count": 0,
+        "scaled_intersection_materialization_enabled": true
+      },
+      "midpoint_pip_map0_in_map1": {
+        "hot_call_sec": 0.00867142528295517,
+        "mode": "rows",
+        "point_count": 944,
+        "point_upload": 3.3644e-05,
+        "positive_face_count": 934,
+        "row_download": 1.9907e-05,
+        "traversal": 0.008256637
+      },
+      "midpoint_pip_map1_in_map0": {
+        "hot_call_sec": 0.006617933511734009,
+        "mode": "rows",
+        "point_count": 3594,
+        "point_upload": 3.7691e-05,
+        "positive_face_count": 3189,
+        "row_download": 2.3765e-05,
+        "traversal": 0.006171029
+      },
+      "point_location_prepare_map0_in_map1": {
+        "hot_call_sec": 0.5334072858095169,
+        "mode": "prepare"
+      },
+      "point_location_prepare_map1_in_map0": {
+        "hot_call_sec": 0.0338943675160408,
+        "mode": "prepare"
+      },
+      "vertex_pip_map0_in_map1": {
+        "hot_call_sec": 0.08941084146499634,
+        "mode": "rows",
+        "point_count": 342738,
+        "point_upload": 0.001305257,
+        "positive_face_count": 337691,
+        "row_download": 0.000512963,
+        "traversal": 0.072807845
+      },
+      "vertex_pip_map1_in_map0": {
+        "hot_call_sec": 0.039205364882946014,
+        "mode": "rows",
+        "point_count": 258961,
+        "point_upload": 0.000999646,
+        "positive_face_count": 255272,
+        "row_download": 0.000408495,
+        "traversal": 0.032190052
+      }
+    },
+    "output": {
+      "assembled": true,
+      "chain_count": 64459,
+      "face_count": 19399,
+      "path": "/workspace/goal4834_rtdl_current_public_sample/rtdl_current_output_iter0.txt"
+    },
+    "phase_seconds": {
+      "lsi_row_object_materialize_sec": 0.16447624564170837,
+      "lsi_row_sort_sec": 0.5122948512434959,
+      "output_chain_assembly_sec": 1.067248411476612,
+      "output_chain_write_sec": 0.8570908233523369,
+      "pack_inputs_sec": 0.673478290438652,
+      "point_location_prepare_sec": 0.5673016533255577,
+      "point_location_prepare_wall_sec": 0.5673759654164314,
+      "total_sec": 5.760444954037666
+    },
+    "program": "overlay",
+    "schema": "rtdl.rayjoin.overlay_rtdl_run.v1",
+    "vertex_pip": {
+      "map0_points_in_map1": 342738,
+      "map0_positive_faces": 337691,
+      "map1_points_in_map0": 258961,
+      "map1_positive_faces": 255272
+    }
+  },
+  "right": "/workspace/RayJoin_fresh/test/dataset/br_soil_ascii_odyssey_final.txt",
+  "rtdl_optix_lib": "/workspace/rtdl_goal4817_user_smoke_20260630_102224/build/librtdl_optix.so",
+  "sha256": "464f87a59cc2428f63cbfe5068965d7bc7adb8eee51e9c1e3a5960ae8b76019e"
+}

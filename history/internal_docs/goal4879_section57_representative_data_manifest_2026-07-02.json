@@ -1,0 +1,103 @@
+{
+  "schema": "rtdl.goal4879.section57.representative_data_manifest.v1",
+  "date": "2026-07-02",
+  "baseline": "AuthorOfficial = Author+RTDLContractPatch",
+  "global_labeling_rule": {
+    "exact_old_paper_input": "Only if the exact old paper-preprocessed CDB and answer/comparator output are present.",
+    "representative_current_source": "Current or regenerated public-source data processed with author-compatible rules; useful for reproduction engineering, not exact old hidden-input proof."
+  },
+  "pairs": [
+    {
+      "pair": "County x Zipcode",
+      "paper_pair": true,
+      "current_status": "completed_full_stream_bounded_pair",
+      "input_label": "available_current_same_source_cdb",
+      "left_cdb": "/workspace/rayjoin_section57_same_source_cdb/point_cdb/dtl_cnty/dtl_cnty_Point.cdb",
+      "right_cdb": "/workspace/rayjoin_section57_same_source_cdb/point_cdb/USAZIPCodeArea/USAZIPCodeArea_Point.cdb",
+      "claim_limit": "full-stream correctness for this available pair; not a claim about the six missing Lakes/Parks pairs"
+    },
+    {
+      "pair": "Block x Water",
+      "paper_pair": true,
+      "current_status": "completed_full_stream_bounded_pair_under_authorofficial",
+      "input_label": "available_arcgis_current_or_regenerated_cdb",
+      "left_cdb": "/workspace/rtdl_goal4806_fast_min/artifacts/goal4806_section57_arcgis_full_us_20260630/dataset/point_cdb/USACensusBlockGroupBoundaries/USACensusBlockGroupBoundaries_Point.cdb",
+      "right_cdb": "/workspace/rtdl_goal4806_fast_min/artifacts/goal4806_section57_arcgis_full_us_20260630/dataset/point_cdb/USADetailedWaterBodies/USADetailedWaterBodies_Point.cdb",
+      "claim_limit": "full-stream correctness for this available pair under AuthorOfficial; exact old paper provenance remains bounded"
+    },
+    {
+      "pair": "LKAU x PKAU",
+      "paper_pair": true,
+      "current_status": "completed_representative_current_osm_authorofficial",
+      "input_label": "representative_current_osm_regenerated",
+      "raw_source": "Geofabrik Australia/Oceania current OSM extract",
+      "raw_source_url_candidate": "https://download.geofabrik.de/australia-oceania-latest.osm.pbf",
+      "left_cdb": "/workspace/goal4848_rep/current_osm_au/lakes_Australia_current_osm_Point.cdb",
+      "right_cdb": "/workspace/goal4848_rep/current_osm_au/parks_Australia_current_osm_Point.cdb",
+      "claim_limit": "representative current-source Section 5.7 result; not exact old paper CDB"
+    },
+    {
+      "pair": "LKSA x PKSA",
+      "paper_pair": true,
+      "current_status": "selected_next_representative_pair",
+      "input_label": "representative_current_osm_regenerated_planned",
+      "raw_source": "Geofabrik South America current OSM extract",
+      "raw_source_url_candidate": "https://download.geofabrik.de/south-america-latest.osm.pbf",
+      "approx_pbf_size_gb_from_prior_audit": 3.8,
+      "why_selected": "Smallest practical remaining continent after completed Australia; enough to test another non-US Lakes/Parks representative shape without jumping to Europe/North America scale.",
+      "planned_preprocessing": [
+        "osmium tags-filter lakes polygons",
+        "osmium tags-filter parks/national-park polygons",
+        "osmium export polygon GeoJSONSeq",
+        "goal4848_geojsonseq_to_cdb.py with author-compatible CDB output"
+      ],
+      "claim_limit": "representative current-source only"
+    },
+    {
+      "pair": "LKAF x PKAF",
+      "paper_pair": true,
+      "current_status": "backup_representative_pair_after_south_america",
+      "input_label": "representative_current_osm_regenerated_planned",
+      "raw_source": "Geofabrik Africa current OSM extract",
+      "raw_source_url_candidate": "https://download.geofabrik.de/africa-latest.osm.pbf",
+      "approx_pbf_size_gb_from_prior_audit": 7.3,
+      "why_selected": "Second-most practical remaining continent after South America; larger but still more manageable than Asia/Europe/North America.",
+      "claim_limit": "representative current-source only"
+    },
+    {
+      "pair": "LKAS x PKAS",
+      "paper_pair": true,
+      "current_status": "deferred_high_resource_representative_candidate",
+      "input_label": "representative_current_osm_regenerated_possible",
+      "raw_source_url_candidate": "https://download.geofabrik.de/asia-latest.osm.pbf",
+      "approx_pbf_size_gb_from_prior_audit": 14.9,
+      "claim_limit": "not immediate"
+    },
+    {
+      "pair": "LKEU x PKEU",
+      "paper_pair": true,
+      "current_status": "deferred_very_high_resource_representative_candidate",
+      "input_label": "representative_current_osm_regenerated_possible",
+      "raw_source_url_candidate": "https://download.geofabrik.de/europe-latest.osm.pbf",
+      "approx_pbf_size_gb_from_prior_audit": 32.2,
+      "claim_limit": "not immediate"
+    },
+    {
+      "pair": "LKNA x PKNA",
+      "paper_pair": true,
+      "current_status": "deferred_high_resource_representative_candidate",
+      "input_label": "representative_current_osm_regenerated_possible",
+      "raw_source_url_candidate": "https://download.geofabrik.de/north-america-latest.osm.pbf",
+      "approx_pbf_size_gb_from_prior_audit": 17.8,
+      "claim_limit": "not immediate"
+    }
+  ],
+  "next_pair": "LKSA x PKSA",
+  "backup_pair": "LKAF x PKAF",
+  "not_authorized": [
+    "calling current OSM regenerated pairs exact old paper inputs",
+    "claiming full eight-pair Section 5.7 old-paper reproduction",
+    "running performance before byte equality",
+    "using V3/V4 language"
+  ]
+}

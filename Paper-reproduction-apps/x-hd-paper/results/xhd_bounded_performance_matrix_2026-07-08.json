@@ -1,0 +1,62 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.bounded_performance_matrix.v1",
+  "paper_app": "x-hd-paper",
+  "claim_boundary": {
+    "performance_claim_authorized": false,
+    "author_performance_parity_claimed": false,
+    "speedup_ratio_reported": false,
+    "reason_no_ratio": "Author phase/wall measurements were collected on POD. RTDL route phases were collected in the local Python process and use exact public columnar reference routes, not the author X-HD RT-core algorithm. Denominators and hardware do not align."
+  },
+  "author_pod": {
+    "binary": "/tmp/xhd-goal5112/build-gcc11-optix77-fast/bin/hd_exec",
+    "variant": "rt",
+    "execution": "gpu",
+    "metric_contract": {
+      "HDResult": "directed input1-to-input2 Hausdorff distance",
+      "Running.AvgTime": "mean of per-repeat X-HD ReportedTime inside CalculateDistanceImpl; not whole process wall time"
+    },
+    "bounded2d": {
+      "HDResult": 2.0,
+      "retained_json_Running_AvgTime_ms": 3.873,
+      "same_binary_rerun_median_Running_AvgTime_ms": 3.888,
+      "same_binary_rerun_median_process_wall_sec": 1.079,
+      "runs": 3
+    },
+    "bounded3d": {
+      "HDResult": 2.0,
+      "retained_json_Running_AvgTime_ms": 4.235,
+      "same_binary_rerun_median_Running_AvgTime_ms": 3.724,
+      "same_binary_rerun_median_process_wall_sec": 1.104,
+      "runs": 3
+    }
+  },
+  "rtdl_local": {
+    "route_contract": "Public exact columnar reference route; not author X-HD RT-core implementation",
+    "bounded2d": {
+      "matched_author_HDResult": true,
+      "author_comparison_reference": "directed_a_to_b",
+      "author_comparison_distance": 2.0,
+      "symmetric_hausdorff_diagnostic": 2.0,
+      "run_phases_sec": {
+        "load_wkt_sec": 0.000591999851167202,
+        "exact_reference_sec": 0.0002808002755045891,
+        "rtdl_route_sec": 0.0014174999669194221,
+        "author_json_load_sec": 0.0003761998377740383,
+        "total_sec": 0.002716599963605404
+      }
+    },
+    "bounded3d": {
+      "matched_author_HDResult": true,
+      "author_comparison_reference": "directed_a_to_b",
+      "author_comparison_distance": 2.0,
+      "symmetric_hausdorff_diagnostic": 2.0,
+      "run_phases_sec": {
+        "load_wkt_sec": 0.0006378996185958385,
+        "exact_reference_sec": 0.0002960003912448883,
+        "rtdl_route_sec": 0.0015863003209233284,
+        "author_json_load_sec": 0.00044350000098347664,
+        "total_sec": 0.003020400181412697
+      }
+    }
+  }
+}

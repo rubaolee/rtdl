@@ -1,0 +1,103 @@
+{
+  "all_cases_matched": true,
+  "author_comparator_used": true,
+  "backend": "optix_numba_component_signature",
+  "case_filter": [
+    "representative_three_components_noise3d"
+  ],
+  "cases": [
+    {
+      "all_matched": true,
+      "backend": "optix_numba_component_signature",
+      "epsilon": 0.095,
+      "first_repeat": {
+        "author_reported_build_time_sec": 0.002816,
+        "author_reported_cluster_formation_time_sec": 0.008638,
+        "author_reported_core_points_time_sec": 0.015372,
+        "author_reported_total_time_sec": 0.026826,
+        "author_wall_sec": 0.3656034991145134,
+        "component_partition_matched": true,
+        "core_flags_matched": true,
+        "matched": true,
+        "repeat_index": 0,
+        "rtdl_phase_metadata": {
+          "component_label_policy": "positive_root_index_labels_noise_minus_one",
+          "count_threshold_native_elapsed_sec": 0.0001012161374092102,
+          "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+          "grouped_union_native_elapsed_sec": 0.45582256466150284,
+          "materializes_directed_adjacency_stream": false,
+          "materializes_neighbor_rows": false,
+          "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+          "partner_reference_contract": "generic_prepared_optix_numba_grouped_stream_component_labels_3d",
+          "rt_core_accelerated": true
+        },
+        "rtdl_signature": {
+          "component_count": 3,
+          "component_sizes": [
+            16,
+            18,
+            27
+          ],
+          "core_count": 61,
+          "noise_count": 3
+        },
+        "rtdl_wall_sec": 1.6278286203742027,
+        "signature_matched": true
+      },
+      "input_path": "/root/rtdl_goal5093/Paper-reproduction-apps/rt-dbscan-paper/data/fixtures/representative_three_components_noise3d.csv",
+      "median_author_process_wall_sec": 0.3656034991145134,
+      "median_author_reported_total_time_sec": 0.026826,
+      "median_rtdl_wall_sec": 1.6278286203742027,
+      "min_points": 6,
+      "name": "representative_three_components_noise3d",
+      "point_count": 64,
+      "repeat": 1,
+      "repeats": [
+        {
+          "author_reported_build_time_sec": 0.002816,
+          "author_reported_cluster_formation_time_sec": 0.008638,
+          "author_reported_core_points_time_sec": 0.015372,
+          "author_reported_total_time_sec": 0.026826,
+          "author_wall_sec": 0.3656034991145134,
+          "component_partition_matched": true,
+          "core_flags_matched": true,
+          "matched": true,
+          "repeat_index": 0,
+          "rtdl_phase_metadata": {
+            "component_label_policy": "positive_root_index_labels_noise_minus_one",
+            "count_threshold_native_elapsed_sec": 0.0001012161374092102,
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_native_elapsed_sec": 0.45582256466150284,
+            "materializes_directed_adjacency_stream": false,
+            "materializes_neighbor_rows": false,
+            "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+            "partner_reference_contract": "generic_prepared_optix_numba_grouped_stream_component_labels_3d",
+            "rt_core_accelerated": true
+          },
+          "rtdl_signature": {
+            "component_count": 3,
+            "component_sizes": [
+              16,
+              18,
+              27
+            ],
+            "core_count": 61,
+            "noise_count": 3
+          },
+          "rtdl_wall_sec": 1.6278286203742027,
+          "signature_matched": true
+        }
+      ],
+      "rtdl_vs_author_process_wall_ratio": 4.452442671683343,
+      "rtdl_vs_author_reported_total_ratio": 60.681004263557845
+    }
+  ],
+  "claim_boundary": "Bounded same-input representative correctness and diagnostic timing matrix. Synthetic fixtures only; not exact paper datasets and not a public speedup claim.",
+  "manifest_path": "/root/rtdl_goal5093/Paper-reproduction-apps/rt-dbscan-paper/data/fixtures/representative_fixtures_manifest.json",
+  "paper_app": "rt-dbscan-paper",
+  "paper_reproduction_claim_authorized": false,
+  "performance_claim_authorized": false,
+  "repeat": 1,
+  "schema": "rtdl.paper_reproduction.rt_dbscan.partition_matrix.v1",
+  "whole_program_speedup_claim_authorized": false
+}

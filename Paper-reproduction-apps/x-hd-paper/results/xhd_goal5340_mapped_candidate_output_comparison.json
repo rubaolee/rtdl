@@ -1,0 +1,50 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5340.mapped_candidate_output_comparison.v1",
+  "goal": "Goal5340",
+  "date": "2026-07-09",
+  "purpose": "Add an app-owned mapped-candidate same-input output comparator that reads a Goal5339 command packet after execution, compares author and RTDL HDResult, and keeps timing fields separated without reporting a performance ratio.",
+  "status": "mapped_candidate_same_input_output_comparator_ready__await_real_pod_outputs",
+  "script": {
+    "path": "Paper-reproduction-apps/x-hd-paper/scripts/compare_xhd_mapped_candidate_same_input_outputs.py",
+    "inputs": [
+      "Goal5339 mapped-candidate same-input gate packet JSON",
+      "author hd_exec JSON outputs produced by a later POD gate",
+      "RTDL hd_exec-compatible JSON outputs produced by a later POD gate"
+    ],
+    "output_schema": "rtdl.paper_reproduction.xhd.mapped_candidate_same_input_output_comparison.v1"
+  },
+  "classification_statuses": [
+    "mapped_candidate_same_input_gate_passed",
+    "mapped_candidate_same_input_gate_failed",
+    "mapped_candidate_outputs_missing",
+    "packet_not_ready_for_output_comparison"
+  ],
+  "behavior_locked_by_tests": [
+    "matching outputs pass without performance ratio",
+    "HDResult mismatch fails the gate",
+    "missing outputs fail the gate",
+    "packet not command-ready fails the gate",
+    "summary forbids exact/full/performance claims"
+  ],
+  "pod_usage": {
+    "used": false,
+    "expected_next": false,
+    "reason": "This goal adds the post-POD comparator only. It does not execute the command packet."
+  },
+  "claim_boundary": {
+    "same_input_gate_passed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false
+  },
+  "allowed_summary": "Goal5340 adds an app-owned post-execution comparator for future mapped-candidate same-input POD outputs. It compares HDResult and keeps timing fields separated without reporting a performance ratio.",
+  "not_allowed": [
+    "claiming commands were executed by this comparator",
+    "claiming exact paper dataset reproduction from an HDResult match alone",
+    "claiming Figure 5 reproduction from this comparison alone",
+    "claiming full X-HD paper reproduction from this comparison alone",
+    "claiming author-vs-RTDL performance ratio from this comparison"
+  ],
+  "exit_label": "mapped_candidate_same_input_output_comparator_ready__await_real_pod_outputs"
+}

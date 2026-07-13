@@ -1,0 +1,104 @@
+{
+  "schema": "rtdl.goal4889.work_count_ledger.v1",
+  "date": "2026-07-03",
+  "dataset": {
+    "label": "Australia representative Section 5.7",
+    "left": "/workspace/goal4848_rep/current_osm_au/lakes_Australia_current_osm_Point.cdb",
+    "right": "/workspace/goal4848_rep/current_osm_au/parks_Australia_current_osm_Point.cdb"
+  },
+  "rtdl": {
+    "route": "public_planar_map_lsi_and_point_location_plus_numba_app_continuation",
+    "artifact": "history/internal_docs/goal4886_pod_numba_au_skip_v2_summary.json",
+    "lsi_probe_artifact": "history/internal_docs/goal4889_lsi_probe_summary_2026-07-03.json",
+    "map0_edges": 14430155,
+    "map1_edges": 941375,
+    "map0_points": 14788065,
+    "map1_points": 992505,
+    "lsi": {
+      "query_segment_count": 14430155,
+      "base_segment_count": 941375,
+      "accepted_row_count": 13452,
+      "wall_seconds_probe": 6.28831684589386,
+      "raw_candidate_or_test_count": null,
+      "raw_candidate_or_test_count_status": "not_exposed_for_public_grouped_range_row_route",
+      "native_timing_mode": "none",
+      "native_reported_raw_candidate_count": 0,
+      "native_reported_emitted_count": 13452
+    },
+    "pip": {
+      "vertex_map0_in_map1": {
+        "query_point_count": 14788065,
+        "positive_face_count": 193846,
+        "traversal_seconds": 9.784154503,
+        "candidate_or_edge_test_count": null,
+        "candidate_or_edge_test_count_status": "not_exposed"
+      },
+      "vertex_map1_in_map0": {
+        "query_point_count": 992505,
+        "positive_face_count": 30538,
+        "traversal_seconds": 1.52976916,
+        "candidate_or_edge_test_count": null,
+        "candidate_or_edge_test_count_status": "not_exposed"
+      },
+      "midpoint_map0": {
+        "query_point_count": 1707,
+        "positive_face_count": 920,
+        "traversal_seconds": 0.065761965,
+        "candidate_or_edge_test_count": null,
+        "candidate_or_edge_test_count_status": "not_exposed"
+      },
+      "midpoint_map1": {
+        "query_point_count": 2752,
+        "positive_face_count": 1824,
+        "traversal_seconds": 0.059341061,
+        "candidate_or_edge_test_count": null,
+        "candidate_or_edge_test_count_status": "not_exposed"
+      }
+    }
+  },
+  "authorpatch": {
+    "route": "AuthorOfficial_AuthorPatch_CUDA_OptiX",
+    "artifact": "history/internal_docs/goal4886_authorofficial_wall_attempt_freshser_cwd_invalid_summary.json",
+    "map0_edges": 14430155,
+    "map1_edges": 941375,
+    "map0_points": 14788065,
+    "map1_points": 992505,
+    "compressed_aabb_counts": {
+      "map0": 2640424,
+      "map1": 194026
+    },
+    "lsi": {
+      "query_segment_count": 14430155,
+      "accepted_row_count": 13452,
+      "intersection_edges_seconds": 0.0048,
+      "candidate_or_test_count": null,
+      "candidate_or_test_count_status": "not_exposed_in_existing_logs"
+    },
+    "pip": {
+      "vertex_map0_in_map1": {
+        "query_point_count": 14788065,
+        "locate_seconds": 0.0209,
+        "candidate_or_edge_test_count": null,
+        "candidate_or_edge_test_count_status": "not_exposed_in_existing_logs"
+      },
+      "vertex_map1_in_map0": {
+        "query_point_count": 992505,
+        "locate_seconds": 0.0073,
+        "candidate_or_edge_test_count": null,
+        "candidate_or_edge_test_count_status": "not_exposed_in_existing_logs"
+      },
+      "midpoints": {
+        "query_point_counts": [1707, 2752],
+        "candidate_or_edge_test_count": null,
+        "candidate_or_edge_test_count_status": "not_exposed_in_existing_logs"
+      }
+    }
+  },
+  "comparison": {
+    "query_counts_match": true,
+    "rtdl_launches_orders_more_rays": false,
+    "candidate_test_counts_available": false,
+    "can_choose_fusion_vs_kernel_tuning_from_existing_counts": false
+  },
+  "decision_label": "work_count_unavailable__instrumentation_required"
+}

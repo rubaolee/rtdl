@@ -1,0 +1,151 @@
+{
+  "decision_inputs": {
+    "all_same_face_hash": true,
+    "all_same_positive_count": true,
+    "local_prepare_points_sec": [
+      0.289755055680871,
+      0.2881430145353079,
+      0.2895870953798294
+    ],
+    "local_run_sec": [
+      0.024315275251865387,
+      0.02433021552860737,
+      0.024659939110279083
+    ],
+    "shared_prepare_points_sec": 0.3007925059646368,
+    "shared_run_sec": [
+      0.02380489744246006,
+      0.023658839985728264,
+      0.02368135191500187
+    ]
+  },
+  "left": "Paper-reproduction-apps/rayjoin-paper/_data/top4_arcgis/top4_county.cdb",
+  "right": "Paper-reproduction-apps/rayjoin-paper/_data/top4_arcgis/top4_zipcode.cdb",
+  "rows": [
+    {
+      "batch_id": 1,
+      "local_prepare_points_sec": 0.289755055680871,
+      "local_run": {
+        "elapsed_sec": 0.024315275251865387,
+        "face_hash": 6875829389,
+        "positive_count": 4527305,
+        "sample": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "prepare_locator_sec": 1.4472494833171368,
+      "same_face_hash": true,
+      "same_positive_count": true,
+      "same_sample": true,
+      "shared_prepare_points_sec_amortized": 0.3007925059646368,
+      "shared_run": {
+        "elapsed_sec": 0.02380489744246006,
+        "face_hash": 6875829389,
+        "positive_count": 4527305,
+        "sample": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "batch_id": 2,
+      "local_prepare_points_sec": 0.2881430145353079,
+      "local_run": {
+        "elapsed_sec": 0.02433021552860737,
+        "face_hash": 6875829389,
+        "positive_count": 4527305,
+        "sample": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "prepare_locator_sec": 0.4583439268171787,
+      "same_face_hash": true,
+      "same_positive_count": true,
+      "same_sample": true,
+      "shared_prepare_points_sec_amortized": 0.0,
+      "shared_run": {
+        "elapsed_sec": 0.023658839985728264,
+        "face_hash": 6875829389,
+        "positive_count": 4527305,
+        "sample": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "batch_id": 3,
+      "local_prepare_points_sec": 0.2895870953798294,
+      "local_run": {
+        "elapsed_sec": 0.024659939110279083,
+        "face_hash": 6875829389,
+        "positive_count": 4527305,
+        "sample": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "prepare_locator_sec": 0.4412592686712742,
+      "same_face_hash": true,
+      "same_positive_count": true,
+      "same_sample": true,
+      "shared_prepare_points_sec_amortized": 0.0,
+      "shared_run": {
+        "elapsed_sec": 0.02368135191500187,
+        "face_hash": 6875829389,
+        "positive_count": 4527305,
+        "sample": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    }
+  ],
+  "schema": "rtdl.goal5011.point_location_query_point_reuse_probe.v1",
+  "shared_bounds": [
+    -124.415163,
+    -71.85615,
+    25.837092,
+    45.015851
+  ],
+  "shared_prepare_points_sec": 0.3007925059646368
+}

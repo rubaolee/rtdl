@@ -1,0 +1,437 @@
+{
+  "case_count": 6,
+  "cases": {
+    "USACensusBlockGroupBoundaries": {
+      "author": {
+        "command": [
+          "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+          "-geom",
+          "/workspace/librts-targets/point-contains-real-remaining/PPoPPAE/datasets/polygons/USACensusBlockGroupBoundaries.wkt",
+          "-query",
+          "/workspace/librts-targets/point-contains-real-remaining/PPoPPAE/datasets/queries/point-contains_queries_100000/USACensusBlockGroupBoundaries.wkt",
+          "-serialize",
+          "/workspace/librts-serialize/goal5486/USACensusBlockGroupBoundaries",
+          "-query_type",
+          "point-contains",
+          "-index_type",
+          "rtspatial",
+          "-load_factor",
+          "0.0001"
+        ],
+        "geometry_count": 248954,
+        "loading_ms_diagnostic": 1.1344,
+        "pair_rows_exposed": false,
+        "query_count": 100000,
+        "query_metric": "internal Query Time; index Loading Time excluded",
+        "query_ms_internal": 0.0908,
+        "result_count": 148970,
+        "stdout": "Loaded polygons 248954\nLoaded queries 100000\nLoading Time 1.1344 ms\nGeoms 248954\nQueries 100000\nQuery Time 0.0908 ms\nResults 148970\nSelectivity: 5.98384e-06\n"
+      },
+      "case_id": "USACensusBlockGroupBoundaries",
+      "claim_boundary": {
+        "complete_paper_reproduction_claimed": false,
+        "embree_in_scope": false,
+        "exact_archive_and_extracted_input_identity_used": true,
+        "figure6_reproduced": false,
+        "performance_ratio_authorized": false,
+        "pointwise_containment_equivalence_claimed": false,
+        "prepared_query_phase_comparison_candidate": true,
+        "same_input_result_count_agreement": true
+      },
+      "extraction_manifest": "remaining",
+      "input_identity": {
+        "geometry_path": "/workspace/librts-targets/point-contains-real-remaining/PPoPPAE/datasets/polygons/USACensusBlockGroupBoundaries.wkt",
+        "geometry_sha256": "a5ead9c7bf5adac34a256e54ead58e6e100ca5321ddeb5268699a58a82b7b8da",
+        "query_path": "/workspace/librts-targets/point-contains-real-remaining/PPoPPAE/datasets/queries/point-contains_queries_100000/USACensusBlockGroupBoundaries.wkt",
+        "query_sha256": "d7ba3175a0f3214d23a81475bd30c4c4d47b65dac61955653aa2e75566ad7355",
+        "same_files_passed_to_author_and_rtdl": true,
+        "verified_extraction_root": "/workspace/librts-targets/point-contains-real-remaining"
+      },
+      "matched": true,
+      "phase_boundary": {
+        "author_query_excludes_loading": true,
+        "performance_ratio_authorized": false,
+        "prepared_query_phase_comparison_candidate": true,
+        "rtdl_prepared_query_excludes_wkt_load_and_index_prepare": true
+      },
+      "rtdl": {
+        "backend": "optix",
+        "load_wkt_sec": 97.50529366900446,
+        "native_engine_customization": false,
+        "operation": "point_contains",
+        "prepare_index_sec": 1.8708852480049245,
+        "prepared_query_wall_sec": 0.18980695598293096,
+        "primitive_query_sec": 0.04908630301360972,
+        "public_api": "prepare_aabb_index_2d + prepared.count",
+        "result_count": 148970,
+        "row_output_requested": false,
+        "rt_core_accelerated": true
+      },
+      "schema": "rtdl.paper_reproduction.librts.exact_point_contains_prepared_phase.v1",
+      "status": "exact_input_point_contains_prepared_phase_matched"
+    },
+    "USADetailedWaterBodies": {
+      "author": {
+        "command": [
+          "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+          "-geom",
+          "/workspace/librts-targets/point-contains-real-remaining/PPoPPAE/datasets/polygons/USADetailedWaterBodies.wkt",
+          "-query",
+          "/workspace/librts-targets/point-contains-real-remaining/PPoPPAE/datasets/queries/point-contains_queries_100000/USADetailedWaterBodies.wkt",
+          "-serialize",
+          "/workspace/librts-serialize/goal5486/USADetailedWaterBodies",
+          "-query_type",
+          "point-contains",
+          "-index_type",
+          "rtspatial",
+          "-load_factor",
+          "0.0001"
+        ],
+        "geometry_count": 463595,
+        "loading_ms_diagnostic": 1.7744,
+        "pair_rows_exposed": false,
+        "query_count": 100000,
+        "query_metric": "internal Query Time; index Loading Time excluded",
+        "query_ms_internal": 0.0886,
+        "result_count": 118622,
+        "stdout": "Loaded polygons 463595\nLoaded queries 100000\nLoading Time 1.7744 ms\nGeoms 463595\nQueries 100000\nQuery Time 0.0886 ms\nResults 118622\nSelectivity: 2.55874e-06\n"
+      },
+      "case_id": "USADetailedWaterBodies",
+      "claim_boundary": {
+        "complete_paper_reproduction_claimed": false,
+        "embree_in_scope": false,
+        "exact_archive_and_extracted_input_identity_used": true,
+        "figure6_reproduced": false,
+        "performance_ratio_authorized": false,
+        "pointwise_containment_equivalence_claimed": false,
+        "prepared_query_phase_comparison_candidate": true,
+        "same_input_result_count_agreement": true
+      },
+      "extraction_manifest": "remaining",
+      "input_identity": {
+        "geometry_path": "/workspace/librts-targets/point-contains-real-remaining/PPoPPAE/datasets/polygons/USADetailedWaterBodies.wkt",
+        "geometry_sha256": "bbdf49e4e2484f7d2994aea40bf772ce5418bacb58ade8efc63ab9e8dc703dfe",
+        "query_path": "/workspace/librts-targets/point-contains-real-remaining/PPoPPAE/datasets/queries/point-contains_queries_100000/USADetailedWaterBodies.wkt",
+        "query_sha256": "a05b052eabce6f22249cbaa920f54b7836e40ee92a9b8fc6cd2afb1180933816",
+        "same_files_passed_to_author_and_rtdl": true,
+        "verified_extraction_root": "/workspace/librts-targets/point-contains-real-remaining"
+      },
+      "matched": true,
+      "phase_boundary": {
+        "author_query_excludes_loading": true,
+        "performance_ratio_authorized": false,
+        "prepared_query_phase_comparison_candidate": true,
+        "rtdl_prepared_query_excludes_wkt_load_and_index_prepare": true
+      },
+      "rtdl": {
+        "backend": "optix",
+        "load_wkt_sec": 34.58133358298801,
+        "native_engine_customization": false,
+        "operation": "point_contains",
+        "prepare_index_sec": 3.430097295989981,
+        "prepared_query_wall_sec": 0.29946306999772787,
+        "primitive_query_sec": 0.04777359601575881,
+        "public_api": "prepare_aabb_index_2d + prepared.count",
+        "result_count": 118622,
+        "row_output_requested": false,
+        "rt_core_accelerated": true
+      },
+      "schema": "rtdl.paper_reproduction.librts.exact_point_contains_prepared_phase.v1",
+      "status": "exact_input_point_contains_prepared_phase_matched"
+    },
+    "dtl_cnty": {
+      "author": {
+        "command": [
+          "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+          "-geom",
+          "/workspace/librts-targets/point-contains-dtl-cnty/PPoPPAE/datasets/polygons/dtl_cnty.wkt",
+          "-query",
+          "/workspace/librts-targets/point-contains-dtl-cnty/PPoPPAE/datasets/queries/point-contains_queries_100000/dtl_cnty.wkt",
+          "-serialize",
+          "/workspace/librts-serialize/goal5486/dtl_cnty",
+          "-query_type",
+          "point-contains",
+          "-index_type",
+          "rtspatial",
+          "-load_factor",
+          "0.0001"
+        ],
+        "geometry_count": 12234,
+        "loading_ms_diagnostic": 0.425,
+        "pair_rows_exposed": false,
+        "query_count": 100000,
+        "query_metric": "internal Query Time; index Loading Time excluded",
+        "query_ms_internal": 0.0846,
+        "result_count": 136475,
+        "stdout": "Loaded polygons 12234\nLoaded queries 100000\nLoading Time 0.425 ms\nGeoms 12234\nQueries 100000\nQuery Time 0.0846 ms\nResults 136475\nSelectivity: 0.000111554\n"
+      },
+      "case_id": "dtl_cnty",
+      "claim_boundary": {
+        "complete_paper_reproduction_claimed": false,
+        "embree_in_scope": false,
+        "exact_archive_and_extracted_input_identity_used": true,
+        "figure6_reproduced": false,
+        "performance_ratio_authorized": false,
+        "pointwise_containment_equivalence_claimed": false,
+        "prepared_query_phase_comparison_candidate": true,
+        "same_input_result_count_agreement": true
+      },
+      "extraction_manifest": "dtl",
+      "input_identity": {
+        "geometry_path": "/workspace/librts-targets/point-contains-dtl-cnty/PPoPPAE/datasets/polygons/dtl_cnty.wkt",
+        "geometry_sha256": "9177fdff45f24488f22157a2a1428a7cdb9d5a66a7287d4013ead52de1c7973f",
+        "query_path": "/workspace/librts-targets/point-contains-dtl-cnty/PPoPPAE/datasets/queries/point-contains_queries_100000/dtl_cnty.wkt",
+        "query_sha256": "95241f4e3f03c6dcea31b80e785a9729d4a4aaefeb82302e761b59d9c4fe39d3",
+        "same_files_passed_to_author_and_rtdl": true,
+        "verified_extraction_root": "/workspace/librts-targets/point-contains-dtl-cnty"
+      },
+      "matched": true,
+      "phase_boundary": {
+        "author_query_excludes_loading": true,
+        "performance_ratio_authorized": false,
+        "prepared_query_phase_comparison_candidate": true,
+        "rtdl_prepared_query_excludes_wkt_load_and_index_prepare": true
+      },
+      "rtdl": {
+        "backend": "optix",
+        "load_wkt_sec": 28.410851431981428,
+        "native_engine_customization": false,
+        "operation": "point_contains",
+        "prepare_index_sec": 0.6322899520164356,
+        "prepared_query_wall_sec": 0.3760756319970824,
+        "primitive_query_sec": 0.21273391801514663,
+        "public_api": "prepare_aabb_index_2d + prepared.count",
+        "result_count": 136475,
+        "row_output_requested": false,
+        "rt_core_accelerated": true
+      },
+      "schema": "rtdl.paper_reproduction.librts.exact_point_contains_prepared_phase.v1",
+      "status": "exact_input_point_contains_prepared_phase_matched"
+    },
+    "lakes.bz2": {
+      "author": {
+        "command": [
+          "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+          "-geom",
+          "/workspace/librts-targets/point-contains-real-remaining/PPoPPAE/datasets/polygons/lakes.bz2.wkt",
+          "-query",
+          "/workspace/librts-targets/point-contains-real-remaining/PPoPPAE/datasets/queries/point-contains_queries_100000/lakes.bz2.wkt",
+          "-serialize",
+          "/workspace/librts-serialize/goal5486/lakes.bz2",
+          "-query_type",
+          "point-contains",
+          "-index_type",
+          "rtspatial",
+          "-load_factor",
+          "0.0001"
+        ],
+        "geometry_count": 8327448,
+        "loading_ms_diagnostic": 36.992,
+        "pair_rows_exposed": false,
+        "query_count": 100000,
+        "query_metric": "internal Query Time; index Loading Time excluded",
+        "query_ms_internal": 0.0838,
+        "result_count": 103189,
+        "stdout": "Loaded polygons 8327448\nLoaded queries 100000\nLoading Time 36.992 ms\nGeoms 8327448\nQueries 100000\nQuery Time 0.0838 ms\nResults 103189\nSelectivity: 1.23914e-07\n"
+      },
+      "case_id": "lakes.bz2",
+      "claim_boundary": {
+        "complete_paper_reproduction_claimed": false,
+        "embree_in_scope": false,
+        "exact_archive_and_extracted_input_identity_used": true,
+        "figure6_reproduced": false,
+        "performance_ratio_authorized": false,
+        "pointwise_containment_equivalence_claimed": false,
+        "prepared_query_phase_comparison_candidate": true,
+        "same_input_result_count_agreement": true
+      },
+      "extraction_manifest": "remaining",
+      "input_identity": {
+        "geometry_path": "/workspace/librts-targets/point-contains-real-remaining/PPoPPAE/datasets/polygons/lakes.bz2.wkt",
+        "geometry_sha256": "0cde2245faf03cb0cf48cf9f8ffb0e31a7391300d947fa9de2110a46006e2f03",
+        "query_path": "/workspace/librts-targets/point-contains-real-remaining/PPoPPAE/datasets/queries/point-contains_queries_100000/lakes.bz2.wkt",
+        "query_sha256": "af77499deb2691be731b95ed0d9214573967ff16527f25268cba2ea422252074",
+        "same_files_passed_to_author_and_rtdl": true,
+        "verified_extraction_root": "/workspace/librts-targets/point-contains-real-remaining"
+      },
+      "matched": true,
+      "phase_boundary": {
+        "author_query_excludes_loading": true,
+        "performance_ratio_authorized": false,
+        "prepared_query_phase_comparison_candidate": true,
+        "rtdl_prepared_query_excludes_wkt_load_and_index_prepare": true
+      },
+      "rtdl": {
+        "backend": "optix",
+        "load_wkt_sec": 404.4714000340027,
+        "native_engine_customization": false,
+        "operation": "point_contains",
+        "prepare_index_sec": 66.31069961100002,
+        "prepared_query_wall_sec": 0.178842873981921,
+        "primitive_query_sec": 0.04639601698727347,
+        "public_api": "prepare_aabb_index_2d + prepared.count",
+        "result_count": 103189,
+        "row_output_requested": false,
+        "rt_core_accelerated": true
+      },
+      "schema": "rtdl.paper_reproduction.librts.exact_point_contains_prepared_phase.v1",
+      "status": "exact_input_point_contains_prepared_phase_matched"
+    },
+    "parks.bz2": {
+      "author": {
+        "command": [
+          "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+          "-geom",
+          "/workspace/librts-targets/point-contains-real-remaining/PPoPPAE/datasets/polygons/parks.bz2.wkt",
+          "-query",
+          "/workspace/librts-targets/point-contains-real-remaining/PPoPPAE/datasets/queries/point-contains_queries_100000/parks.bz2.wkt",
+          "-serialize",
+          "/workspace/librts-serialize/goal5486/parks.bz2",
+          "-query_type",
+          "point-contains",
+          "-index_type",
+          "rtspatial",
+          "-load_factor",
+          "0.0001"
+        ],
+        "geometry_count": 11544398,
+        "loading_ms_diagnostic": 51.634,
+        "pair_rows_exposed": false,
+        "query_count": 100000,
+        "query_metric": "internal Query Time; index Loading Time excluded",
+        "query_ms_internal": 0.0914,
+        "result_count": 112729,
+        "stdout": "Loaded polygons 11544398\nLoaded queries 100000\nLoading Time 51.634 ms\nGeoms 11544398\nQueries 100000\nQuery Time 0.0914 ms\nResults 112729\nSelectivity: 9.76482e-08\n"
+      },
+      "case_id": "parks.bz2",
+      "claim_boundary": {
+        "complete_paper_reproduction_claimed": false,
+        "embree_in_scope": false,
+        "exact_archive_and_extracted_input_identity_used": true,
+        "figure6_reproduced": false,
+        "performance_ratio_authorized": false,
+        "pointwise_containment_equivalence_claimed": false,
+        "prepared_query_phase_comparison_candidate": true,
+        "same_input_result_count_agreement": true
+      },
+      "extraction_manifest": "remaining",
+      "input_identity": {
+        "geometry_path": "/workspace/librts-targets/point-contains-real-remaining/PPoPPAE/datasets/polygons/parks.bz2.wkt",
+        "geometry_sha256": "ca133e4456b20c4baae1027d64a373d23083973ae042a3b6025dcc51eb3073a0",
+        "query_path": "/workspace/librts-targets/point-contains-real-remaining/PPoPPAE/datasets/queries/point-contains_queries_100000/parks.bz2.wkt",
+        "query_sha256": "736e2f3acc5c2875ca1a787a87b16f6fdf9216251e0d231df78bce1e9bb68ff9",
+        "same_files_passed_to_author_and_rtdl": true,
+        "verified_extraction_root": "/workspace/librts-targets/point-contains-real-remaining"
+      },
+      "matched": true,
+      "phase_boundary": {
+        "author_query_excludes_loading": true,
+        "performance_ratio_authorized": false,
+        "prepared_query_phase_comparison_candidate": true,
+        "rtdl_prepared_query_excludes_wkt_load_and_index_prepare": true
+      },
+      "rtdl": {
+        "backend": "optix",
+        "load_wkt_sec": 553.019124716986,
+        "native_engine_customization": false,
+        "operation": "point_contains",
+        "prepare_index_sec": 85.54676716701942,
+        "prepared_query_wall_sec": 0.4083252919954248,
+        "primitive_query_sec": 0.049226060014916584,
+        "public_api": "prepare_aabb_index_2d + prepared.count",
+        "result_count": 112729,
+        "row_output_requested": false,
+        "rt_core_accelerated": true
+      },
+      "schema": "rtdl.paper_reproduction.librts.exact_point_contains_prepared_phase.v1",
+      "status": "exact_input_point_contains_prepared_phase_matched"
+    },
+    "parks_Europe": {
+      "author": {
+        "command": [
+          "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+          "-geom",
+          "/workspace/librts-targets/point-contains-real-remaining/PPoPPAE/datasets/polygons/parks_Europe.wkt",
+          "-query",
+          "/workspace/librts-targets/point-contains-real-remaining/PPoPPAE/datasets/queries/point-contains_queries_100000/parks_Europe.wkt",
+          "-serialize",
+          "/workspace/librts-serialize/goal5486/parks_Europe",
+          "-query_type",
+          "point-contains",
+          "-index_type",
+          "rtspatial",
+          "-load_factor",
+          "0.0001"
+        ],
+        "geometry_count": 1856318,
+        "loading_ms_diagnostic": 7.2618,
+        "pair_rows_exposed": false,
+        "query_count": 100000,
+        "query_metric": "internal Query Time; index Loading Time excluded",
+        "query_ms_internal": 0.0842,
+        "result_count": 109279,
+        "stdout": "Loaded polygons 1856318\nLoaded queries 100000\nLoading Time 7.2618 ms\nGeoms 1856318\nQueries 100000\nQuery Time 0.0842 ms\nResults 109279\nSelectivity: 5.88687e-07\n"
+      },
+      "case_id": "parks_Europe",
+      "claim_boundary": {
+        "complete_paper_reproduction_claimed": false,
+        "embree_in_scope": false,
+        "exact_archive_and_extracted_input_identity_used": true,
+        "figure6_reproduced": false,
+        "performance_ratio_authorized": false,
+        "pointwise_containment_equivalence_claimed": false,
+        "prepared_query_phase_comparison_candidate": true,
+        "same_input_result_count_agreement": true
+      },
+      "extraction_manifest": "remaining",
+      "input_identity": {
+        "geometry_path": "/workspace/librts-targets/point-contains-real-remaining/PPoPPAE/datasets/polygons/parks_Europe.wkt",
+        "geometry_sha256": "fd77bf8294dfb9dfe45e49fc4aec99427ebd9ac4f370697b0c908d635d643aed",
+        "query_path": "/workspace/librts-targets/point-contains-real-remaining/PPoPPAE/datasets/queries/point-contains_queries_100000/parks_Europe.wkt",
+        "query_sha256": "b955fe9e33cee4dbe599fc1d125e06f3d4bb5a916799363b69ef7f4139612f66",
+        "same_files_passed_to_author_and_rtdl": true,
+        "verified_extraction_root": "/workspace/librts-targets/point-contains-real-remaining"
+      },
+      "matched": true,
+      "phase_boundary": {
+        "author_query_excludes_loading": true,
+        "performance_ratio_authorized": false,
+        "prepared_query_phase_comparison_candidate": true,
+        "rtdl_prepared_query_excludes_wkt_load_and_index_prepare": true
+      },
+      "rtdl": {
+        "backend": "optix",
+        "load_wkt_sec": 139.90407481099828,
+        "native_engine_customization": false,
+        "operation": "point_contains",
+        "prepare_index_sec": 15.44149299399578,
+        "prepared_query_wall_sec": 0.22696331000770442,
+        "primitive_query_sec": 0.05418390699196607,
+        "public_api": "prepare_aabb_index_2d + prepared.count",
+        "result_count": 109279,
+        "row_output_requested": false,
+        "rt_core_accelerated": true
+      },
+      "schema": "rtdl.paper_reproduction.librts.exact_point_contains_prepared_phase.v1",
+      "status": "exact_input_point_contains_prepared_phase_matched"
+    }
+  },
+  "claim_boundary": {
+    "complete_paper_reproduction_claimed": false,
+    "embree_in_scope": false,
+    "exact_archive_and_extracted_input_identity_used": true,
+    "figure6_reproduced": false,
+    "performance_ratio_authorized": false,
+    "pointwise_containment_equivalence_claimed": false,
+    "same_input_result_count_agreement": true
+  },
+  "matched": true,
+  "matched_case_count": 6,
+  "phase_boundary": {
+    "performance_ratio_authorized": false,
+    "prepared_query_phase_comparison_candidate": true
+  },
+  "same_files_passed_to_author_and_rtdl": true,
+  "schema": "rtdl.paper_reproduction.librts.exact_point_contains_prepared_phase_batch.v1",
+  "status": "exact_input_point_contains_prepared_phase_batch_matched"
+}

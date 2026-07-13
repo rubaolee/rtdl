@@ -1,0 +1,20 @@
+{
+  "goal": "Goal4834",
+  "status": "synthetic_gate_passed_locally",
+  "date": "2026-06-30",
+  "tests": {
+    "command": "py -3 -m unittest tests.goal4834_rayjoin_sos_synthetic_contract_test tests.goal4373_rayjoin_cdb_point_location_route_test tests.goal4374_rayjoin_exact_paper_suite_test.Goal4374RayjoinExactPaperSuiteTest.test_overlay_midpoint_faces_are_stored_per_map tests.goal4374_rayjoin_exact_paper_suite_test.Goal4374RayjoinExactPaperSuiteTest.test_overlay_output_chain_writer_is_not_legacy_seed",
+    "tests_run": 12,
+    "result": "OK"
+  },
+  "contract": {
+    "query_map_0": "larger_slope_preferred",
+    "query_map_1": "smaller_slope_preferred",
+    "reported_t": "preferred_equal_height_candidate_reports_slightly_smaller_t",
+    "order_independence": true,
+    "endpoint_exclusion_checked": true,
+    "midpoint_faces_per_directed_map_checked": true
+  },
+  "large_data_authorized": false,
+  "performance_authorized": false
+}

@@ -1,0 +1,41 @@
+Please review Goal4914, the POD smoke of RTDL's new public planar-map workspace API.
+
+Workspace root:
+
+```text
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review
+```
+
+Report:
+
+```text
+history/internal_docs/goal4914_workspace_api_pod_smoke_report_2026-07-03.md
+```
+
+Call-for-review:
+
+```text
+history/internal_docs/call_for_review_goal4914_workspace_api_pod_smoke_2026-07-03.md
+```
+
+Artifacts:
+
+```text
+history/internal_docs/goal4914_workspace_api_smoke.py
+history/internal_docs/goal4914_workspace_api_smoke_summary_2026-07-03.json
+```
+
+Please write your review to:
+
+```text
+history/internal_docs/antigravity_goal4914_workspace_api_pod_smoke_review_2026-07-03.md
+```
+
+Requested verdict labels:
+
+- `approve_goal4914_workspace_api_pod_smoke`
+- `approve_with_required_amendments`
+- `block_goal4914_due_to_correctness_or_boundary_issue`
+- `block_goal4914_due_to_hot_regression`
+
+Please answer all 8 review questions and preserve the non-authorization boundary.

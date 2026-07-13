@@ -1,0 +1,17 @@
+{
+  "column_dtypes": {
+    "ids": "uint32",
+    "max_x": "float64",
+    "max_y": "float64",
+    "min_x": "float64",
+    "min_y": "float64"
+  },
+  "row_count": 11544398,
+  "rtdl_core_wkt_semantics": false,
+  "schema": "rtdl.paper_reproduction.librts.exact_aabb_column_cache.v1",
+  "source_format": "app-owned WKT MBR derivation",
+  "source_name": "parks.bz2.wkt",
+  "source_path": "/tmp/goal5521-target/PPoPPAE/datasets/polygons/parks.bz2.wkt",
+  "source_sha256": "ca133e4456b20c4baae1027d64a373d23083973ae042a3b6025dcc51eb3073a0",
+  "source_size_bytes": 8582211935
+}

@@ -1,0 +1,65 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5341.acm_supplement_live_access_probe.v1",
+  "goal": "Goal5341",
+  "date": "2026-07-09",
+  "purpose": "Add and run a reusable live-access probe for the unresolved ACM ics26-106.zip supplement, with optional cookie support for future authorized access.",
+  "script": {
+    "path": "Paper-reproduction-apps/x-hd-paper/scripts/probe_xhd_acm_supplement_live_access.py",
+    "output_schema": "rtdl.paper_reproduction.xhd.acm_supplement_live_access_probe.v1",
+    "supports_cookie_file": true,
+    "supports_range_get_zip_magic_probe": true
+  },
+  "live_probe_artifact": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5341_acm_supplement_live_access_probe_live.json",
+  "live_probe_summary": {
+    "classification": "acm_supplement_visible_but_forbidden_from_current_environment",
+    "used_cookie_header": false,
+    "urls_checked": 3,
+    "head_statuses": [
+      403,
+      403,
+      403
+    ],
+    "range_get_statuses": [
+      403,
+      403,
+      403
+    ],
+    "zip_magic_observed": false,
+    "response_content_type": "text/html; charset=UTF-8"
+  },
+  "interpretation": {
+    "current_environment_can_download_zip": false,
+    "acm_supplement_still_uninspected": true,
+    "exact_input_blocker_removed": false,
+    "next_required_actor": "ACM-authorized user or paper author with artifact access",
+    "next_if_access_obtained": "run probe with a cookie file or downloaded zip, then inspect_xhd_acm_supplement_zip.py and the Goal5336-Goal5340 chain"
+  },
+  "pod_usage": {
+    "used": false,
+    "expected_next": false,
+    "reason": "Live access/provenance probe only. POD is useful only after inspected artifacts, accepted workload mapping, and command packet readiness."
+  },
+  "claim_boundary": {
+    "acm_supplement_inspected": false,
+    "zip_contents_inspected": false,
+    "candidate_workload_mapping_accepted": false,
+    "same_input_gate_passed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false,
+    "pod_execution_claimed": false
+  },
+  "allowed_summary": "Goal5341 adds a reusable live ACM supplement access probe and records that the current unauthenticated environment still receives 403 HTML responses, with no zip magic observed.",
+  "not_allowed": [
+    "claiming the ACM supplement contents were inspected",
+    "claiming the ACM supplement contains datasets",
+    "claiming the ACM supplement contains no useful artifacts",
+    "claiming exact paper dataset reproduction",
+    "claiming Figure 5 reproduction",
+    "claiming full X-HD paper reproduction",
+    "claiming author-vs-RTDL performance ratio",
+    "running POD from this live-access probe"
+  ],
+  "exit_label": "acm_supplement_live_access_probe_ready__current_environment_still_not_exact_input"
+}

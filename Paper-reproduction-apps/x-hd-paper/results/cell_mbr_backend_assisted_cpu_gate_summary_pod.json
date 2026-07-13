@@ -1,0 +1,155 @@
+{
+  "assisted_columns": {
+    "cell_ids": [
+      0,
+      0,
+      0,
+      1,
+      1,
+      1
+    ],
+    "frontier_kind_codes": [
+      1,
+      1,
+      1,
+      2,
+      3,
+      3
+    ],
+    "max_distances": [
+      1.118033988749895,
+      5.0990195135927845,
+      11.045361017187261,
+      1.5,
+      12.0,
+      7.5
+    ],
+    "min_distances": [
+      0.0,
+      4.0,
+      10.0,
+      0.0,
+      9.5,
+      5.0
+    ],
+    "point_begin_offsets": [
+      0,
+      0,
+      0,
+      2,
+      2,
+      2
+    ],
+    "point_counts": [
+      2,
+      2,
+      2,
+      3,
+      3,
+      3
+    ],
+    "query_point_ids": [
+      100,
+      101,
+      102,
+      102,
+      100,
+      101
+    ],
+    "query_row_ids": [
+      0,
+      1,
+      2,
+      2,
+      0,
+      1
+    ]
+  },
+  "assisted_contract": "generic_cell_mbr_nearest_frontier_aabb_membership_2d",
+  "backend": "cpu",
+  "broadphase_contract": "generic_expanded_aabb_point_membership_rows_2d_v1",
+  "broadphase_native_symbol": null,
+  "broadphase_row_count": 6,
+  "claim_boundary": {
+    "backend_assisted_correctness_gate": true,
+    "native_goal5140_backend_claim": false,
+    "paper_reproduction_claim": false,
+    "xhd_performance_claim": false
+  },
+  "elapsed_sec": 0.0009686648845672607,
+  "exact_candidate_row_count": 6,
+  "fixture": "goal5142_synthetic_2d_cell_mbr_frontier",
+  "goal": "Goal5144",
+  "matched": true,
+  "native_abi_contract": "generic_cell_mbr_nearest_frontier_native_abi_v1",
+  "reference_columns": {
+    "cell_ids": [
+      0,
+      0,
+      0,
+      1,
+      1,
+      1
+    ],
+    "frontier_kind_codes": [
+      1,
+      1,
+      1,
+      2,
+      3,
+      3
+    ],
+    "max_distances": [
+      1.118033988749895,
+      5.0990195135927845,
+      11.045361017187261,
+      1.5,
+      12.0,
+      7.5
+    ],
+    "min_distances": [
+      0.0,
+      4.0,
+      10.0,
+      0.0,
+      9.5,
+      5.0
+    ],
+    "point_begin_offsets": [
+      0,
+      0,
+      0,
+      2,
+      2,
+      2
+    ],
+    "point_counts": [
+      2,
+      2,
+      2,
+      3,
+      3,
+      3
+    ],
+    "query_point_ids": [
+      100,
+      101,
+      102,
+      102,
+      100,
+      101
+    ],
+    "query_row_ids": [
+      0,
+      1,
+      2,
+      2,
+      0,
+      1
+    ]
+  },
+  "reference_contract": "generic_cell_mbr_nearest_frontier_row_table",
+  "row_count": 6,
+  "schema": "rtdl.paper_reproduction.xhd.cell_mbr_backend_assisted_gate.v1",
+  "status": "cell_mbr_backend_assisted_gate_completed"
+}

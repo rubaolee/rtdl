@@ -1,0 +1,205 @@
+{
+  "author_pair": {
+    "input_scope": {
+      "exact_paper_dataset_identity_proven": false,
+      "input1": "/tmp/xhd_goal5234/data/dragon.ply",
+      "input1_num_points": 437645,
+      "input2": "/tmp/xhd_goal5234/data/asian_dragon.ply",
+      "input2_num_points": 3609600,
+      "not_full_figure7_matrix_reason": "The current POD lacks /local/storage/shared/HDDatasets and has only Dragon/Asian temporary inputs, not the four graphics pairs or full author lb_comparison matrix required by author run_lb.sh / draw_lb.py.",
+      "source": "partial temporary POD inputs from /tmp/xhd_goal5234, not /local/storage/shared/HDDatasets"
+    },
+    "lb_0": {
+      "hd_result": 52.453487396240234,
+      "iteration_3": {
+        "CUDATime_ms": 0.054,
+        "ComparedPoints": 7969408615,
+        "Hits": 746444835,
+        "NumInputPoints": 437645,
+        "NumOutputPoints": 0,
+        "OffloadingSize": 0,
+        "RTTime_ms": 96.854,
+        "Radius": 79.2156982421875
+      },
+      "large_cells": 0,
+      "lb": 0,
+      "memory": {
+        "WL": 3501160,
+        "WL Heavy Peak": 0
+      },
+      "process_wall_sec": 16.25388788431883,
+      "running_avg_time_ms": 107.254
+    },
+    "lb_256": {
+      "hd_result": 52.453487396240234,
+      "iteration_3": {
+        "CUDATime_ms": 75.923,
+        "ComparedPoints": 1242037623,
+        "Hits": 896287932,
+        "NumInputPoints": 437645,
+        "NumOutputPoints": 0,
+        "OffloadingSize": 27133990,
+        "RTTime_ms": 45.519,
+        "Radius": 79.2156982421875
+      },
+      "large_cells": 5060,
+      "lb": 256,
+      "memory": {
+        "WL": 3501160,
+        "WL Heavy Peak": 217071920
+      },
+      "process_wall_sec": 17.09253077954054,
+      "running_avg_time_ms": 131.841
+    },
+    "level": "level_b_temporary_input_author_only_diagnostic"
+  },
+  "claim_boundary": {
+    "author_rt_core_algorithm_parity_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_support_claimed": false,
+    "figure11_reproduction_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "row_count_parity_claimed": false,
+    "rtdl_author_performance_ratio_claimed": false,
+    "same_denominator_memory_claimed": false
+  },
+  "comparison": {
+    "author_lb256_offloading_size": 27133990,
+    "author_lb256_wl_heavy_peak_bytes": 217071920,
+    "input_match": true,
+    "lb0_abs_diff": 3.925021061945699e-06,
+    "lb0_behavior_zero_offload": true,
+    "lb256_abs_diff": 3.925021061945699e-06,
+    "lb256_behavior_positive_offload": true,
+    "matched": true,
+    "performance_ratio_claimed": false,
+    "preprocessing_match": true,
+    "row_count_or_byte_parity_claimed": false,
+    "rtdl_lb256_author_width_wl_heavy_peak_candidate_bytes": 196064960,
+    "rtdl_lb256_heavy_offload_peak_rows": 24508120,
+    "tolerance": 5e-06,
+    "value_match": true
+  },
+  "date": "2026-07-09",
+  "decision": {
+    "bounded_lb_behavior_gate_passed": true,
+    "explicit_lb_support_authorized_now": false,
+    "next_allowed_goal": "Add a narrow explicit -lb mapping only if the owner accepts this behavior-level gate, or tighten the gate to row-count/denominator parity before exposing -lb.",
+    "reason_support_not_authorized": "The same-input behavior gate passes at the qualitative level (value match, lb0 zero offload, lb256 positive offload), but author and RTDL offload row counts / byte denominators are not equal and this is a Level-B temporary input rather than the full Figure 7 matrix."
+  },
+  "exit_label": "rtdl_lb_counterpart_behavior_gate_passed__decide_narrow_lb_mapping_or_tighten",
+  "goal": "Goal5365",
+  "input_artifacts": {
+    "author_contract": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5364_lb_trace_gate_author_pair_contract.json",
+    "rtdl_lb0": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5365_rtdl_lb0_disabled_raw_dragon_asian_translated_initial_none_pod.json",
+    "rtdl_lb256": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5365_rtdl_lb256_raw_dragon_asian_translated_initial_none_pod.json"
+  },
+  "purpose": "Run RTDL same-input lb0/lb256 counterpart routes against the Goal5364 author-pair contract and decide whether the behavior gate is strong enough to consider a narrow explicit -lb mapping later.",
+  "rtdl_counterparts": {
+    "lb0_disabled_offload": {
+      "candidate_distance_evaluations": 0,
+      "frontier_inline_nearest": true,
+      "frontier_native_phase_timings": {
+        "accel_build_sec": 0.001022932,
+        "attempted_count": 0,
+        "cell_pack_aabb_sec": 0.000570468,
+        "count_download_sec": 9.44e-06,
+        "device_alloc_upload_sec": 0.013737421,
+        "emitted_count": 0,
+        "host_sort_pack_sec": 1.5e-07,
+        "mode": {
+          "emit_pruned_rows": false,
+          "inline_nearest": true,
+          "inline_stats": false,
+          "sort_rows": true
+        },
+        "mode_bits": 5,
+        "nearest_download_sec": 0.002790308,
+        "optix_launch_sec": 0.930504783,
+        "query_pack_sec": 0.018357057,
+        "row_download_sec": 0.0,
+        "stats_download_sec": 0.0,
+        "total_native_sec": 1.17847315
+      },
+      "frontier_row_count": 0,
+      "frontier_rows_sec": 1.2029969096183777,
+      "grid_shape": [
+        96,
+        60,
+        72
+      ],
+      "hd_result": 52.453491321261296,
+      "heavy_offload_peak_rows": 0,
+      "heavy_offload_queue_peak_bytes_author_u32_equivalent": 0,
+      "heavy_offload_queue_peak_bytes_generic_u64": 0,
+      "in_queue_capacity": 0,
+      "initial_state": "none",
+      "input1": "/tmp/xhd_goal5234/data/dragon.ply",
+      "input2": "/tmp/xhd_goal5234/data/asian_dragon.ply",
+      "max_inline_points": 4294967295,
+      "miss_queue_capacity": 0,
+      "nearest_continuation_sec": 0.0009586736559867859,
+      "reference_preprocessing": [
+        "translate_each_input_to_min_bound"
+      ],
+      "rtdl_route_sec": 1.657000720500946,
+      "source_id": 69303,
+      "target_id": 1069665,
+      "total_sec": 2.409115359187126
+    },
+    "lb256_heavy_offload": {
+      "candidate_distance_evaluations": 9696024975,
+      "frontier_inline_nearest": true,
+      "frontier_native_phase_timings": {
+        "accel_build_sec": 0.001391473,
+        "attempted_count": 24508120,
+        "cell_pack_aabb_sec": 0.000202717,
+        "count_download_sec": 1.8071e-05,
+        "device_alloc_upload_sec": 0.024119208,
+        "emitted_count": 24508120,
+        "host_sort_pack_sec": 3.105163958,
+        "mode": {
+          "emit_pruned_rows": false,
+          "inline_nearest": true,
+          "inline_stats": false,
+          "sort_rows": true
+        },
+        "mode_bits": 5,
+        "nearest_download_sec": 0.000618049,
+        "optix_launch_sec": 0.559335236,
+        "query_pack_sec": 0.003300743,
+        "row_download_sec": 0.161658906,
+        "stats_download_sec": 0.0,
+        "total_native_sec": 4.79733165
+      },
+      "frontier_row_count": 24508120,
+      "frontier_rows_sec": 16.335087150335312,
+      "grid_shape": [
+        96,
+        60,
+        72
+      ],
+      "hd_result": 52.453491321261296,
+      "heavy_offload_peak_rows": 24508120,
+      "heavy_offload_queue_peak_bytes_author_u32_equivalent": 196064960,
+      "heavy_offload_queue_peak_bytes_generic_u64": 392129920,
+      "in_queue_capacity": 24508120,
+      "initial_state": "none",
+      "input1": "/tmp/xhd_goal5234/data/dragon.ply",
+      "input2": "/tmp/xhd_goal5234/data/asian_dragon.ply",
+      "max_inline_points": 256,
+      "miss_queue_capacity": 0,
+      "nearest_continuation_sec": 21.47888918966055,
+      "reference_preprocessing": [
+        "translate_each_input_to_min_bound"
+      ],
+      "rtdl_route_sec": 38.40844701975584,
+      "source_id": 69303,
+      "target_id": 1069665,
+      "total_sec": 39.164794921875
+    }
+  },
+  "schema": "rtdl.paper_reproduction.xhd.goal5365.rtdl_lb_counterpart_gate.v1",
+  "status": "rtdl_lb0_lb256_counterpart_behavior_gate_passed__row_count_denominator_not_parity"
+}

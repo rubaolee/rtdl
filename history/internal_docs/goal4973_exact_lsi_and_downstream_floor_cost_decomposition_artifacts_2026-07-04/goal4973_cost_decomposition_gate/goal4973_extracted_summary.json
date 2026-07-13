@@ -1,0 +1,281 @@
+{
+  "bounded_exact_repeat": {
+    "downstream_components_sec": {
+      "assign_midpoint_faces_map0_columnar_sec": 0.0006208270788192749,
+      "assign_midpoint_faces_map1_columnar_sec": 0.0006011724472045898,
+      "grouped_compiled_columnar_carrier_construction_sec": 0.5937569588422775,
+      "grouped_descriptor_pair_count_consumer_sec": 0.01682092994451523,
+      "intersection_reprojection_device_columnar_sec": 0.23865804076194763,
+      "midpoint_pip_map0_sec": 0.0070157721638679504,
+      "midpoint_pip_map1_sec": 0.006943255662918091,
+      "midpoint_points_map0_columnar_sec": 0.6007397100329399,
+      "midpoint_points_map1_columnar_sec": 0.5927207618951797,
+      "sort_map0_device_columnar_sec": 0.03174316883087158,
+      "sort_map1_device_columnar_sec": 0.09032196551561356,
+      "vertex_pip_map0_in_map1_sec": 0.12526413053274155,
+      "vertex_pip_map1_in_map0_sec": 0.762300044298172
+    },
+    "downstream_floor_sec": 3.0675067380070686,
+    "extended": {
+      "count_download": 1.931e-05,
+      "device_alloc": 0.001437764,
+      "emitted_count": 428322,
+      "exact_pipeline_ensure": 0.523575707,
+      "grouped_range_ensure": 1.012860557,
+      "mode": "pair_id_rows_prepared_left_grouped_range_direct_intersection",
+      "optix_launch": 0.00226502,
+      "param_upload": 3.47e-06,
+      "raw_candidate_count": 0,
+      "scaled_cache_ensure": 0.687531634,
+      "schema": "rtdl.optix.segment_pair.extended_phase_timings.v1",
+      "split_kernel_ensure": 0.442062948,
+      "split_kernel_launch": 1.9321e-05,
+      "total_native": 2.669812632
+    },
+    "largest_downstream_component": [
+      "vertex_pip_map1_in_map0_sec",
+      0.762300044298172
+    ],
+    "lsi_copy_sec": 0.003527916967868805,
+    "lsi_phase_sec": 2.670249007642269,
+    "lsi_row_count": 428322,
+    "native_total_sec": 2.669812632,
+    "python_wrapper_or_unaccounted_sec": 0.0004363756422689491,
+    "repeat_diagnostic": {
+      "capacity": 1000000,
+      "claim_boundary": {
+        "diagnostic_only": true,
+        "no_author_comparison": true,
+        "no_numpy_copy": true,
+        "public_speedup_claim_authorized": false,
+        "same_process_same_prepared_query": true
+      },
+      "first_run_sec": 1.7946365624666214,
+      "later_run_median_sec": 0.0029753483831882477,
+      "later_run_min_sec": 0.002968832850456238,
+      "repeat_count_completed": 3,
+      "repeat_count_requested": 3,
+      "runs": [
+        {
+          "candidate_event_count": 428322,
+          "capacity": 1000000,
+          "elapsed_sec": 1.7946365624666214,
+          "index": 0,
+          "native_output_traversal_seconds": 0.002236449,
+          "native_timings": {
+            "candidate_count_pass": 0.0,
+            "candidate_download": 0.0,
+            "candidate_write_pass": 0.002236149,
+            "emitted_count": 428322,
+            "exact_refine": 0.0,
+            "extended": {
+              "count_download": 1.048e-05,
+              "device_alloc": 0.001119714,
+              "emitted_count": 428322,
+              "exact_pipeline_ensure": 4.6e-07,
+              "grouped_range_ensure": 1.048912497,
+              "mode": "pair_id_rows_prepared_left_grouped_range_direct_intersection",
+              "optix_launch": 0.002225559,
+              "param_upload": 3.26e-06,
+              "raw_candidate_count": 0,
+              "scaled_cache_ensure": 0.742017811,
+              "schema": "rtdl.optix.segment_pair.extended_phase_timings.v1",
+              "split_kernel_ensure": 1.5e-07,
+              "split_kernel_launch": 2.1981e-05,
+              "total_native": 1.794330763
+            },
+            "left_upload": 0.0,
+            "mode": "pair_id_rows_prepared_left_grouped_range_direct_intersection",
+            "raw_candidate_count": 0
+          },
+          "overflow": false,
+          "row_count": 428322
+        },
+        {
+          "candidate_event_count": 428322,
+          "capacity": 1000000,
+          "elapsed_sec": 0.0029818639159202576,
+          "index": 1,
+          "native_output_traversal_seconds": 0.002209678,
+          "native_timings": {
+            "candidate_count_pass": 0.0,
+            "candidate_download": 0.0,
+            "candidate_write_pass": 0.002209638,
+            "emitted_count": 428322,
+            "exact_refine": 0.0,
+            "extended": {
+              "count_download": 8.29e-06,
+              "device_alloc": 0.000536417,
+              "emitted_count": 428322,
+              "exact_pipeline_ensure": 1.1e-07,
+              "grouped_range_ensure": 2.6e-07,
+              "mode": "pair_id_rows_prepared_left_grouped_range_direct_intersection",
+              "optix_launch": 0.002201248,
+              "param_upload": 3.24e-06,
+              "raw_candidate_count": 0,
+              "scaled_cache_ensure": 4.8e-07,
+              "schema": "rtdl.optix.segment_pair.extended_phase_timings.v1",
+              "split_kernel_ensure": 5e-08,
+              "split_kernel_launch": 1.8161e-05,
+              "total_native": 0.002779356
+            },
+            "left_upload": 0.0,
+            "mode": "pair_id_rows_prepared_left_grouped_range_direct_intersection",
+            "raw_candidate_count": 0
+          },
+          "overflow": false,
+          "row_count": 428322
+        },
+        {
+          "candidate_event_count": 428322,
+          "capacity": 1000000,
+          "elapsed_sec": 0.002968832850456238,
+          "index": 2,
+          "native_output_traversal_seconds": 0.002211999,
+          "native_timings": {
+            "candidate_count_pass": 0.0,
+            "candidate_download": 0.0,
+            "candidate_write_pass": 0.002211959,
+            "emitted_count": 428322,
+            "exact_refine": 0.0,
+            "extended": {
+              "count_download": 8.331e-06,
+              "device_alloc": 0.000533126,
+              "emitted_count": 428322,
+              "exact_pipeline_ensure": 1.1e-07,
+              "grouped_range_ensure": 7e-08,
+              "mode": "pair_id_rows_prepared_left_grouped_range_direct_intersection",
+              "optix_launch": 0.002203538,
+              "param_upload": 3.3e-06,
+              "raw_candidate_count": 0,
+              "scaled_cache_ensure": 9e-08,
+              "schema": "rtdl.optix.segment_pair.extended_phase_timings.v1",
+              "split_kernel_ensure": 5e-08,
+              "split_kernel_launch": 2.004e-05,
+              "total_native": 0.002779575
+            },
+            "left_upload": 0.0,
+            "mode": "pair_id_rows_prepared_left_grouped_range_direct_intersection",
+            "raw_candidate_count": 0
+          },
+          "overflow": false,
+          "row_count": 428322
+        }
+      ],
+      "schema": "rtdl.paper_reproduction.rayjoin.section57.bounded_exact_lsi_repeat_diagnostic.v1"
+    },
+    "vertex_positive_counts": {
+      "side0_in_side1": 812721,
+      "side1_in_side0": 4527305
+    },
+    "writer_free_hot_sec": 5.741283662617207,
+    "xsect_sorted_counts": {
+      "side0": 428322,
+      "side1": 428322
+    }
+  },
+  "exact_device_columns": {
+    "downstream_components_sec": {
+      "assign_midpoint_faces_map0_columnar_sec": 0.0005837008357048035,
+      "assign_midpoint_faces_map1_columnar_sec": 0.0005972981452941895,
+      "grouped_compiled_columnar_carrier_construction_sec": 0.10667131841182709,
+      "grouped_descriptor_pair_count_consumer_sec": 0.016705960035324097,
+      "intersection_reprojection_device_columnar_sec": 0.22815536707639694,
+      "midpoint_pip_map0_sec": 0.00717376172542572,
+      "midpoint_pip_map1_sec": 0.0064007192850112915,
+      "midpoint_points_map0_columnar_sec": 0.5960121229290962,
+      "midpoint_points_map1_columnar_sec": 0.5900393426418304,
+      "sort_map0_device_columnar_sec": 0.030780628323554993,
+      "sort_map1_device_columnar_sec": 0.09261380136013031,
+      "vertex_pip_map0_in_map1_sec": 0.13172636926174164,
+      "vertex_pip_map1_in_map0_sec": 0.7655325904488564
+    },
+    "downstream_floor_sec": 2.572992980480194,
+    "extended": {
+      "count_download": 3.7191000000000004e-05,
+      "device_alloc": 0.001826547,
+      "emitted_count": 428322,
+      "exact_pipeline_ensure": 0.514101952,
+      "grouped_range_ensure": 1.017851884,
+      "mode": "pair_id_rows_prepared_left_grouped_range_direct_intersection",
+      "optix_launch": 0.004503758,
+      "param_upload": 6.341e-06,
+      "raw_candidate_count": 0,
+      "scaled_cache_ensure": 0.690948824,
+      "schema": "rtdl.optix.segment_pair.extended_phase_timings.v1",
+      "split_kernel_ensure": 0.414131715,
+      "split_kernel_launch": 2.0741e-05,
+      "total_native": 2.643482594
+    },
+    "largest_downstream_component": [
+      "vertex_pip_map1_in_map0_sec",
+      0.7655325904488564
+    ],
+    "lsi_copy_sec": 0.003561839461326599,
+    "lsi_phase_sec": 2.6439320519566536,
+    "lsi_row_count": 428322,
+    "native_total_sec": 2.643482594,
+    "python_wrapper_or_unaccounted_sec": 0.00044945795665363164,
+    "vertex_positive_counts": {
+      "side0_in_side1": 812721,
+      "side1_in_side0": 4527305
+    },
+    "writer_free_hot_sec": 5.220486871898174,
+    "xsect_sorted_counts": {
+      "side0": 428322,
+      "side1": 428322
+    }
+  },
+  "prepared_replay": {
+    "downstream_components_sec": {
+      "assign_midpoint_faces_map0_columnar_sec": 0.0005992650985717773,
+      "assign_midpoint_faces_map1_columnar_sec": 0.0006301179528236389,
+      "grouped_compiled_columnar_carrier_construction_sec": 0.10773426294326782,
+      "grouped_descriptor_pair_count_consumer_sec": 0.016427740454673767,
+      "intersection_reprojection_device_columnar_sec": 0.23000755906105042,
+      "midpoint_pip_map0_sec": 0.006626494228839874,
+      "midpoint_pip_map1_sec": 0.006126634776592255,
+      "midpoint_points_map0_columnar_sec": 0.5869109332561493,
+      "midpoint_points_map1_columnar_sec": 0.5812239274382591,
+      "sort_map0_device_columnar_sec": 0.031683750450611115,
+      "sort_map1_device_columnar_sec": 0.0897260531783104,
+      "vertex_pip_map0_in_map1_sec": 0.12450332939624786,
+      "vertex_pip_map1_in_map0_sec": 0.7538340985774994
+    },
+    "downstream_floor_sec": 2.5360341668128967,
+    "extended": {
+      "count_download": 8.59e-06,
+      "device_alloc": 5.37e-06,
+      "emitted_count": 428322,
+      "exact_pipeline_ensure": 1.8e-07,
+      "grouped_range_ensure": 3.9e-07,
+      "mode": "pair_id_rows_prepared_left_grouped_range_direct_intersection",
+      "optix_launch": 0.002193278,
+      "param_upload": 7.25e-06,
+      "raw_candidate_count": 0,
+      "scaled_cache_ensure": 0.0,
+      "schema": "rtdl.optix.segment_pair.extended_phase_timings.v1",
+      "split_kernel_ensure": 0.0,
+      "split_kernel_launch": 0.0,
+      "total_native": 0.002219028
+    },
+    "largest_downstream_component": [
+      "vertex_pip_map1_in_map0_sec",
+      0.7538340985774994
+    ],
+    "lsi_copy_sec": 0.0,
+    "lsi_phase_sec": 0.008617423474788666,
+    "lsi_row_count": 428322,
+    "native_total_sec": 0.002219028,
+    "python_wrapper_or_unaccounted_sec": 0.006398395474788666,
+    "vertex_positive_counts": {
+      "side0_in_side1": 812721,
+      "side1_in_side0": 4527305
+    },
+    "writer_free_hot_sec": 2.5446515902876854,
+    "xsect_sorted_counts": {
+      "side0": 428322,
+      "side1": 428322
+    }
+  }
+}

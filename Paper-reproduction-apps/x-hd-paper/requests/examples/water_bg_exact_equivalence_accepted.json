@@ -1,0 +1,54 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.external_response_intake.v1",
+  "status": "filled_synthetic_example",
+  "received_from": {
+    "actor_type": "external_reviewer",
+    "name_or_role": "synthetic exact-equivalence reviewer",
+    "contact_or_source": "synthetic@example.invalid",
+    "received_date": "2026-07-09"
+  },
+  "response_type": "exact_equivalence_verdict",
+  "scope": {
+    "paper": "X-HD",
+    "families": ["geo_wkt"],
+    "paper_paths_or_figures": ["Figure 5"],
+    "claim_boundary_requested": "bounded_public_reconstruction"
+  },
+  "artifacts": {
+    "hash_manifest_entries": [],
+    "archive": null,
+    "regeneration_script": null,
+    "acm_supplement_listing": null,
+    "exact_equivalence_verdict": {
+      "decision": "accepted_as_exact_equivalent_with_named_boundary",
+      "reviewed_reconstruction": "WaterBodies/BG full-public ArcGIS reconstruction",
+      "accepted_claim_name": "bounded_public_reconstruction_exact_equivalent",
+      "accepted_denominator": "full-public WaterBodies/BG with author paper-config n_points_cell=8",
+      "explicit_limitations": [
+        "not a claim that author WKT hashes were found",
+        "not a full Figure 5 matrix"
+      ],
+      "exact_paper_wording_allowed": false
+    },
+    "freeform_notes": "Synthetic example: bounded exact-equivalence accepted with renamed boundary."
+  },
+  "validation_status": {
+    "validated_by_codex": false,
+    "sufficient_to_run_pod_gate": false,
+    "sufficient_to_claim_exact_input": false,
+    "requires_external_review_before_use": true,
+    "failure_or_missing_items": []
+  },
+  "next_action": "classify_response_before_action",
+  "claim_boundary": {
+    "request_sent_claimed": false,
+    "external_response_received": false,
+    "external_artifacts_acquired": false,
+    "acm_supplement_inspected": false,
+    "exact_equivalence_accepted": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false
+  }
+}

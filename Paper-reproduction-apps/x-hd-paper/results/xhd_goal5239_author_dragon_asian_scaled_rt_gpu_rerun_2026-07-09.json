@@ -1,0 +1,1420 @@
+{
+    "DateTime": "2026-07-09 05:59:37",
+    "GPU": {
+        "Device": 0,
+        "name": "NVIDIA RTX 4000 Ada Generation"
+    },
+    "HDResult": 0.06536787003278732,
+    "Input": {
+        "Density": 1019017088.0,
+        "Files": [
+            {
+                "Density": 161400144.0,
+                "Grid": {
+                    "BuildTime": 1.209,
+                    "CellDiagonalLength": 0.006733445916324854,
+                    "GiniIndex": 0.4159379303455353,
+                    "GridSize": [
+                        52,
+                        37,
+                        24
+                    ],
+                    "Histogram": [
+                        {
+                            "count": 145,
+                            "percentile": 0.0,
+                            "value": 1.0
+                        },
+                        {
+                            "count": 1138,
+                            "percentile": 0.166667,
+                            "value": 16.0
+                        },
+                        {
+                            "count": 2193,
+                            "percentile": 0.333333,
+                            "value": 37.0
+                        },
+                        {
+                            "count": 3318,
+                            "percentile": 0.5,
+                            "value": 59.0
+                        },
+                        {
+                            "count": 3856,
+                            "percentile": 0.583333,
+                            "value": 70.0
+                        },
+                        {
+                            "count": 4382,
+                            "percentile": 0.666667,
+                            "value": 81.0
+                        },
+                        {
+                            "count": 4956,
+                            "percentile": 0.75,
+                            "value": 96.0
+                        },
+                        {
+                            "count": 5207,
+                            "percentile": 0.791667,
+                            "value": 103.0
+                        },
+                        {
+                            "count": 5483,
+                            "percentile": 0.833333,
+                            "value": 112.0
+                        },
+                        {
+                            "count": 5748,
+                            "percentile": 0.875,
+                            "value": 123.0
+                        },
+                        {
+                            "count": 5894,
+                            "percentile": 0.895833,
+                            "value": 131.0
+                        },
+                        {
+                            "count": 6024,
+                            "percentile": 0.916667,
+                            "value": 139.0
+                        },
+                        {
+                            "count": 6163,
+                            "percentile": 0.9375,
+                            "value": 150.0
+                        },
+                        {
+                            "count": 6228,
+                            "percentile": 0.947917,
+                            "value": 157.0
+                        },
+                        {
+                            "count": 6296,
+                            "percentile": 0.958333,
+                            "value": 167.0
+                        },
+                        {
+                            "count": 6361,
+                            "percentile": 0.96875,
+                            "value": 178.0
+                        },
+                        {
+                            "count": 6397,
+                            "percentile": 0.973958,
+                            "value": 185.0
+                        },
+                        {
+                            "count": 6428,
+                            "percentile": 0.979167,
+                            "value": 192.0
+                        },
+                        {
+                            "count": 6461,
+                            "percentile": 0.984375,
+                            "value": 204.0
+                        },
+                        {
+                            "count": 6478,
+                            "percentile": 0.986979,
+                            "value": 213.0
+                        },
+                        {
+                            "count": 6495,
+                            "percentile": 0.989583,
+                            "value": 223.0
+                        },
+                        {
+                            "count": 6513,
+                            "percentile": 0.992188,
+                            "value": 238.0
+                        },
+                        {
+                            "count": 6522,
+                            "percentile": 0.99349,
+                            "value": 250.0
+                        },
+                        {
+                            "count": 6529,
+                            "percentile": 0.994792,
+                            "value": 273.0
+                        },
+                        {
+                            "count": 6538,
+                            "percentile": 0.996094,
+                            "value": 287.0
+                        },
+                        {
+                            "count": 6542,
+                            "percentile": 0.996745,
+                            "value": 299.0
+                        },
+                        {
+                            "count": 6546,
+                            "percentile": 0.997396,
+                            "value": 309.0
+                        },
+                        {
+                            "count": 6551,
+                            "percentile": 0.998047,
+                            "value": 337.0
+                        },
+                        {
+                            "count": 6553,
+                            "percentile": 0.998372,
+                            "value": 350.0
+                        },
+                        {
+                            "count": 6555,
+                            "percentile": 0.998698,
+                            "value": 366.0
+                        },
+                        {
+                            "count": 6557,
+                            "percentile": 0.999023,
+                            "value": 374.0
+                        },
+                        {
+                            "count": 6558,
+                            "percentile": 0.999186,
+                            "value": 388.0
+                        },
+                        {
+                            "count": 6559,
+                            "percentile": 0.999349,
+                            "value": 389.0
+                        },
+                        {
+                            "count": 6560,
+                            "percentile": 0.999512,
+                            "value": 415.0
+                        },
+                        {
+                            "count": 6561,
+                            "percentile": 0.999593,
+                            "value": 440.0
+                        },
+                        {
+                            "count": 6561,
+                            "percentile": 0.999674,
+                            "value": 440.0
+                        },
+                        {
+                            "count": 6562,
+                            "percentile": 0.999756,
+                            "value": 445.0
+                        },
+                        {
+                            "count": 6562,
+                            "percentile": 0.999797,
+                            "value": 445.0
+                        },
+                        {
+                            "count": 6562,
+                            "percentile": 0.999837,
+                            "value": 445.0
+                        },
+                        {
+                            "count": 6563,
+                            "percentile": 0.999878,
+                            "value": 490.0
+                        },
+                        {
+                            "count": 6563,
+                            "percentile": 1.0,
+                            "value": 490.0
+                        }
+                    ],
+                    "MaxPoints": 490,
+                    "MedianPointsPerCell": 59,
+                    "NonEmptyCells": 0,
+                    "TotalCells": 46176
+                },
+                "MBR": [
+                    {
+                        "Lower": 0.0,
+                        "Upper": 0.2048902064561844
+                    },
+                    {
+                        "Lower": 0.0,
+                        "Upper": 0.14444349706172943
+                    },
+                    {
+                        "Lower": 0.0,
+                        "Upper": 0.09162180125713348
+                    }
+                ],
+                "NumPoints": 437645,
+                "Path": "/tmp/xhd_goal5234/data/dragon.ply",
+                "StatsGridNumPointsPerCell": 10
+            },
+            {
+                "Density": 1190092800.0,
+                "Grid": {
+                    "BuildTime": 1.353,
+                    "CellDiagonalLength": 0.003476202953606844,
+                    "GiniIndex": 0.3842625916004181,
+                    "GridSize": [
+                        100,
+                        56,
+                        67
+                    ],
+                    "Histogram": [
+                        {
+                            "count": 178,
+                            "percentile": 0.0,
+                            "value": 1.0
+                        },
+                        {
+                            "count": 2314,
+                            "percentile": 0.166667,
+                            "value": 48.0
+                        },
+                        {
+                            "count": 4603,
+                            "percentile": 0.333333,
+                            "value": 151.0
+                        },
+                        {
+                            "count": 6895,
+                            "percentile": 0.5,
+                            "value": 267.0
+                        },
+                        {
+                            "count": 8048,
+                            "percentile": 0.583333,
+                            "value": 323.0
+                        },
+                        {
+                            "count": 9206,
+                            "percentile": 0.666667,
+                            "value": 380.0
+                        },
+                        {
+                            "count": 10335,
+                            "percentile": 0.75,
+                            "value": 426.0
+                        },
+                        {
+                            "count": 10914,
+                            "percentile": 0.791667,
+                            "value": 444.0
+                        },
+                        {
+                            "count": 11481,
+                            "percentile": 0.833333,
+                            "value": 458.0
+                        },
+                        {
+                            "count": 12054,
+                            "percentile": 0.875,
+                            "value": 471.0
+                        },
+                        {
+                            "count": 12343,
+                            "percentile": 0.895833,
+                            "value": 479.0
+                        },
+                        {
+                            "count": 12629,
+                            "percentile": 0.916667,
+                            "value": 490.0
+                        },
+                        {
+                            "count": 12917,
+                            "percentile": 0.9375,
+                            "value": 505.0
+                        },
+                        {
+                            "count": 13065,
+                            "percentile": 0.947917,
+                            "value": 513.0
+                        },
+                        {
+                            "count": 13206,
+                            "percentile": 0.958333,
+                            "value": 524.0
+                        },
+                        {
+                            "count": 13336,
+                            "percentile": 0.96875,
+                            "value": 537.0
+                        },
+                        {
+                            "count": 13412,
+                            "percentile": 0.973958,
+                            "value": 547.0
+                        },
+                        {
+                            "count": 13482,
+                            "percentile": 0.979167,
+                            "value": 554.0
+                        },
+                        {
+                            "count": 13552,
+                            "percentile": 0.984375,
+                            "value": 566.0
+                        },
+                        {
+                            "count": 13590,
+                            "percentile": 0.986979,
+                            "value": 575.0
+                        },
+                        {
+                            "count": 13624,
+                            "percentile": 0.989583,
+                            "value": 583.0
+                        },
+                        {
+                            "count": 13660,
+                            "percentile": 0.992188,
+                            "value": 595.0
+                        },
+                        {
+                            "count": 13677,
+                            "percentile": 0.99349,
+                            "value": 601.0
+                        },
+                        {
+                            "count": 13695,
+                            "percentile": 0.994792,
+                            "value": 610.0
+                        },
+                        {
+                            "count": 13713,
+                            "percentile": 0.996094,
+                            "value": 622.0
+                        },
+                        {
+                            "count": 13722,
+                            "percentile": 0.996745,
+                            "value": 630.0
+                        },
+                        {
+                            "count": 13732,
+                            "percentile": 0.997396,
+                            "value": 640.0
+                        },
+                        {
+                            "count": 13741,
+                            "percentile": 0.998047,
+                            "value": 649.0
+                        },
+                        {
+                            "count": 13744,
+                            "percentile": 0.998372,
+                            "value": 650.0
+                        },
+                        {
+                            "count": 13749,
+                            "percentile": 0.998698,
+                            "value": 673.0
+                        },
+                        {
+                            "count": 13753,
+                            "percentile": 0.999023,
+                            "value": 695.0
+                        },
+                        {
+                            "count": 13755,
+                            "percentile": 0.999186,
+                            "value": 701.0
+                        },
+                        {
+                            "count": 13758,
+                            "percentile": 0.999349,
+                            "value": 748.0
+                        },
+                        {
+                            "count": 13760,
+                            "percentile": 0.999512,
+                            "value": 758.0
+                        },
+                        {
+                            "count": 13761,
+                            "percentile": 0.999593,
+                            "value": 781.0
+                        },
+                        {
+                            "count": 13762,
+                            "percentile": 0.999674,
+                            "value": 801.0
+                        },
+                        {
+                            "count": 13763,
+                            "percentile": 0.999756,
+                            "value": 831.0
+                        },
+                        {
+                            "count": 13764,
+                            "percentile": 0.999797,
+                            "value": 879.0
+                        },
+                        {
+                            "count": 13764,
+                            "percentile": 0.999837,
+                            "value": 879.0
+                        },
+                        {
+                            "count": 13765,
+                            "percentile": 0.999878,
+                            "value": 889.0
+                        },
+                        {
+                            "count": 13765,
+                            "percentile": 0.999898,
+                            "value": 889.0
+                        },
+                        {
+                            "count": 13765,
+                            "percentile": 0.999919,
+                            "value": 889.0
+                        },
+                        {
+                            "count": 13766,
+                            "percentile": 0.999939,
+                            "value": 933.0
+                        },
+                        {
+                            "count": 13766,
+                            "percentile": 1.0,
+                            "value": 933.0
+                        }
+                    ],
+                    "MaxPoints": 933,
+                    "MedianPointsPerCell": 267,
+                    "NonEmptyCells": 0,
+                    "TotalCells": 375200
+                },
+                "MBR": [
+                    {
+                        "Lower": 0.0,
+                        "Upper": 0.20174352824687958
+                    },
+                    {
+                        "Lower": 0.0,
+                        "Upper": 0.11202625930309296
+                    },
+                    {
+                        "Lower": 0.0,
+                        "Upper": 0.13420194387435913
+                    }
+                ],
+                "NumPoints": 3609600,
+                "Path": "/tmp/xhd_goal5234/data/asian_dragon_scaled_1e-3.ply",
+                "StatsGridNumPointsPerCell": 10
+            }
+        ],
+        "Grid": {
+            "BuildTime": 1.454,
+            "CellDiagonalLength": 0.003688485361635685,
+            "GiniIndex": 0.6817401051521301,
+            "GridSize": [
+                96,
+                68,
+                63
+            ],
+            "Histogram": [
+                {
+                    "count": 1108,
+                    "percentile": 0.0,
+                    "value": 1.0
+                },
+                {
+                    "count": 5834,
+                    "percentile": 0.166667,
+                    "value": 8.0
+                },
+                {
+                    "count": 11210,
+                    "percentile": 0.333333,
+                    "value": 17.0
+                },
+                {
+                    "count": 16527,
+                    "percentile": 0.5,
+                    "value": 28.0
+                },
+                {
+                    "count": 19301,
+                    "percentile": 0.583333,
+                    "value": 37.0
+                },
+                {
+                    "count": 21872,
+                    "percentile": 0.666667,
+                    "value": 55.0
+                },
+                {
+                    "count": 24607,
+                    "percentile": 0.75,
+                    "value": 171.0
+                },
+                {
+                    "count": 25961,
+                    "percentile": 0.791667,
+                    "value": 252.0
+                },
+                {
+                    "count": 27326,
+                    "percentile": 0.833333,
+                    "value": 339.0
+                },
+                {
+                    "count": 28704,
+                    "percentile": 0.875,
+                    "value": 424.0
+                },
+                {
+                    "count": 29384,
+                    "percentile": 0.895833,
+                    "value": 461.0
+                },
+                {
+                    "count": 30064,
+                    "percentile": 0.916667,
+                    "value": 492.0
+                },
+                {
+                    "count": 30754,
+                    "percentile": 0.9375,
+                    "value": 515.0
+                },
+                {
+                    "count": 31108,
+                    "percentile": 0.947917,
+                    "value": 525.0
+                },
+                {
+                    "count": 31427,
+                    "percentile": 0.958333,
+                    "value": 536.0
+                },
+                {
+                    "count": 31783,
+                    "percentile": 0.96875,
+                    "value": 552.0
+                },
+                {
+                    "count": 31937,
+                    "percentile": 0.973958,
+                    "value": 562.0
+                },
+                {
+                    "count": 32107,
+                    "percentile": 0.979167,
+                    "value": 575.0
+                },
+                {
+                    "count": 32281,
+                    "percentile": 0.984375,
+                    "value": 592.0
+                },
+                {
+                    "count": 32372,
+                    "percentile": 0.986979,
+                    "value": 601.0
+                },
+                {
+                    "count": 32451,
+                    "percentile": 0.989583,
+                    "value": 612.0
+                },
+                {
+                    "count": 32539,
+                    "percentile": 0.992188,
+                    "value": 627.0
+                },
+                {
+                    "count": 32579,
+                    "percentile": 0.99349,
+                    "value": 637.0
+                },
+                {
+                    "count": 32621,
+                    "percentile": 0.994792,
+                    "value": 648.0
+                },
+                {
+                    "count": 32662,
+                    "percentile": 0.996094,
+                    "value": 659.0
+                },
+                {
+                    "count": 32684,
+                    "percentile": 0.996745,
+                    "value": 667.0
+                },
+                {
+                    "count": 32706,
+                    "percentile": 0.997396,
+                    "value": 675.0
+                },
+                {
+                    "count": 32727,
+                    "percentile": 0.998047,
+                    "value": 688.0
+                },
+                {
+                    "count": 32738,
+                    "percentile": 0.998372,
+                    "value": 698.0
+                },
+                {
+                    "count": 32748,
+                    "percentile": 0.998698,
+                    "value": 707.0
+                },
+                {
+                    "count": 32758,
+                    "percentile": 0.999023,
+                    "value": 722.0
+                },
+                {
+                    "count": 32764,
+                    "percentile": 0.999186,
+                    "value": 733.0
+                },
+                {
+                    "count": 32769,
+                    "percentile": 0.999349,
+                    "value": 745.0
+                },
+                {
+                    "count": 32774,
+                    "percentile": 0.999512,
+                    "value": 756.0
+                },
+                {
+                    "count": 32777,
+                    "percentile": 0.999593,
+                    "value": 761.0
+                },
+                {
+                    "count": 32780,
+                    "percentile": 0.999674,
+                    "value": 788.0
+                },
+                {
+                    "count": 32782,
+                    "percentile": 0.999756,
+                    "value": 794.0
+                },
+                {
+                    "count": 32784,
+                    "percentile": 0.999797,
+                    "value": 797.0
+                },
+                {
+                    "count": 32785,
+                    "percentile": 0.999837,
+                    "value": 873.0
+                },
+                {
+                    "count": 32786,
+                    "percentile": 0.999878,
+                    "value": 877.0
+                },
+                {
+                    "count": 32787,
+                    "percentile": 0.999898,
+                    "value": 894.0
+                },
+                {
+                    "count": 32788,
+                    "percentile": 0.999919,
+                    "value": 908.0
+                },
+                {
+                    "count": 32788,
+                    "percentile": 0.999939,
+                    "value": 908.0
+                },
+                {
+                    "count": 32789,
+                    "percentile": 0.999949,
+                    "value": 1036.0
+                },
+                {
+                    "count": 32789,
+                    "percentile": 0.999959,
+                    "value": 1036.0
+                },
+                {
+                    "count": 32789,
+                    "percentile": 0.999969,
+                    "value": 1036.0
+                },
+                {
+                    "count": 32790,
+                    "percentile": 0.999975,
+                    "value": 1116.0
+                },
+                {
+                    "count": 32790,
+                    "percentile": 1.0,
+                    "value": 1116.0
+                }
+            ],
+            "MaxPoints": 1116,
+            "MedianPointsPerCell": 28,
+            "NonEmptyCells": 0,
+            "TotalCells": 411264
+        },
+        "Limit": 2147483647,
+        "MBR": [
+            {
+                "Lower": 0.0,
+                "Upper": 0.2048902064561844
+            },
+            {
+                "Lower": 0.0,
+                "Upper": 0.14444349706172943
+            },
+            {
+                "Lower": 0.0,
+                "Upper": 0.13420194387435913
+            }
+        ],
+        "Normalize": false,
+        "NumDims": 3,
+        "SerializationPrefix": "",
+        "StatsGridNumPointsPerCell": 10,
+        "Translate": 0.0,
+        "Type": "Float"
+    },
+    "Running": {
+        "AutoTune": false,
+        "AvgTime": 83.49680000000001,
+        "EBOnlyThreshold": 0,
+        "FastBuildBVH": false,
+        "MaxHit": 256,
+        "NumPointsPerCell": 8,
+        "RebuildBVH": false,
+        "Repeats": [
+            {
+                "Algorithm": "Ray Tracing",
+                "BVHBuildTime": 0.656,
+                "BVHMemoryKB": 1888,
+                "ComparedPairs": 0,
+                "Execution": "GPU",
+                "Grid": {
+                    "BuildTime": 1.51,
+                    "CellDiagonalLength": 0.0032427143305540085,
+                    "GiniIndex": 0.38537219166755676,
+                    "GridSize": [
+                        107,
+                        60,
+                        72
+                    ],
+                    "MaxPoints": 813,
+                    "MedianPointsPerCell": 228,
+                    "NonEmptyCells": 0,
+                    "TotalCells": 462240
+                },
+                "HDLowerBound": 0.032417237758636475,
+                "HDUpperBound": 0.2843485176563263,
+                "InitRadius": 0.032417237758636475,
+                "Iterations": [
+                    {
+                        "AccumulatedComparedPoints": 61684692,
+                        "AccumulatedHits": 38366535,
+                        "AdjustBVHTime": 0.096,
+                        "CMax2": 0.0010508772684261203,
+                        "CoveredCells": 9.99694538116455,
+                        "Iteration": 1,
+                        "NumInputPoints": 437645,
+                        "NumOutputPoints": 61172,
+                        "RTTime": 21.427,
+                        "Radius": 0.032417237758636475
+                    },
+                    {
+                        "AccumulatedComparedPoints": 75297194,
+                        "AccumulatedHits": 47765885,
+                        "AdjustBVHTime": 0.073,
+                        "CMax2": 0.0012716271448880434,
+                        "CoveredCells": 10.996946334838867,
+                        "Iteration": 2,
+                        "NumInputPoints": 61172,
+                        "NumOutputPoints": 45759,
+                        "RTTime": 8.212,
+                        "Radius": 0.03565995395183563
+                    },
+                    {
+                        "AccumulatedComparedPoints": 89683137,
+                        "AccumulatedHits": 59651004,
+                        "AdjustBVHTime": 0.076,
+                        "CMax2": 0.001776167075149715,
+                        "CoveredCells": 12.996946334838867,
+                        "Iteration": 3,
+                        "NumInputPoints": 45759,
+                        "NumOutputPoints": 23320,
+                        "RTTime": 9.019,
+                        "Radius": 0.04214538261294365
+                    },
+                    {
+                        "AccumulatedComparedPoints": 105325025,
+                        "AccumulatedHits": 70394349,
+                        "AdjustBVHTime": 0.077,
+                        "CMax2": 0.0023649120703339577,
+                        "CoveredCells": 14.996946334838867,
+                        "Iteration": 4,
+                        "NumInputPoints": 23320,
+                        "NumOutputPoints": 8008,
+                        "RTTime": 8.171,
+                        "Radius": 0.048630811274051666
+                    },
+                    {
+                        "AccumulatedComparedPoints": 108134958,
+                        "AccumulatedHits": 73221062,
+                        "AdjustBVHTime": 0.073,
+                        "CMax2": 0.002690764144062996,
+                        "CoveredCells": 15.996946334838867,
+                        "Iteration": 5,
+                        "NumInputPoints": 8008,
+                        "NumOutputPoints": 4913,
+                        "RTTime": 3.243,
+                        "Radius": 0.051873527467250824
+                    },
+                    {
+                        "AccumulatedComparedPoints": 114713691,
+                        "AccumulatedHits": 77226961,
+                        "AdjustBVHTime": 0.072,
+                        "CMax2": 0.0034056385047733784,
+                        "CoveredCells": 17.996946334838867,
+                        "Iteration": 6,
+                        "NumInputPoints": 4913,
+                        "NumOutputPoints": 1887,
+                        "RTTime": 8.201,
+                        "Radius": 0.05835895612835884
+                    },
+                    {
+                        "AccumulatedComparedPoints": 117373036,
+                        "AccumulatedHits": 79662780,
+                        "AdjustBVHTime": 0.081,
+                        "CMax2": 0.003794567659497261,
+                        "CoveredCells": 18.996946334838867,
+                        "Iteration": 7,
+                        "NumInputPoints": 1887,
+                        "NumOutputPoints": 1011,
+                        "RTTime": 6.569,
+                        "Radius": 0.0616016685962677
+                    },
+                    {
+                        "AccumulatedComparedPoints": 122848418,
+                        "AccumulatedHits": 82043012,
+                        "CMax2": 0.004272958263754845,
+                        "CoveredCells": 20.996946334838867,
+                        "Iteration": 8,
+                        "NumInputPoints": 1011,
+                        "NumOutputPoints": 0,
+                        "RTTime": 16.177,
+                        "Radius": 0.06808710098266602
+                    }
+                ],
+                "Profiling": true,
+                "Repeat": 1,
+                "ReportedTime": 86.395
+            },
+            {
+                "Algorithm": "Ray Tracing",
+                "BVHBuildTime": 0.328,
+                "BVHMemoryKB": 1888,
+                "ComparedPairs": 0,
+                "Execution": "GPU",
+                "Grid": {
+                    "BuildTime": 1.096,
+                    "CellDiagonalLength": 0.0032427143305540085,
+                    "GiniIndex": 0.38537219166755676,
+                    "GridSize": [
+                        107,
+                        60,
+                        72
+                    ],
+                    "MaxPoints": 813,
+                    "MedianPointsPerCell": 228,
+                    "NonEmptyCells": 0,
+                    "TotalCells": 462240
+                },
+                "HDLowerBound": 0.032417237758636475,
+                "HDUpperBound": 0.2843485176563263,
+                "InitRadius": 0.032417237758636475,
+                "Iterations": [
+                    {
+                        "AccumulatedComparedPoints": 184545169,
+                        "AccumulatedHits": 120409547,
+                        "AdjustBVHTime": 0.074,
+                        "CMax2": 0.0010508772684261203,
+                        "CoveredCells": 9.99694538116455,
+                        "Iteration": 1,
+                        "NumInputPoints": 437645,
+                        "NumOutputPoints": 61172,
+                        "RTTime": 19.018,
+                        "Radius": 0.032417237758636475
+                    },
+                    {
+                        "AccumulatedComparedPoints": 198404836,
+                        "AccumulatedHits": 129802933,
+                        "AdjustBVHTime": 0.073,
+                        "CMax2": 0.0012716271448880434,
+                        "CoveredCells": 10.996946334838867,
+                        "Iteration": 2,
+                        "NumInputPoints": 61172,
+                        "NumOutputPoints": 45759,
+                        "RTTime": 8.02,
+                        "Radius": 0.03565995395183563
+                    },
+                    {
+                        "AccumulatedComparedPoints": 211721666,
+                        "AccumulatedHits": 141570848,
+                        "AdjustBVHTime": 0.074,
+                        "CMax2": 0.001776167075149715,
+                        "CoveredCells": 12.996946334838867,
+                        "Iteration": 3,
+                        "NumInputPoints": 45759,
+                        "NumOutputPoints": 23320,
+                        "RTTime": 7.389,
+                        "Radius": 0.04214538261294365
+                    },
+                    {
+                        "AccumulatedComparedPoints": 226602882,
+                        "AccumulatedHits": 152123708,
+                        "AdjustBVHTime": 0.072,
+                        "CMax2": 0.0023649120703339577,
+                        "CoveredCells": 14.996946334838867,
+                        "Iteration": 4,
+                        "NumInputPoints": 23320,
+                        "NumOutputPoints": 8008,
+                        "RTTime": 7.454,
+                        "Radius": 0.048630811274051666
+                    },
+                    {
+                        "AccumulatedComparedPoints": 229604922,
+                        "AccumulatedHits": 154995872,
+                        "AdjustBVHTime": 0.07,
+                        "CMax2": 0.002690764144062996,
+                        "CoveredCells": 15.996946334838867,
+                        "Iteration": 5,
+                        "NumInputPoints": 8008,
+                        "NumOutputPoints": 4913,
+                        "RTTime": 3.006,
+                        "Radius": 0.051873527467250824
+                    },
+                    {
+                        "AccumulatedComparedPoints": 236179573,
+                        "AccumulatedHits": 159031228,
+                        "AdjustBVHTime": 0.073,
+                        "CMax2": 0.0034056385047733784,
+                        "CoveredCells": 17.996946334838867,
+                        "Iteration": 6,
+                        "NumInputPoints": 4913,
+                        "NumOutputPoints": 1887,
+                        "RTTime": 8.682,
+                        "Radius": 0.05835895612835884
+                    },
+                    {
+                        "AccumulatedComparedPoints": 238845659,
+                        "AccumulatedHits": 161461958,
+                        "AdjustBVHTime": 0.073,
+                        "CMax2": 0.003794567659497261,
+                        "CoveredCells": 18.996946334838867,
+                        "Iteration": 7,
+                        "NumInputPoints": 1887,
+                        "NumOutputPoints": 1011,
+                        "RTTime": 6.455,
+                        "Radius": 0.0616016685962677
+                    },
+                    {
+                        "AccumulatedComparedPoints": 244534460,
+                        "AccumulatedHits": 163857541,
+                        "CMax2": 0.004272958263754845,
+                        "CoveredCells": 20.996946334838867,
+                        "Iteration": 8,
+                        "NumInputPoints": 1011,
+                        "NumOutputPoints": 0,
+                        "RTTime": 18.267,
+                        "Radius": 0.06808710098266602
+                    }
+                ],
+                "Profiling": true,
+                "Repeat": 2,
+                "ReportedTime": 81.932
+            },
+            {
+                "Algorithm": "Ray Tracing",
+                "BVHBuildTime": 0.314,
+                "BVHMemoryKB": 1888,
+                "ComparedPairs": 0,
+                "Execution": "GPU",
+                "Grid": {
+                    "BuildTime": 1.059,
+                    "CellDiagonalLength": 0.0032427143305540085,
+                    "GiniIndex": 0.38537219166755676,
+                    "GridSize": [
+                        107,
+                        60,
+                        72
+                    ],
+                    "MaxPoints": 813,
+                    "MedianPointsPerCell": 228,
+                    "NonEmptyCells": 0,
+                    "TotalCells": 462240
+                },
+                "HDLowerBound": 0.032417237758636475,
+                "HDUpperBound": 0.2843485176563263,
+                "InitRadius": 0.032417237758636475,
+                "Iterations": [
+                    {
+                        "AccumulatedComparedPoints": 306357532,
+                        "AccumulatedHits": 202224076,
+                        "AdjustBVHTime": 0.078,
+                        "CMax2": 0.0010508772684261203,
+                        "CoveredCells": 9.99694538116455,
+                        "Iteration": 1,
+                        "NumInputPoints": 437645,
+                        "NumOutputPoints": 61172,
+                        "RTTime": 19.132,
+                        "Radius": 0.032417237758636475
+                    },
+                    {
+                        "AccumulatedComparedPoints": 319660155,
+                        "AccumulatedHits": 211576284,
+                        "AdjustBVHTime": 0.071,
+                        "CMax2": 0.0012716271448880434,
+                        "CoveredCells": 10.996946334838867,
+                        "Iteration": 2,
+                        "NumInputPoints": 61172,
+                        "NumOutputPoints": 45759,
+                        "RTTime": 9.036,
+                        "Radius": 0.03565995395183563
+                    },
+                    {
+                        "AccumulatedComparedPoints": 333144964,
+                        "AccumulatedHits": 223393644,
+                        "AdjustBVHTime": 0.073,
+                        "CMax2": 0.001776167075149715,
+                        "CoveredCells": 12.996946334838867,
+                        "Iteration": 3,
+                        "NumInputPoints": 45759,
+                        "NumOutputPoints": 23320,
+                        "RTTime": 7.087,
+                        "Radius": 0.04214538261294365
+                    },
+                    {
+                        "AccumulatedComparedPoints": 348025674,
+                        "AccumulatedHits": 233919106,
+                        "AdjustBVHTime": 0.072,
+                        "CMax2": 0.0023649120703339577,
+                        "CoveredCells": 14.996946334838867,
+                        "Iteration": 4,
+                        "NumInputPoints": 23320,
+                        "NumOutputPoints": 8008,
+                        "RTTime": 7.127,
+                        "Radius": 0.048630811274051666
+                    },
+                    {
+                        "AccumulatedComparedPoints": 350710455,
+                        "AccumulatedHits": 236735557,
+                        "AdjustBVHTime": 0.071,
+                        "CMax2": 0.002690764144062996,
+                        "CoveredCells": 15.996946334838867,
+                        "Iteration": 5,
+                        "NumInputPoints": 8008,
+                        "NumOutputPoints": 4913,
+                        "RTTime": 3.227,
+                        "Radius": 0.051873527467250824
+                    },
+                    {
+                        "AccumulatedComparedPoints": 357298538,
+                        "AccumulatedHits": 240795518,
+                        "AdjustBVHTime": 0.071,
+                        "CMax2": 0.0034056385047733784,
+                        "CoveredCells": 17.996946334838867,
+                        "Iteration": 6,
+                        "NumInputPoints": 4913,
+                        "NumOutputPoints": 1887,
+                        "RTTime": 8.118,
+                        "Radius": 0.05835895612835884
+                    },
+                    {
+                        "AccumulatedComparedPoints": 359807545,
+                        "AccumulatedHits": 243154399,
+                        "AdjustBVHTime": 0.072,
+                        "CMax2": 0.003794567659497261,
+                        "CoveredCells": 18.996946334838867,
+                        "Iteration": 7,
+                        "NumInputPoints": 1887,
+                        "NumOutputPoints": 1011,
+                        "RTTime": 6.111,
+                        "Radius": 0.0616016685962677
+                    },
+                    {
+                        "AccumulatedComparedPoints": 365298684,
+                        "AccumulatedHits": 245472278,
+                        "CMax2": 0.004272958263754845,
+                        "CoveredCells": 20.996946334838867,
+                        "Iteration": 8,
+                        "NumInputPoints": 1011,
+                        "NumOutputPoints": 0,
+                        "RTTime": 18.482,
+                        "Radius": 0.06808710098266602
+                    }
+                ],
+                "Profiling": true,
+                "Repeat": 3,
+                "ReportedTime": 81.831
+            },
+            {
+                "Algorithm": "Ray Tracing",
+                "BVHBuildTime": 0.32,
+                "BVHMemoryKB": 1888,
+                "ComparedPairs": 0,
+                "Execution": "GPU",
+                "Grid": {
+                    "BuildTime": 1.059,
+                    "CellDiagonalLength": 0.0032427143305540085,
+                    "GiniIndex": 0.38537219166755676,
+                    "GridSize": [
+                        107,
+                        60,
+                        72
+                    ],
+                    "MaxPoints": 813,
+                    "MedianPointsPerCell": 228,
+                    "NonEmptyCells": 0,
+                    "TotalCells": 462240
+                },
+                "HDLowerBound": 0.032417237758636475,
+                "HDUpperBound": 0.2843485176563263,
+                "InitRadius": 0.032417237758636475,
+                "Iterations": [
+                    {
+                        "AccumulatedComparedPoints": 427086493,
+                        "AccumulatedHits": 283838813,
+                        "AdjustBVHTime": 0.077,
+                        "CMax2": 0.0010508772684261203,
+                        "CoveredCells": 9.99694538116455,
+                        "Iteration": 1,
+                        "NumInputPoints": 437645,
+                        "NumOutputPoints": 61172,
+                        "RTTime": 19.018,
+                        "Radius": 0.032417237758636475
+                    },
+                    {
+                        "AccumulatedComparedPoints": 440640060,
+                        "AccumulatedHits": 293216688,
+                        "AdjustBVHTime": 0.071,
+                        "CMax2": 0.0012716271448880434,
+                        "CoveredCells": 10.996946334838867,
+                        "Iteration": 2,
+                        "NumInputPoints": 61172,
+                        "NumOutputPoints": 45759,
+                        "RTTime": 8.004,
+                        "Radius": 0.03565995395183563
+                    },
+                    {
+                        "AccumulatedComparedPoints": 454859044,
+                        "AccumulatedHits": 305038650,
+                        "AdjustBVHTime": 0.072,
+                        "CMax2": 0.001776167075149715,
+                        "CoveredCells": 12.996946334838867,
+                        "Iteration": 3,
+                        "NumInputPoints": 45759,
+                        "NumOutputPoints": 23320,
+                        "RTTime": 7.864,
+                        "Radius": 0.04214538261294365
+                    },
+                    {
+                        "AccumulatedComparedPoints": 469580150,
+                        "AccumulatedHits": 315598022,
+                        "AdjustBVHTime": 0.071,
+                        "CMax2": 0.0023649120703339577,
+                        "CoveredCells": 14.996946334838867,
+                        "Iteration": 4,
+                        "NumInputPoints": 23320,
+                        "NumOutputPoints": 8008,
+                        "RTTime": 7.995,
+                        "Radius": 0.048630811274051666
+                    },
+                    {
+                        "AccumulatedComparedPoints": 472414765,
+                        "AccumulatedHits": 318440695,
+                        "AdjustBVHTime": 0.071,
+                        "CMax2": 0.002690764144062996,
+                        "CoveredCells": 15.996946334838867,
+                        "Iteration": 5,
+                        "NumInputPoints": 8008,
+                        "NumOutputPoints": 4913,
+                        "RTTime": 3.161,
+                        "Radius": 0.051873527467250824
+                    },
+                    {
+                        "AccumulatedComparedPoints": 478809275,
+                        "AccumulatedHits": 322428514,
+                        "AdjustBVHTime": 0.072,
+                        "CMax2": 0.0034056385047733784,
+                        "CoveredCells": 17.996946334838867,
+                        "Iteration": 6,
+                        "NumInputPoints": 4913,
+                        "NumOutputPoints": 1887,
+                        "RTTime": 8.715,
+                        "Radius": 0.05835895612835884
+                    },
+                    {
+                        "AccumulatedComparedPoints": 481377881,
+                        "AccumulatedHits": 324821538,
+                        "AdjustBVHTime": 0.075,
+                        "CMax2": 0.003794567659497261,
+                        "CoveredCells": 18.996946334838867,
+                        "Iteration": 7,
+                        "NumInputPoints": 1887,
+                        "NumOutputPoints": 1011,
+                        "RTTime": 7.008,
+                        "Radius": 0.0616016685962677
+                    },
+                    {
+                        "AccumulatedComparedPoints": 487330430,
+                        "AccumulatedHits": 327256958,
+                        "CMax2": 0.004272958263754845,
+                        "CoveredCells": 20.996946334838867,
+                        "Iteration": 8,
+                        "NumInputPoints": 1011,
+                        "NumOutputPoints": 0,
+                        "RTTime": 18.284,
+                        "Radius": 0.06808710098266602
+                    }
+                ],
+                "Profiling": true,
+                "Repeat": 4,
+                "ReportedTime": 83.642
+            },
+            {
+                "Algorithm": "Ray Tracing",
+                "BVHBuildTime": 0.294,
+                "BVHMemoryKB": 1888,
+                "ComparedPairs": 0,
+                "Execution": "GPU",
+                "Grid": {
+                    "BuildTime": 1.054,
+                    "CellDiagonalLength": 0.0032427143305540085,
+                    "GiniIndex": 0.38537219166755676,
+                    "GridSize": [
+                        107,
+                        60,
+                        72
+                    ],
+                    "MaxPoints": 813,
+                    "MedianPointsPerCell": 228,
+                    "NonEmptyCells": 0,
+                    "TotalCells": 462240
+                },
+                "HDLowerBound": 0.032417237758636475,
+                "HDUpperBound": 0.2843485176563263,
+                "InitRadius": 0.032417237758636475,
+                "Iterations": [
+                    {
+                        "AccumulatedComparedPoints": 549216929,
+                        "AccumulatedHits": 365623493,
+                        "AdjustBVHTime": 0.074,
+                        "CMax2": 0.0010508772684261203,
+                        "CoveredCells": 9.99694538116455,
+                        "Iteration": 1,
+                        "NumInputPoints": 437645,
+                        "NumOutputPoints": 61172,
+                        "RTTime": 18.96,
+                        "Radius": 0.032417237758636475
+                    },
+                    {
+                        "AccumulatedComparedPoints": 562374065,
+                        "AccumulatedHits": 374980849,
+                        "AdjustBVHTime": 0.074,
+                        "CMax2": 0.0012716271448880434,
+                        "CoveredCells": 10.996946334838867,
+                        "Iteration": 2,
+                        "NumInputPoints": 61172,
+                        "NumOutputPoints": 45759,
+                        "RTTime": 7.373,
+                        "Radius": 0.03565995395183563
+                    },
+                    {
+                        "AccumulatedComparedPoints": 576741321,
+                        "AccumulatedHits": 386842302,
+                        "AdjustBVHTime": 0.073,
+                        "CMax2": 0.001776167075149715,
+                        "CoveredCells": 12.996946334838867,
+                        "Iteration": 3,
+                        "NumInputPoints": 45759,
+                        "NumOutputPoints": 23320,
+                        "RTTime": 7.512,
+                        "Radius": 0.04214538261294365
+                    },
+                    {
+                        "AccumulatedComparedPoints": 589841613,
+                        "AccumulatedHits": 397179376,
+                        "AdjustBVHTime": 0.073,
+                        "CMax2": 0.0023649120703339577,
+                        "CoveredCells": 14.996946334838867,
+                        "Iteration": 4,
+                        "NumInputPoints": 23320,
+                        "NumOutputPoints": 8008,
+                        "RTTime": 8.06,
+                        "Radius": 0.048630811274051666
+                    },
+                    {
+                        "AccumulatedComparedPoints": 592821090,
+                        "AccumulatedHits": 400039010,
+                        "AdjustBVHTime": 0.072,
+                        "CMax2": 0.002690764144062996,
+                        "CoveredCells": 15.996946334838867,
+                        "Iteration": 5,
+                        "NumInputPoints": 8008,
+                        "NumOutputPoints": 4913,
+                        "RTTime": 4.031,
+                        "Radius": 0.051873527467250824
+                    },
+                    {
+                        "AccumulatedComparedPoints": 598936540,
+                        "AccumulatedHits": 403987032,
+                        "AdjustBVHTime": 0.075,
+                        "CMax2": 0.0034056385047733784,
+                        "CoveredCells": 17.996946334838867,
+                        "Iteration": 6,
+                        "NumInputPoints": 4913,
+                        "NumOutputPoints": 1887,
+                        "RTTime": 8.29,
+                        "Radius": 0.05835895612835884
+                    },
+                    {
+                        "AccumulatedComparedPoints": 601562037,
+                        "AccumulatedHits": 406406893,
+                        "AdjustBVHTime": 0.072,
+                        "CMax2": 0.003794567659497261,
+                        "CoveredCells": 18.996946334838867,
+                        "Iteration": 7,
+                        "NumInputPoints": 1887,
+                        "NumOutputPoints": 1011,
+                        "RTTime": 6.217,
+                        "Radius": 0.0616016685962677
+                    },
+                    {
+                        "AccumulatedComparedPoints": 607817950,
+                        "AccumulatedHits": 408903091,
+                        "CMax2": 0.004272958263754845,
+                        "CoveredCells": 20.996946334838867,
+                        "Iteration": 8,
+                        "NumInputPoints": 1011,
+                        "NumOutputPoints": 0,
+                        "RTTime": 19.71,
+                        "Radius": 0.06808710098266602
+                    }
+                ],
+                "Profiling": true,
+                "Repeat": 5,
+                "ReportedTime": 83.684
+            }
+        ],
+        "SampleRate": 0.009999999776482582,
+        "Seed": 0
+    }
+}

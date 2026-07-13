@@ -1,0 +1,135 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.exact_dataset_availability_refresh.v1",
+  "goal": "Goal5214",
+  "date": "2026-07-09",
+  "purpose": "Refresh exact X-HD paper input availability after Goal5213 before claiming any Level-C or full paper reproduction status.",
+  "pod": {
+    "host": "213.173.108.24",
+    "port": 13502,
+    "preflight_status": "POD_OK",
+    "container": "45c502cfccb5",
+    "gpu": "NVIDIA RTX 4000 Ada Generation"
+  },
+  "remote_path_probe": {
+    "checked_paths": [
+      "/local",
+      "/local/storage",
+      "/local/storage/shared",
+      "/local/storage/shared/HDDatasets",
+      "/root/rtdl_goal5093/Paper-reproduction-apps/x-hd-paper/data",
+      "/root/rtdl_goal5093/Paper-reproduction-apps/x-hd-paper/results"
+    ],
+    "missing_paths": [
+      "/local",
+      "/local/storage",
+      "/local/storage/shared",
+      "/local/storage/shared/HDDatasets"
+    ],
+    "existing_paths": [
+      "/root/rtdl_goal5093/Paper-reproduction-apps/x-hd-paper/data",
+      "/root/rtdl_goal5093/Paper-reproduction-apps/x-hd-paper/results"
+    ]
+  },
+  "author_paper_branch_log_index": {
+    "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_paper_branch_log_index_goal5176_2026-07-08.json",
+    "run_all_record_count": 4535,
+    "categories": {
+      "BraTS2020_ValidationData": 2500,
+      "ModelNet40": 2000,
+      "graphics": 20,
+      "geo": 15
+    },
+    "input_root_counts": {
+      "/local/storage/shared": 9070
+    },
+    "sample_records": {
+      "graphics": {
+        "file_name": "dragon.ply_asian_dragon.ply.json",
+        "hd_result": 0.06536811590194702,
+        "files": [
+          {
+            "path": "/local/storage/shared/HDDatasets/graphics/dragon.ply",
+            "num_points": 437645,
+            "exact_status": "author_log_path_known__input_file_not_available"
+          },
+          {
+            "path": "/local/storage/shared/HDDatasets/graphics/asian_dragon.ply",
+            "num_points": 3609600,
+            "exact_status": "author_log_path_known__input_file_not_available"
+          }
+        ]
+      },
+      "geo": {
+        "file_name": "USADetailedWaterBodies.wkt_USACensusBlockGroupBoundaries.wkt.json",
+        "hd_result": 0.8964367508888245,
+        "files": [
+          {
+            "path": "/local/storage/shared/HDDatasets/geo/USADetailedWaterBodies.wkt",
+            "num_points": 22818694,
+            "exact_status": "author_log_path_known__input_file_not_available"
+          },
+          {
+            "path": "/local/storage/shared/HDDatasets/geo/USACensusBlockGroupBoundaries.wkt",
+            "num_points": 52271340,
+            "exact_status": "author_log_path_known__input_file_not_available"
+          }
+        ]
+      },
+      "ModelNet40": {
+        "file_name": "airplane_0036.off_airplane_0515.off.json",
+        "hd_result": 0.09761668741703033,
+        "files": [
+          {
+            "path": "/local/storage/shared/HDDatasets/ModelNet40/airplane/train/airplane_0036.off",
+            "num_points": 370568,
+            "exact_status": "author_log_path_known__input_file_not_available"
+          },
+          {
+            "path": "/local/storage/shared/HDDatasets/ModelNet40/airplane/train/airplane_0515.off",
+            "num_points": 376741,
+            "exact_status": "author_log_path_known__input_file_not_available"
+          }
+        ]
+      },
+      "BraTS2020_ValidationData": {
+        "file_name": "BraTS20_Validation_001_flair.nii_BraTS20_Validation_033_flair.nii.json",
+        "hd_result": 26.645824432373047,
+        "files": [
+          {
+            "path": "/local/storage/shared/HDDatasets/BraTS2020_ValidationData/MICCAI_BraTS2020_ValidationData/BraTS20_Validation_001/BraTS20_Validation_001_flair.nii",
+            "num_points": 1589257,
+            "exact_status": "author_log_path_known__input_file_not_available"
+          },
+          {
+            "path": "/local/storage/shared/HDDatasets/BraTS2020_ValidationData/MICCAI_BraTS2020_ValidationData/BraTS20_Validation_033/BraTS20_Validation_033_flair.nii",
+            "num_points": 1145851,
+            "exact_status": "author_log_path_known__input_file_not_available"
+          }
+        ]
+      }
+    }
+  },
+  "exact_dataset_rule": {
+    "level_c_requires": [
+      "author-provided input files",
+      "retained hashes for converted point sets",
+      "byte-identical converted point sets",
+      "or a documented author script that deterministically regenerates the same point sets from pinned public source files"
+    ],
+    "statistics_or_log_paths_only_are_not_sufficient": true
+  },
+  "conclusion": {
+    "exact_paper_input_files_available_in_current_pod": false,
+    "paper_log_paths_known": true,
+    "paper_log_paths_resolvable_in_current_pod": false,
+    "level_c_exact_paper_dataset_reproduction_supported": false,
+    "current_best_supported_level": "Level B same-source representative reproduction",
+    "recommended_next_step": "Consolidate Level-B representative packet and continue exact-input acquisition only if files, hashes, or deterministic author conversion provenance can be obtained."
+  },
+  "claim_boundary": {
+    "full_paper_reproduction_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "author_performance_ratio_claimed": false,
+    "author_parity_claimed": false
+  }
+}

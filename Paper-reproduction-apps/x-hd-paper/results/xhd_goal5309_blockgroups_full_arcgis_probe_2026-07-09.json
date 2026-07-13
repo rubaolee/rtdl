@@ -1,0 +1,71 @@
+{
+  "claim_boundary": {
+    "author_rtdl_correctness_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "geo_figure5_reproduction_claimed": false,
+    "performance_ratio_claimed": false
+  },
+  "elapsed_sec": 929.2135703996755,
+  "goal": "Goal5309",
+  "max_pages": null,
+  "page_size_requested": 2000,
+  "schema": "rtdl.paper_reproduction.xhd.goal5309.full_public_arcgis_point_count_mbr_probe.v1",
+  "services": {
+    "blockgroups": {
+      "author_loader_point_count": 52271467,
+      "checkpoint_features_seen_at_start": 0,
+      "complete": true,
+      "elapsed_sec": 929.2135376003571,
+      "features_seen": 239203,
+      "geometry_types": {
+        "MultiPolygon": 2237,
+        "Polygon": 236966
+      },
+      "key": "blockgroups",
+      "mbr": [
+        -179.148909000445,
+        -66.9496079221226,
+        18.9106929999612,
+        71.3651620001228
+      ],
+      "mbr_delta": {
+        "x_lower": 1.5220159355067153e-06,
+        "x_upper": -7.300150173250586e-08,
+        "y_lower": 7.849953789218489e-07,
+        "y_upper": -3.7103264247662082e-06
+      },
+      "object_id_max": 239203,
+      "object_id_min": 1,
+      "pages_seen": 120,
+      "paper_basename": "USACensusBlockGroupBoundaries.wkt",
+      "paper_mbr": {
+        "x": [
+          -179.14891052246094,
+          -66.9496078491211
+        ],
+        "y": [
+          18.91069221496582,
+          71.36516571044922
+        ]
+      },
+      "paper_point_count": 52271340,
+      "point_count_delta": 127,
+      "point_count_relative_delta": 2.4296296976507585e-06,
+      "resumed_from_checkpoint": false,
+      "sample_labels": [
+        "010010201001",
+        "010010201002",
+        "010010202001",
+        "010010202002",
+        "010010203001",
+        "010010203002",
+        "010010204001",
+        "010010204002"
+      ],
+      "service_feature_count": 239203,
+      "service_url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Census_BlockGroups/FeatureServer"
+    }
+  },
+  "status": "full_public_probe_complete"
+}

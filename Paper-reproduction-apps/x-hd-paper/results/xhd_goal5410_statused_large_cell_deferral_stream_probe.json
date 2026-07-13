@@ -1,0 +1,214 @@
+{
+  "aborted_rows": {
+    "active_queue_indices": [
+      13
+    ],
+    "nearest_distance_sq": [
+      8.0
+    ],
+    "nearest_item_ids": [
+      1003
+    ],
+    "query_row_ids": [
+      3
+    ],
+    "source_ids": [
+      103
+    ],
+    "status_codes": [
+      4
+    ]
+  },
+  "claim_boundary": {
+    "bounded_xhd_author_sample_recovery_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_support_claimed": false,
+    "figure11_reproduction_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "full_goal5387_row_identity_parity_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false,
+    "synthetic_status_stream_claimed": true
+  },
+  "completed_rows": {
+    "active_queue_indices": [
+      10,
+      14
+    ],
+    "nearest_distance_sq": [
+      2.0,
+      5.0
+    ],
+    "nearest_item_ids": [
+      900,
+      1004
+    ],
+    "query_row_ids": [
+      0,
+      4
+    ],
+    "source_ids": [
+      100,
+      104
+    ],
+    "status_codes": [
+      1,
+      1
+    ]
+  },
+  "decision": {
+    "bounded_xhd_author_sample_row_gate_passed": false,
+    "explicit_lb_support_authorized": false,
+    "full_goal5387_row_identity_gate_passed": false,
+    "recommended_next_goal": "Goal5411_bounded_xhd_statused_deferral_sample_row_gate",
+    "synthetic_app_neutral_gate_passed": true
+  },
+  "expected_counts": {
+    "aborted_row_count": 1,
+    "completed_row_count": 2,
+    "miss_row_count": 1,
+    "offload_row_count": 2,
+    "pruned_by_radius_or_current_best_count": 1
+  },
+  "fixture": {
+    "active_query_count": 5,
+    "candidate_row_count": 5,
+    "contains_xhd_or_paper_semantics": false,
+    "global_bound_sq": 2.0,
+    "heavy_threshold": 5,
+    "name": "synthetic_non_app_statused_large_cell_deferral_stream",
+    "radius_sq": 100.0
+  },
+  "generic_semantic": {
+    "app_semantics": "none",
+    "contract": "generic_active_query_status_machine_reference_v1",
+    "name": "statused_large_cell_deferral_stream",
+    "native_execution_claimed": false,
+    "summary_contract": "generic_active_query_status_trace_summary_v1"
+  },
+  "goal": "Goal5410",
+  "matched": true,
+  "miss_rows": {
+    "active_queue_indices": [
+      12
+    ],
+    "nearest_distance_sq": [
+      "inf"
+    ],
+    "nearest_item_ids": [
+      -1
+    ],
+    "query_row_ids": [
+      2
+    ],
+    "source_ids": [
+      102
+    ],
+    "status_codes": [
+      3
+    ]
+  },
+  "observed_telemetry": {
+    "aborted_row_count": 1,
+    "active_query_count": 5,
+    "attempted_output_row_count": 6,
+    "candidate_row_count": 5,
+    "completed_row_count": 2,
+    "emitted_output_row_count": 6,
+    "miss_row_count": 1,
+    "offload_row_count": 2,
+    "overflowed": 0,
+    "pruned_by_radius_or_current_best_count": 1,
+    "queries_with_candidates": 4,
+    "schema": "rtdl.generic.active_query_status_machine.telemetry.v1"
+  },
+  "offload_rows": {
+    "active_queue_indices": [
+      11,
+      11
+    ],
+    "cell_ids": [
+      51,
+      52
+    ],
+    "current_best_sq": [
+      "inf",
+      "inf"
+    ],
+    "lower_bounds_sq": [
+      1.0,
+      2.0
+    ],
+    "query_row_ids": [
+      1,
+      1
+    ],
+    "source_ids": [
+      101,
+      101
+    ],
+    "upper_bounds_sq": [
+      10.0,
+      8.0
+    ],
+    "work_counts": [
+      9,
+      8
+    ]
+  },
+  "schema": "rtdl.paper_reproduction.xhd.goal5410.statused_large_cell_deferral_stream_probe.v1",
+  "status": "synthetic_app_neutral_status_stream_gate_passed__bounded_xhd_gate_pending",
+  "trace_summary": {
+    "active_query_count": 5,
+    "app_semantics": "none",
+    "contract": "generic_active_query_status_trace_summary_v1",
+    "hash_columns": [
+      "source_ids",
+      "cell_ids"
+    ],
+    "metadata": {
+      "adapter": "active_query_status_trace_summary_numpy_columns",
+      "app_semantics": "none",
+      "contract": "generic_active_query_status_trace_summary_v1",
+      "default_hash_offset": 1469598103934665603,
+      "explicit_app_option_support_claimed": false,
+      "hash_contract": "fnv1a_u64_over_selected_int64_columns",
+      "native_engine_row_contract": "not_called_cpu_reference_only",
+      "partner": "numpy",
+      "rt_core_speedup_claim_authorized": false,
+      "whole_app_speedup_claim_authorized": false
+    },
+    "raw_offload_row_hash": 10435025991522756098,
+    "row_count": 2,
+    "sample_columns": [
+      "active_queue_indices",
+      "source_ids",
+      "cell_ids",
+      "work_counts"
+    ],
+    "sample_indices": [
+      0,
+      1
+    ],
+    "samples": {
+      "active_queue_indices": [
+        11,
+        11
+      ],
+      "cell_ids": [
+        51,
+        52
+      ],
+      "source_ids": [
+        101,
+        101
+      ],
+      "work_counts": [
+        9,
+        8
+      ]
+    },
+    "schema": "rtdl.generic.active_query_status_trace_summary.v1",
+    "status_count_offloading": 2
+  }
+}

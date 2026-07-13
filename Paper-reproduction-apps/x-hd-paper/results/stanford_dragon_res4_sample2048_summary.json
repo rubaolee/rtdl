@@ -1,0 +1,15 @@
+{
+  "claim_boundary": {
+    "exact_paper_dataset_reproduction_claimed": false,
+    "performance_claimed": false,
+    "same_source_sample": true
+  },
+  "input": "Paper-reproduction-apps\\x-hd-paper\\data\\external\\stanford\\dragon_recon\\dragon_vrip_res4.ply",
+  "input_point_count": 5205,
+  "n_dims": 3,
+  "output": "Paper-reproduction-apps\\x-hd-paper\\data\\fixtures\\stanford_dragon_res4_sample2048.ply",
+  "output_sha256": "E5BA906AC3F39E69C3851A63D7D6349625C234DD4E537505E9653FB1EB3CA4E5",
+  "sample_point_count": 2048,
+  "sampling": "deterministic_even_index_sample_including_first_and_last",
+  "schema": "rtdl.paper_reproduction.xhd.ply_sample.v1"
+}

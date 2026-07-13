@@ -1,0 +1,17 @@
+{
+  "PYTHONPATH": "src",
+  "RTDL_OPTIX_LIB": "/workspace/rtdl_goal4817_user_smoke_20260630_102224/build/librtdl_optix.so",
+  "cwd": "/workspace/rtdl_goal4817_user_smoke_20260630_102224",
+  "git_head": {
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "5f049502e268417b0c0d78b93fd6fc575092e8d6\n"
+  },
+  "git_status_short": {
+    "returncode": 0,
+    "stderr": "",
+    "stdout": " M src/native/optix/rtdl_optix_api.cpp\n M src/native/optix/rtdl_optix_core.cpp\n M src/native/optix/rtdl_optix_prelude.h\n M src/native/optix/rtdl_optix_workloads.cpp\n M src/rtdsl/__init__.py\n M src/rtdsl/embree_runtime.py\n M src/rtdsl/engine_feature_matrix.py\n M src/rtdsl/optix_runtime.py\n M src/rtdsl/rayjoin_overlay.py\n M tests/goal4373_rayjoin_cdb_point_location_route_test.py\n M tests/goal4374_rayjoin_exact_paper_suite_test.py\n?? history/internal_docs/goal4839_chain_prefix_probe_current_code.py\n?? history/internal_docs/goal4840_chain_prefix_probe_scaled_points.py\n?? history/internal_docs/goal4840_compare_prefix_to_author.py\n?? history/internal_docs/goal4840_generic_chunked_point_oracle.py\n?? history/internal_docs/goal4840_inspect_prefix_chains.py\n?? history/internal_docs/goal4841_make_rayjoin_cdb_window.py\n?? history/internal_docs/goal4841_rtdl_window_pip_probe.py\n?? history/internal_docs/goal4841_run_prefix60000.sh\n?? history/internal_docs/goal4842_compute_chain41230_midpoint.py\n?? history/internal_docs/goal4842_midpoint_scaled_pip_probe.py\n?? history/internal_docs/goal4842_run_full_midpoint_probe.sh\n?? history/internal_docs/goal4851_rayjoin_section52_lsi_public_front_door.py\n?? history/internal_docs/goal4851_synthetic_planar_map_lsi_probe.py\n?? history/internal_docs/stderr.txt\n?? history/internal_docs/stdout.txt\n?? tests/goal4834_rayjoin_sos_synthetic_contract_test.py\n?? tests/goal4845_rayjoin_lsi_collapsed_ray_candidate_test.py\n?? tests/goal4851_planar_map_lsi_public_front_door_test.py\n"
+  },
+  "python": "/usr/bin/python3",
+  "python_version": "3.12.3 (main, Aug 14 2025, 17:47:21) [GCC 13.3.0]"
+}

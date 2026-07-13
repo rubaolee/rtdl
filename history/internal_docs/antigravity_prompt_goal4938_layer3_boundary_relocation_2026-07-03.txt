@@ -1,0 +1,22 @@
+Please perform an independent technical review of Goal4938 in the RTDL workspace.
+
+Read:
+
+- history/internal_docs/call_for_review_goal4938_layer3_boundary_relocation_2026-07-03.md
+- history/internal_docs/goal4938_layer3_boundary_relocation_report_2026-07-03.md
+- history/internal_docs/goal4937_rayjoin_public_sample_materializer_wiring_2026-07-03.md
+- history/internal_docs/antigravity_goal4937_rayjoin_public_sample_materializer_wiring_review_2026-07-03.md
+
+Answer all six review questions from the call-for-review file.
+
+Write the review to:
+
+history/internal_docs/antigravity_goal4938_layer3_boundary_relocation_review_2026-07-03.md
+
+Use one of these verdict labels:
+
+- approve_goal4938_boundary_relocation_authorize_goal4939
+- redo_goal4938_due_to_incomplete_boundary_analysis
+- reject_goal4938_path_split_direction
+
+Be strict about the central issue: Goal4939 must be generic and must not hide RayJoin overlay semantics or author text output inside RTDL core.

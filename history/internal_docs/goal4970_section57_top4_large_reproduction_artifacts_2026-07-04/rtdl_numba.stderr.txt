@@ -1,0 +1,46 @@
+[rayjoin-section57] start load/pack left
+[rayjoin-section57] done load/pack left: 0.010785s
+[rayjoin-section57] start load/pack right
+[rayjoin-section57] done load/pack right: 0.046325s
+[rayjoin-section57] start shared bounds
+[rayjoin-section57] done shared bounds: 0.000005s
+[rayjoin-section57] start public planar-map LSI rows
+[rayjoin-section57] done public planar-map LSI rows: 4.447934s
+[rayjoin-section57] start intersection reprojection
+[rayjoin-section57] done intersection reprojection: 15.693551s
+[rayjoin-section57] start sort xsects map0
+[rayjoin-section57] done sort xsects map0: 6.543549s
+[rayjoin-section57] start sort xsects map1
+[rayjoin-section57] done sort xsects map1: 7.361317s
+[rayjoin-section57] start prepare point-location map0 in map1
+[rayjoin-section57] done prepare point-location map0 in map1: 3.336685s
+[rayjoin-section57] start prepare point-location map1 in map0
+[rayjoin-section57] done prepare point-location map1 in map0: 0.414147s
+[rayjoin-section57] start vertex PIP map0 in map1
+[rayjoin-section57] done vertex PIP map0 in map1: 0.135850s
+[rayjoin-section57] start vertex PIP map1 in map0
+[rayjoin-section57] done vertex PIP map1 in map0: 0.747089s
+[rayjoin-section57] start midpoint points map0
+[rayjoin-section57] done midpoint points map0: 1.072820s
+[rayjoin-section57] start pack midpoint points map0
+[rayjoin-section57] done pack midpoint points map0: 0.833788s
+[rayjoin-section57] start midpoint PIP map0
+[rayjoin-section57] done midpoint PIP map0: 0.006108s
+[rayjoin-section57] start assign midpoint faces map0
+[rayjoin-section57] done assign midpoint faces map0: 0.101509s
+[rayjoin-section57] start midpoint points map1
+[rayjoin-section57] done midpoint points map1: 0.718819s
+[rayjoin-section57] start pack midpoint points map1
+[rayjoin-section57] done pack midpoint points map1: 0.462525s
+[rayjoin-section57] start midpoint PIP map1
+[rayjoin-section57] done midpoint PIP map1: 0.006566s
+[rayjoin-section57] start assign midpoint faces map1
+[rayjoin-section57] done assign midpoint faces map1: 0.083906s
+[rayjoin-section57] start destroy point-location sessions
+[rayjoin-section57] done destroy point-location sessions: 0.158458s
+[rayjoin-section57] start output-chain streaming write
+[rayjoin-section57] done output-chain streaming write: 27.528997s
+[rayjoin-section57] start file summary generated
+[rayjoin-section57] done file summary generated: 0.212722s
+[rayjoin-section57] start file summary author
+[rayjoin-section57] done file summary author: 0.210394s

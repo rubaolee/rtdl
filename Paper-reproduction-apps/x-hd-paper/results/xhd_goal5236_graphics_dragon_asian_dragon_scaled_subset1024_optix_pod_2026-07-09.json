@@ -1,0 +1,213 @@
+{
+  "author_hd_result": null,
+  "author_tolerance": 1e-06,
+  "backend": "optix",
+  "capacity_planning": {
+    "basis": "ceil(max_observed_frontier_rows * 1.5) for the next bounded POD/OptiX gate",
+    "max_observed_frontier_rows": 6533,
+    "max_observed_rows_per_source": 6.3798828125,
+    "source_limit_for_max_rows": 1024,
+    "suggested_next_explicit_row_capacity": 9800
+  },
+  "cases": [
+    {
+      "author_abs_diff": null,
+      "author_hd_result": null,
+      "case_role": "measured",
+      "exact_oracle_used": true,
+      "exact_subset_reference": {
+        "distance": 0.06520984417895137,
+        "elapsed_sec": 61.16541910171509,
+        "oracle_strategy": "vectorized_per_source_exact_nearest_full_target_no_pair_matrix",
+        "pair_evaluations": 3696230400,
+        "source_count": 1024,
+        "source_id": 121,
+        "target_count": 3609600,
+        "target_id": 394515
+      },
+      "excluded_from_summary_statistics": false,
+      "match_basis": "exact_subset_reference",
+      "matched": true,
+      "phase_timings_sec": {
+        "case_total": 70.30098555982113,
+        "exact_subset_reference": 61.16541910171509,
+        "rtdl_route_wall": 1.447802945971489,
+        "select_source_subset": 0.0005414411425590515
+      },
+      "route_abs_diff": 0.0,
+      "rtdl_route": {
+        "anyhit_row_distance_computation": "lazy_row_output_only",
+        "cell_order": "native",
+        "cell_order_changed": false,
+        "cell_order_contract": "input_order_preserved",
+        "complete_frontier_state_passthrough": false,
+        "continuation_candidate_distance_evaluations": 12138965,
+        "distance": 0.06520984417895137,
+        "frontier_attempted_count": 6533,
+        "frontier_contract": "generic_cell_mbr_nearest_frontier_native_3d_optix",
+        "frontier_full_row_capacity": 2650112,
+        "frontier_inline_nearest": true,
+        "frontier_inline_nearest_requested": true,
+        "frontier_native_phase_timings": null,
+        "frontier_native_phase_timings_collected": false,
+        "frontier_native_symbol": "rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v5",
+        "frontier_query_coordinate_matrix_reused": true,
+        "frontier_row_capacity": 400000,
+        "frontier_row_capacity_attempts": [
+          400000
+        ],
+        "frontier_row_capacity_policy": "explicit",
+        "frontier_row_capacity_requested": 400000,
+        "frontier_row_count": 6533,
+        "frontier_row_order": "native_unsorted",
+        "frontier_row_order_requested": "native",
+        "frontier_target_coordinate_matrix_reused": true,
+        "global_bound_contract": "generic_max_nearest_global_bound_early_break",
+        "global_bound_distance": 0.004287534472008641,
+        "global_bound_early_break": true,
+        "global_bound_early_break_count": 77,
+        "global_bound_early_break_requested": true,
+        "grid_cell_count": 2588,
+        "initial_candidate_distance_evaluations": 775072,
+        "initial_cell_lookup_strategy": "dense_grid_cell_position_table",
+        "initial_cell_mbr_tests": 0,
+        "initial_cell_selection": "local_grid_first_occupied_shell_min_grid_cell_distance_then_cell_id",
+        "initial_dense_lookup_cell_capacity": 32768,
+        "initial_dense_lookup_max_cells": 8000000,
+        "initial_grid_cell_probes": 581326,
+        "initial_query_coordinate_matrix_reused": true,
+        "initial_scanned_cell_budget_per_query": 0,
+        "initial_scanned_cell_count": 0,
+        "initial_seed_executor": "numba_parallel",
+        "initial_seed_executor_requested": "numba",
+        "initial_seed_quality": "valid_upper_bound_not_nearest_cell_mbr",
+        "initial_target_coordinate_matrix_reused": true,
+        "inline_cell_hit_count": null,
+        "inline_nearest_pruning": "payload_current_best_min_cell_distance_gt_best",
+        "inline_point_evaluation_count": null,
+        "inline_stats_collected": false,
+        "intersection_attribute_min_distance_sq": "reported_by_intersection_reused_by_anyhit",
+        "intersection_pruning": "payload_current_best_before_report_intersection",
+        "max_inline_points": 512,
+        "max_reduction_strategy": "finite_max_then_tie_lexsort",
+        "max_tie_candidate_count": 1,
+        "nearest_executor": "numba",
+        "per_source_witness_exact": false,
+        "phase_timings_sec": {
+          "direction_total": 1.22140172123909,
+          "frontier_rows": 0.3460104316473007,
+          "grid_cell_mbrs": 0.5638368502259254,
+          "initial_state_seed": 0.18988734483718872,
+          "max_nearest_reduction": 0.00010739266872406006,
+          "nearest_continuation": 0.11932124942541122,
+          "radius_selection": 8.48919153213501e-05,
+          "source_columns": 2.7552247047424316e-05,
+          "target_columns": 0.0021155700087547302
+        },
+        "source_id": 121,
+        "target_id": 394515,
+        "total_candidate_distance_evaluations": 12914037
+      },
+      "selected_indices_head": [
+        0,
+        428,
+        856,
+        1283,
+        1711,
+        2139,
+        2567,
+        2995
+      ],
+      "selected_indices_tail": [
+        434649,
+        435077,
+        435505,
+        435933,
+        436361,
+        436788,
+        437216,
+        437644
+      ],
+      "selection_policy": "evenly-spaced",
+      "source_limit": 1024,
+      "source_subset_materialized": true,
+      "source_subset_selection_contract": "deterministic_indexed_subset_copy"
+    }
+  ],
+  "cell_order": "native",
+  "claim_boundary": {
+    "bounded_subset_scaling_claimed": true,
+    "exact_oracle_claimed": true,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure_reproduction_claimed": false,
+    "full_all_source_route_run_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "level_b_same_source_candidate_claimed": true,
+    "performance_ratio_claimed": false,
+    "route_only_author_comparison_claimed": false
+  },
+  "collect_frontier_native_phase_timings": false,
+  "full_point_counts": {
+    "source": 437645,
+    "target": 3609600
+  },
+  "global_bound_early_break": true,
+  "goal": "Goal5236",
+  "goal5179_pairwise_estimate": {
+    "basis": "bridge PLY vertex counts; profile only for subset gate capacity accounting",
+    "pair_count": 1579723392000,
+    "pairwise_exact_route_allowed": false,
+    "source_count": 437645,
+    "target_count": 3609600
+  },
+  "grid_shape": [
+    32,
+    32,
+    32
+  ],
+  "input1": "/tmp/xhd_goal5234/data/dragon.ply",
+  "input2": "/tmp/xhd_goal5234/data/asian_dragon_scaled_1e-3.ply",
+  "level": "level_b_same_source_candidate_only",
+  "local_grid_seed_executor": "numba",
+  "phase_timings_sec": {
+    "load_full_inputs": 0.4925229921936989,
+    "route_warmup": null,
+    "total": 70.79386930912733
+  },
+  "preprocessing": [
+    "translate_each_input_to_min_bound"
+  ],
+  "route_feasibility": {
+    "exact_oracle_used": true,
+    "frontier_row_capacity_requested": 400000,
+    "full_all_source_route_run": false,
+    "full_pairwise_rows_materialized": false,
+    "full_source_loaded_for_deterministic_subset_selection": true,
+    "full_target_loaded": true,
+    "next_gate_should_be": "run POD/OptiX bounded subset with explicit fail-closed row capacity or increase source subset before any all-source route claim",
+    "pairwise_exact_route_allowed": false,
+    "route_warmup_excluded_from_summary_statistics": false,
+    "route_warmup_used": false,
+    "scalable_route_exercised_on_full_source_and_target": false,
+    "scalable_route_exercised_on_full_target_with_bounded_source_subsets": true
+  },
+  "route_warmup": null,
+  "route_warmup_source_limit": null,
+  "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+  "skip_exact_oracle": false,
+  "source_limits": [
+    1024
+  ],
+  "status": "full_public_candidate_bounded_subset_scaling_checked",
+  "summary_statistics": {
+    "all_matched": true,
+    "full_all_source_route_run": false,
+    "max_exact_subset_reference_sec": 61.16541910171509,
+    "max_frontier_row_count": 6533,
+    "max_route_wall_sec": 1.447802945971489,
+    "median_exact_subset_reference_sec": 61.16541910171509,
+    "median_route_wall_sec": 1.447802945971489,
+    "route_warmup_used": false
+  },
+  "target": "graphics_dragon_asian_dragon"
+}

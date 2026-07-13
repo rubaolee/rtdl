@@ -1,0 +1,60 @@
+{
+  "base": "/workspace/goal4848_rep/current_osm_au/lakes_Australia_current_osm_Point.cdb",
+  "base_chains": 357910,
+  "base_segments": 14430155,
+  "expected_count": 13622,
+  "expected_equals_planar_map_lsi": true,
+  "first_raw_rows": [
+    {
+      "intersection_point_x": 151.9579997,
+      "intersection_point_y": -27.5606008,
+      "left_id": 84,
+      "right_id": 3629873
+    },
+    {
+      "intersection_point_x": 151.9579997,
+      "intersection_point_y": -27.5606008,
+      "left_id": 85,
+      "right_id": 3629873
+    },
+    {
+      "intersection_point_x": 153.028346,
+      "intersection_point_y": -27.4794543,
+      "left_id": 165,
+      "right_id": 12767832
+    },
+    {
+      "intersection_point_x": 153.0291335,
+      "intersection_point_y": -27.4797141,
+      "left_id": 168,
+      "right_id": 12767830
+    },
+    {
+      "intersection_point_x": 153.030526,
+      "intersection_point_y": -27.4795518,
+      "left_id": 173,
+      "right_id": 12767825
+    }
+  ],
+  "interpretation": {
+    "generic_public_lsi_count_available": true,
+    "generic_public_lsi_rows_available": false,
+    "if_false": "Public raw segment-pair rows are not the same contract as planar-map LSI rows."
+  },
+  "planar_map_lsi_count": 13622,
+  "query": "/workspace/goal4848_rep/current_osm_au/parks_Australia_current_osm_Point.cdb",
+  "query_chains": 51130,
+  "query_segments": 941375,
+  "raw_equals_planar_map_lsi": false,
+  "raw_segment_pair_row_count": 103843,
+  "schema": "rtdl.goal4859.real_pair_lsi_row_surface_check.v1",
+  "timings_seconds": {
+    "load_base": 39.64727405458689,
+    "load_query": 5.098779283463955,
+    "planar_map_lsi_count": 21.084147460758686,
+    "raw_rows": 18.768028929829597,
+    "segments_base": 6.9142006784677505,
+    "segments_query": 0.6073454916477203,
+    "total": 92.1197758987546
+  }
+}

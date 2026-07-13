@@ -636,7 +636,7 @@ PRIMITIVE_HIERARCHY = (
                     "reduce segment pair intersections by caller supplied left id",
                     "find the segment pair denominator and endpoint contract",
                 ),
-                reference_path="docs/reports/goal3625_segment_pair_intersection_contract_foundation_2026-06-06.md",
+                reference_path="docs/features/lsi/README.md",
                 backends=("cpu_python_reference", "embree", "optix"),
                 considered_alternatives=(
                     "traversal.any_hit",
@@ -1103,7 +1103,7 @@ PRIMITIVE_HIERARCHY = (
                     "avoid dense adjacency row materialization for fixed radius graph components",
                     "run grouped stream continuation for fixed radius graph component labels",
                 ),
-                reference_path="docs/reports/goal3155_fixed_radius_graph_component_front_door_2026-06-03.md",
+                reference_path="docs/features/fixed_radius_neighbors/README.md",
                 backends=("optix",),
                 partner_ops=("cupy_grouped_stream_component_labels",),
                 considered_alternatives=(
@@ -1155,9 +1155,7 @@ PRIMITIVE_HIERARCHY = (
                     "compute predicate aware fixed radius component signatures without app specific clustering logic",
                     "compare counts only and policy bound component size contracts for fixed radius components",
                 ),
-                reference_path=(
-                    "docs/reports/goal4190_rt_dbscan_counts_only_mixed_route_probe_rtx4000ada_2026-06-09.md"
-                ),
+                reference_path="docs/learn/partner_choice_for_custom_logic.md",
                 backends=("optix",),
                 partner_ops=("numba_grouped_stream_component_labels", "cupy_direct_status_union_preview"),
                 considered_alternatives=(
@@ -1259,7 +1257,7 @@ PRIMITIVE_HIERARCHY = (
             "find candidate primitive pressure not yet stable",
             "review future app independent primitive contracts",
         ),
-        reference_path="docs/research/future_version_to_do_list.md",
+        reference_path="docs/capability_boundaries.md",
         backends=("metadata_only",),
         children=(
             PrimitiveHierarchyNode(
@@ -1375,7 +1373,7 @@ PRIMITIVE_HIERARCHY = (
                     "filter closed shape membership candidates after explicit owner face selection",
                     "use deterministic boundary ownership policy for point closed shape counts",
                 ),
-                reference_path="docs/reports/goal3349_owner_face_priority_pipeline_contract_2026-06-04.md",
+                reference_path="docs/features/pip/README.md",
                 backends=("cpu_python_reference", "planned_optix"),
                 considered_alternatives=(
                     "traversal.count_hits",
@@ -1405,7 +1403,7 @@ PRIMITIVE_HIERARCHY = (
                     "avoid host materialization when consuming rows on device",
                     "future device resident row stream handoff for partner continuation",
                 ),
-                reference_path="docs/research/future_version_to_do_list.md",
+                reference_path="docs/capability_boundaries.md",
                 backends=("metadata_only",),
             ),
         ),

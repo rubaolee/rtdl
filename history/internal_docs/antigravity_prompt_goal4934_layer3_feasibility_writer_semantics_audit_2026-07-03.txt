@@ -1,0 +1,18 @@
+Please review the following RTDL Goal4934 packet.
+
+Call for review:
+history/internal_docs/call_for_review_goal4934_layer3_feasibility_writer_semantics_audit_2026-07-03.md
+
+Primary report:
+history/internal_docs/goal4934_layer3_feasibility_writer_semantics_audit_2026-07-03.md
+
+Please answer the review questions in the call-for-review file and write the result to:
+
+history/internal_docs/antigravity_goal4934_layer3_feasibility_writer_semantics_audit_review_2026-07-03.md
+
+Important:
+
+- Be strict about hidden RayJoin semantics.
+- Do not approve implementation of a compiled writer unless the report actually proves it is generic.
+- The expected honest exit may be `needs_layer1_shape_before_decision`.
+- Check whether Goal4935, a row-buffer/data-shape contract goal, is the right next step.

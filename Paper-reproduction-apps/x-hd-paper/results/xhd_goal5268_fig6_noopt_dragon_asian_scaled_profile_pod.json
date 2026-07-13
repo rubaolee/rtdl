@@ -1,0 +1,172 @@
+{
+    "DateTime": "2026-07-09 11:12:13",
+    "GPU": {
+        "Device": 0,
+        "name": "NVIDIA RTX 4000 Ada Generation"
+    },
+    "HDResult": 0.06536787003278732,
+    "Input": {
+        "Files": [
+            {
+                "Density": 161400144.0,
+                "MBR": [
+                    {
+                        "Lower": 0.0,
+                        "Upper": 0.2048902064561844
+                    },
+                    {
+                        "Lower": 0.0,
+                        "Upper": 0.14444349706172943
+                    },
+                    {
+                        "Lower": 0.0,
+                        "Upper": 0.09162180125713348
+                    }
+                ],
+                "NumPoints": 437645,
+                "Path": "Paper-reproduction-apps/x-hd-paper/data/external/stanford/dragon_recon/dragon_vrip.ply"
+            },
+            {
+                "Density": 1190092800.0,
+                "MBR": [
+                    {
+                        "Lower": 0.0,
+                        "Upper": 0.20174352824687958
+                    },
+                    {
+                        "Lower": 0.0,
+                        "Upper": 0.11202625930309296
+                    },
+                    {
+                        "Lower": 0.0,
+                        "Upper": 0.13420194387435913
+                    }
+                ],
+                "NumPoints": 3609600,
+                "Path": "Paper-reproduction-apps/x-hd-paper/data/external/stanford/asian_dragon_scaled_1e-3.ply"
+            }
+        ],
+        "Limit": 2147483647,
+        "Normalize": false,
+        "NumDims": 3,
+        "SerializationPrefix": "",
+        "Translate": 0.0,
+        "Type": "Float"
+    },
+    "Running": {
+        "AvgTime": 6976.301,
+        "EB": false,
+        "FastBuildBVH": false,
+        "LB": 0,
+        "NumPointsPerCell": 15,
+        "Prune": false,
+        "RebuildBVH": false,
+        "Repeats": [
+            {
+                "Algorithm": "XHD",
+                "BVHBuildTime": 0.681,
+                "Cells": 2617,
+                "Execution": "GPU",
+                "GridResolution": [
+                    44,
+                    25,
+                    30
+                ],
+                "HDLowerBound": 0.032417237758636475,
+                "HDUpperBound": 0.2843485176563263,
+                "InitRadius": 0.032417237758636475,
+                "Iterations": [
+                    {
+                        "AdjustBVHTime": 0.153,
+                        "CMax2": 0.0010508772684261203,
+                        "CUDATime": 0.192,
+                        "ComparedPoints": 157136550864,
+                        "Hits": 114639602,
+                        "Iteration": 1,
+                        "NumInputPoints": 437645,
+                        "NumOutputPoints": 61172,
+                        "OffloadingSize": 0,
+                        "RTTime": 5030.839,
+                        "Radius": 0.032417237758636475
+                    },
+                    {
+                        "AdjustBVHTime": 0.086,
+                        "CMax2": 0.0016188303707167506,
+                        "CUDATime": 0.064,
+                        "ComparedPoints": 8690211141,
+                        "Hits": 6366536,
+                        "Iteration": 2,
+                        "NumInputPoints": 61172,
+                        "NumOutputPoints": 28992,
+                        "OffloadingSize": 0,
+                        "RTTime": 431.049,
+                        "Radius": 0.04023478552699089
+                    },
+                    {
+                        "AdjustBVHTime": 0.081,
+                        "CMax2": 0.0023090180475264788,
+                        "CUDATime": 0.063,
+                        "ComparedPoints": 7069838716,
+                        "Hits": 5101650,
+                        "Iteration": 3,
+                        "NumInputPoints": 28992,
+                        "NumOutputPoints": 8627,
+                        "OffloadingSize": 0,
+                        "RTTime": 426.102,
+                        "Radius": 0.048052333295345306
+                    },
+                    {
+                        "AdjustBVHTime": 0.08,
+                        "CMax2": 0.0031214323826134205,
+                        "CUDATime": 0.064,
+                        "ComparedPoints": 1848894130,
+                        "Hits": 1354233,
+                        "Iteration": 4,
+                        "NumInputPoints": 8627,
+                        "NumOutputPoints": 2798,
+                        "OffloadingSize": 0,
+                        "RTTime": 301.952,
+                        "Radius": 0.05586988106369972
+                    },
+                    {
+                        "AdjustBVHTime": 0.082,
+                        "CMax2": 0.004056047182530165,
+                        "CUDATime": 0.065,
+                        "ComparedPoints": 1247575886,
+                        "Hits": 874239,
+                        "Iteration": 5,
+                        "NumInputPoints": 2798,
+                        "NumOutputPoints": 311,
+                        "OffloadingSize": 0,
+                        "RTTime": 333.758,
+                        "Radius": 0.06368742883205414
+                    },
+                    {
+                        "CMax2": 0.004272958263754845,
+                        "CUDATime": 0.139,
+                        "ComparedPoints": 286109185,
+                        "Hits": 196565,
+                        "Iteration": 6,
+                        "NumInputPoints": 311,
+                        "NumOutputPoints": 0,
+                        "OffloadingSize": 0,
+                        "RTTime": 444.604,
+                        "Radius": 0.07150498032569885
+                    }
+                ],
+                "LargeCells": 0,
+                "Memory": {
+                    "BVH": 130688,
+                    "Grid": 14469808,
+                    "MBRs B": 62808,
+                    "WL": 3501160,
+                    "WL Heavy Peak": 0
+                },
+                "Profiling": true,
+                "Repeat": 1,
+                "ReportedTime": 6976.301
+            }
+        ],
+        "Seed": 0
+    }
+}

@@ -1,0 +1,25 @@
+{
+  "schema": "rtdl.goal5487.generic_aabb_columnar_pod_gate.v1",
+  "pod": {
+    "host": "157.157.221.29",
+    "port": 25039,
+    "gpu": "NVIDIA RTX 4000 Ada",
+    "cuda": "12.8",
+    "backend": "optix"
+  },
+  "columnar_counts": {
+    "point_contains": 2
+  },
+  "row_counts": {
+    "point_contains": 2
+  },
+  "counts_match": true,
+  "columnar_rt_core_accelerated": true,
+  "row_rt_core_accelerated": true,
+  "claim_boundary": {
+    "device_zero_copy_claimed": false,
+    "librts_specific_claimed": false,
+    "performance_ratio_claimed": false,
+    "embree_in_scope": false
+  }
+}

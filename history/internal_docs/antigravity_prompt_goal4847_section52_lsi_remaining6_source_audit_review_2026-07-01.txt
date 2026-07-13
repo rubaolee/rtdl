@@ -1,0 +1,27 @@
+Please review Goal4847 critically.
+
+Review packet:
+
+- history/internal_docs/call_for_review_goal4847_section52_lsi_remaining6_source_audit_2026-07-01.md
+- history/internal_docs/goal4847_section52_lsi_remaining6_exact_input_acquisition_plan_2026-07-01.md
+- history/internal_docs/goal4847_section52_lsi_remaining6_source_audit_2026-07-01.md
+- history/internal_docs/goal4846_section52_lsi_results_2026-07-01.md
+- history/internal_docs/antigravity_goal4846_section52_lsi_8pair_status_review_2026-07-01.md
+
+Requested output file:
+
+history/internal_docs/antigravity_goal4847_section52_lsi_remaining6_source_audit_review_2026-07-01.md
+
+Please answer the eight review questions in the call-for-review file and issue one of:
+
+- approve_goal4847_remaining6_missing_exact_input_after_source_audit
+- approve_with_required_amendments
+- block_goal4847_due_to_insufficient_source_audit_or_overclaim
+
+Important boundaries:
+
+- Do not authorize full 8/8 Section 5.2 reproduction.
+- Do not authorize Section 5.7 overlay reproduction.
+- Do not authorize regenerated data being called exact paper input.
+- Do not authorize V3/V4, Embree, or broad performance claims.
+- Treat author logs as reference evidence only, not executable RTDL input data.

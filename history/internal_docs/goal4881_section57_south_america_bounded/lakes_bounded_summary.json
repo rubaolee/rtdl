@@ -1,0 +1,10 @@
+{
+  "claim_boundary": "LSI ring geometry only; no overlay topology or PIP claim",
+  "feature_count": 150000,
+  "input_path": "/workspace/goal4881_section57_south_america/extract/lakes.geojsonseq",
+  "output_path": "/workspace/goal4881_section57_south_america/cdb_bounded_150k_50k/lakes_South_America_current_osm_bounded150k_Point.cdb",
+  "point_count": 7216938,
+  "ring_chain_count": 159346,
+  "skipped_non_polygon": 0,
+  "skipped_short_ring": 0
+}

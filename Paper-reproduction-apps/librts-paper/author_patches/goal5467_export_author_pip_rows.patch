@@ -1,0 +1,31 @@
+diff --git a/src/query/rtspatial/pip_query.cu b/src/query/rtspatial/pip_query.cu
+index c08de2e..6db7a5a 100644
+--- a/src/query/rtspatial/pip_query.cu
++++ b/src/query/rtspatial/pip_query.cu
+@@ -1,3 +1,7 @@
++#include <cstdlib>
++#include <fstream>
++#include <vector>
++
+ #include "query/rtspatial/common.h"
+ #include "query/rtspatial/pip_context.h"
+ #include "query/rtspatial/pip_query.h"
+@@ -132,5 +136,17 @@ time_stat RunPIPQueryRTSpatial(const std::vector<polygon_t> &polygons,
+     ts.query_ms.push_back(sw.ms());
+   }
+-
++  const char *row_dump_path = std::getenv("LIBRTS_PIP_ROW_DUMP");
++  if (row_dump_path != nullptr && row_dump_path[0] != '\0') {
++    std::vector<thrust::pair<uint32_t, uint32_t>> host_results(results.size());
++    cudaMemcpy(host_results.data(), results.data(),
++               host_results.size() * sizeof(host_results[0]),
++               cudaMemcpyDeviceToHost);
++    std::ofstream row_dump(row_dump_path);
++    for (const auto &row : host_results) {
++      row_dump << row.second << "," << row.first << "\n";
++    }
++    row_dump.close();
++  }
++
+   return ts;
+ }

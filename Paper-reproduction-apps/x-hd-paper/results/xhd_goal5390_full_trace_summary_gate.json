@@ -1,0 +1,165 @@
+{
+  "author_trace_v2_target": {
+    "active_in_queue_size": 437645,
+    "raw_offload_row_hash": 4333109858711462591,
+    "raw_offload_row_sample_cell_ids": [
+      2924,
+      17,
+      17
+    ],
+    "raw_offload_row_sample_point_ids": [
+      11168,
+      210712,
+      437119
+    ],
+    "raw_offload_rows_before_sort_reduce": 27133990,
+    "status_count_offloading_append": 27133990
+  },
+  "claim_boundary": {
+    "author_rt_core_algorithm_parity_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_support_claimed": false,
+    "figure11_reproduction_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "full_trace_summary_gate_claimed": true,
+    "full_xhd_paper_reproduction_claimed": false,
+    "rtdl_author_performance_ratio_claimed": false,
+    "rtdl_hash_sample_parity_claimed": false,
+    "rtdl_row_count_parity_claimed": false,
+    "same_denominator_memory_claimed": false
+  },
+  "comparison_to_author": {
+    "active_query_count_parity": true,
+    "author_raw_offload_row_hash": 4333109858711462591,
+    "author_raw_offload_row_sample_cell_ids": [
+      2924,
+      17,
+      17
+    ],
+    "author_raw_offload_row_sample_point_ids": [
+      11168,
+      210712,
+      437119
+    ],
+    "author_raw_offload_rows_before_sort_reduce": 27133990,
+    "hash_comparable_to_author": true,
+    "hash_parity": false,
+    "row_count_parity": false,
+    "row_delta_author_minus_rtdl_bridge": 24945765,
+    "row_ratio_rtdl_bridge_div_author": 0.08064516129032258,
+    "rtdl_bridge_offload_rows": 2188225,
+    "rtdl_raw_offload_row_hash": 10510374331443640811,
+    "rtdl_sample_cell_ids": [
+      6279,
+      6286,
+      6145
+    ],
+    "rtdl_sample_source_ids": [
+      18080,
+      219488,
+      437599
+    ],
+    "sample_comparable_to_author": true
+  },
+  "comparison_to_goal5389_smoke": {
+    "full_active_query_count": 437645,
+    "full_row_count": 2188225,
+    "prior_source_limited_row_count": 320,
+    "source_limited_smoke_superseded_for_full_parity_question": true
+  },
+  "date": "2026-07-10",
+  "decision": {
+    "active_query_count_matches_author": true,
+    "explicit_lb_support_remains_unsupported": true,
+    "full_source_trace_summary_emitted": true,
+    "hash_parity": false,
+    "next_gate": "native_status_stream_semantics_or_fail_closed_lb_closeout",
+    "row_count_parity": false,
+    "why": "The full-source bridge reaches the same active query count as the author trace v2 oracle, but it emits only 2,188,225 offload rows versus the author 27,133,990 rows and its row hash/samples do not match. The remaining gap is native status-stream semantics, not source-limited plumbing."
+  },
+  "exit_label": "native_status_stream_denominator_mismatch__lb_remains_unsupported",
+  "frontier": {
+    "attempted_count": 2600727,
+    "frontier_status_probe_contract": "generic_active_query_initial_best_status_probe",
+    "native_symbol": "rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v6",
+    "overflowed": false,
+    "row_count": 2600727
+  },
+  "goal": "Goal5390",
+  "input_artifacts": {
+    "full_pod": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5390_full_trace_summary_pod.json",
+    "goal5387_author_trace_v2": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5387_author_trace_v2_execution.json",
+    "goal5389_source_limited_smoke": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5389_bridge_trace_summary_smoke.json"
+  },
+  "pod": {
+    "host": "213.173.108.24",
+    "port": 13502,
+    "wrapper": "scripts/current_pod_ssh.py"
+  },
+  "purpose": "Run the full-source X-HD active-query bridge probe with the Goal5388 generic trace summary and compare it to the Goal5387 author trace v2 oracle.",
+  "rtdl_trace_summary": {
+    "active_query_count": 437645,
+    "app_semantics": "none",
+    "contract": "generic_active_query_status_trace_summary_v1",
+    "hash_columns": [
+      "source_ids",
+      "cell_ids"
+    ],
+    "raw_offload_row_hash": 10510374331443640811,
+    "row_count": 2188225,
+    "sample_indices": [
+      0,
+      1094112,
+      2188224
+    ],
+    "samples": {
+      "cell_ids": [
+        6279,
+        6286,
+        6145
+      ],
+      "source_ids": [
+        18080,
+        219488,
+        437599
+      ],
+      "work_counts": [
+        586,
+        412,
+        313
+      ]
+    },
+    "status_count_offloading": 2188225
+  },
+  "run_scope": {
+    "frontier_row_capacity": 30000000,
+    "frontier_status_probe_mode": "active-initial-best-prune",
+    "grid_cell_builder": "native_cuda",
+    "grid_cell_point_order": "input-stable",
+    "grid_shape": [
+      96,
+      60,
+      72
+    ],
+    "initial_state": "local-grid-cell",
+    "inline_nearest": true,
+    "input1": "/tmp/xhd_goal5234/data/dragon.ply",
+    "input2": "/tmp/xhd_goal5234/data/asian_dragon.ply",
+    "local_grid_seed_executor": "native_cuda",
+    "max_inline_points": 256,
+    "point_count_a": 437645,
+    "point_count_b": 3609600,
+    "source_limit": null,
+    "source_limit_applied": false
+  },
+  "schema": "rtdl.paper_reproduction.xhd.goal5390.full_trace_summary_gate.v1",
+  "status": "full_bridge_trace_summary_emitted__row_hash_parity_failed",
+  "timings_sec": {
+    "active_query_bridge": 9.771344847977161,
+    "frontier_rows": 1.12689857929945,
+    "grid_cell_mbrs": 0.44852539151906967,
+    "initial_seed": 0.14327648282051086,
+    "load_inputs": 0.34597449004650116,
+    "total": 11.840128637850285
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "archive": {
+    "path": "/workspace/librts-data/PPoPPAE-v2.tar.gz",
+    "verified_md5": "89e589f086038f1cd3af9e3ed67da8c8",
+    "verified_size_bytes": 23062425365
+  },
+  "claim_boundary": {
+    "archive_subset_extended": true,
+    "archive_verified": true,
+    "complete_paper_reproduction_claimed": false,
+    "embree_in_scope": false,
+    "exact_input_files_identified": true,
+    "paper_figure_reproduced": false,
+    "performance_ratio_authorized": false
+  },
+  "extraction": {
+    "atomic_member_promotion": true,
+    "final_path": "/tmp/goal5521-target",
+    "newly_extracted_member_count": 5,
+    "reused_verified_member_count": 1,
+    "selected_member_count": 6,
+    "selected_members": [
+      {
+        "relative_path": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+        "sha256": "ca133e4456b20c4baae1027d64a373d23083973ae042a3b6025dcc51eb3073a0",
+        "size_bytes": 8582211935
+      },
+      {
+        "relative_path": "PPoPPAE/datasets/queries/point-contains_queries_100000/parks.bz2.wkt",
+        "sha256": "736e2f3acc5c2875ca1a787a87b16f6fdf9216251e0d231df78bce1e9bb68ff9",
+        "size_bytes": 3979572
+      },
+      {
+        "relative_path": "PPoPPAE/datasets/queries/point-contains_queries_200000/parks.bz2.wkt",
+        "sha256": "a0841c76781c2a49530eb8adff73e58a88075e2d4944a2e40647611a28f4586d",
+        "size_bytes": 7959540
+      },
+      {
+        "relative_path": "PPoPPAE/datasets/queries/point-contains_queries_400000/parks.bz2.wkt",
+        "sha256": "b1d0d6ca16be223291affd9911f8bb9791008fa96823916364515a27864a29f8",
+        "size_bytes": 15919453
+      },
+      {
+        "relative_path": "PPoPPAE/datasets/queries/point-contains_queries_50000/parks.bz2.wkt",
+        "sha256": "9aa29248ed047fde65b53f7fadefacae0d075098e9ace9a2a869a970f8bd2c26",
+        "size_bytes": 1990006
+      },
+      {
+        "relative_path": "PPoPPAE/datasets/queries/point-contains_queries_800000/parks.bz2.wkt",
+        "sha256": "bba3861da5b39c96571f6efb94fdf42b9d8149fbd52462ce7fe112882a769a47",
+        "size_bytes": 31839685
+      }
+    ],
+    "selected_pair_count": 5,
+    "selected_pairs": [
+      {
+        "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+        "query": "PPoPPAE/datasets/queries/point-contains_queries_50000/parks.bz2.wkt"
+      },
+      {
+        "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+        "query": "PPoPPAE/datasets/queries/point-contains_queries_100000/parks.bz2.wkt"
+      },
+      {
+        "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+        "query": "PPoPPAE/datasets/queries/point-contains_queries_200000/parks.bz2.wkt"
+      },
+      {
+        "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+        "query": "PPoPPAE/datasets/queries/point-contains_queries_400000/parks.bz2.wkt"
+      },
+      {
+        "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+        "query": "PPoPPAE/datasets/queries/point-contains_queries_800000/parks.bz2.wkt"
+      }
+    ]
+  },
+  "operation": "point_contains",
+  "schema": "rtdl.paper_reproduction.librts.verified_operation_batch_extension.v1",
+  "status": "exact_archive_operation_batch_safely_extended"
+}

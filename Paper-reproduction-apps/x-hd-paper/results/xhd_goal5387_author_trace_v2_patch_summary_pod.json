@@ -1,0 +1,24 @@
+{
+  "author_root": "/tmp/xhd-goal5387/author",
+  "changed": {
+    "launch_parameters": true,
+    "rt_impl": true,
+    "shader": true
+  },
+  "claim_boundary": {
+    "author_rt_core_algorithm_parity_claimed": false,
+    "author_v2_trace_executed_on_pod": false,
+    "author_v2_trace_implemented": true,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_support_claimed": false,
+    "figure11_reproduction_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "row_count_parity_claimed": false,
+    "rtdl_author_performance_ratio_claimed": false
+  },
+  "marker": "RTDL_GOAL5385_LB_STATUS_TRACE_V2",
+  "patched": true,
+  "schema": "rtdl.paper_reproduction.xhd.goal5387.author_lb_status_trace_v2_patch.v1",
+  "trace_schema": "rtdl.goal5385.author.lb_status_trace.v2"
+}

@@ -1,0 +1,10 @@
+Loaded polygons 1
+Loaded queries 5
+Queue size 0 MB
+BVH 149 MB, Geometries 0 MB, AABBs 0 MB, Total 149 MB
+Loading Time 3.261 ms
+Geoms 1
+Queries 5
+Query Time 0.27 ms
+Results 5
+Selectivity: 1

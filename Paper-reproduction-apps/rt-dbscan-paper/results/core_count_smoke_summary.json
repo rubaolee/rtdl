@@ -1,0 +1,16 @@
+{
+  "author_comparator_used": false,
+  "backend": "cpu_python_reference",
+  "boundary": "Local RTDL CPU-reference/oracle smoke for the first RT-DBSCAN paper-app target. This is not an author-comparator run, exact paper-input run, or performance result.",
+  "copies": 1,
+  "core_count": 7,
+  "matches_oracle": true,
+  "oracle_core_count": 7,
+  "paper_app": "rt-dbscan-paper",
+  "paper_reproduction_claim_authorized": false,
+  "point_count": 8,
+  "schema": "rtdl.paper_reproduction.rt_dbscan.core_count_smoke.v1",
+  "status": "pass",
+  "summary_mode": "scalar_threshold_count_oracle",
+  "whole_program_speedup_claim_authorized": false
+}

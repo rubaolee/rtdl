@@ -1,0 +1,70 @@
+{
+  "archive": {
+    "path": "/workspace/librts-data/PPoPPAE-v2.tar.gz",
+    "verified_md5": "89e589f086038f1cd3af9e3ed67da8c8",
+    "verified_size_bytes": 23062425365
+  },
+  "claim_boundary": {
+    "archive_subset_extracted": true,
+    "archive_verified": true,
+    "complete_paper_reproduction_claimed": false,
+    "embree_in_scope": false,
+    "exact_input_files_identified": true,
+    "paper_figure_reproduced": false,
+    "performance_ratio_authorized": false
+  },
+  "extraction": {
+    "atomic_directory_promotion": true,
+    "final_path": "/tmp/goal5520-target",
+    "selected_member_count": 5,
+    "selected_members": [
+      {
+        "relative_path": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+        "sha256": "fd77bf8294dfb9dfe45e49fc4aec99427ebd9ac4f370697b0c908d635d643aed",
+        "size_bytes": 2962689351
+      },
+      {
+        "relative_path": "PPoPPAE/datasets/queries/range-contains_queries_50000/parks_Europe.wkt",
+        "sha256": "34298f675fcfa86062d12663735294385082a6cb82717d3ea14061046c5ccbae",
+        "size_bytes": 8575752
+      },
+      {
+        "relative_path": "PPoPPAE/datasets/queries/range-contains_queries_400000/parks_Europe.wkt",
+        "sha256": "44d3ff16cdc9943b2a90333bd55124fb6f73ea595ce54164b107c6ad1d51c0c1",
+        "size_bytes": 68609522
+      },
+      {
+        "relative_path": "PPoPPAE/datasets/queries/range-contains_queries_200000/parks_Europe.wkt",
+        "sha256": "a3665be38dbde6c050d0623ce848ac93961bea46b94e861e599755cdb412adf7",
+        "size_bytes": 34303239
+      },
+      {
+        "relative_path": "PPoPPAE/datasets/queries/range-contains_queries_800000/parks_Europe.wkt",
+        "sha256": "46e3667c678029c74ac1ff0ab97a5996c144f6ae53325a0194f7f5ad9102daea",
+        "size_bytes": 137222934
+      }
+    ],
+    "selected_pair_count": 4,
+    "selected_pairs": [
+      {
+        "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+        "query": "PPoPPAE/datasets/queries/range-contains_queries_50000/parks_Europe.wkt"
+      },
+      {
+        "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+        "query": "PPoPPAE/datasets/queries/range-contains_queries_200000/parks_Europe.wkt"
+      },
+      {
+        "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+        "query": "PPoPPAE/datasets/queries/range-contains_queries_400000/parks_Europe.wkt"
+      },
+      {
+        "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+        "query": "PPoPPAE/datasets/queries/range-contains_queries_800000/parks_Europe.wkt"
+      }
+    ]
+  },
+  "operation": "range_contains",
+  "schema": "rtdl.paper_reproduction.librts.verified_operation_batch.v1",
+  "status": "exact_archive_operation_batch_safely_extracted"
+}

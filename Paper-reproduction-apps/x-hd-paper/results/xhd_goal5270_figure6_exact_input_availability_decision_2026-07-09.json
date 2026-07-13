@@ -1,0 +1,100 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.figure6_exact_input_availability_decision.v1",
+  "goal": "Goal5270",
+  "date": "2026-07-09",
+  "status": "figure6_exact_inputs_unavailable__level_b_pruning_diagnostic_only",
+  "pod_probe": {
+    "host": "213.173.108.24",
+    "port": 13502,
+    "preflight": "POD_OK",
+    "gpu": "NVIDIA RTX 4000 Ada Generation, 550.127.05",
+    "exact_dataset_roots": {
+      "/local/storage/shared/HDDatasets": false,
+      "/local/storage/shared/HDDatasets/graphics": false
+    },
+    "required_exact_paths": {
+      "/local/storage/shared/HDDatasets/graphics/dragon.ply": false,
+      "/local/storage/shared/HDDatasets/graphics/asian_dragon.ply": false,
+      "/local/storage/shared/HDDatasets/graphics/happy_buddha.ply": false
+    },
+    "available_candidate_paths": {
+      "/tmp/xhd_goal5234/data/dragon.ply": true,
+      "/tmp/xhd_goal5234/data/asian_dragon.ply": true,
+      "/tmp/xhd_goal5234/data/asian_dragon_scaled_1e-3.ply": true
+    }
+  },
+  "author_figure6_contract": {
+    "script": "/tmp/xhd-goal5112/author/expr/run_rt_comparison.sh",
+    "paper_branch_log": "/tmp/xhd-goal5112/author/expr/logs/end2end/rt_gpu/graphics/dragon.ply_asian_dragon.ply.json",
+    "dataset1": "/local/storage/shared/HDDatasets/graphics/dragon.ply",
+    "dataset2": "/local/storage/shared/HDDatasets/graphics/asian_dragon.ply",
+    "normalize": false,
+    "variant": "rt",
+    "execution": "gpu",
+    "figure6_variants": [
+      {
+        "label": "NoOpt",
+        "eb": false,
+        "prune": false,
+        "lb": 0
+      },
+      {
+        "label": "EB",
+        "eb": true,
+        "prune": false,
+        "lb": 0
+      },
+      {
+        "label": "EB+Prune",
+        "eb": true,
+        "prune": true,
+        "lb": 0
+      },
+      {
+        "label": "XHD",
+        "eb": true,
+        "prune": true,
+        "lb": 256
+      }
+    ],
+    "paper_log_lb256": {
+      "hd_result": 0.06536811590194702,
+      "running_avg_time_ms": 17.260399999999997,
+      "offloading_size_sum": 2366254,
+      "input_point_counts": [
+        437645,
+        3609600
+      ]
+    }
+  },
+  "current_level_b_candidate_evidence": {
+    "candidate": "public/same-source Stanford Dragon plus app-owned AsianDragon scale 1e-3 candidate",
+    "point_counts_match_paper_log": true,
+    "mbrs_differ_from_paper_log": true,
+    "goal5269_summary": {
+      "lb256_check_true_status": "aborts_with_wrong_hausdorff_distance",
+      "lb256_hd_result": 0.06545527279376984,
+      "reference_hd_result": 0.06536787003278732,
+      "lb2048_check_true_passes": true,
+      "lb2048_is_figure6_substitute": false
+    },
+    "source_artifact": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5269_figure6_lb256_correctness_probe_2026-07-09.json"
+  },
+  "decision": {
+    "figure6_reproduction_status": "not_reproduced",
+    "exact_input_blocker": true,
+    "level_b_pruning_diagnostic_allowed": true,
+    "level_b_pruning_diagnostic_must_be_named_separately": true,
+    "lb2048_substitute_authorized_as_figure6": false,
+    "recommended_next_goal": "Goal5271 - separately named Level-B pruning diagnostic or move to another figure/dataset with weaker exact-input blocker"
+  },
+  "claim_boundary": {
+    "figure6_reproduced": false,
+    "full_paper_reproduction_claimed": false,
+    "exact_paper_dataset_identity_claimed": false,
+    "author_rt_core_equivalence_claimed": false,
+    "performance_ratio_claimed": false,
+    "lb2048_substitute_authorized_as_figure6": false,
+    "level_b_diagnostic_is_paper_figure": false
+  }
+}

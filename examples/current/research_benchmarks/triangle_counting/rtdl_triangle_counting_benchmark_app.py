@@ -108,9 +108,8 @@ def scope_payload() -> dict[str, Any]:
             "Python graph semantics and app-agnostic engine row contracts"
         ),
         "primary_reports": (
-            "history/internal_docs/docs_reports/archived_evidence_graph_analytics_benchmark_promotion_2026-05-24.md",
-            "history/internal_docs/docs_reports/archived_evidence_benchmark_apps_milestone_report_2026-05-24.md",
-            "history/internal_docs/docs_reports/archived_evidence_rt_graph_triangle_counting_paper_code_intake_2026-05-24.md",
+            "docs/application_catalog.md",
+            "docs/release_reports/v2_14/README.md",
         ),
         "claim_boundary": CLAIM_BOUNDARY,
     }
@@ -333,7 +332,7 @@ def describe_triangle_counting_v2_6_numba_compact_mask_continuation() -> dict[st
         ),
         "integration_decision": (
             "Keep the v2.5 primitive-first fused scalar summary as the recommended "
-            "triangle-count path. Use this v2.6 Numba compact-mask path only for "
+            "triangle-count path. Use this legacy Numba compact-mask path only for "
             "witness-row streams or tensor post-processing that cannot be expressed "
             "as the fused generic RTDL summary."
         ),
@@ -341,7 +340,7 @@ def describe_triangle_counting_v2_6_numba_compact_mask_continuation() -> dict[st
 
 
 def describe_triangle_counting_segmented_compact_mask_numba_continuation() -> dict[str, Any]:
-    """Current alias for the legacy v2.6 Numba compact-mask continuation."""
+    """Current alias for the legacy Numba compact-mask continuation."""
 
     plan = describe_triangle_counting_v2_6_numba_compact_mask_continuation()
     return {
@@ -359,7 +358,7 @@ def v2_6_numba_compact_mask_plan_payload() -> dict[str, Any]:
         "command_shape": (
             "Use run_triangle_counting_v2_6_numba_compact_mask_preview(...) from "
             "Python with Numba CUDA device arrays for candidate_row_ids:int64 and "
-            "valid_triangle_mask:bool. The legacy v2.6 app helper now routes "
+            "valid_triangle_mask:bool. The legacy app helper now routes "
             "through the generic v2.8 segmented typed-stream partner front door."
         ),
         "claim_boundary": {
@@ -372,7 +371,7 @@ def v2_6_numba_compact_mask_plan_payload() -> dict[str, Any]:
 
 
 def segmented_compact_mask_numba_plan_payload() -> dict[str, Any]:
-    """Current alias for the legacy v2.6 Numba compact-mask plan payload."""
+    """Current alias for the legacy Numba compact-mask plan payload."""
 
     plan = describe_triangle_counting_segmented_compact_mask_numba_continuation()
     return {
@@ -383,7 +382,7 @@ def segmented_compact_mask_numba_plan_payload() -> dict[str, Any]:
         "command_shape": (
             "Use run_triangle_counting_segmented_compact_mask_numba_preview(...) "
             "from Python with Numba CUDA device arrays for candidate_row_ids:int64 "
-            "and valid_triangle_mask:bool. The legacy v2.6 helper remains available "
+            "and valid_triangle_mask:bool. The legacy helper remains available "
             "as a compatibility alias."
         ),
     }
@@ -411,7 +410,7 @@ def run_triangle_counting_v2_6_numba_compact_mask_preview(
     handoff_validation = rt.validate_v2_6_neutral_partner_handoff(handoff)
     if handoff_validation["status"] != "accept":
         raise RuntimeError(
-            "Triangle counting v2.6 Numba neutral handoff rejected: "
+            "Triangle counting legacy Numba neutral handoff rejected: "
             f"{handoff_validation['errors']}"
         )
 
@@ -479,7 +478,7 @@ def run_triangle_counting_segmented_compact_mask_numba_preview(
     *,
     block_size: int = 256,
 ) -> dict[str, Any]:
-    """Current alias for the legacy v2.6 compact-mask preview runner."""
+    """Current alias for the legacy compact-mask preview runner."""
 
     payload = run_triangle_counting_v2_6_numba_compact_mask_preview(
         inputs,

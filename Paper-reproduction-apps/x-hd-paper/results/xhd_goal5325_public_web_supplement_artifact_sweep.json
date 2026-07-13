@@ -1,0 +1,160 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5325.public_web_supplement_artifact_sweep.v1",
+  "goal": "Goal5325",
+  "date": "2026-07-09",
+  "purpose": "Search public web and publication-adjacent artifact surfaces beyond the author GitHub repository for X-HD exact input datasets, supplemental data, archives, mirrors, or dataset instructions.",
+  "status": "public_web_exact_dataset_artifacts_not_found__acm_supplement_unresolved",
+  "claim_boundary": {
+    "public_web_artifact_search_claimed": true,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "author_rtdl_correctness_claimed": false,
+    "performance_ratio_claimed": false,
+    "new_rtdl_route_code_added": false,
+    "pod_execution_claimed": false
+  },
+  "search_surfaces": [
+    {
+      "surface": "ACM DOI page",
+      "url": "https://dl.acm.org/doi/10.1145/3797905.3800509",
+      "finding": "paper metadata page exists",
+      "dataset_artifact_found": false,
+      "notes": "Search result exposes the paper and DOI but no dataset archive in the visible metadata."
+    },
+    {
+      "surface": "ACM proceedings supplementary listing",
+      "url": "https://dl.acm.org/doi/proceedings/10.1145/3797905?tocHeading=heading19",
+      "finding": "search result lists supplementary material `ics26-106.zip` and labels it as camera-ready submission for ICS '26 Paper 106",
+      "dataset_artifact_found": "unresolved",
+      "download_attempts": [
+        {
+          "url": "https://dl.acm.org/action/downloadSupplement?doi=10.1145%2F3797905.3800509&file=ics26-106.zip",
+          "status": 403
+        },
+        {
+          "url": "https://dl.acm.org/doi/suppl/10.1145/3797905.3800509/suppl_file/ics26-106.zip",
+          "status": 403
+        },
+        {
+          "url": "https://dl.acm.org/doi/suppl/10.1145/3797905.3800509/suppl_file/ics26-106.zip?download=true",
+          "status": 403
+        }
+      ],
+      "notes": "This item must be inspected if accessible through ACM. Current evidence does not prove it contains datasets, and the visible label suggests a camera-ready submission rather than an HDDatasets bundle."
+    },
+    {
+      "surface": "Rubao Lee public PDF",
+      "url": "https://rubaolee.github.io/paper_pdfs/2026-xhd.pdf",
+      "finding": "PDF is publicly reachable and points to source code at https://github.com/pwrliang/X-HD",
+      "dataset_artifact_found": false,
+      "notes": "Visible paper text and search snippets identify the source-code repository; no dataset archive or input hash link was found in the searched text."
+    },
+    {
+      "surface": "Liang Geng publication page",
+      "url": "https://gengl.me/publications/ics26/",
+      "finding": "publication page exists for X-HD",
+      "dataset_artifact_found": false,
+      "notes": "Search result exposes publication metadata, not dataset archives or exact input hashes."
+    },
+    {
+      "surface": "NSF Public Access record",
+      "url": "https://par.nsf.gov/biblio/10688987-hd-fast-hausdorff-distance-computation-ray-tracing",
+      "finding": "NSF PAR record exists but says public content becomes available on 2027-07-06",
+      "dataset_artifact_found": false,
+      "notes": "No current exact input artifact was found here."
+    },
+    {
+      "surface": "ResearchGate publication page",
+      "url": "https://www.researchgate.net/publication/408469252_X-HD_Fast_Hausdorff_Distance_Computation_with_Ray_Tracing",
+      "finding": "ResearchGate page exists for the paper",
+      "dataset_artifact_found": false,
+      "notes": "Search result exposes publication metadata and related references, not input datasets."
+    },
+    {
+      "surface": "Zenodo / Figshare / OSF targeted web search",
+      "queries": [
+        "\"X-HD\" \"Zenodo\" \"Hausdorff\"",
+        "\"X-HD\" \"figshare\" \"Hausdorff\"",
+        "\"X-HD\" \"OSF\" \"Hausdorff\"",
+        "\"X-HD\" \"supplementary\" \"Hausdorff\" \"3797905\""
+      ],
+      "finding": "no X-HD dataset package found in search results",
+      "dataset_artifact_found": false,
+      "notes": "Search results were either unrelated Hausdorff-distance content or the same paper/source-code surfaces."
+    },
+    {
+      "surface": "BraTS public mirrors",
+      "examples": [
+        "https://www.med.upenn.edu/cbica/brats2020/data.html",
+        "https://www.kaggle.com/datasets/awsaf49/brats20-dataset-training-validation"
+      ],
+      "finding": "public/registration-gated BraTS sources exist",
+      "dataset_artifact_found": false,
+      "notes": "These are not author converted point sets, author file hashes, or author NIfTI-to-point conversion provenance. They do not close X-HD exact input identity."
+    }
+  ],
+  "important_unresolved_artifacts": [
+    {
+      "artifact": "ACM `ics26-106.zip` supplementary item",
+      "status": "unresolved_403",
+      "why_matters": "It is the only newly identified publication-adjacent artifact outside the GitHub repo that might conceivably contain extra materials.",
+      "current_inference": "Visible search label says camera-ready submission, so do not assume it is a dataset. But it must be inspected before making a final 'no supplemental artifact exists' claim.",
+      "next_action": "Obtain ACM-accessible download or ask author/reviewer to inspect the zip contents for input data, hashes, or artifact instructions."
+    }
+  ],
+  "classification": {
+    "public_exact_dataset_artifacts_found": false,
+    "publication_supplement_fully_inspected": false,
+    "blocking_unresolved_item": "ACM ics26-106.zip supplementary item is visible but inaccessible from this environment",
+    "current_level": "no_public_exact_dataset_found__one_acm_supplement_requires_access_or_confirmation"
+  },
+  "relationship_to_goal5324": {
+    "supports_acquisition_packet": true,
+    "modifies_next_action": "Add ACM supplement inspection as a concrete acquisition item before concluding all publication-adjacent artifacts are exhausted.",
+    "does_not_change": [
+      "No full paper reproduction claim",
+      "No Figure 5 claim",
+      "No performance ratio",
+      "No route work as next paper-reproduction step"
+    ]
+  },
+  "pod_usage": {
+    "used": false,
+    "expected_next": false,
+    "reason": "This is a public web / publication artifact sweep. POD cannot inspect inaccessible ACM supplement materials or create missing dataset provenance."
+  },
+  "recommended_next_actions": [
+    {
+      "rank": 1,
+      "action": "Inspect ACM `ics26-106.zip` through an accessible ACM session or ask the author/reviewer to disclose its contents.",
+      "requires_pod": false
+    },
+    {
+      "rank": 2,
+      "action": "If the ACM supplement is only camera-ready manuscript materials, record that and keep the exact-input blocker unchanged.",
+      "requires_pod": false
+    },
+    {
+      "rank": 3,
+      "action": "If the ACM supplement contains datasets, hashes, scripts, or artifact instructions, ingest them as the next exact-input provenance target.",
+      "requires_pod": false
+    },
+    {
+      "rank": 4,
+      "action": "Continue the Goal5324 acquisition/equivalence decision path: author files/hashes, byte-identical regeneration, or explicit exact-equivalence review.",
+      "requires_pod": false
+    }
+  ],
+  "exit_label": "public_web_exact_dataset_artifacts_not_found__acm_supplement_unresolved",
+  "allowed_summary": "A broader public web sweep did not find X-HD exact input datasets on author pages, NSF PAR, ResearchGate, Zenodo/Figshare/OSF-style searches, or BraTS mirrors. One ACM supplementary zip (`ics26-106.zip`) is visible but inaccessible from this environment and must be inspected before declaring publication-adjacent artifacts exhausted.",
+  "not_allowed": [
+    "claiming the ACM supplement contains datasets without inspection",
+    "claiming the ACM supplement contains no useful artifacts without inspection",
+    "claiming all public publication-adjacent artifacts are exhausted while the ACM zip remains unresolved",
+    "claiming public BraTS mirrors provide X-HD converted point sets or conversion provenance",
+    "claiming Figure 5 reproduction",
+    "claiming full X-HD paper reproduction",
+    "claiming author-vs-RTDL performance ratio from this web sweep"
+  ]
+}

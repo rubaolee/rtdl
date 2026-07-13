@@ -1,0 +1,112 @@
+{
+  "author_instrumentation": {
+    "author_root": "/tmp/xhd-goal5112/author",
+    "binary": "/tmp/xhd-goal5112/build-gcc11-optix77-fast/bin/hd_exec",
+    "changed": {
+      "launch_parameters": true,
+      "rt_impl": true,
+      "shader": true
+    },
+    "marker": "RTDL_GOAL5374_LB_STATUS_TRACE",
+    "patch_schema": "rtdl.paper_reproduction.xhd.goal5374.author_lb_status_trace_instrumentation_patch.v1",
+    "patched": true,
+    "rtdl_core_modified": false,
+    "source_modified_in_pod_only": true
+  },
+  "author_lb_trace": {
+    "active_in_queue_size": 437645,
+    "batch_count": 1,
+    "batches": [
+      {
+        "ActiveInQueueSize": 437645,
+        "Batch": 0,
+        "RawOffloadRowsAuthorWidthBytes": 217071920,
+        "RawOffloadRowsBeforeSortReduce": 27133990,
+        "StatusCmax2MbrAbortCount": 0,
+        "StatusInitCount": 437645,
+        "StatusOffloadingAppendCount": 27133990,
+        "StatusPointLoopEarlyBreakCount": 0
+      }
+    ],
+    "raw_offload_rows_author_width_bytes": 217071920,
+    "raw_offload_rows_before_sort_reduce": 27133990,
+    "schema": "rtdl.goal5374.author.lb_status_trace.v1",
+    "status_count_cmax2_mbr_abort": 0,
+    "status_count_init": 437645,
+    "status_count_offloading_append": 27133990,
+    "status_count_point_loop_early_break": 0
+  },
+  "author_result": {
+    "AvgTime_ms": 136.251,
+    "HDResult": 52.453487396240234,
+    "LB": 256,
+    "iteration_3": {
+      "CUDATime_ms": 77.58,
+      "ComparedPoints": 1241945719,
+      "Hits": 896287932,
+      "NumInputPoints": 437645,
+      "NumOutputPoints": 0,
+      "OffloadingSize": 27133990,
+      "RTTime_ms": 46.679,
+      "Radius": 79.2156982421875
+    }
+  },
+  "claim_boundary": {
+    "author_oracle_claimed": true,
+    "author_rt_core_algorithm_parity_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_support_claimed": false,
+    "figure11_reproduction_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "rtdl_author_performance_ratio_claimed": false,
+    "rtdl_row_count_parity_claimed": false,
+    "same_denominator_memory_claimed": false
+  },
+  "comparison": {
+    "active_in_queue_parity": true,
+    "author_offloading_size_rows": 27133990,
+    "author_trace_row_parity": true,
+    "author_width_parity": true,
+    "author_wl_heavy_peak_bytes": 217071920,
+    "rtdl_counterpart_row_parity": false,
+    "rtdl_inline_div_author_trace_rows": 0.7741935483870968,
+    "rtdl_inline_kind2_rows_from_goal5371": 21006960,
+    "rtdl_noinline_div_author_trace_rows": 11.239846738352892,
+    "rtdl_noinline_kind2_rows_from_goal5371": 304981889,
+    "rtdl_surface_ready_from_goal5373": false
+  },
+  "date": "2026-07-09",
+  "decision": {
+    "author_oracle_ready": true,
+    "explicit_lb_support_authorized": false,
+    "next_gate": "rtdl_status_machine_counterpart_against_author_oracle",
+    "recommended_next_goal": "Goal5375 rtdl_status_machine_counterpart_against_goal5374_author_oracle"
+  },
+  "exit_label": "author_oracle_ready__next_rtdl_status_machine_counterpart",
+  "goal": "Goal5374",
+  "input_artifacts": {
+    "author_trace": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5374_author_lb256_status_trace_pod.json",
+    "goal5364_author_pair_contract": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5364_lb_trace_gate_author_pair_contract.json",
+    "goal5371_rtdl_count_probe": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5371_inline_global_bound_lb_probe.json",
+    "goal5373_rtdl_surface_audit": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5373_rtdl_status_machine_telemetry_surface.json",
+    "patch_summary": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5374_author_instrument_patch_summary_pod.json"
+  },
+  "input_scope": {
+    "exact_paper_dataset_identity_proven": false,
+    "input1": "/tmp/xhd_goal5234/data/dragon.ply",
+    "input1_num_points": 437645,
+    "input2": "/tmp/xhd_goal5234/data/asian_dragon.ply",
+    "input2_num_points": 3609600,
+    "level": "level_b_temporary_input_author_only_diagnostic"
+  },
+  "pod": {
+    "gpu": "NVIDIA RTX 4000 Ada Generation",
+    "host": "213.173.108.24",
+    "port": 13502,
+    "wrapper": "scripts/current_pod_ssh.py"
+  },
+  "purpose": "Instrument the author X-HD RT path to emit raw lb status-machine trace fields for the Dragon -> AsianDragon lb=256 Level-B diagnostic.",
+  "schema": "rtdl.paper_reproduction.xhd.goal5374.author_lb_status_trace_oracle.v1",
+  "status": "author_lb_status_trace_oracle_ready__rtdl_status_machine_counterpart_missing"
+}

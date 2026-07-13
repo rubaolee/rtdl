@@ -80,6 +80,7 @@ Read these in order:
 | RT-core evidence interpretation | [RT-Core Evidence Matrix](learn/rt_core_evidence_matrix.md) |
 | Public map | [Public Documentation Map](public_documentation_map.md) |
 | Current release package | [RTDL v2.14 Release Package](release_reports/v2_14/README.md) |
+| RayJoin bounded reproduction | [RayJoin Section 5.7 Bounded Reproduction](release_reports/v2_14/rayjoin_section57_bounded_reproduction.md) |
 | Current benchmark evidence | [Benchmark Evidence Index](learn/benchmark_evidence_index.md) |
 | Archived project history | [History](../history/README.md) |
 

@@ -1,0 +1,143 @@
+{
+  "candidate_ranking": [
+    {
+      "action": "feasibility_and_generation_plan_first",
+      "candidate": "full_public_waterbodies_blockgroups",
+      "claim_if_executed": "Level-B full-public geo candidate only",
+      "rank": 1,
+      "reason": "WaterBodies point count delta is +6,129 (+0.0269%) and BlockGroups delta is +127 (+0.000243%); both MBR deltas are below 1e-5 degrees. This is strong Level-B full-public candidate evidence but not exact file/hash provenance.",
+      "services": {
+        "blockgroups": {
+          "classification": "near_exact_point_count_and_mbr_but_no_file_hash",
+          "features_seen": 239203,
+          "max_abs_mbr_delta": 3.7103264247662082e-06,
+          "observed_author_loader_point_count": 52271467,
+          "pages_seen": 120,
+          "paper_basename": "USACensusBlockGroupBoundaries.wkt",
+          "paper_point_count": 52271340,
+          "point_count_delta": 127,
+          "point_count_relative_delta": 2.4296296976507585e-06
+        },
+        "waterbodies": {
+          "classification": "very_close_point_count_and_mbr_but_no_file_hash",
+          "features_seen": 463591,
+          "max_abs_mbr_delta": 2.9081737551450715e-06,
+          "observed_author_loader_point_count": 22824823,
+          "pages_seen": 464,
+          "paper_basename": "USADetailedWaterBodies.wkt",
+          "paper_point_count": 22818694,
+          "point_count_delta": 6129,
+          "point_count_relative_delta": 0.0002685955646716679
+        }
+      }
+    },
+    {
+      "action": "investigate_before_full_public_execution",
+      "candidate": "alternate_county_source_or_simplification_search",
+      "claim_if_executed": "source/provenance investigation only",
+      "rank": 2,
+      "reason": "ZCTA is close, but County has +3,039,134 points (+32.2%), so County-ZCTA cannot be promoted toward exact/Figure status without an alternate County source or simplification match.",
+      "services": {
+        "county": {
+          "classification": "extent_match_point_count_mismatch_not_exact",
+          "features_seen": 3144,
+          "max_abs_mbr_delta": 3.7104491212858193e-06,
+          "observed_author_loader_point_count": 12477179,
+          "pages_seen": 2,
+          "paper_basename": "dtl_cnty.wkt",
+          "paper_point_count": 9438045,
+          "point_count_delta": 3039134,
+          "point_count_relative_delta": 0.32200884823075115
+        },
+        "zcta": {
+          "classification": "very_close_point_count_and_mbr_but_no_file_hash",
+          "features_seen": 32294,
+          "max_abs_mbr_delta": 7.358398448786829e-06,
+          "observed_author_loader_point_count": 43984131,
+          "pages_seen": 57,
+          "paper_basename": "uszipcode.wkt",
+          "paper_point_count": 43952878,
+          "point_count_delta": 31253,
+          "point_count_relative_delta": 0.0007110569642333773
+        }
+      }
+    },
+    {
+      "action": "requires_access_or_license_before_execution",
+      "candidate": "brats_2020",
+      "claim_if_executed": "not executable under current evidence",
+      "rank": 3,
+      "reason": "Registration/license and author image-list provenance remain blocked."
+    },
+    {
+      "action": "requires_snapshot_filter_conversion_plan_before_execution",
+      "candidate": "osm_lakes_parks_allnodes",
+      "claim_if_executed": "not executable under current evidence",
+      "rank": 4,
+      "reason": "Public in principle but exact snapshot/filter/conversion parameters are unresolved."
+    }
+  ],
+  "claim_boundary": {
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_reopened": false,
+    "figure5_reproduction_claimed": false,
+    "full_public_water_bg_execution_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "level_b_same_pod_matrix_claimed": true,
+    "next_branch_decision_claimed": true,
+    "performance_ratio_claimed": false,
+    "route_micro_optimization_goal_authorized": false
+  },
+  "current_level_b_coverage": {
+    "bounded_geo_case_count": 2,
+    "bounded_geo_route_result_count": 2,
+    "graphics_case_count": 3,
+    "graphics_route_result_count": 6,
+    "total_case_count": 5
+  },
+  "decision": {
+    "brats_now": false,
+    "county_zcta_full_public_now": false,
+    "explicit_lb": false,
+    "osm_now": false,
+    "recommended_next_goal": "Goal5425_full_public_waterbodies_blockgroups_wkt_generation_feasibility",
+    "route_micro_optimization": false,
+    "strict_review_packet_available": true,
+    "technical_branch": "full_public_waterbodies_blockgroups_before_more_route_work"
+  },
+  "goal": "Goal5424",
+  "goal5425_requirements": {
+    "must_define_author_loader_semantics": true,
+    "must_define_kill_conditions": [
+      "generated point counts diverge materially from Goal5309 probe",
+      "disk or runtime requirements exceed available POD resources",
+      "ArcGIS service export cannot be made deterministic/reproducible"
+    ],
+    "must_define_pod_upload_or_generation_location": true,
+    "must_define_resume_checkpoint_plan": true,
+    "must_estimate_or_bound_wkt_size_and_disk": true,
+    "must_keep_claim_level": "Level-B full-public candidate, not exact paper input",
+    "must_not_run_author_or_rtdl_yet": true
+  },
+  "matched": true,
+  "schema": "rtdl.paper_reproduction.xhd.goal5424.post_level_b_blocker_priority.v1",
+  "source_artifacts": {
+    "goal5309": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5309_full_public_arcgis_probe_summary_2026-07-09.json",
+    "goal5423": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5423_level_b_matrix_consolidation_after_geo.json"
+  },
+  "status": "post_level_b_next_branch_selected__full_public_water_bg_feasibility_first__no_route_tuning",
+  "stop_loss_gate": {
+    "decision": "pass_no_app_artifact_parity_work_authorized",
+    "gate_downstream_consumer_reachable": true,
+    "gate_generic_capability_produced": true,
+    "gate_non_app_consumer": "dataset_provenance_and_full_public_candidate_selection / no app-artifact parity work",
+    "gate_requires_app_specific_logic": false
+  },
+  "why_this_branch": [
+    "Goal5423 already provides a Level-B same-POD matrix; the next full-reproduction blocker is dataset identity / full-public coverage, not another route timing column.",
+    "Goal5309 shows WaterBodies and BlockGroups are the strongest full-public geo candidates by point-count and MBR proximity.",
+    "County-ZCTA should not be the next full-public execution branch because County is +32.2% by author-loader point count.",
+    "BraTS remains access/license blocked and OSM remains snapshot/filter blocked.",
+    "Explicit -lb remains fail-closed under the stop-loss gate and is not a next branch."
+  ]
+}

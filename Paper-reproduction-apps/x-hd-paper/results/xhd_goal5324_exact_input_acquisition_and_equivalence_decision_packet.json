@@ -1,0 +1,185 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5324.exact_input_acquisition_and_equivalence_decision_packet.v1",
+  "goal": "Goal5324",
+  "date": "2026-07-09",
+  "purpose": "Turn the Goals5318-5323 exact-provenance blockers into an actionable acquisition and decision packet for continuing full X-HD paper reproduction.",
+  "status": "acquisition_packet_ready__external_artifacts_or_equivalence_decision_required",
+  "claim_boundary": {
+    "acquisition_packet_claimed": true,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "author_rtdl_correctness_claimed": false,
+    "performance_ratio_claimed": false,
+    "new_rtdl_route_code_added": false,
+    "pod_execution_claimed": false
+  },
+  "inputs": [
+    "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5317_figure5_exact_input_acquisition_gap_matrix.json",
+    "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5318_water_bg_exact_provenance_search.json",
+    "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5319_graphics_exact_provenance_search.json",
+    "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5320_county_zcta_source_conversion_investigation.json",
+    "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5321_osm_lakes_parks_allnodes_provenance_search.json",
+    "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5322_brats2020_access_conversion_provenance.json",
+    "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5323_external_author_artifact_availability_sweep.json"
+  ],
+  "global_decision": {
+    "full_reproduction_next_blocker": "exact_input_artifacts_or_explicit_exact_equivalence_acceptance",
+    "more_route_performance_work_is_next": false,
+    "reason": "The current RTDL route already has strong Level-B scalar evidence. Full paper reproduction is blocked by exact input identity, not by another immediate route optimization.",
+    "valid_next_paths": [
+      "obtain author input files/hashes or converted point-set artifacts",
+      "obtain byte-identical regeneration scripts and source snapshots",
+      "obtain external review accepting a deterministic public reconstruction as exact-equivalent for a bounded claim",
+      "otherwise keep the project at Level-B for these rows"
+    ]
+  },
+  "author_artifact_request": {
+    "minimum_request": [
+      "A checksum manifest for the paper-run `/local/storage/shared/HDDatasets` inputs.",
+      "The input files or archived bundle used for Figure 5 and related paper figures, if redistributable.",
+      "If raw data cannot be shared, hashes plus exact source URLs/snapshot identifiers/export parameters sufficient to regenerate the files.",
+      "Any preprocessing/conversion scripts used to produce X-HD-ready point inputs from public sources.",
+      "The exact command-line options used for paper logs where they are not fully captured by the JSON logs."
+    ],
+    "preferred_hash_algorithm": "sha256",
+    "paper_log_path_root": "/local/storage/shared/HDDatasets",
+    "families": [
+      {
+        "family": "graphics_stanford",
+        "request_items": [
+          "paper-run Dragon input file bytes or sha256",
+          "paper-run HappyBuddha input file bytes or sha256",
+          "paper-run AsianDragon input file bytes or sha256",
+          "paper-run ThaiStatuette input file bytes or sha256",
+          "preprocessing/scaling/translation scripts or parameters for graphics inputs",
+          "point-count manifest after preprocessing"
+        ],
+        "current_status": "level_b_value_matched_for_three_pairs__exact_graphics_hashes_missing"
+      },
+      {
+        "family": "geo_wkt",
+        "request_items": [
+          "dtl_cnty.wkt bytes or sha256",
+          "uszipcode.wkt bytes or sha256",
+          "USADetailedWaterBodies.wkt bytes or sha256",
+          "USACensusBlockGroupBoundaries.wkt bytes or sha256",
+          "lakes.bz2.wkt bytes or sha256",
+          "parks.bz2.wkt bytes or sha256",
+          "all_nodes.wkt or all_nodes source/snapshot bytes or sha256",
+          "shapefile/ArcGIS/OSM source vintage and export parameters",
+          "WKT conversion script and precision policy"
+        ],
+        "current_status": "water_bg_strong_level_b__county_source_blocked__osm_snapshot_blocked"
+      },
+      {
+        "family": "brats2020_validation",
+        "request_items": [
+          "exact BraTS2020 validation NIfTI file list used in paper logs",
+          "sha256 for each selected NIfTI file if redistributable files cannot be shared",
+          "author NIfTI-to-point conversion script or source function",
+          "modality/threshold/mask/coordinate/precision policy",
+          "converted point-set hashes or archived converted point arrays for logged pairs"
+        ],
+        "current_status": "official_access_and_conversion_blocked"
+      }
+    ]
+  },
+  "public_exact_equivalence_review_protocol": {
+    "purpose": "Define the only way a public reconstruction can be upgraded beyond Level-B without author files/hashes.",
+    "required_before_exact_equivalence_can_be_considered": [
+      "pinned public source URL or archive identifier",
+      "source snapshot date/version/hash where applicable",
+      "deterministic conversion/export script in the repository",
+      "explicit geometry filtering/simplification/precision policy",
+      "generated input file sha256 recorded in artifact",
+      "author `hd_exec` rerun on generated inputs matches paper-log scalar within declared tolerance",
+      "RTDL route on the same generated inputs matches the author rerun within declared tolerance",
+      "external review explicitly accepts the generated public inputs as exact-equivalent or accepts a renamed bounded public-reconstruction claim"
+    ],
+    "not_sufficient": [
+      "matching point counts",
+      "matching MBRs",
+      "matching Gini/statistics",
+      "matching HDResult alone",
+      "matching author rerun on current public service snapshot",
+      "checked-in author logs",
+      "public repository source code without input hashes"
+    ],
+    "allowed_outcomes": [
+      "exact_equivalent_accepted_by_external_review",
+      "bounded_public_reconstruction_only",
+      "not_accepted_keep_level_b"
+    ]
+  },
+  "current_best_candidate_for_exact_equivalence_review": {
+    "row_id": "geo_waterbodies_blockgroups",
+    "why_best": [
+      "WaterBodies and BlockGroups full-public MBRs match paper logs.",
+      "Point-count deltas are small compared with other geo rows.",
+      "Author paper-config rerun with n_points_cell=8 reproduces paper-log HDResult.",
+      "RTDL exact-witness float64 aligns with author/paper float32 within the declared numeric boundary."
+    ],
+    "why_not_exact_yet": [
+      "No author WKT file hashes.",
+      "No proof that current ArcGIS services are the author's exact snapshot.",
+      "No byte-identical regeneration proof.",
+      "Remaining point-count deltas are nonzero."
+    ],
+    "recommended_decision": "Send for external exact-equivalence review only if owner wants a bounded public-reconstruction claim; do not self-promote to exact."
+  },
+  "stop_or_continue_decision_matrix": [
+    {
+      "condition": "author files/hashes or archived HDDatasets acquired",
+      "next": "run author and RTDL same-input gates, then build denominator-aligned performance matrix",
+      "pod_expected": true
+    },
+    {
+      "condition": "byte-identical regeneration pipeline acquired",
+      "next": "generate files, record hashes, run author and RTDL same-input gates",
+      "pod_expected": true
+    },
+    {
+      "condition": "external review accepts public reconstruction as exact-equivalent",
+      "next": "rename claim precisely and run bounded Figure-5 matrix under accepted inputs",
+      "pod_expected": true
+    },
+    {
+      "condition": "no external artifacts and no exact-equivalence acceptance",
+      "next": "stop full-paper claims at Level-B; publish blocker packet and avoid more performance work as paper reproduction",
+      "pod_expected": false
+    }
+  ],
+  "pod_usage": {
+    "used": false,
+    "expected_next": false,
+    "reason": "This is an acquisition/decision packet. POD becomes useful only after concrete input artifacts or an accepted public reconstruction need author/RTDL verification."
+  },
+  "recommended_next_actions": [
+    {
+      "rank": 1,
+      "action": "Send Goals5318-5324 for strict review as the exact-input blocker and acquisition-decision packet.",
+      "requires_pod": false
+    },
+    {
+      "rank": 2,
+      "action": "Owner decides whether to pursue external author data/hashes, ask for exact-equivalence acceptance, or stop full-paper claims at Level-B.",
+      "requires_pod": false
+    },
+    {
+      "rank": 3,
+      "action": "If external artifacts arrive, run a single same-input author/RTDL gate before any full matrix.",
+      "requires_pod": true
+    }
+  ],
+  "exit_label": "exact_input_acquisition_packet_ready__await_external_artifacts_or_equivalence_decision",
+  "allowed_summary": "Goal5324 converts the exact-input blocker into an actionable acquisition and review-decision packet. Full X-HD paper reproduction remains open, but the next progress must come from author files/hashes, byte-identical regeneration, or an explicit exact-equivalence decision rather than more route optimization.",
+  "not_allowed": [
+    "claiming exact input acquisition is complete",
+    "claiming public reconstructions are exact without external acceptance",
+    "claiming Figure 5 reproduction",
+    "claiming full X-HD paper reproduction",
+    "claiming author-vs-RTDL performance ratio",
+    "running more performance work as paper reproduction before input identity changes"
+  ]
+}

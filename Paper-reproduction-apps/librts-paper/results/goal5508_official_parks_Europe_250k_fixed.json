@@ -1,0 +1,36 @@
+{
+  "claim_boundary": {
+    "author_specific_rtdl_core_behavior_authorized": false,
+    "embree_in_scope": false,
+    "full_input_adjudication": false,
+    "generic_native_patch_probe_only": true,
+    "paper_reproduction_claimed": false,
+    "performance_ratio_authorized": false
+  },
+  "input_identity": {
+    "geometry_path": "/workspace/librts-results/goal5502-large-prefix/parks_Europe_select_0.01_10000/geometry_prefix.wkt",
+    "geometry_sha256": "281391d873a0462331bc0d896e4e6e3f990693b87c03e538dc0d149d0e3162e4",
+    "query_path": "/workspace/librts-results/goal5502-large-prefix/parks_Europe_select_0.01_10000/query_prefix.wkt",
+    "query_sha256": "0ddf5ea567223621ffdd7f0fe9c789dd5c7350941d0a8a8e7bb8b98b308ca499",
+    "same_input_files": true
+  },
+  "rtdl": {
+    "backend": "optix",
+    "count_only": true,
+    "intersection_duplicate_row_count": 0,
+    "intersection_rows": [],
+    "intersection_rows_count": 0,
+    "intersection_rows_sec": null,
+    "intersection_unique_rows_count": 0,
+    "native_engine_customization": false,
+    "operation": "range_intersects",
+    "prepare_sec": 0.449143819976598,
+    "primitive_query_sec": 0.1634281410370022,
+    "public_api": "Aabb2DColumns + prepare_aabb_index_2d_columns + prepared.count",
+    "query_wall_sec": 0.1833277289988473,
+    "result_count": 34240217,
+    "rt_core_accelerated": true
+  },
+  "schema": "rtdl.paper_reproduction.librts.goal5507_rtdl_range_intersects_probe.v1",
+  "status": "rtdl_probe_completed"
+}

@@ -1,0 +1,375 @@
+{
+  "arcgis_metadata": {
+    "blockgroups": {
+      "item": {
+        "access": "public",
+        "created_iso": "2022-05-09T16:03:42+00:00",
+        "created_ms": 1652112222000,
+        "description": "This layer presents the 2020 U.S. Census Block Group boundaries of the United States in the 50 states and the District of Columbia. This layer is updated annually. The geography is sourced from U.S. Census Bureau 2020 TIGER FGDB (National Sub-State) and edited using TIGER Hydrography to add a detailed coastline for cartographic purposes. Attribute fields include 2020 total population from the U.S. Census Public Law 94 data . This ready-to-use layer can be used in ArcGIS Pro and in ArcGIS Online and its configurable apps, dashboards, StoryMaps, custom apps, and mobile apps. The data can also be exported for offline workflows. Cite the 'U.S. Census Bureau' when using this data.",
+        "id": "2f5e592494d243b0aa5c253e75e792a4",
+        "licenseInfo": "This work is licensed under the Esri Master License Agreement. View Summary | View Terms of Use",
+        "modified_iso": "2026-05-21T16:21:53+00:00",
+        "modified_ms": 1779380513000,
+        "owner": "esri_dm",
+        "size": 1540087808,
+        "snippet": "This layer presents the 2020 U.S. Census Block Group boundaries of the United States in the 50 states and the District of Columbia. It includes 2020 U.S. Census codes and population information. Block Groups are polygons containing population totals from the 2020 Census and Esri Updated Demographics.",
+        "tags": [
+          "layer",
+          "polygon",
+          "population",
+          "demographics",
+          "area",
+          "Census",
+          "Census Bureau",
+          "census block groups",
+          "density",
+          "FIPS",
+          "block group",
+          "society",
+          "boundaries",
+          "United States",
+          "2020",
+          "2021",
+          "2011",
+          "2022"
+        ],
+        "title": "USA Census Block Group Boundaries",
+        "type": "Feature Service",
+        "url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Census_BlockGroups/FeatureServer"
+      },
+      "layer": {
+        "capabilities": "Query,Extract",
+        "copyrightText": "Sources: Esri; U.S. Department of Commerce, Census Bureau; U.S. Department of Commerce (DOC), National Oceanic and Atmospheric Administration (NOAA), National Ocean Service (NOS), National Geodetic Survey (NGS)",
+        "description": "&lt;div style=\"text-align:Left;\"&gt;&lt;div&gt;&lt;div&gt;&lt;p&gt;&lt;span&gt;U.S. Census Block Group Boundaries represents the 2020 U.S. Census block groups of the United States in the 50 states and the District of Columbia. Block Groups are polygons containing population totals from the 2020 Census and Esri Updated Demographics.&lt;/span&gt;&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;",
+        "editingInfo": {
+          "dataLastEditDate": 1696614940447,
+          "lastEditDate": 1779380515472,
+          "schemaLastEditDate": 1779380515472
+        },
+        "editingInfoIso": {
+          "dataLastEditDate": "2023-10-06T17:55:40.447000+00:00",
+          "lastEditDate": "2026-05-21T16:21:55.472000+00:00",
+          "schemaLastEditDate": "2026-05-21T16:21:55.472000+00:00"
+        },
+        "fields_first": [
+          "OBJECTID",
+          "STATE_ABBR",
+          "STATE_FIPS",
+          "COUNTY_FIPS",
+          "STCOFIPS",
+          "TRACT_FIPS",
+          "BLOCKGROUP_FIPS",
+          "FIPS",
+          "POPULATION",
+          "POP_SQMI",
+          "SQMI",
+          "POPULATION_2020"
+        ],
+        "geometryType": "esriGeometryPolygon",
+        "hasStaticData": false,
+        "id": 0,
+        "maxRecordCount": 2000,
+        "name": "USA Census BlockGroups",
+        "objectIdField": "OBJECTID"
+      },
+      "linked_layer_package": null,
+      "service": {
+        "capabilities": "Query,Extract",
+        "copyrightText": "U.S. Census Bureau, Esri",
+        "currentVersion": 12,
+        "description": "This layer presents the USA 2020 Census Block Group boundaries of the United States in the 50 states and the District of Columbia. It is updated annually as Block Group boundaries change. The geography is sourced from U.S. Census Bureau 2020 TIGER FGDB (National Sub-State) and edited using TIGER Hydrology to add a detailed coastline for cartographic purposes. Geography last updated May 2022. Attribute fields include 2020 total population from the U.S. Census PL94 data . This ready-to-use layer can be used within ArcGIS Pro, ArcGIS Online, its configurable apps, dashboards, StoryMaps, custom apps, and mobile apps. Data can also be exported for offline workflows. Cite the 'U.S. Census Bureau' when using this data.",
+        "fullExtent": {
+          "spatialReference": {
+            "latestWkid": 4326,
+            "wkid": 4326
+          },
+          "xmax": -66.9496079221226,
+          "xmin": -179.1489090004446,
+          "ymax": 71.36516200012278,
+          "ymin": 18.910692999961213
+        },
+        "hasStaticData": false,
+        "maxRecordCount": 2000,
+        "size": 1115152384,
+        "supportedExportFormats": "csv,shapefile,sqlite,geoPackage,filegdb,featureCollection,geojson,kml,excel"
+      },
+      "service_item_id": "2f5e592494d243b0aa5c253e75e792a4",
+      "service_url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Census_BlockGroups/FeatureServer"
+    },
+    "waterbodies": {
+      "item": {
+        "access": "public",
+        "created_iso": "2014-04-22T21:15:27+00:00",
+        "created_ms": 1398201327000,
+        "description": "USA Detailed Water Bodies represents the major lakes, reservoirs, large rivers, lagoons, and estuaries in the United States. To download the data for this layer as a layer package for use in ArcGIS desktop applications, refer to USA Detailed Water Bodies .",
+        "id": "48c77cbde9a0470fb371f8c8a8a7421a",
+        "licenseInfo": "This work is licensed under the Esri Master License Agreement. View Summary | View Terms of Use The data used in this hosted feature layer is provided via ArcGIS Data and Maps . The datasets included within ArcGIS Data and Maps are subject to varying redistribution rights that have been granted by Esri\u2019s third party data suppliers. Consult the Redistribution Rights document to determine the ways in which Licensee is permitted to use and redistribute each specific dataset and the applicable disclaimers, attribution requirements, and other conditions of use. This dataset may be used and redistributed with proper metadata and attribution.",
+        "modified_iso": "2025-09-10T00:07:45+00:00",
+        "modified_ms": 1757462865000,
+        "owner": "esri_dm",
+        "size": 593715200,
+        "snippet": "USA Detailed Water Bodies represents the major water features in the United States.",
+        "tags": [
+          "layer",
+          "polygon",
+          "lakes",
+          "swamps",
+          "reservoirs",
+          "lagoons",
+          "large rivers",
+          "estuaries",
+          "hydrography",
+          "landscape",
+          "inlandWaters",
+          "United States",
+          "2004"
+        ],
+        "title": "USA Detailed Water Bodies",
+        "type": "Feature Service",
+        "url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Detailed_Water_Bodies/FeatureServer"
+      },
+      "layer": {
+        "capabilities": "Query",
+        "copyrightText": "Sources: National Hydrography Dataset - USGS",
+        "description": "USA Detailed Water Bodies represents the major lakes, reservoirs, large rivers, lagoons, and estuaries in the United States.",
+        "editingInfo": {
+          "dataLastEditDate": 1675735328244,
+          "lastEditDate": 1675735328244,
+          "schemaLastEditDate": 1675735328244
+        },
+        "editingInfoIso": {
+          "dataLastEditDate": "2023-02-07T02:02:08.244000+00:00",
+          "lastEditDate": "2023-02-07T02:02:08.244000+00:00",
+          "schemaLastEditDate": "2023-02-07T02:02:08.244000+00:00"
+        },
+        "fields_first": [
+          "OBJECTID",
+          "NAME",
+          "FTYPE",
+          "FCODE",
+          "FCODE_DESC",
+          "SQKM",
+          "SQMI"
+        ],
+        "geometryType": "esriGeometryPolygon",
+        "hasStaticData": true,
+        "id": 0,
+        "maxRecordCount": 1000,
+        "name": "USA Detailed Water Bodies",
+        "objectIdField": "OBJECTID"
+      },
+      "linked_layer_package": {
+        "created_iso": "2010-11-05T20:40:18+00:00",
+        "created_ms": 1288989618000,
+        "description": "Retirement Notice: This item type is retired. This item will be retired in December 2026. A new version of this item will be available in July 2026. U.S. Detailed Water Bodies provides a database of areal water features that identifies the water bodies or reaches that comprise the surface water drainage system of the United States. U.S. Detailed Water Bodies represents the detailed water bodies (for example, lakes, reservoirs, large rivers, and swamps) in the United States. The source of this dataset is the U.S. Geological Survey (USGS) National Hydrography Dataset (NHD) in cooperation with the U.S. Environmental Protection Agency (EPA).",
+        "id": "84e780692f644e2d93cefc80ae1eba3a",
+        "modified_iso": "2026-04-13T23:59:56+00:00",
+        "modified_ms": 1776124796000,
+        "owner": "esri_dm",
+        "size": 278617494,
+        "snippet": "This layer presents the detailed water bodies in the United States. (Retiring)",
+        "tags": [
+          "layer",
+          "polygon",
+          "lakes",
+          "swamps",
+          "reservoirs",
+          "lagoons",
+          "hydrography",
+          "inlandWaters",
+          "United States",
+          "2004",
+          "retiring-2026-12"
+        ],
+        "title": "USA Detailed Water Bodies",
+        "type": "Layer Package",
+        "url": ""
+      },
+      "service": {
+        "capabilities": "Query",
+        "copyrightText": "National Hydrography Dataset - USGS",
+        "currentVersion": 12,
+        "description": "USA Detailed Water Bodies represents the major lakes, reservoirs, large rivers, lagoons, and estuaries in the United States.",
+        "fullExtent": {
+          "spatialReference": {
+            "latestWkid": 4326,
+            "wkid": 4326
+          },
+          "xmax": -66.99786667770503,
+          "xmin": -160.2311071663626,
+          "ymax": 49.38433306071302,
+          "ymin": 19.203998324163425
+        },
+        "hasStaticData": true,
+        "maxRecordCount": 1000,
+        "size": 597426176,
+        "supportedExportFormats": "csv,shapefile,sqlite,geoPackage,filegdb,featureCollection,geojson,kml,excel"
+      },
+      "service_item_id": "48c77cbde9a0470fb371f8c8a8a7421a",
+      "service_url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Detailed_Water_Bodies/FeatureServer"
+    }
+  },
+  "claim_boundary": {
+    "author_vs_rtdl_performance_ratio_authorized": false,
+    "exact_paper_dataset_reproduction_complete": false,
+    "figure5_reproduction_complete": false,
+    "full_paper_reproduction_complete": false,
+    "new_author_or_rtdl_performance_run": false,
+    "new_rtdl_route_code_added": false,
+    "provenance_search_complete": true
+  },
+  "date": "2026-07-09",
+  "decision": {
+    "allowed_summary": "WaterBodies/BG remains the strongest current geo Level-B candidate: public ArcGIS WKT candidate has near-paper counts/MBRs, author paper-config n_points_cell=8 reproduces paper-log HDResult, and RTDL witness agrees within the declared float64-vs-author-float32 tolerance. Exact input provenance is still not proven because author WKT files/hashes or accepted deterministic regeneration proof are missing.",
+    "exit_label": "water_bg_exact_provenance_not_found_keep_level_b",
+    "forbidden_summaries": [
+      "WaterBodies/BG exact paper WKT files were recovered.",
+      "Current ArcGIS public services are proven byte-identical to author HDDatasets WKT inputs.",
+      "Figure 5 geo is reproduced.",
+      "Author-vs-RTDL performance ratio is authorized.",
+      "Matching HDResult/counts/MBRs proves exact dataset identity."
+    ],
+    "water_bg_exact_paper_dataset_reproduction_claimed": false,
+    "water_bg_remains_best_geo_level_b_candidate": true
+  },
+  "exact_dataset_rule": {
+    "level_c_requires_one_of": [
+      "author-provided input files or archives",
+      "author-provided hashes for converted point files",
+      "byte-identical regenerated point files from a documented author conversion pipeline",
+      "external review accepting a deterministic public-source regeneration as equivalent"
+    ],
+    "not_sufficient": [
+      "matching point counts",
+      "matching MBRs",
+      "matching Gini or other aggregate statistics",
+      "matching HDResult alone",
+      "matching author rerun on a public same-source candidate",
+      "paper-log path names without bytes or hashes"
+    ]
+  },
+  "goal": "Goal5318",
+  "local_full_public_wkt_candidate": {
+    "blockgroups": {
+      "author_loader_point_count": 52271467,
+      "bytes": 1560257609,
+      "features": 239203,
+      "mbr": [
+        -179.148909000445,
+        -66.9496079221226,
+        18.9106929999612,
+        71.3651620001228
+      ],
+      "mbr_delta": {
+        "x_lower": 1.5220159355067153e-06,
+        "x_upper": -7.300150173250586e-08,
+        "y_lower": 7.849953789218489e-07,
+        "y_upper": -3.7103264247662082e-06
+      },
+      "paper_basename": "USACensusBlockGroupBoundaries.wkt",
+      "paper_mbr": {
+        "x": [
+          -179.14891052246094,
+          -66.9496078491211
+        ],
+        "y": [
+          18.91069221496582,
+          71.36516571044922
+        ]
+      },
+      "paper_point_count": 52271340,
+      "point_count_delta": 127,
+      "relative_delta": 2.4296296976507585e-06,
+      "sha256": "8a1d3cd848083e5182de81521f07d8850c597910320250066d850928b017e66e",
+      "wkt_path": "Paper-reproduction-apps\\x-hd-paper\\data\\generated\\goal5310_water_bg_full_public_wkt_candidate\\USACensusBlockGroupBoundaries.wkt.full_public_arcgis_candidate.wkt"
+    },
+    "waterbodies": {
+      "author_loader_point_count": 22824823,
+      "bytes": 741925630,
+      "features": 463591,
+      "mbr": [
+        -160.231107166363,
+        -66.997866677705,
+        19.2039983241634,
+        49.384333060713
+      ],
+      "mbr_delta": {
+        "x_lower": 2.4527776361082942e-06,
+        "x_upper": -2.9081737551450715e-06,
+        "y_lower": -2.4151042765652164e-07,
+        "y_upper": -1.5034959872650688e-06
+      },
+      "paper_basename": "USADetailedWaterBodies.wkt",
+      "paper_mbr": {
+        "x": [
+          -160.23110961914062,
+          -66.99786376953125
+        ],
+        "y": [
+          19.203998565673828,
+          49.384334564208984
+        ]
+      },
+      "paper_point_count": 22818694,
+      "point_count_delta": 6129,
+      "relative_delta": 0.0002685955646716679,
+      "sha256": "0c4ad7d7c1953364478d4940a8eb1696cca24d0dfd6422aafc532b1983f3dd39",
+      "wkt_path": "Paper-reproduction-apps\\x-hd-paper\\data\\generated\\goal5310_water_bg_full_public_wkt_candidate\\USADetailedWaterBodies.wkt.full_public_arcgis_candidate.wkt"
+    }
+  },
+  "paper_config_value_evidence": {
+    "author_num_points_cell": 8,
+    "author_paper_config_hd_result": 0.8964367508888245,
+    "declared_tolerance": 2e-06,
+    "paper_log_hd_result": 0.8964367508888245,
+    "rtdl_exact_witness_float64": 0.8964380566690101,
+    "same_witness_float32": 0.8964367508888245,
+    "value_status": "author paper-config value reproduced; RTDL float64 witness within declared author-float32 tolerance"
+  },
+  "paper_pair": "USADetailedWaterBodies.wkt -> USACensusBlockGroupBoundaries.wkt",
+  "provenance_findings": {
+    "arcgis_current_snapshot_exact_equivalence_proven": false,
+    "author_blockgroups_wkt_file_found": false,
+    "author_blockgroups_wkt_sha256_found": false,
+    "author_waterbodies_wkt_file_found": false,
+    "author_waterbodies_wkt_sha256_found": false,
+    "byte_identical_regeneration_proven": false,
+    "external_review_accepts_public_snapshot_as_exact": false,
+    "service_metadata_supports_exact_claim": false,
+    "service_metadata_supports_same_source_candidate": true,
+    "why_not_exact": [
+      "No author-provided WKT files or WKT hashes were found in the local goal evidence or repository search.",
+      "The current public ArcGIS export has small but nonzero point-count deltas from the paper logs (+6129 WaterBodies, +127 BlockGroups).",
+      "ArcGIS metadata establishes public source family and update/vintage hints, but not byte identity with the author /local/storage/shared/HDDatasets WKT files.",
+      "The BlockGroups service/item is updated data, not a frozen author snapshot; metadata alone cannot prove exact input bytes.",
+      "Prior RayJoin WaterBodies/BlockGroups CDB artifacts are a different representation and point-count denominator, not X-HD WKT provenance."
+    ]
+  },
+  "purpose": "Search whether the current full-public WaterBodies/BG candidate can be promoted from Level-B same-source evidence to exact paper-input provenance before any new performance work.",
+  "recommended_next": {
+    "if_no_external_provenance": "Keep WaterBodies/BG as Level-B full-public evidence and move to another exact-input target or a separately reviewed performance-denominator design without claiming Figure 5.",
+    "pod_expected": false,
+    "pod_reason": "No new author/RTDL execution is needed until a concrete provenance lead appears.",
+    "primary": "Seek external dataset provenance: author WKT files/hashes, archived ArcGIS export packages, or a documented deterministic conversion path accepted by review."
+  },
+  "related_prior_assets": {
+    "example_counts": {
+      "rayjoin_blockgroups_cdb_points_seen_in_logs": 56946676,
+      "rayjoin_waterbodies_cdb_points_seen_in_logs": 44863618,
+      "xhd_paper_blockgroups_author_loader_points": 52271340,
+      "xhd_paper_waterbodies_author_loader_points": 22818694
+    },
+    "rayjoin_cdb_assets_found": true,
+    "reason": "Prior RayJoin assets/logs mention BlockGroups/WaterBodies CDB topology and point CDB paths, but those are RayJoin CDB/topology artifacts, not X-HD author WKT files or hashes.",
+    "status": "related_not_exact_xhd_wkt_provenance"
+  },
+  "schema": "rtdl.paper_reproduction.xhd.goal5318.water_bg_exact_provenance_search.v1",
+  "searched_sources": [
+    "Goal5310 full-public WKT manifest and generated hashes",
+    "Goal5313/5314 author paper-config and RTDL witness evidence",
+    "Goal5317 acquisition gap matrix",
+    "ArcGIS FeatureServer service/layer metadata for USA_Detailed_Water_Bodies and USA_Census_BlockGroups",
+    "ArcGIS item metadata for both FeatureServer items and the linked WaterBodies layer package item",
+    "Repository search for author WKT hashes / HDDatasets residue / prior RayJoin CDB assets"
+  ]
+}

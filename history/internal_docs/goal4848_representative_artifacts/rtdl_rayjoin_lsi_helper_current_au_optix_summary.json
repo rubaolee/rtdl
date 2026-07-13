@@ -1,0 +1,26 @@
+{
+  "backend": "optix",
+  "claim_boundary": "v2.14 bundled RayJoin LSI helper; Section 5.2 LSI count/hash only; not generic-language proof and not overlay/PIP/full Section 5.7",
+  "left_cdb": "/workspace/goal4848_rep/current_osm_au/lakes_Australia_current_osm_Point.cdb",
+  "left_segment_count": 14430155,
+  "load_sec": 21.125477254390717,
+  "native_timings": {
+    "candidate_count_pass": 0.002890244,
+    "candidate_download": 0.0,
+    "candidate_write_pass": 0.0,
+    "emitted_count": 13452,
+    "exact_refine": 0.0,
+    "hot_call_sec": 2.8357882872223854,
+    "left_upload": 0.0,
+    "mode": "count_prepared_left_grouped_range_direct_intersection",
+    "raw_candidate_count": 0,
+    "scaled_intersection_materialization_enabled": false
+  },
+  "result": {
+    "row_count": 13452,
+    "sha256": "83071b242c1813c78ceeb135b5ba7ccd946817cbf3463fbd0061ecc03c96b98c"
+  },
+  "right_cdb": "/workspace/goal4848_rep/current_osm_au/parks_Australia_current_osm_Point.cdb",
+  "right_segment_count": 941375,
+  "run_sec": 2.8358296900987625
+}

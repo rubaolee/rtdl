@@ -1,0 +1,160 @@
+{
+  "author_sample_membership": [
+    {
+      "author_cell_id": 2924,
+      "author_cell_present_in_statused_deferral_stream": false,
+      "source_id": 11168,
+      "statused_deferral_cells_sample": [
+        1554
+      ],
+      "statused_deferral_row_count_for_source": 1
+    },
+    {
+      "author_cell_id": 17,
+      "author_cell_present_in_statused_deferral_stream": false,
+      "source_id": 210712,
+      "statused_deferral_cells_sample": [
+        1554
+      ],
+      "statused_deferral_row_count_for_source": 1
+    },
+    {
+      "author_cell_id": 17,
+      "author_cell_present_in_statused_deferral_stream": false,
+      "source_id": 437119,
+      "statused_deferral_cells_sample": [
+        1554
+      ],
+      "statused_deferral_row_count_for_source": 1
+    }
+  ],
+  "author_trace_v2": {
+    "active_in_queue_size": 437645,
+    "cmin2_after_load_balance_hash": 10400538358226239013,
+    "cmin2_after_ray_hash": 10400538358226239013,
+    "feedback_update_count": 294,
+    "raw_offload_row_hash": 4333109858711462591,
+    "raw_offload_rows_before_sort_reduce": 27133990
+  },
+  "claim_boundary": {
+    "bounded_xhd_author_sample_recovery_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_support_claimed": false,
+    "figure11_reproduction_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "full_goal5387_row_identity_parity_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false
+  },
+  "classification": {
+    "all_author_sample_pairs_present": false,
+    "label": "author_sample_rows_not_recovered_by_statused_deferral_stream"
+  },
+  "decision": {
+    "bounded_xhd_author_sample_row_gate_passed": false,
+    "direct_native_fix_authorized": false,
+    "explicit_lb_support_authorized": false,
+    "full_goal5387_row_identity_gate_authorized": false,
+    "recommended_next_goal": "Goal5412_fail_close_explicit_lb_or_design_new_generic_native_trace_semantics"
+  },
+  "generic_semantic": {
+    "app_semantics": "none",
+    "frontier_bridge_contract": "generic_active_query_status_from_frontier_rows_v1",
+    "name": "statused_large_cell_deferral_stream",
+    "reference_contract": "generic_active_query_status_machine_reference_v1",
+    "trace_summary_contract": "generic_active_query_status_trace_summary_v1"
+  },
+  "goal": "Goal5411",
+  "input1": "/tmp/xhd_goal5234/data/dragon.ply",
+  "input2": "/tmp/xhd_goal5234/data/asian_dragon.ply",
+  "matched": true,
+  "observed_telemetry": {
+    "aborted_row_count": 0,
+    "active_query_count": 3,
+    "attempted_output_row_count": 3,
+    "candidate_row_count": 168,
+    "completed_row_count": 0,
+    "emitted_output_row_count": 3,
+    "miss_row_count": 0,
+    "offload_row_count": 3,
+    "overflowed": false,
+    "pruned_by_radius_or_current_best_count": 165,
+    "queries_with_candidates": 3,
+    "schema": "rtdl.generic.active_query_status_machine.telemetry.v1"
+  },
+  "preprocessing": [
+    "translate_each_input_to_min_bound"
+  ],
+  "purpose": "Use the generic statused large-cell deferral stream over the Goal5387 author sample source ids and test whether author sample source/cell rows are recovered without hard-coded rows.",
+  "sample_cell_ids": [
+    2924,
+    17,
+    17
+  ],
+  "sample_source_ids": [
+    11168,
+    210712,
+    437119
+  ],
+  "schema": "rtdl.paper_reproduction.xhd.goal5411.bounded_statused_deferral_sample_row_gate.v1",
+  "status": "bounded_xhd_statused_deferral_sample_row_gate_failed__sample_rows_not_recovered",
+  "timings_sec": {
+    "frontier_rows": 0.26117925345897675,
+    "grid_cell_mbrs": 0.47656749188899994,
+    "load_inputs": 0.500143826007843,
+    "status_bridge": 0.0006431862711906433,
+    "total": 1.4943321198225021
+  },
+  "trace_summary": {
+    "active_query_count": 3,
+    "app_semantics": "none",
+    "contract": "generic_active_query_status_trace_summary_v1",
+    "hash_columns": [
+      "source_ids",
+      "cell_ids"
+    ],
+    "metadata": {
+      "adapter": "active_query_status_trace_summary_numpy_columns",
+      "app_semantics": "none",
+      "contract": "generic_active_query_status_trace_summary_v1",
+      "default_hash_offset": 1469598103934665603,
+      "explicit_app_option_support_claimed": false,
+      "hash_contract": "fnv1a_u64_over_selected_int64_columns",
+      "native_engine_row_contract": "not_called_cpu_reference_only",
+      "partner": "numpy",
+      "rt_core_speedup_claim_authorized": false,
+      "whole_app_speedup_claim_authorized": false
+    },
+    "raw_offload_row_hash": 9167427956528640442,
+    "row_count": 3,
+    "sample_columns": [
+      "source_ids",
+      "cell_ids",
+      "work_counts"
+    ],
+    "sample_indices": [
+      0,
+      1,
+      2
+    ],
+    "samples": {
+      "cell_ids": [
+        1554,
+        1554,
+        1554
+      ],
+      "source_ids": [
+        11168,
+        210712,
+        437119
+      ],
+      "work_counts": [
+        269,
+        269,
+        269
+      ]
+    },
+    "schema": "rtdl.generic.active_query_status_trace_summary.v1",
+    "status_count_offloading": 3
+  }
+}

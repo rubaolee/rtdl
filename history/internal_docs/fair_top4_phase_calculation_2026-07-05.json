@@ -1,0 +1,22 @@
+{
+  "author_phases": {
+    "Read map 0": 14.8587,
+    "Read map 1": 85.69630000000001,
+    "Create App": 0.000762939,
+    "Load Data": 2.8226999999999998,
+    "Init": 0.375749,
+    "Build Index": 0.13618799999999998,
+    "Intersection edges": 0.00697207,
+    "Map 0: Locate vertices in other map": 0.015573,
+    "Map 1: Locate vertices in other map": 0.060183,
+    "Computer output polygons": 0.10431399999999999,
+    "Write to file": 8.66027
+  },
+  "author_core_compute_no_read_no_write_sec": 0.18704207,
+  "author_post_read_full_text_sec": 12.18194907,
+  "author_read_maps_sec": 100.555,
+  "rtdl_load_sec": 13.962218048982322,
+  "rtdl_compute_no_load_no_writer_sec": 38.87912297435105,
+  "rtdl_post_load_full_text_sec": 64.383474169299,
+  "rtdl_writer_sec": 25.504351194947958
+}

@@ -1,0 +1,6 @@
+*
+!*/
+!.gitignore
+!README.md
+!**/README.md
+!**/*_acquisition_*.json

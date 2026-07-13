@@ -1,0 +1,60 @@
+{
+  "action_packet": "Paper-reproduction-apps/x-hd-paper/requests/water_bg_external_action_packet.md",
+  "allowed_summary": "Goal5434 creates a single Water/BG external action packet. It does not send requests, receive responses, accept exact-equivalence, acquire artifacts, run POD, or change X-HD claim status.",
+  "claim_boundary": {
+    "exact_equivalence_accepted": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_reopened": false,
+    "external_action_packet_prepared": true,
+    "external_artifacts_acquired": false,
+    "external_response_received": false,
+    "figure5_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "new_rtdl_route_code_added": false,
+    "performance_ratio_claimed": false,
+    "pod_execution_claimed": false,
+    "request_sent_claimed": false,
+    "route_micro_optimization_goal_authorized": false
+  },
+  "date": "2026-07-10",
+  "goal": "Goal5434",
+  "included_workflow": {
+    "classify_response_script": "Paper-reproduction-apps/x-hd-paper/scripts/classify_xhd_goal5433_water_bg_external_response.py",
+    "normalize_response_template": "Paper-reproduction-apps/x-hd-paper/requests/external_response_intake_template.json",
+    "send_or_review_author_request": "Paper-reproduction-apps/x-hd-paper/requests/author_water_bg_input_hash_request.md",
+    "send_or_review_exact_equivalence_request": "Paper-reproduction-apps/x-hd-paper/requests/water_bg_exact_equivalence_review_request.md"
+  },
+  "inputs": {
+    "goal5430": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5430_water_bg_exact_equivalence_packet.json",
+    "goal5431": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5431_water_bg_outbox_refresh.json",
+    "goal5432": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5432_public_artifact_live_refresh.json",
+    "goal5433": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5433_water_bg_external_response_classifier_contract.json"
+  },
+  "next_action": "send_or_review_action_packet_and_await_classified_external_response",
+  "not_allowed": [
+    "claiming the action packet was sent",
+    "claiming any response arrived",
+    "claiming external artifacts were acquired",
+    "claiming exact-equivalence was accepted",
+    "claiming exact paper dataset reproduction",
+    "claiming Figure 5 reproduction",
+    "claiming full X-HD paper reproduction",
+    "claiming author-vs-RTDL performance ratio",
+    "starting POD/route work before a positive classifier outcome"
+  ],
+  "pod_usage": {
+    "expected_next": false,
+    "reason": "External action packet only. POD is expected only after a positive classifier outcome.",
+    "used": false
+  },
+  "purpose": "Create a single action packet for Water/BG external request/review/response classification.",
+  "schema": "rtdl.paper_reproduction.xhd.goal5434.water_bg_external_action_packet.v1",
+  "status": "water_bg_external_action_packet_ready__prepared_not_sent",
+  "stop_loss_gate": {
+    "decision": "PASS: packaging external action, not app-artifact parity implementation.",
+    "gate_downstream_consumer_reachable": true,
+    "gate_generic_capability_produced": true,
+    "gate_non_app_consumer": "external action packet / response classification workflow",
+    "gate_requires_app_specific_logic": false
+  }
+}

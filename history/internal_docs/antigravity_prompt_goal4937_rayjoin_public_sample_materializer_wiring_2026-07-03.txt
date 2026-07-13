@@ -1,0 +1,26 @@
+Please perform an independent technical review of Goal4937 in the RTDL workspace.
+
+Read:
+
+- history/internal_docs/call_for_review_goal4937_rayjoin_public_sample_materializer_wiring_2026-07-03.md
+- history/internal_docs/goal4937_rayjoin_public_sample_materializer_wiring_2026-07-03.md
+- history/internal_docs/goal4937_pod_artifacts/first_run/summary.json
+- history/internal_docs/goal4937_pod_artifacts/first_run/section57_overlay.json
+- history/internal_docs/goal4937_pod_artifacts/first_run/section57_overlay_numba_materializer.json
+- history/internal_docs/goal4937_pod_artifacts/rerun1/summary.json
+- history/internal_docs/goal4937_pod_artifacts/rerun1/section57_overlay.json
+- history/internal_docs/goal4937_pod_artifacts/rerun1/section57_overlay_numba_materializer.json
+
+Answer the six review questions in the call-for-review file.
+
+Pay special attention to whether the conclusion is honest: the route is byte-equal but slower, so it should close as a failed performance gate rather than being promoted as a speedup.
+
+Write the result to:
+
+history/internal_docs/antigravity_goal4937_rayjoin_public_sample_materializer_wiring_review_2026-07-03.md
+
+Use one of these verdict labels:
+
+- approve_goal4937_byte_equal_but_not_faster_stop
+- redo_goal4937_due_to_missing_evidence
+- reject_goal4937_interpretation

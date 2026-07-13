@@ -1,0 +1,628 @@
+{
+  "all_cases_matched": true,
+  "cases": [
+    {
+      "author_log": {
+        "algorithm": "Hybrid",
+        "hd_result": 0.1137629821896553,
+        "max_hit": null,
+        "normalize": true,
+        "num_points_per_cell": 8,
+        "point_counts": [
+          439910,
+          2286376
+        ],
+        "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/ModelNet40/n_points_cell_false_max_hit_false/airplane_0396.off_airplane_0050.off.json",
+        "translate": 0.0,
+        "type": "Float"
+      },
+      "author_normalized": {
+        "algorithm_matched": true,
+        "author_bin": "/tmp/xhd-goal5222_build_paper/bin/hd_exec",
+        "expected_algorithm": "Hybrid",
+        "hd_result": 0.1137629821896553,
+        "json": "Paper-reproduction-apps/x-hd-paper/results/goal5225/modelnet40_algorithm_aware_largest10/author/00_airplane_0396__airplane_0050.json",
+        "mbr_matched": true,
+        "observed_algorithms": [
+          "Hybrid"
+        ],
+        "paper_abs_diff": 0.0,
+        "paper_hd_matched": true,
+        "process_wall_sec": 3.271713934838772,
+        "running_avg_time_ms": 8.399,
+        "variant": "hybrid"
+      },
+      "case_index": 0,
+      "case_matched": true,
+      "case_name": "00_airplane_0396__airplane_0050",
+      "category": "airplane",
+      "members": [
+        "ModelNet40/airplane/train/airplane_0396.off",
+        "ModelNet40/airplane/train/airplane_0050.off"
+      ],
+      "public_paths": [
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/airplane/train/airplane_0396.off",
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/airplane/train/airplane_0050.off"
+      ],
+      "public_sha256": [
+        "aa2e9ba6682303d21bba5de5668777939a0fed854ab938205399f1505fd79076",
+        "786a35e50656fc9cb6ce582bf946d446fee79962906c8938373b41be086d3194"
+      ],
+      "rtdl_normalized_route": {
+        "author_abs_diff": 1.0617538129253923e-07,
+        "json": "Paper-reproduction-apps/x-hd-paper/results/goal5225/modelnet40_algorithm_aware_largest10/rtdl/00_airplane_0396__airplane_0050.json",
+        "matched_author": true,
+        "reference_preprocessing": [
+          "normalize_each_input_to_author_unit_box"
+        ],
+        "route_distance": 0.11376287601427401,
+        "route_wall_sec": 9.464011810719967,
+        "total_sec": 15.987704440951347
+      },
+      "total_points": 2726286
+    },
+    {
+      "author_log": {
+        "algorithm": "Hybrid",
+        "hd_result": 0.06059353053569794,
+        "max_hit": null,
+        "normalize": true,
+        "num_points_per_cell": 8,
+        "point_counts": [
+          161094,
+          2501688
+        ],
+        "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/ModelNet40/n_points_cell_false_max_hit_false/curtain_0001.off_curtain_0130.off.json",
+        "translate": 0.0,
+        "type": "Float"
+      },
+      "author_normalized": {
+        "algorithm_matched": true,
+        "author_bin": "/tmp/xhd-goal5222_build_paper/bin/hd_exec",
+        "expected_algorithm": "Hybrid",
+        "hd_result": 0.06059353053569794,
+        "json": "Paper-reproduction-apps/x-hd-paper/results/goal5225/modelnet40_algorithm_aware_largest10/author/01_curtain_0001__curtain_0130.json",
+        "mbr_matched": true,
+        "observed_algorithms": [
+          "Hybrid"
+        ],
+        "paper_abs_diff": 0.0,
+        "paper_hd_matched": true,
+        "process_wall_sec": 3.1095424741506577,
+        "running_avg_time_ms": 9.739,
+        "variant": "hybrid"
+      },
+      "case_index": 1,
+      "case_matched": true,
+      "case_name": "01_curtain_0001__curtain_0130",
+      "category": "curtain",
+      "members": [
+        "ModelNet40/curtain/train/curtain_0001.off",
+        "ModelNet40/curtain/train/curtain_0130.off"
+      ],
+      "public_paths": [
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/curtain/train/curtain_0001.off",
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/curtain/train/curtain_0130.off"
+      ],
+      "public_sha256": [
+        "093aea9588037deaaca13b3f718186c143150dc716617fedc8bfc060e2e6b909",
+        "ad38bfa9b507c72c440e5ea8b2bca980644b2c7490b1daffab590ca8405709de"
+      ],
+      "rtdl_normalized_route": {
+        "author_abs_diff": 2.576319915043035e-08,
+        "json": "Paper-reproduction-apps/x-hd-paper/results/goal5225/modelnet40_algorithm_aware_largest10/rtdl/01_curtain_0001__curtain_0130.json",
+        "matched_author": true,
+        "reference_preprocessing": [
+          "normalize_each_input_to_author_unit_box"
+        ],
+        "route_distance": 0.06059355629889709,
+        "route_wall_sec": 6.377336397767067,
+        "total_sec": 13.08482676744461
+      },
+      "total_points": 2662782
+    },
+    {
+      "author_log": {
+        "algorithm": "Hybrid",
+        "hd_result": 0.4391026198863983,
+        "max_hit": null,
+        "normalize": true,
+        "num_points_per_cell": 8,
+        "point_counts": [
+          1240160,
+          813792
+        ],
+        "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/ModelNet40/n_points_cell_false_max_hit_false/airplane_0061.off_airplane_0395.off.json",
+        "translate": 0.0,
+        "type": "Float"
+      },
+      "author_normalized": {
+        "algorithm_matched": true,
+        "author_bin": "/tmp/xhd-goal5222_build_paper/bin/hd_exec",
+        "expected_algorithm": "Hybrid",
+        "hd_result": 0.4391026198863983,
+        "json": "Paper-reproduction-apps/x-hd-paper/results/goal5225/modelnet40_algorithm_aware_largest10/author/02_airplane_0061__airplane_0395.json",
+        "mbr_matched": true,
+        "observed_algorithms": [
+          "Hybrid"
+        ],
+        "paper_abs_diff": 0.0,
+        "paper_hd_matched": true,
+        "process_wall_sec": 2.764259971678257,
+        "running_avg_time_ms": 63.329,
+        "variant": "hybrid"
+      },
+      "case_index": 2,
+      "case_matched": true,
+      "case_name": "02_airplane_0061__airplane_0395",
+      "category": "airplane",
+      "members": [
+        "ModelNet40/airplane/train/airplane_0061.off",
+        "ModelNet40/airplane/train/airplane_0395.off"
+      ],
+      "public_paths": [
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/airplane/train/airplane_0061.off",
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/airplane/train/airplane_0395.off"
+      ],
+      "public_sha256": [
+        "0c44ff248713a8c552e6dd4eeb15440ccd154948e6044ff48f94ba4e0affbd35",
+        "8a9c3a562462c180004bf8c0eaadb369ec5901a6474164e8ddd6e1b6ec2df534"
+      ],
+      "rtdl_normalized_route": {
+        "author_abs_diff": 1.3367260298657868e-08,
+        "json": "Paper-reproduction-apps/x-hd-paper/results/goal5225/modelnet40_algorithm_aware_largest10/rtdl/02_airplane_0061__airplane_0395.json",
+        "matched_author": true,
+        "reference_preprocessing": [
+          "normalize_each_input_to_author_unit_box"
+        ],
+        "route_distance": 0.439102606519138,
+        "route_wall_sec": 17.188483856618404,
+        "total_sec": 21.790249228477478
+      },
+      "total_points": 2053952
+    },
+    {
+      "author_log": {
+        "algorithm": "Hybrid",
+        "hd_result": 0.26232820749282837,
+        "max_hit": null,
+        "normalize": true,
+        "num_points_per_cell": 8,
+        "point_counts": [
+          1393755,
+          439910
+        ],
+        "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/ModelNet40/n_points_cell_false_max_hit_false/airplane_0130.off_airplane_0396.off.json",
+        "translate": 0.0,
+        "type": "Float"
+      },
+      "author_normalized": {
+        "algorithm_matched": true,
+        "author_bin": "/tmp/xhd-goal5222_build_paper/bin/hd_exec",
+        "expected_algorithm": "Hybrid",
+        "hd_result": 0.26232820749282837,
+        "json": "Paper-reproduction-apps/x-hd-paper/results/goal5225/modelnet40_algorithm_aware_largest10/author/03_airplane_0130__airplane_0396.json",
+        "mbr_matched": true,
+        "observed_algorithms": [
+          "Hybrid"
+        ],
+        "paper_abs_diff": 0.0,
+        "paper_hd_matched": true,
+        "process_wall_sec": 2.616846516728401,
+        "running_avg_time_ms": 31.691,
+        "variant": "hybrid"
+      },
+      "case_index": 3,
+      "case_matched": true,
+      "case_name": "03_airplane_0130__airplane_0396",
+      "category": "airplane",
+      "members": [
+        "ModelNet40/airplane/train/airplane_0130.off",
+        "ModelNet40/airplane/train/airplane_0396.off"
+      ],
+      "public_paths": [
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/airplane/train/airplane_0130.off",
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/airplane/train/airplane_0396.off"
+      ],
+      "public_sha256": [
+        "f0c66c80d5634f20d4d2b752b0561d6d100548bb2b3d61b2eef26057c33725c6",
+        "aa2e9ba6682303d21bba5de5668777939a0fed854ab938205399f1505fd79076"
+      ],
+      "rtdl_normalized_route": {
+        "author_abs_diff": 2.6194424962433516e-08,
+        "json": "Paper-reproduction-apps/x-hd-paper/results/goal5225/modelnet40_algorithm_aware_largest10/rtdl/03_airplane_0130__airplane_0396.json",
+        "matched_author": true,
+        "reference_preprocessing": [
+          "normalize_each_input_to_author_unit_box"
+        ],
+        "route_distance": 0.26232823368725333,
+        "route_wall_sec": 75.94323969632387,
+        "total_sec": 80.18635851889849
+      },
+      "total_points": 1833665
+    },
+    {
+      "author_log": {
+        "algorithm": "Hybrid",
+        "hd_result": 0.2397836297750473,
+        "max_hit": null,
+        "normalize": true,
+        "num_points_per_cell": 8,
+        "point_counts": [
+          234374,
+          1587572
+        ],
+        "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/ModelNet40/n_points_cell_false_max_hit_false/plant_0072.off_plant_0014.off.json",
+        "translate": 0.0,
+        "type": "Float"
+      },
+      "author_normalized": {
+        "algorithm_matched": true,
+        "author_bin": "/tmp/xhd-goal5222_build_paper/bin/hd_exec",
+        "expected_algorithm": "Hybrid",
+        "hd_result": 0.2397836297750473,
+        "json": "Paper-reproduction-apps/x-hd-paper/results/goal5225/modelnet40_algorithm_aware_largest10/author/04_plant_0072__plant_0014.json",
+        "mbr_matched": true,
+        "observed_algorithms": [
+          "Hybrid"
+        ],
+        "paper_abs_diff": 0.0,
+        "paper_hd_matched": true,
+        "process_wall_sec": 2.29845017939806,
+        "running_avg_time_ms": 14.043,
+        "variant": "hybrid"
+      },
+      "case_index": 4,
+      "case_matched": true,
+      "case_name": "04_plant_0072__plant_0014",
+      "category": "plant",
+      "members": [
+        "ModelNet40/plant/train/plant_0072.off",
+        "ModelNet40/plant/train/plant_0014.off"
+      ],
+      "public_paths": [
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/plant/train/plant_0072.off",
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/plant/train/plant_0014.off"
+      ],
+      "public_sha256": [
+        "a9b67e0e989ebd0b5d88d094986c7e31181f1c72bf565cbcbe190fa06bd216b3",
+        "f0ebd46f1a51794e3446d5c95caf262b7e6f30760bc3be671bb5462763a9131e"
+      ],
+      "rtdl_normalized_route": {
+        "author_abs_diff": 1.0387007423617867e-07,
+        "json": "Paper-reproduction-apps/x-hd-paper/results/goal5225/modelnet40_algorithm_aware_largest10/rtdl/04_plant_0072__plant_0014.json",
+        "matched_author": true,
+        "reference_preprocessing": [
+          "normalize_each_input_to_author_unit_box"
+        ],
+        "route_distance": 0.23978373364512154,
+        "route_wall_sec": 1.0780517682433128,
+        "total_sec": 5.160388141870499
+      },
+      "total_points": 1821946
+    },
+    {
+      "author_log": {
+        "algorithm": "Hybrid",
+        "hd_result": 0.19587910175323486,
+        "max_hit": null,
+        "normalize": true,
+        "num_points_per_cell": 8,
+        "point_counts": [
+          389364,
+          1039614
+        ],
+        "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/ModelNet40/n_points_cell_false_max_hit_false/car_0215.off_car_0021.off.json",
+        "translate": 0.0,
+        "type": "Float"
+      },
+      "author_normalized": {
+        "algorithm_matched": true,
+        "author_bin": "/tmp/xhd-goal5222_build_paper/bin/hd_exec",
+        "expected_algorithm": "Hybrid",
+        "hd_result": 0.19587910175323486,
+        "json": "Paper-reproduction-apps/x-hd-paper/results/goal5225/modelnet40_algorithm_aware_largest10/author/05_car_0215__car_0021.json",
+        "mbr_matched": true,
+        "observed_algorithms": [
+          "Hybrid"
+        ],
+        "paper_abs_diff": 0.0,
+        "paper_hd_matched": true,
+        "process_wall_sec": 1.8364877179265022,
+        "running_avg_time_ms": 9.608,
+        "variant": "hybrid"
+      },
+      "case_index": 5,
+      "case_matched": true,
+      "case_name": "05_car_0215__car_0021",
+      "category": "car",
+      "members": [
+        "ModelNet40/car/test/car_0215.off",
+        "ModelNet40/car/train/car_0021.off"
+      ],
+      "public_paths": [
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/car/test/car_0215.off",
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/car/train/car_0021.off"
+      ],
+      "public_sha256": [
+        "0d7ca24ee422253d4f70644828587f6f49381ffa77995e8ebd04cb5c15c13b99",
+        "d54dd3cfdc59dc38b27800a987bc165608d99e6715066530a419c4a14d6a3ce2"
+      ],
+      "rtdl_normalized_route": {
+        "author_abs_diff": 9.672009693151296e-09,
+        "json": "Paper-reproduction-apps/x-hd-paper/results/goal5225/modelnet40_algorithm_aware_largest10/rtdl/05_car_0215__car_0021.json",
+        "matched_author": true,
+        "reference_preprocessing": [
+          "normalize_each_input_to_author_unit_box"
+        ],
+        "route_distance": 0.19587911142524456,
+        "route_wall_sec": 1.0258140936493874,
+        "total_sec": 4.258059442043304
+      },
+      "total_points": 1428978
+    },
+    {
+      "author_log": {
+        "algorithm": "Hybrid",
+        "hd_result": 0.36232367157936096,
+        "max_hit": null,
+        "normalize": true,
+        "num_points_per_cell": 8,
+        "point_counts": [
+          83406,
+          1246107
+        ],
+        "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/ModelNet40/n_points_cell_false_max_hit_false/stairs_0094.off_stairs_0121.off.json",
+        "translate": 0.0,
+        "type": "Float"
+      },
+      "author_normalized": {
+        "algorithm_matched": true,
+        "author_bin": "/tmp/xhd-goal5222_build_paper/bin/hd_exec",
+        "expected_algorithm": "Hybrid",
+        "hd_result": 0.36232367157936096,
+        "json": "Paper-reproduction-apps/x-hd-paper/results/goal5225/modelnet40_algorithm_aware_largest10/author/06_stairs_0094__stairs_0121.json",
+        "mbr_matched": true,
+        "observed_algorithms": [
+          "Hybrid"
+        ],
+        "paper_abs_diff": 0.0,
+        "paper_hd_matched": true,
+        "process_wall_sec": 1.848005622625351,
+        "running_avg_time_ms": 50.535,
+        "variant": "hybrid"
+      },
+      "case_index": 6,
+      "case_matched": true,
+      "case_name": "06_stairs_0094__stairs_0121",
+      "category": "stairs",
+      "members": [
+        "ModelNet40/stairs/train/stairs_0094.off",
+        "ModelNet40/stairs/train/stairs_0121.off"
+      ],
+      "public_paths": [
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/stairs/train/stairs_0094.off",
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/stairs/train/stairs_0121.off"
+      ],
+      "public_sha256": [
+        "aca30d736638ac7b07fa76c3b448c85b7cd3b4d961169771599bc9969fe702b7",
+        "ff3da2117e3ae13829363ae1a3e879b448e646d622b8a77aa96a8910796af8dc"
+      ],
+      "rtdl_normalized_route": {
+        "author_abs_diff": 2.6518318096968585e-08,
+        "json": "Paper-reproduction-apps/x-hd-paper/results/goal5225/modelnet40_algorithm_aware_largest10/rtdl/06_stairs_0094__stairs_0121.json",
+        "matched_author": true,
+        "reference_preprocessing": [
+          "normalize_each_input_to_author_unit_box"
+        ],
+        "route_distance": 0.36232364506104286,
+        "route_wall_sec": 1.6884143203496933,
+        "total_sec": 4.769845053553581
+      },
+      "total_points": 1329513
+    },
+    {
+      "author_log": {
+        "algorithm": "Hybrid",
+        "hd_result": 0.6357009410858154,
+        "max_hit": null,
+        "normalize": true,
+        "num_points_per_cell": 8,
+        "point_counts": [
+          813792,
+          400919
+        ],
+        "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/ModelNet40/n_points_cell_false_max_hit_false/airplane_0395.off_airplane_0172.off.json",
+        "translate": 0.0,
+        "type": "Float"
+      },
+      "author_normalized": {
+        "algorithm_matched": true,
+        "author_bin": "/tmp/xhd-goal5222_build_paper/bin/hd_exec",
+        "expected_algorithm": "Hybrid",
+        "hd_result": 0.6357009410858154,
+        "json": "Paper-reproduction-apps/x-hd-paper/results/goal5225/modelnet40_algorithm_aware_largest10/author/07_airplane_0395__airplane_0172.json",
+        "mbr_matched": true,
+        "observed_algorithms": [
+          "Hybrid"
+        ],
+        "paper_abs_diff": 0.0,
+        "paper_hd_matched": true,
+        "process_wall_sec": 1.8480815067887306,
+        "running_avg_time_ms": 9.998,
+        "variant": "hybrid"
+      },
+      "case_index": 7,
+      "case_matched": true,
+      "case_name": "07_airplane_0395__airplane_0172",
+      "category": "airplane",
+      "members": [
+        "ModelNet40/airplane/train/airplane_0395.off",
+        "ModelNet40/airplane/train/airplane_0172.off"
+      ],
+      "public_paths": [
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/airplane/train/airplane_0395.off",
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/airplane/train/airplane_0172.off"
+      ],
+      "public_sha256": [
+        "8a9c3a562462c180004bf8c0eaadb369ec5901a6474164e8ddd6e1b6ec2df534",
+        "ab4cd2a3a2d096f65cb7eb71cf0f84862d3394577e3c0217ef6d3c1a3fe18b01"
+      ],
+      "rtdl_normalized_route": {
+        "author_abs_diff": 5.5232065365729e-08,
+        "json": "Paper-reproduction-apps/x-hd-paper/results/goal5225/modelnet40_algorithm_aware_largest10/rtdl/07_airplane_0395__airplane_0172.json",
+        "matched_author": true,
+        "reference_preprocessing": [
+          "normalize_each_input_to_author_unit_box"
+        ],
+        "route_distance": 0.6357009963178808,
+        "route_wall_sec": 5.221723690629005,
+        "total_sec": 8.021120056509972
+      },
+      "total_points": 1214711
+    },
+    {
+      "author_log": {
+        "algorithm": "Hybrid",
+        "hd_result": 0.32214951515197754,
+        "max_hit": null,
+        "normalize": true,
+        "num_points_per_cell": 8,
+        "point_counts": [
+          813792,
+          341282
+        ],
+        "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/ModelNet40/n_points_cell_false_max_hit_false/airplane_0395.off_airplane_0413.off.json",
+        "translate": 0.0,
+        "type": "Float"
+      },
+      "author_normalized": {
+        "algorithm_matched": true,
+        "author_bin": "/tmp/xhd-goal5222_build_paper/bin/hd_exec",
+        "expected_algorithm": "Hybrid",
+        "hd_result": 0.32214951515197754,
+        "json": "Paper-reproduction-apps/x-hd-paper/results/goal5225/modelnet40_algorithm_aware_largest10/author/08_airplane_0395__airplane_0413.json",
+        "mbr_matched": true,
+        "observed_algorithms": [
+          "Hybrid"
+        ],
+        "paper_abs_diff": 0.0,
+        "paper_hd_matched": true,
+        "process_wall_sec": 1.8383622244000435,
+        "running_avg_time_ms": 13.72,
+        "variant": "hybrid"
+      },
+      "case_index": 8,
+      "case_matched": true,
+      "case_name": "08_airplane_0395__airplane_0413",
+      "category": "airplane",
+      "members": [
+        "ModelNet40/airplane/train/airplane_0395.off",
+        "ModelNet40/airplane/train/airplane_0413.off"
+      ],
+      "public_paths": [
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/airplane/train/airplane_0395.off",
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/airplane/train/airplane_0413.off"
+      ],
+      "public_sha256": [
+        "8a9c3a562462c180004bf8c0eaadb369ec5901a6474164e8ddd6e1b6ec2df534",
+        "3bb2b6cea29cdf390da0864e94a8e752a771aa4f7ad0a071d79e15fb4b0dd476"
+      ],
+      "rtdl_normalized_route": {
+        "author_abs_diff": 4.1174419429523823e-10,
+        "json": "Paper-reproduction-apps/x-hd-paper/results/goal5225/modelnet40_algorithm_aware_largest10/rtdl/08_airplane_0395__airplane_0413.json",
+        "matched_author": true,
+        "reference_preprocessing": [
+          "normalize_each_input_to_author_unit_box"
+        ],
+        "route_distance": 0.32214951474023334,
+        "route_wall_sec": 4.765410386025906,
+        "total_sec": 7.4135048389434814
+      },
+      "total_points": 1155074
+    },
+    {
+      "author_log": {
+        "algorithm": "Hybrid",
+        "hd_result": 0.1658155471086502,
+        "max_hit": null,
+        "normalize": true,
+        "num_points_per_cell": 8,
+        "point_counts": [
+          413690,
+          529241
+        ],
+        "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/ModelNet40/n_points_cell_false_max_hit_false/car_0066.off_car_0160.off.json",
+        "translate": 0.0,
+        "type": "Float"
+      },
+      "author_normalized": {
+        "algorithm_matched": true,
+        "author_bin": "/tmp/xhd-goal5222_build_paper/bin/hd_exec",
+        "expected_algorithm": "Hybrid",
+        "hd_result": 0.1658155471086502,
+        "json": "Paper-reproduction-apps/x-hd-paper/results/goal5225/modelnet40_algorithm_aware_largest10/author/09_car_0066__car_0160.json",
+        "mbr_matched": true,
+        "observed_algorithms": [
+          "Hybrid"
+        ],
+        "paper_abs_diff": 0.0,
+        "paper_hd_matched": true,
+        "process_wall_sec": 1.4838835895061493,
+        "running_avg_time_ms": 23.092,
+        "variant": "hybrid"
+      },
+      "case_index": 9,
+      "case_matched": true,
+      "case_name": "09_car_0066__car_0160",
+      "category": "car",
+      "members": [
+        "ModelNet40/car/train/car_0066.off",
+        "ModelNet40/car/train/car_0160.off"
+      ],
+      "public_paths": [
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/car/train/car_0066.off",
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/car/train/car_0160.off"
+      ],
+      "public_sha256": [
+        "ba752a0fd1263a17f1e1585a1d1afae8f4f4ced691ef3183173013ff5af0445f",
+        "e9fec9588b001f7ab21ee857ddd47f9074ccc180b5576c36ec4cd5582f04f770"
+      ],
+      "rtdl_normalized_route": {
+        "author_abs_diff": 6.023049309300532e-09,
+        "json": "Paper-reproduction-apps/x-hd-paper/results/goal5225/modelnet40_algorithm_aware_largest10/rtdl/09_car_0066__car_0160.json",
+        "matched_author": true,
+        "reference_preprocessing": [
+          "normalize_each_input_to_author_unit_box"
+        ],
+        "route_distance": 0.1658155410856009,
+        "route_wall_sec": 1.3312717154622078,
+        "total_sec": 3.355309709906578
+      },
+      "total_points": 942931
+    }
+  ],
+  "claim_boundary": {
+    "algorithm_aware_author_comparator_selection": true,
+    "author_vs_rtdl_ratio_claimed": false,
+    "exact_paper_dataset_identity_proved": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "modelnet40_all_pairs_reproduced": false,
+    "modelnet40_batch_normalized_contract_claimed": true
+  },
+  "elapsed_sec": 190.53602692484856,
+  "extract_root": "/tmp/xhd-modelnet40/extracted",
+  "goal": "Goal5223",
+  "log_index": "Paper-reproduction-apps/x-hd-paper/results/xhd_paper_branch_log_index_goal5176_2026-07-08.json",
+  "matched_case_count": 10,
+  "modelnet_zip": "/tmp/xhd-modelnet40/ModelNet40.zip",
+  "schema": "rtdl.paper_reproduction.xhd.modelnet40_normalized_batch_gate.v2",
+  "selection": {
+    "requested_max_pairs": 10,
+    "selected_count": 10,
+    "strategy": "largest_unique_pairs",
+    "total_points_max": 2726286,
+    "total_points_min": 942931
+  },
+  "status": "modelnet40_normalized_public_off_batch_checked"
+}

@@ -1,0 +1,38 @@
+You are reviewing Goal4834 in the RTDL repository.
+
+Please read these files:
+
+- history/internal_docs/call_for_review_goal4834_patched_author_sos_contract_and_synthetic_gate_2026-06-30.md
+- history/internal_docs/goal4834_completion_report_2026-06-30.md
+- history/internal_docs/goal4834_author_sos_t_reported.patch
+- history/internal_docs/goal4834_author_patch_scope.md
+- history/internal_docs/goal4834_contract_alignment_notes_2026-06-30.md
+- history/internal_docs/goal4834_synthetic_cases.md
+- history/internal_docs/goal4834_synthetic_gate_summary.json
+- history/internal_docs/goal4834_author_patched_public_sample_summary.json
+- history/internal_docs/goal4834_rtdl_rebuilt_public_sample_iter0_summary.json
+- history/internal_docs/goal4834_public_sample_patched_author_vs_rtdl_perf_summary.json
+- src/native/optix/rtdl_optix_core.cpp
+- src/rtdsl/rayjoin_overlay.py
+- tests/goal4834_rayjoin_sos_synthetic_contract_test.py
+- tests/goal4373_rayjoin_cdb_point_location_route_test.py
+- tests/goal4374_rayjoin_exact_paper_suite_test.py
+
+Answer with:
+
+1. One verdict label, exactly one of:
+   - approve_goal4834_correctness_repair_no_performance_win_claim
+   - approve_with_required_amendments
+   - fail_redo_goal4834
+2. P0/P1/P2 findings, if any.
+3. Answers to the eight review questions in the call-for-review file.
+4. Whether Goal4834 may close with:
+   completed_correctness_repair__public_sample_byte_equal__no_performance_win_claim
+
+Important boundaries:
+
+- Do not authorize any full Section 5.7 eight-pair claim.
+- Do not authorize any broad RayJoin or RTDL performance claim.
+- Do not authorize a claim that RTDL is faster than the patched author baseline.
+- Do not authorize V3/V4 work.
+- Do not authorize Embree work.

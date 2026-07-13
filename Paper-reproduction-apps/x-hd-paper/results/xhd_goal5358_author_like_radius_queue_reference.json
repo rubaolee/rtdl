@@ -1,0 +1,73 @@
+{
+  "author": {
+    "artifact": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\bounded3d_author_hd_exec_output_pod.json",
+    "hd_result": 2.0,
+    "hd_upper_bound": 3.316624879837036,
+    "init_radius": 2.0,
+    "iteration_model": "author_adaptive_radius_queue_loop",
+    "iterations": [
+      {
+        "CMax2": 4.0,
+        "CUDATime": 0.084,
+        "Iteration": 1,
+        "NumInputPoints": 9,
+        "NumOutputPoints": 0,
+        "OffloadingSize": 0,
+        "RTTime": 2.536,
+        "Radius": 2.0
+      }
+    ]
+  },
+  "claim_boundary": {
+    "author_rt_core_algorithm_equivalence_claimed": false,
+    "author_tune_radius_route_mapping_claimed": false,
+    "figure8_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "performance_claimed": false
+  },
+  "comparison": {
+    "matched": true,
+    "mismatch_count": 0,
+    "mismatches": []
+  },
+  "date": "2026-07-09",
+  "decision": {
+    "author_like_iteration_schema_available": true,
+    "current_cell_mbr_route_replaced": false,
+    "explicit_author_tune_radius_supported": false,
+    "reason": "This is a generic exact-nearest semantics reference. It does not make the current cell-MBR route author-queue-compatible yet."
+  },
+  "exit_label": "author_like_queue_reference_ready__route_implementation_still_required",
+  "goal": "Goal5358",
+  "input_fixture": "bounded3d_a.wkt -> bounded3d_b.wkt",
+  "purpose": "Build an app-owned author-like radius queue reference from generic nearest/witness primitives, so future route work has a comparable Iteration/Radius/NumInputPoints/NumOutputPoints target.",
+  "recommended_next_targets": [
+    "implement_cell_mbr_author_like_queue_route_using_this_iteration_schema",
+    "compare_route_queue_trace_against_author_trace",
+    "only_then_consider_accepting_explicit_author_tune_radius"
+  ],
+  "rtdl_reference": {
+    "hd_result": 2.0,
+    "iteration_model": "generic_exact_nearest_author_like_radius_queue_reference",
+    "iterations": [
+      {
+        "CMax2": 4.0,
+        "Iteration": 1,
+        "NumInputPoints": 9,
+        "NumOutputPoints": 0,
+        "Radius": 2.0
+      }
+    ],
+    "pipeline_metadata": {
+      "app_semantics": "none",
+      "candidate_row_count": 72,
+      "contract": "generic_pairwise_l2_distance_candidate_rows -> generic_nearest_witness_columns -> generic_max_nearest_distance_with_witness",
+      "max_contract": "generic_max_nearest_distance_with_witness",
+      "nearest_source_count": 9
+    },
+    "uses_generic_nearest_pipeline": true,
+    "uses_radius_growth_step": false
+  },
+  "schema": "rtdl.paper_reproduction.xhd.goal5358.author_like_radius_queue_reference.v1",
+  "status": "author_like_radius_queue_reference_matches_bounded3d_author_trace"
+}

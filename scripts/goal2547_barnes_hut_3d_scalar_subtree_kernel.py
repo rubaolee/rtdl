@@ -17,6 +17,9 @@ sys.path.insert(0, str(ROOT))
 
 
 CONTRACT = "generic_aggregate_frontier_inverse_square_scalar_sum_3d_v1"
+TRAVERSAL_RTDL_CONTAINMENT = "rtdl-containment"
+TRAVERSAL_AUTHOR_OPENING = "author-opening"
+TRAVERSAL_AUTHOR_OPTIX_PAYLOAD = "author-optix-payload"
 
 
 @dataclass(frozen=True)
@@ -262,7 +265,11 @@ def reference_scalar_sum_3d(
     *,
     theta: float,
     softening: float,
+    traversal_policy: str = TRAVERSAL_RTDL_CONTAINMENT,
 ) -> dict[str, object]:
+    if traversal_policy not in (TRAVERSAL_RTDL_CONTAINMENT, TRAVERSAL_AUTHOR_OPENING):
+        raise ValueError(f"unsupported traversal policy: {traversal_policy}")
+    respect_subtree_containment = traversal_policy == TRAVERSAL_RTDL_CONTAINMENT
     point_by_id = {point.id: point for point in points}
     node_by_id = {node.id: node for node in nodes}
     node_member_sets = {node.id: set(node.member_ids) for node in nodes}
@@ -287,7 +294,7 @@ def reference_scalar_sum_3d(
             dz = node.cz - source.z
             distance = math.sqrt(dx * dx + dy * dy + dz * dz)
             contains_source = source.id in node_member_sets[node.id]
-            if not contains_source and node.half_size < distance * theta:
+            if (not respect_subtree_containment or not contains_source) and node.half_size < distance * theta:
                 dist_sq = dx * dx + dy * dy + dz * dz + softening * softening
                 if dist_sq != 0.0:
                     scalar_sum += source.mass * node.mass / dist_sq
@@ -353,13 +360,17 @@ std::vector<torch::Tensor> scalar_sum_3d_cuda(
     torch::Tensor node_mass,
     torch::Tensor node_resume_index,
     torch::Tensor node_subtree_end_index,
+    torch::Tensor node_next_prim_index,
+    torch::Tensor node_auto_rope_index,
     torch::Tensor source_leaf_node_index,
     torch::Tensor member_offsets,
     torch::Tensor member_indices,
     torch::Tensor child_offsets,
     torch::Tensor child_indices,
     double theta,
-    double softening
+    double softening,
+    bool respect_subtree_containment,
+    bool use_author_optix_payload
 );
 """
 
@@ -387,6 +398,8 @@ __global__ void scalar_sum_3d_kernel(
     const float* __restrict__ node_mass,
     const int64_t* __restrict__ node_resume_index,
     const int64_t* __restrict__ node_subtree_end_index,
+    const int64_t* __restrict__ node_next_prim_index,
+    const int64_t* __restrict__ node_auto_rope_index,
     const int64_t* __restrict__ source_leaf_node_index,
     const int64_t* __restrict__ member_offsets,
     const int64_t* __restrict__ member_indices,
@@ -394,6 +407,8 @@ __global__ void scalar_sum_3d_kernel(
     const int64_t* __restrict__ child_indices,
     float theta,
     float softening,
+    bool respect_subtree_containment,
+    bool use_author_optix_payload,
     float* __restrict__ out_scalar,
     int64_t* __restrict__ out_visited,
     int64_t* __restrict__ out_aggregate_count,
@@ -424,6 +439,85 @@ __global__ void scalar_sum_3d_kernel(
     int64_t exact_count = 0;
     int64_t node_index = 0;
 
+    if (use_author_optix_payload) {
+        int ray_self = 0;
+        while (true) {
+            if (node_index >= node_count) {
+                break;
+            }
+            visited += 1;
+            const float dx = sx - node_cx[node_index];
+            const float dy = sy - node_cy[node_index];
+            const float dz = sz - node_cz[node_index];
+            const float raw_dist_sq = dx * dx + dy * dy + dz * dz;
+            const float dist_sq = raw_dist_sq + softening * softening;
+            const float ray_length = sqrtf(raw_dist_sq) * theta;
+            const bool hit_current_node = node_half_size[node_index] < ray_length;
+            const int64_t child_begin = child_offsets[node_index];
+            const int64_t child_end = child_offsets[node_index + 1];
+            const bool is_leaf = child_begin >= child_end;
+
+            if (hit_current_node) {
+                if (is_leaf) {
+                    const int64_t member_begin = member_offsets[node_index];
+                    const int64_t member_end = member_offsets[node_index + 1];
+                    for (int64_t offset = member_begin; offset < member_end; ++offset) {
+                        const int64_t target_index = member_indices[offset];
+                        if (target_index == source_index) {
+                            continue;
+                        }
+                        const float ex = point_x[target_index] - sx;
+                        const float ey = point_y[target_index] - sy;
+                        const float ez = point_z[target_index] - sz;
+                        const float exact_dist_sq = ex * ex + ey * ey + ez * ez + softening * softening;
+                        if (exact_dist_sq != 0.0f) {
+                            scalar_sum += smass * point_mass[target_index] / exact_dist_sq;
+                        }
+                        exact_count += 1;
+                    }
+                } else if (dist_sq != 0.0f) {
+                    scalar_sum += smass * node_mass[node_index] / dist_sq;
+                    aggregate_count += 1;
+                }
+                node_index = node_auto_rope_index[node_index];
+            } else {
+                if (is_leaf && ray_self == 0) {
+                    const int64_t member_begin = member_offsets[node_index];
+                    const int64_t member_end = member_offsets[node_index + 1];
+                    for (int64_t offset = member_begin; offset < member_end; ++offset) {
+                        const int64_t target_index = member_indices[offset];
+                        if (target_index == source_index) {
+                            continue;
+                        }
+                        const float ex = point_x[target_index] - sx;
+                        const float ey = point_y[target_index] - sy;
+                        const float ez = point_z[target_index] - sz;
+                        const float exact_dist_sq = ex * ex + ey * ey + ez * ez + softening * softening;
+                        if (exact_dist_sq != 0.0f) {
+                            scalar_sum += smass * point_mass[target_index] / exact_dist_sq;
+                        }
+                        exact_count += 1;
+                    }
+                }
+                node_index = node_next_prim_index[node_index];
+            }
+
+            if (node_index >= node_count || node_index == 0) {
+                break;
+            }
+            const float ndx = sx - node_cx[node_index];
+            const float ndy = sy - node_cy[node_index];
+            const float ndz = sz - node_cz[node_index];
+            const float next_ray_length = sqrtf(ndx * ndx + ndy * ndy + ndz * ndz) * theta;
+            ray_self = (next_ray_length == 0.0f) ? 1 : 0;
+        }
+        out_scalar[source_index] = scalar_sum;
+        out_visited[source_index] = visited;
+        out_aggregate_count[source_index] = aggregate_count;
+        out_exact_count[source_index] = exact_count;
+        return;
+    }
+
     while (node_index >= 0) {
         if (node_index >= node_count) {
             status[0] = 2;
@@ -437,7 +531,7 @@ __global__ void scalar_sum_3d_kernel(
         const int64_t subtree_end = node_subtree_end_index[node_index];
         const bool contains_source = node_index <= source_leaf && source_leaf < subtree_end;
 
-        if (!contains_source && node_half_size[node_index] < distance * theta) {
+        if ((!respect_subtree_containment || !contains_source) && node_half_size[node_index] < distance * theta) {
             const float dist_sq = dx * dx + dy * dy + dz * dz + softening * softening;
             if (dist_sq != 0.0f) {
                 scalar_sum += smass * node_mass[node_index] / dist_sq;
@@ -493,13 +587,17 @@ std::vector<torch::Tensor> scalar_sum_3d_cuda(
     torch::Tensor node_mass,
     torch::Tensor node_resume_index,
     torch::Tensor node_subtree_end_index,
+    torch::Tensor node_next_prim_index,
+    torch::Tensor node_auto_rope_index,
     torch::Tensor source_leaf_node_index,
     torch::Tensor member_offsets,
     torch::Tensor member_indices,
     torch::Tensor child_offsets,
     torch::Tensor child_indices,
     double theta,
-    double softening
+    double softening,
+    bool respect_subtree_containment,
+    bool use_author_optix_payload
 ) {
     TORCH_CHECK(point_x.is_cuda(), "point_x must be CUDA");
     TORCH_CHECK(point_x.scalar_type() == torch::kFloat32, "point_x must be float32");
@@ -529,6 +627,8 @@ std::vector<torch::Tensor> scalar_sum_3d_cuda(
         node_mass.data_ptr<float>(),
         node_resume_index.data_ptr<int64_t>(),
         node_subtree_end_index.data_ptr<int64_t>(),
+        node_next_prim_index.data_ptr<int64_t>(),
+        node_auto_rope_index.data_ptr<int64_t>(),
         source_leaf_node_index.data_ptr<int64_t>(),
         member_offsets.data_ptr<int64_t>(),
         member_indices.data_ptr<int64_t>(),
@@ -536,6 +636,8 @@ std::vector<torch::Tensor> scalar_sum_3d_cuda(
         child_indices.data_ptr<int64_t>(),
         static_cast<float>(theta),
         static_cast<float>(softening),
+        respect_subtree_containment,
+        use_author_optix_payload,
         out_scalar.data_ptr<float>(),
         out_visited.data_ptr<int64_t>(),
         out_aggregate.data_ptr<int64_t>(),
@@ -548,9 +650,13 @@ std::vector<torch::Tensor> scalar_sum_3d_cuda(
 """
 
 
-def prepare_arrays_3d(points: tuple[Point3D, ...], *, bucket_size: int, max_depth: int) -> dict[str, Any]:
-    tree = build_bucketized_aggregate_tree_3d(points, bucket_size=bucket_size, max_depth=max_depth)
-    nodes = tuple(tree["nodes"])
+def _arrays_from_points_and_nodes(
+    points: tuple[Point3D, ...],
+    nodes: tuple[TreeNode3D, ...],
+    *,
+    tree: dict[str, Any],
+    contract_source: str,
+) -> dict[str, Any]:
     id_to_index = {point.id: index for index, point in enumerate(points)}
     node_id_to_index = {node.id: index for index, node in enumerate(nodes)}
     member_offsets = [0]
@@ -571,6 +677,7 @@ def prepare_arrays_3d(points: tuple[Point3D, ...], *, bucket_size: int, max_dept
     return {
         "points": points,
         "tree": tree,
+        "contract_source": contract_source,
         "nodes": nodes,
         "point_x": [point.x for point in points],
         "point_y": [point.y for point in points],
@@ -583,6 +690,8 @@ def prepare_arrays_3d(points: tuple[Point3D, ...], *, bucket_size: int, max_dept
         "node_mass": [node.mass for node in nodes],
         "node_resume_index": [-1 if node.resume_index is None else int(node.resume_index) for node in nodes],
         "node_subtree_end_index": [len(nodes) if node.resume_index is None else int(node.resume_index) for node in nodes],
+        "node_next_prim_index": [-1 if node.resume_index is None else int(node.resume_index) for node in nodes],
+        "node_auto_rope_index": [-1 if node.resume_index is None else int(node.resume_index) for node in nodes],
         "source_leaf_node_index": source_leaf_node_index,
         "member_offsets": member_offsets,
         "member_indices": member_indices,
@@ -591,16 +700,122 @@ def prepare_arrays_3d(points: tuple[Point3D, ...], *, bucket_size: int, max_dept
     }
 
 
+def prepare_arrays_3d(points: tuple[Point3D, ...], *, bucket_size: int, max_depth: int) -> dict[str, Any]:
+    tree = build_bucketized_aggregate_tree_3d(points, bucket_size=bucket_size, max_depth=max_depth)
+    nodes = tuple(tree["nodes"])
+    return _arrays_from_points_and_nodes(
+        points,
+        nodes,
+        tree=tree,
+        contract_source="rtdl_bucketized_aggregate_tree_3d_v1",
+    )
+
+
+def read_prepared_arrays_3d(path: Path) -> dict[str, Any]:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if payload.get("schema") != "generic_aggregate_frontier_inverse_square_scalar_sum_3d_prepared_arrays_v1":
+        raise ValueError(f"unsupported prepared-arrays schema in {path}")
+    points = tuple(
+        Point3D(
+            id=int(row["id"]),
+            x=float(row["x"]),
+            y=float(row["y"]),
+            z=float(row["z"]),
+            mass=float(row["mass"]),
+        )
+        for row in payload["points"]
+    )
+    nodes = tuple(
+        TreeNode3D(
+            id=int(row["id"]),
+            cx=float(row["cx"]),
+            cy=float(row["cy"]),
+            cz=float(row["cz"]),
+            half_size=float(row["half_size"]),
+            mass=float(row["mass"]),
+            member_ids=tuple(int(item) for item in row.get("member_ids", [])),
+            child_ids=tuple(int(item) for item in row.get("child_ids", [])),
+            depth=int(row.get("depth", 0)),
+            dfs_index=int(row.get("dfs_index", index)),
+            resume_index=None if row.get("resume_index") is None else int(row["resume_index"]),
+            cell_cx=float(row.get("cell_cx", 0.0)),
+            cell_cy=float(row.get("cell_cy", 0.0)),
+            cell_cz=float(row.get("cell_cz", 0.0)),
+            is_leaf=bool(row.get("is_leaf", not row.get("child_ids"))),
+        )
+        for index, row in enumerate(payload["nodes"])
+    )
+    if any(node.resume_index is None for node in nodes):
+        node_id_to_index = {node.id: index for index, node in enumerate(nodes)}
+
+        def subtree_end_index(index: int) -> int:
+            child_indices = [node_id_to_index[child_id] for child_id in nodes[index].child_ids]
+            if not child_indices:
+                return index + 1
+            return max(subtree_end_index(child_index) for child_index in child_indices)
+
+        filled_nodes: list[TreeNode3D] = []
+        for index, node in enumerate(nodes):
+            computed_end = subtree_end_index(index)
+            computed_resume = None if computed_end >= len(nodes) else computed_end
+            filled_nodes.append(
+                TreeNode3D(
+                    id=node.id,
+                    cx=node.cx,
+                    cy=node.cy,
+                    cz=node.cz,
+                    half_size=node.half_size,
+                    mass=node.mass,
+                    member_ids=node.member_ids,
+                    child_ids=node.child_ids,
+                    depth=node.depth,
+                    dfs_index=node.dfs_index,
+                    resume_index=computed_resume if node.resume_index is None else node.resume_index,
+                    cell_cx=node.cell_cx,
+                    cell_cy=node.cell_cy,
+                    cell_cz=node.cell_cz,
+                    is_leaf=node.is_leaf,
+                )
+            )
+        nodes = tuple(filled_nodes)
+    tree = {
+        "nodes": nodes,
+        "ordered_source_ids": tuple(int(row["id"]) for row in payload["points"]),
+        "schema": payload["schema"],
+        "contract_source": payload.get("contract_source", "external_prepared_arrays"),
+    }
+    arrays = _arrays_from_points_and_nodes(
+        points,
+        nodes,
+        tree=tree,
+        contract_source=str(payload.get("contract_source", "external_prepared_arrays")),
+    )
+    if any("author_device" in row for row in payload["nodes"]):
+        arrays["node_next_prim_index"] = [
+            int(row.get("author_device", {}).get("next_prim_id", arrays["node_next_prim_index"][index]))
+            for index, row in enumerate(payload["nodes"])
+        ]
+        arrays["node_auto_rope_index"] = [
+            int(row.get("author_device", {}).get("auto_rope_prim_id", arrays["node_auto_rope_index"][index]))
+            for index, row in enumerate(payload["nodes"])
+        ]
+    return arrays
+
+
 def run_scalar_3d_kernel(
     *,
     body_count: int,
     input_file: Path | None,
+    prepared_arrays_json: Path | None,
     bucket_size: int,
     max_depth: int,
     theta: float,
     softening: float,
+    traversal_policy: str,
     repeats: int,
     skip_reference: bool,
+    force_out: Path | None = None,
+    force_output_scale: float = 1.0,
 ) -> dict[str, Any]:
     import torch
     from torch.utils.cpp_extension import load_inline
@@ -610,10 +825,19 @@ def run_scalar_3d_kernel(
     os.environ.setdefault("MAX_JOBS", "2")
     os.environ.setdefault("TORCH_CUDA_ARCH_LIST", "8.6")
 
-    points = read_treelogy_points(input_file, limit=body_count) if input_file is not None else make_generated_points_3d(body_count)
     prepare_start = time.perf_counter()
-    prepared = prepare_arrays_3d(points, bucket_size=bucket_size, max_depth=max_depth)
+    if prepared_arrays_json is not None:
+        prepared = read_prepared_arrays_3d(prepared_arrays_json)
+        points = tuple(prepared["points"])
+    else:
+        points = read_treelogy_points(input_file, limit=body_count) if input_file is not None else make_generated_points_3d(body_count)
+        prepared = prepare_arrays_3d(points, bucket_size=bucket_size, max_depth=max_depth)
     tree_prepare_ms = (time.perf_counter() - prepare_start) * 1000.0
+    if traversal_policy not in (TRAVERSAL_RTDL_CONTAINMENT, TRAVERSAL_AUTHOR_OPENING, TRAVERSAL_AUTHOR_OPTIX_PAYLOAD):
+        raise ValueError(f"unsupported traversal policy: {traversal_policy}")
+    respect_subtree_containment = traversal_policy == TRAVERSAL_RTDL_CONTAINMENT
+    use_author_optix_payload = traversal_policy == TRAVERSAL_AUTHOR_OPTIX_PAYLOAD
+    skip_reference = skip_reference or use_author_optix_payload
 
     compile_start = time.perf_counter()
     module = load_inline(
@@ -640,6 +864,8 @@ def run_scalar_3d_kernel(
         "node_mass": torch.tensor(prepared["node_mass"], dtype=torch.float32, device=device).contiguous(),
         "node_resume_index": torch.tensor(prepared["node_resume_index"], dtype=torch.int64, device=device).contiguous(),
         "node_subtree_end_index": torch.tensor(prepared["node_subtree_end_index"], dtype=torch.int64, device=device).contiguous(),
+        "node_next_prim_index": torch.tensor(prepared["node_next_prim_index"], dtype=torch.int64, device=device).contiguous(),
+        "node_auto_rope_index": torch.tensor(prepared["node_auto_rope_index"], dtype=torch.int64, device=device).contiguous(),
         "source_leaf_node_index": torch.tensor(prepared["source_leaf_node_index"], dtype=torch.int64, device=device).contiguous(),
         "member_offsets": torch.tensor(prepared["member_offsets"], dtype=torch.int64, device=device).contiguous(),
         "member_indices": torch.tensor(prepared["member_indices"], dtype=torch.int64, device=device).contiguous(),
@@ -662,6 +888,8 @@ def run_scalar_3d_kernel(
             tensors["node_mass"],
             tensors["node_resume_index"],
             tensors["node_subtree_end_index"],
+            tensors["node_next_prim_index"],
+            tensors["node_auto_rope_index"],
             tensors["source_leaf_node_index"],
             tensors["member_offsets"],
             tensors["member_indices"],
@@ -669,6 +897,8 @@ def run_scalar_3d_kernel(
             tensors["child_indices"],
             float(theta),
             float(softening),
+            bool(respect_subtree_containment),
+            bool(use_author_optix_payload),
         )
 
     launch()
@@ -689,6 +919,11 @@ def run_scalar_3d_kernel(
     if status_value != 0:
         raise RuntimeError(f"CUDA 3-D scalar kernel returned status {status_value}")
     out_scalar_cpu = out_scalar.cpu().double()
+    if force_out is not None:
+        force_out.parent.mkdir(parents=True, exist_ok=True)
+        with force_out.open("w", encoding="utf-8") as handle:
+            for index, force in enumerate(out_scalar_cpu.tolist()):
+                handle.write(f"{index} {float(force) * force_output_scale:.9g}\n")
     visited_total = int(out_visited.sum().cpu().item())
     aggregate_total = int(out_aggregate.sum().cpu().item())
     exact_total = int(out_exact.sum().cpu().item())
@@ -699,9 +934,11 @@ def run_scalar_3d_kernel(
         "contract": CONTRACT,
         "body_count": len(points),
         "input_file": None if input_file is None else str(input_file),
+        "prepared_arrays_json": None if prepared_arrays_json is None else str(prepared_arrays_json),
         "bucket_size": bucket_size,
         "theta": theta,
         "softening": softening,
+        "traversal_policy": traversal_policy,
         "repeats": repeats,
         "device": torch.cuda.get_device_name(0),
         "timing_ms": {
@@ -714,6 +951,8 @@ def run_scalar_3d_kernel(
         },
         "result": {
             "checksum_scalar_force": float(out_scalar_cpu.sum().item()),
+            "force_output": None if force_out is None else str(force_out),
+            "force_output_scale": force_output_scale,
             "visited_node_total": visited_total,
             "aggregate_contribution_row_count": aggregate_total,
             "exact_contribution_row_count": exact_total,
@@ -726,20 +965,34 @@ def run_scalar_3d_kernel(
         "metadata": {
             "same_dimension_as_authors": True,
             "same_scalar_inverse_square_force_shape_as_authors": True,
-            "same_tree_contract_as_authors": False,
+            "same_tree_contract_as_authors": (
+                prepared.get("contract_source") in (
+                    "rt_barneshut_author_bucket_tree_v1",
+                    "rt_barneshut_author_binary_prepared_state_v1",
+                )
+                and traversal_policy in (TRAVERSAL_AUTHOR_OPENING, TRAVERSAL_AUTHOR_OPTIX_PAYLOAD)
+            ),
+            "prepared_contract_source": prepared.get("contract_source"),
             "partner_resident_kernel": True,
             "native_engine_app_specific": False,
             "authors_code_comparison": input_file is not None,
             "paper_reproduction": False,
             "public_speedup_claim_authorized": False,
             "claim_boundary": (
-                "3-D scalar inverse-square subtree-containment prototype. Same dimensionality and force shape as authors' sample, "
-                "but not yet the exact same tree construction or RT traversal contract."
+                "3-D scalar inverse-square aggregate-frontier prototype. Paper-app "
+                "prepared arrays may supply the author bucket-tree contract; the "
+                "patched author binary remains the paper comparator."
             ),
         },
     }
     if not skip_reference:
-        reference = reference_scalar_sum_3d(points, tuple(prepared["nodes"]), theta=theta, softening=softening)
+        reference = reference_scalar_sum_3d(
+            points,
+            tuple(prepared["nodes"]),
+            theta=theta,
+            softening=softening,
+            traversal_policy=traversal_policy,
+        )
         reference_values = torch.tensor(
             [float(row["scalar_force"]) for row in reference["scalar_sum_rows"]],
             dtype=torch.float64,
@@ -766,24 +1019,36 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="3-D scalar inverse-square subtree-containment prototype.")
     parser.add_argument("--body-count", type=int, default=32768)
     parser.add_argument("--input-file", type=Path, default=None)
+    parser.add_argument("--prepared-arrays-json", type=Path, default=None)
     parser.add_argument("--bucket-size", type=int, default=32)
     parser.add_argument("--max-depth", type=int, default=32)
     parser.add_argument("--theta", type=float, default=0.5)
     parser.add_argument("--softening", type=float, default=0.0)
+    parser.add_argument(
+        "--traversal-policy",
+        choices=(TRAVERSAL_RTDL_CONTAINMENT, TRAVERSAL_AUTHOR_OPENING, TRAVERSAL_AUTHOR_OPTIX_PAYLOAD),
+        default=TRAVERSAL_RTDL_CONTAINMENT,
+    )
     parser.add_argument("--repeats", type=int, default=5)
     parser.add_argument("--skip-reference", action="store_true")
     parser.add_argument("--json-out", type=Path, default=None)
+    parser.add_argument("--force-out", type=Path, default=None)
+    parser.add_argument("--force-output-scale", type=float, default=1.0)
     args = parser.parse_args()
 
     payload = run_scalar_3d_kernel(
         body_count=args.body_count,
         input_file=args.input_file,
+        prepared_arrays_json=args.prepared_arrays_json,
         bucket_size=args.bucket_size,
         max_depth=args.max_depth,
         theta=args.theta,
         softening=args.softening,
+        traversal_policy=args.traversal_policy,
         repeats=args.repeats,
         skip_reference=args.skip_reference,
+        force_out=args.force_out,
+        force_output_scale=args.force_output_scale,
     )
     text = json.dumps(payload, indent=2, sort_keys=True)
     if args.json_out is not None:

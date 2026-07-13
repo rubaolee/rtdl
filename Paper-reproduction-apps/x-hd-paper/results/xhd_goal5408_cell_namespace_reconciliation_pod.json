@@ -1,0 +1,227 @@
+{
+  "author_sample_namespace_reconciliation": [
+    {
+      "author_cell_as_compact_maps_to_original": 126733,
+      "author_cell_as_original_maps_to_compact": null,
+      "author_cell_exists_as_global_compact": true,
+      "author_cell_exists_as_global_original": false,
+      "author_cell_id": 2924,
+      "author_cell_present_as_compact_in_source": false,
+      "author_cell_present_as_original_in_source": false,
+      "rtdl_compact_cells_sample": [
+        785,
+        898,
+        899,
+        904,
+        913,
+        999,
+        1000,
+        1005,
+        1013,
+        1089,
+        1090,
+        1095,
+        1102,
+        1105,
+        1180,
+        1181
+      ],
+      "rtdl_original_cells_sample": [
+        66547,
+        70723,
+        70724,
+        70794,
+        70866,
+        74971,
+        74972,
+        75042,
+        75114,
+        79219,
+        79220,
+        79290,
+        79362,
+        79433,
+        83467,
+        83468
+      ],
+      "rtdl_source_row_count": 56,
+      "source_id": 11168
+    },
+    {
+      "author_cell_as_compact_maps_to_original": 12047,
+      "author_cell_as_original_maps_to_compact": null,
+      "author_cell_exists_as_global_compact": true,
+      "author_cell_exists_as_global_original": false,
+      "author_cell_id": 17,
+      "author_cell_present_as_compact_in_source": false,
+      "author_cell_present_as_original_in_source": false,
+      "rtdl_compact_cells_sample": [
+        785,
+        898,
+        899,
+        904,
+        913,
+        999,
+        1000,
+        1005,
+        1013,
+        1089,
+        1090,
+        1095,
+        1102,
+        1105,
+        1180,
+        1181
+      ],
+      "rtdl_original_cells_sample": [
+        66547,
+        70723,
+        70724,
+        70794,
+        70866,
+        74971,
+        74972,
+        75042,
+        75114,
+        79219,
+        79220,
+        79290,
+        79362,
+        79433,
+        83467,
+        83468
+      ],
+      "rtdl_source_row_count": 56,
+      "source_id": 210712
+    },
+    {
+      "author_cell_as_compact_maps_to_original": 12047,
+      "author_cell_as_original_maps_to_compact": null,
+      "author_cell_exists_as_global_compact": true,
+      "author_cell_exists_as_global_original": false,
+      "author_cell_id": 17,
+      "author_cell_present_as_compact_in_source": false,
+      "author_cell_present_as_original_in_source": false,
+      "rtdl_compact_cells_sample": [
+        785,
+        898,
+        899,
+        904,
+        913,
+        999,
+        1000,
+        1005,
+        1013,
+        1089,
+        1090,
+        1095,
+        1102,
+        1105,
+        1180,
+        1181
+      ],
+      "rtdl_original_cells_sample": [
+        66547,
+        70723,
+        70724,
+        70794,
+        70866,
+        74971,
+        74972,
+        75042,
+        75114,
+        79219,
+        79220,
+        79290,
+        79362,
+        79433,
+        83467,
+        83468
+      ],
+      "rtdl_source_row_count": 56,
+      "source_id": 437119
+    }
+  ],
+  "author_state_evidence": {
+    "cmin2_after_load_balance_hash": 10400538358226239013,
+    "cmin2_after_ray_equals_after_load_balance": true,
+    "cmin2_after_ray_hash": 10400538358226239013,
+    "feedback_update_count": 294
+  },
+  "claim_boundary": {
+    "cell_namespace_reconciliation_claimed": true,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_support_claimed": false,
+    "figure11_reproduction_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "hash_sample_parity_with_author_claimed": false,
+    "performance_ratio_claimed": false,
+    "row_count_parity_with_author_claimed": false
+  },
+  "classification": {
+    "all_samples_present_as_compact": false,
+    "all_samples_present_as_original": false,
+    "any_author_cell_id_exists_globally": true,
+    "any_sample_present_as_compact_or_original": false,
+    "interpretation": "If samples are recovered as original cell ids, the next gate may be a generic compact/original namespace remap. If not, the gap is not explained by the existing RTDL compact/original cell id mapping.",
+    "label": "author_sample_cell_ids_exist_globally_but_not_for_author_sources"
+  },
+  "decision": {
+    "compact_original_namespace_remap_explains_author_samples": false,
+    "direct_native_fix_authorized": false,
+    "explicit_lb_support_authorized": false,
+    "recommended_next_goal": "Goal5409_status_machine_semantics_or_fail_closed_decision"
+  },
+  "goal": "Goal5408",
+  "goal5407_delta": {
+    "active_count": 437645,
+    "author_raw_offload_row_hash": 4333109858711462591,
+    "author_raw_offload_rows": 27133990,
+    "delta_rows_per_active_if_uniform": 6,
+    "delta_rows_per_active_remainder": 0,
+    "goal5365_full_cover_rows": 24508120,
+    "rtdl_full_cover_row_hash": 9732286907904247845,
+    "rtdl_full_cover_rows": 24508120,
+    "rtdl_rows_per_active_summary": {
+      "active_count": 437645,
+      "all_sources_have_same_row_count": true,
+      "max_rows_per_active": 56,
+      "mean_rows_per_active": 56.0,
+      "min_rows_per_active": 56,
+      "row_count": 24508120,
+      "rows_per_active_histogram": {
+        "56": 437645
+      },
+      "unique_rows_per_active": [
+        56
+      ]
+    },
+    "total_delta_rows": 2625870
+  },
+  "grid": {
+    "cell_count": 14710,
+    "cell_id_contract": "compact_zero_based_with_original_cell_ids",
+    "compact_cell_id_max": 14709,
+    "compact_cell_id_min": 0,
+    "grid_shape": [
+      96,
+      60,
+      72
+    ],
+    "original_cell_id_max": 413966,
+    "original_cell_id_min": 3406
+  },
+  "input1": "/tmp/xhd_goal5234/data/dragon.ply",
+  "input2": "/tmp/xhd_goal5234/data/asian_dragon.ply",
+  "matched": true,
+  "preprocessing": [
+    "translate_each_input_to_min_bound"
+  ],
+  "purpose": "Determine whether Goal5407's absent author sample rows are merely a compact-vs-original cell-id namespace issue.",
+  "schema": "rtdl.paper_reproduction.xhd.goal5408.cell_namespace_reconciliation.v1",
+  "status": "cell_namespace_reconciliation_complete__sample_rows_not_recovered",
+  "timings_sec": {
+    "total": 31.38289612531662
+  }
+}

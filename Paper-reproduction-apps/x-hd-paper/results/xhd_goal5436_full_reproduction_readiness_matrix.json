@@ -1,0 +1,115 @@
+{
+  "claim_boundary": {
+    "author_rt_core_algorithm_equivalence_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_reopened": false,
+    "figure5_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "new_rtdl_route_code_added": false,
+    "performance_ratio_claimed": false,
+    "pod_execution_claimed": false,
+    "readiness_matrix_claimed": true,
+    "route_micro_optimization_goal_authorized": false
+  },
+  "current_blocker": {
+    "explicit_lb_authorized": false,
+    "kind": "exact_input_artifacts_or_explicit_exact_equivalence_acceptance",
+    "route_micro_optimization_authorized": false,
+    "route_micro_optimization_is_next": false
+  },
+  "current_level_b_summary": {
+    "bounded_geo_case_count": 2,
+    "case_count": 6,
+    "full_public_geo_case_count": 1,
+    "graphics_case_count": 3,
+    "matched": true,
+    "route_result_count": 9,
+    "strongest_candidate_evidence_level": "level_b_full_public_same_source_geo_not_exact_file_hash",
+    "strongest_exact_equivalence_candidate": "geo_waterbodies_blockgroups"
+  },
+  "date": "2026-07-10",
+  "external_state": {
+    "action_packet_status": "water_bg_external_action_packet_ready__prepared_not_sent",
+    "exact_reproduction_pod_readiness": "exact_reproduction_not_pod_ready__await_artifact_access",
+    "inbox_status": "external_response_inbox_empty__await_response",
+    "pod_execution_allowed_now": false,
+    "positive_classifier_outcome_count": 0,
+    "response_count": 0
+  },
+  "full_xhd_paper_reproduction_ready": false,
+  "goal": "Goal5436",
+  "next_action": "send_or_review_action_packet_and_wait_for_classified_external_response",
+  "not_allowed": [
+    "claiming full X-HD paper reproduction from Level-B scalar evidence",
+    "claiming exact paper dataset reproduction without file/hash, regeneration, artifact, or accepted exact-equivalence evidence",
+    "claiming Figure 5 reproduction from the Level-B matrix",
+    "claiming author-vs-RTDL performance ratio without denominator alignment",
+    "reopening route micro-optimization as paper-reproduction progress",
+    "reopening explicit -lb or row-identity work",
+    "running POD before a positive classified response or command-ready exact artifact packet"
+  ],
+  "pod_usage": {
+    "expected_next": false,
+    "reason": "POD remains gated by exact/accepted input evidence and strict review of classifier output.",
+    "used": false
+  },
+  "requirements": {
+    "denominator_aligned_performance_matrix": {
+      "evidence": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5428_level_b_matrix_with_water_bg_full_public.json",
+      "reason": "Author internal AvgTime/process wall and RTDL route/total remain separate denominators.",
+      "satisfied": false
+    },
+    "exact_inputs_or_accepted_exact_equivalence": {
+      "evidence": [
+        "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5429_exact_input_or_equivalence_decision_refresh.json",
+        "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5435_external_response_inbox_gate.json"
+      ],
+      "missing": [
+        "author input files or hashes",
+        "byte-identical regeneration proof",
+        "inspectable ACM supplement contents with relevant inputs",
+        "explicit external exact-equivalence acceptance"
+      ],
+      "satisfied": false
+    },
+    "full_functional_parity_with_author_visible_behavior": {
+      "evidence": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5429_exact_input_or_equivalence_decision_refresh.json",
+      "reason": "Current evidence is scalar Level-B correctness. Full paper figures, exact input identity, and author RT-core algorithm equivalence remain unclaimed.",
+      "satisfied": false
+    },
+    "level_b_representative_scalar_evidence": {
+      "evidence": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5428_level_b_matrix_with_water_bg_full_public.json",
+      "satisfied": true,
+      "scope": "6 Level-B cases / 9 route results; scalar correctness only, not exact paper input."
+    },
+    "pod_execution_ready_for_next_gate": {
+      "evidence": [
+        "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5435_external_response_inbox_gate.json",
+        "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5345_exact_reproduction_readiness.json"
+      ],
+      "reason": "POD is expected only after a positive classifier outcome or command-ready exact artifact packet.",
+      "satisfied": false
+    },
+    "same_input_author_rtdl_gate_on_exact_or_accepted_inputs": {
+      "evidence": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5345_exact_reproduction_readiness.json",
+      "reason": "No exact/accepted input artifact is command-ready; POD same-input gate is not open.",
+      "satisfied": false
+    }
+  },
+  "schema": "rtdl.paper_reproduction.xhd.goal5436.full_reproduction_readiness_matrix.v1",
+  "source_artifacts": {
+    "goal5345": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5345_exact_reproduction_readiness.json",
+    "goal5428": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5428_level_b_matrix_with_water_bg_full_public.json",
+    "goal5429": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5429_exact_input_or_equivalence_decision_refresh.json",
+    "goal5434": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5434_water_bg_external_action_packet.json",
+    "goal5435": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5435_external_response_inbox_gate.json"
+  },
+  "status": "full_xhd_reproduction_not_ready__await_external_response_or_artifact",
+  "stop_loss_gate": {
+    "decision": "PASS: readiness governance, not app-artifact parity implementation.",
+    "gate_downstream_consumer_reachable": true,
+    "gate_generic_capability_produced": true,
+    "gate_non_app_consumer": "full-reproduction readiness matrix / external-response governance workflow",
+    "gate_requires_app_specific_logic": false
+  }
+}

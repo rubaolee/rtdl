@@ -3,7 +3,9 @@ from __future__ import annotations
 import math
 import time
 from dataclasses import dataclass
-from typing import Any, Iterable
+from typing import Any, Iterable, Mapping
+
+from .aabb_columns import Aabb2DColumns
 
 
 AABB_INDEX_2D_OPERATIONS = ("point_contains", "range_contains", "range_intersects")
@@ -21,6 +23,12 @@ AABB_INDEX_2D_CONTRACT = {
         "range_intersects": "indexed_box_intersects_query_box",
         "range_intersection_rows": "emit_query_box_indexed_box_intersection_pairs",
     },
+    "indexed_box_validity": (
+        "OptiX range_intersects paths reject indexed boxes that are "
+        "not strict after numeric packing (min_x < max_x and min_y < max_y); "
+        "point_contains and range_contains retain their inclusive exact predicates "
+        "after numeric packing and do not inherit the intersection-only validity guard"
+    ),
     "backend_status": {
         "cpu": "reference_uniform_grid_counts_and_intersection_pair_rows",
         "embree": "native_prepared_aabb_collision_counts_with_columnar_fallback",
@@ -203,6 +211,51 @@ class OptixAabbIndex2D:
     prepared: Any
     row_ids: tuple[int, ...]
     backend: str = "optix"
+
+    def refit(
+        self,
+        boxes: Iterable[Any],
+        *,
+        row_ids: tuple[int, ...],
+    ) -> dict[str, object]:
+        normalized_boxes = tuple(_normalize_aabb2d(box) for box in boxes)
+        if tuple(int(value) for value in row_ids) != self.row_ids:
+            raise ValueError("OptiX AABB refit requires unchanged stable row_ids")
+        if len(normalized_boxes) != len(self.boxes):
+            raise ValueError("OptiX AABB refit requires unchanged box_count")
+        records = tuple(
+            _IdentifiedAabb2D(
+                int(self.row_ids[index]),
+                box.min_x,
+                box.min_y,
+                box.max_x,
+                box.max_y,
+            )
+            for index, box in enumerate(normalized_boxes)
+        )
+        result = self.prepared.refit(records)
+        object.__setattr__(self, "boxes", normalized_boxes)
+        return result
+
+    def refit_updates(self, updates: Iterable[tuple[int, Any]]) -> dict[str, object]:
+        normalized_updates = tuple(
+            (int(row_id), _normalize_aabb2d(box)) for row_id, box in updates
+        )
+        row_to_slot = {row_id: slot for slot, row_id in enumerate(self.row_ids)}
+        missing = sorted(row_id for row_id, _ in normalized_updates if row_id not in row_to_slot)
+        if missing:
+            raise KeyError(f"OptiX AABB refit update ids are not active: {missing}")
+        slots = tuple(row_to_slot[row_id] for row_id, _ in normalized_updates)
+        records = tuple(
+            _IdentifiedAabb2D(row_id, box.min_x, box.min_y, box.max_x, box.max_y)
+            for row_id, box in normalized_updates
+        )
+        result = self.prepared.refit_slots(slots, records)
+        candidate_boxes = list(self.boxes)
+        for slot, (_, box) in zip(slots, normalized_updates):
+            candidate_boxes[slot] = box
+        object.__setattr__(self, "boxes", tuple(candidate_boxes))
+        return result
 
     def count(
         self,
@@ -518,6 +571,7 @@ def prepare_aabb_index_2d(
     indexed_ids: Iterable[int] | None = None,
     resolution: int = 32,
     backend: str = "cpu",
+    allow_native_update: bool = False,
 ) -> AabbIndex2D | OptixAabbIndex2D | HiprtAabbIndex2D | EmbreeAabbIndex2D:
     """Prepare an app-name-free 2-D AABB index for point/box query predicates."""
 
@@ -553,9 +607,15 @@ def prepare_aabb_index_2d(
         )
         return OptixAabbIndex2D(
             boxes=box_tuple,
-            prepared=prepare_optix_aabb_index_2d(identified_records),
+            prepared=prepare_optix_aabb_index_2d(
+                identified_records,
+                allow_update=bool(allow_native_update),
+            ),
             row_ids=indexed_id_tuple,
         )
+
+    if allow_native_update:
+        raise ValueError("allow_native_update is supported only by the OptiX backend")
 
     if normalized_backend == "hiprt":
         from .hiprt_runtime import prepare_hiprt_aabb_index_2d
@@ -598,6 +658,52 @@ def prepare_aabb_index_2d(
         cells={cell: tuple(box_ids) for cell, box_ids in mutable_cells.items()},
         candidate_entries=candidate_entries,
         backend=normalized_backend,
+    )
+
+
+def prepare_aabb_index_2d_columns(
+    columns: Aabb2DColumns | Mapping[str, object],
+    *,
+    point_queries: Iterable[Any] = (),
+    box_queries: Iterable[Any] = (),
+    indexed_ids: Iterable[int] | None = None,
+    resolution: int = 32,
+    backend: str = "cpu",
+    allow_native_update: bool = False,
+) -> AabbIndex2D | OptixAabbIndex2D | HiprtAabbIndex2D | EmbreeAabbIndex2D:
+    """Prepare a generic 2-D AABB index from validated host columns.
+
+    The OptiX path preserves the columns through native packing and avoids
+    constructing one Python Aabb2D/_IdentifiedAabb2D object per indexed row.
+    CPU and other backends retain the existing row-shaped reference path.
+    """
+    columnar = (
+        columns
+        if isinstance(columns, Aabb2DColumns)
+        else Aabb2DColumns.from_mapping(columns, indexed_ids=indexed_ids)
+    )
+    normalized_backend = _validate_backend(backend)
+    if normalized_backend != "optix":
+        return prepare_aabb_index_2d(
+            tuple(columnar),
+            point_queries=point_queries,
+            box_queries=box_queries,
+            indexed_ids=columnar.ids,
+            resolution=resolution,
+            backend=normalized_backend,
+            allow_native_update=allow_native_update,
+        )
+    if len(columnar) == 0:
+        raise ValueError("AABB index requires at least one indexed box")
+    from .optix_runtime import prepare_optix_aabb_index_2d
+
+    return OptixAabbIndex2D(
+        boxes=columnar,
+        prepared=prepare_optix_aabb_index_2d(
+            columnar,
+            allow_update=bool(allow_native_update),
+        ),
+        row_ids=columnar.ids,
     )
 
 

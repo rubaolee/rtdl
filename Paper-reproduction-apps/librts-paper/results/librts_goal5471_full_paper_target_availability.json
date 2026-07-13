@@ -1,0 +1,230 @@
+{
+  "author_evidence": {
+    "all_paper_figure_targets_have_author_logs": true,
+    "logs_are_author_reference_evidence_not_rtdl_reproduction": true,
+    "paper_log_categories": {
+      "deletion_batch_1000": 2,
+      "deletion_batch_10000": 2,
+      "deletion_batch_100000": 2,
+      "deletion_batch_1000000": 2,
+      "insertion_batch_1000": 2,
+      "insertion_batch_10000": 2,
+      "insertion_batch_100000": 2,
+      "insertion_batch_1000000": 2,
+      "pip_queries_100000": 12,
+      "point-contains_queries_100000": 36,
+      "point-contains_queries_200000": 6,
+      "point-contains_queries_400000": 6,
+      "point-contains_queries_50000": 6,
+      "point-contains_queries_800000": 6,
+      "point-contains_update_0.0002_queries_100000": 1,
+      "point-contains_update_0.002_queries_100000": 1,
+      "point-contains_update_0.02_queries_100000": 1,
+      "point-contains_update_0.2_queries_100000": 1,
+      "range-contains_queries_100000": 24,
+      "range-contains_queries_200000": 4,
+      "range-contains_queries_400000": 4,
+      "range-contains_queries_50000": 4,
+      "range-contains_queries_800000": 4,
+      "range-contains_update_0.0002_queries_100000": 1,
+      "range-contains_update_0.002_queries_100000": 1,
+      "range-contains_update_0.02_queries_100000": 1,
+      "range-contains_update_0.2_queries_100000": 1,
+      "range-intersects_select_0.0001_queries_10000": 24,
+      "range-intersects_select_0.001_queries_10000": 24,
+      "range-intersects_select_0.001_queries_20000": 4,
+      "range-intersects_select_0.001_queries_30000": 4,
+      "range-intersects_select_0.001_queries_40000": 4,
+      "range-intersects_select_0.001_queries_50000": 4,
+      "range-intersects_select_0.01_queries_10000": 24,
+      "range-intersects_update_0.0002_queries_10000": 1,
+      "range-intersects_update_0.002_queries_10000": 1,
+      "range-intersects_update_0.02_queries_10000": 1,
+      "range-intersects_update_0.2_queries_10000": 1,
+      "ray_duplication_range-intersects_select_0.001_queries_50000": 6,
+      "scalability_10000000_point-contains": 2,
+      "scalability_10000000_range-contains": 2,
+      "scalability_10000000_range-intersects": 2,
+      "scalability_20000000_point-contains": 2,
+      "scalability_20000000_range-contains": 2,
+      "scalability_20000000_range-intersects": 2,
+      "scalability_30000000_point-contains": 2,
+      "scalability_30000000_range-contains": 2,
+      "scalability_30000000_range-intersects": 2,
+      "scalability_40000000_point-contains": 2,
+      "scalability_40000000_range-contains": 2,
+      "scalability_40000000_range-intersects": 2,
+      "scalability_50000000_point-contains": 2,
+      "scalability_50000000_range-contains": 2,
+      "scalability_50000000_range-intersects": 2
+    },
+    "paper_log_category_count": 54,
+    "paper_log_count": 264
+  },
+  "claim_boundary": {
+    "author_logs_treated_as_rtdl_results": false,
+    "author_performance_ratio_authorized": false,
+    "embree_in_scope": false,
+    "exact_dataset_identity_claimed": false,
+    "paper_figures_reproduced": false
+  },
+  "dataset_acquisition": {
+    "archives": [
+      {
+        "md5": "d5c2a8053fd0b7359a5b83391f7d0b82",
+        "name": "polygons"
+      },
+      {
+        "md5": "64b560c3d067262b7ef7d7422c64225a",
+        "name": "queries"
+      },
+      {
+        "md5": "ebe7dcf4001132d297a8022c110cedeb",
+        "name": "synthetic"
+      }
+    ],
+    "direct_head_probe_is_not_author_downloader_execution": true,
+    "direct_sharepoint_head_probe_status": [
+      401,
+      401,
+      401
+    ],
+    "exact_inputs_present_in_audit_checkout": false,
+    "large_zenodo_archive_downloaded": false,
+    "large_zenodo_archive_published_size": "23.1 GB",
+    "script": "3_download_datasets.sh"
+  },
+  "decision": {
+    "author_paper_logs_available": true,
+    "exact_paper_inputs_available": false,
+    "full_paper_reproduction_complete": false,
+    "next_goal": "extract_author_log_denominators_before_any_large_dataset_download",
+    "paper_target_matrix_complete": true,
+    "pod_required_next": false
+  },
+  "figure_targets": [
+    {
+      "ae_output": "fig7.pdf",
+      "author_entrypoint": "expr/query/query.sh",
+      "current_rtdl_status": "bounded same-input point count only",
+      "datasets": "six real datasets; OSMParks query-size sweep",
+      "log_prefixes": [
+        "point-contains_queries_"
+      ],
+      "paper_figure": 6,
+      "paper_logs_present": true,
+      "paper_question": "point-query performance and query-count scaling"
+    },
+    {
+      "ae_output": "fig8.pdf",
+      "author_entrypoint": "expr/query/query.sh",
+      "current_rtdl_status": "bounded same-input range-contains count only",
+      "datasets": "six real datasets; OSMParks query-size sweep",
+      "log_prefixes": [
+        "range-contains_queries_"
+      ],
+      "paper_figure": 7,
+      "paper_logs_present": true,
+      "paper_question": "range-contains performance and query-count scaling"
+    },
+    {
+      "ae_output": "fig9.pdf",
+      "author_entrypoint": "expr/query/query.sh",
+      "current_rtdl_status": "bounded same-input exact rows only",
+      "datasets": "six real datasets; selectivity 0.01%, 0.1%, 1%",
+      "log_prefixes": [
+        "range-intersects_select_"
+      ],
+      "paper_figure": 8,
+      "paper_logs_present": true,
+      "paper_question": "range-intersects performance by selectivity and query count"
+    },
+    {
+      "ae_output": "fig10.pdf",
+      "author_entrypoint": "expr/query/query.sh",
+      "current_rtdl_status": "source/reference audit complete; native spike no-go and reverted",
+      "datasets": "six real datasets; 50K queries at 0.1% selectivity",
+      "log_prefixes": [
+        "ray_duplication_range-intersects_"
+      ],
+      "paper_figure": 9,
+      "paper_logs_present": true,
+      "paper_question": "Ray-Multicast k sweep, prediction, and phase breakdown"
+    },
+    {
+      "ae_output": "fig12.pdf",
+      "author_entrypoint": "expr/query/update.sh",
+      "current_rtdl_status": "bounded mutation semantics and sparse-refit speedup only",
+      "datasets": "real datasets plus 50M synthetic insertion/deletion workloads",
+      "log_prefixes": [
+        "insertion_batch_",
+        "deletion_batch_",
+        "point-contains_update_"
+      ],
+      "paper_figure": 10,
+      "paper_logs_present": true,
+      "paper_question": "build cost, mutation throughput, and update sensitivity"
+    },
+    {
+      "ae_output": "fig11.pdf",
+      "author_entrypoint": "expr/query/scalability.sh",
+      "current_rtdl_status": "not reproduced",
+      "datasets": "generated 10M-50M uniform and Gaussian rectangles",
+      "log_prefixes": [
+        "scalability_"
+      ],
+      "paper_figure": 11,
+      "paper_logs_present": true,
+      "paper_question": "10M-50M uniform/Gaussian scalability"
+    },
+    {
+      "ae_output": "fig13.pdf",
+      "author_entrypoint": "expr/query/pip.sh",
+      "current_rtdl_status": "one Level-B representative same-input relation gate",
+      "datasets": "USCounty, USCensus, USWater, EUParks",
+      "log_prefixes": [
+        "pip_queries_100000"
+      ],
+      "paper_figure": 12,
+      "paper_logs_present": true,
+      "paper_question": "100K point-in-polygon application performance"
+    }
+  ],
+  "numbering_warning": {
+    "mechanical_numeric_matching_is_valid": false,
+    "paper_to_ae_output": {
+      "10": "fig12.pdf",
+      "11": "fig11.pdf",
+      "12": "fig13.pdf",
+      "6": "fig7.pdf",
+      "7": "fig8.pdf",
+      "8": "fig9.pdf",
+      "9": "fig10.pdf"
+    }
+  },
+  "provenance": {
+    "ae_commit": "d605fe1bd5708cbf3c457a3a9698e0cc7bcdc14b",
+    "ae_repository": "https://github.com/RTSpatial/PPoPPAE",
+    "paper": "LibRTS: A Spatial Indexing Library by Ray Tracing, PPoPP 2025",
+    "paper_doi": "10.1145/3710848.3710850",
+    "source_sha256": {
+      "3_download_datasets.sh": "662c8e2c090794e90baf89862866489e16b721132c31a4acf493b7ca6296c6ea",
+      "4_run_experiments.sh": "c4112620796d95bf06f03f2bf2cea7f0d3de674448029253c13d9fd30b30ba0b",
+      "5_draw_figures.sh": "1440d4f6836dc1bdab1209072abd321b0352fd7fe4e4eff437cd5b1e224de7c2",
+      "README.md": "fb62c67f5f64f0db01b80e6de25ec49845d379b7396f29d29dbd4a6589cf77e0",
+      "expr/common.sh": "8aaf940cf3611de4d77fe235cf8b812b4454661e8364c0c360445136e05291a6",
+      "expr/query/paper_logs.zip": "d44d3c31fe14387c97b51229d1b9f99770efd4ca94334f76954885336a5fd655",
+      "expr/query/pip.sh": "b7eb5ed3f5a9f355432a62386f1f2872cebc6fae22fddf2f10ac8efef02cc80c",
+      "expr/query/query.sh": "19db5a0057aa849c2f7628439fdd410b8fef5aca4f6d190ff46d647d9d396be4",
+      "expr/query/scalability.sh": "6a4654e8ebcaa4a8acd4165f64d6649d79cf6173708253158acf446080528463",
+      "expr/query/update.sh": "e7740f4785b2f4094843c526478dde49068c7424a5554eeab16c7b42c107201d"
+    },
+    "submodule_pins": {
+      "RTSpatial": "7c54c181b1058c87768767998c00e225cc58666e",
+      "RayJoin": "2151f56d09cbcfd4edbff259d97ac3123705411b",
+      "SpatialQueryBenchmark": "9140ad997519713bb5fdceba639a357afa4609ad"
+    }
+  },
+  "schema": "rtdl.paper_reproduction.librts.full_target_availability.v1",
+  "status": "paper_targets_and_author_logs_available__exact_inputs_not_acquired"
+}

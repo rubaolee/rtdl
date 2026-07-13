@@ -1,0 +1,801 @@
+{
+  "decision": {
+    "conclusion": "Goal4956 columnar xsect route is a measured useful win but not a 1.5x target win; keep as internal v2.14.3 candidate pending review/productization decision.",
+    "frozen_useful_bar_speedup": 1.15,
+    "goal4956_median_sec": 2.3288087574765086,
+    "goal4956_speedup_vs_original_2_921366": 1.2544465021531372,
+    "goal4956_speedup_vs_rerun_baseline": 1.2656480597062292,
+    "meets_target_bar": false,
+    "meets_useful_bar": true,
+    "semantic_check_passed": false,
+    "target_speedup": 1.5
+  },
+  "schema": "rtdl.internal.goal4956.pod_comparison_summary.v1",
+  "semantic_check": {
+    "baseline_consumer_fingerprint": {
+      "pair_count": 28815,
+      "top_pairs_by_point_rows": [
+        {
+          "group_count": 25,
+          "label_a": 933,
+          "label_b": 159,
+          "point_row_count": 2152
+        },
+        {
+          "group_count": 201,
+          "label_a": 0,
+          "label_b": 5,
+          "point_row_count": 1455
+        },
+        {
+          "group_count": 78,
+          "label_a": 0,
+          "label_b": 2115,
+          "point_row_count": 1023
+        },
+        {
+          "group_count": 15,
+          "label_a": 1485,
+          "label_b": 5209,
+          "point_row_count": 725
+        },
+        {
+          "group_count": 5,
+          "label_a": 1988,
+          "label_b": 5264,
+          "point_row_count": 576
+        },
+        {
+          "group_count": 3,
+          "label_a": 1401,
+          "label_b": 5187,
+          "point_row_count": 531
+        },
+        {
+          "group_count": 6,
+          "label_a": 1765,
+          "label_b": 5264,
+          "point_row_count": 519
+        },
+        {
+          "group_count": 4,
+          "label_a": 1843,
+          "label_b": 5301,
+          "point_row_count": 515
+        },
+        {
+          "group_count": 7,
+          "label_a": 1505,
+          "label_b": 270,
+          "point_row_count": 505
+        },
+        {
+          "group_count": 7,
+          "label_a": 374,
+          "label_b": 82,
+          "point_row_count": 489
+        }
+      ],
+      "total_groups": 64459,
+      "total_point_rows": 673371
+    },
+    "goal4956_all_runs_match_baseline_fingerprint": false
+  },
+  "sets": {
+    "baseline_goal4954e_rerun": {
+      "consumer_fingerprints": [
+        {
+          "pair_count": 28815,
+          "top_pairs_by_point_rows": [
+            {
+              "group_count": 25,
+              "label_a": 933,
+              "label_b": 159,
+              "point_row_count": 2152
+            },
+            {
+              "group_count": 201,
+              "label_a": 0,
+              "label_b": 5,
+              "point_row_count": 1455
+            },
+            {
+              "group_count": 78,
+              "label_a": 0,
+              "label_b": 2115,
+              "point_row_count": 1023
+            },
+            {
+              "group_count": 15,
+              "label_a": 1485,
+              "label_b": 5209,
+              "point_row_count": 725
+            },
+            {
+              "group_count": 5,
+              "label_a": 1988,
+              "label_b": 5264,
+              "point_row_count": 576
+            },
+            {
+              "group_count": 3,
+              "label_a": 1401,
+              "label_b": 5187,
+              "point_row_count": 531
+            },
+            {
+              "group_count": 6,
+              "label_a": 1765,
+              "label_b": 5264,
+              "point_row_count": 519
+            },
+            {
+              "group_count": 4,
+              "label_a": 1843,
+              "label_b": 5301,
+              "point_row_count": 515
+            },
+            {
+              "group_count": 7,
+              "label_a": 1505,
+              "label_b": 270,
+              "point_row_count": 505
+            },
+            {
+              "group_count": 7,
+              "label_a": 374,
+              "label_b": 82,
+              "point_row_count": 489
+            }
+          ],
+          "total_groups": 64459,
+          "total_point_rows": 673371
+        },
+        {
+          "pair_count": 28815,
+          "top_pairs_by_point_rows": [
+            {
+              "group_count": 25,
+              "label_a": 933,
+              "label_b": 159,
+              "point_row_count": 2152
+            },
+            {
+              "group_count": 201,
+              "label_a": 0,
+              "label_b": 5,
+              "point_row_count": 1455
+            },
+            {
+              "group_count": 78,
+              "label_a": 0,
+              "label_b": 2115,
+              "point_row_count": 1023
+            },
+            {
+              "group_count": 15,
+              "label_a": 1485,
+              "label_b": 5209,
+              "point_row_count": 725
+            },
+            {
+              "group_count": 5,
+              "label_a": 1988,
+              "label_b": 5264,
+              "point_row_count": 576
+            },
+            {
+              "group_count": 3,
+              "label_a": 1401,
+              "label_b": 5187,
+              "point_row_count": 531
+            },
+            {
+              "group_count": 6,
+              "label_a": 1765,
+              "label_b": 5264,
+              "point_row_count": 519
+            },
+            {
+              "group_count": 4,
+              "label_a": 1843,
+              "label_b": 5301,
+              "point_row_count": 515
+            },
+            {
+              "group_count": 7,
+              "label_a": 1505,
+              "label_b": 270,
+              "point_row_count": 505
+            },
+            {
+              "group_count": 7,
+              "label_a": 374,
+              "label_b": 82,
+              "point_row_count": 489
+            }
+          ],
+          "total_groups": 64459,
+          "total_point_rows": 673371
+        },
+        {
+          "pair_count": 28815,
+          "top_pairs_by_point_rows": [
+            {
+              "group_count": 25,
+              "label_a": 933,
+              "label_b": 159,
+              "point_row_count": 2152
+            },
+            {
+              "group_count": 201,
+              "label_a": 0,
+              "label_b": 5,
+              "point_row_count": 1455
+            },
+            {
+              "group_count": 78,
+              "label_a": 0,
+              "label_b": 2115,
+              "point_row_count": 1023
+            },
+            {
+              "group_count": 15,
+              "label_a": 1485,
+              "label_b": 5209,
+              "point_row_count": 725
+            },
+            {
+              "group_count": 5,
+              "label_a": 1988,
+              "label_b": 5264,
+              "point_row_count": 576
+            },
+            {
+              "group_count": 3,
+              "label_a": 1401,
+              "label_b": 5187,
+              "point_row_count": 531
+            },
+            {
+              "group_count": 6,
+              "label_a": 1765,
+              "label_b": 5264,
+              "point_row_count": 519
+            },
+            {
+              "group_count": 4,
+              "label_a": 1843,
+              "label_b": 5301,
+              "point_row_count": 515
+            },
+            {
+              "group_count": 7,
+              "label_a": 1505,
+              "label_b": 270,
+              "point_row_count": 505
+            },
+            {
+              "group_count": 7,
+              "label_a": 374,
+              "label_b": 82,
+              "point_row_count": 489
+            }
+          ],
+          "total_groups": 64459,
+          "total_point_rows": 673371
+        }
+      ],
+      "count": 3,
+      "missing": [],
+      "phase_medians": {
+        "assign_midpoint_faces_map0_sec": 0.0009225169196724892,
+        "assign_midpoint_faces_map1_sec": 0.0015708757564425468,
+        "destroy_point_location_sessions_sec": 0.007949684746563435,
+        "grouped_columnar_carrier_construction_sec": 1.127681752666831,
+        "grouped_descriptor_pair_count_consumer_sec": 0.054766870103776455,
+        "intersection_reprojection_sec": 0.23438149318099022,
+        "load_pack_left_sec": 0.005381808616220951,
+        "load_pack_right_sec": 0.004199313931167126,
+        "lsi_public_rows_sec": 1.0009337132796645,
+        "midpoint_pip_map0_sec": 0.0006144680082798004,
+        "midpoint_pip_map1_sec": 0.0005805175751447678,
+        "midpoint_points_map0_sec": 0.02204981166869402,
+        "midpoint_points_map1_sec": 0.021439144387841225,
+        "pack_midpoint_points_map0_sec": 0.023980689235031605,
+        "pack_midpoint_points_map1_sec": 0.007393809035420418,
+        "prepare_point_location_map0_in_map1_sec": 0.5702893370762467,
+        "prepare_point_location_map1_in_map0_sec": 0.07790081482380629,
+        "shared_bounds_sec": 3.7597492337226868e-06,
+        "sort_map0_sec": 0.23147741612046957,
+        "sort_map1_sec": 0.20660803094506264,
+        "vertex_pip_map0_in_map1_sec": 0.011530380696058273,
+        "vertex_pip_map1_in_map0_sec": 0.006930475123226643
+      },
+      "speedup_vs_goal4954e_original_2_921366": 0.9911495478800861,
+      "speedup_vs_rerun_baseline_median": 1.0,
+      "writer_free_hot_sec_median": 2.9474522853270173,
+      "writer_free_hot_sec_values": [
+        3.21989952493459,
+        2.9474522853270173,
+        2.9278068859130144
+      ]
+    },
+    "goal4956_columnar_xsect_pipeline": {
+      "consumer_fingerprints": [
+        {
+          "pair_count": 28794,
+          "top_pairs_by_point_rows": [
+            {
+              "group_count": 25,
+              "label_a": 933,
+              "label_b": 159,
+              "point_row_count": 2152
+            },
+            {
+              "group_count": 201,
+              "label_a": 0,
+              "label_b": 5,
+              "point_row_count": 1455
+            },
+            {
+              "group_count": 78,
+              "label_a": 0,
+              "label_b": 2115,
+              "point_row_count": 1023
+            },
+            {
+              "group_count": 15,
+              "label_a": 1485,
+              "label_b": 5209,
+              "point_row_count": 725
+            },
+            {
+              "group_count": 5,
+              "label_a": 1988,
+              "label_b": 5264,
+              "point_row_count": 576
+            },
+            {
+              "group_count": 3,
+              "label_a": 1401,
+              "label_b": 5187,
+              "point_row_count": 531
+            },
+            {
+              "group_count": 6,
+              "label_a": 1765,
+              "label_b": 5264,
+              "point_row_count": 519
+            },
+            {
+              "group_count": 4,
+              "label_a": 1843,
+              "label_b": 5301,
+              "point_row_count": 515
+            },
+            {
+              "group_count": 7,
+              "label_a": 1505,
+              "label_b": 270,
+              "point_row_count": 505
+            },
+            {
+              "group_count": 7,
+              "label_a": 374,
+              "label_b": 82,
+              "point_row_count": 489
+            }
+          ],
+          "total_groups": 64477,
+          "total_point_rows": 673407
+        },
+        {
+          "pair_count": 28794,
+          "top_pairs_by_point_rows": [
+            {
+              "group_count": 25,
+              "label_a": 933,
+              "label_b": 159,
+              "point_row_count": 2152
+            },
+            {
+              "group_count": 201,
+              "label_a": 0,
+              "label_b": 5,
+              "point_row_count": 1455
+            },
+            {
+              "group_count": 78,
+              "label_a": 0,
+              "label_b": 2115,
+              "point_row_count": 1023
+            },
+            {
+              "group_count": 15,
+              "label_a": 1485,
+              "label_b": 5209,
+              "point_row_count": 725
+            },
+            {
+              "group_count": 5,
+              "label_a": 1988,
+              "label_b": 5264,
+              "point_row_count": 576
+            },
+            {
+              "group_count": 3,
+              "label_a": 1401,
+              "label_b": 5187,
+              "point_row_count": 531
+            },
+            {
+              "group_count": 6,
+              "label_a": 1765,
+              "label_b": 5264,
+              "point_row_count": 519
+            },
+            {
+              "group_count": 4,
+              "label_a": 1843,
+              "label_b": 5301,
+              "point_row_count": 515
+            },
+            {
+              "group_count": 7,
+              "label_a": 1505,
+              "label_b": 270,
+              "point_row_count": 505
+            },
+            {
+              "group_count": 7,
+              "label_a": 374,
+              "label_b": 82,
+              "point_row_count": 489
+            }
+          ],
+          "total_groups": 64477,
+          "total_point_rows": 673407
+        },
+        {
+          "pair_count": 28794,
+          "top_pairs_by_point_rows": [
+            {
+              "group_count": 25,
+              "label_a": 933,
+              "label_b": 159,
+              "point_row_count": 2152
+            },
+            {
+              "group_count": 201,
+              "label_a": 0,
+              "label_b": 5,
+              "point_row_count": 1455
+            },
+            {
+              "group_count": 78,
+              "label_a": 0,
+              "label_b": 2115,
+              "point_row_count": 1023
+            },
+            {
+              "group_count": 15,
+              "label_a": 1485,
+              "label_b": 5209,
+              "point_row_count": 725
+            },
+            {
+              "group_count": 5,
+              "label_a": 1988,
+              "label_b": 5264,
+              "point_row_count": 576
+            },
+            {
+              "group_count": 3,
+              "label_a": 1401,
+              "label_b": 5187,
+              "point_row_count": 531
+            },
+            {
+              "group_count": 6,
+              "label_a": 1765,
+              "label_b": 5264,
+              "point_row_count": 519
+            },
+            {
+              "group_count": 4,
+              "label_a": 1843,
+              "label_b": 5301,
+              "point_row_count": 515
+            },
+            {
+              "group_count": 7,
+              "label_a": 1505,
+              "label_b": 270,
+              "point_row_count": 505
+            },
+            {
+              "group_count": 7,
+              "label_a": 374,
+              "label_b": 82,
+              "point_row_count": 489
+            }
+          ],
+          "total_groups": 64477,
+          "total_point_rows": 673407
+        }
+      ],
+      "count": 3,
+      "missing": [],
+      "phase_medians": {
+        "assign_midpoint_faces_map0_columnar_sec": 4.9406662583351135e-06,
+        "assign_midpoint_faces_map1_columnar_sec": 1.1570751667022705e-05,
+        "destroy_point_location_sessions_sec": 0.007707827724516392,
+        "grouped_columnar_carrier_construction_sec": 1.0093165282160044,
+        "grouped_descriptor_pair_count_consumer_sec": 0.005913625471293926,
+        "intersection_reprojection_columnar_sec": 0.12955914344638586,
+        "load_pack_left_sec": 0.005469862371683121,
+        "load_pack_right_sec": 0.004425370134413242,
+        "lsi_public_rows_sec": 1.0202260492369533,
+        "midpoint_pip_map0_sec": 0.00047935545444488525,
+        "midpoint_pip_map1_sec": 0.00040451157838106155,
+        "midpoint_points_map0_columnar_sec": 0.0023124879226088524,
+        "midpoint_points_map1_columnar_sec": 0.0070911189541220665,
+        "prepare_point_location_map0_in_map1_sec": 0.5585442585870624,
+        "prepare_point_location_map1_in_map0_sec": 0.07830838952213526,
+        "shared_bounds_sec": 4.390254616737366e-06,
+        "sort_map0_columnar_sec": 0.06521186418831348,
+        "sort_map1_columnar_sec": 0.06463771685957909,
+        "vertex_pip_map0_in_map1_sec": 0.01602102257311344,
+        "vertex_pip_map1_in_map0_sec": 0.006854701787233353
+      },
+      "speedup_vs_goal4954e_original_2_921366": 1.2544465021531372,
+      "speedup_vs_rerun_baseline_median": 1.2656480597062292,
+      "writer_free_hot_sec_median": 2.3288087574765086,
+      "writer_free_hot_sec_values": [
+        2.4125032452866435,
+        2.290514967404306,
+        2.3288087574765086
+      ]
+    },
+    "projected_descriptor_minimal_descriptor": {
+      "consumer_fingerprints": [
+        {
+          "pair_count": 28815,
+          "top_pairs_by_point_rows": [
+            {
+              "group_count": 25,
+              "label_a": 933,
+              "label_b": 159,
+              "point_row_count": 2152
+            },
+            {
+              "group_count": 201,
+              "label_a": 0,
+              "label_b": 5,
+              "point_row_count": 1455
+            },
+            {
+              "group_count": 78,
+              "label_a": 0,
+              "label_b": 2115,
+              "point_row_count": 1023
+            },
+            {
+              "group_count": 15,
+              "label_a": 1485,
+              "label_b": 5209,
+              "point_row_count": 725
+            },
+            {
+              "group_count": 5,
+              "label_a": 1988,
+              "label_b": 5264,
+              "point_row_count": 576
+            },
+            {
+              "group_count": 3,
+              "label_a": 1401,
+              "label_b": 5187,
+              "point_row_count": 531
+            },
+            {
+              "group_count": 6,
+              "label_a": 1765,
+              "label_b": 5264,
+              "point_row_count": 519
+            },
+            {
+              "group_count": 4,
+              "label_a": 1843,
+              "label_b": 5301,
+              "point_row_count": 515
+            },
+            {
+              "group_count": 7,
+              "label_a": 1505,
+              "label_b": 270,
+              "point_row_count": 505
+            },
+            {
+              "group_count": 7,
+              "label_a": 374,
+              "label_b": 82,
+              "point_row_count": 489
+            }
+          ],
+          "total_groups": 64459,
+          "total_point_rows": 673371
+        },
+        {
+          "pair_count": 28815,
+          "top_pairs_by_point_rows": [
+            {
+              "group_count": 25,
+              "label_a": 933,
+              "label_b": 159,
+              "point_row_count": 2152
+            },
+            {
+              "group_count": 201,
+              "label_a": 0,
+              "label_b": 5,
+              "point_row_count": 1455
+            },
+            {
+              "group_count": 78,
+              "label_a": 0,
+              "label_b": 2115,
+              "point_row_count": 1023
+            },
+            {
+              "group_count": 15,
+              "label_a": 1485,
+              "label_b": 5209,
+              "point_row_count": 725
+            },
+            {
+              "group_count": 5,
+              "label_a": 1988,
+              "label_b": 5264,
+              "point_row_count": 576
+            },
+            {
+              "group_count": 3,
+              "label_a": 1401,
+              "label_b": 5187,
+              "point_row_count": 531
+            },
+            {
+              "group_count": 6,
+              "label_a": 1765,
+              "label_b": 5264,
+              "point_row_count": 519
+            },
+            {
+              "group_count": 4,
+              "label_a": 1843,
+              "label_b": 5301,
+              "point_row_count": 515
+            },
+            {
+              "group_count": 7,
+              "label_a": 1505,
+              "label_b": 270,
+              "point_row_count": 505
+            },
+            {
+              "group_count": 7,
+              "label_a": 374,
+              "label_b": 82,
+              "point_row_count": 489
+            }
+          ],
+          "total_groups": 64459,
+          "total_point_rows": 673371
+        },
+        {
+          "pair_count": 28815,
+          "top_pairs_by_point_rows": [
+            {
+              "group_count": 25,
+              "label_a": 933,
+              "label_b": 159,
+              "point_row_count": 2152
+            },
+            {
+              "group_count": 201,
+              "label_a": 0,
+              "label_b": 5,
+              "point_row_count": 1455
+            },
+            {
+              "group_count": 78,
+              "label_a": 0,
+              "label_b": 2115,
+              "point_row_count": 1023
+            },
+            {
+              "group_count": 15,
+              "label_a": 1485,
+              "label_b": 5209,
+              "point_row_count": 725
+            },
+            {
+              "group_count": 5,
+              "label_a": 1988,
+              "label_b": 5264,
+              "point_row_count": 576
+            },
+            {
+              "group_count": 3,
+              "label_a": 1401,
+              "label_b": 5187,
+              "point_row_count": 531
+            },
+            {
+              "group_count": 6,
+              "label_a": 1765,
+              "label_b": 5264,
+              "point_row_count": 519
+            },
+            {
+              "group_count": 4,
+              "label_a": 1843,
+              "label_b": 5301,
+              "point_row_count": 515
+            },
+            {
+              "group_count": 7,
+              "label_a": 1505,
+              "label_b": 270,
+              "point_row_count": 505
+            },
+            {
+              "group_count": 7,
+              "label_a": 374,
+              "label_b": 82,
+              "point_row_count": 489
+            }
+          ],
+          "total_groups": 64459,
+          "total_point_rows": 673371
+        }
+      ],
+      "count": 3,
+      "missing": [],
+      "phase_medians": {
+        "assign_midpoint_faces_map0_sec": 0.000859125517308712,
+        "assign_midpoint_faces_map1_sec": 0.0014910036697983742,
+        "destroy_point_location_sessions_sec": 0.007738049142062664,
+        "grouped_columnar_carrier_construction_sec": 0.7980163032189012,
+        "grouped_descriptor_pair_count_consumer_sec": 0.006020847707986832,
+        "intersection_reprojection_sec": 0.21999850589782,
+        "load_pack_left_sec": 0.005673417821526527,
+        "load_pack_right_sec": 0.00417697336524725,
+        "lsi_public_rows_sec": 1.021197914145887,
+        "midpoint_pip_map0_sec": 0.0005467459559440613,
+        "midpoint_pip_map1_sec": 0.0005463557317852974,
+        "midpoint_points_map0_sec": 0.021744633093476295,
+        "midpoint_points_map1_sec": 0.020361391827464104,
+        "pack_midpoint_points_map0_sec": 0.002201935276389122,
+        "pack_midpoint_points_map1_sec": 0.0073812976479530334,
+        "prepare_point_location_map0_in_map1_sec": 0.5689718574285507,
+        "prepare_point_location_map1_in_map0_sec": 0.07808701042085886,
+        "shared_bounds_sec": 4.33996319770813e-06,
+        "sort_map0_sec": 0.22737687546759844,
+        "sort_map1_sec": 0.25401017256081104,
+        "vertex_pip_map0_in_map1_sec": 0.011470959521830082,
+        "vertex_pip_map1_in_map0_sec": 0.006978586316108704
+      },
+      "speedup_vs_goal4954e_original_2_921366": 1.124742339334653,
+      "speedup_vs_rerun_baseline_median": 1.1347857058910038,
+      "writer_free_hot_sec_median": 2.597364656627178,
+      "writer_free_hot_sec_values": [
+        2.63047890458256,
+        2.597364656627178,
+        2.576425670646131
+      ]
+    }
+  }
+}

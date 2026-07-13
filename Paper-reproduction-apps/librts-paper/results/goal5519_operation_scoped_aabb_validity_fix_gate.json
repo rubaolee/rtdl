@@ -1,0 +1,131 @@
+{
+  "author_source_audit": {
+    "contains_shader": {
+      "observation": "uses envelope.Contains(query) without Envelope::IsValid guard",
+      "path": "RTSpatial/src/shaders/shaders_contains_envelope_query_2d.cu",
+      "sha256": "f5200603839e6c714bfc6ce9d085a04f2ca17aa44f9961cd4abc36c0b6caae5f"
+    },
+    "intersects_shader": {
+      "observation": "uses geom.IsValid() for the indexed envelope path",
+      "path": "RTSpatial/src/shaders/shaders_intersects_envelope_query_2d.cu",
+      "sha256": "1f1dc0507bfc2abb813d17c23ae39914f358b466caf4a3e9ced52354c91faea2"
+    },
+    "rtspatial_commit": "7c54c181b1058c87768767998c00e225cc58666e"
+  },
+  "checks": {
+    "fixed_exact_columns_match_author": true,
+    "float32_collapsed_rows_contribute_exact_delta": true,
+    "minimal_author_subset_does_not_overprove_cause": true,
+    "native_ab_isolates_strict_validity_regression": true,
+    "operation_discriminating_probe_matches": true,
+    "original_exact_input_delta_is_79": true,
+    "range_intersects_degenerate_regression_matches": true,
+    "range_intersects_prefix_regression_matches": true,
+    "semantic_audit_uses_same_input_hashes": true
+  },
+  "claim_boundary": {
+    "author_specific_rtdl_core_behavior_authorized": false,
+    "complete_paper_reproduction_claimed": false,
+    "complete_range_contains_matrix_claimed": false,
+    "embree_in_scope": false,
+    "exact_lakes_range_contains_count_match_claimed": true,
+    "figure_reproduction_claimed": false,
+    "generic_native_semantic_fix_claimed": true,
+    "performance_ratio_authorized": false,
+    "pointwise_relation_equivalence_claimed": false
+  },
+  "corrected_exact_case": {
+    "author_count": 101418,
+    "case_id": "lakes_bz2_range_contains_100000",
+    "column_cache_contract": "rtdl.paper_reproduction.librts.exact_aabb_column_cache.v1",
+    "fixed_rtdl_count": 101418,
+    "geometry_sha256": "0cde2245faf03cb0cf48cf9f8ffb0e31a7391300d947fa9de2110a46006e2f03",
+    "matched": true,
+    "query_sha256": "f4119e7d429ab8cd9355f0b1ef1f3594e28fb6b6e1ce70fcdaff1a557c13c3b8"
+  },
+  "evidence": [
+    "results/goal5519_lakes_bz2_range_contains_100000.json",
+    "results/goal5519_lakes_range_contains_semantic_audit.json",
+    "results/goal5519_lakes_collapsed_subset_gate.json",
+    "results/goal5519_lakes_cached_pre_strict.json",
+    "results/goal5519_lakes_cached_strict.json",
+    "results/goal5519_lakes_range_contains_operation_scoped_fix.json",
+    "results/goal5519_operation_scoped_validity_probe.json",
+    "results/goal5519_lakes_range_intersects_prefix_regression.json",
+    "results/goal5519_lakes_range_intersects_degenerate_regression.json",
+    "results/goal5519_optix_build.log"
+  ],
+  "generic_regressions": {
+    "operation_discriminating_counts": {
+      "point_contains": 1,
+      "range_contains": 1,
+      "range_intersects": 0
+    },
+    "operation_discriminating_expected": {
+      "point_contains": 1,
+      "range_contains": 1,
+      "range_intersects": 0
+    },
+    "range_intersects_degenerate_count": 0,
+    "range_intersects_prefix_count": 34581812
+  },
+  "operation_contract": {
+    "app_specific_behavior_added": false,
+    "point_contains": "inclusive exact predicate after float32 numeric packing",
+    "range_contains": "inclusive exact predicate after float32 numeric packing",
+    "range_intersects": "OptiX strict indexed-box validity after float32 packing before segment predicate"
+  },
+  "pod_build": {
+    "build_root": "/tmp/rtdl-goal5519",
+    "library_sha256": "75e7d0dea9f10e98e179c2617a3401f872ca09de0a54adbb57792cb8675120df",
+    "pod": "157.157.221.29:25039",
+    "source_sha256": "50fa9bfdeed2efbf7b7ae2fb46ca9ad1fdffe500849c87c7619c7bf640a3023f",
+    "workspace_quota_workaround": "read-only /workspace inputs plus writable /tmp build tree"
+  },
+  "root_cause": {
+    "delta": 79,
+    "float32_collapsed_indexed_count": 215,
+    "float32_invalid_indexed_count": 276,
+    "full_exact_author_count": 101418,
+    "native_pre_strict_count": 101418,
+    "native_strict_count": 101339,
+    "nonzero_contributing_collapsed_rows": [
+      {
+        "float32_box": [
+          -69.73983764648438,
+          -89.96784210205078,
+          -69.73445129394531,
+          -89.96784210205078
+        ],
+        "float32_containment_count": 21,
+        "float64_box": [
+          -69.73984,
+          -89.967841,
+          -69.734454,
+          -89.967839
+        ],
+        "indexed_row": 5783378
+      },
+      {
+        "float32_box": [
+          -67.26188659667969,
+          -89.96714782714844,
+          -67.25595092773438,
+          -89.96714782714844
+        ],
+        "float32_containment_count": 58,
+        "float64_box": [
+          -67.261889,
+          -89.96715,
+          -67.255948,
+          -89.967146
+        ],
+        "indexed_row": 6569581
+      }
+    ],
+    "pre_fix_rtdl_count": 101339,
+    "regression_source": "Goal5508 strict indexed-box validity guard was applied before all AABB operations"
+  },
+  "schema": "rtdl.paper_reproduction.librts.goal5519_operation_scoped_aabb_validity_fix.v1",
+  "status": "generic_operation_scoped_aabb_validity_regression_fixed"
+}

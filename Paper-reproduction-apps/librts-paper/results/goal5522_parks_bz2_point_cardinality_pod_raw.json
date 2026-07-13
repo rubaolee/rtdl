@@ -1,0 +1,225 @@
+{
+  "case_count": 5,
+  "cases": [
+    {
+      "author": {
+        "command": [
+          "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+          "-geom",
+          "/tmp/goal5521-target/PPoPPAE/datasets/polygons/parks.bz2.wkt",
+          "-query",
+          "/tmp/goal5521-target/PPoPPAE/datasets/queries/point-contains_queries_50000/parks.bz2.wkt",
+          "-serialize",
+          "/tmp/goal5521-stage/serialize/shared",
+          "-query_type",
+          "point-contains",
+          "-index_type",
+          "rtspatial",
+          "-load_factor",
+          "0.0001"
+        ],
+        "geometry_count": 11544398,
+        "loading_ms_diagnostic": 51.952,
+        "query_count": 50000,
+        "query_ms_internal": 0.0724,
+        "result_count": 56428,
+        "stdout": "Loaded polygons 11544398\nLoaded queries 50000\nLoading Time 51.952 ms\nGeoms 11544398\nQueries 50000\nQuery Time 0.0724 ms\nResults 56428\nSelectivity: 9.77582e-08\n"
+      },
+      "case_id": "parks_bz2_point_contains_50000",
+      "input_identity": {
+        "geometry_sha256": "ca133e4456b20c4baae1027d64a373d23083973ae042a3b6025dcc51eb3073a0",
+        "query_sha256": "9aa29248ed047fde65b53f7fadefacae0d075098e9ace9a2a869a970f8bd2c26",
+        "same_files_passed_to_author_and_rtdl": true
+      },
+      "matched": true,
+      "query_cardinality": 50000,
+      "rtdl": {
+        "prepared_query_wall_sec": 0.27022048202343285,
+        "primitive_query_sec": 0.19909992901375517,
+        "query_load_sec": 0.19052438001381233,
+        "result_count": 56428
+      }
+    },
+    {
+      "author": {
+        "command": [
+          "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+          "-geom",
+          "/tmp/goal5521-target/PPoPPAE/datasets/polygons/parks.bz2.wkt",
+          "-query",
+          "/tmp/goal5521-target/PPoPPAE/datasets/queries/point-contains_queries_100000/parks.bz2.wkt",
+          "-serialize",
+          "/tmp/goal5521-stage/serialize/shared",
+          "-query_type",
+          "point-contains",
+          "-index_type",
+          "rtspatial",
+          "-load_factor",
+          "0.0001"
+        ],
+        "geometry_count": 11544398,
+        "loading_ms_diagnostic": 51.9028,
+        "query_count": 100000,
+        "query_ms_internal": 0.0902,
+        "result_count": 112729,
+        "stdout": "Loaded polygons 11544398\nLoaded queries 100000\nLoading Time 51.9028 ms\nGeoms 11544398\nQueries 100000\nQuery Time 0.0902 ms\nResults 112729\nSelectivity: 9.76482e-08\n"
+      },
+      "case_id": "parks_bz2_point_contains_100000",
+      "input_identity": {
+        "geometry_sha256": "ca133e4456b20c4baae1027d64a373d23083973ae042a3b6025dcc51eb3073a0",
+        "query_sha256": "736e2f3acc5c2875ca1a787a87b16f6fdf9216251e0d231df78bce1e9bb68ff9",
+        "same_files_passed_to_author_and_rtdl": true
+      },
+      "matched": true,
+      "query_cardinality": 100000,
+      "rtdl": {
+        "prepared_query_wall_sec": 0.22412641299888492,
+        "primitive_query_sec": 0.07094637304544449,
+        "query_load_sec": 0.3265058219549246,
+        "result_count": 112729
+      }
+    },
+    {
+      "author": {
+        "command": [
+          "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+          "-geom",
+          "/tmp/goal5521-target/PPoPPAE/datasets/polygons/parks.bz2.wkt",
+          "-query",
+          "/tmp/goal5521-target/PPoPPAE/datasets/queries/point-contains_queries_200000/parks.bz2.wkt",
+          "-serialize",
+          "/tmp/goal5521-stage/serialize/shared",
+          "-query_type",
+          "point-contains",
+          "-index_type",
+          "rtspatial",
+          "-load_factor",
+          "0.0001"
+        ],
+        "geometry_count": 11544398,
+        "loading_ms_diagnostic": 51.8696,
+        "query_count": 200000,
+        "query_ms_internal": 0.1302,
+        "result_count": 225699,
+        "stdout": "Loaded polygons 11544398\nLoaded queries 200000\nLoading Time 51.8696 ms\nGeoms 11544398\nQueries 200000\nQuery Time 0.1302 ms\nResults 225699\nSelectivity: 9.77526e-08\n"
+      },
+      "case_id": "parks_bz2_point_contains_200000",
+      "input_identity": {
+        "geometry_sha256": "ca133e4456b20c4baae1027d64a373d23083973ae042a3b6025dcc51eb3073a0",
+        "query_sha256": "a0841c76781c2a49530eb8adff73e58a88075e2d4944a2e40647611a28f4586d",
+        "same_files_passed_to_author_and_rtdl": true
+      },
+      "matched": true,
+      "query_cardinality": 200000,
+      "rtdl": {
+        "prepared_query_wall_sec": 0.4504775959649123,
+        "primitive_query_sec": 0.1355360360466875,
+        "query_load_sec": 0.6175210819928907,
+        "result_count": 225699
+      }
+    },
+    {
+      "author": {
+        "command": [
+          "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+          "-geom",
+          "/tmp/goal5521-target/PPoPPAE/datasets/polygons/parks.bz2.wkt",
+          "-query",
+          "/tmp/goal5521-target/PPoPPAE/datasets/queries/point-contains_queries_400000/parks.bz2.wkt",
+          "-serialize",
+          "/tmp/goal5521-stage/serialize/shared",
+          "-query_type",
+          "point-contains",
+          "-index_type",
+          "rtspatial",
+          "-load_factor",
+          "0.0001"
+        ],
+        "geometry_count": 11544398,
+        "loading_ms_diagnostic": 51.8492,
+        "query_count": 400000,
+        "query_ms_internal": 0.2074,
+        "result_count": 451007,
+        "stdout": "Loaded polygons 11544398\nLoaded queries 400000\nLoading Time 51.8492 ms\nGeoms 11544398\nQueries 400000\nQuery Time 0.2074 ms\nResults 451007\nSelectivity: 9.76679e-08\n"
+      },
+      "case_id": "parks_bz2_point_contains_400000",
+      "input_identity": {
+        "geometry_sha256": "ca133e4456b20c4baae1027d64a373d23083973ae042a3b6025dcc51eb3073a0",
+        "query_sha256": "b1d0d6ca16be223291affd9911f8bb9791008fa96823916364515a27864a29f8",
+        "same_files_passed_to_author_and_rtdl": true
+      },
+      "matched": true,
+      "query_cardinality": 400000,
+      "rtdl": {
+        "prepared_query_wall_sec": 0.9064984540455043,
+        "primitive_query_sec": 0.22402190399589017,
+        "query_load_sec": 1.1977239820407704,
+        "result_count": 451007
+      }
+    },
+    {
+      "author": {
+        "command": [
+          "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+          "-geom",
+          "/tmp/goal5521-target/PPoPPAE/datasets/polygons/parks.bz2.wkt",
+          "-query",
+          "/tmp/goal5521-target/PPoPPAE/datasets/queries/point-contains_queries_800000/parks.bz2.wkt",
+          "-serialize",
+          "/tmp/goal5521-stage/serialize/shared",
+          "-query_type",
+          "point-contains",
+          "-index_type",
+          "rtspatial",
+          "-load_factor",
+          "0.0001"
+        ],
+        "geometry_count": 11544398,
+        "loading_ms_diagnostic": 51.8768,
+        "query_count": 800000,
+        "query_ms_internal": 0.371,
+        "result_count": 901103,
+        "stdout": "Loaded polygons 11544398\nLoaded queries 800000\nLoading Time 51.8768 ms\nGeoms 11544398\nQueries 800000\nQuery Time 0.371 ms\nResults 901103\nSelectivity: 9.75693e-08\n"
+      },
+      "case_id": "parks_bz2_point_contains_800000",
+      "input_identity": {
+        "geometry_sha256": "ca133e4456b20c4baae1027d64a373d23083973ae042a3b6025dcc51eb3073a0",
+        "query_sha256": "bba3861da5b39c96571f6efb94fdf42b9d8149fbd52462ce7fe112882a769a47",
+        "same_files_passed_to_author_and_rtdl": true
+      },
+      "matched": true,
+      "query_cardinality": 800000,
+      "rtdl": {
+        "prepared_query_wall_sec": 1.8706134289968759,
+        "primitive_query_sec": 0.4468621300184168,
+        "query_load_sec": 2.3878732189768925,
+        "result_count": 901103
+      }
+    }
+  ],
+  "claim_boundary": {
+    "author_specific_rtdl_core_behavior_authorized": false,
+    "complete_paper_reproduction_claimed": false,
+    "embree_in_scope": false,
+    "exact_archive_same_input_count_evidence": true,
+    "figure_reproduction_claimed": false,
+    "performance_ratio_authorized": false,
+    "pointwise_containment_equivalence_claimed": false,
+    "prepared_base_distinct_query_batches": true,
+    "same_input_replay_claimed": false
+  },
+  "matched_case_count": 5,
+  "operation": "point_contains",
+  "prepared_base": {
+    "cache_contract": "rtdl.paper_reproduction.librts.exact_aabb_column_cache.v1",
+    "geometry_member": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+    "geometry_sha256": "ca133e4456b20c4baae1027d64a373d23083973ae042a3b6025dcc51eb3073a0",
+    "indexed_count": 11544398,
+    "prepare_index_sec": 0.9815886769792996,
+    "runtime_distinct_query_batches": 5,
+    "same_input_replay_used": false,
+    "shared_author_serialization_base": true
+  },
+  "schema": "rtdl.paper_reproduction.librts.goal5522_parks_bz2_point_cardinality_gate.v1",
+  "status": "parks_bz2_exact_point_contains_five_cardinality_matrix_matched"
+}

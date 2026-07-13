@@ -1,0 +1,148 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.generic_cell_mbr_backend_feasibility.v1",
+  "goal": "Goal5141",
+  "date": "2026-07-08",
+  "status": "generic_cell_mbr_backend_feasibility_ready_no_backend_implemented",
+  "verdict": "feasible_optix_backend_spike_next__requires_new_generic_native_symbol",
+  "scope": {
+    "implemented_backend": false,
+    "performance_claim": false,
+    "xhd_specific_primitive": false,
+    "author_code_copied": false,
+    "review_status": "implemented_review_pending"
+  },
+  "goal5140_target_contract": {
+    "contract": "generic_cell_mbr_nearest_frontier_native_abi_v1",
+    "row_schema": [
+      "frontier_kind_code",
+      "query_row_id",
+      "query_point_id",
+      "cell_id",
+      "point_begin_offset",
+      "point_count",
+      "min_distance",
+      "max_distance"
+    ],
+    "frontier_kind_codes": {
+      "inline": 1,
+      "offload": 2,
+      "pruned": 3
+    }
+  },
+  "existing_assets_reviewed": [
+    {
+      "asset": "generic_2d_aabb_index_optix",
+      "files": [
+        "src/rtdsl/aabb_index.py",
+        "src/rtdsl/optix_runtime.py",
+        "src/native/optix/rtdl_optix_prelude.h",
+        "src/native/optix/rtdl_optix_workloads.cpp"
+      ],
+      "evidence": [
+        "prepare_aabb_index_2d",
+        "expanded_aabb_point_membership_rows_2d",
+        "rtdl_optix_collect_prepared_aabb_index_2d_point_contains_rows"
+      ],
+      "usable_for_goal5140": "pattern_only",
+      "reason": "It already provides app-neutral OptiX custom-AABB row output with fail-closed capacity handling, but it is 2-D point/AABB membership rows, not the Goal5140 nearest-state frontier row schema."
+    },
+    {
+      "asset": "optix_custom_aabb_gas_builder",
+      "files": [
+        "src/native/optix/rtdl_optix_core.cpp"
+      ],
+      "evidence": [
+        "build_custom_accel_from_device_aabbs",
+        "build_custom_accel_from_borrowed_device_aabbs"
+      ],
+      "usable_for_goal5140": "direct_building_block",
+      "reason": "Cell MBRs can be represented as custom AABBs and traversed through the existing generic custom-primitive acceleration pattern."
+    },
+    {
+      "asset": "fixed_radius_neighbors_3d_rt_and_grid_kernels",
+      "files": [
+        "src/native/optix/rtdl_optix_core.cpp",
+        "src/native/optix/rtdl_optix_workloads.cpp"
+      ],
+      "evidence": [
+        "__raygen__frn3d_probe",
+        "fixed_radius_neighbors_3d_grid",
+        "fixed_radius_neighbors_3d_grid_exact_rows"
+      ],
+      "usable_for_goal5140": "kernel_pattern_only",
+      "reason": "It demonstrates 3-D query launch, payload-style nearest/radius behavior, and CUDA module loading, but its data model is point-neighbor rows rather than cell-MBR nearest frontiers."
+    },
+    {
+      "asset": "point_group_nearest_witness_2d_device_columns",
+      "files": [
+        "src/native/optix/rtdl_optix_prelude.h",
+        "src/native/optix/rtdl_optix_workloads.cpp"
+      ],
+      "evidence": [
+        "rtdl_optix_prepare_point_group_nearest_witness_2d",
+        "rtdl_optix_write_prepared_point_group_nearest_witness_2d_device_columns"
+      ],
+      "usable_for_goal5140": "handoff_pattern_only",
+      "reason": "It proves native nearest-witness device-column handoff patterns exist, but it is 2-D point-group nearest witness, not generic cell-MBR frontier classification."
+    }
+  ],
+  "missing_backend_surface": [
+    "No native symbol currently implements rtdl_optix_collect_cell_mbr_nearest_frontier.",
+    "No current backend emits Goal5140 row schema with inline/offload/pruned frontier kind codes.",
+    "No current backend combines cell-MBR traversal with caller-provided current nearest state and max_inline_points classification.",
+    "No current Embree/HIPRT equivalent exists for this ABI."
+  ],
+  "recommended_next_goal": {
+    "goal": "Goal5142",
+    "name": "Generic OptiX cell-MBR frontier backend spike",
+    "type": "implementation_spike",
+    "target_backend": "optix_first",
+    "minimal_scope": [
+      "Add a generic native symbol following the Goal5140 ABI.",
+      "Use custom AABB acceleration over caller-owned cell MBRs.",
+      "Emit the Goal5140 row schema and fail closed on row-capacity overflow.",
+      "Validate on a tiny synthetic non-X-HD fixture against the Goal5140 NumPy row-table reference."
+    ],
+    "not_in_scope": [
+      "Full X-HD paper reproduction",
+      "Author performance parity",
+      "Embree/HIPRT backend",
+      "X-HD-specific primitive names or author-code copy"
+    ]
+  },
+  "risk_register": [
+    {
+      "risk": "3d_backend_gap",
+      "description": "The strongest existing AABB row-output API is 2-D; X-HD representative graphics inputs are 3-D.",
+      "mitigation": "Start with one OptiX backend spike that is explicitly checked against synthetic 3-D cell-MBR fixtures before app integration."
+    },
+    {
+      "risk": "row_overflow_or_partial_output",
+      "description": "Frontier row count can exceed caller capacity.",
+      "mitigation": "Reuse the existing AABB row-output discipline: overflow must fail closed, never emit partial success."
+    },
+    {
+      "risk": "app_identity_creep",
+      "description": "Because this work is motivated by X-HD, backend names could drift toward X-HD or Hausdorff semantics.",
+      "mitigation": "Native symbol, Python wrapper, tests, and metadata must use cell-MBR/frontier/nearest-state terminology only."
+    },
+    {
+      "risk": "false_performance_claim",
+      "description": "A tiny backend smoke can prove ABI correctness but not paper performance.",
+      "mitigation": "Goal5142 must be correctness-only unless a separate phase-aligned performance goal is authorized."
+    }
+  ],
+  "claim_boundary": {
+    "allowed": [
+      "Existing generic native assets make an OptiX implementation plausible.",
+      "A new generic native symbol is required for the Goal5140 ABI.",
+      "Goal5142 may implement a bounded correctness spike."
+    ],
+    "not_allowed": [
+      "RTDL already has the cell-MBR traversal backend.",
+      "X-HD RT algorithm is reproduced.",
+      "X-HD performance is improved or comparable to the author.",
+      "Existing 2-D AABB point-membership rows are equivalent to the Goal5140 frontier ABI."
+    ]
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "claim_boundary": "LSI ring geometry only; no overlay topology or PIP claim",
+  "feature_count": 50090,
+  "input_path": "parks.geojsonseq",
+  "output_path": "parks_Australia_current_osm_Point.cdb",
+  "point_count": 992505,
+  "ring_chain_count": 51130,
+  "skipped_non_polygon": 0,
+  "skipped_short_ring": 0
+}

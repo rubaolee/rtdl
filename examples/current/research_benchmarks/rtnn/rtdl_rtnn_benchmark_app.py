@@ -96,9 +96,9 @@ def scope_payload() -> dict[str, Any]:
         ),
         "claim_boundary": CLAIM_BOUNDARY,
         "primary_reports": (
-            "history/internal_docs/docs_reports/archived_evidence_exact_ann_candidate_quality_partner_reference_2026-05-14.md",
-            "history/internal_docs/docs_reports/archived_evidence_rtnn_fair_fight_benchmark_2026-05-19.md",
-            "history/internal_docs/docs_reports/archived_evidence_rtnn_benchmark_front_door_2026-05-24.md",
+            "docs/application_catalog.md",
+            "docs/release_reports/v2_14/README.md",
+            "docs/learn/benchmark_partner_reference_matrix.md",
         ),
     }
 

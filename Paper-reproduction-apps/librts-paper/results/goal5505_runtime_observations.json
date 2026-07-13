@@ -1,0 +1,29 @@
+{
+  "schema": "rtdl.paper_reproduction.librts.goal5505_runtime_observations.v1",
+  "status": "pod_runtime_observations_completed",
+  "pod": {
+    "host": "157.157.221.29",
+    "port": 25039,
+    "gpu": "NVIDIA RTX 4000 Ada Generation",
+    "driver": "570.133.07"
+  },
+  "geometry_sha256": "2256d450210f56d7032284e87fae70b46ed1686a441f1bf4fad9ed8fba544ba2",
+  "query_sha256": "d427b5164a23be371779550b0b368b2fd8a4e2f08b449765ccdc74ef46002b95",
+  "author_counts": [
+    1,
+    1,
+    1,
+    1,
+    1
+  ],
+  "rtdl_counts": [
+    1,
+    1,
+    1,
+    1,
+    0
+  ],
+  "author_command_contract": "query -geom -query -serialize -query_type range-intersects -index_type rtspatial -load_factor 1",
+  "rtdl_contract": "prepare_aabb_index_2d_columns + prepared.count(operation=range_intersects, backend=optix)",
+  "same_input_per_case": true
+}

@@ -1,0 +1,117 @@
+{
+  "schema": "rtdl.paper_reproduction.librts.goal5508_generic_float32_degenerate_aabb_validity_fix.v1",
+  "status": "generic_float32_degenerate_aabb_validity_fix_completed",
+  "root_cause": {
+    "source_observation": "author Envelope::IsValid uses strict min<max after coord_t=float parsing; author backward query skips invalid indexed envelopes",
+    "rtdl_pre_fix_observation": "native float32 packing plus generic OptiX AABB padding allowed post-pack degenerate indexed boxes to produce range_intersects hits",
+    "diagnostic_contract": "indexed AABBs that are not strictly valid after float32 packing are non-matchable in the generic OptiX intersection kernel",
+    "app_specific_behavior_added": false
+  },
+  "official_prefix_matrix": [
+    {
+      "case_id": "parks_Europe_select_0.01_10000",
+      "author_count": 34240217,
+      "pre_fix_rtdl_count": 34240244,
+      "fixed_rtdl_count": 34240217,
+      "pre_fix_delta": 27,
+      "fixed_delta": 0,
+      "same_input_files": true,
+      "geometry_sha256": "281391d873a0462331bc0d896e4e6e3f990693b87c03e538dc0d149d0e3162e4",
+      "query_sha256": "0ddf5ea567223621ffdd7f0fe9c789dd5c7350941d0a8a8e7bb8b98b308ca499",
+      "fixed_probe": "Paper-reproduction-apps/librts-paper/results/goal5508_official_parks_Europe_250k_fixed.json"
+    },
+    {
+      "case_id": "lakes_bz2_select_0.01_10000",
+      "author_count": 34581812,
+      "pre_fix_rtdl_count": 34586817,
+      "fixed_rtdl_count": 34581812,
+      "pre_fix_delta": 5005,
+      "fixed_delta": 0,
+      "same_input_files": true,
+      "geometry_sha256": "40b912f51abed43bc22a301257e440e533bd0402516267d64aecb477b34645e3",
+      "query_sha256": "3ddc24019d37f4dd0bc0c1f41ef04cb24d6e1f9d852f068f7eae87ca014aeb04",
+      "fixed_probe": "Paper-reproduction-apps/librts-paper/results/goal5508_official_lakes_bz2_250k_fixed.json"
+    }
+  ],
+  "degenerate_subset_matrix": [
+    {
+      "case_id": "parks_Europe_select_0.01_10000",
+      "invalid_after_float32_count": 4,
+      "invalid_geometry_indices": [
+        52848,
+        146914,
+        237679,
+        237905
+      ],
+      "author_count": 0,
+      "pre_fix_rtdl_count": 27,
+      "fixed_rtdl_count": 0,
+      "same_input_files": true,
+      "geometry_sha256": "281391d873a0462331bc0d896e4e6e3f990693b87c03e538dc0d149d0e3162e4",
+      "query_sha256": "0ddf5ea567223621ffdd7f0fe9c789dd5c7350941d0a8a8e7bb8b98b308ca499",
+      "subset_wkt_sha256": "d48db3d83bf378a75482754c674fb98a893771373e6c99a543d2022c8684140a",
+      "subset_wkt": "Paper-reproduction-apps/librts-paper/results/goal5508_parks_degenerate.wkt"
+    },
+    {
+      "case_id": "lakes_bz2_select_0.01_10000",
+      "invalid_after_float32_count": 4,
+      "invalid_geometry_indices": [
+        123637,
+        161418,
+        161903,
+        214318
+      ],
+      "author_count": 0,
+      "pre_fix_rtdl_count": 5005,
+      "fixed_rtdl_count": 0,
+      "same_input_files": true,
+      "geometry_sha256": "40b912f51abed43bc22a301257e440e533bd0402516267d64aecb477b34645e3",
+      "query_sha256": "3ddc24019d37f4dd0bc0c1f41ef04cb24d6e1f9d852f068f7eae87ca014aeb04",
+      "subset_wkt_sha256": "fd9eeb6b746b0d8b86a043058e58a911b915480db1110de8520516a916500d6b",
+      "subset_wkt": "Paper-reproduction-apps/librts-paper/results/goal5508_lakes_degenerate.wkt"
+    }
+  ],
+  "author_degenerate_subset_runtime": [
+    {
+      "case_id": "parks_Europe_select_0.01_10000",
+      "author_count": 0,
+      "geometry_subset": "Paper-reproduction-apps/librts-paper/results/goal5508_parks_degenerate.wkt",
+      "query_sha256": "0ddf5ea567223621ffdd7f0fe9c789dd5c7350941d0a8a8e7bb8b98b308ca499",
+      "command_contract": "SpatialQueryBenchmark/build/query -query_type range-intersects -index_type rtspatial -load_factor 1"
+    },
+    {
+      "case_id": "lakes_bz2_select_0.01_10000",
+      "author_count": 0,
+      "geometry_subset": "Paper-reproduction-apps/librts-paper/results/goal5508_lakes_degenerate.wkt",
+      "query_sha256": "3ddc24019d37f4dd0bc0c1f41ef04cb24d6e1f9d852f068f7eae87ca014aeb04",
+      "command_contract": "SpatialQueryBenchmark/build/query -query_type range-intersects -index_type rtspatial -load_factor 1"
+    }
+  ],
+  "source_audit": {
+    "source_path": "src/native/optix/rtdl_optix_workloads.cpp",
+    "source_sha256": "f34bab8707cb7c030e954923f991ca293aacdc92b3d51d553c470135e01c2cd2",
+    "library_path": "Paper-reproduction-apps/librts-paper/results/goal5508_librtdl_optix.so",
+    "library_sha256": "449a91438b43e39abb8c6d8ef03cb9784cf936088c6b5610e16c2df87a6c145a",
+    "pod": "157.157.221.29:25039",
+    "gpu": "NVIDIA RTX 4000 Ada Generation",
+    "cuda": "12.8",
+    "optix_sdk": "/workspace/vendor/optix-sdk"
+  },
+  "checks": {
+    "official_parks_author_match": true,
+    "official_lakes_author_match": true,
+    "degenerate_parks_author_match": true,
+    "degenerate_lakes_author_match": true,
+    "source_and_rtdl_input_mbr_contract_is_same": true,
+    "generic_native_kernel_fix": true
+  },
+  "claim_boundary": {
+    "generic_native_semantic_fix_claimed": true,
+    "full_official_input_adjudication": false,
+    "complete_range_intersects_matrix_claimed": false,
+    "paper_reproduction_claimed": false,
+    "performance_ratio_authorized": false,
+    "author_specific_rtdl_core_behavior_authorized": false,
+    "embree_in_scope": false
+  }
+}

@@ -1,0 +1,107 @@
+{
+  "author": {
+    "counts": [
+      2,
+      1,
+      0,
+      1,
+      0
+    ],
+    "expected": [
+      2,
+      1,
+      0,
+      1,
+      0
+    ],
+    "implicit_inserted_id": 2,
+    "matched": true,
+    "schema": "librts.author_mutation_probe.v1"
+  },
+  "claim_boundary": {
+    "bounded_same_input_mutation_semantics_claimed": true,
+    "embree_used": false,
+    "full_paper_reproduction_claimed": false,
+    "mutation_performance_parity_claimed": false,
+    "native_incremental_rtdl_insert_delete_claimed": false,
+    "native_incremental_rtdl_update_claimed": true,
+    "paper_figure_reproduction_claimed": false
+  },
+  "comparison": {
+    "counts": [
+      2,
+      1,
+      0,
+      1,
+      0
+    ],
+    "same_geometry_and_query_sequence": true,
+    "same_implicit_id_sequence": true,
+    "same_result_counts": true
+  },
+  "environment": {
+    "host": "lx1",
+    "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39"
+  },
+  "execution_model_difference": {
+    "author": "native_incremental_gas_ias_update",
+    "performance_comparison_authorized": false,
+    "rtdl": "native_sparse_slot_refit_for_update__atomic_snapshot_rebuild_for_insert_delete_clear"
+  },
+  "matched": true,
+  "operation_sequence": [
+    "insert_initial",
+    "query",
+    "update_id_1",
+    "query",
+    "delete_id_0",
+    "query",
+    "insert_auto_id_2",
+    "query",
+    "clear",
+    "query"
+  ],
+  "rtdl": {
+    "backend": "optix",
+    "counts": [
+      2,
+      1,
+      0,
+      1,
+      0
+    ],
+    "expected": [
+      2,
+      1,
+      0,
+      1,
+      0
+    ],
+    "inserted_ids": [
+      2
+    ],
+    "matched": true,
+    "metadata": {
+      "active_count": 0,
+      "active_ids": [],
+      "app_semantics": "none",
+      "backend": "optix",
+      "closed": false,
+      "contract": "generic_mutable_aabb_index_2d_v1",
+      "execution_model": "native_fixed_cardinality_refit_or_atomic_snapshot_rebuild",
+      "last_mutation_execution_model": "atomic_snapshot_rebuild",
+      "native_incremental_insert_delete": false,
+      "native_incremental_update": true,
+      "primitive": "MUTABLE_AABB_INDEX_2D",
+      "revision": 4
+    },
+    "mutation_execution_models": [
+      "native_sparse_slot_refit_with_rollback",
+      "atomic_snapshot_rebuild",
+      "atomic_snapshot_rebuild",
+      "atomic_snapshot_rebuild"
+    ]
+  },
+  "schema": "librts.same_input_mutation_gate.v1",
+  "status": "matched"
+}

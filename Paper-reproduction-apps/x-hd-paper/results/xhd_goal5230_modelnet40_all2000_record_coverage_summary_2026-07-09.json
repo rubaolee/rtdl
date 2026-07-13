@@ -1,0 +1,150 @@
+{
+  "algorithm_distribution": {
+    "Early Break": 400,
+    "Hybrid": 1200,
+    "Ray Tracing": 400
+  },
+  "all_records_covered": true,
+  "claim_boundary": {
+    "algorithm_specific_performance_reproduced": false,
+    "all_2000_records_individually_rerun": false,
+    "author_vs_rtdl_ratio_claimed": false,
+    "coverage_kind": "HDResult value coverage across paper-log records",
+    "exact_paper_dataset_identity_proved": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "modelnet40_all_2000_log_records_covered_by_unique_pair_equivalence": true
+  },
+  "covered_record_count": 2000,
+  "covered_records_sample": [
+    {
+      "algorithm": "Hybrid",
+      "covered_by_unique_case_index": 4,
+      "covered_by_unique_case_name": "0004_airplane_0691__airplane_0439",
+      "hd_result": 0.18344946205615997,
+      "members": [
+        "ModelNet40/airplane/test/airplane_0691.off",
+        "ModelNet40/airplane/train/airplane_0439.off"
+      ],
+      "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/ModelNet40/n_points_cell_false_max_hit_false/airplane_0691.off_airplane_0439.off.json"
+    },
+    {
+      "algorithm": "Hybrid",
+      "covered_by_unique_case_index": 4,
+      "covered_by_unique_case_name": "0004_airplane_0691__airplane_0439",
+      "hd_result": 0.18344946205615997,
+      "members": [
+        "ModelNet40/airplane/test/airplane_0691.off",
+        "ModelNet40/airplane/train/airplane_0439.off"
+      ],
+      "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/ModelNet40/n_points_cell_true_max_hit_true/airplane_0691.off_airplane_0439.off.json"
+    },
+    {
+      "algorithm": "Early Break",
+      "covered_by_unique_case_index": 4,
+      "covered_by_unique_case_name": "0004_airplane_0691__airplane_0439",
+      "hd_result": 0.18344946205615997,
+      "members": [
+        "ModelNet40/airplane/test/airplane_0691.off",
+        "ModelNet40/airplane/train/airplane_0439.off"
+      ],
+      "relative_log_path": "expr/for_the_paper/logs/run_all/eb_gpu/ModelNet40/airplane_0691.off_airplane_0439.off.json"
+    },
+    {
+      "algorithm": "Hybrid",
+      "covered_by_unique_case_index": 4,
+      "covered_by_unique_case_name": "0004_airplane_0691__airplane_0439",
+      "hd_result": 0.18344946205615997,
+      "members": [
+        "ModelNet40/airplane/test/airplane_0691.off",
+        "ModelNet40/airplane/train/airplane_0439.off"
+      ],
+      "relative_log_path": "expr/for_the_paper/logs/run_all/hybrid_gpu/ModelNet40/airplane_0691.off_airplane_0439.off.json"
+    },
+    {
+      "algorithm": "Ray Tracing",
+      "covered_by_unique_case_index": 4,
+      "covered_by_unique_case_name": "0004_airplane_0691__airplane_0439",
+      "hd_result": 0.18344946205615997,
+      "members": [
+        "ModelNet40/airplane/test/airplane_0691.off",
+        "ModelNet40/airplane/train/airplane_0439.off"
+      ],
+      "relative_log_path": "expr/for_the_paper/logs/run_all/rt_gpu/ModelNet40/airplane_0691.off_airplane_0439.off.json"
+    },
+    {
+      "algorithm": "Hybrid",
+      "covered_by_unique_case_index": 0,
+      "covered_by_unique_case_name": "0000_airplane_0036__airplane_0515",
+      "hd_result": 0.09761668741703033,
+      "members": [
+        "ModelNet40/airplane/train/airplane_0036.off",
+        "ModelNet40/airplane/train/airplane_0515.off"
+      ],
+      "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/ModelNet40/n_points_cell_false_max_hit_false/airplane_0036.off_airplane_0515.off.json"
+    },
+    {
+      "algorithm": "Hybrid",
+      "covered_by_unique_case_index": 0,
+      "covered_by_unique_case_name": "0000_airplane_0036__airplane_0515",
+      "hd_result": 0.09761668741703033,
+      "members": [
+        "ModelNet40/airplane/train/airplane_0036.off",
+        "ModelNet40/airplane/train/airplane_0515.off"
+      ],
+      "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/ModelNet40/n_points_cell_true_max_hit_true/airplane_0036.off_airplane_0515.off.json"
+    },
+    {
+      "algorithm": "Early Break",
+      "covered_by_unique_case_index": 0,
+      "covered_by_unique_case_name": "0000_airplane_0036__airplane_0515",
+      "hd_result": 0.09761668741703033,
+      "members": [
+        "ModelNet40/airplane/train/airplane_0036.off",
+        "ModelNet40/airplane/train/airplane_0515.off"
+      ],
+      "relative_log_path": "expr/for_the_paper/logs/run_all/eb_gpu/ModelNet40/airplane_0036.off_airplane_0515.off.json"
+    },
+    {
+      "algorithm": "Hybrid",
+      "covered_by_unique_case_index": 0,
+      "covered_by_unique_case_name": "0000_airplane_0036__airplane_0515",
+      "hd_result": 0.09761668741703033,
+      "members": [
+        "ModelNet40/airplane/train/airplane_0036.off",
+        "ModelNet40/airplane/train/airplane_0515.off"
+      ],
+      "relative_log_path": "expr/for_the_paper/logs/run_all/hybrid_gpu/ModelNet40/airplane_0036.off_airplane_0515.off.json"
+    },
+    {
+      "algorithm": "Ray Tracing",
+      "covered_by_unique_case_index": 0,
+      "covered_by_unique_case_name": "0000_airplane_0036__airplane_0515",
+      "hd_result": 0.09761668741703033,
+      "members": [
+        "ModelNet40/airplane/train/airplane_0036.off",
+        "ModelNet40/airplane/train/airplane_0515.off"
+      ],
+      "relative_log_path": "expr/for_the_paper/logs/run_all/rt_gpu/ModelNet40/airplane_0036.off_airplane_0515.off.json"
+    }
+  ],
+  "duplicate_count_distribution": {
+    "5": 400
+  },
+  "duplicate_signature_mismatch_count": 0,
+  "duplicate_signature_mismatches": [],
+  "goal": "Goal5230",
+  "log_index": "Paper-reproduction-apps/x-hd-paper/results/xhd_paper_branch_log_index_goal5176_2026-07-08.json",
+  "missing_unique_pair_count": 0,
+  "missing_unique_pairs": [],
+  "pair_algorithm_set_distribution": {
+    "Early Break + Hybrid + Ray Tracing": 400
+  },
+  "paper_log_repo": "/tmp/xhd-goal5222_author_paper",
+  "record_count": 2000,
+  "schema": "rtdl.paper_reproduction.xhd.modelnet40_record_coverage.v1",
+  "status": "modelnet40_paper_log_record_coverage_from_unique_pairs",
+  "unique_pair_count": 400,
+  "unique_summary": "/tmp/xhd-goal5229/modelnet40_all400_float32norm/all400_float32norm_aggregate_summary.json",
+  "unmatched_unique_pair_count": 0,
+  "unmatched_unique_pairs": []
+}

@@ -1,0 +1,119 @@
+{
+  "answer": "/workspace/RayJoin_fresh/test/dataset/br_countyXbr_soil_answer.txt",
+  "answer_bytes": 16631243,
+  "answer_sha256": "464f87a59cc2428f63cbfe5068965d7bc7adb8eee51e9c1e3a5960ae8b76019e",
+  "author_binary": "/workspace/RayJoin_goal4834_patched_author/release/bin/polyover_exec",
+  "author_over_rtdl_wall_ratio": 1.0496383430247331,
+  "author_patched": {
+    "byte_equal_to_answer": true,
+    "bytes": 16631243,
+    "elapsed_sec": 7.811462253332138,
+    "exists": true,
+    "output": "/workspace/goal4837_public_sample_confirm/author_patched.txt",
+    "returncode": 0,
+    "sha256": "464f87a59cc2428f63cbfe5068965d7bc7adb8eee51e9c1e3a5960ae8b76019e",
+    "stderr_tail": [
+      " - Read map 1: 2312.13 ms",
+      "",
+      " - Create App: 1.724 ms",
+      "",
+      " - Load Data: 2.34699 ms",
+      "",
+      " - Init: 144.844 ms",
+      "",
+      " - Build Index: 3.13902 ms",
+      "",
+      " - Intersection edges: 0.863075 ms",
+      "",
+      " - Map 0: Locate vertices in other map: 2.08187 ms",
+      "",
+      " - Map 1: Locate vertices in other map: 1.67918 ms",
+      "",
+      " - Computer output polygons: 8.30793 ms",
+      "",
+      " - Write to file: 1351.55 ms",
+      ""
+    ]
+  },
+  "boundary": "County x Soil public sample only; no broad performance claim",
+  "goal": "Goal4837 one-run Linux OptiX public sample confirmation",
+  "left": "/workspace/RayJoin_fresh/test/dataset/br_county_clean_25_odyssey_final.txt",
+  "repo": "/workspace/rtdl_goal4817_user_smoke_20260630_102224",
+  "right": "/workspace/RayJoin_fresh/test/dataset/br_soil_ascii_odyssey_final.txt",
+  "rtdl_optix": {
+    "byte_equal_to_answer": true,
+    "bytes": 16631243,
+    "elapsed_sec": 7.442051164805889,
+    "intersection_count": null,
+    "native_timings": {
+      "lsi": {
+        "candidate_count_pass": 0.000214618,
+        "candidate_download": 0.0,
+        "candidate_write_pass": 0.0,
+        "emitted_count": 20860,
+        "exact_refine": 0.0,
+        "hot_call_sec": 1.5247344821691513,
+        "left_upload": 0.0,
+        "mode": "count_prepared_left_grouped_range_direct_intersection",
+        "raw_candidate_count": 0,
+        "scaled_intersection_materialization_enabled": true
+      },
+      "midpoint_pip_map0_in_map1": {
+        "hot_call_sec": 0.00864710658788681,
+        "mode": "rows",
+        "point_count": 944,
+        "point_upload": 3.3994e-05,
+        "positive_face_count": 934,
+        "row_download": 2.0298e-05,
+        "traversal": 0.00825858
+      },
+      "midpoint_pip_map1_in_map0": {
+        "hot_call_sec": 0.00659942626953125,
+        "mode": "rows",
+        "point_count": 3594,
+        "point_upload": 3.4165e-05,
+        "positive_face_count": 3189,
+        "row_download": 2.4597e-05,
+        "traversal": 0.006179475
+      },
+      "point_location_prepare_map0_in_map1": {
+        "hot_call_sec": 0.594224788248539,
+        "mode": "prepare"
+      },
+      "point_location_prepare_map1_in_map0": {
+        "hot_call_sec": 0.033327892422676086,
+        "mode": "prepare"
+      },
+      "vertex_pip_map0_in_map1": {
+        "hot_call_sec": 0.08826890587806702,
+        "mode": "rows",
+        "point_count": 342738,
+        "point_upload": 0.00131774,
+        "positive_face_count": 337691,
+        "row_download": 0.000513094,
+        "traversal": 0.071588344
+      },
+      "vertex_pip_map1_in_map0": {
+        "hot_call_sec": 0.039114609360694885,
+        "mode": "rows",
+        "point_count": 258961,
+        "point_upload": 0.000998915,
+        "positive_face_count": 255272,
+        "row_download": 0.000398777,
+        "traversal": 0.032203364
+      }
+    },
+    "output": "/workspace/goal4837_public_sample_confirm/rtdl_optix.txt",
+    "phase_seconds": {
+      "lsi_row_object_materialize_sec": 0.16431396454572678,
+      "lsi_row_sort_sec": 0.4958415701985359,
+      "output_chain_assembly_sec": 1.0497062727808952,
+      "output_chain_write_sec": 0.9111801534891129,
+      "pack_inputs_sec": 0.6707691252231598,
+      "point_location_prepare_sec": 0.6275526806712151,
+      "point_location_prepare_wall_sec": 0.6276253089308739,
+      "total_sec": 5.690379619598389
+    },
+    "sha256": "464f87a59cc2428f63cbfe5068965d7bc7adb8eee51e9c1e3a5960ae8b76019e"
+  }
+}

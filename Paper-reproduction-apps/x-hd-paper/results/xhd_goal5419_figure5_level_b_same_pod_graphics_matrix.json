@@ -1,0 +1,803 @@
+{
+  "claim_boundary": {
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false
+  },
+  "failures": [],
+  "goal": "Goal5419",
+  "graphics_case_count": 3,
+  "matched": true,
+  "matrix_rows_executed": 3,
+  "pod": {
+    "cwd": "/tmp/rtdl_goal5419",
+    "hostname": "45c502cfccb5",
+    "rtdl_optix_library": "/tmp/rtdl_goal5419/build/librtdl_optix.so"
+  },
+  "route_result_count": 6,
+  "rows": [
+    {
+      "abs_diff_author_rerun_vs_paper_log": 1.9371509552001953e-07,
+      "author": {
+        "hd_result": 0.12572988867759705,
+        "json_path": "/tmp/xhd_goal5419/results/dragon_happy_author.json",
+        "reported_time_ms": null,
+        "running": {
+          "AvgTime": 8.128,
+          "EB": true,
+          "FastBuildBVH": false,
+          "LB": 256,
+          "NumPointsPerCell": 15,
+          "Prune": true,
+          "RebuildBVH": false,
+          "Repeats": [
+            {
+              "Algorithm": "XHD",
+              "BVHBuildTime": 0.337,
+              "Cells": 955,
+              "Execution": "GPU",
+              "GridResolution": [
+                10,
+                24,
+                10
+              ],
+              "HDLowerBound": 0.12356820702552795,
+              "HDUpperBound": 0.26690536737442017,
+              "InitRadius": 0.12356820702552795,
+              "Iterations": [
+                {
+                  "AdjustBVHTime": 0.103,
+                  "CMax2": 0.01548159122467041,
+                  "CUDATime": 0.955,
+                  "Iteration": 1,
+                  "LBTrace": {
+                    "ActiveInQueueSize": 437645,
+                    "Batches": [
+                      {
+                        "ActiveInQueueSize": 437645,
+                        "Batch": 0,
+                        "RawOffloadRowsAuthorWidthBytes": 471952,
+                        "RawOffloadRowsBeforeSortReduce": 58994,
+                        "StatusCmax2MbrAbortCount": 421711,
+                        "StatusInitCount": 437645,
+                        "StatusOffloadingAppendCount": 58994,
+                        "StatusPointLoopEarlyBreakCount": 13707
+                      }
+                    ],
+                    "RawOffloadRowsAuthorWidthBytes": 471952,
+                    "RawOffloadRowsBeforeSortReduce": 58994,
+                    "Schema": "rtdl.goal5374.author.lb_status_trace.v1",
+                    "StatusCmax2MbrAbortCount": 421711,
+                    "StatusInitCount": 437645,
+                    "StatusOffloadingAppendCount": 58994,
+                    "StatusPointLoopEarlyBreakCount": 13707
+                  },
+                  "NumInputPoints": 437645,
+                  "NumOutputPoints": 150,
+                  "OffloadingSize": 58994,
+                  "RTTime": 2.947,
+                  "Radius": 0.12356820702552795
+                },
+                {
+                  "CMax2": 0.01580800488591194,
+                  "CUDATime": 0.207,
+                  "Iteration": 2,
+                  "LBTrace": {
+                    "ActiveInQueueSize": 150,
+                    "Batches": [
+                      {
+                        "ActiveInQueueSize": 150,
+                        "Batch": 0,
+                        "RawOffloadRowsAuthorWidthBytes": 35416,
+                        "RawOffloadRowsBeforeSortReduce": 4427,
+                        "StatusCmax2MbrAbortCount": 0,
+                        "StatusInitCount": 150,
+                        "StatusOffloadingAppendCount": 4427,
+                        "StatusPointLoopEarlyBreakCount": 0
+                      }
+                    ],
+                    "RawOffloadRowsAuthorWidthBytes": 35416,
+                    "RawOffloadRowsBeforeSortReduce": 4427,
+                    "Schema": "rtdl.goal5374.author.lb_status_trace.v1",
+                    "StatusCmax2MbrAbortCount": 0,
+                    "StatusInitCount": 150,
+                    "StatusOffloadingAppendCount": 4427,
+                    "StatusPointLoopEarlyBreakCount": 0
+                  },
+                  "NumInputPoints": 150,
+                  "NumOutputPoints": 0,
+                  "OffloadingSize": 4427,
+                  "RTTime": 0.472,
+                  "Radius": 0.1377279907464981
+                }
+              ],
+              "LargeCells": 674,
+              "Memory": {
+                "BVH": 49280,
+                "Grid": 2186072,
+                "MBRs B": 22920,
+                "WL": 3501160,
+                "WL Heavy Peak": 471952
+              },
+              "Profiling": false,
+              "Repeat": 1,
+              "ReportedTime": 8.128
+            }
+          ],
+          "Seed": 0
+        },
+        "running_avg_time_ms": 8.128
+      },
+      "author_command": [
+        "/tmp/xhd-goal5112/build-gcc11-optix77-fast/bin/hd_exec",
+        "-input1",
+        "/tmp/xhd_goal5298/data/dragon.ply",
+        "-input2",
+        "/tmp/xhd_goal5298/data/happy_buddha.ply",
+        "-input_type",
+        "ply",
+        "-n_dims",
+        "3",
+        "-serialize",
+        "/tmp/xhd_goal5419/ser",
+        "-variant",
+        "rt",
+        "-execution",
+        "gpu",
+        "-repeat",
+        "1",
+        "-json",
+        "/tmp/xhd_goal5419/results/dragon_happy_author.json",
+        "-overwrite=true",
+        "-check=false",
+        "-normalize=false",
+        "-lb=256"
+      ],
+      "author_process_wall_sec": 1.9343201890587807,
+      "author_rerun_matches_paper_log": true,
+      "case_id": "dragon_happy",
+      "category": "graphics",
+      "input_identity_level": "level_b_same_source_public_graphics",
+      "paper_log_hd_result_if_available": 0.12572969496250153,
+      "point_counts": [
+        437645,
+        543652
+      ],
+      "ratio_authorized": false,
+      "required_rtdl_preprocessing": [
+        "translate_each_input_to_min_bound"
+      ],
+      "rtdl_routes": [
+        {
+          "abs_diff_vs_author_rerun": 2.3848857610975216e-09,
+          "command": [
+            "python3",
+            "Paper-reproduction-apps/x-hd-paper/scripts/run_xhd_rtdl_hd_exec.py",
+            "-input1",
+            "/tmp/xhd_goal5298/data/dragon.ply",
+            "-input2",
+            "/tmp/xhd_goal5298/data/happy_buddha.ply",
+            "-input_type",
+            "ply",
+            "-n_dims",
+            "3",
+            "-variant",
+            "rt",
+            "-execution",
+            "gpu",
+            "-json",
+            "/tmp/xhd_goal5419/results/dragon_happy_cell-mbr-fast-scalar_rtdl.json",
+            "-overwrite=true",
+            "-check=false",
+            "--rtdl-route",
+            "cell-mbr-fast-scalar",
+            "--grid-shape",
+            "32,32,32",
+            "--max-inline-points",
+            "512",
+            "--translate-each-input-to-min-bound"
+          ],
+          "condition": "execute",
+          "matched_author_rerun": true,
+          "process_wall_sec": 2.2426721453666687,
+          "ratio_authorized": false,
+          "route_label": "cell-mbr-fast-scalar",
+          "rtdl": {
+            "hd_result": 0.12572988629271128,
+            "json_path": "/tmp/xhd_goal5419/results/dragon_happy_cell-mbr-fast-scalar_rtdl.json",
+            "per_source_witness_exact": false,
+            "route_label": "cell-mbr-fast-scalar",
+            "rtdl_input_load_sec": 0.6886668801307678,
+            "rtdl_process_wall_sec": 1.2914344146847725,
+            "rtdl_route_wall_sec": 0.5402215495705605,
+            "running_avg_time_ms": 540.2215495705605,
+            "running_time_semantics": "RTDL route wall time in milliseconds for the selected route label; not author internal Running.AvgTime parity",
+            "witness_contract": "directed_input1_to_input2_witness_may_be_approximate_for_fast_scalar"
+          }
+        },
+        {
+          "abs_diff_vs_author_rerun": 2.3848857610975216e-09,
+          "command": [
+            "python3",
+            "Paper-reproduction-apps/x-hd-paper/scripts/run_xhd_rtdl_hd_exec.py",
+            "-input1",
+            "/tmp/xhd_goal5298/data/dragon.ply",
+            "-input2",
+            "/tmp/xhd_goal5298/data/happy_buddha.ply",
+            "-input_type",
+            "ply",
+            "-n_dims",
+            "3",
+            "-variant",
+            "rt",
+            "-execution",
+            "gpu",
+            "-json",
+            "/tmp/xhd_goal5419/results/dragon_happy_cell-mbr-exact-witness_rtdl.json",
+            "-overwrite=true",
+            "-check=false",
+            "--rtdl-route",
+            "cell-mbr-exact-witness",
+            "--grid-shape",
+            "32,32,32",
+            "--max-inline-points",
+            "512",
+            "--translate-each-input-to-min-bound"
+          ],
+          "condition": "execute_if_operational",
+          "matched_author_rerun": true,
+          "process_wall_sec": 2.282781593501568,
+          "ratio_authorized": false,
+          "route_label": "cell-mbr-exact-witness",
+          "rtdl": {
+            "hd_result": 0.12572988629271128,
+            "json_path": "/tmp/xhd_goal5419/results/dragon_happy_cell-mbr-exact-witness_rtdl.json",
+            "per_source_witness_exact": true,
+            "route_label": "cell-mbr-exact-witness",
+            "rtdl_input_load_sec": 0.688907191157341,
+            "rtdl_process_wall_sec": 1.368519239127636,
+            "rtdl_route_wall_sec": 0.6174861714243889,
+            "running_avg_time_ms": 617.4861714243889,
+            "running_time_semantics": "RTDL route wall time in milliseconds for the selected route label; not author internal Running.AvgTime parity",
+            "witness_contract": "directed_input1_to_input2_per_source_witness_exact_seed_route"
+          }
+        }
+      ]
+    },
+    {
+      "abs_diff_author_rerun_vs_paper_log": 2.9802322387695312e-08,
+      "author": {
+        "hd_result": 0.21912431716918945,
+        "json_path": "/tmp/xhd_goal5419/results/thai_happy_scaled_author.json",
+        "reported_time_ms": null,
+        "running": {
+          "AvgTime": 26.817,
+          "EB": true,
+          "FastBuildBVH": false,
+          "LB": 256,
+          "NumPointsPerCell": 15,
+          "Prune": true,
+          "RebuildBVH": false,
+          "Repeats": [
+            {
+              "Algorithm": "XHD",
+              "BVHBuildTime": 0.324,
+              "Cells": 750,
+              "Execution": "GPU",
+              "GridResolution": [
+                9,
+                21,
+                9
+              ],
+              "HDLowerBound": 0.19801831245422363,
+              "HDUpperBound": 0.503441572189331,
+              "InitRadius": 0.19801831245422363,
+              "Iterations": [
+                {
+                  "AdjustBVHTime": 0.111,
+                  "CMax2": 0.04076765477657318,
+                  "CUDATime": 8.372,
+                  "Iteration": 1,
+                  "LBTrace": {
+                    "ActiveInQueueSize": 4999996,
+                    "Batches": [
+                      {
+                        "ActiveInQueueSize": 4999996,
+                        "Batch": 0,
+                        "RawOffloadRowsAuthorWidthBytes": 59825680,
+                        "RawOffloadRowsBeforeSortReduce": 7478210,
+                        "StatusCmax2MbrAbortCount": 4328691,
+                        "StatusInitCount": 4999996,
+                        "StatusOffloadingAppendCount": 7478210,
+                        "StatusPointLoopEarlyBreakCount": 363574
+                      }
+                    ],
+                    "RawOffloadRowsAuthorWidthBytes": 59825680,
+                    "RawOffloadRowsBeforeSortReduce": 7478210,
+                    "Schema": "rtdl.goal5374.author.lb_status_trace.v1",
+                    "StatusCmax2MbrAbortCount": 4328691,
+                    "StatusInitCount": 4999996,
+                    "StatusOffloadingAppendCount": 7478210,
+                    "StatusPointLoopEarlyBreakCount": 363574
+                  },
+                  "NumInputPoints": 4999996,
+                  "NumOutputPoints": 210609,
+                  "OffloadingSize": 7478210,
+                  "RTTime": 7.874,
+                  "Radius": 0.19801831245422363
+                },
+                {
+                  "AdjustBVHTime": 0.082,
+                  "CMax2": 0.04732847213745117,
+                  "CUDATime": 3.518,
+                  "Iteration": 2,
+                  "LBTrace": {
+                    "ActiveInQueueSize": 210609,
+                    "Batches": [
+                      {
+                        "ActiveInQueueSize": 210609,
+                        "Batch": 0,
+                        "RawOffloadRowsAuthorWidthBytes": 15863840,
+                        "RawOffloadRowsBeforeSortReduce": 1982980,
+                        "StatusCmax2MbrAbortCount": 0,
+                        "StatusInitCount": 210609,
+                        "StatusOffloadingAppendCount": 1982980,
+                        "StatusPointLoopEarlyBreakCount": 0
+                      }
+                    ],
+                    "RawOffloadRowsAuthorWidthBytes": 15863840,
+                    "RawOffloadRowsBeforeSortReduce": 1982980,
+                    "Schema": "rtdl.goal5374.author.lb_status_trace.v1",
+                    "StatusCmax2MbrAbortCount": 0,
+                    "StatusInitCount": 210609,
+                    "StatusOffloadingAppendCount": 1982980,
+                    "StatusPointLoopEarlyBreakCount": 0
+                  },
+                  "NumInputPoints": 210609,
+                  "NumOutputPoints": 1364,
+                  "OffloadingSize": 1982980,
+                  "RTTime": 1.433,
+                  "Radius": 0.213905468583107
+                },
+                {
+                  "CMax2": 0.04801546782255173,
+                  "CUDATime": 0.37,
+                  "Iteration": 3,
+                  "LBTrace": {
+                    "ActiveInQueueSize": 1364,
+                    "Batches": [
+                      {
+                        "ActiveInQueueSize": 1364,
+                        "Batch": 0,
+                        "RawOffloadRowsAuthorWidthBytes": 144056,
+                        "RawOffloadRowsBeforeSortReduce": 18007,
+                        "StatusCmax2MbrAbortCount": 0,
+                        "StatusInitCount": 1364,
+                        "StatusOffloadingAppendCount": 18007,
+                        "StatusPointLoopEarlyBreakCount": 0
+                      }
+                    ],
+                    "RawOffloadRowsAuthorWidthBytes": 144056,
+                    "RawOffloadRowsBeforeSortReduce": 18007,
+                    "Schema": "rtdl.goal5374.author.lb_status_trace.v1",
+                    "StatusCmax2MbrAbortCount": 0,
+                    "StatusInitCount": 1364,
+                    "StatusOffloadingAppendCount": 18007,
+                    "StatusPointLoopEarlyBreakCount": 0
+                  },
+                  "NumInputPoints": 1364,
+                  "NumOutputPoints": 0,
+                  "OffloadingSize": 18007,
+                  "RTTime": 0.204,
+                  "Radius": 0.22979262471199036
+                }
+              ],
+              "LargeCells": 556,
+              "Memory": {
+                "BVH": 39296,
+                "Grid": 2183612,
+                "MBRs B": 18000,
+                "WL": 39999968,
+                "WL Heavy Peak": 59825680
+              },
+              "Profiling": false,
+              "Repeat": 1,
+              "ReportedTime": 26.817
+            }
+          ],
+          "Seed": 0
+        },
+        "running_avg_time_ms": 26.817
+      },
+      "author_command": [
+        "/tmp/xhd-goal5112/build-gcc11-optix77-fast/bin/hd_exec",
+        "-input1",
+        "/tmp/xhd_goal5298/data/thai_statuette_scaled_1e-3.ply",
+        "-input2",
+        "/tmp/xhd_goal5298/data/happy_buddha.ply",
+        "-input_type",
+        "ply",
+        "-n_dims",
+        "3",
+        "-serialize",
+        "/tmp/xhd_goal5419/ser",
+        "-variant",
+        "rt",
+        "-execution",
+        "gpu",
+        "-repeat",
+        "1",
+        "-json",
+        "/tmp/xhd_goal5419/results/thai_happy_scaled_author.json",
+        "-overwrite=true",
+        "-check=false",
+        "-normalize=false",
+        "-lb=256"
+      ],
+      "author_process_wall_sec": 2.345173105597496,
+      "author_rerun_matches_paper_log": true,
+      "case_id": "thai_happy_scaled",
+      "category": "graphics",
+      "input_identity_level": "level_b_same_source_public_graphics",
+      "paper_log_hd_result_if_available": 0.21912434697151184,
+      "point_counts": [
+        4999996,
+        543652
+      ],
+      "ratio_authorized": false,
+      "required_rtdl_preprocessing": [
+        "translate_each_input_to_min_bound"
+      ],
+      "rtdl_routes": [
+        {
+          "abs_diff_vs_author_rerun": 6.335011043523409e-09,
+          "command": [
+            "python3",
+            "Paper-reproduction-apps/x-hd-paper/scripts/run_xhd_rtdl_hd_exec.py",
+            "-input1",
+            "/tmp/xhd_goal5298/data/thai_statuette_scaled_1e-3.ply",
+            "-input2",
+            "/tmp/xhd_goal5298/data/happy_buddha.ply",
+            "-input_type",
+            "ply",
+            "-n_dims",
+            "3",
+            "-variant",
+            "rt",
+            "-execution",
+            "gpu",
+            "-json",
+            "/tmp/xhd_goal5419/results/thai_happy_scaled_cell-mbr-exact-witness_rtdl.json",
+            "-overwrite=true",
+            "-check=false",
+            "--rtdl-route",
+            "cell-mbr-exact-witness",
+            "--grid-shape",
+            "32,32,32",
+            "--max-inline-points",
+            "512",
+            "--translate-each-input-to-min-bound"
+          ],
+          "condition": "execute",
+          "matched_author_rerun": true,
+          "process_wall_sec": 6.879824742674828,
+          "ratio_authorized": false,
+          "route_label": "cell-mbr-exact-witness",
+          "rtdl": {
+            "hd_result": 0.2191243235042005,
+            "json_path": "/tmp/xhd_goal5419/results/thai_happy_scaled_cell-mbr-exact-witness_rtdl.json",
+            "per_source_witness_exact": true,
+            "route_label": "cell-mbr-exact-witness",
+            "rtdl_input_load_sec": 0.6456520184874535,
+            "rtdl_process_wall_sec": 6.018355198204517,
+            "rtdl_route_wall_sec": 5.016979873180389,
+            "running_avg_time_ms": 5016.979873180389,
+            "running_time_semantics": "RTDL route wall time in milliseconds for the selected route label; not author internal Running.AvgTime parity",
+            "witness_contract": "directed_input1_to_input2_per_source_witness_exact_seed_route"
+          }
+        },
+        {
+          "abs_diff_vs_author_rerun": 6.335011043523409e-09,
+          "command": [
+            "python3",
+            "Paper-reproduction-apps/x-hd-paper/scripts/run_xhd_rtdl_hd_exec.py",
+            "-input1",
+            "/tmp/xhd_goal5298/data/thai_statuette_scaled_1e-3.ply",
+            "-input2",
+            "/tmp/xhd_goal5298/data/happy_buddha.ply",
+            "-input_type",
+            "ply",
+            "-n_dims",
+            "3",
+            "-variant",
+            "rt",
+            "-execution",
+            "gpu",
+            "-json",
+            "/tmp/xhd_goal5419/results/thai_happy_scaled_cell-mbr-fast-scalar_rtdl.json",
+            "-overwrite=true",
+            "-check=false",
+            "--rtdl-route",
+            "cell-mbr-fast-scalar",
+            "--grid-shape",
+            "32,32,32",
+            "--max-inline-points",
+            "512",
+            "--translate-each-input-to-min-bound"
+          ],
+          "condition": "execute",
+          "matched_author_rerun": true,
+          "process_wall_sec": 3.0352219864726067,
+          "ratio_authorized": false,
+          "route_label": "cell-mbr-fast-scalar",
+          "rtdl": {
+            "hd_result": 0.2191243235042005,
+            "json_path": "/tmp/xhd_goal5419/results/thai_happy_scaled_cell-mbr-fast-scalar_rtdl.json",
+            "per_source_witness_exact": false,
+            "route_label": "cell-mbr-fast-scalar",
+            "rtdl_input_load_sec": 0.6635239124298096,
+            "rtdl_process_wall_sec": 2.1144309416413307,
+            "rtdl_route_wall_sec": 1.099169783294201,
+            "running_avg_time_ms": 1099.169783294201,
+            "running_time_semantics": "RTDL route wall time in milliseconds for the selected route label; not author internal Running.AvgTime parity",
+            "witness_contract": "directed_input1_to_input2_witness_may_be_approximate_for_fast_scalar"
+          }
+        }
+      ]
+    },
+    {
+      "abs_diff_author_rerun_vs_paper_log": 2.9802322387695312e-08,
+      "author": {
+        "hd_result": 0.28763842582702637,
+        "json_path": "/tmp/xhd_goal5419/results/thai_asian_scaled_author.json",
+        "reported_time_ms": null,
+        "running": {
+          "AvgTime": 19.281,
+          "EB": true,
+          "FastBuildBVH": false,
+          "LB": 256,
+          "NumPointsPerCell": 15,
+          "Prune": true,
+          "RebuildBVH": false,
+          "Repeats": [
+            {
+              "Algorithm": "XHD",
+              "BVHBuildTime": 0.712,
+              "Cells": 865,
+              "Execution": "GPU",
+              "GridResolution": [
+                26,
+                15,
+                17
+              ],
+              "HDLowerBound": 0.2840149402618408,
+              "HDUpperBound": 0.503441572189331,
+              "InitRadius": 0.2840149402618408,
+              "Iterations": [
+                {
+                  "AdjustBVHTime": 0.141,
+                  "CMax2": 0.08104444295167923,
+                  "CUDATime": 5.051,
+                  "Iteration": 1,
+                  "LBTrace": {
+                    "ActiveInQueueSize": 4999996,
+                    "Batches": [
+                      {
+                        "ActiveInQueueSize": 4999996,
+                        "Batch": 0,
+                        "RawOffloadRowsAuthorWidthBytes": 24731240,
+                        "RawOffloadRowsBeforeSortReduce": 3091405,
+                        "StatusCmax2MbrAbortCount": 4782365,
+                        "StatusInitCount": 4999996,
+                        "StatusOffloadingAppendCount": 3091405,
+                        "StatusPointLoopEarlyBreakCount": 54745
+                      }
+                    ],
+                    "RawOffloadRowsAuthorWidthBytes": 24731240,
+                    "RawOffloadRowsBeforeSortReduce": 3091405,
+                    "Schema": "rtdl.goal5374.author.lb_status_trace.v1",
+                    "StatusCmax2MbrAbortCount": 4782365,
+                    "StatusInitCount": 4999996,
+                    "StatusOffloadingAppendCount": 3091405,
+                    "StatusPointLoopEarlyBreakCount": 54745
+                  },
+                  "NumInputPoints": 4999996,
+                  "NumOutputPoints": 5821,
+                  "OffloadingSize": 3091405,
+                  "RTTime": 5.254,
+                  "Radius": 0.2840149402618408
+                },
+                {
+                  "CMax2": 0.08273586630821228,
+                  "CUDATime": 1.195,
+                  "Iteration": 2,
+                  "LBTrace": {
+                    "ActiveInQueueSize": 5821,
+                    "Batches": [
+                      {
+                        "ActiveInQueueSize": 5821,
+                        "Batch": 0,
+                        "RawOffloadRowsAuthorWidthBytes": 692800,
+                        "RawOffloadRowsBeforeSortReduce": 86600,
+                        "StatusCmax2MbrAbortCount": 0,
+                        "StatusInitCount": 5821,
+                        "StatusOffloadingAppendCount": 86600,
+                        "StatusPointLoopEarlyBreakCount": 0
+                      }
+                    ],
+                    "RawOffloadRowsAuthorWidthBytes": 692800,
+                    "RawOffloadRowsBeforeSortReduce": 86600,
+                    "Schema": "rtdl.goal5374.author.lb_status_trace.v1",
+                    "StatusCmax2MbrAbortCount": 0,
+                    "StatusInitCount": 5821,
+                    "StatusOffloadingAppendCount": 86600,
+                    "StatusPointLoopEarlyBreakCount": 0
+                  },
+                  "NumInputPoints": 5821,
+                  "NumOutputPoints": 0,
+                  "OffloadingSize": 86600,
+                  "RTTime": 0.162,
+                  "Radius": 0.29736799001693726
+                }
+              ],
+              "LargeCells": 761,
+              "Memory": {
+                "BVH": 45184,
+                "Grid": 14448784,
+                "MBRs B": 20760,
+                "WL": 39999968,
+                "WL Heavy Peak": 24731240
+              },
+              "Profiling": false,
+              "Repeat": 1,
+              "ReportedTime": 19.281
+            }
+          ],
+          "Seed": 0
+        },
+        "running_avg_time_ms": 19.281
+      },
+      "author_command": [
+        "/tmp/xhd-goal5112/build-gcc11-optix77-fast/bin/hd_exec",
+        "-input1",
+        "/tmp/xhd_goal5298/data/thai_statuette_scaled_1e-3.ply",
+        "-input2",
+        "/tmp/xhd_goal5298/data/asian_dragon_scaled_1e-3.ply",
+        "-input_type",
+        "ply",
+        "-n_dims",
+        "3",
+        "-serialize",
+        "/tmp/xhd_goal5419/ser",
+        "-variant",
+        "rt",
+        "-execution",
+        "gpu",
+        "-repeat",
+        "1",
+        "-json",
+        "/tmp/xhd_goal5419/results/thai_asian_scaled_author.json",
+        "-overwrite=true",
+        "-check=false",
+        "-normalize=false",
+        "-lb=256"
+      ],
+      "author_process_wall_sec": 2.4374816194176674,
+      "author_rerun_matches_paper_log": true,
+      "case_id": "thai_asian_scaled",
+      "category": "graphics",
+      "input_identity_level": "level_b_same_source_public_graphics",
+      "paper_log_hd_result_if_available": 0.28763845562934875,
+      "point_counts": [
+        4999996,
+        3609600
+      ],
+      "ratio_authorized": false,
+      "required_rtdl_preprocessing": [
+        "translate_each_input_to_min_bound"
+      ],
+      "rtdl_routes": [
+        {
+          "abs_diff_vs_author_rerun": 1.0956085760849277e-08,
+          "command": [
+            "python3",
+            "Paper-reproduction-apps/x-hd-paper/scripts/run_xhd_rtdl_hd_exec.py",
+            "-input1",
+            "/tmp/xhd_goal5298/data/thai_statuette_scaled_1e-3.ply",
+            "-input2",
+            "/tmp/xhd_goal5298/data/asian_dragon_scaled_1e-3.ply",
+            "-input_type",
+            "ply",
+            "-n_dims",
+            "3",
+            "-variant",
+            "rt",
+            "-execution",
+            "gpu",
+            "-json",
+            "/tmp/xhd_goal5419/results/thai_asian_scaled_cell-mbr-exact-witness_rtdl.json",
+            "-overwrite=true",
+            "-check=false",
+            "--rtdl-route",
+            "cell-mbr-exact-witness",
+            "--grid-shape",
+            "32,32,32",
+            "--max-inline-points",
+            "512",
+            "--translate-each-input-to-min-bound"
+          ],
+          "condition": "execute",
+          "matched_author_rerun": true,
+          "process_wall_sec": 12.748397842049599,
+          "ratio_authorized": false,
+          "route_label": "cell-mbr-exact-witness",
+          "rtdl": {
+            "hd_result": 0.2876384148709406,
+            "json_path": "/tmp/xhd_goal5419/results/thai_asian_scaled_cell-mbr-exact-witness_rtdl.json",
+            "per_source_witness_exact": true,
+            "route_label": "cell-mbr-exact-witness",
+            "rtdl_input_load_sec": 0.4784742519259453,
+            "rtdl_process_wall_sec": 11.832834839820862,
+            "rtdl_route_wall_sec": 10.80515542626381,
+            "running_avg_time_ms": 10805.15542626381,
+            "running_time_semantics": "RTDL route wall time in milliseconds for the selected route label; not author internal Running.AvgTime parity",
+            "witness_contract": "directed_input1_to_input2_per_source_witness_exact_seed_route"
+          }
+        },
+        {
+          "abs_diff_vs_author_rerun": 1.0956085760849277e-08,
+          "command": [
+            "python3",
+            "Paper-reproduction-apps/x-hd-paper/scripts/run_xhd_rtdl_hd_exec.py",
+            "-input1",
+            "/tmp/xhd_goal5298/data/thai_statuette_scaled_1e-3.ply",
+            "-input2",
+            "/tmp/xhd_goal5298/data/asian_dragon_scaled_1e-3.ply",
+            "-input_type",
+            "ply",
+            "-n_dims",
+            "3",
+            "-variant",
+            "rt",
+            "-execution",
+            "gpu",
+            "-json",
+            "/tmp/xhd_goal5419/results/thai_asian_scaled_cell-mbr-fast-scalar_rtdl.json",
+            "-overwrite=true",
+            "-check=false",
+            "--rtdl-route",
+            "cell-mbr-fast-scalar",
+            "--grid-shape",
+            "32,32,32",
+            "--max-inline-points",
+            "512",
+            "--translate-each-input-to-min-bound"
+          ],
+          "condition": "execute",
+          "matched_author_rerun": true,
+          "process_wall_sec": 14.557483047246933,
+          "ratio_authorized": false,
+          "route_label": "cell-mbr-fast-scalar",
+          "rtdl": {
+            "hd_result": 0.2876384148709406,
+            "json_path": "/tmp/xhd_goal5419/results/thai_asian_scaled_cell-mbr-fast-scalar_rtdl.json",
+            "per_source_witness_exact": false,
+            "route_label": "cell-mbr-fast-scalar",
+            "rtdl_input_load_sec": 0.4731784909963608,
+            "rtdl_process_wall_sec": 13.547547191381454,
+            "rtdl_route_wall_sec": 12.536289468407631,
+            "running_avg_time_ms": 12536.289468407631,
+            "running_time_semantics": "RTDL route wall time in milliseconds for the selected route label; not author internal Running.AvgTime parity",
+            "witness_contract": "directed_input1_to_input2_witness_may_be_approximate_for_fast_scalar"
+          }
+        }
+      ]
+    }
+  ],
+  "same_pod_execution_claimed": true,
+  "schema": "rtdl.paper_reproduction.xhd.goal5419.figure5_level_b_same_pod_graphics_matrix.v1",
+  "source_packet": "/tmp/rtdl_goal5419/Paper-reproduction-apps/x-hd-paper/results/xhd_goal5418_figure5_level_b_same_pod_matrix_readiness.json",
+  "status": "figure5_level_b_same_pod_graphics_matrix_executed",
+  "tolerance": 1e-06
+}

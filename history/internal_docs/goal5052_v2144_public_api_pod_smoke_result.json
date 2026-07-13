@@ -1,0 +1,42 @@
+{
+  "not_authorized": {
+    "author_parity_claim": true,
+    "device_group_by_public_ready": true,
+    "public_speedup_claim": true,
+    "true_zero_copy_claim": true
+  },
+  "overall_status": "pass",
+  "schema": "rtdl.goal5052.v2_14_4_public_api_pod_smoke.v1",
+  "steps": [
+    {
+      "elapsed_sec": 0.7986969891935587,
+      "host_fallback_used": false,
+      "label": "public_numba_partner_continuation_cuda",
+      "mask": [
+        false,
+        true,
+        true,
+        false
+      ],
+      "operation": "uint32_equal_mask",
+      "public_speedup_claim_authorized": false,
+      "status": "pass",
+      "true_zero_copy_claim_authorized": false
+    },
+    {
+      "backend": "native_thrust_lexsort_i64_f64_i64_i64",
+      "contract_version": "rtdl.device_order_by.v2_14_4.public.v1",
+      "elapsed_sec": 0.024714553728699684,
+      "label": "rayjoin_public_device_order_by_native_cuda_path",
+      "observed_order": [
+        2,
+        1,
+        3,
+        0
+      ],
+      "public_device_order_by_used": true,
+      "status": "pass"
+    }
+  ],
+  "strict": true
+}

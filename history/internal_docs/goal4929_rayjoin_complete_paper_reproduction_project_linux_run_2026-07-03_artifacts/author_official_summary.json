@@ -1,0 +1,18 @@
+{
+  "schema": "rtdl.paper_reproduction.rayjoin.author_official_public_sample.v1",
+  "query_exec": "/tmp/rtdl_rayjoin_complete_project_20260703/Paper-reproduction-apps/rayjoin-paper/_work/author_official/release/bin/query_exec",
+  "polyover_exec": "/tmp/rtdl_rayjoin_complete_project_20260703/Paper-reproduction-apps/rayjoin-paper/_work/author_official/release/bin/polyover_exec",
+  "section52_stdout": "/tmp/rtdl_rayjoin_complete_project_20260703/Paper-reproduction-apps/rayjoin-paper/_runs/public_sample/author_official/section52_lsi.stdout.txt",
+  "section52_stderr": "/tmp/rtdl_rayjoin_complete_project_20260703/Paper-reproduction-apps/rayjoin-paper/_runs/public_sample/author_official/section52_lsi.stderr.txt",
+  "section53_stdout": "/tmp/rtdl_rayjoin_complete_project_20260703/Paper-reproduction-apps/rayjoin-paper/_runs/public_sample/author_official/section53_pip.stdout.txt",
+  "section53_stderr": "/tmp/rtdl_rayjoin_complete_project_20260703/Paper-reproduction-apps/rayjoin-paper/_runs/public_sample/author_official/section53_pip.stderr.txt",
+  "section57_stdout": "/tmp/rtdl_rayjoin_complete_project_20260703/Paper-reproduction-apps/rayjoin-paper/_runs/public_sample/author_official/section57_overlay.stdout.txt",
+  "section57_stderr": "/tmp/rtdl_rayjoin_complete_project_20260703/Paper-reproduction-apps/rayjoin-paper/_runs/public_sample/author_official/section57_overlay.stderr.txt",
+  "section57_output": "/tmp/rtdl_rayjoin_complete_project_20260703/Paper-reproduction-apps/rayjoin-paper/_runs/public_sample/author_official/section57_overlay.txt",
+  "section57_answer": "/tmp/rtdl_rayjoin_complete_project_20260703/Paper-reproduction-apps/rayjoin-paper/_data/public_sample/br_countyXbr_soil_answer.txt",
+  "section57_bytes": 16631243,
+  "answer_bytes": 16631243,
+  "section57_sha256": "464f87a59cc2428f63cbfe5068965d7bc7adb8eee51e9c1e3a5960ae8b76019e",
+  "answer_sha256": "464f87a59cc2428f63cbfe5068965d7bc7adb8eee51e9c1e3a5960ae8b76019e",
+  "section57_byte_equal_to_answer": true
+}

@@ -1,0 +1,19 @@
+Please review the Goal4897 Numba partner continuation validation:
+
+- history/internal_docs/call_for_review_goal4897_numba_partner_continuation_validation_2026-07-03.md
+- history/internal_docs/goal4897_numba_partner_continuation_validation_report_2026-07-03.md
+
+Please inspect the evidence JSON named in the call-for-review and answer all seven review questions.
+
+Write your review result to:
+
+history/internal_docs/antigravity_goal4897_numba_partner_continuation_validation_review_2026-07-03.md
+
+Use one of these verdict labels:
+
+- approve_goal4897_numba_partner_enabled_bounded_speedup
+- approve_with_required_amendments
+- block_as_partner_claim_overreach
+- fail_redo
+
+Preserve all non-authorization boundaries.

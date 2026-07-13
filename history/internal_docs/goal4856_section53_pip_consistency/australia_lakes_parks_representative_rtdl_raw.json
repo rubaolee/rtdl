@@ -1,0 +1,61 @@
+{
+  "chunks": [
+    {
+      "chunk_index": 1,
+      "face_positive": 15989,
+      "first_point_id": 1,
+      "pack_points_sec": 0.0040262192487716675,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.9407433420419693,
+      "segment_found": 479573
+    },
+    {
+      "chunk_index": 2,
+      "face_positive": 13730,
+      "first_point_id": 500001,
+      "pack_points_sec": 0.003122590482234955,
+      "point_count": 492505,
+      "run_raw_wall_sec": 1.9019238501787186,
+      "segment_found": 479408
+    }
+  ],
+  "dontknow_u32": 4294967295,
+  "face_hash_fnv64": 17803505458248047016,
+  "face_positive_count": 29719,
+  "input_stats": {
+    "poly1": {
+      "chain_count": 357910,
+      "max_x": 167.9699741,
+      "max_y": -9.2320578,
+      "min_x": 73.3778761,
+      "min_y": -54.7704428,
+      "path": "/workspace/goal4848_rep/current_osm_au/lakes_Australia_current_osm_Point.cdb",
+      "point_count": 14788065,
+      "segment_count": 14430155
+    },
+    "poly2": {
+      "chain_count": 51130,
+      "max_x": 167.9654646,
+      "max_y": -10.430788,
+      "min_x": 105.6713281,
+      "min_y": -43.3160294,
+      "path": "/workspace/goal4848_rep/current_osm_au/parks_Australia_current_osm_Point.cdb",
+      "point_count": 992505,
+      "segment_count": 941375
+    }
+  },
+  "label": "australia_lakes_parks_representative",
+  "metric_contract": "closest edge found: segment_id != DONTKNOW",
+  "poly1": "/workspace/goal4848_rep/current_osm_au/lakes_Australia_current_osm_Point.cdb",
+  "poly2": "/workspace/goal4848_rep/current_osm_au/parks_Australia_current_osm_Point.cdb",
+  "schema": "rtdl.goal4856.section53_pip_raw_diagnostic.v1",
+  "segment_found_count": 958981,
+  "segment_hash_minus1_fnv64": 11266624325209482800,
+  "segment_hash_raw_fnv64": 5067078235884034639,
+  "timings_sec": {
+    "pack_base": 42.36839205771685,
+    "raw_query_and_download": 7.863973617553711,
+    "scan": 22.59125405550003
+  },
+  "total_points": 992505
+}

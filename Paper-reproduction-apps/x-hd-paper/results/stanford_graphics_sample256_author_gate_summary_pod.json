@@ -1,0 +1,32 @@
+{
+  "abs_diff": 2.6291111648868437e-09,
+  "author_comparison_reference": "directed_a_to_b",
+  "author_comparison_reference_value": 0.11612464969699586,
+  "author_hd_result": 0.11612465232610703,
+  "author_json": "Paper-reproduction-apps\\x-hd-paper\\results\\stanford_graphics_sample256_author_hd_exec_output_pod.json",
+  "author_run": null,
+  "author_run_failed": false,
+  "boundary": "Tiny same-input author JSON gate. This compares author HDResult to a deterministic exact Hausdorff reference for bounded WKT or ASCII PLY fixtures. It is not exact paper input reproduction and not a performance claim.",
+  "execution": "gpu",
+  "input1": "Paper-reproduction-apps\\x-hd-paper\\data\\fixtures\\stanford_dragon_res4_sample256.ply",
+  "input2": "Paper-reproduction-apps\\x-hd-paper\\data\\fixtures\\stanford_happy_res4_sample256.ply",
+  "input_type": "ply",
+  "matched": true,
+  "n_dims": 3,
+  "paper_app": "x-hd-paper",
+  "paper_reproduction_claim_authorized": false,
+  "performance_claim_authorized": false,
+  "point_count_a": 256,
+  "point_count_b": 256,
+  "reference_preprocessing": [
+    "translate_each_input_to_min_bound"
+  ],
+  "rtdl_reference": {
+    "directed_a_to_b": 0.11612464969699586,
+    "directed_b_to_a": 0.06962366802783376,
+    "hausdorff": 0.11612464969699586
+  },
+  "schema": "rtdl.paper_reproduction.xhd.author_json_gate.v1",
+  "tolerance": 1e-06,
+  "variant": "rt"
+}

@@ -29,8 +29,8 @@ PAPER = {
     "authors": ("Lara Kreis", "Justus Henneberg", "Valentin Henkys", "Felix Schuhknecht", "Bertil Schmidt"),
     "relationship": (
         "This research/learner app records the paper's hierarchical/hybrid RMQ "
-        "design pressure for RTDL, but archived_evidence rejected promotion to a closed "
-        "benchmark app because the RTDL paths were still far slower than a direct "
+        "design pressure for RTDL, but current v2.14 evidence keeps it as a learner "
+        "and design-pressure app because the RTDL paths were still far slower than a direct "
         "CUDA sparse-query baseline."
     ),
 }
@@ -82,7 +82,7 @@ CLAIM_BOUNDARY = {
     "benchmark_app": False,
     "front_door_only": True,
     "demoted_from_benchmark_candidate": True,
-    "demotion_evidence": "history/internal_docs/docs_reports/archived_evidence_gpu_rmq_grouped_candidate_argmin_vs_cuda_2026-05-25.md",
+    "demotion_evidence": "top-level history archive",
     "full_gpu_rmq_reproduction": False,
     "paper_code_evidence": False,
     "author_code_available": True,

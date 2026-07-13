@@ -1,0 +1,110 @@
+{
+  "baseline": {
+    "median_downstream_floor_sec": 1.6196485199034214,
+    "median_lsi_phase_sec": 2.708058686926961,
+    "median_prewarm_elapsed_sec": null,
+    "median_route_elapsed_sec": 24.793032117187977,
+    "median_writer_free_hot_sec": 4.2974185068160295,
+    "rows": [
+      {
+        "descriptor_pair_count": 15014,
+        "downstream_floor_sec": 1.6254683919250965,
+        "file": "baseline_1.json",
+        "group_sec": 0.16993580013513565,
+        "lsi_phase_sec": 2.7307125106453896,
+        "lsi_row_count": 428322,
+        "prewarm_elapsed_sec": null,
+        "prewarm_exact_pipeline_ensure_sec": null,
+        "prewarm_split_kernel_ensure_sec": null,
+        "route_elapsed_sec": 24.806513469666243,
+        "sort0_sec": 0.27507345750927925,
+        "sort1_sec": 0.09031730331480503,
+        "writer_free_hot_sec": 4.356180902570486
+      },
+      {
+        "descriptor_pair_count": 15014,
+        "downstream_floor_sec": 1.5893598198890686,
+        "file": "baseline_2.json",
+        "group_sec": 0.16909179836511612,
+        "lsi_phase_sec": 2.708058686926961,
+        "lsi_row_count": 428322,
+        "prewarm_elapsed_sec": null,
+        "prewarm_exact_pipeline_ensure_sec": null,
+        "prewarm_split_kernel_ensure_sec": null,
+        "route_elapsed_sec": 24.536018453538418,
+        "sort0_sec": 0.2697501312941313,
+        "sort1_sec": 0.0990647692233324,
+        "writer_free_hot_sec": 4.2974185068160295
+      },
+      {
+        "descriptor_pair_count": 15014,
+        "downstream_floor_sec": 1.6196485199034214,
+        "file": "baseline_3.json",
+        "group_sec": 0.169885179027915,
+        "lsi_phase_sec": 2.6750498097389936,
+        "lsi_row_count": 428322,
+        "prewarm_elapsed_sec": null,
+        "prewarm_exact_pipeline_ensure_sec": null,
+        "prewarm_split_kernel_ensure_sec": null,
+        "route_elapsed_sec": 24.793032117187977,
+        "sort0_sec": 0.2828625310212374,
+        "sort1_sec": 0.09884942881762981,
+        "writer_free_hot_sec": 4.294698329642415
+      }
+    ]
+  },
+  "prewarm": {
+    "median_downstream_floor_sec": 1.585742587223649,
+    "median_lsi_phase_sec": 1.7334713023155928,
+    "median_prewarm_elapsed_sec": 1.245790084823966,
+    "median_route_elapsed_sec": 23.096903951838613,
+    "median_writer_free_hot_sec": 3.3173598498106003,
+    "rows": [
+      {
+        "descriptor_pair_count": 15014,
+        "downstream_floor_sec": 1.585742587223649,
+        "file": "prewarm_1.json",
+        "group_sec": 0.16836206056177616,
+        "lsi_phase_sec": 1.7316172625869513,
+        "lsi_row_count": 428322,
+        "prewarm_elapsed_sec": 1.2050917129963636,
+        "prewarm_exact_pipeline_ensure_sec": null,
+        "prewarm_split_kernel_ensure_sec": null,
+        "route_elapsed_sec": 22.91952460631728,
+        "sort0_sec": 0.26679214648902416,
+        "sort1_sec": 0.08877921663224697,
+        "writer_free_hot_sec": 3.3173598498106003
+      },
+      {
+        "descriptor_pair_count": 15014,
+        "downstream_floor_sec": 1.57867974601686,
+        "file": "prewarm_2.json",
+        "group_sec": 0.16874327510595322,
+        "lsi_phase_sec": 1.7334713023155928,
+        "lsi_row_count": 428322,
+        "prewarm_elapsed_sec": 1.245790084823966,
+        "prewarm_exact_pipeline_ensure_sec": null,
+        "prewarm_split_kernel_ensure_sec": null,
+        "route_elapsed_sec": 23.096903951838613,
+        "sort0_sec": 0.2674566488713026,
+        "sort1_sec": 0.08949419856071472,
+        "writer_free_hot_sec": 3.3121510483324528
+      },
+      {
+        "descriptor_pair_count": 15014,
+        "downstream_floor_sec": 1.6218267176300287,
+        "file": "prewarm_3.json",
+        "group_sec": 0.1776164099574089,
+        "lsi_phase_sec": 1.7701441962271929,
+        "lsi_row_count": 428322,
+        "prewarm_elapsed_sec": 1.299909496679902,
+        "prewarm_exact_pipeline_ensure_sec": null,
+        "prewarm_split_kernel_ensure_sec": null,
+        "route_elapsed_sec": 23.222094541415572,
+        "sort0_sec": 0.27963230200111866,
+        "sort1_sec": 0.09541728347539902,
+        "writer_free_hot_sec": 3.3919709138572216
+      }
+    ]
+  }
+}

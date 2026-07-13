@@ -1,0 +1,27 @@
+Please review the Goal4880 Section 5.7 public RTDL overlay harness packet.
+
+Workspace:
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review
+
+Call-for-review:
+history/internal_docs/call_for_review_goal4880_section57_public_primitives_overlay_harness_2026-07-02.md
+
+Primary result:
+history/internal_docs/goal4880_section57_public_primitives_overlay_harness_result_2026-07-02.md
+
+Harness:
+history/internal_docs/goal4880_section57_public_primitives_overlay_harness.py
+
+Smoke summary:
+history/internal_docs/goal4880_section57_harness_smoke/summary.json
+
+Please answer all reviewer questions and write your verdict to:
+history/internal_docs/antigravity_goal4880_section57_public_primitives_overlay_harness_review_2026-07-02.md
+
+Requested verdict if approved:
+approve_goal4880_parameterized_harness_australia_smoke_byte_equal
+
+Please be strict that this is harness generalization only: it must not authorize
+South America correctness, full eight-pair Section 5.7, exact old hidden-input
+claims for regenerated data, performance claims, Embree claims, or Numba
+critical-path claims.

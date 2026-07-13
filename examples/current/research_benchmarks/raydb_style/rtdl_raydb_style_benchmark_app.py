@@ -1270,7 +1270,7 @@ RAYDB_V2_8_TYPED_STREAM_EXECUTION_PATH = "v2_8_grouped_reduction_typed_stream_pa
 
 
 def describe_raydb_v2_6_numba_neutral_continuation(mode: str) -> dict[str, Any]:
-    """Describe RayDB's v2.6 user-selected Numba continuation path.
+    """Describe RayDB's legacy user-selected Numba continuation path.
 
     This is an app-level plan over generic RTDL partner primitives. RayDB
     predicate encoding and result interpretation stay in Python app code; RTDL
@@ -1321,16 +1321,16 @@ def describe_raydb_v2_6_numba_neutral_continuation(mode: str) -> dict[str, Any]:
         "public_speedup_claim_authorized": False,
         "rt_core_speedup_claim_authorized": False,
         "true_zero_copy_claim_authorized": False,
-        "blocked_reason": "unsupported RayDB v2.6 Numba mode" if blocked else None,
+        "blocked_reason": "unsupported RayDB legacy Numba mode" if blocked else None,
         "app_owned_lowering": (
-            "RayDB query encoding remains Python app code. The v2.6 Numba "
+            "RayDB query encoding remains Python app code. The legacy Numba "
             "continuation sees only generic group ids and numeric payload values."
         ),
     }
 
 
 def describe_raydb_numba_grouped_reduction_continuation(mode: str) -> dict[str, Any]:
-    """Current alias for the legacy v2.6 Numba grouped-reduction continuation."""
+    """Current alias for the legacy Numba grouped-reduction continuation."""
 
     plan = describe_raydb_v2_6_numba_neutral_continuation(mode)
     return {
@@ -1347,19 +1347,19 @@ def run_raydb_v2_6_numba_neutral_continuation_preview(
     *,
     block_size: int = 256,
 ) -> dict[str, Any]:
-    """Run RayDB's v2.6 Numba continuation over generic device columns."""
+    """Run RayDB's legacy Numba continuation over generic device columns."""
 
     plan = describe_raydb_v2_6_numba_neutral_continuation(mode)
     operations = tuple(plan["operations"])
     if not operations:
-        raise ValueError(f"RayDB v2.6 Numba continuation does not support mode: {mode}")
+        raise ValueError(f"RayDB legacy Numba continuation does not support mode: {mode}")
     group_ids = inputs["group_ids"]
     values = inputs.get("values")
     group_count = int(inputs["group_count"])
     columns = {"group_ids": group_ids}
     if any(operation in {"segmented_sum_f64", "segmented_min_f64", "segmented_max_f64"} for operation in operations):
         if values is None:
-            raise ValueError("RayDB v2.6 Numba value reduction requires values")
+            raise ValueError("RayDB legacy Numba value reduction requires values")
         columns["values"] = values
     handoff = rt.prepare_v2_6_neutral_partner_handoff(
         columns,
@@ -1369,7 +1369,7 @@ def run_raydb_v2_6_numba_neutral_continuation_preview(
     )
     handoff_validation = rt.validate_v2_6_neutral_partner_handoff(handoff)
     if handoff_validation["status"] != "accept":
-        raise RuntimeError(f"RayDB v2.6 Numba neutral handoff rejected: {handoff_validation['errors']}")
+        raise RuntimeError(f"RayDB legacy Numba neutral handoff rejected: {handoff_validation['errors']}")
 
     outputs: dict[str, Any] = {}
     continuation_results: list[dict[str, Any]] = []
@@ -1449,7 +1449,7 @@ def run_raydb_numba_grouped_reduction_continuation_preview(
     *,
     block_size: int = 256,
 ) -> dict[str, Any]:
-    """Current alias for the legacy v2.6 Numba grouped-reduction preview."""
+    """Current alias for the legacy Numba grouped-reduction preview."""
 
     payload = run_raydb_v2_6_numba_neutral_continuation_preview(
         mode,

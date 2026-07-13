@@ -1,0 +1,273 @@
+{
+  "claim_boundary": {
+    "exact_equivalence_accepted": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_reopened": false,
+    "external_artifacts_acquired": false,
+    "external_path_readiness_audit_claimed": true,
+    "external_response_received": false,
+    "figure5_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "new_rtdl_route_code_added": false,
+    "performance_ratio_claimed": false,
+    "pod_execution_claimed": false,
+    "request_sent_claimed": false,
+    "route_micro_optimization_goal_authorized": false
+  },
+  "current_state_status": "current_external_blocker_waiting_on_owner_or_external_action",
+  "date": "2026-07-10",
+  "exact_input_blocker_removed": false,
+  "goal": "Goal5448",
+  "missing_required_file_count": 0,
+  "missing_required_files": [],
+  "next_action": "owner_or_external_action_required; after trigger, run the corresponding ready path",
+  "not_allowed": [
+    "claiming any external action happened from this audit alone",
+    "claiming exact paper dataset reproduction",
+    "claiming Figure 5 or full X-HD reproduction",
+    "claiming author-vs-RTDL performance ratio",
+    "running POD or route work from this audit alone"
+  ],
+  "path_count": 6,
+  "paths": [
+    {
+      "command_templates": [
+        "py Paper-reproduction-apps/x-hd-paper/scripts/run_xhd_goal5439_external_request_sent_receipt_gate.py",
+        "py Paper-reproduction-apps/x-hd-paper/scripts/build_xhd_goal5440_external_evidence_chain_review_packet.py",
+        "py Paper-reproduction-apps/x-hd-paper/scripts/build_xhd_goal5447_current_external_blocker_state.py"
+      ],
+      "exact_claim_direct_allowed": false,
+      "expected_output": "valid sent receipt updates request_sent_claimed but still does not imply response/artifact/exact input",
+      "missing_required_files": [],
+      "path_id": "sent_receipt_path",
+      "pod_direct_allowed": false,
+      "ready": true,
+      "required_files": [
+        {
+          "exists": true,
+          "path": "Paper-reproduction-apps/x-hd-paper/scripts/run_xhd_goal5439_external_request_sent_receipt_gate.py"
+        },
+        {
+          "exists": true,
+          "path": "Paper-reproduction-apps/x-hd-paper/scripts/build_xhd_goal5440_external_evidence_chain_review_packet.py"
+        },
+        {
+          "exists": true,
+          "path": "Paper-reproduction-apps/x-hd-paper/scripts/build_xhd_goal5447_current_external_blocker_state.py"
+        },
+        {
+          "exists": true,
+          "path": "tests/goal5439_external_request_sent_receipt_gate_test.py"
+        },
+        {
+          "exists": true,
+          "path": "tests/goal5447_current_external_blocker_state_test.py"
+        }
+      ],
+      "status_now": "not_triggered__request_sent_claimed_false",
+      "trigger": "owner sends a prepared request outside the repository and records a real sent receipt"
+    },
+    {
+      "command_templates": [
+        "py Paper-reproduction-apps/x-hd-paper/scripts/validate_xhd_external_response_intake.py <response.json>",
+        "py Paper-reproduction-apps/x-hd-paper/scripts/ingest_xhd_external_response.py <response.json> --case-id <case>",
+        "py Paper-reproduction-apps/x-hd-paper/scripts/run_xhd_goal5435_external_response_inbox_gate.py",
+        "py Paper-reproduction-apps/x-hd-paper/scripts/build_xhd_goal5437_external_response_next_gate_plan.py"
+      ],
+      "exact_claim_direct_allowed": false,
+      "expected_output": "classified response and explicit not-executed next-gate plan",
+      "missing_required_files": [],
+      "path_id": "incoming_response_json_path",
+      "pod_direct_allowed": false,
+      "ready": true,
+      "required_files": [
+        {
+          "exists": true,
+          "path": "Paper-reproduction-apps/x-hd-paper/scripts/validate_xhd_external_response_intake.py"
+        },
+        {
+          "exists": true,
+          "path": "Paper-reproduction-apps/x-hd-paper/scripts/ingest_xhd_external_response.py"
+        },
+        {
+          "exists": true,
+          "path": "Paper-reproduction-apps/x-hd-paper/scripts/run_xhd_goal5435_external_response_inbox_gate.py"
+        },
+        {
+          "exists": true,
+          "path": "Paper-reproduction-apps/x-hd-paper/scripts/build_xhd_goal5437_external_response_next_gate_plan.py"
+        },
+        {
+          "exists": true,
+          "path": "tests/goal5330_xhd_external_response_intake_validator_test.py"
+        },
+        {
+          "exists": true,
+          "path": "tests/goal5435_external_response_inbox_gate_test.py"
+        },
+        {
+          "exists": true,
+          "path": "tests/goal5437_external_response_next_gate_plan_test.py"
+        }
+      ],
+      "status_now": "not_triggered__external_response_received_false",
+      "trigger": "author/reviewer/ACM response is normalized as external_response_intake.v1 JSON"
+    },
+    {
+      "command_templates": [
+        "py Paper-reproduction-apps/x-hd-paper/scripts/run_xhd_goal5446_external_artifact_dropbox_gate.py"
+      ],
+      "exact_claim_direct_allowed": false,
+      "expected_output": "hash-and-route record with file-specific intake recommendation; no direct POD",
+      "missing_required_files": [],
+      "path_id": "artifact_dropbox_path",
+      "pod_direct_allowed": false,
+      "ready": true,
+      "required_files": [
+        {
+          "exists": true,
+          "path": "Paper-reproduction-apps/x-hd-paper/scripts/run_xhd_goal5446_external_artifact_dropbox_gate.py"
+        },
+        {
+          "exists": true,
+          "path": "tests/goal5446_external_artifact_dropbox_gate_test.py"
+        },
+        {
+          "exists": true,
+          "path": "Paper-reproduction-apps/x-hd-paper/requests/artifacts/README.md"
+        }
+      ],
+      "status_now": "not_triggered__artifact_candidate_count_zero",
+      "trigger": "owner places authorized ACM zip, author archive, hash file, or response JSON in requests/artifacts"
+    },
+    {
+      "command_templates": [
+        "py Paper-reproduction-apps/x-hd-paper/scripts/inspect_xhd_acm_supplement_zip.py <ics26-106.zip> --output <response.json>",
+        "py Paper-reproduction-apps/x-hd-paper/scripts/ingest_xhd_external_response.py <response.json> --case-id <case>",
+        "py Paper-reproduction-apps/x-hd-paper/scripts/plan_xhd_provenance_ingestion_from_case.py <case-dir>"
+      ],
+      "exact_claim_direct_allowed": false,
+      "expected_output": "ACM listing response classified before any artifact mapping or POD",
+      "missing_required_files": [],
+      "path_id": "acm_supplement_zip_path",
+      "pod_direct_allowed": false,
+      "ready": true,
+      "required_files": [
+        {
+          "exists": true,
+          "path": "Paper-reproduction-apps/x-hd-paper/scripts/inspect_xhd_acm_supplement_zip.py"
+        },
+        {
+          "exists": true,
+          "path": "Paper-reproduction-apps/x-hd-paper/scripts/ingest_xhd_external_response.py"
+        },
+        {
+          "exists": true,
+          "path": "Paper-reproduction-apps/x-hd-paper/scripts/plan_xhd_provenance_ingestion_from_case.py"
+        },
+        {
+          "exists": true,
+          "path": "tests/goal5335_xhd_acm_supplement_zip_inspector_test.py"
+        }
+      ],
+      "status_now": "not_triggered__dropbox_empty",
+      "trigger": "authorized local ACM supplement zip is available"
+    },
+    {
+      "command_templates": [
+        "py Paper-reproduction-apps/x-hd-paper/scripts/ingest_xhd_acm_artifact_instructions.py <ics26-106.zip> --output <manifest.json>",
+        "py Paper-reproduction-apps/x-hd-paper/scripts/run_xhd_acm_artifact_to_packet_pipeline.py <zip> <accepted_mapping_spec.json> --output-root <out> --output <summary.json>"
+      ],
+      "exact_claim_direct_allowed": false,
+      "expected_output": "mapped same-input command packet; POD remains separate and reviewed",
+      "missing_required_files": [],
+      "path_id": "acm_artifact_pipeline_path",
+      "pod_direct_allowed": false,
+      "ready": true,
+      "required_files": [
+        {
+          "exists": true,
+          "path": "Paper-reproduction-apps/x-hd-paper/scripts/ingest_xhd_acm_artifact_instructions.py"
+        },
+        {
+          "exists": true,
+          "path": "Paper-reproduction-apps/x-hd-paper/scripts/map_xhd_acm_candidate_bytes_hashes.py"
+        },
+        {
+          "exists": true,
+          "path": "Paper-reproduction-apps/x-hd-paper/scripts/review_xhd_candidate_workload_mapping.py"
+        },
+        {
+          "exists": true,
+          "path": "Paper-reproduction-apps/x-hd-paper/scripts/build_xhd_mapped_candidate_same_input_gate_packet.py"
+        },
+        {
+          "exists": true,
+          "path": "Paper-reproduction-apps/x-hd-paper/scripts/run_xhd_acm_artifact_to_packet_pipeline.py"
+        },
+        {
+          "exists": true,
+          "path": "tests/goal5337_xhd_acm_candidate_hash_mapping_test.py"
+        },
+        {
+          "exists": true,
+          "path": "tests/goal5338_xhd_candidate_workload_mapping_review_test.py"
+        },
+        {
+          "exists": true,
+          "path": "tests/goal5339_xhd_mapped_candidate_same_input_packet_test.py"
+        },
+        {
+          "exists": true,
+          "path": "tests/goal5342_xhd_acm_artifact_to_packet_pipeline_test.py"
+        }
+      ],
+      "status_now": "not_triggered__requires_prior_zip_inspection_and_mapping_review",
+      "trigger": "ACM zip contains artifact-like material and a mapping spec has been accepted"
+    },
+    {
+      "command_templates": [
+        "py Paper-reproduction-apps/x-hd-paper/scripts/validate_xhd_external_response_intake.py <exact_equivalence_verdict_response.json>",
+        "py Paper-reproduction-apps/x-hd-paper/scripts/build_xhd_goal5437_external_response_next_gate_plan.py"
+      ],
+      "exact_claim_direct_allowed": false,
+      "expected_output": "accepted-equivalence next-gate label; still requires accepted matrix gate before exact wording",
+      "missing_required_files": [],
+      "path_id": "exact_equivalence_verdict_path",
+      "pod_direct_allowed": false,
+      "ready": true,
+      "required_files": [
+        {
+          "exists": true,
+          "path": "Paper-reproduction-apps/x-hd-paper/scripts/validate_xhd_external_response_intake.py"
+        },
+        {
+          "exists": true,
+          "path": "Paper-reproduction-apps/x-hd-paper/scripts/build_xhd_goal5437_external_response_next_gate_plan.py"
+        },
+        {
+          "exists": true,
+          "path": "tests/goal5330_xhd_external_response_intake_validator_test.py"
+        },
+        {
+          "exists": true,
+          "path": "tests/goal5437_external_response_next_gate_plan_test.py"
+        }
+      ],
+      "status_now": "not_triggered__exact_equivalence_accepted_false",
+      "trigger": "external reviewer accepts a named exact-equivalence boundary"
+    }
+  ],
+  "pod_expected_next": false,
+  "ready_path_count": 6,
+  "schema": "rtdl.paper_reproduction.xhd.goal5448.external_path_readiness_audit.v1",
+  "source_current_state": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5447_current_external_blocker_state.json",
+  "status": "external_path_readiness_complete__all_paths_have_fail_closed_gates",
+  "stop_loss_gate": {
+    "decision": "PASS: external-action routing audit, not app-artifact parity implementation.",
+    "gate_downstream_consumer_reachable": true,
+    "gate_generic_capability_produced": true,
+    "gate_non_app_consumer": "external path readiness audit / reproduction-governance workflow",
+    "gate_requires_app_specific_logic": false
+  }
+}

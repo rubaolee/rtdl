@@ -1,0 +1,223 @@
+{
+  "decision": {
+    "best_meets_useful_bar": false,
+    "best_route": "projected_descriptor_minimal_descriptor",
+    "best_speedup_vs_baseline": 1.1347857058910038,
+    "best_writer_free_hot_sec_median": 2.597364656627178,
+    "conclusion": "all tested pre-fusion projection variants are real but sub-threshold; do not claim v2.14.3 performance goal complete",
+    "frozen_useful_bar_speedup": 1.15
+  },
+  "schema": "rtdl.internal.goal4955.pod_comparison_summary.v5",
+  "sets": {
+    "baseline_goal4954e_rerun": {
+      "count": 3,
+      "missing": [],
+      "phase_medians": {
+        "assign_midpoint_faces_map0_sec": 0.0009225169196724892,
+        "assign_midpoint_faces_map1_sec": 0.0015708757564425468,
+        "destroy_point_location_sessions_sec": 0.007949684746563435,
+        "grouped_columnar_carrier_construction_sec": 1.127681752666831,
+        "grouped_descriptor_pair_count_consumer_sec": 0.054766870103776455,
+        "intersection_reprojection_sec": 0.23438149318099022,
+        "load_pack_left_sec": 0.005381808616220951,
+        "load_pack_right_sec": 0.004199313931167126,
+        "lsi_public_rows_sec": 1.0009337132796645,
+        "midpoint_pip_map0_sec": 0.0006144680082798004,
+        "midpoint_pip_map1_sec": 0.0005805175751447678,
+        "midpoint_points_map0_sec": 0.02204981166869402,
+        "midpoint_points_map1_sec": 0.021439144387841225,
+        "pack_midpoint_points_map0_sec": 0.023980689235031605,
+        "pack_midpoint_points_map1_sec": 0.007393809035420418,
+        "prepare_point_location_map0_in_map1_sec": 0.5702893370762467,
+        "prepare_point_location_map1_in_map0_sec": 0.07790081482380629,
+        "shared_bounds_sec": 3.7597492337226868e-06,
+        "sort_map0_sec": 0.23147741612046957,
+        "sort_map1_sec": 0.20660803094506264,
+        "vertex_pip_map0_in_map1_sec": 0.011530380696058273,
+        "vertex_pip_map1_in_map0_sec": 0.006930475123226643
+      },
+      "speedup_vs_baseline_median": 1.0,
+      "writer_free_hot_sec_median": 2.9474522853270173,
+      "writer_free_hot_sec_values": [
+        3.21989952493459,
+        2.9474522853270173,
+        2.9278068859130144
+      ]
+    },
+    "projected_descriptor_full_descriptor": {
+      "count": 3,
+      "missing": [],
+      "phase_medians": {
+        "assign_midpoint_faces_map0_sec": 0.0008434150367975235,
+        "assign_midpoint_faces_map1_sec": 0.001485973596572876,
+        "destroy_point_location_sessions_sec": 0.007693208754062653,
+        "grouped_columnar_carrier_construction_sec": 0.8192775109782815,
+        "grouped_descriptor_pair_count_consumer_sec": 0.006097270175814629,
+        "intersection_reprojection_sec": 0.2183115966618061,
+        "load_pack_left_sec": 0.005459550768136978,
+        "load_pack_right_sec": 0.004370409995317459,
+        "lsi_public_rows_sec": 0.9951464924961329,
+        "midpoint_pip_map0_sec": 0.0005433857440948486,
+        "midpoint_pip_map1_sec": 0.0005419459193944931,
+        "midpoint_points_map0_sec": 0.021891597658395767,
+        "midpoint_points_map1_sec": 0.019552688114345074,
+        "pack_midpoint_points_map0_sec": 0.002214374952018261,
+        "pack_midpoint_points_map1_sec": 0.007281055673956871,
+        "prepare_point_location_map0_in_map1_sec": 0.5656743301078677,
+        "prepare_point_location_map1_in_map0_sec": 0.07854216266423464,
+        "shared_bounds_sec": 4.139728844165802e-06,
+        "sort_map0_sec": 0.22848487738519907,
+        "sort_map1_sec": 0.2529786517843604,
+        "vertex_pip_map0_in_map1_sec": 0.011640004813671112,
+        "vertex_pip_map1_in_map0_sec": 0.0069061340764164925
+      },
+      "speedup_vs_baseline_median": 1.1337859319092312,
+      "writer_free_hot_sec_median": 2.599655016325414,
+      "writer_free_hot_sec_values": [
+        2.599655016325414,
+        2.563420015387237,
+        2.604885091073811
+      ]
+    },
+    "projected_descriptor_group_cache": {
+      "count": 3,
+      "missing": [],
+      "phase_medians": {
+        "assign_midpoint_faces_map0_sec": 0.0008700257167220116,
+        "assign_midpoint_faces_map1_sec": 0.0015089437365531921,
+        "destroy_point_location_sessions_sec": 0.007787109352648258,
+        "grouped_columnar_carrier_construction_sec": 0.768273776397109,
+        "grouped_descriptor_pair_count_consumer_sec": 0.005910683423280716,
+        "intersection_reprojection_sec": 0.21903601195663214,
+        "load_pack_left_sec": 0.005428599193692207,
+        "load_pack_right_sec": 0.004187852144241333,
+        "lsi_public_rows_sec": 1.025793612934649,
+        "midpoint_pip_map0_sec": 0.0005589770153164864,
+        "midpoint_pip_map1_sec": 0.0006133895367383957,
+        "midpoint_points_map0_sec": 0.031219040974974632,
+        "midpoint_points_map1_sec": 0.02888807188719511,
+        "pack_midpoint_points_map0_sec": 0.0020997514948248863,
+        "pack_midpoint_points_map1_sec": 0.00767875649034977,
+        "prepare_point_location_map0_in_map1_sec": 0.5651115328073502,
+        "prepare_point_location_map1_in_map0_sec": 0.07857033796608448,
+        "shared_bounds_sec": 4.080124199390411e-06,
+        "sort_map0_sec": 0.23995814938098192,
+        "sort_map1_sec": 0.2584914658218622,
+        "vertex_pip_map0_in_map1_sec": 0.012944861315190792,
+        "vertex_pip_map1_in_map0_sec": 0.007518591359257698
+      },
+      "speedup_vs_baseline_median": 1.1261568320467377,
+      "writer_free_hot_sec_median": 2.617266264744103,
+      "writer_free_hot_sec_values": [
+        2.662507220171392,
+        2.617266264744103,
+        2.572605819441378
+      ]
+    },
+    "projected_descriptor_minimal_descriptor": {
+      "count": 3,
+      "missing": [],
+      "phase_medians": {
+        "assign_midpoint_faces_map0_sec": 0.000859125517308712,
+        "assign_midpoint_faces_map1_sec": 0.0014910036697983742,
+        "destroy_point_location_sessions_sec": 0.007738049142062664,
+        "grouped_columnar_carrier_construction_sec": 0.7980163032189012,
+        "grouped_descriptor_pair_count_consumer_sec": 0.006020847707986832,
+        "intersection_reprojection_sec": 0.21999850589782,
+        "load_pack_left_sec": 0.005673417821526527,
+        "load_pack_right_sec": 0.00417697336524725,
+        "lsi_public_rows_sec": 1.021197914145887,
+        "midpoint_pip_map0_sec": 0.0005467459559440613,
+        "midpoint_pip_map1_sec": 0.0005463557317852974,
+        "midpoint_points_map0_sec": 0.021744633093476295,
+        "midpoint_points_map1_sec": 0.020361391827464104,
+        "pack_midpoint_points_map0_sec": 0.002201935276389122,
+        "pack_midpoint_points_map1_sec": 0.0073812976479530334,
+        "prepare_point_location_map0_in_map1_sec": 0.5689718574285507,
+        "prepare_point_location_map1_in_map0_sec": 0.07808701042085886,
+        "shared_bounds_sec": 4.33996319770813e-06,
+        "sort_map0_sec": 0.22737687546759844,
+        "sort_map1_sec": 0.25401017256081104,
+        "vertex_pip_map0_in_map1_sec": 0.011470959521830082,
+        "vertex_pip_map1_in_map0_sec": 0.006978586316108704
+      },
+      "speedup_vs_baseline_median": 1.1347857058910038,
+      "writer_free_hot_sec_median": 2.597364656627178,
+      "writer_free_hot_sec_values": [
+        2.63047890458256,
+        2.597364656627178,
+        2.576425670646131
+      ]
+    },
+    "projected_descriptor_online_dedupe": {
+      "count": 3,
+      "missing": [],
+      "phase_medians": {
+        "assign_midpoint_faces_map0_sec": 0.0008584354072809219,
+        "assign_midpoint_faces_map1_sec": 0.0014907736331224442,
+        "destroy_point_location_sessions_sec": 0.01883216667920351,
+        "grouped_columnar_carrier_construction_sec": 0.8311228817328811,
+        "grouped_descriptor_pair_count_consumer_sec": 0.006154241971671581,
+        "intersection_reprojection_sec": 0.2192121734842658,
+        "load_pack_left_sec": 0.0057000285014510155,
+        "load_pack_right_sec": 0.004203444346785545,
+        "lsi_public_rows_sec": 1.034088235348463,
+        "midpoint_pip_map0_sec": 0.0005367361009120941,
+        "midpoint_pip_map1_sec": 0.0005316557362675667,
+        "midpoint_points_map0_sec": 0.02166219148784876,
+        "midpoint_points_map1_sec": 0.019828655757009983,
+        "pack_midpoint_points_map0_sec": 0.002204194664955139,
+        "pack_midpoint_points_map1_sec": 0.007428429089486599,
+        "prepare_point_location_map0_in_map1_sec": 0.5563957067206502,
+        "prepare_point_location_map1_in_map0_sec": 0.07822472415864468,
+        "shared_bounds_sec": 4.349276423454285e-06,
+        "sort_map0_sec": 0.22903667390346527,
+        "sort_map1_sec": 0.254057384096086,
+        "vertex_pip_map0_in_map1_sec": 0.011595172807574272,
+        "vertex_pip_map1_in_map0_sec": 0.006897774524986744
+      },
+      "speedup_vs_baseline_median": 1.1135481792791535,
+      "writer_free_hot_sec_median": 2.6469014454632998,
+      "writer_free_hot_sec_values": [
+        2.67921113781631,
+        2.6469014454632998,
+        2.58939640969038
+      ]
+    },
+    "projected_descriptor_sorted_run_scan": {
+      "count": 3,
+      "missing": [],
+      "phase_medians": {
+        "assign_midpoint_faces_map0_sec": 0.0008567553013563156,
+        "assign_midpoint_faces_map1_sec": 0.0014798128977417946,
+        "destroy_point_location_sessions_sec": 0.007726788520812988,
+        "grouped_columnar_carrier_construction_sec": 0.9927479093894362,
+        "grouped_descriptor_pair_count_consumer_sec": 0.005908864550292492,
+        "intersection_reprojection_sec": 0.21741076465696096,
+        "load_pack_left_sec": 0.005494452081620693,
+        "load_pack_right_sec": 0.004412570036947727,
+        "lsi_public_rows_sec": 0.9920526184141636,
+        "midpoint_pip_map0_sec": 0.000525396317243576,
+        "midpoint_pip_map1_sec": 0.0005517164245247841,
+        "midpoint_points_map0_sec": 0.022000188939273357,
+        "midpoint_points_map1_sec": 0.020144094713032246,
+        "pack_midpoint_points_map0_sec": 0.0020287493243813515,
+        "pack_midpoint_points_map1_sec": 0.007242104038596153,
+        "prepare_point_location_map0_in_map1_sec": 0.5639388086274266,
+        "prepare_point_location_map1_in_map0_sec": 0.0780489630997181,
+        "shared_bounds_sec": 4.7907233238220215e-06,
+        "sort_map0_sec": 0.2287033274769783,
+        "sort_map1_sec": 0.2526745153591037,
+        "vertex_pip_map0_in_map1_sec": 0.011582591570913792,
+        "vertex_pip_map1_in_map0_sec": 0.006979785859584808
+      },
+      "speedup_vs_baseline_median": 1.0656028793173151,
+      "writer_free_hot_sec_median": 2.7659950461238623,
+      "writer_free_hot_sec_values": [
+        2.808010244742036,
+        2.7659950461238623,
+        2.759161826223135
+      ]
+    }
+  }
+}

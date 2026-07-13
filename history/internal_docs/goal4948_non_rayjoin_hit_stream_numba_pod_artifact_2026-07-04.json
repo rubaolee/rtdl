@@ -1,0 +1,52 @@
+{
+  "claim_boundary": {
+    "layer1_2_capability_only": true,
+    "non_rayjoin_genericity_gate": true,
+    "rayjoin_app_claim_authorized": false,
+    "speedup_claim_authorized": false,
+    "whole_app_claim_authorized": false
+  },
+  "columns": [
+    "ray_ids",
+    "primitive_ids"
+  ],
+  "counts": [
+    2,
+    1,
+    0
+  ],
+  "counts_match": true,
+  "device_resident_candidate": true,
+  "expected_counts": [
+    2,
+    1,
+    0
+  ],
+  "fixture": "ray_triangle_hit_stream_per_ray_count",
+  "goal": 4948,
+  "host_rows_materialized_before_partner_handoff": false,
+  "native_device_column_output_proven_on_hardware": true,
+  "native_symbol": "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream_device_columns",
+  "numba_operation": "segmented_count_i64",
+  "phase_timing": {
+    "phase_contract_version": "rtdl.partner.v2.4",
+    "phases_sec": {
+      "partner_continuation": 0.03436295600840822
+    },
+    "promoted_performance_path": false,
+    "same_phase_contract_as_basis": false,
+    "source": "run_numba_segmented_count_i64",
+    "validation": {
+      "errors": [],
+      "known_phases": [
+        "partner_continuation"
+      ],
+      "status": "accept"
+    }
+  },
+  "producer": "goal4948_ray_triangle_hit_stream",
+  "public_speedup_claim_authorized": false,
+  "row_count": 3,
+  "schema": "rtdl.goal4948.non_rayjoin_hit_stream_numba.v1",
+  "true_zero_copy_claim_authorized": false
+}

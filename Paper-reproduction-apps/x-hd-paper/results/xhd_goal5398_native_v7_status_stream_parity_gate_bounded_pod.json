@@ -1,0 +1,288 @@
+{
+  "author_trace_v2": {
+    "active_in_queue_size": 437645,
+    "batch_0": {
+      "cmin2_after_load_balance_hash": 10400538358226239013,
+      "cmin2_after_ray_hash": 10400538358226239013,
+      "cmin2_initial_hash": 5369460447013261471,
+      "load_balance_feedback_update_count": 294,
+      "raw_offload_row_hash": 4333109858711462591,
+      "raw_offload_row_sample_cell_ids": [
+        2924,
+        17,
+        17
+      ],
+      "raw_offload_row_sample_point_ids": [
+        11168,
+        210712,
+        437119
+      ],
+      "status_count_offloading": 27133990
+    },
+    "feedback_update_count": 294,
+    "raw_offload_rows_before_sort_reduce": 27133990,
+    "schema": "rtdl.goal5385.author.lb_status_trace.v2",
+    "status_count_aborted": 0,
+    "status_count_completed": 0,
+    "status_count_init": 437645,
+    "status_count_miss": 0,
+    "status_count_offloading_append": 27133990
+  },
+  "claim_boundary": {
+    "author_rt_core_algorithm_parity_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_support_claimed": false,
+    "figure11_reproduction_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "full_trace_summary_gate_claimed": true,
+    "full_xhd_paper_reproduction_claimed": false,
+    "hash_sample_parity_claimed": false,
+    "performance_claimed": false,
+    "row_count_parity_claimed": false,
+    "same_denominator_memory_claimed": false
+  },
+  "decision": {
+    "explicit_lb_support_remains_unsupported": true,
+    "hash_parity": false,
+    "next_gate": "native_v7_semantic_gap_or_status_machine_redesign",
+    "row_count_parity": false
+  },
+  "emit_pruned_rows": false,
+  "execution_n_dims": 3,
+  "frontier_status_probe_mode": "active-initial-best-prune",
+  "goal": "Goal5398",
+  "grid_cell_builder": "native_cuda",
+  "grid_cell_point_order": "input-stable",
+  "grid_shape": [
+    96,
+    60,
+    72
+  ],
+  "initial_state": "local-grid-cell",
+  "inline_nearest": true,
+  "input1": "/tmp/xhd_goal5234/data/dragon.ply",
+  "input2": "/tmp/xhd_goal5234/data/asian_dragon.ply",
+  "input_n_dims": 3,
+  "input_type": "ply",
+  "local_grid_seed_executor": "native_cuda",
+  "matched": false,
+  "max_inline_points": 256,
+  "native_v7_status_stream": {
+    "claim_boundary": {
+      "author_rt_core_algorithm_parity_claimed": false,
+      "explicit_lb_support_claimed": false,
+      "figure11_reproduction_claimed": false,
+      "figure7_reproduction_claimed": false,
+      "full_xhd_paper_reproduction_claimed": false,
+      "hash_sample_parity_claimed": false,
+      "performance_claimed": false,
+      "row_count_parity_claimed": false,
+      "same_denominator_memory_claimed": false
+    },
+    "comparison_to_author": {
+      "active_query_count_parity": false,
+      "author_active_in_queue_size": 437645,
+      "author_raw_offload_row_hash": 4333109858711462591,
+      "author_raw_offload_row_sample_cell_ids": [
+        2924,
+        17,
+        17
+      ],
+      "author_raw_offload_row_sample_point_ids": [
+        11168,
+        210712,
+        437119
+      ],
+      "author_raw_offload_rows_before_sort_reduce": 27133990,
+      "author_status_count_offloading": 27133990,
+      "feedback_update_count_author": 294,
+      "feedback_update_count_parity": null,
+      "feedback_update_count_rtdl_v7": null,
+      "hash_parity": false,
+      "row_count_parity": false,
+      "row_delta_author_minus_rtdl_v7": 27133606,
+      "row_ratio_rtdl_v7_div_author": 1.4151991653273256e-05,
+      "rtdl_active_query_count": 64,
+      "rtdl_raw_offload_row_hash": 13738221957471899587,
+      "rtdl_sample_cell_ids": [
+        6145,
+        6279,
+        6292
+      ],
+      "rtdl_sample_source_ids": [
+        32,
+        32,
+        31
+      ],
+      "rtdl_status_count_offloading": 384,
+      "rtdl_v7_offload_rows": 384,
+      "status_count_offloading_parity": false
+    },
+    "current_best_after_finite_count": 384,
+    "current_best_before_finite_count": 384,
+    "native_result_metadata": {
+      "attempted_count": 384,
+      "backend": "optix",
+      "claim_boundary": "Generic native active-query status-stream rows. This is not an application option implementation, not a row/hash parity claim, and not a paper performance claim.",
+      "contract": "generic_active_query_status_stream_native_abi_v1",
+      "emit_pruned_rows": false,
+      "explicit_app_option_support_claimed": false,
+      "frontier_status_probe_mode": "active-initial-best-prune",
+      "frontier_status_probe_mode_code": 2,
+      "inline_nearest": true,
+      "native_backend_complete": false,
+      "native_engine_customization": false,
+      "native_generic_symbol": "rtdl_optix_collect_active_query_status_stream_3d_v1",
+      "overflowed": false,
+      "primitive": "ACTIVE_QUERY_STATUS_STREAM_3D",
+      "row_capacity": 1000000,
+      "row_schema": [
+        "active_queue_indices",
+        "query_row_ids",
+        "source_ids",
+        "cell_ids",
+        "status_codes",
+        "transition_phase_codes",
+        "current_best_before_sq",
+        "current_best_after_sq"
+      ],
+      "rt_core_accelerated": true,
+      "valid_count": 384
+    },
+    "status_code_counts": {
+      "2": 384
+    },
+    "trace_summary": {
+      "active_query_count": 64,
+      "app_semantics": "none",
+      "contract": "generic_active_query_status_trace_summary_v1",
+      "hash_columns": [
+        "source_ids",
+        "cell_ids"
+      ],
+      "metadata": {
+        "adapter": "active_query_status_trace_summary_numpy_columns",
+        "app_semantics": "none",
+        "contract": "generic_active_query_status_trace_summary_v1",
+        "default_hash_offset": 1469598103934665603,
+        "explicit_app_option_support_claimed": false,
+        "hash_contract": "fnv1a_u64_over_selected_int64_columns",
+        "native_engine_row_contract": "not_called_cpu_reference_only",
+        "partner": "numpy",
+        "rt_core_speedup_claim_authorized": false,
+        "whole_app_speedup_claim_authorized": false
+      },
+      "raw_offload_row_hash": 13738221957471899587,
+      "row_count": 384,
+      "sample_columns": [
+        "source_ids",
+        "cell_ids",
+        "active_queue_indices",
+        "query_row_ids"
+      ],
+      "sample_indices": [
+        0,
+        192,
+        383
+      ],
+      "samples": {
+        "active_queue_indices": [
+          32,
+          32,
+          31
+        ],
+        "cell_ids": [
+          6145,
+          6279,
+          6292
+        ],
+        "query_row_ids": [
+          32,
+          32,
+          31
+        ],
+        "source_ids": [
+          32,
+          32,
+          31
+        ]
+      },
+      "schema": "rtdl.generic.active_query_status_trace_summary.v1",
+      "status_count_offloading": 384
+    },
+    "transition_phase_code_counts": {
+      "2": 384
+    }
+  },
+  "point_count_a": 64,
+  "point_count_b": 3609600,
+  "preprocessing": [
+    "source_limit_64"
+  ],
+  "purpose": "Compare generic native v7 active-query status-stream rows against the Goal5387 author trace v2 oracle.",
+  "radius": 266.9466183641096,
+  "row_capacity": 1000000,
+  "schema": "rtdl.paper_reproduction.xhd.goal5398.native_v7_status_stream_parity_gate.v1",
+  "seed_metadata": {
+    "adapter": "seed_nearest_witness_from_local_grid_cell_numpy_columns",
+    "app_semantics": "none",
+    "candidate_distance_evaluations": 1216,
+    "cell_count": 14710,
+    "cell_lookup_strategy": "dense_grid_cell_position_table",
+    "cell_selection": "local_grid_first_occupied_shell_min_grid_cell_distance_then_cell_id",
+    "contract": "generic_seed_nearest_witness_from_local_grid_cell",
+    "coordinate_fields": [
+      "x",
+      "y",
+      "z"
+    ],
+    "dense_lookup_cell_capacity": 414720,
+    "dense_lookup_max_cells": 8000000,
+    "executor": "native_cuda",
+    "executor_requested": "native_cuda",
+    "grid_cell_probes": 1728,
+    "grid_shape": [
+      96,
+      60,
+      72
+    ],
+    "max_grid_cell_probes_per_query": 27,
+    "max_seed_cell_point_count": 19,
+    "native_engine_row_contract": "generic_local_grid_nearest_seed_native_cuda",
+    "native_generic_symbol": "rtdl_optix_seed_nearest_witness_local_grid_3d",
+    "native_phase_timings": {
+      "cell_count": 14710,
+      "context_ensure_sec": 0.095267811,
+      "dense_cell_position_count": 414720,
+      "device_alloc_sec": 0.001210039,
+      "download_sec": 4.3271e-05,
+      "kernel_sec": 0.000125564,
+      "module_ensure_sec": 0.0,
+      "point_row_index_count": 3609600,
+      "query_count": 64,
+      "target_count": 3609600,
+      "total_native_sec": 0.111241835,
+      "upload_sec": 0.01459369
+    },
+    "native_phase_timings_collected": true,
+    "partner": "optix_cuda",
+    "query_coordinate_matrix_reused": true,
+    "query_count": 64,
+    "rt_core_speedup_claim_authorized": false,
+    "seed_point_reduction_strategy": "native_cuda_loop_min_distance_then_item_id",
+    "seed_quality": "valid_upper_bound_not_nearest_cell_mbr",
+    "target_coordinate_matrix_reused": true,
+    "target_count": 3609600,
+    "whole_app_speedup_claim_authorized": false
+  },
+  "source_limit": 64,
+  "source_limit_applied": true,
+  "status": "native_v7_status_stream_denominator_or_hash_mismatch__lb_remains_fail_closed",
+  "timings_sec": {
+    "grid_cell_mbrs": 0.4560912251472473,
+    "initial_seed": 0.1231597363948822,
+    "load_inputs": 0.35416414588689804,
+    "native_v7_status_stream": 0.24946798384189606,
+    "total": 1.4223774150013924
+  }
+}

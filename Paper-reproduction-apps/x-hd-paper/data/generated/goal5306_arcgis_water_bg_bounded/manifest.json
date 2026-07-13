@@ -1,0 +1,100 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5306.arcgis_water_bg_bounded_fixture.v1",
+  "goal": "Goal5306",
+  "status": "arcgis_water_bg_bounded_fixture_ready__level_b_only__not_exact_paper_input",
+  "created_sec": 0.8759750998578966,
+  "source_contract": {
+    "source_family": "ArcGIS name-matched services already tracked by RTDL RayJoin assets",
+    "paper_pair": "USADetailedWaterBodies.wkt -> USACensusBlockGroupBoundaries.wkt",
+    "waterbodies_service": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Detailed_Water_Bodies/FeatureServer",
+    "blockgroup_service": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Census_BlockGroups/FeatureServer",
+    "query_order": "OBJECTID",
+    "out_sr": 4326,
+    "water_feature_count_requested": 5,
+    "blockgroup_feature_count_requested": 5
+  },
+  "author_loader_contract": {
+    "input_type": "wkt",
+    "n_dims": 2,
+    "normalize": false,
+    "one_geometry_per_line": true,
+    "polygon_outer_ring_only_for_author_point_count": true
+  },
+  "outputs": {
+    "waterbodies": {
+      "path": "Paper-reproduction-apps\\x-hd-paper\\data\\generated\\goal5306_arcgis_water_bg_bounded\\USADetailedWaterBodies_arcgis_bounded.wkt",
+      "bytes": 3742,
+      "sha256": "3dda7b9df0655e0070f129625c4cfb7ab9cb40b22c8b71da3994faf0283c1dcb",
+      "feature_count": 5,
+      "outer_ring_point_count_author_loader_estimate": 124,
+      "geometry_types": {
+        "Polygon": 5
+      },
+      "object_ids": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "sample_labels": [
+        " ",
+        " ",
+        " ",
+        " ",
+        " "
+      ],
+      "bbox": [
+        -158.039698966938,
+        -157.730386142575,
+        21.2749468266754,
+        21.3849224255351
+      ],
+      "line_count": 5
+    },
+    "blockgroups": {
+      "path": "Paper-reproduction-apps\\x-hd-paper\\data\\generated\\goal5306_arcgis_water_bg_bounded\\USACensusBlockGroupBoundaries_arcgis_bounded.wkt",
+      "bytes": 26682,
+      "sha256": "01ec10a1cdd3520f3bcc5742a6c7a6430c7e9dbe45f170ec35a5d70d4f7455b9",
+      "feature_count": 5,
+      "outer_ring_point_count_author_loader_estimate": 894,
+      "geometry_types": {
+        "Polygon": 5
+      },
+      "object_ids": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "sample_labels": [
+        "010010201001",
+        "010010201002",
+        "010010202001",
+        "010010202002",
+        "010010203001"
+      ],
+      "bbox": [
+        -86.5104237431699,
+        -86.4515247259963,
+        32.4497330783256,
+        32.5051650900736
+      ],
+      "line_count": 5
+    }
+  },
+  "comparison_readiness": {
+    "author_hd_exec_ready": false,
+    "rtdl_route_ready": false,
+    "reason": "This goal creates a bounded input fixture and metadata only; author/RTDL execution should be a separate gate.",
+    "first_author_command_shape": "./bin/hd_exec -input1 <water_wkt> -input2 <blockgroup_wkt> -input_type wkt -n_dims 2 -variant rt -execution gpu -normalize=false -json <summary.json>"
+  },
+  "claim_boundary": {
+    "level_b_same_source_fixture": true,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "geo_correctness_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "performance_ratio_claimed": false
+  }
+}

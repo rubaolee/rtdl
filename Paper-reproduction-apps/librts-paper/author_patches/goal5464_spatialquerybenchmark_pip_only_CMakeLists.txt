@@ -1,0 +1,59 @@
+cmake_minimum_required(VERSION 3.18)
+project(librts_pip_only LANGUAGES CXX CUDA)
+
+if(NOT DEFINED AUTHOR_SOURCE)
+  message(FATAL_ERROR "AUTHOR_SOURCE must point to SpatialQueryBenchmark@9140ad9")
+endif()
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CUDA_ARCHITECTURES "61" CACHE STRING "Target GPU architecture")
+
+list(APPEND CMAKE_MODULE_PATH "${AUTHOR_SOURCE}/cmake")
+find_package(GFlags REQUIRED)
+find_package(Boost 1.76 REQUIRED)
+find_package(rtspatial REQUIRED)
+
+find_library(
+  BOOST_SERIALIZATION_LIBRARY
+  NAMES boost_serialization boost_serialization.so.1.83.0
+  PATHS /usr/lib/x86_64-linux-gnu
+  REQUIRED
+)
+
+include_directories(SYSTEM ${GFLAGS_INCLUDE_DIRS})
+include_directories(${Boost_INCLUDE_DIRS})
+include_directories(${RTSPATIAL_INCLUDE_DIR})
+include_directories("${AUTHOR_SOURCE}/src")
+
+RTSPATIAL_COMPILE_SHADERS(
+  "${AUTHOR_SOURCE}/src"
+  "query/rtspatial/pip_handler.h"
+  "${PROJECT_BINARY_DIR}/ptx_pip"
+  PROGRAM_MODULES_PIP
+)
+
+add_executable(
+  librts_author_pip
+  "${AUTHOR_SOURCE}/src/query/pip.cpp"
+  "${AUTHOR_SOURCE}/src/query/rtspatial/pip_query.cu"
+  "${AUTHOR_SOURCE}/src/flags.cpp"
+  ${PROGRAM_MODULES_PIP}
+)
+
+target_link_libraries(
+  librts_author_pip
+  PRIVATE cuda pthread ${GFLAGS_LIBRARIES} ${BOOST_SERIALIZATION_LIBRARY}
+)
+target_compile_definitions(
+  librts_author_pip
+  PRIVATE RTSPATIAL_PTX_DIR="${PROJECT_BINARY_DIR}/ptx_pip"
+)
+target_include_directories(
+  librts_author_pip
+  BEFORE PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/compat"
+)
+target_compile_options(
+  librts_author_pip
+  PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:--expt-extended-lambda;--expt-relaxed-constexpr;--use_fast_math>
+)

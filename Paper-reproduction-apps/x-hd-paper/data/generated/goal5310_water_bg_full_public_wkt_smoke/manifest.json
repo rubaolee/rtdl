@@ -1,0 +1,118 @@
+{
+  "claim_boundary": {
+    "author_rtdl_correctness_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "full_public_wkt_candidate_claimed": true,
+    "geo_figure5_reproduction_claimed": false,
+    "performance_ratio_claimed": false
+  },
+  "comparison_readiness": {
+    "author_hd_exec_ready": false,
+    "reason": "Full-public WKT materialization only; author/RTDL execution must be a separate reviewed gate.",
+    "rtdl_route_ready": false
+  },
+  "elapsed_sec": 1.8706912999041378,
+  "goal": "Goal5310",
+  "max_pages": 1,
+  "page_size_requested": 100,
+  "pair": "USADetailedWaterBodies.wkt -> USACensusBlockGroupBoundaries.wkt",
+  "schema": "rtdl.paper_reproduction.xhd.goal5310.water_bg_full_public_wkt_candidate.v1",
+  "services": {
+    "blockgroups": {
+      "author_loader_point_count": 48038,
+      "checkpoint_features_seen_at_start": 0,
+      "complete": false,
+      "elapsed_sec": 1.0041310996748507,
+      "features_seen": 100,
+      "geometry_types": {
+        "MultiPolygon": 3,
+        "Polygon": 97
+      },
+      "key": "blockgroups",
+      "mbr": [
+        -88.0255670859761,
+        -86.4111767117537,
+        30.4795746141723,
+        32.7082191359937
+      ],
+      "mbr_delta": {
+        "x_lower": 91.12334343648483,
+        "x_upper": -19.461568862632603,
+        "y_lower": 11.56888239920648,
+        "y_upper": -38.65694657445552
+      },
+      "object_id_max": 100,
+      "object_id_min": 1,
+      "output_bytes": 1430678,
+      "output_wkt": "Paper-reproduction-apps\\x-hd-paper\\data\\generated\\goal5310_water_bg_full_public_wkt_smoke\\USACensusBlockGroupBoundaries.wkt.full_public_arcgis_candidate.wkt",
+      "pages_seen": 1,
+      "paper_basename": "USACensusBlockGroupBoundaries.wkt",
+      "paper_mbr": {
+        "x": [
+          -179.14891052246094,
+          -66.9496078491211
+        ],
+        "y": [
+          18.91069221496582,
+          71.36516571044922
+        ]
+      },
+      "paper_point_count": 52271340,
+      "point_count_delta": -52223302,
+      "point_count_relative_delta": -0.999080987784128,
+      "resumed_from_checkpoint": false,
+      "service_feature_count": 239203,
+      "service_url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Census_BlockGroups/FeatureServer",
+      "sha256": null
+    },
+    "waterbodies": {
+      "author_loader_point_count": 24967,
+      "checkpoint_features_seen_at_start": 0,
+      "complete": false,
+      "elapsed_sec": 0.8665382000617683,
+      "features_seen": 100,
+      "geometry_types": {
+        "Polygon": 100
+      },
+      "key": "waterbodies",
+      "mbr": [
+        -160.231107166363,
+        -115.425333023071,
+        19.2039983241634,
+        46.8867667959578
+      ],
+      "mbr_delta": {
+        "x_lower": 2.4527776361082942e-06,
+        "x_upper": -48.427469253539755,
+        "y_lower": -2.4151042765652164e-07,
+        "y_upper": -2.497567768251187
+      },
+      "object_id_max": 100,
+      "object_id_min": 1,
+      "output_bytes": 776138,
+      "output_wkt": "Paper-reproduction-apps\\x-hd-paper\\data\\generated\\goal5310_water_bg_full_public_wkt_smoke\\USADetailedWaterBodies.wkt.full_public_arcgis_candidate.wkt",
+      "pages_seen": 1,
+      "paper_basename": "USADetailedWaterBodies.wkt",
+      "paper_mbr": {
+        "x": [
+          -160.23110961914062,
+          -66.99786376953125
+        ],
+        "y": [
+          19.203998565673828,
+          49.384334564208984
+        ]
+      },
+      "paper_point_count": 22818694,
+      "point_count_delta": -22793727,
+      "point_count_relative_delta": -0.9989058532447125,
+      "resumed_from_checkpoint": false,
+      "service_feature_count": 463591,
+      "service_url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Detailed_Water_Bodies/FeatureServer",
+      "sha256": null
+    }
+  },
+  "source_basis": "Goal5309 strong full-public candidate, not exact paper file/hash provenance",
+  "status": "water_bg_full_public_wkt_candidate_partial"
+}

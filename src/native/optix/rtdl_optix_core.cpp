@@ -586,6 +586,10 @@ struct AccelHolder {
     CUdeviceptr aabb_buf     = 0;
     bool owns_aabb_buf       = true;
     OptixTraversableHandle handle = 0;
+    size_t output_size_bytes = 0;
+    size_t temp_size_bytes = 0;
+    size_t aabb_size_bytes = 0;
+    size_t compacted_output_size_bytes = 0;
 
     AccelHolder() = default;
     ~AccelHolder() {
@@ -598,11 +602,19 @@ struct AccelHolder {
         : output_buf(other.output_buf),
           aabb_buf(other.aabb_buf),
           owns_aabb_buf(other.owns_aabb_buf),
-          handle(other.handle) {
+          handle(other.handle),
+          output_size_bytes(other.output_size_bytes),
+          temp_size_bytes(other.temp_size_bytes),
+          aabb_size_bytes(other.aabb_size_bytes),
+          compacted_output_size_bytes(other.compacted_output_size_bytes) {
         other.output_buf = 0;
         other.aabb_buf = 0;
         other.owns_aabb_buf = true;
         other.handle = 0;
+        other.output_size_bytes = 0;
+        other.temp_size_bytes = 0;
+        other.aabb_size_bytes = 0;
+        other.compacted_output_size_bytes = 0;
     }
     AccelHolder& operator=(AccelHolder&& other) noexcept {
         if (this != &other) {
@@ -612,10 +624,18 @@ struct AccelHolder {
             aabb_buf = other.aabb_buf;
             owns_aabb_buf = other.owns_aabb_buf;
             handle = other.handle;
+            output_size_bytes = other.output_size_bytes;
+            temp_size_bytes = other.temp_size_bytes;
+            aabb_size_bytes = other.aabb_size_bytes;
+            compacted_output_size_bytes = other.compacted_output_size_bytes;
             other.output_buf = 0;
             other.aabb_buf = 0;
             other.owns_aabb_buf = true;
             other.handle = 0;
+            other.output_size_bytes = 0;
+            other.temp_size_bytes = 0;
+            other.aabb_size_bytes = 0;
+            other.compacted_output_size_bytes = 0;
         }
         return *this;
     }
@@ -627,6 +647,7 @@ static AccelHolder build_custom_accel_with_flags(
         unsigned int build_flags) {
     AccelHolder result;
     size_t aabb_bytes = sizeof(OptixAabb) * aabbs.size();
+    result.aabb_size_bytes = aabb_bytes;
     CU_CHECK(cuMemAlloc(&result.aabb_buf, aabb_bytes));
     CU_CHECK(cuMemcpyHtoD(result.aabb_buf, aabbs.data(), aabb_bytes));
 
@@ -649,13 +670,49 @@ static AccelHolder build_custom_accel_with_flags(
 
     DevPtr temp_buf(sizes.tempSizeInBytes);
     CU_CHECK(cuMemAlloc(&result.output_buf, sizes.outputSizeInBytes));
+    result.temp_size_bytes = sizes.tempSizeInBytes;
+    result.output_size_bytes = sizes.outputSizeInBytes;
+
+    const bool allow_compaction = (build_flags & OPTIX_BUILD_FLAG_ALLOW_COMPACTION) != 0u;
+    DevPtr compacted_size_buf(allow_compaction ? sizeof(uint64_t) : 0);
+    OptixAccelEmitDesc emit_desc = {};
+    OptixAccelEmitDesc* emit_descs = nullptr;
+    unsigned int emit_desc_count = 0;
+    if (allow_compaction) {
+        emit_desc.type = OPTIX_PROPERTY_TYPE_COMPACTED_SIZE;
+        emit_desc.result = compacted_size_buf.ptr;
+        emit_descs = &emit_desc;
+        emit_desc_count = 1;
+    }
 
     CUstream stream = 0;
     OPTIX_CHECK(optixAccelBuild(ctx, stream, &accel_opts, &build_input, 1,
                                  temp_buf.ptr, sizes.tempSizeInBytes,
                                  result.output_buf, sizes.outputSizeInBytes,
-                                 &result.handle, nullptr, 0));
+                                 &result.handle, emit_descs, emit_desc_count));
     CU_CHECK(cuStreamSynchronize(stream));
+    if (allow_compaction) {
+        uint64_t compacted_size = 0;
+        download(&compacted_size, compacted_size_buf.ptr, 1);
+        if (compacted_size > 0) {
+            CUdeviceptr compacted_buf = 0;
+            CU_CHECK(cuMemAlloc(&compacted_buf, static_cast<size_t>(compacted_size)));
+            OptixTraversableHandle compacted_handle = 0;
+            OPTIX_CHECK(optixAccelCompact(
+                ctx,
+                stream,
+                result.handle,
+                compacted_buf,
+                static_cast<size_t>(compacted_size),
+                &compacted_handle));
+            CU_CHECK(cuStreamSynchronize(stream));
+            CU_CHECK(cuMemFree(result.output_buf));
+            result.output_buf = compacted_buf;
+            result.handle = compacted_handle;
+            result.compacted_output_size_bytes = static_cast<size_t>(compacted_size);
+            result.output_size_bytes = static_cast<size_t>(compacted_size);
+        }
+    }
     return result;
 }
 
@@ -667,6 +724,62 @@ static AccelHolder build_custom_accel(OptixDeviceContext ctx,
         OPTIX_BUILD_FLAG_ALLOW_RANDOM_VERTEX_ACCESS);
 }
 
+static void refit_custom_accel_existing_aabb_buffer_with_flags(
+        OptixDeviceContext ctx,
+        AccelHolder& accel,
+        size_t aabb_count,
+        unsigned int build_flags) {
+    if (aabb_count == 0)
+        throw std::runtime_error("OptiX AABB refit requires at least one primitive");
+    const size_t aabb_bytes = sizeof(OptixAabb) * aabb_count;
+    if (!accel.aabb_buf || aabb_bytes != accel.aabb_size_bytes)
+        throw std::runtime_error("OptiX AABB refit requires unchanged primitive cardinality");
+    if ((build_flags & OPTIX_BUILD_FLAG_ALLOW_UPDATE) == 0u)
+        throw std::runtime_error("OptiX AABB refit requires ALLOW_UPDATE build state");
+
+    OptixBuildInput build_input = {};
+    build_input.type = OPTIX_BUILD_INPUT_TYPE_CUSTOM_PRIMITIVES;
+    auto& cpp = build_input.customPrimitiveArray;
+    cpp.aabbBuffers = &accel.aabb_buf;
+    cpp.numPrimitives = static_cast<unsigned>(aabb_count);
+    cpp.strideInBytes = sizeof(OptixAabb);
+    uint32_t flags_arr = OPTIX_GEOMETRY_FLAG_NONE;
+    cpp.flags = &flags_arr;
+    cpp.numSbtRecords = 1;
+
+    OptixAccelBuildOptions accel_opts = {};
+    accel_opts.buildFlags = build_flags;
+    accel_opts.operation = OPTIX_BUILD_OPERATION_UPDATE;
+
+    OptixAccelBufferSizes sizes = {};
+    OPTIX_CHECK(optixAccelComputeMemoryUsage(
+        ctx, &accel_opts, &build_input, 1, &sizes));
+    if (sizes.outputSizeInBytes > accel.output_size_bytes)
+        throw std::runtime_error("OptiX AABB refit output exceeds prepared output capacity");
+
+    DevPtr temp_buf(sizes.tempUpdateSizeInBytes);
+    OptixTraversableHandle updated_handle = accel.handle;
+    CUstream stream = 0;
+    OPTIX_CHECK(optixAccelBuild(
+        ctx, stream, &accel_opts, &build_input, 1,
+        temp_buf.ptr, sizes.tempUpdateSizeInBytes,
+        accel.output_buf, accel.output_size_bytes,
+        &updated_handle, nullptr, 0));
+    CU_CHECK(cuStreamSynchronize(stream));
+    accel.handle = updated_handle;
+}
+
+static void refit_custom_accel_with_flags(
+        OptixDeviceContext ctx,
+        AccelHolder& accel,
+        const std::vector<OptixAabb>& aabbs,
+        unsigned int build_flags) {
+    CU_CHECK(cuMemcpyHtoD(
+        accel.aabb_buf, aabbs.data(), sizeof(OptixAabb) * aabbs.size()));
+    refit_custom_accel_existing_aabb_buffer_with_flags(
+        ctx, accel, aabbs.size(), build_flags);
+}
+
 static AccelHolder build_custom_accel_from_device_aabbs(
         OptixDeviceContext ctx,
         CUdeviceptr source_aabbs,
@@ -676,6 +789,7 @@ static AccelHolder build_custom_accel_from_device_aabbs(
     if (!source_aabbs)
         throw std::runtime_error("device AABB buffer must not be null when aabb_count is nonzero");
     size_t aabb_bytes = sizeof(OptixAabb) * aabb_count;
+    result.aabb_size_bytes = aabb_bytes;
     CU_CHECK(cuMemAlloc(&result.aabb_buf, aabb_bytes));
     CU_CHECK(cuMemcpyDtoD(result.aabb_buf, source_aabbs, aabb_bytes));
 
@@ -698,6 +812,8 @@ static AccelHolder build_custom_accel_from_device_aabbs(
 
     DevPtr temp_buf(sizes.tempSizeInBytes);
     CU_CHECK(cuMemAlloc(&result.output_buf, sizes.outputSizeInBytes));
+    result.temp_size_bytes = sizes.tempSizeInBytes;
+    result.output_size_bytes = sizes.outputSizeInBytes;
 
     CUstream stream = 0;
     OPTIX_CHECK(optixAccelBuild(ctx, stream, &accel_opts, &build_input, 1,
@@ -718,6 +834,7 @@ static AccelHolder build_custom_accel_from_borrowed_device_aabbs(
         throw std::runtime_error("borrowed device AABB buffer must not be null when aabb_count is nonzero");
     result.aabb_buf = source_aabbs;
     result.owns_aabb_buf = false;
+    result.aabb_size_bytes = sizeof(OptixAabb) * aabb_count;
 
     OptixBuildInput build_input = {};
     build_input.type = OPTIX_BUILD_INPUT_TYPE_CUSTOM_PRIMITIVES;
@@ -738,6 +855,8 @@ static AccelHolder build_custom_accel_from_borrowed_device_aabbs(
 
     DevPtr temp_buf(sizes.tempSizeInBytes);
     CU_CHECK(cuMemAlloc(&result.output_buf, sizes.outputSizeInBytes));
+    result.temp_size_bytes = sizes.tempSizeInBytes;
+    result.output_size_bytes = sizes.outputSizeInBytes;
 
     CUstream stream = 0;
     OPTIX_CHECK(optixAccelBuild(ctx, stream, &accel_opts, &build_input, 1,
@@ -1161,6 +1280,7 @@ extern "C" __global__ void __anyhit__segment_first_hit_anyhit() {
 
 static const char* kRayjoinCdbPointLocationKernelSrc = R"CUDA(
 #include <optix_device.h>
+#include <math.h>
 #include <stdint.h>
 
 struct GpuRayjoinCdbPoint {
@@ -1198,6 +1318,8 @@ struct RayjoinCdbPointLocationParams {
     const GpuRayjoinCdbPoint* points;
     const GpuRayjoinCdbSegment* segments;
     const GpuRayjoinCdbSegmentRange* ranges;
+    const unsigned int* canonical_segment_ids;
+    const unsigned int* canonical_face_ids;
     GpuRayjoinCdbPointLocationRecord* output;
     unsigned int* segment_id_output;
     unsigned int* face_id_output;
@@ -1205,6 +1327,7 @@ struct RayjoinCdbPointLocationParams {
     unsigned int point_count;
     unsigned int query_map_id;
     unsigned int allow_equal_ties;
+    double scale_rry;
 };
 
 extern "C" {
@@ -1219,19 +1342,8 @@ static __forceinline__ __device__ double cdb_absd(double x) {
     return x < 0.0 ? -x : x;
 }
 
-static __forceinline__ __device__ double unpack_double_payload(unsigned int lo, unsigned int hi) {
-    const unsigned long long bits =
-        (static_cast<unsigned long long>(hi) << 32) | static_cast<unsigned long long>(lo);
-    return __longlong_as_double(static_cast<long long>(bits));
-}
-
-static __forceinline__ __device__ void pack_double_payload(
-        double value,
-        unsigned int* lo,
-        unsigned int* hi) {
-    const unsigned long long bits = static_cast<unsigned long long>(__double_as_longlong(value));
-    *lo = static_cast<unsigned int>(bits & 0xffffffffull);
-    *hi = static_cast<unsigned int>(bits >> 32);
+static __forceinline__ __device__ double cdb_clampd(double x, double lo, double hi) {
+    return x < lo ? lo : (x > hi ? hi : x);
 }
 
 struct RayjoinCdbLine {
@@ -1254,6 +1366,73 @@ static __forceinline__ __device__ RayjoinCdbLine rayjoin_cdb_line_for_segment(
         line.c = -line.c;
     }
     return line;
+}
+
+static __forceinline__ __device__ bool directed_segment_sos_segment_is_better(
+        double current_slope,
+        double best_slope,
+        const GpuRayjoinCdbSegment current_segment,
+        const GpuRayjoinCdbSegment best_segment,
+        unsigned int query_map_id)
+{
+    if (current_slope == best_slope) {
+        (void)current_segment;
+        (void)best_segment;
+        (void)query_map_id;
+        return false;
+    }
+    return query_map_id == 0u ? current_slope > best_slope : current_slope < best_slope;
+}
+
+static __forceinline__ __device__ double directed_segment_sos_tie_breaker(
+        double slope,
+        unsigned int query_map_id)
+{
+    const double pi = 3.141592653589793238462643383279502884;
+    const double half_pi = 1.570796326794896619231321691639751442;
+    const double normalized_slope = cdb_clampd((atan(slope) + half_pi) / pi, 0.0, 1.0);
+    return query_map_id == 0u ? normalized_slope : (1.0 - normalized_slope);
+}
+
+static __forceinline__ __device__ float directed_segment_sos_report_t(
+        float hit_t,
+        double slope,
+        const GpuRayjoinCdbSegment segment,
+        unsigned int query_map_id)
+{
+    (void)segment;
+    const double t_edge = hit_t > 0.0f ? static_cast<double>(hit_t) : 0.0;
+    const double factor = t_edge > 1.0 ? t_edge : 1.0;
+    const double tie_breaker = directed_segment_sos_tie_breaker(slope, query_map_id);
+    const double adjusted = t_edge + factor * (1.0 - tie_breaker) * 1.0e-14;
+    float reported = static_cast<float>(adjusted);
+    if (reported <= hit_t) {
+        const unsigned int max_steps = 32u;
+        const unsigned int steps =
+            1u + static_cast<unsigned int>((1.0 - tie_breaker) * static_cast<double>(max_steps));
+        const unsigned int bits = __float_as_uint(hit_t);
+        if ((bits & 0x80000000u) == 0u && (bits & 0x7f800000u) != 0x7f800000u) {
+            reported = __uint_as_float(bits + steps);
+        } else {
+            reported = nextafterf(hit_t, 3.402823466e38F);
+        }
+    }
+    return reported;
+}
+
+static __forceinline__ __device__ double unpack_double_payload(unsigned int lo, unsigned int hi) {
+    const unsigned long long bits =
+        (static_cast<unsigned long long>(hi) << 32) | static_cast<unsigned long long>(lo);
+    return __longlong_as_double(static_cast<long long>(bits));
+}
+
+static __forceinline__ __device__ void pack_double_payload(
+        double value,
+        unsigned int* lo,
+        unsigned int* hi) {
+    const unsigned long long bits = static_cast<unsigned long long>(__double_as_longlong(value));
+    *lo = static_cast<unsigned int>(bits & 0xffffffffull);
+    *hi = static_cast<unsigned int>(bits >> 32);
 }
 
 static __forceinline__ __device__ double rayjoin_cdb_segment_slope_scaled(
@@ -1285,6 +1464,7 @@ static __forceinline__ __device__ bool vertical_ray_segment_scaled(
         const GpuRayjoinCdbPoint point,
         const GpuRayjoinCdbSegment segment,
         unsigned int query_map_id,
+        double scale_rry,
         double* hit_y_out,
         float* report_t_out,
         double* slope_out)
@@ -1317,7 +1497,9 @@ static __forceinline__ __device__ bool vertical_ray_segment_scaled(
         return false;
     }
     *hit_y_out = xsect_y;
-    *report_t_out = fmaxf(0.0f, static_cast<float>(xsect_y - static_cast<double>(point.sy)));
+    *report_t_out = fmaxf(
+        0.0f,
+        static_cast<float>((xsect_y - static_cast<double>(point.sy)) * scale_rry));
     *slope_out = static_cast<double>(line.a) / static_cast<double>(line.b);
     return true;
 }
@@ -1458,17 +1640,22 @@ extern "C" __global__ void __raygen__rayjoin_cdb_point_location() {
                p0, p1, p2, p3);
     if (p3 != 0xffffffffu) {
         const GpuRayjoinCdbSegment segment = params.segments[p3];
-        const unsigned int face_id = face_for_segment_direction(segment);
+        const unsigned int segment_id = params.canonical_segment_ids != nullptr
+            ? params.canonical_segment_ids[p3]
+            : segment.id;
+        const unsigned int face_id = params.canonical_face_ids != nullptr
+            ? params.canonical_face_ids[p3]
+            : face_for_segment_direction(segment);
         best_y = unpack_double_payload(p1, p2);
         if (params.output != nullptr) {
             params.output[idx].face_id = face_id;
-            params.output[idx].segment_id = segment.id;
+            params.output[idx].segment_id = segment_id;
             params.output[idx].hit_t = point.has_scaled
                 ? fmaxf(0.0f, static_cast<float>(best_y - static_cast<double>(point.sy)))
                 : static_cast<float>(best_y);
         }
         if (params.segment_id_output != nullptr) {
-            params.segment_id_output[idx] = segment.id;
+            params.segment_id_output[idx] = segment_id;
         }
         if (params.face_id_output != nullptr) {
             params.face_id_output[idx] = face_id;
@@ -1493,6 +1680,7 @@ extern "C" __global__ void __intersection__rayjoin_cdb_point_location() {
     unsigned int best_segment_index = optixGetPayload_3();
     bool report = false;
     float report_t = 0.0f;
+    double report_slope = 0.0;
     for (unsigned int segment_index = range.begin; segment_index < range.end; ++segment_index) {
         const GpuRayjoinCdbSegment segment = params.segments[segment_index];
         float t = 0.0f;
@@ -1501,7 +1689,8 @@ extern "C" __global__ void __intersection__rayjoin_cdb_point_location() {
         if (point.has_scaled != 0u && segment.has_scaled != 0u) {
             double hit_y = 0.0;
             double exact_slope = 0.0;
-            if (!vertical_ray_segment_scaled(point, segment, query_map_id, &hit_y, &t, &exact_slope)) {
+            if (!vertical_ray_segment_scaled(
+                    point, segment, query_map_id, params.scale_rry, &hit_y, &t, &exact_slope)) {
                 continue;
             }
             if (hit_y < best_y) {
@@ -1510,15 +1699,16 @@ extern "C" __global__ void __intersection__rayjoin_cdb_point_location() {
                 if (best_segment_index == 0xffffffffu) {
                     better = true;
                 } else {
-                    const double best_slope =
-                        rayjoin_cdb_segment_slope_scaled(params.segments[best_segment_index]);
-                    const bool current_slope_gt = exact_slope > best_slope;
-                    better = query_map_id == 0u ? !current_slope_gt : current_slope_gt;
+                    const GpuRayjoinCdbSegment best_segment = params.segments[best_segment_index];
+                    const double best_slope = rayjoin_cdb_segment_slope_scaled(best_segment);
+                    better = directed_segment_sos_segment_is_better(
+                        exact_slope, best_slope, segment, best_segment, query_map_id);
                 }
             }
             if (better) {
                 best_y = hit_y;
                 report_t = t;
+                report_slope = exact_slope;
             }
         } else {
             if (!vertical_ray_segment_t(point, segment, query_map_id, &t, &slope)) {
@@ -1529,19 +1719,27 @@ extern "C" __global__ void __intersection__rayjoin_cdb_point_location() {
             } else if (cdb_absf(t - static_cast<float>(best_y)) <= eps) {
                 if (best_segment_index == 0xffffffffu) {
                     better = true;
-                } else if (query_map_id == 0u &&
-                           slope < rayjoin_cdb_segment_slope_world(params.segments[best_segment_index]) - eps) {
-                    better = true;
-                } else if (query_map_id != 0u &&
-                           slope > rayjoin_cdb_segment_slope_world(params.segments[best_segment_index]) + eps) {
-                    better = true;
                 } else if (best_segment_index != 0xffffffffu) {
-                    better = segment.id < params.segments[best_segment_index].id;
+                    const GpuRayjoinCdbSegment best_segment = params.segments[best_segment_index];
+                    const float best_slope = rayjoin_cdb_segment_slope_world(best_segment);
+                    if (query_map_id == 0u && slope > best_slope + eps) {
+                        better = true;
+                    } else if (query_map_id != 0u && slope < best_slope - eps) {
+                        better = true;
+                    } else if (cdb_absf(slope - best_slope) <= eps) {
+                        better = directed_segment_sos_segment_is_better(
+                            static_cast<double>(slope),
+                            static_cast<double>(best_slope),
+                            segment,
+                            best_segment,
+                            query_map_id);
+                    }
                 }
             }
             if (better) {
                 best_y = static_cast<double>(t);
                 report_t = t;
+                report_slope = static_cast<double>(slope);
             }
         }
         if (better) {
@@ -1554,9 +1752,12 @@ extern "C" __global__ void __intersection__rayjoin_cdb_point_location() {
         optixSetPayload_1(best_y_lo);
         optixSetPayload_2(best_y_hi);
         optixSetPayload_3(best_segment_index);
-        const float accepted_t = params.allow_equal_ties != 0u
-            ? nextafterf(report_t, 3.402823466e38F)
-            : report_t;
+        const float accepted_t =
+            directed_segment_sos_report_t(
+                report_t,
+                report_slope,
+                params.segments[best_segment_index],
+                query_map_id);
         optixReportIntersection(accepted_t, 0u);
     }
 }
@@ -8016,6 +8217,8 @@ static RayAnyHitPipeline    g_raytriangle_hitstream3d;
 static RayAnyHitPipeline    g_raytriangle_hitstream_device_columns3d;
 static RayAnyHitPipeline    g_rayanyhit_count;
 static RayAnyHitPipeline    g_aabb_index_count;
+static RayAnyHitPipeline    g_aabb_index_count3d;
+static RayAnyHitPipeline    g_cell_mbr_frontier3d;
 static RayAnyHitPipeline    g_rayanyhit_count_device_ray_columns;
 static RayAnyHitPipeline    g_rayanyhit_count_device_columns;
 static RayAnyHitPipeline    g_rayanyhit_flags_device_columns;

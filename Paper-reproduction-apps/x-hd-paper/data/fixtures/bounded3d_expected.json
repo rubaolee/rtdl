@@ -1,0 +1,11 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.expected_hausdorff.v1",
+  "fixture": "bounded3d",
+  "n_dims": 3,
+  "point_count_a": 9,
+  "point_count_b": 8,
+  "directed_a_to_b": 2.0,
+  "directed_b_to_a": 0.1,
+  "hausdorff": 2.0,
+  "note": "A is the unit-cube vertices plus one outlier at (3,1,1). B is the unit-cube vertices with one 0.1 perturbation. The A outlier contributes the Hausdorff maximum 2.0."
+}

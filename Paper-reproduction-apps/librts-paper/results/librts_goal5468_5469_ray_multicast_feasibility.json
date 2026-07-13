@@ -1,0 +1,312 @@
+{
+  "schema": "rtdl.paper_reproduction.librts.ray_multicast_feasibility.v2",
+  "status": "generic_contract_and_non_librts_consumer_complete__native_optix_pod_spike_authorized__review_pending",
+  "goals": [
+    5468,
+    5469
+  ],
+  "author_source_manifest": {
+    "schema": "rtdl.paper_reproduction.librts.ray_multicast_source_manifest.v1",
+    "paper": {
+      "title": "LibRTS: A Spatial Indexing Library by Ray Tracing",
+      "official_pdf": "https://gengl.me/public/publications/ppopp25.pdf",
+      "section": "3.4 Ray Multicast for Load Balancing",
+      "figure": "Figure 5",
+      "equations": [
+        3,
+        4,
+        5
+      ],
+      "publication_pages": [
+        401,
+        402
+      ]
+    },
+    "source": {
+      "repository": "https://github.com/RTSpatial/RTSpatial",
+      "commit": "7c54c181b1058c87768767998c00e225cc58666e",
+      "files": [
+        {
+          "path": "include/rtspatial/spatial_index.cuh",
+          "sha256": "93d504254a07721c2ccc20294c2b73a351c27ac728ddc5b9740c40d4d8438e8e",
+          "anchors": [
+            "IntersectsWhatQueryProfiling lines 566-683",
+            "CalculateBestParallelism lines 690-759"
+          ]
+        },
+        {
+          "path": "src/shaders/shaders_intersects_envelope_query_2d.cu",
+          "sha256": "1f1dc0507bfc2abb813d17c23ae39914f358b466caf4a3e9ced52354c91faea2",
+          "anchors": [
+            "backward intersection lines 76-96",
+            "backward raygen lines 98-127"
+          ]
+        },
+        {
+          "path": "examples/spatial_index.cu",
+          "sha256": "20d3e025da57857beedf24682a22b5cdd72aeff69f48cdd02da780859b58f0dd",
+          "anchors": [
+            "parallelism selection and override lines 101-111"
+          ]
+        },
+        {
+          "path": "examples/flags.cpp",
+          "sha256": "991b26a9854b06125de1711d83686d3d3a4eebd933e2acc5f041de0e67098165",
+          "anchors": [
+            "parallelism flag line 10"
+          ]
+        }
+      ]
+    },
+    "mechanism": {
+      "scope": "range-intersects backward casting only",
+      "primitive_partition": "prepared query AABBs use stable ordinal modulo k",
+      "disjoint_encoding": "query AABBs are placed in z layers equal to ordinal modulo k",
+      "ray_fanout": "each indexed geometry anti-diagonal is launched once per layer",
+      "layer_filter": "payload layer must equal primitive ordinal modulo launch dimension y",
+      "coverage": "every primitive belongs to one layer and every ray visits every layer",
+      "parameter_selection": "sample pair selectivity and search power-of-two k values with a weighted ray-cast/intersection cost model"
+    },
+    "claim_boundary": {
+      "author_behavior_reimplemented": false,
+      "native_backend_implemented": false,
+      "runtime_speedup_measured": false,
+      "figure9_reproduced": false,
+      "full_paper_reproduction_claimed": false,
+      "embree_in_scope": false
+    }
+  },
+  "existing_rtdl_assets": [
+    "generic prepared OptiX AABB index",
+    "prepared box-query GAS",
+    "two-pass range-intersection count and pair-row output",
+    "prepared multi-operation query execution on independent streams",
+    "generic sorted and duplicate-free query/indexed id pair rows"
+  ],
+  "missing_native_capabilities": [
+    "partition-id encoding into disjoint traversal layers",
+    "per-ray partition fanout in a two-dimensional OptiX launch",
+    "partition-id payload filtering in the intersection program",
+    "per-ray intersection-load telemetry",
+    "native sampled-selectivity fanout selection"
+  ],
+  "historical_non_equivalences": [
+    "query batching does not partition one traversal workload",
+    "multiple CUDA streams do not bound intersections handled by one ray",
+    "prepared query replay does not create disjoint traversal layers",
+    "status worklists and deferred queues are dynamic scheduling, not static layer fanout"
+  ],
+  "generic_reference_contract": {
+    "fanout": {
+      "columns": {
+        "primitive_ids": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "primitive_partition_ids": [
+          0,
+          1,
+          2,
+          3,
+          0,
+          1,
+          2,
+          3,
+          0,
+          1,
+          2,
+          3,
+          0,
+          1,
+          2,
+          3
+        ],
+        "fanout_ray_ids": [
+          100,
+          100,
+          100,
+          100,
+          101,
+          101,
+          101,
+          101,
+          102,
+          102,
+          102,
+          102,
+          103,
+          103,
+          103,
+          103
+        ],
+        "fanout_partition_ids": [
+          0,
+          1,
+          2,
+          3,
+          0,
+          1,
+          2,
+          3,
+          0,
+          1,
+          2,
+          3,
+          0,
+          1,
+          2,
+          3
+        ],
+        "partition_loads": [
+          4,
+          4,
+          4,
+          4
+        ]
+      },
+      "metadata": {
+        "contract": "generic_partitioned_traversal_fanout_v1",
+        "app_semantics": "none",
+        "execution": "python_reference",
+        "native_backend": false,
+        "partition_count": 4,
+        "primitive_count": 16,
+        "ray_count": 4,
+        "fanout_ray_count": 16,
+        "max_primitives_per_partition": 4,
+        "cartesian_pair_count": 64,
+        "partitioned_pair_count": 64,
+        "complete_pair_coverage_by_construction": true,
+        "duplicate_pair_coverage_by_construction": false,
+        "runtime_speedup_claimed": false
+      }
+    },
+    "sampled_selectivity": 0.125,
+    "cost_model": {
+      "selected_partition_count": 128,
+      "cost_rows": [
+        {
+          "partition_count": 1,
+          "ray_cast_cost": 20480.0,
+          "intersection_cost": 51200000.0,
+          "weighted_cost": 40964096.0
+        },
+        {
+          "partition_count": 2,
+          "ray_cast_cost": 40960.0,
+          "intersection_cost": 25600000.0,
+          "weighted_cost": 20488192.0
+        },
+        {
+          "partition_count": 4,
+          "ray_cast_cost": 81920.0,
+          "intersection_cost": 12800000.0,
+          "weighted_cost": 10256384.0
+        },
+        {
+          "partition_count": 8,
+          "ray_cast_cost": 163840.0,
+          "intersection_cost": 6400000.0,
+          "weighted_cost": 5152768.0
+        },
+        {
+          "partition_count": 16,
+          "ray_cast_cost": 327680.0,
+          "intersection_cost": 3200000.0,
+          "weighted_cost": 2625536.0
+        },
+        {
+          "partition_count": 32,
+          "ray_cast_cost": 655360.0,
+          "intersection_cost": 1600000.0,
+          "weighted_cost": 1411072.0
+        },
+        {
+          "partition_count": 64,
+          "ray_cast_cost": 1310720.0,
+          "intersection_cost": 800000.0,
+          "weighted_cost": 902144.0
+        },
+        {
+          "partition_count": 128,
+          "ray_cast_cost": 2621440.0,
+          "intersection_cost": 400000.0,
+          "weighted_cost": 844287.9999999999
+        }
+      ],
+      "metadata": {
+        "contract": "generic_partitioned_traversal_cost_model_v1",
+        "app_semantics": "none",
+        "ray_count": 4096,
+        "primitive_count": 100000,
+        "selectivity": 0.125,
+        "intersection_cost_weight": 0.8,
+        "candidate_partition_counts": [
+          1,
+          2,
+          4,
+          8,
+          16,
+          32,
+          64,
+          128
+        ],
+        "search_cost_model": "log10_primitive_count",
+        "runtime_speedup_claimed": false
+      }
+    },
+    "native_backend": false,
+    "runtime_speedup_claimed": false
+  },
+  "genericity_gate": {
+    "generic_capability_produced": true,
+    "capability": "partitioned traversal fanout plan and configurable cost selector",
+    "requires_app_identity_in_core": false,
+    "non_app_consumer": "contact-manifold broad-phase scheduling test",
+    "non_app_consumer_complete": true,
+    "falsifiable_static_metric": "max primitives assigned to one partition must fall from N to ceil(N/k)",
+    "falsifiable_pod_metric": "exact pair rows must match baseline and candidate end-to-end time must beat k=1",
+    "kill_gate": "pass_for_bounded_native_spike"
+  },
+  "next_pod_gate": {
+    "authorized": true,
+    "scope": "generic OptiX partitioned range-intersection spike only",
+    "required_controls": [
+      "same prepared boxes and query boxes",
+      "k=1 baseline",
+      "at least two power-of-two k candidates",
+      "exact canonical pair-row equality",
+      "per-partition and maximum per-ray hit telemetry",
+      "fresh and prepared timings reported separately",
+      "contact-manifold non-app smoke"
+    ],
+    "stop_conditions": [
+      "pair-row mismatch",
+      "host-side partition traversal in measured body",
+      "no same-POD end-to-end win over k=1 on a skewed workload",
+      "app identity required by native ABI"
+    ]
+  },
+  "claim_boundary": {
+    "native_backend_implemented": false,
+    "runtime_speedup_measured": false,
+    "author_equivalence_claimed": false,
+    "figure9_reproduced": false,
+    "full_paper_reproduction_claimed": false,
+    "embree_in_scope": false
+  }
+}

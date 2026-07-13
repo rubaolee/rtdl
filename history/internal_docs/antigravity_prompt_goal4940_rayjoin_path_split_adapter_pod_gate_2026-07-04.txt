@@ -1,0 +1,25 @@
+Please perform an independent technical review of Goal4940 in the RTDL workspace.
+
+Read:
+
+- history/internal_docs/call_for_review_goal4940_rayjoin_path_split_adapter_pod_gate_2026-07-04.md
+- history/internal_docs/goal4940_rayjoin_path_split_adapter_pod_gate_2026-07-04.md
+- history/internal_docs/goal4940_pod_artifacts/summary.json
+- history/internal_docs/goal4940_pod_artifacts/section57_overlay_plain.json
+- history/internal_docs/goal4940_pod_artifacts/section57_overlay_path_split.json
+- src/rtdsl/output_assembly.py
+- tests/goal4939_grouped_path_split_records_test.py
+
+Answer all six review questions from the call-for-review file.
+
+Write the review to:
+
+history/internal_docs/antigravity_goal4940_rayjoin_path_split_adapter_pod_gate_review_2026-07-04.md
+
+Use one of these verdict labels:
+
+- approve_goal4940_byte_equal_but_not_faster_stop
+- redo_goal4940_due_to_missing_evidence
+- reject_goal4940_interpretation
+
+Be strict: byte-equal is not enough. If the same-run writer gate failed, no speedup claim is authorized and the slower RayJoin app route must not be retained.

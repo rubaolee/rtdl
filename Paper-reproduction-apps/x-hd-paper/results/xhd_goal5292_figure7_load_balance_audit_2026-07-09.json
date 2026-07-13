@@ -1,0 +1,503 @@
+{
+  "author_script_contract": {
+    "draw_lb": {
+      "expected_log_dirs": [
+        "logs/lb_comparison/lb_0/geo",
+        "logs/lb_comparison/lb_256/geo",
+        "logs/lb_comparison/lb_0/graphics",
+        "logs/lb_comparison/lb_256/graphics"
+      ],
+      "expects_geo": true,
+      "expects_graphics": true,
+      "iteration_fields_used": [
+        "AdjustBVHTime",
+        "CUDATime",
+        "RTTime",
+        "Hits",
+        "ComparedPoints"
+      ],
+      "speedup_formula": "NoLB.RTShader / (LB.RTShader + LB.LBKernel)",
+      "stacked_components": [
+        "BVHBuildup",
+        "LBKernel",
+        "RTShader"
+      ]
+    },
+    "mismatch_note": "draw_lb.py expects both geo and graphics lb_comparison logs, but run_lb.sh at the pinned main commit lists only graphics pairs.",
+    "run_lb": {
+      "check_flag_present": true,
+      "execution": "gpu",
+      "graphics_pair_count": 4,
+      "graphics_pairs": [
+        {
+          "input1": "dragon.ply",
+          "input2": "asian_dragon.ply"
+        },
+        {
+          "input1": "thai_statuette.ply",
+          "input2": "happy_buddha.ply"
+        },
+        {
+          "input1": "dragon.ply",
+          "input2": "happy_buddha.ply"
+        },
+        {
+          "input1": "thai_statuette.ply",
+          "input2": "asian_dragon.ply"
+        }
+      ],
+      "lb_values": [
+        0,
+        256
+      ],
+      "normalize": "false",
+      "output_pattern": "logs/lb_comparison/lb_${lb}/{out_prefix}/{name1}_{name2}.json",
+      "profiling_flag_present": true,
+      "script_lists_geo_pairs": false,
+      "script_lists_graphics_pairs": true,
+      "variant": "rt"
+    },
+    "script_draw_contract_mismatch": true
+  },
+  "checked_in_log_evidence": {
+    "interpretation": "run_all rt_gpu logs contain per-iteration RTTime/CUDATime/OffloadingSize fields for geo and graphics, but they are LB=256 records only and do not provide the lb=0 vs lb=256 matrix that draw_lb.py requires for Figure 7.",
+    "lb_comparison": {
+      "complete_lb0_lb256_matrix_present": false,
+      "per_expected_dir_json_count": {
+        "expr\\logs\\lb_comparison\\lb_0\\geo": 0,
+        "expr\\logs\\lb_comparison\\lb_0\\graphics": 0,
+        "expr\\logs\\lb_comparison\\lb_256\\geo": 0,
+        "expr\\logs\\lb_comparison\\lb_256\\graphics": 0
+      },
+      "total_json_count": 0
+    },
+    "run_all_rt_gpu": {
+      "by_category": {
+        "geo": {
+          "lb_values": [
+            256
+          ],
+          "record_count": 3,
+          "records": [
+            {
+              "avg_time_ms": 100.604,
+              "category": "geo",
+              "file_name": "dtl_cnty.wkt_uszipcode.wkt.json",
+              "has_adjust_bvh_time": true,
+              "has_cuda_time": true,
+              "has_offloading_size": true,
+              "has_rt_time": true,
+              "hd_result": 0.4093780517578125,
+              "input_basenames": [
+                "dtl_cnty.wkt",
+                "uszipcode.wkt"
+              ],
+              "iteration_count_first_repeat": 12,
+              "lb": 256,
+              "num_points": [
+                9438045,
+                43952878
+              ],
+              "profiling": false,
+              "repeat_count": 5
+            },
+            {
+              "avg_time_ms": 783.4268,
+              "category": "geo",
+              "file_name": "lakes.bz2.wkt_parks.bz2.wkt.json",
+              "has_adjust_bvh_time": true,
+              "has_cuda_time": true,
+              "has_offloading_size": true,
+              "has_rt_time": true,
+              "hd_result": 55.734275817871094,
+              "input_basenames": [
+                "lakes.bz2.wkt",
+                "parks.bz2.wkt"
+              ],
+              "iteration_count_first_repeat": 58,
+              "lb": 256,
+              "num_points": [
+                301704289,
+                403688408
+              ],
+              "profiling": false,
+              "repeat_count": 5
+            },
+            {
+              "avg_time_ms": 84.4008,
+              "category": "geo",
+              "file_name": "USADetailedWaterBodies.wkt_USACensusBlockGroupBoundaries.wkt.json",
+              "has_adjust_bvh_time": true,
+              "has_cuda_time": true,
+              "has_offloading_size": true,
+              "has_rt_time": true,
+              "hd_result": 0.8964367508888245,
+              "input_basenames": [
+                "USADetailedWaterBodies.wkt",
+                "USACensusBlockGroupBoundaries.wkt"
+              ],
+              "iteration_count_first_repeat": 14,
+              "lb": 256,
+              "num_points": [
+                22818694,
+                52271340
+              ],
+              "profiling": false,
+              "repeat_count": 5
+            }
+          ],
+          "records_with_iteration_profiling": 3
+        },
+        "graphics": {
+          "lb_values": [
+            256
+          ],
+          "record_count": 4,
+          "records": [
+            {
+              "avg_time_ms": 17.260399999999997,
+              "category": "graphics",
+              "file_name": "dragon.ply_asian_dragon.ply.json",
+              "has_adjust_bvh_time": true,
+              "has_cuda_time": true,
+              "has_offloading_size": true,
+              "has_rt_time": true,
+              "hd_result": 0.06536811590194702,
+              "input_basenames": [
+                "dragon.ply",
+                "asian_dragon.ply"
+              ],
+              "iteration_count_first_repeat": 5,
+              "lb": 256,
+              "num_points": [
+                437645,
+                3609600
+              ],
+              "profiling": false,
+              "repeat_count": 5
+            },
+            {
+              "avg_time_ms": 3.2227999999999994,
+              "category": "graphics",
+              "file_name": "dragon.ply_happy_buddha.ply.json",
+              "has_adjust_bvh_time": true,
+              "has_cuda_time": true,
+              "has_offloading_size": true,
+              "has_rt_time": true,
+              "hd_result": 0.12572969496250153,
+              "input_basenames": [
+                "dragon.ply",
+                "happy_buddha.ply"
+              ],
+              "iteration_count_first_repeat": 2,
+              "lb": 256,
+              "num_points": [
+                437645,
+                543652
+              ],
+              "profiling": false,
+              "repeat_count": 5
+            },
+            {
+              "avg_time_ms": 10.515199999999998,
+              "category": "graphics",
+              "file_name": "thai_statuette.ply_asian_dragon.ply.json",
+              "has_adjust_bvh_time": true,
+              "has_cuda_time": true,
+              "has_offloading_size": true,
+              "has_rt_time": true,
+              "hd_result": 0.28763845562934875,
+              "input_basenames": [
+                "thai_statuette.ply",
+                "asian_dragon.ply"
+              ],
+              "iteration_count_first_repeat": 2,
+              "lb": 256,
+              "num_points": [
+                4999996,
+                3609600
+              ],
+              "profiling": false,
+              "repeat_count": 5
+            },
+            {
+              "avg_time_ms": 17.3556,
+              "category": "graphics",
+              "file_name": "thai_statuette.ply_happy_buddha.ply.json",
+              "has_adjust_bvh_time": true,
+              "has_cuda_time": true,
+              "has_offloading_size": true,
+              "has_rt_time": true,
+              "hd_result": 0.21912434697151184,
+              "input_basenames": [
+                "thai_statuette.ply",
+                "happy_buddha.ply"
+              ],
+              "iteration_count_first_repeat": 3,
+              "lb": 256,
+              "num_points": [
+                4999996,
+                543652
+              ],
+              "profiling": false,
+              "repeat_count": 5
+            }
+          ],
+          "records_with_iteration_profiling": 4
+        }
+      },
+      "has_iteration_metrics": true,
+      "has_lb0_records": false,
+      "has_lb256_records": true,
+      "record_count": 7
+    }
+  },
+  "claim_boundary": {
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "lb2048_or_other_substitute_claimed_as_figure7": false,
+    "performance_ratio_claimed": false,
+    "rtdl_author_load_balance_parity_claimed": false
+  },
+  "date": "2026-07-09",
+  "decision": {
+    "author_script_available": true,
+    "current_blocker": "Author source contains Figure 7 scripts, and run_all contains profiling-style iteration fields for LB=256 records, but checked-in lb_comparison lb=0/lb=256 logs are absent. Figure 7 reproduction requires rerunning or reconstructing the author lb_comparison matrix with exact or explicitly Level-B inputs.",
+    "figure7_reproduced": false,
+    "lb_comparison_numeric_matrix_available": false,
+    "next_allowed_steps": [
+      "If exact HDDatasets inputs are available on a POD, run author run_lb.sh or equivalent commands to regenerate lb_comparison logs.",
+      "If exact inputs are unavailable, define a separately named Level-B load-balance diagnostic and do not call it Figure 7 reproduction.",
+      "Only after a value/correctness-clean author lb=0/lb=256 matrix exists should RTDL comparison work begin."
+    ],
+    "run_all_iteration_metrics_available": true,
+    "run_all_lb0_counterpart_available": false
+  },
+  "figure7_prior_mapping": {
+    "available_evidence": [
+      "OSM Lakes-Parks run_all records",
+      "selected graphics run_all records",
+      "author HDResult and Running.AvgTime"
+    ],
+    "coverage_status": "partially_covered_by_run_all_workloads__load_balance_metrics_missing",
+    "figure": "Figure 7",
+    "interpretation": "The large Lakes-Parks workload exists in run_all logs, but load-balance phase metrics are not present in the extracted records.",
+    "missing_evidence": [
+      "RT shader time",
+      "CUDA offload kernel time",
+      "with/without load-balancing phase split",
+      "large geospatial input bytes and hashes"
+    ],
+    "record_summary": {
+      "by_category": {
+        "geo": 5,
+        "graphics": 20
+      },
+      "by_section": {
+        "auto_tune": 10,
+        "eb_gpu": 5,
+        "hybrid_gpu": 5,
+        "rt_gpu": 5
+      },
+      "examples": [
+        {
+          "category": "geo",
+          "config": "n_points_cell_false_max_hit_false",
+          "exact_status": [
+            "author_log_path_known__input_file_not_available"
+          ],
+          "file_pair": "lakes.bz2.wkt -> parks.bz2.wkt",
+          "hd_result": 55.734275817871094,
+          "input_point_counts": [
+            301704289,
+            403688408
+          ],
+          "num_dims": 2,
+          "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/geo/n_points_cell_false_max_hit_false/lakes.bz2.wkt_parks.bz2.wkt.json",
+          "reported_time_median": 1469.257,
+          "running_avg_time": 1467.5124,
+          "section": "auto_tune"
+        },
+        {
+          "category": "geo",
+          "config": "n_points_cell_true_max_hit_true",
+          "exact_status": [
+            "author_log_path_known__input_file_not_available"
+          ],
+          "file_pair": "lakes.bz2.wkt -> parks.bz2.wkt",
+          "hd_result": 55.734275817871094,
+          "input_point_counts": [
+            301704289,
+            403688408
+          ],
+          "num_dims": 2,
+          "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/geo/n_points_cell_true_max_hit_true/lakes.bz2.wkt_parks.bz2.wkt.json",
+          "reported_time_median": 1277.414,
+          "running_avg_time": 1279.2266,
+          "section": "auto_tune"
+        },
+        {
+          "category": "geo",
+          "config": "lakes.bz2.wkt_parks.bz2.wkt.json",
+          "exact_status": [
+            "author_log_path_known__input_file_not_available"
+          ],
+          "file_pair": "lakes.bz2.wkt -> parks.bz2.wkt",
+          "hd_result": 55.734275817871094,
+          "input_point_counts": [
+            301704289,
+            403688408
+          ],
+          "num_dims": 2,
+          "relative_log_path": "expr/for_the_paper/logs/run_all/eb_gpu/geo/lakes.bz2.wkt_parks.bz2.wkt.json",
+          "reported_time_median": 3379.993,
+          "running_avg_time": 3288.1046,
+          "section": "eb_gpu"
+        },
+        {
+          "category": "geo",
+          "config": "lakes.bz2.wkt_parks.bz2.wkt.json",
+          "exact_status": [
+            "author_log_path_known__input_file_not_available"
+          ],
+          "file_pair": "lakes.bz2.wkt -> parks.bz2.wkt",
+          "hd_result": 55.734275817871094,
+          "input_point_counts": [
+            301704289,
+            403688408
+          ],
+          "num_dims": 2,
+          "relative_log_path": "expr/for_the_paper/logs/run_all/hybrid_gpu/geo/lakes.bz2.wkt_parks.bz2.wkt.json",
+          "reported_time_median": 1277.654,
+          "running_avg_time": 1277.0038,
+          "section": "hybrid_gpu"
+        },
+        {
+          "category": "geo",
+          "config": "lakes.bz2.wkt_parks.bz2.wkt.json",
+          "exact_status": [
+            "author_log_path_known__input_file_not_available"
+          ],
+          "file_pair": "lakes.bz2.wkt -> parks.bz2.wkt",
+          "hd_result": 55.734275817871094,
+          "input_point_counts": [
+            301704289,
+            403688408
+          ],
+          "num_dims": 2,
+          "relative_log_path": "expr/for_the_paper/logs/run_all/rt_gpu/geo/lakes.bz2.wkt_parks.bz2.wkt.json",
+          "reported_time_median": 3031.674,
+          "running_avg_time": 3036.1838,
+          "section": "rt_gpu"
+        }
+      ],
+      "record_count": 25,
+      "top_configs": [
+        {
+          "config": "n_points_cell_false_max_hit_false",
+          "record_count": 5
+        },
+        {
+          "config": "n_points_cell_true_max_hit_true",
+          "record_count": 5
+        },
+        {
+          "config": "lakes.bz2.wkt_parks.bz2.wkt.json",
+          "record_count": 3
+        },
+        {
+          "config": "dragon.ply_asian_dragon.ply.json",
+          "record_count": 3
+        },
+        {
+          "config": "dragon.ply_happy_buddha.ply.json",
+          "record_count": 3
+        }
+      ],
+      "top_pairs": [
+        {
+          "file_pair": "lakes.bz2.wkt -> parks.bz2.wkt",
+          "record_count": 5,
+          "sections": [
+            "auto_tune",
+            "eb_gpu",
+            "hybrid_gpu",
+            "rt_gpu"
+          ]
+        },
+        {
+          "file_pair": "dragon.ply -> asian_dragon.ply",
+          "record_count": 5,
+          "sections": [
+            "auto_tune",
+            "eb_gpu",
+            "hybrid_gpu",
+            "rt_gpu"
+          ]
+        },
+        {
+          "file_pair": "dragon.ply -> happy_buddha.ply",
+          "record_count": 5,
+          "sections": [
+            "auto_tune",
+            "eb_gpu",
+            "hybrid_gpu",
+            "rt_gpu"
+          ]
+        },
+        {
+          "file_pair": "thai_statuette.ply -> asian_dragon.ply",
+          "record_count": 5,
+          "sections": [
+            "auto_tune",
+            "eb_gpu",
+            "hybrid_gpu",
+            "rt_gpu"
+          ]
+        },
+        {
+          "file_pair": "thai_statuette.ply -> happy_buddha.ply",
+          "record_count": 5,
+          "sections": [
+            "auto_tune",
+            "eb_gpu",
+            "hybrid_gpu",
+            "rt_gpu"
+          ]
+        }
+      ],
+      "unique_pair_count": 5
+    },
+    "subject": "Load balance / heavy-cell offload effectiveness"
+  },
+  "figure7_target": {
+    "figure": "Figure 7",
+    "required_inputs": [
+      "OSMLakes-OSMParks",
+      "selected graphics pairs"
+    ],
+    "required_metrics": [
+      "RT shader time",
+      "CUDA kernel offload time",
+      "total with and without load balancing"
+    ],
+    "status": "blocked_on_algorithmic_phase_mapping_and_large_geospatial_inputs",
+    "subject": "Load balance / heavy-cell offload effectiveness"
+  },
+  "goal": "Goal5292",
+  "matched": null,
+  "schema": "rtdl.paper_reproduction.xhd.figure7_load_balance_audit.v1",
+  "source_hashes": {
+    "expr/draw_lb.py": "aa6099e27f9c94cdb2ab5b77c3fda05fb821b567eacc3da773392a99adb5ccb7",
+    "expr/run_lb.sh": "8ee483424974f63844bb5d1f9067d54be6cef9295f096c7713db4c1952d2fde2"
+  },
+  "sources": {
+    "author_commit": "7bf41c8442d059c94f4178355c6d5a10571d9658",
+    "author_repo": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\.codex_tmp\\xhd_author_repo",
+    "draw_lb": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\.codex_tmp\\xhd_author_repo\\expr\\draw_lb.py",
+    "paper_target_log_mapping": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_paper_target_log_mapping_goal5177_2026-07-08.json",
+    "paper_target_matrix": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_paper_target_matrix_2026-07-08.json",
+    "run_lb": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\.codex_tmp\\xhd_author_repo\\expr\\run_lb.sh"
+  },
+  "status": "figure7_load_balance_source_audit_ready__figure7_not_reproduced__lb_comparison_logs_missing"
+}

@@ -1,0 +1,55 @@
+{
+  "base": "/workspace/goal4848_rep/current_osm_au/lakes_Australia_current_osm_Point.cdb",
+  "expected": 13622,
+  "filtered_equals_expected": false,
+  "filtered_equals_planar_map_lsi": false,
+  "filtered_row_count": 12508,
+  "first_filtered_rows": [
+    {
+      "intersection_point_x": 153.028346,
+      "intersection_point_y": -27.4794543,
+      "left_id": 165,
+      "right_id": 12767832
+    },
+    {
+      "intersection_point_x": 153.0291335,
+      "intersection_point_y": -27.4797141,
+      "left_id": 168,
+      "right_id": 12767830
+    },
+    {
+      "intersection_point_x": 153.0295482,
+      "intersection_point_y": -27.4796667,
+      "left_id": 169,
+      "right_id": 12767829
+    },
+    {
+      "intersection_point_x": 153.0299165,
+      "intersection_point_y": -27.4797262,
+      "left_id": 170,
+      "right_id": 12767828
+    },
+    {
+      "intersection_point_x": 151.2225386,
+      "intersection_point_y": -33.8444179,
+      "left_id": 337,
+      "right_id": 14112762
+    }
+  ],
+  "planar_map_lsi_count": 13622,
+  "private_bundled_helper_imported": false,
+  "query": "/workspace/goal4848_rep/current_osm_au/parks_Australia_current_osm_Point.cdb",
+  "raw_row_count": 103843,
+  "rejected_or_missing": 91335,
+  "route": "public_raw_segment_pair_rows_plus_user_layer_planar_map_lsi_filter",
+  "runtime_or_native_edits": false,
+  "schema": "rtdl.goal4859.user_layer_planar_map_lsi_filter_probe.v1",
+  "timings_seconds": {
+    "load_and_segment": 49.38303606212139,
+    "public_lsi_count": 21.23734237998724,
+    "raw_rows": 19.947864204645157,
+    "scale_params": 14.600075714290142,
+    "scale_touched_and_python_filter": 0.2831943407654762,
+    "total": 105.4515127018094
+  }
+}

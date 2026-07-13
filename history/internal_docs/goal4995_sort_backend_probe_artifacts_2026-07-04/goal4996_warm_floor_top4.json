@@ -1,0 +1,218 @@
+{
+  "best_writer_free_hot_sec": 0.38730624318122864,
+  "claim_boundary": {
+    "author_comparison_authorized": false,
+    "claim_scope": "Same-process prepared/query-many diagnostic for the writer-free binary operator. It must be reported beside, not instead of, the fresh one-shot route.",
+    "fresh_one_shot_headline": false,
+    "paper_text_route": false,
+    "prepared_operator_session": true,
+    "same_process_prepared_query_many_measurement": true,
+    "warmup_only_headline_authorized": false,
+    "warmup_rows_excluded_from_median": true,
+    "writer_excluded": true
+  },
+  "measured_rows": [
+    {
+      "bounded_exact_lsi_numba_direct_handoff_used": true,
+      "descriptor_pair_count": 15014,
+      "downstream_floor_sec": 1.6343545001000166,
+      "key_phase_seconds": {
+        "grouped_compiled_columnar_carrier_construction_sec": 0.8106802105903625,
+        "grouped_descriptor_pair_count_consumer_sec": 0.01513407938182354,
+        "intersection_reprojection_device_columnar_sec": 0.015922455117106438,
+        "lsi_bounded_exact_pair_id_device_columns_sec": 0.003239057958126068,
+        "sort_map0_device_columnar_sec": 0.04208723083138466,
+        "sort_map1_device_columnar_sec": 0.5841714162379503
+      },
+      "lsi_pair_host_to_device_copy_used": false,
+      "lsi_pair_input_device_resident": true,
+      "lsi_phase_sec": 0.003239057958126068,
+      "lsi_row_count": 428322,
+      "run_index": 1,
+      "run_kind": "measured",
+      "writer_free_hot_sec": 1.6375935580581427
+    },
+    {
+      "bounded_exact_lsi_numba_direct_handoff_used": true,
+      "descriptor_pair_count": 15014,
+      "downstream_floor_sec": 2.024037292227149,
+      "key_phase_seconds": {
+        "grouped_compiled_columnar_carrier_construction_sec": 0.9118117224425077,
+        "grouped_descriptor_pair_count_consumer_sec": 0.01523207500576973,
+        "intersection_reprojection_device_columnar_sec": 0.01636621728539467,
+        "lsi_bounded_exact_pair_id_device_columns_sec": 0.003302937373518944,
+        "sort_map0_device_columnar_sec": 0.04723169468343258,
+        "sort_map1_device_columnar_sec": 0.12605269625782967
+      },
+      "lsi_pair_host_to_device_copy_used": false,
+      "lsi_pair_input_device_resident": true,
+      "lsi_phase_sec": 0.003302937373518944,
+      "lsi_row_count": 428322,
+      "run_index": 2,
+      "run_kind": "measured",
+      "writer_free_hot_sec": 2.027340229600668
+    },
+    {
+      "bounded_exact_lsi_numba_direct_handoff_used": true,
+      "descriptor_pair_count": 15014,
+      "downstream_floor_sec": 1.3761849999427795,
+      "key_phase_seconds": {
+        "grouped_compiled_columnar_carrier_construction_sec": 0.2443819735199213,
+        "grouped_descriptor_pair_count_consumer_sec": 0.014948099851608276,
+        "intersection_reprojection_device_columnar_sec": 0.015498843044042587,
+        "lsi_bounded_exact_pair_id_device_columns_sec": 0.0032347682863473892,
+        "sort_map0_device_columnar_sec": 0.04417935945093632,
+        "sort_map1_device_columnar_sec": 0.11928696744143963
+      },
+      "lsi_pair_host_to_device_copy_used": false,
+      "lsi_pair_input_device_resident": true,
+      "lsi_phase_sec": 0.0032347682863473892,
+      "lsi_row_count": 428322,
+      "run_index": 3,
+      "run_kind": "measured",
+      "writer_free_hot_sec": 1.379419768229127
+    },
+    {
+      "bounded_exact_lsi_numba_direct_handoff_used": true,
+      "descriptor_pair_count": 15014,
+      "downstream_floor_sec": 0.3842076323926449,
+      "key_phase_seconds": {
+        "grouped_compiled_columnar_carrier_construction_sec": 0.11531211249530315,
+        "grouped_descriptor_pair_count_consumer_sec": 0.015126416459679604,
+        "intersection_reprojection_device_columnar_sec": 0.015083534643054008,
+        "lsi_bounded_exact_pair_id_device_columns_sec": 0.0030986107885837555,
+        "sort_map0_device_columnar_sec": 0.041643647477030754,
+        "sort_map1_device_columnar_sec": 0.1274661049246788
+      },
+      "lsi_pair_host_to_device_copy_used": false,
+      "lsi_pair_input_device_resident": true,
+      "lsi_phase_sec": 0.0030986107885837555,
+      "lsi_row_count": 428322,
+      "run_index": 4,
+      "run_kind": "measured",
+      "writer_free_hot_sec": 0.38730624318122864
+    },
+    {
+      "bounded_exact_lsi_numba_direct_handoff_used": true,
+      "descriptor_pair_count": 15014,
+      "downstream_floor_sec": 0.39134027250111103,
+      "key_phase_seconds": {
+        "grouped_compiled_columnar_carrier_construction_sec": 0.12297473289072514,
+        "grouped_descriptor_pair_count_consumer_sec": 0.015165532007813454,
+        "intersection_reprojection_device_columnar_sec": 0.01503712497651577,
+        "lsi_bounded_exact_pair_id_device_columns_sec": 0.0032479818910360336,
+        "sort_map0_device_columnar_sec": 0.047344958409667015,
+        "sort_map1_device_columnar_sec": 0.11978068388998508
+      },
+      "lsi_pair_host_to_device_copy_used": false,
+      "lsi_pair_input_device_resident": true,
+      "lsi_phase_sec": 0.0032479818910360336,
+      "lsi_row_count": 428322,
+      "run_index": 5,
+      "run_kind": "measured",
+      "writer_free_hot_sec": 0.39458825439214706
+    }
+  ],
+  "median_downstream_floor_sec": 1.3761849999427795,
+  "median_lsi_phase_sec": 0.003239057958126068,
+  "median_writer_free_hot_sec": 1.379419768229127,
+  "pair_name": "top4_county_zipcode",
+  "repeat_count": 5,
+  "route": {
+    "bounded_exact_lsi_device_columns": true,
+    "compiled_group": true,
+    "device_columnar": true,
+    "exact_lsi_device_columns": false,
+    "fast_scaled_point_pack": true,
+    "point_location_device_face_columns": true,
+    "prepared_operator_session": true
+  },
+  "schema": "rtdl.paper_reproduction.rayjoin.section57.binary_repeat_protocol.v1",
+  "session_prepare_phase_seconds": {
+    "session_load_pack_left_sec": 2.045892897993326,
+    "session_load_pack_right_sec": 11.761832144111395,
+    "session_prepare_lsi_left_query_sec": 0.08360925316810608,
+    "session_prepare_lsi_right_sec": 1.46970771625638,
+    "session_prepare_point_location_map0_in_map1_sec": 3.399128917604685,
+    "session_prepare_point_location_map1_in_map0_sec": 0.446937907487154,
+    "session_prepare_reprojection_left_segment_device_arrays_sec": 0.026026098057627678,
+    "session_prepare_reprojection_right_segment_device_arrays_sec": 0.15456252358853817,
+    "session_prepare_vertex_points_map0_in_map1_sec": 0.0527406744658947,
+    "session_prepare_vertex_points_map1_in_map0_sec": 0.2947569265961647,
+    "session_shared_bounds_sec": 7.0445239543914795e-06
+  },
+  "structural_consistency": {
+    "descriptor_pair_counts": [
+      15014
+    ],
+    "lsi_row_counts": [
+      428322
+    ],
+    "single_descriptor_pair_count": true,
+    "single_lsi_row_count": true
+  },
+  "warmup_rows": [
+    {
+      "bounded_exact_lsi_numba_direct_handoff_used": true,
+      "descriptor_pair_count": 15014,
+      "downstream_floor_sec": 3.879306137561798,
+      "key_phase_seconds": {
+        "grouped_compiled_columnar_carrier_construction_sec": 1.6149259731173515,
+        "grouped_descriptor_pair_count_consumer_sec": 0.015360601246356964,
+        "intersection_reprojection_device_columnar_sec": 0.007665740326046944,
+        "lsi_bounded_exact_pair_id_device_columns_sec": 2.8857902586460114,
+        "sort_map0_device_columnar_sec": 0.0444708950817585,
+        "sort_map1_device_columnar_sec": 0.25443451292812824
+      },
+      "lsi_pair_host_to_device_copy_used": false,
+      "lsi_pair_input_device_resident": true,
+      "lsi_phase_sec": 2.8857902586460114,
+      "lsi_row_count": 428322,
+      "run_index": 1,
+      "run_kind": "warmup",
+      "writer_free_hot_sec": 6.7650963962078094
+    },
+    {
+      "bounded_exact_lsi_numba_direct_handoff_used": true,
+      "descriptor_pair_count": 15014,
+      "downstream_floor_sec": 2.78429389372468,
+      "key_phase_seconds": {
+        "grouped_compiled_columnar_carrier_construction_sec": 1.4225871227681637,
+        "grouped_descriptor_pair_count_consumer_sec": 0.015249930322170258,
+        "intersection_reprojection_device_columnar_sec": 0.026420800015330315,
+        "lsi_bounded_exact_pair_id_device_columns_sec": 0.010257404297590256,
+        "sort_map0_device_columnar_sec": 0.044535037130117416,
+        "sort_map1_device_columnar_sec": 1.1183535642921925
+      },
+      "lsi_pair_host_to_device_copy_used": false,
+      "lsi_pair_input_device_resident": true,
+      "lsi_phase_sec": 0.010257404297590256,
+      "lsi_row_count": 428322,
+      "run_index": 2,
+      "run_kind": "warmup",
+      "writer_free_hot_sec": 2.79455129802227
+    },
+    {
+      "bounded_exact_lsi_numba_direct_handoff_used": true,
+      "descriptor_pair_count": 15014,
+      "downstream_floor_sec": 2.1567683778703213,
+      "key_phase_seconds": {
+        "grouped_compiled_columnar_carrier_construction_sec": 1.169320909306407,
+        "grouped_descriptor_pair_count_consumer_sec": 0.015069780871272087,
+        "intersection_reprojection_device_columnar_sec": 0.01593814603984356,
+        "lsi_bounded_exact_pair_id_device_columns_sec": 0.003283170983195305,
+        "sort_map0_device_columnar_sec": 0.04976532235741615,
+        "sort_map1_device_columnar_sec": 0.7250502873212099
+      },
+      "lsi_pair_host_to_device_copy_used": false,
+      "lsi_pair_input_device_resident": true,
+      "lsi_phase_sec": 0.003283170983195305,
+      "lsi_row_count": 428322,
+      "run_index": 3,
+      "run_kind": "warmup",
+      "writer_free_hot_sec": 2.1600515488535166
+    }
+  ],
+  "warmup_runs": 3,
+  "worst_writer_free_hot_sec": 2.027340229600668
+}

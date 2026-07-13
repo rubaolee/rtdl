@@ -1,0 +1,144 @@
+{
+  "bootstrap_right_query_points_locator_prepare_sec": 0.4425996392965317,
+  "capacity": 1000000,
+  "decision_inputs": {
+    "descriptor_pair_counts": [
+      15014,
+      15014,
+      15014
+    ],
+    "distinct_query_count": 3,
+    "lsi_row_counts": [
+      428322,
+      428322,
+      428322
+    ],
+    "total_body_sec": [
+      4.828192817047238,
+      1.2059536185115576,
+      1.2354567032307386
+    ],
+    "writer_free_hot_sec_excluding_external_prepares": [
+      4.300445048138499,
+      0.7127733714878559,
+      0.7459944412112236
+    ]
+  },
+  "left": "Paper-reproduction-apps/rayjoin-paper/_data/top4_arcgis/top4_county.cdb",
+  "load_dataset_arrays_sec": 14.077000737190247,
+  "prepare_base_sessions_sec": 5.057712592184544,
+  "query_results": [
+    {
+      "changed_point_count": 8,
+      "label": "distinct_same_domain_overlay_query_1",
+      "prepare_left_point_location_sec": 0.43956857547163963,
+      "prepare_lsi_query_sec": 0.08817919343709946,
+      "run_pipeline_elapsed_sec": 4.335958704352379,
+      "shared_right_query_points_used": true,
+      "summary_compact": {
+        "descriptor_pair_count": 15014,
+        "downstream_floor_sec": 1.2286767698824406,
+        "key_phase_seconds": {
+          "assign_midpoint_faces_map0_columnar_sec": 0.0005283020436763763,
+          "assign_midpoint_faces_map1_columnar_sec": 0.0013267770409584045,
+          "grouped_compiled_columnar_carrier_construction_sec": 0.18061129562556744,
+          "grouped_descriptor_pair_count_consumer_sec": 0.01819419674575329,
+          "intersection_reprojection_device_columnar_sec": 0.5420335475355387,
+          "lsi_bounded_exact_pair_id_device_columns_sec": 3.0717682782560587,
+          "midpoint_pip_map0_sec": 0.0038159526884555817,
+          "midpoint_pip_map1_sec": 0.003737734630703926,
+          "midpoint_points_map0_columnar_sec": 0.017633674666285515,
+          "midpoint_points_map1_columnar_sec": 0.011134345084428787,
+          "sort_map0_device_columnar_sec": 0.23594657704234123,
+          "sort_map1_device_columnar_sec": 0.12123577296733856,
+          "vertex_pip_map0_in_map1_sec": 0.06839382462203503,
+          "vertex_pip_map1_in_map0_sec": 0.024084769189357758
+        },
+        "lsi_phase_sec": 3.0717682782560587,
+        "lsi_row_count": 428322,
+        "writer_free_hot_sec": 4.300445048138499
+      },
+      "total_body_sec_including_query_prepares": 4.828192817047238,
+      "variant_build_sec_not_in_body": 5.0589090045541525,
+      "writer_free_hot_sec_excluding_external_prepares": 4.300445048138499
+    },
+    {
+      "changed_point_count": 8,
+      "label": "distinct_same_domain_overlay_query_2",
+      "prepare_left_point_location_sec": 0.44635344482958317,
+      "prepare_lsi_query_sec": 0.0468268021941185,
+      "run_pipeline_elapsed_sec": 0.7329592108726501,
+      "shared_right_query_points_used": true,
+      "summary_compact": {
+        "descriptor_pair_count": 15014,
+        "downstream_floor_sec": 0.5676843170076609,
+        "key_phase_seconds": {
+          "assign_midpoint_faces_map0_columnar_sec": 0.0005488619208335876,
+          "assign_midpoint_faces_map1_columnar_sec": 0.0006802733987569809,
+          "grouped_compiled_columnar_carrier_construction_sec": 0.095225989818573,
+          "grouped_descriptor_pair_count_consumer_sec": 0.01610766537487507,
+          "intersection_reprojection_device_columnar_sec": 0.1846822313964367,
+          "lsi_bounded_exact_pair_id_device_columns_sec": 0.14508905448019505,
+          "midpoint_pip_map0_sec": 0.0038623418658971786,
+          "midpoint_pip_map1_sec": 0.003914879634976387,
+          "midpoint_points_map0_columnar_sec": 0.014909734949469566,
+          "midpoint_points_map1_columnar_sec": 0.01074487715959549,
+          "sort_map0_device_columnar_sec": 0.031182412058115005,
+          "sort_map1_device_columnar_sec": 0.12118331342935562,
+          "vertex_pip_map0_in_map1_sec": 0.060017380863428116,
+          "vertex_pip_map1_in_map0_sec": 0.024624355137348175
+        },
+        "lsi_phase_sec": 0.14508905448019505,
+        "lsi_row_count": 428322,
+        "writer_free_hot_sec": 0.7127733714878559
+      },
+      "total_body_sec_including_query_prepares": 1.2059536185115576,
+      "variant_build_sec_not_in_body": 5.330566875636578,
+      "writer_free_hot_sec_excluding_external_prepares": 0.7127733714878559
+    },
+    {
+      "changed_point_count": 8,
+      "label": "distinct_same_domain_overlay_query_3",
+      "prepare_left_point_location_sec": 0.44548208452761173,
+      "prepare_lsi_query_sec": 0.043980177491903305,
+      "run_pipeline_elapsed_sec": 0.7643151953816414,
+      "shared_right_query_points_used": true,
+      "summary_compact": {
+        "descriptor_pair_count": 15014,
+        "downstream_floor_sec": 0.6026344019919634,
+        "key_phase_seconds": {
+          "assign_midpoint_faces_map0_columnar_sec": 0.0005511865019798279,
+          "assign_midpoint_faces_map1_columnar_sec": 0.0005450043827295303,
+          "grouped_compiled_columnar_carrier_construction_sec": 0.0939456894993782,
+          "grouped_descriptor_pair_count_consumer_sec": 0.01597721129655838,
+          "intersection_reprojection_device_columnar_sec": 0.20050164498388767,
+          "lsi_bounded_exact_pair_id_device_columns_sec": 0.14336003921926022,
+          "midpoint_pip_map0_sec": 0.003919590264558792,
+          "midpoint_pip_map1_sec": 0.0036962367594242096,
+          "midpoint_points_map0_columnar_sec": 0.014918280765414238,
+          "midpoint_points_map1_columnar_sec": 0.011177359148859978,
+          "sort_map0_device_columnar_sec": 0.040293168276548386,
+          "sort_map1_device_columnar_sec": 0.1329343393445015,
+          "vertex_pip_map0_in_map1_sec": 0.060310740023851395,
+          "vertex_pip_map1_in_map0_sec": 0.02386395074427128
+        },
+        "lsi_phase_sec": 0.14336003921926022,
+        "lsi_row_count": 428322,
+        "writer_free_hot_sec": 0.7459944412112236
+      },
+      "total_body_sec_including_query_prepares": 1.2354567032307386,
+      "variant_build_sec_not_in_body": 5.128572864457965,
+      "writer_free_hot_sec_excluding_external_prepares": 0.7459944412112236
+    }
+  ],
+  "regime_under_test": "prepared_base_same_scale_domain_distinct_query_batches_full_binary_overlay_body",
+  "right": "Paper-reproduction-apps/rayjoin-paper/_data/top4_arcgis/top4_zipcode.cdb",
+  "schema": "rtdl.goal5009.distinct_query_many_overlay_probe.v1",
+  "shared_bounds": [
+    -124.415163,
+    -71.85615,
+    25.837092,
+    45.015851
+  ],
+  "shared_right_query_points_prepare_sec": 0.302949832752347
+}

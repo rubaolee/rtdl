@@ -1,0 +1,11 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.expected_hausdorff.v1",
+  "fixture": "bounded2d",
+  "n_dims": 2,
+  "point_count_a": 10,
+  "point_count_b": 9,
+  "directed_a_to_b": 2.0,
+  "directed_b_to_a": 0.10000000000000009,
+  "hausdorff": 2.0,
+  "note": "A is a 3x3 grid plus one outlier at (4,1). B is a slightly perturbed grid containing (2,1), so the A outlier contributes the Hausdorff maximum 2.0."
+}

@@ -1,0 +1,24 @@
+{
+  "author": null,
+  "author_comparator_used": false,
+  "boundary": "Bounded same-input RT-DBSCAN core-count comparator gate. It covers the call-1 fixed-radius core predicate count only; it does not claim full DBSCAN labels, exact paper dataset reproduction, or performance.",
+  "bounded_core_count_reproduction_claim_authorized": false,
+  "epsilon": 0.35,
+  "input_path": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\rt-dbscan-paper\\data\\fixtures\\tiny3d_core_count.csv",
+  "matched": null,
+  "min_points": 3,
+  "paper_app": "rt-dbscan-paper",
+  "paper_reproduction_claim_authorized": false,
+  "performance_claim_authorized": false,
+  "point_count": 8,
+  "rtdl": {
+    "backend": "cpu_reference",
+    "core_count": 7,
+    "metadata": {
+      "native_engine_row_contract": "not_called_cpu_reference_only",
+      "rt_core_accelerated": false
+    }
+  },
+  "schema": "rtdl.paper_reproduction.rt_dbscan.authorofficial_core_count_gate.v1",
+  "whole_program_speedup_claim_authorized": false
+}

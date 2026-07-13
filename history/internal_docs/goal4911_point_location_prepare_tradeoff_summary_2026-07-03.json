@@ -1,0 +1,270 @@
+{
+  "left": "/workspace/goal4848_rep/current_osm_au/lakes_Australia_current_osm_Point.cdb",
+  "load_sec": 0.20771758258342743,
+  "right": "/workspace/goal4848_rep/current_osm_au/parks_Australia_current_osm_Point.cdb",
+  "rows": [
+    {
+      "env": {},
+      "label": "default_current",
+      "map0_in_map1": {
+        "destroy_sec": 0.016095153987407684,
+        "face_hash_fnv64": "f2d982e19b845172",
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 14788065,
+          "point_upload": 0.037848348,
+          "positive_face_count": 193846,
+          "row_download": 0.022897052,
+          "traversal": 0.010324408
+        },
+        "point_count": 14788065,
+        "positive_face_count": 193846,
+        "prepare_sec": 1.0727727562189102,
+        "raw_candidate_count": null,
+        "run_sec": 1.1442709788680077
+      },
+      "map1_in_map0": {
+        "destroy_sec": 0.2115935981273651,
+        "face_hash_fnv64": "217ca910d4b1af08",
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 992505,
+          "point_upload": 0.003124148,
+          "positive_face_count": 30538,
+          "row_download": 0.001320666,
+          "traversal": 0.002472592
+        },
+        "point_count": 992505,
+        "positive_face_count": 30538,
+        "prepare_sec": 4.094774477183819,
+        "raw_candidate_count": null,
+        "run_sec": 0.0690571740269661
+      }
+    },
+    {
+      "env": {
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MODE": "fixed8"
+      },
+      "label": "legacy_fixed8",
+      "map0_in_map1": {
+        "candidate_reduction_vs_default": null,
+        "destroy_sec": 0.014486469328403473,
+        "face_hash_fnv64": "f2d982e19b845172",
+        "face_hash_matches_default": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 14788065,
+          "point_upload": 0.037850803,
+          "positive_face_count": 193846,
+          "row_download": 0.022690138,
+          "traversal": 9.800027663
+        },
+        "point_count": 14788065,
+        "positive_face_count": 193846,
+        "prepare_sec": 0.2134701982140541,
+        "raw_candidate_count": null,
+        "run_sec": 10.915362760424614
+      },
+      "map1_in_map0": {
+        "candidate_reduction_vs_default": null,
+        "destroy_sec": 0.2005356252193451,
+        "face_hash_fnv64": "217ca910d4b1af08",
+        "face_hash_matches_default": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 992505,
+          "point_upload": 0.002996345,
+          "positive_face_count": 30538,
+          "row_download": 0.001339471,
+          "traversal": 1.537166908
+        },
+        "point_count": 992505,
+        "positive_face_count": 30538,
+        "prepare_sec": 3.3740985468029976,
+        "raw_candidate_count": null,
+        "run_sec": 1.5873132273554802
+      }
+    },
+    {
+      "env": {
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_AREA_ENLARGE": "1.5",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MAX_SIZE": "8",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MODE": "adaptive"
+      },
+      "label": "adaptive_ms8_e1.5",
+      "map0_in_map1": {
+        "candidate_reduction_vs_default": null,
+        "destroy_sec": 0.015276379883289337,
+        "face_hash_fnv64": "f2d982e19b845172",
+        "face_hash_matches_default": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 14788065,
+          "point_upload": 0.04628302,
+          "positive_face_count": 193846,
+          "row_download": 0.022967475,
+          "traversal": 0.011002675
+        },
+        "point_count": 14788065,
+        "positive_face_count": 193846,
+        "prepare_sec": 0.25248564034700394,
+        "raw_candidate_count": null,
+        "run_sec": 1.142164707183838
+      },
+      "map1_in_map0": {
+        "candidate_reduction_vs_default": null,
+        "destroy_sec": 0.22257805615663528,
+        "face_hash_fnv64": "217ca910d4b1af08",
+        "face_hash_matches_default": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 992505,
+          "point_upload": 0.003117424,
+          "positive_face_count": 30538,
+          "row_download": 0.001315495,
+          "traversal": 0.002737604
+        },
+        "point_count": 992505,
+        "positive_face_count": 30538,
+        "prepare_sec": 4.073098190128803,
+        "raw_candidate_count": null,
+        "run_sec": 0.040261946618556976
+      }
+    },
+    {
+      "env": {
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_AREA_ENLARGE": "1.5",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MAX_ITER": "0",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MODE": "block_merge64"
+      },
+      "label": "block_merge64_i0_e1.5",
+      "map0_in_map1": {
+        "candidate_reduction_vs_default": null,
+        "destroy_sec": 0.014727212488651276,
+        "face_hash_fnv64": "f2d982e19b845172",
+        "face_hash_matches_default": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 14788065,
+          "point_upload": 0.037938709,
+          "positive_face_count": 193846,
+          "row_download": 0.022744452,
+          "traversal": 0.009932695
+        },
+        "point_count": 14788065,
+        "positive_face_count": 193846,
+        "prepare_sec": 0.2614082098007202,
+        "raw_candidate_count": null,
+        "run_sec": 1.1368643715977669
+      },
+      "map1_in_map0": {
+        "candidate_reduction_vs_default": null,
+        "destroy_sec": 0.2265072762966156,
+        "face_hash_fnv64": "217ca910d4b1af08",
+        "face_hash_matches_default": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 992505,
+          "point_upload": 0.003590121,
+          "positive_face_count": 30538,
+          "row_download": 0.001313442,
+          "traversal": 0.002481558
+        },
+        "point_count": 992505,
+        "positive_face_count": 30538,
+        "prepare_sec": 4.325243927538395,
+        "raw_candidate_count": null,
+        "run_sec": 0.035756975412368774
+      }
+    },
+    {
+      "env": {
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_AREA_ENLARGE": "1.5",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MAX_ITER": "1",
+        "RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MODE": "block_merge64"
+      },
+      "label": "block_merge64_i1_e1.5",
+      "map0_in_map1": {
+        "candidate_reduction_vs_default": null,
+        "destroy_sec": 0.014639057219028473,
+        "face_hash_fnv64": "f2d982e19b845172",
+        "face_hash_matches_default": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 14788065,
+          "point_upload": 0.038032988,
+          "positive_face_count": 193846,
+          "row_download": 0.022779579,
+          "traversal": 0.010276307
+        },
+        "point_count": 14788065,
+        "positive_face_count": 193846,
+        "prepare_sec": 0.26767831295728683,
+        "raw_candidate_count": null,
+        "run_sec": 1.1396642550826073
+      },
+      "map1_in_map0": {
+        "candidate_reduction_vs_default": null,
+        "destroy_sec": 0.22016128152608871,
+        "face_hash_fnv64": "217ca910d4b1af08",
+        "face_hash_matches_default": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 992505,
+          "point_upload": 0.003295773,
+          "positive_face_count": 30538,
+          "row_download": 0.001329703,
+          "traversal": 0.002653314
+        },
+        "point_count": 992505,
+        "positive_face_count": 30538,
+        "prepare_sec": 4.43870846927166,
+        "raw_candidate_count": null,
+        "run_sec": 0.03704950213432312
+      }
+    },
+    {
+      "env": {},
+      "label": "default_current_repeat",
+      "map0_in_map1": {
+        "candidate_reduction_vs_default": null,
+        "destroy_sec": 0.01664428412914276,
+        "face_hash_fnv64": "f2d982e19b845172",
+        "face_hash_matches_default": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 14788065,
+          "point_upload": 0.037958727,
+          "positive_face_count": 193846,
+          "row_download": 0.022875551,
+          "traversal": 0.010336752
+        },
+        "point_count": 14788065,
+        "positive_face_count": 193846,
+        "prepare_sec": 0.2603358179330826,
+        "raw_candidate_count": null,
+        "run_sec": 1.1570319011807442
+      },
+      "map1_in_map0": {
+        "candidate_reduction_vs_default": null,
+        "destroy_sec": 0.2145848050713539,
+        "face_hash_fnv64": "217ca910d4b1af08",
+        "face_hash_matches_default": true,
+        "native_timings": {
+          "mode": "rows",
+          "point_count": 992505,
+          "point_upload": 0.003123076,
+          "positive_face_count": 30538,
+          "row_download": 0.001315826,
+          "traversal": 0.00244537
+        },
+        "point_count": 992505,
+        "positive_face_count": 30538,
+        "prepare_sec": 4.042937837541103,
+        "raw_candidate_count": null,
+        "run_sec": 0.03848458081483841
+      }
+    }
+  ],
+  "schema": "rtdl.goal4911.point_location_prepare_tradeoff_probe.v1"
+}

@@ -1,0 +1,11 @@
+{
+  "author_root": "/tmp/xhd-goal5112/author",
+  "changed": {
+    "launch_parameters": true,
+    "rt_impl": true,
+    "shader": true
+  },
+  "marker": "RTDL_GOAL5374_LB_STATUS_TRACE",
+  "patched": true,
+  "schema": "rtdl.paper_reproduction.xhd.goal5374.author_lb_status_trace_instrumentation_patch.v1"
+}

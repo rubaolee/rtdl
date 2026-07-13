@@ -1,0 +1,194 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.full_paper_coverage_gap_matrix.v1",
+  "goal": "Goal5267",
+  "date": "2026-07-09",
+  "status": "full_paper_reproduction_gap_matrix_ready__full_paper_incomplete",
+  "scope": {
+    "purpose": "Map current X-HD RTDL/author evidence to the paper's dataset and Figure 5-11 reproduction requirements after Goals5255-5266.",
+    "does_not_claim": [
+      "full X-HD paper reproduction",
+      "exact paper byte-input identity",
+      "author RT-core algorithm equivalence",
+      "author performance parity",
+      "paper Figure 5-11 reproduction"
+    ]
+  },
+  "current_entrypoint_evidence": {
+    "rtdl_user_entrypoint": "Paper-reproduction-apps/x-hd-paper/scripts/run_xhd_rtdl_hd_exec.py",
+    "status_string": "xhd_public_modelnet40_all400_and_graphics_representatives_hd_exec_entrypoint_complete__full_paper_incomplete",
+    "covered_workloads": [
+      {
+        "name": "ModelNet40 all-400 paper-log pair identities",
+        "level": "Level B public-data author-rerun evidence",
+        "artifact": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5260_modelnet40_all400_hd_exec_batch_exact_witness_pod.json",
+        "correctness": "400/400 matched author rerun within tolerance; per_source_witness_exact=true for all cases",
+        "limits": [
+          "public reconstructed inputs are not proven exact paper byte inputs",
+          "performance denominators are not author-internal parity"
+        ]
+      },
+      {
+        "name": "Dragon -> HappyBuddha",
+        "level": "Level B public same-source representative",
+        "artifact": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5263_dragon_happy_hd_exec_exact_witness_pod.json",
+        "author_hd_result": 0.12572988867759705,
+        "rtdl_hd_result": 0.12572988629271128,
+        "rtdl_route_wall_ms": 620.9204494953156,
+        "per_source_witness_exact": true
+      },
+      {
+        "name": "Dragon -> AsianDragon scaled 1e-3",
+        "level": "Level B public same-source/scaled candidate",
+        "artifact": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5264_dragon_asian_hd_exec_exact_witness_pod.json",
+        "author_hd_result": 0.06536787003278732,
+        "paper_log_hd_result": 0.06536811590194702,
+        "rtdl_hd_result": 0.06536787240753439,
+        "rtdl_route_wall_ms": 2651.0526463389397,
+        "per_source_witness_exact": true
+      },
+      {
+        "name": "ThaiStatuette scaled 1e-3 -> HappyBuddha",
+        "level": "Level B public same-source/scaled candidate",
+        "artifact": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5265_thai_happy_hd_exec_exact_witness_pod.json",
+        "author_hd_result": 0.21912431716918945,
+        "paper_log_hd_result": 0.21912434697151184,
+        "rtdl_hd_result": 0.2191243235042005,
+        "rtdl_route_wall_ms": 5013.226099312305,
+        "per_source_witness_exact": true
+      },
+      {
+        "name": "ThaiStatuette scaled 1e-3 -> AsianDragon scaled 1e-3",
+        "level": "Level B public same-source/scaled candidate",
+        "artifact": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5266_thai_asian_hd_exec_exact_witness_pod.json",
+        "author_hd_result": 0.28763842582702637,
+        "paper_log_hd_result": 0.28763845562934875,
+        "rtdl_hd_result": 0.2876384148709406,
+        "rtdl_route_wall_ms": 10770.01540362835,
+        "per_source_witness_exact": true
+      }
+    ]
+  },
+  "dataset_target_status": [
+    {
+      "dataset": "BraTS",
+      "category": "MRI",
+      "paper_requirement": "494 images / 250 sampled pairs in paper Figure 5-style run_all logs",
+      "current_status": "author logs indexed; exact NIfTI input bytes unavailable; no RTDL full workload gate",
+      "blocking_gap": "BraTS access, exact image list, and author conversion/provenance are unresolved"
+    },
+    {
+      "dataset": "Geospatial families",
+      "category": "Geospatial",
+      "paper_requirement": "USCounty, USZipcode, Lakes, Parks, USWater, USCensus, and large OSM-node derived workloads",
+      "current_status": "author logs indexed for selected pairs; exact converted point files unavailable; no full RTDL gate on paper-scale geospatial inputs",
+      "blocking_gap": "exact source snapshots, conversion rules, and feasible large-input execution plan are unresolved"
+    },
+    {
+      "dataset": "Stanford Graphics",
+      "category": "Graphics",
+      "paper_requirement": "Dragon, HappyBuddha, AsianDragon, ThaiStatuette pair family",
+      "current_status": "public same-source/scaled candidates acquired and four representative hd_exec-compatible gates run",
+      "blocking_gap": "file/hash provenance for exact author paper inputs is still absent; results remain Level B"
+    },
+    {
+      "dataset": "ModelNet40",
+      "category": "ModelNet40 / paper-log workload family",
+      "paper_requirement": "paper-branch log pair identities, all-400 pair set represented in logs",
+      "current_status": "RTDL hd_exec-compatible all-400 gate passed 400/400 with exact witnesses",
+      "blocking_gap": "public reconstructed inputs are not proven exact paper byte-inputs; performance remains denominator-labeled"
+    }
+  ],
+  "figure_status": [
+    {
+      "figure": "Figure 5",
+      "subject": "Overall performance across MRI, geospatial, and graphics datasets",
+      "current_coverage": "partial: author logs cover workload families; RTDL has ModelNet40 all-400 and graphics representative gates",
+      "missing_for_reproduction": [
+        "exact paper input bytes/hashes or accepted exact provenance",
+        "BraTS and geospatial full workload RTDL gates",
+        "denominator-aligned performance matrix on same hardware",
+        "paper baseline timings for all compared algorithms"
+      ],
+      "status": "not_reproduced__partial_level_b_evidence_only"
+    },
+    {
+      "figure": "Figure 6",
+      "subject": "Pruning effectiveness on Dragon-AsianDragon",
+      "current_coverage": "closest next target: Dragon->AsianDragon same-source/scaled entrypoint exists; author run_all logs exist",
+      "missing_for_reproduction": [
+        "No-Opt / EB / EB+Prune / RT-HDIST phase mapping",
+        "intersection counts and visited point-pair counts",
+        "author script or instrumentation mapping for pruning variants",
+        "exact or accepted same-source input provenance"
+      ],
+      "status": "not_reproduced__best_next_algorithmic_figure_target"
+    },
+    {
+      "figure": "Figure 7",
+      "subject": "Load balance / heavy-cell offload effectiveness",
+      "current_coverage": "author logs identify OSM Lakes-Parks and selected graphics workloads",
+      "missing_for_reproduction": [
+        "large geospatial inputs",
+        "RT shader vs CUDA offload phase split",
+        "with/without load-balancing instrumentation",
+        "RTDL equivalent load-balance/offload route"
+      ],
+      "status": "not_reproduced__blocked_on_large_inputs_and_algorithmic_phase_metrics"
+    },
+    {
+      "figure": "Figure 8",
+      "subject": "Radius-growing strategy",
+      "current_coverage": "not covered by current run_all timing logs",
+      "missing_for_reproduction": [
+        "paper-selected workloads",
+        "radius strategy labels and iteration diagnostics",
+        "RTDL equivalent strategy variants"
+      ],
+      "status": "not_reproduced__blocked_on_author_script_mapping"
+    },
+    {
+      "figure": "Figure 9",
+      "subject": "Adaptive grid sizing",
+      "current_coverage": "partial auto_tune logs with observed config labels",
+      "missing_for_reproduction": [
+        "full adaptive-grid sweep semantics",
+        "paper-selected grid-size choices",
+        "RTDL equivalent grid adaptation route"
+      ],
+      "status": "not_reproduced__blocked_on_grid_sweep_semantics"
+    },
+    {
+      "figure": "Figure 10",
+      "subject": "Scalability and overlap sensitivity",
+      "current_coverage": "workload families appear in logs but overlap/scale labels are unresolved",
+      "missing_for_reproduction": [
+        "paper scalability subset generation",
+        "overlap-controlled input generation details",
+        "same-denominator RTDL/author matrix"
+      ],
+      "status": "not_reproduced__blocked_on_dataset_generation_details"
+    },
+    {
+      "figure": "Figure 11",
+      "subject": "Memory footprint",
+      "current_coverage": "not covered by current run_all timing logs",
+      "missing_for_reproduction": [
+        "GPU memory footprint measurements",
+        "author memory accounting boundary",
+        "RTDL matching memory instrumentation"
+      ],
+      "status": "not_reproduced__blocked_on_memory_instrumentation"
+    }
+  ],
+  "recommended_next_goal": {
+    "id": "Goal5268",
+    "title": "Figure 6 pruning-effectiveness phase/counter mapping",
+    "reason": "Figure 6 is the closest substantive next target because Dragon->AsianDragon already has a same-source/scaled RTDL hd_exec gate, author run_all logs, and an established paper-log target. The missing evidence is algorithmic: phase/counter mapping for No-Opt, EB, EB+Prune, and RT-HDIST, not another wrapper gate.",
+    "expected_outputs": [
+      "author source/log mapping for pruning variants",
+      "list of counters available without patching vs requiring instrumentation",
+      "decision whether Figure 6 can be reproduced from existing author logs, patched-author instrumentation, or must remain blocked",
+      "no new performance ratio unless phase boundaries align"
+    ]
+  }
+}

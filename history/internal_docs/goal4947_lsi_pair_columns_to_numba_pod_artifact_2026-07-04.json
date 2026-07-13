@@ -1,0 +1,54 @@
+{
+  "claim_boundary": {
+    "layer1_2_capability_only": true,
+    "rayjoin_app_claim_authorized": false,
+    "speedup_claim_authorized": false,
+    "whole_app_claim_authorized": false
+  },
+  "columns": [
+    "left_id",
+    "right_id"
+  ],
+  "counts": [
+    1,
+    1,
+    2,
+    0
+  ],
+  "counts_match": true,
+  "device_resident_candidate": true,
+  "expected_counts": [
+    1,
+    1,
+    2,
+    0
+  ],
+  "fixture": "small_segment_pair_lsi_candidate_columns",
+  "goal": 4947,
+  "host_rows_materialized_before_partner_handoff": false,
+  "native_device_column_output_proven_on_hardware": true,
+  "native_symbol": "rtdl_optix_prepared_segment_pair_candidate_device_columns",
+  "numba_operation": "segmented_count_i64",
+  "partner_packet_status": "accept",
+  "phase_timing": {
+    "phase_contract_version": "rtdl.partner.v2.4",
+    "phases_sec": {
+      "partner_continuation": 0.03391919200657867
+    },
+    "promoted_performance_path": false,
+    "same_phase_contract_as_basis": false,
+    "source": "run_numba_segmented_count_i64",
+    "validation": {
+      "errors": [],
+      "known_phases": [
+        "partner_continuation"
+      ],
+      "status": "accept"
+    }
+  },
+  "public_speedup_claim_authorized": false,
+  "row_count": 4,
+  "schema": "rtdl.goal4947.lsi_pair_columns_to_numba.v1",
+  "torch_conversion_used": false,
+  "true_zero_copy_claim_authorized": false
+}

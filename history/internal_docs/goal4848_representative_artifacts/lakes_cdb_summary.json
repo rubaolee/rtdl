@@ -1,0 +1,10 @@
+{
+  "claim_boundary": "LSI ring geometry only; no overlay topology or PIP claim",
+  "feature_count": 316399,
+  "input_path": "lakes.geojsonseq",
+  "output_path": "lakes_Australia_current_osm_Point.cdb",
+  "point_count": 14788065,
+  "ring_chain_count": 357910,
+  "skipped_non_polygon": 0,
+  "skipped_short_ring": 0
+}

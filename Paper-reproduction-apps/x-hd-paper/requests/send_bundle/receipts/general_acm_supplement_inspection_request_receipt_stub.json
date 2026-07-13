@@ -1,0 +1,29 @@
+{
+  "channel": null,
+  "claim_boundary": {
+    "exact_equivalence_accepted": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "external_artifacts_acquired": false,
+    "external_response_received": false,
+    "figure5_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false,
+    "pod_execution_claimed": false,
+    "receipt_stub_claimed": true,
+    "request_sent_claimed": false
+  },
+  "expected_response_intake": "If a response arrives, normalize it into Paper-reproduction-apps/x-hd-paper/requests/incoming before running the response inbox gate.",
+  "privacy_notes": "Do not commit private raw correspondence unless the sender permits it.",
+  "raw_message_committed": false,
+  "recipient_or_reviewer": "ACM supplement access holder / owner",
+  "request_id": "general_acm_supplement_inspection_request",
+  "request_path": "Paper-reproduction-apps/x-hd-paper/requests/acm_supplement_inspection_request.md",
+  "request_sha256_at_prepare_time": "013f646400945f88c9ca1744dfd5973201102ffc7124c875c7a7cf9a12789423",
+  "request_sha256_at_send_time": null,
+  "schema": "rtdl.paper_reproduction.xhd.external_request_send_receipt.v1",
+  "sent": false,
+  "sent_at_utc": null,
+  "sent_by": null,
+  "status": "stub_not_a_receipt",
+  "subject_or_thread": null
+}

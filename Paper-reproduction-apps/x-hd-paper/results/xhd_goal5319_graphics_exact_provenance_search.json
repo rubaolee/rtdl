@@ -1,0 +1,304 @@
+{
+  "app_owned_scaled_assets": {
+    "asian_dragon_scaled_1e-3": {
+      "app_owned_conversion": true,
+      "bytes": 43315372,
+      "path": "Paper-reproduction-apps/x-hd-paper/data/external/stanford/asian_dragon_scaled_1e-3.ply",
+      "scale": 0.001,
+      "sha256": "4f98d1f809cfb6dcb448e469fdd94a606de17b45ccb160f5cd1a5423508f01fe",
+      "status": "app_owned_scaled_level_b_candidate_not_author_preprocessing_proof",
+      "vertices": 3609600
+    },
+    "thai_statuette_scaled_1e-3": {
+      "app_owned_conversion": true,
+      "bytes": 60000124,
+      "path": "Paper-reproduction-apps/x-hd-paper/data/external/stanford/thai_statuette_scaled_1e-3.ply",
+      "scale": 0.001,
+      "sha256": "047024cf12fc541634d02612f0d72ea03ef9babb8239f4ca6a1a6a9422da272e",
+      "status": "app_owned_scaled_level_b_candidate_not_author_preprocessing_proof",
+      "vertices": 4999996
+    }
+  },
+  "author_log_path_evidence": {
+    "author_hashes_found": false,
+    "author_preprocessing_script_found": false,
+    "known_point_counts": {
+      "asian_dragon.ply": 3609600,
+      "dragon.ply": 437645,
+      "happy_buddha.ply": 543652,
+      "thai_statuette.ply": 4999996
+    },
+    "paper_paths_observed": [
+      "/local/storage/shared/HDDatasets/graphics/dragon.ply",
+      "/local/storage/shared/HDDatasets/graphics/happy_buddha.ply",
+      "/local/storage/shared/HDDatasets/graphics/asian_dragon.ply",
+      "/local/storage/shared/HDDatasets/graphics/thai_statuette.ply"
+    ],
+    "status": "basenames_and_point_counts_known__author_bytes_hashes_absent"
+  },
+  "claim_boundary": {
+    "author_vs_rtdl_performance_ratio_authorized": false,
+    "exact_paper_dataset_reproduction_complete": false,
+    "figure5_reproduction_complete": false,
+    "full_paper_reproduction_complete": false,
+    "new_author_or_rtdl_performance_run": false,
+    "new_rtdl_route_code_added": false,
+    "provenance_search_complete": true
+  },
+  "date": "2026-07-09",
+  "decision": {
+    "allowed_summary": "Current public Stanford graphics assets provide strong Level-B same-source evidence: three author reruns value-match paper logs and RTDL matches those author reruns on the tested routes. Exact graphics paper-input provenance is still not proven because author files/hashes and author preprocessing/scaling proof are missing; Dragon->Asian remains a no-go under the current public/scaled mapping.",
+    "exit_label": "graphics_exact_provenance_not_found_keep_level_b",
+    "forbidden_summaries": [
+      "Public Stanford graphics files are proven byte-identical to author HDDatasets inputs.",
+      "The app-owned scaled AsianDragon/ThaiStatuette files are proven author preprocessing outputs.",
+      "All four Figure-5 graphics pairs are value-matched.",
+      "Figure 5 graphics is reproduced exactly.",
+      "Author-vs-RTDL graphics performance ratio is authorized."
+    ],
+    "graphics_exact_paper_dataset_reproduction_claimed": false,
+    "graphics_remains_level_b_same_source": true
+  },
+  "exact_dataset_rule": {
+    "level_c_requires_one_of": [
+      "author-provided graphics input files or archives",
+      "author-provided hashes for dragon.ply/happy_buddha.ply/asian_dragon.ply/thai_statuette.ply",
+      "byte-identical regenerated point files from a documented author preprocessing pipeline",
+      "external review accepting public Stanford archives plus documented app-owned scaling as exact-equivalent"
+    ],
+    "not_sufficient": [
+      "matching point counts",
+      "matching public Stanford source family",
+      "matching HDResult alone",
+      "paper-log basenames without bytes/hashes",
+      "app-owned scaled files that value-match author logs but lack author scaling provenance"
+    ]
+  },
+  "goal": "Goal5319",
+  "pair_status": [
+    {
+      "abs_diff_vs_paper_log": 1.9371509552001953e-07,
+      "author_hd_result": 0.12572988867759705,
+      "author_input_point_counts": [
+        437645,
+        543652
+      ],
+      "case_id": "dragon_happy",
+      "input_files_used": [
+        "dragon.ply",
+        "happy_buddha.ply"
+      ],
+      "local_mapping_note": null,
+      "matched_paper_log_value": true,
+      "paper_log_hd_result": 0.12572969496250153,
+      "paper_log_pair": [
+        "dragon.ply",
+        "happy_buddha.ply"
+      ],
+      "paper_log_relative_path": "expr/logs/end2end/rt_gpu/graphics/dragon.ply_happy_buddha.ply.json",
+      "status": "level_b_value_matched"
+    },
+    {
+      "abs_diff_vs_paper_log": 8.715689182281494e-05,
+      "author_hd_result": 0.06545527279376984,
+      "author_input_point_counts": [
+        437645,
+        3609600
+      ],
+      "case_id": "dragon_asian_scaled",
+      "input_files_used": [
+        "dragon.ply",
+        "asian_dragon_scaled_1e-3.ply"
+      ],
+      "local_mapping_note": "author log basename asian_dragon.ply is represented by local scaled public file",
+      "matched_paper_log_value": false,
+      "paper_log_hd_result": 0.06536811590194702,
+      "paper_log_pair": [
+        "dragon.ply",
+        "asian_dragon.ply"
+      ],
+      "paper_log_relative_path": "expr/logs/end2end/rt_gpu/graphics/dragon.ply_asian_dragon.ply.json",
+      "status": "author_value_no_go_current_mapping"
+    },
+    {
+      "abs_diff_vs_paper_log": 2.9802322387695312e-08,
+      "author_hd_result": 0.21912431716918945,
+      "author_input_point_counts": [
+        4999996,
+        543652
+      ],
+      "case_id": "thai_happy_scaled",
+      "input_files_used": [
+        "thai_statuette_scaled_1e-3.ply",
+        "happy_buddha.ply"
+      ],
+      "local_mapping_note": "author log basename thai_statuette.ply is represented by local scaled public file",
+      "matched_paper_log_value": true,
+      "paper_log_hd_result": 0.21912434697151184,
+      "paper_log_pair": [
+        "thai_statuette.ply",
+        "happy_buddha.ply"
+      ],
+      "paper_log_relative_path": "expr/logs/end2end/rt_gpu/graphics/thai_statuette.ply_happy_buddha.ply.json",
+      "status": "level_b_value_matched"
+    },
+    {
+      "abs_diff_vs_paper_log": 2.9802322387695312e-08,
+      "author_hd_result": 0.28763842582702637,
+      "author_input_point_counts": [
+        4999996,
+        3609600
+      ],
+      "case_id": "thai_asian_scaled",
+      "input_files_used": [
+        "thai_statuette_scaled_1e-3.ply",
+        "asian_dragon_scaled_1e-3.ply"
+      ],
+      "local_mapping_note": "author log basenames are represented by local scaled public files",
+      "matched_paper_log_value": true,
+      "paper_log_hd_result": 0.28763845562934875,
+      "paper_log_pair": [
+        "thai_statuette.ply",
+        "asian_dragon.ply"
+      ],
+      "paper_log_relative_path": "expr/logs/end2end/rt_gpu/graphics/thai_statuette.ply_asian_dragon.ply.json",
+      "status": "level_b_value_matched"
+    }
+  ],
+  "provenance_findings": {
+    "author_graphics_files_found": false,
+    "author_graphics_hashes_found": false,
+    "author_scaling_or_preprocessing_proven": false,
+    "byte_identical_regeneration_proven": false,
+    "external_review_accepts_public_graphics_as_exact": false,
+    "public_source_metadata_supports_exact_claim": false,
+    "public_source_metadata_supports_same_source_candidate": true,
+    "public_stanford_archives_exact_equivalence_proven": false,
+    "why_not_exact": [
+      "No author-provided graphics files or author input hashes were found in the local evidence.",
+      "Paper-branch logs provide basenames and point counts, but not bytes, hashes, or preprocessing commands.",
+      "Public Stanford archive hashes prove the local public assets, not that the author used identical bytes.",
+      "AsianDragon and ThaiStatuette value-matched cases require app-owned 1e-3 scaled files; author scaling/preprocessing provenance is not found.",
+      "Dragon->Asian current public/scaled mapping remains an author-value no-go."
+    ]
+  },
+  "public_stanford_assets": {
+    "asian_dragon": {
+      "archive_head": {
+        "content_length": 70527166,
+        "content_type": "application/x-gzip",
+        "etag": "\"436c13c6-43428be-3dfac6743d680\"",
+        "last_modified": "Tue, 20 Jul 2004 20:48:10 GMT",
+        "status": 200,
+        "url": "https://graphics.stanford.edu/data/3Dscanrep/xyzrgb/xyzrgb_dragon.ply.gz"
+      },
+      "archive_sha256": "8aa449f1966cbb50e5896ecc32cf57ab5f0cdfd3c3e37d3e6f60b948997da5c1",
+      "archive_url": "https://graphics.stanford.edu/data/3Dscanrep/xyzrgb/xyzrgb_dragon.ply.gz",
+      "bytes": 137162963,
+      "path": "Paper-reproduction-apps/x-hd-paper/data/external/stanford/asian_dragon.ply",
+      "sha256": "4a31c6b8951b0f9f4b351d183cb5d5d27e2d1a5916b27e6516acfb9a91ad7f85",
+      "status": "public_same_source_asset_not_author_hash",
+      "vertices": 3609600
+    },
+    "dragon_vrip": {
+      "archive_head": {
+        "content_length": 11197764,
+        "content_type": "application/x-gzip",
+        "etag": "\"43710bc2-aadd44-2fc098a065f80\"",
+        "last_modified": "Thu, 15 Aug 1996 00:10:54 GMT",
+        "status": 200,
+        "url": "https://graphics.stanford.edu/pub/3Dscanrep/dragon/dragon_recon.tar.gz"
+      },
+      "archive_sha256": "74ac1d90989c9b1732edee82d57e9ce71452144cf4355f108d8c9c616d28d02f",
+      "archive_url": "https://graphics.stanford.edu/pub/3Dscanrep/dragon/dragon_recon.tar.gz",
+      "bytes": 33831477,
+      "path": "Paper-reproduction-apps/x-hd-paper/data/external/stanford/dragon_recon/dragon_vrip.ply",
+      "sha256": "fea87ff48f2aba22fb53e7b67c3ff3f7b8c2a3b3a0653af62c48bba67c6d5744",
+      "status": "public_same_source_asset_not_author_hash",
+      "vertices": 437645
+    },
+    "happy_vrip": {
+      "archive_head": {
+        "content_length": 14456495,
+        "content_type": "application/x-gzip",
+        "etag": "\"4371104a-dc96af-2fb430db88b40\"",
+        "last_modified": "Mon, 05 Aug 1996 03:22:45 GMT",
+        "status": 200,
+        "url": "https://graphics.stanford.edu/pub/3Dscanrep/happy/happy_recon.tar.gz"
+      },
+      "archive_sha256": "409cd294efbfd8244e15a382b95a9423f153b7776e736c9b09f19ec9d3c10ed0",
+      "archive_url": "https://graphics.stanford.edu/pub/3Dscanrep/happy/happy_recon.tar.gz",
+      "bytes": 42619420,
+      "path": "Paper-reproduction-apps/x-hd-paper/data/external/stanford/happy_recon/happy_vrip.ply",
+      "sha256": "2283371216d748a08376a3c88698e283cc8f18d10ced348d6d133051bcf217ab",
+      "status": "public_same_source_asset_not_author_hash",
+      "vertices": 543652
+    },
+    "thai_statuette": {
+      "archive_head": {
+        "content_length": 106051627,
+        "content_type": "application/x-gzip",
+        "etag": "\"436c13d0-652382b-3dfd0fe9c9c00\"",
+        "last_modified": "Thu, 22 Jul 2004 16:27:28 GMT",
+        "status": 200,
+        "url": "https://graphics.stanford.edu/data/3Dscanrep/xyzrgb/xyzrgb_statuette.ply.gz"
+      },
+      "archive_sha256": "1d867b6540c02935caa777bd6746429a62d4a5d23f11c9bfdfebbaa90c05ca8b",
+      "archive_url": "https://graphics.stanford.edu/data/3Dscanrep/xyzrgb/xyzrgb_statuette.ply.gz",
+      "bytes": 190000131,
+      "path": "Paper-reproduction-apps/x-hd-paper/data/external/stanford/thai_statuette.ply",
+      "sha256": "01470da9fc1241dcb4b075cc057ff6bf88d8dc721ce24b5847b9efdfbb8c0345",
+      "status": "public_same_source_asset_not_author_hash",
+      "vertices": 4999996
+    }
+  },
+  "purpose": "Search whether current public Stanford graphics candidates can be promoted from Level-B same-source evidence to exact paper-input provenance.",
+  "recommended_next": {
+    "if_no_external_provenance": "Do not spend RTDL timing on Dragon->Asian until a value-matched input variant or author provenance appears; use Dragon->HappyBuddha and Thai matched pairs only as Level-B scalar evidence.",
+    "pod_expected": false,
+    "pod_reason": "No new author/RTDL execution is needed until a concrete graphics provenance or value-matched input lead appears.",
+    "primary": "Search for author graphics input hashes or preprocessing/scaling scripts outside current local evidence; otherwise keep graphics at Level-B."
+  },
+  "schema": "rtdl.paper_reproduction.xhd.goal5319.graphics_exact_provenance_search.v1",
+  "searched_sources": [
+    "Goal5297 dataset acquisition manifest and local Stanford archive/file hashes",
+    "Goal5298 author-only graphics value precheck on current POD uploads",
+    "Goal5291 Dragon->HappyBuddha Level-B status matrix",
+    "Goal5299/5300 Thai graphics RTDL comparisons",
+    "Goal5316 Figure-5 / Level-B status matrix",
+    "paper-branch log mapping records for graphics basenames and point counts",
+    "public Stanford archive HTTP HEAD metadata for four source archives",
+    "repository search for graphics author hashes or preprocessing provenance"
+  ],
+  "strongest_graphics_level_b_rows": {
+    "dragon_asian_scaled": {
+      "abs_diff_vs_paper_log": 8.715689182281494e-05,
+      "author_rerun_hd_result": 0.06545527279376984,
+      "paper_log_hd_result": 0.06536811590194702,
+      "status": "author_value_no_go_current_mapping"
+    },
+    "dragon_happy": {
+      "author_rerun_hd_result": 0.12572988867759705,
+      "global_bound_early_break": true,
+      "paper_log_hd_result": 0.12572969496250153,
+      "per_source_witness_exact": false,
+      "rtdl_abs_diff_vs_author": 2.3848857610975216e-09,
+      "rtdl_fresh_hd_result": 0.12572988629271128,
+      "status": "strongest_current_graphics_level_b_scalar_match_not_exact"
+    },
+    "thai_asian_scaled": {
+      "author_hd_result": 0.28763842582702637,
+      "paper_log_hd_result": 0.28763845562934875,
+      "rtdl_exact_witness_hd_result": 0.2876384148709406,
+      "rtdl_fast_scalar_hd_result": 0.2876384148709406,
+      "status": "level_b_scaled_scalar_match_not_exact"
+    },
+    "thai_happy_scaled": {
+      "author_hd_result": 0.21912431716918945,
+      "paper_log_hd_result": 0.21912434697151184,
+      "rtdl_exact_witness_hd_result": 0.2191243235042005,
+      "rtdl_fast_scalar_hd_result": 0.2191243235042005,
+      "status": "level_b_scaled_scalar_match_not_exact"
+    }
+  }
+}

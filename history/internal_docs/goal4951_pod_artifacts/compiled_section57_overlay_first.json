@@ -1,0 +1,151 @@
+{
+  "author_output": {
+    "bytes": 16631243,
+    "lines": 737830,
+    "path": "Paper-reproduction-apps/rayjoin-paper/_data/public_sample/br_countyXbr_soil_answer.txt",
+    "sha256": "464f87a59cc2428f63cbfe5068965d7bc7adb8eee51e9c1e3a5960ae8b76019e"
+  },
+  "byte_equal_to_author": true,
+  "claim_boundary": {
+    "broad_performance_claim": false,
+    "bundled_rayjoin_overlay_imported": false,
+    "compiled_path_split_adapter": true,
+    "dataset_label": "available_bounded_pair",
+    "default_route_claim": false,
+    "exact_old_paper_input_claim": false,
+    "full_eight_pair_paper_claim": false,
+    "numba_on_correctness_critical_path": false,
+    "public_api_claim": false,
+    "public_lsi_used": true,
+    "public_point_location_used": true
+  },
+  "elapsed_sec": 8.990586429979885,
+  "generated_output": {
+    "bytes": 16631243,
+    "lines": 737830,
+    "path": "Paper-reproduction-apps/rayjoin-paper/_runs/goal4951/compiled/section57_overlay_compiled_path_split.txt",
+    "sha256": "464f87a59cc2428f63cbfe5068965d7bc7adb8eee51e9c1e3a5960ae8b76019e"
+  },
+  "left": {
+    "chains": 16545,
+    "edges": 326193,
+    "path": "Paper-reproduction-apps/rayjoin-paper/_data/public_sample/br_county_clean_25_odyssey_final.txt",
+    "points": 342738
+  },
+  "lsi_row_count": 20860,
+  "native_point_location_timings": {
+    "midpoint_pip_map0": {
+      "mode": "none",
+      "point_count": 944,
+      "point_upload": 0.0,
+      "positive_face_count": 934,
+      "row_download": 2.2573e-05,
+      "traversal": 0.000105752
+    },
+    "midpoint_pip_map1": {
+      "mode": "none",
+      "point_count": 3594,
+      "point_upload": 0.0,
+      "positive_face_count": 3189,
+      "row_download": 2.5759e-05,
+      "traversal": 9.466e-05
+    },
+    "vertex_pip_map0_in_map1": {
+      "mode": "rows",
+      "point_count": 342738,
+      "point_upload": 0.001242904,
+      "positive_face_count": 337691,
+      "row_download": 0.000531781,
+      "traversal": 0.000492086
+    },
+    "vertex_pip_map1_in_map0": {
+      "mode": "rows",
+      "point_count": 258961,
+      "point_upload": 0.000977739,
+      "positive_face_count": 255272,
+      "row_download": 0.000446369,
+      "traversal": 0.000393398
+    }
+  },
+  "packed_cache": {
+    "enabled": true,
+    "path": "Paper-reproduction-apps/rayjoin-paper/_runs/goal4951/cache"
+  },
+  "pair_name": "br_county_soil",
+  "phase_seconds": {
+    "assign_midpoint_faces_map0_sec": 0.000883909990079701,
+    "assign_midpoint_faces_map1_sec": 0.001593109016539529,
+    "compiled_path_split_wrapper_total_sec": 9.008272528008092,
+    "destroy_point_location_sessions_sec": 0.008505531994160265,
+    "file_summary_author_sec": 0.027508383005624637,
+    "file_summary_generated_sec": 0.024309210013598204,
+    "intersection_reprojection_sec": 0.7606488029996399,
+    "load_pack_left_sec": 0.7316055109840818,
+    "load_pack_right_sec": 0.46305526202195324,
+    "lsi_public_rows_sec": 1.151582757011056,
+    "midpoint_pip_map0_sec": 0.0005459180101752281,
+    "midpoint_pip_map1_sec": 0.0005830679729115218,
+    "midpoint_points_map0_sec": 0.023864694987423718,
+    "midpoint_points_map1_sec": 0.0202167899988126,
+    "output_chain_write_sec": 4.2071475890115835,
+    "pack_midpoint_points_map0_sec": 0.0020295989816077054,
+    "pack_midpoint_points_map1_sec": 0.007320568984141573,
+    "prepare_point_location_map0_in_map1_sec": 0.7013014619878959,
+    "prepare_point_location_map1_in_map0_sec": 0.07883310000761412,
+    "shared_bounds_sec": 3.6870187614113092e-06,
+    "sort_map0_sec": 0.39198134499019943,
+    "sort_map1_sec": 0.3665767519851215,
+    "vertex_pip_map0_in_map1_sec": 0.01176632201531902,
+    "vertex_pip_map1_in_map0_sec": 0.0074394049879629165
+  },
+  "query_map_ids": {
+    "map0_in_map1": 0,
+    "map1_in_map0": 1,
+    "swapped": false
+  },
+  "right": {
+    "chains": 7950,
+    "edges": 251011,
+    "path": "Paper-reproduction-apps/rayjoin-paper/_data/public_sample/br_soil_ascii_odyssey_final.txt",
+    "points": 258961
+  },
+  "route": "public_lsi_pip_plus_internal_compiled_generic_path_split_adapter",
+  "scale_bounds": [
+    -73.990943647,
+    -25.7463,
+    -35.8075,
+    7.0518
+  ],
+  "schema": "rtdl.paper_reproduction.rayjoin.section57_compiled_path_split.v1",
+  "vertex_positive_counts": {
+    "map0_in_map1": 337691,
+    "map1_in_map0": 255272
+  },
+  "writer_result": {
+    "chain_count": 64459,
+    "compiled_path_split": {
+      "enabled": true,
+      "schema": "rtdl.paper_reproduction.section57.compiled_path_split_adapter.v1"
+    },
+    "face_count": 19399,
+    "line_count": 737830,
+    "path": "Paper-reproduction-apps/rayjoin-paper/_runs/goal4951/compiled/section57_overlay_compiled_path_split.txt",
+    "point_count": 673371,
+    "writer_cache_counts": {
+      "unique_point_records": 581554
+    },
+    "writer_phase_seconds": {
+      "build_path_split_inputs_map0_sec": 0.1989170509914402,
+      "build_path_split_inputs_map1_sec": 0.22524917899863794,
+      "bulk_write_text_sec": 0.04195860802428797,
+      "compiled_path_split_materialize_map0_sec": 1.818659867014503,
+      "compiled_path_split_materialize_map1_sec": 0.5171911040088162,
+      "format_compiled_path_split_map0_sec": 0.7235006510163657,
+      "format_compiled_path_split_map1_sec": 0.594054548011627
+    }
+  },
+  "xsect_sorted_counts": {
+    "map0": 20860,
+    "map1": 20860
+  }
+}

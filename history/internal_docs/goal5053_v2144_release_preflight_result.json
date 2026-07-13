@@ -1,0 +1,165 @@
+{
+  "blockers": [],
+  "checks": [
+    {
+      "id": "required_goal_reports_present",
+      "missing": [],
+      "status": "pass"
+    },
+    {
+      "consolidated_review_patterns": [
+        "*review*v2_14_4*review*debt*.md",
+        "*review*all_open_review_debt*.md"
+      ],
+      "found": {
+        "Goal5048": [
+          "review_v2_14_4_all_open_review_debt_2026-07-06.md"
+        ],
+        "Goal5049": [
+          "review_v2_14_4_all_open_review_debt_2026-07-06.md"
+        ],
+        "Goal5050": [
+          "review_v2_14_4_all_open_review_debt_2026-07-06.md"
+        ],
+        "Goal5051": [
+          "review_v2_14_4_all_open_review_debt_2026-07-06.md"
+        ],
+        "Goal5052": [
+          "review_v2_14_4_all_open_review_debt_2026-07-06.md"
+        ],
+        "Goal5053": [
+          "review_v2_14_4_all_open_review_debt_2026-07-06.md"
+        ],
+        "Goal5055": [
+          "review_v2_14_4_all_open_review_debt_2026-07-06.md"
+        ],
+        "Goal5056": [
+          "review_v2_14_4_all_open_review_debt_2026-07-06.md"
+        ],
+        "Goal5057": [
+          "review_v2_14_4_all_open_review_debt_2026-07-06.md"
+        ],
+        "Goal5058": [
+          "review_v2_14_4_all_open_review_debt_2026-07-06.md"
+        ],
+        "Goal5059": [
+          "review_v2_14_4_all_open_review_debt_2026-07-06.md"
+        ],
+        "Goal5060": [
+          "review_v2_14_4_all_open_review_debt_2026-07-06.md"
+        ],
+        "Goal5061": [
+          "review_v2_14_4_all_open_review_debt_2026-07-06.md"
+        ],
+        "Goal5062": [
+          "review_v2_14_4_all_open_review_debt_2026-07-06.md"
+        ]
+      },
+      "id": "external_review_debt",
+      "malformed": {},
+      "malformed_reasons": {},
+      "minimum_review_characters": 800,
+      "open": [],
+      "required_goals": [
+        "Goal5048",
+        "Goal5049",
+        "Goal5050",
+        "Goal5051",
+        "Goal5052",
+        "Goal5053",
+        "Goal5055",
+        "Goal5056",
+        "Goal5057",
+        "Goal5058",
+        "Goal5059",
+        "Goal5060",
+        "Goal5061",
+        "Goal5062"
+      ],
+      "status": "pass"
+    },
+    {
+      "id": "strict_pod_smoke",
+      "observed_overall_status": "pass",
+      "observed_strict": true,
+      "reason": null,
+      "required_result": "history/internal_docs/goal5052_v2144_public_api_pod_smoke_result.json",
+      "status": "pass"
+    },
+    {
+      "hits": [],
+      "id": "public_surface_internal_leak_scan",
+      "status": "pass",
+      "targets": [
+        "README.md",
+        "docs",
+        "examples/current",
+        "tutorials",
+        "Paper-reproduction-apps/rayjoin-paper/README.md"
+      ]
+    },
+    {
+      "expected_exports": [
+        "PreparedEmbreeRayjoinCdbPointLocation2D",
+        "PreparedOptixRayjoinCdbPointLocation2D",
+        "PreparedOptixRayjoinCdbPointLocationPoints2D",
+        "RAYJOIN_PAPER_TARGETS",
+        "RayJoinBoundedPlan",
+        "RayJoinFeatureServiceLayer",
+        "RayJoinPlan",
+        "RayJoinPublicAsset",
+        "chains_to_rayjoin_cdb_segments",
+        "download_rayjoin_sample",
+        "lower_to_rayjoin",
+        "pack_rayjoin_cdb_segments",
+        "prepare_rayjoin_cdb_point_location_2d_embree",
+        "prepare_rayjoin_cdb_point_location_2d_optix",
+        "rayjoin_bounded_plans",
+        "rayjoin_feature_service_layers",
+        "rayjoin_public_assets"
+      ],
+      "exports": [
+        "chains_to_rayjoin_cdb_segments",
+        "download_rayjoin_sample",
+        "lower_to_rayjoin",
+        "pack_rayjoin_cdb_segments",
+        "prepare_rayjoin_cdb_point_location_2d_embree",
+        "prepare_rayjoin_cdb_point_location_2d_optix",
+        "PreparedEmbreeRayjoinCdbPointLocation2D",
+        "PreparedOptixRayjoinCdbPointLocation2D",
+        "PreparedOptixRayjoinCdbPointLocationPoints2D",
+        "rayjoin_bounded_plans",
+        "rayjoin_feature_service_layers",
+        "RAYJOIN_PAPER_TARGETS",
+        "rayjoin_public_assets",
+        "RayJoinBoundedPlan",
+        "RayJoinFeatureServiceLayer",
+        "RayJoinPlan",
+        "RayJoinPublicAsset"
+      ],
+      "id": "legacy_rayjoin_public_exports_disclosed",
+      "missing_expected_exports_from_rtdsl_all": [],
+      "missing_report_phrases": {},
+      "missing_reports": [],
+      "required_classification": "legacy public exports / compatibility debt; not new v2.14.4 public generic API",
+      "required_reports": [
+        "goal5050_v2_14_4_public_private_boundary_audit_2026-07-06.md",
+        "goal5051_v2_14_4_api_consolidation_closeout_packet_2026-07-06.md",
+        "goal5059_v2_14_4_legacy_public_export_boundary_amendment_2026-07-06.md"
+      ],
+      "status": "pass",
+      "unexpected_rayjoin_exports_from_rtdsl_all": []
+    }
+  ],
+  "generated_at_utc": "2026-07-06T10:09:05.563577+00:00",
+  "not_authorized": {
+    "author_parity_claim": true,
+    "device_group_by_public_ready": true,
+    "public_release_ready_without_pod_smoke": true,
+    "public_release_ready_without_review": true,
+    "true_zero_copy_claim": true,
+    "v2_14_4_speedup_claim": true
+  },
+  "overall_status": "ready_for_public_release_staging",
+  "schema": "rtdl.goal5053.v2_14_4_release_preflight.v1"
+}

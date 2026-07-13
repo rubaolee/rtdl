@@ -1,0 +1,98 @@
+{
+  "claim_boundary": {
+    "author_rt_core_algorithm_parity_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_support_claimed": false,
+    "figure11_reproduction_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "generic_probe_capability_claimed": true,
+    "row_count_parity_claimed": false,
+    "rtdl_author_performance_ratio_claimed": false,
+    "same_denominator_memory_claimed": false
+  },
+  "comparison": {
+    "author_offloading_size_rows": 27133990,
+    "global_bound_changed_kind2_rows": false,
+    "inline_div_author": 0.7741935483870968,
+    "inline_global_div_author": 0.7741935483870968,
+    "inline_row_delta_author_minus_rtdl": 6127030,
+    "materialized_equals_inline_count_only": true,
+    "noinline_div_author": 11.239846738352892,
+    "row_count_parity": false,
+    "rtdl_author_radius_inline_count_only_kind2_rows": 21006960,
+    "rtdl_author_radius_inline_global_bound_kind2_rows": 21006960,
+    "rtdl_author_radius_materialized_rows_from_goal5367": 21006960,
+    "rtdl_author_radius_noinline_raw_kind2_rows_from_goal5368": 304981889
+  },
+  "date": "2026-07-09",
+  "exit_label": "inline_payload_and_existing_global_bound_do_not_explain_author_offloading_size",
+  "goal": "Goal5371",
+  "input_artifacts": {
+    "goal5367": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5367_lb_author_radius_probe.json",
+    "goal5368": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5368_cell_mbr_raw_kind_count_telemetry.json",
+    "inline_global_bound_pod_probe": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5371_dragon_asian_lb256_author_radius_inline_global_bound_kind_count_pod.json",
+    "inline_pod_probe": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5371_dragon_asian_lb256_author_radius_inline_kind_count_pod.json"
+  },
+  "input_scope": {
+    "exact_paper_dataset_identity_proven": false,
+    "grid_shape": [
+      96,
+      60,
+      72
+    ],
+    "input1": "/tmp/xhd_goal5234/data/dragon.ply",
+    "input2": "/tmp/xhd_goal5234/data/asian_dragon.ply",
+    "max_inline_points": 256,
+    "point_count_a": 437645,
+    "point_count_b": 3609600,
+    "preprocessing": [
+      "translate_each_input_to_min_bound"
+    ],
+    "radius": 79.2156982421875
+  },
+  "interpretation": {
+    "existing_global_bound_hypothesis": "Rejected for this probe. Enabling RTDL's generic global-bound early-break changes neither raw kind2 rows nor early-break count.",
+    "materialization_sort_hypothesis": "Rejected. The inline count-only raw kind2 count is exactly the same as the prior materialized author-radius row count.",
+    "next_required_alignment": "Model or instrument the author shader status machine: dynamic cmin2 updates, cmax2 abort status, miss/offload queue updates, and load-balance post-processing over offloaded cells."
+  },
+  "probe_results": {
+    "inline_count_only": {
+      "frontier_probe_sec": 0.628547877073288,
+      "global_bound_early_break": false,
+      "inline_nearest": true,
+      "overflow_telemetry_only": true,
+      "path": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5371_dragon_asian_lb256_author_radius_inline_kind_count_pod.json",
+      "raw_kind2_rows": 21006960,
+      "raw_kind_counts": {
+        "1": 0,
+        "2": 21006960,
+        "3": 0
+      }
+    },
+    "inline_global_bound_count_only": {
+      "frontier_probe_sec": 0.6303703114390373,
+      "global_bound_distance": 0.0,
+      "global_bound_early_break": true,
+      "global_bound_early_break_count": 0,
+      "inline_nearest": true,
+      "overflow_telemetry_only": true,
+      "path": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5371_dragon_asian_lb256_author_radius_inline_global_bound_kind_count_pod.json",
+      "raw_kind2_rows": 21006960,
+      "raw_kind_counts": {
+        "1": 0,
+        "2": 21006960,
+        "3": 0
+      }
+    }
+  },
+  "purpose": "Probe whether RTDL inline-nearest payload state or existing generic global-bound early-break explains the author lb256 OffloadingSize denominator on Dragon -> AsianDragon.",
+  "schema": "rtdl.paper_reproduction.xhd.goal5371.inline_global_bound_lb_probe.v1",
+  "status": "inline_and_global_bound_lb_probes_ready__author_denominator_still_unmatched",
+  "system_changes": {
+    "core_app_specific_behavior_added": false,
+    "kind_count_probe_supports_global_bound_early_break": true,
+    "kind_count_probe_supports_inline_nearest": true,
+    "overflow_telemetry_only_tolerates_missing_nearest_columns": true
+  }
+}

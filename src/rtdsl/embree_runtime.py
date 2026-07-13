@@ -308,6 +308,16 @@ class _RtdlPoint(ctypes.Structure):
     ]
 
 
+class _RtdlRayjoinCdbScaledPoint(ctypes.Structure):
+    _fields_ = [
+        ("id", ctypes.c_uint32),
+        ("x", ctypes.c_double),
+        ("y", ctypes.c_double),
+        ("sx", ctypes.c_int64),
+        ("sy", ctypes.c_int64),
+    ]
+
+
 class _RtdlAabb2D(ctypes.Structure):
     _fields_ = [
         ("id", ctypes.c_uint32),
@@ -649,6 +659,13 @@ class PackedPoints:
     records: object
     count: int
     dimension: int = 2
+    owner: object | None = None
+
+
+@dataclass(frozen=True)
+class PackedRayjoinCdbScaledPoints:
+    records: object
+    count: int
     owner: object | None = None
 
 
@@ -1591,6 +1608,89 @@ def pack_points(records=None, *, ids=None, x=None, y=None, z=None, dimension: in
         for i in range(count)
     ])
     return PackedPoints(records=array, count=count, dimension=2)
+
+
+def pack_rayjoin_cdb_scaled_points(*, ids, x, y, sx, sy) -> PackedRayjoinCdbScaledPoints:
+    ids_list = _coerce_list("ids", ids)
+    x_list = _coerce_list("x", x)
+    y_list = _coerce_list("y", y)
+    sx_list = _coerce_list("sx", sx)
+    sy_list = _coerce_list("sy", sy)
+    count = _validate_equal_lengths("scaled points", ids_list, x_list, y_list, sx_list, sy_list)
+    array = (_RtdlRayjoinCdbScaledPoint * count)(*[
+        _RtdlRayjoinCdbScaledPoint(
+            _uint32_field(ids_list[i], "id"),
+            float(x_list[i]),
+            float(y_list[i]),
+            int(sx_list[i]),
+            int(sy_list[i]),
+        )
+        for i in range(count)
+    ])
+    return PackedRayjoinCdbScaledPoints(records=array, count=count)
+
+
+def pack_rayjoin_cdb_scaled_points_fast_host(*, ids, x, y, sx, sy) -> PackedRayjoinCdbScaledPoints:
+    """Pack scaled CDB query points with vectorized host-side field assignment.
+
+    This preserves the existing ``RtdlRayjoinCdbScaledPoint`` ABI but avoids
+    constructing one Python ctypes object per row.  The returned packed object
+    keeps the NumPy structured array alive through ``owner`` while ``records``
+    is a ctypes view over the same buffer.
+    """
+
+    try:
+        import numpy as np
+    except Exception as exc:  # pragma: no cover - NumPy is expected in RTDL array routes.
+        raise RuntimeError("fast scaled-point packing requires NumPy") from exc
+
+    ids_arr = np.asarray(ids)
+    x_arr = np.asarray(x, dtype=np.float64)
+    y_arr = np.asarray(y, dtype=np.float64)
+    sx_arr = np.asarray(sx, dtype=np.int64)
+    sy_arr = np.asarray(sy, dtype=np.int64)
+    count = _validate_equal_lengths("scaled points", ids_arr, x_arr, y_arr, sx_arr, sy_arr)
+    if count == 0:
+        empty = np.empty(0, dtype=_rayjoin_cdb_scaled_point_numpy_dtype(np))
+        records = (_RtdlRayjoinCdbScaledPoint * 0).from_buffer(empty)
+        return PackedRayjoinCdbScaledPoints(records=records, count=0, owner=empty)
+    if np.any(ids_arr < 0) or np.any(ids_arr > 0xFFFFFFFF):
+        raise ValueError("id out of uint32 range")
+
+    owner = np.empty(count, dtype=_rayjoin_cdb_scaled_point_numpy_dtype(np))
+    owner["id"] = ids_arr.astype(np.uint32, copy=False)
+    owner["x"] = x_arr
+    owner["y"] = y_arr
+    owner["sx"] = sx_arr
+    owner["sy"] = sy_arr
+    records = (_RtdlRayjoinCdbScaledPoint * count).from_buffer(owner)
+    return PackedRayjoinCdbScaledPoints(records=records, count=count, owner=owner)
+
+
+def _rayjoin_cdb_scaled_point_numpy_dtype(np):
+    dtype = np.dtype(
+        [
+            ("id", np.uint32),
+            ("x", np.float64),
+            ("y", np.float64),
+            ("sx", np.int64),
+            ("sy", np.int64),
+        ],
+        align=True,
+    )
+    if dtype.itemsize != ctypes.sizeof(_RtdlRayjoinCdbScaledPoint):
+        raise RuntimeError(
+            "NumPy scaled-point dtype does not match RtdlRayjoinCdbScaledPoint ABI"
+        )
+    for field_name in ("id", "x", "y", "sx", "sy"):
+        numpy_offset = dtype.fields[field_name][1]
+        ctypes_offset = getattr(_RtdlRayjoinCdbScaledPoint, field_name).offset
+        if numpy_offset != ctypes_offset:
+            raise RuntimeError(
+                "NumPy scaled-point dtype field offsets do not match "
+                "RtdlRayjoinCdbScaledPoint ABI"
+            )
+    return dtype
 
 
 def _normalize_aabb2d_record(box, index: int) -> tuple[int, float, float, float, float]:

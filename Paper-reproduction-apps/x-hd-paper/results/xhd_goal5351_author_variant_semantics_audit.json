@@ -1,0 +1,257 @@
+{
+  "author_cli_surface": {
+    "compare_methods_status": "Parser maps compare-methods to Variant::kCompareMethods, but RunHausdorffDistanceImpl has no switch case for it; not treated as a supported hd_exec paper variant surface.",
+    "documented_readme_variants": [
+      "eb",
+      "nn",
+      "itk",
+      "rt"
+    ],
+    "flags_help_variants": [
+      "eb",
+      "rt",
+      "nn",
+      "itk"
+    ],
+    "main_cpp_variants": [
+      "compare-methods",
+      "eb",
+      "rt",
+      "nn",
+      "clover",
+      "itk"
+    ],
+    "supported_goal5349_rtdl_value_surface": [
+      "eb",
+      "nn",
+      "itk",
+      "clover",
+      "rt"
+    ]
+  },
+  "author_provenance": {
+    "main_commit": "7bf41c8442d059c94f4178355c6d5a10571d9658",
+    "paper_branch_commit": "8c3846866052e1e8755210021f23fac2cbe8c3d6",
+    "repository": "https://github.com/pwrliang/X-HD.git",
+    "source_verification": {
+      "author_source_root": ".codex_tmp\\xhd_author_src",
+      "checked": true,
+      "missing_files": [],
+      "missing_snippets": {},
+      "status": "source_expectations_matched"
+    }
+  },
+  "claim_boundary": {
+    "author_variant_algorithm_equivalence_claimed": false,
+    "author_variant_performance_parity_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "rt_hdist_reproduced": false,
+    "rtdl_accepts_all_author_variant_names_as_algorithm_equivalent": false
+  },
+  "current_rtdl_parity_summary": {
+    "algorithm_surface": {
+      "closed": [],
+      "full_author_variant_algorithm_parity_ready": false,
+      "not_closed": [
+        "eb",
+        "nn",
+        "clover",
+        "itk",
+        "RT-HDIST external baseline"
+      ],
+      "partial": [
+        "rt value route on Level-B representative artifacts"
+      ]
+    },
+    "performance_surface": {
+      "author_variant_performance_parity_ready": false,
+      "reason": "RTDL does not reproduce non-rt algorithm denominators, and author/RTDL timing denominators are not aligned."
+    },
+    "value_surface": {
+      "scope": "bounded / supported inputs through app-owned RTDL hd_exec-compatible runner",
+      "source": "Goal5349",
+      "status": "all_author_variant_names_accepted_for_directed_hdresult_value_output"
+    }
+  },
+  "date": "2026-07-09",
+  "exit_label": "author_variant_semantics_audit_ready__non_rt_algorithm_parity_not_closed",
+  "figure5_script_surface": {
+    "external_baselines_not_hd_exec_variants": [
+      {
+        "label": "RT-HDIST",
+        "note": "Figure scripts load RT-HDIST timing from separate logs rather than from hd_exec -variant rt/eb/nn/clover/itk.",
+        "status": "external_script_baseline_not_reproduced_by_rtdl"
+      }
+    ],
+    "geo_labels": [
+      "NN-KD",
+      "NN-Clover",
+      "EB",
+      "X-HD"
+    ],
+    "geo_variants": [
+      "nn_gpu",
+      "clover_gpu",
+      "eb_gpu",
+      "rt_gpu"
+    ],
+    "graphics_labels": [
+      "RT-HDIST",
+      "NN-KD",
+      "NN-Clover",
+      "EB",
+      "X-HD"
+    ],
+    "graphics_variants": [
+      "rt_hdist",
+      "nn_gpu",
+      "clover_gpu",
+      "eb_gpu",
+      "rt_gpu"
+    ],
+    "mri_labels": [
+      "ITK",
+      "RT-HDIST",
+      "NN-KD",
+      "NN-Clover",
+      "EB",
+      "X-HD"
+    ],
+    "mri_variants": [
+      "itk_cpu",
+      "rt_hdist",
+      "nn_gpu",
+      "clover_gpu",
+      "eb_gpu",
+      "rt_gpu"
+    ]
+  },
+  "goal": "Goal5351",
+  "purpose": "Map author hd_exec variants and Figure-5 labels to implementation semantics and current RTDL support, so variant-name acceptance cannot be mistaken for author algorithm or performance reproduction.",
+  "recommended_next_actions": [
+    {
+      "action": "decide_external_baseline_policy",
+      "details": "Classify ITK, NN-KD, NN-Clover, EB, and RT-HDIST as external baselines unless RTDL intentionally implements algorithm-equivalent routes."
+    },
+    {
+      "action": "target_rt_algorithm_gap",
+      "details": "For the main X-HD algorithm, focus on radius-growth, LB/heavy-cell offload, and Figure 7/11 counters rather than variant flag plumbing."
+    },
+    {
+      "action": "avoid_false_figure5_completion",
+      "details": "Do not claim Figure 5 baseline reproduction from Goal5349 value-compatible variant acceptance."
+    }
+  ],
+  "schema": "rtdl.paper_reproduction.xhd.goal5351.author_variant_semantics_audit.v1",
+  "status": "author_variant_semantics_audit_ready__algorithm_parity_not_closed",
+  "variant_semantics": [
+    {
+      "algorithm_equivalence_claimed": false,
+      "author_algorithm_semantics": [
+        "Directed Hausdorff value by brute-force nearest search with global cmax early break.",
+        "CPU path shuffles both input point arrays and uses host threads.",
+        "GPU path shuffles device arrays and uses a block-reduce kernel with early termination when local min <= global cmax."
+      ],
+      "author_enum": "Variant::kEarlyBreak",
+      "author_flag": "eb",
+      "author_impl": "HausdorffDistanceEarlyBreak",
+      "author_reported_algorithm": "Early Break",
+      "current_rtdl_status": "value_compatible_only",
+      "figure5_label": "EB",
+      "gap_to_close_for_full_parity": [
+        "Reproduce author EB execution semantics, including shuffle/seed behavior, early-break update contract, and CPU/GPU denominator fields.",
+        "Or explicitly classify EB as an external baseline that RTDL reports but does not reproduce algorithmically."
+      ],
+      "paper_role": "Figure 5 baseline and pruning/early-break comparison component.",
+      "performance_equivalence_claimed": false,
+      "rtdl_current_behavior": "RTDL accepts -variant eb and returns directed HDResult through the selected generic RTDL route."
+    },
+    {
+      "algorithm_equivalence_claimed": false,
+      "author_algorithm_semantics": [
+        "Directed Hausdorff value by building a nearest-neighbor index over input2 and reducing max nearest distance over input1.",
+        "CPU path uses the author's KDTree wrapper.",
+        "GPU path uses cuKD buildTree and fcp nearest point query."
+      ],
+      "author_enum": "Variant::kNearestNeighborSearch",
+      "author_flag": "nn",
+      "author_impl": "HausdorffDistanceNearestNeighborSearch",
+      "author_reported_algorithm": "Nearest Neighbor Search",
+      "current_rtdl_status": "value_compatible_only",
+      "figure5_label": "NN-KD",
+      "gap_to_close_for_full_parity": [
+        "Implement or map an RTDL generic KD-tree / cuKD-equivalent nearest-neighbor route with matched timing fields.",
+        "Or carry NN-KD as an external author baseline, not a reproduced RTDL algorithm."
+      ],
+      "paper_role": "Figure 5 baseline; Figure 11 memory baseline.",
+      "performance_equivalence_claimed": false,
+      "rtdl_current_behavior": "RTDL accepts -variant nn and returns directed HDResult through the selected generic RTDL route."
+    },
+    {
+      "algorithm_equivalence_claimed": false,
+      "author_algorithm_semantics": [
+        "Directed Hausdorff value through the included Clover bitonic-hubs C_and_Q k=1 query.",
+        "2-D inputs are lifted to 3-D with z=0 before Clover execution.",
+        "The implementation is GPU-oriented and records Clover memory/time fields."
+      ],
+      "author_enum": "Variant::kClover",
+      "author_flag": "clover",
+      "author_impl": "HausdorffDistanceClover",
+      "author_reported_algorithm": "Clover",
+      "current_rtdl_status": "value_compatible_only",
+      "figure5_label": "NN-Clover",
+      "gap_to_close_for_full_parity": [
+        "Implement or wrap an equivalent generic Clover/bitonic-hubs nearest-neighbor baseline.",
+        "Or carry NN-Clover as an external author baseline, not a reproduced RTDL algorithm."
+      ],
+      "paper_role": "Figure 5 and Figure 11 baseline.",
+      "performance_equivalence_claimed": false,
+      "rtdl_current_behavior": "RTDL accepts -variant clover and returns directed HDResult through the selected generic RTDL route."
+    },
+    {
+      "algorithm_equivalence_claimed": false,
+      "author_algorithm_semantics": [
+        "Directed Hausdorff value via itk::DirectedHausdorffDistanceImageFilter.",
+        "Meaningful for image inputs with known ITK image sizes.",
+        "CPU path records ITK ReportedTime; it is not the X-HD RT algorithm."
+      ],
+      "author_enum": "Variant::kITK",
+      "author_flag": "itk",
+      "author_impl": "HausdorffDistanceITK",
+      "author_reported_algorithm": "ITK",
+      "current_rtdl_status": "value_compatible_only",
+      "figure5_label": "ITK",
+      "gap_to_close_for_full_parity": [
+        "Either implement/wrap an ITK-directed Hausdorff baseline for image inputs, or classify ITK as an external baseline.",
+        "Clarify image voxelization/index semantics before any MRI Figure 5 reproduction claim."
+      ],
+      "paper_role": "MRI / image baseline in Figure 5.",
+      "performance_equivalence_claimed": false,
+      "rtdl_current_behavior": "RTDL accepts -variant itk and returns directed HDResult through the selected generic RTDL route, but does not reproduce ITK image-filter semantics."
+    },
+    {
+      "algorithm_equivalence_claimed": false,
+      "author_algorithm_semantics": [
+        "X-HD ray-tracing route over uniform-grid tight cell MBRs.",
+        "Uses radius-growing iterations, OptiX custom primitives, early-break and prune flags, load-balance threshold lb, and heavy-cell offload queues.",
+        "Records Grid/BVH/MBRs/WL/WL Heavy Peak memory and iteration RTTime/CUDATime/OffloadingSize."
+      ],
+      "author_enum": "Variant::kRT",
+      "author_flag": "rt",
+      "author_impl": "HausdorffDistanceRT",
+      "author_reported_algorithm": "XHD",
+      "current_rtdl_status": "partial_level_b_value_route",
+      "figure5_label": "X-HD",
+      "gap_to_close_for_full_parity": [
+        "Align or explicitly differ from author radius-growth / tune-radius policy.",
+        "Align or explicitly differ from author LB / heavy-cell offload behavior.",
+        "Align memory and iteration counters if Figure 7/11 are in scope.",
+        "Acquire exact inputs or accepted exact-equivalence before full-paper claims."
+      ],
+      "paper_role": "Main paper algorithm.",
+      "performance_equivalence_claimed": false,
+      "rtdl_current_behavior": "RTDL has generic cell-MBR / native OptiX routes that match Level-B directed HD values and an hd_exec-compatible exact-witness route on reviewed representative artifacts, but it does not claim author RT-core algorithm identity."
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+Review the Goal4931 design packet strictly.
+
+Files:
+- history/internal_docs/call_for_review_goal4931_generic_output_assembly_layer_design_2026-07-03.md
+- history/internal_docs/goal4931_generic_output_assembly_layer_design_2026-07-03.md
+- history/internal_docs/goal4930_v2_14_2_layer0_writer_phase_decomposition_result_2026-07-03.md
+- history/internal_docs/antigravity_goal4930_result_v2_14_2_layer0_writer_phase_decomposition_review_2026-07-03.md
+- history/internal_docs/rtdl_next_version_performance_blueprint_layers_1_3_2026-07-03.md
+
+Please answer the 9 review questions in the call-for-review and write a clear verdict.
+
+Be strict on the central risk: this must be a generic output-assembly design, not a RayJoin output-chain writer disguised as RTDL core. Check whether RayJoin exact text/topology formatting remains app-owned, whether a non-RayJoin proof workload is required, and whether the next proposed Goal4932 is appropriately limited to a host-columnar prototype rather than native/device-resident implementation.
+
+Requested verdict labels:
+- approve_goal4931_design_authorize_goal4932_host_columnar_prototype
+- approve_with_required_amendments
+- block_goal4931_design

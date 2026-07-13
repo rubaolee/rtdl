@@ -1,0 +1,143 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5416.full_reproduction_blocker_priority_refresh.v1",
+  "goal": "Goal5416",
+  "status": "full_reproduction_priority_refreshed__dataset_first__figure5_level_b_next__lb_line_stopped",
+  "matched": true,
+  "current_global_status": {
+    "bounded_same_input_value_reproduction_complete": true,
+    "level_b_representative_scalar_evidence_strong": true,
+    "full_xhd_paper_reproduction_complete": false,
+    "exact_paper_dataset_provenance_complete": false,
+    "performance_ratio_authorized": false,
+    "explicit_lb_line_closed": true
+  },
+  "priority_order": [
+    {
+      "rank": 1,
+      "name": "exact_input_provenance_and_dataset_acquisition",
+      "reason": "Exact paper input files or deterministic regeneration provenance remain the blocker for full paper and figure claims.",
+      "next_action": "Refresh exact-input acquisition state and only run POD probes when a concrete file/provenance candidate exists.",
+      "pod_needed_now": false
+    },
+    {
+      "rank": 2,
+      "name": "figure5_level_b_value_and_denominator_matrix",
+      "reason": "Figure 5 has the strongest author log coverage and multiple Level-B value-matched graphics/geo candidates, but no exact full matrix and no denominator-aligned ratio.",
+      "next_action": "Prepare a same-POD Level-B matrix over value-matched candidates with author internal time, author process wall, RTDL route wall, and RTDL process wall kept separate.",
+      "pod_needed_now": true
+    },
+    {
+      "rank": 3,
+      "name": "figure_status_closeout_refresh",
+      "reason": "Figures 7/8/9/10/11 each have documented denominator or log blockers and should not be reopened without new data.",
+      "next_action": "Keep them closed or blocked unless author matrices, exact inputs, or externally accepted narrower diagnostics appear.",
+      "pod_needed_now": false
+    },
+    {
+      "rank": 4,
+      "name": "generic_system_extraction_only_when_app_neutral",
+      "reason": "New RTDL APIs must be driven by a generic need and backed by non-X-HD evidence.",
+      "next_action": "Avoid X-HD-specific reverse engineering; extract only app-neutral primitives with independent consumers.",
+      "pod_needed_now": false
+    }
+  ],
+  "figure_matrix": {
+    "figure5": {
+      "status": "level_b_candidates_available__full_matrix_not_reproduced",
+      "best_current_evidence": [
+        "Dragon->HappyBuddha value-matched candidate",
+        "ThaiStatuette-scaled->HappyBuddha value-matched candidate",
+        "ThaiStatuette-scaled->AsianDragon-scaled value-matched candidate",
+        "bounded County-ZCTA and WaterBodies-BlockGroups scalar matches"
+      ],
+      "blocked_by": [
+        "exact paper input bytes/hashes unavailable",
+        "BraTS/geo full matrix missing from RTDL evidence",
+        "author internal AvgTime and RTDL route/process wall are different denominators"
+      ],
+      "recommended_next": "same_pod_level_b_value_and_timing_matrix_without_paper_ratio"
+    },
+    "figure6": {
+      "status": "not_claimed",
+      "blocked_by": [
+        "exact input and phase/counter mapping not sufficient for paper claim"
+      ],
+      "recommended_next": "do_not_prioritize_until_figure5_or_exact_input_state_changes"
+    },
+    "figure7": {
+      "status": "not_reproduced__lb_comparison_logs_missing__current_lb_line_stopped",
+      "blocked_by": [
+        "checked-in lb_comparison logs absent",
+        "run_all logs have LB=256 only",
+        "current RTDL explicit-lb row-identity line fail-closed"
+      ],
+      "recommended_next": "do_not_reopen_without_author_lb0_lb256_matrix_or_external_review"
+    },
+    "figure8": {
+      "status": "not_reproduced__tune_radius_logs_missing",
+      "blocked_by": [
+        "checked-in tune_radius logs absent",
+        "run_all does not provide radius-strategy denominator"
+      ],
+      "recommended_next": "do_not_start_rtdl_comparison_until_author_radius_matrix_exists"
+    },
+    "figure9": {
+      "status": "closed_current_line_author_denominator_missing",
+      "blocked_by": [
+        "plot expects four variants but current logs provide two",
+        "checked-in PDF is evidence, not reproducible denominator"
+      ],
+      "recommended_next": "reopen_only_with_missing_variants_or_external_mapping_review"
+    },
+    "figure10": {
+      "status": "not_reproduced__scalability_logs_missing",
+      "blocked_by": [
+        "checked-in scalability logs absent",
+        "run_all lacks scale/overlap labels"
+      ],
+      "recommended_next": "do_not_start_rtdl_comparison_until_author_scalability_matrix_exists"
+    },
+    "figure11": {
+      "status": "closed_denominator_not_aligned",
+      "blocked_by": [
+        "RTDL worklist byte denominator differs from author WL",
+        "no author-like heavy offload peak denominator",
+        "exact Figure 11 input provenance unavailable"
+      ],
+      "recommended_next": "do_not_reopen_without_denominator_aligned_generic_worklist"
+    }
+  },
+  "recommended_next_goal": {
+    "name": "Goal5417_figure5_level_b_same_pod_matrix_plan",
+    "type": "planning_then_pod_if_inputs_ready",
+    "purpose": "Define the exact Level-B Figure 5 same-POD matrix to run next, including candidate list, denominator columns, and forbidden claims.",
+    "must_keep_separate": [
+      "author Running.AvgTime",
+      "author process wall",
+      "RTDL route wall",
+      "RTDL process wall",
+      "input load time",
+      "cold vs warm process"
+    ]
+  },
+  "claim_boundary": {
+    "priority_refresh_claimed": true,
+    "figure5_level_b_next_claimed": true,
+    "figure5_reproduction_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "figure8_reproduction_claimed": false,
+    "figure9_reproduction_claimed": false,
+    "figure10_reproduction_claimed": false,
+    "figure11_reproduction_claimed": false,
+    "performance_ratio_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false
+  },
+  "forbidden_next_work": [
+    "restart explicit -lb row identity probing without new author matrix or external review",
+    "publish author-vs-RTDL ratio from mismatched denominators",
+    "promote Level-B public inputs to exact paper datasets",
+    "treat checked-in PDFs as reproducible figure denominators",
+    "add X-HD-specific primitives to RTDL core"
+  ]
+}

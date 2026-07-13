@@ -1,0 +1,172 @@
+{
+  "assisted_columns": {
+    "cell_ids": [
+      0,
+      0,
+      0,
+      1,
+      1,
+      1
+    ],
+    "frontier_kind_codes": [
+      1,
+      1,
+      1,
+      2,
+      3,
+      3
+    ],
+    "max_distances": [
+      1.118033988749895,
+      5.0990195135927845,
+      11.090536506409418,
+      1.8027756377319946,
+      12.165525060596439,
+      7.762087348130012
+    ],
+    "min_distances": [
+      0.0,
+      4.0,
+      10.04987562112089,
+      0.0,
+      9.5,
+      5.0
+    ],
+    "point_begin_offsets": [
+      0,
+      0,
+      0,
+      2,
+      2,
+      2
+    ],
+    "point_counts": [
+      2,
+      2,
+      2,
+      3,
+      3,
+      3
+    ],
+    "query_point_ids": [
+      100,
+      101,
+      102,
+      102,
+      100,
+      101
+    ],
+    "query_row_ids": [
+      0,
+      1,
+      2,
+      2,
+      0,
+      1
+    ]
+  },
+  "backend": "cpu",
+  "claim_boundary": {
+    "complete_native_goal5140_backend_claim": false,
+    "generic_3d_backend_assisted_frontdoor": true,
+    "paper_reproduction_claim": false,
+    "xhd_performance_claim": false
+  },
+  "elapsed_sec": 0.0009600999765098095,
+  "fixture": "goal5147_synthetic_3d_cell_mbr_frontier",
+  "goal": "Goal5147",
+  "matched": true,
+  "metadata": {
+    "adapter": "cell_mbr_nearest_frontier_aabb_membership_3d_numpy_columns",
+    "app_semantics": "none",
+    "broadphase_contract": "generic_expanded_aabb_point_membership_rows_3d_v1",
+    "broadphase_native_symbol": null,
+    "broadphase_row_capacity": 6,
+    "broadphase_row_count": 6,
+    "cell_count": 2,
+    "contract": "generic_cell_mbr_nearest_frontier_aabb_membership_3d",
+    "distance_filter": "exact_point_to_cell_mbr_min_distance_lte_radius",
+    "exact_candidate_row_count": 6,
+    "max_inline_points": 2,
+    "native_abi_contract": "generic_cell_mbr_nearest_frontier_native_abi_v1",
+    "native_backend_complete": false,
+    "native_engine_row_contract": "backend_assisted_aabb_membership_plus_numpy_frontier_classification",
+    "partner": "numpy",
+    "query_count": 3,
+    "row_capacity": null,
+    "row_count": 6,
+    "row_table_contract": "generic_cell_mbr_nearest_frontier_row_table",
+    "rt_core_speedup_claim_authorized": false,
+    "state_split_contract": "generic_nearest_state_cell_frontier",
+    "traversal_backend": "cpu",
+    "whole_app_speedup_claim_authorized": false
+  },
+  "oracle_columns": {
+    "cell_ids": [
+      0,
+      0,
+      0,
+      1,
+      1,
+      1
+    ],
+    "frontier_kind_codes": [
+      1,
+      1,
+      1,
+      2,
+      3,
+      3
+    ],
+    "max_distances": [
+      1.118033988749895,
+      5.0990195135927845,
+      11.090536506409418,
+      1.8027756377319946,
+      12.165525060596439,
+      7.762087348130012
+    ],
+    "min_distances": [
+      0.0,
+      4.0,
+      10.04987562112089,
+      0.0,
+      9.5,
+      5.0
+    ],
+    "point_begin_offsets": [
+      0,
+      0,
+      0,
+      2,
+      2,
+      2
+    ],
+    "point_counts": [
+      2,
+      2,
+      2,
+      3,
+      3,
+      3
+    ],
+    "query_point_ids": [
+      100,
+      101,
+      102,
+      102,
+      100,
+      101
+    ],
+    "query_row_ids": [
+      0,
+      1,
+      2,
+      2,
+      0,
+      1
+    ]
+  },
+  "schema": "rtdl.paper_reproduction.xhd.backend_assisted_3d_cell_mbr_gate.v1",
+  "status": "backend_assisted_3d_cell_mbr_gate_completed"
+}

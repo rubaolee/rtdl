@@ -1,0 +1,101 @@
+{
+  "all_cases_matched": true,
+  "author_comparator_used": true,
+  "backend": "optix_numba_component_signature",
+  "case_filter": [
+    "representative_border_shell3d"
+  ],
+  "cases": [
+    {
+      "all_matched": true,
+      "backend": "optix_numba_component_signature",
+      "epsilon": 0.085,
+      "first_repeat": {
+        "author_reported_build_time_sec": 0.002883,
+        "author_reported_cluster_formation_time_sec": 0.008924,
+        "author_reported_core_points_time_sec": 0.012109,
+        "author_reported_total_time_sec": 0.023916,
+        "author_wall_sec": 0.3767322599887848,
+        "component_partition_matched": true,
+        "core_flags_matched": true,
+        "matched": true,
+        "repeat_index": 0,
+        "rtdl_phase_metadata": {
+          "component_label_policy": "positive_root_index_labels_noise_minus_one",
+          "count_threshold_native_elapsed_sec": 0.0001233816146850586,
+          "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+          "grouped_union_native_elapsed_sec": 0.4674173891544342,
+          "materializes_directed_adjacency_stream": false,
+          "materializes_neighbor_rows": false,
+          "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+          "partner_reference_contract": "generic_prepared_optix_numba_grouped_stream_component_labels_3d",
+          "rt_core_accelerated": true
+        },
+        "rtdl_signature": {
+          "component_count": 2,
+          "component_sizes": [
+            29,
+            29
+          ],
+          "core_count": 54,
+          "noise_count": 2
+        },
+        "rtdl_wall_sec": 1.7171748131513596,
+        "signature_matched": true
+      },
+      "input_path": "/root/rtdl_goal5093/Paper-reproduction-apps/rt-dbscan-paper/data/fixtures/representative_border_shell3d.csv",
+      "median_author_process_wall_sec": 0.3767322599887848,
+      "median_author_reported_total_time_sec": 0.023916,
+      "median_rtdl_wall_sec": 1.7171748131513596,
+      "min_points": 8,
+      "name": "representative_border_shell3d",
+      "point_count": 60,
+      "repeat": 1,
+      "repeats": [
+        {
+          "author_reported_build_time_sec": 0.002883,
+          "author_reported_cluster_formation_time_sec": 0.008924,
+          "author_reported_core_points_time_sec": 0.012109,
+          "author_reported_total_time_sec": 0.023916,
+          "author_wall_sec": 0.3767322599887848,
+          "component_partition_matched": true,
+          "core_flags_matched": true,
+          "matched": true,
+          "repeat_index": 0,
+          "rtdl_phase_metadata": {
+            "component_label_policy": "positive_root_index_labels_noise_minus_one",
+            "count_threshold_native_elapsed_sec": 0.0001233816146850586,
+            "grouped_stream_policy": "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "grouped_union_native_elapsed_sec": 0.4674173891544342,
+            "materializes_directed_adjacency_stream": false,
+            "materializes_neighbor_rows": false,
+            "native_engine_row_contract": "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+            "partner_reference_contract": "generic_prepared_optix_numba_grouped_stream_component_labels_3d",
+            "rt_core_accelerated": true
+          },
+          "rtdl_signature": {
+            "component_count": 2,
+            "component_sizes": [
+              29,
+              29
+            ],
+            "core_count": 54,
+            "noise_count": 2
+          },
+          "rtdl_wall_sec": 1.7171748131513596,
+          "signature_matched": true
+        }
+      ],
+      "rtdl_vs_author_process_wall_ratio": 4.558077434628188,
+      "rtdl_vs_author_reported_total_ratio": 71.80025142797122
+    }
+  ],
+  "claim_boundary": "Bounded same-input representative correctness and diagnostic timing matrix. Synthetic fixtures only; not exact paper datasets and not a public speedup claim.",
+  "manifest_path": "/root/rtdl_goal5093/Paper-reproduction-apps/rt-dbscan-paper/data/fixtures/representative_fixtures_manifest.json",
+  "paper_app": "rt-dbscan-paper",
+  "paper_reproduction_claim_authorized": false,
+  "performance_claim_authorized": false,
+  "repeat": 1,
+  "schema": "rtdl.paper_reproduction.rt_dbscan.partition_matrix.v1",
+  "whole_program_speedup_claim_authorized": false
+}

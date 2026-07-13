@@ -1,0 +1,170 @@
+{
+  "bounded_geo_rows": [
+    {
+      "abs_diff_vs_author": 5.2616073986655465e-06,
+      "author_hd_result": 65.44752502441406,
+      "author_process_wall_sec": 1.2626526355743408,
+      "author_running_avg_time_ms": 6.506,
+      "case_id": "county_zcta_bounded",
+      "category": "geo_bounded",
+      "figure5_reproduction_claimed": false,
+      "input_identity_level": "level_b_bounded_geo_fixture",
+      "matched_author": true,
+      "paper_pair": "dtl_cnty.wkt -> uszipcode.wkt",
+      "partner": "triton",
+      "per_source_witness_exact": true,
+      "point_counts": [
+        38034,
+        50272
+      ],
+      "ratio_authorized": false,
+      "route": "directed_max_of_nearest_distance_2d_partner_columns",
+      "rtdl_hd_result": 65.44751976280666,
+      "rtdl_route_sec": 0.6388622000813484,
+      "rtdl_total_sec": 3.674895405769348,
+      "tolerance": 1e-05,
+      "triton_strategy": "dense_point_nearest_tiled"
+    },
+    {
+      "abs_diff_vs_author": 4.925300871150284e-06,
+      "author_hd_result": 72.38665008544922,
+      "author_process_wall_sec": 1.1073951125144958,
+      "author_running_avg_time_ms": 4.423,
+      "case_id": "water_bg_bounded",
+      "category": "geo_bounded",
+      "figure5_reproduction_claimed": false,
+      "input_identity_level": "level_b_bounded_geo_fixture",
+      "matched_author": true,
+      "paper_pair": "USADetailedWaterBodies.wkt -> USACensusBlockGroupBoundaries.wkt",
+      "partner": "triton",
+      "per_source_witness_exact": true,
+      "point_counts": [
+        124,
+        894
+      ],
+      "ratio_authorized": false,
+      "route": "directed_max_of_nearest_distance_2d_partner_columns",
+      "rtdl_hd_result": 72.38664516014835,
+      "rtdl_route_sec": 0.5364696383476257,
+      "rtdl_total_sec": 2.08864938467741,
+      "tolerance": 1e-05,
+      "triton_strategy": "dense_point_nearest_tiled"
+    }
+  ],
+  "claim_boundary": {
+    "author_rt_core_algorithm_equivalence_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_reopened": false,
+    "figure5_reproduction_claimed": false,
+    "full_figure5_matrix_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "level_b_same_pod_scalar_matrix_claimed": true,
+    "performance_ratio_claimed": false,
+    "route_micro_optimization_goal_authorized": false
+  },
+  "coverage": {
+    "bounded_geo_case_count": 2,
+    "bounded_geo_route_result_count": 2,
+    "graphics_case_count": 3,
+    "graphics_route_result_count": 6,
+    "total_case_count": 5
+  },
+  "goal": "Goal5423",
+  "graphics_rows": [
+    {
+      "all_routes_match_author": true,
+      "author_hd_result": 0.12572988867759705,
+      "author_process_wall_sec": 1.9343201890587807,
+      "author_rerun_matches_paper_log": true,
+      "author_running_avg_time_ms": 8.128,
+      "case_id": "dragon_happy",
+      "category": "graphics",
+      "exact_witness_route_labels": [
+        "cell-mbr-exact-witness"
+      ],
+      "figure5_reproduction_claimed": false,
+      "input_identity_level": "level_b_same_source_public_graphics",
+      "ratio_authorized": false,
+      "route_count": 2,
+      "scalar_only_route_labels": [
+        "cell-mbr-fast-scalar"
+      ]
+    },
+    {
+      "all_routes_match_author": true,
+      "author_hd_result": 0.21912431716918945,
+      "author_process_wall_sec": 2.345173105597496,
+      "author_rerun_matches_paper_log": true,
+      "author_running_avg_time_ms": 26.817,
+      "case_id": "thai_happy_scaled",
+      "category": "graphics",
+      "exact_witness_route_labels": [
+        "cell-mbr-exact-witness"
+      ],
+      "figure5_reproduction_claimed": false,
+      "input_identity_level": "level_b_same_source_public_graphics",
+      "ratio_authorized": false,
+      "route_count": 2,
+      "scalar_only_route_labels": [
+        "cell-mbr-fast-scalar"
+      ]
+    },
+    {
+      "all_routes_match_author": true,
+      "author_hd_result": 0.28763842582702637,
+      "author_process_wall_sec": 2.4374816194176674,
+      "author_rerun_matches_paper_log": true,
+      "author_running_avg_time_ms": 19.281,
+      "case_id": "thai_asian_scaled",
+      "category": "graphics",
+      "exact_witness_route_labels": [
+        "cell-mbr-exact-witness"
+      ],
+      "figure5_reproduction_claimed": false,
+      "input_identity_level": "level_b_same_source_public_graphics",
+      "ratio_authorized": false,
+      "route_count": 2,
+      "scalar_only_route_labels": [
+        "cell-mbr-fast-scalar"
+      ]
+    }
+  ],
+  "matched": true,
+  "next_recommendation": {
+    "explicit_lb": false,
+    "preferred_next_goal": "Goal5424_strict_review_packet_for_5419_5423_or_return_to_exact_dataset_acquisition",
+    "route_micro_optimization": false,
+    "strict_review_packet": true
+  },
+  "remaining_blockers": [
+    {
+      "blocker": "exact_paper_dataset_files_or_hashes_missing",
+      "impact": "prevents exact paper dataset and full Figure 5 reproduction claims"
+    },
+    {
+      "blocker": "figures_5_to_11_denominators_not_aligned",
+      "impact": "prevents author-vs-RTDL performance ratios"
+    },
+    {
+      "blocker": "explicit_lb_row_identity_fail_closed",
+      "impact": "prevents Figure 7 load-balance implementation-artifact parity line"
+    },
+    {
+      "blocker": "fast_scalar_routes_are_scalar_only_when_per_source_witness_exact_false",
+      "impact": "prevents exact per-source witness claims for fast-scalar rows"
+    }
+  ],
+  "schema": "rtdl.paper_reproduction.xhd.goal5423.level_b_matrix_consolidation_after_geo.v1",
+  "source_artifacts": {
+    "goal5419": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5419_figure5_level_b_same_pod_graphics_matrix.json",
+    "goal5422": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5422_bounded_geo_same_pod_packet_execution.json"
+  },
+  "status": "level_b_same_pod_matrix_consolidated_after_geo__review_node__no_ratio",
+  "stop_loss_gate": {
+    "decision": "pass_no_app_artifact_parity_work_authorized",
+    "gate_downstream_consumer_reachable": true,
+    "gate_generic_capability_produced": true,
+    "gate_non_app_consumer": "generic_directed_max_of_nearest_distance_2d / Goal5128 facility-service-radius consumer family",
+    "gate_requires_app_specific_logic": false
+  }
+}

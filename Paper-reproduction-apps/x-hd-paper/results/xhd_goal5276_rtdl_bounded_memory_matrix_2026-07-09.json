@@ -1,0 +1,192 @@
+{
+  "claim_boundary": {
+    "author_memory_parity_claimed": false,
+    "exact_gpu_allocator_measurement_claimed": false,
+    "figure11_reproduced": false,
+    "performance_ratio_claimed": false,
+    "same_denominator_author_figure11_claimed": false
+  },
+  "coverage": {
+    "all_rows_same_denominator_author_figure11": false,
+    "measured_bvh_rows": 2,
+    "wl_heavy_peak_unavailable_rows": 2
+  },
+  "date": "2026-07-09",
+  "goal": "Goal5276",
+  "row_count": 2,
+  "rows": [
+    {
+      "author_mapped_fields": {
+        "BVH": {
+          "bytes": 896,
+          "mb": 0.0008544921875,
+          "method": "Native OptiX cell-MBR frontier telemetry: accel_output_bytes from the GAS output buffer. This excludes transient build workspace and is still not author Figure 11 parity.",
+          "status": "measured_native_optix_accel_output_buffer"
+        },
+        "Grid": {
+          "bytes": 184,
+          "mb": 0.00017547607421875,
+          "method": "4 cell int64 columns + 2 target-point int64 columns + grid shape/bounds + dense lookup.",
+          "status": "estimated_from_generic_grid_column_contract"
+        },
+        "MBRs B": {
+          "bytes": 48,
+          "mb": 4.57763671875e-05,
+          "method": "6 float64 min/max cell-MBR columns over occupied grid cells.",
+          "status": "estimated_from_cell_mbr_columns"
+        },
+        "WL": {
+          "bytes": 128,
+          "mb": 0.0001220703125,
+          "method": "frontier_row_capacity * 8 generic 64-bit frontier row columns. This is RTDL route capacity accounting, not the author's Figure 11 WL denominator; author WL is in_queue + miss_queue, computed in hausdorff_distance_rt.h as 2 * n_points_a * sizeof(uint32_t).",
+          "status": "estimated_rtdl_frontier_row_capacity_not_author_in_miss_queue"
+        },
+        "WL Heavy Peak": {
+          "bytes": null,
+          "mb": null,
+          "method": "Current RTDL route does not expose an author-like heavy-cell offload worklist peak.",
+          "status": "unavailable_no_author_heavy_offload_equivalent_in_current_rtdl_route"
+        }
+      },
+      "candidate_distance_evaluations": 0,
+      "estimated_author_mapped_bytes_excluding_unavailable": 1256,
+      "estimated_author_mapped_mb_excluding_unavailable": 0.00119781494140625,
+      "estimated_total_accounted_bytes_excluding_unavailable": 4680,
+      "estimated_total_accounted_mb_excluding_unavailable": 0.00446319580078125,
+      "frontier_attempted_count": 0,
+      "frontier_row_count": 0,
+      "hd_result": 2.0,
+      "input1": "Paper-reproduction-apps/x-hd-paper/data/fixtures/tiny3d_ply_a.ply",
+      "input2": "Paper-reproduction-apps/x-hd-paper/data/fixtures/tiny3d_ply_b.ply",
+      "native_memory_telemetry_collected": true,
+      "native_memory_telemetry_schema": "rtdl.optix.cell_mbr_nearest_frontier_3d.memory_telemetry.v1",
+      "point_count_a": 2,
+      "point_count_b": 1,
+      "route_label": "cell-mbr-fast-scalar",
+      "row_label": "tiny3d native telemetry probe",
+      "rtdl_only_fields": {
+        "input_column_matrices_and_ids": {
+          "bytes": 96,
+          "mb": 9.1552734375e-05,
+          "method": "source/target float64 coordinate matrices plus int64 ids.",
+          "status": "estimated_rtdl_host_column_memory_not_author_field"
+        },
+        "native_accel_aabb_input": {
+          "bytes": 24,
+          "mb": 2.288818359375e-05,
+          "method": "Device AABB input buffer used to build the OptiX GAS; not an author Figure 11 field.",
+          "status": "measured_native_optix_aabb_input_buffer"
+        },
+        "native_accel_build_temp": {
+          "bytes": 2688,
+          "mb": 0.0025634765625,
+          "method": "Transient OptiX GAS build workspace from native telemetry; not an author Figure 11 field.",
+          "status": "measured_native_optix_transient_accel_build_workspace"
+        },
+        "native_route_device_buffers_excluding_accel": {
+          "bytes": 568,
+          "mb": 0.00054168701171875,
+          "method": "Native cell-MBR frontier route device buffers excluding OptiX GAS output/temp/AABB.",
+          "status": "measured_native_route_device_workspace"
+        },
+        "nearest_state": {
+          "bytes": 48,
+          "mb": 4.57763671875e-05,
+          "method": "query ids, nearest item ids, and nearest distances for max-nearest reduction.",
+          "status": "estimated_rtdl_route_state_not_author_field"
+        }
+      },
+      "same_denominator_author_figure11": false,
+      "same_denominator_reason": "RTDL status-bearing memory rows are derived from RTDL route metadata/native telemetry. They do not use the author Figure 11 allocator denominator, paper-exact inputs, author WL in/miss queue accounting, or author heavy-worklist peak accounting.",
+      "source_artifact": "Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5275_tiny3d_native_memory_telemetry_pod_2026-07-09.json"
+    },
+    {
+      "author_mapped_fields": {
+        "BVH": {
+          "bytes": 7552,
+          "mb": 0.0072021484375,
+          "method": "Native OptiX cell-MBR frontier telemetry: accel_output_bytes from the GAS output buffer. This excludes transient build workspace and is still not author Figure 11 parity.",
+          "status": "measured_native_optix_accel_output_buffer"
+        },
+        "Grid": {
+          "bytes": 13288,
+          "mb": 0.01267242431640625,
+          "method": "4 cell int64 columns + 2 target-point int64 columns + grid shape/bounds + dense lookup.",
+          "status": "estimated_from_generic_grid_column_contract"
+        },
+        "MBRs B": {
+          "bytes": 7536,
+          "mb": 0.0071868896484375,
+          "method": "6 float64 min/max cell-MBR columns over occupied grid cells.",
+          "status": "estimated_from_cell_mbr_columns"
+        },
+        "WL": {
+          "bytes": 131072,
+          "mb": 0.125,
+          "method": "frontier_row_capacity * 8 generic 64-bit frontier row columns. This is RTDL route capacity accounting, not the author's Figure 11 WL denominator; author WL is in_queue + miss_queue, computed in hausdorff_distance_rt.h as 2 * n_points_a * sizeof(uint32_t).",
+          "status": "estimated_rtdl_frontier_row_capacity_not_author_in_miss_queue"
+        },
+        "WL Heavy Peak": {
+          "bytes": null,
+          "mb": null,
+          "method": "Current RTDL route does not expose an author-like heavy-cell offload worklist peak.",
+          "status": "unavailable_no_author_heavy_offload_equivalent_in_current_rtdl_route"
+        }
+      },
+      "candidate_distance_evaluations": 0,
+      "estimated_author_mapped_bytes_excluding_unavailable": 159448,
+      "estimated_author_mapped_mb_excluding_unavailable": 0.15206146240234375,
+      "estimated_total_accounted_bytes_excluding_unavailable": 369408,
+      "estimated_total_accounted_mb_excluding_unavailable": 0.352294921875,
+      "frontier_attempted_count": 0,
+      "frontier_row_count": 0,
+      "hd_result": 0.07136699450130711,
+      "input1": "Paper-reproduction-apps/x-hd-paper/data/fixtures/stanford_dragon_res4_sample256.ply",
+      "input2": "Paper-reproduction-apps/x-hd-paper/data/fixtures/stanford_happy_res4_sample256.ply",
+      "native_memory_telemetry_collected": true,
+      "native_memory_telemetry_schema": "rtdl.optix.cell_mbr_nearest_frontier_3d.memory_telemetry.v1",
+      "point_count_a": 256,
+      "point_count_b": 256,
+      "route_label": "cell-mbr-fast-scalar",
+      "row_label": "stanford dragon->happy sample256 native telemetry probe",
+      "rtdl_only_fields": {
+        "input_column_matrices_and_ids": {
+          "bytes": 16384,
+          "mb": 0.015625,
+          "method": "source/target float64 coordinate matrices plus int64 ids.",
+          "status": "estimated_rtdl_host_column_memory_not_author_field"
+        },
+        "native_accel_aabb_input": {
+          "bytes": 3768,
+          "mb": 0.00359344482421875,
+          "method": "Device AABB input buffer used to build the OptiX GAS; not an author Figure 11 field.",
+          "status": "measured_native_optix_aabb_input_buffer"
+        },
+        "native_accel_build_temp": {
+          "bytes": 14464,
+          "mb": 0.0137939453125,
+          "method": "Transient OptiX GAS build workspace from native telemetry; not an author Figure 11 field.",
+          "status": "measured_native_optix_transient_accel_build_workspace"
+        },
+        "native_route_device_buffers_excluding_accel": {
+          "bytes": 169200,
+          "mb": 0.1613616943359375,
+          "method": "Native cell-MBR frontier route device buffers excluding OptiX GAS output/temp/AABB.",
+          "status": "measured_native_route_device_workspace"
+        },
+        "nearest_state": {
+          "bytes": 6144,
+          "mb": 0.005859375,
+          "method": "query ids, nearest item ids, and nearest distances for max-nearest reduction.",
+          "status": "estimated_rtdl_route_state_not_author_field"
+        }
+      },
+      "same_denominator_author_figure11": false,
+      "same_denominator_reason": "RTDL status-bearing memory rows are derived from RTDL route metadata/native telemetry. They do not use the author Figure 11 allocator denominator, paper-exact inputs, author WL in/miss queue accounting, or author heavy-worklist peak accounting.",
+      "source_artifact": "Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5275_stanford_sample256_native_memory_telemetry_pod_2026-07-09.json"
+    }
+  ],
+  "schema": "rtdl.paper_reproduction.xhd.rtdl_memory_matrix.v1",
+  "semantics": "RTDL-side status-bearing memory matrix for bounded/pilot artifacts. Measured BVH means RTDL native OptiX accel output bytes when available; estimated fields remain estimates, unavailable fields remain unavailable. No author Figure 11 ratio is authorized from this matrix.",
+  "status": "rtdl_bounded_memory_matrix_ready__figure11_not_reproduced"
+}

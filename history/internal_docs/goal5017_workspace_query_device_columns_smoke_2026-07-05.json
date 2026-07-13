@@ -1,0 +1,109 @@
+{
+  "face_columns_metadata": {
+    "app_specific_schema_allowed": false,
+    "capacity": 1706639,
+    "device_ordinal": 0,
+    "device_resident": true,
+    "dtype": "uint32",
+    "engine_boundary": "generic_directed_point_location_id_column",
+    "field_name": "face_id",
+    "ids_device_ptr_observed": true,
+    "native_symbol": "rtdl_optix_prepared_directed_segment_point_location_2d_device_face_id_columns",
+    "overflow": false,
+    "owner": "prepared_point_location_query_points",
+    "producer_primitive": "directed_segment_point_location_2d",
+    "public_speedup_claim_authorized": false,
+    "release_authorized": false,
+    "row_count": 1706639,
+    "schema": "rtdl.optix.directed_point_location_device_id_column.v1",
+    "traversal_seconds": 0.004413117,
+    "true_zero_copy_claim_authorized": false
+  },
+  "query_metadata": {
+    "backend": "optix",
+    "base_edge_count": 9982960,
+    "base_point_count": 9993104,
+    "bounds": [
+      -124.415163,
+      -71.85615,
+      25.837092,
+      45.015851
+    ],
+    "claim_boundary": {
+      "application_continuation_inside_rtdl_core": false,
+      "broad_speedup_claim_authorized": false,
+      "bundled_rayjoin_helper_used": false,
+      "public_generic_rtdl_workspace_query": true,
+      "query_specific_locator_prepare_still_paid": false,
+      "raw_optix_callback_exposed": false
+    },
+    "prepared": {
+      "base_points_in_query_point_location": false,
+      "lsi_query": false,
+      "query_points_in_base_uses_base_workspace_locator": true
+    },
+    "query_edge_count": 1705027,
+    "query_point_count": 1706639,
+    "schema": "rtdl.optix.planar_map_workspace_2d.query.v1",
+    "setup_phase_seconds": {
+      "load_pack_query_sec": 2.055520372465253
+    },
+    "workspace": "PLANAR_MAP_WORKSPACE_2D_QUERY"
+  },
+  "schema": "goal5017_workspace_query_device_columns_smoke.v1",
+  "shared_base_points_smoke": {
+    "query_metadata": {
+      "backend": "optix",
+      "base_edge_count": 9982960,
+      "base_point_count": 9993104,
+      "bounds": [
+        -124.415163,
+        -71.85615,
+        25.837092,
+        45.015851
+      ],
+      "claim_boundary": {
+        "application_continuation_inside_rtdl_core": false,
+        "broad_speedup_claim_authorized": false,
+        "bundled_rayjoin_helper_used": false,
+        "public_generic_rtdl_workspace_query": true,
+        "query_specific_locator_prepare_still_paid": true,
+        "raw_optix_callback_exposed": false
+      },
+      "prepared": {
+        "base_points_in_query_point_location": true,
+        "lsi_query": false,
+        "query_points_in_base_uses_base_workspace_locator": true
+      },
+      "query_edge_count": 1705027,
+      "query_point_count": 1706639,
+      "schema": "rtdl.optix.planar_map_workspace_2d.query.v1",
+      "setup_phase_seconds": {
+        "load_pack_query_sec": 2.0618832241743803,
+        "prepare_point_location_base_in_query_sec": 0.4303861930966377
+      },
+      "workspace": "PLANAR_MAP_WORKSPACE_2D_QUERY"
+    },
+    "schema": "goal5017_workspace_query_shared_base_points_smoke.v1",
+    "shared_base_points_column_metadata": {
+      "app_specific_schema_allowed": false,
+      "capacity": 9993104,
+      "device_ordinal": 0,
+      "device_resident": true,
+      "dtype": "uint32",
+      "engine_boundary": "generic_directed_point_location_id_column",
+      "field_name": "face_id",
+      "ids_device_ptr_observed": true,
+      "native_symbol": "rtdl_optix_prepared_directed_segment_point_location_2d_device_face_id_columns",
+      "overflow": false,
+      "owner": "prepared_point_location_query_points",
+      "producer_primitive": "directed_segment_point_location_2d",
+      "public_speedup_claim_authorized": false,
+      "release_authorized": false,
+      "row_count": 9993104,
+      "schema": "rtdl.optix.directed_point_location_device_id_column.v1",
+      "traversal_seconds": 0.01524035,
+      "true_zero_copy_claim_authorized": false
+    }
+  }
+}

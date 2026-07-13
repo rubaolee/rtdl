@@ -1,0 +1,58 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5337.acm_candidate_hash_mapping.v1",
+  "goal": "Goal5337",
+  "date": "2026-07-09",
+  "purpose": "Add an app-owned ACM candidate bytes/hash mapping gate that parses simple SHA256 manifests and verifies whether candidate input/archive entries are covered by matching hashes before any workload mapping or POD gate.",
+  "status": "acm_candidate_hash_mapping_gate_ready__await_real_candidate_zip",
+  "script": {
+    "path": "Paper-reproduction-apps/x-hd-paper/scripts/map_xhd_acm_candidate_bytes_hashes.py",
+    "input": "local ACM supplement zip with candidate bytes and optional hash manifests",
+    "output_schema": "rtdl.paper_reproduction.xhd.acm_candidate_bytes_hash_mapping.v1"
+  },
+  "classification_statuses": [
+    "all_candidate_hashes_matched__workload_mapping_required",
+    "candidate_hash_mismatch_detected",
+    "partial_or_missing_candidate_hash_mapping",
+    "candidate_bytes_without_parseable_hash_manifest",
+    "no_candidate_bytes_to_map"
+  ],
+  "follow_up_goal_types": [
+    "candidate_workload_mapping_review",
+    "candidate_hash_mismatch_review",
+    "candidate_hash_mapping_gap_review",
+    "candidate_identity_review",
+    "record_no_candidate_bytes"
+  ],
+  "behavior_locked_by_tests": [
+    "candidate bytes plus matching sha256 lines choose candidate_workload_mapping_review",
+    "named candidate hash mismatch chooses candidate_hash_mismatch_review",
+    "candidate bytes without parseable hash manifest choose candidate_identity_review",
+    "invalid zip fails closed",
+    "summary forbids exact/full/performance claims"
+  ],
+  "pod_usage": {
+    "used": false,
+    "expected_next": false,
+    "reason": "Hash mapping is still provenance review. Candidate bytes plus matching hashes require workload mapping before author/RTDL POD execution."
+  },
+  "claim_boundary": {
+    "real_acm_zip_inspected": false,
+    "external_artifacts_acquired": false,
+    "exact_equivalence_accepted": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false
+  },
+  "allowed_summary": "Goal5337 adds an app-owned ACM candidate bytes/hash mapping gate. It can verify simple SHA256 manifest coverage for candidate files, but still requires workload mapping/review before POD.",
+  "not_allowed": [
+    "claiming the real ACM supplement has been inspected from synthetic tests",
+    "claiming candidate bytes are exact paper inputs from hash matches alone",
+    "claiming exact paper dataset reproduction from this mapping alone",
+    "claiming Figure 5 reproduction from this mapping alone",
+    "claiming full X-HD paper reproduction from this mapping alone",
+    "claiming author-vs-RTDL performance ratio from this mapping alone",
+    "running POD directly from this mapping"
+  ],
+  "exit_label": "acm_candidate_hash_mapping_gate_ready__await_real_candidate_zip"
+}

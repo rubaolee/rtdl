@@ -1,0 +1,29 @@
+{
+  "channel": null,
+  "claim_boundary": {
+    "exact_equivalence_accepted": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "external_artifacts_acquired": false,
+    "external_response_received": false,
+    "figure5_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false,
+    "pod_execution_claimed": false,
+    "receipt_stub_claimed": true,
+    "request_sent_claimed": false
+  },
+  "expected_response_intake": "If a response arrives, normalize it into Paper-reproduction-apps/x-hd-paper/requests/incoming before running the response inbox gate.",
+  "privacy_notes": "Do not commit private raw correspondence unless the sender permits it.",
+  "raw_message_committed": false,
+  "recipient_or_reviewer": "owner or external reviewer",
+  "request_id": "water_bg_exact_equivalence_review_request",
+  "request_path": "Paper-reproduction-apps/x-hd-paper/requests/water_bg_exact_equivalence_review_request.md",
+  "request_sha256_at_prepare_time": "075f54412c7187aa003df85cf8eaf1f892b06fd0f895a0c2946d046bf5671875",
+  "request_sha256_at_send_time": null,
+  "schema": "rtdl.paper_reproduction.xhd.external_request_send_receipt.v1",
+  "sent": false,
+  "sent_at_utc": null,
+  "sent_by": null,
+  "status": "stub_not_a_receipt",
+  "subject_or_thread": null
+}

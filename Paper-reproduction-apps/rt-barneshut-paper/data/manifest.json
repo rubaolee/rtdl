@@ -1,0 +1,52 @@
+{
+  "paper": {
+    "title": "RT-BarnesHut: Accelerating Barnes-Hut Using Ray-Tracing Hardware",
+    "venue": "PPoPP 2025",
+    "doi": "10.1145/3710848.3710885"
+  },
+  "author_artifact": {
+    "repository": "https://github.com/vani-nag/OWLRayTracing",
+    "branch": "BarnesHutRT",
+    "commit": "2a3c60da0bbbd00ff1777cb57ec2089cb0029cf7",
+    "sample_path": "samples/cmdline/s01-rtbarneshut",
+    "binary_target": "rtbarneshut"
+  },
+  "known_compatibility_requirements": {
+    "optix_sdk": "8.1.0 tested historically",
+    "cuda_compiler": "12.6 tested historically with an R565 driver",
+    "cmake_cuda_flags": "-include array",
+    "single_gpu_device_ordinal": "patch hardcoded device ordinal 1 to 0 when needed",
+    "body_count": "author source hardcodes NUM_POINTS and may need a controlled-size patch",
+    "force_output": "RTBH_FORCE_OUT patch writes per-body forces after the measured force phase"
+  },
+  "current_rtdl_status": {
+    "paper_reproduction_complete": false,
+    "bounded_same_input_reproduction_complete": true,
+    "existing_benchmark_app": "examples/current/research_benchmarks/barnes_hut/rtdl_barnes_hut_benchmark_app.py",
+    "existing_diagnostic_script": "scripts/goal2547_barnes_hut_3d_scalar_subtree_kernel.py",
+    "known_gap": "none for the bounded same-input AuthorOfficial comparator",
+    "completed_evidence": "remote_full_pod_gate/pod_57582_author_optix_payload_gate",
+    "completion_audit_evidence": "remote_full_pod_gate/pod_57582_author_optix_payload_gate/pulled/_runs/completion_audit/summary.json",
+    "same_input_author_rtdl_match": {
+      "force_count": 32768,
+      "mismatch_count": 0,
+      "max_rel_error": 2.1112736725325853e-06
+    },
+    "narrow_force_kernel_ratio_rtdl_over_author": 0.4112069216475026,
+    "performance_phase_context": {
+      "rtdl_resident_kernel_min_ms": 0.856544017791748,
+      "rtdl_resident_kernel_mean_ms": 0.9283008098602294,
+      "author_rt_core_force_ms": 2.083,
+      "rtdl_reported_prep_plus_kernel_min_ms": 469.34572154283524,
+      "author_reported_preprocessing_plus_execution_ms": 185.44600000000003,
+      "prep_plus_kernel_ratio_rtdl_over_author_reported_envelope": 2.530902373428573
+    }
+  },
+  "completion_gates": [
+    "build pinned author artifact",
+    "produce same-input author output or stable checksum",
+    "run RTDL on the same input",
+    "compare numeric output under an explicit tolerance",
+    "report performance under matched phase boundaries"
+  ]
+}

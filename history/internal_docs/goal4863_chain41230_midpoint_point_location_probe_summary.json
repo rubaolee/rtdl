@@ -1,0 +1,238 @@
+{
+  "edge_id": 43212,
+  "elapsed_sec": 440.797776222229,
+  "expected_face_from_author_output": 10950,
+  "left": "/workspace/rayjoin_section57_same_source_cdb/point_cdb/dtl_cnty/dtl_cnty_Point.cdb",
+  "lsi_timings": {
+    "candidate_count_pass": 0.006142316,
+    "candidate_download": 0.0,
+    "candidate_write_pass": 0.0,
+    "emitted_count": 965844,
+    "exact_refine": 0.0,
+    "hot_call_sec": 28.38512583076954,
+    "left_upload": 0.0,
+    "mode": "count_prepared_left_grouped_range_direct_intersection",
+    "raw_candidate_count": 0,
+    "scaled_intersection_materialization_enabled": true
+  },
+  "matching_variants": [
+    "trunc_scaled_endpoint_midpoint",
+    "rational_plus_0_-1",
+    "rational_plus_1_-1",
+    "rational_plus_1_0",
+    "rational_plus_1_1"
+  ],
+  "prepare_wall_sec": 4.341731540858746,
+  "right": "/workspace/rayjoin_section57_same_source_cdb/point_cdb/USAZIPCodeArea/USAZIPCodeArea_Point.cdb",
+  "right_eids": [
+    8522815,
+    8522816
+  ],
+  "scale_bounds": [
+    -179.148909,
+    179.778465,
+    -14.548692,
+    71.390482
+  ],
+  "schema": "rtdl.goal4863.chain41230_midpoint_point_location_probe.v1",
+  "target_xsects": [
+    {
+      "eid0": 43212,
+      "eid1": 8522815,
+      "scaled_x": -33924059549368,
+      "scaled_x_rational": "-849631005185907902183936852/25045086480569",
+      "scaled_y": 9057003035586,
+      "scaled_y_rational": "2041500818529247127170970804/225405778325121",
+      "x": -86.6849394999989,
+      "y": 34.080121799998686
+    },
+    {
+      "eid0": 43212,
+      "eid1": 8522816,
+      "scaled_x": -33924059549367,
+      "scaled_x_rational": "-42704545359037305450425626652/1258827685315555",
+      "scaled_y": 9057003035590,
+      "scaled_y_rational": "11401206167187807083092783964/1258827685315555",
+      "x": -86.68493949999633,
+      "y": 34.08012180000119
+    }
+  ],
+  "variants": {
+    "rational_midpoint_current": {
+      "face_id": 10938,
+      "sx": -33924059549368,
+      "sy": 9057003035588,
+      "timings": {
+        "hot_call_sec": 0.0015200972557067871,
+        "mode": "none",
+        "point_count": 1,
+        "point_upload": 0.0,
+        "positive_face_count": 1,
+        "row_download": 2.3575e-05,
+        "traversal": 0.000222021
+      },
+      "x": -86.6849394999989,
+      "y": 34.08012179999994
+    },
+    "rational_plus_-1_-1": {
+      "face_id": 10938,
+      "sx": -33924059549369,
+      "sy": 9057003035587,
+      "timings": {
+        "hot_call_sec": 0.000282973051071167,
+        "mode": "none",
+        "point_count": 1,
+        "point_upload": 0.0,
+        "positive_face_count": 1,
+        "row_download": 1.2504e-05,
+        "traversal": 0.000127461
+      },
+      "x": -86.68493950000146,
+      "y": 34.08012179999931
+    },
+    "rational_plus_-1_0": {
+      "face_id": 10938,
+      "sx": -33924059549369,
+      "sy": 9057003035588,
+      "timings": {
+        "hot_call_sec": 0.0002769380807876587,
+        "mode": "none",
+        "point_count": 1,
+        "point_upload": 0.0,
+        "positive_face_count": 1,
+        "row_download": 1.2734e-05,
+        "traversal": 0.000127101
+      },
+      "x": -86.68493950000146,
+      "y": 34.08012179999994
+    },
+    "rational_plus_-1_1": {
+      "face_id": 10938,
+      "sx": -33924059549369,
+      "sy": 9057003035589,
+      "timings": {
+        "hot_call_sec": 0.0002817511558532715,
+        "mode": "none",
+        "point_count": 1,
+        "point_upload": 0.0,
+        "positive_face_count": 1,
+        "row_download": 1.2523e-05,
+        "traversal": 0.00012651
+      },
+      "x": -86.68493950000146,
+      "y": 34.08012180000056
+    },
+    "rational_plus_0_-1": {
+      "face_id": 10950,
+      "sx": -33924059549368,
+      "sy": 9057003035587,
+      "timings": {
+        "hot_call_sec": 0.0002754777669906616,
+        "mode": "none",
+        "point_count": 1,
+        "point_upload": 0.0,
+        "positive_face_count": 1,
+        "row_download": 1.2474e-05,
+        "traversal": 0.000121681
+      },
+      "x": -86.6849394999989,
+      "y": 34.08012179999931
+    },
+    "rational_plus_0_0": {
+      "face_id": 10938,
+      "sx": -33924059549368,
+      "sy": 9057003035588,
+      "timings": {
+        "hot_call_sec": 0.00026907026767730713,
+        "mode": "none",
+        "point_count": 1,
+        "point_upload": 0.0,
+        "positive_face_count": 1,
+        "row_download": 1.2063e-05,
+        "traversal": 0.000123614
+      },
+      "x": -86.6849394999989,
+      "y": 34.08012179999994
+    },
+    "rational_plus_0_1": {
+      "face_id": 10938,
+      "sx": -33924059549368,
+      "sy": 9057003035589,
+      "timings": {
+        "hot_call_sec": 0.0002760961651802063,
+        "mode": "none",
+        "point_count": 1,
+        "point_upload": 0.0,
+        "positive_face_count": 1,
+        "row_download": 1.2293e-05,
+        "traversal": 0.000123785
+      },
+      "x": -86.6849394999989,
+      "y": 34.08012180000056
+    },
+    "rational_plus_1_-1": {
+      "face_id": 10950,
+      "sx": -33924059549367,
+      "sy": 9057003035587,
+      "timings": {
+        "hot_call_sec": 0.00026907026767730713,
+        "mode": "none",
+        "point_count": 1,
+        "point_upload": 0.0,
+        "positive_face_count": 1,
+        "row_download": 1.3285e-05,
+        "traversal": 0.000122643
+      },
+      "x": -86.68493949999633,
+      "y": 34.08012179999931
+    },
+    "rational_plus_1_0": {
+      "face_id": 10950,
+      "sx": -33924059549367,
+      "sy": 9057003035588,
+      "timings": {
+        "hot_call_sec": 0.0002682432532310486,
+        "mode": "none",
+        "point_count": 1,
+        "point_upload": 0.0,
+        "positive_face_count": 1,
+        "row_download": 1.3616e-05,
+        "traversal": 0.000121942
+      },
+      "x": -86.68493949999633,
+      "y": 34.08012179999994
+    },
+    "rational_plus_1_1": {
+      "face_id": 10950,
+      "sx": -33924059549367,
+      "sy": 9057003035589,
+      "timings": {
+        "hot_call_sec": 0.00028207898139953613,
+        "mode": "none",
+        "point_count": 1,
+        "point_upload": 0.0,
+        "positive_face_count": 1,
+        "row_download": 1.3615e-05,
+        "traversal": 0.000121851
+      },
+      "x": -86.68493949999633,
+      "y": 34.08012180000056
+    },
+    "trunc_scaled_endpoint_midpoint": {
+      "face_id": 10950,
+      "sx": -33924059549367,
+      "sy": 9057003035588,
+      "timings": {
+        "hot_call_sec": 0.0003179684281349182,
+        "mode": "none",
+        "point_count": 1,
+        "point_upload": 0.0,
+        "positive_face_count": 1,
+        "row_download": 1.3295e-05,
+        "traversal": 0.000124437
+      },
+      "x": -86.68493949999633,
+      "y": 34.08012179999994
+    }
+  }
+}

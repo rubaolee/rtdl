@@ -1,0 +1,118 @@
+{
+  "allowed_summary": "After Goals5440-5443, the X-HD exact-input blocker is unchanged: public/ACM checks do not provide exact input artifacts, no request is recorded sent, no response exists, and POD is not the next step.",
+  "blocker_rows": [
+    {
+      "blocker": "exact input artifacts or accepted exact-equivalence evidence",
+      "current_state": "not satisfied",
+      "evidence": [
+        "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5441_full_objective_functional_gap_matrix.json",
+        "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5442_public_provenance_rescan.json",
+        "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5443_acm_supplement_access_gate.json",
+        "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5440_external_evidence_chain_review_packet.json"
+      ]
+    },
+    {
+      "blocker": "ACM supplement contents",
+      "current_state": "visible but forbidden; not inspected",
+      "evidence": [
+        "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5443_acm_supplement_access_gate.json"
+      ]
+    },
+    {
+      "blocker": "external request/response chain",
+      "current_state": "prepared but not sent; no response; no planned gate",
+      "evidence": [
+        "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5440_external_evidence_chain_review_packet.json"
+      ]
+    },
+    {
+      "blocker": "full user objective",
+      "current_state": "1 of 14 requirements achieved; full objective incomplete",
+      "evidence": [
+        "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5441_full_objective_functional_gap_matrix.json"
+      ]
+    }
+  ],
+  "claim_boundary": {
+    "exact_equivalence_accepted": false,
+    "exact_input_blocker_removed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_reopened": false,
+    "external_artifacts_acquired": false,
+    "external_response_received": false,
+    "figure5_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "new_rtdl_route_code_added": false,
+    "performance_ratio_claimed": false,
+    "pod_execution_claimed": false,
+    "post_acm_blocker_packet_claimed": true,
+    "request_sent_claimed": false,
+    "route_micro_optimization_goal_authorized": false
+  },
+  "date": "2026-07-10",
+  "exit_label": "post_acm_exact_input_blocker_unchanged__owner_external_action_needed",
+  "goal": "Goal5444",
+  "next_action": "owner_send_selected_requests_or_obtain_authorized_acm_access_then_record_receipt_or_intake",
+  "not_allowed": [
+    "claiming exact paper dataset reproduction",
+    "claiming Figure 5 or full X-HD reproduction",
+    "claiming author-vs-RTDL performance ratio",
+    "claiming ACM supplement inspection from forbidden HTML",
+    "running POD or route work from this packet",
+    "reopening explicit -lb or route micro-optimization as paper-reproduction progress"
+  ],
+  "not_recommended_next_actions": [
+    "POD execution without exact artifact/hash/equivalence response",
+    "route micro-optimization",
+    "explicit -lb or row/hash parity work",
+    "performance ratio work",
+    "promoting Level-B scalar evidence to exact paper reproduction"
+  ],
+  "purpose": "Consolidate Goals5440-5443 into the current exact-input blocker node after public and ACM access checks.",
+  "recommended_next_actions": [
+    {
+      "action": "send_or_review_selected_external_requests_and_record_receipts",
+      "expected_artifact": "valid sent receipt under Paper-reproduction-apps/x-hd-paper/requests/sent",
+      "when": "owner chooses an external request path"
+    },
+    {
+      "action": "obtain_authorized_acm_access_or_local_zip_then_inspect",
+      "expected_artifact": "normalized ACM supplement intake JSON via inspect_xhd_acm_supplement_zip.py",
+      "when": "ACM access/cookie or ics26-106.zip becomes available"
+    },
+    {
+      "action": "normalize_external_response_then_run_goal5435_and_goal5437",
+      "expected_artifact": "classified response and strict next-gate plan",
+      "when": "author/reviewer/ACM response arrives"
+    }
+  ],
+  "schema": "rtdl.paper_reproduction.xhd.goal5444.post_acm_exact_input_blocker_packet.v1",
+  "source_artifacts": {
+    "acm_access_gate": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5443_acm_supplement_access_gate.json",
+    "external_chain": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5440_external_evidence_chain_review_packet.json",
+    "full_objective_gap": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5441_full_objective_functional_gap_matrix.json",
+    "public_provenance_rescan": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5442_public_provenance_rescan.json"
+  },
+  "status": "post_acm_exact_input_blocker_unchanged__owner_external_action_needed",
+  "stop_loss_gate": {
+    "decision": "PASS: blocker governance, not app-artifact parity implementation.",
+    "gate_downstream_consumer_reachable": true,
+    "gate_generic_capability_produced": true,
+    "gate_non_app_consumer": "post-ACM exact-input blocker packet / reproduction-governance workflow",
+    "gate_requires_app_specific_logic": false
+  },
+  "summary": {
+    "achieved_requirement_count": 1,
+    "acm_current_environment_can_download_zip": false,
+    "acm_supplement_inspected": false,
+    "exact_input_blocker_removed": false,
+    "external_response_count": 0,
+    "full_objective_complete": false,
+    "new_public_exact_input_artifact_found": false,
+    "planned_gate_count": 0,
+    "pod_expected_next": false,
+    "ready_external_request_count": 4,
+    "requirement_count": 14,
+    "sent_receipt_count": 0
+  }
+}

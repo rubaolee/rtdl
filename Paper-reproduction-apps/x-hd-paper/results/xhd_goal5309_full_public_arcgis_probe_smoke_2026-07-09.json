@@ -1,0 +1,224 @@
+{
+  "claim_boundary": {
+    "author_rtdl_correctness_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "geo_figure5_reproduction_claimed": false,
+    "performance_ratio_claimed": false
+  },
+  "elapsed_sec": 11.338014900218695,
+  "goal": "Goal5309",
+  "max_pages": 1,
+  "page_size_requested": 100,
+  "schema": "rtdl.paper_reproduction.xhd.goal5309.full_public_arcgis_point_count_mbr_probe.v1",
+  "services": {
+    "blockgroups": {
+      "author_loader_point_count": 48038,
+      "complete": false,
+      "elapsed_sec": 0.9877872001379728,
+      "features_seen": 100,
+      "geometry_types": {
+        "MultiPolygon": 3,
+        "Polygon": 97
+      },
+      "key": "blockgroups",
+      "mbr": [
+        -88.0255670859761,
+        -86.4111767117537,
+        30.4795746141723,
+        32.7082191359937
+      ],
+      "mbr_delta": {
+        "x_lower": 91.12334343648483,
+        "x_upper": -19.461568862632603,
+        "y_lower": 11.56888239920648,
+        "y_upper": -38.65694657445552
+      },
+      "object_id_max": 100,
+      "object_id_min": 1,
+      "pages_seen": 1,
+      "paper_basename": "USACensusBlockGroupBoundaries.wkt",
+      "paper_mbr": {
+        "x": [
+          -179.14891052246094,
+          -66.9496078491211
+        ],
+        "y": [
+          18.91069221496582,
+          71.36516571044922
+        ]
+      },
+      "paper_point_count": 52271340,
+      "point_count_delta": -52223302,
+      "point_count_relative_delta": -0.999080987784128,
+      "sample_labels": [
+        "010010201001",
+        "010010201002",
+        "010010202001",
+        "010010202002",
+        "010010203001",
+        "010010203002",
+        "010010204001",
+        "010010204002"
+      ],
+      "service_feature_count": 239203,
+      "service_url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Census_BlockGroups/FeatureServer"
+    },
+    "county": {
+      "author_loader_point_count": 344085,
+      "complete": false,
+      "elapsed_sec": 2.790509999729693,
+      "features_seen": 100,
+      "geometry_types": {
+        "MultiPolygon": 25,
+        "Polygon": 75
+      },
+      "key": "county",
+      "mbr": [
+        -179.148909,
+        -84.888246,
+        30.2209285380001,
+        71.3651620000001
+      ],
+      "mbr_delta": {
+        "x_lower": 1.5224609342112672e-06,
+        "x_upper": -17.9386381508789,
+        "y_lower": 11.310236323034278,
+        "y_upper": -3.7104491212858193e-06
+      },
+      "object_id_max": 100,
+      "object_id_min": 1,
+      "pages_seen": 1,
+      "paper_basename": "dtl_cnty.wkt",
+      "paper_mbr": {
+        "x": [
+          -179.14891052246094,
+          -66.9496078491211
+        ],
+        "y": [
+          18.91069221496582,
+          71.36516571044922
+        ]
+      },
+      "paper_point_count": 9438045,
+      "point_count_delta": -9093960,
+      "point_count_relative_delta": -0.9635427675964673,
+      "sample_labels": [
+        "Autauga County",
+        "Baldwin County",
+        "Barbour County",
+        "Bibb County",
+        "Blount County",
+        "Bullock County",
+        "Butler County",
+        "Calhoun County"
+      ],
+      "service_feature_count": 3144,
+      "service_url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Census_Counties/FeatureServer"
+    },
+    "waterbodies": {
+      "author_loader_point_count": 24967,
+      "complete": false,
+      "elapsed_sec": 1.339177300222218,
+      "features_seen": 100,
+      "geometry_types": {
+        "Polygon": 100
+      },
+      "key": "waterbodies",
+      "mbr": [
+        -160.231107166363,
+        -115.425333023071,
+        19.2039983241634,
+        46.8867667959578
+      ],
+      "mbr_delta": {
+        "x_lower": 2.4527776361082942e-06,
+        "x_upper": -48.427469253539755,
+        "y_lower": -2.4151042765652164e-07,
+        "y_upper": -2.497567768251187
+      },
+      "object_id_max": 100,
+      "object_id_min": 1,
+      "pages_seen": 1,
+      "paper_basename": "USADetailedWaterBodies.wkt",
+      "paper_mbr": {
+        "x": [
+          -160.23110961914062,
+          -66.99786376953125
+        ],
+        "y": [
+          19.203998565673828,
+          49.384334564208984
+        ]
+      },
+      "paper_point_count": 22818694,
+      "point_count_delta": -22793727,
+      "point_count_relative_delta": -0.9989058532447125,
+      "sample_labels": [
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        "Salt Lake"
+      ],
+      "service_feature_count": 463591,
+      "service_url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Detailed_Water_Bodies/FeatureServer"
+    },
+    "zcta": {
+      "author_loader_point_count": 513559,
+      "complete": false,
+      "elapsed_sec": 6.220500099938363,
+      "features_seen": 100,
+      "geometry_types": {
+        "MultiPolygon": 20,
+        "Polygon": 80
+      },
+      "key": "zcta",
+      "mbr": [
+        -178.332237,
+        179.778465,
+        23.05702,
+        70.4082487
+      ],
+      "mbr_delta": {
+        "x_lower": 0.8151018671875079,
+        "x_upper": 7.358398448786829e-06,
+        "y_lower": 37.605711749572755,
+        "y_upper": -0.9822313415039048
+      },
+      "object_id_max": 100,
+      "object_id_min": 1,
+      "pages_seen": 1,
+      "paper_basename": "uszipcode.wkt",
+      "paper_mbr": {
+        "x": [
+          -179.1473388671875,
+          179.77845764160156
+        ],
+        "y": [
+          -14.548691749572754,
+          71.3904800415039
+        ]
+      },
+      "paper_point_count": 43952878,
+      "point_count_delta": -43439319,
+      "point_count_relative_delta": -0.9883156911818152,
+      "sample_labels": [
+        "00001",
+        "00002",
+        "00003",
+        "00004",
+        "00005",
+        "00006",
+        "00007",
+        "00008"
+      ],
+      "service_feature_count": 32294,
+      "service_url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_ZIP_Code_Areas_anaylsis/FeatureServer"
+    }
+  },
+  "status": "full_public_probe_partial"
+}

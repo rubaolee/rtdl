@@ -1,0 +1,175 @@
+{
+  "claim_boundary": {
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_support_claimed": false,
+    "figure11_reproduction_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "generic_native_status_state_smoke_claimed": true,
+    "hash_sample_parity_claimed": false,
+    "performance_ratio_claimed": false,
+    "row_count_parity_claimed": false,
+    "synthetic_non_app_gate_claimed": true
+  },
+  "columns": {
+    "active_queue_indices": [
+      0,
+      2
+    ],
+    "cell_ids": [
+      50,
+      52
+    ],
+    "current_best_after_sq": [
+      5.0,
+      9.0
+    ],
+    "current_best_before_sq": [
+      5.0,
+      9.0
+    ],
+    "query_row_ids": [
+      10,
+      12
+    ],
+    "source_ids": [
+      100,
+      102
+    ],
+    "status_codes": [
+      2,
+      2
+    ],
+    "transition_phase_codes": [
+      1,
+      1
+    ]
+  },
+  "expected": {
+    "active_queue_indices": [
+      0,
+      2
+    ],
+    "attempted_count": 2,
+    "cell_ids": [
+      50,
+      52
+    ],
+    "current_best_after_sq": [
+      5.0,
+      9.0
+    ],
+    "current_best_before_sq": [
+      5.0,
+      9.0
+    ],
+    "query_row_ids": [
+      10,
+      12
+    ],
+    "source_ids": [
+      100,
+      102
+    ],
+    "status_codes": [
+      2,
+      2
+    ],
+    "telemetry": {
+      "feedback_row_count": 1,
+      "feedback_update_count": 1,
+      "overflowed": false,
+      "raw_offload_row_count": 2,
+      "status_count_offloading": 2
+    },
+    "transition_phase_codes": [
+      1,
+      1
+    ],
+    "valid_count": 2
+  },
+  "fixture": "synthetic_three_active_queries_two_heavy_candidates_one_feedback_update",
+  "goal": "Goal5402",
+  "matched": true,
+  "native_result_metadata": {
+    "attempted_count": 2,
+    "backend": "native",
+    "claim_boundary": "Generic native active-query status-state smoke. This is not an application option implementation, not a row/hash parity claim, and not a paper performance claim.",
+    "contract": "generic_active_query_status_state_machine_native_spike_v1",
+    "explicit_app_option_support_claimed": false,
+    "native_backend_complete": false,
+    "native_engine_customization": false,
+    "native_generic_symbol": "rtdl_optix_active_query_status_state_machine_smoke_v1",
+    "overflowed": false,
+    "primitive": "ACTIVE_QUERY_STATUS_STATE_MACHINE_SMOKE",
+    "row_capacity": 4,
+    "row_schema": [
+      "active_queue_indices",
+      "query_row_ids",
+      "source_ids",
+      "cell_ids",
+      "status_codes",
+      "transition_phase_codes",
+      "current_best_before_sq",
+      "current_best_after_sq"
+    ],
+    "rt_core_accelerated": false,
+    "telemetry": {
+      "active_query_count": 3,
+      "candidate_row_count": 3,
+      "feedback_row_count": 1,
+      "feedback_update_count": 1,
+      "overflowed": false,
+      "raw_offload_row_count": 2,
+      "status_count_offloading": 2
+    },
+    "valid_count": 2
+  },
+  "observed": {
+    "active_queue_indices": [
+      0,
+      2
+    ],
+    "attempted_count": 2,
+    "cell_ids": [
+      50,
+      52
+    ],
+    "current_best_after_sq": [
+      5.0,
+      9.0
+    ],
+    "current_best_before_sq": [
+      5.0,
+      9.0
+    ],
+    "query_row_ids": [
+      10,
+      12
+    ],
+    "source_ids": [
+      100,
+      102
+    ],
+    "status_codes": [
+      2,
+      2
+    ],
+    "telemetry": {
+      "active_query_count": 3,
+      "candidate_row_count": 3,
+      "feedback_row_count": 1,
+      "feedback_update_count": 1,
+      "overflowed": false,
+      "raw_offload_row_count": 2,
+      "status_count_offloading": 2
+    },
+    "transition_phase_codes": [
+      1,
+      1
+    ],
+    "valid_count": 2
+  },
+  "schema": "rtdl.paper_reproduction.xhd.goal5402.status_state_machine_native_smoke.v1",
+  "status": "native_status_state_machine_smoke_passed"
+}

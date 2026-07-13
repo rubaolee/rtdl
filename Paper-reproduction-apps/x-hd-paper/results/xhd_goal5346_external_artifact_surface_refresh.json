@@ -1,0 +1,87 @@
+{
+  "acm_live_probe": {
+    "artifact_name": "ics26-106.zip",
+    "classification": "acm_supplement_visible_but_forbidden_from_current_environment",
+    "content_type": "text/html; charset=UTF-8",
+    "head_statuses": [
+      403,
+      403,
+      403
+    ],
+    "range_get_statuses": [
+      403,
+      403,
+      403
+    ],
+    "zip_magic_observed": false
+  },
+  "claim_boundary": {
+    "acm_supplement_inspected": false,
+    "candidate_workload_mapping_accepted": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false,
+    "pod_execution_claimed": false,
+    "same_input_gate_passed": false
+  },
+  "date": "2026-07-09",
+  "exit_label": "external_artifact_surface_refresh_no_new_exact_input__acm_still_forbidden",
+  "github_live_probe": {
+    "branches": {
+      "hybrid": "4d9046a9e55d87f35daf81dd718444029fab56ce",
+      "main": "7bf41c8442d059c94f4178355c6d5a10571d9658",
+      "paper": "8c3846866052e1e8755210021f23fac2cbe8c3d6"
+    },
+    "data_directory_found": false,
+    "default_branch": "main",
+    "full_name": "pwrliang/X-HD",
+    "public_release_count": 0,
+    "pushed_at": "2026-06-13T20:59:45Z",
+    "top_level_contents": [
+      ".clang-format",
+      ".gitignore",
+      ".gitmodules",
+      "CMakeLists.txt",
+      "README.md",
+      "cmake/",
+      "expr/",
+      "src/",
+      "thirdparty/",
+      "vcpkg.json"
+    ],
+    "tree_paths_matching_dataset_or_archive_terms": [
+      "expr/logs/end2end/rt_gpu/BraTS2020_ValidationData/...",
+      "expr/logs/end2end/*/*.wkt_*.json"
+    ],
+    "tree_paths_matching_dataset_or_archive_terms_interpretation": "matches are checked-in author logs whose filenames mention paper inputs; no input dataset blobs, archive downloads, HDDatasets directory, or release assets were found"
+  },
+  "goal": "Goal5346",
+  "interpretation": {
+    "current_public_artifact_status_changed": false,
+    "exact_input_blocker_removed": false,
+    "new_exact_input_artifact_found": false,
+    "next_action": "continue to require authorized ACM access, author-provided artifacts, or another externally verified exact input source before POD execution"
+  },
+  "purpose": "Record a current external artifact/provenance refresh after Goal5345: ACM live probe still forbidden, author GitHub still source/scripts/logs with no release/data artifact, and web-visible search surfaces still point only to ACM/PDF/source metadata.",
+  "schema": "rtdl.paper_reproduction.xhd.goal5346.external_artifact_surface_refresh.v1",
+  "search_refresh_summary": {
+    "queries": [
+      "\"ics26-106.zip\"",
+      "\"X-HD\" \"ics26-106\"",
+      "\"X-HD\" Hausdorff distance \"HDDatasets\"",
+      "\"pwrliang\" \"X-HD\" \"HDDatasets\"",
+      "site:github.com pwrliang X-HD ics26-106.zip",
+      "site:github.com/pwrliang/X-HD HDDatasets",
+      "site:github.com/pwrliang/X-HD dragon happy_buddha HDResult",
+      "site:rubaolee.github.io X-HD HDDatasets"
+    ],
+    "useful_hits": [
+      "ACM proceedings page exposes ics26-106.zip metadata but not downloadable zip bytes from this environment",
+      "Rubao Lee public PDF matches the paper DOI and source-code pointer",
+      "GitHub repository pwrliang/X-HD remains source/scripts/logs only"
+    ],
+    "web_exact_input_artifact_found": false
+  },
+  "status": "implemented_review_pending"
+}

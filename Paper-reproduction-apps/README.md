@@ -1,0 +1,42 @@
+# Paper Reproduction Apps
+
+This directory holds RTDL programs that reproduce selected workloads from
+published papers. It is a separate line from the promoted benchmark apps:
+
+- benchmark apps exercise RTDL language/runtime development across the current
+  10-app portfolio;
+- paper reproduction apps follow a paper's workload contract as closely as the
+  available inputs, author code, and documented comparator allow.
+
+Each paper gets its own subdirectory. Current apps:
+
+| Paper app | RTDL language surface exercised | Bounded reproduction status | Performance status | Boundary |
+| --- | --- | --- | --- | --- |
+| [RayJoin paper](rayjoin-paper/README.md) | Public planar-map LSI/PIP primitives, device-columnar rows, ordering, and writer-free binary operators. | Available-pair bounded Section 5.2 LSI and Section 5.3 PIP, plus bounded Section 5.7 overlay reproduction, are complete. | Final v2.14.4 prepared-binary top4 evidence is `0.328842s` for six distinct batches; the comparable AuthorOfficial core phases are `0.187042s` (`1.76x` slower RTDL under this bounded boundary). | Not a broad all-input RayJoin performance claim; binary descriptors and author polygons have different semantics. |
+| [RT-BarnesHut paper](rt-barneshut-paper/README.md) | Generic `AggregateHierarchy3D`, opening policies, reducers, CPU reference executor, and optional Numba parity executor. | Bounded same-input prepared-state scalar force-output reproduction against the pinned AuthorOfficial comparator. | Narrow resident-kernel phase is phase-boundary-limited; broader reported envelope remains unfavorable to RTDL. | Not full paper reproduction; independent tree construction is not claimed. |
+| [RT-DBSCAN paper](rt-dbscan-paper/README.md) | Generic fixed-radius count-threshold primitives plus app-owned DBSCAN component continuation. | Bounded AuthorOfficial same-input gates and a three-fixture representative synthetic partition matrix are complete. | Cold and warm diagnostics are retained separately; no paper-performance claim is authorized. | Exact paper preprocessing is unavailable, and RTDL does not adopt the author's index-directional border semantics. |
+| [X-HD paper](x-hd-paper/README.md) | Generic candidate-row, nearest-witness, max-nearest reduction, cell-MBR, and partner exact-witness routes. | Same-input directed input1-to-input2 `HDResult` reproduction is complete and externally approved across seven primary cases. | Author internal, author process-wall, RTDL fresh, and RTDL warm timings remain separate; no ratio is authorized. | Not exact paper-input, all-figure, author RT-core algorithm, or performance reproduction. |
+| [LibRTS paper](librts-paper/README.md) | Generic prepared/mutable 2-D AABB queries, sparse native refit, rollback/fail-closed mutation, and operation-scoped packed-AABB semantics. | Externally approved scoped closeout: exact point-contains and range-contains count matrices are each 14/14; representative PIP has 71,626 canonical relation rows equal; bounded mutation counts match at `[2,1,0,1,0]`. | No author-versus-RTDL paper-performance ratio is authorized; sparse-refit numbers are RTDL system diagnostics only. | Range-intersects remains 14 matches, 2 author capacity failures, and 26 uncheckpointed. Full-paper/Figure reproduction, complete range-intersects coverage, author algorithm equivalence, count-case pointwise equality, zero-copy, and Embree remain unclaimed. |
+
+These apps are not hidden benchmark rows. They are reader-facing reproduction
+programs with explicit inputs, comparator boundaries, and output artifacts.
+No current app claims complete reproduction of every original paper dataset,
+figure, algorithmic implementation detail, and performance result.
+
+The machine-readable current portfolio state is recorded in
+[`paper_app_status_snapshot.json`](paper_app_status_snapshot.json).
+
+## Adding A Paper App
+
+New paper apps should start from [PAPER_APP_TEMPLATE.md](PAPER_APP_TEMPLATE.md)
+and should include a `data/manifest.json` shaped by
+[paper_app_manifest.schema.json](paper_app_manifest.schema.json).
+
+The manifest is not a runtime input. It is a reader-facing contract that states:
+
+- which RTDL public APIs the app exercises;
+- which pieces remain app-owned;
+- what reproduction scope is claimed;
+- which comparator or expected output is used;
+- which performance regime is being measured;
+- which broader claims are not made.

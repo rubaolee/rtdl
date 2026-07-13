@@ -1,0 +1,315 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5316.figure5_level_b_status_matrix.v1",
+  "goal": "Goal5316",
+  "date": "2026-07-09",
+  "purpose": "Consolidate current X-HD Figure-5-like Level-B evidence without upgrading it to exact paper dataset reproduction or performance parity.",
+  "claim_boundary": {
+    "figure5_reproduction_complete": false,
+    "exact_paper_dataset_reproduction_complete": false,
+    "full_paper_reproduction_complete": false,
+    "author_vs_rtdl_performance_ratio_authorized": false,
+    "author_rt_core_equivalence_claimed": false,
+    "level_b_status_matrix_claimed": true
+  },
+  "allowed_global_summary": "Current X-HD evidence includes multiple Level-B same-source or bounded scalar matches, including full-public Dragon->HappyBuddha and full-public WaterBodies->BlockGroups under the paper-config author denominator. Exact paper input files or hashes are still unavailable, Figure 5 is not complete, and no author-vs-RTDL performance ratio is authorized.",
+  "forbidden_summaries": [
+    "Figure 5 is reproduced.",
+    "Full X-HD paper reproduction is complete.",
+    "Exact paper datasets have been recovered.",
+    "RTDL has author performance parity or a speedup ratio.",
+    "Level-B public or bounded fixtures are the exact paper inputs.",
+    "The global-bound early-break route provides exact per-source witnesses."
+  ],
+  "matrix_summary": {
+    "row_count": 8,
+    "author_and_rtdl_scalar_match_rows": [
+      "graphics_dragon_happy_full_public",
+      "graphics_thai_happy_scaled",
+      "graphics_thai_asian_scaled",
+      "geo_county_zcta_bounded",
+      "geo_water_bg_bounded",
+      "geo_water_bg_full_public_corrected"
+    ],
+    "author_value_no_go_rows": [
+      "graphics_dragon_asian_scaled_author_no_go"
+    ],
+    "input_provenance_no_go_rows": [
+      "geo_county_zcta_full_public_probe"
+    ],
+    "rows_with_exact_paper_input_provenance": [],
+    "rows_with_denominator_aligned_performance_ratio": [],
+    "strongest_current_graphics_level_b_row": "graphics_dragon_happy_full_public",
+    "strongest_current_geo_level_b_row": "geo_water_bg_full_public_corrected"
+  },
+  "rows": [
+    {
+      "row_id": "graphics_dragon_happy_full_public",
+      "domain": "graphics",
+      "paper_pair": "dragon.ply -> happy_buddha.ply",
+      "evidence_level": "level_b_same_source_full_public_scalar_match",
+      "source_goal": "Goal5291",
+      "primary_artifacts": [
+        "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5291_figure5_dragon_happy_candidate_matrix_2026-07-09.json"
+      ],
+      "exact_paper_input_available": false,
+      "same_source_public_candidate_available": true,
+      "author_paper_config_scalar": {
+        "available": true,
+        "paper_log_hd_result": 0.12572969496250153,
+        "author_rerun_hd_result": 0.12572988867759705,
+        "author_rerun_vs_paper_log_abs_diff": 1.9371509552001953e-07,
+        "matched_paper_log_within_tolerance": true,
+        "tolerance": 1e-06
+      },
+      "rtdl_scalar": {
+        "available": true,
+        "route_hd_result": 0.12572988629271128,
+        "abs_diff_vs_author_rerun": 2.3848857610975216e-09,
+        "matched_author_rerun": true,
+        "fresh_route_wall_sec": 0.8517371863126755,
+        "fresh_total_including_load_sec": 1.5306707620620728,
+        "explicit_warm_measured_case_total_sec": 0.2880931422114372,
+        "global_bound_early_break": true,
+        "global_bound_early_break_count": 409376,
+        "per_source_witness_exact": false
+      },
+      "performance_denominator_status": "not_aligned_no_ratio",
+      "allowed_claim": "Level-B full-public same-source scalar directed-HD match against author rerun; exact-value-only for the early-break route.",
+      "current_blocker": "No exact paper input file/hash provenance; paper log and author rerun differ; performance denominators are not aligned; early-break route does not provide exact per-source witnesses."
+    },
+    {
+      "row_id": "graphics_dragon_asian_scaled_author_no_go",
+      "domain": "graphics",
+      "paper_pair": "dragon.ply -> asian_dragon.ply",
+      "evidence_level": "level_b_author_value_precheck_no_go",
+      "source_goal": "Goal5298",
+      "primary_artifacts": [
+        "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5298_author_graphics_precheck_summary_pod.json"
+      ],
+      "exact_paper_input_available": false,
+      "same_source_public_candidate_available": true,
+      "author_paper_config_scalar": {
+        "available": true,
+        "paper_log_hd_result": 0.06536811590194702,
+        "author_rerun_hd_result": 0.06545527279376984,
+        "author_rerun_vs_paper_log_abs_diff": 8.715689182281494e-05,
+        "matched_paper_log_within_tolerance": false,
+        "tolerance": 1e-06
+      },
+      "rtdl_scalar": {
+        "available": false,
+        "reason": "Author-only precheck failed; this candidate should not receive additional RTDL timing without new input provenance."
+      },
+      "performance_denominator_status": "not_applicable_author_value_no_go",
+      "allowed_claim": "Current public/scaled Dragon->AsianDragon mapping is not a value-matched Level-B Figure-5 candidate.",
+      "current_blocker": "Author rerun on available public/scaled input does not match paper-log HDResult."
+    },
+    {
+      "row_id": "graphics_thai_happy_scaled",
+      "domain": "graphics",
+      "paper_pair": "thai_statuette.ply -> happy_buddha.ply",
+      "evidence_level": "level_b_same_source_scaled_scalar_match",
+      "source_goal": "Goal5299",
+      "primary_artifacts": [
+        "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5299_thai_happy_level_b_rtdl_comparison_matrix_2026-07-09.json"
+      ],
+      "exact_paper_input_available": false,
+      "same_source_public_candidate_available": true,
+      "author_paper_config_scalar": {
+        "available": true,
+        "paper_log_hd_result": 0.21912434697151184,
+        "author_rerun_hd_result": 0.21912431716918945,
+        "author_rerun_vs_paper_log_abs_diff": 2.9802322387695312e-08,
+        "matched_paper_log_within_tolerance": true,
+        "tolerance": 1e-06
+      },
+      "rtdl_scalar": {
+        "available": true,
+        "exact_witness_hd_result": 0.2191243235042005,
+        "fast_scalar_hd_result": 0.2191243235042005,
+        "abs_diff_vs_author_rerun": 6.335011043523409e-09,
+        "matched_author_rerun": true,
+        "exact_witness_route_wall_sec": 5.001549616456032,
+        "fast_scalar_route_wall_sec": 1.0029054209589958,
+        "fast_scalar_per_source_witness_exact": false,
+        "exact_witness_per_source_witness_exact": true
+      },
+      "performance_denominator_status": "not_aligned_no_ratio",
+      "allowed_claim": "Level-B same-source scaled graphics scalar match; exact-witness route is per-source exact, fast-scalar route is scalar-only.",
+      "current_blocker": "Local scaled public input is not exact paper input; performance denominators are not aligned."
+    },
+    {
+      "row_id": "graphics_thai_asian_scaled",
+      "domain": "graphics",
+      "paper_pair": "thai_statuette.ply -> asian_dragon.ply",
+      "evidence_level": "level_b_same_source_scaled_scalar_match",
+      "source_goal": "Goal5300",
+      "primary_artifacts": [
+        "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5300_thai_asian_level_b_rtdl_comparison_matrix_2026-07-09.json"
+      ],
+      "exact_paper_input_available": false,
+      "same_source_public_candidate_available": true,
+      "author_paper_config_scalar": {
+        "available": true,
+        "paper_log_hd_result": 0.28763845562934875,
+        "author_rerun_hd_result": 0.28763842582702637,
+        "author_rerun_vs_paper_log_abs_diff": 2.9802322387695312e-08,
+        "matched_paper_log_within_tolerance": true,
+        "tolerance": 1e-06
+      },
+      "rtdl_scalar": {
+        "available": true,
+        "exact_witness_hd_result": 0.2876384148709406,
+        "fast_scalar_hd_result": 0.2876384148709406,
+        "abs_diff_vs_author_rerun": 1.0956085760849277e-08,
+        "matched_author_rerun": true,
+        "exact_witness_route_wall_sec": 10.764273278415203,
+        "fast_scalar_route_wall_sec": 12.505260519683361,
+        "fast_scalar_per_source_witness_exact": false,
+        "exact_witness_per_source_witness_exact": true
+      },
+      "performance_denominator_status": "not_aligned_no_ratio",
+      "allowed_claim": "Level-B same-source scaled graphics scalar match; exact-witness route is faster than fast-scalar on this workload.",
+      "current_blocker": "Local scaled public input is not exact paper input; performance denominators are not aligned."
+    },
+    {
+      "row_id": "geo_county_zcta_bounded",
+      "domain": "geo",
+      "paper_pair": "dtl_cnty.wkt -> uszipcode.wkt",
+      "evidence_level": "level_b_bounded_same_fixture_scalar_match",
+      "source_goal": "Goal5305",
+      "primary_artifacts": [
+        "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5305_county_zcta_rtdl_triton_summary_pod.json"
+      ],
+      "exact_paper_input_available": false,
+      "same_source_public_candidate_available": false,
+      "bounded_fixture_available": true,
+      "author_paper_config_scalar": {
+        "available": false,
+        "reason": "Bounded fixture is not the paper or full-public candidate."
+      },
+      "rtdl_scalar": {
+        "available": true,
+        "author_hd_result": 65.44752502441406,
+        "rtdl_hd_result": 65.44751976280666,
+        "abs_diff_vs_author": 5.2616073986655465e-06,
+        "matched_author": true,
+        "tolerance": 1e-05,
+        "point_counts": [
+          38034,
+          50272
+        ],
+        "route": "directed_max_of_nearest_distance_2d_partner_columns",
+        "partner": "triton",
+        "per_source_witness_exact": true
+      },
+      "performance_denominator_status": "not_aligned_no_ratio",
+      "allowed_claim": "Bounded same-fixture geo scalar correctness for the County->ZCTA WKT path.",
+      "current_blocker": "Only first-OBJECTID bounded fixture; not full-public, exact, representative, or Figure-5 evidence."
+    },
+    {
+      "row_id": "geo_county_zcta_full_public_probe",
+      "domain": "geo",
+      "paper_pair": "dtl_cnty.wkt -> uszipcode.wkt",
+      "evidence_level": "full_public_input_probe_no_exact_claim",
+      "source_goal": "Goal5309",
+      "primary_artifacts": [
+        "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5309_full_public_arcgis_probe_summary_2026-07-09.json"
+      ],
+      "exact_paper_input_available": false,
+      "same_source_public_candidate_available": true,
+      "author_paper_config_scalar": {
+        "available": false,
+        "reason": "Full-public author/RTDL gate not run because County point-count mismatch blocks exact/Figure-5 promotion."
+      },
+      "rtdl_scalar": {
+        "available": false,
+        "reason": "Full-public scalar route not run for this mismatched input candidate."
+      },
+      "input_probe": {
+        "county_paper_point_count": 9438045,
+        "county_observed_point_count": 12477179,
+        "county_point_count_delta": 3039134,
+        "county_point_count_relative_delta": 0.32200884823075115,
+        "zcta_paper_point_count": 43952878,
+        "zcta_observed_point_count": 43984131,
+        "zcta_point_count_delta": 31253,
+        "mbrs_match_paper_logs_to_1e_5_degrees": true
+      },
+      "performance_denominator_status": "not_applicable_input_provenance_blocked",
+      "allowed_claim": "Full-public County/ZCTA ArcGIS probe has paper-like MBRs but County point count differs by about 32.2%; do not promote to exact/Figure-5 status.",
+      "current_blocker": "County public candidate point count mismatch; alternate source/simplification/conversion evidence needed."
+    },
+    {
+      "row_id": "geo_water_bg_bounded",
+      "domain": "geo",
+      "paper_pair": "USADetailedWaterBodies.wkt -> USACensusBlockGroupBoundaries.wkt",
+      "evidence_level": "level_b_bounded_same_fixture_scalar_match",
+      "source_goal": "Goal5307",
+      "primary_artifacts": [
+        "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5307_water_bg_author_rtdl_partner_gate_summary_pod.json"
+      ],
+      "exact_paper_input_available": false,
+      "same_source_public_candidate_available": false,
+      "bounded_fixture_available": true,
+      "author_paper_config_scalar": {
+        "available": false,
+        "reason": "Bounded fixture is not the paper or full-public candidate."
+      },
+      "rtdl_scalar": {
+        "available": true,
+        "author_hd_result": 72.38665008544922,
+        "rtdl_hd_result": 72.38664516014835,
+        "abs_diff_vs_author": 4.925300871150284e-06,
+        "matched_author": true,
+        "tolerance": 1e-05,
+        "point_counts": [
+          124,
+          894
+        ],
+        "route": "directed_max_of_nearest_distance_2d_partner_columns",
+        "partner": "triton",
+        "per_source_witness_exact": true
+      },
+      "performance_denominator_status": "not_aligned_no_ratio",
+      "allowed_claim": "Bounded same-fixture geo scalar correctness for the WaterBodies->BlockGroups WKT path.",
+      "current_blocker": "Only first-OBJECTID bounded fixture; not exact, representative, Figure-5, or performance evidence."
+    },
+    {
+      "row_id": "geo_water_bg_full_public_corrected",
+      "domain": "geo",
+      "paper_pair": "USADetailedWaterBodies.wkt -> USACensusBlockGroupBoundaries.wkt",
+      "evidence_level": "level_b_full_public_author_paper_config_and_rtdl_witness_match",
+      "source_goal": "Goal5314",
+      "primary_artifacts": [
+        "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5314_water_bg_corrected_comparison_summary.json"
+      ],
+      "exact_paper_input_available": false,
+      "same_source_public_candidate_available": true,
+      "author_paper_config_scalar": {
+        "available": true,
+        "paper_log_hd_result": 0.8964367508888245,
+        "author_default_n_points_cell_15_hd_result": 0.8970130085945129,
+        "author_paper_config_n_points_cell_8_hd_result": 0.8964367508888245,
+        "author_paper_config_vs_paper_log_abs_diff": 0.0,
+        "matched_paper_log_with_paper_config": true,
+        "num_points_cell": 8
+      },
+      "rtdl_scalar": {
+        "available": true,
+        "exact_witness_hd_result_float64": 0.8964380566690101,
+        "same_witness_float32_distance": 0.8964367508888245,
+        "abs_diff_float64_vs_author_float32": 1.305780185645311e-06,
+        "matched_author_at_declared_tolerance": true,
+        "declared_tolerance": 2e-06,
+        "matches_at_1e_6": false,
+        "per_source_witness_exact": true,
+        "route_sec": 61.562113016843796,
+        "entrypoint_total_sec": 873.2409668043256
+      },
+      "performance_denominator_status": "not_aligned_no_ratio",
+      "allowed_claim": "Full-public WaterBodies->BlockGroups reproduces the author paper-config scalar with author n_points_cell=8; RTDL exact-witness float64 matches author/paper float32 within an explicit 2e-6 numeric boundary.",
+      "current_blocker": "No exact paper WKT file/hash provenance, no Figure-5 matrix completion, no performance denominator alignment, and no identical internal numeric precision claim."
+    }
+  ]
+}

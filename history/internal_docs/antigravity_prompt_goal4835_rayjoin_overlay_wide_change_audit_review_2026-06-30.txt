@@ -1,0 +1,25 @@
+You are reviewing RTDL Goal4835.
+
+Workspace:
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review
+
+Read this review request first:
+history/internal_docs/call_for_review_goal4835_rayjoin_overlay_wide_change_audit_and_v214_regression_gate_2026-06-30.md
+
+Then read the referenced report and relevant code/tests.
+
+Write a concise but critical review result to:
+history/internal_docs/antigravity_goal4835_rayjoin_overlay_wide_change_audit_review_2026-06-30.md
+
+Required verdict labels:
+- approve_goal4835_focused_gate_passed_but_v214_wide_gate_not_green
+- request_amendments_goal4835
+- fail_redo_goal4835
+
+Answer every review question in the call-for-review file.
+
+Be especially strict about these points:
+- Do not let the focused 38-test RayJoin pass become a full v2.14 product gate.
+- Do not treat the broader rayjoin_overlay.py sorting/scaled/rational changes as fully release-proven unless the evidence supports it.
+- Confirm whether the v2.14-wide matrix failure is correctly recorded as not green.
+- Preserve all non-authorization boundaries.

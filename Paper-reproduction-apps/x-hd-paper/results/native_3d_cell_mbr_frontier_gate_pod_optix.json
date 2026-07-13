@@ -1,0 +1,168 @@
+{
+  "claim_boundary": {
+    "app_semantics": "none",
+    "full_native_abi_backend_complete": false,
+    "generic_native_symbol": "rtdl_optix_collect_cell_mbr_nearest_frontier_3d",
+    "paper_reproduction_claim_authorized": false,
+    "xhd_performance_claim_authorized": false
+  },
+  "fixture": "goal5148_synthetic_3d_cell_mbr_frontier",
+  "matched": true,
+  "mismatched_columns": [],
+  "native_columns": {
+    "cell_ids": [
+      0,
+      0,
+      0,
+      1,
+      1,
+      1
+    ],
+    "frontier_kind_codes": [
+      1,
+      1,
+      1,
+      2,
+      3,
+      3
+    ],
+    "max_distances": [
+      1.118033988749895,
+      5.0990195135927845,
+      11.090536506409418,
+      1.8027756377319946,
+      12.165525060596439,
+      7.762087348130012
+    ],
+    "min_distances": [
+      0.0,
+      4.0,
+      10.04987562112089,
+      0.0,
+      9.5,
+      5.0
+    ],
+    "point_begin_offsets": [
+      0,
+      0,
+      0,
+      2,
+      2,
+      2
+    ],
+    "point_counts": [
+      2,
+      2,
+      2,
+      3,
+      3,
+      3
+    ],
+    "query_point_ids": [
+      100,
+      101,
+      102,
+      102,
+      100,
+      101
+    ],
+    "query_row_ids": [
+      0,
+      1,
+      2,
+      2,
+      0,
+      1
+    ]
+  },
+  "native_metadata": {
+    "adapter": "cell_mbr_nearest_frontier_native_3d_optix_columns",
+    "app_semantics": "none",
+    "attempted_count": 6,
+    "cell_count": 2,
+    "claim_boundary": "Bounded 3-D OptiX backend for generic cell-MBR frontier rows. It is not the full 2-D/3-D native ABI backend and not an application benchmark-performance claim.",
+    "contract": "generic_cell_mbr_nearest_frontier_native_3d_optix",
+    "distance_filter": "native_exact_point_to_cell_mbr_min_distance_lte_radius",
+    "max_inline_points": 2,
+    "native_abi_contract": "generic_cell_mbr_nearest_frontier_native_abi_v1",
+    "native_backend_complete": false,
+    "native_generic_symbol": "rtdl_optix_collect_cell_mbr_nearest_frontier_3d",
+    "partner": "optix",
+    "query_count": 3,
+    "radius": 20.0,
+    "row_capacity": 6,
+    "row_count": 6,
+    "row_table_contract": "generic_cell_mbr_nearest_frontier_row_table",
+    "rt_core_speedup_claim_authorized": false,
+    "state_split_location": "native_optix_anyhit",
+    "whole_app_speedup_claim_authorized": false
+  },
+  "oracle_columns": {
+    "cell_ids": [
+      0,
+      0,
+      0,
+      1,
+      1,
+      1
+    ],
+    "frontier_kind_codes": [
+      1,
+      1,
+      1,
+      2,
+      3,
+      3
+    ],
+    "max_distances": [
+      1.118033988749895,
+      5.0990195135927845,
+      11.090536506409418,
+      1.8027756377319946,
+      12.165525060596439,
+      7.762087348130012
+    ],
+    "min_distances": [
+      0.0,
+      4.0,
+      10.04987562112089,
+      0.0,
+      9.5,
+      5.0
+    ],
+    "point_begin_offsets": [
+      0,
+      0,
+      0,
+      2,
+      2,
+      2
+    ],
+    "point_counts": [
+      2,
+      2,
+      2,
+      3,
+      3,
+      3
+    ],
+    "query_point_ids": [
+      100,
+      101,
+      102,
+      102,
+      100,
+      101
+    ],
+    "query_row_ids": [
+      0,
+      1,
+      2,
+      2,
+      0,
+      1
+    ]
+  },
+  "schema": "rtdl.paper_reproduction.xhd.native_3d_cell_mbr_frontier_gate.v1",
+  "status": "native_3d_cell_mbr_frontier_gate_completed"
+}

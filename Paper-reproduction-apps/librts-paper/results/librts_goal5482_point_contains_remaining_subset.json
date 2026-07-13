@@ -1,0 +1,82 @@
+{
+  "claim_boundary": {
+    "archive_extracted": false,
+    "archive_subset_extracted": true,
+    "archive_verified": true,
+    "embree_in_scope": false,
+    "exact_input_files_identified": true,
+    "inventory_completed": true,
+    "paper_figure_reproduced": false,
+    "performance_ratio_authorized": false
+  },
+  "extraction": {
+    "atomic_directory_promotion": true,
+    "final_path": "/workspace/librts-targets/point-contains-real-remaining",
+    "selected_member_count": 10,
+    "selected_members": [
+      {
+        "relative_path": "PPoPPAE/datasets/polygons/USACensusBlockGroupBoundaries.wkt",
+        "sha256": "a5ead9c7bf5adac34a256e54ead58e6e100ca5321ddeb5268699a58a82b7b8da",
+        "size_bytes": 2012101367
+      },
+      {
+        "relative_path": "PPoPPAE/datasets/queries/point-contains_queries_100000/USACensusBlockGroupBoundaries.wkt",
+        "sha256": "d7ba3175a0f3214d23a81475bd30c4c4d47b65dac61955653aa2e75566ad7355",
+        "size_bytes": 3976174
+      },
+      {
+        "relative_path": "PPoPPAE/datasets/polygons/USADetailedWaterBodies.wkt",
+        "sha256": "bbdf49e4e2484f7d2994aea40bf772ce5418bacb58ade8efc63ab9e8dc703dfe",
+        "size_bytes": 890353369
+      },
+      {
+        "relative_path": "PPoPPAE/datasets/queries/point-contains_queries_100000/USADetailedWaterBodies.wkt",
+        "sha256": "a05b052eabce6f22249cbaa920f54b7836e40ee92a9b8fc6cd2afb1180933816",
+        "size_bytes": 3976181
+      },
+      {
+        "relative_path": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+        "sha256": "fd77bf8294dfb9dfe45e49fc4aec99427ebd9ac4f370697b0c908d635d643aed",
+        "size_bytes": 2962689351
+      },
+      {
+        "relative_path": "PPoPPAE/datasets/queries/point-contains_queries_100000/parks_Europe.wkt",
+        "sha256": "b955fe9e33cee4dbe599fc1d125e06f3d4bb5a916799363b69ef7f4139612f66",
+        "size_bytes": 3910647
+      },
+      {
+        "relative_path": "PPoPPAE/datasets/polygons/lakes.bz2.wkt",
+        "sha256": "0cde2245faf03cb0cf48cf9f8ffb0e31a7391300d947fa9de2110a46006e2f03",
+        "size_bytes": 6557960529
+      },
+      {
+        "relative_path": "PPoPPAE/datasets/queries/point-contains_queries_100000/lakes.bz2.wkt",
+        "sha256": "af77499deb2691be731b95ed0d9214573967ff16527f25268cba2ea422252074",
+        "size_bytes": 3979121
+      },
+      {
+        "relative_path": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+        "sha256": "ca133e4456b20c4baae1027d64a373d23083973ae042a3b6025dcc51eb3073a0",
+        "size_bytes": 8582211935
+      },
+      {
+        "relative_path": "PPoPPAE/datasets/queries/point-contains_queries_100000/parks.bz2.wkt",
+        "sha256": "736e2f3acc5c2875ca1a787a87b16f6fdf9216251e0d231df78bce1e9bb68ff9",
+        "size_bytes": 3979572
+      }
+    ]
+  },
+  "inventory_reference": {
+    "member_count": 1694,
+    "safe": true,
+    "unpacked_file_bytes": 88229246574
+  },
+  "schema": "rtdl.paper_reproduction.librts.safe_subset_extraction.v1",
+  "status": "exact_ae_archive_selected_members_safely_extracted",
+  "verification": {
+    "md5": "89e589f086038f1cd3af9e3ed67da8c8",
+    "path": "/workspace/librts-data/PPoPPAE-v2.tar.gz",
+    "size_bytes": 23062425365,
+    "verified": true
+  }
+}

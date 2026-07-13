@@ -1,0 +1,24 @@
+Please review the Goal4881 Section 5.7 South America representative public-primitives reproduction.
+
+Read:
+
+history/internal_docs/goal4881_section57_south_america_representative_public_primitives_2026-07-03.md
+history/internal_docs/call_for_review_goal4881_section57_south_america_representative_public_primitives_2026-07-03.md
+
+Primary artifacts:
+
+history/internal_docs/goal4881_section57_south_america_bounded/south-america-latest.osm.pbf.sha256
+history/internal_docs/goal4881_section57_south_america_bounded/lakes_bounded_summary.json
+history/internal_docs/goal4881_section57_south_america_bounded/parks_bounded_summary.json
+history/internal_docs/goal4881_section57_south_america_bounded/author_official_sa_bounded_overlay_summary.json
+history/internal_docs/goal4881_section57_south_america_bounded/author_official_sa_bounded_overlay.log
+history/internal_docs/goal4881_section57_south_america_bounded/rtdl_public_sa_bounded_overlay_summary.json
+history/internal_docs/goal4881_section57_south_america_bounded/rtdl_public_sa_bounded_overlay.log
+
+Please answer the seven questions in the call-for-review and issue one verdict label:
+
+- approve_goal4881_south_america_bounded_representative_public_primitives_byte_equal
+- approve_with_required_amendments
+- block_goal4881_due_to_boundary_or_evidence_error
+
+Focus especially on whether bounded representative labeling is honest, whether byte equality is real, whether public RTDL primitives are used without bundled rayjoin_overlay, and whether the report avoids overclaiming exact old paper input/full eight-pair/broad performance/Numba-critical claims.

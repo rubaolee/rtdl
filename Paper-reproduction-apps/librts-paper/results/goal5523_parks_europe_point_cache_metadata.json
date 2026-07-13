@@ -1,0 +1,17 @@
+{
+  "column_dtypes": {
+    "ids": "uint32",
+    "max_x": "float64",
+    "max_y": "float64",
+    "min_x": "float64",
+    "min_y": "float64"
+  },
+  "row_count": 1856318,
+  "rtdl_core_wkt_semantics": false,
+  "schema": "rtdl.paper_reproduction.librts.exact_aabb_column_cache.v1",
+  "source_format": "app-owned WKT MBR derivation",
+  "source_name": "parks_Europe.wkt",
+  "source_path": "/tmp/goal5523-target/PPoPPAE/datasets/polygons/parks_Europe.wkt",
+  "source_sha256": "fd77bf8294dfb9dfe45e49fc4aec99427ebd9ac4f370697b0c908d635d643aed",
+  "source_size_bytes": 2962689351
+}

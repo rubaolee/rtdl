@@ -1,0 +1,104 @@
+{
+  "claim_boundary": {
+    "author_rt_core_algorithm_equivalence_claimed": false,
+    "author_tune_radius_route_mapping_claimed": false,
+    "figure8_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "performance_claimed": false
+  },
+  "comparison": {
+    "author": {
+      "first_iteration": {
+        "iteration": 1,
+        "num_input_points": 9,
+        "num_output_points": 0,
+        "radius": 2.0
+      },
+      "hd_result": 2.0,
+      "iteration_count": 1,
+      "iteration_model": "author_adaptive_radius_queue_loop",
+      "source_artifact": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\bounded3d_author_hd_exec_output_pod.json"
+    },
+    "case_id": "bounded3d_author_vs_rtdl_single_pass",
+    "decision": {
+      "explicit_author_tune_radius_must_remain_fail_closed": true,
+      "reason": "The current RTDL route matches bounded3d HDResult but does not emit author-like radius/input/output queue iterations."
+    },
+    "input_fixture": "bounded3d_a.wkt -> bounded3d_b.wkt",
+    "rtdl": {
+      "author_queue_semantics_aligned": false,
+      "author_trace_comparison_ready": false,
+      "direction_count": 1,
+      "first_direction": {
+        "input_count_semantics": "source_point_count_before_single_pass_not_author_in_queue",
+        "iteration": 1,
+        "label": "a_to_b",
+        "num_input_points": 9,
+        "num_output_points": 9,
+        "output_count_semantics": "frontier_row_count_after_single_pass_not_author_out_queue",
+        "radius": 3.3166247913554
+      },
+      "hd_result": 2.0,
+      "iteration_model": "single_pass_cell_mbr_route_not_author_radius_loop",
+      "route_uses_radius_growth_helper": false,
+      "source_artifact": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5356_route_radius_trace_metadata.json"
+    },
+    "trace_result": {
+      "comparable_as_author_radius_queue": false,
+      "matched": false,
+      "semantic_mismatches": [
+        {
+          "author": "author_adaptive_radius_queue_loop",
+          "field": "iteration_model",
+          "reason": "Current RTDL route emits one single-pass diagnostic row, not the author's radius queue loop.",
+          "rtdl": "single_pass_cell_mbr_route_not_author_radius_loop"
+        },
+        {
+          "author": 2.0,
+          "field": "radius",
+          "reason": "Author bounded3d starts from HD lower bound 2.0; current RTDL trace records the route's full-cover fallback radius.",
+          "rtdl": 3.3166247913554
+        },
+        {
+          "author": 0,
+          "field": "num_output_points",
+          "reason": "Author NumOutputPoints is unresolved queue size after an iteration; RTDL num_output_points is frontier row count after a single pass.",
+          "rtdl": 9
+        },
+        {
+          "author": true,
+          "field": "route_uses_radius_growth_helper",
+          "reason": "Goal5355 maps author transitions to radius_growth_step, but the current RTDL route does not use that helper to drive iterations.",
+          "rtdl": false
+        }
+      ]
+    },
+    "value_result": {
+      "abs_diff": 0.0,
+      "hd_result_matched": true,
+      "tolerance": 1e-06
+    }
+  },
+  "date": "2026-07-09",
+  "exit_label": "current_single_pass_route_not_author_tune_radius_compatible__keep_explicit_tune_radius_fail_closed",
+  "goal": "Goal5357",
+  "inputs": {
+    "author_mapping_artifact": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5355_radius_trace_mapping.json",
+    "rtdl_route_trace_artifact": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5356_route_radius_trace_metadata.json"
+  },
+  "purpose": "Compare existing author hd_exec radius trace evidence with current RTDL route radius trace metadata, and keep explicit author tune_radius fail-closed unless the route emits comparable author-like iterations.",
+  "recommended_next_targets": [
+    "decide_whether_to_build_author_like_radius_queue_route_or_stop_tune_radius_line",
+    "if_built_emit_author_like_radius_input_output_iterations_using_generic_radius_growth_step",
+    "only_after_trace_match_consider_accepting_explicit_author_tune_radius"
+  ],
+  "schema": "rtdl.paper_reproduction.xhd.goal5357.author_rtdl_radius_trace_comparison.v1",
+  "status": "trace_comparison_complete__rtdl_value_matches_but_radius_trace_not_author_queue_aligned",
+  "summary": {
+    "explicit_author_tune_radius_must_remain_fail_closed": true,
+    "hd_result_matched": true,
+    "semantic_mismatch_count": 4,
+    "trace_comparable_as_author_radius_queue": false,
+    "trace_matched": false
+  }
+}

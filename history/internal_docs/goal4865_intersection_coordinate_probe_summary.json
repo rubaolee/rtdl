@@ -1,0 +1,43 @@
+{
+  "elapsed_sec": 414.2186903953552,
+  "match_count_returned": 1,
+  "matches": [
+    {
+      "formatted": "-144.125743 64.796192",
+      "left_id": 172803,
+      "right_id": 23714604,
+      "row_index": 27139,
+      "scaled_x": -56322123525811,
+      "scaled_x_rational": "-112644247051623/2",
+      "scaled_y": 58214874844375,
+      "scaled_y_rational": "58214874844375",
+      "x": -144.1257429999967,
+      "y": 64.79619249999968
+    }
+  ],
+  "row_count": 965844,
+  "scale_bounds": [
+    -179.148909,
+    179.778465,
+    -14.548692,
+    71.390482
+  ],
+  "schema": "rtdl.goal4865.intersection_coordinate_probe.v1",
+  "target": {
+    "tol": 2e-06,
+    "x": -144.125743,
+    "y": 64.796193
+  },
+  "timings": {
+    "candidate_count_pass": 0.005886567,
+    "candidate_download": 0.0,
+    "candidate_write_pass": 0.0,
+    "emitted_count": 965844,
+    "exact_refine": 0.0,
+    "hot_call_sec": 27.2914052978158,
+    "left_upload": 0.0,
+    "mode": "count_prepared_left_grouped_range_direct_intersection",
+    "raw_candidate_count": 0,
+    "scaled_intersection_materialization_enabled": true
+  }
+}

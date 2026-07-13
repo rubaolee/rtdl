@@ -1,0 +1,99 @@
+[rayjoin-section53] scan poly1 stats: /tmp/rtdl_rayjoin_complete_project_20260703/Paper-reproduction-apps/rayjoin-paper/_data/public_sample/br_county_clean_25_odyssey_final.txt
+[rayjoin-section53] scan poly2 stats: /tmp/rtdl_rayjoin_complete_project_20260703/Paper-reproduction-apps/rayjoin-paper/_data/public_sample/br_soil_ascii_odyssey_final.txt
+[rayjoin-section53] stats ready: poly1 points=342738 segments=326193; poly2 points=258961 segments=251011
+[rayjoin-section53] pack base segments from /tmp/rtdl_rayjoin_complete_project_20260703/Paper-reproduction-apps/rayjoin-paper/_data/public_sample/br_county_clean_25_odyssey_final.txt (326193 segments)
+[rayjoin-section53] prepare directed point-location primitive (326193 base segments)
+[rayjoin-section53] count chunk 1: first_point_id=1 points=258961
+[rayjoin-section53] chunk 1 done: positives=255272 count_wall=0.007947s native_traversal=0.001595s
+[rayjoin-section57] start load/pack left
+[rayjoin-section57] done load/pack left: 0.003990s
+[rayjoin-section57] start load/pack right
+[rayjoin-section57] done load/pack right: 0.003207s
+[rayjoin-section57] start shared bounds
+[rayjoin-section57] done shared bounds: 0.000003s
+[rayjoin-section57] start public planar-map LSI rows
+[rayjoin-section57] done public planar-map LSI rows: 0.861689s
+[rayjoin-section57] start intersection reprojection
+[rayjoin-section57] done intersection reprojection: 0.616500s
+[rayjoin-section57] start sort xsects map0
+[rayjoin-section57] done sort xsects map0: 0.417738s
+[rayjoin-section57] start sort xsects map1
+[rayjoin-section57] done sort xsects map1: 0.398243s
+[rayjoin-section57] start prepare point-location map0 in map1
+[rayjoin-section57] done prepare point-location map0 in map1: 0.541450s
+[rayjoin-section57] start prepare point-location map1 in map0
+[rayjoin-section57] done prepare point-location map1 in map0: 0.074439s
+[rayjoin-section57] start vertex PIP map0 in map1
+[rayjoin-section57] done vertex PIP map0 in map1: 0.014208s
+[rayjoin-section57] start vertex PIP map1 in map0
+[rayjoin-section57] done vertex PIP map1 in map0: 0.009399s
+[rayjoin-section57] start midpoint points map0
+[rayjoin-section57] done midpoint points map0: 0.019462s
+[rayjoin-section57] start pack midpoint points map0
+[rayjoin-section57] done pack midpoint points map0: 0.002246s
+[rayjoin-section57] start midpoint PIP map0
+[rayjoin-section57] done midpoint PIP map0: 0.000522s
+[rayjoin-section57] start assign midpoint faces map0
+[rayjoin-section57] done assign midpoint faces map0: 0.000798s
+[rayjoin-section57] start midpoint points map1
+[rayjoin-section57] done midpoint points map1: 0.042784s
+[rayjoin-section57] start pack midpoint points map1
+[rayjoin-section57] done pack midpoint points map1: 0.006385s
+[rayjoin-section57] start midpoint PIP map1
+[rayjoin-section57] done midpoint PIP map1: 0.000604s
+[rayjoin-section57] start assign midpoint faces map1
+[rayjoin-section57] done assign midpoint faces map1: 0.001546s
+[rayjoin-section57] start destroy point-location sessions
+[rayjoin-section57] done destroy point-location sessions: 0.005544s
+[rayjoin-section57] start output-chain streaming write
+[rayjoin-section57] done output-chain streaming write: 2.272770s
+[rayjoin-section57] start file summary generated
+[rayjoin-section57] done file summary generated: 0.052631s
+[rayjoin-section57] start file summary author
+[rayjoin-section57] done file summary author: 0.051987s
+[rayjoin-section57] start load/pack left
+[rayjoin-section57] done load/pack left: 0.004117s
+[rayjoin-section57] start load/pack right
+[rayjoin-section57] done load/pack right: 0.003163s
+[rayjoin-section57] start shared bounds
+[rayjoin-section57] done shared bounds: 0.000003s
+[rayjoin-section57] start public planar-map LSI rows
+[rayjoin-section57] done public planar-map LSI rows: 0.861799s
+[rayjoin-section57] start intersection reprojection
+[rayjoin-section57] done intersection reprojection: 0.634008s
+[rayjoin-section57] start sort xsects map0
+[rayjoin-section57] done sort xsects map0: 0.429461s
+[rayjoin-section57] start sort xsects map1
+[rayjoin-section57] done sort xsects map1: 0.403605s
+[rayjoin-section57] start prepare point-location map0 in map1
+[rayjoin-section57] done prepare point-location map0 in map1: 0.541117s
+[rayjoin-section57] start prepare point-location map1 in map0
+[rayjoin-section57] done prepare point-location map1 in map0: 0.074171s
+[rayjoin-section57] start vertex PIP map0 in map1
+[rayjoin-section57] done vertex PIP map0 in map1: 0.014129s
+[rayjoin-section57] start vertex PIP map1 in map0
+[rayjoin-section57] done vertex PIP map1 in map0: 0.009400s
+[rayjoin-section57] start midpoint points map0
+[rayjoin-section57] done midpoint points map0: 0.190183s
+[rayjoin-section57] start pack midpoint points map0
+[rayjoin-section57] done pack midpoint points map0: 0.001737s
+[rayjoin-section57] start midpoint PIP map0
+[rayjoin-section57] done midpoint PIP map0: 0.000485s
+[rayjoin-section57] start assign midpoint faces map0
+[rayjoin-section57] done assign midpoint faces map0: 0.000808s
+[rayjoin-section57] start midpoint points map1
+[rayjoin-section57] done midpoint points map1: 0.021600s
+[rayjoin-section57] start pack midpoint points map1
+[rayjoin-section57] done pack midpoint points map1: 0.006410s
+[rayjoin-section57] start midpoint PIP map1
+[rayjoin-section57] done midpoint PIP map1: 0.000585s
+[rayjoin-section57] start assign midpoint faces map1
+[rayjoin-section57] done assign midpoint faces map1: 0.001424s
+[rayjoin-section57] start destroy point-location sessions
+[rayjoin-section57] done destroy point-location sessions: 0.005674s
+[rayjoin-section57] start output-chain streaming write
+[rayjoin-section57] done output-chain streaming write: 2.146217s
+[rayjoin-section57] start file summary generated
+[rayjoin-section57] done file summary generated: 0.052513s
+[rayjoin-section57] start file summary author
+[rayjoin-section57] done file summary author: 0.051812s

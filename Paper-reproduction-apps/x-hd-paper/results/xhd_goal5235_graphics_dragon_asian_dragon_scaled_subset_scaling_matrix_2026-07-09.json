@@ -1,0 +1,79 @@
+{
+  "all_cases_matched": true,
+  "capacity_extrapolation_diagnostic": {
+    "basis": "observed bounded source subsets; diagnostic only, not an all-source claim",
+    "candidate_evaluations_per_source_median": 18786.359375,
+    "estimated_all_source_candidate_evaluations_from_median": 8221756249,
+    "estimated_all_source_frontier_rows_from_median": 301997274,
+    "frontier_rows_per_source_max": 820.515625,
+    "frontier_rows_per_source_median": 690.05078125,
+    "frontier_rows_per_source_min": 568.125
+  },
+  "cases": [
+    {
+      "artifact": "Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5234_graphics_dragon_asian_dragon_scaled_1e-3_subset16_numpy_2026-07-09.json",
+      "candidate_evaluations_per_source": 10203.0625,
+      "distance": 0.044985184486035196,
+      "exact_pair_evaluations": 57753600,
+      "exact_subset_reference_sec": 1.9203260000795126,
+      "frontier_row_count": 9090,
+      "frontier_rows_per_source": 568.125,
+      "matched": true,
+      "route_abs_diff": 0.0,
+      "route_over_exact_ratio": 1.440849157989338,
+      "rtdl_route_wall_sec": 2.7669001002795994,
+      "source_id": 0,
+      "source_limit": 16,
+      "target_id": 1695001,
+      "total_candidate_distance_evaluations": 163249
+    },
+    {
+      "artifact": "Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5235_graphics_dragon_asian_dragon_scaled_1e-3_subset64_numpy_2026-07-09.json",
+      "candidate_evaluations_per_source": 18786.359375,
+      "distance": 0.06155463019045801,
+      "exact_pair_evaluations": 231014400,
+      "exact_subset_reference_sec": 8.637364400085062,
+      "frontier_row_count": 52513,
+      "frontier_rows_per_source": 820.515625,
+      "matched": true,
+      "route_abs_diff": 0.0,
+      "route_over_exact_ratio": 0.46170015709872914,
+      "rtdl_route_wall_sec": 3.987872500438243,
+      "source_id": 9,
+      "source_limit": 64,
+      "target_id": 1803033,
+      "total_candidate_distance_evaluations": 1202327
+    },
+    {
+      "artifact": "Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5235_graphics_dragon_asian_dragon_scaled_1e-3_subset256_numpy_2026-07-09.json",
+      "candidate_evaluations_per_source": 20405.21484375,
+      "distance": 0.05981302471903363,
+      "exact_pair_evaluations": 924057600,
+      "exact_subset_reference_sec": 33.07700269995257,
+      "frontier_row_count": 176653,
+      "frontier_rows_per_source": 690.05078125,
+      "matched": true,
+      "route_abs_diff": 0.0,
+      "route_over_exact_ratio": 0.22159260518424737,
+      "rtdl_route_wall_sec": 7.3296191999688745,
+      "source_id": 62,
+      "source_limit": 256,
+      "target_id": 769395,
+      "total_candidate_distance_evaluations": 5223735
+    }
+  ],
+  "claim_boundary": {
+    "all_source_rtdl_hdresult_claimed": false,
+    "bounded_subset_scaling_claimed": true,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false
+  },
+  "full_source_count": 437645,
+  "full_target_count": 3609600,
+  "goal": "Goal5235",
+  "input_contract": "Dragon public PLY + AsianDragon public PLY scaled by 1e-3",
+  "schema": "rtdl.paper_reproduction.xhd.graphics_scaled_subset_scaling_matrix.v1",
+  "target": "graphics_dragon_asian_dragon"
+}

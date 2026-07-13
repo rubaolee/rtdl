@@ -1,0 +1,198 @@
+{
+  "derived": {
+    "distinct_same_domain_median_sec": 0.47301095724105835,
+    "full_size_prefix_median_sec": 0.4618798615410924,
+    "same_variant_after_first_median_sec": 0.4609238803386688,
+    "same_variant_first_sec": 1.5506882332265377
+  },
+  "distinct_same_domain_prepare_rows": [
+    {
+      "batch_id": 1,
+      "changed_point_count": 8,
+      "elapsed_sec": 0.4597965534776449,
+      "native_timings": {
+        "bvh": null,
+        "copy": null,
+        "trav": null
+      }
+    },
+    {
+      "batch_id": 2,
+      "changed_point_count": 8,
+      "elapsed_sec": 0.48486204259097576,
+      "native_timings": {
+        "bvh": null,
+        "copy": null,
+        "trav": null
+      }
+    },
+    {
+      "batch_id": 3,
+      "changed_point_count": 8,
+      "elapsed_sec": 0.47301095724105835,
+      "native_timings": {
+        "bvh": null,
+        "copy": null,
+        "trav": null
+      }
+    }
+  ],
+  "input_counts": {
+    "left_points": 1706639,
+    "left_segments": 1705027,
+    "right_points": 9993104,
+    "right_segments": 9982960
+  },
+  "left": "Paper-reproduction-apps/rayjoin-paper/_data/top4_arcgis/top4_county.cdb",
+  "load_dataset_arrays_sec": 15.596234615892172,
+  "question": "can_prepare_left_point_location_locator_be_reused_or_prepared_away_generically",
+  "repeat": 4,
+  "right": "Paper-reproduction-apps/rayjoin-paper/_data/top4_arcgis/top4_zipcode.cdb",
+  "same_variant_reprepare_rows": [
+    {
+      "elapsed_sec": 1.5506882332265377,
+      "iteration": 1,
+      "native_timings": {
+        "bvh": null,
+        "copy": null,
+        "trav": null
+      }
+    },
+    {
+      "elapsed_sec": 0.4592728242278099,
+      "iteration": 2,
+      "native_timings": {
+        "bvh": null,
+        "copy": null,
+        "trav": null
+      }
+    },
+    {
+      "elapsed_sec": 0.4609238803386688,
+      "iteration": 3,
+      "native_timings": {
+        "bvh": null,
+        "copy": null,
+        "trav": null
+      }
+    },
+    {
+      "elapsed_sec": 0.48967787250876427,
+      "iteration": 4,
+      "native_timings": {
+        "bvh": null,
+        "copy": null,
+        "trav": null
+      }
+    }
+  ],
+  "schema": "rtdl.goal5013.point_location_locator_prepare_probe.v1",
+  "segment_count_scaling_rows": [
+    {
+      "fraction": 0.125,
+      "median_elapsed_sec": 0.037733567878603935,
+      "rows": [
+        {
+          "elapsed_sec": 0.044655900448560715,
+          "iteration": 1,
+          "native_timings": {
+            "bvh": null,
+            "copy": null,
+            "trav": null
+          }
+        },
+        {
+          "elapsed_sec": 0.030811235308647156,
+          "iteration": 2,
+          "native_timings": {
+            "bvh": null,
+            "copy": null,
+            "trav": null
+          }
+        }
+      ],
+      "segment_count": 213128
+    },
+    {
+      "fraction": 0.25,
+      "median_elapsed_sec": 0.09834523126482964,
+      "rows": [
+        {
+          "elapsed_sec": 0.09524763561785221,
+          "iteration": 1,
+          "native_timings": {
+            "bvh": null,
+            "copy": null,
+            "trav": null
+          }
+        },
+        {
+          "elapsed_sec": 0.10144282691180706,
+          "iteration": 2,
+          "native_timings": {
+            "bvh": null,
+            "copy": null,
+            "trav": null
+          }
+        }
+      ],
+      "segment_count": 426257
+    },
+    {
+      "fraction": 0.5,
+      "median_elapsed_sec": 0.22002025973051786,
+      "rows": [
+        {
+          "elapsed_sec": 0.23078998364508152,
+          "iteration": 1,
+          "native_timings": {
+            "bvh": null,
+            "copy": null,
+            "trav": null
+          }
+        },
+        {
+          "elapsed_sec": 0.2092505358159542,
+          "iteration": 2,
+          "native_timings": {
+            "bvh": null,
+            "copy": null,
+            "trav": null
+          }
+        }
+      ],
+      "segment_count": 852514
+    },
+    {
+      "fraction": 1.0,
+      "median_elapsed_sec": 0.4618798615410924,
+      "rows": [
+        {
+          "elapsed_sec": 0.4753703363239765,
+          "iteration": 1,
+          "native_timings": {
+            "bvh": null,
+            "copy": null,
+            "trav": null
+          }
+        },
+        {
+          "elapsed_sec": 0.4483893867582083,
+          "iteration": 2,
+          "native_timings": {
+            "bvh": null,
+            "copy": null,
+            "trav": null
+          }
+        }
+      ],
+      "segment_count": 1705027
+    }
+  ],
+  "shared_bounds": [
+    -124.415163,
+    -71.85615,
+    25.837092,
+    45.015851
+  ]
+}

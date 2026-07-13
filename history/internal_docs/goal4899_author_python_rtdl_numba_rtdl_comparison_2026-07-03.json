@@ -1,0 +1,56 @@
+{
+  "schema": "rtdl.goal4899.author_python_rtdl_numba_rtdl_comparison.v1",
+  "dataset": "Australia current-source lakes x parks representative",
+  "correctness_contract": "AuthorOfficial = author source plus documented RTDL contract patch",
+  "rows": [
+    {
+      "route": "AuthorOfficial C++/CUDA/OptiX",
+      "source": "goal4875 author log",
+      "byte_equal_reference": true,
+      "total_sec": 145.137811,
+      "load_sec": 144.2618,
+      "compute_and_write_sec": 0.876011,
+      "compute_without_write_sec": 0.074451,
+      "write_sec": 0.80156,
+      "notes": "Author log reads original CDB inputs; not directly comparable to RTDL packed-cache load."
+    },
+    {
+      "route": "Python+RTDL public primitives",
+      "source": "goal4898_prepared_query_overlay_summary_2026-07-03.json",
+      "byte_equal_reference": true,
+      "total_sec": 51.31680668890476,
+      "load_sec": 24.282970808446407,
+      "compute_and_write_sec": 27.033835880458355,
+      "compute_without_write_sec": 9.932407841087288,
+      "write_sec": 17.101428039371967,
+      "notes": "Uses public RTDL planar-map LSI/PIP primitives plus Python app-layer overlay writer."
+    },
+    {
+      "route": "Python+Numba+RTDL public primitives",
+      "source": "goal4899_numba_prepared_query_overlay_summary_2026-07-03.json",
+      "byte_equal_reference": true,
+      "total_sec": 39.37301053851843,
+      "load_sec": 25.43685767799616,
+      "compute_and_write_sec": 13.93615286052227,
+      "compute_without_write_sec": 11.578451067209244,
+      "write_sec": 2.3577017933130264,
+      "notes": "Uses the same public RTDL LSI/PIP primitives. Numba accelerates app-layer continuation/writer skip planning, not RTDL primitive traversal."
+    }
+  ],
+  "derived": {
+    "numba_vs_python_total_speedup": 1.303326528278731,
+    "numba_vs_python_compute_and_write_speedup": 1.9398360219448378,
+    "numba_vs_python_writer_speedup": 7.253432607994113,
+    "author_vs_numba_compute_and_write_speedup": 15.907792315911797,
+    "author_vs_numba_compute_without_write_speedup": 155.51817123967643,
+    "author_total_vs_numba_total_note": "Author total includes raw CDB read; RTDL total uses packed cache. Do not headline this as a language-stack speedup."
+  },
+  "claim_boundary": {
+    "broad_rayjoin_speedup_claim_authorized": false,
+    "full_section57_eight_pair_claim_authorized": false,
+    "numba_on_rtdl_primitive_path": false,
+    "numba_on_app_continuation_path": true,
+    "public_rtdl_lsi_pip_primitives_used": true,
+    "bundled_rayjoin_overlay_imported": false
+  }
+}

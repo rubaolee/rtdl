@@ -1,0 +1,560 @@
+{
+  "archive": {
+    "path": "/workspace/librts-data/PPoPPAE-v2.tar.gz",
+    "size_bytes": 23062425365,
+    "verified_result_path": "/workspace/librts-data/PPoPPAE-v2.tar.gz"
+  },
+  "decision": {
+    "complete_paper_reproduction_claimed": false,
+    "do_not_invent_missing_paper_inputs": true,
+    "embree_in_scope": false,
+    "figure6_reproduced": false,
+    "mutation_exact_pairs_available": false,
+    "performance_ratio_authorized": false,
+    "pip_exact_pairs_available": false,
+    "point_contains_exact_pairs_available": true,
+    "range_contains_exact_pairs_available": true,
+    "range_intersects_exact_pairs_available": true
+  },
+  "inventory": {
+    "exact_pairs": {
+      "mutation": [],
+      "pip": [],
+      "point_contains": [
+        {
+          "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+          "query": "PPoPPAE/datasets/queries/point-contains_queries_100000/parks_Europe.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+          "query": "PPoPPAE/datasets/queries/point-contains_queries_100000/parks.bz2.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/dtl_cnty.wkt",
+          "query": "PPoPPAE/datasets/queries/point-contains_queries_100000/dtl_cnty.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/lakes.bz2.wkt",
+          "query": "PPoPPAE/datasets/queries/point-contains_queries_100000/lakes.bz2.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/USACensusBlockGroupBoundaries.wkt",
+          "query": "PPoPPAE/datasets/queries/point-contains_queries_100000/USACensusBlockGroupBoundaries.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/USADetailedWaterBodies.wkt",
+          "query": "PPoPPAE/datasets/queries/point-contains_queries_100000/USADetailedWaterBodies.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+          "query": "PPoPPAE/datasets/queries/point-contains_queries_50000/parks_Europe.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+          "query": "PPoPPAE/datasets/queries/point-contains_queries_50000/parks.bz2.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+          "query": "PPoPPAE/datasets/queries/point-contains_queries_400000/parks_Europe.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+          "query": "PPoPPAE/datasets/queries/point-contains_queries_400000/parks.bz2.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+          "query": "PPoPPAE/datasets/queries/point-contains_queries_200000/parks_Europe.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+          "query": "PPoPPAE/datasets/queries/point-contains_queries_200000/parks.bz2.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+          "query": "PPoPPAE/datasets/queries/point-contains_queries_800000/parks_Europe.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+          "query": "PPoPPAE/datasets/queries/point-contains_queries_800000/parks.bz2.wkt"
+        }
+      ],
+      "range_contains": [
+        {
+          "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+          "query": "PPoPPAE/datasets/queries/range-contains_queries_50000/parks_Europe.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+          "query": "PPoPPAE/datasets/queries/range-contains_queries_50000/parks.bz2.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+          "query": "PPoPPAE/datasets/queries/range-contains_queries_400000/parks_Europe.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+          "query": "PPoPPAE/datasets/queries/range-contains_queries_400000/parks.bz2.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+          "query": "PPoPPAE/datasets/queries/range-contains_queries_100000/parks_Europe.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+          "query": "PPoPPAE/datasets/queries/range-contains_queries_100000/parks.bz2.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/dtl_cnty.wkt",
+          "query": "PPoPPAE/datasets/queries/range-contains_queries_100000/dtl_cnty.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/lakes.bz2.wkt",
+          "query": "PPoPPAE/datasets/queries/range-contains_queries_100000/lakes.bz2.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/USACensusBlockGroupBoundaries.wkt",
+          "query": "PPoPPAE/datasets/queries/range-contains_queries_100000/USACensusBlockGroupBoundaries.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/USADetailedWaterBodies.wkt",
+          "query": "PPoPPAE/datasets/queries/range-contains_queries_100000/USADetailedWaterBodies.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+          "query": "PPoPPAE/datasets/queries/range-contains_queries_200000/parks_Europe.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+          "query": "PPoPPAE/datasets/queries/range-contains_queries_200000/parks.bz2.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+          "query": "PPoPPAE/datasets/queries/range-contains_queries_800000/parks_Europe.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+          "query": "PPoPPAE/datasets/queries/range-contains_queries_800000/parks.bz2.wkt"
+        }
+      ],
+      "range_intersects": [
+        {
+          "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_10000/parks_Europe.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_10000/parks.bz2.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/dtl_cnty.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_10000/dtl_cnty.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/lakes.bz2.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_10000/lakes.bz2.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/USACensusBlockGroupBoundaries.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_10000/USACensusBlockGroupBoundaries.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/USADetailedWaterBodies.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_10000/USADetailedWaterBodies.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.0001_queries_10000/parks_Europe.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.0001_queries_10000/parks.bz2.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/dtl_cnty.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.0001_queries_10000/dtl_cnty.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/lakes.bz2.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.0001_queries_10000/lakes.bz2.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/USACensusBlockGroupBoundaries.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.0001_queries_10000/USACensusBlockGroupBoundaries.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/USADetailedWaterBodies.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.0001_queries_10000/USADetailedWaterBodies.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_40000/parks_Europe.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_40000/parks.bz2.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_50000/parks_Europe.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_50000/parks.bz2.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/dtl_cnty.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_50000/dtl_cnty.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/lakes.bz2.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_50000/lakes.bz2.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/USACensusBlockGroupBoundaries.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_50000/USACensusBlockGroupBoundaries.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/USADetailedWaterBodies.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_50000/USADetailedWaterBodies.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_10000/parks_Europe.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_10000/parks.bz2.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/dtl_cnty.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_10000/dtl_cnty.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/lakes.bz2.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_10000/lakes.bz2.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/USACensusBlockGroupBoundaries.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_10000/USACensusBlockGroupBoundaries.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/USADetailedWaterBodies.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_10000/USADetailedWaterBodies.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_30000/parks_Europe.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_30000/parks.bz2.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.0001_queries_50000/parks_Europe.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.0001_queries_50000/parks.bz2.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/dtl_cnty.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.0001_queries_50000/dtl_cnty.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/lakes.bz2.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.0001_queries_50000/lakes.bz2.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/USACensusBlockGroupBoundaries.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.0001_queries_50000/USACensusBlockGroupBoundaries.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/USADetailedWaterBodies.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.0001_queries_50000/USADetailedWaterBodies.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_20000/parks_Europe.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_20000/parks.bz2.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_50000/parks_Europe.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_50000/parks.bz2.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/dtl_cnty.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_50000/dtl_cnty.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/lakes.bz2.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_50000/lakes.bz2.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/USACensusBlockGroupBoundaries.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_50000/USACensusBlockGroupBoundaries.wkt"
+        },
+        {
+          "geometry": "PPoPPAE/datasets/polygons/USADetailedWaterBodies.wkt",
+          "query": "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_50000/USADetailedWaterBodies.wkt"
+        }
+      ]
+    },
+    "geometry_member_count": 10,
+    "operation_exact_pair_counts": {
+      "mutation": 0,
+      "pip": 0,
+      "point_contains": 14,
+      "range_contains": 14,
+      "range_intersects": 42
+    },
+    "operation_member_counts": {
+      "mutation": 0,
+      "pip": 126,
+      "point_contains": 26,
+      "range_contains": 24,
+      "range_intersects": 42
+    },
+    "operation_members": {
+      "mutation": [],
+      "pip": [
+        "PPoPPAE/expr/draw/draw_pip.py",
+        "PPoPPAE/expr/query/cuspatial_pip.py",
+        "PPoPPAE/expr/query/pip.sh",
+        "PPoPPAE/RayJoin/expr/draw/query_pip/lakes_parks_North_America_lbvh.log",
+        "PPoPPAE/RayJoin/expr/draw/query_pip/lakes_parks_South_America_lbvh.log",
+        "PPoPPAE/RayJoin/expr/draw/query_pip/lakes_parks_South_America_rt.log",
+        "PPoPPAE/RayJoin/expr/draw/query_pip/USACensusBlockGroupBoundaries_USADetailedWaterBodies_grid.log",
+        "PPoPPAE/RayJoin/expr/draw/query_pip/lakes_parks_Africa_rt.log",
+        "PPoPPAE/RayJoin/expr/draw/query_pip/lakes_parks_Asia_lbvh.log",
+        "PPoPPAE/RayJoin/expr/draw/query_pip/USACensusBlockGroupBoundaries_USADetailedWaterBodies_rt.log",
+        "PPoPPAE/RayJoin/expr/draw/query_pip/lakes_parks_Asia_rt.log",
+        "PPoPPAE/RayJoin/expr/draw/query_pip/dtl_cnty_USAZIPCodeArea_grid.log",
+        "PPoPPAE/RayJoin/expr/draw/query_pip/lakes_parks_Europe_grid.log",
+        "PPoPPAE/RayJoin/expr/draw/query_pip/USACensusBlockGroupBoundaries_USADetailedWaterBodies_lbvh.log",
+        "PPoPPAE/RayJoin/expr/draw/query_pip/lakes_parks_North_America_rt.log",
+        "PPoPPAE/RayJoin/expr/draw/query_pip/lakes_parks_Europe_rt.log",
+        "PPoPPAE/RayJoin/expr/draw/query_pip/lakes_parks_South_America_grid.log",
+        "PPoPPAE/RayJoin/expr/draw/query_pip/lakes_parks_Asia_grid.log",
+        "PPoPPAE/RayJoin/expr/draw/query_pip/lakes_parks_Europe_lbvh.log",
+        "PPoPPAE/RayJoin/expr/draw/query_pip/lakes_parks_North_America_grid.log",
+        "PPoPPAE/RayJoin/expr/draw/query_pip/lakes_parks_Africa_grid.log",
+        "PPoPPAE/RayJoin/expr/draw/query_pip/lakes_parks_Africa_lbvh.log",
+        "PPoPPAE/RayJoin/expr/draw/query_pip/lakes_parks_Australia_rt.log",
+        "PPoPPAE/RayJoin/expr/draw/query_pip/lakes_parks_Australia_lbvh.log",
+        "PPoPPAE/RayJoin/expr/draw/query_pip/dtl_cnty_USAZIPCodeArea_lbvh.log",
+        "PPoPPAE/RayJoin/expr/draw/query_pip/dtl_cnty_USAZIPCodeArea_rt.log",
+        "PPoPPAE/RayJoin/expr/draw/query_pip/lakes_parks_Australia_grid.log",
+        "PPoPPAE/RayJoin/expr/draw/speedup/pip.csv",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/dtl_cnty_USAZIPCodeArea_enlarge_2.0.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/USACensusBlockGroupBoundaries_USADetailedWaterBodies_enlarge_1.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_South_America_enlarge_2.0.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_South_America_enlarge_4.0.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_North_America_enlarge_3.0.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_South_America_enlarge_2.5.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/USACensusBlockGroupBoundaries_USADetailedWaterBodies_enlarge_5.0.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/dtl_cnty_USAZIPCodeArea_enlarge_3.0.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_South_America_enlarge_5.0.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_Europe_enlarge_4.5.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_Asia_enlarge_2.5.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_North_America_enlarge_2.0.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_Europe_enlarge_5.0.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_Africa_enlarge_4.0.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/USACensusBlockGroupBoundaries_USADetailedWaterBodies_enlarge_2.5.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_Europe_enlarge_1.5.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_Asia_enlarge_2.0.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/dtl_cnty_USAZIPCodeArea_enlarge_5.0.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_Africa_enlarge_2.0.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_Europe_enlarge_2.5.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_Asia_enlarge_1.5.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_Asia_enlarge_4.5.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_Africa_enlarge_4.5.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_Africa_enlarge_5.0.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/dtl_cnty_USAZIPCodeArea_enlarge_1.5.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/dtl_cnty_USAZIPCodeArea_enlarge_3.5.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_Australia_enlarge_1.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/dtl_cnty_USAZIPCodeArea_enlarge_2.5.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_South_America_enlarge_3.0.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/dtl_cnty_USAZIPCodeArea_enlarge_4.5.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_North_America_enlarge_2.5.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_Australia_enlarge_2.0.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_Australia_enlarge_4.5.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_North_America_enlarge_4.5.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_South_America_enlarge_4.5.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_Australia_enlarge_1.5.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_Europe_enlarge_1.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_Asia_enlarge_1.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_North_America_enlarge_4.0.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_Africa_enlarge_2.5.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_Africa_enlarge_3.5.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_Australia_enlarge_4.0.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/USACensusBlockGroupBoundaries_USADetailedWaterBodies_enlarge_3.0.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_North_America_enlarge_1.5.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_Europe_enlarge_3.0.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/USACensusBlockGroupBoundaries_USADetailedWaterBodies_enlarge_3.5.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/dtl_cnty_USAZIPCodeArea_enlarge_1.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_Africa_enlarge_3.0.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_North_America_enlarge_1.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_Asia_enlarge_4.0.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_Australia_enlarge_3.5.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_North_America_enlarge_3.5.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_Asia_enlarge_5.0.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_Europe_enlarge_4.0.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/USACensusBlockGroupBoundaries_USADetailedWaterBodies_enlarge_4.0.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_Africa_enlarge_1.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_Australia_enlarge_5.0.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/USACensusBlockGroupBoundaries_USADetailedWaterBodies_enlarge_2.0.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_South_America_enlarge_3.5.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/dtl_cnty_USAZIPCodeArea_enlarge_4.0.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_South_America_enlarge_1.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/USACensusBlockGroupBoundaries_USADetailedWaterBodies_enlarge_4.5.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/USACensusBlockGroupBoundaries_USADetailedWaterBodies_enlarge_1.5.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_North_America_enlarge_5.0.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_Europe_enlarge_3.5.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_Asia_enlarge_3.5.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_Asia_enlarge_3.0.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_Australia_enlarge_2.5.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_Africa_enlarge_1.5.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_Europe_enlarge_2.0.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_South_America_enlarge_1.5.log",
+        "PPoPPAE/RayJoin/expr/draw/ag_pip_varying_enlarge/lakes_parks_Australia_enlarge_3.0.log",
+        "PPoPPAE/RayJoin/expr/draw/scal_pip.pdf",
+        "PPoPPAE/RayJoin/expr/draw/scal_pip_synthetic/uniform_2000000.log",
+        "PPoPPAE/RayJoin/expr/draw/scal_pip_synthetic/gaussian_4000000.log",
+        "PPoPPAE/RayJoin/expr/draw/scal_pip_synthetic/gaussian_5000000.log",
+        "PPoPPAE/RayJoin/expr/draw/scal_pip_synthetic/uniform_4000000.log",
+        "PPoPPAE/RayJoin/expr/draw/scal_pip_synthetic/gaussian_1000000.log",
+        "PPoPPAE/RayJoin/expr/draw/scal_pip_synthetic/gaussian_3000000.log",
+        "PPoPPAE/RayJoin/expr/draw/scal_pip_synthetic/uniform_5000000.log",
+        "PPoPPAE/RayJoin/expr/draw/scal_pip_synthetic/gaussian_2000000.log",
+        "PPoPPAE/RayJoin/expr/draw/scal_pip_synthetic/uniform_3000000.log",
+        "PPoPPAE/RayJoin/expr/draw/scal_pip_synthetic/uniform_1000000.log",
+        "PPoPPAE/RayJoin/expr/draw/scal_pip_synthetic.pdf",
+        "PPoPPAE/RayJoin/src/app/pip_lbvh.h",
+        "PPoPPAE/RayJoin/src/app/pip_grid.h",
+        "PPoPPAE/RayJoin/src/app/pip.h",
+        "PPoPPAE/RayJoin/src/app/pip_rt.h",
+        "PPoPPAE/RayJoin/src/algo/rt_pip_custom.cu",
+        "PPoPPAE/RayJoin/src/algo/pip.h",
+        "PPoPPAE/SpatialQueryBenchmark/expr/draw/draw_pip.py",
+        "PPoPPAE/SpatialQueryBenchmark/expr/query/cuspatial_pip.py",
+        "PPoPPAE/SpatialQueryBenchmark/expr/query/pip.sh",
+        "PPoPPAE/SpatialQueryBenchmark/src/query/rtspatial/pip_context.h",
+        "PPoPPAE/SpatialQueryBenchmark/src/query/rtspatial/pip_query.h",
+        "PPoPPAE/SpatialQueryBenchmark/src/query/rtspatial/pip_handler.h",
+        "PPoPPAE/SpatialQueryBenchmark/src/query/rtspatial/pip_query.cu",
+        "PPoPPAE/SpatialQueryBenchmark/src/query/pip.cpp"
+      ],
+      "point_contains": [
+        "PPoPPAE/expr/query/cuspatial_point_contains.py",
+        "PPoPPAE/SpatialQueryBenchmark/expr/query/cuspatial_point_contains.py",
+        "PPoPPAE/datasets/synthetic/point-contains_queries_10000/uniform_n_10000000.wkt",
+        "PPoPPAE/datasets/synthetic/point-contains_queries_10000/uniform_n_20000000.wkt",
+        "PPoPPAE/datasets/synthetic/point-contains_queries_10000/gaussian_n_50000000.wkt",
+        "PPoPPAE/datasets/synthetic/point-contains_queries_10000/uniform_n_30000000.wkt",
+        "PPoPPAE/datasets/synthetic/point-contains_queries_10000/uniform_n_40000000.wkt",
+        "PPoPPAE/datasets/synthetic/point-contains_queries_10000/gaussian_n_40000000.wkt",
+        "PPoPPAE/datasets/synthetic/point-contains_queries_10000/gaussian_n_30000000.wkt",
+        "PPoPPAE/datasets/synthetic/point-contains_queries_10000/gaussian_n_20000000.wkt",
+        "PPoPPAE/datasets/synthetic/point-contains_queries_10000/gaussian_n_10000000.wkt",
+        "PPoPPAE/datasets/synthetic/point-contains_queries_10000/uniform_n_50000000.wkt",
+        "PPoPPAE/datasets/queries/point-contains_queries_100000/parks_Europe.wkt",
+        "PPoPPAE/datasets/queries/point-contains_queries_100000/parks.bz2.wkt",
+        "PPoPPAE/datasets/queries/point-contains_queries_100000/dtl_cnty.wkt",
+        "PPoPPAE/datasets/queries/point-contains_queries_100000/lakes.bz2.wkt",
+        "PPoPPAE/datasets/queries/point-contains_queries_100000/USACensusBlockGroupBoundaries.wkt",
+        "PPoPPAE/datasets/queries/point-contains_queries_100000/USADetailedWaterBodies.wkt",
+        "PPoPPAE/datasets/queries/point-contains_queries_50000/parks_Europe.wkt",
+        "PPoPPAE/datasets/queries/point-contains_queries_50000/parks.bz2.wkt",
+        "PPoPPAE/datasets/queries/point-contains_queries_400000/parks_Europe.wkt",
+        "PPoPPAE/datasets/queries/point-contains_queries_400000/parks.bz2.wkt",
+        "PPoPPAE/datasets/queries/point-contains_queries_200000/parks_Europe.wkt",
+        "PPoPPAE/datasets/queries/point-contains_queries_200000/parks.bz2.wkt",
+        "PPoPPAE/datasets/queries/point-contains_queries_800000/parks_Europe.wkt",
+        "PPoPPAE/datasets/queries/point-contains_queries_800000/parks.bz2.wkt"
+      ],
+      "range_contains": [
+        "PPoPPAE/datasets/synthetic/range-contains_queries_10000/uniform_n_10000000.wkt",
+        "PPoPPAE/datasets/synthetic/range-contains_queries_10000/uniform_n_20000000.wkt",
+        "PPoPPAE/datasets/synthetic/range-contains_queries_10000/gaussian_n_50000000.wkt",
+        "PPoPPAE/datasets/synthetic/range-contains_queries_10000/uniform_n_30000000.wkt",
+        "PPoPPAE/datasets/synthetic/range-contains_queries_10000/uniform_n_40000000.wkt",
+        "PPoPPAE/datasets/synthetic/range-contains_queries_10000/gaussian_n_40000000.wkt",
+        "PPoPPAE/datasets/synthetic/range-contains_queries_10000/gaussian_n_30000000.wkt",
+        "PPoPPAE/datasets/synthetic/range-contains_queries_10000/gaussian_n_20000000.wkt",
+        "PPoPPAE/datasets/synthetic/range-contains_queries_10000/gaussian_n_10000000.wkt",
+        "PPoPPAE/datasets/synthetic/range-contains_queries_10000/uniform_n_50000000.wkt",
+        "PPoPPAE/datasets/queries/range-contains_queries_50000/parks_Europe.wkt",
+        "PPoPPAE/datasets/queries/range-contains_queries_50000/parks.bz2.wkt",
+        "PPoPPAE/datasets/queries/range-contains_queries_400000/parks_Europe.wkt",
+        "PPoPPAE/datasets/queries/range-contains_queries_400000/parks.bz2.wkt",
+        "PPoPPAE/datasets/queries/range-contains_queries_100000/parks_Europe.wkt",
+        "PPoPPAE/datasets/queries/range-contains_queries_100000/parks.bz2.wkt",
+        "PPoPPAE/datasets/queries/range-contains_queries_100000/dtl_cnty.wkt",
+        "PPoPPAE/datasets/queries/range-contains_queries_100000/lakes.bz2.wkt",
+        "PPoPPAE/datasets/queries/range-contains_queries_100000/USACensusBlockGroupBoundaries.wkt",
+        "PPoPPAE/datasets/queries/range-contains_queries_100000/USADetailedWaterBodies.wkt",
+        "PPoPPAE/datasets/queries/range-contains_queries_200000/parks_Europe.wkt",
+        "PPoPPAE/datasets/queries/range-contains_queries_200000/parks.bz2.wkt",
+        "PPoPPAE/datasets/queries/range-contains_queries_800000/parks_Europe.wkt",
+        "PPoPPAE/datasets/queries/range-contains_queries_800000/parks.bz2.wkt"
+      ],
+      "range_intersects": [
+        "PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_10000/parks_Europe.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_10000/parks.bz2.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_10000/dtl_cnty.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_10000/lakes.bz2.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_10000/USACensusBlockGroupBoundaries.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_10000/USADetailedWaterBodies.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.0001_queries_10000/parks_Europe.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.0001_queries_10000/parks.bz2.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.0001_queries_10000/dtl_cnty.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.0001_queries_10000/lakes.bz2.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.0001_queries_10000/USACensusBlockGroupBoundaries.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.0001_queries_10000/USADetailedWaterBodies.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_40000/parks_Europe.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_40000/parks.bz2.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_50000/parks_Europe.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_50000/parks.bz2.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_50000/dtl_cnty.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_50000/lakes.bz2.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_50000/USACensusBlockGroupBoundaries.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_50000/USADetailedWaterBodies.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_10000/parks_Europe.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_10000/parks.bz2.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_10000/dtl_cnty.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_10000/lakes.bz2.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_10000/USACensusBlockGroupBoundaries.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_10000/USADetailedWaterBodies.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_30000/parks_Europe.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_30000/parks.bz2.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.0001_queries_50000/parks_Europe.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.0001_queries_50000/parks.bz2.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.0001_queries_50000/dtl_cnty.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.0001_queries_50000/lakes.bz2.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.0001_queries_50000/USACensusBlockGroupBoundaries.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.0001_queries_50000/USADetailedWaterBodies.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_20000/parks_Europe.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_20000/parks.bz2.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_50000/parks_Europe.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_50000/parks.bz2.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_50000/dtl_cnty.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_50000/lakes.bz2.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_50000/USACensusBlockGroupBoundaries.wkt",
+        "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_50000/USADetailedWaterBodies.wkt"
+      ]
+    },
+    "query_member_count": 70,
+    "regular_file_member_count": 1370,
+    "regular_file_total_bytes": 88229246574
+  },
+  "schema": "rtdl.paper_reproduction.librts.exact_archive_operation_inventory.v1",
+  "status": "verified_archive_operation_inventory_complete"
+}

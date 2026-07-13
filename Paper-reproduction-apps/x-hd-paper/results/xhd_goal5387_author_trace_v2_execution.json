@@ -1,0 +1,227 @@
+{
+  "author_instrumentation": {
+    "author_root": "/tmp/xhd-goal5387/author",
+    "binary": "/tmp/xhd-goal5387/build-gcc11-optix77-fast/bin/hd_exec",
+    "changed": {
+      "launch_parameters": true,
+      "rt_impl": true,
+      "shader": true
+    },
+    "goal5386_all_hooks_found": true,
+    "goal5386_all_required_fields_covered": true,
+    "marker": "RTDL_GOAL5385_LB_STATUS_TRACE_V2",
+    "patch_schema": "rtdl.paper_reproduction.xhd.goal5387.author_lb_status_trace_v2_patch.v1",
+    "rtdl_core_modified": false,
+    "source_copy": "/tmp/xhd-goal5387/author",
+    "source_modified_in_pod_only": true,
+    "trace_schema": "rtdl.goal5385.author.lb_status_trace.v2"
+  },
+  "author_lb_trace_v2": {
+    "active_in_queue_size": 437645,
+    "batch_0": {
+      "active_in_queue_size": 437645,
+      "batch_index": 0,
+      "cmax2_after_load_balance": 2751.368408203125,
+      "cmax2_after_ray": 0.0,
+      "cmax2_before_ray": 0.0,
+      "cmax2_mbr_abort_count": 0,
+      "cmin2_after_load_balance_hash": 10400538358226239013,
+      "cmin2_after_load_balance_samples": [
+        2765.849853515625,
+        2762.239501953125,
+        2764.1494140625
+      ],
+      "cmin2_after_ray_hash": 10400538358226239013,
+      "cmin2_after_ray_samples": [
+        2765.849853515625,
+        2762.239501953125,
+        2764.1494140625
+      ],
+      "cmin2_initial_hash": 5369460447013261471,
+      "cmin2_initial_samples": [
+        3.4028234663852886e+38,
+        3.4028234663852886e+38,
+        3.4028234663852886e+38
+      ],
+      "cmin2_sample_indices": [
+        0,
+        218822,
+        437644
+      ],
+      "iteration_index": 3,
+      "load_balance_feedback_update_count": 294,
+      "load_balance_group_count": 437645,
+      "load_balance_input_row_count": 27133990,
+      "point_loop_early_break_count": 0,
+      "radius": 79.2156982421875,
+      "raw_offload_row_hash": 4333109858711462591,
+      "raw_offload_row_sample_cell_ids": [
+        2924,
+        17,
+        17
+      ],
+      "raw_offload_row_sample_point_ids": [
+        11168,
+        210712,
+        437119
+      ],
+      "raw_offload_rows_before_sort_reduce": 27133990,
+      "status_count_aborted": 0,
+      "status_count_completed": 0,
+      "status_count_init": 437645,
+      "status_count_miss": 0,
+      "status_count_offloading": 27133990
+    },
+    "batch_count": 1,
+    "load_balance_feedback_update_count": 294,
+    "raw_offload_rows_before_sort_reduce": 27133990,
+    "schema": "rtdl.goal5385.author.lb_status_trace.v2",
+    "status_count_aborted": 0,
+    "status_count_cmax2_mbr_abort": 0,
+    "status_count_completed": 0,
+    "status_count_init": 437645,
+    "status_count_miss": 0,
+    "status_count_offloading_append": 27133990,
+    "status_count_point_loop_early_break": 0
+  },
+  "author_result": {
+    "AvgTime_ms": 608.585,
+    "HDResult": 52.453487396240234,
+    "LB": 256,
+    "iteration_3": {
+      "CUDATime_ms": 511.578,
+      "ComparedPoints": 1242781559,
+      "Hits": 896287932,
+      "OffloadingSize": 27133990,
+      "RTTime_ms": 46.212,
+      "Radius": 79.2156982421875
+    },
+    "iteration_count": 3
+  },
+  "claim_boundary": {
+    "author_rt_core_algorithm_parity_claimed": false,
+    "author_v2_trace_executed_on_pod": true,
+    "author_v2_trace_implemented": true,
+    "author_v2_trace_oracle_claimed": true,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_support_claimed": false,
+    "figure11_reproduction_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "rtdl_author_performance_ratio_claimed": false,
+    "rtdl_row_count_parity_claimed": false,
+    "same_denominator_memory_claimed": false
+  },
+  "comparison_to_goal5374": {
+    "all_core_counts_match_goal5374": true,
+    "count_parity": {
+      "active_matches_goal5374": true,
+      "offloading_size_matches_goal5374": true,
+      "raw_rows_matches_goal5374": true,
+      "status_init_matches_active": true,
+      "status_offload_matches_raw_rows": true
+    },
+    "goal5374_active_in_queue_size": 437645,
+    "goal5374_offloading_size": 27133990,
+    "goal5374_raw_rows": 27133990,
+    "goal5374_status_offload": 27133990
+  },
+  "date": "2026-07-10",
+  "decision": {
+    "author_trace_v2_oracle_ready": true,
+    "next_gate": "rtdl_native_multi_round_status_stream_against_author_trace_v2",
+    "recommended_next_goal": "Goal5388 or successor: RTDL native counterpart against Goal5387 oracle"
+  },
+  "exit_label": "author_trace_v2_oracle_ready__native_counterpart_next",
+  "field_validation": {
+    "all_required_batch_fields_present": true,
+    "batch_field_presence": {
+      "active_in_queue_size": true,
+      "batch_index": true,
+      "cmax2_after_load_balance": true,
+      "cmax2_after_ray": true,
+      "cmax2_before_ray": true,
+      "cmax2_mbr_abort_count": true,
+      "cmin2_after_load_balance_hash": true,
+      "cmin2_after_load_balance_samples": true,
+      "cmin2_after_ray_hash": true,
+      "cmin2_after_ray_samples": true,
+      "cmin2_initial_hash": true,
+      "cmin2_initial_samples": true,
+      "cmin2_sample_indices": true,
+      "iteration_index": true,
+      "load_balance_feedback_update_count": true,
+      "load_balance_group_count": true,
+      "load_balance_input_row_count": true,
+      "point_loop_early_break_count": true,
+      "radius": true,
+      "raw_offload_row_hash": true,
+      "raw_offload_row_sample_cell_ids": true,
+      "raw_offload_row_sample_point_ids": true,
+      "raw_offload_rows_before_sort_reduce": true,
+      "status_count_aborted": true,
+      "status_count_completed": true,
+      "status_count_init": true,
+      "status_count_miss": true,
+      "status_count_offloading": true
+    },
+    "hash_fields_present": true,
+    "required_batch_fields": [
+      "batch_index",
+      "iteration_index",
+      "radius",
+      "active_in_queue_size",
+      "cmax2_before_ray",
+      "cmax2_after_ray",
+      "cmax2_after_load_balance",
+      "cmin2_initial_hash",
+      "cmin2_after_ray_hash",
+      "cmin2_after_load_balance_hash",
+      "cmin2_sample_indices",
+      "cmin2_initial_samples",
+      "cmin2_after_ray_samples",
+      "cmin2_after_load_balance_samples",
+      "raw_offload_rows_before_sort_reduce",
+      "raw_offload_row_hash",
+      "raw_offload_row_sample_point_ids",
+      "raw_offload_row_sample_cell_ids",
+      "status_count_init",
+      "status_count_offloading",
+      "status_count_aborted",
+      "status_count_miss",
+      "status_count_completed",
+      "cmax2_mbr_abort_count",
+      "point_loop_early_break_count",
+      "load_balance_input_row_count",
+      "load_balance_group_count",
+      "load_balance_feedback_update_count"
+    ],
+    "sample_fields_present": true
+  },
+  "goal": "Goal5387",
+  "input_artifacts": {
+    "author_trace_v2_pod": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5387_author_lb256_status_trace_v2_pod.json",
+    "goal5374_author_oracle": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5374_author_lb_status_trace_oracle.json",
+    "goal5385_trace_v2_spec": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5385_author_trace_v2_spec.json",
+    "goal5386_patch_plan": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5386_author_trace_v2_patch_plan.json",
+    "patch_summary_v2_pod": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5387_author_trace_v2_patch_summary_pod.json"
+  },
+  "input_scope": {
+    "exact_paper_dataset_identity_proven": false,
+    "input1": "/tmp/xhd_goal5234/data/dragon.ply",
+    "input1_num_points": 437645,
+    "input2": "/tmp/xhd_goal5234/data/asian_dragon.ply",
+    "input2_num_points": 3609600,
+    "level": "level_b_public_dragon_asian_author_only_diagnostic"
+  },
+  "pod": {
+    "gpu": "NVIDIA RTX 4000 Ada Generation",
+    "host": "213.173.108.24",
+    "hostname": "45c502cfccb5",
+    "port": 13502,
+    "wrapper": "scripts/current_pod_ssh.py"
+  },
+  "purpose": "Execute the app-owned author trace v2 instrumentation on the Dragon -> AsianDragon lb=256 Level-B diagnostic, producing a stronger status-machine oracle for the next RTDL counterpart.",
+  "schema": "rtdl.paper_reproduction.xhd.goal5387.author_trace_v2_execution.v1",
+  "status": "author_trace_v2_executed_on_pod__rtdl_counterpart_next"
+}

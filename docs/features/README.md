@@ -17,6 +17,7 @@ Use these pages when you want to answer practical questions:
 | engine-by-feature support states | [Engine Feature Support Contract](engine_support_matrix.md) |
 | segment/segment spatial join | [LSI: Line Segment Intersection](lsi/README.md) |
 | point/polygon spatial join | [PIP: Point In Polygon](pip/README.md) |
+| reusable planar-map LSI + point-location sessions | [Planar-Map Workspace](planar_map_workspace/README.md) |
 | nearest neighbors within a radius | [Fixed-Radius Neighbors](fixed_radius_neighbors/README.md) |
 | top-k nearest neighbors | [KNN Rows](knn_rows/README.md) |
 | segment/polygon candidate search | [Segment/Polygon Hit Count](segment_polygon_hitcount/README.md) |

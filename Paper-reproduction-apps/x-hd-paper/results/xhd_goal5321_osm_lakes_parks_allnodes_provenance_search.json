@@ -1,0 +1,166 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5321.osm_lakes_parks_allnodes_provenance_search.v1",
+  "goal": "Goal5321",
+  "date": "2026-07-09",
+  "purpose": "Classify the X-HD OSM-derived Lakes/Parks/AllNodes family after the WaterBodies/BG, graphics, and County-ZCTA exact-provenance searches.",
+  "claim_boundary": {
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "figure10_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "author_rtdl_correctness_claimed": false,
+    "performance_ratio_claimed": false,
+    "new_rtdl_route_code_added": false,
+    "provenance_search_claimed": true
+  },
+  "paper_targets": {
+    "lakes_parks": {
+      "paper_pair": "lakes.bz2.wkt -> parks.bz2.wkt",
+      "category": "geo",
+      "author_log_records": 5,
+      "sections_present": [
+        "auto_tune",
+        "eb_gpu",
+        "hybrid_gpu",
+        "rt_gpu"
+      ],
+      "author_log_hdresult": 55.734275817871094,
+      "author_log_point_counts": [
+        301704289,
+        403688408
+      ],
+      "example_log": "expr/for_the_paper/logs/run_all/rt_gpu/geo/lakes.bz2.wkt_parks.bz2.wkt.json"
+    },
+    "all_nodes": {
+      "paper_family": "all_nodes.wkt / OSM All Nodes scalability or overlap workloads",
+      "status": "mentioned in full-paper coverage/gap matrix but exact paper input and generation details are absent",
+      "author_expected_scale": "billions of points"
+    }
+  },
+  "exact_dataset_rule": {
+    "sufficient": [
+      "author-provided lakes.bz2.wkt / parks.bz2.wkt / all_nodes.wkt bytes",
+      "author-provided hashes for those converted WKT / point files",
+      "byte-identical deterministic regeneration from the same OSM planet snapshot and extraction filters",
+      "external review accepting a public OSM snapshot reconstruction as exact-equivalent"
+    ],
+    "not_sufficient": [
+      "SpatialHadoop catalog availability",
+      "matching high-level dataset names",
+      "matching record counts at catalog level",
+      "matching author HDResult alone",
+      "bounded live Overpass analogues",
+      "old RayJoin CDB paths for Lakes/Parks continent families"
+    ]
+  },
+  "evidence_inputs": [
+    "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5317_figure5_exact_input_acquisition_gap_matrix.json",
+    "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5301_non_graphics_dataset_provenance_matrix_2026-07-09.json",
+    "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5267_full_paper_coverage_gap_matrix_2026-07-09.json",
+    "Paper-reproduction-apps/x-hd-paper/results/xhd_paper_target_log_mapping_goal5177_2026-07-08.json",
+    "Paper-reproduction-apps/x-hd-paper/results/xhd_author_log_workload_manifest_goal5175_2026-07-08.json",
+    "src/rtdsl/datasets.py",
+    "history/internal_docs/docs_reports/goal54_lkau_pkau_four_system_2026-04-03.md",
+    "https://spatialhadoop.cs.umn.edu/datasets.html"
+  ],
+  "public_catalog": {
+    "spatialhadoop_datasets_page": {
+      "url": "https://spatialhadoop.cs.umn.edu/datasets.html",
+      "available": true,
+      "page_statement": "The page says datasets are extracted from public sources and recommends linking because datasets will be updated and more added.",
+      "openstreetmap_new_datasets": {
+        "source_description": "extracted from one planet.osm file and converted to CSV/TSV text formats for SpatialHadoop/Pigeon scripts",
+        "all_nodes": {
+          "records": "2.7 Billion records",
+          "size_uncompressed": "96GB",
+          "download_size": "24.9GB",
+          "download_url": "https://drive.google.com/open?id=0B1jY75xGiy7eNjJuRy1KWjRieVU"
+        },
+        "lakes": {
+          "records": "8.4M records",
+          "size_uncompressed": "9GB",
+          "download_size": "2.7GB",
+          "download_url": "https://drive.google.com/open?id=0B1jY75xGiy7eYjNFbFVQdi15WDA"
+        },
+        "parks": {
+          "records": "10M records",
+          "size_uncompressed": "9.3GB",
+          "download_size": "2.9GB",
+          "download_url": "https://drive.google.com/open?id=0B1jY75xGiy7eTExfbkNTSGp0UTA"
+        }
+      },
+      "openstreetmap_old_datasets": {
+        "source_description": "older planet-derived TSV datasets",
+        "all_nodes": {
+          "records": "1.7 Billion points",
+          "size_uncompressed": "62.3GB",
+          "download_size": "17GB",
+          "download_url": "https://drive.google.com/open?id=0B1jY75xGiy7eZjM3NU8zb3p3Z28"
+        },
+        "lakes": {
+          "records": "4.3M Polygons",
+          "size_uncompressed": "2.6GB",
+          "download_size": "798MB",
+          "download_url": "https://drive.google.com/open?id=0B1jY75xGiy7eRHpHdmc3b2FlQ1E"
+        },
+        "parks": {
+          "records": "234K Polygons",
+          "size_uncompressed": "102MB",
+          "download_size": "34MB",
+          "download_url": "https://drive.google.com/open?id=0B1jY75xGiy7eT3RiejlYb3RoVG8"
+        }
+      },
+      "classification": "public_source_available_but_snapshot_hash_filter_and_author_conversion_identity_absent"
+    }
+  },
+  "prior_bounded_analogue": {
+    "goal54_lkau_pkau": {
+      "status": "bounded_live_overpass_australia_analogue_only",
+      "source": "live OSM Overpass way geometry",
+      "bbox_label": "sunshine_tiny",
+      "lakes_source_elements": 280,
+      "parks_source_elements": 264,
+      "accepted_as": "bounded four-system closure for a tiny Australia analogue",
+      "not_accepted_as": [
+        "continent-scale LKAU/PKAU completion",
+        "exact SpatialHadoop or author HDDatasets reproduction",
+        "multipolygon relation reconstruction"
+      ]
+    }
+  },
+  "blocking_gaps": [
+    "No author lakes.bz2.wkt / parks.bz2.wkt / all_nodes.wkt files were found.",
+    "No author hashes for converted OSM files were found.",
+    "No OSM planet snapshot date, planet file hash, extraction filter, or conversion script identity was recovered.",
+    "SpatialHadoop public catalog entries are update-prone public sources, not exact author-input provenance.",
+    "Old bounded Overpass analogues are useful smoke evidence but not paper-scale or exact input evidence.",
+    "The datasets are large enough that route execution before provenance would be expensive without changing exact-input status."
+  ],
+  "interpretation": {
+    "current_status": "source_public_but_exact_snapshot_and_conversion_blocked",
+    "level_b_status": "not_started_for_xhd_osm_full_scale",
+    "primary_blocker": "OSM snapshot/filter/conversion identity, not RTDL route code.",
+    "why_no_pod_now": "There is no concrete author input or accepted public reconstruction candidate to verify.",
+    "why_not_download_now": "The catalog downloads are multi-GB to tens-of-GB and would only produce Level-B public-source candidates without snapshot/hash proof."
+  },
+  "exit_label": "osm_lakes_parks_allnodes_exact_provenance_not_found__snapshot_filter_blocked",
+  "allowed_next_actions": [
+    "seek author lakes/parks/all_nodes WKT files or hashes",
+    "seek the OSM planet snapshot date/hash and extraction/filter scripts used by the author",
+    "ask external review whether a specific SpatialHadoop public dataset generation can be accepted as exact-equivalent",
+    "if exact status is abandoned, design a small Level-B public-source OSM gate with explicit snapshot and bounded scale"
+  ],
+  "not_allowed": [
+    "claiming OSM Lakes/Parks/AllNodes exact paper input recovery",
+    "claiming SpatialHadoop public catalog entries are the exact author inputs",
+    "claiming bounded Overpass analogues reproduce X-HD OSM paper workloads",
+    "running multi-GB public downloads as Figure-5/7/10 reproduction before provenance is accepted",
+    "claiming author-vs-RTDL performance ratio for OSM rows"
+  ],
+  "pod_usage": {
+    "used": false,
+    "expected_next": false,
+    "reason": "Goal5321 is a provenance/source classification goal. POD is only needed if concrete author files or accepted public snapshot artifacts are acquired."
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "claim_boundary": {
+    "author_rtdl_correctness_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "geo_figure5_reproduction_claimed": false,
+    "performance_ratio_claimed": false
+  },
+  "elapsed_sec": 179.76124490005895,
+  "goal": "Goal5309",
+  "max_pages": null,
+  "page_size_requested": 2000,
+  "schema": "rtdl.paper_reproduction.xhd.goal5309.full_public_arcgis_point_count_mbr_probe.v1",
+  "services": {
+    "county": {
+      "author_loader_point_count": 12477179,
+      "complete": true,
+      "elapsed_sec": 179.76120809977874,
+      "features_seen": 3144,
+      "geometry_types": {
+        "MultiPolygon": 329,
+        "Polygon": 2815
+      },
+      "key": "county",
+      "mbr": [
+        -179.148909,
+        -66.949607922,
+        18.910693,
+        71.3651620000001
+      ],
+      "mbr_delta": {
+        "x_lower": 1.5224609342112672e-06,
+        "x_upper": -7.287890468887781e-08,
+        "y_lower": 7.850341781079351e-07,
+        "y_upper": -3.7104491212858193e-06
+      },
+      "object_id_max": 3144,
+      "object_id_min": 1,
+      "pages_seen": 2,
+      "paper_basename": "dtl_cnty.wkt",
+      "paper_mbr": {
+        "x": [
+          -179.14891052246094,
+          -66.9496078491211
+        ],
+        "y": [
+          18.91069221496582,
+          71.36516571044922
+        ]
+      },
+      "paper_point_count": 9438045,
+      "point_count_delta": 3039134,
+      "point_count_relative_delta": 0.32200884823075115,
+      "sample_labels": [
+        "Autauga County",
+        "Baldwin County",
+        "Barbour County",
+        "Bibb County",
+        "Blount County",
+        "Bullock County",
+        "Butler County",
+        "Calhoun County"
+      ],
+      "service_feature_count": 3144,
+      "service_url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Census_Counties/FeatureServer"
+    }
+  },
+  "status": "full_public_probe_complete"
+}

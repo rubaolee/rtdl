@@ -1,0 +1,27 @@
+Please review the following RTDL Goal4936 packet.
+
+Call for review:
+history/internal_docs/call_for_review_goal4936_generic_output_materializer_prototype_2026-07-03.md
+
+Primary report:
+history/internal_docs/goal4936_generic_output_materializer_prototype_2026-07-03.md
+
+Please inspect:
+
+- src/rtdsl/output_assembly.py
+- src/rtdsl/__init__.py
+- tests/goal4936_output_materializer_test.py
+- tests/goal4935_output_row_buffer_contract_test.py
+- tests/goal4932_generic_output_assembly_test.py
+
+Please answer the review questions in the call-for-review file and write the result to:
+
+history/internal_docs/antigravity_goal4936_generic_output_materializer_prototype_review_2026-07-03.md
+
+Important:
+
+- Be strict about hidden RayJoin/overlay/author semantics.
+- This goal does not claim RayJoin public-sample speedup.
+- This goal does not implement a compiled/native writer.
+- This goal does not implement device-resident row-buffer.
+- The expected honest exit may be `generic_materializer_beats_python_loop`.

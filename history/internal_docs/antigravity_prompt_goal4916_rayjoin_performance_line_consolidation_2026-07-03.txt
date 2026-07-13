@@ -1,0 +1,34 @@
+Please review Goal4916, a consolidation of the current RayJoin performance line.
+
+Workspace root:
+
+```text
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review
+```
+
+Report:
+
+```text
+history/internal_docs/goal4916_rayjoin_performance_line_consolidation_2026-07-03.md
+```
+
+Call-for-review:
+
+```text
+history/internal_docs/call_for_review_goal4916_rayjoin_performance_line_consolidation_2026-07-03.md
+```
+
+Please write the review to:
+
+```text
+history/internal_docs/antigravity_goal4916_rayjoin_performance_line_consolidation_review_2026-07-03.md
+```
+
+Requested verdict labels:
+
+- `approve_goal4916_consolidate_current_best_and_stop_micro_optimization`
+- `approve_with_required_amendments`
+- `block_goal4916_because_more_micro_optimization_is_justified`
+- `block_goal4916_because_summary_overclaims`
+
+Please answer all 6 review questions and preserve the non-authorization boundary.

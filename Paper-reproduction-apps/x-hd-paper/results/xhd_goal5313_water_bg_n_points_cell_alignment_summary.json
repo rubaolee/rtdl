@@ -1,0 +1,82 @@
+{
+  "author_rerun_default_goal5311": {
+    "abs_diff_vs_paper_log": 0.0005762577056884766,
+    "avg_time_ms": 103.564,
+    "grid_resolution": [
+      2304,
+      1078
+    ],
+    "hd_result": 0.8970130085945129,
+    "iterations": 12,
+    "matches_paper_log": false,
+    "num_points_per_cell": 15
+  },
+  "author_rerun_paper_config_goal5313": {
+    "abs_diff_vs_paper_log": 0.0,
+    "avg_time_ms": 110.167,
+    "grid_resolution": [
+      2557,
+      1196
+    ],
+    "hd_result": 0.8964367508888245,
+    "iterations": 14,
+    "matches_paper_log": true,
+    "num_points_per_cell": 8
+  },
+  "claim_boundary": {
+    "allowed": "On the full-public WaterBodies/BG candidate, author hd_exec rerun with paper-log num_points_cell=8 reproduces the paper-log HDResult exactly; RTDL exact-witness route reports the same witness in float64, whose float32 distance equals the author/paper value.",
+    "forbidden": [
+      "Exact paper WKT files are recovered.",
+      "Figure 5 is fully reproduced.",
+      "RTDL performance parity is established.",
+      "RTDL and author use identical numeric precision internally."
+    ]
+  },
+  "decision": {
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "goal5311_author_default_mismatch_explained": true,
+    "mismatch_root_cause": "Goal5311 author rerun used default n_points_cell=15; paper-branch WaterBodies/BG logs use n_points_cell=8.",
+    "performance_ratio_claimed": false,
+    "rtdl_float64_matches_author_float32_at_1e_6": false,
+    "rtdl_float64_matches_author_float32_at_2e_6": true,
+    "water_bg_public_candidate_matches_author_paper_config": true
+  },
+  "goal": "Goal5313",
+  "pair": "USADetailedWaterBodies.wkt -> USACensusBlockGroupBoundaries.wkt",
+  "paper_log": {
+    "hd_result": 0.8964367508888245,
+    "num_points_per_cell": 8,
+    "source": "paper-branch run_all log index / rt_gpu and auto_tune entries"
+  },
+  "point_counts": [
+    22824823,
+    52271467
+  ],
+  "rtdl_exact_witness_goal5312": {
+    "abs_diff_vs_author_paper_config": 1.305780185645311e-06,
+    "abs_diff_vs_paper_log": 1.305780185645311e-06,
+    "hd_result_float64": 0.8964380566690101,
+    "per_source_witness_exact": true,
+    "route_label": "cell-mbr-exact-witness",
+    "source_id": 13579843,
+    "target_id": 22441127
+  },
+  "schema": "rtdl.paper_reproduction.xhd.goal5313.water_bg_n_points_cell_alignment.v1",
+  "witness_pair_probe": {
+    "distance_float32_matches_paper_log": true,
+    "distance_float32_numpy": 0.8964367508888245,
+    "distance_float64": 0.8964380566690101,
+    "distance_float64_matches_rtdl": true,
+    "source_coordinate_float64": [
+      -81.9999084473,
+      44.5000190735
+    ],
+    "source_id": 13579843,
+    "target_coordinate_float64": [
+      -82.7264814704,
+      43.974954476
+    ],
+    "target_id": 22441127
+  }
+}

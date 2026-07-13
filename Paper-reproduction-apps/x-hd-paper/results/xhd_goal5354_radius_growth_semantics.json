@@ -1,0 +1,200 @@
+{
+  "author_source_excerpt": {
+    "commit": "7bf41c8442d059c94f4178355c6d5a10571d9658",
+    "file": "src/hd_impl/hausdorff_distance_rt.h",
+    "lines": "398-419 in pinned checkout",
+    "repository": "https://github.com/pwrliang/X-HD.git",
+    "semantics": [
+      "last_in_size = in_size; in_size = in_queue.size(stream)",
+      "if in_size > 0 and radius < hd_ub, update radius",
+      "adaptive: reduced_factor = (last_in_size - in_size) / last_in_size",
+      "adaptive: for expand_factor in [8,4,2,1], if reduced_factor < 1/expand_factor, radius += expand_factor * cell_diagonal and break",
+      "double: radius *= 2",
+      "add: radius += cell_diagonal",
+      "radius = min(radius, hd_ub)"
+    ]
+  },
+  "claim_boundary": {
+    "author_rt_core_algorithm_equivalence_claimed": false,
+    "author_tune_radius_route_mapping_claimed": false,
+    "figure8_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "performance_claimed": false
+  },
+  "current_xhd_mapping_status": {
+    "helper_semantics_available": true,
+    "reason": "This goal proves the schedule rule in isolation. A later behavior gate must decide how to wire it into the cell-MBR route and compare iteration traces against author outputs.",
+    "route_uses_helper": false,
+    "run_xhd_rtdl_hd_exec_explicit_tune_radius_still_fail_closed": true,
+    "tune_radius_author_values": [
+      "adaptive",
+      "double",
+      "add"
+    ]
+  },
+  "date": "2026-07-09",
+  "examples": {
+    "adaptive": {
+      "half_reduction_adds_1_diagonal": {
+        "app_semantics": "none",
+        "cell_diagonal": 0.5,
+        "clamp_applied": false,
+        "contract": "rtdl.radius_growth_schedule.v1",
+        "expanded_by": 0.5,
+        "hd_upper_bound": 100.0,
+        "last_input_count": 100,
+        "mode": "adaptive",
+        "next_input_count": 50,
+        "next_radius": 2.5,
+        "previous_radius": 2.0,
+        "reduced_factor": 0.5,
+        "update_applied": true
+      },
+      "low_reduction_adds_8_diagonals": {
+        "app_semantics": "none",
+        "cell_diagonal": 0.5,
+        "clamp_applied": false,
+        "contract": "rtdl.radius_growth_schedule.v1",
+        "expanded_by": 4.0,
+        "hd_upper_bound": 100.0,
+        "last_input_count": 100,
+        "mode": "adaptive",
+        "next_input_count": 90,
+        "next_radius": 6.0,
+        "previous_radius": 2.0,
+        "reduced_factor": 0.1,
+        "update_applied": true
+      },
+      "strict_boundary_one_eighth_adds_4_diagonals": {
+        "app_semantics": "none",
+        "cell_diagonal": 0.5,
+        "clamp_applied": false,
+        "contract": "rtdl.radius_growth_schedule.v1",
+        "expanded_by": 2.0,
+        "hd_upper_bound": 100.0,
+        "last_input_count": 1000,
+        "mode": "adaptive",
+        "next_input_count": 875,
+        "next_radius": 4.0,
+        "previous_radius": 2.0,
+        "reduced_factor": 0.125,
+        "update_applied": true
+      }
+    },
+    "modes": {
+      "add": {
+        "app_semantics": "none",
+        "cell_diagonal": 0.5,
+        "clamp_applied": false,
+        "contract": "rtdl.radius_growth_schedule.v1",
+        "expanded_by": 0.5,
+        "hd_upper_bound": 100.0,
+        "last_input_count": 10,
+        "mode": "add",
+        "next_input_count": 8,
+        "next_radius": 3.5,
+        "previous_radius": 3.0,
+        "reduced_factor": 0.2,
+        "update_applied": true
+      },
+      "clamp": {
+        "app_semantics": "none",
+        "cell_diagonal": 2.0,
+        "clamp_applied": true,
+        "contract": "rtdl.radius_growth_schedule.v1",
+        "expanded_by": 16.0,
+        "hd_upper_bound": 10.0,
+        "last_input_count": 100,
+        "mode": "adaptive",
+        "next_input_count": 99,
+        "next_radius": 10.0,
+        "previous_radius": 9.0,
+        "reduced_factor": 0.01,
+        "update_applied": true
+      },
+      "double": {
+        "app_semantics": "none",
+        "cell_diagonal": 0.5,
+        "clamp_applied": false,
+        "contract": "rtdl.radius_growth_schedule.v1",
+        "expanded_by": 3.0,
+        "hd_upper_bound": 100.0,
+        "last_input_count": 10,
+        "mode": "double",
+        "next_input_count": 8,
+        "next_radius": 6.0,
+        "previous_radius": 3.0,
+        "reduced_factor": 0.2,
+        "update_applied": true
+      }
+    },
+    "non_xhd_retry_radius_consumer_trace": [
+      {
+        "app_semantics": "none",
+        "cell_diagonal": 0.25,
+        "clamp_applied": false,
+        "contract": "rtdl.radius_growth_schedule.v1",
+        "expanded_by": 2.0,
+        "hd_upper_bound": 5.0,
+        "last_input_count": 20,
+        "mode": "adaptive",
+        "next_input_count": 18,
+        "next_radius": 2.25,
+        "previous_radius": 0.25,
+        "reduced_factor": 0.1,
+        "update_applied": true
+      },
+      {
+        "app_semantics": "none",
+        "cell_diagonal": 0.25,
+        "clamp_applied": false,
+        "contract": "rtdl.radius_growth_schedule.v1",
+        "expanded_by": 0.25,
+        "hd_upper_bound": 5.0,
+        "last_input_count": 18,
+        "mode": "adaptive",
+        "next_input_count": 9,
+        "next_radius": 2.5,
+        "previous_radius": 2.25,
+        "reduced_factor": 0.5,
+        "update_applied": true
+      },
+      {
+        "app_semantics": "none",
+        "cell_diagonal": 0.25,
+        "clamp_applied": false,
+        "contract": "rtdl.radius_growth_schedule.v1",
+        "expanded_by": 0.25,
+        "hd_upper_bound": 5.0,
+        "last_input_count": 9,
+        "mode": "adaptive",
+        "next_input_count": 3,
+        "next_radius": 2.75,
+        "previous_radius": 2.5,
+        "reduced_factor": 0.6666666666666666,
+        "update_applied": true
+      }
+    ]
+  },
+  "exit_label": "radius_growth_schedule_helper_ready__next_target_route_trace_mapping",
+  "goal": "Goal5354",
+  "purpose": "Extract the author-compatible add/double/adaptive radius update rule into a generic RTDL helper and prove the strict threshold behavior.",
+  "recommended_next_targets": [
+    "wire_tune_radius_to_cell_mbr_route_under_explicit_flag",
+    "compare_author_and_rtdl_radius_iteration_trace_on_bounded_or_level_b_input",
+    "keep_explicit_tune_radius_fail_closed_until_trace_mapping_is_verified"
+  ],
+  "rtdl_api": {
+    "app_semantics": "none",
+    "contract": "rtdl.radius_growth_schedule.v1",
+    "exports": [
+      "RadiusGrowthStep",
+      "radius_growth_step",
+      "radius_growth_trace",
+      "RADIUS_GROWTH_SCHEDULE_CONTRACT_VERSION"
+    ],
+    "module": "src/rtdsl/radius_schedule.py"
+  },
+  "schema": "rtdl.paper_reproduction.xhd.goal5354.radius_growth_semantics.v1",
+  "status": "radius_growth_schedule_helper_ready__route_mapping_not_yet_enabled"
+}

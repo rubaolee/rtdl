@@ -1,0 +1,138 @@
+{
+  "claim_boundary": {
+    "author_rt_core_algorithm_equivalence_claimed": false,
+    "bounded_geo_execution_claimed": true,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_reopened": false,
+    "figure5_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "geo_figure5_reproduction_claimed": false,
+    "performance_ratio_claimed": false,
+    "route_micro_optimization_goal_authorized": false
+  },
+  "denominator_policy": {
+    "author_process_wall_sec": "record_in_goal5422_execution_only",
+    "author_running_avg_time_ms": "record_if_author_json_reports_it",
+    "ratio_authorized": false,
+    "reason": "Author internal timing, author process wall, RTDL route wall, and RTDL total are separate denominators.",
+    "rtdl_route_sec": "record_in_goal5422_execution_only",
+    "rtdl_total_sec": "record_in_goal5422_execution_only"
+  },
+  "goal": "Goal5422",
+  "matched": true,
+  "pod": {
+    "host": "213.173.108.24",
+    "naked_ssh_allowed": false,
+    "port": 13502,
+    "wrapper_command_prefix": "py scripts/current_pod_ssh.py --host 213.173.108.24 --port 13502 exec",
+    "wrapper_required": true
+  },
+  "row_count": 2,
+  "rows": [
+    {
+      "author": {
+        "HDResult": 65.44752502441406,
+        "Running_AvgTime_ms": 6.506,
+        "local_json": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\goal5422_raw\\county_zcta_bounded_author.json",
+        "remote_process_wall_sec": 1.2626526355743408
+      },
+      "case_id": "county_zcta_bounded",
+      "claim_boundary": {
+        "author_rt_core_algorithm_equivalence_claimed": false,
+        "exact_paper_dataset_reproduction_claimed": false,
+        "full_paper_reproduction_claimed": false,
+        "geo_figure5_reproduction_claimed": false,
+        "level_b_bounded_geo_correctness_claimed": true,
+        "performance_ratio_claimed": false
+      },
+      "comparison": {
+        "abs_diff": 5.2616073986655465e-06,
+        "comparison_reference": "directed_input1_to_input2",
+        "matched": true,
+        "tolerance": 1e-05
+      },
+      "input_identity_level": "level_b_bounded_geo_fixture",
+      "paper_pair": "dtl_cnty.wkt -> uszipcode.wkt",
+      "point_counts": [
+        38034,
+        50272
+      ],
+      "rtdl": {
+        "HDResult": 65.44751976280666,
+        "local_json": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\goal5422_raw\\county_zcta_bounded_rtdl_summary.json",
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "partner": "triton",
+        "partner_reference_contract": "generic_directed_max_of_nearest_distance_2d",
+        "per_source_witness_exact": true,
+        "remote_process_wall_sec": 4.973517917096615,
+        "route": "directed_max_of_nearest_distance_2d_partner_columns",
+        "run_phases": {
+          "load_input_sec": 1.303458459675312,
+          "numba_grouped_argmax_elapsed_seconds": null,
+          "numba_grouped_argmin_elapsed_seconds": null,
+          "numba_pairwise_elapsed_seconds": null,
+          "partner_column_upload_sec": 1.732411965727806,
+          "rtdl_route_sec": 0.6388622000813484,
+          "total_sec": 3.674895405769348,
+          "triton_dense_point_nearest_elapsed_seconds": null,
+          "triton_grouped_argmax_elapsed_seconds": null
+        },
+        "triton_strategy": "dense_point_nearest_tiled"
+      }
+    },
+    {
+      "author": {
+        "HDResult": 72.38665008544922,
+        "Running_AvgTime_ms": 4.423,
+        "local_json": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\goal5422_raw\\water_bg_bounded_author.json",
+        "remote_process_wall_sec": 1.1073951125144958
+      },
+      "case_id": "water_bg_bounded",
+      "claim_boundary": {
+        "author_rt_core_algorithm_equivalence_claimed": false,
+        "exact_paper_dataset_reproduction_claimed": false,
+        "full_paper_reproduction_claimed": false,
+        "geo_figure5_reproduction_claimed": false,
+        "level_b_bounded_geo_correctness_claimed": true,
+        "performance_ratio_claimed": false
+      },
+      "comparison": {
+        "abs_diff": 4.925300871150284e-06,
+        "comparison_reference": "directed_input1_to_input2",
+        "matched": true,
+        "tolerance": 1e-05
+      },
+      "input_identity_level": "level_b_bounded_geo_fixture",
+      "paper_pair": "USADetailedWaterBodies.wkt -> USACensusBlockGroupBoundaries.wkt",
+      "point_counts": [
+        124,
+        894
+      ],
+      "rtdl": {
+        "HDResult": 72.38664516014835,
+        "local_json": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\goal5422_raw\\water_bg_bounded_rtdl_summary.json",
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "partner": "triton",
+        "partner_reference_contract": "generic_directed_max_of_nearest_distance_2d",
+        "per_source_witness_exact": true,
+        "remote_process_wall_sec": 3.328819952905178,
+        "route": "directed_max_of_nearest_distance_2d_partner_columns",
+        "run_phases": {
+          "load_input_sec": 0.010932393372058868,
+          "numba_grouped_argmax_elapsed_seconds": null,
+          "numba_grouped_argmin_elapsed_seconds": null,
+          "numba_pairwise_elapsed_seconds": null,
+          "partner_column_upload_sec": 1.5410912781953812,
+          "rtdl_route_sec": 0.5364696383476257,
+          "total_sec": 2.08864938467741,
+          "triton_dense_point_nearest_elapsed_seconds": null,
+          "triton_grouped_argmax_elapsed_seconds": null
+        },
+        "triton_strategy": "dense_point_nearest_tiled"
+      }
+    }
+  ],
+  "schema": "rtdl.paper_reproduction.xhd.goal5422.bounded_geo_same_pod_packet_execution.v1",
+  "source_packet": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5421_bounded_geo_same_pod_packet_plan.json",
+  "status": "bounded_geo_same_pod_packet_executed__level_b_only_no_ratio"
+}

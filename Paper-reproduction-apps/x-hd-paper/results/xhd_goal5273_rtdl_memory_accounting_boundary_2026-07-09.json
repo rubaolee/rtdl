@@ -1,0 +1,421 @@
+{
+  "author_figure11_graphics": {
+    "xhd_mean_breakdown_mb": {
+      "BVH": 0.078277587890625,
+      "Grid": 7.940291404724121,
+      "MBRs B": 0.03717613220214844,
+      "WL": 20.74295425415039,
+      "WL Heavy Peak": 17.215864181518555
+    },
+    "xhd_mean_total_memory_mb": 46.01456356048584
+  },
+  "author_reference_artifact": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5272_figure11_author_memory_log_matrix_2026-07-09.json",
+  "claim_boundary": {
+    "author_bvh_memory_measured_by_rtdl": false,
+    "author_heavy_worklist_peak_measured_by_rtdl": false,
+    "author_memory_parity_claimed": false,
+    "exact_gpu_allocator_measurement_claimed": false,
+    "figure11_reproduced": false,
+    "performance_ratio_claimed": false
+  },
+  "date": "2026-07-09",
+  "field_mapping": {
+    "BVH": "unavailable: RTDL route metadata does not expose OptiX/BVH or acceleration-structure allocator bytes.",
+    "Grid": "estimated from generic grid-cell column contract (cell ids, offsets, counts, sorted point ids, dense lookup, grid shape/bounds).",
+    "MBRs B": "estimated from occupied cell min/max MBR columns.",
+    "RTDL-only input columns": "reported separately; not an author Figure 11 field.",
+    "RTDL-only nearest state": "reported separately; not an author Figure 11 field.",
+    "WL": "estimated from frontier_row_capacity when a bounded frontier row table is allocated; zero for exact-witness routes that skip frontier rows.",
+    "WL Heavy Peak": "unavailable: current RTDL route has no author-like heavy-cell offload worklist peak telemetry."
+  },
+  "frontier_route_accounting_example": {
+    "label": "Dragon\nBuddha",
+    "rtdl_accounting": {
+      "author_mapped_fields": {
+        "BVH": {
+          "bytes": null,
+          "mb": null,
+          "method": "RTDL current route metadata does not expose OptiX/acceleration-structure memory bytes.",
+          "status": "unavailable_opaque_native_acceleration_memory_not_reported"
+        },
+        "Grid": {
+          "bytes": 9167176,
+          "mb": 8.742500305175781,
+          "method": "4 cell int64 columns + 2 target-point int64 columns + grid shape/bounds + dense lookup.",
+          "status": "estimated_from_generic_grid_column_contract"
+        },
+        "MBRs B": {
+          "bytes": 309792,
+          "mb": 0.295440673828125,
+          "method": "6 float64 min/max cell-MBR columns over occupied grid cells.",
+          "status": "estimated_from_cell_mbr_columns"
+        },
+        "WL": {
+          "bytes": 224074240,
+          "mb": 213.69384765625,
+          "method": "frontier_row_capacity * 8 generic 64-bit frontier row columns.",
+          "status": "estimated_from_frontier_row_capacity"
+        },
+        "WL Heavy Peak": {
+          "bytes": null,
+          "mb": null,
+          "method": "Current RTDL route does not expose an author-like heavy-cell offload worklist peak.",
+          "status": "unavailable_no_author_heavy_offload_equivalent_in_current_rtdl_route"
+        }
+      },
+      "claim_boundary": {
+        "author_memory_parity_claimed": false,
+        "exact_gpu_allocator_measurement_claimed": false,
+        "figure11_reproduced": false,
+        "performance_ratio_claimed": false
+      },
+      "estimated_author_mapped_bytes_excluding_unavailable": 233551208,
+      "estimated_author_mapped_mb_excluding_unavailable": 222.7317886352539,
+      "estimated_total_accounted_bytes_excluding_unavailable": 275456192,
+      "estimated_total_accounted_mb_excluding_unavailable": 262.69549560546875,
+      "frontier_row_capacity": 3501160,
+      "frontier_row_count": 0,
+      "grid_cell_count": 6454,
+      "point_count_a": 437645,
+      "point_count_b": 543652,
+      "route_contract": "RTDL 3-D cell-MBR frontier route using generic grid-cell MBRs, generic cell-MBR frontier rows, generic nearest-witness continuation, and generic max-nearest reduction. It is not the author X-HD RT-core implementation and not a performance claim.",
+      "route_label": "cell-mbr-fast-scalar",
+      "rtdl_only_fields": {
+        "input_column_matrices_and_ids": {
+          "bytes": 31401504,
+          "mb": 29.946807861328125,
+          "method": "source/target float64 coordinate matrices plus int64 ids.",
+          "status": "estimated_rtdl_host_column_memory_not_author_field"
+        },
+        "nearest_state": {
+          "bytes": 10503480,
+          "mb": 10.016899108886719,
+          "method": "query ids, nearest item ids, and nearest distances for max-nearest reduction.",
+          "status": "estimated_rtdl_route_state_not_author_field"
+        }
+      },
+      "schema": "rtdl.paper_reproduction.xhd.rtdl_memory_accounting.v1"
+    },
+    "source_artifact": "xhd_goal5263_dragon_happy_hd_exec_fast_scalar_pod.json",
+    "why_included": "Shows nonzero WL estimate for a route that allocates bounded frontier rows; not a Figure 11 reproduction row."
+  },
+  "goal": "Goal5273",
+  "graphics_exact_witness_rows": {
+    "Dragon\nAsian Dragon": {
+      "author_figure11_xhd_breakdown_mb": {
+        "BVH": 0.1575927734375,
+        "Grid": 13.807609558105469,
+        "MBRs B": 0.07614898681640625,
+        "WL": 3.3389663696289062,
+        "WL Heavy Peak": 12.2381591796875
+      },
+      "author_figure11_xhd_total_mb": 29.61847686767578,
+      "rtdl_accounting": {
+        "author_mapped_fields": {
+          "BVH": {
+            "bytes": null,
+            "mb": null,
+            "method": "RTDL current route metadata does not expose OptiX/acceleration-structure memory bytes.",
+            "status": "unavailable_opaque_native_acceleration_memory_not_reported"
+          },
+          "Grid": {
+            "bytes": 58098632,
+            "mb": 55.40717315673828,
+            "method": "4 cell int64 columns + 2 target-point int64 columns + grid shape/bounds + dense lookup.",
+            "status": "estimated_from_generic_grid_column_contract"
+          },
+          "MBRs B": {
+            "bytes": 124224,
+            "mb": 0.11846923828125,
+            "method": "6 float64 min/max cell-MBR columns over occupied grid cells.",
+            "status": "estimated_from_cell_mbr_columns"
+          },
+          "WL": {
+            "bytes": 0,
+            "mb": 0.0,
+            "method": "frontier_row_capacity * 8 generic 64-bit frontier row columns.",
+            "status": "estimated_from_frontier_row_capacity"
+          },
+          "WL Heavy Peak": {
+            "bytes": null,
+            "mb": null,
+            "method": "Current RTDL route does not expose an author-like heavy-cell offload worklist peak.",
+            "status": "unavailable_no_author_heavy_offload_equivalent_in_current_rtdl_route"
+          }
+        },
+        "claim_boundary": {
+          "author_memory_parity_claimed": false,
+          "exact_gpu_allocator_measurement_claimed": false,
+          "figure11_reproduced": false,
+          "performance_ratio_claimed": false
+        },
+        "estimated_author_mapped_bytes_excluding_unavailable": 58222856,
+        "estimated_author_mapped_mb_excluding_unavailable": 55.52564239501953,
+        "estimated_total_accounted_bytes_excluding_unavailable": 198238176,
+        "estimated_total_accounted_mb_excluding_unavailable": 189.05465698242188,
+        "frontier_row_capacity": null,
+        "frontier_row_count": 0,
+        "grid_cell_count": 2588,
+        "point_count_a": 437645,
+        "point_count_b": 3609600,
+        "route_contract": "RTDL 3-D cell-MBR frontier route using generic grid-cell MBRs, generic cell-MBR frontier rows, generic nearest-witness continuation, and generic max-nearest reduction. It is not the author X-HD RT-core implementation and not a performance claim.",
+        "route_label": "cell-mbr-exact-witness",
+        "rtdl_only_fields": {
+          "input_column_matrices_and_ids": {
+            "bytes": 129511840,
+            "mb": 123.51211547851562,
+            "method": "source/target float64 coordinate matrices plus int64 ids.",
+            "status": "estimated_rtdl_host_column_memory_not_author_field"
+          },
+          "nearest_state": {
+            "bytes": 10503480,
+            "mb": 10.016899108886719,
+            "method": "query ids, nearest item ids, and nearest distances for max-nearest reduction.",
+            "status": "estimated_rtdl_route_state_not_author_field"
+          }
+        },
+        "schema": "rtdl.paper_reproduction.xhd.rtdl_memory_accounting.v1"
+      },
+      "source_artifact": "xhd_goal5264_dragon_asian_hd_exec_exact_witness_pod.json"
+    },
+    "Dragon\nBuddha": {
+      "author_figure11_xhd_breakdown_mb": {
+        "BVH": 0.058349609375,
+        "Grid": 2.087512969970703,
+        "MBRs B": 0.02728271484375,
+        "WL": 3.3389663696289062,
+        "WL Heavy Peak": 0.6736679077148438
+      },
+      "author_figure11_xhd_total_mb": 6.185779571533203,
+      "rtdl_accounting": {
+        "author_mapped_fields": {
+          "BVH": {
+            "bytes": null,
+            "mb": null,
+            "method": "RTDL current route metadata does not expose OptiX/acceleration-structure memory bytes.",
+            "status": "unavailable_opaque_native_acceleration_memory_not_reported"
+          },
+          "Grid": {
+            "bytes": 9167176,
+            "mb": 8.742500305175781,
+            "method": "4 cell int64 columns + 2 target-point int64 columns + grid shape/bounds + dense lookup.",
+            "status": "estimated_from_generic_grid_column_contract"
+          },
+          "MBRs B": {
+            "bytes": 309792,
+            "mb": 0.295440673828125,
+            "method": "6 float64 min/max cell-MBR columns over occupied grid cells.",
+            "status": "estimated_from_cell_mbr_columns"
+          },
+          "WL": {
+            "bytes": 0,
+            "mb": 0.0,
+            "method": "frontier_row_capacity * 8 generic 64-bit frontier row columns.",
+            "status": "estimated_from_frontier_row_capacity"
+          },
+          "WL Heavy Peak": {
+            "bytes": null,
+            "mb": null,
+            "method": "Current RTDL route does not expose an author-like heavy-cell offload worklist peak.",
+            "status": "unavailable_no_author_heavy_offload_equivalent_in_current_rtdl_route"
+          }
+        },
+        "claim_boundary": {
+          "author_memory_parity_claimed": false,
+          "exact_gpu_allocator_measurement_claimed": false,
+          "figure11_reproduced": false,
+          "performance_ratio_claimed": false
+        },
+        "estimated_author_mapped_bytes_excluding_unavailable": 9476968,
+        "estimated_author_mapped_mb_excluding_unavailable": 9.037940979003906,
+        "estimated_total_accounted_bytes_excluding_unavailable": 51381952,
+        "estimated_total_accounted_mb_excluding_unavailable": 49.00164794921875,
+        "frontier_row_capacity": null,
+        "frontier_row_count": 0,
+        "grid_cell_count": 6454,
+        "point_count_a": 437645,
+        "point_count_b": 543652,
+        "route_contract": "RTDL 3-D cell-MBR frontier route using generic grid-cell MBRs, generic cell-MBR frontier rows, generic nearest-witness continuation, and generic max-nearest reduction. It is not the author X-HD RT-core implementation and not a performance claim.",
+        "route_label": "cell-mbr-exact-witness",
+        "rtdl_only_fields": {
+          "input_column_matrices_and_ids": {
+            "bytes": 31401504,
+            "mb": 29.946807861328125,
+            "method": "source/target float64 coordinate matrices plus int64 ids.",
+            "status": "estimated_rtdl_host_column_memory_not_author_field"
+          },
+          "nearest_state": {
+            "bytes": 10503480,
+            "mb": 10.016899108886719,
+            "method": "query ids, nearest item ids, and nearest distances for max-nearest reduction.",
+            "status": "estimated_rtdl_route_state_not_author_field"
+          }
+        },
+        "schema": "rtdl.paper_reproduction.xhd.rtdl_memory_accounting.v1"
+      },
+      "source_artifact": "xhd_goal5263_dragon_happy_hd_exec_exact_witness_pod.json"
+    },
+    "Thai\nAsian Dragon": {
+      "author_figure11_xhd_breakdown_mb": {
+        "BVH": 0.0501708984375,
+        "Grid": 13.781242370605469,
+        "MBRs B": 0.02341461181640625,
+        "WL": 38.146942138671875,
+        "WL Heavy Peak": 20.64380645751953
+      },
+      "author_figure11_xhd_total_mb": 72.64557647705078,
+      "rtdl_accounting": {
+        "author_mapped_fields": {
+          "BVH": {
+            "bytes": null,
+            "mb": null,
+            "method": "RTDL current route metadata does not expose OptiX/acceleration-structure memory bytes.",
+            "status": "unavailable_opaque_native_acceleration_memory_not_reported"
+          },
+          "Grid": {
+            "bytes": 58098632,
+            "mb": 55.40717315673828,
+            "method": "4 cell int64 columns + 2 target-point int64 columns + grid shape/bounds + dense lookup.",
+            "status": "estimated_from_generic_grid_column_contract"
+          },
+          "MBRs B": {
+            "bytes": 124224,
+            "mb": 0.11846923828125,
+            "method": "6 float64 min/max cell-MBR columns over occupied grid cells.",
+            "status": "estimated_from_cell_mbr_columns"
+          },
+          "WL": {
+            "bytes": 0,
+            "mb": 0.0,
+            "method": "frontier_row_capacity * 8 generic 64-bit frontier row columns.",
+            "status": "estimated_from_frontier_row_capacity"
+          },
+          "WL Heavy Peak": {
+            "bytes": null,
+            "mb": null,
+            "method": "Current RTDL route does not expose an author-like heavy-cell offload worklist peak.",
+            "status": "unavailable_no_author_heavy_offload_equivalent_in_current_rtdl_route"
+          }
+        },
+        "claim_boundary": {
+          "author_memory_parity_claimed": false,
+          "exact_gpu_allocator_measurement_claimed": false,
+          "figure11_reproduced": false,
+          "performance_ratio_claimed": false
+        },
+        "estimated_author_mapped_bytes_excluding_unavailable": 58222856,
+        "estimated_author_mapped_mb_excluding_unavailable": 55.52564239501953,
+        "estimated_total_accounted_bytes_excluding_unavailable": 453729832,
+        "estimated_total_accounted_mb_excluding_unavailable": 432.71048736572266,
+        "frontier_row_capacity": null,
+        "frontier_row_count": 0,
+        "grid_cell_count": 2588,
+        "point_count_a": 4999996,
+        "point_count_b": 3609600,
+        "route_contract": "RTDL 3-D cell-MBR frontier route using generic grid-cell MBRs, generic cell-MBR frontier rows, generic nearest-witness continuation, and generic max-nearest reduction. It is not the author X-HD RT-core implementation and not a performance claim.",
+        "route_label": "cell-mbr-exact-witness",
+        "rtdl_only_fields": {
+          "input_column_matrices_and_ids": {
+            "bytes": 275507072,
+            "mb": 262.7440185546875,
+            "method": "source/target float64 coordinate matrices plus int64 ids.",
+            "status": "estimated_rtdl_host_column_memory_not_author_field"
+          },
+          "nearest_state": {
+            "bytes": 119999904,
+            "mb": 114.44082641601562,
+            "method": "query ids, nearest item ids, and nearest distances for max-nearest reduction.",
+            "status": "estimated_rtdl_route_state_not_author_field"
+          }
+        },
+        "schema": "rtdl.paper_reproduction.xhd.rtdl_memory_accounting.v1"
+      },
+      "source_artifact": "xhd_goal5266_thai_asian_hd_exec_exact_witness_pod.json"
+    },
+    "Thai\nBuddha": {
+      "author_figure11_xhd_breakdown_mb": {
+        "BVH": 0.0469970703125,
+        "Grid": 2.0848007202148438,
+        "MBRs B": 0.02185821533203125,
+        "WL": 38.146942138671875,
+        "WL Heavy Peak": 35.307823181152344
+      },
+      "author_figure11_xhd_total_mb": 75.6084213256836,
+      "rtdl_accounting": {
+        "author_mapped_fields": {
+          "BVH": {
+            "bytes": null,
+            "mb": null,
+            "method": "RTDL current route metadata does not expose OptiX/acceleration-structure memory bytes.",
+            "status": "unavailable_opaque_native_acceleration_memory_not_reported"
+          },
+          "Grid": {
+            "bytes": 9167176,
+            "mb": 8.742500305175781,
+            "method": "4 cell int64 columns + 2 target-point int64 columns + grid shape/bounds + dense lookup.",
+            "status": "estimated_from_generic_grid_column_contract"
+          },
+          "MBRs B": {
+            "bytes": 309792,
+            "mb": 0.295440673828125,
+            "method": "6 float64 min/max cell-MBR columns over occupied grid cells.",
+            "status": "estimated_from_cell_mbr_columns"
+          },
+          "WL": {
+            "bytes": 0,
+            "mb": 0.0,
+            "method": "frontier_row_capacity * 8 generic 64-bit frontier row columns.",
+            "status": "estimated_from_frontier_row_capacity"
+          },
+          "WL Heavy Peak": {
+            "bytes": null,
+            "mb": null,
+            "method": "Current RTDL route does not expose an author-like heavy-cell offload worklist peak.",
+            "status": "unavailable_no_author_heavy_offload_equivalent_in_current_rtdl_route"
+          }
+        },
+        "claim_boundary": {
+          "author_memory_parity_claimed": false,
+          "exact_gpu_allocator_measurement_claimed": false,
+          "figure11_reproduced": false,
+          "performance_ratio_claimed": false
+        },
+        "estimated_author_mapped_bytes_excluding_unavailable": 9476968,
+        "estimated_author_mapped_mb_excluding_unavailable": 9.037940979003906,
+        "estimated_total_accounted_bytes_excluding_unavailable": 306873608,
+        "estimated_total_accounted_mb_excluding_unavailable": 292.65747833251953,
+        "frontier_row_capacity": null,
+        "frontier_row_count": 0,
+        "grid_cell_count": 6454,
+        "point_count_a": 4999996,
+        "point_count_b": 543652,
+        "route_contract": "RTDL 3-D cell-MBR frontier route using generic grid-cell MBRs, generic cell-MBR frontier rows, generic nearest-witness continuation, and generic max-nearest reduction. It is not the author X-HD RT-core implementation and not a performance claim.",
+        "route_label": "cell-mbr-exact-witness",
+        "rtdl_only_fields": {
+          "input_column_matrices_and_ids": {
+            "bytes": 177396736,
+            "mb": 169.1787109375,
+            "method": "source/target float64 coordinate matrices plus int64 ids.",
+            "status": "estimated_rtdl_host_column_memory_not_author_field"
+          },
+          "nearest_state": {
+            "bytes": 119999904,
+            "mb": 114.44082641601562,
+            "method": "query ids, nearest item ids, and nearest distances for max-nearest reduction.",
+            "status": "estimated_rtdl_route_state_not_author_field"
+          }
+        },
+        "schema": "rtdl.paper_reproduction.xhd.rtdl_memory_accounting.v1"
+      },
+      "source_artifact": "xhd_goal5265_thai_happy_hd_exec_exact_witness_pod.json"
+    }
+  },
+  "next_required_work": [
+    "Expose or measure native allocator/BVH memory if Figure 11 parity is to be attempted.",
+    "Expose a heavy-worklist peak equivalent only if a comparable RTDL route exists.",
+    "Integrate accounting into hd_exec-compatible output only with per-field status, never as a silent Memory total."
+  ],
+  "purpose": "Define a reviewable RTDL-side memory accounting boundary for Figure 11 without claiming author memory parity.",
+  "schema": "rtdl.paper_reproduction.xhd.figure11_rtdl_memory_accounting_boundary.v1",
+  "status": "rtdl_memory_accounting_boundary_ready__figure11_not_reproduced"
+}

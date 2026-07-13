@@ -1,0 +1,429 @@
+{
+  "author_capacity_failure_case_count": 1,
+  "case_count": 6,
+  "cases": [
+    {
+      "author": {
+        "command": [
+          "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+          "-geom",
+          "/workspace/librts-targets/goal5500-range-intersects/PPoPPAE/datasets/polygons/parks_Europe.wkt",
+          "-query",
+          "/workspace/librts-targets/goal5500-range-intersects/PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_10000/parks_Europe.wkt",
+          "-serialize",
+          "/tmp/librts-serialize/goal5513/parks_Europe_select_0.01_10000_retry_tmp",
+          "-query_type",
+          "range-intersects",
+          "-index_type",
+          "rtspatial",
+          "-load_factor",
+          "1"
+        ],
+        "geometry_count": 1856318,
+        "load_factor": "1",
+        "loading_ms_diagnostic": 7.2256,
+        "pair_rows_exposed": false,
+        "query_count": 10000,
+        "query_metric": "internal Query Time; index Loading Time excluded",
+        "query_ms_internal": 77.3638,
+        "result_count": 216977211,
+        "stdout": "Loaded polygons 1856318\nLoaded queries 10000\nQueue size 141625 MB\nBVH 385 MB, Geometries 28 MB, AABBs 42 MB, Total 455 MB\nLoading Time 7.2256 ms\nGeoms 1856318\nQueries 10000\nQuery Time 77.3638 ms\nResults 216977211\nSelectivity: 0.0116886\n"
+      },
+      "case_id": "parks_Europe_select_0.01_10000",
+      "claim_boundary": {
+        "complete_paper_reproduction_claimed": false,
+        "device_zero_copy_claimed": false,
+        "embree_in_scope": false,
+        "exact_archive_and_extracted_input_identity_used": true,
+        "figure6_reproduced": false,
+        "generic_columnar_frontdoor_used": true,
+        "performance_ratio_authorized": false,
+        "pointwise_intersection_equivalence_claimed": false,
+        "same_input_result_count_agreement": true
+      },
+      "input_identity": {
+        "geometry_path": "/workspace/librts-targets/goal5500-range-intersects/PPoPPAE/datasets/polygons/parks_Europe.wkt",
+        "geometry_sha256": "fd77bf8294dfb9dfe45e49fc4aec99427ebd9ac4f370697b0c908d635d643aed",
+        "query_path": "/workspace/librts-targets/goal5500-range-intersects/PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_10000/parks_Europe.wkt",
+        "query_sha256": "0ddf5ea567223621ffdd7f0fe9c789dd5c7350941d0a8a8e7bb8b98b308ca499",
+        "same_files_passed_to_author_and_rtdl": true,
+        "verified_extraction_root": "/workspace/librts-targets/goal5500-range-intersects"
+      },
+      "matched": true,
+      "phase_boundary": {
+        "author_query_excludes_loading": true,
+        "performance_ratio_authorized": false,
+        "rtdl_prepared_query_excludes_wkt_load_and_index_prepare": true
+      },
+      "rtdl": {
+        "backend": "optix",
+        "input_contract": "generic_host_aabb_2d_columns",
+        "load_wkt_sec": 142.23538729699794,
+        "native_engine_customization": false,
+        "operation": "range_intersects",
+        "prepare_index_sec": 0.5456208980176598,
+        "prepared_query_wall_sec": 0.9852475830120966,
+        "primitive_query_sec": 0.9648157019983046,
+        "public_api": "Aabb2DColumns + prepare_aabb_index_2d_columns + prepared.count",
+        "result_count": 216977211,
+        "row_output_requested": false,
+        "rt_core_accelerated": true
+      },
+      "schema": "rtdl.paper_reproduction.librts.exact_range_intersects_count_gate.v1",
+      "status": "exact_input_range_intersects_count_matched"
+    },
+    {
+      "author": {
+        "command": [
+          "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+          "-geom",
+          "/workspace/librts-targets/goal5500-range-intersects/PPoPPAE/datasets/polygons/dtl_cnty.wkt",
+          "-query",
+          "/workspace/librts-targets/goal5500-range-intersects/PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_10000/dtl_cnty.wkt",
+          "-serialize",
+          "/tmp/librts-serialize/goal5513/dtl_cnty_select_0.01_10000",
+          "-query_type",
+          "range-intersects",
+          "-index_type",
+          "rtspatial",
+          "-load_factor",
+          "1"
+        ],
+        "geometry_count": 12234,
+        "load_factor": "1",
+        "loading_ms_diagnostic": 0.4914,
+        "pair_rows_exposed": false,
+        "query_count": 10000,
+        "query_metric": "internal Query Time; index Loading Time excluded",
+        "query_ms_internal": 0.7944,
+        "result_count": 1570285,
+        "stdout": "Loaded polygons 12234\nLoaded queries 10000\nQueue size 933 MB\nBVH 151 MB, Geometries 0 MB, AABBs 0 MB, Total 151 MB\nLoading Time 0.4914 ms\nGeoms 12234\nQueries 10000\nQuery Time 0.7944 ms\nResults 1570285\nSelectivity: 0.0128354\n"
+      },
+      "case_id": "dtl_cnty_select_0.01_10000",
+      "claim_boundary": {
+        "complete_paper_reproduction_claimed": false,
+        "device_zero_copy_claimed": false,
+        "embree_in_scope": false,
+        "exact_archive_and_extracted_input_identity_used": true,
+        "figure6_reproduced": false,
+        "generic_columnar_frontdoor_used": true,
+        "performance_ratio_authorized": false,
+        "pointwise_intersection_equivalence_claimed": false,
+        "same_input_result_count_agreement": true
+      },
+      "input_identity": {
+        "geometry_path": "/workspace/librts-targets/goal5500-range-intersects/PPoPPAE/datasets/polygons/dtl_cnty.wkt",
+        "geometry_sha256": "9177fdff45f24488f22157a2a1428a7cdb9d5a66a7287d4013ead52de1c7973f",
+        "query_path": "/workspace/librts-targets/goal5500-range-intersects/PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_10000/dtl_cnty.wkt",
+        "query_sha256": "f901553c4d9a25f1df567051f5a1f940723d46a7c74e25a02339eb25f185dce7",
+        "same_files_passed_to_author_and_rtdl": true,
+        "verified_extraction_root": "/workspace/librts-targets/goal5500-range-intersects"
+      },
+      "matched": true,
+      "phase_boundary": {
+        "author_query_excludes_loading": true,
+        "performance_ratio_authorized": false,
+        "rtdl_prepared_query_excludes_wkt_load_and_index_prepare": true
+      },
+      "rtdl": {
+        "backend": "optix",
+        "input_contract": "generic_host_aabb_2d_columns",
+        "load_wkt_sec": 28.247321802016813,
+        "native_engine_customization": false,
+        "operation": "range_intersects",
+        "prepare_index_sec": 0.40123186801793054,
+        "prepared_query_wall_sec": 0.17962852597702295,
+        "primitive_query_sec": 0.14519302902044728,
+        "public_api": "Aabb2DColumns + prepare_aabb_index_2d_columns + prepared.count",
+        "result_count": 1570285,
+        "row_output_requested": false,
+        "rt_core_accelerated": true
+      },
+      "schema": "rtdl.paper_reproduction.librts.exact_range_intersects_count_gate.v1",
+      "status": "exact_input_range_intersects_count_matched"
+    },
+    {
+      "author": {
+        "command": [
+          "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+          "-geom",
+          "/workspace/librts-targets/goal5500-range-intersects/PPoPPAE/datasets/polygons/USACensusBlockGroupBoundaries.wkt",
+          "-query",
+          "/workspace/librts-targets/goal5500-range-intersects/PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_10000/USACensusBlockGroupBoundaries.wkt",
+          "-serialize",
+          "/tmp/librts-serialize/goal5513/USACensusBlockGroupBoundaries_select_0.01_10000",
+          "-query_type",
+          "range-intersects",
+          "-index_type",
+          "rtspatial",
+          "-load_factor",
+          "1"
+        ],
+        "geometry_count": 248954,
+        "load_factor": "1",
+        "loading_ms_diagnostic": 1.1432,
+        "pair_rows_exposed": false,
+        "query_count": 10000,
+        "query_metric": "internal Query Time; index Loading Time excluded",
+        "query_ms_internal": 6.8716,
+        "result_count": 33404355,
+        "stdout": "Loaded polygons 248954\nLoaded queries 10000\nQueue size 18993 MB\nBVH 181 MB, Geometries 3 MB, AABBs 5 MB, Total 189 MB\nLoading Time 1.1432 ms\nGeoms 248954\nQueries 10000\nQuery Time 6.8716 ms\nResults 33404355\nSelectivity: 0.0134179\n"
+      },
+      "case_id": "USACensusBlockGroupBoundaries_select_0.01_10000",
+      "claim_boundary": {
+        "complete_paper_reproduction_claimed": false,
+        "device_zero_copy_claimed": false,
+        "embree_in_scope": false,
+        "exact_archive_and_extracted_input_identity_used": true,
+        "figure6_reproduced": false,
+        "generic_columnar_frontdoor_used": true,
+        "performance_ratio_authorized": false,
+        "pointwise_intersection_equivalence_claimed": false,
+        "same_input_result_count_agreement": true
+      },
+      "input_identity": {
+        "geometry_path": "/workspace/librts-targets/goal5500-range-intersects/PPoPPAE/datasets/polygons/USACensusBlockGroupBoundaries.wkt",
+        "geometry_sha256": "a5ead9c7bf5adac34a256e54ead58e6e100ca5321ddeb5268699a58a82b7b8da",
+        "query_path": "/workspace/librts-targets/goal5500-range-intersects/PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_10000/USACensusBlockGroupBoundaries.wkt",
+        "query_sha256": "94cab1712439246b1fb3b3341a20261b18f77b0a9597408b0e630f677ff4ef83",
+        "same_files_passed_to_author_and_rtdl": true,
+        "verified_extraction_root": "/workspace/librts-targets/goal5500-range-intersects"
+      },
+      "matched": true,
+      "phase_boundary": {
+        "author_query_excludes_loading": true,
+        "performance_ratio_authorized": false,
+        "rtdl_prepared_query_excludes_wkt_load_and_index_prepare": true
+      },
+      "rtdl": {
+        "backend": "optix",
+        "input_contract": "generic_host_aabb_2d_columns",
+        "load_wkt_sec": 96.99078773800284,
+        "native_engine_customization": false,
+        "operation": "range_intersects",
+        "prepare_index_sec": 0.4053399520344101,
+        "prepared_query_wall_sec": 0.8995082459878176,
+        "primitive_query_sec": 0.8640967730316333,
+        "public_api": "Aabb2DColumns + prepare_aabb_index_2d_columns + prepared.count",
+        "result_count": 33404355,
+        "row_output_requested": false,
+        "rt_core_accelerated": true
+      },
+      "schema": "rtdl.paper_reproduction.librts.exact_range_intersects_count_gate.v1",
+      "status": "exact_input_range_intersects_count_matched"
+    },
+    {
+      "author": {
+        "command": [
+          "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+          "-geom",
+          "/workspace/librts-targets/goal5500-range-intersects/PPoPPAE/datasets/polygons/USADetailedWaterBodies.wkt",
+          "-query",
+          "/workspace/librts-targets/goal5500-range-intersects/PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_10000/USADetailedWaterBodies.wkt",
+          "-serialize",
+          "/tmp/librts-serialize/goal5513/USADetailedWaterBodies_select_0.01_10000",
+          "-query_type",
+          "range-intersects",
+          "-index_type",
+          "rtspatial",
+          "-load_factor",
+          "1"
+        ],
+        "geometry_count": 463595,
+        "load_factor": "1",
+        "loading_ms_diagnostic": 1.82,
+        "pair_rows_exposed": false,
+        "query_count": 10000,
+        "query_metric": "internal Query Time; index Loading Time excluded",
+        "query_ms_internal": 9.2196,
+        "result_count": 55205607,
+        "stdout": "Loaded polygons 463595\nLoaded queries 10000\nQueue size 35369 MB\nBVH 208 MB, Geometries 7 MB, AABBs 10 MB, Total 225 MB\nLoading Time 1.82 ms\nGeoms 463595\nQueries 10000\nQuery Time 9.2196 ms\nResults 55205607\nSelectivity: 0.0119082\n"
+      },
+      "case_id": "USADetailedWaterBodies_select_0.01_10000",
+      "claim_boundary": {
+        "complete_paper_reproduction_claimed": false,
+        "device_zero_copy_claimed": false,
+        "embree_in_scope": false,
+        "exact_archive_and_extracted_input_identity_used": true,
+        "figure6_reproduced": false,
+        "generic_columnar_frontdoor_used": true,
+        "performance_ratio_authorized": false,
+        "pointwise_intersection_equivalence_claimed": false,
+        "same_input_result_count_agreement": true
+      },
+      "input_identity": {
+        "geometry_path": "/workspace/librts-targets/goal5500-range-intersects/PPoPPAE/datasets/polygons/USADetailedWaterBodies.wkt",
+        "geometry_sha256": "bbdf49e4e2484f7d2994aea40bf772ce5418bacb58ade8efc63ab9e8dc703dfe",
+        "query_path": "/workspace/librts-targets/goal5500-range-intersects/PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_10000/USADetailedWaterBodies.wkt",
+        "query_sha256": "2103f88f94f5ba3dcffe19ad0fcde18449566efeff42f9d37417ef766a27185e",
+        "same_files_passed_to_author_and_rtdl": true,
+        "verified_extraction_root": "/workspace/librts-targets/goal5500-range-intersects"
+      },
+      "matched": true,
+      "phase_boundary": {
+        "author_query_excludes_loading": true,
+        "performance_ratio_authorized": false,
+        "rtdl_prepared_query_excludes_wkt_load_and_index_prepare": true
+      },
+      "rtdl": {
+        "backend": "optix",
+        "input_contract": "generic_host_aabb_2d_columns",
+        "load_wkt_sec": 35.14627850300167,
+        "native_engine_customization": false,
+        "operation": "range_intersects",
+        "prepare_index_sec": 0.41589190100785345,
+        "prepared_query_wall_sec": 0.1823169519775547,
+        "primitive_query_sec": 0.14520071004517376,
+        "public_api": "Aabb2DColumns + prepare_aabb_index_2d_columns + prepared.count",
+        "result_count": 55205607,
+        "row_output_requested": false,
+        "rt_core_accelerated": true
+      },
+      "schema": "rtdl.paper_reproduction.librts.exact_range_intersects_count_gate.v1",
+      "status": "exact_input_range_intersects_count_matched"
+    },
+    {
+      "author": {
+        "command": [
+          "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+          "-geom",
+          "/workspace/librts-targets/goal5500-range-intersects/PPoPPAE/datasets/polygons/lakes.bz2.wkt",
+          "-query",
+          "/workspace/librts-targets/goal5500-range-intersects/PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_10000/lakes.bz2.wkt",
+          "-serialize",
+          "/tmp/librts-serialize/goal5513/lakes_bz2_select_0.01_10000",
+          "-query_type",
+          "range-intersects",
+          "-index_type",
+          "rtspatial",
+          "-load_factor",
+          "1"
+        ],
+        "geometry_count": 8327448,
+        "load_factor": "1",
+        "loading_ms_diagnostic": 36.815,
+        "pair_rows_exposed": false,
+        "query_count": 10000,
+        "query_metric": "internal Query Time; index Loading Time excluded",
+        "query_ms_internal": 374.478,
+        "result_count": 1113229623,
+        "stdout": "Loaded polygons 8327448\nLoaded queries 10000\nQueue size 635333 MB\nBVH 1206 MB, Geometries 127 MB, AABBs 190 MB, Total 1523 MB\nLoading Time 36.815 ms\nGeoms 8327448\nQueries 10000\nQuery Time 374.478 ms\nResults 1113229623\nSelectivity: 0.0133682\n"
+      },
+      "case_id": "lakes_bz2_select_0.01_10000",
+      "claim_boundary": {
+        "complete_paper_reproduction_claimed": false,
+        "device_zero_copy_claimed": false,
+        "embree_in_scope": false,
+        "exact_archive_and_extracted_input_identity_used": true,
+        "figure6_reproduced": false,
+        "generic_columnar_frontdoor_used": true,
+        "performance_ratio_authorized": false,
+        "pointwise_intersection_equivalence_claimed": false,
+        "same_input_result_count_agreement": true
+      },
+      "input_identity": {
+        "geometry_path": "/workspace/librts-targets/goal5500-range-intersects/PPoPPAE/datasets/polygons/lakes.bz2.wkt",
+        "geometry_sha256": "0cde2245faf03cb0cf48cf9f8ffb0e31a7391300d947fa9de2110a46006e2f03",
+        "query_path": "/workspace/librts-targets/goal5500-range-intersects/PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_10000/lakes.bz2.wkt",
+        "query_sha256": "3ddc24019d37f4dd0bc0c1f41ef04cb24d6e1f9d852f068f7eae87ca014aeb04",
+        "same_files_passed_to_author_and_rtdl": true,
+        "verified_extraction_root": "/workspace/librts-targets/goal5500-range-intersects"
+      },
+      "matched": true,
+      "phase_boundary": {
+        "author_query_excludes_loading": true,
+        "performance_ratio_authorized": false,
+        "rtdl_prepared_query_excludes_wkt_load_and_index_prepare": true
+      },
+      "rtdl": {
+        "backend": "optix",
+        "input_contract": "generic_host_aabb_2d_columns",
+        "load_wkt_sec": 406.21699380798964,
+        "native_engine_customization": false,
+        "operation": "range_intersects",
+        "prepare_index_sec": 1.0963739290018566,
+        "prepared_query_wall_sec": 0.741360783984419,
+        "primitive_query_sec": 0.7210941379889846,
+        "public_api": "Aabb2DColumns + prepare_aabb_index_2d_columns + prepared.count",
+        "result_count": 1113229623,
+        "row_output_requested": false,
+        "rt_core_accelerated": true
+      },
+      "schema": "rtdl.paper_reproduction.librts.exact_range_intersects_count_gate.v1",
+      "status": "exact_input_range_intersects_count_matched"
+    },
+    {
+      "author": {
+        "command": [
+          "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+          "-geom",
+          "/workspace/librts-targets/goal5500-range-intersects/PPoPPAE/datasets/polygons/parks.bz2.wkt",
+          "-query",
+          "/workspace/librts-targets/goal5500-range-intersects/PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_10000/parks.bz2.wkt",
+          "-serialize",
+          "/tmp/librts-serialize/goal5513/parks_bz2_select_0.01_10000",
+          "-query_type",
+          "range-intersects",
+          "-index_type",
+          "rtspatial",
+          "-load_factor",
+          "1"
+        ],
+        "exit_code": -6,
+        "failure_class": "author_cuda_memory_allocation_failure",
+        "stderr": "terminate called after throwing an instance of 'thrust::THRUST_200700_750_NS::system::detail::bad_alloc'; what(): cudaErrorMemoryAllocation: out of memory"
+      },
+      "case_id": "parks_bz2_select_0.01_10000",
+      "claim_boundary": {
+        "complete_paper_reproduction_claimed": false,
+        "complete_range_intersects_matrix_claimed": false,
+        "device_zero_copy_claimed": false,
+        "embree_in_scope": false,
+        "figure6_reproduced": false,
+        "performance_ratio_authorized": false,
+        "pointwise_intersection_equivalence_claimed": false,
+        "semantic_mismatch_claimed": false
+      },
+      "input_identity": {
+        "geometry_path": "/workspace/librts-targets/goal5500-range-intersects/PPoPPAE/datasets/polygons/parks.bz2.wkt",
+        "geometry_sha256": "ca133e4456b20c4baae1027d64a373d23083973ae042a3b6025dcc51eb3073a0",
+        "query_path": "/workspace/librts-targets/goal5500-range-intersects/PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_10000/parks.bz2.wkt",
+        "query_sha256": "5422a267bf4adc54a11111b8b3308017493ad9d2e5b11bc5a3c1051d73d29169",
+        "rtdl_not_run_after_author_failure": true,
+        "same_files_passed_to_author_and_rtdl": false
+      },
+      "interpretation": "The pinned author binary could not allocate this exact CUDA workload. This is a capacity boundary, not an author/RTDL semantic mismatch.",
+      "status": "author_capacity_failure"
+    }
+  ],
+  "claim_boundary": {
+    "author_capacity_failure_not_semantic_mismatch": true,
+    "author_performance_parity_claimed": false,
+    "complete_paper_reproduction_claimed": false,
+    "complete_range_intersects_matrix_claimed": false,
+    "count_match_cases_only": true,
+    "device_zero_copy_claimed": false,
+    "embree_in_scope": false,
+    "figure6_reproduced": false,
+    "performance_ratio_authorized": false,
+    "pointwise_intersection_equivalence_claimed": false
+  },
+  "coverage": {
+    "complete_range_intersects_matrix_claimed": false,
+    "exact_range_intersects_archive_pair_count": 42,
+    "query_family_geometry_count": 6,
+    "query_family_states_resolved": true,
+    "remaining_exact_archive_pairs_not_attempted": true
+  },
+  "evidence_integrity": {
+    "goal5513_gate_sha256": "e9310ed6960e507879cd320254ed8635d31714aba7594a2b37dd49466d68dbe6",
+    "lakes_checkpoint_sha256": "7d93f72156276e5b87c16102b1ec4e3c9619ebf24b3f7a67d4dd43d123b4bc59",
+    "parks_failure_record_sha256": "afa4ab86631ada9e659c454b74c3bb4cbe1e2378f8bc6279dca81cdb60eed8d7"
+  },
+  "matched_case_count": 5,
+  "operation": "range_intersects",
+  "query_family": "range-intersects_select_0.01_queries_10000",
+  "schema": "rtdl.paper_reproduction.librts.goal5514_exact_range_intersects_select001_resolution.v1",
+  "status": "exact_input_range_intersects_select001_six_geometry_states_resolved",
+  "unresolved_case_count": 0
+}

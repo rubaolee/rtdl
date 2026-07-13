@@ -1,0 +1,151 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.figure6_pruning_phase_counter_mapping.v1",
+  "goal": "Goal5268",
+  "date": "2026-07-09",
+  "status": "figure6_mapping_ready__figure6_not_reproduced",
+  "target": {
+    "figure": "Figure 6",
+    "subject": "Pruning effectiveness on Dragon -> AsianDragon",
+    "current_input_regime": "Level B public same-source/scaled candidate, not exact paper byte-input identity",
+    "input1": "Paper-reproduction-apps/x-hd-paper/data/external/stanford/dragon_recon/dragon_vrip.ply",
+    "input2": "Paper-reproduction-apps/x-hd-paper/data/external/stanford/asian_dragon_scaled_1e-3.ply",
+    "author_reference_hd": 0.06536787003278732
+  },
+  "author_source_mapping": {
+    "flags": {
+      "path": "/tmp/xhd-goal5112/author/src/flags.cc",
+      "relevant_flags": [
+        "--eb",
+        "--prune",
+        "--lb",
+        "--profiling"
+      ]
+    },
+    "run_config": {
+      "path": "/tmp/xhd-goal5112/author/src/main.cpp",
+      "mapping": "FLAGS_eb, FLAGS_prune, FLAGS_lb, and FLAGS_profiling are copied into RunConfig."
+    },
+    "json_fields": {
+      "path": "/tmp/xhd-goal5112/author/src/hd_impl/hausdorff_distance_rt.h",
+      "per_iteration_fields": [
+        "NumInputPoints",
+        "NumOutputPoints",
+        "RTTime",
+        "OffloadingSize",
+        "CUDATime",
+        "Radius",
+        "CMax2",
+        "Hits",
+        "ComparedPoints"
+      ],
+      "note": "Hits and ComparedPoints appear when profiling is enabled."
+    },
+    "figure_script": {
+      "path": "/tmp/xhd-goal5112/author/expr/run_rt_comparison.sh",
+      "variant_sequence": [
+        "rt_hdist external baseline",
+        "rt gpu eb=false prune=false lb=0",
+        "rt gpu eb=true prune=false lb=0",
+        "rt gpu eb=true prune=true lb=0",
+        "rt gpu eb=true prune=true lb=256"
+      ]
+    }
+  },
+  "profile_runs": [
+    {
+      "label": "noopt",
+      "artifact": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5268_fig6_noopt_dragon_asian_scaled_profile_pod.json",
+      "eb": false,
+      "prune": false,
+      "lb": 0,
+      "profiling": true,
+      "hd_result": 0.06536787003278732,
+      "matches_author_reference": true,
+      "running_avg_time_ms": 6976.301,
+      "iteration_count": 6,
+      "sum_RTTime_ms": 6968.304,
+      "sum_CUDATime_ms": 0.587,
+      "sum_OffloadingSize": 0,
+      "sum_Hits": 128532825,
+      "sum_ComparedPoints": 176279179922
+    },
+    {
+      "label": "eb",
+      "artifact": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5268_fig6_eb_dragon_asian_scaled_profile_pod.json",
+      "eb": true,
+      "prune": false,
+      "lb": 0,
+      "profiling": true,
+      "hd_result": 0.06536787003278732,
+      "matches_author_reference": true,
+      "running_avg_time_ms": 1841.428,
+      "iteration_count": 6,
+      "sum_RTTime_ms": 1833.605,
+      "sum_CUDATime_ms": 0.467,
+      "sum_OffloadingSize": 0,
+      "sum_Hits": 15269735,
+      "sum_ComparedPoints": 21009262745
+    },
+    {
+      "label": "eb_prune",
+      "artifact": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5268_fig6_eb_prune_dragon_asian_scaled_profile_pod.json",
+      "eb": true,
+      "prune": true,
+      "lb": 0,
+      "profiling": true,
+      "hd_result": 0.06536787003278732,
+      "matches_author_reference": true,
+      "running_avg_time_ms": 146.486,
+      "iteration_count": 6,
+      "sum_RTTime_ms": 138.99,
+      "sum_CUDATime_ms": 0.336,
+      "sum_OffloadingSize": 0,
+      "sum_Hits": 15163664,
+      "sum_ComparedPoints": 586805995
+    },
+    {
+      "label": "xhd_lb256",
+      "artifact": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5268_fig6_xhd_dragon_asian_scaled_profile_pod.json",
+      "eb": true,
+      "prune": true,
+      "lb": 256,
+      "profiling": true,
+      "hd_result": 0.06545527279376984,
+      "matches_author_reference": false,
+      "running_avg_time_ms": 19.64,
+      "iteration_count": 5,
+      "sum_RTTime_ms": 8.405,
+      "sum_CUDATime_ms": 4.243,
+      "sum_OffloadingSize": 2241985,
+      "sum_Hits": 23980889,
+      "sum_ComparedPoints": 56056564,
+      "check_true_status": "aborts_with_wrong_hausdorff_distance_on_this_scaled_candidate",
+      "check_true_error": "Wrong HausdorffDistance. Result: 0.06545527 Answer: 0.06536787 Diff: -0.00008740"
+    }
+  ],
+  "rt_hdist_external_baseline": {
+    "status": "not_run",
+    "reason": "run_rt_comparison.sh references RT_HDIST_ROOT=/local/storage/liang/.clion/RT-HDIST/output; that external baseline is not available in the current RTDL/POD evidence chain."
+  },
+  "conclusions": {
+    "available_now": [
+      "Author source and script mapping for Figure 6-style pruning variants.",
+      "Profiling JSON fields expose Hits and ComparedPoints in addition to RTTime/CUDATime/OffloadingSize.",
+      "NoOpt, EB, and EB+Prune profiling variants match the same author reference HD on the Level-B scaled candidate."
+    ],
+    "not_yet_available": [
+      "External RT-HDIST baseline output.",
+      "A valid LB=256 profiling run that also passes check=true on the Level-B scaled candidate.",
+      "Exact paper input bytes/hashes for Dragon and AsianDragon.",
+      "A Figure 6 plot/table reproduction with author-accepted phase semantics."
+    ],
+    "recommended_next": "Do not publish Figure 6 from these runs. Either reproduce Figure 6 using exact author inputs and the author's script environment, or add/verify author instrumentation that preserves correctness for the LB=256 profiling case before comparing RTDL phases."
+  },
+  "claim_boundary": {
+    "figure6_reproduced": false,
+    "full_paper_reproduction_claimed": false,
+    "exact_paper_dataset_identity_claimed": false,
+    "performance_ratio_claimed": false,
+    "author_rt_core_algorithm_equivalence_claimed": false
+  }
+}

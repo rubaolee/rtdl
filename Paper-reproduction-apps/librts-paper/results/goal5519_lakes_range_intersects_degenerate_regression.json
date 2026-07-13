@@ -1,0 +1,36 @@
+{
+  "claim_boundary": {
+    "author_specific_rtdl_core_behavior_authorized": false,
+    "embree_in_scope": false,
+    "full_input_adjudication": false,
+    "generic_native_patch_probe_only": true,
+    "paper_reproduction_claimed": false,
+    "performance_ratio_authorized": false
+  },
+  "input_identity": {
+    "geometry_path": "/tmp/goal5519/goal5508_lakes_degenerate.wkt",
+    "geometry_sha256": "fd9eeb6b746b0d8b86a043058e58a911b915480db1110de8520516a916500d6b",
+    "query_path": "/workspace/librts-results/goal5502-large-prefix/lakes_bz2_select_0.01_10000/query_prefix.wkt",
+    "query_sha256": "3ddc24019d37f4dd0bc0c1f41ef04cb24d6e1f9d852f068f7eae87ca014aeb04",
+    "same_input_files": true
+  },
+  "rtdl": {
+    "backend": "optix",
+    "count_only": true,
+    "intersection_duplicate_row_count": 0,
+    "intersection_rows": [],
+    "intersection_rows_count": 0,
+    "intersection_rows_sec": null,
+    "intersection_unique_rows_count": 0,
+    "native_engine_customization": false,
+    "operation": "range_intersects",
+    "prepare_sec": 0.35443729703547433,
+    "primitive_query_sec": 0.15727174701169133,
+    "public_api": "Aabb2DColumns + prepare_aabb_index_2d_columns + prepared.count",
+    "query_wall_sec": 0.19055879599181935,
+    "result_count": 0,
+    "rt_core_accelerated": true
+  },
+  "schema": "rtdl.paper_reproduction.librts.goal5507_rtdl_range_intersects_probe.v1",
+  "status": "rtdl_probe_completed"
+}

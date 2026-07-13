@@ -1,0 +1,98 @@
+{
+  "left": "/workspace/rtdl_goal4806_fast_min/artifacts/goal4806_section57_arcgis_full_us_20260630/dataset/point_cdb/USACensusBlockGroupBoundaries/USACensusBlockGroupBoundaries_Point.cdb",
+  "load_cached_inputs_sec": 1.0371747091412544,
+  "point_indices": [
+    1069665,
+    5693875,
+    7386601,
+    7906217,
+    9926545
+  ],
+  "prepare_sec": 11.16650054603815,
+  "query_map_id": 0,
+  "records": [
+    {
+      "face_id": 323443,
+      "hit_t": 2404658688.0,
+      "point": [
+        -88.157424109,
+        30.463451588
+      ],
+      "point_id": 1069666,
+      "point_index": 1069665,
+      "point_text": "-88.157424 30.463452",
+      "scaled": [
+        43000167991015,
+        -37926159610254
+      ],
+      "segment_id": 15220835
+    },
+    {
+      "face_id": 17144,
+      "hit_t": 17578307584.0,
+      "point": [
+        -121.74681801,
+        36.808320909
+      ],
+      "point_id": 5693876,
+      "point_index": 5693875,
+      "point_text": "-121.746818 36.808321",
+      "scaled": [
+        1605107877856,
+        -21527854960909
+      ],
+      "segment_id": 827260
+    },
+    {
+      "face_id": 0,
+      "hit_t": 1070246400.0,
+      "point": [
+        -121.91723819,
+        38.228399019
+      ],
+      "point_id": 7386602,
+      "point_index": 7386601,
+      "point_text": "-121.917238 38.228399",
+      "scaled": [
+        1395084630150,
+        -17857665348560
+      ],
+      "segment_id": 880129
+    },
+    {
+      "face_id": 0,
+      "hit_t": 40495353856.0,
+      "point": [
+        -104.84021306,
+        39.619783413
+      ],
+      "point_id": 7906218,
+      "point_index": 7906217,
+      "point_text": "-104.840213 39.619783",
+      "scaled": [
+        22440551657443,
+        -14261634599489
+      ],
+      "segment_id": 1839334
+    },
+    {
+      "face_id": 0,
+      "hit_t": 274096384.0,
+      "point": [
+        -82.631589391,
+        28.887242508
+      ],
+      "point_id": 9926546,
+      "point_index": 9926545,
+      "point_text": "-82.631589 28.887243",
+      "scaled": [
+        49810122972673,
+        -41999869465768
+      ],
+      "segment_id": 16153901
+    }
+  ],
+  "right": "/workspace/rtdl_goal4806_fast_min/artifacts/goal4806_section57_arcgis_full_us_20260630/dataset/point_cdb/USADetailedWaterBodies/USADetailedWaterBodies_Point.cdb",
+  "run_sec": 0.0005438476800918579,
+  "schema": "rtdl.goal4867.specific_pip_probe.v1"
+}

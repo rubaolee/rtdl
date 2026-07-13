@@ -120,7 +120,7 @@ def initial_status(path: str, category: str) -> str:
         return "transitional"
     if re.match(r"^scripts/goal\d+.*\.(py|sh|md|json)$", path):
         return "transitional"
-    if re.match(r"^examples/internal/rtdl_goal\d+.*\.py$", path):
+    if re.match(r"^history/examples_internal/internal/rtdl_goal\d+.*\.py$", path):
         return "transitional"
     if category == "release_doc":
         if "/v0_6/" in path:
@@ -197,7 +197,7 @@ def dead_content_for(path: str, category: str, status: str) -> str:
         return "possible dead or duplicated artifact; review needed"
     if status == "transitional" and re.match(r"^(src/.*/goal\d+|scripts/goal\d+)", path):
         return "possible dead scaffolding; verify not imported by live surfaces"
-    if re.match(r"^examples/internal/rtdl_goal\d+.*\.py$", path):
+    if re.match(r"^history/examples_internal/internal/rtdl_goal\d+.*\.py$", path):
         return "internal historical example; misleading if presented as release-facing"
     if category == "example":
         return "possible drift risk; verify runnable status and messaging"
@@ -223,7 +223,7 @@ def action_for(path: str, category: str, status: str) -> str:
         return "review for deletion, relocation, or regeneration policy"
     if status == "transitional" and re.match(r"^(src/.*/goal\d+|scripts/goal\d+)", path):
         return "verify imports and either keep as bounded support or retire as scaffolding"
-    if re.match(r"^examples/internal/rtdl_goal\d+.*\.py$", path):
+    if re.match(r"^history/examples_internal/internal/rtdl_goal\d+.*\.py$", path):
         return "keep only if needed for bounded reproduction; otherwise archive or relabel clearly"
     if category in {"source", "native_source", "test", "script", "schema", "app"}:
         return "retain; audit grouped by subsystem"
@@ -257,7 +257,7 @@ def notes_for(path: str, category: str, status: str) -> str:
         notes.append("root install surface")
     if status == "transitional" and re.match(r"^(src/.*/goal\d+|scripts/goal\d+)", path):
         notes.append("goal-scoped harness or support file")
-    if re.match(r"^examples/internal/rtdl_goal\d+.*\.py$", path):
+    if re.match(r"^history/examples_internal/internal/rtdl_goal\d+.*\.py$", path):
         notes.append("internal goal-scoped example")
     if status == "unclear":
         notes.append("path alone did not establish live vs historical use")

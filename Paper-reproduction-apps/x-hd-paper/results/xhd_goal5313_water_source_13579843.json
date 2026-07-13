@@ -1,0 +1,27 @@
+{
+  "geometry_rows_until_last_hit": 294666,
+  "n_dims": 2,
+  "parsed_point_count_until_last_hit": 13579866,
+  "path": "/tmp/xhd_goal5311/data/USADetailedWaterBodies.wkt.full_public_arcgis_candidate.wkt",
+  "points": [
+    {
+      "coordinate_float32": [
+        -81.99990844726562,
+        44.50001907348633
+      ],
+      "coordinate_float64": [
+        -81.9999084473,
+        44.5000190735
+      ],
+      "geometry_line_number": 294666,
+      "geometry_point_count": 15401,
+      "geometry_row_index": 294665,
+      "index": 13579843,
+      "local_index_in_geometry": 15378
+    }
+  ],
+  "requested_indices": [
+    13579843
+  ],
+  "schema": "rtdl.paper_reproduction.xhd.wkt_point_index_inspection.v1"
+}

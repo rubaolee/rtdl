@@ -1,0 +1,20 @@
+Please review Goal4911 as an independent critical reviewer.
+
+Read:
+
+1. `history/internal_docs/goal4911_point_location_prepare_tradeoff_report_2026-07-03.md`
+2. `history/internal_docs/call_for_review_goal4911_point_location_prepare_tradeoff_2026-07-03.md`
+3. `history/internal_docs/goal4911_point_location_prepare_tradeoff_summary_2026-07-03.json`
+
+Be strict. The important question is whether the current default should be
+retained, and whether more group-mode knob tuning should stop.
+
+Write the review to:
+
+`history/internal_docs/antigravity_goal4911_point_location_prepare_tradeoff_review_2026-07-03.md`
+
+Use one of these verdict labels:
+
+- `approve_goal4911_retain_default_and_stop_knob_tuning`
+- `approve_with_required_amendments`
+- `block_goal4911_interpretation`

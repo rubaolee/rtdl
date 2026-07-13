@@ -1,0 +1,22 @@
+[
+  {
+    "case_id": "parks_Europe_select_0.001_10000",
+    "geometry_member": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+    "query_member": "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_10000/parks_Europe.wkt"
+  },
+  {
+    "case_id": "dtl_cnty_select_0.001_10000",
+    "geometry_member": "PPoPPAE/datasets/polygons/dtl_cnty.wkt",
+    "query_member": "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_10000/dtl_cnty.wkt"
+  },
+  {
+    "case_id": "USACensusBlockGroupBoundaries_select_0.001_10000",
+    "geometry_member": "PPoPPAE/datasets/polygons/USACensusBlockGroupBoundaries.wkt",
+    "query_member": "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_10000/USACensusBlockGroupBoundaries.wkt"
+  },
+  {
+    "case_id": "USADetailedWaterBodies_select_0.001_10000",
+    "geometry_member": "PPoPPAE/datasets/polygons/USADetailedWaterBodies.wkt",
+    "query_member": "PPoPPAE/datasets/queries/range-intersects_select_0.001_queries_10000/USADetailedWaterBodies.wkt"
+  }
+]

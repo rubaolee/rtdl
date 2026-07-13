@@ -1,0 +1,109 @@
+{
+  "author": {
+    "command": [
+      "reused_author_result_json"
+    ],
+    "geometry_count": 8327448,
+    "loading_ms_diagnostic": 36.9018,
+    "pair_rows_exposed": false,
+    "query_count": 100000,
+    "query_metric": "internal Query Time; index Loading Time excluded",
+    "query_ms_internal": 0.0816,
+    "result_count": 103189,
+    "stdout": "reused exact-input author evidence"
+  },
+  "cache_metadata": {
+    "column_dtypes": {
+      "ids": "uint32",
+      "max_x": "float64",
+      "max_y": "float64",
+      "min_x": "float64",
+      "min_y": "float64"
+    },
+    "row_count": 8327448,
+    "rtdl_core_wkt_semantics": false,
+    "schema": "rtdl.paper_reproduction.librts.exact_aabb_column_cache.v1",
+    "source_format": "app-owned WKT MBR derivation",
+    "source_name": "lakes.bz2.wkt",
+    "source_path": "/workspace/librts-targets/point-contains-real-remaining/PPoPPAE/datasets/polygons/lakes.bz2.wkt",
+    "source_sha256": "0cde2245faf03cb0cf48cf9f8ffb0e31a7391300d947fa9de2110a46006e2f03",
+    "source_size_bytes": 6557960529
+  },
+  "claim_boundary": {
+    "complete_paper_reproduction_claimed": false,
+    "device_zero_copy_claimed": false,
+    "embree_in_scope": false,
+    "exact_archive_and_extracted_input_identity_used": true,
+    "figure6_reproduced": false,
+    "generic_columnar_frontdoor_used": true,
+    "performance_ratio_authorized": false,
+    "pointwise_containment_equivalence_claimed": false,
+    "same_input_result_count_agreement": true,
+    "same_process_reuse_diagnostic": true
+  },
+  "geometry_loader": "cache",
+  "input_identity": {
+    "geometry_path": "/workspace/librts-targets/point-contains-real-remaining/PPoPPAE/datasets/polygons/lakes.bz2.wkt",
+    "geometry_sha256": "0cde2245faf03cb0cf48cf9f8ffb0e31a7391300d947fa9de2110a46006e2f03",
+    "query_path": "/workspace/librts-targets/point-contains-real-remaining/PPoPPAE/datasets/queries/point-contains_queries_100000/lakes.bz2.wkt",
+    "query_sha256": "af77499deb2691be731b95ed0d9214573967ff16527f25268cba2ea422252074",
+    "same_files_passed_to_author_and_rtdl": true,
+    "verified_extraction_root": "/workspace/librts-targets/point-contains-real-remaining"
+  },
+  "matched": true,
+  "phase_boundary": {
+    "author_query_excludes_loading": true,
+    "performance_ratio_authorized": false,
+    "rtdl_repeated_queries_exclude_wkt_load_and_index_prepare": true,
+    "same_process_reuse_only": true
+  },
+  "repeat": 3,
+  "rtdl": {
+    "input_contract": "generic_host_aabb_2d_columns",
+    "load_wkt_sec": 8.100781811983325,
+    "operation": "point_contains",
+    "prepare_index_sec": 0.8395111580030061,
+    "primitive_query_summary": {
+      "all_median_sec": 0.06928810296813026,
+      "first_sec": 0.1984802230144851,
+      "subsequent_median_sec": 0.0692852679931093
+    },
+    "public_api": "Aabb2DColumns + prepare_aabb_index_2d_columns + prepared.count",
+    "queries": [
+      {
+        "backend": "optix",
+        "iteration": 1,
+        "matched_author_count": true,
+        "prepared_query_wall_sec": 0.3503764719935134,
+        "primitive_query_sec": 0.1984802230144851,
+        "result_count": 103189,
+        "rt_core_accelerated": true
+      },
+      {
+        "backend": "optix",
+        "iteration": 2,
+        "matched_author_count": true,
+        "prepared_query_wall_sec": 0.21628938399953768,
+        "primitive_query_sec": 0.06928243301808834,
+        "result_count": 103189,
+        "rt_core_accelerated": true
+      },
+      {
+        "backend": "optix",
+        "iteration": 3,
+        "matched_author_count": true,
+        "prepared_query_wall_sec": 0.21843339101178572,
+        "primitive_query_sec": 0.06928810296813026,
+        "result_count": 103189,
+        "rt_core_accelerated": true
+      }
+    ],
+    "query_wall_summary": {
+      "all_median_sec": 0.21843339101178572,
+      "first_sec": 0.3503764719935134,
+      "subsequent_median_sec": 0.2173613875056617
+    }
+  },
+  "schema": "rtdl.paper_reproduction.librts.exact_point_contains_prepared_phase_columns_repeat.v1",
+  "status": "exact_input_point_contains_prepared_phase_columns_repeat_matched"
+}

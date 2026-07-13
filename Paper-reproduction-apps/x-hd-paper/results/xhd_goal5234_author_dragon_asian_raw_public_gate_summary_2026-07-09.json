@@ -1,0 +1,40 @@
+{
+  "author_hd_result": 52.453487396240234,
+  "author_input_point_counts": [
+    437645,
+    3609600
+  ],
+  "author_json": "Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5234_author_dragon_asian_raw_rt_gpu_pod_2026-07-09.json",
+  "author_run": null,
+  "author_run_failed": false,
+  "author_running_avg_time_ms": 20.281799999999997,
+  "boundary_note": "This gate runs author hd_exec on the full public Stanford Level-B candidate and compares HDResult to the paper-branch author log value. It does not compute an RTDL exact reference and does not prove exact paper input identity.",
+  "bridge": "Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5232_priority_input_bridge_graphics_dragon_asian_dragon_2026-07-09.json",
+  "claim_boundary": {
+    "author_full_public_candidate_run_claimed": true,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "level_b_same_source_candidate_claimed": true,
+    "performance_ratio_claimed": false,
+    "rtdl_all_source_route_run_claimed": false,
+    "rtdl_exact_reference_claimed": false
+  },
+  "execution": "gpu",
+  "goal": "Goal5234",
+  "input1": "Paper-reproduction-apps\\x-hd-paper\\data\\external\\stanford\\dragon_recon\\dragon_vrip.ply",
+  "input2": "Paper-reproduction-apps\\x-hd-paper\\data\\external\\stanford\\asian_dragon.ply",
+  "input_type": "ply",
+  "level": "level_b_same_source_candidate_only",
+  "matched": false,
+  "n_dims": 3,
+  "paper_log_hd_results": [
+    0.06536811590194702
+  ],
+  "paper_log_min_abs_diff": 52.38811928033829,
+  "schema": "rtdl.paper_reproduction.xhd.full_public_author_gate.v1",
+  "status": "full_public_level_b_author_hd_exec_checked",
+  "target": "graphics_dragon_asian_dragon",
+  "tolerance": 1e-06,
+  "variant": "rt"
+}

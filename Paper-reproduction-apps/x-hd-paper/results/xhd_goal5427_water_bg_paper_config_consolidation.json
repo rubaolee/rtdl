@@ -1,0 +1,75 @@
+{
+  "author_denominator": {
+    "avg_time_ms": 110.167,
+    "grid_resolution": [
+      2557,
+      1196
+    ],
+    "hd_result": 0.8964367508888245,
+    "iterations": 14,
+    "matches_paper_log": true,
+    "num_points_cell": 8,
+    "selected": "goal5314_paper_config_n_points_cell_8"
+  },
+  "claim_boundary": {
+    "author_rt_core_equivalence_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "existing_evidence_consolidation_only": true,
+    "explicit_lb_reopened": false,
+    "full_public_level_b_scalar_match_claimed": true,
+    "full_xhd_paper_reproduction_claimed": false,
+    "geo_figure5_reproduction_claimed": false,
+    "new_execution_claimed": false,
+    "performance_ratio_claimed": false,
+    "route_micro_optimization_goal_authorized": false
+  },
+  "decision": {
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "full_public_water_bg_level_b_scalar_match_confirmed": true,
+    "performance_ratio_claimed": false,
+    "rerun_required_now": false
+  },
+  "default_author_denominator_kept_as_config_sensitivity": {
+    "goal5311_default_author_hd_result": 0.8970130085945129,
+    "goal5311_paper_value_matched": false,
+    "goal5314_default_author_hd_result": 0.8970130085945129,
+    "num_points_cell": 15,
+    "reason": "Default n_points_cell=15 does not match the paper log and must not be used as the paper denominator."
+  },
+  "execution": {
+    "new_author_execution": false,
+    "new_rtdl_execution": false,
+    "reason": "Goal5426 verifies the current POD has hash-matching full-public WKT artifacts via symlink, and Goal5314 already ran RTDL exact-witness on the same Goal5310 WKT hashes against the paper-config author denominator. Re-running the 873s-class exact route would not change the evidence boundary."
+  },
+  "goal": "Goal5427",
+  "input_artifact_reuse": {
+    "blockgroups_goal5426_path": "/tmp/xhd_goal5426/full_public_water_bg/USACensusBlockGroupBoundaries_full_public.wkt",
+    "blockgroups_sha256": "8a1d3cd848083e5182de81521f07d8850c597910320250066d850928b017e66e",
+    "goal5426_generation_safety_gate_passed": false,
+    "goal5426_reuse_gate_passed": true,
+    "waterbodies_goal5426_path": "/tmp/xhd_goal5426/full_public_water_bg/USADetailedWaterBodies_full_public.wkt",
+    "waterbodies_sha256": "0c4ad7d7c1953364478d4940a8eb1696cca24d0dfd6422aafc532b1983f3dd39"
+  },
+  "matched": true,
+  "next_recommended_goal": "Goal5428_update_level_b_matrix_with_goal5427_water_bg_paper_config_row",
+  "rtdl_evidence": {
+    "abs_diff_vs_author_paper_config": 1.305780185645311e-06,
+    "declared_tolerance": 2e-06,
+    "distance_float32_matches_paper_log": true,
+    "entrypoint_total_sec": 873.2409668043256,
+    "hd_result_float64": 0.8964380566690101,
+    "matched_with_declared_tolerance": true,
+    "per_source_witness_exact": true,
+    "route": "existing_goal5314_exact_witness",
+    "route_sec": 61.562113016843796,
+    "same_witness_float32_distance": 0.8964367508888245
+  },
+  "schema": "rtdl.paper_reproduction.xhd.goal5427.water_bg_paper_config_consolidation.v1",
+  "source_artifacts": {
+    "goal5311": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5311_water_bg_full_public_author_ingestion_summary_pod.json",
+    "goal5314": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5314_water_bg_corrected_comparison_summary.json",
+    "goal5426": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5426_full_public_water_bg_wkt_resource_gate.json"
+  },
+  "status": "existing_goal5314_evidence_sufficient__no_rerun"
+}

@@ -1,0 +1,44 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.dimension_generic_cell_mbr_frontdoor.v1",
+  "goal": "Goal5145",
+  "date": "2026-07-08",
+  "status": "dimension_generic_cell_mbr_frontdoor_reference_ready",
+  "matched": true,
+  "api": {
+    "public_function": "cell_mbr_nearest_frontier_numpy_columns",
+    "contract": "generic_cell_mbr_nearest_frontier_reference",
+    "native_abi_contract": "generic_cell_mbr_nearest_frontier_native_abi_v1",
+    "coordinate_fields": ["x", "y", "z"],
+    "native_backend_complete": false
+  },
+  "fixture": {
+    "name": "goal5145_synthetic_3d_cell_mbr_frontier",
+    "query_count": 3,
+    "cell_count": 2,
+    "candidate_row_count": 6,
+    "row_count": 6
+  },
+  "row_table": {
+    "query_point_ids": [100, 101, 102, 102, 100, 101],
+    "cell_ids": [0, 0, 0, 1, 1, 1],
+    "frontier_kind_codes": [1, 1, 1, 2, 3, 3],
+    "point_counts": [2, 2, 2, 3, 3, 3]
+  },
+  "validation": [
+    {
+      "command": "py -m unittest tests.goal5145_dimension_generic_cell_mbr_frontdoor_test",
+      "result": "Ran 4 tests OK"
+    },
+    {
+      "command": "py -m unittest tests.goal5142_generic_cell_mbr_backend_assisted_frontdoor_test tests.goal5140_generic_cell_mbr_traversal_abi_test tests.goal5139_generic_nearest_state_frontier_api_test tests.goal5138_generic_grid_cell_candidate_api_test",
+      "result": "Ran 15 tests OK"
+    }
+  ],
+  "claim_boundary": {
+    "dimension_generic_reference_frontdoor": true,
+    "native_goal5140_backend_claim": false,
+    "optix_3d_backend_claim": false,
+    "xhd_performance_claim": false,
+    "paper_reproduction_claim": false
+  }
+}

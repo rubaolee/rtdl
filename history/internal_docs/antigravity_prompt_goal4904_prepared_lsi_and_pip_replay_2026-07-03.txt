@@ -1,0 +1,21 @@
+Please review RTDL Goal4904 critically.
+
+Repository:
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review
+
+Primary review request:
+history/internal_docs/call_for_review_goal4904_prepared_lsi_and_pip_replay_2026-07-03.md
+
+Main report:
+history/internal_docs/goal4904_prepared_lsi_and_pip_replay_report_2026-07-03.md
+
+Please inspect the evidence files and code surface named in the call-for-review, then write your review to:
+history/internal_docs/antigravity_goal4904_prepared_lsi_and_pip_replay_review_2026-07-03.md
+
+Requested verdict labels:
+- approve_goal4904_prepared_lsi_pip_hot_replay
+- approve_with_required_amendments
+- block_due_to_metric_reframing
+- block_due_to_correctness_or_semantics_risk
+
+Be strict about metric reframing. Approve only if the report honestly bounds the result to hot replay/repeated-query workloads, preserves byte-for-byte correctness, and does not turn prepared-session reuse into a single-run or broad RayJoin speedup claim.

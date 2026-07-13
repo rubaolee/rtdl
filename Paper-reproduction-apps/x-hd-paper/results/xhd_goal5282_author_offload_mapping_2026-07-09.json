@@ -1,0 +1,89 @@
+{
+  "author_offload_mapping": {
+    "author_shaped_fields": {
+      "OffloadingSize": {
+        "method": "Maps generic heavy_offload_peak_rows to the author's OffloadingSize row-count concept. This is a bounded shape mapping, not proof of paper Figure 11 parity.",
+        "status": "mapped_from_generic_heavy_offload_peak_rows",
+        "value": 6
+      },
+      "WL": {
+        "bytes": null,
+        "mb": null,
+        "method": "Author WL is in_queue + miss_queue over source points. Current RTDL native v2 telemetry reports in_queue_capacity=6 attempted frontier hits and miss_queue_capacity=0; this is not the same author queue denominator.",
+        "status": "not_aligned_native_in_queue_capacity_is_not_author_in_plus_miss_queue"
+      },
+      "WL Heavy Peak": {
+        "bytes": 48,
+        "mb": 4.57763671875e-05,
+        "method": "Author formula: OffloadingSize * 2 * sizeof(uint32_t). The row-count shape comes from generic heavy_offload_peak_rows; this is author-width equivalent accounting, not measured RTDL queue allocation bytes.",
+        "status": "author_uint32_width_equivalent_from_generic_offload_rows"
+      }
+    },
+    "claim_boundary": {
+      "author_memory_parity_claimed": false,
+      "figure11_reproduced": false,
+      "performance_ratio_claimed": false
+    },
+    "denominator_alignment": {
+      "offloading_size_row_count_shape_available": true,
+      "reason": "The offload row-count shape is now mappable, but measured RTDL queue bytes use 64-bit ids while author Figure 11 WL Heavy Peak uses uint32 ids. WL is also not aligned because RTDL in_queue capacity is attempted frontier hits rather than author in_queue + miss_queue over source points.",
+      "rtdl_queue_bytes_match_expected_uint64_pair_shape": true,
+      "same_byte_denominator_author_figure11": false,
+      "same_denominator_author_figure11": false
+    },
+    "rtdl_measured_fields": {
+      "expected_rtdl_uint64_pair_queue_peak": {
+        "bytes": 96,
+        "mb": 9.1552734375e-05,
+        "method": "heavy_offload_peak_rows * 2 * sizeof(uint64_t).",
+        "status": "computed_from_generic_offload_rows_for_consistency_check"
+      },
+      "generic_heavy_offload_queue_peak": {
+        "bytes": 96,
+        "mb": 9.1552734375e-05,
+        "method": "Native RTDL v2 telemetry reports heavy_offload_queue_peak_bytes for a generic two-id offload row using RTDL's current 64-bit id queue shape.",
+        "status": "measured_native_rtdl_uint64_pair_queue_bytes"
+      }
+    },
+    "schema": "rtdl.paper_reproduction.xhd.author_offload_field_mapping.v1",
+    "source_telemetry_schema": "rtdl.optix.cell_mbr_nearest_frontier_3d.memory_telemetry.v2",
+    "status": "bounded_author_offload_shape_mapped__figure11_byte_denominator_not_aligned"
+  },
+  "checks": {
+    "figure11_claims_remain_false": true,
+    "native_schema_v2": true,
+    "offloading_size_shape_available": true,
+    "rtdl_uint64_bytes_consistent": true,
+    "source_artifact_matched": true
+  },
+  "claim_boundary": {
+    "author_memory_parity_claimed": false,
+    "figure11_reproduced": false,
+    "performance_ratio_claimed": false,
+    "same_denominator_author_figure11_claimed": false
+  },
+  "date": "2026-07-09",
+  "decision": {
+    "figure11_reproduced": false,
+    "reason": "Goal5281 v2 telemetry provides a generic offload row-count shape. Goal5282 can map that to author-shaped OffloadingSize and author-width WL Heavy Peak candidate bytes, but measured RTDL queue bytes are 64-bit pair bytes and WL is still not the author in_queue + miss_queue denominator.",
+    "same_denominator_author_figure11": false,
+    "wl_heavy_peak_author_width_candidate_available": true,
+    "xhd_offloading_size_shape_mapped": true
+  },
+  "goal": "Goal5282",
+  "input_native_artifact": "Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5281_native_heavy_offload_telemetry_pod_2026-07-09.json",
+  "matched": true,
+  "native_frontier_kind_codes": [
+    2,
+    2,
+    2,
+    2,
+    2,
+    2
+  ],
+  "native_generic_symbol": "rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v2",
+  "native_offload_row_count": 6,
+  "native_route": "generic_cell_mbr_nearest_frontier_native_3d_optix",
+  "schema": "rtdl.paper_reproduction.xhd.goal5282.author_offload_mapping.v1",
+  "status": "xhd_bounded_offload_mapping_ready__figure11_same_denominator_not_met"
+}

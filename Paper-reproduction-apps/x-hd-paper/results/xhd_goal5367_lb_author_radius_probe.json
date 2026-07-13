@@ -1,0 +1,140 @@
+{
+  "author_reference": {
+    "hd_result": 52.453487396240234,
+    "input_scope": {
+      "exact_paper_dataset_identity_proven": false,
+      "input1": "/tmp/xhd_goal5234/data/dragon.ply",
+      "input1_num_points": 437645,
+      "input2": "/tmp/xhd_goal5234/data/asian_dragon.ply",
+      "input2_num_points": 3609600,
+      "not_full_figure7_matrix_reason": "The current POD lacks /local/storage/shared/HDDatasets and has only Dragon/Asian temporary inputs, not the four graphics pairs or full author lb_comparison matrix required by author run_lb.sh / draw_lb.py.",
+      "source": "partial temporary POD inputs from /tmp/xhd_goal5234, not /local/storage/shared/HDDatasets"
+    },
+    "iteration_num_input_points": 437645,
+    "iteration_radius": 79.2156982421875,
+    "lb": 256,
+    "offloading_size_rows": 27133990,
+    "wl_heavy_peak_bytes": 217071920
+  },
+  "claim_boundary": {
+    "author_rt_core_algorithm_parity_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_support_claimed": false,
+    "figure11_reproduction_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "row_count_parity_claimed": false,
+    "rtdl_author_performance_ratio_claimed": false,
+    "same_denominator_memory_claimed": false
+  },
+  "comparison": {
+    "author_offloading_size_rows": 27133990,
+    "author_radius_abs_diff": 3.925021061945699e-06,
+    "author_radius_closes_denominator_gap": false,
+    "author_radius_reduces_rows_vs_full_cover": true,
+    "author_radius_row_count": 21006960,
+    "explicit_radius_matches_author_value": true,
+    "full_cover_abs_diff": 3.925021061945699e-06,
+    "full_cover_row_count": 24508120,
+    "radius_aligned": true,
+    "row_count_parity": false,
+    "row_delta_author_minus_author_radius_rtdl": 6127030,
+    "row_delta_full_cover_minus_author_radius": 3501160,
+    "row_ratio_author_radius_rtdl_div_author": 0.7741935483870968,
+    "tolerance": 5e-06
+  },
+  "date": "2026-07-09",
+  "decision": {
+    "explicit_lb_support_authorized_now": false,
+    "next_gate": "author_queue_aligned_lb_trace_with_in_queue_cmin2_and_raw_offload_denominator",
+    "row_count_parity_authorized_now": false
+  },
+  "exit_label": "author_radius_alignment_preserves_value_but_not_lb_denominator_parity",
+  "goal": "Goal5367",
+  "input_artifacts": {
+    "goal5365": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5365_rtdl_lb_counterpart_gate.json",
+    "goal5366": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5366_lb_denominator_reconciliation.json",
+    "rtdl_author_radius_probe": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5367_rtdl_lb256_author_radius_probe_pod.json",
+    "rtdl_full_cover_lb256": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5365_rtdl_lb256_raw_dragon_asian_translated_initial_none_pod.json"
+  },
+  "interpretation": {
+    "denominator_implication": "The row-count gap is not solved by radius alignment alone. The next parity target must align author queue/in_queue/cmin2/offload iteration semantics, not only the scalar radius.",
+    "depends_on_goal5366": "lb_denominator_reconciled_shape_aligned__row_count_parity_not_established",
+    "result": "Aligning RTDL radius to the author iteration radius preserves the HD value but reduces RTDL heavy rows from the full-cover probe and moves farther from the author OffloadingSize row count."
+  },
+  "purpose": "Test whether setting the RTDL lb256 route radius to the author iteration radius explains the offload row-count denominator gap.",
+  "rtdl_routes": {
+    "author_iteration_radius_lb256_probe": {
+      "attempted_count": 21006960,
+      "author_width_candidate_bytes": 168055680,
+      "candidate_distance_evaluations": 8210220200,
+      "emitted_count": 21006960,
+      "frontier_native_phase_timings": {
+        "accel_build_sec": 0.001349282,
+        "attempted_count": 21006960,
+        "cell_pack_aabb_sec": 0.000201436,
+        "count_download_sec": 1.1991e-05,
+        "device_alloc_upload_sec": 0.024347989,
+        "emitted_count": 21006960,
+        "host_sort_pack_sec": 2.658562574,
+        "mode": {
+          "emit_pruned_rows": false,
+          "inline_nearest": true,
+          "inline_stats": false,
+          "sort_rows": true
+        },
+        "mode_bits": 5,
+        "nearest_download_sec": 0.00065235,
+        "optix_launch_sec": 0.32543038,
+        "query_pack_sec": 0.00320546,
+        "row_download_sec": 0.134600038,
+        "stats_download_sec": 0.0,
+        "total_native_sec": 3.964707679
+      },
+      "frontier_rows_sec": 11.09527936577797,
+      "generic_queue_peak_bytes": 336111360,
+      "hd_result": 52.453491321261296,
+      "heavy_offload_peak_rows": 21006960,
+      "nearest_continuation_sec": 16.67549693584442,
+      "radius": 79.2156982421875,
+      "rtdl_route_sec": 28.31456644833088
+    },
+    "full_cover_radius_lb256_from_goal5365": {
+      "attempted_count": 24508120,
+      "author_width_candidate_bytes": 196064960,
+      "candidate_distance_evaluations": 9696024975,
+      "emitted_count": 24508120,
+      "frontier_native_phase_timings": {
+        "accel_build_sec": 0.001391473,
+        "attempted_count": 24508120,
+        "cell_pack_aabb_sec": 0.000202717,
+        "count_download_sec": 1.8071e-05,
+        "device_alloc_upload_sec": 0.024119208,
+        "emitted_count": 24508120,
+        "host_sort_pack_sec": 3.105163958,
+        "mode": {
+          "emit_pruned_rows": false,
+          "inline_nearest": true,
+          "inline_stats": false,
+          "sort_rows": true
+        },
+        "mode_bits": 5,
+        "nearest_download_sec": 0.000618049,
+        "optix_launch_sec": 0.559335236,
+        "query_pack_sec": 0.003300743,
+        "row_download_sec": 0.161658906,
+        "stats_download_sec": 0.0,
+        "total_native_sec": 4.79733165
+      },
+      "frontier_rows_sec": 16.335087150335312,
+      "generic_queue_peak_bytes": 392129920,
+      "hd_result": 52.453491321261296,
+      "heavy_offload_peak_rows": 24508120,
+      "nearest_continuation_sec": 21.47888918966055,
+      "radius": 266.9466183641096,
+      "rtdl_route_sec": 38.40844701975584
+    }
+  },
+  "schema": "rtdl.paper_reproduction.xhd.goal5367.lb_author_radius_probe.v1",
+  "status": "author_radius_lb_probe_ready__radius_alignment_not_sufficient_for_row_parity"
+}

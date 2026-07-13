@@ -1,0 +1,193 @@
+{
+  "author_float32_sentinel_count": 71625,
+  "author_matches_rtdl_rows": false,
+  "author_minus_rtdl": [
+    [
+      15371,
+      45
+    ],
+    [
+      48295,
+      55
+    ],
+    [
+      59316,
+      55
+    ],
+    [
+      68228,
+      42
+    ]
+  ],
+  "claim_boundary": {
+    "author_pair_rows_observed": true,
+    "author_row_dump_is_app_owned_instrumentation": true,
+    "diagnostic_only": true,
+    "paper_or_performance_claimed": false,
+    "reference_emulates_pinned_author_source": true
+  },
+  "observed_author_matches_rtdl_candidate_author_compatibility_rows": false,
+  "observed_author_matches_rtdl_candidate_author_numba_compatibility_rows": true,
+  "observed_author_matches_rtdl_rows": false,
+  "observed_author_minus_rtdl": [
+    [
+      15371,
+      45
+    ],
+    [
+      48295,
+      55
+    ],
+    [
+      59316,
+      55
+    ],
+    [
+      68228,
+      42
+    ]
+  ],
+  "observed_author_minus_rtdl_candidate_author_compatibility": [
+    [
+      77266,
+      55
+    ]
+  ],
+  "observed_author_minus_rtdl_candidate_author_numba_compatibility": [],
+  "observed_author_minus_rtdl_details": [
+    {
+      "minimum_outer_edge_distance": 5.874317723170575e-06,
+      "point": [
+        -87.946807861328,
+        31.174648284912
+      ],
+      "point_id": 15371,
+      "polygon_id": 45
+    },
+    {
+      "minimum_outer_edge_distance": 1.4353542089777417e-07,
+      "point": [
+        -87.69123840332,
+        30.864059448242
+      ],
+      "point_id": 48295,
+      "polygon_id": 55
+    },
+    {
+      "minimum_outer_edge_distance": 0.051733347507563525,
+      "point": [
+        -87.511360168457,
+        30.818601608276
+      ],
+      "point_id": 59316,
+      "polygon_id": 55
+    },
+    {
+      "minimum_outer_edge_distance": 2.871360765936792e-07,
+      "point": [
+        -86.787986755371,
+        32.458667755127
+      ],
+      "point_id": 68228,
+      "polygon_id": 42
+    }
+  ],
+  "observed_author_row_count": 71626,
+  "rtdl_candidate_author_compatibility_count": 71625,
+  "rtdl_candidate_author_compatibility_metadata": {
+    "candidate_contract": "generic_expanded_aabb_point_membership_rows_2d_v1",
+    "candidate_count": 154155,
+    "candidate_expansion": 1e-05,
+    "native_engine_customization": false,
+    "rt_core_accelerated": true
+  },
+  "rtdl_candidate_author_compatibility_minus_observed_author": [],
+  "rtdl_candidate_author_numba_compatibility_count": 71626,
+  "rtdl_candidate_author_numba_compatibility_metadata": {
+    "app_semantics": "pinned_author_pnpoly_float32_sentinel_layout",
+    "candidate_contract": "generic_expanded_aabb_point_membership_rows_2d_v1",
+    "candidate_count": 154155,
+    "candidate_expansion": 1e-05,
+    "fastmath": true,
+    "native_engine_customization": false,
+    "partner": "numba_cuda",
+    "point_count": 100000,
+    "polygon_count": 64,
+    "result_count": 71626,
+    "rt_core_accelerated": true,
+    "schema": "rtdl.paper_reproduction.librts.author_compatible_pip_rows.v1"
+  },
+  "rtdl_candidate_author_numba_compatibility_minus_observed_author": [],
+  "rtdl_count": 71624,
+  "rtdl_minus_author": [
+    [
+      48295,
+      57
+    ],
+    [
+      68228,
+      41
+    ],
+    [
+      77266,
+      55
+    ]
+  ],
+  "rtdl_minus_observed_author": [
+    [
+      48295,
+      57
+    ],
+    [
+      68228,
+      41
+    ]
+  ],
+  "rtdl_minus_observed_author_details": [
+    {
+      "minimum_outer_edge_distance": 1.4353542089777417e-07,
+      "point": [
+        -87.69123840332,
+        30.864059448242
+      ],
+      "point_id": 48295,
+      "polygon_id": 57
+    },
+    {
+      "minimum_outer_edge_distance": 2.871360765936792e-07,
+      "point": [
+        -86.787986755371,
+        32.458667755127
+      ],
+      "point_id": 68228,
+      "polygon_id": 41
+    }
+  ],
+  "rtdl_minus_standard": [
+    [
+      48295,
+      57
+    ],
+    [
+      68228,
+      41
+    ]
+  ],
+  "schema": "rtdl.paper_reproduction.librts.pip_semantics_diagnostic.v1",
+  "standard_matches_rtdl_rows": false,
+  "standard_minus_rtdl": [
+    [
+      15371,
+      45
+    ],
+    [
+      48295,
+      55
+    ],
+    [
+      68228,
+      42
+    ]
+  ],
+  "standard_outer_float32_count": 71625
+}

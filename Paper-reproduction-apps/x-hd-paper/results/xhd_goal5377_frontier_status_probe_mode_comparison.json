@@ -1,0 +1,60 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5377.frontier_status_probe_mode_comparison.v1",
+  "goal": "Goal5377",
+  "purpose": "Compare a generic RTDL heavy-cell status probe against the Goal5374 author -lb OffloadingSize oracle on the same Dragon -> AsianDragon diagnostic input.",
+  "input_scope": {
+    "input1": "/tmp/xhd_goal5234/data/dragon.ply",
+    "input2": "/tmp/xhd_goal5234/data/asian_dragon.ply",
+    "point_count_a": 437645,
+    "point_count_b": 3609600,
+    "grid_shape": [96, 60, 72],
+    "radius": 79.2156982421875,
+    "max_inline_points": 256,
+    "preprocessing": ["translate_each_input_to_min_bound"],
+    "exact_paper_dataset_identity_proven": false
+  },
+  "author_oracle": {
+    "source": "xhd_goal5374_author_lb_status_trace_oracle.json",
+    "raw_offload_rows_before_sort_reduce": 27133990,
+    "active_in_queue_size": 437645,
+    "raw_offload_rows_author_width_bytes": 217071920
+  },
+  "probe_results": {
+    "default_inline_current_best_prune": {
+      "source": "xhd_goal5377_default_status_probe_pod.json",
+      "native_symbol": "rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v4",
+      "frontier_status_probe_mode": "default",
+      "raw_frontier_kind2_rows": 21006960,
+      "row_delta_author_minus_rtdl_kind2": 6127030,
+      "row_ratio_rtdl_kind2_div_author": 0.7741935483870968,
+      "row_count_parity": false
+    },
+    "heavy_before_inline_prune_probe": {
+      "source": "xhd_goal5377_heavy_before_inline_prune_probe_pod.json",
+      "native_symbol": "rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v6",
+      "frontier_status_probe_mode": "heavy-before-inline-prune",
+      "frontier_status_probe_contract": "generic_heavy_cell_status_classification_before_inline_prune_probe",
+      "raw_frontier_kind2_rows": 304981889,
+      "row_delta_author_minus_rtdl_kind2": -277847899,
+      "row_ratio_rtdl_kind2_div_author": 11.239846738352892,
+      "row_count_parity": false
+    }
+  },
+  "decision": {
+    "exit_label": "heavy_before_inline_prune_probe_no_go__author_lb_row_parity_still_missing",
+    "interpretation": "Moving heavy-cell/offload classification before inline-current-best prune is not the author's -lb status-machine denominator. It jumps from the known under-counting surface to the known no-inline over-counting surface.",
+    "default_mode_remains": "default_inline_current_best_prune",
+    "explicit_lb_support_claimed": false,
+    "row_count_parity_claimed": false,
+    "same_denominator_memory_claimed": false
+  },
+  "claim_boundary": {
+    "full_xhd_paper_reproduction_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_support_claimed": false,
+    "author_rt_core_algorithm_parity_claimed": false,
+    "row_count_parity_claimed": false,
+    "same_denominator_memory_claimed": false,
+    "performance_claimed": false
+  }
+}

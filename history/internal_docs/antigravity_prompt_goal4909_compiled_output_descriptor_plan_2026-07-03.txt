@@ -1,0 +1,22 @@
+Please review Goal4909 as an independent critical reviewer.
+
+Read:
+
+1. `history/internal_docs/goal4909_compiled_output_descriptor_plan_2026-07-03.md`
+2. `history/internal_docs/call_for_review_goal4909_compiled_output_descriptor_plan_2026-07-03.md`
+3. `history/internal_docs/goal4907_structural_output_chain_writer_report_2026-07-03.md`
+4. `history/internal_docs/goal4908_compiled_descriptor_probe_negative_result_2026-07-03.md`
+
+Be strict. The question is whether Goal4909 is a real compiled descriptor plan
+or just another Python micro-fast-path. Also check whether the performance bar
+is falsifiable and whether the app-layer vs RTDL-core boundary is clear.
+
+Write the review to:
+
+`history/internal_docs/antigravity_goal4909_compiled_output_descriptor_plan_review_2026-07-03.md`
+
+Use one of these labels:
+
+- `approve_goal4909_compiled_descriptor_implementation_gate`
+- `approve_with_required_amendments`
+- `block_goal4909_as_underdesigned_or_too_rayjoin_specific`

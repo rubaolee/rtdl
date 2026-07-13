@@ -1,0 +1,72 @@
+{
+  "author_abs_diff": 0.0,
+  "author_comparison_distance": 2.0,
+  "author_comparison_reference": "directed_a_to_b",
+  "author_hd_result": 2.0,
+  "author_json": "Paper-reproduction-apps/x-hd-paper/results/bounded3d_author_hd_exec_output_pod.json",
+  "author_performance_parity_claimed": false,
+  "backend": "optix",
+  "boundary": "Representative same-input RTDL cell-MBR frontier route gate. This uses generic RTDL system APIs and compares against the exact value and optional author HDResult for the same bounded fixture. It is not full X-HD paper reproduction, not the author's fused RT algorithm, and not a performance claim.",
+  "exact_reference": {
+    "directed_a_to_b": 2.0,
+    "directed_b_to_a": 0.1,
+    "hausdorff": 2.0
+  },
+  "grid_shape": [
+    2,
+    1,
+    1
+  ],
+  "input1": "Paper-reproduction-apps/x-hd-paper/data/fixtures/bounded3d_a.wkt",
+  "input2": "Paper-reproduction-apps/x-hd-paper/data/fixtures/bounded3d_b.wkt",
+  "input_type": "wkt",
+  "matched": true,
+  "max_inline_points": 64,
+  "n_dims": 3,
+  "paper_app": "x-hd-paper",
+  "paper_reproduction_claim_authorized": false,
+  "performance_claim_authorized": false,
+  "point_count_a": 9,
+  "point_count_b": 8,
+  "radius": 3.3166247913554,
+  "reference_preprocessing": [],
+  "rtdl_exact_abs_diff": 0.0,
+  "rtdl_matches_exact_reference": true,
+  "rtdl_route": {
+    "directed_a_to_b": {
+      "candidate_distance_evaluations": 72,
+      "distance": 2.0,
+      "frontier_contract": "generic_cell_mbr_nearest_frontier_native_3d_optix",
+      "frontier_native_symbol": "rtdl_optix_collect_cell_mbr_nearest_frontier_3d",
+      "frontier_row_count": 18,
+      "grid_cell_count": 2,
+      "label": "a_to_b",
+      "max_contract": "generic_max_nearest_distance_with_witness",
+      "nearest_contract": "generic_nearest_witness_from_cell_mbr_frontier",
+      "source_id": 8,
+      "target_id": 7
+    },
+    "directed_b_to_a": {
+      "candidate_distance_evaluations": 72,
+      "distance": 0.1,
+      "frontier_contract": "generic_cell_mbr_nearest_frontier_native_3d_optix",
+      "frontier_native_symbol": "rtdl_optix_collect_cell_mbr_nearest_frontier_3d",
+      "frontier_row_count": 16,
+      "grid_cell_count": 2,
+      "label": "b_to_a",
+      "max_contract": "generic_max_nearest_distance_with_witness",
+      "nearest_contract": "generic_nearest_witness_from_cell_mbr_frontier",
+      "source_id": 0,
+      "target_id": 0
+    },
+    "hausdorff": 2.0,
+    "route": "rtdl_cell_mbr_frontier_optix_3d",
+    "route_contract": "RTDL 3-D cell-MBR frontier route using generic grid-cell MBRs, generic cell-MBR frontier rows, generic nearest-witness continuation, and generic max-nearest reduction. It is not the author X-HD RT-core implementation and not a performance claim."
+  },
+  "run_phases": {
+    "rtdl_route_sec": 0.32798197865486145,
+    "total_sec": 0.32856887578964233
+  },
+  "schema": "rtdl.paper_reproduction.xhd.cell_mbr_frontier_route_gate.v1",
+  "tolerance": 1e-06
+}

@@ -1,0 +1,28 @@
+Please review the RTDL Goal4860 planar-map LSI row-materialization repair critically.
+
+Read:
+
+- history/internal_docs/call_for_review_goal4860_planar_map_lsi_row_materialization_repair_2026-07-02.md
+- history/internal_docs/goal4860_planar_map_lsi_row_materialization_repair_result_2026-07-02.md
+- history/internal_docs/goal4860_county_zipcode_lsi_row_gate_summary.json
+- history/internal_docs/goal4860_au_lsi_row_gate_summary.json
+- tests/goal4860_planar_map_lsi_row_materialization_test.py
+- src/rtdsl/optix_runtime.py
+- src/native/optix/rtdl_optix_prelude.h
+- src/native/optix/rtdl_optix_api.cpp
+- src/native/optix/rtdl_optix_workloads.cpp
+
+Write the review result to:
+
+history/internal_docs/antigravity_goal4860_planar_map_lsi_row_materialization_repair_review_2026-07-02.md
+
+Requested verdict labels:
+
+- approve_goal4860_lsi_row_repair_and_resume_section57
+- approve_with_required_amendments_before_section57
+- reject_goal4860_as_rayjoin_specific_or_insufficient
+
+Please answer the 8 questions in the call-for-review file. Be especially strict
+about whether this is a generic public planar-map LSI repair or a hidden RayJoin
+application shortcut. Also verify that the result does not accidentally
+authorize PIP, Section 5.7 overlay correctness, or any performance claim.

@@ -1,0 +1,277 @@
+{
+  "elapsed_sec": 479.299129486084,
+  "face_inverse_window": {
+    "280": {
+      "first_seen_chain": 37849,
+      "key": [
+        5,
+        10950
+      ]
+    },
+    "290": {
+      "first_seen_chain": 37963,
+      "key": [
+        22,
+        10950
+      ]
+    },
+    "294": {
+      "first_seen_chain": 39105,
+      "key": [
+        5,
+        10938
+      ]
+    },
+    "295": {
+      "first_seen_chain": 39105,
+      "key": [
+        22,
+        10938
+      ]
+    }
+  },
+  "line_no_at_capture": 123678,
+  "outcome": "target_or_mismatch_captured",
+  "recent_headers": [
+    {
+      "author_header": "41226 2 42100 42101 280 290",
+      "chain": 41226,
+      "final_left_polygon_id": 280,
+      "final_right_polygon_id": 290,
+      "first_point_idx": 42100,
+      "generated_header": "41226 2 42100 42101 280 290",
+      "header_match": true,
+      "last_point_idx": 42101,
+      "left_key": [
+        5,
+        10950
+      ],
+      "meta": {
+        "dataset_chain_index": 43209,
+        "edge_id": 43209,
+        "flush_kind": "tail_or_unsplit_chain",
+        "map_index": 0
+      },
+      "other_map_polygon_id": 10950,
+      "points": [
+        [
+          -86.68557053580092,
+          34.07964680160367
+        ],
+        [
+          -86.685325,
+          34.079795
+        ]
+      ],
+      "raw_left_polygon_id": 5,
+      "raw_right_polygon_id": 22,
+      "right_key": [
+        22,
+        10950
+      ]
+    },
+    {
+      "author_header": "41227 2 42101 42102 280 290",
+      "chain": 41227,
+      "final_left_polygon_id": 280,
+      "final_right_polygon_id": 290,
+      "first_point_idx": 42101,
+      "generated_header": "41227 2 42101 42102 280 290",
+      "header_match": true,
+      "last_point_idx": 42102,
+      "left_key": [
+        5,
+        10950
+      ],
+      "meta": {
+        "dataset_chain_index": 43210,
+        "edge_id": 43210,
+        "flush_kind": "tail_or_unsplit_chain",
+        "map_index": 0
+      },
+      "other_map_polygon_id": 10950,
+      "points": [
+        [
+          -86.685325,
+          34.079795
+        ],
+        [
+          -86.685242,
+          34.079858
+        ]
+      ],
+      "raw_left_polygon_id": 5,
+      "raw_right_polygon_id": 22,
+      "right_key": [
+        22,
+        10950
+      ]
+    },
+    {
+      "author_header": "41228 2 42102 42103 280 290",
+      "chain": 41228,
+      "final_left_polygon_id": 280,
+      "final_right_polygon_id": 290,
+      "first_point_idx": 42102,
+      "generated_header": "41228 2 42102 42103 280 290",
+      "header_match": true,
+      "last_point_idx": 42103,
+      "left_key": [
+        5,
+        10950
+      ],
+      "meta": {
+        "dataset_chain_index": 43211,
+        "edge_id": 43211,
+        "flush_kind": "tail_or_unsplit_chain",
+        "map_index": 0
+      },
+      "other_map_polygon_id": 10950,
+      "points": [
+        [
+          -86.685242,
+          34.079858
+        ],
+        [
+          -86.684974,
+          34.08009
+        ]
+      ],
+      "raw_left_polygon_id": 5,
+      "raw_right_polygon_id": 22,
+      "right_key": [
+        22,
+        10950
+      ]
+    },
+    {
+      "author_header": "41229 2 42103 42104 280 290",
+      "chain": 41229,
+      "final_left_polygon_id": 280,
+      "final_right_polygon_id": 290,
+      "first_point_idx": 42103,
+      "generated_header": "41229 2 42103 42104 280 290",
+      "header_match": true,
+      "last_point_idx": 42104,
+      "left_key": [
+        5,
+        10950
+      ],
+      "meta": {
+        "dataset_chain_index": 43212,
+        "edge_id": 43212,
+        "flush_kind": "vertex_to_first_intersection",
+        "local_point_index": 0,
+        "map_index": 0,
+        "xsect_count_on_edge": 2
+      },
+      "other_map_polygon_id": 10950,
+      "points": [
+        [
+          -86.684974,
+          34.08009
+        ],
+        [
+          -86.6849394999989,
+          34.080121799998686
+        ]
+      ],
+      "raw_left_polygon_id": 5,
+      "raw_right_polygon_id": 22,
+      "right_key": [
+        22,
+        10950
+      ]
+    },
+    {
+      "author_header": "41230 2 42104 42105 280 290",
+      "chain": 41230,
+      "final_left_polygon_id": 294,
+      "final_right_polygon_id": 295,
+      "first_point_idx": 42104,
+      "generated_header": "41230 2 42104 42105 294 295",
+      "header_match": false,
+      "last_point_idx": 42105,
+      "left_key": [
+        5,
+        10938
+      ],
+      "meta": {
+        "dataset_chain_index": 43212,
+        "edge_id": 43212,
+        "flush_kind": "between_adjacent_intersections",
+        "local_point_index": 0,
+        "map_index": 0,
+        "next_xsect_eid0": 43212,
+        "next_xsect_eid1": 8522816,
+        "xsect_count_on_edge": 2,
+        "xsect_eid0": 43212,
+        "xsect_eid1": 8522815,
+        "xsect_index": 0
+      },
+      "other_map_polygon_id": 10938,
+      "points": [
+        [
+          -86.6849394999989,
+          34.080121799998686
+        ],
+        [
+          -86.68493949999633,
+          34.08012180000119
+        ]
+      ],
+      "raw_left_polygon_id": 5,
+      "raw_right_polygon_id": 22,
+      "right_key": [
+        22,
+        10938
+      ]
+    }
+  ],
+  "schema": "rtdl.goal4862.chain_face_assignment_probe.v1",
+  "target_chain": 41230,
+  "target_or_first_mismatch": {
+    "author_header": "41230 2 42104 42105 280 290",
+    "chain": 41230,
+    "final_left_polygon_id": 294,
+    "final_right_polygon_id": 295,
+    "first_point_idx": 42104,
+    "generated_header": "41230 2 42104 42105 294 295",
+    "header_match": false,
+    "last_point_idx": 42105,
+    "left_key": [
+      5,
+      10938
+    ],
+    "meta": {
+      "dataset_chain_index": 43212,
+      "edge_id": 43212,
+      "flush_kind": "between_adjacent_intersections",
+      "local_point_index": 0,
+      "map_index": 0,
+      "next_xsect_eid0": 43212,
+      "next_xsect_eid1": 8522816,
+      "xsect_count_on_edge": 2,
+      "xsect_eid0": 43212,
+      "xsect_eid1": 8522815,
+      "xsect_index": 0
+    },
+    "other_map_polygon_id": 10938,
+    "points": [
+      [
+        -86.6849394999989,
+        34.080121799998686
+      ],
+      [
+        -86.68493949999633,
+        34.08012180000119
+      ]
+    ],
+    "raw_left_polygon_id": 5,
+    "raw_right_polygon_id": 22,
+    "right_key": [
+      22,
+      10938
+    ]
+  }
+}

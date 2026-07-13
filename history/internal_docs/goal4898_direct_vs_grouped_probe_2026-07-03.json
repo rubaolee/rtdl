@@ -1,0 +1,23 @@
+{
+  "schema": "rtdl.goal4898.direct_vs_grouped_probe.v1",
+  "dataset": "Australia current-source lakes x parks representative",
+  "left_edges": 14430155,
+  "right_edges": 941375,
+  "result": {
+    "direct_count_first_wall_sec": 1.5054419189691544,
+    "direct_count_first_native_count_pass_sec": 0.08406020300000015,
+    "grouped_count_after_direct_wall_sec": 0.6184626296162605,
+    "grouped_count_after_direct_native_count_pass_sec": 0.002898019,
+    "grouped_pair_id_rows_after_grouped_count_wall_sec": 0.005875013768672943,
+    "grouped_pair_id_rows_after_grouped_count_native_count_pass_sec": 0.002828517,
+    "grouped_pair_id_rows_after_grouped_count_native_write_pass_sec": 0.002831372,
+    "row_count": 13452,
+    "right_group_count": 941375
+  },
+  "interpretation": {
+    "direct_route_hot_kernel_is_slower_than_grouped_route": true,
+    "grouped_route_pays_one_time_grouped_gas_setup": true,
+    "direct_pair_id_rows_not_implemented": "The measured tradeoff does not justify a new public direct row route before broader workloads show one-shot grouped-GAS setup dominates.",
+    "safe_next_api": "Expose and validate PreparedOptixPlanarMapLsi2D.prepare_query so repeated query-side use can reuse the prepared-left handle and cached grouped setup."
+  }
+}

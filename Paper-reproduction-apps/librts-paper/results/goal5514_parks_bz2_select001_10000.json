@@ -1,0 +1,43 @@
+{
+  "case_id": "parks_bz2_select_0.01_10000",
+  "status": "author_capacity_failure",
+  "author": {
+    "command": [
+      "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+      "-geom",
+      "/workspace/librts-targets/goal5500-range-intersects/PPoPPAE/datasets/polygons/parks.bz2.wkt",
+      "-query",
+      "/workspace/librts-targets/goal5500-range-intersects/PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_10000/parks.bz2.wkt",
+      "-serialize",
+      "/tmp/librts-serialize/goal5513/parks_bz2_select_0.01_10000",
+      "-query_type",
+      "range-intersects",
+      "-index_type",
+      "rtspatial",
+      "-load_factor",
+      "1"
+    ],
+    "exit_code": -6,
+    "failure_class": "author_cuda_memory_allocation_failure",
+    "stderr": "terminate called after throwing an instance of 'thrust::THRUST_200700_750_NS::system::detail::bad_alloc'; what(): cudaErrorMemoryAllocation: out of memory"
+  },
+  "input_identity": {
+    "geometry_path": "/workspace/librts-targets/goal5500-range-intersects/PPoPPAE/datasets/polygons/parks.bz2.wkt",
+    "geometry_sha256": "ca133e4456b20c4baae1027d64a373d23083973ae042a3b6025dcc51eb3073a0",
+    "query_path": "/workspace/librts-targets/goal5500-range-intersects/PPoPPAE/datasets/queries/range-intersects_select_0.01_queries_10000/parks.bz2.wkt",
+    "query_sha256": "5422a267bf4adc54a11111b8b3308017493ad9d2e5b11bc5a3c1051d73d29169",
+    "same_files_passed_to_author_and_rtdl": false,
+    "rtdl_not_run_after_author_failure": true
+  },
+  "claim_boundary": {
+    "complete_paper_reproduction_claimed": false,
+    "complete_range_intersects_matrix_claimed": false,
+    "semantic_mismatch_claimed": false,
+    "performance_ratio_authorized": false,
+    "pointwise_intersection_equivalence_claimed": false,
+    "figure6_reproduced": false,
+    "device_zero_copy_claimed": false,
+    "embree_in_scope": false
+  },
+  "interpretation": "The pinned author binary could not allocate this exact CUDA workload. This is a capacity boundary, not an author/RTDL semantic mismatch."
+}

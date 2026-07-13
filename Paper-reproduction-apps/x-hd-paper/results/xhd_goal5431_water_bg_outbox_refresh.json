@@ -1,0 +1,62 @@
+{
+  "allowed_summary": "Goal5431 refreshes the WaterBodies/BG request outbox with Goal5430 evidence. The drafts are prepared but not sent, and no exact-equivalence or artifact acquisition is claimed.",
+  "claim_boundary": {
+    "exact_equivalence_accepted": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_reopened": false,
+    "external_artifacts_acquired": false,
+    "figure5_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "new_pod_execution_claimed": false,
+    "new_rtdl_route_code_added": false,
+    "outbox_refreshed": true,
+    "performance_ratio_claimed": false,
+    "request_sent_claimed": false,
+    "route_micro_optimization_goal_authorized": false
+  },
+  "date": "2026-07-10",
+  "goal": "Goal5431",
+  "next_action": "owner_or_external_reviewer_can_send_or_review_the_prepared_drafts",
+  "not_allowed": [
+    "claiming either request was sent",
+    "claiming any recipient responded",
+    "claiming exact-equivalence was accepted",
+    "claiming external artifacts were acquired",
+    "claiming exact paper dataset reproduction",
+    "claiming Figure 5 reproduction",
+    "claiming full X-HD paper reproduction",
+    "claiming author-vs-RTDL performance ratio"
+  ],
+  "outbox_files": [
+    {
+      "message_id": "author_water_bg_input_hash_request",
+      "path": "Paper-reproduction-apps\\x-hd-paper\\requests\\author_water_bg_input_hash_request.md",
+      "send_status": "prepared_not_sent",
+      "target": "X-HD authors / artifact owner"
+    },
+    {
+      "message_id": "water_bg_exact_equivalence_review_request",
+      "path": "Paper-reproduction-apps\\x-hd-paper\\requests\\water_bg_exact_equivalence_review_request.md",
+      "send_status": "prepared_not_sent",
+      "target": "owner or external reviewer"
+    }
+  ],
+  "pod_usage": {
+    "expected_next": false,
+    "reason": "Sending or reviewing requests is not a POD task. POD becomes useful after a positive external response.",
+    "used": false
+  },
+  "schema": "rtdl.paper_reproduction.xhd.goal5431.water_bg_outbox_refresh.v1",
+  "source_artifacts": {
+    "goal5430": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5430_water_bg_exact_equivalence_packet.json"
+  },
+  "source_goal": "Goal5430",
+  "status": "water_bg_outbox_refreshed_from_goal5430__prepared_not_sent",
+  "stop_loss_gate": {
+    "decision": "PASS: no app-artifact parity implementation; this only prepares external decision messages.",
+    "gate_downstream_consumer_reachable": true,
+    "gate_generic_capability_produced": true,
+    "gate_non_app_consumer": "send-ready author artifact request and exact-equivalence review request drafts",
+    "gate_requires_app_specific_logic": false
+  }
+}

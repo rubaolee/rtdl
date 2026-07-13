@@ -1,0 +1,21 @@
+Please review RTDL Goal4902 critically.
+
+Repository:
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review
+
+Primary review request:
+history/internal_docs/call_for_review_goal4902_reusable_point_location_session_2026-07-03.md
+
+Main report:
+history/internal_docs/goal4902_reusable_point_location_session_report_2026-07-03.md
+
+Please inspect the evidence files and code surface named in the call-for-review, then write your review to:
+history/internal_docs/antigravity_goal4902_reusable_point_location_session_review_2026-07-03.md
+
+Requested verdict labels:
+- approve_goal4902_reusable_point_location_session_probe
+- approve_with_required_amendments
+- block_due_to_metric_reframing
+- block_due_to_correctness_or_semantics_risk
+
+Be strict about metric reframing. Approve only if the report honestly distinguishes setup cost from hot-body reuse, preserves byte-for-byte correctness, and avoids turning a repeated-query hot-session result into a single-run or broad RayJoin performance claim.

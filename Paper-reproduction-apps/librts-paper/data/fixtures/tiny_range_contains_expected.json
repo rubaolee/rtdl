@@ -1,0 +1,7 @@
+{
+  "semantics": "indexed_box_contains_query_box",
+  "boundary_policy": "inclusive_min_max",
+  "candidate_id_rows": [[0, 0], [0, 1], [1, 0], [3, 2], [4, 3]],
+  "valid_count": 5,
+  "reverse_direction_count": 2
+}

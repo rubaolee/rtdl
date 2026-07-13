@@ -1,0 +1,28 @@
+Please review this RTDL internal Goal4859/Goal4860 decision packet critically.
+
+Workspace:
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review
+
+Primary review request:
+history/internal_docs/call_for_review_goal4859_lsi_row_surface_gap_and_goal4860_plan_2026-07-02.md
+
+Files to inspect:
+- history/internal_docs/goal4859_section57_lsi_row_surface_gap_report_2026-07-02.md
+- history/internal_docs/goal4860_planar_map_lsi_row_materialization_repair_goal_2026-07-02.md
+- history/internal_docs/goal4859_minimal_real_witness_probe_summary.json
+- history/internal_docs/goal4859_au_chunk_mismatch_locator_summary.json
+- history/internal_docs/goal4859_county_zipcode_correct_input_hidden_predicate_lsi_rows_summary.json
+
+Please answer the eight reviewer questions in the call-for-review.
+
+Write your review result to:
+history/internal_docs/antigravity_goal4859_lsi_row_surface_gap_review_2026-07-02.md
+
+Use one of these verdict labels:
+- approve_goal4859_pause_section57_and_authorize_goal4860_lsi_row_repair
+- request_amendments_before_goal4860
+- reject_gap_diagnosis_continue_section57_without_lsi_row_repair
+
+Be strict: the central issue is whether this really belongs back to Section 5.2
+LSI row materialization rather than PIP/Section 5.3, and whether Goal4860 is a
+generic planar-map LSI repair rather than a RayJoin-specific patch.

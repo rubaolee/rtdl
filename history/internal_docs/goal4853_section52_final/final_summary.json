@@ -1,0 +1,66 @@
+{
+  "all_matched": true,
+  "rows": [
+    {
+      "claim_boundary": {
+        "all_eight_exact_paper_pairs_claim": false,
+        "broad_speedup_claim": false,
+        "bundled_rayjoin_helper_used": false,
+        "full_overlay_claim": false,
+        "public_generic_rtdl_primitive": true,
+        "section52_lsi_count_only": true
+      },
+      "count": 13622,
+      "count_sec": 5.069712646305561,
+      "expected_count": 13622,
+      "expected_count_provenance": "rtdl_bundled_goal4848_representative_count",
+      "label": "australia_lakes_parks_representative_final",
+      "matched_expected": true,
+      "native_predicate_mechanism": null,
+      "native_predicate_mode": "planar_map_lsi",
+      "raw_native_symbol": null,
+      "total_observed_sec": 76.73268678039312
+    },
+    {
+      "claim_boundary": {
+        "all_eight_exact_paper_pairs_claim": false,
+        "broad_speedup_claim": false,
+        "bundled_rayjoin_helper_used": false,
+        "full_overlay_claim": false,
+        "public_generic_rtdl_primitive": true,
+        "section52_lsi_count_only": true
+      },
+      "count": 649605,
+      "count_sec": 57.501933343708515,
+      "expected_count": 649605,
+      "expected_count_provenance": "authorpatch_goal4846_exact_count",
+      "label": "block_water_final",
+      "matched_expected": true,
+      "native_predicate_mechanism": null,
+      "native_predicate_mode": "planar_map_lsi",
+      "raw_native_symbol": null,
+      "total_observed_sec": 642.4448983818293
+    },
+    {
+      "claim_boundary": {
+        "all_eight_exact_paper_pairs_claim": false,
+        "broad_speedup_claim": false,
+        "bundled_rayjoin_helper_used": false,
+        "full_overlay_claim": false,
+        "public_generic_rtdl_primitive": true,
+        "section52_lsi_count_only": true
+      },
+      "count": 961165,
+      "count_sec": 56.86630602180958,
+      "expected_count": 961165,
+      "expected_count_provenance": "authorpatch_goal4845_exact_count",
+      "label": "county_zipcode_final",
+      "matched_expected": true,
+      "native_predicate_mechanism": null,
+      "native_predicate_mode": "planar_map_lsi",
+      "raw_native_symbol": null,
+      "total_observed_sec": 398.50175981223583
+    }
+  ],
+  "schema": "rtdl.goal4853.section52.final.v2"
+}

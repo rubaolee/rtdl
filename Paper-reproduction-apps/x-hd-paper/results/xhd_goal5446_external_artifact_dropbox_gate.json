@@ -1,0 +1,46 @@
+{
+  "artifact_candidate_count": 0,
+  "claim_boundary": {
+    "acm_supplement_inspected": false,
+    "exact_equivalence_accepted": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_reopened": false,
+    "external_artifact_dropbox_scanned": true,
+    "external_artifacts_acquired": false,
+    "figure5_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "new_rtdl_route_code_added": false,
+    "performance_ratio_claimed": false,
+    "pod_execution_claimed": false,
+    "route_micro_optimization_goal_authorized": false
+  },
+  "date": "2026-07-10",
+  "dropbox_dir": "Paper-reproduction-apps/x-hd-paper/requests/artifacts",
+  "exact_input_blocker_removed": false,
+  "external_artifacts_acquired": false,
+  "goal": "Goal5446",
+  "next_action": "obtain_authorized_acm_zip_author_archive_hash_manifest_or_response",
+  "not_allowed": [
+    "claiming exact paper dataset reproduction from this dropbox scan alone",
+    "claiming ACM supplement inspection from this dropbox scan alone",
+    "claiming Figure 5 or full X-HD reproduction from this dropbox scan alone",
+    "claiming author-vs-RTDL performance ratio from this dropbox scan alone",
+    "running POD or route work from this dropbox scan alone"
+  ],
+  "pod_expected_next": false,
+  "pod_usage": {
+    "expected_next": false,
+    "reason": "Dropbox scan only. POD requires a later intake/classifier gate and strict review.",
+    "used": false
+  },
+  "records": [],
+  "schema": "rtdl.paper_reproduction.xhd.goal5446.external_artifact_dropbox_gate.v1",
+  "status": "external_artifact_dropbox_empty__await_authorized_artifact",
+  "stop_loss_gate": {
+    "decision": "PASS: external artifact intake governance, not app-artifact parity implementation.",
+    "gate_downstream_consumer_reachable": true,
+    "gate_generic_capability_produced": true,
+    "gate_non_app_consumer": "external artifact dropbox gate / intake workflow",
+    "gate_requires_app_specific_logic": false
+  }
+}

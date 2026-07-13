@@ -1,0 +1,853 @@
+{
+  "chunks": [
+    {
+      "chunk_index": 1,
+      "face_positive": 458179,
+      "first_point_id": 1,
+      "pack_points_sec": 0.004150912165641785,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1620642319321632,
+      "segment_found": 499980
+    },
+    {
+      "chunk_index": 2,
+      "face_positive": 419765,
+      "first_point_id": 500001,
+      "pack_points_sec": 0.0019422546029090881,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1481614485383034,
+      "segment_found": 499526
+    },
+    {
+      "chunk_index": 3,
+      "face_positive": 494138,
+      "first_point_id": 1000001,
+      "pack_points_sec": 0.0019329264760017395,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1410104408860207,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 4,
+      "face_positive": 487005,
+      "first_point_id": 1500001,
+      "pack_points_sec": 0.0019329413771629333,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1556216329336166,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 5,
+      "face_positive": 499332,
+      "first_point_id": 2000001,
+      "pack_points_sec": 0.0019402951002120972,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1486962959170341,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 6,
+      "face_positive": 499360,
+      "first_point_id": 2500001,
+      "pack_points_sec": 0.0019151046872138977,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1449425518512726,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 7,
+      "face_positive": 500000,
+      "first_point_id": 3000001,
+      "pack_points_sec": 0.0019990280270576477,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1370621994137764,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 8,
+      "face_positive": 500000,
+      "first_point_id": 3500001,
+      "pack_points_sec": 0.0019375905394554138,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1441167891025543,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 9,
+      "face_positive": 500000,
+      "first_point_id": 4000001,
+      "pack_points_sec": 0.0019787997007369995,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1437024995684624,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 10,
+      "face_positive": 500000,
+      "first_point_id": 4500001,
+      "pack_points_sec": 0.0019905418157577515,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.154774323105812,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 11,
+      "face_positive": 500000,
+      "first_point_id": 5000001,
+      "pack_points_sec": 0.0019788220524787903,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1523030251264572,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 12,
+      "face_positive": 500000,
+      "first_point_id": 5500001,
+      "pack_points_sec": 0.0019341707229614258,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1483784466981888,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 13,
+      "face_positive": 500000,
+      "first_point_id": 6000001,
+      "pack_points_sec": 0.0019065961241722107,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1347063407301903,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 14,
+      "face_positive": 500000,
+      "first_point_id": 6500001,
+      "pack_points_sec": 0.0018952861428260803,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1390055865049362,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 15,
+      "face_positive": 500000,
+      "first_point_id": 7000001,
+      "pack_points_sec": 0.0019172653555870056,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1388038471341133,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 16,
+      "face_positive": 500000,
+      "first_point_id": 7500001,
+      "pack_points_sec": 0.001917712390422821,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.146114319562912,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 17,
+      "face_positive": 500000,
+      "first_point_id": 8000001,
+      "pack_points_sec": 0.0019143223762512207,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1476227417588234,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 18,
+      "face_positive": 500000,
+      "first_point_id": 8500001,
+      "pack_points_sec": 0.0019150227308273315,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1438663452863693,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 19,
+      "face_positive": 500000,
+      "first_point_id": 9000001,
+      "pack_points_sec": 0.001902654767036438,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1380890011787415,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 20,
+      "face_positive": 500000,
+      "first_point_id": 9500001,
+      "pack_points_sec": 0.001907147467136383,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.137036755681038,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 21,
+      "face_positive": 497858,
+      "first_point_id": 10000001,
+      "pack_points_sec": 0.0019188299775123596,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1362780779600143,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 22,
+      "face_positive": 469610,
+      "first_point_id": 10500001,
+      "pack_points_sec": 0.0019048303365707397,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.130222350358963,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 23,
+      "face_positive": 373003,
+      "first_point_id": 11000001,
+      "pack_points_sec": 0.0020217448472976685,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1426801085472107,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 24,
+      "face_positive": 286521,
+      "first_point_id": 11500001,
+      "pack_points_sec": 0.0019154101610183716,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1335128992795944,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 25,
+      "face_positive": 357865,
+      "first_point_id": 12000001,
+      "pack_points_sec": 0.0019473731517791748,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.141438439488411,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 26,
+      "face_positive": 270023,
+      "first_point_id": 12500001,
+      "pack_points_sec": 0.0020132437348365784,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1308435648679733,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 27,
+      "face_positive": 435345,
+      "first_point_id": 13000001,
+      "pack_points_sec": 0.0019126906991004944,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1327284798026085,
+      "segment_found": 499996
+    },
+    {
+      "chunk_index": 28,
+      "face_positive": 491526,
+      "first_point_id": 13500001,
+      "pack_points_sec": 0.0018947944045066833,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.141968198120594,
+      "segment_found": 499996
+    },
+    {
+      "chunk_index": 29,
+      "face_positive": 280164,
+      "first_point_id": 14000001,
+      "pack_points_sec": 0.0019243434071540833,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1294010654091835,
+      "segment_found": 499942
+    },
+    {
+      "chunk_index": 30,
+      "face_positive": 500000,
+      "first_point_id": 14500001,
+      "pack_points_sec": 0.0019268393516540527,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1400685161352158,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 31,
+      "face_positive": 500000,
+      "first_point_id": 15000001,
+      "pack_points_sec": 0.0019266754388809204,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1417045518755913,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 32,
+      "face_positive": 500000,
+      "first_point_id": 15500001,
+      "pack_points_sec": 0.0019189342856407166,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1426509767770767,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 33,
+      "face_positive": 500000,
+      "first_point_id": 16000001,
+      "pack_points_sec": 0.0019302889704704285,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1378880888223648,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 34,
+      "face_positive": 500000,
+      "first_point_id": 16500001,
+      "pack_points_sec": 0.001955181360244751,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1394980773329735,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 35,
+      "face_positive": 500000,
+      "first_point_id": 17000001,
+      "pack_points_sec": 0.0019400715827941895,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1984264105558395,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 36,
+      "face_positive": 326932,
+      "first_point_id": 17500001,
+      "pack_points_sec": 0.0019253268837928772,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1341768726706505,
+      "segment_found": 499860
+    },
+    {
+      "chunk_index": 37,
+      "face_positive": 389016,
+      "first_point_id": 18000001,
+      "pack_points_sec": 0.0019448250532150269,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1354390904307365,
+      "segment_found": 499494
+    },
+    {
+      "chunk_index": 38,
+      "face_positive": 500000,
+      "first_point_id": 18500001,
+      "pack_points_sec": 0.0019424334168434143,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1429940313100815,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 39,
+      "face_positive": 500000,
+      "first_point_id": 19000001,
+      "pack_points_sec": 0.0019597485661506653,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1426006704568863,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 40,
+      "face_positive": 495694,
+      "first_point_id": 19500001,
+      "pack_points_sec": 0.0019301101565361023,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1495254188776016,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 41,
+      "face_positive": 500000,
+      "first_point_id": 20000001,
+      "pack_points_sec": 0.0019307509064674377,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1391083151102066,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 42,
+      "face_positive": 496934,
+      "first_point_id": 20500001,
+      "pack_points_sec": 0.0019166618585586548,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1381257772445679,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 43,
+      "face_positive": 392304,
+      "first_point_id": 21000001,
+      "pack_points_sec": 0.00198306143283844,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1361462101340294,
+      "segment_found": 499930
+    },
+    {
+      "chunk_index": 44,
+      "face_positive": 309850,
+      "first_point_id": 21500001,
+      "pack_points_sec": 0.0019428804516792297,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1426120698451996,
+      "segment_found": 499844
+    },
+    {
+      "chunk_index": 45,
+      "face_positive": 393065,
+      "first_point_id": 22000001,
+      "pack_points_sec": 0.0027150139212608337,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1619198098778725,
+      "segment_found": 499732
+    },
+    {
+      "chunk_index": 46,
+      "face_positive": 498885,
+      "first_point_id": 22500001,
+      "pack_points_sec": 0.001915372908115387,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1411535665392876,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 47,
+      "face_positive": 499562,
+      "first_point_id": 23000001,
+      "pack_points_sec": 0.0019643083214759827,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.138378843665123,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 48,
+      "face_positive": 492505,
+      "first_point_id": 23500001,
+      "pack_points_sec": 0.0019429996609687805,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.145555779337883,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 49,
+      "face_positive": 434184,
+      "first_point_id": 24000001,
+      "pack_points_sec": 0.001949705183506012,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.14125657081604,
+      "segment_found": 495966
+    },
+    {
+      "chunk_index": 50,
+      "face_positive": 460939,
+      "first_point_id": 24500001,
+      "pack_points_sec": 0.0019610077142715454,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1409222036600113,
+      "segment_found": 499994
+    },
+    {
+      "chunk_index": 51,
+      "face_positive": 401280,
+      "first_point_id": 25000001,
+      "pack_points_sec": 0.0019855424761772156,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1371772438287735,
+      "segment_found": 499485
+    },
+    {
+      "chunk_index": 52,
+      "face_positive": 479916,
+      "first_point_id": 25500001,
+      "pack_points_sec": 0.0019541680812835693,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1433430537581444,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 53,
+      "face_positive": 468627,
+      "first_point_id": 26000001,
+      "pack_points_sec": 0.0019212514162063599,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1346715614199638,
+      "segment_found": 498120
+    },
+    {
+      "chunk_index": 54,
+      "face_positive": 434424,
+      "first_point_id": 26500001,
+      "pack_points_sec": 0.001928173005580902,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.132204294204712,
+      "segment_found": 493605
+    },
+    {
+      "chunk_index": 55,
+      "face_positive": 482366,
+      "first_point_id": 27000001,
+      "pack_points_sec": 0.001917429268360138,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1373440027236938,
+      "segment_found": 498610
+    },
+    {
+      "chunk_index": 56,
+      "face_positive": 442651,
+      "first_point_id": 27500001,
+      "pack_points_sec": 0.0019597485661506653,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1343968957662582,
+      "segment_found": 499984
+    },
+    {
+      "chunk_index": 57,
+      "face_positive": 431604,
+      "first_point_id": 28000001,
+      "pack_points_sec": 0.001948811113834381,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1355242505669594,
+      "segment_found": 498314
+    },
+    {
+      "chunk_index": 58,
+      "face_positive": 409510,
+      "first_point_id": 28500001,
+      "pack_points_sec": 0.0019502118229866028,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1404297947883606,
+      "segment_found": 498262
+    },
+    {
+      "chunk_index": 59,
+      "face_positive": 241455,
+      "first_point_id": 29000001,
+      "pack_points_sec": 0.0019469931721687317,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1340983733534813,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 60,
+      "face_positive": 311272,
+      "first_point_id": 29500001,
+      "pack_points_sec": 0.001916259527206421,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1350863426923752,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 61,
+      "face_positive": 353460,
+      "first_point_id": 30000001,
+      "pack_points_sec": 0.0019592568278312683,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1412836164236069,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 62,
+      "face_positive": 458002,
+      "first_point_id": 30500001,
+      "pack_points_sec": 0.0019506588578224182,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.144080251455307,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 63,
+      "face_positive": 425724,
+      "first_point_id": 31000001,
+      "pack_points_sec": 0.001965150237083435,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1418675556778908,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 64,
+      "face_positive": 488726,
+      "first_point_id": 31500001,
+      "pack_points_sec": 0.0019437596201896667,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1517400369048119,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 65,
+      "face_positive": 445682,
+      "first_point_id": 32000001,
+      "pack_points_sec": 0.0019390061497688293,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1496957540512085,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 66,
+      "face_positive": 495944,
+      "first_point_id": 32500001,
+      "pack_points_sec": 0.0019142702221870422,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1483055278658867,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 67,
+      "face_positive": 397513,
+      "first_point_id": 33000001,
+      "pack_points_sec": 0.0019290521740913391,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1509859561920166,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 68,
+      "face_positive": 463212,
+      "first_point_id": 33500001,
+      "pack_points_sec": 0.0019520372152328491,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1370536908507347,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 69,
+      "face_positive": 498858,
+      "first_point_id": 34000001,
+      "pack_points_sec": 0.001910880208015442,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1502244994044304,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 70,
+      "face_positive": 500000,
+      "first_point_id": 34500001,
+      "pack_points_sec": 0.0019037500023841858,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1450378149747849,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 71,
+      "face_positive": 500000,
+      "first_point_id": 35000001,
+      "pack_points_sec": 0.0019181221723556519,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1524313688278198,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 72,
+      "face_positive": 500000,
+      "first_point_id": 35500001,
+      "pack_points_sec": 0.0018887296319007874,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1426189169287682,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 73,
+      "face_positive": 500000,
+      "first_point_id": 36000001,
+      "pack_points_sec": 0.001957245171070099,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1507384702563286,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 74,
+      "face_positive": 496946,
+      "first_point_id": 36500001,
+      "pack_points_sec": 0.001915566623210907,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1845294833183289,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 75,
+      "face_positive": 500000,
+      "first_point_id": 37000001,
+      "pack_points_sec": 0.001931600272655487,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1794873028993607,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 76,
+      "face_positive": 470965,
+      "first_point_id": 37500001,
+      "pack_points_sec": 0.0019239634275436401,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1819963827729225,
+      "segment_found": 496762
+    },
+    {
+      "chunk_index": 77,
+      "face_positive": 499620,
+      "first_point_id": 38000001,
+      "pack_points_sec": 0.0019488483667373657,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.175241343677044,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 78,
+      "face_positive": 497986,
+      "first_point_id": 38500001,
+      "pack_points_sec": 0.0019427090883255005,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1722279638051987,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 79,
+      "face_positive": 485970,
+      "first_point_id": 39000001,
+      "pack_points_sec": 0.00194520503282547,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1819058284163475,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 80,
+      "face_positive": 499992,
+      "first_point_id": 39500001,
+      "pack_points_sec": 0.0019185468554496765,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1726475059986115,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 81,
+      "face_positive": 477526,
+      "first_point_id": 40000001,
+      "pack_points_sec": 0.0019445493817329407,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1735857352614403,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 82,
+      "face_positive": 368478,
+      "first_point_id": 40500001,
+      "pack_points_sec": 0.0019346848130226135,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1693596988916397,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 83,
+      "face_positive": 366622,
+      "first_point_id": 41000001,
+      "pack_points_sec": 0.001944996416568756,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1753320917487144,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 84,
+      "face_positive": 451480,
+      "first_point_id": 41500001,
+      "pack_points_sec": 0.0019460394978523254,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1663702353835106,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 85,
+      "face_positive": 333539,
+      "first_point_id": 42000001,
+      "pack_points_sec": 0.001971237361431122,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1602233350276947,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 86,
+      "face_positive": 368674,
+      "first_point_id": 42500001,
+      "pack_points_sec": 0.0019387826323509216,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1662638485431671,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 87,
+      "face_positive": 378218,
+      "first_point_id": 43000001,
+      "pack_points_sec": 0.001972682774066925,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.173176847398281,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 88,
+      "face_positive": 488193,
+      "first_point_id": 43500001,
+      "pack_points_sec": 0.0019390955567359924,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.1644225269556046,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 89,
+      "face_positive": 363882,
+      "first_point_id": 44000001,
+      "pack_points_sec": 0.0019759386777877808,
+      "point_count": 500000,
+      "run_raw_wall_sec": 1.164072722196579,
+      "segment_found": 500000
+    },
+    {
+      "chunk_index": 90,
+      "face_positive": 335700,
+      "first_point_id": 44500001,
+      "pack_points_sec": 0.001267552375793457,
+      "point_count": 363618,
+      "run_raw_wall_sec": 0.848206490278244,
+      "segment_found": 363618
+    }
+  ],
+  "dontknow_u32": 4294967295,
+  "face_hash_fnv64": 8084413850654759272,
+  "face_positive_count": 40523581,
+  "input_stats": {
+    "poly1": {
+      "chain_count": 28473338,
+      "max_x": -66.949607922,
+      "max_y": 71.365162,
+      "min_x": -179.148909,
+      "min_y": 18.910693,
+      "path": "/workspace/rtdl_goal4806_fast_min/artifacts/goal4806_section57_arcgis_full_us_20260630/dataset/point_cdb/USACensusBlockGroupBoundaries/USACensusBlockGroupBoundaries_Point.cdb",
+      "point_count": 56946676,
+      "segment_count": 28473338
+    },
+    "poly2": {
+      "chain_count": 22431809,
+      "max_x": -66.997866678,
+      "max_y": 49.384333061,
+      "min_x": -160.23110717,
+      "min_y": 19.203998324,
+      "path": "/workspace/rtdl_goal4806_fast_min/artifacts/goal4806_section57_arcgis_full_us_20260630/dataset/point_cdb/USADetailedWaterBodies/USADetailedWaterBodies_Point.cdb",
+      "point_count": 44863618,
+      "segment_count": 22431809
+    }
+  },
+  "label": "block_water",
+  "metric_contract": "closest edge found: segment_id != DONTKNOW",
+  "poly1": "/workspace/rtdl_goal4806_fast_min/artifacts/goal4806_section57_arcgis_full_us_20260630/dataset/point_cdb/USACensusBlockGroupBoundaries/USACensusBlockGroupBoundaries_Point.cdb",
+  "poly2": "/workspace/rtdl_goal4806_fast_min/artifacts/goal4806_section57_arcgis_full_us_20260630/dataset/point_cdb/USADetailedWaterBodies/USADetailedWaterBodies_Point.cdb",
+  "schema": "rtdl.goal4856.section53_pip_raw_diagnostic.v1",
+  "segment_found_count": 44841020,
+  "segment_hash_minus1_fnv64": 13878963590670293968,
+  "segment_hash_raw_fnv64": 12206133088995854134,
+  "timings_sec": {
+    "pack_base": 176.0999777317047,
+    "raw_query_and_download": 234.740080550313,
+    "scan": 264.0371822938323
+  },
+  "total_points": 44863618
+}

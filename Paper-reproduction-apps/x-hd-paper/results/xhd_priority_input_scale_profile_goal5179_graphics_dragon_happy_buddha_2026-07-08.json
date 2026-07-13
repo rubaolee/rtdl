@@ -1,0 +1,197 @@
+{
+  "claim_boundary": {
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "level_b_same_source_candidate_claimed": true,
+    "performance_ratio_claimed": false,
+    "route_run_claimed": false
+  },
+  "goal": "Goal5179",
+  "grid_occupancy_profiles": {
+    "dragon.ply": [
+      {
+        "empty_cells": 241,
+        "grid_shape": [
+          8,
+          8,
+          8
+        ],
+        "max_points_per_cell": 6348,
+        "mean_points_per_occupied_cell": 1614.9261992619927,
+        "median_points_per_occupied_cell": 1327,
+        "nonempty_fraction": 0.529296875,
+        "occupied_cells": 271,
+        "p95_points_per_occupied_cell": 3975.0,
+        "total_cells": 512
+      },
+      {
+        "empty_cells": 2843,
+        "grid_shape": [
+          16,
+          16,
+          16
+        ],
+        "max_points_per_cell": 1894,
+        "mean_points_per_occupied_cell": 349.2777334397446,
+        "median_points_per_occupied_cell": 311,
+        "nonempty_fraction": 0.305908203125,
+        "occupied_cells": 1253,
+        "p95_points_per_occupied_cell": 830.5999999999995,
+        "total_cells": 4096
+      },
+      {
+        "empty_cells": 27516,
+        "grid_shape": [
+          32,
+          32,
+          32
+        ],
+        "max_points_per_cell": 599,
+        "mean_points_per_occupied_cell": 83.32920792079207,
+        "median_points_per_occupied_cell": 73.5,
+        "nonempty_fraction": 0.1602783203125,
+        "occupied_cells": 5252,
+        "p95_points_per_occupied_cell": 199.44999999999982,
+        "total_cells": 32768
+      }
+    ],
+    "happy_buddha.ply": [
+      {
+        "empty_cells": 218,
+        "grid_shape": [
+          8,
+          8,
+          8
+        ],
+        "max_points_per_cell": 7202,
+        "mean_points_per_occupied_cell": 1849.156462585034,
+        "median_points_per_occupied_cell": 1594.0,
+        "nonempty_fraction": 0.57421875,
+        "occupied_cells": 294,
+        "p95_points_per_occupied_cell": 4638.799999999999,
+        "total_cells": 512
+      },
+      {
+        "empty_cells": 2627,
+        "grid_shape": [
+          16,
+          16,
+          16
+        ],
+        "max_points_per_cell": 1732,
+        "mean_points_per_occupied_cell": 370.0830496936692,
+        "median_points_per_occupied_cell": 305,
+        "nonempty_fraction": 0.358642578125,
+        "occupied_cells": 1469,
+        "p95_points_per_occupied_cell": 996.5999999999995,
+        "total_cells": 4096
+      },
+      {
+        "empty_cells": 26314,
+        "grid_shape": [
+          32,
+          32,
+          32
+        ],
+        "max_points_per_cell": 510,
+        "mean_points_per_occupied_cell": 84.23489308955686,
+        "median_points_per_occupied_cell": 65.0,
+        "nonempty_fraction": 0.19696044921875,
+        "occupied_cells": 6454,
+        "p95_points_per_occupied_cell": 234.0,
+        "total_cells": 32768
+      }
+    ]
+  },
+  "input_profiles": {
+    "dragon.ply": {
+      "header": {
+        "face_count": 871414,
+        "format": "ascii 1.0",
+        "vertex_count": 437645
+      },
+      "mbr": {
+        "diagonal": 0.2669053633472546,
+        "extents": [
+          0.20489020000000002,
+          0.1444435,
+          0.0916218
+        ],
+        "maxs": [
+          0.0965662,
+          0.197173,
+          0.0412075
+        ],
+        "means": [
+          -0.011565958317888224,
+          0.1106989346733088,
+          -0.007925758020214247
+        ],
+        "mins": [
+          -0.108324,
+          0.0527295,
+          -0.0504143
+        ]
+      }
+    },
+    "happy_buddha.ply": {
+      "header": {
+        "face_count": 1087716,
+        "format": "ascii 1.0",
+        "vertex_count": 543652
+      },
+      "mbr": {
+        "diagonal": 0.2290309908402136,
+        "extents": [
+          0.081322,
+          0.1980229,
+          0.0814178
+        ],
+        "maxs": [
+          0.0352217,
+          0.24778,
+          0.0340189
+        ],
+        "means": [
+          -0.0021284156289847994,
+          0.13807829933007915,
+          -0.010401090617648231
+        ],
+        "mins": [
+          -0.0461003,
+          0.0497571,
+          -0.0473989
+        ]
+      }
+    }
+  },
+  "pairwise_estimate": {
+    "candidate_row_24b_bytes": 5710237908960,
+    "candidate_row_32b_bytes": 7613650545280,
+    "candidate_row_min_16b_bytes": 3806825272640,
+    "distance_float32_bytes": 951706318160,
+    "distance_float64_bytes": 1903412636320,
+    "pair_count": 237926579540,
+    "pair_count_scientific": "2.379266e+11",
+    "pairwise_exact_route_allowed": false,
+    "reason": "Naive pairwise materialization is hundreds of billions of pairs for this target."
+  },
+  "route_feasibility": {
+    "candidate_route_components": [
+      "author-directed mode from Goal5173",
+      "generic grid/cell-MBR construction",
+      "nearest-cell-MBR seed",
+      "native 3-D cell-MBR frontier",
+      "native inline-nearest for inline cells",
+      "grouped Numba nearest continuation for offload rows"
+    ],
+    "do_not_run_naive_pairwise_exact": true,
+    "next_gate_should_be": "bounded full-public-candidate feasibility gate with fail-closed row capacities and phase counters, not a performance ratio",
+    "requires_scalable_route": true
+  },
+  "schema": "rtdl.paper_reproduction.xhd.priority_input_scale_profile.v1",
+  "source_bridge_status": "graphics_dragon_happy_buddha_public_stanford_candidate_bridged__level_b_only",
+  "status": "graphics_dragon_happy_buddha_full_public_candidate_profiled__no_route_run",
+  "target": "graphics_dragon_happy_buddha"
+}

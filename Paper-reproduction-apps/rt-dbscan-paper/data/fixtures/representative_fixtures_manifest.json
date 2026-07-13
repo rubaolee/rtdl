@@ -1,0 +1,32 @@
+{
+  "cases": [
+    {
+      "description": "Two dense 3D components plus four distant noise points.",
+      "epsilon": 0.09,
+      "min_points": 6,
+      "name": "representative_medium_two_clusters3d",
+      "path": "data/fixtures/representative_medium_two_clusters3d.csv",
+      "point_count": 100
+    },
+    {
+      "description": "Two compact components, early border-shell points, and two noise points.",
+      "epsilon": 0.085,
+      "min_points": 8,
+      "name": "representative_border_shell3d",
+      "path": "data/fixtures/representative_border_shell3d.csv",
+      "point_count": 60
+    },
+    {
+      "description": "Three components of different sizes plus three noise points.",
+      "epsilon": 0.095,
+      "min_points": 6,
+      "name": "representative_three_components_noise3d",
+      "path": "data/fixtures/representative_three_components_noise3d.csv",
+      "point_count": 64
+    }
+  ],
+  "claim_boundary": "Synthetic same-input representative fixtures only; not exact paper datasets.",
+  "generated_by": "generate_representative_fixtures.py",
+  "paper_app": "rt-dbscan-paper",
+  "schema": "rtdl.paper_reproduction.rt_dbscan.representative_fixtures.v1"
+}

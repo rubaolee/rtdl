@@ -1,0 +1,297 @@
+{
+  "capacity": 1000000,
+  "claim_boundary": {
+    "author_performance_parity_claim_authorized": false,
+    "bundled_rayjoin_helper_used": false,
+    "prepared_replay_same_input": false,
+    "public_workspace_query_api": true,
+    "ten_x_claim_authorized": false,
+    "true_query_many_distinct_batches": true
+  },
+  "decision_inputs": {
+    "descriptor_pair_counts": [
+      15014,
+      15014,
+      15014
+    ],
+    "distinct_query_count": 3,
+    "lsi_row_counts": [
+      428322,
+      428322,
+      428322
+    ],
+    "total_body_sec": [
+      4.65746414475143,
+      1.142957603558898,
+      1.1238396801054478
+    ],
+    "writer_free_hot_sec_excluding_external_prepares": [
+      4.080662522464991,
+      0.6187326647341251,
+      0.5981143731623888
+    ]
+  },
+  "left": "Paper-reproduction-apps/rayjoin-paper/_data/top4_arcgis/top4_county.cdb",
+  "load_dataset_arrays_sec": 14.055944496765733,
+  "query_results": [
+    {
+      "batch_id": 1,
+      "changed_point_count": 8,
+      "prepare_query_points_in_base_sec": 0.049766695126891136,
+      "public_workspace_query_api_used": true,
+      "query_metadata": {
+        "backend": "optix",
+        "base_edge_count": 9982960,
+        "base_point_count": 9993104,
+        "bounds": [
+          -124.415163,
+          -71.85615,
+          25.837092,
+          45.015851
+        ],
+        "claim_boundary": {
+          "application_continuation_inside_rtdl_core": false,
+          "broad_speedup_claim_authorized": false,
+          "bundled_rayjoin_helper_used": false,
+          "public_generic_rtdl_workspace_query": true,
+          "query_specific_locator_prepare_still_paid": true,
+          "raw_optix_callback_exposed": false
+        },
+        "prepared": {
+          "base_points_in_query_point_location": true,
+          "lsi_query": true,
+          "query_points_in_base_uses_base_workspace_locator": true
+        },
+        "query_edge_count": 1705027,
+        "query_point_count": 1706639,
+        "schema": "rtdl.optix.planar_map_workspace_2d.query.v1",
+        "setup_phase_seconds": {
+          "load_pack_query_sec": 1.4718621969223022e-05,
+          "prepare_lsi_query_sec": 0.08109256438910961,
+          "prepare_point_location_base_in_query_sec": 0.4459423627704382
+        },
+        "workspace": "PLANAR_MAP_WORKSPACE_2D_QUERY"
+      },
+      "query_setup_phase_seconds": {
+        "load_pack_query_sec": 1.4718621969223022e-05,
+        "prepare_lsi_query_sec": 0.08109256438910961,
+        "prepare_point_location_base_in_query_sec": 0.4459423627704382
+      },
+      "run_pipeline_elapsed_sec": 4.097722662612796,
+      "shared_base_points_from_workspace_used": true,
+      "summary_compact": {
+        "descriptor_pair_count": 15014,
+        "downstream_floor_sec": 1.1159656662493944,
+        "key_phase_seconds": {
+          "assign_midpoint_faces_map0_columnar_sec": 0.0011658146977424622,
+          "assign_midpoint_faces_map1_columnar_sec": 0.0012356564402580261,
+          "grouped_compiled_columnar_carrier_construction_sec": 0.1750474739819765,
+          "grouped_descriptor_pair_count_consumer_sec": 0.017697706818580627,
+          "intersection_reprojection_device_columnar_sec": 0.5079084597527981,
+          "lsi_bounded_exact_pair_id_device_columns_sec": 2.964696856215596,
+          "midpoint_pip_map0_sec": 0.003801494836807251,
+          "midpoint_pip_map1_sec": 0.003681248053908348,
+          "midpoint_points_map0_columnar_sec": 0.017780272290110588,
+          "midpoint_points_map1_columnar_sec": 0.010063143447041512,
+          "sort_map0_device_columnar_sec": 0.23069177940487862,
+          "sort_map1_device_columnar_sec": 0.11758478730916977,
+          "vertex_pip_map0_in_map1_sec": 0.005539286881685257,
+          "vertex_pip_map1_in_map0_sec": 0.02376854233443737
+        },
+        "lsi_phase_sec": 2.964696856215596,
+        "lsi_row_count": 428322,
+        "writer_free_hot_sec": 4.080662522464991
+      },
+      "total_body_sec_including_query_prepares": 4.65746414475143,
+      "variant_build_sec_not_in_body": 5.044415066018701,
+      "writer_free_hot_sec_excluding_external_prepares": 4.080662522464991
+    },
+    {
+      "batch_id": 2,
+      "changed_point_count": 8,
+      "prepare_query_points_in_base_sec": 0.054017163813114166,
+      "public_workspace_query_api_used": true,
+      "query_metadata": {
+        "backend": "optix",
+        "base_edge_count": 9982960,
+        "base_point_count": 9993104,
+        "bounds": [
+          -124.415163,
+          -71.85615,
+          25.837092,
+          45.015851
+        ],
+        "claim_boundary": {
+          "application_continuation_inside_rtdl_core": false,
+          "broad_speedup_claim_authorized": false,
+          "bundled_rayjoin_helper_used": false,
+          "public_generic_rtdl_workspace_query": true,
+          "query_specific_locator_prepare_still_paid": true,
+          "raw_optix_callback_exposed": false
+        },
+        "prepared": {
+          "base_points_in_query_point_location": true,
+          "lsi_query": true,
+          "query_points_in_base_uses_base_workspace_locator": true
+        },
+        "query_edge_count": 1705027,
+        "query_point_count": 1706639,
+        "schema": "rtdl.optix.planar_map_workspace_2d.query.v1",
+        "setup_phase_seconds": {
+          "load_pack_query_sec": 1.4957040548324585e-05,
+          "prepare_lsi_query_sec": 0.05959543213248253,
+          "prepare_point_location_base_in_query_sec": 0.41061234287917614
+        },
+        "workspace": "PLANAR_MAP_WORKSPACE_2D_QUERY"
+      },
+      "query_setup_phase_seconds": {
+        "load_pack_query_sec": 1.4957040548324585e-05,
+        "prepare_lsi_query_sec": 0.05959543213248253,
+        "prepare_point_location_base_in_query_sec": 0.41061234287917614
+      },
+      "run_pipeline_elapsed_sec": 0.6331890486180782,
+      "shared_base_points_from_workspace_used": true,
+      "summary_compact": {
+        "descriptor_pair_count": 15014,
+        "downstream_floor_sec": 0.4904457274824381,
+        "key_phase_seconds": {
+          "assign_midpoint_faces_map0_columnar_sec": 0.0005303379148244858,
+          "assign_midpoint_faces_map1_columnar_sec": 0.00057251937687397,
+          "grouped_compiled_columnar_carrier_construction_sec": 0.09063631109893322,
+          "grouped_descriptor_pair_count_consumer_sec": 0.015344051644206047,
+          "intersection_reprojection_device_columnar_sec": 0.18773330934345722,
+          "lsi_bounded_exact_pair_id_device_columns_sec": 0.12828693725168705,
+          "midpoint_pip_map0_sec": 0.0038941632956266403,
+          "midpoint_pip_map1_sec": 0.003655852749943733,
+          "midpoint_points_map0_columnar_sec": 0.0083646010607481,
+          "midpoint_points_map1_columnar_sec": 0.008146403357386589,
+          "sort_map0_device_columnar_sec": 0.029309239238500595,
+          "sort_map1_device_columnar_sec": 0.11307480745017529,
+          "vertex_pip_map0_in_map1_sec": 0.005391713231801987,
+          "vertex_pip_map1_in_map0_sec": 0.023792417719960213
+        },
+        "lsi_phase_sec": 0.12828693725168705,
+        "lsi_row_count": 428322,
+        "writer_free_hot_sec": 0.6187326647341251
+      },
+      "total_body_sec_including_query_prepares": 1.142957603558898,
+      "variant_build_sec_not_in_body": 5.190229056403041,
+      "writer_free_hot_sec_excluding_external_prepares": 0.6187326647341251
+    },
+    {
+      "batch_id": 3,
+      "changed_point_count": 8,
+      "prepare_query_points_in_base_sec": 0.05357680656015873,
+      "public_workspace_query_api_used": true,
+      "query_metadata": {
+        "backend": "optix",
+        "base_edge_count": 9982960,
+        "base_point_count": 9993104,
+        "bounds": [
+          -124.415163,
+          -71.85615,
+          25.837092,
+          45.015851
+        ],
+        "claim_boundary": {
+          "application_continuation_inside_rtdl_core": false,
+          "broad_speedup_claim_authorized": false,
+          "bundled_rayjoin_helper_used": false,
+          "public_generic_rtdl_workspace_query": true,
+          "query_specific_locator_prepare_still_paid": true,
+          "raw_optix_callback_exposed": false
+        },
+        "prepared": {
+          "base_points_in_query_point_location": true,
+          "lsi_query": true,
+          "query_points_in_base_uses_base_workspace_locator": true
+        },
+        "query_edge_count": 1705027,
+        "query_point_count": 1706639,
+        "schema": "rtdl.optix.planar_map_workspace_2d.query.v1",
+        "setup_phase_seconds": {
+          "load_pack_query_sec": 1.0289251804351807e-05,
+          "prepare_lsi_query_sec": 0.06052422523498535,
+          "prepare_point_location_base_in_query_sec": 0.4116242751479149
+        },
+        "workspace": "PLANAR_MAP_WORKSPACE_2D_QUERY"
+      },
+      "query_setup_phase_seconds": {
+        "load_pack_query_sec": 1.0289251804351807e-05,
+        "prepare_lsi_query_sec": 0.06052422523498535,
+        "prepare_point_location_base_in_query_sec": 0.4116242751479149
+      },
+      "run_pipeline_elapsed_sec": 0.6096869204193354,
+      "shared_base_points_from_workspace_used": true,
+      "summary_compact": {
+        "descriptor_pair_count": 15014,
+        "downstream_floor_sec": 0.4828313235193491,
+        "key_phase_seconds": {
+          "assign_midpoint_faces_map0_columnar_sec": 0.0005313195288181305,
+          "assign_midpoint_faces_map1_columnar_sec": 0.0005336925387382507,
+          "grouped_compiled_columnar_carrier_construction_sec": 0.08639293722808361,
+          "grouped_descriptor_pair_count_consumer_sec": 0.01507490873336792,
+          "intersection_reprojection_device_columnar_sec": 0.17464755475521088,
+          "lsi_bounded_exact_pair_id_device_columns_sec": 0.1152830496430397,
+          "midpoint_pip_map0_sec": 0.00778094120323658,
+          "midpoint_pip_map1_sec": 0.005497274920344353,
+          "midpoint_points_map0_columnar_sec": 0.00813034363090992,
+          "midpoint_points_map1_columnar_sec": 0.008143210783600807,
+          "sort_map0_device_columnar_sec": 0.025587772950530052,
+          "sort_map1_device_columnar_sec": 0.12129341997206211,
+          "vertex_pip_map0_in_map1_sec": 0.005364732816815376,
+          "vertex_pip_map1_in_map0_sec": 0.02385321445763111
+        },
+        "lsi_phase_sec": 0.1152830496430397,
+        "lsi_row_count": 428322,
+        "writer_free_hot_sec": 0.5981143731623888
+      },
+      "total_body_sec_including_query_prepares": 1.1238396801054478,
+      "variant_build_sec_not_in_body": 5.071213450282812,
+      "writer_free_hot_sec_excluding_external_prepares": 0.5981143731623888
+    }
+  ],
+  "regime_under_test": "prepared_base_same_scale_domain_distinct_query_batches_public_workspace_api",
+  "right": "Paper-reproduction-apps/rayjoin-paper/_data/top4_arcgis/top4_zipcode.cdb",
+  "schema": "rtdl.goal5018.public_workspace_query_many_probe.v1",
+  "shared_base_points_prepare_sec": 0.2961289510130882,
+  "workspace_metadata": {
+    "backend": "optix",
+    "bounds": [
+      -124.415163,
+      -71.85615,
+      25.837092,
+      45.015851
+    ],
+    "claim_boundary": {
+      "application_continuation_inside_rtdl_core": false,
+      "broad_speedup_claim_authorized": false,
+      "bundled_rayjoin_helper_used": false,
+      "cross_process_gas_cache": false,
+      "public_generic_rtdl_workspace": true,
+      "raw_optix_callback_exposed": false
+    },
+    "left_edge_count": 1705027,
+    "left_point_count": 1706639,
+    "prepared": {
+      "left_in_right_point_location": true,
+      "lsi_base": true,
+      "lsi_query": true,
+      "right_in_left_point_location": true
+    },
+    "right_edge_count": 9982960,
+    "right_point_count": 9993104,
+    "schema": "rtdl.optix.planar_map_workspace_2d.v1",
+    "setup_phase_seconds": {
+      "load_pack_left_sec": 8.227303624153137e-06,
+      "load_pack_right_sec": 3.2354146242141724e-06,
+      "prepare_lsi_base_sec": 1.7367862686514854,
+      "prepare_lsi_query_sec": 0.08551774360239506,
+      "prepare_point_location_left_in_right_sec": 3.3872187100350857,
+      "prepare_point_location_right_in_left_sec": 0.4364474192261696,
+      "shared_bounds_sec": 5.1800161600112915e-06
+    },
+    "workspace": "PLANAR_MAP_WORKSPACE_2D"
+  },
+  "workspace_prepare_wall_sec": 5.646058116108179
+}

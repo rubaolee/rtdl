@@ -1,0 +1,369 @@
+{
+  "claim_boundary": {
+    "author_performance_compared": false,
+    "librts_specific_core_primitive": false,
+    "paper_hardware_used": false,
+    "paper_performance_reproduced": false,
+    "same_host_generic_k1_control_only": true
+  },
+  "decision": {
+    "all_rows_match_k1": true,
+    "best_end_to_end_speedup_vs_k1": 1.0029451297160041,
+    "best_partition_count": 4,
+    "continue_native_partitioned_traversal": false,
+    "material_win_threshold": 1.02
+  },
+  "regime": {
+    "one_discarded_warmup_per_partition_count": true,
+    "prepared_index_reused_across_samples": true,
+    "query_gas_rebuilt_inside_each_measured_sample": true,
+    "repeats": 5,
+    "same_process": true
+  },
+  "schema": "rtdl.paper_reproduction.librts.partitioned_range_probe.v1",
+  "status": "partitioned_traversal_no_material_end_to_end_win",
+  "summaries": {
+    "1": {
+      "backward_intersection_count_median": 860060.0,
+      "end_to_end_sec_median": 0.5571484300016891,
+      "end_to_end_speedup_vs_k1": 1.0,
+      "matches_k1_rows": true,
+      "max_backward_intersections_per_ray_median": 65.0,
+      "partition_count": 1,
+      "prepare_sec_median": 0.033300008999503916,
+      "query_sec_median": 0.5235616159989149,
+      "query_speedup_vs_k1": 1.0,
+      "row_count_stable": true,
+      "row_hash": "aa3c2bc707d3c62a85625b1312c817d6beec5a7ed90e5686bd42a03b4d5aa7d7",
+      "row_hash_stable": true,
+      "samples": [
+        {
+          "backward_intersection_count": 860060,
+          "end_to_end_sec": 0.5618489239968767,
+          "max_backward_intersections_per_ray": 65,
+          "partition_count": 1,
+          "prepare_sec": 0.03328851499827579,
+          "query_sec": 0.5285604089986009,
+          "row_hash": "aa3c2bc707d3c62a85625b1312c817d6beec5a7ed90e5686bd42a03b4d5aa7d7",
+          "telemetry_denominator": "backward_partition_ray_intersection_program_invocations",
+          "valid_count": 781456
+        },
+        {
+          "backward_intersection_count": 860060,
+          "end_to_end_sec": 0.5746047749998979,
+          "max_backward_intersections_per_ray": 65,
+          "partition_count": 1,
+          "prepare_sec": 0.051043159000982996,
+          "query_sec": 0.5235616159989149,
+          "row_hash": "aa3c2bc707d3c62a85625b1312c817d6beec5a7ed90e5686bd42a03b4d5aa7d7",
+          "telemetry_denominator": "backward_partition_ray_intersection_program_invocations",
+          "valid_count": 781456
+        },
+        {
+          "backward_intersection_count": 860060,
+          "end_to_end_sec": 0.5571484300016891,
+          "max_backward_intersections_per_ray": 65,
+          "partition_count": 1,
+          "prepare_sec": 0.03345926200199756,
+          "query_sec": 0.5236891679996916,
+          "row_hash": "aa3c2bc707d3c62a85625b1312c817d6beec5a7ed90e5686bd42a03b4d5aa7d7",
+          "telemetry_denominator": "backward_partition_ray_intersection_program_invocations",
+          "valid_count": 781456
+        },
+        {
+          "backward_intersection_count": 860060,
+          "end_to_end_sec": 0.5562069150000752,
+          "max_backward_intersections_per_ray": 65,
+          "partition_count": 1,
+          "prepare_sec": 0.03327470799922594,
+          "query_sec": 0.5229322070008493,
+          "row_hash": "aa3c2bc707d3c62a85625b1312c817d6beec5a7ed90e5686bd42a03b4d5aa7d7",
+          "telemetry_denominator": "backward_partition_ray_intersection_program_invocations",
+          "valid_count": 781456
+        },
+        {
+          "backward_intersection_count": 860060,
+          "end_to_end_sec": 0.5512597420020029,
+          "max_backward_intersections_per_ray": 65,
+          "partition_count": 1,
+          "prepare_sec": 0.033300008999503916,
+          "query_sec": 0.517959733002499,
+          "row_hash": "aa3c2bc707d3c62a85625b1312c817d6beec5a7ed90e5686bd42a03b4d5aa7d7",
+          "telemetry_denominator": "backward_partition_ray_intersection_program_invocations",
+          "valid_count": 781456
+        }
+      ],
+      "valid_count": 781456
+    },
+    "2": {
+      "backward_intersection_count_median": 856536.0,
+      "end_to_end_sec_median": 0.5662557860014203,
+      "end_to_end_speedup_vs_k1": 0.9839165334379323,
+      "matches_k1_rows": true,
+      "max_backward_intersections_per_ray_median": 33.0,
+      "partition_count": 2,
+      "prepare_sec_median": 0.05026532400006545,
+      "query_sec_median": 0.5175686519978626,
+      "query_speedup_vs_k1": 1.0115790706757817,
+      "row_count_stable": true,
+      "row_hash": "aa3c2bc707d3c62a85625b1312c817d6beec5a7ed90e5686bd42a03b4d5aa7d7",
+      "row_hash_stable": true,
+      "samples": [
+        {
+          "backward_intersection_count": 856536,
+          "end_to_end_sec": 0.571092485999543,
+          "max_backward_intersections_per_ray": 33,
+          "partition_count": 2,
+          "prepare_sec": 0.051078045999020105,
+          "query_sec": 0.5200144400005229,
+          "row_hash": "aa3c2bc707d3c62a85625b1312c817d6beec5a7ed90e5686bd42a03b4d5aa7d7",
+          "telemetry_denominator": "backward_partition_ray_intersection_program_invocations",
+          "valid_count": 781456
+        },
+        {
+          "backward_intersection_count": 856536,
+          "end_to_end_sec": 0.5527899830012757,
+          "max_backward_intersections_per_ray": 33,
+          "partition_count": 2,
+          "prepare_sec": 0.03353844600133016,
+          "query_sec": 0.5192515369999455,
+          "row_hash": "aa3c2bc707d3c62a85625b1312c817d6beec5a7ed90e5686bd42a03b4d5aa7d7",
+          "telemetry_denominator": "backward_partition_ray_intersection_program_invocations",
+          "valid_count": 781456
+        },
+        {
+          "backward_intersection_count": 856536,
+          "end_to_end_sec": 0.5498558949984726,
+          "max_backward_intersections_per_ray": 33,
+          "partition_count": 2,
+          "prepare_sec": 0.03319925599862472,
+          "query_sec": 0.5166566389998479,
+          "row_hash": "aa3c2bc707d3c62a85625b1312c817d6beec5a7ed90e5686bd42a03b4d5aa7d7",
+          "telemetry_denominator": "backward_partition_ray_intersection_program_invocations",
+          "valid_count": 781456
+        },
+        {
+          "backward_intersection_count": 856536,
+          "end_to_end_sec": 0.5678339759979281,
+          "max_backward_intersections_per_ray": 33,
+          "partition_count": 2,
+          "prepare_sec": 0.05026532400006545,
+          "query_sec": 0.5175686519978626,
+          "row_hash": "aa3c2bc707d3c62a85625b1312c817d6beec5a7ed90e5686bd42a03b4d5aa7d7",
+          "telemetry_denominator": "backward_partition_ray_intersection_program_invocations",
+          "valid_count": 781456
+        },
+        {
+          "backward_intersection_count": 856536,
+          "end_to_end_sec": 0.5662557860014203,
+          "max_backward_intersections_per_ray": 33,
+          "partition_count": 2,
+          "prepare_sec": 0.050877380002930295,
+          "query_sec": 0.51537840599849,
+          "row_hash": "aa3c2bc707d3c62a85625b1312c817d6beec5a7ed90e5686bd42a03b4d5aa7d7",
+          "telemetry_denominator": "backward_partition_ray_intersection_program_invocations",
+          "valid_count": 781456
+        }
+      ],
+      "valid_count": 781456
+    },
+    "4": {
+      "backward_intersection_count_median": 855540.0,
+      "end_to_end_sec_median": 0.5555123740014096,
+      "end_to_end_speedup_vs_k1": 1.0029451297160041,
+      "matches_k1_rows": true,
+      "max_backward_intersections_per_ray_median": 18.0,
+      "partition_count": 4,
+      "prepare_sec_median": 0.03536009399977047,
+      "query_sec_median": 0.5175563119992148,
+      "query_speedup_vs_k1": 1.0116031895669533,
+      "row_count_stable": true,
+      "row_hash": "aa3c2bc707d3c62a85625b1312c817d6beec5a7ed90e5686bd42a03b4d5aa7d7",
+      "row_hash_stable": true,
+      "samples": [
+        {
+          "backward_intersection_count": 855540,
+          "end_to_end_sec": 0.5555123740014096,
+          "max_backward_intersections_per_ray": 18,
+          "partition_count": 4,
+          "prepare_sec": 0.03536009399977047,
+          "query_sec": 0.5201522800016392,
+          "row_hash": "aa3c2bc707d3c62a85625b1312c817d6beec5a7ed90e5686bd42a03b4d5aa7d7",
+          "telemetry_denominator": "backward_partition_ray_intersection_program_invocations",
+          "valid_count": 781456
+        },
+        {
+          "backward_intersection_count": 855540,
+          "end_to_end_sec": 0.568092476001766,
+          "max_backward_intersections_per_ray": 18,
+          "partition_count": 4,
+          "prepare_sec": 0.05053616400255123,
+          "query_sec": 0.5175563119992148,
+          "row_hash": "aa3c2bc707d3c62a85625b1312c817d6beec5a7ed90e5686bd42a03b4d5aa7d7",
+          "telemetry_denominator": "backward_partition_ray_intersection_program_invocations",
+          "valid_count": 781456
+        },
+        {
+          "backward_intersection_count": 855540,
+          "end_to_end_sec": 0.5539432410005247,
+          "max_backward_intersections_per_ray": 18,
+          "partition_count": 4,
+          "prepare_sec": 0.03338371700010612,
+          "query_sec": 0.5205595240004186,
+          "row_hash": "aa3c2bc707d3c62a85625b1312c817d6beec5a7ed90e5686bd42a03b4d5aa7d7",
+          "telemetry_denominator": "backward_partition_ray_intersection_program_invocations",
+          "valid_count": 781456
+        },
+        {
+          "backward_intersection_count": 855540,
+          "end_to_end_sec": 0.5649932179985626,
+          "max_backward_intersections_per_ray": 18,
+          "partition_count": 4,
+          "prepare_sec": 0.05044443999940995,
+          "query_sec": 0.5145487779991527,
+          "row_hash": "aa3c2bc707d3c62a85625b1312c817d6beec5a7ed90e5686bd42a03b4d5aa7d7",
+          "telemetry_denominator": "backward_partition_ray_intersection_program_invocations",
+          "valid_count": 781456
+        },
+        {
+          "backward_intersection_count": 855540,
+          "end_to_end_sec": 0.5488305359976948,
+          "max_backward_intersections_per_ray": 18,
+          "partition_count": 4,
+          "prepare_sec": 0.03359179799736012,
+          "query_sec": 0.5152387380003347,
+          "row_hash": "aa3c2bc707d3c62a85625b1312c817d6beec5a7ed90e5686bd42a03b4d5aa7d7",
+          "telemetry_denominator": "backward_partition_ray_intersection_program_invocations",
+          "valid_count": 781456
+        }
+      ],
+      "valid_count": 781456
+    },
+    "8": {
+      "backward_intersection_count_median": 854164.0,
+      "end_to_end_sec_median": 0.5670238839993544,
+      "end_to_end_speedup_vs_k1": 0.9825837071835292,
+      "matches_k1_rows": true,
+      "max_backward_intersections_per_ray_median": 9.0,
+      "partition_count": 8,
+      "prepare_sec_median": 0.051567346999945585,
+      "query_sec_median": 0.5189749839992146,
+      "query_speedup_vs_k1": 1.0088378672211824,
+      "row_count_stable": true,
+      "row_hash": "aa3c2bc707d3c62a85625b1312c817d6beec5a7ed90e5686bd42a03b4d5aa7d7",
+      "row_hash_stable": true,
+      "samples": [
+        {
+          "backward_intersection_count": 854164,
+          "end_to_end_sec": 0.5705423309991602,
+          "max_backward_intersections_per_ray": 9,
+          "partition_count": 8,
+          "prepare_sec": 0.051567346999945585,
+          "query_sec": 0.5189749839992146,
+          "row_hash": "aa3c2bc707d3c62a85625b1312c817d6beec5a7ed90e5686bd42a03b4d5aa7d7",
+          "telemetry_denominator": "backward_partition_ray_intersection_program_invocations",
+          "valid_count": 781456
+        },
+        {
+          "backward_intersection_count": 854164,
+          "end_to_end_sec": 0.5553725240024505,
+          "max_backward_intersections_per_ray": 9,
+          "partition_count": 8,
+          "prepare_sec": 0.03368528700229945,
+          "query_sec": 0.5216872370001511,
+          "row_hash": "aa3c2bc707d3c62a85625b1312c817d6beec5a7ed90e5686bd42a03b4d5aa7d7",
+          "telemetry_denominator": "backward_partition_ray_intersection_program_invocations",
+          "valid_count": 781456
+        },
+        {
+          "backward_intersection_count": 854164,
+          "end_to_end_sec": 0.5670238839993544,
+          "max_backward_intersections_per_ray": 9,
+          "partition_count": 8,
+          "prepare_sec": 0.051690142001461936,
+          "query_sec": 0.5153337419978925,
+          "row_hash": "aa3c2bc707d3c62a85625b1312c817d6beec5a7ed90e5686bd42a03b4d5aa7d7",
+          "telemetry_denominator": "backward_partition_ray_intersection_program_invocations",
+          "valid_count": 781456
+        },
+        {
+          "backward_intersection_count": 854164,
+          "end_to_end_sec": 0.5729166540004371,
+          "max_backward_intersections_per_ray": 9,
+          "partition_count": 8,
+          "prepare_sec": 0.051445918001263635,
+          "query_sec": 0.5214707359991735,
+          "row_hash": "aa3c2bc707d3c62a85625b1312c817d6beec5a7ed90e5686bd42a03b4d5aa7d7",
+          "telemetry_denominator": "backward_partition_ray_intersection_program_invocations",
+          "valid_count": 781456
+        },
+        {
+          "backward_intersection_count": 854164,
+          "end_to_end_sec": 0.5624157050006033,
+          "max_backward_intersections_per_ray": 9,
+          "partition_count": 8,
+          "prepare_sec": 0.05271364299915149,
+          "query_sec": 0.5097020620014518,
+          "row_hash": "aa3c2bc707d3c62a85625b1312c817d6beec5a7ed90e5686bd42a03b4d5aa7d7",
+          "telemetry_denominator": "backward_partition_ray_intersection_program_invocations",
+          "valid_count": 781456
+        }
+      ],
+      "valid_count": 781456
+    }
+  },
+  "warmups": {
+    "1": {
+      "backward_intersection_count": 860060,
+      "end_to_end_sec": 0.7223539650003659,
+      "max_backward_intersections_per_ray": 65,
+      "partition_count": 1,
+      "prepare_sec": 0.037167420003243024,
+      "query_sec": 0.6851865449971228,
+      "row_hash": "aa3c2bc707d3c62a85625b1312c817d6beec5a7ed90e5686bd42a03b4d5aa7d7",
+      "telemetry_denominator": "backward_partition_ray_intersection_program_invocations",
+      "valid_count": 781456
+    },
+    "2": {
+      "backward_intersection_count": 856536,
+      "end_to_end_sec": 0.5828147219981474,
+      "max_backward_intersections_per_ray": 33,
+      "partition_count": 2,
+      "prepare_sec": 0.05184109200126841,
+      "query_sec": 0.530973629996879,
+      "row_hash": "aa3c2bc707d3c62a85625b1312c817d6beec5a7ed90e5686bd42a03b4d5aa7d7",
+      "telemetry_denominator": "backward_partition_ray_intersection_program_invocations",
+      "valid_count": 781456
+    },
+    "4": {
+      "backward_intersection_count": 855540,
+      "end_to_end_sec": 0.5563992380011769,
+      "max_backward_intersections_per_ray": 18,
+      "partition_count": 4,
+      "prepare_sec": 0.03368019399931654,
+      "query_sec": 0.5227190440018603,
+      "row_hash": "aa3c2bc707d3c62a85625b1312c817d6beec5a7ed90e5686bd42a03b4d5aa7d7",
+      "telemetry_denominator": "backward_partition_ray_intersection_program_invocations",
+      "valid_count": 781456
+    },
+    "8": {
+      "backward_intersection_count": 854164,
+      "end_to_end_sec": 0.570235398998193,
+      "max_backward_intersections_per_ray": 9,
+      "partition_count": 8,
+      "prepare_sec": 0.051464134001435013,
+      "query_sec": 0.518771264996758,
+      "row_hash": "aa3c2bc707d3c62a85625b1312c817d6beec5a7ed90e5686bd42a03b4d5aa7d7",
+      "telemetry_denominator": "backward_partition_ray_intersection_program_invocations",
+      "valid_count": 781456
+    }
+  },
+  "workload": {
+    "indexed_count": 16384,
+    "kind": "deterministic_grid_range_intersection",
+    "query_count": 16384,
+    "query_radius": 2.0,
+    "row_capacity": 1600000,
+    "side": 128
+  }
+}

@@ -1,0 +1,125 @@
+{
+  "all_cases_aligned": true,
+  "case_count": 6,
+  "cases": {
+    "USACensusBlockGroupBoundaries": {
+      "author_loading_ms": 1.0258,
+      "author_log_path": "logs/point-contains_queries_100000/rtspatial/USACensusBlockGroupBoundaries.wkt.log",
+      "author_query_ms": 0.0608,
+      "author_result_count": 148970,
+      "case_id": "USACensusBlockGroupBoundaries",
+      "checks": {
+        "exact_gate_matched": true,
+        "geometry_count_matches_log": true,
+        "query_count_matches_log": true,
+        "result_count_matches_log": true,
+        "same_input_identity_used": true
+      },
+      "geometry_count": 248954,
+      "query_count": 100000,
+      "timing_contract": "author internal Query Time; Loading Time excluded"
+    },
+    "USADetailedWaterBodies": {
+      "author_loading_ms": 1.543,
+      "author_log_path": "logs/point-contains_queries_100000/rtspatial/USADetailedWaterBodies.wkt.log",
+      "author_query_ms": 0.0784,
+      "author_result_count": 118622,
+      "case_id": "USADetailedWaterBodies",
+      "checks": {
+        "exact_gate_matched": true,
+        "geometry_count_matches_log": true,
+        "query_count_matches_log": true,
+        "result_count_matches_log": true,
+        "same_input_identity_used": true
+      },
+      "geometry_count": 463595,
+      "query_count": 100000,
+      "timing_contract": "author internal Query Time; Loading Time excluded"
+    },
+    "dtl_cnty": {
+      "author_loading_ms": 0.4224,
+      "author_log_path": "logs/point-contains_queries_100000/rtspatial/dtl_cnty.wkt.log",
+      "author_query_ms": 0.0544,
+      "author_result_count": 136475,
+      "case_id": "dtl_cnty",
+      "checks": {
+        "exact_gate_matched": true,
+        "geometry_count_matches_log": true,
+        "query_count_matches_log": true,
+        "result_count_matches_log": true,
+        "same_input_identity_used": true
+      },
+      "geometry_count": 12234,
+      "query_count": 100000,
+      "timing_contract": "author internal Query Time; Loading Time excluded"
+    },
+    "lakes.bz2": {
+      "author_loading_ms": 20.3042,
+      "author_log_path": "logs/point-contains_queries_100000/rtspatial/lakes.bz2.wkt.log",
+      "author_query_ms": 0.0596,
+      "author_result_count": 103189,
+      "case_id": "lakes.bz2",
+      "checks": {
+        "exact_gate_matched": true,
+        "geometry_count_matches_log": true,
+        "query_count_matches_log": true,
+        "result_count_matches_log": true,
+        "same_input_identity_used": true
+      },
+      "geometry_count": 8327448,
+      "query_count": 100000,
+      "timing_contract": "author internal Query Time; Loading Time excluded"
+    },
+    "parks.bz2": {
+      "author_loading_ms": 28.0632,
+      "author_log_path": "logs/point-contains_queries_100000/rtspatial/parks.bz2.wkt.log",
+      "author_query_ms": 0.058,
+      "author_result_count": 112729,
+      "case_id": "parks.bz2",
+      "checks": {
+        "exact_gate_matched": true,
+        "geometry_count_matches_log": true,
+        "query_count_matches_log": true,
+        "result_count_matches_log": true,
+        "same_input_identity_used": true
+      },
+      "geometry_count": 11544398,
+      "query_count": 100000,
+      "timing_contract": "author internal Query Time; Loading Time excluded"
+    },
+    "parks_Europe": {
+      "author_loading_ms": 5.2246,
+      "author_log_path": "logs/point-contains_queries_100000/rtspatial/parks_Europe.wkt.log",
+      "author_query_ms": 0.0596,
+      "author_result_count": 109279,
+      "case_id": "parks_Europe",
+      "checks": {
+        "exact_gate_matched": true,
+        "geometry_count_matches_log": true,
+        "query_count_matches_log": true,
+        "result_count_matches_log": true,
+        "same_input_identity_used": true
+      },
+      "geometry_count": 1856318,
+      "query_count": 100000,
+      "timing_contract": "author internal Query Time; Loading Time excluded"
+    }
+  },
+  "claim_boundary": {
+    "complete_paper_reproduction_claimed": false,
+    "embree_in_scope": false,
+    "exact_input_count_matrix_audited": true,
+    "pointwise_containment_equivalence_claimed": false,
+    "relation_level_evidence_reference": "Paper-reproduction-apps/librts-paper/results/librts_goal5467_representative_same_input_pip.json",
+    "figure6_reproduced": false,
+    "performance_ratio_authorized": false
+  },
+  "phase_boundary": {
+    "author_loading_excluded": true,
+    "author_metric": "author internal Query Time",
+    "performance_ratio_authorized": false,
+    "rtdl_route_wall_collected_but_not_denominator_aligned": true
+  },
+  "schema": "rtdl.paper_reproduction.librts.exact_figure6_point_contains_denominator.v1",
+  "status": "exact_input_figure6_point_contains_denominator_aligned__count_only_not_pointwise_relation__no_performance_claim"
+}

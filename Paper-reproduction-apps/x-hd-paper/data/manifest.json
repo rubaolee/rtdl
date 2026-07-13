@@ -1,0 +1,1161 @@
+{
+  "paper": {
+    "title": "X-HD: Fast Hausdorff Distance Computation with Ray Tracing",
+    "venue": "ACM International Conference on Supercomputing (ICS) 2026",
+    "doi": "10.1145/3797905.3800509",
+    "paper_page": "https://gengl.me/publications/ics26/",
+    "pdf": "https://rubaolee.github.io/paper_pdfs/2026-xhd.pdf"
+  },
+  "author_artifact": {
+    "repository": "https://github.com/pwrliang/X-HD.git",
+    "branch": "main",
+    "commit": "7bf41c8442d059c94f4178355c6d5a10571d9658",
+    "commit_date": "2026-06-13 16:59:42 -0400",
+    "binary": "hd_exec",
+    "main_variant": "rt",
+    "known_branches": {
+      "main": "7bf41c8442d059c94f4178355c6d5a10571d9658",
+      "paper": "8c3846866052e1e8755210021f23fac2cbe8c3d6",
+      "hybrid": "4d9046a9e55d87f35daf81dd718444029fab56ce"
+    },
+    "entrypoint_contract": "./bin/hd_exec -input1 <path> -input2 <path> -n_dims <2|3> -input_type <image|wkt|ply|off> -variant rt -execution gpu -json <summary.json>"
+  },
+  "rtdl_program": {
+    "existing_assets": [
+      "examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py",
+      "examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_v2_function.py",
+      "examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_v2_language_lab.py",
+      "examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_v2_user_benchmark.py"
+    ],
+    "public_or_existing_apis_exercised": [
+      "prepare_generic_fixed_radius_count_threshold_2d",
+      "fixed_radius threshold decision",
+      "nearest witness and grouped nearest witness study routes",
+      "partner CuPy/Numba exact witness reductions",
+      "point_rows_to_numpy_columns",
+      "directed_hausdorff_2d_numpy_columns",
+      "point_rows_to_numpy_columns_3d",
+      "directed_hausdorff_3d_numpy_columns",
+      "point_grid_cell_mbrs_numpy_columns",
+      "cell_mbr_nearest_frontier_native_3d_optix_columns",
+      "nearest_witness_from_cell_mbr_frontier_numpy_columns",
+      "seed_nearest_witness_from_nearest_cell_mbr_numpy_columns"
+    ],
+    "app_owned_assets": [
+      "author hd_exec wrapper",
+      "paper workload selection",
+      "author JSON comparator",
+      "input parser/fixture preparation",
+      "Hausdorff tolerance and witness policy",
+      "performance-regime selection"
+    ]
+  },
+  "reproduction_scope": {
+    "status": "xhd_same_input_directed_hdresult_reproduction_complete__externally_reviewed_and_approved",
+    "first_target": "bounded_same_input_author_json_gate",
+    "input_policy": "tiny same-input WKT fixture first; exact paper inputs are not pinned",
+    "output_policy": "compare author HDResult against the directed input1-to-input2 Hausdorff value, plus bounded 2D/3D RTDL public column route output with explicit tolerance; symmetric Hausdorff max is diagnostic only; phase/performance fields are separate evidence",
+    "tolerance": 1e-09
+  },
+  "performance": {
+    "status": "no paper-app performance claim",
+    "regimes_to_separate": [
+      "cold process",
+      "warm long-lived process",
+      "author ReportedTime / Running.AvgTime",
+      "author loading and preprocessing",
+      "RTDL prepare/setup",
+      "RTDL exact witness query",
+      "host comparator/output"
+    ]
+  },
+  "evidence": {
+    "source_audit": [
+      "README.md documents hd_exec CLI",
+      "src/flags.cc documents input, algorithm, execution, parameter, and JSON flags",
+      "src/main.cpp maps variant=rt to Variant::kRT",
+      "src/run_hausdorff_distance.cu writes HDResult and Running.AvgTime",
+      "expr/logs contains author JSON summaries but not the input datasets themselves"
+    ],
+    "result_artifacts": [
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/tiny2d_local_reference_summary.json",
+        "schema": "rtdl.paper_reproduction.xhd.author_json_gate.v1",
+        "status": "local_reference_only__author_hd_exec_not_run",
+        "matched": null,
+        "note": "The local summary proves the tiny WKT fixture and comparator path. It is not author evidence until hd_exec writes an author JSON on POD."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/tiny2d_author_gate_summary_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.author_json_gate.v1",
+        "status": "tiny_same_input_author_json_gate_matched_on_pod",
+        "matched": true,
+        "note": "POD author hd_exec run on the tiny WKT fixture matched the directed input1-to-input2 RTDL exact Hausdorff reference: HDResult=1.0, abs_diff=0.0, tolerance=1e-9."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/directed2d_asymmetric_author_gate_summary_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.author_json_gate.v1",
+        "status": "directed2d_asymmetric_same_input_author_json_gate_matched_on_pod",
+        "matched": true,
+        "note": "POD author hd_exec run on the directed-asymmetric 2D WKT fixture matched the directed input1-to-input2 RTDL exact Hausdorff reference: HDResult=0.5, directed_b_to_a=9.0, symmetric diagnostic=9.0, abs_diff=0.0, tolerance=1e-6. This distinguishes the author directed contract from a symmetric max."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/bounded2d_author_gate_summary_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.author_json_gate.v1",
+        "status": "bounded2d_same_input_author_json_gate_matched_on_pod",
+        "matched": true,
+        "note": "POD author hd_exec run on the 10x9 bounded WKT fixture matched the directed input1-to-input2 RTDL exact Hausdorff reference: HDResult=2.0, abs_diff=0.0, tolerance=1e-6."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/bounded3d_author_gate_summary_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.author_json_gate.v1",
+        "status": "bounded3d_same_input_author_json_gate_matched_on_pod",
+        "matched": true,
+        "note": "POD author hd_exec run on the 9x8 bounded 3D WKT fixture matched the directed input1-to-input2 RTDL exact Hausdorff reference: HDResult=2.0, abs_diff=0.0, tolerance=1e-6."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/bounded2d_rtdl_route_gate_summary.json",
+        "schema": "rtdl.paper_reproduction.xhd.rtdl_route_gate.v1",
+        "status": "bounded2d_rtdl_public_column_route_matched_author_json",
+        "matched": true,
+        "note": "Bounded2d paper app route using RTDL public 2D columnar Hausdorff APIs matched the directed input1-to-input2 reference used by author HDResult JSON: HDResult=2.0, RTDL directed route=2.0, abs_diff=0.0, tolerance=1e-6. This is not a 3D route or performance claim."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/directed2d_asymmetric_rtdl_route_gate_summary.json",
+        "schema": "rtdl.paper_reproduction.xhd.rtdl_route_gate.v1",
+        "status": "directed2d_asymmetric_rtdl_public_column_route_matched_author_json",
+        "matched": true,
+        "note": "Directed-asymmetric paper app route using RTDL public 2D columnar Hausdorff APIs matched the directed input1-to-input2 author HDResult: HDResult=0.5, RTDL directed route=0.5, symmetric diagnostic=9.0, abs_diff=0.0, tolerance=1e-6. This is the RA-1 discriminating fixture."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/bounded3d_rtdl_route_gate_summary.json",
+        "schema": "rtdl.paper_reproduction.xhd.rtdl_route_gate.v1",
+        "status": "bounded3d_rtdl_public_column_route_matched_author_json",
+        "matched": true,
+        "note": "Bounded3d paper app route using RTDL public 3D columnar Hausdorff APIs matched the directed input1-to-input2 reference used by author HDResult JSON: HDResult=2.0, RTDL directed route=2.0, abs_diff=0.0, tolerance=1e-6. This is not a performance claim or author RT-core algorithm equivalence claim."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_bounded_performance_matrix_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.bounded_performance_matrix.v1",
+        "status": "phase_disclosure_no_speedup_ratio",
+        "matched": null,
+        "note": "Bounded performance/phase matrix separates author Running.AvgTime, author process wall, and RTDL local route phases. It intentionally reports no author-vs-RTDL speedup ratio because denominators and hardware do not align."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_author_build_patch_goal5112.diff",
+        "schema": "text/git-diff",
+        "status": "author_build_compatibility_patch_for_pod_toolchain",
+        "note": "Build-only compatibility patch: OptiX headers pinned to v7.7.0 for POD driver ABI, and CCCL return-type wrappers added around three Thrust transform_reduce lambdas. No Hausdorff algorithm semantics are changed."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_paper_target_matrix_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.paper_target_matrix.v1",
+        "status": "xhd_paper_target_matrix_ready",
+        "matched": null,
+        "note": "Goal5130 target matrix for Table 1 and Figure 5-11 reproduction planning. This is planning/provenance evidence only and does not claim any paper figure or performance result."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_dataset_provenance_matrix_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.dataset_provenance_matrix.v1",
+        "status": "xhd_dataset_provenance_matrix_ready__exact_inputs_not_available__same_source_candidates_identified",
+        "matched": null,
+        "note": "Goal5131 dataset provenance matrix. Exact paper inputs are not available in current evidence; same-source candidates are identified for future Level B representative gates."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_stanford_graphics_acquisition_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.same_source_graphics_acquisition.v1",
+        "status": "xhd_stanford_graphics_same_source_acquired__gate_not_yet_run",
+        "matched": null,
+        "note": "Goal5132 acquired public Stanford Dragon and HappyBuddha archives and recorded hashes/header counts. This is Level B source acquisition only; no author or RTDL correctness gate has run on these PLY files."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/tiny3d_ply_local_reference_summary.json",
+        "schema": "rtdl.paper_reproduction.xhd.author_json_gate.v1",
+        "status": "tiny3d_ply_local_reference_only__author_hd_exec_not_run",
+        "matched": null,
+        "note": "Goal5133 local smoke proves the app-owned ASCII PLY input bridge for the author-gate reference path. It does not run author hd_exec."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/tiny3d_ply_rtdl_route_summary.json",
+        "schema": "rtdl.paper_reproduction.xhd.rtdl_route_gate.v1",
+        "status": "tiny3d_ply_rtdl_public_column_route_matched_exact_reference",
+        "matched": null,
+        "note": "Goal5133 local smoke proves the RTDL public 3D column route can consume a bounded ASCII PLY fixture and match exact reference. It does not compare to author hd_exec."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/stanford_graphics_sample256_rtdl_route_summary.json",
+        "schema": "rtdl.paper_reproduction.xhd.rtdl_route_gate.v1",
+        "status": "stanford_graphics_sample256_rtdl_route_matched_author_json_and_exact_reference",
+        "matched": true,
+        "note": "Goal5135 updates the sample256 PLY gate with explicit author-style min-bound translation preprocessing. The RTDL public 3D column route matches exact reference and author HDResult under that contract."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/stanford_graphics_sample256_author_gate_summary_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.author_json_gate.v1",
+        "status": "stanford_graphics_sample256_author_json_gate_matched_on_pod",
+        "matched": true,
+        "note": "Goal5135 POD author hd_exec run on the Stanford sample256 PLY pair matched the RTDL directed input1-to-input2 reference after explicit min-bound translation preprocessing: author HDResult=0.11612465232610703, RTDL=0.11612464969699586."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/stanford_graphics_sample1024_author_gate_summary_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.author_json_gate.v1",
+        "status": "stanford_graphics_sample1024_author_json_gate_matched_on_pod",
+        "matched": true,
+        "note": "Goal5136 extends the Stanford PLY Level B gate to sample1024: author HDResult=0.1215052381157875, RTDL directed reference=0.1215052343959716."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/stanford_graphics_sample2048_author_gate_summary_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.author_json_gate.v1",
+        "status": "stanford_graphics_sample2048_author_json_gate_matched_on_pod",
+        "matched": true,
+        "note": "Goal5136 extends the Stanford PLY Level B gate to sample2048: author HDResult=0.12136761099100113, RTDL directed reference=0.12136761603270661. RTDL exact-reference route time exposes the scaling floor."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_algorithmic_gap_matrix_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.algorithmic_gap_matrix.v1",
+        "status": "xhd_algorithmic_gap_matrix_ready__generic_api_path_identified",
+        "matched": null,
+        "note": "Goal5137 maps the author X-HD RT route to generic RTDL system gaps: grid/cell-MBR descriptors, radius-expanded traversal, nearest-state payload, pruning, heavy-cell offload, and radius iteration. No algorithmic route or performance claim is made."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5138_generic_grid_cell_api_contract_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.generic_grid_cell_api_contract.v1",
+        "status": "generic_grid_cell_candidate_api_reference_ready",
+        "matched": null,
+        "note": "Goal5138 adds app-neutral RTDL NumPy reference APIs for point-grid tight cell-MBR descriptors and radius cell-MBR candidate rows. This is a system API contract step, not a native/OptiX backend or X-HD performance claim."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5139_generic_nearest_state_frontier_contract_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.generic_nearest_state_frontier_contract.v1",
+        "status": "generic_nearest_state_frontier_reference_ready",
+        "matched": null,
+        "note": "Goal5139 adds an app-neutral RTDL NumPy reference API for splitting cell candidates by current nearest state into inline, offload, and pruned frontiers. This is a system API contract step, not a native/OptiX backend or X-HD performance claim."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5140_generic_cell_mbr_traversal_abi_contract_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.generic_cell_mbr_traversal_abi_contract.v1",
+        "status": "generic_cell_mbr_traversal_native_abi_specified_no_backend",
+        "matched": null,
+        "note": "Goal5140 specifies the app-neutral native/RT ABI row schema for generic cell-MBR nearest frontiers and adds a row-table adapter. No native/OptiX backend or X-HD performance claim is made."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5141_generic_cell_mbr_backend_feasibility_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.generic_cell_mbr_backend_feasibility.v1",
+        "status": "generic_cell_mbr_backend_feasibility_ready_no_backend_implemented",
+        "matched": null,
+        "note": "Goal5141 audits existing generic AABB/OptiX/fixed-radius/nearest-witness native assets and concludes that an OptiX backend spike is feasible but requires a new app-neutral native symbol. No backend or X-HD performance claim is made."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5142_backend_assisted_cell_mbr_frontdoor_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.backend_assisted_cell_mbr_frontdoor.v1",
+        "status": "generic_backend_assisted_2d_cell_mbr_frontdoor_ready",
+        "matched": null,
+        "note": "Goal5142 adds a generic executable 2-D backend-assisted front door that converts AABB membership rows into Goal5140 cell-MBR frontier row tables. It is not a complete native backend and makes no X-HD performance claim."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5143_optix_backend_local_probe_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.optix_backend_local_probe.v1",
+        "status": "local_optix_probe_blocked_by_missing_cuda_driver__pod_required",
+        "matched": null,
+        "note": "Goal5143 attempted the Goal5142 route with backend=\"optix\" locally and was blocked by missing CUDA driver library. This is an environment gate; OptiX correctness remains pending POD validation."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5144_pod_optix_gate_attempt_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.pod_optix_gate_attempt.v1",
+        "status": "pod_optix_gate_blocked_by_ssh_auth__cpu_gate_ready",
+        "matched": null,
+        "note": "Superseded first Goal5144 attempt. It used the wrong local SSH key and incorrectly classified the current POD as auth-blocked. See xhd_goal5144_pod_optix_gate_result_2026-07-08.json for the authenticated POD OptiX result."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5144_pod_optix_gate_result_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.pod_optix_gate_result.v1",
+        "status": "pod_optix_gate_matched",
+        "matched": true,
+        "note": "Goal5144 ran the backend-assisted 2-D cell-MBR front door on a CUDA/OptiX POD after building the current librtdl_optix.so. The OptiX gate matched the reference row table and recorded broadphase_native_symbol=rtdl_optix_collect_prepared_aabb_index_2d_point_contains_rows. This validates the generic AABB broadphase-assisted front door, not a complete native Goal5140 backend or X-HD performance route."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5145_dimension_generic_cell_mbr_frontdoor_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.dimension_generic_cell_mbr_frontdoor.v1",
+        "status": "dimension_generic_cell_mbr_frontdoor_reference_ready",
+        "matched": true,
+        "note": "Goal5145 adds a public dimension-generic NumPy reference front door that composes cell-MBR candidate rows, nearest-state frontier splitting, and the Goal5140 row-table adapter. It validates a 3-D synthetic fixture and provides an oracle for future native 3-D backends. It does not implement a native backend or X-HD performance route."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/aabb_index_3d_point_membership_gate_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.aabb_index_3d_point_membership_gate.v1",
+        "status": "aabb_index_3d_point_membership_gate_completed",
+        "matched": true,
+        "note": "Goal5146 adds and validates an app-neutral native OptiX 3-D AABB point-membership row producer: rtdl_optix_collect_prepared_aabb_index_3d_point_contains_rows. The POD gate matched a synthetic overlapping-box fixture. This is the first native 3-D AABB broadphase brick for the cell-MBR track, not a complete Goal5140 cell-MBR nearest-frontier backend or X-HD performance route."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/backend_assisted_3d_cell_mbr_gate_cpu.json",
+        "schema": "rtdl.paper_reproduction.xhd.backend_assisted_3d_cell_mbr_gate.v1",
+        "status": "backend_assisted_3d_cell_mbr_gate_completed",
+        "matched": true,
+        "note": "Goal5147 local CPU gate: the public 3-D AABB-membership-assisted cell-MBR front door matched the Goal5145 dimension-generic oracle. This validates the generic route shape without native acceleration."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/backend_assisted_3d_cell_mbr_gate_pod_optix.json",
+        "schema": "rtdl.paper_reproduction.xhd.backend_assisted_3d_cell_mbr_gate.v1",
+        "status": "backend_assisted_3d_cell_mbr_gate_completed",
+        "matched": true,
+        "note": "Goal5147 POD OptiX gate: the 3-D backend-assisted front door used the generic native symbol rtdl_optix_collect_prepared_aabb_index_3d_point_contains_rows for broadphase rows, then generic NumPy exact filtering and nearest-state frontier lowering. It matched the Goal5145 oracle. This is still not a complete native Goal5140 backend or X-HD performance route."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/native_3d_cell_mbr_frontier_gate_pod_optix.json",
+        "schema": "rtdl.paper_reproduction.xhd.native_3d_cell_mbr_frontier_gate.v1",
+        "status": "native_3d_cell_mbr_frontier_gate_completed",
+        "matched": true,
+        "note": "Goal5148 adds and validates a bounded app-neutral native OptiX 3-D cell-MBR nearest-frontier row producer: rtdl_optix_collect_cell_mbr_nearest_frontier_3d. The POD gate matched the Goal5145 dimension-generic oracle and moves exact point-to-cell-MBR filtering plus nearest-state frontier kind classification into native traversal. This is still not the full 2-D/3-D Goal5140 native ABI backend and does not authorize X-HD performance or full paper reproduction claims."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/bounded3d_cell_mbr_frontier_route_numpy_summary.json",
+        "schema": "rtdl.paper_reproduction.xhd.cell_mbr_frontier_route_gate.v1",
+        "status": "bounded3d_cell_mbr_frontier_numpy_route_matched_author_json_and_exact_reference",
+        "matched": true,
+        "note": "Goal5150 local NumPy route gate: the bounded3D X-HD app route uses generic grid-cell MBRs, generic cell-MBR frontier rows, generic nearest-witness continuation, and generic max-nearest reduction. It matched the directed input1-to-input2 author HDResult and exact reference. This is not the author fused RT algorithm, not a performance claim, and not full paper reproduction."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/bounded3d_cell_mbr_frontier_route_optix_summary_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.cell_mbr_frontier_route_gate.v1",
+        "status": "bounded3d_cell_mbr_frontier_optix_route_matched_author_json_and_exact_reference",
+        "matched": true,
+        "note": "Goal5150 POD OptiX route gate: the bounded3D X-HD app route uses the generic native symbol rtdl_optix_collect_cell_mbr_nearest_frontier_3d for cell-MBR frontier rows, then a generic nearest-witness continuation and generic max-nearest reduction. It matched the directed input1-to-input2 author HDResult and exact reference. This is not the author fused RT algorithm, not a performance claim, and not full paper reproduction."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/stanford_graphics_sample256_cell_mbr_frontier_route_numpy_summary.json",
+        "schema": "rtdl.paper_reproduction.xhd.cell_mbr_frontier_route_gate.v1",
+        "status": "stanford_graphics_sample256_cell_mbr_frontier_numpy_route_matched_author_json_and_exact_reference",
+        "matched": true,
+        "note": "Goal5151 local NumPy representative route gate: the sample256 Stanford graphics same-source fixture uses generic grid-cell MBRs, generic cell-MBR frontier rows, generic nearest-witness continuation, and generic max-nearest reduction. It matched the directed input1-to-input2 author HDResult and exact reference under explicit min-bound translation preprocessing. It still evaluates all 65,536 point pairs and is not a performance claim."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/stanford_graphics_sample256_cell_mbr_frontier_route_optix_summary_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.cell_mbr_frontier_route_gate.v1",
+        "status": "stanford_graphics_sample256_cell_mbr_frontier_optix_route_matched_author_json_and_exact_reference",
+        "matched": true,
+        "note": "Goal5151 POD OptiX representative route gate: the sample256 Stanford graphics same-source fixture uses rtdl_optix_collect_cell_mbr_nearest_frontier_3d for generic native cell-MBR frontier rows, then generic continuation/reduction. It matched the directed input1-to-input2 author HDResult and exact reference. It still evaluates all 65,536 point pairs and is not author fused RT-core equivalence, full paper reproduction, or a performance claim."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/stanford_graphics_sample256_cell_mbr_frontier_seeded_numpy_summary.json",
+        "schema": "rtdl.paper_reproduction.xhd.cell_mbr_frontier_route_gate.v1",
+        "status": "stanford_graphics_sample256_seeded_cell_mbr_frontier_numpy_route_matched_author_json_and_reduced_candidate_work",
+        "matched": true,
+        "note": "Goal5152 local NumPy representative route gate with generic nearest-cell-MBR initial state. It matched the directed input1-to-input2 author HDResult and exact reference while reducing continuation distance evaluations from 65,536 per directed pass to roughly 1,200 total seed+continuation evaluations. This is algorithmic work-reduction evidence, not a performance claim."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/stanford_graphics_sample256_cell_mbr_frontier_seeded_optix_summary_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.cell_mbr_frontier_route_gate.v1",
+        "status": "stanford_graphics_sample256_seeded_cell_mbr_frontier_optix_route_matched_author_json_and_reduced_candidate_work",
+        "matched": true,
+        "note": "Goal5152 POD OptiX representative route gate with generic nearest-cell-MBR initial state. It used rtdl_optix_collect_cell_mbr_nearest_frontier_3d, matched the directed input1-to-input2 author HDResult and exact reference, and reduced continuation distance evaluations from 65,536 per directed pass to about 1,200 total seed+continuation evaluations. It still has Python cell-MBR seed tests and does not authorize a performance claim."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/stanford_graphics_sample256_cell_mbr_frontier_seeded_vectorized_numpy_summary.json",
+        "schema": "rtdl.paper_reproduction.xhd.cell_mbr_frontier_route_gate.v1",
+        "status": "stanford_graphics_sample256_vectorized_seeded_cell_mbr_frontier_numpy_route_matched_author_json",
+        "matched": true,
+        "note": "Goal5153 local NumPy route gate after vectorizing nearest-cell-MBR seed selection. It preserves the Goal5152 work-reduction counts and correctness, and records initial_cell_mbr_selection=numpy_vectorized_min_distance_then_cell_id. This is a route improvement, not a paper-performance claim."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/stanford_graphics_sample256_cell_mbr_frontier_seeded_vectorized_optix_summary_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.cell_mbr_frontier_route_gate.v1",
+        "status": "stanford_graphics_sample256_vectorized_seeded_cell_mbr_frontier_optix_route_matched_author_json",
+        "matched": true,
+        "note": "Goal5153 POD OptiX route gate after vectorizing nearest-cell-MBR seed selection. It matched author HDResult and exact reference, used rtdl_optix_collect_cell_mbr_nearest_frontier_3d, and recorded rtdl_route_sec around 0.37s / total around 0.48s on the POD run. This is not a fair author-vs-RTDL performance matrix or parity claim."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_seeded_sample256_1024_performance_matrix_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.seeded_performance_matrix.v1",
+        "status": "xhd_seeded_sample256_1024_performance_matrix_phase_separated_no_ratio",
+        "matched": true,
+        "note": "Goal5154 same-POD representative performance matrix. It reruns author hd_exec and the seeded RTDL OptiX route for sample256 and sample1024, separates author Running.AvgTime, author process wall, RTDL route, RTDL total, load, and exact-reference phases, and deliberately reports no speedup/parity ratio because denominators are not aligned. Both cases matched author HDResult and exact reference."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_seeded_sample256_1024_production_author_only_matrix_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.seeded_performance_matrix.v1",
+        "status": "xhd_seeded_sample256_1024_production_author_only_matrix_phase_separated_no_ratio",
+        "matched": true,
+        "note": "Goal5155 same-POD production-style matrix. It reruns author hd_exec and the seeded RTDL OptiX route for sample256 and sample1024 with validation_mode=author-only, so exact-reference validation is skipped and reported as null. It includes per-direction route subphase timings for seed, native frontier rows, nearest continuation, and max-nearest reduction. No speedup/parity ratio is authorized."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_seeded_sample256_1024_production_author_only_median_profile_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.seeded_performance_matrix.v1",
+        "status": "xhd_seeded_sample256_1024_production_author_only_median_profile_no_ratio",
+        "matched": true,
+        "note": "Goal5156 same-POD production-style matrix with repeat-level subphase profile. It preserves validation_mode=author-only and no speedup/parity ratio, and records phase_timings_sec_runs plus phase_timings_sec_median for seed, native frontier rows, nearest continuation, and max-nearest reduction. This makes the next performance target selection median-based rather than last-run based."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_seeded_sample256_1024_vectorized_continuation_profile_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.seeded_performance_matrix.v1",
+        "status": "xhd_seeded_sample256_1024_vectorized_continuation_profile_no_ratio",
+        "matched": true,
+        "note": "Goal5157 same-POD production-style matrix after vectorizing the generic nearest-witness continuation over frontier rows. It preserves validation_mode=author-only, no speedup/parity ratio, and author HDResult matching. sample1024 route median falls to about 0.170s and the continuation phase is no longer the dominant route phase; seed and frontier remain the next measured targets."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_seeded_sample256_1024_vectorized_seed_profile_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.seeded_performance_matrix.v1",
+        "status": "xhd_seeded_sample256_1024_vectorized_seed_profile_no_ratio",
+        "matched": true,
+        "note": "Goal5158 same-POD production-style matrix after vectorizing the generic nearest-cell-MBR seed helper. It preserves validation_mode=author-only, no speedup/parity ratio, and author HDResult matching. sample1024 route median falls to about 0.114s; seed is no longer the largest phase, and native frontier rows become the next measured target."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_seeded_sample256_1024_row_table_only_frontier_profile_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.seeded_performance_matrix.v1",
+        "status": "xhd_seeded_sample256_1024_row_table_only_frontier_profile_no_ratio",
+        "matched": true,
+        "note": "Goal5159 same-POD production-style matrix after allowing the generic native 3-D cell-MBR frontier helper to return only the ABI row table when a streaming consumer does not need split frontier partitions. It preserves validation_mode=author-only, no speedup/parity ratio, and author HDResult matching. sample1024 route median falls modestly to about 0.108s, showing split frontier materialization was only a small part of the remaining frontier cost."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_seeded_sample256_1024_active_frontier_profile_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.seeded_performance_matrix.v1",
+        "status": "xhd_seeded_sample256_1024_active_frontier_profile_no_ratio",
+        "matched": true,
+        "note": "Goal5160 same-POD production-style matrix after adding a generic emit_pruned_rows flag to the native 3-D cell-MBR frontier ABI and using emit_pruned_rows=false for the streaming X-HD route. It preserves validation_mode=author-only, no speedup/parity ratio, and author HDResult matching. sample1024 route median falls to about 0.079s, because pruned diagnostic rows are no longer appended, copied, sorted, and scanned when the consumer ignores them."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_seeded_sample256_1024_numba_seed_profile_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.seeded_performance_matrix.v1",
+        "status": "xhd_seeded_sample256_1024_numba_seed_profile_no_ratio",
+        "matched": true,
+        "note": "Goal5161 same-POD production-style matrix after adding a generic Numba executor for the nearest-cell-MBR seed helper. It preserves validation_mode=author-only, no speedup/parity ratio, and author HDResult matching. sample1024 route median falls to about 0.022s; this is an RTDL route improvement and not a denominator-aligned author-performance claim."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_seeded_sample2048_post_numba_seed_profile_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.seeded_performance_matrix.v1",
+        "status": "xhd_seeded_sample2048_post_numba_seed_profile_no_ratio",
+        "matched": true,
+        "note": "Goal5162 same-POD production-style matrix after Goal5161, extending the route profile to the Stanford sample2048 fixture. It preserves validation_mode=author-only, no speedup/parity ratio, and author HDResult matching. sample2048 route median is about 0.059s; the measured dominant phase is now nearest continuation rather than seed or native frontier row emission."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_seeded_sample2048_numba_continuation_profile_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.seeded_performance_matrix.v1",
+        "status": "xhd_seeded_sample2048_numba_continuation_profile_no_ratio",
+        "matched": true,
+        "note": "Goal5163 same-POD production-style matrix after adding a generic Numba executor for the nearest-witness continuation over cell-MBR frontier rows. It preserves validation_mode=author-only, no speedup/parity ratio, and author HDResult matching. sample2048 route median falls to about 0.025s; this is an RTDL route improvement and not a denominator-aligned author-performance claim."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_seeded_sample256_1024_2048_post_goal5163_matrix_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.seeded_performance_matrix.v1",
+        "status": "xhd_seeded_sample256_1024_2048_post_goal5163_matrix_no_ratio",
+        "matched": true,
+        "note": "Goal5164 same-POD production-style matrix after Goal5163, running sample256, sample1024, and sample2048 through the current route. All cases matched author HDResult with validation_mode=author-only and no speedup/parity ratio. Route medians are about 0.009s, 0.025s, and 0.025s respectively."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/stanford_dragon_res4_sample4096_summary.json",
+        "schema": "rtdl.paper_reproduction.xhd.ply_sample.v1",
+        "status": "stanford_dragon_res4_sample4096_level_b_fixture_prepared",
+        "matched": null,
+        "note": "Goal5165 prepares a deterministic even-index 4096-point sample from public Stanford Dragon res4. It is Level B same-source representative evidence only, not an exact paper dataset or performance claim."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/stanford_happy_res4_sample4096_summary.json",
+        "schema": "rtdl.paper_reproduction.xhd.ply_sample.v1",
+        "status": "stanford_happy_res4_sample4096_level_b_fixture_prepared",
+        "matched": null,
+        "note": "Goal5165 prepares a deterministic even-index 4096-point sample from public Stanford HappyBuddha res4. It is Level B same-source representative evidence only, not an exact paper dataset or performance claim."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_seeded_sample4096_post_goal5163_matrix_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.seeded_performance_matrix.v1",
+        "status": "xhd_seeded_sample4096_post_goal5163_matrix_no_ratio",
+        "matched": true,
+        "note": "Goal5165 same-POD production-style matrix after Goal5163, extending the current route lock point to a 4096-point Level B Stanford graphics sample. The case matched author HDResult with validation_mode=author-only; route median is about 0.041s and total median about 0.067s. No speedup/parity ratio or full paper reproduction claim is authorized."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/stanford_dragon_res4_full_summary.json",
+        "schema": "rtdl.paper_reproduction.xhd.ply_sample.v1",
+        "status": "stanford_dragon_res4_full_level_b_fixture_prepared",
+        "matched": null,
+        "note": "Goal5166 prepares a normalized full public Stanford Dragon res4 fixture with all 5205 points. It is Level B same-source representative evidence only, not an exact paper dataset or performance claim."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/stanford_happy_res4_full_summary.json",
+        "schema": "rtdl.paper_reproduction.xhd.ply_sample.v1",
+        "status": "stanford_happy_res4_full_level_b_fixture_prepared",
+        "matched": null,
+        "note": "Goal5166 prepares a normalized full public Stanford HappyBuddha res4 fixture with all 7108 points. It is Level B same-source representative evidence only, not an exact paper dataset or performance claim."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_seeded_res4full_post_goal5163_matrix_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.seeded_performance_matrix.v1",
+        "status": "xhd_seeded_res4full_post_goal5163_matrix_no_ratio",
+        "matched": true,
+        "note": "Goal5166 same-POD production-style matrix after Goal5163, extending the current route to the full public Stanford Dragon/HappyBuddha res4 PLY fixtures: 5205 vs 7108 points. The case matched author HDResult with validation_mode=author-only; route median is about 0.059s and total median about 0.100s. No speedup/parity ratio or full paper reproduction claim is authorized."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_seeded_res4full_goal5167_reduceat_matrix_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.seeded_performance_matrix.v1",
+        "status": "xhd_seeded_res4full_goal5167_reduceat_matrix_no_ratio",
+        "matched": true,
+        "note": "Goal5167 same-POD production-style matrix after replacing generic grid cell MBR per-cell Python min/max loops with NumPy reduceat in point_grid_cell_mbrs_numpy_columns. The full public res4 case matched author HDResult with validation_mode=author-only; route median is about 0.052s and total median about 0.092s. No speedup/parity ratio or full paper reproduction claim is authorized."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_seeded_res4full_goal5168_parallel_seed_matrix_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.seeded_performance_matrix.v1",
+        "status": "xhd_seeded_res4full_goal5168_parallel_seed_matrix_no_ratio",
+        "matched": true,
+        "note": "Goal5168 same-POD production-style matrix after adding a generic Numba parallel executor for nearest-cell-MBR seeding. The full public res4 case matched author HDResult with validation_mode=author-only; route median is about 0.039s and total median about 0.079s. No speedup/parity ratio or full paper reproduction claim is authorized."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_seeded_res4full_goal5169_frontier_capacity_matrix_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.seeded_performance_matrix.v1",
+        "status": "xhd_seeded_res4full_goal5169_frontier_capacity_matrix_no_ratio",
+        "matched": true,
+        "note": "Goal5169 same-POD production-style matrix after adding inferred-capacity retry for streaming native frontier rows. The full public res4 case matched author HDResult with validation_mode=author-only; route median is about 0.036s and total median about 0.075s. No speedup/parity ratio or full paper reproduction claim is authorized."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_seeded_res4full_goal5170_parallel_frontier_continuation_matrix_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.seeded_performance_matrix.v1",
+        "status": "xhd_seeded_res4full_goal5170_parallel_frontier_continuation_matrix_no_ratio",
+        "matched": true,
+        "note": "Goal5170 same-POD production-style matrix after adding a grouped Numba parallel executor for generic cell-MBR frontier nearest continuation. The full public res4 case matched author HDResult with validation_mode=author-only; route median is about 0.034s and total median about 0.075s. No speedup/parity ratio or full paper reproduction claim is authorized."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_seeded_res4full_goal5170_serial_frontier_continuation_matrix_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.seeded_performance_matrix.v1",
+        "status": "xhd_seeded_res4full_goal5170_serial_frontier_continuation_control_no_ratio",
+        "matched": true,
+        "note": "Goal5170 same-POD control matrix using the previous serial Numba frontier nearest continuation executor. It matched author HDResult and is retained only to isolate the parallel continuation delta; it is not a speedup/parity ratio or full paper reproduction claim."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_seeded_res4full_goal5171_sorted_frontier_rows_matrix_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.seeded_performance_matrix.v1",
+        "status": "xhd_seeded_res4full_goal5171_sorted_frontier_rows_control_no_ratio",
+        "matched": true,
+        "note": "Goal5171 same-POD sorted-control matrix after adding the app-neutral native v2 frontier collector. It preserves the legacy sorted+unique row order, matches author HDResult with validation_mode=author-only, and serves only as the control for native-unsorted row-order measurement. No speedup/parity ratio or full paper reproduction claim is authorized."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_seeded_res4full_goal5171_native_unsorted_frontier_rows_matrix_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.seeded_performance_matrix.v1",
+        "status": "xhd_seeded_res4full_goal5171_native_unsorted_frontier_rows_matrix_no_ratio",
+        "matched": true,
+        "note": "Goal5171 same-POD production-style matrix using native_unsorted frontier rows for the streaming consumer. The full public res4 case matched author HDResult; route median moved from about 0.03376s sorted-control to about 0.03309s native-unsorted, while some frontier savings shifted into continuation grouping cost. This is a small RTDL route improvement, not an author-performance parity or full paper reproduction claim."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_seeded_res4full_goal5172_native_no_inline_control_matrix_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.seeded_performance_matrix.v1",
+        "status": "xhd_seeded_res4full_goal5172_native_no_inline_control_no_ratio",
+        "matched": true,
+        "note": "Goal5172 same-rebuild control matrix using native_unsorted frontier rows without native inline-nearest payload reduction. The full public res4 case matched author HDResult; route median is about 0.03279s and total median about 0.07399s. This control exists only to isolate the generic inline-nearest delta; no speedup/parity ratio or full paper reproduction claim is authorized."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_seeded_res4full_goal5172_inline_nearest_matrix_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.seeded_performance_matrix.v1",
+        "status": "xhd_seeded_res4full_goal5172_inline_nearest_matrix_no_ratio",
+        "matched": true,
+        "note": "Goal5172 same-POD production-style matrix after adding app-neutral native inline-nearest payload reduction to the generic 3-D cell-MBR frontier collector. The full public res4 case matched author HDResult; route median moved from about 0.03279s same-rebuild no-inline control to about 0.02916s, while continuation candidate evaluations collapse from about 1.15M to 7354. This is a generic RTDL route improvement, not an author-performance parity or full paper reproduction claim."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_seeded_sample256_goal5172_inline_nearest_exact_smoke_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.seeded_performance_matrix.v1",
+        "status": "xhd_seeded_sample256_goal5172_inline_nearest_exact_smoke_no_ratio",
+        "matched": true,
+        "note": "Goal5172 exact-and-author smoke matrix for sample256 using native inline-nearest payload reduction. It matched author HDResult and exact reference, with no offload continuation rows in either direction. This is a correctness smoke for the new native mode, not a paper-performance or parity claim."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_seeded_res4full_goal5173_author_directed_inline_matrix_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.seeded_performance_matrix.v1",
+        "status": "xhd_seeded_res4full_goal5173_author_directed_inline_matrix_no_ratio",
+        "matched": true,
+        "note": "Goal5173 same-POD production-style matrix using the author-directed input1-to-input2 route mode proved by Goal5126, plus Goal5172 native inline-nearest. The full public res4 case matched author HDResult; route median moved from about 0.02916s in the prior symmetric-diagnostic inline route to about 0.01536s by avoiding the extra B-to-A diagnostic direction. This is author-contract alignment for the RTDL route, not an author-performance parity or full paper reproduction claim."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_seeded_sample256_goal5173_author_directed_exact_smoke_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.seeded_performance_matrix.v1",
+        "status": "xhd_seeded_sample256_goal5173_author_directed_exact_smoke_no_ratio",
+        "matched": true,
+        "note": "Goal5173 exact-and-author smoke matrix for sample256 using the author-directed input1-to-input2 route mode. It matched author HDResult and exact directed reference while leaving directed_b_to_a null by design. This confirms directed-only production mode preserves correctness against exact reference on a bounded representative fixture."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_seeded_goal5174_author_directed_multiscale_matrix_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.seeded_performance_matrix.v1",
+        "status": "xhd_seeded_goal5174_author_directed_multiscale_matrix_no_ratio",
+        "matched": true,
+        "note": "Goal5174 same-POD multiscale matrix for the current author-directed, inline-nearest RTDL route across sample256, sample1024, sample2048, sample4096, and full public res4. All cases matched author HDResult; route medians are about 3.07ms, 5.82ms, 6.35ms, 10.63ms, and 14.92ms respectively. This is the current Level B route performance profile, not an author-performance parity ratio or full paper reproduction claim."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_author_log_workload_manifest_goal5175_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.author_log_workload_manifest.v1",
+        "status": "author_log_workload_manifest_extracted__input_files_not_present",
+        "matched": null,
+        "note": "Goal5175 extracts a structured manifest from the pinned author main-branch expr/logs JSON files: 281 parsed logs, 335 unique author input paths, and zero input files present in the author repo/current machine. It also inventories 41755 origin/paper expr/for_the_paper JSON blobs as inventory-only, not parsed workloads. This deepens dataset provenance but does not provide input bytes/hashes, exact paper dataset reproduction, figure reproduction, or a performance ratio."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_paper_branch_log_index_goal5176_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.paper_branch_log_index.v1",
+        "status": "paper_branch_log_index_extracted_via_git_objects__input_files_not_present",
+        "matched": null,
+        "note": "Goal5176 parses the author paper-branch expr/for_the_paper/logs tree directly from git objects without Windows checkout. It parses 41755 JSON blobs with zero parse errors, includes all 4535 run_all records, samples non-run_all training logs, and records 1946 unique author input paths. This is paper-branch workload provenance, not exact input bytes/hashes, exact paper dataset reproduction, figure reproduction, or a performance ratio."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_paper_target_log_mapping_goal5177_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.paper_target_log_mapping.v1",
+        "status": "xhd_paper_target_log_mapping_ready__no_figure_reproduction_claim",
+        "matched": null,
+        "note": "Goal5177 maps the Goal5130 paper figure targets to the Goal5176 paper-branch run_all log index. It identifies Figure 5 as having the strongest run_all workload-family coverage, Figures 6/7/9/10 as partial coverage with missing phase/semantics, and Figures 8/11 as not covered by run_all timing logs. It also defines priority input subsets. This is figure-target provenance only, not figure reproduction, exact paper dataset reproduction, full paper reproduction, or a performance ratio."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_priority_input_bridge_goal5178_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.priority_input_bridge.v1",
+        "status": "graphics_dragon_happy_buddha_public_stanford_candidate_bridged__level_b_only",
+        "matched": null,
+        "note": "Goal5178 bridges the Goal5177 graphics_dragon_happy_buddha priority subset to locally acquired public Stanford full-resolution Dragon/HappyBuddha PLY candidates. The public files are present, their vertex counts match the author paper-branch logs (437645 and 543652), and SHA256 hashes are recorded. This supports a strong Level B same-source candidate only; exact paper identity is not proved because author input hashes/bytes or deterministic conversion provenance are absent."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_priority_input_scale_profile_goal5179_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.priority_input_scale_profile.v1",
+        "status": "graphics_dragon_happy_buddha_full_public_candidate_profiled__no_route_run",
+        "matched": null,
+        "note": "Goal5179 profiles the full public Stanford Dragon/HappyBuddha Level B candidate from Goal5178 without running a route. It records MBRs, grid occupancy for 8^3/16^3/32^3 grids, and a naive pairwise estimate of 237,926,579,540 point pairs (at least ~3.8 TB for 16-byte rows). It explicitly disallows naive pairwise exact materialization and requires a scalable seeded/frontier/inline-nearest route before any full-candidate gate. No route, performance ratio, figure reproduction, or exact paper dataset claim is made."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_feasibility_gate_goal5180_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_feasibility_gate.v1",
+        "status": "full_public_candidate_bounded_subset_route_feasibility_checked",
+        "matched": true,
+        "note": "Goal5180 loads the full public Stanford Dragon/HappyBuddha Level B candidate, selects 16 deterministic Dragon source rows, runs the scalable RTDL route against the full 543652-point HappyBuddha target, and matches a vectorized exact subset oracle with route_abs_diff=0.0. This is a bounded subset feasibility gate only: it is not an all-source route run, not native/POD fail-closed capacity validation, not a performance ratio, not figure reproduction, and not exact/full paper reproduction."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_subset_scaling_gate_goal5181_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_candidate_bounded_subset_scaling_checked",
+        "matched": true,
+        "note": "Goal5181 extends Goal5180 into a bounded source-subset scaling matrix over the full public Stanford Dragon/HappyBuddha Level B candidate. Source limits 16, 64, and 128 all matched exact subset oracles with route_abs_diff=0.0. The largest observed frontier row count was 526006, yielding a suggested next explicit row capacity of 789009 for a future POD/OptiX gate. This is not an all-source route run, native/POD capacity validation, performance ratio, figure reproduction, exact dataset reproduction, or full paper reproduction."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_explicit_capacity_readiness_goal5182_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_candidate_explicit_capacity_readiness_checked",
+        "matched": true,
+        "note": "Goal5182 threads explicit fail-closed frontier row capacity through the X-HD full-public subset scaling runner and records a local NumPy readiness artifact using capacity 789009 from Goal5181. Source limits 16, 64, and 128 all matched exact subset oracles with route_abs_diff=0.0; each case records frontier_row_capacity_requested=789009, frontier_row_capacity=789009, row_capacity_policy=explicit, and max observed frontier rows 526006. This is local readiness and capacity plumbing evidence only; it is not a POD/OptiX native capacity validation, all-source route run, performance ratio, figure reproduction, exact dataset reproduction, or full paper reproduction."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_explicit_capacity_optix_goal5183_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_candidate_explicit_capacity_pod_optix_checked",
+        "matched": true,
+        "note": "Goal5183 runs the Goal5182 explicit-capacity bounded subset gate on a CUDA/OptiX POD using backend=optix, full public HappyBuddha target, and source limits 16/64/128 from the public Dragon source. All cases match exact subset oracles with route_abs_diff=0.0; native frontier rows use symbol rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v3, row_capacity_policy=explicit, capacity=789009, native_unsorted order, and inline_nearest=true. Max observed native frontier rows are 528 because inline-nearest consumes inline cell rows in native traversal. This is POD/OptiX bounded subset capacity validation only; it is not an all-source route run, performance ratio, figure reproduction, exact dataset reproduction, or full paper reproduction."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_larger_subset_optix_goal5184_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_candidate_larger_subset_pod_optix_checked",
+        "matched": true,
+        "note": "Goal5184 begins larger bounded POD/OptiX subset scaling for the full public Stanford Dragon/HappyBuddha Level B candidate. Source limits 256 and 512 both match exact subset oracles with route_abs_diff=0.0 using backend=optix, native symbol rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v3, explicit row capacity 789009, native_unsorted row order, and inline_nearest=true. Max observed native frontier rows are 2426. This is larger bounded subset evidence only; it is not an all-source route run, performance ratio, figure reproduction, exact dataset reproduction, or full paper reproduction."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_larger_subset1024_optix_goal5184_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_candidate_larger_subset1024_pod_optix_checked",
+        "matched": true,
+        "note": "Goal5184 extends the bounded POD/OptiX subset gate to 1024 Dragon source rows against the full public HappyBuddha target. The case matches the exact subset oracle with route_abs_diff=0.0, explicit capacity 789009, native symbol rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v3, and max native frontier rows 4516. This is bounded subset evidence only; it is not an all-source route run, performance ratio, figure reproduction, exact dataset reproduction, or full paper reproduction."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_larger_subset2048_optix_goal5184_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_candidate_larger_subset2048_pod_optix_checked",
+        "matched": true,
+        "note": "Goal5184 extends the bounded POD/OptiX subset gate to 2048 Dragon source rows against the full public HappyBuddha target. The case matches the exact subset oracle with route_abs_diff=0.0, explicit capacity 789009, native symbol rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v3, and max native frontier rows 9691. This is bounded subset evidence only; it is not an all-source route run, performance ratio, figure reproduction, exact dataset reproduction, or full paper reproduction."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_larger_subset4096_optix_goal5184_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_candidate_larger_subset4096_pod_optix_checked",
+        "matched": true,
+        "note": "Goal5184 extends the bounded POD/OptiX subset gate to 4096 Dragon source rows against the full public HappyBuddha target. The case matches the exact subset oracle with route_abs_diff=0.0, explicit capacity 789009, native symbol rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v3, max native frontier rows 19229, and about 3.2M total candidate distance evaluations. This is the largest current exact-oracle-validated subset for this full public Level B candidate, but it is still not an all-source route run, performance ratio, figure reproduction, exact dataset reproduction, or full paper reproduction."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_larger_subset8192_optix_goal5185_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_candidate_larger_subset8192_pod_optix_checked",
+        "matched": true,
+        "note": "Goal5185 extends the bounded POD/OptiX subset gate to 8192 Dragon source rows against the full public HappyBuddha target. The case matches the exact subset oracle with route_abs_diff=0.0, explicit capacity 789009, native symbol rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v3, max native frontier rows 38249, and about 6.39M total candidate distance evaluations. The exact subset oracle evaluates 4453597184 source-target pairs and takes about 62.3s, while the RTDL route wall is about 1.43s. This is now the largest current exact-oracle-validated subset for this full public Level B candidate, but it is still not an all-source route run, performance ratio, figure reproduction, exact dataset reproduction, or full paper reproduction."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_author_hd_exec_goal5186_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "author_hd_exec_json",
+        "status": "full_public_level_b_author_hd_exec_raw_json",
+        "matched": null,
+        "note": "Goal5186 raw author hd_exec JSON for the public Stanford full Dragon/HappyBuddha Level B candidate: HDResult=0.12572988867759705, counts=437645/543652, Running.AvgTime=7.823ms. This is author evidence only, not an RTDL all-source route or exact paper dataset claim."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_author_gate_summary_goal5186_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_author_gate.v1",
+        "status": "full_public_level_b_author_hd_exec_matched_paper_log_hdresult",
+        "matched": true,
+        "note": "Goal5186 compares the full public author HDResult against the paper-branch author-log HDResult for graphics_dragon_happy_buddha: abs diff approximately 1.94e-7 at tolerance 1e-6. This remains Level B same-source evidence, not exact paper bytes, full paper reproduction, or a performance ratio."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_route_only_goal5187_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_level_b_rtdl_all_source_route_only_matched_author_hdresult",
+        "matched": true,
+        "note": "Goal5187 runs the scalable RTDL route over all 437645 Dragon source points against all 543652 HappyBuddha target points, skips exact oracle validation, and matches the Goal5186 author HDResult with abs diff about 2.38e-9. This is Level B route-only author comparison evidence, not exact paper dataset identity, full paper reproduction, or a performance ratio."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_author_hd_exec_goal5188_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "author_hd_exec_json",
+        "status": "full_public_level_b_author_hd_exec_raw_json_with_timed_summary_pair",
+        "matched": null,
+        "note": "Goal5188 reruns author hd_exec on the full public Dragon/HappyBuddha Level-B candidate to pair raw author phase data with process wall timing in the summary. Author Running.AvgTime is 7.603ms. This is phase evidence only, not a performance ratio."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_author_gate_summary_goal5188_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_author_gate.v1",
+        "status": "full_public_level_b_author_gate_summary_with_process_wall",
+        "matched": true,
+        "note": "Goal5188 author gate summary records author process wall time (~1.97s), author Running.AvgTime=7.603ms, and matched HDResult. This keeps author process wall separate from author internal phase timing."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_phase_matrix_goal5188_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_phase_matrix.v1",
+        "status": "full_public_level_b_phase_boundary_matrix_ready_no_ratio",
+        "matched": true,
+        "note": "Goal5188 phase matrix puts author Running.AvgTime/process wall beside RTDL load/route/subphases for the full public Dragon/HappyBuddha Level-B candidate. It explicitly reports no author-vs-RTDL ratio because denominators differ."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_nearest_mbr_control_goal5189_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_level_b_nearest_mbr_seed_control_goal5189_review_pending",
+        "matched": true,
+        "note": "Goal5189 same-POD control reruns the full public all-source RTDL route with the previous nearest-cell-MBR seed. It matches the Goal5186 author HDResult and records route_wall about 8.31s, seed about 5.15s, frontier rows 2052249. This is a control for isolating the local-grid seed delta, not a performance ratio or full paper reproduction claim."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_local_grid_seed_goal5189_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_level_b_local_grid_seed_route_goal5189_review_pending",
+        "matched": true,
+        "note": "Goal5189 adds a generic local-grid-cell seed upper-bound strategy and runs it on the full public all-source Dragon/HappyBuddha route. It matches the Goal5186 author HDResult with abs diff about 2.38e-9 and lowers same-POD route wall from about 8.31s control to about 5.98s while increasing frontier rows to 7590188. This is route-local system evidence, not an author performance ratio or full paper reproduction claim."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_grid_branch_bound_seed_goal5190_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_level_b_grid_branch_bound_seed_route_goal5190_review_pending",
+        "matched": true,
+        "note": "Goal5190 adds a generic grid-branch-bound seed strategy and runs it on the full public all-source Dragon/HappyBuddha route. It matches the Goal5186 author HDResult with abs diff about 2.38e-9 and lowers frontier rows to 1811625, but route wall is about 7.71s because seed work grows to about 4.60s. This is useful route-local evidence, but it does not beat Goal5189 local-grid seed and should not become the default full-public route strategy without further work."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_local_grid_seed_inline512_fastpath_goal5191_final_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_level_b_local_grid_inline512_fastpath_route_goal5191_review_pending",
+        "matched": true,
+        "note": "Goal5191 increases the generic native inline-nearest threshold on the local-grid route and adds a fail-closed empty-frontier passthrough for complete native nearest state. It matches the Goal5186 author HDResult with abs diff about 2.38e-9, records frontier_rows=0, route wall about 3.65s, and nearest_continuation about 0.016s. This is route-local Level-B system evidence, not an author performance ratio, exact paper dataset reproduction, or full paper reproduction claim."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_local_grid_seed_inline512_no_telemetry_control_goal5192_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_level_b_local_grid_inline512_no_telemetry_control_goal5192_review_pending",
+        "matched": true,
+        "note": "Goal5192 no-telemetry control reruns the Goal5191 inline512 empty-frontier route after adding optional native telemetry. It matches the Goal5186 author HDResult with abs diff about 2.38e-9, records frontier_rows=0, route wall about 3.70s, and inline_stats_collected=false. This is the appropriate performance control for Goal5192, not an author performance ratio, exact paper dataset reproduction, or full paper reproduction claim."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_local_grid_seed_inline512_telemetry_goal5192_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_level_b_local_grid_inline512_native_inline_telemetry_goal5192_review_pending",
+        "matched": true,
+        "note": "Goal5192 telemetry run enables optional native inline-nearest counters on the same Level-B route. It matches the Goal5186 author HDResult, records frontier_rows=0, inline_cell_hit_count=12003138, and inline_point_evaluation_count=1242677739. Telemetry uses atomic counters and is an accounting artifact; it is not the best route timing, author performance ratio, exact paper dataset reproduction, or full paper reproduction claim."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_grid_cell_budget1_inline512_no_telemetry_goal5193_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_level_b_grid_cell_budget_seed_no_go_goal5193_review_pending",
+        "matched": true,
+        "note": "Goal5193 adds a generic bounded grid-cell seed and tests budget=1 without telemetry on the full public Level-B route. It matches the Goal5186 author HDResult but records route wall about 3.716s, slightly slower than the local-grid no-telemetry control. This is a measured no-go for default route replacement, not a performance ratio, exact paper dataset reproduction, or full paper reproduction claim."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_grid_cell_budget8_inline512_telemetry_goal5193_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_level_b_grid_cell_budget_seed_telemetry_no_go_goal5193_review_pending",
+        "matched": true,
+        "note": "Goal5193 telemetry for grid-cell-budget=8 shows the bounded seed can reduce native inline point evaluations to about 926M, but route wall grows to about 8.14s because seed work is too expensive. This is diagnostic no-go evidence, not a default-route improvement or performance ratio."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_local_grid_seed_inline448_goal5193_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_level_b_intermediate_inline_threshold_no_go_goal5193_review_pending",
+        "matched": true,
+        "note": "Goal5193 tests intermediate inline thresholds. The inline448 case matches author HDResult and leaves only 13469 frontier rows, but route wall is about 7.73s and does not beat inline512 with empty-frontier passthrough. This is threshold no-go evidence, not a performance ratio or full paper reproduction claim."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_local_grid_seed_inline512_payload_pruning_rerun2_goal5194_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_level_b_payload_current_best_pruning_goal5194_review_pending",
+        "matched": true,
+        "note": "Goal5194 changes the generic native inline-nearest any-hit path to prune later cells against the updated payload current best rather than only the initial query seed. Two warmed no-telemetry reruns match the Goal5186 author HDResult and report route walls about 3.46s and 3.45s; telemetry shows inline point evaluations drop from about 1.24B to about 0.40B. This is route-local Level-B system evidence, not an author performance ratio, exact paper dataset reproduction, or full paper reproduction claim."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_local_grid_seed_inline512_intersection_pruning_final4_goal5195_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_level_b_intersection_current_best_pruning_goal5195_review_pending",
+        "matched": true,
+        "note": "Goal5195 moves the same generic payload current-best prune earlier into the native intersection stage for inline-nearest/no-pruned-row mode, skipping optixReportIntersection for cells already excluded by the current best. The full-public Level-B route still matches the Goal5186 author HDResult and records a warm route wall about 2.55s in the final metadata-confirmation run; this is route-local generic system evidence, not an author performance ratio, exact paper dataset reproduction, or full paper reproduction claim."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_local_grid_seed_dense_lookup_final2_goal5196_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_level_b_local_grid_dense_lookup_goal5196_review_pending",
+        "matched": true,
+        "note": "Goal5196 changes the generic local-grid seed lookup from repeated binary search over original_cell_ids to a dense encoded-cell position table when grid volume is below a safe cap, with binary-search fallback for oversized grids. The full-public Level-B route still matches the Goal5186 author HDResult and records route wall about 2.26s and seed about 0.55s. This is route-local generic system evidence, not an author performance ratio, exact paper dataset reproduction, or full paper reproduction claim."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_grid_cell_budget1_dense_lookup_goal5196_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_level_b_grid_cell_budget_dense_lookup_control_goal5196_review_pending",
+        "matched": true,
+        "note": "Goal5196 retests grid-cell-budget=1 after extending dense lookup to the generic budget seed helper. The route still matches the Goal5186 author HDResult, but route wall is about 2.28s and does not beat the dense local-grid default. This is no-go/control evidence, not a default-route improvement or performance ratio."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_grid_cell_budget2_dense_lookup_goal5196_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_level_b_grid_cell_budget_dense_lookup_control_goal5196_review_pending",
+        "matched": true,
+        "note": "Goal5196 retests grid-cell-budget=2 after extending dense lookup to the generic budget seed helper. The route still matches the Goal5186 author HDResult, but route wall is about 2.31s and does not beat the dense local-grid default. This is no-go/control evidence, not a default-route improvement or performance ratio."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_grid_branch_bound_dense_lookup_goal5196_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_level_b_grid_branch_bound_dense_lookup_control_goal5196_review_pending",
+        "matched": true,
+        "note": "Goal5196 retests grid-branch-bound after extending dense lookup to the generic branch-bound seed helper. The route still matches the Goal5186 author HDResult, but route wall is about 6.04s because the seed still probes about 857M grid cells. This is no-go/control evidence, not a default-route improvement or performance ratio."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_intersection_attribute_lazy_row_distance_final3_goal5197_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_level_b_intersection_attribute_lazy_row_distance_goal5197_review_pending",
+        "matched": true,
+        "note": "Goal5197 carries cell MBR min_sq from the native intersection program to any-hit via OptiX attributes and computes row-only distance values lazily only when a row is emitted. The full-public Level-B route still matches the Goal5186 author HDResult and records a warm route wall about 2.25-2.28s across confirmation runs. This is a generic native cleanup / neutral optimization, not a strong speedup claim, author performance ratio, exact paper dataset reproduction, or full paper reproduction claim."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_current_goal5198_telemetry_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_level_b_grid_shape_32x32x32_telemetry_goal5198_review_pending",
+        "matched": true,
+        "note": "Goal5198 reruns the current 32^3 default route with native inline-nearest telemetry. The route still matches the Goal5186 author HDResult and records route wall about 2.24s, inline_cell_hit_count=3641962, and inline_point_evaluation_count=400610300. This is route-local telemetry, not an author performance ratio, exact paper dataset reproduction, or full paper reproduction claim."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_goal5198_grid_48x48x48_telemetry_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_level_b_grid_shape_48x48x48_telemetry_no_go_goal5198_review_pending",
+        "matched": true,
+        "note": "Goal5198 tests a finer 48^3 grid. The route still matches the Goal5186 author HDResult and lowers inline point evaluations to about 240M, but route wall worsens to about 3.16s because seed and inline cell-hit costs grow. This is no-go/control telemetry, not a default-route improvement or performance ratio."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_goal5198_grid_64x64x64_telemetry_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_level_b_grid_shape_64x64x64_telemetry_no_go_goal5198_review_pending",
+        "matched": true,
+        "note": "Goal5198 tests a finer 64^3 grid. The route still matches the Goal5186 author HDResult and lowers inline point evaluations to about 166M, but route wall worsens to about 6.76s because seed and inline cell-hit costs grow sharply. This is no-go/control telemetry, not a default-route improvement or performance ratio."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_goal5198_grid_128x128x128_telemetry_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_level_b_grid_shape_128x128x128_telemetry_no_go_goal5198_review_pending",
+        "matched": true,
+        "note": "Goal5198 tests a finer 128^3 grid. The route still matches the Goal5186 author HDResult and lowers inline point evaluations to about 64M, but route wall worsens to about 10.72s because seed probes and inline cell hits explode. This is no-go/control telemetry, not a default-route improvement or performance ratio."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_goal5199_trace_tmax_final2_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_level_b_trace_tmax_bound_no_go_goal5199_review_pending",
+        "matched": true,
+        "note": "Goal5199 temporarily bounded the generic OptiX cell-MBR ray tmax by radius or initial current-best distance plus epsilon. The full-public Level-B route still matched the Goal5186 author HDResult, but inline_cell_hit_count and inline_point_evaluation_count were unchanged from the Goal5198 32^3 baseline and route wall did not improve. The code change was reverted; this is no-go evidence, not a default-route improvement or performance ratio."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_goal5200_auto_local_grid_seed_control_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_level_b_local_grid_seed_auto_control_goal5200_review_pending",
+        "matched": true,
+        "note": "Goal5200 same-POD control for the current default local-grid seed executor. The route still matches the Goal5186 author HDResult; route wall is about 2.258s and initial_state_seed is about 0.563s with executor=numba_parallel requested through auto. This is control evidence for the native CUDA seed no-go comparison, not a new performance headline or author ratio."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_goal5200_native_local_grid_seed_final2_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_level_b_native_cuda_local_grid_seed_no_go_goal5200_review_pending",
+        "matched": true,
+        "note": "Goal5200 tests an explicit experimental generic native CUDA local-grid seed executor. The route still matches the Goal5186 author HDResult, but route wall worsens to about 2.436s and initial_state_seed worsens to about 0.958s versus the same-POD auto/Numba control. The default route remains auto/Numba; this is no-go/control evidence, not a performance improvement or author ratio."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_goal5201_frontier_phase_timing_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_level_b_cell_mbr_frontier_phase_timing_cold_seed_noise_goal5201_review_pending",
+        "matched": true,
+        "note": "Goal5201 collects diagnostic native phase timings for the generic 3-D cell-MBR nearest-frontier collector. This first run still matches the Goal5186 author HDResult, but its route wall is dominated by cold/JIT seed noise (initial_state_seed about 4.967s), so it is not a route headline. Its native frontier timing is consistent with the warm confirmation run."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_goal5201_frontier_phase_timing_warm2_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_level_b_cell_mbr_frontier_phase_timing_goal5201_review_pending",
+        "matched": true,
+        "note": "Goal5201 warm diagnostic run still matches the Goal5186 author HDResult. Route-level frontier_rows is about 0.920s; native frontier total is about 0.600s; native OptiX launch / inline nearest work is about 0.377s; native accel_build is only about 0.0004s. This is diagnostic evidence that prepared cell-MBR accel build is not the next target; it is not a performance improvement claim or author ratio."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_goal5202_packed_coordinate_matrix_cold_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_level_b_packed_coordinate_matrix_cold_goal5202_review_pending",
+        "matched": true,
+        "note": "Goal5202 adds a generic packed coordinate_matrix point-column convention and reuses it in the local-grid seed and native cell-MBR frontier front doors. This cold/warm-up artifact still matches the Goal5186 author HDResult and shows all seed/frontier coordinate-matrix reuse flags true. It is route-local evidence, not an author performance ratio."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_goal5202_packed_coordinate_matrix_warm2_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_level_b_packed_coordinate_matrix_warm_diagnostic_goal5202_review_pending",
+        "matched": true,
+        "note": "Goal5202 warm diagnostic run still matches the Goal5186 author HDResult. Route wall is about 2.011s with native phase timing enabled; initial_state_seed drops to about 0.238s and frontier_rows to about 0.734s compared with the Goal5201 warm diagnostic. This remains route-local evidence, not a broader performance ratio."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_goal5202_packed_coordinate_matrix_no_timing_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_level_b_packed_coordinate_matrix_route_goal5202_review_pending",
+        "matched": true,
+        "note": "Goal5202 no-timing route still matches the Goal5186 author HDResult. Route wall is about 2.027s versus the Goal5200 same-POD auto/Numba control at about 2.258s. This is a route-local generic RTDL front-door improvement from reusing packed coordinate matrices; it is not exact paper dataset reproduction, full paper reproduction, or an author-vs-RTDL performance ratio."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_goal5203_numpy_matrix_loader_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_level_b_numpy_matrix_input_loader_route_goal5203_review_pending",
+        "matched": true,
+        "note": "Goal5203 changes the app-owned PLY input front door to load directly into NumPy coordinate matrices while preserving old row helpers for bounded/reference gates. The full-public route still matches the Goal5186 author HDResult, route wall is about 1.239s, and source+target column construction falls to about 0.002s. This is route-local RTDL evidence, not exact paper dataset reproduction, full paper reproduction, or an author-vs-RTDL performance ratio."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_goal5203_numpy_matrix_loader_warm2_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_level_b_numpy_matrix_input_loader_warm_confirmation_goal5203_review_pending",
+        "matched": true,
+        "note": "Goal5203 warm confirmation still matches the Goal5186 author HDResult. Route wall is about 1.238s, load_full_inputs about 1.682s, and coordinate-matrix reuse flags remain true. This confirms the app input-front-door change and remains route-local evidence only."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_goal5204_linear_max_reduction_final2_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_level_b_linear_max_reduction_goal5204_review_pending",
+        "matched": true,
+        "note": "Goal5204 changes the generic max-nearest reducer from full-array lexsort to finite max plus tie-only lexsort with non-finite fallback. The full-public route still matches the Goal5186 author HDResult, route wall is about 1.172s, and max_nearest_reduction is about 0.00083s with max_reduction_strategy=finite_max_then_tie_lexsort. This is a route-local generic reducer improvement, not exact paper dataset reproduction, full paper reproduction, or an author-vs-RTDL performance ratio."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_goal5204_linear_max_reduction_final3_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_level_b_linear_max_reduction_confirmation_goal5204_review_pending",
+        "matched": true,
+        "note": "Goal5204 confirmation still matches the Goal5186 author HDResult. Route wall is about 1.183s, max_nearest_reduction is about 0.00066s, and max_tie_candidate_count=1. This confirms the generic reducer movement while preserving the claim boundary."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_goal5205_fast_ply_matrix_loader_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_level_b_fast_ascii_ply_matrix_loader_goal5205_review_pending",
+        "matched": true,
+        "note": "Goal5205 changes the app-owned ASCII PLY matrix loader from Python per-line split/float parsing to NumPy loadtxt with max_rows and usecols. The full-public Dragon/HappyBuddha Level-B route still matches the Goal5186 author HDResult, load_full_inputs drops to about 0.682s, total drops to about 2.066s, and route wall remains about 1.171s. This is app input-front-door evidence, not exact paper dataset reproduction, full paper reproduction, or an author-vs-RTDL performance ratio."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_goal5205_fast_ply_matrix_loader_confirm2_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_level_b_fast_ascii_ply_matrix_loader_confirmation_goal5205_review_pending",
+        "matched": true,
+        "note": "Goal5205 confirmation still matches the Goal5186 author HDResult. load_full_inputs is about 0.681s, total is about 2.058s, route wall is about 1.165s, and max_reduction_strategy remains finite_max_then_tie_lexsort. This confirms the input-loading movement while preserving the claim boundary."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_goal5206_frontier_phase_current_goal5205_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_level_b_frontier_phase_current_goal5206_review_pending",
+        "matched": true,
+        "note": "Goal5206 current single-case diagnostic still matches the Goal5186 author HDResult. It reports route_wall about 1.169s, frontier_rows about 0.740s, native frontier total about 0.600s, and OptiX launch about 0.379s. This is diagnostic phase evidence, not a new route improvement or author performance ratio."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_goal5206_frontier_phase_all_then_minus1_goal5205_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_level_b_frontier_first_use_warm_all_then_minus1_goal5206_review_pending",
+        "matched": true,
+        "note": "Goal5206 all->437644 same-process diagnostic still matches author HDResult. The first case route is about 1.170s and the second near-identical warm case route is about 0.613s, indicating large first-use runtime overhead. This is a regime diagnostic and must not replace the fresh one-shot headline."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_goal5206_frontier_phase_minus1_then_all_goal5205_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_level_b_frontier_first_use_warm_minus1_then_all_goal5206_review_pending",
+        "matched": true,
+        "note": "Goal5206 437644->all same-process diagnostic still matches author HDResult. The second all-source warm case reports route_wall about 0.611s, while the first near-identical case reports about 1.174s. This confirms warm-regime behavior but does not authorize a warm-only performance headline."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_goal5206_numba_serial_seed_one_shot_control_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_level_b_seed_executor_control_no_go_goal5206_review_pending",
+        "matched": true,
+        "note": "Goal5206 explicit numba seed-executor control still matches author HDResult but reports route_wall about 1.171s and does not beat the current auto/numba_parallel default. This is no-go/control evidence, not a route improvement."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_goal5207_explicit_warmup_all_then_measured_all_graphics_dragon_happy_buddha_2026-07-08.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+        "status": "full_public_level_b_explicit_route_warmup_protocol_goal5207_review_pending",
+        "matched": true,
+        "note": "Goal5207 adds an explicit app-owned route warmup protocol. The warmup all-source case is recorded separately and excluded from measured summary statistics; the measured all-source warm route still matches the Goal5186 author HDResult and reports route_wall about 0.626s. The same artifact also reports warmup case_total about 1.389s and total including load + warmup + measured about 2.893s. This is a regime-separated performance protocol, not a new route optimization, author performance ratio, exact paper dataset reproduction, or full paper reproduction claim."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5260_modelnet40_all400_hd_exec_batch_exact_witness_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.rtdl_hd_exec_summary_batch.v1",
+        "status": "public_modelnet40_all400_hd_exec_entrypoint_exact_witness_goal5260_review_pending",
+        "matched": true,
+        "note": "Goal5260 runs all 400 public ModelNet40 pair identities represented in the paper-branch log index through the RTDL hd_exec-compatible batch bridge. The exact-witness route matches author rerun HDResult for 400 / 400 cases with max author_abs_diff <= 1e-6 and per_source_witness_exact=true for every case. This is public-data author-rerun evidence, not exact paper byte-input identity, all-dataset reproduction, or performance parity."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5261_hd_exec_entrypoint_all400_performance_matrix_2026-07-09.json",
+        "schema": "rtdl.paper_reproduction.xhd.hd_exec_entrypoint_performance_matrix.v1",
+        "status": "public_modelnet40_all400_hd_exec_entrypoint_performance_matrix_goal5261_review_pending",
+        "matched": null,
+        "note": "Goal5261 builds a denominator-separated all-400 performance matrix for the RTDL hd_exec-compatible entrypoint. RTDL route-wall sum is 420.31s, author process-wall sum is 255.04s, and author internal Running.AvgTime sum is 2794.79ms. Ratios are allowed only with denominator labels: route/process-wall = 1.65x slower; route/author-internal-AvgTime = 150.39x slower. No speedup, performance parity, exact paper byte-input identity, or full paper reproduction is claimed."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5263_dragon_happy_hd_exec_fast_scalar_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.rtdl_hd_exec_compatible.v1",
+        "status": "graphics_dragon_happy_hd_exec_fast_scalar_goal5263_review_pending",
+        "matched": true,
+        "note": "Goal5263 runs the full-public Stanford Dragon -> HappyBuddha Level-B representative pair through the RTDL hd_exec-compatible entrypoint using the cell-mbr-fast-scalar route. It matches the author rerun HDResult within 1e-6 with abs diff about 2.38e-9, point counts 437645/543652, translate-min preprocessing, route wall about 536.22ms, and per_source_witness_exact=false. This is HDResult evidence only, not exact paper byte-input identity, full paper reproduction, author RT-core equivalence, or performance parity."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5263_dragon_happy_hd_exec_exact_witness_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.rtdl_hd_exec_compatible.v1",
+        "status": "graphics_dragon_happy_hd_exec_exact_witness_goal5263_review_pending",
+        "matched": true,
+        "note": "Goal5263 also runs the same Dragon -> HappyBuddha Level-B representative pair through the RTDL hd_exec-compatible entrypoint using the cell-mbr-exact-witness route. It matches the author rerun HDResult within 1e-6 with abs diff about 2.38e-9, point counts 437645/543652, translate-min preprocessing, route wall about 620.92ms, and per_source_witness_exact=true. This strengthens the user-entrypoint graphics evidence but still does not prove exact paper byte-input identity, full paper reproduction, author RT-core equivalence, or performance parity."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5264_dragon_asian_hd_exec_exact_witness_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.rtdl_hd_exec_compatible.v1",
+        "status": "graphics_dragon_asian_scaled_hd_exec_exact_witness_goal5264_review_pending",
+        "matched": true,
+        "note": "Goal5264 runs the Stanford Dragon -> AsianDragon scaled 1e-3 Level-B same-source candidate through the RTDL hd_exec-compatible entrypoint using the cell-mbr-exact-witness route. It matches the author rerun HDResult within 1e-6 with abs diff about 2.37e-9, point counts 437645/3609600, translate-min preprocessing, route wall about 2651.05ms, and per_source_witness_exact=true. The paper-log drift remains visible, so this is not exact paper byte-input identity, not full paper reproduction, not author RT-core equivalence, and not performance parity."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5265_thai_statuette_scaled_1e-3_candidate_summary_2026-07-09.json",
+        "schema": "rtdl.paper_reproduction.xhd.scaled_ply_candidate.v1",
+        "status": "graphics_thai_statuette_scaled_1e-3_candidate_goal5265_review_pending",
+        "matched": null,
+        "note": "Goal5265 acquires the public Stanford XYZRGB ThaiStatuette source and prepares an app-owned 1e-3 scaled PLY candidate. The scaled extents match the author paper-branch log scale and vertex_count=4999996, but this is source/candidate provenance only, not exact paper byte-input identity, not full paper reproduction, and not a performance claim."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5265_author_thai_happy_scaled_rt_gpu_pod.json",
+        "schema": "author.xhd.hd_exec.json",
+        "status": "graphics_thai_happy_scaled_author_hd_exec_goal5265_review_pending",
+        "matched": true,
+        "note": "Goal5265 runs author hd_exec on ThaiStatuette scaled 1e-3 -> HappyBuddha and obtains HDResult=0.21912431716918945, matching the paper log HDResult=0.21912434697151184 within 1e-6. This is Level-B same-source/scaled author rerun evidence only; it is not exact paper byte-input identity or a performance ratio."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5265_thai_happy_hd_exec_exact_witness_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.rtdl_hd_exec_compatible.v1",
+        "status": "graphics_thai_happy_scaled_hd_exec_exact_witness_goal5265_review_pending",
+        "matched": true,
+        "note": "Goal5265 runs ThaiStatuette scaled 1e-3 -> HappyBuddha through the RTDL hd_exec-compatible entrypoint using the cell-mbr-exact-witness route. It matches the author rerun HDResult within 1e-6 with abs diff about 6.34e-9, point counts 4999996/543652, translate-min preprocessing, route wall about 5013.23ms, and per_source_witness_exact=true. This is not exact paper byte-input identity, not full paper reproduction, not author RT-core equivalence, and not performance parity."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5266_author_thai_asian_scaled_rt_gpu_pod.json",
+        "schema": "author.xhd.hd_exec.json",
+        "status": "graphics_thai_asian_scaled_author_hd_exec_goal5266_review_pending",
+        "matched": true,
+        "note": "Goal5266 runs author hd_exec on ThaiStatuette scaled 1e-3 -> AsianDragon scaled 1e-3 and obtains HDResult=0.28763842582702637, matching the paper log HDResult=0.28763845562934875 within 1e-6. This is Level-B same-source/scaled author rerun evidence only; it is not exact paper byte-input identity or a performance ratio."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5266_thai_asian_hd_exec_exact_witness_pod.json",
+        "schema": "rtdl.paper_reproduction.xhd.rtdl_hd_exec_compatible.v1",
+        "status": "graphics_thai_asian_scaled_hd_exec_exact_witness_goal5266_review_pending",
+        "matched": true,
+        "note": "Goal5266 runs ThaiStatuette scaled 1e-3 -> AsianDragon scaled 1e-3 through the RTDL hd_exec-compatible entrypoint using the cell-mbr-exact-witness route. It matches the author rerun HDResult within 1e-6 with abs diff about 1.10e-8, point counts 4999996/3609600, translate-min preprocessing, route wall about 10770.02ms, and per_source_witness_exact=true. This is not exact paper byte-input identity, not full paper reproduction, not author RT-core equivalence, and not performance parity."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5267_full_paper_coverage_gap_matrix_2026-07-09.json",
+        "schema": "rtdl.paper_reproduction.xhd.full_paper_coverage_gap_matrix.v1",
+        "status": "full_paper_coverage_gap_matrix_goal5267_review_pending",
+        "matched": null,
+        "note": "Goal5267 maps current ModelNet40 all-400 and Stanford Graphics entrypoint evidence against X-HD full-paper Figure 5-11 requirements. It keeps every figure at not_reproduced status and selects Figure 6 pruning-effectiveness phase/counter mapping as the next substantive target. This is planning/gap evidence only, not full paper reproduction, not exact paper byte-input identity, and not a performance claim."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5268_figure6_pruning_phase_counter_mapping_2026-07-09.json",
+        "schema": "rtdl.paper_reproduction.xhd.figure6_pruning_phase_counter_mapping.v1",
+        "status": "figure6_mapping_ready__figure6_not_reproduced_goal5268_review_pending",
+        "matched": null,
+        "note": "Goal5268 maps the author Figure 6 pruning-effectiveness flags, script variants, and profiling counters for Dragon -> AsianDragon on the current Level-B same-source/scaled candidate. NoOpt, EB, and EB+Prune profiling variants match the author reference HD, but the LB=256/full-XHD profiling variant fails check=true on this candidate. This is phase/counter mapping evidence only; it is not Figure 6 reproduction, full paper reproduction, exact paper byte-input identity, author RT-core equivalence, or a performance ratio."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5269_figure6_lb256_correctness_probe_2026-07-09.json",
+        "schema": "rtdl.paper_reproduction.xhd.figure6_lb256_correctness_probe.v1",
+        "status": "lb256_failure_classified_as_level_b_candidate_provenance_gap_goal5269_review_pending",
+        "matched": null,
+        "note": "Goal5269 classifies the Figure 6 LB=256/full-XHD blocker. The author paper-branch log records an LB=256 Dragon -> AsianDragon run on exact /local/storage/shared/HDDatasets graphics paths, but those exact files are unavailable on the current POD and the current public/scaled candidate has slightly different MBRs. On the current candidate, lb=32..1152 gives the wrong HDResult, lb>=1280 is correctness-clean, and lb=2048 passes check=true. lb=2048 is not authorized as a Figure 6 substitute. Figure 6 remains not_reproduced."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5270_figure6_exact_input_availability_decision_2026-07-09.json",
+        "schema": "rtdl.paper_reproduction.xhd.figure6_exact_input_availability_decision.v1",
+        "status": "figure6_exact_inputs_unavailable_level_b_diagnostic_only_goal5270_review_pending",
+        "matched": null,
+        "note": "Goal5270 probes the current POD and confirms the author exact Figure 6 graphics inputs under /local/storage/shared/HDDatasets are unavailable, while only Level-B candidate files under /tmp/xhd_goal5234/data are present. Therefore Figure 6 remains not_reproduced; a separately named Level-B pruning diagnostic is allowed, but lb=2048 is not authorized as a Figure 6 substitute."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5271_level_b_pruning_diagnostic_2026-07-09.json",
+        "schema": "rtdl.paper_reproduction.xhd.level_b_pruning_diagnostic.v1",
+        "status": "level_b_pruning_diagnostic_ready_not_figure6_goal5271_review_pending",
+        "matched": null,
+        "note": "Goal5271 creates a separately named Level-B pruning diagnostic on the current public/scaled Dragon -> AsianDragon candidate. It includes only correctness-clean noopt, eb, and eb_prune author profile rows in the primary diagnostic, records EB/Prune reductions in AvgTime and ComparedPoints, and explicitly marks lb=256 as invalid on this candidate and lb=2048 as a candidate-only control. This is not Figure 6 reproduction, not exact paper byte-input identity, and not a performance ratio."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5272_figure11_author_memory_log_matrix_2026-07-09.json",
+        "schema": "rtdl.paper_reproduction.xhd.figure11_author_memory_log_matrix.v1",
+        "status": "figure11_author_memory_matrix_ready_rtdl_memory_instrumentation_missing_goal5272_review_pending",
+        "matched": null,
+        "note": "Goal5272 extracts the author-side Figure 11 memory matrix from draw_mem.py and logs/mem. It records NN-KD, NN-Clover, and X-HD total memory for geo and graphics workloads, plus X-HD breakdown fields BVH/Grid/MBRs B/WL/WL Heavy Peak. This is author-log matrix evidence only; Figure 11 is not reproduced until RTDL has a comparable memory accounting boundary."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5273_rtdl_memory_accounting_boundary_2026-07-09.json",
+        "schema": "rtdl.paper_reproduction.xhd.figure11_rtdl_memory_accounting_boundary.v1",
+        "status": "rtdl_memory_accounting_boundary_ready__figure11_not_reproduced",
+        "matched": null,
+        "note": "Goal5273 defines RTDL-side memory accounting for Figure 11 fields where route metadata permits estimates, explicitly marks BVH and WL Heavy Peak unavailable, and keeps Figure 11 reproduction and memory parity claims false."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5274_hd_exec_memory_accounting_attached_example_2026-07-09.json",
+        "schema": "rtdl.paper_reproduction.xhd.goal5274.memory_accounting_attachment_example.v1",
+        "status": "hd_exec_compatible_running_memory_status_attached__figure11_not_reproduced",
+        "matched": null,
+        "note": "Goal5274 integrates status-bearing RTDL memory accounting into the hd_exec-compatible Running.Repeats[0].Memory location behind --include-memory-accounting. This is not author Figure 11 Memory parity and not exact GPU allocator telemetry."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5275_tiny3d_native_memory_telemetry_pod_2026-07-09.json",
+        "schema": "rtdl.paper_reproduction.xhd.rtdl_hd_exec_compatible.v1",
+        "status": "native_cell_mbr_memory_telemetry_tiny3d_goal5275_review_pending",
+        "matched": null,
+        "note": "Goal5275 rebuilds the native OptiX backend with an optional generic cell-MBR memory telemetry symbol and runs a tiny3D hd_exec-compatible probe. The output maps measured native accel_output_bytes=896 to the status-bearing BVH field, with transient build and route buffers exposed as RTDL-only fields. This is not Figure 11 reproduction, not author memory parity, and not exact GPU allocator peak accounting."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5275_stanford_sample256_native_memory_telemetry_pod_2026-07-09.json",
+        "schema": "rtdl.paper_reproduction.xhd.rtdl_hd_exec_compatible.v1",
+        "status": "native_cell_mbr_memory_telemetry_sample256_goal5275_review_pending",
+        "matched": null,
+        "note": "Goal5275 runs the rebuilt native telemetry path on Stanford Dragon -> HappyBuddha sample256. The output maps measured native accel_output_bytes=7552 to the status-bearing BVH field and records accel_temp_build_bytes=14464 plus route device buffers excluding accel=169200. This is still not Figure 11 reproduction, not author memory parity, and not exact GPU allocator peak accounting."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5276_rtdl_bounded_memory_matrix_2026-07-09.json",
+        "schema": "rtdl.paper_reproduction.xhd.rtdl_memory_matrix.v1",
+        "status": "rtdl_bounded_memory_matrix_ready_goal5276_review_pending__figure11_not_reproduced",
+        "matched": null,
+        "note": "Goal5276 gathers the Goal5275 native memory telemetry artifacts into a status-bearing RTDL memory matrix. It has two bounded probe rows, measured BVH rows=2, WL Heavy Peak unavailable rows=2, and same_denominator_author_figure11=false. This is not Figure 11 reproduction and does not authorize author memory parity or memory ratios."
+      },
+      {
+        "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5277_memory_denominator_alignment_decision_2026-07-09.json",
+        "schema": "rtdl.paper_reproduction.xhd.memory_denominator_alignment_decision.v1",
+        "status": "figure11_denominator_alignment_not_met_goal5277_review_pending__heavy_worklist_api_required",
+        "matched": null,
+        "note": "Goal5277 audits the author source and records that author Figure 11 WL is in_queue + miss_queue while WL Heavy Peak is the peak heavy-cell offload queue. RTDL current WL is generic frontier row-table capacity and RTDL has no author-like heavy offload peak denominator, so same_denominator_author_figure11=false and Figure 11 remains not_reproduced."
+      }
+    ]
+  },
+  "boundaries": {
+    "full_paper_reproduction_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "whole_program_speedup_claimed": false,
+    "author_performance_parity_claimed": false,
+    "existing_hausdorff_xhd_benchmark_reclassified_as_paper_reproduction": false,
+    "forbidden_claims": [
+      "full X-HD paper reproduction",
+      "exact paper dataset reproduction",
+      "paper figure reproduced",
+      "whole-program speedup",
+      "author-performance parity",
+      "universal Hausdorff acceleration"
+    ]
+  }
+}

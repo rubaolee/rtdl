@@ -1,0 +1,103 @@
+{
+  "chain_keep_match": true,
+  "chain_keep_numba": [
+    0,
+    1,
+    0,
+    1,
+    1,
+    1
+  ],
+  "chain_keep_reference": [
+    0,
+    1,
+    0,
+    1,
+    1,
+    1
+  ],
+  "dedupe_mask_match": true,
+  "dedupe_mask_numba": [
+    1,
+    0,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1
+  ],
+  "dedupe_mask_reference": [
+    1,
+    0,
+    1,
+    1,
+    1,
+    0,
+    1,
+    1
+  ],
+  "midpoint_pairs_match": true,
+  "midpoint_pairs_numba": [
+    [
+      10,
+      -1,
+      -7,
+      21,
+      22,
+      0
+    ],
+    [
+      0,
+      -1,
+      0,
+      -31,
+      0,
+      33
+    ],
+    [
+      0,
+      1,
+      4,
+      6,
+      7,
+      8
+    ]
+  ],
+  "midpoint_pairs_reference": [
+    [
+      10,
+      -1,
+      -7,
+      21,
+      22,
+      0
+    ],
+    [
+      0,
+      -1,
+      0,
+      -31,
+      0,
+      33
+    ],
+    [
+      0,
+      1,
+      4,
+      6,
+      7,
+      8
+    ]
+  ],
+  "numba_available": true,
+  "schema": "rtdl.goal4886.numba_overlay_kernel_synthetic_parity.v1",
+  "timings_sec": {
+    "chain_keep_numba_or_fallback": 0.3245042413473129,
+    "chain_keep_reference": 1.7568469047546387e-05,
+    "dedupe_numba_or_fallback": 0.1470208317041397,
+    "dedupe_reference": 1.662224531173706e-05,
+    "midpoint_numba_or_fallback": 3.5245451405644417,
+    "midpoint_reference": 5.3748488426208496e-05
+  }
+}

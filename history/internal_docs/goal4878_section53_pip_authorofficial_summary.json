@@ -1,0 +1,68 @@
+{
+  "schema": "rtdl.goal4878.section53_pip.authorofficial_reproduction.v1",
+  "date": "2026-07-02",
+  "authorofficial": {
+    "definition": "AuthorOfficial = Author+RTDLContractPatch",
+    "author_binary_for_section53": "/workspace/RayJoin_goal4834_patched_author/release/bin/query_exec",
+    "diagnostic_line": "AUTHORPATCH_PIP_DIAG",
+    "metric": "closest_eids != DONTKNOW and FNV64 over closest_eids"
+  },
+  "rtdl": {
+    "worktree": "/workspace/rtdl_goal4859_exec",
+    "public_api": "prepare_planar_map_point_location_2d_optix",
+    "raw_metric": "segment_id != DONTKNOW and FNV64 over segment_id - 1",
+    "bundled_rayjoin_overlay_imported": false,
+    "numba_on_correctness_critical_path": false
+  },
+  "rows": [
+    {
+      "pair": "County x Zipcode",
+      "query_points": 47862092,
+      "authorofficial_positive_count": 47327744,
+      "rtdl_segment_found_count": 47327744,
+      "count_match": true,
+      "authorofficial_closest_eids_fnv64": 17585803063680255704,
+      "rtdl_segment_hash_minus1_fnv64": 17585803063680255704,
+      "hash_match": true,
+      "classification": "exact_per_point_closest_edge_match",
+      "author_artifact": "history/internal_docs/goal4878_section53_authorofficial/county_zipcode_authorofficial_query_exec.stderr",
+      "rtdl_artifact": "history/internal_docs/goal4878_section53_authorofficial/county_zipcode_authorofficial_raw.json"
+    },
+    {
+      "pair": "Block x Water",
+      "query_points": 44863618,
+      "authorofficial_positive_count": 44841020,
+      "rtdl_segment_found_count": 44841020,
+      "count_match": true,
+      "authorofficial_closest_eids_fnv64": 13878963590670293968,
+      "rtdl_segment_hash_minus1_fnv64": 13878963590670293968,
+      "hash_match": true,
+      "classification": "exact_per_point_closest_edge_match",
+      "author_artifact": "history/internal_docs/goal4878_section53_authorofficial/block_water_authorofficial_query_exec.stderr",
+      "rtdl_artifact": "history/internal_docs/goal4878_section53_authorofficial/block_water_authorofficial_raw.json"
+    },
+    {
+      "pair": "Australia Lakes x Parks representative",
+      "query_points": 992505,
+      "authorofficial_positive_count": 958981,
+      "rtdl_segment_found_count": 958981,
+      "count_match": true,
+      "authorofficial_closest_eids_fnv64": 13434159047986799888,
+      "rtdl_segment_hash_minus1_fnv64": 8149910373246904473,
+      "hash_match": false,
+      "classification": "count_consistent_only",
+      "author_artifact": "history/internal_docs/goal4878_section53_authorofficial/australia_lakes_parks_authorofficial_query_exec.stderr",
+      "rtdl_artifact": "history/internal_docs/goal4878_section53_authorofficial/australia_lakes_parks_authorofficial_raw.json"
+    }
+  ],
+  "overall_classification": "two_serious_us_exact_one_representative_count_only",
+  "claim_boundary": {
+    "section53_pip_only": true,
+    "section57_overlay_claim": false,
+    "all_eight_exact_paper_pair_claim": false,
+    "performance_claim": false,
+    "embree_claim": false,
+    "numba_claim": false
+  },
+  "exit_label": "completed_section53_authorofficial_two_serious_exact_one_representative_count_only"
+}

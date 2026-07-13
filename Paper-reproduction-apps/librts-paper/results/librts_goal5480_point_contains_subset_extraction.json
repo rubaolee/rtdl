@@ -1,0 +1,42 @@
+{
+  "claim_boundary": {
+    "archive_extracted": false,
+    "archive_subset_extracted": true,
+    "archive_verified": true,
+    "embree_in_scope": false,
+    "exact_input_files_identified": true,
+    "inventory_completed": true,
+    "paper_figure_reproduced": false,
+    "performance_ratio_authorized": false
+  },
+  "extraction": {
+    "atomic_directory_promotion": true,
+    "final_path": "/workspace/librts-targets/point-contains-dtl-cnty",
+    "selected_member_count": 2,
+    "selected_members": [
+      {
+        "relative_path": "PPoPPAE/datasets/polygons/dtl_cnty.wkt",
+        "sha256": "9177fdff45f24488f22157a2a1428a7cdb9d5a66a7287d4013ead52de1c7973f",
+        "size_bytes": 363987023
+      },
+      {
+        "relative_path": "PPoPPAE/datasets/queries/point-contains_queries_100000/dtl_cnty.wkt",
+        "sha256": "95241f4e3f03c6dcea31b80e785a9729d4a4aaefeb82302e761b59d9c4fe39d3",
+        "size_bytes": 3976199
+      }
+    ]
+  },
+  "inventory_reference": {
+    "member_count": 1694,
+    "safe": true,
+    "unpacked_file_bytes": 88229246574
+  },
+  "schema": "rtdl.paper_reproduction.librts.safe_subset_extraction.v1",
+  "status": "exact_ae_archive_selected_members_safely_extracted",
+  "verification": {
+    "md5": "89e589f086038f1cd3af9e3ed67da8c8",
+    "path": "/workspace/librts-data/PPoPPAE-v2.tar.gz",
+    "size_bytes": 23062425365,
+    "verified": true
+  }
+}

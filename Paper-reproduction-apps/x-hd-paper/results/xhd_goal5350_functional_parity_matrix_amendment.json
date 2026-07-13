@@ -1,0 +1,92 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5350.functional_parity_matrix_amendment.v1",
+  "goal": "Goal5350",
+  "date": "2026-07-09",
+  "status": "implemented_review_pending",
+  "purpose": "Apply the Goal5348 witness audit and Goal5349 variant value-surface evidence as an amendment to the Goal5347 functional feature parity matrix without claiming full parity.",
+  "amends": {
+    "base_matrix": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5347_functional_feature_parity_matrix.json",
+    "witness_audit": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5348_witness_parity_entrypoint_route_audit.json",
+    "variant_value_surface": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5349_hd_exec_variant_value_surface.json"
+  },
+  "amended_interpretation": {
+    "full_functional_parity_ready": false,
+    "highest_current_reproduction_level": "Level-B same-source representative and bounded same-input values",
+    "status_summary": "Stronger than Goal5347 on hd_exec exact-witness entrypoint and variant value-surface compatibility, but still far from full paper reproduction or author algorithm/performance parity."
+  },
+  "amended_feature_status": [
+    {
+      "feature": "hd_exec-compatible CLI and JSON output",
+      "old_goal5347_status": "partial",
+      "amended_status": "partial_but_variant_value_surface_improved",
+      "covered_now": [
+        "key author-style flags remain accepted",
+        "variant names eb/nn/itk/clover/rt are accepted for directed HDResult value output",
+        "HDResult and Running JSON shape are emitted by the app-owned RTDL runner"
+      ],
+      "remaining_gap": [
+        "exact author option surface is not claimed complete",
+        "non-rt variant-specific algorithms are not reproduced",
+        "non-rt variant-specific timing denominators and performance behavior are not reproduced"
+      ],
+      "evidence": [
+        "Goal5349",
+        "Paper-reproduction-apps/x-hd-paper/scripts/run_xhd_rtdl_hd_exec.py"
+      ]
+    },
+    {
+      "feature": "Exact per-source nearest witness output",
+      "old_goal5347_status": "blocking_gap_for_full_witness_equivalence",
+      "amended_status": "covered_for_hd_exec_exact_witness_entrypoint_on_reviewed_level_b_artifacts__not_covered_for_fast_scalar",
+      "covered_now": [
+        "auto + n_dims=3 + execution=gpu defaults to cell-mbr-exact-witness",
+        "ModelNet40 all-400 matched author rerun with per_source_witness_exact=true for all cases",
+        "four Stanford representative hd_exec artifacts have per_source_witness_exact=true"
+      ],
+      "remaining_gap": [
+        "fast-scalar / global-bound early-break route is exact scalar value only and may output approximate per-source witnesses",
+        "author RT-core algorithm identity is not claimed",
+        "exact paper input identity is not proved"
+      ],
+      "evidence": [
+        "Goal5348",
+        "Goal5260",
+        "Goals5263-5266",
+        "Goal5212 fast-scalar route"
+      ]
+    }
+  ],
+  "remaining_major_blockers": [
+    "exact paper input artifacts/provenance",
+    "full Figure 5 workload matrix coverage across BraTS, geospatial, graphics, and ModelNet40-equivalent paper-log workloads",
+    "author variant-specific algorithm and performance semantics for eb/nn/itk/clover baselines",
+    "author-equivalent estimator/pruning/EB/Prune behavior beyond Level-B diagnostics",
+    "load-balance / heavy-cell offload behavior and Figure 7 denominator alignment",
+    "adaptive grid auto-sizing semantics and Figure 9 denominator alignment",
+    "Figure 5-11 denominator-aligned performance and memory matrices"
+  ],
+  "claim_boundary": {
+    "full_xhd_paper_reproduction_claimed": false,
+    "full_functional_parity_claimed": false,
+    "exact_paper_dataset_identity_claimed": false,
+    "author_rt_core_algorithm_equivalence_claimed": false,
+    "author_variant_algorithm_equivalence_claimed": false,
+    "performance_ratio_claimed": false,
+    "figure5_11_reproduction_claimed": false
+  },
+  "recommended_next_functional_targets": [
+    {
+      "target": "author variant algorithm/performance surface",
+      "reason": "Goal5349 accepts variant names for HDResult values only; full Figure 5 baseline reproduction needs variant-specific semantics or an explicit out-of-scope decision."
+    },
+    {
+      "target": "author-equivalent pruning / EB semantics",
+      "reason": "Goal5271 is a Level-B diagnostic only and Figure 6 remains unreproduced."
+    },
+    {
+      "target": "load-balance / heavy-cell offload behavior",
+      "reason": "Figure 7 remains a functional/performance blocker and current work is only shape/telemetry."
+    }
+  ],
+  "exit_label": "functional_parity_matrix_amended_after_witness_and_variant_audits__full_parity_still_false"
+}

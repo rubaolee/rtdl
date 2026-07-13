@@ -1,0 +1,58 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.generic_cell_mbr_traversal_abi_contract.v1",
+  "goal": "Goal5140",
+  "status": "generic_cell_mbr_traversal_native_abi_specified_no_backend",
+  "scope": "generic RTDL native/RT ABI contract",
+  "implemented_symbols": [
+    "cell_mbr_traversal_native_abi_contract",
+    "validate_cell_mbr_traversal_native_abi_contract",
+    "plan_cell_mbr_traversal_lowering",
+    "cell_mbr_frontiers_to_row_table_numpy_columns"
+  ],
+  "contract": {
+    "native_abi_contract": "generic_cell_mbr_nearest_frontier_native_abi_v1",
+    "python_reference_contract": "generic_nearest_state_cell_frontier",
+    "row_table_reference_contract": "generic_cell_mbr_nearest_frontier_row_table",
+    "status": "specified_native_abi_no_backend_implementation",
+    "executable": false,
+    "app_generic": true,
+    "frontier_kind_codes": {
+      "inline": 1,
+      "offload": 2,
+      "pruned": 3
+    },
+    "output_row_schema": [
+      "frontier_kind_code",
+      "query_row_id",
+      "query_point_id",
+      "cell_id",
+      "point_begin_offset",
+      "point_count",
+      "min_distance",
+      "max_distance"
+    ],
+    "overflow_policy": "fail_closed_no_partial_rows"
+  },
+  "evidence": {
+    "tests": [
+      "tests.goal5140_generic_cell_mbr_traversal_abi_test",
+      "tests.goal5139_generic_nearest_state_frontier_api_test",
+      "tests.goal5138_generic_grid_cell_candidate_api_test"
+    ],
+    "test_result": "Ran 11 tests OK",
+    "public_exports": [
+      "rtdsl.cell_mbr_traversal_native_abi_contract",
+      "rtdsl.validate_cell_mbr_traversal_native_abi_contract",
+      "rtdsl.plan_cell_mbr_traversal_lowering",
+      "rtdsl.cell_mbr_frontiers_to_row_table_numpy_columns"
+    ]
+  },
+  "claim_boundary": {
+    "native_or_optix_backend_implemented": false,
+    "payload_shader_implemented": false,
+    "performance_claim_authorized": false,
+    "app_specific_core_primitive_added": false,
+    "app_semantics": "none"
+  },
+  "recommended_next_goal": "Goal5141 generic cell-MBR traversal backend feasibility spike"
+}

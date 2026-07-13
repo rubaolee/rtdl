@@ -1,0 +1,270 @@
+{
+  "claim_boundary": {
+    "author_algorithm_parity_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "full_functional_parity_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false
+  },
+  "date": "2026-07-09",
+  "exit_label": "functional_feature_parity_matrix_ready__full_parity_not_yet_claimed",
+  "feature_groups": [
+    {
+      "author_feature": "hd_exec-compatible CLI and JSON output",
+      "blocking_for_same_functionality": true,
+      "evidence": [
+        "Paper-reproduction-apps/x-hd-paper/scripts/run_xhd_rtdl_hd_exec.py",
+        "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5267_full_paper_coverage_gap_matrix_2026-07-09.json"
+      ],
+      "gap": "RTDL entrypoint maps key author-style flags and JSON HDResult/Running fields, but the exact author option surface is not claimed complete.",
+      "rtdl_status": "implemented_partial_author_compatible_entrypoint",
+      "same_functionality_status": "partial"
+    },
+    {
+      "author_feature": "Directed Hausdorff input1-to-input2 semantics",
+      "blocking_for_same_functionality": true,
+      "evidence": [
+        "Goal5126 directed asymmetric fixture",
+        "review_goals5111_5126_xhd_bounded_completion_verified_2026-07-08.md"
+      ],
+      "gap": "No current gap for the directed scalar definition.",
+      "rtdl_status": "implemented_and_reviewed",
+      "same_functionality_status": "covered_for_directed_scalar"
+    },
+    {
+      "author_feature": "Bounded same-input HDResult value reproduction",
+      "blocking_for_same_functionality": true,
+      "evidence": [
+        "Goals5111-5126",
+        "review_goals5111_5126_xhd_bounded_completion_verified_2026-07-08.md"
+      ],
+      "gap": "Only bounded fixtures, not exact paper datasets.",
+      "rtdl_status": "implemented_and_reviewed",
+      "same_functionality_status": "covered_for_bounded_values"
+    },
+    {
+      "author_feature": "Generic nearest/witness/max-nearest route decomposition",
+      "blocking_for_same_functionality": false,
+      "evidence": [
+        "Goals5127-5128",
+        "review_goals5127_5128_xhd_system_extraction_verified_2026-07-08.md"
+      ],
+      "gap": "System extraction complete for generic exact reference pieces; native/performance parity is separate.",
+      "rtdl_status": "implemented_and_reviewed_as_generic_system_api",
+      "same_functionality_status": "covered_as_system_substrate"
+    },
+    {
+      "author_feature": "2-D and 3-D point-set HD value routes",
+      "blocking_for_same_functionality": true,
+      "evidence": [
+        "Goals5115/5118 bounded RTDL routes",
+        "run_xhd_rtdl_hd_exec.py route labels public-columnar/cell-mbr-*"
+      ],
+      "gap": "2-D/3-D value routes exist, but image/NIfTI conversion and all author input types are not fully equivalent.",
+      "rtdl_status": "implemented_for_point_matrix_and_selected_file_frontdoors",
+      "same_functionality_status": "partial"
+    },
+    {
+      "author_feature": "Author paper input loading and preprocessing",
+      "blocking_for_same_functionality": true,
+      "evidence": [
+        "Goal5267 dataset_target_status",
+        "Goal5323 author repo source/logs only",
+        "Goal5346 external artifact refresh"
+      ],
+      "gap": "Exact paper input bytes/hashes and deterministic conversion provenance remain unavailable. Public/source-matched inputs are Level B, not exact Level C.",
+      "rtdl_status": "partial_public_source_and_bounded_inputs_only",
+      "same_functionality_status": "blocking_gap"
+    },
+    {
+      "author_feature": "Uniform grid organization of target points",
+      "blocking_for_same_functionality": true,
+      "evidence": [
+        "generic grid/cell descriptors from Goals5138+",
+        "Goal5216 current route ingredients"
+      ],
+      "gap": "Generic grid/cell descriptors exist and are used, but exact author grid auto-sizing semantics are not reproduced.",
+      "rtdl_status": "implemented_generic_grid_cell_route",
+      "same_functionality_status": "partial"
+    },
+    {
+      "author_feature": "Cell-MBR / BVH-style RT candidate traversal",
+      "blocking_for_same_functionality": true,
+      "evidence": [
+        "Goals5140-5150",
+        "Goal5216 current route ingredients",
+        "native symbol family rtdl_optix_collect_cell_mbr_nearest_frontier_3d"
+      ],
+      "gap": "Generic OptiX cell-MBR traversal exists and is used; exact author kernel/SBT implementation parity is not claimed.",
+      "rtdl_status": "implemented_generic_native_optix_route",
+      "same_functionality_status": "covered_for_generic_route_not_author_kernel_identity"
+    },
+    {
+      "author_feature": "HD estimator / pruning of non-contributing sources",
+      "blocking_for_same_functionality": true,
+      "evidence": [
+        "Goal5211 global-bound early break",
+        "Goal5216 global_bound_early_break_count=409376/437645"
+      ],
+      "gap": "RTDL implements a generic global-bound early break for exact scalar max-nearest, but per-source witnesses become approximate for early-aborted sources; author estimator/prune semantics are not fully reproduced.",
+      "rtdl_status": "implemented_for_exact_scalar_only",
+      "same_functionality_status": "partial_value_only"
+    },
+    {
+      "author_feature": "Exact per-source nearest witness output",
+      "blocking_for_same_functionality": true,
+      "evidence": [
+        "Goal5216 per_source_witness_exact=false for fast route",
+        "run_xhd_rtdl_hd_exec.py route labels cell-mbr-fast-scalar and cell-mbr-exact-witness"
+      ],
+      "gap": "Fast scalar route is exact-value-only and may output approximate per-source witnesses. Exact-witness route exists for selected gates but is slower and not the current fastest Level-B route.",
+      "rtdl_status": "two_modes_available_fast_scalar_and_exact_witness",
+      "same_functionality_status": "blocking_gap_for_full_witness_equivalence"
+    },
+    {
+      "author_feature": "Early break / EB-style point-level culling",
+      "blocking_for_same_functionality": true,
+      "evidence": [
+        "Goal5211 global-bound early break",
+        "Goal5288 Figure 5 denominator audit"
+      ],
+      "gap": "RTDL has scalar global-bound early break, but author EB variants and Figure 6/5 EB baselines are not fully reproduced.",
+      "rtdl_status": "partial_generic_scalar_early_break",
+      "same_functionality_status": "partial"
+    },
+    {
+      "author_feature": "Load-balance / heavy-cell offload to CUDA",
+      "blocking_for_same_functionality": true,
+      "evidence": [
+        "Goal5279 generic heavy offload worklist",
+        "Goal5281 native heavy offload telemetry",
+        "Goal5282 author offload mapping"
+      ],
+      "gap": "Generic heavy-offload row shape and telemetry exist, and author OffloadingSize can be mapped as a bounded shape. But author worklist byte denominator, Figure 7 behavior, and full CUDA offload performance parity are not reproduced.",
+      "rtdl_status": "partial_shape_and_telemetry_only",
+      "same_functionality_status": "blocking_gap_for_full_load_balance_equivalence"
+    },
+    {
+      "author_feature": "Adaptive grid auto-sizing",
+      "blocking_for_same_functionality": true,
+      "evidence": [
+        "Goal5284 figure9 auto-tune semantics matrix",
+        "Goal5287 figure9 disposition"
+      ],
+      "gap": "Author logs expose partial auto_tune records, but missing variants and grid-size sweep semantics prevent Figure 9 reproduction. RTDL has grid shape controls, not proven author-equivalent auto-sizing.",
+      "rtdl_status": "not_reproduced",
+      "same_functionality_status": "blocking_gap"
+    },
+    {
+      "author_feature": "Figure 5 broad workload matrix across MRI/geospatial/graphics",
+      "blocking_for_same_functionality": true,
+      "evidence": [
+        "Goal5267 full paper coverage gap matrix",
+        "Goal5288 figure5 timing denominator audit"
+      ],
+      "gap": "Author logs cover Figure 5 families; RTDL has ModelNet40 all-400 and graphics representatives, but not full BraTS/geospatial/graphics denominator-aligned matrix.",
+      "rtdl_status": "partial_level_b_representatives",
+      "same_functionality_status": "blocking_gap_for_full_paper"
+    },
+    {
+      "author_feature": "Figure 6 pruning effectiveness",
+      "blocking_for_same_functionality": true,
+      "evidence": [
+        "Goal5267 figure_status Figure 6"
+      ],
+      "gap": "No-Opt / EB / EB+Prune / RT-HDIST phase mapping and counters are unresolved.",
+      "rtdl_status": "not_reproduced",
+      "same_functionality_status": "blocking_gap_for_full_paper"
+    },
+    {
+      "author_feature": "Figure 7 load-balance effectiveness",
+      "blocking_for_same_functionality": true,
+      "evidence": [
+        "Goal5267 figure_status Figure 7",
+        "Goal5282 offload mapping"
+      ],
+      "gap": "Large geospatial inputs, RT shader vs CUDA offload phase split, and with/without load-balancing instrumentation are unresolved.",
+      "rtdl_status": "not_reproduced_beyond_bounded_shape",
+      "same_functionality_status": "blocking_gap_for_full_paper"
+    },
+    {
+      "author_feature": "Figure 8 radius-growing strategy",
+      "blocking_for_same_functionality": true,
+      "evidence": [
+        "Goal5267 figure_status Figure 8"
+      ],
+      "gap": "Paper-selected workloads, radius strategy labels, iteration diagnostics, and RTDL variants are unresolved.",
+      "rtdl_status": "not_reproduced",
+      "same_functionality_status": "blocking_gap_for_full_paper"
+    },
+    {
+      "author_feature": "Figure 9 adaptive grid sizing",
+      "blocking_for_same_functionality": true,
+      "evidence": [
+        "Goal5284",
+        "Goal5287"
+      ],
+      "gap": "Current line closed because author denominator lacks two expected run_all variants and checked-in PDF is not reproducible evidence.",
+      "rtdl_status": "not_reproduced",
+      "same_functionality_status": "blocking_gap_for_full_paper"
+    },
+    {
+      "author_feature": "Figure 10 scalability and overlap sensitivity",
+      "blocking_for_same_functionality": true,
+      "evidence": [
+        "Goal5267 figure_status Figure 10"
+      ],
+      "gap": "Scale/overlap input generation details and same-denominator RTDL/author matrix are unresolved.",
+      "rtdl_status": "not_reproduced",
+      "same_functionality_status": "blocking_gap_for_full_paper"
+    },
+    {
+      "author_feature": "Figure 11 memory footprint",
+      "blocking_for_same_functionality": true,
+      "evidence": [
+        "Goal5273-5283 memory/offload line",
+        "Goal5282 author offload mapping"
+      ],
+      "gap": "RTDL has bounded memory telemetry and offload row-count mapping, but author Figure 11 byte denominators and full memory parity are not aligned.",
+      "rtdl_status": "partial_telemetry_not_figure_reproduction",
+      "same_functionality_status": "blocking_gap_for_full_paper"
+    },
+    {
+      "author_feature": "Performance evaluation with aligned denominators",
+      "blocking_for_same_functionality": true,
+      "evidence": [
+        "Goal5188 phase-boundary matrix",
+        "Goal5288 timing denominator audit",
+        "Goal5345/5346 exact-readiness state"
+      ],
+      "gap": "No full exact dataset and no denominator-aligned author/RTDL matrix exist. Performance ratios remain unauthorized.",
+      "rtdl_status": "phase_metrics_available_no_ratio",
+      "same_functionality_status": "blocking_gap_for_full_performance"
+    }
+  ],
+  "goal": "Goal5347",
+  "interpretation": {
+    "full_functional_parity_ready": false,
+    "highest_current_reproduction_level": "Level-B same-source representative and bounded same-input values",
+    "main_blockers": [
+      "exact paper input artifacts/provenance",
+      "full paper workload matrix coverage",
+      "exact-witness vs fast-scalar mode split",
+      "author-equivalent estimator/pruning/EB variants",
+      "load-balance/offload full behavior",
+      "adaptive grid auto-sizing Figure 9 denominator",
+      "Figure 5-11 denominator-aligned performance and memory matrices"
+    ],
+    "what_is_strong": [
+      "directed HD scalar semantics are proved",
+      "bounded same-input value gates are reviewed",
+      "generic nearest/witness/max-nearest system extraction is reviewed",
+      "Level-B Dragon->HappyBuddha public representative matches author rerun scalar",
+      "RTDL has an hd_exec-compatible app entrypoint and generic OptiX cell-MBR route"
+    ]
+  },
+  "purpose": "Map author X-HD functional features and paper-figure obligations to current RTDL/Python/partner implementation status, so the project can pursue 'same function except language' without confusing value-only, representative, or readiness evidence for full functional parity.",
+  "schema": "rtdl.paper_reproduction.xhd.goal5347.functional_feature_parity_matrix.v1",
+  "status": "implemented_review_pending"
+}

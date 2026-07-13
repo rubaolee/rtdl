@@ -1,0 +1,70 @@
+{
+  "author": {
+    "command": [
+      "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+      "-geom",
+      "/workspace/librts-targets/point-contains-real-remaining/PPoPPAE/datasets/polygons/lakes.bz2.wkt",
+      "-query",
+      "/workspace/librts-targets/point-contains-real-remaining/PPoPPAE/datasets/queries/point-contains_queries_100000/lakes.bz2.wkt",
+      "-serialize",
+      "/workspace/librts-serialize/goal5488/lakes_columns",
+      "-query_type",
+      "point-contains",
+      "-index_type",
+      "rtspatial",
+      "-load_factor",
+      "0.0001"
+    ],
+    "geometry_count": 8327448,
+    "loading_ms_diagnostic": 36.8756,
+    "pair_rows_exposed": false,
+    "query_count": 100000,
+    "query_metric": "internal Query Time; index Loading Time excluded",
+    "query_ms_internal": 0.082,
+    "result_count": 103189,
+    "stdout": "Loaded polygons 8327448\nLoaded queries 100000\nLoading Time 36.8756 ms\nGeoms 8327448\nQueries 100000\nQuery Time 0.082 ms\nResults 103189\nSelectivity: 1.23914e-07\n"
+  },
+  "claim_boundary": {
+    "complete_paper_reproduction_claimed": false,
+    "device_zero_copy_claimed": false,
+    "embree_in_scope": false,
+    "exact_archive_and_extracted_input_identity_used": true,
+    "figure6_reproduced": false,
+    "generic_columnar_frontdoor_used": true,
+    "performance_ratio_authorized": false,
+    "pointwise_containment_equivalence_claimed": false,
+    "prepared_query_phase_comparison_candidate": true,
+    "same_input_result_count_agreement": true
+  },
+  "input_identity": {
+    "geometry_path": "/workspace/librts-targets/point-contains-real-remaining/PPoPPAE/datasets/polygons/lakes.bz2.wkt",
+    "geometry_sha256": "0cde2245faf03cb0cf48cf9f8ffb0e31a7391300d947fa9de2110a46006e2f03",
+    "query_path": "/workspace/librts-targets/point-contains-real-remaining/PPoPPAE/datasets/queries/point-contains_queries_100000/lakes.bz2.wkt",
+    "query_sha256": "af77499deb2691be731b95ed0d9214573967ff16527f25268cba2ea422252074",
+    "same_files_passed_to_author_and_rtdl": true,
+    "verified_extraction_root": "/workspace/librts-targets/point-contains-real-remaining"
+  },
+  "matched": true,
+  "phase_boundary": {
+    "author_query_excludes_loading": true,
+    "performance_ratio_authorized": false,
+    "prepared_query_phase_comparison_candidate": true,
+    "rtdl_prepared_query_excludes_wkt_load_and_index_prepare": true
+  },
+  "rtdl": {
+    "backend": "optix",
+    "input_contract": "generic_host_aabb_2d_columns",
+    "load_wkt_sec": 405.98478630100726,
+    "native_engine_customization": false,
+    "operation": "point_contains",
+    "prepare_index_sec": 0.8558705580071546,
+    "prepared_query_wall_sec": 1.462056277989177,
+    "primitive_query_sec": 1.294525353005156,
+    "public_api": "Aabb2DColumns + prepare_aabb_index_2d_columns + prepared.count",
+    "result_count": 103189,
+    "row_output_requested": false,
+    "rt_core_accelerated": true
+  },
+  "schema": "rtdl.paper_reproduction.librts.exact_point_contains_prepared_phase_columns.v1",
+  "status": "exact_input_point_contains_prepared_phase_columns_matched"
+}

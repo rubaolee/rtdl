@@ -26,7 +26,7 @@ def run_json_example(*args: str) -> dict[str, object]:
 class Goal686AppCatalogCleanupTest(unittest.TestCase):
     def test_db_app_accepts_public_cpu_python_reference_alias(self) -> None:
         payload = run_json_example(
-            "examples/internal/archived_apps/rtdl_v0_7_db_app_demo.py",
+            "history/examples_internal/internal/archived_apps/rtdl_v0_7_db_app_demo.py",
             "--backend",
             "cpu_python_reference",
         )

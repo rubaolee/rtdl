@@ -1,0 +1,75 @@
+{
+  "claim_boundary": {
+    "author_semantics_proven": false,
+    "core_behavior_changed": false,
+    "diagnostic_only": true,
+    "embree_in_scope": false,
+    "paper_reproduction_claimed": false,
+    "performance_ratio_authorized": false
+  },
+  "diagnostic_hypotheses": {
+    "float32_collapse_only_explains_delta": true,
+    "goal5519_author_minus_rtdl": 79,
+    "strict_indexed_validity_filter_explains_delta": true
+  },
+  "indexed_validity": {
+    "float32_collapsed_containment_contribution": 79,
+    "float32_invalid_containment_contribution": 79,
+    "float32_invalid_rows_with_nonzero_contribution": 2,
+    "float32_strictly_invalid_count": 276,
+    "float64_collapsed_containment_contribution": 58,
+    "float64_strictly_invalid_count": 61,
+    "float64_valid_but_float32_collapsed_count": 215,
+    "nonzero_contribution_rows": [
+      {
+        "float32_box": [
+          -69.73983764648438,
+          -89.96784210205078,
+          -69.73445129394531,
+          -89.96784210205078
+        ],
+        "float32_containment_count": 21,
+        "float64_box": [
+          -69.73984,
+          -89.967841,
+          -69.734454,
+          -89.967839
+        ],
+        "indexed_row": 5783378
+      },
+      {
+        "float32_box": [
+          -67.26188659667969,
+          -89.96714782714844,
+          -67.25595092773438,
+          -89.96714782714844
+        ],
+        "float32_containment_count": 58,
+        "float64_box": [
+          -67.261889,
+          -89.96715,
+          -67.255948,
+          -89.967146
+        ],
+        "indexed_row": 6569581
+      }
+    ],
+    "originally_degenerate_count": 61
+  },
+  "input_identity": {
+    "geometry_sha256": "0cde2245faf03cb0cf48cf9f8ffb0e31a7391300d947fa9de2110a46006e2f03",
+    "query_sha256": "f4119e7d429ab8cd9355f0b1ef1f3594e28fb6b6e1ce70fcdaff1a557c13c3b8",
+    "same_exact_archive_inputs_as_goal5519": true
+  },
+  "query_validity": {
+    "float32_strictly_invalid_count": 2181,
+    "float64_strictly_invalid_count": 2181,
+    "float64_valid_but_float32_collapsed_count": 0
+  },
+  "row_counts": {
+    "indexed": 8327448,
+    "queries": 100000
+  },
+  "schema": "rtdl.paper_reproduction.librts.goal5519_range_contains_semantic_audit.v1",
+  "status": "range_contains_numeric_validity_contribution_audited"
+}

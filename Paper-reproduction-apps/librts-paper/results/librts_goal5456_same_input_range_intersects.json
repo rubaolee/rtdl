@@ -1,0 +1,104 @@
+{
+  "author": {
+    "backend": "optix",
+    "command": [
+      "/tmp/rtdl_librts_goal5454_author_20260710/build-goal5454/bin/rtspatial_exec",
+      "--box=/tmp/rtdl_librts_goal5453_20260710/Paper-reproduction-apps/librts-paper/data/fixtures/tiny_boxes.wkt",
+      "--box_query=/tmp/rtdl_librts_goal5453_20260710/Paper-reproduction-apps/librts-paper/data/fixtures/tiny_range_queries.wkt",
+      "--predicate=intersects",
+      "--load_factor=1",
+      "--parallelism=1"
+    ],
+    "commit": "52509e8022abeab722f5a9a89d1917e8b481defe",
+    "commit_matches_pin": true,
+    "implementation": "RTSpatial rtspatial_exec at pinned commit",
+    "load_ms_diagnostic_only": 2.48,
+    "pair_rows_exposed": false,
+    "query_ms_diagnostic_only": 0.345,
+    "result_count": 8,
+    "stdout": "Loaded boxes 4\nLoaded box queries 5\nRT, load 2.48 ms, query 0.345 ms, results: 8\n"
+  },
+  "claim_boundary": {
+    "author_pair_relation_agreement_claimed": false,
+    "bounded_same_input_result_count_agreement": true,
+    "embree_evidence_used": false,
+    "full_paper_reproduction_claimed": false,
+    "mutable_index_parity_claimed": false,
+    "performance_claimed": false,
+    "predicate_semantics_discriminated": true,
+    "rtdl_native_pair_rows_matched": true
+  },
+  "environment": {
+    "gpu": "NVIDIA GeForce GTX 1070",
+    "host": "lx1",
+    "label": "local-linux-lx1-functional-only",
+    "performance_evidence_authorized": false,
+    "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39"
+  },
+  "input_identity": {
+    "boxes_path": "/tmp/rtdl_librts_goal5453_20260710/Paper-reproduction-apps/librts-paper/data/fixtures/tiny_boxes.wkt",
+    "boxes_sha256": "12629026e7323d795d00407a3ac7b11206eca18b442ac8357b2870e57922e3f2",
+    "expected_path": "/tmp/rtdl_librts_goal5453_20260710/Paper-reproduction-apps/librts-paper/data/fixtures/tiny_range_intersects_expected.json",
+    "expected_sha256": "a150d7248fbc2e74c7a445ffec56b2b3c7a9162bfa0af8b93ca3464c248c616d",
+    "queries_path": "/tmp/rtdl_librts_goal5453_20260710/Paper-reproduction-apps/librts-paper/data/fixtures/tiny_range_queries.wkt",
+    "queries_sha256": "72a363f6394d69cc1d508ac12854d43300f526d1eb662365621548c3633f86df",
+    "same_files_passed_to_author_and_rtdl": true
+  },
+  "matched": true,
+  "rtdl": {
+    "backend": "optix",
+    "candidate_id_rows": [
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        0
+      ],
+      [
+        1,
+        1
+      ],
+      [
+        2,
+        0
+      ],
+      [
+        2,
+        1
+      ],
+      [
+        3,
+        2
+      ],
+      [
+        4,
+        3
+      ]
+    ],
+    "complete_candidate_coverage": true,
+    "count_contract": "generic_prepared_aabb_index_query_2d",
+    "count_public_api": "query_aabb_index_2d",
+    "native_engine_customization": false,
+    "result_count": 8,
+    "row_contract": "generic_aabb_intersection_pair_rows_2d",
+    "row_public_api": "aabb_intersection_pair_rows_2d",
+    "rows_exposed": true,
+    "rt_core_accelerated": true
+  },
+  "schema": "rtdl.paper_reproduction.librts.same_input_range_intersects.v1",
+  "semantics": {
+    "boundary_policy": "inclusive_min_max",
+    "direction": "indexed_box_intersects_query_box",
+    "expected_count": 8,
+    "operation": "range_intersects",
+    "predicate_discriminating": true,
+    "range_contains_count": 5
+  },
+  "status": "bounded_same_input_range_intersects_count_and_rtdl_rows_matched"
+}

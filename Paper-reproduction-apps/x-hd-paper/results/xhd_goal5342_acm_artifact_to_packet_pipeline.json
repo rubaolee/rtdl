@@ -1,0 +1,42 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5342.acm_artifact_to_packet_pipeline.v1",
+  "goal": "Goal5342",
+  "date": "2026-07-09",
+  "purpose": "Add an app-owned local orchestrator that turns a concrete ACM supplement zip plus an accepted workload mapping spec into a Goal5339 mapped-candidate same-input command packet.",
+  "script": {
+    "path": "Paper-reproduction-apps/x-hd-paper/scripts/run_xhd_acm_artifact_to_packet_pipeline.py",
+    "output_schema": "rtdl.paper_reproduction.xhd.acm_artifact_to_packet_pipeline.v1",
+    "orchestrates_existing_tools": [
+      "inspect_xhd_acm_supplement_zip.py",
+      "map_xhd_acm_candidate_bytes_hashes.py",
+      "review_xhd_candidate_workload_mapping.py",
+      "build_xhd_mapped_candidate_same_input_gate_packet.py"
+    ]
+  },
+  "status": "acm_artifact_to_packet_pipeline_ready__await_real_zip_and_mapping",
+  "current_real_artifact_available": false,
+  "pod_usage": {
+    "used": false,
+    "expected_next": false,
+    "reason": "This goal adds the local zip-to-command-packet pipeline only. POD begins in a later execution goal after a real zip, accepted mapping, and command-ready packet exist."
+  },
+  "claim_boundary": {
+    "commands_executed": false,
+    "same_input_gate_passed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false
+  },
+  "allowed_summary": "Goal5342 adds a local orchestrator for the existing ACM artifact inspection/hash/mapping/packet tools. It makes the future real-artifact path reproducible but does not execute commands or claim reproduction.",
+  "not_allowed": [
+    "claiming the real ACM zip was processed by this status artifact",
+    "claiming author or RTDL commands were executed",
+    "claiming same-input correctness",
+    "claiming exact paper dataset reproduction",
+    "claiming Figure 5 reproduction",
+    "claiming full X-HD paper reproduction",
+    "claiming author-vs-RTDL performance ratio"
+  ],
+  "exit_label": "acm_artifact_to_packet_pipeline_ready__await_real_zip_and_mapping"
+}

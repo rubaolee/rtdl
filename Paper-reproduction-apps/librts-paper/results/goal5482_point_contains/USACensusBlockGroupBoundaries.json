@@ -1,0 +1,61 @@
+{
+  "author": {
+    "command": [
+      "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+      "-geom",
+      "/workspace/librts-targets/point-contains-real-remaining/PPoPPAE/datasets/polygons/USACensusBlockGroupBoundaries.wkt",
+      "-query",
+      "/workspace/librts-targets/point-contains-real-remaining/PPoPPAE/datasets/queries/point-contains_queries_100000/USACensusBlockGroupBoundaries.wkt",
+      "-serialize",
+      "/workspace/librts-serialize/goal5482/USACensusBlockGroupBoundaries",
+      "-query_type",
+      "point-contains",
+      "-index_type",
+      "rtspatial",
+      "-load_factor",
+      "0.0001"
+    ],
+    "geometry_count": 248954,
+    "loading_ms_diagnostic": 1.2912,
+    "pair_rows_exposed": false,
+    "query_count": 100000,
+    "query_ms_internal": 0.114,
+    "result_count": 148970,
+    "stdout": "Loaded polygons 248954\nLoaded queries 100000\nLoading Time 1.2912 ms\nGeoms 248954\nQueries 100000\nQuery Time 0.114 ms\nResults 148970\nSelectivity: 5.98384e-06\n"
+  },
+  "case_id": "USACensusBlockGroupBoundaries",
+      "claim_boundary": {
+        "author_pair_relation_agreement_claimed": false,
+        "complete_paper_reproduction_claimed": false,
+        "embree_in_scope": false,
+        "exact_archive_and_extracted_input_identity_used": true,
+        "pointwise_containment_equivalence_claimed": false,
+        "relation_level_evidence_reference": "Paper-reproduction-apps/librts-paper/results/librts_goal5467_representative_same_input_pip.json",
+        "figure6_reproduced": false,
+    "performance_ratio_authorized": false,
+    "same_input_result_count_agreement": true
+  },
+  "input_identity": {
+    "geometry_path": "/workspace/librts-targets/point-contains-real-remaining/PPoPPAE/datasets/polygons/USACensusBlockGroupBoundaries.wkt",
+    "geometry_sha256": "a5ead9c7bf5adac34a256e54ead58e6e100ca5321ddeb5268699a58a82b7b8da",
+    "query_path": "/workspace/librts-targets/point-contains-real-remaining/PPoPPAE/datasets/queries/point-contains_queries_100000/USACensusBlockGroupBoundaries.wkt",
+    "query_sha256": "d7ba3175a0f3214d23a81475bd30c4c4d47b65dac61955653aa2e75566ad7355",
+    "same_files_passed_to_author_and_rtdl": true,
+    "verified_extraction_root": "/workspace/librts-targets/point-contains-real-remaining"
+  },
+  "matched": true,
+  "rtdl": {
+    "backend": "optix",
+    "complete_candidate_coverage": true,
+    "load_wkt_sec": 97.4376329210354,
+    "native_engine_customization": false,
+    "primitive_query_sec": 2.958372124005109,
+    "public_api": "expanded_aabb_point_membership_rows_2d",
+    "result_count": 148970,
+    "route_wall_sec": 4.439585145912133,
+    "row_capacity": 178764,
+    "rt_core_accelerated": true
+  },
+  "schema": "rtdl.paper_reproduction.librts.exact_point_contains_count.v1",
+  "status": "exact_input_point_contains_count_matched"
+}

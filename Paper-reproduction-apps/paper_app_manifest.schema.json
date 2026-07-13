@@ -1,0 +1,143 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rtdl.local/schemas/paper_app_manifest.schema.json",
+  "title": "RTDL Paper Reproduction App Manifest",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "paper",
+    "rtdl_program",
+    "reproduction_scope",
+    "boundaries"
+  ],
+  "properties": {
+    "paper": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["title"],
+      "properties": {
+        "title": { "type": "string" },
+        "venue": { "type": "string" },
+        "doi": { "type": "string" },
+        "url": { "type": "string" }
+      }
+    },
+    "author_artifact": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "repository": { "type": "string" },
+        "branch": { "type": "string" },
+        "commit": { "type": "string" },
+        "release": { "type": "string" },
+        "build_notes": { "type": "string" }
+      }
+    },
+    "rtdl_program": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["public_apis_exercised", "app_owned_assets"],
+      "properties": {
+        "entrypoints": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "public_apis_exercised": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "experimental_apis_exercised": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "app_owned_assets": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "reproduction_scope": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["status", "comparator", "input_policy", "output_policy"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "not_started",
+            "bounded_same_input",
+            "bounded_workload",
+            "representative_workload",
+            "full_paper_claimed",
+            "blocked"
+          ]
+        },
+        "workloads": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "comparator": { "type": "string" },
+        "input_policy": { "type": "string" },
+        "output_policy": { "type": "string" },
+        "tolerance": { "type": "string" }
+      }
+    },
+    "performance": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "status": { "type": "string" },
+        "regimes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true,
+            "required": ["name", "claim"],
+            "properties": {
+              "name": { "type": "string" },
+              "claim": { "type": "string" },
+              "includes_prepare": { "type": "boolean" },
+              "includes_writer": { "type": "boolean" },
+              "includes_author_preprocessing": { "type": "boolean" },
+              "baseline": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "tests": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "result_artifacts": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "boundaries": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "full_paper_reproduction_claimed",
+        "whole_program_speedup_claimed",
+        "native_backend_completion_claimed"
+      ],
+      "properties": {
+        "full_paper_reproduction_claimed": { "type": "boolean" },
+        "independent_author_pipeline_reconstruction_claimed": { "type": "boolean" },
+        "whole_program_speedup_claimed": { "type": "boolean" },
+        "author_performance_parity_claimed": { "type": "boolean" },
+        "native_backend_completion_claimed": { "type": "boolean" },
+        "forbidden_claims": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

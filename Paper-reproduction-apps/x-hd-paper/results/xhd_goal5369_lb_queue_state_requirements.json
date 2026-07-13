@@ -1,0 +1,177 @@
+{
+  "claim_boundary": {
+    "author_rt_core_algorithm_parity_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_support_claimed": false,
+    "figure11_reproduction_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "generic_system_requirement_claimed": true,
+    "requirements_gate_claimed": true,
+    "row_count_parity_claimed": false,
+    "rtdl_author_performance_ratio_claimed": false,
+    "same_denominator_memory_claimed": false
+  },
+  "date": "2026-07-09",
+  "evidence_summary": {
+    "author_lb256_reference": {
+      "hd_result": 52.453487396240234,
+      "lb": 256,
+      "num_input_points": 437645,
+      "offloading_size_rows": 27133990,
+      "radius": 79.2156982421875,
+      "wl_heavy_peak_bytes": 217071920
+    },
+    "author_like_queue_rows_available_from_goal5361": {
+      "covers_fields": [
+        "Iteration",
+        "NumInputPoints",
+        "NumOutputPoints",
+        "Radius",
+        "CMax2"
+      ],
+      "does_not_cover_fields": [
+        "OffloadingSize",
+        "raw offloading queue rows",
+        "per-source current-best/cmin2 vector"
+      ],
+      "matched": true,
+      "route_iteration_model": "cell_mbr_author_like_radius_queue_route",
+      "row_mismatch_count": 0,
+      "status": "res4full_nonterminal_author_like_queue_trace_matches"
+    },
+    "denominator_shape_from_goal5366": {
+      "author_denominator": "Raw offloading queue rows appended by the author shader as (in_queue_idx, cell_id), accumulated across batches within the reported iteration. The CUDA load-balance stage later sorts and reduces rows by point, but OffloadingSize records the queue size before that grouped processing.",
+      "formula_denominator_aligned": true,
+      "route_regime_aligned": false,
+      "row_count_parity": false,
+      "rtdl_denominator": "Generic cell-MBR frontier rows with frontier_kind_code=2 after the native collector's row download / sort / unique path. In the Goal5365 artifact raw attempted_count equals emitted_count and equals heavy_offload_peak_rows, so the observed delta is not explained by an RTDL duplicate-collapse delta in that run."
+    },
+    "raw_kind_count_from_goal5368": {
+      "frontier_row_capacity": 0,
+      "overflow_telemetry_only": true,
+      "raw_kind2_div_author": 11.239846738352892,
+      "raw_kind2_greater_than_author": true,
+      "raw_kind2_rows": 304981889
+    },
+    "rtdl_lb_behavior_from_goal5365": {
+      "lb0_zero_offload": true,
+      "lb256_positive_offload": true,
+      "matched_behavior_gate": true,
+      "row_count_or_byte_parity_claimed": false
+    },
+    "scalar_radius_probe_from_goal5367": {
+      "author_radius_closes_denominator_gap": false,
+      "author_radius_rtdl_div_author": 0.7741935483870968,
+      "author_radius_rtdl_rows": 21006960,
+      "explicit_radius_matches_author_value": true,
+      "full_cover_rtdl_div_author": 0.9032258064516129,
+      "full_cover_rtdl_rows": 24508120,
+      "radius_aligned": true
+    }
+  },
+  "exit_label": "lb_queue_state_requirements_ready__no_explicit_lb_support_yet",
+  "goal": "Goal5369",
+  "input_artifacts": {
+    "goal5361": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5361_res4full_nonterminal_author_queue_gate.json",
+    "goal5364": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5364_lb_trace_gate_author_pair_contract.json",
+    "goal5365": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5365_rtdl_lb_counterpart_gate.json",
+    "goal5366": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5366_lb_denominator_reconciliation.json",
+    "goal5367": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5367_lb_author_radius_probe.json",
+    "goal5368": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5368_cell_mbr_raw_kind_count_telemetry.json"
+  },
+  "input_scope": {
+    "exact_paper_dataset_identity_proven": false,
+    "input1": "/tmp/xhd_goal5234/data/dragon.ply",
+    "input1_num_points": 437645,
+    "input2": "/tmp/xhd_goal5234/data/asian_dragon.ply",
+    "input2_num_points": 3609600,
+    "level": "level_b_temporary_input_dragon_to_asian_dragon",
+    "preprocessing": [
+      "translate_each_input_to_min_bound"
+    ]
+  },
+  "missing_author_runtime_state": [
+    "per-source cmin2/current-best vector for iteration 3",
+    "active in_queue_idx vector for iteration 3",
+    "raw author offloading rows before sort/reduce",
+    "per-batch offloading_size contributions inside iteration 3"
+  ],
+  "next_gate_contract": {
+    "failure_exit_label": "lb_trace_blocked_until_queue_state_or_author_instrumentation_available",
+    "implementation_options": [
+      "Reconstruct the RTDL queue/current-best state through prior iterations, then run count-only raw offload telemetry under that state.",
+      "Instrument/regenerate author to expose the missing runtime queue/current-best arrays and raw offload rows, then compare RTDL against them."
+    ],
+    "minimum_acceptance_criteria": {
+      "active_queue_size_matches_author_num_input_points": 437645,
+      "author_offloading_size_rows": 27133990,
+      "must_report": [
+        "active_in_queue_size",
+        "current_best_state_source",
+        "raw_offload_rows_before_sort_reduce",
+        "author_width_bytes",
+        "row_count_parity"
+      ],
+      "same_input_pair": true,
+      "same_iteration_radius": 79.2156982421875,
+      "same_lb_threshold": 256,
+      "same_preprocessing": true
+    },
+    "name": "author_queue_aligned_lb_trace",
+    "success_exit_label": "author_queue_aligned_lb_trace_denominator_compared"
+  },
+  "purpose": "Convert the Goal5364-5368 load-balance evidence into an executable requirements gate for the next author-queue-aligned RTDL lb trace. This goal does not implement explicit -lb support.",
+  "rejected_hypotheses": [
+    {
+      "hypothesis": "byte formula mismatch explains the memory gap",
+      "rejected_by": "Goal5366 shows the author-width formula shape is aligned."
+    },
+    {
+      "hypothesis": "scalar radius mismatch alone explains OffloadingSize",
+      "rejected_by": "Goal5367 matches author radius but gets 21,006,960 rows, not 27,133,990."
+    },
+    {
+      "hypothesis": "author OffloadingSize equals all materialized RTDL heavy/offload rows",
+      "rejected_by": "Goal5365/5367 materialized rows are 24,508,120 / 21,006,960, not 27,133,990."
+    },
+    {
+      "hypothesis": "author OffloadingSize equals all raw same-radius kind2 rows",
+      "rejected_by": "Goal5368 raw no-inline kind2 rows are 304,981,889, about 11.24x author."
+    }
+  ],
+  "required_runtime_state_for_next_gate": [
+    {
+      "current_status": "missing_for_lb_trace",
+      "name": "active_in_queue_indices",
+      "required": true,
+      "why": "Author offload rows append in_q_idx, so RTDL must know the same active queue index space."
+    },
+    {
+      "current_status": "missing_for_lb_trace",
+      "name": "per_source_current_best_or_cmin2",
+      "required": true,
+      "why": "The author shader prunes against current best state; raw kind2 rows without this state overcount by ~11.24x."
+    },
+    {
+      "current_status": "partially_available",
+      "name": "per_iteration_radius_schedule",
+      "required": true,
+      "why": "Goal5361 shows radius queue rows can be reproduced for tune-radius fields, but lb OffloadingSize still needs the same queue state."
+    },
+    {
+      "current_status": "source_semantics_available_runtime_rows_missing",
+      "name": "raw_offload_row_shape",
+      "required": true,
+      "why": "Goal5366 identifies author rows as (in_queue_idx, cell_id); RTDL must emit or count that denominator directly."
+    },
+    {
+      "current_status": "formula_available",
+      "name": "author_width_memory_view",
+      "required": true,
+      "why": "Figure 11 style memory comparison must use OffloadingSize * 2 * sizeof(uint32_t), not RTDL generic uint64 rows."
+    }
+  ],
+  "schema": "rtdl.paper_reproduction.xhd.goal5369.lb_queue_state_requirements.v1",
+  "status": "lb_queue_state_requirements_ready__implementation_requires_queue_state_reconstruction_or_author_instrumentation"
+}

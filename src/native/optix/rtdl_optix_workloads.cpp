@@ -76,6 +76,16 @@ thread_local double g_optix_last_segment_pair_candidate_count_s = 0.0;
 thread_local double g_optix_last_segment_pair_candidate_write_s = 0.0;
 thread_local double g_optix_last_segment_pair_candidate_download_s = 0.0;
 thread_local double g_optix_last_segment_pair_exact_refine_s = 0.0;
+thread_local double g_optix_last_segment_pair_total_native_s = 0.0;
+thread_local double g_optix_last_segment_pair_scaled_cache_ensure_s = 0.0;
+thread_local double g_optix_last_segment_pair_grouped_range_ensure_s = 0.0;
+thread_local double g_optix_last_segment_pair_exact_pipeline_ensure_s = 0.0;
+thread_local double g_optix_last_segment_pair_split_kernel_ensure_s = 0.0;
+thread_local double g_optix_last_segment_pair_device_alloc_s = 0.0;
+thread_local double g_optix_last_segment_pair_param_upload_s = 0.0;
+thread_local double g_optix_last_segment_pair_optix_launch_s = 0.0;
+thread_local double g_optix_last_segment_pair_count_download_s = 0.0;
+thread_local double g_optix_last_segment_pair_split_kernel_launch_s = 0.0;
 thread_local size_t g_optix_last_segment_pair_raw_candidate_count = 0;
 thread_local size_t g_optix_last_segment_pair_emitted_count = 0;
 thread_local uint32_t g_optix_last_segment_pair_mode = 0;
@@ -83,8 +93,19 @@ thread_local uint32_t g_optix_last_segment_pair_mode = 0;
 thread_local double g_optix_last_rayjoin_cdb_point_upload_s = 0.0;
 thread_local double g_optix_last_rayjoin_cdb_traversal_s = 0.0;
 thread_local double g_optix_last_rayjoin_cdb_row_download_s = 0.0;
+thread_local double g_optix_last_rayjoin_cdb_prepare_total_s = 0.0;
+thread_local double g_optix_last_rayjoin_cdb_prepare_pipeline_ensure_s = 0.0;
+thread_local double g_optix_last_rayjoin_cdb_prepare_host_copy_s = 0.0;
+thread_local double g_optix_last_rayjoin_cdb_prepare_segment_pack_s = 0.0;
+thread_local double g_optix_last_rayjoin_cdb_prepare_duplicate_canonicalize_s = 0.0;
+thread_local double g_optix_last_rayjoin_cdb_prepare_device_upload_s = 0.0;
+thread_local double g_optix_last_rayjoin_cdb_prepare_range_build_s = 0.0;
+thread_local double g_optix_last_rayjoin_cdb_prepare_range_upload_s = 0.0;
+thread_local double g_optix_last_rayjoin_cdb_prepare_accel_build_s = 0.0;
 thread_local size_t g_optix_last_rayjoin_cdb_point_count = 0;
 thread_local size_t g_optix_last_rayjoin_cdb_positive_face_count = 0;
+thread_local size_t g_optix_last_rayjoin_cdb_prepare_segment_count = 0;
+thread_local size_t g_optix_last_rayjoin_cdb_prepare_range_count = 0;
 thread_local uint32_t g_optix_last_rayjoin_cdb_mode = 0;
 
 thread_local double g_optix_last_shape_pair_left_prepare_s = 0.0;
@@ -118,6 +139,54 @@ thread_local double g_optix_last_fixed_radius_3d_exact_refine_s = 0.0;
 thread_local size_t g_optix_last_fixed_radius_3d_raw_candidate_count = 0;
 thread_local size_t g_optix_last_fixed_radius_3d_emitted_count = 0;
 thread_local uint32_t g_optix_last_fixed_radius_3d_mode = 0;
+
+thread_local double g_optix_last_cell_mbr_frontier_total_s = 0.0;
+thread_local double g_optix_last_cell_mbr_frontier_query_pack_s = 0.0;
+thread_local double g_optix_last_cell_mbr_frontier_cell_pack_s = 0.0;
+thread_local double g_optix_last_cell_mbr_frontier_accel_build_s = 0.0;
+thread_local double g_optix_last_cell_mbr_frontier_device_upload_s = 0.0;
+thread_local double g_optix_last_cell_mbr_frontier_optix_launch_s = 0.0;
+thread_local double g_optix_last_cell_mbr_frontier_nearest_download_s = 0.0;
+thread_local double g_optix_last_cell_mbr_frontier_stats_download_s = 0.0;
+thread_local double g_optix_last_cell_mbr_frontier_count_download_s = 0.0;
+thread_local double g_optix_last_cell_mbr_frontier_row_download_s = 0.0;
+thread_local double g_optix_last_cell_mbr_frontier_host_sort_pack_s = 0.0;
+thread_local uint64_t g_optix_last_cell_mbr_frontier_attempted_count = 0;
+thread_local uint64_t g_optix_last_cell_mbr_frontier_emitted_count = 0;
+thread_local uint32_t g_optix_last_cell_mbr_frontier_mode = 0;
+thread_local uint64_t g_optix_last_cell_mbr_frontier_accel_output_bytes = 0;
+thread_local uint64_t g_optix_last_cell_mbr_frontier_accel_temp_bytes = 0;
+thread_local uint64_t g_optix_last_cell_mbr_frontier_accel_aabb_bytes = 0;
+thread_local uint64_t g_optix_last_cell_mbr_frontier_accel_compacted_output_bytes = 0;
+thread_local uint64_t g_optix_last_cell_mbr_frontier_device_buffer_bytes = 0;
+thread_local uint64_t g_optix_last_cell_mbr_frontier_row_buffer_bytes = 0;
+thread_local uint64_t g_optix_last_cell_mbr_frontier_query_buffer_bytes = 0;
+thread_local uint64_t g_optix_last_cell_mbr_frontier_cell_buffer_bytes = 0;
+thread_local uint64_t g_optix_last_cell_mbr_frontier_target_buffer_bytes = 0;
+thread_local uint64_t g_optix_last_cell_mbr_frontier_nearest_buffer_bytes = 0;
+thread_local uint64_t g_optix_last_cell_mbr_frontier_in_queue_capacity = 0;
+thread_local uint64_t g_optix_last_cell_mbr_frontier_miss_queue_capacity = 0;
+thread_local uint64_t g_optix_last_cell_mbr_frontier_heavy_offload_row_capacity = 0;
+thread_local uint64_t g_optix_last_cell_mbr_frontier_heavy_offload_current_rows = 0;
+thread_local uint64_t g_optix_last_cell_mbr_frontier_heavy_offload_peak_rows = 0;
+thread_local uint64_t g_optix_last_cell_mbr_frontier_heavy_offload_queue_current_bytes = 0;
+thread_local uint64_t g_optix_last_cell_mbr_frontier_heavy_offload_queue_peak_bytes = 0;
+thread_local uint64_t g_optix_last_cell_mbr_frontier_raw_kind1_rows = 0;
+thread_local uint64_t g_optix_last_cell_mbr_frontier_raw_kind2_rows = 0;
+thread_local uint64_t g_optix_last_cell_mbr_frontier_raw_kind3_rows = 0;
+
+thread_local double g_optix_last_local_grid_seed_total_s = 0.0;
+thread_local double g_optix_last_local_grid_seed_context_ensure_s = 0.0;
+thread_local double g_optix_last_local_grid_seed_module_ensure_s = 0.0;
+thread_local double g_optix_last_local_grid_seed_device_alloc_s = 0.0;
+thread_local double g_optix_last_local_grid_seed_upload_s = 0.0;
+thread_local double g_optix_last_local_grid_seed_kernel_s = 0.0;
+thread_local double g_optix_last_local_grid_seed_download_s = 0.0;
+thread_local size_t g_optix_last_local_grid_seed_query_count = 0;
+thread_local size_t g_optix_last_local_grid_seed_target_count = 0;
+thread_local size_t g_optix_last_local_grid_seed_cell_count = 0;
+thread_local size_t g_optix_last_local_grid_seed_dense_cell_position_count = 0;
+thread_local size_t g_optix_last_local_grid_seed_point_row_index_count = 0;
 
 extern "C" int rtdl_optix_columnar_payload_get_last_phase_timings(
         double* traversal,
@@ -157,6 +226,37 @@ extern "C" int rtdl_optix_segment_pair_intersection_get_last_phase_timings(
     return 0;
 }
 
+extern "C" int rtdl_optix_segment_pair_intersection_get_last_extended_phase_timings(
+        double* total_native,
+        double* scaled_cache_ensure,
+        double* grouped_range_ensure,
+        double* exact_pipeline_ensure,
+        double* split_kernel_ensure,
+        double* device_alloc,
+        double* param_upload,
+        double* optix_launch,
+        double* count_download,
+        double* split_kernel_launch,
+        size_t* raw_candidate_count,
+        size_t* emitted_count,
+        uint32_t* mode)
+{
+    if (total_native) *total_native = g_optix_last_segment_pair_total_native_s;
+    if (scaled_cache_ensure) *scaled_cache_ensure = g_optix_last_segment_pair_scaled_cache_ensure_s;
+    if (grouped_range_ensure) *grouped_range_ensure = g_optix_last_segment_pair_grouped_range_ensure_s;
+    if (exact_pipeline_ensure) *exact_pipeline_ensure = g_optix_last_segment_pair_exact_pipeline_ensure_s;
+    if (split_kernel_ensure) *split_kernel_ensure = g_optix_last_segment_pair_split_kernel_ensure_s;
+    if (device_alloc) *device_alloc = g_optix_last_segment_pair_device_alloc_s;
+    if (param_upload) *param_upload = g_optix_last_segment_pair_param_upload_s;
+    if (optix_launch) *optix_launch = g_optix_last_segment_pair_optix_launch_s;
+    if (count_download) *count_download = g_optix_last_segment_pair_count_download_s;
+    if (split_kernel_launch) *split_kernel_launch = g_optix_last_segment_pair_split_kernel_launch_s;
+    if (raw_candidate_count) *raw_candidate_count = g_optix_last_segment_pair_raw_candidate_count;
+    if (emitted_count) *emitted_count = g_optix_last_segment_pair_emitted_count;
+    if (mode) *mode = g_optix_last_segment_pair_mode;
+    return 0;
+}
+
 extern "C" int rtdl_optix_rayjoin_cdb_point_location_get_last_phase_timings(
         double* point_upload,
         double* traversal,
@@ -188,6 +288,66 @@ extern "C" int rtdl_optix_directed_segment_point_location_get_last_phase_timings
         row_download,
         point_count,
         positive_face_count,
+        mode);
+}
+
+extern "C" int rtdl_optix_rayjoin_cdb_point_location_get_last_extended_phase_timings(
+        double* prepare_total,
+        double* prepare_pipeline_ensure,
+        double* prepare_host_copy,
+        double* prepare_segment_pack,
+        double* prepare_duplicate_canonicalize,
+        double* prepare_device_upload,
+        double* prepare_range_build,
+        double* prepare_range_upload,
+        double* prepare_accel_build,
+        size_t* prepare_segment_count,
+        size_t* prepare_range_count,
+        uint32_t* mode)
+{
+    if (prepare_total) *prepare_total = g_optix_last_rayjoin_cdb_prepare_total_s;
+    if (prepare_pipeline_ensure) *prepare_pipeline_ensure = g_optix_last_rayjoin_cdb_prepare_pipeline_ensure_s;
+    if (prepare_host_copy) *prepare_host_copy = g_optix_last_rayjoin_cdb_prepare_host_copy_s;
+    if (prepare_segment_pack) *prepare_segment_pack = g_optix_last_rayjoin_cdb_prepare_segment_pack_s;
+    if (prepare_duplicate_canonicalize) {
+        *prepare_duplicate_canonicalize = g_optix_last_rayjoin_cdb_prepare_duplicate_canonicalize_s;
+    }
+    if (prepare_device_upload) *prepare_device_upload = g_optix_last_rayjoin_cdb_prepare_device_upload_s;
+    if (prepare_range_build) *prepare_range_build = g_optix_last_rayjoin_cdb_prepare_range_build_s;
+    if (prepare_range_upload) *prepare_range_upload = g_optix_last_rayjoin_cdb_prepare_range_upload_s;
+    if (prepare_accel_build) *prepare_accel_build = g_optix_last_rayjoin_cdb_prepare_accel_build_s;
+    if (prepare_segment_count) *prepare_segment_count = g_optix_last_rayjoin_cdb_prepare_segment_count;
+    if (prepare_range_count) *prepare_range_count = g_optix_last_rayjoin_cdb_prepare_range_count;
+    if (mode) *mode = g_optix_last_rayjoin_cdb_mode;
+    return 0;
+}
+
+extern "C" int rtdl_optix_directed_segment_point_location_get_last_extended_phase_timings(
+        double* prepare_total,
+        double* prepare_pipeline_ensure,
+        double* prepare_host_copy,
+        double* prepare_segment_pack,
+        double* prepare_duplicate_canonicalize,
+        double* prepare_device_upload,
+        double* prepare_range_build,
+        double* prepare_range_upload,
+        double* prepare_accel_build,
+        size_t* prepare_segment_count,
+        size_t* prepare_range_count,
+        uint32_t* mode)
+{
+    return rtdl_optix_rayjoin_cdb_point_location_get_last_extended_phase_timings(
+        prepare_total,
+        prepare_pipeline_ensure,
+        prepare_host_copy,
+        prepare_segment_pack,
+        prepare_duplicate_canonicalize,
+        prepare_device_upload,
+        prepare_range_build,
+        prepare_range_upload,
+        prepare_accel_build,
+        prepare_segment_count,
+        prepare_range_count,
         mode);
 }
 
@@ -264,6 +424,219 @@ extern "C" int rtdl_optix_fixed_radius_neighbors_3d_get_last_phase_timings(
     return 0;
 }
 
+extern "C" int rtdl_optix_cell_mbr_nearest_frontier_3d_get_last_phase_timings(
+        double* total,
+        double* query_pack,
+        double* cell_pack,
+        double* accel_build,
+        double* device_upload,
+        double* optix_launch,
+        double* nearest_download,
+        double* stats_download,
+        double* count_download,
+        double* row_download,
+        double* host_sort_pack,
+        uint64_t* attempted_count,
+        uint64_t* emitted_count,
+        uint32_t* mode)
+{
+    if (total) *total = g_optix_last_cell_mbr_frontier_total_s;
+    if (query_pack) *query_pack = g_optix_last_cell_mbr_frontier_query_pack_s;
+    if (cell_pack) *cell_pack = g_optix_last_cell_mbr_frontier_cell_pack_s;
+    if (accel_build) *accel_build = g_optix_last_cell_mbr_frontier_accel_build_s;
+    if (device_upload) *device_upload = g_optix_last_cell_mbr_frontier_device_upload_s;
+    if (optix_launch) *optix_launch = g_optix_last_cell_mbr_frontier_optix_launch_s;
+    if (nearest_download) *nearest_download = g_optix_last_cell_mbr_frontier_nearest_download_s;
+    if (stats_download) *stats_download = g_optix_last_cell_mbr_frontier_stats_download_s;
+    if (count_download) *count_download = g_optix_last_cell_mbr_frontier_count_download_s;
+    if (row_download) *row_download = g_optix_last_cell_mbr_frontier_row_download_s;
+    if (host_sort_pack) *host_sort_pack = g_optix_last_cell_mbr_frontier_host_sort_pack_s;
+    if (attempted_count) *attempted_count = g_optix_last_cell_mbr_frontier_attempted_count;
+    if (emitted_count) *emitted_count = g_optix_last_cell_mbr_frontier_emitted_count;
+    if (mode) *mode = g_optix_last_cell_mbr_frontier_mode;
+    return 0;
+}
+
+extern "C" int rtdl_optix_cell_mbr_nearest_frontier_3d_get_last_memory_telemetry(
+        uint64_t* accel_output_bytes,
+        uint64_t* accel_temp_bytes,
+        uint64_t* accel_aabb_bytes,
+        uint64_t* accel_compacted_output_bytes,
+        uint64_t* device_buffer_bytes,
+        uint64_t* row_buffer_bytes,
+        uint64_t* query_buffer_bytes,
+        uint64_t* cell_buffer_bytes,
+        uint64_t* target_buffer_bytes,
+        uint64_t* nearest_buffer_bytes,
+        uint64_t* attempted_count,
+        uint64_t* emitted_count,
+        uint32_t* mode)
+{
+    if (accel_output_bytes) *accel_output_bytes = g_optix_last_cell_mbr_frontier_accel_output_bytes;
+    if (accel_temp_bytes) *accel_temp_bytes = g_optix_last_cell_mbr_frontier_accel_temp_bytes;
+    if (accel_aabb_bytes) *accel_aabb_bytes = g_optix_last_cell_mbr_frontier_accel_aabb_bytes;
+    if (accel_compacted_output_bytes) {
+        *accel_compacted_output_bytes = g_optix_last_cell_mbr_frontier_accel_compacted_output_bytes;
+    }
+    if (device_buffer_bytes) *device_buffer_bytes = g_optix_last_cell_mbr_frontier_device_buffer_bytes;
+    if (row_buffer_bytes) *row_buffer_bytes = g_optix_last_cell_mbr_frontier_row_buffer_bytes;
+    if (query_buffer_bytes) *query_buffer_bytes = g_optix_last_cell_mbr_frontier_query_buffer_bytes;
+    if (cell_buffer_bytes) *cell_buffer_bytes = g_optix_last_cell_mbr_frontier_cell_buffer_bytes;
+    if (target_buffer_bytes) *target_buffer_bytes = g_optix_last_cell_mbr_frontier_target_buffer_bytes;
+    if (nearest_buffer_bytes) *nearest_buffer_bytes = g_optix_last_cell_mbr_frontier_nearest_buffer_bytes;
+    if (attempted_count) *attempted_count = g_optix_last_cell_mbr_frontier_attempted_count;
+    if (emitted_count) *emitted_count = g_optix_last_cell_mbr_frontier_emitted_count;
+    if (mode) *mode = g_optix_last_cell_mbr_frontier_mode;
+    return 0;
+}
+
+extern "C" int rtdl_optix_cell_mbr_nearest_frontier_3d_get_last_memory_telemetry_v2(
+        uint64_t* accel_output_bytes,
+        uint64_t* accel_temp_bytes,
+        uint64_t* accel_aabb_bytes,
+        uint64_t* accel_compacted_output_bytes,
+        uint64_t* device_buffer_bytes,
+        uint64_t* row_buffer_bytes,
+        uint64_t* query_buffer_bytes,
+        uint64_t* cell_buffer_bytes,
+        uint64_t* target_buffer_bytes,
+        uint64_t* nearest_buffer_bytes,
+        uint64_t* attempted_count,
+        uint64_t* emitted_count,
+        uint32_t* mode,
+        uint64_t* in_queue_capacity,
+        uint64_t* miss_queue_capacity,
+        uint64_t* heavy_offload_row_capacity,
+        uint64_t* heavy_offload_current_rows,
+        uint64_t* heavy_offload_peak_rows,
+        uint64_t* heavy_offload_queue_current_bytes,
+        uint64_t* heavy_offload_queue_peak_bytes)
+{
+    const int status = rtdl_optix_cell_mbr_nearest_frontier_3d_get_last_memory_telemetry(
+        accel_output_bytes,
+        accel_temp_bytes,
+        accel_aabb_bytes,
+        accel_compacted_output_bytes,
+        device_buffer_bytes,
+        row_buffer_bytes,
+        query_buffer_bytes,
+        cell_buffer_bytes,
+        target_buffer_bytes,
+        nearest_buffer_bytes,
+        attempted_count,
+        emitted_count,
+        mode);
+    if (in_queue_capacity) *in_queue_capacity = g_optix_last_cell_mbr_frontier_in_queue_capacity;
+    if (miss_queue_capacity) *miss_queue_capacity = g_optix_last_cell_mbr_frontier_miss_queue_capacity;
+    if (heavy_offload_row_capacity) {
+        *heavy_offload_row_capacity = g_optix_last_cell_mbr_frontier_heavy_offload_row_capacity;
+    }
+    if (heavy_offload_current_rows) {
+        *heavy_offload_current_rows = g_optix_last_cell_mbr_frontier_heavy_offload_current_rows;
+    }
+    if (heavy_offload_peak_rows) {
+        *heavy_offload_peak_rows = g_optix_last_cell_mbr_frontier_heavy_offload_peak_rows;
+    }
+    if (heavy_offload_queue_current_bytes) {
+        *heavy_offload_queue_current_bytes =
+            g_optix_last_cell_mbr_frontier_heavy_offload_queue_current_bytes;
+    }
+    if (heavy_offload_queue_peak_bytes) {
+        *heavy_offload_queue_peak_bytes =
+            g_optix_last_cell_mbr_frontier_heavy_offload_queue_peak_bytes;
+    }
+    return status;
+}
+
+extern "C" int rtdl_optix_cell_mbr_nearest_frontier_3d_get_last_memory_telemetry_v3(
+        uint64_t* accel_output_bytes,
+        uint64_t* accel_temp_bytes,
+        uint64_t* accel_aabb_bytes,
+        uint64_t* accel_compacted_output_bytes,
+        uint64_t* device_buffer_bytes,
+        uint64_t* row_buffer_bytes,
+        uint64_t* query_buffer_bytes,
+        uint64_t* cell_buffer_bytes,
+        uint64_t* target_buffer_bytes,
+        uint64_t* nearest_buffer_bytes,
+        uint64_t* attempted_count,
+        uint64_t* emitted_count,
+        uint32_t* mode,
+        uint64_t* in_queue_capacity,
+        uint64_t* miss_queue_capacity,
+        uint64_t* heavy_offload_row_capacity,
+        uint64_t* heavy_offload_current_rows,
+        uint64_t* heavy_offload_peak_rows,
+        uint64_t* heavy_offload_queue_current_bytes,
+        uint64_t* heavy_offload_queue_peak_bytes,
+        uint64_t* raw_frontier_kind1_rows,
+        uint64_t* raw_frontier_kind2_rows,
+        uint64_t* raw_frontier_kind3_rows)
+{
+    const int status = rtdl_optix_cell_mbr_nearest_frontier_3d_get_last_memory_telemetry_v2(
+        accel_output_bytes,
+        accel_temp_bytes,
+        accel_aabb_bytes,
+        accel_compacted_output_bytes,
+        device_buffer_bytes,
+        row_buffer_bytes,
+        query_buffer_bytes,
+        cell_buffer_bytes,
+        target_buffer_bytes,
+        nearest_buffer_bytes,
+        attempted_count,
+        emitted_count,
+        mode,
+        in_queue_capacity,
+        miss_queue_capacity,
+        heavy_offload_row_capacity,
+        heavy_offload_current_rows,
+        heavy_offload_peak_rows,
+        heavy_offload_queue_current_bytes,
+        heavy_offload_queue_peak_bytes);
+    if (raw_frontier_kind1_rows) {
+        *raw_frontier_kind1_rows = g_optix_last_cell_mbr_frontier_raw_kind1_rows;
+    }
+    if (raw_frontier_kind2_rows) {
+        *raw_frontier_kind2_rows = g_optix_last_cell_mbr_frontier_raw_kind2_rows;
+    }
+    if (raw_frontier_kind3_rows) {
+        *raw_frontier_kind3_rows = g_optix_last_cell_mbr_frontier_raw_kind3_rows;
+    }
+    return status;
+}
+
+extern "C" int rtdl_optix_seed_nearest_witness_local_grid_3d_get_last_phase_timings(
+        double* total,
+        double* context_ensure,
+        double* module_ensure,
+        double* device_alloc,
+        double* upload,
+        double* kernel,
+        double* download,
+        size_t* query_count,
+        size_t* target_count,
+        size_t* cell_count,
+        size_t* dense_cell_position_count,
+        size_t* point_row_index_count)
+{
+    if (total) *total = g_optix_last_local_grid_seed_total_s;
+    if (context_ensure) *context_ensure = g_optix_last_local_grid_seed_context_ensure_s;
+    if (module_ensure) *module_ensure = g_optix_last_local_grid_seed_module_ensure_s;
+    if (device_alloc) *device_alloc = g_optix_last_local_grid_seed_device_alloc_s;
+    if (upload) *upload = g_optix_last_local_grid_seed_upload_s;
+    if (kernel) *kernel = g_optix_last_local_grid_seed_kernel_s;
+    if (download) *download = g_optix_last_local_grid_seed_download_s;
+    if (query_count) *query_count = g_optix_last_local_grid_seed_query_count;
+    if (target_count) *target_count = g_optix_last_local_grid_seed_target_count;
+    if (cell_count) *cell_count = g_optix_last_local_grid_seed_cell_count;
+    if (dense_cell_position_count) {
+        *dense_cell_position_count = g_optix_last_local_grid_seed_dense_cell_position_count;
+    }
+    if (point_row_index_count) *point_row_index_count = g_optix_last_local_grid_seed_point_row_index_count;
+    return 0;
+}
+
 static void reset_segment_pair_phase_timings(uint32_t mode)
 {
     g_optix_last_segment_pair_left_upload_s = 0.0;
@@ -271,6 +644,16 @@ static void reset_segment_pair_phase_timings(uint32_t mode)
     g_optix_last_segment_pair_candidate_write_s = 0.0;
     g_optix_last_segment_pair_candidate_download_s = 0.0;
     g_optix_last_segment_pair_exact_refine_s = 0.0;
+    g_optix_last_segment_pair_total_native_s = 0.0;
+    g_optix_last_segment_pair_scaled_cache_ensure_s = 0.0;
+    g_optix_last_segment_pair_grouped_range_ensure_s = 0.0;
+    g_optix_last_segment_pair_exact_pipeline_ensure_s = 0.0;
+    g_optix_last_segment_pair_split_kernel_ensure_s = 0.0;
+    g_optix_last_segment_pair_device_alloc_s = 0.0;
+    g_optix_last_segment_pair_param_upload_s = 0.0;
+    g_optix_last_segment_pair_optix_launch_s = 0.0;
+    g_optix_last_segment_pair_count_download_s = 0.0;
+    g_optix_last_segment_pair_split_kernel_launch_s = 0.0;
     g_optix_last_segment_pair_raw_candidate_count = 0;
     g_optix_last_segment_pair_emitted_count = 0;
     g_optix_last_segment_pair_mode = mode;
@@ -284,6 +667,21 @@ static void reset_rayjoin_cdb_point_location_phase_timings(uint32_t mode)
     g_optix_last_rayjoin_cdb_point_count = 0;
     g_optix_last_rayjoin_cdb_positive_face_count = 0;
     g_optix_last_rayjoin_cdb_mode = mode;
+}
+
+static void reset_rayjoin_cdb_point_location_prepare_timings()
+{
+    g_optix_last_rayjoin_cdb_prepare_total_s = 0.0;
+    g_optix_last_rayjoin_cdb_prepare_pipeline_ensure_s = 0.0;
+    g_optix_last_rayjoin_cdb_prepare_host_copy_s = 0.0;
+    g_optix_last_rayjoin_cdb_prepare_segment_pack_s = 0.0;
+    g_optix_last_rayjoin_cdb_prepare_duplicate_canonicalize_s = 0.0;
+    g_optix_last_rayjoin_cdb_prepare_device_upload_s = 0.0;
+    g_optix_last_rayjoin_cdb_prepare_range_build_s = 0.0;
+    g_optix_last_rayjoin_cdb_prepare_range_upload_s = 0.0;
+    g_optix_last_rayjoin_cdb_prepare_accel_build_s = 0.0;
+    g_optix_last_rayjoin_cdb_prepare_segment_count = 0;
+    g_optix_last_rayjoin_cdb_prepare_range_count = 0;
 }
 
 static void reset_shape_pair_relation_phase_timings(uint32_t mode)
@@ -325,6 +723,60 @@ static void reset_fixed_radius_3d_phase_timings(uint32_t mode)
     g_optix_last_fixed_radius_3d_raw_candidate_count = 0;
     g_optix_last_fixed_radius_3d_emitted_count = 0;
     g_optix_last_fixed_radius_3d_mode = mode;
+}
+
+static void reset_cell_mbr_frontier_phase_timings(uint32_t mode)
+{
+    g_optix_last_cell_mbr_frontier_total_s = 0.0;
+    g_optix_last_cell_mbr_frontier_query_pack_s = 0.0;
+    g_optix_last_cell_mbr_frontier_cell_pack_s = 0.0;
+    g_optix_last_cell_mbr_frontier_accel_build_s = 0.0;
+    g_optix_last_cell_mbr_frontier_device_upload_s = 0.0;
+    g_optix_last_cell_mbr_frontier_optix_launch_s = 0.0;
+    g_optix_last_cell_mbr_frontier_nearest_download_s = 0.0;
+    g_optix_last_cell_mbr_frontier_stats_download_s = 0.0;
+    g_optix_last_cell_mbr_frontier_count_download_s = 0.0;
+    g_optix_last_cell_mbr_frontier_row_download_s = 0.0;
+    g_optix_last_cell_mbr_frontier_host_sort_pack_s = 0.0;
+    g_optix_last_cell_mbr_frontier_attempted_count = 0;
+    g_optix_last_cell_mbr_frontier_emitted_count = 0;
+    g_optix_last_cell_mbr_frontier_mode = mode;
+    g_optix_last_cell_mbr_frontier_accel_output_bytes = 0;
+    g_optix_last_cell_mbr_frontier_accel_temp_bytes = 0;
+    g_optix_last_cell_mbr_frontier_accel_aabb_bytes = 0;
+    g_optix_last_cell_mbr_frontier_accel_compacted_output_bytes = 0;
+    g_optix_last_cell_mbr_frontier_device_buffer_bytes = 0;
+    g_optix_last_cell_mbr_frontier_row_buffer_bytes = 0;
+    g_optix_last_cell_mbr_frontier_query_buffer_bytes = 0;
+    g_optix_last_cell_mbr_frontier_cell_buffer_bytes = 0;
+    g_optix_last_cell_mbr_frontier_target_buffer_bytes = 0;
+    g_optix_last_cell_mbr_frontier_nearest_buffer_bytes = 0;
+    g_optix_last_cell_mbr_frontier_in_queue_capacity = 0;
+    g_optix_last_cell_mbr_frontier_miss_queue_capacity = 0;
+    g_optix_last_cell_mbr_frontier_heavy_offload_row_capacity = 0;
+    g_optix_last_cell_mbr_frontier_heavy_offload_current_rows = 0;
+    g_optix_last_cell_mbr_frontier_heavy_offload_peak_rows = 0;
+    g_optix_last_cell_mbr_frontier_heavy_offload_queue_current_bytes = 0;
+    g_optix_last_cell_mbr_frontier_heavy_offload_queue_peak_bytes = 0;
+    g_optix_last_cell_mbr_frontier_raw_kind1_rows = 0;
+    g_optix_last_cell_mbr_frontier_raw_kind2_rows = 0;
+    g_optix_last_cell_mbr_frontier_raw_kind3_rows = 0;
+}
+
+static void reset_local_grid_seed_phase_timings()
+{
+    g_optix_last_local_grid_seed_total_s = 0.0;
+    g_optix_last_local_grid_seed_context_ensure_s = 0.0;
+    g_optix_last_local_grid_seed_module_ensure_s = 0.0;
+    g_optix_last_local_grid_seed_device_alloc_s = 0.0;
+    g_optix_last_local_grid_seed_upload_s = 0.0;
+    g_optix_last_local_grid_seed_kernel_s = 0.0;
+    g_optix_last_local_grid_seed_download_s = 0.0;
+    g_optix_last_local_grid_seed_query_count = 0;
+    g_optix_last_local_grid_seed_target_count = 0;
+    g_optix_last_local_grid_seed_cell_count = 0;
+    g_optix_last_local_grid_seed_dense_cell_position_count = 0;
+    g_optix_last_local_grid_seed_point_row_index_count = 0;
 }
 
 static double seconds_between(
@@ -3247,7 +3699,10 @@ struct PreparedSegmentPolygonAnyhitRows2D {
             for (size_t i = 0; i < polygons.size(); ++i) {
                 aabbs[i] = aabb_for_polygon(vertices_xy, source_polygons[i].vertex_offset, source_polygons[i].vertex_count);
             }
-            accel = build_custom_accel(get_optix_context(), aabbs);
+            accel = build_custom_accel_with_flags(
+                get_optix_context(),
+                aabbs,
+                OPTIX_BUILD_FLAG_ALLOW_COMPACTION);
         }
     }
 };
@@ -4101,13 +4556,53 @@ static double rayjoin_cdb_group_area_enlarge_from_env()
     return value;
 }
 
-static bool rayjoin_cdb_group_fixed8_from_env()
+enum class RayjoinCdbGroupMode {
+    FineGrained,
+    Fixed8,
+    SequentialAdaptive,
+    BlockMerge64,
+};
+
+static int rayjoin_cdb_group_max_iter_from_env()
+{
+    const char* raw = std::getenv("RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MAX_ITER");
+    if (raw == nullptr || raw[0] == '\0') {
+        raw = std::getenv("RTDL_RAYJOIN_CDB_GROUP_MAX_ITER");
+    }
+    if (raw == nullptr || raw[0] == '\0') {
+        return 0;
+    }
+    char* end = nullptr;
+    const long value = std::strtol(raw, &end, 10);
+    if (end == raw || *end != '\0' || value < 0 || value > 32) {
+        throw std::runtime_error("directed segment point-location group max iter must be an integer in [0, 32]");
+    }
+    return static_cast<int>(value);
+}
+
+static RayjoinCdbGroupMode rayjoin_cdb_group_mode_from_env()
 {
     const char* raw = std::getenv("RTDL_DIRECTED_SEGMENT_POINT_LOCATION_GROUP_MODE");
     if (raw == nullptr || raw[0] == '\0') {
         raw = std::getenv("RTDL_RAYJOIN_CDB_GROUP_MODE");
     }
-    return raw == nullptr || std::string(raw) != "adaptive";
+    if (raw == nullptr || raw[0] == '\0') {
+        return RayjoinCdbGroupMode::FineGrained;
+    }
+    const std::string value(raw);
+    if (value == "fine_grained" || value == "per_segment") {
+        return RayjoinCdbGroupMode::FineGrained;
+    }
+    if (value == "fixed8" || value == "fixed_8") {
+        return RayjoinCdbGroupMode::Fixed8;
+    }
+    if (value == "adaptive") {
+        return RayjoinCdbGroupMode::SequentialAdaptive;
+    }
+    if (value == "block_merge64" || value == "author_block_merge64") {
+        return RayjoinCdbGroupMode::BlockMerge64;
+    }
+    return RayjoinCdbGroupMode::Fixed8;
 }
 
 struct SegmentPairExactCountLaunchParams {
@@ -4171,7 +4666,14 @@ struct SegmentPairDeviceRefinedCountFunction {
     std::once_flag init;
 };
 
+struct SegmentPairSplitPackedPairIdsFunction {
+    CUmodule module = nullptr;
+    CUfunction fn = nullptr;
+    std::once_flag init;
+};
+
 static SegmentPairDeviceRefinedCountFunction g_segment_pair_device_refined_count;
+static SegmentPairSplitPackedPairIdsFunction g_segment_pair_split_packed_pair_ids;
 static SegmentPairIntersectionPipeline g_segment_pair_exact_count;
 static SegmentPairIntersectionPipeline g_segment_pair_direct_intersection_exact_count;
 static SegmentPairIntersectionPipeline g_segment_pair_grouped_range_direct_intersection_exact_count;
@@ -4217,6 +4719,25 @@ extern "C" __global__ void segment_pair_ambiguity_count_kernel(
     if (fabsf(denom) < 1.0e-7f) {
         atomicAdd(ambiguous_count, 1ull);
     }
+}
+)CUDA";
+
+static const char* kSegmentPairSplitPackedPairIdsKernelSrc = R"CUDA(
+#include <stdint.h>
+
+extern "C" __global__ void segment_pair_split_packed_pair_ids_kernel(
+    const unsigned long long* packed_pairs,
+    unsigned long long row_count,
+    unsigned long long* left_ids,
+    unsigned long long* right_ids)
+{
+    const unsigned long long idx =
+        (unsigned long long)blockIdx.x * (unsigned long long)blockDim.x +
+        (unsigned long long)threadIdx.x;
+    if (idx >= row_count) return;
+    const unsigned long long pair = packed_pairs[idx];
+    left_ids[idx] = pair >> 32;
+    right_ids[idx] = pair & 0xffffffffull;
 }
 )CUDA";
 
@@ -4436,7 +4957,30 @@ extern "C" __global__ void __raygen__segment_pair_direct_intersection_exact_coun
     float x1 = p.x1;
     float y1 = p.y1;
     if (params.predicate_mode == 1u) {
-        if (x0 == x1) {
+        if (params.left_rayjoin_lsi_segs != nullptr) {
+            RayjoinLsiScaledSegment exact =
+                params.left_rayjoin_lsi_segs[params.left_offset + idx];
+            const bool swap_exact = exact.x0 == exact.x1
+                ? exact.y0 > exact.y1
+                : exact.x0 > exact.x1;
+            if (swap_exact) {
+                const float tx = x0; const float ty = y0;
+                x0 = x1; y0 = y1; x1 = tx; y1 = ty;
+                const long long ex = exact.x0; const long long ey = exact.y0;
+                exact.x0 = exact.x1; exact.y0 = exact.y1;
+                exact.x1 = ex; exact.y1 = ey;
+            }
+            if (x0 == x1 && y0 == y1) {
+                const long long dx = exact.x1 - exact.x0;
+                const long long dy = exact.y1 - exact.y0;
+                if (dx != 0) {
+                    x1 = nextafterf(x0, dx > 0 ? INFINITY : -INFINITY);
+                }
+                if (dy != 0) {
+                    y1 = nextafterf(y0, dy > 0 ? INFINITY : -INFINITY);
+                }
+            }
+        } else if (x0 == x1) {
             if (y0 > y1) {
                 const float tx = x0; const float ty = y0;
                 x0 = x1; y0 = y1; x1 = tx; y1 = ty;
@@ -4643,7 +5187,30 @@ extern "C" __global__ void __raygen__segment_pair_grouped_range_direct_intersect
     float x1 = p.x1;
     float y1 = p.y1;
     if (params.predicate_mode == 1u) {
-        if (x0 == x1) {
+        if (params.left_rayjoin_lsi_segs != nullptr) {
+            RayjoinLsiScaledSegment exact =
+                params.left_rayjoin_lsi_segs[params.left_offset + idx];
+            const bool swap_exact = exact.x0 == exact.x1
+                ? exact.y0 > exact.y1
+                : exact.x0 > exact.x1;
+            if (swap_exact) {
+                const float tx = x0; const float ty = y0;
+                x0 = x1; y0 = y1; x1 = tx; y1 = ty;
+                const long long ex = exact.x0; const long long ey = exact.y0;
+                exact.x0 = exact.x1; exact.y0 = exact.y1;
+                exact.x1 = ex; exact.y1 = ey;
+            }
+            if (x0 == x1 && y0 == y1) {
+                const long long dx = exact.x1 - exact.x0;
+                const long long dy = exact.y1 - exact.y0;
+                if (dx != 0) {
+                    x1 = nextafterf(x0, dx > 0 ? INFINITY : -INFINITY);
+                }
+                if (dy != 0) {
+                    y1 = nextafterf(y0, dy > 0 ? INFINITY : -INFINITY);
+                }
+            }
+        } else if (x0 == x1) {
             if (y0 > y1) {
                 const float tx = x0; const float ty = y0;
                 x0 = x1; y0 = y1; x1 = tx; y1 = ty;
@@ -4708,6 +5275,8 @@ struct RayjoinCdbPointLocationLaunchParams {
     const GpuRayjoinCdbPoint* points;
     const GpuRayjoinCdbSegment* segments;
     const GpuRayjoinCdbSegmentRange* ranges;
+    const uint32_t* canonical_segment_ids;
+    const uint32_t* canonical_face_ids;
     GpuRayjoinCdbPointLocationRecord* output;
     uint32_t* segment_id_output;
     uint32_t* face_id_output;
@@ -4715,7 +5284,67 @@ struct RayjoinCdbPointLocationLaunchParams {
     uint32_t point_count;
     uint32_t query_map_id;
     uint32_t allow_equal_ties;
+    double scale_rry;
 };
+
+static uint32_t rayjoin_cdb_face_for_segment_direction_host(
+        const GpuRayjoinCdbSegment& segment)
+{
+    if (segment.has_scaled != 0u) {
+        return segment.sx0 < segment.sx1 ? segment.right_face_id : segment.left_face_id;
+    }
+    return segment.x0 < segment.x1 ? segment.right_face_id : segment.left_face_id;
+}
+
+struct RayjoinCdbDuplicateHalfEdgeKey {
+    int64_t ax;
+    int64_t ay;
+    int64_t bx;
+    int64_t by;
+};
+
+static bool rayjoin_cdb_duplicate_key_less(
+        const RayjoinCdbDuplicateHalfEdgeKey& left,
+        const RayjoinCdbDuplicateHalfEdgeKey& right)
+{
+    if (left.ax != right.ax) return left.ax < right.ax;
+    if (left.ay != right.ay) return left.ay < right.ay;
+    if (left.bx != right.bx) return left.bx < right.bx;
+    return left.by < right.by;
+}
+
+static bool rayjoin_cdb_duplicate_key_equal(
+        const RayjoinCdbDuplicateHalfEdgeKey& left,
+        const RayjoinCdbDuplicateHalfEdgeKey& right)
+{
+    return left.ax == right.ax && left.ay == right.ay &&
+           left.bx == right.bx && left.by == right.by;
+}
+
+static RayjoinCdbDuplicateHalfEdgeKey rayjoin_cdb_duplicate_key_for_segment(
+        const GpuRayjoinCdbSegment& segment)
+{
+    int64_t x0 = 0;
+    int64_t y0 = 0;
+    int64_t x1 = 0;
+    int64_t y1 = 0;
+    if (segment.has_scaled != 0u) {
+        x0 = segment.sx0;
+        y0 = segment.sy0;
+        x1 = segment.sx1;
+        y1 = segment.sy1;
+    } else {
+        x0 = static_cast<int64_t>(std::llround(static_cast<double>(segment.x0) * 1000000000000.0));
+        y0 = static_cast<int64_t>(std::llround(static_cast<double>(segment.y0) * 1000000000000.0));
+        x1 = static_cast<int64_t>(std::llround(static_cast<double>(segment.x1) * 1000000000000.0));
+        y1 = static_cast<int64_t>(std::llround(static_cast<double>(segment.y1) * 1000000000000.0));
+    }
+    if (x1 < x0 || (x1 == x0 && y1 < y0)) {
+        std::swap(x0, x1);
+        std::swap(y0, y1);
+    }
+    return {x0, y0, x1, y1};
+}
 
 struct PreparedSegmentPairIntersectionBuild {
     std::vector<GpuSegment> right_segments;
@@ -4776,32 +5405,46 @@ struct PreparedRayjoinCdbPointLocation2D {
     std::vector<GpuRayjoinCdbSegment> segments;
     std::vector<GpuRayjoinCdbSegmentRange> ranges;
     std::vector<RtdlRayjoinCdbSegment> host_segments;
+    std::vector<uint32_t> canonical_segment_ids;
+    std::vector<uint32_t> canonical_face_ids;
     RayjoinCdbScale scale;
     size_t segment_count = 0;
     size_t range_count = 0;
     DevPtr d_segments;
     DevPtr d_ranges;
+    DevPtr d_canonical_segment_ids;
+    DevPtr d_canonical_face_ids;
     AccelHolder accel;
 
     PreparedRayjoinCdbPointLocation2D(const RtdlRayjoinCdbSegment* input, size_t count)
         : segments(count),
           ranges(),
           host_segments(),
+          canonical_segment_ids(count),
+          canonical_face_ids(count),
           scale(rayjoin_cdb_scale_from_env()),
           segment_count(count),
           range_count(count),
           d_segments(sizeof(GpuRayjoinCdbSegment) * count),
-          d_ranges(sizeof(GpuRayjoinCdbSegmentRange) * range_count)
+          d_ranges(sizeof(GpuRayjoinCdbSegmentRange) * range_count),
+          d_canonical_segment_ids(sizeof(uint32_t) * count),
+          d_canonical_face_ids(sizeof(uint32_t) * count)
     {
+        g_optix_last_rayjoin_cdb_prepare_segment_count = count;
         if (!input && count != 0) {
             throw std::runtime_error("CDB segment pointer must not be null when segment_count is nonzero");
         }
         if (count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
             throw std::runtime_error("CDB segment count exceeds uint32 primitive capacity");
         }
+        const auto t_host_copy_start = std::chrono::steady_clock::now();
         if (count > 0) {
             host_segments.assign(input, input + count);
         }
+        const auto t_host_copy_end = std::chrono::steady_clock::now();
+        g_optix_last_rayjoin_cdb_prepare_host_copy_s += seconds_between(t_host_copy_start, t_host_copy_end);
+
+        const auto t_segment_pack_start = std::chrono::steady_clock::now();
         for (size_t i = 0; i < count; ++i) {
             if (!std::isfinite(input[i].x0) || !std::isfinite(input[i].y0) ||
                 !std::isfinite(input[i].x1) || !std::isfinite(input[i].y1)) {
@@ -4840,18 +5483,88 @@ struct PreparedRayjoinCdbPointLocation2D {
                 sy1,
             };
         }
-        upload(d_segments.ptr, segments.data(), segments.size());
+        const auto t_segment_pack_end = std::chrono::steady_clock::now();
+        g_optix_last_rayjoin_cdb_prepare_segment_pack_s +=
+            seconds_between(t_segment_pack_start, t_segment_pack_end);
 
         if (!segments.empty()) {
+            const auto t_duplicate_start = std::chrono::steady_clock::now();
+            struct DuplicateEntry {
+                RayjoinCdbDuplicateHalfEdgeKey key;
+                size_t index;
+            };
+            std::vector<DuplicateEntry> entries;
+            entries.reserve(segments.size());
+            for (size_t i = 0; i < segments.size(); ++i) {
+                entries.push_back({rayjoin_cdb_duplicate_key_for_segment(segments[i]), i});
+            }
+            std::sort(
+                entries.begin(),
+                entries.end(),
+                [](const DuplicateEntry& left, const DuplicateEntry& right) {
+                    if (!rayjoin_cdb_duplicate_key_equal(left.key, right.key)) {
+                        return rayjoin_cdb_duplicate_key_less(left.key, right.key);
+                    }
+                    return left.index < right.index;
+                });
+            size_t group_begin = 0;
+            while (group_begin < entries.size()) {
+                size_t group_end = group_begin + 1;
+                while (group_end < entries.size() &&
+                       rayjoin_cdb_duplicate_key_equal(entries[group_begin].key, entries[group_end].key)) {
+                    ++group_end;
+                }
+                size_t canonical_index = entries[group_begin].index;
+                uint32_t canonical_id = segments[canonical_index].id;
+                for (size_t i = group_begin + 1; i < group_end; ++i) {
+                    const size_t candidate_index = entries[i].index;
+                    if (segments[candidate_index].id < canonical_id) {
+                        canonical_index = candidate_index;
+                        canonical_id = segments[candidate_index].id;
+                    }
+                }
+                const uint32_t canonical_face_id =
+                    rayjoin_cdb_face_for_segment_direction_host(segments[canonical_index]);
+                for (size_t i = group_begin; i < group_end; ++i) {
+                    const size_t segment_index = entries[i].index;
+                    canonical_segment_ids[segment_index] = canonical_id;
+                    canonical_face_ids[segment_index] = canonical_face_id;
+                }
+                group_begin = group_end;
+            }
+            const auto t_duplicate_end = std::chrono::steady_clock::now();
+            g_optix_last_rayjoin_cdb_prepare_duplicate_canonicalize_s +=
+                seconds_between(t_duplicate_start, t_duplicate_end);
+        }
+        const auto t_device_upload_start = std::chrono::steady_clock::now();
+        upload(d_segments.ptr, segments.data(), segments.size());
+        upload(d_canonical_segment_ids.ptr, canonical_segment_ids.data(), canonical_segment_ids.size());
+        upload(d_canonical_face_ids.ptr, canonical_face_ids.data(), canonical_face_ids.size());
+        const auto t_device_upload_end = std::chrono::steady_clock::now();
+        g_optix_last_rayjoin_cdb_prepare_device_upload_s +=
+            seconds_between(t_device_upload_start, t_device_upload_end);
+
+        if (!segments.empty()) {
+            const auto t_range_build_start = std::chrono::steady_clock::now();
+            auto next_float_from_double = [](double value, int direction) {
+                float out = static_cast<float>(value);
+                const float target = direction < 0
+                    ? -std::numeric_limits<float>::infinity()
+                    : std::numeric_limits<float>::infinity();
+                for (int i = 0; i < 2; ++i) {
+                    out = std::nextafter(out, target);
+                }
+                return out;
+            };
             auto segment_bounds = [&](size_t segment_index) {
                 const GpuRayjoinCdbSegment& segment = segments[segment_index];
                 OptixAabb aabb;
                 aabb.minX = std::min(segment.x0, segment.x1);
                 aabb.minY = std::min(segment.y0, segment.y1);
-                aabb.minZ = 0.0f;
+                aabb.minZ = -0.005f;
                 aabb.maxX = std::max(segment.x0, segment.x1);
                 aabb.maxY = std::max(segment.y0, segment.y1);
-                aabb.maxZ = 0.0f;
+                aabb.maxZ = 0.005f;
                 return aabb;
             };
             auto merge_bounds = [](const OptixAabb& left, const OptixAabb& right) {
@@ -4867,18 +5580,29 @@ struct PreparedRayjoinCdbPointLocation2D {
             auto area = [](const OptixAabb& aabb) {
                 return (aabb.maxX - aabb.minX) * (aabb.maxY - aabb.minY);
             };
-            auto padded = [](const OptixAabb& aabb) {
-                OptixAabb padded_aabb;
-                padded_aabb.minX = aabb.minX - kSegmentAabbPad;
-                padded_aabb.minY = aabb.minY - kSegmentAabbPad;
-                padded_aabb.minZ = -kSegmentAabbPad;
-                padded_aabb.maxX = aabb.maxX + kSegmentAabbPad;
-                padded_aabb.maxY = aabb.maxY + kSegmentAabbPad;
-                padded_aabb.maxZ = kSegmentAabbPad;
-                return padded_aabb;
+            auto rounded = [&](const OptixAabb& aabb) {
+                OptixAabb rounded_aabb;
+                rounded_aabb.minX = next_float_from_double(aabb.minX, -1);
+                rounded_aabb.minY = next_float_from_double(aabb.minY, -1);
+                rounded_aabb.minZ = next_float_from_double(aabb.minZ, -1);
+                rounded_aabb.maxX = next_float_from_double(aabb.maxX, 1);
+                rounded_aabb.maxY = next_float_from_double(aabb.maxY, 1);
+                rounded_aabb.maxZ = next_float_from_double(aabb.maxZ, 1);
+                return rounded_aabb;
             };
             std::vector<OptixAabb> aabbs;
-            if (rayjoin_cdb_group_fixed8_from_env()) {
+            const RayjoinCdbGroupMode group_mode = rayjoin_cdb_group_mode_from_env();
+            if (group_mode == RayjoinCdbGroupMode::FineGrained) {
+                ranges.resize(segments.size());
+                aabbs.resize(segments.size());
+                for (size_t index = 0; index < segments.size(); ++index) {
+                    ranges[index] = {
+                        static_cast<uint32_t>(index),
+                        static_cast<uint32_t>(index + 1),
+                    };
+                    aabbs[index] = rounded(segment_bounds(index));
+                }
+            } else if (group_mode == RayjoinCdbGroupMode::Fixed8) {
                 ranges.resize((segments.size() + kSegmentsPerRange - 1) / kSegmentsPerRange);
                 aabbs.resize(ranges.size());
                 for (size_t range_index = 0; range_index < ranges.size(); ++range_index) {
@@ -4892,7 +5616,74 @@ struct PreparedRayjoinCdbPointLocation2D {
                     for (size_t i = begin + 1; i < end; ++i) {
                         bounds = merge_bounds(bounds, segment_bounds(i));
                     }
-                    aabbs[range_index] = padded(bounds);
+                    aabbs[range_index] = rounded(bounds);
+                }
+            } else if (group_mode == RayjoinCdbGroupMode::BlockMerge64) {
+                struct RangeBounds {
+                    size_t begin;
+                    size_t end;
+                    OptixAabb bounds;
+                };
+                const size_t block_size = 64u;
+                const int max_iter = rayjoin_cdb_group_max_iter_from_env();
+                const float area_enlarge = static_cast<float>(rayjoin_cdb_group_area_enlarge_from_env());
+                ranges.reserve(segments.size());
+                aabbs.reserve(segments.size());
+                for (size_t block_begin = 0; block_begin < segments.size(); block_begin += block_size) {
+                    const size_t block_end = std::min(block_begin + block_size, segments.size());
+                    RangeBounds current[64];
+                    RangeBounds next[64];
+                    size_t current_count = 0;
+                    for (size_t i = block_begin; i < block_end; ++i) {
+                        current[current_count++] = {i, i + 1, segment_bounds(i)};
+                    }
+                    for (int iter = 0; iter < max_iter; ++iter) {
+                        size_t next_count = 0;
+                        for (size_t i = 0; i < current_count; ) {
+                            if (i + 1 >= current_count) {
+                                next[next_count++] = current[i];
+                                ++i;
+                                continue;
+                            }
+                            const RangeBounds& left = current[i];
+                            const RangeBounds& right = current[i + 1];
+                            const OptixAabb merged = merge_bounds(left.bounds, right.bounds);
+                            const float base_area = std::max(area(left.bounds), area(right.bounds));
+                            const float merged_area = area(merged);
+                            if (base_area > 0.0f && merged_area / base_area < area_enlarge) {
+                                next[next_count++] = {left.begin, right.end, merged};
+                            } else {
+                                next[next_count++] = left;
+                                next[next_count++] = right;
+                            }
+                            i += 2;
+                        }
+                        const bool stable_count = next_count == current_count;
+                        if (!stable_count) {
+                            std::sort(
+                                next,
+                                next + next_count,
+                                [](const RangeBounds& left, const RangeBounds& right) {
+                                    if (left.begin != right.begin) return left.begin < right.begin;
+                                    return left.end < right.end;
+                                });
+                        }
+                        for (size_t i = 0; i < next_count; ++i) {
+                            current[i] = next[i];
+                        }
+                        current_count = next_count;
+                        if (stable_count) {
+                            break;
+                        }
+                    }
+                    for (size_t i = 0; i < current_count; ++i) {
+                        const RangeBounds& range = current[i];
+                        ranges.push_back({
+                            static_cast<uint32_t>(range.begin),
+                            static_cast<uint32_t>(range.end),
+                        });
+                        aabbs.push_back(rounded(range.bounds));
+                    }
                 }
             } else {
                 const size_t max_group_size = rayjoin_cdb_group_max_size_from_env();
@@ -4918,19 +5709,30 @@ struct PreparedRayjoinCdbPointLocation2D {
                         static_cast<uint32_t>(begin),
                         static_cast<uint32_t>(end),
                     });
-                    aabbs.push_back(padded(bounds));
+                    aabbs.push_back(rounded(bounds));
                     begin = end;
                 }
             }
             range_count = ranges.size();
+            g_optix_last_rayjoin_cdb_prepare_range_count = range_count;
             if (range_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
                 throw std::runtime_error("CDB grouped range count exceeds uint32 primitive capacity");
             }
+            const auto t_range_build_end = std::chrono::steady_clock::now();
+            g_optix_last_rayjoin_cdb_prepare_range_build_s +=
+                seconds_between(t_range_build_start, t_range_build_end);
             if (range_count == 0) {
                 return;
             }
+            const auto t_range_upload_start = std::chrono::steady_clock::now();
             upload(d_ranges.ptr, ranges.data(), ranges.size());
+            const auto t_range_upload_end = std::chrono::steady_clock::now();
+            g_optix_last_rayjoin_cdb_prepare_range_upload_s +=
+                seconds_between(t_range_upload_start, t_range_upload_end);
+            const auto t_accel_start = std::chrono::steady_clock::now();
             accel = build_custom_accel(get_optix_context(), aabbs);
+            const auto t_accel_end = std::chrono::steady_clock::now();
+            g_optix_last_rayjoin_cdb_prepare_accel_build_s += seconds_between(t_accel_start, t_accel_end);
         }
     }
 };
@@ -4976,10 +5778,58 @@ static std::vector<GpuRayjoinCdbPoint> make_rayjoin_cdb_gpu_points(
     return gpu_points;
 }
 
+static std::vector<GpuRayjoinCdbPoint> make_rayjoin_cdb_gpu_scaled_points(
+        const PreparedRayjoinCdbPointLocation2D* prepared,
+        const RtdlRayjoinCdbScaledPoint* points,
+        size_t point_count)
+{
+    if (!prepared) {
+        throw std::runtime_error("prepared CDB point-location handle must not be null");
+    }
+    if (!points && point_count != 0) {
+        throw std::runtime_error("scaled point pointer must not be null when point_count is nonzero");
+    }
+    if (point_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+        throw std::runtime_error("RayJoin CDB point-location point count exceeds uint32 launch capacity");
+    }
+    if (!prepared->scale.valid && point_count != 0) {
+        throw std::runtime_error("scaled query points require a prepared CDB scale");
+    }
+    std::vector<GpuRayjoinCdbPoint> gpu_points(point_count);
+    for (size_t i = 0; i < point_count; ++i) {
+        if (!std::isfinite(points[i].x) || !std::isfinite(points[i].y)) {
+            throw std::runtime_error("RayJoin CDB point-location query points must be finite");
+        }
+        const int64_t sx = points[i].sx;
+        const int64_t sy = points[i].sy;
+        double x = points[i].x;
+        double y = points[i].y;
+        if (prepared->scale.valid) {
+            x = rayjoin_cdb_unscale_x(prepared->scale, sx);
+            y = rayjoin_cdb_unscale_y(prepared->scale, sy);
+        }
+        gpu_points[i] = {
+            static_cast<float>(x),
+            static_cast<float>(y),
+            points[i].id,
+            prepared->scale.valid ? 1u : 0u,
+            sx,
+            sy,
+        };
+    }
+    return gpu_points;
+}
+
 struct PreparedRayjoinCdbPointLocationPoints2D {
     size_t point_count = 0;
     DevPtr d_points;
     DevPtr d_segment_ids;
+    DevPtr d_face_ids;
+    CUdeviceptr external_points_ptr = 0;
+
+    CUdeviceptr points_device_ptr() const {
+        return external_points_ptr ? external_points_ptr : d_points.ptr;
+    }
 
     PreparedRayjoinCdbPointLocationPoints2D(
             const PreparedRayjoinCdbPointLocation2D* prepared,
@@ -4987,11 +5837,40 @@ struct PreparedRayjoinCdbPointLocationPoints2D {
             size_t count)
         : point_count(count),
           d_points(sizeof(GpuRayjoinCdbPoint) * count),
-          d_segment_ids(sizeof(uint32_t) * count)
+          d_segment_ids(sizeof(uint32_t) * count),
+          d_face_ids(sizeof(uint32_t) * count)
     {
         const std::vector<GpuRayjoinCdbPoint> gpu_points =
             make_rayjoin_cdb_gpu_points(prepared, points, count);
         upload(d_points.ptr, gpu_points.data(), gpu_points.size());
+    }
+
+    PreparedRayjoinCdbPointLocationPoints2D(
+            const PreparedRayjoinCdbPointLocation2D* prepared,
+            const RtdlRayjoinCdbScaledPoint* points,
+            size_t count)
+        : point_count(count),
+          d_points(sizeof(GpuRayjoinCdbPoint) * count),
+          d_segment_ids(sizeof(uint32_t) * count),
+          d_face_ids(sizeof(uint32_t) * count)
+    {
+        const std::vector<GpuRayjoinCdbPoint> gpu_points =
+            make_rayjoin_cdb_gpu_scaled_points(prepared, points, count);
+        upload(d_points.ptr, gpu_points.data(), gpu_points.size());
+    }
+
+    PreparedRayjoinCdbPointLocationPoints2D(
+            CUdeviceptr device_points_ptr,
+            size_t count)
+        : point_count(count),
+          d_points(0),
+          d_segment_ids(sizeof(uint32_t) * count),
+          d_face_ids(sizeof(uint32_t) * count),
+          external_points_ptr(device_points_ptr)
+    {
+        if (!device_points_ptr && count != 0) {
+            throw std::runtime_error("device query point pointer must not be null when point_count is nonzero");
+        }
     }
 };
 
@@ -5399,6 +6278,19 @@ static void ensure_segment_pair_ambiguity_count_kernel() {
     });
 }
 
+static void ensure_segment_pair_split_packed_pair_ids_kernel() {
+    std::call_once(g_segment_pair_split_packed_pair_ids.init, [&]() {
+        std::string cubin = compile_to_cubin(
+            kSegmentPairSplitPackedPairIdsKernelSrc,
+            "segment_pair_split_packed_pair_ids_kernel.cu");
+        CU_CHECK(cuModuleLoadData(&g_segment_pair_split_packed_pair_ids.module, cubin.data()));
+        CU_CHECK(cuModuleGetFunction(
+            &g_segment_pair_split_packed_pair_ids.fn,
+            g_segment_pair_split_packed_pair_ids.module,
+            "segment_pair_split_packed_pair_ids_kernel"));
+    });
+}
+
 static float segment_pair_aabb_area(const OptixAabb& box)
 {
     const float width = std::max(0.0f, box.maxX - box.minX);
@@ -5418,6 +6310,10 @@ static OptixAabb segment_pair_merge_aabb(const OptixAabb& left, const OptixAabb&
     return merged;
 }
 
+static constexpr uint32_t kSegmentPairPredicateRawExact = 0u;
+static constexpr uint32_t kSegmentPairPredicatePlanarMapLsi = 1u;
+
+static uint32_t normalize_segment_pair_predicate_mode(uint32_t predicate_mode);
 static uint32_t segment_pair_predicate_mode_from_env();
 
 static float rayjoin_next_float_from_double(double value, int direction, int iterations = 2)
@@ -5459,13 +6355,15 @@ static OptixAabb rayjoin_round_aabb(const OptixAabb& aabb)
     return rounded;
 }
 
-static void ensure_segment_pair_grouped_ranges(PreparedSegmentPairIntersectionBuild* prepared)
+static void ensure_segment_pair_grouped_ranges(
+        PreparedSegmentPairIntersectionBuild* prepared,
+        uint32_t predicate_mode = kSegmentPairPredicateRawExact)
 {
     if (!prepared) {
         throw std::runtime_error("prepared segment-pair handle must not be null");
     }
-    const uint32_t predicate_mode = segment_pair_predicate_mode_from_env();
-    const bool rayjoin_lsi_mode = predicate_mode == 1u;
+    predicate_mode = normalize_segment_pair_predicate_mode(predicate_mode);
+    const bool rayjoin_lsi_mode = predicate_mode == kSegmentPairPredicatePlanarMapLsi;
     if (prepared->grouped_range_accel &&
         prepared->grouped_range_predicate_mode == predicate_mode) {
         return;
@@ -5562,10 +6460,22 @@ static void ensure_segment_pair_grouped_ranges(PreparedSegmentPairIntersectionBu
 static uint32_t segment_pair_predicate_mode_from_env()
 {
     const char* raw = std::getenv("RTDL_OPTIX_SEGMENT_PAIR_PREDICATE");
-    if (raw && std::string(raw) == "rayjoin_lsi") {
-        return 1u;
+    if (raw) {
+        const std::string mode(raw);
+        if (mode == "planar_map_lsi" || mode == "rayjoin_lsi") {
+            return kSegmentPairPredicatePlanarMapLsi;
+        }
     }
-    return 0u;
+    return kSegmentPairPredicateRawExact;
+}
+
+static uint32_t normalize_segment_pair_predicate_mode(uint32_t predicate_mode)
+{
+    if (predicate_mode == kSegmentPairPredicateRawExact ||
+        predicate_mode == kSegmentPairPredicatePlanarMapLsi) {
+        return predicate_mode;
+    }
+    throw std::runtime_error("unsupported segment-pair predicate mode");
 }
 
 static bool rayjoin_lsi_scale_key_matches(
@@ -5990,6 +6900,94 @@ static void ensure_rayjoin_cdb_point_location_pipeline() {
     });
 }
 
+static bool planar_map_lsi_materialized_intersection_point(
+        const RtdlSegment& left,
+        const RtdlSegment& right,
+        uint32_t predicate_mode,
+        double* ix_out,
+        double* iy_out)
+{
+    if (exact_segment_intersection(left, right, ix_out, iy_out)) {
+        return true;
+    }
+    if (predicate_mode != 1u) {
+        return false;
+    }
+
+    const double endpoint_scale = std::max({
+        1.0,
+        std::abs(left.x0), std::abs(left.y0), std::abs(left.x1), std::abs(left.y1),
+        std::abs(right.x0), std::abs(right.y0), std::abs(right.x1), std::abs(right.y1),
+    });
+    const double endpoint_tol = 1.0e-10 * endpoint_scale;
+    auto try_endpoint = [&](double ax, double ay, double bx, double by) {
+        if (std::abs(ax - bx) <= endpoint_tol && std::abs(ay - by) <= endpoint_tol) {
+            *ix_out = 0.5 * (ax + bx);
+            *iy_out = 0.5 * (ay + by);
+            return true;
+        }
+        return false;
+    };
+    if (try_endpoint(left.x0, left.y0, right.x0, right.y0) ||
+        try_endpoint(left.x0, left.y0, right.x1, right.y1) ||
+        try_endpoint(left.x1, left.y1, right.x0, right.y0) ||
+        try_endpoint(left.x1, left.y1, right.x1, right.y1)) {
+        return true;
+    }
+
+    const double px = left.x0;
+    const double py = left.y0;
+    const double rx = left.x1 - left.x0;
+    const double ry = left.y1 - left.y0;
+    const double qx = right.x0;
+    const double qy = right.y0;
+    const double sx = right.x1 - right.x0;
+    const double sy = right.y1 - right.y0;
+    const double denom = rx * sy - ry * sx;
+    const double param_tol = std::max(
+        1.0e-5,
+        4096.0 * std::numeric_limits<double>::epsilon() * std::max(1.0, std::hypot(rx, ry) * std::hypot(sx, sy)));
+    if (segment_intersection_denominator_is_degenerate(denom, rx, ry, sx, sy)) {
+        const bool use_x = std::abs(rx) >= std::abs(ry);
+        const double l0 = use_x ? left.x0 : left.y0;
+        const double l1 = use_x ? left.x1 : left.y1;
+        const double r0 = use_x ? right.x0 : right.y0;
+        const double r1 = use_x ? right.x1 : right.y1;
+        const double lmin = std::min(l0, l1);
+        const double lmax = std::max(l0, l1);
+        const double rmin = std::min(r0, r1);
+        const double rmax = std::max(r0, r1);
+        const double omin = std::max(lmin, rmin);
+        const double omax = std::min(lmax, rmax);
+        if (omin <= omax + param_tol) {
+            const double axis_value = 0.5 * (omin + omax);
+            double t = 0.0;
+            if (use_x && std::abs(rx) > 0.0) {
+                t = (axis_value - left.x0) / rx;
+            } else if (!use_x && std::abs(ry) > 0.0) {
+                t = (axis_value - left.y0) / ry;
+            }
+            t = std::min(1.0, std::max(0.0, t));
+            *ix_out = left.x0 + t * rx;
+            *iy_out = left.y0 + t * ry;
+            return true;
+        }
+        return false;
+    }
+
+    const double qpx = qx - px;
+    const double qpy = qy - py;
+    double t = (qpx * sy - qpy * sx) / denom;
+    const double u = (qpx * ry - qpy * rx) / denom;
+    if (!(t >= -param_tol && t <= 1.0 + param_tol && u >= -param_tol && u <= 1.0 + param_tol)) {
+        return false;
+    }
+    t = std::min(1.0, std::max(0.0, t));
+    *ix_out = px + t * rx;
+    *iy_out = py + t * ry;
+    return true;
+}
+
 static void finalize_segment_pair_intersection_rows(
         const RtdlSegment* left, size_t left_count,
         const RtdlSegment* right, size_t right_count,
@@ -6080,7 +7078,8 @@ static void finalize_segment_pair_intersection_rows(
         }
         double ix = 0.0;
         double iy = 0.0;
-        if (!exact_segment_intersection(*left_seg, *right_seg, &ix, &iy)) {
+        if (!planar_map_lsi_materialized_intersection_point(
+                *left_seg, *right_seg, predicate_mode, &ix, &iy)) {
             continue;
         }
         seen_pairs.insert(pair_key);
@@ -6190,7 +7189,8 @@ static size_t count_segment_pair_intersection_rows(
         }
         double ix = 0.0;
         double iy = 0.0;
-        if (!exact_segment_intersection(*left_seg, *right_seg, &ix, &iy)) {
+        if (!planar_map_lsi_materialized_intersection_point(
+                *left_seg, *right_seg, predicate_mode, &ix, &iy)) {
             continue;
         }
         seen_pairs.insert(pair_key);
@@ -6322,6 +7322,8 @@ static void launch_rayjoin_cdb_point_location_optix(
     lp.points = reinterpret_cast<const GpuRayjoinCdbPoint*>(d_points_ptr);
     lp.segments = reinterpret_cast<const GpuRayjoinCdbSegment*>(prepared->d_segments.ptr);
     lp.ranges = reinterpret_cast<const GpuRayjoinCdbSegmentRange*>(prepared->d_ranges.ptr);
+    lp.canonical_segment_ids = reinterpret_cast<const uint32_t*>(prepared->d_canonical_segment_ids.ptr);
+    lp.canonical_face_ids = reinterpret_cast<const uint32_t*>(prepared->d_canonical_face_ids.ptr);
     lp.output = reinterpret_cast<GpuRayjoinCdbPointLocationRecord*>(d_output_ptr);
     lp.segment_id_output = reinterpret_cast<uint32_t*>(d_segment_id_output_ptr);
     lp.face_id_output = reinterpret_cast<uint32_t*>(d_face_id_output_ptr);
@@ -6331,6 +7333,7 @@ static void launch_rayjoin_cdb_point_location_optix(
     lp.query_map_id = (raw_query_map_id != nullptr && std::string(raw_query_map_id) == "0") ? 0u : 1u;
     lp.allow_equal_ties =
         std::getenv("RTDL_RAYJOIN_CDB_ALLOW_EQUAL_TIES") != nullptr ? 1u : 0u;
+    lp.scale_rry = prepared->scale.valid ? prepared->scale.rry : 1.0;
 
     DevPtr d_params(sizeof(RayjoinCdbPointLocationLaunchParams));
     upload(d_params.ptr, &lp, 1);
@@ -6383,8 +7386,19 @@ static PreparedRayjoinCdbPointLocation2D* prepare_rayjoin_cdb_point_location_2d_
         const RtdlRayjoinCdbSegment* segments,
         size_t segment_count)
 {
+    reset_rayjoin_cdb_point_location_phase_timings(7u);
+    reset_rayjoin_cdb_point_location_prepare_timings();
+    const auto t_total_start = std::chrono::steady_clock::now();
+    const auto t_pipeline_start = std::chrono::steady_clock::now();
     ensure_rayjoin_cdb_point_location_pipeline();
-    return new PreparedRayjoinCdbPointLocation2D(segments, segment_count);
+    const auto t_pipeline_end = std::chrono::steady_clock::now();
+    g_optix_last_rayjoin_cdb_prepare_pipeline_ensure_s +=
+        seconds_between(t_pipeline_start, t_pipeline_end);
+    PreparedRayjoinCdbPointLocation2D* prepared =
+        new PreparedRayjoinCdbPointLocation2D(segments, segment_count);
+    const auto t_total_end = std::chrono::steady_clock::now();
+    g_optix_last_rayjoin_cdb_prepare_total_s += seconds_between(t_total_start, t_total_end);
+    return prepared;
 }
 
 static PreparedRayjoinCdbPointLocationPoints2D* prepare_rayjoin_cdb_point_location_points_2d_optix(
@@ -6394,6 +7408,30 @@ static PreparedRayjoinCdbPointLocationPoints2D* prepare_rayjoin_cdb_point_locati
 {
     ensure_rayjoin_cdb_point_location_pipeline();
     return new PreparedRayjoinCdbPointLocationPoints2D(prepared, points, point_count);
+}
+
+static PreparedRayjoinCdbPointLocationPoints2D* prepare_rayjoin_cdb_point_location_scaled_points_2d_optix(
+        PreparedRayjoinCdbPointLocation2D* prepared,
+        const RtdlRayjoinCdbScaledPoint* points,
+        size_t point_count)
+{
+    ensure_rayjoin_cdb_point_location_pipeline();
+    return new PreparedRayjoinCdbPointLocationPoints2D(prepared, points, point_count);
+}
+
+static PreparedRayjoinCdbPointLocationPoints2D* prepare_directed_segment_point_location_device_query_points_2d_optix(
+        PreparedRayjoinCdbPointLocation2D* prepared,
+        CUdeviceptr device_points_ptr,
+        size_t point_count)
+{
+    if (!prepared) {
+        throw std::runtime_error("prepared directed point-location handle must not be null");
+    }
+    if (!device_points_ptr && point_count != 0) {
+        throw std::runtime_error("device query point pointer must not be null when point_count is nonzero");
+    }
+    ensure_rayjoin_cdb_point_location_pipeline();
+    return new PreparedRayjoinCdbPointLocationPoints2D(device_points_ptr, point_count);
 }
 
 static void count_prepared_rayjoin_cdb_point_location_2d_optix(
@@ -6450,7 +7488,7 @@ static void count_prepared_rayjoin_cdb_point_location_2d_device_points_optix(
     DevPtr d_positive_count(sizeof(unsigned long long));
     launch_rayjoin_cdb_point_location_optix(
         prepared,
-        prepared_points->d_points.ptr,
+        prepared_points->points_device_ptr(),
         point_count,
         0,
         0,
@@ -6484,7 +7522,7 @@ static void write_prepared_rayjoin_cdb_point_location_2d_device_segment_ids_opti
 
     launch_rayjoin_cdb_point_location_optix(
         prepared,
-        prepared_points->d_points.ptr,
+        prepared_points->points_device_ptr(),
         point_count,
         0,
         prepared_points->d_segment_ids.ptr,
@@ -6510,17 +7548,60 @@ static void write_prepared_rayjoin_cdb_point_location_2d_device_face_ids_optix(
         return;
     }
 
-    DevPtr d_face_ids(sizeof(uint32_t) * point_count);
     launch_rayjoin_cdb_point_location_optix(
         prepared,
-        prepared_points->d_points.ptr,
+        prepared_points->points_device_ptr(),
         point_count,
         0,
         0,
-        d_face_ids.ptr,
+        prepared_points->d_face_ids.ptr,
         0);
 
     *point_count_out = point_count;
+}
+
+static void prepared_rayjoin_cdb_point_location_2d_device_id_columns_optix(
+        PreparedRayjoinCdbPointLocation2D* prepared,
+        PreparedRayjoinCdbPointLocationPoints2D* prepared_points,
+        RtdlNativePointLocationDeviceIdColumns* columns_out,
+        bool face_ids)
+{
+    if (!columns_out) {
+        throw std::runtime_error("point-location device id columns_out pointer must not be null");
+    }
+    columns_out->ids_device_ptr = 0u;
+    columns_out->row_count = 0u;
+    columns_out->capacity = 0u;
+    columns_out->overflow = 0u;
+    columns_out->device_ordinal = 0;
+    columns_out->traversal_seconds = 0.0;
+
+    if (!prepared) {
+        throw std::runtime_error("prepared CDB point-location handle must not be null");
+    }
+    if (!prepared_points) {
+        throw std::runtime_error("prepared CDB point-location query points handle must not be null");
+    }
+
+    size_t point_count = 0;
+    if (face_ids) {
+        write_prepared_rayjoin_cdb_point_location_2d_device_face_ids_optix(
+            prepared, prepared_points, &point_count);
+    } else {
+        write_prepared_rayjoin_cdb_point_location_2d_device_segment_ids_optix(
+            prepared, prepared_points, &point_count);
+    }
+
+    CUdevice current_device = 0;
+    CU_CHECK(cuCtxGetDevice(&current_device));
+    columns_out->device_ordinal = static_cast<int32_t>(current_device);
+    columns_out->capacity = static_cast<uint64_t>(prepared_points->point_count);
+    columns_out->row_count = static_cast<uint64_t>(point_count);
+    columns_out->traversal_seconds = g_optix_last_rayjoin_cdb_traversal_s;
+    if (point_count != 0) {
+        columns_out->ids_device_ptr = static_cast<uint64_t>(
+            face_ids ? prepared_points->d_face_ids.ptr : prepared_points->d_segment_ids.ptr);
+    }
 }
 
 static void run_prepared_rayjoin_cdb_point_location_2d_optix(
@@ -6546,6 +7627,62 @@ static void run_prepared_rayjoin_cdb_point_location_2d_optix(
     launch_rayjoin_cdb_point_location_optix(
         prepared,
         points,
+        point_count,
+        d_output.ptr,
+        0,
+        0,
+        d_positive_count.ptr);
+
+    std::vector<GpuRayjoinCdbPointLocationRecord> gpu_rows(point_count);
+    unsigned long long host_count = 0ull;
+    const auto t_download_start = std::chrono::steady_clock::now();
+    download(gpu_rows.data(), d_output.ptr, point_count);
+    download<unsigned long long>(&host_count, d_positive_count.ptr, 1);
+    const auto t_download_end = std::chrono::steady_clock::now();
+    g_optix_last_rayjoin_cdb_row_download_s += seconds_between(t_download_start, t_download_end);
+    g_optix_last_rayjoin_cdb_positive_face_count = static_cast<size_t>(host_count);
+
+    auto* out = static_cast<RtdlRayjoinCdbPointLocationRow*>(
+        std::malloc(sizeof(RtdlRayjoinCdbPointLocationRow) * point_count));
+    if (!out && point_count != 0) {
+        throw std::bad_alloc();
+    }
+    for (size_t i = 0; i < point_count; ++i) {
+        out[i] = RtdlRayjoinCdbPointLocationRow{
+            gpu_rows[i].point_id,
+            gpu_rows[i].face_id,
+            gpu_rows[i].segment_id,
+            static_cast<double>(gpu_rows[i].hit_t),
+        };
+    }
+    *rows_out = out;
+    *row_count_out = point_count;
+}
+
+static void run_prepared_rayjoin_cdb_point_location_scaled_points_2d_optix(
+        PreparedRayjoinCdbPointLocation2D* prepared,
+        const RtdlRayjoinCdbScaledPoint* points,
+        size_t point_count,
+        RtdlRayjoinCdbPointLocationRow** rows_out,
+        size_t* row_count_out)
+{
+    if (!rows_out || !row_count_out) {
+        throw std::runtime_error("row output pointers must not be null");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+    reset_rayjoin_cdb_point_location_phase_timings(6u);
+    g_optix_last_rayjoin_cdb_point_count = point_count;
+    if (point_count == 0 || !prepared || prepared->segment_count == 0) {
+        return;
+    }
+
+    PreparedRayjoinCdbPointLocationPoints2D prepared_points(prepared, points, point_count);
+    DevPtr d_output(sizeof(GpuRayjoinCdbPointLocationRecord) * point_count);
+    DevPtr d_positive_count(sizeof(unsigned long long));
+    launch_rayjoin_cdb_point_location_optix(
+        prepared,
+        prepared_points.d_points.ptr,
         point_count,
         d_output.ptr,
         0,
@@ -7008,7 +8145,14 @@ static size_t count_segment_pair_intersection_grouped_range_direct_is_exact_one_
     if (left_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
         throw std::runtime_error("segment-pair grouped-range count left segment count exceeds uint32 launch capacity");
     }
-    ensure_segment_pair_grouped_ranges(prepared);
+    const auto total_start = std::chrono::steady_clock::now();
+    predicate_mode = normalize_segment_pair_predicate_mode(predicate_mode);
+    {
+        const auto phase_start = std::chrono::steady_clock::now();
+        ensure_segment_pair_grouped_ranges(prepared, predicate_mode);
+        g_optix_last_segment_pair_grouped_range_ensure_s +=
+            std::chrono::duration<double>(std::chrono::steady_clock::now() - phase_start).count();
+    }
     if (prepared->right_group_count == 0) {
         return 0;
     }
@@ -7016,8 +8160,14 @@ static size_t count_segment_pair_intersection_grouped_range_direct_is_exact_one_
         throw std::runtime_error("segment-pair grouped-range count group count exceeds uint32 primitive capacity");
     }
 
-    ensure_segment_pair_grouped_range_direct_intersection_exact_count_pipeline();
+    {
+        const auto phase_start = std::chrono::steady_clock::now();
+        ensure_segment_pair_grouped_range_direct_intersection_exact_count_pipeline();
+        g_optix_last_segment_pair_exact_pipeline_ensure_s +=
+            std::chrono::duration<double>(std::chrono::steady_clock::now() - phase_start).count();
+    }
 
+    const auto alloc_start = std::chrono::steady_clock::now();
     DevPtr d_exact_count(sizeof(unsigned long long));
     DevPtr d_group_candidate_count(
         record_group_candidate_events ? sizeof(unsigned long long) : 0);
@@ -7034,6 +8184,8 @@ static size_t count_segment_pair_intersection_grouped_range_direct_is_exact_one_
         }
     }
     DevPtr d_pair_output(pair_dump_capacity * sizeof(unsigned long long));
+    g_optix_last_segment_pair_device_alloc_s +=
+        std::chrono::duration<double>(std::chrono::steady_clock::now() - alloc_start).count();
     unsigned long long zero64 = 0ull;
     upload<unsigned long long>(d_exact_count.ptr, &zero64, 1);
     if (record_group_candidate_events) {
@@ -7057,7 +8209,10 @@ static size_t count_segment_pair_intersection_grouped_range_direct_is_exact_one_
     lp.predicate_mode = predicate_mode;
 
     DevPtr d_params(sizeof(SegmentPairGroupedRangeExactCountLaunchParams));
+    const auto param_start = std::chrono::steady_clock::now();
     upload(d_params.ptr, &lp, 1);
+    g_optix_last_segment_pair_param_upload_s +=
+        std::chrono::duration<double>(std::chrono::steady_clock::now() - param_start).count();
 
     CUstream stream = 0;
     const auto t_start = std::chrono::steady_clock::now();
@@ -7072,9 +8227,12 @@ static size_t count_segment_pair_intersection_grouped_range_direct_is_exact_one_
     const auto t_end = std::chrono::steady_clock::now();
     g_optix_last_segment_pair_candidate_count_s +=
         std::chrono::duration<double>(t_end - t_start).count();
+    g_optix_last_segment_pair_optix_launch_s +=
+        std::chrono::duration<double>(t_end - t_start).count();
 
     unsigned long long exact_count = 0ull;
     unsigned long long group_candidate_count = 0ull;
+    const auto download_start = std::chrono::steady_clock::now();
     download(&exact_count, d_exact_count.ptr, 1);
     if (record_group_candidate_events) {
         download(&group_candidate_count, d_group_candidate_count.ptr, 1);
@@ -7082,6 +8240,8 @@ static size_t count_segment_pair_intersection_grouped_range_direct_is_exact_one_
     } else {
         g_optix_last_segment_pair_raw_candidate_count = 0;
     }
+    g_optix_last_segment_pair_count_download_s +=
+        std::chrono::duration<double>(std::chrono::steady_clock::now() - download_start).count();
     if (pair_dump_capacity != 0ull) {
         const unsigned long long rows_to_copy = std::min(exact_count, pair_dump_capacity);
         std::vector<unsigned long long> pair_rows(static_cast<size_t>(rows_to_copy));
@@ -7121,7 +8281,587 @@ static size_t count_segment_pair_intersection_grouped_range_direct_is_exact_one_
                 pair_dump_capacity);
         }
     }
+    g_optix_last_segment_pair_total_native_s =
+        std::chrono::duration<double>(std::chrono::steady_clock::now() - total_start).count();
     return static_cast<size_t>(exact_count);
+}
+
+static std::vector<unsigned long long> collect_segment_pair_intersection_grouped_range_direct_pair_ids_optix(
+        PreparedSegmentPairIntersectionBuild* prepared,
+        size_t left_count,
+        CUdeviceptr d_left_ptr,
+        CUdeviceptr d_left_exact_ptr,
+        CUdeviceptr d_left_rayjoin_lsi_ptr,
+        CUdeviceptr d_right_rayjoin_lsi_ptr,
+        uint32_t predicate_mode,
+        size_t expected_pair_count)
+{
+    if (!prepared) {
+        throw std::runtime_error("prepared segment-pair handle must not be null");
+    }
+    if (expected_pair_count == 0 || left_count == 0 || prepared->right_count == 0) {
+        return {};
+    }
+    if (left_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+        throw std::runtime_error("segment-pair grouped-range row left segment count exceeds uint32 launch capacity");
+    }
+    predicate_mode = normalize_segment_pair_predicate_mode(predicate_mode);
+    ensure_segment_pair_grouped_ranges(prepared, predicate_mode);
+    if (prepared->right_group_count == 0) {
+        return {};
+    }
+    if (prepared->right_group_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+        throw std::runtime_error("segment-pair grouped-range row group count exceeds uint32 primitive capacity");
+    }
+    {
+        const auto phase_start = std::chrono::steady_clock::now();
+        ensure_segment_pair_grouped_range_direct_intersection_exact_count_pipeline();
+        g_optix_last_segment_pair_exact_pipeline_ensure_s +=
+            std::chrono::duration<double>(std::chrono::steady_clock::now() - phase_start).count();
+    }
+
+    const auto alloc_start = std::chrono::steady_clock::now();
+    DevPtr d_exact_count(sizeof(unsigned long long));
+    DevPtr d_pair_output(sizeof(unsigned long long) * expected_pair_count);
+    unsigned long long zero64 = 0ull;
+    upload<unsigned long long>(d_exact_count.ptr, &zero64, 1);
+
+    SegmentPairGroupedRangeExactCountLaunchParams lp;
+    lp.traversable = prepared->grouped_range_accel->handle;
+    lp.left_segs = reinterpret_cast<const GpuSegment*>(d_left_ptr);
+    lp.left_exact_segs = reinterpret_cast<const RtdlSegment*>(d_left_exact_ptr);
+    lp.left_rayjoin_lsi_segs = reinterpret_cast<const RayjoinLsiScaledSegment*>(d_left_rayjoin_lsi_ptr);
+    lp.right_exact_segs = reinterpret_cast<const RtdlSegment*>(prepared->d_right_exact.ptr);
+    lp.right_rayjoin_lsi_segs = reinterpret_cast<const RayjoinLsiScaledSegment*>(d_right_rayjoin_lsi_ptr);
+    lp.right_group_ranges = reinterpret_cast<const SegmentPairGroupRange*>(prepared->d_right_group_ranges->ptr);
+    lp.exact_count = reinterpret_cast<unsigned long long*>(d_exact_count.ptr);
+    lp.group_candidate_count = nullptr;
+    lp.pair_output = reinterpret_cast<unsigned long long*>(d_pair_output.ptr);
+    lp.pair_output_capacity = static_cast<unsigned long long>(expected_pair_count);
+    lp.probe_count = static_cast<uint32_t>(left_count);
+    lp.left_offset = 0u;
+    lp.predicate_mode = predicate_mode;
+
+    DevPtr d_params(sizeof(SegmentPairGroupedRangeExactCountLaunchParams));
+    const auto param_start = std::chrono::steady_clock::now();
+    upload(d_params.ptr, &lp, 1);
+    g_optix_last_segment_pair_param_upload_s +=
+        std::chrono::duration<double>(std::chrono::steady_clock::now() - param_start).count();
+
+    CUstream stream = 0;
+    const auto t_start = std::chrono::steady_clock::now();
+    OPTIX_CHECK(optixLaunch(
+        g_segment_pair_grouped_range_direct_intersection_exact_count.pipe->pipeline,
+        stream,
+        d_params.ptr,
+        sizeof(SegmentPairGroupedRangeExactCountLaunchParams),
+        &g_segment_pair_grouped_range_direct_intersection_exact_count.pipe->sbt,
+        static_cast<unsigned>(left_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+    const auto t_end = std::chrono::steady_clock::now();
+    g_optix_last_segment_pair_candidate_write_s +=
+        std::chrono::duration<double>(t_end - t_start).count();
+
+    unsigned long long exact_count = 0ull;
+    download(&exact_count, d_exact_count.ptr, 1);
+    if (exact_count != static_cast<unsigned long long>(expected_pair_count)) {
+        throw std::runtime_error("segment-pair grouped-range row count changed between count and write passes");
+    }
+    std::vector<unsigned long long> pair_rows(expected_pair_count);
+    if (!pair_rows.empty()) {
+        download(pair_rows.data(), d_pair_output.ptr, pair_rows.size());
+    }
+    return pair_rows;
+}
+
+static void run_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection_with_predicate_mode_optix(
+        PreparedSegmentPairIntersectionBuild* prepared,
+        PreparedSegmentPairLeftSet* prepared_left,
+        uint32_t predicate_mode,
+        RtdlSegmentPairIntersectionRow** rows_out,
+        size_t* row_count_out)
+{
+    if (!prepared) {
+        throw std::runtime_error("prepared segment-pair handle must not be null");
+    }
+    if (!prepared_left) {
+        throw std::runtime_error("prepared segment-pair left-set handle must not be null");
+    }
+    if (!rows_out || !row_count_out) {
+        throw std::runtime_error("segment-pair grouped-range row output pointers must not be null");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+    reset_segment_pair_phase_timings(9u);
+    if (prepared_left->left_count == 0 || prepared->right_count == 0) {
+        return;
+    }
+    predicate_mode = normalize_segment_pair_predicate_mode(predicate_mode);
+    if (predicate_mode == kSegmentPairPredicatePlanarMapLsi) {
+        ensure_rayjoin_lsi_scaled_segment_caches(prepared, prepared_left);
+    }
+    const size_t exact_count = count_segment_pair_intersection_grouped_range_direct_is_exact_one_pass_optix(
+        prepared,
+        prepared_left->left_count,
+        prepared_left->d_left.ptr,
+        prepared_left->d_left_exact.ptr,
+        predicate_mode == kSegmentPairPredicatePlanarMapLsi ? prepared_left->d_rayjoin_lsi_left->ptr : 0,
+        predicate_mode == kSegmentPairPredicatePlanarMapLsi ? prepared->d_rayjoin_lsi_right->ptr : 0,
+        predicate_mode,
+        false);
+    if (exact_count == 0) {
+        g_optix_last_segment_pair_emitted_count = 0;
+        return;
+    }
+    const std::vector<unsigned long long> pair_ids =
+        collect_segment_pair_intersection_grouped_range_direct_pair_ids_optix(
+            prepared,
+            prepared_left->left_count,
+            prepared_left->d_left.ptr,
+            prepared_left->d_left_exact.ptr,
+            predicate_mode == kSegmentPairPredicatePlanarMapLsi ? prepared_left->d_rayjoin_lsi_left->ptr : 0,
+            predicate_mode == kSegmentPairPredicatePlanarMapLsi ? prepared->d_rayjoin_lsi_right->ptr : 0,
+            predicate_mode,
+            exact_count);
+    std::vector<GpuSegmentPairIntersectionRecord> gpu_rows;
+    gpu_rows.reserve(pair_ids.size());
+    for (const unsigned long long pair : pair_ids) {
+        gpu_rows.push_back(
+            GpuSegmentPairIntersectionRecord{
+                static_cast<uint32_t>(pair >> 32),
+                static_cast<uint32_t>(pair & 0xffffffffull),
+                std::numeric_limits<uint32_t>::max(),
+                std::numeric_limits<uint32_t>::max(),
+            });
+    }
+    const auto t_refine_start = std::chrono::steady_clock::now();
+    finalize_segment_pair_intersection_rows(
+        prepared_left->host_left_segments.data(),
+        prepared_left->left_count,
+        prepared->host_right_segments.data(),
+        prepared->right_count,
+        gpu_rows,
+        rows_out,
+        row_count_out,
+        &prepared->right_by_id,
+        predicate_mode);
+    const auto t_refine_end = std::chrono::steady_clock::now();
+    g_optix_last_segment_pair_exact_refine_s =
+        std::chrono::duration<double>(t_refine_end - t_refine_start).count();
+    g_optix_last_segment_pair_emitted_count = *row_count_out;
+}
+
+static void run_prepared_segment_pair_id_rows_prepared_left_grouped_range_direct_intersection_with_predicate_mode_optix(
+        PreparedSegmentPairIntersectionBuild* prepared,
+        PreparedSegmentPairLeftSet* prepared_left,
+        uint32_t predicate_mode,
+        RtdlSegmentPairIdRow** rows_out,
+        size_t* row_count_out)
+{
+    if (!prepared) {
+        throw std::runtime_error("prepared segment-pair handle must not be null");
+    }
+    if (!prepared_left) {
+        throw std::runtime_error("prepared segment-pair left-set handle must not be null");
+    }
+    if (!rows_out || !row_count_out) {
+        throw std::runtime_error("segment-pair id-row output pointers must not be null");
+    }
+    *rows_out = nullptr;
+    *row_count_out = 0;
+    reset_segment_pair_phase_timings(10u);
+    if (prepared_left->left_count == 0 || prepared->right_count == 0) {
+        return;
+    }
+    predicate_mode = normalize_segment_pair_predicate_mode(predicate_mode);
+    if (predicate_mode == kSegmentPairPredicatePlanarMapLsi) {
+        ensure_rayjoin_lsi_scaled_segment_caches(prepared, prepared_left);
+    }
+    const size_t exact_count = count_segment_pair_intersection_grouped_range_direct_is_exact_one_pass_optix(
+        prepared,
+        prepared_left->left_count,
+        prepared_left->d_left.ptr,
+        prepared_left->d_left_exact.ptr,
+        predicate_mode == kSegmentPairPredicatePlanarMapLsi ? prepared_left->d_rayjoin_lsi_left->ptr : 0,
+        predicate_mode == kSegmentPairPredicatePlanarMapLsi ? prepared->d_rayjoin_lsi_right->ptr : 0,
+        predicate_mode,
+        false);
+    if (exact_count == 0) {
+        g_optix_last_segment_pair_emitted_count = 0;
+        return;
+    }
+    const std::vector<unsigned long long> pair_ids =
+        collect_segment_pair_intersection_grouped_range_direct_pair_ids_optix(
+            prepared,
+            prepared_left->left_count,
+            prepared_left->d_left.ptr,
+            prepared_left->d_left_exact.ptr,
+            predicate_mode == kSegmentPairPredicatePlanarMapLsi ? prepared_left->d_rayjoin_lsi_left->ptr : 0,
+            predicate_mode == kSegmentPairPredicatePlanarMapLsi ? prepared->d_rayjoin_lsi_right->ptr : 0,
+            predicate_mode,
+            exact_count);
+    auto* out = static_cast<RtdlSegmentPairIdRow*>(
+        std::malloc(sizeof(RtdlSegmentPairIdRow) * pair_ids.size()));
+    if (!out && !pair_ids.empty()) {
+        throw std::bad_alloc();
+    }
+    const auto t_materialize_start = std::chrono::steady_clock::now();
+    for (size_t i = 0; i < pair_ids.size(); ++i) {
+        const unsigned long long pair = pair_ids[i];
+        out[i] = RtdlSegmentPairIdRow{
+            static_cast<uint32_t>(pair >> 32),
+            static_cast<uint32_t>(pair & 0xffffffffull),
+        };
+    }
+    const auto t_materialize_end = std::chrono::steady_clock::now();
+    g_optix_last_segment_pair_exact_refine_s =
+        std::chrono::duration<double>(t_materialize_end - t_materialize_start).count();
+    g_optix_last_segment_pair_emitted_count = pair_ids.size();
+    *rows_out = out;
+    *row_count_out = pair_ids.size();
+}
+
+static void run_prepared_segment_pair_exact_pair_id_device_columns_prepared_left_grouped_range_direct_intersection_with_predicate_mode_optix(
+        PreparedSegmentPairIntersectionBuild* prepared,
+        PreparedSegmentPairLeftSet* prepared_left,
+        uint32_t predicate_mode,
+        RtdlNativeDevicePairColumns* columns_out)
+{
+    if (!prepared) {
+        throw std::runtime_error("prepared segment-pair handle must not be null");
+    }
+    if (!prepared_left) {
+        throw std::runtime_error("prepared segment-pair left-set handle must not be null");
+    }
+    if (!columns_out) {
+        throw std::runtime_error("segment-pair exact pair-id device columns_out must not be null");
+    }
+    *columns_out = {};
+    CUdevice current_device = 0;
+    CU_CHECK(cuCtxGetDevice(&current_device));
+    columns_out->device_ordinal = static_cast<int32_t>(current_device);
+    if (prepared_left->left_count == 0 || prepared->right_count == 0) {
+        return;
+    }
+
+    reset_segment_pair_phase_timings(10u);
+    const auto total_start = std::chrono::steady_clock::now();
+    predicate_mode = normalize_segment_pair_predicate_mode(predicate_mode);
+    if (predicate_mode == kSegmentPairPredicatePlanarMapLsi) {
+        const auto phase_start = std::chrono::steady_clock::now();
+        ensure_rayjoin_lsi_scaled_segment_caches(prepared, prepared_left);
+        g_optix_last_segment_pair_scaled_cache_ensure_s +=
+            std::chrono::duration<double>(std::chrono::steady_clock::now() - phase_start).count();
+    }
+
+    const size_t exact_count = count_segment_pair_intersection_grouped_range_direct_is_exact_one_pass_optix(
+        prepared,
+        prepared_left->left_count,
+        prepared_left->d_left.ptr,
+        prepared_left->d_left_exact.ptr,
+        predicate_mode == kSegmentPairPredicatePlanarMapLsi ? prepared_left->d_rayjoin_lsi_left->ptr : 0,
+        predicate_mode == kSegmentPairPredicatePlanarMapLsi ? prepared->d_rayjoin_lsi_right->ptr : 0,
+        predicate_mode,
+        false);
+    columns_out->capacity = static_cast<uint64_t>(exact_count);
+    columns_out->candidate_event_count = static_cast<uint64_t>(exact_count);
+    if (exact_count == 0) {
+        columns_out->row_count = 0u;
+        columns_out->overflow = 0u;
+        columns_out->traversal_seconds = std::chrono::duration<double>(
+            std::chrono::steady_clock::now() - total_start).count();
+        g_optix_last_segment_pair_total_native_s = std::chrono::duration<double>(
+            std::chrono::steady_clock::now() - total_start).count();
+        return;
+    }
+    if (exact_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+        throw std::runtime_error("segment-pair exact pair-id device columns exceed uint32 launch capacity");
+    }
+
+    {
+        const auto phase_start = std::chrono::steady_clock::now();
+        ensure_segment_pair_grouped_ranges(prepared, predicate_mode);
+        g_optix_last_segment_pair_grouped_range_ensure_s +=
+            std::chrono::duration<double>(std::chrono::steady_clock::now() - phase_start).count();
+    }
+    {
+        const auto phase_start = std::chrono::steady_clock::now();
+        ensure_segment_pair_grouped_range_direct_intersection_exact_count_pipeline();
+        g_optix_last_segment_pair_exact_pipeline_ensure_s +=
+            std::chrono::duration<double>(std::chrono::steady_clock::now() - phase_start).count();
+    }
+    {
+        const auto phase_start = std::chrono::steady_clock::now();
+        ensure_segment_pair_split_packed_pair_ids_kernel();
+        g_optix_last_segment_pair_split_kernel_ensure_s +=
+            std::chrono::duration<double>(std::chrono::steady_clock::now() - phase_start).count();
+    }
+
+    const auto alloc_start = std::chrono::steady_clock::now();
+    auto owner = std::make_unique<NativeSegmentPairCandidateDeviceColumnsOwner>();
+    CU_CHECK(cuMemAlloc(&owner->left_ids, sizeof(unsigned long long) * exact_count));
+    CU_CHECK(cuMemAlloc(&owner->right_ids, sizeof(unsigned long long) * exact_count));
+    DevPtr d_pair_output(sizeof(unsigned long long) * exact_count);
+    DevPtr d_exact_count(sizeof(unsigned long long));
+    g_optix_last_segment_pair_device_alloc_s +=
+        std::chrono::duration<double>(std::chrono::steady_clock::now() - alloc_start).count();
+    unsigned long long zero64 = 0ull;
+    upload<unsigned long long>(d_exact_count.ptr, &zero64, 1);
+
+    SegmentPairGroupedRangeExactCountLaunchParams lp;
+    lp.traversable = prepared->grouped_range_accel->handle;
+    lp.left_segs = reinterpret_cast<const GpuSegment*>(prepared_left->d_left.ptr);
+    lp.left_exact_segs = reinterpret_cast<const RtdlSegment*>(prepared_left->d_left_exact.ptr);
+    lp.left_rayjoin_lsi_segs = reinterpret_cast<const RayjoinLsiScaledSegment*>(
+        predicate_mode == kSegmentPairPredicatePlanarMapLsi ? prepared_left->d_rayjoin_lsi_left->ptr : 0);
+    lp.right_exact_segs = reinterpret_cast<const RtdlSegment*>(prepared->d_right_exact.ptr);
+    lp.right_rayjoin_lsi_segs = reinterpret_cast<const RayjoinLsiScaledSegment*>(
+        predicate_mode == kSegmentPairPredicatePlanarMapLsi ? prepared->d_rayjoin_lsi_right->ptr : 0);
+    lp.right_group_ranges = reinterpret_cast<const SegmentPairGroupRange*>(prepared->d_right_group_ranges->ptr);
+    lp.exact_count = reinterpret_cast<unsigned long long*>(d_exact_count.ptr);
+    lp.group_candidate_count = nullptr;
+    lp.pair_output = reinterpret_cast<unsigned long long*>(d_pair_output.ptr);
+    lp.pair_output_capacity = static_cast<unsigned long long>(exact_count);
+    lp.probe_count = static_cast<uint32_t>(prepared_left->left_count);
+    lp.left_offset = 0u;
+    lp.predicate_mode = predicate_mode;
+
+    DevPtr d_params(sizeof(SegmentPairGroupedRangeExactCountLaunchParams));
+    const auto param_start = std::chrono::steady_clock::now();
+    upload(d_params.ptr, &lp, 1);
+    g_optix_last_segment_pair_param_upload_s +=
+        std::chrono::duration<double>(std::chrono::steady_clock::now() - param_start).count();
+
+    CUstream stream = 0;
+    const auto emit_start = std::chrono::steady_clock::now();
+    OPTIX_CHECK(optixLaunch(
+        g_segment_pair_grouped_range_direct_intersection_exact_count.pipe->pipeline,
+        stream,
+        d_params.ptr,
+        sizeof(SegmentPairGroupedRangeExactCountLaunchParams),
+        &g_segment_pair_grouped_range_direct_intersection_exact_count.pipe->sbt,
+        static_cast<unsigned>(prepared_left->left_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+    const auto emit_end = std::chrono::steady_clock::now();
+    g_optix_last_segment_pair_candidate_write_s +=
+        std::chrono::duration<double>(emit_end - emit_start).count();
+    g_optix_last_segment_pair_optix_launch_s +=
+        std::chrono::duration<double>(emit_end - emit_start).count();
+
+    unsigned long long emitted_count = 0ull;
+    const auto download_start = std::chrono::steady_clock::now();
+    download(&emitted_count, d_exact_count.ptr, 1);
+    g_optix_last_segment_pair_count_download_s +=
+        std::chrono::duration<double>(std::chrono::steady_clock::now() - download_start).count();
+    if (emitted_count != static_cast<unsigned long long>(exact_count)) {
+        throw std::runtime_error("segment-pair exact device-column count changed between count and emit passes");
+    }
+
+    unsigned long long row_count64 = static_cast<unsigned long long>(exact_count);
+    CUdeviceptr packed_ptr = d_pair_output.ptr;
+    CUdeviceptr left_ptr = owner->left_ids;
+    CUdeviceptr right_ptr = owner->right_ids;
+    void* split_args[] = {
+        &packed_ptr,
+        &row_count64,
+        &left_ptr,
+        &right_ptr,
+    };
+    const unsigned int block = 256u;
+    const unsigned int grid = static_cast<unsigned int>((row_count64 + block - 1ull) / block);
+    const auto split_start = std::chrono::steady_clock::now();
+    CU_CHECK(cuLaunchKernel(
+        g_segment_pair_split_packed_pair_ids.fn,
+        grid, 1, 1,
+        block, 1, 1,
+        0, stream,
+        split_args,
+        nullptr));
+    CU_CHECK(cuStreamSynchronize(stream));
+    g_optix_last_segment_pair_split_kernel_launch_s +=
+        std::chrono::duration<double>(std::chrono::steady_clock::now() - split_start).count();
+
+    columns_out->left_ids_device_ptr = static_cast<uint64_t>(owner->left_ids);
+    columns_out->right_ids_device_ptr = static_cast<uint64_t>(owner->right_ids);
+    columns_out->row_count = static_cast<uint64_t>(exact_count);
+    columns_out->overflow = 0u;
+    columns_out->owner_handle = owner.release();
+    columns_out->traversal_seconds = std::chrono::duration<double>(
+        std::chrono::steady_clock::now() - total_start).count();
+    g_optix_last_segment_pair_total_native_s = columns_out->traversal_seconds;
+    g_optix_last_segment_pair_emitted_count = exact_count;
+}
+
+static void run_prepared_segment_pair_bounded_exact_pair_id_device_columns_prepared_left_grouped_range_direct_intersection_with_predicate_mode_optix(
+        PreparedSegmentPairIntersectionBuild* prepared,
+        PreparedSegmentPairLeftSet* prepared_left,
+        uint32_t predicate_mode,
+        size_t max_rows,
+        RtdlNativeDevicePairColumns* columns_out)
+{
+    if (!prepared) {
+        throw std::runtime_error("prepared segment-pair handle must not be null");
+    }
+    if (!prepared_left) {
+        throw std::runtime_error("prepared segment-pair left-set handle must not be null");
+    }
+    if (!columns_out) {
+        throw std::runtime_error("segment-pair bounded exact pair-id device columns_out must not be null");
+    }
+    *columns_out = {};
+    columns_out->capacity = static_cast<uint64_t>(max_rows);
+    CUdevice current_device = 0;
+    CU_CHECK(cuCtxGetDevice(&current_device));
+    columns_out->device_ordinal = static_cast<int32_t>(current_device);
+    if (prepared_left->left_count == 0 || prepared->right_count == 0) {
+        return;
+    }
+    if (max_rows > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+        throw std::runtime_error("segment-pair bounded exact pair-id device columns max_rows exceeds uint32 launch capacity");
+    }
+
+    reset_segment_pair_phase_timings(10u);
+    const auto total_start = std::chrono::steady_clock::now();
+    predicate_mode = normalize_segment_pair_predicate_mode(predicate_mode);
+    if (predicate_mode == kSegmentPairPredicatePlanarMapLsi) {
+        const auto phase_start = std::chrono::steady_clock::now();
+        ensure_rayjoin_lsi_scaled_segment_caches(prepared, prepared_left);
+        g_optix_last_segment_pair_scaled_cache_ensure_s +=
+            std::chrono::duration<double>(std::chrono::steady_clock::now() - phase_start).count();
+    }
+
+    {
+        const auto phase_start = std::chrono::steady_clock::now();
+        ensure_segment_pair_grouped_ranges(prepared, predicate_mode);
+        g_optix_last_segment_pair_grouped_range_ensure_s +=
+            std::chrono::duration<double>(std::chrono::steady_clock::now() - phase_start).count();
+    }
+    {
+        const auto phase_start = std::chrono::steady_clock::now();
+        ensure_segment_pair_grouped_range_direct_intersection_exact_count_pipeline();
+        g_optix_last_segment_pair_exact_pipeline_ensure_s +=
+            std::chrono::duration<double>(std::chrono::steady_clock::now() - phase_start).count();
+    }
+    {
+        const auto phase_start = std::chrono::steady_clock::now();
+        ensure_segment_pair_split_packed_pair_ids_kernel();
+        g_optix_last_segment_pair_split_kernel_ensure_s +=
+            std::chrono::duration<double>(std::chrono::steady_clock::now() - phase_start).count();
+    }
+
+    std::unique_ptr<NativeSegmentPairCandidateDeviceColumnsOwner> owner;
+    CUdeviceptr left_ids_output = 0;
+    CUdeviceptr right_ids_output = 0;
+    const auto alloc_start = std::chrono::steady_clock::now();
+    if (max_rows != 0) {
+        owner = std::make_unique<NativeSegmentPairCandidateDeviceColumnsOwner>();
+        CU_CHECK(cuMemAlloc(&owner->left_ids, sizeof(unsigned long long) * max_rows));
+        CU_CHECK(cuMemAlloc(&owner->right_ids, sizeof(unsigned long long) * max_rows));
+        left_ids_output = owner->left_ids;
+        right_ids_output = owner->right_ids;
+    }
+
+    DevPtr d_pair_output(sizeof(unsigned long long) * max_rows);
+    DevPtr d_exact_count(sizeof(unsigned long long));
+    g_optix_last_segment_pair_device_alloc_s +=
+        std::chrono::duration<double>(std::chrono::steady_clock::now() - alloc_start).count();
+    unsigned long long zero64 = 0ull;
+    upload<unsigned long long>(d_exact_count.ptr, &zero64, 1);
+
+    SegmentPairGroupedRangeExactCountLaunchParams lp;
+    lp.traversable = prepared->grouped_range_accel->handle;
+    lp.left_segs = reinterpret_cast<const GpuSegment*>(prepared_left->d_left.ptr);
+    lp.left_exact_segs = reinterpret_cast<const RtdlSegment*>(prepared_left->d_left_exact.ptr);
+    lp.left_rayjoin_lsi_segs = reinterpret_cast<const RayjoinLsiScaledSegment*>(
+        predicate_mode == kSegmentPairPredicatePlanarMapLsi ? prepared_left->d_rayjoin_lsi_left->ptr : 0);
+    lp.right_exact_segs = reinterpret_cast<const RtdlSegment*>(prepared->d_right_exact.ptr);
+    lp.right_rayjoin_lsi_segs = reinterpret_cast<const RayjoinLsiScaledSegment*>(
+        predicate_mode == kSegmentPairPredicatePlanarMapLsi ? prepared->d_rayjoin_lsi_right->ptr : 0);
+    lp.right_group_ranges = reinterpret_cast<const SegmentPairGroupRange*>(prepared->d_right_group_ranges->ptr);
+    lp.exact_count = reinterpret_cast<unsigned long long*>(d_exact_count.ptr);
+    lp.group_candidate_count = nullptr;
+    lp.pair_output = reinterpret_cast<unsigned long long*>(d_pair_output.ptr);
+    lp.pair_output_capacity = static_cast<unsigned long long>(max_rows);
+    lp.probe_count = static_cast<uint32_t>(prepared_left->left_count);
+    lp.left_offset = 0u;
+    lp.predicate_mode = predicate_mode;
+
+    DevPtr d_params(sizeof(SegmentPairGroupedRangeExactCountLaunchParams));
+    const auto param_start = std::chrono::steady_clock::now();
+    upload(d_params.ptr, &lp, 1);
+    g_optix_last_segment_pair_param_upload_s +=
+        std::chrono::duration<double>(std::chrono::steady_clock::now() - param_start).count();
+
+    CUstream stream = 0;
+    const auto start = std::chrono::steady_clock::now();
+    OPTIX_CHECK(optixLaunch(
+        g_segment_pair_grouped_range_direct_intersection_exact_count.pipe->pipeline,
+        stream,
+        d_params.ptr,
+        sizeof(SegmentPairGroupedRangeExactCountLaunchParams),
+        &g_segment_pair_grouped_range_direct_intersection_exact_count.pipe->sbt,
+        static_cast<unsigned>(prepared_left->left_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+
+    const auto launch_end = std::chrono::steady_clock::now();
+    g_optix_last_segment_pair_optix_launch_s +=
+        std::chrono::duration<double>(launch_end - start).count();
+
+    unsigned long long emitted_count = 0ull;
+    const auto download_start = std::chrono::steady_clock::now();
+    download(&emitted_count, d_exact_count.ptr, 1);
+    g_optix_last_segment_pair_count_download_s +=
+        std::chrono::duration<double>(std::chrono::steady_clock::now() - download_start).count();
+    g_optix_last_segment_pair_raw_candidate_count = 0;
+    g_optix_last_segment_pair_emitted_count = static_cast<size_t>(
+        std::min<unsigned long long>(emitted_count, static_cast<unsigned long long>(max_rows)));
+    g_optix_last_segment_pair_candidate_write_s =
+        std::chrono::duration<double>(std::chrono::steady_clock::now() - start).count();
+
+    columns_out->candidate_event_count = static_cast<uint64_t>(emitted_count);
+    columns_out->traversal_seconds = std::chrono::duration<double>(
+        std::chrono::steady_clock::now() - start).count();
+    if (emitted_count > static_cast<unsigned long long>(max_rows)) {
+        columns_out->row_count = 0u;
+        columns_out->overflow = 1u;
+        g_optix_last_segment_pair_total_native_s = std::chrono::duration<double>(
+            std::chrono::steady_clock::now() - total_start).count();
+        return;
+    }
+
+    unsigned long long row_count64 = emitted_count;
+    if (row_count64 != 0ull) {
+        CUdeviceptr packed_ptr = d_pair_output.ptr;
+        CUdeviceptr left_ptr = left_ids_output;
+        CUdeviceptr right_ptr = right_ids_output;
+        void* split_args[] = {
+            &packed_ptr,
+            &row_count64,
+            &left_ptr,
+            &right_ptr,
+        };
+        const unsigned int block = 256u;
+        const unsigned int grid = static_cast<unsigned int>((row_count64 + block - 1ull) / block);
+        const auto split_start = std::chrono::steady_clock::now();
+        CU_CHECK(cuLaunchKernel(
+            g_segment_pair_split_packed_pair_ids.fn,
+            grid, 1, 1,
+            block, 1, 1,
+            0, stream,
+            split_args,
+            nullptr));
+        CU_CHECK(cuStreamSynchronize(stream));
+        g_optix_last_segment_pair_split_kernel_launch_s +=
+            std::chrono::duration<double>(std::chrono::steady_clock::now() - split_start).count();
+    }
+
+    columns_out->left_ids_device_ptr = static_cast<uint64_t>(left_ids_output);
+    columns_out->right_ids_device_ptr = static_cast<uint64_t>(right_ids_output);
+    columns_out->row_count = static_cast<uint64_t>(row_count64);
+    columns_out->overflow = 0u;
+    columns_out->owner_handle = owner.release();
+    g_optix_last_segment_pair_total_native_s = std::chrono::duration<double>(
+        std::chrono::steady_clock::now() - total_start).count();
 }
 
 static void run_prepared_segment_pair_candidate_device_columns_optix(
@@ -7678,16 +9418,16 @@ static void count_prepared_segment_pair_intersection_prepared_left_direct_inters
         return;
     }
     const uint32_t predicate_mode = segment_pair_predicate_mode_from_env();
-    if (predicate_mode == 1u) {
+    if (predicate_mode == kSegmentPairPredicatePlanarMapLsi) {
         ensure_rayjoin_lsi_scaled_segment_caches(prepared, prepared_left);
     }
     *count_out = count_segment_pair_intersection_direct_is_exact_one_pass_optix(
         prepared_left->left_count,
         prepared_left->d_left.ptr,
         prepared_left->d_left_exact.ptr,
-        predicate_mode == 1u ? prepared_left->d_rayjoin_lsi_left->ptr : 0,
+        predicate_mode == kSegmentPairPredicatePlanarMapLsi ? prepared_left->d_rayjoin_lsi_left->ptr : 0,
         prepared->d_right_exact.ptr,
-        predicate_mode == 1u ? prepared->d_rayjoin_lsi_right->ptr : 0,
+        predicate_mode == kSegmentPairPredicatePlanarMapLsi ? prepared->d_rayjoin_lsi_right->ptr : 0,
         prepared->right_count,
         prepared->accel.handle,
         predicate_mode,
@@ -7695,9 +9435,31 @@ static void count_prepared_segment_pair_intersection_prepared_left_direct_inters
     g_optix_last_segment_pair_emitted_count = *count_out;
 }
 
+static void count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection_with_predicate_mode_optix(
+        PreparedSegmentPairIntersectionBuild* prepared,
+        PreparedSegmentPairLeftSet* prepared_left,
+        uint32_t predicate_mode,
+        size_t* count_out,
+        size_t* group_count_out);
+
 static void count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection_optix(
         PreparedSegmentPairIntersectionBuild* prepared,
         PreparedSegmentPairLeftSet* prepared_left,
+        size_t* count_out,
+        size_t* group_count_out)
+{
+    count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection_with_predicate_mode_optix(
+        prepared,
+        prepared_left,
+        segment_pair_predicate_mode_from_env(),
+        count_out,
+        group_count_out);
+}
+
+static void count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection_with_predicate_mode_optix(
+        PreparedSegmentPairIntersectionBuild* prepared,
+        PreparedSegmentPairLeftSet* prepared_left,
+        uint32_t predicate_mode,
         size_t* count_out,
         size_t* group_count_out)
 {
@@ -7716,8 +9478,8 @@ static void count_prepared_segment_pair_intersection_prepared_left_grouped_range
     if (prepared_left->left_count == 0 || prepared->right_count == 0) {
         return;
     }
-    const uint32_t predicate_mode = segment_pair_predicate_mode_from_env();
-    if (predicate_mode == 1u) {
+    predicate_mode = normalize_segment_pair_predicate_mode(predicate_mode);
+    if (predicate_mode == kSegmentPairPredicatePlanarMapLsi) {
         ensure_rayjoin_lsi_scaled_segment_caches(prepared, prepared_left);
     }
     *count_out = count_segment_pair_intersection_grouped_range_direct_is_exact_one_pass_optix(
@@ -7725,8 +9487,8 @@ static void count_prepared_segment_pair_intersection_prepared_left_grouped_range
         prepared_left->left_count,
         prepared_left->d_left.ptr,
         prepared_left->d_left_exact.ptr,
-        predicate_mode == 1u ? prepared_left->d_rayjoin_lsi_left->ptr : 0,
-        predicate_mode == 1u ? prepared->d_rayjoin_lsi_right->ptr : 0,
+        predicate_mode == kSegmentPairPredicatePlanarMapLsi ? prepared_left->d_rayjoin_lsi_left->ptr : 0,
+        predicate_mode == kSegmentPairPredicatePlanarMapLsi ? prepared->d_rayjoin_lsi_right->ptr : 0,
         predicate_mode,
         false);
     *group_count_out = prepared->right_group_count;
@@ -15425,6 +17187,10 @@ static __forceinline__ __device__ bool box_contains_point(const GpuAabb2D& box, 
     return box.min_x <= x && x <= box.max_x && box.min_y <= y && y <= box.max_y;
 }
 
+static __forceinline__ __device__ bool box_is_strictly_valid(const GpuAabb2D& box) {
+    return box.min_x < box.max_x && box.min_y < box.max_y;
+}
+
 static __forceinline__ __device__ bool box_contains_box(const GpuAabb2D& box, const GpuAabb2D& query) {
     return box.min_x <= query.min_x
         && box.min_y <= query.min_y
@@ -15436,7 +17202,12 @@ static __forceinline__ __device__ bool segment_intersects_box(
         float ax, float ay, float bx, float by, const GpuAabb2D& box) {
     const float eps = 1.0e-7f;
     float tmin = 0.0f;
-    float tmax = 1.0f;
+    // IEEE-754 float32 spellings of nextafterf(1.0f, +inf) and
+    // 1 + 2 * FLT_GAMMA(3), kept literal because this NVRTC kernel does not
+    // include the host-side <float.h> definitions.
+    const float tmax_limit = 1.00000011920928955078f;
+    const float t_far_scale = 1.00000071525573730469f;
+    float tmax = tmax_limit;
     const float dx = bx - ax;
     const float dy = by - ay;
     if (fabsf(dx) < eps) {
@@ -15451,7 +17222,7 @@ static __forceinline__ __device__ bool segment_intersects_box(
             t1 = tmp;
         }
         tmin = fmaxf(tmin, t0);
-        tmax = fminf(tmax, t1);
+        tmax = fminf(tmax, t1 * t_far_scale);
         if (tmin > tmax) return false;
     }
     if (fabsf(dy) < eps) {
@@ -15466,7 +17237,7 @@ static __forceinline__ __device__ bool segment_intersects_box(
             t1 = tmp;
         }
         tmin = fmaxf(tmin, t0);
-        tmax = fminf(tmax, t1);
+        tmax = fminf(tmax, t1 * t_far_scale);
         if (tmin > tmax) return false;
     }
     return true;
@@ -15515,11 +17286,11 @@ extern "C" __global__ void __raygen__aabb_index_query() {
         if (params.intersect_pass == 0u) {
             if (idx >= params.box_query_count) return;
             const GpuAabb2D q = params.box_queries[idx];
-            trace_aabb_index_segment(q.min_x, q.min_y, q.max_x, q.max_y, idx);
+            trace_aabb_index_segment(q.max_x, q.min_y, q.min_x, q.max_y, idx);
         } else {
             if (idx >= params.indexed_box_count) return;
             const GpuAabb2D indexed = params.indexed_boxes[idx];
-            trace_aabb_index_segment(indexed.max_x, indexed.min_y, indexed.min_x, indexed.max_y, idx);
+            trace_aabb_index_segment(indexed.min_x, indexed.min_y, indexed.max_x, indexed.max_y, idx);
         }
         return;
     } else {
@@ -15542,6 +17313,10 @@ extern "C" __global__ void __intersection__aabb_index_exact() {
     const uint32_t prim = optixGetPrimitiveIndex();
     const uint32_t qidx = optixGetPayload_0();
     bool accept = false;
+    if (params.operation == 3u) {
+        const uint32_t indexed_idx = params.intersect_pass == 1u ? qidx : prim;
+        if (!box_is_strictly_valid(params.indexed_boxes[indexed_idx])) return;
+    }
     if (params.operation == 1u) {
         const GpuAabb2D indexed = params.indexed_boxes[prim];
         const GpuPoint query = params.point_queries[qidx];
@@ -15554,15 +17329,17 @@ extern "C" __global__ void __intersection__aabb_index_exact() {
         if (params.intersect_pass == 0u) {
             const GpuAabb2D indexed = params.indexed_boxes[prim];
             const GpuAabb2D query = params.box_queries[qidx];
-            accept = segment_intersects_box(query.min_x, query.min_y, query.max_x, query.max_y, indexed);
+            const bool query_diagonal_hits_indexed =
+                segment_intersects_box(query.max_x, query.min_y, query.min_x, query.max_y, indexed);
+            const bool indexed_diagonal_hits_query =
+                segment_intersects_box(indexed.min_x, indexed.min_y, indexed.max_x, indexed.max_y, query);
+            accept = query_diagonal_hits_indexed && !indexed_diagonal_hits_query;
         } else {
             const GpuAabb2D source = params.indexed_boxes[qidx];
             const GpuAabb2D query = params.box_queries[prim];
-            const bool source_antidiagonal_hits_query =
-                segment_intersects_box(source.max_x, source.min_y, source.min_x, source.max_y, query);
-            const bool query_diagonal_hits_source =
-                segment_intersects_box(query.min_x, query.min_y, query.max_x, query.max_y, source);
-            accept = source_antidiagonal_hits_query && !query_diagonal_hits_source;
+            const bool source_diagonal_hits_query =
+                segment_intersects_box(source.min_x, source.min_y, source.max_x, source.max_y, query);
+            accept = source_diagonal_hits_query;
         }
     }
     if (!accept) return;
@@ -15618,9 +17395,21 @@ struct PreparedAabbIndex2DOptix {
     size_t box_count = 0;
     DevPtr d_boxes;
     AccelHolder accel;
+    std::vector<GpuAabb2D> host_gpu_boxes;
+    std::vector<OptixAabb> host_aabbs;
+    size_t native_refit_count = 0;
+    bool mutation_state_valid = true;
+    unsigned int build_flags = OPTIX_BUILD_FLAG_ALLOW_RANDOM_VERTEX_ACCESS;
 
-    PreparedAabbIndex2DOptix(const RtdlAabb2D* boxes, size_t count)
-        : box_count(count), d_boxes(sizeof(GpuAabb2D) * count)
+    PreparedAabbIndex2DOptix(
+            const RtdlAabb2D* boxes,
+            size_t count,
+            bool allow_update)
+        : box_count(count),
+          d_boxes(sizeof(GpuAabb2D) * count),
+          build_flags(
+              OPTIX_BUILD_FLAG_ALLOW_RANDOM_VERTEX_ACCESS |
+              (allow_update ? OPTIX_BUILD_FLAG_ALLOW_UPDATE : 0u))
     {
         if (!boxes && count != 0)
             throw std::runtime_error("boxes pointer must not be null when box_count is nonzero");
@@ -15628,22 +17417,50 @@ struct PreparedAabbIndex2DOptix {
             throw std::runtime_error("AABB index box_count exceeds uint32 launch limit");
         if (count == 0) return;
 
-        std::vector<GpuAabb2D> gpu_boxes(count);
-        std::vector<OptixAabb> aabbs(count);
+        host_gpu_boxes.resize(count);
+        host_aabbs.resize(count);
         for (size_t i = 0; i < count; ++i) {
-            gpu_boxes[i] = pack_aabb2d_for_gpu(boxes[i]);
-            aabbs[i] = optix_aabb_for_gpu_box(gpu_boxes[i]);
+            host_gpu_boxes[i] = pack_aabb2d_for_gpu(boxes[i]);
+            host_aabbs[i] = optix_aabb_for_gpu_box(host_gpu_boxes[i]);
         }
-        upload(d_boxes.ptr, gpu_boxes.data(), gpu_boxes.size());
-        accel = build_custom_accel(get_optix_context(), aabbs);
+        upload(d_boxes.ptr, host_gpu_boxes.data(), host_gpu_boxes.size());
+        accel = build_custom_accel_with_flags(
+            get_optix_context(), host_aabbs, build_flags);
     }
 };
 
+static void require_prepared_aabb_index_2d_valid(
+        const PreparedAabbIndex2DOptix* prepared) {
+    if (!prepared)
+        throw std::runtime_error("prepared OptiX AABB index handle must not be null");
+    if (!prepared->mutation_state_valid)
+        throw std::runtime_error(
+            "prepared OptiX AABB index is invalid after failed rollback");
+}
+
+static void maybe_inject_aabb_refit_failure_for_testing(const char* stage) {
+    const char* mode = std::getenv("RTDL_OPTIX_TEST_AABB_REFIT_FAULT");
+    if (!mode || !stage) return;
+    const bool primary =
+        std::strcmp(stage, "primary_after_device_and_gas_update") == 0;
+    const bool rollback = std::strcmp(stage, "rollback_after_restore_write") == 0;
+    const bool fail_primary_only =
+        std::strcmp(mode, "primary_after_device_and_gas_update") == 0;
+    const bool fail_primary_and_rollback =
+        std::strcmp(mode, "primary_and_rollback_after_restore_write") == 0;
+    if ((primary && (fail_primary_only || fail_primary_and_rollback)) ||
+            (rollback && fail_primary_and_rollback)) {
+        throw std::runtime_error(
+            std::string("test-only injected OptiX AABB refit failure at ") + stage);
+    }
+}
+
 static PreparedAabbIndex2DOptix* prepare_aabb_index_2d_optix(
         const RtdlAabb2D* boxes,
-        size_t box_count)
+        size_t box_count,
+        bool allow_update = false)
 {
-    return new PreparedAabbIndex2DOptix(boxes, box_count);
+    return new PreparedAabbIndex2DOptix(boxes, box_count, allow_update);
 }
 
 static GpuPoint pack_aabb_index_point_query_for_gpu(const RtdlPoint& point)
@@ -15854,7 +17671,7 @@ static void count_prepared_aabb_index_2d_device_optix(
         uint32_t operation,
         size_t* hit_count_out)
 {
-    if (!prepared) throw std::runtime_error("prepared OptiX AABB index handle must not be null");
+    require_prepared_aabb_index_2d_valid(prepared);
     if (!hit_count_out) throw std::runtime_error("hit_count_out must not be null");
     *hit_count_out = 0;
     operation = validate_aabb_index_operation(operation);
@@ -15904,7 +17721,7 @@ static void count_prepared_aabb_index_2d_range_intersects_optix(
         PreparedAabbIndexQueries2DOptix* prepared_queries,
         size_t* hit_count_out)
 {
-    if (!prepared) throw std::runtime_error("prepared OptiX AABB index handle must not be null");
+    require_prepared_aabb_index_2d_valid(prepared);
     if (!prepared_queries) throw std::runtime_error("prepared OptiX AABB query handle must not be null");
     if (!hit_count_out) throw std::runtime_error("hit_count_out must not be null");
     *hit_count_out = 0;
@@ -15963,7 +17780,7 @@ static void count_prepared_aabb_index_2d_optix(
         uint32_t operation,
         size_t* hit_count_out)
 {
-    if (!prepared) throw std::runtime_error("prepared OptiX AABB index handle must not be null");
+    require_prepared_aabb_index_2d_valid(prepared);
     if (!hit_count_out) throw std::runtime_error("hit_count_out must not be null");
     *hit_count_out = 0;
     operation = validate_aabb_index_operation(operation);
@@ -16085,7 +17902,7 @@ static void count_prepared_aabb_index_2d_multi_operation_packed_queries_optix(
         size_t* range_contains_out,
         size_t* range_intersects_out)
 {
-    if (!prepared) throw std::runtime_error("prepared OptiX AABB index handle must not be null");
+    require_prepared_aabb_index_2d_valid(prepared);
     if (!point_contains_out || !range_contains_out || !range_intersects_out)
         throw std::runtime_error("multi-operation count outputs must not be null");
     *point_contains_out = 0;
@@ -16231,7 +18048,7 @@ static void collect_prepared_aabb_index_2d_range_intersection_rows_optix(
         size_t* emitted_count_out,
         uint32_t* overflowed_out)
 {
-    if (!prepared) throw std::runtime_error("prepared OptiX AABB index handle must not be null");
+    require_prepared_aabb_index_2d_valid(prepared);
     if (!emitted_count_out) throw std::runtime_error("emitted_count_out must not be null");
     if (!overflowed_out) throw std::runtime_error("overflowed_out must not be null");
     if (!rows_out && row_capacity != 0)
@@ -16325,7 +18142,7 @@ static void collect_prepared_aabb_index_2d_point_contains_rows_optix(
         size_t* emitted_count_out,
         uint32_t* overflowed_out)
 {
-    if (!prepared) throw std::runtime_error("prepared OptiX AABB index handle must not be null");
+    require_prepared_aabb_index_2d_valid(prepared);
     if (!emitted_count_out) throw std::runtime_error("emitted_count_out must not be null");
     if (!overflowed_out) throw std::runtime_error("overflowed_out must not be null");
     if (!rows_out && row_capacity != 0)
@@ -16397,6 +18214,1306 @@ static void collect_prepared_aabb_index_2d_point_contains_rows_optix(
     *emitted_count_out = rows.size();
     if (!rows.empty())
         std::memcpy(rows_out, rows.data(), sizeof(RtdlAabbPairRow) * rows.size());
+}
+
+static void refit_prepared_aabb_index_2d_optix(
+        PreparedAabbIndex2DOptix* prepared,
+        const RtdlAabb2D* boxes,
+        size_t box_count)
+{
+    require_prepared_aabb_index_2d_valid(prepared);
+    if (!boxes && box_count != 0)
+        throw std::runtime_error("boxes pointer must not be null when box_count is nonzero");
+    if (box_count != prepared->box_count)
+        throw std::runtime_error("native AABB refit requires unchanged box_count");
+    if (box_count == 0)
+        throw std::runtime_error("native AABB refit requires a nonempty prepared index");
+
+    std::vector<GpuAabb2D> candidate_gpu_boxes(box_count);
+    std::vector<OptixAabb> candidate_aabbs(box_count);
+    for (size_t i = 0; i < box_count; ++i) {
+        candidate_gpu_boxes[i] = pack_aabb2d_for_gpu(boxes[i]);
+        if (candidate_gpu_boxes[i].id != prepared->host_gpu_boxes[i].id)
+            throw std::runtime_error("native AABB refit requires stable ids in prepared slot order");
+        candidate_aabbs[i] = optix_aabb_for_gpu_box(candidate_gpu_boxes[i]);
+    }
+
+    try {
+        upload(prepared->d_boxes.ptr, candidate_gpu_boxes.data(), box_count);
+        refit_custom_accel_with_flags(
+            get_optix_context(), prepared->accel, candidate_aabbs,
+            prepared->build_flags);
+        maybe_inject_aabb_refit_failure_for_testing(
+            "primary_after_device_and_gas_update");
+    } catch (...) {
+        const std::exception_ptr original_error = std::current_exception();
+        try {
+            upload(prepared->d_boxes.ptr, prepared->host_gpu_boxes.data(), box_count);
+            maybe_inject_aabb_refit_failure_for_testing("rollback_after_restore_write");
+            refit_custom_accel_with_flags(
+                get_optix_context(), prepared->accel, prepared->host_aabbs,
+                prepared->build_flags);
+        } catch (...) {
+            prepared->mutation_state_valid = false;
+            throw std::runtime_error("native AABB refit failed and rollback could not restore the prepared index");
+        }
+        std::rethrow_exception(original_error);
+    }
+
+    prepared->host_gpu_boxes.swap(candidate_gpu_boxes);
+    prepared->host_aabbs.swap(candidate_aabbs);
+    ++prepared->native_refit_count;
+}
+
+static void refit_prepared_aabb_index_2d_slots_optix(
+        PreparedAabbIndex2DOptix* prepared,
+        const uint32_t* slot_indices,
+        const RtdlAabb2D* boxes,
+        size_t update_count)
+{
+    require_prepared_aabb_index_2d_valid(prepared);
+    if ((!slot_indices || !boxes) && update_count != 0)
+        throw std::runtime_error("slot indices and boxes must not be null when update_count is nonzero");
+    if (update_count == 0) return;
+
+    std::vector<uint32_t> slots(update_count);
+    std::vector<GpuAabb2D> old_gpu_boxes(update_count);
+    std::vector<OptixAabb> old_aabbs(update_count);
+    std::vector<GpuAabb2D> candidate_gpu_boxes(update_count);
+    std::vector<OptixAabb> candidate_aabbs(update_count);
+    std::unordered_set<uint32_t> seen_slots;
+    for (size_t i = 0; i < update_count; ++i) {
+        const uint32_t slot = slot_indices[i];
+        if (slot >= prepared->box_count)
+            throw std::runtime_error("native AABB sparse refit slot is outside prepared box_count");
+        if (!seen_slots.insert(slot).second)
+            throw std::runtime_error("native AABB sparse refit slots must be unique");
+        slots[i] = slot;
+        old_gpu_boxes[i] = prepared->host_gpu_boxes[slot];
+        old_aabbs[i] = prepared->host_aabbs[slot];
+        candidate_gpu_boxes[i] = pack_aabb2d_for_gpu(boxes[i]);
+        if (candidate_gpu_boxes[i].id != old_gpu_boxes[i].id)
+            throw std::runtime_error("native AABB sparse refit requires stable ids for updated slots");
+        candidate_aabbs[i] = optix_aabb_for_gpu_box(candidate_gpu_boxes[i]);
+    }
+
+    auto upload_slots = [&](const std::vector<GpuAabb2D>& gpu_boxes,
+                            const std::vector<OptixAabb>& aabbs) {
+        for (size_t i = 0; i < update_count; ++i) {
+            CU_CHECK(cuMemcpyHtoD(
+                prepared->d_boxes.ptr + sizeof(GpuAabb2D) * slots[i],
+                &gpu_boxes[i], sizeof(GpuAabb2D)));
+            CU_CHECK(cuMemcpyHtoD(
+                prepared->accel.aabb_buf + sizeof(OptixAabb) * slots[i],
+                &aabbs[i], sizeof(OptixAabb)));
+        }
+    };
+
+    try {
+        upload_slots(candidate_gpu_boxes, candidate_aabbs);
+        refit_custom_accel_existing_aabb_buffer_with_flags(
+            get_optix_context(), prepared->accel, prepared->box_count,
+            prepared->build_flags);
+        maybe_inject_aabb_refit_failure_for_testing(
+            "primary_after_device_and_gas_update");
+    } catch (...) {
+        const std::exception_ptr original_error = std::current_exception();
+        try {
+            upload_slots(old_gpu_boxes, old_aabbs);
+            maybe_inject_aabb_refit_failure_for_testing("rollback_after_restore_write");
+            refit_custom_accel_existing_aabb_buffer_with_flags(
+                get_optix_context(), prepared->accel, prepared->box_count,
+                prepared->build_flags);
+        } catch (...) {
+            prepared->mutation_state_valid = false;
+            throw std::runtime_error("native AABB sparse refit failed and rollback could not restore the prepared index");
+        }
+        std::rethrow_exception(original_error);
+    }
+
+    for (size_t i = 0; i < update_count; ++i) {
+        prepared->host_gpu_boxes[slots[i]] = candidate_gpu_boxes[i];
+        prepared->host_aabbs[slots[i]] = candidate_aabbs[i];
+    }
+    ++prepared->native_refit_count;
+}
+
+struct GpuAabb3D {
+    float min_x;
+    float min_y;
+    float min_z;
+    float max_x;
+    float max_y;
+    float max_z;
+    uint32_t id;
+};
+
+struct AabbIndex3DPointLaunchParams {
+    OptixTraversableHandle traversable;
+    const GpuPoint3DHost* point_queries;
+    const GpuAabb3D* indexed_boxes;
+    unsigned long long* hit_count;
+    RtdlAabbPairRow* rows_out;
+    uint32_t point_query_count;
+    uint32_t indexed_box_count;
+    uint32_t row_capacity;
+};
+
+static void validate_aabb3d_bounds(
+        double min_x, double min_y, double min_z,
+        double max_x, double max_y, double max_z)
+{
+    const double values[6] = {min_x, min_y, min_z, max_x, max_y, max_z};
+    for (double value : values) {
+        if (!std::isfinite(value))
+            throw std::runtime_error("3D AABB coordinates must be finite");
+    }
+    if (max_x < min_x || max_y < min_y || max_z < min_z)
+        throw std::runtime_error("3D AABB max bounds must be greater than or equal to min bounds");
+}
+
+static GpuAabb3D pack_aabb3d_for_gpu(const RtdlAabb3D& box)
+{
+    validate_aabb3d_bounds(box.min_x, box.min_y, box.min_z, box.max_x, box.max_y, box.max_z);
+    GpuAabb3D packed = {
+        static_cast<float>(box.min_x),
+        static_cast<float>(box.min_y),
+        static_cast<float>(box.min_z),
+        static_cast<float>(box.max_x),
+        static_cast<float>(box.max_y),
+        static_cast<float>(box.max_z),
+        box.id,
+    };
+    if (!std::isfinite(packed.min_x) || !std::isfinite(packed.min_y) || !std::isfinite(packed.min_z)
+            || !std::isfinite(packed.max_x) || !std::isfinite(packed.max_y) || !std::isfinite(packed.max_z))
+        throw std::runtime_error("3D AABB coordinates are outside float32 OptiX execution range");
+    return packed;
+}
+
+static GpuPoint3DHost pack_aabb_index_point_query3d_for_gpu(const RtdlPoint3D& point)
+{
+    const double values[3] = {point.x, point.y, point.z};
+    for (double value : values) {
+        if (!std::isfinite(value))
+            throw std::runtime_error("3D point query coordinates must be finite");
+    }
+    GpuPoint3DHost packed = {
+        static_cast<float>(point.x),
+        static_cast<float>(point.y),
+        static_cast<float>(point.z),
+        point.id,
+    };
+    if (!std::isfinite(packed.x) || !std::isfinite(packed.y) || !std::isfinite(packed.z))
+        throw std::runtime_error("3D point query coordinates are outside float32 OptiX execution range");
+    return packed;
+}
+
+static OptixAabb optix_aabb_for_gpu_box3d(const GpuAabb3D& box)
+{
+    OptixAabb a = {};
+    a.minX = std::min(box.min_x, box.max_x) - kAabbIndexPad;
+    a.minY = std::min(box.min_y, box.max_y) - kAabbIndexPad;
+    a.minZ = std::min(box.min_z, box.max_z) - kAabbIndexPad;
+    a.maxX = std::max(box.min_x, box.max_x) + kAabbIndexPad;
+    a.maxY = std::max(box.min_y, box.max_y) + kAabbIndexPad;
+    a.maxZ = std::max(box.min_z, box.max_z) + kAabbIndexPad;
+    return a;
+}
+
+static const char* kAabbIndex3DPointKernelSrc = R"CUDA(
+#include <optix_device.h>
+#include <stdint.h>
+
+typedef unsigned int uint32_t;
+
+struct GpuPoint3D { float x, y, z; uint32_t id; };
+
+struct GpuAabb3D {
+    float min_x;
+    float min_y;
+    float min_z;
+    float max_x;
+    float max_y;
+    float max_z;
+    uint32_t id;
+};
+
+struct RtdlAabbPairRow {
+    uint32_t query_id;
+    uint32_t indexed_id;
+};
+
+struct AabbIndex3DPointLaunchParams {
+    OptixTraversableHandle traversable;
+    const GpuPoint3D* point_queries;
+    const GpuAabb3D* indexed_boxes;
+    unsigned long long* hit_count;
+    RtdlAabbPairRow* rows_out;
+    uint32_t point_query_count;
+    uint32_t indexed_box_count;
+    uint32_t row_capacity;
+};
+
+extern "C" __constant__ AabbIndex3DPointLaunchParams params;
+
+static __forceinline__ __device__ bool box_contains_point3d(const GpuAabb3D& box, float x, float y, float z) {
+    return box.min_x <= x && x <= box.max_x
+        && box.min_y <= y && y <= box.max_y
+        && box.min_z <= z && z <= box.max_z;
+}
+
+extern "C" __global__ void __raygen__aabb_index3d_point_query() {
+    const uint32_t idx = optixGetLaunchIndex().x;
+    if (idx >= params.point_query_count) return;
+    const GpuPoint3D q = params.point_queries[idx];
+    unsigned int p0 = idx;
+    optixTrace(params.traversable,
+               make_float3(q.x, q.y, q.z),
+               make_float3(1.0f, 0.0f, 0.0f),
+               0.0f, 1.0e30f, 0.0f,
+               OptixVisibilityMask(255),
+               OPTIX_RAY_FLAG_NONE,
+               0, 1, 0,
+               p0);
+}
+
+extern "C" __global__ void __miss__aabb_index3d_miss() {}
+
+extern "C" __global__ void __intersection__aabb_index3d_exact() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t qidx = optixGetPayload_0();
+    const GpuAabb3D indexed = params.indexed_boxes[prim];
+    const GpuPoint3D query = params.point_queries[qidx];
+    if (!box_contains_point3d(indexed, query.x, query.y, query.z)) {
+        return;
+    }
+    float hit_t = optixGetRayTmin() + 1.0e-6f;
+    if (hit_t > optixGetRayTmax()) hit_t = optixGetRayTmax();
+    optixReportIntersection(hit_t, 0u);
+}
+
+extern "C" __global__ void __anyhit__aabb_index3d_count() {
+    const unsigned long long row_index = atomicAdd(params.hit_count, 1ULL);
+    if (row_index < params.row_capacity) {
+        const uint32_t prim = optixGetPrimitiveIndex();
+        const uint32_t qidx = optixGetPayload_0();
+        RtdlAabbPairRow row;
+        row.query_id = params.point_queries[qidx].id;
+        row.indexed_id = params.indexed_boxes[prim].id;
+        params.rows_out[row_index] = row;
+    }
+    optixIgnoreIntersection();
+}
+)CUDA";
+
+static void ensure_aabb_index_count_3d_pipeline()
+{
+    std::call_once(g_aabb_index_count3d.init, [&]() {
+        std::string ptx = compile_to_ptx(kAabbIndex3DPointKernelSrc, "aabb_index3d_point_kernel.cu");
+        g_aabb_index_count3d.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__aabb_index3d_point_query",
+            "__miss__aabb_index3d_miss",
+            "__intersection__aabb_index3d_exact",
+            "__anyhit__aabb_index3d_count",
+            nullptr, 1).release();
+    });
+}
+
+struct PreparedAabbIndex3DOptix {
+    size_t box_count = 0;
+    DevPtr d_boxes;
+    AccelHolder accel;
+
+    PreparedAabbIndex3DOptix(const RtdlAabb3D* boxes, size_t count)
+        : box_count(count), d_boxes(sizeof(GpuAabb3D) * count)
+    {
+        if (!boxes && count != 0)
+            throw std::runtime_error("3D AABB boxes pointer must not be null when box_count is nonzero");
+        if (count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+            throw std::runtime_error("3D AABB index box_count exceeds uint32 launch limit");
+        if (count == 0) return;
+
+        std::vector<GpuAabb3D> gpu_boxes(count);
+        std::vector<OptixAabb> aabbs(count);
+        for (size_t i = 0; i < count; ++i) {
+            gpu_boxes[i] = pack_aabb3d_for_gpu(boxes[i]);
+            aabbs[i] = optix_aabb_for_gpu_box3d(gpu_boxes[i]);
+        }
+        upload(d_boxes.ptr, gpu_boxes.data(), gpu_boxes.size());
+        accel = build_custom_accel(get_optix_context(), aabbs);
+    }
+};
+
+static PreparedAabbIndex3DOptix* prepare_aabb_index_3d_optix(
+        const RtdlAabb3D* boxes,
+        size_t box_count)
+{
+    return new PreparedAabbIndex3DOptix(boxes, box_count);
+}
+
+static void collect_prepared_aabb_index_3d_point_contains_rows_optix(
+        PreparedAabbIndex3DOptix* prepared,
+        const RtdlPoint3D* point_queries,
+        size_t point_query_count,
+        RtdlAabbPairRow* rows_out,
+        size_t row_capacity,
+        size_t* emitted_count_out,
+        uint32_t* overflowed_out)
+{
+    if (!prepared) throw std::runtime_error("prepared OptiX 3D AABB index handle must not be null");
+    if (!emitted_count_out) throw std::runtime_error("emitted_count_out must not be null");
+    if (!overflowed_out) throw std::runtime_error("overflowed_out must not be null");
+    if (!rows_out && row_capacity != 0)
+        throw std::runtime_error("rows_out pointer must not be null when row_capacity is nonzero");
+    if (!point_queries && point_query_count != 0)
+        throw std::runtime_error("3D point_queries pointer must not be null when point_query_count is nonzero");
+    if (point_query_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("3D point query count exceeds uint32 launch limit");
+    if (row_capacity > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("3D AABB row output capacity exceeds uint32 launch limit");
+
+    *emitted_count_out = 0;
+    *overflowed_out = 0;
+    if (prepared->box_count == 0 || point_query_count == 0)
+        return;
+
+    ensure_aabb_index_count_3d_pipeline();
+
+    std::vector<GpuPoint3DHost> gpu_points(point_query_count);
+    for (size_t i = 0; i < point_query_count; ++i)
+        gpu_points[i] = pack_aabb_index_point_query3d_for_gpu(point_queries[i]);
+    DevPtr d_points(sizeof(GpuPoint3DHost) * point_query_count);
+    upload(d_points.ptr, gpu_points.data(), gpu_points.size());
+
+    DevPtr d_hit_count(sizeof(unsigned long long));
+    unsigned long long zero = 0ULL;
+    upload(d_hit_count.ptr, &zero, 1);
+    DevPtr d_rows(sizeof(RtdlAabbPairRow) * row_capacity);
+
+    AabbIndex3DPointLaunchParams lp = {};
+    lp.traversable = prepared->accel.handle;
+    lp.point_queries = reinterpret_cast<const GpuPoint3DHost*>(d_points.ptr);
+    lp.indexed_boxes = reinterpret_cast<const GpuAabb3D*>(prepared->d_boxes.ptr);
+    lp.hit_count = reinterpret_cast<unsigned long long*>(d_hit_count.ptr);
+    lp.rows_out = reinterpret_cast<RtdlAabbPairRow*>(d_rows.ptr);
+    lp.point_query_count = static_cast<uint32_t>(point_query_count);
+    lp.indexed_box_count = static_cast<uint32_t>(prepared->box_count);
+    lp.row_capacity = static_cast<uint32_t>(row_capacity);
+
+    DevPtr d_params(sizeof(AabbIndex3DPointLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    CUstream stream = 0;
+    OPTIX_CHECK(optixLaunch(g_aabb_index_count3d.pipe->pipeline, stream,
+                            d_params.ptr, sizeof(AabbIndex3DPointLaunchParams),
+                            &g_aabb_index_count3d.pipe->sbt,
+                            static_cast<unsigned>(point_query_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+
+    unsigned long long raw_count = 0ULL;
+    download(&raw_count, d_hit_count.ptr, 1);
+    if (raw_count > static_cast<unsigned long long>(std::numeric_limits<size_t>::max()))
+        throw std::runtime_error("3D AABB point row output count exceeds size_t range");
+    const size_t emitted = static_cast<size_t>(raw_count);
+    *emitted_count_out = emitted;
+    if (emitted > row_capacity) {
+        *overflowed_out = 1;
+        return;
+    }
+
+    std::vector<RtdlAabbPairRow> rows(emitted);
+    if (emitted != 0)
+        download(rows.data(), d_rows.ptr, emitted);
+    std::sort(rows.begin(), rows.end(), [](const RtdlAabbPairRow& a, const RtdlAabbPairRow& b) {
+        if (a.query_id != b.query_id)
+            return a.query_id < b.query_id;
+        return a.indexed_id < b.indexed_id;
+    });
+    rows.erase(std::unique(rows.begin(), rows.end(), [](const RtdlAabbPairRow& a, const RtdlAabbPairRow& b) {
+        return a.query_id == b.query_id && a.indexed_id == b.indexed_id;
+    }), rows.end());
+    *emitted_count_out = rows.size();
+    if (!rows.empty())
+        std::memcpy(rows_out, rows.data(), sizeof(RtdlAabbPairRow) * rows.size());
+}
+
+struct GpuCellMbr3D {
+    double min_x;
+    double min_y;
+    double min_z;
+    double max_x;
+    double max_y;
+    double max_z;
+    int64_t cell_id;
+    unsigned long long point_begin_offset;
+    unsigned long long point_count;
+};
+
+struct GpuCellMbrQuery3D {
+    double x;
+    double y;
+    double z;
+    double current_best_distance;
+    int64_t current_best_item_id;
+    int64_t query_point_id;
+};
+
+struct CellMbrFrontier3DLaunchParams {
+    OptixTraversableHandle traversable;
+    const GpuCellMbrQuery3D* queries;
+    const GpuCellMbr3D* cells;
+    const double* target_coords;
+    const int64_t* target_point_ids;
+    const uint64_t* point_row_indices;
+    unsigned long long point_row_index_count;
+    unsigned long long* hit_count;
+    unsigned long long* raw_frontier_kind_counts;
+    unsigned long long* inline_cell_hit_count;
+    unsigned long long* inline_point_eval_count;
+    RtdlCellMbrFrontierRow* rows_out;
+    RtdlActiveQueryStatusStreamRow* status_rows_out;
+    double* nearest_distances_out;
+    int64_t* nearest_item_ids_out;
+    uint32_t query_count;
+    uint32_t cell_count;
+    uint32_t target_count;
+    uint32_t row_capacity;
+    unsigned long long max_inline_points;
+    uint32_t emit_pruned_rows;
+    uint32_t inline_nearest;
+    uint32_t collect_inline_stats;
+    unsigned long long* global_bound_distance_bits;
+    unsigned long long* global_bound_early_break_count;
+    uint32_t global_bound_early_break;
+    uint32_t frontier_status_probe_mode;
+    double radius;
+};
+
+static double point_to_aabb_min_distance_sq3d(
+        double x, double y, double z,
+        double min_x, double min_y, double min_z,
+        double max_x, double max_y, double max_z)
+{
+    const double dx = x < min_x ? min_x - x : (x > max_x ? x - max_x : 0.0);
+    const double dy = y < min_y ? min_y - y : (y > max_y ? y - max_y : 0.0);
+    const double dz = z < min_z ? min_z - z : (z > max_z ? z - max_z : 0.0);
+    return dx * dx + dy * dy + dz * dz;
+}
+
+static double point_to_aabb_max_distance_sq3d(
+        double x, double y, double z,
+        double min_x, double min_y, double min_z,
+        double max_x, double max_y, double max_z)
+{
+    const double dx = std::max(std::fabs(x - min_x), std::fabs(x - max_x));
+    const double dy = std::max(std::fabs(y - min_y), std::fabs(y - max_y));
+    const double dz = std::max(std::fabs(z - min_z), std::fabs(z - max_z));
+    return dx * dx + dy * dy + dz * dz;
+}
+
+static OptixAabb expanded_optix_aabb_for_cell_mbr3d(const GpuCellMbr3D& cell, double radius)
+{
+    if (radius < 0.0 || !std::isfinite(radius))
+        throw std::runtime_error("cell-MBR radius must be finite and non-negative");
+    OptixAabb a = {};
+    a.minX = static_cast<float>(std::min(cell.min_x, cell.max_x) - radius - kAabbIndexPad);
+    a.minY = static_cast<float>(std::min(cell.min_y, cell.max_y) - radius - kAabbIndexPad);
+    a.minZ = static_cast<float>(std::min(cell.min_z, cell.max_z) - radius - kAabbIndexPad);
+    a.maxX = static_cast<float>(std::max(cell.min_x, cell.max_x) + radius + kAabbIndexPad);
+    a.maxY = static_cast<float>(std::max(cell.min_y, cell.max_y) + radius + kAabbIndexPad);
+    a.maxZ = static_cast<float>(std::max(cell.min_z, cell.max_z) + radius + kAabbIndexPad);
+    return a;
+}
+
+static const char* kCellMbrFrontier3DKernelSrc = R"CUDA(
+#include <optix_device.h>
+
+typedef unsigned int uint32_t;
+typedef long long i64;
+typedef unsigned long long u64;
+
+struct GpuCellMbr3D {
+    double min_x;
+    double min_y;
+    double min_z;
+    double max_x;
+    double max_y;
+    double max_z;
+    i64 cell_id;
+    u64 point_begin_offset;
+    u64 point_count;
+};
+
+struct GpuCellMbrQuery3D {
+    double x;
+    double y;
+    double z;
+    double current_best_distance;
+    i64 current_best_item_id;
+    i64 query_point_id;
+};
+
+struct RtdlCellMbrFrontierRow {
+    i64 frontier_kind_code;
+    i64 query_row_id;
+    i64 query_point_id;
+    i64 cell_id;
+    u64 point_begin_offset;
+    u64 point_count;
+    double min_distance;
+    double max_distance;
+};
+
+struct RtdlActiveQueryStatusStreamRow {
+    i64 active_queue_index;
+    i64 query_row_id;
+    i64 source_id;
+    i64 cell_id;
+    i64 status_code;
+    i64 transition_phase_code;
+    double current_best_before_sq;
+    double current_best_after_sq;
+};
+
+struct CellMbrFrontier3DLaunchParams {
+    OptixTraversableHandle traversable;
+    const GpuCellMbrQuery3D* queries;
+    const GpuCellMbr3D* cells;
+    const double* target_coords;
+    const i64* target_point_ids;
+    const u64* point_row_indices;
+    u64 point_row_index_count;
+    u64* hit_count;
+    u64* raw_frontier_kind_counts;
+    u64* inline_cell_hit_count;
+    u64* inline_point_eval_count;
+    RtdlCellMbrFrontierRow* rows_out;
+    RtdlActiveQueryStatusStreamRow* status_rows_out;
+    double* nearest_distances_out;
+    i64* nearest_item_ids_out;
+    uint32_t query_count;
+    uint32_t cell_count;
+    uint32_t target_count;
+    uint32_t row_capacity;
+    u64 max_inline_points;
+    uint32_t emit_pruned_rows;
+    uint32_t inline_nearest;
+    uint32_t collect_inline_stats;
+    u64* global_bound_distance_bits;
+    u64* global_bound_early_break_count;
+    uint32_t global_bound_early_break;
+    uint32_t frontier_status_probe_mode;
+    double radius;
+};
+
+extern "C" __constant__ CellMbrFrontier3DLaunchParams params;
+
+static __forceinline__ __device__ double min_distance_sq(
+        const GpuCellMbrQuery3D& q,
+        const GpuCellMbr3D& c) {
+    const double dx = q.x < c.min_x ? c.min_x - q.x : (q.x > c.max_x ? q.x - c.max_x : 0.0);
+    const double dy = q.y < c.min_y ? c.min_y - q.y : (q.y > c.max_y ? q.y - c.max_y : 0.0);
+    const double dz = q.z < c.min_z ? c.min_z - q.z : (q.z > c.max_z ? q.z - c.max_z : 0.0);
+    return dx * dx + dy * dy + dz * dz;
+}
+
+static __forceinline__ __device__ double max_distance_sq(
+        const GpuCellMbrQuery3D& q,
+        const GpuCellMbr3D& c) {
+    const double raw_dx0 = q.x - c.min_x;
+    const double raw_dx1 = q.x - c.max_x;
+    const double raw_dy0 = q.y - c.min_y;
+    const double raw_dy1 = q.y - c.max_y;
+    const double raw_dz0 = q.z - c.min_z;
+    const double raw_dz1 = q.z - c.max_z;
+    const double dx0 = raw_dx0 < 0.0 ? -raw_dx0 : raw_dx0;
+    const double dx1 = raw_dx1 < 0.0 ? -raw_dx1 : raw_dx1;
+    const double dy0 = raw_dy0 < 0.0 ? -raw_dy0 : raw_dy0;
+    const double dy1 = raw_dy1 < 0.0 ? -raw_dy1 : raw_dy1;
+    const double dz0 = raw_dz0 < 0.0 ? -raw_dz0 : raw_dz0;
+    const double dz1 = raw_dz1 < 0.0 ? -raw_dz1 : raw_dz1;
+    const double dx = dx0 > dx1 ? dx0 : dx1;
+    const double dy = dy0 > dy1 ? dy0 : dy1;
+    const double dz = dz0 > dz1 ? dz0 : dz1;
+    return dx * dx + dy * dy + dz * dz;
+}
+
+static __forceinline__ __device__ double current_global_bound_sq() {
+    if (params.global_bound_early_break == 0u || params.global_bound_distance_bits == 0) {
+        return 0.0;
+    }
+    const u64 bits = *params.global_bound_distance_bits;
+    return __longlong_as_double((long long)bits);
+}
+
+static __forceinline__ __device__ void publish_global_bound_sq(double value) {
+    if (params.global_bound_early_break == 0u || params.global_bound_distance_bits == 0) {
+        return;
+    }
+    if (!isfinite(value) || value < 0.0) {
+        return;
+    }
+    const u64 bits = (u64)__double_as_longlong(value);
+    atomicMax(params.global_bound_distance_bits, bits);
+}
+
+static __forceinline__ __device__ bool can_global_bound_abort(double value) {
+    if (params.global_bound_early_break == 0u || !isfinite(value) || value < 0.0) {
+        return false;
+    }
+    const double bound = current_global_bound_sq();
+    return isfinite(bound) && bound >= 0.0 && value <= bound;
+}
+
+static __forceinline__ __device__ void increment_global_bound_early_break_count() {
+    if (params.global_bound_early_break_count != 0) {
+        atomicAdd(params.global_bound_early_break_count, 1ULL);
+    }
+}
+
+static __forceinline__ __device__ void mark_global_bound_abort() {
+    increment_global_bound_early_break_count();
+    optixSetPayload_6(1u);
+}
+
+extern "C" __global__ void __raygen__cell_mbr_frontier3d() {
+    const uint32_t idx = optixGetLaunchIndex().x;
+    if (idx >= params.query_count) return;
+    const GpuCellMbrQuery3D q = params.queries[idx];
+    unsigned int p0 = idx;
+    const double initial_best = q.current_best_distance;
+    const double initial_best_sq = (initial_best > 0.0 && isfinite(initial_best))
+        ? initial_best * initial_best
+        : 1.0 / 0.0;
+    const u64 initial_best_bits = (u64)__double_as_longlong(initial_best_sq);
+    const u64 initial_id = q.current_best_item_id >= 0 ? (u64)q.current_best_item_id : 0xffffffffffffffffULL;
+    unsigned int p1 = (unsigned int)(initial_best_bits & 0xffffffffULL);
+    unsigned int p2 = (unsigned int)((initial_best_bits >> 32) & 0xffffffffULL);
+    unsigned int p3 = (unsigned int)(initial_id & 0xffffffffULL);
+    unsigned int p4 = (unsigned int)((initial_id >> 32) & 0xffffffffULL);
+    unsigned int p5 = (q.current_best_item_id >= 0 && isfinite(initial_best)) ? 1u : 0u;
+    unsigned int p6 = 0u;
+    if (params.inline_nearest != 0u && p5 != 0u && can_global_bound_abort(initial_best_sq)) {
+        increment_global_bound_early_break_count();
+        params.nearest_distances_out[idx] = sqrt(initial_best_sq);
+        params.nearest_item_ids_out[idx] = q.current_best_item_id;
+        return;
+    }
+    optixTrace(params.traversable,
+               make_float3((float)q.x, (float)q.y, (float)q.z),
+               make_float3(1.0f, 0.0f, 0.0f),
+               0.0f, 1.0e30f, 0.0f,
+               OptixVisibilityMask(255),
+               OPTIX_RAY_FLAG_DISABLE_CLOSESTHIT,
+               0, 1, 0,
+               p0, p1, p2, p3, p4, p5, p6);
+    if (params.inline_nearest != 0u) {
+        const u64 best_bits = (((u64)p2) << 32) | (u64)p1;
+        const double best_sq = __longlong_as_double((long long)best_bits);
+        const u64 best_id = (((u64)p4) << 32) | (u64)p3;
+        params.nearest_distances_out[idx] = p5 ? sqrt(best_sq) : 1.0 / 0.0;
+        params.nearest_item_ids_out[idx] = p5 ? (i64)best_id : -1ll;
+        if (p5 != 0u && p6 == 0u) {
+            publish_global_bound_sq(best_sq);
+        }
+    }
+}
+
+extern "C" __global__ void __miss__cell_mbr_frontier3d() {}
+
+extern "C" __global__ void __intersection__cell_mbr_frontier3d_exact() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t qidx = optixGetPayload_0();
+    const GpuCellMbr3D cell = params.cells[prim];
+    const GpuCellMbrQuery3D query = params.queries[qidx];
+    const double min_sq = min_distance_sq(query, cell);
+    if (min_sq > params.radius * params.radius) {
+        return;
+    }
+    if (params.inline_nearest != 0u
+            && params.emit_pruned_rows == 0u
+            && params.frontier_status_probe_mode != 1u) {
+        const u64 best_bits = (((u64)optixGetPayload_2()) << 32) | (u64)optixGetPayload_1();
+        double best = __longlong_as_double((long long)best_bits);
+        if (params.frontier_status_probe_mode == 2u) {
+            const double initial_best = query.current_best_distance;
+            best = (initial_best > 0.0 && isfinite(initial_best))
+                ? initial_best * initial_best
+                : 1.0 / 0.0;
+        }
+        const uint32_t found = optixGetPayload_5();
+        if (found != 0u && isfinite(best) && min_sq > best) {
+            return;
+        }
+    }
+    float hit_t = optixGetRayTmin() + 1.0e-6f;
+    if (hit_t > optixGetRayTmax()) hit_t = optixGetRayTmax();
+    const u64 min_bits = (u64)__double_as_longlong(min_sq);
+    optixReportIntersection(
+        hit_t,
+        0u,
+        (unsigned int)(min_bits & 0xffffffffULL),
+        (unsigned int)((min_bits >> 32) & 0xffffffffULL));
+}
+
+extern "C" __global__ void __anyhit__cell_mbr_frontier3d_emit() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t qidx = optixGetPayload_0();
+    const GpuCellMbr3D cell = params.cells[prim];
+    const GpuCellMbrQuery3D query = params.queries[qidx];
+    const u64 min_bits_attr = (((u64)optixGetAttribute_1()) << 32) | (u64)optixGetAttribute_0();
+    const double min_sq = __longlong_as_double((long long)min_bits_attr);
+    const u64 best_bits_in = (((u64)optixGetPayload_2()) << 32) | (u64)optixGetPayload_1();
+    double best = __longlong_as_double((long long)best_bits_in);
+    u64 best_id = (((u64)optixGetPayload_4()) << 32) | (u64)optixGetPayload_3();
+    uint32_t found = optixGetPayload_5();
+    i64 kind = 1;
+    const bool inline_state_available = params.inline_nearest != 0u
+        && found != 0u
+        && isfinite(best);
+    const bool use_initial_best_status = params.frontier_status_probe_mode == 2u;
+    double status_best = best;
+    uint32_t status_found = found;
+    if (use_initial_best_status) {
+        const double initial_best = query.current_best_distance;
+        if (initial_best > 0.0 && isfinite(initial_best)) {
+            status_best = initial_best * initial_best;
+            status_found = 1u;
+        } else {
+            status_best = 1.0 / 0.0;
+            status_found = 0u;
+        }
+    }
+    const double status_best_before_sq =
+        (status_found != 0u && isfinite(status_best)) ? status_best : 1.0 / 0.0;
+    double min_dist = 0.0;
+    if (!inline_state_available) {
+        min_dist = sqrt(min_sq);
+    }
+    if (params.frontier_status_probe_mode == 1u && cell.point_count > params.max_inline_points) {
+        kind = 2;
+    } else if (use_initial_best_status) {
+        if (status_found != 0u && isfinite(status_best) && min_sq > status_best) {
+            kind = 3;
+        } else if (cell.point_count > params.max_inline_points) {
+            kind = 2;
+        }
+    } else if (inline_state_available ? (min_sq > best) : (min_dist >= query.current_best_distance)) {
+        kind = 3;
+    } else if (cell.point_count > params.max_inline_points) {
+        kind = 2;
+    }
+    if (kind == 1 && params.inline_nearest != 0u) {
+        if (params.collect_inline_stats != 0u
+                && params.inline_cell_hit_count != 0
+                && params.inline_point_eval_count != 0) {
+            atomicAdd(params.inline_cell_hit_count, 1ULL);
+            atomicAdd(params.inline_point_eval_count, (u64)cell.point_count);
+        }
+        for (u64 i = 0; i < cell.point_count; ++i) {
+            const u64 point_slot = cell.point_begin_offset + i;
+            if (point_slot >= params.point_row_index_count) {
+                continue;
+            }
+            const u64 target_row = params.point_row_indices[point_slot];
+            if (target_row >= params.target_count) {
+                continue;
+            }
+            const double tx = params.target_coords[target_row * 3ull + 0ull];
+            const double ty = params.target_coords[target_row * 3ull + 1ull];
+            const double tz = params.target_coords[target_row * 3ull + 2ull];
+            const double dx = tx - query.x;
+            const double dy = ty - query.y;
+            const double dz = tz - query.z;
+            const double d2 = dx * dx + dy * dy + dz * dz;
+            const i64 target_id_i64 = params.target_point_ids[target_row];
+            if (target_id_i64 < 0) {
+                continue;
+            }
+            const u64 target_id = (u64)target_id_i64;
+            if (!found || d2 < best || (d2 == best && target_id < best_id)) {
+                best = d2;
+                best_id = target_id;
+                found = 1u;
+            }
+            if (found != 0u && can_global_bound_abort(best)) {
+                const u64 best_bits_out = (u64)__double_as_longlong(best);
+                optixSetPayload_1((unsigned int)(best_bits_out & 0xffffffffULL));
+                optixSetPayload_2((unsigned int)((best_bits_out >> 32) & 0xffffffffULL));
+                optixSetPayload_3((unsigned int)(best_id & 0xffffffffULL));
+                optixSetPayload_4((unsigned int)((best_id >> 32) & 0xffffffffULL));
+                optixSetPayload_5(found);
+                mark_global_bound_abort();
+                optixTerminateRay();
+                return;
+            }
+        }
+        const u64 best_bits_out = (u64)__double_as_longlong(best);
+        optixSetPayload_1((unsigned int)(best_bits_out & 0xffffffffULL));
+        optixSetPayload_2((unsigned int)((best_bits_out >> 32) & 0xffffffffULL));
+        optixSetPayload_3((unsigned int)(best_id & 0xffffffffULL));
+        optixSetPayload_4((unsigned int)((best_id >> 32) & 0xffffffffULL));
+        optixSetPayload_5(found);
+        optixIgnoreIntersection();
+        return;
+    }
+    if (kind == 3 && params.emit_pruned_rows == 0u) {
+        optixIgnoreIntersection();
+        return;
+    }
+    const double row_min_dist = sqrt(min_sq);
+    const double max_sq = max_distance_sq(query, cell);
+    if (kind == 2) {
+        optixSetPayload_6(2u);
+    }
+    if (params.raw_frontier_kind_counts != 0 && kind >= 1 && kind <= 3) {
+        atomicAdd(&params.raw_frontier_kind_counts[(uint32_t)kind], 1ULL);
+    }
+    const u64 row_index = atomicAdd(params.hit_count, 1ULL);
+    if (row_index < params.row_capacity) {
+        RtdlCellMbrFrontierRow row;
+        row.frontier_kind_code = kind;
+        row.query_row_id = (i64)qidx;
+        row.query_point_id = query.query_point_id;
+        row.cell_id = cell.cell_id;
+        row.point_begin_offset = cell.point_begin_offset;
+        row.point_count = cell.point_count;
+        row.min_distance = row_min_dist;
+        row.max_distance = sqrt(max_sq);
+        params.rows_out[row_index] = row;
+        if (params.status_rows_out != 0) {
+            RtdlActiveQueryStatusStreamRow status_row;
+            status_row.active_queue_index = (i64)qidx;
+            status_row.query_row_id = (i64)qidx;
+            status_row.source_id = query.query_point_id;
+            status_row.cell_id = cell.cell_id;
+            status_row.status_code = kind;
+            status_row.transition_phase_code = kind;
+            status_row.current_best_before_sq = status_best_before_sq;
+            status_row.current_best_after_sq = status_best_before_sq;
+            params.status_rows_out[row_index] = status_row;
+        }
+    }
+    optixIgnoreIntersection();
+}
+)CUDA";
+
+static void ensure_cell_mbr_frontier_3d_pipeline()
+{
+    std::call_once(g_cell_mbr_frontier3d.init, [&]() {
+        std::string ptx = compile_to_ptx(kCellMbrFrontier3DKernelSrc, "cell_mbr_frontier3d_kernel.cu");
+        g_cell_mbr_frontier3d.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__cell_mbr_frontier3d",
+            "__miss__cell_mbr_frontier3d",
+            "__intersection__cell_mbr_frontier3d_exact",
+            "__anyhit__cell_mbr_frontier3d_emit",
+            nullptr, 7).release();
+    });
+}
+
+static void collect_cell_mbr_nearest_frontier_3d_optix(
+        const double* query_coords,
+        const int64_t* query_point_ids,
+        size_t query_count,
+        const int64_t* cell_ids,
+        const uint64_t* point_begin_offsets,
+        const uint64_t* point_counts,
+        const double* cell_mbr_min,
+        const double* cell_mbr_max,
+        size_t cell_count,
+        double radius,
+        const double* current_best_distances,
+        const int64_t* current_best_item_ids,
+        const double* target_coords,
+        const int64_t* target_point_ids,
+        size_t target_count,
+        const uint64_t* point_row_indices,
+        size_t point_row_index_count,
+        uint64_t max_inline_points,
+        uint32_t emit_pruned_rows,
+        uint32_t sort_rows,
+        uint32_t inline_nearest,
+        uint64_t row_capacity,
+        int64_t* frontier_kind_codes_out,
+        int64_t* query_row_ids_out,
+        int64_t* query_point_ids_out,
+        int64_t* cell_ids_out,
+        uint64_t* point_begin_offsets_out,
+        uint64_t* point_counts_out,
+        double* min_distances_out,
+        double* max_distances_out,
+        double* nearest_distances_out,
+        int64_t* nearest_item_ids_out,
+        uint64_t* inline_cell_hit_count_out,
+        uint64_t* inline_point_eval_count_out,
+        uint32_t global_bound_early_break,
+        uint32_t frontier_status_probe_mode,
+        uint64_t* global_bound_early_break_count_out,
+        double* global_bound_distance_out,
+        RtdlActiveQueryStatusStreamRow* status_rows_out,
+        uint64_t* emitted_count_out,
+        uint64_t* attempted_count_out,
+        uint32_t* overflowed_out)
+{
+    const auto total_start = std::chrono::steady_clock::now();
+    const uint32_t timing_mode =
+        (inline_nearest ? 1u : 0u)
+        | (emit_pruned_rows ? 2u : 0u)
+        | (sort_rows ? 4u : 0u)
+        | (inline_cell_hit_count_out && inline_point_eval_count_out ? 8u : 0u)
+        | (frontier_status_probe_mode != 0u ? 16u : 0u);
+    reset_cell_mbr_frontier_phase_timings(timing_mode);
+    if (!emitted_count_out) throw std::runtime_error("emitted_count_out must not be null");
+    if (!attempted_count_out) throw std::runtime_error("attempted_count_out must not be null");
+    if (!overflowed_out) throw std::runtime_error("overflowed_out must not be null");
+    *emitted_count_out = 0;
+    *attempted_count_out = 0;
+    *overflowed_out = 0;
+    if (radius < 0.0 || !std::isfinite(radius))
+        throw std::runtime_error("cell-MBR radius must be finite and non-negative");
+    if (query_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("cell-MBR query_count exceeds uint32 launch limit");
+    if (cell_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("cell-MBR cell_count exceeds uint32 launch limit");
+    if (target_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("cell-MBR target_count exceeds uint32 launch limit");
+    if (row_capacity > static_cast<uint64_t>(std::numeric_limits<uint32_t>::max()))
+        throw std::runtime_error("cell-MBR row_capacity exceeds uint32 launch limit");
+    if (query_count != 0 && (!query_coords || !query_point_ids || !current_best_distances || !current_best_item_ids))
+        throw std::runtime_error("cell-MBR query pointers must not be null when query_count is nonzero");
+    if (cell_count != 0 && (!cell_ids || !point_begin_offsets || !point_counts || !cell_mbr_min || !cell_mbr_max))
+        throw std::runtime_error("cell-MBR cell pointers must not be null when cell_count is nonzero");
+    if (row_capacity != 0 && (
+            !frontier_kind_codes_out || !query_row_ids_out || !query_point_ids_out || !cell_ids_out
+            || !point_begin_offsets_out || !point_counts_out || !min_distances_out || !max_distances_out))
+        throw std::runtime_error("cell-MBR output arrays must not be null when row_capacity is nonzero");
+    const bool inline_nearest_enabled = inline_nearest != 0u;
+    const bool collect_inline_stats = inline_nearest_enabled
+        && inline_cell_hit_count_out
+        && inline_point_eval_count_out;
+    const bool global_bound_enabled = inline_nearest_enabled && global_bound_early_break != 0u;
+    if (inline_cell_hit_count_out) *inline_cell_hit_count_out = 0;
+    if (inline_point_eval_count_out) *inline_point_eval_count_out = 0;
+    if (global_bound_early_break_count_out) *global_bound_early_break_count_out = 0;
+    if (global_bound_distance_out) *global_bound_distance_out = 0.0;
+    if (global_bound_early_break != 0u && !inline_nearest_enabled)
+        throw std::runtime_error("cell-MBR global bound early break requires inline_nearest");
+    if (frontier_status_probe_mode > 2u)
+        throw std::runtime_error("cell-MBR frontier_status_probe_mode must be 0, 1, or 2");
+    if (frontier_status_probe_mode != 0u && !inline_nearest_enabled)
+        throw std::runtime_error("cell-MBR frontier_status_probe_mode requires inline_nearest");
+    if (inline_nearest_enabled) {
+        if (query_count != 0 && (!nearest_distances_out || !nearest_item_ids_out))
+            throw std::runtime_error("cell-MBR inline nearest output arrays must not be null when query_count is nonzero");
+        if (target_count != 0 && (!target_coords || !target_point_ids))
+            throw std::runtime_error("cell-MBR inline nearest target arrays must not be null when target_count is nonzero");
+        if (point_row_index_count != 0 && !point_row_indices)
+            throw std::runtime_error("cell-MBR inline nearest point_row_indices must not be null when point_row_index_count is nonzero");
+    }
+    if (query_count == 0 || cell_count == 0) {
+        g_optix_last_cell_mbr_frontier_total_s = seconds_between(total_start, std::chrono::steady_clock::now());
+        return;
+    }
+
+    ensure_cell_mbr_frontier_3d_pipeline();
+
+    const auto query_pack_start = std::chrono::steady_clock::now();
+    std::vector<GpuCellMbrQuery3D> queries(query_count);
+    for (size_t i = 0; i < query_count; ++i) {
+        const double x = query_coords[i * 3 + 0];
+        const double y = query_coords[i * 3 + 1];
+        const double z = query_coords[i * 3 + 2];
+        if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z))
+            throw std::runtime_error("cell-MBR query coordinates must be finite");
+        queries[i] = {x, y, z, current_best_distances[i], current_best_item_ids[i], query_point_ids[i]};
+    }
+    g_optix_last_cell_mbr_frontier_query_pack_s =
+        seconds_between(query_pack_start, std::chrono::steady_clock::now());
+
+    const auto cell_pack_start = std::chrono::steady_clock::now();
+    std::vector<GpuCellMbr3D> cells(cell_count);
+    std::vector<OptixAabb> aabbs(cell_count);
+    for (size_t i = 0; i < cell_count; ++i) {
+        const double min_x = cell_mbr_min[i * 3 + 0];
+        const double min_y = cell_mbr_min[i * 3 + 1];
+        const double min_z = cell_mbr_min[i * 3 + 2];
+        const double max_x = cell_mbr_max[i * 3 + 0];
+        const double max_y = cell_mbr_max[i * 3 + 1];
+        const double max_z = cell_mbr_max[i * 3 + 2];
+        if (!std::isfinite(min_x) || !std::isfinite(min_y) || !std::isfinite(min_z)
+                || !std::isfinite(max_x) || !std::isfinite(max_y) || !std::isfinite(max_z))
+            throw std::runtime_error("cell-MBR bounds must be finite");
+        if (max_x < min_x || max_y < min_y || max_z < min_z)
+            throw std::runtime_error("cell-MBR max bounds must be greater than or equal to min bounds");
+        const uint64_t begin = point_begin_offsets[i];
+        const uint64_t count = point_counts[i];
+        if (inline_nearest_enabled
+                && (begin > point_row_index_count || count > point_row_index_count - begin))
+            throw std::runtime_error("cell-MBR inline nearest point row index range exceeds point_row_index_count");
+        cells[i] = {
+            min_x, min_y, min_z,
+            max_x, max_y, max_z,
+            cell_ids[i],
+            static_cast<unsigned long long>(begin),
+            static_cast<unsigned long long>(count),
+        };
+        aabbs[i] = expanded_optix_aabb_for_cell_mbr3d(cells[i], radius);
+    }
+    g_optix_last_cell_mbr_frontier_cell_pack_s =
+        seconds_between(cell_pack_start, std::chrono::steady_clock::now());
+
+    const auto upload_start = std::chrono::steady_clock::now();
+    DevPtr d_queries(sizeof(GpuCellMbrQuery3D) * query_count);
+    upload(d_queries.ptr, queries.data(), queries.size());
+    DevPtr d_cells(sizeof(GpuCellMbr3D) * cell_count);
+    upload(d_cells.ptr, cells.data(), cells.size());
+    g_optix_last_cell_mbr_frontier_query_buffer_bytes =
+        static_cast<uint64_t>(sizeof(GpuCellMbrQuery3D) * query_count);
+    g_optix_last_cell_mbr_frontier_cell_buffer_bytes =
+        static_cast<uint64_t>(sizeof(GpuCellMbr3D) * cell_count);
+    g_optix_last_cell_mbr_frontier_device_upload_s +=
+        seconds_between(upload_start, std::chrono::steady_clock::now());
+
+    const auto accel_start = std::chrono::steady_clock::now();
+    AccelHolder accel = build_custom_accel(get_optix_context(), aabbs);
+    g_optix_last_cell_mbr_frontier_accel_output_bytes =
+        static_cast<uint64_t>(accel.output_size_bytes);
+    g_optix_last_cell_mbr_frontier_accel_temp_bytes =
+        static_cast<uint64_t>(accel.temp_size_bytes);
+    g_optix_last_cell_mbr_frontier_accel_aabb_bytes =
+        static_cast<uint64_t>(accel.aabb_size_bytes);
+    g_optix_last_cell_mbr_frontier_accel_compacted_output_bytes =
+        static_cast<uint64_t>(accel.compacted_output_size_bytes);
+    g_optix_last_cell_mbr_frontier_accel_build_s =
+        seconds_between(accel_start, std::chrono::steady_clock::now());
+
+    const auto device_alloc_upload_start = std::chrono::steady_clock::now();
+    DevPtr d_hit_count(sizeof(unsigned long long));
+    unsigned long long zero = 0ULL;
+    upload(d_hit_count.ptr, &zero, 1);
+    unsigned long long zero_kind_counts[4] = {0ULL, 0ULL, 0ULL, 0ULL};
+    DevPtr d_raw_frontier_kind_counts(sizeof(zero_kind_counts));
+    upload(d_raw_frontier_kind_counts.ptr, zero_kind_counts, 4);
+    DevPtr d_inline_cell_hit_count(collect_inline_stats ? sizeof(unsigned long long) : 0);
+    DevPtr d_inline_point_eval_count(collect_inline_stats ? sizeof(unsigned long long) : 0);
+    if (collect_inline_stats) {
+        upload(d_inline_cell_hit_count.ptr, &zero, 1);
+        upload(d_inline_point_eval_count.ptr, &zero, 1);
+    }
+    DevPtr d_global_bound_distance_bits(global_bound_enabled ? sizeof(unsigned long long) : 0);
+    DevPtr d_global_bound_early_break_count(global_bound_enabled ? sizeof(unsigned long long) : 0);
+    if (global_bound_enabled) {
+        upload(d_global_bound_distance_bits.ptr, &zero, 1);
+        upload(d_global_bound_early_break_count.ptr, &zero, 1);
+    }
+    DevPtr d_rows(sizeof(RtdlCellMbrFrontierRow) * static_cast<size_t>(row_capacity));
+    DevPtr d_status_rows(status_rows_out ? sizeof(RtdlActiveQueryStatusStreamRow) * static_cast<size_t>(row_capacity) : 0);
+    DevPtr d_target_coords(inline_nearest_enabled ? sizeof(double) * target_count * 3 : 0);
+    DevPtr d_target_point_ids(inline_nearest_enabled ? sizeof(int64_t) * target_count : 0);
+    DevPtr d_point_row_indices(inline_nearest_enabled ? sizeof(uint64_t) * point_row_index_count : 0);
+    DevPtr d_nearest_distances(inline_nearest_enabled ? sizeof(double) * query_count : 0);
+    DevPtr d_nearest_item_ids(inline_nearest_enabled ? sizeof(int64_t) * query_count : 0);
+    const uint64_t row_buffer_bytes =
+        static_cast<uint64_t>(sizeof(RtdlCellMbrFrontierRow) * static_cast<size_t>(row_capacity))
+        + static_cast<uint64_t>(
+            status_rows_out
+                ? sizeof(RtdlActiveQueryStatusStreamRow) * static_cast<size_t>(row_capacity)
+                : 0);
+    const uint64_t target_buffer_bytes = inline_nearest_enabled
+        ? static_cast<uint64_t>(
+            sizeof(double) * target_count * 3
+            + sizeof(int64_t) * target_count
+            + sizeof(uint64_t) * point_row_index_count)
+        : 0ULL;
+    const uint64_t nearest_buffer_bytes = inline_nearest_enabled
+        ? static_cast<uint64_t>(sizeof(double) * query_count + sizeof(int64_t) * query_count)
+        : 0ULL;
+    g_optix_last_cell_mbr_frontier_row_buffer_bytes = row_buffer_bytes;
+    g_optix_last_cell_mbr_frontier_target_buffer_bytes = target_buffer_bytes;
+    g_optix_last_cell_mbr_frontier_nearest_buffer_bytes = nearest_buffer_bytes;
+    g_optix_last_cell_mbr_frontier_device_buffer_bytes =
+        g_optix_last_cell_mbr_frontier_query_buffer_bytes
+        + g_optix_last_cell_mbr_frontier_cell_buffer_bytes
+        + row_buffer_bytes
+        + target_buffer_bytes
+        + nearest_buffer_bytes
+        + static_cast<uint64_t>(sizeof(unsigned long long))
+        + static_cast<uint64_t>(sizeof(zero_kind_counts))
+        + static_cast<uint64_t>(collect_inline_stats ? 2 * sizeof(unsigned long long) : 0)
+        + static_cast<uint64_t>(global_bound_enabled ? 2 * sizeof(unsigned long long) : 0)
+        + static_cast<uint64_t>(sizeof(CellMbrFrontier3DLaunchParams));
+    if (inline_nearest_enabled) {
+        upload(d_target_coords.ptr, target_coords, target_count * 3);
+        upload(d_target_point_ids.ptr, target_point_ids, target_count);
+        upload(d_point_row_indices.ptr, point_row_indices, point_row_index_count);
+    }
+
+    CellMbrFrontier3DLaunchParams lp = {};
+    lp.traversable = accel.handle;
+    lp.queries = reinterpret_cast<const GpuCellMbrQuery3D*>(d_queries.ptr);
+    lp.cells = reinterpret_cast<const GpuCellMbr3D*>(d_cells.ptr);
+    lp.target_coords = inline_nearest_enabled ? reinterpret_cast<const double*>(d_target_coords.ptr) : nullptr;
+    lp.target_point_ids = inline_nearest_enabled ? reinterpret_cast<const int64_t*>(d_target_point_ids.ptr) : nullptr;
+    lp.point_row_indices = inline_nearest_enabled ? reinterpret_cast<const uint64_t*>(d_point_row_indices.ptr) : nullptr;
+    lp.point_row_index_count = inline_nearest_enabled ? static_cast<unsigned long long>(point_row_index_count) : 0ULL;
+    lp.hit_count = reinterpret_cast<unsigned long long*>(d_hit_count.ptr);
+    lp.raw_frontier_kind_counts =
+        reinterpret_cast<unsigned long long*>(d_raw_frontier_kind_counts.ptr);
+    lp.inline_cell_hit_count = collect_inline_stats
+        ? reinterpret_cast<unsigned long long*>(d_inline_cell_hit_count.ptr)
+        : nullptr;
+    lp.inline_point_eval_count = collect_inline_stats
+        ? reinterpret_cast<unsigned long long*>(d_inline_point_eval_count.ptr)
+        : nullptr;
+    lp.rows_out = reinterpret_cast<RtdlCellMbrFrontierRow*>(d_rows.ptr);
+    lp.status_rows_out = status_rows_out
+        ? reinterpret_cast<RtdlActiveQueryStatusStreamRow*>(d_status_rows.ptr)
+        : nullptr;
+    lp.nearest_distances_out = inline_nearest_enabled ? reinterpret_cast<double*>(d_nearest_distances.ptr) : nullptr;
+    lp.nearest_item_ids_out = inline_nearest_enabled ? reinterpret_cast<int64_t*>(d_nearest_item_ids.ptr) : nullptr;
+    lp.query_count = static_cast<uint32_t>(query_count);
+    lp.cell_count = static_cast<uint32_t>(cell_count);
+    lp.target_count = static_cast<uint32_t>(target_count);
+    lp.row_capacity = static_cast<uint32_t>(row_capacity);
+    lp.max_inline_points = static_cast<unsigned long long>(max_inline_points);
+    lp.emit_pruned_rows = emit_pruned_rows ? 1u : 0u;
+    lp.inline_nearest = inline_nearest_enabled ? 1u : 0u;
+    lp.collect_inline_stats = collect_inline_stats ? 1u : 0u;
+    lp.global_bound_distance_bits = global_bound_enabled
+        ? reinterpret_cast<unsigned long long*>(d_global_bound_distance_bits.ptr)
+        : nullptr;
+    lp.global_bound_early_break_count = global_bound_enabled
+        ? reinterpret_cast<unsigned long long*>(d_global_bound_early_break_count.ptr)
+        : nullptr;
+    lp.global_bound_early_break = global_bound_enabled ? 1u : 0u;
+    lp.frontier_status_probe_mode = frontier_status_probe_mode;
+    lp.radius = radius;
+
+    DevPtr d_params(sizeof(CellMbrFrontier3DLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+    g_optix_last_cell_mbr_frontier_device_upload_s +=
+        seconds_between(device_alloc_upload_start, std::chrono::steady_clock::now());
+
+    CUstream stream = 0;
+    const auto launch_start = std::chrono::steady_clock::now();
+    OPTIX_CHECK(optixLaunch(g_cell_mbr_frontier3d.pipe->pipeline, stream,
+                            d_params.ptr, sizeof(CellMbrFrontier3DLaunchParams),
+                            &g_cell_mbr_frontier3d.pipe->sbt,
+                            static_cast<unsigned>(query_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+    g_optix_last_cell_mbr_frontier_optix_launch_s =
+        seconds_between(launch_start, std::chrono::steady_clock::now());
+    if (inline_nearest_enabled) {
+        const auto nearest_download_start = std::chrono::steady_clock::now();
+        download(nearest_distances_out, d_nearest_distances.ptr, query_count);
+        download(nearest_item_ids_out, d_nearest_item_ids.ptr, query_count);
+        g_optix_last_cell_mbr_frontier_nearest_download_s =
+            seconds_between(nearest_download_start, std::chrono::steady_clock::now());
+    }
+    if (collect_inline_stats) {
+        const auto stats_download_start = std::chrono::steady_clock::now();
+        unsigned long long inline_cell_hits = 0ULL;
+        unsigned long long inline_point_evals = 0ULL;
+        download(&inline_cell_hits, d_inline_cell_hit_count.ptr, 1);
+        download(&inline_point_evals, d_inline_point_eval_count.ptr, 1);
+        *inline_cell_hit_count_out = static_cast<uint64_t>(inline_cell_hits);
+        *inline_point_eval_count_out = static_cast<uint64_t>(inline_point_evals);
+        g_optix_last_cell_mbr_frontier_stats_download_s =
+            seconds_between(stats_download_start, std::chrono::steady_clock::now());
+    }
+    if (global_bound_enabled) {
+        unsigned long long early_break_count = 0ULL;
+        unsigned long long global_bound_bits = 0ULL;
+        download(&early_break_count, d_global_bound_early_break_count.ptr, 1);
+        download(&global_bound_bits, d_global_bound_distance_bits.ptr, 1);
+        if (global_bound_early_break_count_out) {
+            *global_bound_early_break_count_out = static_cast<uint64_t>(early_break_count);
+        }
+        if (global_bound_distance_out) {
+            double decoded_bound = 0.0;
+            std::memcpy(&decoded_bound, &global_bound_bits, sizeof(decoded_bound));
+            *global_bound_distance_out = decoded_bound;
+        }
+    }
+
+    const auto count_download_start = std::chrono::steady_clock::now();
+    unsigned long long raw_count = 0ULL;
+    unsigned long long raw_kind_counts[4] = {0ULL, 0ULL, 0ULL, 0ULL};
+    download(&raw_count, d_hit_count.ptr, 1);
+    download(raw_kind_counts, d_raw_frontier_kind_counts.ptr, 4);
+    g_optix_last_cell_mbr_frontier_count_download_s =
+        seconds_between(count_download_start, std::chrono::steady_clock::now());
+    *attempted_count_out = static_cast<uint64_t>(raw_count);
+    g_optix_last_cell_mbr_frontier_attempted_count = static_cast<uint64_t>(raw_count);
+    g_optix_last_cell_mbr_frontier_raw_kind1_rows = static_cast<uint64_t>(raw_kind_counts[1]);
+    g_optix_last_cell_mbr_frontier_raw_kind2_rows = static_cast<uint64_t>(raw_kind_counts[2]);
+    g_optix_last_cell_mbr_frontier_raw_kind3_rows = static_cast<uint64_t>(raw_kind_counts[3]);
+    g_optix_last_cell_mbr_frontier_in_queue_capacity = static_cast<uint64_t>(raw_count);
+    g_optix_last_cell_mbr_frontier_miss_queue_capacity = 0ULL;
+    g_optix_last_cell_mbr_frontier_heavy_offload_row_capacity = static_cast<uint64_t>(row_capacity);
+    if (raw_count > row_capacity) {
+        *overflowed_out = 1;
+        *emitted_count_out = 0;
+        g_optix_last_cell_mbr_frontier_total_s =
+            seconds_between(total_start, std::chrono::steady_clock::now());
+        return;
+    }
+
+    std::vector<RtdlCellMbrFrontierRow> rows(static_cast<size_t>(raw_count));
+    if (raw_count != 0) {
+        const auto row_download_start = std::chrono::steady_clock::now();
+        download(rows.data(), d_rows.ptr, rows.size());
+        if (status_rows_out) {
+            download(status_rows_out, d_status_rows.ptr, rows.size());
+        }
+        g_optix_last_cell_mbr_frontier_row_download_s =
+            seconds_between(row_download_start, std::chrono::steady_clock::now());
+    }
+    const auto host_sort_pack_start = std::chrono::steady_clock::now();
+    if (sort_rows) {
+        std::sort(rows.begin(), rows.end(), [](const RtdlCellMbrFrontierRow& a, const RtdlCellMbrFrontierRow& b) {
+            if (a.frontier_kind_code != b.frontier_kind_code)
+                return a.frontier_kind_code < b.frontier_kind_code;
+            if (a.query_row_id != b.query_row_id)
+                return a.query_row_id < b.query_row_id;
+            return a.cell_id < b.cell_id;
+        });
+        rows.erase(std::unique(rows.begin(), rows.end(), [](const RtdlCellMbrFrontierRow& a, const RtdlCellMbrFrontierRow& b) {
+            return a.frontier_kind_code == b.frontier_kind_code
+                && a.query_row_id == b.query_row_id
+                && a.cell_id == b.cell_id;
+        }), rows.end());
+    }
+    uint64_t offload_row_count = 0ULL;
+    for (const RtdlCellMbrFrontierRow& row : rows) {
+        if (row.frontier_kind_code == 2) {
+            ++offload_row_count;
+        }
+    }
+    const uint64_t offload_queue_bytes =
+        offload_row_count * 2ULL * static_cast<uint64_t>(sizeof(uint64_t));
+    g_optix_last_cell_mbr_frontier_heavy_offload_current_rows = offload_row_count;
+    g_optix_last_cell_mbr_frontier_heavy_offload_peak_rows = offload_row_count;
+    g_optix_last_cell_mbr_frontier_heavy_offload_queue_current_bytes = offload_queue_bytes;
+    g_optix_last_cell_mbr_frontier_heavy_offload_queue_peak_bytes = offload_queue_bytes;
+    *emitted_count_out = static_cast<uint64_t>(rows.size());
+    for (size_t i = 0; i < rows.size(); ++i) {
+        frontier_kind_codes_out[i] = rows[i].frontier_kind_code;
+        query_row_ids_out[i] = rows[i].query_row_id;
+        query_point_ids_out[i] = rows[i].query_point_id;
+        cell_ids_out[i] = rows[i].cell_id;
+        point_begin_offsets_out[i] = rows[i].point_begin_offset;
+        point_counts_out[i] = rows[i].point_count;
+        min_distances_out[i] = rows[i].min_distance;
+        max_distances_out[i] = rows[i].max_distance;
+    }
+    g_optix_last_cell_mbr_frontier_emitted_count = static_cast<uint64_t>(rows.size());
+    g_optix_last_cell_mbr_frontier_host_sort_pack_s =
+        seconds_between(host_sort_pack_start, std::chrono::steady_clock::now());
+    g_optix_last_cell_mbr_frontier_total_s =
+        seconds_between(total_start, std::chrono::steady_clock::now());
 }
 
 static void ensure_pack_triangle2d_device_columns_kernel()
@@ -25541,6 +28658,524 @@ static void apply_prepared_fixed_radius_grouped_union_3d_self_device_outputs_opt
         same_root_culling,
         direct_side_effect,
         item_count);
+}
+
+struct LocalGridSeed3DFunction {
+    CUmodule module = nullptr;
+    CUfunction fn = nullptr;
+    std::once_flag init;
+};
+
+static LocalGridSeed3DFunction g_local_grid_seed3d;
+
+static const char* kLocalGridNearestSeed3DKernelSrc = R"CUDA(
+#include <stdint.h>
+#include <math.h>
+
+extern "C" __global__ void local_grid_nearest_seed_3d(
+        const double* query_coords,
+        const long long* query_ids,
+        unsigned int query_count,
+        const double* target_coords,
+        const long long* target_ids,
+        unsigned int target_count,
+        const long long* cell_ids,
+        const long long* original_cell_ids,
+        const long long* dense_cell_positions,
+        unsigned int dense_cell_position_count,
+        const long long* point_begin_offsets,
+        const long long* point_counts,
+        const long long* point_row_indices,
+        unsigned int point_row_index_count,
+        unsigned int cell_count,
+        int dim_x,
+        int dim_y,
+        int dim_z,
+        double lower_x,
+        double lower_y,
+        double lower_z,
+        double upper_x,
+        double upper_y,
+        double upper_z,
+        double* nearest_distances_out,
+        long long* nearest_item_ids_out,
+        long long* seed_cell_ids_out,
+        long long* seed_cell_point_counts_out,
+        long long* grid_cell_probe_counts_out)
+{
+    const unsigned int query_row = blockIdx.x * blockDim.x + threadIdx.x;
+    if (query_row >= query_count) return;
+    (void)query_ids;
+    const double qx = query_coords[(unsigned long long)query_row * 3ull + 0ull];
+    const double qy = query_coords[(unsigned long long)query_row * 3ull + 1ull];
+    const double qz = query_coords[(unsigned long long)query_row * 3ull + 2ull];
+
+    const double extent_x = upper_x - lower_x;
+    const double extent_y = upper_y - lower_y;
+    const double extent_z = upper_z - lower_z;
+    int base_x = 0;
+    int base_y = 0;
+    int base_z = 0;
+    if (extent_x != 0.0) {
+        base_x = (int)floor((qx - lower_x) / extent_x * (double)dim_x);
+        if (base_x < 0) base_x = 0;
+        if (base_x >= dim_x) base_x = dim_x - 1;
+    }
+    if (extent_y != 0.0) {
+        base_y = (int)floor((qy - lower_y) / extent_y * (double)dim_y);
+        if (base_y < 0) base_y = 0;
+        if (base_y >= dim_y) base_y = dim_y - 1;
+    }
+    if (extent_z != 0.0) {
+        base_z = (int)floor((qz - lower_z) / extent_z * (double)dim_z);
+        if (base_z < 0) base_z = 0;
+        if (base_z >= dim_z) base_z = dim_z - 1;
+    }
+
+    int max_radius = dim_x;
+    if (dim_y > max_radius) max_radius = dim_y;
+    if (dim_z > max_radius) max_radius = dim_z;
+    const double step_x = extent_x == 0.0 ? 0.0 : extent_x / (double)dim_x;
+    const double step_y = extent_y == 0.0 ? 0.0 : extent_y / (double)dim_y;
+    const double step_z = extent_z == 0.0 ? 0.0 : extent_z / (double)dim_z;
+
+    long long best_cell_index = -1ll;
+    long long best_cell_id = 9223372036854775807ll;
+    double best_grid_distance_sq = INFINITY;
+    long long probes = 0ll;
+    int found = 0;
+    for (int radius = 0; radius <= max_radius; ++radius) {
+        for (int dx_shell = -radius; dx_shell <= radius; ++dx_shell) {
+            const int gx = base_x + dx_shell;
+            if (gx < 0 || gx >= dim_x) continue;
+            const int abs_dx = dx_shell >= 0 ? dx_shell : -dx_shell;
+            for (int dy_shell = -radius; dy_shell <= radius; ++dy_shell) {
+                const int gy = base_y + dy_shell;
+                if (gy < 0 || gy >= dim_y) continue;
+                const int abs_dy = dy_shell >= 0 ? dy_shell : -dy_shell;
+                for (int dz_shell = -radius; dz_shell <= radius; ++dz_shell) {
+                    const int gz = base_z + dz_shell;
+                    if (gz < 0 || gz >= dim_z) continue;
+                    const int abs_dz = dz_shell >= 0 ? dz_shell : -dz_shell;
+                    int shell = abs_dx;
+                    if (abs_dy > shell) shell = abs_dy;
+                    if (abs_dz > shell) shell = abs_dz;
+                    if (shell != radius) continue;
+                    ++probes;
+                    const long long encoded = ((long long)gx * (long long)dim_y + (long long)gy) * (long long)dim_z + (long long)gz;
+                    if (encoded < 0 || (unsigned long long)encoded >= (unsigned long long)dense_cell_position_count) {
+                        continue;
+                    }
+                    const long long pos = dense_cell_positions[encoded];
+                    if (pos < 0 || (unsigned long long)pos >= (unsigned long long)cell_count) {
+                        continue;
+                    }
+                    if (point_counts[pos] <= 0) {
+                        continue;
+                    }
+
+                    const double low_x = step_x == 0.0 ? lower_x : lower_x + (double)gx * step_x;
+                    const double high_x = step_x == 0.0 ? lower_x : lower_x + (double)(gx + 1) * step_x;
+                    const double low_y = step_y == 0.0 ? lower_y : lower_y + (double)gy * step_y;
+                    const double high_y = step_y == 0.0 ? lower_y : lower_y + (double)(gy + 1) * step_y;
+                    const double low_z = step_z == 0.0 ? lower_z : lower_z + (double)gz * step_z;
+                    const double high_z = step_z == 0.0 ? lower_z : lower_z + (double)(gz + 1) * step_z;
+
+                    double distance_sq = 0.0;
+                    if (qx < low_x) {
+                        const double delta = low_x - qx;
+                        distance_sq += delta * delta;
+                    } else if (qx > high_x) {
+                        const double delta = qx - high_x;
+                        distance_sq += delta * delta;
+                    }
+                    if (qy < low_y) {
+                        const double delta = low_y - qy;
+                        distance_sq += delta * delta;
+                    } else if (qy > high_y) {
+                        const double delta = qy - high_y;
+                        distance_sq += delta * delta;
+                    }
+                    if (qz < low_z) {
+                        const double delta = low_z - qz;
+                        distance_sq += delta * delta;
+                    } else if (qz > high_z) {
+                        const double delta = qz - high_z;
+                        distance_sq += delta * delta;
+                    }
+
+                    const long long cell_id = cell_ids[pos];
+                    if (distance_sq < best_grid_distance_sq
+                            || (distance_sq == best_grid_distance_sq && cell_id < best_cell_id)) {
+                        best_grid_distance_sq = distance_sq;
+                        best_cell_id = cell_id;
+                        best_cell_index = pos;
+                        found = 1;
+                    }
+                }
+            }
+        }
+        if (found) break;
+    }
+    if (best_cell_index < 0) {
+        best_cell_index = 0;
+        best_cell_id = cell_ids[0];
+    }
+
+    const long long begin = point_begin_offsets[best_cell_index];
+    const long long count = point_counts[best_cell_index];
+    double best_point_distance_sq = INFINITY;
+    long long best_point_id = 9223372036854775807ll;
+    for (long long offset = 0; offset < count; ++offset) {
+        const long long point_slot = begin + offset;
+        if (point_slot < 0 || (unsigned long long)point_slot >= (unsigned long long)point_row_index_count) {
+            continue;
+        }
+        const long long target_row = point_row_indices[point_slot];
+        if (target_row < 0 || (unsigned long long)target_row >= (unsigned long long)target_count) {
+            continue;
+        }
+        const double tx = target_coords[(unsigned long long)target_row * 3ull + 0ull];
+        const double ty = target_coords[(unsigned long long)target_row * 3ull + 1ull];
+        const double tz = target_coords[(unsigned long long)target_row * 3ull + 2ull];
+        const double ddx = qx - tx;
+        const double ddy = qy - ty;
+        const double ddz = qz - tz;
+        const double distance_sq = ddx * ddx + ddy * ddy + ddz * ddz;
+        const long long target_id = target_ids[target_row];
+        if (target_id < 0) {
+            continue;
+        }
+        if (distance_sq < best_point_distance_sq
+                || (distance_sq == best_point_distance_sq && target_id < best_point_id)) {
+            best_point_distance_sq = distance_sq;
+            best_point_id = target_id;
+        }
+    }
+
+    nearest_distances_out[query_row] = sqrt(best_point_distance_sq);
+    nearest_item_ids_out[query_row] = best_point_id;
+    seed_cell_ids_out[query_row] = best_cell_id;
+    seed_cell_point_counts_out[query_row] = count;
+    grid_cell_probe_counts_out[query_row] = probes;
+}
+)CUDA";
+
+static void run_local_grid_nearest_seed_3d_cuda(
+        const double* query_coords,
+        const int64_t* query_point_ids,
+        size_t query_count,
+        const double* target_coords,
+        const int64_t* target_point_ids,
+        size_t target_count,
+        const int64_t* cell_ids,
+        const int64_t* original_cell_ids,
+        const int64_t* dense_cell_positions,
+        size_t dense_cell_position_count,
+        const int64_t* point_begin_offsets,
+        const int64_t* point_counts,
+        const int64_t* point_row_indices,
+        size_t point_row_index_count,
+        size_t cell_count,
+        const int64_t* grid_shape,
+        const double* grid_lower_bounds,
+        const double* grid_upper_bounds,
+        double* nearest_distances_out,
+        int64_t* nearest_item_ids_out,
+        int64_t* seed_cell_ids_out,
+        int64_t* seed_cell_point_counts_out,
+        int64_t* grid_cell_probe_counts_out)
+{
+    reset_local_grid_seed_phase_timings();
+    const auto total_start = std::chrono::steady_clock::now();
+    g_optix_last_local_grid_seed_query_count = query_count;
+    g_optix_last_local_grid_seed_target_count = target_count;
+    g_optix_last_local_grid_seed_cell_count = cell_count;
+    g_optix_last_local_grid_seed_dense_cell_position_count = dense_cell_position_count;
+    g_optix_last_local_grid_seed_point_row_index_count = point_row_index_count;
+    const auto context_start = std::chrono::steady_clock::now();
+    (void)get_optix_context();
+    g_optix_last_local_grid_seed_context_ensure_s =
+        seconds_between(context_start, std::chrono::steady_clock::now());
+    if (query_count > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("local-grid seed query_count exceeds uint32 limit");
+    if (target_count > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("local-grid seed target_count exceeds uint32 limit");
+    if (cell_count > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("local-grid seed cell_count exceeds uint32 limit");
+    if (dense_cell_position_count > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("local-grid seed dense_cell_position_count exceeds uint32 limit");
+    if (point_row_index_count > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("local-grid seed point_row_index_count exceeds uint32 limit");
+    if (!query_coords || !query_point_ids || !target_coords || !target_point_ids
+            || !cell_ids || !original_cell_ids || !dense_cell_positions
+            || !point_begin_offsets || !point_counts || !point_row_indices
+            || !grid_shape || !grid_lower_bounds || !grid_upper_bounds
+            || !nearest_distances_out || !nearest_item_ids_out || !seed_cell_ids_out
+            || !seed_cell_point_counts_out || !grid_cell_probe_counts_out) {
+        throw std::runtime_error("local-grid seed pointers must not be null");
+    }
+    if (query_count == 0 || target_count == 0 || cell_count == 0)
+        return;
+    const int dim_x = static_cast<int>(grid_shape[0]);
+    const int dim_y = static_cast<int>(grid_shape[1]);
+    const int dim_z = static_cast<int>(grid_shape[2]);
+    if (dim_x <= 0 || dim_y <= 0 || dim_z <= 0)
+        throw std::runtime_error("local-grid seed grid_shape entries must be positive");
+    const size_t expected_dense = static_cast<size_t>(dim_x) * static_cast<size_t>(dim_y) * static_cast<size_t>(dim_z);
+    if (expected_dense != dense_cell_position_count)
+        throw std::runtime_error("local-grid seed requires dense_cell_positions to cover the full grid volume");
+
+    g_optix_last_local_grid_seed_module_ensure_s = 0.0;
+
+    const auto alloc_start = std::chrono::steady_clock::now();
+    DevPtr d_query_coords(sizeof(double) * query_count * 3);
+    DevPtr d_query_ids(sizeof(int64_t) * query_count);
+    DevPtr d_target_coords(sizeof(double) * target_count * 3);
+    DevPtr d_target_ids(sizeof(int64_t) * target_count);
+    DevPtr d_cell_ids(sizeof(int64_t) * cell_count);
+    DevPtr d_original_cell_ids(sizeof(int64_t) * cell_count);
+    DevPtr d_dense(sizeof(int64_t) * dense_cell_position_count);
+    DevPtr d_begins(sizeof(int64_t) * cell_count);
+    DevPtr d_counts(sizeof(int64_t) * cell_count);
+    DevPtr d_point_indices(sizeof(int64_t) * point_row_index_count);
+    DevPtr d_distances(sizeof(double) * query_count);
+    DevPtr d_item_ids(sizeof(int64_t) * query_count);
+    DevPtr d_seed_cell_ids(sizeof(int64_t) * query_count);
+    DevPtr d_seed_counts(sizeof(int64_t) * query_count);
+    DevPtr d_probe_counts(sizeof(int64_t) * query_count);
+    g_optix_last_local_grid_seed_device_alloc_s =
+        seconds_between(alloc_start, std::chrono::steady_clock::now());
+
+    const auto upload_start = std::chrono::steady_clock::now();
+    upload(d_query_coords.ptr, query_coords, query_count * 3);
+    upload(d_query_ids.ptr, query_point_ids, query_count);
+    upload(d_target_coords.ptr, target_coords, target_count * 3);
+    upload(d_target_ids.ptr, target_point_ids, target_count);
+    upload(d_cell_ids.ptr, cell_ids, cell_count);
+    upload(d_original_cell_ids.ptr, original_cell_ids, cell_count);
+    upload(d_dense.ptr, dense_cell_positions, dense_cell_position_count);
+    upload(d_begins.ptr, point_begin_offsets, cell_count);
+    upload(d_counts.ptr, point_counts, cell_count);
+    upload(d_point_indices.ptr, point_row_indices, point_row_index_count);
+    g_optix_last_local_grid_seed_upload_s =
+        seconds_between(upload_start, std::chrono::steady_clock::now());
+
+    uint32_t qc = static_cast<uint32_t>(query_count);
+    uint32_t tc = static_cast<uint32_t>(target_count);
+    uint32_t cc = static_cast<uint32_t>(cell_count);
+    double lower_x = grid_lower_bounds[0], lower_y = grid_lower_bounds[1], lower_z = grid_lower_bounds[2];
+    double upper_x = grid_upper_bounds[0], upper_y = grid_upper_bounds[1], upper_z = grid_upper_bounds[2];
+
+    const auto kernel_start = std::chrono::steady_clock::now();
+    rtdl_cuda_local_grid_nearest_seed_3d_precompiled(
+        reinterpret_cast<const double*>(d_query_coords.ptr),
+        reinterpret_cast<const int64_t*>(d_query_ids.ptr),
+        qc,
+        reinterpret_cast<const double*>(d_target_coords.ptr),
+        reinterpret_cast<const int64_t*>(d_target_ids.ptr),
+        tc,
+        reinterpret_cast<const int64_t*>(d_cell_ids.ptr),
+        reinterpret_cast<const int64_t*>(d_original_cell_ids.ptr),
+        reinterpret_cast<const int64_t*>(d_dense.ptr),
+        static_cast<uint32_t>(dense_cell_position_count),
+        reinterpret_cast<const int64_t*>(d_begins.ptr),
+        reinterpret_cast<const int64_t*>(d_counts.ptr),
+        reinterpret_cast<const int64_t*>(d_point_indices.ptr),
+        static_cast<uint32_t>(point_row_index_count),
+        cc,
+        dim_x,
+        dim_y,
+        dim_z,
+        lower_x,
+        lower_y,
+        lower_z,
+        upper_x,
+        upper_y,
+        upper_z,
+        reinterpret_cast<double*>(d_distances.ptr),
+        reinterpret_cast<int64_t*>(d_item_ids.ptr),
+        reinterpret_cast<int64_t*>(d_seed_cell_ids.ptr),
+        reinterpret_cast<int64_t*>(d_seed_counts.ptr),
+        reinterpret_cast<int64_t*>(d_probe_counts.ptr));
+    g_optix_last_local_grid_seed_kernel_s =
+        seconds_between(kernel_start, std::chrono::steady_clock::now());
+
+    const auto download_start = std::chrono::steady_clock::now();
+    download(nearest_distances_out, d_distances.ptr, query_count);
+    download(nearest_item_ids_out, d_item_ids.ptr, query_count);
+    download(seed_cell_ids_out, d_seed_cell_ids.ptr, query_count);
+    download(seed_cell_point_counts_out, d_seed_counts.ptr, query_count);
+    download(grid_cell_probe_counts_out, d_probe_counts.ptr, query_count);
+    g_optix_last_local_grid_seed_download_s =
+        seconds_between(download_start, std::chrono::steady_clock::now());
+    g_optix_last_local_grid_seed_total_s =
+        seconds_between(total_start, std::chrono::steady_clock::now());
+}
+
+static void run_grid_branch_bound_nearest_seed_3d_cuda(
+        const double* query_coords,
+        const int64_t* query_point_ids,
+        size_t query_count,
+        const double* target_coords,
+        const int64_t* target_point_ids,
+        size_t target_count,
+        const int64_t* cell_ids,
+        const int64_t* original_cell_ids,
+        const int64_t* dense_cell_positions,
+        size_t dense_cell_position_count,
+        const int64_t* point_begin_offsets,
+        const int64_t* point_counts,
+        const int64_t* point_row_indices,
+        size_t point_row_index_count,
+        size_t cell_count,
+        const int64_t* grid_shape,
+        const double* grid_lower_bounds,
+        const double* grid_upper_bounds,
+        double* nearest_distances_out,
+        int64_t* nearest_item_ids_out,
+        int64_t* seed_cell_ids_out,
+        int64_t* seed_cell_point_counts_out,
+        int64_t* grid_cell_probe_counts_out,
+        int64_t* scanned_cell_counts_out,
+        int64_t* scanned_point_counts_out,
+        int64_t* shell_counts_out)
+{
+    reset_local_grid_seed_phase_timings();
+    const auto total_start = std::chrono::steady_clock::now();
+    g_optix_last_local_grid_seed_query_count = query_count;
+    g_optix_last_local_grid_seed_target_count = target_count;
+    g_optix_last_local_grid_seed_cell_count = cell_count;
+    g_optix_last_local_grid_seed_dense_cell_position_count = dense_cell_position_count;
+    g_optix_last_local_grid_seed_point_row_index_count = point_row_index_count;
+    const auto context_start = std::chrono::steady_clock::now();
+    (void)get_optix_context();
+    g_optix_last_local_grid_seed_context_ensure_s =
+        seconds_between(context_start, std::chrono::steady_clock::now());
+    if (query_count > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("grid branch-bound seed query_count exceeds uint32 limit");
+    if (target_count > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("grid branch-bound seed target_count exceeds uint32 limit");
+    if (cell_count > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("grid branch-bound seed cell_count exceeds uint32 limit");
+    if (dense_cell_position_count > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("grid branch-bound seed dense_cell_position_count exceeds uint32 limit");
+    if (point_row_index_count > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("grid branch-bound seed point_row_index_count exceeds uint32 limit");
+    if (!query_coords || !query_point_ids || !target_coords || !target_point_ids
+            || !cell_ids || !original_cell_ids || !dense_cell_positions
+            || !point_begin_offsets || !point_counts || !point_row_indices
+            || !grid_shape || !grid_lower_bounds || !grid_upper_bounds
+            || !nearest_distances_out || !nearest_item_ids_out || !seed_cell_ids_out
+            || !seed_cell_point_counts_out || !grid_cell_probe_counts_out
+            || !scanned_cell_counts_out || !scanned_point_counts_out || !shell_counts_out) {
+        throw std::runtime_error("grid branch-bound seed pointers must not be null");
+    }
+    if (query_count == 0 || target_count == 0 || cell_count == 0)
+        return;
+    const int dim_x = static_cast<int>(grid_shape[0]);
+    const int dim_y = static_cast<int>(grid_shape[1]);
+    const int dim_z = static_cast<int>(grid_shape[2]);
+    if (dim_x <= 0 || dim_y <= 0 || dim_z <= 0)
+        throw std::runtime_error("grid branch-bound seed grid_shape entries must be positive");
+    const size_t expected_dense = static_cast<size_t>(dim_x) * static_cast<size_t>(dim_y) * static_cast<size_t>(dim_z);
+    if (expected_dense != dense_cell_position_count)
+        throw std::runtime_error("grid branch-bound seed requires dense_cell_positions to cover the full grid volume");
+
+    g_optix_last_local_grid_seed_module_ensure_s = 0.0;
+
+    const auto alloc_start = std::chrono::steady_clock::now();
+    DevPtr d_query_coords(sizeof(double) * query_count * 3);
+    DevPtr d_query_ids(sizeof(int64_t) * query_count);
+    DevPtr d_target_coords(sizeof(double) * target_count * 3);
+    DevPtr d_target_ids(sizeof(int64_t) * target_count);
+    DevPtr d_cell_ids(sizeof(int64_t) * cell_count);
+    DevPtr d_original_cell_ids(sizeof(int64_t) * cell_count);
+    DevPtr d_dense(sizeof(int64_t) * dense_cell_position_count);
+    DevPtr d_begins(sizeof(int64_t) * cell_count);
+    DevPtr d_counts(sizeof(int64_t) * cell_count);
+    DevPtr d_point_indices(sizeof(int64_t) * point_row_index_count);
+    DevPtr d_distances(sizeof(double) * query_count);
+    DevPtr d_item_ids(sizeof(int64_t) * query_count);
+    DevPtr d_seed_cell_ids(sizeof(int64_t) * query_count);
+    DevPtr d_seed_counts(sizeof(int64_t) * query_count);
+    DevPtr d_probe_counts(sizeof(int64_t) * query_count);
+    DevPtr d_scanned_cell_counts(sizeof(int64_t) * query_count);
+    DevPtr d_scanned_point_counts(sizeof(int64_t) * query_count);
+    DevPtr d_shell_counts(sizeof(int64_t) * query_count);
+    g_optix_last_local_grid_seed_device_alloc_s =
+        seconds_between(alloc_start, std::chrono::steady_clock::now());
+
+    const auto upload_start = std::chrono::steady_clock::now();
+    upload(d_query_coords.ptr, query_coords, query_count * 3);
+    upload(d_query_ids.ptr, query_point_ids, query_count);
+    upload(d_target_coords.ptr, target_coords, target_count * 3);
+    upload(d_target_ids.ptr, target_point_ids, target_count);
+    upload(d_cell_ids.ptr, cell_ids, cell_count);
+    upload(d_original_cell_ids.ptr, original_cell_ids, cell_count);
+    upload(d_dense.ptr, dense_cell_positions, dense_cell_position_count);
+    upload(d_begins.ptr, point_begin_offsets, cell_count);
+    upload(d_counts.ptr, point_counts, cell_count);
+    upload(d_point_indices.ptr, point_row_indices, point_row_index_count);
+    g_optix_last_local_grid_seed_upload_s =
+        seconds_between(upload_start, std::chrono::steady_clock::now());
+
+    uint32_t qc = static_cast<uint32_t>(query_count);
+    uint32_t tc = static_cast<uint32_t>(target_count);
+    uint32_t cc = static_cast<uint32_t>(cell_count);
+    double lower_x = grid_lower_bounds[0], lower_y = grid_lower_bounds[1], lower_z = grid_lower_bounds[2];
+    double upper_x = grid_upper_bounds[0], upper_y = grid_upper_bounds[1], upper_z = grid_upper_bounds[2];
+
+    const auto kernel_start = std::chrono::steady_clock::now();
+    rtdl_cuda_grid_branch_bound_nearest_seed_3d_precompiled(
+        reinterpret_cast<const double*>(d_query_coords.ptr),
+        reinterpret_cast<const int64_t*>(d_query_ids.ptr),
+        qc,
+        reinterpret_cast<const double*>(d_target_coords.ptr),
+        reinterpret_cast<const int64_t*>(d_target_ids.ptr),
+        tc,
+        reinterpret_cast<const int64_t*>(d_cell_ids.ptr),
+        reinterpret_cast<const int64_t*>(d_original_cell_ids.ptr),
+        reinterpret_cast<const int64_t*>(d_dense.ptr),
+        static_cast<uint32_t>(dense_cell_position_count),
+        reinterpret_cast<const int64_t*>(d_begins.ptr),
+        reinterpret_cast<const int64_t*>(d_counts.ptr),
+        reinterpret_cast<const int64_t*>(d_point_indices.ptr),
+        static_cast<uint32_t>(point_row_index_count),
+        cc,
+        dim_x,
+        dim_y,
+        dim_z,
+        lower_x,
+        lower_y,
+        lower_z,
+        upper_x,
+        upper_y,
+        upper_z,
+        reinterpret_cast<double*>(d_distances.ptr),
+        reinterpret_cast<int64_t*>(d_item_ids.ptr),
+        reinterpret_cast<int64_t*>(d_seed_cell_ids.ptr),
+        reinterpret_cast<int64_t*>(d_seed_counts.ptr),
+        reinterpret_cast<int64_t*>(d_probe_counts.ptr),
+        reinterpret_cast<int64_t*>(d_scanned_cell_counts.ptr),
+        reinterpret_cast<int64_t*>(d_scanned_point_counts.ptr),
+        reinterpret_cast<int64_t*>(d_shell_counts.ptr));
+    g_optix_last_local_grid_seed_kernel_s =
+        seconds_between(kernel_start, std::chrono::steady_clock::now());
+
+    const auto download_start = std::chrono::steady_clock::now();
+    download(nearest_distances_out, d_distances.ptr, query_count);
+    download(nearest_item_ids_out, d_item_ids.ptr, query_count);
+    download(seed_cell_ids_out, d_seed_cell_ids.ptr, query_count);
+    download(seed_cell_point_counts_out, d_seed_counts.ptr, query_count);
+    download(grid_cell_probe_counts_out, d_probe_counts.ptr, query_count);
+    download(scanned_cell_counts_out, d_scanned_cell_counts.ptr, query_count);
+    download(scanned_point_counts_out, d_scanned_point_counts.ptr, query_count);
+    download(shell_counts_out, d_shell_counts.ptr, query_count);
+    g_optix_last_local_grid_seed_download_s =
+        seconds_between(download_start, std::chrono::steady_clock::now());
+    g_optix_last_local_grid_seed_total_s =
+        seconds_between(total_start, std::chrono::steady_clock::now());
 }
 
 static void run_k_closest_hits_cuda(

@@ -1,0 +1,118 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5348.witness_parity_entrypoint_route_audit.v1",
+  "goal": "Goal5348",
+  "date": "2026-07-09",
+  "status": "implemented_review_pending",
+  "purpose": "Refine the Goal5347 witness-parity blocker by auditing the actual hd_exec-compatible entrypoint route selection and separating the exact-witness user route from the faster exact-scalar route.",
+  "audited_entrypoint": {
+    "file": "Paper-reproduction-apps/x-hd-paper/scripts/run_xhd_rtdl_hd_exec.py",
+    "auto_route_rule": {
+      "n_dims_2_or_cpu": "public-columnar",
+      "n_dims_3_and_gpu": "cell-mbr-exact-witness"
+    },
+    "hd_exec_default_3d_gpu_route": "cell-mbr-exact-witness",
+    "hd_exec_default_3d_gpu_per_source_witness_exact": true,
+    "evidence": [
+      "_select_route_label returns public-columnar only for n_dims == 2 or execution == cpu",
+      "_select_route_label returns cell-mbr-exact-witness for auto 3-D GPU",
+      "cell-mbr-exact-witness witness_contract is directed_input1_to_input2_per_source_witness_exact_seed_route",
+      "cell-mbr-fast-scalar witness_contract is directed_input1_to_input2_witness_may_be_approximate_for_fast_scalar"
+    ]
+  },
+  "exact_witness_entrypoint_evidence": {
+    "interpretation": "The hd_exec-compatible 3-D GPU entrypoint already has exact per-source witness evidence for the reviewed Level-B / representative artifacts listed here. This does not prove exact paper input identity or author RT-core algorithm identity.",
+    "modelnet40_all400": {
+      "artifact": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5260_modelnet40_all400_hd_exec_batch_exact_witness_pod.json",
+      "route_label": "cell-mbr-exact-witness",
+      "selected_case_count": 400,
+      "matched_case_count": 400,
+      "failed_case_count": 0,
+      "all_cases_matched": true,
+      "all_cases_per_source_witness_exact": true,
+      "case_index_range": [
+        0,
+        399
+      ]
+    },
+    "stanford_graphics_representatives": [
+      {
+        "name": "Dragon -> HappyBuddha",
+        "artifact": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5263_dragon_happy_hd_exec_exact_witness_pod.json",
+        "route_label": "cell-mbr-exact-witness",
+        "per_source_witness_exact": true,
+        "witness_contract": "directed_input1_to_input2_per_source_witness_exact_seed_route",
+        "hd_result": 0.12572988629271128,
+        "route_wall_ms": 620.9204494953156,
+        "point_count_a": 437645,
+        "point_count_b": 543652
+      },
+      {
+        "name": "Dragon -> AsianDragon scaled 1e-3",
+        "artifact": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5264_dragon_asian_hd_exec_exact_witness_pod.json",
+        "route_label": "cell-mbr-exact-witness",
+        "per_source_witness_exact": true,
+        "witness_contract": "directed_input1_to_input2_per_source_witness_exact_seed_route",
+        "hd_result": 0.06536787240753439,
+        "route_wall_ms": 2651.0526463389397,
+        "point_count_a": 437645,
+        "point_count_b": 3609600
+      },
+      {
+        "name": "ThaiStatuette scaled 1e-3 -> HappyBuddha",
+        "artifact": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5265_thai_happy_hd_exec_exact_witness_pod.json",
+        "route_label": "cell-mbr-exact-witness",
+        "per_source_witness_exact": true,
+        "witness_contract": "directed_input1_to_input2_per_source_witness_exact_seed_route",
+        "hd_result": 0.2191243235042005,
+        "route_wall_ms": 5013.226099312305,
+        "point_count_a": 4999996,
+        "point_count_b": 543652
+      },
+      {
+        "name": "ThaiStatuette scaled 1e-3 -> AsianDragon scaled 1e-3",
+        "artifact": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5266_thai_asian_hd_exec_exact_witness_pod.json",
+        "route_label": "cell-mbr-exact-witness",
+        "per_source_witness_exact": true,
+        "witness_contract": "directed_input1_to_input2_per_source_witness_exact_seed_route",
+        "hd_result": 0.2876384148709406,
+        "route_wall_ms": 10770.01540362835,
+        "point_count_a": 4999996,
+        "point_count_b": 3609600
+      }
+    ]
+  },
+  "fast_scalar_route_evidence": {
+    "artifact": "Paper-reproduction-apps/x-hd-paper/results/xhd_full_public_all_source_goal5212_all_source_no_copy_fresh_graphics_dragon_happy_buddha_2026-07-09.json",
+    "route_role": "performance / exact-scalar route variant, not the default hd_exec-compatible exact-witness route",
+    "route_label": "cell-mbr-fast-scalar-like cell-MBR route with global bound early break",
+    "hd_result_matches_author_rerun": true,
+    "per_source_witness_exact": false,
+    "global_bound_early_break": true,
+    "global_bound_early_break_count": 409376,
+    "source_count": 437645,
+    "early_break_fraction": 0.9354100058266389,
+    "witness_contract": "exact directed HD scalar value; early-aborted per-source witnesses may be approximate",
+    "route_wall_sec": 0.8517371863126755,
+    "claim_boundary": "This route is strong evidence for a fast exact scalar max-nearest value, but it must not be used as evidence of exact per-source witness parity."
+  },
+  "goal5347_refinement": {
+    "amends_goal5347_exact_witness_blocker": true,
+    "old_overbroad_interpretation": "Exact-witness vs fast-scalar mode split was listed as a broad blocking gap for same functionality.",
+    "refined_interpretation": {
+      "not_a_blocker_for_hd_exec_default_3d_gpu_value_plus_witness_entrypoint_on_existing_level_b_artifacts": true,
+      "still_a_blocker_for_claiming_fast_scalar_route_has_exact_per_source_witnesses": true,
+      "still_a_blocker_for_author_rt_core_algorithm_identity": true,
+      "still_a_blocker_for_full_exact_paper_reproduction_without_exact_inputs": true
+    },
+    "recommended_goal5347_status_update": "Replace the broad exact-witness blocker with a split status: hd_exec-compatible exact-witness route is covered for reviewed 3-D representative artifacts; fast-scalar early-break route is exact-value-only and not a witness-equivalence route."
+  },
+  "claim_boundary": {
+    "full_xhd_paper_reproduction_claimed": false,
+    "exact_paper_dataset_identity_claimed": false,
+    "author_rt_core_algorithm_equivalence_claimed": false,
+    "performance_ratio_claimed": false,
+    "fast_scalar_exact_witness_claimed": false,
+    "hd_exec_default_exact_witness_route_claimed_for_reviewed_level_b_artifacts": true
+  },
+  "exit_label": "witness_parity_entrypoint_route_audit_complete__goal5347_witness_blocker_refined"
+}

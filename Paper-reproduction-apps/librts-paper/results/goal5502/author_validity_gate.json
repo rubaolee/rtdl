@@ -1,0 +1,98 @@
+{
+  "case_count": 5,
+  "claim_boundary": {
+    "author_specific_rtdl_core_behavior_authorized": false,
+    "author_validity_proven_for_full_inputs": false,
+    "full_range_intersects_matrix_claimed": false,
+    "performance_ratio_authorized": false,
+    "rtdl_full_input_fix_authorized": false
+  },
+  "classifications": [
+    {
+      "author_matches_selected_generic_contract": false,
+      "author_result_count": 13695048,
+      "case_id": "parks_Europe_select_0.01_10000",
+      "classification": "rtdl_matches_contract_author_diverges",
+      "cpu_float32_count": 13695053,
+      "decision": "preserve_generic_rtdl_do_not_copy_author_divergence",
+      "rtdl_count": 13695053,
+      "rtdl_matches_selected_generic_contract": true,
+      "sample_geometry_count": 100000,
+      "sample_query_count": 10000,
+      "scope": "same_source_prefix_only"
+    },
+    {
+      "author_matches_selected_generic_contract": true,
+      "author_result_count": 12596850,
+      "case_id": "lakes_bz2_select_0.01_10000",
+      "classification": "author_and_rtdl_match_selected_generic_contract",
+      "cpu_float32_count": 12596850,
+      "decision": "no_semantic_fix_required_for_this_case",
+      "rtdl_count": 12596850,
+      "rtdl_matches_selected_generic_contract": true,
+      "sample_geometry_count": 100000,
+      "sample_query_count": 10000,
+      "scope": "same_source_prefix_only"
+    },
+    {
+      "author_matches_selected_generic_contract": false,
+      "author_result_count": 34240217,
+      "case_id": "parks_Europe_select_0.01_10000",
+      "classification": "rtdl_matches_contract_author_diverges",
+      "cpu_float32_count": 34240244,
+      "decision": "preserve_generic_rtdl_do_not_copy_author_divergence",
+      "rtdl_count": 34240244,
+      "rtdl_matches_selected_generic_contract": true,
+      "sample_geometry_count": 250000,
+      "sample_query_count": 10000,
+      "scope": "same_source_prefix_only"
+    },
+    {
+      "author_matches_selected_generic_contract": false,
+      "author_result_count": 34581812,
+      "case_id": "lakes_bz2_select_0.01_10000",
+      "classification": "rtdl_matches_contract_author_diverges",
+      "cpu_float32_count": 34586817,
+      "decision": "preserve_generic_rtdl_do_not_copy_author_divergence",
+      "rtdl_count": 34586817,
+      "rtdl_matches_selected_generic_contract": true,
+      "sample_geometry_count": 250000,
+      "sample_query_count": 10000,
+      "scope": "same_source_prefix_only"
+    },
+    {
+      "author_matches_selected_generic_contract": false,
+      "author_result_count": 11815394,
+      "case_id": "parks_bz2_select_0.01_10000",
+      "classification": "rtdl_matches_contract_author_diverges",
+      "cpu_float32_count": 11815398,
+      "decision": "preserve_generic_rtdl_do_not_copy_author_divergence",
+      "rtdl_count": 11815398,
+      "rtdl_matches_selected_generic_contract": true,
+      "sample_geometry_count": 100000,
+      "sample_query_count": 10000,
+      "scope": "same_source_prefix_only"
+    }
+  ],
+  "policy": {
+    "author_divergence_does_not_justify_author_specific_core_behavior": true,
+    "author_wrong_is_not_inferred_from_count_difference": true,
+    "full_input_adjudication": false,
+    "independent_oracle": "Goal5501 CPU float32 AABB overlap count",
+    "rtdl_must_match_oracle_before_author_reproduction_claim": true,
+    "selected_generic_contract": "inclusive_aabb_intersects_float32"
+  },
+  "schema": "rtdl.paper_reproduction.librts.goal5502_author_validity_gate.v1",
+  "source_artifacts": [
+    "Paper-reproduction-apps\\librts-paper\\results\\goal5501\\mismatch_diagnostic.json",
+    "Paper-reproduction-apps\\librts-paper\\results\\goal5502\\mismatch_diagnostic_250k.json",
+    "Paper-reproduction-apps\\librts-paper\\results\\goal5501\\parks_bz2_capacity.json"
+  ],
+  "status": "author_validity_gate_completed",
+  "summary": {
+    "author_matches_rtdl_diverges_count": 0,
+    "both_match_count": 1,
+    "rtdl_matches_author_diverges_count": 4,
+    "unresolved_count": 0
+  }
+}

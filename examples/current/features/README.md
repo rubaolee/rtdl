@@ -10,4 +10,4 @@ time.
 | `neighbors/` | fixed-radius neighbors and KNN rows |
 | `database/` | columnar scans and grouped reductions |
 | `graph/` | frontier traversal and triangle counting |
-| `spatial/` | segment/polygon rows, overlap summaries, Jaccard summaries |
+| `spatial/` | segment/polygon rows, overlap summaries, Jaccard summaries, planar-map workspace |

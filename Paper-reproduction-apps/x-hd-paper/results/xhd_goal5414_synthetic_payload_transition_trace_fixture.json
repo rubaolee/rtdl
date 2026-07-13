@@ -1,0 +1,114 @@
+{
+  "claim_boundary": {
+    "bounded_xhd_sample_row_recovery_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_support_claimed": false,
+    "figure11_reproduction_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "native_backend_implementation_claimed": false,
+    "performance_ratio_claimed": false,
+    "synthetic_non_app_payload_transition_trace_claimed": true
+  },
+  "contract_validation": {
+    "contract": "generic_native_payload_transition_trace_stream_contract_v1",
+    "status": "accept"
+  },
+  "expected_counts": {
+    "raw_transition_row_count": 5,
+    "status_count_aborted": 1,
+    "status_count_completed": 1,
+    "status_count_miss": 1,
+    "status_count_offloading": 2
+  },
+  "fixture": {
+    "active_query_count": 3,
+    "contains_xhd_or_paper_semantics": false,
+    "name": "synthetic_non_app_spatial_request_payload_transition_trace",
+    "row_count": 5
+  },
+  "goal": "Goal5414",
+  "matched": true,
+  "overflow_reject": {
+    "reason": "row_capacity is smaller than emitted payload transition rows",
+    "status": "reject"
+  },
+  "recommended_next_goal": "Goal5415_decide_stop_or_bounded_xhd_payload_transition_sample_gate",
+  "schema": "rtdl.paper_reproduction.xhd.goal5414.synthetic_payload_transition_trace_fixture.v1",
+  "status": "synthetic_non_app_payload_transition_trace_fixture_passed",
+  "summary": {
+    "active_query_count": 3,
+    "app_semantics": "none",
+    "contract": "generic_native_payload_transition_trace_summary_v1",
+    "hash_columns": [
+      "active_queue_indices",
+      "primitive_or_cell_ids",
+      "status_codes",
+      "payload_event_ordinals"
+    ],
+    "metadata": {
+      "adapter": "payload_transition_trace_summary_numpy_columns",
+      "app_semantics": "none",
+      "contract": "generic_native_payload_transition_trace_summary_v1",
+      "default_hash_offset": 1469598103934665603,
+      "external_option_support_claimed": false,
+      "hash_contract": "fnv1a_u64_over_selected_int64_columns",
+      "native_engine_row_contract": "not_called_cpu_reference_only",
+      "partner": "numpy",
+      "rt_core_speedup_claim_authorized": false,
+      "trace_contract": "generic_native_payload_transition_trace_stream_contract_v1",
+      "whole_app_speedup_claim_authorized": false
+    },
+    "overflowed": false,
+    "raw_transition_row_count": 5,
+    "raw_transition_row_hash": 15898264581180060485,
+    "row_capacity": 8,
+    "row_count": 5,
+    "sample_columns": [
+      "active_queue_indices",
+      "source_ids",
+      "primitive_or_cell_ids",
+      "status_codes",
+      "payload_event_ordinals"
+    ],
+    "sample_indices": [
+      0,
+      2,
+      4
+    ],
+    "samples": {
+      "active_queue_indices": [
+        0,
+        1,
+        2
+      ],
+      "payload_event_ordinals": [
+        0,
+        0,
+        1
+      ],
+      "primitive_or_cell_ids": [
+        7,
+        3,
+        6
+      ],
+      "source_ids": [
+        100,
+        101,
+        102
+      ],
+      "status_codes": [
+        2,
+        3,
+        4
+      ]
+    },
+    "schema": "rtdl.generic.payload_transition_trace_summary.v1",
+    "status": "accept",
+    "status_count_aborted": 1,
+    "status_count_completed": 1,
+    "status_count_miss": 1,
+    "status_count_offloading": 2,
+    "trace_contract": "generic_native_payload_transition_trace_stream_contract_v1"
+  }
+}

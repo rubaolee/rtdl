@@ -1,0 +1,152 @@
+{
+  "schema": "rtdl.rayjoin.goal4825.goal4806_reusable_artifact_index.v1",
+  "date": "2026-06-30",
+  "purpose": "Index reusable Goal4806 RayJoin artifacts without continuing abandoned V4 work or promoting dirty evidence.",
+  "current_line": "v2.14-centered RTDL RayJoin paper-reproduction/product-correctness line",
+  "not_continuing": [
+    "V4 product line",
+    "V4 public claim",
+    "V4 API/planner architecture",
+    "dirty Goal4806 runtime changes"
+  ],
+  "pod_recheck": {
+    "host": "e7820d339c40",
+    "gpu": "NVIDIA RTX 4000 Ada Generation",
+    "present_paths": [
+      "/workspace/rtdl_goal4806_fast_min",
+      "/workspace/rayjoin_section57_same_source_cdb",
+      "/workspace/RayJoin_fresh",
+      "/workspace/rayjoin_section57_arcgis_stage",
+      "/workspace/rtdl_goal4806",
+      "/workspace/rtdl_goal4806_fast_min/artifacts/goal4806_section57_matrix_exact_county_20260630",
+      "/workspace/rtdl_goal4806_fast_min/artifacts/goal4806_section57_arcgis_full_us_20260630"
+    ]
+  },
+  "labels": {
+    "exact_public_sample_current_line": "Current Goal4820/4821 line evidence that was produced after the core fix and can be cited as current bounded evidence.",
+    "goal4806_dirty_line_needs_revalidation": "Archived Goal4806 evidence that may guide work but cannot be cited as current product evidence without revalidation.",
+    "same_source_regenerated_cdb": "Inputs regenerated from live source data; useful engineering evidence but not exact paper-preprocessed CDB unless equivalence is separately proven.",
+    "candidate_stage_only": "Measured continuation/candidate evidence; not full polygon-overlay app performance.",
+    "missing_exact_input_or_answer": "Evidence of missing exact CDB inputs, answers, or coverage blockers."
+  },
+  "artifacts": [
+    {
+      "id": "current_public_county_soil_goal4821",
+      "label": "exact_public_sample_current_line",
+      "path": "history/internal_docs/goal4821_rayjoin_public_sample_controlled_performance_2026-06-30.md",
+      "summary": "Current-line bounded public County x Soil sample: author clean-compat and repaired RTDL both byte-equal to answer in 3/3 runs; RTDL median 4.510876469s vs author median 7.702967159s.",
+      "claim_allowed": "Bounded public sample reproduction and performance smoke only.",
+      "claim_forbidden": "Full Section 5.7 eight-pair reproduction or broad RayJoin/RTDL performance claim."
+    },
+    {
+      "id": "goal4806_contract_and_8pair_audit",
+      "label": "missing_exact_input_or_answer",
+      "path": "exp-project-1/untracked-current/tools___archive__goal4806_released_rtdl_rayjoin_attempt_2026-06-30/docs_reports/goal4806_rayjoin_section57_current_status_and_8pair_data_audit_2026-06-30.md",
+      "summary": "Archived contract/data audit: Section 5.7 requires LSI + PIP + output-chain; eight pairs enumerated; Dryad exact/preprocessed data unavailable; only U.S. same-source route was partially available.",
+      "claim_allowed": "Use as historical audit and task map.",
+      "claim_forbidden": "Use as proof that exact eight-pair inputs or answers are available."
+    },
+    {
+      "id": "goal4806_network_data_acquisition_audit",
+      "label": "missing_exact_input_or_answer",
+      "path": "exp-project-1/untracked-current/tools___archive__goal4806_released_rtdl_rayjoin_attempt_2026-06-30/docs_reports/goal4806_section57_data_acquisition_audit_network_2026-06-30.json",
+      "summary": "Dryad preprocessed share returned HTTP 404; exact local CDB coverage was 0/8 in the archived audit; ArcGIS U.S. FeatureServer sources were live and count-matched.",
+      "claim_allowed": "Use to avoid repeating the same network/source audit unless checking current liveness.",
+      "claim_forbidden": "Treat same-source availability as exact paper-preprocessed data availability."
+    },
+    {
+      "id": "goal4806_arcgis_full_us_build_block_water",
+      "label": "same_source_regenerated_cdb",
+      "path": "exp-project-1/untracked-current/tools___archive__goal4806_released_rtdl_rayjoin_attempt_2026-06-30/docs_reports/goal4806_section57_arcgis_full_us_build_block_water_2026-06-30.json",
+      "remote_artifacts": [
+        "/workspace/rtdl_goal4806_fast_min/artifacts/goal4806_section57_arcgis_full_us_20260630/dataset/point_cdb/USACensusBlockGroupBoundaries/USACensusBlockGroupBoundaries_Point.cdb",
+        "/workspace/rtdl_goal4806_fast_min/artifacts/goal4806_section57_arcgis_full_us_20260630/dataset/point_cdb/USADetailedWaterBodies/USADetailedWaterBodies_Point.cdb"
+      ],
+      "summary": "Same-source regenerated Block x Water CDBs: block group CDB 3,146,767,020 bytes; water bodies CDB 2,402,941,772 bytes.",
+      "claim_allowed": "Use as same-source regenerated Block x Water input for engineering experiments.",
+      "claim_forbidden": "Label as recovered paper-preprocessed CDB or exact Section 5.7 paper input."
+    },
+    {
+      "id": "goal4806_arcgis_full_us_availability",
+      "label": "same_source_regenerated_cdb",
+      "path": "exp-project-1/untracked-current/tools___archive__goal4806_released_rtdl_rayjoin_attempt_2026-06-30/docs_reports/goal4806_section57_arcgis_full_us_availability_2026-06-30.json",
+      "summary": "Archived availability check: Block x Water same-source CDB files present in the generated full-us dataset; County x Zipcode absent from that full-us tree; six Lakes/Parks pairs absent.",
+      "claim_allowed": "Use to decide which generated artifacts exist and which pairs remain missing.",
+      "claim_forbidden": "Treat availability of one same-source pair as 8/8 coverage."
+    },
+    {
+      "id": "goal4806_county_zipcode_byte_equal_report",
+      "label": "goal4806_dirty_line_needs_revalidation",
+      "path": "exp-project-1/untracked-current/tools___archive__goal4806_released_rtdl_rayjoin_attempt_2026-06-30/docs_reports/goal4806_rayjoin_section57_county_zipcode_byte_equal_and_numba_candidate_2026-06-30.md",
+      "remote_artifacts": [
+        "/workspace/rtdl_goal4806_fast_min/artifacts/section57_author_output_debug/author_overlay_debug.overlay.txt",
+        "/workspace/rtdl_goal4806_fast_min/artifacts/section57_same_source_county_zipcode_output_after_no_zero_length_correction_full/section57_overlay_county_zipcode_rtdl_after_no_zero_length_correction_full_optix.txt"
+      ],
+      "summary": "Archived Goal4806 report claims County x Zipcode byte-equal output: both 87,758,310 bytes, chain_count 29,254,027, face_count 115,490, total_sec 459.244764s.",
+      "claim_allowed": "Use as a high-value revalidation target for current Goal4826.",
+      "claim_forbidden": "Cite as current product evidence without re-running or independently validating under the current repaired line."
+    },
+    {
+      "id": "goal4806_county_zipcode_matrix_summary",
+      "label": "goal4806_dirty_line_needs_revalidation",
+      "path": "exp-project-1/untracked-current/tools___archive__goal4806_released_rtdl_rayjoin_attempt_2026-06-30/docs_reports/goal4806_section57_matrix_exact_county_summary_2026-06-30.json",
+      "summary": "Archived matrix slice for County x Zipcode: author_rt 19.547926s, RTDL OptiX 92.031124s, V4+Numba candidate-stage 0.016283s; no raw output digest match recorded in this summary.",
+      "claim_allowed": "Use for planning and locating remote artifacts.",
+      "claim_forbidden": "Use as full correctness or V4 speed evidence."
+    },
+    {
+      "id": "goal4806_v4_numba_candidate",
+      "label": "candidate_stage_only",
+      "path": "exp-project-1/untracked-current/tools___archive__goal4806_released_rtdl_rayjoin_attempt_2026-06-30/docs_reports/goal4806_rayjoin_section57_county_zipcode_byte_equal_and_numba_candidate_2026-06-30.md",
+      "summary": "V4+Numba post-traversal segmented-counts candidate selected with correctness pass and no hot-path host materialization; steady-state 0.01628301292657852s.",
+      "claim_allowed": "Use only as candidate-stage/partner-continuation evidence.",
+      "claim_forbidden": "Call it full Section 5.7 polygon-overlay performance."
+    },
+    {
+      "id": "goal4806_block_water_same_source_matrix",
+      "label": "same_source_regenerated_cdb",
+      "path": "exp-project-1/untracked-current/tools___archive__goal4806_released_rtdl_rayjoin_attempt_2026-06-30/docs_reports/goal4806_section57_matrix_same_source_block_water_rtdl_only_2026-06-30.json",
+      "summary": "Archived same-source Block x Water RTDL-only row: RTDL OptiX total 367.231680s, LSI count 649,605; no author process row and no raw output digest match.",
+      "claim_allowed": "Use as bounded engineering/debug baseline for same-source data.",
+      "claim_forbidden": "Use as exact paper correctness/performance row."
+    },
+    {
+      "id": "goal4806_block_water_phase_and_output_bottlenecks",
+      "label": "same_source_regenerated_cdb",
+      "path": "exp-project-1/untracked-current/tools___archive__goal4806_released_rtdl_rayjoin_attempt_2026-06-30/docs_reports/goal4806_rayjoin_section57_current_status_and_8pair_data_audit_2026-06-30.md",
+      "summary": "Archived Block x Water probes: LSI count matched author at 649,605; full-output summary/output-chain path remained hundreds of seconds; output summary assembly improved from 134.54s to 6.96s in a two-point fast path.",
+      "claim_allowed": "Use to avoid rediscovering known bottlenecks.",
+      "claim_forbidden": "Use as a release-grade performance result."
+    }
+  ],
+  "next_goals": [
+    {
+      "goal": "4826",
+      "title": "Revalidate County x Zipcode Under Current Core Fix",
+      "uses_artifact_ids": [
+        "goal4806_county_zipcode_byte_equal_report",
+        "goal4806_county_zipcode_matrix_summary"
+      ],
+      "purpose": "Convert the old dirty-line County x Zipcode byte-equal clue into current-line evidence, or record the exact mismatch."
+    },
+    {
+      "goal": "4827",
+      "title": "Decide Block x Water Same-Source Route",
+      "uses_artifact_ids": [
+        "goal4806_arcgis_full_us_build_block_water",
+        "goal4806_block_water_same_source_matrix",
+        "goal4806_block_water_phase_and_output_bottlenecks"
+      ],
+      "purpose": "Use Block x Water only as same-source regenerated engineering evidence unless exact paper CDB/answer appears."
+    },
+    {
+      "goal": "4828",
+      "title": "Lakes/Parks Source Gap",
+      "uses_artifact_ids": [
+        "goal4806_network_data_acquisition_audit",
+        "goal4806_arcgis_full_us_availability"
+      ],
+      "purpose": "Decide whether the six Lakes/Parks rows can be reconstructed or must remain blocked by missing exact inputs."
+    }
+  ]
+}

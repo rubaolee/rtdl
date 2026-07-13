@@ -1,0 +1,90 @@
+{
+  "author_reference": {
+    "author_byte_formula": "OffloadingSize * 2 * sizeof(uint32_t)",
+    "hd_result": 52.453487396240234,
+    "lb": 256,
+    "offloading_size_rows": 27133990,
+    "radius": 79.2156982421875,
+    "wl_heavy_peak_bytes": 217071920
+  },
+  "claim_boundary": {
+    "author_rt_core_algorithm_parity_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_support_claimed": false,
+    "figure11_reproduction_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "generic_system_telemetry_claimed": true,
+    "row_count_parity_claimed": false,
+    "rtdl_author_performance_ratio_claimed": false,
+    "same_denominator_memory_claimed": false
+  },
+  "comparison": {
+    "author_offloading_size_rows": 27133990,
+    "full_cover_materialized_rows_div_author": 0.9032258064516129,
+    "inline_materialized_rows_div_author": 0.7741935483870968,
+    "noinline_raw_kind2_greater_than_author": true,
+    "noinline_raw_kind2_greater_than_inline_materialized_rows": true,
+    "row_count_parity": false,
+    "row_delta_author_minus_noinline_kind2": -277847899,
+    "rtdl_noinline_kind2_div_author": 11.239846738352892,
+    "rtdl_noinline_raw_kind2_rows": 304981889
+  },
+  "date": "2026-07-09",
+  "exit_label": "raw_kind2_denominator_probe_shows_author_queue_state_gap",
+  "goal": "Goal5368",
+  "input_artifacts": {
+    "goal5367": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5367_lb_author_radius_probe.json",
+    "goal5368_pod_probe": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5368_dragon_asian_lb256_author_radius_noinline_kind_count_pod.json"
+  },
+  "input_scope": {
+    "exact_paper_dataset_identity_proven": false,
+    "input1": "/tmp/xhd_goal5234/data/dragon.ply",
+    "input2": "/tmp/xhd_goal5234/data/asian_dragon.ply",
+    "point_count_a": 437645,
+    "point_count_b": 3609600,
+    "preprocessing": [
+      "translate_each_input_to_min_bound"
+    ],
+    "scope": "Dragon -> AsianDragon temporary public/POD input, not exact paper dataset"
+  },
+  "interpretation": {
+    "denominator_result": "The no-inline raw kind2/offload denominator is much larger than author OffloadingSize, so the author denominator is not merely all raw cells above the lb threshold under the same scalar radius.",
+    "next_required_alignment": "Align author iterative queue state: in_queue_idx, per-iteration cmin2/current best, radius schedule, and raw offload emission semantics.",
+    "what_goal5368_proves": "The native producer can now report raw generic frontier kind counts before row download and host sort/unique, even in overflow/count-only mode."
+  },
+  "purpose": "Add generic native raw frontier kind-count telemetry so count-only overflow probes can measure offload-kind rows without materializing hundreds of millions of frontier rows.",
+  "rtdl_reference_rows": {
+    "author_radius_inline_lb256_heavy_rows_from_goal5367": 21006960,
+    "author_radius_noinline_attempted_all_kinds": 589961522,
+    "author_radius_noinline_raw_kind2_rows_from_goal5368": 304981889,
+    "author_radius_noinline_raw_kind_counts": {
+      "1": 284979633,
+      "2": 304981889,
+      "3": 0
+    },
+    "full_cover_lb256_heavy_rows_from_goal5367": 24508120
+  },
+  "status": "raw_kind_count_telemetry_ready__author_lb_denominator_still_unmatched",
+  "telemetry": {
+    "frontier_row_capacity": 0,
+    "native_symbol": "rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v2",
+    "overflow_telemetry_only": true,
+    "overflowed": true,
+    "raw_frontier_kind_counts_semantics": "Counts attempted generic frontier rows by kind before host row download and host sort/unique. These counters remain available for overflow/count-only diagnostics and do not assert app- or author-specific denominator parity.",
+    "schema": "rtdl.optix.cell_mbr_nearest_frontier_3d.memory_telemetry.v3"
+  },
+  "validation": {
+    "local_tests": [
+      "py -m py_compile src/rtdsl/optix_runtime.py",
+      "py -m py_compile src/rtdsl/partner_continuations.py Paper-reproduction-apps/x-hd-paper/scripts/run_xhd_cell_mbr_frontier_kind_count_probe.py",
+      "py -m unittest tests.goal5368_cell_mbr_frontier_kind_count_telemetry_test"
+    ],
+    "pod_tests": [
+      "py scripts/current_pod_ssh.py --host 213.173.108.24 --port 13502 preflight",
+      "make build-optix in /tmp/rtdl_goal5364",
+      "small POD smoke returned raw_frontier_kind_counts {'1': 1, '2': 1, '3': 1}",
+      "Dragon -> AsianDragon no-inline count-only probe completed without row materialization"
+    ]
+  }
+}

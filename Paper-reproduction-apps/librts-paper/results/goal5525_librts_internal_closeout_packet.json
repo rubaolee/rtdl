@@ -1,0 +1,55 @@
+{
+  "schema": "rtdl.paper_reproduction.librts.goal5525_internal_closeout_packet.v1",
+  "status": "librts_internal_closeout_ready__external_review_pending",
+  "implementation": {
+    "native_source_sha256": "50fa9bfdeed2efbf7b7ae2fb46ca9ad1fdffe500849c87c7619c7bf640a3023f",
+    "pod_optix_library_sha256": "75e7d0dea9f10e98e179c2617a3401f872ca09de0a54adbb57792cb8675120df",
+    "operation_scoped_validity_fix_included": true,
+    "app_specific_core_primitive_added": false
+  },
+  "verification": {
+    "local_librts_test_count": 176,
+    "local_librts_tests_passed": true,
+    "focused_goals5517_5523_test_count": 24,
+    "focused_goals5517_5523_tests_passed": true,
+    "manifest_json_valid": true,
+    "goal_gates_json_valid": true,
+    "diff_check_errors": 0
+  },
+  "evidence": {
+    "point_contains_exact_count_matches": 14,
+    "point_contains_exact_pair_count": 14,
+    "range_contains_exact_count_matches": 14,
+    "range_contains_exact_pair_count": 14,
+    "range_intersects_exact_count_matches": 14,
+    "range_intersects_author_capacity_failures": 2,
+    "range_intersects_not_checkpointed": 26,
+    "representative_pip_canonical_pair_rows_matched": 71626,
+    "bounded_mutation_counts": [2, 1, 0, 1, 0]
+  },
+  "cleanup": {
+    "local_pycache_directories_removed": 39,
+    "post_test_pycache_directories_removed": 31,
+    "remaining_local_pycache_directories": 0,
+    "pod_transient_goal5521_5523_data_removed": true,
+    "pod_free_space_after_cleanup_gib_approx": 18,
+    "official_archive_preserved": true,
+    "author_build_preserved": true,
+    "rtdl_optix_build_preserved": true
+  },
+  "review": {
+    "goals5519_5525_external_review_pending": true,
+    "self_approved": false,
+    "requested_closeout_scope": "librts_scoped_correctness_and_system_extraction_complete"
+  },
+  "claim_boundary": {
+    "full_paper_reproduction_claimed": false,
+    "figure6_reproduced": false,
+    "performance_ratio_authorized": false,
+    "author_algorithm_equivalence_claimed": false,
+    "complete_range_intersects_matrix_claimed": false,
+    "pointwise_relation_equivalence_for_count_only_cases_claimed": false,
+    "device_zero_copy_claimed": false,
+    "embree_in_scope": false
+  }
+}

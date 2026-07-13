@@ -1,0 +1,34 @@
+{
+  "base": [
+    {
+      "id": 14110870,
+      "x0": 151.2771671,
+      "x1": 151.2772023,
+      "y0": -33.8512399,
+      "y1": -33.8513923
+    },
+    {
+      "id": 14387225,
+      "x0": 151.2771671,
+      "x1": 151.2772023,
+      "y0": -33.8512399,
+      "y1": -33.8513923
+    }
+  ],
+  "count_rows_match": false,
+  "expected_bug_signature": "count=2 rows=0",
+  "hidden_predicate_row_count": 0,
+  "hidden_predicate_rows": [],
+  "public_planar_map_lsi_count": 2,
+  "query": [
+    {
+      "id": 640,
+      "x0": 151.2776856,
+      "x1": 151.2772023,
+      "y0": -33.8511451,
+      "y1": -33.8513923
+    }
+  ],
+  "schema": "rtdl.goal4859.minimal_real_witness_probe.v1",
+  "source": "Australia Lakes x Parks representative, query segment index 639, base witnesses 14110870 and 14387225"
+}

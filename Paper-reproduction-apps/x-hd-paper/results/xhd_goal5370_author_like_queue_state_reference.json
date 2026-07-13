@@ -1,0 +1,137 @@
+{
+  "author": {
+    "artifact": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\bounded3d_author_hd_exec_output_pod.json",
+    "hd_result": 2.0,
+    "iterations": [
+      {
+        "CMax2": 4.0,
+        "CUDATime": 0.084,
+        "Iteration": 1,
+        "NumInputPoints": 9,
+        "NumOutputPoints": 0,
+        "OffloadingSize": 0,
+        "RTTime": 2.536,
+        "Radius": 2.0
+      }
+    ]
+  },
+  "claim_boundary": {
+    "author_rt_core_algorithm_parity_claimed": false,
+    "dragon_asian_lb_denominator_claimed": false,
+    "explicit_lb_support_claimed": false,
+    "figure11_reproduction_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "performance_claimed": false,
+    "queue_state_reference_claimed": true,
+    "row_count_parity_claimed": false
+  },
+  "comparison": {
+    "matched": true,
+    "mismatch_count": 0,
+    "mismatches": []
+  },
+  "date": "2026-07-09",
+  "exit_label": "bounded_queue_state_reference_matches_author_rows__dragon_lb_still_unimplemented",
+  "goal": "Goal5370",
+  "input_fixture": "bounded3d_a.wkt -> bounded3d_b.wkt",
+  "next_large_input_requirement": "Use this queue-state shape to reconstruct Dragon->Asian active queue/current-best state, then run count-only raw offload telemetry against author OffloadingSize.",
+  "purpose": "Prove a concrete app-owned queue-state representation for author-like radius queues: active source ids, in-queue indices, nearest/current-best vectors, confirmed/unresolved source ids, and queue rows.",
+  "rtdl_queue_state_reference": {
+    "iterations": [
+      {
+        "active_in_queue_indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "active_source_ids": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "cmax2_after": 4.0,
+        "cmax2_before": 4.0,
+        "confirmed_source_ids": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "current_best_sq": [
+          0.010000000000000002,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          4.0
+        ],
+        "nearest_distances": [
+          0.1,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          2.0
+        ],
+        "nearest_target_ids": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          7
+        ],
+        "queue_row": {
+          "CMax2": 4.0,
+          "Iteration": 1,
+          "NumInputPoints": 9,
+          "NumOutputPoints": 0,
+          "Radius": 2.0
+        },
+        "unresolved_source_ids": []
+      }
+    ],
+    "state_fields": [
+      "active_source_ids",
+      "active_in_queue_indices",
+      "nearest_target_ids",
+      "nearest_distances",
+      "current_best_sq",
+      "confirmed_source_ids",
+      "unresolved_source_ids",
+      "cmax2_before",
+      "cmax2_after"
+    ],
+    "uses_generic_nearest_pipeline": true,
+    "uses_radius_growth_step": false
+  },
+  "schema": "rtdl.paper_reproduction.xhd.goal5370.author_like_queue_state_reference.v1",
+  "status": "bounded_author_like_queue_state_reference_ready"
+}

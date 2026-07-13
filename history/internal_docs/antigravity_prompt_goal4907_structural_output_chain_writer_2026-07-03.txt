@@ -1,0 +1,21 @@
+Please act as an independent critical reviewer for RTDL Goal4907.
+
+Read:
+
+1. `history/internal_docs/goal4907_structural_output_chain_writer_report_2026-07-03.md`
+2. `history/internal_docs/call_for_review_goal4907_structural_output_chain_writer_2026-07-03.md`
+3. `history/internal_docs/goal4907_structural_writer_summary_2026-07-03.json`
+4. `history/internal_docs/goal4905_writer_breakdown_summary_2026-07-03.json`
+
+Use the review questions exactly. Be strict that this is app-layer
+paper-reproduction engineering, not RTDL primitive traversal acceleration.
+
+Write your review to:
+
+`history/internal_docs/antigravity_goal4907_structural_output_chain_writer_review_2026-07-03.md`
+
+Use one of these verdict labels:
+
+- `approve_goal4907_structural_writer_win`
+- `approve_with_required_amendments`
+- `block_goal4907_writer_change`

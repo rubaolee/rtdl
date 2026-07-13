@@ -1,0 +1,21 @@
+Please review RTDL Goal4901 critically.
+
+Repository:
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review
+
+Primary review request:
+history/internal_docs/call_for_review_goal4901_phase_accounting_and_next_bottleneck_2026-07-03.md
+
+Main report:
+history/internal_docs/goal4901_phase_accounting_and_next_bottleneck_report_2026-07-03.md
+
+Please inspect the evidence files and code surfaces named in the call-for-review, then write your review to:
+history/internal_docs/antigravity_goal4901_phase_accounting_and_next_bottleneck_review_2026-07-03.md
+
+Requested verdict labels:
+- approve_goal4901_phase_accounting_gap_closed
+- approve_with_required_amendments
+- block_due_to_measurement_error
+- block_due_to_overclaim_or_semantics_risk
+
+Be strict about measurement and overclaiming. Approve only if the report really closes the previous unexplained gap by adding phase accounting, preserves byte-for-byte correctness, and correctly identifies point-location preparation as the next measured bottleneck without claiming RT traversal speedup.

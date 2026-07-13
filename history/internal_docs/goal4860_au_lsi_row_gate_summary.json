@@ -1,0 +1,134 @@
+{
+  "base": "/workspace/goal4848_rep/current_osm_au/lakes_Australia_current_osm_Point.cdb",
+  "base_chains": 357910,
+  "base_segments": 14430155,
+  "claim_boundary": {
+    "performance_claim": false,
+    "section52_lsi_row_contract_gate": true,
+    "section53_pip_claim": false,
+    "section57_overlay_claim": false
+  },
+  "count_equals_expected": true,
+  "count_metadata": {
+    "backend": "optix",
+    "base_segment_count": 14430155,
+    "claim_boundary": {
+      "broad_speedup_claim_authorized": false,
+      "bundled_rayjoin_helper_used": false,
+      "full_overlay_supported": false,
+      "paper_eight_pair_claim_authorized": false,
+      "public_generic_rtdl_primitive": true,
+      "section52_lsi_count_supported": true
+    },
+    "count": 13622,
+    "native_predicate_contract": "author_style_planar_map_lsi_endpoint_boundary_predicate",
+    "native_predicate_legacy_alias": "rayjoin_lsi",
+    "native_predicate_mode": "planar_map_lsi",
+    "native_predicate_mode_id": 1,
+    "native_timings": {
+      "candidate_count_pass": 0.000545696,
+      "candidate_download": 0.0,
+      "candidate_write_pass": 0.0,
+      "emitted_count": 13622,
+      "exact_refine": 0.0,
+      "left_upload": 0.0,
+      "mode": "count_prepared_left_grouped_range_direct_intersection",
+      "raw_candidate_count": 0
+    },
+    "output_contract": "scalar_exact_count",
+    "predicate_selection": {
+      "concurrency_note": "Predicate selection is passed to the native count call, not through process-global environment state.",
+      "legacy_native_alias": "rayjoin_lsi",
+      "mechanism": "native_abi_explicit_parameter",
+      "mode_id": 1,
+      "public_mode": "planar_map_lsi"
+    },
+    "primitive": "PLANAR_MAP_LSI_2D",
+    "query_segment_count": 941375,
+    "raw_segment_pair_result": {
+      "backend": "optix",
+      "claim_boundary": {
+        "experimental_front_door": true,
+        "public_speedup_claim_authorized": false,
+        "rayjoin_paper_reproduction_claim_authorized": false,
+        "release_authorized": false,
+        "rt_core_speedup_claim_authorized": false,
+        "rtdl_beats_rayjoin_claim_authorized": false,
+        "true_zero_copy_claim_authorized": false,
+        "whole_app_acceleration_claim_authorized": false
+      },
+      "count": 13622,
+      "implementation_contract": "SEGMENT_PAIR_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_EXACT_COUNT_V1",
+      "native_symbol": "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection_with_predicate_mode",
+      "output_contract": "scalar_exact_count",
+      "predicate_mode": 1,
+      "predicate_selection": {
+        "mechanism": "native_abi_explicit_parameter",
+        "mode_id": 1
+      },
+      "primitive": "SEGMENT_PAIR_INTERSECTION_ROWS_2D",
+      "right_group_count": 14430155,
+      "route": "intersection_program_identity_or_ranged_primitive_records",
+      "route_selection": {
+        "default_right_range_policy": "identity_range",
+        "fallback_route": "count_prepared_left",
+        "native_policy_env": {
+          "area_enlarge": "RTDL_OPTIX_SEGMENT_PAIR_GROUPED_RANGE_AREA_ENLARGE",
+          "max_size": "RTDL_OPTIX_SEGMENT_PAIR_GROUPED_RANGE_MAX_SIZE"
+        }
+      },
+      "schema": "rtdl.optix.segment_pair_prepared_left_exact_intersection_count.front_door.v1"
+    },
+    "schema": "rtdl.optix.planar_map_lsi_2d.count.v1"
+  },
+  "expected": 13622,
+  "first_rows": [
+    {
+      "intersection_point_x": 115.72504226320989,
+      "intersection_point_y": -32.2845911121767,
+      "left_id": 16982,
+      "right_id": 3830622
+    },
+    {
+      "intersection_point_x": 151.3121808,
+      "intersection_point_y": -33.6623889,
+      "left_id": 12774,
+      "right_id": 13671347
+    },
+    {
+      "intersection_point_x": 149.1273402,
+      "intersection_point_y": -35.2917343,
+      "left_id": 10055,
+      "right_id": 13320949
+    },
+    {
+      "intersection_point_x": 150.67536504334538,
+      "intersection_point_y": -35.05119741375086,
+      "left_id": 4509,
+      "right_id": 452265
+    },
+    {
+      "intersection_point_x": 150.67533370764465,
+      "intersection_point_y": -35.05122672329782,
+      "left_id": 4510,
+      "right_id": 452265
+    }
+  ],
+  "planar_map_lsi_count": 13622,
+  "planar_map_lsi_row_count": 13622,
+  "query": "/workspace/goal4848_rep/current_osm_au/parks_Australia_current_osm_Point.cdb",
+  "query_chains": 51130,
+  "query_segments": 941375,
+  "rows_equal_count": true,
+  "rows_equal_expected": true,
+  "schema": "rtdl.goal4860.planar_map_lsi_row_gate.v1",
+  "timings_seconds": {
+    "count": 21.00546470284462,
+    "load_base": 39.42355586588383,
+    "load_query": 4.361481860280037,
+    "rows": 2.81363907456398,
+    "segments_base": 7.0303274765610695,
+    "segments_query": 0.6067579388618469,
+    "total": 75.24122691899538
+  }
+}

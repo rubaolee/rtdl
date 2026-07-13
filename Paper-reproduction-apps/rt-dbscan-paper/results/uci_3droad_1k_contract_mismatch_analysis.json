@@ -1,0 +1,119 @@
+{
+  "author_directional_mismatch_count": 0,
+  "author_directional_signature": {
+    "component_count": 3,
+    "component_sizes": [
+      90,
+      168,
+      181
+    ],
+    "core_count": 329,
+    "noise_count": 561
+  },
+  "author_noise_conventional_cluster_count": 12,
+  "author_output": "Paper-reproduction-apps\\rt-dbscan-paper\\results\\uci_3droad_1k_author_direct.jsonl",
+  "author_signature": {
+    "component_count": 3,
+    "component_sizes": [
+      90,
+      168,
+      181
+    ],
+    "core_count": 329,
+    "noise_count": 561
+  },
+  "claim_boundary": "Diagnostic app-side contract analysis only; not a clean AuthorOfficial gate, not exact paper data, not an RTDL core semantic.",
+  "contract_hypothesis": "Author call-2 can attach a non-core point only when the current ray xID is a higher-index core neighbor (xID > primID). A conventional DBSCAN reference attaches a border point to any core neighbor. This index-order-sensitive border rule is a plausible cause of the same-source 3DRoad component mismatch.",
+  "conventional_mismatch_count": 12,
+  "conventional_signature": {
+    "component_count": 3,
+    "component_sizes": [
+      102,
+      168,
+      181
+    ],
+    "core_count": 329,
+    "noise_count": 549
+  },
+  "core_count": 329,
+  "epsilon": 0.05,
+  "first_author_noise_conventional_cluster_points": [
+    {
+      "core_neighbor_count": 8,
+      "higher_index_core_neighbor_count": 0,
+      "lower_index_core_neighbor_count": 8,
+      "point_id": 136
+    },
+    {
+      "core_neighbor_count": 8,
+      "higher_index_core_neighbor_count": 0,
+      "lower_index_core_neighbor_count": 8,
+      "point_id": 137
+    },
+    {
+      "core_neighbor_count": 8,
+      "higher_index_core_neighbor_count": 0,
+      "lower_index_core_neighbor_count": 8,
+      "point_id": 138
+    },
+    {
+      "core_neighbor_count": 8,
+      "higher_index_core_neighbor_count": 0,
+      "lower_index_core_neighbor_count": 8,
+      "point_id": 139
+    },
+    {
+      "core_neighbor_count": 8,
+      "higher_index_core_neighbor_count": 0,
+      "lower_index_core_neighbor_count": 8,
+      "point_id": 140
+    },
+    {
+      "core_neighbor_count": 8,
+      "higher_index_core_neighbor_count": 0,
+      "lower_index_core_neighbor_count": 8,
+      "point_id": 141
+    },
+    {
+      "core_neighbor_count": 8,
+      "higher_index_core_neighbor_count": 0,
+      "lower_index_core_neighbor_count": 8,
+      "point_id": 142
+    },
+    {
+      "core_neighbor_count": 8,
+      "higher_index_core_neighbor_count": 0,
+      "lower_index_core_neighbor_count": 8,
+      "point_id": 143
+    },
+    {
+      "core_neighbor_count": 8,
+      "higher_index_core_neighbor_count": 0,
+      "lower_index_core_neighbor_count": 8,
+      "point_id": 144
+    },
+    {
+      "core_neighbor_count": 8,
+      "higher_index_core_neighbor_count": 0,
+      "lower_index_core_neighbor_count": 8,
+      "point_id": 145
+    },
+    {
+      "core_neighbor_count": 8,
+      "higher_index_core_neighbor_count": 0,
+      "lower_index_core_neighbor_count": 8,
+      "point_id": 146
+    },
+    {
+      "core_neighbor_count": 8,
+      "higher_index_core_neighbor_count": 0,
+      "lower_index_core_neighbor_count": 8,
+      "point_id": 183
+    }
+  ],
+  "input": "Paper-reproduction-apps\\rt-dbscan-paper\\data\\fixtures\\uci_3droad_1k_author_2d_zero_z.csv",
+  "min_points": 100,
+  "point_count": 1000,
+  "schema": "rtdl.paper_reproduction.rt_dbscan.uci_3droad_contract_mismatch_analysis.v1",
+  "status": "diagnostic_only_not_paper_reproduction"
+}

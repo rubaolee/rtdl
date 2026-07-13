@@ -1,0 +1,89 @@
+{
+  "author": {
+    "artifact": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\bounded3d_author_hd_exec_output_pod.json",
+    "hd_result": 2.0,
+    "hd_upper_bound": 3.316624879837036,
+    "init_radius": 2.0,
+    "iteration_model": "author_adaptive_radius_queue_loop",
+    "iterations": [
+      {
+        "CMax2": 4.0,
+        "CUDATime": 0.084,
+        "Iteration": 1,
+        "NumInputPoints": 9,
+        "NumOutputPoints": 0,
+        "OffloadingSize": 0,
+        "RTTime": 2.536,
+        "Radius": 2.0
+      }
+    ]
+  },
+  "claim_boundary": {
+    "author_rt_core_algorithm_equivalence_claimed": false,
+    "author_tune_radius_route_mapping_claimed": false,
+    "figure8_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "performance_claimed": false
+  },
+  "comparison": {
+    "matched": true,
+    "mismatch_count": 0,
+    "mismatches": []
+  },
+  "date": "2026-07-09",
+  "decision": {
+    "cell_mbr_author_like_queue_route_available_for_bounded3d": true,
+    "explicit_author_tune_radius_supported_by_hd_exec": false,
+    "reason": "The bounded route emits comparable author-like queue fields, but the hd_exec-compatible wrapper still keeps explicit -tune_radius fail-closed until a broader route gate is implemented."
+  },
+  "exit_label": "bounded_cell_mbr_queue_route_trace_matches__wrapper_integration_still_required",
+  "goal": "Goal5359",
+  "input_fixture": "bounded3d_a.wkt -> bounded3d_b.wkt",
+  "purpose": "Run a bounded app-owned cell-MBR route variant that emits author-like radius queue fields, using emitted per-source nearest columns and the generic radius_growth_step schedule for future nonterminal cases.",
+  "recommended_next_targets": [
+    "integrate_author_like_queue_route_into_run_xhd_rtdl_hd_exec_under_explicit_internal_route_label",
+    "run_bounded_route_trace_comparison_through_hd_exec_wrapper",
+    "then_test_nonterminal_author_trace_case_where_radius_growth_step_updates_radius"
+  ],
+  "rtdl_route": {
+    "backend": "numpy",
+    "grid_shape": [
+      1,
+      1,
+      1
+    ],
+    "max_inline_points": 64,
+    "queue_rows": [
+      {
+        "CMax2": 4.0,
+        "Iteration": 1,
+        "NumInputPoints": 9,
+        "NumOutputPoints": 0,
+        "Radius": 2.0
+      }
+    ],
+    "route_iteration_model": "cell_mbr_author_like_radius_queue_route",
+    "route_iterations": [
+      {
+        "candidate_distance_evaluations": 72,
+        "frontier_row_count": 9,
+        "nearest_columns_app_semantics": "none",
+        "nearest_columns_contract": "generic_nearest_witness_from_cell_mbr_frontier",
+        "queue_row": {
+          "CMax2": 4.0,
+          "Iteration": 1,
+          "NumInputPoints": 9,
+          "NumOutputPoints": 0,
+          "Radius": 2.0
+        },
+        "route_contract": "generic_cell_mbr_nearest_frontier_reference",
+        "route_distance": 2.0
+      }
+    ],
+    "uses_cell_mbr_route": true,
+    "uses_emitted_nearest_columns": true,
+    "uses_radius_growth_step": false
+  },
+  "schema": "rtdl.paper_reproduction.xhd.goal5359.cell_mbr_author_like_queue_route.v1",
+  "status": "cell_mbr_author_like_queue_route_matches_bounded3d_author_trace"
+}

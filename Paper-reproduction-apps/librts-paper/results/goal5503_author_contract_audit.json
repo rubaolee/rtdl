@@ -1,0 +1,198 @@
+{
+  "author_commits": {
+    "benchmark": "9140ad997519713bb5fdceba639a357afa4609ad",
+    "rtspatial": "7c54c181b1058c87768767998c00e225cc58666e"
+  },
+  "author_root": "/workspace/librts-ae",
+  "checks": [
+    {
+      "label": "benchmark_coord_t_float",
+      "needle": "using coord_t = float;",
+      "present": true
+    },
+    {
+      "label": "benchmark_boxes_use_coord_t",
+      "needle": "model::box<point_t>",
+      "present": true
+    },
+    {
+      "label": "benchmark_instantiates_coord_t_index",
+      "needle": "SpatialIndex<coord_t, 2>",
+      "present": true
+    },
+    {
+      "label": "benchmark_dispatches_range_intersects",
+      "needle": "QueryType::kRangeIntersects",
+      "present": true
+    },
+    {
+      "label": "benchmark_calls_intersects_predicate",
+      "needle": "Predicate::kIntersects",
+      "present": true
+    },
+    {
+      "label": "benchmark_copies_coord_t_envelopes",
+      "needle": "Point<coord_t, 2>",
+      "present": true
+    },
+    {
+      "label": "wkt_loader_accumulates_coord_t_bounds",
+      "needle": "coord_t lows[2]",
+      "present": true
+    },
+    {
+      "label": "intersects_inclusive_lower_upper",
+      "needle": "other.min_.get_coordinate(dim) <= max_.get_coordinate(dim)",
+      "present": true
+    },
+    {
+      "label": "intersects_inclusive_upper_lower",
+      "needle": "other.max_.get_coordinate(dim) >= min_.get_coordinate(dim)",
+      "present": true
+    },
+    {
+      "label": "float_optix_aabb_path_exists",
+      "needle": "EnvelopeToOptixAabb<float, 2>",
+      "present": true
+    },
+    {
+      "label": "float_optix_aabb_direct_min_assignment",
+      "needle": "aabb.minX = min_point.get_x();",
+      "present": true
+    },
+    {
+      "label": "double_optix_aabb_path_exists",
+      "needle": "EnvelopeToOptixAabb<double, 2>",
+      "present": true
+    },
+    {
+      "label": "double_optix_path_has_explicit_float_rounding_helper",
+      "needle": "next_float_from_double",
+      "present": true
+    },
+    {
+      "label": "double_point_template_exists",
+      "needle": "class Point<double, 2>",
+      "present": true
+    },
+    {
+      "label": "double_point_coordinate_return_type_is_float_in_source",
+      "needle": "DEV_HOST_INLINE float get_coordinate",
+      "present": true
+    },
+    {
+      "label": "gpu_float_ray_params_specialization_exists",
+      "needle": "struct RayParams<float, 2>",
+      "present": true
+    },
+    {
+      "label": "gpu_float_hit_interval_uses_nextafter_one",
+      "needle": "float t0 = 0, t1 = nextafterf(1.0, FLT_MAX);",
+      "present": true
+    },
+    {
+      "label": "gpu_float_hit_interval_expands_tfar",
+      "needle": "tFar *= 1 + 2 * FLT_GAMMA(3);",
+      "present": true
+    },
+    {
+      "label": "gpu_float_hit_interval_rejects_disjoint_slabs",
+      "needle": "if (t0 > t1)",
+      "present": true
+    },
+    {
+      "label": "gpu_forward_intersects_uses_query_diagonal_ray",
+      "needle": "ray_params.Compute(query, true);",
+      "present": true
+    },
+    {
+      "label": "gpu_forward_intersects_tests_envelope_with_ray",
+      "needle": "bool query_hit = ray_params.IsHit(envelope);",
+      "present": true
+    },
+    {
+      "label": "gpu_forward_intersects_reverses_envelope_ray",
+      "needle": "ray_params.Compute(envelope, false);",
+      "present": true
+    },
+    {
+      "label": "gpu_forward_intersects_tests_query_with_reverse_ray",
+      "needle": "bool box_hit = ray_params.IsHit(query);",
+      "present": true
+    },
+    {
+      "label": "gpu_forward_intersects_requires_reverse_hit",
+      "needle": "if (!box_hit)",
+      "present": true
+    }
+  ],
+  "claim_boundary": {
+    "author_contract_source_audited": true,
+    "author_specific_rtdl_core_behavior_authorized": false,
+    "author_validity_proven_for_full_inputs": false,
+    "full_input_root_cause_resolved": false,
+    "performance_ratio_authorized": false,
+    "rtdl_core_change_authorized": false
+  },
+  "contract": {
+    "benchmark_coordinate_type": "float32",
+    "benchmark_cpu_reference_predicate": "inclusive_aabb_intersects",
+    "benchmark_float_optix_conversion": "direct_float_to_OptixAabb_assignment",
+    "benchmark_float_padding": false,
+    "benchmark_gpu_predicate": "float32_rayparams_slab_hit_with_nextafter_t1_and_tfar_gamma",
+    "benchmark_gpu_query_shape": "forward_query_diagonal_then_reverse_envelope_diagonal",
+    "benchmark_gpu_t0": 0.0,
+    "benchmark_gpu_t1": "nextafterf(1.0, FLT_MAX)",
+    "benchmark_gpu_tfar_multiplier": "1 + 2 * FLT_GAMMA(3)",
+    "cpu_reference_and_gpu_predicate_equivalence_proven": false,
+    "double_optix_conversion": "next_float_from_double_round_outward_two_steps",
+    "double_path_used_by_benchmark": false,
+    "double_template_exists": true,
+    "source_anomaly_double_get_coordinate_returns_float": true
+  },
+  "exit_label": "author_float32_gpu_rayparams_contract_audited_cpu_reference_distinguished",
+  "schema": "rtdl.paper_reproduction.librts.goal5503_author_range_intersects_contract.v2",
+  "source_files": {
+    "benchmark_common": {
+      "path": "/workspace/librts-ae/SpatialQueryBenchmark/src/query/rtspatial/common.h",
+      "sha256": "8652095fb55bc0d228617edb464bb574787e4fb3293332905d1b77dfd3e7abe0"
+    },
+    "benchmark_config": {
+      "path": "/workspace/librts-ae/SpatialQueryBenchmark/src/config.h",
+      "sha256": "db3e2ca9f264ee517dd1cfc6fef5b5f8773b820d1d263a54f544ebc132124fcb"
+    },
+    "benchmark_geometry": {
+      "path": "/workspace/librts-ae/SpatialQueryBenchmark/src/geom_common.h",
+      "sha256": "b58a6a4cad70b0a60ad06806e9adbc6b191e50f41ee00a092442cbcc8365f641"
+    },
+    "benchmark_range_query": {
+      "path": "/workspace/librts-ae/SpatialQueryBenchmark/src/query/rtspatial/range_query.cu",
+      "sha256": "ed27c487049e7783db778ef46d5a7bb23d6126b94665d4c39f6c42b69501c0fa"
+    },
+    "envelope": {
+      "path": "/workspace/librts-ae/RTSpatial/include/rtspatial/geom/envelope.cuh",
+      "sha256": "515116d3635ef16b5dfd5201b9991dc7b6aecd770d61d83def6fc8138f3d4a37"
+    },
+    "helpers": {
+      "path": "/workspace/librts-ae/RTSpatial/include/rtspatial/utils/helpers.h",
+      "sha256": "4b8c01c42392f8ab96c62ed2648e3188d2daa08e60b642ff4fe83ac4a7e06b79"
+    },
+    "intersects_shader": {
+      "path": "/workspace/librts-ae/RTSpatial/src/shaders/shaders_intersects_envelope_query_2d.cu",
+      "sha256": "1f1dc0507bfc2abb813d17c23ae39914f358b466caf4a3e9ced52354c91faea2"
+    },
+    "point": {
+      "path": "/workspace/librts-ae/RTSpatial/include/rtspatial/geom/point.cuh",
+      "sha256": "2e2ad57b9cea87feed7470f4fdaa40f901d945164e2b8dea6f061ead27dbe20a"
+    },
+    "ray_params": {
+      "path": "/workspace/librts-ae/RTSpatial/include/rtspatial/details/ray_params.h",
+      "sha256": "85d7cd787ff296810a2c5cfd368d65f977272b984d1c804593e16dc14092598a"
+    },
+    "wkt_loader": {
+      "path": "/workspace/librts-ae/SpatialQueryBenchmark/src/wkt_loader.h",
+      "sha256": "fb876302b74921acd7e985b67dc6eca6e123428ea82deb4b175a65d0c5a10e5f"
+    }
+  },
+  "status": "author_contract_audit_completed"
+}

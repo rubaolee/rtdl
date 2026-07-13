@@ -1,0 +1,53 @@
+I20260701 19:19:28.278702 109556 planar_graph.h:215] Map /dev/shm/-workspace-goal4848_rep-current_osm_au-lakes_Australia_current_osm_Point.cdb.bin is deserialized, chains: 357910 points: 14788065 edges: 14430155
+I20260701 19:19:28.362784 109556 planar_graph.h:215] Map /dev/shm/-workspace-goal4848_rep-current_osm_au-parks_Australia_current_osm_Point.cdb.bin is deserialized, chains: 51130 points: 992505 edges: 941375
+I20260701 19:19:28.362934 109556 context.h:51] Bounding Box, Bottom-left: (73.3779, -54.7704), Top-right: (167.97, -9.23206)
+I20260701 19:19:28.362978 109556 context.h:58] Scaled Bounding Box, Bottom-left: (-68911715173538, -67408242083296), Top-right: (68911715173537, 67408242083295)
+I20260701 19:19:28.362991 109556 context.h:61] Unscaled Bounding Box, Bottom-left: (73.3779, -54.7704), Top-right: (167.97, -9.23206)
+I20260701 19:19:28.514214 109556 rt_engine.cu:282] Info: Pipeline statistics
+	module(s)                            :     1
+	entry function(s)                    :     2
+	trace call(s)                        :     1
+	continuation callable call(s)        :     0
+	direct callable call(s)              :     0
+	basic block(s) in entry functions    :    23
+	instruction(s) in entry functions    :   646
+	non-entry function(s)                :     1
+	basic block(s) in non-entry functions:     1
+	instruction(s) in non-entry functions:     1
+	debug information                    :    no
+I20260701 19:19:28.523799 109556 rt_engine.cu:282] Info: Pipeline statistics
+	module(s)                            :     1
+	entry function(s)                    :     2
+	trace call(s)                        :     1
+	continuation callable call(s)        :     0
+	direct callable call(s)              :     0
+	basic block(s) in entry functions    :    61
+	instruction(s) in entry functions    :   966
+	non-entry function(s)                :     1
+	basic block(s) in non-entry functions:     1
+	instruction(s) in non-entry functions:     1
+	debug information                    :    no
+I20260701 19:19:28.537086 109556 primitive.h:256] Enlarge limit: 3.5 max iter:5 ne: 14430155 aabbs: 2640424 Compress ratio: 0.81702 Time: 11.882 ms
+I20260701 19:19:28.537196 109556 rt_engine.cu:397] Building AS, num prims: 2640424, Required Temp Size: 201086976 Output Size: 98791040
+I20260701 19:19:28.550097 109556 rt_engine.h:159] Parm size: 152
+I20260701 19:19:28.550136 109556 rt_engine.cu:554] optixLaunch, [w,h,d] = 992505,1,1
+Timing results:
+ - Read map 0: 1252.6 ms
+
+ - Read map 1: 83.8571 ms
+
+ - Load Data: 39.8841 ms
+
+ - Create App: 121.478 ms
+
+ - Init: 0.813007 ms
+
+ - Adaptive Grouping: 11.935 ms
+
+ - Build Index: 12.882 ms
+
+ - Warmup: 0.00119209 ms
+
+ - Query: 6.73485 ms
+
+ - Cleanup: 8.02302 ms

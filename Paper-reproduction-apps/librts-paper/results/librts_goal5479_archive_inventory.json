@@ -1,0 +1,54 @@
+{
+  "claim_boundary": {
+    "archive_extracted": false,
+    "archive_present": true,
+    "archive_verified": true,
+    "embree_in_scope": false,
+    "exact_input_files_identified": false,
+    "inventory_completed": true,
+    "paper_figure_reproduced": false,
+    "performance_ratio_authorized": false
+  },
+  "inventory": {
+    "directory_count": 321,
+    "escaping_symlinks_rejected": true,
+    "file_count": 1370,
+    "hardlinks_and_special_files_rejected": true,
+    "member_count": 1694,
+    "member_types_allowed": [
+      "directory",
+      "regular_file",
+      "safe_relative_symlink"
+    ],
+    "safe": true,
+    "symlink_count": 3,
+    "top_level_entries": [
+      "PPoPPAE"
+    ],
+    "unpacked_file_bytes": 88229246574
+  },
+  "paths": {
+    "archive": "/workspace/librts-data/PPoPPAE-v2.tar.gz",
+    "final": "/workspace/librts-extracted/PPoPPAE-v2",
+    "staging": "/workspace/librts-extracted/.PPoPPAE-v2.extracting"
+  },
+  "safety_contract": {
+    "absolute_or_parent_paths_rejected": true,
+    "archive_size_and_md5_required_before_inventory": true,
+    "backslash_and_drive_prefixes_rejected": true,
+    "duplicate_paths_rejected": true,
+    "escaping_symlinks_hardlinks_devices_and_special_files_rejected": true,
+    "expanded_size_checked_before_extraction": true,
+    "final_directory_promotion_is_atomic": true,
+    "safe_relative_symlinks_allowed": true,
+    "staging_directory_required": true
+  },
+  "schema": "rtdl.paper_reproduction.librts.safe_extraction_plan.v1",
+  "status": "exact_ae_archive_inventory_complete__not_extracted",
+  "verification": {
+    "md5": "89e589f086038f1cd3af9e3ed67da8c8",
+    "path": "/workspace/librts-data/PPoPPAE-v2.tar.gz",
+    "size_bytes": 23062425365,
+    "verified": true
+  }
+}

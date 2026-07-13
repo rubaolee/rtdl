@@ -1,0 +1,71 @@
+{
+  "claim_boundary": {
+    "author_rtdl_correctness_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "geo_figure5_reproduction_claimed": false,
+    "performance_ratio_claimed": false
+  },
+  "elapsed_sec": 597.2587998001836,
+  "goal": "Goal5309",
+  "max_pages": null,
+  "page_size_requested": 500,
+  "schema": "rtdl.paper_reproduction.xhd.goal5309.full_public_arcgis_point_count_mbr_probe.v1",
+  "services": {
+    "zcta": {
+      "author_loader_point_count": 43984131,
+      "checkpoint_features_seen_at_start": 6000,
+      "complete": true,
+      "elapsed_sec": 597.2587661999278,
+      "features_seen": 32294,
+      "geometry_types": {
+        "MultiPolygon": 1585,
+        "Polygon": 30709
+      },
+      "key": "zcta",
+      "mbr": [
+        -179.14734,
+        179.778465,
+        -14.548692,
+        71.390482
+      ],
+      "mbr_delta": {
+        "x_lower": -1.1328125140153134e-06,
+        "x_upper": 7.358398448786829e-06,
+        "y_lower": -2.504272469394664e-07,
+        "y_upper": 1.958496099518925e-06
+      },
+      "object_id_max": 32294,
+      "object_id_min": 1,
+      "pages_seen": 57,
+      "paper_basename": "uszipcode.wkt",
+      "paper_mbr": {
+        "x": [
+          -179.1473388671875,
+          179.77845764160156
+        ],
+        "y": [
+          -14.548691749572754,
+          71.3904800415039
+        ]
+      },
+      "paper_point_count": 43952878,
+      "point_count_delta": 31253,
+      "point_count_relative_delta": 0.0007110569642333773,
+      "resumed_from_checkpoint": true,
+      "sample_labels": [
+        "00001",
+        "00002",
+        "00003",
+        "00004",
+        "00005",
+        "00006",
+        "00007",
+        "00008"
+      ],
+      "service_feature_count": 32294,
+      "service_url": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_ZIP_Code_Areas_anaylsis/FeatureServer"
+    }
+  },
+  "status": "full_public_probe_complete"
+}

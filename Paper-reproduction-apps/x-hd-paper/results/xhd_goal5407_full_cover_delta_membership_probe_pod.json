@@ -1,0 +1,153 @@
+{
+  "author_sample_pair_membership_in_rtdl_full_cover": [
+    {
+      "author_cell_id": 2924,
+      "author_cell_present_in_rtdl_full_cover": false,
+      "rtdl_cells_sample": [
+        785,
+        898,
+        899,
+        904,
+        913,
+        999,
+        1000,
+        1005,
+        1013,
+        1089,
+        1090,
+        1095,
+        1102,
+        1105,
+        1180,
+        1181
+      ],
+      "rtdl_source_row_count": 56,
+      "source_id": 11168
+    },
+    {
+      "author_cell_id": 17,
+      "author_cell_present_in_rtdl_full_cover": false,
+      "rtdl_cells_sample": [
+        785,
+        898,
+        899,
+        904,
+        913,
+        999,
+        1000,
+        1005,
+        1013,
+        1089,
+        1090,
+        1095,
+        1102,
+        1105,
+        1180,
+        1181
+      ],
+      "rtdl_source_row_count": 56,
+      "source_id": 210712
+    },
+    {
+      "author_cell_id": 17,
+      "author_cell_present_in_rtdl_full_cover": false,
+      "rtdl_cells_sample": [
+        785,
+        898,
+        899,
+        904,
+        913,
+        999,
+        1000,
+        1005,
+        1013,
+        1089,
+        1090,
+        1095,
+        1102,
+        1105,
+        1180,
+        1181
+      ],
+      "rtdl_source_row_count": 56,
+      "source_id": 437119
+    }
+  ],
+  "author_state_evidence": {
+    "cmin2_after_load_balance_hash": 10400538358226239013,
+    "cmin2_after_ray_equals_after_load_balance": true,
+    "cmin2_after_ray_hash": 10400538358226239013,
+    "feedback_update_count": 294,
+    "status_count_aborted": 0,
+    "status_count_completed": 0,
+    "status_count_miss": 0
+  },
+  "claim_boundary": {
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_support_claimed": false,
+    "figure11_reproduction_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "full_cover_delta_isolated": true,
+    "full_xhd_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false
+  },
+  "classification": {
+    "all_author_sample_pairs_present_in_rtdl_full_cover": false,
+    "author_feedback_update_count": 294,
+    "feedback_changes_cmin2_hash": false,
+    "interpretation": "Existing evidence is insufficient to promote explicit -lb. If author sample rows are absent from the RTDL full-cover surface, the gap is row identity as well as row count. If samples are present, the remaining 6 rows/active still need generic status/feedback evidence.",
+    "label": "author_sample_rows_not_subset_of_rtdl_full_cover__row_identity_gap",
+    "rtdl_full_cover_uniform_rows_per_active": true
+  },
+  "decision": {
+    "direct_native_fix_authorized": false,
+    "explicit_lb_support_authorized": false,
+    "reason": "Goal5407 isolates the real 6 rows/active delta and sample-pair membership, but does not yet identify a generic native transition that can close author row/hash parity.",
+    "recommended_next_goal": "Goal5408_author_trace_v3_or_generic_delta_transition_design"
+  },
+  "delta": {
+    "active_count": 437645,
+    "delta_rows_per_active_if_uniform": 6,
+    "delta_rows_per_active_remainder": 0,
+    "total_delta_rows": 2625870
+  },
+  "goal": "Goal5407",
+  "goal5406_summary": {
+    "author_raw_offload_row_hash": 4333109858711462591,
+    "author_raw_offload_rows": 27133990,
+    "goal5365_full_cover_rows": 24508120,
+    "hash_parity_with_author": false,
+    "matched": true,
+    "row_count_parity_with_author": false,
+    "row_delta_author_minus_rtdl_full_cover": 2625870,
+    "rtdl_full_cover_row_hash": 9732286907904247845,
+    "rtdl_full_cover_rows": 24508120,
+    "status": "real_full_cover_surface_generated__author_delta_remaining"
+  },
+  "input1": "/tmp/xhd_goal5234/data/dragon.ply",
+  "input2": "/tmp/xhd_goal5234/data/asian_dragon.ply",
+  "matched": true,
+  "preprocessing": [
+    "translate_each_input_to_min_bound"
+  ],
+  "purpose": "Probe whether the real RTDL full-cover surface is merely short by 6 rows/active or also differs in sampled row identity from the Goal5387 author trace.",
+  "rtdl_full_cover_per_source_count_summary": {
+    "active_count": 437645,
+    "all_sources_have_same_row_count": true,
+    "max_rows_per_active": 56,
+    "mean_rows_per_active": 56.0,
+    "min_rows_per_active": 56,
+    "row_count": 24508120,
+    "rows_per_active_histogram": {
+      "56": 437645
+    },
+    "unique_rows_per_active": [
+      56
+    ]
+  },
+  "schema": "rtdl.paper_reproduction.xhd.goal5407.full_cover_delta_membership_probe.v1",
+  "status": "full_cover_delta_isolated__row_identity_or_feedback_semantics_still_open",
+  "timings_sec": {
+    "total": 32.18863981962204
+  }
+}

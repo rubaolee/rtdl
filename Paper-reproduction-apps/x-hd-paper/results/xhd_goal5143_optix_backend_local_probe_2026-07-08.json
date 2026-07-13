@@ -1,0 +1,47 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.optix_backend_local_probe.v1",
+  "goal": "Goal5143",
+  "date": "2026-07-08",
+  "status": "local_optix_probe_blocked_by_missing_cuda_driver__pod_required",
+  "matched": null,
+  "probe": {
+    "api": "rtdsl.cell_mbr_nearest_frontier_aabb_membership_2d_numpy_columns",
+    "backend": "optix",
+    "fixture": "Goal5142 synthetic 2-D cell-MBR frontier fixture",
+    "result": "not_executed_to_completion",
+    "exception_type": "RuntimeError",
+    "exception_message": "CUDA driver library is required for the OptiX backend; could not load libcuda.so.1"
+  },
+  "interpretation": {
+    "code_path_reached": true,
+    "logic_failure": false,
+    "environment_failure": true,
+    "requires_pod_or_cuda_driver_host": true,
+    "native_symbol_status": "not_checked_because_cuda_driver_load_failed",
+    "performance_claim": false
+  },
+  "claim_boundary": {
+    "allowed": [
+      "The local environment cannot validate backend=\"optix\" because CUDA driver loading fails.",
+      "Goal5142 CPU-backed correctness remains valid.",
+      "POD validation is required for the OptiX-assisted route."
+    ],
+    "not_allowed": [
+      "OptiX route failed correctness.",
+      "OptiX route passed correctness.",
+      "Native Goal5140 backend exists.",
+      "X-HD performance improved."
+    ]
+  },
+  "recommended_next_step": {
+    "goal": "Goal5144",
+    "name": "POD OptiX assisted cell-MBR frontdoor gate",
+    "requirements": [
+      "CUDA driver visible to Python/native library.",
+      "Current RTDL workspace synced to POD.",
+      "Run the Goal5142 fixture with backend=\"optix\".",
+      "Compare row table exactly against CPU/reference output.",
+      "Record native symbol used by broadphase AABB membership rows."
+    ]
+  }
+}

@@ -1,0 +1,175 @@
+{
+  "author_hd_result": 0.12572988867759705,
+  "author_tolerance": 1e-06,
+  "backend": "optix",
+  "capacity_planning": {
+    "basis": "ceil(max_observed_frontier_rows * 1.5) for the next bounded POD/OptiX gate",
+    "max_observed_frontier_rows": 0,
+    "max_observed_rows_per_source": 0.0,
+    "source_limit_for_max_rows": 437645,
+    "suggested_next_explicit_row_capacity": 0
+  },
+  "cases": [
+    {
+      "author_abs_diff": 2.3848857610975216e-09,
+      "author_hd_result": 0.12572988867759705,
+      "exact_oracle_used": false,
+      "exact_subset_reference": null,
+      "match_basis": "author_hd_result",
+      "matched": true,
+      "phase_timings_sec": {
+        "case_total": 2.435129404067993,
+        "exact_subset_reference": null,
+        "rtdl_route_wall": 2.2462014481425285,
+        "select_source_subset": 0.1889103800058365
+      },
+      "route_abs_diff": null,
+      "rtdl_route": {
+        "anyhit_row_distance_computation": "lazy_row_output_only",
+        "complete_frontier_state_passthrough": true,
+        "continuation_candidate_distance_evaluations": 0,
+        "distance": 0.12572988629271128,
+        "frontier_attempted_count": 0,
+        "frontier_contract": "generic_cell_mbr_nearest_frontier_native_3d_optix",
+        "frontier_full_row_capacity": 2824560830,
+        "frontier_inline_nearest": true,
+        "frontier_inline_nearest_requested": true,
+        "frontier_native_symbol": "rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v3",
+        "frontier_row_capacity": 0,
+        "frontier_row_capacity_attempts": [
+          0
+        ],
+        "frontier_row_capacity_policy": "explicit",
+        "frontier_row_capacity_requested": 0,
+        "frontier_row_count": 0,
+        "frontier_row_order": "native_unsorted",
+        "frontier_row_order_requested": "native",
+        "grid_cell_count": 6454,
+        "initial_candidate_distance_evaluations": 23668840,
+        "initial_cell_lookup_strategy": "dense_grid_cell_position_table",
+        "initial_cell_mbr_tests": 0,
+        "initial_cell_selection": "local_grid_first_occupied_shell_min_grid_cell_distance_then_cell_id",
+        "initial_dense_lookup_cell_capacity": 32768,
+        "initial_dense_lookup_max_cells": 8000000,
+        "initial_grid_cell_probes": 37335261,
+        "initial_scanned_cell_budget_per_query": 0,
+        "initial_scanned_cell_count": 0,
+        "initial_seed_quality": "valid_upper_bound_not_nearest_cell_mbr",
+        "inline_cell_hit_count": null,
+        "inline_nearest_pruning": "payload_current_best_min_cell_distance_gt_best",
+        "inline_point_evaluation_count": null,
+        "inline_stats_collected": false,
+        "intersection_attribute_min_distance_sq": "reported_by_intersection_reused_by_anyhit",
+        "intersection_pruning": "payload_current_best_before_report_intersection",
+        "max_inline_points": 512,
+        "nearest_executor": "complete_frontier_state_passthrough",
+        "phase_timings_sec": {
+          "direction_total": 1.918281689286232,
+          "frontier_rows": 0.925519160926342,
+          "grid_cell_mbrs": 0.18116900324821472,
+          "initial_state_seed": 0.5566430613398552,
+          "max_nearest_reduction": 0.07199088484048843,
+          "nearest_continuation": 0.016326211392879486,
+          "radius_selection": 0.03135956823825836,
+          "source_columns": 0.05570787191390991,
+          "target_columns": 0.07955452799797058
+        },
+        "source_id": 209573,
+        "target_id": 290672,
+        "total_candidate_distance_evaluations": 23668840
+      },
+      "selected_indices_head": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "selected_indices_tail": [
+        437637,
+        437638,
+        437639,
+        437640,
+        437641,
+        437642,
+        437643,
+        437644
+      ],
+      "selection_policy": "evenly-spaced",
+      "source_limit": 437645
+    }
+  ],
+  "claim_boundary": {
+    "bounded_subset_scaling_claimed": false,
+    "exact_oracle_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure_reproduction_claimed": false,
+    "full_all_source_route_run_claimed": true,
+    "full_paper_reproduction_claimed": false,
+    "level_b_same_source_candidate_claimed": true,
+    "performance_ratio_claimed": false,
+    "route_only_author_comparison_claimed": true
+  },
+  "full_point_counts": {
+    "source": 437645,
+    "target": 543652
+  },
+  "goal": "Goal5197-intersection-attribute-lazy-row-distance-final3",
+  "goal5179_pairwise_estimate": {
+    "candidate_row_24b_bytes": 5710237908960,
+    "candidate_row_32b_bytes": 7613650545280,
+    "candidate_row_min_16b_bytes": 3806825272640,
+    "distance_float32_bytes": 951706318160,
+    "distance_float64_bytes": 1903412636320,
+    "pair_count": 237926579540,
+    "pair_count_scientific": "2.379266e+11",
+    "pairwise_exact_route_allowed": false,
+    "reason": "Naive pairwise materialization is hundreds of billions of pairs for this target."
+  },
+  "grid_shape": [
+    32,
+    32,
+    32
+  ],
+  "input1": "Paper-reproduction-apps/x-hd-paper/data/external/stanford/dragon_recon/dragon_vrip.ply",
+  "input2": "Paper-reproduction-apps/x-hd-paper/data/external/stanford/happy_recon/happy_vrip.ply",
+  "level": "level_b_same_source_candidate_only",
+  "phase_timings_sec": {
+    "load_full_inputs": 2.5498201176524162,
+    "total": 4.985407091677189
+  },
+  "preprocessing": [
+    "translate_each_input_to_min_bound"
+  ],
+  "route_feasibility": {
+    "exact_oracle_used": false,
+    "frontier_row_capacity_requested": 0,
+    "full_all_source_route_run": true,
+    "full_pairwise_rows_materialized": false,
+    "full_source_loaded_for_deterministic_subset_selection": true,
+    "full_target_loaded": true,
+    "next_gate_should_be": "review route-only all-source evidence before any performance or exact-paper claim",
+    "pairwise_exact_route_allowed": false,
+    "scalable_route_exercised_on_full_source_and_target": true,
+    "scalable_route_exercised_on_full_target_with_bounded_source_subsets": false
+  },
+  "schema": "rtdl.paper_reproduction.xhd.full_public_subset_scaling_gate.v1",
+  "skip_exact_oracle": true,
+  "source_limits": [
+    437645
+  ],
+  "status": "full_public_candidate_all_source_route_only_checked",
+  "summary_statistics": {
+    "all_matched": true,
+    "full_all_source_route_run": true,
+    "max_exact_subset_reference_sec": null,
+    "max_frontier_row_count": 0,
+    "max_route_wall_sec": 2.2462014481425285,
+    "median_exact_subset_reference_sec": null,
+    "median_route_wall_sec": 2.2462014481425285
+  },
+  "target": "graphics_dragon_happy_buddha"
+}

@@ -1,0 +1,169 @@
+{
+  "author_output": {
+    "bytes": 139098488,
+    "lines": 6341619,
+    "path": "/root/rtdl_goal4955/Paper-reproduction-apps/rayjoin-paper/_runs/goal4970_top4_matrix/author_official_section57_overlay.txt",
+    "sha256": "076227b072340e754b7f2cb54de3c37d8054e2a393e87fdb8a4f7368a297b690"
+  },
+  "byte_equal_to_author": true,
+  "claim_boundary": {
+    "broad_performance_claim": false,
+    "bundled_rayjoin_overlay_imported": false,
+    "dataset_label": "representative_current_source",
+    "exact_old_paper_input_claim": false,
+    "full_eight_pair_paper_claim": false,
+    "numba_available": true,
+    "numba_kernel_module": "/root/rtdl_goal4955/Paper-reproduction-apps/rayjoin-paper/rayjoin_numba_overlay_kernels.py",
+    "numba_on_app_continuation_path": true,
+    "numba_on_correctness_critical_path": false,
+    "numba_on_rtdl_primitive_path": false,
+    "public_lsi_used": true,
+    "public_point_location_used": true
+  },
+  "elapsed_sec": 70.17072626482695,
+  "generated_output": {
+    "bytes": 139098488,
+    "lines": 6341619,
+    "path": "/root/rtdl_goal4955/Paper-reproduction-apps/rayjoin-paper/_runs/goal4970_top4_matrix/rtdl_numba_section57_overlay.txt",
+    "sha256": "076227b072340e754b7f2cb54de3c37d8054e2a393e87fdb8a4f7368a297b690"
+  },
+  "left": {
+    "chains": 1612,
+    "edges": 1705027,
+    "path": "/root/rtdl_goal4955/Paper-reproduction-apps/rayjoin-paper/_data/goal4970_top4_arcgis/top4_county.cdb",
+    "points": 1706639
+  },
+  "lsi_row_count": 428322,
+  "native_point_location_timings": {
+    "midpoint_pip_map0": {
+      "mode": "none",
+      "point_count": 209559,
+      "point_upload": 0.0,
+      "positive_face_count": 103877,
+      "row_download": 0.000312069,
+      "traversal": 0.000963368
+    },
+    "midpoint_pip_map1": {
+      "mode": "none",
+      "point_count": 203941,
+      "point_upload": 0.0,
+      "positive_face_count": 94823,
+      "row_download": 0.00032224,
+      "traversal": 0.000954168
+    },
+    "vertex_pip_map0_in_map1": {
+      "mode": "rows",
+      "point_count": 1706639,
+      "point_upload": 0.004266965,
+      "positive_face_count": 812721,
+      "row_download": 0.002878324,
+      "traversal": 0.004491101
+    },
+    "vertex_pip_map1_in_map0": {
+      "mode": "rows",
+      "point_count": 9993104,
+      "point_upload": 0.02251774,
+      "positive_face_count": 4527305,
+      "row_download": 0.016202895,
+      "traversal": 0.015271027
+    }
+  },
+  "packed_cache": {
+    "enabled": true,
+    "path": "/root/rtdl_goal4955/Paper-reproduction-apps/rayjoin-paper/_runs/goal4970_top4_matrix/rtdl_packed_cache"
+  },
+  "pair_name": "top4_county_zipcode_arcgis_same_source",
+  "phase_seconds": {
+    "assign_midpoint_faces_map0_sec": 0.10150884557515383,
+    "assign_midpoint_faces_map1_sec": 0.0839057294651866,
+    "destroy_point_location_sessions_sec": 0.15845830459147692,
+    "file_summary_author_sec": 0.2103944467380643,
+    "file_summary_generated_sec": 0.2127216961234808,
+    "intersection_reprojection_sec": 15.69355091638863,
+    "load_pack_left_sec": 0.010784556157886982,
+    "load_pack_right_sec": 0.04632503818720579,
+    "lsi_public_rows_sec": 4.447933739982545,
+    "midpoint_pip_map0_sec": 0.006107619032263756,
+    "midpoint_pip_map1_sec": 0.006565822288393974,
+    "midpoint_points_map0_sec": 1.0728199863806367,
+    "midpoint_points_map1_sec": 0.7188186403363943,
+    "numba_wrapper_total_sec": 70.57528683263808,
+    "output_chain_write_sec": 27.52899721171707,
+    "pack_midpoint_points_map0_sec": 0.8337881006300449,
+    "pack_midpoint_points_map1_sec": 0.46252457797527313,
+    "prepare_point_location_map0_in_map1_sec": 3.336685015819967,
+    "prepare_point_location_map1_in_map0_sec": 0.4141471702605486,
+    "shared_bounds_sec": 4.520639777183533e-06,
+    "sort_map0_sec": 6.543549097143114,
+    "sort_map1_sec": 7.361317138187587,
+    "vertex_pip_map0_in_map1_sec": 0.13585036154836416,
+    "vertex_pip_map1_in_map0_sec": 0.7470886083319783
+  },
+  "query_map_ids": {
+    "map0_in_map1": 0,
+    "map1_in_map0": 1,
+    "swapped": false
+  },
+  "right": {
+    "chains": 10144,
+    "edges": 9982960,
+    "path": "/root/rtdl_goal4955/Paper-reproduction-apps/rayjoin-paper/_data/goal4970_top4_arcgis/top4_zipcode.cdb",
+    "points": 9993104
+  },
+  "route": "public_rtdl_lsi_pip_plus_numba_partner_app_continuation",
+  "scale_bounds": [
+    -124.415163,
+    -71.85615,
+    25.837092,
+    45.015851
+  ],
+  "schema": "rtdl.paper_reproduction.rayjoin.section57_overlay_numba.v1",
+  "vertex_positive_counts": {
+    "map0_in_map1": 812721,
+    "map1_in_map0": 4527305
+  },
+  "writer_result": {
+    "buffered_output_line_count": 6341619,
+    "chain_count": 426180,
+    "face_count": 12039,
+    "generic_output_assembly": {
+      "dedupe_enabled": false,
+      "enabled": true,
+      "group_count": 426180,
+      "group_policy": "skip_empty",
+      "input_rows": 5915439,
+      "item_rows": 5915439,
+      "output_shape": "descriptors_and_items",
+      "schema": "rtdl.paper_reproduction.rayjoin.generic_output_assembly.v1",
+      "valid_rows": 5915439
+    },
+    "line_count": 6341619,
+    "numba_writer_skip_plan": {
+      "descriptor_direct_chains": 3159,
+      "descriptor_direct_points": 1460142,
+      "numba_available": true,
+      "processed_chains": 9313,
+      "skipped_no_xsect_chains": 2443,
+      "skipped_no_xsect_points": 1661356
+    },
+    "path": "/root/rtdl_goal4955/Paper-reproduction-apps/rayjoin-paper/_runs/goal4970_top4_matrix/rtdl_numba_section57_overlay.txt",
+    "point_count": 5915439,
+    "writer_cache_counts": {
+      "unique_display_lines": 0,
+      "unique_point_records": 3414565
+    },
+    "writer_phase_seconds": {
+      "bulk_writelines_sec": 0.6002055630087852,
+      "chain_loop_map0_sec": 5.607696174643934,
+      "chain_loop_map1_sec": 16.629447708837688,
+      "generic_output_assembly_sec": 2.502262867987156,
+      "group_xsects_map0_sec": 0.5463778050616384,
+      "group_xsects_map1_sec": 0.25741897616535425,
+      "skip_plan_sec": 0.7129931105300784
+    }
+  },
+  "xsect_sorted_counts": {
+    "map0": 428322,
+    "map1": 428322
+  }
+}

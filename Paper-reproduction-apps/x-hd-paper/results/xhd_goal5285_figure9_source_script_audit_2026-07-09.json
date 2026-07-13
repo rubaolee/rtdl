@@ -1,0 +1,217 @@
+{
+  "author_repo": {
+    "audit_method": "git object access; no checkout required",
+    "head": "8c3846866052e1e8755210021f23fac2cbe8c3d6",
+    "repository": "https://github.com/pwrliang/X-HD.git",
+    "rev": "paper"
+  },
+  "claim_boundary": {
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure9_reproduced": false,
+    "full_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false,
+    "rtdl_route_result_claimed": false
+  },
+  "decision": {
+    "allowed_next_steps": [
+      "Treat Goal5285 as source/script mapping evidence only.",
+      "If Figure 9 remains a priority, either recover the missing run_all variants or reconstruct the plot from an externally reviewed script/data mapping.",
+      "Do not implement RTDL route work for Figure 9 until the author-side plot denominator is complete."
+    ],
+    "figure9_reproduced": false,
+    "forbidden_summaries": [
+      "Figure 9 reproduced",
+      "all auto-tune variants recovered",
+      "training sweep equals Figure 9",
+      "RTDL Figure 9 speedup or parity"
+    ],
+    "reason": "The source contains a Figure-9-like auto-tune plotting script and training sweeps, but the current paper-branch run_all auto_tune logs do not provide all four plotted variants or a paper-selected grid-size choice table. Training sweeps must not be promoted to Figure 9 reproduction without a script mapping from train logs to the plot."
+  },
+  "effective_autotune_runner": {
+    "active_calls": {
+      "run_geo_enabled": false,
+      "run_graphics_enabled": false,
+      "run_modelnet_enabled": true,
+      "run_mri_enabled": false
+    },
+    "literal_boolean_run_hd_pairs_detected": [
+      [
+        "false",
+        "false"
+      ],
+      [
+        "true",
+        "true"
+      ]
+    ],
+    "observation": "The checked paper-branch runner calls only false/false and true/true for enabled run_modelnet, while run_mri/run_geo/run_graphics are commented.",
+    "path": "expr/for_the_paper/effective_autotune.sh"
+  },
+  "figure9_plot_script": {
+    "active_draw_call_in_source_tail": true,
+    "active_tail": [
+      "    # fig.tight_layout(pad=0.1)",
+      "    # fig.savefig(\"hybrid_vs_all.pdf\", format='pdf', bbox_inches='tight')",
+      "    # plt.show()",
+      "",
+      "",
+      "# draw_hybrid_analysis()",
+      "draw_mri_modelnet()",
+      "# draw_spatial_graphics()"
+    ],
+    "exists": true,
+    "expected_variants": [
+      "n_points_cell_false_max_hit_false",
+      "n_points_cell_true_max_hit_false",
+      "n_points_cell_false_max_hit_true",
+      "n_points_cell_true_max_hit_true"
+    ],
+    "loads_run_all_auto_tune": true,
+    "path": "expr/for_the_paper/effective_autoune.py",
+    "plotted_dataset_names_in_active_function": [
+      "geo",
+      "graphics"
+    ],
+    "saves_pdf": true,
+    "variant_labels": [
+      "Fixed",
+      "Autotune Grid",
+      "Autotune Max Hit",
+      "Autotune All"
+    ]
+  },
+  "goal": "Goal5285",
+  "run_all_auto_tune_logs": {
+    "by_category": {
+      "BraTS2020_ValidationData": {
+        "n_points_cell_false_max_hit_false": 500,
+        "n_points_cell_true_max_hit_true": 500
+      },
+      "ModelNet40": {
+        "n_points_cell_false_max_hit_false": 400,
+        "n_points_cell_true_max_hit_true": 400
+      },
+      "geo": {
+        "n_points_cell_false_max_hit_false": 3,
+        "n_points_cell_true_max_hit_true": 3
+      },
+      "graphics": {
+        "n_points_cell_false_max_hit_false": 4,
+        "n_points_cell_true_max_hit_true": 4
+      }
+    },
+    "complete_two_config_pair_count": 907,
+    "configs": {
+      "n_points_cell_false_max_hit_false": 907,
+      "n_points_cell_true_max_hit_true": 907
+    },
+    "incomplete_pair_count": 0,
+    "record_count": 1814,
+    "unique_pair_count": 907
+  },
+  "run_all_vs_plot_script": {
+    "all_plot_variants_present_in_current_run_all_logs": false,
+    "extra_run_all_configs_not_in_plot_variants": [],
+    "missing_plot_variants_from_run_all_logs": [
+      "n_points_cell_true_max_hit_false",
+      "n_points_cell_false_max_hit_true"
+    ],
+    "observed_configs": [
+      "n_points_cell_false_max_hit_false",
+      "n_points_cell_true_max_hit_true"
+    ],
+    "plot_expected_variants": [
+      "n_points_cell_false_max_hit_false",
+      "n_points_cell_true_max_hit_false",
+      "n_points_cell_false_max_hit_true",
+      "n_points_cell_true_max_hit_true"
+    ]
+  },
+  "schema": "rtdl.paper_reproduction.xhd.figure9_source_script_audit.v1",
+  "source_flags_and_models": {
+    "has_auto_tune_flag": true,
+    "has_auto_tune_max_hit_flag": true,
+    "has_auto_tune_n_points_cell_flag": true,
+    "has_max_hit_list_flag": true,
+    "has_n_points_cell_list_flag": true,
+    "hybrid_predicts_max_hit": true,
+    "hybrid_predicts_num_points_per_cell": true
+  },
+  "status": "figure9_plot_script_expects_missing_run_all_variants__figure9_not_reproduced",
+  "training_sweeps": {
+    "logs": {
+      "max_hit_record_count": 0,
+      "max_hit_value_count": 0,
+      "max_hit_values": [],
+      "n_points_cell_record_count": 37220,
+      "n_points_cell_value_count": 30,
+      "n_points_cell_values": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30
+      ]
+    },
+    "not_same_as_figure9_run_all": true,
+    "path": "expr/for_the_paper/gen_train.sh",
+    "reason": "gen_train.sh and logs/train contain multi-value parameter sweeps used to train/tune predictor models, but effective_autoune.py reads logs/run_all/auto_tune for the auto-tune figure.",
+    "script_max_hit_list": [
+      1,
+      16,
+      32,
+      64,
+      128,
+      256,
+      512
+    ],
+    "script_n_points_cell_list": [
+      1,
+      4,
+      8,
+      12,
+      16,
+      20,
+      24,
+      28,
+      32,
+      36,
+      40,
+      44,
+      48,
+      52,
+      56,
+      60,
+      64,
+      68,
+      72,
+      76,
+      80
+    ]
+  }
+}

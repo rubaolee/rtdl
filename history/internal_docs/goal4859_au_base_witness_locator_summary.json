@@ -1,0 +1,96 @@
+{
+  "base": "/workspace/goal4848_rep/current_osm_au/lakes_Australia_current_osm_Point.cdb",
+  "base_chunk_size": 200000,
+  "full_count": 2,
+  "full_delta": 2,
+  "full_hidden_rows": 0,
+  "full_row_sample": [],
+  "mismatch_chunks": [
+    {
+      "count": 1,
+      "delta": 1,
+      "end": 14200000,
+      "row_sample": [],
+      "rows": 0,
+      "start": 14000000
+    },
+    {
+      "count": 1,
+      "delta": 1,
+      "end": 14400000,
+      "row_sample": [],
+      "rows": 0,
+      "start": 14200000
+    }
+  ],
+  "query": "/workspace/goal4848_rep/current_osm_au/parks_Australia_current_osm_Point.cdb",
+  "query_range": [
+    639,
+    640
+  ],
+  "query_segments": [
+    {
+      "chain_id": 28,
+      "id": 640,
+      "left_face_id": 29,
+      "query_index": 639,
+      "right_face_id": 0,
+      "x0": 151.2776856,
+      "x1": 151.2772023,
+      "y0": -33.8511451,
+      "y1": -33.8513923
+    }
+  ],
+  "refined_base_witnesses": [
+    {
+      "base_segments": [
+        {
+          "base_index": 14110869,
+          "chain_id": 351434,
+          "id": 14110870,
+          "left_face_id": 310895,
+          "right_face_id": 0,
+          "x0": 151.2771671,
+          "x1": 151.2772023,
+          "y0": -33.8512399,
+          "y1": -33.8513923
+        }
+      ],
+      "count": 1,
+      "delta": 1,
+      "end": 14110870,
+      "row_sample": [],
+      "rows": 0,
+      "start": 14110869
+    },
+    {
+      "base_segments": [
+        {
+          "base_index": 14387224,
+          "chain_id": 356481,
+          "id": 14387225,
+          "left_face_id": 315117,
+          "right_face_id": 0,
+          "x0": 151.2771671,
+          "x1": 151.2772023,
+          "y0": -33.8512399,
+          "y1": -33.8513923
+        }
+      ],
+      "count": 1,
+      "delta": 1,
+      "end": 14387225,
+      "row_sample": [],
+      "rows": 0,
+      "start": 14387224
+    }
+  ],
+  "schema": "rtdl.goal4859.base_witness_locator.v1",
+  "timings_seconds": {
+    "base_chunk_scan": 33.31857540458441,
+    "full_count_rows": 38.88758082687855,
+    "load_and_segment": 51.562851279973984,
+    "refine": 1.9977416396141052,
+    "total": 125.76674915105104
+  }
+}

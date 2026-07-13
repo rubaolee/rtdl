@@ -1,0 +1,7 @@
+{
+  "core_count": 7,
+  "epsilon": 0.35,
+  "min_points": 3,
+  "point_count": 8,
+  "schema": "rtdl.paper_reproduction.rt_dbscan.tiny3d_core_count_expected.v1"
+}

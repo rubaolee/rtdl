@@ -16,6 +16,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
+CURRENT_VERSION_MARKER = "v2.14.1"
 
 
 def _status_line(status: str, name: str, detail: str) -> str:
@@ -82,7 +83,7 @@ def gather_checks(*, run_smoke: bool = False) -> dict[str, Any]:
     checks.append(
         _check(
             "version marker",
-            "pass" if version == "v2.14" else "fail",
+            "pass" if version == CURRENT_VERSION_MARKER else "fail",
             version or "VERSION is missing",
         )
     )

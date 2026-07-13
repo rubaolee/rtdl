@@ -11,6 +11,30 @@ one row per accepted containment hit.
 spatial-filter primitive behind the early RayJoin-facing work and remains a
 building block for polygon applications that need containment/candidate rows.
 
+For CDB/planar-map workloads that need point-location rows or closest-edge
+counts, use the prepared planar-map front door:
+
+```python
+from rtdsl import load_cdb, prepare_planar_map_point_location_2d_optix
+
+base = load_cdb("base_Point.cdb")
+points = [(1, -73.9, 40.7), (2, -74.0, 40.8)]
+
+with prepare_planar_map_point_location_2d_optix(base, query_map_id=1) as pip:
+    rows = pip.run(points)
+```
+
+This front door hides the legacy CDB point-location execution bridge inside
+RTDL. Application code should not set `RTDL_RAYJOIN_CDB_*` variables directly.
+It is point-location/PIP, not polygon overlay.  This prepared front door is
+currently OptiX-only; the lower compatibility bridge is guarded and restored by
+RTDL, but overlapping calls through this front door are serialized.
+
+When an application needs point-location together with planar-map LSI on the
+same pair of maps, use `prepare_planar_map_workspace_2d_optix`. The workspace
+prepares both public primitives once and keeps topology-specific continuation
+in application code.
+
 ## Docs
 
 - canonical kernel pattern:
@@ -36,6 +60,10 @@ return rt.emit(hits, fields=["point_id", "polygon_id", "contains"])
 
 - predicate:
   - `rt.point_in_polygon(exact=False, boundary_mode="inclusive")`
+- prepared CDB/planar-map point-location front door:
+  - `prepare_planar_map_point_location_2d_optix(base).run(points)`
+- reusable CDB/planar-map workspace:
+  - `prepare_planar_map_workspace_2d_optix(left, right).run_left_points_in_right()`
 - canonical reference kernel:
   - [point_in_counties_reference](../../../examples/reference/rtdl_language_reference.py)
 - current support contract:
@@ -43,6 +71,10 @@ return rt.emit(hits, fields=["point_id", "polygon_id", "contains"])
 
 ## Current Backend Notes
 
+- The prepared CDB/planar-map point-location front door is currently an
+  OptiX-only public front door over a historical native route.  It is an API
+  cleanup, not a claim that RTDL has a fully generalized native planar-map
+  point-location ABI on every backend.
 - Embree: native CPU ray-tracing candidate discovery through build-side polygon
   user geometry and point queries; positive-hit mode emits only accepted
   containment rows.
@@ -72,6 +104,8 @@ matrix and performance table.
 ## Best Practices
 
 - use explicit `boundary_mode="inclusive"`
+- cite a data-bearing correctness artifact before claiming exact agreement with
+  an external implementation
 - validate new semantics against PostGIS on Linux when external correctness matters
 - keep point ids and polygon ids stable so downstream audit rows stay usable
 - treat the current app and support matrices as the trust anchor for this feature line

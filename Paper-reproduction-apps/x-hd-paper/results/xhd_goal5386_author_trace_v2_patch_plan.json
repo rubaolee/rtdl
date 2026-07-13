@@ -1,0 +1,403 @@
+{
+  "author_root": "C:\\Users\\Lestat\\AppData\\Local\\Temp\\xhd-author-src",
+  "claim_boundary": {
+    "author_rt_core_algorithm_parity_claimed": false,
+    "author_v2_trace_executed_on_pod": false,
+    "author_v2_trace_implemented": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_support_claimed": false,
+    "figure11_reproduction_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "row_count_parity_claimed": false,
+    "rtdl_author_performance_ratio_claimed": false
+  },
+  "date": "2026-07-10",
+  "exit_label": "author_trace_v2_patch_plan_ready__implementation_next",
+  "field_coverage": {
+    "all_required_fields_covered": true,
+    "coverage_by_field": {
+      "active_in_queue_size": [
+        "batch_scope_and_active_queue",
+        "json_iteration_emit"
+      ],
+      "batch_index": [
+        "batch_scope_and_active_queue",
+        "json_iteration_emit"
+      ],
+      "cmax2_after_load_balance": [
+        "json_iteration_emit",
+        "outer_iteration_scope"
+      ],
+      "cmax2_after_ray": [
+        "after_ray_launch_state",
+        "json_iteration_emit",
+        "outer_iteration_scope"
+      ],
+      "cmax2_before_ray": [
+        "json_iteration_emit",
+        "outer_iteration_scope"
+      ],
+      "cmax2_mbr_abort_count": [
+        "json_iteration_emit",
+        "launch_parameter_trace_fields",
+        "shader_cmax2_abort_status"
+      ],
+      "cmin2_after_load_balance_hash": [
+        "json_iteration_emit",
+        "load_balance_cmin2_feedback"
+      ],
+      "cmin2_after_load_balance_samples": [
+        "json_iteration_emit",
+        "load_balance_cmin2_feedback"
+      ],
+      "cmin2_after_ray_hash": [
+        "after_ray_launch_state",
+        "json_iteration_emit"
+      ],
+      "cmin2_after_ray_samples": [
+        "after_ray_launch_state",
+        "json_iteration_emit"
+      ],
+      "cmin2_initial_hash": [
+        "cmin2_initial_state",
+        "json_iteration_emit"
+      ],
+      "cmin2_initial_samples": [
+        "cmin2_initial_state",
+        "json_iteration_emit"
+      ],
+      "cmin2_sample_indices": [
+        "batch_scope_and_active_queue",
+        "json_iteration_emit"
+      ],
+      "iteration_index": [
+        "json_iteration_emit",
+        "outer_iteration_scope"
+      ],
+      "load_balance_feedback_update_count": [
+        "json_iteration_emit",
+        "load_balance_cmin2_feedback",
+        "load_balance_processing_call"
+      ],
+      "load_balance_group_count": [
+        "json_iteration_emit",
+        "load_balance_processing_call"
+      ],
+      "load_balance_input_row_count": [
+        "json_iteration_emit",
+        "load_balance_processing_call"
+      ],
+      "point_loop_early_break_count": [
+        "json_iteration_emit",
+        "launch_parameter_trace_fields",
+        "shader_cmax2_abort_status"
+      ],
+      "radius": [
+        "json_iteration_emit",
+        "outer_iteration_scope"
+      ],
+      "raw_offload_row_hash": [
+        "json_iteration_emit",
+        "launch_parameter_trace_fields",
+        "shader_offload_append_stream"
+      ],
+      "raw_offload_row_sample_cell_ids": [
+        "json_iteration_emit",
+        "launch_parameter_trace_fields",
+        "shader_offload_append_stream"
+      ],
+      "raw_offload_row_sample_point_ids": [
+        "json_iteration_emit",
+        "launch_parameter_trace_fields",
+        "shader_offload_append_stream"
+      ],
+      "raw_offload_rows_before_sort_reduce": [
+        "after_ray_launch_state",
+        "json_iteration_emit",
+        "shader_offload_append_stream"
+      ],
+      "status_count_aborted": [
+        "json_iteration_emit",
+        "launch_parameter_trace_fields",
+        "shader_cmax2_abort_status"
+      ],
+      "status_count_completed": [
+        "json_iteration_emit",
+        "launch_parameter_trace_fields",
+        "miss_and_completed_status_after_raygen"
+      ],
+      "status_count_init": [
+        "json_iteration_emit",
+        "launch_parameter_trace_fields"
+      ],
+      "status_count_miss": [
+        "json_iteration_emit",
+        "launch_parameter_trace_fields",
+        "miss_and_completed_status_after_raygen"
+      ],
+      "status_count_offloading": [
+        "json_iteration_emit",
+        "launch_parameter_trace_fields",
+        "shader_offload_append_stream"
+      ]
+    },
+    "required_batch_fields": [
+      "batch_index",
+      "iteration_index",
+      "radius",
+      "active_in_queue_size",
+      "cmax2_before_ray",
+      "cmax2_after_ray",
+      "cmax2_after_load_balance",
+      "cmin2_initial_hash",
+      "cmin2_after_ray_hash",
+      "cmin2_after_load_balance_hash",
+      "cmin2_sample_indices",
+      "cmin2_initial_samples",
+      "cmin2_after_ray_samples",
+      "cmin2_after_load_balance_samples",
+      "raw_offload_rows_before_sort_reduce",
+      "raw_offload_row_hash",
+      "raw_offload_row_sample_point_ids",
+      "raw_offload_row_sample_cell_ids",
+      "status_count_init",
+      "status_count_offloading",
+      "status_count_aborted",
+      "status_count_miss",
+      "status_count_completed",
+      "cmax2_mbr_abort_count",
+      "point_loop_early_break_count",
+      "load_balance_input_row_count",
+      "load_balance_group_count",
+      "load_balance_feedback_update_count"
+    ],
+    "uncovered_fields": []
+  },
+  "goal": "Goal5386",
+  "goal5385_schema": "rtdl.goal5385.author.lb_status_trace.v2",
+  "implementation_status": {
+    "author_v2_trace_executed_on_pod": false,
+    "author_v2_trace_implemented": false,
+    "dry_run_patch_plan_ready": true,
+    "patch_applied_to_author_tree": false,
+    "rtdl_core_patched": false
+  },
+  "patch_plan": {
+    "all_hooks_found": true,
+    "hooks": [
+      {
+        "anchor": "dev::Queue<uint32_t> offloading_point_ids;",
+        "anchor_found": true,
+        "anchor_line": 44,
+        "fields": [
+          "raw_offload_row_hash",
+          "raw_offload_row_sample_point_ids",
+          "raw_offload_row_sample_cell_ids",
+          "status_count_init",
+          "status_count_offloading",
+          "status_count_aborted",
+          "status_count_miss",
+          "status_count_completed",
+          "cmax2_mbr_abort_count",
+          "point_loop_early_break_count"
+        ],
+        "name": "launch_parameter_trace_fields",
+        "patch_intent": "extend author launch parameters with v2 trace counters and optional hash/sample buffers",
+        "target": "src/rt/launch_parameters.h",
+        "would_patch_author_only": true
+      },
+      {
+        "anchor": "while (in_size > 0) {",
+        "anchor_found": true,
+        "anchor_line": 273,
+        "fields": [
+          "iteration_index",
+          "radius",
+          "cmax2_before_ray",
+          "cmax2_after_ray",
+          "cmax2_after_load_balance"
+        ],
+        "name": "outer_iteration_scope",
+        "patch_intent": "open per-iteration trace object and capture cmax2 before/after ray and load-balance",
+        "target": "src/hd_impl/hausdorff_distance_rt.h",
+        "would_patch_author_only": true
+      },
+      {
+        "anchor": "auto valid_batch_size = batch_end - batch_begin;",
+        "anchor_found": true,
+        "anchor_line": 299,
+        "fields": [
+          "batch_index",
+          "active_in_queue_size",
+          "cmin2_sample_indices"
+        ],
+        "name": "batch_scope_and_active_queue",
+        "patch_intent": "record batch index, active input queue window, and deterministic cmin2 sample indices",
+        "target": "src/hd_impl/hausdorff_distance_rt.h",
+        "would_patch_author_only": true
+      },
+      {
+        "anchor": "thrust::fill(rmm::exec_policy_nosync(stream), cmin2.begin(), cmin2.end(),",
+        "anchor_found": true,
+        "anchor_line": 304,
+        "fields": [
+          "cmin2_initial_hash",
+          "cmin2_initial_samples"
+        ],
+        "name": "cmin2_initial_state",
+        "patch_intent": "hash/sample cmin2 after initialization and before the ray launch mutates payload state",
+        "target": "src/hd_impl/hausdorff_distance_rt.h",
+        "would_patch_author_only": true
+      },
+      {
+        "anchor": "update_status(ShaderStatus::kAborted);",
+        "anchor_found": true,
+        "anchor_line": 89,
+        "fields": [
+          "status_count_aborted",
+          "cmax2_mbr_abort_count",
+          "point_loop_early_break_count"
+        ],
+        "name": "shader_cmax2_abort_status",
+        "patch_intent": "count shader abort branches separately for MBR cmax2 abort and point-loop early break",
+        "target": "src/rt/shaders/shaders_nn_uniform_grid.cu",
+        "would_patch_author_only": true
+      },
+      {
+        "anchor": "auto tail = params.offloading_point_ids.Append(in_q_idx);",
+        "anchor_found": true,
+        "anchor_line": 100,
+        "fields": [
+          "raw_offload_rows_before_sort_reduce",
+          "raw_offload_row_hash",
+          "raw_offload_row_sample_point_ids",
+          "raw_offload_row_sample_cell_ids",
+          "status_count_offloading"
+        ],
+        "name": "shader_offload_append_stream",
+        "patch_intent": "hash/sample raw offload point/cell stream at append time before sort/reduce",
+        "target": "src/rt/shaders/shaders_nn_uniform_grid.cu",
+        "would_patch_author_only": true
+      },
+      {
+        "anchor": "auto offloading_size = offloading_point_ids_.size(stream);",
+        "anchor_found": true,
+        "anchor_line": 348,
+        "fields": [
+          "cmin2_after_ray_hash",
+          "cmin2_after_ray_samples",
+          "raw_offload_rows_before_sort_reduce",
+          "cmax2_after_ray"
+        ],
+        "name": "after_ray_launch_state",
+        "patch_intent": "sample cmin2 and offload row stream after OptiX launch before loadBalanceProcessing",
+        "target": "src/hd_impl/hausdorff_distance_rt.h",
+        "would_patch_author_only": true
+      },
+      {
+        "anchor": "loadBalanceProcessing(",
+        "anchor_found": true,
+        "anchor_line": 354,
+        "fields": [
+          "load_balance_input_row_count",
+          "load_balance_group_count",
+          "load_balance_feedback_update_count"
+        ],
+        "name": "load_balance_processing_call",
+        "patch_intent": "record input rows and grouped feedback counts around author loadBalanceProcessing",
+        "target": "src/hd_impl/hausdorff_distance_rt.h",
+        "would_patch_author_only": true
+      },
+      {
+        "anchor": "curr_cmin2 = std::min(curr_cmin2, agg_min);",
+        "anchor_found": true,
+        "anchor_line": 580,
+        "fields": [
+          "load_balance_feedback_update_count",
+          "cmin2_after_load_balance_hash",
+          "cmin2_after_load_balance_samples"
+        ],
+        "name": "load_balance_cmin2_feedback",
+        "patch_intent": "count cmin2 feedback updates and hash/sample post-load-balance state",
+        "target": "src/hd_impl/hausdorff_distance_rt.h",
+        "would_patch_author_only": true
+      },
+      {
+        "anchor": "params.miss_queue.Append(point_id_a);",
+        "anchor_found": true,
+        "anchor_line": 200,
+        "fields": [
+          "status_count_miss",
+          "status_count_completed"
+        ],
+        "name": "miss_and_completed_status_after_raygen",
+        "patch_intent": "count terminal miss/completed statuses in the author raygen result branch",
+        "target": "src/rt/shaders/shaders_nn_uniform_grid.cu",
+        "would_patch_author_only": true
+      },
+      {
+        "anchor": "json_iter[\"OffloadingSize\"] = total_offloading_size;",
+        "anchor_found": true,
+        "anchor_line": 376,
+        "fields": [
+          "batch_index",
+          "iteration_index",
+          "radius",
+          "active_in_queue_size",
+          "cmax2_before_ray",
+          "cmax2_after_ray",
+          "cmax2_after_load_balance",
+          "cmin2_initial_hash",
+          "cmin2_after_ray_hash",
+          "cmin2_after_load_balance_hash",
+          "cmin2_sample_indices",
+          "cmin2_initial_samples",
+          "cmin2_after_ray_samples",
+          "cmin2_after_load_balance_samples",
+          "raw_offload_rows_before_sort_reduce",
+          "raw_offload_row_hash",
+          "raw_offload_row_sample_point_ids",
+          "raw_offload_row_sample_cell_ids",
+          "status_count_init",
+          "status_count_offloading",
+          "status_count_aborted",
+          "status_count_miss",
+          "status_count_completed",
+          "cmax2_mbr_abort_count",
+          "point_loop_early_break_count",
+          "load_balance_input_row_count",
+          "load_balance_group_count",
+          "load_balance_feedback_update_count"
+        ],
+        "name": "json_iteration_emit",
+        "patch_intent": "emit the complete v2 trace payload alongside author iteration JSON",
+        "target": "src/hd_impl/hausdorff_distance_rt.h",
+        "would_patch_author_only": true
+      }
+    ],
+    "instrumentation_marker": "RTDL_GOAL5385_LB_STATUS_TRACE_V2",
+    "missing_files": [],
+    "missing_hooks": [],
+    "targets": [
+      {
+        "exists": true,
+        "owner": "paper_app_author_instrumentation",
+        "path": "src/hd_impl/hausdorff_distance_rt.h"
+      },
+      {
+        "exists": true,
+        "owner": "paper_app_author_instrumentation",
+        "path": "src/rt/launch_parameters.h"
+      },
+      {
+        "exists": true,
+        "owner": "paper_app_author_instrumentation",
+        "path": "src/rt/shaders/shaders_nn_uniform_grid.cu"
+      }
+    ]
+  },
+  "purpose": "Validate fail-closed source hook anchors for the Goal5385 author trace v2 schema before applying a live author patch.",
+  "schema": "rtdl.paper_reproduction.xhd.goal5386.author_trace_v2_patch_plan.v1",
+  "status": "implemented_review_pending"
+}

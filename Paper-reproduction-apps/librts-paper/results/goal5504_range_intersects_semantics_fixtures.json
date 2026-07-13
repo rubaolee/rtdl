@@ -1,0 +1,128 @@
+{
+  "cases": [
+    {
+      "author_gpu_style_intersects": true,
+      "box": [
+        0.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "case_id": "interior_overlap",
+      "category": "ordinary_overlap",
+      "cpu_inclusive_intersects": true,
+      "discriminates": false,
+      "note": "Both contracts must accept an interior overlap.",
+      "query": [
+        0.25,
+        0.25,
+        0.75,
+        0.75
+      ]
+    },
+    {
+      "author_gpu_style_intersects": true,
+      "box": [
+        0.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "case_id": "edge_touch",
+      "category": "inclusive_boundary",
+      "cpu_inclusive_intersects": true,
+      "discriminates": false,
+      "note": "The CPU contract accepts a shared boundary; the GPU emulation is checked explicitly.",
+      "query": [
+        1.0,
+        0.25,
+        2.0,
+        0.75
+      ]
+    },
+    {
+      "author_gpu_style_intersects": true,
+      "box": [
+        0.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "case_id": "one_ulp_gap_after_box_max",
+      "category": "float32_ulp_boundary",
+      "cpu_inclusive_intersects": false,
+      "discriminates": true,
+      "note": "The query starts one float32 ULP beyond the box max; gamma expansion may distinguish the GPU path.",
+      "query": [
+        1.0000001192092896,
+        0.25,
+        2.0,
+        0.75
+      ]
+    },
+    {
+      "author_gpu_style_intersects": true,
+      "box": [
+        0.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "case_id": "one_ulp_overlap_before_box_max",
+      "category": "float32_ulp_boundary",
+      "cpu_inclusive_intersects": true,
+      "discriminates": false,
+      "note": "The query starts one float32 ULP below the box max.",
+      "query": [
+        0.9999999403953552,
+        0.25,
+        2.0,
+        0.75
+      ]
+    },
+    {
+      "author_gpu_style_intersects": true,
+      "box": [
+        0.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "case_id": "corner_touch",
+      "category": "inclusive_corner_boundary",
+      "cpu_inclusive_intersects": true,
+      "discriminates": false,
+      "note": "Both dimensions meet at one corner; this probes diagonal handling.",
+      "query": [
+        1.0,
+        1.0,
+        2.0,
+        2.0
+      ]
+    }
+  ],
+  "claim_boundary": {
+    "author_gpu_runtime_executed": false,
+    "author_specific_rtdl_core_behavior_authorized": false,
+    "cpu_gpu_equivalence_proven": false,
+    "cpu_oracle_is_author_truth": false,
+    "full_input_adjudication": false,
+    "performance_ratio_authorized": false,
+    "rtdl_core_change_authorized": false
+  },
+  "contract_inputs": {
+    "coordinate_type": "float32",
+    "cpu_contract": "inclusive_aabb_intersects_float32",
+    "gamma3": 3.576280107608909e-07,
+    "gpu_contract_emulation": "rayparams_float32_slab_nextafter_t1_tfar_gamma",
+    "t1": 1.0000001192092896,
+    "tfar_multiplier": 1.0000007152557373
+  },
+  "schema": "rtdl.paper_reproduction.librts.goal5504_range_intersects_semantics_fixtures.v1",
+  "status": "semantics_fixture_diagnostic_completed",
+  "summary": {
+    "case_count": 5,
+    "cpu_gpu_emulation_equivalent_on_all_cases": false,
+    "discriminating_case_count": 1
+  }
+}

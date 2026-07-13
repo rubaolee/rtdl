@@ -1,0 +1,46 @@
+{
+  "schema": "rtdl.v2_14_3.rayjoin_performance_canonical_numbers.v1",
+  "date": "2026-07-05",
+  "workload": "top4 County x Zipcode representative writer-free binary overlay",
+  "canonical_numbers": {
+    "os_process_cold_cli_one_shot": {
+      "median_sec": 11.6,
+      "status": "observed_noisy_disclose_not_precise_headline",
+      "claim_boundary": "Includes process/runtime startup and first-call setup."
+    },
+    "warm_long_lived_process_fresh_fast_pack": {
+      "sec": 4.22,
+      "status": "primary_v2_14_3_product_facing_number",
+      "claim_boundary": "Warm process fresh overlay, fast-pack route, writer-free binary output."
+    },
+    "prepared_base_same_domain_distinct_query": {
+      "sec_per_query": 1.22,
+      "status": "best_measured_prepared_query_many_body",
+      "claim_boundary": "Prepared base, same scale/domain, distinct query batches, not same-input replay."
+    },
+    "left_point_location_locator_prepare_floor": {
+      "sec_per_query": 0.46,
+      "status": "steady_segment_count_scaled_floor",
+      "claim_boundary": "Measured by Goal5013; not removed by existing prepared query-point reuse."
+    }
+  },
+  "stopped_tracks": {
+    "device_resident_carrier_v2_14_3_performance": {
+      "status": "stopped_for_v2_14_3",
+      "reason": "Fresh route slower than fast-pack; payoff only appeared in diagnostic replay."
+    },
+    "ten_x_target_v2_14_3": {
+      "status": "not_achieved",
+      "reason": "Prepared route is about 1.22s/query, not 0.42s/query; locator prepare alone is about 0.46s/query."
+    }
+  },
+  "allowed_summary": "v2.14.3 stabilizes RayJoin writer-free binary performance at about 4.22s warm-process fresh and about 1.22s/query for prepared-base same-domain distinct queries; 10x is not achieved in this version.",
+  "forbidden_claims": [
+    "author parity",
+    "full zero-copy",
+    "full device-resident execution",
+    "same-input replay as query-many",
+    "4.22s as cold CLI one-shot",
+    "top4 author ratio without a measured top4 author baseline"
+  ]
+}

@@ -1,0 +1,128 @@
+{
+  "lsi_count": 965844,
+  "lsi_timings": {
+    "candidate_count_pass": 0.00574016,
+    "candidate_download": 0.0,
+    "candidate_write_pass": 0.0,
+    "emitted_count": 965844,
+    "exact_refine": 0.0,
+    "hot_call_sec": 9.840217798948288,
+    "left_upload": 0.0,
+    "mode": "count_prepared_left_grouped_range_direct_intersection",
+    "raw_candidate_count": 0
+  },
+  "map0": {
+    "midpoints": 123082,
+    "nonfinite_midpoints": 26,
+    "sample_bad": [
+      {
+        "midpoint_index": 1551,
+        "mx": "nan",
+        "my": "nan"
+      },
+      {
+        "midpoint_index": 1552,
+        "mx": "inf",
+        "my": "-inf"
+      },
+      {
+        "midpoint_index": 1640,
+        "mx": "nan",
+        "my": "nan"
+      },
+      {
+        "midpoint_index": 1890,
+        "mx": "inf",
+        "my": "-inf"
+      },
+      {
+        "midpoint_index": 29227,
+        "mx": "inf",
+        "my": "-inf"
+      },
+      {
+        "midpoint_index": 37907,
+        "mx": "nan",
+        "my": "nan"
+      },
+      {
+        "midpoint_index": 37914,
+        "mx": "nan",
+        "my": "nan"
+      },
+      {
+        "midpoint_index": 38476,
+        "mx": "inf",
+        "my": "inf"
+      },
+      {
+        "midpoint_index": 38477,
+        "mx": "nan",
+        "my": "nan"
+      },
+      {
+        "midpoint_index": 53124,
+        "mx": "inf",
+        "my": "-inf"
+      }
+    ]
+  },
+  "map1": {
+    "midpoints": 141510,
+    "nonfinite_midpoints": 24,
+    "sample_bad": [
+      {
+        "midpoint_index": 24528,
+        "mx": "-inf",
+        "my": "inf"
+      },
+      {
+        "midpoint_index": 24578,
+        "mx": "-inf",
+        "my": "inf"
+      },
+      {
+        "midpoint_index": 28787,
+        "mx": "inf",
+        "my": "-inf"
+      },
+      {
+        "midpoint_index": 28790,
+        "mx": "nan",
+        "my": "nan"
+      },
+      {
+        "midpoint_index": 28889,
+        "mx": "inf",
+        "my": "-inf"
+      },
+      {
+        "midpoint_index": 29504,
+        "mx": "nan",
+        "my": "nan"
+      },
+      {
+        "midpoint_index": 29737,
+        "mx": "nan",
+        "my": "nan"
+      },
+      {
+        "midpoint_index": 29747,
+        "mx": "nan",
+        "my": "nan"
+      },
+      {
+        "midpoint_index": 38352,
+        "mx": "inf",
+        "my": "-inf"
+      },
+      {
+        "midpoint_index": 41557,
+        "mx": "inf",
+        "my": "inf"
+      }
+    ]
+  },
+  "nonfinite_lsi_rows": 69,
+  "total_sec": 173.1390003040433
+}

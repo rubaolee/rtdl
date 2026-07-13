@@ -1,0 +1,336 @@
+{
+  "claim_boundary": {
+    "author_rt_core_algorithm_parity_claimed": false,
+    "bounded_status_state_oracle_claimed": true,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_support_claimed": false,
+    "figure11_reproduction_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "generic_native_status_state_smoke_reused": true,
+    "goal5387_feedback_parity_claimed": false,
+    "goal5387_hash_sample_parity_claimed": false,
+    "goal5387_row_count_parity_claimed": false,
+    "performance_ratio_claimed": false,
+    "same_denominator_memory_claimed": false
+  },
+  "comparisons": {
+    "current_best_after_matched": true,
+    "current_best_before_matched": true,
+    "feedback_row_count_matched": true,
+    "feedback_update_count_matched": true,
+    "overflow_fail_closed_matched": true,
+    "raw_hash_matched": true,
+    "row_count_matched": true,
+    "sample_matched": true,
+    "status_count_offloading_matched": true
+  },
+  "expected_columns": {
+    "active_queue_indices": [
+      0,
+      2,
+      4,
+      2
+    ],
+    "cell_ids": [
+      2924,
+      17,
+      18,
+      99
+    ],
+    "current_best_after_sq": [
+      20.0,
+      16.0,
+      9.0,
+      16.0
+    ],
+    "current_best_before_sq": [
+      25.0,
+      16.0,
+      9.0,
+      16.0
+    ],
+    "query_row_ids": [
+      1010,
+      1011,
+      1012,
+      1011
+    ],
+    "source_ids": [
+      11168,
+      210712,
+      437119,
+      210712
+    ],
+    "status_codes": [
+      2,
+      2,
+      2,
+      2
+    ],
+    "transition_phase_codes": [
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "expected_telemetry": {
+    "active_query_count": 4,
+    "candidate_row_count": 6,
+    "feedback_row_count": 4,
+    "feedback_update_count": 2,
+    "overflowed": false,
+    "raw_offload_row_count": 4,
+    "status_count_offloading": 4
+  },
+  "expected_trace_summary": {
+    "active_query_count": 4,
+    "app_semantics": "none",
+    "contract": "generic_active_query_status_trace_summary_v1",
+    "hash_columns": [
+      "source_ids",
+      "cell_ids"
+    ],
+    "metadata": {
+      "adapter": "active_query_status_trace_summary_numpy_columns",
+      "app_semantics": "none",
+      "contract": "generic_active_query_status_trace_summary_v1",
+      "default_hash_offset": 1469598103934665603,
+      "explicit_app_option_support_claimed": false,
+      "hash_contract": "fnv1a_u64_over_selected_int64_columns",
+      "native_engine_row_contract": "not_called_cpu_reference_only",
+      "partner": "numpy",
+      "rt_core_speedup_claim_authorized": false,
+      "whole_app_speedup_claim_authorized": false
+    },
+    "raw_offload_row_hash": 18407930560672925736,
+    "row_count": 4,
+    "sample_columns": [
+      "source_ids",
+      "cell_ids",
+      "active_queue_indices",
+      "query_row_ids",
+      "status_codes",
+      "transition_phase_codes"
+    ],
+    "sample_indices": [
+      0,
+      2,
+      3
+    ],
+    "samples": {
+      "active_queue_indices": [
+        0,
+        4,
+        2
+      ],
+      "cell_ids": [
+        2924,
+        18,
+        99
+      ],
+      "query_row_ids": [
+        1010,
+        1012,
+        1011
+      ],
+      "source_ids": [
+        11168,
+        437119,
+        210712
+      ],
+      "status_codes": [
+        2,
+        2,
+        2
+      ],
+      "transition_phase_codes": [
+        1,
+        1,
+        1
+      ]
+    },
+    "schema": "rtdl.generic.active_query_status_trace_summary.v1",
+    "status_count_offloading": 4
+  },
+  "fixture": "bounded_app_shaped_four_active_queries_four_offload_rows_two_feedback_updates",
+  "goal": "Goal5404",
+  "matched": true,
+  "native_result_metadata": {
+    "attempted_count": 4,
+    "backend": "native",
+    "claim_boundary": "Generic native active-query status-state smoke. This is not an application option implementation, not a row/hash parity claim, and not a paper performance claim.",
+    "contract": "generic_active_query_status_state_machine_native_spike_v1",
+    "explicit_app_option_support_claimed": false,
+    "native_backend_complete": false,
+    "native_engine_customization": false,
+    "native_generic_symbol": "rtdl_optix_active_query_status_state_machine_smoke_v1",
+    "overflowed": false,
+    "primitive": "ACTIVE_QUERY_STATUS_STATE_MACHINE_SMOKE",
+    "row_capacity": 8,
+    "row_schema": [
+      "active_queue_indices",
+      "query_row_ids",
+      "source_ids",
+      "cell_ids",
+      "status_codes",
+      "transition_phase_codes",
+      "current_best_before_sq",
+      "current_best_after_sq"
+    ],
+    "rt_core_accelerated": false,
+    "telemetry": {
+      "active_query_count": 4,
+      "candidate_row_count": 6,
+      "feedback_row_count": 4,
+      "feedback_update_count": 2,
+      "overflowed": false,
+      "raw_offload_row_count": 4,
+      "status_count_offloading": 4
+    },
+    "valid_count": 4
+  },
+  "next_gate_decision": {
+    "bounded_oracle_gate_passed": true,
+    "full_gate_reason": "This bounded oracle proves row/hash/status/feedback mechanics on an app-shaped fixture. Full Goal5387 author-trace parity still requires a separate gate on the real full-public stream.",
+    "full_goal5387_gate_authorized_by_goal5404": false,
+    "recommended_next_goal_if_passed": "Goal5405_status_state_real_stream_bridge_or_full_gate_readiness"
+  },
+  "observed_columns": {
+    "active_queue_indices": [
+      0,
+      2,
+      4,
+      2
+    ],
+    "cell_ids": [
+      2924,
+      17,
+      18,
+      99
+    ],
+    "current_best_after_sq": [
+      20.0,
+      16.0,
+      9.0,
+      16.0
+    ],
+    "current_best_before_sq": [
+      25.0,
+      16.0,
+      9.0,
+      16.0
+    ],
+    "query_row_ids": [
+      1010,
+      1011,
+      1012,
+      1011
+    ],
+    "source_ids": [
+      11168,
+      210712,
+      437119,
+      210712
+    ],
+    "status_codes": [
+      2,
+      2,
+      2,
+      2
+    ],
+    "transition_phase_codes": [
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "observed_telemetry": {
+    "active_query_count": 4,
+    "candidate_row_count": 6,
+    "feedback_row_count": 4,
+    "feedback_update_count": 2,
+    "overflowed": false,
+    "raw_offload_row_count": 4,
+    "status_count_offloading": 4
+  },
+  "observed_trace_summary": {
+    "active_query_count": 4,
+    "app_semantics": "none",
+    "contract": "generic_active_query_status_trace_summary_v1",
+    "hash_columns": [
+      "source_ids",
+      "cell_ids"
+    ],
+    "metadata": {
+      "adapter": "active_query_status_trace_summary_numpy_columns",
+      "app_semantics": "none",
+      "contract": "generic_active_query_status_trace_summary_v1",
+      "default_hash_offset": 1469598103934665603,
+      "explicit_app_option_support_claimed": false,
+      "hash_contract": "fnv1a_u64_over_selected_int64_columns",
+      "native_engine_row_contract": "not_called_cpu_reference_only",
+      "partner": "numpy",
+      "rt_core_speedup_claim_authorized": false,
+      "whole_app_speedup_claim_authorized": false
+    },
+    "raw_offload_row_hash": 18407930560672925736,
+    "row_count": 4,
+    "sample_columns": [
+      "source_ids",
+      "cell_ids",
+      "active_queue_indices",
+      "query_row_ids",
+      "status_codes",
+      "transition_phase_codes"
+    ],
+    "sample_indices": [
+      0,
+      2,
+      3
+    ],
+    "samples": {
+      "active_queue_indices": [
+        0,
+        4,
+        2
+      ],
+      "cell_ids": [
+        2924,
+        18,
+        99
+      ],
+      "query_row_ids": [
+        1010,
+        1012,
+        1011
+      ],
+      "source_ids": [
+        11168,
+        437119,
+        210712
+      ],
+      "status_codes": [
+        2,
+        2,
+        2
+      ],
+      "transition_phase_codes": [
+        1,
+        1,
+        1
+      ]
+    },
+    "schema": "rtdl.generic.active_query_status_trace_summary.v1",
+    "status_count_offloading": 4
+  },
+  "overflow_probe": {
+    "message": "Native active-query status-state smoke output overflowed; attempted 4; capacity 3; failure_mode=fail_closed_overflow; partial_result_returned=False",
+    "message_contains_fail_closed_overflow": true,
+    "raised": true
+  },
+  "schema": "rtdl.paper_reproduction.xhd.goal5404.bounded_status_state_oracle_gate.v1",
+  "status": "bounded_status_state_oracle_passed"
+}

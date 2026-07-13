@@ -1,0 +1,2153 @@
+diff --git a/src/native/optix/rtdl_optix_api.cpp b/src/native/optix/rtdl_optix_api.cpp
+index 04352db9e..5f67fb57a 100644
+--- a/src/native/optix/rtdl_optix_api.cpp
++++ b/src/native/optix/rtdl_optix_api.cpp
+@@ -296,6 +296,34 @@ extern "C" int rtdl_optix_count_prepared_segment_pair_intersection_prepared_left
+     }, error_out, error_size);
+ }
+
++extern "C" int rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection_with_predicate_mode(
++        void* prepared,
++        void* prepared_left,
++        uint32_t predicate_mode,
++        size_t* count_out,
++        size_t* group_count_out,
++        char* error_out, size_t error_size)
++{
++    return handle_native_call([&]() {
++        if (!prepared)
++            throw std::runtime_error("prepared segment-pair handle must not be null");
++        if (!prepared_left)
++            throw std::runtime_error("prepared segment-pair left-set handle must not be null");
++        if (!count_out)
++            throw std::runtime_error("count_out must not be null");
++        if (!group_count_out)
++            throw std::runtime_error("group_count_out must not be null");
++        *count_out = 0;
++        *group_count_out = 0;
++        count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection_with_predicate_mode_optix(
++            reinterpret_cast<PreparedSegmentPairIntersectionBuild*>(prepared),
++            reinterpret_cast<PreparedSegmentPairLeftSet*>(prepared_left),
++            predicate_mode,
++            count_out,
++            group_count_out);
++    }, error_out, error_size);
++}
++
+ extern "C" int rtdl_optix_prepared_segment_pair_candidate_device_columns(
+         void* prepared,
+         const RtdlSegment* left, size_t left_count,
+@@ -476,6 +504,28 @@ extern "C" int rtdl_optix_run_prepared_rayjoin_cdb_point_location_2d(
+     }, error_out, error_size);
+ }
+
++extern "C" int rtdl_optix_run_prepared_rayjoin_cdb_point_location_scaled_points_2d(
++        void* prepared,
++        const RtdlRayjoinCdbScaledPoint* points, size_t point_count,
++        RtdlRayjoinCdbPointLocationRow** rows_out, size_t* row_count_out,
++        char* error_out, size_t error_size)
++{
++    return handle_native_call([&]() {
++        if (!prepared)
++            throw std::runtime_error("prepared CDB point-location handle must not be null");
++        if (!points && point_count != 0)
++            throw std::runtime_error("scaled points pointer must not be null when point_count is nonzero");
++        if (!rows_out || !row_count_out)
++            throw std::runtime_error("row output pointers must not be null");
++        run_prepared_rayjoin_cdb_point_location_scaled_points_2d_optix(
++            reinterpret_cast<PreparedRayjoinCdbPointLocation2D*>(prepared),
++            points,
++            point_count,
++            rows_out,
++            row_count_out);
++    }, error_out, error_size);
++}
++
+ extern "C" int rtdl_optix_prepare_rayjoin_cdb_point_location_points_2d(
+         void* prepared,
+         const RtdlPoint* points, size_t point_count,
+@@ -497,6 +547,27 @@ extern "C" int rtdl_optix_prepare_rayjoin_cdb_point_location_points_2d(
+     }, error_out, error_size);
+ }
+
++extern "C" int rtdl_optix_prepare_rayjoin_cdb_point_location_scaled_points_2d(
++        void* prepared,
++        const RtdlRayjoinCdbScaledPoint* points, size_t point_count,
++        void** prepared_points_out,
++        char* error_out, size_t error_size)
++{
++    return handle_native_call([&]() {
++        if (!prepared)
++            throw std::runtime_error("prepared CDB point-location handle must not be null");
++        if (!points && point_count != 0)
++            throw std::runtime_error("scaled points pointer must not be null when point_count is nonzero");
++        if (!prepared_points_out)
++            throw std::runtime_error("prepared_points_out must not be null");
++        *prepared_points_out = nullptr;
++        *prepared_points_out = prepare_rayjoin_cdb_point_location_scaled_points_2d_optix(
++            reinterpret_cast<PreparedRayjoinCdbPointLocation2D*>(prepared),
++            points,
++            point_count);
++    }, error_out, error_size);
++}
++
+ extern "C" int rtdl_optix_count_prepared_rayjoin_cdb_point_location_2d_device_points(
+         void* prepared,
+         void* prepared_points,
+diff --git a/src/native/optix/rtdl_optix_core.cpp b/src/native/optix/rtdl_optix_core.cpp
+index 3862d649d..6ec518ed9 100644
+--- a/src/native/optix/rtdl_optix_core.cpp
++++ b/src/native/optix/rtdl_optix_core.cpp
+@@ -1161,6 +1161,7 @@ extern "C" __global__ void __anyhit__segment_first_hit_anyhit() {
+
+ static const char* kRayjoinCdbPointLocationKernelSrc = R"CUDA(
+ #include <optix_device.h>
++#include <math.h>
+ #include <stdint.h>
+
+ struct GpuRayjoinCdbPoint {
+@@ -1205,6 +1206,7 @@ struct RayjoinCdbPointLocationParams {
+     unsigned int point_count;
+     unsigned int query_map_id;
+     unsigned int allow_equal_ties;
++    double scale_rry;
+ };
+
+ extern "C" {
+@@ -1219,6 +1221,57 @@ static __forceinline__ __device__ double cdb_absd(double x) {
+     return x < 0.0 ? -x : x;
+ }
+
++static __forceinline__ __device__ double cdb_clampd(double x, double lo, double hi) {
++    return x < lo ? lo : (x > hi ? hi : x);
++}
++
++static __forceinline__ __device__ bool directed_segment_sos_slope_is_better(
++        double current_slope,
++        double best_slope,
++        unsigned int query_map_id)
++{
++    if (current_slope == best_slope) {
++        // Match the RayJoin point-location contract: map 0 keeps the earlier
++        // equal-slope candidate, while map 1 accepts the later one.
++        return query_map_id != 0u;
++    }
++    return query_map_id == 0u ? current_slope > best_slope : current_slope < best_slope;
++}
++
++static __forceinline__ __device__ double directed_segment_sos_tie_breaker(
++        double slope,
++        unsigned int query_map_id)
++{
++    const double pi = 3.141592653589793238462643383279502884;
++    const double half_pi = 1.570796326794896619231321691639751442;
++    const double normalized_slope = cdb_clampd((atan(slope) + half_pi) / pi, 0.0, 1.0);
++    return query_map_id == 0u ? normalized_slope : (1.0 - normalized_slope);
++}
++
++static __forceinline__ __device__ float directed_segment_sos_report_t(
++        float hit_t,
++        double slope,
++        unsigned int query_map_id)
++{
++    const double t_edge = hit_t > 0.0f ? static_cast<double>(hit_t) : 0.0;
++    const double factor = t_edge > 1.0 ? t_edge : 1.0;
++    const double tie_breaker = directed_segment_sos_tie_breaker(slope, query_map_id);
++    const double adjusted = t_edge + factor * (1.0 - tie_breaker) * 1.0e-14;
++    float reported = static_cast<float>(adjusted);
++    if (reported <= hit_t) {
++        const unsigned int max_steps = 32u;
++        const unsigned int steps =
++            1u + static_cast<unsigned int>((1.0 - tie_breaker) * static_cast<double>(max_steps));
++        const unsigned int bits = __float_as_uint(hit_t);
++        if ((bits & 0x80000000u) == 0u && (bits & 0x7f800000u) != 0x7f800000u) {
++            reported = __uint_as_float(bits + steps);
++        } else {
++            reported = nextafterf(hit_t, 3.402823466e38F);
++        }
++    }
++    return reported;
++}
++
+ static __forceinline__ __device__ double unpack_double_payload(unsigned int lo, unsigned int hi) {
+     const unsigned long long bits =
+         (static_cast<unsigned long long>(hi) << 32) | static_cast<unsigned long long>(lo);
+@@ -1285,6 +1338,7 @@ static __forceinline__ __device__ bool vertical_ray_segment_scaled(
+         const GpuRayjoinCdbPoint point,
+         const GpuRayjoinCdbSegment segment,
+         unsigned int query_map_id,
++        double scale_rry,
+         double* hit_y_out,
+         float* report_t_out,
+         double* slope_out)
+@@ -1317,7 +1371,9 @@ static __forceinline__ __device__ bool vertical_ray_segment_scaled(
+         return false;
+     }
+     *hit_y_out = xsect_y;
+-    *report_t_out = fmaxf(0.0f, static_cast<float>(xsect_y - static_cast<double>(point.sy)));
++    *report_t_out = fmaxf(
++        0.0f,
++        static_cast<float>((xsect_y - static_cast<double>(point.sy)) * scale_rry));
+     *slope_out = static_cast<double>(line.a) / static_cast<double>(line.b);
+     return true;
+ }
+@@ -1493,6 +1549,7 @@ extern "C" __global__ void __intersection__rayjoin_cdb_point_location() {
+     unsigned int best_segment_index = optixGetPayload_3();
+     bool report = false;
+     float report_t = 0.0f;
++    double report_slope = 0.0;
+     for (unsigned int segment_index = range.begin; segment_index < range.end; ++segment_index) {
+         const GpuRayjoinCdbSegment segment = params.segments[segment_index];
+         float t = 0.0f;
+@@ -1501,7 +1558,8 @@ extern "C" __global__ void __intersection__rayjoin_cdb_point_location() {
+         if (point.has_scaled != 0u && segment.has_scaled != 0u) {
+             double hit_y = 0.0;
+             double exact_slope = 0.0;
+-            if (!vertical_ray_segment_scaled(point, segment, query_map_id, &hit_y, &t, &exact_slope)) {
++            if (!vertical_ray_segment_scaled(
++                    point, segment, query_map_id, params.scale_rry, &hit_y, &t, &exact_slope)) {
+                 continue;
+             }
+             if (hit_y < best_y) {
+@@ -1512,13 +1570,14 @@ extern "C" __global__ void __intersection__rayjoin_cdb_point_location() {
+                 } else {
+                     const double best_slope =
+                         rayjoin_cdb_segment_slope_scaled(params.segments[best_segment_index]);
+-                    const bool current_slope_gt = exact_slope > best_slope;
+-                    better = query_map_id == 0u ? !current_slope_gt : current_slope_gt;
++                    better = directed_segment_sos_slope_is_better(
++                        exact_slope, best_slope, query_map_id);
+                 }
+             }
+             if (better) {
+                 best_y = hit_y;
+                 report_t = t;
++                report_slope = exact_slope;
+             }
+         } else {
+             if (!vertical_ray_segment_t(point, segment, query_map_id, &t, &slope)) {
+@@ -1530,18 +1589,23 @@ extern "C" __global__ void __intersection__rayjoin_cdb_point_location() {
+                 if (best_segment_index == 0xffffffffu) {
+                     better = true;
+                 } else if (query_map_id == 0u &&
+-                           slope < rayjoin_cdb_segment_slope_world(params.segments[best_segment_index]) - eps) {
++                           slope > rayjoin_cdb_segment_slope_world(params.segments[best_segment_index]) + eps) {
+                     better = true;
+                 } else if (query_map_id != 0u &&
+-                           slope > rayjoin_cdb_segment_slope_world(params.segments[best_segment_index]) + eps) {
++                           slope < rayjoin_cdb_segment_slope_world(params.segments[best_segment_index]) - eps) {
+                     better = true;
+-                } else if (best_segment_index != 0xffffffffu) {
+-                    better = segment.id < params.segments[best_segment_index].id;
++                } else if (best_segment_index != 0xffffffffu &&
++                           cdb_absf(slope - rayjoin_cdb_segment_slope_world(params.segments[best_segment_index])) <= eps) {
++                    // Match the scaled/integer contract and the author kernel:
++                    // equal-slope ties keep the first candidate for map 0 and
++                    // accept the later candidate for map 1.
++                    better = query_map_id != 0u;
+                 }
+             }
+             if (better) {
+                 best_y = static_cast<double>(t);
+                 report_t = t;
++                report_slope = static_cast<double>(slope);
+             }
+         }
+         if (better) {
+@@ -1554,9 +1618,8 @@ extern "C" __global__ void __intersection__rayjoin_cdb_point_location() {
+         optixSetPayload_1(best_y_lo);
+         optixSetPayload_2(best_y_hi);
+         optixSetPayload_3(best_segment_index);
+-        const float accepted_t = params.allow_equal_ties != 0u
+-            ? nextafterf(report_t, 3.402823466e38F)
+-            : report_t;
++        const float accepted_t =
++            directed_segment_sos_report_t(report_t, report_slope, query_map_id);
+         optixReportIntersection(accepted_t, 0u);
+     }
+ }
+diff --git a/src/native/optix/rtdl_optix_prelude.h b/src/native/optix/rtdl_optix_prelude.h
+index 6b95f7b51..bd61ccc4b 100644
+--- a/src/native/optix/rtdl_optix_prelude.h
++++ b/src/native/optix/rtdl_optix_prelude.h
+@@ -210,6 +210,13 @@ struct RtdlRayjoinCdbPointLocationRow {
+ };
+ typedef RtdlRayjoinCdbPointLocationRow RtdlDirectedSegmentPointLocationRow2D;
+
++struct RtdlRayjoinCdbScaledPoint {
++    uint32_t id;
++    double x, y;
++    int64_t sx, sy;
++};
++typedef RtdlRayjoinCdbScaledPoint RtdlDirectedSegmentScaledPoint2D;
++
+ struct RtdlPipRow {
+     uint32_t point_id, polygon_id, contains;
+ };
+@@ -667,6 +674,13 @@ int  rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_r
+          size_t* count_out,
+          size_t* group_count_out,
+          char* error_out, size_t error_size);
++int  rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection_with_predicate_mode(
++         void* prepared,
++         void* prepared_left,
++         uint32_t predicate_mode,
++         size_t* count_out,
++         size_t* group_count_out,
++         char* error_out, size_t error_size);
+ int  rtdl_optix_prepared_segment_pair_candidate_device_columns(
+          void* prepared,
+          const RtdlSegment* left, size_t left_count,
+@@ -754,11 +768,21 @@ int  rtdl_optix_run_prepared_rayjoin_cdb_point_location_2d(
+          const RtdlPoint* points, size_t point_count,
+          RtdlRayjoinCdbPointLocationRow** rows_out, size_t* row_count_out,
+          char* error_out, size_t error_size);
++int  rtdl_optix_run_prepared_rayjoin_cdb_point_location_scaled_points_2d(
++         void* prepared,
++         const RtdlRayjoinCdbScaledPoint* points, size_t point_count,
++         RtdlRayjoinCdbPointLocationRow** rows_out, size_t* row_count_out,
++         char* error_out, size_t error_size);
+ int  rtdl_optix_prepare_rayjoin_cdb_point_location_points_2d(
+          void* prepared,
+          const RtdlPoint* points, size_t point_count,
+          void** prepared_points_out,
+          char* error_out, size_t error_size);
++int  rtdl_optix_prepare_rayjoin_cdb_point_location_scaled_points_2d(
++         void* prepared,
++         const RtdlRayjoinCdbScaledPoint* points, size_t point_count,
++         void** prepared_points_out,
++         char* error_out, size_t error_size);
+ int  rtdl_optix_count_prepared_rayjoin_cdb_point_location_2d_device_points(
+          void* prepared,
+          void* prepared_points,
+diff --git a/src/native/optix/rtdl_optix_workloads.cpp b/src/native/optix/rtdl_optix_workloads.cpp
+index c3de82a96..1fb822058 100644
+--- a/src/native/optix/rtdl_optix_workloads.cpp
++++ b/src/native/optix/rtdl_optix_workloads.cpp
+@@ -4436,7 +4436,30 @@ extern "C" __global__ void __raygen__segment_pair_direct_intersection_exact_coun
+     float x1 = p.x1;
+     float y1 = p.y1;
+     if (params.predicate_mode == 1u) {
+-        if (x0 == x1) {
++        if (params.left_rayjoin_lsi_segs != nullptr) {
++            RayjoinLsiScaledSegment exact =
++                params.left_rayjoin_lsi_segs[params.left_offset + idx];
++            const bool swap_exact = exact.x0 == exact.x1
++                ? exact.y0 > exact.y1
++                : exact.x0 > exact.x1;
++            if (swap_exact) {
++                const float tx = x0; const float ty = y0;
++                x0 = x1; y0 = y1; x1 = tx; y1 = ty;
++                const long long ex = exact.x0; const long long ey = exact.y0;
++                exact.x0 = exact.x1; exact.y0 = exact.y1;
++                exact.x1 = ex; exact.y1 = ey;
++            }
++            if (x0 == x1 && y0 == y1) {
++                const long long dx = exact.x1 - exact.x0;
++                const long long dy = exact.y1 - exact.y0;
++                if (dx != 0) {
++                    x1 = nextafterf(x0, dx > 0 ? INFINITY : -INFINITY);
++                }
++                if (dy != 0) {
++                    y1 = nextafterf(y0, dy > 0 ? INFINITY : -INFINITY);
++                }
++            }
++        } else if (x0 == x1) {
+             if (y0 > y1) {
+                 const float tx = x0; const float ty = y0;
+                 x0 = x1; y0 = y1; x1 = tx; y1 = ty;
+@@ -4643,7 +4666,30 @@ extern "C" __global__ void __raygen__segment_pair_grouped_range_direct_intersect
+     float x1 = p.x1;
+     float y1 = p.y1;
+     if (params.predicate_mode == 1u) {
+-        if (x0 == x1) {
++        if (params.left_rayjoin_lsi_segs != nullptr) {
++            RayjoinLsiScaledSegment exact =
++                params.left_rayjoin_lsi_segs[params.left_offset + idx];
++            const bool swap_exact = exact.x0 == exact.x1
++                ? exact.y0 > exact.y1
++                : exact.x0 > exact.x1;
++            if (swap_exact) {
++                const float tx = x0; const float ty = y0;
++                x0 = x1; y0 = y1; x1 = tx; y1 = ty;
++                const long long ex = exact.x0; const long long ey = exact.y0;
++                exact.x0 = exact.x1; exact.y0 = exact.y1;
++                exact.x1 = ex; exact.y1 = ey;
++            }
++            if (x0 == x1 && y0 == y1) {
++                const long long dx = exact.x1 - exact.x0;
++                const long long dy = exact.y1 - exact.y0;
++                if (dx != 0) {
++                    x1 = nextafterf(x0, dx > 0 ? INFINITY : -INFINITY);
++                }
++                if (dy != 0) {
++                    y1 = nextafterf(y0, dy > 0 ? INFINITY : -INFINITY);
++                }
++            }
++        } else if (x0 == x1) {
+             if (y0 > y1) {
+                 const float tx = x0; const float ty = y0;
+                 x0 = x1; y0 = y1; x1 = tx; y1 = ty;
+@@ -4715,6 +4761,7 @@ struct RayjoinCdbPointLocationLaunchParams {
+     uint32_t point_count;
+     uint32_t query_map_id;
+     uint32_t allow_equal_ties;
++    double scale_rry;
+ };
+
+ struct PreparedSegmentPairIntersectionBuild {
+@@ -4976,6 +5023,48 @@ static std::vector<GpuRayjoinCdbPoint> make_rayjoin_cdb_gpu_points(
+     return gpu_points;
+ }
+
++static std::vector<GpuRayjoinCdbPoint> make_rayjoin_cdb_gpu_scaled_points(
++        const PreparedRayjoinCdbPointLocation2D* prepared,
++        const RtdlRayjoinCdbScaledPoint* points,
++        size_t point_count)
++{
++    if (!prepared) {
++        throw std::runtime_error("prepared CDB point-location handle must not be null");
++    }
++    if (!points && point_count != 0) {
++        throw std::runtime_error("scaled point pointer must not be null when point_count is nonzero");
++    }
++    if (point_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
++        throw std::runtime_error("RayJoin CDB point-location point count exceeds uint32 launch capacity");
++    }
++    if (!prepared->scale.valid && point_count != 0) {
++        throw std::runtime_error("scaled query points require a prepared CDB scale");
++    }
++    std::vector<GpuRayjoinCdbPoint> gpu_points(point_count);
++    for (size_t i = 0; i < point_count; ++i) {
++        if (!std::isfinite(points[i].x) || !std::isfinite(points[i].y)) {
++            throw std::runtime_error("RayJoin CDB point-location query points must be finite");
++        }
++        const int64_t sx = points[i].sx;
++        const int64_t sy = points[i].sy;
++        double x = points[i].x;
++        double y = points[i].y;
++        if (prepared->scale.valid) {
++            x = rayjoin_cdb_unscale_x(prepared->scale, sx);
++            y = rayjoin_cdb_unscale_y(prepared->scale, sy);
++        }
++        gpu_points[i] = {
++            static_cast<float>(x),
++            static_cast<float>(y),
++            points[i].id,
++            prepared->scale.valid ? 1u : 0u,
++            sx,
++            sy,
++        };
++    }
++    return gpu_points;
++}
++
+ struct PreparedRayjoinCdbPointLocationPoints2D {
+     size_t point_count = 0;
+     DevPtr d_points;
+@@ -4993,6 +5082,19 @@ struct PreparedRayjoinCdbPointLocationPoints2D {
+             make_rayjoin_cdb_gpu_points(prepared, points, count);
+         upload(d_points.ptr, gpu_points.data(), gpu_points.size());
+     }
++
++    PreparedRayjoinCdbPointLocationPoints2D(
++            const PreparedRayjoinCdbPointLocation2D* prepared,
++            const RtdlRayjoinCdbScaledPoint* points,
++            size_t count)
++        : point_count(count),
++          d_points(sizeof(GpuRayjoinCdbPoint) * count),
++          d_segment_ids(sizeof(uint32_t) * count)
++    {
++        const std::vector<GpuRayjoinCdbPoint> gpu_points =
++            make_rayjoin_cdb_gpu_scaled_points(prepared, points, count);
++        upload(d_points.ptr, gpu_points.data(), gpu_points.size());
++    }
+ };
+
+ struct PreparedSegmentPairLeftSet {
+@@ -5418,6 +5520,10 @@ static OptixAabb segment_pair_merge_aabb(const OptixAabb& left, const OptixAabb&
+     return merged;
+ }
+
++static constexpr uint32_t kSegmentPairPredicateRawExact = 0u;
++static constexpr uint32_t kSegmentPairPredicatePlanarMapLsi = 1u;
++
++static uint32_t normalize_segment_pair_predicate_mode(uint32_t predicate_mode);
+ static uint32_t segment_pair_predicate_mode_from_env();
+
+ static float rayjoin_next_float_from_double(double value, int direction, int iterations = 2)
+@@ -5459,13 +5565,15 @@ static OptixAabb rayjoin_round_aabb(const OptixAabb& aabb)
+     return rounded;
+ }
+
+-static void ensure_segment_pair_grouped_ranges(PreparedSegmentPairIntersectionBuild* prepared)
++static void ensure_segment_pair_grouped_ranges(
++        PreparedSegmentPairIntersectionBuild* prepared,
++        uint32_t predicate_mode = kSegmentPairPredicateRawExact)
+ {
+     if (!prepared) {
+         throw std::runtime_error("prepared segment-pair handle must not be null");
+     }
+-    const uint32_t predicate_mode = segment_pair_predicate_mode_from_env();
+-    const bool rayjoin_lsi_mode = predicate_mode == 1u;
++    predicate_mode = normalize_segment_pair_predicate_mode(predicate_mode);
++    const bool rayjoin_lsi_mode = predicate_mode == kSegmentPairPredicatePlanarMapLsi;
+     if (prepared->grouped_range_accel &&
+         prepared->grouped_range_predicate_mode == predicate_mode) {
+         return;
+@@ -5562,10 +5670,22 @@ static void ensure_segment_pair_grouped_ranges(PreparedSegmentPairIntersectionBu
+ static uint32_t segment_pair_predicate_mode_from_env()
+ {
+     const char* raw = std::getenv("RTDL_OPTIX_SEGMENT_PAIR_PREDICATE");
+-    if (raw && std::string(raw) == "rayjoin_lsi") {
+-        return 1u;
++    if (raw) {
++        const std::string mode(raw);
++        if (mode == "planar_map_lsi" || mode == "rayjoin_lsi") {
++            return kSegmentPairPredicatePlanarMapLsi;
++        }
++    }
++    return kSegmentPairPredicateRawExact;
++}
++
++static uint32_t normalize_segment_pair_predicate_mode(uint32_t predicate_mode)
++{
++    if (predicate_mode == kSegmentPairPredicateRawExact ||
++        predicate_mode == kSegmentPairPredicatePlanarMapLsi) {
++        return predicate_mode;
+     }
+-    return 0u;
++    throw std::runtime_error("unsupported segment-pair predicate mode");
+ }
+
+ static bool rayjoin_lsi_scale_key_matches(
+@@ -6331,6 +6451,7 @@ static void launch_rayjoin_cdb_point_location_optix(
+     lp.query_map_id = (raw_query_map_id != nullptr && std::string(raw_query_map_id) == "0") ? 0u : 1u;
+     lp.allow_equal_ties =
+         std::getenv("RTDL_RAYJOIN_CDB_ALLOW_EQUAL_TIES") != nullptr ? 1u : 0u;
++    lp.scale_rry = prepared->scale.valid ? prepared->scale.rry : 1.0;
+
+     DevPtr d_params(sizeof(RayjoinCdbPointLocationLaunchParams));
+     upload(d_params.ptr, &lp, 1);
+@@ -6396,6 +6517,15 @@ static PreparedRayjoinCdbPointLocationPoints2D* prepare_rayjoin_cdb_point_locati
+     return new PreparedRayjoinCdbPointLocationPoints2D(prepared, points, point_count);
+ }
+
++static PreparedRayjoinCdbPointLocationPoints2D* prepare_rayjoin_cdb_point_location_scaled_points_2d_optix(
++        PreparedRayjoinCdbPointLocation2D* prepared,
++        const RtdlRayjoinCdbScaledPoint* points,
++        size_t point_count)
++{
++    ensure_rayjoin_cdb_point_location_pipeline();
++    return new PreparedRayjoinCdbPointLocationPoints2D(prepared, points, point_count);
++}
++
+ static void count_prepared_rayjoin_cdb_point_location_2d_optix(
+         PreparedRayjoinCdbPointLocation2D* prepared,
+         const RtdlPoint* points,
+@@ -6578,6 +6708,62 @@ static void run_prepared_rayjoin_cdb_point_location_2d_optix(
+     *row_count_out = point_count;
+ }
+
++static void run_prepared_rayjoin_cdb_point_location_scaled_points_2d_optix(
++        PreparedRayjoinCdbPointLocation2D* prepared,
++        const RtdlRayjoinCdbScaledPoint* points,
++        size_t point_count,
++        RtdlRayjoinCdbPointLocationRow** rows_out,
++        size_t* row_count_out)
++{
++    if (!rows_out || !row_count_out) {
++        throw std::runtime_error("row output pointers must not be null");
++    }
++    *rows_out = nullptr;
++    *row_count_out = 0;
++    reset_rayjoin_cdb_point_location_phase_timings(6u);
++    g_optix_last_rayjoin_cdb_point_count = point_count;
++    if (point_count == 0 || !prepared || prepared->segment_count == 0) {
++        return;
++    }
++
++    PreparedRayjoinCdbPointLocationPoints2D prepared_points(prepared, points, point_count);
++    DevPtr d_output(sizeof(GpuRayjoinCdbPointLocationRecord) * point_count);
++    DevPtr d_positive_count(sizeof(unsigned long long));
++    launch_rayjoin_cdb_point_location_optix(
++        prepared,
++        prepared_points.d_points.ptr,
++        point_count,
++        d_output.ptr,
++        0,
++        0,
++        d_positive_count.ptr);
++
++    std::vector<GpuRayjoinCdbPointLocationRecord> gpu_rows(point_count);
++    unsigned long long host_count = 0ull;
++    const auto t_download_start = std::chrono::steady_clock::now();
++    download(gpu_rows.data(), d_output.ptr, point_count);
++    download<unsigned long long>(&host_count, d_positive_count.ptr, 1);
++    const auto t_download_end = std::chrono::steady_clock::now();
++    g_optix_last_rayjoin_cdb_row_download_s += seconds_between(t_download_start, t_download_end);
++    g_optix_last_rayjoin_cdb_positive_face_count = static_cast<size_t>(host_count);
++
++    auto* out = static_cast<RtdlRayjoinCdbPointLocationRow*>(
++        std::malloc(sizeof(RtdlRayjoinCdbPointLocationRow) * point_count));
++    if (!out && point_count != 0) {
++        throw std::bad_alloc();
++    }
++    for (size_t i = 0; i < point_count; ++i) {
++        out[i] = RtdlRayjoinCdbPointLocationRow{
++            gpu_rows[i].point_id,
++            gpu_rows[i].face_id,
++            gpu_rows[i].segment_id,
++            static_cast<double>(gpu_rows[i].hit_t),
++        };
++    }
++    *rows_out = out;
++    *row_count_out = point_count;
++}
++
+ static std::vector<GpuSegmentPairIntersectionRecord> collect_segment_pair_intersection_candidates_optix(
+         size_t left_count,
+         CUdeviceptr d_left_ptr,
+@@ -7008,7 +7194,8 @@ static size_t count_segment_pair_intersection_grouped_range_direct_is_exact_one_
+     if (left_count > static_cast<size_t>(std::numeric_limits<uint32_t>::max())) {
+         throw std::runtime_error("segment-pair grouped-range count left segment count exceeds uint32 launch capacity");
+     }
+-    ensure_segment_pair_grouped_ranges(prepared);
++    predicate_mode = normalize_segment_pair_predicate_mode(predicate_mode);
++    ensure_segment_pair_grouped_ranges(prepared, predicate_mode);
+     if (prepared->right_group_count == 0) {
+         return 0;
+     }
+@@ -7678,16 +7865,16 @@ static void count_prepared_segment_pair_intersection_prepared_left_direct_inters
+         return;
+     }
+     const uint32_t predicate_mode = segment_pair_predicate_mode_from_env();
+-    if (predicate_mode == 1u) {
++    if (predicate_mode == kSegmentPairPredicatePlanarMapLsi) {
+         ensure_rayjoin_lsi_scaled_segment_caches(prepared, prepared_left);
+     }
+     *count_out = count_segment_pair_intersection_direct_is_exact_one_pass_optix(
+         prepared_left->left_count,
+         prepared_left->d_left.ptr,
+         prepared_left->d_left_exact.ptr,
+-        predicate_mode == 1u ? prepared_left->d_rayjoin_lsi_left->ptr : 0,
++        predicate_mode == kSegmentPairPredicatePlanarMapLsi ? prepared_left->d_rayjoin_lsi_left->ptr : 0,
+         prepared->d_right_exact.ptr,
+-        predicate_mode == 1u ? prepared->d_rayjoin_lsi_right->ptr : 0,
++        predicate_mode == kSegmentPairPredicatePlanarMapLsi ? prepared->d_rayjoin_lsi_right->ptr : 0,
+         prepared->right_count,
+         prepared->accel.handle,
+         predicate_mode,
+@@ -7695,11 +7882,33 @@ static void count_prepared_segment_pair_intersection_prepared_left_direct_inters
+     g_optix_last_segment_pair_emitted_count = *count_out;
+ }
+
++static void count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection_with_predicate_mode_optix(
++        PreparedSegmentPairIntersectionBuild* prepared,
++        PreparedSegmentPairLeftSet* prepared_left,
++        uint32_t predicate_mode,
++        size_t* count_out,
++        size_t* group_count_out);
++
+ static void count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection_optix(
+         PreparedSegmentPairIntersectionBuild* prepared,
+         PreparedSegmentPairLeftSet* prepared_left,
+         size_t* count_out,
+         size_t* group_count_out)
++{
++    count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection_with_predicate_mode_optix(
++        prepared,
++        prepared_left,
++        segment_pair_predicate_mode_from_env(),
++        count_out,
++        group_count_out);
++}
++
++static void count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection_with_predicate_mode_optix(
++        PreparedSegmentPairIntersectionBuild* prepared,
++        PreparedSegmentPairLeftSet* prepared_left,
++        uint32_t predicate_mode,
++        size_t* count_out,
++        size_t* group_count_out)
+ {
+     if (!prepared) {
+         throw std::runtime_error("prepared segment-pair handle must not be null");
+@@ -7716,8 +7925,8 @@ static void count_prepared_segment_pair_intersection_prepared_left_grouped_range
+     if (prepared_left->left_count == 0 || prepared->right_count == 0) {
+         return;
+     }
+-    const uint32_t predicate_mode = segment_pair_predicate_mode_from_env();
+-    if (predicate_mode == 1u) {
++    predicate_mode = normalize_segment_pair_predicate_mode(predicate_mode);
++    if (predicate_mode == kSegmentPairPredicatePlanarMapLsi) {
+         ensure_rayjoin_lsi_scaled_segment_caches(prepared, prepared_left);
+     }
+     *count_out = count_segment_pair_intersection_grouped_range_direct_is_exact_one_pass_optix(
+@@ -7725,8 +7934,8 @@ static void count_prepared_segment_pair_intersection_prepared_left_grouped_range
+         prepared_left->left_count,
+         prepared_left->d_left.ptr,
+         prepared_left->d_left_exact.ptr,
+-        predicate_mode == 1u ? prepared_left->d_rayjoin_lsi_left->ptr : 0,
+-        predicate_mode == 1u ? prepared->d_rayjoin_lsi_right->ptr : 0,
++        predicate_mode == kSegmentPairPredicatePlanarMapLsi ? prepared_left->d_rayjoin_lsi_left->ptr : 0,
++        predicate_mode == kSegmentPairPredicatePlanarMapLsi ? prepared->d_rayjoin_lsi_right->ptr : 0,
+         predicate_mode,
+         false);
+     *group_count_out = prepared->right_group_count;
+diff --git a/src/rtdsl/__init__.py b/src/rtdsl/__init__.py
+index 9f8f01bfa..e60c1f75e 100644
+--- a/src/rtdsl/__init__.py
++++ b/src/rtdsl/__init__.py
+@@ -801,6 +801,8 @@ from .datasets import build_arcgis_geojson_query_url
+ from .datasets import build_arcgis_query_url
+ from .datasets import build_arcgis_layer_url
+ from .datasets import chains_to_all_points
++from .datasets import chains_to_planar_map_points
++from .datasets import chains_to_planar_map_segments
+ from .datasets import chains_to_polygons
+ from .datasets import chains_to_polygon_refs
+ from .datasets import chains_to_probe_points
+@@ -1217,6 +1219,8 @@ from .optix_runtime import PreparedOptixDirectedSegmentPointLocation2D
+ from .optix_runtime import PreparedOptixDirectedSegmentPointLocationPoints2D
+ from .optix_runtime import PreparedOptixRayjoinCdbPointLocation2D
+ from .optix_runtime import PreparedOptixRayjoinCdbPointLocationPoints2D
++from .optix_runtime import PreparedOptixPlanarMapLsi2D
++from .optix_runtime import PreparedOptixPlanarMapPointLocation2D
+ from .optix_runtime import PreparedOptixPointClosedShapeMembership2D
+ from .optix_runtime import PreparedOptixPointClosedShapeBatchCountExecutor2D
+ from .optix_runtime import PreparedOptixPointClosedShapeBatchCountGraph2D
+@@ -1224,6 +1228,8 @@ from .optix_runtime import PreparedOptixPointProbeColumns2D
+ from .optix_runtime import closed_shape_membership_2d_optix
+ from .optix_runtime import collect_polygon_pair_candidates_bounded_optix
+ from .optix_runtime import prepare_directed_segment_point_location_2d_optix
++from .optix_runtime import prepare_planar_map_lsi_2d_optix
++from .optix_runtime import prepare_planar_map_point_location_2d_optix
+ from .optix_runtime import prepare_rayjoin_cdb_point_location_2d_optix
+ from .optix_runtime import prepare_point_closed_shape_membership_2d_optix
+ from .optix_runtime import prepare_point_probe_columns_2d_optix
+@@ -2801,6 +2807,8 @@ __all__ = [
+     "build_arcgis_query_url",
+     "build_arcgis_layer_url",
+     "chains_to_all_points",
++    "chains_to_planar_map_points",
++    "chains_to_planar_map_segments",
+     "chains_to_polygons",
+     "chains_to_polygon_refs",
+     "chains_to_probe_points",
+@@ -2990,6 +2998,8 @@ __all__ = [
+     "PreparedOptixDirectedSegmentPointLocationPoints2D",
+     "PreparedOptixRayjoinCdbPointLocation2D",
+     "PreparedOptixRayjoinCdbPointLocationPoints2D",
++    "PreparedOptixPlanarMapLsi2D",
++    "PreparedOptixPlanarMapPointLocation2D",
+     "PreparedOptixPointClosedShapeMembership2D",
+     "PreparedOptixPointClosedShapeBatchCountExecutor2D",
+     "PreparedOptixPointClosedShapeBatchCountGraph2D",
+@@ -2997,6 +3007,8 @@ __all__ = [
+     "closed_shape_membership_2d_optix",
+     "collect_polygon_pair_candidates_bounded_optix",
+     "prepare_directed_segment_point_location_2d_optix",
++    "prepare_planar_map_lsi_2d_optix",
++    "prepare_planar_map_point_location_2d_optix",
+     "prepare_rayjoin_cdb_point_location_2d_optix",
+     "prepare_point_closed_shape_membership_2d_optix",
+     "prepare_point_probe_columns_2d_optix",
+diff --git a/src/rtdsl/datasets.py b/src/rtdsl/datasets.py
+index cd78278c7..28d556bd8 100644
+--- a/src/rtdsl/datasets.py
++++ b/src/rtdsl/datasets.py
+@@ -814,6 +814,22 @@ def chains_to_rayjoin_cdb_segments(
+     return tuple(records)
+
+
++def chains_to_planar_map_segments(
++    dataset: CdbDataset,
++    *,
++    limit_chains: int | None = None,
++) -> tuple[dict[str, float | int], ...]:
++    """Convert CDB chains to directed planar-map edges with adjacent face ids.
++
++    This is the public, application-neutral name for the edge payload required
++    by planar-map point-location/PIP and LSI primitives.  The legacy
++    ``chains_to_rayjoin_cdb_segments`` name is retained for compatibility with
++    old RayJoin reproduction helpers.
++    """
++
++    return chains_to_rayjoin_cdb_segments(dataset, limit_chains=limit_chains)
++
++
+ def chains_to_segment_columns(dataset: CdbDataset, *, limit_chains: int | None = None) -> "SegmentColumns2D":
+     """Convert CDB chain edges directly to generic 2-D segment columns."""
+
+@@ -925,6 +941,12 @@ def chains_to_all_points(dataset: CdbDataset, *, limit_chains: int | None = None
+     return payload
+
+
++def chains_to_planar_map_points(dataset: CdbDataset, *, limit_chains: int | None = None) -> tuple[Point, ...]:
++    """Return all CDB points in file order for planar-map point-location probes."""
++
++    return chains_to_all_points(dataset, limit_chains=limit_chains)
++
++
+ def chains_to_polygon_refs(dataset: CdbDataset) -> tuple[dict[str, int], ...]:
+     """Return legacy face-reference metadata derived from a CDB chain set.
+
+diff --git a/src/rtdsl/engine_feature_matrix.py b/src/rtdsl/engine_feature_matrix.py
+index 44ab69e70..ca43fc117 100644
+--- a/src/rtdsl/engine_feature_matrix.py
++++ b/src/rtdsl/engine_feature_matrix.py
+@@ -38,6 +38,20 @@ _FEATURE_MATRIX: dict[str, dict[str, EngineFeatureSupport]] = {
+         "hiprt": _support("line_segment_intersection_2d", "hiprt", NATIVE, "HIPRT native 2D segment workload path when the library is available."),
+         "apple_rt": _support("line_segment_intersection_2d", "apple_rt", NATIVE_ASSISTED, "Apple MPS/Metal path with exact 2D acceptance where available."),
+     },
++    "planar_map_lsi_count_2d": {
++        "embree": _support("planar_map_lsi_count_2d", "embree", UNSUPPORTED_EXPLICIT, "No public Embree planar-map/CDB LSI scalar-count front door."),
++        "optix": _support("planar_map_lsi_count_2d", "optix", NATIVE, "Prepared OptiX CDB/planar-map LSI scalar-count front door."),
++        "vulkan": _support("planar_map_lsi_count_2d", "vulkan", UNSUPPORTED_EXPLICIT, "No public Vulkan planar-map/CDB LSI scalar-count front door."),
++        "hiprt": _support("planar_map_lsi_count_2d", "hiprt", UNSUPPORTED_EXPLICIT, "No public HIPRT planar-map/CDB LSI scalar-count front door."),
++        "apple_rt": _support("planar_map_lsi_count_2d", "apple_rt", UNSUPPORTED_EXPLICIT, "No public Apple RT planar-map/CDB LSI scalar-count front door."),
++    },
++    "planar_map_point_location_2d": {
++        "embree": _support("planar_map_point_location_2d", "embree", UNSUPPORTED_EXPLICIT, "No public Embree planar-map point-location front door."),
++        "optix": _support("planar_map_point_location_2d", "optix", NATIVE, "Prepared OptiX CDB/planar-map point-location/PIP front door."),
++        "vulkan": _support("planar_map_point_location_2d", "vulkan", UNSUPPORTED_EXPLICIT, "No public Vulkan planar-map point-location front door."),
++        "hiprt": _support("planar_map_point_location_2d", "hiprt", UNSUPPORTED_EXPLICIT, "No public HIPRT planar-map point-location front door."),
++        "apple_rt": _support("planar_map_point_location_2d", "apple_rt", UNSUPPORTED_EXPLICIT, "No public Apple RT planar-map point-location front door."),
++    },
+     "prepared_segment_pair_exact_count_2d": {
+         "embree": _support("prepared_segment_pair_exact_count_2d", "embree", COMPATIBILITY_FALLBACK, "Counts emitted prepared segment-pair rows; no dedicated scalar-count native export."),
+         "optix": _support("prepared_segment_pair_exact_count_2d", "optix", NATIVE, "Prepared segment-pair scene plus scalar exact-count native export."),
+diff --git a/src/rtdsl/optix_runtime.py b/src/rtdsl/optix_runtime.py
+index 12647064f..b15aad1ad 100644
+--- a/src/rtdsl/optix_runtime.py
++++ b/src/rtdsl/optix_runtime.py
+@@ -35,6 +35,7 @@ import ctypes.util
+ import functools
+ import os
+ import platform
++import threading
+ import time
+ import warnings
+ from collections import OrderedDict
+@@ -44,6 +45,7 @@ from typing import Iterable, Mapping
+
+ from .embree_runtime import _RtdlSegment
+ from .embree_runtime import _RtdlRayjoinCdbSegment
++from .embree_runtime import _RtdlRayjoinCdbScaledPoint
+ from .embree_runtime import _RtdlRayjoinCdbPointLocationRow
+ from .embree_runtime import _RtdlPoint
+ from .embree_runtime import _RtdlPoint3D
+@@ -82,6 +84,7 @@ from .oracle_runtime import _encode_db_table
+ from .oracle_runtime import _encode_db_text_clause_values
+ from .oracle_runtime import _encode_db_text_fields
+ from .embree_runtime import PackedPoints
++from .embree_runtime import PackedRayjoinCdbScaledPoints
+ from .embree_runtime import PackedPolygons
+ from .embree_runtime import PackedRays
+ from .embree_runtime import PackedRayjoinCdbSegments
+@@ -235,6 +238,9 @@ OPTIX_SEGMENT_PAIR_COUNT_PREPARED_LEFT_DIRECT_INTERSECTION_SYMBOL = (
+ OPTIX_SEGMENT_PAIR_COUNT_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_SYMBOL = (
+     "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection"
+ )
++OPTIX_SEGMENT_PAIR_COUNT_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_WITH_PREDICATE_MODE_SYMBOL = (
++    "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection_with_predicate_mode"
++)
+ OPTIX_SEGMENT_PAIR_LEFT_ID_COUNT_PREPARED_LEFT_DEVICE_COLUMNS_SYMBOL = (
+     "rtdl_optix_prepared_segment_pair_left_id_count_prepared_left_device_columns"
+ )
+@@ -278,12 +284,18 @@ OPTIX_RAYJOIN_CDB_POINT_LOCATION_PREPARE_SYMBOL = (
+ OPTIX_RAYJOIN_CDB_POINT_LOCATION_RUN_SYMBOL = (
+     "rtdl_optix_run_prepared_rayjoin_cdb_point_location_2d"
+ )
++OPTIX_RAYJOIN_CDB_POINT_LOCATION_RUN_SCALED_POINTS_SYMBOL = (
++    "rtdl_optix_run_prepared_rayjoin_cdb_point_location_scaled_points_2d"
++)
+ OPTIX_RAYJOIN_CDB_POINT_LOCATION_COUNT_SYMBOL = (
+     "rtdl_optix_count_prepared_rayjoin_cdb_point_location_2d"
+ )
+ OPTIX_RAYJOIN_CDB_POINT_LOCATION_PREPARE_POINTS_SYMBOL = (
+     "rtdl_optix_prepare_rayjoin_cdb_point_location_points_2d"
+ )
++OPTIX_RAYJOIN_CDB_POINT_LOCATION_PREPARE_SCALED_POINTS_SYMBOL = (
++    "rtdl_optix_prepare_rayjoin_cdb_point_location_scaled_points_2d"
++)
+ OPTIX_RAYJOIN_CDB_POINT_LOCATION_COUNT_DEVICE_POINTS_SYMBOL = (
+     "rtdl_optix_count_prepared_rayjoin_cdb_point_location_2d_device_points"
+ )
+@@ -3416,6 +3428,8 @@ class PreparedOptixSegmentPairIntersection:
+     def count_prepared_left_grouped_range_direct_intersection(
+         self,
+         prepared_left: PreparedOptixSegmentPairLeftSet,
++        *,
++        predicate_mode: int | None = None,
+     ) -> dict[str, object]:
+         if self._closed:
+             raise RuntimeError("prepared OptiX segment-pair handle is closed")
+@@ -3423,33 +3437,59 @@ class PreparedOptixSegmentPairIntersection:
+             raise RuntimeError("prepared OptiX segment-pair left-set handle is closed")
+         if prepared_left.library is not self.library:
+             raise ValueError("prepared left-set handle must come from the same OptiX library")
+-        count_symbol = _find_optional_backend_symbol(
+-            self.library,
+-            OPTIX_SEGMENT_PAIR_COUNT_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_SYMBOL,
+-        )
++        native_symbol = OPTIX_SEGMENT_PAIR_COUNT_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_SYMBOL
++        count_symbol = _find_optional_backend_symbol(self.library, native_symbol)
++        explicit_predicate_mode = predicate_mode is not None
++        if explicit_predicate_mode:
++            if predicate_mode not in (0, 1):
++                raise ValueError("predicate_mode must be 0 (raw exact) or 1 (planar_map_lsi)")
++            native_symbol = (
++                OPTIX_SEGMENT_PAIR_COUNT_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_WITH_PREDICATE_MODE_SYMBOL
++            )
++            count_symbol = _find_optional_backend_symbol(self.library, native_symbol)
+         if count_symbol is None:
+             raise RuntimeError(
+                 "Loaded OptiX backend library does not export "
+-                f"{OPTIX_SEGMENT_PAIR_COUNT_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_SYMBOL}; "
++                f"{native_symbol}; "
+                 "rebuild the OptiX backend from current main"
+             )
+         count = ctypes.c_size_t()
+         group_count = ctypes.c_size_t()
+         error = ctypes.create_string_buffer(4096)
+-        status = count_symbol(
+-            self.prepared_handle,
+-            prepared_left.prepared_left_handle,
+-            ctypes.byref(count),
+-            ctypes.byref(group_count),
+-            error,
+-            len(error),
+-        )
++        if explicit_predicate_mode:
++            status = count_symbol(
++                self.prepared_handle,
++                prepared_left.prepared_left_handle,
++                ctypes.c_uint32(int(predicate_mode)),
++                ctypes.byref(count),
++                ctypes.byref(group_count),
++                error,
++                len(error),
++            )
++        else:
++            status = count_symbol(
++                self.prepared_handle,
++                prepared_left.prepared_left_handle,
++                ctypes.byref(count),
++                ctypes.byref(group_count),
++                error,
++                len(error),
++            )
+         _check_status(status, error)
+         return {
+             "schema": "rtdl.optix.segment_pair_prepared_left_grouped_range_direct_intersection_exact_count.v1",
+             "count": int(count.value),
+             "right_group_count": int(group_count.value),
+-            "native_symbol": OPTIX_SEGMENT_PAIR_COUNT_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_SYMBOL,
++            "native_symbol": native_symbol,
++            "predicate_mode": None if predicate_mode is None else int(predicate_mode),
++            "predicate_selection": {
++                "mechanism": (
++                    "native_abi_explicit_parameter"
++                    if explicit_predicate_mode
++                    else "native_default_or_legacy_env"
++                ),
++                "mode_id": None if predicate_mode is None else int(predicate_mode),
++            },
+             "contract": "SEGMENT_PAIR_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_EXACT_COUNT_V1",
+             "implementation_note": (
+                 "generic grouped/ranged right-primitive direct custom-intersection exact count; "
+@@ -3468,9 +3508,14 @@ class PreparedOptixSegmentPairIntersection:
+     def count_prepared_left_exact_intersections(
+         self,
+         prepared_left: PreparedOptixSegmentPairLeftSet,
++        *,
++        predicate_mode: int | None = None,
+     ) -> dict[str, object]:
+         """Count exact 2-D segment-pair intersections through the fastest measured generic route."""
+-        result = self.count_prepared_left_grouped_range_direct_intersection(prepared_left)
++        result = self.count_prepared_left_grouped_range_direct_intersection(
++            prepared_left,
++            predicate_mode=predicate_mode,
++        )
+         return {
+             "schema": "rtdl.optix.segment_pair_prepared_left_exact_intersection_count.front_door.v1",
+             "primitive": "SEGMENT_PAIR_INTERSECTION_ROWS_2D",
+@@ -3488,6 +3533,8 @@ class PreparedOptixSegmentPairIntersection:
+             "count": int(result["count"]),
+             "right_group_count": int(result["right_group_count"]),
+             "native_symbol": result["native_symbol"],
++            "predicate_mode": result.get("predicate_mode"),
++            "predicate_selection": result.get("predicate_selection"),
+             "implementation_contract": result["contract"],
+             "claim_boundary": {
+                 "experimental_front_door": True,
+@@ -3770,6 +3817,109 @@ class PreparedOptixSegmentPairIntersection:
+             pass
+
+
++_PLANAR_MAP_LSI_PREDICATE_MODE = "planar_map_lsi"
++_PLANAR_MAP_LSI_PREDICATE_ID = 1
++_PLANAR_MAP_LSI_LEGACY_NATIVE_ALIAS = "rayjoin_lsi"
++_PLANAR_MAP_POINT_LOCATION_ENV_LOCK = threading.RLock()
++
++
++def _coerce_planar_map_lsi_segments_2d(records_or_cdb):
++    if isinstance(records_or_cdb, (str, Path)):
++        from .datasets import chains_to_planar_map_segments
++        from .datasets import load_cdb
++
++        return chains_to_planar_map_segments(load_cdb(records_or_cdb))
++    if hasattr(records_or_cdb, "chains"):
++        from .datasets import chains_to_planar_map_segments
++
++        return chains_to_planar_map_segments(records_or_cdb)
++    return tuple(records_or_cdb)
++
++
++@dataclass
++class PreparedOptixPlanarMapLsi2D:
++    """Prepared 2-D planar-map line-segment-intersection count.
++
++    This is the public front door for CDB/planar-map LSI count semantics.  It is
++    intentionally separate from the lower-level raw segment-pair primitive:
++    raw segment-pair intersection counts every exact pair, while planar-map LSI
++    uses the author-style endpoint/boundary predicate used by RTDL's existing
++    CDB LSI route.  The public API uses the generic predicate name
++    ``planar_map_lsi``; older native libraries may still recognize the legacy
++    alias ``rayjoin_lsi`` for the same predicate.  This class does not import or
++    call ``rtdsl.rayjoin_overlay``.
++    """
++
++    prepared: PreparedOptixSegmentPairIntersection
++    base_segment_count: int = 0
++    _closed: bool = False
++
++    def count(self, query_records_or_cdb) -> int:
++        return int(self.count_with_metadata(query_records_or_cdb)["count"])
++
++    def count_with_metadata(self, query_records_or_cdb) -> dict[str, object]:
++        if self._closed:
++            raise RuntimeError("prepared OptiX planar-map LSI handle is closed")
++        query_segments = _coerce_planar_map_lsi_segments_2d(query_records_or_cdb)
++        prepared_left = prepare_segment_pair_left_set_optix(query_segments)
++        try:
++            raw = self.prepared.count_prepared_left_exact_intersections(
++                prepared_left,
++                predicate_mode=_PLANAR_MAP_LSI_PREDICATE_ID,
++            )
++            timings = self.prepared.last_phase_timings() or {}
++        finally:
++            prepared_left.close()
++        count = int(raw["count"] if isinstance(raw, dict) else raw)
++        return {
++            "schema": "rtdl.optix.planar_map_lsi_2d.count.v1",
++            "primitive": "PLANAR_MAP_LSI_2D",
++            "backend": "optix",
++            "output_contract": "scalar_exact_count",
++            "count": count,
++            "base_segment_count": int(self.base_segment_count),
++            "query_segment_count": int(len(query_segments)),
++            "native_predicate_contract": "author_style_planar_map_lsi_endpoint_boundary_predicate",
++            "native_predicate_mode": _PLANAR_MAP_LSI_PREDICATE_MODE,
++            "native_predicate_mode_id": _PLANAR_MAP_LSI_PREDICATE_ID,
++            "native_predicate_legacy_alias": _PLANAR_MAP_LSI_LEGACY_NATIVE_ALIAS,
++            "predicate_selection": {
++                "mechanism": "native_abi_explicit_parameter",
++                "public_mode": _PLANAR_MAP_LSI_PREDICATE_MODE,
++                "mode_id": _PLANAR_MAP_LSI_PREDICATE_ID,
++                "legacy_native_alias": _PLANAR_MAP_LSI_LEGACY_NATIVE_ALIAS,
++                "concurrency_note": "Predicate selection is passed to the native count call, not through process-global environment state.",
++            },
++            "raw_segment_pair_result": raw,
++            "native_timings": timings,
++            "claim_boundary": {
++                "public_generic_rtdl_primitive": True,
++                "bundled_rayjoin_helper_used": False,
++                "section52_lsi_count_supported": True,
++                "full_overlay_supported": False,
++                "paper_eight_pair_claim_authorized": False,
++                "broad_speedup_claim_authorized": False,
++            },
++        }
++
++    def close(self) -> None:
++        if not self._closed:
++            self.prepared.close()
++            self._closed = True
++
++    def __enter__(self):
++        return self
++
++    def __exit__(self, exc_type, exc, tb) -> None:
++        self.close()
++
++    def __del__(self) -> None:
++        try:
++            self.close()
++        except Exception:
++            pass
++
++
+ def prepare_segment_pair_left_set_optix(left_segments) -> PreparedOptixSegmentPairLeftSet:
+     lib = _load_optix_library()
+     prepare_symbol = _require_backend_symbol(lib, OPTIX_SEGMENT_PAIR_PREPARE_LEFT_SET_SYMBOL)
+@@ -3813,6 +3963,204 @@ def prepare_segment_pair_intersection_optix(right_segments) -> PreparedOptixSegm
+     )
+
+
++def prepare_planar_map_lsi_2d_optix(base_records_or_cdb) -> PreparedOptixPlanarMapLsi2D:
++    """Prepare a reusable OptiX planar-map/CDB LSI count primitive.
++
++    ``base_records_or_cdb`` may be an iterable of segment records, a
++    ``CdbDataset``, or a CDB path.  Query inputs passed to ``count`` /
++    ``count_with_metadata`` accept the same forms.
++    """
++
++    base_segments = _coerce_planar_map_lsi_segments_2d(base_records_or_cdb)
++    prepared = prepare_segment_pair_intersection_optix(base_segments)
++    return PreparedOptixPlanarMapLsi2D(
++        prepared=prepared,
++        base_segment_count=int(len(base_segments)),
++    )
++
++
++def _normalize_planar_map_scale_bounds(scale_bounds) -> tuple[float, float, float, float] | None:
++    if scale_bounds is None:
++        return None
++    if isinstance(scale_bounds, Mapping):
++        try:
++            return (
++                float(scale_bounds["min_x"]),
++                float(scale_bounds["max_x"]),
++                float(scale_bounds["min_y"]),
++                float(scale_bounds["max_y"]),
++            )
++        except KeyError as exc:
++            raise ValueError(
++                "scale_bounds mapping must contain min_x, max_x, min_y, and max_y"
++            ) from exc
++    values = tuple(float(value) for value in scale_bounds)
++    if len(values) != 4:
++        raise ValueError("scale_bounds must contain exactly four values: min_x, max_x, min_y, max_y")
++    return values
++
++
++def _set_planar_map_point_location_env(
++    *,
++    query_map_id: int,
++    scale_bounds: tuple[float, float, float, float] | None,
++) -> dict[str, str | None]:
++    values = {"RTDL_RAYJOIN_CDB_QUERY_MAP_ID": str(int(query_map_id))}
++    if scale_bounds is not None:
++        min_x, max_x, min_y, max_y = scale_bounds
++        values.update(
++            {
++                "RTDL_RAYJOIN_CDB_SCALE_MIN_X": repr(float(min_x)),
++                "RTDL_RAYJOIN_CDB_SCALE_MAX_X": repr(float(max_x)),
++                "RTDL_RAYJOIN_CDB_SCALE_MIN_Y": repr(float(min_y)),
++                "RTDL_RAYJOIN_CDB_SCALE_MAX_Y": repr(float(max_y)),
++            }
++        )
++    old = {key: os.environ.get(key) for key in values}
++    os.environ.update(values)
++    return old
++
++
++def _restore_planar_map_point_location_env(old: Mapping[str, str | None]) -> None:
++    for key, value in old.items():
++        if value is None:
++            os.environ.pop(key, None)
++        else:
++            os.environ[key] = value
++
++
++@dataclass
++class PreparedOptixPlanarMapPointLocation2D:
++    """Prepared 2-D planar-map point-location/PIP primitive.
++
++    This is the public front door for CDB/planar-map point-location.  It wraps
++    the historical directed-segment implementation but keeps the RayJoin-era
++    environment bridge inside RTDL instead of exposing it to application code.
++    """
++
++    prepared: "PreparedOptixRayjoinCdbPointLocation2D"
++    query_map_id: int = 1
++    scale_bounds: tuple[float, float, float, float] | None = None
++    base_segment_count: int = 0
++    _closed: bool = False
++
++    def _with_env(self, func):
++        if self._closed:
++            raise RuntimeError("prepared OptiX planar-map point-location handle is closed")
++        with _PLANAR_MAP_POINT_LOCATION_ENV_LOCK:
++            old = _set_planar_map_point_location_env(
++                query_map_id=self.query_map_id,
++                scale_bounds=self.scale_bounds,
++            )
++            try:
++                return func()
++            finally:
++                _restore_planar_map_point_location_env(old)
++
++    def run_raw(self, points) -> OptixRowView:
++        """Return raw point-location rows with point, face, segment, and hit-t fields."""
++
++        return self._with_env(lambda: self.prepared.run_raw(points))
++
++    def run(self, points) -> tuple:
++        rows = self.run_raw(points)
++        try:
++            return rows.to_dict_rows()
++        finally:
++            rows.close()
++
++    def count_positive_faces(self, points) -> int:
++        """Return the native count of non-exterior face assignments."""
++
++        return int(self._with_env(lambda: self.prepared.count_positive_faces(points)))
++
++    def count_with_metadata(self, points) -> dict[str, object]:
++        rows = self.run_raw(points)
++        located_segments = 0
++        positive_faces = 0
++        try:
++            for row_index in range(rows.row_count):
++                row = rows.rows_ptr[row_index]
++                if int(row.segment_id) != 0xFFFFFFFF:
++                    located_segments += 1
++                if int(row.face_id) not in (0xFFFFFFFF, 0):
++                    positive_faces += 1
++        finally:
++            rows.close()
++        timings = self.prepared.last_phase_timings() or {}
++        return {
++            "schema": "rtdl.optix.planar_map_point_location_2d.count.v1",
++            "primitive": "PLANAR_MAP_POINT_LOCATION_2D",
++            "backend": "optix",
++            "output_contract": "point_location_rows_and_counts",
++            "located_segment_count": int(located_segments),
++            "positive_face_count": int(positive_faces),
++            "query_map_id": int(self.query_map_id),
++            "scale_bounds": self.scale_bounds,
++            "base_segment_count": int(self.base_segment_count),
++            "native_timings": timings,
++            "claim_boundary": {
++                "public_generic_rtdl_primitive": True,
++                "bundled_rayjoin_helper_used": False,
++                "section53_pip_closest_edge_supported": True,
++                "full_overlay_supported": False,
++                "broad_speedup_claim_authorized": False,
++            },
++            "implementation_note": (
++                "The public planar-map point-location primitive hides the legacy "
++                "RayJoin CDB environment bridge inside RTDL; application code should "
++                "not set RTDL_RAYJOIN_CDB_* variables directly."
++            ),
++        }
++
++    def count_located_segments(self, points) -> int:
++        return int(self.count_with_metadata(points)["located_segment_count"])
++
++    def last_phase_timings(self) -> dict[str, float | int | str] | None:
++        return self.prepared.last_phase_timings()
++
++    def close(self) -> None:
++        if not self._closed:
++            self.prepared.close()
++            self._closed = True
++
++    def __enter__(self):
++        return self
++
++    def __exit__(self, exc_type, exc, tb) -> None:
++        self.close()
++
++    def __del__(self) -> None:
++        try:
++            self.close()
++        except Exception:
++            pass
++
++
++def prepare_planar_map_point_location_2d_optix(
++    base_records_or_cdb,
++    *,
++    query_map_id: int = 1,
++    scale_bounds=None,
++) -> PreparedOptixPlanarMapPointLocation2D:
++    """Prepare a reusable OptiX planar-map point-location/PIP primitive.
++
++    ``base_records_or_cdb`` may be an iterable of directed planar-map segment
++    records, a ``CdbDataset``, or a CDB path.  Query points are supplied later
++    to ``run_raw`` / ``run`` / ``count_with_metadata``.  ``query_map_id`` selects
++    the directed tie-break side for the vertical ray contract.
++    """
++
++    base_segments = _coerce_planar_map_lsi_segments_2d(base_records_or_cdb)
++    prepared = prepare_rayjoin_cdb_point_location_2d_optix(base_segments)
++    return PreparedOptixPlanarMapPointLocation2D(
++        prepared=prepared,
++        query_map_id=int(query_map_id),
++        scale_bounds=_normalize_planar_map_scale_bounds(scale_bounds),
++        base_segment_count=int(len(base_segments)),
++    )
++
++
+ @dataclass
+ class PreparedOptixRayjoinCdbPointLocationPoints2D:
+     library: object
+@@ -3854,13 +4202,30 @@ class PreparedOptixRayjoinCdbPointLocation2D:
+     def run_raw(self, points) -> OptixRowView:
+         if self._closed:
+             raise RuntimeError("prepared OptiX RayJoin CDB point-location handle is closed")
+-        packed_points = points if isinstance(points, PackedPoints) else pack_points(records=points, dimension=2)
+-        run_symbol = _find_first_optional_backend_symbol(
+-            self.library,
+-            OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_RUN_SYMBOL,
+-            OPTIX_RAYJOIN_CDB_POINT_LOCATION_RUN_SYMBOL,
+-        )
++        uses_scaled_points = isinstance(points, PackedRayjoinCdbScaledPoints)
++        packed_points = (
++            points
++            if uses_scaled_points
++            else points if isinstance(points, PackedPoints) else pack_points(records=points, dimension=2)
++        )
++        if uses_scaled_points:
++            run_symbol = _find_first_optional_backend_symbol(
++                self.library,
++                OPTIX_RAYJOIN_CDB_POINT_LOCATION_RUN_SCALED_POINTS_SYMBOL,
++            )
++        else:
++            run_symbol = _find_first_optional_backend_symbol(
++                self.library,
++                OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_RUN_SYMBOL,
++                OPTIX_RAYJOIN_CDB_POINT_LOCATION_RUN_SYMBOL,
++            )
+         if run_symbol is None:
++            if uses_scaled_points:
++                raise RuntimeError(
++                    "Loaded OptiX backend library does not export "
++                    f"{OPTIX_RAYJOIN_CDB_POINT_LOCATION_RUN_SCALED_POINTS_SYMBOL}; "
++                    "rebuild the OptiX backend from current main"
++                )
+             raise RuntimeError(
+                 "Loaded OptiX backend library does not export "
+                 f"{OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_RUN_SYMBOL} or "
+@@ -3925,13 +4290,30 @@ class PreparedOptixRayjoinCdbPointLocation2D:
+     def prepare_query_points(self, points) -> PreparedOptixRayjoinCdbPointLocationPoints2D:
+         if self._closed:
+             raise RuntimeError("prepared OptiX RayJoin CDB point-location handle is closed")
+-        packed_points = points if isinstance(points, PackedPoints) else pack_points(records=points, dimension=2)
+-        prepare_symbol = _find_first_optional_backend_symbol(
+-            self.library,
+-            OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_PREPARE_POINTS_SYMBOL,
+-            OPTIX_RAYJOIN_CDB_POINT_LOCATION_PREPARE_POINTS_SYMBOL,
+-        )
++        uses_scaled_points = isinstance(points, PackedRayjoinCdbScaledPoints)
++        packed_points = (
++            points
++            if uses_scaled_points
++            else points if isinstance(points, PackedPoints) else pack_points(records=points, dimension=2)
++        )
++        if uses_scaled_points:
++            prepare_symbol = _find_first_optional_backend_symbol(
++                self.library,
++                OPTIX_RAYJOIN_CDB_POINT_LOCATION_PREPARE_SCALED_POINTS_SYMBOL,
++            )
++        else:
++            prepare_symbol = _find_first_optional_backend_symbol(
++                self.library,
++                OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_PREPARE_POINTS_SYMBOL,
++                OPTIX_RAYJOIN_CDB_POINT_LOCATION_PREPARE_POINTS_SYMBOL,
++            )
+         if prepare_symbol is None:
++            if uses_scaled_points:
++                raise RuntimeError(
++                    "Loaded OptiX backend library does not export "
++                    f"{OPTIX_RAYJOIN_CDB_POINT_LOCATION_PREPARE_SCALED_POINTS_SYMBOL}; "
++                    "rebuild the OptiX backend from current main"
++                )
+             raise RuntimeError(
+                 "Loaded OptiX backend library does not export "
+                 f"{OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_PREPARE_POINTS_SYMBOL} or "
+@@ -21529,6 +21911,21 @@ def _register_argtypes(lib) -> None:
+             ctypes.c_size_t,
+         ]
+         optional_count_prepared_segment_pair_prepared_left_grouped_range_direct_intersection.restype = ctypes.c_int
++    optional_count_prepared_segment_pair_prepared_left_grouped_range_direct_intersection_with_predicate_mode = _find_optional_backend_symbol(
++        lib,
++        OPTIX_SEGMENT_PAIR_COUNT_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_WITH_PREDICATE_MODE_SYMBOL,
++    )
++    if optional_count_prepared_segment_pair_prepared_left_grouped_range_direct_intersection_with_predicate_mode is not None:
++        optional_count_prepared_segment_pair_prepared_left_grouped_range_direct_intersection_with_predicate_mode.argtypes = [
++            ctypes.c_void_p,
++            ctypes.c_void_p,
++            ctypes.c_uint32,
++            ctypes.POINTER(ctypes.c_size_t),
++            ctypes.POINTER(ctypes.c_size_t),
++            ctypes.c_char_p,
++            ctypes.c_size_t,
++        ]
++        optional_count_prepared_segment_pair_prepared_left_grouped_range_direct_intersection_with_predicate_mode.restype = ctypes.c_int
+     optional_segment_pair_candidate_device_columns = _find_optional_backend_symbol(
+         lib,
+         OPTIX_SEGMENT_PAIR_CANDIDATE_DEVICE_COLUMNS_SYMBOL,
+@@ -21678,6 +22075,23 @@ def _register_argtypes(lib) -> None:
+         ctypes.c_char_p,
+         ctypes.c_size_t,
+     ]
++    point_location_run_scaled_points_argtypes = [
++        ctypes.c_void_p,
++        ctypes.POINTER(_RtdlRayjoinCdbScaledPoint),
++        ctypes.c_size_t,
++        ctypes.POINTER(ctypes.POINTER(_RtdlRayjoinCdbPointLocationRow)),
++        ctypes.POINTER(ctypes.c_size_t),
++        ctypes.c_char_p,
++        ctypes.c_size_t,
++    ]
++    point_location_prepare_scaled_points_argtypes = [
++        ctypes.c_void_p,
++        ctypes.POINTER(_RtdlRayjoinCdbScaledPoint),
++        ctypes.c_size_t,
++        ctypes.POINTER(ctypes.c_void_p),
++        ctypes.c_char_p,
++        ctypes.c_size_t,
++    ]
+     point_location_device_count_argtypes = [
+         ctypes.c_void_p,
+         ctypes.c_void_p,
+@@ -21703,6 +22117,10 @@ def _register_argtypes(lib) -> None:
+         OPTIX_RAYJOIN_CDB_POINT_LOCATION_RUN_SYMBOL,
+     ):
+         _register_optional(symbol_name, point_location_run_argtypes)
++    _register_optional(
++        OPTIX_RAYJOIN_CDB_POINT_LOCATION_RUN_SCALED_POINTS_SYMBOL,
++        point_location_run_scaled_points_argtypes,
++    )
+     for symbol_name in (
+         OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_COUNT_SYMBOL,
+         OPTIX_RAYJOIN_CDB_POINT_LOCATION_COUNT_SYMBOL,
+@@ -21713,6 +22131,10 @@ def _register_argtypes(lib) -> None:
+         OPTIX_RAYJOIN_CDB_POINT_LOCATION_PREPARE_POINTS_SYMBOL,
+     ):
+         _register_optional(symbol_name, point_location_prepare_points_argtypes)
++    _register_optional(
++        OPTIX_RAYJOIN_CDB_POINT_LOCATION_PREPARE_SCALED_POINTS_SYMBOL,
++        point_location_prepare_scaled_points_argtypes,
++    )
+     for symbol_name in (
+         OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_COUNT_DEVICE_POINTS_SYMBOL,
+         OPTIX_DIRECTED_SEGMENT_POINT_LOCATION_WRITE_DEVICE_SEGMENT_IDS_SYMBOL,
+diff --git a/src/rtdsl/rayjoin_overlay.py b/src/rtdsl/rayjoin_overlay.py
+index 13371378e..066b74d77 100644
+--- a/src/rtdsl/rayjoin_overlay.py
++++ b/src/rtdsl/rayjoin_overlay.py
+@@ -2,12 +2,14 @@ from __future__ import annotations
+
+ import ctypes
+ import json
++import math
+ import os
+ import re
+ import tempfile
+ import time
+ from contextlib import contextmanager
+ from dataclasses import dataclass
++from fractions import Fraction
+ from pathlib import Path
+ from types import SimpleNamespace
+ from typing import Iterable
+@@ -27,7 +29,12 @@ class RayjoinOverlayIntersection:
+     eid1: int
+     x: float
+     y: float
+-    mid_point_polygon_id: int = EXTERIOR_FACE_ID
++    scaled_x: float | None = None
++    scaled_y: float | None = None
++    scaled_x_rational: Fraction | None = None
++    scaled_y_rational: Fraction | None = None
++    mid_point_polygon_id_map0: int = EXTERIOR_FACE_ID
++    mid_point_polygon_id_map1: int = EXTERIOR_FACE_ID
+
+
+ @dataclass
+@@ -567,6 +574,26 @@ def _packed_points_from_arrays(x, y):
+     return pack_points(ids=ids, x=x, y=y, dimension=2)
+
+
++def _packed_scaled_points_from_midpoints(
++    midpoints: list[tuple[float, float]],
++    scaled_midpoints: list[tuple[int, int] | None],
++):
++    import numpy as np
++    from .embree_runtime import pack_rayjoin_cdb_scaled_points
++
++    if len(midpoints) != len(scaled_midpoints):
++        raise ValueError("midpoint and scaled midpoint counts must match")
++    if any(item is None for item in scaled_midpoints):
++        raise ValueError("all midpoint rows must have exact scaled coordinates")
++    count = len(midpoints)
++    ids = np.arange(1, count + 1, dtype=np.int64)
++    x = np.fromiter((float(point[0]) for point in midpoints), dtype=np.float64, count=count)
++    y = np.fromiter((float(point[1]) for point in midpoints), dtype=np.float64, count=count)
++    sx = np.fromiter((int(point[0]) for point in scaled_midpoints if point is not None), dtype=np.int64, count=count)
++    sy = np.fromiter((int(point[1]) for point in scaled_midpoints if point is not None), dtype=np.int64, count=count)
++    return pack_rayjoin_cdb_scaled_points(ids=ids, x=x, y=y, sx=sx, sy=sy)
++
++
+ def _edge_start_arrays_for_ids(edge_starts, edge_ids):
+     import numpy as np
+
+@@ -581,9 +608,18 @@ def _edge_start_arrays_for_ids(edge_starts, edge_ids):
+     )
+
+
+-def _midpoint_points_from_lsi_rows_numpy(lsi_rows, edge_starts, map_index: int):
++def _midpoint_points_from_lsi_rows_numpy(
++    lsi_rows,
++    edge_starts,
++    map_index: int,
++    *,
++    stats: dict[str, int] | None = None,
++):
+     import numpy as np
+
++    dropped_key = f"map{map_index}_nonfinite_midpoints_dropped"
++    if stats is not None:
++        stats.setdefault(dropped_key, 0)
+     if len(lsi_rows) < 2:
+         return _packed_points_from_arrays(np.empty(0, dtype=np.float64), np.empty(0, dtype=np.float64))
+     edge_field = "left_id" if map_index == 0 else "right_id"
+@@ -603,6 +639,12 @@ def _midpoint_points_from_lsi_rows_numpy(lsi_rows, edge_starts, map_index: int):
+     sorted_y = y[order]
+     midpoint_x = (sorted_x[:-1][same_edge] + sorted_x[1:][same_edge]) * 0.5
+     midpoint_y = (sorted_y[:-1][same_edge] + sorted_y[1:][same_edge]) * 0.5
++    finite = np.isfinite(midpoint_x) & np.isfinite(midpoint_y)
++    if not bool(np.all(finite)):
++        if stats is not None:
++            stats[dropped_key] += int((~finite).sum())
++        midpoint_x = midpoint_x[finite]
++        midpoint_y = midpoint_y[finite]
+     return _packed_points_from_arrays(midpoint_x, midpoint_y)
+
+
+@@ -720,6 +762,237 @@ def _simple_lsi_compiled():
+     )
+
+
++_RAYJOIN_FMA = None
++_RAYJOIN_FMA_LOOKED_UP = False
++
++
++def _rayjoin_fma():
++    global _RAYJOIN_FMA, _RAYJOIN_FMA_LOOKED_UP
++    if _RAYJOIN_FMA_LOOKED_UP:
++        return _RAYJOIN_FMA
++    _RAYJOIN_FMA_LOOKED_UP = True
++    if hasattr(math, "fma"):
++        _RAYJOIN_FMA = math.fma
++        return _RAYJOIN_FMA
++    try:
++        import ctypes.util
++
++        candidates = []
++        libm = ctypes.util.find_library("m")
++        if libm:
++            candidates.append(libm)
++        candidates.extend(("libm.so.6", "libm.so", None))
++        for candidate in candidates:
++            try:
++                library = ctypes.CDLL(candidate) if candidate is not None else ctypes.CDLL(None)
++                fma = library.fma
++            except (AttributeError, OSError):
++                continue
++            fma.argtypes = [ctypes.c_double, ctypes.c_double, ctypes.c_double]
++            fma.restype = ctypes.c_double
++
++            def call_fma(a, b, c, _fma=fma):
++                return float(_fma(float(a), float(b), float(c)))
++
++            _RAYJOIN_FMA = call_fma
++            return _RAYJOIN_FMA
++    except Exception:
++        _RAYJOIN_FMA = None
++    return None
++
++
++def _rayjoin_author_scale_array(values, scale: float, delta: float):
++    import numpy as np
++
++    array = np.asarray(values, dtype=np.float64)
++    # Large RayJoin overlays scale millions of coordinates.  Calling libm.fma
++    # once per element from Python is prohibitively slow; use a vectorized
++    # extended-precision expression by default and keep the scalar fma route for
++    # small regression probes or explicit diagnostics.
++    if int(array.size) > 4096 and os.environ.get("RTDL_RAYJOIN_ARRAY_SCALE_CTYPE_FMA") not in {"1", "true", "TRUE"}:
++        try:
++            return (
++                array.astype(np.longdouble) * np.longdouble(scale) + np.longdouble(delta)
++            ).astype(np.int64)
++        except Exception:
++            return (array * scale + delta).astype(np.int64)
++    fma = _rayjoin_fma()
++    if fma is None:
++        try:
++            return (
++                array.astype(np.longdouble) * np.longdouble(scale) + np.longdouble(delta)
++            ).astype(np.int64)
++        except Exception:
++            return (array * scale + delta).astype(np.int64)
++
++    output = np.empty(array.shape, dtype=np.int64)
++    flat_in = array.ravel()
++    flat_out = output.ravel()
++    for index, value in enumerate(flat_in):
++        flat_out[index] = int(fma(float(value), float(scale), float(delta)))
++    return output
++
++
++def _rayjoin_scaling_constants(scale_bounds: tuple[float, float, float, float]):
++    box_min_x, box_max_x, box_min_y, box_max_y = (float(value) for value in scale_bounds)
++    # Match RayJoin's Scaling<double>: int64 internal coordinate shifted by 17.
++    internal_max = (1 << 46) - 1
++    internal_min = -(1 << 46)
++    margin = 1.0
++    box_max_x += margin
++    box_min_x -= margin
++    box_max_y += margin
++    box_min_y -= margin
++    internal_range = float(internal_max - internal_min)
++    rx_scale = internal_range / (box_max_x - box_min_x)
++    ry_scale = internal_range / (box_max_y - box_min_y)
++    rrx = 1.0 / rx_scale
++    rry = 1.0 / ry_scale
++    deltax = 0.5 * (float(internal_max + internal_min) - (box_max_x + box_min_x) * rx_scale)
++    deltay = 0.5 * (float(internal_max + internal_min) - (box_max_y + box_min_y) * ry_scale)
++    ddeltax = 0.5 * ((box_max_x + box_min_x) - float(internal_max + internal_min) * rrx)
++    ddeltay = 0.5 * ((box_max_y + box_min_y) - float(internal_max + internal_min) * rry)
++    return rx_scale, ry_scale, deltax, deltay, rrx, rry, ddeltax, ddeltay
++
++
++def _rayjoin_author_rational_to_internal(value: Fraction) -> int:
++    if value.denominator == 1:
++        return int(value.numerator)
++    return int(float(int(value.numerator)) / float(int(value.denominator)))
++
++
++def _rayjoin_trunc_div2(value: int) -> int:
++    if value >= 0:
++        return value // 2
++    return -((-value) // 2)
++
++
++def _overlap_midpoint_fallback(left_x0, left_y0, left_x1, left_y1, right_x0, right_y0, right_x1, right_y1):
++    import numpy as np
++
++    left_x0 = np.asarray(left_x0, dtype=np.float64)
++    left_y0 = np.asarray(left_y0, dtype=np.float64)
++    left_x1 = np.asarray(left_x1, dtype=np.float64)
++    left_y1 = np.asarray(left_y1, dtype=np.float64)
++    right_x0 = np.asarray(right_x0, dtype=np.float64)
++    right_y0 = np.asarray(right_y0, dtype=np.float64)
++    right_x1 = np.asarray(right_x1, dtype=np.float64)
++    right_y1 = np.asarray(right_y1, dtype=np.float64)
++    out_x = np.empty(left_x0.shape, dtype=np.float64)
++    out_y = np.empty(left_x0.shape, dtype=np.float64)
++    for index in range(int(left_x0.shape[0])):
++        ldx = float(left_x1[index] - left_x0[index])
++        ldy = float(left_y1[index] - left_y0[index])
++        if abs(ldx) >= abs(ldy) and ldx != 0.0:
++            lo = max(min(float(left_x0[index]), float(left_x1[index])), min(float(right_x0[index]), float(right_x1[index])))
++            hi = min(max(float(left_x0[index]), float(left_x1[index])), max(float(right_x0[index]), float(right_x1[index])))
++            x = 0.5 * (lo + hi) if lo <= hi else 0.25 * (
++                float(left_x0[index]) + float(left_x1[index]) + float(right_x0[index]) + float(right_x1[index])
++            )
++            y = float(left_y0[index]) + ((x - float(left_x0[index])) / ldx) * ldy
++        elif ldy != 0.0:
++            lo = max(min(float(left_y0[index]), float(left_y1[index])), min(float(right_y0[index]), float(right_y1[index])))
++            hi = min(max(float(left_y0[index]), float(left_y1[index])), max(float(right_y0[index]), float(right_y1[index])))
++            y = 0.5 * (lo + hi) if lo <= hi else 0.25 * (
++                float(left_y0[index]) + float(left_y1[index]) + float(right_y0[index]) + float(right_y1[index])
++            )
++            x = float(left_x0[index]) + ((y - float(left_y0[index])) / ldy) * ldx
++        else:
++            x = float(left_x0[index])
++            y = float(left_y0[index])
++        out_x[index] = x
++        out_y[index] = y
++    return out_x, out_y
++
++
++def _rayjoin_scaled_intersection_points_for_pairs(
++    left_x0,
++    left_y0,
++    left_x1,
++    left_y1,
++    right_x0,
++    right_y0,
++    right_x1,
++    right_y1,
++    *,
++    scale_bounds: tuple[float, float, float, float],
++):
++    import numpy as np
++
++    rx_scale, ry_scale, deltax, deltay, rrx, rry, ddeltax, ddeltay = _rayjoin_scaling_constants(scale_bounds)
++
++    lx0 = _rayjoin_author_scale_array(left_x0, rx_scale, deltax)
++    ly0 = _rayjoin_author_scale_array(left_y0, ry_scale, deltay)
++    lx1 = _rayjoin_author_scale_array(left_x1, rx_scale, deltax)
++    ly1 = _rayjoin_author_scale_array(left_y1, ry_scale, deltay)
++    rx0 = _rayjoin_author_scale_array(right_x0, rx_scale, deltax)
++    ry0 = _rayjoin_author_scale_array(right_y0, ry_scale, deltay)
++    rx1 = _rayjoin_author_scale_array(right_x1, rx_scale, deltax)
++    ry1 = _rayjoin_author_scale_array(right_y1, ry_scale, deltay)
++
++    fallback_x, fallback_y = _overlap_midpoint_fallback(
++        left_x0,
++        left_y0,
++        left_x1,
++        left_y1,
++        right_x0,
++        right_y0,
++        right_x1,
++        right_y1,
++    )
++    fallback_sx = _rayjoin_author_scale_array(fallback_x, rx_scale, deltax)
++    fallback_sy = _rayjoin_author_scale_array(fallback_y, ry_scale, deltay)
++
++    output_x_internal = np.empty(lx0.shape[0], dtype=np.int64)
++    output_y_internal = np.empty(lx0.shape[0], dtype=np.int64)
++    output_x_rational = np.empty(lx0.shape[0], dtype=object)
++    output_y_rational = np.empty(lx0.shape[0], dtype=object)
++
++    for index in range(int(lx0.shape[0])):
++        left_a = int(ly1[index]) - int(ly0[index])
++        left_b = int(lx0[index]) - int(lx1[index])
++        left_c = left_a * int(lx0[index]) + left_b * int(ly0[index])
++        right_a = int(ry1[index]) - int(ry0[index])
++        right_b = int(rx0[index]) - int(rx1[index])
++        right_c = right_a * int(rx0[index]) + right_b * int(ry0[index])
++        denom = left_a * right_b - right_a * left_b
++        if denom == 0:
++            output_x_internal[index] = int(fallback_sx[index])
++            output_y_internal[index] = int(fallback_sy[index])
++            output_x_rational[index] = Fraction(int(fallback_sx[index]), 1)
++            output_y_rational[index] = Fraction(int(fallback_sy[index]), 1)
++            continue
++
++        x_scaled = Fraction(left_c * right_b - right_c * left_b, denom)
++        y_scaled = Fraction(left_a * right_c - right_a * left_c, denom)
++        min_scaled_x = min(int(rx0[index]), int(rx1[index]), int(lx0[index]), int(lx1[index]))
++        max_scaled_x = max(int(rx0[index]), int(rx1[index]), int(lx0[index]), int(lx1[index]))
++        min_scaled_y = min(int(ry0[index]), int(ry1[index]), int(ly0[index]), int(ly1[index]))
++        max_scaled_y = max(int(ry0[index]), int(ry1[index]), int(ly0[index]), int(ly1[index]))
++        if x_scaled < min_scaled_x:
++            x_scaled = Fraction(min_scaled_x, 1)
++        elif x_scaled > max_scaled_x:
++            x_scaled = Fraction(max_scaled_x, 1)
++        if y_scaled < min_scaled_y:
++            y_scaled = Fraction(min_scaled_y, 1)
++        elif y_scaled > max_scaled_y:
++            y_scaled = Fraction(max_scaled_y, 1)
++        output_x_internal[index] = _rayjoin_author_rational_to_internal(x_scaled)
++        output_y_internal[index] = _rayjoin_author_rational_to_internal(y_scaled)
++        output_x_rational[index] = x_scaled
++        output_y_rational[index] = y_scaled
++    out_x = output_x_internal.astype(np.float64) * rrx + ddeltax
++    out_y = output_y_internal.astype(np.float64) * rry + ddeltay
++    return (
++        out_x,
++        out_y,
++        output_x_internal.astype(np.float64),
++        output_y_internal.astype(np.float64),
++        output_x_rational,
++        output_y_rational,
++    )
++
++
+ def _rows_from_segment_pair_ids(
+     pair_path: str | Path,
+     left: CdbDataset,
+@@ -727,6 +1000,7 @@ def _rows_from_segment_pair_ids(
+     left_coords=None,
+     right_coords=None,
+     *,
++    scale_bounds: tuple[float, float, float, float] | None = None,
+     binary_u64_pairs: bool = False,
+ ):
+     import numpy as np
+@@ -761,19 +1035,40 @@ def _rows_from_segment_pair_ids(
+     left_index = pairs[:, 0].astype(np.int64, copy=False) - 1
+     right_index = pairs[:, 1].astype(np.int64, copy=False) - 1
+
+-    px = left_x0[left_index]
+-    py = left_y0[left_index]
+-    rx = left_x1[left_index] - px
+-    ry = left_y1[left_index] - py
+-    qx = right_x0[right_index]
+-    qy = right_y0[right_index]
+-    sx = right_x1[right_index] - qx
+-    sy = right_y1[right_index] - qy
+-    denom = rx * sy - ry * sx
+-    qpx = qx - px
+-    qpy = qy - py
+-    with np.errstate(divide="ignore", invalid="ignore"):
+-        t = (qpx * sy - qpy * sx) / denom
++    if scale_bounds is not None:
++        ix, iy, scaled_ix, scaled_iy, scaled_rx, scaled_ry = _rayjoin_scaled_intersection_points_for_pairs(
++            left_x0[left_index],
++            left_y0[left_index],
++            left_x1[left_index],
++            left_y1[left_index],
++            right_x0[right_index],
++            right_y0[right_index],
++            right_x1[right_index],
++            right_y1[right_index],
++            scale_bounds=scale_bounds,
++        )
++    else:
++        px = left_x0[left_index]
++        py = left_y0[left_index]
++        rx = left_x1[left_index] - px
++        ry = left_y1[left_index] - py
++        qx = right_x0[right_index]
++        qy = right_y0[right_index]
++        sx = right_x1[right_index] - qx
++        sy = right_y1[right_index] - qy
++        denom = rx * sy - ry * sx
++        qpx = qx - px
++        qpy = qy - py
++        with np.errstate(divide="ignore", invalid="ignore"):
++            t = (qpx * sy - qpy * sx) / denom
++        ix = px + t * rx
++        iy = py + t * ry
++        scaled_ix = np.full(ix.shape, np.nan, dtype=np.float64)
++        scaled_iy = np.full(iy.shape, np.nan, dtype=np.float64)
++        scaled_rx = np.empty(ix.shape, dtype=object)
++        scaled_ry = np.empty(iy.shape, dtype=object)
++        scaled_rx[:] = None
++        scaled_ry[:] = None
+
+     rows = np.empty(
+         pairs.shape[0],
+@@ -782,12 +1077,20 @@ def _rows_from_segment_pair_ids(
+             ("right_id", np.uint32),
+             ("intersection_point_x", np.float64),
+             ("intersection_point_y", np.float64),
++            ("intersection_scaled_x", np.float64),
++            ("intersection_scaled_y", np.float64),
++            ("intersection_scaled_x_rational", object),
++            ("intersection_scaled_y_rational", object),
+         ],
+     )
+     rows["left_id"] = pairs[:, 0]
+     rows["right_id"] = pairs[:, 1]
+-    rows["intersection_point_x"] = px + t * rx
+-    rows["intersection_point_y"] = py + t * ry
++    rows["intersection_point_x"] = ix
++    rows["intersection_point_y"] = iy
++    rows["intersection_scaled_x"] = scaled_ix
++    rows["intersection_scaled_y"] = scaled_iy
++    rows["intersection_scaled_x_rational"] = scaled_rx
++    rows["intersection_scaled_y_rational"] = scaled_ry
+     return rows
+
+
+@@ -799,6 +1102,7 @@ def _run_lsi_rows(
+     right: CdbDataset,
+     left_coords=None,
+     right_coords=None,
++    scale_bounds: tuple[float, float, float, float] | None = None,
+ ) -> tuple[object, dict[str, object]]:
+     start = time.perf_counter()
+     with _rayjoin_lsi_predicate_env(backend):
+@@ -830,6 +1134,7 @@ def _run_lsi_rows(
+                     right,
+                     left_coords=left_coords,
+                     right_coords=right_coords,
++                    scale_bounds=scale_bounds,
+                     binary_u64_pairs=True,
+                 )
+                 if len(row_array) != expected_count:
+@@ -873,6 +1178,7 @@ def _run_lsi_rows(
+         else:
+             raise ValueError("backend must be 'optix' or 'embree'")
+     timings = dict(timings)
++    timings["scaled_intersection_materialization_enabled"] = bool(scale_bounds is not None)
+     timings["hot_call_sec"] = time.perf_counter() - start
+     if "native_traversal" in timings:
+         timings["native_non_traversal_sec"] = max(
+@@ -1056,12 +1362,38 @@ def _prepared_point_location_pair(
+
+
+ def _intersections_from_lsi_rows(rows) -> list[RayjoinOverlayIntersection]:
++    names = set(rows.dtype.names or ())
++    has_scaled = {"intersection_scaled_x", "intersection_scaled_y"}.issubset(names)
++    has_scaled_rational = {
++        "intersection_scaled_x_rational",
++        "intersection_scaled_y_rational",
++    }.issubset(names)
+     return [
+         RayjoinOverlayIntersection(
+             eid0=int(row["left_id"]) - 1,
+             eid1=int(row["right_id"]) - 1,
+             x=float(row["intersection_point_x"]),
+             y=float(row["intersection_point_y"]),
++            scaled_x=(
++                float(row["intersection_scaled_x"])
++                if has_scaled and math.isfinite(float(row["intersection_scaled_x"]))
++                else None
++            ),
++            scaled_y=(
++                float(row["intersection_scaled_y"])
++                if has_scaled and math.isfinite(float(row["intersection_scaled_y"]))
++                else None
++            ),
++            scaled_x_rational=(
++                row["intersection_scaled_x_rational"]
++                if has_scaled_rational and isinstance(row["intersection_scaled_x_rational"], Fraction)
++                else None
++            ),
++            scaled_y_rational=(
++                row["intersection_scaled_y_rational"]
++                if has_scaled_rational and isinstance(row["intersection_scaled_y_rational"], Fraction)
++                else None
++            ),
+         )
+         for row in rows
+     ]
+@@ -1078,8 +1410,10 @@ def _sort_xsects_for_map(
+     xsects: Iterable[RayjoinOverlayIntersection],
+     edge_starts,
+     map_index: int,
++    scale_bounds: tuple[float, float, float, float] | None = None,
+ ) -> list[RayjoinOverlayIntersection]:
+     edge_attr = "eid0" if map_index == 0 else "eid1"
++    tie_attr = "eid1" if map_index == 0 else "eid0"
+     grouped: dict[int, list[RayjoinOverlayIntersection]] = {}
+     for xsect in xsects:
+         grouped.setdefault(int(getattr(xsect, edge_attr)), []).append(xsect)
+@@ -1093,7 +1427,23 @@ def _sort_xsects_for_map(
+             start_x = float(start.x)
+             start_y = float(start.y)
+         group = grouped[eid]
+-        group.sort(key=lambda x: ((x.x - start_x) * (x.x - start_x) + (x.y - start_y) * (x.y - start_y), x.eid0, x.eid1))
++        if scale_bounds is not None and all(row.scaled_x is not None and row.scaled_y is not None for row in group):
++            rx_scale, ry_scale, deltax, deltay, *_ = _rayjoin_scaling_constants(scale_bounds)
++            start_sx = int(_rayjoin_author_scale_array([start_x], rx_scale, deltax)[0])
++            start_sy = int(_rayjoin_author_scale_array([start_y], ry_scale, deltay)[0])
++            def sort_key(x):
++                dx = float(x.scaled_x) - float(start_sx)
++                dy = float(x.scaled_y) - float(start_sy)
++                return (dx * dx + dy * dy, int(getattr(x, tie_attr)))
++
++            group.sort(key=sort_key)
++        else:
++            group.sort(
++                key=lambda x: (
++                    (x.x - start_x) * (x.x - start_x) + (x.y - start_y) * (x.y - start_y),
++                    int(getattr(x, tie_attr)),
++                )
++            )
+         sorted_rows.extend(group)
+     return sorted_rows
+
+@@ -1101,8 +1451,15 @@ def _sort_xsects_for_map(
+ def _midpoints_for_sorted_xsects(
+     xsects: list[RayjoinOverlayIntersection],
+     map_index: int,
++    *,
++    stats: dict[str, int] | None = None,
++    scale_bounds: tuple[float, float, float, float] | None = None,
++    scaled_midpoints: list[tuple[int, int] | None] | None = None,
+ ) -> tuple[list[tuple[float, float]], list[RayjoinOverlayIntersection]]:
+     edge_attr = "eid0" if map_index == 0 else "eid1"
++    dropped_key = f"map{map_index}_nonfinite_midpoints_dropped"
++    if stats is not None:
++        stats.setdefault(dropped_key, 0)
+     midpoints: list[tuple[float, float]] = []
+     owners: list[RayjoinOverlayIntersection] = []
+     index = 0
+@@ -1113,8 +1470,44 @@ def _midpoints_for_sorted_xsects(
+             end += 1
+         group = xsects[index:end]
+         for left, right in zip(group, group[1:]):
+-            midpoints.append(((left.x + right.x) * 0.5, (left.y + right.y) * 0.5))
+-            owners.append(left)
++            scaled_midpoint: tuple[int, int] | None = None
++            if (
++                scale_bounds is not None
++                and left.scaled_x_rational is not None
++                and left.scaled_y_rational is not None
++                and right.scaled_x_rational is not None
++                and right.scaled_y_rational is not None
++            ):
++                *_, rrx, rry, ddeltax, ddeltay = _rayjoin_scaling_constants(scale_bounds)
++                scaled_midpoint_x = _rayjoin_author_rational_to_internal(
++                    (left.scaled_x_rational + right.scaled_x_rational) / 2
++                )
++                scaled_midpoint_y = _rayjoin_author_rational_to_internal(
++                    (left.scaled_y_rational + right.scaled_y_rational) / 2
++                )
++                scaled_midpoint = (scaled_midpoint_x, scaled_midpoint_y)
++                midpoint = (scaled_midpoint_x * rrx + ddeltax, scaled_midpoint_y * rry + ddeltay)
++            elif (
++                scale_bounds is not None
++                and left.scaled_x is not None
++                and left.scaled_y is not None
++                and right.scaled_x is not None
++                and right.scaled_y is not None
++            ):
++                *_, rrx, rry, ddeltax, ddeltay = _rayjoin_scaling_constants(scale_bounds)
++                scaled_midpoint_x = _rayjoin_trunc_div2(int(left.scaled_x) + int(right.scaled_x))
++                scaled_midpoint_y = _rayjoin_trunc_div2(int(left.scaled_y) + int(right.scaled_y))
++                scaled_midpoint = (scaled_midpoint_x, scaled_midpoint_y)
++                midpoint = (scaled_midpoint_x * rrx + ddeltax, scaled_midpoint_y * rry + ddeltay)
++            else:
++                midpoint = ((left.x + right.x) * 0.5, (left.y + right.y) * 0.5)
++            if math.isfinite(midpoint[0]) and math.isfinite(midpoint[1]):
++                midpoints.append(midpoint)
++                owners.append(left)
++                if scaled_midpoints is not None:
++                    scaled_midpoints.append(scaled_midpoint)
++            elif stats is not None:
++                stats[dropped_key] += 1
+         index = end
+     return midpoints, owners
+
+@@ -1122,16 +1515,33 @@ def _midpoints_for_sorted_xsects(
+ def _assign_midpoint_faces(
+     owners: list[RayjoinOverlayIntersection],
+     faces,
++    map_index: int | None = None,
+ ) -> int:
+     positive = 0
+     for index, owner in enumerate(owners):
+         face = int(faces[index])
+-        owner.mid_point_polygon_id = face
++        if map_index == 0:
++            owner.mid_point_polygon_id_map0 = face
++        elif map_index == 1:
++            owner.mid_point_polygon_id_map1 = face
++        elif map_index is None:
++            owner.mid_point_polygon_id_map0 = face
++            owner.mid_point_polygon_id_map1 = face
++        else:
++            raise ValueError("map_index must be 0, 1, or None")
+         if face != EXTERIOR_FACE_ID:
+             positive += 1
+     return positive
+
+
++def _midpoint_face_for_map(xsect: RayjoinOverlayIntersection, map_index: int) -> int:
++    if map_index == 0:
++        return int(xsect.mid_point_polygon_id_map0)
++    if map_index == 1:
++        return int(xsect.mid_point_polygon_id_map1)
++    raise ValueError("map_index must be 0 or 1")
++
++
+ def _dedupe_consecutive_points(points: list[tuple[float, float]]) -> list[tuple[float, float]]:
+     if not points:
+         return points
+@@ -1192,7 +1602,7 @@ def _assemble_output_chains(
+                     output_chain.points.append((xsects[0].x, xsects[0].y))
+                     for xsect, next_xsect in zip(xsects, xsects[1:]):
+                         flush(output_chain)
+-                        output_chain.other_map_polygon_id = int(xsect.mid_point_polygon_id)
++                        output_chain.other_map_polygon_id = _midpoint_face_for_map(xsect, map_index)
+                         output_chain.points.append((xsect.x, xsect.y))
+                         output_chain.points.append((next_xsect.x, next_xsect.y))
+                     flush(output_chain)
+@@ -1282,6 +1692,7 @@ def _run_rayjoin_overlay_packed(
+         right,
+         left_coords=left_inputs.segment_coords,
+         right_coords=right_inputs.segment_coords,
++        scale_bounds=scale_bounds if bool(assemble_output or output_path is not None) else None,
+     )
+     native_timings["lsi"] = lsi_timings
+
+@@ -1290,21 +1701,35 @@ def _run_rayjoin_overlay_packed(
+     xsects = None
+     xsects_sorted = None
+     midpoint_point_inputs = None
++    midpoint_filter_stats = {
++        "map0_nonfinite_midpoints_dropped": 0,
++        "map1_nonfinite_midpoints_dropped": 0,
++    }
+     if needs_output_faces:
+         materialize_start = time.perf_counter()
+         xsects = _intersections_from_lsi_rows(lsi_rows)
+         phase_seconds["lsi_row_object_materialize_sec"] = time.perf_counter() - materialize_start
+         sort_start = time.perf_counter()
+         xsects_sorted = (
+-            _sort_xsects_for_map(xsects, edge_starts[0], 0),
+-            _sort_xsects_for_map(xsects, edge_starts[1], 1),
++            _sort_xsects_for_map(xsects, edge_starts[0], 0, scale_bounds=scale_bounds),
++            _sort_xsects_for_map(xsects, edge_starts[1], 1, scale_bounds=scale_bounds),
+         )
+         phase_seconds["lsi_row_sort_sec"] = time.perf_counter() - sort_start
+     else:
+         midpoint_start = time.perf_counter()
+         midpoint_point_inputs = (
+-            _midpoint_points_from_lsi_rows_numpy(lsi_rows, edge_starts[0], 0),
+-            _midpoint_points_from_lsi_rows_numpy(lsi_rows, edge_starts[1], 1),
++            _midpoint_points_from_lsi_rows_numpy(
++                lsi_rows,
++                edge_starts[0],
++                0,
++                stats=midpoint_filter_stats,
++            ),
++            _midpoint_points_from_lsi_rows_numpy(
++                lsi_rows,
++                edge_starts[1],
++                1,
++                stats=midpoint_filter_stats,
++            ),
+         )
+         phase_seconds["lsi_midpoint_projection_sec"] = time.perf_counter() - midpoint_start
+
+@@ -1347,12 +1772,27 @@ def _run_rayjoin_overlay_packed(
+             if xsects_sorted is None:
+                 raise RuntimeError("overlay output-chain assembly requires sorted LSI rows")
+             for map_index, locator in ((0, map0_in_map1), (1, map1_in_map0)):
+-                midpoints, owners = _midpoints_for_sorted_xsects(xsects_sorted[map_index], map_index)
++                scaled_midpoints: list[tuple[int, int] | None] = []
++                midpoints, owners = _midpoints_for_sorted_xsects(
++                    xsects_sorted[map_index],
++                    map_index,
++                    stats=midpoint_filter_stats,
++                    scale_bounds=scale_bounds,
++                    scaled_midpoints=scaled_midpoints,
++                )
+                 midpoint_counts.append(len(midpoints))
+                 if midpoints:
+-                    midpoint_points = _packed_points_from_xy(midpoints)
++                    if (
++                        backend == "optix"
++                        and scale_bounds is not None
++                        and len(scaled_midpoints) == len(midpoints)
++                        and all(item is not None for item in scaled_midpoints)
++                    ):
++                        midpoint_points = _packed_scaled_points_from_midpoints(midpoints, scaled_midpoints)
++                    else:
++                        midpoint_points = _packed_points_from_xy(midpoints)
+                     faces, midpoint_timings = locator.faces(midpoint_points, int(midpoint_points.count))
+-                    positive_count = _assign_midpoint_faces(owners, faces)
++                    positive_count = _assign_midpoint_faces(owners, faces, map_index=map_index)
+                 else:
+                     positive_count = 0
+                     midpoint_timings = {
+@@ -1442,8 +1882,10 @@ def _run_rayjoin_overlay_packed(
+         "midpoint_pip": {
+             "map0_midpoints_in_map1": int(midpoint_counts[0]),
+             "map0_positive_faces": None if midpoint_positive_counts[0] is None else int(midpoint_positive_counts[0]),
++            "map0_nonfinite_midpoints_dropped": int(midpoint_filter_stats["map0_nonfinite_midpoints_dropped"]),
+             "map1_midpoints_in_map0": int(midpoint_counts[1]),
+             "map1_positive_faces": None if midpoint_positive_counts[1] is None else int(midpoint_positive_counts[1]),
++            "map1_nonfinite_midpoints_dropped": int(midpoint_filter_stats["map1_nonfinite_midpoints_dropped"]),
+         },
+         "output": output_payload,
+         "phase_seconds": phase_seconds,

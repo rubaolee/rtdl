@@ -1,0 +1,30 @@
+{
+  "claim_boundary": {
+    "archive_extracted": false,
+    "archive_present": false,
+    "archive_verified": false,
+    "embree_in_scope": false,
+    "exact_input_files_identified": false,
+    "inventory_completed": false,
+    "paper_figure_reproduced": false,
+    "performance_ratio_authorized": false
+  },
+  "paths": {
+    "archive": "C:\\rtdl-librts-datasets\\PPoPPAE-v2.tar.gz",
+    "final": "C:\\rtdl-librts-extracted\\PPoPPAE-v2",
+    "staging": "C:\\rtdl-librts-extracted\\.PPoPPAE-v2.extracting"
+  },
+  "safety_contract": {
+    "absolute_or_parent_paths_rejected": true,
+    "archive_size_and_md5_required_before_inventory": true,
+    "backslash_and_drive_prefixes_rejected": true,
+    "duplicate_paths_rejected": true,
+    "escaping_symlinks_hardlinks_devices_and_special_files_rejected": true,
+    "expanded_size_checked_before_extraction": true,
+    "final_directory_promotion_is_atomic": true,
+    "safe_relative_symlinks_allowed": true,
+    "staging_directory_required": true
+  },
+  "schema": "rtdl.paper_reproduction.librts.safe_extraction_plan.v1",
+  "status": "safe_extraction_contract_ready__verified_archive_absent"
+}

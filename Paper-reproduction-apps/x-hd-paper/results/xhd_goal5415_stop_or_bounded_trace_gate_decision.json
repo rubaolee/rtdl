@@ -1,0 +1,79 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5415.stop_or_bounded_trace_gate_decision.v1",
+  "goal": "Goal5415",
+  "status": "stop_after_synthetic_trace_proof__explicit_lb_line_closed__return_to_full_reproduction_blockers",
+  "matched": true,
+  "decision": {
+    "stop_current_explicit_lb_line": true,
+    "attempt_bounded_xhd_payload_transition_sample_gate": false,
+    "bounded_xhd_sample_gate_authorized": false,
+    "generic_payload_transition_trace_contract_retained": true,
+    "native_payload_transition_backend_authorized": false,
+    "full_goal5387_row_identity_gate_authorized": false,
+    "return_to_full_reproduction_mainline": true,
+    "recommended_next_goal": "Goal5416_xhd_full_reproduction_blocker_priority_refresh"
+  },
+  "decision_basis": {
+    "goal5408_review_amendment_absorbed": true,
+    "goal5411_bounded_statused_sample_gate_passed": false,
+    "goal5412_fail_closed_current_model": true,
+    "goal5414_synthetic_non_app_trace_proof_passed": true,
+    "exact_dataset_blocker_still_primary": true,
+    "bounded_sample_gate_would_not_advance_figures_without_exact_inputs": true
+  },
+  "why_stop_now": [
+    "Goal5411 already showed the current statused bridge does not recover the author sample rows.",
+    "Goal5412 already fail-closed explicit -lb under the current model and authorized only design-level generic trace work.",
+    "Goal5414 proved the generic synthetic trace shape, but did not add any X-HD sample-row recovery evidence.",
+    "A new bounded X-HD sample gate would still be an implementation-level -lb probe, while the full reproduction blocker remains exact dataset and figure denominator evidence.",
+    "Continuing here risks repeating the post-dataset-blocker over-investment identified by external review."
+  ],
+  "preserved_system_assets": {
+    "native_payload_transition_trace_contract": true,
+    "payload_transition_trace_summary_numpy_columns": true,
+    "synthetic_non_app_fixture_artifact": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5414_synthetic_payload_transition_trace_fixture.json"
+  },
+  "not_authorized": {
+    "explicit_lb_support": true,
+    "bounded_xhd_payload_transition_sample_gate": true,
+    "native_trace_backend_implementation": true,
+    "full_goal5387_row_identity_parity": true,
+    "figure7_reproduction": true,
+    "figure11_reproduction": true,
+    "performance_ratio": true,
+    "exact_paper_dataset_reproduction": true,
+    "full_xhd_paper_reproduction": true
+  },
+  "claim_boundary": {
+    "decision_claimed": true,
+    "synthetic_non_app_payload_transition_trace_claimed": true,
+    "explicit_lb_support_claimed": false,
+    "bounded_xhd_sample_row_recovery_claimed": false,
+    "native_backend_implementation_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "figure11_reproduction_claimed": false,
+    "performance_ratio_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false
+  },
+  "pod_expectation": {
+    "pod_required_for_this_decision": false,
+    "reason": "Goal5415 is a local decision over Goal5408-5414 evidence and creates no new runner.",
+    "future_pod_use": "Only for exact-input acquisition probes, author reruns, or separately authorized figure/route gates."
+  },
+  "next_mainline": {
+    "name": "full_reproduction_blocker_priority_refresh",
+    "focus": [
+      "exact paper input provenance",
+      "figure-by-figure reproducibility status",
+      "denominator-aligned performance plan",
+      "only generic system extraction with non-app evidence"
+    ],
+    "forbidden_next_focus": [
+      "more -lb row-identity probing without exact dataset or new external review",
+      "hard-coded author row fanout",
+      "X-HD-specific trace semantics in RTDL core",
+      "performance or figure claims from synthetic trace evidence"
+    ]
+  }
+}

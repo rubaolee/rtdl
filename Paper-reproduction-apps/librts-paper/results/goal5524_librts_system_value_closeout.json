@@ -1,0 +1,84 @@
+{
+  "app_owned_work": [
+    "official archive provenance and extraction",
+    "WKT parsing and derived cache construction",
+    "paper-specific wrappers, case matrices, comparators, and tolerances",
+    "author log and figure-denominator mapping"
+  ],
+  "claim_boundary": {
+    "all_range_intersects_pairs_claimed": false,
+    "author_algorithm_equivalence_claimed": false,
+    "device_zero_copy_claimed": false,
+    "embree_in_scope": false,
+    "figure6_reproduced": false,
+    "full_paper_reproduction_claimed": false,
+    "performance_ratio_authorized": false,
+    "pointwise_contains_relation_equivalence_claimed": false
+  },
+  "completion_scope": {
+    "embree_in_scope": false,
+    "full_all_dataset_all_figure_paper_reproduction_complete": false,
+    "librts_scoped_correctness_and_system_extraction_complete": true,
+    "performance_parity_complete": false
+  },
+  "evidence_matrix": {
+    "mutation": {
+      "author_rtdl_counts": [
+        2,
+        1,
+        0,
+        1,
+        0
+      ],
+      "matched": true,
+      "scope": "bounded_same_input_operation_sequence"
+    },
+    "pip": {
+      "canonical_pair_rows_matched": 71626,
+      "exact_archive_pair_available": false,
+      "pair_rows_equal": true,
+      "scope": "representative_same_input_app_instrumented_relation_gate"
+    },
+    "point_contains": {
+      "exact_archive_pair_count": 14,
+      "exact_count_matches": 14,
+      "pointwise_relation_claimed": false
+    },
+    "range_contains": {
+      "exact_archive_pair_count": 14,
+      "exact_count_matches": 14,
+      "pointwise_relation_claimed": false
+    },
+    "range_intersects": {
+      "author_capacity_failures": 2,
+      "complete_matrix_claimed": false,
+      "exact_archive_pair_count": 42,
+      "exact_count_matches": 14,
+      "not_checkpointed": 26,
+      "pointwise_relation_claimed": false
+    }
+  },
+  "schema": "rtdl.paper_reproduction.librts.goal5524_system_value_closeout.v1",
+  "status": "librts_scoped_correctness_and_system_extraction_complete__review_pending",
+  "stop_loss": {
+    "decision": "freeze_exhaustive_range_intersects_enumeration",
+    "generic_capability_produced_by_more_matrix_rows": false,
+    "preserve_uncheckpointed_as_uncheckpointed": true,
+    "reason": "remaining combinations repeat an already validated generic operation and produce no new system capability",
+    "reopen_only_if": [
+      "a new semantic disagreement appears",
+      "a denominator-aligned paper figure objective is explicitly authorized",
+      "a new generic system capability with a non-LibRTS consumer is proposed"
+    ],
+    "unique_unresolved_semantic_question": false
+  },
+  "system_improvements": [
+    "generic Aabb2DColumns public front door",
+    "generic prepared AABB count operations",
+    "generic mutable AABB index with stable IDs",
+    "generic native fixed-cardinality and sparse-slot refit",
+    "rollback recovery and persistent fail-closed invalidation gates",
+    "operation-scoped packed AABB validity semantics",
+    "app-neutral prepared-column and batch reuse contracts"
+  ]
+}

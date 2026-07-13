@@ -1,0 +1,85 @@
+{
+  "claim_boundary": {
+    "author_performance_parity_claimed": false,
+    "embree_used": false,
+    "generic_native_refit_functional_claimed": true,
+    "librts_paper_performance_claimed": false,
+    "native_incremental_insert_delete_claimed": false,
+    "same_host_microbenchmark_claimed": true
+  },
+  "correctness": {
+    "expected_counts": [
+      0,
+      1,
+      0,
+      1,
+      0,
+      1,
+      0
+    ],
+    "mutation_execution_models": [
+      "native_fixed_cardinality_refit_with_rollback",
+      "native_fixed_cardinality_refit_with_rollback",
+      "native_fixed_cardinality_refit_with_rollback",
+      "native_fixed_cardinality_refit_with_rollback",
+      "native_fixed_cardinality_refit_with_rollback",
+      "native_fixed_cardinality_refit_with_rollback",
+      "native_fixed_cardinality_refit_with_rollback"
+    ],
+    "native_refit_counts": [
+      0,
+      1,
+      0,
+      1,
+      0,
+      1,
+      0
+    ],
+    "snapshot_rebuild_counts": [
+      0,
+      1,
+      0,
+      1,
+      0,
+      1,
+      0
+    ]
+  },
+  "environment": {
+    "gpu": "NVIDIA GeForce GTX 1070",
+    "host": "lx1",
+    "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39"
+  },
+  "matched": true,
+  "schema": "rtdl.generic_optix_aabb_native_refit_gate.v1",
+  "status": "matched",
+  "timing_diagnostic": {
+    "native_refit_median_seconds": 0.325294164999832,
+    "native_refit_seconds": [
+      0.3449933020001481,
+      0.3116966199995659,
+      0.3297108879996813,
+      0.325294164999832,
+      0.32386561000021175,
+      0.32754244200077665,
+      0.3242975880002632
+    ],
+    "same_host_microbenchmark_speedup": 1.1974481804803114,
+    "snapshot_rebuild_median_seconds": 0.389522905999911,
+    "snapshot_rebuild_seconds": [
+      0.3978623040002276,
+      0.38306345000000874,
+      0.3787210219998087,
+      0.42814308699962567,
+      0.389522905999911,
+      0.389858567000374,
+      0.38761767800042435
+    ]
+  },
+  "workload": {
+    "box_count": 65536,
+    "primitive_cardinality_unchanged": true,
+    "repeats": 7,
+    "updated_slot_count_per_iteration": 1
+  }
+}

@@ -1,0 +1,68 @@
+diff --git a/samples/cmdline/s02-rtdbscan/hostCode.cpp b/samples/cmdline/s02-rtdbscan/hostCode.cpp
+index 6f75a8c..5a5d59c 100644
+--- a/samples/cmdline/s02-rtdbscan/hostCode.cpp
++++ b/samples/cmdline/s02-rtdbscan/hostCode.cpp
+@@ -34,6 +34,7 @@
+ #include<chrono>
+ #include<algorithm>
+ #include<set>
++#include<cstdlib>
+
+
+
+@@ -301,6 +302,22 @@ int main(int ac, char **av) {
+   std::ofstream ofile;
+   ofile.open(av[5], std::ios::app);
+
++  int repeatCount = 1;
++  const char *repeatEnv = std::getenv("RTDL_AUTHOR_REPEAT");
++  if (repeatEnv != nullptr) {
++    repeatCount = std::max(1, atoi(repeatEnv));
++  }
++
++  for (int repeatIndex = 0; repeatIndex < repeatCount; repeatIndex++) {
++    DisjointSet *mutableFb = (DisjointSet *)owlBufferGetPointer(frameBuffer, 0);
++    for (int i = 0; i < Spheres.size(); i++) {
++      mutableFb[i].parent = i;
++      mutableFb[i].rank = 0;
++      mutableFb[i].neighCount = 0;
++      mutableFb[i].intersections = 0;
++    }
++    cudaDeviceSynchronize();
++
+   ////////////////////////////////////////////////////Call-1////////////////////////////////////////////////////////////////////////////
+
+   //Core point identification
+@@ -321,6 +338,7 @@ int main(int ac, char **av) {
+   auto start = std::chrono::steady_clock::now();
+   owlParamsSet1i(lp, "callNum", 2);
+   owlLaunch2D(rayGen, fbSize.x, fbSize.y, lp);
++  cudaDeviceSynchronize();
+   auto end = std::chrono::steady_clock::now();
+   auto elapsed =
+       std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+@@ -381,11 +399,14 @@ int main(int ac, char **av) {
+   // Write the original total time together with a bounded AuthorOfficial
+   // comparator payload. This patch does not change the RT-DBSCAN kernels; it
+   // only exposes call-1 core counts and the post call-2 component signature for
+-  // same-input RTDL comparison.
++  // same-input RTDL comparison. RTDL_AUTHOR_REPEAT repeats the two DBSCAN
++  // launches in one process after pipeline/accel setup, for warm-loop timing.
+   ofile << "{\"schema\":\"rtdl.paper_reproduction.rt_dbscan.authorofficial_core_count.v1\","
+         << "\"point_count\":" << pointCount << ","
+         << "\"epsilon\":" << radius << ","
+         << "\"min_points\":" << minPts << ","
++        << "\"repeat_index\":" << repeatIndex << ","
++        << "\"repeat_count\":" << repeatCount << ","
+         << "\"core_count\":" << coreCount << ",";
+   ofile << "\"component_labels\":[";
+   for (int i = 0; i < pointCount; i++) {
+@@ -413,7 +434,7 @@ int main(int ac, char **av) {
+         << "\"cluster_formation_time_sec\":" << (elapsed.count() / 1000000.0) << ","
+         << "\"build_time_sec\":" << (elapsed_b.count() / 1000000.0) << ","
+         << "\"total_time_sec\":" << tot << "}" << std::endl;
+-
++  }
+   // ##################################################################
+   // and finally, clean up
+   // ##################################################################

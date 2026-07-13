@@ -1,0 +1,69 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5380.active_query_frontier_bridge.v1",
+  "goal": "Goal5380",
+  "date": "2026-07-10",
+  "purpose": "Connect generic native cell-MBR frontier row tables to the generic active-query status-machine reference before attempting a native author -lb row-parity probe.",
+  "implemented_public_api": {
+    "module": "src/rtdsl/active_query_status.py",
+    "contract": "generic_active_query_status_from_frontier_rows_v1",
+    "functions": [
+      "active_query_status_from_frontier_row_table_numpy_columns"
+    ],
+    "exports_added_to_rtdsl_all": true,
+    "app_semantics": "none"
+  },
+  "bridge_capabilities": {
+    "frontier_row_table_input": true,
+    "frontier_min_max_distance_to_squared_bounds": true,
+    "frontier_point_count_to_work_count": true,
+    "optional_exact_best_rows_for_light_candidates": true,
+    "active_query_offload_rows": true,
+    "active_query_completed_rows": true,
+    "active_query_miss_rows": true,
+    "active_query_aborted_rows": true,
+    "overflow_fail_closed_inherited": true
+  },
+  "validation": {
+    "compile_command": "py -m py_compile src/rtdsl/active_query_status.py src/rtdsl/__init__.py",
+    "compile_status": "OK",
+    "test_command": "py -m unittest tests.goal5380_active_query_frontier_bridge_test tests.goal5379_active_query_status_machine_reference_test tests.goal5279_generic_heavy_offload_worklist_test tests.goal5280_heavy_offload_non_xhd_consumer_gate_test",
+    "tests_run": 16,
+    "test_status": "OK",
+    "local_python_prefix_warning_observed": true
+  },
+  "pod_preflight": {
+    "command": "py scripts/current_pod_ssh.py --host 213.173.108.24 --port 13502 preflight",
+    "status": "POD_OK",
+    "container": "45c502cfccb5",
+    "gpu": "NVIDIA RTX 4000 Ada Generation",
+    "driver": "550.127.05"
+  },
+  "author_oracle_for_next_gate": {
+    "source": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5374_author_lb_status_trace_oracle.json",
+    "active_in_queue_size": 437645,
+    "raw_offload_rows_before_sort_reduce": 27133990,
+    "raw_offload_rows_author_width_bytes": 217071920
+  },
+  "claim_boundary": {
+    "full_xhd_paper_reproduction_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_support_claimed": false,
+    "author_offloading_size_row_parity_claimed": false,
+    "same_denominator_memory_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "figure11_reproduction_claimed": false,
+    "author_rt_core_algorithm_parity_claimed": false,
+    "performance_claimed": false,
+    "native_backend_claimed": false
+  },
+  "next_gate": {
+    "recommended_next_goal": "Goal5381 native/OptiX active-query row-parity probe against Goal5374 author oracle",
+    "requires_pod": true,
+    "must_compare_against": {
+      "author_raw_offload_rows_before_sort_reduce": 27133990,
+      "author_raw_offload_rows_author_width_bytes": 217071920,
+      "author_active_in_queue_size": 437645
+    }
+  },
+  "exit_label": "active_query_frontier_bridge_ready__native_author_oracle_probe_next"
+}

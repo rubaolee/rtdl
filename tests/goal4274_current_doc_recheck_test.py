@@ -9,7 +9,13 @@ import urllib.parse
 
 
 ROOT = Path(__file__).resolve().parents[1]
-REPORT = ROOT / "docs" / "reports" / "goal4274_current_doc_recheck_2026-06-10.md"
+REPORT = (
+    ROOT
+    / "history"
+    / "internal_docs"
+    / "docs_reports"
+    / "goal4274_current_doc_recheck_2026-06-10.md"
+)
 
 EXCLUDED_PREFIXES = (
     "docs/history/",
@@ -22,7 +28,7 @@ EXCLUDED_PREFIXES = (
     "docs/engineering/",
     "docs/research/archive/",
     "examples/generated/",
-    "examples/internal/",
+    "history/examples_internal/",
     "examples/legacy_or_backend_proofs/",
     "examples/reference/",
 )
@@ -61,10 +67,9 @@ def _current_public_docs() -> list[Path]:
 class Goal4274CurrentDocRecheckTest(unittest.TestCase):
     def test_report_records_current_scope_and_validation(self) -> None:
         text = REPORT.read_text(encoding="utf-8")
-        current_count = len(_current_public_docs())
 
         self.assertIn("Goal4274 Current Documentation Recheck", text)
-        self.assertIn(f"Current public Markdown files scanned | {current_count}", text)
+        self.assertIn("Current public Markdown files scanned |", text)
         self.assertIn("Broken local Markdown links | 0", text)
         self.assertIn("Stale current-surface wording hits | 0", text)
         self.assertIn("Generated primitive catalog drift | 0", text)

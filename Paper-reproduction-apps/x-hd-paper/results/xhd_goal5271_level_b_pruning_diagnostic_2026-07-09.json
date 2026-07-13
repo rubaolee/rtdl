@@ -1,0 +1,105 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.level_b_pruning_diagnostic.v1",
+  "goal": "Goal5271",
+  "date": "2026-07-09",
+  "status": "level_b_pruning_diagnostic_ready__not_figure6",
+  "input_regime": {
+    "label": "Level-B public/same-source scaled candidate",
+    "source": "Stanford Dragon -> AsianDragon scaled 1e-3 candidate",
+    "exact_paper_byte_identity": false,
+    "figure6_reproduction": false,
+    "source_goal": "Goal5270"
+  },
+  "author_reference_on_candidate": {
+    "hd_result": 0.06536787003278732,
+    "source": "Goal5268/Goal5269 current candidate reference"
+  },
+  "correctness_clean_profile_variants": [
+    {
+      "label": "noopt",
+      "eb": false,
+      "prune": false,
+      "lb": 0,
+      "hd_result": 0.06536787003278732,
+      "matches_reference": true,
+      "running_avg_time_ms": 6976.301,
+      "sum_RTTime_ms": 6968.304,
+      "sum_CUDATime_ms": 0.587,
+      "sum_OffloadingSize": 0,
+      "sum_Hits": 128532825,
+      "sum_ComparedPoints": 176279179922
+    },
+    {
+      "label": "eb",
+      "eb": true,
+      "prune": false,
+      "lb": 0,
+      "hd_result": 0.06536787003278732,
+      "matches_reference": true,
+      "running_avg_time_ms": 1841.428,
+      "sum_RTTime_ms": 1833.605,
+      "sum_CUDATime_ms": 0.467,
+      "sum_OffloadingSize": 0,
+      "sum_Hits": 15269735,
+      "sum_ComparedPoints": 21009262745
+    },
+    {
+      "label": "eb_prune",
+      "eb": true,
+      "prune": true,
+      "lb": 0,
+      "hd_result": 0.06536787003278732,
+      "matches_reference": true,
+      "running_avg_time_ms": 146.486,
+      "sum_RTTime_ms": 138.99,
+      "sum_CUDATime_ms": 0.336,
+      "sum_OffloadingSize": 0,
+      "sum_Hits": 15163664,
+      "sum_ComparedPoints": 586805995
+    }
+  ],
+  "derived_level_b_effects": {
+    "eb_time_speedup_vs_noopt": 3.7885277078441297,
+    "eb_prune_time_speedup_vs_eb": 12.570675695970948,
+    "eb_prune_time_speedup_vs_noopt": 47.62435318050872,
+    "eb_hits_reduction_factor_vs_noopt": 8.417488908615637,
+    "eb_prune_hits_reduction_factor_vs_eb": 1.0069950771792358,
+    "eb_compared_points_reduction_factor_vs_noopt": 8.39054573506882,
+    "eb_prune_compared_points_reduction_factor_vs_eb": 35.80274046961637,
+    "eb_prune_compared_points_reduction_factor_vs_noopt": 300.40453135111545
+  },
+  "invalid_or_diagnostic_controls": {
+    "lb256_author_figure6_setting_on_candidate": {
+      "eb": true,
+      "prune": true,
+      "lb": 256,
+      "hd_result": 0.06545527279376984,
+      "matches_reference": false,
+      "check_true_status": "aborts_with_wrong_hausdorff_distance_on_this_scaled_candidate",
+      "use_in_diagnostic": "invalid_for_correctness_clean_level_b_diagnostic"
+    },
+    "lb2048_candidate_only_control": {
+      "eb": true,
+      "prune": true,
+      "lb": 2048,
+      "hd_result": 0.06536787003278732,
+      "matches_reference": true,
+      "check_true_passes": true,
+      "use_in_diagnostic": "correctness_clean_candidate_control_only_not_author_figure6_setting"
+    }
+  },
+  "claim_boundary": {
+    "figure6_reproduced": false,
+    "full_paper_reproduction_claimed": false,
+    "exact_paper_dataset_identity_claimed": false,
+    "author_rt_core_equivalence_claimed": false,
+    "performance_ratio_claimed": false,
+    "lb2048_substitute_authorized_as_figure6": false,
+    "diagnostic_named_as_level_b_only": true
+  },
+  "source_artifacts": [
+    "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5268_figure6_pruning_phase_counter_mapping_2026-07-09.json",
+    "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5269_figure6_lb256_correctness_probe_2026-07-09.json",
+    "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5270_figure6_exact_input_availability_decision_2026-07-09.json"
+  ]
+}

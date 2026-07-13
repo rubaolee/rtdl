@@ -1,0 +1,107 @@
+{
+    "DateTime": "2026-07-09 17:19:17",
+    "GPU": {
+        "Device": 0,
+        "name": "NVIDIA RTX 4000 Ada Generation"
+    },
+    "HDResult": 72.38665008544922,
+    "Input": {
+        "Files": [
+            {
+                "Density": 3645.26611328125,
+                "MBR": [
+                    {
+                        "Lower": -158.03970336914063,
+                        "Upper": -157.7303924560547
+                    },
+                    {
+                        "Lower": 21.274946212768555,
+                        "Upper": 21.38492202758789
+                    }
+                ],
+                "NumPoints": 124,
+                "Path": "/tmp/xhd_goal5306/data/USADetailedWaterBodies_arcgis_bounded.wkt"
+            },
+            {
+                "Density": 273825.9375,
+                "MBR": [
+                    {
+                        "Lower": -86.51042175292969,
+                        "Upper": -86.45152282714844
+                    },
+                    {
+                        "Lower": 32.44973373413086,
+                        "Upper": 32.505165100097656
+                    }
+                ],
+                "NumPoints": 894,
+                "Path": "/tmp/xhd_goal5306/data/USACensusBlockGroupBoundaries_arcgis_bounded.wkt"
+            }
+        ],
+        "Limit": 2147483647,
+        "Normalize": false,
+        "NumDims": 2,
+        "SerializationPrefix": "",
+        "Translate": 0.0,
+        "Type": "Float"
+    },
+    "Running": {
+        "AvgTime": 4.209,
+        "EB": true,
+        "FastBuildBVH": false,
+        "LB": 256,
+        "NumPointsPerCell": 15,
+        "Prune": true,
+        "RebuildBVH": false,
+        "Repeats": [
+            {
+                "Algorithm": "XHD",
+                "BVHBuildTime": 0.203,
+                "Cells": 1,
+                "Execution": "GPU",
+                "GridResolution": [
+                    1,
+                    1
+                ],
+                "HDLowerBound": 72.3800277709961,
+                "HDUpperBound": 72.45511627197266,
+                "InitRadius": 72.3800277709961,
+                "Iterations": [
+                    {
+                        "AdjustBVHTime": 0.101,
+                        "CMax2": 5239.35986328125,
+                        "CUDATime": 0.306,
+                        "Iteration": 1,
+                        "NumInputPoints": 124,
+                        "NumOutputPoints": 16,
+                        "OffloadingSize": 13,
+                        "RTTime": 2.362,
+                        "Radius": 72.3800277709961
+                    },
+                    {
+                        "CMax2": 5239.8271484375,
+                        "CUDATime": 0.131,
+                        "Iteration": 2,
+                        "NumInputPoints": 16,
+                        "NumOutputPoints": 0,
+                        "OffloadingSize": 16,
+                        "RTTime": 0.043,
+                        "Radius": 72.45511627197266
+                    }
+                ],
+                "LargeCells": 1,
+                "Memory": {
+                    "BVH": 1920,
+                    "Grid": 3592,
+                    "MBRs B": 16,
+                    "WL": 992,
+                    "WL Heavy Peak": 128
+                },
+                "Profiling": false,
+                "Repeat": 1,
+                "ReportedTime": 4.209
+            }
+        ],
+        "Seed": 0
+    }
+}

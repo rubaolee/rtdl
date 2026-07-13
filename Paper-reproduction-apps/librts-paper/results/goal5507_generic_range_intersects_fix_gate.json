@@ -1,0 +1,58 @@
+{
+  "cases": [
+    {
+      "author_runtime_count": 5,
+      "case_id": "goal5505_boundary_fixture",
+      "geometry_sha256": "2256d450210f56d7032284e87fae70b46ed1686a441f1bf4fad9ed8fba544ba2",
+      "query_sha256": "d427b5164a23be371779550b0b368b2fd8a4e2f08b449765ccdc74ef46002b95",
+      "rtdl_duplicate_row_count": 0,
+      "rtdl_row_count": 5,
+      "rtdl_runtime_count": 5,
+      "same_input": true,
+      "source_model_count": 5
+    },
+    {
+      "author_runtime_count": 21,
+      "case_id": "goal5506_8192_pair_probe",
+      "geometry_sha256": "e20d7e10ecad952f055d6c08a16c8a9360d32de41d08c4de8a757ca972d3f9cd",
+      "query_sha256": "2df5c405ce828e241ee9a5cc7ecf12f59086194899ad82f0774443c505f46784",
+      "rtdl_duplicate_row_count": 0,
+      "rtdl_row_count": 21,
+      "rtdl_runtime_count": 21,
+      "same_input": true,
+      "source_model_count": 21
+    }
+  ],
+  "checks": {
+    "full_official_input_adjudication": false,
+    "generic_native_fix": true,
+    "rtdl_matches_author_on_all_cases": true,
+    "rtdl_rows_match_counts_on_all_cases": true,
+    "same_input_certified_on_all_cases": true,
+    "source_model_matches_author_on_all_cases": true
+  },
+  "claim_boundary": {
+    "author_specific_behavior_copied_into_core": false,
+    "embree_in_scope": false,
+    "full_input_root_cause_resolved": false,
+    "full_official_archive_matrix_reproduced": false,
+    "generic_rtdl_core_fix_supported_by_source_and_runtime": true,
+    "paper_reproduction_claimed": false,
+    "performance_ratio_authorized": false,
+    "relation_equivalence_for_official_archive_claimed": false
+  },
+  "patch_contract": {
+    "backward_acceptance": "indexed main diagonal hits query directly",
+    "backward_query_ray": "indexed main diagonal",
+    "candidate_aabb_pad": 1e-06,
+    "float32_tfar_scale": 1.0000007152557373,
+    "float32_upper_interval": 1.0000001192092896,
+    "forward_acceptance": "query anti-diagonal hits indexed box AND indexed main diagonal does not hit query",
+    "forward_query_ray": "query anti-diagonal",
+    "kernel_source_sha256": "9c065fde08da8ca103aa15db9bdd8fa4bc8d1aa09c7386218b2d9160bf24da50",
+    "native_library_sha256": "cfa7f5da55c9179e8a263d3915be23579481de24e22706d9463e482cd2f1e228",
+    "operation": "generic AABB range_intersects"
+  },
+  "schema": "rtdl.paper_reproduction.librts.goal5507_generic_range_intersects_fix_gate.v1",
+  "status": "generic_float32_range_intersects_fix_completed"
+}

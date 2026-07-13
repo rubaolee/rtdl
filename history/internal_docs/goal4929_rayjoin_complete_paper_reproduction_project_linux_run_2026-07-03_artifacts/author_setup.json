@@ -1,0 +1,10 @@
+{
+  "schema": "rtdl.paper_reproduction.rayjoin.author_official_setup.v1",
+  "source": "/tmp/rtdl_rayjoin_complete_project_20260703/Paper-reproduction-apps/rayjoin-paper/_work/author_official/RayJoin",
+  "build": "/tmp/rtdl_rayjoin_complete_project_20260703/Paper-reproduction-apps/rayjoin-paper/_work/author_official/release",
+  "commit": "02bf6220d6d20b04af77ee20364eced75cc029c9",
+  "cuda_arch": "61",
+  "query_exec": "/tmp/rtdl_rayjoin_complete_project_20260703/Paper-reproduction-apps/rayjoin-paper/_work/author_official/release/bin/query_exec",
+  "polyover_exec": "/tmp/rtdl_rayjoin_complete_project_20260703/Paper-reproduction-apps/rayjoin-paper/_work/author_official/release/bin/polyover_exec",
+  "setup_log": "/tmp/rtdl_rayjoin_complete_project_20260703/Paper-reproduction-apps/rayjoin-paper/_runs/public_sample/author_setup.log"
+}

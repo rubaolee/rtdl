@@ -1,0 +1,638 @@
+{
+  "all_cases_matched": true,
+  "cases": [
+    {
+      "author_log": {
+        "algorithm": "Hybrid",
+        "hd_result": 0.22594279050827026,
+        "max_hit": null,
+        "normalize": true,
+        "num_points_per_cell": 8,
+        "point_counts": [
+          1107,
+          1200
+        ],
+        "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/ModelNet40/n_points_cell_false_max_hit_false/glass_box_0115.off_glass_box_0081.off.json",
+        "translate": 0.0,
+        "type": "Float"
+      },
+      "author_normalized": {
+        "algorithm_matched": true,
+        "author_bin": "/tmp/xhd-goal5222_build_paper/bin/hd_exec",
+        "expected_algorithm": "Hybrid",
+        "hd_result": 0.22594279050827026,
+        "json": "/tmp/xhd-goal5249/modelnet40_scalar_batch10/author/0000_glass_box_0115__glass_box_0081.json",
+        "mbr_matched": true,
+        "observed_algorithms": [
+          "Hybrid"
+        ],
+        "paper_abs_diff": 0.0,
+        "paper_hd_matched": true,
+        "process_wall_sec": 0.469332292675972,
+        "running_avg_time_ms": 4.574,
+        "variant": "hybrid"
+      },
+      "case_index": 0,
+      "case_matched": true,
+      "case_name": "0000_glass_box_0115__glass_box_0081",
+      "category": "glass_box",
+      "members": [
+        "ModelNet40/glass_box/train/glass_box_0115.off",
+        "ModelNet40/glass_box/train/glass_box_0081.off"
+      ],
+      "public_paths": [
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/glass_box/train/glass_box_0115.off",
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/glass_box/train/glass_box_0081.off"
+      ],
+      "public_sha256": [
+        "6a6d23cb9619c32f0c6a17082b450452f13facade3a998ed676de948c53a1b5f",
+        "d35c49cc061f73ec0211bd65c69177599a269300d1b915db1f9a36e523405048"
+      ],
+      "rtdl_normalized_route": {
+        "author_abs_diff": 0.0,
+        "json": "/tmp/xhd-goal5249/modelnet40_scalar_batch10/rtdl/0000_glass_box_0115__glass_box_0081.json",
+        "matched_author": true,
+        "reference_preprocessing": [
+          "normalize_each_input_to_author_float32_unit_box"
+        ],
+        "route_distance": 0.22594279050827026,
+        "route_wall_sec": 0.4323243573307991,
+        "total_sec": 0.4413299411535263
+      },
+      "total_points": 2307
+    },
+    {
+      "author_log": {
+        "algorithm": "Hybrid",
+        "hd_result": 0.5204525589942932,
+        "max_hit": null,
+        "normalize": true,
+        "num_points_per_cell": 8,
+        "point_counts": [
+          1694,
+          2726
+        ],
+        "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/ModelNet40/n_points_cell_false_max_hit_false/cone_0080.off_cone_0161.off.json",
+        "translate": 0.0,
+        "type": "Float"
+      },
+      "author_normalized": {
+        "algorithm_matched": true,
+        "author_bin": "/tmp/xhd-goal5222_build_paper/bin/hd_exec",
+        "expected_algorithm": "Hybrid",
+        "hd_result": 0.5204525589942932,
+        "json": "/tmp/xhd-goal5249/modelnet40_scalar_batch10/author/0001_cone_0080__cone_0161.json",
+        "mbr_matched": true,
+        "observed_algorithms": [
+          "Hybrid"
+        ],
+        "paper_abs_diff": 0.0,
+        "paper_hd_matched": true,
+        "process_wall_sec": 0.41825708001852036,
+        "running_avg_time_ms": 5.01,
+        "variant": "hybrid"
+      },
+      "case_index": 1,
+      "case_matched": true,
+      "case_name": "0001_cone_0080__cone_0161",
+      "category": "cone",
+      "members": [
+        "ModelNet40/cone/train/cone_0080.off",
+        "ModelNet40/cone/train/cone_0161.off"
+      ],
+      "public_paths": [
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/cone/train/cone_0080.off",
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/cone/train/cone_0161.off"
+      ],
+      "public_sha256": [
+        "65a4df8234ef15e33d21c49d4ffc648e667968e1ce7b60840043c4c9026d2163",
+        "3333ab85eea2ddb7c8d7deb92cd10a92d1e2478768cf278e0d1c84affca745ce"
+      ],
+      "rtdl_normalized_route": {
+        "author_abs_diff": 2.6034671862795733e-08,
+        "json": "/tmp/xhd-goal5249/modelnet40_scalar_batch10/rtdl/0001_cone_0080__cone_0161.json",
+        "matched_author": true,
+        "reference_preprocessing": [
+          "normalize_each_input_to_author_float32_unit_box"
+        ],
+        "route_distance": 0.5204525850289651,
+        "route_wall_sec": 0.3949616178870201,
+        "total_sec": 0.4175171032547951
+      },
+      "total_points": 4420
+    },
+    {
+      "author_log": {
+        "algorithm": "Hybrid",
+        "hd_result": 0.4354671835899353,
+        "max_hit": null,
+        "normalize": true,
+        "num_points_per_cell": 8,
+        "point_counts": [
+          3580,
+          3026
+        ],
+        "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/ModelNet40/n_points_cell_false_max_hit_false/bowl_0025.off_bowl_0057.off.json",
+        "translate": 0.0,
+        "type": "Float"
+      },
+      "author_normalized": {
+        "algorithm_matched": true,
+        "author_bin": "/tmp/xhd-goal5222_build_paper/bin/hd_exec",
+        "expected_algorithm": "Hybrid",
+        "hd_result": 0.4354671835899353,
+        "json": "/tmp/xhd-goal5249/modelnet40_scalar_batch10/author/0002_bowl_0025__bowl_0057.json",
+        "mbr_matched": true,
+        "observed_algorithms": [
+          "Hybrid"
+        ],
+        "paper_abs_diff": 0.0,
+        "paper_hd_matched": true,
+        "process_wall_sec": 0.43083426356315613,
+        "running_avg_time_ms": 4.221,
+        "variant": "hybrid"
+      },
+      "case_index": 2,
+      "case_matched": true,
+      "case_name": "0002_bowl_0025__bowl_0057",
+      "category": "bowl",
+      "members": [
+        "ModelNet40/bowl/train/bowl_0025.off",
+        "ModelNet40/bowl/train/bowl_0057.off"
+      ],
+      "public_paths": [
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/bowl/train/bowl_0025.off",
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/bowl/train/bowl_0057.off"
+      ],
+      "public_sha256": [
+        "afe37a782ffe9977dbff287e16479fb82ab1c20cfca5ca69c24a8713ac1989f2",
+        "ce07cd8531a889c02b414a2aa66612fc2a82508be3917cf2999e42bcbe837156"
+      ],
+      "rtdl_normalized_route": {
+        "author_abs_diff": 1.871754601312503e-08,
+        "json": "/tmp/xhd-goal5249/modelnet40_scalar_batch10/rtdl/0002_bowl_0025__bowl_0057.json",
+        "matched_author": true,
+        "reference_preprocessing": [
+          "normalize_each_input_to_author_float32_unit_box"
+        ],
+        "route_distance": 0.4354671648723893,
+        "route_wall_sec": 0.039287060499191284,
+        "total_sec": 0.07404466718435287
+      },
+      "total_points": 6606
+    },
+    {
+      "author_log": {
+        "algorithm": "Hybrid",
+        "hd_result": 0.40083712339401245,
+        "max_hit": null,
+        "normalize": true,
+        "num_points_per_cell": 8,
+        "point_counts": [
+          5165,
+          5040
+        ],
+        "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/ModelNet40/n_points_cell_false_max_hit_false/door_0025.off_door_0014.off.json",
+        "translate": 0.0,
+        "type": "Float"
+      },
+      "author_normalized": {
+        "algorithm_matched": true,
+        "author_bin": "/tmp/xhd-goal5222_build_paper/bin/hd_exec",
+        "expected_algorithm": "Hybrid",
+        "hd_result": 0.40083712339401245,
+        "json": "/tmp/xhd-goal5249/modelnet40_scalar_batch10/author/0003_door_0025__door_0014.json",
+        "mbr_matched": true,
+        "observed_algorithms": [
+          "Hybrid"
+        ],
+        "paper_abs_diff": 0.0,
+        "paper_hd_matched": true,
+        "process_wall_sec": 0.433309443295002,
+        "running_avg_time_ms": 5.708,
+        "variant": "hybrid"
+      },
+      "case_index": 3,
+      "case_matched": true,
+      "case_name": "0003_door_0025__door_0014",
+      "category": "door",
+      "members": [
+        "ModelNet40/door/train/door_0025.off",
+        "ModelNet40/door/train/door_0014.off"
+      ],
+      "public_paths": [
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/door/train/door_0025.off",
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/door/train/door_0014.off"
+      ],
+      "public_sha256": [
+        "15af7069d37e3de19b50a6c76e2cbf8b99c95ea866c8f7e6278da77811eff71c",
+        "cc7ce49e7d8a793dfec9cb74b1662c2b93a7787a2889f2e9fefd941190639d68"
+      ],
+      "rtdl_normalized_route": {
+        "author_abs_diff": 5.535853220273168e-09,
+        "json": "/tmp/xhd-goal5249/modelnet40_scalar_batch10/rtdl/0003_door_0025__door_0014.json",
+        "matched_author": true,
+        "reference_preprocessing": [
+          "normalize_each_input_to_author_float32_unit_box"
+        ],
+        "route_distance": 0.40083712892986567,
+        "route_wall_sec": 0.18139614164829254,
+        "total_sec": 0.23153091967105865
+      },
+      "total_points": 10205
+    },
+    {
+      "author_log": {
+        "algorithm": "Hybrid",
+        "hd_result": 0.5185111165046692,
+        "max_hit": null,
+        "normalize": true,
+        "num_points_per_cell": 8,
+        "point_counts": [
+          5164,
+          7127
+        ],
+        "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/ModelNet40/n_points_cell_false_max_hit_false/wardrobe_0032.off_wardrobe_0061.off.json",
+        "translate": 0.0,
+        "type": "Float"
+      },
+      "author_normalized": {
+        "algorithm_matched": true,
+        "author_bin": "/tmp/xhd-goal5222_build_paper/bin/hd_exec",
+        "expected_algorithm": "Hybrid",
+        "hd_result": 0.5185111165046692,
+        "json": "/tmp/xhd-goal5249/modelnet40_scalar_batch10/author/0004_wardrobe_0032__wardrobe_0061.json",
+        "mbr_matched": true,
+        "observed_algorithms": [
+          "Hybrid"
+        ],
+        "paper_abs_diff": 0.0,
+        "paper_hd_matched": true,
+        "process_wall_sec": 0.3934491351246834,
+        "running_avg_time_ms": 4.234,
+        "variant": "hybrid"
+      },
+      "case_index": 4,
+      "case_matched": true,
+      "case_name": "0004_wardrobe_0032__wardrobe_0061",
+      "category": "wardrobe",
+      "members": [
+        "ModelNet40/wardrobe/train/wardrobe_0032.off",
+        "ModelNet40/wardrobe/train/wardrobe_0061.off"
+      ],
+      "public_paths": [
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/wardrobe/train/wardrobe_0032.off",
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/wardrobe/train/wardrobe_0061.off"
+      ],
+      "public_sha256": [
+        "b92cd5a310960f21b20aa08bb78c1461376806cd005b9a8e282db854988a7e57",
+        "0fb2bd2af8832a347845a21e3619e7954aa81c9e8199089df78ce239ac5eca83"
+      ],
+      "rtdl_normalized_route": {
+        "author_abs_diff": 1.1790942999745369e-08,
+        "json": "/tmp/xhd-goal5249/modelnet40_scalar_batch10/rtdl/0004_wardrobe_0032__wardrobe_0061.json",
+        "matched_author": true,
+        "reference_preprocessing": [
+          "normalize_each_input_to_author_float32_unit_box"
+        ],
+        "route_distance": 0.5185111282956122,
+        "route_wall_sec": 0.01628364622592926,
+        "total_sec": 0.07628811150789261
+      },
+      "total_points": 12291
+    },
+    {
+      "author_log": {
+        "algorithm": "Hybrid",
+        "hd_result": 0.4409995675086975,
+        "max_hit": null,
+        "normalize": true,
+        "num_points_per_cell": 8,
+        "point_counts": [
+          6515,
+          7377
+        ],
+        "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/ModelNet40/n_points_cell_false_max_hit_false/cup_0001.off_cup_0076.off.json",
+        "translate": 0.0,
+        "type": "Float"
+      },
+      "author_normalized": {
+        "algorithm_matched": true,
+        "author_bin": "/tmp/xhd-goal5222_build_paper/bin/hd_exec",
+        "expected_algorithm": "Hybrid",
+        "hd_result": 0.4409995675086975,
+        "json": "/tmp/xhd-goal5249/modelnet40_scalar_batch10/author/0005_cup_0001__cup_0076.json",
+        "mbr_matched": true,
+        "observed_algorithms": [
+          "Hybrid"
+        ],
+        "paper_abs_diff": 0.0,
+        "paper_hd_matched": true,
+        "process_wall_sec": 0.6025014296174049,
+        "running_avg_time_ms": 4.606,
+        "variant": "hybrid"
+      },
+      "case_index": 5,
+      "case_matched": true,
+      "case_name": "0005_cup_0001__cup_0076",
+      "category": "cup",
+      "members": [
+        "ModelNet40/cup/train/cup_0001.off",
+        "ModelNet40/cup/train/cup_0076.off"
+      ],
+      "public_paths": [
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/cup/train/cup_0001.off",
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/cup/train/cup_0076.off"
+      ],
+      "public_sha256": [
+        "e5f6f1766fca7405c73712f08e6fc0da5dfb5fe8caa0f8349857f03e6291ac81",
+        "54214628d350d7fe65a48c09fcd5bc47abfabcfd6a920ec2f5b915803b37781f"
+      ],
+      "rtdl_normalized_route": {
+        "author_abs_diff": 4.780656259750771e-09,
+        "json": "/tmp/xhd-goal5249/modelnet40_scalar_batch10/rtdl/0005_cup_0001__cup_0076.json",
+        "matched_author": true,
+        "reference_preprocessing": [
+          "normalize_each_input_to_author_float32_unit_box"
+        ],
+        "route_distance": 0.44099956272804125,
+        "route_wall_sec": 0.09930943697690964,
+        "total_sec": 0.1674281731247902
+      },
+      "total_points": 13892
+    },
+    {
+      "author_log": {
+        "algorithm": "Hybrid",
+        "hd_result": 0.46497631072998047,
+        "max_hit": null,
+        "normalize": true,
+        "num_points_per_cell": 8,
+        "point_counts": [
+          11578,
+          9530
+        ],
+        "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/ModelNet40/n_points_cell_false_max_hit_false/range_hood_0124.off_range_hood_0004.off.json",
+        "translate": 0.0,
+        "type": "Float"
+      },
+      "author_normalized": {
+        "algorithm_matched": true,
+        "author_bin": "/tmp/xhd-goal5222_build_paper/bin/hd_exec",
+        "expected_algorithm": "Hybrid",
+        "hd_result": 0.46497631072998047,
+        "json": "/tmp/xhd-goal5249/modelnet40_scalar_batch10/author/0006_range_hood_0124__range_hood_0004.json",
+        "mbr_matched": true,
+        "observed_algorithms": [
+          "Hybrid"
+        ],
+        "paper_abs_diff": 0.0,
+        "paper_hd_matched": true,
+        "process_wall_sec": 0.39999162405729294,
+        "running_avg_time_ms": 5.198,
+        "variant": "hybrid"
+      },
+      "case_index": 6,
+      "case_matched": true,
+      "case_name": "0006_range_hood_0124__range_hood_0004",
+      "category": "range_hood",
+      "members": [
+        "ModelNet40/range_hood/test/range_hood_0124.off",
+        "ModelNet40/range_hood/train/range_hood_0004.off"
+      ],
+      "public_paths": [
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/range_hood/test/range_hood_0124.off",
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/range_hood/train/range_hood_0004.off"
+      ],
+      "public_sha256": [
+        "e560885ad1a45bd4d18c21c08ae72eb415f01d04667cf957a887ef0cf3f17ce8",
+        "70388e520b95cf71ba7b7758188c6287b7a8b9c536d366f272cfe36e9f85afa3"
+      ],
+      "rtdl_normalized_route": {
+        "author_abs_diff": 5.797764157655649e-09,
+        "json": "/tmp/xhd-goal5249/modelnet40_scalar_batch10/rtdl/0006_range_hood_0124__range_hood_0004.json",
+        "matched_author": true,
+        "reference_preprocessing": [
+          "normalize_each_input_to_author_float32_unit_box"
+        ],
+        "route_distance": 0.4649763049322163,
+        "route_wall_sec": 0.10351257771253586,
+        "total_sec": 0.17629671841859818
+      },
+      "total_points": 21108
+    },
+    {
+      "author_log": {
+        "algorithm": "Hybrid",
+        "hd_result": 0.3204610347747803,
+        "max_hit": null,
+        "normalize": true,
+        "num_points_per_cell": 8,
+        "point_counts": [
+          7490,
+          15723
+        ],
+        "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/ModelNet40/n_points_cell_false_max_hit_false/stool_0038.off_stool_0086.off.json",
+        "translate": 0.0,
+        "type": "Float"
+      },
+      "author_normalized": {
+        "algorithm_matched": true,
+        "author_bin": "/tmp/xhd-goal5222_build_paper/bin/hd_exec",
+        "expected_algorithm": "Hybrid",
+        "hd_result": 0.3204610347747803,
+        "json": "/tmp/xhd-goal5249/modelnet40_scalar_batch10/author/0007_stool_0038__stool_0086.json",
+        "mbr_matched": true,
+        "observed_algorithms": [
+          "Hybrid"
+        ],
+        "paper_abs_diff": 0.0,
+        "paper_hd_matched": true,
+        "process_wall_sec": 0.41817834228277206,
+        "running_avg_time_ms": 5.598,
+        "variant": "hybrid"
+      },
+      "case_index": 7,
+      "case_matched": true,
+      "case_name": "0007_stool_0038__stool_0086",
+      "category": "stool",
+      "members": [
+        "ModelNet40/stool/train/stool_0038.off",
+        "ModelNet40/stool/train/stool_0086.off"
+      ],
+      "public_paths": [
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/stool/train/stool_0038.off",
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/stool/train/stool_0086.off"
+      ],
+      "public_sha256": [
+        "db3f55800b4448cef37062655e82a8eeb134e635ed41411dd97eeb440d5891de",
+        "7d8bc8be714862f1499850844bff4f61ee7e868768e55be5a08b9e823b7aed78"
+      ],
+      "rtdl_normalized_route": {
+        "author_abs_diff": 1.3913389440567414e-08,
+        "json": "/tmp/xhd-goal5249/modelnet40_scalar_batch10/rtdl/0007_stool_0038__stool_0086.json",
+        "matched_author": true,
+        "reference_preprocessing": [
+          "normalize_each_input_to_author_float32_unit_box"
+        ],
+        "route_distance": 0.32046102086139083,
+        "route_wall_sec": 0.04761544615030289,
+        "total_sec": 0.14637190103530884
+      },
+      "total_points": 23213
+    },
+    {
+      "author_log": {
+        "algorithm": "Hybrid",
+        "hd_result": 0.16716471314430237,
+        "max_hit": null,
+        "normalize": true,
+        "num_points_per_cell": 8,
+        "point_counts": [
+          13248,
+          17294
+        ],
+        "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/ModelNet40/n_points_cell_false_max_hit_false/bottle_0164.off_bottle_0057.off.json",
+        "translate": 0.0,
+        "type": "Float"
+      },
+      "author_normalized": {
+        "algorithm_matched": true,
+        "author_bin": "/tmp/xhd-goal5222_build_paper/bin/hd_exec",
+        "expected_algorithm": "Hybrid",
+        "hd_result": 0.16716471314430237,
+        "json": "/tmp/xhd-goal5249/modelnet40_scalar_batch10/author/0008_bottle_0164__bottle_0057.json",
+        "mbr_matched": true,
+        "observed_algorithms": [
+          "Hybrid"
+        ],
+        "paper_abs_diff": 0.0,
+        "paper_hd_matched": true,
+        "process_wall_sec": 0.41646991670131683,
+        "running_avg_time_ms": 4.818,
+        "variant": "hybrid"
+      },
+      "case_index": 8,
+      "case_matched": true,
+      "case_name": "0008_bottle_0164__bottle_0057",
+      "category": "bottle",
+      "members": [
+        "ModelNet40/bottle/train/bottle_0164.off",
+        "ModelNet40/bottle/train/bottle_0057.off"
+      ],
+      "public_paths": [
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/bottle/train/bottle_0164.off",
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/bottle/train/bottle_0057.off"
+      ],
+      "public_sha256": [
+        "534dabd2acc324a94fdc22a1e211d836cb10d867a778ab091a7942efb20a3d00",
+        "18fae60ea38899fe20958f7cbe754774038ed817b8e830f0902fba6d7dfffeb8"
+      ],
+      "rtdl_normalized_route": {
+        "author_abs_diff": 1.492086121324121e-09,
+        "json": "/tmp/xhd-goal5249/modelnet40_scalar_batch10/rtdl/0008_bottle_0164__bottle_0057.json",
+        "matched_author": true,
+        "reference_preprocessing": [
+          "normalize_each_input_to_author_float32_unit_box"
+        ],
+        "route_distance": 0.1671647146363885,
+        "route_wall_sec": 0.056865304708480835,
+        "total_sec": 0.17144820094108582
+      },
+      "total_points": 30542
+    },
+    {
+      "author_log": {
+        "algorithm": "Hybrid",
+        "hd_result": 0.5426021218299866,
+        "max_hit": null,
+        "normalize": true,
+        "num_points_per_cell": 8,
+        "point_counts": [
+          15639,
+          16854
+        ],
+        "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/ModelNet40/n_points_cell_false_max_hit_false/lamp_0018.off_lamp_0098.off.json",
+        "translate": 0.0,
+        "type": "Float"
+      },
+      "author_normalized": {
+        "algorithm_matched": true,
+        "author_bin": "/tmp/xhd-goal5222_build_paper/bin/hd_exec",
+        "expected_algorithm": "Hybrid",
+        "hd_result": 0.5426021218299866,
+        "json": "/tmp/xhd-goal5249/modelnet40_scalar_batch10/author/0009_lamp_0018__lamp_0098.json",
+        "mbr_matched": true,
+        "observed_algorithms": [
+          "Hybrid"
+        ],
+        "paper_abs_diff": 0.0,
+        "paper_hd_matched": true,
+        "process_wall_sec": 0.4535740986466408,
+        "running_avg_time_ms": 6.68,
+        "variant": "hybrid"
+      },
+      "case_index": 9,
+      "case_matched": true,
+      "case_name": "0009_lamp_0018__lamp_0098",
+      "category": "lamp",
+      "members": [
+        "ModelNet40/lamp/train/lamp_0018.off",
+        "ModelNet40/lamp/train/lamp_0098.off"
+      ],
+      "public_paths": [
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/lamp/train/lamp_0018.off",
+        "/tmp/xhd-modelnet40/extracted/ModelNet40/lamp/train/lamp_0098.off"
+      ],
+      "public_sha256": [
+        "5c4527d138bf2cf896ffe59f9cc0c0dbc8738b766acf17b970823ac748d9d2fa",
+        "801cf64b77e2037f6e84d365aa703fea11dc1394bd7cdaa4a9f17189ea9120e0"
+      ],
+      "rtdl_normalized_route": {
+        "author_abs_diff": 3.139302651167242e-08,
+        "json": "/tmp/xhd-goal5249/modelnet40_scalar_batch10/rtdl/0009_lamp_0018__lamp_0098.json",
+        "matched_author": true,
+        "reference_preprocessing": [
+          "normalize_each_input_to_author_float32_unit_box"
+        ],
+        "route_distance": 0.5426021532230131,
+        "route_wall_sec": 0.08647381514310837,
+        "total_sec": 0.20927433669567108
+      },
+      "total_points": 32493
+    }
+  ],
+  "claim_boundary": {
+    "algorithm_aware_author_comparator_selection": true,
+    "author_vs_rtdl_ratio_claimed": false,
+    "exact_paper_dataset_identity_proved": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "modelnet40_all_pairs_reproduced": false,
+    "modelnet40_batch_normalized_contract_claimed": true
+  },
+  "elapsed_sec": 6.633178122341633,
+  "extract_root": "/tmp/xhd-modelnet40/extracted",
+  "failed_case_count": 0,
+  "goal": "Goal5249",
+  "log_index": "Paper-reproduction-apps/x-hd-paper/results/xhd_paper_branch_log_index_goal5176_2026-07-08.json",
+  "matched_case_count": 10,
+  "modelnet_zip": "/tmp/xhd-modelnet40/ModelNet40.zip",
+  "schema": "rtdl.paper_reproduction.xhd.modelnet40_normalized_batch_gate.v2",
+  "selection": {
+    "chunk": {
+      "chunk_index": null,
+      "chunk_size": null,
+      "end_index_exclusive": 10,
+      "mode": "range",
+      "selected_count_after_chunk": 10,
+      "start_index": 0,
+      "total_selected_before_chunk": 10
+    },
+    "requested_max_pairs": 10,
+    "selected_count": 10,
+    "strategy": "smallest_unique_pairs_preferring_distinct_categories",
+    "total_points_max": 32493,
+    "total_points_min": 2307
+  },
+  "status": "modelnet40_normalized_public_off_batch_checked"
+}

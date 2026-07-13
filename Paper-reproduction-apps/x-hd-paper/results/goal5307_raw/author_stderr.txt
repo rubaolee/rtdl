@@ -1,0 +1,3 @@
+I20260709 17:19:17.472867 123159358410752 run_hausdorff_distance.cu:259] Points A: 124 Points B: 894
+I20260709 17:19:17.477495 123159358410752 run_hausdorff_distance.cu:287] [31mAvg Running Time 4.209 ms[0m
+I20260709 17:19:17.771451 123159358410752 run_hausdorff_distance.cu:71] HausdorffDistance: distance is 72.3867

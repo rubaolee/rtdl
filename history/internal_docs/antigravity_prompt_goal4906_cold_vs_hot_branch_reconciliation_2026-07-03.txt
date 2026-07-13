@@ -1,0 +1,28 @@
+Please act as an independent critical reviewer for RTDL Goal4906.
+
+Read these files:
+
+1. `history/internal_docs/goal4906_cold_vs_hot_branch_reconciliation_2026-07-03.md`
+2. `history/internal_docs/call_for_review_goal4906_cold_vs_hot_branch_reconciliation_2026-07-03.md`
+
+Use the call-for-review questions exactly. Be strict about the key issue:
+
+- Goal4888 classified the route as `native_rt_traversal_dominated`.
+- Goal4896 and Goals4901-4905 show the prepared-hot path has shifted to Branch A:
+  materialization / prepare / replay / app-layer continuation, especially writer
+  chain loops.
+
+Check whether Goal4906 fairly reconciles this without erasing Goal4888's value
+and without overclaiming broad speedup.
+
+Write your review to:
+
+`history/internal_docs/antigravity_goal4906_cold_vs_hot_branch_reconciliation_review_2026-07-03.md`
+
+Use one of these verdict labels:
+
+- `approve_goal4906_reconciliation_and_authorize_goal4907`
+- `approve_with_required_amendments`
+- `block_branch_decision_still_unreconciled`
+
+Answer all 8 review questions in the call-for-review.

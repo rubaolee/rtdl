@@ -1,0 +1,75 @@
+{
+  "claim_boundary": {
+    "checked_in_pdf_treated_as_reproduction": false,
+    "figure9_performance_ratio_claimed": false,
+    "figure9_reproduced": false,
+    "full_paper_reproduction_claimed": false,
+    "rtdl_route_result_claimed": false,
+    "training_sweep_treated_as_figure9": false
+  },
+  "date": "2026-07-09",
+  "decision": {
+    "allowed_reopen_conditions": [
+      "Regenerate or recover the two missing run_all auto_tune variants for the plotted workloads.",
+      "Produce an externally reviewed mapping from logs/train sweeps to the checked-in auto-tune.pdf quantities.",
+      "Obtain external review accepting a narrower Figure 9 question with explicit denominator limits."
+    ],
+    "close_current_figure9_line": true,
+    "figure9_reproduced": false,
+    "forbidden_summaries": [
+      "Figure 9 reproduced",
+      "all auto-tune variants recovered",
+      "checked-in PDF equals reproducible Figure 9",
+      "training sweep equals Figure 9",
+      "RTDL Figure 9 speedup or parity"
+    ],
+    "next_recommended_full_paper_work": "Move to another full-paper blocker with a complete author-side denominator, or explicitly authorize a regeneration goal for Figure 9 missing variants.",
+    "why_closed": [
+      "The Figure-9-like plot script expects four auto-tune variants.",
+      "Current run_all/auto_tune logs provide only two of those variants.",
+      "The missing variants are not present on pinned main or hybrid branches.",
+      "The checked-in auto-tune.pdf is a rendered artifact, not a reproducible denominator.",
+      "Training sweeps are separate logs and are not promoted to Figure 9 without an externally reviewed mapping."
+    ]
+  },
+  "evidence_summary": {
+    "auto_tune_records": 1814,
+    "auto_tune_unique_pairs": 907,
+    "checked_in_pdf": {
+      "mode": "100644",
+      "object": "61ac4ce6c705f15255914e8bde4e0e5c79716152",
+      "path": "expr/for_the_paper/auto-tune.pdf",
+      "size_bytes": 15869,
+      "type": "blob"
+    },
+    "hybrid_run_all_records": 0,
+    "main_run_all_records": 0,
+    "missing_plot_variants": [
+      "n_points_cell_true_max_hit_false",
+      "n_points_cell_false_max_hit_true"
+    ],
+    "plot_expected_variants": [
+      "n_points_cell_false_max_hit_false",
+      "n_points_cell_true_max_hit_false",
+      "n_points_cell_false_max_hit_true",
+      "n_points_cell_true_max_hit_true"
+    ],
+    "plot_script": "expr/for_the_paper/effective_autoune.py",
+    "plot_script_saves_pdf": true,
+    "run_all_observed_configs": [
+      "n_points_cell_false_max_hit_false",
+      "n_points_cell_true_max_hit_true"
+    ],
+    "training_sweeps_exist": true,
+    "training_sweeps_same_denominator_as_plot": false
+  },
+  "goal": "Goal5287",
+  "inputs": {
+    "auto_tune_matrix": "Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5284_figure9_auto_tune_semantics_matrix_2026-07-09.json",
+    "branch_audit": "Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5286_figure9_branch_availability_audit_2026-07-09.json",
+    "source_audit": "Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5285_figure9_source_script_audit_2026-07-09.json"
+  },
+  "matched": true,
+  "schema": "rtdl.paper_reproduction.xhd.goal5287.figure9_disposition.v1",
+  "status": "figure9_closed_current_line_author_denominator_missing"
+}

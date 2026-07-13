@@ -1,0 +1,96 @@
+{
+    "DateTime": "2026-07-08 08:58:39",
+    "GPU": {
+        "Device": 0,
+        "name": "NVIDIA RTX 4000 Ada Generation"
+    },
+    "HDResult": 0.5,
+    "Input": {
+        "Files": [
+            {
+                "Density": 200000.0,
+                "MBR": [
+                    {
+                        "Lower": 0.0,
+                        "Upper": 1.0
+                    },
+                    {
+                        "Lower": 0.0,
+                        "Upper": 9.999999747378752e-06
+                    }
+                ],
+                "NumPoints": 2,
+                "Path": "/tmp/xhd-goal5112/x-hd-paper/data/fixtures/directed2d_asymmetric_a.wkt"
+            },
+            {
+                "Density": 21052.6328125,
+                "MBR": [
+                    {
+                        "Lower": 0.5,
+                        "Upper": 10.0
+                    },
+                    {
+                        "Lower": 0.0,
+                        "Upper": 9.999999747378752e-06
+                    }
+                ],
+                "NumPoints": 2,
+                "Path": "/tmp/xhd-goal5112/x-hd-paper/data/fixtures/directed2d_asymmetric_b.wkt"
+            }
+        ],
+        "Limit": 2147483647,
+        "Normalize": false,
+        "NumDims": 2,
+        "SerializationPrefix": "",
+        "Translate": 0.0,
+        "Type": "Float"
+    },
+    "Running": {
+        "AvgTime": 3.644,
+        "EB": true,
+        "FastBuildBVH": false,
+        "LB": 256,
+        "NumPointsPerCell": 15,
+        "Prune": true,
+        "RebuildBVH": false,
+        "Repeats": [
+            {
+                "Algorithm": "XHD",
+                "BVHBuildTime": 0.26,
+                "Cells": 2,
+                "Execution": "GPU",
+                "GridResolution": [
+                    127,
+                    1
+                ],
+                "HDLowerBound": 0.5,
+                "HDUpperBound": 10.0,
+                "InitRadius": 0.5,
+                "Iterations": [
+                    {
+                        "CMax2": 0.25,
+                        "CUDATime": 0.073,
+                        "Iteration": 1,
+                        "NumInputPoints": 2,
+                        "NumOutputPoints": 0,
+                        "OffloadingSize": 0,
+                        "RTTime": 2.283,
+                        "Radius": 0.5
+                    }
+                ],
+                "LargeCells": 0,
+                "Memory": {
+                    "BVH": 1920,
+                    "Grid": 36,
+                    "MBRs B": 32,
+                    "WL": 16,
+                    "WL Heavy Peak": 0
+                },
+                "Profiling": false,
+                "Repeat": 1,
+                "ReportedTime": 3.644
+            }
+        ],
+        "Seed": 0
+    }
+}

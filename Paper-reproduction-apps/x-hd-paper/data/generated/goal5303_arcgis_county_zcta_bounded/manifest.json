@@ -1,0 +1,97 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5303.arcgis_county_zcta_bounded_fixture.v1",
+  "goal": "Goal5303",
+  "status": "arcgis_county_zcta_bounded_fixture_ready__level_b_only__not_exact_paper_input",
+  "created_sec": 2.2789485999383032,
+  "source_contract": {
+    "source_family": "ArcGIS name-matched services already tracked by RTDL RayJoin assets",
+    "county_service": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Census_Counties/FeatureServer",
+    "zipcode_service": "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_ZIP_Code_Areas_anaylsis/FeatureServer",
+    "query_order": "OBJECTID",
+    "out_sr": 4326,
+    "county_feature_count_requested": 3,
+    "zipcode_feature_count_requested": 5
+  },
+  "author_loader_contract": {
+    "input_type": "wkt",
+    "n_dims": 2,
+    "normalize": false,
+    "one_geometry_per_line": true,
+    "polygon_outer_ring_only_for_author_point_count": true
+  },
+  "outputs": {
+    "county": {
+      "path": "Paper-reproduction-apps\\x-hd-paper\\data\\generated\\goal5303_arcgis_county_zcta_bounded\\dtl_cnty_arcgis_bounded.wkt",
+      "bytes": 943098,
+      "sha256": "204551e901d3695cffcf0701993e037dcd805494d0e6518c3ec6e3f01f7526aa",
+      "feature_count": 3,
+      "outer_ring_point_count_author_loader_estimate": 38034,
+      "geometry_types": {
+        "Polygon": 2,
+        "MultiPolygon": 1
+      },
+      "object_ids": [
+        1,
+        2,
+        3
+      ],
+      "sample_names": [
+        "Autauga County",
+        "Baldwin County",
+        "Barbour County"
+      ],
+      "bbox": [
+        -88.0291319999999,
+        -85.048825,
+        30.2209285380001,
+        32.7082130000001
+      ],
+      "line_count": 3
+    },
+    "zipcode": {
+      "path": "Paper-reproduction-apps\\x-hd-paper\\data\\generated\\goal5303_arcgis_county_zcta_bounded\\uszipcode_arcgis_bounded.wkt",
+      "bytes": 1168282,
+      "sha256": "5cc9ee7fee44348f1ba1110d1e6e07bb490b762df1c5e5e5a3e55b8cf9903e91",
+      "feature_count": 5,
+      "outer_ring_point_count_author_loader_estimate": 50272,
+      "geometry_types": {
+        "MultiPolygon": 4,
+        "Polygon": 1
+      },
+      "object_ids": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "sample_names": [
+        "00001",
+        "00002",
+        "00003",
+        "00004",
+        "00005"
+      ],
+      "bbox": [
+        -160.431152,
+        -141.002465,
+        55.6387556,
+        68.501329
+      ],
+      "line_count": 5
+    }
+  },
+  "comparison_readiness": {
+    "author_hd_exec_ready": false,
+    "rtdl_route_ready": false,
+    "reason": "This goal creates a bounded input fixture and metadata only; author/RTDL execution should be a separate gate.",
+    "first_author_command_shape": "./bin/hd_exec -input1 <county_wkt> -input2 <zipcode_wkt> -input_type wkt -n_dims 2 -variant rt -execution gpu -normalize=false -json <summary.json>"
+  },
+  "claim_boundary": {
+    "level_b_same_source_fixture": true,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "geo_correctness_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "performance_ratio_claimed": false
+  }
+}

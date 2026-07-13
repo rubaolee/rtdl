@@ -1,0 +1,82 @@
+{
+  "dedupe": {
+    "app_specific_semantics_allowed": false,
+    "host_column_materialization_used": false,
+    "keep_count": 666667,
+    "operation": "consecutive_dedupe_mask_f64x2",
+    "phase_timing": {
+      "phase_contract_version": "rtdl.partner.v2.4",
+      "phases_sec": {
+        "partner_continuation": 0.045330932014621794
+      },
+      "promoted_performance_path": false,
+      "same_phase_contract_as_basis": false,
+      "source": "run_numba_consecutive_dedupe_mask_f64x2",
+      "validation": {
+        "errors": [],
+        "known_phases": [
+          "partner_continuation"
+        ],
+        "status": "accept"
+      }
+    }
+  },
+  "midpoint": {
+    "app_specific_semantics_allowed": false,
+    "expected_valid_candidate_count": 500000,
+    "host_column_materialization_used": false,
+    "mid_x_sample": [
+      0,
+      0,
+      2,
+      0,
+      4,
+      0
+    ],
+    "operation": "adjacent_midpoint_candidates_i64x2_by_key",
+    "phase_timing": {
+      "phase_contract_version": "rtdl.partner.v2.4",
+      "phases_sec": {
+        "partner_continuation": 0.25105242000427097
+      },
+      "promoted_performance_path": false,
+      "same_phase_contract_as_basis": false,
+      "source": "run_numba_adjacent_midpoint_candidates_i64x2_by_key",
+      "validation": {
+        "errors": [],
+        "known_phases": [
+          "partner_continuation"
+        ],
+        "status": "accept"
+      }
+    },
+    "valid_candidate_count": 500000
+  },
+  "numba_cuda_available": true,
+  "range_count": 250000,
+  "range_has": {
+    "app_specific_semantics_allowed": false,
+    "expected_has_value_count": 125000,
+    "has_value_count": 125000,
+    "host_column_materialization_used": false,
+    "operation": "range_has_sorted_values_i64",
+    "phase_timing": {
+      "phase_contract_version": "rtdl.partner.v2.4",
+      "phases_sec": {
+        "partner_continuation": 0.058536230004392564
+      },
+      "promoted_performance_path": false,
+      "same_phase_contract_as_basis": false,
+      "source": "run_numba_range_has_sorted_values_i64",
+      "validation": {
+        "errors": [],
+        "known_phases": [
+          "partner_continuation"
+        ],
+        "status": "accept"
+      }
+    }
+  },
+  "row_count": 1000000,
+  "schema": "rtdl.goal4941.layer2_numba_columnar_continuations_smoke.v1"
+}

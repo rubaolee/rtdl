@@ -1,0 +1,34 @@
+Please review Goal4915, a proposed compiled intersection-chain descriptor probe.
+
+Workspace root:
+
+```text
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review
+```
+
+Plan:
+
+```text
+history/internal_docs/goal4915_compiled_intersection_chain_descriptor_plan_2026-07-03.md
+```
+
+Call-for-review:
+
+```text
+history/internal_docs/call_for_review_goal4915_compiled_intersection_chain_descriptor_plan_2026-07-03.md
+```
+
+Please write the review to:
+
+```text
+history/internal_docs/antigravity_goal4915_compiled_intersection_chain_descriptor_plan_review_2026-07-03.md
+```
+
+Requested verdict labels:
+
+- `approve_goal4915_compiled_intersection_chain_descriptor_probe`
+- `approve_with_required_amendments`
+- `block_goal4915_as_more_writer_micro_tuning`
+- `block_goal4915_as_too_rayjoin_specific_for_current_line`
+
+Please answer all 6 review questions and preserve the non-authorization boundary.

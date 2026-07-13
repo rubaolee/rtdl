@@ -1,0 +1,354 @@
+{
+  "author_script_contract": {
+    "draw_scalability": {
+      "count_x_field": "Input.Files[0].NumPoints",
+      "expected_labels": [
+        "EB",
+        "NN-KD",
+        "NN-Clover",
+        "X-HD"
+      ],
+      "expected_log_dirs": [
+        "logs/scalability/eb_gpu/scal_vary_size",
+        "logs/scalability/eb_gpu/scal_vary_translate",
+        "logs/scalability/nn_gpu/scal_vary_size",
+        "logs/scalability/nn_gpu/scal_vary_translate",
+        "logs/scalability/clover_gpu/scal_vary_size",
+        "logs/scalability/clover_gpu/scal_vary_translate",
+        "logs/scalability/rt_gpu/scal_vary_size",
+        "logs/scalability/rt_gpu/scal_vary_translate"
+      ],
+      "expected_variants": [
+        "eb_gpu",
+        "nn_gpu",
+        "clover_gpu",
+        "rt_gpu"
+      ],
+      "expects_count_subplot": true,
+      "expects_translate_subplot": true,
+      "metric": "Running.AvgTime",
+      "output_pdf": "scalability.pdf",
+      "translate_x_field": "Input.Translate"
+    },
+    "run_scalability": {
+      "check": "false",
+      "dataset": "all_nodes.wkt",
+      "execution": "gpu",
+      "input_type": "wkt",
+      "n_dims": 3,
+      "output_pattern": "logs/scalability/${variant}_${execution}/{out_prefix}/{name1}_{name2}_limit_${limit}_translate_${translate}.json",
+      "repeat": 1,
+      "run_variants": [
+        "eb",
+        "nn",
+        "clover",
+        "rt"
+      ],
+      "size_fixed_translate": "0.005",
+      "size_sweep_count": 6,
+      "size_values": [
+        12500000,
+        25000000,
+        50000000,
+        100000000,
+        200000000,
+        400000000
+      ],
+      "translate_fixed_limit": 10000000,
+      "translate_sweep_count": 12,
+      "translate_values": [
+        0.0001,
+        0.0002,
+        0.0004,
+        0.0008,
+        0.0016,
+        0.0032,
+        0.0064,
+        0.0128,
+        0.0256,
+        0.0512,
+        0.1024,
+        0.2048
+      ]
+    },
+    "script_draw_contract_aligned": true
+  },
+  "checked_in_log_evidence": {
+    "run_all_mapping": {
+      "coverage_status": "workload_families_present__scale_overlap_labels_missing",
+      "interpretation": "The log index contains enough records to choose scale candidates, but it does not identify the paper's overlap/scalability subsets.",
+      "missing_evidence": [
+        "paper scalability subset selection",
+        "overlap-controlled input generation details",
+        "overlap/selectivity diagnostics",
+        "input file bytes and hashes"
+      ],
+      "record_count": 4535
+    },
+    "scalability": {
+      "complete_variant_sweep_matrix_present": false,
+      "example_records": [],
+      "per_expected_dir_json_count": {
+        "expr\\logs\\scalability\\clover_gpu\\scal_vary_size": 0,
+        "expr\\logs\\scalability\\clover_gpu\\scal_vary_translate": 0,
+        "expr\\logs\\scalability\\eb_gpu\\scal_vary_size": 0,
+        "expr\\logs\\scalability\\eb_gpu\\scal_vary_translate": 0,
+        "expr\\logs\\scalability\\nn_gpu\\scal_vary_size": 0,
+        "expr\\logs\\scalability\\nn_gpu\\scal_vary_translate": 0,
+        "expr\\logs\\scalability\\rt_gpu\\scal_vary_size": 0,
+        "expr\\logs\\scalability\\rt_gpu\\scal_vary_translate": 0
+      },
+      "root_exists": false,
+      "total_json_count": 0
+    }
+  },
+  "claim_boundary": {
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure10_reproduction_claimed": false,
+    "performance_ratio_claimed": false,
+    "rtdl_author_scalability_overlap_parity_claimed": false,
+    "run_all_workload_families_claimed_as_figure10": false
+  },
+  "date": "2026-07-09",
+  "decision": {
+    "author_script_available": true,
+    "current_blocker": "Author source contains run_scalability.sh and draw_scalability.py for size and translate/overlap sweeps, but checked-in logs/scalability has no JSON records. The paper-branch run_all logs have workload-family records, but they do not identify the Figure 10 scale/overlap subsets or overlap diagnostics. Figure 10 reproduction requires regenerating or recovering the scalability numeric matrix with exact or explicitly Level-B inputs.",
+    "figure10_reproduced": false,
+    "next_allowed_steps": [
+      "If exact all_nodes/HDDatasets inputs are available on a POD, run author run_scalability.sh or equivalent commands to regenerate scalability logs.",
+      "If exact inputs are unavailable, define a separately named Level-B scalability/overlap diagnostic and do not call it Figure 10 reproduction.",
+      "Only after an author size/translate numeric matrix exists should RTDL scalability or overlap comparison work begin."
+    ],
+    "run_all_scale_overlap_labels_available": false,
+    "run_all_workload_family_records_available": true,
+    "scalability_numeric_matrix_available": false
+  },
+  "figure10_prior_mapping": {
+    "available_evidence": [
+      "many BraTS and ModelNet40 run_all pairs plus smaller geo/graphics sets",
+      "logged point counts for every input file",
+      "author HDResult and Running.AvgTime"
+    ],
+    "coverage_status": "workload_families_present__scale_overlap_labels_missing",
+    "figure": "Figure 10",
+    "interpretation": "The log index contains enough records to choose scale candidates, but it does not identify the paper's overlap/scalability subsets.",
+    "missing_evidence": [
+      "paper scalability subset selection",
+      "overlap-controlled input generation details",
+      "overlap/selectivity diagnostics",
+      "input file bytes and hashes"
+    ],
+    "record_summary": {
+      "by_category": {
+        "BraTS2020_ValidationData": 2500,
+        "ModelNet40": 2000,
+        "geo": 15,
+        "graphics": 20
+      },
+      "by_section": {
+        "auto_tune": 1814,
+        "eb_gpu": 907,
+        "hybrid_gpu": 907,
+        "rt_gpu": 907
+      },
+      "examples": [
+        {
+          "category": "BraTS2020_ValidationData",
+          "config": "n_points_cell_false_max_hit_false",
+          "exact_status": [
+            "author_log_path_known__input_file_not_available"
+          ],
+          "file_pair": "BraTS20_Validation_001_flair.nii -> BraTS20_Validation_033_flair.nii",
+          "hd_result": 26.645824432373047,
+          "input_point_counts": [
+            1589257,
+            1145851
+          ],
+          "num_dims": 3,
+          "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/BraTS2020_ValidationData/n_points_cell_false_max_hit_false/BraTS20_Validation_001_flair.nii_BraTS20_Validation_033_flair.nii.json",
+          "reported_time_median": 17.485,
+          "running_avg_time": 17.974,
+          "section": "auto_tune"
+        },
+        {
+          "category": "BraTS2020_ValidationData",
+          "config": "n_points_cell_false_max_hit_false",
+          "exact_status": [
+            "author_log_path_known__input_file_not_available"
+          ],
+          "file_pair": "BraTS20_Validation_001_t1.nii -> BraTS20_Validation_123_flair.nii",
+          "hd_result": 12.529964447021484,
+          "input_point_counts": [
+            1589594,
+            1574924
+          ],
+          "num_dims": 3,
+          "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/BraTS2020_ValidationData/n_points_cell_false_max_hit_false/BraTS20_Validation_001_t1.nii_BraTS20_Validation_123_flair.nii.json",
+          "reported_time_median": 10.664,
+          "running_avg_time": 10.9222,
+          "section": "auto_tune"
+        },
+        {
+          "category": "BraTS2020_ValidationData",
+          "config": "n_points_cell_false_max_hit_false",
+          "exact_status": [
+            "author_log_path_known__input_file_not_available"
+          ],
+          "file_pair": "BraTS20_Validation_001_t1ce.nii -> BraTS20_Validation_116_flair.nii",
+          "hd_result": 12.328827857971191,
+          "input_point_counts": [
+            1591145,
+            1614491
+          ],
+          "num_dims": 3,
+          "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/BraTS2020_ValidationData/n_points_cell_false_max_hit_false/BraTS20_Validation_001_t1ce.nii_BraTS20_Validation_116_flair.nii.json",
+          "reported_time_median": 11.978,
+          "running_avg_time": 12.1218,
+          "section": "auto_tune"
+        },
+        {
+          "category": "BraTS2020_ValidationData",
+          "config": "n_points_cell_false_max_hit_false",
+          "exact_status": [
+            "author_log_path_known__input_file_not_available"
+          ],
+          "file_pair": "BraTS20_Validation_001_t2.nii -> BraTS20_Validation_078_flair.nii",
+          "hd_result": 13.152946472167969,
+          "input_point_counts": [
+            1591815,
+            1407962
+          ],
+          "num_dims": 3,
+          "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/BraTS2020_ValidationData/n_points_cell_false_max_hit_false/BraTS20_Validation_001_t2.nii_BraTS20_Validation_078_flair.nii.json",
+          "reported_time_median": 10.474,
+          "running_avg_time": 10.675999999999998,
+          "section": "auto_tune"
+        },
+        {
+          "category": "BraTS2020_ValidationData",
+          "config": "n_points_cell_false_max_hit_false",
+          "exact_status": [
+            "author_log_path_known__input_file_not_available"
+          ],
+          "file_pair": "BraTS20_Validation_001_t2.nii -> BraTS20_Validation_090_flair.nii",
+          "hd_result": 16.911535263061523,
+          "input_point_counts": [
+            1591815,
+            1369590
+          ],
+          "num_dims": 3,
+          "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/BraTS2020_ValidationData/n_points_cell_false_max_hit_false/BraTS20_Validation_001_t2.nii_BraTS20_Validation_090_flair.nii.json",
+          "reported_time_median": 14.343,
+          "running_avg_time": 14.745,
+          "section": "auto_tune"
+        }
+      ],
+      "record_count": 4535,
+      "top_configs": [
+        {
+          "config": "n_points_cell_false_max_hit_false",
+          "record_count": 907
+        },
+        {
+          "config": "n_points_cell_true_max_hit_true",
+          "record_count": 907
+        },
+        {
+          "config": "BraTS20_Validation_001_flair.nii_BraTS20_Validation_033_flair.nii.json",
+          "record_count": 3
+        },
+        {
+          "config": "BraTS20_Validation_001_t1.nii_BraTS20_Validation_123_flair.nii.json",
+          "record_count": 3
+        },
+        {
+          "config": "BraTS20_Validation_001_t1ce.nii_BraTS20_Validation_116_flair.nii.json",
+          "record_count": 3
+        }
+      ],
+      "top_pairs": [
+        {
+          "file_pair": "BraTS20_Validation_001_flair.nii -> BraTS20_Validation_033_flair.nii",
+          "record_count": 5,
+          "sections": [
+            "auto_tune",
+            "eb_gpu",
+            "hybrid_gpu",
+            "rt_gpu"
+          ]
+        },
+        {
+          "file_pair": "BraTS20_Validation_001_t1.nii -> BraTS20_Validation_123_flair.nii",
+          "record_count": 5,
+          "sections": [
+            "auto_tune",
+            "eb_gpu",
+            "hybrid_gpu",
+            "rt_gpu"
+          ]
+        },
+        {
+          "file_pair": "BraTS20_Validation_001_t1ce.nii -> BraTS20_Validation_116_flair.nii",
+          "record_count": 5,
+          "sections": [
+            "auto_tune",
+            "eb_gpu",
+            "hybrid_gpu",
+            "rt_gpu"
+          ]
+        },
+        {
+          "file_pair": "BraTS20_Validation_001_t2.nii -> BraTS20_Validation_078_flair.nii",
+          "record_count": 5,
+          "sections": [
+            "auto_tune",
+            "eb_gpu",
+            "hybrid_gpu",
+            "rt_gpu"
+          ]
+        },
+        {
+          "file_pair": "BraTS20_Validation_001_t2.nii -> BraTS20_Validation_090_flair.nii",
+          "record_count": 5,
+          "sections": [
+            "auto_tune",
+            "eb_gpu",
+            "hybrid_gpu",
+            "rt_gpu"
+          ]
+        }
+      ],
+      "unique_pair_count": 907
+    },
+    "subject": "Scalability and overlap sensitivity"
+  },
+  "figure10_target": {
+    "figure": "Figure 10",
+    "required_inputs": [
+      "paper scalability inputs and overlap-controlled inputs"
+    ],
+    "required_metrics": [
+      "running time",
+      "input scale",
+      "overlap or selectivity diagnostics"
+    ],
+    "status": "blocked_on_dataset_generation_details",
+    "subject": "Scalability and overlap sensitivity"
+  },
+  "goal": "Goal5294",
+  "matched": null,
+  "schema": "rtdl.paper_reproduction.xhd.figure10_scalability_overlap_audit.v1",
+  "source_hashes": {
+    "expr/draw_scalability.py": "74e21663becde42dccdcc24414ebefdb69ccc1d6578378e5c283a846f08ef170",
+    "expr/run_scalability.sh": "d51bfe9669b630bfdee735e54b577f477eaa82400986012cebaa6a5654840b6c"
+  },
+  "sources": {
+    "author_commit": "7bf41c8442d059c94f4178355c6d5a10571d9658",
+    "author_repo": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\.codex_tmp\\xhd_author_repo",
+    "draw_scalability": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\.codex_tmp\\xhd_author_repo\\expr\\draw_scalability.py",
+    "paper_target_log_mapping": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_paper_target_log_mapping_goal5177_2026-07-08.json",
+    "paper_target_matrix": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_paper_target_matrix_2026-07-08.json",
+    "run_scalability": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\.codex_tmp\\xhd_author_repo\\expr\\run_scalability.sh"
+  },
+  "status": "figure10_scalability_overlap_audit_ready__figure10_not_reproduced__scalability_logs_missing"
+}

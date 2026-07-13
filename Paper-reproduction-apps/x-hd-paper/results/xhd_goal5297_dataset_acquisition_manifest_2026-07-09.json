@@ -1,0 +1,236 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.dataset_acquisition_manifest.v1",
+  "goal": "Goal5297",
+  "date": "2026-07-09",
+  "status": "dataset_acquisition_manifest_ready__graphics_level_b_transfer_possible__exact_hddatasets_missing",
+  "purpose": "Convert the current X-HD dataset blocker into an executable acquisition and POD-transfer plan without upgrading Level-B public data into exact paper input status.",
+  "current_pod": {
+    "host": "213.173.108.24",
+    "port": 13502,
+    "wrapper": "scripts/current_pod_ssh.py",
+    "last_known_preflight": "POD_OK",
+    "gpu": "NVIDIA RTX 4000 Ada Generation",
+    "author_build": "/tmp/xhd-goal5112/build-gcc11-optix77-fast/bin/hd_exec",
+    "author_dataset_root": "/local/storage/shared/HDDatasets",
+    "author_dataset_root_exists": false,
+    "interpretation": "The POD is usable, but exact author-script regeneration via /local/storage/shared/HDDatasets is blocked."
+  },
+  "exact_dataset_rule": {
+    "level_c_requires_one_of": [
+      "author-provided input files",
+      "retained hashes for author converted point sets",
+      "byte-identical converted point sets",
+      "or a documented author script that deterministically regenerates the same point sets from pinned public source files"
+    ],
+    "not_sufficient_for_exact_identity": [
+      "dataset name",
+      "point count",
+      "dimension",
+      "Gini",
+      "bounding box",
+      "matching HDResult alone",
+      "public same-source file without author byte/hash provenance"
+    ]
+  },
+  "dataset_families": {
+    "graphics_stanford": {
+      "paper_datasets": [
+        "Dragon",
+        "HappyBuddha",
+        "AsianDragon",
+        "ThaiStatuette"
+      ],
+      "public_source": {
+        "repository_page": "https://graphics.stanford.edu/data/3Dscanrep/",
+        "source_status": "public_same_source_candidate",
+        "exact_paper_identity_status": "not_proven"
+      },
+      "local_workspace_assets": {
+        "dragon_vrip": {
+          "path": "Paper-reproduction-apps/x-hd-paper/data/external/stanford/dragon_recon/dragon_vrip.ply",
+          "bytes": 33831477,
+          "vertices": 437645,
+          "sha256": "FEA87FF48F2ABA22FB53E7B67C3FF3F7B8C2A3B3A0653AF62C48BBA67C6D5744",
+          "archive_url": "https://graphics.stanford.edu/pub/3Dscanrep/dragon/dragon_recon.tar.gz",
+          "archive_sha256": "74AC1D90989C9B1732EDEE82D57E9CE71452144CF4355F108D8C9C616D28D02F"
+        },
+        "happy_vrip": {
+          "path": "Paper-reproduction-apps/x-hd-paper/data/external/stanford/happy_recon/happy_vrip.ply",
+          "bytes": 42619420,
+          "vertices": 543652,
+          "sha256": "2283371216D748A08376A3C88698E283CC8F18D10CED348D6D133051BCF217AB",
+          "archive_url": "https://graphics.stanford.edu/pub/3Dscanrep/happy/happy_recon.tar.gz",
+          "archive_sha256": "409CD294EFBFD8244E15A382B95A9423F153B7776E736C9B09F19EC9D3C10ED0"
+        },
+        "asian_dragon": {
+          "path": "Paper-reproduction-apps/x-hd-paper/data/external/stanford/asian_dragon.ply",
+          "bytes": 137162963,
+          "vertices": 3609600,
+          "sha256": "4A31C6B8951B0F9F4B351D183CB5D5D27E2D1A5916B27E6516ACFB9A91AD7F85",
+          "archive_url": "https://graphics.stanford.edu/data/3Dscanrep/xyzrgb/xyzrgb_dragon.ply.gz",
+          "archive_sha256": "8AA449F1966CBB50E5896ECC32CF57AB5F0CDFD3C3E37D3E6F60B948997DA5C1"
+        },
+        "asian_dragon_scaled_1e-3": {
+          "path": "Paper-reproduction-apps/x-hd-paper/data/external/stanford/asian_dragon_scaled_1e-3.ply",
+          "bytes": 43315372,
+          "vertices": 3609600,
+          "sha256": "4F98D1F809CFB6DCB448E469FDD94A606DE17B45CCB160F5CD1A5423508F01FE",
+          "scale": 0.001,
+          "app_owned_conversion": true
+        },
+        "thai_statuette": {
+          "path": "Paper-reproduction-apps/x-hd-paper/data/external/stanford/thai_statuette.ply",
+          "bytes": 190000131,
+          "vertices": 4999996,
+          "sha256": "01470DA9FC1241DCB4B075CC057FF6BF88D8DC721CE24B5847B9EFDFBB8C0345",
+          "archive_url": "https://graphics.stanford.edu/data/3Dscanrep/xyzrgb/xyzrgb_statuette.ply.gz",
+          "archive_sha256": "1D867B6540C02935CAA777BD6746429A62D4A5D23F11C9BFDFEBBAA90C05CA8B"
+        },
+        "thai_statuette_scaled_1e-3": {
+          "path": "Paper-reproduction-apps/x-hd-paper/data/external/stanford/thai_statuette_scaled_1e-3.ply",
+          "bytes": 60000124,
+          "vertices": 4999996,
+          "sha256": "047024CF12FC541634D02612F0D72EA03EF9BABB8239F4CA6A1A6A9422DA272E",
+          "scale": 0.001,
+          "app_owned_conversion": true
+        }
+      },
+      "current_pod_assets": {
+        "/tmp/xhd_goal5234/data/dragon.ply": {
+          "exists": true,
+          "bytes": 33831477
+        },
+        "/tmp/xhd_goal5234/data/asian_dragon.ply": {
+          "exists": true,
+          "bytes": 137162963
+        },
+        "/tmp/xhd_goal5234/data/asian_dragon_scaled_1e-3.ply": {
+          "exists": true,
+          "bytes": 43315372
+        },
+        "/tmp/xhd_goal5234/data/thai_statuette.ply": {
+          "exists": false
+        },
+        "/tmp/xhd_goal5234/data/thai_statuette_scaled_1e-3.ply": {
+          "exists": false
+        },
+        "/tmp/xhd_goal5234/data/happy_buddha.ply": {
+          "exists": false
+        }
+      },
+      "next_action": "Upload missing local public Stanford assets to the POD with scripts/current_pod_ssh.py upload, then run author-only Level-B graphics matrix diagnostics before any RTDL comparison.",
+      "authorized_status_after_upload": "level_b_same_source_graphics_matrix_candidate_only",
+      "forbidden_status_after_upload": "exact_paper_dataset_reproduction"
+    },
+    "brats_2020": {
+      "paper_datasets": [
+        "BraTS2020_ValidationData"
+      ],
+      "public_or_controlled_source": "https://www.med.upenn.edu/cbica/brats2020/data.html",
+      "access_status": "registration_or_license_required",
+      "local_workspace_assets": "absent",
+      "current_pod_assets": "absent",
+      "exact_paper_identity_status": "blocked_without_author_image_list_and_conversion_hashes",
+      "next_action": "Obtain authorized BraTS 2020 access and reconstruct only as Level B unless the exact author validation image list and conversion hashes are recovered."
+    },
+    "census_tiger_geospatial": {
+      "paper_datasets": [
+        "USCounty",
+        "USZipcode",
+        "USWater",
+        "USCensus"
+      ],
+      "public_source_candidate": "https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html",
+      "access_status": "public_source_likely_available",
+      "local_workspace_assets": "absent",
+      "current_pod_assets": "absent",
+      "exact_paper_identity_status": "blocked_without_source_year_snapshot_conversion_and_hashes",
+      "next_action": "Resolve exact TIGER product/year and WKT conversion pipeline before running author/RTDL comparisons. Count-matching converted WKT files remain Level B only."
+    },
+    "osm_geospatial": {
+      "paper_datasets": [
+        "Lakes",
+        "Parks",
+        "All Nodes"
+      ],
+      "public_source_candidate": "https://wiki.openstreetmap.org/wiki/Downloading_data",
+      "access_status": "public_but_large_snapshot_required",
+      "local_workspace_assets": "absent",
+      "current_pod_assets": "absent",
+      "exact_paper_identity_status": "blocked_without_osm_snapshot_date_extract_filters_conversion_and_hashes",
+      "next_action": "Do not target full Lakes/Parks/AllNodes until the author snapshot/extraction path or an explicitly Level-B public-snapshot plan is accepted."
+    },
+    "modelnet40_auxiliary": {
+      "paper_target_status": "paper_branch_run_all_evidence_but_not_original_goal5130_named_table_target",
+      "local_or_pod_status": "existing all400 public-data evidence through earlier goals",
+      "exact_paper_identity_status": "not_proven",
+      "next_action": "Keep as auxiliary paper-branch workload evidence unless the target matrix is formally revised."
+    }
+  },
+  "figure_unblock_matrix": {
+    "Figure 5": {
+      "current_status": "partially_value_matched_graphics_level_b_only",
+      "usable_next_input": "graphics_stanford after POD transfer for more graphics pairs",
+      "remaining_blockers": [
+        "BraTS access and exact image list",
+        "geospatial WKT provenance",
+        "same-denominator performance review"
+      ]
+    },
+    "Figure 6": {
+      "current_status": "level_b_pruning_diagnostic_exists_not_exact_figure",
+      "usable_next_input": "graphics Dragon->Asian scaled candidate only as Level-B",
+      "remaining_blockers": [
+        "exact graphics input bytes",
+        "LB/phase counter mapping review"
+      ]
+    },
+    "Figure 7": {
+      "current_status": "author_matrix_missing",
+      "usable_next_input": "after POD transfer, run Level-B graphics lb=0/lb=256 matrix across local Stanford graphics pairs",
+      "remaining_blockers": [
+        "exact HDDatasets",
+        "geo Lakes/Parks input provenance",
+        "full lb_comparison matrix"
+      ]
+    },
+    "Figure 8": {
+      "current_status": "author_tune_radius_matrix_missing",
+      "usable_next_input": "after POD transfer, possible Level-B graphics radius-strategy diagnostic only",
+      "remaining_blockers": [
+        "exact HDDatasets",
+        "geo inputs",
+        "author tune_radius matrix"
+      ]
+    },
+    "Figure 10": {
+      "current_status": "author_scalability_matrix_missing",
+      "usable_next_input": "none on current data",
+      "remaining_blockers": [
+        "all_nodes.wkt",
+        "scale/overlap generation details",
+        "author scalability matrix"
+      ]
+    }
+  },
+  "recommended_next_goal": {
+    "goal": "Goal5298",
+    "title": "Upload local public Stanford graphics assets to POD and run an author-only Level-B graphics matrix precheck",
+    "scope": [
+      "Use scripts/current_pod_ssh.py upload, not naked scp.",
+      "Upload missing HappyBuddha and ThaiStatuette public/derived files to a temporary POD directory.",
+      "Run author hd_exec value prechecks for the graphics pairs already present in paper-branch logs.",
+      "Keep output Level-B same-source only; do not call it exact Figure 5/7/8 reproduction.",
+      "Do not run RTDL comparison until author-side values and diagnostic matrix are recorded."
+    ],
+    "why_this_moves_full_reproduction_forward": "It converts locally acquired public graphics datasets into a POD-executable author-side denominator for graphics portions of the paper, while preserving the exact-vs-Level-B boundary."
+  },
+  "claim_boundary": {
+    "full_paper_reproduction_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure_reproduction_claimed": false,
+    "author_matrix_regenerated": false,
+    "performance_ratio_claimed": false,
+    "partial_tmp_inputs_promoted_to_paper_inputs": false
+  }
+}

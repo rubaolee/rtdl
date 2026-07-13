@@ -1,0 +1,34 @@
+cmake_minimum_required(VERSION 3.18)
+project(librts_query_generator_only LANGUAGES CXX)
+
+if(NOT DEFINED AUTHOR_SOURCE)
+  message(FATAL_ERROR "AUTHOR_SOURCE must point to SpatialQueryBenchmark@9140ad9")
+endif()
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+list(APPEND CMAKE_MODULE_PATH "${AUTHOR_SOURCE}/cmake")
+find_package(GFlags REQUIRED)
+find_package(Boost 1.76 REQUIRED)
+
+find_library(
+  BOOST_SERIALIZATION_LIBRARY
+  NAMES boost_serialization boost_serialization.so.1.83.0
+  PATHS /usr/lib/x86_64-linux-gnu
+  REQUIRED
+)
+
+add_executable(
+  librts_author_gen
+  "${AUTHOR_SOURCE}/src/gen/gen.cpp"
+  "${AUTHOR_SOURCE}/src/flags.cpp"
+)
+target_include_directories(
+  librts_author_gen
+  PRIVATE "${AUTHOR_SOURCE}/src" ${GFLAGS_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS}
+)
+target_link_libraries(
+  librts_author_gen
+  PRIVATE ${GFLAGS_LIBRARIES} ${BOOST_SERIALIZATION_LIBRARY} pthread
+)

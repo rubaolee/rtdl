@@ -1,0 +1,52 @@
+{
+  "abs_diff": 0.0,
+  "author_comparison_reference": "directed_a_to_b",
+  "author_comparison_reference_value": 0.5,
+  "author_hd_result": 0.5,
+  "author_json": "/tmp/xhd-goal5112/xhd_author_directed2d_asymmetric_optix77.json",
+  "author_run": {
+    "cmd": [
+      "/tmp/xhd-goal5112/build-gcc11-optix77-fast/bin/hd_exec",
+      "-input1",
+      "/tmp/xhd-goal5112/x-hd-paper/data/fixtures/directed2d_asymmetric_a.wkt",
+      "-input2",
+      "/tmp/xhd-goal5112/x-hd-paper/data/fixtures/directed2d_asymmetric_b.wkt",
+      "-n_dims",
+      "2",
+      "-input_type",
+      "wkt",
+      "-variant",
+      "rt",
+      "-execution",
+      "gpu",
+      "-json",
+      "/tmp/xhd-goal5112/xhd_author_directed2d_asymmetric_optix77.json",
+      "-overwrite=true",
+      "-check=false"
+    ],
+    "returncode": 0,
+    "stderr": "I20260708 08:58:39.334515 139028861304832 run_hausdorff_distance.cu:259] Points A: 2 Points B: 2\nI20260708 08:58:39.338567 139028861304832 run_hausdorff_distance.cu:287] \u001b[31mAvg Running Time 3.644 ms\u001b[0m\nI20260708 08:58:39.630103 139028861304832 run_hausdorff_distance.cu:71] HausdorffDistance: distance is 0.5\n",
+    "stdout": "avg aabb cycles 1149, avg point cycles 130\n"
+  },
+  "author_run_failed": false,
+  "boundary": "Tiny same-input author JSON gate. This compares author HDResult to a deterministic exact Hausdorff reference for POINT WKT fixtures. It is not exact paper input reproduction and not a performance claim.",
+  "execution": "gpu",
+  "input1": "/tmp/xhd-goal5112/x-hd-paper/data/fixtures/directed2d_asymmetric_a.wkt",
+  "input2": "/tmp/xhd-goal5112/x-hd-paper/data/fixtures/directed2d_asymmetric_b.wkt",
+  "input_type": "wkt",
+  "matched": true,
+  "n_dims": 2,
+  "paper_app": "x-hd-paper",
+  "paper_reproduction_claim_authorized": false,
+  "performance_claim_authorized": false,
+  "point_count_a": 2,
+  "point_count_b": 2,
+  "rtdl_reference": {
+    "directed_a_to_b": 0.5,
+    "directed_b_to_a": 9.0,
+    "hausdorff": 9.0
+  },
+  "schema": "rtdl.paper_reproduction.xhd.author_json_gate.v1",
+  "tolerance": 1e-06,
+  "variant": "rt"
+}

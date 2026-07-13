@@ -762,8 +762,8 @@ class RtdlRawCudaColumn:
     def __post_init__(self) -> None:
         if not str(self.name):
             raise ValueError("raw CUDA column requires a non-empty name")
-        if self.dtype not in {"int64", "float64"}:
-            raise ValueError("raw CUDA column dtype must be int64 or float64")
+        if self.dtype not in {"int64", "uint64", "int32", "uint32", "float64", "float32"}:
+            raise ValueError("raw CUDA column dtype must be an int/uint/float CUDA scalar dtype")
         if int(self.length) < 0:
             raise ValueError("raw CUDA column length must be non-negative")
         if int(self.length) > 0 and int(self.data_ptr) <= 0:
@@ -782,11 +782,22 @@ class RtdlRawCudaColumn:
         return {
             "shape": self.shape,
             "strides": None,
-            "typestr": "<i8" if self.dtype == "int64" else "<f8",
+            "typestr": _raw_cuda_column_typestr(self.dtype),
             "data": (int(self.data_ptr), False),
             "version": 3,
             "device": int(self.device_id),
         }
+
+
+def _raw_cuda_column_typestr(dtype: str) -> str:
+    return {
+        "int64": "<i8",
+        "uint64": "<u8",
+        "int32": "<i4",
+        "uint32": "<u4",
+        "float64": "<f8",
+        "float32": "<f4",
+    }[str(dtype)]
 
 
 @dataclass(frozen=True)

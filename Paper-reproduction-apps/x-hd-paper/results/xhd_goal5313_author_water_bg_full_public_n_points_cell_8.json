@@ -1,0 +1,239 @@
+{
+    "DateTime": "2026-07-09 20:11:27",
+    "GPU": {
+        "Device": 0,
+        "name": "NVIDIA RTX 4000 Ada Generation"
+    },
+    "HDResult": 0.8964367508888245,
+    "Input": {
+        "Files": [
+            {
+                "Density": 8111.71240234375,
+                "MBR": [
+                    {
+                        "Lower": -160.23110961914063,
+                        "Upper": -66.99786376953125
+                    },
+                    {
+                        "Lower": 19.203998565673828,
+                        "Upper": 49.384334564208984
+                    }
+                ],
+                "NumPoints": 22824823,
+                "Path": "/tmp/xhd_goal5311/data/USADetailedWaterBodies.wkt.full_public_arcgis_candidate.wkt"
+            },
+            {
+                "Density": 8881.6162109375,
+                "MBR": [
+                    {
+                        "Lower": -179.14891052246094,
+                        "Upper": -66.9496078491211
+                    },
+                    {
+                        "Lower": 18.91069221496582,
+                        "Upper": 71.36516571044922
+                    }
+                ],
+                "NumPoints": 52271467,
+                "Path": "/tmp/xhd_goal5311/data/USACensusBlockGroupBoundaries.wkt.full_public_arcgis_candidate.wkt"
+            }
+        ],
+        "Limit": 2147483647,
+        "Normalize": false,
+        "NumDims": 2,
+        "SerializationPrefix": "",
+        "Translate": 0.0,
+        "Type": "Float"
+    },
+    "Running": {
+        "AvgTime": 110.167,
+        "EB": true,
+        "FastBuildBVH": false,
+        "LB": 256,
+        "NumPointsPerCell": 8,
+        "Prune": true,
+        "RebuildBVH": false,
+        "Repeats": [
+            {
+                "Algorithm": "XHD",
+                "BVHBuildTime": 12.559,
+                "Cells": 251358,
+                "Execution": "GPU",
+                "GridResolution": [
+                    2557,
+                    1196
+                ],
+                "HDLowerBound": 0.0,
+                "HDUpperBound": 116.21746826171875,
+                "InitRadius": 0.042437803000211716,
+                "Iterations": [
+                    {
+                        "AdjustBVHTime": 1.254,
+                        "CMax2": 0.005515365861356258,
+                        "CUDATime": 18.748,
+                        "Iteration": 1,
+                        "NumInputPoints": 22824823,
+                        "NumOutputPoints": 3270946,
+                        "OffloadingSize": 8122044,
+                        "RTTime": 15.674999999999999,
+                        "Radius": 0.042437803000211716
+                    },
+                    {
+                        "AdjustBVHTime": 1.228,
+                        "CMax2": 0.018127229064702988,
+                        "CUDATime": 1.639,
+                        "Iteration": 2,
+                        "NumInputPoints": 3270946,
+                        "NumOutputPoints": 813707,
+                        "OffloadingSize": 344862,
+                        "RTTime": 3.143,
+                        "Radius": 0.10447760671377182
+                    },
+                    {
+                        "AdjustBVHTime": 1.217,
+                        "CMax2": 0.03688877820968628,
+                        "CUDATime": 1.051,
+                        "Iteration": 3,
+                        "NumInputPoints": 813707,
+                        "NumOutputPoints": 269972,
+                        "OffloadingSize": 65541,
+                        "RTTime": 0.983,
+                        "Radius": 0.16651740670204163
+                    },
+                    {
+                        "AdjustBVHTime": 1.212,
+                        "CMax2": 0.06433054804801941,
+                        "CUDATime": 0.22,
+                        "Iteration": 4,
+                        "NumInputPoints": 269972,
+                        "NumOutputPoints": 102384,
+                        "OffloadingSize": 18784,
+                        "RTTime": 0.503,
+                        "Radius": 0.22855721414089203
+                    },
+                    {
+                        "AdjustBVHTime": 1.205,
+                        "CMax2": 0.09531289339065552,
+                        "CUDATime": 0.193,
+                        "Iteration": 5,
+                        "NumInputPoints": 102384,
+                        "NumOutputPoints": 40934,
+                        "OffloadingSize": 8497,
+                        "RTTime": 0.259,
+                        "Radius": 0.29059702157974243
+                    },
+                    {
+                        "AdjustBVHTime": 1.214,
+                        "CMax2": 0.13964565098285675,
+                        "CUDATime": 0.174,
+                        "Iteration": 6,
+                        "NumInputPoints": 40934,
+                        "NumOutputPoints": 14544,
+                        "OffloadingSize": 3227,
+                        "RTTime": 0.252,
+                        "Radius": 0.35263681411743164
+                    },
+                    {
+                        "AdjustBVHTime": 1.222,
+                        "CMax2": 0.19122403860092163,
+                        "CUDATime": 0.515,
+                        "Iteration": 7,
+                        "NumInputPoints": 14544,
+                        "NumOutputPoints": 4233,
+                        "OffloadingSize": 1739,
+                        "RTTime": 0.202,
+                        "Radius": 0.41467660665512085
+                    },
+                    {
+                        "AdjustBVHTime": 1.233,
+                        "CMax2": 0.2272532880306244,
+                        "CUDATime": 0.135,
+                        "Iteration": 8,
+                        "NumInputPoints": 4233,
+                        "NumOutputPoints": 1576,
+                        "OffloadingSize": 126,
+                        "RTTime": 0.358,
+                        "Radius": 0.47671639919281006
+                    },
+                    {
+                        "AdjustBVHTime": 1.207,
+                        "CMax2": 0.2896473705768585,
+                        "CUDATime": 0.137,
+                        "Iteration": 9,
+                        "NumInputPoints": 1576,
+                        "NumOutputPoints": 171,
+                        "OffloadingSize": 15,
+                        "RTTime": 0.216,
+                        "Radius": 0.5387561917304993
+                    },
+                    {
+                        "AdjustBVHTime": 1.215,
+                        "CMax2": 0.3561270236968994,
+                        "CUDATime": 0.132,
+                        "Iteration": 10,
+                        "NumInputPoints": 171,
+                        "NumOutputPoints": 10,
+                        "OffloadingSize": 43,
+                        "RTTime": 0.21,
+                        "Radius": 0.6007959842681885
+                    },
+                    {
+                        "AdjustBVHTime": 1.211,
+                        "CMax2": 0.4219489097595215,
+                        "CUDATime": 0.131,
+                        "Iteration": 11,
+                        "NumInputPoints": 10,
+                        "NumOutputPoints": 6,
+                        "OffloadingSize": 2,
+                        "RTTime": 0.613,
+                        "Radius": 0.6628357768058777
+                    },
+                    {
+                        "AdjustBVHTime": 1.249,
+                        "CMax2": 0.6362396478652954,
+                        "CUDATime": 0.131,
+                        "Iteration": 12,
+                        "NumInputPoints": 6,
+                        "NumOutputPoints": 2,
+                        "OffloadingSize": 7,
+                        "RTTime": 0.369,
+                        "Radius": 0.7869153618812561
+                    },
+                    {
+                        "AdjustBVHTime": 1.336,
+                        "CMax2": 0.6776860952377319,
+                        "CUDATime": 0.184,
+                        "Iteration": 13,
+                        "NumInputPoints": 2,
+                        "NumOutputPoints": 1,
+                        "OffloadingSize": 3,
+                        "RTTime": 0.17,
+                        "Radius": 0.8489551544189453
+                    },
+                    {
+                        "CMax2": 0.8035988807678223,
+                        "CUDATime": 0.135,
+                        "Iteration": 14,
+                        "NumInputPoints": 1,
+                        "NumOutputPoints": 0,
+                        "OffloadingSize": 3,
+                        "RTTime": 0.183,
+                        "Radius": 0.9109949469566345
+                    }
+                ],
+                "LargeCells": 62851,
+                "Memory": {
+                    "BVH": 12300032,
+                    "Grid": 212102168,
+                    "MBRs B": 4021728,
+                    "WL": 182598584,
+                    "WL Heavy Peak": 34540464
+                },
+                "Profiling": false,
+                "Repeat": 1,
+                "ReportedTime": 110.167
+            }
+        ],
+        "Seed": 0
+    }
+}

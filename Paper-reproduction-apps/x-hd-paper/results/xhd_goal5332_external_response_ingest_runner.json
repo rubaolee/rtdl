@@ -1,0 +1,56 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5332.external_response_ingest_runner.v1",
+  "goal": "Goal5332",
+  "date": "2026-07-09",
+  "purpose": "Add an app-owned ingestion runner that copies a normalized external response into an auditable incoming case directory, runs the Goal5330 validator, and writes manifest, validation_result, and next_action files.",
+  "status": "external_response_ingest_runner_ready__await_real_response",
+  "runner": {
+    "path": "Paper-reproduction-apps/x-hd-paper/scripts/ingest_xhd_external_response.py",
+    "input": "normalized JSON using rtdl.paper_reproduction.xhd.external_response_intake.v1",
+    "default_incoming_dir": "Paper-reproduction-apps/x-hd-paper/requests/incoming",
+    "outputs_per_case": [
+      "response.json",
+      "validation_result.json",
+      "manifest.json",
+      "next_action.md"
+    ],
+    "exit_codes": {
+      "0": "valid response ingested",
+      "2": "invalid response or ingestion failure",
+      "3": "case directory already exists and --overwrite was not supplied"
+    }
+  },
+  "behavior_locked_by_tests": [
+    "valid positive archive response creates an auditable case and returns 0",
+    "invalid template response is still recorded and returns 2",
+    "duplicate case id fails closed with return code 3",
+    "summary forbids exact/full/performance claims"
+  ],
+  "pod_usage": {
+    "used": false,
+    "expected_next": false,
+    "reason": "Local intake runner only. POD is used only in a later provenance-ingestion goal after a real valid positive response."
+  },
+  "claim_boundary": {
+    "external_response_received": false,
+    "external_artifacts_acquired": false,
+    "acm_supplement_inspected": false,
+    "exact_equivalence_accepted": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false
+  },
+  "allowed_summary": "Goal5332 adds an app-owned intake runner for future normalized X-HD external response JSON. It creates auditable case directories and reuses the Goal5330 validator.",
+  "not_allowed": [
+    "claiming any real external response has arrived from Goal5332 alone",
+    "claiming external artifacts have been acquired",
+    "claiming ACM supplement has been inspected",
+    "claiming exact-equivalence has been accepted",
+    "claiming exact paper dataset reproduction",
+    "claiming Figure 5 reproduction",
+    "claiming full X-HD paper reproduction",
+    "claiming author-vs-RTDL performance ratio"
+  ],
+  "exit_label": "external_response_ingest_runner_ready__await_real_response"
+}

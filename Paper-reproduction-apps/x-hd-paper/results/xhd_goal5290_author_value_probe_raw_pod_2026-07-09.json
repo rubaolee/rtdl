@@ -1,0 +1,16 @@
+[
+  {
+    "label": "unscaled",
+    "returncode": 0,
+    "wall_sec": 2.656467668712139,
+    "stdout_tail": "I20260709 14:26:35.854354 127218950176768 run_hausdorff_distance.cu:259] Points A: 437645 Points B: 3609600\nW20260709 14:26:35.855627 127218950176768 hausdorff_distance_rt.h:168] \u001b[33mHD lower bound is zero, setting radius to the digonal length of a grid with number of points = 15\u001b[0m\nI20260709 14:26:35.988394 127218950176768 run_hausdorff_distance.cu:287] \u001b[31mAvg Running Time 133.165 ms\u001b[0m\nI20260709 14:26:36.287756 127218950176768 run_hausdorff_distance.cu:71] HausdorffDistance: distance is 52.4535\navg aabb cycles 1492, avg point cycles 179\n",
+    "json_files": []
+  },
+  {
+    "label": "scaled_1e-3",
+    "returncode": 0,
+    "wall_sec": 2.017522342503071,
+    "stdout_tail": "I20260709 14:26:37.931868 136688870383616 run_hausdorff_distance.cu:259] Points A: 437645 Points B: 3609600\nI20260709 14:26:37.951031 136688870383616 run_hausdorff_distance.cu:287] \u001b[31mAvg Running Time 18.236 ms\u001b[0m\nI20260709 14:26:38.302078 136688870383616 run_hausdorff_distance.cu:71] HausdorffDistance: distance is 0.0654553\navg aabb cycles 1493, avg point cycles 179\n",
+    "json_files": []
+  }
+]

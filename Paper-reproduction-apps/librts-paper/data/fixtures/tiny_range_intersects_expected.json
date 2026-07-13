@@ -1,0 +1,7 @@
+{
+  "semantics": "indexed_box_intersects_query_box",
+  "boundary_policy": "inclusive_min_max",
+  "candidate_id_rows": [[0, 0], [0, 1], [1, 0], [1, 1], [2, 0], [2, 1], [3, 2], [4, 3]],
+  "valid_count": 8,
+  "range_contains_count": 5
+}

@@ -8,8 +8,8 @@ from pathlib import Path
 sys.path.insert(0, "src")
 
 import rtdsl as rt
-from examples.internal.rtdl_codex_authored import CODEX_AUTHORED_KERNELS
-from examples.internal.rtdl_gemini_authored import GEMINI_AUTHORED_KERNELS
+from history.examples_internal.internal.rtdl_codex_authored import CODEX_AUTHORED_KERNELS
+from history.examples_internal.internal.rtdl_gemini_authored import GEMINI_AUTHORED_KERNELS
 from examples.reference.rtdl_workload_reference import WORKLOAD_REFERENCE_KERNELS
 from examples.reference.rtdl_language_reference import LANGUAGE_REFERENCE_KERNELS
 from examples.reference.rtdl_ray_tri_hitcount import ray_triangle_hitcount_reference

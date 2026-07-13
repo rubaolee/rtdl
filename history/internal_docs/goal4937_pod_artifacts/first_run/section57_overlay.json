@@ -1,0 +1,131 @@
+{
+  "author_output": {
+    "bytes": 16631243,
+    "lines": 737830,
+    "path": "/root/rtdl_goal4937/Paper-reproduction-apps/rayjoin-paper/_data/public_sample/br_countyXbr_soil_answer.txt",
+    "sha256": "464f87a59cc2428f63cbfe5068965d7bc7adb8eee51e9c1e3a5960ae8b76019e"
+  },
+  "byte_equal_to_author": true,
+  "claim_boundary": {
+    "broad_performance_claim": false,
+    "bundled_rayjoin_overlay_imported": false,
+    "dataset_label": "available_bounded_pair",
+    "exact_old_paper_input_claim": false,
+    "full_eight_pair_paper_claim": false,
+    "numba_on_correctness_critical_path": false,
+    "public_lsi_used": true,
+    "public_point_location_used": true
+  },
+  "elapsed_sec": 6.764782106998609,
+  "generated_output": {
+    "bytes": 16631243,
+    "lines": 737830,
+    "path": "Paper-reproduction-apps/rayjoin-paper/_runs/goal4937/rtdl/section57_overlay.txt",
+    "sha256": "464f87a59cc2428f63cbfe5068965d7bc7adb8eee51e9c1e3a5960ae8b76019e"
+  },
+  "left": {
+    "chains": 16545,
+    "edges": 326193,
+    "path": "/root/rtdl_goal4937/Paper-reproduction-apps/rayjoin-paper/_data/public_sample/br_county_clean_25_odyssey_final.txt",
+    "points": 342738
+  },
+  "lsi_row_count": 20860,
+  "native_point_location_timings": {
+    "midpoint_pip_map0": {
+      "mode": "none",
+      "point_count": 944,
+      "point_upload": 0.0,
+      "positive_face_count": 934,
+      "row_download": 2.112e-05,
+      "traversal": 0.000103637
+    },
+    "midpoint_pip_map1": {
+      "mode": "none",
+      "point_count": 3594,
+      "point_upload": 0.0,
+      "positive_face_count": 3189,
+      "row_download": 2.8594e-05,
+      "traversal": 9.2957e-05
+    },
+    "vertex_pip_map0_in_map1": {
+      "mode": "rows",
+      "point_count": 342738,
+      "point_upload": 0.001231021,
+      "positive_face_count": 337691,
+      "row_download": 0.000555957,
+      "traversal": 0.000489791
+    },
+    "vertex_pip_map1_in_map0": {
+      "mode": "rows",
+      "point_count": 258961,
+      "point_upload": 0.000967049,
+      "positive_face_count": 255272,
+      "row_download": 0.000419267,
+      "traversal": 0.000389861
+    }
+  },
+  "packed_cache": {
+    "enabled": true,
+    "path": "Paper-reproduction-apps/rayjoin-paper/_runs/goal4937/cache"
+  },
+  "pair_name": "br_county_soil",
+  "phase_seconds": {
+    "assign_midpoint_faces_map0_sec": 0.0008081760024651885,
+    "assign_midpoint_faces_map1_sec": 0.0014619900030083954,
+    "destroy_point_location_sessions_sec": 0.007757408980978653,
+    "file_summary_author_sec": 0.027654990000883117,
+    "file_summary_generated_sec": 0.0252758770075161,
+    "intersection_reprojection_sec": 0.7029493179870769,
+    "load_pack_left_sec": 0.7394850739801768,
+    "load_pack_right_sec": 0.46510655799647793,
+    "lsi_public_rows_sec": 1.1142855620128103,
+    "midpoint_pip_map0_sec": 0.0005324230005498976,
+    "midpoint_pip_map1_sec": 0.0005514679942280054,
+    "midpoint_points_map0_sec": 0.022406622010748833,
+    "midpoint_points_map1_sec": 0.018902559007983655,
+    "output_chain_write_sec": 2.049809894990176,
+    "pack_midpoint_points_map0_sec": 0.001983050984563306,
+    "pack_midpoint_points_map1_sec": 0.007122551993234083,
+    "prepare_point_location_map0_in_map1_sec": 0.6929625800112262,
+    "prepare_point_location_map1_in_map0_sec": 0.07547054198221304,
+    "shared_bounds_sec": 3.6669953260570765e-06,
+    "sort_map0_sec": 0.39483821601606905,
+    "sort_map1_sec": 0.39556738300598226,
+    "vertex_pip_map0_in_map1_sec": 0.01151138698332943,
+    "vertex_pip_map1_in_map0_sec": 0.007074299996020272
+  },
+  "query_map_ids": {
+    "map0_in_map1": 0,
+    "map1_in_map0": 1,
+    "swapped": false
+  },
+  "right": {
+    "chains": 7950,
+    "edges": 251011,
+    "path": "/root/rtdl_goal4937/Paper-reproduction-apps/rayjoin-paper/_data/public_sample/br_soil_ascii_odyssey_final.txt",
+    "points": 258961
+  },
+  "route": "public_planar_map_lsi_and_point_location_plus_python_app_overlay_writer",
+  "scale_bounds": [
+    -73.990943647,
+    -25.7463,
+    -35.8075,
+    7.0518
+  ],
+  "schema": "rtdl.paper_reproduction.rayjoin.section57_overlay.v1",
+  "vertex_positive_counts": {
+    "map0_in_map1": 337691,
+    "map1_in_map0": 255272
+  },
+  "writer_result": {
+    "chain_count": 64459,
+    "face_count": 19399,
+    "line_count": 737830,
+    "path": "Paper-reproduction-apps/rayjoin-paper/_runs/goal4937/rtdl/section57_overlay.txt",
+    "point_count": 673371
+  },
+  "xsect_sorted_counts": {
+    "map0": 20860,
+    "map1": 20860
+  }
+}

@@ -1,0 +1,157 @@
+{
+  "author_pair": {
+    "claim_boundary_from_source": {
+      "author_matrix_regenerated": false,
+      "exact_paper_dataset_reproduction_claimed": false,
+      "figure7_reproduction_claimed": false,
+      "full_lb_comparison_matrix_claimed": false,
+      "partial_tmp_inputs_claimed_as_paper_inputs": false,
+      "rtdl_author_performance_ratio_claimed": false,
+      "rtdl_route_run": false
+    },
+    "comparison": {
+      "hd_result_abs_diff": 0.0,
+      "hd_result_equal": true,
+      "interpretation": "On this temporary Dragon->Asian input, author lb=256 preserves HDResult and reduces iteration-3 compared-points and RTTime, but adds heavy offload work and higher CUDATime; the single-run author Running.AvgTime is slower than lb=0. This is a diagnostic only, not a Figure 7 result.",
+      "lb256_iteration3_compared_points_div_lb0": 0.1558494315665507,
+      "lb256_iteration3_cuda_time_ms_minus_lb0": 75.869,
+      "lb256_iteration3_rt_time_div_lb0": 0.4699754279591973,
+      "lb256_process_wall_div_lb0": 1.0515952298044045,
+      "lb256_running_avg_time_div_lb0": 1.22923642754671
+    },
+    "input_scope": {
+      "exact_paper_dataset_identity_proven": false,
+      "input1": "/tmp/xhd_goal5234/data/dragon.ply",
+      "input1_num_points": 437645,
+      "input2": "/tmp/xhd_goal5234/data/asian_dragon.ply",
+      "input2_num_points": 3609600,
+      "not_full_figure7_matrix_reason": "The current POD lacks /local/storage/shared/HDDatasets and has only Dragon/Asian temporary inputs, not the four graphics pairs or full author lb_comparison matrix required by author run_lb.sh / draw_lb.py.",
+      "source": "partial temporary POD inputs from /tmp/xhd_goal5234, not /local/storage/shared/HDDatasets"
+    },
+    "lb_0": {
+      "hd_result": 52.453487396240234,
+      "iteration_3": {
+        "CUDATime_ms": 0.054,
+        "ComparedPoints": 7969408615,
+        "Hits": 746444835,
+        "NumInputPoints": 437645,
+        "NumOutputPoints": 0,
+        "OffloadingSize": 0,
+        "RTTime_ms": 96.854,
+        "Radius": 79.2156982421875
+      },
+      "large_cells": 0,
+      "lb": 0,
+      "memory": {
+        "WL": 3501160,
+        "WL Heavy Peak": 0
+      },
+      "process_wall_sec": 16.25388788431883,
+      "running_avg_time_ms": 107.254
+    },
+    "lb_256": {
+      "hd_result": 52.453487396240234,
+      "iteration_3": {
+        "CUDATime_ms": 75.923,
+        "ComparedPoints": 1242037623,
+        "Hits": 896287932,
+        "NumInputPoints": 437645,
+        "NumOutputPoints": 0,
+        "OffloadingSize": 27133990,
+        "RTTime_ms": 45.519,
+        "Radius": 79.2156982421875
+      },
+      "large_cells": 5060,
+      "lb": 256,
+      "memory": {
+        "WL": 3501160,
+        "WL Heavy Peak": 217071920
+      },
+      "process_wall_sec": 17.09253077954054,
+      "running_avg_time_ms": 131.841
+    },
+    "level": "level_b_temporary_input_author_only_diagnostic",
+    "status": "ready"
+  },
+  "claim_boundary": {
+    "author_rt_core_algorithm_parity_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_support_claimed": false,
+    "figure11_reproduction_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "rtdl_author_performance_ratio_claimed": false,
+    "same_denominator_memory_claimed": false
+  },
+  "comparison": {
+    "author_pair_valid": true,
+    "matched": true,
+    "rtdl_counterpart_missing": true,
+    "semantics_audit_ready": true
+  },
+  "date": "2026-07-09",
+  "decision": {
+    "author_pair_ready": true,
+    "explicit_lb_support_authorized": false,
+    "figure11_reproduced": false,
+    "figure7_reproduced": false,
+    "next_gate": "run_rtdl_lb0_lb256_counterpart_on_same_level_b_input",
+    "rtdl_counterpart_run_available": false
+  },
+  "exit_label": "bounded_lb_trace_gate_author_pair_ready__next_run_rtdl_counterpart",
+  "goal": "Goal5364",
+  "input_artifacts": {
+    "author_lb_diagnostic": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5296_level_b_dragon_asian_lb_diagnostic_2026-07-09.json",
+    "lb_semantics_audit": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5363_lb_heavy_offload_semantics_audit.json"
+  },
+  "purpose": "Promote the existing Level-B author-only lb=0/lb=256 diagnostic into an explicit bounded trace-gate contract for the next RTDL counterpart run, without claiming -lb support yet.",
+  "rtdl_counterpart_contract": {
+    "comparison_rules": {
+      "denominators": "RTDL may separately report generic bytes and author-width uint32-equivalent bytes; any ratio requires same denominator.",
+      "hd_result": "exact_or_tolerance_equal_per_run",
+      "lb0_offload": "must_be_zero",
+      "lbN_offload": "must_be_positive_when_author_positive",
+      "performance": "not_compared_by_this_gate"
+    },
+    "current_reason_missing": "Goal5296 produced an author-side lb=0/lb=256 pair only. No RTDL same-input lb0/lb256 counterpart artifact exists yet.",
+    "input_scope_must_match_author_pair": {
+      "exact_paper_dataset_identity_proven": false,
+      "input1": "/tmp/xhd_goal5234/data/dragon.ply",
+      "input1_num_points": 437645,
+      "input2": "/tmp/xhd_goal5234/data/asian_dragon.ply",
+      "input2_num_points": 3609600,
+      "level": "level_b_temporary_input_author_only_diagnostic"
+    },
+    "required_runs": [
+      {
+        "candidate_rtdl_control": {
+          "acceptable_implementation": "Use a threshold larger than every cell point count or an explicit disabled-offload mode; record the exact mechanism.",
+          "author_lb": 0,
+          "max_inline_points_mapping": "disable_offload_for_all_cells"
+        },
+        "label": "rtdl_lb0_disabled_offload_counterpart",
+        "must_match_author_fields": {
+          "HDResult": 52.453487396240234,
+          "OffloadingSize": 0,
+          "WL Heavy Peak": 0
+        }
+      },
+      {
+        "candidate_rtdl_control": {
+          "author_lb": 256,
+          "max_inline_points_mapping": 256,
+          "offload_rule": "cell_point_count > max_inline_points"
+        },
+        "label": "rtdl_lb256_heavy_offload_counterpart",
+        "must_match_author_fields": {
+          "HDResult": 52.453487396240234,
+          "OffloadingSize_positive": true,
+          "WL Heavy Peak_positive": true
+        }
+      }
+    ],
+    "status": "required_not_yet_run"
+  },
+  "schema": "rtdl.paper_reproduction.xhd.goal5364.lb_trace_gate_author_pair_contract.v1",
+  "status": "bounded_lb_trace_gate_author_pair_ready__rtdl_counterpart_missing"
+}

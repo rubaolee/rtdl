@@ -1,0 +1,92 @@
+{
+  "active_query_bridge": {
+    "aborted_row_count": 0,
+    "active_query_count": 64,
+    "attempted_output_row_count": 320,
+    "bridge_contract": "generic_active_query_status_from_frontier_rows_v1",
+    "candidate_row_count": 1920,
+    "claim_boundary": {
+      "author_rt_core_algorithm_parity_claimed": false,
+      "explicit_lb_support_claimed": false,
+      "performance_claimed": false,
+      "row_count_parity_claimed": false,
+      "same_denominator_memory_claimed": false
+    },
+    "comparison_to_author": {
+      "active_query_count_parity": false,
+      "author_active_in_queue_size": 437645,
+      "author_raw_offload_rows_author_width_bytes": 217071920,
+      "author_raw_offload_rows_before_sort_reduce": 27133990,
+      "author_width_byte_delta_author_minus_rtdl": 217069360,
+      "author_width_byte_parity": false,
+      "row_count_parity": false,
+      "row_delta_author_minus_rtdl_bridge": 27133670,
+      "row_ratio_rtdl_bridge_div_author": 1.1793326377727713e-05,
+      "rtdl_active_query_count": 64,
+      "rtdl_bridge_author_width_bytes": 2560,
+      "rtdl_bridge_offload_rows": 320
+    },
+    "completed_row_count": 0,
+    "emitted_output_row_count": 320,
+    "miss_row_count": 0,
+    "offload_row_count": 320,
+    "overflowed": false,
+    "reference_contract": "generic_active_query_status_machine_reference_v1"
+  },
+  "claim_boundary": {
+    "author_rt_core_algorithm_parity_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_support_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "performance_claimed": false,
+    "row_count_parity_claimed": false,
+    "same_denominator_memory_claimed": false,
+    "source_limited_smoke_claimed_as_author_oracle_parity": false
+  },
+  "collect_inline_stats": true,
+  "emit_pruned_rows": false,
+  "execution_n_dims": 3,
+  "frontier": {
+    "attempted_count": 1920,
+    "frontier_status_probe_contract": null,
+    "frontier_status_probe_mode_code": 0,
+    "native_symbol": "rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v4",
+    "overflowed": false,
+    "row_capacity": 2000000,
+    "row_count": 1920
+  },
+  "frontier_row_capacity": 2000000,
+  "frontier_status_probe_mode": "default",
+  "global_bound_early_break": false,
+  "grid_cell_builder": "native_cuda",
+  "grid_cell_point_order": "point-id",
+  "grid_shape": [
+    96,
+    60,
+    72
+  ],
+  "inline_nearest": true,
+  "input1": "/tmp/xhd_goal5234/data/dragon.ply",
+  "input2": "/tmp/xhd_goal5234/data/asian_dragon.ply",
+  "input_n_dims": 3,
+  "input_type": "ply",
+  "max_inline_points": 256,
+  "paper_app": "x-hd-paper",
+  "point_count_a": 64,
+  "point_count_b": 3609600,
+  "preprocessing": [
+    "source_limit_64"
+  ],
+  "purpose": "App-owned probe that feeds generic native cell-MBR frontier rows through the generic active-query status-machine frontier bridge, then compares bridge offload rows against the Goal5374 author oracle.",
+  "radius": 79.2156982421875,
+  "schema": "rtdl.paper_reproduction.xhd.goal5381.active_query_frontier_bridge_probe.v1",
+  "source_limit": 64,
+  "source_limit_applied": true,
+  "timings_sec": {
+    "active_query_bridge": 0.00277506560087204,
+    "frontier_rows": 0.26922543346881866,
+    "grid_cell_mbrs": 1.387129820883274,
+    "load_inputs": 0.8806105777621269,
+    "total": 2.542511560022831
+  }
+}

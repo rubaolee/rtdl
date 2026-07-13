@@ -1,0 +1,119 @@
+{
+  "claim_boundary": {
+    "author_rtdl_correctness_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "existing_goal5311_wkt_reused": true,
+    "explicit_lb_reopened": false,
+    "figure5_reproduction_claimed": false,
+    "full_public_wkt_generated_by_goal5426": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false,
+    "resource_gate_claimed": true,
+    "route_micro_optimization_goal_authorized": false
+  },
+  "expected_artifacts": {
+    "blockgroups": {
+      "expected_bytes": 1560257609,
+      "expected_points": 52271467,
+      "expected_sha256": "8a1d3cd848083e5182de81521f07d8850c597910320250066d850928b017e66e",
+      "goal5426_name": "USACensusBlockGroupBoundaries_full_public.wkt",
+      "remote_name": "USACensusBlockGroupBoundaries.wkt.full_public_arcgis_candidate.wkt"
+    },
+    "waterbodies": {
+      "expected_bytes": 741925630,
+      "expected_points": 22824823,
+      "expected_sha256": "0c4ad7d7c1953364478d4940a8eb1696cca24d0dfd6422aafc532b1983f3dd39",
+      "goal5426_name": "USADetailedWaterBodies_full_public.wkt",
+      "remote_name": "USADetailedWaterBodies.wkt.full_public_arcgis_candidate.wkt"
+    }
+  },
+  "goal": "Goal5426",
+  "matched": true,
+  "next_recommended_goal": "Goal5427_refresh_or_consolidate_existing_full_public_water_bg_rtdl_against_goal5314_paper_config",
+  "pod": {
+    "host": "213.173.108.24",
+    "port": 13502,
+    "preflight_ok": true,
+    "preflight_stderr": "Could not find platform independent libraries <prefix>\n",
+    "preflight_stdout": "POD_OK\n45c502cfccb5\nNVIDIA RTX 4000 Ada Generation, 550.127.05\n"
+  },
+  "prior_evidence": {
+    "goal5310_manifest": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\data\\generated\\goal5310_water_bg_full_public_wkt_candidate\\manifest.json",
+    "goal5311_author_ingestion_passed": true,
+    "goal5311_hd_result": 0.8970130085945129,
+    "goal5311_paper_value_matched": false,
+    "goal5311_summary": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5311_water_bg_full_public_author_ingestion_summary_pod.json",
+    "goal5314_paper_config_author_hd_result": 0.8964367508888245,
+    "goal5314_paper_config_matches_paper_log": true,
+    "goal5314_rtdl_exact_witness_hd_result_float64": 0.8964380566690101,
+    "goal5314_rtdl_matches_author_float32_with_declared_tolerance": true,
+    "goal5314_summary": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5314_water_bg_corrected_comparison_summary.json",
+    "goal5425": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5425_full_public_water_bg_wkt_generation_feasibility.json"
+  },
+  "remote_probe": {
+    "parsed": {
+      "all_files_exist": true,
+      "all_hashes_match": true,
+      "all_sizes_match": true,
+      "existing_artifact_reuse_gate_passed": true,
+      "files": {
+        "blockgroups": {
+          "actual_bytes": 1560257609,
+          "actual_sha256": "8a1d3cd848083e5182de81521f07d8850c597910320250066d850928b017e66e",
+          "exists": true,
+          "expected_bytes": 1560257609,
+          "expected_sha256": "8a1d3cd848083e5182de81521f07d8850c597910320250066d850928b017e66e",
+          "goal5426_path": "/tmp/xhd_goal5426/full_public_water_bg/USACensusBlockGroupBoundaries_full_public.wkt",
+          "sha256_matches": true,
+          "size_matches": true,
+          "source_path": "/tmp/xhd_goal5311/data/USACensusBlockGroupBoundaries.wkt.full_public_arcgis_candidate.wkt",
+          "symlink_created": true,
+          "symlink_target": "/tmp/xhd_goal5311/data/USACensusBlockGroupBoundaries.wkt.full_public_arcgis_candidate.wkt"
+        },
+        "waterbodies": {
+          "actual_bytes": 741925630,
+          "actual_sha256": "0c4ad7d7c1953364478d4940a8eb1696cca24d0dfd6422aafc532b1983f3dd39",
+          "exists": true,
+          "expected_bytes": 741925630,
+          "expected_sha256": "0c4ad7d7c1953364478d4940a8eb1696cca24d0dfd6422aafc532b1983f3dd39",
+          "goal5426_path": "/tmp/xhd_goal5426/full_public_water_bg/USADetailedWaterBodies_full_public.wkt",
+          "sha256_matches": true,
+          "size_matches": true,
+          "source_path": "/tmp/xhd_goal5311/data/USADetailedWaterBodies.wkt.full_public_arcgis_candidate.wkt",
+          "symlink_created": true,
+          "symlink_target": "/tmp/xhd_goal5311/data/USADetailedWaterBodies.wkt.full_public_arcgis_candidate.wkt"
+        }
+      },
+      "generation_safety_gate_passed": false,
+      "hostname": "45c502cfccb5",
+      "manifest_path": "/tmp/xhd_goal5426/full_public_water_bg/manifest.json",
+      "output_dir": "/tmp/xhd_goal5426/full_public_water_bg",
+      "recommended_free_gib": 6.283268840052187,
+      "source_dir": "/tmp/xhd_goal5311/data",
+      "tmp_free_bytes": 4201086976,
+      "tmp_free_gib": 3.912567138671875,
+      "tmp_total_bytes": 32212254720,
+      "tmp_used_bytes": 28011167744,
+      "write_permission_passed": true
+    },
+    "returncode": 0,
+    "stderr": "Could not find platform independent libraries <prefix>\n",
+    "stdout": "{\"all_files_exist\": true, \"all_hashes_match\": true, \"all_sizes_match\": true, \"existing_artifact_reuse_gate_passed\": true, \"files\": {\"blockgroups\": {\"actual_bytes\": 1560257609, \"actual_sha256\": \"8a1d3cd848083e5182de81521f07d8850c597910320250066d850928b017e66e\", \"exists\": true, \"expected_bytes\": 1560257609, \"expected_sha256\": \"8a1d3cd848083e5182de81521f07d8850c597910320250066d850928b017e66e\", \"goal5426_path\": \"/tmp/xhd_goal5426/full_public_water_bg/USACensusBlockGroupBoundaries_full_public.wkt\", \"sha256_matches\": true, \"size_matches\": true, \"source_path\": \"/tmp/xhd_goal5311/data/USACensusBlockGroupBoundaries.wkt.full_public_arcgis_candidate.wkt\", \"symlink_created\": true, \"symlink_target\": \"/tmp/xhd_goal5311/data/USACensusBlockGroupBoundaries.wkt.full_public_arcgis_candidate.wkt\"}, \"waterbodies\": {\"actual_bytes\": 741925630, \"actual_sha256\": \"0c4ad7d7c1953364478d4940a8eb1696cca24d0dfd6422aafc532b1983f3dd39\", \"exists\": true, \"expected_bytes\": 741925630, \"expected_sha256\": \"0c4ad7d7c1953364478d4940a8eb1696cca24d0dfd6422aafc532b1983f3dd39\", \"goal5426_path\": \"/tmp/xhd_goal5426/full_public_water_bg/USADetailedWaterBodies_full_public.wkt\", \"sha256_matches\": true, \"size_matches\": true, \"source_path\": \"/tmp/xhd_goal5311/data/USADetailedWaterBodies.wkt.full_public_arcgis_candidate.wkt\", \"symlink_created\": true, \"symlink_target\": \"/tmp/xhd_goal5311/data/USADetailedWaterBodies.wkt.full_public_arcgis_candidate.wkt\"}}, \"generation_safety_gate_passed\": false, \"hostname\": \"45c502cfccb5\", \"manifest_path\": \"/tmp/xhd_goal5426/full_public_water_bg/manifest.json\", \"output_dir\": \"/tmp/xhd_goal5426/full_public_water_bg\", \"recommended_free_gib\": 6.283268840052187, \"source_dir\": \"/tmp/xhd_goal5311/data\", \"tmp_free_bytes\": 4201086976, \"tmp_free_gib\": 3.912567138671875, \"tmp_total_bytes\": 32212254720, \"tmp_used_bytes\": 28011167744, \"write_permission_passed\": true}\n"
+  },
+  "resource_decision": {
+    "existing_artifact_reuse_gate_passed": true,
+    "generation_safety_gate_passed": false,
+    "reason": "Current /tmp free disk is below the Goal5425 3x full-generation safety threshold, but complete Goal5311 full-public WKT artifacts already exist on the POD and match the local Goal5310 manifest hashes, so Goal5426 reuses them through symlinks instead of regenerating or copying multi-GiB files.",
+    "recommended_free_disk_gib": 6.283268840052187,
+    "selected_action": "reuse_existing_goal5311_full_public_wkt_candidate__no_regeneration"
+  },
+  "schema": "rtdl.paper_reproduction.xhd.goal5426.full_public_water_bg_wkt_resource_gate.v1",
+  "status": "resource_gate_complete__existing_goal5311_artifacts_reused__regeneration_not_safe_on_current_tmp",
+  "stop_loss_gate": {
+    "decision": "pass_resource_gate_not_artifact_parity",
+    "gate_downstream_consumer_reachable": true,
+    "gate_generic_capability_produced": true,
+    "gate_non_app_consumer": "dataset resource gate / existing artifact reuse, no app-artifact parity",
+    "gate_requires_app_specific_logic": false
+  }
+}

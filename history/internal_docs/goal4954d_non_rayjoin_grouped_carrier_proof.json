@@ -1,0 +1,76 @@
+{
+  "authorofficial_required": false,
+  "carrier": {
+    "columns": [
+      "alt_label",
+      "group_length",
+      "group_offset",
+      "label_a",
+      "label_b",
+      "source_element_id",
+      "source_side_id",
+      "x",
+      "y"
+    ],
+    "group_count": 5,
+    "point_row_count": 14
+  },
+  "cdb_required": false,
+  "consumer": "descriptor_pair_count_grouped",
+  "expected": [
+    {
+      "group_count": 2,
+      "label_a": 10,
+      "label_b": 100,
+      "point_row_count": 5
+    },
+    {
+      "group_count": 1,
+      "label_a": 10,
+      "label_b": 200,
+      "point_row_count": 3
+    },
+    {
+      "group_count": 1,
+      "label_a": 20,
+      "label_b": 200,
+      "point_row_count": 2
+    },
+    {
+      "group_count": 1,
+      "label_a": 20,
+      "label_b": 300,
+      "point_row_count": 4
+    }
+  ],
+  "paper_text_required": false,
+  "pass": true,
+  "rayjoin_imported": false,
+  "result": [
+    {
+      "group_count": 2,
+      "label_a": 10,
+      "label_b": 100,
+      "point_row_count": 5
+    },
+    {
+      "group_count": 1,
+      "label_a": 10,
+      "label_b": 200,
+      "point_row_count": 3
+    },
+    {
+      "group_count": 1,
+      "label_a": 20,
+      "label_b": 200,
+      "point_row_count": 2
+    },
+    {
+      "group_count": 1,
+      "label_a": 20,
+      "label_b": 300,
+      "point_row_count": 4
+    }
+  ],
+  "schema": "rtdl.internal.goal4954d.non_rayjoin_grouped_carrier_proof.v1"
+}

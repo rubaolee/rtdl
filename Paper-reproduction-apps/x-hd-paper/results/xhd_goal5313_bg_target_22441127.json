@@ -1,0 +1,27 @@
+{
+  "geometry_rows_until_last_hit": 108452,
+  "n_dims": 2,
+  "parsed_point_count_until_last_hit": 22441620,
+  "path": "/tmp/xhd_goal5311/data/USACensusBlockGroupBoundaries.wkt.full_public_arcgis_candidate.wkt",
+  "points": [
+    {
+      "coordinate_float32": [
+        -82.72647857666016,
+        43.974952697753906
+      ],
+      "coordinate_float64": [
+        -82.7264814704,
+        43.974954476
+      ],
+      "geometry_line_number": 108452,
+      "geometry_point_count": 1160,
+      "geometry_row_index": 108451,
+      "index": 22441127,
+      "local_index_in_geometry": 667
+    }
+  ],
+  "requested_indices": [
+    22441127
+  ],
+  "schema": "rtdl.paper_reproduction.xhd.wkt_point_index_inspection.v1"
+}

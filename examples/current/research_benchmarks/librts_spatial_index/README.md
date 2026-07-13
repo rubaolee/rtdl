@@ -2,6 +2,11 @@
 
 This directory contains the current RTDL v2.14 benchmark app for **LibRTS-Style Spatial Index**.
 
+It was inspired by `LibRTS: A Spatial Indexing Library by Ray Tracing`
+(PPoPP 2025, DOI `10.1145/3710848.3710850`) and the author repository
+`https://github.com/RTSpatial/RTSpatial`. The reader-facing paper reproduction
+project now lives separately under `Paper-reproduction-apps/librts-paper/`.
+
 ## Start
 
 From the repository root:
@@ -22,7 +27,10 @@ The Python app owns data setup, benchmark fixtures, policy decisions, labels, fi
 
 ## Boundary
 
-This benchmark is not full mutable LibRTS reproduction or universal spatial-index replacement. Treat timing as exact-contract evidence only. For public wording, use the v2.14 release package and support matrices rather than this README alone.
+This benchmark is not full mutable LibRTS reproduction or universal
+spatial-index replacement. Treat timing as exact-contract evidence only. It
+does not authorize public speedup wording. For public wording, use the v2.14
+release package and support matrices rather than this README alone.
 
 ## Related Current Docs
 

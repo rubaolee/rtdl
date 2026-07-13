@@ -1,0 +1,140 @@
+{
+  "author_target": {
+    "active_in_queue_size": 437645,
+    "raw_offload_row_hash": 4333109858711462591,
+    "raw_offload_rows_before_sort_reduce": 27133990,
+    "rows_per_active": 62
+  },
+  "claim_boundary": {
+    "author_parity_claimed": false,
+    "author_rt_core_algorithm_parity_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_support_claimed": false,
+    "figure11_reproduction_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "generic_full_cover_delta_probe_spec_claimed": true,
+    "hash_sample_parity_claimed": false,
+    "native_backend_completion_claimed": false,
+    "performance_ratio_claimed": false,
+    "row_count_parity_claimed": false,
+    "same_denominator_memory_claimed": false,
+    "synthetic_generic_multiround_demo_claimed": true
+  },
+  "date": "2026-07-10",
+  "decision": {
+    "explicit_lb_support_remains_unsupported": true,
+    "native_code_implemented_by_goal5394": false,
+    "native_probe_ready_for_implementation": true,
+    "next_gate_requires_pod_if_native_code_is_changed": true
+  },
+  "exit_label": "generic_full_cover_delta_probe_ready__native_or_fail_closed_next",
+  "goal": "Goal5394",
+  "input_artifacts": {
+    "goal5387_author_trace_v2": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5387_author_trace_v2_execution.json",
+    "goal5393_status_stream_target_design": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5393_lb_status_stream_target_design.json"
+  },
+  "native_probe_spec": {
+    "contract_kind": "generic_native_multi_round_active_query_status_stream",
+    "fail_exit_label": "generic_full_cover_delta_probe_no_go__explicit_lb_fail_closed_candidate",
+    "must_compare_against_author": [
+      "row_count",
+      "hash_or_samples",
+      "status_count_offloading",
+      "load_balance_feedback_update_count or explicit not-applicable evidence"
+    ],
+    "must_not_hardcode": [
+      "6 missing rows per active",
+      "62 author rows per active",
+      "X-HD option or figure names in RTDL core/native code"
+    ],
+    "name": "generic_full_cover_delta_status_probe",
+    "recommended_goal": "Goal5395",
+    "required_output_columns": [
+      "active_queue_index or query_row_id",
+      "source_id",
+      "cell_id",
+      "status_code",
+      "transition_phase_code",
+      "current_best_before_sq",
+      "current_best_after_sq or explicit not-applicable value"
+    ],
+    "required_telemetry": [
+      "raw_offload_rows_before_sort_reduce",
+      "raw_offload_row_hash or deterministic sample rows",
+      "status_count_offloading",
+      "feedback_update_count or explicit not-applicable evidence",
+      "miss_count",
+      "completed_count",
+      "aborted_count"
+    ],
+    "start_surface": "full_cover_lb256_behavior_gate_surface",
+    "success_exit_label": "generic_full_cover_delta_probe_moves_rows_toward_author"
+  },
+  "purpose": "Convert Goal5393's selected full-cover delta target into a concrete generic probe specification and synthetic capability demo before native implementation.",
+  "schema": "rtdl.paper_reproduction.xhd.goal5394.full_cover_delta_status_probe.v1",
+  "selected_surface": {
+    "full_cover_is_correctness_claim": false,
+    "missing_rows_per_active": 6,
+    "missing_rows_per_active_remainder": 0,
+    "missing_rows_to_author": 2625870,
+    "name": "full_cover_lb256_behavior_gate_surface",
+    "row_count": 24508120,
+    "rows_per_active": 56
+  },
+  "status": "generic_full_cover_delta_probe_spec_ready__native_probe_next",
+  "synthetic_generic_probe": {
+    "app_semantics": "none",
+    "author_semantics_claimed": false,
+    "base_round_offload_rows": 112,
+    "base_rows_per_active": 56,
+    "contract": "generic_active_query_multiround_status_reference_v1",
+    "delta_round_offload_rows": 12,
+    "delta_rows_per_active": 6,
+    "final_active_query_count": 2,
+    "hardcoded_author_fanout_claimed": false,
+    "purpose": "Synthetic app-neutral demonstration that the existing generic multi-round active-query status reference can represent a base offload surface plus a later generic delta surface. It is not an author parity proof.",
+    "raw_offload_rows_before_sort_reduce": 124,
+    "rounds": [
+      {
+        "aborted_row_count": 0,
+        "active_query_count": 2,
+        "candidate_row_count": 112,
+        "completed_row_count": 0,
+        "feedback_row_count": 0,
+        "feedback_updates_applied": 0,
+        "miss_row_count": 0,
+        "next_active_query_count": 2,
+        "offload_row_count": 112,
+        "round_index": 0
+      },
+      {
+        "aborted_row_count": 0,
+        "active_query_count": 2,
+        "candidate_row_count": 12,
+        "completed_row_count": 0,
+        "feedback_row_count": 0,
+        "feedback_updates_applied": 0,
+        "miss_row_count": 0,
+        "next_active_query_count": 2,
+        "offload_row_count": 12,
+        "round_index": 1
+      }
+    ],
+    "sample_offload_cell_ids": [
+      1000,
+      1001,
+      1002,
+      1003,
+      1004
+    ],
+    "synthetic_active_query_count": 2,
+    "target_rows_per_active": 62
+  },
+  "synthetic_probe_assessment": {
+    "proves_author_parity": false,
+    "proves_native_backend_completion": false,
+    "shape_matches_selected_target": true,
+    "why_useful": "It verifies that the generic multi-round status reference can represent the exact base+delta row-shape required by the next native probe without app-specific terminology or hard-coded author constants in RTDL core."
+  }
+}

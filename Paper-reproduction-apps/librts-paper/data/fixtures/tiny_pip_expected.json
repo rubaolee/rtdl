@@ -1,0 +1,12 @@
+{
+  "schema": "rtdl.paper_reproduction.librts.tiny_pip_expected.v1",
+  "expected_rows": [
+    [0, 0],
+    [0, 2],
+    [2, 1],
+    [4, 0]
+  ],
+  "expected_count": 4,
+  "bbox_only_candidate_count": 5,
+  "discriminating_case": "point 1 lies inside polygon 0 MBR but outside its triangle"
+}

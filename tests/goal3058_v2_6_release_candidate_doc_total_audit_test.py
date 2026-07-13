@@ -21,7 +21,7 @@ EXCLUDED_PREFIXES = (
     "docs/engineering/",
     "docs/research/archive/",
     "examples/generated/",
-    "examples/internal/",
+    "history/examples_internal/",
     "examples/legacy_or_backend_proofs/",
     "examples/reference/",
 )

@@ -1,0 +1,45 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5344.mapped_candidate_pod_execution_runner.v1",
+  "goal": "Goal5344",
+  "date": "2026-07-09",
+  "purpose": "Add an app-owned runner for Goal5343 mapped-candidate POD execution plans. The runner defaults to dry-run and requires --execute for real POD work.",
+  "script": {
+    "path": "Paper-reproduction-apps/x-hd-paper/scripts/run_xhd_mapped_candidate_pod_execution_plan.py",
+    "input_schema": "rtdl.paper_reproduction.xhd.mapped_candidate_pod_execution_plan.v1",
+    "output_schema": "rtdl.paper_reproduction.xhd.mapped_candidate_pod_execution_run.v1",
+    "default_mode": "dry_run",
+    "execute_requires_flag": "--execute"
+  },
+  "status": "mapped_candidate_pod_execution_runner_ready__dry_run_only_until_real_plan",
+  "current_real_execution_plan_available": false,
+  "pod_usage": {
+    "used": false,
+    "expected_next": false,
+    "reason": "This status artifact validates the runner and dry-run behavior only. Real POD execution still requires a real command-ready packet, Goal5343 plan, and explicit --execute."
+  },
+  "claim_boundary": {
+    "pod_preflight_ran": false,
+    "uploads_executed": false,
+    "remote_commands_executed": false,
+    "downloads_executed": false,
+    "outputs_compared": false,
+    "same_input_gate_passed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false
+  },
+  "allowed_summary": "Goal5344 adds a dry-run-by-default runner for future Goal5343 POD execution plans. It can later execute wrapper-only steps with --execute, but this status artifact does not run POD.",
+  "not_allowed": [
+    "claiming POD preflight ran",
+    "claiming files were uploaded or downloaded",
+    "claiming author or RTDL commands were executed",
+    "claiming outputs were compared",
+    "claiming same-input correctness",
+    "claiming exact paper dataset reproduction",
+    "claiming Figure 5 reproduction",
+    "claiming full X-HD paper reproduction",
+    "claiming author-vs-RTDL performance ratio"
+  ],
+  "exit_label": "mapped_candidate_pod_execution_runner_ready__dry_run_only_until_real_plan"
+}

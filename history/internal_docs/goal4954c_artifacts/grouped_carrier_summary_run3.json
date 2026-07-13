@@ -1,0 +1,195 @@
+{
+  "author_overlay_compute_sec": 0.0421,
+  "claim_boundary": {
+    "bundled_rayjoin_overlay_imported": false,
+    "generic_contract_goal": true,
+    "implementation_change": "internal_app_owned_measurement_script_only",
+    "layer4_fusion": false,
+    "measurement_only": false,
+    "paper_text_writer_in_binary_metric": false,
+    "prototype_only": true,
+    "rayjoin_app_adapter_used": true,
+    "rtdl_core_change": false
+  },
+  "downstream_consumer": {
+    "pair_count": 28815,
+    "top_pairs_by_point_rows": [
+      {
+        "group_count": 25,
+        "label_a": 933,
+        "label_b": 159,
+        "point_row_count": 2152
+      },
+      {
+        "group_count": 201,
+        "label_a": 0,
+        "label_b": 5,
+        "point_row_count": 1455
+      },
+      {
+        "group_count": 78,
+        "label_a": 0,
+        "label_b": 2115,
+        "point_row_count": 1023
+      },
+      {
+        "group_count": 15,
+        "label_a": 1485,
+        "label_b": 5209,
+        "point_row_count": 725
+      },
+      {
+        "group_count": 5,
+        "label_a": 1988,
+        "label_b": 5264,
+        "point_row_count": 576
+      },
+      {
+        "group_count": 3,
+        "label_a": 1401,
+        "label_b": 5187,
+        "point_row_count": 531
+      },
+      {
+        "group_count": 6,
+        "label_a": 1765,
+        "label_b": 5264,
+        "point_row_count": 519
+      },
+      {
+        "group_count": 4,
+        "label_a": 1843,
+        "label_b": 5301,
+        "point_row_count": 515
+      },
+      {
+        "group_count": 7,
+        "label_a": 1505,
+        "label_b": 270,
+        "point_row_count": 505
+      },
+      {
+        "group_count": 7,
+        "label_a": 374,
+        "label_b": 82,
+        "point_row_count": 489
+      }
+    ],
+    "total_groups": 64459,
+    "total_point_rows": 673371
+  },
+  "elapsed_sec": 5.848811783827841,
+  "grouped_carrier": {
+    "group_count": 64459,
+    "point_row_count": 673371,
+    "skipped_group_count": 1756
+  },
+  "left": {
+    "chains": 16545,
+    "edges": 326193,
+    "path": "Paper-reproduction-apps/rayjoin-paper/_data/public_sample/br_county_clean_25_odyssey_final.txt",
+    "points": 342738
+  },
+  "lsi_row_count": 20860,
+  "native_point_location_timings": {
+    "midpoint_pip_map0": {
+      "mode": "none",
+      "point_count": 944,
+      "point_upload": 0.0,
+      "positive_face_count": 934,
+      "row_download": 2.093e-05,
+      "traversal": 0.000106163
+    },
+    "midpoint_pip_map1": {
+      "mode": "none",
+      "point_count": 3594,
+      "point_upload": 0.0,
+      "positive_face_count": 3189,
+      "row_download": 2.85e-05,
+      "traversal": 9.8473e-05
+    },
+    "vertex_pip_map0_in_map1": {
+      "mode": "rows",
+      "point_count": 342738,
+      "point_upload": 0.001068491,
+      "positive_face_count": 337691,
+      "row_download": 0.000470644,
+      "traversal": 0.000495625
+    },
+    "vertex_pip_map1_in_map0": {
+      "mode": "rows",
+      "point_count": 258961,
+      "point_upload": 0.000809794,
+      "positive_face_count": 255272,
+      "row_download": 0.00035316,
+      "traversal": 0.000389342
+    }
+  },
+  "pair_name": "br_county_soil_public",
+  "phase_seconds": {
+    "assign_midpoint_faces_map0_sec": 0.0008873371407389641,
+    "assign_midpoint_faces_map1_sec": 0.0016171382740139961,
+    "destroy_point_location_sessions_sec": 0.007669087499380112,
+    "grouped_columnar_carrier_construction_sec": 0.9489362807944417,
+    "grouped_descriptor_pair_count_consumer_sec": 0.060235803946852684,
+    "intersection_reprojection_sec": 0.736632033251226,
+    "load_pack_left_sec": 0.7563703376799822,
+    "load_pack_right_sec": 0.47606412693858147,
+    "lsi_public_rows_sec": 1.149958562105894,
+    "midpoint_pip_map0_sec": 0.0005575576797127724,
+    "midpoint_pip_map1_sec": 0.0006288876757025719,
+    "midpoint_points_map0_sec": 0.023377401754260063,
+    "midpoint_points_map1_sec": 0.021227428689599037,
+    "pack_midpoint_points_map0_sec": 0.0020860424265265465,
+    "pack_midpoint_points_map1_sec": 0.007591525092720985,
+    "prepare_point_location_map0_in_map1_sec": 0.6953060682862997,
+    "prepare_point_location_map1_in_map0_sec": 0.07746571395546198,
+    "shared_bounds_sec": 7.210299372673035e-06,
+    "sort_map0_sec": 0.41704120859503746,
+    "sort_map1_sec": 0.44642897974699736,
+    "vertex_pip_map0_in_map1_sec": 0.01134925615042448,
+    "vertex_pip_map1_in_map0_sec": 0.0067626796662807465
+  },
+  "right": {
+    "chains": 7950,
+    "edges": 251011,
+    "path": "Paper-reproduction-apps/rayjoin-paper/_data/public_sample/br_soil_ascii_odyssey_final.txt",
+    "points": 258961
+  },
+  "route": "public_planar_map_lsi_point_location_plus_app_owned_grouped_columnar_carrier",
+  "scale_bounds": [
+    -73.990943647,
+    -25.7463,
+    -35.8075,
+    7.0518
+  ],
+  "schema": "rtdl.internal.goal4954c.grouped_carrier_measure.v1",
+  "vertex_positive_counts": {
+    "side0_in_side1": 337691,
+    "side1_in_side0": 255272
+  },
+  "writer_free_hot_keys": [
+    "lsi_public_rows_sec",
+    "intersection_reprojection_sec",
+    "sort_map0_sec",
+    "sort_map1_sec",
+    "vertex_pip_map0_in_map1_sec",
+    "vertex_pip_map1_in_map0_sec",
+    "midpoint_points_map0_sec",
+    "midpoint_points_map1_sec",
+    "pack_midpoint_points_map0_sec",
+    "pack_midpoint_points_map1_sec",
+    "midpoint_pip_map0_sec",
+    "midpoint_pip_map1_sec",
+    "assign_midpoint_faces_map0_sec",
+    "assign_midpoint_faces_map1_sec",
+    "grouped_columnar_carrier_construction_sec",
+    "grouped_descriptor_pair_count_consumer_sec"
+  ],
+  "writer_free_hot_sec": 3.8353181229904294,
+  "writer_free_hot_vs_author_overlay_compute_ratio": 91.10019294514085,
+  "xsect_sorted_counts": {
+    "side0": 20860,
+    "side1": 20860
+  }
+}

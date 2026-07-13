@@ -1,0 +1,1742 @@
+{
+  "authorpatch": {
+    "command": [
+      "/workspace/RayJoin_goal4834_patched_author/release/bin/query_exec",
+      "-poly1",
+      "/workspace/rayjoin_section57_same_source_cdb/point_cdb/dtl_cnty/dtl_cnty_Point.cdb",
+      "-poly2",
+      "/workspace/rayjoin_section57_same_source_cdb/point_cdb/USAZIPCodeArea/USAZIPCodeArea_Point.cdb",
+      "-serialize=/dev/shm",
+      "-grid_size=15000",
+      "-mode=rt",
+      "-v=1",
+      "-fau",
+      "-xsect_factor",
+      "0.1",
+      "-enlarge=3.5",
+      "-check=false",
+      "-warmup=0",
+      "-repeat=1",
+      "-query=pip"
+    ],
+    "elapsed_sec": 17.883024133741856,
+    "returncode": 0,
+    "stderr_path": "/tmp/goal4855_section53_pip_final_stream/county_zipcode.authorpatch.stderr",
+    "stderr_tail": "I20260701 18:39:57.049178 109092 planar_graph.h:215] Map /dev/shm/-workspace-rayjoin_section57_same_source_cdb-point_cdb-dtl_cnty-dtl_cnty_Point.cdb.bin is deserialized, chains: 8662896 points: 17325792 edges: 8662896\nI20260701 18:40:08.751780 109092 planar_graph.h:215] Map /dev/shm/-workspace-rayjoin_section57_same_source_cdb-point_cdb-USAZIPCodeArea-USAZIPCodeArea_Point.cdb.bin is deserialized, chains: 23931046 points: 47862092 edges: 23931046\nI20260701 18:40:08.751957 109092 context.h:51] Bounding Box, Bottom-left: (-179.149, -14.5487), Top-right: (179.778, 71.3905)\nI20260701 18:40:08.752002 109092 context.h:58] Scaled Bounding Box, Bottom-left: (-69978811192544, -68768348336382), Top-right: (69978811192543, 68768348336381)\nI20260701 18:40:08.752017 109092 context.h:61] Unscaled Bounding Box, Bottom-left: (-179.149, -14.5487), Top-right: (179.778, 71.3905)\nI20260701 18:40:09.226346 109092 rt_engine.cu:282] Info: Pipeline statistics\n\tmodule(s)                            :     1\n\tentry function(s)                    :     2\n\ttrace call(s)                        :     1\n\tcontinuation callable call(s)        :     0\n\tdirect callable call(s)              :     0\n\tbasic block(s) in entry functions    :    23\n\tinstruction(s) in entry functions    :   646\n\tnon-entry function(s)                :     1\n\tbasic block(s) in non-entry functions:     1\n\tinstruction(s) in non-entry functions:     1\n\tdebug information                    :    no\nI20260701 18:40:09.236303 109092 rt_engine.cu:282] Info: Pipeline statistics\n\tmodule(s)                            :     1\n\tentry function(s)                    :     2\n\ttrace call(s)                        :     1\n\tcontinuation callable call(s)        :     0\n\tdirect callable call(s)              :     0\n\tbasic block(s) in entry functions    :    61\n\tinstruction(s) in entry functions    :   966\n\tnon-entry function(s)                :     1\n\tbasic block(s) in non-entry functions:     1\n\tinstruction(s) in non-entry functions:     1\n\tdebug information                    :    no\nI20260701 18:40:09.246997 109092 primitive.h:256] Enlarge limit: 3.5 max iter:5 ne: 8662896 aabbs: 1233757 Compress ratio: 0.857581 Time: 7.179 ms\nI20260701 18:40:09.247103 109092 rt_engine.cu:397] Building AS, num prims: 1233757, Required Temp Size: 93960576 Output Size: 46161664\nI20260701 18:40:09.253928 109092 rt_engine.h:159] Parm size: 152\nI20260701 18:40:09.253968 109092 rt_engine.cu:554] optixLaunch, [w,h,d] = 47862092,1,1\nTiming results:\n - Read map 0: 4441.23 ms\n\n - Read map 1: 11702.4 ms\n\n - Load Data: 353.766 ms\n\n - Create App: 133.176 ms\n\n - Init: 0.813961 ms\n\n - Adaptive Grouping: 7.236 ms\n\n - Build Index: 5.53417 ms\n\n - Warmup: 0 ms\n\n - Query: 110.238 ms\n\n - Cleanup: 10.8202 ms\n",
+    "stdout_path": "/tmp/goal4855_section53_pip_final_stream/county_zipcode.authorpatch.stdout",
+    "stdout_tail": ""
+  },
+  "authorpatch_command_shape": "query_exec -query=pip -mode=rt -grid_size=15000 -xsect_factor 0.1 -enlarge=3.5",
+  "claim_boundary": {
+    "all_eight_exact_paper_pairs_claim": false,
+    "broad_speedup_claim": false,
+    "bundled_rayjoin_helper_used": false,
+    "directed_point_location_public_primitive_used": true,
+    "section53_pip_count_only": true,
+    "section57_overlay_claim": false,
+    "streaming_packer_uses_internal_layout_for_memory_safety": true
+  },
+  "direction_mode": "section53_poly2_in_poly1",
+  "directions": {
+    "section53_poly2_vertices_in_poly1": {
+      "base_dataset": "/workspace/rayjoin_section57_same_source_cdb/point_cdb/dtl_cnty/dtl_cnty_Point.cdb",
+      "base_segments": 8662896,
+      "chunk_count": 96,
+      "chunk_size": 500000,
+      "chunks": [
+        {
+          "chunk_elapsed_sec": 0.01673564314842224,
+          "chunk_index": 1,
+          "count_wall_sec": 0.016728200018405914,
+          "first_point_id": 1,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001812669,
+            "positive_face_count": 345605,
+            "row_download": 1.8115e-05,
+            "traversal": 0.001388014
+          },
+          "pack_points_sec": 0.003608427941799164,
+          "point_count": 500000,
+          "positive_face_count": 345605
+        },
+        {
+          "chunk_elapsed_sec": 0.0143212229013443,
+          "chunk_index": 2,
+          "count_wall_sec": 0.014315642416477203,
+          "first_point_id": 500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001826907,
+            "positive_face_count": 309996,
+            "row_download": 1.05e-05,
+            "traversal": 0.001358808
+          },
+          "pack_points_sec": 0.001992546021938324,
+          "point_count": 500000,
+          "positive_face_count": 309996
+        },
+        {
+          "chunk_elapsed_sec": 0.006634525954723358,
+          "chunk_index": 3,
+          "count_wall_sec": 0.006630495190620422,
+          "first_point_id": 1000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001862163,
+            "positive_face_count": 159834,
+            "row_download": 1.075e-05,
+            "traversal": 0.000582314
+          },
+          "pack_points_sec": 0.0017900243401527405,
+          "point_count": 500000,
+          "positive_face_count": 159834
+        },
+        {
+          "chunk_elapsed_sec": 0.00798313319683075,
+          "chunk_index": 4,
+          "count_wall_sec": 0.007979251444339752,
+          "first_point_id": 1500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001838709,
+            "positive_face_count": 295214,
+            "row_download": 1.0881e-05,
+            "traversal": 0.001941714
+          },
+          "pack_points_sec": 0.0019686147570610046,
+          "point_count": 500000,
+          "positive_face_count": 295214
+        },
+        {
+          "chunk_elapsed_sec": 0.008559219539165497,
+          "chunk_index": 5,
+          "count_wall_sec": 0.008555710315704346,
+          "first_point_id": 2000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.002214801,
+            "positive_face_count": 410821,
+            "row_download": 1.037e-05,
+            "traversal": 0.001700085
+          },
+          "pack_points_sec": 0.001787431538105011,
+          "point_count": 500000,
+          "positive_face_count": 410821
+        },
+        {
+          "chunk_elapsed_sec": 0.008286483585834503,
+          "chunk_index": 6,
+          "count_wall_sec": 0.00828292965888977,
+          "first_point_id": 2500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001867894,
+            "positive_face_count": 283178,
+            "row_download": 1.068e-05,
+            "traversal": 0.002225934
+          },
+          "pack_points_sec": 0.0019514486193656921,
+          "point_count": 500000,
+          "positive_face_count": 283178
+        },
+        {
+          "chunk_elapsed_sec": 0.007098816335201263,
+          "chunk_index": 7,
+          "count_wall_sec": 0.007094450294971466,
+          "first_point_id": 3000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001841344,
+            "positive_face_count": 435244,
+            "row_download": 1.0119e-05,
+            "traversal": 0.001064771
+          },
+          "pack_points_sec": 0.001852475106716156,
+          "point_count": 500000,
+          "positive_face_count": 435244
+        },
+        {
+          "chunk_elapsed_sec": 0.008106991648674011,
+          "chunk_index": 8,
+          "count_wall_sec": 0.008103489875793457,
+          "first_point_id": 3500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.00182379,
+            "positive_face_count": 362701,
+            "row_download": 1.0269e-05,
+            "traversal": 0.002095405
+          },
+          "pack_points_sec": 0.0019484162330627441,
+          "point_count": 500000,
+          "positive_face_count": 362701
+        },
+        {
+          "chunk_elapsed_sec": 0.008076794445514679,
+          "chunk_index": 9,
+          "count_wall_sec": 0.008073322474956512,
+          "first_point_id": 4000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001846092,
+            "positive_face_count": 341007,
+            "row_download": 1.069e-05,
+            "traversal": 0.00200308
+          },
+          "pack_points_sec": 0.0017765611410140991,
+          "point_count": 500000,
+          "positive_face_count": 341007
+        },
+        {
+          "chunk_elapsed_sec": 0.0077041760087013245,
+          "chunk_index": 10,
+          "count_wall_sec": 0.007701173424720764,
+          "first_point_id": 4500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001838599,
+            "positive_face_count": 282694,
+            "row_download": 1.027e-05,
+            "traversal": 0.001657053
+          },
+          "pack_points_sec": 0.00195978581905365,
+          "point_count": 500000,
+          "positive_face_count": 282694
+        },
+        {
+          "chunk_elapsed_sec": 0.007423415780067444,
+          "chunk_index": 11,
+          "count_wall_sec": 0.007419958710670471,
+          "first_point_id": 5000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001839971,
+            "positive_face_count": 439485,
+            "row_download": 1.0179e-05,
+            "traversal": 0.001383926
+          },
+          "pack_points_sec": 0.001777350902557373,
+          "point_count": 500000,
+          "positive_face_count": 439485
+        },
+        {
+          "chunk_elapsed_sec": 0.007574900984764099,
+          "chunk_index": 12,
+          "count_wall_sec": 0.00757136195898056,
+          "first_point_id": 5500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001819112,
+            "positive_face_count": 364058,
+            "row_download": 1.0841e-05,
+            "traversal": 0.001543939
+          },
+          "pack_points_sec": 0.0019484013319015503,
+          "point_count": 500000,
+          "positive_face_count": 364058
+        },
+        {
+          "chunk_elapsed_sec": 0.007692247629165649,
+          "chunk_index": 13,
+          "count_wall_sec": 0.007688693702220917,
+          "first_point_id": 6000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001958295,
+            "positive_face_count": 373843,
+            "row_download": 1.062e-05,
+            "traversal": 0.001519052
+          },
+          "pack_points_sec": 0.0018224045634269714,
+          "point_count": 500000,
+          "positive_face_count": 373843
+        },
+        {
+          "chunk_elapsed_sec": 0.007671050727367401,
+          "chunk_index": 14,
+          "count_wall_sec": 0.0076669007539749146,
+          "first_point_id": 6500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001825624,
+            "positive_face_count": 500000,
+            "row_download": 1.1181e-05,
+            "traversal": 0.001648007
+          },
+          "pack_points_sec": 0.0019583776593208313,
+          "point_count": 500000,
+          "positive_face_count": 500000
+        },
+        {
+          "chunk_elapsed_sec": 0.007613375782966614,
+          "chunk_index": 15,
+          "count_wall_sec": 0.007609717547893524,
+          "first_point_id": 7000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.0018342,
+            "positive_face_count": 473997,
+            "row_download": 1.059e-05,
+            "traversal": 0.00156559
+          },
+          "pack_points_sec": 0.0017896071076393127,
+          "point_count": 500000,
+          "positive_face_count": 473997
+        },
+        {
+          "chunk_elapsed_sec": 0.007656559348106384,
+          "chunk_index": 16,
+          "count_wall_sec": 0.007653132081031799,
+          "first_point_id": 7500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001830763,
+            "positive_face_count": 500000,
+            "row_download": 1.057e-05,
+            "traversal": 0.001649008
+          },
+          "pack_points_sec": 0.001958690583705902,
+          "point_count": 500000,
+          "positive_face_count": 500000
+        },
+        {
+          "chunk_elapsed_sec": 0.009055718779563904,
+          "chunk_index": 17,
+          "count_wall_sec": 0.009051322937011719,
+          "first_point_id": 8000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.002539689,
+            "positive_face_count": 454711,
+            "row_download": 1.0681e-05,
+            "traversal": 0.001846544
+          },
+          "pack_points_sec": 0.0017849281430244446,
+          "point_count": 500000,
+          "positive_face_count": 454711
+        },
+        {
+          "chunk_elapsed_sec": 0.007848255336284637,
+          "chunk_index": 18,
+          "count_wall_sec": 0.00784464180469513,
+          "first_point_id": 8500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001839049,
+            "positive_face_count": 403444,
+            "row_download": 1.014e-05,
+            "traversal": 0.001798132
+          },
+          "pack_points_sec": 0.001959472894668579,
+          "point_count": 500000,
+          "positive_face_count": 403444
+        },
+        {
+          "chunk_elapsed_sec": 0.008396878838539124,
+          "chunk_index": 19,
+          "count_wall_sec": 0.008393369615077972,
+          "first_point_id": 9000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.0018709,
+            "positive_face_count": 433281,
+            "row_download": 1.0189e-05,
+            "traversal": 0.002344277
+          },
+          "pack_points_sec": 0.0017587095499038696,
+          "point_count": 500000,
+          "positive_face_count": 433281
+        },
+        {
+          "chunk_elapsed_sec": 0.009096451103687286,
+          "chunk_index": 20,
+          "count_wall_sec": 0.009092472493648529,
+          "first_point_id": 9500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001829732,
+            "positive_face_count": 320196,
+            "row_download": 1.043e-05,
+            "traversal": 0.003055427
+          },
+          "pack_points_sec": 0.0019594579935073853,
+          "point_count": 500000,
+          "positive_face_count": 320196
+        },
+        {
+          "chunk_elapsed_sec": 0.008792191743850708,
+          "chunk_index": 21,
+          "count_wall_sec": 0.008788123726844788,
+          "first_point_id": 10000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001880788,
+            "positive_face_count": 499416,
+            "row_download": 1.087e-05,
+            "traversal": 0.002718077
+          },
+          "pack_points_sec": 0.0017885193228721619,
+          "point_count": 500000,
+          "positive_face_count": 499416
+        },
+        {
+          "chunk_elapsed_sec": 0.008220992982387543,
+          "chunk_index": 22,
+          "count_wall_sec": 0.008217588067054749,
+          "first_point_id": 10500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001836304,
+            "positive_face_count": 500000,
+            "row_download": 1.0059e-05,
+            "traversal": 0.002163975
+          },
+          "pack_points_sec": 0.001959562301635742,
+          "point_count": 500000,
+          "positive_face_count": 500000
+        },
+        {
+          "chunk_elapsed_sec": 0.008553653955459595,
+          "chunk_index": 23,
+          "count_wall_sec": 0.0085492804646492,
+          "first_point_id": 11000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.002433898,
+            "positive_face_count": 500000,
+            "row_download": 1.063e-05,
+            "traversal": 0.001922447
+          },
+          "pack_points_sec": 0.0017797723412513733,
+          "point_count": 500000,
+          "positive_face_count": 500000
+        },
+        {
+          "chunk_elapsed_sec": 0.008810162544250488,
+          "chunk_index": 24,
+          "count_wall_sec": 0.008806735277175903,
+          "first_point_id": 11500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001824652,
+            "positive_face_count": 491828,
+            "row_download": 1.6542e-05,
+            "traversal": 0.002797768
+          },
+          "pack_points_sec": 0.001964166760444641,
+          "point_count": 500000,
+          "positive_face_count": 491828
+        },
+        {
+          "chunk_elapsed_sec": 0.009085327386856079,
+          "chunk_index": 25,
+          "count_wall_sec": 0.009080931544303894,
+          "first_point_id": 12000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001840191,
+            "positive_face_count": 400185,
+            "row_download": 1.073e-05,
+            "traversal": 0.003049245
+          },
+          "pack_points_sec": 0.0018067359924316406,
+          "point_count": 500000,
+          "positive_face_count": 400185
+        },
+        {
+          "chunk_elapsed_sec": 0.009107954800128937,
+          "chunk_index": 26,
+          "count_wall_sec": 0.00910349190235138,
+          "first_point_id": 12500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001837516,
+            "positive_face_count": 432668,
+            "row_download": 1.9026e-05,
+            "traversal": 0.003079543
+          },
+          "pack_points_sec": 0.00196288526058197,
+          "point_count": 500000,
+          "positive_face_count": 432668
+        },
+        {
+          "chunk_elapsed_sec": 0.008696205914020538,
+          "chunk_index": 27,
+          "count_wall_sec": 0.008692368865013123,
+          "first_point_id": 13000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.002217087,
+            "positive_face_count": 459818,
+            "row_download": 1.059e-05,
+            "traversal": 0.00227704
+          },
+          "pack_points_sec": 0.001799270510673523,
+          "point_count": 500000,
+          "positive_face_count": 459818
+        },
+        {
+          "chunk_elapsed_sec": 0.007942229509353638,
+          "chunk_index": 28,
+          "count_wall_sec": 0.007938578724861145,
+          "first_point_id": 13500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001815414,
+            "positive_face_count": 488194,
+            "row_download": 1.011e-05,
+            "traversal": 0.001903491
+          },
+          "pack_points_sec": 0.0019593536853790283,
+          "point_count": 500000,
+          "positive_face_count": 488194
+        },
+        {
+          "chunk_elapsed_sec": 0.008294187486171722,
+          "chunk_index": 29,
+          "count_wall_sec": 0.008290126919746399,
+          "first_point_id": 14000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001834841,
+            "positive_face_count": 500000,
+            "row_download": 1.039e-05,
+            "traversal": 0.00225623
+          },
+          "pack_points_sec": 0.0017947331070899963,
+          "point_count": 500000,
+          "positive_face_count": 500000
+        },
+        {
+          "chunk_elapsed_sec": 0.008435972034931183,
+          "chunk_index": 30,
+          "count_wall_sec": 0.008431665599346161,
+          "first_point_id": 14500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001829652,
+            "positive_face_count": 441152,
+            "row_download": 9.949e-06,
+            "traversal": 0.00242998
+          },
+          "pack_points_sec": 0.0019630566239356995,
+          "point_count": 500000,
+          "positive_face_count": 441152
+        },
+        {
+          "chunk_elapsed_sec": 0.008446268737316132,
+          "chunk_index": 31,
+          "count_wall_sec": 0.008442319929599762,
+          "first_point_id": 15000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001848547,
+            "positive_face_count": 370680,
+            "row_download": 1.0209e-05,
+            "traversal": 0.002395725
+          },
+          "pack_points_sec": 0.001836933195590973,
+          "point_count": 500000,
+          "positive_face_count": 370680
+        },
+        {
+          "chunk_elapsed_sec": 0.008172392845153809,
+          "chunk_index": 32,
+          "count_wall_sec": 0.008169002830982208,
+          "first_point_id": 15500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001812348,
+            "positive_face_count": 382307,
+            "row_download": 1.0791e-05,
+            "traversal": 0.002143787
+          },
+          "pack_points_sec": 0.0019386634230613708,
+          "point_count": 500000,
+          "positive_face_count": 382307
+        },
+        {
+          "chunk_elapsed_sec": 0.00934300571680069,
+          "chunk_index": 33,
+          "count_wall_sec": 0.009339198470115662,
+          "first_point_id": 16000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.00182385,
+            "positive_face_count": 310458,
+            "row_download": 1.053e-05,
+            "traversal": 0.003316953
+          },
+          "pack_points_sec": 0.001823030412197113,
+          "point_count": 500000,
+          "positive_face_count": 310458
+        },
+        {
+          "chunk_elapsed_sec": 0.009311467409133911,
+          "chunk_index": 34,
+          "count_wall_sec": 0.009307220578193665,
+          "first_point_id": 16500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001798523,
+            "positive_face_count": 281827,
+            "row_download": 1.0089e-05,
+            "traversal": 0.003295482
+          },
+          "pack_points_sec": 0.001980498433113098,
+          "point_count": 500000,
+          "positive_face_count": 281827
+        },
+        {
+          "chunk_elapsed_sec": 0.007659539580345154,
+          "chunk_index": 35,
+          "count_wall_sec": 0.0076562389731407166,
+          "first_point_id": 17000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001837507,
+            "positive_face_count": 500000,
+            "row_download": 1.051e-05,
+            "traversal": 0.001603913
+          },
+          "pack_points_sec": 0.001781560480594635,
+          "point_count": 500000,
+          "positive_face_count": 500000
+        },
+        {
+          "chunk_elapsed_sec": 0.007713548839092255,
+          "chunk_index": 36,
+          "count_wall_sec": 0.007709421217441559,
+          "first_point_id": 17500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001820924,
+            "positive_face_count": 485819,
+            "row_download": 1.1161e-05,
+            "traversal": 0.001669718
+          },
+          "pack_points_sec": 0.0019483715295791626,
+          "point_count": 500000,
+          "positive_face_count": 485819
+        },
+        {
+          "chunk_elapsed_sec": 0.008584611117839813,
+          "chunk_index": 37,
+          "count_wall_sec": 0.008581027388572693,
+          "first_point_id": 18000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.00182903,
+            "positive_face_count": 481668,
+            "row_download": 1.1111e-05,
+            "traversal": 0.002574926
+          },
+          "pack_points_sec": 0.0017954334616661072,
+          "point_count": 500000,
+          "positive_face_count": 481668
+        },
+        {
+          "chunk_elapsed_sec": 0.008711472153663635,
+          "chunk_index": 38,
+          "count_wall_sec": 0.008707351982593536,
+          "first_point_id": 18500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001815474,
+            "positive_face_count": 500000,
+            "row_download": 1.0009e-05,
+            "traversal": 0.002697648
+          },
+          "pack_points_sec": 0.0019641444087028503,
+          "point_count": 500000,
+          "positive_face_count": 500000
+        },
+        {
+          "chunk_elapsed_sec": 0.008890524506568909,
+          "chunk_index": 39,
+          "count_wall_sec": 0.008886530995368958,
+          "first_point_id": 19000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001852013,
+            "positive_face_count": 500000,
+            "row_download": 1.039e-05,
+            "traversal": 0.002845007
+          },
+          "pack_points_sec": 0.0017877593636512756,
+          "point_count": 500000,
+          "positive_face_count": 500000
+        },
+        {
+          "chunk_elapsed_sec": 0.008655145764350891,
+          "chunk_index": 40,
+          "count_wall_sec": 0.008651427924633026,
+          "first_point_id": 19500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001815554,
+            "positive_face_count": 500000,
+            "row_download": 9.999e-06,
+            "traversal": 0.00265634
+          },
+          "pack_points_sec": 0.001959957182407379,
+          "point_count": 500000,
+          "positive_face_count": 500000
+        },
+        {
+          "chunk_elapsed_sec": 0.007788918912410736,
+          "chunk_index": 41,
+          "count_wall_sec": 0.007784761488437653,
+          "first_point_id": 20000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001857023,
+            "positive_face_count": 494310,
+            "row_download": 1.0991e-05,
+            "traversal": 0.001714383
+          },
+          "pack_points_sec": 0.0017945170402526855,
+          "point_count": 500000,
+          "positive_face_count": 494310
+        },
+        {
+          "chunk_elapsed_sec": 0.00880877673625946,
+          "chunk_index": 42,
+          "count_wall_sec": 0.008805014193058014,
+          "first_point_id": 20500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001845853,
+            "positive_face_count": 498026,
+            "row_download": 1.048e-05,
+            "traversal": 0.002764655
+          },
+          "pack_points_sec": 0.0019670426845550537,
+          "point_count": 500000,
+          "positive_face_count": 498026
+        },
+        {
+          "chunk_elapsed_sec": 0.008791431784629822,
+          "chunk_index": 43,
+          "count_wall_sec": 0.008787669241428375,
+          "first_point_id": 21000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001882882,
+            "positive_face_count": 500000,
+            "row_download": 1.1512e-05,
+            "traversal": 0.002691606
+          },
+          "pack_points_sec": 0.001775786280632019,
+          "point_count": 500000,
+          "positive_face_count": 500000
+        },
+        {
+          "chunk_elapsed_sec": 0.008975185453891754,
+          "chunk_index": 44,
+          "count_wall_sec": 0.008971184492111206,
+          "first_point_id": 21500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001815314,
+            "positive_face_count": 471378,
+            "row_download": 1.028e-05,
+            "traversal": 0.002955928
+          },
+          "pack_points_sec": 0.00193110853433609,
+          "point_count": 500000,
+          "positive_face_count": 471378
+        },
+        {
+          "chunk_elapsed_sec": 0.007829755544662476,
+          "chunk_index": 45,
+          "count_wall_sec": 0.007825881242752075,
+          "first_point_id": 22000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001817278,
+            "positive_face_count": 414793,
+            "row_download": 1.098e-05,
+            "traversal": 0.001827497
+          },
+          "pack_points_sec": 0.0018119141459465027,
+          "point_count": 500000,
+          "positive_face_count": 414793
+        },
+        {
+          "chunk_elapsed_sec": 0.008534759283065796,
+          "chunk_index": 46,
+          "count_wall_sec": 0.008530177175998688,
+          "first_point_id": 22500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001815865,
+            "positive_face_count": 496875,
+            "row_download": 1.056e-05,
+            "traversal": 0.002518558
+          },
+          "pack_points_sec": 0.001941770315170288,
+          "point_count": 500000,
+          "positive_face_count": 496875
+        },
+        {
+          "chunk_elapsed_sec": 0.009140774607658386,
+          "chunk_index": 47,
+          "count_wall_sec": 0.009137384593486786,
+          "first_point_id": 23000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001835532,
+            "positive_face_count": 474223,
+            "row_download": 1.0079e-05,
+            "traversal": 0.003116183
+          },
+          "pack_points_sec": 0.0017846077680587769,
+          "point_count": 500000,
+          "positive_face_count": 474223
+        },
+        {
+          "chunk_elapsed_sec": 0.008166924118995667,
+          "chunk_index": 48,
+          "count_wall_sec": 0.00816255807876587,
+          "first_point_id": 23500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001825162,
+            "positive_face_count": 433548,
+            "row_download": 1.0259e-05,
+            "traversal": 0.002079435
+          },
+          "pack_points_sec": 0.0019825026392936707,
+          "point_count": 500000,
+          "positive_face_count": 433548
+        },
+        {
+          "chunk_elapsed_sec": 0.008044078946113586,
+          "chunk_index": 49,
+          "count_wall_sec": 0.00804048776626587,
+          "first_point_id": 24000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001840782,
+            "positive_face_count": 325727,
+            "row_download": 1.0641e-05,
+            "traversal": 0.001982771
+          },
+          "pack_points_sec": 0.001778140664100647,
+          "point_count": 500000,
+          "positive_face_count": 325727
+        },
+        {
+          "chunk_elapsed_sec": 0.008293278515338898,
+          "chunk_index": 50,
+          "count_wall_sec": 0.008289463818073273,
+          "first_point_id": 24500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.00184963,
+            "positive_face_count": 380664,
+            "row_download": 1.033e-05,
+            "traversal": 0.002204212
+          },
+          "pack_points_sec": 0.0019313916563987732,
+          "point_count": 500000,
+          "positive_face_count": 380664
+        },
+        {
+          "chunk_elapsed_sec": 0.007811442017555237,
+          "chunk_index": 51,
+          "count_wall_sec": 0.007807232439517975,
+          "first_point_id": 25000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001851162,
+            "positive_face_count": 489927,
+            "row_download": 1.077e-05,
+            "traversal": 0.001762674
+          },
+          "pack_points_sec": 0.001798577606678009,
+          "point_count": 500000,
+          "positive_face_count": 489927
+        },
+        {
+          "chunk_elapsed_sec": 0.008185341954231262,
+          "chunk_index": 52,
+          "count_wall_sec": 0.008181609213352203,
+          "first_point_id": 25500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.002368684,
+            "positive_face_count": 443515,
+            "row_download": 1.034e-05,
+            "traversal": 0.001606398
+          },
+          "pack_points_sec": 0.0019486099481582642,
+          "point_count": 500000,
+          "positive_face_count": 443515
+        },
+        {
+          "chunk_elapsed_sec": 0.007634297013282776,
+          "chunk_index": 53,
+          "count_wall_sec": 0.007630877196788788,
+          "first_point_id": 26000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001825633,
+            "positive_face_count": 410381,
+            "row_download": 1.1201e-05,
+            "traversal": 0.001620565
+          },
+          "pack_points_sec": 0.0017932504415512085,
+          "point_count": 500000,
+          "positive_face_count": 410381
+        },
+        {
+          "chunk_elapsed_sec": 0.00796893984079361,
+          "chunk_index": 54,
+          "count_wall_sec": 0.00796477496623993,
+          "first_point_id": 26500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.0018395,
+            "positive_face_count": 471777,
+            "row_download": 1.0109e-05,
+            "traversal": 0.001941794
+          },
+          "pack_points_sec": 0.00194627046585083,
+          "point_count": 500000,
+          "positive_face_count": 471777
+        },
+        {
+          "chunk_elapsed_sec": 0.007564552128314972,
+          "chunk_index": 55,
+          "count_wall_sec": 0.007560364902019501,
+          "first_point_id": 27000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001830604,
+            "positive_face_count": 475687,
+            "row_download": 9.819e-06,
+            "traversal": 0.001520905
+          },
+          "pack_points_sec": 0.0017894580960273743,
+          "point_count": 500000,
+          "positive_face_count": 475687
+        },
+        {
+          "chunk_elapsed_sec": 0.00719798356294632,
+          "chunk_index": 56,
+          "count_wall_sec": 0.007193967700004578,
+          "first_point_id": 27500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001822158,
+            "positive_face_count": 440082,
+            "row_download": 1.084e-05,
+            "traversal": 0.001161012
+          },
+          "pack_points_sec": 0.001968078315258026,
+          "point_count": 500000,
+          "positive_face_count": 440082
+        },
+        {
+          "chunk_elapsed_sec": 0.007700465619564056,
+          "chunk_index": 57,
+          "count_wall_sec": 0.007696524262428284,
+          "first_point_id": 28000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001835853,
+            "positive_face_count": 388764,
+            "row_download": 1.0691e-05,
+            "traversal": 0.001377384
+          },
+          "pack_points_sec": 0.001760430634021759,
+          "point_count": 500000,
+          "positive_face_count": 388764
+        },
+        {
+          "chunk_elapsed_sec": 0.007822811603546143,
+          "chunk_index": 58,
+          "count_wall_sec": 0.007819071412086487,
+          "first_point_id": 28500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001820264,
+            "positive_face_count": 431632,
+            "row_download": 9.788e-06,
+            "traversal": 0.001792131
+          },
+          "pack_points_sec": 0.0019473433494567871,
+          "point_count": 500000,
+          "positive_face_count": 431632
+        },
+        {
+          "chunk_elapsed_sec": 0.008442975580692291,
+          "chunk_index": 59,
+          "count_wall_sec": 0.008438728749752045,
+          "first_point_id": 29000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001816296,
+            "positive_face_count": 500000,
+            "row_download": 9.979e-06,
+            "traversal": 0.002430442
+          },
+          "pack_points_sec": 0.0018287301063537598,
+          "point_count": 500000,
+          "positive_face_count": 500000
+        },
+        {
+          "chunk_elapsed_sec": 0.008392073214054108,
+          "chunk_index": 60,
+          "count_wall_sec": 0.008388124406337738,
+          "first_point_id": 29500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001849739,
+            "positive_face_count": 500000,
+            "row_download": 1.1191e-05,
+            "traversal": 0.002336553
+          },
+          "pack_points_sec": 0.0019360259175300598,
+          "point_count": 500000,
+          "positive_face_count": 500000
+        },
+        {
+          "chunk_elapsed_sec": 0.008547849953174591,
+          "chunk_index": 61,
+          "count_wall_sec": 0.008544206619262695,
+          "first_point_id": 30000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001836023,
+            "positive_face_count": 500000,
+            "row_download": 1.0169e-05,
+            "traversal": 0.002474735
+          },
+          "pack_points_sec": 0.001804262399673462,
+          "point_count": 500000,
+          "positive_face_count": 500000
+        },
+        {
+          "chunk_elapsed_sec": 0.008954264223575592,
+          "chunk_index": 62,
+          "count_wall_sec": 0.008950702846050262,
+          "first_point_id": 30500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001843268,
+            "positive_face_count": 500000,
+            "row_download": 9.949e-06,
+            "traversal": 0.0029306
+          },
+          "pack_points_sec": 0.0019363835453987122,
+          "point_count": 500000,
+          "positive_face_count": 500000
+        },
+        {
+          "chunk_elapsed_sec": 0.007972419261932373,
+          "chunk_index": 63,
+          "count_wall_sec": 0.007968775928020477,
+          "first_point_id": 31000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001843678,
+            "positive_face_count": 381908,
+            "row_download": 1.0781e-05,
+            "traversal": 0.001935502
+          },
+          "pack_points_sec": 0.0018052980303764343,
+          "point_count": 500000,
+          "positive_face_count": 381908
+        },
+        {
+          "chunk_elapsed_sec": 0.008398652076721191,
+          "chunk_index": 64,
+          "count_wall_sec": 0.008395090699195862,
+          "first_point_id": 31500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.00182374,
+            "positive_face_count": 263180,
+            "row_download": 1.1441e-05,
+            "traversal": 0.001650903
+          },
+          "pack_points_sec": 0.001950688660144806,
+          "point_count": 500000,
+          "positive_face_count": 263180
+        },
+        {
+          "chunk_elapsed_sec": 0.007521405816078186,
+          "chunk_index": 65,
+          "count_wall_sec": 0.007517904043197632,
+          "first_point_id": 32000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001830513,
+            "positive_face_count": 489789,
+            "row_download": 1.5108e-05,
+            "traversal": 0.001501579
+          },
+          "pack_points_sec": 0.0017831474542617798,
+          "point_count": 500000,
+          "positive_face_count": 489789
+        },
+        {
+          "chunk_elapsed_sec": 0.008786074817180634,
+          "chunk_index": 66,
+          "count_wall_sec": 0.008782058954238892,
+          "first_point_id": 32500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001824913,
+            "positive_face_count": 500000,
+            "row_download": 1.0029e-05,
+            "traversal": 0.002757011
+          },
+          "pack_points_sec": 0.001955181360244751,
+          "point_count": 500000,
+          "positive_face_count": 500000
+        },
+        {
+          "chunk_elapsed_sec": 0.009766727685928345,
+          "chunk_index": 67,
+          "count_wall_sec": 0.009762965142726898,
+          "first_point_id": 33000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.0021396,
+            "positive_face_count": 500000,
+            "row_download": 1.0169e-05,
+            "traversal": 0.00307804
+          },
+          "pack_points_sec": 0.001978069543838501,
+          "point_count": 500000,
+          "positive_face_count": 500000
+        },
+        {
+          "chunk_elapsed_sec": 0.008598461747169495,
+          "chunk_index": 68,
+          "count_wall_sec": 0.008594639599323273,
+          "first_point_id": 33500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001835142,
+            "positive_face_count": 500000,
+            "row_download": 1.041e-05,
+            "traversal": 0.00257792
+          },
+          "pack_points_sec": 0.00195988267660141,
+          "point_count": 500000,
+          "positive_face_count": 500000
+        },
+        {
+          "chunk_elapsed_sec": 0.00822678953409195,
+          "chunk_index": 69,
+          "count_wall_sec": 0.008222140371799469,
+          "first_point_id": 34000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001872292,
+            "positive_face_count": 500000,
+            "row_download": 1.1141e-05,
+            "traversal": 0.00212926
+          },
+          "pack_points_sec": 0.001881130039691925,
+          "point_count": 500000,
+          "positive_face_count": 500000
+        },
+        {
+          "chunk_elapsed_sec": 0.008586473762989044,
+          "chunk_index": 70,
+          "count_wall_sec": 0.008583448827266693,
+          "first_point_id": 34500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001813481,
+            "positive_face_count": 500000,
+            "row_download": 1.048e-05,
+            "traversal": 0.00254062
+          },
+          "pack_points_sec": 0.0019701719284057617,
+          "point_count": 500000,
+          "positive_face_count": 500000
+        },
+        {
+          "chunk_elapsed_sec": 0.010020993649959564,
+          "chunk_index": 71,
+          "count_wall_sec": 0.010017111897468567,
+          "first_point_id": 35000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.0018503,
+            "positive_face_count": 489485,
+            "row_download": 1.1301e-05,
+            "traversal": 0.002944967
+          },
+          "pack_points_sec": 0.0018493235111236572,
+          "point_count": 500000,
+          "positive_face_count": 489485
+        },
+        {
+          "chunk_elapsed_sec": 0.009009294211864471,
+          "chunk_index": 72,
+          "count_wall_sec": 0.009005710482597351,
+          "first_point_id": 35500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001821416,
+            "positive_face_count": 423677,
+            "row_download": 1.061e-05,
+            "traversal": 0.002999741
+          },
+          "pack_points_sec": 0.0019958913326263428,
+          "point_count": 500000,
+          "positive_face_count": 423677
+        },
+        {
+          "chunk_elapsed_sec": 0.008725538849830627,
+          "chunk_index": 73,
+          "count_wall_sec": 0.008721783757209778,
+          "first_point_id": 36000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001856242,
+            "positive_face_count": 402718,
+            "row_download": 1.0971e-05,
+            "traversal": 0.0026938
+          },
+          "pack_points_sec": 0.0018286481499671936,
+          "point_count": 500000,
+          "positive_face_count": 402718
+        },
+        {
+          "chunk_elapsed_sec": 0.009001977741718292,
+          "chunk_index": 74,
+          "count_wall_sec": 0.008998312056064606,
+          "first_point_id": 36500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001845752,
+            "positive_face_count": 481127,
+            "row_download": 9.799e-06,
+            "traversal": 0.00295116
+          },
+          "pack_points_sec": 0.0020004138350486755,
+          "point_count": 500000,
+          "positive_face_count": 481127
+        },
+        {
+          "chunk_elapsed_sec": 0.00807950645685196,
+          "chunk_index": 75,
+          "count_wall_sec": 0.00807538628578186,
+          "first_point_id": 37000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001836514,
+            "positive_face_count": 489965,
+            "row_download": 1.0489e-05,
+            "traversal": 0.00202888
+          },
+          "pack_points_sec": 0.0018040239810943604,
+          "point_count": 500000,
+          "positive_face_count": 489965
+        },
+        {
+          "chunk_elapsed_sec": 0.00806698203086853,
+          "chunk_index": 76,
+          "count_wall_sec": 0.00806320458650589,
+          "first_point_id": 37500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001853707,
+            "positive_face_count": 500000,
+            "row_download": 1.025e-05,
+            "traversal": 0.001985116
+          },
+          "pack_points_sec": 0.0019582733511924744,
+          "point_count": 500000,
+          "positive_face_count": 500000
+        },
+        {
+          "chunk_elapsed_sec": 0.007468514144420624,
+          "chunk_index": 77,
+          "count_wall_sec": 0.0074651166796684265,
+          "first_point_id": 38000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001852845,
+            "positive_face_count": 500000,
+            "row_download": 1.1141e-05,
+            "traversal": 0.001414383
+          },
+          "pack_points_sec": 0.0018183887004852295,
+          "point_count": 500000,
+          "positive_face_count": 500000
+        },
+        {
+          "chunk_elapsed_sec": 0.008009470999240875,
+          "chunk_index": 78,
+          "count_wall_sec": 0.008005857467651367,
+          "first_point_id": 38500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001919943,
+            "positive_face_count": 500000,
+            "row_download": 1.0781e-05,
+            "traversal": 0.001889895
+          },
+          "pack_points_sec": 0.0019820034503936768,
+          "point_count": 500000,
+          "positive_face_count": 500000
+        },
+        {
+          "chunk_elapsed_sec": 0.008058696985244751,
+          "chunk_index": 79,
+          "count_wall_sec": 0.008055321872234344,
+          "first_point_id": 39000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001843478,
+            "positive_face_count": 493988,
+            "row_download": 1.0279e-05,
+            "traversal": 0.001975428
+          },
+          "pack_points_sec": 0.0017739683389663696,
+          "point_count": 500000,
+          "positive_face_count": 493988
+        },
+        {
+          "chunk_elapsed_sec": 0.007377922534942627,
+          "chunk_index": 80,
+          "count_wall_sec": 0.0073736682534217834,
+          "first_point_id": 39500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001831365,
+            "positive_face_count": 497211,
+            "row_download": 1.0721e-05,
+            "traversal": 0.001189046
+          },
+          "pack_points_sec": 0.0020358487963676453,
+          "point_count": 500000,
+          "positive_face_count": 497211
+        },
+        {
+          "chunk_elapsed_sec": 0.007581666111946106,
+          "chunk_index": 81,
+          "count_wall_sec": 0.007578223943710327,
+          "first_point_id": 40000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001827668,
+            "positive_face_count": 500000,
+            "row_download": 1.036e-05,
+            "traversal": 0.001558176
+          },
+          "pack_points_sec": 0.0018076300621032715,
+          "point_count": 500000,
+          "positive_face_count": 500000
+        },
+        {
+          "chunk_elapsed_sec": 0.0073545947670936584,
+          "chunk_index": 82,
+          "count_wall_sec": 0.007350817322731018,
+          "first_point_id": 40500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001847495,
+            "positive_face_count": 499986,
+            "row_download": 1.059e-05,
+            "traversal": 0.001294185
+          },
+          "pack_points_sec": 0.0019848644733428955,
+          "point_count": 500000,
+          "positive_face_count": 499986
+        },
+        {
+          "chunk_elapsed_sec": 0.007521077990531921,
+          "chunk_index": 83,
+          "count_wall_sec": 0.007517680525779724,
+          "first_point_id": 41000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001854278,
+            "positive_face_count": 480411,
+            "row_download": 1.0349e-05,
+            "traversal": 0.001465962
+          },
+          "pack_points_sec": 0.0018196925520896912,
+          "point_count": 500000,
+          "positive_face_count": 480411
+        },
+        {
+          "chunk_elapsed_sec": 0.007334999740123749,
+          "chunk_index": 84,
+          "count_wall_sec": 0.007331423461437225,
+          "first_point_id": 41500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001859679,
+            "positive_face_count": 488617,
+            "row_download": 1.063e-05,
+            "traversal": 0.001074829
+          },
+          "pack_points_sec": 0.002179868519306183,
+          "point_count": 500000,
+          "positive_face_count": 488617
+        },
+        {
+          "chunk_elapsed_sec": 0.0077504441142082214,
+          "chunk_index": 85,
+          "count_wall_sec": 0.007746301591396332,
+          "first_point_id": 42000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001846162,
+            "positive_face_count": 488421,
+            "row_download": 1.069e-05,
+            "traversal": 0.001691549
+          },
+          "pack_points_sec": 0.0018304884433746338,
+          "point_count": 500000,
+          "positive_face_count": 488421
+        },
+        {
+          "chunk_elapsed_sec": 0.008672140538692474,
+          "chunk_index": 86,
+          "count_wall_sec": 0.00866786390542984,
+          "first_point_id": 42500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001844219,
+            "positive_face_count": 346558,
+            "row_download": 9.899e-06,
+            "traversal": 0.002623488
+          },
+          "pack_points_sec": 0.0019799545407295227,
+          "point_count": 500000,
+          "positive_face_count": 346558
+        },
+        {
+          "chunk_elapsed_sec": 0.008080445230007172,
+          "chunk_index": 87,
+          "count_wall_sec": 0.008077256381511688,
+          "first_point_id": 43000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001836375,
+            "positive_face_count": 479738,
+            "row_download": 1.0399e-05,
+            "traversal": 0.002005896
+          },
+          "pack_points_sec": 0.0017771273851394653,
+          "point_count": 500000,
+          "positive_face_count": 479738
+        },
+        {
+          "chunk_elapsed_sec": 0.007887192070484161,
+          "chunk_index": 88,
+          "count_wall_sec": 0.007883630692958832,
+          "first_point_id": 43500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001878534,
+            "positive_face_count": 461783,
+            "row_download": 1.0059e-05,
+            "traversal": 0.001797761
+          },
+          "pack_points_sec": 0.0019606202840805054,
+          "point_count": 500000,
+          "positive_face_count": 461783
+        },
+        {
+          "chunk_elapsed_sec": 0.007591992616653442,
+          "chunk_index": 89,
+          "count_wall_sec": 0.007588222622871399,
+          "first_point_id": 44000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001835953,
+            "positive_face_count": 392865,
+            "row_download": 1.042e-05,
+            "traversal": 0.00151272
+          },
+          "pack_points_sec": 0.0018120482563972473,
+          "point_count": 500000,
+          "positive_face_count": 392865
+        },
+        {
+          "chunk_elapsed_sec": 0.008057326078414917,
+          "chunk_index": 90,
+          "count_wall_sec": 0.008053973317146301,
+          "first_point_id": 44500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.002496677,
+            "positive_face_count": 212678,
+            "row_download": 1.052e-05,
+            "traversal": 0.001008683
+          },
+          "pack_points_sec": 0.0019478127360343933,
+          "point_count": 500000,
+          "positive_face_count": 212678
+        },
+        {
+          "chunk_elapsed_sec": 0.00749409943819046,
+          "chunk_index": 91,
+          "count_wall_sec": 0.007490150630474091,
+          "first_point_id": 45000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001833118,
+            "positive_face_count": 433817,
+            "row_download": 1.0029e-05,
+            "traversal": 0.00144403
+          },
+          "pack_points_sec": 0.0017521753907203674,
+          "point_count": 500000,
+          "positive_face_count": 433817
+        },
+        {
+          "chunk_elapsed_sec": 0.007373139262199402,
+          "chunk_index": 92,
+          "count_wall_sec": 0.007369644939899445,
+          "first_point_id": 45500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001838699,
+            "positive_face_count": 498694,
+            "row_download": 1.085e-05,
+            "traversal": 0.001336766
+          },
+          "pack_points_sec": 0.001958809792995453,
+          "point_count": 500000,
+          "positive_face_count": 498694
+        },
+        {
+          "chunk_elapsed_sec": 0.007654152810573578,
+          "chunk_index": 93,
+          "count_wall_sec": 0.0076508671045303345,
+          "first_point_id": 46000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.001909342,
+            "positive_face_count": 339966,
+            "row_download": 9.939e-06,
+            "traversal": 0.001530554
+          },
+          "pack_points_sec": 0.0017638280987739563,
+          "point_count": 500000,
+          "positive_face_count": 339966
+        },
+        {
+          "chunk_elapsed_sec": 0.007235147058963776,
+          "chunk_index": 94,
+          "count_wall_sec": 0.007231615483760834,
+          "first_point_id": 46500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.00182875,
+            "positive_face_count": 370405,
+            "row_download": 1.0149e-05,
+            "traversal": 0.001204826
+          },
+          "pack_points_sec": 0.0019588619470596313,
+          "point_count": 500000,
+          "positive_face_count": 370405
+        },
+        {
+          "chunk_elapsed_sec": 0.008202485740184784,
+          "chunk_index": 95,
+          "count_wall_sec": 0.008198566734790802,
+          "first_point_id": 47000001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 500000,
+            "point_upload": 0.002437434,
+            "positive_face_count": 276751,
+            "row_download": 1.037e-05,
+            "traversal": 0.001142507
+          },
+          "pack_points_sec": 0.0018205270171165466,
+          "point_count": 500000,
+          "positive_face_count": 276751
+        },
+        {
+          "chunk_elapsed_sec": 0.00600365549325943,
+          "chunk_index": 96,
+          "count_wall_sec": 0.006000146269798279,
+          "first_point_id": 47500001,
+          "native_phase_timings": {
+            "mode": "count",
+            "point_count": 362092,
+            "point_upload": 0.001609213,
+            "positive_face_count": 112540,
+            "row_download": 9.838e-06,
+            "traversal": 0.000825476
+          },
+          "pack_points_sec": 0.0012754499912261963,
+          "point_count": 362092,
+          "positive_face_count": 112540
+        }
+      ],
+      "env_values": {
+        "RTDL_RAYJOIN_CDB_QUERY_MAP_ID": "1",
+        "RTDL_RAYJOIN_CDB_SCALE_MAX_X": "179.778465",
+        "RTDL_RAYJOIN_CDB_SCALE_MAX_Y": "71.390482",
+        "RTDL_RAYJOIN_CDB_SCALE_MIN_X": "-179.148909",
+        "RTDL_RAYJOIN_CDB_SCALE_MIN_Y": "-14.548692"
+      },
+      "positive_face_count": 41352916,
+      "query_dataset": "/workspace/rayjoin_section57_same_source_cdb/point_cdb/USAZIPCodeArea/USAZIPCodeArea_Point.cdb",
+      "query_map_id": 1,
+      "query_points": 47862092,
+      "timings_sec": {
+        "count_total_wall": 0.7986605167388916,
+        "native_traversal_total": 0.194739455,
+        "pack_base_segments_stream": 54.346958346664906,
+        "pack_query_points_stream": 0.18206385523080826,
+        "prepare": 2.115379571914673,
+        "total_direction_observed": 57.26099843531847
+      }
+    }
+  },
+  "input_stats": {
+    "poly1": {
+      "chain_count": 8662896,
+      "max_x": -66.949607922,
+      "max_y": 71.365162,
+      "min_x": -179.148909,
+      "min_y": 18.910693,
+      "path": "/workspace/rayjoin_section57_same_source_cdb/point_cdb/dtl_cnty/dtl_cnty_Point.cdb",
+      "point_count": 17325792,
+      "segment_count": 8662896
+    },
+    "poly2": {
+      "chain_count": 23931046,
+      "max_x": 179.778465,
+      "max_y": 71.390482,
+      "min_x": -179.14734,
+      "min_y": -14.548692,
+      "path": "/workspace/rayjoin_section57_same_source_cdb/point_cdb/USAZIPCodeArea/USAZIPCodeArea_Point.cdb",
+      "point_count": 47862092,
+      "segment_count": 23931046
+    },
+    "scan_timings_sec": {
+      "poly1": 43.12949375063181,
+      "poly2": 119.7851701527834
+    }
+  },
+  "label": "county_zipcode",
+  "paper_section": "5.3 PIP Performance",
+  "poly1": "/workspace/rayjoin_section57_same_source_cdb/point_cdb/dtl_cnty/dtl_cnty_Point.cdb",
+  "poly2": "/workspace/rayjoin_section57_same_source_cdb/point_cdb/USAZIPCodeArea/USAZIPCodeArea_Point.cdb",
+  "rtdl_public_api": "prepare_directed_segment_point_location_2d_optix",
+  "scale_bounds": [
+    -179.148909,
+    179.778465,
+    -14.548692,
+    71.390482
+  ],
+  "schema": "rtdl.goal4855.section53_pip_streaming_front_door.v2",
+  "section53_direction_contract": "query_exec -query=pip probes poly2/map1 vertices against poly1/map0",
+  "section53_positive_faces": 41352916,
+  "streaming_adapter": "user-side CDB streaming packer for large public inputs"
+}

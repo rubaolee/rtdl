@@ -1,0 +1,15 @@
+{
+  "claim_boundary": {
+    "app_specific_core_behavior_authorized": false,
+    "diagnostic_only": true,
+    "embree_in_scope": false,
+    "performance_ratio_authorized": false
+  },
+  "indexed_count": 8327448,
+  "optix_library": "/workspace/rtdl-goal5481/build5507pad1e6/librtdl_optix.so",
+  "prepare_sec": 1.4680798889603466,
+  "query_count": 100000,
+  "query_sec": 0.8824183220276609,
+  "result_count": 101418,
+  "schema": "rtdl.paper_reproduction.librts.goal5519_cached_range_contains_probe.v1"
+}

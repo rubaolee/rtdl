@@ -1,0 +1,63 @@
+{
+  "binaries": {
+    "pip": {
+      "path": "/workspace/librts-ae/SpatialQueryBenchmark/build/pip",
+      "sha256": "839a9c859e3a51532d06615b5b496a836eeaff5e0d8ec25c987523c3fdf791be",
+      "size_bytes": 7543912
+    },
+    "query": {
+      "path": "/workspace/librts-ae/SpatialQueryBenchmark/build/query",
+      "sha256": "8f147ea5b262257728dcfc68eec37e917d6770a7874277b3880ea84de119b04b",
+      "size_bytes": 7037504
+    }
+  },
+  "claim_boundary": {
+    "author_gpu_environment_ready_for_exact_input_gates": true,
+    "complete_paper_matrix_gpu_capacity_claimed": false,
+    "embree_in_scope": false,
+    "exact_archive_download_completed": false,
+    "exact_inputs_identified": false,
+    "paper_figure_reproduced": false,
+    "performance_ratio_authorized": false
+  },
+  "environment": {
+    "benchmark_host_compiler": "gcc/g++ 12",
+    "cmake": "cmake version 3.28.3",
+    "cuda": "Build cuda_12.8.r12.8/compiler.35583870_0",
+    "embree_used": false,
+    "geos": "3.11.0 private AE prefix",
+    "gpu_csv": "NVIDIA RTX 4000 Ada Generation, 20475, 580.65.06",
+    "optix": "8.0 bundled AE SDK"
+  },
+  "matched": true,
+  "provenance": {
+    "commit_matches": {
+      "ae": true,
+      "rayjoin": true,
+      "rtspatial": true,
+      "spatial_query_benchmark": true
+    },
+    "commits": {
+      "ae": "d605fe1bd5708cbf3c457a3a9698e0cc7bcdc14b",
+      "rayjoin": "2151f56d09cbcfd4edbff259d97ac3123705411b",
+      "rtspatial": "7c54c181b1058c87768767998c00e225cc58666e",
+      "spatial_query_benchmark": "9140ad997519713bb5fdceba639a357afa4609ad"
+    },
+    "expected_commits": {
+      "ae": "d605fe1bd5708cbf3c457a3a9698e0cc7bcdc14b",
+      "rayjoin": "2151f56d09cbcfd4edbff259d97ac3123705411b",
+      "rtspatial": "7c54c181b1058c87768767998c00e225cc58666e",
+      "spatial_query_benchmark": "9140ad997519713bb5fdceba639a357afa4609ad"
+    }
+  },
+  "schema": "rtdl.paper_reproduction.librts.author_pod_environment.v1",
+  "smoke": {
+    "counts_match": true,
+    "pip_expected_count": 4,
+    "pip_result_count": 4,
+    "query_expected_count": 5,
+    "query_point_contains_result_count": 5,
+    "timing_fields_diagnostic_only": true
+  },
+  "status": "pinned_author_gpu_query_and_pip_smoke_passed"
+}

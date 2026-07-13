@@ -1,0 +1,38 @@
+You are reviewing RTDL Goal4894. Please act as a strict external reviewer.
+
+Workspace:
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review
+
+Read these files:
+- history/internal_docs/call_for_review_goal4894_fine_grained_point_location_productization_2026-07-03.md
+- history/internal_docs/goal4894_fine_grained_point_location_productization_report_2026-07-03.md
+- src/native/optix/rtdl_optix_workloads.cpp
+- src/rtdsl/rayjoin_overlay.py
+- tests/goal4894_directed_point_location_fine_grained_default_test.py
+- history/internal_docs/goal4894_default_fine_grained_overlay_summary_2026-07-03.json
+- history/internal_docs/goal4894_non_rayjoin_synthetic_point_location_summary_2026-07-03.json
+- history/internal_docs/goal4893_route_a_candidate_range_index_measurement_result_2026-07-03.md
+- history/internal_docs/antigravity_goal4893_route_a_candidate_range_index_measurement_review_2026-07-03.md
+
+Answer all review questions from the call-for-review.
+
+Be strict about the central issue:
+Is Goal4894 truly generic directed point-location planner productization, or is it a RayJoin-specific shortcut hidden inside the engine?
+
+Also verify:
+- fine-grained is actually the no-env default;
+- explicit override routes remain available;
+- the bundled helper no longer auto-selects max_iter=5;
+- the non-RayJoin synthetic evidence is enough for this bounded goal;
+- the representative POD result is interpreted honestly;
+- the report does not overclaim public release, full Section 5.7, broad RayJoin, or broad RTDL performance.
+
+Write the review result to:
+history/internal_docs/antigravity_goal4894_fine_grained_point_location_productization_review_2026-07-03.md
+
+Use one of these verdict labels:
+- approve_goal4894_fine_grained_point_location_productized
+- approve_with_required_amendments
+- block_as_rayjoin_specific_or_insufficiently_verified
+
+Do not authorize public release wording changes, broad RTDL performance claims, raw callback API, V3/V4 resurrection, or additional RayJoin-specific native kernels.

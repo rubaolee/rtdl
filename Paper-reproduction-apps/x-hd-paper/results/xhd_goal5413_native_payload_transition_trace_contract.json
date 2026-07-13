@@ -1,0 +1,80 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5413.native_payload_transition_trace_contract.v1",
+  "goal": "Goal5413",
+  "status": "generic_native_payload_transition_trace_contract_specified__no_backend_implementation",
+  "matched": true,
+  "contract": {
+    "name": "native_payload_transition_trace_stream",
+    "identifier": "generic_native_payload_transition_trace_stream_contract_v1",
+    "app_semantics": "none",
+    "design_only": true,
+    "executable": false,
+    "backend_implemented": false,
+    "public_exports": [
+      "ACTIVE_QUERY_PAYLOAD_TRANSITION_TRACE_CONTRACT",
+      "ACTIVE_QUERY_PAYLOAD_TRANSITION_TRACE_ROW_SCHEMA",
+      "ACTIVE_QUERY_PAYLOAD_TRANSITION_TRACE_TELEMETRY_SCHEMA",
+      "native_payload_transition_trace_stream_contract",
+      "validate_native_payload_transition_trace_stream_contract"
+    ]
+  },
+  "required_row_schema": [
+    "active_queue_index",
+    "query_row_id",
+    "source_id",
+    "primitive_or_cell_id",
+    "cell_namespace_code",
+    "status_code",
+    "transition_phase_code",
+    "current_best_before_sq",
+    "current_best_after_sq",
+    "lower_bound_sq",
+    "upper_bound_sq",
+    "work_count",
+    "payload_event_ordinal"
+  ],
+  "required_telemetry_schema": [
+    "active_query_count",
+    "raw_transition_row_count",
+    "raw_transition_row_hash_or_deterministic_samples",
+    "status_count_offloading",
+    "status_count_completed",
+    "status_count_miss",
+    "status_count_aborted",
+    "feedback_update_count_or_not_applicable",
+    "row_capacity",
+    "overflowed"
+  ],
+  "required_gates": [
+    "synthetic_non_app_payload_transition_trace_behavior",
+    "bounded_external_oracle_sample_row_recovery",
+    "full_external_oracle_row_count_hash_status_feedback"
+  ],
+  "required_fail_closed_rules": [
+    "overflow_returns_no_partial_success_claim",
+    "missing_cell_namespace_rejects_contract",
+    "row_count_mismatch_keeps_external_option_unsupported",
+    "hash_or_sample_mismatch_keeps_external_option_unsupported",
+    "feedback_mismatch_keeps_external_option_unsupported"
+  ],
+  "validation": {
+    "default_contract_status": "accept",
+    "rejects_backend_execution_claim": true,
+    "rejects_app_identity_leak": true,
+    "rejects_missing_bounded_sample_gate": true,
+    "public_rtdsl_exports_verified_by_tests": true
+  },
+  "claim_boundary": {
+    "contract_design_claimed": true,
+    "backend_implementation_claimed": false,
+    "explicit_lb_support_claimed": false,
+    "bounded_xhd_sample_row_recovery_claimed": false,
+    "full_goal5387_row_identity_parity_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "figure11_reproduction_claimed": false,
+    "performance_ratio_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false
+  },
+  "recommended_next_goal": "Goal5414_synthetic_non_app_payload_transition_trace_fixture"
+}

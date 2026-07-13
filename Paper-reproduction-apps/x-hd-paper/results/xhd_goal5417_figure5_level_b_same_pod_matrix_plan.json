@@ -1,0 +1,186 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5417.figure5_level_b_same_pod_matrix_plan.v1",
+  "goal": "Goal5417",
+  "status": "figure5_level_b_same_pod_matrix_plan_ready__no_execution_yet",
+  "matched": true,
+  "purpose": "Define a denominator-disciplined Level-B Figure-5-like same-POD matrix before any new execution.",
+  "matrix_scope": {
+    "level": "Level-B same-source / bounded representative matrix",
+    "figure5_reproduction_claimed": false,
+    "full_figure5_matrix_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "performance_ratio_claimed": false,
+    "reason": "Available candidates are value-matched representative/public or bounded fixtures, not exact paper input bytes."
+  },
+  "primary_graphics_candidates": [
+    {
+      "case_id": "dragon_happy",
+      "category": "graphics",
+      "include": true,
+      "input_type": "ply",
+      "n_dims": 3,
+      "input1": "/tmp/xhd_goal5298/data/dragon.ply",
+      "input2": "/tmp/xhd_goal5298/data/happy_buddha.ply",
+      "point_counts": [437645, 543652],
+      "paper_log_hd_result": 0.12572969496250153,
+      "author_rerun_hd_result": 0.12572988867759705,
+      "author_paper_log_abs_diff": 1.9371509552001953e-07,
+      "prior_rtdl_hd_result": 0.12572988629271128,
+      "prior_rtdl_author_abs_diff": 2.3848857610975216e-09,
+      "prior_evidence": "Goal5291 / Goal5186 / Goal5212",
+      "planned_rtdl_routes": [
+        "cell-mbr-fast-scalar",
+        "cell-mbr-exact-witness_if_operational"
+      ],
+      "notes": "Strongest current graphics Level-B candidate; fast-scalar route is exact-value-only when per_source_witness_exact=false."
+    },
+    {
+      "case_id": "thai_happy_scaled",
+      "category": "graphics",
+      "include": true,
+      "input_type": "ply",
+      "n_dims": 3,
+      "input1": "/tmp/xhd_goal5298/data/thai_statuette_scaled_1e-3.ply",
+      "input2": "/tmp/xhd_goal5298/data/happy_buddha.ply",
+      "point_counts": [4999996, 543652],
+      "paper_log_hd_result": 0.21912434697151184,
+      "author_rerun_hd_result": 0.21912431716918945,
+      "author_paper_log_abs_diff": 2.9802322387695312e-08,
+      "prior_rtdl_hd_result": 0.2191243235042005,
+      "prior_rtdl_author_abs_diff": 6.335011056524345e-09,
+      "prior_evidence": "Goal5298 / Goal5299",
+      "planned_rtdl_routes": [
+        "cell-mbr-exact-witness",
+        "cell-mbr-fast-scalar"
+      ],
+      "notes": "Value matched on author and RTDL; exact-witness and fast-scalar both previously matched scalar value."
+    },
+    {
+      "case_id": "thai_asian_scaled",
+      "category": "graphics",
+      "include": true,
+      "input_type": "ply",
+      "n_dims": 3,
+      "input1": "/tmp/xhd_goal5298/data/thai_statuette_scaled_1e-3.ply",
+      "input2": "/tmp/xhd_goal5298/data/asian_dragon_scaled_1e-3.ply",
+      "point_counts": [4999996, 3609600],
+      "paper_log_hd_result": 0.28763845562934875,
+      "author_rerun_hd_result": 0.28763842582702637,
+      "author_paper_log_abs_diff": 2.9802322387695312e-08,
+      "prior_rtdl_hd_result": 0.2876384148709406,
+      "prior_rtdl_author_abs_diff": 1.0956085765216054e-08,
+      "prior_evidence": "Goal5298 / Goal5300",
+      "planned_rtdl_routes": [
+        "cell-mbr-exact-witness",
+        "cell-mbr-fast-scalar"
+      ],
+      "notes": "Value matched on author and RTDL; previous exact-witness route was slower than fast-scalar on other cases, so both denominators should be reported."
+    }
+  ],
+  "secondary_bounded_geo_candidates": [
+    {
+      "case_id": "county_zcta_bounded",
+      "category": "geo_bounded",
+      "include": true,
+      "input_type": "wkt",
+      "n_dims": 2,
+      "point_counts": [38034, 50272],
+      "author_hd_result": 65.44752502441406,
+      "prior_rtdl_hd_result": 65.44751976280666,
+      "prior_abs_diff": 5.2616073986655465e-06,
+      "tolerance": 1e-05,
+      "prior_evidence": "Goal5304 / Goal5305",
+      "planned_rtdl_routes": [
+        "directed_max_of_nearest_distance_2d_partner_columns_triton"
+      ],
+      "notes": "Bounded geo fixture only; not full geo Figure 5."
+    },
+    {
+      "case_id": "water_bg_bounded",
+      "category": "geo_bounded",
+      "include": true,
+      "input_type": "wkt",
+      "n_dims": 2,
+      "point_counts": [124, 894],
+      "author_hd_result": 72.38665008544922,
+      "prior_rtdl_hd_result": 72.38664516014835,
+      "prior_abs_diff": 4.925300871150284e-06,
+      "tolerance": 1e-05,
+      "prior_evidence": "Goal5306 / Goal5307",
+      "planned_rtdl_routes": [
+        "directed_max_of_nearest_distance_2d_partner_columns_triton"
+      ],
+      "notes": "Bounded geo fixture only; not full geo Figure 5."
+    }
+  ],
+  "excluded_candidates": [
+    {
+      "case_id": "dragon_asian_scaled",
+      "reason": "author rerun does not match paper-branch author-log value",
+      "paper_log_hd_result": 0.06536811590194702,
+      "author_rerun_hd_result": 0.06545527279376984,
+      "author_paper_log_abs_diff": 0.00008715689182281494,
+      "source": "Goal5289 / Goal5290 / Goal5298"
+    },
+    {
+      "case_id": "brats_category",
+      "reason": "BraTS input provenance/access remains blocked",
+      "source": "Goal5288 / Goal5301"
+    },
+    {
+      "case_id": "full_geo_county_zcta",
+      "reason": "full-public County point count differs from paper log by +32.2%, so exact/Figure status is blocked",
+      "source": "Goal5308 / Goal5309"
+    }
+  ],
+  "planned_denominator_columns": [
+    "case_id",
+    "category",
+    "input_identity_level",
+    "point_counts",
+    "paper_log_hd_result_if_available",
+    "author_rerun_hd_result",
+    "rtdl_hd_result",
+    "value_abs_diff_author_rtdl",
+    "value_abs_diff_author_paper_log",
+    "author_running_avg_time_ms",
+    "author_reported_time_ms",
+    "author_process_wall_sec",
+    "rtdl_route_label",
+    "rtdl_route_wall_sec",
+    "rtdl_process_wall_sec",
+    "rtdl_input_load_sec",
+    "per_source_witness_exact",
+    "cold_or_warm_process",
+    "same_pod_gpu",
+    "ratio_authorized"
+  ],
+  "execution_plan": {
+    "goal5417_executes_pod": false,
+    "next_execution_goal": "Goal5418_figure5_level_b_same_pod_matrix_execution",
+    "pod_required_for_goal5418": true,
+    "author_graphics_runner": "Paper-reproduction-apps/x-hd-paper/scripts/run_xhd_goal5298_author_graphics_precheck.py",
+    "rtdl_hd_exec_runner": "Paper-reproduction-apps/x-hd-paper/scripts/run_xhd_rtdl_hd_exec.py",
+    "rtdl_batch_runner": "Paper-reproduction-apps/x-hd-paper/scripts/run_xhd_rtdl_hd_exec_summary_batch.py",
+    "pod_wrapper_required": "py scripts/current_pod_ssh.py --host <host> --port <port> exec \"<remote command>\"",
+    "naked_ssh_allowed": false
+  },
+  "claim_boundary": {
+    "matrix_plan_claimed": true,
+    "same_pod_execution_claimed": false,
+    "figure5_level_b_candidate_plan_claimed": true,
+    "figure5_reproduction_claimed": false,
+    "figure5_full_matrix_claimed": false,
+    "performance_ratio_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false
+  },
+  "forbidden_summaries": [
+    "Figure 5 reproduced",
+    "RTDL is faster/slower than author by ratio X",
+    "graphics public candidates are exact paper inputs",
+    "bounded geo fixtures prove geo Figure 5",
+    "fast-scalar route proves exact per-source witnesses",
+    "Goal5417 executed the same-POD matrix"
+  ]
+}

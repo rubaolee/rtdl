@@ -1,0 +1,44 @@
+Please review this RTDL internal design gate.
+
+Workspace root:
+
+```text
+C:\Users\Lestat\Desktop\work\rtdl_v0_4_release_prep_review
+```
+
+Primary document:
+
+```text
+history/internal_docs/goal4912_persistent_workspace_design_plan_2026-07-03.md
+```
+
+Call-for-review:
+
+```text
+history/internal_docs/call_for_review_goal4912_persistent_workspace_design_2026-07-03.md
+```
+
+Please verify the evidence chain against prior goal files if needed:
+
+```text
+history/internal_docs/goal4902_reusable_point_location_session_report_2026-07-03.md
+history/internal_docs/goal4904_prepared_lsi_and_pip_replay_report_2026-07-03.md
+history/internal_docs/goal4910_direct_descriptor_writer_result_2026-07-03.md
+history/internal_docs/goal4911_point_location_prepare_tradeoff_report_2026-07-03.md
+```
+
+Output your review to:
+
+```text
+history/internal_docs/antigravity_goal4912_persistent_workspace_design_review_2026-07-03.md
+```
+
+Requested verdict labels:
+
+- `approve_goal4912_productize_in_process_workspace_api`
+- `approve_with_required_amendments`
+- `block_goal4912_as_packaging_without_product_value`
+- `block_goal4912_as_too_broad_or_risky`
+
+Please answer all 8 review questions in the call-for-review and preserve the
+non-authorization boundary.

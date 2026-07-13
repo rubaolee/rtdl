@@ -1,0 +1,57 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.author_build_run_result.v2",
+  "paper_app": "x-hd-paper",
+  "goal": "Goal5112",
+  "author_repository": "https://github.com/pwrliang/X-HD.git",
+  "pinned_commit": "7bf41c8442d059c94f4178355c6d5a10571d9658",
+  "pod": {
+    "endpoint": "root@213.173.108.24:13502",
+    "gpu": "NVIDIA RTX 4000 Ada Generation",
+    "driver": "550.127.05",
+    "nvcc": "12.0.140",
+    "cmake": "3.30.4",
+    "compiler": "gcc/g++ 11",
+    "status": "executed"
+  },
+  "author_build": {
+    "status": "built",
+    "route": "Author+BuildPatch",
+    "binary": "/tmp/xhd-goal5112/build-gcc11-optix77-fast/bin/hd_exec",
+    "patch": "Paper-reproduction-apps/x-hd-paper/results/xhd_author_build_patch_goal5112.diff",
+    "configure_log": "Paper-reproduction-apps/x-hd-paper/results/goal5112_pod_configure_optix77.log",
+    "build_log": "Paper-reproduction-apps/x-hd-paper/results/goal5112_pod_build_optix77.log",
+    "patch_summary": [
+      "OptiX dev headers v9.0.0 -> v7.7.0 for POD driver ABI compatibility",
+      "cuda::proclaim_return_type wrappers around three Thrust transform_reduce device lambdas for CCCL compatibility"
+    ]
+  },
+  "author_json_gate": {
+    "input1": "Paper-reproduction-apps/x-hd-paper/data/fixtures/tiny2d_a.wkt",
+    "input2": "Paper-reproduction-apps/x-hd-paper/data/fixtures/tiny2d_b.wkt",
+    "variant": "rt",
+    "execution": "gpu",
+    "author_hd_exec_built": true,
+    "author_json_produced": true,
+    "author_run_returncode": 0,
+    "author_hd_result": 1.0,
+    "rtdl_reference_hausdorff": 1.0,
+    "tolerance": 1e-9,
+    "abs_diff": 0.0,
+    "matched": true,
+    "summary": "Paper-reproduction-apps/x-hd-paper/results/tiny2d_author_gate_summary_pod.json",
+    "author_json": "Paper-reproduction-apps/x-hd-paper/results/tiny2d_author_hd_exec_output_pod.json"
+  },
+  "runner_hardening": {
+    "author_subprocess_failure_returns_nonzero": true,
+    "author_subprocess_failure_exit_code": 2,
+    "test": "tests.goal5111_xhd_author_json_gate_test.Goal5111XhdAuthorJsonGateTest.test_author_binary_failure_fails_closed_but_keeps_summary"
+  },
+  "claims": {
+    "bounded_same_input_author_agreement_claimed": true,
+    "paper_reproduction_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "performance_claimed": false,
+    "raw_unpatched_author_claimed": false
+  },
+  "next_required_action": "Run a slightly larger bounded same-input workload with the same Author+BuildPatch disclosure before any paper-figure or performance claim."
+}

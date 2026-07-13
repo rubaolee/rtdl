@@ -1,0 +1,85 @@
+{
+  "claim_boundary": {
+    "author_performance_parity_claimed": false,
+    "embree_used": false,
+    "generic_native_refit_functional_claimed": true,
+    "librts_paper_performance_claimed": false,
+    "native_incremental_insert_delete_claimed": false,
+    "same_host_microbenchmark_claimed": true
+  },
+  "correctness": {
+    "expected_counts": [
+      0,
+      1,
+      0,
+      1,
+      0,
+      1,
+      0
+    ],
+    "mutation_execution_models": [
+      "native_sparse_slot_refit_with_rollback",
+      "native_sparse_slot_refit_with_rollback",
+      "native_sparse_slot_refit_with_rollback",
+      "native_sparse_slot_refit_with_rollback",
+      "native_sparse_slot_refit_with_rollback",
+      "native_sparse_slot_refit_with_rollback",
+      "native_sparse_slot_refit_with_rollback"
+    ],
+    "native_refit_counts": [
+      0,
+      1,
+      0,
+      1,
+      0,
+      1,
+      0
+    ],
+    "snapshot_rebuild_counts": [
+      0,
+      1,
+      0,
+      1,
+      0,
+      1,
+      0
+    ]
+  },
+  "environment": {
+    "gpu": "NVIDIA GeForce GTX 1070",
+    "host": "lx1",
+    "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39"
+  },
+  "matched": true,
+  "schema": "rtdl.generic_optix_aabb_native_refit_gate.v1",
+  "status": "matched",
+  "timing_diagnostic": {
+    "native_refit_median_seconds": 0.025066356000024825,
+    "native_refit_seconds": [
+      0.029261399000461097,
+      0.0315196930005186,
+      0.025066356000024825,
+      0.023493472999689402,
+      0.02656163400024525,
+      0.022824226999546227,
+      0.023148029999902064
+    ],
+    "same_host_microbenchmark_speedup": 15.625436940215666,
+    "snapshot_rebuild_median_seconds": 0.3916727649993845,
+    "snapshot_rebuild_seconds": [
+      0.4231600100001742,
+      0.3948395690003963,
+      0.3916727649993845,
+      0.38438607399984903,
+      0.37800371200046357,
+      0.42668936800055235,
+      0.3877390550005657
+    ]
+  },
+  "workload": {
+    "box_count": 65536,
+    "primitive_cardinality_unchanged": true,
+    "repeats": 7,
+    "updated_slot_count_per_iteration": 1
+  }
+}

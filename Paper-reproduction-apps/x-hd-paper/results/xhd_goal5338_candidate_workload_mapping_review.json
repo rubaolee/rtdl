@@ -1,0 +1,58 @@
+{
+  "schema": "rtdl.paper_reproduction.xhd.goal5338.candidate_workload_mapping_review.v1",
+  "goal": "Goal5338",
+  "date": "2026-07-09",
+  "purpose": "Add an app-owned candidate workload mapping review gate that validates whether hashed candidate ACM files are explicitly mapped to known X-HD paper workloads before any same-input POD gate.",
+  "status": "candidate_workload_mapping_review_ready__await_real_mapping_spec",
+  "script": {
+    "path": "Paper-reproduction-apps/x-hd-paper/scripts/review_xhd_candidate_workload_mapping.py",
+    "inputs": [
+      "Goal5337 candidate bytes/hash mapping JSON",
+      "candidate workload mapping spec JSON",
+      "X-HD paper target matrix"
+    ],
+    "output_schema": "rtdl.paper_reproduction.xhd.candidate_workload_mapping_review.v1"
+  },
+  "classification_statuses": [
+    "accepted_workload_mapping_ready_for_same_input_gate",
+    "proposed_workload_mapping_requires_external_acceptance",
+    "workload_mapping_invalid_or_incomplete"
+  ],
+  "follow_up_goal_types": [
+    "mapped_candidate_same_input_author_rtdl_gate",
+    "external_workload_mapping_acceptance_review",
+    "repair_candidate_workload_mapping"
+  ],
+  "behavior_locked_by_tests": [
+    "accepted clean mapping becomes same-input gate ready but still not an exact-input claim",
+    "proposed mapping requires external acceptance before POD",
+    "unknown paper dataset fails closed",
+    "dirty candidate hash mapping fails closed",
+    "summary forbids exact/full/performance claims"
+  ],
+  "pod_usage": {
+    "used": false,
+    "expected_next": false,
+    "reason": "Workload mapping review is local provenance work. Only an accepted clean mapping can authorize a later separate same-input POD gate."
+  },
+  "claim_boundary": {
+    "real_acm_zip_inspected": false,
+    "external_artifacts_acquired": false,
+    "exact_equivalence_accepted": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure5_reproduction_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false
+  },
+  "allowed_summary": "Goal5338 adds an app-owned candidate workload mapping review gate. It checks that hashed candidate files are mapped to known paper workload roles before a separate same-input POD gate may be opened.",
+  "not_allowed": [
+    "claiming the real ACM supplement has been inspected from synthetic tests",
+    "claiming candidate files are exact paper inputs from workload mapping alone",
+    "claiming exact paper dataset reproduction from this review alone",
+    "claiming Figure 5 reproduction from this review alone",
+    "claiming full X-HD paper reproduction from this review alone",
+    "claiming author-vs-RTDL performance ratio from this review alone",
+    "running POD outside a separate mapped same-input gate"
+  ],
+  "exit_label": "candidate_workload_mapping_review_ready__await_real_mapping_spec"
+}

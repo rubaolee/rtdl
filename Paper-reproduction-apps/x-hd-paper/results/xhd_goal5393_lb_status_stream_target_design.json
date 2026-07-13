@@ -1,0 +1,106 @@
+{
+  "author_oracle": {
+    "active_in_queue_size": 437645,
+    "load_balance_feedback_update_count": 294,
+    "raw_offload_row_hash": 4333109858711462591,
+    "raw_offload_rows_before_sort_reduce": 27133990,
+    "status_count_offloading_append": 27133990
+  },
+  "claim_boundary": {
+    "author_rt_core_algorithm_parity_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_support_claimed": false,
+    "figure11_reproduction_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "full_cover_surface_promoted_to_author_semantics": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "hash_sample_parity_claimed": false,
+    "native_backend_completion_claimed": false,
+    "performance_ratio_claimed": false,
+    "row_count_parity_claimed": false,
+    "same_denominator_memory_claimed": false,
+    "status_stream_target_selection_claimed": true
+  },
+  "date": "2026-07-10",
+  "decision": {
+    "fail_closed_if_requires_xhd_specific_logic": true,
+    "native_code_authorized_by_this_goal": false,
+    "next_work_is_design_to_implementation_transition": true,
+    "selected_direction": "implement_generic_full_cover_delta_status_probe_next"
+  },
+  "existing_generic_contracts_to_reuse": {
+    "app_semantics": "none",
+    "multiround_status_contract": "generic_active_query_multiround_status_reference_v1",
+    "trace_summary_contract": "generic_active_query_status_trace_summary_v1"
+  },
+  "exit_label": "lb_status_stream_target_selected__implement_generic_full_cover_delta_probe_next",
+  "goal": "Goal5393",
+  "input_artifacts": {
+    "goal5365_full_cover_behavior_gate": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5365_rtdl_lb_counterpart_gate.json",
+    "goal5384_multiround_status_requirements": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5384_multiround_status_requirements.json",
+    "goal5387_author_trace_v2": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5387_author_trace_v2_execution.json",
+    "goal5392_denominator_surface_reconciliation": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5392_lb_denominator_surface_reconciliation.json"
+  },
+  "purpose": "Select the next explicit -lb native status-stream target after Goal5392 reconciled denominator surfaces. This goal chooses the author-compatible raw-status semantics target and defines the next generic implementation gate without claiming explicit -lb support.",
+  "schema": "rtdl.paper_reproduction.xhd.goal5393.lb_status_stream_target_design.v1",
+  "selected_next_gate": {
+    "description": "Add a generic status-stream probe that starts from the closest full-cover-like raw surface and measures whether generic multi-round feedback/current-best/terminal transitions can explain the remaining delta to the author trace v2 oracle.",
+    "failure_label": "generic_status_stream_target_not_author_compatible__lb_fail_closed_candidate",
+    "goal_hint": "Goal5394",
+    "must_compare": [
+      "row_count against author 27,133,990",
+      "raw offload row hash or deterministic samples",
+      "status_count_offloading",
+      "feedback update count or explicit not-applicable evidence",
+      "miss/completed/aborted counters or explicit not-applicable evidence"
+    ],
+    "name": "generic_full_cover_delta_status_probe",
+    "success_label": "generic_status_stream_moves_denominator_toward_author"
+  },
+  "semantic_gap_hypotheses": [
+    {
+      "generic": true,
+      "name": "multi_round_feedback_or_reactivation_delta",
+      "required_evidence": "Rows or state transitions added by feedback / next-active rounds, keyed by active_queue_index, explain the remaining 6 rows per active on aggregate."
+    },
+    {
+      "generic": true,
+      "name": "author_current_best_restore_delta",
+      "required_evidence": "Author cmin2/current-best restoration by active queue index changes which cells remain offload candidates compared with the full-cover single-surface approximation."
+    },
+    {
+      "generic": true,
+      "name": "miss_completed_aborted_transition_delta",
+      "required_evidence": "Generic terminal transitions are counted or sampled in a way not represented by the full-cover row surface."
+    },
+    {
+      "generic": true,
+      "name": "load_balance_processing_feedback_delta",
+      "required_evidence": "Author loadBalanceProcessing feedback changes later current best or offload rows; RTDL must expose generic feedback updates rather than author-specific logic."
+    }
+  ],
+  "status": "status_stream_target_selected__full_cover_delta_requires_generic_transitions",
+  "supporting_behavior_gate": {
+    "goal5365_author_offloading_size": 27133990,
+    "goal5365_explicit_lb_support_authorized": false,
+    "goal5365_rtdl_heavy_offload_peak_rows": 24508120,
+    "goal5365_value_match": true,
+    "why_not_enough": "Goal5365 passes a bounded behavior/value gate but explicitly does not establish row-count denominator parity or explicit -lb support."
+  },
+  "target_selection": {
+    "author_rows_per_active": 62.0,
+    "bridge_missing_rows": 24945765,
+    "bridge_surface_rejected_as_implementation_target": true,
+    "default_raw_kind2_missing_rows": 6127030,
+    "full_cover_promoted_to_correctness": false,
+    "hardcoded_fanout_rejected": true,
+    "missing_rows_per_active_if_exact": 6,
+    "missing_rows_per_active_remainder": 0,
+    "missing_rows_to_author": 2625870,
+    "overcount_rows": 277847899,
+    "selected_rows_per_active": 56.0,
+    "selected_starting_surface": "full_cover_lb256_behavior_gate_surface",
+    "selected_surface_rows": 24508120,
+    "why_selected": "It is the closest known RTDL row-count surface to the author raw offload denominator while staying in generic RTDL row semantics. It still fails parity and must not be treated as correctness."
+  }
+}

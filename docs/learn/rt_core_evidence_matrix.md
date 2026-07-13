@@ -67,6 +67,4 @@ RTDL accelerates all ten benchmark apps on RT cores.
 - [Benchmark Evidence Index](benchmark_evidence_index.md)
 - [Benchmark Partner Reference Matrix](benchmark_partner_reference_matrix.md)
 - [Partner Acceleration Boundaries](../partner_acceleration_boundaries.md)
-- [v2.12 release scoped RT-core vs Embree CPU comparison](../../history/release_reports/v2_12/public_rt_vs_embree_comparison.md)
-- [v2.13 release scoped RT-core vs Embree CPU comparison](../../history/release_reports/v2_13/public_rt_vs_embree_comparison.md)
 - [v2.14 release scoped RT-core vs Embree CPU comparison](../release_reports/v2_14/public_rt_vs_embree_comparison.md)

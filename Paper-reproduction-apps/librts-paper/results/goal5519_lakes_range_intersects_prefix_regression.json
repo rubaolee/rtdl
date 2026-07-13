@@ -1,0 +1,36 @@
+{
+  "claim_boundary": {
+    "author_specific_rtdl_core_behavior_authorized": false,
+    "embree_in_scope": false,
+    "full_input_adjudication": false,
+    "generic_native_patch_probe_only": true,
+    "paper_reproduction_claimed": false,
+    "performance_ratio_authorized": false
+  },
+  "input_identity": {
+    "geometry_path": "/workspace/librts-results/goal5502-large-prefix/lakes_bz2_select_0.01_10000/geometry_prefix.wkt",
+    "geometry_sha256": "40b912f51abed43bc22a301257e440e533bd0402516267d64aecb477b34645e3",
+    "query_path": "/workspace/librts-results/goal5502-large-prefix/lakes_bz2_select_0.01_10000/query_prefix.wkt",
+    "query_sha256": "3ddc24019d37f4dd0bc0c1f41ef04cb24d6e1f9d852f068f7eae87ca014aeb04",
+    "same_input_files": true
+  },
+  "rtdl": {
+    "backend": "optix",
+    "count_only": true,
+    "intersection_duplicate_row_count": 0,
+    "intersection_rows": [],
+    "intersection_rows_count": 0,
+    "intersection_rows_sec": null,
+    "intersection_unique_rows_count": 0,
+    "native_engine_customization": false,
+    "operation": "range_intersects",
+    "prepare_sec": 0.4227907999884337,
+    "primitive_query_sec": 0.15564445196650922,
+    "public_api": "Aabb2DColumns + prepare_aabb_index_2d_columns + prepared.count",
+    "query_wall_sec": 0.1756612120079808,
+    "result_count": 34581812,
+    "rt_core_accelerated": true
+  },
+  "schema": "rtdl.paper_reproduction.librts.goal5507_rtdl_range_intersects_probe.v1",
+  "status": "rtdl_probe_completed"
+}

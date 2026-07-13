@@ -1,0 +1,113 @@
+{
+  "claim_boundary": {
+    "app_specific_semantics_claimed": false,
+    "generic_semantic_parity_only": true,
+    "native_incremental_mutation_claimed": false,
+    "paper_reproduction_claimed": false,
+    "performance_claimed": false
+  },
+  "contract": {
+    "app_semantics": "none",
+    "execution_model": "atomic_snapshot_rebuild",
+    "id_contract": "stable_explicit_or_monotonic_auto_ids",
+    "native_incremental_mutation": false,
+    "primitive": "MUTABLE_AABB_INDEX_2D",
+    "supported_backends": [
+      "cpu",
+      "optix"
+    ]
+  },
+  "empty_count_after_clear": 0,
+  "environment": {
+    "gpu": "NVIDIA GeForce GTX 1070",
+    "host": "lx1",
+    "label": "local-linux-lx1-functional-only",
+    "platform": "Linux-6.17.0-20-generic-x86_64-with-glibc2.39"
+  },
+  "matched": true,
+  "metadata_after_clear": {
+    "active_count": 0,
+    "active_ids": [],
+    "app_semantics": "none",
+    "backend": "optix",
+    "closed": false,
+    "contract": "generic_mutable_aabb_index_2d_v1",
+    "execution_model": "atomic_snapshot_rebuild",
+    "native_incremental_mutation": false,
+    "primitive": "MUTABLE_AABB_INDEX_2D",
+    "revision": 4
+  },
+  "metadata_before_clear": {
+    "active_count": 2,
+    "active_ids": [
+      20,
+      30
+    ],
+    "app_semantics": "none",
+    "backend": "optix",
+    "closed": false,
+    "contract": "generic_mutable_aabb_index_2d_v1",
+    "execution_model": "atomic_snapshot_rebuild",
+    "native_incremental_mutation": false,
+    "primitive": "MUTABLE_AABB_INDEX_2D",
+    "revision": 3
+  },
+  "revisions": [
+    {
+      "active_ids": [
+        10,
+        20
+      ],
+      "label": "initial",
+      "revision": 0,
+      "rows": [
+        [
+          900,
+          10
+        ],
+        [
+          900,
+          20
+        ]
+      ]
+    },
+    {
+      "active_ids": [
+        10,
+        20
+      ],
+      "label": "after_update",
+      "revision": 1,
+      "rows": [
+        [
+          900,
+          10
+        ]
+      ]
+    },
+    {
+      "active_ids": [
+        20
+      ],
+      "label": "after_delete",
+      "revision": 2,
+      "rows": []
+    },
+    {
+      "active_ids": [
+        20,
+        30
+      ],
+      "label": "after_insert",
+      "revision": 3,
+      "rows": [
+        [
+          900,
+          30
+        ]
+      ]
+    }
+  ],
+  "schema": "rtdl.generic_mutable_aabb.optix_snapshot_rebuild_gate.v1",
+  "status": "matched"
+}

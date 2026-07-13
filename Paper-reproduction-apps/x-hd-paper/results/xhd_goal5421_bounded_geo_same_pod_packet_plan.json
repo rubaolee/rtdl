@@ -1,0 +1,236 @@
+{
+  "case_ids": [
+    "county_zcta_bounded",
+    "water_bg_bounded"
+  ],
+  "claim_boundary": {
+    "author_rt_core_algorithm_equivalence_claimed": false,
+    "bounded_geo_execution_claimed": false,
+    "bounded_geo_packet_plan_claimed": true,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_reopened": false,
+    "figure5_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "geo_figure5_reproduction_claimed": false,
+    "level_b_bounded_geo_correctness_claimed_from_prior_evidence": true,
+    "performance_ratio_claimed": false,
+    "route_micro_optimization_goal_authorized": false
+  },
+  "denominator_policy": {
+    "author_process_wall_sec": "record_in_goal5422_execution_only",
+    "author_running_avg_time_ms": "record_if_author_json_reports_it",
+    "ratio_authorized": false,
+    "reason": "Author internal timing, author process wall, RTDL route wall, and RTDL total are separate denominators.",
+    "rtdl_route_sec": "record_in_goal5422_execution_only",
+    "rtdl_total_sec": "record_in_goal5422_execution_only"
+  },
+  "execution": {
+    "bounded_geo_matrix_execution_claimed": false,
+    "goal5421_executes_pod": false,
+    "next_execution_goal": "Goal5422_bounded_geo_same_pod_packet_execution",
+    "remote_output_dir": "/tmp/xhd_goal5422/out",
+    "remote_work_dir": "/tmp/xhd_goal5422",
+    "setup_commands": [
+      "mkdir -p /tmp/xhd_goal5422/out"
+    ]
+  },
+  "forbidden_summaries": [
+    "Geo Figure 5 reproduced",
+    "bounded geo execution completed by Goal5421",
+    "County-ZCTA or WaterBodies-BG are exact paper inputs",
+    "author-vs-RTDL performance ratio is available",
+    "RTDL reproduces the author X-HD RT-core algorithm on geo",
+    "explicit -lb has been reopened"
+  ],
+  "goal": "Goal5421",
+  "matched": true,
+  "pod": {
+    "host": "213.173.108.24",
+    "naked_ssh_allowed": false,
+    "port": 13502,
+    "wrapper_command_prefix": "py scripts/current_pod_ssh.py --host 213.173.108.24 --port 13502 exec",
+    "wrapper_required": true
+  },
+  "purpose": "Define the bounded-geo same-POD command packet before any new execution. This keeps the partner/Triton geo route family separate from the graphics hd_exec-compatible packet.",
+  "recommended_next_goal": "Goal5422_bounded_geo_same_pod_packet_execution",
+  "row_count": 2,
+  "rows": [
+    {
+      "author": {
+        "command": [
+          "/tmp/xhd-goal5112/build-gcc11-optix77-fast/bin/hd_exec",
+          "-input1",
+          "/tmp/xhd_goal5304/data/dtl_cnty_arcgis_bounded.wkt",
+          "-input2",
+          "/tmp/xhd_goal5304/data/uszipcode_arcgis_bounded.wkt",
+          "-input_type",
+          "wkt",
+          "-n_dims",
+          "2",
+          "-variant",
+          "rt",
+          "-execution",
+          "gpu",
+          "-normalize=false",
+          "-json",
+          "/tmp/xhd_goal5422/out/author_county_zcta_bounded.json",
+          "-overwrite=true",
+          "-check=false"
+        ],
+        "expected_hd_result": 65.44752502441406,
+        "prior_author_json": "/tmp/xhd_goal5304/out/author_county_zcta_arcgis_bounded.json",
+        "prior_running_avg_time_ms": null
+      },
+      "case_id": "county_zcta_bounded",
+      "category": "geo_bounded",
+      "comparison": {
+        "prior_abs_diff": 5.2616073986655465e-06,
+        "prior_matched": true,
+        "tolerance": 1e-05
+      },
+      "expected_point_counts": [
+        38034,
+        50272
+      ],
+      "input_identity_level": "level_b_bounded_geo_fixture",
+      "input_type": "wkt",
+      "n_dims": 2,
+      "packet_status": "planned_not_executed",
+      "paper_pair": "dtl_cnty.wkt -> uszipcode.wkt",
+      "remote_inputs": {
+        "input1": "/tmp/xhd_goal5304/data/dtl_cnty_arcgis_bounded.wkt",
+        "input2": "/tmp/xhd_goal5304/data/uszipcode_arcgis_bounded.wkt"
+      },
+      "rtdl": {
+        "command": [
+          "cd",
+          "/tmp/rtdl_goal5419",
+          "&&",
+          "PYTHONPATH=src:.",
+          "RTDL_OPTIX_LIBRARY=/tmp/rtdl_goal5419/build/librtdl_optix.so",
+          "python3",
+          "/tmp/rtdl_goal5419/Paper-reproduction-apps/x-hd-paper/scripts/run_xhd_goal5305_county_zcta_rtdl_numba_gate.py",
+          "--input1",
+          "/tmp/xhd_goal5304/data/dtl_cnty_arcgis_bounded.wkt",
+          "--input2",
+          "/tmp/xhd_goal5304/data/uszipcode_arcgis_bounded.wkt",
+          "--author-json",
+          "/tmp/xhd_goal5422/out/author_county_zcta_bounded.json",
+          "--summary",
+          "/tmp/xhd_goal5422/out/rtdl_county_zcta_bounded_triton_summary.json",
+          "--input-type",
+          "wkt",
+          "--n-dims",
+          "2",
+          "--partner",
+          "triton",
+          "--triton-strategy",
+          "dense_point_nearest_tiled",
+          "--tolerance",
+          "1e-5"
+        ],
+        "expected_hd_result": 65.44751976280666,
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "partner": "triton",
+        "partner_reference_contract": "generic_directed_max_of_nearest_distance_2d",
+        "per_source_witness_exact": true,
+        "prior_route_sec": 1.4407019689679146,
+        "prior_total_sec": 3.858815759420395,
+        "route": "directed_max_of_nearest_distance_2d_partner_columns",
+        "triton_strategy": "dense_point_nearest_tiled"
+      }
+    },
+    {
+      "author": {
+        "command": [
+          "/tmp/xhd-goal5112/build-gcc11-optix77-fast/bin/hd_exec",
+          "-input1",
+          "/tmp/xhd_goal5306/data/USADetailedWaterBodies_arcgis_bounded.wkt",
+          "-input2",
+          "/tmp/xhd_goal5306/data/USACensusBlockGroupBoundaries_arcgis_bounded.wkt",
+          "-input_type",
+          "wkt",
+          "-n_dims",
+          "2",
+          "-variant",
+          "rt",
+          "-execution",
+          "gpu",
+          "-normalize=false",
+          "-json",
+          "/tmp/xhd_goal5422/out/author_water_bg_bounded.json",
+          "-overwrite=true",
+          "-check=false"
+        ],
+        "expected_hd_result": 72.38665008544922,
+        "prior_author_json": "Paper-reproduction-apps/x-hd-paper/results/goal5307_raw/author_water_bg_arcgis_bounded.json",
+        "prior_running_avg_time_ms": 4.209
+      },
+      "case_id": "water_bg_bounded",
+      "category": "geo_bounded",
+      "comparison": {
+        "prior_abs_diff": 4.925300871150284e-06,
+        "prior_matched": true,
+        "tolerance": 1e-05
+      },
+      "expected_point_counts": [
+        124,
+        894
+      ],
+      "input_identity_level": "level_b_bounded_geo_fixture",
+      "input_type": "wkt",
+      "n_dims": 2,
+      "packet_status": "planned_not_executed",
+      "paper_pair": "USADetailedWaterBodies.wkt -> USACensusBlockGroupBoundaries.wkt",
+      "remote_inputs": {
+        "input1": "/tmp/xhd_goal5306/data/USADetailedWaterBodies_arcgis_bounded.wkt",
+        "input2": "/tmp/xhd_goal5306/data/USACensusBlockGroupBoundaries_arcgis_bounded.wkt"
+      },
+      "rtdl": {
+        "command": [
+          "cd",
+          "/tmp/rtdl_goal5419",
+          "&&",
+          "PYTHONPATH=src:.",
+          "RTDL_OPTIX_LIBRARY=/tmp/rtdl_goal5419/build/librtdl_optix.so",
+          "python3",
+          "/tmp/rtdl_goal5419/Paper-reproduction-apps/x-hd-paper/scripts/run_xhd_goal5305_county_zcta_rtdl_numba_gate.py",
+          "--input1",
+          "/tmp/xhd_goal5306/data/USADetailedWaterBodies_arcgis_bounded.wkt",
+          "--input2",
+          "/tmp/xhd_goal5306/data/USACensusBlockGroupBoundaries_arcgis_bounded.wkt",
+          "--author-json",
+          "/tmp/xhd_goal5422/out/author_water_bg_bounded.json",
+          "--summary",
+          "/tmp/xhd_goal5422/out/rtdl_water_bg_bounded_triton_summary.json",
+          "--input-type",
+          "wkt",
+          "--n-dims",
+          "2",
+          "--partner",
+          "triton",
+          "--triton-strategy",
+          "dense_point_nearest_tiled",
+          "--tolerance",
+          "1e-5"
+        ],
+        "expected_hd_result": 72.38664516014835,
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "partner": "triton",
+        "partner_reference_contract": "generic_directed_max_of_nearest_distance_2d",
+        "per_source_witness_exact": true,
+        "prior_route_sec": 1.3052062913775444,
+        "prior_total_sec": 2.839240401983261,
+        "route": "directed_max_of_nearest_distance_2d_partner_columns",
+        "triton_strategy": "dense_point_nearest_tiled"
+      }
+    }
+  ],
+  "schema": "rtdl.paper_reproduction.xhd.goal5421.bounded_geo_same_pod_packet_plan.v1",
+  "source_artifacts": {
+    "goal5305": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5305_county_zcta_rtdl_triton_summary_pod.json",
+    "goal5307": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5307_water_bg_author_rtdl_partner_gate_summary_pod.json",
+    "goal5420": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5420_figure5_level_b_matrix_consolidation_decision.json"
+  },
+  "status": "bounded_geo_same_pod_packet_planned__no_execution"
+}

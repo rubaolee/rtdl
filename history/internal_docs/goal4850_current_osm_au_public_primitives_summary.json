@@ -1,0 +1,73 @@
+{
+  "authorpatch_command_shape": "query_exec -poly1 poly1 -poly2 poly2 -query=lsi",
+  "base_segment_count": 14430155,
+  "claim_boundary": {
+    "all_eight_exact_paper_pairs_claim": false,
+    "bundled_rayjoin_helper_used": false,
+    "full_section57_overlay_claim": false,
+    "numba_hot_path_required": false,
+    "public_generic_rtdl_primitives": true,
+    "section52_lsi_count_only": true
+  },
+  "count": 103869,
+  "expected_count": 13622,
+  "imports": {
+    "forbidden_module_imported": false,
+    "rtdsl.optix_runtime": [
+      "prepare_segment_pair_intersection_optix",
+      "prepare_segment_pair_left_set_optix"
+    ],
+    "rtdsl_top_level": [
+      "load_cdb",
+      "chains_to_rayjoin_cdb_segments"
+    ]
+  },
+  "label": "current_osm_australia_lakes_parks_representative",
+  "matched_expected": false,
+  "poly1": "/workspace/goal4848_rep/current_osm_au/lakes_Australia_current_osm_Point.cdb",
+  "poly2": "/workspace/goal4848_rep/current_osm_au/parks_Australia_current_osm_Point.cdb",
+  "query_segment_count": 941375,
+  "raw_count_result": {
+    "backend": "optix",
+    "claim_boundary": {
+      "experimental_front_door": true,
+      "public_speedup_claim_authorized": false,
+      "rayjoin_paper_reproduction_claim_authorized": false,
+      "release_authorized": false,
+      "rt_core_speedup_claim_authorized": false,
+      "rtdl_beats_rayjoin_claim_authorized": false,
+      "true_zero_copy_claim_authorized": false,
+      "whole_app_acceleration_claim_authorized": false
+    },
+    "count": 103869,
+    "implementation_contract": "SEGMENT_PAIR_PREPARED_LEFT_GROUPED_RANGE_DIRECT_INTERSECTION_EXACT_COUNT_V1",
+    "native_symbol": "rtdl_optix_count_prepared_segment_pair_intersection_prepared_left_grouped_range_direct_intersection",
+    "output_contract": "scalar_exact_count",
+    "primitive": "SEGMENT_PAIR_INTERSECTION_ROWS_2D",
+    "right_group_count": 14430155,
+    "route": "intersection_program_identity_or_ranged_primitive_records",
+    "route_selection": {
+      "default_right_range_policy": "identity_range",
+      "fallback_route": "count_prepared_left",
+      "native_policy_env": {
+        "area_enlarge": "RTDL_OPTIX_SEGMENT_PAIR_GROUPED_RANGE_AREA_ENLARGE",
+        "max_size": "RTDL_OPTIX_SEGMENT_PAIR_GROUPED_RANGE_MAX_SIZE"
+      }
+    },
+    "schema": "rtdl.optix.segment_pair_prepared_left_exact_intersection_count.front_door.v1"
+  },
+  "rtdl_direction_contract": {
+    "base_right_index": "poly1",
+    "query_left_set": "poly2"
+  },
+  "schema": "rtdl.goal4850.section52_lsi_public_generic_primitives.v1",
+  "timings_sec": {
+    "count": 1.765083208680153,
+    "load_poly1": 38.74593783169985,
+    "load_poly2": 4.465584717690945,
+    "prepare_both": 17.59690149128437,
+    "segments_poly1": 6.928645975887775,
+    "segments_poly2": 0.608179435133934,
+    "total_observed": 70.11033266037703
+  }
+}

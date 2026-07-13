@@ -1,0 +1,86 @@
+{
+  "schema": "rtdl.goal4877.section52_lsi.authorofficial_revalidation.v1",
+  "date": "2026-07-02",
+  "authorofficial": {
+    "definition": "AuthorOfficial = Author+RTDLContractPatch",
+    "source_tree": "/workspace/RayJoin_goal4834_patched_author",
+    "source_head": "02bf6220d6d20b04af77ee20364eced75cc029c9",
+    "binary": "/workspace/RayJoin_goal4834_patched_author/release/bin/polyover_exec",
+    "binary_sha256": "7ef4d5ee62180df695191d92a8ccdffcb27443a95820f04d5d6d2bd672888f47",
+    "modified_files_rechecked_on_pod": [
+      "src/algo/rt_pip_custom.cu",
+      "src/app/map_overlay_rt.h",
+      "src/app/output_chain.h",
+      "src/map/map.h",
+      "src/run_query.cu",
+      "src/util/markers.h"
+    ],
+    "lsi_kernel_modified": false,
+    "semantic_reason_lsi_is_stable": "AuthorOfficial semantic patches repair directed point-location SoS and duplicate-half-edge face selection; they do not modify the LSI predicate/kernel."
+  },
+  "rtdl": {
+    "worktree": "/workspace/rtdl_goal4859_exec",
+    "optix_library": "/workspace/rtdl_goal4859_exec/build/librtdl_optix.so",
+    "optix_library_sha256": "f7ba19c10c5d4354f28f768192cd8b2c0ea21234492d14b41a4850549a59c664",
+    "public_api": "prepare_planar_map_lsi_2d_optix",
+    "bundled_rayjoin_helper_used": false
+  },
+  "revalidation_method": {
+    "kind": "light_authorofficial_revalidation",
+    "fresh_pod_fingerprint_checked": true,
+    "fresh_large_cdb_rerun": false,
+    "why_no_fresh_large_cdb_rerun": "The AuthorOfficial changes do not touch the LSI kernel or predicate. Goal4853 already contains raw public-primitive LSI count summaries for the three available pairs; rerunning the two largest CDB loads would spend minutes reproducing an unchanged predicate rather than testing a new hypothesis.",
+    "prior_raw_summary_source": "history/internal_docs/goal4853_section52_final/final_summary.json"
+  },
+  "rows": [
+    {
+      "pair": "County x Zipcode",
+      "orientation": "County base, Zipcode query",
+      "authorofficial_lsi_count": 961165,
+      "authorofficial_count_source": "AuthorPatch Goal4845 exact count revalidated as AuthorOfficial-stable by LSI patch-scope check",
+      "rtdl_public_lsi_count": 961165,
+      "rtdl_raw_summary": "history/internal_docs/goal4853_section52_final/county_zipcode_final.json",
+      "matched": true,
+      "claim_boundary": {
+        "section52_lsi_count_only": true,
+        "full_overlay_claim": false,
+        "all_eight_exact_paper_pairs_claim": false,
+        "performance_claim": false
+      }
+    },
+    {
+      "pair": "Block x Water",
+      "orientation": "Block base, Water query",
+      "authorofficial_lsi_count": 649605,
+      "authorofficial_count_source": "AuthorPatch Goal4846 exact count revalidated as AuthorOfficial-stable by LSI patch-scope check",
+      "rtdl_public_lsi_count": 649605,
+      "rtdl_raw_summary": "history/internal_docs/goal4853_section52_final/block_water_final.json",
+      "matched": true,
+      "claim_boundary": {
+        "section52_lsi_count_only": true,
+        "full_overlay_claim": false,
+        "all_eight_exact_paper_pairs_claim": false,
+        "performance_claim": false
+      }
+    },
+    {
+      "pair": "Australia Lakes x Parks representative",
+      "orientation": "Lakes base, Parks query",
+      "authorofficial_lsi_count": 13622,
+      "authorofficial_count_source": "Goal4848 forward representative count revalidated as AuthorOfficial-stable by LSI patch-scope check",
+      "rtdl_public_lsi_count": 13622,
+      "rtdl_raw_summary": "history/internal_docs/goal4853_section52_final/australia_lakes_parks_representative_final.json",
+      "matched": true,
+      "claim_boundary": {
+        "section52_lsi_count_only": true,
+        "representative_current_source_pair": true,
+        "full_overlay_claim": false,
+        "all_eight_exact_paper_pairs_claim": false,
+        "performance_claim": false
+      },
+      "direction_note": "Goal4875's Section 5.7 overlay route uses the opposite-oriented LSI row count 13452; that is not a contradiction with the Section 5.2 forward count 13622."
+    }
+  ],
+  "all_available_pairs_matched": true,
+  "exit_label": "completed_section52_lsi_authorofficial_available_pairs_revalidated__no_fresh_large_rerun_needed"
+}

@@ -1,0 +1,236 @@
+{
+  "answer": "/workspace/RayJoin_fresh/test/dataset/br_countyXbr_soil_answer.txt",
+  "answer_sha256": "464f87a59cc2428f63cbfe5068965d7bc7adb8eee51e9c1e3a5960ae8b76019e",
+  "author_compat_binary_median_sec": 8.509348466992378,
+  "left": "/workspace/RayJoin_fresh/test/dataset/br_county_clean_25_odyssey_final.txt",
+  "notes": [
+    "author_compat_binary is the existing build in RayJoin_fresh/release; clean worktree build failed under CUDA 12.8/GCC 13 due NVTX/double2 compatibility, so this is not claimed as pristine-source performance"
+  ],
+  "right": "/workspace/RayJoin_fresh/test/dataset/br_soil_ascii_odyssey_final.txt",
+  "rtdl_optix_repaired_median_sec": 4.638960041105747,
+  "runs": {
+    "author_compat_binary": [
+      {
+        "byte_equal": true,
+        "bytes": 16631243,
+        "elapsed_sec": 8.509348466992378,
+        "iteration": 0,
+        "returncode": 0,
+        "sha256": "464f87a59cc2428f63cbfe5068965d7bc7adb8eee51e9c1e3a5960ae8b76019e",
+        "stderr_tail": [
+          " - Build Index: 3.11685 ms",
+          "",
+          " - Intersection edges: 3.36003 ms",
+          "",
+          " - Map 0: Locate vertices in other map: 0.946045 ms",
+          "",
+          " - Map 1: Locate vertices in other map: 0.741005 ms",
+          "",
+          " - Computer output polygons: 6.35409 ms",
+          "",
+          " - Write to file: 1388.31 ms",
+          ""
+        ],
+        "stdout_tail": [
+          "GOAL4806_MIDDEBUG im=0 idx=599 eid=233847 x1_eids=233847,235173 x2_eids=233847,235182 x1=-17649270531744,-45855563158572 x2=-17466547466297,-45646270309383 midx=-17557908999020 midy=-45750916733977 midxi=-17557908999020 midyi=-45750916733977",
+          "GOAL4806_MIDDEBUG im=1 idx=598 eid=27449 x1_eids=9633,27449 x2_eids=9636,27449 x1=-25025469482060,34306365701862 x2=-25086530693757,34242679583703 midx=-25056000087908 midy=34274522642782 midxi=-25056000087908 midyi=34274522642782",
+          "GOAL4806_MIDDEBUG im=1 idx=600 eid=27522 x1_eids=54547,27522 x2_eids=54548,27522 x1=22443001752725,34817641414575 x2=22443098853682,34809494459607 midx=22443050303203 midy=34813567937091 midxi=22443050303203 midyi=34813567937091",
+          "GOAL4806_MIDDEBUG im=1 idx=599 eid=27449 x1_eids=9636,27449 x2_eids=307840,27449 x1=-25086530693757,34242679583703 x2=-25343772528874,33974379406688 midx=-25215151611315 midy=34108529495195 midxi=-25215151611315 midyi=34108529495195",
+          "GOAL4806_MIDDEBUG im=1 idx=592 eid=27337 x1_eids=51737,27337 x2_eids=51739,27337 x1=13530512676335,35283852399516 x2=13522577075786,35283772325041 midx=13526544876060 midy=35283812362278 midxi=13526544876060 midyi=35283812362278",
+          "GOAL4806_MIDDEBUG im=1 idx=594 eid=27345 x1_eids=49178,27345 x2_eids=49179,27345 x1=13230749173435,35049897902854 x2=13231899514120,35047389742203 midx=13231324343777 midy=35048643822528 midxi=13231324343777 midyi=35048643822528",
+          "GOAL4806_MIDDEBUG im=1 idx=595 eid=27371 x1_eids=315950,27371 x2_eids=315949,27371 x1=24195506534647,34238989968912 x2=24182578512176,34227732499730 midx=24189042523411 midy=34233361234321 midxi=24189042523411 midyi=34233361234321",
+          "GOAL4806_MIDDEBUG im=1 idx=597 eid=27380 x1_eids=68654,27380 x2_eids=68408,27380 x1=25183208577319,34084031345731 x2=25226773867141,34003248035616 midx=25204991222230 midy=34043639690673 midxi=25204991222230 midyi=34043639690673",
+          "GOAL4806_MIDDEBUG im=1 idx=593 eid=27337 x1_eids=51739,27337 x2_eids=51746,27337 x1=13522577075786,35283772325041 x2=13449678571424,35283036739952 midx=13486127823605 midy=35283404532496 midxi=13486127823605 midyi=35283404532496",
+          "GOAL4806_MIDDEBUG im=1 idx=596 eid=27371 x1_eids=315949,27371 x2_eids=315946,27371 x1=24182578512176,34227732499730 x2=24117325637409,34170911572292 midx=24149952074792 midy=34199322036011 midxi=24149952074792 midyi=34199322036011",
+          "GOAL4806_MIDDEBUG im=1 idx=590 eid=27336 x1_eids=51724,27336 x2_eids=51725,27336 x1=13598006037036,35264356546855 x2=13593682464233,35267094206791 midx=13595844250634 midy=35265725376823 midxi=13595844250634 midyi=35265725376823",
+          "GOAL4806_MIDDEBUG im=1 idx=591 eid=27336 x1_eids=51725,27336 x2_eids=51727,27336 x1=13593682464233,35267094206791 x2=13587815280061,35270809272032 midx=13590748872147 midy=35268951739411 midxi=13590748872147 midyi=35268951739411"
+        ]
+      },
+      {
+        "byte_equal": true,
+        "bytes": 16631243,
+        "elapsed_sec": 9.181705541908741,
+        "iteration": 1,
+        "returncode": 0,
+        "sha256": "464f87a59cc2428f63cbfe5068965d7bc7adb8eee51e9c1e3a5960ae8b76019e",
+        "stderr_tail": [
+          " - Build Index: 3.13592 ms",
+          "",
+          " - Intersection edges: 3.22914 ms",
+          "",
+          " - Map 0: Locate vertices in other map: 0.961065 ms",
+          "",
+          " - Map 1: Locate vertices in other map: 0.737906 ms",
+          "",
+          " - Computer output polygons: 6.31499 ms",
+          "",
+          " - Write to file: 1717.81 ms",
+          ""
+        ],
+        "stdout_tail": [
+          "GOAL4806_MIDDEBUG im=0 idx=599 eid=233847 x1_eids=233847,235173 x2_eids=233847,235182 x1=-17649270531744,-45855563158572 x2=-17466547466297,-45646270309383 midx=-17557908999020 midy=-45750916733977 midxi=-17557908999020 midyi=-45750916733977",
+          "GOAL4806_MIDDEBUG im=1 idx=598 eid=27449 x1_eids=9633,27449 x2_eids=9636,27449 x1=-25025469482060,34306365701862 x2=-25086530693757,34242679583703 midx=-25056000087908 midy=34274522642782 midxi=-25056000087908 midyi=34274522642782",
+          "GOAL4806_MIDDEBUG im=1 idx=600 eid=27522 x1_eids=54547,27522 x2_eids=54548,27522 x1=22443001752725,34817641414575 x2=22443098853682,34809494459607 midx=22443050303203 midy=34813567937091 midxi=22443050303203 midyi=34813567937091",
+          "GOAL4806_MIDDEBUG im=1 idx=599 eid=27449 x1_eids=9636,27449 x2_eids=307840,27449 x1=-25086530693757,34242679583703 x2=-25343772528874,33974379406688 midx=-25215151611315 midy=34108529495195 midxi=-25215151611315 midyi=34108529495195",
+          "GOAL4806_MIDDEBUG im=1 idx=592 eid=27337 x1_eids=51737,27337 x2_eids=51739,27337 x1=13530512676335,35283852399516 x2=13522577075786,35283772325041 midx=13526544876060 midy=35283812362278 midxi=13526544876060 midyi=35283812362278",
+          "GOAL4806_MIDDEBUG im=1 idx=594 eid=27345 x1_eids=49178,27345 x2_eids=49179,27345 x1=13230749173435,35049897902854 x2=13231899514120,35047389742203 midx=13231324343777 midy=35048643822528 midxi=13231324343777 midyi=35048643822528",
+          "GOAL4806_MIDDEBUG im=1 idx=595 eid=27371 x1_eids=315950,27371 x2_eids=315949,27371 x1=24195506534647,34238989968912 x2=24182578512176,34227732499730 midx=24189042523411 midy=34233361234321 midxi=24189042523411 midyi=34233361234321",
+          "GOAL4806_MIDDEBUG im=1 idx=597 eid=27380 x1_eids=68654,27380 x2_eids=68408,27380 x1=25183208577319,34084031345731 x2=25226773867141,34003248035616 midx=25204991222230 midy=34043639690673 midxi=25204991222230 midyi=34043639690673",
+          "GOAL4806_MIDDEBUG im=1 idx=593 eid=27337 x1_eids=51739,27337 x2_eids=51746,27337 x1=13522577075786,35283772325041 x2=13449678571424,35283036739952 midx=13486127823605 midy=35283404532496 midxi=13486127823605 midyi=35283404532496",
+          "GOAL4806_MIDDEBUG im=1 idx=596 eid=27371 x1_eids=315949,27371 x2_eids=315946,27371 x1=24182578512176,34227732499730 x2=24117325637409,34170911572292 midx=24149952074792 midy=34199322036011 midxi=24149952074792 midyi=34199322036011",
+          "GOAL4806_MIDDEBUG im=1 idx=590 eid=27336 x1_eids=51724,27336 x2_eids=51725,27336 x1=13598006037036,35264356546855 x2=13593682464233,35267094206791 midx=13595844250634 midy=35265725376823 midxi=13595844250634 midyi=35265725376823",
+          "GOAL4806_MIDDEBUG im=1 idx=591 eid=27336 x1_eids=51725,27336 x2_eids=51727,27336 x1=13593682464233,35267094206791 x2=13587815280061,35270809272032 midx=13590748872147 midy=35268951739411 midxi=13590748872147 midyi=35268951739411"
+        ]
+      },
+      {
+        "byte_equal": true,
+        "bytes": 16631243,
+        "elapsed_sec": 7.63390551507473,
+        "iteration": 2,
+        "returncode": 0,
+        "sha256": "464f87a59cc2428f63cbfe5068965d7bc7adb8eee51e9c1e3a5960ae8b76019e",
+        "stderr_tail": [
+          " - Build Index: 3.13807 ms",
+          "",
+          " - Intersection edges: 3.2599 ms",
+          "",
+          " - Map 0: Locate vertices in other map: 0.952005 ms",
+          "",
+          " - Map 1: Locate vertices in other map: 0.738144 ms",
+          "",
+          " - Computer output polygons: 6.31785 ms",
+          "",
+          " - Write to file: 1358.94 ms",
+          ""
+        ],
+        "stdout_tail": [
+          "GOAL4806_MIDDEBUG im=0 idx=599 eid=233847 x1_eids=233847,235173 x2_eids=233847,235182 x1=-17649270531744,-45855563158572 x2=-17466547466297,-45646270309383 midx=-17557908999020 midy=-45750916733977 midxi=-17557908999020 midyi=-45750916733977",
+          "GOAL4806_MIDDEBUG im=1 idx=598 eid=27449 x1_eids=9633,27449 x2_eids=9636,27449 x1=-25025469482060,34306365701862 x2=-25086530693757,34242679583703 midx=-25056000087908 midy=34274522642782 midxi=-25056000087908 midyi=34274522642782",
+          "GOAL4806_MIDDEBUG im=1 idx=600 eid=27522 x1_eids=54547,27522 x2_eids=54548,27522 x1=22443001752725,34817641414575 x2=22443098853682,34809494459607 midx=22443050303203 midy=34813567937091 midxi=22443050303203 midyi=34813567937091",
+          "GOAL4806_MIDDEBUG im=1 idx=599 eid=27449 x1_eids=9636,27449 x2_eids=307840,27449 x1=-25086530693757,34242679583703 x2=-25343772528874,33974379406688 midx=-25215151611315 midy=34108529495195 midxi=-25215151611315 midyi=34108529495195",
+          "GOAL4806_MIDDEBUG im=1 idx=592 eid=27337 x1_eids=51737,27337 x2_eids=51739,27337 x1=13530512676335,35283852399516 x2=13522577075786,35283772325041 midx=13526544876060 midy=35283812362278 midxi=13526544876060 midyi=35283812362278",
+          "GOAL4806_MIDDEBUG im=1 idx=594 eid=27345 x1_eids=49178,27345 x2_eids=49179,27345 x1=13230749173435,35049897902854 x2=13231899514120,35047389742203 midx=13231324343777 midy=35048643822528 midxi=13231324343777 midyi=35048643822528",
+          "GOAL4806_MIDDEBUG im=1 idx=595 eid=27371 x1_eids=315950,27371 x2_eids=315949,27371 x1=24195506534647,34238989968912 x2=24182578512176,34227732499730 midx=24189042523411 midy=34233361234321 midxi=24189042523411 midyi=34233361234321",
+          "GOAL4806_MIDDEBUG im=1 idx=597 eid=27380 x1_eids=68654,27380 x2_eids=68408,27380 x1=25183208577319,34084031345731 x2=25226773867141,34003248035616 midx=25204991222230 midy=34043639690673 midxi=25204991222230 midyi=34043639690673",
+          "GOAL4806_MIDDEBUG im=1 idx=593 eid=27337 x1_eids=51739,27337 x2_eids=51746,27337 x1=13522577075786,35283772325041 x2=13449678571424,35283036739952 midx=13486127823605 midy=35283404532496 midxi=13486127823605 midyi=35283404532496",
+          "GOAL4806_MIDDEBUG im=1 idx=596 eid=27371 x1_eids=315949,27371 x2_eids=315946,27371 x1=24182578512176,34227732499730 x2=24117325637409,34170911572292 midx=24149952074792 midy=34199322036011 midxi=24149952074792 midyi=34199322036011",
+          "GOAL4806_MIDDEBUG im=1 idx=590 eid=27336 x1_eids=51724,27336 x2_eids=51725,27336 x1=13598006037036,35264356546855 x2=13593682464233,35267094206791 midx=13595844250634 midy=35265725376823 midxi=13595844250634 midyi=35265725376823",
+          "GOAL4806_MIDDEBUG im=1 idx=591 eid=27336 x1_eids=51725,27336 x2_eids=51727,27336 x1=13593682464233,35267094206791 x2=13587815280061,35270809272032 midx=13590748872147 midy=35268951739411 midxi=13590748872147 midyi=35268951739411"
+        ]
+      }
+    ],
+    "rtdl_optix_repaired": [
+      {
+        "byte_equal": true,
+        "bytes": 16631243,
+        "elapsed_sec": 5.8986460864543915,
+        "iteration": 0,
+        "result_summary": {
+          "input_shape": {
+            "map0_chains": 16545,
+            "map0_edges": 326193,
+            "map0_points": 342738,
+            "map1_chains": 7950,
+            "map1_edges": 251011,
+            "map1_points": 258961
+          },
+          "lsi": {
+            "intersection_count": 20860,
+            "predicate_contract": "rayjoin_author_lsi_intersect_test_endpoint_collinear_contract"
+          },
+          "midpoint_pip": {
+            "map0_midpoints_in_map1": 944,
+            "map0_positive_faces": 934,
+            "map1_midpoints_in_map0": 3594,
+            "map1_positive_faces": 3189
+          },
+          "phase_seconds": {
+            "lsi_row_object_materialize_sec": 0.06505883485078812,
+            "lsi_row_sort_sec": 0.044769950211048126,
+            "output_chain_assembly_sec": 1.0465645864605904,
+            "output_chain_write_sec": 0.6448461711406708,
+            "pack_inputs_sec": 0.6789280101656914,
+            "point_location_prepare_sec": 0.578263558447361,
+            "point_location_prepare_wall_sec": 0.5783383995294571,
+            "total_sec": 4.185414679348469
+          }
+        },
+        "sha256": "464f87a59cc2428f63cbfe5068965d7bc7adb8eee51e9c1e3a5960ae8b76019e"
+      },
+      {
+        "byte_equal": true,
+        "bytes": 16631243,
+        "elapsed_sec": 4.638960041105747,
+        "iteration": 1,
+        "result_summary": {
+          "input_shape": {
+            "map0_chains": 16545,
+            "map0_edges": 326193,
+            "map0_points": 342738,
+            "map1_chains": 7950,
+            "map1_edges": 251011,
+            "map1_points": 258961
+          },
+          "lsi": {
+            "intersection_count": 20860,
+            "predicate_contract": "rayjoin_author_lsi_intersect_test_endpoint_collinear_contract"
+          },
+          "midpoint_pip": {
+            "map0_midpoints_in_map1": 944,
+            "map0_positive_faces": 934,
+            "map1_midpoints_in_map0": 3594,
+            "map1_positive_faces": 3189
+          },
+          "phase_seconds": {
+            "lsi_row_object_materialize_sec": 0.061915524303913116,
+            "lsi_row_sort_sec": 0.04211202263832092,
+            "output_chain_assembly_sec": 0.9847377017140388,
+            "output_chain_write_sec": 1.0519157499074936,
+            "pack_inputs_sec": 0.6615821197628975,
+            "point_location_prepare_sec": 0.03973296284675598,
+            "point_location_prepare_wall_sec": 0.039778679609298706,
+            "total_sec": 3.0922227576375008
+          }
+        },
+        "sha256": "464f87a59cc2428f63cbfe5068965d7bc7adb8eee51e9c1e3a5960ae8b76019e"
+      },
+      {
+        "byte_equal": true,
+        "bytes": 16631243,
+        "elapsed_sec": 4.232367195188999,
+        "iteration": 2,
+        "result_summary": {
+          "input_shape": {
+            "map0_chains": 16545,
+            "map0_edges": 326193,
+            "map0_points": 342738,
+            "map1_chains": 7950,
+            "map1_edges": 251011,
+            "map1_points": 258961
+          },
+          "lsi": {
+            "intersection_count": 20860,
+            "predicate_contract": "rayjoin_author_lsi_intersect_test_endpoint_collinear_contract"
+          },
+          "midpoint_pip": {
+            "map0_midpoints_in_map1": 944,
+            "map0_positive_faces": 934,
+            "map1_midpoints_in_map0": 3594,
+            "map1_positive_faces": 3189
+          },
+          "phase_seconds": {
+            "lsi_row_object_materialize_sec": 0.06338416039943695,
+            "lsi_row_sort_sec": 0.042628705501556396,
+            "output_chain_assembly_sec": 0.9880187660455704,
+            "output_chain_write_sec": 0.6291592344641685,
+            "pack_inputs_sec": 0.6657111421227455,
+            "point_location_prepare_sec": 0.044365108013153076,
+            "point_location_prepare_wall_sec": 0.04439818859100342,
+            "total_sec": 2.684557616710663
+          }
+        },
+        "sha256": "464f87a59cc2428f63cbfe5068965d7bc7adb8eee51e9c1e3a5960ae8b76019e"
+      }
+    ]
+  }
+}

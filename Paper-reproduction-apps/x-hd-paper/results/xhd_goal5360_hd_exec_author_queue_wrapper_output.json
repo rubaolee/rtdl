@@ -1,0 +1,328 @@
+{
+  "HDResult": 2.0,
+  "RTDL": {
+    "author_rt_option_surface": {
+      "all_explicit_author_rt_options_supported": null,
+      "boundary": "These are author RT option-surface records. Omitted defaults are recorded for audit only. Explicit author RT options fail closed unless this surface records an evidenced narrow RTDL mapping for the selected route.",
+      "claim_boundary": {
+        "author_rt_core_algorithm_equivalence_claimed": false,
+        "author_rt_option_surface_complete_claimed": false,
+        "performance_parity_claimed": false
+      },
+      "explicit_author_rt_options": [],
+      "options": {
+        "eb": {
+          "author_default": true,
+          "author_flag": "eb",
+          "author_semantics_equivalence_claimed": false,
+          "current_rtdl_support_status": "author_default_recorded_not_algorithm_parity",
+          "effective_value": true,
+          "explicitly_requested": false,
+          "mapped_to_rtdl_control": null,
+          "meaning": "Use early-break optimization in author RT mode.",
+          "support_scope": null,
+          "type": "bool"
+        },
+        "fast_build_bvh": {
+          "author_default": false,
+          "author_flag": "fast_build_bvh",
+          "author_semantics_equivalence_claimed": false,
+          "current_rtdl_support_status": "author_default_recorded_not_algorithm_parity",
+          "effective_value": false,
+          "explicitly_requested": false,
+          "mapped_to_rtdl_control": null,
+          "meaning": "Prefer fast-build BVH in author RT mode.",
+          "support_scope": null,
+          "type": "bool"
+        },
+        "lb": {
+          "author_default": 256,
+          "author_flag": "lb",
+          "author_semantics_equivalence_claimed": false,
+          "current_rtdl_support_status": "author_default_recorded_not_algorithm_parity",
+          "effective_value": 256,
+          "explicitly_requested": false,
+          "mapped_to_rtdl_control": null,
+          "meaning": "Author load-balance threshold; 0 disables load balance.",
+          "support_scope": null,
+          "type": "int"
+        },
+        "n_points_cell": {
+          "author_default": 15,
+          "author_flag": "n_points_cell",
+          "author_semantics_equivalence_claimed": false,
+          "current_rtdl_support_status": "author_default_recorded_not_algorithm_parity",
+          "effective_value": 15,
+          "explicitly_requested": false,
+          "mapped_to_rtdl_control": null,
+          "meaning": "Expected points per cell used for author grid/radius setup.",
+          "support_scope": null,
+          "type": "int"
+        },
+        "prune": {
+          "author_default": true,
+          "author_flag": "prune",
+          "author_semantics_equivalence_claimed": false,
+          "current_rtdl_support_status": "author_default_recorded_not_algorithm_parity",
+          "effective_value": true,
+          "explicitly_requested": false,
+          "mapped_to_rtdl_control": null,
+          "meaning": "Use upper/lower-bound pruning in author RT mode.",
+          "support_scope": null,
+          "type": "bool"
+        },
+        "rebuild_bvh": {
+          "author_default": false,
+          "author_flag": "rebuild_bvh",
+          "author_semantics_equivalence_claimed": false,
+          "current_rtdl_support_status": "author_default_recorded_not_algorithm_parity",
+          "effective_value": false,
+          "explicitly_requested": false,
+          "mapped_to_rtdl_control": null,
+          "meaning": "Rebuild BVH on each author RT radius iteration instead of updating.",
+          "support_scope": null,
+          "type": "bool"
+        },
+        "tune_grid": {
+          "author_default": false,
+          "author_flag": "tune_grid",
+          "author_semantics_equivalence_claimed": false,
+          "current_rtdl_support_status": "author_default_recorded_not_algorithm_parity",
+          "effective_value": false,
+          "explicitly_requested": false,
+          "mapped_to_rtdl_control": null,
+          "meaning": "Author brute-force grid-size tuning mode.",
+          "support_scope": null,
+          "type": "bool"
+        },
+        "tune_radius": {
+          "author_default": "adaptive",
+          "author_flag": "tune_radius",
+          "author_semantics_equivalence_claimed": false,
+          "current_rtdl_support_status": "author_default_recorded_not_algorithm_parity",
+          "effective_value": "adaptive",
+          "explicitly_requested": false,
+          "mapped_to_rtdl_control": null,
+          "meaning": "Author radius growth policy between RT iterations.",
+          "support_scope": null,
+          "type": "choice"
+        }
+      },
+      "schema": "rtdl.paper_reproduction.xhd.author_rt_option_surface.v1",
+      "selected_route_label": "cell-mbr-author-queue-diagnostic",
+      "selected_variant": "rt",
+      "status": "no_explicit_author_rt_options__author_defaults_recorded_only",
+      "supported_explicit_author_rt_options": [],
+      "unsupported_explicit_author_rt_options": []
+    },
+    "boundary": "Author-compatible RTDL X-HD app entrypoint. The CLI mirrors the author hd_exec key flags and writes HDResult/Running JSON, but the computation is an RTDL route label selected by --rtdl-route. Non-rt author variants are accepted as value-compatible HDResult requests only; their author-specific algorithms and performance denominators are not reproduced. This is not a claim of full paper reproduction, author RT-core algorithm equivalence, or performance parity.",
+    "claim_boundary": {
+      "author_performance_parity_claimed": false,
+      "author_rt_core_algorithm_equivalence_claim_authorized": false,
+      "author_rt_option_surface_complete_claimed": false,
+      "author_variant_algorithm_equivalence_claimed": false,
+      "exact_paper_dataset_identity_claimed": false,
+      "full_xhd_paper_reproduction_claim_authorized": false,
+      "performance_claim_authorized": false
+    },
+    "entrypoint_contract": "author_hd_exec_key_flags_plus_rtdl_route_extension",
+    "execution": "gpu",
+    "hd_result_semantics": "directed_input1_to_input2",
+    "input1": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\data\\fixtures\\bounded3d_a.wkt",
+    "input2": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\data\\fixtures\\bounded3d_b.wkt",
+    "input_type": "wkt",
+    "n_dims": 3,
+    "paper_app": "x-hd-paper",
+    "point_count_a": 9,
+    "point_count_b": 8,
+    "radius_trace_metadata": {
+      "author_queue_semantics_aligned_for_bounded_trace": true,
+      "author_tune_radius_support_scope": null,
+      "author_tune_radius_supported": false,
+      "claim_boundary": {
+        "author_rt_core_algorithm_equivalence_claimed": false,
+        "author_tune_radius_route_mapping_claimed": false,
+        "figure8_reproduction_claimed": false,
+        "full_xhd_paper_reproduction_claimed": false,
+        "performance_claimed": false
+      },
+      "directions": [
+        {
+          "iterations": [
+            {
+              "CMax2": 4.0,
+              "Iteration": 1,
+              "NumInputPoints": 9,
+              "NumOutputPoints": 0,
+              "Radius": 2.0
+            }
+          ],
+          "label": "a_to_b"
+        }
+      ],
+      "route_iteration_model": "cell_mbr_author_like_radius_queue_route",
+      "schema": "rtdl.paper_reproduction.xhd.author_like_queue_trace.v1",
+      "status": "author_like_queue_trace_available_from_cell_mbr_diagnostic_route",
+      "uses_radius_growth_step": false
+    },
+    "reference_preprocessing": [],
+    "route": {
+      "author_like_queue_iterations": [
+        {
+          "CMax2": 4.0,
+          "Iteration": 1,
+          "NumInputPoints": 9,
+          "NumOutputPoints": 0,
+          "Radius": 2.0
+        }
+      ],
+      "author_trace_json": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\bounded3d_author_hd_exec_output_pod.json",
+      "directed_a_to_b": {
+        "distance": 2.0,
+        "queue_rows": [
+          {
+            "CMax2": 4.0,
+            "Iteration": 1,
+            "NumInputPoints": 9,
+            "NumOutputPoints": 0,
+            "Radius": 2.0
+          }
+        ],
+        "route_iterations": [
+          {
+            "candidate_distance_evaluations": 72,
+            "cmax2_state_model": "author_like_global_cmax2_state_confirmed_points_only",
+            "frontier_row_count": 9,
+            "nearest_columns_app_semantics": "none",
+            "nearest_columns_contract": "generic_nearest_witness_from_cell_mbr_frontier",
+            "nearest_missing_fallback_candidate_rows": 0,
+            "nearest_missing_fallback_count": 0,
+            "queue_row": {
+              "CMax2": 4.0,
+              "Iteration": 1,
+              "NumInputPoints": 9,
+              "NumOutputPoints": 0,
+              "Radius": 2.0
+            },
+            "route_contract": "generic_cell_mbr_nearest_frontier_reference",
+            "route_distance": 2.0
+          }
+        ]
+      },
+      "hd_result": 2.0,
+      "per_source_witness_exact": true,
+      "point_count_a": 9,
+      "point_count_b": 8,
+      "radius_trace_metadata": {
+        "author_queue_semantics_aligned_for_bounded_trace": true,
+        "author_tune_radius_support_scope": null,
+        "author_tune_radius_supported": false,
+        "claim_boundary": {
+          "author_rt_core_algorithm_equivalence_claimed": false,
+          "author_tune_radius_route_mapping_claimed": false,
+          "figure8_reproduction_claimed": false,
+          "full_xhd_paper_reproduction_claimed": false,
+          "performance_claimed": false
+        },
+        "directions": [
+          {
+            "iterations": [
+              {
+                "CMax2": 4.0,
+                "Iteration": 1,
+                "NumInputPoints": 9,
+                "NumOutputPoints": 0,
+                "Radius": 2.0
+              }
+            ],
+            "label": "a_to_b"
+          }
+        ],
+        "route_iteration_model": "cell_mbr_author_like_radius_queue_route",
+        "schema": "rtdl.paper_reproduction.xhd.author_like_queue_trace.v1",
+        "status": "author_like_queue_trace_available_from_cell_mbr_diagnostic_route",
+        "uses_radius_growth_step": false
+      },
+      "reference_preprocessing": [],
+      "route": "rtdl_cell_mbr_author_like_queue_diagnostic_numpy_3d",
+      "route_contract": "App-owned bounded diagnostic route that emits author-like radius queue rows from the generic cell-MBR route and emitted nearest columns. This is not the author RT-core implementation.",
+      "route_label": "cell-mbr-author-queue-diagnostic",
+      "run_phases": {
+        "load_input_sec": 0.0018350998871028423,
+        "rtdl_route_sec": 0.002847100142389536,
+        "total_sec": 0.004682200029492378
+      },
+      "witness_contract": "directed_input1_to_input2_author_like_queue_trace_bounded_diagnostic"
+    },
+    "route_label": "cell-mbr-author-queue-diagnostic",
+    "run_phases": {
+      "entrypoint_total_sec": 0.0051555996760725975,
+      "load_input_sec": 0.0018350998871028423,
+      "rtdl_route_sec": 0.002847100142389536,
+      "total_sec": 0.004682200029492378
+    },
+    "running_avg_time_semantics": "Running.AvgTime is populated for author-shaped JSON compatibility, but it is RTDL route wall time for the selected route label. It must not be compared to author internal Running.AvgTime without an explicit phase-boundary review.",
+    "schema": "rtdl.paper_reproduction.xhd.rtdl_hd_exec_compatible.v1",
+    "variant": "rt",
+    "variant_support": {
+      "author_variant_algorithm_equivalence_claimed": false,
+      "description": "The requested author variant is rt, the X-HD paper algorithm. RTDL computes the same directed HDResult contract through an explicit RTDL route label, but does not claim author RT-core kernel or performance equivalence.",
+      "hdresult_value_supported": true,
+      "performance_parity_claimed": false,
+      "requested_author_variant": "rt",
+      "status": "xhd_rt_value_route"
+    }
+  },
+  "Running": {
+    "Algorithm": "RTDL-cell-mbr-author-queue-diagnostic",
+    "AvgTime": 2.847100142389536,
+    "Repeats": [
+      {
+        "Algorithm": "RTDL-cell-mbr-author-queue-diagnostic",
+        "IterationSemantics": "RTDL author-like radius queue rows emitted by the selected diagnostic route; not author internal timing parity",
+        "Iterations": [
+          {
+            "CMax2": 4.0,
+            "Iteration": 1,
+            "NumInputPoints": 9,
+            "NumOutputPoints": 0,
+            "Radius": 2.0
+          }
+        ],
+        "RTDLRadiusTrace": {
+          "author_queue_semantics_aligned_for_bounded_trace": true,
+          "author_tune_radius_support_scope": null,
+          "author_tune_radius_supported": false,
+          "claim_boundary": {
+            "author_rt_core_algorithm_equivalence_claimed": false,
+            "author_tune_radius_route_mapping_claimed": false,
+            "figure8_reproduction_claimed": false,
+            "full_xhd_paper_reproduction_claimed": false,
+            "performance_claimed": false
+          },
+          "directions": [
+            {
+              "iterations": [
+                {
+                  "CMax2": 4.0,
+                  "Iteration": 1,
+                  "NumInputPoints": 9,
+                  "NumOutputPoints": 0,
+                  "Radius": 2.0
+                }
+              ],
+              "label": "a_to_b"
+            }
+          ],
+          "route_iteration_model": "cell_mbr_author_like_radius_queue_route",
+          "schema": "rtdl.paper_reproduction.xhd.author_like_queue_trace.v1",
+          "status": "author_like_queue_trace_available_from_cell_mbr_diagnostic_route",
+          "uses_radius_growth_step": false
+        },
+        "ReportedTime": 2.847100142389536,
+        "TimeSemantics": "RTDL route wall time in milliseconds for the selected route label; not author internal ReportedTime parity"
+      }
+    ],
+    "TimeSemantics": "RTDL route wall time in milliseconds for the selected route label; not author internal Running.AvgTime parity"
+  }
+}

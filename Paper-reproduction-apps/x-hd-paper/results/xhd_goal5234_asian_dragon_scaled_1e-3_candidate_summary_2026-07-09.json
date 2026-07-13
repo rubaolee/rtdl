@@ -1,0 +1,25 @@
+{
+  "claim_boundary": {
+    "app_owned_input_preprocessing": true,
+    "exact_paper_dataset_identity_claimed": false,
+    "full_paper_reproduction_claimed": false,
+    "paper_figure_reproduction_claimed": false,
+    "performance_ratio_claimed": false
+  },
+  "coordinate_extents_after_scale": [
+    0.20174352264404297,
+    0.1120262680053711,
+    0.1342019500732422
+  ],
+  "faces_preserved": false,
+  "goal": "Goal5234",
+  "input": "Paper-reproduction-apps\\x-hd-paper\\data\\external\\stanford\\asian_dragon.ply",
+  "input_sha256": "4A31C6B8951B0F9F4B351D183CB5D5D27E2D1A5916B27E6516ACFB9A91AD7F85",
+  "n_dims": 3,
+  "output": "Paper-reproduction-apps\\x-hd-paper\\data\\external\\stanford\\asian_dragon_scaled_1e-3.ply",
+  "output_format": "binary_big_endian 1.0",
+  "output_sha256": "4F98D1F809CFB6DCB448E469FDD94A606DE17B45CCB160F5CD1A5423508F01FE",
+  "scale": 0.001,
+  "schema": "rtdl.paper_reproduction.xhd.scaled_ply_candidate.v1",
+  "vertex_count": 3609600
+}

@@ -1,0 +1,10 @@
+{
+  "claim_boundary": "LSI ring geometry only; no overlay topology or PIP claim",
+  "feature_count": 50000,
+  "input_path": "/workspace/goal4881_section57_south_america/extract/parks.geojsonseq",
+  "output_path": "/workspace/goal4881_section57_south_america/cdb_bounded_150k_50k/parks_South_America_current_osm_bounded50k_Point.cdb",
+  "point_count": 654694,
+  "ring_chain_count": 50487,
+  "skipped_non_polygon": 0,
+  "skipped_short_ring": 0
+}

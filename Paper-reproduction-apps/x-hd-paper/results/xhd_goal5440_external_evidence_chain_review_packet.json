@@ -1,0 +1,283 @@
+{
+  "chain_state": {
+    "action_packet_ready": "water_bg_external_action_packet_ready__prepared_not_sent",
+    "classifier_ready": "water_bg_external_response_classifier_ready__await_response",
+    "inbox_status": "external_response_inbox_empty__await_response",
+    "next_gate_plan_status": "external_response_next_gate_plan_empty__await_response",
+    "readiness_status": "full_xhd_reproduction_not_ready__await_external_response_or_artifact",
+    "send_manifest_status": "external_request_send_manifest_ready__prepared_not_sent",
+    "sent_receipt_status": "external_request_sent_receipt_gate_empty__no_request_sent"
+  },
+  "claim_boundary": {
+    "exact_equivalence_accepted": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_reopened": false,
+    "external_artifacts_acquired": false,
+    "external_evidence_chain_review_packet_claimed": true,
+    "external_response_received": false,
+    "figure5_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "new_rtdl_route_code_added": false,
+    "performance_ratio_claimed": false,
+    "pod_execution_claimed": false,
+    "request_send_manifest_claimed": true,
+    "request_sent_claimed": false,
+    "route_micro_optimization_goal_authorized": false
+  },
+  "date": "2026-07-10",
+  "goal": "Goal5440",
+  "goal_statuses": [
+    {
+      "claim_boundary": {
+        "classifier_contract_claimed": true,
+        "exact_equivalence_accepted": false,
+        "exact_paper_dataset_reproduction_claimed": false,
+        "explicit_lb_reopened": false,
+        "external_artifacts_acquired": false,
+        "external_response_received": false,
+        "figure5_reproduction_claimed": false,
+        "full_paper_reproduction_claimed": false,
+        "new_rtdl_route_code_added": false,
+        "performance_ratio_claimed": false,
+        "pod_execution_claimed": false,
+        "route_micro_optimization_goal_authorized": false
+      },
+      "goal": "Goal5433",
+      "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5433_water_bg_external_response_classifier_contract.json",
+      "pod_expected_next": false,
+      "pod_used": false,
+      "status": "water_bg_external_response_classifier_ready__await_response",
+      "stop_loss_gate": {
+        "decision": "PASS: intake governance, not app-artifact parity implementation.",
+        "gate_downstream_consumer_reachable": true,
+        "gate_generic_capability_produced": true,
+        "gate_non_app_consumer": "external response classifier / provenance intake decision gate",
+        "gate_requires_app_specific_logic": false
+      }
+    },
+    {
+      "claim_boundary": {
+        "exact_equivalence_accepted": false,
+        "exact_paper_dataset_reproduction_claimed": false,
+        "explicit_lb_reopened": false,
+        "external_action_packet_prepared": true,
+        "external_artifacts_acquired": false,
+        "external_response_received": false,
+        "figure5_reproduction_claimed": false,
+        "full_xhd_paper_reproduction_claimed": false,
+        "new_rtdl_route_code_added": false,
+        "performance_ratio_claimed": false,
+        "pod_execution_claimed": false,
+        "request_sent_claimed": false,
+        "route_micro_optimization_goal_authorized": false
+      },
+      "goal": "Goal5434",
+      "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5434_water_bg_external_action_packet.json",
+      "pod_expected_next": false,
+      "pod_used": false,
+      "status": "water_bg_external_action_packet_ready__prepared_not_sent",
+      "stop_loss_gate": {
+        "decision": "PASS: packaging external action, not app-artifact parity implementation.",
+        "gate_downstream_consumer_reachable": true,
+        "gate_generic_capability_produced": true,
+        "gate_non_app_consumer": "external action packet / response classification workflow",
+        "gate_requires_app_specific_logic": false
+      }
+    },
+    {
+      "claim_boundary": {
+        "exact_equivalence_accepted": false,
+        "exact_paper_dataset_reproduction_claimed": false,
+        "explicit_lb_reopened": false,
+        "external_artifacts_acquired": false,
+        "external_response_received": false,
+        "figure5_reproduction_claimed": false,
+        "full_xhd_paper_reproduction_claimed": false,
+        "inbox_scanned": true,
+        "new_rtdl_route_code_added": false,
+        "performance_ratio_claimed": false,
+        "pod_execution_claimed": false,
+        "request_sent_claimed": false,
+        "route_micro_optimization_goal_authorized": false
+      },
+      "goal": "Goal5435",
+      "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5435_external_response_inbox_gate.json",
+      "pod_expected_next": false,
+      "pod_used": false,
+      "status": "external_response_inbox_empty__await_response",
+      "stop_loss_gate": {
+        "decision": "PASS: inbox governance, not app-artifact parity implementation.",
+        "gate_downstream_consumer_reachable": true,
+        "gate_generic_capability_produced": true,
+        "gate_non_app_consumer": "external response inbox gate / classifier-driven provenance workflow",
+        "gate_requires_app_specific_logic": false
+      }
+    },
+    {
+      "claim_boundary": {
+        "author_rt_core_algorithm_equivalence_claimed": false,
+        "exact_paper_dataset_reproduction_claimed": false,
+        "explicit_lb_reopened": false,
+        "figure5_reproduction_claimed": false,
+        "full_xhd_paper_reproduction_claimed": false,
+        "new_rtdl_route_code_added": false,
+        "performance_ratio_claimed": false,
+        "pod_execution_claimed": false,
+        "readiness_matrix_claimed": true,
+        "route_micro_optimization_goal_authorized": false
+      },
+      "goal": "Goal5436",
+      "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5436_full_reproduction_readiness_matrix.json",
+      "pod_expected_next": false,
+      "pod_used": false,
+      "status": "full_xhd_reproduction_not_ready__await_external_response_or_artifact",
+      "stop_loss_gate": {
+        "decision": "PASS: readiness governance, not app-artifact parity implementation.",
+        "gate_downstream_consumer_reachable": true,
+        "gate_generic_capability_produced": true,
+        "gate_non_app_consumer": "full-reproduction readiness matrix / external-response governance workflow",
+        "gate_requires_app_specific_logic": false
+      }
+    },
+    {
+      "claim_boundary": {
+        "exact_equivalence_accepted": false,
+        "exact_paper_dataset_reproduction_claimed": false,
+        "explicit_lb_reopened": false,
+        "external_artifacts_acquired": false,
+        "figure5_reproduction_claimed": false,
+        "full_xhd_paper_reproduction_claimed": false,
+        "new_rtdl_route_code_added": false,
+        "next_gate_plan_claimed": true,
+        "performance_ratio_claimed": false,
+        "planned_gate_executed": false,
+        "pod_execution_claimed": false,
+        "request_sent_claimed": false,
+        "route_micro_optimization_goal_authorized": false
+      },
+      "goal": "Goal5437",
+      "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5437_external_response_next_gate_plan.json",
+      "pod_expected_next": false,
+      "pod_used": false,
+      "status": "external_response_next_gate_plan_empty__await_response",
+      "stop_loss_gate": {
+        "decision": "PASS: next-gate governance, not app-artifact parity implementation.",
+        "gate_downstream_consumer_reachable": true,
+        "gate_generic_capability_produced": true,
+        "gate_non_app_consumer": "external response next-gate planner / provenance workflow",
+        "gate_requires_app_specific_logic": false
+      }
+    },
+    {
+      "claim_boundary": {
+        "exact_equivalence_accepted": false,
+        "exact_paper_dataset_reproduction_claimed": false,
+        "explicit_lb_reopened": false,
+        "external_artifacts_acquired": false,
+        "external_response_received": false,
+        "figure5_reproduction_claimed": false,
+        "full_xhd_paper_reproduction_claimed": false,
+        "new_rtdl_route_code_added": false,
+        "performance_ratio_claimed": false,
+        "pod_execution_claimed": false,
+        "request_send_manifest_claimed": true,
+        "request_sent_claimed": false,
+        "route_micro_optimization_goal_authorized": false
+      },
+      "goal": "Goal5438",
+      "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5438_external_request_send_manifest.json",
+      "pod_expected_next": false,
+      "pod_used": false,
+      "status": "external_request_send_manifest_ready__prepared_not_sent",
+      "stop_loss_gate": {
+        "decision": "PASS: outbound governance, not app-artifact parity implementation.",
+        "gate_downstream_consumer_reachable": true,
+        "gate_generic_capability_produced": true,
+        "gate_non_app_consumer": "external request send manifest / receipt workflow",
+        "gate_requires_app_specific_logic": false
+      }
+    },
+    {
+      "claim_boundary": {
+        "exact_equivalence_accepted": false,
+        "exact_paper_dataset_reproduction_claimed": false,
+        "explicit_lb_reopened": false,
+        "external_artifacts_acquired": false,
+        "external_response_received": false,
+        "figure5_reproduction_claimed": false,
+        "full_xhd_paper_reproduction_claimed": false,
+        "new_rtdl_route_code_added": false,
+        "performance_ratio_claimed": false,
+        "pod_execution_claimed": false,
+        "request_send_manifest_claimed": true,
+        "request_sent_claimed": false,
+        "route_micro_optimization_goal_authorized": false,
+        "sent_receipt_gate_scanned": true
+      },
+      "goal": "Goal5439",
+      "path": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5439_external_request_sent_receipt_gate.json",
+      "pod_expected_next": false,
+      "pod_used": false,
+      "status": "external_request_sent_receipt_gate_empty__no_request_sent",
+      "stop_loss_gate": {
+        "decision": "PASS: outbound receipt governance, not app-artifact parity implementation.",
+        "gate_downstream_consumer_reachable": true,
+        "gate_generic_capability_produced": true,
+        "gate_non_app_consumer": "external request sent-receipt gate / response intake workflow",
+        "gate_requires_app_specific_logic": false
+      }
+    }
+  ],
+  "goals_covered": [
+    "Goal5433",
+    "Goal5434",
+    "Goal5435",
+    "Goal5436",
+    "Goal5437",
+    "Goal5438",
+    "Goal5439"
+  ],
+  "next_action": "owner_send_selected_requests_record_receipts_then_run_goal5439",
+  "not_allowed": [
+    "claiming a request was sent from a prepared manifest alone",
+    "claiming a response arrived from a sent receipt alone",
+    "claiming exact-equivalence accepted without external response classification and strict review",
+    "claiming exact paper dataset reproduction",
+    "claiming Figure 5 or full X-HD paper reproduction",
+    "claiming author-vs-RTDL performance ratio",
+    "running POD or route work from this review packet",
+    "reopening route micro-optimization or explicit -lb while exact input evidence is absent"
+  ],
+  "pod_usage": {
+    "expected_next": false,
+    "reason": "Review packet only. POD is opened only after a positive classified response and strict next-gate review.",
+    "used": false
+  },
+  "review_focus": [
+    "Verify that a prepared request is not treated as a sent request.",
+    "Verify that a sent receipt is not treated as an external response.",
+    "Verify that a positive classifier outcome would require strict review before POD.",
+    "Verify that no exact/full/performance claim is made anywhere in the chain.",
+    "Verify that route micro-optimization and explicit -lb remain closed while exact input evidence is absent."
+  ],
+  "schema": "rtdl.paper_reproduction.xhd.goal5440.external_evidence_chain_review_packet.v1",
+  "status": "external_evidence_chain_prepared_not_sent__await_owner_or_external_action",
+  "stop_loss_gate": {
+    "decision": "PASS: review governance, not app-artifact parity implementation.",
+    "gate_downstream_consumer_reachable": true,
+    "gate_generic_capability_produced": true,
+    "gate_non_app_consumer": "external evidence-chain review packet / provenance governance workflow",
+    "gate_requires_app_specific_logic": false
+  },
+  "summary": {
+    "claim_boundaries_preserved": true,
+    "external_response_count": 0,
+    "full_xhd_paper_reproduction_ready": false,
+    "planned_gate_count": 0,
+    "pod_expected_next": false,
+    "pod_used_anywhere_in_chain": false,
+    "positive_classifier_outcome_count": 0,
+    "ready_external_request_count": 4,
+    "sent_receipt_count": 0
+  }
+}

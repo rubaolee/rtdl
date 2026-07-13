@@ -1,0 +1,55 @@
+{
+  "abs_diff": 3.71981589974979e-09,
+  "author_comparison_reference": "directed_a_to_b",
+  "author_comparison_reference_value": 0.1215052343959716,
+  "author_hd_result": 0.1215052381157875,
+  "author_json": "stanford_graphics_sample1024_author_hd_exec_output_pod.json",
+  "author_run": {
+    "cmd": [
+      "/tmp/xhd-goal5112/build-gcc11-optix77-fast/bin/hd_exec",
+      "-input1",
+      "stanford_dragon_res4_sample1024.ply",
+      "-input2",
+      "stanford_happy_res4_sample1024.ply",
+      "-n_dims",
+      "3",
+      "-input_type",
+      "ply",
+      "-variant",
+      "rt",
+      "-execution",
+      "gpu",
+      "-json",
+      "stanford_graphics_sample1024_author_hd_exec_output_pod.json",
+      "-overwrite=true",
+      "-check=false"
+    ],
+    "returncode": 0,
+    "stderr": "I20260708 11:28:31.251187 124973059506176 run_hausdorff_distance.cu:259] Points A: 1024 Points B: 1024\nI20260708 11:28:31.255895 124973059506176 run_hausdorff_distance.cu:287] \u001b[31mAvg Running Time 4.298 ms\u001b[0m\nI20260708 11:28:31.547929 124973059506176 run_hausdorff_distance.cu:71] HausdorffDistance: distance is 0.121505\n",
+    "stdout": "avg aabb cycles 1491, avg point cycles 179\n"
+  },
+  "author_run_failed": false,
+  "boundary": "Tiny same-input author JSON gate. This compares author HDResult to a deterministic exact Hausdorff reference for bounded WKT or ASCII PLY fixtures. It is not exact paper input reproduction and not a performance claim.",
+  "execution": "gpu",
+  "input1": "stanford_dragon_res4_sample1024.ply",
+  "input2": "stanford_happy_res4_sample1024.ply",
+  "input_type": "ply",
+  "matched": true,
+  "n_dims": 3,
+  "paper_app": "x-hd-paper",
+  "paper_reproduction_claim_authorized": false,
+  "performance_claim_authorized": false,
+  "point_count_a": 1024,
+  "point_count_b": 1024,
+  "reference_preprocessing": [
+    "translate_each_input_to_min_bound"
+  ],
+  "rtdl_reference": {
+    "directed_a_to_b": 0.1215052343959716,
+    "directed_b_to_a": 0.07035373561915528,
+    "hausdorff": 0.1215052343959716
+  },
+  "schema": "rtdl.paper_reproduction.xhd.author_json_gate.v1",
+  "tolerance": 1e-06,
+  "variant": "rt"
+}

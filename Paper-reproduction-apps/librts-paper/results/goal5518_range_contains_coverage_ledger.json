@@ -1,0 +1,109 @@
+{
+  "cases": [
+    {
+      "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+      "query": "PPoPPAE/datasets/queries/range-contains_queries_50000/parks_Europe.wkt",
+      "status": "not_checkpointed"
+    },
+    {
+      "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+      "query": "PPoPPAE/datasets/queries/range-contains_queries_50000/parks.bz2.wkt",
+      "status": "not_checkpointed"
+    },
+    {
+      "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+      "query": "PPoPPAE/datasets/queries/range-contains_queries_400000/parks_Europe.wkt",
+      "status": "not_checkpointed"
+    },
+    {
+      "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+      "query": "PPoPPAE/datasets/queries/range-contains_queries_400000/parks.bz2.wkt",
+      "status": "not_checkpointed"
+    },
+    {
+      "author_rtdl_count": 104426,
+      "evidence_source": "results/goal5517_exact_range_contains_batch_gate.json",
+      "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+      "query": "PPoPPAE/datasets/queries/range-contains_queries_100000/parks_Europe.wkt",
+      "status": "matched"
+    },
+    {
+      "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+      "query": "PPoPPAE/datasets/queries/range-contains_queries_100000/parks.bz2.wkt",
+      "status": "not_checkpointed"
+    },
+    {
+      "author_rtdl_count": 117314,
+      "evidence_source": "results/goal5517_exact_range_contains_batch_gate.json",
+      "geometry": "PPoPPAE/datasets/polygons/dtl_cnty.wkt",
+      "query": "PPoPPAE/datasets/queries/range-contains_queries_100000/dtl_cnty.wkt",
+      "status": "matched"
+    },
+    {
+      "geometry": "PPoPPAE/datasets/polygons/lakes.bz2.wkt",
+      "query": "PPoPPAE/datasets/queries/range-contains_queries_100000/lakes.bz2.wkt",
+      "status": "not_checkpointed"
+    },
+    {
+      "author_rtdl_count": 120457,
+      "evidence_source": "results/goal5517_exact_range_contains_batch_gate.json",
+      "geometry": "PPoPPAE/datasets/polygons/USACensusBlockGroupBoundaries.wkt",
+      "query": "PPoPPAE/datasets/queries/range-contains_queries_100000/USACensusBlockGroupBoundaries.wkt",
+      "status": "matched"
+    },
+    {
+      "author_rtdl_count": 112637,
+      "evidence_source": "results/goal5517_exact_range_contains_batch_gate.json",
+      "geometry": "PPoPPAE/datasets/polygons/USADetailedWaterBodies.wkt",
+      "query": "PPoPPAE/datasets/queries/range-contains_queries_100000/USADetailedWaterBodies.wkt",
+      "status": "matched"
+    },
+    {
+      "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+      "query": "PPoPPAE/datasets/queries/range-contains_queries_200000/parks_Europe.wkt",
+      "status": "not_checkpointed"
+    },
+    {
+      "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+      "query": "PPoPPAE/datasets/queries/range-contains_queries_200000/parks.bz2.wkt",
+      "status": "not_checkpointed"
+    },
+    {
+      "geometry": "PPoPPAE/datasets/polygons/parks_Europe.wkt",
+      "query": "PPoPPAE/datasets/queries/range-contains_queries_800000/parks_Europe.wkt",
+      "status": "not_checkpointed"
+    },
+    {
+      "geometry": "PPoPPAE/datasets/polygons/parks.bz2.wkt",
+      "query": "PPoPPAE/datasets/queries/range-contains_queries_800000/parks.bz2.wkt",
+      "status": "not_checkpointed"
+    }
+  ],
+  "claim_boundary": {
+    "author_performance_parity_claimed": false,
+    "complete_paper_reproduction_claimed": false,
+    "complete_range_contains_matrix_claimed": false,
+    "coverage_ledger_only": true,
+    "device_zero_copy_claimed": false,
+    "embree_in_scope": false,
+    "figure6_reproduced": false,
+    "performance_ratio_authorized": false,
+    "pointwise_containment_equivalence_claimed": false
+  },
+  "exact_archive_pair_count": 14,
+  "inventory_source": "results/librts_goal5492_exact_archive_operation_inventory.json",
+  "operation": "range_contains",
+  "remaining_work_classification": {
+    "lakes_bz2_100000_case": 1,
+    "large_geometry_100000_cases": 2,
+    "note": "All ten entries require new checkpoints; large parks/lakes cases require independent capacity handling.",
+    "parks_Europe_query_cardinality_variants": 4,
+    "parks_bz2_query_cardinality_variants": 5
+  },
+  "schema": "rtdl.paper_reproduction.librts.goal5518_range_contains_coverage_ledger.v1",
+  "status": "range_contains_exact_archive_coverage_reconciled",
+  "status_counts": {
+    "matched": 4,
+    "not_checkpointed": 10
+  }
+}

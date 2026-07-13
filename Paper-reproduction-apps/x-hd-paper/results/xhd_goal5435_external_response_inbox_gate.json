@@ -1,0 +1,51 @@
+{
+  "action_packet": "Paper-reproduction-apps/x-hd-paper/requests/water_bg_external_action_packet.md",
+  "action_packet_status": "water_bg_external_action_packet_ready__prepared_not_sent",
+  "claim_boundary": {
+    "exact_equivalence_accepted": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_reopened": false,
+    "external_artifacts_acquired": false,
+    "external_response_received": false,
+    "figure5_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "inbox_scanned": true,
+    "new_rtdl_route_code_added": false,
+    "performance_ratio_claimed": false,
+    "pod_execution_claimed": false,
+    "request_sent_claimed": false,
+    "route_micro_optimization_goal_authorized": false
+  },
+  "classified_responses": [],
+  "date": "2026-07-10",
+  "goal": "Goal5435",
+  "input_dir": "Paper-reproduction-apps/x-hd-paper/requests/incoming",
+  "invalid_response_count": 0,
+  "loaded_response_count": 0,
+  "next_action": "wait_for_external_response_or_send_owner_reviewed_action_packet",
+  "not_allowed": [
+    "treating a positive classifier outcome as exact/full reproduction by itself",
+    "running POD inside the inbox scanner",
+    "running author or RTDL route code inside the inbox scanner",
+    "claiming exact-equivalence accepted without strict review of the classifier output",
+    "claiming exact paper dataset reproduction from response presence alone",
+    "claiming Figure 5 or full X-HD reproduction from response presence alone",
+    "claiming performance ratio from response presence alone"
+  ],
+  "pod_usage": {
+    "expected_next": false,
+    "reason": "POD remains a separate next gate and is never run by this inbox scanner.",
+    "used": false
+  },
+  "positive_classifier_outcome_count": 0,
+  "response_count": 0,
+  "schema": "rtdl.paper_reproduction.xhd.goal5435.external_response_inbox_gate.v1",
+  "status": "external_response_inbox_empty__await_response",
+  "stop_loss_gate": {
+    "decision": "PASS: inbox governance, not app-artifact parity implementation.",
+    "gate_downstream_consumer_reachable": true,
+    "gate_generic_capability_produced": true,
+    "gate_non_app_consumer": "external response inbox gate / classifier-driven provenance workflow",
+    "gate_requires_app_specific_logic": false
+  }
+}

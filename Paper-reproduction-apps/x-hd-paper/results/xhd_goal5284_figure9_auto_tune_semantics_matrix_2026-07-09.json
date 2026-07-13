@@ -1,0 +1,432 @@
+{
+  "category_config_summary": {
+    "BraTS2020_ValidationData": {
+      "avg_time_median_by_config": {
+        "n_points_cell_false_max_hit_false": 10.552699999999998,
+        "n_points_cell_true_max_hit_true": 9.756799999999998
+      },
+      "by_config": {
+        "n_points_cell_false_max_hit_false": 500,
+        "n_points_cell_true_max_hit_true": 500
+      },
+      "row_count": 1000,
+      "unique_pair_count": 500
+    },
+    "ModelNet40": {
+      "avg_time_median_by_config": {
+        "n_points_cell_false_max_hit_false": 2.4339000000000004,
+        "n_points_cell_true_max_hit_true": 0.8023
+      },
+      "by_config": {
+        "n_points_cell_false_max_hit_false": 400,
+        "n_points_cell_true_max_hit_true": 400
+      },
+      "row_count": 800,
+      "unique_pair_count": 400
+    },
+    "geo": {
+      "avg_time_median_by_config": {
+        "n_points_cell_false_max_hit_false": 99.1482,
+        "n_points_cell_true_max_hit_true": 86.345
+      },
+      "by_config": {
+        "n_points_cell_false_max_hit_false": 3,
+        "n_points_cell_true_max_hit_true": 3
+      },
+      "row_count": 6,
+      "unique_pair_count": 3
+    },
+    "graphics": {
+      "avg_time_median_by_config": {
+        "n_points_cell_false_max_hit_false": 14.897599999999999,
+        "n_points_cell_true_max_hit_true": 15.346999999999998
+      },
+      "by_config": {
+        "n_points_cell_false_max_hit_false": 4,
+        "n_points_cell_true_max_hit_true": 4
+      },
+      "row_count": 8,
+      "unique_pair_count": 4
+    }
+  },
+  "claim_boundary": {
+    "exact_paper_dataset_reproduction_claimed": false,
+    "figure9_reproduced": false,
+    "full_paper_reproduction_claimed": false,
+    "performance_ratio_claimed": false,
+    "rtdl_route_result_claimed": false
+  },
+  "config_pair_comparison": {
+    "examples": [
+      {
+        "category": "BraTS2020_ValidationData",
+        "false_false_avg_time": 17.974,
+        "file_pair": "BraTS20_Validation_001_flair.nii -> BraTS20_Validation_033_flair.nii",
+        "hd_results_equal": true,
+        "input_point_counts": [
+          1589257,
+          1145851
+        ],
+        "true_over_false_avg_time_ratio": 0.8100367197062424,
+        "true_true_avg_time": 14.5596,
+        "winner": "n_points_cell_true_max_hit_true"
+      },
+      {
+        "category": "BraTS2020_ValidationData",
+        "false_false_avg_time": 10.9222,
+        "file_pair": "BraTS20_Validation_001_t1.nii -> BraTS20_Validation_123_flair.nii",
+        "hd_results_equal": true,
+        "input_point_counts": [
+          1589594,
+          1574924
+        ],
+        "true_over_false_avg_time_ratio": 0.9185328963029425,
+        "true_true_avg_time": 10.032399999999999,
+        "winner": "n_points_cell_true_max_hit_true"
+      },
+      {
+        "category": "BraTS2020_ValidationData",
+        "false_false_avg_time": 12.1218,
+        "file_pair": "BraTS20_Validation_001_t1ce.nii -> BraTS20_Validation_116_flair.nii",
+        "hd_results_equal": true,
+        "input_point_counts": [
+          1591145,
+          1614491
+        ],
+        "true_over_false_avg_time_ratio": 0.7919285914633141,
+        "true_true_avg_time": 9.5996,
+        "winner": "n_points_cell_true_max_hit_true"
+      },
+      {
+        "category": "BraTS2020_ValidationData",
+        "false_false_avg_time": 10.675999999999998,
+        "file_pair": "BraTS20_Validation_001_t2.nii -> BraTS20_Validation_078_flair.nii",
+        "hd_results_equal": true,
+        "input_point_counts": [
+          1591815,
+          1407962
+        ],
+        "true_over_false_avg_time_ratio": 0.9132071937055077,
+        "true_true_avg_time": 9.7494,
+        "winner": "n_points_cell_true_max_hit_true"
+      },
+      {
+        "category": "BraTS2020_ValidationData",
+        "false_false_avg_time": 14.745,
+        "file_pair": "BraTS20_Validation_001_t2.nii -> BraTS20_Validation_090_flair.nii",
+        "hd_results_equal": true,
+        "input_point_counts": [
+          1591815,
+          1369590
+        ],
+        "true_over_false_avg_time_ratio": 1.0029976263140048,
+        "true_true_avg_time": 14.7892,
+        "winner": "n_points_cell_false_max_hit_false"
+      },
+      {
+        "category": "BraTS2020_ValidationData",
+        "false_false_avg_time": 11.805399999999999,
+        "file_pair": "BraTS20_Validation_001_t2.nii -> BraTS20_Validation_109_flair.nii",
+        "hd_results_equal": true,
+        "input_point_counts": [
+          1591815,
+          1510366
+        ],
+        "true_over_false_avg_time_ratio": 1.0362545953546685,
+        "true_true_avg_time": 12.233400000000001,
+        "winner": "n_points_cell_false_max_hit_false"
+      },
+      {
+        "category": "BraTS2020_ValidationData",
+        "false_false_avg_time": 13.3292,
+        "file_pair": "BraTS20_Validation_002_flair.nii -> BraTS20_Validation_087_t1.nii",
+        "hd_results_equal": true,
+        "input_point_counts": [
+          1850564,
+          1450475
+        ],
+        "true_over_false_avg_time_ratio": 0.82444557812922,
+        "true_true_avg_time": 10.9892,
+        "winner": "n_points_cell_true_max_hit_true"
+      },
+      {
+        "category": "BraTS2020_ValidationData",
+        "false_false_avg_time": 14.3804,
+        "file_pair": "BraTS20_Validation_002_t1.nii -> BraTS20_Validation_017_t2.nii",
+        "hd_results_equal": true,
+        "input_point_counts": [
+          1846784,
+          1498812
+        ],
+        "true_over_false_avg_time_ratio": 1.1110122110650607,
+        "true_true_avg_time": 15.976799999999997,
+        "winner": "n_points_cell_false_max_hit_false"
+      }
+    ],
+    "hd_result_mismatch_pair_count": 0,
+    "incomplete_pair_examples": [],
+    "true_over_false_avg_time_ratio_max": 4.059908875249463,
+    "true_over_false_avg_time_ratio_median": 0.8451452870304746,
+    "true_over_false_avg_time_ratio_min": 0.045700626655468694,
+    "winner_counts_by_avg_time": {
+      "n_points_cell_false_max_hit_false": 167,
+      "n_points_cell_true_max_hit_true": 740
+    }
+  },
+  "coverage": {
+    "auto_tune_record_count": 1814,
+    "categories": {
+      "BraTS2020_ValidationData": 1000,
+      "ModelNet40": 800,
+      "geo": 6,
+      "graphics": 8
+    },
+    "complete_pair_count_with_both_observed_configs": 907,
+    "configs": {
+      "n_points_cell_false_max_hit_false": 907,
+      "n_points_cell_true_max_hit_true": 907
+    },
+    "expected_observed_config_labels": [
+      "n_points_cell_false_max_hit_false",
+      "n_points_cell_true_max_hit_true"
+    ],
+    "incomplete_pair_count": 0,
+    "observed_config_labels": [
+      "n_points_cell_false_max_hit_false",
+      "n_points_cell_true_max_hit_true"
+    ],
+    "unique_pair_count": 907
+  },
+  "figure9_reproduction_decision": {
+    "current_evidence_level": "author_log_mapping_only",
+    "figure9_reproduced": false,
+    "forbidden_claims": [
+      "Figure 9 reproduced",
+      "full adaptive-grid sweep reproduced",
+      "paper selected grid-size choices recovered",
+      "author-vs-RTDL Figure 9 speedup or parity",
+      "exact paper dataset reproduction",
+      "full X-HD paper reproduction"
+    ],
+    "what_is_missing": [
+      "full adaptive-grid parameter sweep semantics",
+      "paper Figure 9 selected grid-size choices",
+      "author source/script mapping that ties these two config labels to the plotted Figure 9 experiment",
+      "exact input file bytes or accepted Level-C provenance",
+      "RTDL equivalent adaptive-grid route matrix",
+      "denominator-aligned author-vs-RTDL performance matrix"
+    ],
+    "what_this_proves": [
+      "The paper-branch run_all index contains 1814 auto_tune records.",
+      "The records cover 907 unique input pairs across BraTS, ModelNet40, geo, and graphics categories.",
+      "Every observed pair has the two extracted config labels.",
+      "The two labels can be compared for author-log HDResult and internal timing within the paper-branch logs."
+    ]
+  },
+  "goal": "Goal5284",
+  "next_if_continuing_figure9": [
+    "Inspect author source/scripts for the actual Figure 9 plotting or grid-tuning driver.",
+    "If a separate grid-size sweep log/source exists, extract its grid choices and target workloads.",
+    "If no such artifact exists, keep Figure 9 at author-log mapping only and move to another figure or dataset blocker."
+  ],
+  "observed_config_semantics": {
+    "all_running_num_points_per_cell_values": [
+      8
+    ],
+    "configs": {
+      "n_points_cell_false_max_hit_false": {
+        "avg_time_median": 8.379000000000001,
+        "eb_values": [],
+        "flags_from_label": {
+          "config_label": "n_points_cell_false_max_hit_false",
+          "uses_max_hit_label": false,
+          "uses_n_points_cell_label": false
+        },
+        "lb_values": [],
+        "num_points_per_cell_values": [
+          8
+        ],
+        "prune_values": [],
+        "reported_time_median": 8.168,
+        "row_count": 907,
+        "seed_values": [
+          0
+        ]
+      },
+      "n_points_cell_true_max_hit_true": {
+        "avg_time_median": 8.091800000000001,
+        "eb_values": [],
+        "flags_from_label": {
+          "config_label": "n_points_cell_true_max_hit_true",
+          "uses_max_hit_label": true,
+          "uses_n_points_cell_label": true
+        },
+        "lb_values": [],
+        "num_points_per_cell_values": [
+          8
+        ],
+        "prune_values": [],
+        "reported_time_median": 7.869,
+        "row_count": 907,
+        "seed_values": [
+          0
+        ]
+      }
+    },
+    "grid_size_sweep_present_in_run_all_auto_tune_logs": false,
+    "grid_size_sweep_reason": "All extracted run_all auto_tune records use NumPointsPerCell=8 and only two boolean-style config labels were observed; no multi-value grid-size sweep or selected paper grid-size choices are present in these records."
+  },
+  "sample_records": [
+    {
+      "avg_time": 17.974,
+      "category": "BraTS2020_ValidationData",
+      "config": "n_points_cell_false_max_hit_false",
+      "eb": null,
+      "file_pair": "BraTS20_Validation_001_flair.nii -> BraTS20_Validation_033_flair.nii",
+      "hd_result": 26.645824432373047,
+      "input_point_counts": [
+        1589257,
+        1145851
+      ],
+      "lb": null,
+      "num_points_per_cell": 8,
+      "prune": null,
+      "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/BraTS2020_ValidationData/n_points_cell_false_max_hit_false/BraTS20_Validation_001_flair.nii_BraTS20_Validation_033_flair.nii.json",
+      "reported_time_median": 17.485,
+      "seed": 0
+    },
+    {
+      "avg_time": 10.9222,
+      "category": "BraTS2020_ValidationData",
+      "config": "n_points_cell_false_max_hit_false",
+      "eb": null,
+      "file_pair": "BraTS20_Validation_001_t1.nii -> BraTS20_Validation_123_flair.nii",
+      "hd_result": 12.529964447021484,
+      "input_point_counts": [
+        1589594,
+        1574924
+      ],
+      "lb": null,
+      "num_points_per_cell": 8,
+      "prune": null,
+      "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/BraTS2020_ValidationData/n_points_cell_false_max_hit_false/BraTS20_Validation_001_t1.nii_BraTS20_Validation_123_flair.nii.json",
+      "reported_time_median": 10.664,
+      "seed": 0
+    },
+    {
+      "avg_time": 12.1218,
+      "category": "BraTS2020_ValidationData",
+      "config": "n_points_cell_false_max_hit_false",
+      "eb": null,
+      "file_pair": "BraTS20_Validation_001_t1ce.nii -> BraTS20_Validation_116_flair.nii",
+      "hd_result": 12.328827857971191,
+      "input_point_counts": [
+        1591145,
+        1614491
+      ],
+      "lb": null,
+      "num_points_per_cell": 8,
+      "prune": null,
+      "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/BraTS2020_ValidationData/n_points_cell_false_max_hit_false/BraTS20_Validation_001_t1ce.nii_BraTS20_Validation_116_flair.nii.json",
+      "reported_time_median": 11.978,
+      "seed": 0
+    },
+    {
+      "avg_time": 10.675999999999998,
+      "category": "BraTS2020_ValidationData",
+      "config": "n_points_cell_false_max_hit_false",
+      "eb": null,
+      "file_pair": "BraTS20_Validation_001_t2.nii -> BraTS20_Validation_078_flair.nii",
+      "hd_result": 13.152946472167969,
+      "input_point_counts": [
+        1591815,
+        1407962
+      ],
+      "lb": null,
+      "num_points_per_cell": 8,
+      "prune": null,
+      "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/BraTS2020_ValidationData/n_points_cell_false_max_hit_false/BraTS20_Validation_001_t2.nii_BraTS20_Validation_078_flair.nii.json",
+      "reported_time_median": 10.474,
+      "seed": 0
+    },
+    {
+      "avg_time": 14.745,
+      "category": "BraTS2020_ValidationData",
+      "config": "n_points_cell_false_max_hit_false",
+      "eb": null,
+      "file_pair": "BraTS20_Validation_001_t2.nii -> BraTS20_Validation_090_flair.nii",
+      "hd_result": 16.911535263061523,
+      "input_point_counts": [
+        1591815,
+        1369590
+      ],
+      "lb": null,
+      "num_points_per_cell": 8,
+      "prune": null,
+      "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/BraTS2020_ValidationData/n_points_cell_false_max_hit_false/BraTS20_Validation_001_t2.nii_BraTS20_Validation_090_flair.nii.json",
+      "reported_time_median": 14.343,
+      "seed": 0
+    },
+    {
+      "avg_time": 11.805399999999999,
+      "category": "BraTS2020_ValidationData",
+      "config": "n_points_cell_false_max_hit_false",
+      "eb": null,
+      "file_pair": "BraTS20_Validation_001_t2.nii -> BraTS20_Validation_109_flair.nii",
+      "hd_result": 14.142135620117188,
+      "input_point_counts": [
+        1591815,
+        1510366
+      ],
+      "lb": null,
+      "num_points_per_cell": 8,
+      "prune": null,
+      "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/BraTS2020_ValidationData/n_points_cell_false_max_hit_false/BraTS20_Validation_001_t2.nii_BraTS20_Validation_109_flair.nii.json",
+      "reported_time_median": 11.586,
+      "seed": 0
+    },
+    {
+      "avg_time": 13.3292,
+      "category": "BraTS2020_ValidationData",
+      "config": "n_points_cell_false_max_hit_false",
+      "eb": null,
+      "file_pair": "BraTS20_Validation_002_flair.nii -> BraTS20_Validation_087_t1.nii",
+      "hd_result": 15.937376976013184,
+      "input_point_counts": [
+        1850564,
+        1450475
+      ],
+      "lb": null,
+      "num_points_per_cell": 8,
+      "prune": null,
+      "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/BraTS2020_ValidationData/n_points_cell_false_max_hit_false/BraTS20_Validation_002_flair.nii_BraTS20_Validation_087_t1.nii.json",
+      "reported_time_median": 13.049,
+      "seed": 0
+    },
+    {
+      "avg_time": 14.3804,
+      "category": "BraTS2020_ValidationData",
+      "config": "n_points_cell_false_max_hit_false",
+      "eb": null,
+      "file_pair": "BraTS20_Validation_002_t1.nii -> BraTS20_Validation_017_t2.nii",
+      "hd_result": 18.41195297241211,
+      "input_point_counts": [
+        1846784,
+        1498812
+      ],
+      "lb": null,
+      "num_points_per_cell": 8,
+      "prune": null,
+      "relative_log_path": "expr/for_the_paper/logs/run_all/auto_tune/BraTS2020_ValidationData/n_points_cell_false_max_hit_false/BraTS20_Validation_002_t1.nii_BraTS20_Validation_017_t2.nii.json",
+      "reported_time_median": 14.173,
+      "seed": 0
+    }
+  ],
+  "schema": "rtdl.paper_reproduction.xhd.figure9_auto_tune_semantics.v1",
+  "sources": {
+    "log_index_goal": "Goal5176",
+    "paper_branch_commit": "8c3846866052e1e8755210021f23fac2cbe8c3d6",
+    "record_source": "paper-branch run_all auto_tune logs"
+  },
+  "status": "figure9_auto_tune_mapping_ready__figure9_not_reproduced"
+}

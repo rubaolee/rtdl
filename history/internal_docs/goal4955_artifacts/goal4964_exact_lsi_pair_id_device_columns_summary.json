@@ -1,0 +1,111 @@
+{
+  "author_overlay_compute_sec": 0.0421,
+  "date": "2026-07-04",
+  "interpretation": {
+    "correctness_fingerprint_stable": true,
+    "fingerprint": {
+      "lsi_row_count": 20860,
+      "pair_count": 28815,
+      "total_groups": 64459,
+      "total_point_rows": 673371
+    },
+    "performance_verdict": "no_go_for_speedup",
+    "reason": "exact device columns avoid host row materialization but use count+emit exact passes; exact traversal/predicate dominates this route."
+  },
+  "medians": {
+    "exact_pair_id_device_columns_lsi_sec": 0.8959130486473441,
+    "exact_pair_id_device_columns_ratio_vs_author": 23.454256873409708,
+    "exact_pair_id_device_columns_to_numpy_sec": 0.0005262149497866631,
+    "exact_pair_id_device_columns_writer_free_hot_sec": 0.9874242143705487,
+    "host_pair_id_rows_lsi_public_rows_sec": 0.8069459963589907,
+    "host_pair_id_rows_ratio_vs_author": 21.212479683643565,
+    "host_pair_id_rows_writer_free_hot_sec": 0.8930453946813941
+  },
+  "rows": [
+    {
+      "grouped_compiled_columnar_carrier_construction_sec": 0.010014154948294163,
+      "lsi_exact_device_columns_sec": null,
+      "lsi_exact_device_columns_to_numpy_sec": null,
+      "lsi_host_rows_sec": 0.8189647113904357,
+      "lsi_row_count": 20860,
+      "mode": "host_pair_id_rows",
+      "pair_count": 28815,
+      "ratio_vs_author_0_0421": 22.18349186389435,
+      "run": 1,
+      "total_groups": 64459,
+      "total_point_rows": 673371,
+      "writer_free_hot_sec": 0.9339250074699521
+    },
+    {
+      "grouped_compiled_columnar_carrier_construction_sec": 0.009986113756895065,
+      "lsi_exact_device_columns_sec": null,
+      "lsi_exact_device_columns_to_numpy_sec": null,
+      "lsi_host_rows_sec": 0.8069459963589907,
+      "lsi_row_count": 20860,
+      "mode": "host_pair_id_rows",
+      "pair_count": 28815,
+      "ratio_vs_author_0_0421": 21.212479683643565,
+      "run": 2,
+      "total_groups": 64459,
+      "total_point_rows": 673371,
+      "writer_free_hot_sec": 0.8930453946813941
+    },
+    {
+      "grouped_compiled_columnar_carrier_construction_sec": 0.009973173961043358,
+      "lsi_exact_device_columns_sec": null,
+      "lsi_exact_device_columns_to_numpy_sec": null,
+      "lsi_host_rows_sec": 0.8048488637432456,
+      "lsi_row_count": 20860,
+      "mode": "host_pair_id_rows",
+      "pair_count": 28815,
+      "ratio_vs_author_0_0421": 21.15609750346305,
+      "run": 3,
+      "total_groups": 64459,
+      "total_point_rows": 673371,
+      "writer_free_hot_sec": 0.8906717048957944
+    },
+    {
+      "grouped_compiled_columnar_carrier_construction_sec": 0.010124859400093555,
+      "lsi_exact_device_columns_sec": 0.8959130486473441,
+      "lsi_exact_device_columns_to_numpy_sec": 0.0005203448235988617,
+      "lsi_host_rows_sec": null,
+      "lsi_row_count": 20860,
+      "mode": "exact_pair_id_device_columns",
+      "pair_count": 28815,
+      "ratio_vs_author_0_0421": 23.330564227955076,
+      "run": 1,
+      "total_groups": 64459,
+      "total_point_rows": 673371,
+      "writer_free_hot_sec": 0.9822167539969087
+    },
+    {
+      "grouped_compiled_columnar_carrier_construction_sec": 0.010715555399656296,
+      "lsi_exact_device_columns_sec": 0.9127167835831642,
+      "lsi_exact_device_columns_to_numpy_sec": 0.0005262149497866631,
+      "lsi_host_rows_sec": null,
+      "lsi_row_count": 20860,
+      "mode": "exact_pair_id_device_columns",
+      "pair_count": 28815,
+      "ratio_vs_author_0_0421": 23.82932805993778,
+      "run": 2,
+      "total_groups": 64459,
+      "total_point_rows": 673371,
+      "writer_free_hot_sec": 1.0032147113233805
+    },
+    {
+      "grouped_compiled_columnar_carrier_construction_sec": 0.009961123578250408,
+      "lsi_exact_device_columns_sec": 0.8948774076998234,
+      "lsi_exact_device_columns_to_numpy_sec": 0.000531274825334549,
+      "lsi_host_rows_sec": null,
+      "lsi_row_count": 20860,
+      "mode": "exact_pair_id_device_columns",
+      "pair_count": 28815,
+      "ratio_vs_author_0_0421": 23.454256873409708,
+      "run": 3,
+      "total_groups": 64459,
+      "total_point_rows": 673371,
+      "writer_free_hot_sec": 0.9874242143705487
+    }
+  ],
+  "schema": "rtdl.goal4964.exact_lsi_pair_id_device_columns.summary.v1"
+}

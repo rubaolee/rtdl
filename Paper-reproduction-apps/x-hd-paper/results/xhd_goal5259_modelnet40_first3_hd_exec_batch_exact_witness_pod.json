@@ -1,0 +1,91 @@
+{
+  "all_cases_matched": true,
+  "boundary": "App-owned batch bridge that drives the RTDL hd_exec-compatible entrypoint over cases listed by an existing evidence summary. It does not add dataset, X-HD, or hd_exec semantics to RTDL core and does not replace the original all-400 evidence unless run over all cases with matching review.",
+  "case_summary": "Paper-reproduction-apps/x-hd-paper/results/xhd_goal5253_modelnet40_all400_exact_seed_summary_2026-07-09.json",
+  "cases": [
+    {
+      "author_abs_diff": 7.211266722650933e-10,
+      "author_hd_result": 0.09761668741703033,
+      "case_index": 0,
+      "case_name": "0000_airplane_0036__airplane_0515",
+      "case_wall_sec": 2.480233132839203,
+      "input1": "/tmp/xhd-modelnet40/extracted/ModelNet40/airplane/train/airplane_0036.off",
+      "input2": "/tmp/xhd-modelnet40/extracted/ModelNet40/airplane/train/airplane_0515.off",
+      "matched_author": true,
+      "per_source_witness_exact": true,
+      "point_count_a": 370568,
+      "point_count_b": 376741,
+      "reference_preprocessing": [
+        "normalize_each_input_to_author_float32_unit_box"
+      ],
+      "route_label": "cell-mbr-exact-witness",
+      "rtdl_hd_result": 0.09761668669590366,
+      "rtdl_payload": null,
+      "running_avg_time_ms": 696.9386786222458,
+      "running_time_semantics": "RTDL route wall time in milliseconds for the selected route label; not author internal Running.AvgTime parity"
+    },
+    {
+      "author_abs_diff": 6.375113270618016e-09,
+      "author_hd_result": 0.16662274301052094,
+      "case_index": 1,
+      "case_name": "0001_airplane_0144__airplane_0384",
+      "case_wall_sec": 2.3132071271538734,
+      "input1": "/tmp/xhd-modelnet40/extracted/ModelNet40/airplane/train/airplane_0144.off",
+      "input2": "/tmp/xhd-modelnet40/extracted/ModelNet40/airplane/train/airplane_0384.off",
+      "matched_author": true,
+      "per_source_witness_exact": true,
+      "point_count_a": 470386,
+      "point_count_b": 318716,
+      "reference_preprocessing": [
+        "normalize_each_input_to_author_float32_unit_box"
+      ],
+      "route_label": "cell-mbr-exact-witness",
+      "rtdl_hd_result": 0.1666227493856342,
+      "rtdl_payload": null,
+      "running_avg_time_ms": 499.0488365292549,
+      "running_time_semantics": "RTDL route wall time in milliseconds for the selected route label; not author internal Running.AvgTime parity"
+    },
+    {
+      "author_abs_diff": 8.212338142854492e-09,
+      "author_hd_result": 0.567950427532196,
+      "case_index": 2,
+      "case_name": "0002_airplane_0384__airplane_0569",
+      "case_wall_sec": 10.785820357501507,
+      "input1": "/tmp/xhd-modelnet40/extracted/ModelNet40/airplane/train/airplane_0384.off",
+      "input2": "/tmp/xhd-modelnet40/extracted/ModelNet40/airplane/train/airplane_0569.off",
+      "matched_author": true,
+      "per_source_witness_exact": true,
+      "point_count_a": 318716,
+      "point_count_b": 472389,
+      "reference_preprocessing": [
+        "normalize_each_input_to_author_float32_unit_box"
+      ],
+      "route_label": "cell-mbr-exact-witness",
+      "rtdl_hd_result": 0.5679504193198579,
+      "rtdl_payload": null,
+      "running_avg_time_ms": 9002.206914126873,
+      "running_time_semantics": "RTDL route wall time in milliseconds for the selected route label; not author internal Running.AvgTime parity"
+    }
+  ],
+  "claim_boundary": {
+    "author_performance_parity_claimed": false,
+    "bulk_all400_claimed": false,
+    "exact_paper_dataset_identity_proved": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "hd_exec_compatible_batch_bridge_claimed": true,
+    "performance_claimed": false
+  },
+  "elapsed_sec": 15.579339981079102,
+  "execution": "gpu",
+  "failed_case_count": 0,
+  "input_type": "off",
+  "matched_case_count": 3,
+  "n_dims": 3,
+  "paper_app": "x-hd-paper",
+  "requested_max_cases": 3,
+  "route_label": "cell-mbr-exact-witness",
+  "schema": "rtdl.paper_reproduction.xhd.rtdl_hd_exec_summary_batch.v1",
+  "selected_case_count": 3,
+  "source_summary_schema": "rtdl.paper_reproduction.xhd.modelnet40_normalized_batch_gate.v2",
+  "start_index": 0
+}

@@ -1,0 +1,110 @@
+{
+  "author_denominator": {
+    "active_in_queue_size": 437645,
+    "division": {
+      "active_query_count": 437645,
+      "integer_multiple": true,
+      "remainder": 0,
+      "row_count": 27133990,
+      "rows_per_active_average": 62.0,
+      "rows_per_active_integer_if_exact": 62
+    },
+    "raw_offload_row_hash": 4333109858711462591,
+    "raw_offload_rows_before_sort_reduce": 27133990,
+    "status_count_offloading_append": 27133990
+  },
+  "claim_boundary": {
+    "author_rt_core_algorithm_parity_claimed": false,
+    "exact_paper_dataset_reproduction_claimed": false,
+    "explicit_lb_support_claimed": false,
+    "fanout_diagnostic_claimed": true,
+    "figure11_reproduction_claimed": false,
+    "figure7_reproduction_claimed": false,
+    "full_xhd_paper_reproduction_claimed": false,
+    "hash_sample_parity_claimed": false,
+    "per_query_distribution_claimed": false,
+    "performance_ratio_claimed": false,
+    "row_count_parity_claimed": false,
+    "same_denominator_memory_claimed": false
+  },
+  "classification": {
+    "not_proven": [
+      "per-query uniform fanout distribution",
+      "author-compatible row identity",
+      "explicit -lb support",
+      "Figure 7 or Figure 11 reproduction"
+    ],
+    "primary_mismatch": "status_stream_fanout_or_transition_semantics",
+    "why": "The active query count matches, but author raw offload rows are an exact 62x the active count while the current RTDL trace rows are an exact 5x the active count. This aggregate denominator gap is much larger than a bridge formatting issue and cannot be fixed by source-limited smoke or bridge runtime optimization."
+  },
+  "comparison": {
+    "active_query_count_parity": true,
+    "aggregate_rows_per_active_author": 62.0,
+    "aggregate_rows_per_active_rtdl": 5.0,
+    "author_and_rtdl_row_counts_are_exact_active_multiples": true,
+    "author_rows_minus_rtdl_rows": 24945765,
+    "author_rows_per_active_minus_rtdl_rows_per_active": 57.0,
+    "denominator_mismatch_confirmed": true,
+    "hash_parity": false,
+    "row_count_parity": false,
+    "rtdl_rows_div_author_rows": 0.08064516129032258
+  },
+  "date": "2026-07-10",
+  "decision": {
+    "bridge_runtime_optimization_rejected_as_next_main_path": true,
+    "explicit_lb_support_remains_unsupported": true,
+    "next_gate": "generic_native_multiround_status_stream_or_fail_closed_lb_closeout",
+    "source_limited_smoke_rejected_as_next_main_path": true
+  },
+  "exit_label": "lb_fanout_semantics_mismatch__bridge_runtime_not_next_target",
+  "goal": "Goal5391",
+  "input_artifacts": {
+    "goal5387_author_trace_v2": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5387_author_trace_v2_execution.json",
+    "goal5390_full_trace_summary_gate": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v0_4_release_prep_review\\Paper-reproduction-apps\\x-hd-paper\\results\\xhd_goal5390_full_trace_summary_gate.json"
+  },
+  "next_native_status_stream_requirements": {
+    "forbidden_implementation_shortcuts": [
+      "hard-code 62 rows per active query",
+      "X-HD-specific native primitive names or paper semantics in RTDL core",
+      "bridge vectorization as the main fix while row/hash parity is false",
+      "source-limited smoke as a substitute for full-source parity"
+    ],
+    "minimum_comparison_fields": [
+      "active_query_count",
+      "raw_offload_row_count",
+      "raw_offload_row_hash",
+      "sampled query/source ids",
+      "sampled cell ids",
+      "status_count_offloading",
+      "miss/completed/aborted counters or explicit not-applicable evidence",
+      "load-balance feedback count or explicit not-applicable evidence"
+    ],
+    "must_change_denominator": true,
+    "must_compare_to_author_trace_v2": true,
+    "required_contract_kind": "generic_native_multi_round_active_query_status_stream"
+  },
+  "purpose": "Classify the Goal5390 full-source -lb trace mismatch as a status-stream fanout / transition semantics problem using the Goal5387 author trace v2 oracle and the Goal5390 RTDL trace summary.",
+  "rtdl_denominator": {
+    "active_query_count": 437645,
+    "division": {
+      "active_query_count": 437645,
+      "integer_multiple": true,
+      "remainder": 0,
+      "row_count": 2188225,
+      "rows_per_active_average": 5.0,
+      "rows_per_active_integer_if_exact": 5
+    },
+    "raw_offload_row_hash": 10510374331443640811,
+    "raw_offload_rows": 2188225,
+    "status_count_offloading": 2188225
+  },
+  "schema": "rtdl.paper_reproduction.xhd.goal5391.lb_fanout_semantics.v1",
+  "scope": {
+    "explicit_lb_support_before_goal5391": false,
+    "level": "level_b_public_dragon_asian_lb256_diagnostic",
+    "point_count_a": 437645,
+    "point_count_b": 3609600,
+    "source_limit_applied": false
+  },
+  "status": "fanout_denominator_mismatch_classified__native_multiround_required"
+}
