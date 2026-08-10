@@ -1,4 +1,4 @@
-"""Fail-closed audit of the documented RTDL V3 functional RC surface."""
+"""Fail-closed audit of the documented RTDL V3.0 release surface."""
 
 from __future__ import annotations
 
@@ -8,6 +8,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+import rtdsl
 from rtdsl.canonical_physical_resolution import current_canonical_provider_registry
 
 
@@ -17,7 +18,8 @@ REQUIRED_DOCS = (
     ROOT / "docs/v3/architecture.md",
     ROOT / "docs/v3/correctness_and_extension.md",
     ROOT / "docs/v3/support_matrix.md",
-    ROOT / "docs/v3/release_candidate.md",
+    ROOT / "docs/v3/release.md",
+    ROOT / "docs/v3/release_notes_3_0_0.md",
     ROOT / "tutorials/v3_canonical_lowering.md",
 )
 PAPER_APPS = (
@@ -45,6 +47,15 @@ def _relative_markdown_links(path: Path) -> tuple[Path, ...]:
 
 def main() -> int:
     checks: dict[str, bool] = {}
+    version_file = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
+    pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    front_page = (ROOT / "README.md").read_text(encoding="utf-8")
+    checks["release_version_is_3_0_0"] = (
+        version_file == "v3.0.0"
+        and rtdsl.__version__ == "3.0.0"
+        and 'version = "3.0.0"' in pyproject
+        and "RTDL 3.0.0" in front_page
+    )
     checks["all_v3_docs_present"] = all(path.is_file() for path in REQUIRED_DOCS)
     links = tuple(target for path in REQUIRED_DOCS for target in _relative_markdown_links(path))
     checks["all_v3_relative_links_resolve"] = all(path.exists() for path in links)
@@ -87,7 +98,7 @@ def main() -> int:
     )
 
     result = {
-        "schema": "rtdl.v3_release_surface_audit.v1",
+        "schema": "rtdl.v3_release_surface_audit.v2",
         "checks": checks,
         "passed": all(checks.values()),
         "registry": {

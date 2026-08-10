@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "rtdl-source-tree"
-version = "2.14.4"
-description = "RTDL source-tree editable development package"
+version = "3.0.0"
+description = "Verified semantic lowering for NVIDIA OptiX workloads"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [

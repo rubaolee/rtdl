@@ -1,4 +1,4 @@
-# RTDL V3 Functional Release Candidate
+# RTDL V3.0
 
 RTDL V3 is a compiler-supported, finite Action language for non-graphical
 ray-tracing workloads.  An application chooses its algorithm and states a
@@ -18,11 +18,11 @@ hatch.
 1. [Architecture](architecture.md)
 2. [Correctness and extension model](correctness_and_extension.md)
 3. [Nine-application support matrix](support_matrix.md)
-4. [Functional RC and installation](release_candidate.md)
+4. [V3 release and installation](release.md)
 5. [Canonical lowering tutorial](../../tutorials/v3_canonical_lowering.md)
 6. [GitHub release-surface audit](release_audit_20260810.md)
 
-## What is complete
+## Release guarantees
 
 - One clean portable source artifact can rebuild its target-native OptiX
   library instead of carrying a foreign prebuilt binary.
@@ -41,7 +41,9 @@ hatch.
 - discovery of a globally fastest plan;
 - universal no-slower performance against V2 or author code;
 - hardware RT-core utilization inferred from an OptiX label alone;
-- production-GA, PyPI release, or public artifact-evaluation readiness.
+- universal performance superiority, arbitrary physical-plan synthesis, or a
+  managed binary service.
 
-The precise release-candidate identity and test counts are in
-[Functional RC and installation](release_candidate.md).
+The precise qualification identity and installation path are in
+[V3 release and installation](release.md). See also the
+[V3.0.0 release notes](release_notes_3_0_0.md).

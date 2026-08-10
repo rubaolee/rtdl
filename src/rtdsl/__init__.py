@@ -1,4 +1,7 @@
 from __future__ import annotations
+
+__version__ = "3.0.0"
+
 from .api import bounded_knn_rows
 from .api import bfs_discover
 from .api import compile_kernel
@@ -4010,6 +4013,7 @@ __all__ = [
 ]
 
 _CONTRACT_FIRST_DIR_EXPORTS = (
+    "__version__",
     "ExecutionPolicy",
     "ExecutionReport",
     "ExecutionResult",
@@ -4069,7 +4073,7 @@ _CONTRACT_FIRST_DIR_EXPORTS = (
 
 
 def __dir__() -> list[str]:
-    """Expose the v2 contract-first learning surface to interactive users.
+    """Expose the V3 contract-first learning surface to interactive users.
 
     Historical compatibility exports remain importable, but tab-completion and
     `dir(rtdsl)` should teach the generic language facade first.

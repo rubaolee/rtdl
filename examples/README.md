@@ -4,8 +4,8 @@ This directory is organized for current RTDL users first. Start in
 `current/`, then choose by purpose: first run, feature, full app, partner
 continuation, or research benchmark.
 
-The `current/` tree is the learner-facing source of truth for the current
-v2.14 Python+partner+RTDL surface. Historical examples, generated bundles,
+The `current/` tree contains the learner-facing examples retained by RTDL 3.0.
+Historical examples, generated bundles,
 backend proofs, and internal development artifacts live under `history/`
 rather than in the first-run examples path.
 
@@ -15,8 +15,9 @@ Run examples from the repository root with source-tree usage:
 PYTHONPATH=src:. python examples/current/getting_started/rtdl_hello_world.py
 ```
 
-Start with the portable CPU reference path, then move to Embree for CPU RT and
-OptiX for NVIDIA RT when those native backends are configured.
+Start with the static V3 canonical-mapping example. Use the portable reference
+examples to learn data contracts, then configure OptiX for the NVIDIA V3
+execution path.
 
 For a full Linux/pod smoke run across tutorials, examples, demos, and benchmark
 front doors, install the native/runtime prerequisites first:
@@ -55,7 +56,7 @@ the same `pip` command inside it.
 | `visual_demo/` | Visual demo reader | Rendering/visual query demos |
 | `reference/` | Test/doc maintainer | Canonical reference kernels used by docs, examples, and tests; not the first learner path |
 
-## v2.x Feature Families
+## Feature Families
 
 | Feature family | Directory |
 | --- | --- |

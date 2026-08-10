@@ -1,6 +1,6 @@
-# V3 Nine-Application Support Matrix
+# V3.0 Nine-Application Support Matrix
 
-The final functional release candidate covers nine applications.  The table
+The V3.0 source release covers nine qualified applications.  The table
 describes application-owned algorithms and the canonical families used by V3;
 it is not a performance ranking.
 

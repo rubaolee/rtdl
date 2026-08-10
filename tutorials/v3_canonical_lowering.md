@@ -58,7 +58,7 @@ The portable Linux qualification separately requires:
 - nonzero traversable and ray-generation evidence where required;
 - exact output against an independent oracle.
 
-Follow [Functional RC and installation](../docs/v3/release_candidate.md) to run
+Follow [V3 release and installation](../docs/v3/release.md) to run
 that target-specific validation.
 
 ## 4. Follow the source

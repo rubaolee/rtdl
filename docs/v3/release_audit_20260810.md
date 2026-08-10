@@ -2,14 +2,15 @@
 
 ## Verdict
 
-The scoped GitHub release surface is ready to commit.  It contains the V3
+The scoped GitHub release surface passed its publication audit. It contains the V3
 compiler/runtime changes, nine application adapters, required examples, a
 compact self-contained test surface, reference documentation, a runnable
 tutorial, and the release audit command.  It does not include private cache
 state, prebuilt native binaries, or the historical experiment archive.
 
-This is a source release-candidate branch, not a production-GA or performance
-claim.
+After this audit, the source version and public documentation were promoted to
+RTDL 3.0.0. The release remains a scoped research compiler/runtime release, not
+a universal performance claim.
 
 ## Cleanup
 
@@ -36,7 +37,7 @@ Added:
 - statement-to-provider architecture;
 - correctness and extension model;
 - nine-application support matrix;
-- functional RC installation and frozen identities;
+- V3 release installation and frozen identities;
 - a runnable canonical-lowering tutorial and example.
 
 The tutorial example resolves the L-infinity metric-kNN statement to the
@@ -58,7 +59,8 @@ nine app directories:      all present
 tutorial example:          passed
 ```
 
-The following self-contained unit-test selection passed 56/56:
+The following self-contained unit-test selection passed 57/57 after the
+version-consistency release gate was added:
 
 ```text
 tests.v3_release_surface_test
@@ -94,17 +96,18 @@ receipts, and zero registered performance timings.
 
 ## Known boundaries
 
-- The repository project metadata remains v2.14.4; this branch is a V3
-  functional RC and does not silently replace the published package version.
+- The repository project metadata is explicitly promoted to `3.0.0`; preserved
+  v2.14 material remains historical comparison evidence.
 - Large paper datasets and internal historical evidence are not bundled into
   the GitHub source branch.
 - Target-native builds are target-specific and not claimed byte-reproducible.
-- No universal no-slower, author-performance, RT-silicon-utilization,
-  production-GA, or public-submission claim follows from this audit.
+- No universal no-slower, author-performance, RT-silicon-utilization, or
+  managed-binary-service claim follows from this audit.
 
 ## Publication status
 
-The branch `codex/v3-functional-rc-20260810` is published and the review surface
-is [draft pull request #2](https://github.com/rubaolee/rtdl/pull/2).  The branch
-is intentionally a functional release candidate; merging it does not assert a
-production-GA or universal performance claim.
+The reviewed branch was published as
+[pull request #2](https://github.com/rubaolee/rtdl/pull/2), then promoted to the
+RTDL 3.0.0 source release after version, front-page, documentation, link, test,
+and release-surface checks. This publication does not assert universal
+performance superiority.

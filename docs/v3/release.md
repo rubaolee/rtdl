@@ -1,4 +1,4 @@
-# V3 Functional RC and Installation
+# V3 Release and Installation
 
 ## Frozen qualification identity
 
@@ -20,7 +20,8 @@ claimed byte-reproducible across toolchains.
 
 ## Linux validation path
 
-The portable artifact is a controlled validation package, not a PyPI wheel.
+The portable artifact is the target-rematerialized qualification package for
+the V3.0 source release; it is not a prebuilt PyPI wheel.
 On a supported Linux host with NVIDIA driver, CUDA toolkit, OptiX SDK, compiler,
 and Python dependencies:
 
@@ -47,6 +48,6 @@ python3 -c 'import rtdsl; print(rtdsl.__file__)'
 
 ## Supported claim
 
-This process establishes a usable functional release candidate on the tested
-Linux configuration.  It does not establish a universal installation promise,
-modern-RTX performance, production-GA, or a public binary distribution.
+This process establishes the qualified V3.0 source release on the tested Linux
+configuration. It does not turn a target-specific native build into a universal
+binary, nor does it establish universal modern-RTX performance.

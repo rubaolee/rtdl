@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import inspect
+from pathlib import Path
 import unittest
 
+import rtdsl
 from rtdsl.canonical_physical_resolution import (
     CanonicalPhysicalResolutionError,
     bind_canonical_provider_to_direct_provider,
@@ -32,6 +34,13 @@ def _resolve(*, memory_limit_bytes: int = 1 << 30):
 
 
 class V3ReleaseSurfaceTest(unittest.TestCase):
+    def test_release_version_is_consistent(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        self.assertEqual((root / "VERSION").read_text(encoding="utf-8").strip(), "v3.0.0")
+        self.assertIn('version = "3.0.0"', (root / "pyproject.toml").read_text(encoding="utf-8"))
+        self.assertEqual(rtdsl.__version__, "3.0.0")
+        self.assertIn("RTDL 3.0.0", (root / "README.md").read_text(encoding="utf-8"))
+
     def test_current_registry_has_unique_nonfallback_statement_backend_pairs(self) -> None:
         registry = current_canonical_provider_registry()
         pairs = [
