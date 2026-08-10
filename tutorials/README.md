@@ -11,6 +11,7 @@ source-tree surface.
 | Path | Purpose |
 | --- | --- |
 | [Current RTDL Tutorial Track](current/README.md) | Learn RTDL step by step, from first run to benchmark-style Python+RTDL+partner programs. |
+| [V3 Canonical Lowering Tutorial](v3_canonical_lowering.md) | Inspect and exercise the V3 statement-to-provider contract without a GPU, then validate the portable artifact on Linux. |
 
 ## Current Track
 

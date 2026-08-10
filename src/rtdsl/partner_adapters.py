@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import hashlib
+import hmac
 import math
+import secrets
 import statistics
 import time
 
@@ -43,6 +46,7 @@ _NUMBA_I32_PARENT_BORDER_INIT_KERNEL = None
 _NUMBA_I64_ZERO_KERNEL = None
 _NUMBA_I64_SIGNATURE_WORKSPACE_ZERO_KERNEL = None
 _NUMBA_RADIUS_GRAPH_COMPONENT_SIGNATURE_KERNEL = None
+_PREPARED_RADIUS_GRAPH_OWNER_SECRET = secrets.token_bytes(32)
 
 _AABB_PAIR_PAYLOAD_FIELDS = (
     "left_index",
@@ -5947,6 +5951,39 @@ def _numba_cuda_stack_for_radius_graph():
     return cuda, np
 
 
+def probe_numba_radius_graph_continuation_3d() -> dict[str, object]:
+    """Probe the actual Numba CUDA stack used by radius-graph continuation."""
+
+    try:
+        cuda, np = _numba_cuda_stack_for_radius_graph()
+        context = cuda.current_context()
+        # Allocate the same scalar kinds used by the continuation.  This
+        # catches a nominally importable stack with an unusable CUDA context.
+        probes = (
+            cuda.device_array((1,), dtype=np.uint32),
+            cuda.device_array((1,), dtype=np.int32),
+            cuda.device_array((1,), dtype=np.int64),
+        )
+        del probes
+        return {
+            "contract": "rtdl.numba.radius_graph_continuation_3d.capability.v1",
+            "available": True,
+            "cuda_is_available": True,
+            "current_context_established": context is not None,
+            "required_dtypes_allocated": ["uint32", "int32", "int64"],
+            "error": None,
+        }
+    except Exception as exc:
+        return {
+            "contract": "rtdl.numba.radius_graph_continuation_3d.capability.v1",
+            "available": False,
+            "cuda_is_available": False,
+            "current_context_established": False,
+            "required_dtypes_allocated": [],
+            "error": f"{type(exc).__name__}: {exc}",
+        }
+
+
 class _NumbaDeviceColumnView:
     """Small view that exposes Numba device arrays to native pointer writers."""
 
@@ -7221,6 +7258,9 @@ class PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D:
             "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
             "count_metadata": self._cached_count_metadata,
             "native_grouped_stream_metadata": native_metadata,
+            "native_library_identity": (
+                self.prepared_native.native_library_identity_metadata
+            ),
             "automatic_hidden_dispatcher": False,
             "direct_device_handoff_authorized": True,
             "output_columns_true_zero_copy_authorized": True,
@@ -7283,6 +7323,8 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
         grouped_union_same_root_culling: bool = True,
         grouped_union_direct_side_effect: bool = False,
         boundary_assignment_policy: str = "single_pass_candidate_root_rebased",
+        expected_native_library_identity=None,
+        expected_native_library_ref=None,
     ):
         if partner != "numba":
             raise ValueError("PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D currently requires partner='numba'")
@@ -7326,7 +7368,21 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
         self.prepared_native = _optix.prepare_optix_fixed_radius_count_threshold_3d(
             self.point_rows,
             max_radius=radius,
+            expected_native_library_identity=expected_native_library_identity,
+            expected_native_library_ref=expected_native_library_ref,
         )
+        self._prepared_native_ref = self.prepared_native
+        self._prepared_native_object_id = id(self.prepared_native)
+        self._prepared_native_binding_seal = hmac.new(
+            _PREPARED_RADIUS_GRAPH_OWNER_SECRET,
+            (
+                "rtdl.prepared_radius_graph_owner.v1\x00"
+                f"{self._prepared_native_object_id}\x00"
+                f"{type(self.prepared_native).__module__}."
+                f"{type(self.prepared_native).__qualname__}"
+            ).encode("utf-8"),
+            hashlib.sha256,
+        ).hexdigest()
         self.count_columns = allocate_fixed_radius_count_threshold_3d_partner_device_output_columns(
             self.point_count,
             partner=partner,
@@ -7354,6 +7410,28 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
         self.run_count = 0
         self.closed = False
         cuda.synchronize()
+
+    def _validate_prepared_native_binding(self) -> None:
+        expected_seal = hmac.new(
+            _PREPARED_RADIUS_GRAPH_OWNER_SECRET,
+            (
+                "rtdl.prepared_radius_graph_owner.v1\x00"
+                f"{self._prepared_native_object_id}\x00"
+                f"{type(self._prepared_native_ref).__module__}."
+                f"{type(self._prepared_native_ref).__qualname__}"
+            ).encode("utf-8"),
+            hashlib.sha256,
+        ).hexdigest()
+        if (
+            not hmac.compare_digest(
+                self._prepared_native_binding_seal, expected_seal
+            )
+            or self.prepared_native is not self._prepared_native_ref
+            or id(self.prepared_native) != self._prepared_native_object_id
+        ):
+            raise RuntimeError(
+                "prepared radius-graph native owner object binding changed"
+            )
 
     def _refresh_core_flags(self, min_neighbors: int) -> bool:
         core_flag_cache_reused = self._cached_core_threshold == min_neighbors
@@ -7564,6 +7642,7 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
     def run(self, *, min_neighbors: int, return_metadata: bool = False):
         if self.closed:
             raise RuntimeError("prepared OptiX+Numba grouped stream radius graph handle is closed")
+        self._validate_prepared_native_binding()
         min_neighbors = int(min_neighbors)
         if min_neighbors < 1:
             raise ValueError("min_neighbors must be at least 1")
@@ -7655,6 +7734,11 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
             "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
             "count_metadata": self._cached_count_metadata,
             "native_grouped_stream_metadata": native_metadata,
+            "native_library_identity": (
+                self.prepared_native.native_library_identity_metadata
+            ),
+            "prepared_native_owner_object_bound": True,
+            "prepared_native_owner_runtime_revalidation_required": True,
             "automatic_hidden_dispatcher": False,
             "direct_device_handoff_authorized": True,
             "output_columns_true_zero_copy_authorized": True,
@@ -7672,6 +7756,7 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
     def run_component_signature(self, *, min_neighbors: int, return_metadata: bool = False):
         if self.closed:
             raise RuntimeError("prepared OptiX+Numba grouped stream radius graph handle is closed")
+        self._validate_prepared_native_binding()
         min_neighbors = int(min_neighbors)
         if min_neighbors < 1:
             raise ValueError("min_neighbors must be at least 1")
@@ -7773,6 +7858,11 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
             "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
             "count_metadata": self._cached_count_metadata,
             "native_grouped_stream_metadata": native_metadata,
+            "native_library_identity": (
+                self.prepared_native.native_library_identity_metadata
+            ),
+            "prepared_native_owner_object_bound": True,
+            "prepared_native_owner_runtime_revalidation_required": True,
             "automatic_hidden_dispatcher": False,
             "direct_device_handoff_authorized": True,
             "output_columns_true_zero_copy_authorized": True,
@@ -7790,6 +7880,7 @@ class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
     def close(self) -> None:
         if self.closed:
             return
+        self._validate_prepared_native_binding()
         close = getattr(self.prepared_native, "close", None)
         if close is not None:
             close()
@@ -7917,6 +8008,8 @@ def prepare_optix_numba_radius_graph_grouped_stream_continuation_3d(
     grouped_union_same_root_culling: bool = True,
     grouped_union_direct_side_effect: bool = False,
     boundary_assignment_policy: str = "single_pass_candidate_root_rebased",
+    expected_native_library_identity=None,
+    expected_native_library_ref=None,
 ) -> PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
     return PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D(
         point_rows,
@@ -7926,6 +8019,8 @@ def prepare_optix_numba_radius_graph_grouped_stream_continuation_3d(
         grouped_union_same_root_culling=grouped_union_same_root_culling,
         grouped_union_direct_side_effect=grouped_union_direct_side_effect,
         boundary_assignment_policy=boundary_assignment_policy,
+        expected_native_library_identity=expected_native_library_identity,
+        expected_native_library_ref=expected_native_library_ref,
     )
 
 

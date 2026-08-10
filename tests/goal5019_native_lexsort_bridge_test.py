@@ -23,6 +23,7 @@ class Goal5019NativeLexsortBridgeTest(unittest.TestCase):
         helper = source[source.index("def run_cuda_lexsort_i64_f64_i64_i64_device") :]
         helper = helper[: helper.index("\ndef _coerce_list")]
         self.assertIn("device_resident", helper)
+        self.assertIn('"input_key_columns_mutated_in_place": True', helper)
         self.assertNotIn("rayjoin_overlay", helper)
 
     def test_rayjoin_app_keeps_native_lexsort_opt_in_with_fallback(self):

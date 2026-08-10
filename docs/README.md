@@ -7,6 +7,7 @@ This directory is the current RTDL v2.14 reference surface.
 | [Learn](learn/README.md) | Learners and app builders | Quick path to run examples, write kernels, choose backends, and understand the current v2.14 boundaries. |
 | [Features](features/README.md) | Users choosing primitives | Current feature families and support boundaries. |
 | [RTDL Reference](rtdl/README.md) | Users who need language details | Programming model, DSL reference, IR, lowering, and workload guide. |
+| [V3 functional RC](v3/README.md) | V3 evaluators and contributors | Canonical lowering, semantic contracts, nine-app evidence, installation, and current boundaries. |
 
 Tutorials live at the repository top level in [Tutorials](../tutorials/README.md).
 Use docs when you need reference material; use tutorials when you want the

@@ -399,6 +399,7 @@ def run_generic_aggregate_frontier_numba_force_bridge(
     force_output: Path | None = None,
     rel_tol: float = DEFAULT_PARITY_REL_TOL,
     abs_tol: float = DEFAULT_PARITY_ABS_TOL,
+    return_force_rows: bool = False,
 ) -> dict[str, Any]:
     """Run public generic RTDL executors and materialize this app's scalar force format."""
 
@@ -433,7 +434,7 @@ def run_generic_aggregate_frontier_numba_force_bridge(
     )
     if force_output is not None:
         write_scalar_force_rows(Path(force_output), numba_force_rows)
-    return {
+    result = {
         "mode": "generic_aggregate_frontier_numba_force_bridge",
         "adapter_contract": RT_BARNESHUT_TO_AGGREGATE_HIERARCHY_ADAPTER_CONTRACT,
         "source_schema": AUTHOR_PREPARED_ARRAYS_SCHEMA,
@@ -458,6 +459,9 @@ def run_generic_aggregate_frontier_numba_force_bridge(
             "not_performance_claim",
         ),
     }
+    if return_force_rows:
+        result["candidate_force_rows"] = tuple(numba_force_rows)
+    return result
 
 
 def read_prepared_arrays_and_run_generic_numba_force_bridge(
@@ -469,6 +473,7 @@ def read_prepared_arrays_and_run_generic_numba_force_bridge(
     force_output: Path | None = None,
     rel_tol: float = DEFAULT_PARITY_REL_TOL,
     abs_tol: float = DEFAULT_PARITY_ABS_TOL,
+    return_force_rows: bool = False,
     reader: Callable[[Path], Mapping[str, Any]] | None = None,
 ) -> dict[str, Any]:
     prepared_reader = _load_goal2547_reader() if reader is None else reader
@@ -481,6 +486,7 @@ def read_prepared_arrays_and_run_generic_numba_force_bridge(
         force_output=force_output,
         rel_tol=rel_tol,
         abs_tol=abs_tol,
+        return_force_rows=return_force_rows,
     )
 
 

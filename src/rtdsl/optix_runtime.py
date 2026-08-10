@@ -33,8 +33,14 @@ from __future__ import annotations
 import ctypes
 import ctypes.util
 import functools
+import hashlib
+import hmac
+import json
+import math
+import operator
 import os
 import platform
+import secrets
 import threading
 import time
 import warnings
@@ -43,15 +49,119 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, Mapping
 
+from .action_value_validation import VerifiedGroupedI64HostColumns
 from .embree_runtime import _RtdlSegment
 from .embree_runtime import _RtdlRayjoinCdbSegment
 from .embree_runtime import _RtdlRayjoinCdbScaledPoint
+
+
+_PREPARED_FIXED_RADIUS_NATIVE_OBJECT_SECRET = secrets.token_bytes(32)
+_PREPARED_RANKED_WINDOW_NATIVE_OBJECT_SECRET = secrets.token_bytes(32)
+_PREPARED_CERTIFIED_NEAREST_SYMBOL_BINDING_SECRET = secrets.token_bytes(32)
+_PREPARED_POINT_COLUMN_DOMAIN_3D_SECRET = secrets.token_bytes(32)
+_GROUPED_I64_NATIVE_CONTEXT_SECRET = secrets.token_bytes(32)
+_GROUPED_I64_NATIVE_RESOURCE_SECRET = secrets.token_bytes(32)
+_GROUPED_I64_NATIVE_CONTEXT_LOCK = threading.RLock()
+_GROUPED_I64_NATIVE_CONTEXTS: dict[int, object] = {}
 from .embree_runtime import _RtdlRayjoinCdbPointLocationRow
 from .embree_runtime import _RtdlPoint
 from .embree_runtime import _RtdlPoint3D
 from .embree_runtime import _RtdlPolygonRef
 from .embree_runtime import _RtdlTriangle
 from .embree_runtime import _RtdlTriangle3D
+
+
+def _canonical_direct_provider_authority(
+    *,
+    statement_stable_id: str | None,
+    backend_contract_id: str | None,
+    direct_provider_stable_id: str,
+    primitive: str,
+    base_item_count: int,
+    input_item_bytes: int,
+) -> tuple[dict[str, object] | None, dict[str, object] | None]:
+    """Bind an optional app statement to one generic direct OptiX provider.
+
+    This runs before native preparation.  It selects no application algorithm;
+    it only authenticates the unique provider for the already-selected exact
+    statement/backend pair.  Actual traversal remains behavior-receipt work.
+    """
+
+    if (statement_stable_id is None) != (backend_contract_id is None):
+        raise ValueError(
+            "canonical semantic statement and backend contract are required together"
+        )
+    if statement_stable_id is None:
+        return None, None
+    from .action_api import _detect_action_target_profile_for_required_backends
+    from .canonical_physical_resolution import (
+        bind_canonical_provider_to_direct_provider,
+        resolve_canonical_standalone_provider_for_contract,
+    )
+
+    target = _detect_action_target_profile_for_required_backends(
+        required_backends=("optix",),
+        cpu_reference_available=False,
+    )
+    if not target.optix_available or target.device_memory_limit_bytes is None:
+        raise RuntimeError("canonical direct OptiX target is unavailable or unbounded")
+    base_count = int(base_item_count)
+    item_bytes = int(input_item_bytes)
+    if base_count < 0 or item_bytes <= 0:
+        raise ValueError("canonical direct provider resource facts are invalid")
+    execution_contract = {
+        "contract": "rtdl.canonical_direct_optix_provider.execution.v1",
+        "provider_stable_id": direct_provider_stable_id,
+        "primitive": primitive,
+        "base_item_count": base_count,
+        "input_item_bytes": item_bytes,
+        "target_profile": target.to_metadata(),
+    }
+    execution_contract_sha256 = hashlib.sha256(
+        json.dumps(
+            execution_contract,
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=True,
+            allow_nan=False,
+        ).encode("ascii")
+    ).hexdigest()
+    resolution = resolve_canonical_standalone_provider_for_contract(
+        statement_stable_id=statement_stable_id,
+        backend_contract_id=backend_contract_id,
+        action_identity={
+            "primitive": primitive,
+            "direct_provider_frontdoor": True,
+        },
+        output_contract={
+            "kind": "exact_provider_defined_rows_or_columns",
+            "dynamic_output_bounded_by_native_call": True,
+        },
+        work_domain={
+            "base_item_count": base_count,
+            "query_domain_bound_at_execute": True,
+        },
+        input_bytes=base_count * item_bytes,
+        output_bytes=0,
+        prepared_bytes=base_count * item_bytes,
+        logical_cardinality_bound=base_count,
+        pair_cardinality_bound=0,
+        logical_item_bytes_bound=item_bytes,
+        pair_item_bytes_bound=0,
+        target_identity={
+            "kind": "runtime_probed_direct_optix_target",
+            "primitive": primitive,
+            "target_profile": target.to_metadata(),
+        },
+        available_providers=("optix",),
+        memory_limit_bytes=target.device_memory_limit_bytes,
+    )
+    authority = bind_canonical_provider_to_direct_provider(
+        resolution,
+        direct_provider_stable_id=direct_provider_stable_id,
+        direct_execution_contract_sha256=execution_contract_sha256,
+    )
+    return resolution, authority
 from .embree_runtime import _RtdlRay2D
 from .embree_runtime import _RtdlRay3D
 from .embree_runtime import _RtdlRayTriangleHitStreamRow
@@ -198,8 +308,14 @@ OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_SUM_COUNT_I64_WITH_CAPACITY_SYMBOL = (
 OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_STATS_I64_WITH_CAPACITY_SYMBOL = (
     "rtdl_optix_columnar_device_payload_grouped_stats_i64_with_capacity"
 )
-OPTIX_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL = (
+OPTIX_LEGACY_UNSIGNED_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL = (
     "rtdl_optix_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction"
+)
+OPTIX_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SIGNED_V2_SYMBOL = (
+    "rtdl_optix_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction_signed_v2"
+)
+OPTIX_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL = (
+    OPTIX_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SIGNED_V2_SYMBOL
 )
 OPTIX_RAY_TRIANGLE_HIT_STREAM_3D_SYMBOL = "rtdl_optix_static_triangle_scene_3d_ray_triangle_hit_stream"
 OPTIX_RAY_TRIANGLE_HIT_STREAM_3D_DEVICE_COLUMNS_SYMBOL = (
@@ -471,15 +587,54 @@ OPTIX_RELEASE_RAY_TRIANGLE_HIT_STREAM_3D_DEVICE_COLUMNS_SYMBOL = (
 OPTIX_RELEASE_RAY_TRIANGLE_HIT_STREAM_3D_ASYNC_LAUNCH_SYMBOL = (
     "rtdl_optix_release_ray_triangle_hit_stream_async_launch"
 )
-OPTIX_PRIMITIVE_GROUPED_I64_PAYLOAD_3D_CREATE_SYMBOL = (
+OPTIX_LEGACY_UNSIGNED_PRIMITIVE_GROUPED_I64_PAYLOAD_3D_CREATE_SYMBOL = (
     "rtdl_optix_primitive_grouped_i64_payload_3d_create"
 )
-OPTIX_PREPARED_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL = (
+OPTIX_PRIMITIVE_GROUPED_I64_PAYLOAD_3D_CREATE_SIGNED_V2_SYMBOL = (
+    "rtdl_optix_primitive_grouped_i64_payload_3d_create_signed_v2"
+)
+OPTIX_PRIMITIVE_GROUPED_I64_PAYLOAD_3D_CREATE_SIGNED_VERIFIED_V3_SYMBOL = (
+    "rtdl_optix_primitive_grouped_i64_payload_3d_create_signed_verified_v3"
+)
+OPTIX_PRIMITIVE_GROUPED_I64_PAYLOAD_3D_CREATE_SYMBOL = (
+    OPTIX_PRIMITIVE_GROUPED_I64_PAYLOAD_3D_CREATE_SIGNED_V2_SYMBOL
+)
+OPTIX_LEGACY_UNSIGNED_PREPARED_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL = (
     "rtdl_optix_static_triangle_scene_3d_ray_prepared_primitive_grouped_i64_reduction"
 )
+OPTIX_PREPARED_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SIGNED_V2_SYMBOL = (
+    "rtdl_optix_static_triangle_scene_3d_ray_prepared_primitive_grouped_i64_reduction_signed_v2"
+)
+OPTIX_PREPARED_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL = (
+    OPTIX_PREPARED_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SIGNED_V2_SYMBOL
+)
+OPTIX_LEGACY_UNSIGNED_PREPARED_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_WITH_PHASE_TIMINGS_SYMBOL = (
+    "rtdl_optix_static_triangle_scene_3d_ray_prepared_primitive_grouped_i64_reduction_with_phase_timings"
+)
+OPTIX_PREPARED_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_WITH_PHASE_TIMINGS_SIGNED_V2_SYMBOL = (
+    "rtdl_optix_static_triangle_scene_3d_ray_prepared_primitive_grouped_i64_reduction_with_phase_timings_signed_v2"
+)
+OPTIX_PREPARED_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_WITH_PHASE_TIMINGS_SYMBOL = (
+    OPTIX_PREPARED_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_WITH_PHASE_TIMINGS_SIGNED_V2_SYMBOL
+)
 OPTIX_RAY_BATCH_3D_CREATE_DEVICE_RAYS_SYMBOL = "rtdl_optix_ray_batch_3d_create_device_rays"
-OPTIX_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL = (
+OPTIX_LEGACY_UNSIGNED_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL = (
     "rtdl_optix_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64_reduction"
+)
+OPTIX_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SIGNED_V2_SYMBOL = (
+    "rtdl_optix_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64_reduction_signed_v2"
+)
+OPTIX_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL = (
+    OPTIX_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SIGNED_V2_SYMBOL
+)
+OPTIX_LEGACY_UNSIGNED_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_3D_WITH_PHASE_TIMINGS_SYMBOL = (
+    "rtdl_optix_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64_reduction_with_phase_timings"
+)
+OPTIX_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_3D_WITH_PHASE_TIMINGS_SIGNED_V2_SYMBOL = (
+    "rtdl_optix_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64_reduction_with_phase_timings_signed_v2"
+)
+OPTIX_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_3D_WITH_PHASE_TIMINGS_SYMBOL = (
+    OPTIX_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_3D_WITH_PHASE_TIMINGS_SIGNED_V2_SYMBOL
 )
 OPTIX_PARTNER_RESIDENT_COLUMNAR_GROUPED_I64_REDUCTIONS = (
     "count",
@@ -1517,7 +1672,10 @@ class OptixRowView:
             raise RuntimeError("cannot expose NumPy rows after OptixRowView is closed")
         import numpy as _np
 
-        rows = _np.ctypeslib.as_array(self.rows_ptr, shape=(self.row_count,))
+        if self.row_count == 0:
+            rows = _np.empty((0,), dtype=_np.dtype(self.row_type))
+        else:
+            rows = _np.ctypeslib.as_array(self.rows_ptr, shape=(self.row_count,))
         return rows.copy() if copy else rows
 
     def to_numpy_columns(self, *, copy: bool = False) -> dict:
@@ -4254,7 +4412,23 @@ class PreparedOptixPlanarMapLsi2D:
 
     prepared: PreparedOptixSegmentPairIntersection
     base_segment_count: int = 0
+    canonical_resolution: Mapping[str, object] | None = None
+    canonical_production_authority: Mapping[str, object] | None = None
     _closed: bool = False
+
+    def canonical_production_metadata(self) -> dict[str, object]:
+        return {
+            "canonical_resolution": (
+                None
+                if self.canonical_resolution is None
+                else dict(self.canonical_resolution)
+            ),
+            "canonical_production_authority": (
+                None
+                if self.canonical_production_authority is None
+                else dict(self.canonical_production_authority)
+            ),
+        }
 
     def run_raw(self, query_records_or_cdb) -> OptixRowView:
         if self._closed:
@@ -4356,6 +4530,7 @@ class PreparedOptixPlanarMapLsi2D:
             },
             "raw_segment_pair_result": raw,
             "native_timings": timings,
+            **self.canonical_production_metadata(),
             "claim_boundary": {
                 "public_generic_rtdl_primitive": True,
                 "bundled_rayjoin_helper_used": False,
@@ -4427,7 +4602,12 @@ def prepare_segment_pair_intersection_optix(right_segments) -> PreparedOptixSegm
     )
 
 
-def prepare_planar_map_lsi_2d_optix(base_records_or_cdb) -> PreparedOptixPlanarMapLsi2D:
+def prepare_planar_map_lsi_2d_optix(
+    base_records_or_cdb,
+    *,
+    semantic_statement_stable_id: str | None = None,
+    backend_contract_id: str | None = None,
+) -> PreparedOptixPlanarMapLsi2D:
     """Prepare a reusable OptiX planar-map/CDB LSI count primitive.
 
     ``base_records_or_cdb`` may be an iterable of segment records, a
@@ -4436,10 +4616,25 @@ def prepare_planar_map_lsi_2d_optix(base_records_or_cdb) -> PreparedOptixPlanarM
     """
 
     base_segments = _coerce_planar_map_lsi_segments_2d(base_records_or_cdb)
+    base_count = _segment_record_count(base_segments)
+    canonical_resolution, canonical_authority = _canonical_direct_provider_authority(
+        statement_stable_id=semantic_statement_stable_id,
+        backend_contract_id=backend_contract_id,
+        direct_provider_stable_id=(
+            "canonical_standalone/segment_pair_grouped_range_direct_"
+            "intersection_exact_count_2d/optix/segment_pair_grouped_range_"
+            "direct_intersection_exact_count_2d"
+        ),
+        primitive="segment_pair_grouped_range_direct_intersection_exact_count_2d",
+        base_item_count=base_count,
+        input_item_bytes=40,
+    )
     prepared = prepare_segment_pair_intersection_optix(base_segments)
     return PreparedOptixPlanarMapLsi2D(
         prepared=prepared,
-        base_segment_count=_segment_record_count(base_segments),
+        base_segment_count=base_count,
+        canonical_resolution=canonical_resolution,
+        canonical_production_authority=canonical_authority,
     )
 
 
@@ -4506,7 +4701,23 @@ class PreparedOptixPlanarMapPointLocation2D:
     query_map_id: int = 1
     scale_bounds: tuple[float, float, float, float] | None = None
     base_segment_count: int = 0
+    canonical_resolution: Mapping[str, object] | None = None
+    canonical_production_authority: Mapping[str, object] | None = None
     _closed: bool = False
+
+    def canonical_production_metadata(self) -> dict[str, object]:
+        return {
+            "canonical_resolution": (
+                None
+                if self.canonical_resolution is None
+                else dict(self.canonical_resolution)
+            ),
+            "canonical_production_authority": (
+                None
+                if self.canonical_production_authority is None
+                else dict(self.canonical_production_authority)
+            ),
+        }
 
     def _with_env(self, func):
         if self._closed:
@@ -4601,6 +4812,7 @@ class PreparedOptixPlanarMapPointLocation2D:
             "scale_bounds": self.scale_bounds,
             "base_segment_count": int(self.base_segment_count),
             "native_timings": timings,
+            **self.canonical_production_metadata(),
             "claim_boundary": {
                 "public_generic_rtdl_primitive": True,
                 "bundled_rayjoin_helper_used": False,
@@ -4644,6 +4856,8 @@ def prepare_planar_map_point_location_2d_optix(
     *,
     query_map_id: int = 1,
     scale_bounds=None,
+    semantic_statement_stable_id: str | None = None,
+    backend_contract_id: str | None = None,
 ) -> PreparedOptixPlanarMapPointLocation2D:
     """Prepare a reusable OptiX planar-map point-location/PIP primitive.
 
@@ -4659,6 +4873,18 @@ def prepare_planar_map_point_location_2d_optix(
         else _coerce_planar_map_lsi_segments_2d(base_records_or_cdb)
     )
     normalized_scale_bounds = _normalize_planar_map_scale_bounds(scale_bounds)
+    base_count = _segment_record_count(base_segments)
+    canonical_resolution, canonical_authority = _canonical_direct_provider_authority(
+        statement_stable_id=semantic_statement_stable_id,
+        backend_contract_id=backend_contract_id,
+        direct_provider_stable_id=(
+            "canonical_standalone/directed_segment_point_location_2d/optix/"
+            "directed_segment_point_location_2d"
+        ),
+        primitive="directed_segment_point_location_2d",
+        base_item_count=base_count,
+        input_item_bytes=40,
+    )
     with _PLANAR_MAP_POINT_LOCATION_ENV_LOCK:
         old = _set_planar_map_point_location_env(
             query_map_id=int(query_map_id),
@@ -4672,7 +4898,9 @@ def prepare_planar_map_point_location_2d_optix(
         prepared=prepared,
         query_map_id=int(query_map_id),
         scale_bounds=normalized_scale_bounds,
-        base_segment_count=_segment_record_count(base_segments),
+        base_segment_count=base_count,
+        canonical_resolution=canonical_resolution,
+        canonical_production_authority=canonical_authority,
     )
 
 
@@ -6242,6 +6470,52 @@ def optix_version() -> tuple:
     return major.value, minor.value, patch.value
 
 
+def probe_optix_fixed_radius_graph_components_3d() -> dict[str, object]:
+    """Probe the exact native exports used by the prepared radius-graph route.
+
+    A general OptiX version query is not sufficient for this composite route:
+    stale libraries can expose the base runtime while omitting one of the
+    prepared count, grouped-union, or lifetime symbols.  This public,
+    application-neutral probe reports those exports individually and never
+    substitutes a different physical implementation.
+    """
+
+    required_symbols = (
+        "rtdl_optix_prepare_fixed_radius_count_threshold_3d",
+        _OPTIX_PREPARED_FIXED_RADIUS_COUNT_THRESHOLD_3D_DEVICE_OUTPUT_SYMBOL,
+        _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_SYMBOL,
+        "rtdl_optix_destroy_prepared_fixed_radius_count_threshold_3d",
+    )
+    try:
+        library = _load_optix_library()
+    except Exception as exc:
+        return {
+            "contract": "rtdl.optix.fixed_radius_graph_components_3d.capability.v1",
+            "available": False,
+            "required_symbols": list(required_symbols),
+            "present_symbols": [],
+            "missing_symbols": list(required_symbols),
+            "library_loaded": False,
+            "error": f"{type(exc).__name__}: {exc}",
+        }
+    present = tuple(
+        name
+        for name in required_symbols
+        if _find_optional_backend_symbol(library, name) is not None
+    )
+    missing = tuple(name for name in required_symbols if name not in present)
+    return {
+        "contract": "rtdl.optix.fixed_radius_graph_components_3d.capability.v1",
+        "available": not missing,
+        "required_symbols": list(required_symbols),
+        "present_symbols": list(present),
+        "missing_symbols": list(missing),
+        "library_loaded": True,
+        "library_path": str(getattr(library, "_rtdl_library_path", "<unknown>")),
+        "error": None,
+    }
+
+
 def fixed_radius_count_threshold_2d_optix(
     query_points,
     search_points=None,
@@ -7127,6 +7401,15 @@ def _normalize_fixed_radius_graph_requests(
     return tuple(requests_out)
 
 
+def _normalize_fixed_radius_boundary(value: str) -> int:
+    normalized = str(value).strip().lower()
+    if normalized == "closed":
+        return 0
+    if normalized == "open":
+        return 1
+    raise ValueError("radius_boundary must be one of: closed, open")
+
+
 class PreparedOptixFixedRadiusNeighbors3D:
     """Prepared OptiX 3-D fixed-radius neighbor scene.
 
@@ -7135,9 +7418,22 @@ class PreparedOptixFixedRadiusNeighbors3D:
     only upload query points and write neighbor rows.
     """
 
-    def __init__(self, search_points, *, max_radius: float):
-        if max_radius <= 0:
-            raise ValueError("max_radius must be positive")
+    def __init__(
+        self,
+        search_points,
+        *,
+        max_radius: float,
+        expected_native_library_identity=None,
+        expected_native_library_ref=None,
+    ):
+        from .action_native_identity import (
+            PREPARED_RANKED_DISTANCE_WINDOW_3D_REQUIRED_SYMBOLS,
+            native_library_identity,
+            validate_native_library_identity,
+        )
+
+        if not math.isfinite(float(max_radius)) or max_radius <= 0:
+            raise ValueError("max_radius must be finite and positive")
         packed = search_points if isinstance(search_points, PackedPoints) else pack_points(records=search_points, dimension=3)
         if packed.dimension != 3:
             raise ValueError("prepare_optix_fixed_radius_neighbors_3d requires 3-D points")
@@ -7145,10 +7441,45 @@ class PreparedOptixFixedRadiusNeighbors3D:
         self._max_radius = float(max_radius)
         self._handle = ctypes.c_void_p()
         self._closed = False
+        if (expected_native_library_identity is None) != (
+            expected_native_library_ref is None
+        ):
+            raise ValueError(
+                "expected native library identity and object must be provided together"
+            )
+        lib = _load_optix_library()
+        if expected_native_library_identity is not None:
+            if lib is not expected_native_library_ref:
+                raise RuntimeError(
+                    "loaded native library object differs from the compiler-bound object"
+                )
+            validate_native_library_identity(
+                lib, expected_native_library_identity
+            )
+            resolved_identity = expected_native_library_identity
+        else:
+            resolved_identity = native_library_identity(
+                lib,
+                required_symbols=(
+                    PREPARED_RANKED_DISTANCE_WINDOW_3D_REQUIRED_SYMBOLS
+                ),
+            )
+        self._native_library_ref = lib
+        self._native_library_identity = resolved_identity
+        self._native_library_object_id = id(lib)
+        self._native_library_object_binding_seal = hmac.new(
+            _PREPARED_RANKED_WINDOW_NATIVE_OBJECT_SECRET,
+            (
+                "rtdl.prepared_ranked_window_native_object.v1\x00"
+                f"{self._native_library_object_id}\x00"
+                f"{type(lib).__module__}.{type(lib).__qualname__}\x00"
+                f"{resolved_identity.identity_digest}"
+            ).encode("utf-8"),
+            hashlib.sha256,
+        ).hexdigest()
         if packed.count == 0:
             return
 
-        lib = _load_optix_library()
         prepare_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_prepare_fixed_radius_neighbors_3d")
         if prepare_symbol is None:
             raise RuntimeError(
@@ -7165,6 +7496,38 @@ class PreparedOptixFixedRadiusNeighbors3D:
             len(error),
         )
         _check_status(status, error)
+
+    def _native_library_for_call(self):
+        from .action_native_identity import validate_native_library_identity
+
+        expected_seal = hmac.new(
+            _PREPARED_RANKED_WINDOW_NATIVE_OBJECT_SECRET,
+            (
+                "rtdl.prepared_ranked_window_native_object.v1\x00"
+                f"{self._native_library_object_id}\x00"
+                f"{type(self._native_library_ref).__module__}."
+                f"{type(self._native_library_ref).__qualname__}\x00"
+                f"{self._native_library_identity.identity_digest}"
+            ).encode("utf-8"),
+            hashlib.sha256,
+        ).hexdigest()
+        if (
+            not hmac.compare_digest(
+                self._native_library_object_binding_seal, expected_seal
+            )
+            or id(self._native_library_ref) != self._native_library_object_id
+        ):
+            raise RuntimeError(
+                "prepared ranked-window native library object binding changed"
+            )
+        validate_native_library_identity(
+            self._native_library_ref, self._native_library_identity
+        )
+        return self._native_library_ref
+
+    @property
+    def native_library_identity_metadata(self) -> dict[str, object]:
+        return self._native_library_identity.to_metadata()
 
     @property
     def max_radius(self) -> float:
@@ -7188,7 +7551,7 @@ class PreparedOptixFixedRadiusNeighbors3D:
             raise ValueError("PreparedOptixFixedRadiusNeighbors3D.run_raw requires 3-D points")
         if packed_queries.count == 0 or self._packed_search.count == 0:
             return OptixRowView(
-                library=_load_optix_library(),
+                library=self._native_library_for_call(),
                 rows_ptr=ctypes.POINTER(_RtdlFixedRadiusNeighborRow)(),
                 row_count=0,
                 row_type=_RtdlFixedRadiusNeighborRow,
@@ -7196,7 +7559,7 @@ class PreparedOptixFixedRadiusNeighbors3D:
                 _free_on_close=False,
             )
 
-        lib = _load_optix_library()
+        lib = self._native_library_for_call()
         run_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_prepared_fixed_radius_neighbors_3d")
         if run_symbol is None:
             raise RuntimeError(
@@ -7233,7 +7596,14 @@ class PreparedOptixFixedRadiusNeighbors3D:
         finally:
             rows.close()
 
-    def run_exact_raw(self, query_points, *, radius: float, k_max: int) -> OptixRowView:
+    def run_exact_raw(
+        self,
+        query_points,
+        *,
+        radius: float,
+        k_max: int,
+        radius_boundary: str = "closed",
+    ) -> OptixRowView:
         if self._closed:
             raise RuntimeError("prepared OptiX fixed-radius-neighbor 3D handle is closed")
         if radius < 0:
@@ -7242,12 +7612,13 @@ class PreparedOptixFixedRadiusNeighbors3D:
             raise ValueError("radius must be less than or equal to prepared max_radius")
         if k_max <= 0:
             raise ValueError("k_max must be positive")
+        boundary_mode = _normalize_fixed_radius_boundary(radius_boundary)
         packed_queries = query_points if isinstance(query_points, PackedPoints) else pack_points(records=query_points, dimension=3)
         if packed_queries.dimension != 3:
             raise ValueError("PreparedOptixFixedRadiusNeighbors3D.run_exact_raw requires 3-D points")
         if packed_queries.count == 0 or self._packed_search.count == 0:
             return OptixRowView(
-                library=_load_optix_library(),
+                library=self._native_library_for_call(),
                 rows_ptr=ctypes.POINTER(_RtdlFixedRadiusNeighborRow)(),
                 row_count=0,
                 row_type=_RtdlFixedRadiusNeighborRow,
@@ -7255,27 +7626,38 @@ class PreparedOptixFixedRadiusNeighbors3D:
                 _free_on_close=False,
             )
 
-        lib = _load_optix_library()
-        run_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_prepared_exact_fixed_radius_neighbors_3d")
+        lib = self._native_library_for_call()
+        if boundary_mode == 0:
+            symbol_name = "rtdl_optix_run_prepared_exact_fixed_radius_neighbors_3d"
+        else:
+            symbol_name = "rtdl_optix_run_prepared_exact_fixed_radius_neighbors_3d_v2"
+        run_symbol = _find_optional_backend_symbol(lib, symbol_name)
         if run_symbol is None:
             raise RuntimeError(
                 "loaded OptiX backend library does not export "
-                "rtdl_optix_run_prepared_exact_fixed_radius_neighbors_3d; rebuild the OptiX backend from current main"
+                f"{symbol_name}; rebuild the OptiX backend from current main"
             )
         rows_ptr = ctypes.POINTER(_RtdlFixedRadiusNeighborRow)()
         row_count = ctypes.c_size_t()
         error = ctypes.create_string_buffer(4096)
-        status = run_symbol(
+        call_args = [
             self._handle,
             packed_queries.records,
             packed_queries.count,
             ctypes.c_double(float(radius)),
             ctypes.c_size_t(int(k_max)),
-            ctypes.byref(rows_ptr),
-            ctypes.byref(row_count),
-            error,
-            len(error),
+        ]
+        if boundary_mode != 0:
+            call_args.append(ctypes.c_uint32(boundary_mode))
+        call_args.extend(
+            [
+                ctypes.byref(rows_ptr),
+                ctypes.byref(row_count),
+                error,
+                len(error),
+            ]
         )
+        status = run_symbol(*call_args)
         _check_status(status, error)
         return OptixRowView(
             library=lib,
@@ -7285,8 +7667,20 @@ class PreparedOptixFixedRadiusNeighbors3D:
             field_names=("query_id", "neighbor_id", "distance"),
         )
 
-    def run_exact(self, query_points, *, radius: float, k_max: int) -> tuple[dict[str, object], ...]:
-        rows = self.run_exact_raw(query_points, radius=radius, k_max=k_max)
+    def run_exact(
+        self,
+        query_points,
+        *,
+        radius: float,
+        k_max: int,
+        radius_boundary: str = "closed",
+    ) -> tuple[dict[str, object], ...]:
+        rows = self.run_exact_raw(
+            query_points,
+            radius=radius,
+            k_max=k_max,
+            radius_boundary=radius_boundary,
+        )
         try:
             return rows.to_dict_rows()
         finally:
@@ -7308,7 +7702,7 @@ class PreparedOptixFixedRadiusNeighbors3D:
             raise ValueError("PreparedOptixFixedRadiusNeighbors3D.run_ranked_raw requires 3-D points")
         if packed_queries.count == 0 or self._packed_search.count == 0:
             return OptixRowView(
-                library=_load_optix_library(),
+                library=self._native_library_for_call(),
                 rows_ptr=ctypes.POINTER(_RtdlKnnNeighborRow)(),
                 row_count=0,
                 row_type=_RtdlKnnNeighborRow,
@@ -7316,8 +7710,10 @@ class PreparedOptixFixedRadiusNeighbors3D:
                 _free_on_close=False,
             )
 
-        lib = _load_optix_library()
-        run_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_prepared_ranked_fixed_radius_neighbors_3d")
+        lib = self._native_library_for_call()
+        run_symbol = _find_optional_backend_symbol(
+            lib, "rtdl_optix_run_prepared_ranked_fixed_radius_neighbors_3d"
+        )
         if run_symbol is None:
             raise RuntimeError(
                 "loaded OptiX backend library does not export "
@@ -7353,6 +7749,124 @@ class PreparedOptixFixedRadiusNeighbors3D:
         finally:
             rows.close()
 
+    def run_ranked_distance_window_raw(
+        self,
+        query_points,
+        *,
+        minimum_distance: float,
+        radius: float,
+        k_max: int,
+        minimum_boundary: str = "closed",
+        radius_boundary: str = "closed",
+    ) -> OptixRowView:
+        """Return the nearest ``k_max`` rows inside a generic distance window.
+
+        Both distance boundaries are evaluated before ranking. The prepared
+        search-side grid remains resident and the native result cardinality is
+        bounded by ``query_count * k_max``.
+        """
+        if self._closed:
+            raise RuntimeError("prepared OptiX fixed-radius-neighbor 3D handle is closed")
+        minimum_distance = float(minimum_distance)
+        radius = float(radius)
+        if not math.isfinite(minimum_distance) or minimum_distance < 0.0:
+            raise ValueError("minimum_distance must be finite and non-negative")
+        if not math.isfinite(radius) or radius < 0.0:
+            raise ValueError("radius must be finite and non-negative")
+        if minimum_distance > radius:
+            raise ValueError("minimum_distance must not exceed radius")
+        if radius > self._max_radius:
+            raise ValueError("radius must be less than or equal to prepared max_radius")
+        if k_max <= 0:
+            raise ValueError("k_max must be positive")
+        if k_max > 64:
+            raise ValueError(
+                "PreparedOptixFixedRadiusNeighbors3D.run_ranked_distance_window_raw "
+                "currently supports k_max <= 64"
+            )
+        minimum_boundary_mode = _normalize_fixed_radius_boundary(minimum_boundary)
+        radius_boundary_mode = _normalize_fixed_radius_boundary(radius_boundary)
+        packed_queries = (
+            query_points
+            if isinstance(query_points, PackedPoints)
+            else pack_points(records=query_points, dimension=3)
+        )
+        if packed_queries.dimension != 3:
+            raise ValueError(
+                "PreparedOptixFixedRadiusNeighbors3D.run_ranked_distance_window_raw "
+                "requires 3-D points"
+            )
+        if packed_queries.count == 0 or self._packed_search.count == 0:
+            return OptixRowView(
+                library=self._native_library_for_call(),
+                rows_ptr=ctypes.POINTER(_RtdlKnnNeighborRow)(),
+                row_count=0,
+                row_type=_RtdlKnnNeighborRow,
+                field_names=("query_id", "neighbor_id", "distance", "neighbor_rank"),
+                _free_on_close=False,
+            )
+
+        lib = self._native_library_for_call()
+        symbol_name = "rtdl_optix_run_prepared_ranked_distance_window_neighbors_3d"
+        run_symbol = _find_optional_backend_symbol(lib, symbol_name)
+        if run_symbol is None:
+            raise RuntimeError(
+                f"loaded OptiX backend library does not export {symbol_name}; "
+                "rebuild the OptiX backend from current main"
+            )
+        rows_ptr = ctypes.POINTER(_RtdlKnnNeighborRow)()
+        row_count = ctypes.c_size_t()
+        error = ctypes.create_string_buffer(4096)
+        status = run_symbol(
+            self._handle,
+            packed_queries.records,
+            packed_queries.count,
+            ctypes.c_double(minimum_distance),
+            ctypes.c_double(radius),
+            ctypes.c_size_t(int(k_max)),
+            ctypes.c_uint32(minimum_boundary_mode),
+            ctypes.c_uint32(radius_boundary_mode),
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
+        _check_status(status, error)
+        if row_count.value > packed_queries.count * int(k_max):
+            if bool(rows_ptr):
+                lib.rtdl_optix_free_rows(rows_ptr)
+            raise RuntimeError("native ranked distance-window output exceeded query_count * k_max")
+        return OptixRowView(
+            library=lib,
+            rows_ptr=rows_ptr,
+            row_count=row_count.value,
+            row_type=_RtdlKnnNeighborRow,
+            field_names=("query_id", "neighbor_id", "distance", "neighbor_rank"),
+        )
+
+    def run_ranked_distance_window(
+        self,
+        query_points,
+        *,
+        minimum_distance: float,
+        radius: float,
+        k_max: int,
+        minimum_boundary: str = "closed",
+        radius_boundary: str = "closed",
+    ) -> tuple[dict[str, object], ...]:
+        rows = self.run_ranked_distance_window_raw(
+            query_points,
+            minimum_distance=minimum_distance,
+            radius=radius,
+            k_max=k_max,
+            minimum_boundary=minimum_boundary,
+            radius_boundary=radius_boundary,
+        )
+        try:
+            return rows.to_dict_rows()
+        finally:
+            rows.close()
+
     def run_ranked_summary_raw(self, query_points, *, radius: float, k_max: int) -> OptixRowView:
         if self._closed:
             raise RuntimeError("prepared OptiX fixed-radius-neighbor 3D handle is closed")
@@ -7369,7 +7883,7 @@ class PreparedOptixFixedRadiusNeighbors3D:
             raise ValueError("PreparedOptixFixedRadiusNeighbors3D.run_ranked_summary_raw requires 3-D points")
         if packed_queries.count == 0 or self._packed_search.count == 0:
             return OptixRowView(
-                library=_load_optix_library(),
+                library=self._native_library_for_call(),
                 rows_ptr=ctypes.POINTER(_RtdlFixedRadiusRankedNeighborSummary)(),
                 row_count=0,
                 row_type=_RtdlFixedRadiusRankedNeighborSummary,
@@ -7385,7 +7899,7 @@ class PreparedOptixFixedRadiusNeighbors3D:
                 _free_on_close=False,
             )
 
-        lib = _load_optix_library()
+        lib = self._native_library_for_call()
         run_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_prepared_ranked_fixed_radius_neighbor_summaries_3d")
         if run_symbol is None:
             raise RuntimeError(
@@ -7462,7 +7976,7 @@ class PreparedOptixFixedRadiusNeighbors3D:
                 "sum_distance": 0.0,
             }
 
-        lib = _load_optix_library()
+        lib = self._native_library_for_call()
         symbol_name = (
             "rtdl_optix_aggregate_prepared_ranked_fixed_radius_neighbor_summaries_3d_f32"
             if precision == "float32"
@@ -7534,7 +8048,7 @@ class PreparedOptixFixedRadiusNeighbors3D:
                 "query_resident": True,
             }
 
-        lib = _load_optix_library()
+        lib = self._native_library_for_call()
         symbol_name = "rtdl_optix_aggregate_prepared_query_ranked_fixed_radius_neighbor_summaries_3d_f32"
         symbol = _find_optional_backend_symbol(lib, symbol_name)
         if symbol is None:
@@ -7610,7 +8124,7 @@ class PreparedOptixFixedRadiusNeighbors3D:
                 for index in range(len(normalized))
             )
 
-        lib = _load_optix_library()
+        lib = self._native_library_for_call()
         symbol_name = "rtdl_optix_aggregate_prepared_query_ranked_fixed_radius_neighbor_summaries_3d_f32_batch"
         symbol = _find_optional_backend_symbol(lib, symbol_name)
         if symbol is None:
@@ -7685,7 +8199,7 @@ class PreparedOptixFixedRadiusNeighbors3D:
         if packed_queries.count == 0 or self._packed_search.count == 0:
             return 0
 
-        lib = _load_optix_library()
+        lib = self._native_library_for_call()
         count_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_count_prepared_fixed_radius_neighbors_3d")
         if count_symbol is None:
             raise RuntimeError(
@@ -7722,7 +8236,7 @@ class PreparedOptixFixedRadiusNeighbors3D:
         if packed_queries.count == 0 or self._packed_search.count == 0:
             return {"count": 0, "min_distance": 0.0, "max_distance": 0.0, "sum_distance": 0.0}
 
-        lib = _load_optix_library()
+        lib = self._native_library_for_call()
         summary_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_summarize_prepared_fixed_radius_neighbors_3d")
         if summary_symbol is None:
             raise RuntimeError(
@@ -7753,10 +8267,10 @@ class PreparedOptixFixedRadiusNeighbors3D:
         if self._closed:
             return
         handle = self._handle
+        lib = self._native_library_for_call() if handle.value else None
         self._handle = ctypes.c_void_p()
         self._closed = True
-        if handle.value:
-            lib = _load_optix_library()
+        if handle.value and lib is not None:
             destroy_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_fixed_radius_neighbors_3d")
             if destroy_symbol is not None:
                 destroy_symbol(handle)
@@ -7778,8 +8292,15 @@ def prepare_optix_fixed_radius_neighbors_3d(
     search_points,
     *,
     max_radius: float,
+    expected_native_library_identity=None,
+    expected_native_library_ref=None,
 ) -> PreparedOptixFixedRadiusNeighbors3D:
-    return PreparedOptixFixedRadiusNeighbors3D(search_points, max_radius=max_radius)
+    return PreparedOptixFixedRadiusNeighbors3D(
+        search_points,
+        max_radius=max_radius,
+        expected_native_library_identity=expected_native_library_identity,
+        expected_native_library_ref=expected_native_library_ref,
+    )
 
 
 def prepare_optix_fixed_radius_query_points_3d(query_points) -> PreparedOptixFixedRadiusQueryPoints3D:
@@ -7794,7 +8315,79 @@ class PreparedOptixFixedRadiusCountThreshold3D:
     flags into caller-owned CUDA columns.
     """
 
-    def __init__(self, search_points, *, max_radius: float):
+    @staticmethod
+    def _validate_attested_library_binding(library, expected):
+        """Recheck the retained loaded object without rehashing library bytes.
+
+        The caller must have fully attested ``expected`` before it is accepted
+        here.  This prepared object then binds that exact Python object and
+        process handle for its lifetime, while still rejecting path, handle,
+        ABI-symbol, or OptiX-version drift on every native call.
+        """
+
+        raw_path = getattr(library, "_rtdl_library_path", None)
+        if not isinstance(raw_path, str) or not raw_path:
+            raise RuntimeError("loaded fixed-radius library has no path identity")
+        path = Path(raw_path).expanduser().resolve(strict=True)
+        if (
+            not path.is_file()
+            or path.is_symlink()
+            or str(path) != expected.resolved_path
+        ):
+            raise RuntimeError(
+                "loaded fixed-radius library path changed after attestation"
+            )
+        handle = getattr(library, "_handle", None)
+        if (
+            not isinstance(handle, int)
+            or isinstance(handle, bool)
+            or handle <= 0
+            or str(handle) != expected.process_handle_token
+        ):
+            raise RuntimeError(
+                "loaded fixed-radius library handle changed after attestation"
+            )
+        missing = tuple(
+            symbol
+            for symbol in expected.required_symbols
+            if _find_optional_backend_symbol(library, symbol) is None
+        )
+        if missing:
+            raise RuntimeError(
+                "loaded fixed-radius library lost required symbols: "
+                + ", ".join(missing)
+            )
+        version_symbol = _find_optional_backend_symbol(
+            library, "rtdl_optix_get_version"
+        )
+        if version_symbol is None:
+            raise RuntimeError(
+                "loaded fixed-radius library lost its version symbol"
+            )
+        major = ctypes.c_int()
+        minor = ctypes.c_int()
+        patch = ctypes.c_int()
+        status = int(
+            version_symbol(
+                ctypes.byref(major), ctypes.byref(minor), ctypes.byref(patch)
+            )
+        )
+        if status != 0 or (
+            int(major.value), int(minor.value), int(patch.value)
+        ) != expected.optix_version:
+            raise RuntimeError(
+                "loaded fixed-radius library version changed after attestation"
+            )
+        return expected
+
+    def __init__(
+        self,
+        search_points,
+        *,
+        max_radius: float,
+        expected_native_library_identity=None,
+        expected_native_library_ref=None,
+    ):
         if max_radius <= 0:
             raise ValueError("max_radius must be positive")
         packed = search_points if isinstance(search_points, PackedPoints) else pack_points(records=search_points, dimension=3)
@@ -7805,7 +8398,49 @@ class PreparedOptixFixedRadiusCountThreshold3D:
         self._handle = ctypes.c_void_p()
         self._closed = False
 
+        from .action_native_identity import (
+            FIXED_RADIUS_GRAPH_COMPONENTS_3D_REQUIRED_SYMBOLS,
+            native_library_identity,
+        )
+
+        if (expected_native_library_identity is None) != (
+            expected_native_library_ref is None
+        ):
+            raise RuntimeError(
+                "expected native library identity and strong reference must be paired"
+            )
         lib = _load_optix_library()
+        if expected_native_library_identity is not None:
+            if lib is not expected_native_library_ref:
+                raise RuntimeError(
+                    "resolved fixed-radius native library differs from the compiler-bound strong reference"
+                )
+            self._validate_attested_library_binding(
+                lib,
+                expected_native_library_identity,
+            )
+            resolved_native_library_identity = expected_native_library_identity
+        else:
+            resolved_native_library_identity = native_library_identity(
+                lib,
+                required_symbols=(
+                    FIXED_RADIUS_GRAPH_COMPONENTS_3D_REQUIRED_SYMBOLS
+                ),
+            )
+        self._library = lib
+        self._library_ref = lib
+        self._library_object_id = id(lib)
+        self._native_library_identity = resolved_native_library_identity
+        self._library_object_binding_seal = hmac.new(
+            _PREPARED_FIXED_RADIUS_NATIVE_OBJECT_SECRET,
+            (
+                "rtdl.prepared_fixed_radius_native_object.v1\x00"
+                f"{self._library_object_id}\x00"
+                f"{type(lib).__module__}.{type(lib).__qualname__}\x00"
+                f"{self._native_library_identity.identity_digest}"
+            ).encode("utf-8"),
+            hashlib.sha256,
+        ).hexdigest()
         prepare_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_prepare_fixed_radius_count_threshold_3d")
         if prepare_symbol is None:
             raise RuntimeError(
@@ -7822,6 +8457,39 @@ class PreparedOptixFixedRadiusCountThreshold3D:
             len(error),
         )
         _check_status(status, error)
+
+    def _native_library_for_call(self):
+        expected_seal = hmac.new(
+            _PREPARED_FIXED_RADIUS_NATIVE_OBJECT_SECRET,
+            (
+                "rtdl.prepared_fixed_radius_native_object.v1\x00"
+                f"{self._library_object_id}\x00"
+                f"{type(self._library_ref).__module__}."
+                f"{type(self._library_ref).__qualname__}\x00"
+                f"{self._native_library_identity.identity_digest}"
+            ).encode("utf-8"),
+            hashlib.sha256,
+        ).hexdigest()
+        if (
+            not hmac.compare_digest(
+                self._library_object_binding_seal, expected_seal
+            )
+            or self._library is not self._library_ref
+            or id(self._library) != self._library_object_id
+        ):
+            raise RuntimeError(
+                "prepared fixed-radius native library object binding changed"
+            )
+
+        self._validate_attested_library_binding(
+            self._library,
+            self._native_library_identity,
+        )
+        return self._library
+
+    @property
+    def native_library_identity_metadata(self) -> dict[str, object]:
+        return self._native_library_identity.to_metadata()
 
     @property
     def max_radius(self) -> float:
@@ -7884,7 +8552,7 @@ class PreparedOptixFixedRadiusCountThreshold3D:
                 }
             }
 
-        lib = _load_optix_library()
+        lib = self._native_library_for_call()
         write_symbol = _find_optional_backend_symbol(
             lib,
             _OPTIX_PREPARED_FIXED_RADIUS_COUNT_THRESHOLD_3D_DEVICE_OUTPUT_SYMBOL,
@@ -7986,7 +8654,7 @@ class PreparedOptixFixedRadiusCountThreshold3D:
                 }
             }
 
-        lib = _load_optix_library()
+        lib = self._native_library_for_call()
         write_symbol = _find_optional_backend_symbol(
             lib,
             _OPTIX_PREPARED_FIXED_RADIUS_ADJACENCY_3D_DEVICE_OUTPUT_SYMBOL,
@@ -8131,7 +8799,7 @@ class PreparedOptixFixedRadiusCountThreshold3D:
                 }
             }
 
-        lib = _load_optix_library()
+        lib = self._native_library_for_call()
         symbol_name = (
             _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_DEVICE_OUTPUT_EXECUTION_OPTIONS_SYMBOL
             if direct_side_effect
@@ -8361,7 +9029,7 @@ class PreparedOptixFixedRadiusCountThreshold3D:
                 }
             }
 
-        lib = _load_optix_library()
+        lib = self._native_library_for_call()
         symbol_name = (
             _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_EXTENDED_TELEMETRY_EXECUTION_OPTIONS_SYMBOL
             if use_extended_telemetry
@@ -8634,7 +9302,7 @@ class PreparedOptixFixedRadiusCountThreshold3D:
                 }
             }
 
-        lib = _load_optix_library()
+        lib = self._native_library_for_call()
         symbol_name = (
             _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_DEVICE_OUTPUT_EXTENDED_TELEMETRY_EXECUTION_OPTIONS_SYMBOL
             if use_extended_telemetry
@@ -8927,7 +9595,7 @@ class PreparedOptixFixedRadiusCountThreshold3D:
                 }
             }
 
-        lib = _load_optix_library()
+        lib = self._native_library_for_call()
         symbol_name = (
             _OPTIX_PREPARED_FIXED_RADIUS_GROUPED_UNION_3D_SELF_RANGE_DEVICE_OUTPUT_EXECUTION_OPTIONS_SYMBOL
             if direct_side_effect
@@ -9062,13 +9730,13 @@ class PreparedOptixFixedRadiusCountThreshold3D:
         if self._closed:
             return
         handle = self._handle
-        self._handle = ctypes.c_void_p()
-        self._closed = True
-        if handle.value:
-            lib = _load_optix_library()
+        lib = self._native_library_for_call() if handle.value else None
+        if handle.value and lib is not None:
             destroy_symbol = _find_optional_backend_symbol(lib, "rtdl_optix_destroy_prepared_fixed_radius_count_threshold_3d")
             if destroy_symbol is not None:
                 destroy_symbol(handle)
+        self._handle = ctypes.c_void_p()
+        self._closed = True
 
     def __enter__(self) -> "PreparedOptixFixedRadiusCountThreshold3D":
         return self
@@ -9087,8 +9755,15 @@ def prepare_optix_fixed_radius_count_threshold_3d(
     search_points,
     *,
     max_radius: float,
+    expected_native_library_identity=None,
+    expected_native_library_ref=None,
 ) -> PreparedOptixFixedRadiusCountThreshold3D:
-    return PreparedOptixFixedRadiusCountThreshold3D(search_points, max_radius=max_radius)
+    return PreparedOptixFixedRadiusCountThreshold3D(
+        search_points,
+        max_radius=max_radius,
+        expected_native_library_identity=expected_native_library_identity,
+        expected_native_library_ref=expected_native_library_ref,
+    )
 
 
 def prepare_optix_fixed_radius_count_threshold_2d_device_search_columns(
@@ -10543,6 +11218,7 @@ def _get_last_fixed_radius_neighbors_3d_phase_timings_from_library(lib) -> dict[
             16: "prepared_query_uniform_cell_ranked_summary_aggregate_f32_batch_direct",
             17: "prepared_query_uniform_cell_ranked_summary_aggregate_f32_batch_block_partials",
             18: "prepared_query_uniform_cell_ranked_summary_aggregate_f32_batch_cuda_graph_replay",
+            20: "prepared_uniform_cell_ranked_distance_window_rows",
         }.get(mode_value, "none"),
         "prepare": float(prepare.value),
         "upload": float(upload.value),
@@ -16666,6 +17342,78 @@ def prepare_optix_aabb_index_3d(boxes) -> PreparedOptixAabbIndex3D:
     return PreparedOptixAabbIndex3D(boxes)
 
 
+def _validate_returned_inline_nearest_state(
+    *,
+    expected_source_count: int,
+    nearest_distances,
+    nearest_item_ids,
+    target_ids,
+    global_bound_early_break_observed: bool,
+) -> tuple[bool, str, tuple[str, ...]]:
+    """Derive exactness from device-returned state under host positional binding."""
+
+    import numpy as _np
+
+    source_count = int(expected_source_count)
+    distances = _np.asarray(nearest_distances)
+    item_ids = _np.asarray(nearest_item_ids)
+    target_domain = _np.asarray(target_ids)
+    violations: list[str] = []
+
+    if source_count <= 0:
+        violations.append("empty_source_domain")
+    expected_shape = (max(source_count, 0),)
+    if distances.shape != expected_shape:
+        violations.append("distance_shape_mismatch")
+    if item_ids.shape != expected_shape:
+        violations.append("item_id_shape_mismatch")
+    if target_domain.ndim != 1 or target_domain.size == 0:
+        violations.append("invalid_target_domain")
+    elif (
+        bool(_np.any(target_domain < 0))
+        or int(_np.unique(target_domain).size) != int(target_domain.size)
+    ):
+        violations.append("invalid_target_domain")
+
+    if distances.shape == expected_shape:
+        if not bool(_np.all(_np.isfinite(distances))):
+            violations.append("nonfinite_distance")
+        if bool(_np.any(distances < 0.0)):
+            violations.append("negative_distance")
+    if item_ids.shape == expected_shape:
+        if bool(_np.any(item_ids < 0)):
+            violations.append("invalid_item_id")
+        if (
+            target_domain.ndim == 1
+            and target_domain.size > 0
+            and not bool(_np.any(target_domain < 0))
+            and int(_np.unique(target_domain).size) == int(target_domain.size)
+        ):
+            sorted_target_ids = _np.sort(target_domain)
+            positions = _np.searchsorted(sorted_target_ids, item_ids)
+            positions_in_range = positions < sorted_target_ids.size
+            membership = _np.zeros(item_ids.shape, dtype=_np.bool_)
+            membership[positions_in_range] = (
+                sorted_target_ids[positions[positions_in_range]]
+                == item_ids[positions_in_range]
+            )
+            if not bool(_np.all(membership)):
+                violations.append("item_id_outside_target_domain")
+
+    if global_bound_early_break_observed:
+        violations.append("global_bound_early_break")
+
+    unique_violations = tuple(dict.fromkeys(violations))
+    exact = not unique_violations
+    reason = (
+        "host_positional_binding_plus_device_returned_finite_nonnegative_"
+        "distances_and_target_domain_items"
+        if exact
+        else "actual_returned_state_failed:" + ",".join(unique_violations)
+    )
+    return exact, reason, unique_violations
+
+
 def collect_aabb_point_membership_pair_rows_3d_optix(
     indexed_boxes,
     point_queries,
@@ -16677,6 +17425,359 @@ def collect_aabb_point_membership_pair_rows_3d_optix(
             point_queries,
             row_capacity=row_capacity,
         )
+
+
+class _PreparedOptixPointColumnDomain3D:
+    """Private compiler/runtime owner for one natively validated target domain.
+
+    The native token is deliberately kept private.  The exact immutable NumPy
+    objects remain strongly referenced for the lifetime of the borrowed native
+    view; a caller cannot validate one target domain and execute another.
+    """
+
+    contract = "rtdl.prepared_point_column_domain_3d.optix.v1"
+    _prepare_name = "rtdl_optix_prepare_point_column_domain_3d_v1"
+    _collect_name = (
+        "rtdl_optix_collect_cell_mbr_nearest_frontier_3d_prepared_domain_v1"
+    )
+    _telemetry_name = (
+        "rtdl_optix_get_prepared_point_column_domain_3d_telemetry_v1"
+    )
+    _destroy_name = "rtdl_optix_destroy_prepared_point_column_domain_3d_v1"
+
+    def __init__(
+        self,
+        *,
+        column_domain_certificate,
+        expected_native_library_identity,
+        expected_native_library_ref,
+    ) -> None:
+        from .action_nearest_state_lowering import (
+            ImmutablePointColumnDomain3DCertificate,
+        )
+        from .action_native_identity import validate_native_library_identity
+
+        if not isinstance(
+            column_domain_certificate,
+            ImmutablePointColumnDomain3DCertificate,
+        ):
+            raise TypeError(
+                "prepared target domain requires an immutable point-column certificate"
+            )
+        points = column_domain_certificate.target_points
+        ids = column_domain_certificate.target_ids
+        column_domain_certificate.validate_exact(points, ids)
+        library = expected_native_library_ref
+        if library is None or expected_native_library_identity is None:
+            raise RuntimeError(
+                "prepared target domain requires a compiler-bound native identity"
+            )
+        identity = validate_native_library_identity(
+            library,
+            expected_native_library_identity,
+        )
+        prepare = _find_optional_backend_symbol(library, self._prepare_name)
+        collect = _find_optional_backend_symbol(library, self._collect_name)
+        telemetry = _find_optional_backend_symbol(library, self._telemetry_name)
+        destroy = _find_optional_backend_symbol(library, self._destroy_name)
+        if None in (prepare, collect, telemetry, destroy):
+            path = getattr(library, "_rtdl_library_path", "<unknown>")
+            raise RuntimeError(
+                f"Loaded OptiX backend library {path!r} lacks the prepared "
+                "point-column-domain ABI; rebuild current source"
+            )
+
+        prepare.argtypes = [
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        prepare.restype = ctypes.c_int
+        telemetry.argtypes = [
+            ctypes.c_uint64,
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        telemetry.restype = ctypes.c_int
+        collect.argtypes = [
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.c_uint64,
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.c_size_t,
+            ctypes.c_uint64,
+            ctypes.c_uint32,
+            ctypes.c_uint32,
+            ctypes.c_uint32,
+            ctypes.c_uint64,
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        collect.restype = ctypes.c_int
+        destroy.argtypes = [
+            ctypes.c_uint64,
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        destroy.restype = ctypes.c_int
+
+        token = ctypes.c_uint64()
+        error = ctypes.create_string_buffer(4096)
+        status = prepare(
+            points.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            ids.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+            ctypes.c_size_t(int(points.shape[0])),
+            ctypes.byref(token),
+            error,
+            ctypes.c_size_t(len(error)),
+        )
+        _check_status(status, error)
+        if int(token.value) == 0:
+            raise RuntimeError("prepared target-domain native token is zero")
+
+        # Native prepare has inserted a live registry entry.  Treat all later
+        # Python construction as a transaction and roll the token back if
+        # object binding or seal creation fails.
+        self._lock = threading.RLock()
+        self._closed = True
+        self._token = ctypes.c_uint64()
+        try:
+            self._library = library
+            self._native_library_identity = identity
+            self._certificate = column_domain_certificate
+            self._target_points = points
+            self._target_ids = ids
+            self._prepare = prepare
+            self._collect = collect
+            self._telemetry = telemetry
+            self._destroy = destroy
+            self._token = token
+            self._creator_pid = os.getpid()
+            self._library_object_id = id(library)
+            self._certificate_object_id = id(column_domain_certificate)
+            self._point_object_id = id(points)
+            self._id_object_id = id(ids)
+            self._binding_seal = self._sign_binding()
+            self._closed = False
+        except BaseException as construction_error:
+            rollback_error = ctypes.create_string_buffer(4096)
+            rollback_status = destroy(
+                token,
+                rollback_error,
+                ctypes.c_size_t(len(rollback_error)),
+            )
+            self._token = ctypes.c_uint64()
+            self._closed = True
+            if int(rollback_status) != 0:
+                detail = rollback_error.value.decode(
+                    "utf-8",
+                    errors="replace",
+                )
+                raise RuntimeError(
+                    "prepared target-domain construction failed and native "
+                    f"registry rollback also failed: {detail}"
+                ) from construction_error
+            raise
+
+    def _binding_payload(self) -> bytes:
+        return (
+            f"{self.contract}\x00{self._creator_pid}\x00"
+            f"{id(self._library)}\x00"
+            f"{self._native_library_identity.identity_digest}\x00"
+            f"{id(self._certificate)}\x00{id(self._target_points)}\x00"
+            f"{id(self._target_ids)}\x00"
+            f"{self._certificate.target_content_digest}\x00"
+            f"{int(self._token.value)}\x00"
+            f"{id(self._prepare)}\x00{id(self._collect)}\x00"
+            f"{id(self._telemetry)}\x00{id(self._destroy)}"
+        ).encode("ascii")
+
+    def _sign_binding(self) -> str:
+        return hmac.new(
+            _PREPARED_POINT_COLUMN_DOMAIN_3D_SECRET,
+            self._binding_payload(),
+            hashlib.sha256,
+        ).hexdigest()
+
+    def _validate_locked(self) -> None:
+        from .action_native_identity import validate_native_library_identity
+
+        if self._closed or int(self._token.value) == 0:
+            raise RuntimeError("prepared target-domain owner is closed")
+        if os.getpid() != self._creator_pid:
+            raise RuntimeError(
+                "prepared target-domain owner cannot cross a process boundary"
+            )
+        if (
+            id(self._library) != self._library_object_id
+            or id(self._certificate) != self._certificate_object_id
+            or id(self._target_points) != self._point_object_id
+            or id(self._target_ids) != self._id_object_id
+            or not hmac.compare_digest(self._binding_seal, self._sign_binding())
+        ):
+            raise RuntimeError("prepared target-domain object binding changed")
+        self._certificate.validate_exact(
+            self._target_points,
+            self._target_ids,
+        )
+        validate_native_library_identity(
+            self._library,
+            self._native_library_identity,
+        )
+        resolved = (
+            _find_optional_backend_symbol(self._library, self._prepare_name),
+            _find_optional_backend_symbol(self._library, self._collect_name),
+            _find_optional_backend_symbol(self._library, self._telemetry_name),
+            _find_optional_backend_symbol(self._library, self._destroy_name),
+        )
+        if resolved != (
+            self._prepare,
+            self._collect,
+            self._telemetry,
+            self._destroy,
+        ):
+            raise RuntimeError("prepared target-domain native symbol binding changed")
+
+    def _validate_execution_target_locked(self, points, ids, library) -> None:
+        self._validate_locked()
+        if (
+            library is not self._library
+            or points is not self._target_points
+            or ids is not self._target_ids
+        ):
+            raise RuntimeError(
+                "prepared target-domain execution target differs from validated bytes"
+            )
+
+    def __getstate__(self):
+        raise TypeError("prepared target-domain owner is not serializable")
+
+    def telemetry(self) -> dict[str, object]:
+        with self._lock:
+            self._validate_locked()
+            validation_count = ctypes.c_uint64()
+            execute_count = ctypes.c_uint64()
+            set_count = ctypes.c_uint64()
+            target_count = ctypes.c_uint64()
+            creator_pid = ctypes.c_uint64()
+            error = ctypes.create_string_buffer(4096)
+            status = self._telemetry(
+                self._token,
+                ctypes.byref(validation_count),
+                ctypes.byref(execute_count),
+                ctypes.byref(set_count),
+                ctypes.byref(target_count),
+                ctypes.byref(creator_pid),
+                error,
+                ctypes.c_size_t(len(error)),
+            )
+            _check_status(status, error)
+            if int(target_count.value) != int(self._certificate.target_count):
+                raise RuntimeError(
+                    "prepared target-domain native telemetry target count differs"
+                )
+            if int(creator_pid.value) != self._creator_pid:
+                raise RuntimeError(
+                    "prepared target-domain native telemetry creator PID differs"
+                )
+            return {
+                "schema": (
+                    "rtdl.optix.prepared_point_column_domain_3d.telemetry.v1"
+                ),
+                "prepared_target_domain_used": True,
+                "native_validation_count": int(validation_count.value),
+                "prepared_execute_count": int(execute_count.value),
+                "per_launch_target_hash_set_construction_count": int(
+                    set_count.value
+                ),
+                "target_count": int(target_count.value),
+                "creator_pid": int(creator_pid.value),
+                "target_id_membership_algorithm": (
+                    "binary_search_strict_monotonic_u32"
+                ),
+                "borrowed_immutable_host_bytes": True,
+            }
+
+    def _invoke_collect(self, *, points, ids, library, args) -> int:
+        with self._lock:
+            self._validate_execution_target_locked(points, ids, library)
+            return int(self._collect(*args))
+
+    def close(self) -> None:
+        with self._lock:
+            if self._closed:
+                return
+            self._validate_locked()
+            error = ctypes.create_string_buffer(4096)
+            status = self._destroy(
+                self._token,
+                error,
+                ctypes.c_size_t(len(error)),
+            )
+            _check_status(status, error)
+            self._token = ctypes.c_uint64()
+            self._closed = True
+
+    def __enter__(self):
+        with self._lock:
+            self._validate_locked()
+        return self
+
+    def __exit__(self, exc_type, exc, traceback) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        try:
+            if hasattr(self, "_closed") and not self._closed:
+                self.close()
+        except Exception:
+            pass
+
+
+def _prepare_point_column_domain_3d_optix(
+    *,
+    column_domain_certificate,
+    expected_native_library_identity,
+    expected_native_library_ref,
+) -> _PreparedOptixPointColumnDomain3D:
+    return _PreparedOptixPointColumnDomain3D(
+        column_domain_certificate=column_domain_certificate,
+        expected_native_library_identity=expected_native_library_identity,
+        expected_native_library_ref=expected_native_library_ref,
+    )
 
 
 def collect_cell_mbr_nearest_frontier_3d_optix(
@@ -16704,6 +17805,7 @@ def collect_cell_mbr_nearest_frontier_3d_optix(
     point_row_indices=None,
     collect_native_phase_timings: bool = False,
     allow_overflow_telemetry: bool = False,
+    _prepared_target_domain: _PreparedOptixPointColumnDomain3D | None = None,
 ) -> dict[str, object]:
     """Collect generic 3-D cell-MBR nearest-frontier rows with OptiX.
 
@@ -16885,7 +17987,26 @@ def collect_cell_mbr_nearest_frontier_3d_optix(
     max_out = _np.empty(resolved_capacity, dtype=_np.float64)
 
     lib = _load_optix_library()
-    if frontier_status_probe_mode_code != 0:
+    prepared_domain_used = _prepared_target_domain is not None
+    if prepared_domain_used:
+        if not isinstance(
+            _prepared_target_domain,
+            _PreparedOptixPointColumnDomain3D,
+        ):
+            raise TypeError("prepared target domain has the wrong private owner type")
+        if (
+            not inline_nearest
+            or not collect_inline_stats
+            or global_bound_early_break
+            or frontier_status_probe_mode_code != 0
+        ):
+            raise ValueError(
+                "prepared target domain supports the v4 inline-nearest plus "
+                "inline-statistics feature set only"
+            )
+        symbol_name = _prepared_target_domain._collect_name
+        collect_symbol = _prepared_target_domain._collect
+    elif frontier_status_probe_mode_code != 0:
         symbol_name = "rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v6"
         collect_symbol = _find_optional_backend_symbol(lib, symbol_name)
         if collect_symbol is None:
@@ -16931,7 +18052,7 @@ def collect_cell_mbr_nearest_frontier_3d_optix(
             lib,
             symbol_name,
         )
-    uses_v2 = (not inline_nearest) and collect_symbol is not None
+    uses_v2 = (not prepared_domain_used) and (not inline_nearest) and collect_symbol is not None
     if collect_symbol is None:
         if not bool(sort_rows):
             raise RuntimeError(
@@ -16959,7 +18080,72 @@ def collect_cell_mbr_nearest_frontier_3d_optix(
     global_bound_distance = ctypes.c_double()
     overflowed = ctypes.c_uint32()
     error = ctypes.create_string_buffer(4096)
-    if frontier_status_probe_mode_code != 0:
+    if prepared_domain_used:
+        status = _prepared_target_domain._invoke_collect(
+            points=target_coords_arr,
+            ids=target_ids_arr,
+            library=lib,
+            args=(
+                query_coords_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+                query_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+                ctypes.c_size_t(query_count),
+                cell_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+                begin_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_uint64)),
+                count_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_uint64)),
+                mins_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+                maxs_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+                ctypes.c_size_t(cell_count),
+                ctypes.c_double(float(radius)),
+                best_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+                best_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+                _prepared_target_domain._token,
+                point_row_indices_arr.ctypes.data_as(
+                    ctypes.POINTER(ctypes.c_uint64)
+                ),
+                ctypes.c_size_t(int(point_row_indices_arr.size)),
+                ctypes.c_uint64(int(max_inline_points)),
+                ctypes.c_uint32(1 if emit_pruned_rows else 0),
+                ctypes.c_uint32(1 if sort_rows else 0),
+                ctypes.c_uint32(1),
+                ctypes.c_uint64(resolved_capacity),
+                kind_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64))
+                if resolved_capacity
+                else None,
+                query_row_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64))
+                if resolved_capacity
+                else None,
+                query_point_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64))
+                if resolved_capacity
+                else None,
+                cell_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64))
+                if resolved_capacity
+                else None,
+                begin_out.ctypes.data_as(ctypes.POINTER(ctypes.c_uint64))
+                if resolved_capacity
+                else None,
+                count_out.ctypes.data_as(ctypes.POINTER(ctypes.c_uint64))
+                if resolved_capacity
+                else None,
+                min_out.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+                if resolved_capacity
+                else None,
+                max_out.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+                if resolved_capacity
+                else None,
+                nearest_distances_out.ctypes.data_as(
+                    ctypes.POINTER(ctypes.c_double)
+                ),
+                nearest_item_ids_out.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+                ctypes.byref(inline_cell_hit_count),
+                ctypes.byref(inline_point_eval_count),
+                ctypes.byref(emitted_count),
+                ctypes.byref(attempted_count),
+                ctypes.byref(overflowed),
+                error,
+                len(error),
+            ),
+        )
+    elif frontier_status_probe_mode_code != 0:
         status = collect_symbol(
             query_coords_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
             query_ids_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
@@ -17196,6 +18382,11 @@ def collect_cell_mbr_nearest_frontier_3d_optix(
             len(error),
         )
     _check_status(status, error)
+    prepared_domain_telemetry = (
+        _prepared_target_domain.telemetry()
+        if prepared_domain_used
+        else None
+    )
     native_phase_timings = None
     if bool(collect_native_phase_timings):
         timings_symbol = _find_optional_backend_symbol(
@@ -17441,6 +18632,9 @@ def collect_cell_mbr_nearest_frontier_3d_optix(
         )
         native_memory_telemetry["status_machine_candidate_telemetry"] = status_machine_telemetry
     nearest_columns = None
+    per_source_witness_exact = None
+    per_source_witness_exact_reason = None
+    per_source_witness_exact_violations = ()
     if int(overflowed.value) != 0:
         if allow_overflow_telemetry:
             empty_columns = {
@@ -17504,6 +18698,10 @@ def collect_cell_mbr_nearest_frontier_3d_optix(
                     frontier_status_probe_contract
                 ),
                 "per_source_witness_exact": None,
+                "per_source_witness_exact_reason": (
+                    "overflow_telemetry_has_no_authoritative_nearest_state"
+                ),
+                "per_source_witness_exact_violations": ("overflow",),
                 "inline_nearest_contract": (
                     "native_inline_cell_point_nearest_with_global_bound_early_break_for_max_nearest_reductions"
                     if global_bound_early_break
@@ -17528,6 +18726,8 @@ def collect_cell_mbr_nearest_frontier_3d_optix(
                 "overflow_telemetry_only": True,
                 "overflow_failure_mode": "fail_closed_overflow_no_rows_returned",
                 "native_generic_symbol": symbol_name,
+                "prepared_target_domain_used": bool(prepared_domain_used),
+                "prepared_target_domain_telemetry": prepared_domain_telemetry,
                 "native_phase_timings_collected": bool(native_phase_timings is not None),
                 "native_phase_timings": native_phase_timings,
                 "native_memory_telemetry_collected": bool(native_memory_telemetry is not None),
@@ -17565,11 +18765,28 @@ def collect_cell_mbr_nearest_frontier_3d_optix(
         "max_distances": max_out[:emitted].copy(),
     }
     if inline_nearest:
+        nearest_distances = nearest_distances_out.copy()
+        nearest_item_ids = nearest_item_ids_out.copy()
+        returned_source_ids = query_ids_arr.copy()
         nearest_columns = {
-            "source_ids": query_ids_arr.copy(),
-            "nearest_distances": nearest_distances_out.copy(),
-            "nearest_item_ids": nearest_item_ids_out.copy(),
+            "source_ids": returned_source_ids,
+            "nearest_distances": nearest_distances,
+            "nearest_item_ids": nearest_item_ids,
         }
+        (
+            per_source_witness_exact,
+            per_source_witness_exact_reason,
+            per_source_witness_exact_violations,
+        ) = _validate_returned_inline_nearest_state(
+            expected_source_count=query_count,
+            nearest_distances=nearest_distances,
+            nearest_item_ids=nearest_item_ids,
+            target_ids=target_ids_arr,
+            global_bound_early_break_observed=(
+                global_bound_early_break
+                and int(global_bound_early_break_count.value) > 0
+            ),
+        )
     return {
         "primitive": "CELL_MBR_NEAREST_FRONTIER_3D",
         "contract": "generic_cell_mbr_nearest_frontier_native_3d_optix",
@@ -17616,11 +18833,17 @@ def collect_cell_mbr_nearest_frontier_3d_optix(
         "frontier_status_probe_contract": (
             frontier_status_probe_contract
         ),
-        "per_source_witness_exact": (
-            False if global_bound_early_break and int(global_bound_early_break_count.value) > 0 else True
-        )
-        if inline_nearest
-        else None,
+        "per_source_witness_exact": per_source_witness_exact,
+        "per_source_witness_exact_reason": per_source_witness_exact_reason,
+        "per_source_witness_exact_violations": (
+            per_source_witness_exact_violations
+        ),
+        "nearest_state_source_binding": (
+            "host_positional_by_optix_launch_index"
+            if inline_nearest
+            else None
+        ),
+        "returned_source_ids_device_evidenced": False,
         "inline_nearest_contract": (
             "native_inline_cell_point_nearest_with_global_bound_early_break_for_max_nearest_reductions"
             if global_bound_early_break
@@ -17643,6 +18866,8 @@ def collect_cell_mbr_nearest_frontier_3d_optix(
         "nearest_columns": nearest_columns,
         "overflowed": False,
         "native_generic_symbol": symbol_name,
+        "prepared_target_domain_used": bool(prepared_domain_used),
+        "prepared_target_domain_telemetry": prepared_domain_telemetry,
         "native_phase_timings_collected": bool(native_phase_timings is not None),
         "native_phase_timings": native_phase_timings,
         "native_memory_telemetry_collected": bool(native_memory_telemetry is not None),
@@ -18832,7 +20057,418 @@ def _pack_uint64_weights(weights, expected_count: int):
     return array, array
 
 
-def _pack_uint32_values(values, expected_count: int, *, label: str):
+def _pack_int64_values(
+    values,
+    expected_count: int,
+    *,
+    label: str,
+    force_copy: bool = False,
+):
+    try:
+        import numpy as _np
+    except ImportError:  # pragma: no cover
+        _np = None
+
+    if _np is not None:
+        raw = _np.asarray(values)
+        if raw.ndim != 1:
+            raise ValueError(f"{label} must be one-dimensional")
+        if len(raw) != expected_count:
+            raise ValueError(f"{label} length must match expected count")
+        if raw.dtype.kind in {"b", "i", "u"}:
+            if raw.size and (
+                int(raw.min()) < -(1 << 63) or int(raw.max()) > (1 << 63) - 1
+            ):
+                raise ValueError(f"{label} entries must fit signed int64")
+            array = (
+                _np.array(raw, dtype=_np.int64, order="C", copy=True)
+                if force_copy
+                else _np.ascontiguousarray(raw, dtype=_np.int64)
+            )
+            pointer = array.ctypes.data_as(ctypes.POINTER(ctypes.c_int64))
+            return pointer, array
+
+    try:
+        normalized = tuple(operator.index(value) for value in values)
+    except TypeError as exc:
+        raise TypeError(f"{label} entries must be integral") from exc
+    if len(normalized) != expected_count:
+        raise ValueError(f"{label} length must match expected count")
+    if any(value < -(1 << 63) or value > (1 << 63) - 1 for value in normalized):
+        raise ValueError(f"{label} entries must fit signed int64")
+    ValueArray = ctypes.c_int64 * len(normalized)
+    array = ValueArray(*normalized)
+    return ctypes.cast(array, ctypes.POINTER(ctypes.c_int64)), array
+
+
+def _decode_i64_bits(value: int) -> int:
+    return value - (1 << 64) if value >= (1 << 63) else value
+
+
+def _validate_grouped_i64_reduction_domain(values, value_count: int, reduction: str) -> None:
+    if reduction not in {"sum", "sum_count"} or value_count == 0:
+        return
+    try:
+        minimum = int(values.min())
+        maximum = int(values.max())
+    except AttributeError:
+        normalized = tuple(int(value) for value in values)
+        minimum = min(normalized)
+        maximum = max(normalized)
+    if max(0, maximum) * value_count > (1 << 63) - 1:
+        raise OverflowError("grouped-i64 sum cannot be proven safe within signed int64")
+    if min(0, minimum) * value_count < -(1 << 63):
+        raise OverflowError("grouped-i64 sum cannot be proven safe within signed int64")
+
+
+def _qualified_runtime_type(value: object) -> str:
+    return f"{type(value).__module__}.{type(value).__qualname__}"
+
+
+class _RayTriangleGroupedI64NativeContext:
+    """One process-local, immutable binding to the grouped-i64 OptiX ABI.
+
+    The expensive native-library byte identity is established once per loaded
+    CDLL.  Every prepared scene, payload, and ray batch then revalidates only
+    object identity, process handle, path, and the exact captured callables.
+    """
+
+    contract = "rtdl.ray_triangle_grouped_i64_native_context.v1"
+
+    def __init__(self, library) -> None:
+        from .action_native_identity import (
+            RAY_TRIANGLE_GROUPED_I64_3D_REQUIRED_SYMBOLS,
+            native_library_identity,
+        )
+
+        symbols: dict[str, object] = {}
+        for name in RAY_TRIANGLE_GROUPED_I64_3D_REQUIRED_SYMBOLS:
+            symbol = _find_optional_backend_symbol(library, name)
+            if symbol is None:
+                raise RuntimeError(
+                    "Loaded OptiX backend library does not export "
+                    f"{name}. Rebuild it with 'make build-optix' from current main."
+                )
+            symbols[name] = symbol
+        for name in (
+            OPTIX_PREPARED_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_WITH_PHASE_TIMINGS_SYMBOL,
+            OPTIX_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_3D_WITH_PHASE_TIMINGS_SYMBOL,
+        ):
+            symbol = _find_optional_backend_symbol(library, name)
+            if symbol is not None:
+                symbols[name] = symbol
+        self._library_ref = library
+        self._library_object_id = id(library)
+        self._library_type = _qualified_runtime_type(library)
+        self._library_path = str(getattr(library, "_rtdl_library_path", ""))
+        raw_handle = getattr(library, "_handle", None)
+        if not isinstance(raw_handle, int) or isinstance(raw_handle, bool) or raw_handle <= 0:
+            raise RuntimeError("loaded OptiX backend library has no process handle identity")
+        self._library_process_handle = raw_handle
+        self._identity = native_library_identity(
+            library,
+            required_symbols=tuple(symbols),
+        )
+        self._symbols = symbols
+        self._symbol_facts = tuple(
+            (name, id(symbol), _qualified_runtime_type(symbol))
+            for name, symbol in symbols.items()
+        )
+        self._seal = self._issue_seal()
+        self._binding_digest = hashlib.sha256(self._binding_payload()).hexdigest()
+        self.validate()
+
+    @property
+    def library(self):
+        return self._library_ref
+
+    @property
+    def identity_digest(self) -> str:
+        return self._identity.identity_digest
+
+    @property
+    def binding_digest(self) -> str:
+        self.validate()
+        return self._binding_digest
+
+    def _binding_payload(self) -> bytes:
+        return (
+            self.contract
+            + "\x00"
+            + str(self._library_object_id)
+            + "\x00"
+            + self._library_type
+            + "\x00"
+            + self._library_path
+            + "\x00"
+            + str(self._library_process_handle)
+            + "\x00"
+            + self._identity.identity_digest
+            + "\x00"
+            + repr(self._symbol_facts)
+        ).encode("utf-8")
+
+    def _issue_seal(self) -> str:
+        return hmac.new(
+            _GROUPED_I64_NATIVE_CONTEXT_SECRET,
+            self._binding_payload(),
+            hashlib.sha256,
+        ).hexdigest()
+
+    def validate(self) -> None:
+        library = self._library_ref
+        if (
+            id(library) != self._library_object_id
+            or _qualified_runtime_type(library) != self._library_type
+            or str(getattr(library, "_rtdl_library_path", "")) != self._library_path
+            or getattr(library, "_handle", None) != self._library_process_handle
+            or self._identity.process_handle_token != str(self._library_process_handle)
+            or self._identity.resolved_path != str(Path(self._library_path).resolve())
+            or tuple(
+                (
+                    name,
+                    id(_find_optional_backend_symbol(library, name)),
+                    _qualified_runtime_type(_find_optional_backend_symbol(library, name)),
+                )
+                for name in self._symbols
+            )
+            != self._symbol_facts
+            or any(
+                _find_optional_backend_symbol(library, name) is not symbol
+                for name, symbol in self._symbols.items()
+            )
+            or not isinstance(self._seal, str)
+            or not hmac.compare_digest(self._seal, self._issue_seal())
+            or not hmac.compare_digest(
+                self._binding_digest,
+                hashlib.sha256(self._binding_payload()).hexdigest(),
+            )
+        ):
+            raise RuntimeError("grouped-i64 OptiX native context binding changed")
+
+    def symbol(self, name: str):
+        self.validate()
+        try:
+            return self._symbols[name]
+        except KeyError as exc:
+            raise RuntimeError(f"grouped-i64 native context does not bind {name}") from exc
+
+    def optional_symbol(self, name: str):
+        self.validate()
+        return self._symbols.get(name)
+
+    def to_metadata(self) -> dict[str, object]:
+        self.validate()
+        return {
+            "contract": self.contract,
+            "library_identity": self._identity.to_metadata(),
+            "context_binding_digest": self._binding_digest,
+            "captured_symbols": list(self._symbols),
+            "native_library_identity_hashed_once_per_process_context": True,
+            "per_query_native_binary_rehash": False,
+        }
+
+
+def _ray_triangle_grouped_i64_native_context(library) -> _RayTriangleGroupedI64NativeContext:
+    key = id(library)
+    with _GROUPED_I64_NATIVE_CONTEXT_LOCK:
+        existing = _GROUPED_I64_NATIVE_CONTEXTS.get(key)
+        if existing is not None:
+            if (
+                type(existing) is not _RayTriangleGroupedI64NativeContext
+                or existing.library is not library
+            ):
+                raise RuntimeError("grouped-i64 native context cache identity collision")
+            existing.validate()
+            return existing
+        context = _RayTriangleGroupedI64NativeContext(library)
+        _GROUPED_I64_NATIVE_CONTEXTS[key] = context
+        return context
+
+
+class _PreparedGroupedI64NativeResourceBinding:
+    """Private seal for one prepared native handle and its exact ABI context."""
+
+    contract = "rtdl.prepared_grouped_i64_native_resource_binding.v1"
+
+    def __init__(self, owner, context, *, kind: str) -> None:
+        self._owner_ref = owner
+        self._owner_object_id = id(owner)
+        self._owner_type = _qualified_runtime_type(owner)
+        self._context_ref = context
+        self._context_object_id = id(context)
+        self._handle_ref = owner._handle
+        self._handle_object_id = id(owner._handle)
+        self._handle_value = int(owner._handle.value or 0)
+        self._null_handle_allowed = bool(
+            kind == "scene" and int(getattr(owner, "triangle_count", -1)) == 0
+        )
+        if self._handle_value <= 0 and not self._null_handle_allowed:
+            raise RuntimeError("prepared grouped-i64 native handle is null")
+        self._kind = kind
+        self._facts = self._current_facts(owner)
+        self._generation = secrets.token_bytes(32)
+        self._generation_sha256 = hashlib.sha256(self._generation).hexdigest()
+        self._seal = self._issue_seal()
+        self._binding_digest = hashlib.sha256(self._binding_payload()).hexdigest()
+
+    def _current_facts(self, owner) -> tuple[object, ...]:
+        if self._kind == "scene":
+            return (
+                int(owner.triangle_count),
+                id(owner._packed_triangles),
+                float(owner.prepare_seconds),
+            )
+        if self._kind == "payload":
+            return (
+                int(owner.primitive_count),
+                int(owner.group_count),
+                id(owner._group_owner),
+                id(owner._value_owner),
+                id(owner._verified_host_columns_ref)
+                if owner._verified_host_columns_ref is not None
+                else None,
+                owner._verified_host_columns_identity_digest,
+                owner._sum_domain_error,
+                int(owner._sum_domain_validation_count),
+                bool(owner._sum_domain_prevalidated),
+                owner._required_reduction,
+                owner._native_payload_create_symbol,
+                int(owner._additional_value_fit_scans),
+                int(owner._additional_group_domain_scans),
+                int(owner._additional_sum_domain_scans),
+                int(owner._additional_host_column_copies),
+                int(owner._python_payload_value_fit_scans),
+                int(owner._python_payload_sum_domain_scans),
+                int(owner._python_payload_host_column_copies),
+                float(owner.prepare_seconds),
+            )
+        if self._kind == "ray_batch":
+            return (
+                int(owner.ray_count),
+                id(owner._packed_rays_owner),
+                owner._prepared_query_input_digest,
+                repr(sorted(dict(owner.transfer_metadata).items())),
+                float(owner.prepare_seconds),
+            )
+        raise RuntimeError(f"unknown grouped-i64 native resource kind: {self._kind}")
+
+    def _binding_payload(self) -> bytes:
+        return (
+            self.contract
+            + "\x00"
+            + self._kind
+            + "\x00"
+            + str(self._owner_object_id)
+            + "\x00"
+            + self._owner_type
+            + "\x00"
+            + str(self._context_object_id)
+            + "\x00"
+            + self._context_ref.binding_digest
+            + "\x00"
+            + str(self._handle_object_id)
+            + "\x00"
+            + str(self._handle_value)
+            + "\x00"
+            + str(self._null_handle_allowed)
+            + "\x00"
+            + repr(self._facts)
+            + "\x00"
+            + self._generation.hex()
+        ).encode("utf-8")
+
+    def _issue_seal(self) -> str:
+        return hmac.new(
+            _GROUPED_I64_NATIVE_RESOURCE_SECRET,
+            self._binding_payload(),
+            hashlib.sha256,
+        ).hexdigest()
+
+    def validate_open(self, owner) -> None:
+        if (
+            owner is not self._owner_ref
+            or id(owner) != self._owner_object_id
+            or _qualified_runtime_type(owner) != self._owner_type
+            or owner._native_context is not self._context_ref
+            or id(owner._native_context) != self._context_object_id
+            or owner._lib is not self._context_ref.library
+            or owner._handle is not self._handle_ref
+            or id(owner._handle) != self._handle_object_id
+            or int(owner._handle.value or 0) != self._handle_value
+            or bool(owner._closed)
+            or self._current_facts(owner) != self._facts
+            or hashlib.sha256(self._generation).hexdigest()
+            != self._generation_sha256
+            or not isinstance(self._seal, str)
+            or not hmac.compare_digest(self._seal, self._issue_seal())
+            or not hmac.compare_digest(
+                self._binding_digest,
+                hashlib.sha256(self._binding_payload()).hexdigest(),
+            )
+        ):
+            raise RuntimeError(
+                f"prepared grouped-i64 {self._kind} native resource binding changed"
+            )
+        _RayTriangleGroupedI64NativeContext.validate(self._context_ref)
+
+    def to_metadata(self, owner) -> dict[str, object]:
+        self.validate_open(owner)
+        return {
+            "contract": self.contract,
+            "resource_kind": self._kind,
+            "resource_generation_sha256": self._generation_sha256,
+            "resource_binding_digest": self._binding_digest,
+            "native_context_identity_digest": self._context_ref.identity_digest,
+            "native_context_binding_digest": self._context_ref.binding_digest,
+            "native_context": self._context_ref.to_metadata(),
+            "native_handle_bound_by_identity_and_value": True,
+            "native_create_execute_destroy_callables_captured": True,
+        }
+
+
+def _close_unbound_grouped_i64_native_handle(owner, destroy_symbol) -> None:
+    """Release a handle when Python binding finalization fails after create."""
+
+    handle_value = int(getattr(getattr(owner, "_handle", None), "value", 0) or 0)
+    owner._handle = ctypes.c_void_p()
+    owner._closed = True
+    if handle_value:
+        destroy_symbol(ctypes.c_void_p(handle_value))
+
+
+def _prepared_grouped_i64_rows(reduction, counts, sums, mins, maxs, output_count: int):
+    rows: list[dict[str, int]] = []
+    for group_id in range(output_count):
+        count_value = int(counts[group_id])
+        if count_value == 0:
+            continue
+        if reduction == "count":
+            rows.append({"group_id": group_id, "count": count_value})
+        elif reduction == "sum":
+            rows.append({"group_id": group_id, "sum": _decode_i64_bits(int(sums[group_id]))})
+        elif reduction == "min":
+            rows.append({"group_id": group_id, "min": _decode_i64_bits(int(mins[group_id]))})
+        elif reduction == "max":
+            rows.append({"group_id": group_id, "max": _decode_i64_bits(int(maxs[group_id]))})
+        else:
+            rows.append(
+                {
+                    "group_id": group_id,
+                    "sum": _decode_i64_bits(int(sums[group_id])),
+                    "count": count_value,
+                }
+            )
+    return rows
+
+
+def _pack_uint32_values(
+    values,
+    expected_count: int,
+    *,
+    label: str,
+    force_copy: bool = False,
+):
     try:
         import numpy as _np
     except ImportError:  # pragma: no cover
@@ -18848,7 +20484,11 @@ def _pack_uint32_values(values, expected_count: int, *, label: str):
             raise ValueError(f"{label} entries must fit uint32")
         if raw.dtype.kind in {"b", "i", "u"}:
             try:
-                array = _np.ascontiguousarray(raw, dtype=_np.uint32)
+                array = (
+                    _np.array(raw, dtype=_np.uint32, order="C", copy=True)
+                    if force_copy
+                    else _np.ascontiguousarray(raw, dtype=_np.uint32)
+                )
             except OverflowError as exc:
                 raise ValueError(f"{label} entries must fit uint32") from exc
             return array.ctypes.data_as(ctypes.POINTER(ctypes.c_uint32)), array
@@ -18867,96 +20507,187 @@ class PreparedOptixRayBatch3D:
     """Reusable device-resident 3-D ray batch for prepared OptiX scenes."""
 
     def __init__(self, lib, rays) -> None:
-        self._lib = lib
+        self._native_context = _ray_triangle_grouped_i64_native_context(lib)
+        self._lib = self._native_context.library
         self._handle = ctypes.c_void_p()
         self._closed = False
         packed_rays = rays if isinstance(rays, PackedRays) else pack_rays(rays, dimension=3)
         if packed_rays.dimension != 3:
             raise ValueError("PreparedOptixRayBatch3D requires 3-D rays")
         self.ray_count = int(packed_rays.count)
+        byte_count = self.ray_count * ctypes.sizeof(_RtdlRay3D)
+        if byte_count:
+            record_address = ctypes.cast(
+                packed_rays.records,
+                ctypes.c_void_p,
+            ).value
+            if not record_address:
+                raise RuntimeError("packed 3-D ray records have a null address")
+            immutable_ray_bytes = ctypes.string_at(record_address, byte_count)
+        else:
+            immutable_ray_bytes = b""
+        RayArray = _RtdlRay3D * self.ray_count
+        immutable_records = RayArray.from_buffer_copy(immutable_ray_bytes)
+        packed_rays = PackedRays(
+            records=immutable_records,
+            count=self.ray_count,
+            dimension=3,
+            owner=(immutable_ray_bytes, immutable_records),
+        )
         self._packed_rays_owner = packed_rays
-        create_symbol = _find_optional_backend_symbol(self._lib, "rtdl_optix_ray_batch_3d_create")
-        if create_symbol is None:
-            raise RuntimeError(
-                "Loaded OptiX backend library does not export rtdl_optix_ray_batch_3d_create. "
-                "Rebuild it with 'make build-optix' from current main."
-            )
+        query_hasher = hashlib.sha256()
+        query_hasher.update(b"rtdl.prepared_ray_batch_3d.snapshot.v1\x00")
+        query_hasher.update(str(self.ray_count).encode("ascii"))
+        query_hasher.update(b"\x00")
+        query_hasher.update(immutable_ray_bytes)
+        self._prepared_query_input_digest = query_hasher.hexdigest()
+        create_symbol = _RayTriangleGroupedI64NativeContext.symbol(
+            self._native_context,
+            "rtdl_optix_ray_batch_3d_create",
+        )
+        destroy_symbol = _RayTriangleGroupedI64NativeContext.symbol(
+            self._native_context,
+            "rtdl_optix_ray_batch_3d_destroy",
+        )
         error = ctypes.create_string_buffer(4096)
         prepare_start = time.perf_counter()
-        status = create_symbol(
-            packed_rays.records,
-            packed_rays.count,
-            ctypes.byref(self._handle),
-            error,
-            len(error),
-        )
-        self.prepare_seconds = time.perf_counter() - prepare_start
-        _check_status(status, error)
-        self.transfer_metadata = {
-            "query_rays_uploaded_each_run": False,
-            "prepared_rays_resident_on_device": True,
-            "ray_batch_created_from": "host_packed_rays",
-            "ray_columns_partner_owned": False,
-        }
+        try:
+            status = create_symbol(
+                packed_rays.records,
+                packed_rays.count,
+                ctypes.byref(self._handle),
+                error,
+                len(error),
+            )
+            self.prepare_seconds = time.perf_counter() - prepare_start
+            _check_status(status, error)
+            self.transfer_metadata = {
+                "query_rays_uploaded_each_run": False,
+                "prepared_rays_resident_on_device": True,
+                "ray_batch_created_from": "host_packed_rays",
+                "ray_columns_partner_owned": False,
+            }
+            self._native_binding = _PreparedGroupedI64NativeResourceBinding(
+                self,
+                self._native_context,
+                kind="ray_batch",
+            )
+            self._native_binding_ref = self._native_binding
+        except BaseException:
+            _close_unbound_grouped_i64_native_handle(self, destroy_symbol)
+            raise
 
     @classmethod
     def from_device_ray_columns(cls, lib, ray_columns: dict) -> "PreparedOptixRayBatch3D":
         self = cls.__new__(cls)
-        self._lib = lib
+        self._native_context = _ray_triangle_grouped_i64_native_context(lib)
+        self._lib = self._native_context.library
         self._handle = ctypes.c_void_p()
         self._closed = False
         packet = pack_optix_static_triangle_scene_3d_device_ray_inputs(ray_columns)
         rays = packet["rays"]
         self.ray_count = int(packet["metadata"]["ray_count"])
         self._packed_rays_owner = packet
-        create_symbol = _find_optional_backend_symbol(self._lib, OPTIX_RAY_BATCH_3D_CREATE_DEVICE_RAYS_SYMBOL)
-        if create_symbol is None:
-            raise RuntimeError(
-                "Loaded OptiX backend library does not export "
-                f"{OPTIX_RAY_BATCH_3D_CREATE_DEVICE_RAYS_SYMBOL}. "
-                "Rebuild it with 'make build-optix' from current main."
-            )
+        device_query_hasher = hashlib.sha256()
+        device_query_hasher.update(b"rtdl.prepared_device_ray_batch_3d.identity.v1\x00")
+        device_query_hasher.update(
+            repr(sorted(dict(packet["metadata"]).items())).encode("utf-8")
+        )
+        device_query_hasher.update(b"\x00")
+        device_query_hasher.update(
+            repr(
+                sorted(
+                    (name, int(column.data_ptr))
+                    for name, column in rays.items()
+                )
+            ).encode("ascii")
+        )
+        self._prepared_query_input_digest = device_query_hasher.hexdigest()
+        create_symbol = _RayTriangleGroupedI64NativeContext.symbol(
+            self._native_context,
+            OPTIX_RAY_BATCH_3D_CREATE_DEVICE_RAYS_SYMBOL
+        )
+        destroy_symbol = _RayTriangleGroupedI64NativeContext.symbol(
+            self._native_context,
+            "rtdl_optix_ray_batch_3d_destroy",
+        )
         error = ctypes.create_string_buffer(4096)
         prepare_start = time.perf_counter()
-        status = create_symbol(
-            ctypes.c_void_p(rays["ids"].data_ptr),
-            ctypes.c_void_p(rays["ox"].data_ptr),
-            ctypes.c_void_p(rays["oy"].data_ptr),
-            ctypes.c_void_p(rays["oz"].data_ptr),
-            ctypes.c_void_p(rays["dx"].data_ptr),
-            ctypes.c_void_p(rays["dy"].data_ptr),
-            ctypes.c_void_p(rays["dz"].data_ptr),
-            ctypes.c_void_p(rays["tmax"].data_ptr),
-            self.ray_count,
-            ctypes.byref(self._handle),
-            error,
-            len(error),
-        )
-        self.prepare_seconds = time.perf_counter() - prepare_start
-        _check_status(status, error)
-        self.transfer_metadata = {
-            **packet["metadata"],
-            "query_rays_uploaded_each_run": False,
-            "query_rays_packed_on_device_once": True,
-            "prepared_rays_resident_on_device": True,
-            "ray_batch_created_from": "partner_device_columns",
-            "ray_columns_partner_owned": True,
-            "true_zero_copy_authorized": False,
-        }
+        try:
+            status = create_symbol(
+                ctypes.c_void_p(rays["ids"].data_ptr),
+                ctypes.c_void_p(rays["ox"].data_ptr),
+                ctypes.c_void_p(rays["oy"].data_ptr),
+                ctypes.c_void_p(rays["oz"].data_ptr),
+                ctypes.c_void_p(rays["dx"].data_ptr),
+                ctypes.c_void_p(rays["dy"].data_ptr),
+                ctypes.c_void_p(rays["dz"].data_ptr),
+                ctypes.c_void_p(rays["tmax"].data_ptr),
+                self.ray_count,
+                ctypes.byref(self._handle),
+                error,
+                len(error),
+            )
+            self.prepare_seconds = time.perf_counter() - prepare_start
+            _check_status(status, error)
+            self.transfer_metadata = {
+                **packet["metadata"],
+                "query_rays_uploaded_each_run": False,
+                "query_rays_packed_on_device_once": True,
+                "prepared_rays_resident_on_device": True,
+                "ray_batch_created_from": "partner_device_columns",
+                "ray_columns_partner_owned": True,
+                "true_zero_copy_authorized": False,
+            }
+            self._native_binding = _PreparedGroupedI64NativeResourceBinding(
+                self,
+                self._native_context,
+                kind="ray_batch",
+            )
+            self._native_binding_ref = self._native_binding
+        except BaseException:
+            _close_unbound_grouped_i64_native_handle(self, destroy_symbol)
+            raise
         return self
+
+    def _validate_native_resource_binding(self) -> None:
+        if self._native_binding is not self._native_binding_ref:
+            raise RuntimeError("prepared grouped-i64 ray-batch binding object changed")
+        _PreparedGroupedI64NativeResourceBinding.validate_open(
+            self._native_binding,
+            self,
+        )
+
+    def compiler_native_resource_binding_metadata(self) -> dict[str, object]:
+        PreparedOptixRayBatch3D._validate_native_resource_binding(self)
+        metadata = _PreparedGroupedI64NativeResourceBinding.to_metadata(
+            self._native_binding,
+            self,
+        )
+        metadata.update(
+            {
+                "prepared_query_input_digest": self._prepared_query_input_digest,
+                "prepared_query_snapshot_matches_native_upload": True,
+            }
+        )
+        return metadata
 
     def close(self) -> None:
         if self._closed:
             return
-        handle = self._handle
+        PreparedOptixRayBatch3D._validate_native_resource_binding(self)
+        handle = ctypes.c_void_p(self._native_binding._handle_value)
+        destroy_symbol = _RayTriangleGroupedI64NativeContext.symbol(
+            self._native_context,
+            "rtdl_optix_ray_batch_3d_destroy"
+        )
+        if handle.value:
+            destroy_symbol(handle)
         self._handle = ctypes.c_void_p()
         self._closed = True
-        if handle.value:
-            destroy_symbol = _find_optional_backend_symbol(self._lib, "rtdl_optix_ray_batch_3d_destroy")
-            if destroy_symbol is not None:
-                destroy_symbol(handle)
 
     def __enter__(self) -> "PreparedOptixRayBatch3D":
+        PreparedOptixRayBatch3D._validate_native_resource_binding(self)
         return self
 
     def __exit__(self, exc_type, exc, tb) -> None:
@@ -19381,61 +21112,245 @@ class PreparedOptixPrimitiveGroupedI64Payload3D:
         *,
         primitive_count: int,
         group_count: int,
+        required_reduction: str | None = None,
+        verified_host_columns: VerifiedGroupedI64HostColumns | None = None,
     ) -> None:
-        self._lib = _load_optix_library()
+        if required_reduction is not None and required_reduction not in {
+            "count",
+            "sum",
+            "min",
+            "max",
+            "sum_count",
+        }:
+            raise ValueError(
+                "required_reduction must be one of: count, sum, min, max, sum_count"
+            )
+        self._native_context = _ray_triangle_grouped_i64_native_context(
+            _load_optix_library()
+        )
+        self._lib = self._native_context.library
         self._handle = ctypes.c_void_p()
         self._closed = False
         self.primitive_count = int(primitive_count)
         self.group_count = int(group_count)
-        group_array, self._group_owner = _pack_uint32_values(
-            primitive_group_ids,
-            self.primitive_count,
-            label="primitive_group_ids",
-        )
-        value_array, self._value_owner = _pack_uint64_weights(
-            primitive_values,
-            self.primitive_count,
-        )
-        create_symbol = _find_optional_backend_symbol(
-            self._lib,
-            OPTIX_PRIMITIVE_GROUPED_I64_PAYLOAD_3D_CREATE_SYMBOL,
-        )
-        if create_symbol is None:
-            raise RuntimeError(
-                "Loaded OptiX backend library does not export "
-                f"{OPTIX_PRIMITIVE_GROUPED_I64_PAYLOAD_3D_CREATE_SYMBOL}. "
-                "Rebuild it with 'make build-optix' from current main."
+        self._required_reduction = required_reduction
+        self._verified_host_columns_ref = verified_host_columns
+        if verified_host_columns is not None:
+            if type(verified_host_columns) is not VerifiedGroupedI64HostColumns:
+                raise TypeError(
+                    "verified_host_columns must be an exact "
+                    "VerifiedGroupedI64HostColumns"
+                )
+            if primitive_group_ids is not None or primitive_values is not None:
+                raise ValueError(
+                    "verified_host_columns cannot be combined with raw grouped-i64 columns"
+                )
+            VerifiedGroupedI64HostColumns.validate(verified_host_columns)
+            if verified_host_columns.primitive_count != self.primitive_count:
+                raise ValueError(
+                    "verified grouped-i64 primitive count differs from primitive_count"
+                )
+            if verified_host_columns.group_count != self.group_count:
+                raise ValueError(
+                    "verified grouped-i64 group count differs from group_count"
+                )
+            self._group_owner, self._value_owner = (
+                VerifiedGroupedI64HostColumns.validated_columns(
+                    verified_host_columns
+                )
             )
+            group_array = self._group_owner.ctypes.data_as(
+                ctypes.POINTER(ctypes.c_uint32)
+            )
+            value_array = self._value_owner.ctypes.data_as(
+                ctypes.POINTER(ctypes.c_int64)
+            )
+            self._sum_domain_error = None
+            self._sum_domain_validation_count = (
+                verified_host_columns.sum_domain_validation_count
+            )
+            self._sum_domain_prevalidated = True
+            self._verified_host_columns_identity_digest = (
+                verified_host_columns.identity_digest
+            )
+            self._additional_value_fit_scans = 0
+            self._additional_sum_domain_scans = 0
+            self._additional_host_column_copies = 0
+            self._additional_group_domain_scans = 0
+            self._python_payload_value_fit_scans = 0
+            self._python_payload_sum_domain_scans = 0
+            self._python_payload_host_column_copies = 0
+        else:
+            group_array, self._group_owner = _pack_uint32_values(
+                primitive_group_ids,
+                self.primitive_count,
+                label="primitive_group_ids",
+                force_copy=True,
+            )
+            value_array, self._value_owner = _pack_int64_values(
+                primitive_values,
+                self.primitive_count,
+                label="primitive_values",
+                force_copy=True,
+            )
+            self._sum_domain_error: str | None = None
+            self._sum_domain_validation_count = 0
+            self._sum_domain_prevalidated = False
+            if required_reduction is None or required_reduction in {
+                "sum",
+                "sum_count",
+            }:
+                self._sum_domain_validation_count = 1
+                self._sum_domain_prevalidated = True
+                try:
+                    _validate_grouped_i64_reduction_domain(
+                        self._value_owner,
+                        self.primitive_count,
+                        "sum",
+                    )
+                except OverflowError as exc:
+                    self._sum_domain_error = str(exc)
+            self._verified_host_columns_identity_digest = "none"
+            self._additional_value_fit_scans = 0
+            self._additional_sum_domain_scans = 1
+            self._additional_host_column_copies = 1
+            self._additional_group_domain_scans = 1
+            self._python_payload_value_fit_scans = 2
+            self._python_payload_sum_domain_scans = (
+                self._sum_domain_validation_count
+            )
+            self._python_payload_host_column_copies = 2
+        if (
+            required_reduction in {"sum", "sum_count"}
+            and self._sum_domain_error is not None
+        ):
+            raise OverflowError(self._sum_domain_error)
+        self._native_payload_create_symbol = (
+            OPTIX_PRIMITIVE_GROUPED_I64_PAYLOAD_3D_CREATE_SIGNED_VERIFIED_V3_SYMBOL
+            if verified_host_columns is not None
+            else OPTIX_PRIMITIVE_GROUPED_I64_PAYLOAD_3D_CREATE_SYMBOL
+        )
+        create_symbol = _RayTriangleGroupedI64NativeContext.symbol(
+            self._native_context,
+            self._native_payload_create_symbol,
+        )
+        destroy_symbol = _RayTriangleGroupedI64NativeContext.symbol(
+            self._native_context,
+            "rtdl_optix_primitive_grouped_i64_payload_3d_destroy",
+        )
         error = ctypes.create_string_buffer(4096)
         prepare_start = time.perf_counter()
-        status = create_symbol(
-            group_array,
-            self.primitive_count,
-            value_array,
-            self.primitive_count,
-            self.group_count,
-            ctypes.byref(self._handle),
-            error,
-            len(error),
+        try:
+            status = create_symbol(
+                group_array,
+                self.primitive_count,
+                value_array,
+                self.primitive_count,
+                self.group_count,
+                ctypes.byref(self._handle),
+                error,
+                len(error),
+            )
+            _check_status(status, error)
+            self.prepare_seconds = time.perf_counter() - prepare_start
+            self._native_binding = _PreparedGroupedI64NativeResourceBinding(
+                self,
+                self._native_context,
+                kind="payload",
+            )
+            self._native_binding_ref = self._native_binding
+        except BaseException:
+            _close_unbound_grouped_i64_native_handle(self, destroy_symbol)
+            raise
+
+    def _validate_native_resource_binding(self) -> None:
+        if self._native_binding is not self._native_binding_ref:
+            raise RuntimeError("prepared grouped-i64 payload binding object changed")
+        _PreparedGroupedI64NativeResourceBinding.validate_open(
+            self._native_binding,
+            self,
         )
-        _check_status(status, error)
-        self.prepare_seconds = time.perf_counter() - prepare_start
+
+    def compiler_native_resource_binding_metadata(self) -> dict[str, object]:
+        PreparedOptixPrimitiveGroupedI64Payload3D._validate_native_resource_binding(
+            self
+        )
+        metadata = _PreparedGroupedI64NativeResourceBinding.to_metadata(
+            self._native_binding,
+            self,
+        )
+        metadata.update(
+            {
+                "sum_domain_validation_count": self._sum_domain_validation_count,
+                "sum_domain_prevalidated_before_native_resource_issue": (
+                    self._sum_domain_prevalidated
+                ),
+                "sum_domain_safe": self._sum_domain_error is None,
+                "host_payload_alias_retained": False,
+                "required_reduction": self._required_reduction,
+                "native_payload_create_symbol": self._native_payload_create_symbol,
+                "verified_host_columns_used": (
+                    self._verified_host_columns_ref is not None
+                ),
+                "verified_host_columns_identity_digest": (
+                    self._verified_host_columns_identity_digest
+                ),
+                "native_payload_additional_value_fit_scans": (
+                    self._additional_value_fit_scans
+                ),
+                "native_payload_additional_group_domain_scans": (
+                    self._additional_group_domain_scans
+                ),
+                "native_payload_additional_sum_domain_scans": (
+                    self._additional_sum_domain_scans
+                ),
+                "native_payload_additional_host_column_copies": (
+                    self._additional_host_column_copies
+                ),
+                "python_payload_additional_value_fit_scans": (
+                    self._python_payload_value_fit_scans
+                ),
+                "python_payload_additional_sum_domain_scans": (
+                    self._python_payload_sum_domain_scans
+                ),
+                "python_payload_additional_host_column_copies": (
+                    self._python_payload_host_column_copies
+                ),
+            }
+        )
+        return metadata
+
+    def validate_reduction_domain(self, reduction: str) -> None:
+        PreparedOptixPrimitiveGroupedI64Payload3D._validate_native_resource_binding(
+            self
+        )
+        if reduction in {"sum", "sum_count"} and self._sum_domain_error is not None:
+            raise OverflowError(self._sum_domain_error)
+        if reduction in {"sum", "sum_count"} and not self._sum_domain_prevalidated:
+            raise RuntimeError(
+                "prepared grouped-i64 payload was not certified for signed sum"
+            )
 
     def close(self) -> None:
         if self._closed:
             return
-        handle = self._handle
+        PreparedOptixPrimitiveGroupedI64Payload3D._validate_native_resource_binding(
+            self
+        )
+        handle = ctypes.c_void_p(self._native_binding._handle_value)
+        destroy_symbol = _RayTriangleGroupedI64NativeContext.symbol(
+            self._native_context,
+            "rtdl_optix_primitive_grouped_i64_payload_3d_destroy"
+        )
+        if handle.value:
+            destroy_symbol(handle)
         self._handle = ctypes.c_void_p()
         self._closed = True
-        if handle.value:
-            destroy_symbol = _find_optional_backend_symbol(
-                self._lib,
-                "rtdl_optix_primitive_grouped_i64_payload_3d_destroy",
-            )
-            if destroy_symbol is not None:
-                destroy_symbol(handle)
 
     def __enter__(self) -> "PreparedOptixPrimitiveGroupedI64Payload3D":
+        PreparedOptixPrimitiveGroupedI64Payload3D._validate_native_resource_binding(
+            self
+        )
         return self
 
     def __exit__(self, exc_type, exc, tb) -> None:
@@ -19454,12 +21369,16 @@ def prepare_optix_primitive_grouped_i64_payload_3d(
     *,
     primitive_count: int,
     group_count: int,
+    required_reduction: str | None = None,
+    verified_host_columns: VerifiedGroupedI64HostColumns | None = None,
 ) -> PreparedOptixPrimitiveGroupedI64Payload3D:
     return PreparedOptixPrimitiveGroupedI64Payload3D(
         primitive_group_ids,
         primitive_values,
         primitive_count=primitive_count,
         group_count=group_count,
+        required_reduction=required_reduction,
+        verified_host_columns=verified_host_columns,
     )
 
 
@@ -20711,49 +22630,76 @@ class PreparedOptixStaticTriangleScene3D:
     contract = "PREPARED_TRIANGLE_SCENE_GROUPED_SEGMENT_ANY_HIT_FLAGS_V1"
 
     def __init__(self, triangles) -> None:
-        self._lib = _load_optix_library()
+        self._native_context = _ray_triangle_grouped_i64_native_context(
+            _load_optix_library()
+        )
+        self._lib = self._native_context.library
         self._handle = ctypes.c_void_p()
         self._closed = False
         self._run_count = 0
         self._packed_triangles = _pack_static_triangles_3d(triangles)
         self.triangle_count = int(self._packed_triangles.count)
-        create_symbol = _find_optional_backend_symbol(
-            self._lib,
-            "rtdl_optix_static_triangle_scene_3d_create",
+        create_symbol = _RayTriangleGroupedI64NativeContext.symbol(
+            self._native_context,
+            "rtdl_optix_static_triangle_scene_3d_create"
         )
-        if create_symbol is None:
-            raise RuntimeError(
-                "Loaded OptiX backend library does not export "
-                "rtdl_optix_static_triangle_scene_3d_create. "
-                "Rebuild it with 'make build-optix' from current main."
-            )
+        destroy_symbol = _RayTriangleGroupedI64NativeContext.symbol(
+            self._native_context,
+            "rtdl_optix_static_triangle_scene_3d_destroy",
+        )
         error = ctypes.create_string_buffer(4096)
         prepare_start = time.perf_counter()
-        status = create_symbol(
-            self._packed_triangles.records,
-            self._packed_triangles.count,
-            ctypes.byref(self._handle),
-            error,
-            len(error),
+        try:
+            status = create_symbol(
+                self._packed_triangles.records,
+                self._packed_triangles.count,
+                ctypes.byref(self._handle),
+                error,
+                len(error),
+            )
+            self.prepare_seconds = time.perf_counter() - prepare_start
+            _check_status(status, error)
+            self._native_binding = _PreparedGroupedI64NativeResourceBinding(
+                self,
+                self._native_context,
+                kind="scene",
+            )
+            self._native_binding_ref = self._native_binding
+        except BaseException:
+            _close_unbound_grouped_i64_native_handle(self, destroy_symbol)
+            raise
+
+    def _validate_native_resource_binding(self) -> None:
+        if self._native_binding is not self._native_binding_ref:
+            raise RuntimeError("prepared grouped-i64 scene binding object changed")
+        _PreparedGroupedI64NativeResourceBinding.validate_open(
+            self._native_binding,
+            self,
         )
-        self.prepare_seconds = time.perf_counter() - prepare_start
-        _check_status(status, error)
+
+    def compiler_native_resource_binding_metadata(self) -> dict[str, object]:
+        PreparedOptixStaticTriangleScene3D._validate_native_resource_binding(self)
+        return _PreparedGroupedI64NativeResourceBinding.to_metadata(
+            self._native_binding,
+            self,
+        )
 
     def close(self) -> None:
         if self._closed:
             return
-        handle = self._handle
+        PreparedOptixStaticTriangleScene3D._validate_native_resource_binding(self)
+        handle = ctypes.c_void_p(self._native_binding._handle_value)
+        destroy_symbol = _RayTriangleGroupedI64NativeContext.symbol(
+            self._native_context,
+            "rtdl_optix_static_triangle_scene_3d_destroy"
+        )
+        if handle.value:
+            destroy_symbol(handle)
         self._handle = ctypes.c_void_p()
         self._closed = True
-        if handle.value:
-            destroy_symbol = _find_optional_backend_symbol(
-                self._lib,
-                "rtdl_optix_static_triangle_scene_3d_destroy",
-            )
-            if destroy_symbol is not None:
-                destroy_symbol(handle)
 
     def __enter__(self) -> "PreparedOptixStaticTriangleScene3D":
+        PreparedOptixStaticTriangleScene3D._validate_native_resource_binding(self)
         return self
 
     def __exit__(self, exc_type, exc, tb) -> None:
@@ -20766,13 +22712,11 @@ class PreparedOptixStaticTriangleScene3D:
             pass
 
     def prepare_ray_batch(self, rays) -> PreparedOptixRayBatch3D:
-        if self._closed:
-            raise RuntimeError("prepared OptiX static triangle scene handle is closed")
+        PreparedOptixStaticTriangleScene3D._validate_native_resource_binding(self)
         return PreparedOptixRayBatch3D(self._lib, rays)
 
     def prepare_ray_batch_device_columns(self, ray_columns: dict) -> PreparedOptixRayBatch3D:
-        if self._closed:
-            raise RuntimeError("prepared OptiX static triangle scene handle is closed")
+        PreparedOptixStaticTriangleScene3D._validate_native_resource_binding(self)
         return PreparedOptixRayBatch3D.from_device_ray_columns(self._lib, ray_columns)
 
     def prepare_ray_triangle_hit_stream_device_column_buffers(
@@ -21552,7 +23496,16 @@ class PreparedOptixStaticTriangleScene3D:
             self.triangle_count,
             label="primitive_group_ids",
         )
-        value_array, _value_owner = _pack_uint64_weights(primitive_values, self.triangle_count)
+        value_array, _value_owner = _pack_int64_values(
+            primitive_values,
+            self.triangle_count,
+            label="primitive_values",
+        )
+        _validate_grouped_i64_reduction_domain(
+            _value_owner,
+            self.triangle_count,
+            reduction,
+        )
         output_count = int(group_count)
         CountsArray = ctypes.c_uint64 * output_count
         counts = CountsArray()
@@ -21592,33 +23545,14 @@ class PreparedOptixStaticTriangleScene3D:
         )
         _check_status(status, error)
 
-        rows: list[dict[str, int]] = []
-        for group_id in range(output_count):
-            if reduction == "count":
-                value = int(counts[group_id])
-                if value == 0:
-                    continue
-                rows.append({"group_id": group_id, "count": value})
-            elif reduction == "sum":
-                value = int(sums[group_id])
-                if value == 0:
-                    continue
-                rows.append({"group_id": group_id, "sum": value})
-            elif reduction == "min":
-                value = int(mins[group_id])
-                if value == 0xFFFFFFFFFFFFFFFF:
-                    continue
-                rows.append({"group_id": group_id, "min": value})
-            elif reduction == "max":
-                value = int(maxs[group_id])
-                if value == 0:
-                    continue
-                rows.append({"group_id": group_id, "max": value})
-            else:
-                count_value = int(counts[group_id])
-                if count_value == 0:
-                    continue
-                rows.append({"group_id": group_id, "sum": int(sums[group_id]), "count": count_value})
+        rows = _prepared_grouped_i64_rows(
+            reduction,
+            counts,
+            sums,
+            mins,
+            maxs,
+            output_count,
+        )
 
         self._run_count += 1
         return {
@@ -21631,6 +23565,7 @@ class PreparedOptixStaticTriangleScene3D:
             "triangle_count": self.triangle_count,
             "group_count": output_count,
             "hit_event_count_before_dedup": int(hit_event_count.value),
+            "deduplicated_primitive_hit_count": sum(int(value) for value in counts),
             "rt_core_accelerated": True,
             "prepared_reused": True,
             "prepared_scene_used": True,
@@ -23109,24 +25044,31 @@ class PreparedOptixStaticTriangleScene3D:
         reduction: str,
     ) -> dict[str, object]:
         """Run grouped i64 reduction with device-resident primitive group/value payload."""
-        if self._closed:
-            raise RuntimeError("prepared OptiX static triangle scene handle is closed")
-        if payload._closed:
-            raise RuntimeError("prepared OptiX primitive grouped payload handle is closed")
+        PreparedOptixStaticTriangleScene3D._validate_native_resource_binding(self)
+        if type(payload) is not PreparedOptixPrimitiveGroupedI64Payload3D:
+            raise TypeError(
+                "ray_triangle_prepared_primitive_grouped_i64_reduction requires "
+                "an exact PreparedOptixPrimitiveGroupedI64Payload3D"
+            )
+        PreparedOptixPrimitiveGroupedI64Payload3D._validate_native_resource_binding(
+            payload
+        )
+        if payload._native_context is not self._native_context:
+            raise RuntimeError("prepared scene and primitive payload use different native contexts")
         if payload.primitive_count != self.triangle_count:
             raise ValueError("prepared primitive payload count must match prepared triangle count")
         if reduction not in {"count", "sum", "min", "max", "sum_count"}:
             raise ValueError("reduction must be one of: count, sum, min, max, sum_count")
-        run_symbol = _find_optional_backend_symbol(
-            self._lib,
+        payload.validate_reduction_domain(reduction)
+        phase_run_symbol = _RayTriangleGroupedI64NativeContext.optional_symbol(
+            self._native_context,
+            OPTIX_PREPARED_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_WITH_PHASE_TIMINGS_SYMBOL,
+        )
+        legacy_run_symbol = _RayTriangleGroupedI64NativeContext.symbol(
+            self._native_context,
             OPTIX_PREPARED_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL,
         )
-        if run_symbol is None:
-            raise RuntimeError(
-                "Loaded OptiX backend library does not export "
-                f"{OPTIX_PREPARED_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL}. "
-                "Rebuild it with 'make build-optix' from current main."
-            )
+        run_symbol = phase_run_symbol or legacy_run_symbol
 
         pack_start = time.perf_counter()
         packed_rays = rays if isinstance(rays, PackedRays) else pack_rays(rays, dimension=3)
@@ -23142,6 +25084,9 @@ class PreparedOptixStaticTriangleScene3D:
 
         hit_event_count = ctypes.c_uint64()
         traversal_seconds = ctypes.c_double()
+        query_prepare_native_seconds = ctypes.c_double()
+        launch_seconds = ctypes.c_double()
+        result_download_seconds = ctypes.c_double()
         error = ctypes.create_string_buffer(4096)
         operation = {
             "count": 1,
@@ -23150,9 +25095,9 @@ class PreparedOptixStaticTriangleScene3D:
             "max": 4,
             "sum_count": 5,
         }[reduction]
-        status = run_symbol(
-            self._handle,
-            payload._handle,
+        call_args = [
+            ctypes.c_void_p(self._native_binding._handle_value),
+            ctypes.c_void_p(payload._native_binding._handle_value),
             packed_rays.records,
             packed_rays.count,
             ctypes.c_uint32(operation),
@@ -23162,61 +25107,68 @@ class PreparedOptixStaticTriangleScene3D:
             maxs,
             ctypes.byref(hit_event_count),
             ctypes.byref(traversal_seconds),
-            error,
-            len(error),
-        )
+        ]
+        if phase_run_symbol is not None:
+            call_args.extend(
+                [
+                    ctypes.byref(query_prepare_native_seconds),
+                    ctypes.byref(launch_seconds),
+                    ctypes.byref(result_download_seconds),
+                ]
+            )
+        call_args.extend([error, len(error)])
+        status = run_symbol(*call_args)
         _check_status(status, error)
 
-        rows: list[dict[str, int]] = []
-        for group_id in range(output_count):
-            if reduction == "count":
-                value = int(counts[group_id])
-                if value == 0:
-                    continue
-                rows.append({"group_id": group_id, "count": value})
-            elif reduction == "sum":
-                value = int(sums[group_id])
-                if value == 0:
-                    continue
-                rows.append({"group_id": group_id, "sum": value})
-            elif reduction == "min":
-                value = int(mins[group_id])
-                if value == 0xFFFFFFFFFFFFFFFF:
-                    continue
-                rows.append({"group_id": group_id, "min": value})
-            elif reduction == "max":
-                value = int(maxs[group_id])
-                if value == 0:
-                    continue
-                rows.append({"group_id": group_id, "max": value})
-            else:
-                count_value = int(counts[group_id])
-                if count_value == 0:
-                    continue
-                rows.append({"group_id": group_id, "sum": int(sums[group_id]), "count": count_value})
+        rows = _prepared_grouped_i64_rows(
+            reduction,
+            counts,
+            sums,
+            mins,
+            maxs,
+            output_count,
+        )
 
         self._run_count += 1
+        phase_timing_seconds = {
+            "prepare_build": float(self.prepare_seconds),
+            "primitive_payload_prepare": float(payload.prepare_seconds),
+            "query_pack": float(query_pack_seconds),
+            "traversal": float(traversal_seconds.value),
+        }
+        if phase_run_symbol is not None:
+            phase_timing_seconds.update(
+                {
+                    "query_prepare_native": float(query_prepare_native_seconds.value),
+                    "launch": float(launch_seconds.value),
+                    "result_download": float(result_download_seconds.value),
+                    "query_prepare_and_launch": float(
+                        query_prepare_native_seconds.value + launch_seconds.value
+                    ),
+                }
+            )
+        selected_symbol = (
+            OPTIX_PREPARED_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_WITH_PHASE_TIMINGS_SYMBOL
+            if phase_run_symbol is not None
+            else OPTIX_PREPARED_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL
+        )
         return {
             "backend": "optix",
             "primitive": "RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
-            "native_symbol": OPTIX_PREPARED_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL,
+            "native_symbol": selected_symbol,
             "reduction": reduction,
             "rows": tuple(rows),
             "ray_count": int(packed_rays.count),
             "triangle_count": self.triangle_count,
             "group_count": output_count,
             "hit_event_count_before_dedup": int(hit_event_count.value),
+            "deduplicated_primitive_hit_count": sum(int(value) for value in counts),
             "rt_core_accelerated": True,
             "prepared_reused": True,
             "prepared_scene_used": True,
             "prepared_primitive_payload_used": True,
             "prepared_run_index": self._run_count,
-            "phase_timing_seconds": {
-                "prepare_build": float(self.prepare_seconds),
-                "primitive_payload_prepare": float(payload.prepare_seconds),
-                "query_pack": float(query_pack_seconds),
-                "traversal": float(traversal_seconds.value),
-            },
+            "phase_timing_seconds": phase_timing_seconds,
             "transfer_metadata": {
                 "static_scene_prepared_on_device": True,
                 "query_rays_uploaded_each_run": True,
@@ -23225,6 +25177,7 @@ class PreparedOptixStaticTriangleScene3D:
                 "prepared_primitive_payload_on_device": True,
                 "per_ray_records_downloaded_to_host": False,
                 "group_rows_downloaded_to_host": True,
+                "native_phase_split_available": phase_run_symbol is not None,
                 "true_zero_copy_authorized": False,
             },
             "claim_boundary": {
@@ -23243,28 +25196,42 @@ class PreparedOptixStaticTriangleScene3D:
         reduction: str,
     ) -> dict[str, object]:
         """Run grouped i64 reduction with prepared rays and prepared primitive payload."""
-        if self._closed:
-            raise RuntimeError("prepared OptiX static triangle scene handle is closed")
-        if not isinstance(rays, PreparedOptixRayBatch3D):
-            raise TypeError("ray_batch_prepared_primitive_grouped_i64_reduction requires PreparedOptixRayBatch3D")
-        if rays._closed:
-            raise RuntimeError("prepared OptiX ray batch handle is closed")
-        if payload._closed:
-            raise RuntimeError("prepared OptiX primitive grouped payload handle is closed")
+        PreparedOptixStaticTriangleScene3D._validate_native_resource_binding(self)
+        if type(rays) is not PreparedOptixRayBatch3D:
+            raise TypeError(
+                "ray_batch_prepared_primitive_grouped_i64_reduction requires "
+                "an exact PreparedOptixRayBatch3D"
+            )
+        if type(payload) is not PreparedOptixPrimitiveGroupedI64Payload3D:
+            raise TypeError(
+                "ray_batch_prepared_primitive_grouped_i64_reduction requires "
+                "an exact PreparedOptixPrimitiveGroupedI64Payload3D"
+            )
+        PreparedOptixRayBatch3D._validate_native_resource_binding(rays)
+        PreparedOptixPrimitiveGroupedI64Payload3D._validate_native_resource_binding(
+            payload
+        )
+        if (
+            rays._native_context is not self._native_context
+            or payload._native_context is not self._native_context
+        ):
+            raise RuntimeError(
+                "prepared scene, ray batch, and primitive payload use different native contexts"
+            )
         if payload.primitive_count != self.triangle_count:
             raise ValueError("prepared primitive payload count must match prepared triangle count")
         if reduction not in {"count", "sum", "min", "max", "sum_count"}:
             raise ValueError("reduction must be one of: count, sum, min, max, sum_count")
-        run_symbol = _find_optional_backend_symbol(
-            self._lib,
+        payload.validate_reduction_domain(reduction)
+        phase_run_symbol = _RayTriangleGroupedI64NativeContext.optional_symbol(
+            self._native_context,
+            OPTIX_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_3D_WITH_PHASE_TIMINGS_SYMBOL,
+        )
+        legacy_run_symbol = _RayTriangleGroupedI64NativeContext.symbol(
+            self._native_context,
             OPTIX_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL,
         )
-        if run_symbol is None:
-            raise RuntimeError(
-                "Loaded OptiX backend library does not export "
-                f"{OPTIX_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL}. "
-                "Rebuild it with 'make build-optix' from current main."
-            )
+        run_symbol = phase_run_symbol or legacy_run_symbol
 
         output_count = int(payload.group_count)
         CountsArray = ctypes.c_uint64 * output_count
@@ -23275,6 +25242,9 @@ class PreparedOptixStaticTriangleScene3D:
 
         hit_event_count = ctypes.c_uint64()
         traversal_seconds = ctypes.c_double()
+        query_prepare_native_seconds = ctypes.c_double()
+        launch_seconds = ctypes.c_double()
+        result_download_seconds = ctypes.c_double()
         error = ctypes.create_string_buffer(4096)
         operation = {
             "count": 1,
@@ -23283,10 +25253,10 @@ class PreparedOptixStaticTriangleScene3D:
             "max": 4,
             "sum_count": 5,
         }[reduction]
-        status = run_symbol(
-            self._handle,
-            payload._handle,
-            rays._handle,
+        call_args = [
+            ctypes.c_void_p(self._native_binding._handle_value),
+            ctypes.c_void_p(payload._native_binding._handle_value),
+            ctypes.c_void_p(rays._native_binding._handle_value),
             ctypes.c_uint32(operation),
             counts,
             sums,
@@ -23294,63 +25264,70 @@ class PreparedOptixStaticTriangleScene3D:
             maxs,
             ctypes.byref(hit_event_count),
             ctypes.byref(traversal_seconds),
-            error,
-            len(error),
-        )
+        ]
+        if phase_run_symbol is not None:
+            call_args.extend(
+                [
+                    ctypes.byref(query_prepare_native_seconds),
+                    ctypes.byref(launch_seconds),
+                    ctypes.byref(result_download_seconds),
+                ]
+            )
+        call_args.extend([error, len(error)])
+        status = run_symbol(*call_args)
         _check_status(status, error)
 
-        rows: list[dict[str, int]] = []
-        for group_id in range(output_count):
-            if reduction == "count":
-                value = int(counts[group_id])
-                if value == 0:
-                    continue
-                rows.append({"group_id": group_id, "count": value})
-            elif reduction == "sum":
-                value = int(sums[group_id])
-                if value == 0:
-                    continue
-                rows.append({"group_id": group_id, "sum": value})
-            elif reduction == "min":
-                value = int(mins[group_id])
-                if value == 0xFFFFFFFFFFFFFFFF:
-                    continue
-                rows.append({"group_id": group_id, "min": value})
-            elif reduction == "max":
-                value = int(maxs[group_id])
-                if value == 0:
-                    continue
-                rows.append({"group_id": group_id, "max": value})
-            else:
-                count_value = int(counts[group_id])
-                if count_value == 0:
-                    continue
-                rows.append({"group_id": group_id, "sum": int(sums[group_id]), "count": count_value})
+        rows = _prepared_grouped_i64_rows(
+            reduction,
+            counts,
+            sums,
+            mins,
+            maxs,
+            output_count,
+        )
 
         self._run_count += 1
+        phase_timing_seconds = {
+            "prepare_build": float(self.prepare_seconds),
+            "prepared_ray_batch_prepare": float(rays.prepare_seconds),
+            "primitive_payload_prepare": float(payload.prepare_seconds),
+            "query_pack": 0.0,
+            "traversal": float(traversal_seconds.value),
+        }
+        if phase_run_symbol is not None:
+            phase_timing_seconds.update(
+                {
+                    "query_prepare_native": float(query_prepare_native_seconds.value),
+                    "launch": float(launch_seconds.value),
+                    "result_download": float(result_download_seconds.value),
+                    "query_prepare_and_launch": float(
+                        query_prepare_native_seconds.value + launch_seconds.value
+                    ),
+                }
+            )
+        selected_symbol = (
+            OPTIX_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_3D_WITH_PHASE_TIMINGS_SYMBOL
+            if phase_run_symbol is not None
+            else OPTIX_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL
+        )
         return {
             "backend": "optix",
             "primitive": "RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
-            "native_symbol": OPTIX_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL,
+            "native_symbol": selected_symbol,
             "reduction": reduction,
             "rows": tuple(rows),
             "ray_count": int(rays.ray_count),
             "triangle_count": self.triangle_count,
             "group_count": output_count,
             "hit_event_count_before_dedup": int(hit_event_count.value),
+            "deduplicated_primitive_hit_count": sum(int(value) for value in counts),
             "rt_core_accelerated": True,
             "prepared_reused": True,
             "prepared_scene_used": True,
             "prepared_ray_batch_used": True,
             "prepared_primitive_payload_used": True,
             "prepared_run_index": self._run_count,
-            "phase_timing_seconds": {
-                "prepare_build": float(self.prepare_seconds),
-                "prepared_ray_batch_prepare": float(rays.prepare_seconds),
-                "primitive_payload_prepare": float(payload.prepare_seconds),
-                "query_pack": 0.0,
-                "traversal": float(traversal_seconds.value),
-            },
+            "phase_timing_seconds": phase_timing_seconds,
             "transfer_metadata": {
                 "static_scene_prepared_on_device": True,
                 **getattr(rays, "transfer_metadata", {}),
@@ -23359,6 +25336,7 @@ class PreparedOptixStaticTriangleScene3D:
                 "prepared_primitive_payload_on_device": True,
                 "per_ray_records_downloaded_to_host": False,
                 "group_rows_downloaded_to_host": True,
+                "native_phase_split_available": phase_run_symbol is not None,
                 "true_zero_copy_authorized": False,
             },
             "claim_boundary": {
@@ -24131,7 +26109,10 @@ def prepare_optix_static_triangle_scene_3d_device_triangles(
 ) -> PreparedOptixStaticTriangleScene3D:
     packet = pack_optix_static_triangle_scene_3d_device_triangle_inputs(triangle_columns)
     prepared = PreparedOptixStaticTriangleScene3D.__new__(PreparedOptixStaticTriangleScene3D)
-    prepared._lib = _load_optix_library()
+    prepared._native_context = _ray_triangle_grouped_i64_native_context(
+        _load_optix_library()
+    )
+    prepared._lib = prepared._native_context.library
     prepared._handle = ctypes.c_void_p()
     prepared._closed = False
     prepared._run_count = 0
@@ -24143,41 +26124,59 @@ def prepare_optix_static_triangle_scene_3d_device_triangles(
     )
     prepared.triangle_count = int(packet["metadata"]["triangle_count"])
     prepared._device_triangle_packet = packet
-    create_symbol = _find_optional_backend_symbol(
-        prepared._lib,
+    create_symbol = _RayTriangleGroupedI64NativeContext.symbol(
+        prepared._native_context,
         _OPTIX_PARTNER_STATIC_TRIANGLE_SCENE_3D_DEVICE_TRIANGLES_SYMBOL,
     )
-    if create_symbol is None:
-        raise RuntimeError(
-            "Loaded OptiX backend library does not export "
-            f"{_OPTIX_PARTNER_STATIC_TRIANGLE_SCENE_3D_DEVICE_TRIANGLES_SYMBOL}. "
-            "Rebuild it with 'make build-optix' from current main."
-        )
+    destroy_symbol = _RayTriangleGroupedI64NativeContext.symbol(
+        prepared._native_context,
+        "rtdl_optix_static_triangle_scene_3d_destroy",
+    )
     if prepared.triangle_count == 0:
         prepared.prepare_seconds = 0.0
+        try:
+            prepared._native_binding = _PreparedGroupedI64NativeResourceBinding(
+                prepared,
+                prepared._native_context,
+                kind="scene",
+            )
+            prepared._native_binding_ref = prepared._native_binding
+        except BaseException:
+            _close_unbound_grouped_i64_native_handle(prepared, destroy_symbol)
+            raise
         return prepared
 
     triangles = packet["triangles"]
     error = ctypes.create_string_buffer(4096)
     prepare_start = time.perf_counter()
-    status = create_symbol(
-        ctypes.c_void_p(triangles["ids"].data_ptr),
-        ctypes.c_void_p(triangles["x0"].data_ptr),
-        ctypes.c_void_p(triangles["y0"].data_ptr),
-        ctypes.c_void_p(triangles["z0"].data_ptr),
-        ctypes.c_void_p(triangles["x1"].data_ptr),
-        ctypes.c_void_p(triangles["y1"].data_ptr),
-        ctypes.c_void_p(triangles["z1"].data_ptr),
-        ctypes.c_void_p(triangles["x2"].data_ptr),
-        ctypes.c_void_p(triangles["y2"].data_ptr),
-        ctypes.c_void_p(triangles["z2"].data_ptr),
-        prepared.triangle_count,
-        ctypes.byref(prepared._handle),
-        error,
-        len(error),
-    )
-    prepared.prepare_seconds = time.perf_counter() - prepare_start
-    _check_status(status, error)
+    try:
+        status = create_symbol(
+            ctypes.c_void_p(triangles["ids"].data_ptr),
+            ctypes.c_void_p(triangles["x0"].data_ptr),
+            ctypes.c_void_p(triangles["y0"].data_ptr),
+            ctypes.c_void_p(triangles["z0"].data_ptr),
+            ctypes.c_void_p(triangles["x1"].data_ptr),
+            ctypes.c_void_p(triangles["y1"].data_ptr),
+            ctypes.c_void_p(triangles["z1"].data_ptr),
+            ctypes.c_void_p(triangles["x2"].data_ptr),
+            ctypes.c_void_p(triangles["y2"].data_ptr),
+            ctypes.c_void_p(triangles["z2"].data_ptr),
+            prepared.triangle_count,
+            ctypes.byref(prepared._handle),
+            error,
+            len(error),
+        )
+        prepared.prepare_seconds = time.perf_counter() - prepare_start
+        _check_status(status, error)
+        prepared._native_binding = _PreparedGroupedI64NativeResourceBinding(
+            prepared,
+            prepared._native_context,
+            kind="scene",
+        )
+        prepared._native_binding_ref = prepared._native_binding
+    except BaseException:
+        _close_unbound_grouped_i64_native_handle(prepared, destroy_symbol)
+        raise
     return prepared
 
 
@@ -26301,12 +28300,12 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_static_scene_3d_device_weighted_sum.restype = ctypes.c_int
-    optional_static_scene_3d_primitive_grouped = _find_optional_backend_symbol(
+    optional_legacy_unsigned_static_scene_3d_primitive_grouped = _find_optional_backend_symbol(
         lib,
-        OPTIX_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL,
+        OPTIX_LEGACY_UNSIGNED_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL,
     )
-    if optional_static_scene_3d_primitive_grouped is not None:
-        optional_static_scene_3d_primitive_grouped.argtypes = [
+    if optional_legacy_unsigned_static_scene_3d_primitive_grouped is not None:
+        optional_legacy_unsigned_static_scene_3d_primitive_grouped.argtypes = [
             ctypes.c_void_p,
             ctypes.POINTER(_RtdlRay3D),
             ctypes.c_size_t,
@@ -26325,13 +28324,38 @@ def _register_argtypes(lib) -> None:
             ctypes.c_char_p,
             ctypes.c_size_t,
         ]
-        optional_static_scene_3d_primitive_grouped.restype = ctypes.c_int
-    optional_primitive_grouped_payload_3d_create = _find_optional_backend_symbol(
+        optional_legacy_unsigned_static_scene_3d_primitive_grouped.restype = ctypes.c_int
+    optional_static_scene_3d_primitive_grouped = _find_optional_backend_symbol(
         lib,
-        OPTIX_PRIMITIVE_GROUPED_I64_PAYLOAD_3D_CREATE_SYMBOL,
+        OPTIX_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL,
     )
-    if optional_primitive_grouped_payload_3d_create is not None:
-        optional_primitive_grouped_payload_3d_create.argtypes = [
+    if optional_static_scene_3d_primitive_grouped is not None:
+        optional_static_scene_3d_primitive_grouped.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlRay3D),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.c_size_t,
+            ctypes.c_size_t,
+            ctypes.c_uint32,
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_static_scene_3d_primitive_grouped.restype = ctypes.c_int
+    optional_legacy_unsigned_primitive_grouped_payload_3d_create = _find_optional_backend_symbol(
+        lib,
+        OPTIX_LEGACY_UNSIGNED_PRIMITIVE_GROUPED_I64_PAYLOAD_3D_CREATE_SYMBOL,
+    )
+    if optional_legacy_unsigned_primitive_grouped_payload_3d_create is not None:
+        optional_legacy_unsigned_primitive_grouped_payload_3d_create.argtypes = [
             ctypes.POINTER(ctypes.c_uint32),
             ctypes.c_size_t,
             ctypes.POINTER(ctypes.c_uint64),
@@ -26341,7 +28365,60 @@ def _register_argtypes(lib) -> None:
             ctypes.c_char_p,
             ctypes.c_size_t,
         ]
+        optional_legacy_unsigned_primitive_grouped_payload_3d_create.restype = ctypes.c_int
+    optional_primitive_grouped_payload_3d_create = _find_optional_backend_symbol(
+        lib,
+        OPTIX_PRIMITIVE_GROUPED_I64_PAYLOAD_3D_CREATE_SYMBOL,
+    )
+    if optional_primitive_grouped_payload_3d_create is not None:
+        optional_primitive_grouped_payload_3d_create.argtypes = [
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.c_size_t,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
         optional_primitive_grouped_payload_3d_create.restype = ctypes.c_int
+    optional_verified_primitive_grouped_payload_3d_create = _find_optional_backend_symbol(
+        lib,
+        OPTIX_PRIMITIVE_GROUPED_I64_PAYLOAD_3D_CREATE_SIGNED_VERIFIED_V3_SYMBOL,
+    )
+    if optional_verified_primitive_grouped_payload_3d_create is not None:
+        optional_verified_primitive_grouped_payload_3d_create.argtypes = [
+            ctypes.POINTER(ctypes.c_uint32),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.c_size_t,
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_verified_primitive_grouped_payload_3d_create.restype = ctypes.c_int
+    optional_legacy_unsigned_prepared_static_scene_3d_primitive_grouped = _find_optional_backend_symbol(
+        lib,
+        OPTIX_LEGACY_UNSIGNED_PREPARED_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL,
+    )
+    if optional_legacy_unsigned_prepared_static_scene_3d_primitive_grouped is not None:
+        optional_legacy_unsigned_prepared_static_scene_3d_primitive_grouped.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlRay3D),
+            ctypes.c_size_t,
+            ctypes.c_uint32,
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_legacy_unsigned_prepared_static_scene_3d_primitive_grouped.restype = ctypes.c_int
     optional_prepared_static_scene_3d_primitive_grouped = _find_optional_backend_symbol(
         lib,
         OPTIX_PREPARED_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL,
@@ -26363,6 +28440,78 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_prepared_static_scene_3d_primitive_grouped.restype = ctypes.c_int
+    optional_legacy_unsigned_prepared_static_scene_3d_primitive_grouped_with_phase_timings = (
+        _find_optional_backend_symbol(
+            lib,
+            OPTIX_LEGACY_UNSIGNED_PREPARED_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_WITH_PHASE_TIMINGS_SYMBOL,
+        )
+    )
+    if optional_legacy_unsigned_prepared_static_scene_3d_primitive_grouped_with_phase_timings is not None:
+        optional_legacy_unsigned_prepared_static_scene_3d_primitive_grouped_with_phase_timings.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlRay3D),
+            ctypes.c_size_t,
+            ctypes.c_uint32,
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_legacy_unsigned_prepared_static_scene_3d_primitive_grouped_with_phase_timings.restype = (
+            ctypes.c_int
+        )
+    optional_prepared_static_scene_3d_primitive_grouped_with_phase_timings = _find_optional_backend_symbol(
+        lib,
+        OPTIX_PREPARED_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D_WITH_PHASE_TIMINGS_SYMBOL,
+    )
+    if optional_prepared_static_scene_3d_primitive_grouped_with_phase_timings is not None:
+        optional_prepared_static_scene_3d_primitive_grouped_with_phase_timings.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlRay3D),
+            ctypes.c_size_t,
+            ctypes.c_uint32,
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_prepared_static_scene_3d_primitive_grouped_with_phase_timings.restype = ctypes.c_int
+    optional_legacy_unsigned_ray_batch_prepared_primitive_grouped = _find_optional_backend_symbol(
+        lib,
+        OPTIX_LEGACY_UNSIGNED_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL,
+    )
+    if optional_legacy_unsigned_ray_batch_prepared_primitive_grouped is not None:
+        optional_legacy_unsigned_ray_batch_prepared_primitive_grouped.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_uint32,
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_legacy_unsigned_ray_batch_prepared_primitive_grouped.restype = ctypes.c_int
     optional_ray_batch_prepared_primitive_grouped = _find_optional_backend_symbol(
         lib,
         OPTIX_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_3D_SYMBOL,
@@ -26383,6 +28532,54 @@ def _register_argtypes(lib) -> None:
             ctypes.c_size_t,
         ]
         optional_ray_batch_prepared_primitive_grouped.restype = ctypes.c_int
+    optional_legacy_unsigned_ray_batch_prepared_primitive_grouped_with_phase_timings = (
+        _find_optional_backend_symbol(
+            lib,
+            OPTIX_LEGACY_UNSIGNED_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_3D_WITH_PHASE_TIMINGS_SYMBOL,
+        )
+    )
+    if optional_legacy_unsigned_ray_batch_prepared_primitive_grouped_with_phase_timings is not None:
+        optional_legacy_unsigned_ray_batch_prepared_primitive_grouped_with_phase_timings.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_uint32,
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_legacy_unsigned_ray_batch_prepared_primitive_grouped_with_phase_timings.restype = ctypes.c_int
+    optional_ray_batch_prepared_primitive_grouped_with_phase_timings = _find_optional_backend_symbol(
+        lib,
+        OPTIX_RAY_BATCH_PREPARED_PRIMITIVE_GROUPED_I64_REDUCTION_3D_WITH_PHASE_TIMINGS_SYMBOL,
+    )
+    if optional_ray_batch_prepared_primitive_grouped_with_phase_timings is not None:
+        optional_ray_batch_prepared_primitive_grouped_with_phase_timings.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_void_p,
+            ctypes.c_uint32,
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        optional_ray_batch_prepared_primitive_grouped_with_phase_timings.restype = ctypes.c_int
     optional_primitive_grouped_payload_3d_destroy = _find_optional_backend_symbol(
         lib,
         "rtdl_optix_primitive_grouped_i64_payload_3d_destroy",
@@ -27895,6 +30092,20 @@ def _register_argtypes(lib) -> None:
         ]
         symbol.restype = ctypes.c_int
 
+    symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_prepared_exact_fixed_radius_neighbors_3d_v2")
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPoint3D), ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.c_size_t,
+            ctypes.c_uint32,
+            ctypes.POINTER(ctypes.POINTER(_RtdlFixedRadiusNeighborRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
     symbol = _find_optional_backend_symbol(lib, "rtdl_optix_run_prepared_ranked_fixed_radius_neighbors_3d")
     if symbol is not None:
         symbol.argtypes = [
@@ -27902,6 +30113,24 @@ def _register_argtypes(lib) -> None:
             ctypes.POINTER(_RtdlPoint3D), ctypes.c_size_t,
             ctypes.c_double,
             ctypes.c_size_t,
+            ctypes.POINTER(ctypes.POINTER(_RtdlKnnNeighborRow)),
+            ctypes.POINTER(ctypes.c_size_t),
+            ctypes.c_char_p, ctypes.c_size_t,
+        ]
+        symbol.restype = ctypes.c_int
+
+    symbol = _find_optional_backend_symbol(
+        lib, "rtdl_optix_run_prepared_ranked_distance_window_neighbors_3d"
+    )
+    if symbol is not None:
+        symbol.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(_RtdlPoint3D), ctypes.c_size_t,
+            ctypes.c_double,
+            ctypes.c_double,
+            ctypes.c_size_t,
+            ctypes.c_uint32,
+            ctypes.c_uint32,
             ctypes.POINTER(ctypes.POINTER(_RtdlKnnNeighborRow)),
             ctypes.POINTER(ctypes.c_size_t),
             ctypes.c_char_p, ctypes.c_size_t,
@@ -29015,6 +31244,7 @@ def run_cuda_lexsort_i64_f64_i64_i64_device(
         "backend": "native_thrust_lexsort_i64_f64_i64_i64",
         "row_count": int(count),
         "device_resident": True,
+        "input_key_columns_mutated_in_place": True,
     }
 
 
@@ -29414,6 +31644,1638 @@ def seed_nearest_witness_local_grid_cell_3d_cuda(
             "whole_app_speedup_claim_authorized": False,
         },
     }
+
+
+class PreparedCertifiedNearestGlobalWitness3DCuda:
+    """Closed native owner for resident target-grid nearest/global reduction.
+
+    The native owner copies the target matrix once, builds its deterministic
+    compact grid once, and keeps both resident.  Query executions are
+    synchronous on the CUDA default stream and return only one global witness,
+    bounded validation samples, and scalar work counters.  Full nearest-state
+    columns are never projected to the host.
+    """
+
+    contract = "rtdl.prepared_certified_nearest_global_witness_3d_cuda.v1"
+
+    def __init__(
+        self,
+        target_points,
+        *,
+        target_ids=None,
+        column_domain_certificate=None,
+        grid_shape=(32, 32, 32),
+        expected_native_library_identity=None,
+        expected_native_library_ref=None,
+    ):
+        import numpy as _np
+        from .action_native_identity import (
+            CERTIFIED_NEAREST_GLOBAL_WITNESS_3D_REQUIRED_SYMBOLS,
+            native_library_identity,
+            validate_native_library_identity,
+        )
+        from .action_value_validation import strict_u32_column
+
+        if column_domain_certificate is not None:
+            from .action_nearest_state_lowering import (
+                ImmutablePointColumnDomain3DCertificate,
+            )
+
+            if not isinstance(
+                column_domain_certificate,
+                ImmutablePointColumnDomain3DCertificate,
+            ):
+                raise TypeError(
+                    "column_domain_certificate must be compiler-issued for the exact point/ID objects"
+                )
+            column_domain_certificate.validate_exact(target_points, target_ids)
+            target_matrix = column_domain_certificate.target_points
+            target_id_values = column_domain_certificate.target_ids
+            target_count = column_domain_certificate.target_count
+            lower = _np.ascontiguousarray(
+                column_domain_certificate.lower_bounds,
+                dtype=_np.float64,
+            )
+            upper = _np.ascontiguousarray(
+                column_domain_certificate.upper_bounds,
+                dtype=_np.float64,
+            )
+            column_domain_certificate_reused = True
+        else:
+            # Public/raw compatibility path deliberately retains full input
+            # copying, finite checks, U32-domain validation, uniqueness proof,
+            # bounds scans, and target-ID sorting.
+            target_matrix = _np.array(
+                target_points, dtype=_np.float64, order="C", copy=True
+            )
+            if target_matrix.ndim != 2 or target_matrix.shape[1] != 3:
+                raise ValueError("target_points must be float64[target_count][3]")
+            target_count = int(target_matrix.shape[0])
+            if target_count <= 0:
+                raise ValueError("prepared nearest target set must be nonempty")
+            if target_count > (1 << 32) - 1:
+                raise ValueError("prepared nearest target_count exceeds uint32 capacity")
+            if not bool(_np.all(_np.isfinite(target_matrix))):
+                raise ValueError("prepared nearest target coordinates must be finite")
+            if target_ids is None:
+                target_id_values = _np.arange(target_count, dtype=_np.int64)
+            else:
+                try:
+                    target_id_values = strict_u32_column(
+                        target_ids,
+                        expected_length=target_count,
+                        require_unique=True,
+                    )
+                except ValueError as exc:
+                    raise ValueError(
+                        "target_ids must be unique uint32-domain integers with an original integer type"
+                    ) from exc
+            lower = _np.ascontiguousarray(
+                _np.min(target_matrix, axis=0), dtype=_np.float64
+            )
+            upper = _np.ascontiguousarray(
+                _np.max(target_matrix, axis=0), dtype=_np.float64
+            )
+            column_domain_certificate_reused = False
+        shape_values = _np.ascontiguousarray(grid_shape, dtype=_np.int64)
+        if shape_values.shape != (3,) or bool(_np.any(shape_values <= 0)):
+            raise ValueError("grid_shape must contain three positive entries")
+        dense_count = int(shape_values[0]) * int(shape_values[1]) * int(shape_values[2])
+        if dense_count > (1 << 32) - 1:
+            raise ValueError("grid_shape volume exceeds uint32 capacity")
+        library = _load_optix_library()
+        if (expected_native_library_identity is None) != (
+            expected_native_library_ref is None
+        ):
+            raise RuntimeError(
+                "expected native library identity and strong reference must be paired"
+            )
+        if expected_native_library_identity is not None:
+            if library is not expected_native_library_ref:
+                raise RuntimeError(
+                    "resolved native library object differs from the compiler-bound strong reference"
+                )
+            resolved_native_identity = validate_native_library_identity(
+                library,
+                expected_native_library_identity,
+            )
+        else:
+            resolved_native_identity = native_library_identity(
+                library,
+                required_symbols=(
+                    CERTIFIED_NEAREST_GLOBAL_WITNESS_3D_REQUIRED_SYMBOLS
+                ),
+            )
+        raw_prepare_name = "rtdl_cuda_prepare_certified_nearest_grid_3d"
+        validated_prepare_name = (
+            "rtdl_cuda_prepare_certified_nearest_grid_3d_from_validated_columns"
+        )
+        prepare_name = (
+            validated_prepare_name
+            if column_domain_certificate_reused
+            else raw_prepare_name
+        )
+        execute_name = "rtdl_cuda_execute_prepared_certified_nearest_global_witness_3d"
+        close_name = "rtdl_cuda_close_prepared_certified_nearest_grid_3d"
+        prepare_symbol = _find_optional_backend_symbol(library, prepare_name)
+        execute_symbol = _find_optional_backend_symbol(library, execute_name)
+        close_symbol = _find_optional_backend_symbol(library, close_name)
+        missing = [
+            name
+            for name, symbol in (
+                (prepare_name, prepare_symbol),
+                (execute_name, execute_symbol),
+                (close_name, close_symbol),
+            )
+            if symbol is None
+        ]
+        if missing:
+            path = getattr(library, "_rtdl_library_path", "<unknown>")
+            raise RuntimeError(
+                f"Loaded OptiX backend library {path!r} lacks the prepared certified "
+                f"nearest-state ABI: {', '.join(missing)}. Rebuild current main."
+            )
+        # Identity creation above is backend-neutral; require the complete ABI
+        # again here before any native owner is created.
+        validate_native_library_identity(library, resolved_native_identity)
+        prepare_symbol.argtypes = [
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.c_uint64,
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_char_p,
+            ctypes.c_uint64,
+        ]
+        prepare_symbol.restype = ctypes.c_int
+        execute_symbol.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.c_uint64,
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.c_uint64,
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_char_p,
+            ctypes.c_uint64,
+        ]
+        execute_symbol.restype = ctypes.c_int
+        close_symbol.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_uint64]
+        close_symbol.restype = ctypes.c_int
+
+        handle = ctypes.c_void_p()
+        cell_count = ctypes.c_uint64()
+        native_prepare_seconds = ctypes.c_double()
+        error = ctypes.create_string_buffer(4096)
+        status = prepare_symbol(
+            target_matrix.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            target_id_values.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+            ctypes.c_uint64(target_count),
+            shape_values.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+            lower.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            upper.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            ctypes.byref(handle),
+            ctypes.byref(cell_count),
+            ctypes.byref(native_prepare_seconds),
+            error,
+            ctypes.c_uint64(len(error)),
+        )
+        _check_status(status, error)
+        if not handle.value:
+            raise RuntimeError("prepared certified nearest native owner returned a null handle")
+        self._library = library
+        self._native_library_identity = resolved_native_identity
+        self._prepare_symbol_name = prepare_name
+        self._prepare_symbol = prepare_symbol
+        self._execute_symbol = execute_symbol
+        self._close_symbol = close_symbol
+        self._column_domain_certificate = column_domain_certificate
+        self._column_domain_certificate_reused = column_domain_certificate_reused
+        self._certified_target_points = (
+            target_matrix if column_domain_certificate_reused else None
+        )
+        self._certified_target_ids = (
+            target_id_values if column_domain_certificate_reused else None
+        )
+        self._sorted_target_ids = (
+            target_id_values
+            if column_domain_certificate_reused
+            else _np.sort(target_id_values).copy()
+        )
+        self._sorted_target_ids.setflags(write=False)
+        self._native_symbol_binding_seal = self._sign_native_symbol_binding()
+        self._handle = handle
+        self._closed = False
+        self._lock = threading.RLock()
+        self.target_count = target_count
+        self.grid_shape = tuple(int(value) for value in shape_values.tolist())
+        self.grid_lower_bounds = tuple(float(value) for value in lower.tolist())
+        self.grid_upper_bounds = tuple(float(value) for value in upper.tolist())
+        self.cell_count = int(cell_count.value)
+        self.native_prepare_seconds = float(native_prepare_seconds.value)
+        self.execution_count = 0
+
+    @property
+    def closed(self) -> bool:
+        return self._closed
+
+    def _native_symbol_binding_payload(self) -> bytes:
+        certificate = self._column_domain_certificate
+        certificate_binding = (
+            f"{id(certificate)}:{certificate.target_content_digest}:"
+            f"{id(self._certified_target_points)}:{id(self._certified_target_ids)}"
+            if certificate is not None
+            else "none"
+        )
+        return (
+            "rtdl.prepared_certified_nearest_native_symbol_binding.v1\x00"
+            f"{id(self._library)}\x00{type(self._library).__module__}."
+            f"{type(self._library).__qualname__}\x00"
+            f"{self._native_library_identity.identity_digest}\x00"
+            f"{self._prepare_symbol_name}\x00{id(self._prepare_symbol)}\x00"
+            f"{id(self._execute_symbol)}\x00"
+            f"{id(self._close_symbol)}\x00{certificate_binding}\x00"
+            f"{self._column_domain_certificate_reused}"
+        ).encode("utf-8")
+
+    def _sign_native_symbol_binding(self) -> str:
+        return hmac.new(
+            _PREPARED_CERTIFIED_NEAREST_SYMBOL_BINDING_SECRET,
+            self._native_symbol_binding_payload(),
+            hashlib.sha256,
+        ).hexdigest()
+
+    def _validate_native_symbol_binding(self):
+        from .action_native_identity import validate_native_library_identity
+
+        self._validate_column_domain_certificate_binding()
+        validate_native_library_identity(
+            self._library,
+            self._native_library_identity,
+        )
+        prepare_symbol = _find_optional_backend_symbol(
+            self._library,
+            self._prepare_symbol_name,
+        )
+        execute_symbol = _find_optional_backend_symbol(
+            self._library,
+            "rtdl_cuda_execute_prepared_certified_nearest_global_witness_3d",
+        )
+        close_symbol = _find_optional_backend_symbol(
+            self._library,
+            "rtdl_cuda_close_prepared_certified_nearest_grid_3d",
+        )
+        expected_seal = self._sign_native_symbol_binding()
+        if (
+            prepare_symbol is None
+            or execute_symbol is None
+            or close_symbol is None
+            or prepare_symbol is not self._prepare_symbol
+            or execute_symbol is not self._execute_symbol
+            or close_symbol is not self._close_symbol
+            or not hmac.compare_digest(
+                expected_seal,
+                self._native_symbol_binding_seal,
+            )
+        ):
+            raise RuntimeError(
+                "prepared certified nearest native symbol binding changed"
+            )
+        return execute_symbol, close_symbol
+
+    def _validate_column_domain_certificate_binding(self) -> None:
+        certificate = self._column_domain_certificate
+        if not self._column_domain_certificate_reused:
+            if (
+                certificate is not None
+                or self._certified_target_points is not None
+                or self._certified_target_ids is not None
+            ):
+                raise RuntimeError(
+                    "raw prepared nearest native owner gained a column-domain certificate"
+                )
+            return
+        if certificate is None:
+            raise RuntimeError(
+                "prepared nearest native column-domain certificate changed"
+            )
+        certificate.validate_exact(
+            self._certified_target_points,
+            self._certified_target_ids,
+        )
+        if self._sorted_target_ids is not self._certified_target_ids:
+            raise RuntimeError(
+                "prepared nearest native target-ID certificate binding changed"
+            )
+
+    def run(self, query_points, *, validation_sample_indices=()) -> dict[str, object]:
+        import numpy as _np
+
+        with self._lock:
+            if self._closed or not self._handle.value:
+                raise RuntimeError("prepared certified nearest native owner is closed")
+            execute_symbol, _ = self._validate_native_symbol_binding()
+            query_matrix = _np.array(query_points, dtype=_np.float64, order="C", copy=True)
+            if query_matrix.ndim != 2 or query_matrix.shape[1] != 3:
+                raise ValueError("query_points must be float64[query_count][3]")
+            query_count = int(query_matrix.shape[0])
+            if query_count <= 0:
+                raise ValueError("prepared nearest query set must be nonempty")
+            if query_count > (1 << 32) - 1:
+                raise ValueError("prepared nearest query_count exceeds uint32 capacity")
+            if not bool(_np.all(_np.isfinite(query_matrix))):
+                raise ValueError("prepared nearest query coordinates must be finite")
+            query_ids = _np.arange(query_count, dtype=_np.int64)
+            sample_indices = _np.ascontiguousarray(
+                validation_sample_indices, dtype=_np.int64
+            )
+            if sample_indices.ndim != 1:
+                raise ValueError("validation_sample_indices must be a 1-D column")
+            if sample_indices.size:
+                if bool(_np.any(sample_indices < 0)) or bool(
+                    _np.any(sample_indices >= query_count)
+                ):
+                    raise ValueError("validation_sample_indices are out of range")
+                if int(_np.unique(sample_indices).size) != int(sample_indices.size):
+                    raise ValueError("validation_sample_indices must be unique")
+
+            witness_source_id = ctypes.c_int64()
+            witness_item_id = ctypes.c_int64()
+            witness_distance = ctypes.c_double()
+            sample_item_ids = _np.empty(sample_indices.size, dtype=_np.int64)
+            sample_distances = _np.empty(sample_indices.size, dtype=_np.float64)
+            candidate_evaluations = ctypes.c_int64()
+            grid_probes = ctypes.c_int64()
+            scanned_cells = ctypes.c_int64()
+            upload_seconds = ctypes.c_double()
+            nearest_seconds = ctypes.c_double()
+            reducer_seconds = ctypes.c_double()
+            download_seconds = ctypes.c_double()
+            total_seconds = ctypes.c_double()
+            error = ctypes.create_string_buffer(4096)
+            sample_indices_ptr = (
+                sample_indices.ctypes.data_as(ctypes.POINTER(ctypes.c_int64))
+                if sample_indices.size
+                else ctypes.POINTER(ctypes.c_int64)()
+            )
+            sample_item_ids_ptr = (
+                sample_item_ids.ctypes.data_as(ctypes.POINTER(ctypes.c_int64))
+                if sample_indices.size
+                else ctypes.POINTER(ctypes.c_int64)()
+            )
+            sample_distances_ptr = (
+                sample_distances.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+                if sample_indices.size
+                else ctypes.POINTER(ctypes.c_double)()
+            )
+            status = execute_symbol(
+                self._handle,
+                query_matrix.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+                query_ids.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+                ctypes.c_uint64(query_count),
+                sample_indices_ptr,
+                ctypes.c_uint64(int(sample_indices.size)),
+                ctypes.byref(witness_source_id),
+                ctypes.byref(witness_item_id),
+                ctypes.byref(witness_distance),
+                sample_item_ids_ptr,
+                sample_distances_ptr,
+                ctypes.byref(candidate_evaluations),
+                ctypes.byref(grid_probes),
+                ctypes.byref(scanned_cells),
+                ctypes.byref(upload_seconds),
+                ctypes.byref(nearest_seconds),
+                ctypes.byref(reducer_seconds),
+                ctypes.byref(download_seconds),
+                ctypes.byref(total_seconds),
+                error,
+                ctypes.c_uint64(len(error)),
+            )
+            _check_status(status, error)
+            source_value = int(witness_source_id.value)
+            item_value = int(witness_item_id.value)
+            distance_value = float(witness_distance.value)
+            if (
+                source_value < 0
+                or source_value >= query_count
+                or source_value > (1 << 32) - 1
+                or item_value < 0
+                or item_value > (1 << 32) - 1
+            ):
+                raise RuntimeError(
+                    "prepared certified nearest witness escaped the query/U32 id contract"
+                )
+            target_position = int(_np.searchsorted(self._sorted_target_ids, item_value))
+            if (
+                target_position >= int(self._sorted_target_ids.size)
+                or int(self._sorted_target_ids[target_position]) != item_value
+            ):
+                raise RuntimeError(
+                    "prepared certified nearest witness item is absent from the prepared target domain"
+                )
+            if not math.isfinite(distance_value) or distance_value < 0.0:
+                raise RuntimeError(
+                    "prepared certified nearest witness distance must be finite and nonnegative"
+                )
+            if sample_item_ids.size and (
+                bool(_np.any(sample_item_ids < 0))
+                or bool(_np.any(sample_item_ids > (1 << 32) - 1))
+            ):
+                raise RuntimeError(
+                    "prepared certified nearest validation item id escaped the U32 contract"
+                )
+            if sample_item_ids.size:
+                sample_positions = _np.searchsorted(
+                    self._sorted_target_ids, sample_item_ids
+                )
+                in_bounds = sample_positions < self._sorted_target_ids.size
+                membership = _np.zeros(sample_item_ids.shape, dtype=_np.bool_)
+                membership[in_bounds] = (
+                    self._sorted_target_ids[sample_positions[in_bounds]]
+                    == sample_item_ids[in_bounds]
+                )
+                if not bool(_np.all(membership)):
+                    raise RuntimeError(
+                        "prepared certified nearest validation item is absent from the prepared target domain"
+                    )
+                if (
+                    not bool(_np.all(_np.isfinite(sample_distances)))
+                    or bool(_np.any(sample_distances < 0.0))
+                ):
+                    raise RuntimeError(
+                        "prepared certified nearest validation distance must be finite and nonnegative"
+                    )
+            self.execution_count += 1
+            return {
+                "actual": {
+                    "source_id": source_value,
+                    "item_id": item_value,
+                    "value": distance_value,
+                },
+                "validation_samples": {
+                    "source_indices": sample_indices,
+                    "nearest_item_ids": sample_item_ids,
+                    "nearest_distances": sample_distances,
+                },
+                "metadata": {
+                    "contract": self.contract,
+                    "native_library_identity": (
+                        self._native_library_identity.to_metadata()
+                    ),
+                    "native_library_identity_digest": (
+                        self._native_library_identity.identity_digest
+                    ),
+                    "native_library_identity_revalidated": True,
+                    "native_prepare_symbol": self._prepare_symbol_name,
+                    "target_column_domain_certificate_contract": (
+                        self._column_domain_certificate.contract
+                        if self._column_domain_certificate is not None
+                        else None
+                    ),
+                    "target_column_domain_certificate_reused": (
+                        self._column_domain_certificate_reused
+                    ),
+                    "target_column_domain_single_full_validation": (
+                        self._column_domain_certificate_reused
+                    ),
+                    "target_column_domain_validation_repeated": (
+                        not self._column_domain_certificate_reused
+                    ),
+                    "native_execute_symbol": (
+                        "rtdl_cuda_execute_prepared_certified_nearest_global_witness_3d"
+                    ),
+                    "target_count": self.target_count,
+                    "query_count": query_count,
+                    "cell_count": self.cell_count,
+                    "grid_shape": self.grid_shape,
+                    "target_and_grid_device_resident_for_prepared_lifetime": True,
+                    "nearest_state_device_resident_through_global_reducer": True,
+                    "full_nearest_state_host_projection_used": False,
+                    "bounded_witness_host_projection_rows": 1,
+                    "bounded_validation_sample_rows": int(sample_indices.size),
+                    "candidate_distance_evaluations": int(candidate_evaluations.value),
+                    "grid_cell_probes": int(grid_probes.value),
+                    "scanned_cell_count": int(scanned_cells.value),
+                    "stream_ordering": "synchronous_default_stream.v1",
+                    "native_phase_timings_sec": {
+                        "prepare_target_grid": self.native_prepare_seconds,
+                        "query_upload": float(upload_seconds.value),
+                        "exact_nearest_state": float(nearest_seconds.value),
+                        "global_max_witness": float(reducer_seconds.value),
+                        "bounded_projection": float(download_seconds.value),
+                        "execute_total": float(total_seconds.value),
+                    },
+                    "native_subphase_component_calibration_eligible": False,
+                    "native_subphase_component_calibration_ineligible_reason": (
+                        "device-vector destruction and complete synchronization "
+                        "attribution are not included in the native subphase intervals"
+                    ),
+                    "outer_primary_timing_contract_unchanged": True,
+                    "execution_count": self.execution_count,
+                    "application_selected_backend": False,
+                    "app_semantics": "none",
+                },
+            }
+
+    def run_exact_bounded_selection(
+        self,
+        query_points,
+        *,
+        minimum_distance: float,
+        maximum_distance: float,
+        limit: int,
+        minimum_boundary: str,
+        maximum_boundary: str,
+    ) -> dict[str, object]:
+        """Execute generic exact top-K selection with cell lower-bound pruning."""
+
+        import numpy as _np
+        from .action_native_identity import native_library_identity
+
+        with self._lock:
+            if self._closed or not self._handle.value:
+                raise RuntimeError("prepared exact bounded-selection owner is closed")
+            self._validate_native_symbol_binding()
+            symbol_name = (
+                "rtdl_cuda_execute_prepared_exact_bounded_selection_3d"
+            )
+            execute_symbol = _find_optional_backend_symbol(
+                self._library,
+                symbol_name,
+            )
+            if execute_symbol is None:
+                path = getattr(self._library, "_rtdl_library_path", "<unknown>")
+                raise RuntimeError(
+                    f"Loaded OptiX backend library {path!r} lacks {symbol_name}; "
+                    "rebuild current main"
+                )
+            bounded_identity = native_library_identity(
+                self._library,
+                required_symbols=(
+                    self._prepare_symbol_name,
+                    symbol_name,
+                    "rtdl_cuda_close_prepared_certified_nearest_grid_3d",
+                ),
+            )
+            if (
+                bounded_identity.binary_sha256
+                != self._native_library_identity.binary_sha256
+            ):
+                raise RuntimeError(
+                    "prepared exact bounded-selection native library changed"
+                )
+
+            if isinstance(query_points, PackedPoints):
+                if query_points.dimension != 3:
+                    raise ValueError(
+                        "exact bounded-selection queries must be 3-D"
+                    )
+                owner = query_points.owner
+                if (
+                    owner is None
+                    or getattr(owner, "dtype", None) is None
+                    or owner.dtype.names is None
+                    or not {"id", "x", "y", "z"}.issubset(owner.dtype.names)
+                ):
+                    query_matrix = _np.asarray(
+                        [
+                            (
+                                query_points.records[index].x,
+                                query_points.records[index].y,
+                                query_points.records[index].z,
+                            )
+                            for index in range(query_points.count)
+                        ],
+                        dtype=_np.float64,
+                    )
+                    query_ids = _np.asarray(
+                        [
+                            query_points.records[index].id
+                            for index in range(query_points.count)
+                        ],
+                        dtype=_np.uint32,
+                    )
+                else:
+                    query_matrix = _np.empty(
+                        (query_points.count, 3),
+                        dtype=_np.float64,
+                    )
+                    query_matrix[:, 0] = owner["x"]
+                    query_matrix[:, 1] = owner["y"]
+                    query_matrix[:, 2] = owner["z"]
+                    query_ids = _np.ascontiguousarray(
+                        owner["id"],
+                        dtype=_np.uint32,
+                    )
+            else:
+                query_matrix = _np.array(
+                    query_points,
+                    dtype=_np.float64,
+                    order="C",
+                    copy=True,
+                )
+                query_ids = _np.arange(
+                    query_matrix.shape[0],
+                    dtype=_np.uint32,
+                )
+            if query_matrix.ndim != 2 or query_matrix.shape[1:] != (3,):
+                raise ValueError(
+                    "exact bounded-selection queries must be an F64[N][3] matrix"
+                )
+            query_matrix = _np.ascontiguousarray(
+                query_matrix,
+                dtype=_np.float64,
+            )
+            query_count = int(query_matrix.shape[0])
+            if query_count <= 0 or query_count > (1 << 32) - 1:
+                raise ValueError(
+                    "exact bounded-selection query_count must fit positive U32"
+                )
+            if not bool(_np.all(_np.isfinite(query_matrix))):
+                raise ValueError(
+                    "exact bounded-selection query coordinates must be finite"
+                )
+            if query_ids.shape != (query_count,) or (
+                query_ids.size > 1
+                and bool(_np.any(query_ids[1:] <= query_ids[:-1]))
+            ):
+                raise ValueError(
+                    "exact bounded-selection query ids must be strictly increasing U32"
+                )
+            minimum = float(minimum_distance)
+            maximum = float(maximum_distance)
+            if (
+                not math.isfinite(minimum)
+                or not math.isfinite(maximum)
+                or minimum < 0.0
+                or maximum < minimum
+            ):
+                raise ValueError(
+                    "exact bounded-selection distance window is invalid"
+                )
+            if (
+                not isinstance(limit, int)
+                or isinstance(limit, bool)
+                or limit <= 0
+                or limit > 64
+            ):
+                raise ValueError(
+                    "exact bounded-selection limit must be an integer in [1,64]"
+                )
+            boundary_modes = {"closed": 0, "open": 1}
+            if (
+                minimum_boundary not in boundary_modes
+                or maximum_boundary not in boundary_modes
+            ):
+                raise ValueError(
+                    "exact bounded-selection boundaries must be open or closed"
+                )
+
+            execute_symbol.argtypes = [
+                ctypes.c_void_p,
+                ctypes.POINTER(ctypes.c_double),
+                ctypes.c_uint64,
+                ctypes.c_double,
+                ctypes.c_double,
+                ctypes.c_uint32,
+                ctypes.c_uint32,
+                ctypes.c_uint32,
+                ctypes.POINTER(ctypes.c_uint32),
+                ctypes.POINTER(ctypes.c_int64),
+                ctypes.POINTER(ctypes.c_double),
+                ctypes.POINTER(ctypes.c_int64),
+                ctypes.POINTER(ctypes.c_int64),
+                ctypes.POINTER(ctypes.c_int64),
+                ctypes.POINTER(ctypes.c_double),
+                ctypes.POINTER(ctypes.c_double),
+                ctypes.POINTER(ctypes.c_double),
+                ctypes.POINTER(ctypes.c_double),
+                ctypes.c_char_p,
+                ctypes.c_uint64,
+            ]
+            execute_symbol.restype = ctypes.c_int
+            capacity = query_count * limit
+            counts = _np.empty(query_count, dtype=_np.uint32)
+            item_ids = _np.empty(capacity, dtype=_np.int64)
+            distances = _np.empty(capacity, dtype=_np.float64)
+            candidate_evaluations = ctypes.c_int64()
+            grid_probes = ctypes.c_int64()
+            scanned_cells = ctypes.c_int64()
+            upload_seconds = ctypes.c_double()
+            kernel_seconds = ctypes.c_double()
+            download_seconds = ctypes.c_double()
+            total_seconds = ctypes.c_double()
+            error = ctypes.create_string_buffer(4096)
+            status = execute_symbol(
+                self._handle,
+                query_matrix.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+                ctypes.c_uint64(query_count),
+                ctypes.c_double(minimum),
+                ctypes.c_double(maximum),
+                ctypes.c_uint32(limit),
+                ctypes.c_uint32(boundary_modes[minimum_boundary]),
+                ctypes.c_uint32(boundary_modes[maximum_boundary]),
+                counts.ctypes.data_as(ctypes.POINTER(ctypes.c_uint32)),
+                item_ids.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+                distances.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+                ctypes.byref(candidate_evaluations),
+                ctypes.byref(grid_probes),
+                ctypes.byref(scanned_cells),
+                ctypes.byref(upload_seconds),
+                ctypes.byref(kernel_seconds),
+                ctypes.byref(download_seconds),
+                ctypes.byref(total_seconds),
+                error,
+                ctypes.c_uint64(len(error)),
+            )
+            _check_status(status, error)
+            if bool(_np.any(counts > limit)):
+                raise RuntimeError(
+                    "native exact bounded-selection count exceeds limit"
+                )
+            slots = _np.arange(limit, dtype=_np.uint32)[None, :]
+            selected = (slots < counts[:, None]).reshape(-1)
+            compact_item_ids = item_ids[selected]
+            compact_distances = distances[selected]
+            compact_query_ids = _np.repeat(query_ids, limit)[selected]
+            compact_ranks = _np.tile(
+                _np.arange(1, limit + 1, dtype=_np.uint32),
+                query_count,
+            )[selected]
+            if compact_item_ids.size:
+                positions = _np.searchsorted(
+                    self._sorted_target_ids,
+                    compact_item_ids,
+                )
+                in_bounds = positions < self._sorted_target_ids.size
+                membership = _np.zeros(
+                    compact_item_ids.shape,
+                    dtype=_np.bool_,
+                )
+                membership[in_bounds] = (
+                    self._sorted_target_ids[positions[in_bounds]]
+                    == compact_item_ids[in_bounds]
+                )
+                if not bool(_np.all(membership)):
+                    raise RuntimeError(
+                        "exact bounded-selection item escaped the prepared domain"
+                    )
+                if (
+                    not bool(_np.all(_np.isfinite(compact_distances)))
+                    or bool(_np.any(compact_distances < 0.0))
+                ):
+                    raise RuntimeError(
+                        "exact bounded-selection distance is invalid"
+                    )
+            self.execution_count += 1
+            return {
+                "columns": {
+                    "scope_id": compact_query_ids,
+                    "item_id": compact_item_ids.astype(_np.uint32, copy=False),
+                    "distance": compact_distances,
+                    "rank": compact_ranks,
+                },
+                "metadata": {
+                    "contract": (
+                        "rtdl.prepared_exact_bounded_selection_3d.v1"
+                    ),
+                    "native_execute_symbol": symbol_name,
+                    "native_library_identity": bounded_identity.to_metadata(),
+                    "target_count": self.target_count,
+                    "query_count": query_count,
+                    "row_count": int(compact_item_ids.size),
+                    "limit": limit,
+                    "minimum_distance": minimum,
+                    "maximum_distance": maximum,
+                    "minimum_boundary": minimum_boundary,
+                    "maximum_boundary": maximum_boundary,
+                    "grid_shape": self.grid_shape,
+                    "cell_count": self.cell_count,
+                    "candidate_distance_evaluations": int(
+                        candidate_evaluations.value
+                    ),
+                    "full_qk_distance_evaluations": (
+                        self.target_count * query_count
+                    ),
+                    "candidate_pruned": (
+                        int(candidate_evaluations.value)
+                        < self.target_count * query_count
+                    ),
+                    "grid_cell_probes": int(grid_probes.value),
+                    "scanned_cell_count": int(scanned_cells.value),
+                    "bounded_qk_output": True,
+                    "deterministic_order": [
+                        "distance_squared",
+                        "item_id",
+                    ],
+                    "target_and_grid_device_resident_for_prepared_lifetime": True,
+                    "application_selected_backend": False,
+                    "app_semantics": "none",
+                    "native_phase_timings_sec": {
+                        "prepare_target_grid": self.native_prepare_seconds,
+                        "query_upload_and_allocations": float(
+                            upload_seconds.value
+                        ),
+                        "exact_bounded_selection": float(
+                            kernel_seconds.value
+                        ),
+                        "bounded_projection": float(download_seconds.value),
+                        "execute_total": float(total_seconds.value),
+                    },
+                    "execution_count": self.execution_count,
+                },
+            }
+
+    def to_metadata(self) -> dict[str, object]:
+        if not self._closed:
+            self._validate_column_domain_certificate_binding()
+        certificate_metadata = (
+            self._column_domain_certificate.to_metadata()
+            if self._column_domain_certificate is not None
+            else None
+        )
+        return {
+            "contract": self.contract,
+            "native_library_identity": self._native_library_identity.to_metadata(),
+            "native_library_identity_digest": (
+                self._native_library_identity.identity_digest
+            ),
+            "target_count": self.target_count,
+            "target_column_domain_certificate_reused": (
+                self._column_domain_certificate_reused
+            ),
+            "target_column_domain_certificate_contract": (
+                certificate_metadata.get("contract")
+                if certificate_metadata is not None
+                else None
+            ),
+            "target_column_domain_certificate": certificate_metadata,
+            "target_column_domain_single_full_validation": (
+                certificate_metadata is not None
+                and certificate_metadata.get("single_full_validation") is True
+            ),
+            "target_column_domain_validation_repeated": False
+            if self._column_domain_certificate_reused
+            else True,
+            "native_prepare_symbol": self._prepare_symbol_name,
+            "cell_count": self.cell_count,
+            "grid_shape": self.grid_shape,
+            "native_prepare_seconds": self.native_prepare_seconds,
+            "execution_count": self.execution_count,
+            "closed": self._closed,
+            "target_and_grid_device_resident_for_prepared_lifetime": True,
+            "application_selected_backend": False,
+        }
+
+    def close(self) -> None:
+        with self._lock:
+            if self._closed:
+                return
+            _, close_symbol = self._validate_native_symbol_binding()
+            handle = self._handle
+            error = ctypes.create_string_buffer(4096)
+            status = close_symbol(
+                handle,
+                error,
+                ctypes.c_uint64(len(error)),
+            )
+            _check_status(status, error)
+            self._handle = ctypes.c_void_p()
+            self._closed = True
+
+    def __enter__(self):
+        if self._closed:
+            raise RuntimeError("prepared certified nearest native owner is closed")
+        return self
+
+    def __exit__(self, exc_type, exc, traceback) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        try:
+            if hasattr(self, "_closed") and not self._closed:
+                self.close()
+        except Exception:
+            pass
+
+
+def prepare_certified_nearest_global_witness_3d_cuda(
+    target_points,
+    *,
+    target_ids=None,
+    column_domain_certificate=None,
+    grid_shape=(32, 32, 32),
+    expected_native_library_identity=None,
+    expected_native_library_ref=None,
+) -> PreparedCertifiedNearestGlobalWitness3DCuda:
+    """Create a compiler-owned native target/grid lifetime."""
+
+    return PreparedCertifiedNearestGlobalWitness3DCuda(
+        target_points,
+        target_ids=target_ids,
+        column_domain_certificate=column_domain_certificate,
+        grid_shape=grid_shape,
+        expected_native_library_identity=expected_native_library_identity,
+        expected_native_library_ref=expected_native_library_ref,
+    )
+
+
+class PreparedCertifiedNearestGlobalWitness3DOptix:
+    """Prepared true-OptiX exact nearest-state plus device witness reduction."""
+
+    contract = "rtdl.prepared_certified_nearest_global_witness_3d.optix.v1"
+
+    def __init__(
+        self,
+        target_points,
+        *,
+        target_ids=None,
+        column_domain_certificate=None,
+        grid_shape=(32, 32, 32),
+        query_domain_lower_bounds,
+        query_domain_upper_bounds,
+        max_inline_points: int = 64,
+        max_heavy_point_evaluations: int = 1 << 30,
+        expected_native_library_identity=None,
+        expected_native_library_ref=None,
+        application_selected_backend: bool = False,
+    ) -> None:
+        import numpy as _np
+        from .action_native_identity import (
+            CERTIFIED_NEAREST_OPTIX_TRAVERSAL_3D_REQUIRED_SYMBOLS,
+            native_library_identity,
+            validate_native_library_identity,
+        )
+        from .action_value_validation import strict_u32_column
+
+        if column_domain_certificate is not None:
+            from .action_nearest_state_lowering import (
+                ImmutablePointColumnDomain3DCertificate,
+            )
+
+            if not isinstance(
+                column_domain_certificate,
+                ImmutablePointColumnDomain3DCertificate,
+            ):
+                raise TypeError(
+                    "column_domain_certificate must be compiler-issued for the exact point/ID objects"
+                )
+            column_domain_certificate.validate_exact(target_points, target_ids)
+            target_matrix = column_domain_certificate.target_points
+            target_id_values = column_domain_certificate.target_ids
+            column_domain_certificate_reused = True
+        else:
+            target_matrix = _np.array(
+                target_points, dtype=_np.float64, order="C", copy=True
+            )
+            if target_matrix.ndim != 2 or target_matrix.shape[1] != 3:
+                raise ValueError("target_points must be float64[target_count][3]")
+            if target_matrix.shape[0] <= 0 or target_matrix.shape[0] > (1 << 32) - 1:
+                raise ValueError(
+                    "prepared OptiX nearest target_count must fit positive uint32"
+                )
+            if not bool(_np.all(_np.isfinite(target_matrix))):
+                raise ValueError(
+                    "prepared OptiX nearest target coordinates must be finite"
+                )
+            if target_ids is None:
+                target_id_values = _np.arange(
+                    target_matrix.shape[0], dtype=_np.int64
+                )
+            else:
+                target_id_values = strict_u32_column(
+                    target_ids,
+                    expected_length=int(target_matrix.shape[0]),
+                    require_unique=True,
+                )
+            target_matrix.setflags(write=False)
+            target_id_values.setflags(write=False)
+            column_domain_certificate_reused = False
+        target_count = int(target_matrix.shape[0])
+        shape_values = _np.ascontiguousarray(grid_shape, dtype=_np.int64)
+        if shape_values.shape != (3,) or bool(_np.any(shape_values <= 0)):
+            raise ValueError("grid_shape must contain three positive entries")
+        if (
+            int(shape_values[0])
+            * int(shape_values[1])
+            * int(shape_values[2])
+            > (1 << 32) - 1
+        ):
+            raise ValueError("grid_shape volume exceeds uint32 capacity")
+        query_lower = _np.ascontiguousarray(
+            query_domain_lower_bounds, dtype=_np.float64
+        )
+        query_upper = _np.ascontiguousarray(
+            query_domain_upper_bounds, dtype=_np.float64
+        )
+        if (
+            query_lower.shape != (3,)
+            or query_upper.shape != (3,)
+            or not bool(_np.all(_np.isfinite(query_lower)))
+            or not bool(_np.all(_np.isfinite(query_upper)))
+            or bool(_np.any(query_upper < query_lower))
+        ):
+            raise ValueError(
+                "prepared OptiX nearest query-domain bounds must be finite ordered 3-D vectors"
+            )
+        if (
+            not isinstance(max_inline_points, int)
+            or isinstance(max_inline_points, bool)
+            or max_inline_points <= 0
+        ):
+            raise ValueError("max_inline_points must be a positive integer")
+        if (
+            not isinstance(max_heavy_point_evaluations, int)
+            or isinstance(max_heavy_point_evaluations, bool)
+            or max_heavy_point_evaluations <= 0
+            or max_heavy_point_evaluations > (1 << 64) - 1
+        ):
+            raise ValueError(
+                "max_heavy_point_evaluations must fit positive uint64"
+            )
+        if not isinstance(application_selected_backend, bool):
+            raise ValueError("application_selected_backend must be boolean")
+
+        lower = _np.ascontiguousarray(
+            _np.min(target_matrix, axis=0), dtype=_np.float64
+        )
+        upper = _np.ascontiguousarray(
+            _np.max(target_matrix, axis=0), dtype=_np.float64
+        )
+        grid = point_grid_cell_mbrs_3d_cuda(
+            coords=target_matrix,
+            point_ids=target_id_values,
+            grid_shape=shape_values,
+            grid_lower_bounds=lower,
+            grid_upper_bounds=upper,
+            cell_point_order="point-id",
+        )
+        columns = grid["cell_columns"]
+        cell_ids = _np.ascontiguousarray(columns["cell_ids"], dtype=_np.int64)
+        begins = _np.ascontiguousarray(
+            columns["point_begin_offsets"], dtype=_np.int64
+        )
+        counts = _np.ascontiguousarray(columns["point_counts"], dtype=_np.int64)
+        point_rows = _np.ascontiguousarray(
+            columns["point_row_indices"], dtype=_np.int64
+        )
+        cell_mins = _np.ascontiguousarray(
+            _np.column_stack(
+                (columns["min_x"], columns["min_y"], columns["min_z"])
+            ),
+            dtype=_np.float64,
+        )
+        cell_maxs = _np.ascontiguousarray(
+            _np.column_stack(
+                (columns["max_x"], columns["max_y"], columns["max_z"])
+            ),
+            dtype=_np.float64,
+        )
+        cell_count = int(cell_ids.size)
+        if (
+            begins.shape != (cell_count,)
+            or counts.shape != (cell_count,)
+            or cell_mins.shape != (cell_count, 3)
+            or cell_maxs.shape != (cell_count, 3)
+            or point_rows.shape != (target_count,)
+        ):
+            raise RuntimeError(
+                "generic point-grid builder returned an inconsistent cell contract"
+            )
+
+        library = _load_optix_library()
+        if (expected_native_library_identity is None) != (
+            expected_native_library_ref is None
+        ):
+            raise RuntimeError(
+                "expected native library identity and strong reference must be paired"
+            )
+        if expected_native_library_identity is not None:
+            if library is not expected_native_library_ref:
+                raise RuntimeError(
+                    "resolved native library object differs from the compiler-bound strong reference"
+                )
+            resolved_native_identity = validate_native_library_identity(
+                library, expected_native_library_identity
+            )
+        else:
+            resolved_native_identity = native_library_identity(
+                library,
+                required_symbols=(
+                    CERTIFIED_NEAREST_OPTIX_TRAVERSAL_3D_REQUIRED_SYMBOLS
+                ),
+            )
+        prepare_name = "rtdl_optix_prepare_certified_nearest_state_3d"
+        execute_name = (
+            "rtdl_optix_run_prepared_certified_nearest_global_witness_3d"
+        )
+        close_name = "rtdl_optix_destroy_prepared_certified_nearest_state_3d"
+        prepare_symbol = _find_optional_backend_symbol(library, prepare_name)
+        execute_symbol = _find_optional_backend_symbol(library, execute_name)
+        close_symbol = _find_optional_backend_symbol(library, close_name)
+        if prepare_symbol is None or execute_symbol is None or close_symbol is None:
+            path = getattr(library, "_rtdl_library_path", "<unknown>")
+            raise RuntimeError(
+                f"Loaded OptiX backend library {path!r} lacks the prepared true-OptiX "
+                "certified-nearest ABI; rebuild current main"
+            )
+        validate_native_library_identity(library, resolved_native_identity)
+        prepare_symbol.argtypes = [
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_uint64,
+            ctypes.c_uint64,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        prepare_symbol.restype = ctypes.c_int
+        execute_symbol.argtypes = [
+            ctypes.c_void_p,
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_int64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_uint64),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        execute_symbol.restype = ctypes.c_int
+        close_symbol.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_char_p,
+            ctypes.c_size_t,
+        ]
+        close_symbol.restype = ctypes.c_int
+
+        handle = ctypes.c_void_p()
+        traversal_radius = ctypes.c_double()
+        prepare_seconds = ctypes.c_double()
+        error = ctypes.create_string_buffer(4096)
+        status = prepare_symbol(
+            target_matrix.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            target_id_values.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+            ctypes.c_size_t(target_count),
+            cell_ids.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+            begins.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+            counts.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+            cell_mins.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            cell_maxs.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            ctypes.c_size_t(cell_count),
+            point_rows.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+            ctypes.c_size_t(target_count),
+            query_lower.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            query_upper.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+            ctypes.c_uint64(max_inline_points),
+            ctypes.c_uint64(max_heavy_point_evaluations),
+            ctypes.byref(handle),
+            ctypes.byref(traversal_radius),
+            ctypes.byref(prepare_seconds),
+            error,
+            ctypes.c_size_t(len(error)),
+        )
+        _check_status(status, error)
+        if not handle.value:
+            raise RuntimeError("prepared true-OptiX nearest owner returned null")
+        self._library = library
+        self._native_library_identity = resolved_native_identity
+        self._prepare_symbol = prepare_symbol
+        self._execute_symbol = execute_symbol
+        self._close_symbol = close_symbol
+        self._prepare_symbol_name = prepare_name
+        self._execute_symbol_name = execute_name
+        self._close_symbol_name = close_name
+        self._handle = handle
+        self._lock = threading.RLock()
+        self._closed = False
+        self._query_lower = query_lower
+        self._query_upper = query_upper
+        self._target_ids_sorted = _np.sort(target_id_values).copy()
+        self._target_ids_sorted.setflags(write=False)
+        self._column_domain_certificate = column_domain_certificate
+        self._column_domain_certificate_reused = column_domain_certificate_reused
+        self._application_selected_backend = application_selected_backend
+        self._target_points = target_matrix
+        self._target_ids = target_id_values
+        self._native_symbol_binding_seal = self._sign_native_symbol_binding()
+        self.target_count = target_count
+        self.cell_count = cell_count
+        self.grid_shape = tuple(int(value) for value in shape_values.tolist())
+        self.max_inline_points = max_inline_points
+        self.max_heavy_point_evaluations = max_heavy_point_evaluations
+        self.traversal_radius = float(traversal_radius.value)
+        self.native_prepare_seconds = float(prepare_seconds.value)
+        self.execution_count = 0
+
+    def _native_symbol_binding_payload(self) -> bytes:
+        return (
+            "rtdl.prepared_certified_nearest_optix_symbol_binding.v1\x00"
+            f"{id(self._library)}\x00"
+            f"{self._native_library_identity.identity_digest}\x00"
+            f"{id(self._prepare_symbol)}\x00{id(self._execute_symbol)}\x00"
+            f"{id(self._close_symbol)}\x00{id(self._column_domain_certificate)}\x00"
+            f"{id(self._target_points)}\x00{id(self._target_ids)}\x00"
+            f"{self._query_lower.tobytes().hex()}\x00"
+            f"{self._query_upper.tobytes().hex()}"
+        ).encode("utf-8")
+
+    def _sign_native_symbol_binding(self) -> str:
+        return hmac.new(
+            _PREPARED_CERTIFIED_NEAREST_SYMBOL_BINDING_SECRET,
+            self._native_symbol_binding_payload(),
+            hashlib.sha256,
+        ).hexdigest()
+
+    def _validate_binding(self):
+        from .action_native_identity import validate_native_library_identity
+
+        validate_native_library_identity(
+            self._library, self._native_library_identity
+        )
+        if self._column_domain_certificate is not None:
+            self._column_domain_certificate.validate_exact(
+                self._target_points, self._target_ids
+            )
+        resolved = (
+            _find_optional_backend_symbol(
+                self._library, self._prepare_symbol_name
+            ),
+            _find_optional_backend_symbol(
+                self._library, self._execute_symbol_name
+            ),
+            _find_optional_backend_symbol(
+                self._library, self._close_symbol_name
+            ),
+        )
+        if (
+            resolved
+            != (self._prepare_symbol, self._execute_symbol, self._close_symbol)
+            or not hmac.compare_digest(
+                self._native_symbol_binding_seal,
+                self._sign_native_symbol_binding(),
+            )
+        ):
+            raise RuntimeError(
+                "prepared true-OptiX nearest native binding changed"
+            )
+        return self._execute_symbol, self._close_symbol
+
+    @property
+    def closed(self) -> bool:
+        return self._closed
+
+    def run(self, query_points, *, validation_sample_indices=()) -> dict[str, object]:
+        import numpy as _np
+
+        with self._lock:
+            if self._closed or not self._handle.value:
+                raise RuntimeError("prepared true-OptiX nearest owner is closed")
+            execute_symbol, _ = self._validate_binding()
+            query_matrix = _np.array(
+                query_points, dtype=_np.float64, order="C", copy=True
+            )
+            if query_matrix.ndim != 2 or query_matrix.shape[1] != 3:
+                raise ValueError("query_points must be float64[query_count][3]")
+            query_count = int(query_matrix.shape[0])
+            if query_count <= 0 or query_count > (1 << 32) - 1:
+                raise ValueError(
+                    "prepared true-OptiX nearest query_count must fit positive uint32"
+                )
+            if not bool(_np.all(_np.isfinite(query_matrix))):
+                raise ValueError("query_points must be finite")
+            if bool(_np.any(query_matrix < self._query_lower)) or bool(
+                _np.any(query_matrix > self._query_upper)
+            ):
+                raise ValueError(
+                    "prepared true-OptiX nearest query escaped certified domain"
+                )
+            query_ids = _np.arange(query_count, dtype=_np.int64)
+            sample_indices = _np.ascontiguousarray(
+                validation_sample_indices, dtype=_np.int64
+            )
+            if sample_indices.ndim != 1:
+                raise ValueError("validation_sample_indices must be 1-D")
+            if sample_indices.size and (
+                bool(_np.any(sample_indices < 0))
+                or bool(_np.any(sample_indices >= query_count))
+                or int(_np.unique(sample_indices).size)
+                != int(sample_indices.size)
+            ):
+                raise ValueError(
+                    "validation_sample_indices must be unique and in range"
+                )
+            witness_source = ctypes.c_int64()
+            witness_item = ctypes.c_int64()
+            witness_distance = ctypes.c_double()
+            sample_items = _np.empty(sample_indices.size, dtype=_np.int64)
+            sample_distances = _np.empty(
+                sample_indices.size, dtype=_np.float64
+            )
+            evaluations = ctypes.c_uint64()
+            scanned_cells = ctypes.c_uint64()
+            heavy_evaluations = ctypes.c_uint64()
+            launch_count = ctypes.c_uint64()
+            upload_seconds = ctypes.c_double()
+            optix_seconds = ctypes.c_double()
+            continuation_seconds = ctypes.c_double()
+            total_seconds = ctypes.c_double()
+            error = ctypes.create_string_buffer(4096)
+            sample_index_ptr = (
+                sample_indices.ctypes.data_as(
+                    ctypes.POINTER(ctypes.c_int64)
+                )
+                if sample_indices.size
+                else ctypes.POINTER(ctypes.c_int64)()
+            )
+            sample_item_ptr = (
+                sample_items.ctypes.data_as(ctypes.POINTER(ctypes.c_int64))
+                if sample_items.size
+                else ctypes.POINTER(ctypes.c_int64)()
+            )
+            sample_distance_ptr = (
+                sample_distances.ctypes.data_as(
+                    ctypes.POINTER(ctypes.c_double)
+                )
+                if sample_distances.size
+                else ctypes.POINTER(ctypes.c_double)()
+            )
+            status = execute_symbol(
+                self._handle,
+                query_matrix.ctypes.data_as(
+                    ctypes.POINTER(ctypes.c_double)
+                ),
+                query_ids.ctypes.data_as(ctypes.POINTER(ctypes.c_int64)),
+                ctypes.c_size_t(query_count),
+                sample_index_ptr,
+                ctypes.c_size_t(int(sample_indices.size)),
+                ctypes.byref(witness_source),
+                ctypes.byref(witness_item),
+                ctypes.byref(witness_distance),
+                sample_item_ptr,
+                sample_distance_ptr,
+                ctypes.byref(evaluations),
+                ctypes.byref(scanned_cells),
+                ctypes.byref(heavy_evaluations),
+                ctypes.byref(launch_count),
+                ctypes.byref(upload_seconds),
+                ctypes.byref(optix_seconds),
+                ctypes.byref(continuation_seconds),
+                ctypes.byref(total_seconds),
+                error,
+                ctypes.c_size_t(len(error)),
+            )
+            _check_status(status, error)
+            source_value = int(witness_source.value)
+            item_value = int(witness_item.value)
+            distance_value = float(witness_distance.value)
+            if (
+                source_value < 0
+                or source_value >= query_count
+                or item_value < 0
+                or not math.isfinite(distance_value)
+                or distance_value < 0.0
+            ):
+                raise RuntimeError(
+                    "prepared true-OptiX nearest witness is invalid"
+                )
+            position = int(
+                _np.searchsorted(self._target_ids_sorted, item_value)
+            )
+            if (
+                position >= self._target_ids_sorted.size
+                or int(self._target_ids_sorted[position]) != item_value
+            ):
+                raise RuntimeError(
+                    "prepared true-OptiX witness item is outside target domain"
+                )
+            if sample_items.size:
+                positions = _np.searchsorted(
+                    self._target_ids_sorted, sample_items
+                )
+                in_range = positions < self._target_ids_sorted.size
+                present = _np.zeros(sample_items.shape, dtype=_np.bool_)
+                present[in_range] = (
+                    self._target_ids_sorted[positions[in_range]]
+                    == sample_items[in_range]
+                )
+                if (
+                    not bool(_np.all(present))
+                    or not bool(_np.all(_np.isfinite(sample_distances)))
+                    or bool(_np.any(sample_distances < 0.0))
+                ):
+                    raise RuntimeError(
+                        "prepared true-OptiX validation samples are invalid"
+                    )
+            if int(launch_count.value) != 1:
+                raise RuntimeError(
+                    "prepared true-OptiX route did not report exactly one launch"
+                )
+            self.execution_count += 1
+            return {
+                "actual": {
+                    "source_id": source_value,
+                    "item_id": item_value,
+                    "value": distance_value,
+                },
+                "validation_samples": {
+                    "source_indices": sample_indices,
+                    "nearest_item_ids": sample_items,
+                    "nearest_distances": sample_distances,
+                },
+                "metadata": {
+                    "contract": self.contract,
+                    "native_library_identity": (
+                        self._native_library_identity.to_metadata()
+                    ),
+                    "native_library_identity_digest": (
+                        self._native_library_identity.identity_digest
+                    ),
+                    "native_library_identity_revalidated": True,
+                    "native_prepare_symbol": self._prepare_symbol_name,
+                    "native_execute_symbol": self._execute_symbol_name,
+                    "target_column_domain_certificate_contract": (
+                        self._column_domain_certificate.contract
+                        if self._column_domain_certificate is not None
+                        else None
+                    ),
+                    "target_column_domain_certificate_reused": (
+                        self._column_domain_certificate_reused
+                    ),
+                    "target_column_domain_single_full_validation": (
+                        self._column_domain_certificate_reused
+                    ),
+                    "target_column_domain_validation_repeated": (
+                        not self._column_domain_certificate_reused
+                    ),
+                    "physical_executor_kind": (
+                        "prepared_optix_cell_mbr_f64_nearest_with_bounded_device_continuation"
+                    ),
+                    "physical_placement": "traversal_device_continuation",
+                    "optix_traversal_used": True,
+                    "optix_launch_count": int(launch_count.value),
+                    "prepared_gas_reused": True,
+                    "query_domain_certificate_enforced": True,
+                    "query_domain_lower_bounds": tuple(
+                        float(value) for value in self._query_lower.tolist()
+                    ),
+                    "query_domain_upper_bounds": tuple(
+                        float(value) for value in self._query_upper.tolist()
+                    ),
+                    "traversal_radius": self.traversal_radius,
+                    "target_count": self.target_count,
+                    "query_count": query_count,
+                    "cell_count": self.cell_count,
+                    "grid_shape": self.grid_shape,
+                    "max_inline_points": self.max_inline_points,
+                    "max_heavy_point_evaluations": (
+                        self.max_heavy_point_evaluations
+                    ),
+                    "candidate_distance_evaluations": int(
+                        evaluations.value
+                    ),
+                    "scanned_cell_count": int(scanned_cells.value),
+                    "heavy_point_evaluations": int(
+                        heavy_evaluations.value
+                    ),
+                    "target_and_gas_device_resident_for_prepared_lifetime": True,
+                    "nearest_state_device_resident_through_global_reducer": True,
+                    "full_nearest_state_host_projection_used": False,
+                    "bounded_witness_host_projection_rows": 1,
+                    "bounded_validation_sample_rows": int(
+                        sample_indices.size
+                    ),
+                    "native_phase_timings_sec": {
+                        "prepare_target_grid_and_gas": (
+                            self.native_prepare_seconds
+                        ),
+                        "query_upload": float(upload_seconds.value),
+                        "optix_traversal": float(optix_seconds.value),
+                        "bounded_continuation_and_global_reducer": float(
+                            continuation_seconds.value
+                        ),
+                        "execute_total": float(total_seconds.value),
+                    },
+                    "native_subphase_component_calibration_eligible": False,
+                    "runtime_speedup_claimed": False,
+                    "paper_performance_claimed": False,
+                    "application_selected_backend": (
+                        self._application_selected_backend
+                    ),
+                    "selection_owner": (
+                        "application"
+                        if self._application_selected_backend
+                        else "compiler"
+                    ),
+                    "app_semantics": "none",
+                    "execution_count": self.execution_count,
+                },
+            }
+
+    def close(self) -> None:
+        with self._lock:
+            if self._closed:
+                return
+            _, close_symbol = self._validate_binding()
+            error = ctypes.create_string_buffer(4096)
+            status = close_symbol(
+                self._handle, error, ctypes.c_size_t(len(error))
+            )
+            _check_status(status, error)
+            self._handle = ctypes.c_void_p()
+            self._closed = True
+
+    def __enter__(self):
+        if self._closed:
+            raise RuntimeError("prepared true-OptiX nearest owner is closed")
+        return self
+
+    def __exit__(self, exc_type, exc, traceback) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        try:
+            if hasattr(self, "_closed") and not self._closed:
+                self.close()
+        except Exception:
+            pass
+
+
+def prepare_certified_nearest_global_witness_3d_optix(
+    target_points,
+    *,
+    target_ids=None,
+    column_domain_certificate=None,
+    grid_shape=(32, 32, 32),
+    query_domain_lower_bounds,
+    query_domain_upper_bounds,
+    max_inline_points: int = 64,
+    max_heavy_point_evaluations: int = 1 << 30,
+    expected_native_library_identity=None,
+    expected_native_library_ref=None,
+    application_selected_backend: bool = False,
+) -> PreparedCertifiedNearestGlobalWitness3DOptix:
+    """Create a true-OptiX nearest-state lifetime.
+
+    The default remains compiler-owned.  A V2-style direct application may set
+    ``application_selected_backend=True`` to record the legacy explicit
+    physical-selection model without changing the native algorithm.
+    """
+
+    return PreparedCertifiedNearestGlobalWitness3DOptix(
+        target_points,
+        target_ids=target_ids,
+        column_domain_certificate=column_domain_certificate,
+        grid_shape=grid_shape,
+        query_domain_lower_bounds=query_domain_lower_bounds,
+        query_domain_upper_bounds=query_domain_upper_bounds,
+        max_inline_points=max_inline_points,
+        max_heavy_point_evaluations=max_heavy_point_evaluations,
+        expected_native_library_identity=expected_native_library_identity,
+        expected_native_library_ref=expected_native_library_ref,
+        application_selected_backend=application_selected_backend,
+    )
 
 
 def seed_nearest_witness_grid_branch_bound_3d_cuda(

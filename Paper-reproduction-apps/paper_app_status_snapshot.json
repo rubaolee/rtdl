@@ -1,6 +1,6 @@
 {
   "schema": "rtdl.paper_reproduction.portfolio_status.v1",
-  "as_of": "2026-07-13",
+  "as_of": "2026-07-14",
   "portfolio_rule": "Each paper app is a scoped evidence package and system pressure test. No app may promote paper-specific semantics into RTDL core.",
   "full_all_dataset_all_figure_reproduction_claimed": false,
   "apps": {
@@ -82,6 +82,34 @@
       "primary_doc": "Paper-reproduction-apps/librts-paper/README.md",
       "review_evidence": "history/internal_docs/review_goals5519_5525_librts_final_closeout_verified_2026-07-13.md",
       "review_identity_terms": ["librts", "goal5519", "approve"]
+    },
+    "rtnn-paper": {
+      "scoped_status": "scoped_exact_correctness_and_system_extraction_complete__externally_reviewed_and_approved",
+      "externally_reviewed_closeout": true,
+      "reviewer": "External strict review captured in the verified Goals5527-5549 sign-off",
+      "full_paper_reproduction_claimed": false,
+      "strongest_correctness": "Exact relations match bounded, representative synthetic, public HappyBuddha same-source, and a 12,000,000-search/4,096-query Level-B same-byte gate. The Level-B exact gate emits 16,382 rows with zero semantic mismatches under exact author-float32 score tie classes; strict raw neighbor-ID equality is false. On those same bytes, author default approximation mode 2 has float32 score recall@K 1.0 and raw-ID recall 0.994262, limited to this workload.",
+      "performance": "Goal5547 changes the RTDL query route from 783.417830s of full relation materialization plus host ranking to a 2.244261s four-run median with bounded Q*K output, about 349.08x internally and about 39,457x fewer materialized rows. This is a same-POD RTDL old-route/new-route diagnostic, not an author or paper ratio.",
+      "boundary": "Exact paper construction provenance is available for 0/9 audited workload labels. The 12M packet is Level-B, not exact paper input. Goal5548 does not reproduce the RTDL approximation algorithm or the complete paper-default point-sort configuration. No Figure 13, Oracle, paper Figure, author algorithm equivalence, performance parity, or full-paper claim is authorized.",
+      "primary_doc": "Paper-reproduction-apps/rtnn-paper/README.md",
+      "closeout_evidence": "Paper-reproduction-apps/rtnn-paper/results/rtnn_goal5549_scoped_closeout.json",
+      "review_evidence": "history/internal_docs/review_goals5527_5549_rtnn_scoped_closeout_verified_2026-07-13.md",
+      "review_identity_terms": ["rtnn", "approve_goals5527_5549", "goal5547", "ra-1", "ra-2"]
+    },
+    "raydb-paper": {
+      "scoped_status": "scoped_generated_ssb_correctness_and_system_extraction_complete",
+      "externally_reviewed_closeout": false,
+      "review_status": "independent_claude_style_internal_review_approved",
+      "reviewer": "Independent Claude-style internal reviewer (not Claude; not external)",
+      "full_paper_reproduction_claimed": false,
+      "strongest_correctness": "The pinned author, independent DuckDB oracle, and generic RTDL partitioned OptiX route produce identical complete grouped integer rows for all 13 deterministic same-source SSB queries at SF10 and SF20 using identical hashed packet bytes.",
+      "performance": "The same-host aligned launch phase is unfavorable to RTDL: author median 0.439941ms versus RTDL 4.054084ms at SF10, and 0.767822ms versus 8.159624ms at SF20; the author is faster on 13/13 queries at both scales, and launch topology differs.",
+      "boundary": "Generated SF10/SF20 are not verified paper bytes. Figure 12, paper-modified Crystal, RTX4090 hardware, paper performance, author algorithm equivalence, whole-program speedup, zero-copy, and full-paper reproduction remain unclaimed.",
+      "primary_doc": "Paper-reproduction-apps/raydb-paper/README.md",
+      "closeout_evidence": "Paper-reproduction-apps/raydb-paper/results/raydb_scoped_closeout.json",
+      "review_evidence": "history/internal_docs/review_goals5551_5569_raydb_scoped_closeout_claude_style_approved_2026-07-14.md",
+      "additional_review_evidence": ["history/internal_docs/review_goals5551_5569_raydb_scoped_closeout_claude_style_final_verified_2026-07-14.md"],
+      "review_identity_terms": ["raydb", "sf10", "sf20", "13", "partitioned", "approve_raydb_scoped", "not an external review"]
     }
   }
 }

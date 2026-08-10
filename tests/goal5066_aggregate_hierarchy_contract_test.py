@@ -65,9 +65,10 @@ class Goal5066AggregateHierarchyContractTest(unittest.TestCase):
         contract = rt.validate_aggregate_hierarchy_3d_contract()
 
         self.assertEqual(rt.AGGREGATE_HIERARCHY_3D_CONTRACT_VERSION, contract["contract_version"])
-        self.assertEqual("reference_and_optional_numba_cpu_executor_no_native_backend", contract["api_maturity"])
+        self.assertEqual(rt.AGGREGATE_HIERARCHY_3D_API_MATURITY, contract["api_maturity"])
         self.assertTrue(contract["reference_execution_authorized"])
         self.assertFalse(contract["native_backend_symbols_authorized"])
+        self.assertTrue(contract["compiler_owned_native_symbols_authorized"])
         self.assertFalse(contract["app_specific_schema_allowed"])
         self.assertFalse(contract["paper_reproduction_claim_authorized"])
         self.assertFalse(contract["whole_program_speedup_claim_authorized"])

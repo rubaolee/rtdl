@@ -1,14 +1,24 @@
 from __future__ import annotations
 
+import hashlib
+import json
 import math
 import time
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Iterable, Mapping
 
 from .aabb_columns import Aabb2DColumns
 
 
 AABB_INDEX_2D_OPERATIONS = ("point_contains", "range_contains", "range_intersects")
+_COMPILER_AABB_INDEX_2D_OPERATIONS = AABB_INDEX_2D_OPERATIONS + (
+    "point_contains_rows",
+    "range_intersection_rows",
+)
+_PRODUCTION_AABB_SEMANTIC_KIND = "prepared_aabb_index_queries_2d.v1"
+_PRODUCTION_AABB_CONTRACT_CLASS = "bounded_count_or_pair_rows"
+_PRODUCTION_AABB_TEMPLATE = "prepared_optix_aabb_index_query_2d"
 EXPANDED_AABB_POINT_MEMBERSHIP_2D_PRIMITIVE = "EXPANDED_AABB_POINT_MEMBERSHIP_2D"
 EXPANDED_AABB_POINT_MEMBERSHIP_2D_CONTRACT = "generic_expanded_aabb_point_membership_rows_2d_v1"
 EXPANDED_AABB_POINT_MEMBERSHIP_2D_ROW_SCHEMA = ("source_id", "box_id", "metadata_flags")
@@ -705,6 +715,388 @@ def prepare_aabb_index_2d_columns(
         ),
         row_ids=columnar.ids,
     )
+
+
+@dataclass
+class CompilerPreparedAabbIndex2D:
+    """Compiler-selected prepared AABB owner without an application backend knob."""
+
+    owner: Any
+    target_profile: Any
+    requested_operations: tuple[str, ...]
+    selected_backend: str
+    fallback_rejections: tuple[tuple[str, str], ...]
+    production_plan: Mapping[str, object]
+    production_binding: Mapping[str, object]
+    canonical_resolution: Mapping[str, object] | None
+    canonical_production_authority: Mapping[str, object] | None
+    max_query_count: int
+    max_output_rows: int
+    closed: bool = False
+
+    def count(self, **kwargs) -> dict[str, Any]:
+        if self.closed:
+            raise RuntimeError("compiler-prepared AABB owner is closed")
+        return self.owner.count(**kwargs)
+
+    def intersection_rows(self, *args, **kwargs):
+        if self.closed:
+            raise RuntimeError("compiler-prepared AABB owner is closed")
+        method = getattr(self.owner, "intersection_rows", None)
+        if not callable(method):
+            raise RuntimeError("compiler-selected AABB owner cannot emit intersection rows")
+        return method(*args, **kwargs)
+
+    def point_membership_rows(self, *args, **kwargs):
+        if self.closed:
+            raise RuntimeError("compiler-prepared AABB owner is closed")
+        method = getattr(self.owner, "point_membership_rows", None)
+        if not callable(method):
+            raise RuntimeError("compiler-selected AABB owner cannot emit point-membership rows")
+        return method(*args, **kwargs)
+
+    def close(self) -> None:
+        if self.closed:
+            return
+        try:
+            close = getattr(self.owner, "close", None)
+            if callable(close):
+                close()
+        finally:
+            self.closed = True
+
+    def to_metadata(self) -> dict[str, object]:
+        return {
+            "contract": "rtdl.compiler_prepared_aabb_index_2d.private_candidate.v1",
+            "target_profile": self.target_profile.to_metadata(),
+            "requested_operations": list(self.requested_operations),
+            "selected_backend": self.selected_backend,
+            "fallback_rejections": [
+                {"backend": backend, "reason": reason}
+                for backend, reason in self.fallback_rejections
+            ],
+            "production_default_plan": dict(self.production_plan),
+            "production_default_binding": dict(self.production_binding),
+            "canonical_resolution": (
+                dict(self.canonical_resolution)
+                if self.canonical_resolution is not None
+                else None
+            ),
+            "canonical_production_authority": (
+                dict(self.canonical_production_authority)
+                if self.canonical_production_authority is not None
+                else None
+            ),
+            "max_query_count": self.max_query_count,
+            "max_output_rows": self.max_output_rows,
+            "fixed_priority_legal_order": None,
+            "compiler_owned": True,
+            "application_selected_backend": False,
+            "closed": self.closed,
+            "runtime_speedup_claimed": False,
+        }
+
+    def __enter__(self):
+        if self.closed:
+            raise RuntimeError("compiler-prepared AABB owner is closed")
+        return self
+
+    def __exit__(self, exc_type, exc, traceback) -> None:
+        self.close()
+
+
+def _canonical_sha256(value: object) -> str:
+    return hashlib.sha256(
+        json.dumps(
+            value,
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=True,
+            allow_nan=False,
+        ).encode("ascii")
+    ).hexdigest()
+
+
+def _compile_aabb_index_production_default(
+    *,
+    indexed_count: int,
+    operations: tuple[str, ...],
+    max_query_count: int,
+    max_output_rows: int,
+    semantic_statement_stable_id: str | None = None,
+    backend_contract_id: str | None = None,
+) -> tuple[
+    object,
+    dict[str, object],
+    dict[str, object],
+    str,
+    Mapping[str, object] | None,
+    Mapping[str, object] | None,
+]:
+    """Select and bind the generic prepared-AABB query implementation.
+
+    This compiler front door accepts only semantic/resource facts.  It never
+    receives an application, dataset, candidate, backend, template, or
+    program override.  Counts stream a bounded scalar result; row-producing
+    operations are bounded by the caller-declared fail-closed row capacity.
+    """
+
+    for field, value in (
+        ("indexed_count", indexed_count),
+        ("max_query_count", max_query_count),
+        ("max_output_rows", max_output_rows),
+    ):
+        if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+            raise ValueError(f"{field} must be a nonnegative integer")
+    if indexed_count == 0:
+        raise ValueError("prepared AABB DEFAULT requires at least one indexed box")
+    if max_query_count == 0:
+        raise ValueError("prepared AABB DEFAULT requires a positive max_query_count")
+    if not operations or any(
+        operation not in _COMPILER_AABB_INDEX_2D_OPERATIONS
+        for operation in operations
+    ):
+        raise ValueError("prepared AABB DEFAULT operation set is invalid")
+    row_operations = {
+        "point_contains_rows",
+        "range_intersection_rows",
+    }.intersection(operations)
+    if row_operations and max_output_rows == 0:
+        raise ValueError("row-producing prepared AABB DEFAULT requires max_output_rows")
+    if not row_operations and max_output_rows != 0:
+        raise ValueError("count-only prepared AABB DEFAULT cannot declare row output")
+    pair_count = indexed_count * max_query_count
+    if pair_count >= 1 << 64:
+        raise ValueError("prepared AABB DEFAULT pair bound exceeds uint64")
+
+    from .action_api import detect_action_target_profile
+    from .default_physical_selection import current_registry_snapshot
+    from .production_default_integration import (
+        bind_default_plan_to_lowering,
+        compile_production_default_plan,
+        make_production_action_descriptor,
+        make_production_target_descriptor,
+    )
+
+    target = detect_action_target_profile(cpu_reference_available=False)
+    if not target.optix_available or target.device_memory_limit_bytes is None:
+        raise RuntimeError("NO_LEGAL_CANDIDATE: prepared AABB true-OptiX target unavailable")
+    providers = ["optix"]
+    action_contract = {
+        "schema": "rtdl.production.prepared_aabb_index_query_2d.v1",
+        "semantic_kind": _PRODUCTION_AABB_SEMANTIC_KIND,
+        "contract_class": _PRODUCTION_AABB_CONTRACT_CLASS,
+        "operations": list(operations),
+        "inclusive_exact_predicates": True,
+        "bounded_output": True,
+    }
+    output_bytes = (
+        max_output_rows * 16 if row_operations else max(8, len(operations) * 8)
+    )
+    action = make_production_action_descriptor(
+        semantic_kind=_PRODUCTION_AABB_SEMANTIC_KIND,
+        action_contract_class=_PRODUCTION_AABB_CONTRACT_CLASS,
+        action_semantic_digest=_canonical_sha256(action_contract),
+        output_contract={
+            "operations": list(operations),
+            "row_order": "canonical_query_then_indexed_id",
+            "overflow": "fail_closed",
+            "output_bytes": output_bytes,
+        },
+        work_domain={
+            "indexed_count": indexed_count,
+            "max_query_count": max_query_count,
+            "max_output_rows": max_output_rows,
+            "pair_interaction_bound": pair_count,
+        },
+        input_bytes=indexed_count * 40 + max_query_count * 40,
+        output_bytes=output_bytes,
+        prepared_bytes=indexed_count * 40,
+        logical_cardinality_bound=max(indexed_count, max_query_count),
+        pair_cardinality_bound=pair_count,
+        logical_item_bytes_bound=40,
+        pair_item_bytes_bound=16,
+    )
+    target_descriptor = make_production_target_descriptor(
+        target_identity={
+            "target_profile": target.to_metadata(),
+            "semantic_kind": _PRODUCTION_AABB_SEMANTIC_KIND,
+            "mandatory_nvidia_rt": True,
+        },
+        available_providers=providers,
+        memory_limit_bytes=int(target.device_memory_limit_bytes),
+        mandatory_nvidia_rt=True,
+    )
+    if (semantic_statement_stable_id is None) != (backend_contract_id is None):
+        raise ValueError(
+            "canonical semantic statement and backend contract are required together"
+        )
+    canonical_resolution = None
+    canonical_authority = None
+    if semantic_statement_stable_id is not None:
+        from .canonical_physical_resolution import (
+            CanonicalPhysicalResolutionError,
+            registered_backend_contract,
+            registered_semantic_statement,
+            resolve_canonical_provider,
+        )
+
+        statement = registered_semantic_statement(semantic_statement_stable_id)
+        backend_contract = registered_backend_contract(backend_contract_id)
+        canonical_resolution = resolve_canonical_provider(
+            statement_stable_id=statement.stable_id,
+            expected_statement_sha256=statement.digest,
+            backend_contract_id=backend_contract.stable_id,
+            expected_backend_contract_sha256=backend_contract.digest,
+            action=action,
+            target=target_descriptor,
+        )
+        if canonical_resolution.get("status") != "RESOLVED":
+            raise CanonicalPhysicalResolutionError(
+                str(canonical_resolution.get("error_code", "FAIL_CLOSED")),
+                str(canonical_resolution.get("error_detail", "")),
+            )
+    plan = compile_production_default_plan(
+        action,
+        target_descriptor,
+        mandatory_nvidia_rt=True,
+        repository_root=Path(__file__).resolve().parents[2],
+    )
+    winner = str(plan["selected_candidate_stable_id"])
+    declaration = next(
+        row
+        for row in current_registry_snapshot().declarations
+        if row.stable_id == winner
+    )
+    if declaration.backend != "optix" or declaration.template != _PRODUCTION_AABB_TEMPLATE:
+        raise RuntimeError("prepared AABB DEFAULT selected an unsupported physical route")
+    binding = bind_default_plan_to_lowering(
+        plan,
+        actual_backend=declaration.backend,
+        actual_template=declaration.template,
+        repository_root=Path(__file__).resolve().parents[2],
+    )
+    if canonical_resolution is not None:
+        from .canonical_physical_resolution import (
+            bind_canonical_provider_to_materialized_plan,
+        )
+
+        canonical_authority = bind_canonical_provider_to_materialized_plan(
+            canonical_resolution,
+            materialized_provider_stable_id=winner,
+            materialized_plan_sha256=plan["production_plan_sha256"],
+            materialized_binding_sha256=binding["binding_sha256"],
+        )
+    return (
+        target,
+        plan,
+        binding,
+        declaration.backend,
+        canonical_resolution,
+        canonical_authority,
+    )
+
+
+def prepare_compiler_aabb_index_2d_columns(
+    columns: Aabb2DColumns | Mapping[str, object],
+    *,
+    operations: Iterable[str],
+    indexed_ids: Iterable[int] | None = None,
+    resolution: int = 32,
+    max_query_count: int,
+    max_output_rows: int = 0,
+    semantic_statement_stable_id: str | None = None,
+    backend_contract_id: str | None = None,
+) -> CompilerPreparedAabbIndex2D:
+    """Select through production DEFAULT and prepare one generic AABB owner."""
+
+    requested = tuple(dict.fromkeys(str(value) for value in operations))
+    if not requested:
+        raise ValueError("at least one AABB operation is required")
+    columnar = (
+        columns
+        if isinstance(columns, Aabb2DColumns)
+        else Aabb2DColumns.from_mapping(columns, indexed_ids=indexed_ids)
+    )
+    target, plan, binding, backend, canonical_resolution, canonical_authority = (
+        _compile_aabb_index_production_default(
+        indexed_count=len(columnar),
+        operations=requested,
+        max_query_count=max_query_count,
+        max_output_rows=max_output_rows,
+        semantic_statement_stable_id=semantic_statement_stable_id,
+        backend_contract_id=backend_contract_id,
+        )
+    )
+    owner = prepare_aabb_index_2d_columns(
+        columnar,
+        indexed_ids=columnar.ids,
+        resolution=resolution,
+        backend=backend,
+    )
+    return CompilerPreparedAabbIndex2D(
+        owner=owner,
+        target_profile=target,
+        requested_operations=requested,
+        selected_backend=backend,
+        fallback_rejections=(),
+        production_plan=plan,
+        production_binding=binding,
+        canonical_resolution=canonical_resolution,
+        canonical_production_authority=canonical_authority,
+        max_query_count=max_query_count,
+        max_output_rows=max_output_rows,
+    )
+
+
+def compiler_expanded_aabb_point_membership_rows_2d(
+    indexed_boxes: Iterable[Any],
+    source_points: Iterable[Any],
+    **kwargs,
+) -> dict[str, Any]:
+    """Compiler-owned placement for generic expanded-AABB membership rows."""
+
+    if "backend" in kwargs:
+        raise ValueError("compiler expanded-AABB front door does not accept a backend")
+    indexed = tuple(indexed_boxes)
+    sources = tuple(source_points)
+    row_capacity = kwargs.get("row_capacity")
+    resolved_capacity = (
+        len(indexed) * len(sources)
+        if row_capacity is None
+        else int(row_capacity)
+    )
+    target, plan, binding, backend, canonical_resolution, canonical_authority = (
+        _compile_aabb_index_production_default(
+        indexed_count=len(indexed),
+        operations=("point_contains_rows",),
+        max_query_count=len(sources),
+        max_output_rows=resolved_capacity,
+        )
+    )
+    result = expanded_aabb_point_membership_rows_2d(
+        indexed,
+        sources,
+        backend=backend,
+        **kwargs,
+    )
+    return {
+        **result,
+        "compiler_plan": {
+            "contract": "rtdl.compiler_expanded_aabb_membership_plan.production_default.v2",
+            "target_profile": target.to_metadata(),
+            "selected_backend": backend,
+            "fallback_rejections": [],
+            "production_default_plan": plan,
+            "production_default_binding": binding,
+            "canonical_resolution": canonical_resolution,
+            "canonical_production_authority": canonical_authority,
+            "fixed_priority_legal_order": None,
+            "compiler_owned": True,
+            "application_selected_backend": False,
+            "runtime_speedup_claimed": False,
+        },
+    }
 
 
 def query_aabb_index_2d(

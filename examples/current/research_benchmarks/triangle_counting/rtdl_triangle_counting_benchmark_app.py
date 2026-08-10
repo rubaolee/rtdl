@@ -23,6 +23,11 @@ from examples.current.research_benchmarks.triangle_counting.rt_graph_contract im
 from examples.current.research_benchmarks.triangle_counting.rt_graph_contract import fixture_edges
 from examples.current.research_benchmarks.triangle_counting.rt_graph_contract import read_binary_edges
 from examples.current.research_benchmarks.triangle_counting.rt_graph_contract import read_text_edges
+from examples.current.research_benchmarks.triangle_counting.segmented_rt_graph import (
+    build_segmented_rt_graph_csr_binary,
+    count_segmented_rt_graph_segments,
+    iter_segmented_rt_graph_device_geometry,
+)
 import rtdsl as rt
 
 
@@ -1250,6 +1255,99 @@ def _require_cupy_device_arrays(contract) -> dict[str, object]:
     return device_arrays
 
 
+def _cupy_repeat_by_counts(cp, values, counts):
+    """Repeat device values by device counts without array-repeat support."""
+
+    total = int(counts.sum().get())
+    if total == 0:
+        return cp.empty(0, dtype=values.dtype)
+    owners = cp.searchsorted(
+        cp.cumsum(counts, dtype=cp.int64),
+        cp.arange(total, dtype=cp.int64),
+        side="right",
+    )
+    return values[owners]
+
+
+def run_rt_graph_segmented_optix_scalar_summary(
+    contract,
+    *,
+    paper_method: str,
+    max_relation_rows: int,
+    start_segment_id: int = 0,
+    stop_segment_id: int | None = None,
+) -> dict[str, object]:
+    """Direct V2-style execution of one app-selected paper algorithm.
+
+    This is deliberately not a selector.  Each bounded segment calls the
+    existing generic OptiX scalar-summary symbol for the requested algorithm,
+    and the host performs only the associative U64 accumulation.
+    """
+
+    import cupy as cp
+    from rtdsl.optix_runtime import prepare_optix_static_triangle_scene_3d_device_triangles
+
+    if paper_method not in {"RT-1A2", "RT-2A1"}:
+        raise ValueError("paper_method must be RT-1A2 or RT-2A1")
+    if max_relation_rows <= 0:
+        raise ValueError("max_relation_rows must be positive")
+    scalar_sum = 0
+    segment_rows: list[dict[str, object]] = []
+    for segment in iter_segmented_rt_graph_device_geometry(
+        contract,
+        paper_algorithm=paper_method,
+        max_relation_rows=max_relation_rows,
+        max_directed_edge_rows=max_relation_rows,
+        start_segment_id=start_segment_id,
+        stop_segment_id=stop_segment_id,
+    ):
+        triangles = segment["triangles"]
+        rays = segment["rays"]
+        weights = segment["ray_weights"]
+        with prepare_optix_static_triangle_scene_3d_device_triangles(triangles) as scene:
+            if paper_method == "RT-1A2":
+                if weights is not None:
+                    raise RuntimeError("RT-1A2 segment must not carry ray weights")
+                native = scene.ray_hit_count_sum_device_columns(rays)
+                value = int(native["hit_count_sum"])
+            else:
+                if weights is None:
+                    raise RuntimeError("RT-2A1 segment requires ray weights")
+                native = scene.ray_any_hit_weighted_sum_device_columns(rays, weights)
+                value = int(native["weighted_hit_sum"])
+        if value < 0 or scalar_sum > ((1 << 64) - 1) - value:
+            raise OverflowError("segmented RT-Graph U64 scalar sum overflow")
+        scalar_sum += value
+        segment_rows.append(
+            {
+                "segment_id": int(segment["segment_id"]),
+                "scalar_sum": value,
+                "ray_count": int(rays["ids"].size),
+                "primitive_count": int(triangles["ids"].size),
+                "relation_count": int(segment["relation_count"]),
+                "host_geometry_bytes": int(segment["host_geometry_bytes"]),
+                "partition": segment["partition"],
+            }
+        )
+        del native, triangles, rays, weights, segment
+        cp.get_default_memory_pool().free_all_blocks()
+    if not segment_rows:
+        raise RuntimeError("segmented RT-Graph execution produced no physical segment")
+    return {
+        "scalar_sum": scalar_sum,
+        "segmented_execution": True,
+        "segment_count": len(segment_rows),
+        "segments": segment_rows,
+        "max_relation_rows": max_relation_rows,
+        "max_directed_edge_rows": max_relation_rows,
+        "global_two_hop_materialized": False,
+        "paper_algorithm_selected_by_application": paper_method,
+        "cross_algorithm_selection_performed": False,
+        "start_segment_id": start_segment_id,
+        "stop_segment_id": stop_segment_id,
+    }
+
+
 def _build_rt_graph_1a2_device_geometry(contract):
     cp = __import__("cupy")
 
@@ -1265,8 +1363,12 @@ def _build_rt_graph_1a2_device_geometry(contract):
 
     edge_count = int(column_indices.size)
     if edge_count:
-        edge_src = cp.repeat(cp.arange(contract.vertex_count, dtype=cp.int64), out_degrees)
-        edge_starts = cp.repeat(row_offsets[:-1], out_degrees)
+        edge_src = _cupy_repeat_by_counts(
+            cp,
+            cp.arange(contract.vertex_count, dtype=cp.int64),
+            out_degrees,
+        )
+        edge_starts = _cupy_repeat_by_counts(cp, row_offsets[:-1], out_degrees)
         edge_local_index = cp.arange(edge_count, dtype=cp.int64) - edge_starts
         edge_mid = column_indices
         two_hop_counts = out_degrees[edge_mid]
@@ -1274,11 +1376,15 @@ def _build_rt_graph_1a2_device_geometry(contract):
         active_counts = two_hop_counts[nonempty]
         primitive_count = int(active_counts.sum().get()) if int(active_counts.size) else 0
         if primitive_count:
-            center_x = cp.repeat(edge_local_index[nonempty], active_counts).astype(cp.float64) - axis_offset_x
-            center_y = cp.repeat(edge_src[nonempty], active_counts).astype(cp.float64) - axis_offset_y
+            center_x = _cupy_repeat_by_counts(cp, edge_local_index[nonempty], active_counts).astype(cp.float64) - axis_offset_x
+            center_y = _cupy_repeat_by_counts(cp, edge_src[nonempty], active_counts).astype(cp.float64) - axis_offset_y
             starts = row_offsets[edge_mid[nonempty]]
-            repeated_starts = cp.repeat(starts, active_counts)
-            repeated_prefix = cp.repeat(cp.cumsum(active_counts) - active_counts, active_counts)
+            repeated_starts = _cupy_repeat_by_counts(cp, starts, active_counts)
+            repeated_prefix = _cupy_repeat_by_counts(
+                cp,
+                cp.cumsum(active_counts) - active_counts,
+                active_counts,
+            )
             dst_index = repeated_starts + (cp.arange(primitive_count, dtype=cp.int64) - repeated_prefix)
             center_z = column_indices[dst_index].astype(cp.float64) - axis_offset_z
         else:

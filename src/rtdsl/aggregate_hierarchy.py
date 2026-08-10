@@ -6,7 +6,9 @@ from typing import Any, Mapping, Sequence
 
 
 AGGREGATE_HIERARCHY_3D_CONTRACT_VERSION = "generic_aggregate_hierarchy_3d_contract_v1"
-AGGREGATE_HIERARCHY_3D_API_MATURITY = "reference_and_optional_numba_cpu_executor_no_native_backend"
+AGGREGATE_HIERARCHY_3D_API_MATURITY = (
+    "reference_optional_numba_and_compiler_owned_native_continuation_executor"
+)
 AGGREGATE_HIERARCHY_3D_OPENING_SIZE_DISTANCE = "size_distance_opening"
 AGGREGATE_HIERARCHY_3D_OPENING_CONTINUATION_PAYLOAD = "continuation_payload_opening"
 AGGREGATE_HIERARCHY_3D_OPENING_LEAF_ONLY = "leaf_only_opening"
@@ -27,11 +29,14 @@ AGGREGATE_FRONTIER_REDUCE_3D_EXECUTION_CONTRACT = "generic_aggregate_frontier_re
 AGGREGATE_FRONTIER_REDUCE_3D_BACKENDS = ("reference", "numba", "cuda", "optix", "embree", "hiprt")
 AGGREGATE_FRONTIER_REDUCE_3D_BACKEND_STATUS_REFERENCE = "implemented_cpu_reference"
 AGGREGATE_FRONTIER_REDUCE_3D_BACKEND_STATUS_NUMBA = "optional_numba_cpu_reference_prototype"
+AGGREGATE_FRONTIER_REDUCE_3D_BACKEND_STATUS_CUDA_COMPILER = (
+    "implemented_precompiled_cuda_compiler_owned_continuation_template"
+)
 AGGREGATE_FRONTIER_REDUCE_3D_BACKEND_STATUS_NOT_IMPLEMENTED = "not_implemented_contract_only"
 AGGREGATE_FRONTIER_REDUCE_3D_BACKEND_STATUS = {
     "reference": AGGREGATE_FRONTIER_REDUCE_3D_BACKEND_STATUS_REFERENCE,
     "numba": AGGREGATE_FRONTIER_REDUCE_3D_BACKEND_STATUS_NUMBA,
-    "cuda": AGGREGATE_FRONTIER_REDUCE_3D_BACKEND_STATUS_NOT_IMPLEMENTED,
+    "cuda": AGGREGATE_FRONTIER_REDUCE_3D_BACKEND_STATUS_CUDA_COMPILER,
     "optix": AGGREGATE_FRONTIER_REDUCE_3D_BACKEND_STATUS_NOT_IMPLEMENTED,
     "embree": AGGREGATE_FRONTIER_REDUCE_3D_BACKEND_STATUS_NOT_IMPLEMENTED,
     "hiprt": AGGREGATE_FRONTIER_REDUCE_3D_BACKEND_STATUS_NOT_IMPLEMENTED,
@@ -53,9 +58,10 @@ AGGREGATE_FRONTIER_REDUCE_3D_OUTPUT_SCHEMA = (
     "status_code",
 )
 AGGREGATE_HIERARCHY_3D_CLAIM_BOUNDARY = (
-    "reference_cpu_executor_only",
+    "reference_cpu_executor_available",
     "optional_numba_cpu_reference_prototype",
-    "no_native_backend_execution",
+    "compiler_owned_precompiled_cuda_continuation_executor",
+    "no_application_backend_or_template_selection",
     "no_paper_reproduction_claim",
     "no_speedup_claim",
     "no_app_identity_in_public_api",
@@ -462,6 +468,9 @@ class AggregateFrontierReduceExecutionContract3D:
             "numba_execution_authorized": self.backend == "numba",
             "runtime_dependency_required": "numba" if self.backend == "numba" else None,
             "native_backend_symbols_authorized": False,
+            "compiler_owned_native_template_available": self.backend == "cuda",
+            "direct_cuda_execution_authorized": False,
+            "cuda_execution_requires_compiler_plan": self.backend == "cuda",
             "output_schema": AGGREGATE_FRONTIER_REDUCE_3D_OUTPUT_SCHEMA,
             "required_descriptor_columns": (
                 "source_leaf_node_index",
@@ -471,8 +480,8 @@ class AggregateFrontierReduceExecutionContract3D:
             "max_output_rows": self.max_output_rows,
             "spec": self.spec.to_metadata(),
             "claim_boundary": (
-                "reference_cpu_or_optional_numba_cpu_only",
-                "no_native_backend_implementation",
+                "reference_cpu_or_optional_numba_cpu_direct_execution",
+                "native_cuda_only_through_compiler_owned_plan",
                 "no_timing_claim",
                 "no_paper_reproduction_claim",
             ),
@@ -1133,6 +1142,9 @@ def describe_aggregate_hierarchy_3d_contract() -> dict[str, Any]:
         "numba_execution_authorized": True,
         "numba_runtime_optional": True,
         "native_backend_symbols_authorized": False,
+        "compiler_owned_native_symbols_authorized": True,
+        "native_execution_compiler_owned_only": True,
+        "application_backend_selection_authorized": False,
         "paper_reproduction_claim_authorized": False,
         "whole_program_speedup_claim_authorized": False,
         "claim_boundary": AGGREGATE_HIERARCHY_3D_CLAIM_BOUNDARY,

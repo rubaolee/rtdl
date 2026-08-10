@@ -1,5 +1,11 @@
 # RTDL
 
+> **V3 functional release candidate:** the V3 research line now has a clean,
+> portable, nine-application functional release candidate.  Start at
+> [RTDL V3](docs/v3/README.md).  This does not change the published v2.14.4
+> package identity and does not claim universal performance, production-GA, or
+> arbitrary physical-plan synthesis.
+
 RTDL is a Python-hosted ray-tracing DSL/runtime for non-graphical workloads:
 spatial search, visibility, nearest-neighbor screening, collision checks, and
 database-style summaries.

@@ -7229,6 +7229,9 @@ static std::vector<uint64_t> collect_segment_first_hits_optix(
 
     CUstream stream = 0;
     const auto t_launch_start = std::chrono::steady_clock::now();
+    rtdl_optix_bind_traversal_audit_context(
+        "segment_first_hit_2d",
+        traversable);
     OPTIX_CHECK(optixLaunch(g_segment_first_hit.pipe->pipeline, stream,
                              d_params.ptr, sizeof(SegmentFirstHitLaunchParams),
                              &g_segment_first_hit.pipe->sbt,
@@ -7340,6 +7343,9 @@ static void launch_rayjoin_cdb_point_location_optix(
 
     CUstream stream = 0;
     const auto t_launch_start = std::chrono::steady_clock::now();
+    rtdl_optix_bind_traversal_audit_context(
+        "directed_segment_point_location_2d",
+        prepared->accel.handle);
     OPTIX_CHECK(optixLaunch(g_rayjoin_cdb_point_location.pipe->pipeline, stream,
                              d_params.ptr, sizeof(RayjoinCdbPointLocationLaunchParams),
                              &g_rayjoin_cdb_point_location.pipe->sbt,
@@ -8794,6 +8800,9 @@ static void run_prepared_segment_pair_bounded_exact_pair_id_device_columns_prepa
 
     CUstream stream = 0;
     const auto start = std::chrono::steady_clock::now();
+    rtdl_optix_bind_traversal_audit_context(
+        "segment_pair_grouped_range_direct_intersection_exact_count_2d",
+        prepared->grouped_range_accel->handle);
     OPTIX_CHECK(optixLaunch(
         g_segment_pair_grouped_range_direct_intersection_exact_count.pipe->pipeline,
         stream,
@@ -16672,9 +16681,64 @@ struct PreparedStaticTriangleScene3D {
     }
 };
 
+static bool signed_grouped_i64_sum_domain_is_safe(
+        const uint32_t* primitive_group_ids,
+        const int64_t* primitive_values,
+        size_t primitive_count,
+        size_t group_count)
+{
+    const uint64_t positive_limit =
+        static_cast<uint64_t>(std::numeric_limits<int64_t>::max());
+    const uint64_t negative_limit = positive_limit + uint64_t{1};
+    std::vector<uint64_t> positive_domain(group_count, uint64_t{0});
+    std::vector<uint64_t> negative_domain(group_count, uint64_t{0});
+
+    for (size_t primitive_index = 0; primitive_index < primitive_count; ++primitive_index) {
+        const uint32_t group = primitive_group_ids[primitive_index];
+        const int64_t value = primitive_values[primitive_index];
+        if (value > 0) {
+            const uint64_t magnitude = static_cast<uint64_t>(value);
+            if (positive_domain[group] > positive_limit - magnitude)
+                return false;
+            positive_domain[group] += magnitude;
+        } else if (value < 0) {
+            const uint64_t magnitude = value == std::numeric_limits<int64_t>::min()
+                ? negative_limit
+                : static_cast<uint64_t>(-value);
+            if (negative_domain[group] > negative_limit - magnitude)
+                return false;
+            negative_domain[group] += magnitude;
+        }
+    }
+    return true;
+}
+
+static void validate_signed_grouped_i64_sum_domain(
+        const uint32_t* primitive_group_ids,
+        const int64_t* primitive_values,
+        size_t primitive_count,
+        size_t group_count)
+{
+    if (!signed_grouped_i64_sum_domain_is_safe(
+            primitive_group_ids,
+            primitive_values,
+            primitive_count,
+            group_count)) {
+        throw std::overflow_error(
+            "signed grouped-i64 positive/negative per-group domain exceeds int64");
+    }
+}
+
 struct PreparedPrimitiveGroupedI64Payload3D {
+    enum class HostValidationMode {
+        ValidateColumns,
+        CompilerVerifiedSignedColumns,
+    };
+
     size_t primitive_count = 0;
     size_t group_count = 0;
+    bool signed_values = false;
+    bool signed_sum_domain_safe = true;
     DevPtr d_groups;
     DevPtr d_values;
 
@@ -16683,9 +16747,12 @@ struct PreparedPrimitiveGroupedI64Payload3D {
             size_t primitive_group_id_count,
             const uint64_t* primitive_values,
             size_t primitive_value_count,
-            size_t group_count_in)
+            size_t group_count_in,
+            bool signed_values_in,
+            HostValidationMode host_validation_mode = HostValidationMode::ValidateColumns)
         : primitive_count(primitive_group_id_count),
           group_count(group_count_in),
+          signed_values(signed_values_in),
           d_groups(sizeof(uint32_t) * primitive_group_id_count),
           d_values(sizeof(unsigned long long) * primitive_value_count)
     {
@@ -16699,18 +16766,43 @@ struct PreparedPrimitiveGroupedI64Payload3D {
             throw std::runtime_error("primitive payload count exceeds uint32 limit");
         if (group_count_in > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
             throw std::runtime_error("group_count exceeds uint32 limit");
-        for (size_t primitive_index = 0; primitive_index < primitive_group_id_count; ++primitive_index) {
-            if (primitive_group_ids[primitive_index] >= group_count_in)
-                throw std::runtime_error("primitive_group_ids entries must be smaller than group_count");
+        const bool compiler_verified_signed_columns =
+            host_validation_mode == HostValidationMode::CompilerVerifiedSignedColumns;
+        if (compiler_verified_signed_columns && !signed_values)
+            throw std::runtime_error("compiler-verified grouped-i64 payload must use signed values");
+        if (compiler_verified_signed_columns && primitive_group_id_count != 0 && group_count_in == 0)
+            throw std::runtime_error("compiler-verified grouped-i64 payload requires a nonzero group_count");
+        // The verified mode is reachable only through the compiler-internal v3
+        // ABI. Its immutable host-column certificate already proves these two
+        // O(n) properties, so native preparation retains only scalar checks.
+        if (!compiler_verified_signed_columns) {
+            for (size_t primitive_index = 0; primitive_index < primitive_group_id_count; ++primitive_index) {
+                if (primitive_group_ids[primitive_index] >= group_count_in)
+                    throw std::runtime_error("primitive_group_ids entries must be smaller than group_count");
+            }
+        }
+        if (signed_values && !compiler_verified_signed_columns) {
+            signed_sum_domain_safe = signed_grouped_i64_sum_domain_is_safe(
+                primitive_group_ids,
+                reinterpret_cast<const int64_t*>(primitive_values),
+                primitive_value_count,
+                group_count_in);
         }
         if (primitive_group_id_count == 0)
             return;
 
-        std::vector<unsigned long long> values(primitive_value_count);
-        for (size_t primitive_index = 0; primitive_index < primitive_value_count; ++primitive_index)
-            values[primitive_index] = static_cast<unsigned long long>(primitive_values[primitive_index]);
         upload(d_groups.ptr, primitive_group_ids, primitive_group_id_count);
-        upload(d_values.ptr, values.data(), values.size());
+        if (compiler_verified_signed_columns) {
+            upload(
+                d_values.ptr,
+                reinterpret_cast<const int64_t*>(primitive_values),
+                primitive_value_count);
+        } else {
+            std::vector<unsigned long long> values(primitive_value_count);
+            for (size_t primitive_index = 0; primitive_index < primitive_value_count; ++primitive_index)
+                values[primitive_index] = static_cast<unsigned long long>(primitive_values[primitive_index]);
+            upload(d_values.ptr, values.data(), values.size());
+        }
     }
 };
 
@@ -17098,6 +17190,9 @@ struct AabbIndexQueryLaunchParams {
     uint32_t operation;
     uint32_t intersect_pass;
     uint32_t collect_rows;
+    uint32_t action_overlap_filter;
+    uint32_t action_overlap_boundary;
+    float minimum_overlap_area;
 };
 
 static void validate_aabb2d_bounds(double min_x, double min_y, double max_x, double max_y)
@@ -17179,6 +17274,9 @@ struct AabbIndexQueryLaunchParams {
     uint32_t operation;
     uint32_t intersect_pass;
     uint32_t collect_rows;
+    uint32_t action_overlap_filter;
+    uint32_t action_overlap_boundary;
+    float minimum_overlap_area;
 };
 
 extern "C" __constant__ AabbIndexQueryLaunchParams params;
@@ -17341,6 +17439,22 @@ extern "C" __global__ void __intersection__aabb_index_exact() {
                 segment_intersects_box(source.min_x, source.min_y, source.max_x, source.max_y, query);
             accept = source_diagonal_hits_query;
         }
+    }
+    if (accept && params.action_overlap_filter != 0u && params.operation == 3u) {
+        const uint32_t indexed_idx = params.intersect_pass == 0u ? prim : qidx;
+        const uint32_t query_idx = params.intersect_pass == 0u ? qidx : prim;
+        const GpuAabb2D indexed = params.indexed_boxes[indexed_idx];
+        const GpuAabb2D query = params.box_queries[query_idx];
+        const float overlap_x = fmaxf(
+            0.0f,
+            fminf(indexed.max_x, query.max_x) - fmaxf(indexed.min_x, query.min_x));
+        const float overlap_y = fmaxf(
+            0.0f,
+            fminf(indexed.max_y, query.max_y) - fmaxf(indexed.min_y, query.min_y));
+        const float overlap_area = overlap_x * overlap_y;
+        accept = params.action_overlap_boundary == 0u
+            ? overlap_area >= params.minimum_overlap_area
+            : overlap_area > params.minimum_overlap_area;
     }
     if (!accept) return;
     if (params.collect_rows == 0u) {
@@ -17572,7 +17686,10 @@ static void launch_aabb_index_count_pass_optix(
         CUdeviceptr d_query_hit_counts = 0,
         CUdeviceptr d_rows_out = 0,
         size_t row_capacity = 0,
-        bool collect_rows = false)
+        bool collect_rows = false,
+        bool action_overlap_filter = false,
+        float minimum_overlap_area = 0.0f,
+        uint32_t action_overlap_boundary = 1u)
 {
     ensure_aabb_index_count_2d_pipeline();
 
@@ -17593,11 +17710,17 @@ static void launch_aabb_index_count_pass_optix(
     lp.operation = operation;
     lp.intersect_pass = intersect_pass;
     lp.collect_rows = collect_rows ? 1u : 0u;
+    lp.action_overlap_filter = action_overlap_filter ? 1u : 0u;
+    lp.action_overlap_boundary = action_overlap_boundary;
+    lp.minimum_overlap_area = minimum_overlap_area;
 
     DevPtr d_params(sizeof(AabbIndexQueryLaunchParams));
     upload(d_params.ptr, &lp, 1);
 
     CUstream stream = 0;
+    rtdl_optix_bind_traversal_audit_context(
+        "aabb_index_count_2d",
+        traversable);
     OPTIX_CHECK(optixLaunch(g_aabb_index_count.pipe->pipeline, stream,
                             d_params.ptr, sizeof(AabbIndexQueryLaunchParams),
                             &g_aabb_index_count.pipe->sbt,
@@ -17640,9 +17763,15 @@ static void launch_aabb_index_count_pass_optix_async(
     lp.operation = operation;
     lp.intersect_pass = intersect_pass;
     lp.collect_rows = 0u;
+    lp.action_overlap_filter = 0u;
+    lp.action_overlap_boundary = 1u;
+    lp.minimum_overlap_area = 0.0f;
 
     auto d_params = std::make_unique<DevPtr>(sizeof(AabbIndexQueryLaunchParams));
     upload(d_params->ptr, &lp, 1);
+    rtdl_optix_bind_traversal_audit_context(
+        "aabb_index_count_2d",
+        traversable);
     OPTIX_CHECK(optixLaunch(g_aabb_index_count.pipe->pipeline, stream,
                             d_params->ptr, sizeof(AabbIndexQueryLaunchParams),
                             &g_aabb_index_count.pipe->sbt,
@@ -18046,7 +18175,10 @@ static void collect_prepared_aabb_index_2d_range_intersection_rows_optix(
         RtdlAabbPairRow* rows_out,
         size_t row_capacity,
         size_t* emitted_count_out,
-        uint32_t* overflowed_out)
+        uint32_t* overflowed_out,
+        bool action_overlap_filter = false,
+        float minimum_overlap_area = 0.0f,
+        uint32_t minimum_overlap_boundary = 1u)
 {
     require_prepared_aabb_index_2d_valid(prepared);
     if (!emitted_count_out) throw std::runtime_error("emitted_count_out must not be null");
@@ -18061,6 +18193,10 @@ static void collect_prepared_aabb_index_2d_range_intersection_rows_optix(
         throw std::runtime_error("box query count exceeds uint32 launch limit");
     if (row_capacity > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
         throw std::runtime_error("AABB row output capacity exceeds uint32 launch limit");
+    if (!std::isfinite(minimum_overlap_area) || minimum_overlap_area < 0.0f)
+        throw std::runtime_error("AABB Action minimum overlap area must be finite and non-negative");
+    if (minimum_overlap_boundary > 1u)
+        throw std::runtime_error("AABB Action minimum overlap boundary must be 0 or 1");
 
     *emitted_count_out = 0;
     *overflowed_out = 0;
@@ -18088,7 +18224,10 @@ static void collect_prepared_aabb_index_2d_range_intersection_rows_optix(
         0,
         d_rows.ptr,
         row_capacity,
-        true);
+        true,
+        action_overlap_filter,
+        minimum_overlap_area,
+        minimum_overlap_boundary);
     launch_aabb_index_count_pass_optix(
         prepared_queries.accel.handle,
         0,
@@ -18104,7 +18243,10 @@ static void collect_prepared_aabb_index_2d_range_intersection_rows_optix(
         0,
         d_rows.ptr,
         row_capacity,
-        true);
+        true,
+        action_overlap_filter,
+        minimum_overlap_area,
+        minimum_overlap_boundary);
 
     unsigned long long raw_count = 0ULL;
     download(&raw_count, d_hit_count.ptr, 1);
@@ -18605,6 +18747,9 @@ static void collect_prepared_aabb_index_3d_point_contains_rows_optix(
     upload(d_params.ptr, &lp, 1);
 
     CUstream stream = 0;
+    rtdl_optix_bind_traversal_audit_context(
+        "aabb_index_count_3d",
+        prepared->accel.handle);
     OPTIX_CHECK(optixLaunch(g_aabb_index_count3d.pipe->pipeline, stream,
                             d_params.ptr, sizeof(AabbIndex3DPointLaunchParams),
                             &g_aabb_index_count3d.pipe->sbt,
@@ -18649,6 +18794,14 @@ struct GpuCellMbr3D {
     unsigned long long point_begin_offset;
     unsigned long long point_count;
 };
+static_assert(sizeof(GpuCellMbr3D) == 72, "GpuCellMbr3D ABI size changed");
+static_assert(offsetof(GpuCellMbr3D, cell_id) == 48, "GpuCellMbr3D cell_id offset changed");
+static_assert(
+    offsetof(GpuCellMbr3D, point_begin_offset) == 56,
+    "GpuCellMbr3D point_begin_offset offset changed");
+static_assert(
+    offsetof(GpuCellMbr3D, point_count) == 64,
+    "GpuCellMbr3D point_count offset changed");
 
 struct GpuCellMbrQuery3D {
     double x;
@@ -18683,6 +18836,7 @@ struct CellMbrFrontier3DLaunchParams {
     uint32_t emit_pruned_rows;
     uint32_t inline_nearest;
     uint32_t collect_inline_stats;
+    uint32_t nearest_output_squared;
     unsigned long long* global_bound_distance_bits;
     unsigned long long* global_bound_early_break_count;
     uint32_t global_bound_early_break;
@@ -18716,13 +18870,31 @@ static OptixAabb expanded_optix_aabb_for_cell_mbr3d(const GpuCellMbr3D& cell, do
 {
     if (radius < 0.0 || !std::isfinite(radius))
         throw std::runtime_error("cell-MBR radius must be finite and non-negative");
+    const auto outward_lower = [](double value) {
+        float converted = static_cast<float>(value);
+        if (std::isfinite(converted)
+                && static_cast<double>(converted) > value)
+            converted = std::nextafter(
+                converted,
+                -std::numeric_limits<float>::infinity());
+        return converted;
+    };
+    const auto outward_upper = [](double value) {
+        float converted = static_cast<float>(value);
+        if (std::isfinite(converted)
+                && static_cast<double>(converted) < value)
+            converted = std::nextafter(
+                converted,
+                std::numeric_limits<float>::infinity());
+        return converted;
+    };
     OptixAabb a = {};
-    a.minX = static_cast<float>(std::min(cell.min_x, cell.max_x) - radius - kAabbIndexPad);
-    a.minY = static_cast<float>(std::min(cell.min_y, cell.max_y) - radius - kAabbIndexPad);
-    a.minZ = static_cast<float>(std::min(cell.min_z, cell.max_z) - radius - kAabbIndexPad);
-    a.maxX = static_cast<float>(std::max(cell.min_x, cell.max_x) + radius + kAabbIndexPad);
-    a.maxY = static_cast<float>(std::max(cell.min_y, cell.max_y) + radius + kAabbIndexPad);
-    a.maxZ = static_cast<float>(std::max(cell.min_z, cell.max_z) + radius + kAabbIndexPad);
+    a.minX = outward_lower(std::min(cell.min_x, cell.max_x) - radius - kAabbIndexPad);
+    a.minY = outward_lower(std::min(cell.min_y, cell.max_y) - radius - kAabbIndexPad);
+    a.minZ = outward_lower(std::min(cell.min_z, cell.max_z) - radius - kAabbIndexPad);
+    a.maxX = outward_upper(std::max(cell.min_x, cell.max_x) + radius + kAabbIndexPad);
+    a.maxY = outward_upper(std::max(cell.min_y, cell.max_y) + radius + kAabbIndexPad);
+    a.maxZ = outward_upper(std::max(cell.min_z, cell.max_z) + radius + kAabbIndexPad);
     return a;
 }
 
@@ -18800,6 +18972,7 @@ struct CellMbrFrontier3DLaunchParams {
     uint32_t emit_pruned_rows;
     uint32_t inline_nearest;
     uint32_t collect_inline_stats;
+    uint32_t nearest_output_squared;
     u64* global_bound_distance_bits;
     u64* global_bound_early_break_count;
     uint32_t global_bound_early_break;
@@ -18883,7 +19056,11 @@ extern "C" __global__ void __raygen__cell_mbr_frontier3d() {
     const GpuCellMbrQuery3D q = params.queries[idx];
     unsigned int p0 = idx;
     const double initial_best = q.current_best_distance;
-    const double initial_best_sq = (initial_best > 0.0 && isfinite(initial_best))
+    const bool initial_seed_valid =
+        q.current_best_item_id >= 0
+        && initial_best >= 0.0
+        && isfinite(initial_best);
+    const double initial_best_sq = initial_seed_valid
         ? initial_best * initial_best
         : 1.0 / 0.0;
     const u64 initial_best_bits = (u64)__double_as_longlong(initial_best_sq);
@@ -18892,11 +19069,13 @@ extern "C" __global__ void __raygen__cell_mbr_frontier3d() {
     unsigned int p2 = (unsigned int)((initial_best_bits >> 32) & 0xffffffffULL);
     unsigned int p3 = (unsigned int)(initial_id & 0xffffffffULL);
     unsigned int p4 = (unsigned int)((initial_id >> 32) & 0xffffffffULL);
-    unsigned int p5 = (q.current_best_item_id >= 0 && isfinite(initial_best)) ? 1u : 0u;
+    unsigned int p5 = initial_seed_valid ? 1u : 0u;
     unsigned int p6 = 0u;
     if (params.inline_nearest != 0u && p5 != 0u && can_global_bound_abort(initial_best_sq)) {
         increment_global_bound_early_break_count();
-        params.nearest_distances_out[idx] = sqrt(initial_best_sq);
+        params.nearest_distances_out[idx] = params.nearest_output_squared != 0u
+            ? initial_best_sq
+            : sqrt(initial_best_sq);
         params.nearest_item_ids_out[idx] = q.current_best_item_id;
         return;
     }
@@ -18912,7 +19091,9 @@ extern "C" __global__ void __raygen__cell_mbr_frontier3d() {
         const u64 best_bits = (((u64)p2) << 32) | (u64)p1;
         const double best_sq = __longlong_as_double((long long)best_bits);
         const u64 best_id = (((u64)p4) << 32) | (u64)p3;
-        params.nearest_distances_out[idx] = p5 ? sqrt(best_sq) : 1.0 / 0.0;
+        params.nearest_distances_out[idx] = p5
+            ? (params.nearest_output_squared != 0u ? best_sq : sqrt(best_sq))
+            : 1.0 / 0.0;
         params.nearest_item_ids_out[idx] = p5 ? (i64)best_id : -1ll;
         if (p5 != 0u && p6 == 0u) {
             publish_global_bound_sq(best_sq);
@@ -18938,7 +19119,10 @@ extern "C" __global__ void __intersection__cell_mbr_frontier3d_exact() {
         double best = __longlong_as_double((long long)best_bits);
         if (params.frontier_status_probe_mode == 2u) {
             const double initial_best = query.current_best_distance;
-            best = (initial_best > 0.0 && isfinite(initial_best))
+            best = (
+                query.current_best_item_id >= 0
+                && initial_best >= 0.0
+                && isfinite(initial_best))
                 ? initial_best * initial_best
                 : 1.0 / 0.0;
         }
@@ -18977,7 +19161,10 @@ extern "C" __global__ void __anyhit__cell_mbr_frontier3d_emit() {
     uint32_t status_found = found;
     if (use_initial_best_status) {
         const double initial_best = query.current_best_distance;
-        if (initial_best > 0.0 && isfinite(initial_best)) {
+        if (
+                query.current_best_item_id >= 0
+                && initial_best >= 0.0
+                && isfinite(initial_best)) {
             status_best = initial_best * initial_best;
             status_found = 1u;
         } else {
@@ -19113,6 +19300,243 @@ static void ensure_cell_mbr_frontier_3d_pipeline()
     });
 }
 
+struct PreparedPointColumnDomain3D {
+    const double* target_coords = nullptr;
+    const int64_t* target_ids = nullptr;
+    size_t target_count = 0;
+    uint64_t token = 0;
+    uint64_t creator_pid = 0;
+    uint64_t validation_count = 1;
+    uint64_t execute_count = 0;
+    uint64_t per_launch_target_hash_set_construction_count = 0;
+    bool closed = false;
+    std::mutex mutex;
+};
+
+struct PreparedPointColumnDomain3DLease {
+    std::shared_ptr<PreparedPointColumnDomain3D> owner;
+    std::unique_lock<std::mutex> lock;
+
+    explicit PreparedPointColumnDomain3DLease(
+            std::shared_ptr<PreparedPointColumnDomain3D> prepared)
+        : owner(std::move(prepared)),
+          lock(owner->mutex)
+    {
+    }
+};
+
+static const uint64_t g_prepared_point_domain_registry_creator_pid =
+    static_cast<uint64_t>(::getpid());
+static std::mutex g_prepared_point_domain_registry_mutex;
+static std::unordered_map<
+    uint64_t,
+    std::shared_ptr<PreparedPointColumnDomain3D>>
+        g_prepared_point_domain_registry;
+// Tokens are intentionally tombstoned for the process lifetime.  A stale token
+// can therefore never acquire a later prepared domain through allocator or
+// generation reuse.
+static std::unordered_set<uint64_t> g_prepared_point_domain_used_tokens;
+
+static void require_prepared_point_domain_registry_process()
+{
+    const uint64_t current_pid = static_cast<uint64_t>(::getpid());
+    if (current_pid == 0
+            || current_pid != g_prepared_point_domain_registry_creator_pid) {
+        throw std::runtime_error(
+            "prepared point-column-domain registry cannot be used after fork");
+    }
+}
+
+static uint64_t random_prepared_point_domain_token()
+{
+    uint64_t token = 0;
+    const int fd = ::open("/dev/urandom", O_RDONLY);
+    if (fd < 0) {
+        throw std::runtime_error(
+            "prepared point-column-domain token source could not be opened");
+    }
+    size_t offset = 0;
+    auto* bytes = reinterpret_cast<unsigned char*>(&token);
+    while (offset < sizeof(token)) {
+        const ssize_t amount = ::read(
+            fd,
+            bytes + offset,
+            sizeof(token) - offset);
+        if (amount < 0 && errno == EINTR) {
+            continue;
+        }
+        if (amount <= 0) {
+            ::close(fd);
+            throw std::runtime_error(
+                "prepared point-column-domain token source returned incomplete bytes");
+        }
+        offset += static_cast<size_t>(amount);
+    }
+    if (::close(fd) != 0) {
+        throw std::runtime_error(
+            "prepared point-column-domain token source could not be closed");
+    }
+    return token;
+}
+
+static uint64_t prepare_point_column_domain_3d_registry(
+        const double* target_coords,
+        const int64_t* target_ids,
+        size_t target_count)
+{
+    require_prepared_point_domain_registry_process();
+    if (!target_coords || !target_ids) {
+        throw std::runtime_error(
+            "prepared point-column-domain target pointers must not be null");
+    }
+    if (target_count == 0
+            || target_count > static_cast<size_t>(
+                std::numeric_limits<uint32_t>::max())) {
+        throw std::runtime_error(
+            "prepared point-column-domain target_count must fit positive uint32");
+    }
+    for (size_t row = 0; row < target_count; ++row) {
+        for (size_t axis = 0; axis < 3; ++axis) {
+            if (!std::isfinite(target_coords[row * 3 + axis])) {
+                throw std::runtime_error(
+                    "prepared point-column-domain coordinates must be finite");
+            }
+        }
+        const int64_t target_id = target_ids[row];
+        if (target_id < 0
+                || static_cast<uint64_t>(target_id)
+                    > static_cast<uint64_t>(
+                        std::numeric_limits<uint32_t>::max())) {
+            throw std::runtime_error(
+                "prepared point-column-domain target ids must fit uint32");
+        }
+        if (row != 0 && target_id <= target_ids[row - 1]) {
+            throw std::runtime_error(
+                "prepared point-column-domain target ids must be strictly increasing");
+        }
+    }
+
+    auto prepared = std::make_shared<PreparedPointColumnDomain3D>();
+    prepared->target_coords = target_coords;
+    prepared->target_ids = target_ids;
+    prepared->target_count = target_count;
+    prepared->creator_pid = g_prepared_point_domain_registry_creator_pid;
+
+    std::lock_guard<std::mutex> registry_lock(
+        g_prepared_point_domain_registry_mutex);
+    uint64_t token = 0;
+    do {
+        token = random_prepared_point_domain_token();
+    } while (token == 0
+            || g_prepared_point_domain_used_tokens.find(token)
+                != g_prepared_point_domain_used_tokens.end());
+    g_prepared_point_domain_used_tokens.insert(token);
+    prepared->token = token;
+    const auto inserted =
+        g_prepared_point_domain_registry.emplace(token, prepared);
+    if (!inserted.second) {
+        throw std::runtime_error(
+            "prepared point-column-domain token registry insertion failed");
+    }
+    return token;
+}
+
+static PreparedPointColumnDomain3DLease
+acquire_prepared_point_column_domain_3d_lease(uint64_t token)
+{
+    require_prepared_point_domain_registry_process();
+    if (token == 0) {
+        throw std::runtime_error(
+            "prepared point-column-domain token must be nonzero");
+    }
+    std::shared_ptr<PreparedPointColumnDomain3D> prepared;
+    {
+        std::lock_guard<std::mutex> registry_lock(
+            g_prepared_point_domain_registry_mutex);
+        const auto found = g_prepared_point_domain_registry.find(token);
+        if (found == g_prepared_point_domain_registry.end()) {
+            throw std::runtime_error(
+                "prepared point-column-domain token is unknown, stale, or closed");
+        }
+        prepared = found->second;
+    }
+    PreparedPointColumnDomain3DLease lease(std::move(prepared));
+    if (lease.owner->closed
+            || lease.owner->token != token
+            || lease.owner->creator_pid
+                != g_prepared_point_domain_registry_creator_pid
+            || static_cast<uint64_t>(::getpid())
+                != lease.owner->creator_pid) {
+        throw std::runtime_error(
+            "prepared point-column-domain token binding is invalid");
+    }
+    return lease;
+}
+
+static void get_prepared_point_column_domain_3d_telemetry(
+        uint64_t token,
+        uint64_t* validation_count_out,
+        uint64_t* execute_count_out,
+        uint64_t* hash_set_construction_count_out,
+        uint64_t* target_count_out,
+        uint64_t* creator_pid_out)
+{
+    if (!validation_count_out || !execute_count_out
+            || !hash_set_construction_count_out || !target_count_out
+            || !creator_pid_out) {
+        throw std::runtime_error(
+            "prepared point-column-domain telemetry outputs must not be null");
+    }
+    auto lease = acquire_prepared_point_column_domain_3d_lease(token);
+    *validation_count_out = lease.owner->validation_count;
+    *execute_count_out = lease.owner->execute_count;
+    *hash_set_construction_count_out =
+        lease.owner->per_launch_target_hash_set_construction_count;
+    *target_count_out = static_cast<uint64_t>(lease.owner->target_count);
+    *creator_pid_out = lease.owner->creator_pid;
+}
+
+static void destroy_prepared_point_column_domain_3d_registry(uint64_t token)
+{
+    require_prepared_point_domain_registry_process();
+    if (token == 0) {
+        throw std::runtime_error(
+            "prepared point-column-domain token must be nonzero");
+    }
+    std::shared_ptr<PreparedPointColumnDomain3D> prepared;
+    {
+        std::lock_guard<std::mutex> registry_lock(
+            g_prepared_point_domain_registry_mutex);
+        const auto found = g_prepared_point_domain_registry.find(token);
+        if (found == g_prepared_point_domain_registry.end()) {
+            throw std::runtime_error(
+                "prepared point-column-domain token is unknown, stale, or already closed");
+        }
+        prepared = found->second;
+    }
+
+    std::unique_lock<std::mutex> prepared_lock(prepared->mutex);
+    if (prepared->closed
+            || prepared->token != token
+            || prepared->creator_pid
+                != g_prepared_point_domain_registry_creator_pid
+            || static_cast<uint64_t>(::getpid())
+                != prepared->creator_pid) {
+        throw std::runtime_error(
+            "prepared point-column-domain token binding is invalid during close");
+    }
+    prepared->closed = true;
+    std::lock_guard<std::mutex> registry_lock(
+        g_prepared_point_domain_registry_mutex);
+    const auto found = g_prepared_point_domain_registry.find(token);
+    if (found == g_prepared_point_domain_registry.end()
+            || found->second.get() != prepared.get()) {
+        throw std::runtime_error(
+            "prepared point-column-domain registry binding changed during close");
+    }
+    g_prepared_point_domain_registry.erase(found);
+}
+
 static void collect_cell_mbr_nearest_frontier_3d_optix(
         const double* query_coords,
         const int64_t* query_point_ids,
@@ -19155,7 +19579,8 @@ static void collect_cell_mbr_nearest_frontier_3d_optix(
         RtdlActiveQueryStatusStreamRow* status_rows_out,
         uint64_t* emitted_count_out,
         uint64_t* attempted_count_out,
-        uint32_t* overflowed_out)
+        uint32_t* overflowed_out,
+        const PreparedPointColumnDomain3D* prepared_target_domain = nullptr)
 {
     const auto total_start = std::chrono::steady_clock::now();
     const uint32_t timing_mode =
@@ -19194,6 +19619,18 @@ static void collect_cell_mbr_nearest_frontier_3d_optix(
         && inline_cell_hit_count_out
         && inline_point_eval_count_out;
     const bool global_bound_enabled = inline_nearest_enabled && global_bound_early_break != 0u;
+    if (prepared_target_domain) {
+        if (!inline_nearest_enabled) {
+            throw std::runtime_error(
+                "prepared point-column-domain collector requires inline_nearest");
+        }
+        if (target_coords != prepared_target_domain->target_coords
+                || target_point_ids != prepared_target_domain->target_ids
+                || target_count != prepared_target_domain->target_count) {
+            throw std::runtime_error(
+                "prepared point-column-domain target binding changed");
+        }
+    }
     if (inline_cell_hit_count_out) *inline_cell_hit_count_out = 0;
     if (inline_point_eval_count_out) *inline_point_eval_count_out = 0;
     if (global_bound_early_break_count_out) *global_bound_early_break_count_out = 0;
@@ -19212,6 +19649,25 @@ static void collect_cell_mbr_nearest_frontier_3d_optix(
         if (point_row_index_count != 0 && !point_row_indices)
             throw std::runtime_error("cell-MBR inline nearest point_row_indices must not be null when point_row_index_count is nonzero");
     }
+    if (prepared_target_domain) {
+        for (size_t point_index = 0;
+                point_index < point_row_index_count;
+                ++point_index) {
+            if (point_row_indices[point_index] >= target_count) {
+                throw std::runtime_error(
+                    "cell-MBR prepared-domain point-row index is outside the target domain");
+            }
+        }
+        for (size_t cell_index = 0; cell_index < cell_count; ++cell_index) {
+            const uint64_t begin = point_begin_offsets[cell_index];
+            const uint64_t count = point_counts[cell_index];
+            if (begin > point_row_index_count
+                    || count > point_row_index_count - begin) {
+                throw std::runtime_error(
+                    "cell-MBR prepared-domain cell span exceeds point_row_index_count");
+            }
+        }
+    }
     if (query_count == 0 || cell_count == 0) {
         g_optix_last_cell_mbr_frontier_total_s = seconds_between(total_start, std::chrono::steady_clock::now());
         return;
@@ -19220,6 +19676,20 @@ static void collect_cell_mbr_nearest_frontier_3d_optix(
     ensure_cell_mbr_frontier_3d_pipeline();
 
     const auto query_pack_start = std::chrono::steady_clock::now();
+    std::optional<std::unordered_set<int64_t>> target_id_domain;
+    if (inline_nearest_enabled) {
+        if (!prepared_target_domain) {
+            target_id_domain.emplace();
+            target_id_domain->reserve(target_count);
+            for (size_t target_index = 0; target_index < target_count; ++target_index) {
+                const int64_t target_id = target_point_ids[target_index];
+                if (target_id < 0)
+                    throw std::runtime_error("cell-MBR inline nearest target ids must be nonnegative");
+                if (!target_id_domain->insert(target_id).second)
+                    throw std::runtime_error("cell-MBR inline nearest target ids must be unique");
+            }
+        }
+    }
     std::vector<GpuCellMbrQuery3D> queries(query_count);
     for (size_t i = 0; i < query_count; ++i) {
         const double x = query_coords[i * 3 + 0];
@@ -19227,6 +19697,33 @@ static void collect_cell_mbr_nearest_frontier_3d_optix(
         const double z = query_coords[i * 3 + 2];
         if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z))
             throw std::runtime_error("cell-MBR query coordinates must be finite");
+        const double seed_distance = current_best_distances[i];
+        const int64_t seed_item_id = current_best_item_ids[i];
+        const bool has_seed_item = seed_item_id >= 0;
+        const bool has_valid_seed_distance =
+            std::isfinite(seed_distance) && seed_distance >= 0.0;
+        if (has_seed_item != has_valid_seed_distance)
+            throw std::runtime_error(
+                "cell-MBR nearest seed item and finite nonnegative distance must be present together");
+        if (!has_seed_item
+                && (seed_item_id != -1
+                    || !(std::isinf(seed_distance) && seed_distance > 0.0)))
+            throw std::runtime_error(
+                "cell-MBR missing nearest seed must use item id -1 and positive infinity");
+        if (inline_nearest_enabled && has_seed_item) {
+            const bool seed_in_target_domain = prepared_target_domain
+                ? std::binary_search(
+                    prepared_target_domain->target_ids,
+                    prepared_target_domain->target_ids
+                        + prepared_target_domain->target_count,
+                    seed_item_id)
+                : target_id_domain->find(seed_item_id)
+                    != target_id_domain->end();
+            if (!seed_in_target_domain) {
+                throw std::runtime_error(
+                    "cell-MBR nearest seed item is outside the target domain");
+            }
+        }
         queries[i] = {x, y, z, current_best_distances[i], current_best_item_ids[i], query_point_ids[i]};
     }
     g_optix_last_cell_mbr_frontier_query_pack_s =
@@ -19250,6 +19747,7 @@ static void collect_cell_mbr_nearest_frontier_3d_optix(
         const uint64_t begin = point_begin_offsets[i];
         const uint64_t count = point_counts[i];
         if (inline_nearest_enabled
+                && !prepared_target_domain
                 && (begin > point_row_index_count || count > point_row_index_count - begin))
             throw std::runtime_error("cell-MBR inline nearest point row index range exceeds point_row_index_count");
         cells[i] = {
@@ -19398,6 +19896,9 @@ static void collect_cell_mbr_nearest_frontier_3d_optix(
 
     CUstream stream = 0;
     const auto launch_start = std::chrono::steady_clock::now();
+    rtdl_optix_bind_traversal_audit_context(
+        "cell_mbr_nearest_frontier_f64_3d.v1",
+        accel.handle);
     OPTIX_CHECK(optixLaunch(g_cell_mbr_frontier3d.pipe->pipeline, stream,
                             d_params.ptr, sizeof(CellMbrFrontier3DLaunchParams),
                             &g_cell_mbr_frontier3d.pipe->sbt,
@@ -19514,6 +20015,564 @@ static void collect_cell_mbr_nearest_frontier_3d_optix(
         seconds_between(host_sort_pack_start, std::chrono::steady_clock::now());
     g_optix_last_cell_mbr_frontier_total_s =
         seconds_between(total_start, std::chrono::steady_clock::now());
+}
+
+static void collect_cell_mbr_nearest_frontier_3d_prepared_domain_v1(
+        const double* query_coords,
+        const int64_t* query_point_ids,
+        size_t query_count,
+        const int64_t* cell_ids,
+        const uint64_t* point_begin_offsets,
+        const uint64_t* point_counts,
+        const double* cell_mbr_min,
+        const double* cell_mbr_max,
+        size_t cell_count,
+        double radius,
+        const double* current_best_distances,
+        const int64_t* current_best_item_ids,
+        uint64_t prepared_domain_token,
+        const uint64_t* point_row_indices,
+        size_t point_row_index_count,
+        uint64_t max_inline_points,
+        uint32_t emit_pruned_rows,
+        uint32_t sort_rows,
+        uint32_t inline_nearest,
+        uint64_t row_capacity,
+        int64_t* frontier_kind_codes_out,
+        int64_t* query_row_ids_out,
+        int64_t* query_point_ids_out,
+        int64_t* cell_ids_out,
+        uint64_t* point_begin_offsets_out,
+        uint64_t* point_counts_out,
+        double* min_distances_out,
+        double* max_distances_out,
+        double* nearest_distances_out,
+        int64_t* nearest_item_ids_out,
+        uint64_t* inline_cell_hit_count_out,
+        uint64_t* inline_point_eval_count_out,
+        uint64_t* emitted_count_out,
+        uint64_t* attempted_count_out,
+        uint32_t* overflowed_out)
+{
+    auto lease =
+        acquire_prepared_point_column_domain_3d_lease(prepared_domain_token);
+    if (lease.owner->execute_count
+            == std::numeric_limits<uint64_t>::max()) {
+        throw std::runtime_error(
+            "prepared point-column-domain execute telemetry overflow");
+    }
+    collect_cell_mbr_nearest_frontier_3d_optix(
+        query_coords,
+        query_point_ids,
+        query_count,
+        cell_ids,
+        point_begin_offsets,
+        point_counts,
+        cell_mbr_min,
+        cell_mbr_max,
+        cell_count,
+        radius,
+        current_best_distances,
+        current_best_item_ids,
+        lease.owner->target_coords,
+        lease.owner->target_ids,
+        lease.owner->target_count,
+        point_row_indices,
+        point_row_index_count,
+        max_inline_points,
+        emit_pruned_rows,
+        sort_rows,
+        inline_nearest,
+        row_capacity,
+        frontier_kind_codes_out,
+        query_row_ids_out,
+        query_point_ids_out,
+        cell_ids_out,
+        point_begin_offsets_out,
+        point_counts_out,
+        min_distances_out,
+        max_distances_out,
+        nearest_distances_out,
+        nearest_item_ids_out,
+        inline_cell_hit_count_out,
+        inline_point_eval_count_out,
+        0u,
+        0u,
+        nullptr,
+        nullptr,
+        nullptr,
+        emitted_count_out,
+        attempted_count_out,
+        overflowed_out,
+        lease.owner.get());
+    ++lease.owner->execute_count;
+}
+
+extern "C" int rtdl_cuda_complete_heavy_cells_and_reduce_nearest_global_witness_3d(
+        const double* query_coords_device,
+        const int64_t* query_ids_device,
+        uint64_t query_count,
+        const double* target_coords_device,
+        const int64_t* target_ids_device,
+        uint64_t target_count,
+        const void* cells_device,
+        uint64_t cell_count,
+        const uint64_t* point_row_indices_device,
+        uint64_t point_row_index_count,
+        uint64_t max_inline_points,
+        double* nearest_distances_device,
+        int64_t* nearest_item_ids_device,
+        const int64_t* validation_sample_indices,
+        uint64_t validation_sample_count,
+        int64_t* witness_source_id_out,
+        int64_t* witness_item_id_out,
+        double* witness_distance_out,
+        int64_t* validation_item_ids_out,
+        double* validation_distances_out,
+        uint64_t* heavy_cell_probes_out,
+        uint64_t* heavy_point_evaluations_out,
+        char* error_out,
+        uint64_t error_capacity);
+
+// Prepared, application-neutral physical composition for the certified F64
+// nearest-state producer.  The GAS, target columns, cell columns, and point
+// spans stay resident.  OptiX resolves bounded cells; a bounded CUDA
+// continuation completes only heavy cells and performs the existing
+// deterministic global witness reduction without projecting the complete
+// nearest-state columns to the host.
+struct PreparedCellMbrExactNearest3D {
+    std::unique_ptr<DevPtr> d_cells;
+    std::unique_ptr<DevPtr> d_target_coords;
+    std::unique_ptr<DevPtr> d_target_ids;
+    std::unique_ptr<DevPtr> d_point_row_indices;
+    AccelHolder accel;
+    uint64_t target_count = 0;
+    uint64_t cell_count = 0;
+    uint64_t point_row_index_count = 0;
+    uint64_t max_inline_points = 0;
+    uint64_t heavy_point_count = 0;
+    uint64_t max_heavy_point_evaluations = 0;
+    double query_lower[3] = {0.0, 0.0, 0.0};
+    double query_upper[3] = {0.0, 0.0, 0.0};
+    double traversal_radius = 0.0;
+};
+
+static double certified_nearest_query_domain_radius(
+        const double* query_lower,
+        const double* query_upper,
+        const double* target_coords,
+        size_t target_count)
+{
+    static_assert(
+        std::numeric_limits<long double>::digits
+            > std::numeric_limits<double>::digits,
+        "certified nearest conservative radius requires extended long double");
+    double target_lower[3] = {
+        std::numeric_limits<double>::infinity(),
+        std::numeric_limits<double>::infinity(),
+        std::numeric_limits<double>::infinity(),
+    };
+    double target_upper[3] = {
+        -std::numeric_limits<double>::infinity(),
+        -std::numeric_limits<double>::infinity(),
+        -std::numeric_limits<double>::infinity(),
+    };
+    for (size_t row = 0; row < target_count; ++row) {
+        for (size_t axis = 0; axis < 3; ++axis) {
+            const double value = target_coords[row * 3 + axis];
+            if (!std::isfinite(value))
+                throw std::runtime_error("prepared OptiX nearest target coordinates must be finite");
+            target_lower[axis] = std::min(target_lower[axis], value);
+            target_upper[axis] = std::max(target_upper[axis], value);
+        }
+    }
+    // Use an upward-rounded L1 box bound, not sqrt(sum(extent^2)).  The
+    // previous sqrt-then-square filter could round down and reject a cell
+    // whose exact minimum squared distance was the mathematical boundary.
+    // L1 is an upper bound on every Euclidean query/target distance.  Compute
+    // it in long double and round the final double outward so both the float
+    // GAS expansion and the device min-distance filter remain conservative.
+    long double radius_upper = 0.0L;
+    for (size_t axis = 0; axis < 3; ++axis) {
+        const double qlo = query_lower[axis];
+        const double qhi = query_upper[axis];
+        if (!std::isfinite(qlo) || !std::isfinite(qhi) || qhi < qlo)
+            throw std::runtime_error("prepared OptiX nearest query-domain bounds are invalid");
+        const long double extent = std::max({
+            std::fabs(static_cast<long double>(qlo) - target_lower[axis]),
+            std::fabs(static_cast<long double>(qlo) - target_upper[axis]),
+            std::fabs(static_cast<long double>(qhi) - target_lower[axis]),
+            std::fabs(static_cast<long double>(qhi) - target_upper[axis]),
+        });
+        radius_upper += extent;
+    }
+    if (radius_upper > static_cast<long double>(
+            std::numeric_limits<double>::max()))
+        throw std::runtime_error("prepared OptiX nearest query-domain radius exceeds double");
+    double radius = static_cast<double>(radius_upper);
+    if (static_cast<long double>(radius) < radius_upper) {
+        radius = std::nextafter(
+            radius,
+            std::numeric_limits<double>::infinity());
+    }
+    if (!std::isfinite(radius))
+        throw std::runtime_error("prepared OptiX nearest query-domain radius is not finite");
+    return radius;
+}
+
+static PreparedCellMbrExactNearest3D* prepare_cell_mbr_exact_nearest_3d_optix(
+        const double* target_coords,
+        const int64_t* target_ids,
+        size_t target_count,
+        const int64_t* cell_ids,
+        const int64_t* point_begin_offsets,
+        const int64_t* point_counts,
+        const double* cell_mbr_min,
+        const double* cell_mbr_max,
+        size_t cell_count,
+        const int64_t* point_row_indices,
+        size_t point_row_index_count,
+        const double* query_domain_lower,
+        const double* query_domain_upper,
+        uint64_t max_inline_points,
+        uint64_t max_heavy_point_evaluations,
+        double* traversal_radius_out,
+        double* prepare_seconds_out)
+{
+    const auto started = std::chrono::steady_clock::now();
+    if (!target_coords || !target_ids || !cell_ids || !point_begin_offsets
+            || !point_counts || !cell_mbr_min || !cell_mbr_max
+            || !point_row_indices || !query_domain_lower || !query_domain_upper
+            || !traversal_radius_out || !prepare_seconds_out)
+        throw std::runtime_error("prepared OptiX nearest input/output pointers must not be null");
+    if (target_count == 0 || target_count > static_cast<size_t>(UINT32_MAX)
+            || cell_count == 0 || cell_count > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("prepared OptiX nearest target/cell counts must fit positive uint32");
+    if (point_row_index_count != target_count)
+        throw std::runtime_error("prepared OptiX nearest point-row index count must equal target count");
+    if (max_inline_points == 0)
+        throw std::runtime_error("prepared OptiX nearest max_inline_points must be positive");
+    if (max_heavy_point_evaluations == 0)
+        throw std::runtime_error("prepared OptiX nearest heavy-work capacity must be positive");
+    ensure_cell_mbr_frontier_3d_pipeline();
+
+    std::vector<int64_t> sorted_target_ids(target_ids, target_ids + target_count);
+    for (int64_t target_id : sorted_target_ids) {
+        if (target_id < 0 || static_cast<uint64_t>(target_id) > UINT32_MAX)
+            throw std::runtime_error("prepared OptiX nearest target id exceeds uint32 domain");
+    }
+    std::sort(sorted_target_ids.begin(), sorted_target_ids.end());
+    if (std::adjacent_find(sorted_target_ids.begin(), sorted_target_ids.end())
+            != sorted_target_ids.end())
+        throw std::runtime_error("prepared OptiX nearest target ids must be unique");
+    for (size_t row = 0; row < point_row_index_count; ++row) {
+        if (point_row_indices[row] < 0
+                || static_cast<uint64_t>(point_row_indices[row]) >= target_count)
+            throw std::runtime_error("prepared OptiX nearest point-row index is out of range");
+    }
+
+    std::unique_ptr<PreparedCellMbrExactNearest3D> prepared(
+        new PreparedCellMbrExactNearest3D());
+    prepared->target_count = static_cast<uint64_t>(target_count);
+    prepared->cell_count = static_cast<uint64_t>(cell_count);
+    prepared->point_row_index_count = static_cast<uint64_t>(point_row_index_count);
+    prepared->max_inline_points = max_inline_points;
+    prepared->max_heavy_point_evaluations = max_heavy_point_evaluations;
+    for (size_t axis = 0; axis < 3; ++axis) {
+        prepared->query_lower[axis] = query_domain_lower[axis];
+        prepared->query_upper[axis] = query_domain_upper[axis];
+    }
+    prepared->traversal_radius = certified_nearest_query_domain_radius(
+        query_domain_lower,
+        query_domain_upper,
+        target_coords,
+        target_count);
+
+    std::vector<GpuCellMbr3D> cells(cell_count);
+    std::vector<OptixAabb> aabbs(cell_count);
+    uint64_t heavy_point_count = 0;
+    for (size_t row = 0; row < cell_count; ++row) {
+        const int64_t begin_i64 = point_begin_offsets[row];
+        const int64_t count_i64 = point_counts[row];
+        if (begin_i64 < 0 || count_i64 <= 0)
+            throw std::runtime_error("prepared OptiX nearest cell span must be positive");
+        const uint64_t begin = static_cast<uint64_t>(begin_i64);
+        const uint64_t count = static_cast<uint64_t>(count_i64);
+        if (begin > point_row_index_count || count > point_row_index_count - begin)
+            throw std::runtime_error("prepared OptiX nearest cell span exceeds point-row indices");
+        const double min_x = cell_mbr_min[row * 3 + 0];
+        const double min_y = cell_mbr_min[row * 3 + 1];
+        const double min_z = cell_mbr_min[row * 3 + 2];
+        const double max_x = cell_mbr_max[row * 3 + 0];
+        const double max_y = cell_mbr_max[row * 3 + 1];
+        const double max_z = cell_mbr_max[row * 3 + 2];
+        if (!std::isfinite(min_x) || !std::isfinite(min_y) || !std::isfinite(min_z)
+                || !std::isfinite(max_x) || !std::isfinite(max_y) || !std::isfinite(max_z)
+                || max_x < min_x || max_y < min_y || max_z < min_z)
+            throw std::runtime_error("prepared OptiX nearest cell MBR is invalid");
+        cells[row] = {
+            min_x, min_y, min_z,
+            max_x, max_y, max_z,
+            cell_ids[row],
+            begin,
+            count,
+        };
+        aabbs[row] = expanded_optix_aabb_for_cell_mbr3d(
+            cells[row],
+            prepared->traversal_radius);
+        if (!std::isfinite(aabbs[row].minX) || !std::isfinite(aabbs[row].minY)
+                || !std::isfinite(aabbs[row].minZ) || !std::isfinite(aabbs[row].maxX)
+                || !std::isfinite(aabbs[row].maxY) || !std::isfinite(aabbs[row].maxZ))
+            throw std::runtime_error("prepared OptiX nearest expanded cell AABB exceeds float domain");
+        if (count > max_inline_points) {
+            if (heavy_point_count > UINT64_MAX - count)
+                throw std::runtime_error("prepared OptiX nearest heavy point count overflows");
+            heavy_point_count += count;
+        }
+    }
+    prepared->heavy_point_count = heavy_point_count;
+
+    prepared->d_cells.reset(new DevPtr(sizeof(GpuCellMbr3D) * cell_count));
+    prepared->d_target_coords.reset(new DevPtr(sizeof(double) * target_count * 3));
+    prepared->d_target_ids.reset(new DevPtr(sizeof(int64_t) * target_count));
+    prepared->d_point_row_indices.reset(
+        new DevPtr(sizeof(uint64_t) * point_row_index_count));
+    upload(prepared->d_cells->ptr, cells.data(), cells.size());
+    upload(prepared->d_target_coords->ptr, target_coords, target_count * 3);
+    upload(prepared->d_target_ids->ptr, target_ids, target_count);
+    std::vector<uint64_t> point_rows(point_row_index_count);
+    for (size_t row = 0; row < point_row_index_count; ++row)
+        point_rows[row] = static_cast<uint64_t>(point_row_indices[row]);
+    upload(
+        prepared->d_point_row_indices->ptr,
+        point_rows.data(),
+        point_rows.size());
+    prepared->accel = build_custom_accel(get_optix_context(), aabbs);
+    if (prepared->accel.handle == 0)
+        throw std::runtime_error("prepared OptiX nearest GAS handle is zero");
+    CU_CHECK(cuCtxSynchronize());
+    *traversal_radius_out = prepared->traversal_radius;
+    *prepare_seconds_out = seconds_between(started, std::chrono::steady_clock::now());
+    return prepared.release();
+}
+
+static void run_prepared_cell_mbr_exact_nearest_3d_optix(
+        PreparedCellMbrExactNearest3D* prepared,
+        const double* query_coords,
+        const int64_t* query_ids,
+        size_t query_count,
+        const int64_t* validation_sample_indices,
+        size_t validation_sample_count,
+        int64_t* witness_source_id_out,
+        int64_t* witness_item_id_out,
+        double* witness_distance_out,
+        int64_t* validation_item_ids_out,
+        double* validation_distances_out,
+        uint64_t* candidate_distance_evaluations_out,
+        uint64_t* scanned_cell_count_out,
+        uint64_t* heavy_point_evaluations_out,
+        uint64_t* optix_launch_count_out,
+        double* upload_seconds_out,
+        double* optix_seconds_out,
+        double* continuation_reducer_seconds_out,
+        double* total_seconds_out)
+{
+    const auto total_start = std::chrono::steady_clock::now();
+    if (!prepared)
+        throw std::runtime_error("prepared OptiX nearest handle is null");
+    if (!query_coords || !query_ids || !witness_source_id_out
+            || !witness_item_id_out || !witness_distance_out
+            || !candidate_distance_evaluations_out || !scanned_cell_count_out
+            || !heavy_point_evaluations_out || !optix_launch_count_out
+            || !upload_seconds_out || !optix_seconds_out
+            || !continuation_reducer_seconds_out || !total_seconds_out)
+        throw std::runtime_error("prepared OptiX nearest execution pointers must not be null");
+    if (query_count == 0 || query_count > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("prepared OptiX nearest query_count must fit positive uint32");
+    if (validation_sample_count != 0
+            && (!validation_sample_indices
+                || !validation_item_ids_out
+                || !validation_distances_out))
+        throw std::runtime_error("prepared OptiX nearest validation pointers must not be null");
+    if (prepared->heavy_point_count != 0
+            && query_count > prepared->max_heavy_point_evaluations
+                / prepared->heavy_point_count)
+        throw std::runtime_error("prepared OptiX nearest heavy-work capacity exceeded");
+    *candidate_distance_evaluations_out = 0;
+    *scanned_cell_count_out = 0;
+    *heavy_point_evaluations_out = 0;
+    *optix_launch_count_out = 0;
+    *upload_seconds_out = 0.0;
+    *optix_seconds_out = 0.0;
+    *continuation_reducer_seconds_out = 0.0;
+    *total_seconds_out = 0.0;
+
+    const auto upload_start = std::chrono::steady_clock::now();
+    std::vector<GpuCellMbrQuery3D> queries(query_count);
+    std::vector<int64_t> sorted_query_ids(query_ids, query_ids + query_count);
+    std::sort(sorted_query_ids.begin(), sorted_query_ids.end());
+    if (std::adjacent_find(sorted_query_ids.begin(), sorted_query_ids.end())
+            != sorted_query_ids.end())
+        throw std::runtime_error("prepared OptiX nearest query ids must be unique");
+    for (size_t row = 0; row < query_count; ++row) {
+        const double x = query_coords[row * 3 + 0];
+        const double y = query_coords[row * 3 + 1];
+        const double z = query_coords[row * 3 + 2];
+        const double values[3] = {x, y, z};
+        for (size_t axis = 0; axis < 3; ++axis) {
+            if (!std::isfinite(values[axis]))
+                throw std::runtime_error("prepared OptiX nearest query coordinates must be finite");
+            if (values[axis] < prepared->query_lower[axis]
+                    || values[axis] > prepared->query_upper[axis])
+                throw std::runtime_error("prepared OptiX nearest query escaped the certified domain");
+        }
+        if (query_ids[row] < 0 || static_cast<uint64_t>(query_ids[row]) > UINT32_MAX)
+            throw std::runtime_error("prepared OptiX nearest query id exceeds uint32 domain");
+        queries[row] = {
+            x, y, z,
+            std::numeric_limits<double>::infinity(),
+            -1,
+            query_ids[row],
+        };
+    }
+    for (size_t row = 0; row < validation_sample_count; ++row) {
+        if (validation_sample_indices[row] < 0
+                || static_cast<size_t>(validation_sample_indices[row]) >= query_count)
+            throw std::runtime_error("prepared OptiX nearest validation sample is out of range");
+    }
+    DevPtr d_query_coords(sizeof(double) * query_count * 3);
+    DevPtr d_query_ids(sizeof(int64_t) * query_count);
+    DevPtr d_queries(sizeof(GpuCellMbrQuery3D) * query_count);
+    DevPtr d_nearest_distances(sizeof(double) * query_count);
+    DevPtr d_nearest_item_ids(sizeof(int64_t) * query_count);
+    DevPtr d_hit_count(sizeof(uint64_t));
+    DevPtr d_inline_cell_hit_count(sizeof(uint64_t));
+    DevPtr d_inline_point_eval_count(sizeof(uint64_t));
+    uint64_t zero = 0;
+    upload(d_query_coords.ptr, query_coords, query_count * 3);
+    upload(d_query_ids.ptr, query_ids, query_count);
+    upload(d_queries.ptr, queries.data(), queries.size());
+    upload(d_hit_count.ptr, &zero, 1);
+    upload(d_inline_cell_hit_count.ptr, &zero, 1);
+    upload(d_inline_point_eval_count.ptr, &zero, 1);
+    *upload_seconds_out = seconds_between(upload_start, std::chrono::steady_clock::now());
+
+    CellMbrFrontier3DLaunchParams lp = {};
+    lp.traversable = prepared->accel.handle;
+    lp.queries = reinterpret_cast<const GpuCellMbrQuery3D*>(d_queries.ptr);
+    lp.cells = reinterpret_cast<const GpuCellMbr3D*>(prepared->d_cells->ptr);
+    lp.target_coords = reinterpret_cast<const double*>(prepared->d_target_coords->ptr);
+    lp.target_point_ids = reinterpret_cast<const int64_t*>(prepared->d_target_ids->ptr);
+    lp.point_row_indices = reinterpret_cast<const uint64_t*>(
+        prepared->d_point_row_indices->ptr);
+    lp.point_row_index_count = prepared->point_row_index_count;
+    lp.hit_count = reinterpret_cast<unsigned long long*>(d_hit_count.ptr);
+    lp.raw_frontier_kind_counts = nullptr;
+    lp.inline_cell_hit_count = reinterpret_cast<unsigned long long*>(
+        d_inline_cell_hit_count.ptr);
+    lp.inline_point_eval_count = reinterpret_cast<unsigned long long*>(
+        d_inline_point_eval_count.ptr);
+    lp.rows_out = nullptr;
+    lp.status_rows_out = nullptr;
+    lp.nearest_distances_out = reinterpret_cast<double*>(d_nearest_distances.ptr);
+    lp.nearest_item_ids_out = reinterpret_cast<int64_t*>(d_nearest_item_ids.ptr);
+    lp.query_count = static_cast<uint32_t>(query_count);
+    lp.cell_count = static_cast<uint32_t>(prepared->cell_count);
+    lp.target_count = static_cast<uint32_t>(prepared->target_count);
+    lp.row_capacity = 0;
+    lp.max_inline_points = prepared->max_inline_points;
+    lp.emit_pruned_rows = 0;
+    lp.inline_nearest = 1;
+    lp.collect_inline_stats = 1;
+    // Keep exact squared state across OptiX inline and CUDA heavy-cell paths.
+    // Converting sqrt(best_sq) back to best_sq can perturb an equality and
+    // select the wrong deterministic lowest target id.
+    lp.nearest_output_squared = 1;
+    lp.global_bound_distance_bits = nullptr;
+    lp.global_bound_early_break_count = nullptr;
+    lp.global_bound_early_break = 0;
+    lp.frontier_status_probe_mode = 0;
+    lp.radius = prepared->traversal_radius;
+    DevPtr d_params(sizeof(CellMbrFrontier3DLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    CUstream stream = 0;
+    const auto launch_start = std::chrono::steady_clock::now();
+    rtdl_optix_bind_traversal_audit_context(
+        "certified_nearest_state_f64_cell_mbr_3d.v1",
+        prepared->accel.handle);
+    OPTIX_CHECK(optixLaunch(
+        g_cell_mbr_frontier3d.pipe->pipeline,
+        stream,
+        d_params.ptr,
+        sizeof(CellMbrFrontier3DLaunchParams),
+        &g_cell_mbr_frontier3d.pipe->sbt,
+        static_cast<unsigned>(query_count),
+        1,
+        1));
+    CU_CHECK(cuStreamSynchronize(stream));
+    *optix_seconds_out = seconds_between(launch_start, std::chrono::steady_clock::now());
+    *optix_launch_count_out = 1;
+
+    uint64_t inline_cell_hits = 0;
+    uint64_t inline_point_evaluations = 0;
+    download(&inline_cell_hits, d_inline_cell_hit_count.ptr, 1);
+    download(&inline_point_evaluations, d_inline_point_eval_count.ptr, 1);
+    const auto continuation_start = std::chrono::steady_clock::now();
+    uint64_t heavy_cell_probes = 0;
+    uint64_t heavy_point_evaluations = 0;
+    char continuation_error[4096] = {};
+    const int continuation_status =
+        rtdl_cuda_complete_heavy_cells_and_reduce_nearest_global_witness_3d(
+            reinterpret_cast<const double*>(d_query_coords.ptr),
+            reinterpret_cast<const int64_t*>(d_query_ids.ptr),
+            static_cast<uint64_t>(query_count),
+            reinterpret_cast<const double*>(prepared->d_target_coords->ptr),
+            reinterpret_cast<const int64_t*>(prepared->d_target_ids->ptr),
+            prepared->target_count,
+            reinterpret_cast<const void*>(prepared->d_cells->ptr),
+            prepared->cell_count,
+            reinterpret_cast<const uint64_t*>(
+                prepared->d_point_row_indices->ptr),
+            prepared->point_row_index_count,
+            prepared->max_inline_points,
+            reinterpret_cast<double*>(d_nearest_distances.ptr),
+            reinterpret_cast<int64_t*>(d_nearest_item_ids.ptr),
+            validation_sample_indices,
+            static_cast<uint64_t>(validation_sample_count),
+            witness_source_id_out,
+            witness_item_id_out,
+            witness_distance_out,
+            validation_item_ids_out,
+            validation_distances_out,
+            &heavy_cell_probes,
+            &heavy_point_evaluations,
+            continuation_error,
+            sizeof(continuation_error));
+    if (continuation_status != 0)
+        throw std::runtime_error(
+            std::string("prepared OptiX nearest continuation failed: ")
+            + continuation_error);
+    *continuation_reducer_seconds_out =
+        seconds_between(continuation_start, std::chrono::steady_clock::now());
+    if (!std::isfinite(*witness_distance_out) || *witness_distance_out < 0.0
+            || *witness_source_id_out < 0 || *witness_item_id_out < 0)
+        throw std::runtime_error("prepared OptiX nearest produced an invalid global witness");
+    for (size_t row = 0; row < validation_sample_count; ++row) {
+        if (!std::isfinite(validation_distances_out[row])
+                || validation_distances_out[row] < 0.0
+                || validation_item_ids_out[row] < 0)
+            throw std::runtime_error("prepared OptiX nearest produced an invalid validation sample");
+    }
+    if (inline_point_evaluations > UINT64_MAX - heavy_point_evaluations)
+        throw std::runtime_error("prepared OptiX nearest evaluation count overflowed");
+    if (inline_cell_hits > UINT64_MAX - heavy_cell_probes)
+        throw std::runtime_error("prepared OptiX nearest cell count overflowed");
+    *candidate_distance_evaluations_out =
+        inline_point_evaluations + heavy_point_evaluations;
+    *scanned_cell_count_out = inline_cell_hits + heavy_cell_probes;
+    *heavy_point_evaluations_out = heavy_point_evaluations;
+    *total_seconds_out = seconds_between(total_start, std::chrono::steady_clock::now());
 }
 
 static void ensure_pack_triangle2d_device_columns_kernel()
@@ -20260,6 +21319,7 @@ struct RayPrimitiveGroupedI64Reduction3DLaunchParams {
     uint32_t                  triangle_count;
     uint32_t                  group_count;
     uint32_t                  reduction;
+    uint32_t                  signed_values;
 };
 
 struct RayTriangleHitStream3DLaunchParams {
@@ -20786,7 +21846,8 @@ static std::string ray_primitive_grouped_i64_reduction_kernel_source_3d()
         "    uint32_t                  ray_count;\n"
         "    uint32_t                  triangle_count;\n"
         "    uint32_t                  group_count;\n"
-        "    uint32_t                  reduction;\n";
+        "    uint32_t                  reduction;\n"
+        "    uint32_t                  signed_values;\n";
     size_t pos = src.find(old_output_field);
     if (pos == std::string::npos)
         throw std::runtime_error("failed to specialize OptiX 3-D primitive grouped reduction params");
@@ -20819,6 +21880,26 @@ static std::string ray_primitive_grouped_i64_reduction_kernel_source_3d()
         "    optixIgnoreIntersection();\n"
         "}\n";
     const std::string new_anyhit =
+        "__device__ long long rtdl_primitive_atomic_min_i64(long long* address, long long value) {\n"
+        "    unsigned long long* bits = reinterpret_cast<unsigned long long*>(address);\n"
+        "    unsigned long long old = *bits;\n"
+        "    while (static_cast<long long>(old) > value) {\n"
+        "        const unsigned long long assumed = old;\n"
+        "        old = atomicCAS(bits, assumed, static_cast<unsigned long long>(value));\n"
+        "        if (old == assumed) break;\n"
+        "    }\n"
+        "    return static_cast<long long>(old);\n"
+        "}\n"
+        "__device__ long long rtdl_primitive_atomic_max_i64(long long* address, long long value) {\n"
+        "    unsigned long long* bits = reinterpret_cast<unsigned long long*>(address);\n"
+        "    unsigned long long old = *bits;\n"
+        "    while (static_cast<long long>(old) < value) {\n"
+        "        const unsigned long long assumed = old;\n"
+        "        old = atomicCAS(bits, assumed, static_cast<unsigned long long>(value));\n"
+        "        if (old == assumed) break;\n"
+        "    }\n"
+        "    return static_cast<long long>(old);\n"
+        "}\n"
         "extern \"C\" __global__ void __anyhit__rayhit3d_anyhit() {\n"
         "    const uint32_t prim = optixGetPrimitiveIndex();\n"
         "    if (prim >= params.triangle_count) {\n"
@@ -20833,16 +21914,35 @@ static std::string ray_primitive_grouped_i64_reduction_kernel_source_3d()
         "        const uint32_t group = params.primitive_group_ids[prim];\n"
         "        if (group < params.group_count) {\n"
         "            const unsigned long long value = params.primitive_values[prim];\n"
-        "            if (params.reduction == 1u) {\n"
+        "            if (params.signed_values != 0u) {\n"
         "                atomicAdd(&params.group_counts[group], 1ull);\n"
+        "            }\n"
+        "            if (params.reduction == 1u) {\n"
+        "                if (params.signed_values == 0u) {\n"
+        "                    atomicAdd(&params.group_counts[group], 1ull);\n"
+        "                }\n"
         "            } else if (params.reduction == 2u) {\n"
         "                atomicAdd(&params.group_sums[group], value);\n"
         "            } else if (params.reduction == 3u) {\n"
-        "                atomicMin(&params.group_mins[group], value);\n"
+        "                if (params.signed_values != 0u) {\n"
+        "                    rtdl_primitive_atomic_min_i64(\n"
+        "                        reinterpret_cast<long long*>(&params.group_mins[group]),\n"
+        "                        static_cast<long long>(value));\n"
+        "                } else {\n"
+        "                    atomicMin(&params.group_mins[group], value);\n"
+        "                }\n"
         "            } else if (params.reduction == 4u) {\n"
-        "                atomicMax(&params.group_maxs[group], value);\n"
+        "                if (params.signed_values != 0u) {\n"
+        "                    rtdl_primitive_atomic_max_i64(\n"
+        "                        reinterpret_cast<long long*>(&params.group_maxs[group]),\n"
+        "                        static_cast<long long>(value));\n"
+        "                } else {\n"
+        "                    atomicMax(&params.group_maxs[group], value);\n"
+        "                }\n"
         "            } else if (params.reduction == 5u) {\n"
-        "                atomicAdd(&params.group_counts[group], 1ull);\n"
+        "                if (params.signed_values == 0u) {\n"
+        "                    atomicAdd(&params.group_counts[group], 1ull);\n"
+        "                }\n"
         "                atomicAdd(&params.group_sums[group], value);\n"
         "            }\n"
         "        }\n"
@@ -21167,7 +22267,41 @@ static PreparedPrimitiveGroupedI64Payload3D* prepare_primitive_grouped_i64_paylo
         primitive_group_id_count,
         primitive_values,
         primitive_value_count,
-        group_count);
+        group_count,
+        false);
+}
+
+static PreparedPrimitiveGroupedI64Payload3D* prepare_primitive_grouped_i64_payload_3d_signed_v2_optix(
+        const uint32_t* primitive_group_ids,
+        size_t primitive_group_id_count,
+        const int64_t* primitive_values,
+        size_t primitive_value_count,
+        size_t group_count)
+{
+    return new PreparedPrimitiveGroupedI64Payload3D(
+        primitive_group_ids,
+        primitive_group_id_count,
+        reinterpret_cast<const uint64_t*>(primitive_values),
+        primitive_value_count,
+        group_count,
+        true);
+}
+
+static PreparedPrimitiveGroupedI64Payload3D* prepare_primitive_grouped_i64_payload_3d_signed_verified_v3_optix(
+        const uint32_t* primitive_group_ids,
+        size_t primitive_group_id_count,
+        const int64_t* primitive_values,
+        size_t primitive_value_count,
+        size_t group_count)
+{
+    return new PreparedPrimitiveGroupedI64Payload3D(
+        primitive_group_ids,
+        primitive_group_id_count,
+        reinterpret_cast<const uint64_t*>(primitive_values),
+        primitive_value_count,
+        group_count,
+        true,
+        PreparedPrimitiveGroupedI64Payload3D::HostValidationMode::CompilerVerifiedSignedColumns);
 }
 
 static PreparedRayBatch3D* prepare_ray_batch_3d_optix(
@@ -21531,6 +22665,9 @@ static void run_prepared_static_triangle_scene_3d_ray_any_hit_weighted_sum_optix
 
     const auto traversal_start = std::chrono::steady_clock::now();
     CUstream stream = 0;
+    rtdl_optix_bind_traversal_audit_context(
+        "ray_triangle_any_hit_weighted_sum_3d",
+        prepared->accel.handle);
     OPTIX_CHECK(optixLaunch(g_rayanyhit_weighted_sum3d.pipe->pipeline, stream,
                              d_params.ptr, sizeof(RayAnyHitWeightedSum3DLaunchParams),
                              &g_rayanyhit_weighted_sum3d.pipe->sbt,
@@ -21554,6 +22691,7 @@ static void run_prepared_static_triangle_scene_3d_ray_primitive_grouped_i64_redu
         size_t primitive_value_count,
         size_t group_count,
         uint32_t reduction,
+        bool signed_values,
         uint64_t* group_counts_out,
         uint64_t* group_sums_out,
         uint64_t* group_mins_out,
@@ -21590,22 +22728,35 @@ static void run_prepared_static_triangle_scene_3d_ray_primitive_grouped_i64_redu
             reduction != kDeviceColumnGroupedOpSumCount) {
         throw std::runtime_error("unsupported primitive grouped i64 reduction operation");
     }
+    for (size_t primitive_index = 0; primitive_index < prepared->triangle_count; ++primitive_index) {
+        if (primitive_group_ids[primitive_index] >= group_count)
+            throw std::runtime_error("primitive_group_ids entries must be smaller than group_count");
+    }
+    if (signed_values &&
+            (reduction == kDeviceColumnGroupedOpSum ||
+             reduction == kDeviceColumnGroupedOpSumCount)) {
+        validate_signed_grouped_i64_sum_domain(
+            primitive_group_ids,
+            reinterpret_cast<const int64_t*>(primitive_values),
+            primitive_value_count,
+            group_count);
+    }
 
     for (size_t group_index = 0; group_index < group_count; ++group_index) {
         group_counts_out[group_index] = 0u;
         group_sums_out[group_index] = 0u;
-        group_mins_out[group_index] = std::numeric_limits<uint64_t>::max();
-        group_maxs_out[group_index] = 0u;
+        group_mins_out[group_index] = signed_values
+            ? static_cast<uint64_t>(std::numeric_limits<int64_t>::max())
+            : std::numeric_limits<uint64_t>::max();
+        group_maxs_out[group_index] = signed_values
+            ? static_cast<uint64_t>(std::numeric_limits<int64_t>::min())
+            : uint64_t{0};
     }
     *hit_event_count_out = 0u;
     if (traversal_seconds_out)
         *traversal_seconds_out = 0.0;
     if (ray_count == 0 || prepared->triangle_count == 0 || group_count == 0)
         return;
-    for (size_t primitive_index = 0; primitive_index < prepared->triangle_count; ++primitive_index) {
-        if (primitive_group_ids[primitive_index] >= group_count)
-            throw std::runtime_error("primitive_group_ids entries must be smaller than group_count");
-    }
 
     std::vector<GpuRay3DHost> gpu_rays(ray_count);
     for (size_t i = 0; i < ray_count; ++i)
@@ -21637,11 +22788,20 @@ static void run_prepared_static_triangle_scene_3d_ray_primitive_grouped_i64_redu
     CU_CHECK(cuMemsetD32(d_flags.ptr, 0u, flag_word_count));
     CU_CHECK(cuMemsetD32(d_counts.ptr, 0u, group_count * 2u));
     CU_CHECK(cuMemsetD32(d_sums.ptr, 0u, group_count * 2u));
-    CU_CHECK(cuMemsetD32(d_maxs.ptr, 0u, group_count * 2u));
     unsigned long long zero = 0ull;
     upload(d_hit_events.ptr, &zero, 1);
-    std::vector<unsigned long long> min_init(group_count, std::numeric_limits<unsigned long long>::max());
+    std::vector<unsigned long long> min_init(
+        group_count,
+        signed_values
+            ? static_cast<unsigned long long>(std::numeric_limits<int64_t>::max())
+            : std::numeric_limits<unsigned long long>::max());
+    std::vector<unsigned long long> max_init(
+        group_count,
+        signed_values
+            ? static_cast<unsigned long long>(std::numeric_limits<int64_t>::min())
+            : 0ull);
     upload(d_mins.ptr, min_init.data(), min_init.size());
+    upload(d_maxs.ptr, max_init.data(), max_init.size());
 
     RayPrimitiveGroupedI64Reduction3DLaunchParams lp;
     lp.traversable = prepared->accel.handle;
@@ -21659,6 +22819,7 @@ static void run_prepared_static_triangle_scene_3d_ray_primitive_grouped_i64_redu
     lp.triangle_count = static_cast<uint32_t>(prepared->triangle_count);
     lp.group_count = static_cast<uint32_t>(group_count);
     lp.reduction = reduction;
+    lp.signed_values = signed_values ? 1u : 0u;
 
     DevPtr d_params(sizeof(RayPrimitiveGroupedI64Reduction3DLaunchParams));
     upload(d_params.ptr, &lp, 1);
@@ -21673,8 +22834,16 @@ static void run_prepared_static_triangle_scene_3d_ray_primitive_grouped_i64_redu
 
     std::vector<unsigned long long> counts(group_count, 0ull);
     std::vector<unsigned long long> sums(group_count, 0ull);
-    std::vector<unsigned long long> mins(group_count, std::numeric_limits<unsigned long long>::max());
-    std::vector<unsigned long long> maxs(group_count, 0ull);
+    std::vector<unsigned long long> mins(
+        group_count,
+        signed_values
+            ? static_cast<unsigned long long>(std::numeric_limits<int64_t>::max())
+            : std::numeric_limits<unsigned long long>::max());
+    std::vector<unsigned long long> maxs(
+        group_count,
+        signed_values
+            ? static_cast<unsigned long long>(std::numeric_limits<int64_t>::min())
+            : 0ull);
     unsigned long long hit_events = 0ull;
     download(counts.data(), d_counts.ptr, group_count);
     download(sums.data(), d_sums.ptr, group_count);
@@ -22155,12 +23324,16 @@ static void run_prepared_static_triangle_scene_3d_ray_prepared_primitive_grouped
         const RtdlRay3D* rays,
         size_t ray_count,
         uint32_t reduction,
+        bool signed_values,
         uint64_t* group_counts_out,
         uint64_t* group_sums_out,
         uint64_t* group_mins_out,
         uint64_t* group_maxs_out,
         uint64_t* hit_event_count_out,
-        double* traversal_seconds_out)
+        double* traversal_seconds_out,
+        double* query_prepare_seconds_out = nullptr,
+        double* launch_seconds_out = nullptr,
+        double* result_download_seconds_out = nullptr)
 {
     if (!prepared)
         throw std::runtime_error("prepared scene handle must not be null");
@@ -22170,6 +23343,8 @@ static void run_prepared_static_triangle_scene_3d_ray_prepared_primitive_grouped
         throw std::runtime_error("ray pointer must not be null when ray_count is nonzero");
     if (payload->primitive_count != prepared->triangle_count)
         throw std::runtime_error("prepared primitive payload length must match prepared triangle count");
+    if (payload->signed_values != signed_values)
+        throw std::runtime_error("prepared primitive grouped payload ABI does not match run symbol");
     if (!group_counts_out || !group_sums_out || !group_mins_out || !group_maxs_out)
         throw std::runtime_error("group output arrays must not be null");
     if (!hit_event_count_out)
@@ -22187,19 +23362,37 @@ static void run_prepared_static_triangle_scene_3d_ray_prepared_primitive_grouped
             reduction != kDeviceColumnGroupedOpSumCount) {
         throw std::runtime_error("unsupported primitive grouped i64 reduction operation");
     }
+    if (signed_values &&
+            (reduction == kDeviceColumnGroupedOpSum ||
+             reduction == kDeviceColumnGroupedOpSumCount) &&
+            !payload->signed_sum_domain_safe) {
+        throw std::overflow_error(
+            "signed grouped-i64 positive/negative per-group domain exceeds int64");
+    }
 
     for (size_t group_index = 0; group_index < payload->group_count; ++group_index) {
         group_counts_out[group_index] = 0u;
         group_sums_out[group_index] = 0u;
-        group_mins_out[group_index] = std::numeric_limits<uint64_t>::max();
-        group_maxs_out[group_index] = 0u;
+        group_mins_out[group_index] = signed_values
+            ? static_cast<uint64_t>(std::numeric_limits<int64_t>::max())
+            : std::numeric_limits<uint64_t>::max();
+        group_maxs_out[group_index] = signed_values
+            ? static_cast<uint64_t>(std::numeric_limits<int64_t>::min())
+            : uint64_t{0};
     }
     *hit_event_count_out = 0u;
     if (traversal_seconds_out)
         *traversal_seconds_out = 0.0;
+    if (query_prepare_seconds_out)
+        *query_prepare_seconds_out = 0.0;
+    if (launch_seconds_out)
+        *launch_seconds_out = 0.0;
+    if (result_download_seconds_out)
+        *result_download_seconds_out = 0.0;
     if (ray_count == 0 || prepared->triangle_count == 0 || payload->group_count == 0)
         return;
 
+    const auto query_prepare_start = std::chrono::steady_clock::now();
     std::vector<GpuRay3DHost> gpu_rays(ray_count);
     for (size_t i = 0; i < ray_count; ++i)
         gpu_rays[i] = pack_ray_3d_as_gpu_ray(rays[i]);
@@ -22219,11 +23412,20 @@ static void run_prepared_static_triangle_scene_3d_ray_prepared_primitive_grouped
     CU_CHECK(cuMemsetD32(d_flags.ptr, 0u, flag_word_count));
     CU_CHECK(cuMemsetD32(d_counts.ptr, 0u, payload->group_count * 2u));
     CU_CHECK(cuMemsetD32(d_sums.ptr, 0u, payload->group_count * 2u));
-    CU_CHECK(cuMemsetD32(d_maxs.ptr, 0u, payload->group_count * 2u));
     unsigned long long zero = 0ull;
     upload(d_hit_events.ptr, &zero, 1);
-    std::vector<unsigned long long> min_init(payload->group_count, std::numeric_limits<unsigned long long>::max());
+    std::vector<unsigned long long> min_init(
+        payload->group_count,
+        signed_values
+            ? static_cast<unsigned long long>(std::numeric_limits<int64_t>::max())
+            : std::numeric_limits<unsigned long long>::max());
+    std::vector<unsigned long long> max_init(
+        payload->group_count,
+        signed_values
+            ? static_cast<unsigned long long>(std::numeric_limits<int64_t>::min())
+            : 0ull);
     upload(d_mins.ptr, min_init.data(), min_init.size());
+    upload(d_maxs.ptr, max_init.data(), max_init.size());
 
     RayPrimitiveGroupedI64Reduction3DLaunchParams lp;
     lp.traversable = prepared->accel.handle;
@@ -22241,28 +23443,55 @@ static void run_prepared_static_triangle_scene_3d_ray_prepared_primitive_grouped
     lp.triangle_count = static_cast<uint32_t>(prepared->triangle_count);
     lp.group_count = static_cast<uint32_t>(payload->group_count);
     lp.reduction = reduction;
+    lp.signed_values = signed_values ? 1u : 0u;
 
     DevPtr d_params(sizeof(RayPrimitiveGroupedI64Reduction3DLaunchParams));
     upload(d_params.ptr, &lp, 1);
+    const auto query_prepare_end = std::chrono::steady_clock::now();
+    if (query_prepare_seconds_out) {
+        *query_prepare_seconds_out =
+            std::chrono::duration<double>(query_prepare_end - query_prepare_start).count();
+    }
 
     const auto traversal_start = std::chrono::steady_clock::now();
+    const auto launch_start = traversal_start;
     CUstream stream = 0;
+    rtdl_optix_bind_traversal_audit_context(
+        "ray_triangle_primitive_grouped_i64_reduction_3d",
+        prepared->accel.handle);
     OPTIX_CHECK(optixLaunch(g_rayprimitive_grouped_i64_reduction3d.pipe->pipeline, stream,
                              d_params.ptr, sizeof(RayPrimitiveGroupedI64Reduction3DLaunchParams),
                              &g_rayprimitive_grouped_i64_reduction3d.pipe->sbt,
                              static_cast<unsigned>(ray_count), 1, 1));
     CU_CHECK(cuStreamSynchronize(stream));
+    const auto launch_end = std::chrono::steady_clock::now();
+    if (launch_seconds_out)
+        *launch_seconds_out = std::chrono::duration<double>(launch_end - launch_start).count();
 
     std::vector<unsigned long long> counts(payload->group_count, 0ull);
     std::vector<unsigned long long> sums(payload->group_count, 0ull);
-    std::vector<unsigned long long> mins(payload->group_count, std::numeric_limits<unsigned long long>::max());
-    std::vector<unsigned long long> maxs(payload->group_count, 0ull);
+    std::vector<unsigned long long> mins(
+        payload->group_count,
+        signed_values
+            ? static_cast<unsigned long long>(std::numeric_limits<int64_t>::max())
+            : std::numeric_limits<unsigned long long>::max());
+    std::vector<unsigned long long> maxs(
+        payload->group_count,
+        signed_values
+            ? static_cast<unsigned long long>(std::numeric_limits<int64_t>::min())
+            : 0ull);
     unsigned long long hit_events = 0ull;
+    const auto result_download_start = std::chrono::steady_clock::now();
     download(counts.data(), d_counts.ptr, payload->group_count);
     download(sums.data(), d_sums.ptr, payload->group_count);
     download(mins.data(), d_mins.ptr, payload->group_count);
     download(maxs.data(), d_maxs.ptr, payload->group_count);
     download(&hit_events, d_hit_events.ptr, 1);
+    const auto result_download_end = std::chrono::steady_clock::now();
+    if (result_download_seconds_out) {
+        *result_download_seconds_out =
+            std::chrono::duration<double>(result_download_end - result_download_start).count();
+    }
     for (size_t group_index = 0; group_index < payload->group_count; ++group_index) {
         group_counts_out[group_index] = static_cast<uint64_t>(counts[group_index]);
         group_sums_out[group_index] = static_cast<uint64_t>(sums[group_index]);
@@ -22280,12 +23509,16 @@ static void run_prepared_static_triangle_scene_3d_ray_batch_prepared_primitive_g
         PreparedPrimitiveGroupedI64Payload3D* payload,
         PreparedRayBatch3D* ray_batch,
         uint32_t reduction,
+        bool signed_values,
         uint64_t* group_counts_out,
         uint64_t* group_sums_out,
         uint64_t* group_mins_out,
         uint64_t* group_maxs_out,
         uint64_t* hit_event_count_out,
-        double* traversal_seconds_out)
+        double* traversal_seconds_out,
+        double* query_prepare_seconds_out = nullptr,
+        double* launch_seconds_out = nullptr,
+        double* result_download_seconds_out = nullptr)
 {
     if (!prepared)
         throw std::runtime_error("prepared scene handle must not be null");
@@ -22295,6 +23528,8 @@ static void run_prepared_static_triangle_scene_3d_ray_batch_prepared_primitive_g
         throw std::runtime_error("prepared ray batch handle must not be null");
     if (payload->primitive_count != prepared->triangle_count)
         throw std::runtime_error("prepared primitive payload length must match prepared triangle count");
+    if (payload->signed_values != signed_values)
+        throw std::runtime_error("prepared primitive grouped payload ABI does not match run symbol");
     if (!group_counts_out || !group_sums_out || !group_mins_out || !group_maxs_out)
         throw std::runtime_error("group output arrays must not be null");
     if (!hit_event_count_out)
@@ -22312,21 +23547,39 @@ static void run_prepared_static_triangle_scene_3d_ray_batch_prepared_primitive_g
             reduction != kDeviceColumnGroupedOpSumCount) {
         throw std::runtime_error("unsupported primitive grouped i64 reduction operation");
     }
+    if (signed_values &&
+            (reduction == kDeviceColumnGroupedOpSum ||
+             reduction == kDeviceColumnGroupedOpSumCount) &&
+            !payload->signed_sum_domain_safe) {
+        throw std::overflow_error(
+            "signed grouped-i64 positive/negative per-group domain exceeds int64");
+    }
 
     for (size_t group_index = 0; group_index < payload->group_count; ++group_index) {
         group_counts_out[group_index] = 0u;
         group_sums_out[group_index] = 0u;
-        group_mins_out[group_index] = std::numeric_limits<uint64_t>::max();
-        group_maxs_out[group_index] = 0u;
+        group_mins_out[group_index] = signed_values
+            ? static_cast<uint64_t>(std::numeric_limits<int64_t>::max())
+            : std::numeric_limits<uint64_t>::max();
+        group_maxs_out[group_index] = signed_values
+            ? static_cast<uint64_t>(std::numeric_limits<int64_t>::min())
+            : uint64_t{0};
     }
     *hit_event_count_out = 0u;
     if (traversal_seconds_out)
         *traversal_seconds_out = 0.0;
+    if (query_prepare_seconds_out)
+        *query_prepare_seconds_out = 0.0;
+    if (launch_seconds_out)
+        *launch_seconds_out = 0.0;
+    if (result_download_seconds_out)
+        *result_download_seconds_out = 0.0;
     if (ray_batch->ray_count == 0 || prepared->triangle_count == 0 || payload->group_count == 0)
         return;
 
     ensure_ray_primitive_grouped_i64_reduction_3d_pipeline();
 
+    const auto query_prepare_start = std::chrono::steady_clock::now();
     const size_t flag_word_count = (prepared->triangle_count + 31u) / 32u;
     DevPtr d_flags(sizeof(uint32_t) * flag_word_count);
     DevPtr d_counts(sizeof(unsigned long long) * payload->group_count);
@@ -22338,11 +23591,20 @@ static void run_prepared_static_triangle_scene_3d_ray_batch_prepared_primitive_g
     CU_CHECK(cuMemsetD32(d_flags.ptr, 0u, flag_word_count));
     CU_CHECK(cuMemsetD32(d_counts.ptr, 0u, payload->group_count * 2u));
     CU_CHECK(cuMemsetD32(d_sums.ptr, 0u, payload->group_count * 2u));
-    CU_CHECK(cuMemsetD32(d_maxs.ptr, 0u, payload->group_count * 2u));
     unsigned long long zero = 0ull;
     upload(d_hit_events.ptr, &zero, 1);
-    std::vector<unsigned long long> min_init(payload->group_count, std::numeric_limits<unsigned long long>::max());
+    std::vector<unsigned long long> min_init(
+        payload->group_count,
+        signed_values
+            ? static_cast<unsigned long long>(std::numeric_limits<int64_t>::max())
+            : std::numeric_limits<unsigned long long>::max());
+    std::vector<unsigned long long> max_init(
+        payload->group_count,
+        signed_values
+            ? static_cast<unsigned long long>(std::numeric_limits<int64_t>::min())
+            : 0ull);
     upload(d_mins.ptr, min_init.data(), min_init.size());
+    upload(d_maxs.ptr, max_init.data(), max_init.size());
 
     RayPrimitiveGroupedI64Reduction3DLaunchParams lp;
     lp.traversable = prepared->accel.handle;
@@ -22360,28 +23622,55 @@ static void run_prepared_static_triangle_scene_3d_ray_batch_prepared_primitive_g
     lp.triangle_count = static_cast<uint32_t>(prepared->triangle_count);
     lp.group_count = static_cast<uint32_t>(payload->group_count);
     lp.reduction = reduction;
+    lp.signed_values = signed_values ? 1u : 0u;
 
     DevPtr d_params(sizeof(RayPrimitiveGroupedI64Reduction3DLaunchParams));
     upload(d_params.ptr, &lp, 1);
+    const auto query_prepare_end = std::chrono::steady_clock::now();
+    if (query_prepare_seconds_out) {
+        *query_prepare_seconds_out =
+            std::chrono::duration<double>(query_prepare_end - query_prepare_start).count();
+    }
 
     const auto traversal_start = std::chrono::steady_clock::now();
+    const auto launch_start = traversal_start;
     CUstream stream = 0;
+    rtdl_optix_bind_traversal_audit_context(
+        "ray_triangle_primitive_grouped_i64_reduction_3d",
+        prepared->accel.handle);
     OPTIX_CHECK(optixLaunch(g_rayprimitive_grouped_i64_reduction3d.pipe->pipeline, stream,
                              d_params.ptr, sizeof(RayPrimitiveGroupedI64Reduction3DLaunchParams),
                              &g_rayprimitive_grouped_i64_reduction3d.pipe->sbt,
                              static_cast<unsigned>(ray_batch->ray_count), 1, 1));
     CU_CHECK(cuStreamSynchronize(stream));
+    const auto launch_end = std::chrono::steady_clock::now();
+    if (launch_seconds_out)
+        *launch_seconds_out = std::chrono::duration<double>(launch_end - launch_start).count();
 
     std::vector<unsigned long long> counts(payload->group_count, 0ull);
     std::vector<unsigned long long> sums(payload->group_count, 0ull);
-    std::vector<unsigned long long> mins(payload->group_count, std::numeric_limits<unsigned long long>::max());
-    std::vector<unsigned long long> maxs(payload->group_count, 0ull);
+    std::vector<unsigned long long> mins(
+        payload->group_count,
+        signed_values
+            ? static_cast<unsigned long long>(std::numeric_limits<int64_t>::max())
+            : std::numeric_limits<unsigned long long>::max());
+    std::vector<unsigned long long> maxs(
+        payload->group_count,
+        signed_values
+            ? static_cast<unsigned long long>(std::numeric_limits<int64_t>::min())
+            : 0ull);
     unsigned long long hit_events = 0ull;
+    const auto result_download_start = std::chrono::steady_clock::now();
     download(counts.data(), d_counts.ptr, payload->group_count);
     download(sums.data(), d_sums.ptr, payload->group_count);
     download(mins.data(), d_mins.ptr, payload->group_count);
     download(maxs.data(), d_maxs.ptr, payload->group_count);
     download(&hit_events, d_hit_events.ptr, 1);
+    const auto result_download_end = std::chrono::steady_clock::now();
+    if (result_download_seconds_out) {
+        *result_download_seconds_out =
+            std::chrono::duration<double>(result_download_end - result_download_start).count();
+    }
     for (size_t group_index = 0; group_index < payload->group_count; ++group_index) {
         group_counts_out[group_index] = static_cast<uint64_t>(counts[group_index]);
         group_sums_out[group_index] = static_cast<uint64_t>(sums[group_index]);
@@ -22439,6 +23728,9 @@ static void run_prepared_static_triangle_scene_3d_ray_hit_count_sum_optix(
 
     const auto traversal_start = std::chrono::steady_clock::now();
     CUstream stream = 0;
+    rtdl_optix_bind_traversal_audit_context(
+        "ray_triangle_hit_count_sum_3d",
+        prepared->accel.handle);
     OPTIX_CHECK(optixLaunch(g_rayhit3d_sum.pipe->pipeline, stream,
                              d_params.ptr, sizeof(RayHitCount3DSumLaunchParams),
                              &g_rayhit3d_sum.pipe->sbt,
@@ -23437,6 +24729,9 @@ static void run_prepared_static_triangle_scene_3d_ray_any_hit_weighted_sum_devic
 
     const auto traversal_start = std::chrono::steady_clock::now();
     CUstream stream = 0;
+    rtdl_optix_bind_traversal_audit_context(
+        "ray_triangle_any_hit_weighted_sum_3d",
+        prepared->accel.handle);
     OPTIX_CHECK(optixLaunch(g_rayanyhit_weighted_sum3d.pipe->pipeline, stream,
                              d_params.ptr, sizeof(RayAnyHitWeightedSum3DLaunchParams),
                              &g_rayanyhit_weighted_sum3d.pipe->sbt,
@@ -23506,6 +24801,9 @@ static void run_prepared_static_triangle_scene_3d_ray_hit_count_sum_device_optix
 
     const auto traversal_start = std::chrono::steady_clock::now();
     CUstream stream = 0;
+    rtdl_optix_bind_traversal_audit_context(
+        "ray_triangle_hit_count_sum_3d",
+        prepared->accel.handle);
     OPTIX_CHECK(optixLaunch(g_rayhit3d_sum.pipe->pipeline, stream,
                              d_params.ptr, sizeof(RayHitCount3DSumLaunchParams),
                              &g_rayhit3d_sum.pipe->sbt,
@@ -24279,7 +25577,22 @@ struct FixedRadiusNeighbors3DRtLaunchParams {
     GpuFrnRecord* output;
     uint32_t query_count;
     uint32_t k_max;
-    float radius;
+    uint32_t minimum_boundary_mode;
+    uint32_t maximum_boundary_mode;
+    float minimum_distance;
+    float maximum_distance;
+    float trace_tmax;
+};
+
+struct MetricKnn3DRtLaunchParams {
+    OptixTraversableHandle traversable;
+    const GpuPoint3DHost* query_points;
+    const GpuPoint3DHost* search_points;
+    GpuFrnRecord* output;
+    uint32_t query_count;
+    uint32_t k;
+    uint32_t metric_kind;
+    float geometric_radius;
     float trace_tmax;
 };
 
@@ -25817,6 +27130,7 @@ static void ensure_fixed_radius_neighbors_grid_cuda_3d_kernel()
         g_frn3d_grid_exact_rows.module = g_frn3d_grid.module;
         g_frn3d_grid_ranked_count.module = g_frn3d_grid.module;
         g_frn3d_grid_ranked_rows.module = g_frn3d_grid.module;
+        g_frn3d_grid_ranked_window_rows_fixed.module = g_frn3d_grid.module;
         g_frn3d_grid_ranked_summary.module = g_frn3d_grid.module;
         g_frn3d_grid_ranked_summary_f32.module = g_frn3d_grid.module;
         g_frn3d_grid_ranked_summary_aggregate.module = g_frn3d_grid.module;
@@ -25830,6 +27144,10 @@ static void ensure_fixed_radius_neighbors_grid_cuda_3d_kernel()
         CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_exact_rows.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_exact_rows"));
         CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_ranked_count.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_ranked_count"));
         CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_ranked_rows.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_ranked_rows"));
+        CU_CHECK(cuModuleGetFunction(
+            &g_frn3d_grid_ranked_window_rows_fixed.fn,
+            g_frn3d_grid.module,
+            "fixed_radius_neighbors_3d_grid_ranked_window_rows_fixed"));
         CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_ranked_summary.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_ranked_summary"));
         CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_ranked_summary_f32.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_ranked_summary_f32"));
         CU_CHECK(cuModuleGetFunction(&g_frn3d_grid_ranked_summary_aggregate.fn, g_frn3d_grid.module, "fixed_radius_neighbors_3d_grid_ranked_summary_aggregate"));
@@ -25868,8 +27186,8 @@ struct PreparedFixedRadiusNeighborsGrid3D {
         : search_points(source_count),
           max_radius(radius_bound)
     {
-        if (radius_bound <= 0.0) {
-            throw std::runtime_error("fixed_radius_neighbors_3d prepared max_radius must be positive");
+        if (!std::isfinite(radius_bound) || radius_bound <= 0.0) {
+            throw std::runtime_error("fixed_radius_neighbors_3d prepared max_radius must be finite and positive");
         }
         if (source_count == 0) {
             return;
@@ -26239,6 +27557,7 @@ static size_t count_prepared_fixed_radius_neighbors_grid_3d_optix(
     double inv_cell_size = prepared->inv_cell_size_exact;
     double radius_exact = radius;
     uint32_t k_max_u32 = static_cast<uint32_t>(std::min(k_max, prepared->search_points.size()));
+    uint32_t radius_boundary_mode = 0u;
 
     void* count_args[] = {
         &d_queries.ptr,
@@ -26254,6 +27573,7 @@ static size_t count_prepared_fixed_radius_neighbors_grid_3d_optix(
         &inv_cell_size,
         &radius_exact,
         &k_max_u32,
+        &radius_boundary_mode,
         &d_counts.ptr,
     };
 
@@ -26323,6 +27643,7 @@ static RtdlFixedRadiusNeighborSummary summarize_prepared_fixed_radius_neighbors_
     double inv_cell_size = prepared->inv_cell_size_exact;
     double radius_exact = radius;
     uint32_t k_max_u32 = static_cast<uint32_t>(std::min(k_max, prepared->search_points.size()));
+    uint32_t radius_boundary_mode = 0u;
 
     void* summary_args[] = {
         &d_queries.ptr,
@@ -26338,6 +27659,7 @@ static RtdlFixedRadiusNeighborSummary summarize_prepared_fixed_radius_neighbors_
         &inv_cell_size,
         &radius_exact,
         &k_max_u32,
+        &radius_boundary_mode,
         &d_summaries.ptr,
     };
 
@@ -26380,6 +27702,7 @@ static void run_prepared_exact_fixed_radius_neighbors_grid_3d_optix(
         const RtdlPoint3D* query_points, size_t query_count,
         double radius,
         size_t k_max,
+        uint32_t radius_boundary_mode,
         RtdlFixedRadiusNeighborRow** rows_out, size_t* row_count_out)
 {
     if (!prepared) throw std::runtime_error("prepared OptiX fixed-radius-neighbor 3D handle must not be null");
@@ -26395,6 +27718,8 @@ static void run_prepared_exact_fixed_radius_neighbors_grid_3d_optix(
         throw std::runtime_error("fixed_radius_neighbors_3d k_max must be positive");
     if (k_max > static_cast<size_t>(UINT32_MAX))
         throw std::runtime_error("fixed_radius_neighbors_3d k_max exceeds uint32 limit");
+    if (radius_boundary_mode > 1u)
+        throw std::runtime_error("fixed_radius_neighbors_3d radius boundary mode must be closed or open");
 
     *rows_out = nullptr;
     *row_count_out = 0;
@@ -26434,6 +27759,7 @@ static void run_prepared_exact_fixed_radius_neighbors_grid_3d_optix(
         &inv_cell_size,
         &radius_exact,
         &k_max_u32,
+        &radius_boundary_mode,
         &d_counts.ptr,
     };
 
@@ -26486,6 +27812,7 @@ static void run_prepared_exact_fixed_radius_neighbors_grid_3d_optix(
         &inv_cell_size,
         &radius_exact,
         &k_max_u32,
+        &radius_boundary_mode,
         &d_output.ptr,
     };
 
@@ -26511,14 +27838,22 @@ static void run_prepared_exact_fixed_radius_neighbors_grid_3d_optix(
 static void run_prepared_ranked_fixed_radius_neighbors_grid_3d_optix(
         PreparedFixedRadiusNeighborsGrid3D* prepared,
         const RtdlPoint3D* query_points, size_t query_count,
+        double minimum_distance,
         double radius,
         size_t k_max,
+        uint32_t minimum_boundary_mode,
+        uint32_t radius_boundary_mode,
         RtdlKnnNeighborRow** rows_out, size_t* row_count_out)
 {
     if (!prepared) throw std::runtime_error("prepared OptiX fixed-radius-neighbor 3D handle must not be null");
     if (!rows_out || !row_count_out) throw std::runtime_error("output pointers must not be null");
     if (!query_points && query_count != 0) throw std::runtime_error("query_points pointer must not be null when query_count is nonzero");
-    if (radius < 0.0) throw std::runtime_error("fixed_radius_neighbors_3d radius must be non-negative");
+    if (!std::isfinite(minimum_distance) || minimum_distance < 0.0)
+        throw std::runtime_error("ranked distance-window minimum_distance must be finite and non-negative");
+    if (!std::isfinite(radius) || radius < 0.0)
+        throw std::runtime_error("ranked distance-window radius must be finite and non-negative");
+    if (minimum_distance > radius)
+        throw std::runtime_error("ranked distance-window minimum_distance must not exceed radius");
     if (radius > prepared->max_radius + 1.0e-7) {
         throw std::runtime_error("fixed_radius_neighbors_3d radius exceeds prepared max_radius");
     }
@@ -26528,10 +27863,15 @@ static void run_prepared_ranked_fixed_radius_neighbors_grid_3d_optix(
         throw std::runtime_error("fixed_radius_neighbors_3d k_max must be positive");
     if (k_max > 64)
         throw std::runtime_error("prepared ranked fixed_radius_neighbors_3d currently supports k_max <= 64");
+    if (minimum_boundary_mode > 1u || radius_boundary_mode > 1u)
+        throw std::runtime_error("ranked distance-window boundary modes must be closed or open");
 
     *rows_out = nullptr;
     *row_count_out = 0;
-    reset_fixed_radius_3d_phase_timings(8u);
+    reset_fixed_radius_3d_phase_timings(
+        minimum_distance == 0.0 && minimum_boundary_mode == 0u && radius_boundary_mode == 0u
+            ? 8u
+            : 20u);
     g_optix_last_fixed_radius_3d_prepare_s = 0.0;
     if (query_count == 0 || prepared->search_points.empty()) return;
 
@@ -26550,8 +27890,101 @@ static void run_prepared_ranked_fixed_radius_neighbors_grid_3d_optix(
     double min_y = prepared->min_y_exact;
     double min_z = prepared->min_z_exact;
     double inv_cell_size = prepared->inv_cell_size_exact;
+    double minimum_distance_exact = minimum_distance;
     double radius_exact = radius;
     uint32_t k_max_u32 = static_cast<uint32_t>(std::min(k_max, prepared->search_points.size()));
+
+    const bool use_fixed_window_output =
+        minimum_distance != 0.0 ||
+        minimum_boundary_mode != 0u ||
+        radius_boundary_mode != 0u;
+    if (use_fixed_window_output) {
+        if (query_count > (std::numeric_limits<size_t>::max)() / static_cast<size_t>(k_max_u32)) {
+            throw std::runtime_error("ranked distance-window fixed output capacity overflows size_t");
+        }
+        const size_t fixed_capacity = query_count * static_cast<size_t>(k_max_u32);
+        DevPtr d_fixed_output(sizeof(RtdlKnnNeighborRow) * fixed_capacity);
+
+        void* fixed_args[] = {
+            &d_queries.ptr,
+            &qc,
+            &prepared->d_search_exact->ptr,
+            &prepared->d_offsets->ptr,
+            &grid_x,
+            &grid_y,
+            &grid_z,
+            &min_x,
+            &min_y,
+            &min_z,
+            &inv_cell_size,
+            &minimum_distance_exact,
+            &radius_exact,
+            &k_max_u32,
+            &minimum_boundary_mode,
+            &radius_boundary_mode,
+            &d_counts.ptr,
+            &d_fixed_output.ptr,
+        };
+
+        const unsigned block = 256;
+        const unsigned grid = (qc + block - 1u) / block;
+        auto t_start_rows = std::chrono::steady_clock::now();
+        CU_CHECK(cuLaunchKernel(
+            g_frn3d_grid_ranked_window_rows_fixed.fn,
+            grid, 1, 1,
+            block, 1, 1,
+            0, nullptr,
+            fixed_args, nullptr));
+        CU_CHECK(cuStreamSynchronize(nullptr));
+        auto t_end_rows = std::chrono::steady_clock::now();
+        g_optix_last_fixed_radius_3d_count_s = 0.0;
+        g_optix_last_fixed_radius_3d_compact_s = seconds_between(t_start_rows, t_end_rows);
+        g_optix_last_fixed_radius_3d_row_offset_upload_s = 0.0;
+
+        auto t_start_download = std::chrono::steady_clock::now();
+        std::vector<uint32_t> ranked_counts(query_count);
+        std::vector<RtdlKnnNeighborRow> fixed_rows(fixed_capacity);
+        download(ranked_counts.data(), d_counts.ptr, query_count);
+        download(fixed_rows.data(), d_fixed_output.ptr, fixed_capacity);
+        auto t_end_download = std::chrono::steady_clock::now();
+        g_optix_last_fixed_radius_3d_row_download_s = seconds_between(t_start_download, t_end_download);
+
+        auto t_start_host_compact = std::chrono::steady_clock::now();
+        size_t compact_capacity = 0;
+        for (uint32_t count : ranked_counts) {
+            if (count > k_max_u32) {
+                throw std::runtime_error("ranked distance-window kernel emitted more than k_max rows");
+            }
+            if (compact_capacity > (std::numeric_limits<size_t>::max)() - static_cast<size_t>(count)) {
+                throw std::runtime_error("ranked distance-window compact output overflows size_t");
+            }
+            compact_capacity += static_cast<size_t>(count);
+        }
+
+        auto* out = static_cast<RtdlKnnNeighborRow*>(
+            std::malloc(sizeof(RtdlKnnNeighborRow) * compact_capacity));
+        if (!out && compact_capacity != 0) throw std::bad_alloc();
+        size_t write_cursor = 0;
+        for (size_t query_index = 0; query_index < query_count; ++query_index) {
+            const size_t count = static_cast<size_t>(ranked_counts[query_index]);
+            if (count != 0) {
+                std::memcpy(
+                    out + write_cursor,
+                    fixed_rows.data() + query_index * static_cast<size_t>(k_max_u32),
+                    sizeof(RtdlKnnNeighborRow) * count);
+                write_cursor += count;
+            }
+        }
+        auto t_end_host_compact = std::chrono::steady_clock::now();
+        g_optix_last_fixed_radius_3d_count_download_s =
+            seconds_between(t_start_host_compact, t_end_host_compact);
+        g_optix_last_fixed_radius_3d_exact_refine_s = 0.0;
+        g_optix_last_fixed_radius_3d_raw_candidate_count = compact_capacity;
+        g_optix_last_fixed_radius_3d_emitted_count = compact_capacity;
+        *rows_out = out;
+        *row_count_out = compact_capacity;
+        return;
+    }
 
     void* count_args[] = {
         &d_queries.ptr,
@@ -26565,8 +27998,11 @@ static void run_prepared_ranked_fixed_radius_neighbors_grid_3d_optix(
         &min_y,
         &min_z,
         &inv_cell_size,
+        &minimum_distance_exact,
         &radius_exact,
         &k_max_u32,
+        &minimum_boundary_mode,
+        &radius_boundary_mode,
         &d_counts.ptr,
     };
 
@@ -26622,8 +28058,11 @@ static void run_prepared_ranked_fixed_radius_neighbors_grid_3d_optix(
         &min_y,
         &min_z,
         &inv_cell_size,
+        &minimum_distance_exact,
         &radius_exact,
         &k_max_u32,
+        &minimum_boundary_mode,
+        &radius_boundary_mode,
         &d_output.ptr,
     };
 
@@ -28068,7 +29507,10 @@ static void run_fixed_radius_neighbors_rt_3d(
     lp.output = reinterpret_cast<GpuFrnRecord*>(d_output.ptr);
     lp.query_count = static_cast<uint32_t>(query_count);
     lp.k_max = static_cast<uint32_t>(kernel_k_max);
-    lp.radius = radius_f;
+    lp.minimum_boundary_mode = 0u;
+    lp.maximum_boundary_mode = 0u;
+    lp.minimum_distance = 0.0f;
+    lp.maximum_distance = radius_f;
     lp.trace_tmax = std::max(1.0e-6f, 2.0f * aabb_radius);
 
     DevPtr d_params(sizeof(FixedRadiusNeighbors3DRtLaunchParams));
@@ -28241,6 +29683,1099 @@ static PreparedFixedRadiusCountThreshold3DRt* prepare_fixed_radius_count_thresho
     return new PreparedFixedRadiusCountThreshold3DRt(search_points, search_count, max_radius);
 }
 
+static void ensure_action_bounded_selection_3d_rt_pipeline()
+{
+    std::call_once(g_frn3d_rt.init, [&]() {
+        std::string ptx = compile_to_ptx(
+            kFixedRadiusNeighbors3DRtKernelSrc,
+            "action_bounded_selection_3d_rt_kernel.cu");
+        g_frn3d_rt.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__frn3d_probe",
+            "__miss__frn3d_miss",
+            "__intersection__frn3d_isect",
+            "__anyhit__frn3d_anyhit",
+            nullptr, 1).release();
+    });
+}
+
+static void run_prepared_action_bounded_selection_3d_optix(
+        PreparedFixedRadiusCountThreshold3DRt* prepared,
+        const RtdlPoint3D* query_points,
+        size_t query_count,
+        double minimum_distance,
+        double maximum_distance,
+        size_t k_max,
+        uint32_t minimum_boundary_mode,
+        uint32_t maximum_boundary_mode,
+        RtdlFixedRadiusNeighborRow** rows_out,
+        size_t* row_count_out)
+{
+    if (!prepared)
+        throw std::runtime_error("prepared Action point-candidate 3D handle must not be null");
+    if (!rows_out || !row_count_out)
+        throw std::runtime_error("prepared Action bounded-selection output pointers must not be null");
+    if (!query_points && query_count != 0)
+        throw std::runtime_error("Action query_points must not be null when query_count is nonzero");
+    if (!std::isfinite(minimum_distance) || !std::isfinite(maximum_distance))
+        throw std::runtime_error("Action distance boundaries must be finite");
+    if (minimum_distance < 0.0 || maximum_distance < minimum_distance)
+        throw std::runtime_error("Action distance boundaries must satisfy 0 <= minimum <= maximum");
+    if (maximum_distance > prepared->max_radius + 1.0e-7)
+        throw std::runtime_error("Action maximum distance exceeds prepared search bound");
+    if (minimum_boundary_mode > 1u || maximum_boundary_mode > 1u)
+        throw std::runtime_error("Action distance boundary modes must be closed or open");
+    if (query_count > static_cast<size_t>(UINT32_MAX))
+        throw std::runtime_error("Action query_count exceeds uint32 launch limit");
+    if (k_max == 0 || k_max > 64)
+        throw std::runtime_error("Action bounded selection currently requires 1 <= limit <= 64");
+
+    *rows_out = nullptr;
+    *row_count_out = 0;
+    reset_fixed_radius_3d_phase_timings(21u);
+    g_optix_last_fixed_radius_3d_prepare_s = 0.0;
+    if (query_count == 0 || prepared->search_points.empty()) return;
+
+    const size_t kernel_k_max = std::min(k_max, prepared->search_points.size());
+    if (query_count > (std::numeric_limits<size_t>::max)() / kernel_k_max)
+        throw std::runtime_error("Action bounded-selection capacity overflows size_t");
+    const size_t output_capacity = query_count * kernel_k_max;
+
+    ensure_action_bounded_selection_3d_rt_pipeline();
+
+    auto t_start_upload = std::chrono::steady_clock::now();
+    std::vector<GpuPoint3DHost> gpu_queries(query_count);
+    for (size_t i = 0; i < query_count; ++i) {
+        gpu_queries[i] = {
+            static_cast<float>(query_points[i].x),
+            static_cast<float>(query_points[i].y),
+            static_cast<float>(query_points[i].z),
+            query_points[i].id,
+        };
+    }
+    DevPtr d_queries(sizeof(GpuPoint3DHost) * query_count);
+    DevPtr d_output(sizeof(GpuFrnRecord) * output_capacity);
+    upload(d_queries.ptr, gpu_queries.data(), query_count);
+    auto t_end_upload = std::chrono::steady_clock::now();
+    g_optix_last_fixed_radius_3d_upload_s = seconds_between(t_start_upload, t_end_upload);
+
+    constexpr float kRadiusPad = 1.0e-4f;
+    const float aabb_radius = static_cast<float>(prepared->max_radius) + kRadiusPad;
+    FixedRadiusNeighbors3DRtLaunchParams lp;
+    lp.traversable = prepared->accel.handle;
+    lp.query_points = reinterpret_cast<const GpuPoint3DHost*>(d_queries.ptr);
+    lp.search_points = reinterpret_cast<const GpuPoint3DHost*>(prepared->d_search->ptr);
+    lp.output = reinterpret_cast<GpuFrnRecord*>(d_output.ptr);
+    lp.query_count = static_cast<uint32_t>(query_count);
+    lp.k_max = static_cast<uint32_t>(kernel_k_max);
+    lp.minimum_boundary_mode = minimum_boundary_mode;
+    lp.maximum_boundary_mode = maximum_boundary_mode;
+    lp.minimum_distance = static_cast<float>(minimum_distance);
+    lp.maximum_distance = static_cast<float>(maximum_distance);
+    lp.trace_tmax = std::max(1.0e-6f, 2.0f * aabb_radius);
+
+    DevPtr d_params(sizeof(FixedRadiusNeighbors3DRtLaunchParams));
+    upload(d_params.ptr, &lp, 1);
+
+    CUstream stream = 0;
+    auto t_start_traversal = std::chrono::steady_clock::now();
+    rtdl_optix_bind_traversal_audit_context(
+        "action_bounded_selection_3d",
+        prepared->accel.handle);
+    OPTIX_CHECK(optixLaunch(
+        g_frn3d_rt.pipe->pipeline, stream,
+        d_params.ptr, sizeof(FixedRadiusNeighbors3DRtLaunchParams),
+        &g_frn3d_rt.pipe->sbt,
+        static_cast<unsigned>(query_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(stream));
+    auto t_end_traversal = std::chrono::steady_clock::now();
+    g_optix_last_traversal_s = seconds_between(t_start_traversal, t_end_traversal);
+    g_optix_last_fixed_radius_3d_compact_s = g_optix_last_traversal_s;
+
+    auto t_start_download = std::chrono::steady_clock::now();
+    std::vector<GpuFrnRecord> gpu_rows(output_capacity);
+    download(gpu_rows.data(), d_output.ptr, output_capacity);
+    auto t_end_download = std::chrono::steady_clock::now();
+    g_optix_last_copy_s = seconds_between(t_start_download, t_end_download);
+    g_optix_last_fixed_radius_3d_row_download_s = g_optix_last_copy_s;
+
+    auto t_start_projection = std::chrono::steady_clock::now();
+    std::vector<RtdlFixedRadiusNeighborRow> rows;
+    rows.reserve(output_capacity);
+    for (const auto& row : gpu_rows) {
+        if (row.neighbor_id == UINT32_MAX) continue;
+        rows.push_back({row.query_id, row.neighbor_id, static_cast<double>(row.distance)});
+    }
+    auto float_key = [](double value) {
+        float normalized = static_cast<float>(value);
+        if (normalized == 0.0f) normalized = 0.0f;
+        uint32_t bits = 0u;
+        std::memcpy(&bits, &normalized, sizeof(bits));
+        return (bits & 0x80000000u) != 0u ? ~bits : (bits ^ 0x80000000u);
+    };
+    std::sort(rows.begin(), rows.end(), [&](const auto& left, const auto& right) {
+        if (left.query_id != right.query_id) return left.query_id < right.query_id;
+        const uint32_t left_key = float_key(left.distance);
+        const uint32_t right_key = float_key(right.distance);
+        if (left_key != right_key) return left_key < right_key;
+        return left.neighbor_id < right.neighbor_id;
+    });
+    auto* out = static_cast<RtdlFixedRadiusNeighborRow*>(
+        std::malloc(sizeof(RtdlFixedRadiusNeighborRow) * rows.size()));
+    if (!out && !rows.empty()) throw std::bad_alloc();
+    if (!rows.empty())
+        std::memcpy(out, rows.data(), sizeof(RtdlFixedRadiusNeighborRow) * rows.size());
+    auto t_end_projection = std::chrono::steady_clock::now();
+    g_optix_last_fixed_radius_3d_exact_refine_s =
+        seconds_between(t_start_projection, t_end_projection);
+    g_optix_last_fixed_radius_3d_raw_candidate_count = output_capacity;
+    g_optix_last_fixed_radius_3d_emitted_count = rows.size();
+    *rows_out = out;
+    *row_count_out = rows.size();
+}
+
+struct PreparedMetricKnn3DOptix {
+    std::vector<GpuPoint3DHost> host_search_points;
+    std::unique_ptr<DevPtr> d_search_points;
+    std::vector<OptixAabb> host_aabbs;
+    AccelHolder accel;
+    float current_radius = 0.0f;
+    size_t native_refit_count = 0;
+    bool mutation_state_valid = true;
+    unsigned int build_flags =
+        OPTIX_BUILD_FLAG_ALLOW_RANDOM_VERTEX_ACCESS
+        | OPTIX_BUILD_FLAG_ALLOW_UPDATE;
+
+    static float checked_radius(double value) {
+        const float radius = static_cast<float>(value);
+        if (!std::isfinite(value) || value <= 0.0
+                || !std::isfinite(radius) || radius <= 0.0f) {
+            throw std::runtime_error(
+                "metric_knn_3d radius must be positive, finite, and fit float32");
+        }
+        return radius;
+    }
+
+    static std::vector<OptixAabb> make_aabbs(
+            const std::vector<GpuPoint3DHost>& points,
+            float radius) {
+        std::vector<OptixAabb> aabbs(points.size());
+        const float negative_infinity = -std::numeric_limits<float>::infinity();
+        const float positive_infinity = std::numeric_limits<float>::infinity();
+        for (size_t i = 0; i < points.size(); ++i) {
+            const auto& point = points[i];
+            OptixAabb box;
+            box.minX = std::nextafter(point.x - radius, negative_infinity);
+            box.minY = std::nextafter(point.y - radius, negative_infinity);
+            box.minZ = std::nextafter(point.z - radius, negative_infinity);
+            box.maxX = std::nextafter(point.x + radius, positive_infinity);
+            box.maxY = std::nextafter(point.y + radius, positive_infinity);
+            box.maxZ = std::nextafter(point.z + radius, positive_infinity);
+            const float values[] = {
+                box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ};
+            for (float component : values) {
+                if (!std::isfinite(component)) {
+                    throw std::runtime_error(
+                        "metric_knn_3d radius expansion escaped finite float32 AABB range");
+                }
+            }
+            aabbs[i] = box;
+        }
+        return aabbs;
+    }
+
+    PreparedMetricKnn3DOptix(
+            const RtdlPoint3D* search_points,
+            size_t search_count,
+            double initial_radius)
+        : host_search_points(search_count),
+          d_search_points(
+              search_count == 0
+                  ? nullptr
+                  : std::make_unique<DevPtr>(sizeof(GpuPoint3DHost) * search_count)),
+          current_radius(checked_radius(initial_radius)) {
+        if (!search_points && search_count != 0) {
+            throw std::runtime_error(
+                "metric_knn_3d search_points must not be null when search_count is nonzero");
+        }
+        if (search_count == 0) {
+            throw std::runtime_error("metric_knn_3d requires at least one search point");
+        }
+        if (search_count > static_cast<size_t>(UINT32_MAX)) {
+            throw std::runtime_error("metric_knn_3d search_count exceeds uint32 limit");
+        }
+        std::unordered_set<uint32_t> seen_ids;
+        seen_ids.reserve(search_count);
+        for (size_t i = 0; i < search_count; ++i) {
+            const auto& source = search_points[i];
+            const float x = static_cast<float>(source.x);
+            const float y = static_cast<float>(source.y);
+            const float z = static_cast<float>(source.z);
+            if (!std::isfinite(source.x) || !std::isfinite(source.y)
+                    || !std::isfinite(source.z) || !std::isfinite(x)
+                    || !std::isfinite(y) || !std::isfinite(z)) {
+                throw std::runtime_error(
+                    "metric_knn_3d search coordinates must be finite and fit float32");
+            }
+            if (!seen_ids.insert(source.id).second) {
+                throw std::runtime_error("metric_knn_3d search ids must be unique");
+            }
+            host_search_points[i] = {x, y, z, source.id};
+        }
+        upload(
+            d_search_points->ptr,
+            host_search_points.data(),
+            host_search_points.size());
+        host_aabbs = make_aabbs(host_search_points, current_radius);
+        accel = build_custom_accel_with_flags(
+            get_optix_context(), host_aabbs, build_flags);
+    }
+};
+
+static void require_prepared_metric_knn_3d_valid(
+        const PreparedMetricKnn3DOptix* prepared) {
+    if (!prepared) {
+        throw std::runtime_error("prepared metric_knn_3d handle must not be null");
+    }
+    if (!prepared->mutation_state_valid) {
+        throw std::runtime_error(
+            "prepared metric_knn_3d handle is invalid after failed refit rollback");
+    }
+}
+
+static void refit_prepared_metric_knn_3d_optix(
+        PreparedMetricKnn3DOptix* prepared,
+        float radius) {
+    require_prepared_metric_knn_3d_valid(prepared);
+    if (!std::isfinite(radius) || radius <= 0.0f) {
+        throw std::runtime_error("metric_knn_3d refit radius must be positive and finite");
+    }
+    if (radius == prepared->current_radius) return;
+    std::vector<OptixAabb> candidate =
+        PreparedMetricKnn3DOptix::make_aabbs(prepared->host_search_points, radius);
+    try {
+        refit_custom_accel_with_flags(
+            get_optix_context(), prepared->accel, candidate, prepared->build_flags);
+    } catch (...) {
+        const std::exception_ptr original_error = std::current_exception();
+        try {
+            refit_custom_accel_with_flags(
+                get_optix_context(), prepared->accel,
+                prepared->host_aabbs, prepared->build_flags);
+        } catch (...) {
+            prepared->mutation_state_valid = false;
+            throw std::runtime_error(
+                "metric_knn_3d refit failed and rollback could not restore the prepared GAS");
+        }
+        std::rethrow_exception(original_error);
+    }
+    prepared->host_aabbs.swap(candidate);
+    prepared->current_radius = radius;
+    ++prepared->native_refit_count;
+}
+
+static void ensure_metric_knn_3d_rt_pipeline() {
+    std::call_once(g_metric_knn3d_rt.init, [&]() {
+        std::string ptx = compile_to_ptx(
+            kMetricKnn3DOptixKernelSrc,
+            "metric_knn_3d_optix_kernel.cu");
+        g_metric_knn3d_rt.pipe = build_pipeline(
+            get_optix_context(), ptx,
+            "__raygen__metric_knn_3d",
+            "__miss__metric_knn_3d",
+            "__intersection__metric_knn_3d",
+            "__anyhit__metric_knn_3d",
+            nullptr, 1).release();
+    });
+}
+
+static PreparedMetricKnn3DOptix* prepare_metric_knn_3d_optix(
+        const RtdlPoint3D* search_points,
+        size_t search_count,
+        double initial_radius) {
+    ensure_metric_knn_3d_rt_pipeline();
+    return new PreparedMetricKnn3DOptix(
+        search_points, search_count, initial_radius);
+}
+
+static uint32_t metric_knn_float_key(float value) {
+    if (value == 0.0f) value = 0.0f;
+    uint32_t bits = 0u;
+    std::memcpy(&bits, &value, sizeof(bits));
+    return (bits & 0x80000000u) != 0u ? ~bits : (bits ^ 0x80000000u);
+}
+
+static void execute_prepared_metric_knn_3d_optix(
+        PreparedMetricKnn3DOptix* prepared,
+        const RtdlPoint3D* query_points,
+        size_t query_count,
+        uint32_t metric_kind,
+        size_t k,
+        double initial_radius,
+        size_t maximum_rounds,
+        RtdlFixedRadiusNeighborRow** rows_out,
+        size_t* row_count_out,
+        size_t* completed_round_count_out,
+        double* final_radius_out,
+        size_t* refit_count_out) {
+    require_prepared_metric_knn_3d_valid(prepared);
+    if (!rows_out || !row_count_out || !completed_round_count_out
+            || !final_radius_out || !refit_count_out) {
+        throw std::runtime_error("metric_knn_3d output pointers must not be null");
+    }
+    if (!query_points && query_count != 0) {
+        throw std::runtime_error(
+            "metric_knn_3d query_points must not be null when query_count is nonzero");
+    }
+    if (query_count == 0 || query_count > static_cast<size_t>(UINT32_MAX)) {
+        throw std::runtime_error("metric_knn_3d query_count must fit positive uint32");
+    }
+    if (metric_kind > 2u) {
+        throw std::runtime_error("metric_knn_3d metric_kind must be 0, 1, or 2");
+    }
+    if (k == 0 || k > 64 || k > prepared->host_search_points.size()) {
+        throw std::runtime_error("metric_knn_3d requires 1 <= k <= min(64, search_count)");
+    }
+    if (maximum_rounds == 0 || maximum_rounds > 64) {
+        throw std::runtime_error("metric_knn_3d maximum_rounds must be in [1,64]");
+    }
+    const float initial_radius_f =
+        PreparedMetricKnn3DOptix::checked_radius(initial_radius);
+    if (query_count > (std::numeric_limits<size_t>::max)() / k) {
+        throw std::runtime_error("metric_knn_3d output capacity overflows size_t");
+    }
+    const size_t output_capacity = query_count * k;
+    *rows_out = nullptr;
+    *row_count_out = 0;
+    *completed_round_count_out = 0;
+    *final_radius_out = 0.0;
+    *refit_count_out = 0;
+
+    std::vector<GpuPoint3DHost> gpu_queries(query_count);
+    std::unordered_set<uint32_t> seen_query_ids;
+    seen_query_ids.reserve(query_count);
+    for (size_t i = 0; i < query_count; ++i) {
+        const auto& source = query_points[i];
+        const float x = static_cast<float>(source.x);
+        const float y = static_cast<float>(source.y);
+        const float z = static_cast<float>(source.z);
+        if (!std::isfinite(source.x) || !std::isfinite(source.y)
+                || !std::isfinite(source.z) || !std::isfinite(x)
+                || !std::isfinite(y) || !std::isfinite(z)) {
+            throw std::runtime_error(
+                "metric_knn_3d query coordinates must be finite and fit float32");
+        }
+        if (!seen_query_ids.insert(source.id).second) {
+            throw std::runtime_error("metric_knn_3d query ids must be unique");
+        }
+        gpu_queries[i] = {x, y, z, source.id};
+    }
+    DevPtr d_queries(sizeof(GpuPoint3DHost) * query_count);
+    DevPtr d_output(sizeof(GpuFrnRecord) * output_capacity);
+    upload(d_queries.ptr, gpu_queries.data(), gpu_queries.size());
+    DevPtr d_params(sizeof(MetricKnn3DRtLaunchParams));
+    std::vector<GpuFrnRecord> gpu_rows(output_capacity);
+
+    const size_t refit_count_before = prepared->native_refit_count;
+    float radius = initial_radius_f;
+    for (size_t round_index = 0; round_index < maximum_rounds; ++round_index) {
+        refit_prepared_metric_knn_3d_optix(prepared, radius);
+        MetricKnn3DRtLaunchParams lp = {};
+        lp.traversable = prepared->accel.handle;
+        lp.query_points = reinterpret_cast<const GpuPoint3DHost*>(d_queries.ptr);
+        lp.search_points = reinterpret_cast<const GpuPoint3DHost*>(
+            prepared->d_search_points->ptr);
+        lp.output = reinterpret_cast<GpuFrnRecord*>(d_output.ptr);
+        lp.query_count = static_cast<uint32_t>(query_count);
+        lp.k = static_cast<uint32_t>(k);
+        lp.metric_kind = metric_kind;
+        lp.geometric_radius = radius;
+        const float padded_radius = std::nextafter(
+            radius, std::numeric_limits<float>::infinity());
+        lp.trace_tmax = std::max(1.0e-6f, 2.0f * padded_radius);
+        if (!std::isfinite(lp.trace_tmax)) {
+            throw std::runtime_error("metric_knn_3d trace range escaped float32");
+        }
+        upload(d_params.ptr, &lp, 1);
+
+        CUstream stream = 0;
+        rtdl_optix_bind_traversal_audit_context(
+            "metric_knn_3d", prepared->accel.handle);
+        OPTIX_CHECK(optixLaunch(
+            g_metric_knn3d_rt.pipe->pipeline, stream,
+            d_params.ptr, sizeof(MetricKnn3DRtLaunchParams),
+            &g_metric_knn3d_rt.pipe->sbt,
+            static_cast<unsigned>(query_count), 1, 1));
+        CU_CHECK(cuStreamSynchronize(stream));
+        download(gpu_rows.data(), d_output.ptr, gpu_rows.size());
+
+        bool complete = true;
+        for (size_t query_index = 0; query_index < query_count; ++query_index) {
+            const size_t base = query_index * k;
+            std::unordered_set<uint32_t> selected_ids;
+            selected_ids.reserve(k);
+            uint32_t previous_key = 0u;
+            uint32_t previous_id = 0u;
+            bool have_previous = false;
+            for (size_t slot = 0; slot < k; ++slot) {
+                const auto& row = gpu_rows[base + slot];
+                if (row.neighbor_id == UINT32_MAX) {
+                    complete = false;
+                    break;
+                }
+                if (row.query_id != gpu_queries[query_index].id
+                        || !std::isfinite(row.distance) || row.distance < 0.0f
+                        || !selected_ids.insert(row.neighbor_id).second) {
+                    throw std::runtime_error(
+                        "metric_knn_3d native output violated identity/distance uniqueness contract");
+                }
+                const uint32_t key = metric_knn_float_key(row.distance);
+                if (have_previous
+                        && (key < previous_key
+                            || (key == previous_key && row.neighbor_id < previous_id))) {
+                    throw std::runtime_error(
+                        "metric_knn_3d native output violated canonical top-k ordering");
+                }
+                previous_key = key;
+                previous_id = row.neighbor_id;
+                have_previous = true;
+            }
+        }
+        if (complete) {
+            auto* out = static_cast<RtdlFixedRadiusNeighborRow*>(
+                std::malloc(sizeof(RtdlFixedRadiusNeighborRow) * output_capacity));
+            if (!out) throw std::bad_alloc();
+            for (size_t i = 0; i < output_capacity; ++i) {
+                out[i] = {
+                    gpu_rows[i].query_id,
+                    gpu_rows[i].neighbor_id,
+                    static_cast<double>(gpu_rows[i].distance),
+                };
+            }
+            *rows_out = out;
+            *row_count_out = output_capacity;
+            *completed_round_count_out = round_index + 1;
+            *final_radius_out = static_cast<double>(radius);
+            *refit_count_out = prepared->native_refit_count - refit_count_before;
+            return;
+        }
+        const float next_radius = radius * 2.0f;
+        if (!std::isfinite(next_radius) || next_radius <= radius) {
+            throw std::runtime_error(
+                "metric_knn_3d radius doubling escaped finite monotone float32 range");
+        }
+        radius = next_radius;
+    }
+    throw std::runtime_error(
+        "metric_knn_3d exhausted maximum_rounds before every query produced k neighbors");
+}
+
+// Generic true-OptiX aggregate-hierarchy continuation executor.
+//
+// The synthetic triangle geometry encodes only the generic opening predicate
+// half_size < distance * max_ratio.  The OptiX triangle traversal is a
+// conservative broad phase; the original F64 columns remain the exact
+// authority and any broad-phase false negative fails closed.
+static const char* kAggregateHierarchyContinuation3DRtKernelSrc = R"CUDA(
+#include <optix.h>
+#include <optix_device.h>
+#include <cuda_runtime.h>
+#include <math.h>
+#include <stdint.h>
+
+struct AggregateHierarchyRtParams {
+    OptixTraversableHandle traversable;
+    const double* point_x;
+    const double* point_y;
+    const double* point_z;
+    const double* point_weight;
+    unsigned long long point_count;
+    const double* node_cx;
+    const double* node_cy;
+    const double* node_cz;
+    const double* node_half_size;
+    const double* node_weight;
+    const long long* member_offsets;
+    const long long* member_indices;
+    const long long* child_offsets;
+    const long long* node_next_index;
+    const long long* node_rope_index;
+    unsigned long long node_count;
+    long long root_node_index;
+    unsigned int reducer_kind;
+    double max_ratio;
+    double softening;
+    double* reducer_value_0_out;
+    long long* visited_node_count_out;
+    long long* aggregate_contribution_count_out;
+    long long* exact_contribution_count_out;
+    long long* status_code_out;
+};
+
+extern "C" {
+__constant__ AggregateHierarchyRtParams params;
+}
+
+extern "C" __global__ void __miss__aggregate_hierarchy_opening() {
+    optixSetPayload_0(0u);
+}
+
+extern "C" __global__ void __closesthit__aggregate_hierarchy_opening() {
+    optixSetPayload_0(1u);
+}
+
+static __forceinline__ __device__ void add_leaf(
+        unsigned long long source_index,
+        long long node_index,
+        double softening_sq,
+        double* reducer_value,
+        long long* exact_count) {
+    const long long begin = params.member_offsets[node_index];
+    const long long end = params.member_offsets[node_index + 1];
+    for (long long offset = begin; offset < end; ++offset) {
+        const long long point_index = params.member_indices[offset];
+        if (point_index == static_cast<long long>(source_index)) continue;
+        if (params.reducer_kind == 0u) {
+            *reducer_value += 1.0;
+        } else {
+            const double dx =
+                params.point_x[point_index] - params.point_x[source_index];
+            const double dy =
+                params.point_y[point_index] - params.point_y[source_index];
+            const double dz =
+                params.point_z[point_index] - params.point_z[source_index];
+            const double distance_sq =
+                dx * dx + dy * dy + dz * dz + softening_sq;
+            if (distance_sq > 0.0) {
+                *reducer_value +=
+                    params.point_weight[source_index]
+                    * params.point_weight[point_index] / distance_sq;
+            }
+        }
+        *exact_count += 1;
+    }
+}
+
+extern "C" __global__ void __raygen__aggregate_hierarchy_continuation() {
+    const unsigned long long source_index =
+        static_cast<unsigned long long>(optixGetLaunchIndex().x);
+    if (source_index >= params.point_count) return;
+
+    double reducer_value = 0.0;
+    long long visited_count = 0;
+    long long aggregate_count = 0;
+    long long exact_count = 0;
+    long long status = 0;
+    long long node_index = params.root_node_index;
+    int ray_self = 0;
+    unsigned long long step_count = 0;
+    const unsigned long long step_limit = params.node_count * 2ull + 1ull;
+    const double softening_sq = params.softening * params.softening;
+
+    while (node_index >= 0) {
+        if (static_cast<unsigned long long>(node_index) >= params.node_count) {
+            status = 2;
+            break;
+        }
+        if (++step_count > step_limit) {
+            status = 3;
+            break;
+        }
+        ++visited_count;
+
+        const long long child_begin = params.child_offsets[node_index];
+        const long long child_end = params.child_offsets[node_index + 1];
+        const bool is_leaf = child_begin == child_end;
+        const double dx =
+            params.point_x[source_index] - params.node_cx[node_index];
+        const double dy =
+            params.point_y[source_index] - params.node_cy[node_index];
+        const double dz =
+            params.point_z[source_index] - params.node_cz[node_index];
+        const double raw_distance_sq = dx * dx + dy * dy + dz * dz;
+        const double distance_sq = raw_distance_sq + softening_sq;
+        const double ray_length = sqrt(raw_distance_sq) * params.max_ratio;
+        const bool exact_hit =
+            params.node_half_size[node_index] < ray_length;
+
+        const float synthetic_y = static_cast<float>(node_index) * 4.0f;
+        const double shifted_ray_length = 1.0 + ray_length;
+        const float conservative_tmax =
+            nextafterf(
+                static_cast<float>(shifted_ray_length),
+                __int_as_float(0x7f800000));
+        unsigned int traversal_hit = 0u;
+        optixTrace(
+            params.traversable,
+            make_float3(0.0f, synthetic_y, 0.0f),
+            make_float3(1.0f, 0.0f, 0.0f),
+            0.0f,
+            conservative_tmax,
+            0.0f,
+            0xffu,
+            OPTIX_RAY_FLAG_DISABLE_ANYHIT
+                | OPTIX_RAY_FLAG_TERMINATE_ON_FIRST_HIT,
+            0u,
+            1u,
+            0u,
+            traversal_hit);
+
+        if (exact_hit && traversal_hit == 0u) {
+            // A conservative geometry miss could silently change the
+            // hierarchy frontier.  Refuse to return a partial result.
+            status = 4;
+            break;
+        }
+        const bool hit_current_node = traversal_hit != 0u && exact_hit;
+
+        if (hit_current_node) {
+            if (is_leaf) {
+                add_leaf(
+                    source_index,
+                    node_index,
+                    softening_sq,
+                    &reducer_value,
+                    &exact_count);
+            } else if (distance_sq > 0.0) {
+                if (params.reducer_kind == 0u) {
+                    reducer_value += 1.0;
+                } else {
+                    reducer_value +=
+                        params.point_weight[source_index]
+                        * params.node_weight[node_index] / distance_sq;
+                }
+                ++aggregate_count;
+            }
+            node_index = params.node_rope_index[node_index];
+        } else {
+            if (is_leaf && ray_self == 0) {
+                add_leaf(
+                    source_index,
+                    node_index,
+                    softening_sq,
+                    &reducer_value,
+                    &exact_count);
+            }
+            node_index = params.node_next_index[node_index];
+        }
+
+        if (node_index < 0) break;
+        if (static_cast<unsigned long long>(node_index) >= params.node_count) {
+            status = 2;
+            break;
+        }
+        const double ndx =
+            params.point_x[source_index] - params.node_cx[node_index];
+        const double ndy =
+            params.point_y[source_index] - params.node_cy[node_index];
+        const double ndz =
+            params.point_z[source_index] - params.node_cz[node_index];
+        const double next_ray_length =
+            sqrt(ndx * ndx + ndy * ndy + ndz * ndz) * params.max_ratio;
+        ray_self = next_ray_length == 0.0 ? 1 : 0;
+    }
+
+    params.reducer_value_0_out[source_index] = reducer_value;
+    params.visited_node_count_out[source_index] = visited_count;
+    params.aggregate_contribution_count_out[source_index] = aggregate_count;
+    params.exact_contribution_count_out[source_index] = exact_count;
+    params.status_code_out[source_index] = status;
+}
+)CUDA";
+
+// Host mirror of the launch-parameter block declared in the NVRTC source
+// above. Keep the field order and widths identical: OptiX copies this byte
+// layout directly into the device-side constant `params` symbol.
+struct AggregateHierarchyRtParams {
+    OptixTraversableHandle traversable;
+    const double* point_x;
+    const double* point_y;
+    const double* point_z;
+    const double* point_weight;
+    uint64_t point_count;
+    const double* node_cx;
+    const double* node_cy;
+    const double* node_cz;
+    const double* node_half_size;
+    const double* node_weight;
+    const int64_t* member_offsets;
+    const int64_t* member_indices;
+    const int64_t* child_offsets;
+    const int64_t* node_next_index;
+    const int64_t* node_rope_index;
+    uint64_t node_count;
+    int64_t root_node_index;
+    uint32_t reducer_kind;
+    double max_ratio;
+    double softening;
+    double* reducer_value_0_out;
+    int64_t* visited_node_count_out;
+    int64_t* aggregate_contribution_count_out;
+    int64_t* exact_contribution_count_out;
+    int64_t* status_code_out;
+};
+
+struct PreparedAggregateHierarchyContinuation3DRt {
+    uint64_t point_count = 0;
+    uint64_t node_count = 0;
+    uint64_t member_count = 0;
+    int64_t root_node_index = -1;
+    std::unique_ptr<DevPtr> point_x;
+    std::unique_ptr<DevPtr> point_y;
+    std::unique_ptr<DevPtr> point_z;
+    std::unique_ptr<DevPtr> point_weight;
+    std::unique_ptr<DevPtr> node_cx;
+    std::unique_ptr<DevPtr> node_cy;
+    std::unique_ptr<DevPtr> node_cz;
+    std::unique_ptr<DevPtr> node_half_size;
+    std::unique_ptr<DevPtr> node_weight;
+    std::unique_ptr<DevPtr> member_offsets;
+    std::unique_ptr<DevPtr> member_indices;
+    std::unique_ptr<DevPtr> child_offsets;
+    std::unique_ptr<DevPtr> node_next_index;
+    std::unique_ptr<DevPtr> node_rope_index;
+    std::unique_ptr<DevPtr> reducer_value_0;
+    std::unique_ptr<DevPtr> visited_node_count;
+    std::unique_ptr<DevPtr> aggregate_contribution_count;
+    std::unique_ptr<DevPtr> exact_contribution_count;
+    std::unique_ptr<DevPtr> status_code;
+    TriangleAccelHolder accel;
+};
+
+template <typename T>
+static std::unique_ptr<DevPtr> aggregate_hierarchy_device_copy(
+        const T* values,
+        size_t count) {
+    auto device = std::make_unique<DevPtr>(sizeof(T) * count);
+    upload(device->ptr, values, count);
+    return device;
+}
+
+static void ensure_aggregate_hierarchy_continuation_3d_rt_pipeline() {
+    std::call_once(g_aggregate_hierarchy_rt.init, [&]() {
+        std::string ptx = compile_to_ptx(
+            kAggregateHierarchyContinuation3DRtKernelSrc,
+            "aggregate_hierarchy_continuation_3d_rt_kernel.cu");
+        g_aggregate_hierarchy_rt.pipe = build_pipeline(
+            get_optix_context(),
+            ptx,
+            "__raygen__aggregate_hierarchy_continuation",
+            "__miss__aggregate_hierarchy_opening",
+            nullptr,
+            nullptr,
+            "__closesthit__aggregate_hierarchy_opening",
+            1,
+            OPTIX_PRIMITIVE_TYPE_FLAGS_TRIANGLE).release();
+    });
+}
+
+static PreparedAggregateHierarchyContinuation3DRt*
+prepare_aggregate_hierarchy_continuation_3d_rt_optix(
+        const double* point_x,
+        const double* point_y,
+        const double* point_z,
+        const double* point_weight,
+        uint64_t point_count,
+        const double* node_cx,
+        const double* node_cy,
+        const double* node_cz,
+        const double* node_half_size,
+        const double* node_weight,
+        uint64_t node_count,
+        const int64_t* member_offsets,
+        const int64_t* member_indices,
+        uint64_t member_count,
+        const int64_t* child_offsets,
+        const int64_t* child_indices,
+        uint64_t child_count,
+        const int64_t* node_next_index,
+        const int64_t* node_rope_index,
+        int64_t root_node_index) {
+    constexpr uint64_t kMaximumSyntheticTriangleNodes = UINT64_C(1048576);
+    if (point_count == 0 || node_count == 0) {
+        throw std::runtime_error(
+            "OptiX aggregate hierarchy point_count and node_count must be positive");
+    }
+    if (point_count > static_cast<uint64_t>(UINT32_MAX)
+            || node_count > kMaximumSyntheticTriangleNodes
+            || member_count > static_cast<uint64_t>(INT64_MAX)
+            || child_count > static_cast<uint64_t>(INT64_MAX)) {
+        throw std::runtime_error(
+            "OptiX aggregate hierarchy dimensions exceed the explicit capacity");
+    }
+    if (!point_x || !point_y || !point_z || !point_weight
+            || !node_cx || !node_cy || !node_cz || !node_half_size
+            || !node_weight || !member_offsets || !child_offsets
+            || !node_next_index || !node_rope_index
+            || (member_count > 0 && !member_indices)
+            || (child_count > 0 && !child_indices)) {
+        throw std::runtime_error(
+            "OptiX aggregate hierarchy input pointers must not be null");
+    }
+    if (root_node_index < 0
+            || static_cast<uint64_t>(root_node_index) >= node_count) {
+        throw std::runtime_error(
+            "OptiX aggregate hierarchy root index is outside node domain");
+    }
+    if (member_offsets[0] != 0
+            || member_offsets[node_count] != static_cast<int64_t>(member_count)
+            || child_offsets[0] != 0
+            || child_offsets[node_count] != static_cast<int64_t>(child_count)) {
+        throw std::runtime_error(
+            "OptiX aggregate hierarchy offset boundary is invalid");
+    }
+
+    int64_t previous_member_offset = 0;
+    int64_t previous_child_offset = 0;
+    for (uint64_t index = 0; index < point_count; ++index) {
+        if (!std::isfinite(point_x[index]) || !std::isfinite(point_y[index])
+                || !std::isfinite(point_z[index])
+                || !std::isfinite(point_weight[index])
+                || point_weight[index] < 0.0) {
+            throw std::runtime_error(
+                "OptiX aggregate hierarchy point column contains an invalid value");
+        }
+    }
+    for (uint64_t index = 0; index < node_count; ++index) {
+        if (!std::isfinite(node_cx[index]) || !std::isfinite(node_cy[index])
+                || !std::isfinite(node_cz[index])
+                || !std::isfinite(node_half_size[index])
+                || !std::isfinite(node_weight[index])
+                || node_half_size[index] < 0.0 || node_weight[index] < 0.0) {
+            throw std::runtime_error(
+                "OptiX aggregate hierarchy node column contains an invalid value");
+        }
+        const int64_t member_offset = member_offsets[index + 1];
+        const int64_t child_offset = child_offsets[index + 1];
+        if (member_offset < previous_member_offset
+                || member_offset > static_cast<int64_t>(member_count)
+                || child_offset < previous_child_offset
+                || child_offset > static_cast<int64_t>(child_count)) {
+            throw std::runtime_error(
+                "OptiX aggregate hierarchy offsets are not monotonic");
+        }
+        previous_member_offset = member_offset;
+        previous_child_offset = child_offset;
+        const int64_t next = node_next_index[index];
+        const int64_t rope = node_rope_index[index];
+        if (next < -1 || (next >= 0 && static_cast<uint64_t>(next) >= node_count)
+                || rope < -1
+                || (rope >= 0 && static_cast<uint64_t>(rope) >= node_count)) {
+            throw std::runtime_error(
+                "OptiX aggregate hierarchy continuation index is outside node domain");
+        }
+    }
+    for (uint64_t index = 0; index < member_count; ++index) {
+        const int64_t point_index = member_indices[index];
+        if (point_index < 0
+                || static_cast<uint64_t>(point_index) >= point_count) {
+            throw std::runtime_error(
+                "OptiX aggregate hierarchy member index is outside point domain");
+        }
+    }
+    for (uint64_t index = 0; index < child_count; ++index) {
+        const int64_t child_index = child_indices[index];
+        if (child_index < 0
+                || static_cast<uint64_t>(child_index) >= node_count) {
+            throw std::runtime_error(
+                "OptiX aggregate hierarchy child index is outside node domain");
+        }
+    }
+
+    auto prepared =
+        std::make_unique<PreparedAggregateHierarchyContinuation3DRt>();
+    prepared->point_count = point_count;
+    prepared->node_count = node_count;
+    prepared->member_count = member_count;
+    prepared->root_node_index = root_node_index;
+    prepared->point_x = aggregate_hierarchy_device_copy(
+        point_x, static_cast<size_t>(point_count));
+    prepared->point_y = aggregate_hierarchy_device_copy(
+        point_y, static_cast<size_t>(point_count));
+    prepared->point_z = aggregate_hierarchy_device_copy(
+        point_z, static_cast<size_t>(point_count));
+    prepared->point_weight = aggregate_hierarchy_device_copy(
+        point_weight, static_cast<size_t>(point_count));
+    prepared->node_cx = aggregate_hierarchy_device_copy(
+        node_cx, static_cast<size_t>(node_count));
+    prepared->node_cy = aggregate_hierarchy_device_copy(
+        node_cy, static_cast<size_t>(node_count));
+    prepared->node_cz = aggregate_hierarchy_device_copy(
+        node_cz, static_cast<size_t>(node_count));
+    prepared->node_half_size = aggregate_hierarchy_device_copy(
+        node_half_size, static_cast<size_t>(node_count));
+    prepared->node_weight = aggregate_hierarchy_device_copy(
+        node_weight, static_cast<size_t>(node_count));
+    prepared->member_offsets = aggregate_hierarchy_device_copy(
+        member_offsets, static_cast<size_t>(node_count + 1));
+    prepared->member_indices = aggregate_hierarchy_device_copy(
+        member_indices, static_cast<size_t>(member_count));
+    prepared->child_offsets = aggregate_hierarchy_device_copy(
+        child_offsets, static_cast<size_t>(node_count + 1));
+    prepared->node_next_index = aggregate_hierarchy_device_copy(
+        node_next_index, static_cast<size_t>(node_count));
+    prepared->node_rope_index = aggregate_hierarchy_device_copy(
+        node_rope_index, static_cast<size_t>(node_count));
+    prepared->reducer_value_0 =
+        std::make_unique<DevPtr>(sizeof(double) * point_count);
+    prepared->visited_node_count =
+        std::make_unique<DevPtr>(sizeof(int64_t) * point_count);
+    prepared->aggregate_contribution_count =
+        std::make_unique<DevPtr>(sizeof(int64_t) * point_count);
+    prepared->exact_contribution_count =
+        std::make_unique<DevPtr>(sizeof(int64_t) * point_count);
+    prepared->status_code =
+        std::make_unique<DevPtr>(sizeof(int64_t) * point_count);
+
+    std::vector<float3> vertices;
+    std::vector<uint3> indices;
+    vertices.reserve(static_cast<size_t>(node_count) * 3u);
+    indices.reserve(static_cast<size_t>(node_count));
+    for (uint64_t index = 0; index < node_count; ++index) {
+        const double shifted_half_size = 1.0 + node_half_size[index];
+        const float triangle_x = std::nextafter(
+            static_cast<float>(shifted_half_size),
+            -std::numeric_limits<float>::infinity());
+        const float synthetic_y = static_cast<float>(index) * 4.0f;
+        const uint32_t base = static_cast<uint32_t>(vertices.size());
+        vertices.push_back(make_float3(triangle_x, synthetic_y - 1.0f, -1.0f));
+        vertices.push_back(make_float3(triangle_x, synthetic_y + 1.0f, -1.0f));
+        vertices.push_back(make_float3(triangle_x, synthetic_y, 1.0f));
+        indices.push_back(make_uint3(base, base + 1u, base + 2u));
+    }
+    prepared->accel = build_triangle_accel(
+        get_optix_context(), vertices, indices);
+    ensure_aggregate_hierarchy_continuation_3d_rt_pipeline();
+    CU_CHECK(cuCtxSynchronize());
+    return prepared.release();
+}
+
+static void execute_prepared_aggregate_hierarchy_continuation_3d_rt_optix(
+        PreparedAggregateHierarchyContinuation3DRt* prepared,
+        uint32_t reducer_kind,
+        double max_ratio,
+        double softening,
+        uint64_t output_capacity,
+        double* reducer_value_0_out,
+        int64_t* visited_node_count_out,
+        int64_t* aggregate_contribution_count_out,
+        int64_t* exact_contribution_count_out,
+        int64_t* status_code_out,
+        double* traversal_seconds_out,
+        double* download_seconds_out,
+        double* total_seconds_out) {
+    const auto total_start = std::chrono::steady_clock::now();
+    if (!prepared) {
+        throw std::runtime_error(
+            "prepared OptiX aggregate hierarchy handle is null");
+    }
+    if (reducer_kind > 1u) {
+        throw std::runtime_error(
+            "OptiX aggregate hierarchy reducer kind is unsupported");
+    }
+    if (!std::isfinite(max_ratio) || max_ratio <= 0.0
+            || !std::isfinite(softening) || softening < 0.0) {
+        throw std::runtime_error(
+            "OptiX aggregate hierarchy execution parameters are invalid");
+    }
+    if (output_capacity < prepared->point_count) {
+        throw std::runtime_error(
+            "OptiX aggregate hierarchy output capacity would truncate output");
+    }
+    if (!reducer_value_0_out || !visited_node_count_out
+            || !aggregate_contribution_count_out
+            || !exact_contribution_count_out || !status_code_out
+            || !traversal_seconds_out || !download_seconds_out
+            || !total_seconds_out) {
+        throw std::runtime_error(
+            "OptiX aggregate hierarchy output pointers must not be null");
+    }
+    *traversal_seconds_out = 0.0;
+    *download_seconds_out = 0.0;
+    *total_seconds_out = 0.0;
+
+    AggregateHierarchyRtParams params = {};
+    params.traversable = prepared->accel.handle;
+    params.point_x = reinterpret_cast<const double*>(prepared->point_x->ptr);
+    params.point_y = reinterpret_cast<const double*>(prepared->point_y->ptr);
+    params.point_z = reinterpret_cast<const double*>(prepared->point_z->ptr);
+    params.point_weight =
+        reinterpret_cast<const double*>(prepared->point_weight->ptr);
+    params.point_count = prepared->point_count;
+    params.node_cx = reinterpret_cast<const double*>(prepared->node_cx->ptr);
+    params.node_cy = reinterpret_cast<const double*>(prepared->node_cy->ptr);
+    params.node_cz = reinterpret_cast<const double*>(prepared->node_cz->ptr);
+    params.node_half_size =
+        reinterpret_cast<const double*>(prepared->node_half_size->ptr);
+    params.node_weight =
+        reinterpret_cast<const double*>(prepared->node_weight->ptr);
+    params.member_offsets =
+        reinterpret_cast<const int64_t*>(prepared->member_offsets->ptr);
+    params.member_indices =
+        reinterpret_cast<const int64_t*>(prepared->member_indices->ptr);
+    params.child_offsets =
+        reinterpret_cast<const int64_t*>(prepared->child_offsets->ptr);
+    params.node_next_index =
+        reinterpret_cast<const int64_t*>(prepared->node_next_index->ptr);
+    params.node_rope_index =
+        reinterpret_cast<const int64_t*>(prepared->node_rope_index->ptr);
+    params.node_count = prepared->node_count;
+    params.root_node_index = prepared->root_node_index;
+    params.reducer_kind = reducer_kind;
+    params.max_ratio = max_ratio;
+    params.softening = softening;
+    params.reducer_value_0_out =
+        reinterpret_cast<double*>(prepared->reducer_value_0->ptr);
+    params.visited_node_count_out =
+        reinterpret_cast<int64_t*>(prepared->visited_node_count->ptr);
+    params.aggregate_contribution_count_out = reinterpret_cast<int64_t*>(
+        prepared->aggregate_contribution_count->ptr);
+    params.exact_contribution_count_out =
+        reinterpret_cast<int64_t*>(prepared->exact_contribution_count->ptr);
+    params.status_code_out =
+        reinterpret_cast<int64_t*>(prepared->status_code->ptr);
+
+    DevPtr device_params(sizeof(params));
+    upload(device_params.ptr, &params, 1);
+    CUstream stream = 0;
+    const auto traversal_start = std::chrono::steady_clock::now();
+    rtdl_optix_bind_traversal_audit_context(
+        "aggregate_hierarchy_continuation_reduce_3d",
+        prepared->accel.handle);
+    OPTIX_CHECK(optixLaunch(
+        g_aggregate_hierarchy_rt.pipe->pipeline,
+        stream,
+        device_params.ptr,
+        sizeof(params),
+        &g_aggregate_hierarchy_rt.pipe->sbt,
+        static_cast<unsigned>(prepared->point_count),
+        1,
+        1));
+    CU_CHECK(cuStreamSynchronize(stream));
+    *traversal_seconds_out = std::chrono::duration<double>(
+        std::chrono::steady_clock::now() - traversal_start).count();
+
+    const auto download_start = std::chrono::steady_clock::now();
+    const size_t point_count = static_cast<size_t>(prepared->point_count);
+    download(
+        reducer_value_0_out, prepared->reducer_value_0->ptr, point_count);
+    download(
+        visited_node_count_out, prepared->visited_node_count->ptr, point_count);
+    download(
+        aggregate_contribution_count_out,
+        prepared->aggregate_contribution_count->ptr,
+        point_count);
+    download(
+        exact_contribution_count_out,
+        prepared->exact_contribution_count->ptr,
+        point_count);
+    download(status_code_out, prepared->status_code->ptr, point_count);
+    *download_seconds_out = std::chrono::duration<double>(
+        std::chrono::steady_clock::now() - download_start).count();
+    *total_seconds_out = std::chrono::duration<double>(
+        std::chrono::steady_clock::now() - total_start).count();
+}
+
 static void write_prepared_fixed_radius_count_threshold_3d_device_outputs_optix(
         PreparedFixedRadiusCountThreshold3DRt* prepared,
         const RtdlPoint3D* query_points,
@@ -28311,6 +30846,9 @@ static void write_prepared_fixed_radius_count_threshold_3d_device_outputs_optix(
     CUstream stream = 0;
     g_optix_last_bvh_build_s = 0.0;
     auto t_start_trav = std::chrono::steady_clock::now();
+    rtdl_optix_bind_traversal_audit_context(
+        "fixed_radius_count_threshold_3d",
+        prepared->accel.handle);
     OPTIX_CHECK(optixLaunch(g_frn3d_count_threshold_rt.pipe->pipeline, stream,
                              d_params.ptr, sizeof(FixedRadiusCountThreshold3DRtLaunchParams),
                              &g_frn3d_count_threshold_rt.pipe->sbt,
@@ -28598,6 +31136,9 @@ static void launch_prepared_fixed_radius_grouped_union_3d_device_outputs_optix(
     CUstream stream = 0;
     g_optix_last_bvh_build_s = 0.0;
     auto t_start_trav = std::chrono::steady_clock::now();
+    rtdl_optix_bind_traversal_audit_context(
+        "fixed_radius_grouped_union_3d",
+        prepared->accel.handle);
     OPTIX_CHECK(optixLaunch(g_frn3d_grouped_union_rt.pipe->pipeline, stream,
                              d_params.ptr, sizeof(FixedRadiusGroupedUnion3DRtLaunchParams),
                              &g_frn3d_grouped_union_rt.pipe->sbt,

@@ -72,6 +72,7 @@ else
 NVCC ?= /usr/bin/nvcc
 endif
 CXX_OPTIX ?= $(NVCC)
+RTDL_OPTIX_BUILD_ID ?= $(shell date -u +%Y%m%dT%H%M%S%N 2>/dev/null || date -u +%s)
 OPTIX_CUDA_ARCH_DETECTED := $(shell nvidia-smi --query-gpu=compute_cap --format=csv,noheader 2>/dev/null | head -n 1 | tr -d '.' | sed 's/^/sm_/')
 OPTIX_CUDA_ARCH ?= $(OPTIX_CUDA_ARCH_DETECTED)
 OPTIX_CUDA_ARCH_FLAGS := $(if $(OPTIX_CUDA_ARCH),-arch=$(OPTIX_CUDA_ARCH),)
@@ -108,6 +109,7 @@ OPTIX_CXXFLAGS := \
 	-DRTDL_OPTIX_INCLUDE_DIR=\"$(OPTIX_INCLUDE)\" \
 	-DRTDL_CUDA_INCLUDE_DIR=\"$(CUDA_INCLUDE)\" \
 	-DRTDL_CUDA_SYSTEM_INCLUDE_DIR=\"$(CUDA_SYSTEM_INCLUDE)\" \
+	-DRTDL_OPTIX_BUILD_ID=\"$(RTDL_OPTIX_BUILD_ID)\" \
 	-Xcompiler -fPIC
 
 OPTIX_LDFLAGS := -L$(CUDA_LIB) -lcuda -lnvrtc $(GEOS_LIBS)

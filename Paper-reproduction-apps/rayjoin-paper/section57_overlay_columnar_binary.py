@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import argparse
 import ctypes
+import hashlib
 import json
 import math
 import os
@@ -97,7 +98,13 @@ except Exception:  # pragma: no cover
 
 if NUMBA_AVAILABLE:
 
-    @njit(cache=True)
+    # This app module is intentionally loaded through importlib front doors.
+    # Numba's disk cache serializes the transient module name and can then make
+    # a later fresh process fail to import a different loader alias.  The
+    # prepared six-batch contract explicitly specializes this scan once before
+    # its primary timer, so disabling the unsafe disk artifact preserves hot
+    # performance while making fresh-process behavior deterministic.
+    @njit(cache=False)
     def _aggregate_sorted_pairs_numba(label_a, label_b, group_length, out_a, out_b, out_groups, out_points):
         if label_a.shape[0] == 0:
             return 0
@@ -2950,22 +2957,30 @@ def descriptor_pair_count_projected_device(carrier):
     fallback_error = None
     native_direct_carrier_prefix = False
     try:
+        # Native lexsort is explicitly in-place.  The carrier remains live for
+        # the independent complete-row comparator after this summary, so sort
+        # compiler-private key snapshots rather than corrupting the shared
+        # producer columns while leaving ``group_length`` in producer order.
+        sorted_label_a = cuda.device_array(valid_count, dtype=np.int64)
+        sorted_label_b = cuda.device_array(valid_count, dtype=np.int64)
+        sorted_label_a.copy_to_device(carrier_label_a[:valid_count])
+        sorted_label_b.copy_to_device(carrier_label_b[:valid_count])
         order = cuda.device_array(valid_count, dtype=np.int64)
         zero_dist = cuda.device_array(valid_count, dtype=np.float64)
         _init_order_kernel[blocks_valid, threads](order)
         _fill_f64_kernel[blocks_valid, threads](zero_dist, 0.0)
         cuda.synchronize()
         _run_public_device_order_by_native_lexsort(
-            carrier_label_a,
+            sorted_label_a,
             zero_dist,
-            carrier_label_b,
+            sorted_label_b,
             order,
             count=valid_count,
             producer="section57_descriptor_pair_keys",
         )
         _reduce_sorted_descriptor_pairs_with_order_single_kernel[1, 1](
-            carrier_label_a,
-            carrier_label_b,
+            sorted_label_a,
+            sorted_label_b,
             carrier_lengths,
             order,
             valid_count,
@@ -3224,6 +3239,7 @@ def build_projected_descriptor_carrier_columnar_device(
     phase_seconds=None,
     phase_prefix="device_resident_carrier",
     concurrent_side_kernels=False,
+    producer_owned_batch_factory=None,
 ):
     if not _cuda_is_available():
         raise RuntimeError("Numba CUDA is required for --device-resident-carrier")
@@ -3233,11 +3249,28 @@ def build_projected_descriptor_carrier_columnar_device(
     for side_id, dataset in enumerate(datasets):
         total_capacity += int(dataset.chain_count) + int(sorted_views[side_id]["order"].size)
     capacity = max(1, int(total_capacity))
-    group_length = cuda.device_array(capacity, dtype=np.int64)
-    label_a = cuda.device_array(capacity, dtype=np.int64)
-    label_b = cuda.device_array(capacity, dtype=np.int64)
-    counters = cuda.to_device(np.zeros(3, dtype=np.int64))
-    overflow = cuda.to_device(np.zeros(1, dtype=np.int64))
+    producer_owned_batch = (
+        producer_owned_batch_factory(capacity=capacity)
+        if callable(producer_owned_batch_factory)
+        else None
+    )
+    if producer_owned_batch is None:
+        group_length = cuda.device_array(capacity, dtype=np.int64)
+        label_a = cuda.device_array(capacity, dtype=np.int64)
+        label_b = cuda.device_array(capacity, dtype=np.int64)
+        counters = cuda.to_device(np.zeros(3, dtype=np.int64))
+        overflow = cuda.to_device(np.zeros(1, dtype=np.int64))
+    else:
+        if int(producer_owned_batch.capacity) != capacity:
+            raise RuntimeError(
+                "compiler-owned producer batch capacity differs from producer bound: "
+                f"expected={capacity}; actual={producer_owned_batch.capacity}"
+            )
+        group_length = producer_owned_batch.group_length_device
+        label_a = producer_owned_batch.label_a_device
+        label_b = producer_owned_batch.label_b_device
+        counters = producer_owned_batch.counters_device
+        overflow = producer_owned_batch.overflow_device
 
     combine_start = time.perf_counter()
     if concurrent_side_kernels and len(datasets) == 2:
@@ -3288,29 +3321,39 @@ def build_projected_descriptor_carrier_columnar_device(
             )
             side_parts.append(side)
     cuda.synchronize()
-    counters_host = counters.copy_to_host()
-    overflow_host = overflow.copy_to_host()
-    total_groups = int(counters_host[0])
-    total_point_rows = int(counters_host[1])
-    total_skipped = int(counters_host[2])
-    if int(overflow_host[0]) != 0 or total_groups > capacity:
-        raise RuntimeError(
-            "device-resident carrier atomic append overflowed: "
-            f"capacity={capacity}, required={total_groups}"
-        )
+    if producer_owned_batch is None:
+        counters_host = counters.copy_to_host()
+        overflow_host = overflow.copy_to_host()
+        total_groups = int(counters_host[0])
+        total_point_rows = int(counters_host[1])
+        total_skipped = int(counters_host[2])
+        if int(overflow_host[0]) != 0 or total_groups > capacity:
+            raise RuntimeError(
+                "device-resident carrier atomic append overflowed: "
+                f"capacity={capacity}, required={total_groups}"
+            )
+    else:
+        completion = producer_owned_batch.complete_production()
+        total_groups = int(completion["group_count"])
+        total_point_rows = int(completion["point_row_count"])
+        total_skipped = int(completion["skipped_group_count"])
     _record_elapsed(combine_start, phase_seconds, f"{phase_prefix}_combine_sides_sec")
 
-    carrier = {
-        "group_length_device": group_length,
-        "label_a_device": label_a,
-        "label_b_device": label_b,
-        "group_count": int(total_groups),
-        "point_row_count": int(total_point_rows),
-        "skipped_group_count": int(total_skipped),
-        "padded_group_count": int(capacity),
-        "_side_parts": side_parts,
-        "_atomic_append_counters": counters,
-    }
+    carrier = (
+        producer_owned_batch.carrier_view()
+        if producer_owned_batch is not None
+        else {
+            "group_length_device": group_length,
+            "label_a_device": label_a,
+            "label_b_device": label_b,
+            "group_count": int(total_groups),
+            "point_row_count": int(total_point_rows),
+            "skipped_group_count": int(total_skipped),
+            "padded_group_count": int(capacity),
+            "_atomic_append_counters": counters,
+        }
+    )
+    carrier["_side_parts"] = side_parts
     stats = {
         "schema": "rtdl.paper_reproduction.rayjoin.section57_device_resident_binary_carrier.v1",
         "group_count": int(total_groups),
@@ -3323,6 +3366,12 @@ def build_projected_descriptor_carrier_columnar_device(
         "device_resident_carrier": True,
         "device_resident_consumer_required": True,
         "device_resident_carrier_atomic_append_used": True,
+        "compiler_preallocated_event_storage_used": bool(
+            producer_owned_batch is not None
+        ),
+        "producer_owned_single_consume_receipt_issued": bool(
+            producer_owned_batch is not None
+        ),
         "compiled_group_execution_mode": "numba_cuda_device_kernels",
         "rayjoin_specific_core_primitive": False,
         "rtdl_core_change": False,
@@ -3330,15 +3379,18 @@ def build_projected_descriptor_carrier_columnar_device(
     return carrier, stats
 
 
-def descriptor_pair_count_projected(carrier):
+def descriptor_pair_count_projected(carrier, *, include_pair_rows=False):
     if carrier["label_a"].size == 0:
-        return {
+        result = {
             "pair_count": 0,
             "total_groups": 0,
             "total_point_rows": 0,
             "top_pairs_by_point_rows": [],
             "partner": "numba" if NUMBA_AVAILABLE else "numpy_reference",
         }
+        if include_pair_rows:
+            result["pair_rows"] = []
+        return result
 
     label_a = np.asarray(carrier["label_a"], dtype=np.int64)
     label_b = np.asarray(carrier["label_b"], dtype=np.int64)
@@ -3364,17 +3416,24 @@ def descriptor_pair_count_projected(carrier):
         point_counts = np.bincount(inverse, weights=lengths).astype(np.int64, copy=False)
         partner = "numpy_reference"
 
-    top_order = np.argsort(point_counts)[::-1]
-    top = [
+    pair_rows = [
         {
             "label_a": int(unique_pairs[index, 0]),
             "label_b": int(unique_pairs[index, 1]),
             "group_count": int(group_counts[index]),
             "point_row_count": int(point_counts[index]),
         }
-        for index in top_order[:10]
+        for index in range(unique_pairs.shape[0])
     ]
-    return {
+    top = sorted(
+        pair_rows,
+        key=lambda row: (
+            -int(row["point_row_count"]),
+            int(row["label_a"]),
+            int(row["label_b"]),
+        ),
+    )[:10]
+    result = {
         "pair_count": int(unique_pairs.shape[0]),
         "total_groups": int(label_a.size),
         "total_point_rows": int(lengths.sum()),
@@ -3384,9 +3443,103 @@ def descriptor_pair_count_projected(carrier):
         "numba_execution_mode": "cpu_njit" if NUMBA_AVAILABLE else "not_used",
         "cuda_device_resident_continuation": False,
     }
+    if include_pair_rows:
+        result["pair_rows"] = pair_rows
+    return result
 
 
-def run_pipeline(args):
+def _canonical_planar_kwargs(args, stage: str) -> dict[str, str]:
+    """Return app-owned semantic authority for the V3 formal route only."""
+
+    bindings = getattr(args, "_rtdl_v3_canonical_planar_bindings", None)
+    if bindings is None:
+        return {}
+    pair = bindings.get(stage) if isinstance(bindings, dict) else None
+    if (
+        not isinstance(pair, tuple)
+        or len(pair) != 2
+        or not all(isinstance(value, str) and value for value in pair)
+    ):
+        raise RuntimeError(f"missing canonical RayJoin stage binding: {stage}")
+    return {
+        "semantic_statement_stable_id": pair[0],
+        "backend_contract_id": pair[1],
+    }
+
+
+def descriptor_pair_rows_projected_device(carrier):
+    """Materialize complete canonical output rows from a device carrier."""
+
+    if not _cuda_is_available():
+        raise RuntimeError("Numba CUDA is required for device descriptor validation")
+    valid_count = int(carrier["group_count"])
+    if valid_count < 0:
+        raise ValueError("device descriptor carrier has a negative group count")
+    cuda.synchronize()
+    host_carrier = {
+        "label_a": carrier["label_a_device"][:valid_count].copy_to_host(),
+        "label_b": carrier["label_b_device"][:valid_count].copy_to_host(),
+        "group_length": carrier["group_length_device"][:valid_count].copy_to_host(),
+    }
+    return descriptor_pair_count_projected(host_carrier, include_pair_rows=True)
+
+
+def eager_specialize_descriptor_pair_rows_projected_device():
+    """Execute the complete V2 device-download plus CPU-reducer route once.
+
+    The six-batch contract is a prepared hot/query-many denominator.  This
+    explicit setup action keeps V2's Numba specialization in the same excluded
+    scope as V3's compiler-owned physical specialization and records the cost
+    instead of relying on an ambient disk cache.
+    """
+
+    if not _cuda_is_available() or not NUMBA_AVAILABLE:
+        raise RuntimeError("V2 descriptor consumer specialization requires CUDA and Numba")
+    started = time.perf_counter()
+    carrier = {
+        "label_a_device": cuda.to_device(np.asarray([1], dtype=np.int64)),
+        "label_b_device": cuda.to_device(np.asarray([2], dtype=np.int64)),
+        "group_length_device": cuda.to_device(np.asarray([3], dtype=np.int64)),
+        "group_count": 1,
+    }
+    before_signatures = len(getattr(_aggregate_sorted_pairs_numba, "signatures", ()))
+    result = descriptor_pair_rows_projected_device(carrier)
+    elapsed = time.perf_counter() - started
+    expected_rows = [
+        {
+            "label_a": 1,
+            "label_b": 2,
+            "group_count": 1,
+            "point_row_count": 3,
+        }
+    ]
+    if result.get("pair_rows") != expected_rows:
+        raise RuntimeError("V2 descriptor consumer eager specialization changed semantics")
+    return {
+        "contract": "rtdl.rayjoin.v2_descriptor_consumer_specialization.v1",
+        "physical_route": "device_columns_d2h_numpy_lexsort_numba_checked_group_scan",
+        "elapsed_seconds": float(elapsed),
+        "synthetic_row_count": 1,
+        "complete_physical_route_executed": True,
+        "registered_query_count": 0,
+        "compiled_signature_count_before": before_signatures,
+        "compiled_signature_count_after": len(
+            getattr(_aggregate_sorted_pairs_numba, "signatures", ())
+        ),
+        "cross_process_numba_cache_enabled": False,
+        "dynamic_module_identity_cache_poisoning_prevented": True,
+        "executed_once_before_primary": True,
+        "excluded_from_writer_free_hot_primary": True,
+        "runtime_speedup_claimed": False,
+    }
+
+
+def _canonical_pair_rows_sha256(rows) -> str:
+    payload = json.dumps(tuple(rows), sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def run_pipeline(args, *, descriptor_consumer=None):
     if "rtdsl.rayjoin_overlay" in sys.modules:
         raise RuntimeError("forbidden import detected: rtdsl.rayjoin_overlay")
 
@@ -3628,6 +3781,9 @@ def run_pipeline(args):
                 right.cdb_segments,
                 query_map_id=map0_query_map_id,
                 scale_bounds=bounds,
+                **_canonical_planar_kwargs(
+                    args, "directed_segment_point_location"
+                ),
             ),
             phase_seconds,
         )
@@ -3641,6 +3797,9 @@ def run_pipeline(args):
                 left.cdb_segments,
                 query_map_id=map1_query_map_id,
                 scale_bounds=bounds,
+                **_canonical_planar_kwargs(
+                    args, "directed_segment_point_location"
+                ),
             ),
             phase_seconds,
         )
@@ -3802,6 +3961,15 @@ def run_pipeline(args):
                 prepared_dataset_arrays=(device_carrier_arrays_left, device_carrier_arrays_right),
                 phase_seconds=phase_seconds,
                 concurrent_side_kernels=device_carrier_concurrent_sides_enabled,
+                producer_owned_batch_factory=(
+                    getattr(
+                        descriptor_consumer,
+                        "begin_producer_owned_device_batch",
+                        None,
+                    )
+                    if descriptor_consumer is not None
+                    else None
+                ),
             )
             if device_resident_carrier_enabled
             else build_projected_descriptor_carrier_columnar_compiled(
@@ -3829,12 +3997,67 @@ def run_pipeline(args):
         if device_resident_carrier_enabled
         else "grouped_descriptor_pair_count_consumer_sec",
         lambda: (
-            descriptor_pair_count_projected_device(carrier)
+            descriptor_consumer(carrier)
+            if descriptor_consumer is not None
+            else descriptor_pair_count_projected_device(carrier)
             if device_resident_carrier_enabled
             else descriptor_pair_count_projected(carrier)
         ),
         phase_seconds,
     )
+    complete_descriptor_validation = None
+    if bool(
+        getattr(args, "collect_complete_descriptor_pair_rows_for_validation", False)
+    ):
+        complete_descriptor_validation = (
+            descriptor_pair_rows_projected_device(carrier)
+            if device_resident_carrier_enabled
+            else descriptor_pair_count_projected(carrier, include_pair_rows=True)
+        )
+        complete_rows = tuple(complete_descriptor_validation["pair_rows"])
+        consumer_rows = consumer.get("pair_rows")
+        consumer_matches = (
+            None
+            if consumer_rows is None
+            else tuple(consumer_rows) == complete_rows
+        )
+        if consumer_matches is False:
+            first_difference = next(
+                (
+                    {
+                        "index": index,
+                        "consumer": consumer_rows[index]
+                        if index < len(consumer_rows)
+                        else None,
+                        "complete": complete_rows[index]
+                        if index < len(complete_rows)
+                        else None,
+                    }
+                    for index in range(max(len(consumer_rows), len(complete_rows)))
+                    if index >= len(consumer_rows)
+                    or index >= len(complete_rows)
+                    or consumer_rows[index] != complete_rows[index]
+                ),
+                None,
+            )
+            raise RuntimeError(
+                "descriptor consumer rows differ from untimed complete validation: "
+                f"consumer_count={len(consumer_rows)}; complete_count={len(complete_rows)}; "
+                f"consumer_sha256={_canonical_pair_rows_sha256(tuple(consumer_rows))}; "
+                f"complete_sha256={_canonical_pair_rows_sha256(complete_rows)}; "
+                f"first_difference={first_difference!r}"
+            )
+        complete_descriptor_validation = {
+            "pair_count": int(complete_descriptor_validation["pair_count"]),
+            "total_groups": int(complete_descriptor_validation["total_groups"]),
+            "total_point_rows": int(
+                complete_descriptor_validation["total_point_rows"]
+            ),
+            "pair_rows": complete_rows,
+            "pair_rows_sha256": _canonical_pair_rows_sha256(complete_rows),
+            "consumer_pair_rows_match": consumer_matches,
+            "excluded_from_writer_free_hot_timing": True,
+        }
     for retained in locals().get("retained_midpoint_face_values", []):
         _close_point_face_value(retained)
 
@@ -4015,6 +4238,12 @@ def run_pipeline(args):
             "generic_contract_goal": True,
             "implementation_change": "internal_app_owned_measurement_script_only",
             "prepared_operator_session_used": bool(getattr(args, "_prepared_operator_session_active", False)),
+            "app_owned_descriptor_consumer_injected": descriptor_consumer is not None,
+            "app_owned_descriptor_consumer_contract": (
+                consumer.get("consumer_contract")
+                if descriptor_consumer is not None and isinstance(consumer, dict)
+                else None
+            ),
         },
         "left": {"path": left.path, "chains": left.chain_count, "points": left.point_count, "edges": left.edge_count},
         "right": {"path": right.path, "chains": right.chain_count, "points": right.point_count, "edges": right.edge_count},
@@ -4031,6 +4260,7 @@ def run_pipeline(args):
         },
         "grouped_carrier": carrier_stats,
         "downstream_consumer": consumer,
+        "complete_descriptor_pair_rows_validation": complete_descriptor_validation,
         "phase_seconds": phase_seconds,
         "native_lsi_timings": native_lsi_timings,
         "lsi_cost_decomposition": lsi_cost_decomposition,
@@ -4051,6 +4281,9 @@ def _compact_repeat_run_summary(summary, *, run_kind, run_index):
     floor = summary.get("downstream_floor_breakdown", {})
     boundary = summary.get("claim_boundary", {})
     downstream_consumer = summary.get("downstream_consumer", {})
+    complete_validation = summary.get(
+        "complete_descriptor_pair_rows_validation"
+    ) or {}
     lsi_cost = summary.get("lsi_cost_decomposition", {})
     lsi_native = lsi_cost.get("native_timings", {}) if isinstance(lsi_cost, dict) else {}
     lsi_extended = lsi_native.get("extended", {}) if isinstance(lsi_native, dict) else {}
@@ -4063,6 +4296,80 @@ def _compact_repeat_run_summary(summary, *, run_kind, run_index):
         "downstream_floor_sec": float(floor.get("downstream_floor_sec", 0.0)),
         "lsi_row_count": int(summary.get("lsi_row_count", 0)),
         "descriptor_pair_count": int(downstream_consumer.get("pair_count", 0)),
+        "descriptor_total_groups": int(downstream_consumer.get("total_groups", 0)),
+        "descriptor_total_point_rows": int(
+            downstream_consumer.get("total_point_rows", 0)
+        ),
+        "descriptor_pair_rows": (
+            complete_validation.get("pair_rows")
+            if complete_validation.get("pair_rows") is not None
+            else downstream_consumer.get("pair_rows")
+        ),
+        "descriptor_pair_rows_sha256": (
+            complete_validation.get("pair_rows_sha256")
+            if complete_validation.get("pair_rows_sha256") is not None
+            else downstream_consumer.get("pair_rows_sha256")
+        ),
+        "descriptor_pair_rows_source": (
+            "untimed_complete_device_validation"
+            if complete_validation.get("pair_rows") is not None
+            else "registered_descriptor_consumer_output"
+        ),
+        "descriptor_consumer_pair_rows_sha256": downstream_consumer.get(
+            "pair_rows_sha256"
+        ),
+        "descriptor_consumer_matches_complete_pair_rows": complete_validation.get(
+            "consumer_pair_rows_match"
+        ),
+        "descriptor_complete_pair_rows_validation_excluded_from_primary": (
+            complete_validation.get("excluded_from_writer_free_hot_timing")
+        ),
+        "descriptor_expected_v2_pair_rows_sha256": downstream_consumer.get(
+            "expected_v2_pair_rows_sha256"
+        ),
+        "descriptor_matched_v2_consumer": downstream_consumer.get(
+            "matched_v2_consumer"
+        ),
+        "descriptor_prepared_query_ordinal": downstream_consumer.get(
+            "prepared_query_ordinal"
+        ),
+        "descriptor_prepared_query_timing_regime": downstream_consumer.get(
+            "prepared_query_timing_regime"
+        ),
+        "descriptor_prepared_query_seconds": downstream_consumer.get(
+            "prepared_query_seconds"
+        ),
+        "descriptor_prepared_consumer_phase_seconds": downstream_consumer.get(
+            "prepared_consumer_phase_seconds"
+        ),
+        "descriptor_prepared_consumer_observation_timing_seconds": (
+            downstream_consumer.get(
+                "prepared_consumer_observation_timing_seconds"
+            )
+        ),
+        "descriptor_selected_physical_backend": downstream_consumer.get(
+            "selected_physical_backend"
+        ),
+        "descriptor_selected_physical_placement": downstream_consumer.get(
+            "selected_physical_placement"
+        ),
+        "descriptor_selected_physical_template": downstream_consumer.get(
+            "selected_physical_template"
+        ),
+        "descriptor_v2_numba_sorted_pair_scan_seconds": downstream_consumer.get(
+            "v2_numba_sorted_pair_scan_seconds"
+        ),
+        "descriptor_comparison_order": downstream_consumer.get("comparison_order"),
+        "descriptor_consumer_phase_trace": downstream_consumer.get("phase_trace"),
+        "descriptor_device_event_batch_certificate": downstream_consumer.get(
+            "device_event_batch_certificate"
+        ),
+        "descriptor_source_event_columns_device_resident": downstream_consumer.get(
+            "source_event_columns_device_resident"
+        ),
+        "descriptor_host_event_column_materialization_used": downstream_consumer.get(
+            "host_event_column_materialization_used"
+        ),
         "downstream_consumer_partner": downstream_consumer.get("partner"),
         "downstream_consumer_native_lexsort_descriptor_pair_scan": downstream_consumer.get(
             "native_lexsort_descriptor_pair_scan"
@@ -4326,7 +4633,25 @@ def summarize_repeat_protocol(*, args, warmup_summaries, measured_summaries, ses
     }
 
 
-def run_pipeline_repeat_protocol(args):
+def run_pipeline_repeat_protocol(args, *, descriptor_consumer=None):
+    canonical_planar_production_authorities: list[dict[str, object]] = []
+
+    def capture_canonical_planar(handle, *, role: str) -> None:
+        if handle is None or not hasattr(handle, "canonical_production_metadata"):
+            return
+        metadata = handle.canonical_production_metadata()
+        if (
+            metadata.get("canonical_resolution") is None
+            and metadata.get("canonical_production_authority") is None
+        ):
+            return
+        canonical_planar_production_authorities.append(
+            {
+                "role": role,
+                **metadata,
+            }
+        )
+
     repeat = int(getattr(args, "repeat", 1))
     warmup_runs = int(getattr(args, "warmup_runs", 0))
     query_chain_batches = int(getattr(args, "query_chain_batches", 0))
@@ -4337,7 +4662,7 @@ def run_pipeline_repeat_protocol(args):
     if query_chain_batches < 0:
         raise ValueError("--query-chain-batches must be >= 0")
     if repeat == 1 and warmup_runs == 0 and not bool(getattr(args, "prepared_lsi_base_session", False)):
-        return run_pipeline(args)
+        return run_pipeline(args, descriptor_consumer=descriptor_consumer)
 
     if bool(getattr(args, "prepared_operator_session", False)) and bool(
         getattr(args, "prepared_lsi_base_session", False)
@@ -4417,7 +4742,12 @@ def run_pipeline_repeat_protocol(args):
         try:
             lsi = timed(
                 "session_prepare_lsi_right_sec",
-                lambda: base.prepare_planar_map_lsi_2d_optix(right.lsi_segments),
+                lambda: base.prepare_planar_map_lsi_2d_optix(
+                    right.lsi_segments,
+                    **_canonical_planar_kwargs(
+                        args, "segment_pair_grouped_range_exact_count"
+                    ),
+                ),
                 session_phase_seconds,
             )
             query = timed(
@@ -4431,6 +4761,9 @@ def run_pipeline_repeat_protocol(args):
                     right.cdb_segments,
                     query_map_id=map0_query_map_id,
                     scale_bounds=bounds,
+                    **_canonical_planar_kwargs(
+                        args, "directed_segment_point_location"
+                    ),
                 ),
                 session_phase_seconds,
             )
@@ -4440,6 +4773,9 @@ def run_pipeline_repeat_protocol(args):
                     left.cdb_segments,
                     query_map_id=map1_query_map_id,
                     scale_bounds=bounds,
+                    **_canonical_planar_kwargs(
+                        args, "directed_segment_point_location"
+                    ),
                 ),
                 session_phase_seconds,
             )
@@ -4488,9 +4824,27 @@ def run_pipeline_repeat_protocol(args):
             setattr(args, "_prepared_vertex_points_map0_in_map1", vertex_points_map0)
             setattr(args, "_prepared_vertex_points_map1_in_map0", vertex_points_map1)
             setattr(args, "_prepared_operator_session_active", True)
-            warmup_summaries = [run_pipeline(args) for _ in range(warmup_runs)]
-            measured_summaries = [run_pipeline(args) for _ in range(repeat)]
+            warmup_summaries = [
+                run_pipeline(args, descriptor_consumer=descriptor_consumer)
+                for _ in range(warmup_runs)
+            ]
+            measured_summaries = [
+                run_pipeline(args, descriptor_consumer=descriptor_consumer)
+                for _ in range(repeat)
+            ]
         finally:
+            capture_canonical_planar(
+                lsi,
+                role="segment_pair_grouped_range_exact_count",
+            )
+            capture_canonical_planar(
+                map0_in_map1,
+                role="directed_segment_point_location_map0_in_map1",
+            )
+            capture_canonical_planar(
+                map1_in_map0,
+                role="directed_segment_point_location_map1_in_map0",
+            )
             for name in (
                 "_preloaded_left",
                 "_preloaded_right",
@@ -4539,7 +4893,12 @@ def run_pipeline_repeat_protocol(args):
             try:
                 lsi = timed(
                     "session_prepare_lsi_right_sec",
-                    lambda: base.prepare_planar_map_lsi_2d_optix(right.lsi_segments),
+                    lambda: base.prepare_planar_map_lsi_2d_optix(
+                        right.lsi_segments,
+                        **_canonical_planar_kwargs(
+                            args, "segment_pair_grouped_range_exact_count"
+                        ),
+                    ),
                     session_phase_seconds,
                 )
                 setattr(args, "_preloaded_left", left)
@@ -4673,6 +5032,9 @@ def run_pipeline_repeat_protocol(args):
                             query_batches[0]["dataset"].cdb_segments,
                             query_map_id=map1_query_map_id,
                             scale_bounds=bounds,
+                            **_canonical_planar_kwargs(
+                                args, "directed_segment_point_location"
+                            ),
                         ),
                         session_phase_seconds,
                     )
@@ -4690,6 +5052,9 @@ def run_pipeline_repeat_protocol(args):
                             right.cdb_segments,
                             query_map_id=map0_query_map_id,
                             scale_bounds=bounds,
+                            **_canonical_planar_kwargs(
+                                args, "directed_segment_point_location"
+                            ),
                         ),
                         session_phase_seconds,
                     )
@@ -4729,7 +5094,10 @@ def run_pipeline_repeat_protocol(args):
                             )
                         if query_batch_lsi_queries:
                             setattr(args, "_prepared_lsi_query", query_batch_lsi_queries[int(batch["index"])])
-                        summary = run_pipeline(args)
+                        summary = run_pipeline(
+                            args,
+                            descriptor_consumer=descriptor_consumer,
+                        )
                         summary["query_batch"] = {
                             "index": int(batch["index"]),
                             "start_chain": int(batch["start_chain"]),
@@ -4740,9 +5108,27 @@ def run_pipeline_repeat_protocol(args):
                         }
                         measured_summaries.append(summary)
                 else:
-                    warmup_summaries = [run_pipeline(args) for _ in range(warmup_runs)]
-                    measured_summaries = [run_pipeline(args) for _ in range(repeat)]
+                    warmup_summaries = [
+                        run_pipeline(args, descriptor_consumer=descriptor_consumer)
+                        for _ in range(warmup_runs)
+                    ]
+                    measured_summaries = [
+                        run_pipeline(args, descriptor_consumer=descriptor_consumer)
+                        for _ in range(repeat)
+                    ]
             finally:
+                capture_canonical_planar(
+                    lsi,
+                    role="segment_pair_grouped_range_exact_count",
+                )
+                capture_canonical_planar(
+                    query_batch_right_vertex_locator,
+                    role="directed_segment_point_location_map1_in_map0",
+                )
+                capture_canonical_planar(
+                    query_batch_left_vertex_locator,
+                    role="directed_segment_point_location_map0_in_map1",
+                )
                 for name in (
                     "_preloaded_left",
                     "_preloaded_right",
@@ -4773,14 +5159,24 @@ def run_pipeline_repeat_protocol(args):
                 if lsi is not None:
                     lsi.close()
         else:
-            warmup_summaries = [run_pipeline(args) for _ in range(warmup_runs)]
-            measured_summaries = [run_pipeline(args) for _ in range(repeat)]
-    return summarize_repeat_protocol(
+            warmup_summaries = [
+                run_pipeline(args, descriptor_consumer=descriptor_consumer)
+                for _ in range(warmup_runs)
+            ]
+            measured_summaries = [
+                run_pipeline(args, descriptor_consumer=descriptor_consumer)
+                for _ in range(repeat)
+            ]
+    summary = summarize_repeat_protocol(
         args=args,
         warmup_summaries=warmup_summaries,
         measured_summaries=measured_summaries,
         session_prepare_phase_seconds=session_phase_seconds,
     )
+    summary["canonical_planar_production_authorities"] = tuple(
+        canonical_planar_production_authorities
+    )
+    return summary
 
 
 def main() -> int:

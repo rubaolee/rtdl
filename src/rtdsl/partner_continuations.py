@@ -1096,28 +1096,30 @@ def numpy_group_topk(
     if group_ids.size and (np.any(group_ids < 0) or np.any(group_ids >= group_count)):
         raise ValueError("group_ids must be in [0, group_count)")
 
-    out_group_ids: list[int] = []
-    out_item_ids: list[int] = []
-    out_scores: list[float] = []
-    out_ranks: list[int] = []
-    for group in range(group_count):
-        mask = group_ids == group
-        if not np.any(mask):
-            continue
-        group_item_ids = item_ids[mask]
-        group_scores = scores[mask]
-        primary = -group_scores if largest else group_scores
-        order = np.lexsort((group_item_ids, primary))[:k]
-        for rank, index in enumerate(order, start=1):
-            out_group_ids.append(group)
-            out_item_ids.append(int(group_item_ids[index]))
-            out_scores.append(float(group_scores[index]))
-            out_ranks.append(rank)
+    if group_ids.size == 0:
+        return {
+            "group_ids": np.asarray([], dtype=np.int64),
+            "item_ids": np.asarray([], dtype=np.int64),
+            "scores": np.asarray([], dtype=np.float64),
+            "rank": np.asarray([], dtype=np.int64),
+        }
+
+    primary = -scores if largest else scores
+    order = np.lexsort((item_ids, primary, group_ids))
+    sorted_group_ids = group_ids[order]
+    starts = np.empty(sorted_group_ids.size, dtype=np.bool_)
+    starts[0] = True
+    starts[1:] = sorted_group_ids[1:] != sorted_group_ids[:-1]
+    positions = np.arange(sorted_group_ids.size, dtype=np.int64)
+    group_starts = np.maximum.accumulate(np.where(starts, positions, 0))
+    ranks = positions - group_starts + 1
+    keep = ranks <= k
+    selected = order[keep]
     return {
-        "group_ids": np.asarray(out_group_ids, dtype=np.int64),
-        "item_ids": np.asarray(out_item_ids, dtype=np.int64),
-        "scores": np.asarray(out_scores, dtype=np.float64),
-        "rank": np.asarray(out_ranks, dtype=np.int64),
+        "group_ids": group_ids[selected].astype(np.int64, copy=False),
+        "item_ids": item_ids[selected].astype(np.int64, copy=False),
+        "scores": scores[selected].astype(np.float64, copy=False),
+        "rank": ranks[keep].astype(np.int64, copy=False),
     }
 
 
@@ -2316,6 +2318,8 @@ def cell_mbr_nearest_frontier_native_3d_optix_columns(
     allow_overflow_telemetry: bool = False,
     return_split_frontiers: bool = True,
     return_metadata: bool = False,
+    issue_completed_state_evidence: bool = False,
+    _prepared_target_domain=None,
 ):
     """Build Goal5140 frontier rows with the bounded native OptiX 3-D collector."""
 
@@ -2418,6 +2422,7 @@ def cell_mbr_nearest_frontier_native_3d_optix_columns(
                 target_coords=target_coords,
                 target_point_ids=target_ids,
                 point_row_indices=point_row_indices,
+                _prepared_target_domain=_prepared_target_domain,
             )
             resolved_capacity = int(attempt_capacity)
             break
@@ -2540,6 +2545,18 @@ def cell_mbr_nearest_frontier_native_3d_optix_columns(
             "frontier_status_probe_mode_code": native.get("frontier_status_probe_mode_code"),
             "frontier_status_probe_contract": native.get("frontier_status_probe_contract"),
             "per_source_witness_exact": native.get("per_source_witness_exact"),
+            "per_source_witness_exact_reason": native.get(
+                "per_source_witness_exact_reason"
+            ),
+            "per_source_witness_exact_violations": tuple(
+                native.get("per_source_witness_exact_violations") or ()
+            ),
+            "nearest_state_source_binding": native.get(
+                "nearest_state_source_binding"
+            ),
+            "returned_source_ids_device_evidenced": bool(
+                native.get("returned_source_ids_device_evidenced", False)
+            ),
             "inline_stats_collected": bool(native.get("inline_stats_collected", False)),
             "inline_cell_hit_count": native.get("inline_cell_hit_count"),
             "inline_point_evaluation_count": native.get("inline_point_evaluation_count"),
@@ -2547,6 +2564,12 @@ def cell_mbr_nearest_frontier_native_3d_optix_columns(
             "native_phase_timings": native.get("native_phase_timings"),
             "native_memory_telemetry_collected": bool(native.get("native_memory_telemetry_collected", False)),
             "native_memory_telemetry": native.get("native_memory_telemetry"),
+            "prepared_target_domain_used": bool(
+                native.get("prepared_target_domain_used", False)
+            ),
+            "prepared_target_domain_telemetry": native.get(
+                "prepared_target_domain_telemetry"
+            ),
             "status_machine_telemetry_collected": bool(
                 native.get("status_machine_telemetry_collected", False)
             ),
@@ -2584,6 +2607,35 @@ def cell_mbr_nearest_frontier_native_3d_optix_columns(
                 "application benchmark-performance claim."
             ),
         }
+    if issue_completed_state_evidence:
+        if not return_metadata or not inline_nearest:
+            raise ValueError(
+                "completed-state evidence requires inline_nearest=True and return_metadata=True"
+            )
+        from .action_completed_nearest_state import (
+            _issue_completed_nearest_state_producer_evidence_3d,
+        )
+
+        result["_completed_nearest_state_producer_evidence"] = (
+            _issue_completed_nearest_state_producer_evidence_3d(
+                query_ids=query_ids,
+                query_coordinates=query_coords,
+                target_ids=target_ids,
+                target_coordinates=target_coords,
+                cell_columns=cell_columns,
+                nearest_state=result["nearest_state"],
+                frontier_columns=columns,
+                metadata=result["metadata"],
+                producer_objects=(
+                    query_point_columns,
+                    cell_columns,
+                    target_point_columns,
+                    native,
+                    result["nearest_state"],
+                    columns,
+                ),
+            )
+        )
     return result
 
 

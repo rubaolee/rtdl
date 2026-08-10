@@ -65,6 +65,181 @@ int handle_native_call(Fn&& fn, char* error_out, size_t error_size) {
     }
 }
 
+// ---------- behavior-level OptiX traversal audit ---------------------------
+//
+// A provider-library label or selected-template field is not evidence that
+// this execution reached RT traversal. The audit observes the actual
+// optixLaunch call and requires the physical route to bind a traversable plus
+// a stable, application-neutral program-bundle id immediately before launch.
+// When no audit session is active the wrapper is observationally inert.
+
+struct OptixTraversalAuditState {
+    bool active = false;
+    bool context_pending = false;
+    bool session_error = false;
+    uint64_t nonce_hi = 0;
+    uint64_t nonce_lo = 0;
+    uint64_t pending_program_bundle_id = 0;
+    OptixTraversableHandle pending_traversable = 0;
+    RtdlOptixTraversalAuditSnapshot snapshot = {};
+};
+
+thread_local OptixTraversalAuditState g_optix_traversal_audit;
+
+static uint64_t rtdl_audit_mix(uint64_t state, uint64_t value)
+{
+    value += UINT64_C(0x9e3779b97f4a7c15);
+    value = (value ^ (value >> 30)) * UINT64_C(0xbf58476d1ce4e5b9);
+    value = (value ^ (value >> 27)) * UINT64_C(0x94d049bb133111eb);
+    value ^= value >> 31;
+    return state ^ (value + UINT64_C(0x9e3779b97f4a7c15) + (state << 6) + (state >> 2));
+}
+
+static uint64_t rtdl_audit_c_string_id(const char* text)
+{
+    uint64_t value = UINT64_C(1469598103934665603);
+    if (!text) return 0;
+    for (const unsigned char* p = reinterpret_cast<const unsigned char*>(text); *p; ++p) {
+        value ^= static_cast<uint64_t>(*p);
+        value *= UINT64_C(1099511628211);
+    }
+    return value;
+}
+
+static void rtdl_optix_bind_traversal_audit_context(
+        const char* physical_program_bundle,
+        OptixTraversableHandle traversable)
+{
+    auto& audit = g_optix_traversal_audit;
+    if (!audit.active) return;
+    const uint64_t bundle_id = rtdl_audit_c_string_id(physical_program_bundle);
+    if (audit.context_pending || bundle_id == 0 || traversable == 0) {
+        audit.session_error = true;
+        throw std::runtime_error(
+            "OptiX traversal audit context must bind exactly one nonzero "
+            "program bundle and traversable before each launch");
+    }
+    audit.context_pending = true;
+    audit.pending_program_bundle_id = bundle_id;
+    audit.pending_traversable = traversable;
+    audit.snapshot.context_bind_count += 1;
+}
+
+static OptixResult rtdl_optix_launch_raw(
+        OptixPipeline pipeline,
+        CUstream stream,
+        CUdeviceptr pipeline_params,
+        size_t pipeline_params_size,
+        const OptixShaderBindingTable* sbt,
+        unsigned int width,
+        unsigned int height,
+        unsigned int depth)
+{
+    return optixLaunch(
+        pipeline, stream, pipeline_params, pipeline_params_size, sbt,
+        width, height, depth);
+}
+
+static OptixResult rtdl_optix_launch_with_audit(
+        const char* source_file,
+        int source_line,
+        OptixPipeline pipeline,
+        CUstream stream,
+        CUdeviceptr pipeline_params,
+        size_t pipeline_params_size,
+        const OptixShaderBindingTable* sbt,
+        unsigned int width,
+        unsigned int height,
+        unsigned int depth)
+{
+    auto& audit = g_optix_traversal_audit;
+    if (audit.active)
+        audit.snapshot.attempted_launch_count += 1;
+
+    const OptixResult result = rtdl_optix_launch_raw(
+        pipeline, stream, pipeline_params, pipeline_params_size, sbt,
+        width, height, depth);
+    if (!audit.active)
+        return result;
+
+    if (result != OPTIX_SUCCESS) {
+        audit.snapshot.failed_launch_count += 1;
+        audit.context_pending = false;
+        audit.pending_program_bundle_id = 0;
+        audit.pending_traversable = 0;
+        return result;
+    }
+
+    audit.snapshot.successful_launch_count += 1;
+    const uint64_t invocation_count =
+        static_cast<uint64_t>(width) *
+        static_cast<uint64_t>(height) *
+        static_cast<uint64_t>(depth);
+    if (UINT64_MAX - audit.snapshot.raygen_invocation_count < invocation_count) {
+        audit.session_error = true;
+    } else {
+        audit.snapshot.raygen_invocation_count += invocation_count;
+    }
+    audit.snapshot.pipeline_mix = rtdl_audit_mix(
+        audit.snapshot.pipeline_mix,
+        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(pipeline)));
+    audit.snapshot.sbt_mix = rtdl_audit_mix(
+        audit.snapshot.sbt_mix,
+        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(sbt)));
+    audit.snapshot.stream_mix = rtdl_audit_mix(
+        audit.snapshot.stream_mix,
+        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(stream)));
+    audit.snapshot.params_mix = rtdl_audit_mix(
+        rtdl_audit_mix(
+            audit.snapshot.params_mix,
+            static_cast<uint64_t>(pipeline_params)),
+        static_cast<uint64_t>(pipeline_params_size));
+    audit.snapshot.callsite_mix = rtdl_audit_mix(
+        rtdl_audit_mix(audit.snapshot.callsite_mix, rtdl_audit_c_string_id(source_file)),
+        static_cast<uint64_t>(source_line));
+
+    if (audit.context_pending &&
+            audit.pending_program_bundle_id != 0 &&
+            audit.pending_traversable != 0) {
+        audit.snapshot.complete_context_launch_count += 1;
+        audit.snapshot.program_bundle_mix = rtdl_audit_mix(
+            audit.snapshot.program_bundle_mix,
+            audit.pending_program_bundle_id);
+        audit.snapshot.traversable_mix = rtdl_audit_mix(
+            audit.snapshot.traversable_mix,
+            static_cast<uint64_t>(audit.pending_traversable));
+        if (audit.snapshot.complete_context_launch_count == 1) {
+            audit.snapshot.first_program_bundle_id =
+                audit.pending_program_bundle_id;
+            audit.snapshot.first_traversable =
+                static_cast<uint64_t>(audit.pending_traversable);
+        }
+        audit.snapshot.last_program_bundle_id =
+            audit.pending_program_bundle_id;
+        audit.snapshot.last_traversable =
+            static_cast<uint64_t>(audit.pending_traversable);
+    } else {
+        audit.snapshot.incomplete_context_launch_count += 1;
+        if (audit.snapshot.incomplete_callsite_record_count <
+                static_cast<uint32_t>(
+                    sizeof(audit.snapshot.incomplete_callsite_lines) /
+                    sizeof(audit.snapshot.incomplete_callsite_lines[0]))) {
+            audit.snapshot.incomplete_callsite_lines[
+                audit.snapshot.incomplete_callsite_record_count++] =
+                    static_cast<uint32_t>(source_line);
+        }
+    }
+    audit.context_pending = false;
+    audit.pending_program_bundle_id = 0;
+    audit.pending_traversable = 0;
+    return result;
+}
+
+#define optixLaunch(pipeline, stream, params, params_size, sbt, width, height, depth) \
+    rtdl_optix_launch_with_audit(                                             \
+        __FILE__, __LINE__, pipeline, stream, params, params_size, sbt,       \
+        width, height, depth)
+
 // ---------- CUDA device pointer RAII ----------------------------------------
 
 struct DevPtr {
@@ -101,18 +276,34 @@ void download(T* dst, CUdeviceptr src, size_t count) {
 
 // ---------- NVRTC compilation -----------------------------------------------
 
+static std::filesystem::path create_native_compile_temp_directory(
+        const char* stem) {
+    namespace fs = std::filesystem;
+    const char* configured = std::getenv("TMPDIR");
+    fs::path root = configured && configured[0] != '\0'
+        ? fs::path(configured)
+        : fs::path("/tmp");
+    std::error_code error;
+    if (!fs::is_directory(root, error) || error) {
+        throw std::runtime_error("native compile TMPDIR is not an existing directory");
+    }
+    std::string value = (root / (std::string(stem) + "-XXXXXX")).string();
+    std::vector<char> writable(value.begin(), value.end());
+    writable.push_back('\0');
+    char* created = mkdtemp(writable.data());
+    if (!created) {
+        throw std::runtime_error("failed to create native compiler temporary directory");
+    }
+    return fs::path(created);
+}
+
 static std::string compile_to_ptx_with_nvcc(const char* cuda_src,
                                             const char* name,
                                             const std::vector<std::string>& include_opts,
                                             const std::vector<const char*>& extra_opts)
 {
     namespace fs = std::filesystem;
-    char dir_template[] = "/tmp/rtdl-optix-XXXXXX";
-    char* tmp_dir = mkdtemp(dir_template);
-    if (!tmp_dir) {
-        throw std::runtime_error("failed to create temporary directory for nvcc PTX compilation");
-    }
-    fs::path tmp_root(tmp_dir);
+    fs::path tmp_root = create_native_compile_temp_directory("rtdl-optix");
     struct TempDirCleanup {
         fs::path path;
         ~TempDirCleanup() {
@@ -196,6 +387,11 @@ static std::string compile_to_ptx_with_nvcc(const char* cuda_src,
             _exit(127);
         }
         std::fclose(log_file);
+        // Keep the effective compiler command identical to the argv covered by
+        // cubin_cache_key. nvcc otherwise consumes these inherited variables
+        // as hidden prepend/append options.
+        unsetenv("NVCC_PREPEND_FLAGS");
+        unsetenv("NVCC_APPEND_FLAGS");
         execvp(nvcc.c_str(), argv.data());
         _exit(127);
     }
@@ -238,18 +434,343 @@ static std::string default_cuda_cubin_arch()
     return "sm_" + std::to_string(major) + std::to_string(minor);
 }
 
+static bool cubin_cache_env_is_disabled(const char* value)
+{
+    if (!value || value[0] == '\0') return false;
+    const std::string raw(value);
+    return raw != "0" && raw != "false" && raw != "False" && raw != "FALSE";
+}
+
+static bool cubin_cache_disabled()
+{
+    if (const char* configured = std::getenv("RTDL_DISABLE_CUBIN_CACHE");
+            configured && configured[0] != '\0') {
+        return cubin_cache_env_is_disabled(configured);
+    }
+    return cubin_cache_env_is_disabled(
+        std::getenv("RTDL_OPTIX_DISABLE_CUBIN_CACHE"));
+}
+
+static std::filesystem::path cubin_cache_root()
+{
+    namespace fs = std::filesystem;
+    fs::path root;
+    if (const char* configured = std::getenv("RTDL_CUBIN_CACHE_DIR");
+            configured && configured[0] != '\0') {
+        root = fs::path(configured);
+    } else if (const char* legacy = std::getenv("RTDL_OPTIX_CUBIN_CACHE_DIR");
+               legacy && legacy[0] != '\0') {
+        root = fs::path(legacy);
+    } else if (const char* xdg = std::getenv("XDG_CACHE_HOME");
+               xdg && xdg[0] != '\0') {
+        root = fs::path(xdg) / "rtdl" / "optix_cubin";
+    } else if (const char* home = std::getenv("HOME"); home && home[0] != '\0') {
+        root = fs::path(home) / ".cache" / "rtdl" / "optix_cubin";
+    } else {
+        std::error_code error;
+        const fs::path temporary = fs::temp_directory_path(error);
+        if (error) return {};
+        root = temporary
+            / ("rtdl-cubin-cache-" + std::to_string(static_cast<unsigned long long>(getuid())));
+    }
+    if (!root.is_absolute()) return {};
+
+    std::error_code error;
+    fs::create_directories(root, error);
+    if (error) return {};
+    struct stat status{};
+    if (lstat(root.c_str(), &status) != 0
+        || !S_ISDIR(status.st_mode)
+        || status.st_uid != getuid()
+        || (status.st_mode & (S_IWGRP | S_IWOTH)) != 0) {
+        return {};
+    }
+    return root;
+}
+
+static void cubin_cache_hash_bytes(uint64_t& hash, const void* raw, size_t size)
+{
+    const auto* bytes = static_cast<const unsigned char*>(raw);
+    for (size_t index = 0; index < size; ++index) {
+        hash ^= static_cast<uint64_t>(bytes[index]);
+        hash *= UINT64_C(1099511628211);
+    }
+}
+
+static void cubin_cache_hash_string(uint64_t& first,
+                                    uint64_t& second,
+                                    const std::string& value)
+{
+    const uint64_t size = static_cast<uint64_t>(value.size());
+    cubin_cache_hash_bytes(first, &size, sizeof(size));
+    cubin_cache_hash_bytes(first, value.data(), value.size());
+    cubin_cache_hash_bytes(second, value.data(), value.size());
+    cubin_cache_hash_bytes(second, &size, sizeof(size));
+}
+
+static std::filesystem::path cubin_cache_resolve_command(const std::string& command)
+{
+    namespace fs = std::filesystem;
+    if (command.empty()) return {};
+    fs::path requested(command);
+    std::error_code error;
+    if (requested.has_parent_path()) {
+        fs::path resolved = fs::weakly_canonical(requested, error);
+        return error ? requested : resolved;
+    }
+    const char* raw_path = std::getenv("PATH");
+    if (!raw_path) return requested;
+    std::stringstream paths(raw_path);
+    std::string directory;
+    while (std::getline(paths, directory, ':')) {
+        if (directory.empty()) directory = ".";
+        fs::path candidate = fs::path(directory) / requested;
+        if (fs::is_regular_file(candidate, error) && !error) {
+            fs::path resolved = fs::weakly_canonical(candidate, error);
+            return error ? candidate : resolved;
+        }
+        error.clear();
+    }
+    return requested;
+}
+
+static std::string cubin_cache_file_identity(const std::string& path_text)
+{
+    namespace fs = std::filesystem;
+    fs::path path = cubin_cache_resolve_command(path_text);
+    const std::string resolved_path = path.string();
+    std::error_code error;
+    const auto size = fs::file_size(path, error);
+    if (error) return resolved_path + "|missing";
+    error.clear();
+    const auto modified = fs::last_write_time(path, error);
+    if (error) return resolved_path + "|size=" + std::to_string(size);
+    return resolved_path + "|size=" + std::to_string(size)
+        + "|mtime=" + std::to_string(modified.time_since_epoch().count());
+}
+
+static std::string cubin_cache_key(const char* cuda_src,
+                                   const char* name,
+                                   const std::string& nvcc,
+                                   const std::string& arch,
+                                   const std::string& ccbin,
+                                   const std::vector<std::string>& include_opts,
+                                   const std::vector<const char*>& extra_opts)
+{
+#ifndef RTDL_OPTIX_BUILD_ID
+    return {};
+#else
+    const std::string build_id(RTDL_OPTIX_BUILD_ID);
+    if (build_id.empty()) return {};
+    uint64_t first = UINT64_C(1469598103934665603);
+    uint64_t second = UINT64_C(1099511628211) ^ UINT64_C(0x9e3779b97f4a7c15);
+    cubin_cache_hash_string(first, second, "rtdl-cubin-cache-v2");
+    cubin_cache_hash_string(first, second, build_id);
+    int driver_version = 0;
+    if (cuDriverGetVersion(&driver_version) != CUDA_SUCCESS) return {};
+    cubin_cache_hash_string(first, second, std::to_string(driver_version));
+    cubin_cache_hash_string(first, second, name ? std::string(name) : std::string());
+    cubin_cache_hash_string(first, second, cuda_src ? std::string(cuda_src) : std::string());
+    cubin_cache_hash_string(first, second, cubin_cache_file_identity(nvcc));
+    cubin_cache_hash_string(first, second, arch);
+    cubin_cache_hash_string(first, second, cubin_cache_file_identity(ccbin));
+    for (const std::string& option : include_opts)
+        cubin_cache_hash_string(first, second, option);
+    for (const char* option : extra_opts)
+        cubin_cache_hash_string(first, second, option ? std::string(option) : std::string());
+    char output[33]{};
+    std::snprintf(
+        output,
+        sizeof(output),
+        "%016llx%016llx",
+        static_cast<unsigned long long>(first),
+        static_cast<unsigned long long>(second));
+    return std::string(output);
+#endif
+}
+
+static std::string cubin_cache_content_digest(const std::string& content)
+{
+    uint64_t first = UINT64_C(1469598103934665603);
+    uint64_t second = UINT64_C(1099511628211) ^ UINT64_C(0x517cc1b727220a95);
+    cubin_cache_hash_bytes(first, content.data(), content.size());
+    cubin_cache_hash_bytes(second, content.data(), content.size());
+    char output[33]{};
+    std::snprintf(
+        output,
+        sizeof(output),
+        "%016llx%016llx",
+        static_cast<unsigned long long>(first),
+        static_cast<unsigned long long>(second));
+    return std::string(output);
+}
+
+static std::string read_secure_cache_file(const std::filesystem::path& path,
+                                          uintmax_t minimum_size,
+                                          uintmax_t maximum_size)
+{
+    const int descriptor = open(path.c_str(), O_RDONLY | O_CLOEXEC | O_NOFOLLOW);
+    if (descriptor < 0) return {};
+    struct stat status{};
+    if (fstat(descriptor, &status) != 0
+        || !S_ISREG(status.st_mode)
+        || status.st_uid != getuid()
+        || (status.st_mode & (S_IWGRP | S_IWOTH)) != 0) {
+        close(descriptor);
+        return {};
+    }
+    const uintmax_t size = static_cast<uintmax_t>(status.st_size);
+    if (size < minimum_size || size > maximum_size) {
+        close(descriptor);
+        return {};
+    }
+    std::string content(static_cast<size_t>(size), '\0');
+    size_t offset = 0u;
+    while (offset < content.size()) {
+        const ssize_t count = read(
+            descriptor,
+            content.data() + offset,
+            content.size() - offset);
+        if (count < 0 && errno == EINTR) continue;
+        if (count <= 0) {
+            close(descriptor);
+            return {};
+        }
+        offset += static_cast<size_t>(count);
+    }
+    close(descriptor);
+    return content;
+}
+
+static std::filesystem::path cubin_cache_metadata_path(
+        const std::filesystem::path& path)
+{
+    std::filesystem::path metadata = path;
+    metadata += ".meta";
+    return metadata;
+}
+
+static void remove_cached_cubin_entry(const std::filesystem::path& path)
+{
+    std::error_code error;
+    std::filesystem::remove(path, error);
+    error.clear();
+    std::filesystem::remove(cubin_cache_metadata_path(path), error);
+}
+
+static std::string read_cached_cubin(const std::filesystem::path& path)
+{
+    constexpr uintmax_t kMinimumElfSize = 64u;
+    constexpr uintmax_t kMaximumCubinSize = 512u * 1024u * 1024u;
+    const std::string cubin = read_secure_cache_file(
+        path,
+        kMinimumElfSize,
+        kMaximumCubinSize);
+    const std::string metadata = read_secure_cache_file(
+        cubin_cache_metadata_path(path),
+        1u,
+        256u);
+    if (cubin.empty() || metadata.empty()) {
+        remove_cached_cubin_entry(path);
+        return {};
+    }
+    const bool has_elf_magic = cubin.size() >= 4u
+        && static_cast<unsigned char>(cubin[0]) == 0x7fu
+        && cubin[1] == 'E'
+        && cubin[2] == 'L'
+        && cubin[3] == 'F';
+    std::istringstream metadata_stream(metadata);
+    std::string version;
+    std::string size_text;
+    std::string digest;
+    std::string extra;
+    const bool metadata_shape_valid =
+        static_cast<bool>(std::getline(metadata_stream, version))
+        && static_cast<bool>(std::getline(metadata_stream, size_text))
+        && static_cast<bool>(std::getline(metadata_stream, digest))
+        && (!std::getline(metadata_stream, extra) || extra.empty());
+    uintmax_t recorded_size = 0u;
+    bool recorded_size_valid = false;
+    if (metadata_shape_valid) {
+        try {
+            size_t consumed = 0u;
+            recorded_size = static_cast<uintmax_t>(std::stoull(size_text, &consumed));
+            recorded_size_valid = consumed == size_text.size();
+        } catch (...) {
+            recorded_size_valid = false;
+        }
+    }
+    if (!has_elf_magic
+        || !metadata_shape_valid
+        || version != "rtdl-cubin-entry-v1"
+        || !recorded_size_valid
+        || recorded_size != cubin.size()
+        || digest != cubin_cache_content_digest(cubin)) {
+        remove_cached_cubin_entry(path);
+        return {};
+    }
+    return cubin;
+}
+
+static bool write_cache_file_atomic(const std::filesystem::path& path,
+                                    const std::string& content)
+{
+    namespace fs = std::filesystem;
+    if (path.empty() || content.empty()) return false;
+    std::string temporary_template =
+        (path.parent_path() / (path.filename().string() + ".XXXXXX")).string();
+    std::vector<char> temporary_buffer(temporary_template.begin(), temporary_template.end());
+    temporary_buffer.push_back('\0');
+    const int descriptor = mkstemp(temporary_buffer.data());
+    if (descriptor < 0) return false;
+    const fs::path temporary(temporary_buffer.data());
+    size_t offset = 0u;
+    bool complete = true;
+    while (offset < content.size()) {
+        const ssize_t count = write(
+            descriptor,
+            content.data() + offset,
+            content.size() - offset);
+        if (count < 0 && errno == EINTR) continue;
+        if (count <= 0) {
+            complete = false;
+            break;
+        }
+        offset += static_cast<size_t>(count);
+    }
+    if (complete && fsync(descriptor) != 0) complete = false;
+    close(descriptor);
+    std::error_code error;
+    if (complete) fs::rename(temporary, path, error);
+    const bool published = complete && !error;
+    if (!published) {
+        std::error_code ignored;
+        fs::remove(temporary, ignored);
+    }
+    return published;
+}
+
+static void write_cached_cubin_best_effort(const std::filesystem::path& path,
+                                           const std::string& cubin)
+{
+    if (path.empty() || cubin.empty()) return;
+    const std::string metadata =
+        "rtdl-cubin-entry-v1\n"
+        + std::to_string(cubin.size()) + "\n"
+        + cubin_cache_content_digest(cubin) + "\n";
+    if (!write_cache_file_atomic(path, cubin)
+        || !write_cache_file_atomic(cubin_cache_metadata_path(path), metadata)) {
+        remove_cached_cubin_entry(path);
+    }
+}
+
 static std::string compile_to_cubin_with_nvcc(const char* cuda_src,
                                               const char* name,
                                               const std::vector<std::string>& include_opts,
                                               const std::vector<const char*>& extra_opts)
 {
     namespace fs = std::filesystem;
-    char dir_template[] = "/tmp/rtdl-optix-cubin-XXXXXX";
-    char* tmp_dir = mkdtemp(dir_template);
-    if (!tmp_dir) {
-        throw std::runtime_error("failed to create temporary directory for nvcc CUBIN compilation");
-    }
-    fs::path tmp_root(tmp_dir);
+    fs::path tmp_root = create_native_compile_temp_directory("rtdl-optix-cubin");
     struct TempDirCleanup {
         fs::path path;
         ~TempDirCleanup() {
@@ -304,6 +825,23 @@ static std::string compile_to_cubin_with_nvcc(const char* cuda_src,
         argv_storage.push_back("-ccbin");
         argv_storage.push_back(ccbin);
     }
+    fs::path cache_path;
+    if (!cubin_cache_disabled()) {
+        const std::string key = cubin_cache_key(
+            cuda_src,
+            name,
+            nvcc,
+            arch,
+            ccbin,
+            include_opts,
+            extra_opts);
+        const fs::path cache_root = key.empty() ? fs::path{} : cubin_cache_root();
+        if (!key.empty() && !cache_root.empty()) {
+            cache_path = cache_root / (key + ".cubin");
+            std::string cached = read_cached_cubin(cache_path);
+            if (!cached.empty()) return cached;
+        }
+    }
     for (const char* opt : extra_opts) {
         argv_storage.push_back(opt);
     }
@@ -331,6 +869,11 @@ static std::string compile_to_cubin_with_nvcc(const char* cuda_src,
             _exit(127);
         }
         std::fclose(log_file);
+        // Keep the effective compiler command identical to the argv covered by
+        // cubin_cache_key. nvcc otherwise consumes these inherited variables
+        // as hidden prepend/append options.
+        unsetenv("NVCC_PREPEND_FLAGS");
+        unsetenv("NVCC_APPEND_FLAGS");
         execvp(nvcc.c_str(), argv.data());
         _exit(127);
     }
@@ -349,8 +892,11 @@ static std::string compile_to_cubin_with_nvcc(const char* cuda_src,
     if (!cubin_file) {
         throw std::runtime_error("nvcc CUBIN compile succeeded but CUBIN output was not found");
     }
-    return std::string((std::istreambuf_iterator<char>(cubin_file)),
-                       std::istreambuf_iterator<char>());
+    std::string cubin((std::istreambuf_iterator<char>(cubin_file)),
+                      std::istreambuf_iterator<char>());
+    if (!cache_path.empty() && !cubin.empty())
+        write_cached_cubin_best_effort(cache_path, cubin);
+    return cubin;
 }
 
 static void append_include_arg(std::vector<std::string>& include_opts,
@@ -378,6 +924,10 @@ static std::string compile_to_cubin(const char* cuda_src,
     std::unordered_set<std::string> seen_nvcc_include_opts;
     append_include_arg(nvcc_include_opts, seen_nvcc_include_opts, RTDL_OPTIX_INCLUDE_DIR);
     append_include_arg(nvcc_include_opts, seen_nvcc_include_opts, RTDL_CUDA_INCLUDE_DIR);
+    if (const char* runtime_optix_include = std::getenv("RTDL_OPTIX_SDK_INCLUDE_DIR"))
+        append_include_arg(nvcc_include_opts, seen_nvcc_include_opts, runtime_optix_include);
+    if (const char* runtime_cuda_include = std::getenv("RTDL_CUDA_SDK_INCLUDE_DIR"))
+        append_include_arg(nvcc_include_opts, seen_nvcc_include_opts, runtime_cuda_include);
     return compile_to_cubin_with_nvcc(cuda_src, name, nvcc_include_opts, extra_opts);
 }
 
@@ -397,6 +947,10 @@ std::string compile_to_ptx(const char* cuda_src,
     std::unordered_set<std::string> seen_nvcc_include_opts;
     append_include_arg(nvcc_include_opts, seen_nvcc_include_opts, RTDL_OPTIX_INCLUDE_DIR);
     append_include_arg(nvcc_include_opts, seen_nvcc_include_opts, RTDL_CUDA_INCLUDE_DIR);
+    if (const char* runtime_optix_include = std::getenv("RTDL_OPTIX_SDK_INCLUDE_DIR"))
+        append_include_arg(nvcc_include_opts, seen_nvcc_include_opts, runtime_optix_include);
+    if (const char* runtime_cuda_include = std::getenv("RTDL_CUDA_SDK_INCLUDE_DIR"))
+        append_include_arg(nvcc_include_opts, seen_nvcc_include_opts, runtime_cuda_include);
 
     std::vector<std::string> nvrtc_include_opts = nvcc_include_opts;
     std::unordered_set<std::string> seen_nvrtc_include_opts = seen_nvcc_include_opts;
@@ -640,6 +1194,136 @@ struct AccelHolder {
         return *this;
     }
 };
+
+struct TriangleAccelHolder {
+    CUdeviceptr output_buf = 0;
+    CUdeviceptr vertex_buf = 0;
+    CUdeviceptr index_buf = 0;
+    OptixTraversableHandle handle = 0;
+    size_t output_size_bytes = 0;
+    size_t temp_size_bytes = 0;
+    size_t vertex_size_bytes = 0;
+    size_t index_size_bytes = 0;
+
+    TriangleAccelHolder() = default;
+    ~TriangleAccelHolder() {
+        if (output_buf) cuMemFree(output_buf);
+        if (vertex_buf) cuMemFree(vertex_buf);
+        if (index_buf) cuMemFree(index_buf);
+    }
+    TriangleAccelHolder(const TriangleAccelHolder&) = delete;
+    TriangleAccelHolder& operator=(const TriangleAccelHolder&) = delete;
+    TriangleAccelHolder(TriangleAccelHolder&& other) noexcept
+        : output_buf(other.output_buf),
+          vertex_buf(other.vertex_buf),
+          index_buf(other.index_buf),
+          handle(other.handle),
+          output_size_bytes(other.output_size_bytes),
+          temp_size_bytes(other.temp_size_bytes),
+          vertex_size_bytes(other.vertex_size_bytes),
+          index_size_bytes(other.index_size_bytes) {
+        other.output_buf = 0;
+        other.vertex_buf = 0;
+        other.index_buf = 0;
+        other.handle = 0;
+        other.output_size_bytes = 0;
+        other.temp_size_bytes = 0;
+        other.vertex_size_bytes = 0;
+        other.index_size_bytes = 0;
+    }
+    TriangleAccelHolder& operator=(TriangleAccelHolder&& other) noexcept {
+        if (this != &other) {
+            if (output_buf) cuMemFree(output_buf);
+            if (vertex_buf) cuMemFree(vertex_buf);
+            if (index_buf) cuMemFree(index_buf);
+            output_buf = other.output_buf;
+            vertex_buf = other.vertex_buf;
+            index_buf = other.index_buf;
+            handle = other.handle;
+            output_size_bytes = other.output_size_bytes;
+            temp_size_bytes = other.temp_size_bytes;
+            vertex_size_bytes = other.vertex_size_bytes;
+            index_size_bytes = other.index_size_bytes;
+            other.output_buf = 0;
+            other.vertex_buf = 0;
+            other.index_buf = 0;
+            other.handle = 0;
+            other.output_size_bytes = 0;
+            other.temp_size_bytes = 0;
+            other.vertex_size_bytes = 0;
+            other.index_size_bytes = 0;
+        }
+        return *this;
+    }
+};
+
+static TriangleAccelHolder build_triangle_accel(
+        OptixDeviceContext ctx,
+        const std::vector<float3>& vertices,
+        const std::vector<uint3>& indices) {
+    if (vertices.empty() || indices.empty()) {
+        throw std::runtime_error(
+            "OptiX triangle acceleration requires nonempty vertices and indices");
+    }
+    if (vertices.size() > static_cast<size_t>(UINT32_MAX)
+            || indices.size() > static_cast<size_t>(UINT32_MAX)) {
+        throw std::runtime_error("OptiX triangle acceleration exceeds uint32 capacity");
+    }
+
+    TriangleAccelHolder result;
+    result.vertex_size_bytes = sizeof(float3) * vertices.size();
+    result.index_size_bytes = sizeof(uint3) * indices.size();
+    CU_CHECK(cuMemAlloc(&result.vertex_buf, result.vertex_size_bytes));
+    CU_CHECK(cuMemAlloc(&result.index_buf, result.index_size_bytes));
+    CU_CHECK(cuMemcpyHtoD(
+        result.vertex_buf, vertices.data(), result.vertex_size_bytes));
+    CU_CHECK(cuMemcpyHtoD(
+        result.index_buf, indices.data(), result.index_size_bytes));
+
+    OptixBuildInput build_input = {};
+    build_input.type = OPTIX_BUILD_INPUT_TYPE_TRIANGLES;
+    auto& triangles = build_input.triangleArray;
+    triangles.vertexBuffers = &result.vertex_buf;
+    triangles.numVertices = static_cast<unsigned>(vertices.size());
+    triangles.vertexFormat = OPTIX_VERTEX_FORMAT_FLOAT3;
+    triangles.vertexStrideInBytes = sizeof(float3);
+    triangles.indexBuffer = result.index_buf;
+    triangles.numIndexTriplets = static_cast<unsigned>(indices.size());
+    triangles.indexFormat = OPTIX_INDICES_FORMAT_UNSIGNED_INT3;
+    triangles.indexStrideInBytes = sizeof(uint3);
+    uint32_t flags = OPTIX_GEOMETRY_FLAG_DISABLE_ANYHIT;
+    triangles.flags = &flags;
+    triangles.numSbtRecords = 1;
+
+    OptixAccelBuildOptions options = {};
+    options.buildFlags = OPTIX_BUILD_FLAG_PREFER_FAST_TRACE;
+    options.operation = OPTIX_BUILD_OPERATION_BUILD;
+
+    OptixAccelBufferSizes sizes = {};
+    OPTIX_CHECK(optixAccelComputeMemoryUsage(
+        ctx, &options, &build_input, 1, &sizes));
+    DevPtr temp(sizes.tempSizeInBytes);
+    CU_CHECK(cuMemAlloc(&result.output_buf, sizes.outputSizeInBytes));
+    result.temp_size_bytes = sizes.tempSizeInBytes;
+    result.output_size_bytes = sizes.outputSizeInBytes;
+
+    CUstream stream = 0;
+    OPTIX_CHECK(optixAccelBuild(
+        ctx,
+        stream,
+        &options,
+        &build_input,
+        1,
+        temp.ptr,
+        sizes.tempSizeInBytes,
+        result.output_buf,
+        sizes.outputSizeInBytes,
+        &result.handle,
+        nullptr,
+        0));
+    CU_CHECK(cuStreamSynchronize(stream));
+    return result;
+}
 
 static AccelHolder build_custom_accel_with_flags(
         OptixDeviceContext ctx,
@@ -899,7 +1583,9 @@ static std::unique_ptr<PipelineHolder> build_pipeline(
         const char* intersection_name,       // null -> skip custom intersection
         const char* anyhit_name,             // null -> skip anyhit
         const char* closesthit_name,         // null -> skip closesthit
-        int max_payload_values               // number of payload registers
+        int max_payload_values,              // number of payload registers
+        unsigned int primitive_type_flags =
+            OPTIX_PRIMITIVE_TYPE_FLAGS_CUSTOM
 ) {
     auto holder = std::make_unique<PipelineHolder>();
 
@@ -916,7 +1602,7 @@ static std::unique_ptr<PipelineHolder> build_pipeline(
     pco.numAttributeValues               = 0;
     pco.exceptionFlags                   = OPTIX_EXCEPTION_FLAG_NONE;
     pco.pipelineLaunchParamsVariableName = "params";
-    pco.usesPrimitiveTypeFlags           = OPTIX_PRIMITIVE_TYPE_FLAGS_CUSTOM;
+    pco.usesPrimitiveTypeFlags           = primitive_type_flags;
 
     char module_log[8192] = {};
     size_t module_log_size = sizeof(module_log);
@@ -5179,7 +5865,10 @@ struct FixedRadiusNeighbors3DRtParams {
     FrnRecord* output;
     uint32_t query_count;
     uint32_t k_max;
-    float radius;
+    uint32_t minimum_boundary_mode;
+    uint32_t maximum_boundary_mode;
+    float minimum_distance;
+    float maximum_distance;
     float trace_tmax;
 };
 
@@ -5217,15 +5906,26 @@ extern "C" __global__ void __intersection__frn3d_isect() {
     const uint32_t qidx = optixGetPayload_0();
     const GpuPoint3D q = params.query_points[qidx];
     const GpuPoint3D t = params.search_points[prim];
-    const float dx = t.x - q.x;
-    const float dy = t.y - q.y;
-    const float dz = t.z - q.z;
-    const float d2 = dx * dx + dy * dy + dz * dz;
-    const float radius_sq = params.radius * params.radius;
-    if (d2 > radius_sq) {
+    const double dx = static_cast<double>(t.x) - static_cast<double>(q.x);
+    const double dy = static_cast<double>(t.y) - static_cast<double>(q.y);
+    const double dz = static_cast<double>(t.z) - static_cast<double>(q.z);
+    const float distance = static_cast<float>(sqrt(dx * dx + dy * dy + dz * dz));
+    const bool above_minimum = params.minimum_boundary_mode != 0u
+        ? distance > params.minimum_distance
+        : distance >= params.minimum_distance;
+    const bool below_maximum = params.maximum_boundary_mode != 0u
+        ? distance < params.maximum_distance
+        : distance <= params.maximum_distance;
+    if (!above_minimum || !below_maximum) {
         return;
     }
-    optixReportIntersection(params.radius, 0u);
+    optixReportIntersection(params.maximum_distance, 0u);
+}
+
+static __forceinline__ __device__ uint32_t canonical_float_key(float value) {
+    if (value == 0.0f) value = 0.0f;
+    const uint32_t bits = __float_as_uint(value);
+    return (bits & 0x80000000u) != 0u ? ~bits : (bits ^ 0x80000000u);
 }
 
 extern "C" __global__ void __anyhit__frn3d_anyhit() {
@@ -5233,18 +5933,19 @@ extern "C" __global__ void __anyhit__frn3d_anyhit() {
     const uint32_t qidx = optixGetPayload_0();
     const GpuPoint3D q = params.query_points[qidx];
     const GpuPoint3D t = params.search_points[prim];
-    const float dx = t.x - q.x;
-    const float dy = t.y - q.y;
-    const float dz = t.z - q.z;
-    const float d2 = dx * dx + dy * dy + dz * dz;
-    const float distance = sqrtf(d2);
+    const double dx = static_cast<double>(t.x) - static_cast<double>(q.x);
+    const double dy = static_cast<double>(t.y) - static_cast<double>(q.y);
+    const double dz = static_cast<double>(t.z) - static_cast<double>(q.z);
+    const float distance = static_cast<float>(sqrt(dx * dx + dy * dy + dz * dz));
     FrnRecord* query_out = params.output + static_cast<unsigned long long>(qidx) * static_cast<unsigned long long>(params.k_max);
 
     uint32_t insert_at = params.k_max;
     for (uint32_t slot = 0; slot < params.k_max; ++slot) {
         const bool empty = query_out[slot].neighbor_id == 0xffffffffu;
-        const bool better_distance = distance < query_out[slot].distance - 1.0e-7f;
-        const bool same_distance = fabsf(distance - query_out[slot].distance) <= 1.0e-7f;
+        const uint32_t distance_key = canonical_float_key(distance);
+        const uint32_t incumbent_key = canonical_float_key(query_out[slot].distance);
+        const bool better_distance = distance_key < incumbent_key;
+        const bool same_distance = distance_key == incumbent_key;
         const bool better_id = same_distance && t.id < query_out[slot].neighbor_id;
         if (empty || better_distance || better_id) {
             insert_at = slot;
@@ -5253,6 +5954,144 @@ extern "C" __global__ void __anyhit__frn3d_anyhit() {
     }
     if (insert_at < params.k_max) {
         for (uint32_t slot = params.k_max - 1u; slot > insert_at; --slot) {
+            query_out[slot] = query_out[slot - 1u];
+        }
+        query_out[insert_at].query_id = q.id;
+        query_out[insert_at].neighbor_id = t.id;
+        query_out[insert_at].distance = distance;
+    }
+    optixIgnoreIntersection();
+}
+)CUDA";
+
+// Generic prepared metric-kNN traversal.  Metric kind is semantic data, not
+// application identity: 0 = Euclidean, 1 = L-infinity, 2 = Euclidean in a
+// compiler-certified normalized space (monotone with cosine distance).
+static const char* kMetricKnn3DOptixKernelSrc = R"CUDA(
+#include <optix_device.h>
+#include <stdint.h>
+#include <math.h>
+#include <float.h>
+
+typedef unsigned int uint32_t;
+
+struct MetricKnnPoint3D { float x, y, z; uint32_t id; };
+struct MetricKnnRecord3D { uint32_t query_id, neighbor_id; float distance; };
+
+struct MetricKnn3DParams {
+    OptixTraversableHandle traversable;
+    const MetricKnnPoint3D* query_points;
+    const MetricKnnPoint3D* search_points;
+    MetricKnnRecord3D* output;
+    uint32_t query_count;
+    uint32_t k;
+    uint32_t metric_kind;
+    float geometric_radius;
+    float trace_tmax;
+};
+
+extern "C" {
+__constant__ MetricKnn3DParams params;
+}
+
+static __forceinline__ __device__ float geometric_distance(
+        const MetricKnnPoint3D& q,
+        const MetricKnnPoint3D& t) {
+    const float dx = t.x - q.x;
+    const float dy = t.y - q.y;
+    const float dz = t.z - q.z;
+    if (params.metric_kind == 1u) {
+        return fmaxf(fabsf(dx), fmaxf(fabsf(dy), fabsf(dz)));
+    }
+    // Kinds 0 and 2 both use Euclidean ordering.  Kind 2 is legal only when
+    // the compiler binds the nonzero-row normalization proof.
+    return sqrtf(dx * dx + dy * dy + dz * dz);
+}
+
+static __forceinline__ __device__ float ranking_distance(
+        const MetricKnnPoint3D& q,
+        const MetricKnnPoint3D& t) {
+    if (params.metric_kind == 2u) {
+        // Arkade MT's theorem reduces cosine kNN to Euclidean ordering in the
+        // compiler-certified normalized space.  Rank by the transformed L2
+        // squared key directly: it is monotone with L2, avoids an unnecessary
+        // sqrt, and avoids pretending that a separately rounded cosine dot
+        // product is the paper's physical ordering.  Explicit round-to-nearest
+        // operations make the binary32 key reproducible by the host oracle.
+        const float dx = t.x - q.x;
+        const float dy = t.y - q.y;
+        const float dz = t.z - q.z;
+        const float xy = __fadd_rn(__fmul_rn(dx, dx), __fmul_rn(dy, dy));
+        return __fadd_rn(xy, __fmul_rn(dz, dz));
+    }
+    return geometric_distance(q, t);
+}
+
+static __forceinline__ __device__ uint32_t canonical_float_key(float value) {
+    if (value == 0.0f) value = 0.0f;
+    const uint32_t bits = __float_as_uint(value);
+    return (bits & 0x80000000u) != 0u ? ~bits : (bits ^ 0x80000000u);
+}
+
+extern "C" __global__ void __raygen__metric_knn_3d() {
+    const uint32_t qidx = optixGetLaunchIndex().x;
+    if (qidx >= params.query_count) return;
+    const MetricKnnPoint3D q = params.query_points[qidx];
+    MetricKnnRecord3D* query_out = params.output
+        + static_cast<unsigned long long>(qidx)
+        * static_cast<unsigned long long>(params.k);
+    for (uint32_t slot = 0; slot < params.k; ++slot) {
+        query_out[slot].query_id = q.id;
+        query_out[slot].neighbor_id = 0xffffffffu;
+        query_out[slot].distance = INFINITY;
+    }
+    unsigned int p0 = qidx;
+    optixTrace(params.traversable,
+               make_float3(q.x, q.y, q.z),
+               make_float3(1.0f, 0.0f, 0.0f),
+               0.0f, params.trace_tmax, 0.0f,
+               OptixVisibilityMask(255),
+               OPTIX_RAY_FLAG_NONE,
+               0, 1, 0,
+               p0);
+}
+
+extern "C" __global__ void __miss__metric_knn_3d() {}
+
+extern "C" __global__ void __intersection__metric_knn_3d() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t qidx = optixGetPayload_0();
+    const float distance = geometric_distance(
+        params.query_points[qidx], params.search_points[prim]);
+    if (isfinite(distance) && distance <= params.geometric_radius) {
+        optixReportIntersection(params.geometric_radius, 0u);
+    }
+}
+
+extern "C" __global__ void __anyhit__metric_knn_3d() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t qidx = optixGetPayload_0();
+    const MetricKnnPoint3D q = params.query_points[qidx];
+    const MetricKnnPoint3D t = params.search_points[prim];
+    const float distance = ranking_distance(q, t);
+    MetricKnnRecord3D* query_out = params.output
+        + static_cast<unsigned long long>(qidx)
+        * static_cast<unsigned long long>(params.k);
+    const uint32_t distance_key = canonical_float_key(distance);
+    uint32_t insert_at = params.k;
+    for (uint32_t slot = 0; slot < params.k; ++slot) {
+        const bool empty = query_out[slot].neighbor_id == 0xffffffffu;
+        const uint32_t incumbent_key = canonical_float_key(query_out[slot].distance);
+        const bool better_distance = distance_key < incumbent_key;
+        const bool same_distance = distance_key == incumbent_key;
+        const bool better_id = same_distance && t.id < query_out[slot].neighbor_id;
+        if (empty || better_distance || better_id) {
+            insert_at = slot;
+            break;
+        }
+    }
+    if (insert_at < params.k) {
+        for (uint32_t slot = params.k - 1u; slot > insert_at; --slot) {
             query_out[slot] = query_out[slot - 1u];
         }
         query_out[insert_at].query_id = q.id;
@@ -5321,11 +6160,14 @@ extern "C" __global__ void __intersection__frn3d_count_threshold_isect() {
     const uint32_t qidx = optixGetPayload_0();
     const GpuPoint3D q = params.query_points[qidx];
     const GpuPoint3D t = params.search_points[prim];
-    const float dx = t.x - q.x;
-    const float dy = t.y - q.y;
-    const float dz = t.z - q.z;
-    const float d2 = dx * dx + dy * dy + dz * dz;
-    const float radius_sq = params.radius * params.radius;
+    const float dx = __fsub_rn(t.x, q.x);
+    const float dy = __fsub_rn(t.y, q.y);
+    const float dz = __fsub_rn(t.z, q.z);
+    const float dx2 = __fmul_rn(dx, dx);
+    const float dy2 = __fmul_rn(dy, dy);
+    const float dz2 = __fmul_rn(dz, dz);
+    const float d2 = __fadd_rn(__fadd_rn(dx2, dy2), dz2);
+    const float radius_sq = __fmul_rn(params.radius, params.radius);
     if (d2 <= radius_sq) {
         optixReportIntersection(params.radius, 0u);
     }
@@ -5393,11 +6235,14 @@ extern "C" __global__ void __intersection__frn3d_adjacency_isect() {
     const uint32_t qidx = optixGetPayload_0();
     const GpuPoint3D q = params.query_points[qidx];
     const GpuPoint3D t = params.search_points[prim];
-    const float dx = t.x - q.x;
-    const float dy = t.y - q.y;
-    const float dz = t.z - q.z;
-    const float d2 = dx * dx + dy * dy + dz * dz;
-    const float radius_sq = params.radius * params.radius;
+    const float dx = __fsub_rn(t.x, q.x);
+    const float dy = __fsub_rn(t.y, q.y);
+    const float dz = __fsub_rn(t.z, q.z);
+    const float dx2 = __fmul_rn(dx, dx);
+    const float dy2 = __fmul_rn(dy, dy);
+    const float dz2 = __fmul_rn(dz, dz);
+    const float d2 = __fadd_rn(__fadd_rn(dx2, dy2), dz2);
+    const float radius_sq = __fmul_rn(params.radius, params.radius);
     if (d2 <= radius_sq) {
         optixReportIntersection(params.radius, 0u);
     }
@@ -5576,11 +6421,14 @@ extern "C" __global__ void __intersection__frn3d_grouped_union_isect() {
     }
     const GpuPoint3D q = params.query_points[qidx];
     const GpuPoint3D t = params.search_points[prim];
-    const float dx = t.x - q.x;
-    const float dy = t.y - q.y;
-    const float dz = t.z - q.z;
-    const float d2 = dx * dx + dy * dy + dz * dz;
-    const float radius_sq = params.radius * params.radius;
+    const float dx = __fsub_rn(t.x, q.x);
+    const float dy = __fsub_rn(t.y, q.y);
+    const float dz = __fsub_rn(t.z, q.z);
+    const float dx2 = __fmul_rn(dx, dx);
+    const float dy2 = __fmul_rn(dy, dy);
+    const float dz2 = __fmul_rn(dz, dz);
+    const float d2 = __fadd_rn(__fadd_rn(dx2, dy2), dz2);
+    const float radius_sq = __fmul_rn(params.radius, params.radius);
     if (d2 <= radius_sq) {
         grouped_union_telemetry_add(4u, 1ull);
         if (parent_union_candidate && params.same_root_culling != 0u) {
@@ -5864,6 +6712,7 @@ extern "C" __global__ void fixed_radius_neighbors_3d_grid_exact_count(
         double inv_cell_size,
         double radius,
         uint32_t k_max,
+        uint32_t radius_boundary_mode,
         uint32_t* counts_out)
 {
     const uint32_t qidx = blockIdx.x * blockDim.x + threadIdx.x;
@@ -5897,7 +6746,10 @@ extern "C" __global__ void fixed_radius_neighbors_3d_grid_exact_count(
                     const double sy = t.y - q.y;
                     const double sz = t.z - q.z;
                     const double d2 = sx * sx + sy * sy + sz * sz;
-                    if (d2 <= radius_sq) {
+                    const bool in_radius = radius_boundary_mode == 0u
+                        ? d2 <= radius_sq
+                        : d2 < radius_sq;
+                    if (in_radius) {
                         count += 1u;
                     }
                 }
@@ -5921,6 +6773,7 @@ extern "C" __global__ void fixed_radius_neighbors_3d_grid_exact_summary(
         double inv_cell_size,
         double radius,
         uint32_t k_max,
+        uint32_t radius_boundary_mode,
         FrnSummary* summaries_out)
 {
     const uint32_t qidx = blockIdx.x * blockDim.x + threadIdx.x;
@@ -5957,7 +6810,10 @@ extern "C" __global__ void fixed_radius_neighbors_3d_grid_exact_summary(
                     const double sy = t.y - q.y;
                     const double sz = t.z - q.z;
                     const double d2 = sx * sx + sy * sy + sz * sz;
-                    if (d2 > radius_sq) continue;
+                    const bool outside_radius = radius_boundary_mode == 0u
+                        ? d2 > radius_sq
+                        : d2 >= radius_sq;
+                    if (outside_radius) continue;
                     const double distance = sqrt(d2);
                     if (count == 0u || distance < min_distance) {
                         min_distance = distance;
@@ -5994,6 +6850,7 @@ extern "C" __global__ void fixed_radius_neighbors_3d_grid_exact_rows(
         double inv_cell_size,
         double radius,
         uint32_t k_max,
+        uint32_t radius_boundary_mode,
         FrnExactRecord* rows_out)
 {
     const uint32_t qidx = blockIdx.x * blockDim.x + threadIdx.x;
@@ -6029,7 +6886,10 @@ extern "C" __global__ void fixed_radius_neighbors_3d_grid_exact_rows(
                     const double sy = t.y - q.y;
                     const double sz = t.z - q.z;
                     const double d2 = sx * sx + sy * sy + sz * sz;
-                    if (d2 > radius_sq) continue;
+                    const bool outside_radius = radius_boundary_mode == 0u
+                        ? d2 > radius_sq
+                        : d2 >= radius_sq;
+                    if (outside_radius) continue;
                     const uint32_t out_index = row_begin + count;
                     if (out_index >= row_end) return;
                     FrnExactRecord row;
@@ -6208,8 +7068,11 @@ extern "C" __global__ void fixed_radius_neighbors_3d_grid_ranked_count(
         double min_y,
         double min_z,
         double inv_cell_size,
+        double minimum_distance,
         double radius,
         uint32_t k_max,
+        uint32_t minimum_boundary_mode,
+        uint32_t radius_boundary_mode,
         uint32_t* counts_out)
 {
     const uint32_t qidx = blockIdx.x * blockDim.x + threadIdx.x;
@@ -6222,6 +7085,7 @@ extern "C" __global__ void fixed_radius_neighbors_3d_grid_ranked_count(
     const int cx = floor_to_int_exact((q.x - min_x) * inv_cell_size);
     const int cy = floor_to_int_exact((q.y - min_y) * inv_cell_size);
     const int cz = floor_to_int_exact((q.z - min_z) * inv_cell_size);
+    const double minimum_distance_sq = minimum_distance * minimum_distance;
     const double radius_sq = radius * radius;
 
     for (int dz = -1; dz <= 1; ++dz) {
@@ -6245,7 +7109,13 @@ extern "C" __global__ void fixed_radius_neighbors_3d_grid_ranked_count(
                     const double sy = t.y - q.y;
                     const double sz = t.z - q.z;
                     const double d2 = sx * sx + sy * sy + sz * sz;
-                    if (d2 > radius_sq) continue;
+                    const bool below_minimum = minimum_boundary_mode == 0u
+                        ? d2 < minimum_distance_sq
+                        : d2 <= minimum_distance_sq;
+                    const bool above_radius = radius_boundary_mode == 0u
+                        ? d2 > radius_sq
+                        : d2 >= radius_sq;
+                    if (below_minimum || above_radius) continue;
                     frn_ranked_insert(d2, t.id, k_max, best_distance_sq, best_neighbor_id, &best_count);
                 }
             }
@@ -6267,8 +7137,11 @@ extern "C" __global__ void fixed_radius_neighbors_3d_grid_ranked_rows(
         double min_y,
         double min_z,
         double inv_cell_size,
+        double minimum_distance,
         double radius,
         uint32_t k_max,
+        uint32_t minimum_boundary_mode,
+        uint32_t radius_boundary_mode,
         FrnRankedRecord* rows_out)
 {
     const uint32_t qidx = blockIdx.x * blockDim.x + threadIdx.x;
@@ -6281,6 +7154,7 @@ extern "C" __global__ void fixed_radius_neighbors_3d_grid_ranked_rows(
     const int cx = floor_to_int_exact((q.x - min_x) * inv_cell_size);
     const int cy = floor_to_int_exact((q.y - min_y) * inv_cell_size);
     const int cz = floor_to_int_exact((q.z - min_z) * inv_cell_size);
+    const double minimum_distance_sq = minimum_distance * minimum_distance;
     const double radius_sq = radius * radius;
 
     for (int dz = -1; dz <= 1; ++dz) {
@@ -6304,7 +7178,13 @@ extern "C" __global__ void fixed_radius_neighbors_3d_grid_ranked_rows(
                     const double sy = t.y - q.y;
                     const double sz = t.z - q.z;
                     const double d2 = sx * sx + sy * sy + sz * sz;
-                    if (d2 > radius_sq) continue;
+                    const bool below_minimum = minimum_boundary_mode == 0u
+                        ? d2 < minimum_distance_sq
+                        : d2 <= minimum_distance_sq;
+                    const bool above_radius = radius_boundary_mode == 0u
+                        ? d2 > radius_sq
+                        : d2 >= radius_sq;
+                    if (below_minimum || above_radius) continue;
                     frn_ranked_insert(d2, t.id, k_max, best_distance_sq, best_neighbor_id, &best_count);
                 }
             }
@@ -6312,6 +7192,88 @@ extern "C" __global__ void fixed_radius_neighbors_3d_grid_ranked_rows(
     }
 
     const uint32_t row_begin = row_offsets[qidx];
+    for (uint32_t rank = 0u; rank < best_count; ++rank) {
+        FrnRankedRecord row;
+        row.query_id = q.id;
+        row.neighbor_id = best_neighbor_id[rank];
+        row.distance = sqrt(best_distance_sq[rank]);
+        row.neighbor_rank = rank + 1u;
+        rows_out[row_begin + rank] = row;
+    }
+}
+
+extern "C" __global__ void fixed_radius_neighbors_3d_grid_ranked_window_rows_fixed(
+        const ExactPoint3D* query_points,
+        uint32_t query_count,
+        const ExactPoint3D* sorted_search_points,
+        const uint32_t* cell_offsets,
+        uint32_t grid_x,
+        uint32_t grid_y,
+        uint32_t grid_z,
+        double min_x,
+        double min_y,
+        double min_z,
+        double inv_cell_size,
+        double minimum_distance,
+        double radius,
+        uint32_t k_max,
+        uint32_t minimum_boundary_mode,
+        uint32_t radius_boundary_mode,
+        uint32_t* counts_out,
+        FrnRankedRecord* rows_out)
+{
+    const uint32_t qidx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (qidx >= query_count) return;
+
+    double best_distance_sq[64];
+    uint32_t best_neighbor_id[64];
+    uint32_t best_count = 0u;
+    const ExactPoint3D q = query_points[qidx];
+    const int cx = floor_to_int_exact((q.x - min_x) * inv_cell_size);
+    const int cy = floor_to_int_exact((q.y - min_y) * inv_cell_size);
+    const int cz = floor_to_int_exact((q.z - min_z) * inv_cell_size);
+    const double minimum_distance_sq = minimum_distance * minimum_distance;
+    const double radius_sq = radius * radius;
+
+    for (int dz = -1; dz <= 1; ++dz) {
+        const int gz_i = cz + dz;
+        if (gz_i < 0 || gz_i >= static_cast<int>(grid_z)) continue;
+        const uint32_t gz_u = static_cast<uint32_t>(gz_i);
+        for (int dy = -1; dy <= 1; ++dy) {
+            const int gy_i = cy + dy;
+            if (gy_i < 0 || gy_i >= static_cast<int>(grid_y)) continue;
+            const uint32_t gy_u = static_cast<uint32_t>(gy_i);
+            for (int dx_cell = -1; dx_cell <= 1; ++dx_cell) {
+                const int gx_i = cx + dx_cell;
+                if (gx_i < 0 || gx_i >= static_cast<int>(grid_x)) continue;
+                const uint32_t gx_u = static_cast<uint32_t>(gx_i);
+                const uint32_t cell = (gz_u * grid_y + gy_u) * grid_x + gx_u;
+                const uint32_t begin = cell_offsets[cell];
+                const uint32_t end = cell_offsets[cell + 1u];
+                for (uint32_t pos = begin; pos < end; ++pos) {
+                    const ExactPoint3D t = sorted_search_points[pos];
+                    const double sx = t.x - q.x;
+                    const double sy = t.y - q.y;
+                    const double sz = t.z - q.z;
+                    const double d2 = sx * sx + sy * sy + sz * sz;
+                    const bool below_minimum = minimum_boundary_mode == 0u
+                        ? d2 < minimum_distance_sq
+                        : d2 <= minimum_distance_sq;
+                    const bool above_radius = radius_boundary_mode == 0u
+                        ? d2 > radius_sq
+                        : d2 >= radius_sq;
+                    if (below_minimum || above_radius) continue;
+                    frn_ranked_insert(
+                        d2, t.id, k_max,
+                        best_distance_sq, best_neighbor_id, &best_count);
+                }
+            }
+        }
+    }
+
+    counts_out[qidx] = best_count;
+    const unsigned long long row_begin =
+        static_cast<unsigned long long>(qidx) * static_cast<unsigned long long>(k_max);
     for (uint32_t rank = 0u; rank < best_count; ++rank) {
         FrnRankedRecord row;
         row.query_id = q.id;
@@ -8230,9 +9192,11 @@ static RayAnyHitPipeline    g_frn_count_rt;
 static RayAnyHitPipeline    g_frn_count_host_rt;
 static RayAnyHitPipeline    g_frn_nearest_rt;
 static RayAnyHitPipeline    g_frn3d_rt;
+static RayAnyHitPipeline    g_metric_knn3d_rt;
 static RayAnyHitPipeline    g_frn3d_count_threshold_rt;
 static RayAnyHitPipeline    g_frn3d_adjacency_rt;
 static RayAnyHitPipeline    g_frn3d_grouped_union_rt;
+static RayAnyHitPipeline    g_aggregate_hierarchy_rt;
 static RayAnyHitPipeline    g_point_group_threshold_rt;
 static RayAnyHitPipeline    g_point_group_nearest_rt;
 static KnnCuFunction       g_point_group_nearest_reduce;
@@ -8252,6 +9216,7 @@ static FrnCuFunction      g_frn3d_grid_exact_summary;
 static FrnCuFunction      g_frn3d_grid_exact_rows;
 static FrnCuFunction      g_frn3d_grid_ranked_count;
 static FrnCuFunction      g_frn3d_grid_ranked_rows;
+static FrnCuFunction      g_frn3d_grid_ranked_window_rows_fixed;
 static FrnCuFunction      g_frn3d_grid_ranked_summary;
 static FrnCuFunction      g_frn3d_grid_ranked_summary_f32;
 static FrnCuFunction      g_frn3d_grid_ranked_summary_aggregate;

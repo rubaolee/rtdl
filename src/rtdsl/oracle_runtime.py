@@ -2083,10 +2083,32 @@ def _load_oracle_library():
     return library
 
 
+def _runtime_build_directory(repo_root: Path) -> Path:
+    """Choose an external controlled build root, or retain the legacy default."""
+
+    configured = os.environ.get("RTDL_RUNTIME_BUILD_ROOT")
+    if configured is None:
+        build_dir = repo_root / "build"
+        build_dir.mkdir(exist_ok=True)
+        return build_dir
+    candidate = Path(configured)
+    if not candidate.is_absolute():
+        raise RuntimeError("RTDL_RUNTIME_BUILD_ROOT must be an absolute path")
+    if candidate.is_symlink():
+        raise RuntimeError("RTDL_RUNTIME_BUILD_ROOT must not be a symlink")
+    build_dir = candidate.resolve(strict=False)
+    source_root = repo_root.resolve()
+    if build_dir == source_root or source_root in build_dir.parents:
+        raise RuntimeError("RTDL_RUNTIME_BUILD_ROOT must be outside the source tree")
+    build_dir.mkdir(parents=True, exist_ok=True)
+    if not build_dir.is_dir() or build_dir.is_symlink():
+        raise RuntimeError("RTDL_RUNTIME_BUILD_ROOT is unsafe")
+    return build_dir
+
+
 def _ensure_oracle_library() -> Path:
     repo_root = Path(__file__).resolve().parents[2]
-    build_dir = repo_root / "build"
-    build_dir.mkdir(exist_ok=True)
+    build_dir = _runtime_build_directory(repo_root)
     source_path = repo_root / "src" / "native" / "rtdl_oracle.cpp"
     source_paths = (source_path, *sorted((repo_root / "src" / "native" / "oracle").glob("*")))
     system = platform.system()
