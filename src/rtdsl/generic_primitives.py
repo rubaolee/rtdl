@@ -1,9 +1,16 @@
 from __future__ import annotations
 
+import hashlib
+import hmac
+import json
+import operator
+import secrets
 import time
+from collections.abc import Iterable, Mapping
 from typing import Any
 
 from . import api as rt
+from .action_value_validation import VerifiedGroupedI64HostColumns
 from .layout_types import Ray2DLayout
 from .layout_types import Ray3DLayout
 from .layout_types import Rays
@@ -29,6 +36,7 @@ from .v2_8_typed_result_stream import typed_result_status_columns
 
 
 ACTIVE_V1_5_GENERIC_PRIMITIVE_BACKENDS = ("cpu", "embree", "optix")
+_GENERIC_PREPARED_GROUPED_I64_OWNER_SECRET = secrets.token_bytes(32)
 FROZEN_BEFORE_V2_1_GENERIC_BACKENDS = ("vulkan", "hiprt", "apple_rt")
 GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_PRIMITIVE = "RAY_TRIANGLE_HIT_STREAM_3D"
 GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_ROW_SCHEMA = ("ray_id", "primitive_id")
@@ -44,7 +52,7 @@ GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_CONTRACT = {
     "native_engine_app_semantics": False,
 }
 V2_8_RAY_TRIANGLE_GROUPED_I64_TYPED_PRODUCER_VERSION = (
-    "rtdl.v2_8.ray_triangle_grouped_i64_typed_producer.v1"
+    "rtdl.v2_8.ray_triangle_grouped_i64_typed_producer.v2"
 )
 V2_8_RAY_TRIANGLE_GROUPED_I64_TYPED_PRODUCER_PRIMITIVE = "ray_triangle_grouped_i64_reduction_3d"
 V2_8_RAY_TRIANGLE_HIT_STREAM_TYPED_PRODUCER_VERSION = (
@@ -57,6 +65,33 @@ V2_8_RAY_TRIANGLE_GROUPED_I64_REDUCTION_COLUMNS = {
     "min": ("group_id", "min"),
     "max": ("group_id", "max"),
     "sum_count": ("group_id", "sum", "count"),
+}
+GENERIC_PARTITIONED_RAY_TRIANGLE_GROUPED_I64_REDUCTION_3D_CONTRACT = {
+    "contract": "GENERIC_PARTITIONED_RAY_TRIANGLE_GROUPED_I64_REDUCTION_3D_V2",
+    "partition_schema": (
+        "primitive_id_start",
+        "triangles",
+        "primitive_group_ids",
+        "primitive_values",
+    ),
+    "partition_rule": (
+        "contiguous_disjoint_primitive_ranges_starting_at_zero_and_ending_at_"
+        "expected_primitive_count"
+    ),
+    "expected_primitive_count_required": True,
+    "deduplicate_primitives": True,
+    "supported_reductions": ("count", "sum", "min", "max", "sum_count"),
+    "semantics": (
+        "Execute generic ray/triangle primitive grouped-i64 reduction over one "
+        "bounded primitive partition at a time and merge sparse group rows exactly."
+    ),
+    "app_semantics": "none",
+    "output_residency": "host_materialized_merged_group_rows",
+    "i64_value_domain": "signed_int64",
+    "partition_sum_overflow_policy": "fail_closed_conservative_signed_bounds",
+    "merged_i64_overflow_policy": "fail_closed_signed_int64",
+    "partition_ledger_schema": "rtdl.generic.partition_ledger.v2",
+    "partition_checksum_schema": "fnv1a64_standard_offset_basis.v2",
 }
 
 
@@ -1011,6 +1046,170 @@ def _infer_ray_id_group_count(rays: tuple[Ray3D, ...]) -> int:
     return max_id + 1
 
 
+_SIGNED_I64_MIN = -(1 << 63)
+_SIGNED_I64_MAX = (1 << 63) - 1
+
+
+def _strict_index(value: Any, *, field: str) -> int:
+    """Return an integer without accepting lossy float/string coercions."""
+
+    try:
+        return int(operator.index(value))
+    except TypeError as exc:
+        raise TypeError(f"{field} entries must be lossless integers") from exc
+
+
+def _normalize_integral_vector(
+    values: Any,
+    *,
+    count: int,
+    field: str,
+    minimum: int,
+    maximum: int,
+) -> Any:
+    if len(values) != count:
+        raise ValueError(f"{field} length must match triangles length")
+
+    dtype = getattr(values, "dtype", None)
+    dtype_kind = getattr(dtype, "kind", None)
+    ndim = getattr(values, "ndim", None)
+    if dtype is not None:
+        if ndim is not None and int(ndim) != 1:
+            raise ValueError(f"{field} must be one-dimensional")
+        if dtype_kind not in {"i", "u"}:
+            raise TypeError(f"{field} entries must be lossless integers")
+        if count:
+            actual_min = _strict_index(values.min(), field=field)
+            actual_max = _strict_index(values.max(), field=field)
+            if actual_min < minimum or actual_max > maximum:
+                raise OverflowError(
+                    f"{field} entries must fit [{minimum}, {maximum}]"
+                )
+        return values
+
+    normalized = tuple(_strict_index(value, field=field) for value in values)
+    if normalized and (min(normalized) < minimum or max(normalized) > maximum):
+        raise OverflowError(f"{field} entries must fit [{minimum}, {maximum}]")
+    return normalized
+
+
+def _validate_grouped_i64_sum_bounds(
+    group_ids: Any,
+    values: Any,
+    *,
+    count: int,
+    group_count: int,
+) -> None:
+    """Conservatively prove that every possible deduplicated group sum fits i64."""
+
+    if count == 0:
+        return
+
+    group_dtype = getattr(group_ids, "dtype", None)
+    value_dtype = getattr(values, "dtype", None)
+    if group_dtype is not None and value_dtype is not None:
+        import numpy as np
+
+        normalized_groups = np.asarray(group_ids, dtype=np.int64)
+        normalized_values = np.asarray(values, dtype=np.int64)
+        counts = np.bincount(normalized_groups, minlength=group_count)
+        group_min = np.full(group_count, _SIGNED_I64_MAX, dtype=np.int64)
+        group_max = np.full(group_count, _SIGNED_I64_MIN, dtype=np.int64)
+        np.minimum.at(group_min, normalized_groups, normalized_values)
+        np.maximum.at(group_max, normalized_groups, normalized_values)
+        for group_id in np.flatnonzero(counts):
+            item_count = int(counts[group_id])
+            minimum = int(group_min[group_id])
+            maximum = int(group_max[group_id])
+            if min(0, minimum) * item_count < _SIGNED_I64_MIN:
+                raise OverflowError(
+                    "grouped-i64 sum cannot be proven safe within signed int64"
+                )
+            if max(0, maximum) * item_count > _SIGNED_I64_MAX:
+                raise OverflowError(
+                    "grouped-i64 sum cannot be proven safe within signed int64"
+                )
+        return
+
+    group_bounds: dict[int, list[int]] = {}
+    for index in range(count):
+        group_id = _strict_index(group_ids[index], field="primitive_group_ids")
+        value = _strict_index(values[index], field="primitive_values")
+        state = group_bounds.setdefault(group_id, [0, value, value])
+        state[0] += 1
+        state[1] = min(state[1], value)
+        state[2] = max(state[2], value)
+    for item_count, minimum, maximum in group_bounds.values():
+        if min(0, minimum) * item_count < _SIGNED_I64_MIN:
+            raise OverflowError(
+                "grouped-i64 sum cannot be proven safe within signed int64"
+            )
+        if max(0, maximum) * item_count > _SIGNED_I64_MAX:
+            raise OverflowError(
+                "grouped-i64 sum cannot be proven safe within signed int64"
+            )
+
+
+def _normalize_grouped_i64_inputs(
+    primitive_group_ids: Any,
+    primitive_values: Any | None,
+    *,
+    count: int,
+    reduction: str,
+    group_count: int | None = None,
+) -> tuple[Any, Any, int]:
+    normalized_group_ids = _normalize_integral_vector(
+        primitive_group_ids,
+        count=count,
+        field="primitive_group_ids",
+        minimum=0,
+        maximum=(1 << 63) - 1,
+    )
+    group_maximum_method = getattr(normalized_group_ids, "max", None)
+    if count and callable(group_maximum_method):
+        inferred_group_count = _strict_index(
+            group_maximum_method(),
+            field="primitive_group_ids",
+        ) + 1
+    else:
+        inferred_group_count = (
+            max(
+                (
+                    _strict_index(value, field="primitive_group_ids")
+                    for value in normalized_group_ids
+                ),
+                default=-1,
+            )
+            + 1
+        )
+    resolved_group_count = inferred_group_count if group_count is None else _strict_index(
+        group_count,
+        field="group_count",
+    )
+    if resolved_group_count < 0:
+        raise ValueError("group_count must be non-negative")
+    if inferred_group_count > resolved_group_count:
+        raise ValueError("primitive_group_ids entries must be within [0, group_count)")
+
+    if primitive_values is None:
+        primitive_values = tuple(1 for _ in range(count))
+    normalized_values = _normalize_integral_vector(
+        primitive_values,
+        count=count,
+        field="primitive_values",
+        minimum=_SIGNED_I64_MIN,
+        maximum=_SIGNED_I64_MAX,
+    )
+    if reduction in {"sum", "sum_count"}:
+        _validate_grouped_i64_sum_bounds(
+            normalized_group_ids,
+            normalized_values,
+            count=count,
+            group_count=resolved_group_count,
+        )
+    return normalized_group_ids, normalized_values, resolved_group_count
+
+
 def make_v2_8_ray_triangle_grouped_i64_reduction_typed_stream_contract(
     row_count: int,
     *,
@@ -1032,7 +1231,7 @@ def make_v2_8_ray_triangle_grouped_i64_reduction_typed_stream_contract(
     columns = []
     for name in V2_8_RAY_TRIANGLE_GROUPED_I64_REDUCTION_COLUMNS[reduction]:
         role = "group_key" if name == "group_id" else "payload"
-        dtype = "int64" if name == "group_id" else "uint64"
+        dtype = "uint64" if name in {"group_id", "count"} else "int64"
         columns.append(
             typed_result_column(
                 name,
@@ -1197,12 +1396,16 @@ def run_generic_ray_triangle_primitive_grouped_i64_reduction_3d(
         packed_triangles_type = _PackedTriangles
     triangle_count = int(triangles.count) if packed_triangles_type is not None and isinstance(triangles, packed_triangles_type) else len(triangles)
     ray_count = int(rays.count) if packed_rays_type is not None and isinstance(rays, packed_rays_type) else len(rays)
-    if len(primitive_group_ids) != triangle_count:
-        raise ValueError("primitive_group_ids length must match triangles length")
-    if primitive_values is None:
-        primitive_values = tuple(1 for _ in range(triangle_count))
-    if len(primitive_values) != triangle_count:
-        raise ValueError("primitive_values length must match triangles length")
+    if normalized_backend in {"embree", "optix"} and not deduplicate_primitives:
+        raise ValueError(
+            "native grouped-i64 reductions require deduplicate_primitives=True"
+        )
+    primitive_group_ids, primitive_values, group_count = _normalize_grouped_i64_inputs(
+        primitive_group_ids,
+        primitive_values,
+        count=triangle_count,
+        reduction=reduction,
+    )
     if packed_rays_type is not None and isinstance(rays, packed_rays_type):
         if rays.dimension != 3:
             raise TypeError("generic grouped reduction 3D requires 3-D rays")
@@ -1213,12 +1416,9 @@ def run_generic_ray_triangle_primitive_grouped_i64_reduction_3d(
             raise TypeError("generic grouped reduction 3D requires 3-D triangles")
     elif any(not isinstance(triangle, Triangle3D) for triangle in triangles):
         raise TypeError("generic grouped reduction 3D requires Triangle3D inputs")
-    if any(int(group_id) < 0 for group_id in primitive_group_ids):
-        raise ValueError("primitive_group_ids must be non-negative")
     if normalized_backend == "embree":
         from .embree_runtime import ray_triangle_primitive_grouped_i64_reduction_3d_embree
 
-        group_count = max((int(group_id) for group_id in primitive_group_ids), default=-1) + 1
         native_result = ray_triangle_primitive_grouped_i64_reduction_3d_embree(
             rays,
             triangles,
@@ -1235,7 +1435,6 @@ def run_generic_ray_triangle_primitive_grouped_i64_reduction_3d(
     if normalized_backend == "optix":
         from .optix_runtime import prepare_optix_static_triangle_scene_3d
 
-        group_count = max((int(group_id) for group_id in primitive_group_ids), default=-1) + 1
         with prepare_optix_static_triangle_scene_3d(triangles) as prepared_scene:
             native_result = prepared_scene.ray_triangle_primitive_grouped_i64_reduction(
                 rays,
@@ -1276,13 +1475,13 @@ def run_generic_ray_triangle_primitive_grouped_i64_reduction_3d(
         if reduction == "count":
             row["count"] = len(values)
         elif reduction == "sum":
-            row["sum"] = int(sum(values))
+            row["sum"] = _checked_partitioned_i64(int(sum(values)), field="sum")
         elif reduction == "min":
             row["min"] = int(min(values))
         elif reduction == "max":
             row["max"] = int(max(values))
         else:
-            row["sum"] = int(sum(values))
+            row["sum"] = _checked_partitioned_i64(int(sum(values)), field="sum")
             row["count"] = len(values)
         rows.append(row)
 
@@ -1326,10 +1525,22 @@ class GenericPreparedRayTrianglePrimitiveGroupedI64Reduction3D:
         primitive_values=None,
         group_count: int | None = None,
         backend: str = "optix",
+        required_reduction: str | None = None,
+        verified_host_columns: VerifiedGroupedI64HostColumns | None = None,
     ) -> None:
         normalized_backend = _normalize_backend(backend)
         if normalized_backend not in {"embree", "optix"}:
             raise ValueError("prepared generic primitive grouped i64 reduction supports backend='embree' or 'optix'")
+        if required_reduction is not None and required_reduction not in {
+            "count",
+            "sum",
+            "min",
+            "max",
+            "sum_count",
+        }:
+            raise ValueError(
+                "required_reduction must be one of: count, sum, min, max, sum_count"
+            )
         from .embree_runtime import PackedTriangles as _PackedTriangles
 
         self.backend = normalized_backend
@@ -1337,58 +1548,319 @@ class GenericPreparedRayTrianglePrimitiveGroupedI64Reduction3D:
         self._payload_cm = None
         self._prepared_scene = None
         self._prepared_payload = None
+        self._payload_close_committed = False
+        self._scene_close_committed = False
+        self._required_reduction = required_reduction
         triangle_count = int(triangles.count) if isinstance(triangles, _PackedTriangles) else len(triangles)
-        if len(primitive_group_ids) != triangle_count:
-            raise ValueError("primitive_group_ids length must match triangles length")
-        if primitive_values is None:
-            primitive_values = tuple(1 for _ in range(triangle_count))
-        if len(primitive_values) != triangle_count:
-            raise ValueError("primitive_values length must match triangles length")
-        if group_count is None:
-            inferred_group_count = max((int(group_id) for group_id in primitive_group_ids), default=-1) + 1
-            group_count = inferred_group_count
-        if int(group_count) < 0:
-            raise ValueError("group_count must be non-negative")
+        self._verified_host_columns_ref = verified_host_columns
+        if verified_host_columns is not None:
+            if type(verified_host_columns) is not VerifiedGroupedI64HostColumns:
+                raise TypeError(
+                    "verified_host_columns must be an exact VerifiedGroupedI64HostColumns"
+                )
+            if primitive_group_ids is not None or primitive_values is not None:
+                raise ValueError(
+                    "verified_host_columns cannot be combined with raw grouped-i64 columns"
+                )
+            VerifiedGroupedI64HostColumns.validate(verified_host_columns)
+            if verified_host_columns.primitive_count != triangle_count:
+                raise ValueError(
+                    "verified grouped-i64 primitive count must match triangles length"
+                )
+            if group_count is not None and int(group_count) != verified_host_columns.group_count:
+                raise ValueError(
+                    "verified grouped-i64 group count differs from group_count"
+                )
+            primitive_group_ids, primitive_values = (
+                VerifiedGroupedI64HostColumns.validated_columns(
+                    verified_host_columns
+                )
+            )
+            resolved_group_count = verified_host_columns.group_count
+        else:
+            if primitive_group_ids is None:
+                raise ValueError(
+                    "primitive_group_ids are required without verified_host_columns"
+                )
+            primitive_group_ids, primitive_values, resolved_group_count = _normalize_grouped_i64_inputs(
+                primitive_group_ids,
+                primitive_values,
+                count=triangle_count,
+                reduction="min",
+                group_count=group_count,
+            )
 
         self.triangle_count = triangle_count
-        self.group_count = int(group_count)
-        scene_prepare_start = time.perf_counter()
-        if normalized_backend == "optix":
-            from .optix_runtime import prepare_optix_primitive_grouped_i64_payload_3d
-            from .optix_runtime import prepare_optix_static_triangle_scene_3d
+        self.group_count = resolved_group_count
+        self._primitive_group_ids = primitive_group_ids
+        self._primitive_values = primitive_values
+        try:
+            scene_prepare_start = time.perf_counter()
+            if normalized_backend == "optix":
+                from .optix_runtime import prepare_optix_primitive_grouped_i64_payload_3d
+                from .optix_runtime import prepare_optix_static_triangle_scene_3d
 
-            self._scene_cm = prepare_optix_static_triangle_scene_3d(triangles)
-        else:
-            from .embree_runtime import prepare_embree_static_triangle_scene_3d
+                self._scene_cm = prepare_optix_static_triangle_scene_3d(triangles)
+            else:
+                from .embree_runtime import prepare_embree_static_triangle_scene_3d
 
-            self._scene_cm = prepare_embree_static_triangle_scene_3d(triangles)
-        self._prepared_scene = self._scene_cm.__enter__()
-        self.scene_prepare_sec = time.perf_counter() - scene_prepare_start
-        payload_prepare_start = time.perf_counter()
-        if normalized_backend == "optix":
-            self._payload_cm = prepare_optix_primitive_grouped_i64_payload_3d(
-                primitive_group_ids,
-                primitive_values,
-                primitive_count=triangle_count,
-                group_count=self.group_count,
+                self._scene_cm = prepare_embree_static_triangle_scene_3d(triangles)
+            self._prepared_scene = self._scene_cm.__enter__()
+            self.scene_prepare_sec = time.perf_counter() - scene_prepare_start
+            payload_prepare_start = time.perf_counter()
+            if normalized_backend == "optix":
+                native_group_ids = (
+                    None if verified_host_columns is not None else primitive_group_ids
+                )
+                native_values = (
+                    None if verified_host_columns is not None else primitive_values
+                )
+                self._payload_cm = prepare_optix_primitive_grouped_i64_payload_3d(
+                    native_group_ids,
+                    native_values,
+                    primitive_count=triangle_count,
+                    group_count=self.group_count,
+                    required_reduction=required_reduction,
+                    verified_host_columns=verified_host_columns,
+                )
+                self._prepared_payload = self._payload_cm.__enter__()
+                self._sum_domain_prevalidated = required_reduction in {
+                    "sum",
+                    "sum_count",
+                }
+            else:
+                if required_reduction in {"sum", "sum_count"}:
+                    _validate_grouped_i64_sum_bounds(
+                        primitive_group_ids,
+                        primitive_values,
+                        count=triangle_count,
+                        group_count=self.group_count,
+                    )
+                    self._sum_domain_prevalidated = True
+                else:
+                    self._sum_domain_prevalidated = False
+                self._prepared_payload = self._prepared_scene.prepare_primitive_grouped_i64_payload(
+                    primitive_group_ids,
+                    primitive_values,
+                    group_count=self.group_count,
+                )
+            self.payload_prepare_sec = time.perf_counter() - payload_prepare_start
+            self._scene_cm_ref = self._scene_cm
+            self._payload_cm_ref = self._payload_cm
+            self._prepared_scene_ref = self._prepared_scene
+            self._prepared_payload_ref = self._prepared_payload
+            self._prepared_resource_snapshot = self._current_prepared_resource_snapshot()
+            self._prepared_resource_seal = self._issue_prepared_resource_seal()
+            self._prepared_resource_identity_digest = hashlib.sha256(
+                self._prepared_resource_binding_payload()
+            ).hexdigest()
+        except Exception:
+            if normalized_backend == "optix":
+                from .optix_runtime import PreparedOptixPrimitiveGroupedI64Payload3D
+                from .optix_runtime import PreparedOptixStaticTriangleScene3D
+
+                if self._prepared_payload is not None:
+                    try:
+                        PreparedOptixPrimitiveGroupedI64Payload3D.close(
+                            self._prepared_payload
+                        )
+                    except Exception:
+                        pass
+                    else:
+                        self._payload_cm = None
+                        self._prepared_payload = None
+                if self._prepared_scene is not None:
+                    try:
+                        PreparedOptixStaticTriangleScene3D.close(
+                            self._prepared_scene
+                        )
+                    except Exception:
+                        pass
+                    else:
+                        self._scene_cm = None
+                        self._prepared_scene = None
+            else:
+                if self._payload_cm is not None:
+                    try:
+                        self._payload_cm.__exit__(None, None, None)
+                    except Exception:
+                        pass
+                    else:
+                        self._payload_cm = None
+                        self._prepared_payload = None
+                if self._scene_cm is not None:
+                    try:
+                        self._scene_cm.__exit__(None, None, None)
+                    except Exception:
+                        pass
+                    else:
+                        self._scene_cm = None
+                        self._prepared_scene = None
+            raise
+
+    @staticmethod
+    def _qualified_type_name(value: object) -> str:
+        return f"{type(value).__module__}.{type(value).__qualname__}"
+
+    def _current_prepared_resource_snapshot(self) -> dict[str, object]:
+        scene = self._prepared_scene
+        payload = self._prepared_payload
+        if scene is None or payload is None:
+            raise RuntimeError("prepared generic grouped-i64 resources are closed")
+        if self.backend == "optix":
+            from .optix_runtime import PreparedOptixPrimitiveGroupedI64Payload3D
+            from .optix_runtime import PreparedOptixStaticTriangleScene3D
+
+            if (
+                type(scene) is not PreparedOptixStaticTriangleScene3D
+                or type(payload) is not PreparedOptixPrimitiveGroupedI64Payload3D
+            ):
+                raise RuntimeError(
+                    "prepared OptiX grouped-i64 resources require exact native owner types"
+                )
+            scene_metadata = (
+                PreparedOptixStaticTriangleScene3D.compiler_native_resource_binding_metadata(
+                    scene
+                )
             )
-            self._prepared_payload = self._payload_cm.__enter__()
+            payload_metadata = (
+                PreparedOptixPrimitiveGroupedI64Payload3D.compiler_native_resource_binding_metadata(
+                    payload
+                )
+            )
+            if (
+                scene_metadata["native_context_identity_digest"]
+                != payload_metadata["native_context_identity_digest"]
+                or scene_metadata["native_context_binding_digest"]
+                != payload_metadata["native_context_binding_digest"]
+            ):
+                raise RuntimeError("prepared scene and payload native contexts differ")
         else:
-            self._prepared_payload = self._prepared_scene.prepare_primitive_grouped_i64_payload(
-                primitive_group_ids,
-                primitive_values,
-                group_count=self.group_count,
+            scene_metadata = {
+                "type": self._qualified_type_name(scene),
+                "object_id": id(scene),
+            }
+            payload_metadata = {
+                "type": self._qualified_type_name(payload),
+                "object_id": id(payload),
+            }
+        return {
+            "backend": self.backend,
+            "triangle_count": self.triangle_count,
+            "group_count": self.group_count,
+            "required_reduction": self._required_reduction,
+            "sum_domain_prevalidated": self._sum_domain_prevalidated,
+            "verified_host_columns_object_id": (
+                id(self._verified_host_columns_ref)
+                if self._verified_host_columns_ref is not None
+                else None
+            ),
+            "verified_host_columns_identity_digest": (
+                self._verified_host_columns_ref.identity_digest
+                if self._verified_host_columns_ref is not None
+                else "none"
+            ),
+            "scene_object_id": id(scene),
+            "scene_type": self._qualified_type_name(scene),
+            "payload_object_id": id(payload),
+            "payload_type": self._qualified_type_name(payload),
+            "scene_context_manager_object_id": id(self._scene_cm),
+            "payload_context_manager_object_id": id(self._payload_cm),
+            "scene_native_binding": scene_metadata,
+            "payload_native_binding": payload_metadata,
+        }
+
+    def _prepared_resource_binding_payload(self) -> bytes:
+        return json.dumps(
+            self._prepared_resource_snapshot,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+
+    def _issue_prepared_resource_seal(self) -> str:
+        return hmac.new(
+            _GENERIC_PREPARED_GROUPED_I64_OWNER_SECRET,
+            self._prepared_resource_binding_payload(),
+            hashlib.sha256,
+        ).hexdigest()
+
+    def _validate_prepared_resources(self) -> None:
+        if (
+            self._prepared_scene is not self._prepared_scene_ref
+            or self._prepared_payload is not self._prepared_payload_ref
+            or self._scene_cm is not self._scene_cm_ref
+            or self._payload_cm is not self._payload_cm_ref
+            or self._current_prepared_resource_snapshot()
+            != self._prepared_resource_snapshot
+            or not isinstance(self._prepared_resource_seal, str)
+            or not hmac.compare_digest(
+                self._prepared_resource_seal,
+                self._issue_prepared_resource_seal(),
             )
-        self.payload_prepare_sec = time.perf_counter() - payload_prepare_start
+            or not hmac.compare_digest(
+                self._prepared_resource_identity_digest,
+                hashlib.sha256(self._prepared_resource_binding_payload()).hexdigest(),
+            )
+        ):
+            raise RuntimeError("prepared generic grouped-i64 resource binding changed")
+
+    @property
+    def closed(self) -> bool:
+        return self._prepared_scene is None and self._prepared_payload is None
+
+    @property
+    def compiler_backend_owner_identity_digest(self) -> str:
+        self._validate_prepared_resources()
+        return self._prepared_resource_identity_digest
+
+    def compiler_backend_owner_metadata(self) -> dict[str, object]:
+        self._validate_prepared_resources()
+        return {
+            "contract": "rtdl.generic_prepared_grouped_i64_backend_owner.v1",
+            "backend": self.backend,
+            "triangle_count": self.triangle_count,
+            "group_count": self.group_count,
+            "required_reduction": self._required_reduction,
+            "sum_domain_prevalidated": self._sum_domain_prevalidated,
+            "verified_host_columns_used": self._verified_host_columns_ref is not None,
+            "verified_host_columns_identity_digest": (
+                self._verified_host_columns_ref.identity_digest
+                if self._verified_host_columns_ref is not None
+                else "none"
+            ),
+            "prepared_resource_identity_digest": self._prepared_resource_identity_digest,
+            "scene_native_binding": dict(
+                self._prepared_resource_snapshot["scene_native_binding"]
+            ),
+            "payload_native_binding": dict(
+                self._prepared_resource_snapshot["payload_native_binding"]
+            ),
+        }
 
     def run(self, rays, *, reduction: str) -> dict[str, Any]:
-        if self._prepared_scene is None or self._prepared_payload is None:
-            raise RuntimeError("prepared generic primitive grouped i64 reduction scene is closed")
-        result = self._prepared_scene.ray_triangle_prepared_primitive_grouped_i64_reduction(
-            rays,
-            self._prepared_payload,
-            reduction=reduction,
-        )
+        self._validate_prepared_resources()
+        if reduction in {"sum", "sum_count"} and not self._sum_domain_prevalidated:
+            _validate_grouped_i64_sum_bounds(
+                self._primitive_group_ids,
+                self._primitive_values,
+                count=self.triangle_count,
+                group_count=self.group_count,
+            )
+        if self.backend == "optix":
+            from .optix_runtime import PreparedOptixStaticTriangleScene3D
+
+            result = PreparedOptixStaticTriangleScene3D.ray_triangle_prepared_primitive_grouped_i64_reduction(
+                self._prepared_scene,
+                rays,
+                self._prepared_payload,
+                reduction=reduction,
+            )
+        else:
+            result = self._prepared_scene.ray_triangle_prepared_primitive_grouped_i64_reduction(
+                rays,
+                self._prepared_payload,
+                reduction=reduction,
+            )
         timings = dict(result.get("phase_timing_seconds", {}))
         timings["generic_scene_prepare"] = float(self.scene_prepare_sec)
         timings["generic_payload_prepare"] = float(self.payload_prepare_sec)
@@ -1398,6 +1870,9 @@ class GenericPreparedRayTrianglePrimitiveGroupedI64Reduction3D:
             "primitive": "RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
             "prepared_generic_payload_used": True,
             "backend": self.backend,
+            "prepared_backend_owner_metadata": (
+                self.compiler_backend_owner_metadata()
+            ),
             "phase_timing_seconds": timings,
             },
             reduction=reduction,
@@ -1405,27 +1880,55 @@ class GenericPreparedRayTrianglePrimitiveGroupedI64Reduction3D:
         )
 
     def prepare_ray_batch(self, rays):
-        if self._prepared_scene is None:
-            raise RuntimeError("prepared generic primitive grouped i64 reduction scene is closed")
+        self._validate_prepared_resources()
+        if self.backend == "optix":
+            from .optix_runtime import PreparedOptixStaticTriangleScene3D
+
+            return PreparedOptixStaticTriangleScene3D.prepare_ray_batch(
+                self._prepared_scene,
+                rays,
+            )
         return self._prepared_scene.prepare_ray_batch(rays)
 
     def prepare_ray_batch_device_columns(self, ray_columns: dict):
-        if self._prepared_scene is None:
-            raise RuntimeError("prepared generic primitive grouped i64 reduction scene is closed")
+        self._validate_prepared_resources()
         if not hasattr(self._prepared_scene, "prepare_ray_batch_device_columns"):
             raise RuntimeError("prepared ray batch device-column creation is not available for this backend")
+        if self.backend == "optix":
+            from .optix_runtime import PreparedOptixStaticTriangleScene3D
+
+            return PreparedOptixStaticTriangleScene3D.prepare_ray_batch_device_columns(
+                self._prepared_scene,
+                ray_columns,
+            )
         return self._prepared_scene.prepare_ray_batch_device_columns(ray_columns)
 
     def run_prepared_rays(self, prepared_rays, *, reduction: str) -> dict[str, Any]:
-        if self._prepared_scene is None or self._prepared_payload is None:
-            raise RuntimeError("prepared generic primitive grouped i64 reduction scene is closed")
+        self._validate_prepared_resources()
+        if reduction in {"sum", "sum_count"} and not self._sum_domain_prevalidated:
+            _validate_grouped_i64_sum_bounds(
+                self._primitive_group_ids,
+                self._primitive_values,
+                count=self.triangle_count,
+                group_count=self.group_count,
+            )
         if not hasattr(self._prepared_scene, "ray_batch_prepared_primitive_grouped_i64_reduction"):
             raise RuntimeError("prepared ray-batch grouped i64 reduction is not available for this backend")
-        result = self._prepared_scene.ray_batch_prepared_primitive_grouped_i64_reduction(
-            prepared_rays,
-            self._prepared_payload,
-            reduction=reduction,
-        )
+        if self.backend == "optix":
+            from .optix_runtime import PreparedOptixStaticTriangleScene3D
+
+            result = PreparedOptixStaticTriangleScene3D.ray_batch_prepared_primitive_grouped_i64_reduction(
+                self._prepared_scene,
+                prepared_rays,
+                self._prepared_payload,
+                reduction=reduction,
+            )
+        else:
+            result = self._prepared_scene.ray_batch_prepared_primitive_grouped_i64_reduction(
+                prepared_rays,
+                self._prepared_payload,
+                reduction=reduction,
+            )
         timings = dict(result.get("phase_timing_seconds", {}))
         timings["generic_scene_prepare"] = float(self.scene_prepare_sec)
         timings["generic_payload_prepare"] = float(self.payload_prepare_sec)
@@ -1436,6 +1939,9 @@ class GenericPreparedRayTrianglePrimitiveGroupedI64Reduction3D:
             "prepared_generic_payload_used": True,
             "prepared_generic_ray_batch_used": True,
             "backend": self.backend,
+            "prepared_backend_owner_metadata": (
+                self.compiler_backend_owner_metadata()
+            ),
             "phase_timing_seconds": timings,
             },
             reduction=reduction,
@@ -1443,6 +1949,41 @@ class GenericPreparedRayTrianglePrimitiveGroupedI64Reduction3D:
         )
 
     def close(self) -> None:
+        if self.closed:
+            return
+        if self.backend == "optix":
+            from .optix_runtime import PreparedOptixPrimitiveGroupedI64Payload3D
+            from .optix_runtime import PreparedOptixStaticTriangleScene3D
+
+            if not self._payload_close_committed and not self._scene_close_committed:
+                self._validate_prepared_resources()
+            if not self._payload_close_committed:
+                if self._prepared_payload is not self._prepared_payload_ref:
+                    raise RuntimeError(
+                        "prepared generic grouped-i64 payload binding changed before close"
+                    )
+                PreparedOptixPrimitiveGroupedI64Payload3D.close(
+                    self._prepared_payload_ref
+                )
+                self._payload_cm = None
+                self._prepared_payload = None
+                self._payload_close_committed = True
+            if not self._scene_close_committed:
+                if (
+                    self._prepared_scene is not self._prepared_scene_ref
+                    or self._scene_cm is not self._scene_cm_ref
+                ):
+                    raise RuntimeError(
+                        "prepared generic grouped-i64 scene binding changed before close"
+                    )
+                PreparedOptixStaticTriangleScene3D._validate_native_resource_binding(
+                    self._prepared_scene_ref
+                )
+                PreparedOptixStaticTriangleScene3D.close(self._prepared_scene_ref)
+                self._scene_cm = None
+                self._prepared_scene = None
+                self._scene_close_committed = True
+            return
         if self._payload_cm is not None:
             self._payload_cm.__exit__(None, None, None)
             self._payload_cm = None
@@ -1466,6 +2007,8 @@ def prepare_generic_ray_triangle_primitive_grouped_i64_reduction_3d(
     primitive_values=None,
     group_count: int | None = None,
     backend: str = "optix",
+    required_reduction: str | None = None,
+    verified_host_columns: VerifiedGroupedI64HostColumns | None = None,
 ) -> GenericPreparedRayTrianglePrimitiveGroupedI64Reduction3D:
     """Prepare a reusable generic 3-D ray/triangle grouped i64 reduction scene."""
     return GenericPreparedRayTrianglePrimitiveGroupedI64Reduction3D(
@@ -1474,6 +2017,359 @@ def prepare_generic_ray_triangle_primitive_grouped_i64_reduction_3d(
         primitive_values=primitive_values,
         group_count=group_count,
         backend=backend,
+        required_reduction=required_reduction,
+        verified_host_columns=verified_host_columns,
+    )
+
+
+def _partitioned_grouped_i64_row_accumulator(reduction: str) -> tuple[str, ...]:
+    return {
+        "count": ("count",),
+        "sum": ("sum",),
+        "min": ("min",),
+        "max": ("max",),
+        "sum_count": ("sum", "count"),
+    }[reduction]
+
+
+def _checked_partitioned_i64(value: int, *, field: str) -> int:
+    if field == "count":
+        if value < 0 or value > (1 << 64) - 1:
+            raise OverflowError(
+                "partitioned grouped-i64 merged count exceeds unsigned int64 range"
+            )
+        return value
+    if value < -(1 << 63) or value > (1 << 63) - 1:
+        raise OverflowError(f"partitioned grouped-i64 merged {field} exceeds signed int64 range")
+    return value
+
+
+def checked_partitioned_grouped_i64_add(
+    left: int,
+    right: int,
+    *,
+    field: str = "sum",
+) -> int:
+    """Merge two partition outputs with the generic reduction's exact bounds."""
+
+    if field not in {"sum", "count"}:
+        raise ValueError("checked partitioned addition supports field='sum' or field='count'")
+    left_value = _strict_index(left, field=f"partitioned_{field}_left")
+    right_value = _strict_index(right, field=f"partitioned_{field}_right")
+    return _checked_partitioned_i64(left_value + right_value, field=field)
+
+
+def _merge_partitioned_grouped_i64_rows(
+    merged: dict[int, dict[str, int]],
+    rows,
+    *,
+    reduction: str,
+    group_count: int,
+) -> None:
+    fields = _partitioned_grouped_i64_row_accumulator(reduction)
+    for source_row in rows:
+        group_id = int(source_row["group_id"])
+        if group_id < 0 or group_id >= group_count:
+            raise RuntimeError("partition result group_id is outside [0, group_count)")
+        target = merged.setdefault(group_id, {"group_id": group_id})
+        for field in fields:
+            value = int(source_row[field])
+            if field in {"sum", "count"}:
+                target[field] = checked_partitioned_grouped_i64_add(
+                    int(target.get(field, 0)),
+                    value,
+                    field=field,
+                )
+            elif field == "min":
+                target[field] = _checked_partitioned_i64(
+                    value if field not in target else min(int(target[field]), value),
+                    field=field,
+                )
+            else:
+                target[field] = _checked_partitioned_i64(
+                    value if field not in target else max(int(target[field]), value),
+                    field=field,
+                )
+
+
+def _partitioned_grouped_i64_rows_checksum(rows) -> str:
+    """Return a stable app-neutral checksum for one partition's sparse rows."""
+    state = 14695981039346656037
+    for row in rows:
+        for key in sorted(row):
+            token = f"{key}={int(row[key])};".encode("ascii")
+            for byte in token:
+                state ^= byte
+                state = (state * 1099511628211) & 0xFFFFFFFFFFFFFFFF
+    return f"{state:016x}"
+
+
+def run_partitioned_generic_ray_triangle_primitive_grouped_i64_reduction_3d(
+    rays,
+    primitive_partitions: Iterable[Mapping[str, Any]],
+    *,
+    group_count: int,
+    expected_primitive_count: int,
+    reduction: str = "sum",
+    backend: str = "cpu",
+) -> dict[str, Any]:
+    """Run exact grouped-i64 reduction while bounding live primitive-scene size.
+
+    Each partition must describe the next contiguous, disjoint primitive-id
+    range. The primitive ids are validation metadata; the reduction itself is
+    expressed only through triangles, group ids, and integer payload values.
+    For OptiX, the ray batch is uploaded once and reused across all partition
+    scenes. Sparse group rows are merged on the host after every partition.
+    """
+    normalized_backend = _normalize_backend(backend)
+    if normalized_backend not in {"cpu", "embree", "optix"}:
+        raise ValueError("partitioned grouped-i64 backend must be one of: cpu, embree, optix")
+    if reduction not in {"count", "sum", "min", "max", "sum_count"}:
+        raise ValueError("reduction must be one of: count, sum, min, max, sum_count")
+    execution_start = time.perf_counter()
+    resolved_group_count = _strict_index(group_count, field="group_count")
+    if resolved_group_count < 0:
+        raise ValueError("group_count must be non-negative")
+    resolved_expected_primitive_count = _strict_index(
+        expected_primitive_count,
+        field="expected_primitive_count",
+    )
+    if resolved_expected_primitive_count < 0:
+        raise ValueError("expected_primitive_count must be non-negative")
+
+    expected_primitive_start = 0
+    partition_count = 0
+    peak_partition_primitive_count = 0
+    hit_event_count = 0
+    deduplicated_primitive_hit_count = 0
+    deduplicated_primitive_hit_count_available = True
+    merged_rows: dict[int, dict[str, int]] = {}
+    phase_timings: dict[str, float] = {}
+    native_symbols: list[str] = []
+    prepared_ray_batch_cm = None
+    prepared_ray_batch = None
+    prepared_ray_batch_timing_counted = False
+    partition_ledger: list[dict[str, Any]] = []
+    partition_backend_call_wall = 0.0
+    host_merge_wall = 0.0
+
+    try:
+        for partition in primitive_partitions:
+            if not isinstance(partition, Mapping):
+                raise TypeError("each primitive partition must be a mapping")
+            required = {"primitive_id_start", "triangles", "primitive_group_ids"}
+            missing = sorted(required.difference(partition))
+            if missing:
+                raise ValueError(f"primitive partition is missing required fields: {', '.join(missing)}")
+
+            primitive_id_start = _strict_index(
+                partition["primitive_id_start"],
+                field="primitive_id_start",
+            )
+            if primitive_id_start != expected_primitive_start:
+                raise ValueError(
+                    "primitive partitions must be contiguous, disjoint, and start at zero; "
+                    f"expected primitive_id_start={expected_primitive_start}, got {primitive_id_start}"
+                )
+            triangles = partition["triangles"]
+            triangle_count_value = getattr(triangles, "count", None)
+            triangle_count = (
+                int(triangle_count_value)
+                if not callable(triangle_count_value) and triangle_count_value is not None
+                else len(triangles)
+            )
+            if triangle_count <= 0:
+                raise ValueError("primitive partitions must be non-empty")
+            primitive_id_stop = primitive_id_start + triangle_count
+            if primitive_id_stop > resolved_expected_primitive_count:
+                raise ValueError(
+                    "primitive partitions exceed expected_primitive_count; "
+                    f"partition stop={primitive_id_stop}, expected={resolved_expected_primitive_count}"
+                )
+            primitive_group_ids, primitive_values, _ = _normalize_grouped_i64_inputs(
+                partition["primitive_group_ids"],
+                partition.get("primitive_values"),
+                count=triangle_count,
+                reduction=reduction,
+                group_count=resolved_group_count,
+            )
+
+            partition_call_start = time.perf_counter()
+            if normalized_backend == "cpu":
+                result = run_generic_ray_triangle_primitive_grouped_i64_reduction_3d(
+                    rays,
+                    triangles,
+                    primitive_group_ids=primitive_group_ids,
+                    primitive_values=primitive_values,
+                    reduction=reduction,
+                    backend="cpu",
+                )
+            else:
+                with prepare_generic_ray_triangle_primitive_grouped_i64_reduction_3d(
+                    triangles,
+                    primitive_group_ids=primitive_group_ids,
+                    primitive_values=primitive_values,
+                    group_count=resolved_group_count,
+                    backend=normalized_backend,
+                ) as prepared_partition:
+                    if normalized_backend == "optix":
+                        if prepared_ray_batch is None:
+                            prepared_ray_batch_cm = prepared_partition.prepare_ray_batch(rays)
+                            prepared_ray_batch = prepared_ray_batch_cm.__enter__()
+                        result = prepared_partition.run_prepared_rays(
+                            prepared_ray_batch,
+                            reduction=reduction,
+                        )
+                    else:
+                        result = prepared_partition.run(rays, reduction=reduction)
+            partition_call_wall = time.perf_counter() - partition_call_start
+            partition_backend_call_wall += partition_call_wall
+
+            merge_start = time.perf_counter()
+            _merge_partitioned_grouped_i64_rows(
+                merged_rows,
+                result.get("rows", ()),
+                reduction=reduction,
+                group_count=resolved_group_count,
+            )
+            partition_merge_wall = time.perf_counter() - merge_start
+            host_merge_wall += partition_merge_wall
+            partition_rows = tuple(result.get("rows", ()))
+            partition_ledger.append(
+                {
+                    "partition_index": partition_count,
+                    "primitive_id_start": primitive_id_start,
+                    "primitive_id_stop": primitive_id_stop,
+                    "primitive_count": triangle_count,
+                    "backend": str(result.get("backend", normalized_backend)),
+                    "native_symbol": result.get("native_symbol"),
+                    "prepared_backend_owner_metadata": result.get(
+                        "prepared_backend_owner_metadata"
+                    ),
+                    "launch_completed": True,
+                    "result_row_count": len(partition_rows),
+                    "result_rows_checksum_fnv1a64": _partitioned_grouped_i64_rows_checksum(
+                        partition_rows
+                    ),
+                    "checksum_schema": "fnv1a64_standard_offset_basis.v2",
+                    "partition_call_wall_sec": partition_call_wall,
+                    "host_merge_wall_sec": partition_merge_wall,
+                    "hit_event_count_before_dedup": int(
+                        result.get("hit_event_count_before_dedup", 0)
+                    ),
+                    "deduplicated_primitive_hit_count": result.get(
+                        "deduplicated_primitive_hit_count"
+                    ),
+                    "phase_timing_seconds": {
+                        str(name): float(value)
+                        for name, value in dict(
+                            result.get("phase_timing_seconds", {})
+                        ).items()
+                        if isinstance(value, (int, float))
+                    },
+                }
+            )
+            hit_event_count += int(result.get("hit_event_count_before_dedup", 0))
+            if "deduplicated_primitive_hit_count" in result:
+                deduplicated_primitive_hit_count += int(result["deduplicated_primitive_hit_count"])
+            else:
+                deduplicated_primitive_hit_count_available = False
+            native_symbol = result.get("native_symbol")
+            if native_symbol and str(native_symbol) not in native_symbols:
+                native_symbols.append(str(native_symbol))
+            for name, value in dict(result.get("phase_timing_seconds", {})).items():
+                if not isinstance(value, (int, float)):
+                    continue
+                if name == "prepared_ray_batch_prepare":
+                    if prepared_ray_batch_timing_counted:
+                        continue
+                    prepared_ray_batch_timing_counted = True
+                phase_timings[str(name)] = float(phase_timings.get(str(name), 0.0)) + float(value)
+
+            partition_count += 1
+            peak_partition_primitive_count = max(peak_partition_primitive_count, triangle_count)
+            expected_primitive_start += triangle_count
+    finally:
+        if prepared_ray_batch_cm is not None:
+            prepared_ray_batch_cm.__exit__(None, None, None)
+
+    if expected_primitive_start != resolved_expected_primitive_count:
+        raise ValueError(
+            "primitive partition stream ended before expected_primitive_count; "
+            f"observed={expected_primitive_start}, expected={resolved_expected_primitive_count}"
+        )
+
+    rows = tuple(merged_rows[group_id] for group_id in sorted(merged_rows))
+    ray_count_value = getattr(rays, "count", None)
+    ray_count = (
+        int(ray_count_value)
+        if not callable(ray_count_value) and ray_count_value is not None
+        else len(rays)
+    )
+    partition_execution_wall = time.perf_counter() - execution_start
+    unattributed_orchestration_pipeline_wall = max(
+        0.0,
+        partition_execution_wall - partition_backend_call_wall - host_merge_wall,
+    )
+    phase_timings.update(
+        {
+            "partition_execution_wall": partition_execution_wall,
+            "partition_backend_call_wall": partition_backend_call_wall,
+            "host_merge_wall": host_merge_wall,
+            "unattributed_orchestration_pipeline_wall": unattributed_orchestration_pipeline_wall,
+        }
+    )
+    result = {
+        "primitive": "PARTITIONED_RAY_TRIANGLE_PRIMITIVE_GROUPED_I64_REDUCTION_3D",
+        "backend": normalized_backend,
+        "reduction": reduction,
+        "deduplicate_primitives": True,
+        "ray_count": ray_count,
+        "triangle_count": expected_primitive_start,
+        "expected_primitive_count": resolved_expected_primitive_count,
+        "group_count": resolved_group_count,
+        "partition_count": partition_count,
+        "peak_partition_primitive_count": peak_partition_primitive_count,
+        "hit_event_count_before_dedup": hit_event_count,
+        "deduplicated_primitive_hit_count": (
+            deduplicated_primitive_hit_count
+            if deduplicated_primitive_hit_count_available
+            else None
+        ),
+        "deduplicated_primitive_hit_count_available": deduplicated_primitive_hit_count_available,
+        "rows": rows,
+        "native_symbols": tuple(native_symbols),
+        "prepared_ray_batch_reused_across_partitions": bool(
+            normalized_backend == "optix" and partition_count > 1
+        ),
+        "partition_ledger": tuple(partition_ledger),
+        "partition_ledger_schema": "rtdl.generic.partition_ledger.v2",
+        "phase_timing_seconds": phase_timings,
+        "phase_timing_contract": {
+            "schema": "rtdl.generic.partitioned_grouped_i64.phase_timing.v2",
+            "top_level_additive_partition": (
+                "partition_backend_call_wall",
+                "host_merge_wall",
+                "unattributed_orchestration_pipeline_wall",
+            ),
+            "top_level_total": "partition_execution_wall",
+            "native_phase_entries_are_nested_within": "partition_backend_call_wall",
+            "native_phase_entries_are_not_additive_with_top_level": True,
+            "prepared_ray_batch_prepare_counted_once": True,
+        },
+        "partition_execution_contract": dict(
+            GENERIC_PARTITIONED_RAY_TRIANGLE_GROUPED_I64_REDUCTION_3D_CONTRACT
+        ),
+        "claim_boundary": (
+            "Generic bounded-live-scene execution with exact host merge of sparse grouped-i64 rows. "
+            "Partitions must be contiguous and disjoint. This does not prove device-resident merged "
+            "outputs, true zero-copy, or cross-implementation performance parity."
+        ),
+    }
+    return _with_v2_8_grouped_i64_typed_producer_metadata(
+        result,
+        reduction=reduction,
+        source_protocol=f"{normalized_backend}_partitioned_host_merged_group_rows",
     )
 
 

@@ -248,8 +248,23 @@ def build_rt_graph_triangle_summary_contract_cupy_binary(path: str | Path) -> RT
         if directed_node_count == 0 or column_indices.size == 0:
             empty = cp.empty(0, dtype=cp.int64)
             return empty, empty, cp.empty(0, dtype=cp.uint64), cp.array(0, dtype=cp.uint64)
+
+        def repeat_by_counts(values, counts):
+            """CuPy-version-neutral repeat for a device count vector."""
+
+            total = int(counts.sum().get())
+            if total == 0:
+                return cp.empty(0, dtype=values.dtype)
+            ends = cp.cumsum(counts, dtype=cp.int64)
+            owners = cp.searchsorted(
+                ends,
+                cp.arange(total, dtype=cp.int64),
+                side="right",
+            )
+            return values[owners]
+
         out_degree = row_offsets[1:] - row_offsets[:-1]
-        edge_src = cp.repeat(cp.arange(directed_node_count, dtype=cp.int64), out_degree)
+        edge_src = repeat_by_counts(cp.arange(directed_node_count, dtype=cp.int64), out_degree)
         edge_mid = column_indices
         counts = out_degree[edge_mid]
         nonempty = counts > 0
@@ -260,11 +275,11 @@ def build_rt_graph_triangle_summary_contract_cupy_binary(path: str | Path) -> RT
         edge_src = edge_src[nonempty]
         starts = row_offsets[edge_mid[nonempty]]
         total_two_hop = int(counts.sum().get())
-        repeated_starts = cp.repeat(starts, counts)
-        repeated_prefix = cp.repeat(cp.cumsum(counts) - counts, counts)
+        repeated_starts = repeat_by_counts(starts, counts)
+        repeated_prefix = repeat_by_counts(cp.cumsum(counts) - counts, counts)
         dst_index = repeated_starts + (cp.arange(total_two_hop, dtype=cp.int64) - repeated_prefix)
         two_hop_dst = column_indices[dst_index]
-        two_hop_src = cp.repeat(edge_src, counts)
+        two_hop_src = repeat_by_counts(edge_src, counts)
         two_hop_keys = two_hop_src * directed_node_count + two_hop_dst
         unique_keys, unique_counts = cp.unique(two_hop_keys, return_counts=True)
         positions = cp.searchsorted(directed_edge_keys, unique_keys)

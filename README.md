@@ -1,288 +1,182 @@
-# RTDL
+# RTDL V3
 
-RTDL is a Python-hosted ray-tracing DSL/runtime for non-graphical workloads:
-spatial search, visibility, nearest-neighbor screening, collision checks, and
-database-style summaries.
+**Verified semantic lowering for non-graphical ray-tracing workloads on NVIDIA OptiX.**
 
-The core idea is simple: write app-shaped Python code, express the RT-shaped
-work through a generic RTDL contract, and choose a backend such as the Python
-reference runner, Embree, or OptiX without rewriting the application. Simple
-teaching programs can use `@rt.kernel`; promoted performance paths usually
-start from primitive discovery or prepared front doors.
+RTDL 3.0 is the official V3 source release. It lets an application state a
+bounded spatial or relational computation without providing an arbitrary
+OptiX callback. The compiler resolves that semantic statement to a canonical,
+source-bound physical provider, validates its proof and resource obligations,
+and requires post-run evidence that the authorized OptiX traversal actually
+executed.
 
-RTDL is not a renderer or graphics engine. It uses ray-tracing-style
-acceleration structures and traversal for application kernels.
+```text
+application-owned algorithm
+        ↓
+typed semantic Action statement
+        ↓
+canonical compiler resolution
+        ↓
+verified OptiX physical provider
+        ↓
+exact output + behavioral traversal receipt
+```
 
-This documentation is written for the current v2.14.4 source-tree RTDL surface:
-Python+partner+RTDL over a generic, app-agnostic native engine, with prepared
-execution and a tested 10-app benchmark matrix. Use RTDL from the repository
-source tree either with `PYTHONPATH=src:.` or with the optional local editable
-checkout path below. Do not read any current doc as a distribution-package
-promise, automatic partner-selection promise, general device-residency/zero-copy
-product claim, or broad speedup claim. The short canonical version of those
-rules is [Current Claim Boundaries](docs/learn/current_claim_boundaries.md).
+V3 is intentionally not a SQL-style cost optimizer and does not claim to
+invent the fastest algorithm. The application owns algorithmic choices such as
+Triangle Counting RT-1A2 versus RT-2A1. V3 owns the correctness-critical step
+after that choice: finding, validating, materializing, and auditing the one
+registered physical implementation for the selected semantics.
 
-## Start Fast
+## Start here
 
-Run commands from the repository root. The no-install source-tree path is:
-
-Linux/pod native smoke prerequisites:
+Requirements for the Python source surface are Python 3.10+ and NumPy. From a
+fresh checkout:
 
 ```bash
-apt-get install -y libgeos-dev pkg-config libembree-dev
-python -m pip install numpy pillow imageio imageio-ffmpeg  # Dependency install only; this does not install RTDL
+git clone https://github.com/rubaolee/rtdl.git
+cd rtdl
+python3 -m pip install -e .
+python3 examples/current/v3_canonical_mapping.py
 ```
 
-Use a virtual environment if your Python distribution blocks system-wide
-`pip`. The portable `cpu_python_reference` examples need fewer native
-dependencies, but the current full runnable surface includes native CPU/Embree
-paths and visual demos.
+Expected result:
 
-Bash or zsh:
+```text
+status: RESOLVED
+statement: metric_knn.filter_refine_linf_3d.v1
+backend: nvidia.optix_traversal.v1
+provider: canonical_standalone/metric_knn_linf_filter_refine_3d/optix/prepared_metric_knn_3d_optix
+cost input used: False
+candidate executed: False
+behavioral receipt still required: True
+```
+
+This first example performs static resolution only and therefore runs without
+a GPU. Building and executing the NVIDIA path additionally requires a Linux
+host with an NVIDIA driver, CUDA toolkit, OptiX SDK, C++ toolchain, and GEOS:
 
 ```bash
-PYTHONPATH=src:. python scripts/rtdl_source_tree_doctor.py
-PYTHONPATH=src:. python examples/current/getting_started/rtdl_hello_world.py
-PYTHONPATH=src:. python examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py --backend cpu_python_reference
+export OPTIX_PREFIX=/path/to/NVIDIA-OptiX-SDK
+export CUDA_PREFIX=/usr/local/cuda
+make build-optix
 ```
 
-Optional local developer convenience (not a package installation):
+See [V3 release and installation](docs/v3/release.md) for the
+target-rematerialized validation path.
 
-```bash
-python -m pip install -e .
-python scripts/rtdl_source_tree_doctor.py
-python examples/current/getting_started/rtdl_hello_world.py
-```
+## The V3 contract
 
-That command only makes this checkout importable as `rtdsl` in your active
-environment. It is not a PyPI, wheel, or package-install support claim.
+The production compiler separates four identities that app-directed GPU code
+often conflates:
 
-Windows `cmd.exe`:
-
-```bat
-set PYTHONPATH=src;.
-python scripts\rtdl_source_tree_doctor.py
-python examples\current\getting_started\rtdl_hello_world.py
-python examples\current\research_benchmarks\hausdorff_xhd\rtdl_hausdorff_distance_app.py --backend cpu_python_reference
-```
-
-Windows PowerShell:
-
-```powershell
-$env:PYTHONPATH = "src;."
-py -3 scripts\rtdl_source_tree_doctor.py
-python examples/current/getting_started/rtdl_hello_world.py
-python examples/current/research_benchmarks/hausdorff_xhd/rtdl_hausdorff_distance_app.py --backend cpu_python_reference
-```
-
-## What You Write
-
-An RTDL kernel has the same basic shape across workloads:
-
-```python
-import rtdsl as rt
-
-@rt.kernel(backend="rtdl", precision="float_approx")
-def visibility_kernel():
-    rays = rt.input("rays", rt.Rays, role="probe")
-    triangles = rt.input("triangles", rt.Triangles, role="build")
-    candidates = rt.traverse(rays, triangles, accel="bvh")
-    hits = rt.refine(candidates, predicate=rt.ray_triangle_any_hit())
-    return rt.emit(hits, fields=["ray_id", "hit"])
-```
-
-Python owns the surrounding program: loading data, choosing a backend,
-post-processing rows, and writing outputs. RTDL owns the kernel contract and
-backend dispatch for supported RT-shaped primitive paths.
-
-For performance-oriented programs, do not assume the small kernel DSL is the
-only entry point. RTDL currently has three public programming surfaces:
-`@rt.kernel` for the authoring shape, primitive/prepared front doors for
-promoted generic contracts, and partner continuation for explicit CuPy/Numba
-column work. See [RTDL Programming Surfaces](docs/learn/programming_surfaces.md).
-
-## Design In One Page
-
-Learn RTDL as two layers:
-
-| Layer | What belongs there |
+| Identity | What V3 binds |
 | --- | --- |
-| Python app layer | data loading, fixtures, policy, orchestration, reductions, labels, files, plots, and final app answers |
-| RTDL engine layer | typed inputs, traversal, refinement, emitted rows, backend dispatch, and app-agnostic native runtime symbols |
+| Semantic statement | Input domain, typed effects, precision, ordering, ties, termination, and exact output semantics |
+| Backend contract | NVIDIA OptiX execution class, required providers, resource rules, and evidence requirements |
+| Physical provider | Source digest, ABI, template, proof, capacity, lifetime, and reuse contracts |
+| Execution evidence | Materialized native/plan identity, exact output, and complete bound traversal receipt |
 
-This is the key design rule: user programs may be app-shaped Python, but the
-native engine must stay app-agnostic. App names such as graph, database,
-polygon, or robot can appear in examples and Python compatibility helpers; they
-must not become special private engine products.
+Resolution succeeds only when exactly one registered provider satisfies the
+complete contract. Missing, ambiguous, stale, forged, or resource-ineligible
+bindings fail before execution. A matching name is never sufficient.
 
-The fastest way to learn the design is:
+The implementation centers on:
 
-1. Run `examples/current/getting_started/rtdl_hello_world.py`.
-2. Run `scripts/rtdl_source_tree_doctor.py` if imports or optional backends are unclear.
-3. Follow the [Current Tutorial Track](tutorials/current/README.md).
-4. Run `examples/current/getting_started/rtdl_feature_quickstart_cookbook.py`.
-5. Pick one app from [App And Example Quickstart](docs/app_example_quickstart.md).
-6. Read [Current Architecture](docs/current_architecture.md) only after you can
-   explain `input -> traverse -> refine -> emit`.
+- [`canonical_physical_resolution.py`](src/rtdsl/canonical_physical_resolution.py)
+- [`action_api.py`](src/rtdsl/action_api.py)
+- [`default_compiler_frontdoor.py`](src/rtdsl/default_compiler_frontdoor.py)
+- [`physical_execution_provenance.py`](src/rtdsl/physical_execution_provenance.py)
 
-## What RTDL Provides
+## Why this is not syntax sugar
 
-RTDL is an embedded Python DSL, so it is not a fixed box of apps. You write the
-Python program around it. RTDL provides the kernel language, runtime contract,
-and backend bridge for the RT-shaped part of that program.
+A string-to-function table could dispatch a name. V3 additionally checks that:
 
-Current public building blocks include:
+- the provider refines the statement's input, effect, output, precision, and
+  deterministic tie contracts;
+- its exact source, ABI, template, proof, and native identities match the
+  compiler registry;
+- dynamic cardinality and memory bounds hold on the target;
+- materialization did not substitute a different implementation;
+- output matches the independent application oracle; and
+- complete context-bound OptiX launches were behaviorally observed with zero
+  failed, incomplete, unbound, pending, or session-error launches.
 
-| Building block | What it lets you express |
+This makes physical execution auditable without exposing an unrestricted
+device callback escape hatch.
+
+## Nine validated applications
+
+The V3 functional qualification covers nine paper applications and fourteen
+canonical physical regions:
+
+| Application | Application-owned algorithm or region |
 | --- | --- |
-| Kernel shape | `input -> traverse -> refine -> emit` |
-| Primitive/prepared front doors | benchmark-backed generic contracts with prepared state, bounded outputs, and typed summaries |
-| Spatial rows | nearest-neighbor rows, fixed-radius rows, closest-hit rows, any-hit rows, visibility rows |
-| Reductions | Python `reduce_rows` plus documented backend reduction contracts where supported |
-| IR and lowering | `CompiledKernel` lowering into `RTExecutionPlan` |
-| Backend selection | CPU reference, native CPU, Embree, OptiX, HIPRT, Vulkan, Apple RT/MPS RT where documented |
+| RTNN | ranked distance-window search |
+| RayDB | partitioned grouped signed-I64 reduction |
+| LibRTS | prepared AABB query and overlap |
+| X-HD | cell-MBR exact witness |
+| RT-DBSCAN | fixed-radius components |
+| RayJoin | point location, intersection, and grouped reduction |
+| RT-BarnesHut | aggregate hierarchy |
+| Triangle Counting | RT-1A2 and RT-2A1 |
+| Arkade | FR-L-infinity and MT-cosine |
 
-The examples show what users have built with those blocks: Hausdorff distance,
-ANN candidate search, outlier detection, DBSCAN, robot screening, Barnes-Hut,
-graph visibility, bounded DB-style summaries, road hazard screening, and
-segment/polygon summaries. That list is a teaching catalog, not the capacity of
-the language.
+All qualified outputs are exact under their declared contracts, and every
+required physical region has behavior-level OptiX evidence. See the
+[full support matrix](docs/v3/support_matrix.md) for compositions and limits.
 
-Backend support varies by feature and platform. Start with the portable
-`cpu_python_reference` backend, then use Embree or OptiX when your host has the
-native dependencies configured.
+## Extending V3
 
-## v2.14.4 Source-Tree Surface
+Applications compose existing typed statements. They cannot inject arbitrary
+Python, Numba, PTX, or OptiX callbacks through the production front door.
 
-RTDL v2.14.4 is the current source-tree surface for this branch. It consolidates
-the generic device-column and prepared-pipeline programming model developed
-under paper-app pressure. The reviewed public surface includes
-`DeviceColumnBuffer`, `PreparedGeometrySession`, the bounded
-`device_order_by` contract, and explicit Numba partner continuation. The
-experimental `device_group_by` path remains internal until its device-resident
-reduction contract is independently proven.
+When a required semantic component is missing, compilation fails closed. A
+language implementer may add an app-neutral physical family by specifying its
+domain, effects, output, precision, ordering, lifetime, capacity, fallback,
+source, ABI, proof, and evidence contracts, then validating it with reference,
+adversarial, and real-consumer tests. The complete process is documented in
+[Correctness and extension](docs/v3/correctness_and_extension.md).
 
-Five paper apps now serve as bounded evidence packages: RayJoin,
-RT-BarnesHut, RT-DBSCAN, X-HD, and LibRTS. Their paper-specific inputs,
-comparators, tolerances, wrappers, and output formats remain app-owned. The
-system improvements extracted from them are generic RTDL APIs and contracts,
-not paper-named core primitives.
+## Performance scope
 
-The current matrix separates promoted benchmark apps from learner/example apps.
-Promoted benchmarks are reconstruction instruments for RTDL language/runtime
-design, not broad paper-reproduction or whole-application speedup claims.
+RTDL V3 is a formally released research compiler/runtime, not a claim that
+compiler orchestration is free or that every V3 endpoint beats handwritten
+code. The project preserves favorable, parity, and unfavorable results. Cold
+single-invocation paths may expose compiler setup cost; prepared execution may
+amortize it only when the application genuinely reuses prepared state.
 
-Do not read v2.14 as a package-install promise, broad RT-core claim, arbitrary
-CuPy/Numba acceleration claim, arbitrary polygon overlay claim, or proof
-that every user program is faster. For the exact positive and negative rule, read
-[Current Claim Boundaries](docs/learn/current_claim_boundaries.md) and
-[Partner Acceleration Boundaries](docs/partner_acceleration_boundaries.md).
+The release claim is therefore precise: **V3 provides correct, deterministic,
+auditable lowering to true OptiX execution across the supported semantic
+universe.** Performance claims remain workload-, lifecycle-, machine-, and
+baseline-specific.
 
-The v2.14 comparison is deliberately mixed where the evidence is mixed: Spatial
-RayJoin PIP is near parity in one public CDB slice, while stricter prepared
-executor rows show a narrow OptiX-over-Embree win and still do not become a
-RayJoin-system speedup claim.
+## Documentation
 
-The v2.14 partner rule is still user-chosen and evidence-gated:
+- [V3 overview](docs/v3/README.md)
+- [Architecture](docs/v3/architecture.md)
+- [Correctness and extension](docs/v3/correctness_and_extension.md)
+- [Nine-application support matrix](docs/v3/support_matrix.md)
+- [V3 release and installation](docs/v3/release.md)
+- [V3.0.0 release notes](docs/v3/release_notes_3_0_0.md)
+- [Canonical lowering tutorial](tutorials/v3_canonical_lowering.md)
+- [Documentation index](docs/README.md)
+- [Paper applications](Paper-reproduction-apps/README.md)
 
-- use fused RTDL primitives first when they exactly express the work;
-- choose a partner explicitly when custom continuation logic is needed;
-- prefer CuPy for mature CUDA-array/library continuations where current
-  same-contract evidence says it wins;
-- use Numba when users need Python-source custom continuation logic without
-  writing a CuPy RawKernel.
-
-For the current partner-choice guide, read
-[Choosing A Partner For Custom Logic](docs/learn/partner_choice_for_custom_logic.md)
-and the [Benchmark Partner Reference Matrix](docs/learn/benchmark_partner_reference_matrix.md).
-For the current v2.14.4 release boundary and evidence set, see
-[RTDL v2.14 Release Package](docs/release_reports/v2_14/README.md).
-
-## Performance Boundary
-
-`--backend optix` means the OptiX backend is selected. It is not by itself a
-claim that every app, every phase, or every workload is faster on GPU.
-
-Current measured evidence supports narrow statements: selected prepared,
-traversal-heavy workloads can show OptiX/RT-core speedups over same-contract
-Embree CPU paths. Some correct exact routes, including Spatial RayJoin PIP under
-the refreshed human-scale slice, are near parity or Embree-faster and should be
-worded as mixed engineering evidence rather than broad RT-core wins.
-
-Use exact benchmark artifacts before publishing performance wording.
-
-## Read Next
-
-- [Docs Index](docs/README.md)
-- [Tutorials](tutorials/README.md)
-- [Current Tutorial Track](tutorials/current/README.md)
-- [Current Claim Boundaries](docs/learn/current_claim_boundaries.md)
-- [Source-Tree Doctor](docs/learn/source_tree_doctor.md)
-- [RTDL Programming Surfaces](docs/learn/programming_surfaces.md)
-- [Versioning Glossary](docs/versioning.md)
-- [Public Documentation Map](docs/public_documentation_map.md)
-- [Quick Tutorial](docs/quick_tutorial.md)
-- [App And Example Quickstart](docs/app_example_quickstart.md)
-- [Choosing A Partner For Custom Logic](docs/learn/partner_choice_for_custom_logic.md)
-- [Application Catalog](docs/application_catalog.md)
-- [Paper Reproduction Apps](Paper-reproduction-apps/README.md)
-- [Feature Guide](docs/rtdl_feature_guide.md)
-- [Engine Feature Support Contract](docs/features/engine_support_matrix.md)
-- [App Engine Support Matrix](docs/app_engine_support_matrix.md)
-- [Current Support Matrix](docs/current_main_support_matrix.md)
-- [Capability Boundaries](docs/capability_boundaries.md)
-- [Partner Acceleration Boundaries](docs/partner_acceleration_boundaries.md)
-- [Current Architecture](docs/current_architecture.md)
-- [Performance Model](docs/performance_model.md)
-- [IR And Lowering](docs/rtdl/ir_and_lowering.md)
-
-## History
-
-User-facing docs describe the current RTDL v2.14.4 product surface. Older release
-evidence, internal reviews, handoffs, and exploratory records are preserved
-outside the first-user path under [History](history/README.md). You do not need
-that archive to learn or use the current system.
-
-## Demo
-
-The video is a visual tour of the RTDL idea, not a separate product surface.
-It shows a Python-hosted application driving RT-shaped query work while RTDL
-keeps the backend engine generic. The goal is to make the design easy to see:
-Python owns scene setup and presentation, RTDL owns the traversal/refinement
-kernel boundary, and backend choice stays a runtime decision.
-
-Why this demo exists: RTDL is easiest to understand when you can watch the
-application layer and kernel layer cooperate. The animation gives a quick
-mental model before you dive into the source-tree examples and docs.
-
-How to reproduce the demo locally: run the primary visual demo from the
-repository root with the source tree on `PYTHONPATH`. The script lives under
-`examples/visual_demo/`; if optional video dependencies are unavailable, use the
-other examples first and treat the linked 4K video as the reference recording.
-
-- [Watch the public 4K demo video](https://www.youtube.com/watch?v=d3yJB7AmCLM)
-- [Short 4K demo URL](https://youtu.be/d3yJB7AmCLM)
-- Primary visual demo: `examples/visual_demo/rtdl_hidden_star_stable_ball_demo.py`
-
-## Repository Layout
-
-Normal users should start with `tutorials/`, `examples/`, and `docs/`.
-Maintainers may also need `scripts/` and `tests/`. Experimental records are
-kept outside the normal learner path.
+## Repository layout
 
 | Path | Purpose |
 | --- | --- |
-| `src/rtdsl/` | Python DSL/runtime and backend adapters |
-| `tutorials/` | Ordered teaching path for current learners |
-| `examples/` | Public example apps and demos |
-| `Paper-reproduction-apps/` | Paper-specific reproduction apps kept separate from the benchmark app portfolio |
-| `docs/` | Current reference docs, architecture docs, API/IR docs, and v2.14-line support matrices |
-| `history/` | Archived release evidence, internal reviews, handoffs, and old records |
-| `tests/` | Maintainer regression tests for API, docs, release gates, and claim boundaries |
-| `scripts/` | Maintainer audits, report generators, benchmark helpers, and intake tools |
+| `src/rtdsl/` | V3 Action language, compiler, runtime, canonical registry, and partner adapters |
+| `src/native/optix/` | App-neutral NVIDIA OptiX/CUDA provider implementation |
+| `Paper-reproduction-apps/` | Application-owned inputs, algorithms, comparators, and V2/V3 front doors |
+| `examples/` | Runnable examples and non-paper consumers |
+| `tutorials/` | Ordered learning material |
+| `docs/v3/` | V3 architecture, correctness, support, and release documentation |
+| `tests/` | Focused release and regression tests |
 
-Root-level generated artifacts, archived proof apps, and schema files are kept
-inside the appropriate source, script, example, or history directories rather
-than as separate front-door folders.
+Historical v2 material remains available for reproducibility, but V3.0 is the
+active project front door.
 
-For full navigation, start with [docs/README.md](docs/README.md).
+## Version
+
+Current release: **RTDL 3.0.0**.

@@ -139,6 +139,7 @@ class Goal5045PublicDeviceOrderByContractTest(unittest.TestCase):
         self.assertEqual("native_thrust_lexsort_i64_f64_i64_i64", metadata["metadata"]["backend"])
         self.assertTrue(metadata["metadata"]["device_resident_candidate"])
         self.assertFalse(metadata["metadata"]["materializes_host_rows_for_bridge"])
+        self.assertTrue(metadata["metadata"]["input_key_columns_mutated_in_place"])
         self.assertFalse(metadata["device_group_by_public_claim_authorized"])
 
     def test_native_cuda_rejects_host_materialized_or_non_device_inputs(self) -> None:

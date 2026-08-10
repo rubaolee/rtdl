@@ -1,4 +1,7 @@
 from __future__ import annotations
+
+__version__ = "3.0.0"
+
 from .api import bounded_knn_rows
 from .api import bfs_discover
 from .api import compile_kernel
@@ -17,6 +20,9 @@ from .api import point_in_polygon
 from .component_partition import canonical_partition_labels
 from .component_partition import component_signature_from_partition
 from .component_partition import partition_equivalent
+from .columnar_encoding import ExactDenseOrdinalEncoding
+from .columnar_encoding import exact_dense_ordinal_encode_integral
+from .columnar_encoding import exact_dense_row_ordinal_encode_integral
 from .partitioned_traversal import PARTITIONED_TRAVERSAL_COST_MODEL_CONTRACT
 from .partitioned_traversal import PARTITIONED_TRAVERSAL_FANOUT_CONTRACT
 from .partitioned_traversal import estimate_partitioned_traversal_selectivity
@@ -893,6 +899,7 @@ from .aggregate_hierarchy import AGGREGATE_HIERARCHY_3D_SUPPORTED_OPENINGS
 from .aggregate_hierarchy import AGGREGATE_HIERARCHY_3D_SUPPORTED_REDUCERS
 from .aggregate_hierarchy import AGGREGATE_FRONTIER_REDUCE_3D_BACKENDS
 from .aggregate_hierarchy import AGGREGATE_FRONTIER_REDUCE_3D_BACKEND_STATUS
+from .aggregate_hierarchy import AGGREGATE_FRONTIER_REDUCE_3D_BACKEND_STATUS_CUDA_COMPILER
 from .aggregate_hierarchy import AGGREGATE_FRONTIER_REDUCE_3D_BACKEND_STATUS_NOT_IMPLEMENTED
 from .aggregate_hierarchy import AGGREGATE_FRONTIER_REDUCE_3D_BACKEND_STATUS_NUMBA
 from .aggregate_hierarchy import AGGREGATE_FRONTIER_REDUCE_3D_BACKEND_STATUS_REFERENCE
@@ -919,6 +926,20 @@ from .aggregate_hierarchy import prepare_aggregate_hierarchy_3d
 from .aggregate_hierarchy import run_aggregate_frontier_reduce_numba_3d
 from .aggregate_hierarchy import run_aggregate_frontier_reduce_reference_3d
 from .aggregate_hierarchy import validate_aggregate_hierarchy_3d_contract
+from .aggregate_hierarchy_native import AGGREGATE_HIERARCHY_NATIVE_LOWERING_CONTRACT
+from .aggregate_hierarchy_native import AGGREGATE_HIERARCHY_NATIVE_REQUIRED_SYMBOLS
+from .aggregate_hierarchy_native import AGGREGATE_HIERARCHY_NATIVE_SUPPORTED_REDUCERS
+from .aggregate_hierarchy_native import AGGREGATE_HIERARCHY_NATIVE_TEMPLATE
+from .aggregate_hierarchy_native import AGGREGATE_HIERARCHY_OPTIX_REQUIRED_SYMBOLS
+from .aggregate_hierarchy_native import AGGREGATE_HIERARCHY_OPTIX_TEMPLATE
+from .aggregate_hierarchy_native import AggregateHierarchyCompilerPlan3D
+from .aggregate_hierarchy_native import PreparedNativeAggregateHierarchy3D
+from .aggregate_hierarchy_native import compile_aggregate_frontier_reduce_3d
+from .aggregate_hierarchy_native import compile_aggregate_frontier_reduce_default_3d
+from .aggregate_hierarchy_native import compile_aggregate_frontier_reduce_candidate_for_functional_validation_3d
+from .aggregate_hierarchy_native import run_aggregate_frontier_reduce_compiler_3d
+from .aggregate_hierarchy_native import run_aggregate_frontier_reduce_default_3d
+from .aggregate_hierarchy_native import run_aggregate_frontier_reduce_candidate_for_functional_validation_3d
 from .spatial_order import SPATIAL_POINT_ORDER_MODES_2D
 from .spatial_order import SPATIAL_SEGMENT_ORDER_MODES_2D
 from .spatial_order import spatial_order_points_2d
@@ -1849,6 +1870,9 @@ from .aabb_index import aabb_intersection_pair_rows_2d
 from .aabb_index import expanded_aabb_point_membership_rows_2d
 from .aabb_index import prepare_aabb_index_2d
 from .aabb_index import prepare_aabb_index_2d_columns
+from .aabb_index import prepare_compiler_aabb_index_2d_columns
+from .aabb_index import compiler_expanded_aabb_point_membership_rows_2d
+from .aabb_index import CompilerPreparedAabbIndex2D
 from .aabb_index import query_aabb_index_2d
 from .mutable_aabb_index import MUTABLE_AABB_INDEX_2D_CONTRACT
 from .mutable_aabb_index import MutableAabbIndex2D
@@ -1858,6 +1882,7 @@ from .generic_primitives import FROZEN_BEFORE_V2_1_GENERIC_BACKENDS
 from .generic_primitives import GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_CONTRACT
 from .generic_primitives import GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_PRIMITIVE
 from .generic_primitives import GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_ROW_SCHEMA
+from .generic_primitives import GENERIC_PARTITIONED_RAY_TRIANGLE_GROUPED_I64_REDUCTION_3D_CONTRACT
 from .generic_primitives import GenericPreparedFixedRadiusCountThreshold2D
 from .generic_primitives import GenericPreparedRayTriangleAnyHitScene
 from .generic_primitives import GenericPreparedRayTriangleEventOrderedPayloadGroupedSum3D
@@ -1883,6 +1908,22 @@ from .generic_primitives import run_generic_ray_triangle_event_ordered_payload_g
 from .generic_primitives import run_generic_ray_triangle_hit_stream_device_columns_3d
 from .generic_primitives import run_generic_ray_triangle_hit_stream_3d
 from .generic_primitives import run_generic_ray_triangle_primitive_grouped_i64_reduction_3d
+from .generic_primitives import run_partitioned_generic_ray_triangle_primitive_grouped_i64_reduction_3d
+from .metric_knn import CompiledMetricKnn3D
+from .metric_knn import METRIC_KNN_COSINE_STATEMENT
+from .metric_knn import METRIC_KNN_EUCLIDEAN_STATEMENT
+from .metric_knn import METRIC_KNN_EXECUTION_CONTRACT
+from .metric_knn import METRIC_KNN_LINF_STATEMENT
+from .metric_knn import MetricKnn3DKind
+from .metric_knn import MetricKnn3DSpec
+from .metric_knn import MetricKnnError
+from .metric_knn import PreparedCompiledMetricKnn3D
+from .metric_knn import PreparedMetricKnnPhysical3D
+from .metric_knn import compile_metric_knn_3d
+from .metric_knn import cpu_aabb_candidate_provider_3d
+from .metric_knn import execute_metric_knn_physical_3d
+from .metric_knn import optix_aabb_candidate_provider_3d
+from .metric_knn import prepare_metric_knn_physical_3d
 from .generic_db_primitives import ACTIVE_V1_5_GENERIC_DB_BACKENDS
 from .generic_db_primitives import FROZEN_BEFORE_V2_1_DB_BACKENDS
 from .generic_db_primitives import run_generic_db_compact_summary_batch
@@ -2114,6 +2155,21 @@ def generate_embree_evaluation_artifacts(*, workloads=None, iterations: int = 5,
     )
 
 __all__ = [
+    "CompiledMetricKnn3D",
+    "METRIC_KNN_COSINE_STATEMENT",
+    "METRIC_KNN_EUCLIDEAN_STATEMENT",
+    "METRIC_KNN_EXECUTION_CONTRACT",
+    "METRIC_KNN_LINF_STATEMENT",
+    "MetricKnn3DKind",
+    "MetricKnn3DSpec",
+    "MetricKnnError",
+    "PreparedCompiledMetricKnn3D",
+    "PreparedMetricKnnPhysical3D",
+    "compile_metric_knn_3d",
+    "cpu_aabb_candidate_provider_3d",
+    "execute_metric_knn_physical_3d",
+    "optix_aabb_candidate_provider_3d",
+    "prepare_metric_knn_physical_3d",
     "CdbChain",
     "CdbDataset",
     "CdbPoint",
@@ -2160,6 +2216,7 @@ __all__ = [
     "AGGREGATE_HIERARCHY_3D_SUPPORTED_REDUCERS",
     "AGGREGATE_FRONTIER_REDUCE_3D_BACKENDS",
     "AGGREGATE_FRONTIER_REDUCE_3D_BACKEND_STATUS",
+    "AGGREGATE_FRONTIER_REDUCE_3D_BACKEND_STATUS_CUDA_COMPILER",
     "AGGREGATE_FRONTIER_REDUCE_3D_BACKEND_STATUS_NOT_IMPLEMENTED",
     "AGGREGATE_FRONTIER_REDUCE_3D_BACKEND_STATUS_NUMBA",
     "AGGREGATE_FRONTIER_REDUCE_3D_BACKEND_STATUS_REFERENCE",
@@ -2168,6 +2225,12 @@ __all__ = [
     "AGGREGATE_FRONTIER_REDUCE_3D_OUTPUT_SCHEMA",
     "AGGREGATE_FRONTIER_REDUCE_3D_OVERFLOW_POLICY",
     "AGGREGATE_FRONTIER_REDUCE_3D_REFERENCE_REDUCERS",
+    "AGGREGATE_HIERARCHY_NATIVE_LOWERING_CONTRACT",
+    "AGGREGATE_HIERARCHY_NATIVE_REQUIRED_SYMBOLS",
+    "AGGREGATE_HIERARCHY_NATIVE_SUPPORTED_REDUCERS",
+    "AGGREGATE_HIERARCHY_NATIVE_TEMPLATE",
+    "AGGREGATE_HIERARCHY_OPTIX_REQUIRED_SYMBOLS",
+    "AGGREGATE_HIERARCHY_OPTIX_TEMPLATE",
     "GROUPED_VECTOR_SUM_ROWS_2D_CONTRACT",
     "WEIGHTED_INVERSE_SQUARE_CONTRIBUTION_ROWS_2D_CONTRACT",
     "WEIGHTED_INVERSE_SQUARE_VECTOR_SUM_2D_CONTRACT",
@@ -2176,10 +2239,12 @@ __all__ = [
     "AggregateFrontierReduceExecutionContract3D",
     "AggregateFrontierReduceSpec3D",
     "AggregateHierarchy3D",
+    "AggregateHierarchyCompilerPlan3D",
     "ContinuationPayloadOpening",
     "LeafOnlyOpening",
     "AggregateNodeRow",
     "PreparedAggregateHierarchy3D",
+    "PreparedNativeAggregateHierarchy3D",
     "SizeDistanceOpening",
     "AggregateTreeNodeRow",
     "aggregate_frontier_collect_to_columnar_record_set",
@@ -2189,11 +2254,17 @@ __all__ = [
     "aggregate_frontier_reduce_numba_available",
     "aggregate_frontier_reduce_reference_3d",
     "aggregate_frontier_reduce_spec_3d",
+    "compile_aggregate_frontier_reduce_3d",
+    "compile_aggregate_frontier_reduce_default_3d",
+    "compile_aggregate_frontier_reduce_candidate_for_functional_validation_3d",
     "aggregate_hierarchy_3d",
     "describe_aggregate_hierarchy_3d_contract",
     "prepare_aggregate_hierarchy_3d",
     "run_aggregate_frontier_reduce_numba_3d",
     "run_aggregate_frontier_reduce_reference_3d",
+    "run_aggregate_frontier_reduce_compiler_3d",
+    "run_aggregate_frontier_reduce_default_3d",
+    "run_aggregate_frontier_reduce_candidate_for_functional_validation_3d",
     "validate_aggregate_hierarchy_3d_contract",
     "ColumnarAggregateLoweringPlan",
     "ColumnarAggregatePlan",
@@ -2905,6 +2976,9 @@ __all__ = [
     "expanded_aabb_point_membership_rows_2d",
     "prepare_aabb_index_2d",
     "prepare_aabb_index_2d_columns",
+    "prepare_compiler_aabb_index_2d_columns",
+    "compiler_expanded_aabb_point_membership_rows_2d",
+    "CompilerPreparedAabbIndex2D",
     "query_aabb_index_2d",
     "MUTABLE_AABB_INDEX_2D_CONTRACT",
     "MutableAabbIndex2D",
@@ -2914,6 +2988,7 @@ __all__ = [
     "GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_CONTRACT",
     "GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_PRIMITIVE",
     "GENERIC_RAY_TRIANGLE_HIT_STREAM_3D_ROW_SCHEMA",
+    "GENERIC_PARTITIONED_RAY_TRIANGLE_GROUPED_I64_REDUCTION_3D_CONTRACT",
     "GenericPreparedFixedRadiusCountThreshold2D",
     "GenericPreparedRayTriangleAnyHitScene",
     "GenericPreparedRayTriangleEventOrderedPayloadGroupedSum3D",
@@ -2939,6 +3014,7 @@ __all__ = [
     "run_generic_ray_triangle_hit_stream_device_columns_3d",
     "run_generic_ray_triangle_hit_stream_3d",
     "run_generic_ray_triangle_primitive_grouped_i64_reduction_3d",
+    "run_partitioned_generic_ray_triangle_primitive_grouped_i64_reduction_3d",
     "run_generic_scalar_reduction",
     "V1_5_GENERIC_SCALAR_REDUCTION_PRIMITIVES",
     "ACTIVE_V1_5_GENERIC_DB_BACKENDS",
@@ -3937,12 +4013,15 @@ __all__ = [
 ]
 
 _CONTRACT_FIRST_DIR_EXPORTS = (
+    "__version__",
     "ExecutionPolicy",
     "ExecutionReport",
     "ExecutionResult",
     "any_hit",
     "aggregate_frontier_reduce_execution_contract_3d",
     "aggregate_frontier_reduce_spec_3d",
+    "compile_aggregate_frontier_reduce_3d",
+    "compile_aggregate_frontier_reduce_default_3d",
     "aggregate_hierarchy_3d",
     "bounded_nearest",
     "closest_hit",
@@ -3967,6 +4046,8 @@ _CONTRACT_FIRST_DIR_EXPORTS = (
     "nearest",
     "partitioned_traversal_fanout_plan",
     "select_partitioned_traversal_fanout",
+    "run_aggregate_frontier_reduce_compiler_3d",
+    "run_aggregate_frontier_reduce_default_3d",
     "prepare_aggregate_hierarchy_3d",
     "primitives",
     "primitive_hierarchy",
@@ -3992,7 +4073,7 @@ _CONTRACT_FIRST_DIR_EXPORTS = (
 
 
 def __dir__() -> list[str]:
-    """Expose the v2 contract-first learning surface to interactive users.
+    """Expose the V3 contract-first learning surface to interactive users.
 
     Historical compatibility exports remain importable, but tab-completion and
     `dir(rtdsl)` should teach the generic language facade first.

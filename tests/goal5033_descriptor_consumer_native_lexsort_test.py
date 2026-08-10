@@ -44,6 +44,30 @@ class Goal5033DescriptorConsumerNativeLexsortTest(unittest.TestCase):
         self.assertIn("a = int(label_a[index])", reducer)
         self.assertIn("b = int(label_b[index])", reducer)
 
+    def test_read_only_consumer_sorts_private_key_snapshots(self):
+        helper = self.source[
+            self.source.index("def descriptor_pair_count_projected_device") :
+            self.source.index("def _build_projected_descriptor_carrier_device_side")
+        ]
+        self.assertIn("sorted_label_a = cuda.device_array", helper)
+        self.assertIn("sorted_label_b = cuda.device_array", helper)
+        self.assertIn(
+            "sorted_label_a.copy_to_device(carrier_label_a[:valid_count])",
+            helper,
+        )
+        self.assertIn(
+            "sorted_label_b.copy_to_device(carrier_label_b[:valid_count])",
+            helper,
+        )
+        sort_call = helper[
+            helper.index("_run_public_device_order_by_native_lexsort(") :
+            helper.index("_reduce_sorted_descriptor_pairs_with_order_single_kernel")
+        ]
+        self.assertIn("sorted_label_a", sort_call)
+        self.assertIn("sorted_label_b", sort_call)
+        self.assertNotIn("carrier_label_a,", sort_call)
+        self.assertNotIn("carrier_label_b,", sort_call)
+
 
 if __name__ == "__main__":
     unittest.main()

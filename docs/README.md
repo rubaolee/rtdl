@@ -1,10 +1,12 @@
 # RTDL Documentation
 
-This directory is the current RTDL v2.14 reference surface.
+This directory is the RTDL 3.0 reference surface. V3 is the active project
+front door; v2.14 reports remain available as historical comparison material.
 
 | Door | Audience | Purpose |
 | --- | --- | --- |
-| [Learn](learn/README.md) | Learners and app builders | Quick path to run examples, write kernels, choose backends, and understand the current v2.14 boundaries. |
+| [V3](v3/README.md) | Users, evaluators, and contributors | Canonical lowering, semantic contracts, nine-app qualification, and installation. |
+| [Learn](learn/README.md) | Learners and app builders | Existing source-tree examples and foundational programming material. |
 | [Features](features/README.md) | Users choosing primitives | Current feature families and support boundaries. |
 | [RTDL Reference](rtdl/README.md) | Users who need language details | Programming model, DSL reference, IR, lowering, and workload guide. |
 
@@ -12,21 +14,16 @@ Tutorials live at the repository top level in [Tutorials](../tutorials/README.md
 Use docs when you need reference material; use tutorials when you want the
 ordered teaching path.
 
-If you are new, start in **Learn**. If you are looking for old evidence,
+If you are new, start in **V3**. If you are looking for old evidence,
 internal reviews, or exploratory work, use the top-level [History](../history/README.md)
 archive instead of this current docs directory.
 
-Current status: RTDL v2.14 is the active source-tree Python+partner+RTDL
-app-portfolio surface on this branch. It keeps source-tree usage, preserves the
-no-broad-speedup/no-package-install boundary, refreshes the Embree CPU plus
-partner reference lane, and provides the row-scoped RT-core versus Embree CPU
-comparison packet alongside current partner-choice guidance, primitive
-discovery, prepared execution, human-scale timing, and the 10-app benchmark
-evidence matrix. Mixed rows such as Spatial RayJoin PIP and the RayJoin overlay
-2/8 exact subset stay explicit rather than being folded into a broad RT-core
-claim.
-For the short canonical wording, read
-[Current Claim Boundaries](learn/current_claim_boundaries.md).
+Current status: RTDL 3.0 provides compiler-owned canonical lowering from typed
+semantic statements to verified NVIDIA OptiX providers. Nine applications are
+functionally qualified with exact-output checks and behavioral traversal
+receipts. Performance evidence remains scoped and mixed; the release does not
+turn those rows into a universal speedup claim. Start with the
+[V3 overview](v3/README.md).
 
 Short model:
 
@@ -45,22 +42,25 @@ generic.
 Read these in order:
 
 1. [Project Front Page](../README.md)
-2. [Tutorials](../tutorials/README.md)
-3. [Current Tutorial Track](../tutorials/current/README.md)
-4. [Current Claim Boundaries](learn/current_claim_boundaries.md)
-5. [RTDL Programming Surfaces](learn/programming_surfaces.md)
-6. [Versioning Glossary](versioning.md)
-7. [Source-Tree Doctor](learn/source_tree_doctor.md)
-8. [Quick Tutorial](quick_tutorial.md)
-9. [App And Example Quickstart](app_example_quickstart.md)
-10. [Application Catalog](application_catalog.md)
-11. [Feature Guide](rtdl_feature_guide.md)
-12. [Capability Boundaries](capability_boundaries.md)
-13. [Current Architecture](current_architecture.md)
-14. [Performance Model](performance_model.md)
-15. [Benchmark Evidence Index](learn/benchmark_evidence_index.md)
-16. [RT-Core Evidence Matrix](learn/rt_core_evidence_matrix.md)
-17. [IR And Lowering](rtdl/ir_and_lowering.md)
+2. [V3 Overview](v3/README.md)
+3. [V3 Canonical Lowering Tutorial](../tutorials/v3_canonical_lowering.md)
+4. [V3 Architecture](v3/architecture.md)
+5. [V3 Correctness and Extension](v3/correctness_and_extension.md)
+6. [Tutorials](../tutorials/README.md)
+7. [Current Tutorial Track](../tutorials/current/README.md)
+8. [Current Claim Boundaries](learn/current_claim_boundaries.md)
+9. [RTDL Programming Surfaces](learn/programming_surfaces.md)
+10. [Versioning Glossary](versioning.md)
+11. [Source-Tree Doctor](learn/source_tree_doctor.md)
+12. [Quick Tutorial](quick_tutorial.md)
+13. [App And Example Quickstart](app_example_quickstart.md)
+14. [Application Catalog](application_catalog.md)
+15. [Feature Guide](rtdl_feature_guide.md)
+16. [Capability Boundaries](capability_boundaries.md)
+17. [Performance Model](performance_model.md)
+18. [Benchmark Evidence Index](learn/benchmark_evidence_index.md)
+19. [RT-Core Evidence Matrix](learn/rt_core_evidence_matrix.md)
+20. [IR And Lowering](rtdl/ir_and_lowering.md)
 
 ## Current Reference Pages
 
@@ -79,7 +79,8 @@ Read these in order:
 | Benchmark evidence | [Benchmark Evidence Index](learn/benchmark_evidence_index.md) |
 | RT-core evidence interpretation | [RT-Core Evidence Matrix](learn/rt_core_evidence_matrix.md) |
 | Public map | [Public Documentation Map](public_documentation_map.md) |
-| Current release package | [RTDL v2.14 Release Package](release_reports/v2_14/README.md) |
+| Current release | [RTDL V3](v3/README.md) |
+| Legacy v2.14 release package | [RTDL v2.14 Release Package](release_reports/v2_14/README.md) |
 | RayJoin bounded reproduction | [RayJoin Section 5.7 Bounded Reproduction](release_reports/v2_14/rayjoin_section57_bounded_reproduction.md) |
 | Current benchmark evidence | [Benchmark Evidence Index](learn/benchmark_evidence_index.md) |
 | Archived project history | [History](../history/README.md) |
@@ -91,7 +92,8 @@ Read these in order:
 | `learn/` | Human learning route and curated current-doc links. |
 | `features/` | Current feature homes and engine support contract. |
 | `rtdl/` | DSL, IR, programming model, and workload reference docs. |
-| `release_reports/v2_14/` | Current v2.14 release package only. |
+| `v3/` | Current V3 architecture, correctness, support, and release documentation. |
+| `release_reports/v2_14/` | Preserved v2.14 release material. |
 | `assets/` | Images and media used by current docs. |
 | `../history/` | Old release reports, internal audits, reviews, handoffs, research notes, and archived records. |
 

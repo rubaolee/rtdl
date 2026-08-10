@@ -13,9 +13,10 @@
 // - PointNearestSegment uses CUDA-parallel brute-force
 // - FixedRadiusNeighbors currently uses CUDA-parallel brute-force
 //
-// Device kernels are embedded as CUDA source strings and compiled to PTX at
-// runtime via NVRTC.  Compiled pipelines are cached across calls in static
-// singletons so the JIT cost is paid only once per workload type per process.
+// Device kernels are embedded as CUDA source strings and compiled to PTX/CUBIN
+// at runtime. Loaded modules are cached across calls in static singletons;
+// direct-CUDA CUBIN helpers also use a build-scoped content-addressed disk cache
+// so a new process can avoid repeating nvcc compilation.
 //
 // Build requirements:
 //   - CUDA Toolkit >= 11.0 11.0  (nvrtc.h, cuda.h, cuda_runtime.h)
@@ -28,8 +29,12 @@
 //        -I/path/to/cuda/include \
 //        -DRTDL_OPTIX_INCLUDE_DIR='"/path/to/optix/include"' \
 //        -DRTDL_CUDA_INCLUDE_DIR='"/path/to/cuda/include"' \
+//        -DRTDL_OPTIX_BUILD_ID='"<cache-relevant-build-input-id>"' \
 //        -lcuda -lnvrtc \
 //        rtdl_optix.cpp -o librtdl_optix.so
+// Persistent CUBIN caching is disabled when RTDL_OPTIX_BUILD_ID is omitted or
+// empty. Reproducible packagers should derive it from all cache-relevant native
+// build inputs; the project Makefile injects a fresh ID for each actual build.
 
 #include <optix.h>
 #include <optix_function_table_definition.h>
@@ -43,6 +48,7 @@
 #include <algorithm>
 #include <array>
 #include <cassert>
+#include <cerrno>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
@@ -56,12 +62,15 @@
 #include <memory>
 #include <mutex>
 #include <new>
+#include <optional>
 #include <sstream>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
+#include <fcntl.h>
+#include <sys/stat.h>
 #include <sys/wait.h>
 #include <unistd.h>
 #include <vector>
@@ -159,6 +168,37 @@ void rtdl_cuda_grid_branch_bound_nearest_seed_3d_precompiled(
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 extern "C" {
+
+// Behavior-level receipt emitted by the thread-local OptiX traversal audit
+// session. A successful launch is claim-complete only when the native route
+// bound both a nonzero traversable handle and a stable physical
+// program-bundle id before the actual optixLaunch call.
+struct RtdlOptixTraversalAuditSnapshot {
+    uint64_t nonce_hi;
+    uint64_t nonce_lo;
+    uint64_t attempted_launch_count;
+    uint64_t successful_launch_count;
+    uint64_t failed_launch_count;
+    uint64_t complete_context_launch_count;
+    uint64_t incomplete_context_launch_count;
+    uint64_t context_bind_count;
+    uint64_t raygen_invocation_count;
+    uint64_t program_bundle_mix;
+    uint64_t traversable_mix;
+    uint64_t pipeline_mix;
+    uint64_t sbt_mix;
+    uint64_t stream_mix;
+    uint64_t params_mix;
+    uint64_t callsite_mix;
+    uint64_t first_program_bundle_id;
+    uint64_t last_program_bundle_id;
+    uint64_t first_traversable;
+    uint64_t last_traversable;
+    uint32_t pending_context_at_finish;
+    uint32_t session_error;
+    uint32_t incomplete_callsite_record_count;
+    uint32_t incomplete_callsite_lines[32];
+};
 
 struct RtdlSegment {
     uint32_t id;
@@ -1398,6 +1438,20 @@ int rtdl_optix_primitive_grouped_i64_payload_3d_create(
          size_t group_count,
          void** payload_handle_out,
          char* error_out, size_t error_size);
+int rtdl_optix_primitive_grouped_i64_payload_3d_create_signed_v2(
+         const uint32_t* primitive_group_ids, size_t primitive_group_id_count,
+         const int64_t* primitive_values, size_t primitive_value_count,
+         size_t group_count,
+         void** payload_handle_out,
+         char* error_out, size_t error_size);
+/* Compiler-internal fast path. The caller must hold the immutable host-column
+ * certificate covering group bounds and the signed per-group sum domain. */
+int rtdl_optix_primitive_grouped_i64_payload_3d_create_signed_verified_v3(
+         const uint32_t* primitive_group_ids, size_t primitive_group_id_count,
+         const int64_t* primitive_values, size_t primitive_value_count,
+         size_t group_count,
+         void** payload_handle_out,
+         char* error_out, size_t error_size);
 int rtdl_optix_static_triangle_scene_3d_ray_prepared_primitive_grouped_i64_reduction(
          void* scene_handle,
          void* payload_handle,
@@ -1410,6 +1464,62 @@ int rtdl_optix_static_triangle_scene_3d_ray_prepared_primitive_grouped_i64_reduc
          uint64_t* hit_event_count_out,
          double* traversal_seconds_out,
          char* error_out, size_t error_size);
+int rtdl_optix_static_triangle_scene_3d_ray_prepared_primitive_grouped_i64_reduction_signed_v2(
+         void* scene_handle,
+         void* payload_handle,
+         const RtdlRay3D* rays, size_t ray_count,
+         uint32_t reduction,
+         uint64_t* group_counts_out,
+         uint64_t* group_sums_out,
+         uint64_t* group_mins_out,
+         uint64_t* group_maxs_out,
+         uint64_t* hit_event_count_out,
+         double* traversal_seconds_out,
+         char* error_out, size_t error_size);
+int rtdl_optix_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction_signed_v2(
+         void* scene_handle,
+         const RtdlRay3D* rays, size_t ray_count,
+         const uint32_t* primitive_group_ids, size_t primitive_group_id_count,
+         const int64_t* primitive_values, size_t primitive_value_count,
+         size_t group_count,
+         uint32_t reduction,
+         uint64_t* group_counts_out,
+         uint64_t* group_sums_out,
+         uint64_t* group_mins_out,
+         uint64_t* group_maxs_out,
+         uint64_t* hit_event_count_out,
+         double* traversal_seconds_out,
+         char* error_out, size_t error_size);
+int rtdl_optix_static_triangle_scene_3d_ray_prepared_primitive_grouped_i64_reduction_with_phase_timings(
+         void* scene_handle,
+         void* payload_handle,
+         const RtdlRay3D* rays, size_t ray_count,
+         uint32_t reduction,
+         uint64_t* group_counts_out,
+         uint64_t* group_sums_out,
+         uint64_t* group_mins_out,
+         uint64_t* group_maxs_out,
+         uint64_t* hit_event_count_out,
+         double* traversal_seconds_out,
+         double* query_prepare_seconds_out,
+         double* launch_seconds_out,
+         double* result_download_seconds_out,
+         char* error_out, size_t error_size);
+int rtdl_optix_static_triangle_scene_3d_ray_prepared_primitive_grouped_i64_reduction_with_phase_timings_signed_v2(
+         void* scene_handle,
+         void* payload_handle,
+         const RtdlRay3D* rays, size_t ray_count,
+         uint32_t reduction,
+         uint64_t* group_counts_out,
+         uint64_t* group_sums_out,
+         uint64_t* group_mins_out,
+         uint64_t* group_maxs_out,
+         uint64_t* hit_event_count_out,
+         double* traversal_seconds_out,
+         double* query_prepare_seconds_out,
+         double* launch_seconds_out,
+         double* result_download_seconds_out,
+         char* error_out, size_t error_size);
 int rtdl_optix_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64_reduction(
          void* scene_handle,
          void* payload_handle,
@@ -1421,6 +1531,48 @@ int rtdl_optix_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64
          uint64_t* group_maxs_out,
          uint64_t* hit_event_count_out,
          double* traversal_seconds_out,
+         char* error_out, size_t error_size);
+int rtdl_optix_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64_reduction_signed_v2(
+         void* scene_handle,
+         void* payload_handle,
+         void* ray_batch_handle,
+         uint32_t reduction,
+         uint64_t* group_counts_out,
+         uint64_t* group_sums_out,
+         uint64_t* group_mins_out,
+         uint64_t* group_maxs_out,
+         uint64_t* hit_event_count_out,
+         double* traversal_seconds_out,
+         char* error_out, size_t error_size);
+int rtdl_optix_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64_reduction_with_phase_timings(
+         void* scene_handle,
+         void* payload_handle,
+         void* ray_batch_handle,
+         uint32_t reduction,
+         uint64_t* group_counts_out,
+         uint64_t* group_sums_out,
+         uint64_t* group_mins_out,
+         uint64_t* group_maxs_out,
+         uint64_t* hit_event_count_out,
+         double* traversal_seconds_out,
+         double* query_prepare_seconds_out,
+         double* launch_seconds_out,
+         double* result_download_seconds_out,
+         char* error_out, size_t error_size);
+int rtdl_optix_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64_reduction_with_phase_timings_signed_v2(
+         void* scene_handle,
+         void* payload_handle,
+         void* ray_batch_handle,
+         uint32_t reduction,
+         uint64_t* group_counts_out,
+         uint64_t* group_sums_out,
+         uint64_t* group_mins_out,
+         uint64_t* group_maxs_out,
+         uint64_t* hit_event_count_out,
+         double* traversal_seconds_out,
+         double* query_prepare_seconds_out,
+         double* launch_seconds_out,
+         double* result_download_seconds_out,
          char* error_out, size_t error_size);
 int rtdl_optix_static_triangle_scene_3d_ray_hit_count_sum(
          void* scene_handle,
@@ -1805,6 +1957,64 @@ int  rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v4(
          uint64_t* attempted_count_out,
          uint32_t* overflowed_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_prepare_point_column_domain_3d_v1(
+         const double* target_coords,
+         const int64_t* target_ids,
+         size_t target_count,
+         uint64_t* prepared_domain_token_out,
+         char* error_out,
+         size_t error_size);
+int  rtdl_optix_collect_cell_mbr_nearest_frontier_3d_prepared_domain_v1(
+         const double* query_coords,
+         const int64_t* query_point_ids,
+         size_t query_count,
+         const int64_t* cell_ids,
+         const uint64_t* point_begin_offsets,
+         const uint64_t* point_counts,
+         const double* cell_mbr_min,
+         const double* cell_mbr_max,
+         size_t cell_count,
+         double radius,
+         const double* current_best_distances,
+         const int64_t* current_best_item_ids,
+         uint64_t prepared_domain_token,
+         const uint64_t* point_row_indices,
+         size_t point_row_index_count,
+         uint64_t max_inline_points,
+         uint32_t emit_pruned_rows,
+         uint32_t sort_rows,
+         uint32_t inline_nearest,
+         uint64_t row_capacity,
+         int64_t* frontier_kind_codes_out,
+         int64_t* query_row_ids_out,
+         int64_t* query_point_ids_out,
+         int64_t* cell_ids_out,
+         uint64_t* point_begin_offsets_out,
+         uint64_t* point_counts_out,
+         double* min_distances_out,
+         double* max_distances_out,
+         double* nearest_distances_out,
+         int64_t* nearest_item_ids_out,
+         uint64_t* inline_cell_hit_count_out,
+         uint64_t* inline_point_eval_count_out,
+         uint64_t* emitted_count_out,
+         uint64_t* attempted_count_out,
+         uint32_t* overflowed_out,
+         char* error_out,
+         size_t error_size);
+int  rtdl_optix_get_prepared_point_column_domain_3d_telemetry_v1(
+         uint64_t prepared_domain_token,
+         uint64_t* validation_count_out,
+         uint64_t* execute_count_out,
+         uint64_t* hash_set_construction_count_out,
+         uint64_t* target_count_out,
+         uint64_t* creator_pid_out,
+         char* error_out,
+         size_t error_size);
+int  rtdl_optix_destroy_prepared_point_column_domain_3d_v1(
+         uint64_t prepared_domain_token,
+         char* error_out,
+         size_t error_size);
 int  rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v5(
          const double* query_coords,
          const int64_t* query_point_ids,
@@ -2245,11 +2455,29 @@ int  rtdl_optix_run_prepared_exact_fixed_radius_neighbors_3d(
          size_t k_max,
          RtdlFixedRadiusNeighborRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_run_prepared_exact_fixed_radius_neighbors_3d_v2(
+         void* prepared,
+         const RtdlPoint3D* query_points, size_t query_count,
+         double radius,
+         size_t k_max,
+         uint32_t radius_boundary_mode,
+         RtdlFixedRadiusNeighborRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
 int  rtdl_optix_run_prepared_ranked_fixed_radius_neighbors_3d(
          void* prepared,
          const RtdlPoint3D* query_points, size_t query_count,
          double radius,
          size_t k_max,
+         RtdlKnnNeighborRow** rows_out, size_t* row_count_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_run_prepared_ranked_distance_window_neighbors_3d(
+         void* prepared,
+         const RtdlPoint3D* query_points, size_t query_count,
+         double minimum_distance,
+         double radius,
+         size_t k_max,
+         uint32_t minimum_boundary_mode,
+         uint32_t radius_boundary_mode,
          RtdlKnnNeighborRow** rows_out, size_t* row_count_out,
          char* error_out, size_t error_size);
 int  rtdl_optix_run_prepared_ranked_fixed_radius_neighbor_summaries_3d(
@@ -2317,6 +2545,25 @@ int  rtdl_optix_prepare_fixed_radius_count_threshold_3d(
          double max_radius,
          void** prepared_out,
          char* error_out, size_t error_size);
+int  rtdl_optix_prepare_metric_knn_3d(
+         const RtdlPoint3D* search_points, size_t search_count,
+         double initial_radius,
+         void** prepared_out,
+         char* error_out, size_t error_size);
+int  rtdl_optix_execute_prepared_metric_knn_3d(
+         void* prepared,
+         const RtdlPoint3D* query_points, size_t query_count,
+         uint32_t metric_kind,
+         size_t k,
+         double initial_radius,
+         size_t maximum_rounds,
+         RtdlFixedRadiusNeighborRow** rows_out,
+         size_t* row_count_out,
+         size_t* completed_round_count_out,
+         double* final_radius_out,
+         size_t* refit_count_out,
+         char* error_out, size_t error_size);
+void rtdl_optix_destroy_prepared_metric_knn_3d(void* prepared);
 int  rtdl_optix_write_prepared_fixed_radius_count_threshold_3d_device_outputs(
          void* prepared,
          const RtdlPoint3D* query_points, size_t query_count,
@@ -2859,6 +3106,104 @@ int  rtdl_optix_get_last_phase_timings(
          double* bvh_build_out,
          double* traversal_out,
          double* copy_out);
+
+// Generic precompiled CUDA aggregate-hierarchy continuation lowering.
+// Compiler-owned reducer codes: 0=aggregate_count,
+// 1=inverse_square_scalar_sum.  No application identity enters this ABI.
+int rtdl_cuda_prepare_aggregate_hierarchy_continuation_3d(
+        const double* point_x,
+        const double* point_y,
+        const double* point_z,
+        const double* point_weight,
+        uint64_t point_count,
+        const double* node_cx,
+        const double* node_cy,
+        const double* node_cz,
+        const double* node_half_size,
+        const double* node_weight,
+        uint64_t node_count,
+        const int64_t* member_offsets,
+        const int64_t* member_indices,
+        uint64_t member_count,
+        const int64_t* child_offsets,
+        const int64_t* child_indices,
+        uint64_t child_count,
+        const int64_t* node_next_index,
+        const int64_t* node_rope_index,
+        int64_t root_node_index,
+        void** prepared_out,
+        double* prepare_total_seconds_out,
+        char* error_out,
+        uint64_t error_capacity);
+int rtdl_cuda_execute_prepared_aggregate_hierarchy_continuation_3d(
+        void* prepared_handle,
+        uint32_t reducer_kind,
+        double max_ratio,
+        double softening,
+        uint64_t output_capacity,
+        double* reducer_value_0_out,
+        int64_t* visited_node_count_out,
+        int64_t* aggregate_contribution_count_out,
+        int64_t* exact_contribution_count_out,
+        int64_t* status_code_out,
+        double* kernel_seconds_out,
+        double* download_seconds_out,
+        double* total_seconds_out,
+        char* error_out,
+        uint64_t error_capacity);
+int rtdl_cuda_close_prepared_aggregate_hierarchy_continuation_3d(
+        void* prepared_handle,
+        char* error_out,
+        uint64_t error_capacity);
+
+// Generic true-OptiX aggregate-hierarchy continuation candidate.  The ABI is
+// deliberately isomorphic to the precompiled-CUDA candidate so the compiler
+// can compare physical candidates for one verified generic specification.
+int rtdl_optix_prepare_aggregate_hierarchy_continuation_3d(
+        const double* point_x,
+        const double* point_y,
+        const double* point_z,
+        const double* point_weight,
+        uint64_t point_count,
+        const double* node_cx,
+        const double* node_cy,
+        const double* node_cz,
+        const double* node_half_size,
+        const double* node_weight,
+        uint64_t node_count,
+        const int64_t* member_offsets,
+        const int64_t* member_indices,
+        uint64_t member_count,
+        const int64_t* child_offsets,
+        const int64_t* child_indices,
+        uint64_t child_count,
+        const int64_t* node_next_index,
+        const int64_t* node_rope_index,
+        int64_t root_node_index,
+        void** prepared_out,
+        double* prepare_total_seconds_out,
+        char* error_out,
+        uint64_t error_capacity);
+int rtdl_optix_execute_prepared_aggregate_hierarchy_continuation_3d(
+        void* prepared_handle,
+        uint32_t reducer_kind,
+        double max_ratio,
+        double softening,
+        uint64_t output_capacity,
+        double* reducer_value_0_out,
+        int64_t* visited_node_count_out,
+        int64_t* aggregate_contribution_count_out,
+        int64_t* exact_contribution_count_out,
+        int64_t* status_code_out,
+        double* traversal_seconds_out,
+        double* download_seconds_out,
+        double* total_seconds_out,
+        char* error_out,
+        uint64_t error_capacity);
+int rtdl_optix_close_prepared_aggregate_hierarchy_continuation_3d(
+        void* prepared_handle,
+        char* error_out,
+        uint64_t error_capacity);
 void rtdl_optix_free_rows(void* rows);
 
 } // extern "C"

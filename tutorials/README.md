@@ -10,7 +10,8 @@ source-tree surface.
 
 | Path | Purpose |
 | --- | --- |
-| [Current RTDL Tutorial Track](current/README.md) | Learn RTDL step by step, from first run to benchmark-style Python+RTDL+partner programs. |
+| [V3 Canonical Lowering Tutorial](v3_canonical_lowering.md) | Start with the V3 statement-to-provider contract, then follow the target validation path. |
+| [Foundational RTDL Tutorial Track](current/README.md) | Learn the retained Python, primitive, prepared, and partner foundations step by step. |
 
 ## Current Track
 
@@ -36,12 +37,13 @@ source-tree surface.
 
 ## Current Claim Boundary
 
-The current tutorial track teaches the v2.14 source-tree programming model:
-Python+RTDL, explicit CuPy/Numba partner choices where needed, and generic
-app-agnostic engine primitives.
+The active release is V3.0. The canonical-lowering tutorial teaches its
+compiler-owned statement-to-provider contract. The longer foundational track
+retains the Python, prepared-execution, and partner concepts inherited from the
+v2 line.
 
-These tutorials are not package-install promises, automatic partner-selection
-promises, universal speedup claims, or paper-reproduction claims.
+These tutorials do not claim automatic algorithm invention, universal speedup,
+or unrestricted callback support.
 
 ## Related Doors
 

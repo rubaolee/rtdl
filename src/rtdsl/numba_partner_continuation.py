@@ -917,6 +917,7 @@ def run_numba_global_argmax_u32_f64(
     *,
     invalid_item_id: int = 0xFFFFFFFF,
     block_size: int = 256,
+    defer_empty_validation: bool = False,
 ) -> dict[str, object]:
     """Run a generic global argmax over CUDA columns with a stable uint32 item tie-break."""
 
@@ -955,11 +956,13 @@ def run_numba_global_argmax_u32_f64(
         invalid_u32,
     )
     cuda.synchronize()
-    valid_count = cuda.device_array((1,), dtype=np.int64)
-    valid_total = int(np.asarray(current_valid_counts.copy_to_host(), dtype=np.int64).sum())
-    valid_count.copy_to_device(np.asarray([valid_total], dtype=np.int64))
-    if valid_total == 0:
-        raise ValueError("global_argmax_u32_f64 requires at least one valid item row")
+    valid_count = None
+    if not defer_empty_validation:
+        valid_count = cuda.device_array((1,), dtype=np.int64)
+        valid_total = int(np.asarray(current_valid_counts.copy_to_host(), dtype=np.int64).sum())
+        valid_count.copy_to_device(np.asarray([valid_total], dtype=np.int64))
+        if valid_total == 0:
+            raise ValueError("global_argmax_u32_f64 requires at least one valid item row")
 
     current_count = block_count
     while current_count > 1:
@@ -987,6 +990,9 @@ def run_numba_global_argmax_u32_f64(
         current_valid_counts = next_valid_counts
         current_count = block_count
 
+    if defer_empty_validation:
+        valid_count = current_valid_counts
+
     elapsed = perf_counter() - started
 
     return _numba_run_result(
@@ -1005,6 +1011,8 @@ def run_numba_global_argmax_u32_f64(
             "tie_break": "highest_score_then_lowest_item_id_then_lowest_row_index",
             "reduction_strategy": "multi_stage_block_reduce_no_global_atomics",
             "host_row_materialization_used": False,
+            "host_valid_count_materialization_used": not defer_empty_validation,
+            "empty_validation_deferred_to_bounded_consumer": defer_empty_validation,
         },
     )
 

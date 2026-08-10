@@ -487,6 +487,76 @@ def _run_cell_mbr_directed(args: argparse.Namespace, *, route_label: str) -> dic
     }
 
 
+def run_loaded_cell_mbr_exact_witness(
+    source_points,
+    target_points,
+    *,
+    grid_shape: tuple[int, int, int] = (32, 32, 32),
+    max_inline_points: int = 512,
+) -> dict[str, object]:
+    """Run the locked Goal5263 V2 route on already prepared point matrices.
+
+    Callers own PLY parsing, per-input translation, and input hashing.  The
+    returned registered interval therefore matches Goal5632's
+    ``loaded_translated_points_to_directed_exact_witness`` contract exactly.
+    This remains an app-owned V2.x route and does not reproduce the author's
+    RT-core algorithm.
+    """
+
+    parsed_grid_shape = tuple(int(value) for value in grid_shape)
+    if len(parsed_grid_shape) != 3 or any(value <= 0 for value in parsed_grid_shape):
+        raise ValueError("grid_shape must contain three positive integers")
+    if int(max_inline_points) <= 0:
+        raise ValueError("max_inline_points must be positive")
+    registered_primary_start = time.perf_counter()
+    directed = cell_mbr_gate._directed_cell_mbr_route(  # app-owned route helper
+        source_points,
+        target_points,
+        label="a_to_b",
+        backend="optix",
+        grid_shape=parsed_grid_shape,
+        radius=None,
+        fallback_radius=cell_mbr_gate._full_cover_radius(source_points, target_points),
+        max_inline_points=int(max_inline_points),
+        initial_state="grid-branch-bound",
+        seed_cell_budget=4,
+        local_grid_seed_executor="auto",
+        grid_branch_bound_seed_executor="native_cuda",
+        frontier_nearest_executor="auto",
+        frontier_row_order="sorted",
+        frontier_inline_nearest=False,
+        cell_order="native",
+        grid_cell_point_order="point-id",
+        grid_cell_builder="native_cuda",
+        skip_frontier_if_exact_seed=True,
+        global_bound_early_break=False,
+        collect_inline_stats=False,
+        collect_frontier_native_phase_timings=False,
+        frontier_row_capacity=None,
+    )
+    registered_primary_elapsed_seconds = time.perf_counter() - registered_primary_start
+    if not bool(directed.get("per_source_witness_exact", False)):
+        raise RuntimeError("loaded Goal5263 route lost its exact-witness contract")
+    return {
+        "schema": "rtdl.paper_reproduction.xhd.loaded_cell_mbr_exact_witness.v1",
+        "status": "loaded_goal5263_cell_mbr_exact_witness_completed",
+        "route_label": "cell-mbr-exact-witness",
+        "directed_a_to_b": directed,
+        "registered_primary_timing": {
+            "contract_id": "loaded_translated_points_to_directed_exact_witness",
+            "elapsed_seconds": registered_primary_elapsed_seconds,
+            "input_loading_included": False,
+            "input_translation_included": False,
+            "correctness_comparator_included": False,
+        },
+        "claim_boundary": {
+            "v2x_route": True,
+            "author_rt_core_algorithm_equivalence_claimed": False,
+            "runtime_claimed": False,
+        },
+    }
+
+
 def _run_cell_mbr_author_queue_diagnostic(args: argparse.Namespace) -> dict[str, object]:
     author_trace_json = getattr(args, "author_trace_json", None)
     if not author_trace_json:

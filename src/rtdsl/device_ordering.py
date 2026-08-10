@@ -210,6 +210,7 @@ def _device_order_by_native_cuda(
             "input_device_column_buffer": columns.to_metadata(),
             "device_resident_candidate": True,
             "materializes_host_rows_for_bridge": False,
+            "input_key_columns_mutated_in_place": True,
         }
     )
     return DeviceOrderByResult(

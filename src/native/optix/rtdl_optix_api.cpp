@@ -6,6 +6,67 @@
     return 0;
 }
 
+extern "C" int rtdl_optix_traversal_audit_begin(
+        uint64_t nonce_hi,
+        uint64_t nonce_lo,
+        char* error_out,
+        size_t error_size)
+{
+    return handle_native_call([&]() {
+        auto& audit = g_optix_traversal_audit;
+        if (audit.active)
+            throw std::runtime_error("OptiX traversal audit session is already active");
+        if (nonce_hi == 0 && nonce_lo == 0)
+            throw std::runtime_error("OptiX traversal audit nonce must be nonzero");
+        audit = OptixTraversalAuditState{};
+        audit.active = true;
+        audit.nonce_hi = nonce_hi;
+        audit.nonce_lo = nonce_lo;
+        audit.snapshot.nonce_hi = nonce_hi;
+        audit.snapshot.nonce_lo = nonce_lo;
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_traversal_audit_finish(
+        uint64_t nonce_hi,
+        uint64_t nonce_lo,
+        RtdlOptixTraversalAuditSnapshot* snapshot_out,
+        char* error_out,
+        size_t error_size)
+{
+    return handle_native_call([&]() {
+        auto& audit = g_optix_traversal_audit;
+        if (!snapshot_out)
+            throw std::runtime_error("OptiX traversal audit snapshot output must not be null");
+        if (!audit.active)
+            throw std::runtime_error("OptiX traversal audit session is not active");
+        if (audit.nonce_hi != nonce_hi || audit.nonce_lo != nonce_lo)
+            throw std::runtime_error("OptiX traversal audit nonce does not match active session");
+        audit.snapshot.pending_context_at_finish =
+            audit.context_pending ? 1u : 0u;
+        audit.snapshot.session_error =
+            (audit.session_error || audit.context_pending) ? 1u : 0u;
+        *snapshot_out = audit.snapshot;
+        audit = OptixTraversalAuditState{};
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_traversal_audit_abort(
+        uint64_t nonce_hi,
+        uint64_t nonce_lo,
+        char* error_out,
+        size_t error_size)
+{
+    return handle_native_call([&]() {
+        auto& audit = g_optix_traversal_audit;
+        if (!audit.active)
+            throw std::runtime_error("OptiX traversal audit session is not active");
+        if (audit.nonce_hi != nonce_hi || audit.nonce_lo != nonce_lo)
+            throw std::runtime_error("OptiX traversal audit nonce does not match active session");
+        audit = OptixTraversalAuditState{};
+    }, error_out, error_size);
+}
+
 extern "C" int rtdl_optix_collect_k_cooperative_launch_capability(
         int* cooperative_launch_supported_out,
         int* cooperative_multi_device_launch_supported_out,
@@ -2098,12 +2159,121 @@ extern "C" int rtdl_optix_static_triangle_scene_3d_ray_primitive_grouped_i64_red
             primitive_value_count,
             group_count,
             reduction,
+            false,
             group_counts_out,
             group_sums_out,
             group_mins_out,
             group_maxs_out,
             hit_event_count_out,
             traversal_seconds_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction_signed_v2(
+        void* scene_handle,
+        const RtdlRay3D* rays, size_t ray_count,
+        const uint32_t* primitive_group_ids, size_t primitive_group_id_count,
+        const int64_t* primitive_values, size_t primitive_value_count,
+        size_t group_count,
+        uint32_t reduction,
+        uint64_t* group_counts_out,
+        uint64_t* group_sums_out,
+        uint64_t* group_mins_out,
+        uint64_t* group_maxs_out,
+        uint64_t* hit_event_count_out,
+        double* traversal_seconds_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_prepared_static_triangle_scene_3d_ray_primitive_grouped_i64_reduction_optix(
+            reinterpret_cast<PreparedStaticTriangleScene3D*>(scene_handle),
+            rays,
+            ray_count,
+            primitive_group_ids,
+            primitive_group_id_count,
+            reinterpret_cast<const uint64_t*>(primitive_values),
+            primitive_value_count,
+            group_count,
+            reduction,
+            true,
+            group_counts_out,
+            group_sums_out,
+            group_mins_out,
+            group_maxs_out,
+            hit_event_count_out,
+            traversal_seconds_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_static_triangle_scene_3d_ray_prepared_primitive_grouped_i64_reduction_with_phase_timings(
+        void* scene_handle,
+        void* payload_handle,
+        const RtdlRay3D* rays, size_t ray_count,
+        uint32_t reduction,
+        uint64_t* group_counts_out,
+        uint64_t* group_sums_out,
+        uint64_t* group_mins_out,
+        uint64_t* group_maxs_out,
+        uint64_t* hit_event_count_out,
+        double* traversal_seconds_out,
+        double* query_prepare_seconds_out,
+        double* launch_seconds_out,
+        double* result_download_seconds_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_prepared_static_triangle_scene_3d_ray_prepared_primitive_grouped_i64_reduction_optix(
+            reinterpret_cast<PreparedStaticTriangleScene3D*>(scene_handle),
+            reinterpret_cast<PreparedPrimitiveGroupedI64Payload3D*>(payload_handle),
+            rays,
+            ray_count,
+            reduction,
+            false,
+            group_counts_out,
+            group_sums_out,
+            group_mins_out,
+            group_maxs_out,
+            hit_event_count_out,
+            traversal_seconds_out,
+            query_prepare_seconds_out,
+            launch_seconds_out,
+            result_download_seconds_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_static_triangle_scene_3d_ray_prepared_primitive_grouped_i64_reduction_with_phase_timings_signed_v2(
+        void* scene_handle,
+        void* payload_handle,
+        const RtdlRay3D* rays, size_t ray_count,
+        uint32_t reduction,
+        uint64_t* group_counts_out,
+        uint64_t* group_sums_out,
+        uint64_t* group_mins_out,
+        uint64_t* group_maxs_out,
+        uint64_t* hit_event_count_out,
+        double* traversal_seconds_out,
+        double* query_prepare_seconds_out,
+        double* launch_seconds_out,
+        double* result_download_seconds_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_prepared_static_triangle_scene_3d_ray_prepared_primitive_grouped_i64_reduction_optix(
+            reinterpret_cast<PreparedStaticTriangleScene3D*>(scene_handle),
+            reinterpret_cast<PreparedPrimitiveGroupedI64Payload3D*>(payload_handle),
+            rays,
+            ray_count,
+            reduction,
+            true,
+            group_counts_out,
+            group_sums_out,
+            group_mins_out,
+            group_maxs_out,
+            hit_event_count_out,
+            traversal_seconds_out,
+            query_prepare_seconds_out,
+            launch_seconds_out,
+            result_download_seconds_out);
     }, error_out, error_size);
 }
 
@@ -2294,12 +2464,159 @@ extern "C" int rtdl_optix_static_triangle_scene_3d_ray_prepared_primitive_groupe
             rays,
             ray_count,
             reduction,
+            false,
             group_counts_out,
             group_sums_out,
             group_mins_out,
             group_maxs_out,
             hit_event_count_out,
-            traversal_seconds_out);
+            traversal_seconds_out,
+            nullptr,
+            nullptr,
+            nullptr);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_static_triangle_scene_3d_ray_prepared_primitive_grouped_i64_reduction_signed_v2(
+        void* scene_handle,
+        void* payload_handle,
+        const RtdlRay3D* rays, size_t ray_count,
+        uint32_t reduction,
+        uint64_t* group_counts_out,
+        uint64_t* group_sums_out,
+        uint64_t* group_mins_out,
+        uint64_t* group_maxs_out,
+        uint64_t* hit_event_count_out,
+        double* traversal_seconds_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_prepared_static_triangle_scene_3d_ray_prepared_primitive_grouped_i64_reduction_optix(
+            reinterpret_cast<PreparedStaticTriangleScene3D*>(scene_handle),
+            reinterpret_cast<PreparedPrimitiveGroupedI64Payload3D*>(payload_handle),
+            rays,
+            ray_count,
+            reduction,
+            true,
+            group_counts_out,
+            group_sums_out,
+            group_mins_out,
+            group_maxs_out,
+            hit_event_count_out,
+            traversal_seconds_out,
+            nullptr,
+            nullptr,
+            nullptr);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_primitive_grouped_i64_payload_3d_create_signed_v2(
+        const uint32_t* primitive_group_ids, size_t primitive_group_id_count,
+        const int64_t* primitive_values, size_t primitive_value_count,
+        size_t group_count,
+        void** payload_handle_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!payload_handle_out)
+            throw std::runtime_error("payload handle output pointer must not be null");
+        *payload_handle_out = nullptr;
+        *payload_handle_out = prepare_primitive_grouped_i64_payload_3d_signed_v2_optix(
+            primitive_group_ids,
+            primitive_group_id_count,
+            primitive_values,
+            primitive_value_count,
+            group_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_primitive_grouped_i64_payload_3d_create_signed_verified_v3(
+        const uint32_t* primitive_group_ids, size_t primitive_group_id_count,
+        const int64_t* primitive_values, size_t primitive_value_count,
+        size_t group_count,
+        void** payload_handle_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!payload_handle_out)
+            throw std::runtime_error("payload handle output pointer must not be null");
+        *payload_handle_out = nullptr;
+        *payload_handle_out = prepare_primitive_grouped_i64_payload_3d_signed_verified_v3_optix(
+            primitive_group_ids,
+            primitive_group_id_count,
+            primitive_values,
+            primitive_value_count,
+            group_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64_reduction_with_phase_timings(
+        void* scene_handle,
+        void* payload_handle,
+        void* ray_batch_handle,
+        uint32_t reduction,
+        uint64_t* group_counts_out,
+        uint64_t* group_sums_out,
+        uint64_t* group_mins_out,
+        uint64_t* group_maxs_out,
+        uint64_t* hit_event_count_out,
+        double* traversal_seconds_out,
+        double* query_prepare_seconds_out,
+        double* launch_seconds_out,
+        double* result_download_seconds_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_prepared_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64_reduction_optix(
+            reinterpret_cast<PreparedStaticTriangleScene3D*>(scene_handle),
+            reinterpret_cast<PreparedPrimitiveGroupedI64Payload3D*>(payload_handle),
+            reinterpret_cast<PreparedRayBatch3D*>(ray_batch_handle),
+            reduction,
+            false,
+            group_counts_out,
+            group_sums_out,
+            group_mins_out,
+            group_maxs_out,
+            hit_event_count_out,
+            traversal_seconds_out,
+            query_prepare_seconds_out,
+            launch_seconds_out,
+            result_download_seconds_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64_reduction_with_phase_timings_signed_v2(
+        void* scene_handle,
+        void* payload_handle,
+        void* ray_batch_handle,
+        uint32_t reduction,
+        uint64_t* group_counts_out,
+        uint64_t* group_sums_out,
+        uint64_t* group_mins_out,
+        uint64_t* group_maxs_out,
+        uint64_t* hit_event_count_out,
+        double* traversal_seconds_out,
+        double* query_prepare_seconds_out,
+        double* launch_seconds_out,
+        double* result_download_seconds_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_prepared_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64_reduction_optix(
+            reinterpret_cast<PreparedStaticTriangleScene3D*>(scene_handle),
+            reinterpret_cast<PreparedPrimitiveGroupedI64Payload3D*>(payload_handle),
+            reinterpret_cast<PreparedRayBatch3D*>(ray_batch_handle),
+            reduction,
+            true,
+            group_counts_out,
+            group_sums_out,
+            group_mins_out,
+            group_maxs_out,
+            hit_event_count_out,
+            traversal_seconds_out,
+            query_prepare_seconds_out,
+            launch_seconds_out,
+            result_download_seconds_out);
     }, error_out, error_size);
 }
 
@@ -2322,6 +2639,36 @@ extern "C" int rtdl_optix_static_triangle_scene_3d_ray_batch_prepared_primitive_
             reinterpret_cast<PreparedPrimitiveGroupedI64Payload3D*>(payload_handle),
             reinterpret_cast<PreparedRayBatch3D*>(ray_batch_handle),
             reduction,
+            false,
+            group_counts_out,
+            group_sums_out,
+            group_mins_out,
+            group_maxs_out,
+            hit_event_count_out,
+            traversal_seconds_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64_reduction_signed_v2(
+        void* scene_handle,
+        void* payload_handle,
+        void* ray_batch_handle,
+        uint32_t reduction,
+        uint64_t* group_counts_out,
+        uint64_t* group_sums_out,
+        uint64_t* group_mins_out,
+        uint64_t* group_maxs_out,
+        uint64_t* hit_event_count_out,
+        double* traversal_seconds_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_prepared_static_triangle_scene_3d_ray_batch_prepared_primitive_grouped_i64_reduction_optix(
+            reinterpret_cast<PreparedStaticTriangleScene3D*>(scene_handle),
+            reinterpret_cast<PreparedPrimitiveGroupedI64Payload3D*>(payload_handle),
+            reinterpret_cast<PreparedRayBatch3D*>(ray_batch_handle),
+            reduction,
+            true,
             group_counts_out,
             group_sums_out,
             group_mins_out,
@@ -2971,6 +3318,83 @@ extern "C" int rtdl_optix_collect_prepared_aabb_index_2d_range_intersection_rows
     }, error_out, error_size);
 }
 
+extern "C" int rtdl_optix_prepare_action_aabb_candidates_2d(
+        const RtdlAabb2D* boxes, size_t box_count,
+        void** prepared_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared_out)
+            throw std::runtime_error("prepared_out must not be null");
+        if (!boxes && box_count != 0)
+            throw std::runtime_error("boxes pointer must not be null when box_count is nonzero");
+        *prepared_out = nullptr;
+        *prepared_out = prepare_aabb_index_2d_optix(boxes, box_count, false);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_run_prepared_action_aabb_filter_bounded_emit_2d(
+        void* prepared,
+        const RtdlAabb2D* box_queries, size_t box_query_count,
+        double minimum_overlap_area,
+        RtdlAabbPairRow* rows_out, size_t row_capacity,
+        size_t* emitted_count_out,
+        uint32_t* overflowed_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!std::isfinite(minimum_overlap_area) || minimum_overlap_area < 0.0)
+            throw std::runtime_error(
+                "Action minimum_overlap_area must be finite and non-negative");
+        collect_prepared_aabb_index_2d_range_intersection_rows_optix(
+            reinterpret_cast<PreparedAabbIndex2DOptix*>(prepared),
+            box_queries,
+            box_query_count,
+            rows_out,
+            row_capacity,
+            emitted_count_out,
+            overflowed_out,
+            true,
+            static_cast<float>(minimum_overlap_area));
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_run_prepared_action_aabb_filter_bounded_emit_2d_v2(
+        void* prepared,
+        const RtdlAabb2D* box_queries, size_t box_query_count,
+        double minimum_overlap_area,
+        uint32_t minimum_overlap_boundary,
+        RtdlAabbPairRow* rows_out, size_t row_capacity,
+        size_t* emitted_count_out,
+        uint32_t* overflowed_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!std::isfinite(minimum_overlap_area) || minimum_overlap_area < 0.0)
+            throw std::runtime_error(
+                "Action minimum_overlap_area must be finite and non-negative");
+        if (minimum_overlap_boundary > 1u)
+            throw std::runtime_error(
+                "Action minimum_overlap_boundary must be 0 (closed) or 1 (open)");
+        collect_prepared_aabb_index_2d_range_intersection_rows_optix(
+            reinterpret_cast<PreparedAabbIndex2DOptix*>(prepared),
+            box_queries,
+            box_query_count,
+            rows_out,
+            row_capacity,
+            emitted_count_out,
+            overflowed_out,
+            true,
+            static_cast<float>(minimum_overlap_area),
+            minimum_overlap_boundary);
+    }, error_out, error_size);
+}
+
+extern "C" void rtdl_optix_destroy_prepared_action_aabb_candidates_2d(void* prepared)
+{
+    delete reinterpret_cast<PreparedAabbIndex2DOptix*>(prepared);
+}
+
 extern "C" int rtdl_optix_collect_prepared_aabb_index_2d_point_contains_rows(
         void* prepared,
         const RtdlPoint* point_queries, size_t point_query_count,
@@ -3392,6 +3816,140 @@ extern "C" int rtdl_optix_collect_cell_mbr_nearest_frontier_3d_v4(
             emitted_count_out,
             attempted_count_out,
             overflowed_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_prepare_point_column_domain_3d_v1(
+        const double* target_coords,
+        const int64_t* target_ids,
+        size_t target_count,
+        uint64_t* prepared_domain_token_out,
+        char* error_out,
+        size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared_domain_token_out) {
+            throw std::runtime_error(
+                "prepared point-column-domain token output must not be null");
+        }
+        *prepared_domain_token_out = 0;
+        *prepared_domain_token_out =
+            prepare_point_column_domain_3d_registry(
+                target_coords,
+                target_ids,
+                target_count);
+    }, error_out, error_size);
+}
+
+extern "C" int
+rtdl_optix_collect_cell_mbr_nearest_frontier_3d_prepared_domain_v1(
+        const double* query_coords,
+        const int64_t* query_point_ids,
+        size_t query_count,
+        const int64_t* cell_ids,
+        const uint64_t* point_begin_offsets,
+        const uint64_t* point_counts,
+        const double* cell_mbr_min,
+        const double* cell_mbr_max,
+        size_t cell_count,
+        double radius,
+        const double* current_best_distances,
+        const int64_t* current_best_item_ids,
+        uint64_t prepared_domain_token,
+        const uint64_t* point_row_indices,
+        size_t point_row_index_count,
+        uint64_t max_inline_points,
+        uint32_t emit_pruned_rows,
+        uint32_t sort_rows,
+        uint32_t inline_nearest,
+        uint64_t row_capacity,
+        int64_t* frontier_kind_codes_out,
+        int64_t* query_row_ids_out,
+        int64_t* query_point_ids_out,
+        int64_t* cell_ids_out,
+        uint64_t* point_begin_offsets_out,
+        uint64_t* point_counts_out,
+        double* min_distances_out,
+        double* max_distances_out,
+        double* nearest_distances_out,
+        int64_t* nearest_item_ids_out,
+        uint64_t* inline_cell_hit_count_out,
+        uint64_t* inline_point_eval_count_out,
+        uint64_t* emitted_count_out,
+        uint64_t* attempted_count_out,
+        uint32_t* overflowed_out,
+        char* error_out,
+        size_t error_size)
+{
+    return handle_native_call([&]() {
+        collect_cell_mbr_nearest_frontier_3d_prepared_domain_v1(
+            query_coords,
+            query_point_ids,
+            query_count,
+            cell_ids,
+            point_begin_offsets,
+            point_counts,
+            cell_mbr_min,
+            cell_mbr_max,
+            cell_count,
+            radius,
+            current_best_distances,
+            current_best_item_ids,
+            prepared_domain_token,
+            point_row_indices,
+            point_row_index_count,
+            max_inline_points,
+            emit_pruned_rows,
+            sort_rows,
+            inline_nearest,
+            row_capacity,
+            frontier_kind_codes_out,
+            query_row_ids_out,
+            query_point_ids_out,
+            cell_ids_out,
+            point_begin_offsets_out,
+            point_counts_out,
+            min_distances_out,
+            max_distances_out,
+            nearest_distances_out,
+            nearest_item_ids_out,
+            inline_cell_hit_count_out,
+            inline_point_eval_count_out,
+            emitted_count_out,
+            attempted_count_out,
+            overflowed_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_get_prepared_point_column_domain_3d_telemetry_v1(
+        uint64_t prepared_domain_token,
+        uint64_t* validation_count_out,
+        uint64_t* execute_count_out,
+        uint64_t* hash_set_construction_count_out,
+        uint64_t* target_count_out,
+        uint64_t* creator_pid_out,
+        char* error_out,
+        size_t error_size)
+{
+    return handle_native_call([&]() {
+        get_prepared_point_column_domain_3d_telemetry(
+            prepared_domain_token,
+            validation_count_out,
+            execute_count_out,
+            hash_set_construction_count_out,
+            target_count_out,
+            creator_pid_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_destroy_prepared_point_column_domain_3d_v1(
+        uint64_t prepared_domain_token,
+        char* error_out,
+        size_t error_size)
+{
+    return handle_native_call([&]() {
+        destroy_prepared_point_column_domain_3d_registry(
+            prepared_domain_token);
     }, error_out, error_size);
 }
 
@@ -6594,7 +7152,24 @@ extern "C" int rtdl_optix_run_prepared_exact_fixed_radius_neighbors_3d(
     return handle_native_call([&]() {
         run_prepared_exact_fixed_radius_neighbors_grid_3d_optix(
             reinterpret_cast<PreparedFixedRadiusNeighborsGrid3D*>(prepared),
-            query_points, query_count, radius, k_max, rows_out, row_count_out);
+            query_points, query_count, radius, k_max, 0u, rows_out, row_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_run_prepared_exact_fixed_radius_neighbors_3d_v2(
+        void* prepared,
+        const RtdlPoint3D* query_points, size_t query_count,
+        double radius,
+        size_t k_max,
+        uint32_t radius_boundary_mode,
+        RtdlFixedRadiusNeighborRow** rows_out, size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_prepared_exact_fixed_radius_neighbors_grid_3d_optix(
+            reinterpret_cast<PreparedFixedRadiusNeighborsGrid3D*>(prepared),
+            query_points, query_count, radius, k_max, radius_boundary_mode,
+            rows_out, row_count_out);
     }, error_out, error_size);
 }
 
@@ -6609,7 +7184,30 @@ extern "C" int rtdl_optix_run_prepared_ranked_fixed_radius_neighbors_3d(
     return handle_native_call([&]() {
         run_prepared_ranked_fixed_radius_neighbors_grid_3d_optix(
             reinterpret_cast<PreparedFixedRadiusNeighborsGrid3D*>(prepared),
-            query_points, query_count, radius, k_max, rows_out, row_count_out);
+            query_points, query_count,
+            0.0, radius, k_max, 0u, 0u,
+            rows_out, row_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_run_prepared_ranked_distance_window_neighbors_3d(
+        void* prepared,
+        const RtdlPoint3D* query_points, size_t query_count,
+        double minimum_distance,
+        double radius,
+        size_t k_max,
+        uint32_t minimum_boundary_mode,
+        uint32_t radius_boundary_mode,
+        RtdlKnnNeighborRow** rows_out, size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_prepared_ranked_fixed_radius_neighbors_grid_3d_optix(
+            reinterpret_cast<PreparedFixedRadiusNeighborsGrid3D*>(prepared),
+            query_points, query_count,
+            minimum_distance, radius, k_max,
+            minimum_boundary_mode, radius_boundary_mode,
+            rows_out, row_count_out);
     }, error_out, error_size);
 }
 
@@ -6856,6 +7454,103 @@ extern "C" int rtdl_optix_prepare_fixed_radius_count_threshold_3d(
         *prepared_out = prepare_fixed_radius_count_threshold_3d_rt_optix(
             search_points, search_count, max_radius);
     }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_prepare_action_point_candidates_3d(
+        const RtdlPoint3D* search_points, size_t search_count,
+        double max_distance,
+        void** prepared_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared_out)
+            throw std::runtime_error("prepared_out must not be null");
+        if (!search_points && search_count != 0)
+            throw std::runtime_error("search_points pointer must not be null when search_count is nonzero");
+        if (!std::isfinite(max_distance) || max_distance <= 0.0)
+            throw std::runtime_error("Action point-candidate max_distance must be finite and positive");
+        if (search_count > static_cast<size_t>(UINT32_MAX))
+            throw std::runtime_error("Action point-candidate search_count exceeds uint32 limit");
+        *prepared_out = nullptr;
+        *prepared_out = prepare_fixed_radius_count_threshold_3d_rt_optix(
+            search_points, search_count, max_distance);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_run_prepared_action_bounded_selection_3d(
+        void* prepared,
+        const RtdlPoint3D* query_points, size_t query_count,
+        double minimum_distance,
+        double maximum_distance,
+        size_t per_scope_limit,
+        uint32_t minimum_boundary_mode,
+        uint32_t maximum_boundary_mode,
+        RtdlFixedRadiusNeighborRow** rows_out,
+        size_t* row_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_prepared_action_bounded_selection_3d_optix(
+            reinterpret_cast<PreparedFixedRadiusCountThreshold3DRt*>(prepared),
+            query_points,
+            query_count,
+            minimum_distance,
+            maximum_distance,
+            per_scope_limit,
+            minimum_boundary_mode,
+            maximum_boundary_mode,
+            rows_out,
+            row_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" void rtdl_optix_destroy_prepared_action_point_candidates_3d(void* prepared)
+{
+    delete reinterpret_cast<PreparedFixedRadiusCountThreshold3DRt*>(prepared);
+}
+
+extern "C" int rtdl_optix_prepare_metric_knn_3d(
+        const RtdlPoint3D* search_points, size_t search_count,
+        double initial_radius,
+        void** prepared_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared_out)
+            throw std::runtime_error("metric_knn_3d prepared_out must not be null");
+        *prepared_out = nullptr;
+        *prepared_out = prepare_metric_knn_3d_optix(
+            search_points, search_count, initial_radius);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_execute_prepared_metric_knn_3d(
+        void* prepared,
+        const RtdlPoint3D* query_points, size_t query_count,
+        uint32_t metric_kind,
+        size_t k,
+        double initial_radius,
+        size_t maximum_rounds,
+        RtdlFixedRadiusNeighborRow** rows_out,
+        size_t* row_count_out,
+        size_t* completed_round_count_out,
+        double* final_radius_out,
+        size_t* refit_count_out,
+        char* error_out, size_t error_size)
+{
+    return handle_native_call([&]() {
+        execute_prepared_metric_knn_3d_optix(
+            reinterpret_cast<PreparedMetricKnn3DOptix*>(prepared),
+            query_points, query_count, metric_kind, k,
+            initial_radius, maximum_rounds,
+            rows_out, row_count_out,
+            completed_round_count_out, final_radius_out, refit_count_out);
+    }, error_out, error_size);
+}
+
+extern "C" void rtdl_optix_destroy_prepared_metric_knn_3d(void* prepared)
+{
+    delete reinterpret_cast<PreparedMetricKnn3DOptix*>(prepared);
 }
 
 extern "C" int rtdl_optix_write_prepared_fixed_radius_count_threshold_3d_device_outputs(
@@ -8591,6 +9286,228 @@ extern "C" int rtdl_optix_collect_k_level_graph_replay_probe(
 
         cleanup();
     }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_prepare_certified_nearest_state_3d(
+        const double* target_coords,
+        const int64_t* target_ids,
+        size_t target_count,
+        const int64_t* cell_ids,
+        const int64_t* point_begin_offsets,
+        const int64_t* point_counts,
+        const double* cell_mbr_min,
+        const double* cell_mbr_max,
+        size_t cell_count,
+        const int64_t* point_row_indices,
+        size_t point_row_index_count,
+        const double* query_domain_lower,
+        const double* query_domain_upper,
+        uint64_t max_inline_points,
+        uint64_t max_heavy_point_evaluations,
+        void** prepared_out,
+        double* traversal_radius_out,
+        double* prepare_seconds_out,
+        char* error_out,
+        size_t error_size)
+{
+    return handle_native_call([&]() {
+        if (!prepared_out)
+            throw std::runtime_error(
+                "prepared OptiX nearest output handle pointer must not be null");
+        *prepared_out = prepare_cell_mbr_exact_nearest_3d_optix(
+            target_coords,
+            target_ids,
+            target_count,
+            cell_ids,
+            point_begin_offsets,
+            point_counts,
+            cell_mbr_min,
+            cell_mbr_max,
+            cell_count,
+            point_row_indices,
+            point_row_index_count,
+            query_domain_lower,
+            query_domain_upper,
+            max_inline_points,
+            max_heavy_point_evaluations,
+            traversal_radius_out,
+            prepare_seconds_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_run_prepared_certified_nearest_global_witness_3d(
+        void* prepared_handle,
+        const double* query_coords,
+        const int64_t* query_ids,
+        size_t query_count,
+        const int64_t* validation_sample_indices,
+        size_t validation_sample_count,
+        int64_t* witness_source_id_out,
+        int64_t* witness_item_id_out,
+        double* witness_distance_out,
+        int64_t* validation_item_ids_out,
+        double* validation_distances_out,
+        uint64_t* candidate_distance_evaluations_out,
+        uint64_t* scanned_cell_count_out,
+        uint64_t* heavy_point_evaluations_out,
+        uint64_t* optix_launch_count_out,
+        double* upload_seconds_out,
+        double* optix_seconds_out,
+        double* continuation_reducer_seconds_out,
+        double* total_seconds_out,
+        char* error_out,
+        size_t error_size)
+{
+    return handle_native_call([&]() {
+        run_prepared_cell_mbr_exact_nearest_3d_optix(
+            reinterpret_cast<PreparedCellMbrExactNearest3D*>(prepared_handle),
+            query_coords,
+            query_ids,
+            query_count,
+            validation_sample_indices,
+            validation_sample_count,
+            witness_source_id_out,
+            witness_item_id_out,
+            witness_distance_out,
+            validation_item_ids_out,
+            validation_distances_out,
+            candidate_distance_evaluations_out,
+            scanned_cell_count_out,
+            heavy_point_evaluations_out,
+            optix_launch_count_out,
+            upload_seconds_out,
+            optix_seconds_out,
+            continuation_reducer_seconds_out,
+            total_seconds_out);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_destroy_prepared_certified_nearest_state_3d(
+        void* prepared_handle,
+        char* error_out,
+        size_t error_size)
+{
+    return handle_native_call([&]() {
+        auto* prepared =
+            reinterpret_cast<PreparedCellMbrExactNearest3D*>(prepared_handle);
+        if (!prepared)
+            throw std::runtime_error(
+                "prepared OptiX nearest destroy handle is null");
+        CU_CHECK(cuCtxSynchronize());
+        delete prepared;
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_prepare_aggregate_hierarchy_continuation_3d(
+        const double* point_x,
+        const double* point_y,
+        const double* point_z,
+        const double* point_weight,
+        uint64_t point_count,
+        const double* node_cx,
+        const double* node_cy,
+        const double* node_cz,
+        const double* node_half_size,
+        const double* node_weight,
+        uint64_t node_count,
+        const int64_t* member_offsets,
+        const int64_t* member_indices,
+        uint64_t member_count,
+        const int64_t* child_offsets,
+        const int64_t* child_indices,
+        uint64_t child_count,
+        const int64_t* node_next_index,
+        const int64_t* node_rope_index,
+        int64_t root_node_index,
+        void** prepared_out,
+        double* prepare_total_seconds_out,
+        char* error_out,
+        uint64_t error_capacity)
+{
+    const auto total_start = std::chrono::steady_clock::now();
+    return handle_native_call([&]() {
+        if (!prepared_out || !prepare_total_seconds_out)
+            throw std::runtime_error(
+                "prepared OptiX aggregate hierarchy output pointers must not be null");
+        *prepared_out = nullptr;
+        *prepare_total_seconds_out = 0.0;
+        *prepared_out = prepare_aggregate_hierarchy_continuation_3d_rt_optix(
+            point_x,
+            point_y,
+            point_z,
+            point_weight,
+            point_count,
+            node_cx,
+            node_cy,
+            node_cz,
+            node_half_size,
+            node_weight,
+            node_count,
+            member_offsets,
+            member_indices,
+            member_count,
+            child_offsets,
+            child_indices,
+            child_count,
+            node_next_index,
+            node_rope_index,
+            root_node_index);
+        *prepare_total_seconds_out = std::chrono::duration<double>(
+            std::chrono::steady_clock::now() - total_start).count();
+    }, error_out, static_cast<size_t>(error_capacity));
+}
+
+extern "C" int rtdl_optix_execute_prepared_aggregate_hierarchy_continuation_3d(
+        void* prepared_handle,
+        uint32_t reducer_kind,
+        double max_ratio,
+        double softening,
+        uint64_t output_capacity,
+        double* reducer_value_0_out,
+        int64_t* visited_node_count_out,
+        int64_t* aggregate_contribution_count_out,
+        int64_t* exact_contribution_count_out,
+        int64_t* status_code_out,
+        double* traversal_seconds_out,
+        double* download_seconds_out,
+        double* total_seconds_out,
+        char* error_out,
+        uint64_t error_capacity)
+{
+    return handle_native_call([&]() {
+        execute_prepared_aggregate_hierarchy_continuation_3d_rt_optix(
+            reinterpret_cast<PreparedAggregateHierarchyContinuation3DRt*>(
+                prepared_handle),
+            reducer_kind,
+            max_ratio,
+            softening,
+            output_capacity,
+            reducer_value_0_out,
+            visited_node_count_out,
+            aggregate_contribution_count_out,
+            exact_contribution_count_out,
+            status_code_out,
+            traversal_seconds_out,
+            download_seconds_out,
+            total_seconds_out);
+    }, error_out, static_cast<size_t>(error_capacity));
+}
+
+extern "C" int rtdl_optix_close_prepared_aggregate_hierarchy_continuation_3d(
+        void* prepared_handle,
+        char* error_out,
+        uint64_t error_capacity)
+{
+    return handle_native_call([&]() {
+        auto* prepared =
+            reinterpret_cast<PreparedAggregateHierarchyContinuation3DRt*>(
+                prepared_handle);
+        if (!prepared)
+            throw std::runtime_error(
+                "prepared OptiX aggregate hierarchy close handle is null");
+        CU_CHECK(cuCtxSynchronize());
+        delete prepared;
+    }, error_out, static_cast<size_t>(error_capacity));
 }
 
 extern "C" int rtdl_optix_collect_k_level_graph_update_probe(

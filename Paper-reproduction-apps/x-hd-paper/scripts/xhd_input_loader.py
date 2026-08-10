@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+import json
 from pathlib import Path
 
 import numpy as np
@@ -465,6 +467,77 @@ def translate_point_matrix_to_min_bound(matrix: np.ndarray, *, copy: bool = Fals
         coords = coords.copy()
     coords -= coords.min(axis=0)
     return coords
+
+
+def canonical_translated_f64_matrix_identity(matrix: np.ndarray) -> dict[str, object]:
+    """Return the byte identity of one post-translation X-HD point matrix.
+
+    The identity is deliberately over the numeric matrix consumed by a physical
+    route, not merely the source file.  This makes a float32 round trip or any
+    other method-specific preprocessing visible to the comparison harness.
+    """
+
+    coords = np.asarray(matrix)
+    if (
+        coords.ndim != 2
+        or coords.shape[0] == 0
+        or coords.dtype != np.dtype(np.float64)
+        or not coords.flags.c_contiguous
+        or not np.isfinite(coords).all()
+    ):
+        raise ValueError(
+            "canonical X-HD input must be a finite C-contiguous float64 matrix"
+        )
+    canonical = np.asarray(coords, dtype=np.dtype("<f8"), order="C")
+    body: dict[str, object] = {
+        "schema": "rtdl.xhd.canonical_translated_f64_matrix.v1",
+        "dtype": "ieee754-binary64-little-endian",
+        "shape": [int(canonical.shape[0]), int(canonical.shape[1])],
+        "canonical_bytes_sha256": hashlib.sha256(
+            canonical.tobytes(order="C")
+        ).hexdigest(),
+    }
+    body["identity_sha256"] = hashlib.sha256(
+        json.dumps(
+            body, sort_keys=True, separators=(",", ":"), ensure_ascii=True
+        ).encode("ascii")
+    ).hexdigest()
+    return body
+
+
+def load_canonical_translated_f64_points(
+    path: Path, *, n_dims: int, input_type: str
+) -> tuple[np.ndarray, dict[str, object]]:
+    """Load and translate one X-HD input under the shared comparison ABI."""
+
+    coords = np.ascontiguousarray(
+        load_points_matrix(path, n_dims=n_dims, input_type=input_type),
+        dtype=np.float64,
+    )
+    coords = translate_point_matrix_to_min_bound(coords, copy=False)
+    coords = np.ascontiguousarray(coords, dtype=np.dtype("<f8"))
+    return coords, canonical_translated_f64_matrix_identity(coords)
+
+
+def canonical_translated_f64_pair_identity(
+    source: dict[str, object], target: dict[str, object]
+) -> dict[str, object]:
+    """Bind the two post-preprocessing matrices used by one X-HD endpoint."""
+
+    expected_schema = "rtdl.xhd.canonical_translated_f64_matrix.v1"
+    if source.get("schema") != expected_schema or target.get("schema") != expected_schema:
+        raise ValueError("X-HD canonical pair has a noncanonical matrix identity")
+    body: dict[str, object] = {
+        "schema": "rtdl.xhd.canonical_translated_f64_pair.v1",
+        "source": dict(source),
+        "target": dict(target),
+    }
+    body["identity_sha256"] = hashlib.sha256(
+        json.dumps(
+            body, sort_keys=True, separators=(",", ":"), ensure_ascii=True
+        ).encode("ascii")
+    ).hexdigest()
+    return body
 
 
 def normalize_point_matrix_to_author_unit_box(matrix: np.ndarray, *, copy: bool = False) -> np.ndarray:
