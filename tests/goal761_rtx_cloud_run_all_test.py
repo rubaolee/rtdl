@@ -1,0 +1,126 @@
+from __future__ import annotations
+
+import json
+import subprocess
+import sys
+import tempfile
+import unittest
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+class Goal761RtxCloudRunAllTest(unittest.TestCase):
+    def test_dry_run_emits_manifest_commands_without_running_benchmarks(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output = Path(tmpdir) / "summary.json"
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    "scripts/goal761_rtx_cloud_run_all.py",
+                    "--dry-run",
+                    "--only",
+                    "robot_collision_screening",
+                    "--output-json",
+                    str(output),
+                ],
+                cwd=ROOT,
+                check=True,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+            payload = json.loads(completed.stdout)
+            self.assertEqual(payload["suite"], "goal761_rtx_cloud_run_all")
+            self.assertTrue(payload["dry_run"])
+            self.assertEqual(payload["entry_count"], 1)
+            self.assertEqual(payload["unique_command_count"], 1)
+            self.assertEqual(payload["results"][0]["app"], "robot_collision_screening")
+            self.assertEqual(
+                payload["results"][0]["baseline_review_contract"]["status"],
+                "required_before_public_speedup_claim",
+            )
+            self.assertEqual(payload["results"][0]["result"]["status"], "dry_run")
+            self.assertEqual(payload["results"][0]["result"]["execution_mode"], "executed")
+            self.assertTrue(output.exists())
+
+    def test_duplicate_manifest_commands_are_reused(self) -> None:
+        module = __import__("scripts.goal761_rtx_cloud_run_all", fromlist=["run_all"])
+        payload = module.run_all(dry_run=True, only={"outlier_detection", "dbscan_clustering"})
+        self.assertEqual(payload["entry_count"], 2)
+        self.assertEqual(payload["unique_command_count"], 1)
+        modes = [row["result"]["execution_mode"] for row in payload["results"]]
+        self.assertEqual(modes, ["executed", "reused_command_result"])
+
+    def test_manifest_records_deferred_segment_polygon_native_gate(self) -> None:
+        module = __import__("scripts.goal759_rtx_cloud_benchmark_manifest", fromlist=["build_manifest"])
+        manifest = module.build_manifest()
+        deferred = {
+            row["path_name"]: row
+            for row in manifest["deferred_entries"]
+        }
+        active_path_names = {
+            row["path_name"]
+            for row in manifest["entries"]
+        }
+        native = deferred["segment_polygon_hitcount_native_experimental"]
+        self.assertEqual(native["env"], {})
+        self.assertIn("scripts/goal933_prepared_segment_polygon_optix_profiler.py", native["command"])
+        self.assertNotIn("segment_polygon_hitcount_native_experimental", active_path_names)
+        self.assertIn("Goal933", native["reason_deferred"])
+
+    def test_runner_can_include_deferred_entries_selectively(self) -> None:
+        module = __import__("scripts.goal761_rtx_cloud_run_all", fromlist=["run_all"])
+        payload = module.run_all(
+            dry_run=True,
+            only={"graph_analytics"},
+            include_deferred=True,
+        )
+        self.assertEqual(payload["entry_count"], 1)
+        self.assertTrue(payload["include_deferred"])
+        self.assertEqual(payload["results"][0]["manifest_section"], "deferred_entries")
+        self.assertEqual(payload["results"][0]["app"], "graph_analytics")
+        self.assertIn("baseline_review_contract", payload["results"][0])
+
+    def test_promoted_spatial_entries_are_active_not_deferred(self) -> None:
+        module = __import__("scripts.goal761_rtx_cloud_run_all", fromlist=["run_all"])
+        payload = module.run_all(
+            dry_run=True,
+            only={"service_coverage_gaps"},
+            include_deferred=True,
+        )
+        self.assertEqual(payload["entry_count"], 1)
+        self.assertTrue(payload["include_deferred"])
+        self.assertEqual(payload["results"][0]["manifest_section"], "entries")
+        self.assertEqual(payload["results"][0]["app"], "service_coverage_gaps")
+        self.assertIn("baseline_review_contract", payload["results"][0])
+
+    def test_runner_caches_distinct_env_overrides_separately(self) -> None:
+        module = __import__("scripts.goal761_rtx_cloud_run_all", fromlist=["_run_command"])
+        first = module._run_command(["python3", "-V"], dry_run=True, env_overrides={"A": "1"})
+        second = module._run_command(["python3", "-V"], dry_run=True, env_overrides={"A": "2"})
+        self.assertEqual(first["env_overrides"], {"A": "1"})
+        self.assertEqual(second["env_overrides"], {"A": "2"})
+
+    def test_runner_reports_source_commit_metadata(self) -> None:
+        module = __import__("scripts.goal761_rtx_cloud_run_all", fromlist=["run_all"])
+        payload = module.run_all(dry_run=True, only={"robot_collision_screening"})
+        self.assertIn("source_commit", payload)
+        self.assertTrue(payload["source_commit"])
+
+    def test_runner_accepts_explicit_source_commit_env_fallback(self) -> None:
+        module = __import__("scripts.goal761_rtx_cloud_run_all", fromlist=["_source_commit"])
+        original = module.os.environ.get("RTDL_SOURCE_COMMIT")
+        try:
+            module.os.environ["RTDL_SOURCE_COMMIT"] = "explicit-source-commit-for-rsync-pod"
+            self.assertEqual(module._source_commit(), "explicit-source-commit-for-rsync-pod")
+        finally:
+            if original is None:
+                module.os.environ.pop("RTDL_SOURCE_COMMIT", None)
+            else:
+                module.os.environ["RTDL_SOURCE_COMMIT"] = original
+
+
+if __name__ == "__main__":
+    unittest.main()

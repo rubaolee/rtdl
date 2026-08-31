@@ -1,0 +1,329 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+
+NATIVE = "native"
+NATIVE_ASSISTED = "native_assisted"
+COMPATIBILITY_FALLBACK = "compatibility_fallback"
+UNSUPPORTED_EXPLICIT = "unsupported_explicit"
+
+ENGINE_SUPPORT_STATUSES = (
+    NATIVE,
+    NATIVE_ASSISTED,
+    COMPATIBILITY_FALLBACK,
+    UNSUPPORTED_EXPLICIT,
+)
+
+RTDL_ENGINES = ("embree", "optix", "vulkan", "hiprt", "apple_rt")
+
+
+@dataclass(frozen=True)
+class EngineFeatureSupport:
+    feature: str
+    engine: str
+    status: str
+    note: str
+
+
+def _support(feature: str, engine: str, status: str, note: str) -> EngineFeatureSupport:
+    return EngineFeatureSupport(feature=feature, engine=engine, status=status, note=note)
+
+
+_FEATURE_MATRIX: dict[str, dict[str, EngineFeatureSupport]] = {
+    "line_segment_intersection_2d": {
+        "embree": _support("line_segment_intersection_2d", "embree", NATIVE, "Embree BVH traversal plus exact segment refinement."),
+        "optix": _support("line_segment_intersection_2d", "optix", NATIVE, "OptiX native 2D segment workload path."),
+        "vulkan": _support("line_segment_intersection_2d", "vulkan", NATIVE, "Vulkan RT native 2D segment workload path."),
+        "hiprt": _support("line_segment_intersection_2d", "hiprt", NATIVE, "HIPRT native 2D segment workload path when the library is available."),
+        "apple_rt": _support("line_segment_intersection_2d", "apple_rt", NATIVE_ASSISTED, "Apple MPS/Metal path with exact 2D acceptance where available."),
+    },
+    "planar_map_lsi_count_2d": {
+        "embree": _support("planar_map_lsi_count_2d", "embree", UNSUPPORTED_EXPLICIT, "No public Embree planar-map/CDB LSI scalar-count front door."),
+        "optix": _support("planar_map_lsi_count_2d", "optix", NATIVE, "Prepared OptiX CDB/planar-map LSI scalar-count front door."),
+        "vulkan": _support("planar_map_lsi_count_2d", "vulkan", UNSUPPORTED_EXPLICIT, "No public Vulkan planar-map/CDB LSI scalar-count front door."),
+        "hiprt": _support("planar_map_lsi_count_2d", "hiprt", UNSUPPORTED_EXPLICIT, "No public HIPRT planar-map/CDB LSI scalar-count front door."),
+        "apple_rt": _support("planar_map_lsi_count_2d", "apple_rt", UNSUPPORTED_EXPLICIT, "No public Apple RT planar-map/CDB LSI scalar-count front door."),
+    },
+    "planar_map_point_location_2d": {
+        "embree": _support("planar_map_point_location_2d", "embree", UNSUPPORTED_EXPLICIT, "No public Embree planar-map point-location front door."),
+        "optix": _support("planar_map_point_location_2d", "optix", NATIVE, "Prepared OptiX CDB/planar-map point-location/PIP front door."),
+        "vulkan": _support("planar_map_point_location_2d", "vulkan", UNSUPPORTED_EXPLICIT, "No public Vulkan planar-map point-location front door."),
+        "hiprt": _support("planar_map_point_location_2d", "hiprt", UNSUPPORTED_EXPLICIT, "No public HIPRT planar-map point-location front door."),
+        "apple_rt": _support("planar_map_point_location_2d", "apple_rt", UNSUPPORTED_EXPLICIT, "No public Apple RT planar-map point-location front door."),
+    },
+    "prepared_segment_pair_exact_count_2d": {
+        "embree": _support("prepared_segment_pair_exact_count_2d", "embree", COMPATIBILITY_FALLBACK, "Counts emitted prepared segment-pair rows; no dedicated scalar-count native export."),
+        "optix": _support("prepared_segment_pair_exact_count_2d", "optix", NATIVE, "Prepared segment-pair scene plus scalar exact-count native export."),
+        "vulkan": _support("prepared_segment_pair_exact_count_2d", "vulkan", COMPATIBILITY_FALLBACK, "Counts emitted segment-pair rows; no prepared scalar-count native export."),
+        "hiprt": _support("prepared_segment_pair_exact_count_2d", "hiprt", NATIVE, "Goal3766 prepared segment-pair scene plus scalar exact-count native export."),
+        "apple_rt": _support("prepared_segment_pair_exact_count_2d", "apple_rt", COMPATIBILITY_FALLBACK, "Counts emitted segment-pair rows; no prepared scalar-count native export."),
+    },
+    "prepared_shape_pair_active_count_2d": {
+        "embree": _support("prepared_shape_pair_active_count_2d", "embree", COMPATIBILITY_FALLBACK, "Counts emitted shape-pair relation rows; no dedicated scalar active-count native export."),
+        "optix": _support("prepared_shape_pair_active_count_2d", "optix", NATIVE, "Prepared shape-pair relation path plus scalar active-count native route."),
+        "vulkan": _support("prepared_shape_pair_active_count_2d", "vulkan", COMPATIBILITY_FALLBACK, "Counts emitted shape-pair relation rows; no prepared scalar active-count native export."),
+        "hiprt": _support("prepared_shape_pair_active_count_2d", "hiprt", NATIVE, "Goal3767 prepared right-shape payload plus scalar active-count query."),
+        "apple_rt": _support("prepared_shape_pair_active_count_2d", "apple_rt", COMPATIBILITY_FALLBACK, "Counts emitted shape-pair relation rows; no prepared scalar active-count native export."),
+    },
+    "prepared_aabb_query_2d": {
+        "embree": _support("prepared_aabb_query_2d", "embree", NATIVE_ASSISTED, "Generic AABB_INDEX_QUERY_2D count path lowered through columnar payload predicates."),
+        "optix": _support("prepared_aabb_query_2d", "optix", NATIVE, "Generic prepared AABB_INDEX_QUERY_2D counts and bounded row paths."),
+        "vulkan": _support("prepared_aabb_query_2d", "vulkan", COMPATIBILITY_FALLBACK, "AABB index queries require fallback/host grouping; no native prepared query contract."),
+        "hiprt": _support("prepared_aabb_query_2d", "hiprt", NATIVE, "Goal3770 prepared AABB_INDEX_QUERY_2D count path for point/range contains and range intersects."),
+        "apple_rt": _support("prepared_aabb_query_2d", "apple_rt", COMPATIBILITY_FALLBACK, "AABB index queries require fallback/host grouping; no native prepared query contract."),
+    },
+    "point_in_polygon_2d": {
+        "embree": _support("point_in_polygon_2d", "embree", NATIVE, "Embree ray-crossing traversal path."),
+        "optix": _support("point_in_polygon_2d", "optix", NATIVE, "OptiX native PIP workload path."),
+        "vulkan": _support("point_in_polygon_2d", "vulkan", NATIVE, "Vulkan RT native PIP workload path."),
+        "hiprt": _support("point_in_polygon_2d", "hiprt", NATIVE, "HIPRT native PIP workload path when the library is available."),
+        "apple_rt": _support("point_in_polygon_2d", "apple_rt", NATIVE_ASSISTED, "Apple RT/Metal path is bounded and exactness-preserving, not a broad speedup claim."),
+    },
+    "overlay_compose_2d": {
+        "embree": _support("overlay_compose_2d", "embree", NATIVE, "Embree overlap candidate traversal plus exact refinement."),
+        "optix": _support("overlay_compose_2d", "optix", NATIVE, "OptiX bounded overlay workload path."),
+        "vulkan": _support("overlay_compose_2d", "vulkan", NATIVE, "Vulkan bounded overlay workload path."),
+        "hiprt": _support("overlay_compose_2d", "hiprt", NATIVE, "HIPRT bounded overlay workload path when available."),
+        "apple_rt": _support("overlay_compose_2d", "apple_rt", NATIVE_ASSISTED, "Apple bounded overlap path uses native-assisted traversal/refinement where available."),
+    },
+    "point_nearest_segment_2d": {
+        "embree": _support("point_nearest_segment_2d", "embree", NATIVE, "Embree point-nearest-segment native helper."),
+        "optix": _support("point_nearest_segment_2d", "optix", NATIVE, "OptiX point-nearest-segment CUDA helper."),
+        "vulkan": _support("point_nearest_segment_2d", "vulkan", NATIVE, "Vulkan point-nearest-segment compute path."),
+        "hiprt": _support("point_nearest_segment_2d", "hiprt", NATIVE, "HIPRT point-nearest-segment 2D path when the library is available."),
+        "apple_rt": _support("point_nearest_segment_2d", "apple_rt", NATIVE_ASSISTED, "Apple RT point-nearest-segment native-assisted path."),
+    },
+    "point_group_nearest_witness_2d": {
+        "embree": _support("point_group_nearest_witness_2d", "embree", COMPATIBILITY_FALLBACK, "Embree uses app-layer grouping over nearest-candidate helpers; no generic point-group witness export."),
+        "optix": _support("point_group_nearest_witness_2d", "optix", NATIVE, "Prepared OptiX point-group nearest witness rows."),
+        "vulkan": _support("point_group_nearest_witness_2d", "vulkan", COMPATIBILITY_FALLBACK, "No prepared generic point-group nearest witness export."),
+        "hiprt": _support("point_group_nearest_witness_2d", "hiprt", NATIVE, "Goal3773 prepared HIPRT point-group nearest witness rows."),
+        "apple_rt": _support("point_group_nearest_witness_2d", "apple_rt", COMPATIBILITY_FALLBACK, "No prepared generic point-group nearest witness export."),
+    },
+    "point_group_nearest_witness_output_columns_2d": {
+        "embree": _support("point_group_nearest_witness_output_columns_2d", "embree", COMPATIBILITY_FALLBACK, "No prepared generic point-group nearest witness device-column export."),
+        "optix": _support("point_group_nearest_witness_output_columns_2d", "optix", NATIVE, "Prepared OptiX point-group nearest witness output columns."),
+        "vulkan": _support("point_group_nearest_witness_output_columns_2d", "vulkan", COMPATIBILITY_FALLBACK, "No prepared generic point-group nearest witness device-column export."),
+        "hiprt": _support("point_group_nearest_witness_output_columns_2d", "hiprt", NATIVE, "Goal3774 prepared HIPRT point-group nearest witness output columns."),
+        "apple_rt": _support("point_group_nearest_witness_output_columns_2d", "apple_rt", COMPATIBILITY_FALLBACK, "No prepared generic point-group nearest witness device-column export."),
+    },
+    "point_group_nearest_max_distance_2d": {
+        "embree": _support("point_group_nearest_max_distance_2d", "embree", COMPATIBILITY_FALLBACK, "Embree has a legacy max-distance nearest-candidate helper but no generic point-group reduction contract."),
+        "optix": _support("point_group_nearest_max_distance_2d", "optix", NATIVE, "Prepared OptiX point-group nearest max-distance reduction."),
+        "vulkan": _support("point_group_nearest_max_distance_2d", "vulkan", COMPATIBILITY_FALLBACK, "No prepared generic point-group max-distance reduction export."),
+        "hiprt": _support("point_group_nearest_max_distance_2d", "hiprt", NATIVE, "Goal3773 prepared HIPRT point-group nearest max-distance reduction."),
+        "apple_rt": _support("point_group_nearest_max_distance_2d", "apple_rt", COMPATIBILITY_FALLBACK, "No prepared generic point-group max-distance reduction export."),
+    },
+    "ray_triangle_hit_count_2d": {
+        "embree": _support("ray_triangle_hit_count_2d", "embree", NATIVE, "Embree ray/triangle hit-count traversal."),
+        "optix": _support("ray_triangle_hit_count_2d", "optix", NATIVE, "OptiX ray/triangle hit-count traversal."),
+        "vulkan": _support("ray_triangle_hit_count_2d", "vulkan", NATIVE, "Vulkan RT ray/triangle hit-count traversal."),
+        "hiprt": _support("ray_triangle_hit_count_2d", "hiprt", NATIVE, "HIPRT 2D ray/triangle hit-count path."),
+        "apple_rt": _support("ray_triangle_hit_count_2d", "apple_rt", NATIVE_ASSISTED, "Apple MPS-prism traversal plus exact 2D acceptance."),
+    },
+    "ray_triangle_hit_count_3d": {
+        "embree": _support("ray_triangle_hit_count_3d", "embree", NATIVE, "Embree 3D ray/triangle hit-count traversal."),
+        "optix": _support("ray_triangle_hit_count_3d", "optix", NATIVE, "OptiX 3D ray/triangle hit-count traversal."),
+        "vulkan": _support("ray_triangle_hit_count_3d", "vulkan", NATIVE, "Vulkan RT 3D ray/triangle hit-count traversal."),
+        "hiprt": _support("ray_triangle_hit_count_3d", "hiprt", NATIVE, "HIPRT 3D ray/triangle hit-count traversal."),
+        "apple_rt": _support("ray_triangle_hit_count_3d", "apple_rt", NATIVE, "Apple MPS RT 3D ray/triangle hit-count path."),
+    },
+    "ray_triangle_any_hit_2d": {
+        "embree": _support("ray_triangle_any_hit_2d", "embree", NATIVE, "Embree native early-exit any-hit via occlusion traversal."),
+        "optix": _support("ray_triangle_any_hit_2d", "optix", NATIVE, "OptiX native early-exit any-hit using ray termination."),
+        "vulkan": _support("ray_triangle_any_hit_2d", "vulkan", NATIVE, "Vulkan native early-exit any-hit using ray termination."),
+        "hiprt": _support("ray_triangle_any_hit_2d", "hiprt", NATIVE, "HIPRT traversal-loop early-exit path."),
+        "apple_rt": _support("ray_triangle_any_hit_2d", "apple_rt", NATIVE_ASSISTED, "Apple MPS-prism traversal with per-ray early exit plus exact 2D acceptance."),
+    },
+    "ray_triangle_any_hit_3d": {
+        "embree": _support("ray_triangle_any_hit_3d", "embree", NATIVE, "Embree native early-exit any-hit via occlusion traversal."),
+        "optix": _support("ray_triangle_any_hit_3d", "optix", NATIVE, "OptiX native early-exit any-hit using ray termination."),
+        "vulkan": _support("ray_triangle_any_hit_3d", "vulkan", NATIVE, "Vulkan native early-exit any-hit using ray termination."),
+        "hiprt": _support("ray_triangle_any_hit_3d", "hiprt", NATIVE, "HIPRT traversal-loop early-exit path."),
+        "apple_rt": _support("ray_triangle_any_hit_3d", "apple_rt", NATIVE, "Apple MPS RT nearest-intersection existence path."),
+    },
+    "ray_triangle_closest_hit_3d": {
+        "embree": _support("ray_triangle_closest_hit_3d", "embree", NATIVE, "Embree closest-hit traversal."),
+        "optix": _support("ray_triangle_closest_hit_3d", "optix", NATIVE, "OptiX closest-hit traversal."),
+        "vulkan": _support("ray_triangle_closest_hit_3d", "vulkan", NATIVE, "Vulkan RT closest-hit traversal where the backend is built."),
+        "hiprt": _support("ray_triangle_closest_hit_3d", "hiprt", NATIVE, "Goal3775 HIPRT closest-hit traversal where the backend is built."),
+        "apple_rt": _support("ray_triangle_closest_hit_3d", "apple_rt", NATIVE, "Apple MPS RT closest-hit traversal."),
+    },
+    "collect_k_bounded_i64": {
+        "embree": _support("collect_k_bounded_i64", "embree", NATIVE, "Generic Embree COLLECT_K_BOUNDED i64 host-native materializer."),
+        "optix": _support("collect_k_bounded_i64", "optix", NATIVE, "Generic OptiX COLLECT_K_BOUNDED i64 host-native materializer."),
+        "vulkan": _support("collect_k_bounded_i64", "vulkan", COMPATIBILITY_FALLBACK, "No generic Vulkan COLLECT_K_BOUNDED i64 native materializer."),
+        "hiprt": _support("collect_k_bounded_i64", "hiprt", NATIVE, "Goal3776 generic HIPRT COLLECT_K_BOUNDED i64 host-native materializer."),
+        "apple_rt": _support("collect_k_bounded_i64", "apple_rt", COMPATIBILITY_FALLBACK, "No generic Apple RT COLLECT_K_BOUNDED i64 native materializer."),
+    },
+    "aggregate_frontier_collect_2d": {
+        "embree": _support("aggregate_frontier_collect_2d", "embree", NATIVE, "Generic Embree aggregate-frontier row collector."),
+        "optix": _support("aggregate_frontier_collect_2d", "optix", NATIVE, "Generic OptiX aggregate-frontier row collector."),
+        "vulkan": _support("aggregate_frontier_collect_2d", "vulkan", COMPATIBILITY_FALLBACK, "No generic Vulkan aggregate-frontier row collector."),
+        "hiprt": _support("aggregate_frontier_collect_2d", "hiprt", NATIVE, "Goal3777 generic HIPRT aggregate-frontier row collector."),
+        "apple_rt": _support("aggregate_frontier_collect_2d", "apple_rt", COMPATIBILITY_FALLBACK, "No generic Apple RT aggregate-frontier row collector."),
+    },
+    "grouped_i64_count_sum": {
+        "embree": _support("grouped_i64_count_sum", "embree", COMPATIBILITY_FALLBACK, "No dedicated dense grouped i64 count/sum materializer; use existing grouped rows or partner reductions."),
+        "optix": _support("grouped_i64_count_sum", "optix", NATIVE, "OptiX partner-resident columnar grouped i64 count/sum reductions."),
+        "vulkan": _support("grouped_i64_count_sum", "vulkan", COMPATIBILITY_FALLBACK, "No generic Vulkan dense grouped i64 count/sum materializer."),
+        "hiprt": _support("grouped_i64_count_sum", "hiprt", NATIVE, "Goal3779 generic HIPRT dense grouped i64 count/sum materializer."),
+        "apple_rt": _support("grouped_i64_count_sum", "apple_rt", COMPATIBILITY_FALLBACK, "No generic Apple RT dense grouped i64 count/sum materializer."),
+    },
+    "grouped_vector_sum_f64x2": {
+        "embree": _support("grouped_vector_sum_f64x2", "embree", COMPATIBILITY_FALLBACK, "No dedicated dense grouped f64x2 vector-sum materializer; use partner reductions or app-side reference math."),
+        "optix": _support("grouped_vector_sum_f64x2", "optix", NATIVE, "OptiX paths can hand grouped f64x2 vector-sum continuations to supported partners."),
+        "vulkan": _support("grouped_vector_sum_f64x2", "vulkan", COMPATIBILITY_FALLBACK, "No generic Vulkan dense grouped f64x2 vector-sum materializer."),
+        "hiprt": _support("grouped_vector_sum_f64x2", "hiprt", NATIVE, "Goal3780 generic HIPRT dense grouped f64x2 vector-sum materializer."),
+        "apple_rt": _support("grouped_vector_sum_f64x2", "apple_rt", COMPATIBILITY_FALLBACK, "No generic Apple RT dense grouped f64x2 vector-sum materializer."),
+    },
+    "columnar_i64_predicate_scan": {
+        "embree": _support("columnar_i64_predicate_scan", "embree", COMPATIBILITY_FALLBACK, "No dedicated generic columnar i64 predicate-scan materializer."),
+        "optix": _support("columnar_i64_predicate_scan", "optix", NATIVE, "OptiX columnar payload predicate-scan paths exist outside SQL/DBMS semantics."),
+        "vulkan": _support("columnar_i64_predicate_scan", "vulkan", COMPATIBILITY_FALLBACK, "No generic Vulkan columnar i64 predicate-scan materializer."),
+        "hiprt": _support("columnar_i64_predicate_scan", "hiprt", NATIVE, "Goal3781 generic HIPRT columnar i64 predicate-scan materializer."),
+        "apple_rt": _support("columnar_i64_predicate_scan", "apple_rt", COMPATIBILITY_FALLBACK, "No generic Apple RT columnar i64 predicate-scan materializer."),
+    },
+    "visibility_rows": {
+        "embree": _support("visibility_rows", "embree", NATIVE, "Dispatches to Embree any-hit and emits visibility rows."),
+        "optix": _support("visibility_rows", "optix", NATIVE, "Dispatches to OptiX any-hit and emits visibility rows."),
+        "vulkan": _support("visibility_rows", "vulkan", NATIVE, "Dispatches to Vulkan any-hit and emits visibility rows."),
+        "hiprt": _support("visibility_rows", "hiprt", NATIVE, "Dispatches to HIPRT any-hit and emits visibility rows."),
+        "apple_rt": _support("visibility_rows", "apple_rt", NATIVE_ASSISTED, "Dispatches to Apple RT any-hit; 2D exact acceptance remains native-assisted."),
+    },
+    "prepared_scalar_visibility_count_2d": {
+        "embree": _support("prepared_scalar_visibility_count_2d", "embree", COMPATIBILITY_FALLBACK, "Counts emitted prepared rows; no dedicated scalar-count native export."),
+        "optix": _support("prepared_scalar_visibility_count_2d", "optix", NATIVE, "Prepared/prepacked scalar count path."),
+        "vulkan": _support("prepared_scalar_visibility_count_2d", "vulkan", NATIVE, "Prepared/prepacked compact any-hit path followed by count."),
+        "hiprt": _support("prepared_scalar_visibility_count_2d", "hiprt", NATIVE, "Prepared 2D any-hit reuse followed by count."),
+        "apple_rt": _support("prepared_scalar_visibility_count_2d", "apple_rt", NATIVE_ASSISTED, "Prepared/prepacked scalar blocked-ray count path over MPS-prism traversal."),
+    },
+    "prepared_grouped_visibility_flags_2d": {
+        "embree": _support("prepared_grouped_visibility_flags_2d", "embree", COMPATIBILITY_FALLBACK, "Groups emitted prepared rows; no dedicated grouped-flag native export."),
+        "optix": _support("prepared_grouped_visibility_flags_2d", "optix", NATIVE, "Prepared ray/triangle any-hit plus native grouped flag summary."),
+        "vulkan": _support("prepared_grouped_visibility_flags_2d", "vulkan", COMPATIBILITY_FALLBACK, "Grouped flags require host grouping over prepared compact any-hit results."),
+        "hiprt": _support("prepared_grouped_visibility_flags_2d", "hiprt", NATIVE, "Goal3765 prepared ray/triangle any-hit plus native grouped flag summary."),
+        "apple_rt": _support("prepared_grouped_visibility_flags_2d", "apple_rt", NATIVE_ASSISTED, "Prepared grouped visibility flags remain native-assisted over MPS-prism traversal."),
+    },
+    "fixed_radius_neighbors_2d": {
+        "embree": _support("fixed_radius_neighbors_2d", "embree", NATIVE, "Embree bounded neighbor traversal."),
+        "optix": _support("fixed_radius_neighbors_2d", "optix", NATIVE, "OptiX bounded neighbor traversal."),
+        "vulkan": _support("fixed_radius_neighbors_2d", "vulkan", NATIVE, "Vulkan bounded neighbor traversal."),
+        "hiprt": _support("fixed_radius_neighbors_2d", "hiprt", NATIVE, "HIPRT bounded 2D neighbor traversal."),
+        "apple_rt": _support("fixed_radius_neighbors_2d", "apple_rt", NATIVE_ASSISTED, "Apple bounded neighbor path is native-assisted where available."),
+    },
+    "fixed_radius_neighbors_3d": {
+        "embree": _support("fixed_radius_neighbors_3d", "embree", NATIVE, "Embree bounded 3D neighbor traversal."),
+        "optix": _support("fixed_radius_neighbors_3d", "optix", NATIVE, "OptiX bounded 3D neighbor traversal."),
+        "vulkan": _support("fixed_radius_neighbors_3d", "vulkan", NATIVE, "Vulkan bounded 3D neighbor traversal."),
+        "hiprt": _support("fixed_radius_neighbors_3d", "hiprt", NATIVE, "HIPRT bounded 3D neighbor traversal."),
+        "apple_rt": _support("fixed_radius_neighbors_3d", "apple_rt", NATIVE_ASSISTED, "Apple bounded 3D neighbor path is native-assisted where available."),
+    },
+    "fixed_radius_threshold_reached_count_3d": {
+        "embree": _support("fixed_radius_threshold_reached_count_3d", "embree", COMPATIBILITY_FALLBACK, "Counts threshold-reaching queries from emitted fixed-radius rows."),
+        "optix": _support("fixed_radius_threshold_reached_count_3d", "optix", NATIVE, "Prepared fixed-radius scalar threshold-reached count path."),
+        "vulkan": _support("fixed_radius_threshold_reached_count_3d", "vulkan", COMPATIBILITY_FALLBACK, "Counts threshold-reaching queries from emitted fixed-radius rows."),
+        "hiprt": _support("fixed_radius_threshold_reached_count_3d", "hiprt", NATIVE, "Goal3768 prepared fixed-radius scalar threshold-reached count path."),
+        "apple_rt": _support("fixed_radius_threshold_reached_count_3d", "apple_rt", COMPATIBILITY_FALLBACK, "Counts threshold-reaching queries from emitted fixed-radius rows."),
+    },
+    "fixed_radius_grouped_stream_flags_3d": {
+        "embree": _support("fixed_radius_grouped_stream_flags_3d", "embree", COMPATIBILITY_FALLBACK, "Derives flags from emitted fixed-radius rows."),
+        "optix": _support("fixed_radius_grouped_stream_flags_3d", "optix", NATIVE, "Prepared fixed-radius threshold flags for downstream grouped/component continuations."),
+        "vulkan": _support("fixed_radius_grouped_stream_flags_3d", "vulkan", COMPATIBILITY_FALLBACK, "Derives flags from emitted fixed-radius rows."),
+        "hiprt": _support("fixed_radius_grouped_stream_flags_3d", "hiprt", NATIVE, "Goal3769 prepared fixed-radius threshold flags for downstream grouped/component continuations."),
+        "apple_rt": _support("fixed_radius_grouped_stream_flags_3d", "apple_rt", COMPATIBILITY_FALLBACK, "Derives flags from emitted fixed-radius rows."),
+    },
+    "fixed_radius_ranked_summary_aggregate_3d": {
+        "embree": _support("fixed_radius_ranked_summary_aggregate_3d", "embree", COMPATIBILITY_FALLBACK, "Aggregates emitted fixed-radius ranked rows; no native aggregate export."),
+        "optix": _support("fixed_radius_ranked_summary_aggregate_3d", "optix", NATIVE, "Prepared fixed-radius ranked-summary aggregate path."),
+        "vulkan": _support("fixed_radius_ranked_summary_aggregate_3d", "vulkan", COMPATIBILITY_FALLBACK, "Aggregates emitted fixed-radius ranked rows; no native aggregate export."),
+        "hiprt": _support("fixed_radius_ranked_summary_aggregate_3d", "hiprt", NATIVE, "Goal3771 prepared fixed-radius ranked-summary aggregate path."),
+        "apple_rt": _support("fixed_radius_ranked_summary_aggregate_3d", "apple_rt", COMPATIBILITY_FALLBACK, "Aggregates emitted fixed-radius ranked rows; no native aggregate export."),
+    },
+    "fixed_radius_ranked_summary_batched_sweep_3d": {
+        "embree": _support("fixed_radius_ranked_summary_batched_sweep_3d", "embree", COMPATIBILITY_FALLBACK, "Loops emitted fixed-radius ranked rows across request sweeps; no native batch export."),
+        "optix": _support("fixed_radius_ranked_summary_batched_sweep_3d", "optix", NATIVE, "Prepared fixed-radius ranked-summary batched request sweep path."),
+        "vulkan": _support("fixed_radius_ranked_summary_batched_sweep_3d", "vulkan", COMPATIBILITY_FALLBACK, "Loops emitted fixed-radius ranked rows across request sweeps; no native batch export."),
+        "hiprt": _support("fixed_radius_ranked_summary_batched_sweep_3d", "hiprt", NATIVE, "Goal3772 prepared fixed-radius ranked-summary batched request sweep path."),
+        "apple_rt": _support("fixed_radius_ranked_summary_batched_sweep_3d", "apple_rt", COMPATIBILITY_FALLBACK, "Loops emitted fixed-radius ranked rows across request sweeps; no native batch export."),
+    },
+    "knn_rows_2d": {
+        "embree": _support("knn_rows_2d", "embree", NATIVE, "Embree bounded nearest-neighbor rows."),
+        "optix": _support("knn_rows_2d", "optix", NATIVE, "OptiX bounded nearest-neighbor rows."),
+        "vulkan": _support("knn_rows_2d", "vulkan", NATIVE, "Vulkan bounded nearest-neighbor rows."),
+        "hiprt": _support("knn_rows_2d", "hiprt", NATIVE, "HIPRT bounded nearest-neighbor rows."),
+        "apple_rt": _support("knn_rows_2d", "apple_rt", NATIVE_ASSISTED, "Apple bounded KNN rows are native-assisted where available."),
+    },
+    "knn_rows_3d": {
+        "embree": _support("knn_rows_3d", "embree", NATIVE, "Embree bounded 3D nearest-neighbor rows."),
+        "optix": _support("knn_rows_3d", "optix", NATIVE, "OptiX bounded 3D nearest-neighbor rows."),
+        "vulkan": _support("knn_rows_3d", "vulkan", NATIVE, "Vulkan bounded 3D nearest-neighbor rows."),
+        "hiprt": _support("knn_rows_3d", "hiprt", NATIVE, "HIPRT bounded 3D nearest-neighbor rows."),
+        "apple_rt": _support("knn_rows_3d", "apple_rt", NATIVE_ASSISTED, "Apple bounded 3D KNN rows are native-assisted where available."),
+    },
+    "bounded_db_conjunctive_scan": {
+        "embree": _support("bounded_db_conjunctive_scan", "embree", NATIVE, "Embree user-primitive RT candidate discovery plus DB refinement."),
+        "optix": _support("bounded_db_conjunctive_scan", "optix", NATIVE, "OptiX custom-primitive BVH candidate discovery plus DB refinement."),
+        "vulkan": _support("bounded_db_conjunctive_scan", "vulkan", NATIVE, "Vulkan bounded DB candidate discovery path."),
+        "hiprt": _support("bounded_db_conjunctive_scan", "hiprt", COMPATIBILITY_FALLBACK, "HIPRT DB surface is bounded; no AMD GPU performance claim."),
+        "apple_rt": _support("bounded_db_conjunctive_scan", "apple_rt", NATIVE_ASSISTED, "Apple DB path is Metal compute/native-assisted, not Apple MPS RT traversal."),
+    },
+    "bounded_db_grouped_count": {
+        "embree": _support("bounded_db_grouped_count", "embree", NATIVE, "Embree bounded RT-DB candidate discovery plus grouped count."),
+        "optix": _support("bounded_db_grouped_count", "optix", NATIVE, "OptiX bounded RT-DB candidate discovery plus grouped count."),
+        "vulkan": _support("bounded_db_grouped_count", "vulkan", NATIVE, "Vulkan bounded DB grouped-count path."),
+        "hiprt": _support("bounded_db_grouped_count", "hiprt", COMPATIBILITY_FALLBACK, "HIPRT DB surface is bounded; no AMD GPU performance claim."),
+        "apple_rt": _support("bounded_db_grouped_count", "apple_rt", NATIVE_ASSISTED, "Apple DB path is Metal compute/native-assisted, not Apple MPS RT traversal."),
+    },
+    "bounded_db_grouped_sum": {
+        "embree": _support("bounded_db_grouped_sum", "embree", NATIVE, "Embree bounded RT-DB candidate discovery plus grouped sum."),
+        "optix": _support("bounded_db_grouped_sum", "optix", NATIVE, "OptiX bounded RT-DB candidate discovery plus grouped sum."),
+        "vulkan": _support("bounded_db_grouped_sum", "vulkan", NATIVE, "Vulkan bounded DB grouped-sum path."),
+        "hiprt": _support("bounded_db_grouped_sum", "hiprt", COMPATIBILITY_FALLBACK, "HIPRT DB surface is bounded; no AMD GPU performance claim."),
+        "apple_rt": _support("bounded_db_grouped_sum", "apple_rt", NATIVE_ASSISTED, "Apple DB path is Metal compute/native-assisted, not Apple MPS RT traversal."),
+    },
+    "graph_bfs": {
+        "embree": _support("graph_bfs", "embree", NATIVE, "Embree bounded graph traversal mapping."),
+        "optix": _support("graph_bfs", "optix", NATIVE, "OptiX bounded graph traversal mapping."),
+        "vulkan": _support("graph_bfs", "vulkan", NATIVE, "Vulkan bounded graph traversal mapping."),
+        "hiprt": _support("graph_bfs", "hiprt", COMPATIBILITY_FALLBACK, "HIPRT graph surface exists but has known memory-scaling limits; no large-graph claim."),
+        "apple_rt": _support("graph_bfs", "apple_rt", NATIVE_ASSISTED, "Apple graph path is Metal compute/native-assisted, not Apple MPS RT traversal."),
+    },
+    "graph_triangle_count": {
+        "embree": _support("graph_triangle_count", "embree", NATIVE, "Embree bounded graph triangle-probe mapping."),
+        "optix": _support("graph_triangle_count", "optix", NATIVE, "OptiX bounded graph triangle-probe mapping."),
+        "vulkan": _support("graph_triangle_count", "vulkan", NATIVE, "Vulkan bounded graph triangle-probe mapping."),
+        "hiprt": _support("graph_triangle_count", "hiprt", NATIVE, "Goal3782 generic HIPRT canonical graph-cycle scalar count path."),
+        "apple_rt": _support("graph_triangle_count", "apple_rt", NATIVE_ASSISTED, "Apple graph path is Metal compute/native-assisted, not Apple MPS RT traversal."),
+    },
+    "reduce_rows": {
+        "embree": _support("reduce_rows", "embree", COMPATIBILITY_FALLBACK, "Python standard-library helper over emitted rows; not a backend-native reduction."),
+        "optix": _support("reduce_rows", "optix", COMPATIBILITY_FALLBACK, "Python standard-library helper over emitted rows; not a backend-native reduction."),
+        "vulkan": _support("reduce_rows", "vulkan", COMPATIBILITY_FALLBACK, "Python standard-library helper over emitted rows; not a backend-native reduction."),
+        "hiprt": _support("reduce_rows", "hiprt", COMPATIBILITY_FALLBACK, "Python standard-library helper over emitted rows; not a backend-native reduction."),
+        "apple_rt": _support("reduce_rows", "apple_rt", COMPATIBILITY_FALLBACK, "Python standard-library helper over emitted rows; not a backend-native reduction."),
+    },
+}
+
+
+def public_engine_features() -> tuple[str, ...]:
+    return tuple(_FEATURE_MATRIX)
+
+
+def engine_feature_support(feature: str, engine: str) -> EngineFeatureSupport:
+    try:
+        return _FEATURE_MATRIX[feature][engine]
+    except KeyError as exc:
+        raise ValueError(f"unknown RTDL feature/engine pair: feature={feature!r}, engine={engine!r}") from exc
+
+
+def engine_feature_support_matrix() -> dict[str, dict[str, EngineFeatureSupport]]:
+    return {feature: dict(entries) for feature, entries in _FEATURE_MATRIX.items()}
+
+
+def assert_engine_feature_supported(feature: str, engine: str) -> EngineFeatureSupport:
+    support = engine_feature_support(feature, engine)
+    if support.status == UNSUPPORTED_EXPLICIT:
+        raise NotImplementedError(f"RTDL feature {feature!r} is explicitly unsupported on engine {engine!r}: {support.note}")
+    return support

@@ -1,0 +1,195 @@
+{
+  "schema": "rtdl.goal5834.final_adversarial_self_review_result.v1",
+  "goal": 5834,
+  "date": "2026-08-30",
+  "status": "INCOMPLETE__POSITIVE_PROVIDER_EVENT_PATH__CAPSULE_NUMERIC_DOMAIN_NOT_ESTABLISHED",
+  "controlling": true,
+  "verdict": "DO_NOT_CALL_GOAL5834_COMPLETE__DO_NOT_START_GOAL5835_ON_THIS_NUMERIC_CONTRACT",
+  "open_severity_counts": {
+    "P0": 1,
+    "P1": 0,
+    "P2": 2,
+    "P3": 1
+  },
+  "supersedes_for_current_status_and_claims": [
+    {
+      "path": "history/internal_docs/goal5834_builtin_round_linear_curve_result_20260830.json",
+      "sha256": "bf838609287ff82d8360581d7927375c6a377e5314508a29b0900f71e6f978b9"
+    },
+    {
+      "path": "history/internal_docs/goal5834_builtin_round_linear_curve_technical_report_20260830.md",
+      "sha256": "6b20111f857079535eb761807f16db1c7607fb835a4cc2cc5974059070afd2ad"
+    },
+    {
+      "path": "history/internal_docs/self_review_goal5834_builtin_round_linear_curve_20260830.md",
+      "sha256": "567d36b2e44bae4a37417f3ab34eac3745d5efd287108c6be1c931ea23f593f6"
+    }
+  ],
+  "supersession_semantics": "The named files remain immutable historical evidence. Their COMPLETE status, exact-capsule-domain claim, 35-leaf claim, and public-C-ABI wording are not controlling after this result.",
+  "repository_binding": {
+    "workspace": "C:/Users/Lestat/Desktop/work/rtdl_v4_restricted_python_design",
+    "git_status": "BROKEN_BAD_OBJECT_HEAD_NO_COMMIT_CLAIM",
+    "observed_rev_parse_text": "1af120d187228035db733ce690de3a3bf5b54ee5",
+    "commit_identity_claimed": false,
+    "executed_source_projection": "history/internal_docs/goal5834_final_adversarial_self_review_20260830/EXECUTED_SOURCE_PROJECTION_V8.tar.gz",
+    "executed_source_projection_sha256": "e0edb530de776d815dd7055fc2fb553efea64082e04c4f2d3f8f9582bcbf6e51",
+    "executed_source_projection_bytes": 197009,
+    "executed_source_projection_member_count": 20,
+    "executed_source_projection_twin_byte_identical": true,
+    "executed_source_projection_manifest_sha256": "85fc7de0341cf742c83b300b320894d16b7a1fdb58940596742802249a237cb0"
+  },
+  "implemented_repairs": [
+    {
+      "defect": "Eleven buffer and hit-channel projection leaves were tested through a subclass rejection and were not actually decision-bearing.",
+      "repair": "The eleven projections are exact BuiltinCurvePhysicalSchema fields and are checked leaf-by-leaf.",
+      "verification": "40 exact-class physical and numeric leaf mutations: 40 REJECT, 0 ACCEPT"
+    },
+    {
+      "defect": "The numeric admission policy could change without changing the physical authority or canonical plan.",
+      "repair": "Five numeric-policy fields are carried by the physical schema and canonical identity.",
+      "policy_id": "rtdl.v4.curve_numeric_admission.v2"
+    },
+    {
+      "defect": "The independent oracle ordered binary64 roots before projecting the selected root to float32.",
+      "repair": "Each candidate time is projected to float32 before stable ordering by (float32_time, application_id)."
+    },
+    {
+      "defect": "The report called native C exports a public C ABI although those exports do not perform Python numeric admission.",
+      "repair": "The source and this controlling record classify them as an internal native provider ABI consumed by the Python public lifecycle."
+    },
+    {
+      "defect": "The old standalone-verifier prose implied target, authority, and source-to-executable reconstruction that it did not perform.",
+      "repair": "The safe verifier claim is explicitly narrowed in this record and the final self-review."
+    }
+  ],
+  "verification": {
+    "local_and_adjacent_test_count": 82,
+    "local_and_adjacent_test_failure_count": 0,
+    "focused_goal5834_test_count": 12,
+    "focused_goal5834_test_failure_count": 0,
+    "physical_and_numeric_leaf_mutations": 40,
+    "physical_and_numeric_leaf_rejections": 40,
+    "abi_scalar_mutations": 611,
+    "target_leaf_mutations": 6,
+    "canonical_plan_leaf_mutations": 7
+  },
+  "home_environment": {
+    "machine": "lx1",
+    "gpu": "NVIDIA GeForce GTX 1070",
+    "compute_capability": "6.1",
+    "driver": "580.173.02",
+    "optix_sdk": "9.0.0",
+    "cuda_toolkit": "12.0",
+    "behavioral_true_optix": true,
+    "rt_core_silicon_claimed": false,
+    "registered_performance_timing_count": 0
+  },
+  "fresh_home_positive_evidence": {
+    "result": "history/internal_docs/goal5834_final_adversarial_self_review_20260830/HOME_POSITIVE_RESULT.json",
+    "result_sha256": "67746c2141677df80dbdb62d396031a9d8f35d6343cb5283f7416c10a96e4b77",
+    "standalone_consistency_verification": "history/internal_docs/goal5834_final_adversarial_self_review_20260830/HOME_POSITIVE_VERIFY.json",
+    "standalone_consistency_verification_sha256": "1964438e1a2ba816bc6479e313312d0314e8c94da7db16dbf7817f2f9c947129",
+    "native": "history/internal_docs/goal5834_final_adversarial_self_review_20260830/librtdl_optix.so",
+    "native_sha256": "d9bd98135f18b1545a0d55e72acb4d7ae4aa06a6e36c03415e02b7efe70f7531",
+    "generated_artifact_manifest_sha256": "837edb191e82b60ce7bcd587efc505cdc9f852fb8d0a384072da51b166c1188f",
+    "generated_artifact_member_count": 13,
+    "callback_ir_sha256": "627df36820b8d18cd3a3d0202d4d617ffa913444caff29d91af9a0613ba1fe7c",
+    "callback_effect_digest": "e89ddea0580fe0ad017e649de8dbe3d08409174e9cfdb3f662afbc1344d989be",
+    "callback_abi_sha256": "a47fad0d52f082df8f34c5432a6b6092d08593becb92a70bb0b3c8ef04d7bc8a",
+    "physical_schema_sha256": "ca2a008eb6f95d16b7e6a880dc3a6dd7a1c0adbc568ac75b517fd341fbc05cc4",
+    "canonical_plan_sha256": "0063d24fd9d8616358dba0c58caffc20ad7a14173b3f68cddaafd6560dc6be76",
+    "wrapper_source_sha256": "f014546e135b1645175f5d55723e23a44850ac192219f070b5b42893e63316a6",
+    "composed_ptx_sha256": "2c04c7b6c06148098af6819ffdf596f789c4e8bb2a01c5552f56b8053520cb99",
+    "executable_sha256": "7ec48faa40d4427d8c5ef34dcd7e49446b5f5e9d86c1277abd7ce37e606a3da7",
+    "fixed_fixture_count": 4,
+    "fixed_fixture_rows": [
+      [1, 1052770304, 50],
+      [0, 1065353216, 4294967295],
+      [1, 1044381696, 900],
+      [1, 1049699860, 77]
+    ],
+    "repeat_execution_passed": true,
+    "role_counters": [0, 4, 0, 0, 3, 1, 4],
+    "status_before_output": true,
+    "use_after_close_rejected": true
+  },
+  "controlling_counterexamples": {
+    "evidence": "history/internal_docs/goal5834_final_adversarial_self_review_20260830/NUMERIC_COUNTEREXAMPLES.json",
+    "evidence_sha256": "ce9c7daddf65c6a0d4686ff89841a365930d15eceeea6e1069528b842a28cfd3",
+    "public_admission": "ACCEPT_FOR_ALL_FOUR",
+    "optix_traversal": "OBSERVED_FOR_ALL_FOUR",
+    "cases": [
+      {
+        "id": "FLOAT32_TIE_ORDERS_APPLICATION_ID",
+        "cpu_capsule_reference": [1, 1056964604, 1],
+        "provider_output": [1, 1056964604, 1],
+        "meaning": "The repaired float32-before-ID oracle ordering is live."
+      },
+      {
+        "id": "ORDINARY_SCALE_PROVIDER_T_DIFFERS_FROM_CPU_ROOT",
+        "cpu_capsule_reference": [1, 983336707, 555],
+        "provider_output": [1, 983337432, 555],
+        "absolute_t_bits_delta": 725,
+        "meaning": "The withdrawn fixed eight-ULP bound is false even at ordinary scale."
+      },
+      {
+        "id": "NEAR_COINCIDENT_CAPSULES_REORDER_APPLICATION_ID",
+        "cpu_capsule_reference": [1, 1030805664, 1000],
+        "provider_output": [1, 1030805698, 1],
+        "meaning": "Provider numeric behavior can change the selected application ID."
+      },
+      {
+        "id": "UNNORMALIZED_LARGE_TRANSLATION_PROVIDER_MISS",
+        "cpu_capsule_reference": [1, 1056833536, 4],
+        "provider_output": [0, 1065353216, 4294967295],
+        "meaning": "The accepted domain contains a mathematical capsule hit that the provider misses."
+      }
+    ]
+  },
+  "scientific_conclusion": {
+    "positive": [
+      "RTDL has a public lifecycle that materializes and executes an OptiX built-in round-linear curve provider.",
+      "The fresh Home run observes real OptiX traversal for four fixed fixtures and preserves exact provider-event outputs, stable float32-time/application-ID ordering, status-before-output, and lifecycle closure.",
+      "All forty populated physical and numeric schema leaves are individually decision-bearing in exact-class mutations.",
+      "Curves may count as OptiX leaf-primitive kind presence, not as feature-complete or mathematically closed capsule support."
+    ],
+    "withdrawn": [
+      "exact capsule semantics on the accepted numeric domain",
+      "a fixed eight-ULP CPU-root accuracy bound",
+      "provider event ordering as proof of mathematical earliest time of impact",
+      "Goal5834 complete at swept-sphere or capsule semantic scope",
+      "the native exports as a public C ABI",
+      "the standalone verifier as a reconstruction of target, authority, or source-to-executable identity"
+    ],
+    "safe_standalone_verifier_claim": "An RTDL-free consistency verifier rehashes the preserved DSO and thirteen generated artifacts, recomputes the four fixed fixture rows with the separately implemented capsule reference, and checks selected embedded descriptor and traversal-receipt invariants.",
+    "standalone_verifier_limit": "It does not rebuild the implementation, independently query the GPU, reconstruct target or authority identities, or prove the source-to-IR-to-PTX/native chain."
+  },
+  "open_blocker": {
+    "id": "P0_CURVE_PROVIDER_NUMERIC_SEMANTICS",
+    "effect": "Goal5834 cannot supply a sound swept-sphere or capsule correctness contract to Goal5835.",
+    "required_repair": [
+      "Define and implement a scene/query normalization transform with an inverse result mapping.",
+      "Define a competing-contact ambiguity or separation rule that prevents provider error from changing application identity.",
+      "Choose explicitly between provider-reported event time and a mathematically recomputed time-of-impact contract.",
+      "Freeze a differential corpus across scale, translation, side/endcap, near-parallel, near-tangent, and competing-contact cases before the repair run.",
+      "Accept the repair result unconditionally, including a terminal negative result."
+    ]
+  },
+  "secondary_risks": [
+    "Current per-execution admission performs query-by-primitive CPU geometry work and is not yet an acceleration-friendly Goal5835 path.",
+    "The new result is from one GTX 1070 and establishes behavioral OptiX execution, not RT-core silicon or cross-GPU numeric stability.",
+    "The original axial oracle-hit/provider-miss failure log was not preserved; only the later prelaunch exclusion and the newly preserved counterexamples are controlling evidence."
+  ],
+  "claim_ceiling": {
+    "kind_presence": "CURVES_PRESENT_IN_PUBLIC_GPU_PROVIDER__KIND_PRESENCE_ONLY_NOT_FEATURE_COMPLETE",
+    "capsule_semantics": "NOT_ESTABLISHED",
+    "prospective_generalization_count": 0,
+    "external_user_count": 0,
+    "paper_app_count_added_by_goal5834": 0,
+    "registered_performance_timing_count": 0,
+    "performance_claimed": false,
+    "goal5835_authorized": false
+  },
+  "external_review_requested": false,
+  "external_review_authorized": false
+}

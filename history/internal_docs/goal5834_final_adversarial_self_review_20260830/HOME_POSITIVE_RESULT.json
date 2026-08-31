@@ -1,0 +1,582 @@
+{
+  "application_ids": [
+    100,
+    50,
+    900,
+    1,
+    77
+  ],
+  "artifacts": {
+    "executable_sha256": "7ec48faa40d4427d8c5ef34dcd7e49446b5f5e9d86c1277abd7ce37e606a3da7",
+    "manifest_sha256": "837edb191e82b60ce7bcd587efc505cdc9f852fb8d0a384072da51b166c1188f",
+    "member_count": 13,
+    "members": [
+      {
+        "path": "callback_source.py",
+        "sha256": "65c766041d864482c78a47ab402bd192322ad333485585acdf45a5ffd592e8c7",
+        "size": 1502
+      },
+      {
+        "path": "composed.ptx",
+        "sha256": "2c04c7b6c06148098af6819ffdf596f789c4e8bb2a01c5552f56b8053520cb99",
+        "size": 58091
+      },
+      {
+        "path": "leaf_0_make_ray.ptx",
+        "sha256": "cef79e6b1161e70b303d1d80a26b50578b61b79aaee3175da13226402c09d7a0",
+        "size": 9395
+      },
+      {
+        "path": "leaf_0_make_ray.py",
+        "sha256": "4bc88a0cf6d304a793e50730190298c1da41c88a0c2ef4175928a3c43e1bbe7e",
+        "size": 6533
+      },
+      {
+        "path": "leaf_1_closest_hit.ptx",
+        "sha256": "c4e207c988999635cc38fc488890b01e97336eb6ed6e3d07816af4a0f7bb73dc",
+        "size": 4869
+      },
+      {
+        "path": "leaf_1_closest_hit.py",
+        "sha256": "59d2f92a96920a78e169043aa3a593b07506a211ff11b0bd1a125b4101dedcaa",
+        "size": 2170
+      },
+      {
+        "path": "leaf_2_miss.ptx",
+        "sha256": "83879f4093d870288554351bf192538bfef73227b783c32b25cd039b3446453a",
+        "size": 6906
+      },
+      {
+        "path": "leaf_2_miss.py",
+        "sha256": "cd85967c0f88dbdf6889baab6101660601752a9b3726fe774b7c3bdfde9892ff",
+        "size": 3023
+      },
+      {
+        "path": "leaf_3_finalize.ptx",
+        "sha256": "9678b68ef486386b1bc60264d584ca7e5b524279f77b17d91a0da75ffd737829",
+        "size": 3898
+      },
+      {
+        "path": "leaf_3_finalize.py",
+        "sha256": "97b6a1337e487e1d1f94e81e72654ee62988013279cb03adfd33d7330954f609",
+        "size": 1772
+      },
+      {
+        "path": "nvrtc.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": 0
+      },
+      {
+        "path": "wrapper.cu",
+        "sha256": "f014546e135b1645175f5d55723e23a44850ac192219f070b5b42893e63316a6",
+        "size": 16008
+      },
+      {
+        "path": "wrapper.ptx",
+        "sha256": "d4114ee2354177760b9f7461540bf7a47c2386164d85f0ddf557471a008a7040",
+        "size": 40584
+      }
+    ],
+    "schema": "rtdl.goal5834.curve_executable_artifacts.v1"
+  },
+  "axial_provider_boundary": {
+    "independent_closed_capsule_oracle": [
+      1,
+      1051372203,
+      77
+    ],
+    "native_launch_occurred": false,
+    "rejection": {
+      "code": "near_parallel_curve_query",
+      "message": "V4 curve physical schema rejected: near_parallel_curve_query@queries[0].curves[4]: potential query/curve contact has axis cross ratio below 2^-12"
+    },
+    "status": "POST_OBSERVATION_FAIL_CLOSED_EXCLUSION"
+  },
+  "callback_abi_sha256": "a47fad0d52f082df8f34c5432a6b6092d08593becb92a70bb0b3c8ef04d7bc8a",
+  "callback_effect_digest": "e89ddea0580fe0ad017e649de8dbe3d08409174e9cfdb3f662afbc1344d989be",
+  "callback_ir_sha256": "627df36820b8d18cd3a3d0202d4d617ffa913444caff29d91af9a0613ba1fe7c",
+  "canonical_plan_sha256": "0063d24fd9d8616358dba0c58caffc20ad7a14173b3f68cddaafd6560dc6be76",
+  "composed_ptx_sha256": "2c04c7b6c06148098af6819ffdf596f789c4e8bb2a01c5552f56b8053520cb99",
+  "control_points": [
+    [
+      0.0,
+      -1.0,
+      0.0
+    ],
+    [
+      0.0,
+      1.0,
+      0.0
+    ],
+    [
+      0.0,
+      -1.0,
+      0.0
+    ],
+    [
+      0.0,
+      1.0,
+      0.0
+    ],
+    [
+      -0.5,
+      -1.0,
+      3.0
+    ],
+    [
+      -0.5,
+      1.0,
+      3.0
+    ],
+    [
+      0.5,
+      -1.0,
+      3.0
+    ],
+    [
+      0.5,
+      1.0,
+      3.0
+    ],
+    [
+      2.0,
+      0.0,
+      6.0
+    ],
+    [
+      3.0,
+      0.0,
+      6.0
+    ]
+  ],
+  "device_status": [
+    {
+      "effect_tag": 0,
+      "error_code": 0,
+      "error_site": 0,
+      "first_error_claimed": 0,
+      "invocation_mask": 82,
+      "launch_index": 0,
+      "nonce_word": 0,
+      "role": 0,
+      "stage": 0
+    },
+    {
+      "effect_tag": 0,
+      "error_code": 0,
+      "error_site": 0,
+      "first_error_claimed": 0,
+      "invocation_mask": 98,
+      "launch_index": 1,
+      "nonce_word": 0,
+      "role": 0,
+      "stage": 0
+    },
+    {
+      "effect_tag": 0,
+      "error_code": 0,
+      "error_site": 0,
+      "first_error_claimed": 0,
+      "invocation_mask": 82,
+      "launch_index": 2,
+      "nonce_word": 0,
+      "role": 0,
+      "stage": 0
+    },
+    {
+      "effect_tag": 0,
+      "error_code": 0,
+      "error_site": 0,
+      "first_error_claimed": 0,
+      "invocation_mask": 82,
+      "launch_index": 3,
+      "nonce_word": 0,
+      "role": 0,
+      "stage": 0
+    }
+  ],
+  "executable_sha256": "7ec48faa40d4427d8c5ef34dcd7e49446b5f5e9d86c1277abd7ce37e606a3da7",
+  "expected": [
+    [
+      1,
+      1052770304,
+      50
+    ],
+    [
+      0,
+      1065353216,
+      4294967295
+    ],
+    [
+      1,
+      1044381696,
+      900
+    ],
+    [
+      1,
+      1049699860,
+      77
+    ]
+  ],
+  "expected_comparison_policies": [
+    "exact_provider_t_bits",
+    "miss_exact_bits",
+    "exact_provider_t_bits",
+    "exact_provider_t_bits"
+  ],
+  "fixture_names": [
+    "side_hit_equal_time_stable_application_id",
+    "miss",
+    "earlier_time_precedes_smaller_application_id",
+    "round_endcap_only_hit"
+  ],
+  "lifecycle_counts": {
+    "after_axial": 2,
+    "after_first": 1,
+    "after_second": 2,
+    "after_tangent": 2,
+    "before": 0
+  },
+  "native_path": "/home/lestat/work/goal5834_final_self_review_20260830/source/build/librtdl_optix.so",
+  "native_sha256": "d9bd98135f18b1545a0d55e72acb4d7ae4aa06a6e36c03415e02b7efe70f7531",
+  "observed": [
+    [
+      1,
+      1052770304,
+      50
+    ],
+    [
+      0,
+      1065353216,
+      4294967295
+    ],
+    [
+      1,
+      1044381696,
+      900
+    ],
+    [
+      1,
+      1049699860,
+      77
+    ]
+  ],
+  "observed_hit_kinds": [
+    132,
+    4294967295,
+    132,
+    132
+  ],
+  "observed_primitive_indices": [
+    1,
+    4294967295,
+    2,
+    4
+  ],
+  "observed_t": [
+    0.375,
+    null,
+    0.1875,
+    0.28349363803863525
+  ],
+  "observed_t_f32_bits": [
+    1052770304,
+    2147483647,
+    1044381696,
+    1049699860
+  ],
+  "oracle_path": "/home/lestat/work/goal5834_final_self_review_20260830/source/examples/first_contact_curve/first_contact_oracle.py",
+  "oracle_sha256": "8450d718afb77804e898e3ac805f41703420e5bb42cc2b9b83c334bdc75169a3",
+  "paper_app_claimed": false,
+  "performance_claimed": false,
+  "physical_receipt": {
+    "authority_nonce": "c246ac71dd7a2b60c2d8f816c1b2e100dc7810c9ac30a8eccd8768a877ba36a0",
+    "authorized_native_library_path": "/home/lestat/work/goal5834_final_self_review_20260830/source/build/librtdl_optix.so",
+    "build_flags_name": "OPTIX_BUILD_FLAG_PREFER_FAST_TRACE",
+    "build_input_type_name": "OPTIX_BUILD_INPUT_TYPE_CURVES",
+    "builtin_is_api_name": "optixBuiltinISModuleGet",
+    "composed_ptx_sha256": "2c04c7b6c06148098af6819ffdf596f789c4e8bb2a01c5552f56b8053520cb99",
+    "curve_endcap_name": "OPTIX_CURVE_ENDCAP_DEFAULT__ROUND_FOR_LINEAR",
+    "field_mapping_commitment_sha256": "321ddabeda84e1d3fc0c1efc75d94ade287f7f574ee9dc46615ae1f570d2ea31",
+    "geometry_flags_name": "OPTIX_GEOMETRY_FLAG_REQUIRE_SINGLE_ANYHIT_CALL",
+    "loaded_native_library_path": "/home/lestat/work/goal5834_final_self_review_20260830/source/build/librtdl_optix.so",
+    "loaded_native_library_sha256": "d9bd98135f18b1545a0d55e72acb4d7ae4aa06a6e36c03415e02b7efe70f7531",
+    "native_descriptor": {
+      "application_id_device_pointer": 135782635407360,
+      "build_flags": 4,
+      "build_input_type": 8517,
+      "builtin_is_build_flags": 4,
+      "builtin_is_curve_endcap_flags": 0,
+      "builtin_is_module": true,
+      "compiled_optix_major": 9,
+      "compiled_optix_minor": 0,
+      "compiled_optix_patch": 0,
+      "compiled_optix_version": 90000,
+      "cuda_compute_capability_major": 6,
+      "cuda_compute_capability_minor": 1,
+      "cuda_device_ordinal": 0,
+      "cuda_driver_version": 13000,
+      "device_static_input_fingerprint": "95fe0440a8776885c1c66d01aa791c9a1b24327b44d9b26d5c172642e385e8cb",
+      "endcap_flags": 0,
+      "gas_count": 1,
+      "geometry_flags": 2,
+      "index_device_pointer": 135782635406336,
+      "index_stride_bytes": 4,
+      "last_application_output_d2h_call_count": 6,
+      "last_counter_fingerprint": "e756a4a63696acdc96b34cffc481efb9876aefa78d5b9da0668c9183a5b6a78c",
+      "last_device_query_fingerprint": "94ba676f3b87183ba92a6011e5effef57ac797805a0739332b820e38853ea34c",
+      "last_execution_present": true,
+      "last_output_after_status_failure_count": 0,
+      "last_output_device_pointer_fingerprint": "3dfadf76ad2c5aa189cc7bd5704519e0824a8d9a3c5393e7cdc3426096190b69",
+      "last_output_device_pointer_nonzero_count": 8,
+      "last_output_fingerprint": "a6707dcf0f6e6a9e9dbb01fb29617a69de04111d32a15156e18ec460bf27662a",
+      "last_query_count": 4,
+      "last_query_device_pointer_fingerprint": "577d0ea4134c60f9cb78017fc05dad174d8a6197afeebeab2b8c07eba9a7d508",
+      "last_query_device_pointer_nonzero_count": 6,
+      "last_query_fingerprint": "94ba676f3b87183ba92a6011e5effef57ac797805a0739332b820e38853ea34c",
+      "last_status_d2h_call_count": 1,
+      "last_status_failed": false,
+      "last_status_fingerprint": "8e5ae1113d681016f3432ffd57cdcf0dc93005bfa9fc3c44fa4fe0a96111e5e8",
+      "max_attribute_values": 0,
+      "max_payload_values": 8,
+      "max_trace_depth": 1,
+      "motion_key_count": 0,
+      "normal_buffers_present": false,
+      "primitive_count": 5,
+      "primitive_index_offset": 0,
+      "primitive_type": 9475,
+      "primitive_type_flags": 8,
+      "program_group_count": 3,
+      "sbt_record_count": 1,
+      "schema": "rtdl.v4.native_builtin_curve_descriptor.v1",
+      "static_input_fingerprint": "95fe0440a8776885c1c66d01aa791c9a1b24327b44d9b26d5c172642e385e8cb",
+      "traversable_graph_flags": 1,
+      "traversable_identity": 135782635410634,
+      "user_intersection_program": false,
+      "uses_motion_blur": false,
+      "vertex_count": 10,
+      "vertex_device_pointer": 135782635405312,
+      "vertex_stride_bytes": 12,
+      "width_device_pointer": 135782635405824,
+      "width_stride_bytes": 4
+    },
+    "native_library_sha256": "d9bd98135f18b1545a0d55e72acb4d7ae4aa06a6e36c03415e02b7efe70f7531",
+    "numeric_admission": {
+      "front_entry_endpoint_margin_exponent2": -12,
+      "policy_id": "rtdl.v4.curve_numeric_admission.v2",
+      "provider_t_semantics": "optix_provider_reported_float32__no_cpu_toi_accuracy_bound_v1",
+      "query_axis_cross_ratio_min_exponent2": -12,
+      "segment_distance_ratio_min_exponent2": -12
+    },
+    "numeric_policy": "binary32_projection__constant_radius_per_segment__query_axis_cross_ratio_ge_2^-12__segment_distance_ratio_ge_2^-12__front_entry_endpoint_margin_2^-12__provider_reported_float32_t__no_cpu_toi_accuracy_bound_v2",
+    "output_commitment_sha256": "3e4d8c6b629b1497802aa2d71fde819e9a7b8d40e601ad70a45757d2adc64328",
+    "primitive_type_flags_name": "OPTIX_PRIMITIVE_TYPE_FLAGS_ROUND_LINEAR",
+    "primitive_type_name": "OPTIX_PRIMITIVE_TYPE_ROUND_LINEAR",
+    "query_commitment_sha256": "30e8d4c4135361aca63deabc1fc382f3db772546f425f603ff6f7f680fabd992",
+    "schema": "rtdl.v4.builtin_curve_physical_receipt.v1",
+    "static_input_commitment_sha256": "e674c3b4fc232cfc8b1de316ed9f3bbafad10e67eede1c7cc9fcf04a75aa8971",
+    "status_before_output": true
+  },
+  "physical_schema_sha256": "ca2a008eb6f95d16b7e6a880dc3a6dd7a1c0adbc568ac75b517fd341fbc05cc4",
+  "prospective_generalization_claimed": false,
+  "queries": [
+    [
+      [
+        -1.0,
+        0.0,
+        0.0
+      ],
+      [
+        1.0,
+        0.0,
+        0.0
+      ]
+    ],
+    [
+      [
+        -1.0,
+        2.0,
+        0.0
+      ],
+      [
+        1.0,
+        2.0,
+        0.0
+      ]
+    ],
+    [
+      [
+        -1.0,
+        0.0,
+        3.0
+      ],
+      [
+        1.0,
+        0.0,
+        3.0
+      ]
+    ],
+    [
+      [
+        1.75,
+        1.0,
+        6.0
+      ],
+      [
+        1.75,
+        -1.0,
+        6.0
+      ]
+    ]
+  ],
+  "registered_performance_timing_count": 0,
+  "repeat_observed": [
+    [
+      1,
+      1049699860,
+      77
+    ],
+    [
+      1,
+      1044381696,
+      900
+    ],
+    [
+      0,
+      1065353216,
+      4294967295
+    ],
+    [
+      1,
+      1052770304,
+      50
+    ]
+  ],
+  "role_counters": [
+    0,
+    4,
+    0,
+    0,
+    3,
+    1,
+    4
+  ],
+  "schema": "rtdl.goal5834.home_builtin_curve_validation.v1",
+  "scope": "functional_only_no_performance",
+  "segment_indices": [
+    0,
+    2,
+    4,
+    6,
+    8
+  ],
+  "source_sha256": "65c766041d864482c78a47ab402bd192322ad333485585acdf45a5ffd592e8c7",
+  "status": "PASS",
+  "tangent_prelaunch_rejection": {
+    "code": "near_tangent_curve_contact",
+    "message": "V4 curve physical schema rejected: near_tangent_curve_contact@queries[0].curves[0]: segment/capsule distance separation is below 2^-12"
+  },
+  "traversal_receipt": {
+    "claim_rules": {
+      "nonzero_traversable_binding_required": true,
+      "output_digest_bound": true,
+      "program_bundle_binding_required": true,
+      "provider_name_alone_proves_traversal": false,
+      "selected_template_alone_proves_traversal": false,
+      "successful_optix_launch_required": true
+    },
+    "expected_program_bundle_ids": [
+      9680857441963577480
+    ],
+    "expected_program_bundles": [
+      "v4_builtin_curve_callback_ir_four_role_composed"
+    ],
+    "expected_program_observed_at_receipt_edge": true,
+    "native_snapshot": {
+      "attempted_launch_count": 1,
+      "callsite_mix": 4657372044884990837,
+      "complete_context_launch_count": 1,
+      "context_bind_count": 1,
+      "failed_launch_count": 0,
+      "first_program_bundle_id": 9680857441963577480,
+      "first_traversable": 135782635410634,
+      "incomplete_callsite_lines": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "incomplete_callsite_record_count": 0,
+      "incomplete_context_launch_count": 0,
+      "last_program_bundle_id": 9680857441963577480,
+      "last_traversable": 135782635410634,
+      "nonce_hi": 16166234496781211386,
+      "nonce_lo": 290694033357457509,
+      "params_mix": 12430613525702323376,
+      "pending_context_at_finish": 0,
+      "pipeline_mix": 13848365835366867384,
+      "program_bundle_mix": 9434761183219082632,
+      "raygen_invocation_count": 4,
+      "sbt_mix": 14394084565846957796,
+      "session_error": 0,
+      "stream_mix": 9248179162272254404,
+      "successful_launch_count": 1,
+      "traversable_mix": 17122577512198534396
+    },
+    "nonce": {
+      "hi": 16166234496781211386,
+      "lo": 290694033357457509
+    },
+    "output_digest": "3e4d8c6b629b1497802aa2d71fde819e9a7b8d40e601ad70a45757d2adc64328",
+    "physical_executor_classification": "optix_traversal_observed",
+    "provider_library": "librtdl_optix",
+    "provider_library_path": "/home/lestat/work/goal5834_final_self_review_20260830/source/build/librtdl_optix.so",
+    "provider_library_sha256": "d9bd98135f18b1545a0d55e72acb4d7ae4aa06a6e36c03415e02b7efe70f7531",
+    "receipt_sha256": "9b13977454e96f0afaa35ca03f5190aec8a819415f13fd4ad01a37ab8355e112",
+    "route_identity": "v4_builtin_curve_callback_ir:four_role_composed_v1",
+    "schema": "rtdl.physical_execution.traversal_receipt.v1",
+    "semantic_digest": "ef3a06ad1ad979dd4134e1f55c44e82842bd8d387c9e87fe20e5c93886401397"
+  },
+  "use_after_close_rejected": true,
+  "widths": [
+    0.25,
+    0.25,
+    0.25,
+    0.25,
+    0.125,
+    0.125,
+    0.25,
+    0.25,
+    0.5,
+    0.5
+  ],
+  "wrapper_source_sha256": "f014546e135b1645175f5d55723e23a44850ac192219f070b5b42893e63316a6"
+}

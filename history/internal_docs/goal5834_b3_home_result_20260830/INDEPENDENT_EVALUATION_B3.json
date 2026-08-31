@@ -1,0 +1,199 @@
+{
+  "controlling_for_goal5834_b1": true,
+  "evaluation_rows": [
+    {
+      "execution_id": "clear_miss",
+      "expected_collision": 0,
+      "expected_per_query_hit": [
+        0
+      ],
+      "match": true,
+      "observed_collision_host_or": 0,
+      "observed_per_query_hit": [
+        0
+      ],
+      "repeat_preserved": true,
+      "reversed_preserved": true,
+      "true_optix": true
+    },
+    {
+      "execution_id": "face_interior_only_boundary",
+      "expected_collision": 0,
+      "expected_per_query_hit": [
+        0,
+        0,
+        0
+      ],
+      "match": true,
+      "observed_collision_host_or": 0,
+      "observed_per_query_hit": [
+        0,
+        0,
+        0
+      ],
+      "repeat_preserved": true,
+      "reversed_preserved": true,
+      "true_optix": true
+    },
+    {
+      "execution_id": "float32_tie_id_disagreement_regression",
+      "expected_collision": 1,
+      "expected_per_query_hit": [
+        1
+      ],
+      "match": true,
+      "observed_collision_host_or": 1,
+      "observed_per_query_hit": [
+        1
+      ],
+      "repeat_preserved": true,
+      "reversed_preserved": true,
+      "true_optix": true
+    },
+    {
+      "execution_id": "large_translation_base",
+      "expected_collision": 1,
+      "expected_per_query_hit": [
+        1
+      ],
+      "match": true,
+      "observed_collision_host_or": 1,
+      "observed_per_query_hit": [
+        1
+      ],
+      "repeat_preserved": true,
+      "reversed_preserved": true,
+      "true_optix": true
+    },
+    {
+      "execution_id": "large_translation_transformed",
+      "expected_collision": 1,
+      "expected_per_query_hit": [
+        1
+      ],
+      "match": true,
+      "observed_collision_host_or": 1,
+      "observed_per_query_hit": [
+        1
+      ],
+      "repeat_preserved": true,
+      "reversed_preserved": true,
+      "true_optix": true
+    },
+    {
+      "execution_id": "multiple_robust_hits",
+      "expected_collision": 1,
+      "expected_per_query_hit": [
+        1
+      ],
+      "match": true,
+      "observed_collision_host_or": 1,
+      "observed_per_query_hit": [
+        1
+      ],
+      "repeat_preserved": true,
+      "reversed_preserved": true,
+      "true_optix": true
+    },
+    {
+      "execution_id": "near_coincident_id_disagreement_regression",
+      "expected_collision": 1,
+      "expected_per_query_hit": [
+        1
+      ],
+      "match": true,
+      "observed_collision_host_or": 1,
+      "observed_per_query_hit": [
+        1
+      ],
+      "repeat_preserved": true,
+      "reversed_preserved": true,
+      "true_optix": true
+    },
+    {
+      "execution_id": "ordinary_provider_t_disagreement_regression",
+      "expected_collision": 1,
+      "expected_per_query_hit": [
+        1
+      ],
+      "match": true,
+      "observed_collision_host_or": 1,
+      "observed_per_query_hit": [
+        1
+      ],
+      "repeat_preserved": true,
+      "reversed_preserved": true,
+      "true_optix": true
+    },
+    {
+      "execution_id": "piecewise_linear_or",
+      "expected_collision": 1,
+      "expected_per_query_hit": [
+        0,
+        1,
+        0
+      ],
+      "match": true,
+      "observed_collision_host_or": 1,
+      "observed_per_query_hit": [
+        0,
+        1,
+        0
+      ],
+      "repeat_preserved": true,
+      "reversed_preserved": true,
+      "true_optix": true
+    },
+    {
+      "execution_id": "round_endcap_hit",
+      "expected_collision": 1,
+      "expected_per_query_hit": [
+        1
+      ],
+      "match": true,
+      "observed_collision_host_or": 1,
+      "observed_per_query_hit": [
+        1
+      ],
+      "repeat_preserved": true,
+      "reversed_preserved": true,
+      "true_optix": true
+    },
+    {
+      "execution_id": "single_crossing_hit",
+      "expected_collision": 1,
+      "expected_per_query_hit": [
+        1
+      ],
+      "match": true,
+      "observed_collision_host_or": 1,
+      "observed_per_query_hit": [
+        1
+      ],
+      "repeat_preserved": true,
+      "reversed_preserved": true,
+      "true_optix": true
+    }
+  ],
+  "evaluator_ineligible_worker_count": 0,
+  "first_contact_general_numeric_goal_status": "INCOMPLETE__UNCHANGED_BY_BOOLEAN_RESULT",
+  "fixture_authority_sha256": "0f13ab8a7408c253114c56a51645c015d0e5e36ca96a4290c9dd1a2ba700adad",
+  "fixture_family_count": 10,
+  "generalization_exam_count": 0,
+  "goal5835_authorization_scope": "REGISTERED_FIXTURE_SUI_DERIVED_EDGE_CROSSING_MAPPING_ONLY",
+  "goal5835_registered_fixture_mapping_authorized": true,
+  "independent_oracle_sha256": "61111750c21441bea1e5547a86bca1e1b8f24c48152f172f46ea72295b46ddfb",
+  "lineage": "B3",
+  "malformed_prelaunch_rejection_count": 1,
+  "matching_primary_execution_count": 11,
+  "mismatch_execution_ids": [],
+  "paper_app_claimed": false,
+  "primary_execution_count": 11,
+  "provider_capsule_theorem_claimed": false,
+  "raw_gpu_receipt_sha256": "b50043e81713aacf6a70986a6e334789cbfeef17342ae97a8ae401ab1507f513",
+  "registered_performance_timing_count": 0,
+  "schema": "rtdl.goal5834_b3.independent_evaluation.v1",
+  "status": "GOAL5834_B3_COMPLETE_REGISTERED_FIXTURE_EVALUATION",
+  "target_preaction_sha256": "5998d20a41eccb2a50d671d10995545cea210b25b9afb4452e9132ed30ae2127",
+  "worker_inputs_sha256": "55eeff377c93c32fed8cc326ad975cb9d2437df85812e30b9d916b3e7cc581a4"
+}

@@ -1,0 +1,150 @@
+{
+  "schema": "rtdl.goal5833.builtin_sphere_first_contact_result.v1",
+  "goal": 5833,
+  "date": "2026-08-30",
+  "status": "COMPLETE_AT_BOUNDED_STATIC_BUILTIN_SPHERE_SCOPE",
+  "controlling_plan": {
+    "path": "history/internal_docs/goal5833_goal5836_sphere_curve_rtccd_owner_replan_20260830.md",
+    "sha256": "72463371e244b7405bce06200896bc2c933b3372f1536f6d3fcc62c57e375088"
+  },
+  "repository_identity": {
+    "git_status": "BROKEN_BAD_OBJECT_HEAD_NO_COMMIT_CLAIM",
+    "identity_method": "exact_file_sha256_plus_home_execution_receipt"
+  },
+  "completed_scope": {
+    "public_namespace": "rtdsl.v4_sphere",
+    "geometry": "one static OptiX built-in-sphere GAS",
+    "program": "four-role Callback IR First Contact",
+    "roles": ["make_ray", "closest_hit", "miss", "finalize"],
+    "compiler_owned_role": "stable any-hit sphere enumerator",
+    "stable_order": ["ordered_float32_t", "application_id", "primitive_index"],
+    "lifecycle": ["verify", "compile", "materialize", "prepare", "execute", "close"],
+    "oracle": "independent stdlib-only binary64 analytic segment-sphere oracle",
+    "physical_identity": [
+      "OPTIX_BUILD_INPUT_TYPE_SPHERES",
+      "OPTIX_PRIMITIVE_TYPE_SPHERE",
+      "OPTIX_PRIMITIVE_TYPE_FLAGS_SPHERE",
+      "optixBuiltinISModuleGet",
+      "no user intersection program"
+    ]
+  },
+  "claim_ceiling": {
+    "performance": false,
+    "prospective_generalization": false,
+    "paper_app": false,
+    "curve_support": false,
+    "rt_ccd": false,
+    "motion_blur": false,
+    "instancing": false,
+    "arbitrary_callback_ir_to_gpu": false,
+    "external_user_evidence": false,
+    "registered_performance_timing_count": 0
+  },
+  "home_execution": {
+    "machine": "lx1",
+    "gpu": "NVIDIA GeForce GTX 1070",
+    "compute_capability": "6.1",
+    "driver": "580.126.09",
+    "optix_sdk": "9.0.0",
+    "cuda_toolkit": "12.0",
+    "native_sha256": "c0c2981f2d1bf132d11abdf533de1d4ead1bbb80bd6624ec4f1b7b0681bfbd45",
+    "callback_source_sha256": "94bf800af5f1c04020ccdcd34d2e4c7b8378389d2be91196612d2fc63d8add7e",
+    "callback_ir_sha256": "60314121a0d865dbd32efe92616bbd3784f11286cb0581eaed3aded0fbe0ae5d",
+    "callback_effect_digest": "e89ddea0580fe0ad017e649de8dbe3d08409174e9cfdb3f662afbc1344d989be",
+    "physical_schema_sha256": "2ea5117c3a8da9a3ee5aa8edc78e0e02317766a79fde9c51109a768fb88d512e",
+    "canonical_plan_sha256": "d289f2c3b11e668ec90c194628dec305e9d99ae6a21eabd1b3de95216951d16d",
+    "callback_abi_sha256": "8f63b85dbd792b817b330b821e28a6f9d82c5b4d48f65097b4deff3a8b149652",
+    "wrapper_source_sha256": "2cabe16eb8a386565e3ac2dd68639fb78337df549af86291957c29a45140391a",
+    "executable_sha256": "8a449c774324ba777eeff007787396607c2df6c128816637d1d3da29bd1a1a34",
+    "composed_ptx_sha256": "5653791d25b94a625a8d75df316fd38795c832c005ef74b33b023ce6a8020848",
+    "fixture_count": 5,
+    "fixture_names": [
+      "equal_time_stable_application_id",
+      "transverse_miss",
+      "nearer_time_precedes_application_id",
+      "exact_tangent",
+      "beyond_tmax_miss"
+    ],
+    "expected_equals_observed": true,
+    "observed_u32_rows": [
+      [1, 1056964608, 2],
+      [0, 1065353216, 4294967295],
+      [1, 1048576000, 99],
+      [1, 1048576000, 11],
+      [0, 1065353216, 4294967295]
+    ],
+    "role_counters": [0, 5, 0, 0, 3, 2, 5],
+    "device_error_row_count": 0,
+    "attempted_launch_count": 1,
+    "successful_launch_count": 1,
+    "failed_launch_count": 0,
+    "complete_context_launch_count": 1,
+    "incomplete_context_launch_count": 0,
+    "raygen_invocation_count": 5,
+    "physical_executor_classification": "optix_traversal_observed",
+    "expected_program_observed_at_receipt_edge": true,
+    "use_after_close_rejected": true
+  },
+  "native_descriptor": {
+    "schema": "rtdl.v4.native_builtin_sphere_descriptor.v1",
+    "build_input_type": 8518,
+    "primitive_type": 9478,
+    "primitive_type_flags": 64,
+    "builtin_is_module": true,
+    "user_intersection_program": false,
+    "uses_motion_blur": false,
+    "build_flags": 4,
+    "geometry_flags": 2,
+    "center_stride_bytes": 12,
+    "radius_stride_bytes": 4,
+    "single_radius": false,
+    "primitive_index_offset": 0,
+    "sbt_record_count": 1,
+    "gas_count": 1,
+    "primitive_count": 5
+  },
+  "verification": {
+    "focused_and_regression_test_count": 178,
+    "focused_and_regression_failures": 0,
+    "python_compile_status": "PASS",
+    "native_home_build_status": "PASS",
+    "home_result_sha256": "7ac21df6d89a6b5a22c0bd6c22bac63b78788aab5db1e03ba7d271c4eafa8e72",
+    "home_recount_sha256": "054c0b239c3ade2eb844a2131e84b00b9de661ea20e3034cd911d6bad3cadf26",
+    "local_recount_sha256": "00fa268c55db63fe752f1fa6cc8bee595f72dc09aa1db08e09df1baae176b7da",
+    "independent_oracle_sha256": "cc2429679763280d8e38c5fa56ae304cbafe5ab410d284ecf6a7f33ee9aef27f",
+    "frozen_predecessor_identities_preserved": {
+      "src/rtdsl/v4_callback_abi.py": "3f4be4d998ee91600c6a1f4bba4fadbb435f23d193a49f4cbf6dc50522d74fb5",
+      "src/rtdsl/v4_typed_physical_schema.py": "f1b093da9aa10465767beec8f22f804e080a6691abd7ec1873de231328cc7e5d",
+      "src/rtdsl/v4.py": "5800a38193275b3c6e37dfc6a0aadfe6d3fbdd6c108af93ef3799dc296c7f582"
+    }
+  },
+  "terminal_pre_final_lineage": [
+    {
+      "stage": "a1",
+      "outcome": "PASS_INTERMEDIATE",
+      "note": "initial built-in-sphere native build and true-OptiX execution passed before native-descriptor hardening"
+    },
+    {
+      "stage": "a2",
+      "outcome": "ZERO_EXECUTION_COMPILE_FAILURE",
+      "note": "unnecessary early public prototype referenced V4FormalLaunchStatus before its definition; prototype removed"
+    },
+    {
+      "stage": "a3",
+      "outcome": "PASS_INTERMEDIATE",
+      "note": "live native descriptor and true-OptiX execution passed before predecessor-custody repair"
+    },
+    {
+      "stage": "a4",
+      "outcome": "ZERO_LAUNCH_MATERIALIZATION_FAILURE",
+      "note": "successor leaf adapter omitted three required evidence fields; exact frozen return shape restored"
+    },
+    {
+      "stage": "a5",
+      "outcome": "FINAL_PASS",
+      "note": "successor public namespace, predecessor identities, Home execution, and independent recount all passed"
+    }
+  ],
+  "external_review_requested": false,
+  "external_review_authorized": false
+}

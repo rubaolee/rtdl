@@ -1,0 +1,29 @@
+# rtdl.v4.generated_formal_numba_leaf.v1
+# callback_ir_sha256=daf61a8371e76956a291604c59449ae80e577772baf5175637b31fc857e0e394
+# callback_abi_sha256=fa91b6bd0672f5fe79e6189d40ca248325c7811be3d1529226beec12f61bc154
+def rtdl_v4_closest_hit_daf61a8371e76956(in_context_launch_index, in_hit_t, in_hit_hit_kind, in_payload_hit, in_application_ids_columns, in_application_ids_length, status_ok, status_error_code, status_stage, status_role, status_launch_index, status_error_site, status_effect_tag, status_nonce_word, status_invocation_mask, status_first_error_claimed, out_effect_tag, out_payload_payload_hit):
+    status_ok[0] = 0
+    status_error_code[0] = 0
+    status_stage[0] = 3
+    status_role[0] = 5
+    status_launch_index[0] = in_context_launch_index
+    status_error_site[0] = 0
+    status_effect_tag[0] = 0
+    status_nonce_word[0] = 3829449019
+    status_invocation_mask[0] = 16
+    status_first_error_claimed[0] = 0
+    out_effect_tag[0] = 0
+    out_payload_payload_hit[0] = 0
+    if not math.isfinite(in_hit_t):
+        status_ok[0] = 0
+        status_error_code[0] = 2
+        status_error_site[0] = 1
+        return
+    status_error_code[0] = 0
+    _rtdl_local_updated = 1
+    out_payload_payload_hit[0] = _rtdl_local_updated
+    out_effect_tag[0] = 8
+    status_effect_tag[0] = 8
+    status_error_code[0] = 0
+    status_ok[0] = 1
+    return

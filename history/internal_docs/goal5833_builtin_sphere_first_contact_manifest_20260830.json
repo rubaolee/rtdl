@@ -1,0 +1,41 @@
+{
+  "schema": "rtdl.goal5833.builtin_sphere_first_contact_manifest.v1",
+  "goal": 5833,
+  "date": "2026-08-30",
+  "status": "COMPLETE_AT_BOUNDED_STATIC_BUILTIN_SPHERE_SCOPE",
+  "external_review_requested": false,
+  "payload_count": 26,
+  "payloads": [
+    {"path":"history/internal_docs/goal5833_builtin_sphere_first_contact_result_20260830.json","bytes":6254,"sha256":"a9423232f4f4fe8da7949356b0b3a34c63134f2f8245c905829306929fc87f6b"},
+    {"path":"history/internal_docs/goal5833_builtin_sphere_first_contact_technical_report_20260830.md","bytes":6770,"sha256":"29b527cb56cb6c43fd3ed4ecf263aca7457e58c55af00a7935478c990c22ff25"},
+    {"path":"history/internal_docs/self_review_goal5833_builtin_sphere_first_contact_20260830.md","bytes":5933,"sha256":"a131038f742b1017cf23aa0c85e6fd5df3be8f3806ff1e17d4a879721663a4dc"},
+    {"path":"history/internal_docs/goal5833_builtin_sphere_home_evidence_20260830/goal5833_home_result.json","bytes":10098,"sha256":"7ac21df6d89a6b5a22c0bd6c22bac63b78788aab5db1e03ba7d271c4eafa8e72"},
+    {"path":"history/internal_docs/goal5833_builtin_sphere_home_evidence_20260830/goal5833_home_recount.json","bytes":1289,"sha256":"054c0b239c3ade2eb844a2131e84b00b9de661ea20e3034cd911d6bad3cadf26"},
+    {"path":"history/internal_docs/goal5833_builtin_sphere_home_evidence_20260830/goal5833_local_recount.json","bytes":1343,"sha256":"00fa268c55db63fe752f1fa6cc8bee595f72dc09aa1db08e09df1baae176b7da"},
+    {"path":"history/internal_docs/goal5833_builtin_sphere_home_evidence_20260830/librtdl_optix_goal5833_sm61.so","bytes":6392536,"sha256":"c0c2981f2d1bf132d11abdf533de1d4ead1bbb80bd6624ec4f1b7b0681bfbd45"},
+    {"path":"src/rtdsl/v4_sphere.py","bytes":1413,"sha256":"41f3cf3e041911110e5d9c63661c86ec36268289ee473c2a9340cbf156429246"},
+    {"path":"src/rtdsl/v4_sphere_callback_abi.py","bytes":4699,"sha256":"5f6fc0addc38eb3df2baef7c1ddda4db6b69a802f56d928c89708aa012039e8d"},
+    {"path":"src/rtdsl/v4_sphere_callback_numba_codegen.py","bytes":2141,"sha256":"23a9f091a2f595058ad1e12efec8a4b2b7bf8acbbfd5f11fd8fb856730f9ca1e"},
+    {"path":"src/rtdsl/v4_sphere_physical_schema.py","bytes":14792,"sha256":"31ebb6d1f577855f52f01f6afc2f3040c0946afaf1b0945c7addcc508baf7b2f"},
+    {"path":"src/rtdsl/v4_sphere_optix_wrapper_codegen.py","bytes":16178,"sha256":"a9d268edf666898b0537d37fe1a8d7ef41be07d6e0991f449793315289beda91"},
+    {"path":"src/rtdsl/v4_sphere_optix_compiler.py","bytes":13721,"sha256":"41eca178c34a25818ffa77db16939b564bc22d12eb977db61078c6db4f2f021a"},
+    {"path":"src/rtdsl/v4_sphere_prepared_runtime.py","bytes":16548,"sha256":"debd560bbdbdb62a1eaa95dcea8d20c02ff13b8dc979fbee65755326e40e7c2b"},
+    {"path":"src/rtdsl/v4_builtin_sphere_standard_library.py","bytes":4607,"sha256":"8f751471059ffcacd855e862819322b0ebc986fbe8a84163f7b2045b89d16064"},
+    {"path":"src/rtdsl/v4_public_builtin_sphere.py","bytes":9933,"sha256":"d66d492b6e0e6e41edc21fbb03a2abae15029e1038a4d89cdcaadca222b32cdb"},
+    {"path":"src/native/optix/rtdl_optix_core.cpp","bytes":389296,"sha256":"b53de851da412a6fdc6a732f4e6387cd762c7cd30a2713c1118cc5a88bc3ac2a"},
+    {"path":"src/native/optix/rtdl_optix_v4_callback_poc.cpp","bytes":291884,"sha256":"dbb9ecc3dab58adb0d7ad76486160648d982a3eea36847f2017e5a9303528ae0"},
+    {"path":"src/native/optix/rtdl_optix_api.cpp","bytes":534065,"sha256":"b60682b980758d5bf9bdfd07ec8e6c7c4e6016959b03c7e602c53864df703a9e"},
+    {"path":"examples/first_contact_sphere/first_contact_oracle.py","bytes":3046,"sha256":"cc2429679763280d8e38c5fa56ae304cbafe5ab410d284ecf6a7f33ee9aef27f"},
+    {"path":"scripts/goal5833_home_builtin_sphere_validation.py","bytes":7316,"sha256":"43e7e8a770680f0ebed605867d5ecf83520a400715ab4f477112f2372f8acb62"},
+    {"path":"scripts/goal5833_verify_home_builtin_sphere.py","bytes":6951,"sha256":"b69dffa9c9aa0b8eef56474d95861e9004dee69b998738ea1e319062099cb1d2"},
+    {"path":"src/rtdsl/v4_family_schema.py","bytes":50404,"sha256":"829fed3594dd3cb618edcf5ebbdfc1000d22e024e50c5f6a1973d35e3a5e4eef"},
+    {"path":"tests/goal5833_family_schema_compilation_plan_test.py","bytes":16218,"sha256":"53d0624d33ad5f6a973113233bc14712192d2e5e680a988ecbf23b95f2752c73"},
+    {"path":"tests/goal5758_v4_triangle_reduction_test.py","bytes":15598,"sha256":"16397c88db4931032a4beec477b3ce2f2d0bac52b0b3169c82ea1abee6fe0f87"},
+    {"path":"tests/goal5833_builtin_sphere_public_path_test.py","bytes":9275,"sha256":"a9c708b72d0ffcb467f8ffcc9ee263a1d22d838cd63ce6e5fbcc9854c4d99448"}
+  ],
+  "preserved_predecessor_identities": {
+    "src/rtdsl/v4_callback_abi.py": "3f4be4d998ee91600c6a1f4bba4fadbb435f23d193a49f4cbf6dc50522d74fb5",
+    "src/rtdsl/v4_typed_physical_schema.py": "f1b093da9aa10465767beec8f22f804e080a6691abd7ec1873de231328cc7e5d",
+    "src/rtdsl/v4.py": "5800a38193275b3c6e37dfc6a0aadfe6d3fbdd6c108af93ef3799dc296c7f582"
+  }
+}

@@ -1,0 +1,400 @@
+{
+  "schema": "rtdl.goal5832.protocol_shape_algebra_authority.v1",
+  "date": "2026-08-30",
+  "scope": "terminology_denominator_three_domain_identity_equivalence_and_claim_ceiling_only",
+  "implementation_status": "RESEARCH_SPECIFICATION_NOT_GENERIC_GPU_COMPILER",
+  "terminology": {
+    "build_input_kind": "One member of the pinned OptiX 9 OptixBuildInputType platform enum.",
+    "leaf_primitive_kind": "A geometry-bearing build input: triangle, custom primitive, curve, or sphere; instance inputs are scene-graph nodes.",
+    "physical_geometry_kind": "One geometry kind implemented by the RTDL physical schema and public GPU provider.",
+    "fixed_protocol_constructor": "A closed public factory whose callback, physical, continuation, and result shape is prescribed by RTDL.",
+    "bounded_user_authored_gpu_template": "A public source-authoring route whose callback expressions are caller-authored but whose physical and ABI shape is fixed.",
+    "application_semantic_protocol_shape": "A structural protocol over roles, effects, channels, ownership, physical graph, result, continuation, identity, and resource limits; application names and datasets are excluded.",
+    "protocol_instance": "A protocol shape plus nominal semantic values, verified Callback IR, proofs, and typed parameter values.",
+    "deployment": "A protocol instance bound to one target, provider, generated code, native binary, and actual executable identity.",
+    "composition_batch": "An application-neutral reuse/composition label; not a geometry kind, constructor, template, or protocol-shape denominator."
+  },
+  "current_counts": {
+    "optix9_build_input_kinds": 6,
+    "optix9_leaf_primitive_kinds": 4,
+    "rtdl_physical_geometry_kinds": 2,
+    "fixed_protocol_constructors": 2,
+    "bounded_user_authored_gpu_templates": 1,
+    "public_application_specializations": 1,
+    "composition_batches": 6,
+    "project_authored_systems": 9,
+    "project_authored_lanes": 13,
+    "prospective_frozen_core_new_shape_exams": 0,
+    "external_human_authors": 0,
+    "application_semantic_shape_denominator": "OPEN_NO_FINITE_N"
+  },
+  "coverage_semantics": {
+    "classification": "KIND_PRESENCE_ONLY__NOT_FEATURE_COMPLETE",
+    "instantiated_build_input_members": [
+      "TRIANGLES",
+      "CUSTOM_PRIMITIVES"
+    ],
+    "build_input_ratio": "2/6",
+    "leaf_primitive_ratio": "2/4",
+    "not_category_closure": true,
+    "not_application_semantic_coverage": true
+  },
+  "platform_denominator": {
+    "authority_path": "history/internal_docs/goal5818_optix9_public_header_evidence_20260829/optix_types.h",
+    "authority_scope": "PINNED_OPTIX9_PUBLIC_HEADER",
+    "build_inputs": [
+      {
+        "id": "TRIANGLES",
+        "leaf_primitive": true,
+        "scene_graph_input": false,
+        "rtdl_public_gpu_kind_presence": true
+      },
+      {
+        "id": "CUSTOM_PRIMITIVES",
+        "leaf_primitive": true,
+        "scene_graph_input": false,
+        "rtdl_public_gpu_kind_presence": true
+      },
+      {
+        "id": "INSTANCES",
+        "leaf_primitive": false,
+        "scene_graph_input": true,
+        "rtdl_public_gpu_kind_presence": false
+      },
+      {
+        "id": "INSTANCE_POINTERS",
+        "leaf_primitive": false,
+        "scene_graph_input": true,
+        "rtdl_public_gpu_kind_presence": false
+      },
+      {
+        "id": "CURVES",
+        "leaf_primitive": true,
+        "scene_graph_input": false,
+        "rtdl_public_gpu_kind_presence": false
+      },
+      {
+        "id": "SPHERES",
+        "leaf_primitive": true,
+        "scene_graph_input": false,
+        "rtdl_public_gpu_kind_presence": false
+      }
+    ]
+  },
+  "current_public_surface": {
+    "scope": "rtdsl.v4 stable surface plus explicitly named root deployment specialization",
+    "physical_geometry_kinds": [
+      {
+        "id": "custom_aabb",
+        "source": "src/rtdsl/v4_typed_physical_schema.py::GeometryFamily.CUSTOM_AABB"
+      },
+      {
+        "id": "builtin_triangle",
+        "source": "src/rtdsl/v4_typed_physical_schema.py::GeometryFamily.BUILTIN_TRIANGLE"
+      }
+    ],
+    "fixed_protocol_constructors": [
+      {
+        "id": "custom_aabb_bounded_relation_v1",
+        "physical_geometry_kind": "custom_aabb"
+      },
+      {
+        "id": "builtin_triangle_reduction_v1",
+        "physical_geometry_kind": "builtin_triangle"
+      }
+    ],
+    "bounded_user_authored_gpu_templates": [
+      {
+        "id": "builtin_triangle_static_u32x3_two_metadata_v1",
+        "physical_geometry_kind": "builtin_triangle",
+        "static_gas_only": true,
+        "payload_output": "u32x3",
+        "primitive_aligned_u32_metadata_views": 2,
+        "maximum_trace_depth": 1,
+        "maximum_callable_depth": 0,
+        "caller_supplies_restricted_source": true,
+        "caller_supplies_ptx_sbt_pipeline_native": false,
+        "source": "src/rtdsl/v4_public_builtin_triangle.py"
+      }
+    ],
+    "public_application_specializations": [
+      {
+        "id": "builtin_triangle_particle_strict_interior_v1",
+        "classification": "EXISTING_TEMPLATE_STANDARD_LIBRARY_SPECIALIZATION",
+        "new_general_template": false,
+        "new_physical_geometry_kind": false,
+        "new_fixed_protocol_constructor": false,
+        "source": "src/rtdsl/v4_particle_rtdlexe.py"
+      }
+    ],
+    "composition_batches": [
+      "M1_TRIANGLE_REDUCTION",
+      "M2_BOUNDED_RELATION",
+      "M3_PREPARED_MULTIROUND_SPATIAL",
+      "M4_EXACT_PREDICATE_GLOBAL_WITNESS",
+      "M5_GROUPED_EVENT_REDUCTION",
+      "M6_HIERARCHY_FRONTIER"
+    ],
+    "non_counted_surfaces": [
+      "target_neutral_callback_ir_frontend_and_cpu_interpreter",
+      "advanced_internal_v4_prepared_provider",
+      "historical_non_v4_root_reexports",
+      "stable_sort_existing_bounded_relation_instance"
+    ]
+  },
+  "selection_rationale": {
+    "custom_primitive_boundary": "callback-produced intersection and attribute path",
+    "builtin_triangle_boundary": "platform-produced intersection and builtin hit path",
+    "cohort_fit": "the author-written paper cohort mapped to these two physical kinds",
+    "selection_was_prospective": false,
+    "representative_sample_claimed": false,
+    "generalization_evidence_count": 0
+  },
+  "identity_domains": {
+    "family_shape": {
+      "schema": "rtdl.family_shape.v1",
+      "domain_separator": "rtdl.family_shape.v1\u0000",
+      "contains": [
+        "physical_build_and_scene_graph",
+        "callback_role_topology",
+        "typed_views",
+        "role_effects",
+        "hit_channel_producer_consumer_ownership",
+        "buffer_gas_ias_sbt_bindings",
+        "result_operator_pipeline",
+        "continuation_status_commit_automaton",
+        "identity_bind_set",
+        "numeric_and_resource_limits"
+      ],
+      "excludes": [
+        "application_names",
+        "dataset_names",
+        "record_spelling",
+        "nominal_semantic_parameter_values",
+        "target_identity",
+        "provider_binary",
+        "actual_executable"
+      ]
+    },
+    "protocol_instance": {
+      "schema": "rtdl.protocol_instance.v1",
+      "domain_separator": "rtdl.protocol_instance.v1\u0000",
+      "contains": [
+        "family_shape_identity",
+        "typed_parameter_values",
+        "nominal_semantic_values",
+        "callback_source_identity",
+        "callback_ir_identity",
+        "effect_identity",
+        "abi_identity",
+        "proof_authorities"
+      ],
+      "excludes": [
+        "target_identity",
+        "provider_binary",
+        "actual_executable"
+      ]
+    },
+    "deployment": {
+      "schema": "rtdl.protocol_deployment.v1",
+      "domain_separator": "rtdl.protocol_deployment.v1\u0000",
+      "contains": [
+        "protocol_instance_identity",
+        "target_profile_identity",
+        "physical_schema_identity",
+        "provider_identity",
+        "generated_device_source_identity",
+        "generated_host_source_identity",
+        "provider_binary_identity",
+        "actual_executable_identity"
+      ],
+      "excludes": []
+    }
+  },
+  "family_shape_axes": [
+    "G",
+    "R",
+    "V",
+    "E",
+    "H",
+    "B",
+    "C",
+    "X",
+    "L"
+  ],
+  "axis_meanings": {
+    "G": "physical build and scene graph",
+    "R": "callback role topology and cardinality",
+    "V": "typed callback views and argument order",
+    "E": "role-indexed returned effects",
+    "H": "nominal hit-channel producer, consumer, ownership, and argument index",
+    "B": "buffer, GAS, IAS, SBT, residency, count, and layout bindings",
+    "C": "continuation, status, result operator order, and commit automaton",
+    "X": "declaration and actual-projection identity bind set",
+    "L": "numeric and resource bounds"
+  },
+  "canonicalization": {
+    "encoding": "UTF8_JSON_CANONICAL_ASCII_ESCAPES",
+    "duplicate_keys": "REJECT",
+    "unknown_normative_keys": "REJECT_BY_SCHEMA",
+    "nan_infinity": "REJECT",
+    "json_floats": "REJECT_USE_EXACT_BIT_TEXT",
+    "bool_as_integer": "REJECT_BY_TYPED_SCHEMA",
+    "local_binder_alpha_normalization": [
+      "parameter_id",
+      "node_id",
+      "buffer_id",
+      "channel_id",
+      "event_id",
+      "state_id"
+    ],
+    "set_sorted_fields": [
+      "capabilities",
+      "allowed_effects",
+      "required_effects",
+      "terminal_states",
+      "identity_bind_set",
+      "authorities"
+    ],
+    "order_preserved_fields": [
+      "callback_arguments",
+      "graph_nodes_and_edges",
+      "buffer_channel_ordinals",
+      "result_operator_pipeline",
+      "continuation_transitions"
+    ],
+    "fuzzy_or_manual_equivalence": "FORBIDDEN"
+  },
+  "schema_validation": {
+    "family_shape": "EXACT_RECURSIVE_TYPED_AND_CROSS_REFERENCE_VALIDATION_IMPLEMENTED",
+    "protocol_instance": "EXACT_TYPED_BINDINGS_AND_AUTHORITY_SET_VALIDATION_IMPLEMENTED",
+    "deployment": "EXACT_TARGET_PROVIDER_GENERATED_AND_EXECUTABLE_BINDING_VALIDATION_IMPLEMENTED",
+    "schema_only_or_unknown_key_documents": "REJECT",
+    "bool_as_integer": "REJECT",
+    "role_effect_compatibility": "ENFORCED",
+    "instance_against_shape_typed_binding": "ENFORCED_BY_EXPLICIT_CROSS_VALIDATOR"
+  },
+  "equivalence": {
+    "same_family_shape": "domain-separated canonical bytes equal after local-binder alpha normalization and set-only sorting",
+    "same_protocol_instance": "family shape plus typed parameters, nominal semantics, Callback IR, ABI, and proof bindings equal",
+    "same_deployment": "protocol instance plus target, provider, generated artifacts, native binary, and actual executable equal",
+    "nominal_semantics_may_be_erased_from_instance_identity": false,
+    "target_changes_family_shape": false,
+    "application_or_dataset_name_changes_family_shape": false,
+    "role_or_channel_ownership_change_changes_family_shape": true,
+    "continuation_or_result_operator_order_change_changes_family_shape": true
+  },
+  "support_matrix": [
+    {
+      "feature": "custom_aabb_leaf_primitive",
+      "vocabulary": "SUPPORTED",
+      "verifier": "SUPPORTED",
+      "provider_codegen": "SUPPORTED_FIXED_ROUTE",
+      "public_lifecycle": "SUPPORTED_FIXED_CONSTRUCTOR",
+      "true_gpu_evidence": "SUPPORTED"
+    },
+    {
+      "feature": "builtin_triangle_leaf_primitive",
+      "vocabulary": "SUPPORTED",
+      "verifier": "SUPPORTED",
+      "provider_codegen": "SUPPORTED",
+      "public_lifecycle": "SUPPORTED_FIXED_AND_BOUNDED_AUTHORING",
+      "true_gpu_evidence": "SUPPORTED"
+    },
+    {
+      "feature": "curves_leaf_primitive",
+      "vocabulary": "UNSUPPORTED",
+      "verifier": "UNSUPPORTED",
+      "provider_codegen": "UNSUPPORTED",
+      "public_lifecycle": "UNSUPPORTED",
+      "true_gpu_evidence": "NONE"
+    },
+    {
+      "feature": "spheres_leaf_primitive",
+      "vocabulary": "UNSUPPORTED",
+      "verifier": "UNSUPPORTED",
+      "provider_codegen": "UNSUPPORTED",
+      "public_lifecycle": "UNSUPPORTED",
+      "true_gpu_evidence": "NONE"
+    },
+    {
+      "feature": "instances_scene_graph",
+      "vocabulary": "UNSUPPORTED",
+      "verifier": "UNSUPPORTED",
+      "provider_codegen": "UNSUPPORTED",
+      "public_lifecycle": "UNSUPPORTED",
+      "true_gpu_evidence": "NONE"
+    },
+    {
+      "feature": "instance_pointer_scene_graph",
+      "vocabulary": "UNSUPPORTED",
+      "verifier": "UNSUPPORTED",
+      "provider_codegen": "UNSUPPORTED",
+      "public_lifecycle": "UNSUPPORTED",
+      "true_gpu_evidence": "NONE"
+    },
+    {
+      "feature": "single_static_gas_trace_depth_one_callable_depth_zero",
+      "vocabulary": "SUPPORTED",
+      "verifier": "SUPPORTED",
+      "provider_codegen": "SUPPORTED",
+      "public_lifecycle": "SUPPORTED",
+      "true_gpu_evidence": "SUPPORTED"
+    },
+    {
+      "feature": "graph_depth_greater_than_one",
+      "vocabulary": "PARTIAL_INTEGER_FIELD_EXISTS",
+      "verifier": "REJECTED_BY_CURRENT_BOUND",
+      "provider_codegen": "UNSUPPORTED",
+      "public_lifecycle": "UNSUPPORTED",
+      "true_gpu_evidence": "NONE"
+    },
+    {
+      "feature": "trace_depth_greater_than_one_or_callable_depth_positive",
+      "vocabulary": "PARTIAL_RESOURCE_FIELD_EXISTS",
+      "verifier": "REJECTED_BY_CURRENT_BOUND",
+      "provider_codegen": "UNSUPPORTED",
+      "public_lifecycle": "UNSUPPORTED",
+      "true_gpu_evidence": "NONE"
+    },
+    {
+      "feature": "arbitrary_verified_callback_ir_to_gpu",
+      "vocabulary": "CALLBACK_IR_EXISTS",
+      "verifier": "TARGET_NEUTRAL_ONLY",
+      "provider_codegen": "UNSUPPORTED_GENERAL_ROUTE",
+      "public_lifecycle": "UNSUPPORTED",
+      "true_gpu_evidence": "NONE"
+    }
+  ],
+  "scientific_outcome_rules": {
+    "new_app_existing_shape": "REUSE_NOT_NEW_SHAPE_EVIDENCE",
+    "new_shape_cpu_only": "NO_GPU_EXTENSION_EVIDENCE",
+    "copy_paste_route": "IMPLEMENTATION_COVERAGE_NOT_PARAMETRICITY",
+    "core_changes_after_freeze": "PROSPECTIVE_EXAM_FAIL",
+    "repair_same_challenge": "NOT_PROSPECTIVE_SUCCESS",
+    "unexpressible_shape": "UNMAPPED_NO_COERCION"
+  },
+  "claim_ceiling": {
+    "supported_claims": [
+      "current_scope_is_exactly_two_physical_geometry_kinds",
+      "current_surface_has_two_fixed_protocol_constructors",
+      "current_surface_has_one_bounded_user_authored_triangle_template",
+      "platform_kind_presence_is_two_of_six_build_inputs_and_two_of_four_leaf_primitives_not_feature_complete",
+      "application_semantic_protocol_shape_universe_is_open",
+      "protocol_shape_instance_and_deployment_are_separate_normative_identities",
+      "future_family_parametric_claim_must_be_scoped_to_shapes_expressible_by_a_separately_implemented_schema"
+    ],
+    "forbidden_claims": [
+      "all_rt_protocols",
+      "arbitrary_repurposed_applications",
+      "complete_optix_coverage",
+      "universal_callback_ir_to_gpu",
+      "family_parametric_gpu_compiler_implemented",
+      "prospective_new_shape_generalization",
+      "third_party_usability"
+    ],
+    "prospective_generalization_count": 0,
+    "external_author_count": 0,
+    "goal5832_product_or_gpu_bytes_changed": false
+  }
+}

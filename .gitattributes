@@ -1,0 +1,50 @@
+scripts/goal5749_modern_rtx_executor.sh text eol=lf
+
+# Goal5800/5801 evidence is byte-addressed.  Disable checkout-time newline
+# conversion so a clean Windows checkout rehashes exactly like Linux and the
+# frozen manifests remain independently verifiable.
+/experiments/goal5800_pyoptix_owl/pyoptix_idiomatic_arm.py -text
+/scripts/goal5801_independent_closeout_verifier.py -text
+/tests/goal5801_independent_closeout_verifier_test.py -text
+/history/internal_docs/goal5796_source_backed_responsibility_tables_v2_20260823.json -text
+/history/internal_docs/goal5797_five_mechanism_liveness_and_necessity_result_20260823.json -text
+/history/internal_docs/goal5797_gpu_evidence_20260823/GOAL5797_PYOPTIX_CONTROLS.json -text
+/history/internal_docs/goal5800_owl_v5_lx1_untimed_result_20260824/** -text
+/history/internal_docs/goal5800_pyoptix_idiomatic_untimed_evidence_20260824/** -text
+/history/internal_docs/goal5800_three_arm_responsibility_and_executable_residual_result_v6_20260824.json -text
+/history/internal_docs/strict_self_review_goals5800_5801_p1_closure_and_public_api_a2_20260824.md -text
+/history/internal_docs/call_for_review_goals5800_5801_p1_closure_and_public_api_a2_20260824.md -text
+/history/internal_docs/goal5801_rtdlexe_lx1_untimed_evidence_20260824/** -text
+/history/internal_docs/goal5801_cache_commit_and_public_api_a3_lx1_untimed_evidence_20260824/** -text
+/history/internal_docs/goal5801_g_a2_home_failure_evidence_20260824/** -text
+/history/internal_docs/goal5801_g_a2_home_failure_result_20260824.json -text
+/history/internal_docs/goal5801_g_a3_home_success_evidence_20260824/** -text
+/history/internal_docs/goal5801_g_a3_independent_verification_20260824.json -text
+/history/internal_docs/goal5801_g_a3_public_lifecycle_home_closure_result_20260824.json -text
+/history/internal_docs/goal5801_g_a3_public_lifecycle_home_closure_report_20260824.md -text
+/history/internal_docs/self_review_goal5801_g_a3_public_lifecycle_home_closure_20260824.md -text
+/history/internal_docs/call_for_review_goal5801_g_a3_public_lifecycle_home_closure_20260824.md -text
+/history/internal_docs/goal5801_g_a3_cross_platform_source_identity_home_execution_authority_20260824.md -text
+/scripts/goal5801_g_a3_independent_verify.py -text
+
+# Goal5802 freezes exact source, installed-package, and instrument bytes across
+# Windows and Linux. Disable checkout-time newline conversion for the measured
+# product and every Goal5802/clean-custody instrument surface.
+/.gitattributes -text
+/src/rtdsl/** -text
+/experiments/goal5802_premeasurement/** -text
+/scripts/goal5802_* -text
+/tests/goal5802_* -text
+/scripts/goal5801_a3_capture_native_custody.py -text
+/scripts/goal5801_a3_run_clean_install.py -text
+/scripts/goal5801_a3_verify_clean_install.py -text
+/scripts/goal5801_a3_verify_native_custody.py -text
+/tests/goal5801_a3_custody_and_clean_install_test.py -text
+/history/internal_docs/goal5802_* -text
+/history/internal_docs/goal5802_*/** -text
+
+# This CGO handoff branch is an exact-byte recovery snapshot. Preserve every
+# committed payload byte across Windows, macOS, and `git archive`; scientific
+# authorities bind raw bytes and must not be rewritten by checkout-time EOL
+# normalization. This final rule intentionally overrides earlier text rules.
+* -text

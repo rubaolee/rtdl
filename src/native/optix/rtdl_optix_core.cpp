@@ -1,0 +1,10130 @@
+// ---------- error helpers ---------------------------------------------------
+
+template <typename T>
+void set_error(const std::string& msg, T* buf, size_t sz) {
+    if (!buf || !sz) return;
+    size_t n = std::min(sz - 1, msg.size());
+    std::memcpy(buf, msg.data(), n);
+    buf[n] = '\0';
+}
+
+#define CUDA_CHECK(call)                                                        \
+    do {                                                                        \
+        cudaError_t _e = (call);                                               \
+        if (_e != cudaSuccess)                                                  \
+            throw std::runtime_error(std::string("CUDA error: ") +             \
+                                     cudaGetErrorString(_e));                   \
+    } while (0)
+
+inline std::string cuda_driver_error_message(CUresult result) {
+    const char* raw = nullptr;
+    cuGetErrorString(result, &raw);
+    std::string message = std::string("CUDA driver error: ") + (raw ? raw : "unknown");
+    if (raw && std::string(raw).find("unsupported toolchain") != std::string::npos) {
+        message +=
+            ". RTDL generated PTX that this CUDA driver cannot load. "
+            "Use a CUDA toolkit/NVRTC version supported by the installed driver, "
+            "put the driver's CUDA compat libraries first in LD_LIBRARY_PATH when required, "
+            "or set RTDL_OPTIX_PTX_ARCH=compute_XX for the target GPU before rerunning.";
+    }
+    return message;
+}
+
+#define CU_CHECK(call)                                                          \
+    do {                                                                        \
+        CUresult _r = (call);                                                   \
+        if (_r != CUDA_SUCCESS) {                                               \
+            throw std::runtime_error(cuda_driver_error_message(_r));            \
+        }                                                                       \
+    } while (0)
+
+#define OPTIX_CHECK(call)                                                       \
+    do {                                                                        \
+        OptixResult _r = (call);                                                \
+        if (_r != OPTIX_SUCCESS)                                                \
+            throw std::runtime_error(std::string("OptiX error: ") +            \
+                                     optixGetErrorString(_r));                  \
+    } while (0)
+
+#define NVRTC_CHECK(call)                                                       \
+    do {                                                                        \
+        nvrtcResult _r = (call);                                                \
+        if (_r != NVRTC_SUCCESS)                                                \
+            throw std::runtime_error(std::string("NVRTC error: ") +            \
+                                     nvrtcGetErrorString(_r));                  \
+    } while (0)
+
+// Goal5807 post-result performance diagnosis.  This is an environment-gated
+// diagnostic channel, never a registered timer or a product receipt.  It is
+// intentionally implemented inside the exact native call graph so overlapping
+// Python wrapper spans cannot be mistaken for additive native phases.
+using Goal5807ProfileClock = std::chrono::steady_clock;
+
+static bool goal5807_native_profile_enabled() {
+    static const bool enabled = [] {
+        const char* value = std::getenv("RTDL_GOAL5807_PROFILE_NATIVE");
+        return value && std::strcmp(value, "1") == 0;
+    }();
+    return enabled;
+}
+
+static Goal5807ProfileClock::time_point goal5807_profile_now() {
+    return Goal5807ProfileClock::now();
+}
+
+static void goal5807_emit_native_phase(
+        const char* family, const char* phase,
+        Goal5807ProfileClock::time_point start,
+        Goal5807ProfileClock::time_point end) {
+    if (!goal5807_native_profile_enabled()) return;
+    const auto nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(
+        end - start).count();
+    std::fprintf(
+        stderr, "RTDL_GOAL5807_NATIVE_PHASE|%s|%s|%lld\n",
+        family ? family : "unknown", phase ? phase : "unknown",
+        static_cast<long long>(nanoseconds));
+    std::fflush(stderr);
+}
+
+template <typename Fn>
+int handle_native_call(Fn&& fn, char* error_out, size_t error_size) {
+    try {
+        fn();
+        return 0;
+    } catch (const std::exception& ex) {
+        set_error(ex.what(), error_out, error_size);
+        return 1;
+    }
+}
+
+// ---------- behavior-level OptiX traversal audit ---------------------------
+//
+// A provider-library label or selected-template field is not evidence that
+// this execution reached RT traversal. The audit observes the actual
+// optixLaunch call and requires the physical route to bind a traversable plus
+// a stable, application-neutral program-bundle id immediately before launch.
+// When no audit session is active the wrapper is observationally inert.
+
+struct OptixTraversalAuditState {
+    bool active = false;
+    bool context_pending = false;
+    bool session_error = false;
+    uint64_t nonce_hi = 0;
+    uint64_t nonce_lo = 0;
+    uint64_t pending_program_bundle_id = 0;
+    OptixTraversableHandle pending_traversable = 0;
+    RtdlOptixTraversalAuditSnapshot snapshot = {};
+};
+
+thread_local OptixTraversalAuditState g_optix_traversal_audit;
+
+static uint64_t rtdl_audit_mix(uint64_t state, uint64_t value)
+{
+    value += UINT64_C(0x9e3779b97f4a7c15);
+    value = (value ^ (value >> 30)) * UINT64_C(0xbf58476d1ce4e5b9);
+    value = (value ^ (value >> 27)) * UINT64_C(0x94d049bb133111eb);
+    value ^= value >> 31;
+    return state ^ (value + UINT64_C(0x9e3779b97f4a7c15) + (state << 6) + (state >> 2));
+}
+
+static uint64_t rtdl_audit_c_string_id(const char* text)
+{
+    uint64_t value = UINT64_C(1469598103934665603);
+    if (!text) return 0;
+    for (const unsigned char* p = reinterpret_cast<const unsigned char*>(text); *p; ++p) {
+        value ^= static_cast<uint64_t>(*p);
+        value *= UINT64_C(1099511628211);
+    }
+    return value;
+}
+
+static void rtdl_optix_bind_traversal_audit_context(
+        const char* physical_program_bundle,
+        OptixTraversableHandle traversable)
+{
+    auto& audit = g_optix_traversal_audit;
+    if (!audit.active) return;
+    const uint64_t bundle_id = rtdl_audit_c_string_id(physical_program_bundle);
+    if (audit.context_pending || bundle_id == 0 || traversable == 0) {
+        audit.session_error = true;
+        throw std::runtime_error(
+            "OptiX traversal audit context must bind exactly one nonzero "
+            "program bundle and traversable before each launch");
+    }
+    audit.context_pending = true;
+    audit.pending_program_bundle_id = bundle_id;
+    audit.pending_traversable = traversable;
+    audit.snapshot.context_bind_count += 1;
+}
+
+static OptixResult rtdl_optix_launch_raw(
+        OptixPipeline pipeline,
+        CUstream stream,
+        CUdeviceptr pipeline_params,
+        size_t pipeline_params_size,
+        const OptixShaderBindingTable* sbt,
+        unsigned int width,
+        unsigned int height,
+        unsigned int depth)
+{
+    return optixLaunch(
+        pipeline, stream, pipeline_params, pipeline_params_size, sbt,
+        width, height, depth);
+}
+
+static OptixResult rtdl_optix_launch_with_audit(
+        const char* source_file,
+        int source_line,
+        OptixPipeline pipeline,
+        CUstream stream,
+        CUdeviceptr pipeline_params,
+        size_t pipeline_params_size,
+        const OptixShaderBindingTable* sbt,
+        unsigned int width,
+        unsigned int height,
+        unsigned int depth)
+{
+    auto& audit = g_optix_traversal_audit;
+    if (audit.active)
+        audit.snapshot.attempted_launch_count += 1;
+
+    const OptixResult result = rtdl_optix_launch_raw(
+        pipeline, stream, pipeline_params, pipeline_params_size, sbt,
+        width, height, depth);
+    if (!audit.active)
+        return result;
+
+    if (result != OPTIX_SUCCESS) {
+        audit.snapshot.failed_launch_count += 1;
+        audit.context_pending = false;
+        audit.pending_program_bundle_id = 0;
+        audit.pending_traversable = 0;
+        return result;
+    }
+
+    audit.snapshot.successful_launch_count += 1;
+    const uint64_t invocation_count =
+        static_cast<uint64_t>(width) *
+        static_cast<uint64_t>(height) *
+        static_cast<uint64_t>(depth);
+    if (UINT64_MAX - audit.snapshot.raygen_invocation_count < invocation_count) {
+        audit.session_error = true;
+    } else {
+        audit.snapshot.raygen_invocation_count += invocation_count;
+    }
+    audit.snapshot.pipeline_mix = rtdl_audit_mix(
+        audit.snapshot.pipeline_mix,
+        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(pipeline)));
+    audit.snapshot.sbt_mix = rtdl_audit_mix(
+        audit.snapshot.sbt_mix,
+        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(sbt)));
+    audit.snapshot.stream_mix = rtdl_audit_mix(
+        audit.snapshot.stream_mix,
+        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(stream)));
+    audit.snapshot.params_mix = rtdl_audit_mix(
+        rtdl_audit_mix(
+            audit.snapshot.params_mix,
+            static_cast<uint64_t>(pipeline_params)),
+        static_cast<uint64_t>(pipeline_params_size));
+    audit.snapshot.callsite_mix = rtdl_audit_mix(
+        rtdl_audit_mix(audit.snapshot.callsite_mix, rtdl_audit_c_string_id(source_file)),
+        static_cast<uint64_t>(source_line));
+
+    if (audit.context_pending &&
+            audit.pending_program_bundle_id != 0 &&
+            audit.pending_traversable != 0) {
+        audit.snapshot.complete_context_launch_count += 1;
+        audit.snapshot.program_bundle_mix = rtdl_audit_mix(
+            audit.snapshot.program_bundle_mix,
+            audit.pending_program_bundle_id);
+        audit.snapshot.traversable_mix = rtdl_audit_mix(
+            audit.snapshot.traversable_mix,
+            static_cast<uint64_t>(audit.pending_traversable));
+        if (audit.snapshot.complete_context_launch_count == 1) {
+            audit.snapshot.first_program_bundle_id =
+                audit.pending_program_bundle_id;
+            audit.snapshot.first_traversable =
+                static_cast<uint64_t>(audit.pending_traversable);
+        }
+        audit.snapshot.last_program_bundle_id =
+            audit.pending_program_bundle_id;
+        audit.snapshot.last_traversable =
+            static_cast<uint64_t>(audit.pending_traversable);
+    } else {
+        audit.snapshot.incomplete_context_launch_count += 1;
+        if (audit.snapshot.incomplete_callsite_record_count <
+                static_cast<uint32_t>(
+                    sizeof(audit.snapshot.incomplete_callsite_lines) /
+                    sizeof(audit.snapshot.incomplete_callsite_lines[0]))) {
+            audit.snapshot.incomplete_callsite_lines[
+                audit.snapshot.incomplete_callsite_record_count++] =
+                    static_cast<uint32_t>(source_line);
+        }
+    }
+    audit.context_pending = false;
+    audit.pending_program_bundle_id = 0;
+    audit.pending_traversable = 0;
+    return result;
+}
+
+#define optixLaunch(pipeline, stream, params, params_size, sbt, width, height, depth) \
+    rtdl_optix_launch_with_audit(                                             \
+        __FILE__, __LINE__, pipeline, stream, params, params_size, sbt,       \
+        width, height, depth)
+
+// ---------- CUDA device pointer RAII ----------------------------------------
+
+struct DevPtr {
+    CUdeviceptr ptr = 0;
+    explicit DevPtr(size_t bytes) {
+        if (bytes == 0) return;
+        CU_CHECK(cuMemAlloc(&ptr, bytes));
+    }
+    ~DevPtr() {
+        if (ptr) cuMemFree(ptr);
+    }
+    DevPtr(const DevPtr&)            = delete;
+    DevPtr& operator=(const DevPtr&) = delete;
+    void* as_void() const { return reinterpret_cast<void*>(ptr); }
+};
+
+template <typename T>
+void upload(CUdeviceptr dst, const T* src, size_t count) {
+    if (count == 0) return;
+    CU_CHECK(cuMemcpyHtoD(dst, src, sizeof(T) * count));
+}
+
+template <typename T>
+void upload_async(CUdeviceptr dst, const T* src, size_t count, CUstream stream) {
+    if (count == 0) return;
+    CU_CHECK(cuMemcpyHtoDAsync(dst, src, sizeof(T) * count, stream));
+}
+
+template <typename T>
+void download(T* dst, CUdeviceptr src, size_t count) {
+    if (count == 0) return;
+    CU_CHECK(cuMemcpyDtoH(dst, src, sizeof(T) * count));
+}
+
+// ---------- NVRTC compilation -----------------------------------------------
+
+static std::atomic<uint64_t> g_rtdlexe_runtime_compiler_attempt_count{0u};
+
+static std::filesystem::path create_native_compile_temp_directory(
+        const char* stem) {
+    namespace fs = std::filesystem;
+    const char* configured = std::getenv("TMPDIR");
+    fs::path root = configured && configured[0] != '\0'
+        ? fs::path(configured)
+        : fs::path("/tmp");
+    std::error_code error;
+    if (!fs::is_directory(root, error) || error) {
+        throw std::runtime_error("native compile TMPDIR is not an existing directory");
+    }
+    std::string value = (root / (std::string(stem) + "-XXXXXX")).string();
+    std::vector<char> writable(value.begin(), value.end());
+    writable.push_back('\0');
+    char* created = mkdtemp(writable.data());
+    if (!created) {
+        throw std::runtime_error("failed to create native compiler temporary directory");
+    }
+    return fs::path(created);
+}
+
+static std::string compile_to_ptx_with_nvcc(const char* cuda_src,
+                                            const char* name,
+                                            const std::vector<std::string>& include_opts,
+                                            const std::vector<const char*>& extra_opts)
+{
+    namespace fs = std::filesystem;
+    fs::path tmp_root = create_native_compile_temp_directory("rtdl-optix");
+    struct TempDirCleanup {
+        fs::path path;
+        ~TempDirCleanup() {
+            std::error_code ignored;
+            fs::remove_all(path, ignored);
+        }
+    } cleanup{tmp_root};
+
+    fs::path src_path = tmp_root / name;
+    fs::path ptx_path = src_path;
+    ptx_path += ".ptx";
+    fs::path log_path = src_path;
+    log_path += ".log";
+    {
+        std::ofstream src_file(src_path, std::ios::binary);
+        if (!src_file) {
+            throw std::runtime_error("failed to write temporary CUDA source for nvcc PTX compilation");
+        }
+        src_file.write(cuda_src, static_cast<std::streamsize>(std::strlen(cuda_src)));
+    }
+    std::string nvcc = std::getenv("RTDL_NVCC") ? std::getenv("RTDL_NVCC") : "/usr/bin/nvcc";
+    if (!std::getenv("RTDL_NVCC")) {
+        std::error_code ignored;
+        if (!std::filesystem::exists(nvcc, ignored)
+            && std::filesystem::exists("/usr/local/cuda/bin/nvcc", ignored)) {
+            nvcc = "/usr/local/cuda/bin/nvcc";
+        }
+    }
+    std::vector<std::string> argv_storage = {
+        nvcc,
+        "-ptx",
+        "--std=c++14",
+        "-allow-unsupported-compiler",
+        "-O3",
+    };
+    std::string configured_arch;
+    if (const char* arch = std::getenv("RTDL_OPTIX_PTX_ARCH"); arch && arch[0] != '\0') {
+        configured_arch = std::string("-arch=") + arch;
+        argv_storage.push_back(configured_arch);
+    }
+    for (const std::string& include_opt : include_opts) {
+        argv_storage.push_back(include_opt);
+    }
+    std::string ccbin;
+    if (const char* configured_ccbin = std::getenv("RTDL_NVCC_CCBIN")) {
+        ccbin = configured_ccbin;
+    } else {
+        std::error_code ignored;
+        if (std::filesystem::exists("/usr/bin/g++-12", ignored)) {
+            ccbin = "/usr/bin/g++-12";
+        }
+    }
+    if (!ccbin.empty()) {
+        argv_storage.push_back("-ccbin");
+        argv_storage.push_back(ccbin);
+    }
+    for (const char* opt : extra_opts) {
+        argv_storage.push_back(opt);
+    }
+    argv_storage.push_back(src_path.string());
+    argv_storage.push_back("-o");
+    argv_storage.push_back(ptx_path.string());
+
+    std::vector<char*> argv;
+    argv.reserve(argv_storage.size() + 1);
+    for (std::string& arg : argv_storage) {
+        argv.push_back(arg.data());
+    }
+    argv.push_back(nullptr);
+
+    pid_t pid = fork();
+    if (pid < 0) {
+        throw std::runtime_error("failed to fork nvcc PTX compilation process");
+    }
+    if (pid == 0) {
+        FILE* log_file = std::fopen(log_path.c_str(), "wb");
+        if (!log_file) _exit(127);
+        int log_fd = fileno(log_file);
+        if (dup2(log_fd, STDOUT_FILENO) < 0 || dup2(log_fd, STDERR_FILENO) < 0) {
+            std::fclose(log_file);
+            _exit(127);
+        }
+        std::fclose(log_file);
+        // Keep the effective compiler command identical to the argv covered by
+        // cubin_cache_key. nvcc otherwise consumes these inherited variables
+        // as hidden prepend/append options.
+        unsetenv("NVCC_PREPEND_FLAGS");
+        unsetenv("NVCC_APPEND_FLAGS");
+        execvp(nvcc.c_str(), argv.data());
+        _exit(127);
+    }
+
+    int status = 0;
+    if (waitpid(pid, &status, 0) < 0) {
+        throw std::runtime_error("failed to wait for nvcc PTX compilation process");
+    }
+    if (!WIFEXITED(status) || WEXITSTATUS(status) != 0) {
+        std::ifstream log_file(log_path, std::ios::binary);
+        std::string log((std::istreambuf_iterator<char>(log_file)),
+                        std::istreambuf_iterator<char>());
+        throw std::runtime_error("nvcc PTX compile failed for " + std::string(name) + ":\n" + log);
+    }
+    std::ifstream ptx_file(ptx_path, std::ios::binary);
+    if (!ptx_file) {
+        throw std::runtime_error("nvcc PTX compile succeeded but PTX output was not found");
+    }
+    return std::string((std::istreambuf_iterator<char>(ptx_file)),
+                       std::istreambuf_iterator<char>());
+}
+
+static std::string default_cuda_cubin_arch()
+{
+    if (const char* arch = std::getenv("RTDL_OPTIX_CUBIN_ARCH"); arch && arch[0] != '\0')
+        return arch;
+    if (const char* arch = std::getenv("RTDL_OPTIX_PTX_ARCH"); arch && arch[0] != '\0') {
+        std::string value(arch);
+        if (value.rfind("compute_", 0) == 0)
+            return "sm_" + value.substr(std::strlen("compute_"));
+        return value;
+    }
+    CU_CHECK(cuInit(0));
+    CUdevice device = 0;
+    CU_CHECK(cuDeviceGet(&device, 0));
+    int major = 0;
+    int minor = 0;
+    CU_CHECK(cuDeviceGetAttribute(&major, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MAJOR, device));
+    CU_CHECK(cuDeviceGetAttribute(&minor, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MINOR, device));
+    return "sm_" + std::to_string(major) + std::to_string(minor);
+}
+
+static bool cubin_cache_env_is_disabled(const char* value)
+{
+    if (!value || value[0] == '\0') return false;
+    const std::string raw(value);
+    return raw != "0" && raw != "false" && raw != "False" && raw != "FALSE";
+}
+
+static bool cubin_cache_disabled()
+{
+    if (const char* configured = std::getenv("RTDL_DISABLE_CUBIN_CACHE");
+            configured && configured[0] != '\0') {
+        return cubin_cache_env_is_disabled(configured);
+    }
+    return cubin_cache_env_is_disabled(
+        std::getenv("RTDL_OPTIX_DISABLE_CUBIN_CACHE"));
+}
+
+static std::filesystem::path cubin_cache_root()
+{
+    namespace fs = std::filesystem;
+    fs::path root;
+    if (const char* configured = std::getenv("RTDL_CUBIN_CACHE_DIR");
+            configured && configured[0] != '\0') {
+        root = fs::path(configured);
+    } else if (const char* legacy = std::getenv("RTDL_OPTIX_CUBIN_CACHE_DIR");
+               legacy && legacy[0] != '\0') {
+        root = fs::path(legacy);
+    } else if (const char* xdg = std::getenv("XDG_CACHE_HOME");
+               xdg && xdg[0] != '\0') {
+        root = fs::path(xdg) / "rtdl" / "optix_cubin";
+    } else if (const char* home = std::getenv("HOME"); home && home[0] != '\0') {
+        root = fs::path(home) / ".cache" / "rtdl" / "optix_cubin";
+    } else {
+        std::error_code error;
+        const fs::path temporary = fs::temp_directory_path(error);
+        if (error) return {};
+        root = temporary
+            / ("rtdl-cubin-cache-" + std::to_string(static_cast<unsigned long long>(getuid())));
+    }
+    if (!root.is_absolute()) return {};
+
+    std::error_code error;
+    fs::create_directories(root, error);
+    if (error) return {};
+    struct stat status{};
+    if (lstat(root.c_str(), &status) != 0
+        || !S_ISDIR(status.st_mode)
+        || status.st_uid != getuid()
+        || (status.st_mode & (S_IWGRP | S_IWOTH)) != 0) {
+        return {};
+    }
+    return root;
+}
+
+static void cubin_cache_hash_bytes(uint64_t& hash, const void* raw, size_t size)
+{
+    const auto* bytes = static_cast<const unsigned char*>(raw);
+    for (size_t index = 0; index < size; ++index) {
+        hash ^= static_cast<uint64_t>(bytes[index]);
+        hash *= UINT64_C(1099511628211);
+    }
+}
+
+static void cubin_cache_hash_string(uint64_t& first,
+                                    uint64_t& second,
+                                    const std::string& value)
+{
+    const uint64_t size = static_cast<uint64_t>(value.size());
+    cubin_cache_hash_bytes(first, &size, sizeof(size));
+    cubin_cache_hash_bytes(first, value.data(), value.size());
+    cubin_cache_hash_bytes(second, value.data(), value.size());
+    cubin_cache_hash_bytes(second, &size, sizeof(size));
+}
+
+static std::filesystem::path cubin_cache_resolve_command(const std::string& command)
+{
+    namespace fs = std::filesystem;
+    if (command.empty()) return {};
+    fs::path requested(command);
+    std::error_code error;
+    if (requested.has_parent_path()) {
+        fs::path resolved = fs::weakly_canonical(requested, error);
+        return error ? requested : resolved;
+    }
+    const char* raw_path = std::getenv("PATH");
+    if (!raw_path) return requested;
+    std::stringstream paths(raw_path);
+    std::string directory;
+    while (std::getline(paths, directory, ':')) {
+        if (directory.empty()) directory = ".";
+        fs::path candidate = fs::path(directory) / requested;
+        if (fs::is_regular_file(candidate, error) && !error) {
+            fs::path resolved = fs::weakly_canonical(candidate, error);
+            return error ? candidate : resolved;
+        }
+        error.clear();
+    }
+    return requested;
+}
+
+static std::string cubin_cache_file_identity(const std::string& path_text)
+{
+    namespace fs = std::filesystem;
+    fs::path path = cubin_cache_resolve_command(path_text);
+    const std::string resolved_path = path.string();
+    std::error_code error;
+    const auto size = fs::file_size(path, error);
+    if (error) return resolved_path + "|missing";
+    error.clear();
+    const auto modified = fs::last_write_time(path, error);
+    if (error) return resolved_path + "|size=" + std::to_string(size);
+    return resolved_path + "|size=" + std::to_string(size)
+        + "|mtime=" + std::to_string(modified.time_since_epoch().count());
+}
+
+static std::string cubin_cache_key(const char* cuda_src,
+                                   const char* name,
+                                   const std::string& nvcc,
+                                   const std::string& arch,
+                                   const std::string& ccbin,
+                                   const std::vector<std::string>& include_opts,
+                                   const std::vector<const char*>& extra_opts)
+{
+#ifndef RTDL_OPTIX_BUILD_ID
+    return {};
+#else
+    const std::string build_id(RTDL_OPTIX_BUILD_ID);
+    if (build_id.empty()) return {};
+    uint64_t first = UINT64_C(1469598103934665603);
+    uint64_t second = UINT64_C(1099511628211) ^ UINT64_C(0x9e3779b97f4a7c15);
+    cubin_cache_hash_string(first, second, "rtdl-cubin-cache-v2");
+    cubin_cache_hash_string(first, second, build_id);
+    int driver_version = 0;
+    if (cuDriverGetVersion(&driver_version) != CUDA_SUCCESS) return {};
+    cubin_cache_hash_string(first, second, std::to_string(driver_version));
+    cubin_cache_hash_string(first, second, name ? std::string(name) : std::string());
+    cubin_cache_hash_string(first, second, cuda_src ? std::string(cuda_src) : std::string());
+    cubin_cache_hash_string(first, second, cubin_cache_file_identity(nvcc));
+    cubin_cache_hash_string(first, second, arch);
+    cubin_cache_hash_string(first, second, cubin_cache_file_identity(ccbin));
+    for (const std::string& option : include_opts)
+        cubin_cache_hash_string(first, second, option);
+    for (const char* option : extra_opts)
+        cubin_cache_hash_string(first, second, option ? std::string(option) : std::string());
+    char output[33]{};
+    std::snprintf(
+        output,
+        sizeof(output),
+        "%016llx%016llx",
+        static_cast<unsigned long long>(first),
+        static_cast<unsigned long long>(second));
+    return std::string(output);
+#endif
+}
+
+static std::string cubin_cache_content_digest(const std::string& content)
+{
+    uint64_t first = UINT64_C(1469598103934665603);
+    uint64_t second = UINT64_C(1099511628211) ^ UINT64_C(0x517cc1b727220a95);
+    cubin_cache_hash_bytes(first, content.data(), content.size());
+    cubin_cache_hash_bytes(second, content.data(), content.size());
+    char output[33]{};
+    std::snprintf(
+        output,
+        sizeof(output),
+        "%016llx%016llx",
+        static_cast<unsigned long long>(first),
+        static_cast<unsigned long long>(second));
+    return std::string(output);
+}
+
+static std::string read_secure_cache_file(const std::filesystem::path& path,
+                                          uintmax_t minimum_size,
+                                          uintmax_t maximum_size)
+{
+    const int descriptor = open(path.c_str(), O_RDONLY | O_CLOEXEC | O_NOFOLLOW);
+    if (descriptor < 0) return {};
+    struct stat status{};
+    if (fstat(descriptor, &status) != 0
+        || !S_ISREG(status.st_mode)
+        || status.st_uid != getuid()
+        || (status.st_mode & (S_IWGRP | S_IWOTH)) != 0) {
+        close(descriptor);
+        return {};
+    }
+    const uintmax_t size = static_cast<uintmax_t>(status.st_size);
+    if (size < minimum_size || size > maximum_size) {
+        close(descriptor);
+        return {};
+    }
+    std::string content(static_cast<size_t>(size), '\0');
+    size_t offset = 0u;
+    while (offset < content.size()) {
+        const ssize_t count = read(
+            descriptor,
+            content.data() + offset,
+            content.size() - offset);
+        if (count < 0 && errno == EINTR) continue;
+        if (count <= 0) {
+            close(descriptor);
+            return {};
+        }
+        offset += static_cast<size_t>(count);
+    }
+    close(descriptor);
+    return content;
+}
+
+static std::filesystem::path cubin_cache_metadata_path(
+        const std::filesystem::path& path)
+{
+    std::filesystem::path metadata = path;
+    metadata += ".meta";
+    return metadata;
+}
+
+static void remove_cached_cubin_entry(const std::filesystem::path& path)
+{
+    std::error_code error;
+    std::filesystem::remove(path, error);
+    error.clear();
+    std::filesystem::remove(cubin_cache_metadata_path(path), error);
+}
+
+static std::string read_cached_cubin(const std::filesystem::path& path)
+{
+    constexpr uintmax_t kMinimumElfSize = 64u;
+    constexpr uintmax_t kMaximumCubinSize = 512u * 1024u * 1024u;
+    const std::string cubin = read_secure_cache_file(
+        path,
+        kMinimumElfSize,
+        kMaximumCubinSize);
+    const std::string metadata = read_secure_cache_file(
+        cubin_cache_metadata_path(path),
+        1u,
+        256u);
+    if (cubin.empty() || metadata.empty()) {
+        remove_cached_cubin_entry(path);
+        return {};
+    }
+    const bool has_elf_magic = cubin.size() >= 4u
+        && static_cast<unsigned char>(cubin[0]) == 0x7fu
+        && cubin[1] == 'E'
+        && cubin[2] == 'L'
+        && cubin[3] == 'F';
+    std::istringstream metadata_stream(metadata);
+    std::string version;
+    std::string size_text;
+    std::string digest;
+    std::string extra;
+    const bool metadata_shape_valid =
+        static_cast<bool>(std::getline(metadata_stream, version))
+        && static_cast<bool>(std::getline(metadata_stream, size_text))
+        && static_cast<bool>(std::getline(metadata_stream, digest))
+        && (!std::getline(metadata_stream, extra) || extra.empty());
+    uintmax_t recorded_size = 0u;
+    bool recorded_size_valid = false;
+    if (metadata_shape_valid) {
+        try {
+            size_t consumed = 0u;
+            recorded_size = static_cast<uintmax_t>(std::stoull(size_text, &consumed));
+            recorded_size_valid = consumed == size_text.size();
+        } catch (...) {
+            recorded_size_valid = false;
+        }
+    }
+    if (!has_elf_magic
+        || !metadata_shape_valid
+        || version != "rtdl-cubin-entry-v1"
+        || !recorded_size_valid
+        || recorded_size != cubin.size()
+        || digest != cubin_cache_content_digest(cubin)) {
+        remove_cached_cubin_entry(path);
+        return {};
+    }
+    return cubin;
+}
+
+static bool write_cache_file_atomic(const std::filesystem::path& path,
+                                    const std::string& content)
+{
+    namespace fs = std::filesystem;
+    if (path.empty() || content.empty()) return false;
+    std::string temporary_template =
+        (path.parent_path() / (path.filename().string() + ".XXXXXX")).string();
+    std::vector<char> temporary_buffer(temporary_template.begin(), temporary_template.end());
+    temporary_buffer.push_back('\0');
+    const int descriptor = mkstemp(temporary_buffer.data());
+    if (descriptor < 0) return false;
+    const fs::path temporary(temporary_buffer.data());
+    size_t offset = 0u;
+    bool complete = true;
+    while (offset < content.size()) {
+        const ssize_t count = write(
+            descriptor,
+            content.data() + offset,
+            content.size() - offset);
+        if (count < 0 && errno == EINTR) continue;
+        if (count <= 0) {
+            complete = false;
+            break;
+        }
+        offset += static_cast<size_t>(count);
+    }
+    if (complete && fsync(descriptor) != 0) complete = false;
+    close(descriptor);
+    std::error_code error;
+    if (complete) fs::rename(temporary, path, error);
+    const bool published = complete && !error;
+    if (!published) {
+        std::error_code ignored;
+        fs::remove(temporary, ignored);
+    }
+    return published;
+}
+
+static void write_cached_cubin_best_effort(const std::filesystem::path& path,
+                                           const std::string& cubin)
+{
+    if (path.empty() || cubin.empty()) return;
+    const std::string metadata =
+        "rtdl-cubin-entry-v1\n"
+        + std::to_string(cubin.size()) + "\n"
+        + cubin_cache_content_digest(cubin) + "\n";
+    if (!write_cache_file_atomic(path, cubin)
+        || !write_cache_file_atomic(cubin_cache_metadata_path(path), metadata)) {
+        remove_cached_cubin_entry(path);
+    }
+}
+
+static std::string compile_to_cubin_with_nvcc(const char* cuda_src,
+                                              const char* name,
+                                              const std::vector<std::string>& include_opts,
+                                              const std::vector<const char*>& extra_opts)
+{
+    namespace fs = std::filesystem;
+    fs::path tmp_root = create_native_compile_temp_directory("rtdl-optix-cubin");
+    struct TempDirCleanup {
+        fs::path path;
+        ~TempDirCleanup() {
+            std::error_code ignored;
+            fs::remove_all(path, ignored);
+        }
+    } cleanup{tmp_root};
+
+    fs::path src_path = tmp_root / name;
+    fs::path cubin_path = src_path;
+    cubin_path += ".cubin";
+    fs::path log_path = src_path;
+    log_path += ".log";
+    {
+        std::ofstream src_file(src_path, std::ios::binary);
+        if (!src_file) {
+            throw std::runtime_error("failed to write temporary CUDA source for nvcc CUBIN compilation");
+        }
+        src_file.write(cuda_src, static_cast<std::streamsize>(std::strlen(cuda_src)));
+    }
+
+    std::string nvcc = std::getenv("RTDL_NVCC") ? std::getenv("RTDL_NVCC") : "/usr/bin/nvcc";
+    if (!std::getenv("RTDL_NVCC")) {
+        std::error_code ignored;
+        if (!std::filesystem::exists(nvcc, ignored)
+            && std::filesystem::exists("/usr/local/cuda/bin/nvcc", ignored)) {
+            nvcc = "/usr/local/cuda/bin/nvcc";
+        }
+    }
+    std::string arch = "-arch=" + default_cuda_cubin_arch();
+    std::vector<std::string> argv_storage = {
+        nvcc,
+        "-cubin",
+        "--std=c++14",
+        "-allow-unsupported-compiler",
+        "-O3",
+        arch,
+    };
+    for (const std::string& include_opt : include_opts) {
+        argv_storage.push_back(include_opt);
+    }
+    std::string ccbin;
+    if (const char* configured_ccbin = std::getenv("RTDL_NVCC_CCBIN")) {
+        ccbin = configured_ccbin;
+    } else {
+        std::error_code ignored;
+        if (std::filesystem::exists("/usr/bin/g++-12", ignored)) {
+            ccbin = "/usr/bin/g++-12";
+        }
+    }
+    if (!ccbin.empty()) {
+        argv_storage.push_back("-ccbin");
+        argv_storage.push_back(ccbin);
+    }
+    fs::path cache_path;
+    if (!cubin_cache_disabled()) {
+        const std::string key = cubin_cache_key(
+            cuda_src,
+            name,
+            nvcc,
+            arch,
+            ccbin,
+            include_opts,
+            extra_opts);
+        const fs::path cache_root = key.empty() ? fs::path{} : cubin_cache_root();
+        if (!key.empty() && !cache_root.empty()) {
+            cache_path = cache_root / (key + ".cubin");
+            std::string cached = read_cached_cubin(cache_path);
+            if (!cached.empty()) return cached;
+        }
+    }
+    for (const char* opt : extra_opts) {
+        argv_storage.push_back(opt);
+    }
+    argv_storage.push_back(src_path.string());
+    argv_storage.push_back("-o");
+    argv_storage.push_back(cubin_path.string());
+
+    std::vector<char*> argv;
+    argv.reserve(argv_storage.size() + 1);
+    for (std::string& arg : argv_storage) {
+        argv.push_back(arg.data());
+    }
+    argv.push_back(nullptr);
+
+    pid_t pid = fork();
+    if (pid < 0) {
+        throw std::runtime_error("failed to fork nvcc CUBIN compilation process");
+    }
+    if (pid == 0) {
+        FILE* log_file = std::fopen(log_path.c_str(), "wb");
+        if (!log_file) _exit(127);
+        int log_fd = fileno(log_file);
+        if (dup2(log_fd, STDOUT_FILENO) < 0 || dup2(log_fd, STDERR_FILENO) < 0) {
+            std::fclose(log_file);
+            _exit(127);
+        }
+        std::fclose(log_file);
+        // Keep the effective compiler command identical to the argv covered by
+        // cubin_cache_key. nvcc otherwise consumes these inherited variables
+        // as hidden prepend/append options.
+        unsetenv("NVCC_PREPEND_FLAGS");
+        unsetenv("NVCC_APPEND_FLAGS");
+        execvp(nvcc.c_str(), argv.data());
+        _exit(127);
+    }
+
+    int status = 0;
+    if (waitpid(pid, &status, 0) < 0) {
+        throw std::runtime_error("failed to wait for nvcc CUBIN compilation process");
+    }
+    if (!WIFEXITED(status) || WEXITSTATUS(status) != 0) {
+        std::ifstream log_file(log_path, std::ios::binary);
+        std::string log((std::istreambuf_iterator<char>(log_file)),
+                        std::istreambuf_iterator<char>());
+        throw std::runtime_error("nvcc CUBIN compile failed for " + std::string(name) + ":\n" + log);
+    }
+    std::ifstream cubin_file(cubin_path, std::ios::binary);
+    if (!cubin_file) {
+        throw std::runtime_error("nvcc CUBIN compile succeeded but CUBIN output was not found");
+    }
+    std::string cubin((std::istreambuf_iterator<char>(cubin_file)),
+                      std::istreambuf_iterator<char>());
+    if (!cache_path.empty() && !cubin.empty())
+        write_cached_cubin_best_effort(cache_path, cubin);
+    return cubin;
+}
+
+static void append_include_arg(std::vector<std::string>& include_opts,
+                               std::unordered_set<std::string>& seen,
+                               const std::string& include_dir) {
+    if (include_dir.empty()) return;
+    std::error_code ignored;
+    if (!std::filesystem::is_directory(include_dir, ignored)) return;
+    std::string include_arg = "-I" + include_dir;
+    if (seen.insert(include_arg).second) {
+        include_opts.push_back(include_arg);
+    }
+}
+
+static std::string compile_to_cubin(const char* cuda_src,
+                                    const char* name,
+                                    const std::vector<const char*>& extra_opts = {}) {
+    g_rtdlexe_runtime_compiler_attempt_count.fetch_add(
+        1u, std::memory_order_relaxed);
+#ifndef RTDL_OPTIX_INCLUDE_DIR
+#define RTDL_OPTIX_INCLUDE_DIR ""
+#endif
+#ifndef RTDL_CUDA_INCLUDE_DIR
+#define RTDL_CUDA_INCLUDE_DIR ""
+#endif
+    std::vector<std::string> nvcc_include_opts;
+    std::unordered_set<std::string> seen_nvcc_include_opts;
+    append_include_arg(nvcc_include_opts, seen_nvcc_include_opts, RTDL_OPTIX_INCLUDE_DIR);
+    append_include_arg(nvcc_include_opts, seen_nvcc_include_opts, RTDL_CUDA_INCLUDE_DIR);
+    if (const char* runtime_optix_include = std::getenv("RTDL_OPTIX_SDK_INCLUDE_DIR"))
+        append_include_arg(nvcc_include_opts, seen_nvcc_include_opts, runtime_optix_include);
+    if (const char* runtime_cuda_include = std::getenv("RTDL_CUDA_SDK_INCLUDE_DIR"))
+        append_include_arg(nvcc_include_opts, seen_nvcc_include_opts, runtime_cuda_include);
+    return compile_to_cubin_with_nvcc(cuda_src, name, nvcc_include_opts, extra_opts);
+}
+
+std::string compile_to_ptx(const char* cuda_src,
+                           const char* name,
+                           const std::vector<const char*>& extra_opts = {}) {
+    g_rtdlexe_runtime_compiler_attempt_count.fetch_add(
+        1u, std::memory_order_relaxed);
+#ifndef RTDL_OPTIX_INCLUDE_DIR
+#define RTDL_OPTIX_INCLUDE_DIR ""
+#endif
+#ifndef RTDL_CUDA_INCLUDE_DIR
+#define RTDL_CUDA_INCLUDE_DIR ""
+#endif
+#ifndef RTDL_CUDA_SYSTEM_INCLUDE_DIR
+#define RTDL_CUDA_SYSTEM_INCLUDE_DIR ""
+#endif
+    std::vector<std::string> nvcc_include_opts;
+    std::unordered_set<std::string> seen_nvcc_include_opts;
+    append_include_arg(nvcc_include_opts, seen_nvcc_include_opts, RTDL_OPTIX_INCLUDE_DIR);
+    append_include_arg(nvcc_include_opts, seen_nvcc_include_opts, RTDL_CUDA_INCLUDE_DIR);
+    if (const char* runtime_optix_include = std::getenv("RTDL_OPTIX_SDK_INCLUDE_DIR"))
+        append_include_arg(nvcc_include_opts, seen_nvcc_include_opts, runtime_optix_include);
+    if (const char* runtime_cuda_include = std::getenv("RTDL_CUDA_SDK_INCLUDE_DIR"))
+        append_include_arg(nvcc_include_opts, seen_nvcc_include_opts, runtime_cuda_include);
+
+    std::vector<std::string> nvrtc_include_opts = nvcc_include_opts;
+    std::unordered_set<std::string> seen_nvrtc_include_opts = seen_nvcc_include_opts;
+    append_include_arg(nvrtc_include_opts, seen_nvrtc_include_opts, RTDL_CUDA_SYSTEM_INCLUDE_DIR);
+    append_include_arg(nvrtc_include_opts, seen_nvrtc_include_opts, "/usr/include");
+    append_include_arg(nvrtc_include_opts, seen_nvrtc_include_opts, "/usr/include/x86_64-linux-gnu");
+
+    if (const char* compiler = std::getenv("RTDL_OPTIX_PTX_COMPILER");
+        compiler && std::string(compiler) == "nvcc") {
+        return compile_to_ptx_with_nvcc(cuda_src, name, nvcc_include_opts, extra_opts);
+    }
+
+    std::vector<std::string> option_storage;
+    if (const char* arch = std::getenv("RTDL_OPTIX_PTX_ARCH"); arch && arch[0] != '\0') {
+        option_storage.push_back(std::string("--gpu-architecture=") + arch);
+    }
+    std::vector<const char*> opts;
+    opts.reserve(nvrtc_include_opts.size() + extra_opts.size() + 3);
+    for (const std::string& include_opt : nvrtc_include_opts) {
+        opts.push_back(include_opt.c_str());
+    }
+    for (const std::string& stored_opt : option_storage) {
+        opts.push_back(stored_opt.c_str());
+    }
+    opts.push_back("--std=c++14");
+#if defined(__linux__) && defined(__x86_64__)
+    // CUDA 13 NVRTC can include glibc headers without the host architecture
+    // predefines, which makes gnu/stubs.h look for missing 32-bit stubs.
+    opts.push_back("-D__x86_64__=1");
+    opts.push_back("-D__LP64__=1");
+#endif
+    for (const char* o : extra_opts) opts.push_back(o);
+
+    nvrtcProgram prog;
+    NVRTC_CHECK(nvrtcCreateProgram(&prog, cuda_src, name, 0, nullptr, nullptr));
+
+    nvrtcResult compile_result = nvrtcCompileProgram(prog,
+                                                     static_cast<int>(opts.size()),
+                                                     opts.data());
+    if (compile_result != NVRTC_SUCCESS) {
+        size_t log_size = 0;
+        nvrtcGetProgramLogSize(prog, &log_size);
+        std::string log(log_size, '\0');
+        nvrtcGetProgramLog(prog, log.data());
+        nvrtcDestroyProgram(&prog);
+        try {
+            return compile_to_ptx_with_nvcc(cuda_src, name, nvcc_include_opts, extra_opts);
+        } catch (const std::exception& fallback_error) {
+            throw std::runtime_error("NVRTC compile failed for " +
+                                     std::string(name) + ":\n" + log +
+                                     "\nFallback nvcc compile also failed:\n" +
+                                     fallback_error.what());
+        }
+    }
+
+    size_t ptx_size = 0;
+    NVRTC_CHECK(nvrtcGetPTXSize(prog, &ptx_size));
+    std::string ptx(ptx_size, '\0');
+    NVRTC_CHECK(nvrtcGetPTX(prog, ptx.data()));
+    nvrtcDestroyProgram(&prog);
+
+    if (const char* dump_dir = std::getenv("RTDL_DUMP_PTX_DIR")) {
+        std::string path = std::string(dump_dir) + "/" + name + ".ptx";
+        std::ofstream out(path, std::ios::binary);
+        if (out) out.write(ptx.data(), static_cast<std::streamsize>(ptx.size()));
+    }
+    return ptx;
+}
+
+// ---------- OptiX context singleton -----------------------------------------
+
+static OptixDeviceContext g_optix_ctx = nullptr;
+static CUcontext          g_cuda_primary_ctx = nullptr;
+static std::once_flag     g_optix_init_flag;
+
+static void optix_log_callback(unsigned int level, const char* tag, const char* message, void*) {
+    std::fprintf(stderr, "[optix][%u][%s] %s\n", level, tag ? tag : "", message ? message : "");
+}
+
+static void init_optix_context() {
+    const auto total_start = goal5807_profile_now();
+    auto phase_start = total_start;
+    CU_CHECK(cuInit(0));
+    auto phase_end = goal5807_profile_now();
+    goal5807_emit_native_phase(
+        "shared", "context.cu_init", phase_start, phase_end);
+    CUcontext prior = nullptr;
+    CUcontext retained = nullptr;
+    OptixDeviceContext created = nullptr;
+    CUdevice dev = 0;
+    bool have_device = false;
+    phase_start = goal5807_profile_now();
+    CU_CHECK(cuCtxGetCurrent(&prior));
+    try {
+        CU_CHECK(cuDeviceGet(&dev, 0));
+        have_device = true;
+        CU_CHECK(cuDevicePrimaryCtxRetain(&retained, dev));
+        CU_CHECK(cuCtxSetCurrent(retained));
+        phase_end = goal5807_profile_now();
+        goal5807_emit_native_phase(
+            "shared", "context.primary_retain_and_select",
+            phase_start, phase_end);
+        phase_start = goal5807_profile_now();
+        OPTIX_CHECK(optixInit());
+        phase_end = goal5807_profile_now();
+        goal5807_emit_native_phase(
+            "shared", "context.optix_init", phase_start, phase_end);
+        OptixDeviceContextOptions opts = {};
+        // Goal5802 compares three host stacks against one OptiX execution
+        // contract.  Do not rely on aggregate zero-initialisation to select
+        // the validation mode: make the performance-relevant setting an
+        // explicit source fact that the native producer descriptor reports.
+        static_assert(OPTIX_DEVICE_CONTEXT_VALIDATION_MODE_OFF == 0,
+                      "OptiX validation OFF enum value changed");
+        opts.validationMode = OPTIX_DEVICE_CONTEXT_VALIDATION_MODE_OFF;
+        if (const char* log_level = std::getenv("RTDL_OPTIX_LOG_LEVEL")) {
+            opts.logCallbackFunction = optix_log_callback;
+            opts.logCallbackLevel = static_cast<unsigned int>(std::max(0, std::atoi(log_level)));
+        }
+        phase_start = goal5807_profile_now();
+        OPTIX_CHECK(optixDeviceContextCreate(retained, &opts, &created));
+        phase_end = goal5807_profile_now();
+        goal5807_emit_native_phase(
+            "shared", "context.optix_device_context_create",
+            phase_start, phase_end);
+        phase_start = goal5807_profile_now();
+        CU_CHECK(cuCtxSetCurrent(prior));
+        phase_end = goal5807_profile_now();
+        goal5807_emit_native_phase(
+            "shared", "context.restore_caller", phase_start, phase_end);
+    } catch (...) {
+        if (created) (void)optixDeviceContextDestroy(created);
+        (void)cuCtxSetCurrent(prior);
+        if (retained && have_device) (void)cuDevicePrimaryCtxRelease(dev);
+        throw;
+    }
+    // Publish only after every fallible initialization and caller-context
+    // restoration step succeeds.  std::call_once may retry after a throw, so
+    // publishing earlier would leak retains or expose a partial singleton.
+    g_cuda_primary_ctx = retained;
+    g_optix_ctx = created;
+    goal5807_emit_native_phase(
+        "shared", "context.total", total_start, goal5807_profile_now());
+}
+
+static OptixDeviceContext get_optix_context() {
+    std::call_once(g_optix_init_flag, init_optix_context);
+    // CUDA current-context state is per host thread.  The process owns one
+    // primary-context retain, while every public prepare/execute entry selects
+    // that same context on the calling thread without taking another retain.
+    CU_CHECK(cuCtxSetCurrent(g_cuda_primary_ctx));
+    return g_optix_ctx;
+}
+
+class ScopedRtdlCudaContext {
+public:
+    ScopedRtdlCudaContext() {
+        CU_CHECK(cuCtxGetCurrent(&prior_));
+        try {
+            std::call_once(g_optix_init_flag, init_optix_context);
+            CU_CHECK(cuCtxSetCurrent(g_cuda_primary_ctx));
+            active_ = true;
+        } catch (...) {
+            // A constructor that throws has no destructor.  Restore the
+            // caller's context explicitly so failed RTDL context selection
+            // cannot leak a partially selected primary context.
+            (void)cuCtxSetCurrent(prior_);
+            throw;
+        }
+    }
+    ~ScopedRtdlCudaContext() noexcept {
+        if (active_) (void)cuCtxSetCurrent(prior_);
+    }
+    ScopedRtdlCudaContext(const ScopedRtdlCudaContext&) = delete;
+    ScopedRtdlCudaContext& operator=(const ScopedRtdlCudaContext&) = delete;
+private:
+    CUcontext prior_ = nullptr;
+    bool active_ = false;
+};
+
+// ---------- SBT record types ------------------------------------------------
+
+template <typename T>
+struct alignas(OPTIX_SBT_RECORD_ALIGNMENT) SbtRecord {
+    char header[OPTIX_SBT_RECORD_HEADER_SIZE];
+    T    data;
+};
+
+struct EmptyData {};
+
+using RaygenRecord = SbtRecord<EmptyData>;
+using MissRecord   = SbtRecord<EmptyData>;
+using HitRecord    = SbtRecord<EmptyData>;
+
+// ---------- AABB helpers ----------------------------------------------------
+
+// OptiX positive-hit PIP uses GPU-side candidate generation followed by host
+// exact finalize. Candidate generation must therefore bias toward false
+// positives, not false negatives. The clean-clone release regression showed
+// that the earlier polygon AABB pad was too tight for the float32 broad phase
+// on the exact-source county/zipcode surface.
+constexpr float kAabbPad = 1.0e-3f;
+constexpr float kSegmentAabbPad = 1.0e-4f;
+constexpr float kSegmentPairIntersectionTraceTmaxPad = 1.0e-4f;
+
+OptixAabb aabb_for_segment(float x0, float y0, float x1, float y1) {
+    OptixAabb a;
+    a.minX = std::min(x0, x1) - kSegmentAabbPad;
+    a.minY = std::min(y0, y1) - kSegmentAabbPad;
+    a.minZ = -kSegmentAabbPad;
+    a.maxX = std::max(x0, x1) + kSegmentAabbPad;
+    a.maxY = std::max(y0, y1) + kSegmentAabbPad;
+    a.maxZ =  kSegmentAabbPad;
+    return a;
+}
+
+OptixAabb aabb_for_polygon(const double* verts_xy, uint32_t offset, uint32_t count) {
+    OptixAabb a;
+    a.minX = a.maxX = static_cast<float>(verts_xy[offset * 2]);
+    a.minY = a.maxY = static_cast<float>(verts_xy[offset * 2 + 1]);
+    a.minZ = -kAabbPad;
+    a.maxZ =  kAabbPad;
+    for (uint32_t i = 1; i < count; ++i) {
+        float px = static_cast<float>(verts_xy[(offset + i) * 2]);
+        float py = static_cast<float>(verts_xy[(offset + i) * 2 + 1]);
+        a.minX = std::min(a.minX, px);
+        a.minY = std::min(a.minY, py);
+        a.maxX = std::max(a.maxX, px);
+        a.maxY = std::max(a.maxY, py);
+    }
+    a.minX -= kAabbPad;
+    a.minY -= kAabbPad;
+    a.maxX += kAabbPad;
+    a.maxY += kAabbPad;
+    return a;
+}
+
+OptixAabb aabb_for_triangle(float x0, float y0,
+                             float x1, float y1,
+                             float x2, float y2) {
+    OptixAabb a;
+    a.minX = std::min({x0, x1, x2}) - kAabbPad;
+    a.minY = std::min({y0, y1, y2}) - kAabbPad;
+    a.minZ = -kAabbPad;
+    a.maxX = std::max({x0, x1, x2}) + kAabbPad;
+    a.maxY = std::max({y0, y1, y2}) + kAabbPad;
+    a.maxZ =  kAabbPad;
+    return a;
+}
+
+OptixAabb aabb_for_triangle_3d(float x0, float y0, float z0,
+                                float x1, float y1, float z1,
+                                float x2, float y2, float z2) {
+    OptixAabb a;
+    a.minX = std::min({x0, x1, x2}) - kAabbPad;
+    a.minY = std::min({y0, y1, y2}) - kAabbPad;
+    a.minZ = std::min({z0, z1, z2}) - kAabbPad;
+    a.maxX = std::max({x0, x1, x2}) + kAabbPad;
+    a.maxY = std::max({y0, y1, y2}) + kAabbPad;
+    a.maxZ = std::max({z0, z1, z2}) + kAabbPad;
+    return a;
+}
+
+// ---------- BVH construction ------------------------------------------------
+
+struct AccelHolder {
+    CUdeviceptr output_buf   = 0;
+    CUdeviceptr aabb_buf     = 0;
+    bool owns_aabb_buf       = true;
+    OptixTraversableHandle handle = 0;
+    size_t output_size_bytes = 0;
+    size_t temp_size_bytes = 0;
+    size_t aabb_size_bytes = 0;
+    size_t compacted_output_size_bytes = 0;
+
+    AccelHolder() = default;
+    ~AccelHolder() {
+        if (output_buf) cuMemFree(output_buf);
+        if (aabb_buf && owns_aabb_buf) cuMemFree(aabb_buf);
+    }
+    AccelHolder(const AccelHolder&)            = delete;
+    AccelHolder& operator=(const AccelHolder&) = delete;
+    AccelHolder(AccelHolder&& other) noexcept
+        : output_buf(other.output_buf),
+          aabb_buf(other.aabb_buf),
+          owns_aabb_buf(other.owns_aabb_buf),
+          handle(other.handle),
+          output_size_bytes(other.output_size_bytes),
+          temp_size_bytes(other.temp_size_bytes),
+          aabb_size_bytes(other.aabb_size_bytes),
+          compacted_output_size_bytes(other.compacted_output_size_bytes) {
+        other.output_buf = 0;
+        other.aabb_buf = 0;
+        other.owns_aabb_buf = true;
+        other.handle = 0;
+        other.output_size_bytes = 0;
+        other.temp_size_bytes = 0;
+        other.aabb_size_bytes = 0;
+        other.compacted_output_size_bytes = 0;
+    }
+    AccelHolder& operator=(AccelHolder&& other) noexcept {
+        if (this != &other) {
+            if (output_buf) cuMemFree(output_buf);
+            if (aabb_buf && owns_aabb_buf) cuMemFree(aabb_buf);
+            output_buf = other.output_buf;
+            aabb_buf = other.aabb_buf;
+            owns_aabb_buf = other.owns_aabb_buf;
+            handle = other.handle;
+            output_size_bytes = other.output_size_bytes;
+            temp_size_bytes = other.temp_size_bytes;
+            aabb_size_bytes = other.aabb_size_bytes;
+            compacted_output_size_bytes = other.compacted_output_size_bytes;
+            other.output_buf = 0;
+            other.aabb_buf = 0;
+            other.owns_aabb_buf = true;
+            other.handle = 0;
+            other.output_size_bytes = 0;
+            other.temp_size_bytes = 0;
+            other.aabb_size_bytes = 0;
+            other.compacted_output_size_bytes = 0;
+        }
+        return *this;
+    }
+};
+
+struct TriangleAccelHolder {
+    CUdeviceptr output_buf = 0;
+    CUdeviceptr vertex_buf = 0;
+    CUdeviceptr index_buf = 0;
+    OptixTraversableHandle handle = 0;
+    size_t output_size_bytes = 0;
+    size_t temp_size_bytes = 0;
+    size_t vertex_size_bytes = 0;
+    size_t index_size_bytes = 0;
+
+    TriangleAccelHolder() = default;
+    ~TriangleAccelHolder() {
+        if (output_buf) cuMemFree(output_buf);
+        if (vertex_buf) cuMemFree(vertex_buf);
+        if (index_buf) cuMemFree(index_buf);
+    }
+    TriangleAccelHolder(const TriangleAccelHolder&) = delete;
+    TriangleAccelHolder& operator=(const TriangleAccelHolder&) = delete;
+    TriangleAccelHolder(TriangleAccelHolder&& other) noexcept
+        : output_buf(other.output_buf),
+          vertex_buf(other.vertex_buf),
+          index_buf(other.index_buf),
+          handle(other.handle),
+          output_size_bytes(other.output_size_bytes),
+          temp_size_bytes(other.temp_size_bytes),
+          vertex_size_bytes(other.vertex_size_bytes),
+          index_size_bytes(other.index_size_bytes) {
+        other.output_buf = 0;
+        other.vertex_buf = 0;
+        other.index_buf = 0;
+        other.handle = 0;
+        other.output_size_bytes = 0;
+        other.temp_size_bytes = 0;
+        other.vertex_size_bytes = 0;
+        other.index_size_bytes = 0;
+    }
+    TriangleAccelHolder& operator=(TriangleAccelHolder&& other) noexcept {
+        if (this != &other) {
+            if (output_buf) cuMemFree(output_buf);
+            if (vertex_buf) cuMemFree(vertex_buf);
+            if (index_buf) cuMemFree(index_buf);
+            output_buf = other.output_buf;
+            vertex_buf = other.vertex_buf;
+            index_buf = other.index_buf;
+            handle = other.handle;
+            output_size_bytes = other.output_size_bytes;
+            temp_size_bytes = other.temp_size_bytes;
+            vertex_size_bytes = other.vertex_size_bytes;
+            index_size_bytes = other.index_size_bytes;
+            other.output_buf = 0;
+            other.vertex_buf = 0;
+            other.index_buf = 0;
+            other.handle = 0;
+            other.output_size_bytes = 0;
+            other.temp_size_bytes = 0;
+            other.vertex_size_bytes = 0;
+            other.index_size_bytes = 0;
+        }
+        return *this;
+    }
+};
+
+static TriangleAccelHolder build_triangle_accel(
+        OptixDeviceContext ctx,
+        const std::vector<float3>& vertices,
+        const std::vector<uint3>& indices) {
+    if (vertices.empty() || indices.empty()) {
+        throw std::runtime_error(
+            "OptiX triangle acceleration requires nonempty vertices and indices");
+    }
+    if (vertices.size() > static_cast<size_t>(UINT32_MAX)
+            || indices.size() > static_cast<size_t>(UINT32_MAX)) {
+        throw std::runtime_error("OptiX triangle acceleration exceeds uint32 capacity");
+    }
+
+    TriangleAccelHolder result;
+    result.vertex_size_bytes = sizeof(float3) * vertices.size();
+    result.index_size_bytes = sizeof(uint3) * indices.size();
+    CU_CHECK(cuMemAlloc(&result.vertex_buf, result.vertex_size_bytes));
+    CU_CHECK(cuMemAlloc(&result.index_buf, result.index_size_bytes));
+    CU_CHECK(cuMemcpyHtoD(
+        result.vertex_buf, vertices.data(), result.vertex_size_bytes));
+    CU_CHECK(cuMemcpyHtoD(
+        result.index_buf, indices.data(), result.index_size_bytes));
+
+    OptixBuildInput build_input = {};
+    build_input.type = OPTIX_BUILD_INPUT_TYPE_TRIANGLES;
+    auto& triangles = build_input.triangleArray;
+    triangles.vertexBuffers = &result.vertex_buf;
+    triangles.numVertices = static_cast<unsigned>(vertices.size());
+    triangles.vertexFormat = OPTIX_VERTEX_FORMAT_FLOAT3;
+    triangles.vertexStrideInBytes = sizeof(float3);
+    triangles.indexBuffer = result.index_buf;
+    triangles.numIndexTriplets = static_cast<unsigned>(indices.size());
+    triangles.indexFormat = OPTIX_INDICES_FORMAT_UNSIGNED_INT3;
+    triangles.indexStrideInBytes = sizeof(uint3);
+    uint32_t flags = OPTIX_GEOMETRY_FLAG_DISABLE_ANYHIT;
+    triangles.flags = &flags;
+    triangles.numSbtRecords = 1;
+
+    OptixAccelBuildOptions options = {};
+    options.buildFlags = OPTIX_BUILD_FLAG_PREFER_FAST_TRACE;
+    options.operation = OPTIX_BUILD_OPERATION_BUILD;
+
+    OptixAccelBufferSizes sizes = {};
+    OPTIX_CHECK(optixAccelComputeMemoryUsage(
+        ctx, &options, &build_input, 1, &sizes));
+    DevPtr temp(sizes.tempSizeInBytes);
+    CU_CHECK(cuMemAlloc(&result.output_buf, sizes.outputSizeInBytes));
+    result.temp_size_bytes = sizes.tempSizeInBytes;
+    result.output_size_bytes = sizes.outputSizeInBytes;
+
+    CUstream stream = 0;
+    OPTIX_CHECK(optixAccelBuild(
+        ctx,
+        stream,
+        &options,
+        &build_input,
+        1,
+        temp.ptr,
+        sizes.tempSizeInBytes,
+        result.output_buf,
+        sizes.outputSizeInBytes,
+        &result.handle,
+        nullptr,
+        0));
+    CU_CHECK(cuStreamSynchronize(stream));
+    return result;
+}
+
+static AccelHolder build_custom_accel_with_flags(
+        OptixDeviceContext ctx,
+        const std::vector<OptixAabb>& aabbs,
+        unsigned int build_flags) {
+    AccelHolder result;
+    size_t aabb_bytes = sizeof(OptixAabb) * aabbs.size();
+    result.aabb_size_bytes = aabb_bytes;
+    CU_CHECK(cuMemAlloc(&result.aabb_buf, aabb_bytes));
+    CU_CHECK(cuMemcpyHtoD(result.aabb_buf, aabbs.data(), aabb_bytes));
+
+    OptixBuildInput build_input = {};
+    build_input.type = OPTIX_BUILD_INPUT_TYPE_CUSTOM_PRIMITIVES;
+    auto& cpp = build_input.customPrimitiveArray;
+    cpp.aabbBuffers   = &result.aabb_buf;
+    cpp.numPrimitives = static_cast<unsigned>(aabbs.size());
+    cpp.strideInBytes = sizeof(OptixAabb);
+    uint32_t flags_arr = OPTIX_GEOMETRY_FLAG_NONE;
+    cpp.flags          = &flags_arr;
+    cpp.numSbtRecords  = 1;
+
+    OptixAccelBuildOptions accel_opts = {};
+    accel_opts.buildFlags = build_flags;
+    accel_opts.operation  = OPTIX_BUILD_OPERATION_BUILD;
+
+    OptixAccelBufferSizes sizes = {};
+    OPTIX_CHECK(optixAccelComputeMemoryUsage(ctx, &accel_opts, &build_input, 1, &sizes));
+
+    DevPtr temp_buf(sizes.tempSizeInBytes);
+    CU_CHECK(cuMemAlloc(&result.output_buf, sizes.outputSizeInBytes));
+    result.temp_size_bytes = sizes.tempSizeInBytes;
+    result.output_size_bytes = sizes.outputSizeInBytes;
+
+    const bool allow_compaction = (build_flags & OPTIX_BUILD_FLAG_ALLOW_COMPACTION) != 0u;
+    DevPtr compacted_size_buf(allow_compaction ? sizeof(uint64_t) : 0);
+    OptixAccelEmitDesc emit_desc = {};
+    OptixAccelEmitDesc* emit_descs = nullptr;
+    unsigned int emit_desc_count = 0;
+    if (allow_compaction) {
+        emit_desc.type = OPTIX_PROPERTY_TYPE_COMPACTED_SIZE;
+        emit_desc.result = compacted_size_buf.ptr;
+        emit_descs = &emit_desc;
+        emit_desc_count = 1;
+    }
+
+    CUstream stream = 0;
+    OPTIX_CHECK(optixAccelBuild(ctx, stream, &accel_opts, &build_input, 1,
+                                 temp_buf.ptr, sizes.tempSizeInBytes,
+                                 result.output_buf, sizes.outputSizeInBytes,
+                                 &result.handle, emit_descs, emit_desc_count));
+    CU_CHECK(cuStreamSynchronize(stream));
+    if (allow_compaction) {
+        uint64_t compacted_size = 0;
+        download(&compacted_size, compacted_size_buf.ptr, 1);
+        if (compacted_size > 0) {
+            CUdeviceptr compacted_buf = 0;
+            CU_CHECK(cuMemAlloc(&compacted_buf, static_cast<size_t>(compacted_size)));
+            OptixTraversableHandle compacted_handle = 0;
+            OPTIX_CHECK(optixAccelCompact(
+                ctx,
+                stream,
+                result.handle,
+                compacted_buf,
+                static_cast<size_t>(compacted_size),
+                &compacted_handle));
+            CU_CHECK(cuStreamSynchronize(stream));
+            CU_CHECK(cuMemFree(result.output_buf));
+            result.output_buf = compacted_buf;
+            result.handle = compacted_handle;
+            result.compacted_output_size_bytes = static_cast<size_t>(compacted_size);
+            result.output_size_bytes = static_cast<size_t>(compacted_size);
+        }
+    }
+    return result;
+}
+
+static AccelHolder build_custom_accel(OptixDeviceContext ctx,
+                                      const std::vector<OptixAabb>& aabbs) {
+    return build_custom_accel_with_flags(
+        ctx,
+        aabbs,
+        OPTIX_BUILD_FLAG_ALLOW_RANDOM_VERTEX_ACCESS);
+}
+
+static void refit_custom_accel_existing_aabb_buffer_with_flags(
+        OptixDeviceContext ctx,
+        AccelHolder& accel,
+        size_t aabb_count,
+        unsigned int build_flags) {
+    if (aabb_count == 0)
+        throw std::runtime_error("OptiX AABB refit requires at least one primitive");
+    const size_t aabb_bytes = sizeof(OptixAabb) * aabb_count;
+    if (!accel.aabb_buf || aabb_bytes != accel.aabb_size_bytes)
+        throw std::runtime_error("OptiX AABB refit requires unchanged primitive cardinality");
+    if ((build_flags & OPTIX_BUILD_FLAG_ALLOW_UPDATE) == 0u)
+        throw std::runtime_error("OptiX AABB refit requires ALLOW_UPDATE build state");
+
+    OptixBuildInput build_input = {};
+    build_input.type = OPTIX_BUILD_INPUT_TYPE_CUSTOM_PRIMITIVES;
+    auto& cpp = build_input.customPrimitiveArray;
+    cpp.aabbBuffers = &accel.aabb_buf;
+    cpp.numPrimitives = static_cast<unsigned>(aabb_count);
+    cpp.strideInBytes = sizeof(OptixAabb);
+    uint32_t flags_arr = OPTIX_GEOMETRY_FLAG_NONE;
+    cpp.flags = &flags_arr;
+    cpp.numSbtRecords = 1;
+
+    OptixAccelBuildOptions accel_opts = {};
+    accel_opts.buildFlags = build_flags;
+    accel_opts.operation = OPTIX_BUILD_OPERATION_UPDATE;
+
+    OptixAccelBufferSizes sizes = {};
+    OPTIX_CHECK(optixAccelComputeMemoryUsage(
+        ctx, &accel_opts, &build_input, 1, &sizes));
+    if (sizes.outputSizeInBytes > accel.output_size_bytes)
+        throw std::runtime_error("OptiX AABB refit output exceeds prepared output capacity");
+
+    DevPtr temp_buf(sizes.tempUpdateSizeInBytes);
+    OptixTraversableHandle updated_handle = accel.handle;
+    CUstream stream = 0;
+    OPTIX_CHECK(optixAccelBuild(
+        ctx, stream, &accel_opts, &build_input, 1,
+        temp_buf.ptr, sizes.tempUpdateSizeInBytes,
+        accel.output_buf, accel.output_size_bytes,
+        &updated_handle, nullptr, 0));
+    CU_CHECK(cuStreamSynchronize(stream));
+    accel.handle = updated_handle;
+}
+
+static void refit_custom_accel_with_flags(
+        OptixDeviceContext ctx,
+        AccelHolder& accel,
+        const std::vector<OptixAabb>& aabbs,
+        unsigned int build_flags) {
+    CU_CHECK(cuMemcpyHtoD(
+        accel.aabb_buf, aabbs.data(), sizeof(OptixAabb) * aabbs.size()));
+    refit_custom_accel_existing_aabb_buffer_with_flags(
+        ctx, accel, aabbs.size(), build_flags);
+}
+
+static AccelHolder build_custom_accel_from_device_aabbs(
+        OptixDeviceContext ctx,
+        CUdeviceptr source_aabbs,
+        size_t aabb_count) {
+    AccelHolder result;
+    if (aabb_count == 0) return result;
+    if (!source_aabbs)
+        throw std::runtime_error("device AABB buffer must not be null when aabb_count is nonzero");
+    size_t aabb_bytes = sizeof(OptixAabb) * aabb_count;
+    result.aabb_size_bytes = aabb_bytes;
+    CU_CHECK(cuMemAlloc(&result.aabb_buf, aabb_bytes));
+    CU_CHECK(cuMemcpyDtoD(result.aabb_buf, source_aabbs, aabb_bytes));
+
+    OptixBuildInput build_input = {};
+    build_input.type = OPTIX_BUILD_INPUT_TYPE_CUSTOM_PRIMITIVES;
+    auto& cpp = build_input.customPrimitiveArray;
+    cpp.aabbBuffers   = &result.aabb_buf;
+    cpp.numPrimitives = static_cast<unsigned>(aabb_count);
+    cpp.strideInBytes = sizeof(OptixAabb);
+    uint32_t flags_arr = OPTIX_GEOMETRY_FLAG_NONE;
+    cpp.flags          = &flags_arr;
+    cpp.numSbtRecords  = 1;
+
+    OptixAccelBuildOptions accel_opts = {};
+    accel_opts.buildFlags = OPTIX_BUILD_FLAG_ALLOW_RANDOM_VERTEX_ACCESS;
+    accel_opts.operation  = OPTIX_BUILD_OPERATION_BUILD;
+
+    OptixAccelBufferSizes sizes = {};
+    OPTIX_CHECK(optixAccelComputeMemoryUsage(ctx, &accel_opts, &build_input, 1, &sizes));
+
+    DevPtr temp_buf(sizes.tempSizeInBytes);
+    CU_CHECK(cuMemAlloc(&result.output_buf, sizes.outputSizeInBytes));
+    result.temp_size_bytes = sizes.tempSizeInBytes;
+    result.output_size_bytes = sizes.outputSizeInBytes;
+
+    CUstream stream = 0;
+    OPTIX_CHECK(optixAccelBuild(ctx, stream, &accel_opts, &build_input, 1,
+                                 temp_buf.ptr, sizes.tempSizeInBytes,
+                                 result.output_buf, sizes.outputSizeInBytes,
+                                 &result.handle, nullptr, 0));
+    CU_CHECK(cuStreamSynchronize(stream));
+    return result;
+}
+
+static AccelHolder build_custom_accel_from_borrowed_device_aabbs(
+        OptixDeviceContext ctx,
+        CUdeviceptr source_aabbs,
+        size_t aabb_count) {
+    AccelHolder result;
+    if (aabb_count == 0) return result;
+    if (!source_aabbs)
+        throw std::runtime_error("borrowed device AABB buffer must not be null when aabb_count is nonzero");
+    result.aabb_buf = source_aabbs;
+    result.owns_aabb_buf = false;
+    result.aabb_size_bytes = sizeof(OptixAabb) * aabb_count;
+
+    OptixBuildInput build_input = {};
+    build_input.type = OPTIX_BUILD_INPUT_TYPE_CUSTOM_PRIMITIVES;
+    auto& cpp = build_input.customPrimitiveArray;
+    cpp.aabbBuffers   = &result.aabb_buf;
+    cpp.numPrimitives = static_cast<unsigned>(aabb_count);
+    cpp.strideInBytes = sizeof(OptixAabb);
+    uint32_t flags_arr = OPTIX_GEOMETRY_FLAG_NONE;
+    cpp.flags          = &flags_arr;
+    cpp.numSbtRecords  = 1;
+
+    OptixAccelBuildOptions accel_opts = {};
+    accel_opts.buildFlags = OPTIX_BUILD_FLAG_ALLOW_RANDOM_VERTEX_ACCESS;
+    accel_opts.operation  = OPTIX_BUILD_OPERATION_BUILD;
+
+    OptixAccelBufferSizes sizes = {};
+    OPTIX_CHECK(optixAccelComputeMemoryUsage(ctx, &accel_opts, &build_input, 1, &sizes));
+
+    DevPtr temp_buf(sizes.tempSizeInBytes);
+    CU_CHECK(cuMemAlloc(&result.output_buf, sizes.outputSizeInBytes));
+    result.temp_size_bytes = sizes.tempSizeInBytes;
+    result.output_size_bytes = sizes.outputSizeInBytes;
+
+    CUstream stream = 0;
+    OPTIX_CHECK(optixAccelBuild(ctx, stream, &accel_opts, &build_input, 1,
+                                 temp_buf.ptr, sizes.tempSizeInBytes,
+                                 result.output_buf, sizes.outputSizeInBytes,
+                                 &result.handle, nullptr, 0));
+    CU_CHECK(cuStreamSynchronize(stream));
+    return result;
+}
+
+// ---------- Pipeline builder ------------------------------------------------
+
+struct PipelineHolder {
+    OptixModule        module    = nullptr;
+    OptixModule        builtin_is_module = nullptr;
+    OptixProgramGroup  raygen_pg = nullptr;
+    OptixProgramGroup  miss_pg   = nullptr;
+    OptixProgramGroup  hit_pg    = nullptr;
+    OptixPipeline      pipeline  = nullptr;
+    CUdeviceptr        sbt_buf   = 0;
+    OptixShaderBindingTable sbt  = {};
+    // An optional second pipeline may select physically separate diagnostic
+    // entry points from the same already-compiled module.  Sharing the module
+    // keeps preparation cost bounded while ensuring the hot entry points do
+    // not inherit the diagnostic leaf-call register footprint.
+    OptixProgramGroup  secondary_raygen_pg = nullptr;
+    OptixProgramGroup  secondary_miss_pg   = nullptr;
+    OptixProgramGroup  secondary_hit_pg    = nullptr;
+    OptixPipeline      secondary_pipeline  = nullptr;
+    CUdeviceptr        secondary_sbt_buf   = 0;
+    OptixShaderBindingTable secondary_sbt  = {};
+
+    ~PipelineHolder() {
+        if (secondary_pipeline) optixPipelineDestroy(secondary_pipeline);
+        if (secondary_hit_pg) optixProgramGroupDestroy(secondary_hit_pg);
+        if (secondary_miss_pg) optixProgramGroupDestroy(secondary_miss_pg);
+        if (secondary_raygen_pg)
+            optixProgramGroupDestroy(secondary_raygen_pg);
+        if (pipeline) optixPipelineDestroy(pipeline);
+        if (hit_pg)   optixProgramGroupDestroy(hit_pg);
+        if (miss_pg)  optixProgramGroupDestroy(miss_pg);
+        if (raygen_pg) optixProgramGroupDestroy(raygen_pg);
+        if (builtin_is_module) optixModuleDestroy(builtin_is_module);
+        if (module)   optixModuleDestroy(module);
+        if (secondary_sbt_buf) cuMemFree(secondary_sbt_buf);
+        if (sbt_buf)  cuMemFree(sbt_buf);
+    }
+    PipelineHolder() = default;
+    PipelineHolder(const PipelineHolder&)            = delete;
+    PipelineHolder& operator=(const PipelineHolder&) = delete;
+};
+
+// One construction specification is consumed by the actual OptiX producer
+// and by the deployment descriptor.  Product families must use this overload;
+// the legacy argument overload below only adapts older internal call sites.
+struct RtdlexeNativeProducerSpec {
+    const char* family;
+    const char* native_abi;
+    const char* program_bundle;
+    const char* raygen_name;
+    const char* miss_name;
+    const char* intersection_name;
+    const char* anyhit_name;
+    const char* closesthit_name;
+    int module_max_register_count;
+    unsigned int module_optimization_level;
+    unsigned int module_debug_level;
+    unsigned int uses_motion_blur;
+    unsigned int traversable_graph_flags;
+    int max_payload_values;
+    int max_attribute_values;
+    unsigned int exception_flags;
+    const char* launch_params_symbol;
+    unsigned int primitive_type_flags;
+    unsigned int max_trace_depth;
+    unsigned int direct_callable_depth;
+    unsigned int continuation_callable_depth;
+    unsigned int max_traversable_graph_depth;
+    unsigned int program_group_count;
+    unsigned int raygen_record_count;
+    unsigned int miss_record_count;
+    unsigned int hitgroup_record_count;
+    uint32_t required_invocation_mask;
+    uint32_t terminal_invocation_mask;
+    unsigned int product_success_per_ray_detail_d2h;
+    unsigned int product_success_event_row_detail_d2h;
+    unsigned int use_builtin_is;
+    OptixPrimitiveType builtin_is_type;
+    unsigned int builtin_is_build_flags;
+    unsigned int builtin_is_curve_endcap_flags;
+};
+
+static RtdlexeNativeProducerSpec make_native_producer_spec(
+        const char* raygen_name,
+        const char* miss_name,
+        const char* intersection_name,
+        const char* anyhit_name,
+        const char* closesthit_name,
+        int max_payload_values,
+        unsigned int primitive_type_flags,
+        int max_attribute_values) {
+    return RtdlexeNativeProducerSpec{
+        nullptr, nullptr, nullptr,
+        raygen_name, miss_name, intersection_name, anyhit_name, closesthit_name,
+        OPTIX_COMPILE_DEFAULT_MAX_REGISTER_COUNT,
+        static_cast<unsigned int>(OPTIX_COMPILE_OPTIMIZATION_DEFAULT),
+        static_cast<unsigned int>(OPTIX_COMPILE_DEBUG_LEVEL_NONE),
+        0u,
+        static_cast<unsigned int>(OPTIX_TRAVERSABLE_GRAPH_FLAG_ALLOW_SINGLE_GAS),
+        max_payload_values, max_attribute_values,
+        static_cast<unsigned int>(OPTIX_EXCEPTION_FLAG_NONE),
+        "params", primitive_type_flags,
+        1u, 0u, 0u, 1u, 3u, 1u, 1u, 1u, 0u, 0u, 1u, 1u,
+        0u, OPTIX_PRIMITIVE_TYPE_CUSTOM, 0u, 0u};
+}
+
+static std::unique_ptr<PipelineHolder> build_pipeline(
+        OptixDeviceContext ctx,
+        const std::string& ptx,
+        const RtdlexeNativeProducerSpec& spec
+) {
+    const char* profile_family = spec.family ? spec.family : "legacy";
+    const auto profile_total_start = goal5807_profile_now();
+    auto profile_phase_start = profile_total_start;
+    if (!spec.raygen_name || !spec.miss_name ||
+            spec.program_group_count != 3u ||
+            spec.raygen_record_count != 1u ||
+            spec.miss_record_count != 1u ||
+            spec.hitgroup_record_count != 1u)
+        throw std::runtime_error("OptiX pipeline producer specification is invalid");
+    auto holder = std::make_unique<PipelineHolder>();
+
+    // Compile module
+    OptixModuleCompileOptions mco = {};
+    mco.maxRegisterCount = spec.module_max_register_count;
+    mco.optLevel = static_cast<decltype(mco.optLevel)>(
+        spec.module_optimization_level);
+    mco.debugLevel = static_cast<decltype(mco.debugLevel)>(
+        spec.module_debug_level);
+
+    OptixPipelineCompileOptions pco = {};
+    pco.usesMotionBlur = spec.uses_motion_blur;
+    pco.traversableGraphFlags = spec.traversable_graph_flags;
+    pco.numPayloadValues = spec.max_payload_values;
+    pco.numAttributeValues = spec.max_attribute_values;
+    pco.exceptionFlags = spec.exception_flags;
+    pco.pipelineLaunchParamsVariableName = spec.launch_params_symbol;
+    pco.usesPrimitiveTypeFlags = spec.primitive_type_flags;
+
+    char module_log[8192] = {};
+    size_t module_log_size = sizeof(module_log);
+    OptixResult module_result = rtdlOptixModuleCreateCompat(ctx, &mco, &pco,
+                                                  ptx.c_str(), ptx.size(),
+                                                  module_log, &module_log_size,
+                                                  &holder->module);
+    auto profile_phase_end = goal5807_profile_now();
+    goal5807_emit_native_phase(
+        profile_family, "pipeline.module_create",
+        profile_phase_start, profile_phase_end);
+    if (module_result != OPTIX_SUCCESS) {
+        std::string message = std::string("OptiX module compile error: ") +
+                              optixGetErrorString(module_result);
+        if (module_log_size > 1 && module_log[0] != '\0') {
+            message += "\n" + std::string(module_log);
+        }
+        throw std::runtime_error(message);
+    }
+    if (spec.use_builtin_is) {
+        if (spec.intersection_name || spec.builtin_is_type == OPTIX_PRIMITIVE_TYPE_CUSTOM)
+            throw std::runtime_error("OptiX built-in IS producer specification is invalid");
+        OptixBuiltinISOptions builtin_options = {};
+        builtin_options.builtinISModuleType = spec.builtin_is_type;
+        builtin_options.usesMotionBlur = static_cast<int>(spec.uses_motion_blur);
+        builtin_options.buildFlags = spec.builtin_is_build_flags;
+        builtin_options.curveEndcapFlags = spec.builtin_is_curve_endcap_flags;
+        OPTIX_CHECK(optixBuiltinISModuleGet(
+            ctx, &mco, &pco, &builtin_options, &holder->builtin_is_module));
+    }
+
+    profile_phase_start = goal5807_profile_now();
+    // Raygen group
+    {
+        OptixProgramGroupDesc desc = {};
+        desc.kind = OPTIX_PROGRAM_GROUP_KIND_RAYGEN;
+        desc.raygen.module            = holder->module;
+        desc.raygen.entryFunctionName = spec.raygen_name;
+        OptixProgramGroupOptions opts = {};
+        OPTIX_CHECK(optixProgramGroupCreate(ctx, &desc, 1, &opts,
+                                             nullptr, nullptr,
+                                             &holder->raygen_pg));
+    }
+    // Miss group
+    {
+        OptixProgramGroupDesc desc = {};
+        desc.kind = OPTIX_PROGRAM_GROUP_KIND_MISS;
+        desc.miss.module            = holder->module;
+        desc.miss.entryFunctionName = spec.miss_name;
+        OptixProgramGroupOptions opts = {};
+        OPTIX_CHECK(optixProgramGroupCreate(ctx, &desc, 1, &opts,
+                                             nullptr, nullptr,
+                                             &holder->miss_pg));
+    }
+    // Hit group
+    {
+        OptixProgramGroupDesc desc = {};
+        desc.kind = OPTIX_PROGRAM_GROUP_KIND_HITGROUP;
+        if (spec.use_builtin_is) {
+            desc.hitgroup.moduleIS = holder->builtin_is_module;
+            desc.hitgroup.entryFunctionNameIS = nullptr;
+        } else if (spec.intersection_name) {
+            desc.hitgroup.moduleIS            = holder->module;
+            desc.hitgroup.entryFunctionNameIS = spec.intersection_name;
+        }
+        if (spec.anyhit_name) {
+            desc.hitgroup.moduleAH            = holder->module;
+            desc.hitgroup.entryFunctionNameAH = spec.anyhit_name;
+        }
+        if (spec.closesthit_name) {
+            desc.hitgroup.moduleCH            = holder->module;
+            desc.hitgroup.entryFunctionNameCH = spec.closesthit_name;
+        }
+        OptixProgramGroupOptions opts = {};
+        OPTIX_CHECK(optixProgramGroupCreate(ctx, &desc, 1, &opts,
+                                             nullptr, nullptr,
+                                             &holder->hit_pg));
+    }
+    profile_phase_end = goal5807_profile_now();
+    goal5807_emit_native_phase(
+        profile_family, "pipeline.program_groups",
+        profile_phase_start, profile_phase_end);
+
+    // Pipeline
+    profile_phase_start = goal5807_profile_now();
+    OptixProgramGroup pgs[3] = {holder->raygen_pg, holder->miss_pg, holder->hit_pg};
+    OptixPipelineLinkOptions plo = {};
+    plo.maxTraceDepth = spec.max_trace_depth;
+    OPTIX_CHECK(optixPipelineCreate(ctx, &pco, &plo, pgs,
+                                     spec.program_group_count,
+                                     nullptr, nullptr,
+                                     &holder->pipeline));
+
+    // OptiX requires an explicit stack-size configuration before launch.
+    OptixStackSizes stack_sizes = {};
+    OPTIX_CHECK(rtdlOptixAccumulateStackSizesCompat(holder->raygen_pg, &stack_sizes, holder->pipeline));
+    OPTIX_CHECK(rtdlOptixAccumulateStackSizesCompat(holder->miss_pg, &stack_sizes, holder->pipeline));
+    OPTIX_CHECK(rtdlOptixAccumulateStackSizesCompat(holder->hit_pg, &stack_sizes, holder->pipeline));
+
+    uint32_t dc_from_traversal = 0;
+    uint32_t dc_from_state = 0;
+    uint32_t continuation = 0;
+    OPTIX_CHECK(optixUtilComputeStackSizes(&stack_sizes,
+                                           plo.maxTraceDepth,
+                                           spec.continuation_callable_depth,
+                                           spec.direct_callable_depth,
+                                           &dc_from_traversal,
+                                           &dc_from_state,
+                                           &continuation));
+    OPTIX_CHECK(optixPipelineSetStackSize(holder->pipeline,
+                                          dc_from_traversal,
+                                          dc_from_state,
+                                          continuation,
+                                          spec.max_traversable_graph_depth));
+    profile_phase_end = goal5807_profile_now();
+    goal5807_emit_native_phase(
+        profile_family, "pipeline.link_and_stack",
+        profile_phase_start, profile_phase_end);
+
+    // SBT
+    profile_phase_start = goal5807_profile_now();
+    RaygenRecord raygen_rec = {};
+    MissRecord   miss_rec   = {};
+    HitRecord    hit_rec    = {};
+    OPTIX_CHECK(optixSbtRecordPackHeader(holder->raygen_pg, &raygen_rec));
+    OPTIX_CHECK(optixSbtRecordPackHeader(holder->miss_pg,   &miss_rec));
+    OPTIX_CHECK(optixSbtRecordPackHeader(holder->hit_pg,    &hit_rec));
+
+    size_t sbt_bytes = sizeof(RaygenRecord) + sizeof(MissRecord) + sizeof(HitRecord);
+    CU_CHECK(cuMemAlloc(&holder->sbt_buf, sbt_bytes));
+    CUdeviceptr p = holder->sbt_buf;
+    CU_CHECK(cuMemcpyHtoD(p, &raygen_rec, sizeof(RaygenRecord)));
+    p += sizeof(RaygenRecord);
+    CU_CHECK(cuMemcpyHtoD(p, &miss_rec, sizeof(MissRecord)));
+    p += sizeof(MissRecord);
+    CU_CHECK(cuMemcpyHtoD(p, &hit_rec, sizeof(HitRecord)));
+
+    holder->sbt.raygenRecord                = holder->sbt_buf;
+    holder->sbt.missRecordBase              = holder->sbt_buf + sizeof(RaygenRecord);
+    holder->sbt.missRecordStrideInBytes     = sizeof(MissRecord);
+    holder->sbt.missRecordCount             = spec.miss_record_count;
+    holder->sbt.hitgroupRecordBase          = holder->sbt_buf + sizeof(RaygenRecord) + sizeof(MissRecord);
+    holder->sbt.hitgroupRecordStrideInBytes = sizeof(HitRecord);
+    holder->sbt.hitgroupRecordCount         = spec.hitgroup_record_count;
+
+    profile_phase_end = goal5807_profile_now();
+    goal5807_emit_native_phase(
+        profile_family, "pipeline.sbt", profile_phase_start, profile_phase_end);
+    goal5807_emit_native_phase(
+        profile_family, "pipeline.total",
+        profile_total_start, goal5807_profile_now());
+
+    return holder;
+}
+
+static void attach_secondary_pipeline(
+        OptixDeviceContext ctx,
+        PipelineHolder& holder,
+        const RtdlexeNativeProducerSpec& spec) {
+    if (!holder.module || holder.secondary_pipeline ||
+            holder.secondary_raygen_pg || holder.secondary_miss_pg ||
+            holder.secondary_hit_pg || holder.secondary_sbt_buf ||
+            !spec.raygen_name || !spec.miss_name ||
+            spec.program_group_count != 3u ||
+            spec.raygen_record_count != 1u ||
+            spec.miss_record_count != 1u ||
+            spec.hitgroup_record_count != 1u)
+        throw std::runtime_error(
+            "OptiX secondary pipeline producer specification is invalid");
+
+    OptixPipelineCompileOptions pco = {};
+    pco.usesMotionBlur = spec.uses_motion_blur;
+    pco.traversableGraphFlags = spec.traversable_graph_flags;
+    pco.numPayloadValues = spec.max_payload_values;
+    pco.numAttributeValues = spec.max_attribute_values;
+    pco.exceptionFlags = spec.exception_flags;
+    pco.pipelineLaunchParamsVariableName = spec.launch_params_symbol;
+    pco.usesPrimitiveTypeFlags = spec.primitive_type_flags;
+
+    {
+        OptixProgramGroupDesc desc = {};
+        desc.kind = OPTIX_PROGRAM_GROUP_KIND_RAYGEN;
+        desc.raygen.module = holder.module;
+        desc.raygen.entryFunctionName = spec.raygen_name;
+        OptixProgramGroupOptions options = {};
+        OPTIX_CHECK(optixProgramGroupCreate(
+            ctx, &desc, 1, &options, nullptr, nullptr,
+            &holder.secondary_raygen_pg));
+    }
+    {
+        OptixProgramGroupDesc desc = {};
+        desc.kind = OPTIX_PROGRAM_GROUP_KIND_MISS;
+        desc.miss.module = holder.module;
+        desc.miss.entryFunctionName = spec.miss_name;
+        OptixProgramGroupOptions options = {};
+        OPTIX_CHECK(optixProgramGroupCreate(
+            ctx, &desc, 1, &options, nullptr, nullptr,
+            &holder.secondary_miss_pg));
+    }
+    {
+        OptixProgramGroupDesc desc = {};
+        desc.kind = OPTIX_PROGRAM_GROUP_KIND_HITGROUP;
+        if (spec.intersection_name) {
+            desc.hitgroup.moduleIS = holder.module;
+            desc.hitgroup.entryFunctionNameIS = spec.intersection_name;
+        }
+        if (spec.anyhit_name) {
+            desc.hitgroup.moduleAH = holder.module;
+            desc.hitgroup.entryFunctionNameAH = spec.anyhit_name;
+        }
+        if (spec.closesthit_name) {
+            desc.hitgroup.moduleCH = holder.module;
+            desc.hitgroup.entryFunctionNameCH = spec.closesthit_name;
+        }
+        OptixProgramGroupOptions options = {};
+        OPTIX_CHECK(optixProgramGroupCreate(
+            ctx, &desc, 1, &options, nullptr, nullptr,
+            &holder.secondary_hit_pg));
+    }
+
+    OptixProgramGroup groups[3] = {
+        holder.secondary_raygen_pg,
+        holder.secondary_miss_pg,
+        holder.secondary_hit_pg,
+    };
+    OptixPipelineLinkOptions link = {};
+    link.maxTraceDepth = spec.max_trace_depth;
+    OPTIX_CHECK(optixPipelineCreate(
+        ctx, &pco, &link, groups, spec.program_group_count,
+        nullptr, nullptr, &holder.secondary_pipeline));
+
+    OptixStackSizes stack_sizes = {};
+    for (OptixProgramGroup group : groups)
+        OPTIX_CHECK(rtdlOptixAccumulateStackSizesCompat(
+            group, &stack_sizes, holder.secondary_pipeline));
+    uint32_t dc_from_traversal = 0;
+    uint32_t dc_from_state = 0;
+    uint32_t continuation = 0;
+    OPTIX_CHECK(optixUtilComputeStackSizes(
+        &stack_sizes, link.maxTraceDepth,
+        spec.continuation_callable_depth, spec.direct_callable_depth,
+        &dc_from_traversal, &dc_from_state, &continuation));
+    OPTIX_CHECK(optixPipelineSetStackSize(
+        holder.secondary_pipeline, dc_from_traversal, dc_from_state,
+        continuation, spec.max_traversable_graph_depth));
+
+    RaygenRecord raygen_record = {};
+    MissRecord miss_record = {};
+    HitRecord hit_record = {};
+    OPTIX_CHECK(optixSbtRecordPackHeader(
+        holder.secondary_raygen_pg, &raygen_record));
+    OPTIX_CHECK(optixSbtRecordPackHeader(
+        holder.secondary_miss_pg, &miss_record));
+    OPTIX_CHECK(optixSbtRecordPackHeader(
+        holder.secondary_hit_pg, &hit_record));
+    const size_t raygen_bytes = sizeof(RaygenRecord);
+    const size_t miss_bytes = sizeof(MissRecord);
+    const size_t hit_bytes = sizeof(HitRecord);
+    CU_CHECK(cuMemAlloc(
+        &holder.secondary_sbt_buf,
+        raygen_bytes + miss_bytes + hit_bytes));
+    CUdeviceptr cursor = holder.secondary_sbt_buf;
+    CU_CHECK(cuMemcpyHtoD(cursor, &raygen_record, raygen_bytes));
+    cursor += raygen_bytes;
+    CU_CHECK(cuMemcpyHtoD(cursor, &miss_record, miss_bytes));
+    cursor += miss_bytes;
+    CU_CHECK(cuMemcpyHtoD(cursor, &hit_record, hit_bytes));
+    holder.secondary_sbt.raygenRecord = holder.secondary_sbt_buf;
+    holder.secondary_sbt.missRecordBase =
+        holder.secondary_sbt_buf + raygen_bytes;
+    holder.secondary_sbt.missRecordStrideInBytes = sizeof(MissRecord);
+    holder.secondary_sbt.missRecordCount = spec.miss_record_count;
+    holder.secondary_sbt.hitgroupRecordBase =
+        holder.secondary_sbt_buf + raygen_bytes + miss_bytes;
+    holder.secondary_sbt.hitgroupRecordStrideInBytes = sizeof(HitRecord);
+    holder.secondary_sbt.hitgroupRecordCount = spec.hitgroup_record_count;
+}
+
+static std::unique_ptr<PipelineHolder> build_pipeline(
+        OptixDeviceContext ctx,
+        const std::string& ptx,
+        const char* raygen_name,
+        const char* miss_name,
+        const char* intersection_name,
+        const char* anyhit_name,
+        const char* closesthit_name,
+        int max_payload_values,
+        unsigned int primitive_type_flags =
+            OPTIX_PRIMITIVE_TYPE_FLAGS_CUSTOM,
+        int max_attribute_values = 0) {
+    return build_pipeline(
+        ctx, ptx, make_native_producer_spec(
+            raygen_name, miss_name, intersection_name, anyhit_name,
+            closesthit_name, max_payload_values, primitive_type_flags,
+            max_attribute_values));
+}
+
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// Device kernel source strings
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+// ---------- segment-pair intersection kernel -------------------------------------------------------
+
+static const char* kSegmentPairIntersectionKernelSrc = R"CUDA(
+#include <optix_device.h>
+
+struct GpuSegment {
+    float x0, y0, x1, y1;
+    unsigned int id;
+};
+
+struct SegmentPairIntersectionRecord {
+    unsigned int left_id, right_id;
+    unsigned int left_index, right_index;
+};
+
+struct SegmentPairIntersectionParams {
+    OptixTraversableHandle traversable;
+    const GpuSegment* left_segs;
+    const GpuSegment* right_segs;
+    SegmentPairIntersectionRecord* output;
+    unsigned int* output_count;
+    unsigned int  output_capacity;
+    unsigned int  probe_count;
+    unsigned int  left_offset;
+};
+
+extern "C" {
+__constant__ SegmentPairIntersectionParams params;
+}
+
+static __forceinline__ __device__ float dabsf(float x) {
+    return x < 0.0f ? -x : x;
+}
+
+static __forceinline__ __device__ bool seg_intersect(
+        float ax0, float ay0, float ax1, float ay1,
+        float bx0, float by0, float bx1, float by1,
+        float* t_out, float* ix_out, float* iy_out)
+{
+    float rx = ax1 - ax0, ry = ay1 - ay0;
+    float sx = bx1 - bx0, sy = by1 - by0;
+    float denom = rx * sy - ry * sx;
+    if (dabsf(denom) < 1.0e-7f) return false;
+    float qpx = bx0 - ax0, qpy = by0 - ay0;
+    float t = (qpx * sy - qpy * sx) / denom;
+    float u = (qpx * ry - qpy * rx) / denom;
+    if (t < 0.0f || t > 1.0f || u < 0.0f || u > 1.0f) return false;
+    *t_out  = t;
+    *ix_out = ax0 + t * rx;
+    *iy_out = ay0 + t * ry;
+    return true;
+}
+
+static __forceinline__ __device__ bool seg_intersect_conservative_candidate(
+        float ax0, float ay0, float ax1, float ay1,
+        float bx0, float by0, float bx1, float by1,
+        float* ix_out, float* iy_out)
+{
+    float rx = ax1 - ax0, ry = ay1 - ay0;
+    float sx = bx1 - bx0, sy = by1 - by0;
+    float denom = rx * sy - ry * sx;
+    if (dabsf(denom) < 1.0e-7f) {
+        *ix_out = ax0;
+        *iy_out = ay0;
+        return true;
+    }
+    float qpx = bx0 - ax0, qpy = by0 - ay0;
+    float t = (qpx * sy - qpy * sx) / denom;
+    float u = (qpx * ry - qpy * rx) / denom;
+    // Candidate emission may over-emit: host-side exact refinement remains the
+    // final authority. Keep a wider guard for endpoint-near float32 rounding.
+    const float slack = 1.0e-3f;
+    if (t < -slack || t > 1.0f + slack || u < -slack || u > 1.0f + slack) {
+        return false;
+    }
+    *ix_out = ax0 + t * rx;
+    *iy_out = ay0 + t * ry;
+    return true;
+}
+
+extern "C" __global__ void __raygen__segment_pair_intersection_probe() {
+    const unsigned int idx = optixGetLaunchIndex().x;
+    if (idx >= params.probe_count) return;
+    const GpuSegment p = params.left_segs[idx];
+    unsigned int p0 = idx, p1 = 0u, p2 = 0u, p3 = 0u;
+    optixTrace(params.traversable,
+               make_float3(p.x0, p.y0, 0.0f),
+               make_float3(p.x1 - p.x0, p.y1 - p.y0, 0.0f),
+               0.0f, 1.0f + 1.0e-4f, 0.0f,
+               OptixVisibilityMask(255),
+               OPTIX_RAY_FLAG_NONE,
+               0, 1, 0,
+               p0, p1, p2, p3);
+}
+
+extern "C" __global__ void __miss__segment_pair_intersection_miss() {}
+
+extern "C" __global__ void __intersection__segment_pair_intersection_isect() {
+    const unsigned int prim = optixGetPrimitiveIndex();
+    optixSetPayload_1(prim);
+    optixSetPayload_2(0u);
+    optixSetPayload_3(0u);
+    // Report the AABB overlap as a candidate; the any-hit stage may compact
+    // obvious misses, and host-side exact refine remains the final authority.
+    optixReportIntersection(0.5f, 0u);
+}
+
+extern "C" __global__ void __anyhit__segment_pair_intersection_anyhit() {
+    const unsigned int pidx = optixGetPayload_0();
+    const unsigned int bidx = optixGetPayload_1();
+    const GpuSegment left = params.left_segs[pidx];
+    const GpuSegment right = params.right_segs[bidx];
+    float ix = 0.0f;
+    float iy = 0.0f;
+    if (!seg_intersect_conservative_candidate(
+            left.x0, left.y0, left.x1, left.y1,
+            right.x0, right.y0, right.x1, right.y1,
+            &ix, &iy)) {
+        optixIgnoreIntersection();
+        return;
+    }
+    const unsigned int slot = atomicAdd(params.output_count, 1u);
+    if (slot < params.output_capacity) {
+        SegmentPairIntersectionRecord r;
+        r.left_id  = left.id;
+        r.right_id = right.id;
+        r.left_index = params.left_offset + pidx;
+        r.right_index = bidx;
+        params.output[slot] = r;
+    }
+    optixIgnoreIntersection();
+}
+)CUDA";
+
+// ---------- segment first-hit kernel --------------------------------------------------------------
+
+static const char* kSegmentFirstHitKernelSrc = R"CUDA(
+#include <optix_device.h>
+#include <stdint.h>
+
+struct GpuSegment {
+    float x0, y0, x1, y1;
+    unsigned int id;
+};
+
+struct SegmentFirstHitParams {
+    OptixTraversableHandle traversable;
+    const GpuSegment* probes;
+    const GpuSegment* primitives;
+    unsigned long long* best_pair;
+    unsigned int probe_count;
+};
+
+extern "C" {
+__constant__ SegmentFirstHitParams params;
+}
+
+static __forceinline__ __device__ float dabsf(float x) {
+    return x < 0.0f ? -x : x;
+}
+
+static __forceinline__ __device__ float dclampf(float x, float lo, float hi) {
+    return x < lo ? lo : (x > hi ? hi : x);
+}
+
+static __forceinline__ __device__ bool seg_intersect_t(
+        float ax0, float ay0, float ax1, float ay1,
+        float bx0, float by0, float bx1, float by1,
+        float* t_out)
+{
+    float rx = ax1 - ax0, ry = ay1 - ay0;
+    float sx = bx1 - bx0, sy = by1 - by0;
+    float denom = rx * sy - ry * sx;
+    if (dabsf(denom) < 1.0e-7f) return false;
+    float qpx = bx0 - ax0, qpy = by0 - ay0;
+    float t = (qpx * sy - qpy * sx) / denom;
+    float u = (qpx * ry - qpy * rx) / denom;
+    const float slack = 1.0e-6f;
+    if (t < -slack || t > 1.0f + slack || u < -slack || u > 1.0f + slack) {
+        return false;
+    }
+    *t_out = dclampf(t, 0.0f, 1.0f);
+    return true;
+}
+
+extern "C" __global__ void __raygen__segment_first_hit_probe() {
+    const unsigned int idx = optixGetLaunchIndex().x;
+    if (idx >= params.probe_count) return;
+    const GpuSegment p = params.probes[idx];
+    unsigned int p0 = idx, p1 = 0u, p2 = 0u, p3 = 0u;
+    optixTrace(params.traversable,
+               make_float3(p.x0, p.y0, 0.0f),
+               make_float3(p.x1 - p.x0, p.y1 - p.y0, 0.0f),
+               0.0f, 1.0f + 1.0e-4f, 0.0f,
+               OptixVisibilityMask(255),
+               OPTIX_RAY_FLAG_NONE,
+               0, 1, 0,
+               p0, p1, p2, p3);
+}
+
+extern "C" __global__ void __miss__segment_first_hit_miss() {}
+
+extern "C" __global__ void __intersection__segment_first_hit_isect() {
+    optixSetPayload_1(optixGetPrimitiveIndex());
+    optixReportIntersection(0.5f, 0u);
+}
+
+extern "C" __global__ void __anyhit__segment_first_hit_anyhit() {
+    const unsigned int pidx = optixGetPayload_0();
+    const unsigned int bidx = optixGetPayload_1();
+    const GpuSegment probe = params.probes[pidx];
+    const GpuSegment primitive = params.primitives[bidx];
+    float t = 0.0f;
+    if (!seg_intersect_t(
+            probe.x0, probe.y0, probe.x1, probe.y1,
+            primitive.x0, primitive.y0, primitive.x1, primitive.y1,
+            &t)) {
+        optixIgnoreIntersection();
+        return;
+    }
+    const unsigned int t_key =
+        ((unsigned int)(dclampf(t, 0.0f, 1.0f) * 4294967294.0f)) + 1u;
+    const unsigned long long candidate =
+        (((unsigned long long)t_key) << 32) | ((unsigned long long)bidx);
+    unsigned long long* slot = params.best_pair + pidx;
+    unsigned long long old = *slot;
+    while (candidate < old) {
+        const unsigned long long observed = atomicCAS(slot, old, candidate);
+        if (observed == old) {
+            break;
+        }
+        old = observed;
+    }
+    optixIgnoreIntersection();
+}
+)CUDA";
+
+// ---------- RayJoin CDB point-location PIP kernel -----------------------------------------------
+
+static const char* kRayjoinCdbPointLocationKernelSrc = R"CUDA(
+#include <optix_device.h>
+#include <math.h>
+#include <stdint.h>
+
+struct GpuRayjoinCdbPoint {
+    float x;
+    float y;
+    unsigned int id;
+    unsigned int has_scaled;
+    long long sx;
+    long long sy;
+};
+
+struct GpuRayjoinCdbSegment {
+    float x0, y0, x1, y1;
+    unsigned int id;
+    unsigned int left_face_id;
+    unsigned int right_face_id;
+    unsigned int has_scaled;
+    long long sx0, sy0, sx1, sy1;
+};
+
+struct GpuRayjoinCdbSegmentRange {
+    unsigned int begin;
+    unsigned int end;
+};
+
+struct GpuRayjoinCdbPointLocationRecord {
+    unsigned int point_id;
+    unsigned int face_id;
+    unsigned int segment_id;
+    float hit_t;
+};
+
+struct RayjoinCdbPointLocationParams {
+    OptixTraversableHandle traversable;
+    const GpuRayjoinCdbPoint* points;
+    const GpuRayjoinCdbSegment* segments;
+    const GpuRayjoinCdbSegmentRange* ranges;
+    const unsigned int* canonical_segment_ids;
+    const unsigned int* canonical_face_ids;
+    GpuRayjoinCdbPointLocationRecord* output;
+    unsigned int* segment_id_output;
+    unsigned int* face_id_output;
+    unsigned long long* positive_face_count;
+    unsigned int point_count;
+    unsigned int query_map_id;
+    unsigned int allow_equal_ties;
+    double scale_rry;
+};
+
+extern "C" {
+__constant__ RayjoinCdbPointLocationParams params;
+}
+
+static __forceinline__ __device__ float cdb_absf(float x) {
+    return x < 0.0f ? -x : x;
+}
+
+static __forceinline__ __device__ double cdb_absd(double x) {
+    return x < 0.0 ? -x : x;
+}
+
+static __forceinline__ __device__ double cdb_clampd(double x, double lo, double hi) {
+    return x < lo ? lo : (x > hi ? hi : x);
+}
+
+struct RayjoinCdbLine {
+    __int128 a;
+    __int128 b;
+    __int128 c;
+};
+
+static __forceinline__ __device__ RayjoinCdbLine rayjoin_cdb_line_for_segment(
+        const GpuRayjoinCdbSegment segment)
+{
+    RayjoinCdbLine line;
+    line.a = static_cast<__int128>(segment.sy0) - static_cast<__int128>(segment.sy1);
+    line.b = static_cast<__int128>(segment.sx1) - static_cast<__int128>(segment.sx0);
+    line.c = -(static_cast<__int128>(segment.sx0) * line.a) -
+             (static_cast<__int128>(segment.sy0) * line.b);
+    if (line.b < 0) {
+        line.a = -line.a;
+        line.b = -line.b;
+        line.c = -line.c;
+    }
+    return line;
+}
+
+static __forceinline__ __device__ bool directed_segment_sos_segment_is_better(
+        double current_slope,
+        double best_slope,
+        const GpuRayjoinCdbSegment current_segment,
+        const GpuRayjoinCdbSegment best_segment,
+        unsigned int query_map_id)
+{
+    if (current_slope == best_slope) {
+        (void)current_segment;
+        (void)best_segment;
+        (void)query_map_id;
+        return false;
+    }
+    return query_map_id == 0u ? current_slope > best_slope : current_slope < best_slope;
+}
+
+static __forceinline__ __device__ double directed_segment_sos_tie_breaker(
+        double slope,
+        unsigned int query_map_id)
+{
+    const double pi = 3.141592653589793238462643383279502884;
+    const double half_pi = 1.570796326794896619231321691639751442;
+    const double normalized_slope = cdb_clampd((atan(slope) + half_pi) / pi, 0.0, 1.0);
+    return query_map_id == 0u ? normalized_slope : (1.0 - normalized_slope);
+}
+
+static __forceinline__ __device__ float directed_segment_sos_report_t(
+        float hit_t,
+        double slope,
+        const GpuRayjoinCdbSegment segment,
+        unsigned int query_map_id)
+{
+    (void)segment;
+    const double t_edge = hit_t > 0.0f ? static_cast<double>(hit_t) : 0.0;
+    const double factor = t_edge > 1.0 ? t_edge : 1.0;
+    const double tie_breaker = directed_segment_sos_tie_breaker(slope, query_map_id);
+    const double adjusted = t_edge + factor * (1.0 - tie_breaker) * 1.0e-14;
+    float reported = static_cast<float>(adjusted);
+    if (reported <= hit_t) {
+        const unsigned int max_steps = 32u;
+        const unsigned int steps =
+            1u + static_cast<unsigned int>((1.0 - tie_breaker) * static_cast<double>(max_steps));
+        const unsigned int bits = __float_as_uint(hit_t);
+        if ((bits & 0x80000000u) == 0u && (bits & 0x7f800000u) != 0x7f800000u) {
+            reported = __uint_as_float(bits + steps);
+        } else {
+            reported = nextafterf(hit_t, 3.402823466e38F);
+        }
+    }
+    return reported;
+}
+
+static __forceinline__ __device__ double unpack_double_payload(unsigned int lo, unsigned int hi) {
+    const unsigned long long bits =
+        (static_cast<unsigned long long>(hi) << 32) | static_cast<unsigned long long>(lo);
+    return __longlong_as_double(static_cast<long long>(bits));
+}
+
+static __forceinline__ __device__ void pack_double_payload(
+        double value,
+        unsigned int* lo,
+        unsigned int* hi) {
+    const unsigned long long bits = static_cast<unsigned long long>(__double_as_longlong(value));
+    *lo = static_cast<unsigned int>(bits & 0xffffffffull);
+    *hi = static_cast<unsigned int>(bits >> 32);
+}
+
+static __forceinline__ __device__ double rayjoin_cdb_segment_slope_scaled(
+        const GpuRayjoinCdbSegment segment)
+{
+    const RayjoinCdbLine line = rayjoin_cdb_line_for_segment(segment);
+    if (line.b == 0) {
+        return 0.0;
+    }
+    return static_cast<double>(line.a) / static_cast<double>(line.b);
+}
+
+static __forceinline__ __device__ float rayjoin_cdb_segment_slope_world(
+        const GpuRayjoinCdbSegment segment)
+{
+    float a = segment.y0 - segment.y1;
+    float b = segment.x1 - segment.x0;
+    if (b < 0.0f) {
+        a = -a;
+        b = -b;
+    }
+    if (b == 0.0f) {
+        return 0.0f;
+    }
+    return a / b;
+}
+
+static __forceinline__ __device__ bool vertical_ray_segment_scaled(
+        const GpuRayjoinCdbPoint point,
+        const GpuRayjoinCdbSegment segment,
+        unsigned int query_map_id,
+        double scale_rry,
+        double* hit_y_out,
+        float* report_t_out,
+        double* slope_out)
+{
+    if (point.has_scaled == 0u || segment.has_scaled == 0u) {
+        return false;
+    }
+    const long long x_min = segment.sx0 < segment.sx1 ? segment.sx0 : segment.sx1;
+    const long long x_max = segment.sx0 > segment.sx1 ? segment.sx0 : segment.sx1;
+    const long long excluded_x = query_map_id == 0u ? x_min : x_max;
+    if (point.sx < x_min || point.sx > x_max || point.sx == excluded_x) {
+        return false;
+    }
+
+    const RayjoinCdbLine line = rayjoin_cdb_line_for_segment(segment);
+    if (line.b == 0) {
+        return false;
+    }
+    const __int128 numerator =
+        -(line.a * static_cast<__int128>(point.sx)) - line.c;
+    const double xsect_y = static_cast<double>(numerator) / static_cast<double>(line.b);
+    double diff_y = static_cast<double>(point.sy) - xsect_y;
+    if (diff_y == 0.0) {
+        diff_y = query_map_id == 0u ? -static_cast<double>(line.a) : static_cast<double>(line.a);
+    }
+    if (diff_y == 0.0) {
+        diff_y = query_map_id == 0u ? -static_cast<double>(line.b) : static_cast<double>(line.b);
+    }
+    if (diff_y > 0.0) {
+        return false;
+    }
+    *hit_y_out = xsect_y;
+    *report_t_out = fmaxf(
+        0.0f,
+        static_cast<float>((xsect_y - static_cast<double>(point.sy)) * scale_rry));
+    *slope_out = static_cast<double>(line.a) / static_cast<double>(line.b);
+    return true;
+}
+
+static __forceinline__ __device__ bool vertical_ray_segment_t_precise(
+        const GpuRayjoinCdbPoint point,
+        const GpuRayjoinCdbSegment segment,
+        unsigned int query_map_id,
+        float* t_out,
+        float* slope_out)
+{
+    const double eps = 1.0e-7;
+    const double point_x = static_cast<double>(point.x);
+    const double point_y = static_cast<double>(point.y);
+    const double x0 = static_cast<double>(segment.x0);
+    const double y0 = static_cast<double>(segment.y0);
+    const double x1 = static_cast<double>(segment.x1);
+    const double y1 = static_cast<double>(segment.y1);
+    const double sx = x1 - x0;
+    if (cdb_absd(sx) <= eps) {
+        return false;
+    }
+    const double lo_x = fmin(x0, x1);
+    const double hi_x = fmax(x0, x1);
+    const double excluded_x = query_map_id == 0u ? lo_x : hi_x;
+    if (point_x < lo_x - eps || point_x > hi_x + eps || cdb_absd(point_x - excluded_x) <= eps) {
+        return false;
+    }
+    const double u = (point_x - x0) / sx;
+    if (u < -eps || u > 1.0 + eps) {
+        return false;
+    }
+    const double hit_y = y0 + u * (y1 - y0);
+    double diff_y = point_y - hit_y;
+    double a = y0 - y1;
+    double b = x1 - x0;
+    if (b < 0.0) {
+        a = -a;
+        b = -b;
+    }
+    if (cdb_absd(diff_y) <= eps) {
+        diff_y = query_map_id == 0u ? -a : a;
+    }
+    if (cdb_absd(diff_y) <= eps) {
+        diff_y = query_map_id == 0u ? -b : b;
+    }
+    if (diff_y > eps) {
+        return false;
+    }
+    const double t = hit_y - point_y;
+    *t_out = static_cast<float>(fmax(t, 0.0));
+    *slope_out = static_cast<float>(a / b);
+    return true;
+}
+
+static __forceinline__ __device__ bool vertical_ray_segment_t(
+        const GpuRayjoinCdbPoint point,
+        const GpuRayjoinCdbSegment segment,
+        unsigned int query_map_id,
+        float* t_out,
+        float* slope_out)
+{
+    const float eps = 1.0e-7f;
+    const float refine_eps = 1.0e-5f;
+    const float sx = segment.x1 - segment.x0;
+    if (cdb_absf(sx) <= eps) {
+        return false;
+    }
+    const float lo_x = fminf(segment.x0, segment.x1);
+    const float hi_x = fmaxf(segment.x0, segment.x1);
+    const float excluded_x = query_map_id == 0u ? lo_x : hi_x;
+    if (point.x < lo_x - eps || point.x > hi_x + eps || cdb_absf(point.x - excluded_x) <= eps) {
+        return false;
+    }
+    const float u = (point.x - segment.x0) / sx;
+    if (u < -eps || u > 1.0f + eps) {
+        return false;
+    }
+    const float hit_y = segment.y0 + u * (segment.y1 - segment.y0);
+    float diff_y = point.y - hit_y;
+    if (cdb_absf(diff_y) <= refine_eps) {
+        return vertical_ray_segment_t_precise(point, segment, query_map_id, t_out, slope_out);
+    }
+    float a = segment.y0 - segment.y1;
+    float b = segment.x1 - segment.x0;
+    if (b < 0.0f) {
+        a = -a;
+        b = -b;
+    }
+    if (diff_y > eps) {
+        return false;
+    }
+    const float t = hit_y - point.y;
+    *t_out = fmaxf(t, 0.0f);
+    *slope_out = a / b;
+    return true;
+}
+
+static __forceinline__ __device__ unsigned int face_for_segment_direction(
+        const GpuRayjoinCdbSegment segment)
+{
+    if (segment.has_scaled != 0u) {
+        return segment.sx0 < segment.sx1 ? segment.right_face_id : segment.left_face_id;
+    }
+    return segment.x0 < segment.x1 ? segment.right_face_id : segment.left_face_id;
+}
+
+extern "C" __global__ void __raygen__rayjoin_cdb_point_location() {
+    const unsigned int idx = optixGetLaunchIndex().x;
+    if (idx >= params.point_count) return;
+    const GpuRayjoinCdbPoint point = params.points[idx];
+    if (params.output != nullptr) {
+        params.output[idx].point_id = point.id;
+        params.output[idx].face_id = 0u;
+        params.output[idx].segment_id = 0xffffffffu;
+        params.output[idx].hit_t = 3.402823466e38F;
+    }
+    if (params.segment_id_output != nullptr) {
+        params.segment_id_output[idx] = 0xffffffffu;
+    }
+    if (params.face_id_output != nullptr) {
+        params.face_id_output[idx] = 0u;
+    }
+
+    unsigned int p0 = idx;
+    double best_y = 1.7976931348623157e308;
+    unsigned int p1 = 0u;
+    unsigned int p2 = 0u;
+    pack_double_payload(best_y, &p1, &p2);
+    unsigned int p3 = 0xffffffffu;
+    optixTrace(params.traversable,
+               make_float3(point.x, point.y, 0.0f),
+               make_float3(0.0f, 1.0f, 0.0f),
+               0.0f, 1.0e30f, 0.0f,
+               OptixVisibilityMask(255),
+               OPTIX_RAY_FLAG_NONE,
+               0, 1, 0,
+               p0, p1, p2, p3);
+    if (p3 != 0xffffffffu) {
+        const GpuRayjoinCdbSegment segment = params.segments[p3];
+        const unsigned int segment_id = params.canonical_segment_ids != nullptr
+            ? params.canonical_segment_ids[p3]
+            : segment.id;
+        const unsigned int face_id = params.canonical_face_ids != nullptr
+            ? params.canonical_face_ids[p3]
+            : face_for_segment_direction(segment);
+        best_y = unpack_double_payload(p1, p2);
+        if (params.output != nullptr) {
+            params.output[idx].face_id = face_id;
+            params.output[idx].segment_id = segment_id;
+            params.output[idx].hit_t = point.has_scaled
+                ? fmaxf(0.0f, static_cast<float>(best_y - static_cast<double>(point.sy)))
+                : static_cast<float>(best_y);
+        }
+        if (params.segment_id_output != nullptr) {
+            params.segment_id_output[idx] = segment_id;
+        }
+        if (params.face_id_output != nullptr) {
+            params.face_id_output[idx] = face_id;
+        }
+        if (params.positive_face_count != nullptr && face_id != 0u) {
+            atomicAdd(params.positive_face_count, 1ull);
+        }
+    }
+}
+
+extern "C" __global__ void __miss__rayjoin_cdb_point_location() {}
+
+extern "C" __global__ void __intersection__rayjoin_cdb_point_location() {
+    const unsigned int point_index = optixGetPayload_0();
+    const GpuRayjoinCdbPoint point = params.points[point_index];
+    const GpuRayjoinCdbSegmentRange range = params.ranges[optixGetPrimitiveIndex()];
+    const float eps = 1.0e-7f;
+    const unsigned int query_map_id = params.query_map_id;
+    unsigned int best_y_lo = optixGetPayload_1();
+    unsigned int best_y_hi = optixGetPayload_2();
+    double best_y = unpack_double_payload(best_y_lo, best_y_hi);
+    unsigned int best_segment_index = optixGetPayload_3();
+    bool report = false;
+    float report_t = 0.0f;
+    double report_slope = 0.0;
+    for (unsigned int segment_index = range.begin; segment_index < range.end; ++segment_index) {
+        const GpuRayjoinCdbSegment segment = params.segments[segment_index];
+        float t = 0.0f;
+        float slope = 0.0f;
+        bool better = false;
+        if (point.has_scaled != 0u && segment.has_scaled != 0u) {
+            double hit_y = 0.0;
+            double exact_slope = 0.0;
+            if (!vertical_ray_segment_scaled(
+                    point, segment, query_map_id, params.scale_rry, &hit_y, &t, &exact_slope)) {
+                continue;
+            }
+            if (hit_y < best_y) {
+                better = true;
+            } else if (hit_y == best_y) {
+                if (best_segment_index == 0xffffffffu) {
+                    better = true;
+                } else {
+                    const GpuRayjoinCdbSegment best_segment = params.segments[best_segment_index];
+                    const double best_slope = rayjoin_cdb_segment_slope_scaled(best_segment);
+                    better = directed_segment_sos_segment_is_better(
+                        exact_slope, best_slope, segment, best_segment, query_map_id);
+                }
+            }
+            if (better) {
+                best_y = hit_y;
+                report_t = t;
+                report_slope = exact_slope;
+            }
+        } else {
+            if (!vertical_ray_segment_t(point, segment, query_map_id, &t, &slope)) {
+                continue;
+            }
+            if (t < static_cast<float>(best_y) - eps) {
+                better = true;
+            } else if (cdb_absf(t - static_cast<float>(best_y)) <= eps) {
+                if (best_segment_index == 0xffffffffu) {
+                    better = true;
+                } else if (best_segment_index != 0xffffffffu) {
+                    const GpuRayjoinCdbSegment best_segment = params.segments[best_segment_index];
+                    const float best_slope = rayjoin_cdb_segment_slope_world(best_segment);
+                    if (query_map_id == 0u && slope > best_slope + eps) {
+                        better = true;
+                    } else if (query_map_id != 0u && slope < best_slope - eps) {
+                        better = true;
+                    } else if (cdb_absf(slope - best_slope) <= eps) {
+                        better = directed_segment_sos_segment_is_better(
+                            static_cast<double>(slope),
+                            static_cast<double>(best_slope),
+                            segment,
+                            best_segment,
+                            query_map_id);
+                    }
+                }
+            }
+            if (better) {
+                best_y = static_cast<double>(t);
+                report_t = t;
+                report_slope = static_cast<double>(slope);
+            }
+        }
+        if (better) {
+            best_segment_index = segment_index;
+            report = true;
+        }
+    }
+    if (report) {
+        pack_double_payload(best_y, &best_y_lo, &best_y_hi);
+        optixSetPayload_1(best_y_lo);
+        optixSetPayload_2(best_y_hi);
+        optixSetPayload_3(best_segment_index);
+        const float accepted_t =
+            directed_segment_sos_report_t(
+                report_t,
+                report_slope,
+                params.segments[best_segment_index],
+                query_map_id);
+        optixReportIntersection(accepted_t, 0u);
+    }
+}
+
+extern "C" __global__ void __closesthit__rayjoin_cdb_point_location() {
+}
+)CUDA";
+
+// ---------- PIP kernel -------------------------------------------------------
+
+static const char* kPipKernelSrc = R"CUDA(
+#include <optix_device.h>
+#include <stdint.h>
+
+struct GpuPolygonRef {
+    uint32_t id;
+    uint32_t vertex_offset;
+    uint32_t vertex_count;
+};
+
+struct GpuPreparedClosedShapeEdge2D {
+    float ax, ay;
+    float bx, by;
+    float dx, dy;
+    float len2;
+    float crossing_scale;
+};
+
+struct PipRecord {
+    uint32_t point_id, polygon_id, contains;
+};
+
+struct PipParams {
+    OptixTraversableHandle traversable;
+    const float* points_x;
+    const float* points_y;
+    const uint32_t* point_ids;
+    const GpuPolygonRef* polygons;
+    const float* vertices_x;
+    const float* vertices_y;
+    const GpuPreparedClosedShapeEdge2D* prepared_edges;
+    uint32_t* hit_words;
+    PipRecord* output;
+    uint32_t* output_count;
+    uint32_t output_capacity;
+    uint32_t positive_only;
+    uint32_t hit_word_count;
+    uint32_t polygon_count;
+    uint32_t probe_count;
+    uint32_t point_index_offset;
+    uint32_t device_prefilter;
+    uint32_t boundary_check;
+};
+
+extern "C" {
+__constant__ PipParams params;
+}
+
+static __forceinline__ __device__ float pip_absf(float x) {
+    return x < 0.0f ? -x : x;
+}
+
+static __forceinline__ __device__ uint32_t point_closed_shape_membership_status(
+        float px, float py,
+        const GpuPolygonRef& poly,
+        uint32_t* boundary_element_ordinal)
+{
+    // The wider epsilon is useful for the non-positive-only float32 path and
+    // for the opt-in positive-only device prefilter, where false negatives are
+    // worse than extra host exact-refine candidates.
+    const float point_eps = 1.0e-4f;
+    uint32_t n = poly.vertex_count;
+    uint32_t off = poly.vertex_offset;
+    bool inside = false;
+    if (boundary_element_ordinal != nullptr) {
+        *boundary_element_ordinal = 0xffffffffu;
+    }
+    if (params.prepared_edges != nullptr) {
+        for (uint32_t i = 0; i < n; ++i) {
+            const GpuPreparedClosedShapeEdge2D edge = params.prepared_edges[off + i];
+            const float ax = edge.ax;
+            const float ay = edge.ay;
+            const float bx = edge.bx;
+            const float by = edge.by;
+            const float len2 = edge.len2;
+            if (params.boundary_check != 0u) {
+                if (len2 <= point_eps * point_eps) {
+                    if (pip_absf(px - ax) <= point_eps && pip_absf(py - ay) <= point_eps) {
+                        if (boundary_element_ordinal != nullptr) {
+                            *boundary_element_ordinal = off + i;
+                        }
+                        return 2u;
+                    }
+                } else {
+                    float cross = (px - ax) * edge.dy - (py - ay) * edge.dx;
+                    if (cross * cross <= point_eps * point_eps * len2) {
+                        float dot = (px - ax) * edge.dx + (py - ay) * edge.dy;
+                        if (dot >= -point_eps && dot <= len2 + point_eps) {
+                            if (boundary_element_ordinal != nullptr) {
+                                *boundary_element_ordinal = off + i;
+                            }
+                            return 2u;
+                        }
+                    }
+                }
+            }
+
+            if (((by > py) != (ay > py)) &&
+                (px <= edge.crossing_scale * (py - by) + bx))
+                inside = !inside;
+        }
+        return inside ? 1u : 0u;
+    }
+    for (uint32_t i = 0, j = n - 1; i < n; j = i++) {
+        float ax = params.vertices_x[off + j];
+        float ay = params.vertices_y[off + j];
+        float bx = params.vertices_x[off + i];
+        float by = params.vertices_y[off + i];
+        float dx = bx - ax;
+        float dy = by - ay;
+        float len2 = dx * dx + dy * dy;
+        if (params.boundary_check != 0u) {
+            if (len2 <= point_eps * point_eps) {
+                if (pip_absf(px - ax) <= point_eps && pip_absf(py - ay) <= point_eps) {
+                    if (boundary_element_ordinal != nullptr) {
+                        *boundary_element_ordinal = off + j;
+                    }
+                    return 2u;
+                }
+            } else {
+                float cross = (px - ax) * dy - (py - ay) * dx;
+                if (cross * cross <= point_eps * point_eps * len2) {
+                    float dot = (px - ax) * dx + (py - ay) * dy;
+                    if (dot >= -point_eps && dot <= len2 + point_eps) {
+                        if (boundary_element_ordinal != nullptr) {
+                            *boundary_element_ordinal = off + j;
+                        }
+                        return 2u;
+                    }
+                }
+            }
+        }
+
+        if (((by > py) != (ay > py)) &&
+            (px <= (ax - bx) * (py - by) / ((ay - by) != 0.0f ? (ay - by) : 1.0e-20f) + bx))
+            inside = !inside;
+    }
+    return inside ? 1u : 0u;
+}
+
+static __forceinline__ __device__ bool point_in_polygon(
+        float px, float py,
+        const GpuPolygonRef& poly)
+{
+    uint32_t boundary_element_ordinal = 0xffffffffu;
+    return point_closed_shape_membership_status(px, py, poly, &boundary_element_ordinal) != 0u;
+}
+
+extern "C" __global__ void __raygen__pip_probe() {
+    const uint32_t idx = optixGetLaunchIndex().x;
+    if (idx >= params.probe_count) return;
+    float px = params.points_x[idx];
+    float py = params.points_y[idx];
+    unsigned int p0 = idx, p1 = 0u, p2 = 0u, p3 = 0u;
+    const float query_half_extent = 0.5f;
+    const uint32_t query_axis_z_point = 0u;
+    if (query_axis_z_point != 0u) {
+        // Point-axis probe: traverse only shape AABBs containing the query
+        // point in XY, then let the generic closed-shape predicate decide.
+        optixTrace(params.traversable,
+                   make_float3(px, py, -1.0f),
+                   make_float3(0.0f, 0.0f, 1.0f),
+                   0.0f, 2.0f, 0.0f,
+                   OptixVisibilityMask(255),
+                   OPTIX_RAY_FLAG_NONE,
+                   0, 1, 0,
+                   p0, p1, p2, p3);
+    } else {
+        // Bounded vertical probe through the point. Closed-shape membership only
+        // needs shapes whose AABB contains the point, not every shape above it.
+        optixTrace(params.traversable,
+                   make_float3(px, py - query_half_extent, 0.0f),
+                   make_float3(0.0f, 1.0f, 0.0f),
+                   0.0f, 2.0f * query_half_extent, 0.0f,
+                   OptixVisibilityMask(255),
+                   OPTIX_RAY_FLAG_NONE,
+                   0, 1, 0,
+                   p0, p1, p2, p3);
+    }
+    if (params.positive_only != 0u && params.output == nullptr && params.output_capacity == 0u && p2 != 0u) {
+        atomicAdd(params.output_count, p2);
+    }
+}
+
+extern "C" __global__ void __miss__pip_miss() {}
+
+extern "C" __global__ void __intersection__pip_isect() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t pidx = optixGetPayload_0();
+    if (params.positive_only != 0u) {
+        uint32_t relation_status = 0u;
+        uint32_t boundary_element_ordinal = 0xffffffffu;
+        if (params.device_prefilter != 0u) {
+            const GpuPolygonRef poly = params.polygons[prim];
+            const float px = params.points_x[pidx];
+            const float py = params.points_y[pidx];
+            relation_status = point_closed_shape_membership_status(px, py, poly, &boundary_element_ordinal);
+            if (relation_status == 0u) {
+                return;
+            }
+        }
+        optixSetPayload_3(relation_status);
+        if (params.output == nullptr && params.output_capacity == 0u) {
+            optixSetPayload_2(optixGetPayload_2() + 1u);
+            return;
+        }
+        optixSetPayload_2(boundary_element_ordinal);
+        // In positive-hit mode, OptiX is only a conservative candidate
+        // generator. Final inclusive truth is decided on the host. The default
+        // reports every AABB candidate; the opt-in device prefilter only
+        // removes obvious non-hits before host exact refinement.
+        optixSetPayload_1(prim);
+        optixReportIntersection(0.5f, 0u);
+        return;
+    }
+    const GpuPolygonRef poly = params.polygons[prim];
+    float px = params.points_x[pidx];
+    float py = params.points_y[pidx];
+    uint32_t boundary_element_ordinal = 0xffffffffu;
+    const uint32_t relation_status =
+        point_closed_shape_membership_status(px, py, poly, &boundary_element_ordinal);
+    if (relation_status == 0u) return;
+    optixSetPayload_1(prim);
+    optixSetPayload_2(boundary_element_ordinal);
+    optixSetPayload_3(relation_status);
+    optixReportIntersection(0.5f, 0u);
+}
+
+    extern "C" __global__ void __anyhit__pip_anyhit() {
+        const uint32_t pidx = optixGetPayload_0();
+        const uint32_t prim = optixGetPayload_1();
+        if (params.positive_only != 0u) {
+            if (params.output == nullptr && params.output_capacity == 0u) {
+                optixSetPayload_2(optixGetPayload_2() + 1u);
+                optixIgnoreIntersection();
+                return;
+            }
+            const uint32_t slot = atomicAdd(params.output_count, 1u);
+            if (slot < params.output_capacity && params.output != nullptr) {
+                PipRecord r;
+                r.point_id = params.point_index_offset + pidx;
+                r.polygon_id = prim;
+                r.contains = 1u;
+                params.output[slot] = r;
+            }
+            optixIgnoreIntersection();
+            return;
+        }
+    const uint32_t slot = pidx * params.polygon_count + prim;
+    params.output[slot].contains = 1u;
+    optixIgnoreIntersection();
+}
+)CUDA";
+
+// ---------- point/closed-shape boundary-event kernel ------------------------
+
+static const char* kPointClosedShapeBoundaryEventKernelSrc = R"CUDA(
+#include <optix_device.h>
+#include <stdint.h>
+
+struct GpuPolygonRef {
+    uint32_t id;
+    uint32_t vertex_offset;
+    uint32_t vertex_count;
+};
+
+struct GpuPreparedClosedShapeEdge2D {
+    float ax, ay;
+    float bx, by;
+    float dx, dy;
+    float len2;
+    float crossing_scale;
+};
+
+struct BoundaryEventRecord {
+    uint32_t point_id;
+    uint32_t shape_id;
+    uint32_t boundary_id;
+    double crossing_t;
+    double crossing_x;
+    double crossing_y;
+    uint32_t event_kind;
+};
+
+struct BoundaryEventParams {
+    OptixTraversableHandle traversable;
+    const float* points_x;
+    const float* points_y;
+    const uint32_t* point_ids;
+    const GpuPolygonRef* polygons;
+    const GpuPreparedClosedShapeEdge2D* prepared_edges;
+    BoundaryEventRecord* output;
+    unsigned long long* point_ids_out;
+    unsigned long long* shape_ids_out;
+    unsigned long long* boundary_ids_out;
+    double* crossing_t_out;
+    double* crossing_x_out;
+    double* crossing_y_out;
+    unsigned int* event_kinds_out;
+    uint32_t* output_count;
+    uint32_t output_capacity;
+    uint32_t* overflow;
+    uint32_t probe_count;
+    float ray_tmax;
+};
+
+extern "C" {
+__constant__ BoundaryEventParams params;
+}
+
+static __forceinline__ __device__ float boundary_event_absf(float x) {
+    return x < 0.0f ? -x : x;
+}
+
+static __forceinline__ __device__ bool first_boundary_crossing(
+        const float px,
+        const float py,
+        const GpuPolygonRef& poly,
+        float* best_t,
+        uint32_t* best_boundary_id)
+{
+    if (params.prepared_edges == nullptr) return false;
+    const float eps = 1.0e-6f;
+    bool found = false;
+    float local_best_t = 0.0f;
+    uint32_t local_best_boundary = 0u;
+    const uint32_t off = poly.vertex_offset;
+    for (uint32_t i = 0; i < poly.vertex_count; ++i) {
+        const GpuPreparedClosedShapeEdge2D edge = params.prepared_edges[off + i];
+        const float ex = edge.bx - edge.ax;
+        if (boundary_event_absf(ex) <= eps) {
+            continue;
+        }
+        const float u = (px - edge.ax) / ex;
+        if (u < -eps || u > 1.0f + eps) {
+            continue;
+        }
+        const float crossing_y = edge.ay + u * (edge.by - edge.ay);
+        float t = crossing_y - py;
+        if (t < -eps) {
+            continue;
+        }
+        if (boundary_event_absf(t) <= eps) {
+            t = 0.0f;
+        }
+        if (!found || t < local_best_t || (boundary_event_absf(t - local_best_t) <= eps && i < local_best_boundary)) {
+            found = true;
+            local_best_t = t;
+            local_best_boundary = i;
+        }
+    }
+    if (!found) return false;
+    *best_t = local_best_t;
+    *best_boundary_id = local_best_boundary;
+    return true;
+}
+
+extern "C" __global__ void __raygen__point_closed_shape_boundary_event_probe() {
+    const uint32_t idx = optixGetLaunchIndex().x;
+    if (idx >= params.probe_count) return;
+    const float px = params.points_x[idx];
+    const float py = params.points_y[idx];
+    unsigned int p0 = idx, p1 = 0u, p2 = 0u, p3 = 0u;
+    optixTrace(params.traversable,
+               make_float3(px, py, 0.0f),
+               make_float3(0.0f, 1.0f, 0.0f),
+               0.0f, params.ray_tmax, 0.0f,
+               OptixVisibilityMask(255),
+               OPTIX_RAY_FLAG_NONE,
+               0, 1, 0,
+               p0, p1, p2, p3);
+}
+
+extern "C" __global__ void __miss__point_closed_shape_boundary_event_miss() {}
+
+extern "C" __global__ void __intersection__point_closed_shape_boundary_event_isect() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t pidx = optixGetPayload_0();
+    const float px = params.points_x[pidx];
+    const float py = params.points_y[pidx];
+    float best_t = 0.0f;
+    uint32_t best_boundary_id = 0u;
+    if (!first_boundary_crossing(px, py, params.polygons[prim], &best_t, &best_boundary_id)) {
+        return;
+    }
+    optixSetPayload_1(prim);
+    optixSetPayload_2(best_boundary_id);
+    optixSetPayload_3(__float_as_uint(best_t));
+    optixReportIntersection(best_t, 0u);
+}
+
+extern "C" __global__ void __anyhit__point_closed_shape_boundary_event_anyhit() {
+    const uint32_t pidx = optixGetPayload_0();
+    const uint32_t prim = optixGetPayload_1();
+    const uint32_t boundary_id = optixGetPayload_2();
+    const float t = __uint_as_float(optixGetPayload_3());
+    const uint32_t slot = atomicAdd(params.output_count, 1u);
+    const bool has_columns = params.point_ids_out != nullptr;
+    if (params.output != nullptr && slot < params.output_capacity) {
+        BoundaryEventRecord row;
+        row.point_id = params.point_ids[pidx];
+        row.shape_id = params.polygons[prim].id;
+        row.boundary_id = boundary_id;
+        row.crossing_t = (double)t;
+        row.crossing_x = (double)params.points_x[pidx];
+        row.crossing_y = (double)(params.points_y[pidx] + t);
+        row.event_kind = 1u;
+        params.output[slot] = row;
+    }
+    if (has_columns && slot < params.output_capacity) {
+        params.point_ids_out[slot] = (unsigned long long)params.point_ids[pidx];
+        params.shape_ids_out[slot] = (unsigned long long)params.polygons[prim].id;
+        params.boundary_ids_out[slot] = (unsigned long long)boundary_id;
+        params.crossing_t_out[slot] = (double)t;
+        params.crossing_x_out[slot] = (double)params.points_x[pidx];
+        params.crossing_y_out[slot] = (double)(params.points_y[pidx] + t);
+        params.event_kinds_out[slot] = 1u;
+    }
+    if ((params.output != nullptr || has_columns) && slot >= params.output_capacity && params.overflow != nullptr) {
+        *params.overflow = 1u;
+    }
+    optixIgnoreIntersection();
+}
+)CUDA";
+
+// ---------- shape-pair relation kernel ---------------------------------------------------
+
+static const char* kShapePairRelationKernelSrc = R"CUDA(
+#include <optix_device.h>
+#include <stdint.h>
+
+struct GpuPolygonRef {
+    uint32_t id;
+    uint32_t vertex_offset;
+    uint32_t vertex_count;
+};
+
+struct ShapePairRelationFlags {
+    uint32_t requires_segment_intersection;
+    uint32_t requires_point_containment;
+};
+
+struct ShapePairRelationParams {
+    OptixTraversableHandle traversable;
+    const GpuPolygonRef* left_polygons;
+    const GpuPolygonRef* right_polygons;
+    const float* left_vx;
+    const float* left_vy;
+    const float* right_vx;
+    const float* right_vy;
+    ShapePairRelationFlags* output;         // left_count * right_count elements
+    uint32_t  right_count;
+    uint32_t  left_count;
+    uint32_t  launch_count;       // total raygen threads
+    uint32_t  max_edges_per_poly; // raygen stride
+};
+
+extern "C" {
+__constant__ ShapePairRelationParams params;
+}
+
+static __forceinline__ __device__ float shape_pair_relation_absf(float x) {
+    return x < 0.0f ? -x : x;
+}
+
+static __forceinline__ __device__ bool seg_intersect_flag(
+        float ax0, float ay0, float ax1, float ay1,
+        float bx0, float by0, float bx1, float by1)
+{
+    float rx = ax1 - ax0, ry = ay1 - ay0;
+    float sx = bx1 - bx0, sy = by1 - by0;
+    float denom = rx * sy - ry * sx;
+    if (shape_pair_relation_absf(denom) < 1.0e-7f) return false;
+    float qpx = bx0 - ax0, qpy = by0 - ay0;
+    float t = (qpx * sy - qpy * sx) / denom;
+    float u = (qpx * ry - qpy * rx) / denom;
+    return t >= 0.0f && t <= 1.0f && u >= 0.0f && u <= 1.0f;
+}
+
+static __forceinline__ __device__ bool point_in_polygon_dev(
+        float px, float py,
+        const GpuPolygonRef& poly,
+        const float* vx, const float* vy)
+{
+    uint32_t n = poly.vertex_count;
+    uint32_t off = poly.vertex_offset;
+    bool inside = false;
+    for (uint32_t i = 0, j = n - 1; i < n; j = i++) {
+        float xi = vx[off + i], yi = vy[off + i];
+        float xj = vx[off + j], yj = vy[off + j];
+        if (((yi > py) != (yj > py)) &&
+            (px <= (xj - xi) * (py - yi) / ((yj - yi) != 0.0f ? (yj - yi) : 1.0e-20f) + xi))
+            inside = !inside;
+    }
+    return inside;
+}
+
+// Launch layout: one thread per (left_polygon, left_edge_index)
+// left_polygon_idx = launch_idx / max_edges_per_poly
+// edge_idx         = launch_idx % max_edges_per_poly
+extern "C" __global__ void __raygen__shape_pair_relation_probe() {
+    const uint32_t gidx = optixGetLaunchIndex().x;
+    if (gidx >= params.launch_count) return;
+    const uint32_t lpidx   = gidx / params.max_edges_per_poly;
+    const uint32_t edge_i  = gidx % params.max_edges_per_poly;
+    if (lpidx >= params.left_count) return;
+    const GpuPolygonRef lp = params.left_polygons[lpidx];
+    if (edge_i >= lp.vertex_count) return;
+
+    uint32_t i0 = lp.vertex_offset + edge_i;
+    uint32_t i1 = lp.vertex_offset + (edge_i + 1) % lp.vertex_count;
+    float ex0 = params.left_vx[i0], ey0 = params.left_vy[i0];
+    float ex1 = params.left_vx[i1], ey1 = params.left_vy[i1];
+    float dx = ex1 - ex0, dy = ey1 - ey0;
+
+    unsigned int p0 = lpidx, p1 = edge_i, p2 = 0u, p3 = 0u;
+    optixTrace(params.traversable,
+               make_float3(ex0, ey0, 0.0f),
+               make_float3(dx, dy, 0.0f),
+               0.0f, 1.0f, 0.0f,
+               OptixVisibilityMask(255),
+               OPTIX_RAY_FLAG_NONE,
+               0, 1, 0,
+               p0, p1, p2, p3);
+}
+
+extern "C" __global__ void __miss__shape_pair_relation_miss() {}
+
+extern "C" __global__ void __intersection__shape_pair_relation_isect() {
+    const uint32_t rpidx = optixGetPrimitiveIndex();
+    const uint32_t lpidx = optixGetPayload_0();
+    const uint32_t eidx  = optixGetPayload_1();
+    const GpuPolygonRef lp = params.left_polygons[lpidx];
+    const GpuPolygonRef rp = params.right_polygons[rpidx];
+    // Test probe edge against each right polygon edge
+    uint32_t i0 = lp.vertex_offset + eidx;
+    uint32_t i1 = lp.vertex_offset + (eidx + 1) % lp.vertex_count;
+    float ax0 = params.left_vx[i0], ay0 = params.left_vy[i0];
+    float ax1 = params.left_vx[i1], ay1 = params.left_vy[i1];
+    bool segment_pair_intersection_hit = false;
+    for (uint32_t k = 0; k < rp.vertex_count; ++k) {
+        uint32_t j0 = rp.vertex_offset + k;
+        uint32_t j1 = rp.vertex_offset + (k + 1) % rp.vertex_count;
+        float bx0 = params.right_vx[j0], by0 = params.right_vy[j0];
+        float bx1 = params.right_vx[j1], by1 = params.right_vy[j1];
+        if (seg_intersect_flag(ax0, ay0, ax1, ay1, bx0, by0, bx1, by1)) {
+            segment_pair_intersection_hit = true;
+            break;
+        }
+    }
+    if (segment_pair_intersection_hit) {
+        optixSetPayload_2(rpidx);
+        optixReportIntersection(0.5f, 1u);  // hit_kind=1 -> segment-pair intersection
+    }
+}
+
+extern "C" __global__ void __anyhit__shape_pair_relation_anyhit() {
+    const uint32_t lpidx = optixGetPayload_0();
+    const uint32_t rpidx = optixGetPayload_2();
+    const uint32_t slot  = lpidx * params.right_count + rpidx;
+    atomicOr(&params.output[slot].requires_segment_intersection, 1u);
+    optixIgnoreIntersection();
+}
+)CUDA";
+
+static const char* kShapePairRelationActiveCountDeviceKernelSrc = R"CUDA(
+#include <stdint.h>
+
+struct GpuPolygonRef {
+    uint32_t id;
+    uint32_t vertex_offset;
+    uint32_t vertex_count;
+};
+
+struct ShapePairRelationFlags {
+    uint32_t requires_segment_intersection;
+    uint32_t requires_point_containment;
+};
+
+struct GpuBounds2D {
+    float min_x;
+    float min_y;
+    float max_x;
+    float max_y;
+};
+
+static __forceinline__ __device__ bool point_inside_bounds_dev(
+        const GpuBounds2D& bounds,
+        float x,
+        float y,
+        float eps)
+{
+    return x >= bounds.min_x - eps && x <= bounds.max_x + eps &&
+           y >= bounds.min_y - eps && y <= bounds.max_y + eps;
+}
+
+static __forceinline__ __device__ float shape_pair_absf(float x)
+{
+    return x < 0.0f ? -x : x;
+}
+
+static __forceinline__ __device__ bool point_on_segment_dev(
+        float px, float py,
+        float ax, float ay,
+        float bx, float by)
+{
+    const float cross = (px - ax) * (by - ay) - (py - ay) * (bx - ax);
+    if (shape_pair_absf(cross) > 1.0e-5f) return false;
+    const float min_x = ax < bx ? ax : bx;
+    const float max_x = ax > bx ? ax : bx;
+    const float min_y = ay < by ? ay : by;
+    const float max_y = ay > by ? ay : by;
+    return px >= min_x - 1.0e-5f && px <= max_x + 1.0e-5f &&
+           py >= min_y - 1.0e-5f && py <= max_y + 1.0e-5f;
+}
+
+static __forceinline__ __device__ bool point_in_polygon_inclusive_dev(
+        float px, float py,
+        const GpuPolygonRef& poly,
+        const float* vx, const float* vy)
+{
+    const uint32_t n = poly.vertex_count;
+    if (n == 0u) return false;
+    const uint32_t off = poly.vertex_offset;
+    for (uint32_t i = 0, j = n - 1u; i < n; j = i++) {
+        const float xi = vx[off + i], yi = vy[off + i];
+        const float xj = vx[off + j], yj = vy[off + j];
+        if (point_on_segment_dev(px, py, xi, yi, xj, yj)) {
+            return true;
+        }
+    }
+    bool inside = false;
+    for (uint32_t i = 0, j = n - 1u; i < n; j = i++) {
+        const float xi = vx[off + i], yi = vy[off + i];
+        const float xj = vx[off + j], yj = vy[off + j];
+        if (((yi > py) != (yj > py)) &&
+            (px <= (xj - xi) * (py - yi) / ((yj - yi) != 0.0f ? (yj - yi) : 1.0e-20f) + xi)) {
+            inside = !inside;
+        }
+    }
+    return inside;
+}
+
+extern "C" __global__ void shape_pair_relation_active_count_device_kernel(
+        const ShapePairRelationFlags* flags,
+        const GpuPolygonRef* left_polygons,
+        const GpuPolygonRef* right_polygons,
+        const float* left_vx,
+        const float* left_vy,
+        const float* right_vx,
+        const float* right_vy,
+        const GpuBounds2D* left_bounds,
+        const GpuBounds2D* right_bounds,
+        uint32_t left_count,
+        uint32_t right_count,
+        unsigned long long* active_count)
+{
+    const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    const uint32_t total = left_count * right_count;
+    if (idx >= total) return;
+    const uint32_t li = idx / right_count;
+    const uint32_t ri = idx - li * right_count;
+    const ShapePairRelationFlags flag = flags[idx];
+    bool active = flag.requires_segment_intersection != 0u ||
+                  flag.requires_point_containment != 0u;
+    if (!active) {
+        const GpuPolygonRef lp = left_polygons[li];
+        const GpuPolygonRef rp = right_polygons[ri];
+        bool contains = false;
+        if (lp.vertex_count > 0u) {
+            const uint32_t loff = lp.vertex_offset;
+            const float lx = left_vx[loff];
+            const float ly = left_vy[loff];
+            if (point_inside_bounds_dev(right_bounds[ri], lx, ly, 1.0e-6f) &&
+                point_in_polygon_inclusive_dev(lx, ly, rp, right_vx, right_vy)) {
+                contains = true;
+            }
+        }
+        if (!contains && rp.vertex_count > 0u) {
+            const uint32_t roff = rp.vertex_offset;
+            const float rx = right_vx[roff];
+            const float ry = right_vy[roff];
+            if (point_inside_bounds_dev(left_bounds[li], rx, ry, 1.0e-6f) &&
+                point_in_polygon_inclusive_dev(rx, ry, lp, left_vx, left_vy)) {
+                contains = true;
+            }
+        }
+        active = contains;
+    }
+    if (active) {
+        atomicAdd(active_count, 1ull);
+    }
+}
+
+extern "C" __global__ void shape_pair_relation_active_relation_device_columns_kernel(
+        const ShapePairRelationFlags* flags,
+        const GpuPolygonRef* left_polygons,
+        const GpuPolygonRef* right_polygons,
+        const float* left_vx,
+        const float* left_vy,
+        const float* right_vx,
+        const float* right_vy,
+        const GpuBounds2D* left_bounds,
+        const GpuBounds2D* right_bounds,
+        uint32_t left_count,
+        uint32_t right_count,
+        unsigned long long* active_count,
+        unsigned long long* left_ids_out,
+        unsigned long long* right_ids_out,
+        uint32_t* left_ordinals_out,
+        uint32_t* right_ordinals_out,
+        uint32_t* requires_segment_intersection_out,
+        uint32_t* requires_point_containment_out,
+        uint32_t output_capacity,
+        uint32_t* overflow)
+{
+    const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    const uint32_t total = left_count * right_count;
+    if (idx >= total) return;
+    const uint32_t li = idx / right_count;
+    const uint32_t ri = idx - li * right_count;
+    ShapePairRelationFlags flag = flags[idx];
+    bool active = flag.requires_segment_intersection != 0u ||
+                  flag.requires_point_containment != 0u;
+    if (!active) {
+        const GpuPolygonRef lp = left_polygons[li];
+        const GpuPolygonRef rp = right_polygons[ri];
+        bool contains = false;
+        if (lp.vertex_count > 0u) {
+            const uint32_t loff = lp.vertex_offset;
+            const float lx = left_vx[loff];
+            const float ly = left_vy[loff];
+            if (point_inside_bounds_dev(right_bounds[ri], lx, ly, 1.0e-6f) &&
+                point_in_polygon_inclusive_dev(lx, ly, rp, right_vx, right_vy)) {
+                contains = true;
+            }
+        }
+        if (!contains && rp.vertex_count > 0u) {
+            const uint32_t roff = rp.vertex_offset;
+            const float rx = right_vx[roff];
+            const float ry = right_vy[roff];
+            if (point_inside_bounds_dev(left_bounds[li], rx, ry, 1.0e-6f) &&
+                point_in_polygon_inclusive_dev(rx, ry, lp, left_vx, left_vy)) {
+                contains = true;
+            }
+        }
+        if (contains) {
+            flag.requires_point_containment = 1u;
+            active = true;
+        }
+    }
+    if (!active) return;
+    const unsigned long long slot = atomicAdd(active_count, 1ull);
+    if (slot >= static_cast<unsigned long long>(output_capacity)) {
+        if (overflow) *overflow = 1u;
+        return;
+    }
+    left_ids_out[slot] = static_cast<unsigned long long>(left_polygons[li].id);
+    right_ids_out[slot] = static_cast<unsigned long long>(right_polygons[ri].id);
+    left_ordinals_out[slot] = li;
+    right_ordinals_out[slot] = ri;
+    requires_segment_intersection_out[slot] = flag.requires_segment_intersection;
+    requires_point_containment_out[slot] = flag.requires_point_containment;
+}
+)CUDA";
+
+// ---------- Ray-triangle hit count kernel ------------------------------------
+
+static const char* kRayHitCountKernelSrc = R"CUDA(
+#include <optix_device.h>
+
+typedef unsigned int uint32_t;
+
+static __forceinline__ __device__ float rt_absf(float x)
+{
+    return x < 0.0f ? -x : x;
+}
+
+static __forceinline__ __device__ float rt_sqrtf(float x)
+{
+    if (x <= 0.0f) return 0.0f;
+    float r = x > 1.0f ? x : 1.0f;
+    for (int i = 0; i < 8; ++i) {
+        r = 0.5f * (r + x / r);
+    }
+    return r;
+}
+
+struct GpuTriangle {
+    float x0, y0, x1, y1, x2, y2;
+    uint32_t id;
+};
+
+struct GpuRay {
+    float ox, oy, dx, dy, tmax;
+    uint32_t id;
+};
+
+struct RayHitCountRecord {
+    uint32_t ray_id, hit_count;
+};
+
+struct RayHitCountParams {
+    OptixTraversableHandle traversable;
+    const GpuRay*      rays;
+    const GpuTriangle* triangles;
+    RayHitCountRecord* output;
+    uint32_t ray_count;
+};
+
+extern "C" {
+__constant__ RayHitCountParams params;
+}
+
+static __forceinline__ __device__ bool ray_hits_triangle(
+        float ox, float oy,
+        float dx, float dy,
+        float tmax,
+        float x0, float y0,
+        float x1, float y1,
+        float x2, float y2)
+{
+    float ex = ox + dx * tmax, ey = oy + dy * tmax;
+
+    auto point_in_triangle = [&](float px, float py) -> bool {
+        const float v0x = x2 - x0;
+        const float v0y = y2 - y0;
+        const float v1x = x1 - x0;
+        const float v1y = y1 - y0;
+        const float v2x = px - x0;
+        const float v2y = py - y0;
+
+        const float dot00 = v0x * v0x + v0y * v0y;
+        const float dot01 = v0x * v1x + v0y * v1y;
+        const float dot02 = v0x * v2x + v0y * v2y;
+        const float dot11 = v1x * v1x + v1y * v1y;
+        const float dot12 = v1x * v2x + v1y * v2y;
+        const float denom = dot00 * dot11 - dot01 * dot01;
+        if (rt_absf(denom) < 1.0e-7f) return false;
+        const float inv = 1.0f / denom;
+        const float u = (dot11 * dot02 - dot01 * dot12) * inv;
+        const float v = (dot00 * dot12 - dot01 * dot02) * inv;
+        return u >= 0.0f && v >= 0.0f && (u + v) <= 1.0f;
+    };
+
+    auto seg_hit = [&](float ax, float ay, float bx, float by) -> bool {
+        float rx = ex - ox, ry = ey - oy;
+        float sx = bx - ax, sy = by - ay;
+        float denom = rx * sy - ry * sx;
+        if (rt_absf(denom) < 1.0e-7f) return false;
+        float qpx = ax - ox, qpy = ay - oy;
+        float t = (qpx * sy - qpy * sx) / denom;
+        float u = (qpx * ry - qpy * rx) / denom;
+        return t >= 0.0f && t <= 1.0f && u >= 0.0f && u <= 1.0f;
+    };
+
+    if (point_in_triangle(ox, oy) || point_in_triangle(ex, ey)) {
+        return true;
+    }
+
+    if (seg_hit(x0, y0, x1, y1) ||
+        seg_hit(x1, y1, x2, y2) ||
+        seg_hit(x2, y2, x0, y0))
+        return true;
+    return false;
+}
+
+extern "C" __global__ void __raygen__rayhit_probe() {
+    const uint32_t idx = optixGetLaunchIndex().x;
+    if (idx >= params.ray_count) return;
+    const GpuRay r = params.rays[idx];
+    float len = rt_sqrtf(r.dx * r.dx + r.dy * r.dy);
+    if (len < 1.0e-10f) {
+        params.output[idx] = {r.id, 0u};
+        return;
+    }
+    unsigned int p0 = idx, p1 = 0u, p2 = 0u, p3 = 0u;
+    optixTrace(params.traversable,
+               make_float3(r.ox, r.oy, 0.0f),
+               make_float3(r.dx / len, r.dy / len, 0.0f),
+               0.0f, r.tmax * len, 0.0f,
+               OptixVisibilityMask(255),
+               OPTIX_RAY_FLAG_NONE,
+               0, 1, 0,
+               p0, p1, p2, p3);
+    params.output[idx] = {r.id, p1};
+}
+
+extern "C" __global__ void __miss__rayhit_miss() {}
+
+extern "C" __global__ void __intersection__rayhit_isect() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t ridx = optixGetPayload_0();
+    const GpuRay r = params.rays[ridx];
+    const GpuTriangle t = params.triangles[prim];
+    if (!ray_hits_triangle(r.ox, r.oy, r.dx, r.dy, r.tmax,
+                           t.x0, t.y0, t.x1, t.y1, t.x2, t.y2))
+        return;
+    // Any-hit only needs a valid interval-local t. A fixed 0.5f drops
+    // legitimate short rays whose world-space trace interval is below 0.5.
+    float hit_t = optixGetRayTmin() + 1.0e-6f;
+    if (hit_t > optixGetRayTmax()) hit_t = optixGetRayTmax();
+    optixReportIntersection(hit_t, 0u);
+}
+
+extern "C" __global__ void __anyhit__rayhit_anyhit() {
+    uint32_t count = optixGetPayload_1();
+    optixSetPayload_1(count + 1u);
+    optixIgnoreIntersection();
+}
+)CUDA";
+
+// ---------- 3-D ray-triangle hit count kernel --------------------------------
+
+static const char* kRayHitCount3DKernelSrc = R"CUDA(
+#include <optix_device.h>
+
+typedef unsigned int uint32_t;
+
+// GPU-side 3-D ray: direction is pre-normalised; tmax is in world units.
+struct GpuRay3D {
+    float ox, oy, oz;
+    float dx, dy, dz;  // unit-length
+    float tmax;
+    uint32_t id;
+};
+
+// GPU-side triangle (float32 coordinates).
+struct GpuTriangle3D {
+    float x0, y0, z0;
+    float x1, y1, z1;
+    float x2, y2, z2;
+    uint32_t id;
+};
+
+struct RayHitCount3DRecord {
+    uint32_t ray_id, hit_count;
+};
+
+struct RayHitCount3DParams {
+    OptixTraversableHandle   traversable;
+    const GpuRay3D*          rays;
+    const GpuTriangle3D*     triangles;
+    RayHitCount3DRecord*     output;
+    uint32_t                 ray_count;
+};
+
+extern "C" {
+__constant__ RayHitCount3DParams params;
+}
+
+// M-¶ller-Trumbore ray-triangle intersection.
+// Returns the hit parameter t in [0, tmax], or -1 if no hit.
+static __forceinline__ __device__ float ray_hits_triangle_3d(
+        float ox, float oy, float oz,
+        float dx, float dy, float dz,
+        float tmax,
+        float x0, float y0, float z0,
+        float x1, float y1, float z1,
+        float x2, float y2, float z2)
+{
+    const float edge1x = x1 - x0, edge1y = y1 - y0, edge1z = z1 - z0;
+    const float edge2x = x2 - x0, edge2y = y2 - y0, edge2z = z2 - z0;
+
+    // pvec = dir x edge2
+    const float pvx = dy * edge2z - dz * edge2y;
+    const float pvy = dz * edge2x - dx * edge2z;
+    const float pvz = dx * edge2y - dy * edge2x;
+
+    const float det = edge1x * pvx + edge1y * pvy + edge1z * pvz;
+    if (det > -1.0e-8f && det < 1.0e-8f) return -1.0f;
+    const float inv_det = 1.0f / det;
+
+    // tvec = ray_origin - v0
+    const float tvx = ox - x0, tvy = oy - y0, tvz = oz - z0;
+
+    const float u = (tvx * pvx + tvy * pvy + tvz * pvz) * inv_det;
+    if (u < 0.0f || u > 1.0f) return -1.0f;
+
+    // qvec = tvec x edge1
+    const float qvx = tvy * edge1z - tvz * edge1y;
+    const float qvy = tvz * edge1x - tvx * edge1z;
+    const float qvz = tvx * edge1y - tvy * edge1x;
+
+    const float v = (dx * qvx + dy * qvy + dz * qvz) * inv_det;
+    if (v < 0.0f || (u + v) > 1.0f) return -1.0f;
+
+    const float t = (edge2x * qvx + edge2y * qvy + edge2z * qvz) * inv_det;
+    if (t < 0.0f || t > tmax) return -1.0f;
+    return t;
+}
+
+extern "C" __global__ void __raygen__rayhit3d_probe() {
+    const uint32_t idx = optixGetLaunchIndex().x;
+    if (idx >= params.ray_count) return;
+    const GpuRay3D r = params.rays[idx];
+    // Direction is already normalised; skip rays with zero direction.
+    if (r.dx == 0.0f && r.dy == 0.0f && r.dz == 0.0f) {
+        params.output[idx] = {r.id, 0u};
+        return;
+    }
+    // Payload: p0 = ray index, p1 = accumulating hit count.
+    unsigned int p0 = idx, p1 = 0u;
+    optixTrace(params.traversable,
+               make_float3(r.ox, r.oy, r.oz),
+               make_float3(r.dx, r.dy, r.dz),
+               0.0f, r.tmax, 0.0f,
+               OptixVisibilityMask(255),
+               OPTIX_RAY_FLAG_NONE,
+               0, 1, 0,
+               p0, p1);
+    params.output[idx] = {r.id, p1};
+}
+
+extern "C" __global__ void __miss__rayhit3d_miss() {}
+
+extern "C" __global__ void __intersection__rayhit3d_isect() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t ridx = optixGetPayload_0();
+    const GpuRay3D     r = params.rays[ridx];
+    const GpuTriangle3D t = params.triangles[prim];
+
+    const float hit_t = ray_hits_triangle_3d(
+            r.ox, r.oy, r.oz, r.dx, r.dy, r.dz, r.tmax,
+            t.x0, t.y0, t.z0, t.x1, t.y1, t.z1, t.x2, t.y2, t.z2);
+    if (hit_t < 0.0f) return;
+    // Report hit at the computed t; AABB z-extent is used so t must be in
+    // [optixGetRayTmin(), optixGetRayTmax()].  Because we set tmax on the
+    // optixTrace call to r.tmax, and hit_t <= r.tmax, this is satisfied.
+    optixReportIntersection(hit_t, 0u);
+}
+
+extern "C" __global__ void __anyhit__rayhit3d_anyhit() {
+    // Count this hit and keep traversing all triangles.
+    uint32_t count = optixGetPayload_1();
+    optixSetPayload_1(count + 1u);
+    optixIgnoreIntersection();
+}
+)CUDA";
+
+static const char* kRayClosestHit3DKernelSrc = R"CUDA(
+#include <optix_device.h>
+
+typedef unsigned int uint32_t;
+
+struct GpuRay3D {
+    float ox, oy, oz;
+    float dx, dy, dz;
+    float tmax;
+    uint32_t id;
+};
+
+struct GpuTriangle3D {
+    float x0, y0, z0;
+    float x1, y1, z1;
+    float x2, y2, z2;
+    uint32_t id;
+};
+
+struct RayClosestHit3DRecord {
+    uint32_t ray_id;
+    uint32_t triangle_id;
+    uint32_t has_hit;
+    float t;
+};
+
+struct RayClosestHit3DParams {
+    OptixTraversableHandle   traversable;
+    const GpuRay3D*          rays;
+    const GpuTriangle3D*     triangles;
+    RayClosestHit3DRecord*   output;
+    uint32_t                 ray_count;
+};
+
+extern "C" {
+__constant__ RayClosestHit3DParams params;
+}
+
+static __forceinline__ __device__ float ray_hits_triangle_3d(
+        float ox, float oy, float oz,
+        float dx, float dy, float dz,
+        float tmax,
+        float x0, float y0, float z0,
+        float x1, float y1, float z1,
+        float x2, float y2, float z2)
+{
+    const float edge1x = x1 - x0, edge1y = y1 - y0, edge1z = z1 - z0;
+    const float edge2x = x2 - x0, edge2y = y2 - y0, edge2z = z2 - z0;
+
+    const float pvx = dy * edge2z - dz * edge2y;
+    const float pvy = dz * edge2x - dx * edge2z;
+    const float pvz = dx * edge2y - dy * edge2x;
+
+    const float det = edge1x * pvx + edge1y * pvy + edge1z * pvz;
+    if (det > -1.0e-8f && det < 1.0e-8f) return -1.0f;
+    const float inv_det = 1.0f / det;
+
+    const float tvx = ox - x0, tvy = oy - y0, tvz = oz - z0;
+
+    const float u = (tvx * pvx + tvy * pvy + tvz * pvz) * inv_det;
+    if (u < 0.0f || u > 1.0f) return -1.0f;
+
+    const float qvx = tvy * edge1z - tvz * edge1y;
+    const float qvy = tvz * edge1x - tvx * edge1z;
+    const float qvz = tvx * edge1y - tvy * edge1x;
+
+    const float v = (dx * qvx + dy * qvy + dz * qvz) * inv_det;
+    if (v < 0.0f || (u + v) > 1.0f) return -1.0f;
+
+    const float t = (edge2x * qvx + edge2y * qvy + edge2z * qvz) * inv_det;
+    if (t < 0.0f || t > tmax) return -1.0f;
+    return t;
+}
+
+extern "C" __global__ void __raygen__rayclosest3d_probe() {
+    const uint32_t idx = optixGetLaunchIndex().x;
+    if (idx >= params.ray_count) return;
+    const GpuRay3D r = params.rays[idx];
+    params.output[idx] = {r.id, 0xffffffffu, 0u, 0.0f};
+    if ((r.dx == 0.0f && r.dy == 0.0f && r.dz == 0.0f) || !(r.tmax >= 0.0f)) {
+        return;
+    }
+    unsigned int p0 = idx;
+    optixTrace(params.traversable,
+               make_float3(r.ox, r.oy, r.oz),
+               make_float3(r.dx, r.dy, r.dz),
+               0.0f, r.tmax, 0.0f,
+               OptixVisibilityMask(255),
+               OPTIX_RAY_FLAG_DISABLE_ANYHIT,
+               0, 1, 0,
+               p0);
+}
+
+extern "C" __global__ void __miss__rayclosest3d_miss() {}
+
+extern "C" __global__ void __intersection__rayclosest3d_isect() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t ridx = optixGetPayload_0();
+    const GpuRay3D     r = params.rays[ridx];
+    const GpuTriangle3D t = params.triangles[prim];
+
+    const float hit_t = ray_hits_triangle_3d(
+            r.ox, r.oy, r.oz, r.dx, r.dy, r.dz, r.tmax,
+            t.x0, t.y0, t.z0, t.x1, t.y1, t.z1, t.x2, t.y2, t.z2);
+    if (hit_t < 0.0f) return;
+    optixReportIntersection(hit_t, 0u);
+}
+
+extern "C" __global__ void __closesthit__rayclosest3d_closesthit() {
+    const uint32_t ridx = optixGetPayload_0();
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const GpuRay3D r = params.rays[ridx];
+    const GpuTriangle3D t = params.triangles[prim];
+    params.output[ridx] = {r.id, t.id, 1u, optixGetRayTmax()};
+}
+)CUDA";
+
+static const char* kRayClosestHitGroupedArgminKernelSrc = R"CUDA(
+#include <stdint.h>
+#include <math.h>
+
+struct RayClosestHit3DRecord {
+    uint32_t ray_id;
+    uint32_t triangle_id;
+    uint32_t has_hit;
+    float t;
+};
+
+static __forceinline__ __device__ unsigned long long encode_ordered_double(double value)
+{
+    const double ordered_value = (value == 0.0) ? 0.0 : value;
+    const unsigned long long bits = __double_as_longlong(ordered_value);
+    return (bits & 0x8000000000000000ULL)
+        ? ~bits
+        : (bits ^ 0x8000000000000000ULL);
+}
+
+static __forceinline__ __device__ double decode_ordered_double(unsigned long long key)
+{
+    const unsigned long long bits = (key & 0x8000000000000000ULL)
+        ? (key ^ 0x8000000000000000ULL)
+        : ~key;
+    return __longlong_as_double(bits);
+}
+
+extern "C" __global__ void closest_hit_grouped_argmin_init(
+        unsigned long long* group_best_keys,
+        uint8_t* group_has_value,
+        uint32_t* group_index,
+        double* group_value,
+        uint32_t group_count)
+{
+    const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= group_count) return;
+    group_best_keys[idx] = 0xffffffffffffffffULL;
+    group_has_value[idx] = 0u;
+    group_index[idx] = 0xffffffffu;
+    group_value[idx] = 0.0;
+}
+
+extern "C" __global__ void closest_hit_grouped_argmin_min_key(
+        const RayClosestHit3DRecord* rows,
+        uint32_t ray_count,
+        const uint32_t* ray_group_ids,
+        uint32_t ray_group_id_count,
+        const double* candidate_values,
+        uint32_t candidate_count,
+        unsigned long long* group_best_keys,
+        uint32_t group_count)
+{
+    const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= ray_count) return;
+    const RayClosestHit3DRecord row = rows[idx];
+    if (row.has_hit == 0u) return;
+    if (row.ray_id >= ray_group_id_count || row.triangle_id >= candidate_count) return;
+    const uint32_t group_id = ray_group_ids[row.ray_id];
+    if (group_id >= group_count) return;
+    const double value = candidate_values[row.triangle_id];
+    if (isnan(value)) return;
+    atomicMin(&group_best_keys[group_id], encode_ordered_double(value));
+}
+
+extern "C" __global__ void closest_hit_grouped_argmin_scatter_unique(
+        const RayClosestHit3DRecord* rows,
+        uint32_t ray_count,
+        const uint32_t* ray_group_ids,
+        uint32_t ray_group_id_count,
+        const double* candidate_values,
+        const uint32_t* candidate_indices,
+        uint32_t candidate_count,
+        uint8_t* group_has_value,
+        uint32_t* group_index,
+        double* group_value,
+        uint32_t group_count)
+{
+    const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= ray_count) return;
+    const RayClosestHit3DRecord row = rows[idx];
+    if (row.has_hit == 0u) return;
+    if (row.ray_id >= ray_group_id_count || row.triangle_id >= candidate_count) return;
+    const uint32_t group_id = ray_group_ids[row.ray_id];
+    if (group_id >= group_count) return;
+    const double value = candidate_values[row.triangle_id];
+    if (isnan(value)) return;
+    group_has_value[group_id] = 1u;
+    group_index[group_id] = candidate_indices[row.triangle_id];
+    group_value[group_id] = value;
+}
+
+extern "C" __global__ void closest_hit_grouped_argmin_min_index(
+        const RayClosestHit3DRecord* rows,
+        uint32_t ray_count,
+        const uint32_t* ray_group_ids,
+        uint32_t ray_group_id_count,
+        const double* candidate_values,
+        const uint32_t* candidate_indices,
+        uint32_t candidate_count,
+        const unsigned long long* group_best_keys,
+        uint32_t* group_index,
+        uint8_t* group_has_value,
+        double* group_value,
+        uint32_t group_count)
+{
+    const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= ray_count) return;
+    const RayClosestHit3DRecord row = rows[idx];
+    if (row.has_hit == 0u) return;
+    if (row.ray_id >= ray_group_id_count || row.triangle_id >= candidate_count) return;
+    const uint32_t group_id = ray_group_ids[row.ray_id];
+    if (group_id >= group_count) return;
+    const double value = candidate_values[row.triangle_id];
+    if (isnan(value)) return;
+    const unsigned long long key = encode_ordered_double(value);
+    if (key == group_best_keys[group_id]) {
+        group_has_value[group_id] = 1u;
+        group_value[group_id] = value;
+        atomicMin(&group_index[group_id], candidate_indices[row.triangle_id]);
+    }
+}
+
+extern "C" __global__ void grouped_candidate_argmin_min_key(
+        const uint32_t* candidate_group_ids,
+        const double* candidate_values,
+        uint32_t candidate_count,
+        unsigned long long* group_best_keys,
+        uint32_t group_count)
+{
+    const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= candidate_count) return;
+    const uint32_t group_id = candidate_group_ids[idx];
+    if (group_id >= group_count) return;
+    const double value = candidate_values[idx];
+    if (isnan(value)) return;
+    atomicMin(&group_best_keys[group_id], encode_ordered_double(value));
+}
+
+extern "C" __global__ void grouped_candidate_argmin_min_index(
+        const uint32_t* candidate_group_ids,
+        const double* candidate_values,
+        const uint32_t* candidate_indices,
+        uint32_t candidate_count,
+        const unsigned long long* group_best_keys,
+        uint32_t* group_index,
+        uint8_t* group_has_value,
+        double* group_value,
+        uint32_t group_count)
+{
+    const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= candidate_count) return;
+    const uint32_t group_id = candidate_group_ids[idx];
+    if (group_id >= group_count) return;
+    const double value = candidate_values[idx];
+    if (isnan(value)) return;
+    const unsigned long long key = encode_ordered_double(value);
+    if (key == group_best_keys[group_id]) {
+        group_has_value[group_id] = 1u;
+        group_value[group_id] = value;
+        atomicMin(&group_index[group_id], candidate_indices[idx]);
+    }
+}
+
+extern "C" __global__ void closest_hit_grouped_argmin_materialize(
+        const unsigned long long* group_best_keys,
+        uint8_t* group_has_value,
+        const uint32_t* group_index,
+        double* group_value,
+        uint32_t group_count)
+{
+    const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= group_count) return;
+    if (group_best_keys[idx] == 0xffffffffffffffffULL || group_index[idx] == 0xffffffffu)
+        return;
+    group_has_value[idx] = 1u;
+    group_value[idx] = decode_ordered_double(group_best_keys[idx]);
+}
+
+extern "C" __global__ void closest_hit_grouped_argmin_merge_two(
+        const uint8_t* group_has_value_a,
+        const uint32_t* group_index_a,
+        const double* group_value_a,
+        const uint8_t* group_has_value_b,
+        const uint32_t* group_index_b,
+        const double* group_value_b,
+        uint8_t* group_has_value_out,
+        uint32_t* group_index_out,
+        double* group_value_out,
+        uint32_t group_count)
+{
+    const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= group_count) return;
+
+    const bool has_a = group_has_value_a[idx] != 0u;
+    const bool has_b = group_has_value_b[idx] != 0u;
+    if (!has_a && !has_b) {
+        group_has_value_out[idx] = 0u;
+        group_index_out[idx] = 0xffffffffu;
+        group_value_out[idx] = 0.0;
+        return;
+    }
+
+    bool take_a = has_a;
+    if (has_a && has_b) {
+        const double value_a = group_value_a[idx];
+        const double value_b = group_value_b[idx];
+        const uint32_t index_a = group_index_a[idx];
+        const uint32_t index_b = group_index_b[idx];
+        take_a = (value_a < value_b) || (value_a == value_b && index_a <= index_b);
+    } else if (!has_a) {
+        take_a = false;
+    }
+
+    group_has_value_out[idx] = 1u;
+    if (take_a) {
+        group_index_out[idx] = group_index_a[idx];
+        group_value_out[idx] = group_value_a[idx];
+    } else {
+        group_index_out[idx] = group_index_b[idx];
+        group_value_out[idx] = group_value_b[idx];
+    }
+}
+)CUDA";
+
+// ---------- Segment-polygon hitcount kernel ----------------------------------
+
+static const char* kSegPolyHitcountKernelSrc = R"CUDA(
+#include <optix_device.h>
+#include <stdint.h>
+#include <math.h>
+
+struct GpuSegment {
+    float x0, y0, x1, y1;
+    uint32_t id;
+};
+
+struct GpuPolygonRef {
+    uint32_t id;
+    uint32_t vertex_offset;
+    uint32_t vertex_count;
+};
+
+struct SegPolyHitRecord {
+    uint32_t segment_id, hit_count;
+};
+
+struct SegPolyParams {
+    OptixTraversableHandle traversable;
+    const GpuSegment*    segments;
+    const GpuPolygonRef* polygons;
+    const float* vertices_x;
+    const float* vertices_y;
+    SegPolyHitRecord* output;
+    uint32_t segment_count;
+};
+
+extern "C" {
+__constant__ SegPolyParams params;
+}
+
+static __forceinline__ __device__ float segpoly_absf(float x)
+{
+    return x < 0.0f ? -x : x;
+}
+
+static __forceinline__ __device__ bool point_on_segment_dev(
+        float px, float py,
+        float ax, float ay,
+        float bx, float by)
+{
+    const float cross = (px - ax) * (by - ay) - (py - ay) * (bx - ax);
+    if (segpoly_absf(cross) > 1.0e-5f) return false;
+    const float min_x = ax < bx ? ax : bx;
+    const float max_x = ax > bx ? ax : bx;
+    const float min_y = ay < by ? ay : by;
+    const float max_y = ay > by ? ay : by;
+    return px >= min_x - 1.0e-5f && px <= max_x + 1.0e-5f &&
+           py >= min_y - 1.0e-5f && py <= max_y + 1.0e-5f;
+}
+
+static __forceinline__ __device__ bool point_in_polygon_inclusive_dev(
+        float px, float py,
+        const GpuPolygonRef& poly)
+{
+    const uint32_t n = poly.vertex_count;
+    const uint32_t off = poly.vertex_offset;
+    for (uint32_t i = 0, j = n - 1; i < n; j = i++) {
+        const float xi = params.vertices_x[off + i], yi = params.vertices_y[off + i];
+        const float xj = params.vertices_x[off + j], yj = params.vertices_y[off + j];
+        if (point_on_segment_dev(px, py, xi, yi, xj, yj)) {
+            return true;
+        }
+    }
+    bool inside = false;
+    for (uint32_t i = 0, j = n - 1; i < n; j = i++) {
+        const float xi = params.vertices_x[off + i], yi = params.vertices_y[off + i];
+        const float xj = params.vertices_x[off + j], yj = params.vertices_y[off + j];
+        if (((yi > py) != (yj > py)) &&
+            (px <= (xj - xi) * (py - yi) / ((yj - yi) != 0.0f ? (yj - yi) : 1.0e-20f) + xi)) {
+            inside = !inside;
+        }
+    }
+    return inside;
+}
+
+static __forceinline__ __device__ bool seg_edge_hit_dev(
+        float sx0, float sy0, float sx1, float sy1,
+        float ax, float ay, float bx, float by)
+{
+    const float rx = sx1 - sx0;
+    const float ry = sy1 - sy0;
+    const float ex = bx - ax;
+    const float ey = by - ay;
+    const float denom = rx * ey - ry * ex;
+    if (segpoly_absf(denom) < 1.0e-7f) {
+        return point_on_segment_dev(sx0, sy0, ax, ay, bx, by) ||
+               point_on_segment_dev(sx1, sy1, ax, ay, bx, by) ||
+               point_on_segment_dev(ax, ay, sx0, sy0, sx1, sy1) ||
+               point_on_segment_dev(bx, by, sx0, sy0, sx1, sy1);
+    }
+    const float qpx = ax - sx0;
+    const float qpy = ay - sy0;
+    const float t = (qpx * ey - qpy * ex) / denom;
+    const float u = (qpx * ry - qpy * rx) / denom;
+    return t >= 0.0f && t <= 1.0f && u >= 0.0f && u <= 1.0f;
+}
+
+static __forceinline__ __device__ bool seg_hits_polygon(
+        float sx0, float sy0, float sx1, float sy1,
+        const GpuPolygonRef& poly)
+{
+    const uint32_t n = poly.vertex_count;
+    const uint32_t off = poly.vertex_offset;
+    if (point_in_polygon_inclusive_dev(sx0, sy0, poly) ||
+        point_in_polygon_inclusive_dev(sx1, sy1, poly)) {
+        return true;
+    }
+    for (uint32_t i = 0; i < n; ++i) {
+        const float ax = params.vertices_x[off + i], ay = params.vertices_y[off + i];
+        const float bx = params.vertices_x[off + (i + 1) % n], by = params.vertices_y[off + (i + 1) % n];
+        if (seg_edge_hit_dev(sx0, sy0, sx1, sy1, ax, ay, bx, by)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+extern "C" __global__ void __raygen__segpoly_probe() {
+    const uint32_t idx = optixGetLaunchIndex().x;
+    if (idx >= params.segment_count) return;
+    const GpuSegment s = params.segments[idx];
+    float dx = s.x1 - s.x0, dy = s.y1 - s.y0;
+    float len = sqrtf(dx * dx + dy * dy);
+    if (len < 1.0e-10f) {
+        params.output[idx] = {s.id, 0u};
+        return;
+    }
+    unsigned int p0 = idx, p1 = 0u, p2 = 0u, p3 = 0u;
+    optixTrace(params.traversable,
+               make_float3(s.x0, s.y0, 0.0f),
+               make_float3(dx / len, dy / len, 0.0f),
+               0.0f, len, 0.0f,
+               OptixVisibilityMask(255),
+               OPTIX_RAY_FLAG_NONE,
+               0, 1, 0,
+               p0, p1, p2, p3);
+    params.output[idx] = {s.id, p1};
+}
+
+extern "C" __global__ void __miss__segpoly_miss() {}
+
+extern "C" __global__ void __intersection__segpoly_isect() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t sidx = optixGetPayload_0();
+    const GpuSegment s = params.segments[sidx];
+    const GpuPolygonRef poly = params.polygons[prim];
+    if (!seg_hits_polygon(s.x0, s.y0, s.x1, s.y1, poly)) return;
+    // Segment/polygon traces use unit directions and tmax=segment length.
+    // Report a t inside that interval so short segments are not discarded.
+    float hit_t = optixGetRayTmin() + 1.0e-6f;
+    if (hit_t > optixGetRayTmax()) hit_t = optixGetRayTmax();
+    optixReportIntersection(hit_t, 0u);
+}
+
+extern "C" __global__ void __anyhit__segpoly_anyhit() {
+    uint32_t count = optixGetPayload_1();
+    optixSetPayload_1(count + 1u);
+    optixIgnoreIntersection();
+}
+)CUDA";
+
+static const char* kSegPolyAnyhitRowsKernelSrc = R"CUDA(
+#include <optix.h>
+#include <optix_device.h>
+#include <stdint.h>
+#include <math.h>
+
+struct GpuSegment {
+    float x0, y0, x1, y1;
+    uint32_t id;
+};
+
+struct GpuPolygonRef {
+    uint32_t id;
+    uint32_t vertex_offset;
+    uint32_t vertex_count;
+};
+
+struct SegPolyPairRecord {
+    uint32_t segment_id, polygon_id;
+};
+
+struct SegPolyRowsParams {
+    OptixTraversableHandle traversable;
+    const GpuSegment* segments;
+    const GpuPolygonRef* polygons;
+    const float* vertices_x;
+    const float* vertices_y;
+    SegPolyPairRecord* output;
+    uint32_t* output_count;
+    uint32_t* overflowed;
+    uint32_t output_capacity;
+    uint32_t segment_count;
+};
+
+extern "C" {
+__constant__ SegPolyRowsParams params;
+}
+
+static __forceinline__ __device__ float segpoly_absf(float x)
+{
+    return x < 0.0f ? -x : x;
+}
+
+static __forceinline__ __device__ bool point_on_segment_dev(
+        float px, float py,
+        float ax, float ay,
+        float bx, float by)
+{
+    const float cross = (px - ax) * (by - ay) - (py - ay) * (bx - ax);
+    if (segpoly_absf(cross) > 1.0e-5f) return false;
+    const float min_x = ax < bx ? ax : bx;
+    const float max_x = ax > bx ? ax : bx;
+    const float min_y = ay < by ? ay : by;
+    const float max_y = ay > by ? ay : by;
+    return px >= min_x - 1.0e-5f && px <= max_x + 1.0e-5f &&
+           py >= min_y - 1.0e-5f && py <= max_y + 1.0e-5f;
+}
+
+static __forceinline__ __device__ bool point_in_polygon_inclusive_dev(
+        float px, float py,
+        const GpuPolygonRef& poly)
+{
+    const uint32_t n = poly.vertex_count;
+    const uint32_t off = poly.vertex_offset;
+    for (uint32_t i = 0, j = n - 1; i < n; j = i++) {
+        const float xi = params.vertices_x[off + i], yi = params.vertices_y[off + i];
+        const float xj = params.vertices_x[off + j], yj = params.vertices_y[off + j];
+        if (point_on_segment_dev(px, py, xi, yi, xj, yj)) {
+            return true;
+        }
+    }
+    bool inside = false;
+    for (uint32_t i = 0, j = n - 1; i < n; j = i++) {
+        const float xi = params.vertices_x[off + i], yi = params.vertices_y[off + i];
+        const float xj = params.vertices_x[off + j], yj = params.vertices_y[off + j];
+        if (((yi > py) != (yj > py)) &&
+            (px <= (xj - xi) * (py - yi) / ((yj - yi) != 0.0f ? (yj - yi) : 1.0e-20f) + xi)) {
+            inside = !inside;
+        }
+    }
+    return inside;
+}
+
+static __forceinline__ __device__ bool seg_edge_hit_dev(
+        float sx0, float sy0, float sx1, float sy1,
+        float ax, float ay, float bx, float by)
+{
+    const float rx = sx1 - sx0;
+    const float ry = sy1 - sy0;
+    const float ex = bx - ax;
+    const float ey = by - ay;
+    const float denom = rx * ey - ry * ex;
+    if (segpoly_absf(denom) < 1.0e-7f) {
+        return point_on_segment_dev(sx0, sy0, ax, ay, bx, by) ||
+               point_on_segment_dev(sx1, sy1, ax, ay, bx, by) ||
+               point_on_segment_dev(ax, ay, sx0, sy0, sx1, sy1) ||
+               point_on_segment_dev(bx, by, sx0, sy0, sx1, sy1);
+    }
+    const float qpx = ax - sx0;
+    const float qpy = ay - sy0;
+    const float t = (qpx * ey - qpy * ex) / denom;
+    const float u = (qpx * ry - qpy * rx) / denom;
+    return t >= 0.0f && t <= 1.0f && u >= 0.0f && u <= 1.0f;
+}
+
+static __forceinline__ __device__ bool seg_hits_polygon(
+        float sx0, float sy0, float sx1, float sy1,
+        const GpuPolygonRef& poly)
+{
+    const uint32_t n = poly.vertex_count;
+    const uint32_t off = poly.vertex_offset;
+    if (point_in_polygon_inclusive_dev(sx0, sy0, poly) ||
+        point_in_polygon_inclusive_dev(sx1, sy1, poly)) {
+        return true;
+    }
+    for (uint32_t i = 0; i < n; ++i) {
+        const float ax = params.vertices_x[off + i], ay = params.vertices_y[off + i];
+        const float bx = params.vertices_x[off + (i + 1) % n], by = params.vertices_y[off + (i + 1) % n];
+        if (seg_edge_hit_dev(sx0, sy0, sx1, sy1, ax, ay, bx, by)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+extern "C" __global__ void __raygen__segpoly_rows_probe() {
+    const uint32_t idx = optixGetLaunchIndex().x;
+    if (idx >= params.segment_count) return;
+    const GpuSegment s = params.segments[idx];
+    float dx = s.x1 - s.x0, dy = s.y1 - s.y0;
+    float len = sqrtf(dx * dx + dy * dy);
+    if (len < 1.0e-10f) return;
+    unsigned int p0 = idx, p1 = 0u, p2 = 0u, p3 = 0u;
+    optixTrace(params.traversable,
+               make_float3(s.x0, s.y0, 0.0f),
+               make_float3(dx / len, dy / len, 0.0f),
+               0.0f, len, 0.0f,
+               OptixVisibilityMask(255),
+               OPTIX_RAY_FLAG_NONE,
+               0, 1, 0,
+               p0, p1, p2, p3);
+}
+
+extern "C" __global__ void __miss__segpoly_rows_miss() {}
+
+extern "C" __global__ void __intersection__segpoly_rows_isect() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t sidx = optixGetPayload_0();
+    const GpuSegment s = params.segments[sidx];
+    const GpuPolygonRef poly = params.polygons[prim];
+    if (!seg_hits_polygon(s.x0, s.y0, s.x1, s.y1, poly)) return;
+    float hit_t = optixGetRayTmin() + 1.0e-6f;
+    if (hit_t > optixGetRayTmax()) hit_t = optixGetRayTmax();
+    optixReportIntersection(hit_t, 0u);
+}
+
+extern "C" __global__ void __anyhit__segpoly_rows_anyhit() {
+    const uint32_t sidx = optixGetPayload_0();
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t slot = atomicAdd(params.output_count, 1u);
+    if (slot < params.output_capacity && params.output != nullptr) {
+        params.output[slot] = {params.segments[sidx].id, params.polygons[prim].id};
+    } else if (params.overflowed != nullptr) {
+        atomicExch(params.overflowed, 1u);
+    }
+    optixIgnoreIntersection();
+}
+)CUDA";
+
+// ---------- Point-nearest-segment: CUDA kernel (no OptiX BVH) ---------------
+//
+// PointNearestSegment does not map well to OptiX ray traversal (it needs a
+// radius/distance query, not a ray-AABB intersection). We use a plain CUDA
+// kernel that is GPU-parallel but brute-force: one thread owns one point and
+// scans the full segment list.
+
+static const char* kPointNearestKernelSrc = R"CUDA(
+#include <stdint.h>
+#include <math.h>
+#include <float.h>
+
+struct GpuPoint { float x, y; uint32_t id; uint32_t pad; };
+struct GpuSegment { float x0, y0, x1, y1; uint32_t id; };
+struct PnsRecord { uint32_t point_id, segment_id; float distance; };
+
+extern "C" __global__ void point_nearest_segment(
+        const GpuPoint*   points,
+        uint32_t          point_count,
+        const GpuSegment* segs,
+        uint32_t          seg_count,
+        PnsRecord*        output)
+{
+    const uint32_t pidx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (pidx >= point_count) return;
+    float px = points[pidx].x, py = points[pidx].y;
+    float best_dist = FLT_MAX;
+    uint32_t best_seg_id = 0;
+    for (uint32_t s = 0; s < seg_count; ++s) {
+        float ax = segs[s].x0, ay = segs[s].y0;
+        float bx = segs[s].x1, by = segs[s].y1;
+        float vx = bx - ax, vy = by - ay;
+        float wx = px - ax, wy = py - ay;
+        float denom = vx * vx + vy * vy;
+        float t = (denom < 1.0e-12f) ? 0.0f
+                                      : fminf(1.0f, fmaxf(0.0f, (wx * vx + wy * vy) / denom));
+        float proj_x = ax + t * vx, proj_y = ay + t * vy;
+        float dx = px - proj_x, dy = py - proj_y;
+        float dist = sqrtf(dx * dx + dy * dy);
+        if (dist < best_dist ||
+            (fabsf(dist - best_dist) < 1.0e-7f && segs[s].id < best_seg_id)) {
+            best_dist   = dist;
+            best_seg_id = segs[s].id;
+        }
+    }
+    output[pidx] = {points[pidx].id, best_seg_id, best_dist};
+}
+)CUDA";
+
+static const char* kFixedRadiusNeighborsKernelSrc = R"CUDA(
+#include <stdint.h>
+#include <math.h>
+#include <float.h>
+
+struct GpuPoint { float x, y; uint32_t id; uint32_t pad; };
+struct FrnRecord { uint32_t query_id, neighbor_id; float distance; };
+
+extern "C" __global__ void fixed_radius_neighbors(
+        const GpuPoint* query_points,
+        uint32_t        query_count,
+        const GpuPoint* search_points,
+        uint32_t        search_count,
+        float           radius,
+        uint32_t        k_max,
+        FrnRecord*      output)
+{
+    const uint32_t qidx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (qidx >= query_count) return;
+
+    FrnRecord* query_out = output + static_cast<size_t>(qidx) * static_cast<size_t>(k_max);
+    for (uint32_t slot = 0; slot < k_max; ++slot) {
+        query_out[slot].query_id = query_points[qidx].id;
+        query_out[slot].neighbor_id = 0xffffffffu;
+        query_out[slot].distance = INFINITY;
+    }
+
+    const float px = query_points[qidx].x;
+    const float py = query_points[qidx].y;
+    const float radius_sq = radius * radius;
+
+    for (uint32_t sidx = 0; sidx < search_count; ++sidx) {
+        const float dx = search_points[sidx].x - px;
+        const float dy = search_points[sidx].y - py;
+        const float distance_sq = dx * dx + dy * dy;
+        if (distance_sq > radius_sq) {
+            continue;
+        }
+        const float distance = sqrtf(distance_sq);
+        const uint32_t neighbor_id = search_points[sidx].id;
+
+        uint32_t insert_at = k_max;
+        for (uint32_t slot = 0; slot < k_max; ++slot) {
+            const bool empty = query_out[slot].neighbor_id == 0xffffffffu;
+            const bool better_distance = distance < query_out[slot].distance - 1.0e-7f;
+            const bool same_distance = fabsf(distance - query_out[slot].distance) <= 1.0e-7f;
+            const bool better_id = same_distance && neighbor_id < query_out[slot].neighbor_id;
+            if (empty || better_distance || better_id) {
+                insert_at = slot;
+                break;
+            }
+        }
+        if (insert_at == k_max) {
+            continue;
+        }
+        for (uint32_t slot = k_max - 1; slot > insert_at; --slot) {
+            query_out[slot] = query_out[slot - 1];
+        }
+        query_out[insert_at].query_id = query_points[qidx].id;
+        query_out[insert_at].neighbor_id = neighbor_id;
+        query_out[insert_at].distance = distance;
+    }
+}
+)CUDA";
+
+static const char* kCollectKBoundedI64KernelSrc = R"CUDA(
+#include <stdint.h>
+#include <stddef.h>
+
+__device__ bool collect_k_rows_equal(
+        const int64_t* rows,
+        size_t lhs,
+        size_t rhs,
+        size_t row_width)
+{
+    for (size_t column = 0; column < row_width; ++column) {
+        if (rows[lhs * row_width + column] != rows[rhs * row_width + column])
+            return false;
+    }
+    return true;
+}
+
+__device__ int collect_k_compare_rows(
+        const int64_t* rows,
+        size_t lhs,
+        size_t rhs,
+        size_t row_width)
+{
+    for (size_t column = 0; column < row_width; ++column) {
+        const int64_t left = rows[lhs * row_width + column];
+        const int64_t right = rows[rhs * row_width + column];
+        if (left < right)
+            return -1;
+        if (left > right)
+            return 1;
+    }
+    return 0;
+}
+
+extern "C" __global__ void collect_k_bounded_i64(
+        const int64_t* candidate_rows,
+        size_t candidate_count,
+        size_t row_width,
+        int64_t* rows_out,
+        size_t row_capacity,
+        size_t* emitted_count,
+        uint32_t* overflowed)
+{
+    if (blockIdx.x != 0 || threadIdx.x != 0)
+        return;
+
+    size_t unique_count = 0;
+    for (size_t row_index = 0; row_index < candidate_count; ++row_index) {
+        bool seen = false;
+        for (size_t prior = 0; prior < row_index; ++prior) {
+            if (collect_k_rows_equal(candidate_rows, row_index, prior, row_width)) {
+                seen = true;
+                break;
+            }
+        }
+        if (!seen)
+            ++unique_count;
+    }
+
+    *emitted_count = unique_count;
+    *overflowed = 0u;
+    if (unique_count > row_capacity) {
+        *overflowed = 1u;
+        return;
+    }
+
+    bool have_last = false;
+    size_t last_index = 0;
+    for (size_t out_index = 0; out_index < unique_count; ++out_index) {
+        bool have_best = false;
+        size_t best_index = 0;
+
+        for (size_t row_index = 0; row_index < candidate_count; ++row_index) {
+            const bool greater_than_last =
+                !have_last || collect_k_compare_rows(candidate_rows, row_index, last_index, row_width) > 0;
+            const bool less_than_best =
+                !have_best || collect_k_compare_rows(candidate_rows, row_index, best_index, row_width) < 0;
+            if (greater_than_last && less_than_best) {
+                best_index = row_index;
+                have_best = true;
+            }
+        }
+
+        for (size_t column = 0; column < row_width; ++column) {
+            rows_out[out_index * row_width + column] = candidate_rows[best_index * row_width + column];
+        }
+        last_index = best_index;
+        have_last = true;
+    }
+}
+)CUDA";
+
+static const char* kCollectKBoundedI64RowWidth2SortKernelSrc = R"CUDA(
+#include <stdint.h>
+#include <stddef.h>
+#include <limits.h>
+
+__device__ int collect_k_pair_compare(int64_t lhs0, int64_t lhs1, int64_t rhs0, int64_t rhs1)
+{
+    if (lhs0 < rhs0)
+        return -1;
+    if (lhs0 > rhs0)
+        return 1;
+    if (lhs1 < rhs1)
+        return -1;
+    if (lhs1 > rhs1)
+        return 1;
+    return 0;
+}
+
+extern "C" __global__ void collect_k_bounded_i64_row_width2_sort(
+        const int64_t* candidate_rows,
+        size_t candidate_count,
+        size_t padded_count,
+        int64_t* rows_out,
+        size_t row_capacity,
+        size_t* emitted_count,
+        uint32_t* overflowed)
+{
+    extern __shared__ int64_t shared[];
+    int64_t* first = shared;
+    int64_t* second = shared + padded_count;
+    uint8_t* valid = reinterpret_cast<uint8_t*>(shared + padded_count * 2);
+    const size_t tid = static_cast<size_t>(threadIdx.x);
+    const size_t stride = static_cast<size_t>(blockDim.x);
+
+    for (size_t index = tid; index < padded_count; index += stride) {
+        if (index < candidate_count) {
+            first[index] = candidate_rows[index * 2];
+            second[index] = candidate_rows[index * 2 + 1];
+            valid[index] = 1u;
+        } else {
+            first[index] = 0;
+            second[index] = 0;
+            valid[index] = 0u;
+        }
+    }
+    __syncthreads();
+
+    for (size_t k = 2; k <= padded_count; k <<= 1) {
+        for (size_t j = k >> 1; j > 0; j >>= 1) {
+            for (size_t index = tid; index < padded_count; index += stride) {
+                const size_t peer = index ^ j;
+                if (peer > index && peer < padded_count) {
+                    const bool ascending = (index & k) == 0;
+                    int cmp = 0;
+                    if (valid[index] != valid[peer]) {
+                        cmp = valid[index] ? -1 : 1;
+                    } else if (valid[index]) {
+                        cmp = collect_k_pair_compare(first[index], second[index], first[peer], second[peer]);
+                    }
+                    const bool should_swap = ascending ? (cmp > 0) : (cmp < 0);
+                    if (should_swap) {
+                        const int64_t tmp_first = first[index];
+                        const int64_t tmp_second = second[index];
+                        const uint8_t tmp_valid = valid[index];
+                        first[index] = first[peer];
+                        second[index] = second[peer];
+                        valid[index] = valid[peer];
+                        first[peer] = tmp_first;
+                        second[peer] = tmp_second;
+                        valid[peer] = tmp_valid;
+                    }
+                }
+            }
+            __syncthreads();
+        }
+    }
+
+    if (tid != 0)
+        return;
+
+    size_t unique_count = 0;
+    for (size_t index = 0; index < padded_count; ++index) {
+        if (!valid[index])
+            break;
+        if (index == 0 || first[index] != first[index - 1] || second[index] != second[index - 1])
+            ++unique_count;
+    }
+
+    *emitted_count = unique_count;
+    *overflowed = 0u;
+    if (unique_count > row_capacity) {
+        *overflowed = 1u;
+        return;
+    }
+
+    size_t out_index = 0;
+    for (size_t index = 0; index < padded_count && out_index < unique_count; ++index) {
+        if (!valid[index])
+            break;
+        if (index != 0 && first[index] == first[index - 1] && second[index] == second[index - 1])
+            continue;
+        rows_out[out_index * 2] = first[index];
+        rows_out[out_index * 2 + 1] = second[index];
+        ++out_index;
+    }
+}
+)CUDA";
+
+static const char* kCollectKBoundedI64RowWidth2CubSortKernelSrc = R"CUDA(
+#include <stdint.h>
+#include <stddef.h>
+#include <cub/block/block_merge_sort.cuh>
+
+struct CollectKRow2 {
+    int64_t first;
+    int64_t second;
+};
+
+struct CollectKRow2Less {
+    __device__ bool operator()(const CollectKRow2& lhs, const CollectKRow2& rhs) const
+    {
+        if (lhs.first != rhs.first)
+            return lhs.first < rhs.first;
+        return lhs.second < rhs.second;
+    }
+};
+
+extern "C" __global__ void collect_k_bounded_i64_row_width2_cub_sort(
+        const int64_t* candidate_rows,
+        size_t candidate_count,
+        int64_t* rows_out,
+        size_t row_capacity,
+        size_t* emitted_count,
+        uint32_t* overflowed)
+{
+    constexpr int block_threads = 256;
+    constexpr int items_per_thread = 8;
+    constexpr size_t tile_capacity = static_cast<size_t>(block_threads * items_per_thread);
+    using BlockSort = cub::BlockMergeSort<CollectKRow2, block_threads, items_per_thread>;
+
+    __shared__ typename BlockSort::TempStorage temp_storage;
+    CollectKRow2 rows[items_per_thread];
+
+    const size_t tid = static_cast<size_t>(threadIdx.x);
+    #pragma unroll
+    for (int item = 0; item < items_per_thread; ++item) {
+        const size_t index = tid * static_cast<size_t>(items_per_thread) + static_cast<size_t>(item);
+        if (index < candidate_count) {
+            rows[item].first = candidate_rows[index * 2];
+            rows[item].second = candidate_rows[index * 2 + 1];
+        } else {
+            rows[item].first = INT64_MAX;
+            rows[item].second = INT64_MAX;
+        }
+    }
+
+    BlockSort(temp_storage).Sort(rows, CollectKRow2Less());
+
+    #pragma unroll
+    for (int item = 0; item < items_per_thread; ++item) {
+        const size_t index = tid * static_cast<size_t>(items_per_thread) + static_cast<size_t>(item);
+        if (index < candidate_count && index < row_capacity) {
+            rows_out[index * 2] = rows[item].first;
+            rows_out[index * 2 + 1] = rows[item].second;
+        }
+    }
+
+    if (threadIdx.x == 0) {
+        *emitted_count = candidate_count < tile_capacity ? candidate_count : tile_capacity;
+        *overflowed = candidate_count > row_capacity ? 1u : 0u;
+    }
+}
+
+extern "C" __global__ void collect_k_bounded_i64_row_width2_cub_sort_tiles(
+        const int64_t* candidate_rows,
+        size_t candidate_count,
+        int64_t* rows_out,
+        size_t* emitted_counts,
+        uint32_t* overflowed_flags)
+{
+    constexpr int block_threads = 256;
+    constexpr int items_per_thread = 8;
+    constexpr size_t tile_capacity = static_cast<size_t>(block_threads * items_per_thread);
+    using BlockSort = cub::BlockMergeSort<CollectKRow2, block_threads, items_per_thread>;
+
+    __shared__ typename BlockSort::TempStorage temp_storage;
+    CollectKRow2 rows[items_per_thread];
+
+    const size_t tile_index = static_cast<size_t>(blockIdx.x);
+    const size_t tile_offset = tile_index * tile_capacity;
+    if (tile_offset >= candidate_count)
+        return;
+    const size_t tile_candidate_count =
+        candidate_count - tile_offset < tile_capacity ? candidate_count - tile_offset : tile_capacity;
+    const size_t tid = static_cast<size_t>(threadIdx.x);
+
+    #pragma unroll
+    for (int item = 0; item < items_per_thread; ++item) {
+        const size_t index = tid * static_cast<size_t>(items_per_thread) + static_cast<size_t>(item);
+        if (index < tile_candidate_count) {
+            const size_t input_index = tile_offset + index;
+            rows[item].first = candidate_rows[input_index * 2];
+            rows[item].second = candidate_rows[input_index * 2 + 1];
+        } else {
+            rows[item].first = INT64_MAX;
+            rows[item].second = INT64_MAX;
+        }
+    }
+
+    BlockSort(temp_storage).Sort(rows, CollectKRow2Less());
+
+    int64_t* tile_rows_out = rows_out + tile_index * tile_capacity * 2;
+    #pragma unroll
+    for (int item = 0; item < items_per_thread; ++item) {
+        const size_t index = tid * static_cast<size_t>(items_per_thread) + static_cast<size_t>(item);
+        if (index < tile_candidate_count) {
+            tile_rows_out[index * 2] = rows[item].first;
+            tile_rows_out[index * 2 + 1] = rows[item].second;
+        }
+    }
+
+    if (threadIdx.x == 0) {
+        emitted_counts[tile_index] = tile_candidate_count;
+        overflowed_flags[tile_index] = 0u;
+    }
+}
+)CUDA";
+
+static const char* kCollectKBoundedI64RowWidth2MergeTwoKernelSrc = R"CUDA(
+#include <stdint.h>
+#include <stddef.h>
+
+__device__ int collect_k_merge_pair_compare(int64_t lhs0, int64_t lhs1, int64_t rhs0, int64_t rhs1)
+{
+    if (lhs0 < rhs0)
+        return -1;
+    if (lhs0 > rhs0)
+        return 1;
+    if (lhs1 < rhs1)
+        return -1;
+    if (lhs1 > rhs1)
+        return 1;
+    return 0;
+}
+
+__device__ void collect_k_merge_next_pair(
+        const int64_t* first_rows,
+        size_t first_count,
+        const int64_t* second_rows,
+        size_t second_count,
+        size_t* first_index,
+        size_t* second_index,
+        int64_t* value0,
+        int64_t* value1)
+{
+    if (*second_index >= second_count) {
+        *value0 = first_rows[*first_index * 2];
+        *value1 = first_rows[*first_index * 2 + 1];
+        ++(*first_index);
+        return;
+    }
+    if (*first_index >= first_count) {
+        *value0 = second_rows[*second_index * 2];
+        *value1 = second_rows[*second_index * 2 + 1];
+        ++(*second_index);
+        return;
+    }
+
+    const int64_t first0 = first_rows[*first_index * 2];
+    const int64_t first1 = first_rows[*first_index * 2 + 1];
+    const int64_t second0 = second_rows[*second_index * 2];
+    const int64_t second1 = second_rows[*second_index * 2 + 1];
+    const int cmp = collect_k_merge_pair_compare(first0, first1, second0, second1);
+    if (cmp <= 0) {
+        *value0 = first0;
+        *value1 = first1;
+        ++(*first_index);
+        if (cmp == 0)
+            ++(*second_index);
+    } else {
+        *value0 = second0;
+        *value1 = second1;
+        ++(*second_index);
+    }
+}
+
+extern "C" __global__ void collect_k_bounded_i64_row_width2_merge_two(
+        const int64_t* first_rows,
+        size_t first_count,
+        const int64_t* second_rows,
+        size_t second_count,
+        int64_t* rows_out,
+        size_t row_capacity,
+        size_t* emitted_count,
+        uint32_t* overflowed)
+{
+    if (blockIdx.x != 0 || threadIdx.x != 0)
+        return;
+
+    size_t first_index = 0;
+    size_t second_index = 0;
+    size_t unique_count = 0;
+    bool have_last = false;
+    int64_t last0 = 0;
+    int64_t last1 = 0;
+    while (first_index < first_count || second_index < second_count) {
+        int64_t value0 = 0;
+        int64_t value1 = 0;
+        collect_k_merge_next_pair(
+            first_rows, first_count, second_rows, second_count,
+            &first_index, &second_index, &value0, &value1);
+        if (have_last && value0 == last0 && value1 == last1)
+            continue;
+        if (unique_count < row_capacity) {
+            rows_out[unique_count * 2] = value0;
+            rows_out[unique_count * 2 + 1] = value1;
+        }
+        last0 = value0;
+        last1 = value1;
+        have_last = true;
+        ++unique_count;
+    }
+
+    *emitted_count = unique_count;
+    *overflowed = unique_count > row_capacity ? 1u : 0u;
+}
+)CUDA";
+
+static const char* kCollectKBoundedI64RowWidth2MergeLevelKernelSrc = R"CUDA(
+#include <stdint.h>
+#include <stddef.h>
+
+__device__ int collect_k_merge_pair_compare(int64_t lhs0, int64_t lhs1, int64_t rhs0, int64_t rhs1)
+{
+    if (lhs0 < rhs0)
+        return -1;
+    if (lhs0 > rhs0)
+        return 1;
+    if (lhs1 < rhs1)
+        return -1;
+    if (lhs1 > rhs1)
+        return 1;
+    return 0;
+}
+
+__device__ void collect_k_merge_next_pair(
+        const int64_t* first_rows,
+        size_t first_count,
+        const int64_t* second_rows,
+        size_t second_count,
+        size_t* first_index,
+        size_t* second_index,
+        int64_t* value0,
+        int64_t* value1)
+{
+    if (*second_index >= second_count) {
+        *value0 = first_rows[*first_index * 2];
+        *value1 = first_rows[*first_index * 2 + 1];
+        ++(*first_index);
+        return;
+    }
+    if (*first_index >= first_count) {
+        *value0 = second_rows[*second_index * 2];
+        *value1 = second_rows[*second_index * 2 + 1];
+        ++(*second_index);
+        return;
+    }
+
+    const int64_t first0 = first_rows[*first_index * 2];
+    const int64_t first1 = first_rows[*first_index * 2 + 1];
+    const int64_t second0 = second_rows[*second_index * 2];
+    const int64_t second1 = second_rows[*second_index * 2 + 1];
+    const int cmp = collect_k_merge_pair_compare(first0, first1, second0, second1);
+    if (cmp <= 0) {
+        *value0 = first0;
+        *value1 = first1;
+        ++(*first_index);
+        if (cmp == 0)
+            ++(*second_index);
+    } else {
+        *value0 = second0;
+        *value1 = second1;
+        ++(*second_index);
+    }
+}
+
+extern "C" __global__ void collect_k_bounded_i64_row_width2_merge_level(
+        const uint64_t* first_row_ptrs,
+        const size_t* first_counts,
+        const uint64_t* second_row_ptrs,
+        const size_t* second_counts,
+        const uint64_t* output_row_ptrs,
+        size_t output_capacity,
+        size_t* emitted_counts,
+        uint32_t* overflowed,
+        size_t pair_count)
+{
+    const size_t pair_index = blockIdx.x;
+    if (pair_index >= pair_count || threadIdx.x != 0)
+        return;
+
+    const int64_t* first_rows =
+        reinterpret_cast<const int64_t*>(static_cast<uintptr_t>(first_row_ptrs[pair_index]));
+    const int64_t* second_rows =
+        reinterpret_cast<const int64_t*>(static_cast<uintptr_t>(second_row_ptrs[pair_index]));
+    int64_t* rows_out =
+        reinterpret_cast<int64_t*>(static_cast<uintptr_t>(output_row_ptrs[pair_index]));
+    const size_t first_count = first_counts[pair_index];
+    const size_t second_count = second_counts[pair_index];
+
+    size_t first_index = 0;
+    size_t second_index = 0;
+    size_t unique_count = 0;
+    bool have_last = false;
+    int64_t last0 = 0;
+    int64_t last1 = 0;
+    while (first_index < first_count || second_index < second_count) {
+        int64_t value0 = 0;
+        int64_t value1 = 0;
+        collect_k_merge_next_pair(
+            first_rows, first_count, second_rows, second_count,
+            &first_index, &second_index, &value0, &value1);
+        if (have_last && value0 == last0 && value1 == last1)
+            continue;
+        if (unique_count < output_capacity) {
+            rows_out[unique_count * 2] = value0;
+            rows_out[unique_count * 2 + 1] = value1;
+        }
+        last0 = value0;
+        last1 = value1;
+        have_last = true;
+        ++unique_count;
+    }
+
+    emitted_counts[pair_index] = unique_count;
+    overflowed[pair_index] = unique_count > output_capacity ? 1u : 0u;
+}
+)CUDA";
+
+static const char* kCollectKCooperativeLaunchSmokeKernelSrc = R"CUDA(
+#include <stdint.h>
+#include <cooperative_groups.h>
+
+namespace cg = cooperative_groups;
+
+extern "C" __global__ void collect_k_cooperative_launch_smoke(uint32_t* observed)
+{
+    cg::grid_group grid = cg::this_grid();
+    if (threadIdx.x == 0)
+        atomicAdd(&observed[0], 1u);
+    grid.sync();
+    if (grid.thread_rank() == 0)
+        observed[1] = observed[0];
+}
+)CUDA";
+
+static const char* kCollectKBoundedI64RowWidth2FinalCompactKernelSrc = R"CUDA(
+#include <stdint.h>
+#include <stddef.h>
+
+__device__ int collect_k_final_pair_compare(int64_t lhs0, int64_t lhs1, int64_t rhs0, int64_t rhs1)
+{
+    if (lhs0 < rhs0)
+        return -1;
+    if (lhs0 > rhs0)
+        return 1;
+    if (lhs1 < rhs1)
+        return -1;
+    if (lhs1 > rhs1)
+        return 1;
+    return 0;
+}
+
+__device__ size_t collect_k_final_lower_bound(
+        const int64_t* rows,
+        size_t count,
+        int64_t value0,
+        int64_t value1)
+{
+    size_t low = 0;
+    size_t high = count;
+    while (low < high) {
+        const size_t mid = low + (high - low) / 2;
+        const int64_t mid0 = rows[mid * 2];
+        const int64_t mid1 = rows[mid * 2 + 1];
+        if (collect_k_final_pair_compare(mid0, mid1, value0, value1) < 0)
+            low = mid + 1;
+        else
+            high = mid;
+    }
+    return low;
+}
+
+__device__ size_t collect_k_final_upper_bound(
+        const int64_t* rows,
+        size_t count,
+        int64_t value0,
+        int64_t value1)
+{
+    size_t low = 0;
+    size_t high = count;
+    while (low < high) {
+        const size_t mid = low + (high - low) / 2;
+        const int64_t mid0 = rows[mid * 2];
+        const int64_t mid1 = rows[mid * 2 + 1];
+        if (collect_k_final_pair_compare(mid0, mid1, value0, value1) <= 0)
+            low = mid + 1;
+        else
+            high = mid;
+    }
+    return low;
+}
+
+extern "C" __global__ void collect_k_bounded_i64_row_width2_final_materialize(
+        const int64_t* first_rows,
+        size_t first_count,
+        const int64_t* second_rows,
+        size_t second_count,
+        int64_t* merged_rows)
+{
+    const size_t total = first_count + second_count;
+    const size_t index = blockIdx.x * blockDim.x + threadIdx.x;
+    if (index >= total)
+        return;
+
+    if (index < first_count) {
+        const int64_t value0 = first_rows[index * 2];
+        const int64_t value1 = first_rows[index * 2 + 1];
+        const size_t output_index =
+            index + collect_k_final_lower_bound(second_rows, second_count, value0, value1);
+        merged_rows[output_index * 2] = value0;
+        merged_rows[output_index * 2 + 1] = value1;
+        return;
+    }
+
+    const size_t second_index = index - first_count;
+    const int64_t value0 = second_rows[second_index * 2];
+    const int64_t value1 = second_rows[second_index * 2 + 1];
+    const size_t output_index =
+        second_index + collect_k_final_upper_bound(first_rows, first_count, value0, value1);
+    merged_rows[output_index * 2] = value0;
+    merged_rows[output_index * 2 + 1] = value1;
+}
+
+extern "C" __global__ void collect_k_bounded_i64_row_width2_final_materialize_counts(
+        const int64_t* first_rows,
+        const int64_t* second_rows,
+        const size_t* counts,
+        int64_t* merged_rows)
+{
+    const size_t first_count = counts[0];
+    const size_t second_count = counts[1];
+    const size_t total = first_count + second_count;
+    const size_t index = blockIdx.x * blockDim.x + threadIdx.x;
+    if (index >= total)
+        return;
+
+    if (index < first_count) {
+        const int64_t value0 = first_rows[index * 2];
+        const int64_t value1 = first_rows[index * 2 + 1];
+        const size_t output_index =
+            index + collect_k_final_lower_bound(second_rows, second_count, value0, value1);
+        merged_rows[output_index * 2] = value0;
+        merged_rows[output_index * 2 + 1] = value1;
+        return;
+    }
+
+    const size_t second_index = index - first_count;
+    const int64_t value0 = second_rows[second_index * 2];
+    const int64_t value1 = second_rows[second_index * 2 + 1];
+    const size_t output_index =
+        second_index + collect_k_final_upper_bound(first_rows, first_count, value0, value1);
+    merged_rows[output_index * 2] = value0;
+    merged_rows[output_index * 2 + 1] = value1;
+}
+
+extern "C" __global__ void collect_k_bounded_i64_row_width2_final_materialize_level(
+        const uint64_t* first_row_ptrs,
+        const size_t* first_counts,
+        const uint64_t* second_row_ptrs,
+        const size_t* second_counts,
+        size_t output_capacity,
+        int64_t* merged_rows,
+        size_t pair_count,
+        size_t blocks_per_pair)
+{
+    const size_t pair_index = blockIdx.x / blocks_per_pair;
+    if (pair_index >= pair_count)
+        return;
+    const size_t local_block = blockIdx.x - pair_index * blocks_per_pair;
+    const size_t index = local_block * blockDim.x + threadIdx.x;
+    const int64_t* first_rows =
+        reinterpret_cast<const int64_t*>(static_cast<uintptr_t>(first_row_ptrs[pair_index]));
+    const int64_t* second_rows =
+        reinterpret_cast<const int64_t*>(static_cast<uintptr_t>(second_row_ptrs[pair_index]));
+    const size_t first_count = first_counts[pair_index];
+    const size_t second_count = second_counts[pair_index];
+    const size_t total = first_count + second_count;
+    if (index >= total)
+        return;
+
+    int64_t* pair_merged_rows = merged_rows + pair_index * output_capacity * 2;
+    if (index < first_count) {
+        const int64_t value0 = first_rows[index * 2];
+        const int64_t value1 = first_rows[index * 2 + 1];
+        const size_t output_index =
+            index + collect_k_final_lower_bound(second_rows, second_count, value0, value1);
+        pair_merged_rows[output_index * 2] = value0;
+        pair_merged_rows[output_index * 2 + 1] = value1;
+        return;
+    }
+
+    const size_t second_index = index - first_count;
+    const int64_t value0 = second_rows[second_index * 2];
+    const int64_t value1 = second_rows[second_index * 2 + 1];
+    const size_t output_index =
+        second_index + collect_k_final_upper_bound(first_rows, first_count, value0, value1);
+    pair_merged_rows[output_index * 2] = value0;
+    pair_merged_rows[output_index * 2 + 1] = value1;
+}
+
+extern "C" __global__ void collect_k_bounded_i64_row_width2_final_materialize_level_counts_pointers(
+        const uint64_t* first_row_ptrs,
+        const uint64_t* second_row_ptrs,
+        const size_t* current_counts,
+        size_t output_capacity,
+        int64_t* merged_rows,
+        size_t pair_count,
+        size_t blocks_per_pair)
+{
+    const size_t pair_index = blockIdx.x / blocks_per_pair;
+    if (pair_index >= pair_count)
+        return;
+    const size_t local_block = blockIdx.x - pair_index * blocks_per_pair;
+    const size_t index = local_block * blockDim.x + threadIdx.x;
+    const int64_t* first_rows =
+        reinterpret_cast<const int64_t*>(static_cast<uintptr_t>(first_row_ptrs[pair_index]));
+    const int64_t* second_rows =
+        reinterpret_cast<const int64_t*>(static_cast<uintptr_t>(second_row_ptrs[pair_index]));
+    const size_t first_count = current_counts[pair_index * 2];
+    const size_t second_count = current_counts[pair_index * 2 + 1];
+    const size_t total = first_count + second_count;
+    if (index >= total)
+        return;
+
+    int64_t* pair_merged_rows = merged_rows + pair_index * output_capacity * 2;
+    if (index < first_count) {
+        const int64_t value0 = first_rows[index * 2];
+        const int64_t value1 = first_rows[index * 2 + 1];
+        const size_t output_index =
+            index + collect_k_final_lower_bound(second_rows, second_count, value0, value1);
+        pair_merged_rows[output_index * 2] = value0;
+        pair_merged_rows[output_index * 2 + 1] = value1;
+        return;
+    }
+
+    const size_t second_index = index - first_count;
+    const int64_t value0 = second_rows[second_index * 2];
+    const int64_t value1 = second_rows[second_index * 2 + 1];
+    const size_t output_index =
+        second_index + collect_k_final_upper_bound(first_rows, first_count, value0, value1);
+    pair_merged_rows[output_index * 2] = value0;
+    pair_merged_rows[output_index * 2 + 1] = value1;
+}
+
+extern "C" __global__ void collect_k_bounded_i64_row_width2_final_materialize_level_derived(
+        const int64_t* current_base,
+        const size_t* first_counts,
+        const size_t* second_counts,
+        size_t segment_capacity,
+        size_t output_capacity,
+        int64_t* merged_rows,
+        size_t pair_count,
+        size_t blocks_per_pair)
+{
+    const size_t pair_index = blockIdx.x / blocks_per_pair;
+    if (pair_index >= pair_count)
+        return;
+    const size_t local_block = blockIdx.x - pair_index * blocks_per_pair;
+    const size_t index = local_block * blockDim.x + threadIdx.x;
+    const int64_t* first_rows = current_base + (pair_index * 2) * segment_capacity * 2;
+    const int64_t* second_rows = current_base + (pair_index * 2 + 1) * segment_capacity * 2;
+    const size_t first_count = first_counts[pair_index];
+    const size_t second_count = second_counts[pair_index];
+    const size_t total = first_count + second_count;
+    if (index >= total)
+        return;
+
+    int64_t* pair_merged_rows = merged_rows + pair_index * output_capacity * 2;
+    if (index < first_count) {
+        const int64_t value0 = first_rows[index * 2];
+        const int64_t value1 = first_rows[index * 2 + 1];
+        const size_t output_index =
+            index + collect_k_final_lower_bound(second_rows, second_count, value0, value1);
+        pair_merged_rows[output_index * 2] = value0;
+        pair_merged_rows[output_index * 2 + 1] = value1;
+        return;
+    }
+
+    const size_t second_index = index - first_count;
+    const int64_t value0 = second_rows[second_index * 2];
+    const int64_t value1 = second_rows[second_index * 2 + 1];
+    const size_t output_index =
+        second_index + collect_k_final_upper_bound(first_rows, first_count, value0, value1);
+    pair_merged_rows[output_index * 2] = value0;
+    pair_merged_rows[output_index * 2 + 1] = value1;
+}
+
+extern "C" __global__ void collect_k_bounded_i64_row_width2_final_materialize_level_counts_derived(
+        const int64_t* current_base,
+        const size_t* current_counts,
+        size_t segment_capacity,
+        size_t output_capacity,
+        int64_t* merged_rows,
+        size_t pair_count,
+        size_t blocks_per_pair)
+{
+    const size_t pair_index = blockIdx.x / blocks_per_pair;
+    if (pair_index >= pair_count)
+        return;
+    const size_t local_block = blockIdx.x - pair_index * blocks_per_pair;
+    const size_t index = local_block * blockDim.x + threadIdx.x;
+    const int64_t* first_rows = current_base + (pair_index * 2) * segment_capacity * 2;
+    const int64_t* second_rows = current_base + (pair_index * 2 + 1) * segment_capacity * 2;
+    const size_t first_count = current_counts[pair_index * 2];
+    const size_t second_count = current_counts[pair_index * 2 + 1];
+    const size_t total = first_count + second_count;
+    if (index >= total)
+        return;
+
+    int64_t* pair_merged_rows = merged_rows + pair_index * output_capacity * 2;
+    if (index < first_count) {
+        const int64_t value0 = first_rows[index * 2];
+        const int64_t value1 = first_rows[index * 2 + 1];
+        const size_t output_index =
+            index + collect_k_final_lower_bound(second_rows, second_count, value0, value1);
+        pair_merged_rows[output_index * 2] = value0;
+        pair_merged_rows[output_index * 2 + 1] = value1;
+        return;
+    }
+
+    const size_t second_index = index - first_count;
+    const int64_t value0 = second_rows[second_index * 2];
+    const int64_t value1 = second_rows[second_index * 2 + 1];
+    const size_t output_index =
+        second_index + collect_k_final_upper_bound(first_rows, first_count, value0, value1);
+    pair_merged_rows[output_index * 2] = value0;
+    pair_merged_rows[output_index * 2 + 1] = value1;
+}
+
+extern "C" __global__ void collect_k_bounded_i64_row_width2_final_mark_counts(
+        const int64_t* merged_rows,
+        size_t total_count,
+        uint32_t* marks,
+        uint32_t* block_counts)
+{
+    extern __shared__ uint32_t shared_counts[];
+    const size_t index = blockIdx.x * blockDim.x + threadIdx.x;
+    uint32_t mark = 0;
+    if (index < total_count) {
+        if (index == 0) {
+            mark = 1;
+        } else {
+            const int64_t value0 = merged_rows[index * 2];
+            const int64_t value1 = merged_rows[index * 2 + 1];
+            const int64_t prev0 = merged_rows[(index - 1) * 2];
+            const int64_t prev1 = merged_rows[(index - 1) * 2 + 1];
+            mark = (value0 != prev0 || value1 != prev1) ? 1u : 0u;
+        }
+        marks[index] = mark;
+    }
+    shared_counts[threadIdx.x] = mark;
+    __syncthreads();
+
+    for (unsigned stride = blockDim.x / 2; stride > 0; stride >>= 1) {
+        if (threadIdx.x < stride)
+            shared_counts[threadIdx.x] += shared_counts[threadIdx.x + stride];
+        __syncthreads();
+    }
+    if (threadIdx.x == 0)
+        block_counts[blockIdx.x] = shared_counts[0];
+}
+
+extern "C" __global__ void collect_k_bounded_i64_row_width2_final_mark_counts_counts(
+        const int64_t* merged_rows,
+        const size_t* counts,
+        uint32_t* marks,
+        uint32_t* block_counts)
+{
+    extern __shared__ uint32_t shared_counts[];
+    const size_t total_count = counts[0] + counts[1];
+    const size_t index = blockIdx.x * blockDim.x + threadIdx.x;
+    uint32_t mark = 0;
+    if (index < total_count) {
+        if (index == 0) {
+            mark = 1;
+        } else {
+            const int64_t value0 = merged_rows[index * 2];
+            const int64_t value1 = merged_rows[index * 2 + 1];
+            const int64_t prev0 = merged_rows[(index - 1) * 2];
+            const int64_t prev1 = merged_rows[(index - 1) * 2 + 1];
+            mark = (value0 != prev0 || value1 != prev1) ? 1u : 0u;
+        }
+        marks[index] = mark;
+    }
+    shared_counts[threadIdx.x] = mark;
+    __syncthreads();
+
+    for (unsigned stride = blockDim.x / 2; stride > 0; stride >>= 1) {
+        if (threadIdx.x < stride)
+            shared_counts[threadIdx.x] += shared_counts[threadIdx.x + stride];
+        __syncthreads();
+    }
+    if (threadIdx.x == 0)
+        block_counts[blockIdx.x] = shared_counts[0];
+}
+
+extern "C" __global__ void collect_k_bounded_i64_row_width2_final_mark_counts_level(
+        const int64_t* merged_rows,
+        const size_t* first_counts,
+        const size_t* second_counts,
+        size_t output_capacity,
+        size_t pair_count,
+        uint32_t* marks,
+        uint32_t* block_counts,
+        size_t blocks_per_pair)
+{
+    extern __shared__ uint32_t shared_counts[];
+    const size_t pair_index = blockIdx.x / blocks_per_pair;
+    const size_t local_block = blockIdx.x - pair_index * blocks_per_pair;
+    const size_t local_index = local_block * blockDim.x + threadIdx.x;
+    uint32_t mark = 0;
+    if (pair_index < pair_count) {
+        const size_t total = first_counts[pair_index] + second_counts[pair_index];
+        if (local_index < total) {
+            const int64_t* pair_merged_rows = merged_rows + pair_index * output_capacity * 2;
+            if (local_index == 0) {
+                mark = 1;
+            } else {
+                const int64_t value0 = pair_merged_rows[local_index * 2];
+                const int64_t value1 = pair_merged_rows[local_index * 2 + 1];
+                const int64_t prev0 = pair_merged_rows[(local_index - 1) * 2];
+                const int64_t prev1 = pair_merged_rows[(local_index - 1) * 2 + 1];
+                mark = (value0 != prev0 || value1 != prev1) ? 1u : 0u;
+            }
+        }
+    }
+
+    const size_t global_index = blockIdx.x * blockDim.x + threadIdx.x;
+    marks[global_index] = mark;
+    shared_counts[threadIdx.x] = mark;
+    __syncthreads();
+    for (unsigned stride = blockDim.x / 2; stride > 0; stride >>= 1) {
+        if (threadIdx.x < stride)
+            shared_counts[threadIdx.x] += shared_counts[threadIdx.x + stride];
+        __syncthreads();
+    }
+    if (threadIdx.x == 0)
+        block_counts[blockIdx.x] = shared_counts[0];
+}
+
+extern "C" __global__ void collect_k_bounded_i64_row_width2_final_mark_counts_level_counts(
+        const int64_t* merged_rows,
+        const size_t* current_counts,
+        size_t output_capacity,
+        size_t pair_count,
+        uint32_t* marks,
+        uint32_t* block_counts,
+        size_t blocks_per_pair)
+{
+    extern __shared__ uint32_t shared_counts[];
+    const size_t pair_index = blockIdx.x / blocks_per_pair;
+    const size_t local_block = blockIdx.x - pair_index * blocks_per_pair;
+    const size_t local_index = local_block * blockDim.x + threadIdx.x;
+    uint32_t mark = 0;
+    if (pair_index < pair_count) {
+        const size_t total = current_counts[pair_index * 2] + current_counts[pair_index * 2 + 1];
+        if (local_index < total) {
+            const int64_t* pair_merged_rows = merged_rows + pair_index * output_capacity * 2;
+            if (local_index == 0) {
+                mark = 1;
+            } else {
+                const int64_t value0 = pair_merged_rows[local_index * 2];
+                const int64_t value1 = pair_merged_rows[local_index * 2 + 1];
+                const int64_t prev0 = pair_merged_rows[(local_index - 1) * 2];
+                const int64_t prev1 = pair_merged_rows[(local_index - 1) * 2 + 1];
+                mark = (value0 != prev0 || value1 != prev1) ? 1u : 0u;
+            }
+        }
+    }
+
+    const size_t global_index = blockIdx.x * blockDim.x + threadIdx.x;
+    marks[global_index] = mark;
+    shared_counts[threadIdx.x] = mark;
+    __syncthreads();
+    for (unsigned stride = blockDim.x / 2; stride > 0; stride >>= 1) {
+        if (threadIdx.x < stride)
+            shared_counts[threadIdx.x] += shared_counts[threadIdx.x + stride];
+        __syncthreads();
+    }
+    if (threadIdx.x == 0)
+        block_counts[blockIdx.x] = shared_counts[0];
+}
+
+extern "C" __global__ void collect_k_bounded_i64_row_width2_final_mark_counts_level_counts_pointers(
+        const int64_t* merged_rows,
+        const size_t* current_counts,
+        size_t output_capacity,
+        size_t pair_count,
+        uint32_t* marks,
+        uint32_t* block_counts,
+        size_t blocks_per_pair)
+{
+    extern __shared__ uint32_t shared_counts[];
+    const size_t pair_index = blockIdx.x / blocks_per_pair;
+    const size_t local_block = blockIdx.x - pair_index * blocks_per_pair;
+    const size_t local_index = local_block * blockDim.x + threadIdx.x;
+    uint32_t mark = 0;
+    if (pair_index < pair_count) {
+        const size_t total = current_counts[pair_index * 2] + current_counts[pair_index * 2 + 1];
+        if (local_index < total) {
+            const int64_t* pair_merged_rows = merged_rows + pair_index * output_capacity * 2;
+            if (local_index == 0) {
+                mark = 1;
+            } else {
+                const int64_t value0 = pair_merged_rows[local_index * 2];
+                const int64_t value1 = pair_merged_rows[local_index * 2 + 1];
+                const int64_t prev0 = pair_merged_rows[(local_index - 1) * 2];
+                const int64_t prev1 = pair_merged_rows[(local_index - 1) * 2 + 1];
+                mark = (value0 != prev0 || value1 != prev1) ? 1u : 0u;
+            }
+        }
+    }
+
+    const size_t global_index = blockIdx.x * blockDim.x + threadIdx.x;
+    marks[global_index] = mark;
+    shared_counts[threadIdx.x] = mark;
+    __syncthreads();
+    for (unsigned stride = blockDim.x / 2; stride > 0; stride >>= 1) {
+        if (threadIdx.x < stride)
+            shared_counts[threadIdx.x] += shared_counts[threadIdx.x + stride];
+        __syncthreads();
+    }
+    if (threadIdx.x == 0)
+        block_counts[blockIdx.x] = shared_counts[0];
+}
+
+extern "C" __global__ void collect_k_bounded_i64_row_width2_final_materialize_mark_counts_level_counts(
+        const int64_t* current_base,
+        const size_t* current_counts,
+        size_t segment_capacity,
+        size_t output_capacity,
+        int64_t* merged_rows,
+        size_t pair_count,
+        uint32_t* marks,
+        uint32_t* block_counts,
+        size_t blocks_per_pair)
+{
+    const size_t pair_index = blockIdx.x / blocks_per_pair;
+    if (pair_index >= pair_count)
+        return;
+
+    const size_t local_block = blockIdx.x - pair_index * blocks_per_pair;
+    const size_t index = local_block * blockDim.x + threadIdx.x;
+    const int64_t* first_rows = current_base + (pair_index * 2) * segment_capacity * 2;
+    const int64_t* second_rows = current_base + (pair_index * 2 + 1) * segment_capacity * 2;
+    const size_t first_count = current_counts[pair_index * 2];
+    const size_t second_count = current_counts[pair_index * 2 + 1];
+    const size_t total = first_count + second_count;
+    if (index >= total)
+        return;
+
+    int64_t value0 = 0;
+    int64_t value1 = 0;
+    int64_t prev0 = 0;
+    int64_t prev1 = 0;
+    bool has_prev = false;
+    size_t output_index = 0;
+
+    if (index < first_count) {
+        value0 = first_rows[index * 2];
+        value1 = first_rows[index * 2 + 1];
+        const size_t less_second = collect_k_final_lower_bound(second_rows, second_count, value0, value1);
+        output_index = index + less_second;
+
+        if (index > 0) {
+            prev0 = first_rows[(index - 1) * 2];
+            prev1 = first_rows[(index - 1) * 2 + 1];
+            has_prev = true;
+        }
+        if (less_second > 0) {
+            const int64_t candidate0 = second_rows[(less_second - 1) * 2];
+            const int64_t candidate1 = second_rows[(less_second - 1) * 2 + 1];
+            if (!has_prev || collect_k_final_pair_compare(prev0, prev1, candidate0, candidate1) < 0) {
+                prev0 = candidate0;
+                prev1 = candidate1;
+                has_prev = true;
+            }
+        }
+    } else {
+        const size_t second_index = index - first_count;
+        value0 = second_rows[second_index * 2];
+        value1 = second_rows[second_index * 2 + 1];
+        const size_t le_first = collect_k_final_upper_bound(first_rows, first_count, value0, value1);
+        output_index = second_index + le_first;
+
+        if (second_index > 0) {
+            prev0 = second_rows[(second_index - 1) * 2];
+            prev1 = second_rows[(second_index - 1) * 2 + 1];
+            has_prev = true;
+        }
+        if (le_first > 0) {
+            const int64_t candidate0 = first_rows[(le_first - 1) * 2];
+            const int64_t candidate1 = first_rows[(le_first - 1) * 2 + 1];
+            if (!has_prev || collect_k_final_pair_compare(prev0, prev1, candidate0, candidate1) < 0) {
+                prev0 = candidate0;
+                prev1 = candidate1;
+                has_prev = true;
+            }
+        }
+    }
+
+    if (output_index >= output_capacity)
+        return;
+
+    int64_t* pair_merged_rows = merged_rows + pair_index * output_capacity * 2;
+    pair_merged_rows[output_index * 2] = value0;
+    pair_merged_rows[output_index * 2 + 1] = value1;
+
+    const uint32_t mark =
+        (!has_prev || value0 != prev0 || value1 != prev1) ? 1u : 0u;
+    const size_t output_block = output_index / blockDim.x;
+    const size_t global_output_index =
+        (pair_index * blocks_per_pair + output_block) * blockDim.x + (output_index % blockDim.x);
+    marks[global_output_index] = mark;
+    if (mark)
+        atomicAdd(&block_counts[pair_index * blocks_per_pair + output_block], 1u);
+}
+
+__device__ size_t collect_k_final_stable_partition(
+        const int64_t* first_rows,
+        size_t first_count,
+        const int64_t* second_rows,
+        size_t second_count,
+        size_t output_index)
+{
+    size_t low = output_index > second_count ? output_index - second_count : 0;
+    size_t high = output_index < first_count ? output_index : first_count;
+    while (low <= high) {
+        const size_t first_take = low + (high - low) / 2;
+        const size_t second_take = output_index - first_take;
+        const bool too_many_first =
+            first_take > 0 && second_take < second_count &&
+            collect_k_final_pair_compare(
+                first_rows[(first_take - 1) * 2],
+                first_rows[(first_take - 1) * 2 + 1],
+                second_rows[second_take * 2],
+                second_rows[second_take * 2 + 1]) > 0;
+        const bool too_few_first =
+            second_take > 0 && first_take < first_count &&
+            collect_k_final_pair_compare(
+                second_rows[(second_take - 1) * 2],
+                second_rows[(second_take - 1) * 2 + 1],
+                first_rows[first_take * 2],
+                first_rows[first_take * 2 + 1]) >= 0;
+        if (too_many_first) {
+            if (first_take == 0)
+                return 0;
+            high = first_take - 1;
+        } else if (too_few_first) {
+            low = first_take + 1;
+        } else {
+            return first_take;
+        }
+    }
+    return low;
+}
+
+__device__ void collect_k_final_select_stable_output(
+        const int64_t* first_rows,
+        size_t first_count,
+        const int64_t* second_rows,
+        size_t second_count,
+        size_t output_index,
+        int64_t* value0,
+        int64_t* value1)
+{
+    const size_t first_take =
+        collect_k_final_stable_partition(first_rows, first_count, second_rows, second_count, output_index);
+    const size_t second_take = output_index - first_take;
+    if (first_take < first_count &&
+        (second_take >= second_count ||
+         collect_k_final_pair_compare(
+             first_rows[first_take * 2],
+             first_rows[first_take * 2 + 1],
+             second_rows[second_take * 2],
+             second_rows[second_take * 2 + 1]) <= 0)) {
+        *value0 = first_rows[first_take * 2];
+        *value1 = first_rows[first_take * 2 + 1];
+        return;
+    }
+    *value0 = second_rows[second_take * 2];
+    *value1 = second_rows[second_take * 2 + 1];
+}
+
+extern "C" __global__ void collect_k_bounded_i64_row_width2_final_output_indexed_materialize_mark_counts_level_counts(
+        const int64_t* current_base,
+        const size_t* current_counts,
+        size_t segment_capacity,
+        size_t output_capacity,
+        int64_t* merged_rows,
+        size_t pair_count,
+        uint32_t* marks,
+        uint32_t* block_counts,
+        size_t blocks_per_pair)
+{
+    extern __shared__ uint32_t shared_counts[];
+    const size_t pair_index = blockIdx.x / blocks_per_pair;
+    const size_t local_block = blockIdx.x - pair_index * blocks_per_pair;
+    const size_t local_index = local_block * blockDim.x + threadIdx.x;
+    uint32_t mark = 0;
+
+    if (pair_index < pair_count) {
+        const int64_t* first_rows = current_base + (pair_index * 2) * segment_capacity * 2;
+        const int64_t* second_rows = current_base + (pair_index * 2 + 1) * segment_capacity * 2;
+        const size_t first_count = current_counts[pair_index * 2];
+        const size_t second_count = current_counts[pair_index * 2 + 1];
+        const size_t total = first_count + second_count;
+        if (local_index < total && local_index < output_capacity) {
+            int64_t value0 = 0;
+            int64_t value1 = 0;
+            collect_k_final_select_stable_output(
+                first_rows, first_count, second_rows, second_count, local_index, &value0, &value1);
+            int64_t* pair_merged_rows = merged_rows + pair_index * output_capacity * 2;
+            pair_merged_rows[local_index * 2] = value0;
+            pair_merged_rows[local_index * 2 + 1] = value1;
+            if (local_index == 0) {
+                mark = 1;
+            } else {
+                int64_t prev0 = 0;
+                int64_t prev1 = 0;
+                collect_k_final_select_stable_output(
+                    first_rows, first_count, second_rows, second_count, local_index - 1, &prev0, &prev1);
+                mark = (value0 != prev0 || value1 != prev1) ? 1u : 0u;
+            }
+        }
+    }
+
+    const size_t global_index = blockIdx.x * blockDim.x + threadIdx.x;
+    marks[global_index] = mark;
+    shared_counts[threadIdx.x] = mark;
+    __syncthreads();
+    for (unsigned stride = blockDim.x / 2; stride > 0; stride >>= 1) {
+        if (threadIdx.x < stride)
+            shared_counts[threadIdx.x] += shared_counts[threadIdx.x + stride];
+        __syncthreads();
+    }
+    if (threadIdx.x == 0)
+        block_counts[blockIdx.x] = shared_counts[0];
+}
+
+extern "C" __global__ void collect_k_bounded_i64_row_width2_four_way_materialize_mark_counts_derived(
+        const int64_t* current_base,
+        const size_t* current_counts,
+        size_t segment_capacity,
+        size_t output_capacity,
+        int64_t* merged_rows,
+        size_t group_count,
+        uint32_t* marks,
+        uint32_t* block_counts,
+        size_t blocks_per_group)
+{
+    const size_t group_index = blockIdx.x / blocks_per_group;
+    if (group_index >= group_count)
+        return;
+
+    const size_t local_block = blockIdx.x - group_index * blocks_per_group;
+    const size_t raw_index = local_block * blockDim.x + threadIdx.x;
+    const size_t segment_slot = raw_index / segment_capacity;
+    if (segment_slot >= 4)
+        return;
+
+    const size_t local_index = raw_index - segment_slot * segment_capacity;
+    const size_t segment_base = group_index * 4;
+    const size_t own_count = current_counts[segment_base + segment_slot];
+    if (local_index >= own_count)
+        return;
+
+    const int64_t* own_rows =
+        current_base + (segment_base + segment_slot) * segment_capacity * 2;
+    const int64_t value0 = own_rows[local_index * 2];
+    const int64_t value1 = own_rows[local_index * 2 + 1];
+
+    size_t output_index = local_index;
+    bool has_prior_duplicate = false;
+    if (local_index > 0) {
+        const int64_t prev0 = own_rows[(local_index - 1) * 2];
+        const int64_t prev1 = own_rows[(local_index - 1) * 2 + 1];
+        has_prior_duplicate = (prev0 == value0 && prev1 == value1);
+    }
+
+    for (size_t peer_slot = 0; peer_slot < 4; ++peer_slot) {
+        if (peer_slot == segment_slot)
+            continue;
+        const int64_t* peer_rows =
+            current_base + (segment_base + peer_slot) * segment_capacity * 2;
+        const size_t peer_count = current_counts[segment_base + peer_slot];
+        const size_t lower =
+            collect_k_final_lower_bound(peer_rows, peer_count, value0, value1);
+        const size_t upper =
+            collect_k_final_upper_bound(peer_rows, peer_count, value0, value1);
+        output_index += peer_slot < segment_slot ? upper : lower;
+        if (peer_slot < segment_slot && lower < upper)
+            has_prior_duplicate = true;
+    }
+
+    if (output_index >= output_capacity)
+        return;
+
+    int64_t* group_merged_rows =
+        merged_rows + group_index * output_capacity * 2;
+    group_merged_rows[output_index * 2] = value0;
+    group_merged_rows[output_index * 2 + 1] = value1;
+
+    const uint32_t mark = has_prior_duplicate ? 0u : 1u;
+    const size_t output_block = output_index / blockDim.x;
+    const size_t global_output_index =
+        (group_index * blocks_per_group + output_block) * blockDim.x + (output_index % blockDim.x);
+    marks[global_output_index] = mark;
+    if (mark)
+        atomicAdd(&block_counts[group_index * blocks_per_group + output_block], 1u);
+}
+
+extern "C" __global__ void collect_k_bounded_i64_row_width2_final_compact(
+        const int64_t* merged_rows,
+        const uint32_t* marks,
+        const uint32_t* block_offsets,
+        size_t total_count,
+        int64_t* rows_out,
+        size_t row_capacity)
+{
+    extern __shared__ uint32_t shared_marks[];
+    const size_t index = blockIdx.x * blockDim.x + threadIdx.x;
+    const uint32_t mark = index < total_count ? marks[index] : 0u;
+    shared_marks[threadIdx.x] = mark;
+    __syncthreads();
+
+    for (unsigned offset = 1; offset < blockDim.x; offset <<= 1) {
+        const uint32_t value = threadIdx.x >= offset ? shared_marks[threadIdx.x - offset] : 0u;
+        __syncthreads();
+        shared_marks[threadIdx.x] += value;
+        __syncthreads();
+    }
+
+    if (index < total_count && mark) {
+        const size_t output_index =
+            static_cast<size_t>(block_offsets[blockIdx.x]) + shared_marks[threadIdx.x] - 1u;
+        if (output_index < row_capacity) {
+            rows_out[output_index * 2] = merged_rows[index * 2];
+            rows_out[output_index * 2 + 1] = merged_rows[index * 2 + 1];
+        }
+    }
+}
+
+extern "C" __global__ void collect_k_bounded_i64_row_width2_final_compact_counts(
+        const int64_t* merged_rows,
+        const uint32_t* marks,
+        const uint32_t* block_offsets,
+        const size_t* counts,
+        int64_t* rows_out,
+        size_t row_capacity)
+{
+    extern __shared__ uint32_t shared_marks[];
+    const size_t total_count = counts[0] + counts[1];
+    const size_t index = blockIdx.x * blockDim.x + threadIdx.x;
+    const uint32_t mark = index < total_count ? marks[index] : 0u;
+    shared_marks[threadIdx.x] = mark;
+    __syncthreads();
+
+    for (unsigned offset = 1; offset < blockDim.x; offset <<= 1) {
+        const uint32_t value = threadIdx.x >= offset ? shared_marks[threadIdx.x - offset] : 0u;
+        __syncthreads();
+        shared_marks[threadIdx.x] += value;
+        __syncthreads();
+    }
+
+    if (index < total_count && mark) {
+        const size_t output_index =
+            static_cast<size_t>(block_offsets[blockIdx.x]) + shared_marks[threadIdx.x] - 1u;
+        if (output_index < row_capacity) {
+            rows_out[output_index * 2] = merged_rows[index * 2];
+            rows_out[output_index * 2 + 1] = merged_rows[index * 2 + 1];
+        }
+    }
+}
+
+extern "C" __global__ void collect_k_bounded_i64_row_width2_final_compact_level(
+        const int64_t* merged_rows,
+        const uint32_t* marks,
+        const uint32_t* block_offsets,
+        const uint32_t* pair_offsets,
+        const uint64_t* output_row_ptrs,
+        size_t output_capacity,
+        size_t pair_count,
+        size_t blocks_per_pair)
+{
+    extern __shared__ uint32_t shared_marks[];
+    const size_t pair_index = blockIdx.x / blocks_per_pair;
+    if (pair_index >= pair_count)
+        return;
+    const size_t local_block = blockIdx.x - pair_index * blocks_per_pair;
+    const size_t local_index = local_block * blockDim.x + threadIdx.x;
+    if (local_index >= output_capacity)
+        return;
+
+    const size_t global_index = blockIdx.x * blockDim.x + threadIdx.x;
+    const uint32_t mark = marks[global_index];
+    shared_marks[threadIdx.x] = mark;
+    __syncthreads();
+    for (unsigned offset = 1; offset < blockDim.x; offset <<= 1) {
+        const uint32_t value = threadIdx.x >= offset ? shared_marks[threadIdx.x - offset] : 0u;
+        __syncthreads();
+        shared_marks[threadIdx.x] += value;
+        __syncthreads();
+    }
+
+    if (mark) {
+        const size_t output_index =
+            static_cast<size_t>(block_offsets[blockIdx.x] + shared_marks[threadIdx.x] - 1u - pair_offsets[pair_index]);
+        int64_t* rows_out =
+            reinterpret_cast<int64_t*>(static_cast<uintptr_t>(output_row_ptrs[pair_index]));
+        const int64_t* pair_merged_rows = merged_rows + pair_index * output_capacity * 2;
+        rows_out[output_index * 2] = pair_merged_rows[local_index * 2];
+        rows_out[output_index * 2 + 1] = pair_merged_rows[local_index * 2 + 1];
+    }
+}
+
+extern "C" __global__ void collect_k_bounded_i64_row_width2_final_compact_level_derived(
+        const int64_t* merged_rows,
+        const uint32_t* marks,
+        const uint32_t* block_offsets,
+        const uint32_t* pair_offsets,
+        int64_t* output_base,
+        size_t output_capacity,
+        size_t pair_count,
+        size_t blocks_per_pair)
+{
+    extern __shared__ uint32_t shared_marks[];
+    const size_t pair_index = blockIdx.x / blocks_per_pair;
+    if (pair_index >= pair_count)
+        return;
+    const size_t local_block = blockIdx.x - pair_index * blocks_per_pair;
+    const size_t local_index = local_block * blockDim.x + threadIdx.x;
+    if (local_index >= output_capacity)
+        return;
+
+    const size_t global_index = blockIdx.x * blockDim.x + threadIdx.x;
+    const uint32_t mark = marks[global_index];
+    shared_marks[threadIdx.x] = mark;
+    __syncthreads();
+    for (unsigned offset = 1; offset < blockDim.x; offset <<= 1) {
+        const uint32_t value = threadIdx.x >= offset ? shared_marks[threadIdx.x - offset] : 0u;
+        __syncthreads();
+        shared_marks[threadIdx.x] += value;
+        __syncthreads();
+    }
+
+    if (mark) {
+        const size_t output_index =
+            static_cast<size_t>(block_offsets[blockIdx.x] + shared_marks[threadIdx.x] - 1u - pair_offsets[pair_index]);
+        int64_t* rows_out = output_base + pair_index * output_capacity * 2;
+        const int64_t* pair_merged_rows = merged_rows + pair_index * output_capacity * 2;
+        rows_out[output_index * 2] = pair_merged_rows[local_index * 2];
+        rows_out[output_index * 2 + 1] = pair_merged_rows[local_index * 2 + 1];
+    }
+}
+
+extern "C" __global__ void collect_k_bounded_i64_row_width2_final_prefix_offsets_level(
+        const uint32_t* block_counts,
+        size_t pair_count,
+        size_t blocks_per_pair,
+        uint32_t* block_offsets,
+        uint32_t* pair_offsets,
+        size_t* pair_counts)
+{
+    const size_t pair_index = blockIdx.x;
+    if (pair_index >= pair_count || threadIdx.x != 0)
+        return;
+
+    uint32_t running_total = 0;
+    for (size_t block_index = 0; block_index < blocks_per_pair; ++block_index) {
+        const size_t global_block = pair_index * blocks_per_pair + block_index;
+        block_offsets[global_block] = running_total;
+        running_total += block_counts[global_block];
+    }
+    // Offsets are local to each pair in this path; the existing compact kernel
+    // subtracts pair_offsets[pair_index], so keep the pair base at zero.
+    pair_offsets[pair_index] = 0;
+    pair_counts[pair_index] = static_cast<size_t>(running_total);
+}
+)CUDA";
+
+static const char* kFixedRadiusNeighbors3DKernelSrc = R"CUDA(
+#include <stdint.h>
+#include <math.h>
+#include <float.h>
+
+struct GpuPoint3D { float x, y, z; uint32_t id; };
+struct FrnRecord { uint32_t query_id, neighbor_id; float distance; };
+
+extern "C" __global__ void fixed_radius_neighbors_3d(
+        const GpuPoint3D* query_points,
+        uint32_t          query_count,
+        const GpuPoint3D* search_points,
+        uint32_t          search_count,
+        float             radius,
+        uint32_t          k_max,
+        FrnRecord*        output)
+{
+    const uint32_t qidx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (qidx >= query_count) return;
+
+    FrnRecord* query_out = output + static_cast<size_t>(qidx) * static_cast<size_t>(k_max);
+    for (uint32_t slot = 0; slot < k_max; ++slot) {
+        query_out[slot].query_id = query_points[qidx].id;
+        query_out[slot].neighbor_id = 0xffffffffu;
+        query_out[slot].distance = INFINITY;
+    }
+
+    const float px = query_points[qidx].x;
+    const float py = query_points[qidx].y;
+    const float pz = query_points[qidx].z;
+    const float radius_sq = radius * radius;
+
+    for (uint32_t sidx = 0; sidx < search_count; ++sidx) {
+        const float dx = search_points[sidx].x - px;
+        const float dy = search_points[sidx].y - py;
+        const float dz = search_points[sidx].z - pz;
+        const float distance_sq = dx * dx + dy * dy + dz * dz;
+        if (distance_sq > radius_sq) {
+            continue;
+        }
+        const float distance = sqrtf(distance_sq);
+        const uint32_t neighbor_id = search_points[sidx].id;
+
+        uint32_t insert_at = k_max;
+        for (uint32_t slot = 0; slot < k_max; ++slot) {
+            const bool empty = query_out[slot].neighbor_id == 0xffffffffu;
+            const bool better_distance = distance < query_out[slot].distance - 1.0e-7f;
+            const bool same_distance = fabsf(distance - query_out[slot].distance) <= 1.0e-7f;
+            const bool better_id = same_distance && neighbor_id < query_out[slot].neighbor_id;
+            if (empty || better_distance || better_id) {
+                insert_at = slot;
+                break;
+            }
+        }
+        if (insert_at == k_max) {
+            continue;
+        }
+        for (uint32_t slot = k_max - 1; slot > insert_at; --slot) {
+            query_out[slot] = query_out[slot - 1];
+        }
+        query_out[insert_at].query_id = query_points[qidx].id;
+        query_out[insert_at].neighbor_id = neighbor_id;
+        query_out[insert_at].distance = distance;
+    }
+}
+)CUDA";
+
+static const char* kFixedRadiusNeighbors3DRtKernelSrc = R"CUDA(
+#include <optix_device.h>
+#include <stdint.h>
+#include <math.h>
+#include <float.h>
+
+typedef unsigned int uint32_t;
+
+struct GpuPoint3D { float x, y, z; uint32_t id; };
+struct FrnRecord { uint32_t query_id, neighbor_id; float distance; };
+
+struct FixedRadiusNeighbors3DRtParams {
+    OptixTraversableHandle traversable;
+    const GpuPoint3D* query_points;
+    const GpuPoint3D* search_points;
+    FrnRecord* output;
+    uint32_t query_count;
+    uint32_t k_max;
+    uint32_t minimum_boundary_mode;
+    uint32_t maximum_boundary_mode;
+    float minimum_distance;
+    float maximum_distance;
+    float trace_tmax;
+};
+
+extern "C" {
+__constant__ FixedRadiusNeighbors3DRtParams params;
+}
+
+extern "C" __global__ void __raygen__frn3d_probe() {
+    const uint32_t qidx = optixGetLaunchIndex().x;
+    if (qidx >= params.query_count) return;
+
+    const GpuPoint3D q = params.query_points[qidx];
+    FrnRecord* query_out = params.output + static_cast<unsigned long long>(qidx) * static_cast<unsigned long long>(params.k_max);
+    for (uint32_t slot = 0; slot < params.k_max; ++slot) {
+        query_out[slot].query_id = q.id;
+        query_out[slot].neighbor_id = 0xffffffffu;
+        query_out[slot].distance = INFINITY;
+    }
+
+    unsigned int p0 = qidx;
+    optixTrace(params.traversable,
+               make_float3(q.x, q.y, q.z),
+               make_float3(1.0f, 0.0f, 0.0f),
+               0.0f, params.trace_tmax, 0.0f,
+               OptixVisibilityMask(255),
+               OPTIX_RAY_FLAG_NONE,
+               0, 1, 0,
+               p0);
+}
+
+extern "C" __global__ void __miss__frn3d_miss() {}
+
+extern "C" __global__ void __intersection__frn3d_isect() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t qidx = optixGetPayload_0();
+    const GpuPoint3D q = params.query_points[qidx];
+    const GpuPoint3D t = params.search_points[prim];
+    const double dx = static_cast<double>(t.x) - static_cast<double>(q.x);
+    const double dy = static_cast<double>(t.y) - static_cast<double>(q.y);
+    const double dz = static_cast<double>(t.z) - static_cast<double>(q.z);
+    const float distance = static_cast<float>(sqrt(dx * dx + dy * dy + dz * dz));
+    const bool above_minimum = params.minimum_boundary_mode != 0u
+        ? distance > params.minimum_distance
+        : distance >= params.minimum_distance;
+    const bool below_maximum = params.maximum_boundary_mode != 0u
+        ? distance < params.maximum_distance
+        : distance <= params.maximum_distance;
+    if (!above_minimum || !below_maximum) {
+        return;
+    }
+    optixReportIntersection(params.maximum_distance, 0u);
+}
+
+static __forceinline__ __device__ uint32_t canonical_float_key(float value) {
+    if (value == 0.0f) value = 0.0f;
+    const uint32_t bits = __float_as_uint(value);
+    return (bits & 0x80000000u) != 0u ? ~bits : (bits ^ 0x80000000u);
+}
+
+extern "C" __global__ void __anyhit__frn3d_anyhit() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t qidx = optixGetPayload_0();
+    const GpuPoint3D q = params.query_points[qidx];
+    const GpuPoint3D t = params.search_points[prim];
+    const double dx = static_cast<double>(t.x) - static_cast<double>(q.x);
+    const double dy = static_cast<double>(t.y) - static_cast<double>(q.y);
+    const double dz = static_cast<double>(t.z) - static_cast<double>(q.z);
+    const float distance = static_cast<float>(sqrt(dx * dx + dy * dy + dz * dz));
+    FrnRecord* query_out = params.output + static_cast<unsigned long long>(qidx) * static_cast<unsigned long long>(params.k_max);
+
+    uint32_t insert_at = params.k_max;
+    for (uint32_t slot = 0; slot < params.k_max; ++slot) {
+        const bool empty = query_out[slot].neighbor_id == 0xffffffffu;
+        const uint32_t distance_key = canonical_float_key(distance);
+        const uint32_t incumbent_key = canonical_float_key(query_out[slot].distance);
+        const bool better_distance = distance_key < incumbent_key;
+        const bool same_distance = distance_key == incumbent_key;
+        const bool better_id = same_distance && t.id < query_out[slot].neighbor_id;
+        if (empty || better_distance || better_id) {
+            insert_at = slot;
+            break;
+        }
+    }
+    if (insert_at < params.k_max) {
+        for (uint32_t slot = params.k_max - 1u; slot > insert_at; --slot) {
+            query_out[slot] = query_out[slot - 1u];
+        }
+        query_out[insert_at].query_id = q.id;
+        query_out[insert_at].neighbor_id = t.id;
+        query_out[insert_at].distance = distance;
+    }
+    optixIgnoreIntersection();
+}
+)CUDA";
+
+// Generic prepared metric-kNN traversal.  Metric kind is semantic data, not
+// application identity: 0 = Euclidean, 1 = L-infinity, 2 = Euclidean in a
+// compiler-certified normalized space (monotone with cosine distance).
+static const char* kMetricKnn3DOptixKernelSrc = R"CUDA(
+#include <optix_device.h>
+#include <stdint.h>
+#include <math.h>
+#include <float.h>
+
+typedef unsigned int uint32_t;
+
+struct MetricKnnPoint3D { float x, y, z; uint32_t id; };
+struct MetricKnnRecord3D { uint32_t query_id, neighbor_id; float distance; };
+
+struct MetricKnn3DParams {
+    OptixTraversableHandle traversable;
+    const MetricKnnPoint3D* query_points;
+    const MetricKnnPoint3D* search_points;
+    MetricKnnRecord3D* output;
+    uint32_t query_count;
+    uint32_t k;
+    uint32_t metric_kind;
+    float geometric_radius;
+    float trace_tmax;
+};
+
+extern "C" {
+__constant__ MetricKnn3DParams params;
+}
+
+static __forceinline__ __device__ float geometric_distance(
+        const MetricKnnPoint3D& q,
+        const MetricKnnPoint3D& t) {
+    const float dx = t.x - q.x;
+    const float dy = t.y - q.y;
+    const float dz = t.z - q.z;
+    if (params.metric_kind == 1u) {
+        return fmaxf(fabsf(dx), fmaxf(fabsf(dy), fabsf(dz)));
+    }
+    // Kinds 0 and 2 both use Euclidean ordering.  Kind 2 is legal only when
+    // the compiler binds the nonzero-row normalization proof.
+    return sqrtf(dx * dx + dy * dy + dz * dz);
+}
+
+static __forceinline__ __device__ float ranking_distance(
+        const MetricKnnPoint3D& q,
+        const MetricKnnPoint3D& t) {
+    if (params.metric_kind == 2u) {
+        // Arkade MT's theorem reduces cosine kNN to Euclidean ordering in the
+        // compiler-certified normalized space.  Rank by the transformed L2
+        // squared key directly: it is monotone with L2, avoids an unnecessary
+        // sqrt, and avoids pretending that a separately rounded cosine dot
+        // product is the paper's physical ordering.  Explicit round-to-nearest
+        // operations make the binary32 key reproducible by the host oracle.
+        const float dx = t.x - q.x;
+        const float dy = t.y - q.y;
+        const float dz = t.z - q.z;
+        const float xy = __fadd_rn(__fmul_rn(dx, dx), __fmul_rn(dy, dy));
+        return __fadd_rn(xy, __fmul_rn(dz, dz));
+    }
+    return geometric_distance(q, t);
+}
+
+static __forceinline__ __device__ uint32_t canonical_float_key(float value) {
+    if (value == 0.0f) value = 0.0f;
+    const uint32_t bits = __float_as_uint(value);
+    return (bits & 0x80000000u) != 0u ? ~bits : (bits ^ 0x80000000u);
+}
+
+extern "C" __global__ void __raygen__metric_knn_3d() {
+    const uint32_t qidx = optixGetLaunchIndex().x;
+    if (qidx >= params.query_count) return;
+    const MetricKnnPoint3D q = params.query_points[qidx];
+    MetricKnnRecord3D* query_out = params.output
+        + static_cast<unsigned long long>(qidx)
+        * static_cast<unsigned long long>(params.k);
+    for (uint32_t slot = 0; slot < params.k; ++slot) {
+        query_out[slot].query_id = q.id;
+        query_out[slot].neighbor_id = 0xffffffffu;
+        query_out[slot].distance = INFINITY;
+    }
+    unsigned int p0 = qidx;
+    optixTrace(params.traversable,
+               make_float3(q.x, q.y, q.z),
+               make_float3(1.0f, 0.0f, 0.0f),
+               0.0f, params.trace_tmax, 0.0f,
+               OptixVisibilityMask(255),
+               OPTIX_RAY_FLAG_NONE,
+               0, 1, 0,
+               p0);
+}
+
+extern "C" __global__ void __miss__metric_knn_3d() {}
+
+extern "C" __global__ void __intersection__metric_knn_3d() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t qidx = optixGetPayload_0();
+    const float distance = geometric_distance(
+        params.query_points[qidx], params.search_points[prim]);
+    if (isfinite(distance) && distance <= params.geometric_radius) {
+        optixReportIntersection(params.geometric_radius, 0u);
+    }
+}
+
+extern "C" __global__ void __anyhit__metric_knn_3d() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t qidx = optixGetPayload_0();
+    const MetricKnnPoint3D q = params.query_points[qidx];
+    const MetricKnnPoint3D t = params.search_points[prim];
+    const float distance = ranking_distance(q, t);
+    MetricKnnRecord3D* query_out = params.output
+        + static_cast<unsigned long long>(qidx)
+        * static_cast<unsigned long long>(params.k);
+    const uint32_t distance_key = canonical_float_key(distance);
+    uint32_t insert_at = params.k;
+    for (uint32_t slot = 0; slot < params.k; ++slot) {
+        const bool empty = query_out[slot].neighbor_id == 0xffffffffu;
+        const uint32_t incumbent_key = canonical_float_key(query_out[slot].distance);
+        const bool better_distance = distance_key < incumbent_key;
+        const bool same_distance = distance_key == incumbent_key;
+        const bool better_id = same_distance && t.id < query_out[slot].neighbor_id;
+        if (empty || better_distance || better_id) {
+            insert_at = slot;
+            break;
+        }
+    }
+    if (insert_at < params.k) {
+        for (uint32_t slot = params.k - 1u; slot > insert_at; --slot) {
+            query_out[slot] = query_out[slot - 1u];
+        }
+        query_out[insert_at].query_id = q.id;
+        query_out[insert_at].neighbor_id = t.id;
+        query_out[insert_at].distance = distance;
+    }
+    optixIgnoreIntersection();
+}
+)CUDA";
+
+static const char* kFixedRadiusCountThreshold3DRtKernelSrc = R"CUDA(
+#include <optix_device.h>
+#include <stdint.h>
+
+typedef unsigned int uint32_t;
+
+struct GpuPoint3D { float x, y, z; uint32_t id; };
+
+struct FixedRadiusCountThreshold3DRtParams {
+    OptixTraversableHandle traversable;
+    const GpuPoint3D* query_points;
+    const GpuPoint3D* search_points;
+    uint32_t* query_ids_out;
+    uint32_t* neighbor_counts_out;
+    uint32_t* threshold_flags_out;
+    uint32_t query_count;
+    uint32_t threshold;
+    float radius;
+    float trace_tmax;
+};
+
+extern "C" {
+__constant__ FixedRadiusCountThreshold3DRtParams params;
+}
+
+extern "C" __global__ void __raygen__frn3d_count_threshold_probe() {
+    const uint32_t qidx = optixGetLaunchIndex().x;
+    if (qidx >= params.query_count) return;
+
+    const GpuPoint3D q = params.query_points[qidx];
+    params.query_ids_out[qidx] = q.id;
+    if (params.threshold == 0u) {
+        params.neighbor_counts_out[qidx] = 0u;
+        params.threshold_flags_out[qidx] = 1u;
+        return;
+    }
+
+    unsigned int p0 = qidx;
+    unsigned int p1 = 0u;
+    optixTrace(params.traversable,
+               make_float3(q.x, q.y, q.z),
+               make_float3(1.0f, 0.0f, 0.0f),
+               0.0f, params.trace_tmax, 0.0f,
+               OptixVisibilityMask(255),
+               OPTIX_RAY_FLAG_NONE,
+               0, 1, 0,
+               p0, p1);
+    params.neighbor_counts_out[qidx] = p1;
+    params.threshold_flags_out[qidx] = p1 >= params.threshold ? 1u : 0u;
+}
+
+extern "C" __global__ void __miss__frn3d_count_threshold_miss() {}
+
+extern "C" __global__ void __intersection__frn3d_count_threshold_isect() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t qidx = optixGetPayload_0();
+    const GpuPoint3D q = params.query_points[qidx];
+    const GpuPoint3D t = params.search_points[prim];
+    const float dx = __fsub_rn(t.x, q.x);
+    const float dy = __fsub_rn(t.y, q.y);
+    const float dz = __fsub_rn(t.z, q.z);
+    const float dx2 = __fmul_rn(dx, dx);
+    const float dy2 = __fmul_rn(dy, dy);
+    const float dz2 = __fmul_rn(dz, dz);
+    const float d2 = __fadd_rn(__fadd_rn(dx2, dy2), dz2);
+    const float radius_sq = __fmul_rn(params.radius, params.radius);
+    if (d2 <= radius_sq) {
+        optixReportIntersection(params.radius, 0u);
+    }
+}
+
+extern "C" __global__ void __anyhit__frn3d_count_threshold_anyhit() {
+    uint32_t count = optixGetPayload_1();
+    if (count < params.threshold) {
+        count += 1u;
+        optixSetPayload_1(count);
+    }
+    if (count >= params.threshold) {
+        optixTerminateRay();
+        return;
+    }
+    optixIgnoreIntersection();
+}
+)CUDA";
+
+static const char* kFixedRadiusAdjacency3DRtKernelSrc = R"CUDA(
+#include <optix_device.h>
+#include <stdint.h>
+
+typedef unsigned int uint32_t;
+
+struct GpuPoint3D { float x, y, z; uint32_t id; };
+
+struct FixedRadiusAdjacency3DRtParams {
+    OptixTraversableHandle traversable;
+    const GpuPoint3D* query_points;
+    const GpuPoint3D* search_points;
+    const long long* edge_offsets;
+    int* neighbor_indices_out;
+    unsigned long long neighbor_index_capacity;
+    uint32_t query_count;
+    float radius;
+    float trace_tmax;
+};
+
+extern "C" {
+__constant__ FixedRadiusAdjacency3DRtParams params;
+}
+
+extern "C" __global__ void __raygen__frn3d_adjacency_probe() {
+    const uint32_t qidx = optixGetLaunchIndex().x;
+    if (qidx >= params.query_count) return;
+
+    const GpuPoint3D q = params.query_points[qidx];
+    unsigned int p0 = qidx;
+    unsigned int p1 = 0u;
+    optixTrace(params.traversable,
+               make_float3(q.x, q.y, q.z),
+               make_float3(1.0f, 0.0f, 0.0f),
+               0.0f, params.trace_tmax, 0.0f,
+               OptixVisibilityMask(255),
+               OPTIX_RAY_FLAG_NONE,
+               0, 1, 0,
+               p0, p1);
+}
+
+extern "C" __global__ void __miss__frn3d_adjacency_miss() {}
+
+extern "C" __global__ void __intersection__frn3d_adjacency_isect() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t qidx = optixGetPayload_0();
+    const GpuPoint3D q = params.query_points[qidx];
+    const GpuPoint3D t = params.search_points[prim];
+    const float dx = __fsub_rn(t.x, q.x);
+    const float dy = __fsub_rn(t.y, q.y);
+    const float dz = __fsub_rn(t.z, q.z);
+    const float dx2 = __fmul_rn(dx, dx);
+    const float dy2 = __fmul_rn(dy, dy);
+    const float dz2 = __fmul_rn(dz, dz);
+    const float d2 = __fadd_rn(__fadd_rn(dx2, dy2), dz2);
+    const float radius_sq = __fmul_rn(params.radius, params.radius);
+    if (d2 <= radius_sq) {
+        optixReportIntersection(params.radius, 0u);
+    }
+}
+
+extern "C" __global__ void __anyhit__frn3d_adjacency_anyhit() {
+    const uint32_t qidx = optixGetPayload_0();
+    uint32_t count = optixGetPayload_1();
+    const unsigned long long out_index =
+        (unsigned long long)params.edge_offsets[qidx] + (unsigned long long)count;
+    if (out_index < params.neighbor_index_capacity) {
+        params.neighbor_indices_out[out_index] = (int)optixGetPrimitiveIndex();
+    }
+    optixSetPayload_1(count + 1u);
+    optixIgnoreIntersection();
+}
+)CUDA";
+
+static const char* kFixedRadiusGroupedUnion3DRtKernelSrc = R"CUDA(
+#include <optix_device.h>
+#include <stdint.h>
+
+typedef unsigned int uint32_t;
+
+struct GpuPoint3D { float x, y, z; uint32_t id; };
+
+struct FixedRadiusGroupedUnion3DRtParams {
+    OptixTraversableHandle traversable;
+    const GpuPoint3D* query_points;
+    const GpuPoint3D* search_points;
+    const uint32_t* predicate_flags;
+    int* parent_out;
+    int* fallback_candidate_out;
+    unsigned long long* telemetry_out;
+    uint32_t telemetry_count;
+    uint32_t query_count;
+    uint32_t query_index_offset;
+    uint32_t item_count;
+    uint32_t all_predicate;
+    uint32_t same_root_culling;
+    uint32_t direct_side_effect;
+    float radius;
+    float trace_tmax;
+};
+
+extern "C" {
+__constant__ FixedRadiusGroupedUnion3DRtParams params;
+}
+
+extern "C" __device__
+void grouped_union_telemetry_add(uint32_t index, unsigned long long value) {
+    if (params.telemetry_out && index < params.telemetry_count) {
+        atomicAdd(params.telemetry_out + index, value);
+    }
+}
+
+extern "C" __device__
+int find_grouped_union_root_readonly(int* parent, int item) {
+    grouped_union_telemetry_add(8u, 1ull);
+    int root = item;
+    int guard = 0;
+    while (parent[root] != root && guard < 4096) {
+        grouped_union_telemetry_add(9u, 1ull);
+        root = parent[root];
+        ++guard;
+    }
+    return root;
+}
+
+extern "C" __device__
+void union_grouped_min_root(int* parent, int left, int right) {
+    while (true) {
+        int left_root = find_grouped_union_root_readonly(parent, left);
+        int right_root = find_grouped_union_root_readonly(parent, right);
+        if (left_root == right_root) {
+            return;
+        }
+        const int high = left_root > right_root ? left_root : right_root;
+        const int low = left_root > right_root ? right_root : left_root;
+        const int old = atomicMin(parent + high, low);
+        if (old == high) {
+            return;
+        }
+    }
+}
+
+extern "C" __device__
+void union_grouped_min_root_with_telemetry(
+        int* parent,
+        int left,
+        int right,
+        unsigned long long* telemetry_out) {
+    while (true) {
+        int left_root = find_grouped_union_root_readonly(parent, left);
+        int right_root = find_grouped_union_root_readonly(parent, right);
+        if (left_root == right_root) {
+            return;
+        }
+        const int high = left_root > right_root ? left_root : right_root;
+        const int low = left_root > right_root ? right_root : left_root;
+        if (telemetry_out && 0u < params.telemetry_count) {
+            atomicAdd(telemetry_out + 0, 1ull);
+        }
+        const int old = atomicMin(parent + high, low);
+        if (old == high) {
+            if (telemetry_out && 1u < params.telemetry_count) {
+                atomicAdd(telemetry_out + 1, 1ull);
+            }
+            return;
+        }
+    }
+}
+
+extern "C" __device__
+void apply_grouped_union_side_effect(uint32_t source, uint32_t target, bool parent_union_candidate) {
+    if (source >= params.item_count || target >= params.item_count) {
+        return;
+    }
+
+    if (parent_union_candidate) {
+        if (params.telemetry_out) {
+            union_grouped_min_root_with_telemetry(
+                params.parent_out, (int)source, (int)target, params.telemetry_out);
+        } else {
+            union_grouped_min_root(params.parent_out, (int)source, (int)target);
+        }
+    } else if (params.all_predicate == 0u && params.fallback_candidate_out) {
+        grouped_union_telemetry_add(2u, 1ull);
+        const int target_root = find_grouped_union_root_readonly(params.parent_out, (int)target);
+        const int old = atomicMin(params.fallback_candidate_out + source, target_root);
+        if (target_root < old) {
+            grouped_union_telemetry_add(3u, 1ull);
+        }
+    }
+}
+
+extern "C" __global__ void __raygen__frn3d_grouped_union_probe() {
+    const uint32_t qidx = optixGetLaunchIndex().x;
+    if (qidx >= params.query_count) return;
+
+    const GpuPoint3D q = params.query_points[qidx];
+    unsigned int p0 = qidx;
+    optixTrace(params.traversable,
+               make_float3(q.x, q.y, q.z),
+               make_float3(1.0f, 0.0f, 0.0f),
+               0.0f, params.trace_tmax, 0.0f,
+               OptixVisibilityMask(255),
+               OPTIX_RAY_FLAG_NONE,
+               0, 1, 0,
+               p0);
+}
+
+extern "C" __global__ void __miss__frn3d_grouped_union_miss() {}
+
+extern "C" __global__ void __intersection__frn3d_grouped_union_isect() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t qidx = optixGetPayload_0();
+    const uint32_t source = params.query_index_offset + qidx;
+    bool parent_union_candidate = false;
+    if (params.all_predicate != 0u) {
+        if (prim <= source) {
+            return;
+        }
+        parent_union_candidate = true;
+    } else {
+        const bool source_predicate = params.predicate_flags[source] != 0u;
+        const bool target_predicate = params.predicate_flags[prim] != 0u;
+        if (source_predicate) {
+            if (prim <= source || !target_predicate) {
+                return;
+            }
+            parent_union_candidate = true;
+        } else if (!target_predicate) {
+            return;
+        }
+    }
+    const GpuPoint3D q = params.query_points[qidx];
+    const GpuPoint3D t = params.search_points[prim];
+    const float dx = __fsub_rn(t.x, q.x);
+    const float dy = __fsub_rn(t.y, q.y);
+    const float dz = __fsub_rn(t.z, q.z);
+    const float dx2 = __fmul_rn(dx, dx);
+    const float dy2 = __fmul_rn(dy, dy);
+    const float dz2 = __fmul_rn(dz, dz);
+    const float d2 = __fadd_rn(__fadd_rn(dx2, dy2), dz2);
+    const float radius_sq = __fmul_rn(params.radius, params.radius);
+    if (d2 <= radius_sq) {
+        grouped_union_telemetry_add(4u, 1ull);
+        if (parent_union_candidate && params.same_root_culling != 0u) {
+            const int source_root = find_grouped_union_root_readonly(params.parent_out, (int)source);
+            const int target_root = find_grouped_union_root_readonly(params.parent_out, (int)prim);
+            if (source_root == target_root) {
+                grouped_union_telemetry_add(5u, 1ull);
+                return;
+            }
+        }
+        if (params.direct_side_effect != 0u) {
+            grouped_union_telemetry_add(6u, 1ull);
+            apply_grouped_union_side_effect(source, prim, parent_union_candidate);
+            return;
+        }
+        grouped_union_telemetry_add(7u, 1ull);
+        optixReportIntersection(params.radius, 0u);
+    }
+}
+
+extern "C" __global__ void __anyhit__frn3d_grouped_union_anyhit() {
+    const uint32_t local_source = optixGetPayload_0();
+    const uint32_t source = params.query_index_offset + local_source;
+    const uint32_t target = optixGetPrimitiveIndex();
+    if (source >= params.item_count || target >= params.item_count) {
+        optixIgnoreIntersection();
+        return;
+    }
+
+    if (params.all_predicate != 0u) {
+        if (target > source) {
+            if (params.telemetry_out) {
+                union_grouped_min_root_with_telemetry(
+                    params.parent_out, (int)source, (int)target, params.telemetry_out);
+            } else {
+                union_grouped_min_root(params.parent_out, (int)source, (int)target);
+            }
+        }
+        optixIgnoreIntersection();
+        return;
+    }
+
+    const bool source_predicate = params.predicate_flags[source] != 0u;
+    const bool target_predicate = params.predicate_flags[target] != 0u;
+    if (source_predicate) {
+        if (target > source && target_predicate) {
+            if (params.telemetry_out) {
+                union_grouped_min_root_with_telemetry(
+                    params.parent_out, (int)source, (int)target, params.telemetry_out);
+            } else {
+                union_grouped_min_root(params.parent_out, (int)source, (int)target);
+            }
+        }
+    } else if (target_predicate) {
+        grouped_union_telemetry_add(2u, 1ull);
+        const int target_root = find_grouped_union_root_readonly(params.parent_out, (int)target);
+        const int old = atomicMin(params.fallback_candidate_out + source, target_root);
+        if (target_root < old) {
+            grouped_union_telemetry_add(3u, 1ull);
+        }
+    }
+    optixIgnoreIntersection();
+}
+)CUDA";
+
+static const char* kFixedRadiusNeighbors3DGridKernelSrc = R"CUDA(
+#include <stdint.h>
+
+typedef unsigned int uint32_t;
+
+struct GpuPoint3D { float x, y, z; uint32_t id; };
+struct ExactPoint3D { uint32_t id; double x, y, z; };
+struct FrnRecord { uint32_t query_id, neighbor_id; float distance; };
+struct FrnSummary { unsigned long long count; double min_distance; double max_distance; double sum_distance; };
+struct FrnExactRecord { uint32_t query_id, neighbor_id; double distance; };
+struct FrnRankedRecord { uint32_t query_id, neighbor_id; double distance; uint32_t neighbor_rank; };
+struct FrnRankedSummary {
+    uint32_t query_id;
+    uint32_t neighbor_count;
+    uint32_t nearest_neighbor_id;
+    uint32_t kth_neighbor_id;
+    double nearest_distance;
+    double kth_distance;
+    double sum_distance;
+};
+struct FrnRankedAggregate {
+    unsigned long long query_count;
+    unsigned long long bounded_neighbor_count;
+    unsigned long long nearest_id_checksum;
+    unsigned long long kth_id_checksum;
+    double sum_distance;
+};
+
+static __device__ __forceinline__ float abs_float(float value)
+{
+    return value < 0.0f ? -value : value;
+}
+
+static __device__ __forceinline__ int floor_to_int_float(float value)
+{
+    int raw = static_cast<int>(value);
+    if (static_cast<float>(raw) > value) {
+        raw -= 1;
+    }
+    return raw;
+}
+
+static __device__ __forceinline__ int floor_to_int_exact(double value)
+{
+    long long raw = static_cast<long long>(value);
+    if (static_cast<double>(raw) > value) {
+        raw -= 1ll;
+    }
+    return static_cast<int>(raw);
+}
+
+static __device__ __forceinline__ void insert_neighbor(
+        FrnRecord* query_out,
+        uint32_t k_max,
+        uint32_t* count,
+        uint32_t query_id,
+        uint32_t neighbor_id,
+        float distance)
+{
+    uint32_t insert_at = k_max;
+    const uint32_t used = *count < k_max ? *count : k_max;
+    for (uint32_t slot = 0; slot < used; ++slot) {
+        const bool better_distance = distance < query_out[slot].distance - 1.0e-7f;
+        const bool same_distance = abs_float(distance - query_out[slot].distance) <= 1.0e-7f;
+        const bool better_id = same_distance && neighbor_id < query_out[slot].neighbor_id;
+        if (better_distance || better_id) {
+            insert_at = slot;
+            break;
+        }
+    }
+    if (insert_at == k_max && used < k_max) {
+        insert_at = used;
+    }
+    if (insert_at == k_max) {
+        return;
+    }
+    const uint32_t last_slot = used < k_max ? used : (k_max - 1u);
+    for (uint32_t slot = last_slot; slot > insert_at; --slot) {
+        query_out[slot] = query_out[slot - 1u];
+    }
+    query_out[insert_at].query_id = query_id;
+    query_out[insert_at].neighbor_id = neighbor_id;
+    query_out[insert_at].distance = distance;
+    if (*count < k_max) {
+        *count += 1u;
+    }
+}
+
+extern "C" __global__ void fixed_radius_neighbors_3d_grid(
+        const GpuPoint3D* query_points,
+        uint32_t query_count,
+        const GpuPoint3D* sorted_search_points,
+        const uint32_t* cell_offsets,
+        uint32_t grid_x,
+        uint32_t grid_y,
+        uint32_t grid_z,
+        float min_x,
+        float min_y,
+        float min_z,
+        float inv_cell_size,
+        float radius,
+        uint32_t k_max,
+        uint32_t* counts_out,
+        FrnRecord* output)
+{
+    const uint32_t qidx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (qidx >= query_count) return;
+
+    const GpuPoint3D q = query_points[qidx];
+    FrnRecord* query_out = output + static_cast<unsigned long long>(qidx) * static_cast<unsigned long long>(k_max);
+    uint32_t count = 0u;
+
+    const int cx = floor_to_int_float((q.x - min_x) * inv_cell_size);
+    const int cy = floor_to_int_float((q.y - min_y) * inv_cell_size);
+    const int cz = floor_to_int_float((q.z - min_z) * inv_cell_size);
+    const float radius_sq = radius * radius;
+
+    for (int dz = -1; dz <= 1; ++dz) {
+        const int gz_i = cz + dz;
+        if (gz_i < 0 || gz_i >= static_cast<int>(grid_z)) continue;
+        const uint32_t gz_u = static_cast<uint32_t>(gz_i);
+        for (int dy = -1; dy <= 1; ++dy) {
+            const int gy_i = cy + dy;
+            if (gy_i < 0 || gy_i >= static_cast<int>(grid_y)) continue;
+            const uint32_t gy_u = static_cast<uint32_t>(gy_i);
+            for (int dx_cell = -1; dx_cell <= 1; ++dx_cell) {
+                const int gx_i = cx + dx_cell;
+                if (gx_i < 0 || gx_i >= static_cast<int>(grid_x)) continue;
+                const uint32_t gx_u = static_cast<uint32_t>(gx_i);
+                const uint32_t cell = (gz_u * grid_y + gy_u) * grid_x + gx_u;
+                const uint32_t begin = cell_offsets[cell];
+                const uint32_t end = cell_offsets[cell + 1u];
+                for (uint32_t pos = begin; pos < end; ++pos) {
+                    const GpuPoint3D t = sorted_search_points[pos];
+                    const float sx = t.x - q.x;
+                    const float sy = t.y - q.y;
+                    const float sz = t.z - q.z;
+                    const float d2 = sx * sx + sy * sy + sz * sz;
+                    if (d2 > radius_sq) continue;
+                    insert_neighbor(query_out, k_max, &count, q.id, t.id, sqrtf(d2));
+                }
+            }
+        }
+    }
+    counts_out[qidx] = count;
+}
+
+extern "C" __global__ void fixed_radius_neighbors_3d_grid_count(
+        const GpuPoint3D* query_points,
+        uint32_t query_count,
+        const GpuPoint3D* sorted_search_points,
+        const uint32_t* cell_offsets,
+        uint32_t grid_x,
+        uint32_t grid_y,
+        uint32_t grid_z,
+        float min_x,
+        float min_y,
+        float min_z,
+        float inv_cell_size,
+        float radius,
+        uint32_t k_max,
+        uint32_t* counts_out)
+{
+    const uint32_t qidx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (qidx >= query_count) return;
+
+    const GpuPoint3D q = query_points[qidx];
+    const int cx = floor_to_int_float((q.x - min_x) * inv_cell_size);
+    const int cy = floor_to_int_float((q.y - min_y) * inv_cell_size);
+    const int cz = floor_to_int_float((q.z - min_z) * inv_cell_size);
+    const float radius_sq = radius * radius;
+    uint32_t count = 0u;
+
+    for (int dz = -1; dz <= 1 && count < k_max; ++dz) {
+        const int gz_i = cz + dz;
+        if (gz_i < 0 || gz_i >= static_cast<int>(grid_z)) continue;
+        const uint32_t gz_u = static_cast<uint32_t>(gz_i);
+        for (int dy = -1; dy <= 1 && count < k_max; ++dy) {
+            const int gy_i = cy + dy;
+            if (gy_i < 0 || gy_i >= static_cast<int>(grid_y)) continue;
+            const uint32_t gy_u = static_cast<uint32_t>(gy_i);
+            for (int dx_cell = -1; dx_cell <= 1 && count < k_max; ++dx_cell) {
+                const int gx_i = cx + dx_cell;
+                if (gx_i < 0 || gx_i >= static_cast<int>(grid_x)) continue;
+                const uint32_t gx_u = static_cast<uint32_t>(gx_i);
+                const uint32_t cell = (gz_u * grid_y + gy_u) * grid_x + gx_u;
+                const uint32_t begin = cell_offsets[cell];
+                const uint32_t end = cell_offsets[cell + 1u];
+                for (uint32_t pos = begin; pos < end && count < k_max; ++pos) {
+                    const GpuPoint3D t = sorted_search_points[pos];
+                    const float sx = t.x - q.x;
+                    const float sy = t.y - q.y;
+                    const float sz = t.z - q.z;
+                    const float d2 = sx * sx + sy * sy + sz * sz;
+                    if (d2 <= radius_sq) {
+                        count += 1u;
+                    }
+                }
+            }
+        }
+    }
+    counts_out[qidx] = count;
+}
+
+extern "C" __global__ void fixed_radius_neighbors_3d_grid_exact_count(
+        const ExactPoint3D* query_points,
+        uint32_t query_count,
+        const ExactPoint3D* sorted_search_points,
+        const uint32_t* cell_offsets,
+        uint32_t grid_x,
+        uint32_t grid_y,
+        uint32_t grid_z,
+        double min_x,
+        double min_y,
+        double min_z,
+        double inv_cell_size,
+        double radius,
+        uint32_t k_max,
+        uint32_t radius_boundary_mode,
+        uint32_t* counts_out)
+{
+    const uint32_t qidx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (qidx >= query_count) return;
+
+    const ExactPoint3D q = query_points[qidx];
+    const int cx = floor_to_int_exact((q.x - min_x) * inv_cell_size);
+    const int cy = floor_to_int_exact((q.y - min_y) * inv_cell_size);
+    const int cz = floor_to_int_exact((q.z - min_z) * inv_cell_size);
+    const double radius_sq = radius * radius;
+    uint32_t count = 0u;
+
+    for (int dz = -1; dz <= 1 && count < k_max; ++dz) {
+        const int gz_i = cz + dz;
+        if (gz_i < 0 || gz_i >= static_cast<int>(grid_z)) continue;
+        const uint32_t gz_u = static_cast<uint32_t>(gz_i);
+        for (int dy = -1; dy <= 1 && count < k_max; ++dy) {
+            const int gy_i = cy + dy;
+            if (gy_i < 0 || gy_i >= static_cast<int>(grid_y)) continue;
+            const uint32_t gy_u = static_cast<uint32_t>(gy_i);
+            for (int dx_cell = -1; dx_cell <= 1 && count < k_max; ++dx_cell) {
+                const int gx_i = cx + dx_cell;
+                if (gx_i < 0 || gx_i >= static_cast<int>(grid_x)) continue;
+                const uint32_t gx_u = static_cast<uint32_t>(gx_i);
+                const uint32_t cell = (gz_u * grid_y + gy_u) * grid_x + gx_u;
+                const uint32_t begin = cell_offsets[cell];
+                const uint32_t end = cell_offsets[cell + 1u];
+                for (uint32_t pos = begin; pos < end && count < k_max; ++pos) {
+                    const ExactPoint3D t = sorted_search_points[pos];
+                    const double sx = t.x - q.x;
+                    const double sy = t.y - q.y;
+                    const double sz = t.z - q.z;
+                    const double d2 = sx * sx + sy * sy + sz * sz;
+                    const bool in_radius = radius_boundary_mode == 0u
+                        ? d2 <= radius_sq
+                        : d2 < radius_sq;
+                    if (in_radius) {
+                        count += 1u;
+                    }
+                }
+            }
+        }
+    }
+    counts_out[qidx] = count;
+}
+
+extern "C" __global__ void fixed_radius_neighbors_3d_grid_exact_summary(
+        const ExactPoint3D* query_points,
+        uint32_t query_count,
+        const ExactPoint3D* sorted_search_points,
+        const uint32_t* cell_offsets,
+        uint32_t grid_x,
+        uint32_t grid_y,
+        uint32_t grid_z,
+        double min_x,
+        double min_y,
+        double min_z,
+        double inv_cell_size,
+        double radius,
+        uint32_t k_max,
+        uint32_t radius_boundary_mode,
+        FrnSummary* summaries_out)
+{
+    const uint32_t qidx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (qidx >= query_count) return;
+
+    const ExactPoint3D q = query_points[qidx];
+    const int cx = floor_to_int_exact((q.x - min_x) * inv_cell_size);
+    const int cy = floor_to_int_exact((q.y - min_y) * inv_cell_size);
+    const int cz = floor_to_int_exact((q.z - min_z) * inv_cell_size);
+    const double radius_sq = radius * radius;
+    uint32_t count = 0u;
+    double min_distance = 0.0;
+    double max_distance = 0.0;
+    double sum_distance = 0.0;
+
+    for (int dz = -1; dz <= 1 && count < k_max; ++dz) {
+        const int gz_i = cz + dz;
+        if (gz_i < 0 || gz_i >= static_cast<int>(grid_z)) continue;
+        const uint32_t gz_u = static_cast<uint32_t>(gz_i);
+        for (int dy = -1; dy <= 1 && count < k_max; ++dy) {
+            const int gy_i = cy + dy;
+            if (gy_i < 0 || gy_i >= static_cast<int>(grid_y)) continue;
+            const uint32_t gy_u = static_cast<uint32_t>(gy_i);
+            for (int dx_cell = -1; dx_cell <= 1 && count < k_max; ++dx_cell) {
+                const int gx_i = cx + dx_cell;
+                if (gx_i < 0 || gx_i >= static_cast<int>(grid_x)) continue;
+                const uint32_t gx_u = static_cast<uint32_t>(gx_i);
+                const uint32_t cell = (gz_u * grid_y + gy_u) * grid_x + gx_u;
+                const uint32_t begin = cell_offsets[cell];
+                const uint32_t end = cell_offsets[cell + 1u];
+                for (uint32_t pos = begin; pos < end && count < k_max; ++pos) {
+                    const ExactPoint3D t = sorted_search_points[pos];
+                    const double sx = t.x - q.x;
+                    const double sy = t.y - q.y;
+                    const double sz = t.z - q.z;
+                    const double d2 = sx * sx + sy * sy + sz * sz;
+                    const bool outside_radius = radius_boundary_mode == 0u
+                        ? d2 > radius_sq
+                        : d2 >= radius_sq;
+                    if (outside_radius) continue;
+                    const double distance = sqrt(d2);
+                    if (count == 0u || distance < min_distance) {
+                        min_distance = distance;
+                    }
+                    if (count == 0u || distance > max_distance) {
+                        max_distance = distance;
+                    }
+                    sum_distance += distance;
+                    count += 1u;
+                }
+            }
+        }
+    }
+    FrnSummary summary;
+    summary.count = static_cast<unsigned long long>(count);
+    summary.min_distance = min_distance;
+    summary.max_distance = max_distance;
+    summary.sum_distance = sum_distance;
+    summaries_out[qidx] = summary;
+}
+
+extern "C" __global__ void fixed_radius_neighbors_3d_grid_exact_rows(
+        const ExactPoint3D* query_points,
+        uint32_t query_count,
+        const ExactPoint3D* sorted_search_points,
+        const uint32_t* cell_offsets,
+        const uint32_t* row_offsets,
+        uint32_t grid_x,
+        uint32_t grid_y,
+        uint32_t grid_z,
+        double min_x,
+        double min_y,
+        double min_z,
+        double inv_cell_size,
+        double radius,
+        uint32_t k_max,
+        uint32_t radius_boundary_mode,
+        FrnExactRecord* rows_out)
+{
+    const uint32_t qidx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (qidx >= query_count) return;
+
+    const ExactPoint3D q = query_points[qidx];
+    const int cx = floor_to_int_exact((q.x - min_x) * inv_cell_size);
+    const int cy = floor_to_int_exact((q.y - min_y) * inv_cell_size);
+    const int cz = floor_to_int_exact((q.z - min_z) * inv_cell_size);
+    const double radius_sq = radius * radius;
+    const uint32_t row_begin = row_offsets[qidx];
+    const uint32_t row_end = row_offsets[qidx + 1u];
+    uint32_t count = 0u;
+
+    for (int dz = -1; dz <= 1 && count < k_max; ++dz) {
+        const int gz_i = cz + dz;
+        if (gz_i < 0 || gz_i >= static_cast<int>(grid_z)) continue;
+        const uint32_t gz_u = static_cast<uint32_t>(gz_i);
+        for (int dy = -1; dy <= 1 && count < k_max; ++dy) {
+            const int gy_i = cy + dy;
+            if (gy_i < 0 || gy_i >= static_cast<int>(grid_y)) continue;
+            const uint32_t gy_u = static_cast<uint32_t>(gy_i);
+            for (int dx_cell = -1; dx_cell <= 1 && count < k_max; ++dx_cell) {
+                const int gx_i = cx + dx_cell;
+                if (gx_i < 0 || gx_i >= static_cast<int>(grid_x)) continue;
+                const uint32_t gx_u = static_cast<uint32_t>(gx_i);
+                const uint32_t cell = (gz_u * grid_y + gy_u) * grid_x + gx_u;
+                const uint32_t begin = cell_offsets[cell];
+                const uint32_t end = cell_offsets[cell + 1u];
+                for (uint32_t pos = begin; pos < end && count < k_max; ++pos) {
+                    const ExactPoint3D t = sorted_search_points[pos];
+                    const double sx = t.x - q.x;
+                    const double sy = t.y - q.y;
+                    const double sz = t.z - q.z;
+                    const double d2 = sx * sx + sy * sy + sz * sz;
+                    const bool outside_radius = radius_boundary_mode == 0u
+                        ? d2 > radius_sq
+                        : d2 >= radius_sq;
+                    if (outside_radius) continue;
+                    const uint32_t out_index = row_begin + count;
+                    if (out_index >= row_end) return;
+                    FrnExactRecord row;
+                    row.query_id = q.id;
+                    row.neighbor_id = t.id;
+                    row.distance = sqrt(d2);
+                    rows_out[out_index] = row;
+                    count += 1u;
+                }
+            }
+        }
+    }
+}
+
+static __device__ __forceinline__ void frn_ranked_insert(
+        double distance_sq,
+        uint32_t neighbor_id,
+        uint32_t k_max,
+        double* best_distance_sq,
+        uint32_t* best_neighbor_id,
+        uint32_t* best_count)
+{
+    uint32_t insert_at = *best_count;
+    for (uint32_t i = 0u; i < *best_count; ++i) {
+        const double current = best_distance_sq[i];
+        const uint32_t current_id = best_neighbor_id[i];
+        if (distance_sq < current || (distance_sq == current && neighbor_id < current_id)) {
+            insert_at = i;
+            break;
+        }
+    }
+    if (insert_at >= k_max) return;
+
+    const uint32_t limit = (*best_count < k_max) ? *best_count : (k_max - 1u);
+    for (uint32_t i = limit; i > insert_at; --i) {
+        best_distance_sq[i] = best_distance_sq[i - 1u];
+        best_neighbor_id[i] = best_neighbor_id[i - 1u];
+    }
+    best_distance_sq[insert_at] = distance_sq;
+    best_neighbor_id[insert_at] = neighbor_id;
+    if (*best_count < k_max) {
+        *best_count += 1u;
+    }
+}
+
+static __device__ __forceinline__ void frn_ranked_insert_f32(
+        float distance_sq,
+        uint32_t neighbor_id,
+        uint32_t k_max,
+        float* best_distance_sq,
+        uint32_t* best_neighbor_id,
+        uint32_t* best_count)
+{
+    uint32_t insert_at = k_max;
+    const uint32_t used = *best_count < k_max ? *best_count : k_max;
+    for (uint32_t rank = 0u; rank < used; ++rank) {
+        const bool better_distance = distance_sq < best_distance_sq[rank];
+        const bool better_id = (distance_sq == best_distance_sq[rank]) && neighbor_id < best_neighbor_id[rank];
+        if (better_distance || better_id) {
+            insert_at = rank;
+            break;
+        }
+    }
+    if (insert_at == k_max && used < k_max) {
+        insert_at = used;
+    }
+    if (insert_at == k_max) {
+        return;
+    }
+    const uint32_t limit = used < k_max ? used : (k_max - 1u);
+    for (uint32_t i = limit; i > insert_at; --i) {
+        best_distance_sq[i] = best_distance_sq[i - 1u];
+        best_neighbor_id[i] = best_neighbor_id[i - 1u];
+    }
+    best_distance_sq[insert_at] = distance_sq;
+    best_neighbor_id[insert_at] = neighbor_id;
+    if (*best_count < k_max) {
+        *best_count += 1u;
+    }
+}
+
+static __device__ __forceinline__ bool frn_ranked_f32_less(
+        float left_distance_sq,
+        uint32_t left_id,
+        float right_distance_sq,
+        uint32_t right_id)
+{
+    return left_distance_sq < right_distance_sq ||
+        (left_distance_sq == right_distance_sq && left_id < right_id);
+}
+
+static __device__ __forceinline__ bool frn_ranked_f32_worse(
+        float left_distance_sq,
+        uint32_t left_id,
+        float right_distance_sq,
+        uint32_t right_id)
+{
+    return left_distance_sq > right_distance_sq ||
+        (left_distance_sq == right_distance_sq && left_id > right_id);
+}
+
+static __device__ __forceinline__ void frn_ranked_insert_unsorted_f32(
+        float distance_sq,
+        uint32_t neighbor_id,
+        uint32_t k_max,
+        float* best_distance_sq,
+        uint32_t* best_neighbor_id,
+        uint32_t* best_count,
+        uint32_t* worst_index,
+        float* worst_distance_sq,
+        uint32_t* worst_neighbor_id)
+{
+    if (*best_count < k_max) {
+        const uint32_t pos = *best_count;
+        best_distance_sq[pos] = distance_sq;
+        best_neighbor_id[pos] = neighbor_id;
+        if (pos == 0u || frn_ranked_f32_worse(distance_sq, neighbor_id, *worst_distance_sq, *worst_neighbor_id)) {
+            *worst_index = pos;
+            *worst_distance_sq = distance_sq;
+            *worst_neighbor_id = neighbor_id;
+        }
+        *best_count += 1u;
+        return;
+    }
+
+    if (!frn_ranked_f32_less(distance_sq, neighbor_id, *worst_distance_sq, *worst_neighbor_id)) {
+        return;
+    }
+
+    best_distance_sq[*worst_index] = distance_sq;
+    best_neighbor_id[*worst_index] = neighbor_id;
+    uint32_t new_worst_index = 0u;
+    float new_worst_distance_sq = best_distance_sq[0];
+    uint32_t new_worst_neighbor_id = best_neighbor_id[0];
+    for (uint32_t rank = 1u; rank < k_max; ++rank) {
+        if (frn_ranked_f32_worse(best_distance_sq[rank], best_neighbor_id[rank], new_worst_distance_sq, new_worst_neighbor_id)) {
+            new_worst_index = rank;
+            new_worst_distance_sq = best_distance_sq[rank];
+            new_worst_neighbor_id = best_neighbor_id[rank];
+        }
+    }
+    *worst_index = new_worst_index;
+    *worst_distance_sq = new_worst_distance_sq;
+    *worst_neighbor_id = new_worst_neighbor_id;
+}
+
+static __device__ __forceinline__ double frn_atomic_add_double(double* address, double value)
+{
+#if defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 600
+    return atomicAdd(address, value);
+#else
+    unsigned long long int* address_as_ull =
+        reinterpret_cast<unsigned long long int*>(address);
+    unsigned long long int old = *address_as_ull;
+    unsigned long long int assumed;
+    do {
+        assumed = old;
+        old = atomicCAS(
+            address_as_ull,
+            assumed,
+            __double_as_longlong(value + __longlong_as_double(assumed)));
+    } while (assumed != old);
+    return __longlong_as_double(old);
+#endif
+}
+
+extern "C" __global__ void fixed_radius_neighbors_3d_grid_ranked_count(
+        const ExactPoint3D* query_points,
+        uint32_t query_count,
+        const ExactPoint3D* sorted_search_points,
+        const uint32_t* cell_offsets,
+        uint32_t grid_x,
+        uint32_t grid_y,
+        uint32_t grid_z,
+        double min_x,
+        double min_y,
+        double min_z,
+        double inv_cell_size,
+        double minimum_distance,
+        double radius,
+        uint32_t k_max,
+        uint32_t minimum_boundary_mode,
+        uint32_t radius_boundary_mode,
+        uint32_t* counts_out)
+{
+    const uint32_t qidx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (qidx >= query_count) return;
+
+    double best_distance_sq[64];
+    uint32_t best_neighbor_id[64];
+    uint32_t best_count = 0u;
+    const ExactPoint3D q = query_points[qidx];
+    const int cx = floor_to_int_exact((q.x - min_x) * inv_cell_size);
+    const int cy = floor_to_int_exact((q.y - min_y) * inv_cell_size);
+    const int cz = floor_to_int_exact((q.z - min_z) * inv_cell_size);
+    const double minimum_distance_sq = minimum_distance * minimum_distance;
+    const double radius_sq = radius * radius;
+
+    for (int dz = -1; dz <= 1; ++dz) {
+        const int gz_i = cz + dz;
+        if (gz_i < 0 || gz_i >= static_cast<int>(grid_z)) continue;
+        const uint32_t gz_u = static_cast<uint32_t>(gz_i);
+        for (int dy = -1; dy <= 1; ++dy) {
+            const int gy_i = cy + dy;
+            if (gy_i < 0 || gy_i >= static_cast<int>(grid_y)) continue;
+            const uint32_t gy_u = static_cast<uint32_t>(gy_i);
+            for (int dx_cell = -1; dx_cell <= 1; ++dx_cell) {
+                const int gx_i = cx + dx_cell;
+                if (gx_i < 0 || gx_i >= static_cast<int>(grid_x)) continue;
+                const uint32_t gx_u = static_cast<uint32_t>(gx_i);
+                const uint32_t cell = (gz_u * grid_y + gy_u) * grid_x + gx_u;
+                const uint32_t begin = cell_offsets[cell];
+                const uint32_t end = cell_offsets[cell + 1u];
+                for (uint32_t pos = begin; pos < end; ++pos) {
+                    const ExactPoint3D t = sorted_search_points[pos];
+                    const double sx = t.x - q.x;
+                    const double sy = t.y - q.y;
+                    const double sz = t.z - q.z;
+                    const double d2 = sx * sx + sy * sy + sz * sz;
+                    const bool below_minimum = minimum_boundary_mode == 0u
+                        ? d2 < minimum_distance_sq
+                        : d2 <= minimum_distance_sq;
+                    const bool above_radius = radius_boundary_mode == 0u
+                        ? d2 > radius_sq
+                        : d2 >= radius_sq;
+                    if (below_minimum || above_radius) continue;
+                    frn_ranked_insert(d2, t.id, k_max, best_distance_sq, best_neighbor_id, &best_count);
+                }
+            }
+        }
+    }
+    counts_out[qidx] = best_count;
+}
+
+extern "C" __global__ void fixed_radius_neighbors_3d_grid_ranked_rows(
+        const ExactPoint3D* query_points,
+        uint32_t query_count,
+        const ExactPoint3D* sorted_search_points,
+        const uint32_t* cell_offsets,
+        const uint32_t* row_offsets,
+        uint32_t grid_x,
+        uint32_t grid_y,
+        uint32_t grid_z,
+        double min_x,
+        double min_y,
+        double min_z,
+        double inv_cell_size,
+        double minimum_distance,
+        double radius,
+        uint32_t k_max,
+        uint32_t minimum_boundary_mode,
+        uint32_t radius_boundary_mode,
+        FrnRankedRecord* rows_out)
+{
+    const uint32_t qidx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (qidx >= query_count) return;
+
+    double best_distance_sq[64];
+    uint32_t best_neighbor_id[64];
+    uint32_t best_count = 0u;
+    const ExactPoint3D q = query_points[qidx];
+    const int cx = floor_to_int_exact((q.x - min_x) * inv_cell_size);
+    const int cy = floor_to_int_exact((q.y - min_y) * inv_cell_size);
+    const int cz = floor_to_int_exact((q.z - min_z) * inv_cell_size);
+    const double minimum_distance_sq = minimum_distance * minimum_distance;
+    const double radius_sq = radius * radius;
+
+    for (int dz = -1; dz <= 1; ++dz) {
+        const int gz_i = cz + dz;
+        if (gz_i < 0 || gz_i >= static_cast<int>(grid_z)) continue;
+        const uint32_t gz_u = static_cast<uint32_t>(gz_i);
+        for (int dy = -1; dy <= 1; ++dy) {
+            const int gy_i = cy + dy;
+            if (gy_i < 0 || gy_i >= static_cast<int>(grid_y)) continue;
+            const uint32_t gy_u = static_cast<uint32_t>(gy_i);
+            for (int dx_cell = -1; dx_cell <= 1; ++dx_cell) {
+                const int gx_i = cx + dx_cell;
+                if (gx_i < 0 || gx_i >= static_cast<int>(grid_x)) continue;
+                const uint32_t gx_u = static_cast<uint32_t>(gx_i);
+                const uint32_t cell = (gz_u * grid_y + gy_u) * grid_x + gx_u;
+                const uint32_t begin = cell_offsets[cell];
+                const uint32_t end = cell_offsets[cell + 1u];
+                for (uint32_t pos = begin; pos < end; ++pos) {
+                    const ExactPoint3D t = sorted_search_points[pos];
+                    const double sx = t.x - q.x;
+                    const double sy = t.y - q.y;
+                    const double sz = t.z - q.z;
+                    const double d2 = sx * sx + sy * sy + sz * sz;
+                    const bool below_minimum = minimum_boundary_mode == 0u
+                        ? d2 < minimum_distance_sq
+                        : d2 <= minimum_distance_sq;
+                    const bool above_radius = radius_boundary_mode == 0u
+                        ? d2 > radius_sq
+                        : d2 >= radius_sq;
+                    if (below_minimum || above_radius) continue;
+                    frn_ranked_insert(d2, t.id, k_max, best_distance_sq, best_neighbor_id, &best_count);
+                }
+            }
+        }
+    }
+
+    const uint32_t row_begin = row_offsets[qidx];
+    for (uint32_t rank = 0u; rank < best_count; ++rank) {
+        FrnRankedRecord row;
+        row.query_id = q.id;
+        row.neighbor_id = best_neighbor_id[rank];
+        row.distance = sqrt(best_distance_sq[rank]);
+        row.neighbor_rank = rank + 1u;
+        rows_out[row_begin + rank] = row;
+    }
+}
+
+extern "C" __global__ void fixed_radius_neighbors_3d_grid_ranked_window_rows_fixed(
+        const ExactPoint3D* query_points,
+        uint32_t query_count,
+        const ExactPoint3D* sorted_search_points,
+        const uint32_t* cell_offsets,
+        uint32_t grid_x,
+        uint32_t grid_y,
+        uint32_t grid_z,
+        double min_x,
+        double min_y,
+        double min_z,
+        double inv_cell_size,
+        double minimum_distance,
+        double radius,
+        uint32_t k_max,
+        uint32_t minimum_boundary_mode,
+        uint32_t radius_boundary_mode,
+        uint32_t* counts_out,
+        FrnRankedRecord* rows_out)
+{
+    const uint32_t qidx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (qidx >= query_count) return;
+
+    double best_distance_sq[64];
+    uint32_t best_neighbor_id[64];
+    uint32_t best_count = 0u;
+    const ExactPoint3D q = query_points[qidx];
+    const int cx = floor_to_int_exact((q.x - min_x) * inv_cell_size);
+    const int cy = floor_to_int_exact((q.y - min_y) * inv_cell_size);
+    const int cz = floor_to_int_exact((q.z - min_z) * inv_cell_size);
+    const double minimum_distance_sq = minimum_distance * minimum_distance;
+    const double radius_sq = radius * radius;
+
+    for (int dz = -1; dz <= 1; ++dz) {
+        const int gz_i = cz + dz;
+        if (gz_i < 0 || gz_i >= static_cast<int>(grid_z)) continue;
+        const uint32_t gz_u = static_cast<uint32_t>(gz_i);
+        for (int dy = -1; dy <= 1; ++dy) {
+            const int gy_i = cy + dy;
+            if (gy_i < 0 || gy_i >= static_cast<int>(grid_y)) continue;
+            const uint32_t gy_u = static_cast<uint32_t>(gy_i);
+            for (int dx_cell = -1; dx_cell <= 1; ++dx_cell) {
+                const int gx_i = cx + dx_cell;
+                if (gx_i < 0 || gx_i >= static_cast<int>(grid_x)) continue;
+                const uint32_t gx_u = static_cast<uint32_t>(gx_i);
+                const uint32_t cell = (gz_u * grid_y + gy_u) * grid_x + gx_u;
+                const uint32_t begin = cell_offsets[cell];
+                const uint32_t end = cell_offsets[cell + 1u];
+                for (uint32_t pos = begin; pos < end; ++pos) {
+                    const ExactPoint3D t = sorted_search_points[pos];
+                    const double sx = t.x - q.x;
+                    const double sy = t.y - q.y;
+                    const double sz = t.z - q.z;
+                    const double d2 = sx * sx + sy * sy + sz * sz;
+                    const bool below_minimum = minimum_boundary_mode == 0u
+                        ? d2 < minimum_distance_sq
+                        : d2 <= minimum_distance_sq;
+                    const bool above_radius = radius_boundary_mode == 0u
+                        ? d2 > radius_sq
+                        : d2 >= radius_sq;
+                    if (below_minimum || above_radius) continue;
+                    frn_ranked_insert(
+                        d2, t.id, k_max,
+                        best_distance_sq, best_neighbor_id, &best_count);
+                }
+            }
+        }
+    }
+
+    counts_out[qidx] = best_count;
+    const unsigned long long row_begin =
+        static_cast<unsigned long long>(qidx) * static_cast<unsigned long long>(k_max);
+    for (uint32_t rank = 0u; rank < best_count; ++rank) {
+        FrnRankedRecord row;
+        row.query_id = q.id;
+        row.neighbor_id = best_neighbor_id[rank];
+        row.distance = sqrt(best_distance_sq[rank]);
+        row.neighbor_rank = rank + 1u;
+        rows_out[row_begin + rank] = row;
+    }
+}
+
+extern "C" __global__ void fixed_radius_neighbors_3d_grid_ranked_summary(
+        const ExactPoint3D* query_points,
+        uint32_t query_count,
+        const ExactPoint3D* sorted_search_points,
+        const uint32_t* cell_offsets,
+        uint32_t grid_x,
+        uint32_t grid_y,
+        uint32_t grid_z,
+        double min_x,
+        double min_y,
+        double min_z,
+        double inv_cell_size,
+        double radius,
+        uint32_t k_max,
+        FrnRankedSummary* summaries_out)
+{
+    const uint32_t qidx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (qidx >= query_count) return;
+
+    double best_distance_sq[64];
+    uint32_t best_neighbor_id[64];
+    uint32_t best_count = 0u;
+    const ExactPoint3D q = query_points[qidx];
+    const int cx = floor_to_int_exact((q.x - min_x) * inv_cell_size);
+    const int cy = floor_to_int_exact((q.y - min_y) * inv_cell_size);
+    const int cz = floor_to_int_exact((q.z - min_z) * inv_cell_size);
+    const double radius_sq = radius * radius;
+
+    for (int dz = -1; dz <= 1; ++dz) {
+        const int gz_i = cz + dz;
+        if (gz_i < 0 || gz_i >= static_cast<int>(grid_z)) continue;
+        const uint32_t gz_u = static_cast<uint32_t>(gz_i);
+        for (int dy = -1; dy <= 1; ++dy) {
+            const int gy_i = cy + dy;
+            if (gy_i < 0 || gy_i >= static_cast<int>(grid_y)) continue;
+            const uint32_t gy_u = static_cast<uint32_t>(gy_i);
+            for (int dx_cell = -1; dx_cell <= 1; ++dx_cell) {
+                const int gx_i = cx + dx_cell;
+                if (gx_i < 0 || gx_i >= static_cast<int>(grid_x)) continue;
+                const uint32_t gx_u = static_cast<uint32_t>(gx_i);
+                const uint32_t cell = (gz_u * grid_y + gy_u) * grid_x + gx_u;
+                const uint32_t begin = cell_offsets[cell];
+                const uint32_t end = cell_offsets[cell + 1u];
+                for (uint32_t pos = begin; pos < end; ++pos) {
+                    const ExactPoint3D t = sorted_search_points[pos];
+                    const double sx = t.x - q.x;
+                    const double sy = t.y - q.y;
+                    const double sz = t.z - q.z;
+                    const double d2 = sx * sx + sy * sy + sz * sz;
+                    if (d2 > radius_sq) continue;
+                    frn_ranked_insert(d2, t.id, k_max, best_distance_sq, best_neighbor_id, &best_count);
+                }
+            }
+        }
+    }
+
+    FrnRankedSummary summary;
+    summary.query_id = q.id;
+    summary.neighbor_count = best_count;
+    summary.nearest_neighbor_id = 0xffffffffu;
+    summary.kth_neighbor_id = 0xffffffffu;
+    summary.nearest_distance = 0.0;
+    summary.kth_distance = 0.0;
+    summary.sum_distance = 0.0;
+    if (best_count > 0u) {
+        summary.nearest_neighbor_id = best_neighbor_id[0];
+        summary.nearest_distance = sqrt(best_distance_sq[0]);
+        const uint32_t kth_index = best_count - 1u;
+        summary.kth_neighbor_id = best_neighbor_id[kth_index];
+        summary.kth_distance = sqrt(best_distance_sq[kth_index]);
+        for (uint32_t rank = 0u; rank < best_count; ++rank) {
+            summary.sum_distance += sqrt(best_distance_sq[rank]);
+        }
+    }
+    summaries_out[qidx] = summary;
+}
+
+extern "C" __global__ void fixed_radius_neighbors_3d_grid_ranked_summary_f32(
+        const GpuPoint3D* query_points,
+        uint32_t query_count,
+        const GpuPoint3D* sorted_search_points,
+        const uint32_t* cell_offsets,
+        uint32_t grid_x,
+        uint32_t grid_y,
+        uint32_t grid_z,
+        float min_x,
+        float min_y,
+        float min_z,
+        float inv_cell_size,
+        float radius,
+        uint32_t k_max,
+        FrnRankedSummary* summaries_out)
+{
+    const uint32_t qidx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (qidx >= query_count) return;
+
+    float best_distance_sq[64];
+    uint32_t best_neighbor_id[64];
+    uint32_t best_count = 0u;
+    uint32_t worst_index = 0u;
+    float worst_distance_sq = 0.0f;
+    uint32_t worst_neighbor_id = 0u;
+    const GpuPoint3D q = query_points[qidx];
+    const int cx = floor_to_int_float((q.x - min_x) * inv_cell_size);
+    const int cy = floor_to_int_float((q.y - min_y) * inv_cell_size);
+    const int cz = floor_to_int_float((q.z - min_z) * inv_cell_size);
+    const float radius_sq = radius * radius;
+
+    for (int dz = -1; dz <= 1; ++dz) {
+        const int gz_i = cz + dz;
+        if (gz_i < 0 || gz_i >= static_cast<int>(grid_z)) continue;
+        const uint32_t gz_u = static_cast<uint32_t>(gz_i);
+        for (int dy = -1; dy <= 1; ++dy) {
+            const int gy_i = cy + dy;
+            if (gy_i < 0 || gy_i >= static_cast<int>(grid_y)) continue;
+            const uint32_t gy_u = static_cast<uint32_t>(gy_i);
+            for (int dx_cell = -1; dx_cell <= 1; ++dx_cell) {
+                const int gx_i = cx + dx_cell;
+                if (gx_i < 0 || gx_i >= static_cast<int>(grid_x)) continue;
+                const uint32_t gx_u = static_cast<uint32_t>(gx_i);
+                const uint32_t cell = (gz_u * grid_y + gy_u) * grid_x + gx_u;
+                const uint32_t begin = cell_offsets[cell];
+                const uint32_t end = cell_offsets[cell + 1u];
+                for (uint32_t pos = begin; pos < end; ++pos) {
+                    const GpuPoint3D t = sorted_search_points[pos];
+                    const float sx = t.x - q.x;
+                    const float sy = t.y - q.y;
+                    const float sz = t.z - q.z;
+                    const float d2 = sx * sx + sy * sy + sz * sz;
+                    if (d2 > radius_sq) continue;
+                    frn_ranked_insert_unsorted_f32(
+                        d2, t.id, k_max, best_distance_sq, best_neighbor_id,
+                        &best_count, &worst_index, &worst_distance_sq, &worst_neighbor_id);
+                }
+            }
+        }
+    }
+
+    FrnRankedSummary summary;
+    summary.query_id = q.id;
+    summary.neighbor_count = best_count;
+    summary.nearest_neighbor_id = 0xffffffffu;
+    summary.kth_neighbor_id = 0xffffffffu;
+    summary.nearest_distance = 0.0;
+    summary.kth_distance = 0.0;
+    summary.sum_distance = 0.0;
+    if (best_count > 0u) {
+        uint32_t nearest_index = 0u;
+        uint32_t kth_index = 0u;
+        for (uint32_t rank = 0u; rank < best_count; ++rank) {
+            if (frn_ranked_f32_less(best_distance_sq[rank], best_neighbor_id[rank], best_distance_sq[nearest_index], best_neighbor_id[nearest_index])) {
+                nearest_index = rank;
+            }
+            if (frn_ranked_f32_worse(best_distance_sq[rank], best_neighbor_id[rank], best_distance_sq[kth_index], best_neighbor_id[kth_index])) {
+                kth_index = rank;
+            }
+            summary.sum_distance += static_cast<double>(sqrtf(best_distance_sq[rank]));
+        }
+        summary.nearest_neighbor_id = best_neighbor_id[nearest_index];
+        summary.nearest_distance = static_cast<double>(sqrtf(best_distance_sq[nearest_index]));
+        summary.kth_neighbor_id = best_neighbor_id[kth_index];
+        summary.kth_distance = static_cast<double>(sqrtf(best_distance_sq[kth_index]));
+    }
+    summaries_out[qidx] = summary;
+}
+
+extern "C" __global__ void fixed_radius_neighbors_3d_grid_ranked_summary_aggregate(
+        const FrnRankedSummary* summaries,
+        uint32_t query_count,
+        FrnRankedAggregate* aggregate_out)
+{
+    __shared__ unsigned long long s_query_count[256];
+    __shared__ unsigned long long s_neighbor_count[256];
+    __shared__ unsigned long long s_nearest_checksum[256];
+    __shared__ unsigned long long s_kth_checksum[256];
+    __shared__ double s_sum_distance[256];
+
+    const uint32_t tid = threadIdx.x;
+    unsigned long long local_query_count = 0ull;
+    unsigned long long local_neighbor_count = 0ull;
+    unsigned long long local_nearest_checksum = 0ull;
+    unsigned long long local_kth_checksum = 0ull;
+    double local_sum_distance = 0.0;
+
+    for (uint32_t idx = blockIdx.x * blockDim.x + tid;
+         idx < query_count;
+         idx += blockDim.x * gridDim.x) {
+        const FrnRankedSummary summary = summaries[idx];
+        local_query_count += 1ull;
+        local_neighbor_count += static_cast<unsigned long long>(summary.neighbor_count);
+        local_nearest_checksum += static_cast<unsigned long long>(summary.nearest_neighbor_id);
+        local_kth_checksum += static_cast<unsigned long long>(summary.kth_neighbor_id);
+        local_sum_distance += summary.sum_distance;
+    }
+
+    s_query_count[tid] = local_query_count;
+    s_neighbor_count[tid] = local_neighbor_count;
+    s_nearest_checksum[tid] = local_nearest_checksum;
+    s_kth_checksum[tid] = local_kth_checksum;
+    s_sum_distance[tid] = local_sum_distance;
+    __syncthreads();
+
+    for (uint32_t stride = blockDim.x >> 1u; stride > 0u; stride >>= 1u) {
+        if (tid < stride) {
+            s_query_count[tid] += s_query_count[tid + stride];
+            s_neighbor_count[tid] += s_neighbor_count[tid + stride];
+            s_nearest_checksum[tid] += s_nearest_checksum[tid + stride];
+            s_kth_checksum[tid] += s_kth_checksum[tid + stride];
+            s_sum_distance[tid] += s_sum_distance[tid + stride];
+        }
+        __syncthreads();
+    }
+
+    if (tid == 0u) {
+        atomicAdd(&aggregate_out->query_count, s_query_count[0]);
+        atomicAdd(&aggregate_out->bounded_neighbor_count, s_neighbor_count[0]);
+        atomicAdd(&aggregate_out->nearest_id_checksum, s_nearest_checksum[0]);
+        atomicAdd(&aggregate_out->kth_id_checksum, s_kth_checksum[0]);
+        frn_atomic_add_double(&aggregate_out->sum_distance, s_sum_distance[0]);
+    }
+}
+
+extern "C" __global__ void fixed_radius_neighbors_3d_grid_ranked_summary_aggregate_f32_direct(
+        const GpuPoint3D* query_points,
+        uint32_t query_count,
+        const GpuPoint3D* sorted_search_points,
+        const uint32_t* cell_offsets,
+        uint32_t grid_x,
+        uint32_t grid_y,
+        uint32_t grid_z,
+        float min_x,
+        float min_y,
+        float min_z,
+        float inv_cell_size,
+        float radius,
+        uint32_t k_max,
+        FrnRankedAggregate* aggregate_out)
+{
+    __shared__ unsigned long long s_query_count[256];
+    __shared__ unsigned long long s_neighbor_count[256];
+    __shared__ unsigned long long s_nearest_checksum[256];
+    __shared__ unsigned long long s_kth_checksum[256];
+    __shared__ double s_sum_distance[256];
+
+    const uint32_t tid = threadIdx.x;
+    unsigned long long local_query_count = 0ull;
+    unsigned long long local_neighbor_count = 0ull;
+    unsigned long long local_nearest_checksum = 0ull;
+    unsigned long long local_kth_checksum = 0ull;
+    double local_sum_distance = 0.0;
+    const float radius_sq = radius * radius;
+
+    for (uint32_t qidx = blockIdx.x * blockDim.x + tid;
+         qidx < query_count;
+         qidx += blockDim.x * gridDim.x) {
+        float best_distance_sq[64];
+        uint32_t best_neighbor_id[64];
+        uint32_t best_count = 0u;
+        uint32_t worst_index = 0u;
+        float worst_distance_sq = 0.0f;
+        uint32_t worst_neighbor_id = 0u;
+        const GpuPoint3D q = query_points[qidx];
+        const int cx = floor_to_int_float((q.x - min_x) * inv_cell_size);
+        const int cy = floor_to_int_float((q.y - min_y) * inv_cell_size);
+        const int cz = floor_to_int_float((q.z - min_z) * inv_cell_size);
+
+        for (int dz = -1; dz <= 1; ++dz) {
+            const int gz_i = cz + dz;
+            if (gz_i < 0 || gz_i >= static_cast<int>(grid_z)) continue;
+            const uint32_t gz_u = static_cast<uint32_t>(gz_i);
+            for (int dy = -1; dy <= 1; ++dy) {
+                const int gy_i = cy + dy;
+                if (gy_i < 0 || gy_i >= static_cast<int>(grid_y)) continue;
+                const uint32_t gy_u = static_cast<uint32_t>(gy_i);
+                for (int dx_cell = -1; dx_cell <= 1; ++dx_cell) {
+                    const int gx_i = cx + dx_cell;
+                    if (gx_i < 0 || gx_i >= static_cast<int>(grid_x)) continue;
+                    const uint32_t gx_u = static_cast<uint32_t>(gx_i);
+                    const uint32_t cell = (gz_u * grid_y + gy_u) * grid_x + gx_u;
+                    const uint32_t begin = cell_offsets[cell];
+                    const uint32_t end = cell_offsets[cell + 1u];
+                    for (uint32_t pos = begin; pos < end; ++pos) {
+                        const GpuPoint3D t = sorted_search_points[pos];
+                        const float sx = t.x - q.x;
+                        const float sy = t.y - q.y;
+                        const float sz = t.z - q.z;
+                        const float d2 = sx * sx + sy * sy + sz * sz;
+                        if (d2 > radius_sq) continue;
+                        frn_ranked_insert_unsorted_f32(
+                            d2, t.id, k_max, best_distance_sq, best_neighbor_id,
+                            &best_count, &worst_index, &worst_distance_sq, &worst_neighbor_id);
+                    }
+                }
+            }
+        }
+
+        local_query_count += 1ull;
+        local_neighbor_count += static_cast<unsigned long long>(best_count);
+        if (best_count == 0u) {
+            local_nearest_checksum += 0xffffffffull;
+            local_kth_checksum += 0xffffffffull;
+            continue;
+        }
+        uint32_t nearest_index = 0u;
+        uint32_t kth_index = 0u;
+        for (uint32_t rank = 0u; rank < best_count; ++rank) {
+            if (frn_ranked_f32_less(best_distance_sq[rank], best_neighbor_id[rank], best_distance_sq[nearest_index], best_neighbor_id[nearest_index])) {
+                nearest_index = rank;
+            }
+            if (frn_ranked_f32_worse(best_distance_sq[rank], best_neighbor_id[rank], best_distance_sq[kth_index], best_neighbor_id[kth_index])) {
+                kth_index = rank;
+            }
+            local_sum_distance += static_cast<double>(sqrtf(best_distance_sq[rank]));
+        }
+        local_nearest_checksum += static_cast<unsigned long long>(best_neighbor_id[nearest_index]);
+        local_kth_checksum += static_cast<unsigned long long>(best_neighbor_id[kth_index]);
+    }
+
+    s_query_count[tid] = local_query_count;
+    s_neighbor_count[tid] = local_neighbor_count;
+    s_nearest_checksum[tid] = local_nearest_checksum;
+    s_kth_checksum[tid] = local_kth_checksum;
+    s_sum_distance[tid] = local_sum_distance;
+    __syncthreads();
+
+    for (uint32_t stride = blockDim.x >> 1u; stride > 0u; stride >>= 1u) {
+        if (tid < stride) {
+            s_query_count[tid] += s_query_count[tid + stride];
+            s_neighbor_count[tid] += s_neighbor_count[tid + stride];
+            s_nearest_checksum[tid] += s_nearest_checksum[tid + stride];
+            s_kth_checksum[tid] += s_kth_checksum[tid + stride];
+            s_sum_distance[tid] += s_sum_distance[tid + stride];
+        }
+        __syncthreads();
+    }
+
+    if (tid == 0u) {
+        atomicAdd(&aggregate_out->query_count, s_query_count[0]);
+        atomicAdd(&aggregate_out->bounded_neighbor_count, s_neighbor_count[0]);
+        atomicAdd(&aggregate_out->nearest_id_checksum, s_nearest_checksum[0]);
+        atomicAdd(&aggregate_out->kth_id_checksum, s_kth_checksum[0]);
+        frn_atomic_add_double(&aggregate_out->sum_distance, s_sum_distance[0]);
+    }
+}
+
+extern "C" __global__ void fixed_radius_neighbors_3d_grid_ranked_summary_aggregate_f32_blocks(
+        const GpuPoint3D* query_points,
+        uint32_t query_count,
+        const GpuPoint3D* sorted_search_points,
+        const uint32_t* cell_offsets,
+        uint32_t grid_x,
+        uint32_t grid_y,
+        uint32_t grid_z,
+        float min_x,
+        float min_y,
+        float min_z,
+        float inv_cell_size,
+        float radius,
+        uint32_t k_max,
+        FrnRankedAggregate* partials_out)
+{
+    __shared__ unsigned long long s_query_count[256];
+    __shared__ unsigned long long s_neighbor_count[256];
+    __shared__ unsigned long long s_nearest_checksum[256];
+    __shared__ unsigned long long s_kth_checksum[256];
+    __shared__ double s_sum_distance[256];
+
+    const uint32_t tid = threadIdx.x;
+    unsigned long long local_query_count = 0ull;
+    unsigned long long local_neighbor_count = 0ull;
+    unsigned long long local_nearest_checksum = 0ull;
+    unsigned long long local_kth_checksum = 0ull;
+    double local_sum_distance = 0.0;
+    const float radius_sq = radius * radius;
+
+    for (uint32_t qidx = blockIdx.x * blockDim.x + tid;
+         qidx < query_count;
+         qidx += blockDim.x * gridDim.x) {
+        float best_distance_sq[64];
+        uint32_t best_neighbor_id[64];
+        uint32_t best_count = 0u;
+        uint32_t worst_index = 0u;
+        float worst_distance_sq = 0.0f;
+        uint32_t worst_neighbor_id = 0u;
+        const GpuPoint3D q = query_points[qidx];
+        const int cx = floor_to_int_float((q.x - min_x) * inv_cell_size);
+        const int cy = floor_to_int_float((q.y - min_y) * inv_cell_size);
+        const int cz = floor_to_int_float((q.z - min_z) * inv_cell_size);
+
+        for (int dz = -1; dz <= 1; ++dz) {
+            const int gz_i = cz + dz;
+            if (gz_i < 0 || gz_i >= static_cast<int>(grid_z)) continue;
+            const uint32_t gz_u = static_cast<uint32_t>(gz_i);
+            for (int dy = -1; dy <= 1; ++dy) {
+                const int gy_i = cy + dy;
+                if (gy_i < 0 || gy_i >= static_cast<int>(grid_y)) continue;
+                const uint32_t gy_u = static_cast<uint32_t>(gy_i);
+                for (int dx_cell = -1; dx_cell <= 1; ++dx_cell) {
+                    const int gx_i = cx + dx_cell;
+                    if (gx_i < 0 || gx_i >= static_cast<int>(grid_x)) continue;
+                    const uint32_t gx_u = static_cast<uint32_t>(gx_i);
+                    const uint32_t cell = (gz_u * grid_y + gy_u) * grid_x + gx_u;
+                    const uint32_t begin = cell_offsets[cell];
+                    const uint32_t end = cell_offsets[cell + 1u];
+                    for (uint32_t pos = begin; pos < end; ++pos) {
+                        const GpuPoint3D t = sorted_search_points[pos];
+                        const float sx = t.x - q.x;
+                        const float sy = t.y - q.y;
+                        const float sz = t.z - q.z;
+                        const float d2 = sx * sx + sy * sy + sz * sz;
+                        if (d2 > radius_sq) continue;
+                        frn_ranked_insert_unsorted_f32(
+                            d2, t.id, k_max, best_distance_sq, best_neighbor_id,
+                            &best_count, &worst_index, &worst_distance_sq, &worst_neighbor_id);
+                    }
+                }
+            }
+        }
+
+        local_query_count += 1ull;
+        local_neighbor_count += static_cast<unsigned long long>(best_count);
+        if (best_count == 0u) {
+            local_nearest_checksum += 0xffffffffull;
+            local_kth_checksum += 0xffffffffull;
+            continue;
+        }
+        uint32_t nearest_index = 0u;
+        uint32_t kth_index = 0u;
+        for (uint32_t rank = 0u; rank < best_count; ++rank) {
+            if (frn_ranked_f32_less(best_distance_sq[rank], best_neighbor_id[rank], best_distance_sq[nearest_index], best_neighbor_id[nearest_index])) {
+                nearest_index = rank;
+            }
+            if (frn_ranked_f32_worse(best_distance_sq[rank], best_neighbor_id[rank], best_distance_sq[kth_index], best_neighbor_id[kth_index])) {
+                kth_index = rank;
+            }
+            local_sum_distance += static_cast<double>(sqrtf(best_distance_sq[rank]));
+        }
+        local_nearest_checksum += static_cast<unsigned long long>(best_neighbor_id[nearest_index]);
+        local_kth_checksum += static_cast<unsigned long long>(best_neighbor_id[kth_index]);
+    }
+
+    s_query_count[tid] = local_query_count;
+    s_neighbor_count[tid] = local_neighbor_count;
+    s_nearest_checksum[tid] = local_nearest_checksum;
+    s_kth_checksum[tid] = local_kth_checksum;
+    s_sum_distance[tid] = local_sum_distance;
+    __syncthreads();
+
+    for (uint32_t stride = blockDim.x >> 1u; stride > 0u; stride >>= 1u) {
+        if (tid < stride) {
+            s_query_count[tid] += s_query_count[tid + stride];
+            s_neighbor_count[tid] += s_neighbor_count[tid + stride];
+            s_nearest_checksum[tid] += s_nearest_checksum[tid + stride];
+            s_kth_checksum[tid] += s_kth_checksum[tid + stride];
+            s_sum_distance[tid] += s_sum_distance[tid + stride];
+        }
+        __syncthreads();
+    }
+
+    if (tid == 0u) {
+        partials_out[blockIdx.x].query_count = s_query_count[0];
+        partials_out[blockIdx.x].bounded_neighbor_count = s_neighbor_count[0];
+        partials_out[blockIdx.x].nearest_id_checksum = s_nearest_checksum[0];
+        partials_out[blockIdx.x].kth_id_checksum = s_kth_checksum[0];
+        partials_out[blockIdx.x].sum_distance = s_sum_distance[0];
+    }
+}
+
+extern "C" __global__ void fixed_radius_neighbors_3d_grid_ranked_summary_aggregate_f32_blocks_batch(
+        const GpuPoint3D* query_points,
+        uint32_t query_count,
+        const GpuPoint3D* sorted_search_points,
+        const uint32_t* cell_offsets,
+        uint32_t grid_x,
+        uint32_t grid_y,
+        uint32_t grid_z,
+        float min_x,
+        float min_y,
+        float min_z,
+        float inv_cell_size,
+        const float* radii,
+        const uint32_t* k_values,
+        uint32_t request_count,
+        FrnRankedAggregate* partials_out)
+{
+    const uint32_t request_index = blockIdx.y;
+    if (request_index >= request_count) return;
+
+    __shared__ unsigned long long s_query_count[256];
+    __shared__ unsigned long long s_neighbor_count[256];
+    __shared__ unsigned long long s_nearest_checksum[256];
+    __shared__ unsigned long long s_kth_checksum[256];
+    __shared__ double s_sum_distance[256];
+
+    const uint32_t tid = threadIdx.x;
+    unsigned long long local_query_count = 0ull;
+    unsigned long long local_neighbor_count = 0ull;
+    unsigned long long local_nearest_checksum = 0ull;
+    unsigned long long local_kth_checksum = 0ull;
+    double local_sum_distance = 0.0;
+    const float radius = radii[request_index];
+    const float radius_sq = radius * radius;
+    const uint32_t k_max = k_values[request_index];
+
+    for (uint32_t qidx = blockIdx.x * blockDim.x + tid;
+         qidx < query_count;
+         qidx += blockDim.x * gridDim.x) {
+        float best_distance_sq[64];
+        uint32_t best_neighbor_id[64];
+        uint32_t best_count = 0u;
+        uint32_t worst_index = 0u;
+        float worst_distance_sq = 0.0f;
+        uint32_t worst_neighbor_id = 0u;
+        const GpuPoint3D q = query_points[qidx];
+        const int cx = floor_to_int_float((q.x - min_x) * inv_cell_size);
+        const int cy = floor_to_int_float((q.y - min_y) * inv_cell_size);
+        const int cz = floor_to_int_float((q.z - min_z) * inv_cell_size);
+
+        for (int dz = -1; dz <= 1; ++dz) {
+            const int gz_i = cz + dz;
+            if (gz_i < 0 || gz_i >= static_cast<int>(grid_z)) continue;
+            const uint32_t gz_u = static_cast<uint32_t>(gz_i);
+            for (int dy = -1; dy <= 1; ++dy) {
+                const int gy_i = cy + dy;
+                if (gy_i < 0 || gy_i >= static_cast<int>(grid_y)) continue;
+                const uint32_t gy_u = static_cast<uint32_t>(gy_i);
+                for (int dx_cell = -1; dx_cell <= 1; ++dx_cell) {
+                    const int gx_i = cx + dx_cell;
+                    if (gx_i < 0 || gx_i >= static_cast<int>(grid_x)) continue;
+                    const uint32_t gx_u = static_cast<uint32_t>(gx_i);
+                    const uint32_t cell = (gz_u * grid_y + gy_u) * grid_x + gx_u;
+                    const uint32_t begin = cell_offsets[cell];
+                    const uint32_t end = cell_offsets[cell + 1u];
+                    for (uint32_t pos = begin; pos < end; ++pos) {
+                        const GpuPoint3D t = sorted_search_points[pos];
+                        const float sx = t.x - q.x;
+                        const float sy = t.y - q.y;
+                        const float sz = t.z - q.z;
+                        const float d2 = sx * sx + sy * sy + sz * sz;
+                        if (d2 > radius_sq) continue;
+                        frn_ranked_insert_unsorted_f32(
+                            d2, t.id, k_max, best_distance_sq, best_neighbor_id,
+                            &best_count, &worst_index, &worst_distance_sq, &worst_neighbor_id);
+                    }
+                }
+            }
+        }
+
+        local_query_count += 1ull;
+        local_neighbor_count += static_cast<unsigned long long>(best_count);
+        if (best_count == 0u) {
+            local_nearest_checksum += 0xffffffffull;
+            local_kth_checksum += 0xffffffffull;
+            continue;
+        }
+        uint32_t nearest_index = 0u;
+        uint32_t kth_index = 0u;
+        for (uint32_t rank = 0u; rank < best_count; ++rank) {
+            if (frn_ranked_f32_less(best_distance_sq[rank], best_neighbor_id[rank], best_distance_sq[nearest_index], best_neighbor_id[nearest_index])) {
+                nearest_index = rank;
+            }
+            if (frn_ranked_f32_worse(best_distance_sq[rank], best_neighbor_id[rank], best_distance_sq[kth_index], best_neighbor_id[kth_index])) {
+                kth_index = rank;
+            }
+            local_sum_distance += static_cast<double>(sqrtf(best_distance_sq[rank]));
+        }
+        local_nearest_checksum += static_cast<unsigned long long>(best_neighbor_id[nearest_index]);
+        local_kth_checksum += static_cast<unsigned long long>(best_neighbor_id[kth_index]);
+    }
+
+    s_query_count[tid] = local_query_count;
+    s_neighbor_count[tid] = local_neighbor_count;
+    s_nearest_checksum[tid] = local_nearest_checksum;
+    s_kth_checksum[tid] = local_kth_checksum;
+    s_sum_distance[tid] = local_sum_distance;
+    __syncthreads();
+
+    for (uint32_t stride = blockDim.x >> 1u; stride > 0u; stride >>= 1u) {
+        if (tid < stride) {
+            s_query_count[tid] += s_query_count[tid + stride];
+            s_neighbor_count[tid] += s_neighbor_count[tid + stride];
+            s_nearest_checksum[tid] += s_nearest_checksum[tid + stride];
+            s_kth_checksum[tid] += s_kth_checksum[tid + stride];
+            s_sum_distance[tid] += s_sum_distance[tid + stride];
+        }
+        __syncthreads();
+    }
+
+    if (tid == 0u) {
+        const uint32_t output_index = request_index * gridDim.x + blockIdx.x;
+        partials_out[output_index].query_count = s_query_count[0];
+        partials_out[output_index].bounded_neighbor_count = s_neighbor_count[0];
+        partials_out[output_index].nearest_id_checksum = s_nearest_checksum[0];
+        partials_out[output_index].kth_id_checksum = s_kth_checksum[0];
+        partials_out[output_index].sum_distance = s_sum_distance[0];
+    }
+}
+
+extern "C" __global__ void fixed_radius_neighbors_3d_grid_compact(
+        const GpuPoint3D* query_points,
+        uint32_t query_count,
+        const GpuPoint3D* sorted_search_points,
+        const uint32_t* cell_offsets,
+        const uint32_t* row_offsets,
+        uint32_t grid_x,
+        uint32_t grid_y,
+        uint32_t grid_z,
+        float min_x,
+        float min_y,
+        float min_z,
+        float inv_cell_size,
+        float radius,
+        uint32_t k_max,
+        FrnRecord* output)
+{
+    const uint32_t qidx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (qidx >= query_count) return;
+
+    const uint32_t row_begin = row_offsets[qidx];
+    const uint32_t row_end = row_offsets[qidx + 1u];
+    const uint32_t capacity = row_end - row_begin;
+    if (capacity == 0u) return;
+
+    const GpuPoint3D q = query_points[qidx];
+    FrnRecord* query_out = output + row_begin;
+    uint32_t count = 0u;
+    const int cx = floor_to_int_float((q.x - min_x) * inv_cell_size);
+    const int cy = floor_to_int_float((q.y - min_y) * inv_cell_size);
+    const int cz = floor_to_int_float((q.z - min_z) * inv_cell_size);
+    const float radius_sq = radius * radius;
+
+    for (int dz = -1; dz <= 1; ++dz) {
+        const int gz_i = cz + dz;
+        if (gz_i < 0 || gz_i >= static_cast<int>(grid_z)) continue;
+        const uint32_t gz_u = static_cast<uint32_t>(gz_i);
+        for (int dy = -1; dy <= 1; ++dy) {
+            const int gy_i = cy + dy;
+            if (gy_i < 0 || gy_i >= static_cast<int>(grid_y)) continue;
+            const uint32_t gy_u = static_cast<uint32_t>(gy_i);
+            for (int dx_cell = -1; dx_cell <= 1; ++dx_cell) {
+                const int gx_i = cx + dx_cell;
+                if (gx_i < 0 || gx_i >= static_cast<int>(grid_x)) continue;
+                const uint32_t gx_u = static_cast<uint32_t>(gx_i);
+                const uint32_t cell = (gz_u * grid_y + gy_u) * grid_x + gx_u;
+                const uint32_t begin = cell_offsets[cell];
+                const uint32_t end = cell_offsets[cell + 1u];
+                for (uint32_t pos = begin; pos < end; ++pos) {
+                    const GpuPoint3D t = sorted_search_points[pos];
+                    const float sx = t.x - q.x;
+                    const float sy = t.y - q.y;
+                    const float sz = t.z - q.z;
+                    const float d2 = sx * sx + sy * sy + sz * sz;
+                    if (d2 > radius_sq) continue;
+                    insert_neighbor(query_out, capacity, &count, q.id, t.id, sqrtf(d2));
+                }
+            }
+        }
+    }
+}
+)CUDA";
+
+static const char* kFixedRadiusCountRtKernelSrc = R"CUDA(
+#include <optix_device.h>
+#include <stdint.h>
+
+typedef unsigned int uint32_t;
+
+struct GpuPoint { float x, y; uint32_t id; uint32_t pad; };
+struct FixedRadiusCountRecord { uint32_t query_id, neighbor_count, threshold_reached; };
+
+struct FixedRadiusCountParams {
+    OptixTraversableHandle traversable;
+    const GpuPoint* query_points;
+    const GpuPoint* search_points;
+    const uint32_t* query_ids;
+    const double* query_x;
+    const double* query_y;
+    const uint32_t* search_ids;
+    const double* search_x;
+    const double* search_y;
+    FixedRadiusCountRecord* output;
+    uint32_t* query_ids_out;
+    uint32_t* neighbor_counts_out;
+    uint32_t* threshold_flags_out;
+    uint32_t* threshold_reached_count;
+    uint32_t query_count;
+    uint32_t threshold;
+    uint32_t use_device_columns;
+    float radius;
+    float trace_tmax;
+};
+
+extern "C" {
+__constant__ FixedRadiusCountParams params;
+}
+
+extern "C" __global__ void __raygen__frn_count_probe() {
+    const uint32_t idx = optixGetLaunchIndex().x;
+    if (idx >= params.query_count) return;
+    const uint32_t query_id = params.use_device_columns ? params.query_ids[idx] : params.query_points[idx].id;
+    const float query_x = params.use_device_columns ? static_cast<float>(params.query_x[idx]) : params.query_points[idx].x;
+    const float query_y = params.use_device_columns ? static_cast<float>(params.query_y[idx]) : params.query_points[idx].y;
+    unsigned int p0 = idx, p1 = 0u, p2 = 0u;
+    optixTrace(params.traversable,
+               make_float3(query_x, query_y, -params.radius),
+               make_float3(0.0f, 0.0f, 1.0f),
+               0.0f, params.trace_tmax, 0.0f,
+               OptixVisibilityMask(255),
+               OPTIX_RAY_FLAG_NONE,
+               0, 1, 0,
+               p0, p1, p2);
+    if (params.output) {
+        params.output[idx] = {query_id, p1, p2};
+    }
+    if (params.query_ids_out) {
+        params.query_ids_out[idx] = query_id;
+    }
+    if (params.neighbor_counts_out) {
+        params.neighbor_counts_out[idx] = p1;
+    }
+    if (params.threshold_flags_out) {
+        params.threshold_flags_out[idx] = p2 ? 1u : 0u;
+    }
+    if (params.threshold_reached_count && p2 != 0u) {
+        atomicAdd(params.threshold_reached_count, 1u);
+    }
+}
+
+extern "C" __global__ void __miss__frn_count_miss() {}
+
+extern "C" __global__ void __intersection__frn_count_isect() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t qidx = optixGetPayload_0();
+    const float query_x = params.use_device_columns ? static_cast<float>(params.query_x[qidx]) : params.query_points[qidx].x;
+    const float query_y = params.use_device_columns ? static_cast<float>(params.query_y[qidx]) : params.query_points[qidx].y;
+    const float target_x = params.use_device_columns ? static_cast<float>(params.search_x[prim]) : params.search_points[prim].x;
+    const float target_y = params.use_device_columns ? static_cast<float>(params.search_y[prim]) : params.search_points[prim].y;
+    const float dx = target_x - query_x;
+    const float dy = target_y - query_y;
+    const float radius_sq = params.radius * params.radius;
+    if ((dx * dx + dy * dy) > radius_sq) {
+        return;
+    }
+    optixReportIntersection(params.radius, 0u);
+}
+
+extern "C" __global__ void __anyhit__frn_count_anyhit() {
+    uint32_t count = optixGetPayload_1() + 1u;
+    optixSetPayload_1(count);
+    if (params.threshold != 0u && count >= params.threshold) {
+        optixSetPayload_2(1u);
+        optixTerminateRay();
+        return;
+    }
+    optixIgnoreIntersection();
+}
+)CUDA";
+
+static const char* kFixedRadiusCountHostRtKernelSrc = R"CUDA(
+#include <optix_device.h>
+#include <stdint.h>
+
+typedef unsigned int uint32_t;
+
+struct GpuPoint { float x, y; uint32_t id; uint32_t pad; };
+struct FixedRadiusCountRecord { uint32_t query_id, neighbor_count, threshold_reached; };
+
+struct FixedRadiusCountHostParams {
+    OptixTraversableHandle traversable;
+    const GpuPoint* query_points;
+    const GpuPoint* search_points;
+    FixedRadiusCountRecord* output;
+    uint32_t* threshold_reached_count;
+    uint32_t query_count;
+    uint32_t threshold;
+    float radius;
+    float trace_tmax;
+};
+
+extern "C" {
+__constant__ FixedRadiusCountHostParams params;
+}
+
+extern "C" __global__ void __raygen__frn_count_host_probe() {
+    const uint32_t idx = optixGetLaunchIndex().x;
+    if (idx >= params.query_count) return;
+    const GpuPoint q = params.query_points[idx];
+    unsigned int p0 = idx, p1 = 0u, p2 = 0u;
+    optixTrace(params.traversable,
+               make_float3(q.x, q.y, -params.radius),
+               make_float3(0.0f, 0.0f, 1.0f),
+               0.0f, params.trace_tmax, 0.0f,
+               OptixVisibilityMask(255),
+               OPTIX_RAY_FLAG_NONE,
+               0, 1, 0,
+               p0, p1, p2);
+    if (params.output) {
+        params.output[idx] = {q.id, p1, p2};
+    }
+    if (params.threshold_reached_count && p2 != 0u) {
+        atomicAdd(params.threshold_reached_count, 1u);
+    }
+}
+
+extern "C" __global__ void __miss__frn_count_host_miss() {}
+
+extern "C" __global__ void __intersection__frn_count_host_isect() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t qidx = optixGetPayload_0();
+    const GpuPoint q = params.query_points[qidx];
+    const GpuPoint t = params.search_points[prim];
+    const float dx = t.x - q.x;
+    const float dy = t.y - q.y;
+    const float radius_sq = params.radius * params.radius;
+    if ((dx * dx + dy * dy) > radius_sq) {
+        return;
+    }
+    optixReportIntersection(params.radius, 0u);
+}
+
+extern "C" __global__ void __anyhit__frn_count_host_anyhit() {
+    uint32_t count = optixGetPayload_1() + 1u;
+    optixSetPayload_1(count);
+    if (params.threshold != 0u && count >= params.threshold) {
+        optixSetPayload_2(1u);
+        optixTerminateRay();
+        return;
+    }
+    optixIgnoreIntersection();
+}
+)CUDA";
+
+static const char* kFixedRadiusNearestRtKernelSrc = R"CUDA(
+#include <optix_device.h>
+#include <stdint.h>
+
+typedef unsigned int uint32_t;
+
+struct GpuPoint { float x, y; uint32_t id; uint32_t pad; };
+struct FixedRadiusNearestRecord { uint32_t query_id, neighbor_id; float distance; };
+
+struct FixedRadiusNearestParams {
+    OptixTraversableHandle traversable;
+    const GpuPoint* query_points;
+    const GpuPoint* search_points;
+    FixedRadiusNearestRecord* output;
+    uint32_t query_count;
+    float radius;
+    float trace_tmax;
+};
+
+extern "C" {
+__constant__ FixedRadiusNearestParams params;
+}
+
+extern "C" __global__ void __raygen__frn_nearest_probe() {
+    const uint32_t idx = optixGetLaunchIndex().x;
+    if (idx >= params.query_count) return;
+    const GpuPoint q = params.query_points[idx];
+    unsigned int p0 = idx;
+    unsigned int p1 = __float_as_uint(3.4028234663852886e38f);
+    unsigned int p2 = 0xFFFFFFFFu;
+    unsigned int p3 = 0u;
+    optixTrace(params.traversable,
+               make_float3(q.x, q.y, -params.radius),
+               make_float3(0.0f, 0.0f, 1.0f),
+               0.0f, params.trace_tmax, 0.0f,
+               OptixVisibilityMask(255),
+               OPTIX_RAY_FLAG_NONE,
+               0, 1, 0,
+               p0, p1, p2, p3);
+    params.output[idx] = {q.id, p2, p3 ? sqrtf(__uint_as_float(p1)) : 3.4028234663852886e38f};
+}
+
+extern "C" __global__ void __miss__frn_nearest_miss() {}
+
+extern "C" __global__ void __intersection__frn_nearest_isect() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t qidx = optixGetPayload_0();
+    const GpuPoint q = params.query_points[qidx];
+    const GpuPoint t = params.search_points[prim];
+    const float dx = t.x - q.x;
+    const float dy = t.y - q.y;
+    const float d2 = dx * dx + dy * dy;
+    const float radius_sq = params.radius * params.radius;
+    if (d2 > radius_sq) return;
+    optixReportIntersection(params.radius, 0u);
+}
+
+extern "C" __global__ void __anyhit__frn_nearest_anyhit() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t qidx = optixGetPayload_0();
+    const GpuPoint q = params.query_points[qidx];
+    const GpuPoint t = params.search_points[prim];
+    const float dx = t.x - q.x;
+    const float dy = t.y - q.y;
+    const float d2 = dx * dx + dy * dy;
+    const float best = __uint_as_float(optixGetPayload_1());
+    const uint32_t best_id = optixGetPayload_2();
+    if (d2 < best || (d2 == best && t.id < best_id)) {
+        optixSetPayload_1(__float_as_uint(d2));
+        optixSetPayload_2(t.id);
+        optixSetPayload_3(1u);
+    }
+    optixIgnoreIntersection();
+}
+)CUDA";
+
+static const char* kPointGroupThresholdRtKernelSrc = R"CUDA(
+#include <optix_device.h>
+#include <stdint.h>
+#include <math.h>
+
+typedef unsigned int uint32_t;
+
+struct GpuPoint { float x, y; uint32_t id; uint32_t pad; };
+struct PointGroupBounds { float min_x, min_y, max_x, max_y; uint32_t id, point_offset, point_count, pad; };
+
+struct PointGroupThresholdParams {
+    OptixTraversableHandle traversable;
+    const GpuPoint* query_points;
+    const GpuPoint* search_points;
+    const PointGroupBounds* groups;
+    uint32_t* threshold_reached_count;
+    uint32_t* threshold_flags;
+    uint32_t query_count;
+    uint32_t threshold;
+    float radius;
+    float trace_tmax;
+};
+
+extern "C" {
+__constant__ PointGroupThresholdParams params;
+}
+
+static __forceinline__ __device__ float min_distance_sq_to_group(const GpuPoint q, const PointGroupBounds g) {
+    const float dx = q.x < g.min_x ? (g.min_x - q.x) : (q.x > g.max_x ? (q.x - g.max_x) : 0.0f);
+    const float dy = q.y < g.min_y ? (g.min_y - q.y) : (q.y > g.max_y ? (q.y - g.max_y) : 0.0f);
+    return dx * dx + dy * dy;
+}
+
+extern "C" __global__ void __raygen__point_group_threshold_probe() {
+    const uint32_t idx = optixGetLaunchIndex().x;
+    if (idx >= params.query_count) return;
+    const GpuPoint q = params.query_points[idx];
+    unsigned int p0 = idx;
+    unsigned int p1 = 0u;
+    unsigned int p2 = 0u;
+    optixTrace(params.traversable,
+               make_float3(q.x, q.y, -params.radius),
+               make_float3(0.0f, 0.0f, 1.0f),
+               0.0f, params.trace_tmax, 0.0f,
+               OptixVisibilityMask(255),
+               OPTIX_RAY_FLAG_NONE,
+               0, 1, 0,
+               p0, p1, p2);
+    if (params.threshold_reached_count && p2 != 0u) {
+        atomicAdd(params.threshold_reached_count, 1u);
+    }
+    if (params.threshold_flags) {
+        params.threshold_flags[idx] = p2 != 0u ? 1u : 0u;
+    }
+}
+
+extern "C" __global__ void __miss__point_group_threshold_miss() {}
+
+extern "C" __global__ void __intersection__point_group_threshold_isect() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t qidx = optixGetPayload_0();
+    const GpuPoint q = params.query_points[qidx];
+    const PointGroupBounds g = params.groups[prim];
+    const float radius_sq = params.radius * params.radius;
+    if (min_distance_sq_to_group(q, g) > radius_sq) {
+        return;
+    }
+    optixReportIntersection(params.radius, 0u);
+}
+
+extern "C" __global__ void __anyhit__point_group_threshold_anyhit() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t qidx = optixGetPayload_0();
+    const GpuPoint q = params.query_points[qidx];
+    const PointGroupBounds g = params.groups[prim];
+    const float radius_sq = params.radius * params.radius;
+    uint32_t count = optixGetPayload_1();
+    for (uint32_t i = 0; i < g.point_count; ++i) {
+        const GpuPoint t = params.search_points[g.point_offset + i];
+        const float dx = t.x - q.x;
+        const float dy = t.y - q.y;
+        if ((dx * dx + dy * dy) <= radius_sq) {
+            ++count;
+            if (params.threshold != 0u && count >= params.threshold) {
+                optixSetPayload_1(count);
+                optixSetPayload_2(1u);
+                optixTerminateRay();
+                return;
+            }
+        }
+    }
+    optixSetPayload_1(count);
+    optixIgnoreIntersection();
+}
+)CUDA";
+
+static const char* kPointGroupNearestRtKernelSrc = R"CUDA(
+#include <optix_device.h>
+#include <stdint.h>
+#include <math.h>
+
+typedef unsigned int uint32_t;
+
+struct GpuPoint { float x, y; uint32_t id; uint32_t pad; };
+struct PointGroupBounds { float min_x, min_y, max_x, max_y; uint32_t id, point_offset, point_count, pad; };
+struct FixedRadiusNearestRecord { uint32_t query_id, neighbor_id; float distance; };
+
+struct PointGroupNearestParams {
+    OptixTraversableHandle traversable;
+    const GpuPoint* query_points;
+    const GpuPoint* search_points;
+    const PointGroupBounds* groups;
+    const uint32_t* active_flags;
+    uint32_t* active_query_count;
+    FixedRadiusNearestRecord* output;
+    uint32_t query_count;
+    uint32_t active_keep_value;
+    float radius;
+    float trace_tmax;
+};
+
+extern "C" {
+__constant__ PointGroupNearestParams params;
+}
+
+static __forceinline__ __device__ float nearest_min_distance_sq_to_group(const GpuPoint q, const PointGroupBounds g) {
+    const float dx = q.x < g.min_x ? (g.min_x - q.x) : (q.x > g.max_x ? (q.x - g.max_x) : 0.0f);
+    const float dy = q.y < g.min_y ? (g.min_y - q.y) : (q.y > g.max_y ? (q.y - g.max_y) : 0.0f);
+    return dx * dx + dy * dy;
+}
+
+extern "C" __global__ void __raygen__point_group_nearest_probe() {
+    const uint32_t idx = optixGetLaunchIndex().x;
+    if (idx >= params.query_count) return;
+    const GpuPoint q = params.query_points[idx];
+    if (params.active_flags && params.active_flags[idx] != params.active_keep_value) {
+        params.output[idx] = {q.id, 0xffffffffu, -1.0f};
+        return;
+    }
+    if (params.active_flags && params.active_query_count) {
+        atomicAdd(params.active_query_count, 1u);
+    }
+    unsigned int p0 = idx;
+    unsigned int p1 = __float_as_uint(3.4028234663852886e38f);
+    unsigned int p2 = 0xFFFFFFFFu;
+    unsigned int p3 = 0u;
+    optixTrace(params.traversable,
+               make_float3(q.x, q.y, -params.radius),
+               make_float3(0.0f, 0.0f, 1.0f),
+               0.0f, params.trace_tmax, 0.0f,
+               OptixVisibilityMask(255),
+               OPTIX_RAY_FLAG_NONE,
+               0, 1, 0,
+               p0, p1, p2, p3);
+    params.output[idx] = {q.id, p2, p3 ? sqrtf(__uint_as_float(p1)) : 3.4028234663852886e38f};
+}
+
+extern "C" __global__ void __miss__point_group_nearest_miss() {}
+
+extern "C" __global__ void __intersection__point_group_nearest_isect() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t qidx = optixGetPayload_0();
+    const GpuPoint q = params.query_points[qidx];
+    const PointGroupBounds g = params.groups[prim];
+    const float radius_sq = params.radius * params.radius;
+    if (nearest_min_distance_sq_to_group(q, g) > radius_sq) {
+        return;
+    }
+    optixReportIntersection(params.radius, 0u);
+}
+
+extern "C" __global__ void __anyhit__point_group_nearest_anyhit() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t qidx = optixGetPayload_0();
+    const GpuPoint q = params.query_points[qidx];
+    const PointGroupBounds g = params.groups[prim];
+    const float radius_sq = params.radius * params.radius;
+    float best = __uint_as_float(optixGetPayload_1());
+    uint32_t best_id = optixGetPayload_2();
+    uint32_t found = optixGetPayload_3();
+    for (uint32_t i = 0; i < g.point_count; ++i) {
+        const GpuPoint t = params.search_points[g.point_offset + i];
+        const float dx = t.x - q.x;
+        const float dy = t.y - q.y;
+        const float d2 = dx * dx + dy * dy;
+        if (d2 > radius_sq) {
+            continue;
+        }
+        if (d2 < best || (d2 == best && t.id < best_id)) {
+            best = d2;
+            best_id = t.id;
+            found = 1u;
+        }
+    }
+    optixSetPayload_1(__float_as_uint(best));
+    optixSetPayload_2(best_id);
+    optixSetPayload_3(found);
+    optixIgnoreIntersection();
+}
+)CUDA";
+
+static const char* kPointGroupNearestMaxReduceKernelSrc = R"CUDA(
+#include <stdint.h>
+#include <math.h>
+
+typedef unsigned int uint32_t;
+
+struct FixedRadiusNearestRecord { uint32_t query_id, neighbor_id; float distance; };
+
+static __forceinline__ __device__ bool better_max_record(
+        const FixedRadiusNearestRecord candidate,
+        const FixedRadiusNearestRecord incumbent)
+{
+    if (candidate.distance > incumbent.distance) return true;
+    if (candidate.distance < incumbent.distance) return false;
+    if (candidate.query_id < incumbent.query_id) return true;
+    if (candidate.query_id > incumbent.query_id) return false;
+    return candidate.neighbor_id < incumbent.neighbor_id;
+}
+
+extern "C" __global__ void reduce_point_group_nearest_max_distance(
+        const FixedRadiusNearestRecord* input,
+        uint32_t count,
+        FixedRadiusNearestRecord* output)
+{
+    __shared__ FixedRadiusNearestRecord scratch[256];
+    const uint32_t tid = threadIdx.x;
+    FixedRadiusNearestRecord best = {0xffffffffu, 0xffffffffu, -1.0f};
+    for (uint32_t index = tid; index < count; index += blockDim.x) {
+        FixedRadiusNearestRecord row = input[index];
+        if (row.neighbor_id == 0xffffffffu) {
+            if (row.distance < 0.0f) {
+                continue;
+            }
+            row.distance = INFINITY;
+        } else if (!isfinite(row.distance)) {
+            row.distance = INFINITY;
+        }
+        if (better_max_record(row, best)) {
+            best = row;
+        }
+    }
+    scratch[tid] = best;
+    __syncthreads();
+    for (uint32_t stride = blockDim.x >> 1; stride > 0; stride >>= 1) {
+        if (tid < stride && better_max_record(scratch[tid + stride], scratch[tid])) {
+            scratch[tid] = scratch[tid + stride];
+        }
+        __syncthreads();
+    }
+    if (tid == 0) {
+        output[0] = scratch[0];
+    }
+}
+
+extern "C" __global__ void split_point_group_nearest_columns(
+        const FixedRadiusNearestRecord* input,
+        uint32_t count,
+        uint32_t* query_ids_out,
+        uint32_t* neighbor_ids_out,
+        double* distances_out)
+{
+    const uint32_t index = blockIdx.x * blockDim.x + threadIdx.x;
+    if (index >= count) return;
+    const FixedRadiusNearestRecord row = input[index];
+    query_ids_out[index] = row.query_id;
+    neighbor_ids_out[index] = row.neighbor_id;
+    distances_out[index] = static_cast<double>(row.distance);
+}
+)CUDA";
+
+static const char* kKnnRowsKernelSrc = R"CUDA(
+#include <stdint.h>
+#include <math.h>
+#include <float.h>
+
+struct GpuPoint { float x, y; uint32_t id; uint32_t pad; };
+struct KnnRecord { uint32_t query_id, neighbor_id; float distance; uint32_t neighbor_rank; };
+
+extern "C" __global__ void knn_rows(
+        const GpuPoint* query_points,
+        uint32_t        query_count,
+        const GpuPoint* search_points,
+        uint32_t        search_count,
+        uint32_t        k,
+        KnnRecord*      output)
+{
+    const uint32_t qidx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (qidx >= query_count) return;
+
+    KnnRecord* query_out = output + static_cast<size_t>(qidx) * static_cast<size_t>(k);
+    for (uint32_t slot = 0; slot < k; ++slot) {
+        query_out[slot].query_id = query_points[qidx].id;
+        query_out[slot].neighbor_id = 0xffffffffu;
+        query_out[slot].distance = INFINITY;
+        query_out[slot].neighbor_rank = 0u;
+    }
+
+    const float px = query_points[qidx].x;
+    const float py = query_points[qidx].y;
+    for (uint32_t sidx = 0; sidx < search_count; ++sidx) {
+        const float dx = search_points[sidx].x - px;
+        const float dy = search_points[sidx].y - py;
+        const float distance = sqrtf(dx * dx + dy * dy);
+        const uint32_t neighbor_id = search_points[sidx].id;
+
+        uint32_t insert_at = k;
+        for (uint32_t slot = 0; slot < k; ++slot) {
+            const bool empty = query_out[slot].neighbor_id == 0xffffffffu;
+            const bool better_distance = distance < query_out[slot].distance - 1.0e-7f;
+            const bool same_distance = fabsf(distance - query_out[slot].distance) <= 1.0e-7f;
+            const bool better_id = same_distance && neighbor_id < query_out[slot].neighbor_id;
+            if (empty || better_distance || better_id) {
+                insert_at = slot;
+                break;
+            }
+        }
+        if (insert_at == k) {
+            continue;
+        }
+        for (uint32_t slot = k - 1; slot > insert_at; --slot) {
+            query_out[slot] = query_out[slot - 1];
+        }
+        query_out[insert_at].query_id = query_points[qidx].id;
+        query_out[insert_at].neighbor_id = neighbor_id;
+        query_out[insert_at].distance = distance;
+    }
+
+    for (uint32_t slot = 0; slot < k; ++slot) {
+        if (query_out[slot].neighbor_id == 0xffffffffu) {
+            break;
+        }
+        query_out[slot].neighbor_rank = slot + 1;
+    }
+}
+)CUDA";
+
+static const char* kPackPoint2DDeviceAabbsKernelSrc = R"CUDA(
+#include <stdint.h>
+
+struct RtdlDeviceAabb {
+    float minX, minY, minZ;
+    float maxX, maxY, maxZ;
+};
+
+extern "C" __global__ void pack_point2d_fixed_radius_aabbs(
+        const double* x,
+        const double* y,
+        RtdlDeviceAabb* aabbs,
+        uint32_t point_count,
+        float aabb_radius)
+{
+    const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= point_count) return;
+    const float px = static_cast<float>(x[idx]);
+    const float py = static_cast<float>(y[idx]);
+    RtdlDeviceAabb aabb;
+    aabb.minX = px - aabb_radius;
+    aabb.minY = py - aabb_radius;
+    aabb.minZ = -aabb_radius;
+    aabb.maxX = px + aabb_radius;
+    aabb.maxY = py + aabb_radius;
+    aabb.maxZ = aabb_radius;
+    aabbs[idx] = aabb;
+}
+)CUDA";
+
+static const char* kPackRay2DDeviceColumnsKernelSrc = R"CUDA(
+#include <stdint.h>
+
+struct GpuRay {
+    float ox, oy, dx, dy, tmax;
+    uint32_t id;
+};
+
+extern "C" __global__ void pack_ray2d_device_columns(
+        const uint32_t* ids,
+        const double* ox,
+        const double* oy,
+        const double* dx,
+        const double* dy,
+        const double* tmax,
+        GpuRay* output,
+        uint32_t ray_count)
+{
+    const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= ray_count) return;
+    GpuRay ray;
+    ray.ox = static_cast<float>(ox[idx]);
+    ray.oy = static_cast<float>(oy[idx]);
+    ray.dx = static_cast<float>(dx[idx]);
+    ray.dy = static_cast<float>(dy[idx]);
+    ray.tmax = static_cast<float>(tmax[idx]);
+    ray.id = ids[idx];
+    output[idx] = ray;
+}
+)CUDA";
+
+static const char* kPackTriangle2DDeviceColumnsKernelSrc = R"CUDA(
+#include <stdint.h>
+#include <math.h>
+
+struct GpuTriangle {
+    float x0, y0, x1, y1, x2, y2;
+    uint32_t id;
+};
+
+struct RtdlDeviceAabb {
+    float minX, minY, minZ;
+    float maxX, maxY, maxZ;
+};
+
+extern "C" __global__ void pack_triangle2d_device_columns(
+        const uint32_t* ids,
+        const double* x0,
+        const double* y0,
+        const double* x1,
+        const double* y1,
+        const double* x2,
+        const double* y2,
+        GpuTriangle* triangles,
+        RtdlDeviceAabb* aabbs,
+        uint32_t triangle_count)
+{
+    const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= triangle_count) return;
+    GpuTriangle tri;
+    tri.x0 = static_cast<float>(x0[idx]);
+    tri.y0 = static_cast<float>(y0[idx]);
+    tri.x1 = static_cast<float>(x1[idx]);
+    tri.y1 = static_cast<float>(y1[idx]);
+    tri.x2 = static_cast<float>(x2[idx]);
+    tri.y2 = static_cast<float>(y2[idx]);
+    tri.id = ids[idx];
+    triangles[idx] = tri;
+
+    const float min_x = fminf(fminf(tri.x0, tri.x1), tri.x2);
+    const float min_y = fminf(fminf(tri.y0, tri.y1), tri.y2);
+    const float max_x = fmaxf(fmaxf(tri.x0, tri.x1), tri.x2);
+    const float max_y = fmaxf(fmaxf(tri.y0, tri.y1), tri.y2);
+    RtdlDeviceAabb aabb;
+    aabb.minX = min_x;
+    aabb.minY = min_y;
+    aabb.minZ = -1.0e-4f;
+    aabb.maxX = max_x;
+    aabb.maxY = max_y;
+    aabb.maxZ = 1.0e-4f;
+    aabbs[idx] = aabb;
+}
+)CUDA";
+
+static const char* kPackTriangle3DDeviceColumnsKernelSrc = R"CUDA(
+#include <stdint.h>
+#include <math.h>
+
+struct GpuTriangle3DHost {
+    float x0, y0, z0, x1, y1, z1, x2, y2, z2;
+    uint32_t id;
+};
+
+struct RtdlDeviceAabb {
+    float minX, minY, minZ;
+    float maxX, maxY, maxZ;
+};
+
+extern "C" __global__ void pack_triangle3d_device_columns(
+        const uint32_t* ids,
+        const double* x0,
+        const double* y0,
+        const double* z0,
+        const double* x1,
+        const double* y1,
+        const double* z1,
+        const double* x2,
+        const double* y2,
+        const double* z2,
+        GpuTriangle3DHost* triangles,
+        RtdlDeviceAabb* aabbs,
+        uint32_t triangle_count)
+{
+    const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= triangle_count) return;
+    GpuTriangle3DHost tri;
+    tri.x0 = static_cast<float>(x0[idx]);
+    tri.y0 = static_cast<float>(y0[idx]);
+    tri.z0 = static_cast<float>(z0[idx]);
+    tri.x1 = static_cast<float>(x1[idx]);
+    tri.y1 = static_cast<float>(y1[idx]);
+    tri.z1 = static_cast<float>(z1[idx]);
+    tri.x2 = static_cast<float>(x2[idx]);
+    tri.y2 = static_cast<float>(y2[idx]);
+    tri.z2 = static_cast<float>(z2[idx]);
+    tri.id = ids[idx];
+    triangles[idx] = tri;
+
+    RtdlDeviceAabb aabb;
+    aabb.minX = fminf(fminf(tri.x0, tri.x1), tri.x2) - 1.0e-3f;
+    aabb.minY = fminf(fminf(tri.y0, tri.y1), tri.y2) - 1.0e-3f;
+    aabb.minZ = fminf(fminf(tri.z0, tri.z1), tri.z2) - 1.0e-3f;
+    aabb.maxX = fmaxf(fmaxf(tri.x0, tri.x1), tri.x2) + 1.0e-3f;
+    aabb.maxY = fmaxf(fmaxf(tri.y0, tri.y1), tri.y2) + 1.0e-3f;
+    aabb.maxZ = fmaxf(fmaxf(tri.z0, tri.z1), tri.z2) + 1.0e-3f;
+    aabbs[idx] = aabb;
+}
+)CUDA";
+
+static const char* kPackRay3DDeviceColumnsKernelSrc = R"CUDA(
+#include <stdint.h>
+#include <math.h>
+
+struct GpuRay3DHost {
+    float ox, oy, oz, dx, dy, dz, tmax;
+    uint32_t id;
+};
+
+extern "C" __global__ void pack_ray3d_device_columns(
+        const uint32_t* ids,
+        const double* ox,
+        const double* oy,
+        const double* oz,
+        const double* dx,
+        const double* dy,
+        const double* dz,
+        const double* tmax,
+        GpuRay3DHost* rays,
+        uint32_t ray_count)
+{
+    const uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= ray_count) return;
+    const float fdx = static_cast<float>(dx[idx]);
+    const float fdy = static_cast<float>(dy[idx]);
+    const float fdz = static_cast<float>(dz[idx]);
+    const float len = sqrtf(fdx * fdx + fdy * fdy + fdz * fdz);
+    GpuRay3DHost ray;
+    ray.ox = static_cast<float>(ox[idx]);
+    ray.oy = static_cast<float>(oy[idx]);
+    ray.oz = static_cast<float>(oz[idx]);
+    if (len > 1.0e-10f) {
+        ray.dx = fdx / len;
+        ray.dy = fdy / len;
+        ray.dz = fdz / len;
+        ray.tmax = static_cast<float>(tmax[idx]) * len;
+    } else {
+        ray.dx = 0.0f;
+        ray.dy = 0.0f;
+        ray.dz = 0.0f;
+        ray.tmax = 0.0f;
+    }
+    ray.id = ids[idx];
+    rays[idx] = ray;
+}
+)CUDA";
+
+// ---------- Columnar predicate-scan kernel ----------------------------------
+
+static const char* kColumnarPredicateScanKernelSrc = R"CUDA(
+#include <optix_device.h>
+#include <stdint.h>
+
+struct ColumnarPredicateScanParams {
+    OptixTraversableHandle traversable;
+    uint32_t* hit_words;
+    uint32_t hit_word_count;
+    uint32_t x_lo;
+    uint32_t y_lo;
+    uint32_t z_lo;
+    uint32_t z_hi;
+    uint32_t x_count;
+    uint32_t y_count;
+};
+
+extern "C" {
+__constant__ ColumnarPredicateScanParams params;
+}
+
+extern "C" __global__ void __raygen__columnar_predicate_scan_probe() {
+    const uint32_t x_index = optixGetLaunchIndex().x;
+    const uint32_t y_index = optixGetLaunchIndex().y;
+    if (x_index >= params.x_count || y_index >= params.y_count) {
+        return;
+    }
+    const float origin_x = static_cast<float>(params.x_lo + x_index);
+    const float origin_y = static_cast<float>(params.y_lo + y_index);
+    const float origin_z = static_cast<float>(params.z_lo) - 1.0f;
+    const float tmax = static_cast<float>((params.z_hi - params.z_lo) + 2u);
+    optixTrace(
+        params.traversable,
+        make_float3(origin_x, origin_y, origin_z),
+        make_float3(0.0f, 0.0f, 1.0f),
+        0.0f,
+        tmax,
+        0.0f,
+        OptixVisibilityMask(255),
+        OPTIX_RAY_FLAG_NONE,
+        0, 1, 0);
+}
+
+extern "C" __global__ void __miss__columnar_predicate_scan_miss() {}
+
+extern "C" __global__ void __intersection__columnar_predicate_scan_isect() {
+    optixReportIntersection(0.5f, 0u);
+}
+
+extern "C" __global__ void __anyhit__columnar_predicate_scan_anyhit() {
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const uint32_t word = prim >> 5;
+    if (word < params.hit_word_count) {
+        const uint32_t bit = 1u << (prim & 31u);
+        atomicOr(params.hit_words + word, bit);
+    }
+    optixIgnoreIntersection();
+}
+)CUDA";
+
+static const char* kGraphBfsRayKernelSrc = R"CUDA(
+#include <optix_device.h>
+#include <stdint.h>
+
+struct FrontierVertex {
+    uint32_t vertex_id;
+    uint32_t level;
+};
+
+struct EdgeSeed {
+    uint32_t u;
+    uint32_t v;
+};
+
+struct GraphEdge {
+    uint32_t src;
+    uint32_t dst;
+};
+
+struct BfsRow {
+    uint32_t src_vertex;
+    uint32_t dst_vertex;
+    uint32_t level;
+};
+
+struct GraphBfsParams {
+    OptixTraversableHandle traversable;
+    const GraphEdge* edges;
+    const FrontierVertex* frontier;
+    const uint32_t* visited_flags;
+    uint32_t* discovered_flags;
+    BfsRow* output;
+    uint32_t* output_count;
+    uint32_t output_capacity;
+    uint32_t frontier_count;
+    uint32_t vertex_count;
+    uint32_t dedupe;
+};
+
+extern "C" {
+__constant__ GraphBfsParams params;
+}
+
+extern "C" __global__ void __raygen__graph_bfs_probe() {
+    const uint32_t idx = optixGetLaunchIndex().x;
+    if (idx >= params.frontier_count) {
+        return;
+    }
+    const FrontierVertex f = params.frontier[idx];
+    if (f.vertex_id >= params.vertex_count) {
+        return;
+    }
+    uint32_t p0 = idx;
+    optixTrace(
+        params.traversable,
+        make_float3(static_cast<float>(f.vertex_id), -1.0f, 0.0f),
+        make_float3(0.0f, 1.0f, 0.0f),
+        0.0f,
+        static_cast<float>(params.vertex_count + 2u),
+        0.0f,
+        OptixVisibilityMask(255),
+        OPTIX_RAY_FLAG_NONE,
+        0, 1, 0,
+        p0);
+}
+
+extern "C" __global__ void __miss__graph_bfs_miss() {}
+
+extern "C" __global__ void __intersection__graph_bfs_isect() {
+    optixReportIntersection(optixGetRayTmin() + 1.0e-6f, 0u);
+}
+
+extern "C" __global__ void __anyhit__graph_bfs_anyhit() {
+    const uint32_t frontier_index = optixGetPayload_0();
+    const uint32_t prim = optixGetPrimitiveIndex();
+    const FrontierVertex f = params.frontier[frontier_index];
+    const GraphEdge edge = params.edges[prim];
+    if (edge.src != f.vertex_id) {
+        optixIgnoreIntersection();
+        return;
+    }
+    if (params.visited_flags[edge.dst] != 0u) {
+        optixIgnoreIntersection();
+        return;
+    }
+    if (params.dedupe != 0u) {
+        if (atomicExch(params.discovered_flags + edge.dst, 1u) != 0u) {
+            optixIgnoreIntersection();
+            return;
+        }
+    }
+    const uint32_t slot = atomicAdd(params.output_count, 1u);
+    if (slot < params.output_capacity) {
+        params.output[slot] = {edge.src, edge.dst, f.level + 1u};
+    }
+    optixIgnoreIntersection();
+}
+)CUDA";
+
+static const char* kGraphTriangleRayKernelSrc = R"CUDA(
+#include <optix_device.h>
+#include <stdint.h>
+
+struct EdgeSeed {
+    uint32_t u;
+    uint32_t v;
+};
+
+struct GraphEdge {
+    uint32_t src;
+    uint32_t dst;
+};
+
+struct TriangleCandidate {
+    uint32_t seed_index;
+    uint32_t side;
+    uint32_t dst_vertex;
+};
+
+struct GraphTriangleParams {
+    OptixTraversableHandle traversable;
+    const GraphEdge* edges;
+    const EdgeSeed* seeds;
+    TriangleCandidate* output;
+    uint32_t* output_count;
+    uint32_t output_capacity;
+    uint32_t seed_count;
+    uint32_t vertex_count;
+};
+
+extern "C" {
+__constant__ GraphTriangleParams params;
+}
+
+extern "C" __global__ void __raygen__graph_triangle_cycle_candidates() {
+    const uint32_t ray_index = optixGetLaunchIndex().x;
+    const uint32_t seed_index = ray_index >> 1;
+    if (seed_index >= params.seed_count) {
+        return;
+    }
+    const EdgeSeed seed = params.seeds[seed_index];
+    const uint32_t src = (ray_index & 1u) == 0u ? seed.u : seed.v;
+    if (src >= params.vertex_count) {
+        return;
+    }
+    uint32_t p0 = ray_index;
+    optixTrace(
+        params.traversable,
+        make_float3(static_cast<float>(src), -1.0f, 0.0f),
+        make_float3(0.0f, 1.0f, 0.0f),
+        0.0f,
+        static_cast<float>(params.vertex_count + 2u),
+        0.0f,
+        OptixVisibilityMask(255),
+        OPTIX_RAY_FLAG_NONE,
+        0, 1, 0,
+        p0);
+}
+
+extern "C" __global__ void __miss__graph_triangle_miss() {}
+
+extern "C" __global__ void __intersection__graph_triangle_isect() {
+    optixReportIntersection(optixGetRayTmin() + 1.0e-6f, 0u);
+}
+
+extern "C" __global__ void __anyhit__graph_triangle_anyhit() {
+    const uint32_t ray_index = optixGetPayload_0();
+    const uint32_t seed_index = ray_index >> 1;
+    const uint32_t side = ray_index & 1u;
+    const EdgeSeed seed = params.seeds[seed_index];
+    const uint32_t src = side == 0u ? seed.u : seed.v;
+    const GraphEdge edge = params.edges[optixGetPrimitiveIndex()];
+    if (edge.src != src) {
+        optixIgnoreIntersection();
+        return;
+    }
+    const uint32_t slot = atomicAdd(params.output_count, 1u);
+    if (slot < params.output_capacity) {
+        params.output[slot] = {seed_index, side, edge.dst};
+    }
+    optixIgnoreIntersection();
+}
+)CUDA";
+
+static const char* kKnnRows3DKernelSrc = R"CUDA(
+#include <stdint.h>
+#include <math.h>
+#include <float.h>
+
+struct GpuPoint3D { float x, y, z; uint32_t id; };
+struct KnnRecord { uint32_t query_id, neighbor_id; float distance; uint32_t neighbor_rank; };
+
+extern "C" __global__ void knn_rows_3d(
+        const GpuPoint3D* query_points,
+        uint32_t          query_count,
+        const GpuPoint3D* search_points,
+        uint32_t          search_count,
+        uint32_t          k,
+        KnnRecord*        output)
+{
+    const uint32_t qidx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (qidx >= query_count) return;
+
+    KnnRecord* query_out = output + static_cast<size_t>(qidx) * static_cast<size_t>(k);
+    for (uint32_t slot = 0; slot < k; ++slot) {
+        query_out[slot].query_id = query_points[qidx].id;
+        query_out[slot].neighbor_id = 0xffffffffu;
+        query_out[slot].distance = INFINITY;
+        query_out[slot].neighbor_rank = 0u;
+    }
+
+    const float px = query_points[qidx].x;
+    const float py = query_points[qidx].y;
+    const float pz = query_points[qidx].z;
+    for (uint32_t sidx = 0; sidx < search_count; ++sidx) {
+        const float dx = search_points[sidx].x - px;
+        const float dy = search_points[sidx].y - py;
+        const float dz = search_points[sidx].z - pz;
+        const float distance = sqrtf(dx * dx + dy * dy + dz * dz);
+        const uint32_t neighbor_id = search_points[sidx].id;
+
+        uint32_t insert_at = k;
+        for (uint32_t slot = 0; slot < k; ++slot) {
+            const bool empty = query_out[slot].neighbor_id == 0xffffffffu;
+            const bool better_distance = distance < query_out[slot].distance - 1.0e-7f;
+            const bool same_distance = fabsf(distance - query_out[slot].distance) <= 1.0e-7f;
+            const bool better_id = same_distance && neighbor_id < query_out[slot].neighbor_id;
+            if (empty || better_distance || better_id) {
+                insert_at = slot;
+                break;
+            }
+        }
+        if (insert_at == k) {
+            continue;
+        }
+        for (uint32_t slot = k - 1; slot > insert_at; --slot) {
+            query_out[slot] = query_out[slot - 1];
+        }
+        query_out[insert_at].query_id = query_points[qidx].id;
+        query_out[insert_at].neighbor_id = neighbor_id;
+        query_out[insert_at].distance = distance;
+    }
+
+    for (uint32_t slot = 0; slot < k; ++slot) {
+        if (query_out[slot].neighbor_id == 0xffffffffu) {
+            break;
+        }
+        query_out[slot].neighbor_rank = slot + 1;
+    }
+}
+)CUDA";
+
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// Cached pipeline singletons
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+struct SegmentPairIntersectionPipeline {
+    PipelineHolder* pipe = nullptr;
+    std::once_flag   init;
+};
+
+struct SegmentFirstHitPipeline {
+    PipelineHolder* pipe = nullptr;
+    std::once_flag   init;
+};
+
+struct RayjoinCdbPointLocationPipeline {
+    PipelineHolder* pipe = nullptr;
+    std::once_flag   init;
+};
+
+struct PipPipeline {
+    PipelineHolder* pipe = nullptr;
+    std::once_flag   init;
+};
+
+struct ShapePairRelationPipeline {
+    PipelineHolder* pipe = nullptr;
+    std::once_flag   init;
+};
+
+struct RayHitCountPipeline {
+    PipelineHolder* pipe = nullptr;
+    std::once_flag   init;
+};
+
+struct RayAnyHitPipeline {
+    PipelineHolder* pipe = nullptr;
+    std::once_flag   init;
+};
+
+struct SegPolyPipeline {
+    PipelineHolder* pipe = nullptr;
+    std::once_flag   init;
+};
+
+struct RayHitCount3DPipeline {
+    PipelineHolder* pipe = nullptr;
+    std::once_flag   init;
+};
+
+struct RayClosestHit3DPipeline {
+    PipelineHolder* pipe = nullptr;
+    std::once_flag   init;
+};
+
+struct ColumnarPredicateScanPipeline {
+    PipelineHolder* pipe = nullptr;
+    std::once_flag init;
+};
+
+struct GraphEdgePipeline {
+    PipelineHolder* pipe = nullptr;
+    std::once_flag init;
+};
+
+struct PnsCuFunction {
+    CUmodule   module   = nullptr;
+    CUfunction fn       = nullptr;
+    std::once_flag init;
+};
+
+struct FrnCuFunction {
+    CUmodule   module   = nullptr;
+    CUfunction fn       = nullptr;
+    std::once_flag init;
+};
+
+struct KnnCuFunction {
+    CUmodule   module   = nullptr;
+    CUfunction fn       = nullptr;
+    std::once_flag init;
+};
+
+struct ClosestHitGroupedArgminCuFunctions {
+    CUmodule module = nullptr;
+    CUfunction init_fn = nullptr;
+    CUfunction min_key_fn = nullptr;
+    CUfunction scatter_unique_fn = nullptr;
+    CUfunction min_index_fn = nullptr;
+    CUfunction materialize_fn = nullptr;
+    CUfunction merge_two_fn = nullptr;
+    CUfunction candidate_min_key_fn = nullptr;
+    CUfunction candidate_min_index_fn = nullptr;
+    std::once_flag init;
+};
+
+static SegmentPairIntersectionPipeline         g_segment_pair_intersection;
+static SegmentPairIntersectionPipeline         g_segment_pair_candidate_device_columns;
+static SegmentPairIntersectionPipeline         g_segment_pair_left_id_count_device_columns;
+static SegmentFirstHitPipeline                 g_segment_first_hit;
+static RayjoinCdbPointLocationPipeline         g_rayjoin_cdb_point_location;
+static PipPipeline         g_pip;
+static PipPipeline         g_pip_scalar_count;
+static PipPipeline         g_pip_candidate_device_columns;
+static PipPipeline         g_pip_relation_status_candidate_device_columns;
+static PipPipeline         g_pip_relation_status_corrected_scalar_count;
+static PipPipeline         g_pip_point_id_count_device_columns;
+static PipPipeline         g_point_closed_shape_boundary_event;
+static ShapePairRelationPipeline     g_shape_pair_relation;
+static RayHitCountPipeline  g_rayhit;
+static RayHitCount3DPipeline g_rayhit3d;
+static RayClosestHit3DPipeline g_rayclosest3d;
+static ClosestHitGroupedArgminCuFunctions g_rayclosest3d_grouped_argmin;
+static RayAnyHitPipeline    g_rayhit3d_sum;
+static RayAnyHitPipeline    g_rayanyhit;
+static RayAnyHitPipeline    g_rayanyhit3d;
+static RayAnyHitPipeline    g_rayanyhit_weighted_sum3d;
+static RayAnyHitPipeline    g_rayprimitive_grouped_i64_reduction3d;
+static RayAnyHitPipeline    g_raytriangle_hitstream3d;
+static RayAnyHitPipeline    g_raytriangle_hitstream_device_columns3d;
+static RayAnyHitPipeline    g_rayanyhit_count;
+static RayAnyHitPipeline    g_aabb_index_count;
+static RayAnyHitPipeline    g_aabb_index_count3d;
+static RayAnyHitPipeline    g_cell_mbr_frontier3d;
+static RayAnyHitPipeline    g_rayanyhit_count_device_ray_columns;
+static RayAnyHitPipeline    g_rayanyhit_count_device_columns;
+static RayAnyHitPipeline    g_rayanyhit_flags_device_columns;
+static RayAnyHitPipeline    g_rayanyhit_witness_device_columns;
+static RayAnyHitPipeline    g_rayanyhit_all_witnesses_device_columns;
+static RayAnyHitPipeline    g_rayanyhit_group_flags;
+static RayAnyHitPipeline    g_rayanyhit_group_flags3d;
+static RayAnyHitPipeline    g_frn_count_rt;
+static RayAnyHitPipeline    g_frn_count_host_rt;
+static RayAnyHitPipeline    g_frn_nearest_rt;
+static RayAnyHitPipeline    g_frn3d_rt;
+static RayAnyHitPipeline    g_metric_knn3d_rt;
+static RayAnyHitPipeline    g_frn3d_count_threshold_rt;
+static RayAnyHitPipeline    g_frn3d_adjacency_rt;
+static RayAnyHitPipeline    g_frn3d_grouped_union_rt;
+static RayAnyHitPipeline    g_aggregate_hierarchy_rt;
+static RayAnyHitPipeline    g_point_group_threshold_rt;
+static RayAnyHitPipeline    g_point_group_nearest_rt;
+static KnnCuFunction       g_point_group_nearest_reduce;
+static KnnCuFunction       g_point_group_nearest_split_columns;
+static SegPolyPipeline     g_segpoly;
+static SegPolyPipeline     g_segpoly_rows;
+static ColumnarPredicateScanPipeline g_columnar_predicate_scan;
+static GraphEdgePipeline   g_graph_bfs;
+static GraphEdgePipeline   g_graph_triangle;
+static PnsCuFunction      g_pns;
+static FrnCuFunction      g_frn;
+static FrnCuFunction      g_frn3d;
+static FrnCuFunction      g_frn3d_grid;
+static FrnCuFunction      g_frn3d_grid_count;
+static FrnCuFunction      g_frn3d_grid_exact_count;
+static FrnCuFunction      g_frn3d_grid_exact_summary;
+static FrnCuFunction      g_frn3d_grid_exact_rows;
+static FrnCuFunction      g_frn3d_grid_ranked_count;
+static FrnCuFunction      g_frn3d_grid_ranked_rows;
+static FrnCuFunction      g_frn3d_grid_ranked_window_rows_fixed;
+static FrnCuFunction      g_frn3d_grid_ranked_summary;
+static FrnCuFunction      g_frn3d_grid_ranked_summary_f32;
+static FrnCuFunction      g_frn3d_grid_ranked_summary_aggregate;
+static FrnCuFunction      g_frn3d_grid_ranked_summary_aggregate_f32_direct;
+static FrnCuFunction      g_frn3d_grid_ranked_summary_aggregate_f32_blocks;
+static FrnCuFunction      g_frn3d_grid_ranked_summary_aggregate_f32_blocks_batch;
+static FrnCuFunction      g_frn3d_grid_compact;
+static KnnCuFunction      g_partner_ray2d_pack;
+static KnnCuFunction      g_partner_triangle2d_pack;
+static KnnCuFunction      g_partner_ray3d_pack;
+static KnnCuFunction      g_partner_triangle3d_pack;
+static KnnCuFunction      g_partner_point2d_aabb_pack;
+static KnnCuFunction      g_knn;
+static KnnCuFunction      g_knn3d;
+static KnnCuFunction      g_collect_k_i64;
+static KnnCuFunction      g_collect_k_i64_row_width2_sort;
+static KnnCuFunction      g_collect_k_i64_row_width2_cub_sort;
+static KnnCuFunction      g_collect_k_i64_row_width2_cub_sort_tiles;
+static KnnCuFunction      g_collect_k_i64_row_width2_merge_two;
+static KnnCuFunction      g_collect_k_i64_row_width2_merge_level;
+static KnnCuFunction      g_collect_k_cooperative_launch_smoke;
+static KnnCuFunction      g_collect_k_i64_row_width2_final_materialize;
+static KnnCuFunction      g_collect_k_i64_row_width2_final_materialize_counts;
+static KnnCuFunction      g_collect_k_i64_row_width2_final_mark_counts;
+static KnnCuFunction      g_collect_k_i64_row_width2_final_mark_counts_counts;
+static KnnCuFunction      g_collect_k_i64_row_width2_final_compact;
+static KnnCuFunction      g_collect_k_i64_row_width2_final_compact_counts;
+static KnnCuFunction      g_collect_k_i64_row_width2_final_materialize_level;
+static KnnCuFunction      g_collect_k_i64_row_width2_final_mark_counts_level;
+static KnnCuFunction      g_collect_k_i64_row_width2_final_compact_level;
+static KnnCuFunction      g_collect_k_i64_row_width2_final_materialize_level_derived;
+static KnnCuFunction      g_collect_k_i64_row_width2_final_materialize_level_counts_derived;
+static KnnCuFunction      g_collect_k_i64_row_width2_final_materialize_level_counts_pointers;
+static KnnCuFunction      g_collect_k_i64_row_width2_final_mark_counts_level_counts;
+static KnnCuFunction      g_collect_k_i64_row_width2_final_mark_counts_level_counts_pointers;
+static KnnCuFunction      g_collect_k_i64_row_width2_final_materialize_mark_counts_level_counts;
+static KnnCuFunction      g_collect_k_i64_row_width2_final_output_indexed_materialize_mark_counts_level_counts;
+static KnnCuFunction      g_collect_k_i64_row_width2_four_way_materialize_mark_counts_derived;
+static KnnCuFunction      g_collect_k_i64_row_width2_final_compact_level_derived;
+static KnnCuFunction      g_collect_k_i64_row_width2_final_prefix_offsets_level;
+
+// GPU structs for upload
+
+#pragma pack(push, 1)
+struct GpuSegment   { float x0, y0, x1, y1; uint32_t id; };
+struct GpuRayjoinCdbSegment {
+    float x0, y0, x1, y1;
+    uint32_t id;
+    uint32_t left_face_id;
+    uint32_t right_face_id;
+    uint32_t has_scaled;
+    int64_t sx0, sy0, sx1, sy1;
+};
+struct GpuRayjoinCdbSegmentRange {
+    uint32_t begin;
+    uint32_t end;
+};
+struct GpuRayjoinCdbPointLocationRecord {
+    uint32_t point_id;
+    uint32_t face_id;
+    uint32_t segment_id;
+    float hit_t;
+};
+struct GpuRayjoinCdbPoint {
+    float x;
+    float y;
+    uint32_t id;
+    uint32_t has_scaled;
+    int64_t sx;
+    int64_t sy;
+};
+struct GpuPoint     { float x, y;           uint32_t id; uint32_t pad; };
+struct GpuPoint3DHost { float x, y, z;      uint32_t id; };
+struct GpuPolygonRef { uint32_t id, vertex_offset, vertex_count; };
+struct GpuPreparedClosedShapeEdge2D {
+    float ax, ay;
+    float bx, by;
+    float dx, dy;
+    float len2;
+    float crossing_scale;
+};
+struct GpuTriangle  { float x0, y0, x1, y1, x2, y2; uint32_t id; };
+struct GpuRay       { float ox, oy, dx, dy, tmax; uint32_t id; };
+// 3-D counterparts - direction is pre-normalised before upload.
+struct GpuRay3DHost { float ox, oy, oz, dx, dy, dz, tmax; uint32_t id; };
+struct GpuTriangle3DHost { float x0, y0, z0, x1, y1, z1, x2, y2, z2; uint32_t id; };
+#pragma pack(pop)
+
+// Output structs (GPU-side, float coords)
+#pragma pack(push, 1)
+struct GpuSegmentPairIntersectionRecord  { uint32_t left_id, right_id, left_index, right_index; };
+struct GpuPipRecord  { uint32_t point_id, polygon_id, contains; };
+struct GpuShapePairRelationFlags { uint32_t requires_segment_intersection, requires_point_containment; };
+struct GpuRayHitRecord { uint32_t ray_id, hit_count; };
+struct GpuRayAnyHitRecord { uint32_t ray_id, any_hit; };
+struct GpuRayClosestHitRecord { uint32_t ray_id, triangle_id, has_hit; float t; };
+struct GpuFixedRadiusCountRecord { uint32_t query_id, neighbor_count, threshold_reached; };
+struct GpuSegPolyRecord { uint32_t segment_id, hit_count; };
+struct GpuPnsRecord     { uint32_t point_id, segment_id; float distance; };
+struct GpuFrnRecord     { uint32_t query_id, neighbor_id; float distance; };
+struct GpuKnnRecord     { uint32_t query_id, neighbor_id; float distance; uint32_t neighbor_rank; };
+#pragma pack(pop)
+
+struct Bounds2D {
+    double min_x, min_y, max_x, max_y;
+};
+
+static bool segment_intersection_denominator_is_degenerate(
+        double denom,
+        double rx,
+        double ry,
+        double sx,
+        double sy)
+{
+    const double scale = std::hypot(rx, ry) * std::hypot(sx, sy);
+    const double threshold = 64.0 * std::numeric_limits<double>::epsilon() * std::max(1.0, scale);
+    return std::abs(denom) <= threshold;
+}
+
+static bool exact_segment_intersection(
+        const RtdlSegment& left,
+        const RtdlSegment& right,
+        double* ix_out,
+        double* iy_out)
+{
+    const double px = left.x0;
+    const double py = left.y0;
+    const double rx = left.x1 - left.x0;
+    const double ry = left.y1 - left.y0;
+    const double qx = right.x0;
+    const double qy = right.y0;
+    const double sx = right.x1 - right.x0;
+    const double sy = right.y1 - right.y0;
+
+    const double denom = rx * sy - ry * sx;
+    if (segment_intersection_denominator_is_degenerate(denom, rx, ry, sx, sy)) {
+        return false;
+    }
+
+    const double qpx = qx - px;
+    const double qpy = qy - py;
+    const double t = (qpx * sy - qpy * sx) / denom;
+    const double u = (qpx * ry - qpy * rx) / denom;
+    if (!(0.0 <= t && t <= 1.0 && 0.0 <= u && u <= 1.0)) {
+        return false;
+    }
+
+    *ix_out = px + t * rx;
+    *iy_out = py + t * ry;
+    return true;
+}
+
+static bool exact_point_in_triangle(
+        double x,
+        double y,
+        const RtdlTriangle& triangle)
+{
+    const double v0x = triangle.x2 - triangle.x0;
+    const double v0y = triangle.y2 - triangle.y0;
+    const double v1x = triangle.x1 - triangle.x0;
+    const double v1y = triangle.y1 - triangle.y0;
+    const double v2x = x - triangle.x0;
+    const double v2y = y - triangle.y0;
+
+    const double dot00 = v0x * v0x + v0y * v0y;
+    const double dot01 = v0x * v1x + v0y * v1y;
+    const double dot02 = v0x * v2x + v0y * v2y;
+    const double dot11 = v1x * v1x + v1y * v1y;
+    const double dot12 = v1x * v2x + v1y * v2y;
+    const double denom = dot00 * dot11 - dot01 * dot01;
+    if (std::abs(denom) < 1.0e-7) {
+        return false;
+    }
+
+    const double inv = 1.0 / denom;
+    const double u = (dot11 * dot02 - dot01 * dot12) * inv;
+    const double v = (dot00 * dot12 - dot01 * dot02) * inv;
+    return u >= 0.0 && v >= 0.0 && (u + v) <= 1.0;
+}
+
+static bool exact_ray_hits_triangle(
+        const RtdlRay2D& ray,
+        const RtdlTriangle& triangle)
+{
+    const double ex = ray.ox + ray.dx * ray.tmax;
+    const double ey = ray.oy + ray.dy * ray.tmax;
+    const RtdlSegment ray_segment{ray.id, ray.ox, ray.oy, ex, ey};
+
+    if (exact_point_in_triangle(ray.ox, ray.oy, triangle) ||
+        exact_point_in_triangle(ex, ey, triangle)) {
+        return true;
+    }
+
+    const RtdlSegment edges[3] = {
+        {triangle.id, triangle.x0, triangle.y0, triangle.x1, triangle.y1},
+        {triangle.id, triangle.x1, triangle.y1, triangle.x2, triangle.y2},
+        {triangle.id, triangle.x2, triangle.y2, triangle.x0, triangle.y0},
+    };
+    for (const auto& edge : edges) {
+        double ix = 0.0;
+        double iy = 0.0;
+        if (exact_segment_intersection(ray_segment, edge, &ix, &iy)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+static bool exact_ray_hits_triangle_3d(
+        const RtdlRay3D& ray,
+        const RtdlTriangle3D& triangle)
+{
+    const double edge1x = triangle.x1 - triangle.x0;
+    const double edge1y = triangle.y1 - triangle.y0;
+    const double edge1z = triangle.z1 - triangle.z0;
+    const double edge2x = triangle.x2 - triangle.x0;
+    const double edge2y = triangle.y2 - triangle.y0;
+    const double edge2z = triangle.z2 - triangle.z0;
+
+    const double pvx = ray.dy * edge2z - ray.dz * edge2y;
+    const double pvy = ray.dz * edge2x - ray.dx * edge2z;
+    const double pvz = ray.dx * edge2y - ray.dy * edge2x;
+    const double det = edge1x * pvx + edge1y * pvy + edge1z * pvz;
+    if (std::abs(det) <= 1.0e-8) {
+        return false;
+    }
+
+    const double inv_det = 1.0 / det;
+    const double tvx = ray.ox - triangle.x0;
+    const double tvy = ray.oy - triangle.y0;
+    const double tvz = ray.oz - triangle.z0;
+    const double u = (tvx * pvx + tvy * pvy + tvz * pvz) * inv_det;
+    if (u < 0.0 || u > 1.0) {
+        return false;
+    }
+
+    const double qvx = tvy * edge1z - tvz * edge1y;
+    const double qvy = tvz * edge1x - tvx * edge1z;
+    const double qvz = tvx * edge1y - tvy * edge1x;
+    const double v = (ray.dx * qvx + ray.dy * qvy + ray.dz * qvz) * inv_det;
+    if (v < 0.0 || (u + v) > 1.0) {
+        return false;
+    }
+
+    const double t = (edge2x * qvx + edge2y * qvy + edge2z * qvz) * inv_det;
+    return t >= 0.0 && t <= ray.tmax;
+}
+
+#if RTDL_OPTIX_HAS_GEOS
+class GeosPreparedPolygonRefs {
+  public:
+    GeosPreparedPolygonRefs(const RtdlPolygonRef* polys, size_t poly_count, const double* vertices_xy)
+        : context_(GEOS_init_r()) {
+        if (context_ == nullptr) {
+            throw std::runtime_error("failed to initialize GEOS context");
+        }
+        geometries_.reserve(poly_count);
+        prepared_.reserve(poly_count);
+        for (size_t i = 0; i < poly_count; ++i) {
+            GEOSGeometry* geometry = build_polygon_geometry(polys[i], vertices_xy);
+            if (geometry == nullptr) {
+                throw std::runtime_error("failed to build GEOS polygon geometry");
+            }
+            const GEOSPreparedGeometry* prepared = GEOSPrepare_r(context_, geometry);
+            if (prepared == nullptr) {
+                GEOSGeom_destroy_r(context_, geometry);
+                throw std::runtime_error("failed to prepare GEOS polygon geometry");
+            }
+            geometries_.push_back(geometry);
+            prepared_.push_back(prepared);
+        }
+    }
+
+    GeosPreparedPolygonRefs(const GeosPreparedPolygonRefs&) = delete;
+    GeosPreparedPolygonRefs& operator=(const GeosPreparedPolygonRefs&) = delete;
+
+    ~GeosPreparedPolygonRefs() {
+        if (context_ == nullptr) return;
+        for (const GEOSPreparedGeometry* prepared : prepared_) {
+            if (prepared != nullptr) {
+                GEOSPreparedGeom_destroy_r(context_, prepared);
+            }
+        }
+        for (GEOSGeometry* geometry : geometries_) {
+            if (geometry != nullptr) {
+                GEOSGeom_destroy_r(context_, geometry);
+            }
+        }
+        GEOS_finish_r(context_);
+    }
+
+    bool covers(size_t polygon_index, double x, double y) const {
+        GEOSGeometry* point = build_point_geometry(x, y);
+        if (point == nullptr) {
+            throw std::runtime_error("failed to build GEOS point geometry");
+        }
+        char covers_value = GEOSPreparedCovers_r(context_, prepared_.at(polygon_index), point);
+        GEOSGeom_destroy_r(context_, point);
+        if (covers_value == 2) {
+            throw std::runtime_error("GEOSPreparedCovers_r failed");
+        }
+        return covers_value == 1;
+    }
+
+  private:
+    GEOSGeometry* build_point_geometry(double x, double y) const {
+        GEOSCoordSequence* sequence = GEOSCoordSeq_create_r(context_, 1, 2);
+        if (sequence == nullptr) return nullptr;
+        if (!GEOSCoordSeq_setX_r(context_, sequence, 0, x) ||
+            !GEOSCoordSeq_setY_r(context_, sequence, 0, y)) {
+            GEOSCoordSeq_destroy_r(context_, sequence);
+            return nullptr;
+        }
+        return GEOSGeom_createPoint_r(context_, sequence);
+    }
+
+    GEOSGeometry* build_polygon_geometry(const RtdlPolygonRef& poly, const double* vertices_xy) const {
+        size_t ring_size = poly.vertex_count;
+        bool closed = ring_size > 0 &&
+                      vertices_xy[poly.vertex_offset * 2] == vertices_xy[(poly.vertex_offset + poly.vertex_count - 1) * 2] &&
+                      vertices_xy[poly.vertex_offset * 2 + 1] == vertices_xy[(poly.vertex_offset + poly.vertex_count - 1) * 2 + 1];
+        if (!closed) {
+            ring_size += 1;
+        }
+        GEOSCoordSequence* sequence = GEOSCoordSeq_create_r(context_, ring_size, 2);
+        if (sequence == nullptr) return nullptr;
+        for (size_t i = 0; i < poly.vertex_count; ++i) {
+            const size_t vertex_index = poly.vertex_offset + i;
+            if (!GEOSCoordSeq_setX_r(context_, sequence, i, vertices_xy[vertex_index * 2]) ||
+                !GEOSCoordSeq_setY_r(context_, sequence, i, vertices_xy[vertex_index * 2 + 1])) {
+                GEOSCoordSeq_destroy_r(context_, sequence);
+                return nullptr;
+            }
+        }
+        if (!closed) {
+            if (!GEOSCoordSeq_setX_r(context_, sequence, ring_size - 1, vertices_xy[poly.vertex_offset * 2]) ||
+                !GEOSCoordSeq_setY_r(context_, sequence, ring_size - 1, vertices_xy[poly.vertex_offset * 2 + 1])) {
+                GEOSCoordSeq_destroy_r(context_, sequence);
+                return nullptr;
+            }
+        }
+        GEOSGeometry* ring = GEOSGeom_createLinearRing_r(context_, sequence);
+        if (ring == nullptr) return nullptr;
+        GEOSGeometry* polygon = GEOSGeom_createPolygon_r(context_, ring, nullptr, 0);
+        if (polygon == nullptr) {
+            GEOSGeom_destroy_r(context_, ring);
+            return nullptr;
+        }
+        return polygon;
+    }
+
+    GEOSContextHandle_t context_;
+    std::vector<GEOSGeometry*> geometries_;
+    std::vector<const GEOSPreparedGeometry*> prepared_;
+};
+#endif
+
+static bool exact_point_on_segment(
+        double px,
+        double py,
+        double ax,
+        double ay,
+        double bx,
+        double by)
+{
+    const double point_eps = 1.0e-12;
+    const double len2 = (bx - ax) * (bx - ax) + (by - ay) * (by - ay);
+    if (len2 <= point_eps * point_eps) {
+        return std::abs(px - ax) <= point_eps && std::abs(py - ay) <= point_eps;
+    }
+    const double len = std::sqrt(len2);
+    const double cross = (px - ax) * (by - ay) - (py - ay) * (bx - ax);
+    if (std::abs(cross) > point_eps * len) {
+        return false;
+    }
+    const double dot = (px - ax) * (bx - ax) + (py - ay) * (by - ay);
+    const double along_eps = point_eps * len;
+    if (dot < -along_eps) {
+        return false;
+    }
+    return dot <= len2 + along_eps;
+}
+
+static bool exact_point_in_polygon(
+        double x,
+        double y,
+        const RtdlPolygonRef& poly,
+        const double* vertices_xy)
+{
+    const uint32_t n = poly.vertex_count;
+    const uint32_t off = poly.vertex_offset;
+    for (uint32_t i = 0; i < n; ++i) {
+        const uint32_t j = (i + 1) % n;
+        const double ax = vertices_xy[(off + i) * 2];
+        const double ay = vertices_xy[(off + i) * 2 + 1];
+        const double bx = vertices_xy[(off + j) * 2];
+        const double by = vertices_xy[(off + j) * 2 + 1];
+        if (exact_point_on_segment(x, y, ax, ay, bx, by)) {
+            return true;
+        }
+    }
+
+    bool inside = false;
+    for (uint32_t i = 0, j = n - 1; i < n; j = i++) {
+        const double xi = vertices_xy[(off + i) * 2];
+        const double yi = vertices_xy[(off + i) * 2 + 1];
+        const double xj = vertices_xy[(off + j) * 2];
+        const double yj = vertices_xy[(off + j) * 2 + 1];
+        if ((yi > y) != (yj > y)) {
+            const double denom = (yj - yi) != 0.0 ? (yj - yi) : 1.0e-20;
+            const double x_cross = (xj - xi) * (y - yi) / denom + xi;
+            if (x <= x_cross) {
+                inside = !inside;
+            }
+        }
+    }
+    return inside;
+}
+
+static bool exact_segment_hits_polygon(
+        const RtdlSegment& segment,
+        const RtdlPolygonRef& poly,
+        const double* vertices_xy)
+{
+    if (exact_point_in_polygon(segment.x0, segment.y0, poly, vertices_xy) ||
+        exact_point_in_polygon(segment.x1, segment.y1, poly, vertices_xy)) {
+        return true;
+    }
+    const uint32_t n = poly.vertex_count;
+    const uint32_t off = poly.vertex_offset;
+    for (uint32_t i = 0; i < n; ++i) {
+        const uint32_t j = (i + 1) % n;
+        RtdlSegment edge{
+            poly.id,
+            vertices_xy[(off + i) * 2],
+            vertices_xy[(off + i) * 2 + 1],
+            vertices_xy[(off + j) * 2],
+            vertices_xy[(off + j) * 2 + 1],
+        };
+        double ix = 0.0;
+        double iy = 0.0;
+        if (exact_segment_intersection(segment, edge, &ix, &iy)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+static Bounds2D bounds_for_segment(const RtdlSegment& segment)
+{
+    return {
+        std::min(segment.x0, segment.x1),
+        std::min(segment.y0, segment.y1),
+        std::max(segment.x0, segment.x1),
+        std::max(segment.y0, segment.y1),
+    };
+}
+
+static Bounds2D bounds_for_polygon(const RtdlPolygonRef& poly, const double* vertices_xy)
+{
+    Bounds2D bounds{
+        vertices_xy[poly.vertex_offset * 2],
+        vertices_xy[poly.vertex_offset * 2 + 1],
+        vertices_xy[poly.vertex_offset * 2],
+        vertices_xy[poly.vertex_offset * 2 + 1],
+    };
+    for (uint32_t i = 0; i < poly.vertex_count; ++i) {
+        const size_t base = static_cast<size_t>(poly.vertex_offset + i) * 2;
+        const double x = vertices_xy[base];
+        const double y = vertices_xy[base + 1];
+        bounds.min_x = std::min(bounds.min_x, x);
+        bounds.min_y = std::min(bounds.min_y, y);
+        bounds.max_x = std::max(bounds.max_x, x);
+        bounds.max_y = std::max(bounds.max_y, y);
+    }
+    return bounds;
+}
+
+static bool point_inside_bounds(const Bounds2D& bounds, double x, double y, double eps = 0.0)
+{
+    return x >= bounds.min_x - eps && x <= bounds.max_x + eps &&
+           y >= bounds.min_y - eps && y <= bounds.max_y + eps;
+}
+
+static bool bounds_overlap(const Bounds2D& left, const Bounds2D& right)
+{
+    return !(left.max_x < right.min_x || right.max_x < left.min_x ||
+             left.max_y < right.min_y || right.max_y < left.min_y);
+}
+
+struct PolygonBucketIndex {
+    double origin_x;
+    double bucket_width;
+    std::vector<std::vector<size_t>> buckets;
+};
+
+static PolygonBucketIndex build_polygon_bucket_index(const std::vector<Bounds2D>& polygon_bounds)
+{
+    if (polygon_bounds.empty()) {
+        return {0.0, 1.0, {}};
+    }
+    double global_min = polygon_bounds.front().min_x;
+    double global_max = polygon_bounds.front().max_x;
+    for (const Bounds2D& bounds : polygon_bounds) {
+        global_min = std::min(global_min, bounds.min_x);
+        global_max = std::max(global_max, bounds.max_x);
+    }
+    const double span = std::max(global_max - global_min, 1.0e-9);
+    const size_t bucket_count = std::max<size_t>(16, std::min<size_t>(polygon_bounds.size() * 2, 8192));
+    const double bucket_width = span / static_cast<double>(bucket_count);
+    std::vector<std::vector<size_t>> buckets(bucket_count);
+    for (size_t polygon_index = 0; polygon_index < polygon_bounds.size(); ++polygon_index) {
+        const Bounds2D& bounds = polygon_bounds[polygon_index];
+        const auto first = static_cast<size_t>(std::clamp(
+            static_cast<long long>(std::floor((bounds.min_x - global_min) / bucket_width)),
+            0LL,
+            static_cast<long long>(bucket_count - 1)));
+        const auto last = static_cast<size_t>(std::clamp(
+            static_cast<long long>(std::floor((bounds.max_x - global_min) / bucket_width)),
+            0LL,
+            static_cast<long long>(bucket_count - 1)));
+        for (size_t bucket_id = first; bucket_id <= last; ++bucket_id) {
+            buckets[bucket_id].push_back(polygon_index);
+        }
+    }
+    return {global_min, bucket_width, std::move(buckets)};
+}

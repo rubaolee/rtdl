@@ -1,0 +1,220 @@
+{
+  "schema": "rtdl.goal5831.public_gpu_surface_terminology_and_denominator_result.v1",
+  "date": "2026-08-30",
+  "verdict": "PASS_EXACT_CURRENT_SCOPE_FACTUAL_REPAIR",
+  "external_review_requested": false,
+  "registered_performance_timing_count": 0,
+  "formal_worker_count": 0,
+  "gpu_execution_count": 0,
+  "product_source_modified": false,
+  "central_correction": "The number two describes RTDL fixed protocol constructors and physical geometry kinds, not the complete public GPU surface and not a finite universe of application-semantic protocols.",
+  "exact_taxonomy": {
+    "pinned_optix9_build_input_kinds": {
+      "count": 6,
+      "members": [
+        "TRIANGLES",
+        "CUSTOM_PRIMITIVES",
+        "INSTANCES",
+        "INSTANCE_POINTERS",
+        "CURVES",
+        "SPHERES"
+      ]
+    },
+    "pinned_optix9_leaf_primitive_kinds": {
+      "count": 4,
+      "members": [
+        "TRIANGLES",
+        "CUSTOM_PRIMITIVES",
+        "CURVES",
+        "SPHERES"
+      ]
+    },
+    "rtdl_physical_geometry_kinds": {
+      "count": 2,
+      "members": [
+        "custom_aabb",
+        "builtin_triangle"
+      ],
+      "kind_presence_of_build_inputs": "2/6",
+      "kind_presence_of_leaf_primitives": "2/4",
+      "coverage_semantics": "KIND_PRESENCE_ONLY__NOT_FEATURE_COMPLETE"
+    },
+    "fixed_protocol_constructors": {
+      "count": 2,
+      "members": [
+        "custom_aabb_bounded_relation_v1",
+        "builtin_triangle_reduction_v1"
+      ]
+    },
+    "bounded_user_authored_gpu_templates": {
+      "count": 1,
+      "members": [
+        "builtin_triangle_static_u32x3_two_metadata_v1"
+      ]
+    },
+    "public_application_specializations": {
+      "count": 1,
+      "members": [
+        "builtin_triangle_particle_strict_interior_v1"
+      ],
+      "classification": "EXISTING_TRIANGLE_TEMPLATE_SPECIALIZATION_NOT_NEW_GENERAL_FAMILY"
+    },
+    "composition_batches": {
+      "count": 6,
+      "members": [
+        "M1",
+        "M2",
+        "M3",
+        "M4",
+        "M5",
+        "M6"
+      ],
+      "classification": "COMPOSITION_LABELS_NOT_PROTOCOL_FAMILY_DENOMINATOR"
+    },
+    "project_authored_cohort": {
+      "systems": 9,
+      "selected_lanes": 13,
+      "classification": "APPLICATION_REUSE_EVIDENCE_NOT_FAMILY_DENOMINATOR"
+    },
+    "application_semantic_protocol_universe": {
+      "cardinality": "OPEN_NO_FINITE_N",
+      "prospective_frozen_core_new_shape_exams": 0,
+      "external_human_authors": 0
+    }
+  },
+  "why_these_two_physical_kinds": {
+    "builtin_triangle": "platform-produced intersection and builtin hit facts",
+    "custom_primitive": "callback-produced intersection and explicit hit attributes",
+    "cohort_fit": true,
+    "author_selected": true,
+    "prospectively_selected": false,
+    "representative_sample_claimed": false
+  },
+  "closed_findings": [
+    {
+      "id": "P1_1_CALLER_SOURCE_GPU_FACT_ERROR",
+      "repair": "Paper now states that caller-authored restricted source reaches GPU inside one fixed built-in-triangle u32x3 template while arbitrary IR/new geometry/new topology do not."
+    },
+    {
+      "id": "P1_2_PUBLIC_DOCS_OMITTED_TEMPLATE",
+      "repair": "API reference, tutorial, README, and manuscript now enumerate the bounded authoring route."
+    },
+    {
+      "id": "P1_3_FAMILY_TERM_COLLISION",
+      "repair": "Geometry kind, fixed constructor, authoring template, application specialization, composition batch, application lane, protocol shape, instance, and deployment are separated."
+    },
+    {
+      "id": "P1_4_PARTICLE_PUBLIC_SPECIALIZATION_OMITTED",
+      "repair": "Particle is explicitly registered as a public existing-template specialization and denied status as a new general template, constructor, or geometry kind."
+    }
+  ],
+  "source_authorities": [
+    {
+      "path": "history/internal_docs/goal5818_optix9_public_header_evidence_20260829/optix_types.h",
+      "bytes": 126878,
+      "sha256": "fbd1aca6096daee765233f6be5a3680c7017ec678fd35c9a5000ed7d6b6ff48c"
+    },
+    {
+      "path": "src/rtdsl/v4_callback_lifecycle.py",
+      "bytes": 54398,
+      "sha256": "76e35a2b246f125b51136bd6f8354a3133b8c207474f9e9aea31fda9c6b240bd"
+    },
+    {
+      "path": "src/rtdsl/v4_typed_physical_schema.py",
+      "bytes": 44931,
+      "sha256": "f1b093da9aa10465767beec8f22f804e080a6691abd7ec1873de231328cc7e5d"
+    },
+    {
+      "path": "src/rtdsl/v4_public_builtin_triangle.py",
+      "bytes": 61636,
+      "sha256": "627d2ae1db01769e50697f6bf92a05e1eee21ca5d10d6ddb1c360b901a7cec9c"
+    },
+    {
+      "path": "src/rtdsl/v4.py",
+      "bytes": 5825,
+      "sha256": "5800a38193275b3c6e37dfc6a0aadfe6d3fbdd6c108af93ef3799dc296c7f582"
+    },
+    {
+      "path": "src/rtdsl/v4_particle_rtdlexe.py",
+      "bytes": 82896,
+      "sha256": "32ed90f8cc3177fa32be7eb4bc2efdb75f821307ca7fab8bdab171b3e8d1f37f"
+    },
+    {
+      "path": "src/rtdsl/__init__.py",
+      "bytes": 318939,
+      "sha256": "57a012cecb0ffd5a5090022eb310dba991015a8750dd161d53104f17cb705fe8"
+    },
+    {
+      "path": "history/internal_docs/goal5801_g_public_generic_triangle_authoring_result_20260824.json",
+      "bytes": 8487,
+      "sha256": "64ef764fd9dee4d1df83fed3891b52b236400fda886118508d6923b70a123d5f"
+    }
+  ],
+  "changed_scientific_documents": [
+    {
+      "path": "docs/v4/README.md",
+      "bytes": 4608,
+      "sha256": "0775950bdbf81367658ae75a03d8b41e2621cbbb93897594d36da0b1b5b14992"
+    },
+    {
+      "path": "docs/v4/api_reference.md",
+      "bytes": 7249,
+      "sha256": "1d0b5279ecd75709f09f61e2be9e5850d81472ebe1ff88636a22f8bf2f6be19e"
+    },
+    {
+      "path": "docs/v4/tutorial.md",
+      "bytes": 8370,
+      "sha256": "40f7fb8630aaf5129828db675f2fb47734408f2bd4165e2be2a8b9b0f95c2b3d"
+    },
+    {
+      "path": "docs/v4/nine_app_coverage.md",
+      "bytes": 3443,
+      "sha256": "0f74c7945c3abf16086824c62d82ffa7c5e59583b17b34b80baf932c5dd2d518"
+    },
+    {
+      "path": "docs/v4/typed_physical_schema_and_gas_abi_design.md",
+      "bytes": 14741,
+      "sha256": "8fcd643c7ec907604c5703e4d9f37dbad1e661d4600b949dc5d7ed69dbeec337"
+    },
+    {
+      "path": "docs/v4/protocol_family_algebra_v1.md",
+      "bytes": 9182,
+      "sha256": "60d14ba8784eae08464830f2937f0a146e32ead2e92491f0dd6395ae3abf7262"
+    },
+    {
+      "path": "paper/cgo2027/main.tex",
+      "bytes": 85730,
+      "sha256": "d9cf2dc38f83e6545c4880efd6f101be27553c6729f41dcc7afe0e126c504716"
+    },
+    {
+      "path": "paper/cgo2027/goal5832_main.pdf",
+      "bytes": 643943,
+      "sha256": "a9344342d4f292fd35d08e94d85261799eca2c0d889bd9a70359f6a934e5e80a"
+    }
+  ],
+  "verification": {
+    "goal5832_scope_validator": "PASS",
+    "goal5832_unit_tests": "23/23 PASS",
+    "latex_pages": 17,
+    "latex_overfull_hbox_count": 0,
+    "latex_undefined_citation_count": 0,
+    "latex_undefined_reference_count": 0,
+    "visual_pages_checked": [
+      1,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ]
+  },
+  "claim_ceiling": "RTDL currently provides two fixed protocol constructors over two physical geometry kinds plus one bounded user-authored built-in-triangle u32x3 template. Its public routes instantiate two of six OptiX 9 build-input enum kinds and two of four leaf-primitive kinds; this is kind-presence only, not feature-complete category support. The application-semantic protocol universe is open; prospective frozen-core new-shape exams remain zero."
+}

@@ -1,0 +1,225 @@
+{
+  "schema": "rtdl.goal5803.sql_integer_bag_equijoin.task_semantics_preaction.v1",
+  "date": "2026-08-27",
+  "status": "TASK_SEMANTICS_FROZEN_BEFORE_ADAPTER_IMPLEMENTATION__EXACT_EXECUTION_FREEZE_PENDING",
+  "lineage": {
+    "name": "POST_BED_FAILURE_PROJECT_SELECTED_SUCCESSOR",
+    "predecessor_task": "BED_INTERVAL_INTERSECTION_PAIR_QUERY",
+    "predecessor_disposition": "CORE_CHANGE_REQUIRED",
+    "predecessor_failure_preserved": true,
+    "predecessor_normal_case_completed": true,
+    "predecessor_failure_boundary": "K_PLUS_ONE_SEMANTIC_CAPACITY",
+    "predecessor_observed_native_compact_status_hex": "0xffff5102",
+    "predecessor_observed_public_error": "RX035_DEVICE_STATUS_INVALID",
+    "predecessor_required_public_error": "RX041_OUTPUT_OVERFLOW",
+    "generic_overflow_repair_may_count_only_as_regression": true,
+    "repaired_bed_replay_may_count_as_fresh_transfer": false,
+    "this_task_selected_after_predecessor_failure_was_observed": true,
+    "this_task_selected_by_project": true,
+    "blind_claim_allowed": false,
+    "unseen_claim_allowed": false,
+    "held_out_claim_allowed": false,
+    "unbiased_generalization_exam_claim_allowed": false,
+    "third_party_author_claim_allowed": false
+  },
+  "task": {
+    "name": "SQL_INTEGER_BAG_EQUIJOIN",
+    "application_domain": "relational_database_inner_join",
+    "external_specification": {
+      "provider": "SQLite public language specification and independently executable sqlite3 engine",
+      "select_semantics_url": "https://www.sqlite.org/lang_select.html",
+      "integer_comparison_url": "https://www.sqlite.org/datatype3.html",
+      "relevant_semantics": [
+        "an inner join considers left-right row combinations",
+        "the ON predicate retains exactly the row pairs for which the expression is true",
+        "INTEGER values compare numerically",
+        "duplicate join keys retain row-pair bag multiplicity"
+      ],
+      "runtime_network_required": false,
+      "provider_data_ingestion_required": false
+    },
+    "oracle": {
+      "engine": "Python standard-library sqlite3 linked to an external SQLite implementation",
+      "database": ":memory:",
+      "ddl": [
+        "CREATE TABLE a(row_id INTEGER PRIMARY KEY, join_key INTEGER NOT NULL)",
+        "CREATE TABLE b(row_id INTEGER PRIMARY KEY, join_key INTEGER NOT NULL)"
+      ],
+      "query": "SELECT a.row_id, b.row_id FROM a INNER JOIN b ON a.join_key = b.join_key ORDER BY a.row_id ASC, b.row_id ASC",
+      "execution_identity_to_record": [
+        "sqlite3.sqlite_version",
+        "SELECT sqlite_source_id()",
+        "oracle_source_sha256",
+        "query_utf8_sha256",
+        "input_canonical_sha256"
+      ],
+      "must_not_import": [
+        "rtdsl",
+        "the RTDL adapter"
+      ],
+      "second_route_independent_crosscheck": "sorted Python comprehension over integer key equality"
+    },
+    "declared_domain": {
+      "row_id": "unique within each side, non-bool unsigned 32-bit integer",
+      "join_key": "non-NULL, non-bool integer in [0, 16777215]",
+      "key_multiplicity": "duplicate keys are permitted on either side",
+      "input_sides": "A and B are both nonempty",
+      "output": "lexicographically sorted (A.row_id, B.row_id) pairs",
+      "capacity": "number of unique output id-pairs does not exceed the sealed semantic capacity"
+    },
+    "mapping": {
+      "A_records": "source AABBs",
+      "B_records": "indexed AABBs",
+      "row_mapping": "(row_id,k) maps to binary32 AABB [k,0,k+1,1] carrying row_id",
+      "minimum_overlap_f32": 1.0,
+      "same_key_intersection_area": 1.0,
+      "different_integer_key_maximum_intersection_area": 0.0,
+      "why_exact": "k and k+1 are integers no greater than 2^24 and are exactly representable in binary32; threshold area >= 1.0 is therefore true exactly when the integer keys are equal",
+      "public_static_type": "BoundedRelationStaticInput",
+      "public_batch_type": "BoundedRelationBatch",
+      "oracle_passed_into_execute": false,
+      "new_geometry_family_required": false,
+      "new_protocol_family_required": false
+    },
+    "unit_box_precedent_disclosure": {
+      "goal5798_already_used_unit_boxes": true,
+      "unit_box_geometry_claimed_new": false,
+      "scientific_difference_claimed": "SQLite integer bag semantics, duplicate-key Cartesian row multiplicity, and application-level cross-domain reuse"
+    }
+  },
+  "frozen_fixtures": {
+    "normal": {
+      "A": [
+        {"row_id": 10, "join_key": 0},
+        {"row_id": 11, "join_key": 7},
+        {"row_id": 12, "join_key": 7},
+        {"row_id": 13, "join_key": 8},
+        {"row_id": 14, "join_key": 16777215},
+        {"row_id": 15, "join_key": 42}
+      ],
+      "B": [
+        {"row_id": 100, "join_key": 0},
+        {"row_id": 101, "join_key": 7},
+        {"row_id": 102, "join_key": 7},
+        {"row_id": 103, "join_key": 8},
+        {"row_id": 104, "join_key": 9},
+        {"row_id": 105, "join_key": 16777215},
+        {"row_id": 106, "join_key": 43}
+      ],
+      "expected_pairs": [
+        [10, 100],
+        [11, 101],
+        [11, 102],
+        [12, 101],
+        [12, 102],
+        [13, 103],
+        [14, 105]
+      ]
+    },
+    "prepared_reuse_batch": {
+      "A": [
+        {"row_id": 20, "join_key": 7},
+        {"row_id": 21, "join_key": 9},
+        {"row_id": 22, "join_key": 43},
+        {"row_id": 23, "join_key": 6}
+      ],
+      "B_is_normal_fixture_B": true,
+      "expected_pairs": [
+        [20, 101],
+        [20, 102],
+        [21, 104],
+        [22, 106]
+      ]
+    }
+  },
+  "frozen_boundary_and_failure_cases": {
+    "application_semantic_boundaries": [
+      "two A rows and two B rows with key 7 produce four distinct bag pairs",
+      "keys 8 and 9 do not join even though their closed unit boxes touch at a boundary",
+      "keys 42 and 43 do not join even though their closed unit boxes touch at a boundary",
+      "keys 0 and 16777215 match exactly at both ends of the admitted key domain",
+      "an A key absent from B produces no row"
+    ],
+    "adapter_rejections_before_native_admission": [
+      "NULL key",
+      "bool key",
+      "negative key",
+      "key 16777216",
+      "duplicate row_id within one side",
+      "empty A",
+      "empty B"
+    ],
+    "generic_overflow_regression": {
+      "fixture": "sealed capacity plus one A rows with distinct ids and one shared key joined to one B row with that key",
+      "required_error": "RX041_OUTPUT_OVERFLOW",
+      "partial_application_result_allowed": false,
+      "status_before_output_required": true,
+      "counts_as_sql_transfer_evidence": false,
+      "counts_only_as_generic_repair_regression": true
+    }
+  },
+  "execution_rule": {
+    "exact_core_successor_freeze_required_before_gpu": true,
+    "exact_execution_freeze_status": "PENDING_CORE_SUCCESSOR_IDENTITY",
+    "core_or_native_change_after_exact_freeze_allowed": false,
+    "private_execution_api_allowed": false,
+    "handwritten_ptx_sbt_or_pipeline_allowed": false,
+    "task_replacement_after_first_sql_gpu_attempt_allowed": false,
+    "adapter_or_oracle_semantics_change_after_first_sql_gpu_attempt_allowed": false,
+    "expected_rows_passed_into_execute_allowed": false,
+    "exact_output_required": true,
+    "behavioral_optix_receipt_required": true,
+    "performance_timing_allowed": false,
+    "gpu_call_authorized_by_this_preaction": false
+  },
+  "success_gate": [
+    "exact frozen repaired-core, wheel, native, rtdlexe, authority and trust identities match",
+    "the adapter and independent SQLite oracle match their pre-GPU frozen hashes",
+    "only the public install-load-prepare-execute-close lifecycle is used",
+    "SQLite and pure-Python independent oracles agree exactly",
+    "normal and prepared-reuse RTDL outputs equal the frozen oracle rows exactly",
+    "duplicate-key multiplicity, adjacent-key nonmatches, misses and endpoint keys are all observed",
+    "each successful execution carries behavioral OptiX and status-before-output evidence",
+    "the generic K+1 repair regression has passed separately without publishing partial output",
+    "zero registered or formal performance timings are produced",
+    "no core, native, private API or task replacement is required"
+  ],
+  "outcome_policy": {
+    "pass": "ONE_POST_FAILURE_PROJECT_SELECTED_EXISTING_FAMILY_APPLICATION_REUSE_CASE",
+    "unsupported": "TERMINAL_SQL_SUCCESSOR_UNSUPPORTED__NO_REPLACEMENT",
+    "core_change_required": "TERMINAL_SQL_SUCCESSOR_CORE_CHANGE_REQUIRED__NO_REPAIR_OR_REPLACEMENT_INSIDE_THIS_CASE",
+    "infrastructure_invalid": "TERMINAL_SQL_SUCCESSOR_INFRA_INVALID__NO_SCIENTIFIC_PASS__NO_SILENT_RETRY"
+  },
+  "claim_ceiling": {
+    "if_pass": "one project-selected post-BED-failure external-spec SQLite integer bag-equijoin case reused the already frozen public custom-AABB relation family without another core or native change and matched an independent SQLite oracle exactly",
+    "constructive_cross_domain_existing_family_reuse_witness_allowed": true,
+    "original_bed_failure_superseded_or_erased": false,
+    "two_of_two_transfer_claim_allowed": false,
+    "blind_unseen_or_held_out_claim_allowed": false,
+    "unbiased_generalization_or_transfer_rate_claim_allowed": false,
+    "new_protocol_or_geometry_family_claim_allowed": false,
+    "arbitrary_callback_ir_gpu_transfer_claim_allowed": false,
+    "third_party_user_or_author_claim_allowed": false,
+    "usability_productivity_or_performance_claim_allowed": false
+  },
+  "scientific_counts_before_execution": {
+    "original_frozen_bed_attempts": 1,
+    "original_frozen_bed_passes": 0,
+    "original_frozen_bed_core_change_required": 1,
+    "generic_overflow_regression_passes": 0,
+    "post_failure_project_selected_sql_successor_attempts": 0,
+    "post_failure_project_selected_sql_successor_passes": 0,
+    "unbiased_prospective_generalization_exams": 0,
+    "third_party_authors": 0,
+    "new_protocol_families": 0,
+    "new_geometry_families": 0
+  },
+  "implementation_state_at_freeze": {
+    "adapter_exists": false,
+    "independent_sqlite_oracle_exists": false,
+    "goal_specific_tests_exist": false,
+    "exact_execution_freeze_exists": false,
+    "gpu_call_count": 0,
+    "registered_performance_timing_count": 0
+  }
+}

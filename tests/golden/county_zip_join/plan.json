@@ -1,0 +1,239 @@
+{
+  "$schema": "https://rtdl.dev/schemas/rtdl-plan-v1alpha1.json",
+  "accel_kind": "native_loop",
+  "backend": "rtdl",
+  "buffers": [
+    {
+      "element": "Segment2D",
+      "name": "right_segments",
+      "role": "device_input_build"
+    },
+    {
+      "element": "Segment2D",
+      "name": "left_segments",
+      "role": "device_input_probe"
+    },
+    {
+      "element": "IntersectionRecord",
+      "name": "output_records",
+      "role": "device_output"
+    },
+    {
+      "element": "uint32_t",
+      "name": "output_count",
+      "role": "device_counter"
+    },
+    {
+      "element": "uint32_t",
+      "name": "output_capacity",
+      "role": "device_limit"
+    }
+  ],
+  "build_input": {
+    "fields": [
+      {
+        "c_type": "float",
+        "cuda_type": "float",
+        "name": "x0",
+        "scalar_type": "f32",
+        "size": 4
+      },
+      {
+        "c_type": "float",
+        "cuda_type": "float",
+        "name": "y0",
+        "scalar_type": "f32",
+        "size": 4
+      },
+      {
+        "c_type": "float",
+        "cuda_type": "float",
+        "name": "x1",
+        "scalar_type": "f32",
+        "size": 4
+      },
+      {
+        "c_type": "float",
+        "cuda_type": "float",
+        "name": "y1",
+        "scalar_type": "f32",
+        "size": 4
+      },
+      {
+        "c_type": "uint32_t",
+        "cuda_type": "uint32_t",
+        "name": "id",
+        "scalar_type": "u32",
+        "size": 4
+      }
+    ],
+    "geometry": "segments",
+    "layout": "Segment2D",
+    "name": "right",
+    "role": "build"
+  },
+  "bvh_policy": "current local backend uses native_loop for this workload; BVH-backed candidate traversal is suspended pending a parity-safe redesign",
+  "device_programs": [
+    "__raygen__rtdl_probe",
+    "__miss__rtdl_miss",
+    "__closesthit__rtdl_refine",
+    "__intersection__rtdl_segments"
+  ],
+  "emit_fields": [
+    "left_id",
+    "right_id",
+    "intersection_point_x",
+    "intersection_point_y"
+  ],
+  "exact_refine_mode": "analytic_float_segment_intersection",
+  "host_steps": [
+    "Upload `right` and `left` arrays using `Segment2D` / `Segment2D` layouts.",
+    "Current local backend uses a native analytic nested-loop segment intersection path for correctness.",
+    "Bind launch parameters with segment buffers, output buffer, output capacity, and atomic output counter.",
+    "Future GPU backends may still lower this workload through BVH-backed candidate traversal once candidate completeness is demonstrated.",
+    "Run one analytic segment-vs-segment pass per probe/build pair and emit intersection rows."
+  ],
+  "kernel_name": "county_zip_join",
+  "launch_params": [
+    {
+      "c_type": "OptixTraversableHandle",
+      "name": "traversable",
+      "role": "rt_accel"
+    },
+    {
+      "c_type": "const Segment2D*",
+      "name": "right_segments",
+      "role": "device_input_build"
+    },
+    {
+      "c_type": "const Segment2D*",
+      "name": "left_segments",
+      "role": "device_input_probe"
+    },
+    {
+      "c_type": "IntersectionRecord*",
+      "name": "output_records",
+      "role": "device_output"
+    },
+    {
+      "c_type": "uint32_t*",
+      "name": "output_count",
+      "role": "device_counter"
+    },
+    {
+      "c_type": "uint32_t",
+      "name": "output_capacity",
+      "role": "device_limit"
+    },
+    {
+      "c_type": "uint32_t",
+      "name": "probe_count",
+      "role": "launch_size"
+    }
+  ],
+  "output_record": {
+    "fields": [
+      {
+        "c_type": "uint32_t",
+        "name": "left_id"
+      },
+      {
+        "c_type": "uint32_t",
+        "name": "right_id"
+      },
+      {
+        "c_type": "float",
+        "name": "intersection_point_x"
+      },
+      {
+        "c_type": "float",
+        "name": "intersection_point_y"
+      }
+    ],
+    "name": "IntersectionRecord"
+  },
+  "payload_registers": [
+    {
+      "encoding": "u32",
+      "index": 0,
+      "name": "probe_index"
+    },
+    {
+      "encoding": "u32",
+      "index": 1,
+      "name": "build_primitive_index"
+    },
+    {
+      "encoding": "f32_bits",
+      "index": 2,
+      "name": "hit_t_bits"
+    },
+    {
+      "encoding": "u32",
+      "index": 3,
+      "name": "hit_kind"
+    }
+  ],
+  "precision": "float_approx",
+  "predicate": "segment_intersection",
+  "probe_input": {
+    "fields": [
+      {
+        "c_type": "float",
+        "cuda_type": "float",
+        "name": "x0",
+        "scalar_type": "f32",
+        "size": 4
+      },
+      {
+        "c_type": "float",
+        "cuda_type": "float",
+        "name": "y0",
+        "scalar_type": "f32",
+        "size": 4
+      },
+      {
+        "c_type": "float",
+        "cuda_type": "float",
+        "name": "x1",
+        "scalar_type": "f32",
+        "size": 4
+      },
+      {
+        "c_type": "float",
+        "cuda_type": "float",
+        "name": "y1",
+        "scalar_type": "f32",
+        "size": 4
+      },
+      {
+        "c_type": "uint32_t",
+        "cuda_type": "uint32_t",
+        "name": "id",
+        "scalar_type": "u32",
+        "size": 4
+      }
+    ],
+    "geometry": "segments",
+    "layout": "Segment2D",
+    "name": "left",
+    "role": "probe"
+  },
+  "ray_spec": {
+    "description": "Current local backend does not use the historical segment-as-ray Embree path; this placeholder records the intended finite-segment query shape.",
+    "direction": [
+      "probe.x1 - probe.x0",
+      "probe.y1 - probe.y0",
+      "0.0f"
+    ],
+    "origin": [
+      "probe.x0",
+      "probe.y0",
+      "0.0f"
+    ],
+    "tmax": "1.0f",
+    "tmin": "0.0f"
+  },
+  "schema_version": "v1alpha1",
+  "workload_kind": "lsi"
+}

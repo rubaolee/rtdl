@@ -1,0 +1,54 @@
+{
+  "input_sha256": "7ac21df6d89a6b5a22c0bd6c22bac63b78788aab5db1e03ba7d271c4eafa8e72",
+  "native_descriptor": {
+    "build_flags": 4,
+    "build_input_type": 8518,
+    "builtin_is_module": true,
+    "center_stride_bytes": 12,
+    "gas_count": 1,
+    "geometry_flags": 2,
+    "primitive_count": 5,
+    "primitive_index_offset": 0,
+    "primitive_type": 9478,
+    "primitive_type_flags": 64,
+    "radius_stride_bytes": 4,
+    "sbt_record_count": 1,
+    "schema": "rtdl.v4.native_builtin_sphere_descriptor.v1",
+    "single_radius": false,
+    "user_intersection_program": false,
+    "uses_motion_blur": false
+  },
+  "native_sha256": "c0c2981f2d1bf132d11abdf533de1d4ead1bbb80bd6624ec4f1b7b0681bfbd45",
+  "observed": [
+    [
+      1,
+      1056964608,
+      2
+    ],
+    [
+      0,
+      1065353216,
+      4294967295
+    ],
+    [
+      1,
+      1048576000,
+      99
+    ],
+    [
+      1,
+      1048576000,
+      11
+    ],
+    [
+      0,
+      1065353216,
+      4294967295
+    ]
+  ],
+  "oracle_sha256": "cc2429679763280d8e38c5fa56ae304cbafe5ab410d284ecf6a7f33ee9aef27f",
+  "registered_performance_timing_count": 0,
+  "schema": "rtdl.goal5833.home_builtin_sphere_recount.v1",
+  "status": "PASS",
+  "traversal_receipt_sha256": "39c4683ee03ad2a201135463fdad5204f9e8c025cacb65ea4509605ba33a9dd0"
+}

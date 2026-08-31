@@ -1,0 +1,10638 @@
+from __future__ import annotations
+
+import hashlib
+import hmac
+import math
+import secrets
+import statistics
+import time
+
+from .reference import Polygon as _CanonicalPolygon
+from .reference import Ray2D as _CanonicalRay2D
+from .reference import Segment as _CanonicalSegment
+from .reference import Triangle as _CanonicalTriangle
+from .reference import _finite_ray_hits_triangle
+from .runtime import _normalize_records
+from . import optix_runtime as _optix
+from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_CONTRACT
+from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_PRIMITIVE
+from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA
+from .aggregate_tree_reference import AGGREGATE_FRONTIER_COLLECT_ROW_METADATA_FLAGS_NONE
+from .partner_column_contracts import default_partner_claim_boundary_metadata
+from .partner_column_contracts import make_dense_zero_based_group_id_contract
+from .partner_column_contracts import make_equal_contiguous_group_id_contract
+from .partner_column_contracts import require_group_id_contract
+from .triton_partner_continuation import run_triton_partner_continuation
+from .triton_partner_continuation import run_triton_bounded_collect_finalize_i64
+from .triton_partner_continuation import run_triton_dense_point_nearest_2d
+from .triton_partner_continuation import run_triton_dense_point_nearest_2d_tiled
+from .triton_partner_continuation import run_triton_dense_point_topk_2d
+from .triton_partner_continuation import run_triton_grouped_argmax_f64
+from .triton_partner_continuation import run_triton_grouped_argmin_f64
+from .triton_partner_continuation import run_triton_grouped_topk_f64
+from .triton_partner_continuation import run_triton_grouped_vector_sum_f64x2_by_offsets
+from .partner_continuation_protocol import PartnerContinuationOverflowError
+
+_UINT32_MAX = 2**32 - 1
+_CUPY_COLUMNAR_PREDICATE_BATCH_KERNELS = {}
+_CUPY_AABB_PAIR_OVERLAP_SUMMARY_2D_KERNEL = None
+_CUPY_SEGMENT_TRIANGLE_EXACT_WITNESS_FILTER_KERNEL = None
+_CUPY_RADIUS_GRAPH_COMPONENTS_3D_GRID_KERNELS = None
+_CUPY_RADIUS_GRAPH_COMPONENTS_3D_MICROCELL_GRAPH_KERNELS = None
+_CUPY_GROUPED_VECTOR_SUM_OFFSETS_F64X2_KERNEL = None
+_NUMBA_RADIUS_GRAPH_COMPONENTS_3D_GRID_KERNELS = None
+_NUMBA_RADIUS_GRAPH_COMPONENTS_3D_BORDER_CANDIDATE_LABEL_KERNEL = None
+_NUMBA_I32_PARENT_BORDER_INIT_KERNEL = None
+_NUMBA_I64_ZERO_KERNEL = None
+_NUMBA_I64_SIGNATURE_WORKSPACE_ZERO_KERNEL = None
+_NUMBA_RADIUS_GRAPH_COMPONENT_SIGNATURE_KERNEL = None
+_PREPARED_RADIUS_GRAPH_OWNER_SECRET = secrets.token_bytes(32)
+
+_AABB_PAIR_PAYLOAD_FIELDS = (
+    "left_index",
+    "right_index",
+    "left_min_x",
+    "left_min_y",
+    "left_max_x",
+    "left_max_y",
+    "left_area",
+    "right_min_x",
+    "right_min_y",
+    "right_max_x",
+    "right_max_y",
+    "right_area",
+)
+
+
+def _require_uint32_id(value: int, label: str) -> int:
+    item = int(value)
+    if item < 0 or item > _UINT32_MAX:
+        raise ValueError(f"{label} IDs must fit uint32 for the current OptiX witness contract")
+    return item
+
+
+def _partner_module(partner: str):
+    if partner == "triton":
+        import torch
+
+        if not torch.cuda.is_available():
+            raise RuntimeError("Triton partner adapter requires torch CUDA tensors as the launch carrier")
+
+        return {
+            "name": "triton",
+            "module": torch,
+            "device": torch.device("cuda:0"),
+            "uint32": torch.uint32,
+            "int64": torch.int64,
+            "float64": torch.float64,
+            "float32": torch.float32,
+            "tensor": lambda values, dtype, device: torch.tensor(values, dtype=dtype, device=device),
+            "zeros": lambda shape, dtype, device: torch.zeros(shape, dtype=dtype, device=device),
+            "sync": torch.cuda.synchronize,
+            "to_host": lambda value: [int(item) for item in value.detach().cpu().tolist()],
+            "to_host_float": lambda value: [float(item) for item in value.detach().cpu().tolist()],
+            "slice": lambda value, count: value[: int(count)],
+        }
+    if partner == "torch":
+        import torch
+
+        if not torch.cuda.is_available():
+            raise RuntimeError("Torch partner adapter requires torch.cuda to be available")
+
+        def count_unique_pairs_by_ids(segment_ids, witness_ray_ids, witness_primitive_ids):
+            return partner_group_count_unique_pairs_by_key(
+                witness_ray_ids,
+                witness_primitive_ids,
+                segment_ids,
+                partner="torch",
+            )
+
+        return {
+            "name": "torch",
+            "module": torch,
+            "device": torch.device("cuda:0"),
+            "uint32": torch.uint32,
+            "int64": torch.int64,
+            "float64": torch.float64,
+            "float32": torch.float32,
+            "tensor": lambda values, dtype, device: torch.tensor(values, dtype=dtype, device=device),
+            "zeros": lambda shape, dtype, device: torch.zeros(shape, dtype=dtype, device=device),
+            "sync": torch.cuda.synchronize,
+            "to_host": lambda value: [int(item) for item in value.detach().cpu().tolist()],
+            "to_host_float": lambda value: [float(item) for item in value.detach().cpu().tolist()],
+            "slice": lambda value, count: value[: int(count)],
+            "count_unique_pairs_by_ids": count_unique_pairs_by_ids,
+            "greater_equal_uint32": lambda value, threshold: value.to(torch.int64).ge(int(threshold)).to(torch.uint32),
+            "invert_binary_uint32": lambda value: (1 - value.to(torch.int64)).to(torch.uint32),
+            "fixed_radius_count_threshold_2d": lambda query, search, radius, threshold: _torch_fixed_radius_count_threshold_2d(
+                torch,
+                query,
+                search,
+                radius,
+                threshold,
+            ),
+            "fixed_radius_count_threshold_3d": lambda query, search, radius, threshold: _torch_fixed_radius_count_threshold_3d(
+                torch,
+                query,
+                search,
+                radius,
+                threshold,
+            ),
+        }
+    if partner == "cupy":
+        import cupy
+
+        if int(cupy.cuda.runtime.getDeviceCount()) <= 0:
+            raise RuntimeError("CuPy partner adapter requires a CUDA device")
+
+        def count_unique_pairs_by_ids(segment_ids, witness_ray_ids, witness_primitive_ids):
+            return partner_group_count_unique_pairs_by_key(
+                witness_ray_ids,
+                witness_primitive_ids,
+                segment_ids,
+                partner="cupy",
+            )
+
+        return {
+            "name": "cupy",
+            "module": cupy,
+            "device": None,
+            "uint32": cupy.uint32,
+            "int64": cupy.int64,
+            "float64": cupy.float64,
+            "float32": cupy.float32,
+            "tensor": lambda values, dtype, device: cupy.asarray(values, dtype=dtype),
+            "zeros": lambda shape, dtype, device: cupy.zeros(shape, dtype=dtype),
+            "sync": cupy.cuda.runtime.deviceSynchronize,
+            "to_host": lambda value: [int(item) for item in cupy.asnumpy(value).tolist()],
+            "to_host_float": lambda value: [float(item) for item in cupy.asnumpy(value).tolist()],
+            "slice": lambda value, count: value[: int(count)],
+            "count_unique_pairs_by_ids": count_unique_pairs_by_ids,
+            "greater_equal_uint32": lambda value, threshold: (value >= int(threshold)).astype(cupy.uint32, copy=False),
+            "invert_binary_uint32": lambda value: (1 - value).astype(cupy.uint32, copy=False),
+            "fixed_radius_count_threshold_2d": lambda query, search, radius, threshold: _cupy_fixed_radius_count_threshold_2d(
+                cupy,
+                query,
+                search,
+                radius,
+                threshold,
+            ),
+            "fixed_radius_count_threshold_3d": lambda query, search, radius, threshold: _cupy_fixed_radius_count_threshold_3d(
+                cupy,
+                query,
+                search,
+                radius,
+                threshold,
+            ),
+        }
+    raise ValueError("partner must be 'triton', 'torch', or 'cupy'")
+
+
+def _require_triton_float64(values, *, name: str):
+    dtype_name = str(getattr(values, "dtype", ""))
+    if "float64" not in dtype_name and "Double" not in dtype_name:
+        raise ValueError(f"{name} must be float64 for the v2.5 Triton f64 continuation")
+
+
+def _runtime_uses_torch_tensor_carrier(runtime: dict[str, object]) -> bool:
+    return runtime["name"] in ("triton", "torch")
+
+
+def _as_partner_column(runtime: dict[str, object], values):
+    module = runtime["module"]
+    if _runtime_uses_torch_tensor_carrier(runtime):
+        return module.as_tensor(values, device=runtime["device"])
+    return module.asarray(values)
+
+
+def _field_dtype_from_row_type(row_type: object, field: str) -> str:
+    for name, ctype in getattr(row_type, "_fields_", ()):
+        if name != field:
+            continue
+        ctype_name = getattr(ctype, "__name__", str(ctype)).lower()
+        if "float" in ctype_name or "double" in ctype_name:
+            return "float64"
+        return "int64"
+    return "unknown"
+
+
+def _numeric_row_view_field_values(row_view, field: str):
+    try:
+        import numpy as np
+
+        row_array = np.ctypeslib.as_array(row_view.rows_ptr, shape=(int(row_view.row_count),))
+        if getattr(row_array.dtype, "names", None) and field in row_array.dtype.names:
+            return row_array[field].copy()
+    except Exception:
+        pass
+    return tuple(getattr(row_view.rows_ptr[index], field) for index in range(int(row_view.row_count)))
+
+
+def optix_row_view_to_partner_columns(
+    row_view,
+    *,
+    fields: tuple[str, ...] | None = None,
+    partner: str = "torch",
+    return_metadata: bool = False,
+) -> dict[str, object]:
+    """Convert a generic OptiX row view into typed partner-owned columns.
+
+    This is a host-staged bridge for generic row views. It is useful for
+    partner continuations that should not depend on app-shaped Python dict
+    materialization, but it is deliberately not a true zero-copy/device-resident
+    handoff claim.
+    """
+
+    row_count = int(getattr(row_view, "row_count"))
+    available_fields = tuple(str(field) for field in getattr(row_view, "field_names"))
+    requested_fields = available_fields if fields is None else tuple(str(field) for field in fields)
+    missing = [field for field in requested_fields if field not in available_fields]
+    if missing:
+        raise ValueError(f"row view missing requested fields: {', '.join(missing)}")
+    runtime = _partner_module(partner)
+    columns: dict[str, object] = {}
+    field_dtypes: dict[str, str] = {}
+    row_type = getattr(row_view, "row_type", object)
+    for field in requested_fields:
+        dtype_name = _field_dtype_from_row_type(row_type, field)
+        values = _numeric_row_view_field_values(row_view, field)
+        if dtype_name == "float64":
+            dtype = runtime["float64"]
+        else:
+            dtype = runtime["int64"]
+            dtype_name = "int64" if dtype_name == "unknown" else dtype_name
+        columns[field] = runtime["tensor"](values, dtype, runtime["device"])
+        field_dtypes[field] = dtype_name
+    runtime["sync"]()
+    metadata = {
+        "adapter": "optix_row_view_to_partner_columns",
+        "partner": runtime["name"],
+        "input_contract": "generic_optix_row_view_numeric_fields",
+        "partner_reference_contract": "typed_primitive_payload_columns",
+        "field_names": requested_fields,
+        "field_dtypes": field_dtypes,
+        "row_count": row_count,
+        "host_stage_copy_used": True,
+        "python_dict_row_materialization_used": False,
+        "native_engine_row_contract": "existing_generic_optix_row_view",
+        "direct_device_handoff_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "v2_5_release_authorized": False,
+        "claim_boundary": (
+            "Generic typed row-view to partner-column bridge. It host-stages "
+            "existing OptiX row-view fields into partner-owned columns and does "
+            "not authorize true zero-copy, speedup, release, or app-specific engine claims."
+        ),
+    }
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def _mask_to_partner_f64(mask, runtime: dict[str, object]):
+    if runtime["name"] == "cupy":
+        return mask.astype(runtime["module"].float64, copy=False)
+    return mask.to(runtime["module"].float64)
+
+
+def _triton_count_mask(mask, *, partner: str):
+    selected = partner_mask_indices(mask, partner=partner)
+    group_ids = selected.new_zeros((int(selected.numel()),))
+    return partner_group_count_by_key(group_ids, 1, partner=partner)[0]
+
+
+def partner_group_count_by_key(keys, group_count: int, *, partner: str = "torch"):
+    """Count rows per integer key with the selected partner tensor runtime."""
+    group_count = int(group_count)
+    if group_count < 0:
+        raise ValueError("group_count must be non-negative")
+    if partner == "numba":
+        from .numba_partner_continuation import run_numba_segmented_count_i64
+        from .v2_6_neutral_partner_handoff import prepare_v2_6_neutral_partner_handoff
+        from .v2_6_neutral_partner_handoff import validate_v2_6_neutral_partner_handoff
+
+        try:
+            handoff = prepare_v2_6_neutral_partner_handoff(
+                {"group_ids": keys},
+                partner="numba",
+                access_modes={"group_ids": "read"},
+            )
+        except ValueError as exc:
+            raise RuntimeError(f"Numba neutral handoff rejected: {exc}") from exc
+        validation = validate_v2_6_neutral_partner_handoff(handoff)
+        if validation["status"] != "accept":
+            raise RuntimeError(f"Numba neutral handoff rejected: {validation['errors']}")
+        result = run_numba_segmented_count_i64(keys, group_count=group_count)
+        return result["outputs"]["counts"]
+    runtime = _partner_module(partner)
+    if runtime["name"] == "triton":
+        result = run_triton_partner_continuation(
+            "segmented_count_i64",
+            {"group_ids": keys.to(runtime["int64"]), "group_count": group_count},
+        )
+        return result["outputs"]["counts"].to(runtime["uint32"])
+    if runtime["name"] == "torch":
+        torch = runtime["module"]
+        if int(keys.numel()) == 0:
+            return torch.zeros((group_count,), dtype=torch.uint32, device=keys.device)
+        return torch.bincount(keys.to(torch.int64), minlength=group_count).to(torch.uint32)
+    if runtime["name"] == "cupy":
+        cupy = runtime["module"]
+        if int(keys.size) == 0:
+            return cupy.zeros((group_count,), dtype=cupy.uint32)
+        return cupy.bincount(keys.astype(cupy.int64, copy=False), minlength=group_count).astype(cupy.uint32, copy=False)
+    raise ValueError("partner must be 'triton', 'torch', or 'cupy'")
+
+
+def partner_group_sum_by_key(keys, values, group_count: int, *, partner: str = "torch"):
+    """Sum values per integer key with the selected partner tensor runtime."""
+    group_count = int(group_count)
+    if group_count < 0:
+        raise ValueError("group_count must be non-negative")
+    if partner == "numba":
+        from .numba_partner_continuation import run_numba_segmented_sum_f64
+        from .v2_6_neutral_partner_handoff import prepare_v2_6_neutral_partner_handoff
+        from .v2_6_neutral_partner_handoff import validate_v2_6_neutral_partner_handoff
+
+        try:
+            handoff = prepare_v2_6_neutral_partner_handoff(
+                {"group_ids": keys, "values": values},
+                partner="numba",
+                access_modes={"group_ids": "read", "values": "read"},
+            )
+        except ValueError as exc:
+            raise RuntimeError(f"Numba neutral handoff rejected: {exc}") from exc
+        validation = validate_v2_6_neutral_partner_handoff(handoff)
+        if validation["status"] != "accept":
+            raise RuntimeError(f"Numba neutral handoff rejected: {validation['errors']}")
+        result = run_numba_segmented_sum_f64(keys, values, group_count=group_count)
+        return result["outputs"]["sums"]
+    runtime = _partner_module(partner)
+    if runtime["name"] == "triton":
+        _require_triton_float64(values, name="values")
+        result = run_triton_partner_continuation(
+            "segmented_sum_f64",
+            {"group_ids": keys.to(runtime["int64"]), "values": values, "group_count": group_count},
+        )
+        return result["outputs"]["sums"]
+    if runtime["name"] == "torch":
+        torch = runtime["module"]
+        out = torch.zeros((group_count,), dtype=values.dtype, device=values.device)
+        if int(keys.numel()) == 0:
+            return out
+        out.scatter_add_(0, keys.to(torch.int64), values)
+        return out
+    if runtime["name"] == "cupy":
+        cupy = runtime["module"]
+        out = cupy.zeros((group_count,), dtype=values.dtype)
+        if int(keys.size) == 0:
+            return out
+        cupy.add.at(out, keys.astype(cupy.int64, copy=False), values)
+        return out
+    raise ValueError("partner must be 'triton', 'torch', 'cupy', or 'numba'")
+
+
+def partner_group_vector_sum_2d_by_key(keys, values_x, values_y, group_count: int, *, partner: str = "torch"):
+    """Sum paired float64 vector components per integer key with the selected partner."""
+
+    group_count = int(group_count)
+    if group_count < 0:
+        raise ValueError("group_count must be non-negative")
+    if partner == "numba":
+        from .numba_partner_continuation import run_numba_grouped_vector_sum_f64x2
+        from .v2_6_neutral_partner_handoff import prepare_v2_6_neutral_partner_handoff
+        from .v2_6_neutral_partner_handoff import validate_v2_6_neutral_partner_handoff
+
+        try:
+            handoff = prepare_v2_6_neutral_partner_handoff(
+                {"group_ids": keys, "values_x": values_x, "values_y": values_y},
+                partner="numba",
+                access_modes={"group_ids": "read", "values_x": "read", "values_y": "read"},
+            )
+        except ValueError as exc:
+            raise RuntimeError(f"Numba neutral handoff rejected: {exc}") from exc
+        validation = validate_v2_6_neutral_partner_handoff(handoff)
+        if validation["status"] != "accept":
+            raise RuntimeError(f"Numba neutral handoff rejected: {validation['errors']}")
+        result = run_numba_grouped_vector_sum_f64x2(
+            keys,
+            values_x,
+            values_y,
+            group_count=group_count,
+        )
+        return result["outputs"]["sum_x"], result["outputs"]["sum_y"]
+    runtime = _partner_module(partner)
+    if runtime["name"] == "triton":
+        _require_triton_float64(values_x, name="values_x")
+        _require_triton_float64(values_y, name="values_y")
+        result = run_triton_partner_continuation(
+            "grouped_vector_sum_f64x2",
+            {
+                "group_ids": keys.to(runtime["int64"]),
+                "values_x": values_x,
+                "values_y": values_y,
+                "group_count": group_count,
+            },
+        )
+        return result["outputs"]["sum_x"], result["outputs"]["sum_y"]
+    if runtime["name"] == "torch":
+        torch = runtime["module"]
+        out_x = torch.zeros((group_count,), dtype=values_x.dtype, device=values_x.device)
+        out_y = torch.zeros((group_count,), dtype=values_y.dtype, device=values_y.device)
+        if int(keys.numel()) == 0:
+            return out_x, out_y
+        group_ids = keys.to(torch.int64)
+        out_x.scatter_add_(0, group_ids, values_x)
+        out_y.scatter_add_(0, group_ids, values_y)
+        return out_x, out_y
+    if runtime["name"] == "cupy":
+        cupy = runtime["module"]
+        out_x = cupy.zeros((group_count,), dtype=values_x.dtype)
+        out_y = cupy.zeros((group_count,), dtype=values_y.dtype)
+        if int(keys.size) == 0:
+            return out_x, out_y
+        group_ids = keys.astype(cupy.int64, copy=False)
+        cupy.add.at(out_x, group_ids, values_x)
+        cupy.add.at(out_y, group_ids, values_y)
+        return out_x, out_y
+    raise ValueError("partner must be 'triton', 'torch', 'cupy', or 'numba'")
+
+
+def _cupy_grouped_vector_sum_2d_by_offsets(cupy, row_offsets, values_x, values_y):
+    """Reduce presegmented grouped 2D vectors with a generic CuPy RawKernel."""
+
+    global _CUPY_GROUPED_VECTOR_SUM_OFFSETS_F64X2_KERNEL
+
+    row_offsets = row_offsets.astype(cupy.int64, copy=False)
+    values_x = values_x.astype(cupy.float64, copy=False)
+    values_y = values_y.astype(cupy.float64, copy=False)
+    if values_x.shape != values_y.shape:
+        raise ValueError("values_x and values_y must have the same shape")
+    group_count = int(row_offsets.size) - 1
+    row_count = int(values_x.size)
+    if group_count < 0:
+        raise ValueError("row_offsets must contain at least one element")
+    if group_count == 0:
+        return (
+            cupy.empty((0,), dtype=cupy.float64),
+            cupy.empty((0,), dtype=cupy.float64),
+            {
+                "presegmented_row_offsets": True,
+                "adapter_kernel": "cupy_grouped_vector_sum_offsets_f64x2_kernel",
+                "program_count": 0,
+                "threads_per_block": 128,
+                "global_atomic_add_used": False,
+            },
+        )
+    if bool(cupy.any(row_offsets[1:] < row_offsets[:-1]).item()):
+        raise ValueError("row_offsets must be monotonically nondecreasing")
+    if int(row_offsets[0].item()) != 0 or int(row_offsets[-1].item()) != row_count:
+        raise ValueError("row_offsets must start at 0 and end at the row count")
+    if _CUPY_GROUPED_VECTOR_SUM_OFFSETS_F64X2_KERNEL is None:
+        source = r'''
+        extern "C" __global__
+        void rtdl_cupy_grouped_vector_sum_offsets_f64x2(
+            const long long* row_offsets,
+            const double* values_x,
+            const double* values_y,
+            double* output_x,
+            double* output_y,
+            const long long group_count
+        ) {
+            const long long group = (long long)blockIdx.x * blockDim.x + threadIdx.x;
+            if (group >= group_count) {
+                return;
+            }
+            const long long start = row_offsets[group];
+            const long long end = row_offsets[group + 1];
+            double sum_x = 0.0;
+            double sum_y = 0.0;
+            for (long long index = start; index < end; ++index) {
+                sum_x += values_x[index];
+                sum_y += values_y[index];
+            }
+            output_x[group] = sum_x;
+            output_y[group] = sum_y;
+        }
+        '''
+        _CUPY_GROUPED_VECTOR_SUM_OFFSETS_F64X2_KERNEL = cupy.RawKernel(
+            source,
+            "rtdl_cupy_grouped_vector_sum_offsets_f64x2",
+        )
+    output_x = cupy.empty((group_count,), dtype=cupy.float64)
+    output_y = cupy.empty((group_count,), dtype=cupy.float64)
+    threads_per_block = 128
+    blocks = (max(1, math.ceil(group_count / threads_per_block)),)
+    _CUPY_GROUPED_VECTOR_SUM_OFFSETS_F64X2_KERNEL(
+        blocks,
+        (threads_per_block,),
+        (row_offsets, values_x, values_y, output_x, output_y, group_count),
+    )
+    return (
+        output_x,
+        output_y,
+        {
+            "presegmented_row_offsets": True,
+            "adapter_kernel": "cupy_grouped_vector_sum_offsets_f64x2_kernel",
+            "program_count": int(blocks[0]),
+            "threads_per_block": threads_per_block,
+            "global_atomic_add_used": False,
+        },
+    )
+
+
+def partner_group_max_by_key(keys, values, group_count: int, *, partner: str = "torch", initial=0):
+    """Compute max(values) per integer key with the selected partner tensor runtime."""
+    group_count = int(group_count)
+    if group_count < 0:
+        raise ValueError("group_count must be non-negative")
+    if partner == "numba":
+        from .numba_partner_continuation import run_numba_segmented_max_f64
+        from .v2_6_neutral_partner_handoff import prepare_v2_6_neutral_partner_handoff
+        from .v2_6_neutral_partner_handoff import validate_v2_6_neutral_partner_handoff
+
+        try:
+            handoff = prepare_v2_6_neutral_partner_handoff(
+                {"group_ids": keys, "values": values},
+                partner="numba",
+                access_modes={"group_ids": "read", "values": "read"},
+            )
+        except ValueError as exc:
+            raise RuntimeError(f"Numba neutral handoff rejected: {exc}") from exc
+        validation = validate_v2_6_neutral_partner_handoff(handoff)
+        if validation["status"] != "accept":
+            raise RuntimeError(f"Numba neutral handoff rejected: {validation['errors']}")
+        result = run_numba_segmented_max_f64(
+            keys,
+            values,
+            group_count=group_count,
+            initial=float(initial),
+        )
+        return result["outputs"]["maxes"]
+    runtime = _partner_module(partner)
+    if runtime["name"] == "triton":
+        _require_triton_float64(values, name="values")
+        result = run_triton_partner_continuation(
+            "segmented_max_f64",
+            {"group_ids": keys.to(runtime["int64"]), "values": values, "group_count": group_count},
+        )
+        dense = result["outputs"]["dense_maxes"]
+        counts = result["outputs"]["present_counts"]
+        fill = runtime["module"].full_like(dense, float(initial))
+        return runtime["module"].where(counts > 0, dense, fill)
+    if runtime["name"] == "torch":
+        torch = runtime["module"]
+        out = torch.full((group_count,), initial, dtype=values.dtype, device=values.device)
+        if int(keys.numel()) == 0:
+            return out
+        return out.scatter_reduce(0, keys.to(torch.int64), values, reduce="amax", include_self=True)
+    if runtime["name"] == "cupy":
+        cupy = runtime["module"]
+        out = cupy.full((group_count,), initial, dtype=values.dtype)
+        if int(keys.size) == 0:
+            return out
+        cupy.maximum.at(out, keys.astype(cupy.int64, copy=False), values)
+        return out
+    raise ValueError("partner must be 'triton', 'torch', 'cupy', or 'numba'")
+
+
+def partner_group_min_by_key(keys, values, group_count: int, *, partner: str = "torch", initial=0):
+    """Compute min(values) per integer key with the selected partner tensor runtime."""
+    group_count = int(group_count)
+    if group_count < 0:
+        raise ValueError("group_count must be non-negative")
+    if partner == "numba":
+        from .numba_partner_continuation import run_numba_segmented_min_f64
+        from .v2_6_neutral_partner_handoff import prepare_v2_6_neutral_partner_handoff
+        from .v2_6_neutral_partner_handoff import validate_v2_6_neutral_partner_handoff
+
+        try:
+            handoff = prepare_v2_6_neutral_partner_handoff(
+                {"group_ids": keys, "values": values},
+                partner="numba",
+                access_modes={"group_ids": "read", "values": "read"},
+            )
+        except ValueError as exc:
+            raise RuntimeError(f"Numba neutral handoff rejected: {exc}") from exc
+        validation = validate_v2_6_neutral_partner_handoff(handoff)
+        if validation["status"] != "accept":
+            raise RuntimeError(f"Numba neutral handoff rejected: {validation['errors']}")
+        result = run_numba_segmented_min_f64(
+            keys,
+            values,
+            group_count=group_count,
+            initial=float(initial),
+        )
+        return result["outputs"]["mins"]
+    runtime = _partner_module(partner)
+    if runtime["name"] == "triton":
+        _require_triton_float64(values, name="values")
+        result = run_triton_partner_continuation(
+            "segmented_min_f64",
+            {"group_ids": keys.to(runtime["int64"]), "values": values, "group_count": group_count},
+        )
+        dense = result["outputs"]["dense_mins"]
+        counts = result["outputs"]["present_counts"]
+        fill = runtime["module"].full_like(dense, float(initial))
+        return runtime["module"].where(counts > 0, dense, fill)
+    if runtime["name"] == "torch":
+        torch = runtime["module"]
+        out = torch.full((group_count,), initial, dtype=values.dtype, device=values.device)
+        if int(keys.numel()) == 0:
+            return out
+        return out.scatter_reduce(0, keys.to(torch.int64), values, reduce="amin", include_self=True)
+    if runtime["name"] == "cupy":
+        cupy = runtime["module"]
+        out = cupy.full((group_count,), initial, dtype=values.dtype)
+        if int(keys.size) == 0:
+            return out
+        cupy.minimum.at(out, keys.astype(cupy.int64, copy=False), values)
+        return out
+    raise ValueError("partner must be 'triton', 'torch', 'cupy', or 'numba'")
+
+
+def partner_metric_table_reduce_by_key(
+    metric_keys,
+    values,
+    output_metric_keys,
+    *,
+    partner: str = "torch",
+    reduce: str = "sum",
+    initial=0,
+):
+    """Reduce generic metric/value rows into requested output metric keys."""
+    runtime = _partner_module(partner)
+    if runtime["name"] in ("triton", "torch"):
+        torch = runtime["module"]
+        if int(metric_keys.numel()) != int(values.numel()):
+            raise ValueError("metric_keys and values must have the same length")
+        if int(metric_keys.numel()) == 0:
+            return torch.zeros_like(output_metric_keys, dtype=values.dtype)
+        output_i64 = output_metric_keys.to(torch.int64)
+        metric_i64 = metric_keys.to(torch.int64)
+        sorted_output, sorted_to_original = torch.sort(output_i64)
+        sorted_positions = torch.searchsorted(sorted_output, metric_i64)
+        valid_positions = sorted_positions < int(output_i64.numel())
+        if not bool(torch.all(valid_positions).item()):
+            raise ValueError("metric_keys must be present in output_metric_keys")
+        if not bool(torch.all(sorted_output[sorted_positions] == metric_i64).item()):
+            raise ValueError("metric_keys must be present in output_metric_keys")
+        group_positions = sorted_to_original[sorted_positions]
+        group_count = int(output_i64.numel())
+        if reduce == "sum":
+            return partner_group_sum_by_key(group_positions, values, group_count, partner=partner)
+        if reduce == "max":
+            return partner_group_max_by_key(group_positions, values, group_count, partner=partner, initial=initial)
+        if reduce == "min":
+            return partner_group_min_by_key(group_positions, values, group_count, partner=partner, initial=initial)
+        raise ValueError("reduce must be 'sum', 'max', or 'min'")
+    if runtime["name"] == "cupy":
+        cupy = runtime["module"]
+        if int(metric_keys.size) != int(values.size):
+            raise ValueError("metric_keys and values must have the same length")
+        if int(metric_keys.size) == 0:
+            return cupy.zeros_like(output_metric_keys, dtype=values.dtype)
+        output_i64 = output_metric_keys.astype(cupy.int64, copy=False)
+        metric_i64 = metric_keys.astype(cupy.int64, copy=False)
+        sorted_to_original = cupy.argsort(output_i64)
+        sorted_output = output_i64[sorted_to_original]
+        sorted_positions = cupy.searchsorted(sorted_output, metric_i64)
+        valid_positions = sorted_positions < int(output_i64.size)
+        if not bool(cupy.all(valid_positions).item()):
+            raise ValueError("metric_keys must be present in output_metric_keys")
+        if not bool(cupy.all(sorted_output[sorted_positions] == metric_i64).item()):
+            raise ValueError("metric_keys must be present in output_metric_keys")
+        group_positions = sorted_to_original[sorted_positions].astype(cupy.int64, copy=False)
+        group_count = int(output_i64.size)
+        if reduce == "sum":
+            return partner_group_sum_by_key(group_positions, values, group_count, partner=partner)
+        if reduce == "max":
+            return partner_group_max_by_key(group_positions, values, group_count, partner=partner, initial=initial)
+        if reduce == "min":
+            return partner_group_min_by_key(group_positions, values, group_count, partner=partner, initial=initial)
+        raise ValueError("reduce must be 'sum', 'max', or 'min'")
+    raise ValueError("partner must be 'triton', 'torch', or 'cupy'")
+
+
+def partner_metric_table_reduce_repeated_pattern(
+    metric_keys,
+    values,
+    output_metric_keys,
+    repeat_count: int,
+    *,
+    partner: str = "torch",
+    reduce: str = "sum",
+    initial=0,
+    assume_aligned_output: bool = False,
+):
+    """Reduce a generic metric/value pattern repeated N times without materializing rows."""
+    runtime = _partner_module(partner)
+    repeat_count = int(repeat_count)
+    if repeat_count < 0:
+        raise ValueError("repeat_count must be non-negative")
+    module = runtime["module"]
+    if reduce not in {"sum", "max", "min"}:
+        raise ValueError("reduce must be 'sum', 'max', or 'min'")
+    if assume_aligned_output:
+        if len(metric_keys) != len(output_metric_keys):
+            raise ValueError("aligned repeated metric pattern requires one value per output metric key")
+        if repeat_count == 0:
+            if reduce == "sum":
+                return module.zeros_like(output_metric_keys, dtype=values.dtype)
+            return module.full_like(output_metric_keys, initial, dtype=values.dtype)
+        if runtime["name"] == "cupy" and not isinstance(values, module.ndarray):
+            return module.asarray(values * repeat_count if reduce == "sum" else values)
+        if runtime["name"] in ("triton", "torch") and not hasattr(values, "device"):
+            base = values * repeat_count if reduce == "sum" else values
+            return module.as_tensor(base, device=runtime["device"])
+        if reduce == "sum":
+            return values * repeat_count
+        return values
+    if repeat_count == 0:
+        if reduce == "sum":
+            if runtime["name"] in ("triton", "torch"):
+                return module.zeros_like(output_metric_keys, dtype=values.dtype)
+            return module.zeros_like(output_metric_keys, dtype=values.dtype)
+        if runtime["name"] in ("triton", "torch"):
+            return module.full_like(output_metric_keys, initial, dtype=values.dtype)
+        return module.full_like(output_metric_keys, initial, dtype=values.dtype)
+    reduced = partner_metric_table_reduce_by_key(
+        metric_keys,
+        values,
+        output_metric_keys,
+        partner=partner,
+        reduce=reduce,
+        initial=initial,
+    )
+    if reduce == "sum":
+        return reduced * repeat_count
+    return reduced
+
+
+def metric_table_payload_to_partner_columns(
+    payload,
+    *,
+    partner: str = "torch",
+) -> dict[str, object]:
+    """Convert caller-supplied metric table arrays into partner-owned columns."""
+    runtime = _partner_module(partner)
+    module = runtime["module"]
+    source = dict(payload)
+    required = ("metric_keys", "values", "output_metric_keys")
+    for name in required:
+        if name not in source:
+            raise ValueError(f"metric table payload requires {name!r}")
+    metric_len = len(source["metric_keys"])
+    if len(source["values"]) != metric_len:
+        raise ValueError("metric_keys and values must have the same length")
+    if _runtime_uses_torch_tensor_carrier(runtime):
+        columns = {
+            "metric_keys": module.as_tensor(source["metric_keys"], device=runtime["device"]),
+            "values": module.as_tensor(source["values"], device=runtime["device"]),
+            "output_metric_keys": module.as_tensor(source["output_metric_keys"], device=runtime["device"]),
+        }
+    else:
+        columns = {
+            "metric_keys": module.asarray(source["metric_keys"]),
+            "values": module.asarray(source["values"]),
+            "output_metric_keys": module.asarray(source["output_metric_keys"]),
+        }
+    columns["_metadata"] = {
+        "adapter": "metric_table_payload_to_partner_columns",
+        "partner": runtime["name"],
+        "row_count": int(metric_len),
+        "output_metric_count": int(len(source["output_metric_keys"])),
+        "input_contract": "caller_supplied_metric_table_payload",
+        "partner_reference_contract": "generic_metric_table_columns",
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "direct_device_handoff_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "v2_0_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+    }
+    return columns
+
+
+def partner_metric_table_reduce_batch(metric_tables, *, partner: str = "torch") -> dict[str, object]:
+    """Reduce multiple generic metric tables in one public partner-adapter call."""
+    runtime = _partner_module(partner)
+    results: dict[str, object] = {}
+    tables = tuple(metric_tables)
+    for table in tables:
+        name = str(table["name"])
+        columns = table["columns"]
+        results[name] = partner_metric_table_reduce_by_key(
+            columns["metric_keys"],
+            columns["values"],
+            columns["output_metric_keys"],
+            partner=partner,
+            reduce=str(table.get("reduce", "sum")),
+            initial=table.get("initial", 0),
+        )
+    results["_metadata"] = {
+        "adapter": "partner_metric_table_reduce_batch",
+        "partner": runtime["name"],
+        "metric_table_count": len(tables),
+        "partner_reference_contract": "generic_metric_table_batch_reductions",
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "whole_app_speedup_claim_authorized": False,
+    }
+    return results
+
+
+def aabb_pair_payload_to_partner_columns(payload, *, partner: str = "torch") -> dict[str, object]:
+    """Convert caller-supplied 2D AABB pair payload arrays into partner columns."""
+    runtime = _partner_module(partner)
+    if runtime["name"] == "triton":
+        raise ValueError(
+            "aabb pair payload columns are not a v2.5 Triton generic front door; "
+            "decompose through reviewed generic continuation operations first"
+        )
+    module = runtime["module"]
+    source = dict(payload)
+    row_count = None
+    columns: dict[str, object] = {}
+    for name in _AABB_PAIR_PAYLOAD_FIELDS:
+        if name not in source:
+            raise ValueError(f"aabb pair payload requires {name!r}")
+        values = source[name]
+        length = len(values)
+        if row_count is None:
+            row_count = int(length)
+        elif int(length) != row_count and name in ("left_index", "right_index"):
+            raise ValueError("left_index and right_index must have the same length")
+        if runtime["name"] == "torch":
+            columns[name] = module.as_tensor(values, device=runtime["device"])
+        else:
+            columns[name] = module.asarray(values)
+    if int(len(columns["left_index"])) != int(len(columns["right_index"])):
+        raise ValueError("left_index and right_index must have the same length")
+    columns["_metadata"] = {
+        "adapter": "aabb_pair_payload_to_partner_columns",
+        "partner": runtime["name"],
+        "pair_count": int(len(columns["left_index"])),
+        "input_contract": "caller_supplied_aabb_pair_payload",
+        "partner_reference_contract": "generic_aabb_pair_payload_columns",
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "direct_device_handoff_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "v2_0_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+    }
+    return columns
+
+
+def aabb_tiled_candidate_pair_payload_2d_partner_columns(
+    left_aabb_columns,
+    right_aabb_columns,
+    *,
+    partner: str = "torch",
+    tile_rows: int = 2048,
+    right_tile_rows: int | None = None,
+    free_tile_blocks: bool = True,
+    return_metadata: bool = False,
+) -> dict[str, object]:
+    """Build a bounded-memory 2D AABB candidate-pair payload on the partner.
+
+    The adapter scans left/right AABB columns in tiles, appends only positive
+    overlap pairs, and returns the generic pair payload consumed by
+    aabb_pair_overlap_summary_2d_partner_columns. It is intentionally a
+    partner-side primitive, not a native engine specialization.
+    """
+    runtime = _partner_module(partner)
+    module = runtime["module"]
+    tile_rows = int(tile_rows)
+    right_tile_rows = tile_rows if right_tile_rows is None else int(right_tile_rows)
+    if tile_rows <= 0 or right_tile_rows <= 0:
+        raise ValueError("tile row counts must be positive")
+
+    def as_column(source, name):
+        if name not in source:
+            raise ValueError(f"aabb tiled candidate payload requires {name!r}")
+        values = source[name]
+        if runtime["name"] == "torch":
+            return module.as_tensor(values, device=runtime["device"])
+        return module.asarray(values)
+
+    left = {name: as_column(left_aabb_columns, name) for name in ("min_x", "min_y", "max_x", "max_y", "area")}
+    right = {name: as_column(right_aabb_columns, name) for name in ("min_x", "min_y", "max_x", "max_y", "area")}
+    left_count = int(len(left["min_x"]))
+    right_count = int(len(right["min_x"]))
+    left_chunks = []
+    right_chunks = []
+
+    for left_start in range(0, left_count, tile_rows):
+        left_stop = min(left_start + tile_rows, left_count)
+        left_min_x = left["min_x"][left_start:left_stop, None]
+        left_min_y = left["min_y"][left_start:left_stop, None]
+        left_max_x = left["max_x"][left_start:left_stop, None]
+        left_max_y = left["max_y"][left_start:left_stop, None]
+        for right_start in range(0, right_count, right_tile_rows):
+            right_stop = min(right_start + right_tile_rows, right_count)
+            right_min_x = right["min_x"][None, right_start:right_stop]
+            right_min_y = right["min_y"][None, right_start:right_stop]
+            right_max_x = right["max_x"][None, right_start:right_stop]
+            right_max_y = right["max_y"][None, right_start:right_stop]
+            width = module.minimum(left_max_x, right_max_x) - module.maximum(left_min_x, right_min_x)
+            height = module.minimum(left_max_y, right_max_y) - module.maximum(left_min_y, right_min_y)
+            mask = (width > 0) & (height > 0)
+            if runtime["name"] == "torch":
+                local = module.nonzero(mask, as_tuple=False)
+                if int(local.numel()):
+                    left_chunks.append((local[:, 0] + left_start).to(module.int32))
+                    right_chunks.append((local[:, 1] + right_start).to(module.int32))
+            else:
+                local_left, local_right = module.nonzero(mask)
+                if int(local_left.size):
+                    left_chunks.append((local_left + left_start).astype(module.int32, copy=False))
+                    right_chunks.append((local_right + right_start).astype(module.int32, copy=False))
+                if free_tile_blocks:
+                    module.get_default_memory_pool().free_all_blocks()
+
+    if left_chunks:
+        if runtime["name"] == "torch":
+            left_index = module.cat(left_chunks).to(module.int32)
+            right_index = module.cat(right_chunks).to(module.int32)
+        else:
+            left_index = module.concatenate(left_chunks).astype(module.int32, copy=False)
+            right_index = module.concatenate(right_chunks).astype(module.int32, copy=False)
+    elif runtime["name"] == "torch":
+        left_index = module.empty((0,), dtype=module.int32, device=runtime["device"])
+        right_index = module.empty((0,), dtype=module.int32, device=runtime["device"])
+    else:
+        left_index = module.empty(0, dtype=module.int32)
+        right_index = module.empty(0, dtype=module.int32)
+
+    columns = {
+        "left_index": left_index,
+        "right_index": right_index,
+        "left_min_x": left["min_x"],
+        "left_min_y": left["min_y"],
+        "left_max_x": left["max_x"],
+        "left_max_y": left["max_y"],
+        "left_area": left["area"],
+        "right_min_x": right["min_x"],
+        "right_min_y": right["min_y"],
+        "right_max_x": right["max_x"],
+        "right_max_y": right["max_y"],
+        "right_area": right["area"],
+        "_metadata": {
+            "adapter": "aabb_tiled_candidate_pair_payload_2d_partner_columns",
+            "partner": runtime["name"],
+            "pair_count": int(len(left_index)),
+            "left_count": left_count,
+            "right_count": right_count,
+            "tile_rows": tile_rows,
+            "right_tile_rows": right_tile_rows,
+            "input_contract": "caller_supplied_aabb_columns",
+            "partner_reference_contract": "generic_tiled_aabb_candidate_pair_payload_2d",
+            "native_engine_row_contract": "not_called_partner_reference_only",
+            "bounded_materialization": True,
+            "direct_device_handoff_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        },
+    }
+    if return_metadata:
+        return {"columns": columns, "metadata": columns["_metadata"]}
+    return columns
+
+
+def aabb_pair_overlap_summary_2d_partner_columns(pair_columns: dict[str, object], *, partner: str = "torch") -> dict[str, object]:
+    """Summarize 2D axis-aligned box pair overlaps from partner/caller columns."""
+    runtime = _partner_module(partner)
+    module = runtime["module"]
+    for name in _AABB_PAIR_PAYLOAD_FIELDS:
+        if name not in pair_columns:
+            raise ValueError(f"aabb pair summary requires {name!r}")
+    if runtime["name"] == "torch":
+        left_index = pair_columns["left_index"].to(module.int64)
+        right_index = pair_columns["right_index"].to(module.int64)
+        lx0 = pair_columns["left_min_x"][left_index]
+        ly0 = pair_columns["left_min_y"][left_index]
+        lx1 = pair_columns["left_max_x"][left_index]
+        ly1 = pair_columns["left_max_y"][left_index]
+        la = pair_columns["left_area"][left_index]
+        rx0 = pair_columns["right_min_x"][right_index]
+        ry0 = pair_columns["right_min_y"][right_index]
+        rx1 = pair_columns["right_max_x"][right_index]
+        ry1 = pair_columns["right_max_y"][right_index]
+        ra = pair_columns["right_area"][right_index]
+        width = module.clamp(module.minimum(lx1, rx1) - module.maximum(lx0, rx0), min=0)
+        height = module.clamp(module.minimum(ly1, ry1) - module.maximum(ly0, ry0), min=0)
+        intersection = width * height
+        mask = intersection > 0
+        union = la + ra - intersection
+        return {
+            "overlap_pair_count": mask.to(module.int64).sum().reshape(1),
+            "total_intersection_area": intersection[mask].to(module.int64).sum().reshape(1),
+            "total_union_area": union[mask].to(module.int64).sum().reshape(1),
+            "set_intersection_area": intersection[mask].to(module.int64).sum().reshape(1),
+            "_metadata": {
+                "adapter": "aabb_pair_overlap_summary_2d_partner_columns",
+                "partner": runtime["name"],
+                "pair_count": int(_column_length(pair_columns, "left_index")),
+                "partner_reference_contract": "generic_aabb_pair_overlap_summary_2d",
+                "native_engine_row_contract": "not_called_partner_reference_only",
+                "whole_app_speedup_claim_authorized": False,
+            },
+        }
+    if runtime["name"] == "cupy":
+        return _cupy_aabb_pair_overlap_summary_2d(module, pair_columns)
+    raise ValueError("partner must be 'torch' or 'cupy'")
+
+
+def _cupy_aabb_pair_overlap_summary_2d(cupy, pair_columns: dict[str, object]) -> dict[str, object]:
+    global _CUPY_AABB_PAIR_OVERLAP_SUMMARY_2D_KERNEL
+    if _CUPY_AABB_PAIR_OVERLAP_SUMMARY_2D_KERNEL is None:
+        _CUPY_AABB_PAIR_OVERLAP_SUMMARY_2D_KERNEL = cupy.RawKernel(
+            r'''
+            extern "C" __global__
+            void aabb_pair_overlap_summary_2d(
+                const int pair_count,
+                const int* left_index,
+                const int* right_index,
+                const int* left_min_x,
+                const int* left_min_y,
+                const int* left_max_x,
+                const int* left_max_y,
+                const int* left_area,
+                const int* right_min_x,
+                const int* right_min_y,
+                const int* right_max_x,
+                const int* right_max_y,
+                const int* right_area,
+                int* overlap_pair_count,
+                int* total_intersection_area,
+                int* total_union_area,
+                int* set_intersection_area
+            ) {
+                int pair = blockDim.x * blockIdx.x + threadIdx.x;
+                if (pair >= pair_count) {
+                    return;
+                }
+                int li = left_index[pair];
+                int ri = right_index[pair];
+                int ix0 = max(left_min_x[li], right_min_x[ri]);
+                int iy0 = max(left_min_y[li], right_min_y[ri]);
+                int ix1 = min(left_max_x[li], right_max_x[ri]);
+                int iy1 = min(left_max_y[li], right_max_y[ri]);
+                int width = max(0, ix1 - ix0);
+                int height = max(0, iy1 - iy0);
+                int intersection_area = width * height;
+                if (intersection_area > 0) {
+                    atomicAdd(overlap_pair_count, 1);
+                    atomicAdd(total_intersection_area, intersection_area);
+                    atomicAdd(total_union_area, left_area[li] + right_area[ri] - intersection_area);
+                    atomicAdd(set_intersection_area, intersection_area);
+                }
+            }
+            ''',
+            "aabb_pair_overlap_summary_2d",
+        )
+    pair_count = int(_column_length(pair_columns, "left_index"))
+    overlap_pair_count = cupy.zeros(1, dtype=cupy.int32)
+    total_intersection_area = cupy.zeros(1, dtype=cupy.int32)
+    total_union_area = cupy.zeros(1, dtype=cupy.int32)
+    set_intersection_area = cupy.zeros(1, dtype=cupy.int32)
+    block = 256
+    grid = (max(1, (pair_count + block - 1) // block),)
+    _CUPY_AABB_PAIR_OVERLAP_SUMMARY_2D_KERNEL(
+        grid,
+        (block,),
+        (
+            pair_count,
+            pair_columns["left_index"],
+            pair_columns["right_index"],
+            pair_columns["left_min_x"],
+            pair_columns["left_min_y"],
+            pair_columns["left_max_x"],
+            pair_columns["left_max_y"],
+            pair_columns["left_area"],
+            pair_columns["right_min_x"],
+            pair_columns["right_min_y"],
+            pair_columns["right_max_x"],
+            pair_columns["right_max_y"],
+            pair_columns["right_area"],
+            overlap_pair_count,
+            total_intersection_area,
+            total_union_area,
+            set_intersection_area,
+        ),
+    )
+    return {
+        "overlap_pair_count": overlap_pair_count,
+        "total_intersection_area": total_intersection_area,
+        "total_union_area": total_union_area,
+        "set_intersection_area": set_intersection_area,
+        "_metadata": {
+            "adapter": "aabb_pair_overlap_summary_2d_partner_columns",
+            "partner": "cupy",
+            "pair_count": pair_count,
+            "partner_reference_contract": "generic_aabb_pair_overlap_summary_2d",
+            "native_engine_row_contract": "not_called_partner_reference_only",
+            "whole_app_speedup_claim_authorized": False,
+        },
+    }
+
+
+def partner_mask_indices(mask, *, partner: str = "torch"):
+    """Return partner-owned indices where mask is true/non-zero."""
+    if partner == "numba":
+        from .numba_partner_continuation import run_numba_mask_indices_i64
+        from .v2_6_neutral_partner_handoff import prepare_v2_6_neutral_partner_handoff
+        from .v2_6_neutral_partner_handoff import validate_v2_6_neutral_partner_handoff
+
+        try:
+            handoff = prepare_v2_6_neutral_partner_handoff(
+                {"mask": mask},
+                partner="numba",
+                access_modes={"mask": "read"},
+            )
+        except ValueError as exc:
+            raise RuntimeError(f"Numba neutral handoff rejected: {exc}") from exc
+        validation = validate_v2_6_neutral_partner_handoff(handoff)
+        if validation["status"] != "accept":
+            raise RuntimeError(f"Numba neutral handoff rejected: {validation['errors']}")
+        result = run_numba_mask_indices_i64(mask)
+        return result["outputs"]["original_indices"]
+    runtime = _partner_module(partner)
+    if runtime["name"] == "triton":
+        torch = runtime["module"]
+        values = torch.arange(int(mask.numel()), dtype=torch.int64, device=mask.device)
+        result = run_triton_partner_continuation(
+            "compact_mask_i64",
+            {"values": values, "mask": mask.to(torch.bool)},
+        )
+        return result["outputs"]["original_indices"]
+    if runtime["name"] == "torch":
+        torch = runtime["module"]
+        return torch.nonzero(mask.to(torch.bool), as_tuple=False).reshape(-1).to(torch.int64)
+    if runtime["name"] == "cupy":
+        cupy = runtime["module"]
+        return cupy.nonzero(mask.astype(cupy.bool_, copy=False))[0].astype(cupy.int64, copy=False)
+    raise ValueError("partner must be 'triton', 'torch', 'cupy', or 'numba'")
+
+
+def partner_take_columns_by_indices(columns: dict[str, object], indices, *, partner: str = "torch"):
+    """Take the same partner-owned row indices from each column."""
+    runtime = _partner_module(partner)
+    if runtime["name"] in ("triton", "torch", "cupy"):
+        return {name: column[indices] for name, column in columns.items()}
+    raise ValueError("partner must be 'triton', 'torch', or 'cupy'")
+
+
+def partner_compact_columns_by_mask(columns: dict[str, object], mask, *, partner: str = "torch"):
+    """Compact partner-owned columns by a true/non-zero mask without host rows."""
+    indices = partner_mask_indices(mask, partner=partner)
+    return partner_take_columns_by_indices(columns, indices, partner=partner)
+
+
+def partner_page_columns(columns: dict[str, object], *, offset: int = 0, limit: int | None = None, partner: str = "torch"):
+    """Return a bounded page of partner-owned columns without Python row materialization."""
+    runtime = _partner_module(partner)
+    if runtime["name"] not in ("triton", "torch", "cupy"):
+        raise ValueError("partner must be 'triton', 'torch', or 'cupy'")
+    offset = int(offset)
+    if offset < 0:
+        raise ValueError("offset must be non-negative")
+    if limit is not None and int(limit) < 0:
+        raise ValueError("limit must be non-negative")
+    data_names = [name for name in columns if not str(name).startswith("_")]
+    if not data_names:
+        raise ValueError("partner page requires at least one data column")
+    row_count = _column_length(columns, data_names[0])
+    end = row_count if limit is None else min(row_count, offset + int(limit))
+    sliced = {
+        name: column[offset:end]
+        for name, column in columns.items()
+        if not str(name).startswith("_")
+    }
+    sliced["_metadata"] = {
+        "adapter": "partner_page_columns",
+        "partner": runtime["name"],
+        "offset": offset,
+        "limit": None if limit is None else int(limit),
+        "row_count": max(0, end - offset),
+        "source_row_count": row_count,
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "whole_app_speedup_claim_authorized": False,
+    }
+    return sliced
+
+
+def columnar_rows_to_partner_columns(
+    rows,
+    *,
+    partner: str = "torch",
+    categorical_fields: tuple[str, ...] = (),
+) -> dict[str, object]:
+    """Convert generic row dictionaries into partner-owned column tensors."""
+    runtime = _partner_module(partner)
+    row_tuple = tuple(rows)
+    if not row_tuple:
+        raise ValueError("columnar rows require at least one row")
+    categorical = set(categorical_fields)
+    device = runtime["device"]
+    columns: dict[str, object] = {}
+    category_maps: dict[str, dict[str, int]] = {}
+    for name in row_tuple[0]:
+        values = [row[name] for row in row_tuple]
+        if name in categorical or any(isinstance(value, str) for value in values):
+            labels = sorted({str(value) for value in values})
+            mapping = {label: index for index, label in enumerate(labels)}
+            category_maps[name] = mapping
+            columns[name] = runtime["tensor"]([mapping[str(value)] for value in values], runtime["uint32"], device)
+        elif any(isinstance(value, float) for value in values):
+            columns[name] = runtime["tensor"]([float(value) for value in values], runtime["float64"], device)
+        else:
+            columns[name] = runtime["tensor"]([int(value) for value in values], runtime["module"].int64, device)
+    columns["_metadata"] = {
+        "adapter": "columnar_rows_to_partner_columns",
+        "partner": runtime["name"],
+        "row_count": len(row_tuple),
+        "category_maps": category_maps,
+        "input_contract": "caller_supplied_python_rows",
+        "partner_reference_contract": "generic_columnar_payload_columns",
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "direct_device_handoff_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "v2_0_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+    }
+    return columns
+
+
+def columnar_payload_to_partner_columns(
+    payload,
+    *,
+    partner: str = "torch",
+    category_maps: dict[str, dict[str, int]] | None = None,
+) -> dict[str, object]:
+    """Convert caller-supplied column arrays into partner-owned column tensors."""
+    runtime = _partner_module(partner)
+    module = runtime["module"]
+    items = [(str(name), values) for name, values in dict(payload).items() if not str(name).startswith("_")]
+    if not items:
+        raise ValueError("columnar payload requires at least one column")
+    row_count = None
+    columns: dict[str, object] = {}
+    for name, values in items:
+        length = len(values)
+        if row_count is None:
+            row_count = int(length)
+        elif int(length) != row_count:
+            raise ValueError("all columnar payload columns must have the same length")
+        columns[name] = _as_partner_column(runtime, values)
+    columns["_metadata"] = {
+        "adapter": "columnar_payload_to_partner_columns",
+        "partner": runtime["name"],
+        "row_count": int(row_count or 0),
+        "category_maps": dict(category_maps or {}),
+        "input_contract": "caller_supplied_columnar_payload",
+        "partner_reference_contract": "generic_columnar_payload_columns",
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "direct_device_handoff_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "v2_0_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+    }
+    return columns
+
+
+def partner_columnar_predicate_mask(columns: dict[str, object], predicates, *, partner: str = "torch"):
+    """Build a boolean mask for simple generic columnar predicates."""
+    runtime = _partner_module(partner)
+    row_count = _column_length(columns, next(name for name in columns if not name.startswith("_")))
+    module = runtime["module"]
+    if _runtime_uses_torch_tensor_carrier(runtime):
+        mask = module.ones((row_count,), dtype=module.bool, device=runtime["device"])
+    else:
+        mask = module.ones((row_count,), dtype=module.bool_)
+    for predicate in predicates:
+        field, op, *values = predicate
+        column = columns[str(field)]
+        if op == "between":
+            current = (column >= values[0]) & (column <= values[1])
+        elif op == "eq":
+            current = column == values[0]
+        elif op == "ge":
+            current = column >= values[0]
+        elif op == "gt":
+            current = column > values[0]
+        elif op == "le":
+            current = column <= values[0]
+        elif op == "lt":
+            current = column < values[0]
+        else:
+            raise ValueError(f"unsupported predicate op: {op}")
+        mask = mask & current
+    return mask
+
+
+def partner_columnar_predicate_reduce(
+    columns: dict[str, object],
+    predicates,
+    *,
+    partner: str = "torch",
+    reduce: str = "count",
+    group_field: str | None = None,
+    value_field: str | None = None,
+    group_count: int | None = None,
+):
+    """Reduce rows matching generic predicates with partner tensor operations."""
+    runtime = _partner_module(partner)
+    mask = partner_columnar_predicate_mask(columns, predicates, partner=partner)
+    if group_field is None:
+        if reduce == "count":
+            if runtime["name"] == "triton":
+                return _triton_count_mask(mask, partner=partner)
+            return partner_group_sum_by_key(
+                runtime["zeros"]((int(_column_length({"mask": mask}, "mask")),), runtime["uint32"], runtime["device"]),
+                mask.astype(runtime["uint32"], copy=False) if runtime["name"] == "cupy" else mask.to(runtime["uint32"]),
+                1,
+                partner=partner,
+            )[0]
+        if reduce == "ids":
+            return columns[str(value_field)][partner_mask_indices(mask, partner=partner)]
+        raise ValueError("scalar reduce must be 'count' or 'ids'")
+    if group_count is None:
+        metadata = columns.get("_metadata", {})
+        category_maps = metadata.get("category_maps", {}) if isinstance(metadata, dict) else {}
+        group_count = len(category_maps.get(group_field, {}))
+        if not group_count:
+            group_count = int(runtime["to_host"](columns[group_field].max().reshape(1))[0]) + 1
+    keys = columns[group_field]
+    if reduce == "count":
+        if runtime["name"] == "triton":
+            selected = partner_mask_indices(mask, partner=partner)
+            return partner_group_count_by_key(keys[selected].to(runtime["int64"]), int(group_count), partner=partner)
+        values = mask.astype(runtime["uint32"], copy=False) if runtime["name"] == "cupy" else mask.to(runtime["uint32"])
+        return partner_group_sum_by_key(keys, values, int(group_count), partner=partner)
+    if reduce == "sum":
+        if value_field is None:
+            raise ValueError("sum reduce requires value_field")
+        if runtime["name"] == "triton":
+            values = columns[value_field].to(runtime["float64"]) * _mask_to_partner_f64(mask, runtime)
+            return partner_group_sum_by_key(keys, values, int(group_count), partner=partner)
+        values = columns[value_field] * (
+            mask.astype(columns[value_field].dtype, copy=False)
+            if runtime["name"] == "cupy"
+            else mask.to(columns[value_field].dtype)
+        )
+        if runtime["name"] == "cupy" and values.dtype == runtime["module"].int64:
+            values = values.astype(runtime["module"].float64, copy=False)
+        return partner_group_sum_by_key(keys, values, int(group_count), partner=partner)
+    raise ValueError("grouped reduce must be 'count' or 'sum'")
+
+
+def partner_columnar_predicate_reduce_batch(
+    columns: dict[str, object],
+    summaries,
+    *,
+    partner: str = "torch",
+) -> dict[str, object]:
+    """Evaluate several generic predicate/reduction summaries with shared masks."""
+    runtime = _partner_module(partner)
+    summary_tuple = tuple(summaries)
+    if runtime["name"] == "cupy" and summary_tuple:
+        return _cupy_columnar_predicate_reduce_batch_fused(runtime["module"], columns, summary_tuple)
+    results: dict[str, object] = {}
+    mask_cache: dict[tuple, object] = {}
+    group_count_cache: dict[str, int] = {}
+
+    def predicate_key(predicates) -> tuple:
+        return tuple(tuple(item) for item in predicates)
+
+    def mask_for(predicates):
+        key = predicate_key(predicates)
+        if key not in mask_cache:
+            mask_cache[key] = partner_columnar_predicate_mask(columns, key, partner=partner)
+        return mask_cache[key]
+
+    def group_count_for(group_field: str, explicit_count) -> int:
+        if explicit_count is not None:
+            return int(explicit_count)
+        if group_field not in group_count_cache:
+            metadata = columns.get("_metadata", {})
+            category_maps = metadata.get("category_maps", {}) if isinstance(metadata, dict) else {}
+            count = len(category_maps.get(group_field, {}))
+            if not count:
+                count = int(runtime["to_host"](columns[group_field].max().reshape(1))[0]) + 1
+            group_count_cache[group_field] = int(count)
+        return group_count_cache[group_field]
+
+    for summary in summary_tuple:
+        name = str(summary["name"])
+        predicates = summary.get("predicates", ())
+        reduce = str(summary.get("reduce", "count"))
+        group_field = summary.get("group_field")
+        value_field = summary.get("value_field")
+        mask = mask_for(predicates)
+        if group_field is None:
+            if reduce == "count":
+                if runtime["name"] == "triton":
+                    results[name] = _triton_count_mask(mask, partner=partner)
+                    continue
+                one_key = runtime["zeros"]((int(_column_length({"mask": mask}, "mask")),), runtime["uint32"], runtime["device"])
+                values = mask.astype(runtime["uint32"], copy=False) if runtime["name"] == "cupy" else mask.to(runtime["uint32"])
+                results[name] = partner_group_sum_by_key(one_key, values, 1, partner=partner)[0]
+                continue
+            if reduce == "ids":
+                if value_field is None:
+                    raise ValueError("ids reduce requires value_field")
+                results[name] = columns[str(value_field)][partner_mask_indices(mask, partner=partner)]
+                continue
+            raise ValueError("scalar reduce must be 'count' or 'ids'")
+        group_count = group_count_for(str(group_field), summary.get("group_count"))
+        keys = columns[str(group_field)]
+        if reduce == "count":
+            if runtime["name"] == "triton":
+                selected = partner_mask_indices(mask, partner=partner)
+                results[name] = partner_group_count_by_key(keys[selected].to(runtime["int64"]), group_count, partner=partner)
+                continue
+            values = mask.astype(runtime["uint32"], copy=False) if runtime["name"] == "cupy" else mask.to(runtime["uint32"])
+            results[name] = partner_group_sum_by_key(keys, values, group_count, partner=partner)
+            continue
+        if reduce == "sum":
+            if value_field is None:
+                raise ValueError("sum reduce requires value_field")
+            value_column = columns[str(value_field)]
+            if runtime["name"] == "triton":
+                values = value_column.to(runtime["float64"]) * _mask_to_partner_f64(mask, runtime)
+                results[name] = partner_group_sum_by_key(keys, values, group_count, partner=partner)
+                continue
+            values = value_column * (
+                mask.astype(value_column.dtype, copy=False)
+                if runtime["name"] == "cupy"
+                else mask.to(value_column.dtype)
+            )
+            if runtime["name"] == "cupy" and values.dtype == runtime["module"].int64:
+                values = values.astype(runtime["module"].float64, copy=False)
+            results[name] = partner_group_sum_by_key(keys, values, group_count, partner=partner)
+            continue
+        raise ValueError("grouped reduce must be 'count' or 'sum'")
+
+    metadata = columns.get("_metadata")
+    if isinstance(metadata, dict):
+        metadata = dict(metadata)
+        metadata.update(
+            {
+                "adapter": "partner_columnar_predicate_reduce_batch",
+                "summary_count": len(summary_tuple),
+                "shared_predicate_mask_count": len(mask_cache),
+                "native_engine_row_contract": "not_called_partner_reference_only",
+                "whole_app_speedup_claim_authorized": False,
+            }
+        )
+        results["_metadata"] = metadata
+    return results
+
+
+def _cupy_column_c_type(cupy, column) -> str:
+    if column.dtype == cupy.int32:
+        return "int"
+    if column.dtype == cupy.int64:
+        return "long long"
+    if column.dtype == cupy.uint32:
+        return "unsigned int"
+    if column.dtype == cupy.float64:
+        return "double"
+    if column.dtype == cupy.float32:
+        return "float"
+    raise ValueError(f"unsupported fused column dtype: {column.dtype}")
+
+
+def _cupy_dtype_from_summary(cupy, summary: dict, fallback):
+    name = summary.get("output_dtype")
+    if name is None:
+        return fallback
+    if name == "int32":
+        return cupy.int32
+    if name == "int64":
+        return cupy.int64
+    if name == "float32":
+        return cupy.float32
+    if name == "float64":
+        return cupy.float64
+    raise ValueError(f"unsupported output_dtype: {name}")
+
+
+def _cupy_atomic_add(c_type: str, target: str, value: str) -> str:
+    if c_type == "long long":
+        return f"atomicAdd((unsigned long long*)({target}), (unsigned long long)({value}));"
+    return f"atomicAdd({target}, ({c_type})({value}));"
+
+
+def _cupy_predicate_expr(column_names: dict[str, str], predicate) -> str:
+    field, op, *values = predicate
+    column = f"{column_names[str(field)]}[i]"
+    if op == "between":
+        return f"(({column}) >= ({values[0]}) && ({column}) <= ({values[1]}))"
+    if op == "eq":
+        return f"(({column}) == ({values[0]}))"
+    if op == "ge":
+        return f"(({column}) >= ({values[0]}))"
+    if op == "gt":
+        return f"(({column}) > ({values[0]}))"
+    if op == "le":
+        return f"(({column}) <= ({values[0]}))"
+    if op == "lt":
+        return f"(({column}) < ({values[0]}))"
+    raise ValueError(f"unsupported predicate op: {op}")
+
+
+def _cupy_columnar_predicate_reduce_batch_fused(cupy, columns: dict[str, object], summaries: tuple) -> dict[str, object]:
+    row_count = _column_length(columns, next(name for name in columns if not name.startswith("_")))
+    field_names: list[str] = []
+    for summary in summaries:
+        for predicate in summary.get("predicates", ()):
+            field_names.append(str(predicate[0]))
+        for optional in ("group_field", "value_field"):
+            if summary.get(optional) is not None:
+                field_names.append(str(summary[optional]))
+    field_names = sorted(set(field_names))
+    if not field_names:
+        raise ValueError("fused columnar summaries require at least one referenced field")
+
+    column_arg_names = {name: f"col_{index}" for index, name in enumerate(field_names)}
+    column_decls = [
+        f"const {_cupy_column_c_type(cupy, columns[name])}* {column_arg_names[name]}"
+        for name in field_names
+    ]
+    output_decls: list[str] = []
+    output_args: list[object] = []
+    output_info: list[dict[str, object]] = []
+    results: dict[str, object] = {}
+
+    for index, summary in enumerate(summaries):
+        name = str(summary["name"])
+        reduce = str(summary.get("reduce", "count"))
+        group_field = summary.get("group_field")
+        value_field = summary.get("value_field")
+        if group_field is None:
+            if reduce == "count":
+                output = cupy.zeros(1, dtype=_cupy_dtype_from_summary(cupy, summary, cupy.int32))
+                output_decls.append(f"{_cupy_column_c_type(cupy, output)}* out_{index}")
+                output_args.append(output)
+                output_info.append({"name": name, "reduce": reduce, "output": output})
+                continue
+            if reduce == "ids":
+                if value_field is None:
+                    raise ValueError("ids reduce requires value_field")
+                value_column = columns[str(value_field)]
+                output = cupy.zeros(row_count, dtype=_cupy_dtype_from_summary(cupy, summary, value_column.dtype))
+                counter = cupy.zeros(1, dtype=cupy.int32)
+                output_decls.append(f"{_cupy_column_c_type(cupy, value_column)}* out_{index}")
+                output_decls[-1] = f"{_cupy_column_c_type(cupy, output)}* out_{index}"
+                output_decls.append(f"int* out_{index}_count")
+                output_args.extend([output, counter])
+                output_info.append({"name": name, "reduce": reduce, "output": output, "counter": counter})
+                continue
+            raise ValueError("scalar reduce must be 'count' or 'ids'")
+        group_count = int(summary.get("group_count") or 0)
+        if group_count <= 0:
+            metadata = columns.get("_metadata", {})
+            category_maps = metadata.get("category_maps", {}) if isinstance(metadata, dict) else {}
+            group_count = len(category_maps.get(str(group_field), {}))
+            if not group_count:
+                group_count = int(cupy.asnumpy(columns[str(group_field)].max().reshape(1))[0]) + 1
+        if reduce == "count":
+            output = cupy.zeros(group_count, dtype=_cupy_dtype_from_summary(cupy, summary, cupy.int32))
+            output_decls.append(f"{_cupy_column_c_type(cupy, output)}* out_{index}")
+            output_args.append(output)
+            output_info.append({"name": name, "reduce": reduce, "output": output})
+            continue
+        if reduce == "sum":
+            if value_field is None:
+                raise ValueError("sum reduce requires value_field")
+            value_column = columns[str(value_field)]
+            output = cupy.zeros(group_count, dtype=_cupy_dtype_from_summary(cupy, summary, value_column.dtype))
+            output_decls.append(f"{_cupy_column_c_type(cupy, output)}* out_{index}")
+            output_args.append(output)
+            output_info.append({"name": name, "reduce": reduce, "output": output})
+            continue
+        raise ValueError("grouped reduce must be 'count' or 'sum'")
+
+    lines = [
+        'extern "C" __global__',
+        "void rtdl_columnar_predicate_reduce_batch(",
+        "    int n,",
+        *[f"    {decl}," for decl in column_decls],
+        *[f"    {decl}{',' if pos + 1 < len(output_decls) else ''}" for pos, decl in enumerate(output_decls)],
+        ") {",
+        "    int i = blockIdx.x * blockDim.x + threadIdx.x;",
+        "    if (i >= n) return;",
+    ]
+    for index, summary in enumerate(summaries):
+        predicates = summary.get("predicates", ())
+        reduce = str(summary.get("reduce", "count"))
+        group_field = summary.get("group_field")
+        value_field = summary.get("value_field")
+        expr = " && ".join(_cupy_predicate_expr(column_arg_names, predicate) for predicate in predicates) or "true"
+        lines.append(f"    if ({expr}) {{")
+        if group_field is None:
+            if reduce == "count":
+                out_type = _cupy_column_c_type(cupy, output_info[index]["output"])
+                lines.append(f"        {_cupy_atomic_add(out_type, f'&out_{index}[0]', '1')}")
+            elif reduce == "ids":
+                value_type = _cupy_column_c_type(cupy, output_info[index]["output"])
+                lines.append(f"        int pos = atomicAdd(&out_{index}_count[0], 1);")
+                lines.append(f"        out_{index}[pos] = ({value_type})({column_arg_names[str(value_field)]}[i]);")
+        else:
+            group_index = f"(int)({column_arg_names[str(group_field)]}[i])"
+            if reduce == "count":
+                out_type = _cupy_column_c_type(cupy, output_info[index]["output"])
+                lines.append(f"        {_cupy_atomic_add(out_type, f'&out_{index}[{group_index}]', '1')}")
+            elif reduce == "sum":
+                value_type = _cupy_column_c_type(cupy, output_info[index]["output"])
+                lines.append(
+                    f"        {_cupy_atomic_add(value_type, f'&out_{index}[{group_index}]', f'{column_arg_names[str(value_field)]}[i]')}"
+                )
+        lines.append("    }")
+    lines.append("}")
+    source = "\n".join(lines)
+    cache_key = (tuple((name, str(columns[name].dtype)) for name in field_names), tuple(str(summary) for summary in summaries))
+    kernel = _CUPY_COLUMNAR_PREDICATE_BATCH_KERNELS.get(cache_key)
+    if kernel is None:
+        kernel = cupy.RawKernel(source, "rtdl_columnar_predicate_reduce_batch")
+        _CUPY_COLUMNAR_PREDICATE_BATCH_KERNELS[cache_key] = kernel
+    block = 256
+    grid = ((row_count + block - 1) // block,)
+    column_args = [columns[name] for name in field_names]
+    kernel(grid, (block,), (row_count, *column_args, *output_args))
+
+    for item in output_info:
+        if item["reduce"] == "ids":
+            count = int(cupy.asnumpy(item["counter"])[0])
+            results[str(item["name"])] = item["output"][:count]
+        else:
+            results[str(item["name"])] = item["output"]
+    metadata = columns.get("_metadata")
+    if isinstance(metadata, dict):
+        metadata = dict(metadata)
+        metadata.update(
+            {
+                "adapter": "partner_columnar_predicate_reduce_batch",
+                "execution": "cupy_fused_rawkernel_from_generic_summary_specs",
+                "summary_count": len(summaries),
+                "native_engine_row_contract": "not_called_partner_reference_only",
+                "whole_app_speedup_claim_authorized": False,
+            }
+        )
+        results["_metadata"] = metadata
+    return results
+
+
+def partner_group_any_by_key(keys, flags, group_count: int, *, partner: str = "torch"):
+    """Reduce binary/int flags to one any-hit flag per integer key."""
+    runtime = _partner_module(partner)
+    if runtime["name"] == "triton":
+        selected = partner_mask_indices(flags != 0, partner=partner)
+        counts = partner_group_count_by_key(keys[selected].to(runtime["int64"]), group_count, partner=partner)
+        return (counts > 0).to(runtime["uint32"])
+    if runtime["name"] == "torch":
+        torch = runtime["module"]
+        out = torch.zeros((int(group_count),), dtype=torch.int64, device=flags.device)
+        if int(keys.numel()) == 0:
+            return out.to(torch.uint32)
+        out.scatter_add_(0, keys.to(torch.int64), flags.to(torch.int64))
+        return out.gt(0).to(torch.uint32)
+    if runtime["name"] == "cupy":
+        cupy = runtime["module"]
+        sums = partner_group_sum_by_key(keys, flags, group_count, partner=partner)
+        return (sums > 0).astype(cupy.uint32, copy=False)
+    raise ValueError("partner must be 'triton', 'torch', or 'cupy'")
+
+
+def partner_unique_pair_keys(left_keys, right_keys, *, partner: str = "torch"):
+    """Return unique left/right key pairs without host materialization."""
+    runtime = _partner_module(partner)
+    if runtime["name"] == "torch":
+        torch = runtime["module"]
+        if int(left_keys.numel()) == 0:
+            return left_keys, right_keys
+        right_i64 = right_keys.to(torch.int64)
+        modulus = torch.max(right_i64) + 1
+        encoded = left_keys.to(torch.int64) * modulus + right_i64
+        unique = torch.unique(encoded)
+        return (
+            torch.div(unique, modulus, rounding_mode="floor").to(left_keys.dtype),
+            (unique % modulus).to(right_keys.dtype),
+        )
+    if runtime["name"] == "cupy":
+        cupy = runtime["module"]
+        if int(left_keys.size) == 0:
+            return left_keys, right_keys
+        right_i64 = right_keys.astype(cupy.int64, copy=False)
+        modulus = cupy.max(right_i64) + cupy.asarray(1, dtype=cupy.int64)
+        encoded = left_keys.astype(cupy.int64, copy=False) * modulus + right_i64
+        unique = cupy.unique(encoded)
+        return (
+            (unique // modulus).astype(left_keys.dtype, copy=False),
+            (unique % modulus).astype(right_keys.dtype, copy=False),
+        )
+    raise ValueError("partner must be 'torch' or 'cupy'")
+
+
+def partner_group_count_unique_pairs_by_key(group_keys, item_keys, output_group_keys, *, partner: str = "torch"):
+    """Count unique (group_key, item_key) pairs per requested output group key."""
+    runtime = _partner_module(partner)
+    if runtime["name"] == "torch":
+        torch = runtime["module"]
+        if int(group_keys.numel()) != int(item_keys.numel()):
+            raise ValueError("group_keys and item_keys must have the same length")
+        if int(group_keys.numel()) == 0:
+            return torch.zeros_like(output_group_keys, dtype=torch.uint32)
+        output_i64 = output_group_keys.to(torch.int64)
+        group_i64 = group_keys.to(torch.int64)
+        item_i64 = item_keys.to(torch.int64)
+        if bool(torch.any(item_i64 < 0).item()):
+            raise ValueError("item_keys must be non-negative")
+        sorted_output, sorted_to_original = torch.sort(output_i64)
+        sorted_positions = torch.searchsorted(sorted_output, group_i64)
+        valid_positions = sorted_positions < int(output_i64.numel())
+        if not bool(torch.all(valid_positions).item()):
+            raise ValueError("group_keys must be present in output_group_keys")
+        if not bool(torch.all(sorted_output[sorted_positions] == group_i64).item()):
+            raise ValueError("group_keys must be present in output_group_keys")
+        group_positions = sorted_to_original[sorted_positions]
+        item_modulus = torch.max(item_i64) + 1
+        unique_pairs = torch.unique(group_positions * item_modulus + item_i64)
+        unique_positions = torch.div(unique_pairs, item_modulus, rounding_mode="floor")
+        return torch.bincount(unique_positions, minlength=int(output_group_keys.numel())).to(torch.uint32)
+    if runtime["name"] == "cupy":
+        cupy = runtime["module"]
+        if int(group_keys.size) != int(item_keys.size):
+            raise ValueError("group_keys and item_keys must have the same length")
+        if int(group_keys.size) == 0:
+            return cupy.zeros_like(output_group_keys, dtype=cupy.uint32)
+        output_i64 = output_group_keys.astype(cupy.int64, copy=False)
+        group_i64 = group_keys.astype(cupy.int64, copy=False)
+        item_i64 = item_keys.astype(cupy.int64, copy=False)
+        if bool(cupy.any(item_i64 < 0).item()):
+            raise ValueError("item_keys must be non-negative")
+        sorted_to_original = cupy.argsort(output_i64)
+        sorted_output = output_i64[sorted_to_original]
+        sorted_positions = cupy.searchsorted(sorted_output, group_i64)
+        valid_positions = sorted_positions < int(output_i64.size)
+        if not bool(cupy.all(valid_positions).item()):
+            raise ValueError("group_keys must be present in output_group_keys")
+        if not bool(cupy.all(sorted_output[sorted_positions] == group_i64).item()):
+            raise ValueError("group_keys must be present in output_group_keys")
+        group_positions = sorted_to_original[sorted_positions].astype(cupy.int64, copy=False)
+        item_modulus = cupy.max(item_i64) + cupy.asarray(1, dtype=cupy.int64)
+        unique_pairs = cupy.unique(group_positions * item_modulus + item_i64)
+        unique_positions = unique_pairs // item_modulus
+        return cupy.bincount(unique_positions, minlength=int(output_group_keys.size)).astype(cupy.uint32, copy=False)
+    raise ValueError("partner must be 'torch' or 'cupy'")
+
+
+def _count_unique_pairs_for_runtime(runtime, output_group_keys, group_keys, item_keys):
+    if runtime["name"] in ("torch", "cupy"):
+        return partner_group_count_unique_pairs_by_key(
+            group_keys,
+            item_keys,
+            output_group_keys,
+            partner=runtime["name"],
+        )
+    if "count_unique_pairs_by_ids" in runtime:
+        return runtime["count_unique_pairs_by_ids"](output_group_keys, group_keys, item_keys)
+    raise ValueError("runtime must provide a supported partner name or count_unique_pairs_by_ids fallback")
+
+
+def _torch_fixed_radius_count_threshold_2d(torch, query_columns, search_columns, radius, threshold):
+    qx = query_columns["x"].to(torch.float64)
+    qy = query_columns["y"].to(torch.float64)
+    sx = search_columns["x"].to(torch.float64)
+    sy = search_columns["y"].to(torch.float64)
+    if int(qx.numel()) == 0:
+        return torch.zeros((0,), dtype=torch.uint32, device=qx.device)
+    if int(sx.numel()) == 0:
+        return torch.zeros_like(query_columns["ids"], dtype=torch.uint32)
+    radius_sq = float(radius) * float(radius)
+    dx = qx.reshape(-1, 1) - sx.reshape(1, -1)
+    dy = qy.reshape(-1, 1) - sy.reshape(1, -1)
+    within = (dx * dx + dy * dy).le(radius_sq)
+    counts = torch.sum(within.to(torch.int64), dim=1)
+    return counts.to(torch.uint32)
+
+
+def _cupy_fixed_radius_count_threshold_2d(cupy, query_columns, search_columns, radius, threshold):
+    qx = query_columns["x"].astype(cupy.float64, copy=False)
+    qy = query_columns["y"].astype(cupy.float64, copy=False)
+    sx = search_columns["x"].astype(cupy.float64, copy=False)
+    sy = search_columns["y"].astype(cupy.float64, copy=False)
+    if int(qx.size) == 0:
+        return cupy.zeros((0,), dtype=cupy.uint32)
+    if int(sx.size) == 0:
+        return cupy.zeros_like(query_columns["ids"], dtype=cupy.uint32)
+    radius_sq = float(radius) * float(radius)
+    dx = qx.reshape(-1, 1) - sx.reshape(1, -1)
+    dy = qy.reshape(-1, 1) - sy.reshape(1, -1)
+    within = (dx * dx + dy * dy) <= radius_sq
+    counts = cupy.sum(within.astype(cupy.int64, copy=False), axis=1)
+    return counts.astype(cupy.uint32, copy=False)
+
+
+def _torch_fixed_radius_count_threshold_3d(torch, query_columns, search_columns, radius, threshold):
+    qx = query_columns["x"].to(torch.float64)
+    qy = query_columns["y"].to(torch.float64)
+    qz = query_columns["z"].to(torch.float64)
+    sx = search_columns["x"].to(torch.float64)
+    sy = search_columns["y"].to(torch.float64)
+    sz = search_columns["z"].to(torch.float64)
+    if int(qx.numel()) == 0:
+        return torch.zeros((0,), dtype=torch.uint32, device=qx.device)
+    if int(sx.numel()) == 0:
+        return torch.zeros_like(query_columns["ids"], dtype=torch.uint32)
+    radius_sq = float(radius) * float(radius)
+    dx = qx.reshape(-1, 1) - sx.reshape(1, -1)
+    dy = qy.reshape(-1, 1) - sy.reshape(1, -1)
+    dz = qz.reshape(-1, 1) - sz.reshape(1, -1)
+    within = (dx * dx + dy * dy + dz * dz).le(radius_sq)
+    counts = torch.sum(within.to(torch.int64), dim=1)
+    return counts.to(torch.uint32)
+
+
+def _cupy_fixed_radius_count_threshold_3d(cupy, query_columns, search_columns, radius, threshold):
+    qx = query_columns["x"].astype(cupy.float64, copy=False)
+    qy = query_columns["y"].astype(cupy.float64, copy=False)
+    qz = query_columns["z"].astype(cupy.float64, copy=False)
+    sx = search_columns["x"].astype(cupy.float64, copy=False)
+    sy = search_columns["y"].astype(cupy.float64, copy=False)
+    sz = search_columns["z"].astype(cupy.float64, copy=False)
+    if int(qx.size) == 0:
+        return cupy.zeros((0,), dtype=cupy.uint32)
+    if int(sx.size) == 0:
+        return cupy.zeros_like(query_columns["ids"], dtype=cupy.uint32)
+    radius_sq = float(radius) * float(radius)
+    dx = qx.reshape(-1, 1) - sx.reshape(1, -1)
+    dy = qy.reshape(-1, 1) - sy.reshape(1, -1)
+    dz = qz.reshape(-1, 1) - sz.reshape(1, -1)
+    within = (dx * dx + dy * dy + dz * dz) <= radius_sq
+    counts = cupy.sum(within.astype(cupy.int64, copy=False), axis=1)
+    return counts.astype(cupy.uint32, copy=False)
+
+
+def _segment_ray_columns(segments: tuple[_CanonicalSegment, ...], partner: dict) -> dict[str, object]:
+    device = partner["device"]
+    return {
+        "ids": partner["tensor"](
+            [_require_uint32_id(segment.id, "segment") for segment in segments],
+            partner["uint32"],
+            device,
+        ),
+        "ox": partner["tensor"]([segment.x0 for segment in segments], partner["float32"], device),
+        "oy": partner["tensor"]([segment.y0 for segment in segments], partner["float32"], device),
+        "dx": partner["tensor"]([segment.x1 - segment.x0 for segment in segments], partner["float32"], device),
+        "dy": partner["tensor"]([segment.y1 - segment.y0 for segment in segments], partner["float32"], device),
+        "tmax": partner["tensor"]([1.0 for _ in segments], partner["float32"], device),
+    }
+
+
+def _point_columns(points, partner: dict) -> dict[str, object]:
+    device = partner["device"]
+    rows = tuple(points)
+    id_dtype = partner["int64"] if partner["name"] == "numba" else partner["uint32"]
+    columns = {
+        "ids": partner["tensor"](
+            [_require_uint32_id(point.id, "point") for point in rows],
+            id_dtype,
+            device,
+        ),
+        "x": partner["tensor"]([point.x for point in rows], partner["float64"], device),
+        "y": partner["tensor"]([point.y for point in rows], partner["float64"], device),
+    }
+    if rows and all(hasattr(point, "z") for point in rows):
+        columns["z"] = partner["tensor"]([point.z for point in rows], partner["float64"], device)
+    return columns
+
+
+def _numba_runtime_for_point_columns() -> dict[str, object]:
+    try:
+        import _numba_cuda_redirector  # noqa: F401
+    except ImportError:
+        pass
+    import numpy as np
+    from numba import cuda
+
+    if not cuda.is_available():
+        raise RuntimeError("Numba partner adapter requires numba.cuda to be available")
+
+    return {
+        "name": "numba",
+        "module": cuda,
+        "numpy": np,
+        "device": None,
+        "uint32": np.uint32,
+        "int64": np.int64,
+        "float64": np.float64,
+        "float32": np.float32,
+        "tensor": lambda values, dtype, device: cuda.to_device(np.asarray(values, dtype=dtype)),
+        "zeros": lambda shape, dtype, device: cuda.to_device(np.zeros(shape, dtype=dtype)),
+        "sync": cuda.synchronize,
+        "to_host": lambda value: [int(item) for item in np.asarray(value.copy_to_host()).tolist()],
+        "to_host_float": lambda value: [float(item) for item in np.asarray(value.copy_to_host()).tolist()],
+        "slice": lambda value, count: value[: int(count)],
+    }
+
+
+def _numba_topk_query_id_distance_kernel(cuda):
+    @cuda.jit
+    def kernel(query_source_ids, group_ids, scores, out_query_ids, out_distances, row_count):
+        index = cuda.grid(1)
+        if index < row_count:
+            group = group_ids[index]
+            out_query_ids[index] = query_source_ids[group]
+            out_distances[index] = math.sqrt(scores[index])
+
+    return kernel
+
+
+def point_rows_to_partner_columns(points, *, partner: str = "torch") -> dict[str, object]:
+    """Convert point rows into partner-owned generic point columns."""
+    if partner == "numba":
+        return _point_columns(tuple(points), _numba_runtime_for_point_columns())
+    runtime = _partner_module(partner)
+    return _point_columns(tuple(points), runtime)
+
+
+def weighted_point_rows_to_partner_columns(points, *, partner: str = "torch") -> dict[str, object]:
+    """Convert rows with id/x/y/mass attributes into partner-owned weighted point columns."""
+    runtime = _numba_runtime_for_point_columns() if partner == "numba" else _partner_module(partner)
+    device = runtime["device"]
+    rows = tuple(points)
+    return {
+        "ids": runtime["tensor"](
+            [_require_uint32_id(point.id, "point") for point in rows],
+            runtime["uint32"],
+            device,
+        ),
+        "x": runtime["tensor"]([float(point.x) for point in rows], runtime["float64"], device),
+        "y": runtime["tensor"]([float(point.y) for point in rows], runtime["float64"], device),
+        "weight": runtime["tensor"]([float(point.mass) for point in rows], runtime["float64"], device),
+    }
+
+
+def aggregate_frontier_collect_to_partner_columns(
+    collection: dict[str, object],
+    *,
+    partner: str = "torch",
+    return_metadata: bool = False,
+) -> dict[str, object]:
+    """Convert generic aggregate-frontier rows into partner-owned ID columns."""
+
+    if not isinstance(collection, dict):
+        raise ValueError("aggregate frontier collection must be a mapping")
+    metadata = collection.get("metadata")
+    if not isinstance(metadata, dict) or metadata.get("contract") != AGGREGATE_FRONTIER_COLLECT_2D_CONTRACT:
+        raise ValueError("aggregate frontier collection uses an unsupported contract")
+    row_schema = tuple(str(item) for item in collection.get("row_schema", ()))
+    if row_schema != AGGREGATE_FRONTIER_COLLECT_2D_ROW_SCHEMA:
+        raise ValueError("aggregate frontier collection row schema mismatch")
+
+    runtime = _partner_module(partner)
+    device = runtime["device"]
+    rows = tuple(tuple(int(value) for value in row) for row in collection.get("frontier_i64_rows", ()))
+    for row in rows:
+        if len(row) != len(row_schema):
+            raise ValueError("aggregate frontier i64 row width mismatch")
+
+    column_values = {
+        name: [row[index] for row in rows]
+        for index, name in enumerate(row_schema)
+    }
+    columns = {
+        name: runtime["tensor"](values, runtime["int64"], device)
+        for name, values in column_values.items()
+    }
+    columns["source_ids"] = runtime["tensor"](
+        [int(value) for value in collection.get("source_ids", ())],
+        runtime["int64"],
+        device,
+    )
+    columns["row_offsets"] = runtime["tensor"](
+        [int(value) for value in collection.get("row_offsets", ())],
+        runtime["int64"],
+        device,
+    )
+    if return_metadata:
+        return {
+            "columns": columns,
+            "metadata": {
+                "primitive": AGGREGATE_FRONTIER_COLLECT_2D_PRIMITIVE,
+                "contract": AGGREGATE_FRONTIER_COLLECT_2D_CONTRACT,
+                "adapter": "aggregate_frontier_collect_to_partner_columns",
+                "partner": runtime["name"],
+                "row_schema": row_schema,
+                "frontier_row_count": len(rows),
+                "source_count": len(collection.get("source_ids", ())),
+                "row_offset_count": len(collection.get("row_offsets", ())),
+                "column_layout": "partner_owned_i64_columns_with_source_offsets",
+                "metadata_flags_semantics": {
+                    AGGREGATE_FRONTIER_COLLECT_ROW_METADATA_FLAGS_NONE: (
+                        "no flags set; partners must ignore unknown future non-zero flags "
+                        "unless a later contract revision documents them"
+                    ),
+                },
+                "native_engine_app_specific": False,
+                "app_math_embedded": False,
+                "force_law_embedded": False,
+                "native_rt_execution": False,
+                "zero_copy_claim_authorized": False,
+                "public_speedup_claim_authorized": False,
+                "claim_boundary": (
+                    "Partner-owned generic frontier ID columns only. The adapter does not "
+                    "execute native RT traversal, does not compute force/scoring math, "
+                    "and does not authorize zero-copy, speedup, or whole-app claims."
+                ),
+            },
+        }
+    return columns
+
+
+def grouped_vector_sum_2d_partner_columns(
+    vector_columns: dict[str, object],
+    *,
+    group_count: int,
+    partner: str = "triton",
+    triton_offset_groups_per_program: int = 1,
+    validate_row_offsets: bool = True,
+    return_metadata: bool = False,
+) -> dict[str, object]:
+    """Reduce generic grouped 2D vector rows into dense per-group vector sums."""
+
+    if not isinstance(vector_columns, dict):
+        raise ValueError("vector_columns must be a mapping")
+    group_count = int(group_count)
+    if group_count < 0:
+        raise ValueError("group_count must be non-negative")
+    normalized_partner = str(partner).strip().lower().replace("-", "_")
+    group_ids = vector_columns.get("group_ids", vector_columns.get("source_ids"))
+    values_x = vector_columns.get("values_x", vector_columns.get("vector_x"))
+    values_y = vector_columns.get("values_y", vector_columns.get("vector_y"))
+    row_offsets = vector_columns.get("row_offsets")
+    if group_ids is None or values_x is None or values_y is None:
+        raise ValueError(
+            "vector_columns must contain group_ids/source_ids and values_x/vector_x plus values_y/vector_y"
+        )
+    if normalized_partner == "numba":
+        from .numba_partner_continuation import run_numba_grouped_vector_sum_f64x2
+        from .numba_partner_continuation import run_numba_grouped_vector_sum_f64x2_by_offsets
+        from .v2_6_neutral_partner_handoff import prepare_v2_6_neutral_partner_handoff
+        from .v2_6_neutral_partner_handoff import validate_v2_6_neutral_partner_handoff
+
+        runtime = _numba_runtime_for_point_columns()
+        row_count = _column_length({"group_ids": group_ids}, "group_ids")
+        if _column_length({"values_x": values_x}, "values_x") != row_count:
+            raise ValueError("values_x length must match group_ids length")
+        if _column_length({"values_y": values_y}, "values_y") != row_count:
+            raise ValueError("values_y length must match group_ids length")
+        handoff_columns = {"group_ids": group_ids, "values_x": values_x, "values_y": values_y}
+        access_modes = {"group_ids": "read", "values_x": "read", "values_y": "read"}
+        if row_offsets is not None:
+            if _column_length({"row_offsets": row_offsets}, "row_offsets") != group_count + 1:
+                raise ValueError("row_offsets length must equal group_count + 1")
+            handoff_columns["row_offsets"] = row_offsets
+            access_modes["row_offsets"] = "read"
+        try:
+            handoff = prepare_v2_6_neutral_partner_handoff(
+                handoff_columns,
+                partner="numba",
+                access_modes=access_modes,
+            )
+        except ValueError as exc:
+            raise RuntimeError(f"Numba neutral handoff rejected: {exc}") from exc
+        validation = validate_v2_6_neutral_partner_handoff(handoff)
+        if validation["status"] != "accept":
+            raise RuntimeError(f"Numba neutral handoff rejected: {validation['errors']}")
+        if row_offsets is None:
+            numba_result = run_numba_grouped_vector_sum_f64x2(
+                group_ids,
+                values_x,
+                values_y,
+                group_count=group_count,
+            )
+            numba_offset_result = None
+        else:
+            numba_result = run_numba_grouped_vector_sum_f64x2_by_offsets(
+                row_offsets,
+                values_x,
+                values_y,
+                validate_row_offsets=bool(validate_row_offsets),
+            )
+            numba_offset_result = numba_result
+        columns = {
+            "group_ids": runtime["tensor"](range(group_count), runtime["int64"], runtime["device"]),
+            "sum_x": numba_result["outputs"]["sum_x"],
+            "sum_y": numba_result["outputs"]["sum_y"],
+        }
+        metadata = {
+            "adapter": "grouped_vector_sum_2d_partner_columns",
+            "partner": runtime["name"],
+            "input_contract": "caller_supplied_grouped_vector_rows_2d",
+            "partner_reference_contract": "generic_grouped_vector_sum_f64x2",
+            "v2_5_partner_continuation_operation": "grouped_vector_sum_f64x2",
+            "v2_5_numba_preview_kernel_used": True,
+            "v2_5_numba_preview_kernel_status": numba_result["status"],
+            "v2_6_neutral_handoff_validation_status": validation["status"],
+            "v2_6_neutral_handoff_column_count": handoff["column_count"],
+            "v2_5_numba_presegmented_offsets_used": numba_offset_result is not None,
+            "v2_5_numba_adapter_kernel": (
+                numba_offset_result["adapter_kernel"] if numba_offset_result is not None else None
+            ),
+            "v2_5_numba_global_atomic_add_used": (
+                numba_offset_result["global_atomic_add_used"] if numba_offset_result is not None else True
+            ),
+            "v2_5_numba_offset_program_count": (
+                numba_offset_result["program_count"] if numba_offset_result is not None else None
+            ),
+            "v2_5_numba_row_offset_validation_host_sync_used": (
+                numba_offset_result["row_offset_validation_host_sync_used"] if numba_offset_result is not None else None
+            ),
+            "v2_5_triton_preview_kernel_used": False,
+            "v2_5_cupy_rawkernel_used": False,
+            "v2_5_cupy_presegmented_offsets_used": False,
+            "native_engine_row_contract": "not_called_partner_continuation_only",
+            "group_count": group_count,
+            "row_count": row_count,
+            "direct_device_handoff_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "v2_5_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "claim_boundary": (
+                "Generic grouped vector-sum adapter over caller-supplied Numba CUDA columns. "
+                "It does not call native RT traversal, does not authorize true zero-copy wording, "
+                "and is preview integration evidence only."
+            ),
+        }
+        if return_metadata:
+            return {"columns": columns, "metadata": metadata}
+        return columns
+
+    runtime = _partner_module(partner)
+    if runtime["name"] == "cupy":
+        module = runtime["module"]
+        group_ids = group_ids.astype(module.int64, copy=False)
+        values_x = values_x.astype(module.float64, copy=False)
+        values_y = values_y.astype(module.float64, copy=False)
+        if row_offsets is not None:
+            row_offsets = row_offsets.astype(module.int64, copy=False)
+        row_count = int(group_ids.size)
+    else:
+        module = runtime["module"]
+        group_ids = group_ids.to(module.int64)
+        values_x = values_x.to(module.float64)
+        values_y = values_y.to(module.float64)
+        row_count = int(group_ids.numel())
+
+    triton_offset_result = None
+    cupy_offset_result = None
+    if runtime["name"] == "triton" and row_offsets is not None:
+        triton_offset_result = run_triton_grouped_vector_sum_f64x2_by_offsets(
+            row_offsets.to(runtime["int64"]),
+            values_x,
+            values_y,
+            groups_per_program=triton_offset_groups_per_program,
+        )
+        sum_x = triton_offset_result["outputs"]["sum_x"]
+        sum_y = triton_offset_result["outputs"]["sum_y"]
+    elif runtime["name"] == "cupy" and row_offsets is not None:
+        sum_x, sum_y, cupy_offset_result = _cupy_grouped_vector_sum_2d_by_offsets(
+            runtime["module"],
+            row_offsets,
+            values_x,
+            values_y,
+        )
+    else:
+        sum_x, sum_y = partner_group_vector_sum_2d_by_key(
+            group_ids,
+            values_x,
+            values_y,
+            group_count,
+            partner=runtime["name"],
+        )
+    runtime["sync"]()
+    columns = {
+        "group_ids": runtime["tensor"](range(group_count), runtime["int64"], runtime["device"]),
+        "sum_x": sum_x,
+        "sum_y": sum_y,
+    }
+    metadata = {
+        "adapter": "grouped_vector_sum_2d_partner_columns",
+        "partner": runtime["name"],
+        "input_contract": "caller_supplied_grouped_vector_rows_2d",
+        "partner_reference_contract": "generic_grouped_vector_sum_f64x2",
+        "v2_5_partner_continuation_operation": (
+            "grouped_vector_sum_f64x2" if runtime["name"] == "triton" else None
+        ),
+        "v2_5_triton_preview_kernel_used": runtime["name"] == "triton",
+        "v2_5_triton_preview_kernel_status": (
+            "preview_not_promoted" if runtime["name"] == "triton" else None
+        ),
+        "v2_5_triton_presegmented_offsets_used": triton_offset_result is not None,
+        "v2_5_triton_adapter_kernel": (
+            triton_offset_result["adapter_kernel"] if triton_offset_result is not None else None
+        ),
+        "v2_5_triton_global_atomic_add_used": (
+            triton_offset_result["global_atomic_add_used"] if triton_offset_result is not None else None
+        ),
+        "v2_5_triton_offset_groups_per_program": (
+            triton_offset_result["groups_per_program"] if triton_offset_result is not None else None
+        ),
+        "v2_5_triton_offset_program_count": (
+            triton_offset_result["program_count"] if triton_offset_result is not None else None
+        ),
+        "v2_5_cupy_rawkernel_used": cupy_offset_result is not None,
+        "v2_5_cupy_presegmented_offsets_used": cupy_offset_result is not None,
+        "v2_5_cupy_adapter_kernel": (
+            cupy_offset_result["adapter_kernel"] if cupy_offset_result is not None else None
+        ),
+        "v2_5_cupy_global_atomic_add_used": (
+            cupy_offset_result["global_atomic_add_used"] if cupy_offset_result is not None else None
+        ),
+        "v2_5_cupy_offset_program_count": (
+            cupy_offset_result["program_count"] if cupy_offset_result is not None else None
+        ),
+        "native_engine_row_contract": "not_called_partner_continuation_only",
+        "group_count": group_count,
+        "row_count": row_count,
+        "direct_device_handoff_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "v2_5_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "claim_boundary": (
+            "Generic grouped vector-sum adapter over partner-owned columns. "
+            "It does not call native RT traversal, does not authorize true "
+            "zero-copy wording, and is preview integration evidence only."
+        ),
+    }
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def prepare_grouped_vector_sum_2d_partner_columns_session(
+    vector_columns: dict[str, object],
+    *,
+    group_count: int,
+    partner: str = "numba",
+    validate_row_offsets: bool = True,
+    return_metadata: bool = False,
+) -> dict[str, object]:
+    """Prepare a reusable grouped-vector sum session over presegmented columns."""
+
+    if str(partner).strip().lower().replace("-", "_") != "numba":
+        raise ValueError("prepared grouped vector-sum sessions currently require partner='numba'")
+    if not isinstance(vector_columns, dict):
+        raise ValueError("vector_columns must be a mapping")
+    group_count = int(group_count)
+    if group_count < 0:
+        raise ValueError("group_count must be non-negative")
+    group_ids = vector_columns.get("group_ids", vector_columns.get("source_ids"))
+    values_x = vector_columns.get("values_x", vector_columns.get("vector_x"))
+    values_y = vector_columns.get("values_y", vector_columns.get("vector_y"))
+    row_offsets = vector_columns.get("row_offsets")
+    if group_ids is None or values_x is None or values_y is None or row_offsets is None:
+        raise ValueError("prepared grouped vector-sum sessions require group_ids, row_offsets, values_x, and values_y")
+    row_count = _column_length({"group_ids": group_ids}, "group_ids")
+    if _column_length({"values_x": values_x}, "values_x") != row_count:
+        raise ValueError("values_x length must match group_ids length")
+    if _column_length({"values_y": values_y}, "values_y") != row_count:
+        raise ValueError("values_y length must match group_ids length")
+    if _column_length({"row_offsets": row_offsets}, "row_offsets") != group_count + 1:
+        raise ValueError("row_offsets length must equal group_count + 1")
+
+    from .numba_partner_continuation import prepare_numba_grouped_vector_sum_f64x2_offsets_session
+    from .v2_6_neutral_partner_handoff import prepare_v2_6_neutral_partner_handoff
+    from .v2_6_neutral_partner_handoff import validate_v2_6_neutral_partner_handoff
+
+    runtime = _numba_runtime_for_point_columns()
+    try:
+        handoff = prepare_v2_6_neutral_partner_handoff(
+            {"group_ids": group_ids, "row_offsets": row_offsets, "values_x": values_x, "values_y": values_y},
+            partner="numba",
+            access_modes={"group_ids": "read", "row_offsets": "read", "values_x": "read", "values_y": "read"},
+        )
+    except ValueError as exc:
+        raise RuntimeError(f"Numba neutral handoff rejected: {exc}") from exc
+    validation = validate_v2_6_neutral_partner_handoff(handoff)
+    if validation["status"] != "accept":
+        raise RuntimeError(f"Numba neutral handoff rejected: {validation['errors']}")
+
+    numba_session = prepare_numba_grouped_vector_sum_f64x2_offsets_session(
+        row_offsets,
+        values_x,
+        values_y,
+        validate_row_offsets=bool(validate_row_offsets),
+    )
+    columns = {
+        "group_ids": runtime["tensor"](range(group_count), runtime["int64"], runtime["device"]),
+        "sum_x": numba_session["outputs"]["sum_x"],
+        "sum_y": numba_session["outputs"]["sum_y"],
+    }
+    metadata = {
+        "adapter": "prepare_grouped_vector_sum_2d_partner_columns_session",
+        "partner": "numba",
+        "session_version": numba_session["session_version"],
+        "input_contract": "caller_supplied_presegmented_grouped_vector_rows_2d",
+        "partner_reference_contract": "generic_grouped_vector_sum_f64x2",
+        "v2_5_partner_continuation_operation": "grouped_vector_sum_f64x2",
+        "v2_6_neutral_handoff_validation_status": validation["status"],
+        "v2_6_neutral_handoff_column_count": handoff["column_count"],
+        "v2_5_numba_presegmented_offsets_used": True,
+        "v2_5_numba_adapter_kernel": "numba_grouped_vector_sum_offsets_f64x2_kernel",
+        "v2_5_numba_global_atomic_add_used": False,
+        "row_offset_validation_performed_at_prepare": bool(validate_row_offsets),
+        "per_run_neutral_handoff_validation_used": False,
+        "output_columns_reused": True,
+        "native_engine_row_contract": "not_called_partner_continuation_only",
+        "group_count": group_count,
+        "row_count": row_count,
+        "direct_device_handoff_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "v2_5_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "claim_boundary": (
+            "Prepared generic grouped vector-sum session over caller-supplied Numba CUDA columns. "
+            "It validates the neutral handoff once, reuses output columns, does not call native RT traversal, "
+            "and does not authorize true zero-copy, release, or speedup claims."
+        ),
+    }
+    session = {
+        "adapter": "grouped_vector_sum_2d_partner_columns_session",
+        "partner": "numba",
+        "numba_session": numba_session,
+        "columns": columns,
+        "metadata": metadata,
+    }
+    if return_metadata:
+        return {"session": session, "columns": columns, "metadata": metadata}
+    return session
+
+
+def run_grouped_vector_sum_2d_partner_columns_session(
+    prepared_session: dict[str, object],
+    *,
+    return_metadata: bool = False,
+) -> dict[str, object]:
+    """Replay a prepared grouped-vector sum partner session."""
+
+    if not isinstance(prepared_session, dict):
+        raise ValueError("prepared_session must be a mapping")
+    if prepared_session.get("partner") != "numba":
+        raise ValueError("prepared grouped vector-sum sessions currently require partner='numba'")
+    if prepared_session.get("adapter") != "grouped_vector_sum_2d_partner_columns_session":
+        raise ValueError("unexpected prepared grouped vector-sum session adapter")
+
+    from .numba_partner_continuation import run_numba_prepared_grouped_vector_sum_f64x2_by_offsets
+
+    numba_result = run_numba_prepared_grouped_vector_sum_f64x2_by_offsets(prepared_session["numba_session"])
+    columns = dict(prepared_session["columns"])
+    metadata = dict(prepared_session["metadata"])
+    metadata.update(
+        {
+            "adapter": "run_grouped_vector_sum_2d_partner_columns_session",
+            "prepared_session_reused": True,
+            "output_columns_reused": True,
+            "per_run_neutral_handoff_validation_used": False,
+            "phase_timing": numba_result["phase_timing"],
+            "v2_5_numba_preview_kernel_status": numba_result["status"],
+        }
+    )
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def _host_float_list(values) -> list[float]:
+    if hasattr(values, "detach"):
+        return [float(item) for item in values.detach().cpu().tolist()]
+    module_name = type(values).__module__.split(".", 1)[0]
+    if module_name == "cupy":
+        import cupy
+
+        return [float(item) for item in cupy.asnumpy(values).tolist()]
+    if hasattr(values, "tolist"):
+        return [float(item) for item in values.tolist()]
+    return [float(item) for item in values]
+
+
+def _same_float_rows(left: list[float], right: list[float], *, atol: float, rtol: float) -> bool:
+    if len(left) != len(right):
+        return False
+    return all(math.isclose(a, b, abs_tol=atol, rel_tol=rtol) for a, b in zip(left, right))
+
+
+def measured_grouped_vector_sum_2d_partner_selection(
+    partner_vector_columns: dict[str, dict[str, object]],
+    *,
+    group_count: int,
+    partners: tuple[str, ...] = ("torch", "triton", "cupy"),
+    repeats: int = 3,
+    warmups: int = 1,
+    triton_offset_groups_per_program: int = 1,
+    validate_same_contract: bool = True,
+    atol: float = 1e-9,
+    rtol: float = 1e-9,
+) -> dict[str, object]:
+    """Measure same-contract grouped vector-sum partners and return the winner.
+
+    This is caller-requested measurement, not invisible runtime dispatch. The
+    native RT engine is not called; users provide partner-owned columns for each
+    candidate they want to compare.
+    """
+
+    if not isinstance(partner_vector_columns, dict):
+        raise ValueError("partner_vector_columns must map partner names to vector column mappings")
+    group_count = int(group_count)
+    if group_count < 0:
+        raise ValueError("group_count must be non-negative")
+    repeats = int(repeats)
+    warmups = int(warmups)
+    if repeats <= 0:
+        raise ValueError("repeats must be positive")
+    if warmups < 0:
+        raise ValueError("warmups must be non-negative")
+
+    candidate_results: list[dict[str, object]] = []
+    selected_result: dict[str, object] | None = None
+    reference: tuple[list[float], list[float]] | None = None
+    for partner in partners:
+        if partner not in partner_vector_columns:
+            candidate_results.append(
+                {
+                    "partner": partner,
+                    "status": "skipped",
+                    "reason": "no columns supplied for partner",
+                }
+            )
+            continue
+        vector_columns = partner_vector_columns[partner]
+        try:
+            for _ in range(warmups):
+                grouped_vector_sum_2d_partner_columns(
+                    vector_columns,
+                    group_count=group_count,
+                    partner=partner,
+                    triton_offset_groups_per_program=triton_offset_groups_per_program,
+                    return_metadata=True,
+                )
+            times: list[float] = []
+            result: dict[str, object] | None = None
+            for _ in range(repeats):
+                start = time.perf_counter()
+                result = grouped_vector_sum_2d_partner_columns(
+                    vector_columns,
+                    group_count=group_count,
+                    partner=partner,
+                    triton_offset_groups_per_program=triton_offset_groups_per_program,
+                    return_metadata=True,
+                )
+                times.append(time.perf_counter() - start)
+            assert result is not None
+            columns = result["columns"]
+            host_pair = (
+                _host_float_list(columns["sum_x"]),
+                _host_float_list(columns["sum_y"]),
+            )
+            matches_reference = True
+            if validate_same_contract:
+                if reference is None:
+                    reference = host_pair
+                else:
+                    matches_reference = _same_float_rows(
+                        host_pair[0],
+                        reference[0],
+                        atol=atol,
+                        rtol=rtol,
+                    ) and _same_float_rows(
+                        host_pair[1],
+                        reference[1],
+                        atol=atol,
+                        rtol=rtol,
+                    )
+            status = "pass" if matches_reference else "mismatch"
+            candidate_results.append(
+                {
+                    "partner": partner,
+                    "status": status,
+                    "median_sec": float(statistics.median(times)),
+                    "min_sec": float(min(times)),
+                    "max_sec": float(max(times)),
+                    "repeats": repeats,
+                    "warmups": warmups,
+                    "matches_reference": matches_reference,
+                    "partner_metadata": result.get("metadata", {}),
+                    "result": result,
+                }
+            )
+        except Exception as exc:  # pragma: no cover - environment dependent
+            candidate_results.append(
+                {
+                    "partner": partner,
+                    "status": "error",
+                    "reason": f"{type(exc).__name__}: {exc}",
+                }
+            )
+
+    successful = [row for row in candidate_results if row.get("status") == "pass"]
+    if not successful:
+        return {
+            "columns": None,
+            "metadata": {
+                "adapter": "measured_grouped_vector_sum_2d_partner_selection",
+                "status": "no_successful_partner",
+                "operation": "grouped_vector_sum_f64x2",
+                "candidate_results": tuple(
+                    {k: v for k, v in row.items() if k != "result"} for row in candidate_results
+                ),
+                "selected_partner": None,
+                "native_engine_row_contract": "not_called_partner_continuation_only",
+                "selection_policy": "caller_requested_same_contract_measurement",
+                "silent_auto_selection_authorized": False,
+                "public_speedup_claim_authorized": False,
+                "v2_5_release_authorized": False,
+                "claim_boundary": (
+                    "No partner passed the measured same-contract grouped vector-sum selection. "
+                    "This helper does not authorize fallback claims or public speedup wording."
+                ),
+            },
+        }
+
+    selected = min(successful, key=lambda row: float(row["median_sec"]))
+    selected_result = selected["result"]
+    compact_results = tuple({k: v for k, v in row.items() if k != "result"} for row in candidate_results)
+    selected_partner = str(selected["partner"])
+    metadata = {
+        "adapter": "measured_grouped_vector_sum_2d_partner_selection",
+        "status": "pass",
+        "operation": "grouped_vector_sum_f64x2",
+        "group_count": group_count,
+        "candidate_order": tuple(partners),
+        "candidate_results": compact_results,
+        "selected_partner": selected_partner,
+        "selected_partner_median_sec": float(selected["median_sec"]),
+        "selected_partner_reason": f"{selected_partner}_wins_caller_requested_same_contract_measurement",
+        "selected_partner_metadata": selected.get("partner_metadata", {}),
+        "native_engine_row_contract": "not_called_partner_continuation_only",
+        "selection_policy": "caller_requested_same_contract_measurement",
+        "silent_auto_selection_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "v2_5_release_authorized": False,
+        "claim_boundary": (
+            "Measured grouped vector-sum partner selection over caller-supplied "
+            "same-contract columns. It is explicit user/app measurement, not hidden "
+            "engine dispatch, and it does not authorize speedup, zero-copy, or release claims."
+        ),
+    }
+    return {"columns": selected_result["columns"], "metadata": metadata}
+
+
+def _coerce_torch_group_item_score_columns(score_columns: dict[str, object], runtime):
+    if not isinstance(score_columns, dict):
+        raise ValueError("score_columns must be a mapping")
+    group_ids = score_columns.get("group_ids")
+    item_ids = score_columns.get("item_ids")
+    scores = score_columns.get("scores", score_columns.get("values"))
+    if group_ids is None or item_ids is None or scores is None:
+        raise ValueError("score_columns must contain group_ids, item_ids, and scores/values")
+    torch = runtime["module"]
+    group_ids = group_ids.to(torch.int64)
+    item_ids = item_ids.to(torch.int64)
+    scores = scores.to(torch.float64)
+    if not (tuple(group_ids.shape) == tuple(item_ids.shape) == tuple(scores.shape)):
+        raise ValueError("group_ids, item_ids, and scores must have the same shape")
+    return torch, group_ids, item_ids, scores
+
+
+def _validate_torch_group_ids(group_ids, group_count: int, torch) -> None:
+    if group_count < 0:
+        raise ValueError("group_count must be non-negative")
+    if int(group_ids.numel()) == 0:
+        return
+    if bool(torch.any(group_ids < 0).detach().cpu().item()):
+        raise ValueError("group_ids must be non-negative")
+    if bool(torch.any(group_ids >= group_count).detach().cpu().item()):
+        raise ValueError("group_ids must be < group_count")
+
+
+def _generic_partner_front_door_metadata(
+    *,
+    adapter: str,
+    partner: str,
+    operation: str,
+    group_count: int,
+    row_count: int,
+    contract: str,
+    extra: dict[str, object] | None = None,
+) -> dict[str, object]:
+    metadata = {
+        "adapter": adapter,
+        "partner": partner,
+        "input_contract": "caller_supplied_partner_device_columns",
+        "partner_reference_contract": contract,
+        "v2_5_partner_continuation_operation": operation if partner == "triton" else None,
+        "v2_5_triton_preview_kernel_used": partner == "triton",
+        "v2_5_triton_preview_kernel_status": "preview_not_promoted" if partner == "triton" else None,
+        "native_engine_row_contract": "not_called_partner_continuation_only",
+        "group_count": int(group_count),
+        "row_count": int(row_count),
+        "direct_device_handoff_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "v2_5_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "claim_boundary": (
+            "Generic partner-column continuation front door. It does not call native RT "
+            "traversal, does not embed app semantics, and does not authorize speedup, "
+            "zero-copy, or release claims."
+        ),
+    }
+    if extra:
+        metadata.update(extra)
+    return metadata
+
+
+def _dense_group_id_contract_metadata(
+    *,
+    operation: str,
+    group_count: int,
+    row_count: int,
+    validation_mode: str,
+) -> dict[str, object]:
+    return require_group_id_contract(
+        make_dense_zero_based_group_id_contract(
+            operation=operation,
+            group_count=group_count,
+            row_count=row_count,
+            validation_mode=validation_mode,
+        )
+    )
+
+
+def _torch_grouped_arg_reduce(score_columns: dict[str, object], *, group_count: int, reduce: str, runtime):
+    torch, group_ids, item_ids, scores = _coerce_torch_group_item_score_columns(score_columns, runtime)
+    group_count = int(group_count)
+    _validate_torch_group_ids(group_ids, group_count, torch)
+    row_count = int(group_ids.numel())
+    if bool(torch.any(torch.isnan(scores)).detach().cpu().item()) if row_count else False:
+        raise ValueError(f"grouped {reduce} rejects NaN scores")
+    fill_score = float("inf") if reduce == "argmin" else -float("inf")
+    dense_scores = torch.full((group_count,), fill_score, dtype=torch.float64, device=scores.device)
+    dense_item_ids = torch.full(
+        (group_count,),
+        torch.iinfo(torch.int64).max,
+        dtype=torch.int64,
+        device=item_ids.device,
+    )
+    counts = torch.zeros((group_count,), dtype=torch.int64, device=group_ids.device)
+    for group in range(group_count):
+        mask = group_ids == group
+        count = int(torch.count_nonzero(mask).detach().cpu().item())
+        if count == 0:
+            continue
+        group_scores = scores[mask]
+        group_items = item_ids[mask]
+        best_score = torch.min(group_scores) if reduce == "argmin" else torch.max(group_scores)
+        tied_items = group_items[group_scores == best_score]
+        dense_scores[group] = best_score
+        dense_item_ids[group] = torch.min(tied_items)
+        counts[group] = count
+    present_mask = counts > 0
+    return {
+        "group_ids": torch.nonzero(present_mask, as_tuple=False).reshape(-1).to(torch.int64),
+        "item_ids": dense_item_ids[present_mask],
+        "scores": dense_scores[present_mask],
+        "missing_group_ids": torch.nonzero(~present_mask, as_tuple=False).reshape(-1).to(torch.int64),
+        "dense_item_ids": dense_item_ids,
+        "dense_scores": dense_scores,
+        "present_counts": counts,
+    }, row_count
+
+
+def _numba_grouped_arg_reduce(
+    score_columns: dict[str, object],
+    *,
+    group_count: int,
+    reduce: str,
+    validate_group_ids: bool = True,
+    validate_nan_scores: bool = True,
+    compact_present_groups: bool = True,
+):
+    if not isinstance(score_columns, dict):
+        raise ValueError("score_columns must be a mapping")
+    group_ids = score_columns.get("group_ids")
+    item_ids = score_columns.get("item_ids")
+    scores = score_columns.get("scores", score_columns.get("values"))
+    if group_ids is None or item_ids is None or scores is None:
+        raise ValueError("score_columns must contain group_ids, item_ids, and scores/values")
+
+    from .numba_partner_continuation import run_numba_grouped_argmax_f64
+    from .numba_partner_continuation import run_numba_grouped_argmin_f64
+    from .v2_6_neutral_partner_handoff import prepare_v2_6_neutral_partner_handoff
+    from .v2_6_neutral_partner_handoff import validate_v2_6_neutral_partner_handoff
+
+    try:
+        handoff = prepare_v2_6_neutral_partner_handoff(
+            {"group_ids": group_ids, "item_ids": item_ids, "scores": scores},
+            partner="numba",
+            access_modes={"group_ids": "read", "item_ids": "read", "scores": "read"},
+        )
+    except ValueError as exc:
+        raise RuntimeError(f"Numba neutral handoff rejected: {exc}") from exc
+    validation = validate_v2_6_neutral_partner_handoff(handoff)
+    if validation["status"] != "accept":
+        raise RuntimeError(f"Numba neutral handoff rejected: {validation['errors']}")
+
+    if reduce == "argmin":
+        result = run_numba_grouped_argmin_f64(
+            group_ids,
+            item_ids,
+            scores,
+            group_count=group_count,
+            validate_group_ids=validate_group_ids,
+            validate_nan_scores=validate_nan_scores,
+            compact_present_groups=compact_present_groups,
+        )
+    elif reduce == "argmax":
+        result = run_numba_grouped_argmax_f64(
+            group_ids,
+            item_ids,
+            scores,
+            group_count=group_count,
+            validate_group_ids=validate_group_ids,
+            validate_nan_scores=validate_nan_scores,
+            compact_present_groups=compact_present_groups,
+        )
+    else:
+        raise ValueError("reduce must be 'argmin' or 'argmax'")
+    return (
+        result["outputs"],
+        int(group_ids.shape[0]),
+        float(result["phase_timing"]["phases_sec"]["partner_continuation"]),
+        {
+            "host_present_group_compaction_used": bool(result["host_present_group_compaction_used"]),
+            "nan_validation_host_sync_used": bool(result["nan_validation_host_sync_used"]),
+            "validate_group_ids": validate_group_ids,
+        },
+    )
+
+
+def grouped_argmin_f64_partner_columns(
+    score_columns: dict[str, object],
+    *,
+    group_count: int,
+    partner: str = "triton",
+    validate_group_ids: bool = True,
+    validate_nan_scores: bool = True,
+    compact_present_groups: bool = True,
+    return_metadata: bool = False,
+) -> dict[str, object]:
+    """Reduce generic grouped score rows to the lowest-score item per group."""
+
+    group_count = int(group_count)
+    numba_metadata: dict[str, object] = {}
+    if partner == "numba":
+        columns, row_count, elapsed, numba_metadata = _numba_grouped_arg_reduce(
+            score_columns,
+            group_count=group_count,
+            reduce="argmin",
+            validate_group_ids=validate_group_ids,
+            validate_nan_scores=validate_nan_scores,
+            compact_present_groups=compact_present_groups,
+        )
+        partner_name = "numba"
+    else:
+        runtime = _partner_module(partner)
+        partner_name = runtime["name"]
+    if partner_name == "triton":
+        torch, group_ids, item_ids, scores = _coerce_torch_group_item_score_columns(score_columns, runtime)
+        _validate_torch_group_ids(group_ids, group_count, torch)
+        result = run_triton_grouped_argmin_f64(group_ids, item_ids, scores, group_count=group_count)
+        columns = result["outputs"]
+        row_count = int(group_ids.numel())
+        elapsed = float(result["phase_timing"]["phases_sec"]["partner_continuation"])
+    elif partner_name == "torch":
+        columns, row_count = _torch_grouped_arg_reduce(
+            score_columns,
+            group_count=group_count,
+            reduce="argmin",
+            runtime=runtime,
+        )
+        runtime["sync"]()
+        elapsed = None
+    elif partner_name == "numba":
+        pass
+    else:
+        raise ValueError("partner must be 'triton', 'torch', or 'numba'")
+    group_contract_metadata = _dense_group_id_contract_metadata(
+        operation="grouped_argmin_f64",
+        group_count=group_count,
+        row_count=row_count,
+        validation_mode=(
+            "numba_device_runtime_validation"
+            if partner_name == "numba"
+            else "torch_host_group_id_bounds_check"
+        ),
+    )
+    metadata = _generic_partner_front_door_metadata(
+        adapter="grouped_argmin_f64_partner_columns",
+        partner=partner_name,
+        operation="grouped_argmin_f64",
+        group_count=group_count,
+        row_count=row_count,
+        contract="generic_grouped_argmin_f64",
+        extra={
+            "tie_break": "lowest_score_then_lowest_item_id",
+            "partner_elapsed_seconds": elapsed,
+            "triton_elapsed_seconds": elapsed if partner_name == "triton" else None,
+            "numba_elapsed_seconds": elapsed if partner_name == "numba" else None,
+            **group_contract_metadata,
+            **numba_metadata,
+        },
+    )
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def grouped_argmax_f64_partner_columns(
+    score_columns: dict[str, object],
+    *,
+    group_count: int,
+    partner: str = "triton",
+    validate_group_ids: bool = True,
+    validate_nan_scores: bool = True,
+    compact_present_groups: bool = True,
+    return_metadata: bool = False,
+) -> dict[str, object]:
+    """Reduce generic grouped score rows to the highest-score item per group."""
+
+    group_count = int(group_count)
+    numba_metadata: dict[str, object] = {}
+    if partner == "numba":
+        columns, row_count, elapsed, numba_metadata = _numba_grouped_arg_reduce(
+            score_columns,
+            group_count=group_count,
+            reduce="argmax",
+            validate_group_ids=validate_group_ids,
+            validate_nan_scores=validate_nan_scores,
+            compact_present_groups=compact_present_groups,
+        )
+        partner_name = "numba"
+    else:
+        runtime = _partner_module(partner)
+        partner_name = runtime["name"]
+    if partner_name == "triton":
+        torch, group_ids, item_ids, scores = _coerce_torch_group_item_score_columns(score_columns, runtime)
+        _validate_torch_group_ids(group_ids, group_count, torch)
+        result = run_triton_grouped_argmax_f64(group_ids, item_ids, scores, group_count=group_count)
+        columns = result["outputs"]
+        row_count = int(group_ids.numel())
+        elapsed = float(result["phase_timing"]["phases_sec"]["partner_continuation"])
+    elif partner_name == "torch":
+        columns, row_count = _torch_grouped_arg_reduce(
+            score_columns,
+            group_count=group_count,
+            reduce="argmax",
+            runtime=runtime,
+        )
+        runtime["sync"]()
+        elapsed = None
+    elif partner_name == "numba":
+        pass
+    else:
+        raise ValueError("partner must be 'triton', 'torch', or 'numba'")
+    group_contract_metadata = _dense_group_id_contract_metadata(
+        operation="grouped_argmax_f64",
+        group_count=group_count,
+        row_count=row_count,
+        validation_mode=(
+            "numba_device_runtime_validation"
+            if partner_name == "numba"
+            else "torch_host_group_id_bounds_check"
+        ),
+    )
+    metadata = _generic_partner_front_door_metadata(
+        adapter="grouped_argmax_f64_partner_columns",
+        partner=partner_name,
+        operation="grouped_argmax_f64",
+        group_count=group_count,
+        row_count=row_count,
+        contract="generic_grouped_argmax_f64",
+        extra={
+            "tie_break": "highest_score_then_lowest_item_id",
+            "partner_elapsed_seconds": elapsed,
+            "triton_elapsed_seconds": elapsed if partner_name == "triton" else None,
+            "numba_elapsed_seconds": elapsed if partner_name == "numba" else None,
+            **group_contract_metadata,
+            **numba_metadata,
+        },
+    )
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def global_argmax_u32_f64_partner_columns(
+    score_columns: dict[str, object],
+    *,
+    partner: str = "numba",
+    invalid_item_id: int = _UINT32_MAX,
+    return_metadata: bool = False,
+) -> dict[str, object]:
+    """Select the highest-score uint32 item from generic device columns."""
+
+    if partner != "numba":
+        raise ValueError("global_argmax_u32_f64 currently supports partner='numba'")
+    if not isinstance(score_columns, dict):
+        raise ValueError("score_columns must be a mapping")
+    item_ids = score_columns.get("item_ids")
+    scores = score_columns.get("scores", score_columns.get("values"))
+    if item_ids is None or scores is None:
+        raise ValueError("score_columns must contain item_ids and scores/values")
+
+    from .numba_partner_continuation import run_numba_global_argmax_u32_f64
+    from .v2_6_neutral_partner_handoff import prepare_v2_6_neutral_partner_handoff
+    from .v2_6_neutral_partner_handoff import validate_v2_6_neutral_partner_handoff
+
+    try:
+        handoff = prepare_v2_6_neutral_partner_handoff(
+            {"item_ids": item_ids, "scores": scores},
+            partner="numba",
+            producer="generic_device_column_producer",
+            consumer="global_argmax_u32_f64_partner_columns",
+            access_modes={"item_ids": "read", "scores": "read"},
+        )
+    except ValueError as exc:
+        raise RuntimeError(f"Numba neutral handoff rejected: {exc}") from exc
+    validation = validate_v2_6_neutral_partner_handoff(handoff)
+    if validation["status"] != "accept":
+        raise RuntimeError(f"Numba neutral handoff rejected: {validation['errors']}")
+
+    result = run_numba_global_argmax_u32_f64(
+        item_ids,
+        scores,
+        invalid_item_id=invalid_item_id,
+    )
+    elapsed = float(result["phase_timing"]["phases_sec"]["partner_continuation"])
+    columns = result["outputs"]
+    metadata = _generic_partner_front_door_metadata(
+        adapter="global_argmax_u32_f64_partner_columns",
+        partner="numba",
+        operation="global_argmax_u32_f64",
+        group_count=1,
+        row_count=int(result["row_count"]),
+        contract="generic_global_argmax_u32_f64",
+        extra={
+            "operation": "global_argmax_u32_f64",
+            "contract": "generic_global_argmax_u32_f64",
+            "tie_break": result["tie_break"],
+            "reduction_strategy": result.get("reduction_strategy"),
+            "invalid_item_id": int(result["invalid_item_id"]),
+            "partner_elapsed_seconds": elapsed,
+            "numba_elapsed_seconds": elapsed,
+            "host_row_materialization_used": False,
+            "neutral_handoff_status": handoff["status"],
+            "neutral_handoff_source_protocols": tuple(
+                str(record["source_protocol"]) for record in handoff["column_records"]
+            ),
+            "direct_device_handoff_authorized": True,
+            "true_zero_copy_claim_authorized": False,
+        },
+    )
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def _torch_grouped_topk(score_columns: dict[str, object], *, group_count: int, k: int, runtime):
+    torch, group_ids, item_ids, scores = _coerce_torch_group_item_score_columns(score_columns, runtime)
+    group_count = int(group_count)
+    k = int(k)
+    if k <= 0:
+        raise ValueError("k must be positive")
+    _validate_torch_group_ids(group_ids, group_count, torch)
+    row_count = int(group_ids.numel())
+    if bool(torch.any(torch.isnan(scores)).detach().cpu().item()) if row_count else False:
+        raise ValueError("grouped top-k rejects NaN scores")
+    dense_scores = torch.full((group_count, k), float("inf"), dtype=torch.float64, device=scores.device)
+    dense_item_ids = torch.full(
+        (group_count, k),
+        torch.iinfo(torch.int64).max,
+        dtype=torch.int64,
+        device=item_ids.device,
+    )
+    counts = torch.zeros((group_count,), dtype=torch.int64, device=group_ids.device)
+    compact_group_ids: list[int] = []
+    compact_item_ids: list[int] = []
+    compact_scores: list[float] = []
+    compact_ranks: list[int] = []
+    row_offsets = [0]
+    for group in range(group_count):
+        mask = group_ids == group
+        count = int(torch.count_nonzero(mask).detach().cpu().item())
+        counts[group] = count
+        if count == 0:
+            row_offsets.append(row_offsets[-1])
+            continue
+        raw_items = item_ids[mask]
+        raw_scores = scores[mask]
+        unique_items = torch.unique(raw_items)
+        best_pairs: list[tuple[float, int]] = []
+        for item in unique_items.detach().cpu().tolist():
+            item_i = int(item)
+            item_mask = raw_items == item_i
+            best_score = torch.min(raw_scores[item_mask])
+            best_pairs.append((float(best_score.detach().cpu().item()), item_i))
+        best_pairs.sort(key=lambda item: (item[0], item[1]))
+        selected = best_pairs[:k]
+        for rank, (score, item_i) in enumerate(selected, start=1):
+            dense_scores[group, rank - 1] = score
+            dense_item_ids[group, rank - 1] = item_i
+            compact_group_ids.append(group)
+            compact_item_ids.append(item_i)
+            compact_scores.append(score)
+            compact_ranks.append(rank)
+        row_offsets.append(row_offsets[-1] + len(selected))
+    device = group_ids.device
+    return {
+        "group_ids": torch.tensor(compact_group_ids, dtype=torch.int64, device=device),
+        "item_ids": torch.tensor(compact_item_ids, dtype=torch.int64, device=device),
+        "scores": torch.tensor(compact_scores, dtype=torch.float64, device=device),
+        "ranks": torch.tensor(compact_ranks, dtype=torch.int64, device=device),
+        "row_offsets": torch.tensor(row_offsets, dtype=torch.int64, device=device),
+        "missing_group_ids": torch.nonzero(counts == 0, as_tuple=False).reshape(-1).to(torch.int64),
+        "dense_item_ids": dense_item_ids,
+        "dense_scores": dense_scores,
+        "counts": counts,
+    }, row_count
+
+
+def grouped_topk_f64_partner_columns(
+    score_columns: dict[str, object],
+    *,
+    group_count: int,
+    k: int,
+    partner: str = "triton",
+    rows_per_group: int | None = None,
+    return_metadata: bool = False,
+) -> dict[str, object]:
+    """Finalize generic grouped score rows into deterministic top-k rows."""
+
+    group_count = int(group_count)
+    k = int(k)
+    if partner == "numba":
+        from .numba_partner_continuation import run_numba_grouped_topk_f64
+        from .v2_6_neutral_partner_handoff import prepare_v2_6_neutral_partner_handoff
+        from .v2_6_neutral_partner_handoff import validate_v2_6_neutral_partner_handoff
+
+        runtime = _numba_runtime_for_point_columns()
+        group_ids = score_columns.get("group_ids")
+        item_ids = score_columns.get("item_ids")
+        scores = score_columns.get("scores")
+        if group_ids is None or item_ids is None or scores is None:
+            raise ValueError("score_columns must contain group_ids, item_ids, and scores")
+        try:
+            handoff = prepare_v2_6_neutral_partner_handoff(
+                {"group_ids": group_ids, "item_ids": item_ids, "scores": scores},
+                partner="numba",
+                access_modes={"group_ids": "read", "item_ids": "read", "scores": "read"},
+            )
+        except ValueError as exc:
+            raise RuntimeError(f"Numba neutral handoff rejected: {exc}") from exc
+        validation = validate_v2_6_neutral_partner_handoff(handoff)
+        if validation["status"] != "accept":
+            raise RuntimeError(f"Numba neutral handoff rejected: {validation['errors']}")
+        result = run_numba_grouped_topk_f64(
+            group_ids,
+            item_ids,
+            scores,
+            group_count=group_count,
+            k=k,
+            rows_per_group=rows_per_group,
+        )
+        columns = result["outputs"]
+        row_count = int(group_ids.shape[0])
+        elapsed = float(result["phase_timing"]["phases_sec"]["partner_continuation"])
+        group_contract_metadata = require_group_id_contract(
+            make_equal_contiguous_group_id_contract(
+                operation="grouped_topk_f64",
+                group_count=group_count,
+                row_count=row_count,
+                rows_per_group=rows_per_group,
+            )
+        )
+        numba_extra = {
+            "numba_elapsed_seconds": elapsed,
+            "numba_layout_precondition": result["layout_precondition"],
+            "numba_grouped_topk_device_rank_used": True,
+            "host_rank_materialization_used": False,
+            **group_contract_metadata,
+        }
+    else:
+        runtime = _partner_module(partner)
+        numba_extra = {}
+    if runtime["name"] == "triton":
+        torch, group_ids, item_ids, scores = _coerce_torch_group_item_score_columns(score_columns, runtime)
+        _validate_torch_group_ids(group_ids, group_count, torch)
+        result = run_triton_grouped_topk_f64(group_ids, item_ids, scores, group_count=group_count, k=k)
+        columns = result["outputs"]
+        row_count = int(group_ids.numel())
+        elapsed = float(result["phase_timing"]["phases_sec"]["partner_continuation"])
+    elif runtime["name"] == "torch":
+        columns, row_count = _torch_grouped_topk(score_columns, group_count=group_count, k=k, runtime=runtime)
+        runtime["sync"]()
+        elapsed = None
+    elif runtime["name"] != "numba":
+        raise ValueError("partner must be 'triton', 'torch', or 'numba'")
+    group_contract_metadata = (
+        {}
+        if runtime["name"] == "numba"
+        else _dense_group_id_contract_metadata(
+            operation="grouped_topk_f64",
+            group_count=group_count,
+            row_count=row_count,
+            validation_mode="torch_host_group_id_bounds_check",
+        )
+    )
+    metadata = _generic_partner_front_door_metadata(
+        adapter="grouped_topk_f64_partner_columns",
+        partner=runtime["name"],
+        operation="grouped_topk_f64",
+        group_count=group_count,
+        row_count=row_count,
+        contract="generic_grouped_topk_f64",
+        extra={
+            "k": k,
+            "tie_break": "lowest_score_then_lowest_item_id",
+            "duplicate_item_policy": "lowest_score_per_group_item",
+            "triton_elapsed_seconds": elapsed,
+            **default_partner_claim_boundary_metadata(),
+            **group_contract_metadata,
+            **numba_extra,
+        },
+    )
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def _torch_bounded_collect(row_columns: dict[str, object], *, group_count: int, k: int, total_row_capacity, runtime):
+    if not isinstance(row_columns, dict):
+        raise ValueError("row_columns must be a mapping")
+    group_ids = row_columns.get("group_ids")
+    item_ids = row_columns.get("item_ids")
+    if group_ids is None or item_ids is None:
+        raise ValueError("row_columns must contain group_ids and item_ids")
+    torch = runtime["module"]
+    group_ids = group_ids.to(torch.int64)
+    item_ids = item_ids.to(torch.int64)
+    if tuple(group_ids.shape) != tuple(item_ids.shape):
+        raise ValueError("group_ids and item_ids must have the same shape")
+    group_count = int(group_count)
+    k = int(k)
+    if k <= 0:
+        raise ValueError("k must be positive")
+    _validate_torch_group_ids(group_ids, group_count, torch)
+    row_count = int(group_ids.numel())
+    if total_row_capacity is not None and row_count > int(total_row_capacity):
+        raise PartnerContinuationOverflowError(
+            "bounded_collect_finalize_i64 overflowed total row capacity; "
+            "failure_mode=fail_closed_overflow; partial_result_returned=False"
+        )
+    counts = torch.zeros((group_count,), dtype=torch.int64, device=group_ids.device)
+    for group in range(group_count):
+        counts[group] = int(torch.count_nonzero(group_ids == group).detach().cpu().item())
+    if bool(torch.any(counts > k).detach().cpu().item()) if group_count else False:
+        raise PartnerContinuationOverflowError(
+            "bounded_collect_finalize_i64 overflowed per-group capacity; "
+            "failure_mode=fail_closed_overflow; partial_result_returned=False"
+        )
+    row_offsets = torch.empty((group_count + 1,), dtype=torch.int64, device=group_ids.device)
+    row_offsets[0] = 0
+    if group_count:
+        row_offsets[1:] = torch.cumsum(counts, dim=0)
+    out_group_chunks = []
+    out_item_chunks = []
+    for group in range(group_count):
+        mask = group_ids == group
+        if int(torch.count_nonzero(mask).detach().cpu().item()) == 0:
+            continue
+        out_group_chunks.append(group_ids[mask])
+        out_item_chunks.append(item_ids[mask])
+    if out_group_chunks:
+        out_group_ids = torch.cat(out_group_chunks)
+        out_item_ids = torch.cat(out_item_chunks)
+    else:
+        out_group_ids = torch.empty((0,), dtype=torch.int64, device=group_ids.device)
+        out_item_ids = torch.empty((0,), dtype=torch.int64, device=item_ids.device)
+    return {
+        "group_ids": out_group_ids,
+        "item_ids": out_item_ids,
+        "row_offsets": row_offsets,
+        "counts": counts,
+    }, row_count
+
+
+def bounded_collect_finalize_i64_partner_columns(
+    row_columns: dict[str, object],
+    *,
+    group_count: int,
+    k: int,
+    total_row_capacity: int | None = None,
+    partner: str = "triton",
+    return_metadata: bool = False,
+) -> dict[str, object]:
+    """Finalize bounded generic item rows per group with fail-closed overflow."""
+
+    runtime = _partner_module(partner)
+    group_count = int(group_count)
+    k = int(k)
+    if runtime["name"] == "triton":
+        if not isinstance(row_columns, dict):
+            raise ValueError("row_columns must be a mapping")
+        group_ids = row_columns.get("group_ids")
+        item_ids = row_columns.get("item_ids")
+        if group_ids is None or item_ids is None:
+            raise ValueError("row_columns must contain group_ids and item_ids")
+        torch = runtime["module"]
+        group_ids = group_ids.to(torch.int64)
+        item_ids = item_ids.to(torch.int64)
+        _validate_torch_group_ids(group_ids, group_count, torch)
+        result = run_triton_bounded_collect_finalize_i64(
+            group_ids,
+            item_ids,
+            group_count=group_count,
+            k=k,
+            total_row_capacity=total_row_capacity,
+        )
+        columns = result["outputs"]
+        row_count = int(group_ids.numel())
+        elapsed = float(result["phase_timing"]["phases_sec"]["partner_continuation"])
+    elif runtime["name"] == "torch":
+        columns, row_count = _torch_bounded_collect(
+            row_columns,
+            group_count=group_count,
+            k=k,
+            total_row_capacity=total_row_capacity,
+            runtime=runtime,
+        )
+        runtime["sync"]()
+        elapsed = None
+    else:
+        raise ValueError("partner must be 'triton' or 'torch'")
+    metadata = _generic_partner_front_door_metadata(
+        adapter="bounded_collect_finalize_i64_partner_columns",
+        partner=runtime["name"],
+        operation="bounded_collect_finalize_i64",
+        group_count=group_count,
+        row_count=row_count,
+        contract="generic_bounded_collect_finalize_i64",
+        extra={
+            "k": k,
+            "total_row_capacity": total_row_capacity,
+            "failure_mode": "fail_closed_overflow",
+            "within_group_order": "unspecified_nonsemantic",
+            "triton_elapsed_seconds": elapsed,
+        },
+    )
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def pairwise_l2_sq_score_rows_2d_partner_columns(
+    source_point_columns: dict[str, object],
+    target_point_columns: dict[str, object],
+    *,
+    partner: str = "numba",
+    return_metadata: bool = False,
+) -> dict[str, object]:
+    """Produce generic squared-L2 score rows for 2D point pairs on a user-selected partner."""
+
+    if partner != "numba":
+        raise ValueError("pairwise_l2_sq_score_rows_2d currently supports partner='numba'")
+    for name, columns in (("source_point_columns", source_point_columns), ("target_point_columns", target_point_columns)):
+        if not isinstance(columns, dict):
+            raise ValueError(f"{name} must be a mapping")
+        for key in ("ids", "x", "y"):
+            if key not in columns:
+                raise ValueError(f"{name} must contain ids, x, and y")
+
+    from .numba_partner_continuation import run_numba_pairwise_l2_sq_score_rows_2d
+
+    result = run_numba_pairwise_l2_sq_score_rows_2d(
+        source_point_columns["x"],
+        source_point_columns["y"],
+        target_point_columns["ids"],
+        target_point_columns["x"],
+        target_point_columns["y"],
+    )
+    outputs = result["outputs"]
+    row_count = int(result["row_count"])
+    metadata = {
+        "adapter": "pairwise_l2_sq_score_rows_2d_partner_columns",
+        "partner": "numba",
+        "operation": "pairwise_l2_sq_score_rows_2d",
+        "input_contract": "source_and_target_point_columns_2d",
+        "output_contract": "generic_grouped_score_rows",
+        "group_id_semantics": result["group_id_semantics"],
+        "item_id_semantics": result["item_id_semantics"],
+        "score_semantics": result["score_semantics"],
+        "source_count": int(result["source_count"]),
+        "target_count": int(result["target_count"]),
+        "row_count": row_count,
+        "numba_pairwise_score_rows_elapsed_seconds": float(
+            result["phase_timing"]["phases_sec"]["partner_continuation"]
+        ),
+        "host_score_row_materialization_used": False,
+        "score_rows_generated_on_partner_device": True,
+        "native_engine_row_contract": "not_called_partner_continuation_only",
+        "rt_core_speedup_claim_authorized": False,
+        "v2_6_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "claim_boundary": (
+            "Generic pairwise squared-L2 score-row generation over Numba-owned device "
+            "arrays. It does not call native RT traversal, does not embed app "
+            "distance semantics, and does not authorize speedup, zero-copy, or release claims."
+        ),
+    }
+    if return_metadata:
+        return {"columns": outputs, "metadata": metadata}
+    return outputs
+
+
+def pairwise_l2_sq_block_nearest_rows_2d_partner_columns(
+    source_point_columns: dict[str, object],
+    target_point_columns: dict[str, object],
+    *,
+    partner: str = "numba",
+    block_size: int = 256,
+    return_metadata: bool = False,
+) -> dict[str, object]:
+    """Produce bounded per-source/tile nearest squared-L2 score rows."""
+
+    if partner != "numba":
+        raise ValueError("pairwise_l2_sq_block_nearest_rows_2d currently supports partner='numba'")
+    for name, columns in (("source_point_columns", source_point_columns), ("target_point_columns", target_point_columns)):
+        if not isinstance(columns, dict):
+            raise ValueError(f"{name} must be a mapping")
+        for key in ("ids", "x", "y"):
+            if key not in columns:
+                raise ValueError(f"{name} must contain ids, x, and y")
+
+    from .numba_partner_continuation import run_numba_pairwise_l2_sq_block_nearest_rows_2d
+
+    result = run_numba_pairwise_l2_sq_block_nearest_rows_2d(
+        source_point_columns["x"],
+        source_point_columns["y"],
+        target_point_columns["ids"],
+        target_point_columns["x"],
+        target_point_columns["y"],
+        block_size=block_size,
+    )
+    outputs = result["outputs"]
+    metadata = {
+        "adapter": "pairwise_l2_sq_block_nearest_rows_2d_partner_columns",
+        "partner": "numba",
+        "operation": "pairwise_l2_sq_block_nearest_rows_2d",
+        "input_contract": "source_and_target_point_columns_2d",
+        "output_contract": "generic_grouped_score_rows_bounded_tile_summary",
+        "group_id_semantics": result["group_id_semantics"],
+        "item_id_semantics": result["item_id_semantics"],
+        "score_semantics": result["score_semantics"],
+        "tie_break": result["tie_break"],
+        "source_count": int(result["source_count"]),
+        "target_count": int(result["target_count"]),
+        "target_tile_count": int(result["target_tile_count"]),
+        "row_count": int(result["row_count"]),
+        "logical_pair_count": int(result["logical_pair_count"]),
+        "numba_pairwise_block_nearest_rows_elapsed_seconds": float(
+            result["phase_timing"]["phases_sec"]["partner_continuation"]
+        ),
+        "host_score_row_materialization_used": False,
+        "score_rows_generated_on_partner_device": True,
+        "bounded_tile_summary_rows": True,
+        "native_engine_row_contract": "not_called_partner_continuation_only",
+        "rt_core_speedup_claim_authorized": False,
+        "v2_6_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "claim_boundary": (
+            "Generic pairwise squared-L2 per-tile nearest score rows over Numba-owned "
+            "device arrays. It reduces candidate-row materialization, does not call "
+            "native RT traversal, does not embed app distance semantics, and does not "
+            "authorize speedup, zero-copy, or release claims."
+        ),
+    }
+    if return_metadata:
+        return {"columns": outputs, "metadata": metadata}
+    return outputs
+
+
+def group_argmin_then_global_argmax_partner_columns(
+    score_columns: dict[str, object],
+    *,
+    group_count: int,
+    partner: str = "triton",
+    numba_known_dense_groups: bool = False,
+    numba_validate_group_ids: bool = True,
+    numba_validate_nan_scores: bool = True,
+    return_metadata: bool = False,
+) -> dict[str, object]:
+    """Run generic per-group argmin followed by global argmax with witness."""
+
+    if not isinstance(score_columns, dict):
+        raise ValueError("score_columns must be a mapping")
+    group_ids = score_columns.get("group_ids")
+    item_ids = score_columns.get("item_ids")
+    scores = score_columns.get("scores", score_columns.get("values"))
+    if group_ids is None or item_ids is None or scores is None:
+        raise ValueError("score_columns must contain group_ids, item_ids, and scores/values")
+    group_count = int(group_count)
+    if group_count <= 0:
+        raise ValueError("group_count must be positive")
+
+    if partner == "numba":
+        from .numba_partner_continuation import _import_numba_stack
+        from .numba_partner_continuation import run_numba_grouped_argmax_f64
+
+        cuda, np = _import_numba_stack()
+        row_count = int(group_ids.shape[0])
+        argmin_result = grouped_argmin_f64_partner_columns(
+            {"group_ids": group_ids, "item_ids": item_ids, "scores": scores},
+            group_count=group_count,
+            partner="numba",
+            validate_group_ids=numba_validate_group_ids,
+            validate_nan_scores=numba_validate_nan_scores,
+            compact_present_groups=not numba_known_dense_groups,
+            return_metadata=True,
+        )
+        argmin_outputs = argmin_result["columns"]
+        if numba_known_dense_groups:
+            missing = []
+        else:
+            missing = argmin_outputs["missing_group_ids"].copy_to_host().tolist()
+            if missing:
+                raise ValueError(f"every group must have at least one candidate; missing groups: {missing}")
+
+        per_group_ids = argmin_outputs["group_ids"]
+        per_group_scores = argmin_outputs["scores"]
+        global_group_ids = cuda.to_device(np.zeros((int(per_group_ids.shape[0]),), dtype=np.int64))
+        argmax_result = run_numba_grouped_argmax_f64(
+            global_group_ids,
+            per_group_ids,
+            per_group_scores,
+            group_count=1,
+            validate_group_ids=False,
+            validate_nan_scores=False,
+            compact_present_groups=False,
+        )
+        winner_group_id = int(argmax_result["outputs"]["item_ids"].copy_to_host()[0])
+        winner_score = float(argmax_result["outputs"]["scores"].copy_to_host()[0])
+        dense_item_ids = argmin_outputs["dense_item_ids"]
+        dense_scores = argmin_outputs["dense_scores"]
+        winner_item_id = int(dense_item_ids.copy_to_host()[winner_group_id])
+        columns = {
+            "group_ids": per_group_ids,
+            "argmin_item_ids": dense_item_ids,
+            "argmin_scores": dense_scores,
+        }
+        metadata = {
+            "adapter": "group_argmin_then_global_argmax_partner_columns",
+            "partner": "numba",
+            "input_contract": "caller_supplied_grouped_score_rows",
+            "partner_reference_contract": "generic_group_argmin_then_global_argmax_with_witness",
+            "v2_6_numba_partner_continuation_operations": ("grouped_argmin_f64", "grouped_argmax_f64"),
+            "v2_6_numba_preview_kernel_status": "preview_not_promoted",
+            "native_engine_row_contract": "not_called_partner_continuation_only",
+            "group_count": group_count,
+            "row_count": row_count,
+            "winner_group_id": winner_group_id,
+            "winner_item_id": winner_item_id,
+            "winner_score": winner_score,
+            "tie_break": "per_group_lowest_score_then_lowest_item_id__global_highest_score_then_lowest_group_id",
+            "numba_grouped_argmin_elapsed_seconds": argmin_result["metadata"]["numba_elapsed_seconds"],
+            "numba_grouped_argmax_elapsed_seconds": float(
+                argmax_result["phase_timing"]["phases_sec"]["partner_continuation"]
+            ),
+            "numba_known_dense_groups": numba_known_dense_groups,
+            "numba_validate_group_ids": numba_validate_group_ids,
+            "numba_validate_nan_scores": numba_validate_nan_scores,
+            "host_present_group_compaction_used": bool(
+                argmin_result["metadata"]["host_present_group_compaction_used"]
+            ),
+            "nan_validation_host_sync_used": bool(
+                argmin_result["metadata"]["nan_validation_host_sync_used"]
+            ),
+            "direct_device_handoff_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "v2_6_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "claim_boundary": (
+                "Generic group-argmin then global-argmax witness adapter over Numba-owned "
+                "score rows. It does not call native RT traversal, does not embed app "
+                "distance semantics, and does not authorize speedup, zero-copy, or release claims."
+            ),
+        }
+        if return_metadata:
+            return {"columns": columns, "metadata": metadata}
+        return columns
+
+    runtime = _partner_module(partner)
+    if runtime["name"] in {"triton", "torch"}:
+        torch = runtime["module"]
+        group_ids = group_ids.to(torch.int64)
+        item_ids = item_ids.to(torch.int64)
+        scores = scores.to(torch.float64)
+        row_count = int(group_ids.numel())
+        if not (tuple(group_ids.shape) == tuple(item_ids.shape) == tuple(scores.shape)):
+            raise ValueError("group_ids, item_ids, and scores must have the same shape")
+        if runtime["name"] == "triton":
+            argmin_result = run_triton_grouped_argmin_f64(
+                group_ids,
+                item_ids,
+                scores,
+                group_count=group_count,
+            )
+            if int(argmin_result["outputs"]["missing_group_ids"].numel()) != 0:
+                missing = argmin_result["outputs"]["missing_group_ids"].detach().cpu().tolist()
+                raise ValueError(f"every group must have at least one candidate; missing groups: {missing}")
+            per_group_ids = argmin_result["outputs"]["group_ids"]
+            per_group_item_ids = argmin_result["outputs"]["item_ids"]
+            per_group_scores = argmin_result["outputs"]["scores"]
+            global_group_ids = torch.zeros_like(per_group_ids)
+            argmax_result = run_triton_grouped_argmax_f64(
+                global_group_ids,
+                per_group_ids,
+                per_group_scores,
+                group_count=1,
+            )
+            winner_group_id = argmax_result["outputs"]["item_ids"][0]
+            winner_score = argmax_result["outputs"]["scores"][0]
+            winner_item_id = argmin_result["outputs"]["dense_item_ids"][winner_group_id]
+            dense_item_ids = argmin_result["outputs"]["dense_item_ids"]
+            dense_scores = argmin_result["outputs"]["dense_scores"]
+            operations = ("grouped_argmin_f64", "grouped_argmax_f64")
+            preview_kernel_status = "preview_not_promoted"
+            argmin_elapsed = float(argmin_result["phase_timing"]["phases_sec"]["partner_continuation"])
+            argmax_elapsed = float(argmax_result["phase_timing"]["phases_sec"]["partner_continuation"])
+        else:
+            dense_scores = torch.full((group_count,), float("inf"), dtype=torch.float64, device=scores.device)
+            dense_item_ids = torch.full(
+                (group_count,),
+                torch.iinfo(torch.int64).max,
+                dtype=torch.int64,
+                device=item_ids.device,
+            )
+            for group in range(group_count):
+                mask = group_ids == group
+                if not bool(torch.any(mask).detach().cpu().item()):
+                    raise ValueError(f"every group must have at least one candidate; missing groups: [{group}]")
+                group_scores = scores[mask]
+                group_items = item_ids[mask]
+                best_score = torch.min(group_scores)
+                tied_items = group_items[group_scores == best_score]
+                dense_scores[group] = best_score
+                dense_item_ids[group] = torch.min(tied_items)
+            winner_score = torch.max(dense_scores)
+            tied_groups = torch.nonzero(dense_scores == winner_score, as_tuple=False).reshape(-1)
+            winner_group_id = torch.min(tied_groups).to(torch.int64)
+            winner_item_id = dense_item_ids[winner_group_id]
+            operations = ()
+            preview_kernel_status = None
+            argmin_elapsed = None
+            argmax_elapsed = None
+        runtime["sync"]()
+        columns = {
+            "group_ids": runtime["tensor"](range(group_count), runtime["int64"], runtime["device"]),
+            "argmin_item_ids": dense_item_ids,
+            "argmin_scores": dense_scores,
+        }
+        metadata = {
+            "adapter": "group_argmin_then_global_argmax_partner_columns",
+            "partner": runtime["name"],
+            "input_contract": "caller_supplied_grouped_score_rows",
+            "partner_reference_contract": "generic_group_argmin_then_global_argmax_with_witness",
+            "v2_5_partner_continuation_operations": operations,
+            "v2_5_triton_preview_kernel_status": preview_kernel_status,
+            "native_engine_row_contract": "not_called_partner_continuation_only",
+            "group_count": group_count,
+            "row_count": row_count,
+            "winner_group_id": int(winner_group_id.detach().cpu().item()),
+            "winner_item_id": int(winner_item_id.detach().cpu().item()),
+            "winner_score": float(winner_score.detach().cpu().item()),
+            "tie_break": "per_group_lowest_score_then_lowest_item_id__global_highest_score_then_lowest_group_id",
+            "triton_grouped_argmin_elapsed_seconds": argmin_elapsed,
+            "triton_grouped_argmax_elapsed_seconds": argmax_elapsed,
+            "direct_device_handoff_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "v2_5_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+            "claim_boundary": (
+                "Generic group-argmin then global-argmax witness adapter over partner-owned "
+                "score rows. It does not call native RT traversal, does not embed app "
+                "distance semantics, and does not authorize speedup, zero-copy, or release claims."
+            ),
+        }
+        if return_metadata:
+            return {"columns": columns, "metadata": metadata}
+        return columns
+
+    raise ValueError("partner must be 'triton', 'torch', or 'numba'")
+
+
+def _directed_hausdorff_2d_numba_partner_columns(
+    source_point_columns: dict[str, object],
+    target_point_columns: dict[str, object],
+    *,
+    source_count: int,
+    target_count: int,
+    numba_strategy: str,
+    numba_block_size: int,
+    materialize_nearest_distances: bool,
+    return_metadata: bool,
+) -> dict[str, object]:
+    if numba_strategy == "dense_score_rows":
+        score_rows = pairwise_l2_sq_score_rows_2d_partner_columns(
+            source_point_columns,
+            target_point_columns,
+            partner="numba",
+            return_metadata=True,
+        )
+    elif numba_strategy == "block_nearest_rows":
+        score_rows = pairwise_l2_sq_block_nearest_rows_2d_partner_columns(
+            source_point_columns,
+            target_point_columns,
+            partner="numba",
+            block_size=numba_block_size,
+            return_metadata=True,
+        )
+    else:
+        raise ValueError("numba_strategy must be 'dense_score_rows' or 'block_nearest_rows'")
+
+    witness = group_argmin_then_global_argmax_partner_columns(
+        score_rows["columns"],
+        group_count=source_count,
+        partner="numba",
+        numba_known_dense_groups=True,
+        numba_validate_group_ids=False,
+        numba_validate_nan_scores=False,
+        return_metadata=True,
+    )
+    columns = witness["columns"]
+    sqrt_result = None
+    if materialize_nearest_distances:
+        from .numba_partner_continuation import run_numba_sqrt_f64
+
+        sqrt_result = run_numba_sqrt_f64(columns["argmin_scores"])
+    source_index_i = int(witness["metadata"]["winner_group_id"])
+    winner_score = float(witness["metadata"]["winner_score"])
+    source_id = int(source_point_columns["ids"].copy_to_host()[source_index_i])
+    target_id = int(witness["metadata"]["winner_item_id"])
+    output_columns = {
+        "source_ids": source_point_columns["ids"],
+        "nearest_target_ids": columns["argmin_item_ids"],
+        "nearest_distance_sq": columns["argmin_scores"],
+    }
+    if sqrt_result is not None:
+        output_columns["nearest_distances"] = sqrt_result["outputs"]["sqrt_values"]
+    score_metadata = score_rows["metadata"]
+    witness_metadata = witness["metadata"]
+    score_operation = str(score_metadata["operation"])
+    executed_operations = [score_operation, "grouped_argmin_f64", "grouped_argmax_f64"]
+    if sqrt_result is not None:
+        executed_operations.append("sqrt_f64")
+    metadata = {
+        "adapter": "directed_hausdorff_2d_partner_columns",
+        "partner": "numba",
+        "input_contract": "caller_supplied_partner_device_point_columns",
+        "partner_reference_contract": "generic_exact_directed_hausdorff_2d",
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "source_count": source_count,
+        "target_count": target_count,
+        "source_id": source_id,
+        "target_id": target_id,
+        "distance": math.sqrt(winner_score),
+        "distance_sq": winner_score,
+        "app_distance_materialization": (
+            "partner_gpu_bounded_tile_score_rows_then_generic_min_max"
+            if numba_strategy == "block_nearest_rows"
+            else "partner_gpu_dense_score_rows_then_generic_min_max"
+        ),
+        "app_distance_host_materialization": False,
+        "numba_strategy": numba_strategy,
+        "numba_block_size": int(numba_block_size),
+        "v2_8_partner_continuation_operations": tuple(executed_operations),
+        "v2_8_partner_continuation_operations_semantics": "executed_operations_this_call",
+        "v2_8_numba_preview_kernel_status": "preview_not_promoted",
+        "numba_score_row_operation": score_operation,
+        "numba_score_row_count": int(score_metadata["row_count"]),
+        "numba_logical_pair_count": int(score_metadata.get("logical_pair_count", score_metadata["row_count"])),
+        "numba_pairwise_elapsed_seconds": float(
+            score_metadata.get(
+                "numba_pairwise_block_nearest_rows_elapsed_seconds",
+                score_metadata.get("numba_pairwise_score_rows_elapsed_seconds", 0.0),
+            )
+        ),
+        "numba_grouped_argmin_elapsed_seconds": witness_metadata["numba_grouped_argmin_elapsed_seconds"],
+        "numba_grouped_argmax_elapsed_seconds": witness_metadata["numba_grouped_argmax_elapsed_seconds"],
+        "numba_sqrt_elapsed_seconds": float(
+            sqrt_result["phase_timing"]["phases_sec"]["partner_continuation"]
+        )
+        if sqrt_result is not None
+        else None,
+        "nearest_distance_column_materialized": sqrt_result is not None,
+        "numba_known_dense_groups": witness_metadata["numba_known_dense_groups"],
+        "host_present_group_compaction_used": witness_metadata["host_present_group_compaction_used"],
+        "nan_validation_host_sync_used": witness_metadata["nan_validation_host_sync_used"],
+        "host_score_row_materialization_used": False,
+        "score_rows_generated_on_partner_device": True,
+        "direct_device_handoff_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "v2_0_release_authorized": False,
+        "v2_5_release_authorized": False,
+        "v2_8_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+    }
+    if return_metadata:
+        return {"columns": output_columns, "metadata": metadata}
+    return output_columns
+
+
+def directed_hausdorff_2d_partner_columns(
+    source_point_columns: dict[str, object],
+    target_point_columns: dict[str, object],
+    *,
+    partner: str = "torch",
+    triton_strategy: str = "generic_score_rows",
+    triton_candidate_block_size: int = 1024,
+    numba_strategy: str = "block_nearest_rows",
+    numba_block_size: int = 256,
+    materialize_nearest_distances: bool = True,
+    return_metadata: bool = False,
+):
+    """Compute exact directed Hausdorff distance from generic point columns."""
+    source_count = _column_length(source_point_columns, "ids")
+    target_count = _column_length(target_point_columns, "ids")
+    if source_count <= 0 or target_count <= 0:
+        raise ValueError("directed Hausdorff requires non-empty source and target columns")
+    if partner == "numba":
+        return _directed_hausdorff_2d_numba_partner_columns(
+            source_point_columns,
+            target_point_columns,
+            source_count=source_count,
+            target_count=target_count,
+            numba_strategy=str(numba_strategy),
+            numba_block_size=int(numba_block_size),
+            materialize_nearest_distances=bool(materialize_nearest_distances),
+            return_metadata=return_metadata,
+        )
+
+    runtime = _partner_module(partner)
+    triton_strategy = str(triton_strategy)
+
+    if runtime["name"] == "triton":
+        torch = runtime["module"]
+        sx = source_point_columns["x"].to(torch.float64)
+        sy = source_point_columns["y"].to(torch.float64)
+        tx = target_point_columns["x"].to(torch.float64)
+        ty = target_point_columns["y"].to(torch.float64)
+        if triton_strategy == "generic_score_rows":
+            dx = sx.reshape(-1, 1) - tx.reshape(1, -1)
+            dy = sy.reshape(-1, 1) - ty.reshape(1, -1)
+            distance_sq = dx * dx + dy * dy
+            group_ids = torch.arange(source_count, dtype=torch.int64, device=sx.device).repeat_interleave(target_count)
+            item_ids = target_point_columns["ids"].to(torch.int64).repeat(source_count)
+            witness = group_argmin_then_global_argmax_partner_columns(
+                {"group_ids": group_ids, "item_ids": item_ids, "scores": distance_sq.reshape(-1)},
+                group_count=source_count,
+                partner="triton",
+                return_metadata=True,
+            )
+            nearest_target_ids = witness["columns"]["argmin_item_ids"]
+            nearest_distance_sq = witness["columns"]["argmin_scores"]
+            source_index_i = int(witness["metadata"]["winner_group_id"])
+            target_index_i = None
+            directed_distance_sq = nearest_distance_sq[source_index_i]
+            directed_distance = torch.sqrt(directed_distance_sq)
+            nearest_distances = torch.sqrt(nearest_distance_sq)
+            triton_witness_metadata = dict(witness["metadata"])
+            triton_witness_metadata["v2_5_triton_strategy"] = triton_strategy
+            triton_witness_metadata["app_distance_materialization"] = (
+                "partner_gpu_dense_score_rows_then_generic_min_max"
+            )
+        elif triton_strategy == "dense_point_nearest":
+            nearest_result = run_triton_dense_point_nearest_2d(
+                source_point_columns["ids"].to(torch.int64),
+                sx,
+                sy,
+                target_point_columns["ids"].to(torch.int64),
+                tx,
+                ty,
+            )
+            nearest_outputs = nearest_result["outputs"]
+            nearest_target_ids = nearest_outputs["neighbor_ids"]
+            nearest_distance_sq = nearest_outputs["scores"]
+            global_group_ids = torch.zeros_like(nearest_outputs["query_indices"])
+            farthest_result = run_triton_grouped_argmax_f64(
+                global_group_ids,
+                nearest_outputs["query_indices"],
+                nearest_distance_sq,
+                group_count=1,
+            )
+            source_index_tensor = farthest_result["outputs"]["item_ids"][0]
+            source_index_i = int(source_index_tensor.detach().cpu().item())
+            target_index_i = None
+            directed_distance_sq = nearest_distance_sq[source_index_i]
+            directed_distance = torch.sqrt(directed_distance_sq)
+            nearest_distances = torch.sqrt(nearest_distance_sq)
+            triton_witness_metadata = {
+                "adapter": "directed_hausdorff_2d_partner_columns",
+                "partner": "triton",
+                "partner_reference_contract": "generic_exact_directed_hausdorff_2d",
+                "v2_5_triton_strategy": triton_strategy,
+                "v2_5_partner_continuation_operations": (
+                    "dense_point_nearest_2d",
+                    "grouped_argmax_f64",
+                ),
+                "v2_5_triton_preview_kernel_status": "preview_not_promoted",
+                "v2_5_triton_adapter_kernel": nearest_result["adapter_kernel"],
+                "app_distance_materialization": "partner_gpu_fused_point_nearest_then_global_max",
+                "winner_group_id": source_index_i,
+                "winner_item_id": int(nearest_target_ids[source_index_i].detach().cpu().item()),
+                "winner_score": float(directed_distance_sq.detach().cpu().item()),
+                "triton_dense_point_nearest_elapsed_seconds": float(
+                    nearest_result["phase_timing"]["phases_sec"]["partner_continuation"]
+                ),
+                "triton_grouped_argmax_elapsed_seconds": float(
+                    farthest_result["phase_timing"]["phases_sec"]["partner_continuation"]
+                ),
+            }
+        elif triton_strategy == "dense_point_nearest_tiled":
+            nearest_result = run_triton_dense_point_nearest_2d_tiled(
+                source_point_columns["ids"].to(torch.int64),
+                sx,
+                sy,
+                target_point_columns["ids"].to(torch.int64),
+                tx,
+                ty,
+                candidate_block_size=triton_candidate_block_size,
+            )
+            nearest_outputs = nearest_result["outputs"]
+            nearest_target_ids = nearest_outputs["neighbor_ids"]
+            nearest_distance_sq = nearest_outputs["scores"]
+            global_group_ids = torch.zeros_like(nearest_outputs["query_indices"])
+            farthest_result = run_triton_grouped_argmax_f64(
+                global_group_ids,
+                nearest_outputs["query_indices"],
+                nearest_distance_sq,
+                group_count=1,
+            )
+            source_index_tensor = farthest_result["outputs"]["item_ids"][0]
+            source_index_i = int(source_index_tensor.detach().cpu().item())
+            target_index_i = None
+            directed_distance_sq = nearest_distance_sq[source_index_i]
+            directed_distance = torch.sqrt(directed_distance_sq)
+            nearest_distances = torch.sqrt(nearest_distance_sq)
+            triton_witness_metadata = {
+                "adapter": "directed_hausdorff_2d_partner_columns",
+                "partner": "triton",
+                "partner_reference_contract": "generic_exact_directed_hausdorff_2d",
+                "v2_5_triton_strategy": triton_strategy,
+                "v2_5_partner_continuation_operations": (
+                    "dense_point_nearest_2d_tiled",
+                    "grouped_argmin_f64",
+                    "grouped_argmax_f64",
+                ),
+                "v2_5_triton_preview_kernel_status": "preview_not_promoted",
+                "v2_5_triton_adapter_kernel": nearest_result["adapter_kernel"],
+                "app_distance_materialization": "partner_gpu_tiled_point_nearest_then_global_max",
+                "winner_group_id": source_index_i,
+                "winner_item_id": int(nearest_target_ids[source_index_i].detach().cpu().item()),
+                "winner_score": float(directed_distance_sq.detach().cpu().item()),
+                "triton_dense_point_nearest_elapsed_seconds": float(
+                    nearest_result["phase_timing"]["phases_sec"]["partner_continuation"]
+                ),
+                "triton_grouped_argmax_elapsed_seconds": float(
+                    farthest_result["phase_timing"]["phases_sec"]["partner_continuation"]
+                ),
+                "triton_candidate_block_size": int(triton_candidate_block_size),
+                "triton_candidate_tile_count": nearest_result["candidate_tile_count"],
+                "triton_tile_witness_row_count": nearest_result["tile_witness_row_count"],
+            }
+        else:
+            raise ValueError(
+                "triton_strategy must be 'generic_score_rows', 'dense_point_nearest', "
+                "or 'dense_point_nearest_tiled'"
+            )
+    elif runtime["name"] == "torch":
+        torch = runtime["module"]
+        sx = source_point_columns["x"].to(torch.float64)
+        sy = source_point_columns["y"].to(torch.float64)
+        tx = target_point_columns["x"].to(torch.float64)
+        ty = target_point_columns["y"].to(torch.float64)
+        dx = sx.reshape(-1, 1) - tx.reshape(1, -1)
+        dy = sy.reshape(-1, 1) - ty.reshape(1, -1)
+        distance_sq = dx * dx + dy * dy
+        nearest_distance_sq, nearest_indices = torch.min(distance_sq, dim=1)
+        directed_distance_sq, source_index = torch.max(nearest_distance_sq, dim=0)
+        source_index_i = int(source_index.detach().cpu().item())
+        target_index_i = int(nearest_indices[source_index_i].detach().cpu().item())
+        directed_distance = torch.sqrt(directed_distance_sq)
+        nearest_distances = torch.sqrt(nearest_distance_sq)
+        nearest_target_ids = target_point_columns["ids"][nearest_indices]
+        triton_witness_metadata = None
+    elif runtime["name"] == "cupy":
+        cupy = runtime["module"]
+        sx = source_point_columns["x"].astype(cupy.float64, copy=False)
+        sy = source_point_columns["y"].astype(cupy.float64, copy=False)
+        tx = target_point_columns["x"].astype(cupy.float64, copy=False)
+        ty = target_point_columns["y"].astype(cupy.float64, copy=False)
+        dx = sx.reshape(-1, 1) - tx.reshape(1, -1)
+        dy = sy.reshape(-1, 1) - ty.reshape(1, -1)
+        distance_sq = dx * dx + dy * dy
+        nearest_distance_sq = cupy.min(distance_sq, axis=1)
+        nearest_indices = cupy.argmin(distance_sq, axis=1)
+        source_index = cupy.argmax(nearest_distance_sq)
+        source_index_i = int(source_index.item())
+        target_index_i = int(nearest_indices[source_index_i].item())
+        directed_distance_sq = nearest_distance_sq[source_index_i]
+        directed_distance = cupy.sqrt(directed_distance_sq)
+        nearest_distances = cupy.sqrt(nearest_distance_sq)
+        nearest_target_ids = target_point_columns["ids"][nearest_indices]
+        triton_witness_metadata = None
+    else:
+        raise ValueError("partner must be 'triton', 'torch', 'cupy', or 'numba'")
+
+    runtime["sync"]()
+    columns = {
+        "source_ids": source_point_columns["ids"],
+        "nearest_target_ids": nearest_target_ids,
+        "nearest_distances": nearest_distances,
+    }
+    metadata = {
+        "adapter": "directed_hausdorff_2d_partner_columns",
+        "partner": runtime["name"],
+        "input_contract": "caller_supplied_partner_device_point_columns",
+        "partner_reference_contract": "generic_exact_directed_hausdorff_2d",
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "source_count": source_count,
+        "target_count": target_count,
+        "source_id": int(runtime["to_host"](source_point_columns["ids"][source_index_i : source_index_i + 1])[0]),
+        "target_id": int(triton_witness_metadata["winner_item_id"])
+        if runtime["name"] == "triton"
+        else int(runtime["to_host"](target_point_columns["ids"][target_index_i : target_index_i + 1])[0]),
+        "distance": float(directed_distance.detach().cpu().item())
+        if runtime["name"] in {"triton", "torch"}
+        else float(directed_distance.item()),
+        "distance_sq": float(directed_distance_sq.detach().cpu().item())
+        if runtime["name"] in {"triton", "torch"}
+        else float(directed_distance_sq.item()),
+        "app_distance_materialization": triton_witness_metadata["app_distance_materialization"]
+        if runtime["name"] == "triton"
+        else "partner_gpu_exact_dense_min_then_max_distance",
+        "app_distance_host_materialization": False,
+        "v2_5_triton_strategy": triton_witness_metadata["v2_5_triton_strategy"]
+        if runtime["name"] == "triton"
+        else None,
+        "v2_5_partner_continuation_operations": triton_witness_metadata[
+            "v2_5_partner_continuation_operations"
+        ]
+        if runtime["name"] == "triton"
+        else (),
+        "v2_5_triton_adapter_kernel": triton_witness_metadata.get("v2_5_triton_adapter_kernel")
+        if runtime["name"] == "triton"
+        else None,
+        "v2_5_triton_preview_kernel_status": triton_witness_metadata[
+            "v2_5_triton_preview_kernel_status"
+        ]
+        if runtime["name"] == "triton"
+        else None,
+        "direct_device_handoff_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "v2_0_release_authorized": False,
+        "v2_5_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+    }
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def directed_max_of_nearest_distance_2d_partner_columns(
+    source_point_columns: dict[str, object],
+    target_point_columns: dict[str, object],
+    *,
+    partner: str = "torch",
+    triton_strategy: str = "generic_score_rows",
+    triton_candidate_block_size: int = 1024,
+    numba_strategy: str = "block_nearest_rows",
+    numba_block_size: int = 256,
+    materialize_nearest_distances: bool = True,
+    return_metadata: bool = False,
+):
+    """Compute max-over-source of nearest-target distance from generic point columns.
+
+    This is the generic front-door name for the exact directed Hausdorff building
+    block. The older Hausdorff-named adapter remains available for compatibility.
+    """
+    result = directed_hausdorff_2d_partner_columns(
+        source_point_columns,
+        target_point_columns,
+        partner=partner,
+        triton_strategy=triton_strategy,
+        triton_candidate_block_size=triton_candidate_block_size,
+        numba_strategy=numba_strategy,
+        numba_block_size=numba_block_size,
+        materialize_nearest_distances=materialize_nearest_distances,
+        return_metadata=return_metadata,
+    )
+    if not return_metadata:
+        return result
+
+    metadata = dict(result["metadata"])
+    metadata["adapter"] = "directed_max_of_nearest_distance_2d_partner_columns"
+    metadata["partner_reference_contract"] = "generic_directed_max_of_nearest_distance_2d"
+    metadata["compatibility_adapter_aliases"] = ("directed_hausdorff_2d_partner_columns",)
+    metadata["compatibility_partner_reference_contracts"] = ("generic_exact_directed_hausdorff_2d",)
+    metadata["semantic_aliases"] = ("directed_hausdorff_2d",)
+    return {"columns": result["columns"], "metadata": metadata}
+
+
+def top_k_nearest_points_2d_partner_columns(
+    query_point_columns: dict[str, object],
+    candidate_point_columns: dict[str, object],
+    *,
+    k: int,
+    partner: str = "torch",
+    return_metadata: bool = False,
+):
+    """Compute exact ranked nearest candidate points from generic point columns."""
+    k = int(k)
+    if k <= 0:
+        raise ValueError("k must be positive")
+    runtime = _numba_runtime_for_point_columns() if partner == "numba" else _partner_module(partner)
+    query_count = _column_length(query_point_columns, "ids")
+    candidate_count = _column_length(candidate_point_columns, "ids")
+    if query_count <= 0 or candidate_count <= 0:
+        raise ValueError("top-k nearest points requires non-empty query and candidate columns")
+    if k > candidate_count:
+        raise ValueError("k must be <= candidate point count")
+
+    numba_topk_metadata: dict[str, object] = {}
+    if runtime["name"] in {"triton", "torch"}:
+        torch = runtime["module"]
+        qx = query_point_columns["x"].to(torch.float64)
+        qy = query_point_columns["y"].to(torch.float64)
+        cx = candidate_point_columns["x"].to(torch.float64)
+        cy = candidate_point_columns["y"].to(torch.float64)
+        candidate_ids_i64 = candidate_point_columns["ids"].to(torch.int64)
+        if runtime["name"] == "triton":
+            topk_result = run_triton_dense_point_topk_2d(
+                query_point_columns["ids"].to(torch.int64),
+                qx,
+                qy,
+                candidate_ids_i64,
+                cx,
+                cy,
+                k=k,
+            )
+            topk_outputs = topk_result["outputs"]
+            query_ids = topk_outputs["query_ids"]
+            neighbor_ids = topk_outputs["neighbor_ids"]
+            distances = torch.sqrt(topk_outputs["scores"])
+            neighbor_rank = topk_outputs["ranks"]
+        else:
+            dx = qx.reshape(-1, 1) - cx.reshape(1, -1)
+            dy = qy.reshape(-1, 1) - cy.reshape(1, -1)
+            distance_sq = dx * dx + dy * dy
+            candidate_id_order = torch.argsort(candidate_ids_i64)
+            distance_sq_by_id = distance_sq[:, candidate_id_order]
+            rank_order_by_id = torch.argsort(distance_sq_by_id, dim=1, stable=True)[:, :k]
+            nearest_indices = candidate_id_order[rank_order_by_id]
+            nearest_distance_sq = torch.gather(distance_sq, 1, nearest_indices)
+            query_ids = query_point_columns["ids"].to(torch.int64).reshape(-1, 1).expand(query_count, k).reshape(-1)
+            neighbor_ids = candidate_ids_i64[nearest_indices].reshape(-1)
+            distances = torch.sqrt(nearest_distance_sq).reshape(-1)
+            neighbor_rank = (
+                torch.arange(1, k + 1, dtype=torch.int64, device=query_ids.device)
+                .reshape(1, k)
+                .expand(query_count, k)
+                .reshape(-1)
+            )
+    elif runtime["name"] == "cupy":
+        cupy = runtime["module"]
+        qx = query_point_columns["x"].astype(cupy.float64, copy=False)
+        qy = query_point_columns["y"].astype(cupy.float64, copy=False)
+        cx = candidate_point_columns["x"].astype(cupy.float64, copy=False)
+        cy = candidate_point_columns["y"].astype(cupy.float64, copy=False)
+        candidate_ids_i64 = candidate_point_columns["ids"].astype(cupy.int64, copy=False)
+        candidate_id_order = cupy.argsort(candidate_ids_i64)
+        dx = qx.reshape(-1, 1) - cx.reshape(1, -1)
+        dy = qy.reshape(-1, 1) - cy.reshape(1, -1)
+        distance_sq = dx * dx + dy * dy
+        distance_sq_by_id = distance_sq[:, candidate_id_order]
+        rank_order_by_id = cupy.argsort(distance_sq_by_id, axis=1, kind="stable")[:, :k]
+        nearest_indices = candidate_id_order[rank_order_by_id]
+        nearest_distance_sq = cupy.take_along_axis(distance_sq, nearest_indices, axis=1)
+        query_ids = cupy.repeat(query_point_columns["ids"], k)
+        neighbor_ids = candidate_point_columns["ids"][nearest_indices].reshape(-1)
+        distances = cupy.sqrt(nearest_distance_sq).reshape(-1)
+        neighbor_rank = cupy.tile(cupy.arange(1, k + 1, dtype=cupy.uint32), query_count)
+    elif runtime["name"] == "numba":
+        cuda = runtime["module"]
+        np = runtime["numpy"]
+        score_payload = pairwise_l2_sq_score_rows_2d_partner_columns(
+            query_point_columns,
+            candidate_point_columns,
+            partner="numba",
+            return_metadata=True,
+        )
+        score_columns = score_payload["columns"]
+        topk_payload = grouped_topk_f64_partner_columns(
+            score_columns,
+            group_count=query_count,
+            k=k,
+            partner="numba",
+            rows_per_group=candidate_count,
+            return_metadata=True,
+        )
+        topk_columns = topk_payload["columns"]
+        output_count = query_count * k
+        query_ids = cuda.device_array((output_count,), dtype=np.int64)
+        distances = cuda.device_array((output_count,), dtype=np.float64)
+        if output_count:
+            block_size = 128
+            grid = ((output_count + block_size - 1) // block_size,)
+            _numba_topk_query_id_distance_kernel(cuda)[grid, block_size](
+                query_point_columns["ids"],
+                topk_columns["group_ids"],
+                topk_columns["scores"],
+                query_ids,
+                distances,
+                output_count,
+            )
+        neighbor_ids = topk_columns["item_ids"]
+        neighbor_rank = topk_columns["ranks"]
+        cuda.synchronize()
+        numba_topk_metadata = {
+            "v2_11_numba_partner_continuation_operations": (
+                "pairwise_l2_sq_score_rows_2d",
+                "grouped_topk_f64",
+                "dense_group_id_query_id_gather_and_sqrt_f64",
+            ),
+            "v2_11_numba_preview_kernel_status": "device_grouped_topk_after_device_score_rows",
+            "numba_score_rows_generated_on_partner_device": True,
+            "numba_score_row_count": int(score_payload["metadata"]["row_count"]),
+            "numba_pairwise_score_rows_elapsed_seconds": float(
+                score_payload["metadata"]["numba_pairwise_score_rows_elapsed_seconds"]
+            ),
+            "numba_grouped_topk_device_rank_used": True,
+            "numba_grouped_topk_elapsed_seconds": float(topk_payload["metadata"]["numba_elapsed_seconds"]),
+            "host_rank_materialization_used": False,
+            "host_rank_materialization_reason": None,
+            "numba_topk_layout_precondition": topk_payload["metadata"]["numba_layout_precondition"],
+        }
+    else:
+        raise ValueError("partner must be 'triton', 'torch', 'cupy', or 'numba'")
+
+    runtime["sync"]()
+    columns = {
+        "query_ids": query_ids,
+        "neighbor_ids": neighbor_ids,
+        "distances": distances,
+        "neighbor_rank": neighbor_rank,
+    }
+    metadata = {
+        "adapter": "top_k_nearest_points_2d_partner_columns",
+        "partner": runtime["name"],
+        "input_contract": "caller_supplied_partner_device_point_columns",
+        "partner_reference_contract": "generic_exact_top_k_nearest_points_2d",
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "query_count": query_count,
+        "candidate_count": candidate_count,
+        "k": k,
+        "tie_break": "distance_then_candidate_id",
+        "v2_5_partner_continuation_operation": (
+            "grouped_topk_f64" if runtime["name"] in {"triton", "numba"} else None
+        ),
+        "v2_5_triton_adapter_kernel": (
+            topk_result["adapter_kernel"] if runtime["name"] == "triton" else None
+        ),
+        "v2_5_triton_score_materialization": (
+            topk_result["score_materialization"] if runtime["name"] == "triton" else None
+        ),
+        "v2_5_triton_preview_kernel_used": runtime["name"] == "triton",
+        "v2_5_triton_preview_kernel_status": (
+            "preview_not_promoted" if runtime["name"] == "triton" else None
+        ),
+        **(numba_topk_metadata if runtime["name"] == "numba" else {}),
+        "app_row_materialization": "caller_optional",
+        **default_partner_claim_boundary_metadata(),
+        "direct_device_handoff_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "v2_0_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+    }
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def radius_graph_components_2d_partner_columns(
+    point_columns: dict[str, object],
+    *,
+    radius: float,
+    min_neighbors: int,
+    partner: str = "torch",
+    return_metadata: bool = False,
+):
+    """Label radius-graph core components over generic point columns."""
+    radius = float(radius)
+    min_neighbors = int(min_neighbors)
+    if radius < 0:
+        raise ValueError("radius must be non-negative")
+    if min_neighbors < 1:
+        raise ValueError("min_neighbors must be at least 1")
+    runtime = _partner_module(partner)
+    point_count = _column_length(point_columns, "ids")
+    if point_count <= 0:
+        raise ValueError("radius graph components requires non-empty point columns")
+
+    if runtime["name"] == "torch":
+        torch = runtime["module"]
+        x = point_columns["x"].to(torch.float64)
+        y = point_columns["y"].to(torch.float64)
+        dx = x.reshape(-1, 1) - x.reshape(1, -1)
+        dy = y.reshape(-1, 1) - y.reshape(1, -1)
+        within = (dx * dx + dy * dy).le(radius * radius)
+        neighbor_counts = torch.sum(within.to(torch.int64), dim=1)
+        is_core = neighbor_counts.ge(min_neighbors)
+        labels = torch.arange(point_count, dtype=torch.int64, device=x.device)
+        active = within & is_core.reshape(-1, 1) & is_core.reshape(1, -1)
+        for _ in range(point_count):
+            candidate = torch.where(active, labels.reshape(1, -1), torch.full_like(active.to(torch.int64), point_count))
+            new_labels = torch.minimum(labels, torch.min(candidate, dim=1).values)
+            if bool(torch.all(new_labels == labels).item()):
+                break
+            labels = new_labels
+        core_labels = torch.where(is_core, labels, torch.full_like(labels, -1))
+        border_candidates = torch.where(
+            within & is_core.reshape(1, -1),
+            labels.reshape(1, -1),
+            torch.full_like(within.to(torch.int64), point_count),
+        )
+        border_labels = torch.min(border_candidates, dim=1).values
+        component_labels = torch.where(is_core, core_labels, torch.where(border_labels < point_count, border_labels, torch.full_like(labels, -1)))
+        unique_labels = torch.unique(component_labels[component_labels >= 0])
+        dense = torch.full_like(component_labels, -1)
+        for index, label in enumerate(unique_labels.detach().cpu().tolist(), start=1):
+            dense = torch.where(component_labels == int(label), torch.full_like(dense, index), dense)
+        core_u32 = is_core.to(torch.uint32)
+        counts_u32 = neighbor_counts.to(torch.uint32)
+    elif runtime["name"] == "cupy":
+        cupy = runtime["module"]
+        x = point_columns["x"].astype(cupy.float64, copy=False)
+        y = point_columns["y"].astype(cupy.float64, copy=False)
+        dx = x.reshape(-1, 1) - x.reshape(1, -1)
+        dy = y.reshape(-1, 1) - y.reshape(1, -1)
+        within = (dx * dx + dy * dy) <= (radius * radius)
+        neighbor_counts = cupy.sum(within.astype(cupy.int64, copy=False), axis=1)
+        is_core = neighbor_counts >= min_neighbors
+        labels = cupy.arange(point_count, dtype=cupy.int64)
+        active = within & is_core.reshape(-1, 1) & is_core.reshape(1, -1)
+        sentinel = cupy.asarray(point_count, dtype=cupy.int64)
+        for _ in range(point_count):
+            candidate = cupy.where(active, labels.reshape(1, -1), sentinel)
+            new_labels = cupy.minimum(labels, cupy.min(candidate, axis=1))
+            if bool(cupy.all(new_labels == labels).item()):
+                break
+            labels = new_labels
+        core_labels = cupy.where(is_core, labels, cupy.full_like(labels, -1))
+        border_candidates = cupy.where(
+            within & is_core.reshape(1, -1),
+            labels.reshape(1, -1),
+            sentinel,
+        )
+        border_labels = cupy.min(border_candidates, axis=1)
+        component_labels = cupy.where(
+            is_core,
+            core_labels,
+            cupy.where(border_labels < point_count, border_labels, cupy.full_like(labels, -1)),
+        )
+        unique_labels = cupy.unique(component_labels[component_labels >= 0])
+        dense = cupy.full_like(component_labels, -1)
+        for index, label in enumerate(cupy.asnumpy(unique_labels).tolist(), start=1):
+            dense = cupy.where(component_labels == int(label), cupy.full_like(dense, index), dense)
+        core_u32 = is_core.astype(cupy.uint32, copy=False)
+        counts_u32 = neighbor_counts.astype(cupy.uint32, copy=False)
+    else:
+        raise ValueError("partner must be 'torch' or 'cupy'")
+
+    runtime["sync"]()
+    columns = {
+        "point_ids": point_columns["ids"],
+        "component_labels": dense,
+        "is_core": core_u32,
+        "neighbor_counts": counts_u32,
+    }
+    metadata = {
+        "adapter": "radius_graph_components_2d_partner_columns",
+        "partner": runtime["name"],
+        "input_contract": "caller_supplied_partner_device_point_columns",
+        "partner_reference_contract": "generic_radius_graph_component_labels_2d",
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "point_count": point_count,
+        "radius": radius,
+        "min_neighbors": min_neighbors,
+        "component_label_policy": "dense_positive_labels_by_lowest_component_seed_noise_minus_one",
+        "direct_device_handoff_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "v2_0_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+    }
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def _partner_float_column_to_host(column, *, partner: str) -> list[float]:
+    if partner in ("triton", "torch"):
+        return [float(item) for item in column.detach().cpu().tolist()]
+    if partner == "cupy":
+        import cupy
+
+        return [float(item) for item in cupy.asnumpy(column).tolist()]
+    raise ValueError("partner must be 'torch' or 'cupy'")
+
+
+def radius_graph_components_2d_spatial_bucket_partner_columns(
+    point_columns: dict[str, object],
+    *,
+    radius: float,
+    min_neighbors: int,
+    partner: str = "torch",
+    return_metadata: bool = False,
+):
+    """Label radius-graph components with a generic sparse spatial-bucket index."""
+    import math
+
+    radius = float(radius)
+    min_neighbors = int(min_neighbors)
+    if radius < 0:
+        raise ValueError("radius must be non-negative")
+    if min_neighbors < 1:
+        raise ValueError("min_neighbors must be at least 1")
+    runtime = _partner_module(partner)
+    point_count = _column_length(point_columns, "ids")
+    if point_count <= 0:
+        raise ValueError("radius graph components requires non-empty point columns")
+
+    ids = runtime["to_host"](point_columns["ids"])
+    xs = _partner_float_column_to_host(point_columns["x"], partner=runtime["name"])
+    ys = _partner_float_column_to_host(point_columns["y"], partner=runtime["name"])
+    cell_size = radius if radius > 0.0 else 1.0
+    radius_sq = radius * radius
+
+    cells: dict[tuple[int, int], list[int]] = {}
+    for index, (x, y) in enumerate(zip(xs, ys)):
+        key = (math.floor(x / cell_size), math.floor(y / cell_size))
+        cells.setdefault(key, []).append(index)
+
+    neighbor_counts = [1 for _ in range(point_count)]
+    within_pairs: list[tuple[int, int]] = []
+    neighbor_offsets = tuple((dx, dy) for dx in (-1, 0, 1) for dy in (-1, 0, 1))
+    for cell_key, left_indices in cells.items():
+        cx, cy = cell_key
+        for ox, oy in neighbor_offsets:
+            other_key = (cx + ox, cy + oy)
+            if other_key not in cells or other_key < cell_key:
+                continue
+            right_indices = cells[other_key]
+            for left_offset, left in enumerate(left_indices):
+                start = left_offset + 1 if other_key == cell_key else 0
+                for right in right_indices[start:]:
+                    dx = xs[left] - xs[right]
+                    dy = ys[left] - ys[right]
+                    if dx * dx + dy * dy <= radius_sq:
+                        neighbor_counts[left] += 1
+                        neighbor_counts[right] += 1
+                        within_pairs.append((left, right))
+
+    is_core_host = [count >= min_neighbors for count in neighbor_counts]
+    parent = list(range(point_count))
+
+    def find(item: int) -> int:
+        while parent[item] != item:
+            parent[item] = parent[parent[item]]
+            item = parent[item]
+        return item
+
+    def union(left: int, right: int) -> None:
+        left_root = find(left)
+        right_root = find(right)
+        if left_root == right_root:
+            return
+        if left_root < right_root:
+            parent[right_root] = left_root
+        else:
+            parent[left_root] = right_root
+
+    for left, right in within_pairs:
+        if is_core_host[left] and is_core_host[right]:
+            union(left, right)
+
+    component_roots: list[int] = [-1 for _ in range(point_count)]
+    for index, is_core in enumerate(is_core_host):
+        if is_core:
+            component_roots[index] = find(index)
+    for left, right in within_pairs:
+        if component_roots[left] == -1 and is_core_host[right]:
+            component_roots[left] = find(right)
+        if component_roots[right] == -1 and is_core_host[left]:
+            component_roots[right] = find(left)
+
+    dense_by_root: dict[int, int] = {}
+    next_label = 1
+    dense_labels: list[int] = []
+    for root in component_roots:
+        if root < 0:
+            dense_labels.append(-1)
+            continue
+        if root not in dense_by_root:
+            dense_by_root[root] = next_label
+            next_label += 1
+        dense_labels.append(dense_by_root[root])
+
+    device = runtime["device"]
+    label_dtype = runtime["module"].int64
+    columns = {
+        "point_ids": point_columns["ids"],
+        "component_labels": runtime["tensor"](dense_labels, label_dtype, device),
+        "is_core": runtime["tensor"]([1 if item else 0 for item in is_core_host], runtime["uint32"], device),
+        "neighbor_counts": runtime["tensor"](neighbor_counts, runtime["uint32"], device),
+    }
+    metadata = {
+        "adapter": "radius_graph_components_2d_spatial_bucket_partner_columns",
+        "partner": runtime["name"],
+        "input_contract": "caller_supplied_partner_device_point_columns",
+        "partner_reference_contract": "generic_spatial_bucket_radius_graph_component_labels_2d",
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "point_count": point_count,
+        "radius": radius,
+        "min_neighbors": min_neighbors,
+        "cell_count": len(cells),
+        "candidate_edge_count": len(within_pairs),
+        "component_label_policy": "dense_positive_labels_by_lowest_component_seed_noise_minus_one",
+        "host_bucket_index_used": True,
+        "direct_device_handoff_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "v2_0_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+    }
+    runtime["sync"]()
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def radius_graph_components_3d_spatial_bucket_partner_columns(
+    point_columns: dict[str, object],
+    *,
+    radius: float,
+    min_neighbors: int,
+    partner: str = "torch",
+    return_metadata: bool = False,
+):
+    """Label 3-D radius-graph components with a generic sparse spatial-bucket index."""
+    import math
+
+    radius = float(radius)
+    min_neighbors = int(min_neighbors)
+    if radius < 0:
+        raise ValueError("radius must be non-negative")
+    if min_neighbors < 1:
+        raise ValueError("min_neighbors must be at least 1")
+    if "z" not in point_columns:
+        raise ValueError("radius_graph_components_3d_spatial_bucket_partner_columns requires z point columns")
+    runtime = _partner_module(partner)
+    point_count = _column_length(point_columns, "ids")
+    if point_count <= 0:
+        raise ValueError("radius graph components requires non-empty point columns")
+
+    xs = _partner_float_column_to_host(point_columns["x"], partner=runtime["name"])
+    ys = _partner_float_column_to_host(point_columns["y"], partner=runtime["name"])
+    zs = _partner_float_column_to_host(point_columns["z"], partner=runtime["name"])
+    cell_size = radius if radius > 0.0 else 1.0
+    radius_sq = radius * radius
+
+    cells: dict[tuple[int, int, int], list[int]] = {}
+    for index, (x, y, z) in enumerate(zip(xs, ys, zs)):
+        key = (math.floor(x / cell_size), math.floor(y / cell_size), math.floor(z / cell_size))
+        cells.setdefault(key, []).append(index)
+
+    neighbor_counts = [1 for _ in range(point_count)]
+    within_pairs: list[tuple[int, int]] = []
+    neighbor_offsets = tuple((dx, dy, dz) for dx in (-1, 0, 1) for dy in (-1, 0, 1) for dz in (-1, 0, 1))
+    for cell_key, left_indices in cells.items():
+        cx, cy, cz = cell_key
+        for ox, oy, oz in neighbor_offsets:
+            other_key = (cx + ox, cy + oy, cz + oz)
+            if other_key not in cells or other_key < cell_key:
+                continue
+            right_indices = cells[other_key]
+            for left_offset, left in enumerate(left_indices):
+                start = left_offset + 1 if other_key == cell_key else 0
+                for right in right_indices[start:]:
+                    dx = xs[left] - xs[right]
+                    dy = ys[left] - ys[right]
+                    dz = zs[left] - zs[right]
+                    if dx * dx + dy * dy + dz * dz <= radius_sq:
+                        neighbor_counts[left] += 1
+                        neighbor_counts[right] += 1
+                        within_pairs.append((left, right))
+
+    is_core_host = [count >= min_neighbors for count in neighbor_counts]
+    parent = list(range(point_count))
+
+    def find(item: int) -> int:
+        while parent[item] != item:
+            parent[item] = parent[parent[item]]
+            item = parent[item]
+        return item
+
+    def union(left: int, right: int) -> None:
+        left_root = find(left)
+        right_root = find(right)
+        if left_root == right_root:
+            return
+        if left_root < right_root:
+            parent[right_root] = left_root
+        else:
+            parent[left_root] = right_root
+
+    for left, right in within_pairs:
+        if is_core_host[left] and is_core_host[right]:
+            union(left, right)
+
+    component_roots: list[int] = [-1 for _ in range(point_count)]
+    for index, is_core in enumerate(is_core_host):
+        if is_core:
+            component_roots[index] = find(index)
+    for left, right in within_pairs:
+        if component_roots[left] == -1 and is_core_host[right]:
+            component_roots[left] = find(right)
+        if component_roots[right] == -1 and is_core_host[left]:
+            component_roots[right] = find(left)
+
+    dense_by_root: dict[int, int] = {}
+    next_label = 1
+    dense_labels: list[int] = []
+    for root in component_roots:
+        if root < 0:
+            dense_labels.append(-1)
+            continue
+        if root not in dense_by_root:
+            dense_by_root[root] = next_label
+            next_label += 1
+        dense_labels.append(dense_by_root[root])
+
+    device = runtime["device"]
+    label_dtype = runtime["module"].int64
+    columns = {
+        "point_ids": point_columns["ids"],
+        "component_labels": runtime["tensor"](dense_labels, label_dtype, device),
+        "is_core": runtime["tensor"]([1 if item else 0 for item in is_core_host], runtime["uint32"], device),
+        "neighbor_counts": runtime["tensor"](neighbor_counts, runtime["uint32"], device),
+    }
+    metadata = {
+        "adapter": "radius_graph_components_3d_spatial_bucket_partner_columns",
+        "partner": runtime["name"],
+        "input_contract": "caller_supplied_partner_device_point_columns_3d",
+        "partner_reference_contract": "generic_spatial_bucket_radius_graph_component_labels_3d",
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "point_count": point_count,
+        "radius": radius,
+        "min_neighbors": min_neighbors,
+        "cell_count": len(cells),
+        "candidate_edge_count": len(within_pairs),
+        "component_label_policy": "dense_positive_labels_by_lowest_component_seed_noise_minus_one",
+        "host_bucket_index_used": True,
+        "direct_device_handoff_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "v2_0_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+    }
+    runtime["sync"]()
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def _cupy_radius_graph_components_3d_grid_kernels(cupy):
+    global _CUPY_RADIUS_GRAPH_COMPONENTS_3D_GRID_KERNELS
+    if _CUPY_RADIUS_GRAPH_COMPONENTS_3D_GRID_KERNELS is None:
+        source = r'''
+        extern "C" __device__
+        int lower_bound_cell(const long long* values, const int count, const long long key) {
+            int left = 0;
+            int right = count;
+            while (left < right) {
+                const int mid = left + ((right - left) >> 1);
+                if (values[mid] < key) {
+                    left = mid + 1;
+                } else {
+                    right = mid;
+                }
+            }
+            return left;
+        }
+
+        extern "C" __device__
+        int find_root_readonly(const int* parent, int item) {
+            int root = item;
+            int guard = 0;
+            while (parent[root] != root && guard < 4096) {
+                root = parent[root];
+                ++guard;
+            }
+            return root;
+        }
+
+        extern "C" __device__
+        void union_min_root(int* parent, int left, int right) {
+            while (true) {
+                int left_root = find_root_readonly(parent, left);
+                int right_root = find_root_readonly(parent, right);
+                if (left_root == right_root) {
+                    return;
+                }
+                const int high = left_root > right_root ? left_root : right_root;
+                const int low = left_root > right_root ? right_root : left_root;
+                const int old = atomicMin(parent + high, low);
+                if (old == high) {
+                    return;
+                }
+            }
+        }
+
+        extern "C" __device__
+        long long make_cell_id(const int gx, const int gy, const int gz, const int dim_x, const int dim_y) {
+            return (long long)gx + (long long)gy * (long long)dim_x + (long long)gz * (long long)dim_x * (long long)dim_y;
+        }
+
+        extern "C" __global__
+        void radius_graph_3d_count_kernel(
+            const double* x,
+            const double* y,
+            const double* z,
+            const int point_count,
+            const long long* unique_cells,
+            const int* cell_starts,
+            const int* cell_counts,
+            const int unique_cell_count,
+            const int* sorted_point_indices,
+            const double min_x,
+            const double min_y,
+            const double min_z,
+            const double cell_size,
+            const int dim_x,
+            const int dim_y,
+            const int dim_z,
+            const double radius_sq,
+            const int min_neighbors,
+            unsigned int* neighbor_counts,
+            unsigned int* core_flags
+        ) {
+            const int point = blockDim.x * blockIdx.x + threadIdx.x;
+            if (point >= point_count) {
+                return;
+            }
+            const int gx = (int)floor((x[point] - min_x) / cell_size);
+            const int gy = (int)floor((y[point] - min_y) / cell_size);
+            const int gz = (int)floor((z[point] - min_z) / cell_size);
+            unsigned int count = 0;
+            for (int oz = -1; oz <= 1; ++oz) {
+                const int nz = gz + oz;
+                if (nz < 0 || nz >= dim_z) continue;
+                for (int oy = -1; oy <= 1; ++oy) {
+                    const int ny = gy + oy;
+                    if (ny < 0 || ny >= dim_y) continue;
+                    for (int ox = -1; ox <= 1; ++ox) {
+                        const int nx = gx + ox;
+                        if (nx < 0 || nx >= dim_x) continue;
+                        const long long cell_id = make_cell_id(nx, ny, nz, dim_x, dim_y);
+                        const int pos = lower_bound_cell(unique_cells, unique_cell_count, cell_id);
+                        if (pos >= unique_cell_count || unique_cells[pos] != cell_id) continue;
+                        const int start = cell_starts[pos];
+                        const int end = start + cell_counts[pos];
+                        for (int cursor = start; cursor < end; ++cursor) {
+                            const int other = sorted_point_indices[cursor];
+                            const double dx = x[point] - x[other];
+                            const double dy = y[point] - y[other];
+                            const double dz = z[point] - z[other];
+                            if (dx * dx + dy * dy + dz * dz <= radius_sq) {
+                                ++count;
+                            }
+                        }
+                    }
+                }
+            }
+            neighbor_counts[point] = count;
+            core_flags[point] = count >= (unsigned int)min_neighbors ? 1u : 0u;
+        }
+
+        extern "C" __global__
+        void radius_graph_3d_union_kernel(
+            const double* x,
+            const double* y,
+            const double* z,
+            const int point_count,
+            const long long* unique_cells,
+            const int* cell_starts,
+            const int* cell_counts,
+            const int unique_cell_count,
+            const int* sorted_point_indices,
+            const double min_x,
+            const double min_y,
+            const double min_z,
+            const double cell_size,
+            const int dim_x,
+            const int dim_y,
+            const int dim_z,
+            const double radius_sq,
+            const unsigned int* core_flags,
+            int* parent
+        ) {
+            const int point = blockDim.x * blockIdx.x + threadIdx.x;
+            if (point >= point_count || core_flags[point] == 0u) {
+                return;
+            }
+            const int gx = (int)floor((x[point] - min_x) / cell_size);
+            const int gy = (int)floor((y[point] - min_y) / cell_size);
+            const int gz = (int)floor((z[point] - min_z) / cell_size);
+            for (int oz = -1; oz <= 1; ++oz) {
+                const int nz = gz + oz;
+                if (nz < 0 || nz >= dim_z) continue;
+                for (int oy = -1; oy <= 1; ++oy) {
+                    const int ny = gy + oy;
+                    if (ny < 0 || ny >= dim_y) continue;
+                    for (int ox = -1; ox <= 1; ++ox) {
+                        const int nx = gx + ox;
+                        if (nx < 0 || nx >= dim_x) continue;
+                        const long long cell_id = make_cell_id(nx, ny, nz, dim_x, dim_y);
+                        const int pos = lower_bound_cell(unique_cells, unique_cell_count, cell_id);
+                        if (pos >= unique_cell_count || unique_cells[pos] != cell_id) continue;
+                        const int start = cell_starts[pos];
+                        const int end = start + cell_counts[pos];
+                        for (int cursor = start; cursor < end; ++cursor) {
+                            const int other = sorted_point_indices[cursor];
+                            if (other <= point || core_flags[other] == 0u) continue;
+                            const double dx = x[point] - x[other];
+                            const double dy = y[point] - y[other];
+                            const double dz = z[point] - z[other];
+                            if (dx * dx + dy * dy + dz * dz <= radius_sq) {
+                                union_min_root(parent, point, other);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        extern "C" __global__
+        void radius_graph_3d_label_kernel(
+            const double* x,
+            const double* y,
+            const double* z,
+            const int point_count,
+            const long long* unique_cells,
+            const int* cell_starts,
+            const int* cell_counts,
+            const int unique_cell_count,
+            const int* sorted_point_indices,
+            const double min_x,
+            const double min_y,
+            const double min_z,
+            const double cell_size,
+            const int dim_x,
+            const int dim_y,
+            const int dim_z,
+            const double radius_sq,
+            const unsigned int* core_flags,
+            int* parent,
+            long long* labels
+        ) {
+            const int point = blockDim.x * blockIdx.x + threadIdx.x;
+            if (point >= point_count) {
+                return;
+            }
+            if (core_flags[point] != 0u) {
+                labels[point] = (long long)find_root_readonly(parent, point) + 1ll;
+                return;
+            }
+            const int gx = (int)floor((x[point] - min_x) / cell_size);
+            const int gy = (int)floor((y[point] - min_y) / cell_size);
+            const int gz = (int)floor((z[point] - min_z) / cell_size);
+            int best_root = -1;
+            for (int oz = -1; oz <= 1; ++oz) {
+                const int nz = gz + oz;
+                if (nz < 0 || nz >= dim_z) continue;
+                for (int oy = -1; oy <= 1; ++oy) {
+                    const int ny = gy + oy;
+                    if (ny < 0 || ny >= dim_y) continue;
+                    for (int ox = -1; ox <= 1; ++ox) {
+                        const int nx = gx + ox;
+                        if (nx < 0 || nx >= dim_x) continue;
+                        const long long cell_id = make_cell_id(nx, ny, nz, dim_x, dim_y);
+                        const int pos = lower_bound_cell(unique_cells, unique_cell_count, cell_id);
+                        if (pos >= unique_cell_count || unique_cells[pos] != cell_id) continue;
+                        const int start = cell_starts[pos];
+                        const int end = start + cell_counts[pos];
+                        for (int cursor = start; cursor < end; ++cursor) {
+                            const int other = sorted_point_indices[cursor];
+                            if (core_flags[other] == 0u) continue;
+                            const double dx = x[point] - x[other];
+                            const double dy = y[point] - y[other];
+                            const double dz = z[point] - z[other];
+                            if (dx * dx + dy * dy + dz * dz <= radius_sq) {
+                                const int root = find_root_readonly(parent, other);
+                                if (best_root < 0 || root < best_root) {
+                                    best_root = root;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            labels[point] = best_root < 0 ? -1ll : (long long)best_root + 1ll;
+        }
+        '''
+        _CUPY_RADIUS_GRAPH_COMPONENTS_3D_GRID_KERNELS = (
+            cupy.RawKernel(source, "radius_graph_3d_count_kernel"),
+            cupy.RawKernel(source, "radius_graph_3d_union_kernel"),
+            cupy.RawKernel(source, "radius_graph_3d_label_kernel"),
+        )
+    return _CUPY_RADIUS_GRAPH_COMPONENTS_3D_GRID_KERNELS
+
+
+def _numba_radius_graph_components_3d_grid_kernels(cuda):
+    global _NUMBA_RADIUS_GRAPH_COMPONENTS_3D_GRID_KERNELS
+    if _NUMBA_RADIUS_GRAPH_COMPONENTS_3D_GRID_KERNELS is None:
+
+        @cuda.jit(device=True)
+        def lower_bound_cell_numba(values, count, key):
+            left = 0
+            right = count
+            while left < right:
+                mid = left + ((right - left) >> 1)
+                if values[mid] < key:
+                    left = mid + 1
+                else:
+                    right = mid
+            return left
+
+        @cuda.jit(device=True)
+        def find_root_readonly_numba(parent, item):
+            root = item
+            guard = 0
+            while parent[root] != root and guard < 4096:
+                root = parent[root]
+                guard += 1
+            return root
+
+        @cuda.jit(device=True)
+        def union_min_root_numba(parent, left, right):
+            while True:
+                left_root = find_root_readonly_numba(parent, left)
+                right_root = find_root_readonly_numba(parent, right)
+                if left_root == right_root:
+                    return
+                high = left_root
+                low = right_root
+                if right_root > left_root:
+                    high = right_root
+                    low = left_root
+                old = cuda.atomic.min(parent, high, low)
+                if old == high:
+                    return
+
+        @cuda.jit(device=True)
+        def make_cell_id_numba(gx, gy, gz, dim_x, dim_y):
+            return gx + gy * dim_x + gz * dim_x * dim_y
+
+        @cuda.jit
+        def radius_graph_3d_count_kernel(
+            x,
+            y,
+            z,
+            point_count,
+            unique_cells,
+            cell_starts,
+            cell_counts,
+            unique_cell_count,
+            sorted_point_indices,
+            min_x,
+            min_y,
+            min_z,
+            cell_size,
+            dim_x,
+            dim_y,
+            dim_z,
+            radius_sq,
+            min_neighbors,
+            neighbor_counts,
+            core_flags,
+        ):
+            point = cuda.grid(1)
+            if point >= point_count:
+                return
+            gx = int(math.floor((x[point] - min_x) / cell_size))
+            gy = int(math.floor((y[point] - min_y) / cell_size))
+            gz = int(math.floor((z[point] - min_z) / cell_size))
+            count = 0
+            for oz in range(-1, 2):
+                nz = gz + oz
+                if nz < 0 or nz >= dim_z:
+                    continue
+                for oy in range(-1, 2):
+                    ny = gy + oy
+                    if ny < 0 or ny >= dim_y:
+                        continue
+                    for ox in range(-1, 2):
+                        nx = gx + ox
+                        if nx < 0 or nx >= dim_x:
+                            continue
+                        cell_id = make_cell_id_numba(nx, ny, nz, dim_x, dim_y)
+                        pos = lower_bound_cell_numba(unique_cells, unique_cell_count, cell_id)
+                        if pos >= unique_cell_count or unique_cells[pos] != cell_id:
+                            continue
+                        start = cell_starts[pos]
+                        end = start + cell_counts[pos]
+                        for cursor in range(start, end):
+                            other = sorted_point_indices[cursor]
+                            dx = x[point] - x[other]
+                            dy = y[point] - y[other]
+                            dz = z[point] - z[other]
+                            if dx * dx + dy * dy + dz * dz <= radius_sq:
+                                count += 1
+            neighbor_counts[point] = count
+            core_flags[point] = 1 if count >= min_neighbors else 0
+
+        @cuda.jit
+        def radius_graph_3d_union_kernel(
+            x,
+            y,
+            z,
+            point_count,
+            unique_cells,
+            cell_starts,
+            cell_counts,
+            unique_cell_count,
+            sorted_point_indices,
+            min_x,
+            min_y,
+            min_z,
+            cell_size,
+            dim_x,
+            dim_y,
+            dim_z,
+            radius_sq,
+            core_flags,
+            parent,
+        ):
+            point = cuda.grid(1)
+            if point >= point_count or core_flags[point] == 0:
+                return
+            gx = int(math.floor((x[point] - min_x) / cell_size))
+            gy = int(math.floor((y[point] - min_y) / cell_size))
+            gz = int(math.floor((z[point] - min_z) / cell_size))
+            for oz in range(-1, 2):
+                nz = gz + oz
+                if nz < 0 or nz >= dim_z:
+                    continue
+                for oy in range(-1, 2):
+                    ny = gy + oy
+                    if ny < 0 or ny >= dim_y:
+                        continue
+                    for ox in range(-1, 2):
+                        nx = gx + ox
+                        if nx < 0 or nx >= dim_x:
+                            continue
+                        cell_id = make_cell_id_numba(nx, ny, nz, dim_x, dim_y)
+                        pos = lower_bound_cell_numba(unique_cells, unique_cell_count, cell_id)
+                        if pos >= unique_cell_count or unique_cells[pos] != cell_id:
+                            continue
+                        start = cell_starts[pos]
+                        end = start + cell_counts[pos]
+                        for cursor in range(start, end):
+                            other = sorted_point_indices[cursor]
+                            if other <= point or core_flags[other] == 0:
+                                continue
+                            dx = x[point] - x[other]
+                            dy = y[point] - y[other]
+                            dz = z[point] - z[other]
+                            if dx * dx + dy * dy + dz * dz <= radius_sq:
+                                union_min_root_numba(parent, point, other)
+
+        @cuda.jit
+        def radius_graph_3d_label_kernel(
+            x,
+            y,
+            z,
+            point_count,
+            unique_cells,
+            cell_starts,
+            cell_counts,
+            unique_cell_count,
+            sorted_point_indices,
+            min_x,
+            min_y,
+            min_z,
+            cell_size,
+            dim_x,
+            dim_y,
+            dim_z,
+            radius_sq,
+            core_flags,
+            parent,
+            labels,
+        ):
+            point = cuda.grid(1)
+            if point >= point_count:
+                return
+            if core_flags[point] != 0:
+                labels[point] = find_root_readonly_numba(parent, point) + 1
+                return
+            gx = int(math.floor((x[point] - min_x) / cell_size))
+            gy = int(math.floor((y[point] - min_y) / cell_size))
+            gz = int(math.floor((z[point] - min_z) / cell_size))
+            best_root = -1
+            for oz in range(-1, 2):
+                nz = gz + oz
+                if nz < 0 or nz >= dim_z:
+                    continue
+                for oy in range(-1, 2):
+                    ny = gy + oy
+                    if ny < 0 or ny >= dim_y:
+                        continue
+                    for ox in range(-1, 2):
+                        nx = gx + ox
+                        if nx < 0 or nx >= dim_x:
+                            continue
+                        cell_id = make_cell_id_numba(nx, ny, nz, dim_x, dim_y)
+                        pos = lower_bound_cell_numba(unique_cells, unique_cell_count, cell_id)
+                        if pos >= unique_cell_count or unique_cells[pos] != cell_id:
+                            continue
+                        start = cell_starts[pos]
+                        end = start + cell_counts[pos]
+                        for cursor in range(start, end):
+                            other = sorted_point_indices[cursor]
+                            if core_flags[other] == 0:
+                                continue
+                            dx = x[point] - x[other]
+                            dy = y[point] - y[other]
+                            dz = z[point] - z[other]
+                            if dx * dx + dy * dy + dz * dz <= radius_sq:
+                                root = find_root_readonly_numba(parent, other)
+                                if best_root < 0 or root < best_root:
+                                    best_root = root
+            labels[point] = -1 if best_root < 0 else best_root + 1
+
+        _NUMBA_RADIUS_GRAPH_COMPONENTS_3D_GRID_KERNELS = (
+            radius_graph_3d_count_kernel,
+            radius_graph_3d_union_kernel,
+            radius_graph_3d_label_kernel,
+        )
+    return _NUMBA_RADIUS_GRAPH_COMPONENTS_3D_GRID_KERNELS
+
+
+def _numba_radius_graph_components_3d_border_candidate_label_kernel(cuda):
+    global _NUMBA_RADIUS_GRAPH_COMPONENTS_3D_BORDER_CANDIDATE_LABEL_KERNEL
+    if _NUMBA_RADIUS_GRAPH_COMPONENTS_3D_BORDER_CANDIDATE_LABEL_KERNEL is None:
+
+        @cuda.jit(device=True)
+        def find_grouped_stream_root_readonly(parent, item):
+            root = item
+            guard = 0
+            while parent[root] != root and guard < 4096:
+                root = parent[root]
+                guard += 1
+            return root
+
+        @cuda.jit
+        def radius_graph_3d_grouped_stream_border_candidate_label_kernel(
+            point_count,
+            core_flags,
+            parent,
+            border_core_candidate,
+            labels,
+        ):
+            point = cuda.grid(1)
+            if point >= point_count:
+                return
+            if core_flags[point] != 0:
+                labels[point] = find_grouped_stream_root_readonly(parent, point) + 1
+                return
+            candidate = border_core_candidate[point]
+            if candidate < 0 or candidate >= point_count or core_flags[candidate] == 0:
+                labels[point] = -1
+                return
+            labels[point] = find_grouped_stream_root_readonly(parent, candidate) + 1
+
+        _NUMBA_RADIUS_GRAPH_COMPONENTS_3D_BORDER_CANDIDATE_LABEL_KERNEL = (
+            radius_graph_3d_grouped_stream_border_candidate_label_kernel
+        )
+    return _NUMBA_RADIUS_GRAPH_COMPONENTS_3D_BORDER_CANDIDATE_LABEL_KERNEL
+
+
+def _numba_i32_parent_border_init_kernel(cuda):
+    global _NUMBA_I32_PARENT_BORDER_INIT_KERNEL
+    if _NUMBA_I32_PARENT_BORDER_INIT_KERNEL is None:
+
+        @cuda.jit
+        def init_kernel(parent, border, point_count, border_value, write_border):
+            point = cuda.grid(1)
+            if point >= point_count:
+                return
+            parent[point] = point
+            if write_border:
+                border[point] = border_value
+
+        _NUMBA_I32_PARENT_BORDER_INIT_KERNEL = init_kernel
+    return _NUMBA_I32_PARENT_BORDER_INIT_KERNEL
+
+
+_NUMBA_I32_FILL_KERNEL = None
+
+
+def _numba_i32_fill_kernel(cuda):
+    global _NUMBA_I32_FILL_KERNEL
+    if _NUMBA_I32_FILL_KERNEL is None:
+
+        @cuda.jit
+        def fill_kernel(values, value_count, fill_value):
+            index = cuda.grid(1)
+            if index < value_count:
+                values[index] = fill_value
+
+        _NUMBA_I32_FILL_KERNEL = fill_kernel
+    return _NUMBA_I32_FILL_KERNEL
+
+
+def _numba_i64_zero_kernel(cuda):
+    global _NUMBA_I64_ZERO_KERNEL
+    if _NUMBA_I64_ZERO_KERNEL is None:
+
+        @cuda.jit
+        def zero_kernel(values, value_count):
+            index = cuda.grid(1)
+            if index < value_count:
+                values[index] = 0
+
+        _NUMBA_I64_ZERO_KERNEL = zero_kernel
+    return _NUMBA_I64_ZERO_KERNEL
+
+
+def _numba_i64_signature_workspace_zero_kernel(cuda):
+    global _NUMBA_I64_SIGNATURE_WORKSPACE_ZERO_KERNEL
+    if _NUMBA_I64_SIGNATURE_WORKSPACE_ZERO_KERNEL is None:
+
+        @cuda.jit
+        def zero_signature_workspace_kernel(
+            label_counts,
+            label_count,
+            flag_true_count,
+            negative_label_count,
+        ):
+            index = cuda.grid(1)
+            if index < label_count:
+                label_counts[index] = 0
+            if index == 0:
+                flag_true_count[0] = 0
+                negative_label_count[0] = 0
+
+        _NUMBA_I64_SIGNATURE_WORKSPACE_ZERO_KERNEL = zero_signature_workspace_kernel
+    return _NUMBA_I64_SIGNATURE_WORKSPACE_ZERO_KERNEL
+
+
+def _numba_radius_graph_component_signature_kernel(cuda):
+    global _NUMBA_RADIUS_GRAPH_COMPONENT_SIGNATURE_KERNEL
+    if _NUMBA_RADIUS_GRAPH_COMPONENT_SIGNATURE_KERNEL is None:
+
+        @cuda.jit(device=True)
+        def find_signature_root(parent, item):
+            root = item
+            guard = 0
+            while parent[root] != root and guard < 4096:
+                root = parent[root]
+                guard += 1
+            return root
+
+        @cuda.jit
+        def signature_kernel(
+            point_count,
+            core_flags,
+            parent,
+            border_core_candidate,
+            label_counts,
+            flag_true_count,
+            negative_label_count,
+        ):
+            point = cuda.grid(1)
+            if point >= point_count:
+                return
+            if core_flags[point] != 0:
+                root = find_signature_root(parent, point)
+                cuda.atomic.add(label_counts, root + 1, 1)
+                cuda.atomic.add(flag_true_count, 0, 1)
+                return
+            candidate = border_core_candidate[point]
+            if candidate < 0 or candidate >= point_count or core_flags[candidate] == 0:
+                cuda.atomic.add(negative_label_count, 0, 1)
+                return
+            root = find_signature_root(parent, candidate)
+            cuda.atomic.add(label_counts, root + 1, 1)
+
+        _NUMBA_RADIUS_GRAPH_COMPONENT_SIGNATURE_KERNEL = signature_kernel
+    return _NUMBA_RADIUS_GRAPH_COMPONENT_SIGNATURE_KERNEL
+
+
+_CUPY_RADIUS_GRAPH_COMPONENTS_3D_ADJACENCY_KERNELS = None
+
+
+def _cupy_radius_graph_components_3d_adjacency_kernels(cupy):
+    global _CUPY_RADIUS_GRAPH_COMPONENTS_3D_ADJACENCY_KERNELS
+    if _CUPY_RADIUS_GRAPH_COMPONENTS_3D_ADJACENCY_KERNELS is None:
+        source = r'''
+        extern "C" __device__
+        int lower_bound_adj_cell(const long long* values, const int count, const long long key) {
+            int left = 0;
+            int right = count;
+            while (left < right) {
+                const int mid = left + ((right - left) >> 1);
+                if (values[mid] < key) {
+                    left = mid + 1;
+                } else {
+                    right = mid;
+                }
+            }
+            return left;
+        }
+
+        extern "C" __device__
+        int find_adj_root_readonly(const int* parent, int item) {
+            int root = item;
+            int guard = 0;
+            while (parent[root] != root && guard < 4096) {
+                root = parent[root];
+                ++guard;
+            }
+            return root;
+        }
+
+        extern "C" __device__
+        void union_adj_min_root(int* parent, int left, int right) {
+            while (true) {
+                int left_root = find_adj_root_readonly(parent, left);
+                int right_root = find_adj_root_readonly(parent, right);
+                if (left_root == right_root) {
+                    return;
+                }
+                const int high = left_root > right_root ? left_root : right_root;
+                const int low = left_root > right_root ? right_root : left_root;
+                const int old = atomicMin(parent + high, low);
+                if (old == high) {
+                    return;
+                }
+            }
+        }
+
+        extern "C" __device__
+        long long make_adj_cell_id(const int gx, const int gy, const int gz, const int dim_x, const int dim_y) {
+            return (long long)gx + (long long)gy * (long long)dim_x + (long long)gz * (long long)dim_x * (long long)dim_y;
+        }
+
+        extern "C" __global__
+        void radius_graph_3d_write_directed_adjacency_kernel(
+            const double* x,
+            const double* y,
+            const double* z,
+            const int point_count,
+            const long long* unique_cells,
+            const int* cell_starts,
+            const int* cell_counts,
+            const int unique_cell_count,
+            const int* sorted_point_indices,
+            const double min_x,
+            const double min_y,
+            const double min_z,
+            const double cell_size,
+            const int dim_x,
+            const int dim_y,
+            const int dim_z,
+            const double radius_sq,
+            const long long* edge_offsets,
+            int* neighbor_indices
+        ) {
+            const int point = blockDim.x * blockIdx.x + threadIdx.x;
+            if (point >= point_count) {
+                return;
+            }
+            const int gx = (int)floor((x[point] - min_x) / cell_size);
+            const int gy = (int)floor((y[point] - min_y) / cell_size);
+            const int gz = (int)floor((z[point] - min_z) / cell_size);
+            long long cursor_out = edge_offsets[point];
+            for (int oz = -1; oz <= 1; ++oz) {
+                const int nz = gz + oz;
+                if (nz < 0 || nz >= dim_z) continue;
+                for (int oy = -1; oy <= 1; ++oy) {
+                    const int ny = gy + oy;
+                    if (ny < 0 || ny >= dim_y) continue;
+                    for (int ox = -1; ox <= 1; ++ox) {
+                        const int nx = gx + ox;
+                        if (nx < 0 || nx >= dim_x) continue;
+                        const long long cell_id = make_adj_cell_id(nx, ny, nz, dim_x, dim_y);
+                        const int pos = lower_bound_adj_cell(unique_cells, unique_cell_count, cell_id);
+                        if (pos >= unique_cell_count || unique_cells[pos] != cell_id) continue;
+                        const int start = cell_starts[pos];
+                        const int end = start + cell_counts[pos];
+                        for (int scan = start; scan < end; ++scan) {
+                            const int other = sorted_point_indices[scan];
+                            const double dx = x[point] - x[other];
+                            const double dy = y[point] - y[other];
+                            const double dz = z[point] - z[other];
+                            if (dx * dx + dy * dy + dz * dz <= radius_sq) {
+                                neighbor_indices[cursor_out] = other;
+                                ++cursor_out;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        extern "C" __global__
+        void radius_graph_3d_adjacency_union_kernel(
+            const int point_count,
+            const long long* edge_offsets,
+            const int* neighbor_indices,
+            const unsigned int* core_flags,
+            int* parent
+        ) {
+            const int point = blockDim.x * blockIdx.x + threadIdx.x;
+            if (point >= point_count || core_flags[point] == 0u) {
+                return;
+            }
+            const long long start = edge_offsets[point];
+            const long long end = edge_offsets[point + 1];
+            for (long long cursor = start; cursor < end; ++cursor) {
+                const int other = neighbor_indices[cursor];
+                if (other <= point || core_flags[other] == 0u) {
+                    continue;
+                }
+                union_adj_min_root(parent, point, other);
+            }
+        }
+
+        extern "C" __global__
+        void radius_graph_3d_adjacency_label_kernel(
+            const int point_count,
+            const long long* edge_offsets,
+            const int* neighbor_indices,
+            const unsigned int* core_flags,
+            const int* parent,
+            long long* labels
+        ) {
+            const int point = blockDim.x * blockIdx.x + threadIdx.x;
+            if (point >= point_count) {
+                return;
+            }
+            if (core_flags[point] != 0u) {
+                labels[point] = (long long)find_adj_root_readonly(parent, point) + 1ll;
+                return;
+            }
+            int best_root = -1;
+            const long long start = edge_offsets[point];
+            const long long end = edge_offsets[point + 1];
+            for (long long cursor = start; cursor < end; ++cursor) {
+                const int other = neighbor_indices[cursor];
+                if (core_flags[other] == 0u) {
+                    continue;
+                }
+                const int root = find_adj_root_readonly(parent, other);
+                if (best_root < 0 || root < best_root) {
+                    best_root = root;
+                }
+            }
+            labels[point] = best_root < 0 ? -1ll : (long long)best_root + 1ll;
+        }
+        '''
+        _CUPY_RADIUS_GRAPH_COMPONENTS_3D_ADJACENCY_KERNELS = (
+            cupy.RawKernel(source, "radius_graph_3d_write_directed_adjacency_kernel"),
+            cupy.RawKernel(source, "radius_graph_3d_adjacency_union_kernel"),
+            cupy.RawKernel(source, "radius_graph_3d_adjacency_label_kernel"),
+        )
+    return _CUPY_RADIUS_GRAPH_COMPONENTS_3D_ADJACENCY_KERNELS
+
+
+_CUPY_RADIUS_GRAPH_COMPONENTS_3D_CHUNKED_ADJACENCY_KERNELS = None
+
+
+def _cupy_radius_graph_components_3d_chunked_adjacency_kernels(cupy):
+    global _CUPY_RADIUS_GRAPH_COMPONENTS_3D_CHUNKED_ADJACENCY_KERNELS
+    if _CUPY_RADIUS_GRAPH_COMPONENTS_3D_CHUNKED_ADJACENCY_KERNELS is None:
+        source = r'''
+        extern "C" __device__
+        int find_chunk_adj_root_readonly(const int* parent, int item) {
+            int root = item;
+            int guard = 0;
+            while (parent[root] != root && guard < 4096) {
+                root = parent[root];
+                ++guard;
+            }
+            return root;
+        }
+
+        extern "C" __device__
+        void union_chunk_adj_min_root(int* parent, int left, int right) {
+            while (true) {
+                int left_root = find_chunk_adj_root_readonly(parent, left);
+                int right_root = find_chunk_adj_root_readonly(parent, right);
+                if (left_root == right_root) {
+                    return;
+                }
+                const int high = left_root > right_root ? left_root : right_root;
+                const int low = left_root > right_root ? right_root : left_root;
+                const int old = atomicMin(parent + high, low);
+                if (old == high) {
+                    return;
+                }
+            }
+        }
+
+        extern "C" __global__
+        void radius_graph_3d_chunk_adjacency_union_kernel(
+            const int chunk_count,
+            const int source_start,
+            const long long* edge_offsets,
+            const int* neighbor_indices,
+            const unsigned int* core_flags,
+            int* parent
+        ) {
+            const int local = blockDim.x * blockIdx.x + threadIdx.x;
+            if (local >= chunk_count) {
+                return;
+            }
+            const int point = source_start + local;
+            if (core_flags[point] == 0u) {
+                return;
+            }
+            const long long start = edge_offsets[local];
+            const long long end = edge_offsets[local + 1];
+            for (long long cursor = start; cursor < end; ++cursor) {
+                const int other = neighbor_indices[cursor];
+                if (other <= point || core_flags[other] == 0u) {
+                    continue;
+                }
+                union_chunk_adj_min_root(parent, point, other);
+            }
+        }
+
+        extern "C" __global__
+        void radius_graph_3d_chunk_adjacency_union_border_candidate_kernel(
+            const int chunk_count,
+            const int source_start,
+            const long long* edge_offsets,
+            const int* neighbor_indices,
+            const unsigned int* core_flags,
+            int* parent,
+            int* border_core_candidate
+        ) {
+            const int local = blockDim.x * blockIdx.x + threadIdx.x;
+            if (local >= chunk_count) {
+                return;
+            }
+            const int point = source_start + local;
+            const long long start = edge_offsets[local];
+            const long long end = edge_offsets[local + 1];
+            if (core_flags[point] != 0u) {
+                for (long long cursor = start; cursor < end; ++cursor) {
+                    const int other = neighbor_indices[cursor];
+                    if (other <= point || core_flags[other] == 0u) {
+                        continue;
+                    }
+                    union_chunk_adj_min_root(parent, point, other);
+                }
+                return;
+            }
+            for (long long cursor = start; cursor < end; ++cursor) {
+                const int other = neighbor_indices[cursor];
+                if (core_flags[other] != 0u) {
+                    atomicMin(border_core_candidate + point, other);
+                }
+            }
+        }
+
+        extern "C" __global__
+        void radius_graph_3d_border_candidate_label_kernel(
+            const int point_count,
+            const unsigned int* core_flags,
+            const int* parent,
+            const int* border_core_candidate,
+            long long* labels
+        ) {
+            const int point = blockDim.x * blockIdx.x + threadIdx.x;
+            if (point >= point_count) {
+                return;
+            }
+            if (core_flags[point] != 0u) {
+                labels[point] = (long long)find_chunk_adj_root_readonly(parent, point) + 1ll;
+                return;
+            }
+            const int candidate = border_core_candidate[point];
+            if (candidate < 0 || candidate >= point_count || core_flags[candidate] == 0u) {
+                labels[point] = -1ll;
+                return;
+            }
+            labels[point] = (long long)find_chunk_adj_root_readonly(parent, candidate) + 1ll;
+        }
+
+        extern "C" __global__
+        void radius_graph_3d_chunk_adjacency_label_kernel(
+            const int chunk_count,
+            const int source_start,
+            const long long* edge_offsets,
+            const int* neighbor_indices,
+            const unsigned int* core_flags,
+            const int* parent,
+            long long* labels
+        ) {
+            const int local = blockDim.x * blockIdx.x + threadIdx.x;
+            if (local >= chunk_count) {
+                return;
+            }
+            const int point = source_start + local;
+            if (core_flags[point] != 0u) {
+                labels[point] = (long long)find_chunk_adj_root_readonly(parent, point) + 1ll;
+                return;
+            }
+            int best_root = -1;
+            const long long start = edge_offsets[local];
+            const long long end = edge_offsets[local + 1];
+            for (long long cursor = start; cursor < end; ++cursor) {
+                const int other = neighbor_indices[cursor];
+                if (core_flags[other] == 0u) {
+                    continue;
+                }
+                const int root = find_chunk_adj_root_readonly(parent, other);
+                if (best_root < 0 || root < best_root) {
+                    best_root = root;
+                }
+            }
+            labels[point] = best_root < 0 ? -1ll : (long long)best_root + 1ll;
+        }
+        '''
+        _CUPY_RADIUS_GRAPH_COMPONENTS_3D_CHUNKED_ADJACENCY_KERNELS = (
+            cupy.RawKernel(source, "radius_graph_3d_chunk_adjacency_union_kernel"),
+            cupy.RawKernel(source, "radius_graph_3d_chunk_adjacency_label_kernel"),
+            cupy.RawKernel(source, "radius_graph_3d_chunk_adjacency_union_border_candidate_kernel"),
+            cupy.RawKernel(source, "radius_graph_3d_border_candidate_label_kernel"),
+        )
+    return _CUPY_RADIUS_GRAPH_COMPONENTS_3D_CHUNKED_ADJACENCY_KERNELS
+
+
+def radius_graph_components_3d_cupy_grid_partner_columns(
+    point_columns: dict[str, object],
+    *,
+    radius: float,
+    min_neighbors: int,
+    partner: str = "cupy",
+    core_flags=None,
+    neighbor_counts=None,
+    core_flag_source: str = "device_grid_count_kernel",
+    return_metadata: bool = False,
+):
+    """Label 3-D radius-graph components with a device-resident CuPy grid."""
+    import math
+
+    if partner != "cupy":
+        raise ValueError("radius_graph_components_3d_cupy_grid_partner_columns currently requires partner='cupy'")
+    radius = float(radius)
+    min_neighbors = int(min_neighbors)
+    if radius < 0:
+        raise ValueError("radius must be non-negative")
+    if min_neighbors < 1:
+        raise ValueError("min_neighbors must be at least 1")
+    if "z" not in point_columns:
+        raise ValueError("radius_graph_components_3d_cupy_grid_partner_columns requires z point columns")
+    runtime = _partner_module(partner)
+    cupy = runtime["module"]
+    point_count = _column_length(point_columns, "ids")
+    if point_count <= 0:
+        raise ValueError("radius graph components requires non-empty point columns")
+
+    x = point_columns["x"].astype(cupy.float64, copy=False)
+    y = point_columns["y"].astype(cupy.float64, copy=False)
+    z = point_columns["z"].astype(cupy.float64, copy=False)
+    cell_size = radius if radius > 0.0 else 1.0
+    min_x = float(cupy.min(x).item())
+    min_y = float(cupy.min(y).item())
+    min_z = float(cupy.min(z).item())
+    gx = cupy.floor((x - min_x) / cell_size).astype(cupy.int64, copy=False)
+    gy = cupy.floor((y - min_y) / cell_size).astype(cupy.int64, copy=False)
+    gz = cupy.floor((z - min_z) / cell_size).astype(cupy.int64, copy=False)
+    dim_x = int(cupy.max(gx).item()) + 1
+    dim_y = int(cupy.max(gy).item()) + 1
+    dim_z = int(cupy.max(gz).item()) + 1
+    cell_ids = gx + gy * dim_x + gz * dim_x * dim_y
+    order = cupy.argsort(cell_ids).astype(cupy.int32, copy=False)
+    sorted_cell_ids = cell_ids[order].astype(cupy.int64, copy=False)
+    unique_cells, starts, counts = cupy.unique(
+        sorted_cell_ids,
+        return_index=True,
+        return_counts=True,
+    )
+    starts = starts.astype(cupy.int32, copy=False)
+    counts = counts.astype(cupy.int32, copy=False)
+    unique_cells = unique_cells.astype(cupy.int64, copy=False)
+    unique_cell_count = int(unique_cells.size)
+
+    if (core_flags is None) != (neighbor_counts is None):
+        raise ValueError("core_flags and neighbor_counts must be supplied together")
+    caller_supplied_core_flags = core_flags is not None
+    if caller_supplied_core_flags:
+        neighbor_counts = cupy.asarray(neighbor_counts, dtype=cupy.uint32)
+        core_flags = cupy.asarray(core_flags, dtype=cupy.uint32)
+        if int(neighbor_counts.size) != point_count or int(core_flags.size) != point_count:
+            raise ValueError("core_flags and neighbor_counts must match point_count")
+    else:
+        neighbor_counts = cupy.zeros((point_count,), dtype=cupy.uint32)
+        core_flags = cupy.zeros((point_count,), dtype=cupy.uint32)
+    parent = cupy.arange(point_count, dtype=cupy.int32)
+    labels = cupy.full((point_count,), -1, dtype=cupy.int64)
+    count_kernel, union_kernel, label_kernel = _cupy_radius_graph_components_3d_grid_kernels(cupy)
+    threads = 256
+    blocks = (max(1, math.ceil(point_count / threads)),)
+    common = (
+        x,
+        y,
+        z,
+        point_count,
+        unique_cells,
+        starts,
+        counts,
+        unique_cell_count,
+        order,
+        min_x,
+        min_y,
+        min_z,
+        cell_size,
+        dim_x,
+        dim_y,
+        dim_z,
+        radius * radius,
+    )
+    if not caller_supplied_core_flags:
+        count_kernel(
+            blocks,
+            (threads,),
+            common + (min_neighbors, neighbor_counts, core_flags),
+        )
+    union_kernel(
+        blocks,
+        (threads,),
+        common + (core_flags, parent),
+    )
+    label_kernel(
+        blocks,
+        (threads,),
+        common + (core_flags, parent, labels),
+    )
+    runtime["sync"]()
+
+    if caller_supplied_core_flags:
+        edge_count = None
+        edge_count_policy = "not_reported_for_caller_supplied_threshold_capped_counts"
+    else:
+        edge_count = int((int(cupy.sum(neighbor_counts).item()) - point_count) // 2)
+        edge_count_policy = "exact_from_device_grid_neighbor_counts"
+    columns = {
+        "point_ids": point_columns["ids"],
+        "component_labels": labels,
+        "is_core": core_flags,
+        "neighbor_counts": neighbor_counts,
+    }
+    metadata = {
+        "adapter": "radius_graph_components_3d_cupy_grid_partner_columns",
+        "partner": runtime["name"],
+        "input_contract": "caller_supplied_partner_device_point_columns_3d",
+        "partner_reference_contract": "generic_cupy_grid_radius_graph_component_labels_3d",
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "point_count": point_count,
+        "radius": radius,
+        "min_neighbors": min_neighbors,
+        "cell_count": unique_cell_count,
+        "candidate_edge_count": edge_count,
+        "candidate_edge_count_policy": edge_count_policy,
+        "grid_dimensions": (dim_x, dim_y, dim_z),
+        "component_label_policy": "positive_root_index_labels_noise_minus_one",
+        "component_union_policy": "monotonic_atomic_min_core_edge_union",
+        "core_flag_source": str(core_flag_source),
+        "caller_supplied_core_flags": caller_supplied_core_flags,
+        "host_bucket_index_used": False,
+        "device_grid_index_used": True,
+        "direct_device_handoff_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "v2_0_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+    }
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+class PreparedCupyRadiusGraphComponents3DGrid:
+    """Prepared CuPy grid state for repeated generic radius-graph labeling."""
+
+    def __init__(self, point_columns: dict[str, object], *, radius: float, partner: str = "cupy"):
+        import math
+
+        if partner != "cupy":
+            raise ValueError("PreparedCupyRadiusGraphComponents3DGrid currently requires partner='cupy'")
+        radius = float(radius)
+        if radius < 0:
+            raise ValueError("radius must be non-negative")
+        if "z" not in point_columns:
+            raise ValueError("PreparedCupyRadiusGraphComponents3DGrid requires z point columns")
+        runtime = _partner_module(partner)
+        cupy = runtime["module"]
+        point_count = _column_length(point_columns, "ids")
+        if point_count <= 0:
+            raise ValueError("radius graph components requires non-empty point columns")
+
+        self.runtime = runtime
+        self.cupy = cupy
+        self.partner = runtime["name"]
+        self.point_columns = point_columns
+        self.point_count = point_count
+        self.radius = radius
+        self.radius_sq = radius * radius
+        self.x = point_columns["x"].astype(cupy.float64, copy=False)
+        self.y = point_columns["y"].astype(cupy.float64, copy=False)
+        self.z = point_columns["z"].astype(cupy.float64, copy=False)
+        self.cell_size = radius if radius > 0.0 else 1.0
+        self.min_x = float(cupy.min(self.x).item())
+        self.min_y = float(cupy.min(self.y).item())
+        self.min_z = float(cupy.min(self.z).item())
+        gx = cupy.floor((self.x - self.min_x) / self.cell_size).astype(cupy.int64, copy=False)
+        gy = cupy.floor((self.y - self.min_y) / self.cell_size).astype(cupy.int64, copy=False)
+        gz = cupy.floor((self.z - self.min_z) / self.cell_size).astype(cupy.int64, copy=False)
+        self.dim_x = int(cupy.max(gx).item()) + 1
+        self.dim_y = int(cupy.max(gy).item()) + 1
+        self.dim_z = int(cupy.max(gz).item()) + 1
+        cell_ids = gx + gy * self.dim_x + gz * self.dim_x * self.dim_y
+        self.order = cupy.argsort(cell_ids).astype(cupy.int32, copy=False)
+        sorted_cell_ids = cell_ids[self.order].astype(cupy.int64, copy=False)
+        unique_cells, starts, counts = cupy.unique(
+            sorted_cell_ids,
+            return_index=True,
+            return_counts=True,
+        )
+        self.unique_cells = unique_cells.astype(cupy.int64, copy=False)
+        self.starts = starts.astype(cupy.int32, copy=False)
+        self.counts = counts.astype(cupy.int32, copy=False)
+        self.unique_cell_count = int(self.unique_cells.size)
+        self.parent_initial = cupy.arange(point_count, dtype=cupy.int32)
+        self.parent_workspace = cupy.empty((point_count,), dtype=cupy.int32)
+        self.labels_workspace = cupy.empty((point_count,), dtype=cupy.int64)
+        self.neighbor_counts_workspace = cupy.empty((point_count,), dtype=cupy.uint32)
+        self.core_flags_workspace = cupy.empty((point_count,), dtype=cupy.uint32)
+        self.count_kernel, self.union_kernel, self.label_kernel = _cupy_radius_graph_components_3d_grid_kernels(cupy)
+        self.threads = 256
+        self.blocks = (max(1, math.ceil(point_count / self.threads)),)
+        self.run_count = 0
+        runtime["sync"]()
+
+    def _common_args(self):
+        return (
+            self.x,
+            self.y,
+            self.z,
+            self.point_count,
+            self.unique_cells,
+            self.starts,
+            self.counts,
+            self.unique_cell_count,
+            self.order,
+            self.min_x,
+            self.min_y,
+            self.min_z,
+            self.cell_size,
+            self.dim_x,
+            self.dim_y,
+            self.dim_z,
+            self.radius_sq,
+        )
+
+    def run(
+        self,
+        *,
+        min_neighbors: int,
+        core_flags=None,
+        neighbor_counts=None,
+        core_flag_source: str = "device_grid_count_kernel",
+        return_metadata: bool = False,
+    ):
+        min_neighbors = int(min_neighbors)
+        if min_neighbors < 1:
+            raise ValueError("min_neighbors must be at least 1")
+        cupy = self.cupy
+        if (core_flags is None) != (neighbor_counts is None):
+            raise ValueError("core_flags and neighbor_counts must be supplied together")
+        caller_supplied_core_flags = core_flags is not None
+        if caller_supplied_core_flags:
+            neighbor_counts = cupy.asarray(neighbor_counts, dtype=cupy.uint32)
+            core_flags = cupy.asarray(core_flags, dtype=cupy.uint32)
+            if int(neighbor_counts.size) != self.point_count or int(core_flags.size) != self.point_count:
+                raise ValueError("core_flags and neighbor_counts must match point_count")
+        else:
+            neighbor_counts = self.neighbor_counts_workspace
+            core_flags = self.core_flags_workspace
+
+        self.parent_workspace[...] = self.parent_initial
+        common = self._common_args()
+        if not caller_supplied_core_flags:
+            self.count_kernel(
+                self.blocks,
+                (self.threads,),
+                common + (min_neighbors, neighbor_counts, core_flags),
+            )
+        self.union_kernel(
+            self.blocks,
+            (self.threads,),
+            common + (core_flags, self.parent_workspace),
+        )
+        self.label_kernel(
+            self.blocks,
+            (self.threads,),
+            common + (core_flags, self.parent_workspace, self.labels_workspace),
+        )
+        self.runtime["sync"]()
+
+        if caller_supplied_core_flags:
+            edge_count = None
+            edge_count_policy = "not_reported_for_caller_supplied_threshold_capped_counts"
+        else:
+            edge_count = int((int(cupy.sum(neighbor_counts).item()) - self.point_count) // 2)
+            edge_count_policy = "exact_from_device_grid_neighbor_counts"
+        prepared_grid_reused = self.run_count > 0
+        self.run_count += 1
+        columns = {
+            "point_ids": self.point_columns["ids"],
+            "component_labels": self.labels_workspace,
+            "is_core": core_flags,
+            "neighbor_counts": neighbor_counts,
+        }
+        metadata = {
+            "adapter": "PreparedCupyRadiusGraphComponents3DGrid.run",
+            "partner": self.partner,
+            "input_contract": "prepared_partner_device_point_columns_3d",
+            "partner_reference_contract": "generic_prepared_cupy_grid_radius_graph_component_labels_3d",
+            "native_engine_row_contract": "not_called_partner_reference_only",
+            "point_count": self.point_count,
+            "radius": self.radius,
+            "min_neighbors": min_neighbors,
+            "cell_count": self.unique_cell_count,
+            "candidate_edge_count": edge_count,
+            "candidate_edge_count_policy": edge_count_policy,
+            "grid_dimensions": (self.dim_x, self.dim_y, self.dim_z),
+            "component_label_policy": "positive_root_index_labels_noise_minus_one",
+            "component_union_policy": "monotonic_atomic_min_core_edge_union",
+            "core_flag_source": str(core_flag_source),
+            "caller_supplied_core_flags": caller_supplied_core_flags,
+            "prepared_grid_reused": prepared_grid_reused,
+            "prepared_run_count": self.run_count,
+            "output_workspace_reused": True,
+            "host_bucket_index_used": False,
+            "device_grid_index_used": True,
+            "direct_device_handoff_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+        if return_metadata:
+            return {"columns": columns, "metadata": metadata}
+        return columns
+
+
+def _numba_cuda_stack_for_radius_graph():
+    try:
+        import _numba_cuda_redirector  # noqa: F401
+    except ImportError:
+        pass
+    import numpy as np
+    from numba import cuda
+
+    if not cuda.is_available():
+        raise RuntimeError("Numba radius-graph component adapter requires numba.cuda")
+    return cuda, np
+
+
+def probe_numba_radius_graph_continuation_3d() -> dict[str, object]:
+    """Probe the actual Numba CUDA stack used by radius-graph continuation."""
+
+    try:
+        cuda, np = _numba_cuda_stack_for_radius_graph()
+        context = cuda.current_context()
+        # Allocate the same scalar kinds used by the continuation.  This
+        # catches a nominally importable stack with an unusable CUDA context.
+        probes = (
+            cuda.device_array((1,), dtype=np.uint32),
+            cuda.device_array((1,), dtype=np.int32),
+            cuda.device_array((1,), dtype=np.int64),
+        )
+        del probes
+        return {
+            "contract": "rtdl.numba.radius_graph_continuation_3d.capability.v1",
+            "available": True,
+            "cuda_is_available": True,
+            "current_context_established": context is not None,
+            "required_dtypes_allocated": ["uint32", "int32", "int64"],
+            "error": None,
+        }
+    except Exception as exc:
+        return {
+            "contract": "rtdl.numba.radius_graph_continuation_3d.capability.v1",
+            "available": False,
+            "cuda_is_available": False,
+            "current_context_established": False,
+            "required_dtypes_allocated": [],
+            "error": f"{type(exc).__name__}: {exc}",
+        }
+
+
+class _NumbaDeviceColumnView:
+    """Small view that exposes Numba device arrays to native pointer writers."""
+
+    def __init__(self, array):
+        self.array = array
+
+    @property
+    def data_ptr(self) -> int:
+        return int(self.array.device_ctypes_pointer.value)
+
+    @property
+    def shape(self):
+        return self.array.shape
+
+    @property
+    def dtype(self):
+        return self.array.dtype
+
+    @property
+    def __cuda_array_interface__(self):
+        return self.array.__cuda_array_interface__
+
+    def copy_to_host(self):
+        return self.array.copy_to_host()
+
+
+def _as_numba_radius_graph_device_array(values, *, cuda, np, dtype, name: str):
+    if hasattr(values, "__cuda_array_interface__"):
+        values = cuda.as_cuda_array(values)
+    elif not hasattr(values, "copy_to_host"):
+        values = cuda.to_device(np.asarray(values, dtype=dtype))
+    if not hasattr(values, "copy_to_host"):
+        raise ValueError(f"{name} must be a Numba-compatible CUDA device array")
+    dtype_name = str(getattr(values, "dtype", ""))
+    expected_name = str(np.dtype(dtype))
+    if expected_name not in dtype_name:
+        host = np.asarray(values.copy_to_host(), dtype=dtype)
+        values = cuda.to_device(host)
+    return values
+
+
+class PreparedNumbaRadiusGraphComponents3DGrid:
+    """Prepared Numba CUDA grid state for generic radius-graph labeling."""
+
+    def __init__(self, point_columns: dict[str, object], *, radius: float, partner: str = "numba"):
+        if partner != "numba":
+            raise ValueError("PreparedNumbaRadiusGraphComponents3DGrid currently requires partner='numba'")
+        radius = float(radius)
+        if radius < 0:
+            raise ValueError("radius must be non-negative")
+        if "z" not in point_columns:
+            raise ValueError("PreparedNumbaRadiusGraphComponents3DGrid requires z point columns")
+        cuda, np = _numba_cuda_stack_for_radius_graph()
+        point_count = _column_length(point_columns, "ids")
+        if point_count <= 0:
+            raise ValueError("radius graph components requires non-empty point columns")
+
+        self.cuda = cuda
+        self.np = np
+        self.partner = "numba"
+        self.point_columns = point_columns
+        self.point_count = point_count
+        self.radius = radius
+        self.radius_sq = radius * radius
+        self.x = _as_numba_radius_graph_device_array(point_columns["x"], cuda=cuda, np=np, dtype=np.float64, name="x")
+        self.y = _as_numba_radius_graph_device_array(point_columns["y"], cuda=cuda, np=np, dtype=np.float64, name="y")
+        self.z = _as_numba_radius_graph_device_array(point_columns["z"], cuda=cuda, np=np, dtype=np.float64, name="z")
+        self.point_ids = _as_numba_radius_graph_device_array(
+            point_columns["ids"],
+            cuda=cuda,
+            np=np,
+            dtype=np.int64,
+            name="ids",
+        )
+        self.cell_size = radius if radius > 0.0 else 1.0
+        x_host = np.asarray(self.x.copy_to_host(), dtype=np.float64)
+        y_host = np.asarray(self.y.copy_to_host(), dtype=np.float64)
+        z_host = np.asarray(self.z.copy_to_host(), dtype=np.float64)
+        self.min_x = float(np.min(x_host))
+        self.min_y = float(np.min(y_host))
+        self.min_z = float(np.min(z_host))
+        gx = np.floor((x_host - self.min_x) / self.cell_size).astype(np.int64)
+        gy = np.floor((y_host - self.min_y) / self.cell_size).astype(np.int64)
+        gz = np.floor((z_host - self.min_z) / self.cell_size).astype(np.int64)
+        self.dim_x = int(np.max(gx)) + 1
+        self.dim_y = int(np.max(gy)) + 1
+        self.dim_z = int(np.max(gz)) + 1
+        cell_ids = (gx + gy * self.dim_x + gz * self.dim_x * self.dim_y).astype(np.int64)
+        order_host = np.argsort(cell_ids).astype(np.int32)
+        sorted_cell_ids = cell_ids[order_host].astype(np.int64)
+        unique_cells, starts, counts = np.unique(
+            sorted_cell_ids,
+            return_index=True,
+            return_counts=True,
+        )
+        self.unique_cells = cuda.to_device(unique_cells.astype(np.int64))
+        self.starts = cuda.to_device(starts.astype(np.int32))
+        self.counts = cuda.to_device(counts.astype(np.int32))
+        self.order = cuda.to_device(order_host)
+        self.unique_cell_count = int(unique_cells.size)
+        self.parent_initial_host = np.arange(point_count, dtype=np.int32)
+        self.parent_workspace = cuda.device_array((point_count,), dtype=np.int32)
+        self.labels_workspace = cuda.device_array((point_count,), dtype=np.int64)
+        self.neighbor_counts_workspace = cuda.device_array((point_count,), dtype=np.uint32)
+        self.core_flags_workspace = cuda.device_array((point_count,), dtype=np.uint32)
+        self.count_kernel, self.union_kernel, self.label_kernel = _numba_radius_graph_components_3d_grid_kernels(cuda)
+        self.threads = 256
+        self.blocks = (max(1, math.ceil(point_count / self.threads)),)
+        self.run_count = 0
+        cuda.synchronize()
+
+    def _common_args(self):
+        return (
+            self.x,
+            self.y,
+            self.z,
+            self.point_count,
+            self.unique_cells,
+            self.starts,
+            self.counts,
+            self.unique_cell_count,
+            self.order,
+            self.min_x,
+            self.min_y,
+            self.min_z,
+            self.cell_size,
+            self.dim_x,
+            self.dim_y,
+            self.dim_z,
+            self.radius_sq,
+        )
+
+    def run(
+        self,
+        *,
+        min_neighbors: int,
+        core_flags=None,
+        neighbor_counts=None,
+        core_flag_source: str = "numba_grid_count_kernel",
+        return_metadata: bool = False,
+    ):
+        min_neighbors = int(min_neighbors)
+        if min_neighbors < 1:
+            raise ValueError("min_neighbors must be at least 1")
+        cuda = self.cuda
+        np = self.np
+        if (core_flags is None) != (neighbor_counts is None):
+            raise ValueError("core_flags and neighbor_counts must be supplied together")
+        caller_supplied_core_flags = core_flags is not None
+        if caller_supplied_core_flags:
+            neighbor_counts = _as_numba_radius_graph_device_array(
+                neighbor_counts,
+                cuda=cuda,
+                np=np,
+                dtype=np.uint32,
+                name="neighbor_counts",
+            )
+            core_flags = _as_numba_radius_graph_device_array(
+                core_flags,
+                cuda=cuda,
+                np=np,
+                dtype=np.uint32,
+                name="core_flags",
+            )
+            if int(neighbor_counts.shape[0]) != self.point_count or int(core_flags.shape[0]) != self.point_count:
+                raise ValueError("core_flags and neighbor_counts must match point_count")
+        else:
+            neighbor_counts = self.neighbor_counts_workspace
+            core_flags = self.core_flags_workspace
+
+        self.parent_workspace.copy_to_device(self.parent_initial_host)
+        common = self._common_args()
+        if not caller_supplied_core_flags:
+            self.count_kernel[self.blocks, self.threads](
+                *(common + (min_neighbors, neighbor_counts, core_flags))
+            )
+        self.union_kernel[self.blocks, self.threads](*(common + (core_flags, self.parent_workspace)))
+        self.label_kernel[self.blocks, self.threads](*(common + (core_flags, self.parent_workspace, self.labels_workspace)))
+        cuda.synchronize()
+
+        if caller_supplied_core_flags:
+            edge_count = None
+            edge_count_policy = "not_reported_for_caller_supplied_threshold_capped_counts"
+        else:
+            edge_count = int((int(np.asarray(neighbor_counts.copy_to_host(), dtype=np.uint32).sum()) - self.point_count) // 2)
+            edge_count_policy = "exact_from_numba_grid_neighbor_counts"
+        prepared_grid_reused = self.run_count > 0
+        self.run_count += 1
+        columns = {
+            "point_ids": self.point_ids,
+            "component_labels": self.labels_workspace,
+            "is_core": core_flags,
+            "neighbor_counts": neighbor_counts,
+        }
+        metadata = {
+            "adapter": "PreparedNumbaRadiusGraphComponents3DGrid.run",
+            "partner": self.partner,
+            "input_contract": "prepared_partner_device_point_columns_3d",
+            "partner_reference_contract": "generic_prepared_numba_grid_radius_graph_component_labels_3d",
+            "native_engine_row_contract": "not_called_partner_reference_only",
+            "point_count": self.point_count,
+            "radius": self.radius,
+            "min_neighbors": min_neighbors,
+            "cell_count": self.unique_cell_count,
+            "candidate_edge_count": edge_count,
+            "candidate_edge_count_policy": edge_count_policy,
+            "grid_dimensions": (self.dim_x, self.dim_y, self.dim_z),
+            "component_label_policy": "positive_root_index_labels_noise_minus_one",
+            "component_union_policy": "monotonic_atomic_min_core_edge_union",
+            "core_flag_source": str(core_flag_source),
+            "caller_supplied_core_flags": caller_supplied_core_flags,
+            "prepared_grid_reused": prepared_grid_reused,
+            "prepared_run_count": self.run_count,
+            "output_workspace_reused": True,
+            "host_prepared_grid_index_used": True,
+            "device_grid_labeling_used": True,
+            "raw_cuda_kernel_required": False,
+            "numba_cuda_jit_used": True,
+            "direct_device_handoff_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "v2_9_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+        if return_metadata:
+            return {"columns": columns, "metadata": metadata}
+        return columns
+
+
+class PreparedCupyRadiusGraphAdjacency3D:
+    """Prepared directed adjacency stream for generic 3-D fixed-radius graphs."""
+
+    def __init__(
+        self,
+        point_columns: dict[str, object],
+        *,
+        radius: float,
+        partner: str = "cupy",
+        max_directed_edges: int | None = None,
+    ):
+        import math
+
+        if partner != "cupy":
+            raise ValueError("PreparedCupyRadiusGraphAdjacency3D currently requires partner='cupy'")
+        radius = float(radius)
+        if radius < 0:
+            raise ValueError("radius must be non-negative")
+        if "z" not in point_columns:
+            raise ValueError("PreparedCupyRadiusGraphAdjacency3D requires z point columns")
+        runtime = _partner_module(partner)
+        cupy = runtime["module"]
+        point_count = _column_length(point_columns, "ids")
+        if point_count <= 0:
+            raise ValueError("radius graph adjacency requires non-empty point columns")
+
+        self.runtime = runtime
+        self.cupy = cupy
+        self.partner = runtime["name"]
+        self.point_columns = point_columns
+        self.point_count = point_count
+        self.radius = radius
+        self.radius_sq = radius * radius
+        self.x = point_columns["x"].astype(cupy.float64, copy=False)
+        self.y = point_columns["y"].astype(cupy.float64, copy=False)
+        self.z = point_columns["z"].astype(cupy.float64, copy=False)
+        self.cell_size = radius if radius > 0.0 else 1.0
+        self.min_x = float(cupy.min(self.x).item())
+        self.min_y = float(cupy.min(self.y).item())
+        self.min_z = float(cupy.min(self.z).item())
+        gx = cupy.floor((self.x - self.min_x) / self.cell_size).astype(cupy.int64, copy=False)
+        gy = cupy.floor((self.y - self.min_y) / self.cell_size).astype(cupy.int64, copy=False)
+        gz = cupy.floor((self.z - self.min_z) / self.cell_size).astype(cupy.int64, copy=False)
+        self.dim_x = int(cupy.max(gx).item()) + 1
+        self.dim_y = int(cupy.max(gy).item()) + 1
+        self.dim_z = int(cupy.max(gz).item()) + 1
+        cell_ids = gx + gy * self.dim_x + gz * self.dim_x * self.dim_y
+        self.order = cupy.argsort(cell_ids).astype(cupy.int32, copy=False)
+        sorted_cell_ids = cell_ids[self.order].astype(cupy.int64, copy=False)
+        unique_cells, starts, counts = cupy.unique(
+            sorted_cell_ids,
+            return_index=True,
+            return_counts=True,
+        )
+        self.unique_cells = unique_cells.astype(cupy.int64, copy=False)
+        self.starts = starts.astype(cupy.int32, copy=False)
+        self.counts = counts.astype(cupy.int32, copy=False)
+        self.unique_cell_count = int(self.unique_cells.size)
+        self.threads = 256
+        self.blocks = (max(1, math.ceil(point_count / self.threads)),)
+
+        count_kernel, _, _ = _cupy_radius_graph_components_3d_grid_kernels(cupy)
+        self.neighbor_counts = cupy.zeros((point_count,), dtype=cupy.uint32)
+        scratch_flags = cupy.zeros((point_count,), dtype=cupy.uint32)
+        count_kernel(
+            self.blocks,
+            (self.threads,),
+            self._common_args() + (1, self.neighbor_counts, scratch_flags),
+        )
+        self.edge_offsets = cupy.empty((point_count + 1,), dtype=cupy.int64)
+        self.edge_offsets[0] = 0
+        self.edge_offsets[1:] = cupy.cumsum(self.neighbor_counts.astype(cupy.int64, copy=False))
+        runtime["sync"]()
+        self.directed_edge_count = int(self.edge_offsets[-1].item())
+        if max_directed_edges is not None and self.directed_edge_count > int(max_directed_edges):
+            raise ValueError(
+                "prepared radius-graph adjacency stream exceeds max_directed_edges "
+                f"({self.directed_edge_count} > {int(max_directed_edges)})"
+            )
+        self.neighbor_indices = cupy.empty((self.directed_edge_count,), dtype=cupy.int32)
+        write_kernel, self.union_kernel, self.label_kernel = _cupy_radius_graph_components_3d_adjacency_kernels(cupy)
+        write_kernel(
+            self.blocks,
+            (self.threads,),
+            self._common_args() + (self.edge_offsets, self.neighbor_indices),
+        )
+        self.parent_initial = cupy.arange(point_count, dtype=cupy.int32)
+        self.parent_workspace = cupy.empty((point_count,), dtype=cupy.int32)
+        self.labels_workspace = cupy.empty((point_count,), dtype=cupy.int64)
+        self.run_count = 0
+        runtime["sync"]()
+
+    def _common_args(self):
+        return (
+            self.x,
+            self.y,
+            self.z,
+            self.point_count,
+            self.unique_cells,
+            self.starts,
+            self.counts,
+            self.unique_cell_count,
+            self.order,
+            self.min_x,
+            self.min_y,
+            self.min_z,
+            self.cell_size,
+            self.dim_x,
+            self.dim_y,
+            self.dim_z,
+            self.radius_sq,
+        )
+
+    def run(self, *, min_neighbors: int, return_metadata: bool = False):
+        min_neighbors = int(min_neighbors)
+        if min_neighbors < 1:
+            raise ValueError("min_neighbors must be at least 1")
+        cupy = self.cupy
+        core_flags = (self.neighbor_counts >= min_neighbors).astype(cupy.uint32, copy=False)
+        self.parent_workspace[...] = self.parent_initial
+        self.union_kernel(
+            self.blocks,
+            (self.threads,),
+            (
+                self.point_count,
+                self.edge_offsets,
+                self.neighbor_indices,
+                core_flags,
+                self.parent_workspace,
+            ),
+        )
+        self.label_kernel(
+            self.blocks,
+            (self.threads,),
+            (
+                self.point_count,
+                self.edge_offsets,
+                self.neighbor_indices,
+                core_flags,
+                self.parent_workspace,
+                self.labels_workspace,
+            ),
+        )
+        self.runtime["sync"]()
+
+        prepared_adjacency_reused = self.run_count > 0
+        self.run_count += 1
+        columns = {
+            "point_ids": self.point_columns["ids"],
+            "component_labels": self.labels_workspace,
+            "is_core": core_flags,
+            "neighbor_counts": self.neighbor_counts,
+            "edge_offsets": self.edge_offsets,
+            "neighbor_indices": self.neighbor_indices,
+        }
+        metadata = {
+            "adapter": "PreparedCupyRadiusGraphAdjacency3D.run",
+            "partner": self.partner,
+            "input_contract": "prepared_partner_device_point_columns_3d",
+            "partner_reference_contract": "generic_prepared_cupy_directed_radius_graph_adjacency_component_labels_3d",
+            "native_engine_row_contract": "not_called_partner_reference_only",
+            "point_count": self.point_count,
+            "radius": self.radius,
+            "min_neighbors": min_neighbors,
+            "cell_count": self.unique_cell_count,
+            "directed_edge_count": self.directed_edge_count,
+            "edge_stream_policy": "directed_radius_graph_neighbor_index_stream_with_offsets",
+            "edge_stream_reused": prepared_adjacency_reused,
+            "prepared_adjacency_run_count": self.run_count,
+            "component_label_policy": "positive_root_index_labels_noise_minus_one",
+            "component_union_policy": "monotonic_atomic_min_from_prepared_directed_edge_stream",
+            "host_bucket_index_used": False,
+            "device_grid_index_used": True,
+            "direct_device_handoff_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+        if return_metadata:
+            return {"columns": columns, "metadata": metadata}
+        return columns
+
+
+class PreparedOptixCupyRadiusGraphComponents3D:
+    """Prepared generic OptiX RT + CuPy continuation for 3-D radius graph labels."""
+
+    def __init__(self, point_rows, *, radius: float, partner: str = "cupy"):
+        if partner != "cupy":
+            raise ValueError("PreparedOptixCupyRadiusGraphComponents3D currently requires partner='cupy'")
+        radius = float(radius)
+        if radius <= 0.0:
+            raise ValueError("radius must be positive")
+        self.point_rows = tuple(point_rows)
+        if not self.point_rows:
+            raise ValueError("prepared OptiX+CuPy radius graph components requires non-empty point rows")
+        self.radius = radius
+        self.partner = partner
+        self.point_count = len(self.point_rows)
+        self.point_columns = point_rows_to_partner_columns(self.point_rows, partner=partner)
+        self.prepared_grid = PreparedCupyRadiusGraphComponents3DGrid(
+            self.point_columns,
+            radius=radius,
+            partner=partner,
+        )
+        self.output_columns = allocate_fixed_radius_count_threshold_3d_partner_device_output_columns(
+            self.point_count,
+            partner=partner,
+        )
+        self.prepared_native = _optix.prepare_optix_fixed_radius_count_threshold_3d(
+            self.point_rows,
+            max_radius=radius,
+        )
+        self.run_count = 0
+        self.closed = False
+
+    def run(self, *, min_neighbors: int, return_metadata: bool = False):
+        import time
+
+        if self.closed:
+            raise RuntimeError("prepared OptiX+CuPy radius graph components handle is closed")
+        min_neighbors = int(min_neighbors)
+        if min_neighbors < 1:
+            raise ValueError("min_neighbors must be at least 1")
+        optix_start = time.perf_counter()
+        threshold_result = fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns(
+            self.prepared_native,
+            self.point_rows,
+            radius=self.radius,
+            threshold=min_neighbors,
+            partner=self.partner,
+            output_columns=self.output_columns,
+            return_metadata=True,
+        )
+        optix_elapsed = time.perf_counter() - optix_start
+        continuation_start = time.perf_counter()
+        result = radius_graph_components_3d_cupy_prepared_grid_partner_columns(
+            self.prepared_grid,
+            min_neighbors=min_neighbors,
+            core_flags=threshold_result["columns"]["threshold_flags"],
+            neighbor_counts=threshold_result["columns"]["neighbor_counts"],
+            core_flag_source="optix_rt_fixed_radius_count_threshold_3d_device_outputs",
+            return_metadata=True,
+        )
+        continuation_elapsed = time.perf_counter() - continuation_start
+        self.run_count += 1
+        columns = result["columns"]
+        metadata = dict(result["metadata"])
+        metadata.update(
+            {
+                "adapter": "PreparedOptixCupyRadiusGraphComponents3D.run",
+                "partner": self.partner,
+                "input_contract": "prepared_host_point_rows_self_radius_graph_3d",
+                "partner_reference_contract": "generic_prepared_optix_cupy_radius_graph_component_labels_3d",
+                "native_engine_summary_contract": "generic_prepared_fixed_radius_count_threshold_3d_device_columns",
+                "native_execution_path": "prepared_rt_core_count_threshold_3d",
+                "point_count": self.point_count,
+                "radius": self.radius,
+                "min_neighbors": min_neighbors,
+                "prepared_composite_reused": self.run_count > 1,
+                "prepared_composite_run_count": self.run_count,
+                "prepared_optix_scene_reused": True,
+                "prepared_cupy_grid_reused": bool(metadata.get("prepared_grid_reused")),
+                "output_columns_reused": True,
+                "optix_rt_count_threshold_sec": optix_elapsed,
+                "cupy_component_continuation_sec": continuation_elapsed,
+                "optix_backend_used": True,
+                "rt_core_accelerated": True,
+                "materializes_neighbor_summaries": False,
+                "materializes_neighbor_rows": False,
+                "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+                "threshold_metadata": threshold_result["metadata"],
+                "automatic_hidden_dispatcher": False,
+                "direct_device_handoff_authorized": False,
+                "rt_core_speedup_claim_authorized": False,
+                "v2_0_release_authorized": False,
+                "whole_app_speedup_claim_authorized": False,
+            }
+        )
+        if return_metadata:
+            return {"columns": columns, "metadata": metadata}
+        return columns
+
+    def close(self) -> None:
+        if self.closed:
+            return
+        close = getattr(self.prepared_native, "close", None)
+        if close is not None:
+            close()
+        self.closed = True
+
+    def __enter__(self) -> "PreparedOptixCupyRadiusGraphComponents3D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):  # pragma: no cover - best-effort cleanup
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+class PreparedOptixCupyRadiusGraphAdjacency3D:
+    """Prepared generic OptiX RT adjacency stream plus CuPy grouped continuation."""
+
+    def __init__(
+        self,
+        point_rows,
+        *,
+        radius: float,
+        partner: str = "cupy",
+        max_directed_edges: int | None = None,
+    ):
+        if partner != "cupy":
+            raise ValueError("PreparedOptixCupyRadiusGraphAdjacency3D currently requires partner='cupy'")
+        radius = float(radius)
+        if radius <= 0.0:
+            raise ValueError("radius must be positive")
+        self.point_rows = tuple(point_rows)
+        if not self.point_rows:
+            raise ValueError("prepared OptiX+CuPy adjacency radius graph requires non-empty point rows")
+        self.radius = radius
+        self.partner = partner
+        self.point_count = len(self.point_rows)
+        self.runtime = _partner_module(partner)
+        self.cupy = self.runtime["module"]
+        self.point_columns = point_rows_to_partner_columns(self.point_rows, partner=partner)
+        if "z" not in self.point_columns:
+            raise ValueError("PreparedOptixCupyRadiusGraphAdjacency3D requires 3-D point rows")
+
+        self.prepared_native = _optix.prepare_optix_fixed_radius_count_threshold_3d(
+            self.point_rows,
+            max_radius=radius,
+        )
+        self.count_columns = allocate_fixed_radius_count_threshold_3d_partner_device_output_columns(
+            self.point_count,
+            partner=partner,
+        )
+        threshold_result = fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns(
+            self.prepared_native,
+            self.point_rows,
+            radius=radius,
+            threshold=self.point_count,
+            partner=partner,
+            output_columns=self.count_columns,
+            return_metadata=True,
+        )
+        self.count_metadata = dict(threshold_result["metadata"])
+        self.neighbor_counts = threshold_result["columns"]["neighbor_counts"]
+        self.edge_offsets = self.cupy.empty((self.point_count + 1,), dtype=self.cupy.int64)
+        self.edge_offsets[0] = 0
+        self.edge_offsets[1:] = self.cupy.cumsum(self.neighbor_counts.astype(self.cupy.int64, copy=False))
+        self.runtime["sync"]()
+        self.directed_edge_count = int(self.edge_offsets[-1].item())
+        if max_directed_edges is not None and self.directed_edge_count > int(max_directed_edges):
+            raise ValueError(
+                "prepared OptiX radius-graph adjacency stream exceeds max_directed_edges "
+                f"({self.directed_edge_count} > {int(max_directed_edges)})"
+            )
+        self.neighbor_indices = self.cupy.empty((self.directed_edge_count,), dtype=self.cupy.int32)
+        self.native_adjacency_result = self.prepared_native.write_device_adjacency_columns(
+            self.point_rows,
+            radius=radius,
+            edge_offsets=self.edge_offsets,
+            neighbor_indices_out=self.neighbor_indices,
+        )
+        self.runtime["sync"]()
+        _, self.union_kernel, self.label_kernel = _cupy_radius_graph_components_3d_adjacency_kernels(self.cupy)
+        self.parent_initial = self.cupy.arange(self.point_count, dtype=self.cupy.int32)
+        self.parent_workspace = self.cupy.empty((self.point_count,), dtype=self.cupy.int32)
+        self.labels_workspace = self.cupy.empty((self.point_count,), dtype=self.cupy.int64)
+        self.run_count = 0
+        self.closed = False
+
+    def run(self, *, min_neighbors: int, return_metadata: bool = False):
+        if self.closed:
+            raise RuntimeError("prepared OptiX+CuPy adjacency radius graph handle is closed")
+        min_neighbors = int(min_neighbors)
+        if min_neighbors < 1:
+            raise ValueError("min_neighbors must be at least 1")
+        core_flags = (self.neighbor_counts >= min_neighbors).astype(self.cupy.uint32, copy=False)
+        self.parent_workspace[...] = self.parent_initial
+        blocks = (max(1, (self.point_count + 255) // 256),)
+        threads = 256
+        self.union_kernel(
+            blocks,
+            (threads,),
+            (
+                self.point_count,
+                self.edge_offsets,
+                self.neighbor_indices,
+                core_flags,
+                self.parent_workspace,
+            ),
+        )
+        self.label_kernel(
+            blocks,
+            (threads,),
+            (
+                self.point_count,
+                self.edge_offsets,
+                self.neighbor_indices,
+                core_flags,
+                self.parent_workspace,
+                self.labels_workspace,
+            ),
+        )
+        self.runtime["sync"]()
+
+        adjacency_reused = self.run_count > 0
+        self.run_count += 1
+        columns = {
+            "point_ids": self.point_columns["ids"],
+            "component_labels": self.labels_workspace,
+            "is_core": core_flags,
+            "neighbor_counts": self.neighbor_counts,
+            "edge_offsets": self.edge_offsets,
+            "neighbor_indices": self.neighbor_indices,
+        }
+        native_metadata = dict(self.native_adjacency_result["metadata"])
+        metadata = {
+            "adapter": "PreparedOptixCupyRadiusGraphAdjacency3D.run",
+            "partner": self.partner,
+            "input_contract": "prepared_host_point_rows_self_radius_graph_3d",
+            "partner_reference_contract": "generic_prepared_optix_cupy_directed_radius_graph_adjacency_component_labels_3d",
+            "native_engine_row_contract": "generic_prepared_fixed_radius_adjacency_3d_device_columns",
+            "native_execution_path": "prepared_rt_core_adjacency_3d",
+            "point_count": self.point_count,
+            "radius": self.radius,
+            "min_neighbors": min_neighbors,
+            "directed_edge_count": self.directed_edge_count,
+            "edge_stream_policy": "optix_written_directed_radius_graph_neighbor_index_stream_with_offsets",
+            "edge_stream_reused": adjacency_reused,
+            "prepared_adjacency_run_count": self.run_count,
+            "component_label_policy": "positive_root_index_labels_noise_minus_one",
+            "component_union_policy": "monotonic_atomic_min_from_prepared_directed_edge_stream",
+            "prepared_optix_scene_reused": True,
+            "output_columns_reused": True,
+            "optix_backend_used": True,
+            "rt_core_accelerated": True,
+            "materializes_neighbor_summaries": False,
+            "materializes_neighbor_rows": False,
+            "materializes_directed_adjacency_stream": True,
+            "neighbor_count_policy": "exact_full_degree_from_prepared_rt_count_threshold_with_threshold_equal_point_count",
+            "count_metadata": self.count_metadata,
+            "native_adjacency_metadata": native_metadata,
+            "automatic_hidden_dispatcher": False,
+            "direct_device_handoff_authorized": bool(native_metadata.get("direct_device_handoff_authorized", False)),
+            "output_columns_true_zero_copy_authorized": bool(native_metadata.get("output_columns_true_zero_copy_authorized", False)),
+            "true_zero_copy_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+        if return_metadata:
+            return {"columns": columns, "metadata": metadata}
+        return columns
+
+    def close(self) -> None:
+        if self.closed:
+            return
+        close = getattr(self.prepared_native, "close", None)
+        if close is not None:
+            close()
+        self.closed = True
+
+    def __enter__(self) -> "PreparedOptixCupyRadiusGraphAdjacency3D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):  # pragma: no cover - best-effort cleanup
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+def _radius_graph_degree_budget_chunk_ranges(
+    neighbor_counts: list[int] | tuple[int, ...],
+    *,
+    max_chunk_points: int,
+    max_directed_edges_per_chunk: int | None,
+) -> list[tuple[int, int]]:
+    point_count = len(neighbor_counts)
+    if point_count < 1:
+        raise ValueError("neighbor_counts must be non-empty")
+    max_chunk_points = int(max_chunk_points)
+    if max_chunk_points <= 0:
+        raise ValueError("max_chunk_points must be positive")
+    edge_budget = None if max_directed_edges_per_chunk is None else int(max_directed_edges_per_chunk)
+    if edge_budget is not None and edge_budget <= 0:
+        raise ValueError("max_directed_edges_per_chunk must be positive when provided")
+
+    ranges: list[tuple[int, int]] = []
+    start = 0
+    chunk_points = 0
+    chunk_edges = 0
+    for index, raw_count in enumerate(neighbor_counts):
+        degree = int(raw_count)
+        if degree < 0:
+            raise ValueError("neighbor_counts must be non-negative")
+        if edge_budget is not None and degree > edge_budget:
+            raise ValueError(
+                "single query exceeds max_directed_edges_per_chunk "
+                f"({degree} > {edge_budget})"
+            )
+        point_limit_hit = chunk_points >= max_chunk_points
+        edge_limit_hit = (
+            edge_budget is not None
+            and chunk_points > 0
+            and chunk_edges + degree > edge_budget
+        )
+        if point_limit_hit or edge_limit_hit:
+            ranges.append((start, index))
+            start = index
+            chunk_points = 0
+            chunk_edges = 0
+        chunk_points += 1
+        chunk_edges += degree
+    if start < point_count:
+        ranges.append((start, point_count))
+    return ranges
+
+
+class PreparedOptixCupyRadiusGraphChunkedAdjacency3D:
+    """Memory-bounded OptiX RT adjacency chunks plus CuPy grouped continuation."""
+
+    def __init__(
+        self,
+        point_rows,
+        *,
+        radius: float,
+        partner: str = "cupy",
+        max_chunk_points: int = 4096,
+        max_directed_edges_per_chunk: int | None = None,
+        reuse_neighbor_index_workspace: bool = False,
+        neighbor_index_workspace_pool_size: int = 0,
+    ):
+        if partner != "cupy":
+            raise ValueError("PreparedOptixCupyRadiusGraphChunkedAdjacency3D currently requires partner='cupy'")
+        radius = float(radius)
+        if radius <= 0.0:
+            raise ValueError("radius must be positive")
+        max_chunk_points = int(max_chunk_points)
+        if max_chunk_points <= 0:
+            raise ValueError("max_chunk_points must be positive")
+        self.point_rows = tuple(point_rows)
+        if not self.point_rows:
+            raise ValueError("prepared OptiX+CuPy chunked adjacency radius graph requires non-empty point rows")
+        self.radius = radius
+        self.partner = partner
+        self.point_count = len(self.point_rows)
+        self.max_chunk_points = max_chunk_points
+        self.max_directed_edges_per_chunk = (
+            None if max_directed_edges_per_chunk is None else int(max_directed_edges_per_chunk)
+        )
+        if self.max_directed_edges_per_chunk is not None and self.max_directed_edges_per_chunk <= 0:
+            raise ValueError("max_directed_edges_per_chunk must be positive when provided")
+        neighbor_index_workspace_pool_size = int(neighbor_index_workspace_pool_size)
+        if neighbor_index_workspace_pool_size < 0:
+            raise ValueError("neighbor_index_workspace_pool_size must be non-negative")
+        self.reuse_neighbor_index_workspace = bool(reuse_neighbor_index_workspace)
+        if self.reuse_neighbor_index_workspace and neighbor_index_workspace_pool_size == 0:
+            neighbor_index_workspace_pool_size = 1
+        self.runtime = _partner_module(partner)
+        self.cupy = self.runtime["module"]
+        self.point_columns = point_rows_to_partner_columns(self.point_rows, partner=partner)
+        if "z" not in self.point_columns:
+            raise ValueError("PreparedOptixCupyRadiusGraphChunkedAdjacency3D requires 3-D point rows")
+        self.prepared_native = _optix.prepare_optix_fixed_radius_count_threshold_3d(
+            self.point_rows,
+            max_radius=radius,
+        )
+        self.count_chunk_ranges = [
+            (start, min(start + max_chunk_points, self.point_count))
+            for start in range(0, self.point_count, max_chunk_points)
+        ]
+        self.neighbor_counts = self.cupy.empty((self.point_count,), dtype=self.cupy.uint32)
+        self.count_metadata: list[dict[str, object]] = []
+        for start, end in self.count_chunk_ranges:
+            chunk_rows = self.point_rows[start:end]
+            output_columns = allocate_fixed_radius_count_threshold_3d_partner_device_output_columns(
+                end - start,
+                partner=partner,
+            )
+            result = fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns(
+                self.prepared_native,
+                chunk_rows,
+                radius=radius,
+                threshold=self.point_count,
+                partner=partner,
+                output_columns=output_columns,
+                return_metadata=True,
+            )
+            self.neighbor_counts[start:end] = result["columns"]["neighbor_counts"]
+            self.count_metadata.append(dict(result["metadata"]))
+        self.runtime["sync"]()
+        neighbor_counts_host = self.cupy.asnumpy(self.neighbor_counts).astype("int64", copy=False).tolist()
+        self.total_directed_edge_count = int(sum(int(count) for count in neighbor_counts_host))
+        self.chunk_ranges = _radius_graph_degree_budget_chunk_ranges(
+            neighbor_counts_host,
+            max_chunk_points=max_chunk_points,
+            max_directed_edges_per_chunk=self.max_directed_edges_per_chunk,
+        )
+        self.chunk_planning_policy = (
+            "adaptive_degree_budget_and_max_point_count"
+            if self.max_directed_edges_per_chunk is not None
+            else "fixed_max_point_count"
+        )
+        self.chunk_edge_offsets: list[object] = []
+        self.chunk_directed_edge_counts: list[int] = []
+        for start, end in self.chunk_ranges:
+            counts = self.neighbor_counts[start:end]
+            edge_offsets = self.cupy.empty((end - start + 1,), dtype=self.cupy.int64)
+            edge_offsets[0] = 0
+            edge_offsets[1:] = self.cupy.cumsum(counts.astype(self.cupy.int64, copy=False))
+            self.chunk_edge_offsets.append(edge_offsets)
+        self.runtime["sync"]()
+        self.chunk_directed_edge_counts = [int(edge_offsets[-1].item()) for edge_offsets in self.chunk_edge_offsets]
+        self.neighbor_index_workspaces: list[object] = []
+        self.neighbor_index_workspace_size = 0
+        self.neighbor_index_workspace_pool_size = min(
+            neighbor_index_workspace_pool_size,
+            len(self.chunk_directed_edge_counts),
+        )
+        if self.neighbor_index_workspace_pool_size > 0:
+            self.reuse_neighbor_index_workspace = True
+            self.neighbor_index_workspace_size = max(self.chunk_directed_edge_counts, default=0)
+            self.neighbor_index_workspaces = [
+                self.cupy.empty((self.neighbor_index_workspace_size,), dtype=self.cupy.int32)
+                for _ in range(self.neighbor_index_workspace_pool_size)
+            ]
+        (
+            self.union_kernel,
+            self.label_kernel,
+            self.union_border_candidate_kernel,
+            self.border_candidate_label_kernel,
+        ) = _cupy_radius_graph_components_3d_chunked_adjacency_kernels(self.cupy)
+        self.parent_initial = self.cupy.arange(self.point_count, dtype=self.cupy.int32)
+        self.parent_workspace = self.cupy.empty((self.point_count,), dtype=self.cupy.int32)
+        self.border_core_candidate_workspace = self.cupy.empty((self.point_count,), dtype=self.cupy.int32)
+        self.labels_workspace = self.cupy.empty((self.point_count,), dtype=self.cupy.int64)
+        self.run_count = 0
+        self.closed = False
+
+    def _chunk_adjacency(self, chunk_index: int, start: int, end: int):
+        edge_offsets = self.chunk_edge_offsets[chunk_index]
+        directed_edge_count = self.chunk_directed_edge_counts[chunk_index]
+        if (
+            self.max_directed_edges_per_chunk is not None
+            and directed_edge_count > self.max_directed_edges_per_chunk
+        ):
+            raise ValueError(
+                "chunked OptiX radius-graph adjacency stream exceeds max_directed_edges_per_chunk "
+                f"({directed_edge_count} > {self.max_directed_edges_per_chunk})"
+            )
+        if self.neighbor_index_workspaces:
+            workspace_index = chunk_index % self.neighbor_index_workspace_pool_size
+            neighbor_indices = self.neighbor_index_workspaces[workspace_index][:directed_edge_count]
+        else:
+            neighbor_indices = self.cupy.empty((directed_edge_count,), dtype=self.cupy.int32)
+        native_result = self.prepared_native.write_device_adjacency_columns(
+            self.point_rows[start:end],
+            radius=self.radius,
+            edge_offsets=edge_offsets,
+            neighbor_indices_out=neighbor_indices,
+        )
+        return edge_offsets, neighbor_indices, directed_edge_count, dict(native_result["metadata"])
+
+    def run(self, *, min_neighbors: int, return_metadata: bool = False):
+        if self.closed:
+            raise RuntimeError("prepared OptiX+CuPy chunked adjacency radius graph handle is closed")
+        min_neighbors = int(min_neighbors)
+        if min_neighbors < 1:
+            raise ValueError("min_neighbors must be at least 1")
+        core_flags = (self.neighbor_counts >= min_neighbors).astype(self.cupy.uint32, copy=False)
+        self.parent_workspace[...] = self.parent_initial
+        self.border_core_candidate_workspace.fill(self.point_count)
+        threads = 256
+        chunk_edge_counts: list[int] = []
+        native_union_metadata: list[dict[str, object]] = []
+        for chunk_index, (start, end) in enumerate(self.chunk_ranges):
+            if self.neighbor_index_workspaces and chunk_index >= self.neighbor_index_workspace_pool_size:
+                self.runtime["sync"]()
+            edge_offsets, neighbor_indices, directed_edge_count, native_metadata = self._chunk_adjacency(
+                chunk_index,
+                start,
+                end,
+            )
+            blocks = (max(1, ((end - start) + threads - 1) // threads),)
+            self.union_border_candidate_kernel(
+                blocks,
+                (threads,),
+                (
+                    end - start,
+                    start,
+                    edge_offsets,
+                    neighbor_indices,
+                    core_flags,
+                    self.parent_workspace,
+                    self.border_core_candidate_workspace,
+                ),
+            )
+            chunk_edge_counts.append(directed_edge_count)
+            native_union_metadata.append(native_metadata)
+        self.runtime["sync"]()
+
+        label_blocks = (max(1, (self.point_count + threads - 1) // threads),)
+        self.border_candidate_label_kernel(
+            label_blocks,
+            (threads,),
+            (
+                self.point_count,
+                core_flags,
+                self.parent_workspace,
+                self.border_core_candidate_workspace,
+                self.labels_workspace,
+            ),
+        )
+        self.runtime["sync"]()
+
+        chunked_reused = self.run_count > 0
+        self.run_count += 1
+        columns = {
+            "point_ids": self.point_columns["ids"],
+            "component_labels": self.labels_workspace,
+            "is_core": core_flags,
+            "neighbor_counts": self.neighbor_counts,
+        }
+        metadata = {
+            "adapter": "PreparedOptixCupyRadiusGraphChunkedAdjacency3D.run",
+            "partner": self.partner,
+            "input_contract": "prepared_host_point_rows_self_radius_graph_3d",
+            "partner_reference_contract": "generic_prepared_optix_cupy_chunked_radius_graph_adjacency_component_labels_3d",
+            "native_engine_row_contract": "generic_prepared_fixed_radius_adjacency_3d_device_columns",
+            "native_execution_path": "prepared_rt_core_chunked_adjacency_3d",
+            "point_count": self.point_count,
+            "radius": self.radius,
+            "min_neighbors": min_neighbors,
+            "chunk_count": len(self.chunk_ranges),
+            "count_chunk_count": len(self.count_chunk_ranges),
+            "max_chunk_points": self.max_chunk_points,
+            "max_directed_edges_per_chunk": self.max_directed_edges_per_chunk,
+            "chunk_planning_policy": self.chunk_planning_policy,
+            "total_directed_edge_count": self.total_directed_edge_count,
+            "max_chunk_directed_edge_count": max(chunk_edge_counts) if chunk_edge_counts else 0,
+            "chunk_directed_edge_counts": tuple(chunk_edge_counts),
+            "prepared_chunk_edge_offsets_reused": chunked_reused,
+            "prepared_chunk_edge_offset_count": len(self.chunk_edge_offsets),
+            "prepared_chunk_edge_offsets_policy": "degree_prefix_offsets_prepared_once_per_chunk",
+            "neighbor_index_workspace_policy": (
+                "single_prepared_workspace_with_explicit_chunk_sync"
+                if self.neighbor_index_workspace_pool_size == 1
+                else "prepared_workspace_pool_with_explicit_reuse_sync"
+                if self.neighbor_index_workspace_pool_size > 1
+                else "allocated_per_chunk_to_avoid_cross_stream_reuse_race"
+            ),
+            "neighbor_index_workspace_reused": self.reuse_neighbor_index_workspace,
+            "neighbor_index_workspace_pool_size": self.neighbor_index_workspace_pool_size,
+            "neighbor_index_workspace_size": self.neighbor_index_workspace_size,
+            "chunk_sync_for_neighbor_index_workspace_reuse": self.reuse_neighbor_index_workspace,
+            "edge_stream_policy": "memory_bounded_optix_written_directed_radius_graph_neighbor_index_stream_chunks",
+            "edge_stream_reused": chunked_reused,
+            "prepared_chunked_adjacency_run_count": self.run_count,
+            "component_label_policy": "positive_root_index_labels_noise_minus_one",
+            "component_union_policy": "monotonic_atomic_min_from_chunked_directed_edge_stream",
+            "prepared_optix_scene_reused": True,
+            "output_columns_reused": True,
+            "optix_backend_used": True,
+            "rt_core_accelerated": True,
+            "materializes_neighbor_summaries": False,
+            "materializes_neighbor_rows": False,
+            "materializes_directed_adjacency_stream": False,
+            "materializes_bounded_directed_adjacency_chunks": True,
+            "adjacency_write_pass_count": 1,
+            "border_label_policy": "one_core_neighbor_candidate_per_border_point_captured_during_union_pass",
+            "neighbor_count_policy": "exact_full_degree_from_prepared_rt_count_threshold_with_threshold_equal_point_count",
+            "count_metadata": tuple(self.count_metadata),
+            "native_union_adjacency_metadata": tuple(native_union_metadata),
+            "native_label_adjacency_metadata": (),
+            "automatic_hidden_dispatcher": False,
+            "direct_device_handoff_authorized": True,
+            "output_columns_true_zero_copy_authorized": True,
+            "true_zero_copy_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+        if return_metadata:
+            return {"columns": columns, "metadata": metadata}
+        return columns
+
+    def close(self) -> None:
+        if self.closed:
+            return
+        close = getattr(self.prepared_native, "close", None)
+        if close is not None:
+            close()
+        self.closed = True
+
+    def __enter__(self) -> "PreparedOptixCupyRadiusGraphChunkedAdjacency3D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):  # pragma: no cover - best-effort cleanup
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+class PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D:
+    """Prepared generic OptiX RT grouped stream continuation plus CuPy labels."""
+
+    def __init__(
+        self,
+        point_rows,
+        *,
+        radius: float,
+        partner: str = "cupy",
+        grouped_union_query_block_size: int | None = None,
+        grouped_union_same_root_culling: bool = True,
+        grouped_union_direct_side_effect: bool = False,
+    ):
+        if partner != "cupy":
+            raise ValueError("PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D currently requires partner='cupy'")
+        radius = float(radius)
+        if radius <= 0.0:
+            raise ValueError("radius must be positive")
+        if not isinstance(grouped_union_same_root_culling, bool):
+            raise TypeError("grouped_union_same_root_culling must be a bool")
+        if not isinstance(grouped_union_direct_side_effect, bool):
+            raise TypeError("grouped_union_direct_side_effect must be a bool")
+        if grouped_union_query_block_size is not None:
+            grouped_union_query_block_size = int(grouped_union_query_block_size)
+            if grouped_union_query_block_size <= 0:
+                raise ValueError("grouped_union_query_block_size must be positive when provided")
+        self.point_rows = tuple(point_rows)
+        if not self.point_rows:
+            raise ValueError("prepared OptiX+CuPy grouped stream radius graph requires non-empty point rows")
+        self.radius = radius
+        self.partner = partner
+        self.grouped_union_query_block_size = grouped_union_query_block_size
+        self.grouped_union_same_root_culling = grouped_union_same_root_culling
+        self.grouped_union_direct_side_effect = grouped_union_direct_side_effect
+        self.point_count = len(self.point_rows)
+        self.runtime = _partner_module(partner)
+        self.cupy = self.runtime["module"]
+        self.point_columns = point_rows_to_partner_columns(self.point_rows, partner=partner)
+        if "z" not in self.point_columns:
+            raise ValueError("PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D requires 3-D point rows")
+
+        self.prepared_native = _optix.prepare_optix_fixed_radius_count_threshold_3d(
+            self.point_rows,
+            max_radius=radius,
+        )
+        self.count_columns = allocate_fixed_radius_count_threshold_3d_partner_device_output_columns(
+            self.point_count,
+            partner=partner,
+        )
+        self._cached_core_threshold: int | None = None
+        self._cached_core_flags = None
+        self._cached_neighbor_counts = None
+        self._cached_count_metadata: dict[str, object] | None = None
+        self._cached_all_core_flags_true: bool | None = None
+        self.parent_initial = self.cupy.arange(self.point_count, dtype=self.cupy.int32)
+        self.parent_workspace = self.cupy.empty((self.point_count,), dtype=self.cupy.int32)
+        self.border_core_candidate_workspace = self.cupy.empty((self.point_count,), dtype=self.cupy.int32)
+        self.labels_workspace = self.cupy.empty((self.point_count,), dtype=self.cupy.int64)
+        _, _, _, self.border_candidate_label_kernel = _cupy_radius_graph_components_3d_chunked_adjacency_kernels(self.cupy)
+        self.run_count = 0
+        self.closed = False
+
+    def run(self, *, min_neighbors: int, return_metadata: bool = False):
+        if self.closed:
+            raise RuntimeError("prepared OptiX+CuPy grouped stream radius graph handle is closed")
+        min_neighbors = int(min_neighbors)
+        if min_neighbors < 1:
+            raise ValueError("min_neighbors must be at least 1")
+        core_flag_cache_reused = self._cached_core_threshold == min_neighbors
+        if not core_flag_cache_reused:
+            threshold_result = fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns(
+                self.prepared_native,
+                self.point_rows,
+                radius=self.radius,
+                threshold=min_neighbors,
+                partner=self.partner,
+                output_columns=self.count_columns,
+                return_metadata=True,
+            )
+            self._cached_core_threshold = min_neighbors
+            self._cached_core_flags = threshold_result["columns"]["threshold_flags"]
+            self._cached_neighbor_counts = threshold_result["columns"]["neighbor_counts"]
+            self._cached_count_metadata = dict(threshold_result["metadata"])
+            self._cached_all_core_flags_true = bool(self.cupy.all(self._cached_core_flags).item())
+        core_flags = self._cached_core_flags
+        neighbor_counts = self._cached_neighbor_counts
+        all_core_flags_true = bool(self._cached_all_core_flags_true)
+        self.parent_workspace[...] = self.parent_initial
+        query_block_size = self.grouped_union_query_block_size
+        use_query_blocks = query_block_size is not None and query_block_size < self.point_count
+        continuation_pass_count = 1
+        if use_query_blocks:
+            native_range_metadata = []
+            if all_core_flags_true:
+                for query_start in range(0, self.point_count, query_block_size):
+                    query_count = min(query_block_size, self.point_count - query_start)
+                    range_result = self.prepared_native.apply_device_grouped_union_self_range(
+                        query_start=query_start,
+                        query_count=query_count,
+                        radius=self.radius,
+                        parent_out=self.parent_workspace,
+                        same_root_culling=self.grouped_union_same_root_culling,
+                        direct_side_effect=self.grouped_union_direct_side_effect,
+                    )
+                    native_range_metadata.append(dict(range_result["metadata"]))
+                grouped_stream_policy = "optix_applies_query_blocked_all_items_grouped_union_without_predicate_or_fallback_workspace"
+                fallback_candidate_policy = "not_needed_all_items_satisfy_predicate"
+            else:
+                self.border_core_candidate_workspace.fill(self.point_count)
+                for query_start in range(0, self.point_count, query_block_size):
+                    query_count = min(query_block_size, self.point_count - query_start)
+                    range_result = self.prepared_native.apply_device_grouped_union_self_range(
+                        query_start=query_start,
+                        query_count=query_count,
+                        radius=self.radius,
+                        predicate_flags=core_flags,
+                        parent_out=self.parent_workspace,
+                        fallback_candidate_out=self.border_core_candidate_workspace,
+                        same_root_culling=self.grouped_union_same_root_culling,
+                        direct_side_effect=self.grouped_union_direct_side_effect,
+                    )
+                    native_range_metadata.append(dict(range_result["metadata"]))
+                grouped_stream_policy = "optix_applies_query_blocked_predicated_union_and_border_candidate_during_traversal"
+                fallback_candidate_policy = "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass"
+            continuation_pass_count = len(native_range_metadata)
+            native_elapsed_total = sum(float(row.get("native_elapsed_sec", 0.0)) for row in native_range_metadata)
+            native_metadata = dict(native_range_metadata[-1]) if native_range_metadata else {}
+            native_metadata.update(
+                {
+                    "native_execution_path": "prepared_rt_core_grouped_union_3d_self_query_blocked_ranges",
+                    "query_source": "prepared_search_points_self_query_device_range",
+                    "query_block_size": query_block_size,
+                    "query_block_count": continuation_pass_count,
+                    "query_block_policy": "explicit_contiguous_prepared_search_ranges",
+                    "native_elapsed_sec": native_elapsed_total,
+                    "range_native_metadata_sample": native_range_metadata[:1] + native_range_metadata[-1:],
+                    "grouped_union_query_blocked": True,
+                    "grouped_union_blocked_candidate": True,
+                    "performance_claim_authorized": False,
+                }
+            )
+            native_result = {"metadata": native_metadata}
+        elif all_core_flags_true:
+            native_result = self.prepared_native.apply_device_grouped_union_all_self(
+                radius=self.radius,
+                parent_out=self.parent_workspace,
+                same_root_culling=self.grouped_union_same_root_culling,
+                direct_side_effect=self.grouped_union_direct_side_effect,
+            )
+            grouped_stream_policy = "optix_applies_all_items_grouped_union_without_predicate_or_fallback_workspace"
+            fallback_candidate_policy = "not_needed_all_items_satisfy_predicate"
+        else:
+            self.border_core_candidate_workspace.fill(self.point_count)
+            native_result = self.prepared_native.apply_device_grouped_union_self(
+                radius=self.radius,
+                predicate_flags=core_flags,
+                parent_out=self.parent_workspace,
+                fallback_candidate_out=self.border_core_candidate_workspace,
+                same_root_culling=self.grouped_union_same_root_culling,
+                direct_side_effect=self.grouped_union_direct_side_effect,
+            )
+            grouped_stream_policy = "optix_applies_predicated_union_and_border_candidate_during_traversal"
+            fallback_candidate_policy = "one_predicate_true_neighbor_candidate_per_predicate_false_item_captured_during_rt_pass"
+        threads = 256
+        label_blocks = (max(1, (self.point_count + threads - 1) // threads),)
+        self.border_candidate_label_kernel(
+            label_blocks,
+            (threads,),
+            (
+                self.point_count,
+                core_flags,
+                self.parent_workspace,
+                self.border_core_candidate_workspace,
+                self.labels_workspace,
+            ),
+        )
+        self.runtime["sync"]()
+        grouped_reused = self.run_count > 0
+        self.run_count += 1
+        columns = {
+            "point_ids": self.point_columns["ids"],
+            "component_labels": self.labels_workspace,
+            "is_core": core_flags,
+            "neighbor_counts": neighbor_counts,
+        }
+        native_metadata = dict(native_result["metadata"])
+        metadata = {
+            "adapter": "PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D.run",
+            "partner": self.partner,
+            "input_contract": "prepared_host_point_rows_self_radius_graph_3d",
+            "partner_reference_contract": "generic_prepared_optix_cupy_grouped_stream_component_labels_3d",
+            "native_engine_row_contract": native_metadata.get(
+                "native_engine_row_contract",
+                "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+            ),
+            "native_execution_path": native_metadata.get(
+                "native_execution_path",
+                "prepared_rt_core_grouped_union_3d_self_query",
+            ),
+            "query_source": "prepared_search_points_self_query_device",
+            "point_count": self.point_count,
+            "radius": self.radius,
+            "min_neighbors": min_neighbors,
+            "prepared_grouped_stream_run_count": self.run_count,
+            "prepared_grouped_stream_reused": grouped_reused,
+            "grouped_stream_policy": grouped_stream_policy,
+            "component_label_policy": "positive_root_index_labels_noise_minus_one",
+            "component_union_policy": "monotonic_atomic_min_from_rt_hit_stream_without_neighbor_index_materialization",
+            "fallback_candidate_policy": fallback_candidate_policy,
+            "prepared_optix_scene_reused": True,
+            "output_columns_reused": True,
+            "core_flag_threshold": min_neighbors,
+            "core_flag_cache_reused": core_flag_cache_reused,
+            "all_core_flags_true": all_core_flags_true,
+            "grouped_union_query_block_size": query_block_size,
+            "grouped_union_query_block_count": continuation_pass_count,
+            "grouped_union_query_blocked_candidate": bool(use_query_blocks),
+            "grouped_union_same_root_culling_enabled": self.grouped_union_same_root_culling,
+            "grouped_union_direct_side_effect_enabled": self.grouped_union_direct_side_effect,
+            "optix_backend_used": True,
+            "rt_core_accelerated": True,
+            "materializes_neighbor_summaries": False,
+            "materializes_neighbor_rows": False,
+            "materializes_directed_adjacency_stream": False,
+            "materializes_bounded_directed_adjacency_chunks": False,
+            "adjacency_write_pass_count": 0,
+            "grouped_stream_continuation_pass_count": continuation_pass_count,
+            "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+            "count_metadata": self._cached_count_metadata,
+            "native_grouped_stream_metadata": native_metadata,
+            "native_library_identity": (
+                self.prepared_native.native_library_identity_metadata
+            ),
+            "automatic_hidden_dispatcher": False,
+            "direct_device_handoff_authorized": True,
+            "output_columns_true_zero_copy_authorized": True,
+            "true_zero_copy_authorized": False,
+            "rt_core_speedup_claim_authorized": False,
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+        if return_metadata:
+            return {"columns": columns, "metadata": metadata}
+        return columns
+
+    def close(self) -> None:
+        if self.closed:
+            return
+        close = getattr(self.prepared_native, "close", None)
+        if close is not None:
+            close()
+        self.closed = True
+
+    def __enter__(self) -> "PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):  # pragma: no cover - best-effort cleanup
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+_RADIUS_GRAPH_BOUNDARY_ASSIGNMENT_POLICIES = (
+    "single_pass_candidate_root_rebased",
+    "lowest_candidate_then_root",
+    "lowest_component_root_two_pass",
+)
+_RADIUS_GRAPH_BOUNDARY_ASSIGNMENT_CANONICAL_POLICY = {
+    "single_pass_candidate_root_rebased": "single_pass_candidate_root_rebased",
+    "lowest_candidate_then_root": "single_pass_candidate_root_rebased",
+    "lowest_component_root_two_pass": "lowest_component_root_two_pass",
+}
+
+
+def _radius_graph_boundary_assignment_canonical_policy(policy: str) -> str:
+    return _RADIUS_GRAPH_BOUNDARY_ASSIGNMENT_CANONICAL_POLICY[str(policy)]
+
+
+class PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
+    """Prepared generic OptiX RT grouped stream continuation plus Numba labels."""
+
+    def __init__(
+        self,
+        point_rows,
+        *,
+        radius: float,
+        partner: str = "numba",
+        grouped_union_query_block_size: int | None = None,
+        grouped_union_same_root_culling: bool = True,
+        grouped_union_direct_side_effect: bool = False,
+        boundary_assignment_policy: str = "single_pass_candidate_root_rebased",
+        expected_native_library_identity=None,
+        expected_native_library_ref=None,
+    ):
+        if partner != "numba":
+            raise ValueError("PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D currently requires partner='numba'")
+        boundary_assignment_policy = str(boundary_assignment_policy)
+        if boundary_assignment_policy not in _RADIUS_GRAPH_BOUNDARY_ASSIGNMENT_POLICIES:
+            raise ValueError(
+                "boundary_assignment_policy must be one of "
+                f"{_RADIUS_GRAPH_BOUNDARY_ASSIGNMENT_POLICIES!r}"
+            )
+        radius = float(radius)
+        if radius <= 0.0:
+            raise ValueError("radius must be positive")
+        if not isinstance(grouped_union_same_root_culling, bool):
+            raise TypeError("grouped_union_same_root_culling must be a bool")
+        if not isinstance(grouped_union_direct_side_effect, bool):
+            raise TypeError("grouped_union_direct_side_effect must be a bool")
+        if grouped_union_query_block_size is not None:
+            grouped_union_query_block_size = int(grouped_union_query_block_size)
+            if grouped_union_query_block_size <= 0:
+                raise ValueError("grouped_union_query_block_size must be positive when provided")
+        cuda, np = _numba_cuda_stack_for_radius_graph()
+        self.cuda = cuda
+        self.np = np
+        self.point_rows = tuple(point_rows)
+        if not self.point_rows:
+            raise ValueError("prepared OptiX+Numba grouped stream radius graph requires non-empty point rows")
+        self.radius = radius
+        self.partner = partner
+        self.grouped_union_query_block_size = grouped_union_query_block_size
+        self.grouped_union_same_root_culling = grouped_union_same_root_culling
+        self.grouped_union_direct_side_effect = grouped_union_direct_side_effect
+        self.boundary_assignment_policy = boundary_assignment_policy
+        self.boundary_assignment_canonical_policy = _radius_graph_boundary_assignment_canonical_policy(
+            boundary_assignment_policy
+        )
+        self.point_count = len(self.point_rows)
+        self.point_columns = point_rows_to_partner_columns(self.point_rows, partner=partner)
+        if "z" not in self.point_columns:
+            raise ValueError("PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D requires 3-D point rows")
+
+        self.prepared_native = _optix.prepare_optix_fixed_radius_count_threshold_3d(
+            self.point_rows,
+            max_radius=radius,
+            expected_native_library_identity=expected_native_library_identity,
+            expected_native_library_ref=expected_native_library_ref,
+        )
+        self._prepared_native_ref = self.prepared_native
+        self._prepared_native_object_id = id(self.prepared_native)
+        self._prepared_native_binding_seal = hmac.new(
+            _PREPARED_RADIUS_GRAPH_OWNER_SECRET,
+            (
+                "rtdl.prepared_radius_graph_owner.v1\x00"
+                f"{self._prepared_native_object_id}\x00"
+                f"{type(self.prepared_native).__module__}."
+                f"{type(self.prepared_native).__qualname__}"
+            ).encode("utf-8"),
+            hashlib.sha256,
+        ).hexdigest()
+        self.count_columns = allocate_fixed_radius_count_threshold_3d_partner_device_output_columns(
+            self.point_count,
+            partner=partner,
+        )
+        self._cached_core_threshold: int | None = None
+        self._cached_core_flags = None
+        self._cached_neighbor_counts = None
+        self._cached_count_metadata: dict[str, object] | None = None
+        self._cached_all_core_flags_true: bool | None = None
+        self.parent_workspace = cuda.device_array((self.point_count,), dtype=np.int32)
+        self.border_core_candidate_workspace = cuda.device_array((self.point_count,), dtype=np.int32)
+        self.labels_workspace = cuda.device_array((self.point_count,), dtype=np.int64)
+        self.parent_border_init_kernel = _numba_i32_parent_border_init_kernel(cuda)
+        self.i32_fill_kernel = _numba_i32_fill_kernel(cuda)
+        self.border_candidate_label_kernel = _numba_radius_graph_components_3d_border_candidate_label_kernel(cuda)
+        self.i64_zero_kernel = _numba_i64_zero_kernel(cuda)
+        self.signature_workspace_zero_kernel = _numba_i64_signature_workspace_zero_kernel(cuda)
+        self.component_signature_kernel = _numba_radius_graph_component_signature_kernel(cuda)
+        self.signature_label_counts = cuda.device_array((self.point_count + 1,), dtype=np.int64)
+        self.signature_flag_true_count = cuda.device_array((1,), dtype=np.int64)
+        self.signature_negative_label_count = cuda.device_array((1,), dtype=np.int64)
+        self.threads = 256
+        self.label_blocks = (max(1, math.ceil(self.point_count / self.threads)),)
+        self.signature_count_blocks = (max(1, math.ceil((self.point_count + 1) / self.threads)),)
+        self.run_count = 0
+        self.closed = False
+        cuda.synchronize()
+
+    def _validate_prepared_native_binding(self) -> None:
+        expected_seal = hmac.new(
+            _PREPARED_RADIUS_GRAPH_OWNER_SECRET,
+            (
+                "rtdl.prepared_radius_graph_owner.v1\x00"
+                f"{self._prepared_native_object_id}\x00"
+                f"{type(self._prepared_native_ref).__module__}."
+                f"{type(self._prepared_native_ref).__qualname__}"
+            ).encode("utf-8"),
+            hashlib.sha256,
+        ).hexdigest()
+        if (
+            not hmac.compare_digest(
+                self._prepared_native_binding_seal, expected_seal
+            )
+            or self.prepared_native is not self._prepared_native_ref
+            or id(self.prepared_native) != self._prepared_native_object_id
+        ):
+            raise RuntimeError(
+                "prepared radius-graph native owner object binding changed"
+            )
+
+    def _refresh_core_flags(self, min_neighbors: int) -> bool:
+        core_flag_cache_reused = self._cached_core_threshold == min_neighbors
+        if core_flag_cache_reused:
+            return True
+        threshold_result = fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns(
+            self.prepared_native,
+            self.point_rows,
+            radius=self.radius,
+            threshold=min_neighbors,
+            partner=self.partner,
+            output_columns=self.count_columns,
+            return_metadata=True,
+        )
+        self._cached_core_threshold = min_neighbors
+        self._cached_core_flags = _as_numba_radius_graph_device_array(
+            threshold_result["columns"]["threshold_flags"],
+            cuda=self.cuda,
+            np=self.np,
+            dtype=self.np.uint32,
+            name="threshold_flags",
+        )
+        self._cached_neighbor_counts = _as_numba_radius_graph_device_array(
+            threshold_result["columns"]["neighbor_counts"],
+            cuda=self.cuda,
+            np=self.np,
+            dtype=self.np.uint32,
+            name="neighbor_counts",
+        )
+        self._cached_count_metadata = dict(threshold_result["metadata"])
+        flags_host = self.np.asarray(self._cached_core_flags.copy_to_host(), dtype=self.np.uint32)
+        self._cached_all_core_flags_true = bool(flags_host.all())
+        return False
+
+    def _reset_border_candidate_workspace(self) -> None:
+        self.i32_fill_kernel[self.label_blocks, self.threads](
+            self.border_core_candidate_workspace,
+            self.point_count,
+            self.point_count,
+        )
+        self.cuda.synchronize()
+
+    def _apply_native_grouped_union(
+        self,
+        *,
+        core_flags,
+        all_core_flags_true: bool,
+    ) -> tuple[dict[str, object], str, str, int]:
+        query_block_size = self.grouped_union_query_block_size
+        use_query_blocks = query_block_size is not None and query_block_size < self.point_count
+
+        def apply_predicated_range(query_start: int, query_count: int) -> dict[str, object]:
+            return self.prepared_native.apply_device_grouped_union_self_range(
+                query_start=query_start,
+                query_count=query_count,
+                radius=self.radius,
+                predicate_flags=core_flags,
+                parent_out=self.parent_workspace,
+                fallback_candidate_out=self.border_core_candidate_workspace,
+                same_root_culling=self.grouped_union_same_root_culling,
+                direct_side_effect=self.grouped_union_direct_side_effect,
+            )
+
+        def apply_all_items_range(query_start: int, query_count: int) -> dict[str, object]:
+            return self.prepared_native.apply_device_grouped_union_self_range(
+                query_start=query_start,
+                query_count=query_count,
+                radius=self.radius,
+                parent_out=self.parent_workspace,
+                same_root_culling=self.grouped_union_same_root_culling,
+                direct_side_effect=self.grouped_union_direct_side_effect,
+            )
+
+        if use_query_blocks:
+            native_range_metadata = []
+            assert query_block_size is not None
+            if all_core_flags_true:
+                for query_start in range(0, self.point_count, query_block_size):
+                    query_count = min(query_block_size, self.point_count - query_start)
+                    native_range_metadata.append(dict(apply_all_items_range(query_start, query_count)["metadata"]))
+                grouped_stream_policy = "optix_applies_query_blocked_all_items_grouped_union_without_predicate_or_fallback_workspace"
+                fallback_candidate_policy = "not_needed_all_items_satisfy_predicate"
+                boundary_assignment_pass_count = 1
+            elif self.boundary_assignment_policy == "lowest_component_root_two_pass":
+                first_pass_metadata = []
+                second_pass_metadata = []
+                for query_start in range(0, self.point_count, query_block_size):
+                    query_count = min(query_block_size, self.point_count - query_start)
+                    first_pass_metadata.append(dict(apply_predicated_range(query_start, query_count)["metadata"]))
+                self._reset_border_candidate_workspace()
+                for query_start in range(0, self.point_count, query_block_size):
+                    query_count = min(query_block_size, self.point_count - query_start)
+                    second_pass_metadata.append(dict(apply_predicated_range(query_start, query_count)["metadata"]))
+                native_range_metadata = first_pass_metadata + second_pass_metadata
+                grouped_stream_policy = "optix_applies_query_blocked_predicated_union_then_lowest_root_boundary_assignment"
+                fallback_candidate_policy = "lowest_component_root_after_two_prepared_rt_passes"
+                boundary_assignment_pass_count = 2
+            else:
+                for query_start in range(0, self.point_count, query_block_size):
+                    query_count = min(query_block_size, self.point_count - query_start)
+                    native_range_metadata.append(dict(apply_predicated_range(query_start, query_count)["metadata"]))
+                grouped_stream_policy = "optix_applies_query_blocked_predicated_union_and_border_candidate_during_traversal"
+                fallback_candidate_policy = "lowest_component_root_observed_during_single_rt_pass"
+                boundary_assignment_pass_count = 1
+            continuation_pass_count = len(native_range_metadata)
+            native_elapsed_total = sum(float(row.get("native_elapsed_sec", 0.0)) for row in native_range_metadata)
+            native_metadata = dict(native_range_metadata[-1]) if native_range_metadata else {}
+            native_metadata.update(
+                {
+                    "native_execution_path": "prepared_rt_core_grouped_union_3d_self_query_blocked_ranges",
+                    "query_source": "prepared_search_points_self_query_device_range",
+                    "query_block_size": query_block_size,
+                    "query_block_count": continuation_pass_count,
+                    "query_block_policy": "explicit_contiguous_prepared_search_ranges",
+                    "native_elapsed_sec": native_elapsed_total,
+                    "range_native_metadata_sample": native_range_metadata[:1] + native_range_metadata[-1:],
+                    "grouped_union_query_blocked": True,
+                    "grouped_union_blocked_candidate": True,
+                    "boundary_assignment_policy": self.boundary_assignment_policy,
+                    "boundary_assignment_canonical_policy": self.boundary_assignment_canonical_policy,
+                    "boundary_assignment_pass_count": boundary_assignment_pass_count,
+                    "performance_claim_authorized": False,
+                }
+            )
+            return {"metadata": native_metadata}, grouped_stream_policy, fallback_candidate_policy, continuation_pass_count
+
+        if all_core_flags_true:
+            native_result = self.prepared_native.apply_device_grouped_union_all_self(
+                radius=self.radius,
+                parent_out=self.parent_workspace,
+                same_root_culling=self.grouped_union_same_root_culling,
+                direct_side_effect=self.grouped_union_direct_side_effect,
+            )
+            native_metadata = dict(native_result["metadata"])
+            native_metadata.update(
+                {
+                    "boundary_assignment_policy": self.boundary_assignment_policy,
+                    "boundary_assignment_canonical_policy": self.boundary_assignment_canonical_policy,
+                    "boundary_assignment_pass_count": 1,
+                    "fallback_candidate_policy": "not_needed_all_items_satisfy_predicate",
+                    "performance_claim_authorized": False,
+                }
+            )
+            return (
+                {"metadata": native_metadata},
+                "optix_applies_all_items_grouped_union_without_predicate_or_fallback_workspace",
+                "not_needed_all_items_satisfy_predicate",
+                1,
+            )
+
+        if self.boundary_assignment_policy == "lowest_component_root_two_pass":
+            first_pass = self.prepared_native.apply_device_grouped_union_self(
+                radius=self.radius,
+                predicate_flags=core_flags,
+                parent_out=self.parent_workspace,
+                fallback_candidate_out=self.border_core_candidate_workspace,
+                same_root_culling=self.grouped_union_same_root_culling,
+                direct_side_effect=self.grouped_union_direct_side_effect,
+            )
+            self._reset_border_candidate_workspace()
+            second_pass = self.prepared_native.apply_device_grouped_union_self(
+                radius=self.radius,
+                predicate_flags=core_flags,
+                parent_out=self.parent_workspace,
+                fallback_candidate_out=self.border_core_candidate_workspace,
+                same_root_culling=self.grouped_union_same_root_culling,
+                direct_side_effect=self.grouped_union_direct_side_effect,
+            )
+            native_metadata = dict(second_pass["metadata"])
+            native_metadata.update(
+                {
+                    "native_elapsed_sec": float(first_pass["metadata"].get("native_elapsed_sec", 0.0))
+                    + float(second_pass["metadata"].get("native_elapsed_sec", 0.0)),
+                    "boundary_assignment_policy": self.boundary_assignment_policy,
+                    "boundary_assignment_canonical_policy": self.boundary_assignment_canonical_policy,
+                    "boundary_assignment_pass_count": 2,
+                    "boundary_assignment_first_pass_metadata": dict(first_pass["metadata"]),
+                    "boundary_assignment_second_pass_metadata": dict(second_pass["metadata"]),
+                    "performance_claim_authorized": False,
+                }
+            )
+            return (
+                {"metadata": native_metadata},
+                "optix_applies_predicated_union_then_lowest_root_boundary_assignment",
+                "lowest_component_root_after_two_prepared_rt_passes",
+                2,
+            )
+
+        native_result = self.prepared_native.apply_device_grouped_union_self(
+            radius=self.radius,
+            predicate_flags=core_flags,
+            parent_out=self.parent_workspace,
+            fallback_candidate_out=self.border_core_candidate_workspace,
+            same_root_culling=self.grouped_union_same_root_culling,
+            direct_side_effect=self.grouped_union_direct_side_effect,
+        )
+        native_metadata = dict(native_result["metadata"])
+        native_metadata["boundary_assignment_policy"] = self.boundary_assignment_policy
+        native_metadata["boundary_assignment_canonical_policy"] = self.boundary_assignment_canonical_policy
+        native_metadata["boundary_assignment_pass_count"] = 1
+        return (
+            {"metadata": native_metadata},
+            "optix_applies_predicated_union_and_border_candidate_during_traversal",
+            "lowest_component_root_observed_during_single_rt_pass",
+            1,
+        )
+
+    def run(self, *, min_neighbors: int, return_metadata: bool = False):
+        if self.closed:
+            raise RuntimeError("prepared OptiX+Numba grouped stream radius graph handle is closed")
+        self._validate_prepared_native_binding()
+        min_neighbors = int(min_neighbors)
+        if min_neighbors < 1:
+            raise ValueError("min_neighbors must be at least 1")
+        core_flag_cache_reused = self._refresh_core_flags(min_neighbors)
+        core_flags = self._cached_core_flags
+        neighbor_counts = self._cached_neighbor_counts
+        all_core_flags_true = bool(self._cached_all_core_flags_true)
+        self.parent_border_init_kernel[self.label_blocks, self.threads](
+            self.parent_workspace,
+            self.border_core_candidate_workspace,
+            self.point_count,
+            self.point_count,
+            not all_core_flags_true,
+        )
+        self.cuda.synchronize()
+        query_block_size = self.grouped_union_query_block_size
+        use_query_blocks = query_block_size is not None and query_block_size < self.point_count
+        (
+            native_result,
+            grouped_stream_policy,
+            fallback_candidate_policy,
+            continuation_pass_count,
+        ) = self._apply_native_grouped_union(
+            core_flags=core_flags,
+            all_core_flags_true=all_core_flags_true,
+        )
+        self.border_candidate_label_kernel[self.label_blocks, self.threads](
+            self.point_count,
+            core_flags,
+            self.parent_workspace,
+            self.border_core_candidate_workspace,
+            self.labels_workspace,
+        )
+        self.cuda.synchronize()
+        grouped_reused = self.run_count > 0
+        self.run_count += 1
+        columns = {
+            "point_ids": self.point_columns["ids"],
+            "component_labels": self.labels_workspace,
+            "is_core": core_flags,
+            "neighbor_counts": neighbor_counts,
+        }
+        native_metadata = dict(native_result["metadata"])
+        metadata = {
+            "adapter": "PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D.run",
+            "partner": self.partner,
+            "input_contract": "prepared_host_point_rows_self_radius_graph_3d",
+            "partner_reference_contract": "generic_prepared_optix_numba_grouped_stream_component_labels_3d",
+            "native_engine_row_contract": native_metadata.get(
+                "native_engine_row_contract",
+                "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+            ),
+            "native_execution_path": native_metadata.get(
+                "native_execution_path",
+                "prepared_rt_core_grouped_union_3d_self_query",
+            ),
+            "query_source": "prepared_search_points_self_query_device",
+            "point_count": self.point_count,
+            "radius": self.radius,
+            "min_neighbors": min_neighbors,
+            "prepared_grouped_stream_run_count": self.run_count,
+            "prepared_grouped_stream_reused": grouped_reused,
+            "grouped_stream_policy": grouped_stream_policy,
+            "component_label_policy": "positive_root_index_labels_noise_minus_one",
+            "component_union_policy": "monotonic_atomic_min_from_rt_hit_stream_without_neighbor_index_materialization",
+            "fallback_candidate_policy": fallback_candidate_policy,
+            "boundary_assignment_policy": self.boundary_assignment_policy,
+            "boundary_assignment_canonical_policy": self.boundary_assignment_canonical_policy,
+            "prepared_optix_scene_reused": True,
+            "output_columns_reused": True,
+            "core_flag_threshold": min_neighbors,
+            "core_flag_cache_reused": core_flag_cache_reused,
+            "all_core_flags_true": all_core_flags_true,
+            "grouped_union_query_block_size": query_block_size,
+            "grouped_union_query_block_count": continuation_pass_count,
+            "grouped_union_query_blocked_candidate": bool(use_query_blocks),
+            "grouped_union_same_root_culling_enabled": self.grouped_union_same_root_culling,
+            "grouped_union_direct_side_effect_enabled": self.grouped_union_direct_side_effect,
+            "numba_workspace_init_policy": "device_parent_iota_optional_border_fill",
+            "numba_workspace_host_reset_copy_used": False,
+            "optix_backend_used": True,
+            "rt_core_accelerated": True,
+            "materializes_neighbor_summaries": False,
+            "materializes_neighbor_rows": False,
+            "materializes_directed_adjacency_stream": False,
+            "materializes_bounded_directed_adjacency_chunks": False,
+            "adjacency_write_pass_count": 0,
+            "grouped_stream_continuation_pass_count": continuation_pass_count,
+            "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+            "count_metadata": self._cached_count_metadata,
+            "native_grouped_stream_metadata": native_metadata,
+            "native_library_identity": (
+                self.prepared_native.native_library_identity_metadata
+            ),
+            "prepared_native_owner_object_bound": True,
+            "prepared_native_owner_runtime_revalidation_required": True,
+            "automatic_hidden_dispatcher": False,
+            "direct_device_handoff_authorized": True,
+            "output_columns_true_zero_copy_authorized": True,
+            "true_zero_copy_authorized": False,
+            "raw_cuda_kernel_required": False,
+            "numba_cuda_jit_used": True,
+            "rt_core_speedup_claim_authorized": False,
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+        if return_metadata:
+            return {"columns": columns, "metadata": metadata}
+        return columns
+
+    def run_component_signature(self, *, min_neighbors: int, return_metadata: bool = False):
+        if self.closed:
+            raise RuntimeError("prepared OptiX+Numba grouped stream radius graph handle is closed")
+        self._validate_prepared_native_binding()
+        min_neighbors = int(min_neighbors)
+        if min_neighbors < 1:
+            raise ValueError("min_neighbors must be at least 1")
+        core_flag_cache_reused = self._refresh_core_flags(min_neighbors)
+        core_flags = self._cached_core_flags
+        neighbor_counts = self._cached_neighbor_counts
+        all_core_flags_true = bool(self._cached_all_core_flags_true)
+        self.parent_border_init_kernel[self.label_blocks, self.threads](
+            self.parent_workspace,
+            self.border_core_candidate_workspace,
+            self.point_count,
+            self.point_count,
+            not all_core_flags_true,
+        )
+        self.cuda.synchronize()
+        query_block_size = self.grouped_union_query_block_size
+        use_query_blocks = query_block_size is not None and query_block_size < self.point_count
+        (
+            native_result,
+            grouped_stream_policy,
+            fallback_candidate_policy,
+            continuation_pass_count,
+        ) = self._apply_native_grouped_union(
+            core_flags=core_flags,
+            all_core_flags_true=all_core_flags_true,
+        )
+        self.signature_workspace_zero_kernel[self.signature_count_blocks, self.threads](
+            self.signature_label_counts,
+            self.point_count + 1,
+            self.signature_flag_true_count,
+            self.signature_negative_label_count,
+        )
+        self.component_signature_kernel[self.label_blocks, self.threads](
+            self.point_count,
+            core_flags,
+            self.parent_workspace,
+            self.border_core_candidate_workspace,
+            self.signature_label_counts,
+            self.signature_flag_true_count,
+            self.signature_negative_label_count,
+        )
+        self.cuda.synchronize()
+        grouped_reused = self.run_count > 0
+        self.run_count += 1
+        columns = {
+            "label_counts": self.signature_label_counts,
+            "flag_true_count": self.signature_flag_true_count,
+            "negative_label_count": self.signature_negative_label_count,
+            "neighbor_counts": neighbor_counts,
+        }
+        native_metadata = dict(native_result["metadata"])
+        metadata = {
+            "adapter": "PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D.run_component_signature",
+            "partner": self.partner,
+            "input_contract": "prepared_host_point_rows_self_radius_graph_3d",
+            "partner_reference_contract": "generic_prepared_optix_numba_grouped_stream_component_size_signature_3d",
+            "native_engine_row_contract": native_metadata.get(
+                "native_engine_row_contract",
+                "generic_prepared_fixed_radius_grouped_union_3d_self_device_workspaces",
+            ),
+            "native_execution_path": native_metadata.get(
+                "native_execution_path",
+                "prepared_rt_core_grouped_union_3d_self_query",
+            ),
+            "query_source": "prepared_search_points_self_query_device",
+            "point_count": self.point_count,
+            "radius": self.radius,
+            "min_neighbors": min_neighbors,
+            "prepared_grouped_stream_run_count": self.run_count,
+            "prepared_grouped_stream_reused": grouped_reused,
+            "grouped_stream_policy": grouped_stream_policy,
+            "component_signature_policy": "direct_root_count_from_parent_workspace_and_border_candidates",
+            "component_label_policy": "not_materialized_signature_counts_only",
+            "component_union_policy": "monotonic_atomic_min_from_rt_hit_stream_without_neighbor_index_materialization",
+            "fallback_candidate_policy": fallback_candidate_policy,
+            "boundary_assignment_policy": self.boundary_assignment_policy,
+            "boundary_assignment_canonical_policy": self.boundary_assignment_canonical_policy,
+            "prepared_optix_scene_reused": True,
+            "output_columns_reused": True,
+            "core_flag_threshold": min_neighbors,
+            "core_flag_cache_reused": core_flag_cache_reused,
+            "all_core_flags_true": all_core_flags_true,
+            "grouped_union_query_block_size": query_block_size,
+            "grouped_union_query_block_count": continuation_pass_count,
+            "grouped_union_query_blocked_candidate": bool(use_query_blocks),
+            "grouped_union_same_root_culling_enabled": self.grouped_union_same_root_culling,
+            "grouped_union_direct_side_effect_enabled": self.grouped_union_direct_side_effect,
+            "numba_workspace_init_policy": "device_parent_iota_optional_border_fill",
+            "numba_workspace_host_reset_copy_used": False,
+            "optix_backend_used": True,
+            "rt_core_accelerated": True,
+            "materializes_component_labels": False,
+            "materializes_neighbor_summaries": False,
+            "materializes_neighbor_rows": False,
+            "materializes_directed_adjacency_stream": False,
+            "materializes_bounded_directed_adjacency_chunks": False,
+            "adjacency_write_pass_count": 0,
+            "grouped_stream_continuation_pass_count": continuation_pass_count,
+            "neighbor_count_policy": "threshold_capped_at_min_neighbors_not_exact_full_degree",
+            "count_metadata": self._cached_count_metadata,
+            "native_grouped_stream_metadata": native_metadata,
+            "native_library_identity": (
+                self.prepared_native.native_library_identity_metadata
+            ),
+            "prepared_native_owner_object_bound": True,
+            "prepared_native_owner_runtime_revalidation_required": True,
+            "automatic_hidden_dispatcher": False,
+            "direct_device_handoff_authorized": True,
+            "output_columns_true_zero_copy_authorized": True,
+            "true_zero_copy_authorized": False,
+            "raw_cuda_kernel_required": False,
+            "numba_cuda_jit_used": True,
+            "rt_core_speedup_claim_authorized": False,
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+        if return_metadata:
+            return {"columns": columns, "metadata": metadata}
+        return columns
+
+    def close(self) -> None:
+        if self.closed:
+            return
+        self._validate_prepared_native_binding()
+        close = getattr(self.prepared_native, "close", None)
+        if close is not None:
+            close()
+        self.closed = True
+
+    def __enter__(self) -> "PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def __del__(self):  # pragma: no cover - best-effort cleanup
+        try:
+            self.close()
+        except Exception:
+            pass
+
+
+def prepare_optix_cupy_radius_graph_components_3d(
+    point_rows,
+    *,
+    radius: float,
+    partner: str = "cupy",
+) -> PreparedOptixCupyRadiusGraphComponents3D:
+    return PreparedOptixCupyRadiusGraphComponents3D(point_rows, radius=radius, partner=partner)
+
+
+def radius_graph_components_3d_optix_cupy_prepared_partner_columns(
+    prepared: PreparedOptixCupyRadiusGraphComponents3D,
+    *,
+    min_neighbors: int,
+    return_metadata: bool = False,
+):
+    return prepared.run(min_neighbors=min_neighbors, return_metadata=return_metadata)
+
+
+def prepare_optix_cupy_radius_graph_adjacency_3d(
+    point_rows,
+    *,
+    radius: float,
+    partner: str = "cupy",
+    max_directed_edges: int | None = None,
+) -> PreparedOptixCupyRadiusGraphAdjacency3D:
+    return PreparedOptixCupyRadiusGraphAdjacency3D(
+        point_rows,
+        radius=radius,
+        partner=partner,
+        max_directed_edges=max_directed_edges,
+    )
+
+
+def radius_graph_components_3d_optix_cupy_prepared_adjacency_partner_columns(
+    prepared: PreparedOptixCupyRadiusGraphAdjacency3D,
+    *,
+    min_neighbors: int,
+    return_metadata: bool = False,
+):
+    return prepared.run(min_neighbors=min_neighbors, return_metadata=return_metadata)
+
+
+def prepare_optix_cupy_radius_graph_chunked_adjacency_3d(
+    point_rows,
+    *,
+    radius: float,
+    partner: str = "cupy",
+    max_chunk_points: int = 4096,
+    max_directed_edges_per_chunk: int | None = None,
+    reuse_neighbor_index_workspace: bool = False,
+    neighbor_index_workspace_pool_size: int = 0,
+) -> PreparedOptixCupyRadiusGraphChunkedAdjacency3D:
+    return PreparedOptixCupyRadiusGraphChunkedAdjacency3D(
+        point_rows,
+        radius=radius,
+        partner=partner,
+        max_chunk_points=max_chunk_points,
+        max_directed_edges_per_chunk=max_directed_edges_per_chunk,
+        reuse_neighbor_index_workspace=reuse_neighbor_index_workspace,
+        neighbor_index_workspace_pool_size=neighbor_index_workspace_pool_size,
+    )
+
+
+def radius_graph_components_3d_optix_cupy_prepared_chunked_adjacency_partner_columns(
+    prepared: PreparedOptixCupyRadiusGraphChunkedAdjacency3D,
+    *,
+    min_neighbors: int,
+    return_metadata: bool = False,
+):
+    return prepared.run(min_neighbors=min_neighbors, return_metadata=return_metadata)
+
+
+def prepare_optix_cupy_radius_graph_grouped_stream_continuation_3d(
+    point_rows,
+    *,
+    radius: float,
+    partner: str = "cupy",
+    grouped_union_query_block_size: int | None = None,
+    grouped_union_same_root_culling: bool = True,
+    grouped_union_direct_side_effect: bool = False,
+) -> PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D:
+    return PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D(
+        point_rows,
+        radius=radius,
+        partner=partner,
+        grouped_union_query_block_size=grouped_union_query_block_size,
+        grouped_union_same_root_culling=grouped_union_same_root_culling,
+        grouped_union_direct_side_effect=grouped_union_direct_side_effect,
+    )
+
+
+def radius_graph_components_3d_optix_cupy_prepared_grouped_stream_partner_columns(
+    prepared: PreparedOptixCupyRadiusGraphGroupedStreamContinuation3D,
+    *,
+    min_neighbors: int,
+    return_metadata: bool = False,
+):
+    return prepared.run(min_neighbors=min_neighbors, return_metadata=return_metadata)
+
+
+def prepare_optix_numba_radius_graph_grouped_stream_continuation_3d(
+    point_rows,
+    *,
+    radius: float,
+    partner: str = "numba",
+    grouped_union_query_block_size: int | None = None,
+    grouped_union_same_root_culling: bool = True,
+    grouped_union_direct_side_effect: bool = False,
+    boundary_assignment_policy: str = "single_pass_candidate_root_rebased",
+    expected_native_library_identity=None,
+    expected_native_library_ref=None,
+) -> PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D:
+    return PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D(
+        point_rows,
+        radius=radius,
+        partner=partner,
+        grouped_union_query_block_size=grouped_union_query_block_size,
+        grouped_union_same_root_culling=grouped_union_same_root_culling,
+        grouped_union_direct_side_effect=grouped_union_direct_side_effect,
+        boundary_assignment_policy=boundary_assignment_policy,
+        expected_native_library_identity=expected_native_library_identity,
+        expected_native_library_ref=expected_native_library_ref,
+    )
+
+
+def radius_graph_components_3d_optix_numba_prepared_grouped_stream_partner_columns(
+    prepared: PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D,
+    *,
+    min_neighbors: int,
+    return_metadata: bool = False,
+):
+    return prepared.run(min_neighbors=min_neighbors, return_metadata=return_metadata)
+
+
+def radius_graph_component_signature_3d_optix_numba_prepared_grouped_stream_partner_columns(
+    prepared: PreparedOptixNumbaRadiusGraphGroupedStreamContinuation3D,
+    *,
+    min_neighbors: int,
+    return_metadata: bool = False,
+):
+    return prepared.run_component_signature(min_neighbors=min_neighbors, return_metadata=return_metadata)
+
+
+def prepare_radius_graph_components_3d_cupy_grid_partner_columns(
+    point_columns: dict[str, object],
+    *,
+    radius: float,
+    partner: str = "cupy",
+) -> PreparedCupyRadiusGraphComponents3DGrid:
+    return PreparedCupyRadiusGraphComponents3DGrid(point_columns, radius=radius, partner=partner)
+
+
+def radius_graph_components_3d_cupy_prepared_grid_partner_columns(
+    prepared: PreparedCupyRadiusGraphComponents3DGrid,
+    *,
+    min_neighbors: int,
+    core_flags=None,
+    neighbor_counts=None,
+    core_flag_source: str = "device_grid_count_kernel",
+    return_metadata: bool = False,
+):
+    return prepared.run(
+        min_neighbors=min_neighbors,
+        core_flags=core_flags,
+        neighbor_counts=neighbor_counts,
+        core_flag_source=core_flag_source,
+        return_metadata=return_metadata,
+    )
+
+
+def prepare_radius_graph_components_3d_numba_grid_partner_columns(
+    point_columns: dict[str, object],
+    *,
+    radius: float,
+    partner: str = "numba",
+) -> PreparedNumbaRadiusGraphComponents3DGrid:
+    return PreparedNumbaRadiusGraphComponents3DGrid(point_columns, radius=radius, partner=partner)
+
+
+def radius_graph_components_3d_numba_prepared_grid_partner_columns(
+    prepared: PreparedNumbaRadiusGraphComponents3DGrid,
+    *,
+    min_neighbors: int,
+    core_flags=None,
+    neighbor_counts=None,
+    core_flag_source: str = "numba_grid_count_kernel",
+    return_metadata: bool = False,
+):
+    return prepared.run(
+        min_neighbors=min_neighbors,
+        core_flags=core_flags,
+        neighbor_counts=neighbor_counts,
+        core_flag_source=core_flag_source,
+        return_metadata=return_metadata,
+    )
+
+
+def radius_graph_components_3d_numba_grid_partner_columns(
+    point_columns: dict[str, object],
+    *,
+    radius: float,
+    min_neighbors: int,
+    partner: str = "numba",
+    core_flags=None,
+    neighbor_counts=None,
+    core_flag_source: str = "numba_grid_count_kernel",
+    return_metadata: bool = False,
+):
+    prepared = PreparedNumbaRadiusGraphComponents3DGrid(point_columns, radius=radius, partner=partner)
+    result = prepared.run(
+        min_neighbors=min_neighbors,
+        core_flags=core_flags,
+        neighbor_counts=neighbor_counts,
+        core_flag_source=core_flag_source,
+        return_metadata=True,
+    )
+    result["metadata"].update(
+        {
+            "adapter": "radius_graph_components_3d_numba_grid_partner_columns",
+            "partner_reference_contract": "generic_numba_grid_radius_graph_component_labels_3d",
+            "prepared_wrapper_used": False,
+        }
+    )
+    if return_metadata:
+        return result
+    return result["columns"]
+
+
+def prepare_radius_graph_adjacency_3d_cupy_partner_columns(
+    point_columns: dict[str, object],
+    *,
+    radius: float,
+    partner: str = "cupy",
+    max_directed_edges: int | None = None,
+) -> PreparedCupyRadiusGraphAdjacency3D:
+    return PreparedCupyRadiusGraphAdjacency3D(
+        point_columns,
+        radius=radius,
+        partner=partner,
+        max_directed_edges=max_directed_edges,
+    )
+
+
+def radius_graph_components_3d_cupy_prepared_adjacency_partner_columns(
+    prepared: PreparedCupyRadiusGraphAdjacency3D,
+    *,
+    min_neighbors: int,
+    return_metadata: bool = False,
+):
+    return prepared.run(min_neighbors=min_neighbors, return_metadata=return_metadata)
+
+
+def _fixed_radius_clique_safe_microcell_size(radius: float) -> float:
+    """Return a 3-D cell size whose cube diagonal is at most the radius."""
+    import math
+
+    radius = float(radius)
+    if radius <= 0.0:
+        raise ValueError("radius must be positive for clique-safe microcells")
+    return radius / math.sqrt(3.0)
+
+
+def _fixed_radius_microcell_neighbor_range(radius: float, microcell_size: float) -> int:
+    import math
+
+    radius = float(radius)
+    microcell_size = float(microcell_size)
+    if radius <= 0.0 or microcell_size <= 0.0:
+        raise ValueError("radius and microcell_size must be positive")
+    return int(math.ceil(radius / microcell_size))
+
+
+def _cupy_radius_graph_components_3d_microcell_graph_kernels(cupy):
+    global _CUPY_RADIUS_GRAPH_COMPONENTS_3D_MICROCELL_GRAPH_KERNELS
+    if _CUPY_RADIUS_GRAPH_COMPONENTS_3D_MICROCELL_GRAPH_KERNELS is None:
+        source = r'''
+        extern "C" __device__
+        int lower_bound_microcell(const long long* values, const int count, const long long key) {
+            int left = 0;
+            int right = count;
+            while (left < right) {
+                const int mid = left + ((right - left) >> 1);
+                if (values[mid] < key) {
+                    left = mid + 1;
+                } else {
+                    right = mid;
+                }
+            }
+            return left;
+        }
+
+        extern "C" __device__
+        int find_microcell_root_readonly(const int* parent, int item) {
+            int root = item;
+            int guard = 0;
+            while (parent[root] != root && guard < 4096) {
+                root = parent[root];
+                ++guard;
+            }
+            return root;
+        }
+
+        extern "C" __device__
+        void union_microcell_min_root(int* parent, int left, int right) {
+            while (true) {
+                int left_root = find_microcell_root_readonly(parent, left);
+                int right_root = find_microcell_root_readonly(parent, right);
+                if (left_root == right_root) {
+                    return;
+                }
+                const int high = left_root > right_root ? left_root : right_root;
+                const int low = left_root > right_root ? right_root : left_root;
+                const int old = atomicMin(parent + high, low);
+                if (old == high) {
+                    return;
+                }
+            }
+        }
+
+        extern "C" __device__
+        long long make_microcell_id(const int gx, const int gy, const int gz, const int dim_x, const int dim_y) {
+            return (long long)gx + (long long)gy * (long long)dim_x + (long long)gz * (long long)dim_x * (long long)dim_y;
+        }
+
+        extern "C" __device__
+        void decode_microcell_id(const long long cell_id, const int dim_x, const int dim_y, int* gx, int* gy, int* gz) {
+            const long long plane = (long long)dim_x * (long long)dim_y;
+            *gz = (int)(cell_id / plane);
+            const long long rem = cell_id - (long long)(*gz) * plane;
+            *gy = (int)(rem / (long long)dim_x);
+            *gx = (int)(rem - (long long)(*gy) * (long long)dim_x);
+        }
+
+        extern "C" __global__
+        void microcell_graph_3d_union_kernel(
+            const double* x,
+            const double* y,
+            const double* z,
+            const long long* unique_cells,
+            const int* cell_starts,
+            const int* cell_counts,
+            const int unique_cell_count,
+            const int* sorted_point_indices,
+            const int dim_x,
+            const int dim_y,
+            const int dim_z,
+            const double radius_sq,
+            const int neighbor_range,
+            int* parent
+        ) {
+            const int cell_pos = blockDim.x * blockIdx.x + threadIdx.x;
+            if (cell_pos >= unique_cell_count) {
+                return;
+            }
+            int gx = 0;
+            int gy = 0;
+            int gz = 0;
+            decode_microcell_id(unique_cells[cell_pos], dim_x, dim_y, &gx, &gy, &gz);
+            const int source_start = cell_starts[cell_pos];
+            const int source_end = source_start + cell_counts[cell_pos];
+            for (int oz = -neighbor_range; oz <= neighbor_range; ++oz) {
+                const int nz = gz + oz;
+                if (nz < 0 || nz >= dim_z) continue;
+                for (int oy = -neighbor_range; oy <= neighbor_range; ++oy) {
+                    const int ny = gy + oy;
+                    if (ny < 0 || ny >= dim_y) continue;
+                    for (int ox = -neighbor_range; ox <= neighbor_range; ++ox) {
+                        const int nx = gx + ox;
+                        if (nx < 0 || nx >= dim_x) continue;
+                        const long long target_id = make_microcell_id(nx, ny, nz, dim_x, dim_y);
+                        const int target_pos = lower_bound_microcell(unique_cells, unique_cell_count, target_id);
+                        if (target_pos >= unique_cell_count || unique_cells[target_pos] != target_id) continue;
+                        if (target_pos <= cell_pos) continue;
+                        const int target_start = cell_starts[target_pos];
+                        const int target_end = target_start + cell_counts[target_pos];
+                        bool connected = false;
+                        for (int source_cursor = source_start; source_cursor < source_end && !connected; ++source_cursor) {
+                            const int left = sorted_point_indices[source_cursor];
+                            for (int target_cursor = target_start; target_cursor < target_end; ++target_cursor) {
+                                const int right = sorted_point_indices[target_cursor];
+                                const double dx = x[left] - x[right];
+                                const double dy = y[left] - y[right];
+                                const double dz = z[left] - z[right];
+                                if (dx * dx + dy * dy + dz * dz <= radius_sq) {
+                                    connected = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (connected) {
+                            union_microcell_min_root(parent, cell_pos, target_pos);
+                        }
+                    }
+                }
+            }
+        }
+
+        extern "C" __global__
+        void microcell_graph_3d_label_kernel(
+            const double* x,
+            const double* y,
+            const double* z,
+            const int point_count,
+            const long long* unique_cells,
+            const int unique_cell_count,
+            const double min_x,
+            const double min_y,
+            const double min_z,
+            const double microcell_size,
+            const int dim_x,
+            const int dim_y,
+            const int* parent,
+            long long* labels
+        ) {
+            const int point = blockDim.x * blockIdx.x + threadIdx.x;
+            if (point >= point_count) {
+                return;
+            }
+            const int gx = (int)floor((x[point] - min_x) / microcell_size);
+            const int gy = (int)floor((y[point] - min_y) / microcell_size);
+            const int gz = (int)floor((z[point] - min_z) / microcell_size);
+            const long long cell_id = make_microcell_id(gx, gy, gz, dim_x, dim_y);
+            const int pos = lower_bound_microcell(unique_cells, unique_cell_count, cell_id);
+            if (pos >= unique_cell_count || unique_cells[pos] != cell_id) {
+                labels[point] = -1ll;
+                return;
+            }
+            labels[point] = (long long)find_microcell_root_readonly(parent, pos) + 1ll;
+        }
+        '''
+        _CUPY_RADIUS_GRAPH_COMPONENTS_3D_MICROCELL_GRAPH_KERNELS = (
+            cupy.RawKernel(source, "microcell_graph_3d_union_kernel"),
+            cupy.RawKernel(source, "microcell_graph_3d_label_kernel"),
+        )
+    return _CUPY_RADIUS_GRAPH_COMPONENTS_3D_MICROCELL_GRAPH_KERNELS
+
+
+def radius_graph_components_3d_cupy_microcell_graph_partner_columns(
+    point_columns: dict[str, object],
+    *,
+    radius: float,
+    min_neighbors: int,
+    partner: str = "cupy",
+    core_flags=None,
+    neighbor_counts=None,
+    core_flag_source: str = "caller_supplied_core_flags",
+    return_metadata: bool = False,
+):
+    """Label all-core 3-D radius graph components through clique-safe microcells."""
+    import math
+
+    if partner != "cupy":
+        raise ValueError("radius_graph_components_3d_cupy_microcell_graph_partner_columns currently requires partner='cupy'")
+    radius = float(radius)
+    min_neighbors = int(min_neighbors)
+    if radius < 0:
+        raise ValueError("radius must be non-negative")
+    if min_neighbors < 1:
+        raise ValueError("min_neighbors must be at least 1")
+    if "z" not in point_columns:
+        raise ValueError("radius_graph_components_3d_cupy_microcell_graph_partner_columns requires z point columns")
+    if (core_flags is None) != (neighbor_counts is None):
+        raise ValueError("core_flags and neighbor_counts must be supplied together")
+
+    runtime = _partner_module(partner)
+    cupy = runtime["module"]
+    point_count = _column_length(point_columns, "ids")
+    if point_count <= 0:
+        raise ValueError("radius graph components requires non-empty point columns")
+
+    fallback_reason = None
+    caller_supplied_core_flags = core_flags is not None
+    if not caller_supplied_core_flags:
+        fallback_reason = "missing_core_flags"
+    elif radius <= 0.0:
+        fallback_reason = "non_positive_radius"
+    else:
+        neighbor_counts = cupy.asarray(neighbor_counts, dtype=cupy.uint32)
+        core_flags = cupy.asarray(core_flags, dtype=cupy.uint32)
+        if int(neighbor_counts.size) != point_count or int(core_flags.size) != point_count:
+            raise ValueError("core_flags and neighbor_counts must match point_count")
+        if not bool(cupy.all(core_flags != 0).item()):
+            fallback_reason = "not_all_points_core"
+
+    if fallback_reason is not None:
+        fallback = radius_graph_components_3d_cupy_grid_partner_columns(
+            point_columns,
+            radius=radius,
+            min_neighbors=min_neighbors,
+            partner=partner,
+            core_flags=core_flags,
+            neighbor_counts=neighbor_counts,
+            core_flag_source=core_flag_source,
+            return_metadata=True,
+        )
+        metadata = dict(fallback["metadata"])
+        metadata.update(
+            {
+                "adapter": "radius_graph_components_3d_cupy_microcell_graph_partner_columns",
+                "fallback_adapter": "radius_graph_components_3d_cupy_grid_partner_columns",
+                "fallback_reason": fallback_reason,
+                "cell_graph_fast_path_active": False,
+                "cell_graph_granularity": "fallback_point_grid",
+                "microcell_size_policy": "not_used_fallback",
+                "neighbor_cell_range": None,
+                "rt_core_speedup_claim_authorized": False,
+                "v2_0_release_authorized": False,
+                "whole_app_speedup_claim_authorized": False,
+            }
+        )
+        if return_metadata:
+            return {"columns": fallback["columns"], "metadata": metadata}
+        return fallback["columns"]
+
+    x = point_columns["x"].astype(cupy.float64, copy=False)
+    y = point_columns["y"].astype(cupy.float64, copy=False)
+    z = point_columns["z"].astype(cupy.float64, copy=False)
+    microcell_size = _fixed_radius_clique_safe_microcell_size(radius)
+    neighbor_cell_range = _fixed_radius_microcell_neighbor_range(radius, microcell_size)
+    min_x = float(cupy.min(x).item())
+    min_y = float(cupy.min(y).item())
+    min_z = float(cupy.min(z).item())
+    gx = cupy.floor((x - min_x) / microcell_size).astype(cupy.int64, copy=False)
+    gy = cupy.floor((y - min_y) / microcell_size).astype(cupy.int64, copy=False)
+    gz = cupy.floor((z - min_z) / microcell_size).astype(cupy.int64, copy=False)
+    dim_x = int(cupy.max(gx).item()) + 1
+    dim_y = int(cupy.max(gy).item()) + 1
+    dim_z = int(cupy.max(gz).item()) + 1
+    cell_ids = gx + gy * dim_x + gz * dim_x * dim_y
+    order = cupy.argsort(cell_ids).astype(cupy.int32, copy=False)
+    sorted_cell_ids = cell_ids[order].astype(cupy.int64, copy=False)
+    unique_cells, starts, counts = cupy.unique(
+        sorted_cell_ids,
+        return_index=True,
+        return_counts=True,
+    )
+    starts = starts.astype(cupy.int32, copy=False)
+    counts = counts.astype(cupy.int32, copy=False)
+    unique_cells = unique_cells.astype(cupy.int64, copy=False)
+    unique_cell_count = int(unique_cells.size)
+
+    parent = cupy.arange(unique_cell_count, dtype=cupy.int32)
+    labels = cupy.full((point_count,), -1, dtype=cupy.int64)
+    union_kernel, label_kernel = _cupy_radius_graph_components_3d_microcell_graph_kernels(cupy)
+    threads = 256
+    cell_blocks = (max(1, math.ceil(unique_cell_count / threads)),)
+    point_blocks = (max(1, math.ceil(point_count / threads)),)
+    union_kernel(
+        cell_blocks,
+        (threads,),
+        (
+            x,
+            y,
+            z,
+            unique_cells,
+            starts,
+            counts,
+            unique_cell_count,
+            order,
+            dim_x,
+            dim_y,
+            dim_z,
+            radius * radius,
+            neighbor_cell_range,
+            parent,
+        ),
+    )
+    label_kernel(
+        point_blocks,
+        (threads,),
+        (
+            x,
+            y,
+            z,
+            point_count,
+            unique_cells,
+            unique_cell_count,
+            min_x,
+            min_y,
+            min_z,
+            microcell_size,
+            dim_x,
+            dim_y,
+            parent,
+            labels,
+        ),
+    )
+    runtime["sync"]()
+
+    columns = {
+        "point_ids": point_columns["ids"],
+        "component_labels": labels,
+        "is_core": core_flags,
+        "neighbor_counts": neighbor_counts,
+    }
+    metadata = {
+        "adapter": "radius_graph_components_3d_cupy_microcell_graph_partner_columns",
+        "partner": runtime["name"],
+        "input_contract": "caller_supplied_partner_device_point_columns_3d",
+        "partner_reference_contract": "generic_cupy_microcell_radius_graph_component_labels_3d",
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "point_count": point_count,
+        "radius": radius,
+        "min_neighbors": min_neighbors,
+        "cell_count": unique_cell_count,
+        "cell_graph_fast_path_active": True,
+        "cell_graph_granularity": "clique_safe_microcell",
+        "microcell_size": microcell_size,
+        "microcell_size_policy": "radius_div_sqrt3_cube_diagonal_within_radius",
+        "neighbor_cell_range": neighbor_cell_range,
+        "grid_dimensions": (dim_x, dim_y, dim_z),
+        "component_label_policy": "positive_microcell_root_index_labels_all_core",
+        "component_union_policy": "monotonic_atomic_min_microcell_union_after_exact_cross_pair",
+        "core_flag_source": str(core_flag_source),
+        "caller_supplied_core_flags": caller_supplied_core_flags,
+        "host_bucket_index_used": False,
+        "device_microcell_index_used": True,
+        "direct_device_handoff_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "v2_0_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+    }
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def _polygon_triangle_columns(polygons: tuple[_CanonicalPolygon, ...], partner: dict) -> tuple[dict[str, object], object]:
+    ids: list[int] = []
+    x0: list[float] = []
+    y0: list[float] = []
+    x1: list[float] = []
+    y1: list[float] = []
+    x2: list[float] = []
+    y2: list[float] = []
+    aabbs: list[list[float]] = []
+    for polygon in polygons:
+        vertices = tuple((float(x), float(y)) for x, y in polygon.vertices)
+        if len(vertices) < 3:
+            raise ValueError("polygons must have at least three vertices")
+        anchor_x, anchor_y = vertices[0]
+        for index in range(1, len(vertices) - 1):
+            bx, by = vertices[index]
+            cx, cy = vertices[index + 1]
+            ids.append(_require_uint32_id(polygon.id, "polygon"))
+            x0.append(anchor_x)
+            y0.append(anchor_y)
+            x1.append(bx)
+            y1.append(by)
+            x2.append(cx)
+            y2.append(cy)
+            min_x = min(anchor_x, bx, cx)
+            min_y = min(anchor_y, by, cy)
+            max_x = max(anchor_x, bx, cx)
+            max_y = max(anchor_y, by, cy)
+            aabbs.append([min_x, min_y, -1.0e-4, max_x, max_y, 1.0e-4])
+    device = partner["device"]
+    columns = {
+        "ids": partner["tensor"](ids, partner["uint32"], device),
+        "x0": partner["tensor"](x0, partner["float64"], device),
+        "y0": partner["tensor"](y0, partner["float64"], device),
+        "x1": partner["tensor"](x1, partner["float64"], device),
+        "y1": partner["tensor"](y1, partner["float64"], device),
+        "x2": partner["tensor"](x2, partner["float64"], device),
+        "y2": partner["tensor"](y2, partner["float64"], device),
+    }
+    return columns, partner["tensor"](aabbs, partner["float32"], device)
+
+
+def segment_polygon_anyhit_rows_optix_partner(
+    segments,
+    polygons,
+    *,
+    partner: str = "torch",
+    output_capacity: int | None = None,
+    return_metadata: bool = False,
+):
+    """Run segment/polygon any-hit rows as a Python+partner+RTDL adapter.
+
+    The native engine sees only generic ray/primitive witness IDs. Polygon
+    triangulation, duplicate removal, and row naming live in Python.
+    """
+    normalized_segments = tuple(
+        segments
+        if isinstance(segments, tuple) and all(isinstance(item, _CanonicalSegment) for item in segments)
+        else _normalize_records("segments", "segments", segments)
+    )
+    normalized_polygons = tuple(
+        polygons
+        if isinstance(polygons, tuple) and all(isinstance(item, _CanonicalPolygon) for item in polygons)
+        else _normalize_records("polygons", "polygons", polygons)
+    )
+    if not normalized_segments or not normalized_polygons:
+        rows: tuple[dict[str, int], ...] = ()
+        metadata = {
+            "adapter": "segment_polygon_anyhit_rows_optix_partner",
+            "partner": partner,
+            "app_rows_emitted": 0,
+            "native_engine_row_contract": "generic_ray_primitive_candidate_witness_pairs",
+            "app_exact_filter": "host_segment_triangle_filter_from_generic_witness_candidates",
+            "native_exact_row_semantics_authorized": False,
+            "app_exact_row_semantics_authorized": True,
+            "whole_app_true_zero_copy_authorized": False,
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+        if return_metadata:
+            return {"rows": rows, "metadata": metadata}
+        return rows
+    if output_capacity is None:
+        triangle_capacity = sum(max(0, len(polygon.vertices) - 2) for polygon in normalized_polygons)
+        output_capacity = max(1, len(normalized_segments) * triangle_capacity)
+    if output_capacity <= 0:
+        raise ValueError("output_capacity must be positive")
+
+    runtime = _partner_module(partner)
+    rays = _segment_ray_columns(normalized_segments, runtime)
+    triangles, triangle_aabbs = _polygon_triangle_columns(normalized_polygons, runtime)
+    witness_ray_ids = runtime["zeros"]((output_capacity,), runtime["uint32"], runtime["device"])
+    witness_primitive_ids = runtime["zeros"]((output_capacity,), runtime["uint32"], runtime["device"])
+
+    scene = _optix.prepare_optix_ray_triangle_any_hit_2d_device_triangle_zero_copy_scene(
+        triangles,
+        triangle_aabbs,
+    )
+    try:
+        packet = scene.write_device_any_hit_all_witnesses(
+            rays,
+            witness_ray_ids,
+            witness_primitive_ids,
+        )
+        runtime["sync"]()
+    finally:
+        scene.close()
+
+    metadata = dict(packet["metadata"])
+    emitted_count = int(metadata["emitted_count"])
+    if metadata["overflowed"]:
+        raise RuntimeError("partner segment/polygon adapter overflowed; increase output_capacity")
+    rows = _exact_segment_triangle_rows_from_witness_columns(
+        runtime,
+        rays,
+        triangles,
+        witness_ray_ids,
+        witness_primitive_ids,
+        emitted_count,
+    )
+    metadata.update(
+        {
+            "adapter": "segment_polygon_anyhit_rows_optix_partner",
+            "partner": runtime["name"],
+            "app_rows_emitted": len(rows),
+            "native_engine_row_contract": "generic_ray_primitive_candidate_witness_pairs",
+            "app_exact_filter": "host_segment_triangle_filter_from_generic_witness_candidates",
+            "native_exact_row_semantics_authorized": False,
+            "app_exact_row_semantics_authorized": True,
+            "whole_app_true_zero_copy_authorized": False,
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+    )
+    if return_metadata:
+        return {"rows": rows, "metadata": metadata}
+    return rows
+
+
+def _column_length(columns: dict[str, object], name: str) -> int:
+    column = columns[name]
+    shape = getattr(column, "shape", None)
+    if shape is not None:
+        return int(shape[0])
+    values = getattr(column, "values", None)
+    if values is not None:
+        return len(values)
+    try:
+        return len(column)  # type: ignore[arg-type]
+    except TypeError as exc:
+        raise ValueError(f"{name} column must expose shape[0] or a length") from exc
+
+
+def _segment_polygon_all_witness_columns_optix_partner_columns(
+    segment_ray_columns: dict[str, object],
+    polygon_triangle_columns: dict[str, object] | None,
+    polygon_triangle_aabbs,
+    *,
+    partner: str = "torch",
+    output_capacity: int | None = None,
+    prepared_scene=None,
+    witness_output_columns: dict[str, object] | None = None,
+):
+    ray_count = _column_length(segment_ray_columns, "ids")
+    if prepared_scene is not None:
+        prepared_triangle_columns = getattr(prepared_scene, "polygon_triangle_columns", None)
+        if prepared_triangle_columns is not None:
+            triangle_count = _column_length(prepared_triangle_columns, "ids")
+        else:
+            triangle_count = int(getattr(getattr(prepared_scene, "_packed_triangles", None), "count", 0))
+    elif polygon_triangle_columns is not None:
+        triangle_count = _column_length(polygon_triangle_columns, "ids")
+    else:
+        raise ValueError("polygon_triangle_columns are required when prepared_scene is not supplied")
+    runtime = _partner_module(partner)
+    if ray_count == 0 or triangle_count == 0:
+        metadata = {
+            "input_contract": "caller_supplied_partner_device_columns",
+            "native_engine_row_contract": "generic_ray_primitive_candidate_witness_pairs",
+            "emitted_count": 0,
+            "overflowed": False,
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+        empty = runtime["zeros"]((0,), runtime["uint32"], runtime["device"])
+        return {
+            "runtime": runtime,
+            "witness_ray_ids": empty,
+            "witness_primitive_ids": empty,
+            "emitted_count": 0,
+            "metadata": metadata,
+        }
+    if output_capacity is None:
+        output_capacity = max(1, ray_count * triangle_count)
+    if output_capacity <= 0:
+        raise ValueError("output_capacity must be positive")
+
+    output_reuse_authorized = witness_output_columns is not None
+    if witness_output_columns is None:
+        witness_output_columns = allocate_segment_polygon_witness_partner_device_output_columns(
+            output_capacity,
+            partner=partner,
+        )
+    _require_segment_polygon_witness_output_lengths(witness_output_columns, output_capacity)
+    witness_ray_ids = witness_output_columns["witness_ray_ids"]
+    witness_primitive_ids = witness_output_columns["witness_primitive_ids"]
+
+    scene_reuse_authorized = prepared_scene is not None
+    scene = prepared_scene
+    if scene is None:
+        scene = _optix.prepare_optix_ray_triangle_any_hit_2d_device_triangle_zero_copy_scene(
+            polygon_triangle_columns,
+            polygon_triangle_aabbs,
+        )
+    try:
+        packet = scene.write_device_any_hit_all_witnesses(
+            segment_ray_columns,
+            witness_ray_ids,
+            witness_primitive_ids,
+        )
+        runtime["sync"]()
+    finally:
+        if not scene_reuse_authorized:
+            scene.close()
+
+    metadata = dict(packet["metadata"])
+    metadata["prepared_scene_reused"] = scene_reuse_authorized
+    metadata["witness_output_columns_reused"] = output_reuse_authorized
+    emitted_count = int(metadata["emitted_count"])
+    if metadata["overflowed"]:
+        raise RuntimeError("partner segment/polygon column adapter overflowed; increase output_capacity")
+    return {
+        "runtime": runtime,
+        "witness_ray_ids": witness_ray_ids,
+        "witness_primitive_ids": witness_primitive_ids,
+        "emitted_count": emitted_count,
+        "metadata": metadata,
+    }
+
+
+def _exact_segment_triangle_rows_from_witness_columns(
+    runtime,
+    segment_ray_columns: dict[str, object],
+    polygon_triangle_columns: dict[str, object],
+    witness_ray_ids,
+    witness_primitive_ids,
+    emitted_count: int,
+) -> tuple[dict[str, int], ...]:
+    emitted_count = int(emitted_count)
+    if emitted_count <= 0:
+        return ()
+
+    def to_host_int(value) -> list[int]:
+        if isinstance(value, (list, tuple)):
+            return [int(item) for item in value]
+        if hasattr(value, "values") and not callable(value.values):
+            return [int(item) for item in value.values]
+        if "to_host" in runtime:
+            return runtime["to_host"](value)
+        if hasattr(value, "tolist"):
+            return [int(item) for item in value.tolist()]
+        return [int(item) for item in value]
+
+    def to_host_float(value) -> list[float]:
+        if isinstance(value, (list, tuple)):
+            return [float(item) for item in value]
+        if hasattr(value, "values") and not callable(value.values):
+            return [float(item) for item in value.values]
+        if "to_host_float" in runtime:
+            return runtime["to_host_float"](value)
+        if "to_host" in runtime:
+            return [float(item) for item in runtime["to_host"](value)]
+        if hasattr(value, "tolist"):
+            return [float(item) for item in value.tolist()]
+        return [float(item) for item in value]
+
+    def slice_values(value, count: int):
+        if "slice" in runtime:
+            return runtime["slice"](value, count)
+        if hasattr(value, "values") and not callable(value.values):
+            return value.values[: int(count)]
+        if hasattr(value, "tolist"):
+            return value.tolist()[: int(count)]
+        return value[: int(count)]
+
+    segment_ids = to_host_int(segment_ray_columns["ids"])
+    ray_ox = to_host_float(segment_ray_columns["ox"])
+    ray_oy = to_host_float(segment_ray_columns["oy"])
+    ray_dx = to_host_float(segment_ray_columns["dx"])
+    ray_dy = to_host_float(segment_ray_columns["dy"])
+    ray_tmax = to_host_float(segment_ray_columns["tmax"])
+    rays_by_id = {
+        int(segment_id): _CanonicalRay2D(
+            int(segment_id),
+            float(ox),
+            float(oy),
+            float(dx),
+            float(dy),
+            float(tmax),
+        )
+        for segment_id, ox, oy, dx, dy, tmax in zip(segment_ids, ray_ox, ray_oy, ray_dx, ray_dy, ray_tmax)
+    }
+
+    triangle_ids = to_host_int(polygon_triangle_columns["ids"])
+    x0 = to_host_float(polygon_triangle_columns["x0"])
+    y0 = to_host_float(polygon_triangle_columns["y0"])
+    x1 = to_host_float(polygon_triangle_columns["x1"])
+    y1 = to_host_float(polygon_triangle_columns["y1"])
+    x2 = to_host_float(polygon_triangle_columns["x2"])
+    y2 = to_host_float(polygon_triangle_columns["y2"])
+    triangles_by_id = {
+        int(triangle_id): _CanonicalTriangle(
+            int(triangle_id),
+            float(ax),
+            float(ay),
+            float(bx),
+            float(by),
+            float(cx),
+            float(cy),
+        )
+        for triangle_id, ax, ay, bx, by, cx, cy in zip(triangle_ids, x0, y0, x1, y1, x2, y2)
+    }
+
+    candidate_ray_ids = to_host_int(slice_values(witness_ray_ids, emitted_count))
+    candidate_primitive_ids = to_host_int(slice_values(witness_primitive_ids, emitted_count))
+    exact_pairs: set[tuple[int, int]] = set()
+    for ray_id, primitive_id in zip(candidate_ray_ids, candidate_primitive_ids):
+        ray = rays_by_id.get(int(ray_id))
+        triangle = triangles_by_id.get(int(primitive_id))
+        if ray is None or triangle is None:
+            continue
+        if _finite_ray_hits_triangle(ray, triangle):
+            exact_pairs.add((int(ray_id), int(primitive_id)))
+    return tuple({"segment_id": segment_id, "polygon_id": polygon_id} for segment_id, polygon_id in sorted(exact_pairs))
+
+
+def _cupy_segment_triangle_exact_witness_filter_kernel(cupy):
+    global _CUPY_SEGMENT_TRIANGLE_EXACT_WITNESS_FILTER_KERNEL
+    if _CUPY_SEGMENT_TRIANGLE_EXACT_WITNESS_FILTER_KERNEL is None:
+        _CUPY_SEGMENT_TRIANGLE_EXACT_WITNESS_FILTER_KERNEL = cupy.RawKernel(
+            r'''
+            __device__ double rtdl_orient2d(double px, double py, double qx, double qy, double rx, double ry) {
+                return (qx - px) * (ry - py) - (qy - py) * (rx - px);
+            }
+
+            __device__ bool rtdl_between_eps(double p, double q, double r, double eps) {
+                double mn = p < q ? p : q;
+                double mx = p > q ? p : q;
+                return r >= mn - eps && r <= mx + eps;
+            }
+
+            __device__ bool rtdl_on_segment_eps(
+                double px, double py, double qx, double qy, double rx, double ry, double eps
+            ) {
+                return fabs(rtdl_orient2d(px, py, qx, qy, rx, ry)) <= eps
+                    && rtdl_between_eps(px, qx, rx, eps)
+                    && rtdl_between_eps(py, qy, ry, eps);
+            }
+
+            __device__ bool rtdl_segments_intersect_eps(
+                double p1x, double p1y, double p2x, double p2y,
+                double q1x, double q1y, double q2x, double q2y,
+                double eps
+            ) {
+                double o1 = rtdl_orient2d(p1x, p1y, p2x, p2y, q1x, q1y);
+                double o2 = rtdl_orient2d(p1x, p1y, p2x, p2y, q2x, q2y);
+                double o3 = rtdl_orient2d(q1x, q1y, q2x, q2y, p1x, p1y);
+                double o4 = rtdl_orient2d(q1x, q1y, q2x, q2y, p2x, p2y);
+                if (((o1 > eps && o2 < -eps) || (o1 < -eps && o2 > eps))
+                    && ((o3 > eps && o4 < -eps) || (o3 < -eps && o4 > eps))) {
+                    return true;
+                }
+                return rtdl_on_segment_eps(p1x, p1y, p2x, p2y, q1x, q1y, eps)
+                    || rtdl_on_segment_eps(p1x, p1y, p2x, p2y, q2x, q2y, eps)
+                    || rtdl_on_segment_eps(q1x, q1y, q2x, q2y, p1x, p1y, eps)
+                    || rtdl_on_segment_eps(q1x, q1y, q2x, q2y, p2x, p2y, eps);
+            }
+
+            __device__ bool rtdl_point_in_triangle_eps(
+                double px, double py,
+                double ax, double ay,
+                double bx, double by,
+                double cx, double cy,
+                double eps
+            ) {
+                double o1 = rtdl_orient2d(ax, ay, bx, by, px, py);
+                double o2 = rtdl_orient2d(bx, by, cx, cy, px, py);
+                double o3 = rtdl_orient2d(cx, cy, ax, ay, px, py);
+                bool has_neg = (o1 < -eps) || (o2 < -eps) || (o3 < -eps);
+                bool has_pos = (o1 > eps) || (o2 > eps) || (o3 > eps);
+                return !(has_neg && has_pos);
+            }
+
+            extern "C" __global__
+            void segment_triangle_exact_witness_filter_2d(
+                const int n,
+                const long long* ray_indices,
+                const long long* triangle_indices,
+                const float* ox,
+                const float* oy,
+                const float* dx,
+                const float* dy,
+                const float* tmax,
+                const double* x0,
+                const double* y0,
+                const double* x1,
+                const double* y1,
+                const double* x2,
+                const double* y2,
+                unsigned char* exact_flags
+            ) {
+                int i = blockDim.x * blockIdx.x + threadIdx.x;
+                if (i >= n) {
+                    return;
+                }
+                long long ri = ray_indices[i];
+                long long ti = triangle_indices[i];
+                if (ri < 0 || ti < 0) {
+                    exact_flags[i] = 0;
+                    return;
+                }
+                double sx = (double)ox[ri];
+                double sy = (double)oy[ri];
+                double ex = sx + (double)dx[ri] * (double)tmax[ri];
+                double ey = sy + (double)dy[ri] * (double)tmax[ri];
+                double ax = x0[ti];
+                double ay = y0[ti];
+                double bx = x1[ti];
+                double by = y1[ti];
+                double cx = x2[ti];
+                double cy = y2[ti];
+                const double eps = 1.0e-9;
+
+                bool hit = rtdl_point_in_triangle_eps(sx, sy, ax, ay, bx, by, cx, cy, eps)
+                    || rtdl_point_in_triangle_eps(ex, ey, ax, ay, bx, by, cx, cy, eps)
+                    || rtdl_segments_intersect_eps(sx, sy, ex, ey, ax, ay, bx, by, eps)
+                    || rtdl_segments_intersect_eps(sx, sy, ex, ey, bx, by, cx, cy, eps)
+                    || rtdl_segments_intersect_eps(sx, sy, ex, ey, cx, cy, ax, ay, eps);
+                exact_flags[i] = hit ? 1 : 0;
+            }
+            ''',
+            "segment_triangle_exact_witness_filter_2d",
+        )
+    return _CUPY_SEGMENT_TRIANGLE_EXACT_WITNESS_FILTER_KERNEL
+
+
+def _cupy_exact_segment_triangle_witness_pairs(
+    runtime,
+    segment_ray_columns: dict[str, object],
+    polygon_triangle_columns: dict[str, object],
+    witness_ray_ids,
+    witness_primitive_ids,
+    emitted_count: int,
+    triangle_lookup_cache: dict[str, object] | None = None,
+):
+    emitted_count = int(emitted_count)
+    cupy = runtime["module"]
+    if emitted_count <= 0:
+        return (
+            cupy.zeros((0,), dtype=cupy.uint32),
+            cupy.zeros((0,), dtype=cupy.uint32),
+            {
+                "app_exact_filter": "cupy_rawkernel_segment_triangle_filter_from_generic_witness_candidates",
+                "app_exact_filter_device_materialization": True,
+            },
+        )
+
+    candidate_ray_ids = runtime["slice"](witness_ray_ids, emitted_count).astype(cupy.uint32, copy=False)
+    candidate_primitive_ids = runtime["slice"](witness_primitive_ids, emitted_count).astype(cupy.uint32, copy=False)
+
+    segment_ids = segment_ray_columns["ids"].astype(cupy.uint32, copy=False)
+    triangle_ids = polygon_triangle_columns["ids"].astype(cupy.uint32, copy=False)
+    sorted_segment_pos = cupy.argsort(segment_ids)
+    sorted_segment_ids = segment_ids[sorted_segment_pos]
+    segment_search_pos = cupy.searchsorted(sorted_segment_ids, candidate_ray_ids)
+    segment_valid = segment_search_pos < int(segment_ids.size)
+    safe_segment_pos = cupy.minimum(segment_search_pos, max(0, int(segment_ids.size) - 1))
+    segment_valid = segment_valid & (sorted_segment_ids[safe_segment_pos] == candidate_ray_ids)
+    ray_indices = cupy.where(segment_valid, sorted_segment_pos[safe_segment_pos], -1).astype(cupy.int64, copy=False)
+
+    if triangle_lookup_cache is not None:
+        sorted_triangle_pos = triangle_lookup_cache.get("sorted_triangle_pos")
+        sorted_triangle_ids = triangle_lookup_cache.get("sorted_triangle_ids")
+    else:
+        sorted_triangle_pos = None
+        sorted_triangle_ids = None
+    if sorted_triangle_pos is None or sorted_triangle_ids is None:
+        sorted_triangle_pos = cupy.argsort(triangle_ids)
+        sorted_triangle_ids = triangle_ids[sorted_triangle_pos]
+        if triangle_lookup_cache is not None:
+            triangle_lookup_cache["sorted_triangle_pos"] = sorted_triangle_pos
+            triangle_lookup_cache["sorted_triangle_ids"] = sorted_triangle_ids
+    triangle_search_pos = cupy.searchsorted(sorted_triangle_ids, candidate_primitive_ids)
+    triangle_valid = triangle_search_pos < int(triangle_ids.size)
+    safe_triangle_pos = cupy.minimum(triangle_search_pos, max(0, int(triangle_ids.size) - 1))
+    triangle_valid = triangle_valid & (sorted_triangle_ids[safe_triangle_pos] == candidate_primitive_ids)
+    triangle_indices = cupy.where(triangle_valid, sorted_triangle_pos[safe_triangle_pos], -1).astype(cupy.int64, copy=False)
+
+    exact_flags = cupy.zeros((emitted_count,), dtype=cupy.uint8)
+    kernel = _cupy_segment_triangle_exact_witness_filter_kernel(cupy)
+    block = 256
+    grid = ((emitted_count + block - 1) // block,)
+    kernel(
+        grid,
+        (block,),
+        (
+            emitted_count,
+            ray_indices,
+            triangle_indices,
+            segment_ray_columns["ox"].astype(cupy.float32, copy=False),
+            segment_ray_columns["oy"].astype(cupy.float32, copy=False),
+            segment_ray_columns["dx"].astype(cupy.float32, copy=False),
+            segment_ray_columns["dy"].astype(cupy.float32, copy=False),
+            segment_ray_columns["tmax"].astype(cupy.float32, copy=False),
+            polygon_triangle_columns["x0"].astype(cupy.float64, copy=False),
+            polygon_triangle_columns["y0"].astype(cupy.float64, copy=False),
+            polygon_triangle_columns["x1"].astype(cupy.float64, copy=False),
+            polygon_triangle_columns["y1"].astype(cupy.float64, copy=False),
+            polygon_triangle_columns["x2"].astype(cupy.float64, copy=False),
+            polygon_triangle_columns["y2"].astype(cupy.float64, copy=False),
+            exact_flags,
+        ),
+    )
+    exact_mask = exact_flags.astype(cupy.bool_, copy=False)
+    metadata = {
+        "app_exact_filter": "cupy_rawkernel_segment_triangle_filter_from_generic_witness_candidates",
+        "app_exact_filter_device_materialization": True,
+    }
+    return candidate_ray_ids[exact_mask], candidate_primitive_ids[exact_mask], metadata
+
+
+def _torch_exact_segment_triangle_witness_pairs(
+    runtime,
+    segment_ray_columns: dict[str, object],
+    polygon_triangle_columns: dict[str, object],
+    witness_ray_ids,
+    witness_primitive_ids,
+    emitted_count: int,
+    triangle_lookup_cache: dict[str, object] | None = None,
+):
+    emitted_count = int(emitted_count)
+    torch = runtime["module"]
+    device = runtime["device"]
+    if emitted_count <= 0:
+        return (
+            torch.zeros((0,), dtype=torch.int64, device=device),
+            torch.zeros((0,), dtype=torch.int64, device=device),
+            {
+                "app_exact_filter": "torch_vectorized_segment_triangle_filter_from_generic_witness_candidates",
+                "app_exact_filter_device_materialization": True,
+            },
+        )
+
+    candidate_ray_ids = runtime["slice"](witness_ray_ids, emitted_count).to(torch.int64)
+    candidate_primitive_ids = runtime["slice"](witness_primitive_ids, emitted_count).to(torch.int64)
+
+    def lookup_indices(source_ids, candidate_ids, cache: dict[str, object] | None = None):
+        source_ids_i64 = source_ids.to(torch.int64)
+        candidate_ids_i64 = candidate_ids.to(torch.int64)
+        if cache is not None:
+            sorted_pos = cache.get("sorted_pos")
+            sorted_ids = cache.get("sorted_ids")
+        else:
+            sorted_pos = None
+            sorted_ids = None
+        if sorted_pos is None or sorted_ids is None:
+            sorted_ids, sorted_pos = torch.sort(source_ids_i64)
+            if cache is not None:
+                cache["sorted_pos"] = sorted_pos
+                cache["sorted_ids"] = sorted_ids
+        search_pos = torch.searchsorted(sorted_ids, candidate_ids_i64)
+        valid = search_pos < int(source_ids_i64.numel())
+        safe_pos = torch.minimum(
+            search_pos,
+            torch.full_like(search_pos, max(0, int(source_ids_i64.numel()) - 1)),
+        )
+        valid = valid & (sorted_ids[safe_pos] == candidate_ids_i64)
+        return torch.where(valid, sorted_pos[safe_pos], torch.full_like(safe_pos, -1)).to(torch.int64)
+
+    ray_indices = lookup_indices(segment_ray_columns["ids"], candidate_ray_ids)
+    if triangle_lookup_cache is not None:
+        torch_cache = triangle_lookup_cache.setdefault("torch", {})
+    else:
+        torch_cache = None
+    triangle_indices = lookup_indices(polygon_triangle_columns["ids"], candidate_primitive_ids, torch_cache)
+
+    valid = (ray_indices >= 0) & (triangle_indices >= 0)
+    safe_ray_indices = torch.clamp(ray_indices, min=0)
+    safe_triangle_indices = torch.clamp(triangle_indices, min=0)
+
+    sx = segment_ray_columns["ox"].to(torch.float64)[safe_ray_indices]
+    sy = segment_ray_columns["oy"].to(torch.float64)[safe_ray_indices]
+    ex = sx + segment_ray_columns["dx"].to(torch.float64)[safe_ray_indices] * segment_ray_columns["tmax"].to(torch.float64)[safe_ray_indices]
+    ey = sy + segment_ray_columns["dy"].to(torch.float64)[safe_ray_indices] * segment_ray_columns["tmax"].to(torch.float64)[safe_ray_indices]
+    ax = polygon_triangle_columns["x0"].to(torch.float64)[safe_triangle_indices]
+    ay = polygon_triangle_columns["y0"].to(torch.float64)[safe_triangle_indices]
+    bx = polygon_triangle_columns["x1"].to(torch.float64)[safe_triangle_indices]
+    by = polygon_triangle_columns["y1"].to(torch.float64)[safe_triangle_indices]
+    cx = polygon_triangle_columns["x2"].to(torch.float64)[safe_triangle_indices]
+    cy = polygon_triangle_columns["y2"].to(torch.float64)[safe_triangle_indices]
+    eps = 1.0e-9
+
+    def orient(px, py, qx, qy, rx, ry):
+        return (qx - px) * (ry - py) - (qy - py) * (rx - px)
+
+    def point_in_triangle(px, py):
+        o1 = orient(ax, ay, bx, by, px, py)
+        o2 = orient(bx, by, cx, cy, px, py)
+        o3 = orient(cx, cy, ax, ay, px, py)
+        has_neg = (o1 < -eps) | (o2 < -eps) | (o3 < -eps)
+        has_pos = (o1 > eps) | (o2 > eps) | (o3 > eps)
+        return ~(has_neg & has_pos)
+
+    def on_segment(px, py, qx, qy, rx, ry):
+        return (
+            (torch.minimum(px, rx) - eps <= qx)
+            & (qx <= torch.maximum(px, rx) + eps)
+            & (torch.minimum(py, ry) - eps <= qy)
+            & (qy <= torch.maximum(py, ry) + eps)
+        )
+
+    def segments_intersect(px, py, qx, qy, rx, ry, sx2, sy2):
+        o1 = orient(px, py, qx, qy, rx, ry)
+        o2 = orient(px, py, qx, qy, sx2, sy2)
+        o3 = orient(rx, ry, sx2, sy2, px, py)
+        o4 = orient(rx, ry, sx2, sy2, qx, qy)
+        proper = (((o1 > eps) & (o2 < -eps)) | ((o1 < -eps) & (o2 > eps))) & (
+            ((o3 > eps) & (o4 < -eps)) | ((o3 < -eps) & (o4 > eps))
+        )
+        return (
+            proper
+            | ((torch.abs(o1) <= eps) & on_segment(px, py, rx, ry, qx, qy))
+            | ((torch.abs(o2) <= eps) & on_segment(px, py, sx2, sy2, qx, qy))
+            | ((torch.abs(o3) <= eps) & on_segment(rx, ry, px, py, sx2, sy2))
+            | ((torch.abs(o4) <= eps) & on_segment(rx, ry, qx, qy, sx2, sy2))
+        )
+
+    exact_mask = valid & (
+        point_in_triangle(sx, sy)
+        | point_in_triangle(ex, ey)
+        | segments_intersect(sx, sy, ex, ey, ax, ay, bx, by)
+        | segments_intersect(sx, sy, ex, ey, bx, by, cx, cy)
+        | segments_intersect(sx, sy, ex, ey, cx, cy, ax, ay)
+    )
+    metadata = {
+        "app_exact_filter": "torch_vectorized_segment_triangle_filter_from_generic_witness_candidates",
+        "app_exact_filter_device_materialization": True,
+    }
+    return candidate_ray_ids[exact_mask], candidate_primitive_ids[exact_mask], metadata
+
+
+class _PartnerPreparedTriangleScene:
+    def __init__(self, native_scene, polygon_triangle_columns: dict[str, object], polygon_triangle_aabbs) -> None:
+        self._native_scene = native_scene
+        self.polygon_triangle_columns = polygon_triangle_columns
+        self.polygon_triangle_aabbs = polygon_triangle_aabbs
+        self._partner_exact_filter_triangle_lookup_cache: dict[str, object] = {}
+        self._cupy_exact_filter_triangle_lookup_cache = self._partner_exact_filter_triangle_lookup_cache
+
+    def write_device_any_hit_all_witnesses(self, *args, **kwargs):
+        return self._native_scene.write_device_any_hit_all_witnesses(*args, **kwargs)
+
+    def write_device_any_hit_flags(self, *args, **kwargs):
+        return self._native_scene.write_device_any_hit_flags(*args, **kwargs)
+
+    def __getattr__(self, name):
+        return getattr(self._native_scene, name)
+
+    def close(self) -> None:
+        self._native_scene.close()
+
+
+def prepare_segment_polygon_anyhit_optix_partner_device_scene(
+    polygon_triangle_columns: dict[str, object],
+    polygon_triangle_aabbs,
+):
+    """Prepare a reusable OptiX scene from partner-owned triangle columns."""
+    native_scene = _optix.prepare_optix_ray_triangle_any_hit_2d_device_triangle_zero_copy_scene(
+        polygon_triangle_columns,
+        polygon_triangle_aabbs,
+    )
+    return _PartnerPreparedTriangleScene(native_scene, polygon_triangle_columns, polygon_triangle_aabbs)
+
+
+def allocate_segment_polygon_witness_partner_device_output_columns(
+    output_capacity: int,
+    *,
+    partner: str = "torch",
+) -> dict[str, object]:
+    """Allocate reusable partner-owned witness output columns."""
+    output_capacity = int(output_capacity)
+    if output_capacity <= 0:
+        raise ValueError("output_capacity must be positive")
+    runtime = _partner_module(partner)
+    return {
+        "witness_ray_ids": runtime["zeros"]((output_capacity,), runtime["uint32"], runtime["device"]),
+        "witness_primitive_ids": runtime["zeros"]((output_capacity,), runtime["uint32"], runtime["device"]),
+    }
+
+
+def ray_primitive_witness_pair_page_optix_prepared_partner_columns(
+    prepared_scene,
+    ray_columns: dict[str, object],
+    *,
+    partner: str = "torch",
+    output_capacity: int | None = None,
+    witness_output_columns: dict[str, object] | None = None,
+    page_offset: int = 0,
+    page_limit: int | None = None,
+    return_metadata: bool = False,
+):
+    """Return a bounded partner-owned page of generic ray/primitive witness pairs."""
+    witness_result = _segment_polygon_all_witness_columns_optix_partner_columns(
+        ray_columns,
+        None,
+        None,
+        partner=partner,
+        output_capacity=output_capacity,
+        prepared_scene=prepared_scene,
+        witness_output_columns=witness_output_columns,
+    )
+    runtime = witness_result["runtime"]
+    emitted_count = witness_result["emitted_count"]
+    witness_columns = {
+        "witness_ray_ids": runtime["slice"](witness_result["witness_ray_ids"], emitted_count),
+        "witness_primitive_ids": runtime["slice"](witness_result["witness_primitive_ids"], emitted_count),
+    }
+    page = partner_page_columns(
+        witness_columns,
+        offset=page_offset,
+        limit=page_limit,
+        partner=runtime["name"],
+    )
+    metadata = dict(page["_metadata"])
+    metadata.update(dict(witness_result["metadata"]))
+    metadata.update(
+        {
+            "adapter": "ray_primitive_witness_pair_page_optix_prepared_partner_columns",
+            "partner": runtime["name"],
+            "emitted_count": emitted_count,
+            "native_engine_row_contract": "generic_ray_primitive_candidate_witness_pairs",
+            "app_row_materialization": "not_performed_generic_witness_page_only",
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+    )
+    page["_metadata"] = metadata
+    if return_metadata:
+        return {"columns": page, "metadata": metadata}
+    return page
+
+
+def _host_exact_segment_triangle_witness_pair_columns(
+    runtime,
+    segment_ray_columns: dict[str, object],
+    polygon_triangle_columns: dict[str, object],
+    witness_ray_ids,
+    witness_primitive_ids,
+    emitted_count: int,
+):
+    rows = _exact_segment_triangle_rows_from_witness_columns(
+        runtime,
+        segment_ray_columns,
+        polygon_triangle_columns,
+        witness_ray_ids,
+        witness_primitive_ids,
+        emitted_count,
+    )
+    segment_ids = [int(row["segment_id"]) for row in rows]
+    polygon_ids = [int(row["polygon_id"]) for row in rows]
+    return (
+        runtime["tensor"](segment_ids, runtime["uint32"], runtime["device"]),
+        runtime["tensor"](polygon_ids, runtime["uint32"], runtime["device"]),
+        {
+            "app_exact_filter": "host_segment_triangle_filter_from_generic_witness_candidates",
+            "app_exact_filter_device_materialization": False,
+        },
+    )
+
+
+def _page_columns_with_runtime(runtime, columns: dict[str, object], *, offset: int, limit: int | None):
+    if runtime["name"] in ("torch", "cupy"):
+        return partner_page_columns(columns, offset=offset, limit=limit, partner=runtime["name"])
+    offset = int(offset)
+    if offset < 0:
+        raise ValueError("offset must be non-negative")
+    if limit is not None and int(limit) < 0:
+        raise ValueError("limit must be non-negative")
+    row_count = _column_length(columns, "witness_ray_ids")
+    end = row_count if limit is None else min(row_count, offset + int(limit))
+    sliced = {
+        name: column[offset:end]
+        for name, column in columns.items()
+        if not str(name).startswith("_")
+    }
+    sliced["_metadata"] = {
+        "adapter": "partner_page_columns",
+        "partner": runtime["name"],
+        "offset": offset,
+        "limit": None if limit is None else int(limit),
+        "row_count": max(0, end - offset),
+        "source_row_count": row_count,
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "whole_app_speedup_claim_authorized": False,
+    }
+    return sliced
+
+
+def segment_polygon_exact_witness_pair_page_optix_prepared_partner_columns(
+    prepared_scene,
+    segment_ray_columns: dict[str, object],
+    *,
+    partner: str = "torch",
+    output_capacity: int | None = None,
+    witness_output_columns: dict[str, object] | None = None,
+    page_offset: int = 0,
+    page_limit: int | None = None,
+    return_metadata: bool = False,
+):
+    """Return a bounded page of exact segment/shape witness pairs in partner columns.
+
+    The native engine remains app-agnostic: it writes generic ray/primitive
+    candidate witness pairs. This adapter exact-filters those candidates in the
+    partner layer and returns a bounded page of witness ID columns, avoiding
+    Python row-dictionary materialization for consumers that can continue on
+    Torch/CuPy tensors.
+    """
+    polygon_triangle_columns = getattr(prepared_scene, "polygon_triangle_columns", None)
+    if polygon_triangle_columns is None:
+        raise ValueError("prepared_scene must expose polygon_triangle_columns for exact witness filtering")
+    witness_result = _segment_polygon_all_witness_columns_optix_partner_columns(
+        segment_ray_columns,
+        None,
+        None,
+        partner=partner,
+        output_capacity=output_capacity,
+        prepared_scene=prepared_scene,
+        witness_output_columns=witness_output_columns,
+    )
+    runtime = witness_result["runtime"]
+    emitted_count = witness_result["emitted_count"]
+    metadata = dict(witness_result["metadata"])
+    if runtime["name"] == "cupy":
+        triangle_lookup_cache = getattr(
+            prepared_scene,
+            "_partner_exact_filter_triangle_lookup_cache",
+            getattr(prepared_scene, "_cupy_exact_filter_triangle_lookup_cache", None),
+        )
+        exact_ray_ids, exact_primitive_ids, exact_filter_metadata = _cupy_exact_segment_triangle_witness_pairs(
+            runtime,
+            segment_ray_columns,
+            polygon_triangle_columns,
+            witness_result["witness_ray_ids"],
+            witness_result["witness_primitive_ids"],
+            emitted_count,
+            triangle_lookup_cache=triangle_lookup_cache,
+        )
+        exact_filter_host_materialization = False
+    elif runtime["name"] == "torch":
+        triangle_lookup_cache = getattr(prepared_scene, "_partner_exact_filter_triangle_lookup_cache", None)
+        exact_ray_ids, exact_primitive_ids, exact_filter_metadata = _torch_exact_segment_triangle_witness_pairs(
+            runtime,
+            segment_ray_columns,
+            polygon_triangle_columns,
+            witness_result["witness_ray_ids"],
+            witness_result["witness_primitive_ids"],
+            emitted_count,
+            triangle_lookup_cache=triangle_lookup_cache,
+        )
+        exact_filter_host_materialization = False
+    else:
+        exact_ray_ids, exact_primitive_ids, exact_filter_metadata = _host_exact_segment_triangle_witness_pair_columns(
+            runtime,
+            segment_ray_columns,
+            polygon_triangle_columns,
+            witness_result["witness_ray_ids"],
+            witness_result["witness_primitive_ids"],
+            emitted_count,
+        )
+        exact_filter_host_materialization = True
+    exact_columns = {
+        "witness_ray_ids": exact_ray_ids,
+        "witness_primitive_ids": exact_primitive_ids,
+    }
+    page = _page_columns_with_runtime(
+        runtime,
+        exact_columns,
+        offset=page_offset,
+        limit=page_limit,
+    )
+    page_metadata = dict(page["_metadata"])
+    page_metadata.update(metadata)
+    page_metadata.update(exact_filter_metadata)
+    page_metadata.update(
+        {
+            "adapter": "segment_polygon_exact_witness_pair_page_optix_prepared_partner_columns",
+            "partner": runtime["name"],
+            "exact_witness_count": _column_length(exact_columns, "witness_ray_ids"),
+            "page_offset": int(page_offset),
+            "page_limit": None if page_limit is None else int(page_limit),
+            "page_row_count": _column_length(page, "witness_ray_ids"),
+            "input_contract": "caller_supplied_partner_device_columns",
+            "native_engine_row_contract": "generic_ray_primitive_candidate_witness_pairs",
+            "app_exact_filter_host_materialization": exact_filter_host_materialization,
+            "app_row_materialization": "not_performed_exact_witness_columns_only",
+            "app_row_host_materialization": False,
+            "streaming_witness_page_authorized": True,
+            "full_python_row_table_materialization_avoided": True,
+            "native_exact_row_semantics_authorized": False,
+            "app_exact_row_semantics_authorized": True,
+            "whole_app_true_zero_copy_authorized": not exact_filter_host_materialization,
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+    )
+    page["_metadata"] = page_metadata
+    if return_metadata:
+        return {"columns": page, "metadata": page_metadata}
+    return page
+
+
+def segment_polygon_exact_witness_pair_page_optix_partner_columns(
+    segment_ray_columns: dict[str, object],
+    polygon_triangle_columns: dict[str, object],
+    polygon_triangle_aabbs,
+    *,
+    partner: str = "torch",
+    output_capacity: int | None = None,
+    witness_output_columns: dict[str, object] | None = None,
+    page_offset: int = 0,
+    page_limit: int | None = None,
+    return_metadata: bool = False,
+):
+    """Return exact segment/shape witness pages without reusing a prepared scene."""
+    prepared_scene = prepare_segment_polygon_anyhit_optix_partner_device_scene(
+        polygon_triangle_columns,
+        polygon_triangle_aabbs,
+    )
+    try:
+        return segment_polygon_exact_witness_pair_page_optix_prepared_partner_columns(
+            prepared_scene,
+            segment_ray_columns,
+            partner=partner,
+            output_capacity=output_capacity,
+            witness_output_columns=witness_output_columns,
+            page_offset=page_offset,
+            page_limit=page_limit,
+            return_metadata=return_metadata,
+        )
+    finally:
+        prepared_scene.close()
+
+
+def _require_segment_polygon_witness_output_lengths(
+    witness_output_columns: dict[str, object],
+    output_capacity: int,
+) -> None:
+    for name in ("witness_ray_ids", "witness_primitive_ids"):
+        if name not in witness_output_columns:
+            raise ValueError(f"witness_output_columns must include {name!r}")
+        if _column_length(witness_output_columns, name) != output_capacity:
+            raise ValueError(f"witness_output_columns[{name!r}] length must match output_capacity")
+
+
+def segment_polygon_anyhit_rows_optix_partner_columns(
+    segment_ray_columns: dict[str, object],
+    polygon_triangle_columns: dict[str, object],
+    polygon_triangle_aabbs,
+    *,
+    partner: str = "torch",
+    output_capacity: int | None = None,
+    return_metadata: bool = False,
+):
+    """Run segment/polygon rows from caller-supplied partner CUDA columns.
+
+    The caller owns the GPU-resident ray and triangle columns. The adapter only
+    allocates bounded witness output columns, invokes the generic native
+    all-witness contract, and names/deduplicates app rows in Python.
+    """
+    witness_result = _segment_polygon_all_witness_columns_optix_partner_columns(
+        segment_ray_columns,
+        polygon_triangle_columns,
+        polygon_triangle_aabbs,
+        partner=partner,
+        output_capacity=output_capacity,
+    )
+    runtime = witness_result["runtime"]
+    emitted_count = witness_result["emitted_count"]
+    metadata = dict(witness_result["metadata"])
+    witness_ray_ids = witness_result["witness_ray_ids"]
+    witness_primitive_ids = witness_result["witness_primitive_ids"]
+    rows = _exact_segment_triangle_rows_from_witness_columns(
+        runtime,
+        segment_ray_columns,
+        polygon_triangle_columns,
+        witness_ray_ids,
+        witness_primitive_ids,
+        emitted_count,
+    )
+    metadata.update(
+        {
+            "adapter": "segment_polygon_anyhit_rows_optix_partner_columns",
+            "partner": runtime["name"],
+            "app_rows_emitted": len(rows),
+            "input_contract": "caller_supplied_partner_device_columns",
+            "native_engine_row_contract": "generic_ray_primitive_candidate_witness_pairs",
+            "app_exact_filter": "host_segment_triangle_filter_from_generic_witness_candidates",
+            "native_exact_row_semantics_authorized": False,
+            "app_exact_row_semantics_authorized": True,
+            "whole_app_true_zero_copy_authorized": False,
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+    )
+    if return_metadata:
+        return {"rows": rows, "metadata": metadata}
+    return rows
+
+
+def segment_polygon_hitcount_optix_partner_columns(
+    segment_ray_columns: dict[str, object],
+    polygon_triangle_columns: dict[str, object],
+    polygon_triangle_aabbs,
+    *,
+    partner: str = "torch",
+    output_capacity: int | None = None,
+    return_metadata: bool = False,
+):
+    """Run segment/polygon hit counts from caller-supplied partner CUDA columns.
+
+    This is an app-layer adapter over generic ray/primitive witness rows. The
+    native engine emits witness IDs only; Python deduplicates polygon hits and
+    materializes one hit-count row per input segment ID.
+    """
+    runtime = _partner_module(partner)
+    segment_ids = runtime["to_host"](segment_ray_columns["ids"])
+    if not segment_ids:
+        rows: tuple[dict[str, int], ...] = ()
+        metadata = {
+            "adapter": "segment_polygon_hitcount_optix_partner_columns",
+            "partner": runtime["name"],
+            "app_rows_emitted": 0,
+            "input_contract": "caller_supplied_partner_device_columns",
+            "native_engine_row_contract": "generic_ray_primitive_witness_pairs",
+            "app_count_materialization": "none_empty_input",
+            "app_count_host_materialization": False,
+            "whole_app_true_zero_copy_authorized": False,
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+        if return_metadata:
+            return {"rows": rows, "metadata": metadata}
+        return rows
+    witness_result = segment_polygon_anyhit_rows_optix_partner_columns(
+        segment_ray_columns,
+        polygon_triangle_columns,
+        polygon_triangle_aabbs,
+        partner=partner,
+        output_capacity=output_capacity,
+        return_metadata=True,
+    )
+    counts = {int(segment_id): 0 for segment_id in segment_ids}
+    seen_pairs = set()
+    for row in witness_result["rows"]:
+        pair = (int(row["segment_id"]), int(row["polygon_id"]))
+        if pair in seen_pairs:
+            continue
+        seen_pairs.add(pair)
+        if pair[0] in counts:
+            counts[pair[0]] += 1
+    rows = tuple({"segment_id": segment_id, "hit_count": counts[segment_id]} for segment_id in segment_ids)
+    metadata = dict(witness_result["metadata"])
+    metadata.update(
+        {
+            "adapter": "segment_polygon_hitcount_optix_partner_columns",
+            "partner": runtime["name"],
+            "app_rows_emitted": len(rows),
+            "input_contract": "caller_supplied_partner_device_columns",
+            "native_engine_row_contract": "generic_ray_primitive_witness_pairs",
+            "app_count_materialization": "python_from_generic_witness_pairs",
+            "app_count_host_materialization": True,
+            "whole_app_true_zero_copy_authorized": False,
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+    )
+    if return_metadata:
+        return {"rows": rows, "metadata": metadata}
+    return rows
+
+
+def segment_polygon_hitcount_optix_partner_device_count_columns(
+    segment_ray_columns: dict[str, object],
+    polygon_triangle_columns: dict[str, object],
+    polygon_triangle_aabbs,
+    *,
+    partner: str = "torch",
+    output_capacity: int | None = None,
+    return_metadata: bool = False,
+):
+    """Return partner-owned segment IDs and hit-count columns.
+
+    This adapter keeps the native call on the same generic bounded witness
+    contract as the row adapters, then performs duplicate-pair removal and
+    per-segment counting with PyTorch/CuPy tensor operations. It avoids
+    materializing app hit-count rows on the host.
+    """
+    witness_result = _segment_polygon_all_witness_columns_optix_partner_columns(
+        segment_ray_columns,
+        polygon_triangle_columns,
+        polygon_triangle_aabbs,
+        partner=partner,
+        output_capacity=output_capacity,
+    )
+    runtime = witness_result["runtime"]
+    emitted_count = witness_result["emitted_count"]
+    metadata = dict(witness_result["metadata"])
+    if runtime["name"] == "cupy":
+        exact_ray_ids, exact_primitive_ids, exact_filter_metadata = _cupy_exact_segment_triangle_witness_pairs(
+            runtime,
+            segment_ray_columns,
+            polygon_triangle_columns,
+            witness_result["witness_ray_ids"],
+            witness_result["witness_primitive_ids"],
+            emitted_count,
+        )
+        hit_counts = _count_unique_pairs_for_runtime(
+            runtime,
+            segment_ray_columns["ids"],
+            exact_ray_ids,
+            exact_primitive_ids,
+        )
+        app_count_materialization = "partner_gpu_unique_pair_counts_from_cupy_exact_filter"
+        app_count_host_materialization = False
+        whole_app_true_zero_copy_authorized = True
+    elif runtime["name"] == "torch":
+        exact_ray_ids, exact_primitive_ids, exact_filter_metadata = _torch_exact_segment_triangle_witness_pairs(
+            runtime,
+            segment_ray_columns,
+            polygon_triangle_columns,
+            witness_result["witness_ray_ids"],
+            witness_result["witness_primitive_ids"],
+            emitted_count,
+        )
+        hit_counts = _count_unique_pairs_for_runtime(
+            runtime,
+            segment_ray_columns["ids"],
+            exact_ray_ids,
+            exact_primitive_ids,
+        )
+        app_count_materialization = "partner_gpu_unique_pair_counts_from_torch_exact_filter"
+        app_count_host_materialization = False
+        whole_app_true_zero_copy_authorized = True
+    else:
+        exact_rows = _exact_segment_triangle_rows_from_witness_columns(
+            runtime,
+            segment_ray_columns,
+            polygon_triangle_columns,
+            witness_result["witness_ray_ids"],
+            witness_result["witness_primitive_ids"],
+            emitted_count,
+        )
+        ids_column = segment_ray_columns["ids"]
+        if "to_host" in runtime:
+            segment_ids = runtime["to_host"](ids_column)
+        elif hasattr(ids_column, "values") and not callable(ids_column.values):
+            segment_ids = [int(item) for item in ids_column.values]
+        elif hasattr(ids_column, "tolist"):
+            segment_ids = [int(item) for item in ids_column.tolist()]
+        else:
+            segment_ids = [int(item) for item in ids_column]
+        counts = {int(segment_id): 0 for segment_id in segment_ids}
+        for row in exact_rows:
+            segment_id = int(row["segment_id"])
+            if segment_id in counts:
+                counts[segment_id] += 1
+        hit_counts = runtime["tensor"]([counts[int(segment_id)] for segment_id in segment_ids], runtime["uint32"], runtime["device"])
+        exact_filter_metadata = {
+            "app_exact_filter": "host_segment_triangle_filter_from_generic_witness_candidates",
+            "app_exact_filter_device_materialization": False,
+        }
+        app_count_materialization = "partner_columns_from_host_exact_filter"
+        app_count_host_materialization = True
+        whole_app_true_zero_copy_authorized = False
+    runtime["sync"]()
+    columns = {
+        "segment_ids": segment_ray_columns["ids"],
+        "hit_counts": hit_counts,
+    }
+    metadata.update(
+        {
+            "adapter": "segment_polygon_hitcount_optix_partner_device_count_columns",
+            "partner": runtime["name"],
+            "app_columns_emitted": 2,
+            "app_rows_emitted": _column_length(segment_ray_columns, "ids"),
+            "input_contract": "caller_supplied_partner_device_columns",
+            "native_engine_row_contract": "generic_ray_primitive_candidate_witness_pairs",
+            "app_count_materialization": app_count_materialization,
+            "app_count_host_materialization": app_count_host_materialization,
+            "app_exact_filter": exact_filter_metadata["app_exact_filter"],
+            "app_exact_filter_device_materialization": exact_filter_metadata["app_exact_filter_device_materialization"],
+            "native_exact_row_semantics_authorized": False,
+            "app_exact_row_semantics_authorized": True,
+            "whole_app_true_zero_copy_authorized": whole_app_true_zero_copy_authorized,
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+    )
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def segment_polygon_hitcount_optix_prepared_partner_device_count_columns(
+    prepared_scene,
+    segment_ray_columns: dict[str, object],
+    *,
+    partner: str = "torch",
+    output_capacity: int | None = None,
+    witness_output_columns: dict[str, object] | None = None,
+    return_metadata: bool = False,
+):
+    """Return partner-owned hit-count columns through a reusable triangle scene."""
+    witness_result = _segment_polygon_all_witness_columns_optix_partner_columns(
+        segment_ray_columns,
+        None,
+        None,
+        partner=partner,
+        output_capacity=output_capacity,
+        prepared_scene=prepared_scene,
+        witness_output_columns=witness_output_columns,
+    )
+    runtime = witness_result["runtime"]
+    emitted_count = witness_result["emitted_count"]
+    metadata = dict(witness_result["metadata"])
+    polygon_triangle_columns = getattr(prepared_scene, "polygon_triangle_columns", None)
+    if runtime["name"] == "cupy" and polygon_triangle_columns is not None:
+        triangle_lookup_cache = getattr(
+            prepared_scene,
+            "_partner_exact_filter_triangle_lookup_cache",
+            getattr(prepared_scene, "_cupy_exact_filter_triangle_lookup_cache", None),
+        )
+        exact_ray_ids, exact_primitive_ids, exact_filter_metadata = _cupy_exact_segment_triangle_witness_pairs(
+            runtime,
+            segment_ray_columns,
+            polygon_triangle_columns,
+            witness_result["witness_ray_ids"],
+            witness_result["witness_primitive_ids"],
+            emitted_count,
+            triangle_lookup_cache=triangle_lookup_cache,
+        )
+        hit_counts = _count_unique_pairs_for_runtime(
+            runtime,
+            segment_ray_columns["ids"],
+            exact_ray_ids,
+            exact_primitive_ids,
+        )
+        app_count_materialization = "partner_gpu_unique_pair_counts_from_prepared_cupy_exact_filter"
+        app_count_host_materialization = False
+        native_exact_row_semantics_authorized = False
+        app_exact_row_semantics_authorized = True
+        whole_app_true_zero_copy_authorized = True
+    elif runtime["name"] == "torch" and polygon_triangle_columns is not None:
+        triangle_lookup_cache = getattr(
+            prepared_scene,
+            "_partner_exact_filter_triangle_lookup_cache",
+            getattr(prepared_scene, "_cupy_exact_filter_triangle_lookup_cache", None),
+        )
+        exact_ray_ids, exact_primitive_ids, exact_filter_metadata = _torch_exact_segment_triangle_witness_pairs(
+            runtime,
+            segment_ray_columns,
+            polygon_triangle_columns,
+            witness_result["witness_ray_ids"],
+            witness_result["witness_primitive_ids"],
+            emitted_count,
+            triangle_lookup_cache=triangle_lookup_cache,
+        )
+        hit_counts = _count_unique_pairs_for_runtime(
+            runtime,
+            segment_ray_columns["ids"],
+            exact_ray_ids,
+            exact_primitive_ids,
+        )
+        app_count_materialization = "partner_gpu_unique_pair_counts_from_prepared_torch_exact_filter"
+        app_count_host_materialization = False
+        native_exact_row_semantics_authorized = False
+        app_exact_row_semantics_authorized = True
+        whole_app_true_zero_copy_authorized = True
+    else:
+        witness_ray_ids = runtime["slice"](witness_result["witness_ray_ids"], emitted_count)
+        witness_primitive_ids = runtime["slice"](witness_result["witness_primitive_ids"], emitted_count)
+        hit_counts = _count_unique_pairs_for_runtime(
+            runtime,
+            segment_ray_columns["ids"],
+            witness_ray_ids,
+            witness_primitive_ids,
+        )
+        exact_filter_metadata = {
+            "app_exact_filter": "not_available_for_prepared_scene_without_partner_triangle_columns",
+            "app_exact_filter_device_materialization": False,
+        }
+        app_count_materialization = "partner_gpu_from_prepared_generic_candidate_witness_pairs"
+        app_count_host_materialization = False
+        native_exact_row_semantics_authorized = False
+        app_exact_row_semantics_authorized = False
+        whole_app_true_zero_copy_authorized = False
+    runtime["sync"]()
+    columns = {
+        "segment_ids": segment_ray_columns["ids"],
+        "hit_counts": hit_counts,
+    }
+    metadata.update(
+        {
+            "adapter": "segment_polygon_hitcount_optix_prepared_partner_device_count_columns",
+            "partner": runtime["name"],
+            "app_columns_emitted": 2,
+            "app_rows_emitted": _column_length(segment_ray_columns, "ids"),
+            "input_contract": "caller_supplied_partner_device_columns",
+            "native_engine_row_contract": "generic_ray_primitive_candidate_witness_pairs",
+            "app_count_materialization": app_count_materialization,
+            "app_count_host_materialization": app_count_host_materialization,
+            "app_exact_filter": exact_filter_metadata["app_exact_filter"],
+            "app_exact_filter_device_materialization": exact_filter_metadata["app_exact_filter_device_materialization"],
+            "native_exact_row_semantics_authorized": native_exact_row_semantics_authorized,
+            "app_exact_row_semantics_authorized": app_exact_row_semantics_authorized,
+            "whole_app_true_zero_copy_authorized": whole_app_true_zero_copy_authorized,
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+    )
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def road_hazard_priority_flags_optix_partner_device_columns(
+    segment_ray_columns: dict[str, object],
+    polygon_triangle_columns: dict[str, object],
+    polygon_triangle_aabbs,
+    *,
+    threshold: int = 2,
+    partner: str = "torch",
+    output_capacity: int | None = None,
+    return_metadata: bool = False,
+):
+    """Return partner-owned road hazard priority columns.
+
+    This app adapter reuses the generic segment/polygon hit-count partner
+    column path, then applies the road-hazard priority threshold with the
+    selected partner tensor library. The native engine still sees only generic
+    ray/primitive candidate witness IDs.
+    """
+    threshold = int(threshold)
+    if threshold < 0:
+        raise ValueError("threshold must be non-negative")
+    hitcount_result = segment_polygon_hitcount_optix_partner_device_count_columns(
+        segment_ray_columns,
+        polygon_triangle_columns,
+        polygon_triangle_aabbs,
+        partner=partner,
+        output_capacity=output_capacity,
+        return_metadata=True,
+    )
+    runtime = _partner_module(partner)
+    hitcount_columns = hitcount_result["columns"]
+    priority_flags = runtime["greater_equal_uint32"](
+        hitcount_columns["hit_counts"],
+        threshold,
+    )
+    runtime["sync"]()
+    columns = {
+        "road_ids": hitcount_columns["segment_ids"],
+        "hit_counts": hitcount_columns["hit_counts"],
+        "priority_flags": priority_flags,
+    }
+    metadata = dict(hitcount_result["metadata"])
+    metadata.update(
+        {
+            "adapter": "road_hazard_priority_flags_optix_partner_device_columns",
+            "app": "road_hazard_screening",
+            "partner": runtime["name"],
+            "priority_threshold": threshold,
+            "app_priority_materialization": "partner_gpu_threshold_from_hit_counts",
+            "app_priority_host_materialization": False,
+            "input_contract": "caller_supplied_partner_device_columns",
+            "native_engine_row_contract": "generic_ray_primitive_candidate_witness_pairs",
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+    )
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def road_hazard_priority_flags_optix_prepared_partner_device_columns(
+    prepared_scene,
+    segment_ray_columns: dict[str, object],
+    *,
+    threshold: int = 2,
+    partner: str = "torch",
+    output_capacity: int | None = None,
+    witness_output_columns: dict[str, object] | None = None,
+    return_metadata: bool = False,
+):
+    """Return road hazard priority columns through a reusable triangle scene."""
+    threshold = int(threshold)
+    if threshold < 0:
+        raise ValueError("threshold must be non-negative")
+    hitcount_result = segment_polygon_hitcount_optix_prepared_partner_device_count_columns(
+        prepared_scene,
+        segment_ray_columns,
+        partner=partner,
+        output_capacity=output_capacity,
+        witness_output_columns=witness_output_columns,
+        return_metadata=True,
+    )
+    runtime = _partner_module(partner)
+    hitcount_columns = hitcount_result["columns"]
+    priority_flags = runtime["greater_equal_uint32"](
+        hitcount_columns["hit_counts"],
+        threshold,
+    )
+    runtime["sync"]()
+    columns = {
+        "road_ids": hitcount_columns["segment_ids"],
+        "hit_counts": hitcount_columns["hit_counts"],
+        "priority_flags": priority_flags,
+    }
+    metadata = dict(hitcount_result["metadata"])
+    metadata.update(
+        {
+            "adapter": "road_hazard_priority_flags_optix_prepared_partner_device_columns",
+            "app": "road_hazard_screening",
+            "partner": runtime["name"],
+            "priority_threshold": threshold,
+            "app_priority_materialization": "partner_gpu_threshold_from_prepared_hit_counts",
+            "app_priority_host_materialization": False,
+            "input_contract": "caller_supplied_partner_device_columns",
+            "native_engine_row_contract": "generic_ray_primitive_candidate_witness_pairs",
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+    )
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def fixed_radius_count_threshold_2d_partner_columns(
+    query_point_columns: dict[str, object],
+    search_point_columns: dict[str, object],
+    *,
+    radius: float,
+    threshold: int = 1,
+    partner: str = "torch",
+    return_metadata: bool = False,
+):
+    """Return partner-owned fixed-radius count and threshold columns.
+
+    This is the protocol-first partner reference path for fixed-radius apps. It
+    uses PyTorch/CuPy tensor operations over caller-owned point columns and does
+    not call the native RTDL engine yet.
+    """
+    radius = float(radius)
+    threshold = int(threshold)
+    if radius < 0:
+        raise ValueError("radius must be non-negative")
+    if threshold < 0:
+        raise ValueError("threshold must be non-negative")
+    runtime = _partner_module(partner)
+    neighbor_counts = runtime["fixed_radius_count_threshold_2d"](
+        query_point_columns,
+        search_point_columns,
+        radius,
+        threshold,
+    )
+    threshold_flags = runtime["greater_equal_uint32"](neighbor_counts, threshold)
+    runtime["sync"]()
+    columns = {
+        "query_ids": query_point_columns["ids"],
+        "neighbor_counts": neighbor_counts,
+        "threshold_flags": threshold_flags,
+    }
+    metadata = {
+        "adapter": "fixed_radius_count_threshold_2d_partner_columns",
+        "partner": runtime["name"],
+        "input_contract": "caller_supplied_partner_device_point_columns",
+        "partner_reference_contract": "generic_fixed_radius_count_threshold_2d",
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "radius": radius,
+        "threshold": threshold,
+        "app_count_materialization": "partner_gpu_fixed_radius_count_threshold",
+        "app_count_host_materialization": False,
+        "direct_device_handoff_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "v2_0_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+    }
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def fixed_radius_count_threshold_3d_partner_columns(
+    query_point_columns: dict[str, object],
+    search_point_columns: dict[str, object],
+    *,
+    radius: float,
+    threshold: int = 1,
+    partner: str = "torch",
+    return_metadata: bool = False,
+):
+    """Return partner-owned 3-D fixed-radius count and threshold columns."""
+    radius = float(radius)
+    threshold = int(threshold)
+    if radius < 0:
+        raise ValueError("radius must be non-negative")
+    if threshold < 0:
+        raise ValueError("threshold must be non-negative")
+    if "z" not in query_point_columns or "z" not in search_point_columns:
+        raise ValueError("fixed_radius_count_threshold_3d_partner_columns requires z point columns")
+    runtime = _partner_module(partner)
+    neighbor_counts = runtime["fixed_radius_count_threshold_3d"](
+        query_point_columns,
+        search_point_columns,
+        radius,
+        threshold,
+    )
+    threshold_flags = runtime["greater_equal_uint32"](neighbor_counts, threshold)
+    runtime["sync"]()
+    columns = {
+        "query_ids": query_point_columns["ids"],
+        "neighbor_counts": neighbor_counts,
+        "threshold_flags": threshold_flags,
+    }
+    metadata = {
+        "adapter": "fixed_radius_count_threshold_3d_partner_columns",
+        "partner": runtime["name"],
+        "input_contract": "caller_supplied_partner_device_point_columns_3d",
+        "partner_reference_contract": "generic_fixed_radius_count_threshold_3d",
+        "native_engine_row_contract": "not_called_partner_reference_only",
+        "radius": radius,
+        "threshold": threshold,
+        "app_count_materialization": "partner_gpu_fixed_radius_count_threshold_3d",
+        "app_count_host_materialization": False,
+        "direct_device_handoff_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "v2_0_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+    }
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def allocate_fixed_radius_count_threshold_3d_partner_device_output_columns(
+    query_count: int,
+    *,
+    partner: str = "cupy",
+) -> dict[str, object]:
+    """Allocate reusable partner-owned output columns for 3-D threshold runs."""
+    query_count = int(query_count)
+    if query_count < 0:
+        raise ValueError("query_count must be non-negative")
+    if partner == "numba":
+        cuda, np = _numba_cuda_stack_for_radius_graph()
+        return {
+            "query_ids": _NumbaDeviceColumnView(cuda.device_array((query_count,), dtype=np.uint32)),
+            "neighbor_counts": _NumbaDeviceColumnView(cuda.device_array((query_count,), dtype=np.uint32)),
+            "threshold_flags": _NumbaDeviceColumnView(cuda.device_array((query_count,), dtype=np.uint32)),
+        }
+    runtime = _partner_module(partner)
+    return {
+        "query_ids": runtime["zeros"]((query_count,), runtime["uint32"], runtime["device"]),
+        "neighbor_counts": runtime["zeros"]((query_count,), runtime["uint32"], runtime["device"]),
+        "threshold_flags": runtime["zeros"]((query_count,), runtime["uint32"], runtime["device"]),
+    }
+
+
+def _require_fixed_radius_threshold_3d_output_column_lengths(output_columns: dict[str, object], query_count: int) -> None:
+    for name in ("query_ids", "neighbor_counts", "threshold_flags"):
+        if name not in output_columns:
+            raise ValueError(f"output_columns must include {name!r}")
+        if _column_length(output_columns, name) != query_count:
+            raise ValueError(f"output_columns[{name!r}] length must match query point count")
+
+
+def fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns(
+    prepared,
+    query_points,
+    *,
+    radius: float,
+    threshold: int = 1,
+    partner: str = "cupy",
+    output_columns: dict[str, object] | None = None,
+    return_metadata: bool = False,
+):
+    """Return 3-D fixed-radius count-threshold columns through a prepared OptiX RT scene."""
+    radius = float(radius)
+    threshold = int(threshold)
+    if radius < 0:
+        raise ValueError("radius must be non-negative")
+    if threshold < 0:
+        raise ValueError("threshold must be non-negative")
+    runtime = _numba_runtime_for_point_columns() if partner == "numba" else _partner_module(partner)
+    packed_count = getattr(query_points, "count", None)
+    query_count = int(packed_count) if packed_count is not None and not callable(packed_count) else int(len(query_points))
+    output_reuse_authorized = output_columns is not None
+    if output_columns is None:
+        output_columns = allocate_fixed_radius_count_threshold_3d_partner_device_output_columns(
+            query_count,
+            partner=partner,
+        )
+    _require_fixed_radius_threshold_3d_output_column_lengths(output_columns, query_count)
+
+    native_result = prepared.write_device_count_threshold_columns(
+        query_points,
+        radius=radius,
+        threshold=threshold,
+        query_ids_out=output_columns["query_ids"],
+        neighbor_counts_out=output_columns["neighbor_counts"],
+        threshold_flags_out=output_columns["threshold_flags"],
+    )
+    runtime["sync"]()
+    columns = {
+        "query_ids": output_columns["query_ids"],
+        "neighbor_counts": output_columns["neighbor_counts"],
+        "threshold_flags": output_columns["threshold_flags"],
+    }
+    metadata = {
+        "adapter": "fixed_radius_count_threshold_3d_optix_prepared_partner_device_columns",
+        "partner": runtime["name"],
+        "input_contract": "host_query_points_prepared_native_search_scene",
+        "native_engine_row_contract": "generic_fixed_radius_count_threshold_3d_device_columns",
+        "app_count_materialization": "native_optix_rt_device_columns",
+        "app_count_host_materialization": False,
+        "query_count": query_count,
+        "radius": radius,
+        "threshold": threshold,
+        "output_columns_reused": output_reuse_authorized,
+        "direct_device_handoff_authorized": bool(native_result["metadata"]["direct_device_handoff_authorized"]),
+        "true_zero_copy_authorized": bool(native_result["metadata"]["true_zero_copy_authorized"]),
+        "rt_core_accelerated": bool(native_result["metadata"]["rt_core_accelerated"]),
+        "rt_core_speedup_claim_authorized": False,
+        "paper_speedup_claim_authorized": False,
+        "v2_0_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "native_metadata": native_result["metadata"],
+    }
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def fixed_radius_count_threshold_2d_optix_partner_device_columns(
+    query_point_columns: dict[str, object],
+    search_point_columns: dict[str, object],
+    *,
+    radius: float,
+    threshold: int = 1,
+    partner: str = "torch",
+    return_metadata: bool = False,
+):
+    """Return OptiX-written fixed-radius count-threshold columns.
+
+    This is the first native RTDL fixed-radius partner bridge: caller-owned
+    PyTorch/CuPy point columns are handed directly to OptiX, and OptiX writes
+    caller-owned output columns without app-row host materialization.
+    """
+    radius = float(radius)
+    threshold = int(threshold)
+    if radius < 0:
+        raise ValueError("radius must be non-negative")
+    if threshold < 0:
+        raise ValueError("threshold must be non-negative")
+    runtime = _partner_module(partner)
+    query_count = _column_length(query_point_columns, "ids")
+    search_count = _column_length(search_point_columns, "ids")
+    neighbor_counts = runtime["zeros"]((query_count,), runtime["uint32"], runtime["device"])
+    threshold_flags = runtime["zeros"]((query_count,), runtime["uint32"], runtime["device"])
+    query_ids_out = runtime["zeros"]((query_count,), runtime["uint32"], runtime["device"])
+
+    if query_count and search_count:
+        with _optix.prepare_optix_fixed_radius_count_threshold_2d_device_search_columns(
+            search_point_columns,
+            max_radius=radius,
+        ) as prepared:
+            native_result = prepared.write_device_count_threshold_columns(
+                query_point_columns,
+                radius=radius,
+                threshold=threshold,
+                query_ids_out=query_ids_out,
+                neighbor_counts_out=neighbor_counts,
+                threshold_flags_out=threshold_flags,
+            )
+        native_metadata = native_result["metadata"]
+    else:
+        query_ids_out = query_point_columns["ids"]
+        if threshold == 0:
+            threshold_flags = runtime["greater_equal_uint32"](neighbor_counts, 0)
+        native_metadata = {
+            "transfer_mode": "device_fixed_radius_point_columns_output_columns_zero_copy_empty_shortcut",
+            "native_symbol": "not_called_empty_input",
+            "direct_device_handoff_authorized": True,
+            "true_zero_copy_authorized": True,
+            "rt_core_speedup_claim_authorized": False,
+        }
+    runtime["sync"]()
+    columns = {
+        "query_ids": query_ids_out,
+        "neighbor_counts": neighbor_counts,
+        "threshold_flags": threshold_flags,
+    }
+    metadata = {
+        "adapter": "fixed_radius_count_threshold_2d_optix_partner_device_columns",
+        "partner": runtime["name"],
+        "input_contract": "caller_supplied_partner_device_point_columns",
+        "native_engine_row_contract": "generic_fixed_radius_count_threshold_2d_device_columns",
+        "app_count_materialization": "native_optix_device_columns",
+        "app_count_host_materialization": False,
+        "query_count": query_count,
+        "search_count": search_count,
+        "radius": radius,
+        "threshold": threshold,
+        "direct_device_handoff_authorized": bool(native_metadata["direct_device_handoff_authorized"]),
+        "true_zero_copy_authorized": bool(native_metadata["true_zero_copy_authorized"]),
+        "rt_core_speedup_claim_authorized": False,
+        "v2_0_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "native_metadata": native_metadata,
+    }
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def prepare_fixed_radius_count_threshold_2d_optix_partner_device_scene(
+    search_point_columns: dict[str, object],
+    *,
+    max_radius: float,
+    partner: str = "torch",
+):
+    """Prepare a reusable OptiX fixed-radius scene from partner point columns."""
+    _partner_module(partner)
+    return _optix.prepare_optix_fixed_radius_count_threshold_2d_device_search_columns(
+        search_point_columns,
+        max_radius=max_radius,
+    )
+
+
+def allocate_fixed_radius_count_threshold_2d_partner_device_output_columns(
+    query_count: int,
+    *,
+    partner: str = "torch",
+) -> dict[str, object]:
+    """Allocate reusable partner-owned output columns for prepared fixed-radius runs."""
+    query_count = int(query_count)
+    if query_count < 0:
+        raise ValueError("query_count must be non-negative")
+    runtime = _partner_module(partner)
+    return {
+        "query_ids": runtime["zeros"]((query_count,), runtime["uint32"], runtime["device"]),
+        "neighbor_counts": runtime["zeros"]((query_count,), runtime["uint32"], runtime["device"]),
+        "threshold_flags": runtime["zeros"]((query_count,), runtime["uint32"], runtime["device"]),
+    }
+
+
+def _require_fixed_radius_output_column_lengths(output_columns: dict[str, object], query_count: int) -> None:
+    for name in ("query_ids", "neighbor_counts", "threshold_flags"):
+        if name not in output_columns:
+            raise ValueError(f"output_columns must include {name!r}")
+        if _column_length(output_columns, name) != query_count:
+            raise ValueError(f"output_columns[{name!r}] length must match query point count")
+
+
+def fixed_radius_count_threshold_2d_optix_prepared_partner_device_columns(
+    prepared,
+    query_point_columns: dict[str, object],
+    *,
+    radius: float,
+    threshold: int = 1,
+    partner: str = "torch",
+    output_columns: dict[str, object] | None = None,
+    return_metadata: bool = False,
+):
+    """Return fixed-radius columns through a reusable prepared OptiX scene."""
+    radius = float(radius)
+    threshold = int(threshold)
+    if radius < 0:
+        raise ValueError("radius must be non-negative")
+    if threshold < 0:
+        raise ValueError("threshold must be non-negative")
+    runtime = _partner_module(partner)
+    query_count = _column_length(query_point_columns, "ids")
+    output_reuse_authorized = output_columns is not None
+    if output_columns is None:
+        output_columns = allocate_fixed_radius_count_threshold_2d_partner_device_output_columns(
+            query_count,
+            partner=partner,
+        )
+    _require_fixed_radius_output_column_lengths(output_columns, query_count)
+    query_ids_out = output_columns["query_ids"]
+    neighbor_counts = output_columns["neighbor_counts"]
+    threshold_flags = output_columns["threshold_flags"]
+
+    native_result = prepared.write_device_count_threshold_columns(
+        query_point_columns,
+        radius=radius,
+        threshold=threshold,
+        query_ids_out=query_ids_out,
+        neighbor_counts_out=neighbor_counts,
+        threshold_flags_out=threshold_flags,
+    )
+    runtime["sync"]()
+    columns = {
+        "query_ids": query_ids_out,
+        "neighbor_counts": neighbor_counts,
+        "threshold_flags": threshold_flags,
+    }
+    metadata = {
+        "adapter": "fixed_radius_count_threshold_2d_optix_prepared_partner_device_columns",
+        "partner": runtime["name"],
+        "input_contract": "caller_supplied_partner_device_point_columns",
+        "native_engine_row_contract": "generic_fixed_radius_count_threshold_2d_device_columns",
+        "app_count_materialization": "native_optix_prepared_device_columns",
+        "app_count_host_materialization": False,
+        "query_count": query_count,
+        "radius": radius,
+        "threshold": threshold,
+        "output_columns_reused": output_reuse_authorized,
+        "direct_device_handoff_authorized": bool(native_result["metadata"]["direct_device_handoff_authorized"]),
+        "true_zero_copy_authorized": bool(native_result["metadata"]["true_zero_copy_authorized"]),
+        "rt_core_speedup_claim_authorized": False,
+        "v2_0_release_authorized": False,
+        "whole_app_speedup_claim_authorized": False,
+        "native_metadata": native_result["metadata"],
+    }
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def service_coverage_gap_flags_partner_columns(
+    household_point_columns: dict[str, object],
+    clinic_point_columns: dict[str, object],
+    *,
+    radius: float,
+    partner: str = "torch",
+    return_metadata: bool = False,
+):
+    """Return partner-owned service coverage flags.
+
+    A household is uncovered when the fixed-radius neighbor count is zero. This
+    remains a partner-reference app adapter until fixed-radius native
+    device-column handoff exists.
+    """
+    result = fixed_radius_count_threshold_2d_partner_columns(
+        household_point_columns,
+        clinic_point_columns,
+        radius=radius,
+        threshold=1,
+        partner=partner,
+        return_metadata=True,
+    )
+    runtime = _partner_module(partner)
+    covered_flags = result["columns"]["threshold_flags"]
+    uncovered_flags = runtime["invert_binary_uint32"](covered_flags)
+    runtime["sync"]()
+    columns = {
+        "household_ids": result["columns"]["query_ids"],
+        "nearby_clinic_counts": result["columns"]["neighbor_counts"],
+        "covered_flags": covered_flags,
+        "uncovered_flags": uncovered_flags,
+    }
+    metadata = dict(result["metadata"])
+    metadata.update(
+        {
+            "adapter": "service_coverage_gap_flags_partner_columns",
+            "app": "service_coverage_gaps",
+            "app_flag_materialization": "partner_gpu_threshold_flags_from_fixed_radius_counts",
+        }
+    )
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def service_coverage_gap_flags_optix_partner_device_columns(
+    household_point_columns: dict[str, object],
+    clinic_point_columns: dict[str, object],
+    *,
+    radius: float,
+    partner: str = "torch",
+    return_metadata: bool = False,
+):
+    """Return native OptiX fixed-radius service coverage columns."""
+    result = fixed_radius_count_threshold_2d_optix_partner_device_columns(
+        household_point_columns,
+        clinic_point_columns,
+        radius=radius,
+        threshold=1,
+        partner=partner,
+        return_metadata=True,
+    )
+    runtime = _partner_module(partner)
+    covered_flags = result["columns"]["threshold_flags"]
+    uncovered_flags = runtime["invert_binary_uint32"](covered_flags)
+    runtime["sync"]()
+    columns = {
+        "household_ids": result["columns"]["query_ids"],
+        "nearby_clinic_counts": result["columns"]["neighbor_counts"],
+        "covered_flags": covered_flags,
+        "uncovered_flags": uncovered_flags,
+    }
+    metadata = dict(result["metadata"])
+    metadata.update(
+        {
+            "adapter": "service_coverage_gap_flags_optix_partner_device_columns",
+            "app": "service_coverage_gaps",
+            "app_flag_materialization": "partner_gpu_threshold_flags_from_native_fixed_radius_counts",
+            "app_flag_host_materialization": False,
+            "native_engine_row_contract": "generic_fixed_radius_count_threshold_2d_device_columns",
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+    )
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def service_coverage_gap_flags_optix_prepared_partner_device_columns(
+    prepared,
+    household_point_columns: dict[str, object],
+    *,
+    radius: float,
+    partner: str = "torch",
+    fixed_radius_output_columns: dict[str, object] | None = None,
+    return_metadata: bool = False,
+):
+    """Return service coverage columns through a reusable prepared scene."""
+    result = fixed_radius_count_threshold_2d_optix_prepared_partner_device_columns(
+        prepared,
+        household_point_columns,
+        radius=radius,
+        threshold=1,
+        partner=partner,
+        output_columns=fixed_radius_output_columns,
+        return_metadata=True,
+    )
+    runtime = _partner_module(partner)
+    covered_flags = result["columns"]["threshold_flags"]
+    uncovered_flags = runtime["invert_binary_uint32"](covered_flags)
+    runtime["sync"]()
+    columns = {
+        "household_ids": result["columns"]["query_ids"],
+        "nearby_clinic_counts": result["columns"]["neighbor_counts"],
+        "covered_flags": covered_flags,
+        "uncovered_flags": uncovered_flags,
+    }
+    metadata = dict(result["metadata"])
+    metadata.update(
+        {
+            "adapter": "service_coverage_gap_flags_optix_prepared_partner_device_columns",
+            "app": "service_coverage_gaps",
+            "app_flag_materialization": "partner_gpu_threshold_flags_from_prepared_native_fixed_radius_counts",
+            "app_flag_host_materialization": False,
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+    )
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def event_hotspot_flags_partner_columns(
+    event_point_columns: dict[str, object],
+    *,
+    radius: float,
+    hotspot_threshold: int,
+    partner: str = "torch",
+    return_metadata: bool = False,
+):
+    """Return partner-owned event hotspot flags.
+
+    The self-neighbor is included in the fixed-radius count, so the partner
+    threshold is `hotspot_threshold + 1`, matching the existing app summary
+    semantics.
+    """
+    hotspot_threshold = int(hotspot_threshold)
+    if hotspot_threshold < 0:
+        raise ValueError("hotspot_threshold must be non-negative")
+    result = fixed_radius_count_threshold_2d_partner_columns(
+        event_point_columns,
+        event_point_columns,
+        radius=radius,
+        threshold=hotspot_threshold + 1,
+        partner=partner,
+        return_metadata=True,
+    )
+    metadata = dict(result["metadata"])
+    metadata.update(
+        {
+            "adapter": "event_hotspot_flags_partner_columns",
+            "app": "event_hotspot_screening",
+            "hotspot_threshold_excluding_self": hotspot_threshold,
+            "fixed_radius_threshold_including_self": hotspot_threshold + 1,
+            "app_flag_materialization": "partner_gpu_threshold_flags_from_fixed_radius_counts",
+        }
+    )
+    columns = {
+        "event_ids": result["columns"]["query_ids"],
+        "neighbor_counts_including_self": result["columns"]["neighbor_counts"],
+        "hotspot_flags": result["columns"]["threshold_flags"],
+    }
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def event_hotspot_flags_optix_partner_device_columns(
+    event_point_columns: dict[str, object],
+    *,
+    radius: float,
+    hotspot_threshold: int,
+    partner: str = "torch",
+    return_metadata: bool = False,
+):
+    """Return native OptiX fixed-radius event hotspot columns."""
+    hotspot_threshold = int(hotspot_threshold)
+    if hotspot_threshold < 0:
+        raise ValueError("hotspot_threshold must be non-negative")
+    result = fixed_radius_count_threshold_2d_optix_partner_device_columns(
+        event_point_columns,
+        event_point_columns,
+        radius=radius,
+        threshold=hotspot_threshold + 1,
+        partner=partner,
+        return_metadata=True,
+    )
+    metadata = dict(result["metadata"])
+    metadata.update(
+        {
+            "adapter": "event_hotspot_flags_optix_partner_device_columns",
+            "app": "event_hotspot_screening",
+            "hotspot_threshold_excluding_self": hotspot_threshold,
+            "fixed_radius_threshold_including_self": hotspot_threshold + 1,
+            "app_flag_materialization": "partner_gpu_threshold_flags_from_native_fixed_radius_counts",
+            "app_flag_host_materialization": False,
+            "native_engine_row_contract": "generic_fixed_radius_count_threshold_2d_device_columns",
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+    )
+    columns = {
+        "event_ids": result["columns"]["query_ids"],
+        "neighbor_counts_including_self": result["columns"]["neighbor_counts"],
+        "hotspot_flags": result["columns"]["threshold_flags"],
+    }
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns
+
+
+def event_hotspot_flags_optix_prepared_partner_device_columns(
+    prepared,
+    event_point_columns: dict[str, object],
+    *,
+    radius: float,
+    hotspot_threshold: int,
+    partner: str = "torch",
+    fixed_radius_output_columns: dict[str, object] | None = None,
+    return_metadata: bool = False,
+):
+    """Return event hotspot columns through a reusable prepared scene."""
+    hotspot_threshold = int(hotspot_threshold)
+    if hotspot_threshold < 0:
+        raise ValueError("hotspot_threshold must be non-negative")
+    result = fixed_radius_count_threshold_2d_optix_prepared_partner_device_columns(
+        prepared,
+        event_point_columns,
+        radius=radius,
+        threshold=hotspot_threshold + 1,
+        partner=partner,
+        output_columns=fixed_radius_output_columns,
+        return_metadata=True,
+    )
+    metadata = dict(result["metadata"])
+    metadata.update(
+        {
+            "adapter": "event_hotspot_flags_optix_prepared_partner_device_columns",
+            "app": "event_hotspot_screening",
+            "hotspot_threshold_excluding_self": hotspot_threshold,
+            "fixed_radius_threshold_including_self": hotspot_threshold + 1,
+            "app_flag_materialization": "partner_gpu_threshold_flags_from_prepared_native_fixed_radius_counts",
+            "app_flag_host_materialization": False,
+            "v2_0_release_authorized": False,
+            "whole_app_speedup_claim_authorized": False,
+        }
+    )
+    columns = {
+        "event_ids": result["columns"]["query_ids"],
+        "neighbor_counts_including_self": result["columns"]["neighbor_counts"],
+        "hotspot_flags": result["columns"]["threshold_flags"],
+    }
+    if return_metadata:
+        return {"columns": columns, "metadata": metadata}
+    return columns

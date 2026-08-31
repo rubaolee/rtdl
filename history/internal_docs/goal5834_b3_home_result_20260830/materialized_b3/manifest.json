@@ -1,0 +1,72 @@
+{
+  "executable_sha256": "16a752edb5156d69007ba7bbd285e9051d2acd513644cc081a1ba9211127de68",
+  "member_count": 13,
+  "members": [
+    {
+      "bytes": 1254,
+      "path": "callback_source.py",
+      "sha256": "a582ae56ef8adf380d628494b4a2e1fe758c76a5b0521cf4134f251fba34ca2b"
+    },
+    {
+      "bytes": 52220,
+      "path": "composed.ptx",
+      "sha256": "fe6ee9b4bad2982f0868d13e6c81390df578675b6c7e516a1b16723b878d5039"
+    },
+    {
+      "bytes": 9007,
+      "path": "leaf_0_make_ray.ptx",
+      "sha256": "bf63c0e79f36ab5e62505701336c4b62c4bf50bfa210facdbc895ef6d4219121"
+    },
+    {
+      "bytes": 6042,
+      "path": "leaf_0_make_ray.py",
+      "sha256": "b92d765ccc22e41ec208e34d6343d16fcc684ccf384d7ae2568a1406b66b5792"
+    },
+    {
+      "bytes": 3656,
+      "path": "leaf_1_closest_hit.ptx",
+      "sha256": "6e9a56a4cf2f472698521b2a2ec5f17c8bdaac725a5d283485b108fef01180e8"
+    },
+    {
+      "bytes": 1355,
+      "path": "leaf_1_closest_hit.py",
+      "sha256": "cf0f0dcb4b3ef4bbdd6544ef84d24f2778b89f6d16a7a7652c6d56c813a6261a"
+    },
+    {
+      "bytes": 6044,
+      "path": "leaf_2_miss.ptx",
+      "sha256": "f09a3dd774052a14af678b627950405e5d3135a2d1ad09fcae996356ee053abf"
+    },
+    {
+      "bytes": 2421,
+      "path": "leaf_2_miss.py",
+      "sha256": "f7be4daeb032b1fd71aa2bc08f8ae7ba56dbaecdd069d46797e1876d35d0b658"
+    },
+    {
+      "bytes": 2893,
+      "path": "leaf_3_finalize.ptx",
+      "sha256": "ace88131ba4963fcd7b1867f8ecf13984590c6d216f5606ec56af9634595e716"
+    },
+    {
+      "bytes": 1130,
+      "path": "leaf_3_finalize.py",
+      "sha256": "62cf4e68b5b4bc989535b0d1e470a12163d489f63ae677d00f53272540f75dcd"
+    },
+    {
+      "bytes": 0,
+      "path": "nvrtc.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 14610,
+      "path": "wrapper.cu",
+      "sha256": "1bf2c8c028c8986e592ea48c752c08242086d506a42847a61df0db61557a7a21"
+    },
+    {
+      "bytes": 37293,
+      "path": "wrapper.ptx",
+      "sha256": "47f0b51212962a7008c4021b7c33f2aad12a63d12106bb365845fddd5e0348a0"
+    }
+  ],
+  "schema": "rtdl.goal5834_b1.materialized_executable.v1"
+}

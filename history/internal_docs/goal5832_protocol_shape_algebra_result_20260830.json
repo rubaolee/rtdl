@@ -1,0 +1,79 @@
+{
+  "schema": "rtdl.goal5832.protocol_shape_algebra_result.v1",
+  "date": "2026-08-30",
+  "verdict": "PASS_RESEARCH_SPECIFICATION_AND_REFERENCE_VALIDATOR_SCOPE",
+  "implementation_status": "NOT_A_GENERIC_GPU_COMPILER",
+  "external_review_requested": false,
+  "product_source_modified": false,
+  "gpu_execution_count": 0,
+  "formal_worker_count": 0,
+  "registered_performance_timing_count": 0,
+  "identity_domains": [
+    "family_shape",
+    "protocol_instance",
+    "deployment"
+  ],
+  "family_shape_axes": [
+    "G_physical_graph",
+    "R_role_topology",
+    "V_typed_views",
+    "E_role_effects",
+    "H_hit_channel_ownership",
+    "B_physical_bindings",
+    "C_result_and_continuation",
+    "X_identity_bind_set",
+    "L_resource_limits"
+  ],
+  "verification": {
+    "scope_validator": "GOAL5832_PROTOCOL_SHAPE_AUTHORITY_PASS",
+    "unit_tests": "23/23_PASS",
+    "paper_pages_content_first": 17,
+    "paper_overfull_hbox_count": 0,
+    "paper_undefined_citation_count": 0,
+    "paper_undefined_reference_count": 0
+  },
+  "hostile_self_review_closure": {
+    "authority_overclaim_mutation": "REJECTED",
+    "support_matrix_promotion_mutation": "REJECTED",
+    "schema_only_three_domain_documents": "REJECTED",
+    "unknown_recursive_keys": "REJECTED",
+    "bool_as_integer": "REJECTED",
+    "illegal_role_effect_pairs": "REJECTED",
+    "broken_result_or_continuation_contract": "REJECTED",
+    "untyped_instance_binding": "REJECTED",
+    "incomplete_deployment_binding": "REJECTED"
+  },
+  "artifacts": [
+    {
+      "path": "history/internal_docs/goal5832_protocol_shape_algebra_authority_v1_20260830.json",
+      "bytes": 14887,
+      "sha256": "33db5c7c9c9403cc3c8f1f426fdf1ba594fd6c4a8d94608ab41e50dbe7be5200"
+    },
+    {
+      "path": "scripts/goal5832_protocol_shape_algebra.py",
+      "bytes": 64206,
+      "sha256": "881f6336b369c507a59943b21917c583b2d8f5487d1e712d7ebaa3e8dc660361"
+    },
+    {
+      "path": "tests/goal5832_protocol_shape_algebra_test.py",
+      "bytes": 17371,
+      "sha256": "812c2330a5377725a0e9ac0a7117df71a1d7b872b3ea5d0577552c3f7d1d259d"
+    },
+    {
+      "path": "docs/v4/protocol_family_algebra_v1.md",
+      "bytes": 9182,
+      "sha256": "60d14ba8784eae08464830f2937f0a146e32ead2e92491f0dd6395ae3abf7262"
+    }
+  ],
+  "current_counts": {
+    "optix9_build_input_kinds": 6,
+    "optix9_leaf_primitive_kinds": 4,
+    "rtdl_physical_geometry_kinds": 2,
+    "fixed_protocol_constructors": 2,
+    "bounded_user_authored_gpu_templates": 1,
+    "prospective_frozen_core_new_shape_exams": 0,
+    "external_human_authors": 0,
+    "application_semantic_shape_denominator": "OPEN_NO_FINITE_N"
+  },
+  "claim_ceiling": "RTDL has an executable specification for protocol-shape identity and current-scope validation, but its current GPU provider/compiler remains family-specific and has zero prospective frozen-core new-shape exams."
+}

@@ -1,0 +1,684 @@
+{
+  "contains_expected_output": false,
+  "contains_pairwise_geometry_result": false,
+  "primary_execution_count": 11,
+  "rows": [
+    {
+      "execution_id": "single_crossing_hit",
+      "family_id": "single_crossing_hit",
+      "normalization_origin_f64_bits": [
+        0,
+        0,
+        0
+      ],
+      "normalization_scale_f64_bits": 4607182418800017408,
+      "normalized_input_sha256": "b5b8e641c5e76381f3f9fb70289e10211348f1f614b7ce8ca677be3571539d5c",
+      "original_input_sha256": "acf4178cbd1aaa2a844bd2bf4762baa202fda86dd3aa2829af532fc043792ce7",
+      "public_query_commitment_sha256": "924bc1aa4f60097d96e4397494e328d55a0f3c6181578ea6c1ff659c9fd9abb7",
+      "public_static_input_commitment_sha256": "82d017ede56b335e0749236971b5f59b252fc74b2c00f5f755cd3ff95bebbac4",
+      "queries": [
+        [
+          [
+            -1.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ]
+      ],
+      "static_input": {
+        "application_ids": [
+          1
+        ],
+        "control_points": [
+          [
+            0.0,
+            -1.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "segment_indices": [
+          0
+        ],
+        "widths": [
+          0.25,
+          0.25
+        ]
+      }
+    },
+    {
+      "execution_id": "clear_miss",
+      "family_id": "clear_miss",
+      "normalization_origin_f64_bits": [
+        0,
+        0,
+        0
+      ],
+      "normalization_scale_f64_bits": 4607182418800017408,
+      "normalized_input_sha256": "06e813a8738962394050f97bfed4808f48927c38bcba951a06d9de44983c03c9",
+      "original_input_sha256": "54fe09de124bc32c60494455efe542fff37186675c4cf36f2615cd1953f8713f",
+      "public_query_commitment_sha256": "9e0f3f712f6bda3bdee148c1484d8614d29d6d4af63d505fea459479e4d87e20",
+      "public_static_input_commitment_sha256": "c51da3bf5cdbf7ee222532e36d9ff7afefd11ed2def3ab393b5c9a847258b38e",
+      "queries": [
+        [
+          [
+            -1.0,
+            0.0,
+            1.0
+          ],
+          [
+            1.0,
+            0.0,
+            1.0
+          ]
+        ]
+      ],
+      "static_input": {
+        "application_ids": [
+          2
+        ],
+        "control_points": [
+          [
+            0.0,
+            -1.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "segment_indices": [
+          0
+        ],
+        "widths": [
+          0.25,
+          0.25
+        ]
+      }
+    },
+    {
+      "execution_id": "round_endcap_hit",
+      "family_id": "round_endcap_hit",
+      "normalization_origin_f64_bits": [
+        0,
+        4602678819172646912,
+        0
+      ],
+      "normalization_scale_f64_bits": 4602678819172646912,
+      "normalized_input_sha256": "e3840193d52b2215906805aad8043d069539c305b3b7fabcf44e3fa78cc9dcb7",
+      "original_input_sha256": "bcf16c9c3af21541f9b03dd7c86cc6c0d6428d4b13cb5cd688b47af0096acf94",
+      "public_query_commitment_sha256": "f408791986e6c6eaebb091ffbf69069badc4d75468ae88d6e12a291be474b31d",
+      "public_static_input_commitment_sha256": "56233fafd3da5276ed25ba542d94e450f28b7844d6df74d1f69d4da59d577766",
+      "queries": [
+        [
+          [
+            -2.0,
+            -1.399999976158142,
+            0.0
+          ],
+          [
+            2.0,
+            -1.399999976158142,
+            0.0
+          ]
+        ]
+      ],
+      "static_input": {
+        "application_ids": [
+          3
+        ],
+        "control_points": [
+          [
+            0.0,
+            -1.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "segment_indices": [
+          0
+        ],
+        "widths": [
+          0.5,
+          0.5
+        ]
+      }
+    },
+    {
+      "execution_id": "piecewise_linear_or",
+      "family_id": "piecewise_linear_or",
+      "normalization_origin_f64_bits": [
+        4602678819172646911,
+        13826050856027422720,
+        0
+      ],
+      "normalization_scale_f64_bits": 4602678819172646912,
+      "normalized_input_sha256": "d46b1341b2ffc0e81e08924c5e0696410d0a279b43971b78e5920647e6908eca",
+      "original_input_sha256": "d06c4711a7bfd901fa69a14c21d2231ce180928c0d1129aaab77fdf92f3b9daa",
+      "public_query_commitment_sha256": "c3c37d908b2bb988e288629060877f62da14bc36716d456798b21d58f0d3e22a",
+      "public_static_input_commitment_sha256": "8b500a598bfa62f782b4de5d2ca3fd3b72c14333365b247013a32936b0d765c6",
+      "queries": [
+        [
+          [
+            -3.0,
+            1.0,
+            2.0
+          ],
+          [
+            1.0,
+            1.0,
+            2.0
+          ]
+        ],
+        [
+          [
+            1.1102230246251565e-16,
+            -1.0,
+            0.0
+          ],
+          [
+            1.1102230246251565e-16,
+            3.0,
+            0.0
+          ]
+        ],
+        [
+          [
+            -3.0,
+            -1.0,
+            2.0
+          ],
+          [
+            -3.0,
+            3.0,
+            2.0
+          ]
+        ]
+      ],
+      "static_input": {
+        "application_ids": [
+          10,
+          11
+        ],
+        "control_points": [
+          [
+            -1.0,
+            -1.0,
+            0.0
+          ],
+          [
+            -1.0,
+            1.0,
+            0.0
+          ],
+          [
+            -1.0,
+            1.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "segment_indices": [
+          0,
+          2
+        ],
+        "widths": [
+          0.4000000059604645,
+          0.4000000059604645,
+          0.4000000059604645,
+          0.4000000059604645
+        ]
+      }
+    },
+    {
+      "execution_id": "multiple_robust_hits",
+      "family_id": "multiple_robust_hits",
+      "normalization_origin_f64_bits": [
+        4598175219545276414,
+        0,
+        0
+      ],
+      "normalization_scale_f64_bits": 4607182418800017408,
+      "normalized_input_sha256": "76c06ee1fd95cebaf6d2edf0764fd257d3e42d0976732fe3306f854f9673f757",
+      "original_input_sha256": "cb3158ef23ebb939a82fe7a06fbf560ab6cc0b0e38b575fbd2e5257bfb51dda5",
+      "public_query_commitment_sha256": "6ed7d4f43518e9ca523acb990f04a461caf89c807e5a79ea489f80ebc14dfdef",
+      "public_static_input_commitment_sha256": "244bdf1f7598816a70eb27803b233a0261fc8a30ea797e5f3af1cdd56d4c15f2",
+      "queries": [
+        [
+          [
+            -1.25,
+            0.0,
+            0.0
+          ],
+          [
+            0.75,
+            0.0,
+            0.0
+          ]
+        ]
+      ],
+      "static_input": {
+        "application_ids": [
+          20,
+          21
+        ],
+        "control_points": [
+          [
+            -0.25,
+            -1.0,
+            0.0
+          ],
+          [
+            -0.25,
+            1.0,
+            0.0
+          ],
+          [
+            0.25,
+            -1.0,
+            0.0
+          ],
+          [
+            0.25,
+            1.0,
+            0.0
+          ]
+        ],
+        "segment_indices": [
+          0,
+          2
+        ],
+        "widths": [
+          0.20000000298023224,
+          0.20000000298023224,
+          0.20000000298023224,
+          0.20000000298023224
+        ]
+      }
+    },
+    {
+      "execution_id": "large_translation_base",
+      "family_id": "large_translation_metamorphic_pair",
+      "normalization_origin_f64_bits": [
+        0,
+        0,
+        0
+      ],
+      "normalization_scale_f64_bits": 4607182418800017408,
+      "normalized_input_sha256": "bd1efecb16f070b2e8c8cedd2dd7a5b4be0f34cce3fb3ce30a8e4a1577a2a0a4",
+      "original_input_sha256": "c9806e4b2d3ea0f7fcfeabdfa369ab9f26034c141f542ecb324c7bc09eb0ab25",
+      "public_query_commitment_sha256": "f470347556c493c7ad72ed6d6833055519991ee6935b8b805c4141eeb657540e",
+      "public_static_input_commitment_sha256": "c55b85bd6e54d50230992c67b1a1d75a2f93e025813f78301cf9c21613fa7e20",
+      "queries": [
+        [
+          [
+            -4.0,
+            0.0,
+            0.0
+          ],
+          [
+            4.0,
+            0.0,
+            0.0
+          ]
+        ]
+      ],
+      "static_input": {
+        "application_ids": [
+          4
+        ],
+        "control_points": [
+          [
+            0.0,
+            -1.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "segment_indices": [
+          0
+        ],
+        "widths": [
+          0.125,
+          0.125
+        ]
+      }
+    },
+    {
+      "execution_id": "large_translation_transformed",
+      "family_id": "large_translation_metamorphic_pair",
+      "normalization_origin_f64_bits": [
+        4787326403894837248,
+        14006194841122242560,
+        4778319204640096256
+      ],
+      "normalization_scale_f64_bits": 4697254411347427328,
+      "normalized_input_sha256": "bd1efecb16f070b2e8c8cedd2dd7a5b4be0f34cce3fb3ce30a8e4a1577a2a0a4",
+      "original_input_sha256": "28e956cc9f64df3e4fc2d9eefd07e9c0dd0487e2a298f3c5453ef947698d16b1",
+      "public_query_commitment_sha256": "f470347556c493c7ad72ed6d6833055519991ee6935b8b805c4141eeb657540e",
+      "public_static_input_commitment_sha256": "c55b85bd6e54d50230992c67b1a1d75a2f93e025813f78301cf9c21613fa7e20",
+      "queries": [
+        [
+          [
+            -4.0,
+            0.0,
+            0.0
+          ],
+          [
+            4.0,
+            0.0,
+            0.0
+          ]
+        ]
+      ],
+      "static_input": {
+        "application_ids": [
+          4
+        ],
+        "control_points": [
+          [
+            0.0,
+            -1.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "segment_indices": [
+          0
+        ],
+        "widths": [
+          0.125,
+          0.125
+        ]
+      }
+    },
+    {
+      "execution_id": "face_interior_only_boundary",
+      "family_id": "face_interior_only_boundary",
+      "normalization_origin_f64_bits": [
+        0,
+        0,
+        0
+      ],
+      "normalization_scale_f64_bits": 4607182418800017408,
+      "normalized_input_sha256": "823657dffcffc3ab19f85165b1fdfce675dfaf3d1917d71ce1dfd6ca6e8fafdb",
+      "original_input_sha256": "e51dac781a0c5458297a8af7737fab5bc40427dea43e367db3c31ec6138cb1db",
+      "public_query_commitment_sha256": "c45551a06f38358e089105c7bc3da90ebb03b558108592e5c4c05cc4648bde07",
+      "public_static_input_commitment_sha256": "a4c9aa12702f6a0c528eab859ab02145e07064889db7712f52d875469f12dfae",
+      "queries": [
+        [
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            2.0,
+            -2.0,
+            0.0
+          ]
+        ],
+        [
+          [
+            2.0,
+            -2.0,
+            0.0
+          ],
+          [
+            0.0,
+            2.0,
+            0.0
+          ]
+        ],
+        [
+          [
+            0.0,
+            2.0,
+            0.0
+          ],
+          [
+            -2.0,
+            -2.0,
+            0.0
+          ]
+        ]
+      ],
+      "static_input": {
+        "application_ids": [
+          30
+        ],
+        "control_points": [
+          [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "segment_indices": [
+          0
+        ],
+        "widths": [
+          0.10000000149011612,
+          0.10000000149011612
+        ]
+      }
+    },
+    {
+      "execution_id": "ordinary_provider_t_disagreement_regression",
+      "family_id": "ordinary_provider_t_disagreement_regression",
+      "normalization_origin_f64_bits": [
+        13832806255468478464,
+        0,
+        4609434218613702656
+      ],
+      "normalization_scale_f64_bits": 4607182418800017408,
+      "normalized_input_sha256": "8664280edc0a76868fb7f9e4b29f47f2e9276bd6495cbfcfb5cf8168ec93e08f",
+      "original_input_sha256": "5467755392abb380c6fb65aeb3d44ffee2a7679866bfd2cbbb04720193dd3415",
+      "public_query_commitment_sha256": "7ea5b3aea06941b6f8b2d81b9dcc4dbdd97c3483b3da77e6a615cb095605f419",
+      "public_static_input_commitment_sha256": "13f2e343e608950d1397c3c72a11d3c95d4c78a54c044b414983b239336019ee",
+      "queries": [
+        [
+          [
+            0.5409121513366699,
+            1.1931053400039673,
+            0.45411035418510437
+          ],
+          [
+            3.9671945571899414,
+            -2.85371732711792,
+            -3.2223615646362305
+          ]
+        ]
+      ],
+      "static_input": {
+        "application_ids": [
+          555
+        ],
+        "control_points": [
+          [
+            -0.5,
+            -1.0,
+            -0.5
+          ],
+          [
+            0.5,
+            1.0,
+            0.5
+          ]
+        ],
+        "segment_indices": [
+          0
+        ],
+        "widths": [
+          0.20000000298023224,
+          0.20000000298023224
+        ]
+      }
+    },
+    {
+      "execution_id": "near_coincident_id_disagreement_regression",
+      "family_id": "near_coincident_id_disagreement_regression",
+      "normalization_origin_f64_bits": [
+        13832806255468478464,
+        0,
+        4609434218613702656
+      ],
+      "normalization_scale_f64_bits": 4607182418800017408,
+      "normalized_input_sha256": "f8e6bfc8535741be6584c650f697cf41917f957d3851be904c0f94b6715b752d",
+      "original_input_sha256": "5925102863eb222dda139ae895d79610b8d641cbad419e1526727668db802145",
+      "public_query_commitment_sha256": "bdc2a72ee02ddfee2b2bddd732a7df1288a1d490bedf99ecd8ff564ee0e9e515",
+      "public_static_input_commitment_sha256": "2804bf7611d3c0676439757590b5d106caa4af49796bbc721da3e61f013d0163",
+      "queries": [
+        [
+          [
+            -0.8912659883499146,
+            -1.1123559474945068,
+            -0.5712414979934692
+          ],
+          [
+            3.2186849117279053,
+            -1.1347604990005493,
+            -0.5253816246986389
+          ]
+        ]
+      ],
+      "static_input": {
+        "application_ids": [
+          1000,
+          1
+        ],
+        "control_points": [
+          [
+            -0.5,
+            -1.0,
+            -0.5
+          ],
+          [
+            0.5,
+            1.0,
+            0.5
+          ],
+          [
+            -0.5,
+            -1.0,
+            -0.5
+          ],
+          [
+            0.5,
+            1.0,
+            0.5
+          ]
+        ],
+        "segment_indices": [
+          0,
+          2
+        ],
+        "widths": [
+          0.20000001788139343,
+          0.20000001788139343,
+          0.20000000298023224,
+          0.20000000298023224
+        ]
+      }
+    },
+    {
+      "execution_id": "float32_tie_id_disagreement_regression",
+      "family_id": "float32_tie_id_disagreement_regression",
+      "normalization_origin_f64_bits": [
+        4572414629676717184,
+        0,
+        0
+      ],
+      "normalization_scale_f64_bits": 4607182418800017408,
+      "normalized_input_sha256": "c723f8e68d0b30c6db021f1ebe367fc40953619fbd0eafbc9926332b92463c57",
+      "original_input_sha256": "252d4cf56c6c74d68f41750db40e09b12a48b0f75a9558823d9895e8b9312951",
+      "public_query_commitment_sha256": "297d07d5bdf8092e070da245bb3ad9a4d36a7a28a704f468179bce4bbacea6cc",
+      "public_static_input_commitment_sha256": "0ff61a764cd2e51cbef95232188744b8d7b159bc672b676e9bacf09bd0ffa5fc",
+      "queries": [
+        [
+          [
+            -1000000.0,
+            0.0,
+            0.0
+          ],
+          [
+            1000000.0,
+            0.0,
+            0.0
+          ]
+        ]
+      ],
+      "static_input": {
+        "application_ids": [
+          100,
+          1
+        ],
+        "control_points": [
+          [
+            -0.004999999888241291,
+            -1.0,
+            0.0
+          ],
+          [
+            -0.004999999888241291,
+            1.0,
+            0.0
+          ],
+          [
+            0.004999999888241291,
+            -1.0,
+            0.0
+          ],
+          [
+            0.004999999888241291,
+            1.0,
+            0.0
+          ]
+        ],
+        "segment_indices": [
+          0,
+          2
+        ],
+        "widths": [
+          0.25,
+          0.25,
+          0.25,
+          0.25
+        ]
+      }
+    }
+  ],
+  "schema": "rtdl.goal5834_b1.boolean_worker_inputs.v1"
+}

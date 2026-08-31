@@ -1,0 +1,72 @@
+{
+  "executable_sha256": "7ec48faa40d4427d8c5ef34dcd7e49446b5f5e9d86c1277abd7ce37e606a3da7",
+  "member_count": 13,
+  "members": [
+    {
+      "path": "callback_source.py",
+      "sha256": "65c766041d864482c78a47ab402bd192322ad333485585acdf45a5ffd592e8c7",
+      "size": 1502
+    },
+    {
+      "path": "composed.ptx",
+      "sha256": "2c04c7b6c06148098af6819ffdf596f789c4e8bb2a01c5552f56b8053520cb99",
+      "size": 58091
+    },
+    {
+      "path": "leaf_0_make_ray.ptx",
+      "sha256": "cef79e6b1161e70b303d1d80a26b50578b61b79aaee3175da13226402c09d7a0",
+      "size": 9395
+    },
+    {
+      "path": "leaf_0_make_ray.py",
+      "sha256": "4bc88a0cf6d304a793e50730190298c1da41c88a0c2ef4175928a3c43e1bbe7e",
+      "size": 6533
+    },
+    {
+      "path": "leaf_1_closest_hit.ptx",
+      "sha256": "c4e207c988999635cc38fc488890b01e97336eb6ed6e3d07816af4a0f7bb73dc",
+      "size": 4869
+    },
+    {
+      "path": "leaf_1_closest_hit.py",
+      "sha256": "59d2f92a96920a78e169043aa3a593b07506a211ff11b0bd1a125b4101dedcaa",
+      "size": 2170
+    },
+    {
+      "path": "leaf_2_miss.ptx",
+      "sha256": "83879f4093d870288554351bf192538bfef73227b783c32b25cd039b3446453a",
+      "size": 6906
+    },
+    {
+      "path": "leaf_2_miss.py",
+      "sha256": "cd85967c0f88dbdf6889baab6101660601752a9b3726fe774b7c3bdfde9892ff",
+      "size": 3023
+    },
+    {
+      "path": "leaf_3_finalize.ptx",
+      "sha256": "9678b68ef486386b1bc60264d584ca7e5b524279f77b17d91a0da75ffd737829",
+      "size": 3898
+    },
+    {
+      "path": "leaf_3_finalize.py",
+      "sha256": "97b6a1337e487e1d1f94e81e72654ee62988013279cb03adfd33d7330954f609",
+      "size": 1772
+    },
+    {
+      "path": "nvrtc.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "wrapper.cu",
+      "sha256": "f014546e135b1645175f5d55723e23a44850ac192219f070b5b42893e63316a6",
+      "size": 16008
+    },
+    {
+      "path": "wrapper.ptx",
+      "sha256": "d4114ee2354177760b9f7461540bf7a47c2386164d85f0ddf557471a008a7040",
+      "size": 40584
+    }
+  ],
+  "schema": "rtdl.goal5834.curve_executable_artifacts.v1"
+}

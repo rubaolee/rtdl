@@ -1,0 +1,182 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
+import argparse
+import json
+from pathlib import Path
+from typing import Any
+
+
+ROOT = Path(__file__).resolve().parents[1]
+DATE = "2026-04-29"
+GOAL = "Goal1085 robot chunked Embree baseline packet"
+REPORT_DIR = "docs/reports/goal1085_robot_chunked_embree_baseline"
+TOTAL_POSE_COUNT = 36_000_000
+CHUNK_POSE_COUNT = 200_000
+OBSTACLE_COUNT = 4096
+ITERATIONS = 3
+WORKER_COUNT = 8
+
+
+def build_packet() -> dict[str, Any]:
+    chunk_count = TOTAL_POSE_COUNT // CHUNK_POSE_COUNT
+    return {
+        "goal": GOAL,
+        "date": DATE,
+        "report_dir": REPORT_DIR,
+        "source_artifacts": [
+            "docs/reports/goal1080_post_pod_public_wording_readiness_audit_2026-04-29.json",
+            "docs/reports/goal1081_same_scale_baseline_execution_packet_2026-04-29.json",
+        ],
+        "target_rtx_artifact": "docs/reports/goal1072_post_scale_up_rtx_pod_batch/robot_prepared_pose_flags_36m_timing.json",
+        "scale": {
+            "total_pose_count": TOTAL_POSE_COUNT,
+            "chunk_pose_count": CHUNK_POSE_COUNT,
+            "chunk_count": chunk_count,
+            "obstacle_count": OBSTACLE_COUNT,
+            "iterations_per_chunk": ITERATIONS,
+            "worker_count": WORKER_COUNT,
+        },
+        "timing_only_controls": {
+            "env": "RTDL_GOAL1085_TIMING_ONLY",
+            "output_prefix": "timing_chunk_",
+            "requires_separate_validation": True,
+        },
+        "command_template": (
+            "PYTHONPATH=src:. python3 scripts/goal839_robot_pose_count_baseline.py "
+            "--backend embree --pose-count {chunk_pose_count} --obstacle-count {obstacle_count} "
+            "--iterations {iterations} --worker-count {worker_count} "
+            "--pose-id-start $(( chunk_index * {chunk_pose_count} + 1 )) "
+            "--output-json \"${{output_json}}\" ${{validation_flag}}"
+        ).format(
+            chunk_pose_count=CHUNK_POSE_COUNT,
+            obstacle_count=OBSTACLE_COUNT,
+            iterations=ITERATIONS,
+            worker_count=WORKER_COUNT,
+            report_dir=REPORT_DIR,
+        ),
+        "public_speedup_claim_authorized": False,
+        "baseline_interpretation": (
+            "Chunked Embree baseline repeats a 200k-pose workload 180 times to cover the same total pose-count "
+            "as the 36M RTX timing artifact without requiring one huge resident Python object graph. It is a "
+            "same-total-work engineering baseline, not a same-single-launch baseline, until artifact intake and "
+            "2+ AI review decide whether the comparison boundary is acceptable. The generated runner is resumable "
+            "through RTDL_GOAL1085_START_CHUNK, RTDL_GOAL1085_END_CHUNK, and RTDL_GOAL1085_SKIP_EXISTING. Each "
+            "chunk uses pose-id offsets so chunk i represents pose ids i*200000+1 through (i+1)*200000."
+        ),
+        "valid": (
+            TOTAL_POSE_COUNT % CHUNK_POSE_COUNT == 0
+            and chunk_count == 180
+            and OBSTACLE_COUNT == 4096
+            and ITERATIONS == 3
+        ),
+        "boundary": (
+            "Goal1085 prepares a non-cloud robot Embree baseline runner only. It does not run the heavy baseline, "
+            "does not authorize release, does not change public wording, and does not authorize public RTX speedup claims."
+        ),
+    }
+
+
+def to_markdown(payload: dict[str, Any]) -> str:
+    scale = payload["scale"]
+    return "\n".join(
+        [
+            "# Goal1085 Robot Chunked Embree Baseline Packet",
+            "",
+            f"Date: {payload['date']}",
+            "",
+            f"Valid: `{str(payload['valid']).lower()}`",
+            "",
+            payload["boundary"],
+            "",
+            "## Scale",
+            "",
+            f"- Total poses: `{scale['total_pose_count']}`",
+            f"- Chunk poses: `{scale['chunk_pose_count']}`",
+            f"- Chunk count: `{scale['chunk_count']}`",
+            f"- Obstacles: `{scale['obstacle_count']}`",
+            f"- Iterations per chunk: `{scale['iterations_per_chunk']}`",
+        "- Resume controls: `RTDL_GOAL1085_START_CHUNK`, `RTDL_GOAL1085_END_CHUNK`, `RTDL_GOAL1085_SKIP_EXISTING`",
+        "- Timing-only control: `RTDL_GOAL1085_TIMING_ONLY=1` writes `timing_chunk_<index>.json` and uses `--skip-validation`.",
+            "",
+            "## Interpretation",
+            "",
+            payload["baseline_interpretation"],
+            "",
+            "## Command Template",
+            "",
+            "```bash",
+            payload["command_template"],
+            "```",
+            "",
+            "## Boundary",
+            "",
+            payload["boundary"],
+            "",
+        ]
+    )
+
+
+def to_shell(payload: dict[str, Any]) -> str:
+    scale = payload["scale"]
+    lines = [
+        "#!/usr/bin/env bash",
+        "set -euo pipefail",
+        "",
+        "# Goal1085 generated runner for a local/Linux/Windows non-cloud Embree baseline host.",
+        "# Boundary: does not authorize public RTX speedup claims.",
+        "",
+        'export PYTHONPATH="${PYTHONPATH:-src:.}"',
+        f'export RTDL_GOAL1085_START_CHUNK="${{RTDL_GOAL1085_START_CHUNK:-0}}"',
+        f'export RTDL_GOAL1085_END_CHUNK="${{RTDL_GOAL1085_END_CHUNK:-{scale["chunk_count"] - 1}}}"',
+        'export RTDL_GOAL1085_SKIP_EXISTING="${RTDL_GOAL1085_SKIP_EXISTING:-1}"',
+        "",
+        'if [ "${RTDL_GOAL1085_START_CHUNK}" -lt 0 ] || [ "${RTDL_GOAL1085_END_CHUNK}" -gt '
+        + str(scale["chunk_count"] - 1)
+        + ' ] || [ "${RTDL_GOAL1085_START_CHUNK}" -gt "${RTDL_GOAL1085_END_CHUNK}" ]; then',
+        '  echo "invalid chunk range ${RTDL_GOAL1085_START_CHUNK}..${RTDL_GOAL1085_END_CHUNK}" >&2',
+        "  exit 2",
+        "fi",
+        "",
+        f"mkdir -p {payload['report_dir']}",
+        'for chunk_index in $(seq "${RTDL_GOAL1085_START_CHUNK}" "${RTDL_GOAL1085_END_CHUNK}"); do',
+        '  if [ "${RTDL_GOAL1085_TIMING_ONLY:-0}" = "1" ]; then',
+        f'    output_json="{payload["report_dir"]}/timing_chunk_${{chunk_index}}.json"',
+        '    validation_flag="--skip-validation"',
+        "  else",
+        f'    output_json="{payload["report_dir"]}/chunk_${{chunk_index}}.json"',
+        '    validation_flag=""',
+        "  fi",
+        '  if [ "${RTDL_GOAL1085_SKIP_EXISTING}" = "1" ] && [ -s "${output_json}" ]; then',
+        '    echo "Skipping existing robot Embree baseline chunk ${chunk_index}"',
+        "    continue",
+        "  fi",
+        '  echo "Running robot Embree baseline chunk ${chunk_index}"',
+        "  " + payload["command_template"],
+        "done",
+        f'echo "Goal1085 complete. Review {payload["report_dir"]}/chunk_*.json and timing_chunk_*.json before any comparison."',
+        "",
+    ]
+    return "\n".join(lines)
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Build Goal1085 robot chunked Embree baseline packet.")
+    parser.add_argument("--output-json", default="docs/reports/goal1085_robot_chunked_embree_baseline_packet_2026-04-29.json")
+    parser.add_argument("--output-md", default="docs/reports/goal1085_robot_chunked_embree_baseline_packet_2026-04-29.md")
+    parser.add_argument("--output-sh", default="scripts/goal1085_robot_chunked_embree_baseline_runner.sh")
+    args = parser.parse_args(argv)
+    payload = build_packet()
+    json_path = ROOT / args.output_json
+    md_path = ROOT / args.output_md
+    sh_path = ROOT / args.output_sh
+    json_path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    md_path.write_text(to_markdown(payload), encoding="utf-8")
+    sh_path.write_text(to_shell(payload), encoding="utf-8")
+    sh_path.chmod(0o755)
+    print(json.dumps({"json": str(json_path), "md": str(md_path), "sh": str(sh_path), "valid": payload["valid"]}, sort_keys=True))
+    return 0 if payload["valid"] else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

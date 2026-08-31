@@ -1,0 +1,41 @@
+{
+  "schema": "rtdl.goal5834_b2.failure_and_b3_amendment.v1",
+  "date": "2026-08-30",
+  "goal": "5834-B2",
+  "status": "TERMINAL_NEGATIVE__B2_MULTI_MATERIALIZATION_IDENTITY_DRIFT",
+  "scientific_boolean_result_exists": false,
+  "complete_raw_gpu_receipt_exists": false,
+  "registered_performance_timing_count": 0,
+  "failure": {
+    "error_type": "RuntimeError",
+    "error_text": "target preaction identity differs at executable_sha256",
+    "failure_site": "second static-scene materialization before its prepare",
+    "cause": "Repeated NVRTC compilation in one process increments PTX callseq comment identifiers. The trusted wrapper source, generated Callback leaves, four compiled leaf PTX digests, compiler log, and executable behavior inputs remain equal, but raw wrapper/composed PTX bytes and the sealed executable identity correctly differ.",
+    "first_executable_sha256": "16a752edb5156d69007ba7bbd285e9051d2acd513644cc081a1ba9211127de68",
+    "second_executable_sha256": "ea4735385547a87cb9e31ed9f36cca5181a8a3e09986da3ff6c39a808e650bbd",
+    "identity_check_weakened": false,
+    "fixture_specific": false,
+    "provider_boolean_mismatch_observed": false,
+    "partial_bits_promoted_to_evidence": false
+  },
+  "custody": {
+    "fixture_authority_sha256": "0f13ab8a7408c253114c56a51645c015d0e5e36ca96a4290c9dd1a2ba700adad",
+    "worker_inputs_sha256": "55eeff377c93c32fed8cc326ad975cb9d2437df85812e30b9d916b3e7cc581a4",
+    "b2_source_projection_sha256": "b38972c8a95bfdd6322bb664a96ce32ca2bae2ba16008631361afd7483e96501",
+    "b2_target_preaction_sha256": "ef8b5d2a401b170a8c45f35eff32a5d0f3470bd75ab245849534bd854225c2f0",
+    "fresh_native_sha256": "065599472ada1a8fa4cf9ecbb46ee2aa76a4d90ec099f6626b171b4720553d73",
+    "preserved_target_preaction": "history/internal_docs/goal5834_b2_home_failure_20260830/TARGET_PREACTION_B2.json"
+  },
+  "b3": {
+    "authorized": true,
+    "authorization_scope": "HARNESS_ONLY__SAME_FROZEN_FIXTURES__EXACT_EXECUTABLE_IDENTITY_RETAINED",
+    "required_change": "Materialize the exact target-bound executable once in a parent that has not loaded or called the native OptiX provider. Fork one sequential child per static scene. Each child inherits the same unconsumed live executable registry entry, consumes it once, executes primary/repeat/reverse, seals its raw receipt, and exits. The parent never consumes the executable and therefore supplies an identical live object to every child.",
+    "why_not_identity_relaxation": "B3 retains the exact executable SHA and does not normalize PTX comments, whitelist multiple hashes, or remove the live-registry check.",
+    "must_inherit_fixture_authority_sha256": "0f13ab8a7408c253114c56a51645c015d0e5e36ca96a4290c9dd1a2ba700adad",
+    "must_inherit_worker_inputs_sha256": "55eeff377c93c32fed8cc326ad975cb9d2437df85812e30b9d916b3e7cc581a4",
+    "result_accepted_unconditionally": true,
+    "goal5835_authorized": false,
+    "performance_authorized": false,
+    "external_review_requested": false
+  }
+}

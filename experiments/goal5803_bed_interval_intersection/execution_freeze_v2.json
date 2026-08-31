@@ -1,0 +1,91 @@
+{
+  "schema": "rtdl.goal5803.bed_interval_intersection.execution_freeze.v2",
+  "frozen_at_utc": "2026-08-27T13:17:30.2166692Z",
+  "status": "FROZEN_BEFORE_NEXT_GPU_CALL__NO_SCIENTIFIC_RESULT_YET",
+  "files": [
+    {
+      "path": "experiments/goal5803_bed_interval_intersection/preaction.json",
+      "bytes": 5457,
+      "sha256": "a4353b0f66753947b7c3b25b4d134428d29bd3385888dab177dc01b936f4aa2c"
+    },
+    {
+      "path": "experiments/goal5803_bed_interval_intersection/bed_transfer.py",
+      "bytes": 5164,
+      "sha256": "baca40c89c17f6d36af388d3c673d96828c78b0a2714e5ddbe1b540d812de4cb"
+    },
+    {
+      "path": "experiments/goal5803_bed_interval_intersection/run_untimed.py",
+      "bytes": 13131,
+      "sha256": "7ed98a299711cb0937d7e2829e7f358d3a958be90b03b90f458a1e60f4a29f8c"
+    },
+    {
+      "path": "tests/goal5803_bed_interval_intersection_test.py",
+      "bytes": 10656,
+      "sha256": "9caf615299e886f0a712c2d4900f9a95ce96bf6f066631f1f0e26f97f007b99e"
+    }
+  ],
+  "driver_compatibility_bridge": {
+    "purpose": "Run against the already-loaded 580.126.09 kernel module without installing packages, changing system links, unloading modules, or rebooting the host.",
+    "source": "Ubuntu Launchpad primary archive",
+    "packages": [
+      {
+        "name": "libnvidia-compute-580",
+        "version": "580.126.09-0ubuntu0.24.04.2",
+        "bytes": 59417388,
+        "sha256": "039c4d9c11be86141c2c97a439c5696c67e820d800de9632e7bf19b250b6c627",
+        "url": "https://launchpadlibrarian.net/850469220/libnvidia-compute-580_580.126.09-0ubuntu0.24.04.2_amd64.deb"
+      },
+      {
+        "name": "libnvidia-gl-580",
+        "version": "580.126.09-0ubuntu0.24.04.2",
+        "bytes": 172175024,
+        "sha256": "ac8c311af3c1747bb2a714a3d60ba2ad3ffac6b8930029a740e960c060157306",
+        "url": "https://launchpadlibrarian.net/850469225/libnvidia-gl-580_580.126.09-0ubuntu0.24.04.2_amd64.deb"
+      }
+    ],
+    "libraries": [
+      {
+        "name": "libcuda.so.580.126.09",
+        "bytes": 96284520,
+        "sha256": "e8e541166449da5a1278f40b27a28d072174b31f2941b101a9609b6d1d3aed32"
+      },
+      {
+        "name": "libnvoptix.so.580.126.09",
+        "bytes": 105212368,
+        "sha256": "36f9ee5a05e56e3f8522251f6e8bbd8f3c7d5414dda0699311fb2079f31c6638"
+      },
+      {
+        "name": "libnvidia-ptxjitcompiler.so.580.126.09",
+        "bytes": 39422584,
+        "sha256": "afc319751643a76395d728ea1c4471085bfe5fde02d3c6a7bc27a6b005d463c8"
+      }
+    ],
+    "compatibility_probe": {
+      "result": "PASS",
+      "gpu": "NVIDIA GeForce GTX 1070",
+      "compute_capability": "6.1",
+      "driver_version": "580.126.09"
+    },
+    "system_packages_installed_or_changed": false,
+    "system_library_links_changed": false,
+    "host_rebooted": false
+  },
+  "prior_home_attempt": {
+    "outcome": "INFRA_INVALID__RX031_CUDA_DRIVER_UNAVAILABLE",
+    "stage": "CUDA_CUINIT_BEFORE_NATIVE_PREPARE_OR_OPTIX_LAUNCH",
+    "scientific_task_executed": false,
+    "result_file_created": false,
+    "cause": "loaded NVIDIA kernel module 580.126.09 but system userspace library 580.173.02",
+    "task_replaced_or_rescued": false
+  },
+  "next_execution_rule": {
+    "registered_performance_timing_count": 0,
+    "task_replacement_allowed": false,
+    "core_native_artifact_or_runner_change_allowed": false,
+    "only_expected_capacity_failure_code": "RX041_OUTPUT_OVERFLOW",
+    "normal_case_must_return_exact_oracle": true,
+    "behavioral_optix_receipt_required": true,
+    "any_noninfra_failure_after_prepare_begins_is_scientific": true,
+    "successful_result_may_be_rerun_or_replaced": false
+  }
+}

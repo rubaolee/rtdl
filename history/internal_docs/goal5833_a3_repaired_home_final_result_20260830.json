@@ -1,0 +1,176 @@
+{
+  "schema": "rtdl.goal5833.a3_repaired_home_final_result.v1",
+  "goal": 5833,
+  "date": "2026-08-30",
+  "status": "COMPLETE_AT_BOUNDED_STATIC_BUILTIN_SPHERE_SCOPE",
+  "controlling": true,
+  "supersedes": [
+    "history/internal_docs/goal5833_builtin_sphere_first_contact_result_20260830.json",
+    "history/internal_docs/goal5833_builtin_sphere_first_contact_technical_report_20260830.md",
+    "history/internal_docs/self_review_goal5833_builtin_sphere_first_contact_20260830.md",
+    "history/internal_docs/self_review_goal5833_a1_negative_permitted_adversarial_20260830.md",
+    "history/internal_docs/self_review_goal5833_a2_final_adversarial_20260830.md",
+    "history/internal_docs/goal5833_a3_repaired_home_evidence_20260830/attempt1_zero_gpu_preflight",
+    "history/internal_docs/goal5833_a3_repaired_home_evidence_20260830/attempt2_zero_gpu_codegen_environment",
+    "history/internal_docs/goal5833_a3_repaired_home_evidence_20260830/attempt3_real_gpu_tangent_mismatch",
+    "history/internal_docs/goal5833_a3_repaired_home_evidence_20260830/attempt4_real_gpu_cleanup_regression_materialization_failure",
+    "history/internal_docs/goal5833_a3_repaired_home_evidence_20260830/attempt5_gpu_pass_offline_nan_bitloss",
+    "history/internal_docs/goal5833_a3_repaired_home_evidence_20260830/final_home_pass_v6",
+    "history/internal_docs/goal5833_a3_repaired_home_evidence_20260830/attempt6_gpu_pass_compiler_source_identity_mismatch",
+    "history/internal_docs/goal5833_a3_repaired_home_evidence_20260830/final_home_pass_v8_manifest.txt"
+  ],
+  "repository_binding": {
+    "git_status": "BROKEN_BAD_OBJECT_HEAD_NO_COMMIT_CLAIM",
+    "execution_source_archive": "history/internal_docs/goal5833_a3_repaired_home_evidence_20260830/goal5833_a3_final_source_snapshot_v7_20260830.tar.gz",
+    "execution_source_archive_sha256": "861a5d39e3e4661433f8eb7d558f0bc6f30f168f1dc6743e97a84062abbbb01d",
+    "execution_source_archive_bytes": 2437989,
+    "execution_source_archive_members": 377,
+    "unsafe_or_duplicate_member_count": 0,
+    "critical_source_pin_count": 14,
+    "critical_source_pin_mismatch_count": 0
+  },
+  "completed_scope": {
+    "public_namespace": "rtdsl.v4_sphere",
+    "geometry": "one static OptiX built-in-sphere GAS",
+    "program": "four-role Callback IR First Contact",
+    "roles": ["make_ray", "closest_hit", "miss", "finalize"],
+    "compiler_owned_enumerator": true,
+    "stable_order": ["ordered_float32_t", "application_id"],
+    "lifecycle": ["verify", "compile", "materialize", "prepare", "execute", "close"],
+    "input_domain": {
+      "arithmetic_projection": "binary32",
+      "start_strictly_outside_every_sphere": true,
+      "minimum_discriminant_separation_ratio": "2^-12",
+      "exact_tangent_supported": false,
+      "near_degenerate_contact_supported": false,
+      "front_entry_minimum_distance_from_tmin_or_tmax": "strictly_greater_than_2^-12",
+      "exact_trace_endpoint_contact_supported": false,
+      "motion_blur": false,
+      "instancing": false,
+      "trace_depth": 1,
+      "callable_depth": 0
+    }
+  },
+  "home_execution": {
+    "machine": "lx1",
+    "gpu": "NVIDIA GeForce GTX 1070",
+    "compute_capability": "6.1",
+    "driver": "580.173.02",
+    "optix_sdk": "9.0.0",
+    "cuda_toolkit": "12.0",
+    "rt_core_silicon_claimed": false,
+    "behavioral_true_optix": true,
+    "native_sha256": "e7ae6d04068b989876cb5eec45966a034cdda2676ac9b9581687acd11f29170b",
+    "result_sha256": "7b5f997af7666fc3e315c6b0eef0c64cfceb488c35b7382f8a13d8dd4a8d3e46",
+    "recount_sha256": "f721d2104051f3ec224a3ed9e5927ea2e411b8098526ea2950e55cbb5204b59e",
+    "callback_source_sha256": "94bf800af5f1c04020ccdcd34d2e4c7b8378389d2be91196612d2fc63d8add7e",
+    "callback_ir_sha256": "60314121a0d865dbd32efe92616bbd3784f11286cb0581eaed3aded0fbe0ae5d",
+    "callback_effect_digest": "e89ddea0580fe0ad017e649de8dbe3d08409174e9cfdb3f662afbc1344d989be",
+    "physical_schema_sha256": "1b35f1805910cbef604065d025b2625a7d05afd2ab11d3e291cb296bbe2a9f6c",
+    "target_sha256": "40fd2447dc794b66f606bb9cc48387d311b5641839c8d031c0bc9d795a5ebe7b",
+    "canonical_plan_sha256": "0232be3762ee42a58a542c6611d19067187c8ffb9abb4ec497d7f0d97515517e",
+    "callback_abi_sha256": "8f63b85dbd792b817b330b821e28a6f9d82c5b4d48f65097b4deff3a8b149652",
+    "authority_sha256": "79462784999797e96e6de55ff37b4be28e093198040ceba6a6bc4b3e9dd1ef7b",
+    "wrapper_source_sha256": "a09269a15625bc34e1e374c61ba4f571b902bf6b5d7c42e20a0c1f17389d6bb2",
+    "executable_sha256": "14b299486301fd490a55fc6afc7297d06c0769dd966ba984a299108ea42b3878",
+    "composed_ptx_sha256": "1665f6d34a4fab3fecd51aa3a97bb41b13cbe71928c60552b0564f7c7fcf45cc",
+    "accepted_manifest_sha256": "ebf5f87711225730fc1e26640b2a04e7ea790ea83b63b2f80ecb3034d2f7e73a",
+    "observed_rows": [
+      [1, 1056964608, 2],
+      [0, 1065353216, 4294967295],
+      [1, 1050673152, 99],
+      [1, 1050673152, 11],
+      [0, 1065353216, 4294967295]
+    ],
+    "observed_equals_independent_oracle": true,
+    "observed_comparison_policies": [
+      "exact_root_bits",
+      "miss_exact_bits",
+      "exact_root_bits",
+      "exact_root_bits",
+      "miss_exact_bits"
+    ],
+    "second_execution_observed_rows": [
+      [0, 1065353216, 4294967295],
+      [1, 1050673152, 11],
+      [1, 1050673152, 99]
+    ],
+    "prepared_execution_count_sequence": [0, 1, 2]
+  },
+  "prelaunch_negative_boundaries": {
+    "exact_tangent": {
+      "closed_sphere_oracle": [1, 1056964608, 11],
+      "reason": "exact_tangent_unsupported_by_optix9_front_face_contract",
+      "execution_count_before_after": [2, 2]
+    },
+    "just_outside_tmax": {
+      "closed_segment_oracle": [0, 1065353216, 4294967295],
+      "reason": "front_entry_near_closed_trace_interval_boundary",
+      "execution_count_before_after": [2, 2]
+    },
+    "exact_tmax": {
+      "closed_segment_oracle": [1, 1065353216, 2],
+      "reason": "front_entry_near_closed_trace_interval_boundary",
+      "execution_count_before_after": [2, 2]
+    }
+  },
+  "hostile_device_status": {
+    "mutation": "make_ray_tmax_ONE_F32_to_ZERO_F32",
+    "manifest_sha256": "6e5d01a11fbf980d64b8483b2b39f60c069744debcd23af7df782ceb9f0d39ab",
+    "executable_sha256": "01112ec86f0c98f7cb9a575bb044c6c39d754ccb05f220e6e0bdee4139e9c5c4",
+    "composed_ptx_sha256": "da5c9a80cd36e17dabe6f34f8468d4556e04830238441f3a7aaca2d1d6925586",
+    "successful_complete_launch_count": 1,
+    "device_status_error_code": 9,
+    "status_d2h_call_count": 1,
+    "application_output_d2h_call_count": 0,
+    "application_output_after_failure_count": 0
+  },
+  "verification": {
+    "controlling_sphere_test_count": 56,
+    "noncontrolling_family_schema_prototype_test_count": 14,
+    "goal5833_total_test_count": 70,
+    "adjacent_callback_regression_test_count": 46,
+    "failure_count": 0,
+    "generated_artifact_member_count_per_executable": 14,
+    "portable_linux_recount_byte_identical": true,
+    "portable_windows_recount_json_equal": true,
+    "portable_windows_raw_bytes_equal": false,
+    "portable_windows_raw_byte_difference": "CRLF_vs_LF_only",
+    "compiler_reproduction": {
+      "same_frozen_source_and_exact_native": true,
+      "core_identity_match_count": 11,
+      "accepted_and_hostile_generated_artifacts_byte_identical": true,
+      "independent_compiler_correctness_proof": false
+    },
+    "evidence_root": "history/internal_docs/goal5833_a3_repaired_home_evidence_20260830/final_home_pass_v8",
+    "closed_world_manifest": "history/internal_docs/goal5833_a3_repaired_home_evidence_20260830/final_home_pass_v8_manifest_v2.txt",
+    "closed_world_manifest_sha256": "0d439cd33d65a4787d097715cd87141222816766feaff2615b6c9ba05f095e15",
+    "closed_world_manifest_members": 120,
+    "closed_world_manifest_payload_bytes": 21180182
+  },
+  "claim_ceiling": {
+    "primitive_taxonomy_statement": "kind_presence_in_3_of_4_coarse_optix_leaf_primitive_classes",
+    "build_input_enum_statement": "kind_presence_in_3_of_6_optix_build_input_enum_kinds",
+    "feature_coverage_percentage_claimed": false,
+    "universal_geometry_compiler_claimed": false,
+    "prospective_generalization_claimed": false,
+    "performance_claimed": false,
+    "paper_app_claimed": false,
+    "curve_support_claimed": false,
+    "rt_ccd_claimed": false,
+    "external_user_evidence_claimed": false,
+    "cross_gpu_numeric_theorem_claimed": false,
+    "independent_source_to_ir_or_compiler_correctness_proof_claimed": false,
+    "registered_performance_timing_count": 0
+  },
+  "lineage": [
+    "The original result/report falsely described a non-tangent row as exact tangent and used an unsound numeric oracle; they are superseded, not edited.",
+    "A2 found a real silent tmin/tmax lowering defect and multiple physical/evidence gaps; the repair made those leaves decision-bearing and bound the live native route.",
+    "A3 attempts 1 and 2 stopped before GPU execution; attempt 3 exposed exact-tangent provider behavior and a cleanup-path teardown crash; attempts 4 and 5 exposed cleanup-test and NaN-evidence defects.",
+    "final_home_pass_v6 produced valid five-row observations but remained noncontrolling because its accepted domain included ambiguous trace endpoints, its capsule omitted three adjacent-test dependencies, and its verifier was not portable or fully byte-bridged.",
+    "The first endpoint-repaired Home successor executed GPU successfully but its new verifier rejected a conflation of public DSL-source and normalized-program source identities; that failure is preserved as attempt6.",
+    "The v8 execution and independent recount are the first controlling closure candidate to pass every bounded gate."
+  ],
+  "external_review_requested": false,
+  "external_review_authorized": false
+}

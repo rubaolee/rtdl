@@ -1,0 +1,537 @@
+from __future__ import annotations
+
+import argparse
+import json
+import math
+import sys
+import time
+from pathlib import Path
+
+ROOT = next(parent for parent in Path(__file__).resolve().parents if (parent / "src" / "rtdsl").exists())
+sys.path.insert(0, str(ROOT / "src"))
+sys.path.insert(0, str(ROOT))
+
+import rtdsl as rt
+from rtdsl.reference import _segments_from_polygons
+from rtdsl.reference import _polygon_unit_cells
+
+
+@rt.kernel(backend="rtdl", precision="float_approx")
+def polygon_pair_overlap_area_rows_reference():
+    left = rt.input("left", rt.Polygons, layout=rt.Polygon2DLayout, role="probe")
+    right = rt.input("right", rt.Polygons, layout=rt.Polygon2DLayout, role="build")
+    candidates = rt.traverse(left, right, accel="bvh")
+    rows = rt.refine(candidates, predicate=rt.polygon_pair_overlap_area_rows(exact=False))
+    return rt.emit(
+        rows,
+        fields=[
+            "left_polygon_id",
+            "right_polygon_id",
+            "intersection_area",
+            "left_area",
+            "right_area",
+            "union_area",
+        ],
+    )
+
+
+@rt.kernel(backend="rtdl", precision="float_approx")
+def polygon_pair_overlap_candidates_embree_kernel():
+    left = rt.input("left", rt.Polygons, layout=rt.Polygon2DLayout, role="probe")
+    right = rt.input("right", rt.Polygons, layout=rt.Polygon2DLayout, role="build")
+    candidates = rt.traverse(left, right, accel="bvh")
+    rows = rt.refine(candidates, predicate=rt.overlay_compose())
+    return rt.emit(
+        rows,
+        fields=["left_polygon_id", "right_polygon_id", "requires_lsi", "requires_pip"],
+    )
+
+
+@rt.kernel(backend="rtdl", precision="float_approx")
+def polygon_edge_intersections_embree_kernel():
+    left = rt.input("left", rt.Segments, role="probe")
+    right = rt.input("right", rt.Segments, role="build")
+    candidates = rt.traverse(left, right, accel="bvh")
+    rows = rt.refine(candidates, predicate=rt.segment_intersection(exact=False))
+    return rt.emit(rows, fields=["left_id", "right_id", "x", "y"])
+
+
+@rt.kernel(backend="rtdl", precision="float_approx")
+def polygon_point_in_polygon_positive_embree_kernel():
+    points = rt.input("points", rt.Points, role="probe")
+    polygons = rt.input("polygons", rt.Polygons, layout=rt.Polygon2DLayout, role="build")
+    candidates = rt.traverse(points, polygons, accel="bvh")
+    rows = rt.refine(
+        candidates,
+        predicate=rt.point_in_polygon(exact=False, boundary_mode="inclusive", result_mode="positive_hits"),
+    )
+    return rt.emit(rows, fields=["point_id", "polygon_id", "contains"])
+
+
+def _shift_vertices(vertices: tuple[tuple[float, float], ...], offset_x: float) -> tuple[tuple[float, float], ...]:
+    return tuple((x + offset_x, y) for x, y in vertices)
+
+
+def make_authored_polygon_pair_overlap_case(*, copies: int = 1):
+    if copies < 1:
+        raise ValueError("copies must be >= 1")
+    base_left = (
+        (1, ((0.0, 0.0), (3.0, 0.0), (3.0, 3.0), (0.0, 3.0))),
+        (2, ((4.0, 0.0), (6.0, 0.0), (6.0, 2.0), (4.0, 2.0))),
+    )
+    base_right = (
+        (10, ((1.0, 1.0), (4.0, 1.0), (4.0, 4.0), (1.0, 4.0))),
+        (11, ((5.0, 0.0), (7.0, 0.0), (7.0, 1.0), (5.0, 1.0))),
+        (12, ((8.0, 8.0), (9.0, 8.0), (9.0, 9.0), (8.0, 9.0))),
+    )
+    left: list[rt.Polygon] = []
+    right: list[rt.Polygon] = []
+    for copy_index in range(copies):
+        offset_x = float(copy_index * 16)
+        id_offset = copy_index * 100
+        left.extend(
+            rt.Polygon(id=id_offset + polygon_id, vertices=_shift_vertices(vertices, offset_x))
+            for polygon_id, vertices in base_left
+        )
+        right.extend(
+            rt.Polygon(id=id_offset + polygon_id, vertices=_shift_vertices(vertices, offset_x))
+            for polygon_id, vertices in base_right
+        )
+    return {"left": tuple(left), "right": tuple(right)}
+
+
+def _exact_overlap_rows_for_candidates(
+    left: tuple[rt.Polygon, ...],
+    right: tuple[rt.Polygon, ...],
+    candidate_pairs: set[tuple[int, int]],
+) -> tuple[dict[str, int], ...]:
+    right_by_id = {polygon.id: polygon for polygon in right}
+    left_cells_by_id = {polygon.id: tuple(_polygon_unit_cells(polygon)) for polygon in left}
+    right_cells_by_id = {polygon.id: tuple(_polygon_unit_cells(polygon)) for polygon in right}
+    rows: list[dict[str, int]] = []
+    for left_polygon in left:
+        left_cells = left_cells_by_id[left_polygon.id]
+        left_area = len(left_cells)
+        left_cell_lookup = set(left_cells)
+        for right_polygon in right:
+            if (left_polygon.id, right_polygon.id) not in candidate_pairs:
+                continue
+            right_cells = right_cells_by_id[right_polygon.id]
+            intersection_area = sum(1 for cell in right_cells if cell in left_cell_lookup)
+            if intersection_area <= 0:
+                continue
+            right_area = len(right_cells)
+            rows.append(
+                {
+                    "left_polygon_id": left_polygon.id,
+                    "right_polygon_id": right_by_id[right_polygon.id].id,
+                    "intersection_area": intersection_area,
+                    "left_area": left_area,
+                    "right_area": right_area,
+                    "union_area": left_area + right_area - intersection_area,
+                }
+            )
+    return tuple(rows)
+
+
+def _first_vertex_points(polygons: tuple[rt.Polygon, ...]) -> tuple[rt.Point, ...]:
+    return tuple(
+        rt.Point(id=polygon.id, x=polygon.vertices[0][0], y=polygon.vertices[0][1])
+        for polygon in polygons
+    )
+
+
+def _bbox(polygon: rt.Polygon) -> tuple[float, float, float, float]:
+    xs = [vertex[0] for vertex in polygon.vertices]
+    ys = [vertex[1] for vertex in polygon.vertices]
+    return min(xs), min(ys), max(xs), max(ys)
+
+
+def _bbox_candidate_pairs_partner(
+    left: tuple[rt.Polygon, ...],
+    right: tuple[rt.Polygon, ...],
+) -> set[tuple[int, int]]:
+    """CPU-partner grid broadphase for generic bbox-overlap candidates."""
+    all_bboxes = [_bbox(polygon) for polygon in (*left, *right)]
+    max_span = max(
+        max(max_x - min_x, max_y - min_y)
+        for min_x, min_y, max_x, max_y in all_bboxes
+    )
+    cell_size = max(1.0, max_span)
+    bins: dict[tuple[int, int], list[tuple[float, float, float, float, int]]] = {}
+    for polygon in right:
+        min_x, min_y, max_x, max_y = _bbox(polygon)
+        ix0 = math.floor(min_x / cell_size)
+        ix1 = math.floor(max_x / cell_size)
+        iy0 = math.floor(min_y / cell_size)
+        iy1 = math.floor(max_y / cell_size)
+        entry = (min_x, min_y, max_x, max_y, polygon.id)
+        for ix in range(ix0, ix1 + 1):
+            for iy in range(iy0, iy1 + 1):
+                bins.setdefault((ix, iy), []).append(entry)
+
+    pairs: set[tuple[int, int]] = set()
+    for left_polygon in left:
+        left_min_x, left_min_y, left_max_x, left_max_y = _bbox(left_polygon)
+        ix0 = math.floor(left_min_x / cell_size)
+        ix1 = math.floor(left_max_x / cell_size)
+        iy0 = math.floor(left_min_y / cell_size)
+        iy1 = math.floor(left_max_y / cell_size)
+        seen_right_ids: set[int] = set()
+        for ix in range(ix0, ix1 + 1):
+            for iy in range(iy0, iy1 + 1):
+                for right_min_x, right_min_y, right_max_x, right_max_y, right_id in bins.get((ix, iy), ()):
+                    if right_id in seen_right_ids:
+                        continue
+                    seen_right_ids.add(right_id)
+                    if right_max_x < left_min_x or right_min_x > left_max_x:
+                        continue
+                    if right_max_y < left_min_y or right_min_y > left_max_y:
+                        continue
+                    pairs.add((left_polygon.id, int(right_id)))
+    return pairs
+
+
+def _positive_candidate_pairs_backend(
+    backend: str,
+    left: tuple[rt.Polygon, ...],
+    right: tuple[rt.Polygon, ...],
+) -> set[tuple[int, int]]:
+    if backend not in {"embree", "optix"}:
+        raise ValueError("candidate backend must be 'embree' or 'optix'")
+    run_backend = rt.run_embree if backend == "embree" else rt.run_optix
+    left_ids = {polygon.id for polygon in left}
+    right_ids = {polygon.id for polygon in right}
+
+    def orient_pair(first_id: int, second_id: int) -> tuple[int, int] | None:
+        if first_id in left_ids and second_id in right_ids:
+            return first_id, second_id
+        if second_id in left_ids and first_id in right_ids:
+            return second_id, first_id
+        return None
+
+    left_segments = _segments_from_polygons(left)
+    right_segments = _segments_from_polygons(right)
+    lsi_rows = run_backend(
+        polygon_edge_intersections_embree_kernel,
+        left=left_segments,
+        right=right_segments,
+    )
+    left_in_right = run_backend(
+        polygon_point_in_polygon_positive_embree_kernel,
+        points=_first_vertex_points(left),
+        polygons=right,
+    )
+    right_in_left = run_backend(
+        polygon_point_in_polygon_positive_embree_kernel,
+        points=_first_vertex_points(right),
+        polygons=left,
+    )
+    pairs: set[tuple[int, int]] = set()
+    for row in lsi_rows:
+        pair = orient_pair(int(row["left_id"]), int(row["right_id"]))
+        if pair is not None:
+            pairs.add(pair)
+    for row in left_in_right:
+        if int(row["contains"]) != 1:
+            continue
+        pair = orient_pair(int(row["point_id"]), int(row["polygon_id"]))
+        if pair is not None:
+            pairs.add(pair)
+    for row in right_in_left:
+        if int(row["contains"]) != 1:
+            continue
+        pair = orient_pair(int(row["point_id"]), int(row["polygon_id"]))
+        if pair is not None:
+            pairs.add(pair)
+    return pairs
+
+
+def _positive_candidate_pairs_embree(
+    left: tuple[rt.Polygon, ...],
+    right: tuple[rt.Polygon, ...],
+) -> set[tuple[int, int]]:
+    return _positive_candidate_pairs_backend("embree", left, right)
+
+
+def _positive_candidate_pairs_optix(
+    left: tuple[rt.Polygon, ...],
+    right: tuple[rt.Polygon, ...],
+) -> set[tuple[int, int]]:
+    return _positive_candidate_pairs_backend("optix", left, right)
+
+
+def _summarize_rows(rows: tuple[dict[str, int], ...]) -> dict[str, int]:
+    return {
+        "overlap_pair_count": len(rows),
+        "total_intersection_area": sum(int(row["intersection_area"]) for row in rows),
+        "total_union_area": sum(int(row["union_area"]) for row in rows),
+    }
+
+
+def _exact_overlap_summary_for_candidates(
+    left: tuple[rt.Polygon, ...],
+    right: tuple[rt.Polygon, ...],
+    candidate_pairs: set[tuple[int, int]],
+) -> dict[str, int]:
+    left_cells_by_id = {polygon.id: set(_polygon_unit_cells(polygon)) for polygon in left}
+    right_cells_by_id = {polygon.id: set(_polygon_unit_cells(polygon)) for polygon in right}
+    left_area_by_id = {polygon.id: len(cells) for polygon, cells in zip(left, left_cells_by_id.values())}
+    right_area_by_id = {polygon.id: len(cells) for polygon, cells in zip(right, right_cells_by_id.values())}
+    overlap_pair_count = 0
+    total_intersection_area = 0
+    total_union_area = 0
+    for left_id, right_id in candidate_pairs:
+        left_cells = left_cells_by_id[left_id]
+        right_cells = right_cells_by_id[right_id]
+        intersection_area = len(left_cells & right_cells)
+        if intersection_area <= 0:
+            continue
+        overlap_pair_count += 1
+        total_intersection_area += intersection_area
+        total_union_area += left_area_by_id[left_id] + right_area_by_id[right_id] - intersection_area
+    return {
+        "overlap_pair_count": overlap_pair_count,
+        "total_intersection_area": total_intersection_area,
+        "total_union_area": total_union_area,
+    }
+
+
+def _native_overlap_rows_for_candidates(
+    left: tuple[rt.Polygon, ...],
+    right: tuple[rt.Polygon, ...],
+    candidate_pairs: set[tuple[int, int]],
+) -> tuple[dict[str, int], ...]:
+    return tuple(
+        dict(row)
+        for row in rt.refine_polygon_pair_overlap_area_rows_for_pairs(left, right, candidate_pairs)
+    )
+
+
+def _run_embree_native_assisted(left: tuple[rt.Polygon, ...], right: tuple[rt.Polygon, ...]):
+    candidate_pairs = _positive_candidate_pairs_embree(left, right)
+    rows = _native_overlap_rows_for_candidates(left, right, candidate_pairs)
+    return rows, candidate_pairs
+
+
+def _run_embree_summary(left: tuple[rt.Polygon, ...], right: tuple[rt.Polygon, ...]):
+    candidate_pairs = _positive_candidate_pairs_embree(left, right)
+    return _summarize_rows(_native_overlap_rows_for_candidates(left, right, candidate_pairs)), candidate_pairs
+
+
+def _run_optix_native_assisted(left: tuple[rt.Polygon, ...], right: tuple[rt.Polygon, ...]):
+    candidate_pairs = _positive_candidate_pairs_optix(left, right)
+    rows = _native_overlap_rows_for_candidates(left, right, candidate_pairs)
+    return rows, candidate_pairs
+
+
+def _run_optix_summary(left: tuple[rt.Polygon, ...], right: tuple[rt.Polygon, ...]):
+    candidate_pairs = _positive_candidate_pairs_optix(left, right)
+    return _summarize_rows(_native_overlap_rows_for_candidates(left, right, candidate_pairs)), candidate_pairs
+
+
+def _enforce_rt_core_requirement(backend: str, require_rt_core: bool) -> None:
+    if not require_rt_core:
+        return
+    if backend != "optix":
+        raise ValueError("--require-rt-core is only meaningful with --backend optix")
+
+
+def run_case(
+    backend: str = "cpu_python_reference",
+    *,
+    copies: int = 1,
+    output_mode: str = "rows",
+    candidate_mode: str = "rt_positive",
+    require_rt_core: bool = False,
+) -> dict[str, object]:
+    if output_mode not in {"rows", "summary"}:
+        raise ValueError("output_mode must be 'rows' or 'summary'")
+    if candidate_mode not in {"rt_positive", "partner_bbox"}:
+        raise ValueError("candidate_mode must be 'rt_positive' or 'partner_bbox'")
+    if candidate_mode == "partner_bbox" and backend not in {"embree", "optix"}:
+        raise ValueError("partner_bbox candidate mode requires backend 'embree' or 'optix'")
+    _enforce_rt_core_requirement(backend, require_rt_core)
+    input_start = time.perf_counter()
+    case = make_authored_polygon_pair_overlap_case(copies=copies)
+    run_phases: dict[str, float] = {"input_construction_sec": time.perf_counter() - input_start}
+    rows: tuple[dict[str, int], ...] = ()
+    generic_area_summary = None
+    if backend == "cpu_python_reference":
+        query_start = time.perf_counter()
+        rows = rt.run_cpu_python_reference(polygon_pair_overlap_area_rows_reference, **case)
+        run_phases["query_and_materialize_sec"] = time.perf_counter() - query_start
+        candidate_row_count = None
+        summary_start = time.perf_counter()
+        summary = _summarize_rows(tuple(rows))
+        run_phases["summary_postprocess_sec"] = time.perf_counter() - summary_start
+    elif backend == "cpu":
+        query_start = time.perf_counter()
+        rows = rt.run_cpu(polygon_pair_overlap_area_rows_reference, **case)
+        run_phases["query_and_materialize_sec"] = time.perf_counter() - query_start
+        candidate_row_count = None
+        summary_start = time.perf_counter()
+        summary = _summarize_rows(tuple(rows))
+        run_phases["summary_postprocess_sec"] = time.perf_counter() - summary_start
+    elif backend == "embree":
+        candidate_start = time.perf_counter()
+        candidate_pairs = (
+            _bbox_candidate_pairs_partner(case["left"], case["right"])
+            if candidate_mode == "partner_bbox"
+            else _positive_candidate_pairs_embree(case["left"], case["right"])
+        )
+        run_phases["rt_candidate_discovery_sec"] = time.perf_counter() - candidate_start
+        if candidate_mode == "partner_bbox":
+            run_phases["partner_bbox_candidate_discovery_sec"] = run_phases.pop("rt_candidate_discovery_sec")
+        if output_mode == "summary":
+            generic_area_summary = rt.run_generic_polygon_pair_exact_area_summary(
+                left=case["left"],
+                right=case["right"],
+                candidate_pairs=candidate_pairs,
+                backend=backend,
+                exact_summary_fn=_exact_overlap_summary_for_candidates,
+            )
+            summary = generic_area_summary["integer_parity_values"]
+            run_phases.update(generic_area_summary["run_phases"])
+            run_phases["native_exact_continuation_sec"] = generic_area_summary["run_phases"][
+                "query_polygon_exact_area_reduce_float_sum_sec"
+            ]
+        else:
+            exact_start = time.perf_counter()
+            rows = _native_overlap_rows_for_candidates(case["left"], case["right"], candidate_pairs)
+            summary = _summarize_rows(tuple(rows))
+            run_phases["native_exact_continuation_sec"] = time.perf_counter() - exact_start
+        candidate_row_count = len(candidate_pairs)
+    elif backend == "optix":
+        candidate_start = time.perf_counter()
+        candidate_pairs = (
+            _bbox_candidate_pairs_partner(case["left"], case["right"])
+            if candidate_mode == "partner_bbox"
+            else _positive_candidate_pairs_optix(case["left"], case["right"])
+        )
+        run_phases["rt_candidate_discovery_sec"] = time.perf_counter() - candidate_start
+        if candidate_mode == "partner_bbox":
+            run_phases["partner_bbox_candidate_discovery_sec"] = run_phases.pop("rt_candidate_discovery_sec")
+        if output_mode == "summary":
+            generic_area_summary = rt.run_generic_polygon_pair_exact_area_summary(
+                left=case["left"],
+                right=case["right"],
+                candidate_pairs=candidate_pairs,
+                backend=backend,
+                exact_summary_fn=_exact_overlap_summary_for_candidates,
+            )
+            summary = generic_area_summary["integer_parity_values"]
+            run_phases.update(generic_area_summary["run_phases"])
+            run_phases["native_exact_continuation_sec"] = generic_area_summary["run_phases"][
+                "query_polygon_exact_area_reduce_float_sum_sec"
+            ]
+        else:
+            exact_start = time.perf_counter()
+            rows = _native_overlap_rows_for_candidates(case["left"], case["right"], candidate_pairs)
+            summary = _summarize_rows(tuple(rows))
+            run_phases["native_exact_continuation_sec"] = time.perf_counter() - exact_start
+        candidate_row_count = len(candidate_pairs)
+    else:
+        raise ValueError(f"unsupported backend `{backend}`")
+    backend_mode = (
+        "embree_native_assisted" if backend == "embree"
+        else "optix_native_assisted" if backend == "optix"
+        else "cpu_exact"
+    )
+    native_continuation_backend = None
+    if backend in {"embree", "optix"}:
+        native_continuation_backend = (
+            "native_polygon_pair_area_summary"
+            if output_mode == "summary"
+            else "native_polygon_pair_exact_rows"
+        )
+    if candidate_mode == "partner_bbox":
+        boundary = (
+            "Partner-bbox mode uses a CPU-partner generic bounding-box broadphase "
+            "to produce candidate pairs, then uses the backend-neutral native exact-area "
+            "summary. This is not RT candidate discovery, not a monolithic polygon overlay "
+            "engine, and not an app-custom native engine path."
+        )
+    else:
+        boundary = (
+            "Embree and OptiX modes use native LSI/PIP positive candidate discovery. "
+            "Summary mode then uses a backend-neutral native exact-area summary; rows mode "
+            "uses native exact row refinement. These modes are RT-candidate plus native "
+            "summary/row pipelines, not monolithic GPU area-overlay kernels."
+        )
+    payload: dict[str, object] = {
+        "app": "polygon_pair_overlap_area_rows",
+        "backend": backend,
+        "backend_mode": backend_mode,
+        "copies": copies,
+        "output_mode": output_mode,
+        "candidate_mode": candidate_mode,
+        "left_polygon_count": len(case["left"]),
+        "right_polygon_count": len(case["right"]),
+        "row_count": summary["overlap_pair_count"],
+        "candidate_row_count": candidate_row_count,
+        "summary": summary,
+        "generic_area_summary": generic_area_summary,
+        "run_phases": run_phases,
+        "rt_core_accelerated": False,
+        "rt_core_candidate_discovery_active": backend == "optix" and candidate_mode == "rt_positive",
+        "native_continuation_active": backend in {"embree", "optix"},
+        "native_continuation_backend": native_continuation_backend,
+        "optix_performance": {
+            "class": rt.optix_app_performance_support("polygon_pair_overlap_area_rows").performance_class,
+            "note": rt.optix_app_performance_support("polygon_pair_overlap_area_rows").note,
+        },
+        "boundary": boundary,
+    }
+    if output_mode == "rows":
+        payload["rows"] = rows
+    payload = rt.attach_polygon_pair_primitive_contract(payload, backend=backend, output_mode=output_mode)
+    if candidate_mode == "partner_bbox":
+        primitive_contract = dict(payload["primitive_contract"])
+        primitive_contract["candidate_primitive"] = "CPU_PARTNER_BBOX_BROADPHASE"
+        primitive_contract["backend_contract_role"] = "exact_area_summary_after_partner_candidates"
+        primitive_contract["claim_boundary"] = (
+            "partner_bbox candidate discovery only: a CPU partner emits generic bbox-overlap "
+            "candidate pairs before backend-neutral exact grid-cell area summary. This is not "
+            "RT candidate discovery, a generic polygon overlay engine, or public whole-app "
+            "speedup wording."
+        )
+        payload["primitive_contract"] = primitive_contract
+    return payload
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Run bounded polygon-pair overlap area rows.")
+    parser.add_argument("--backend", choices=("cpu_python_reference", "cpu", "embree", "optix"), default="cpu_python_reference")
+    parser.add_argument("--copies", type=int, default=1)
+    parser.add_argument("--output-mode", choices=("rows", "summary"), default="rows")
+    parser.add_argument(
+        "--candidate-mode",
+        choices=("rt_positive", "partner_bbox"),
+        default="rt_positive",
+        help="For Embree/OptiX summary paths, choose RT-positive candidate discovery or CPU-partner bbox broadphase.",
+    )
+    parser.add_argument(
+        "--require-rt-core",
+        action="store_true",
+        help="Require the native-assisted OptiX candidate-discovery path.",
+    )
+    args = parser.parse_args(argv)
+    print(
+        json.dumps(
+            run_case(
+                args.backend,
+                copies=args.copies,
+                output_mode=args.output_mode,
+                candidate_mode=args.candidate_mode,
+                require_rt_core=args.require_rt_core,
+            ),
+            indent=2,
+            sort_keys=True,
+        )
+    )
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

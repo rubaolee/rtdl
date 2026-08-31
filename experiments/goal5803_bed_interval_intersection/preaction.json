@@ -1,0 +1,100 @@
+{
+  "schema": "rtdl.goal5803.bed_interval_intersection.preaction.v1",
+  "date": "2026-08-27",
+  "status": "TASK_SEMANTICS_DECLARED_BEFORE_IMPLEMENTATION__EXACT_EXECUTION_BYTES_FROZEN_BEFORE_NEXT_GPU_CALL",
+  "task": {
+    "name": "BED_INTERVAL_INTERSECTION_PAIR_QUERY",
+    "external_specification": {
+      "provider": "bedtools intersect 2.31.0 public documentation",
+      "url": "https://bedtools.readthedocs.io/en/latest/content/tools/intersect.html",
+      "relevant_semantics": [
+        "compare each feature in A with features in B",
+        "features on different chromosomes do not intersect",
+        "default overlap requires at least one overlapping base pair"
+      ]
+    },
+    "mapping": {
+      "A_records": "source AABBs",
+      "B_records": "indexed AABBs",
+      "x_interval": "BED integer [start,end) represented by binary32 [start,end]",
+      "y_interval": "a disjoint unit-height chromosome band",
+      "minimum_overlap_f32": 1.0,
+      "why_exact_for_declared_domain": "integer endpoints <= 2^24 are exact in binary32; same-chromosome y overlap is one; positive BED overlap is an integer >=1 and boundary-only contact has area zero"
+    },
+    "required_output": "lexicographically sorted unique (A_id,B_id) u32 pairs",
+    "declared_domain": {
+      "coordinates": "nonnegative BED integer endpoints with start < end and end <= 16777216",
+      "identifiers": "unique nonnegative u32 ids within each side",
+      "chromosomes": "nonempty names drawn from the union of A and B",
+      "strand_and_BED12_split_semantics": "not supported in this exam"
+    },
+    "required_protocol_mechanisms": [
+      "cross-role effect closure",
+      "typed physical AABB binding",
+      "bounded fail-closed output capacity",
+      "status-before-output",
+      "checked executable identity"
+    ]
+  },
+  "selection_and_exposure": {
+    "selected_after_core_freeze": true,
+    "selected_by_project": true,
+    "specified_by_external_public_api": true,
+    "project_external_human_selector": false,
+    "goal5793_openalex_route_used": false,
+    "goal5793_observed_200_works_used": false,
+    "legacy_35_candidate_universe_used": false,
+    "blind_claim_allowed": false,
+    "held_out_claim_allowed": false,
+    "unseen_claim_allowed": false,
+    "third_party_user_claim_allowed": false
+  },
+  "frozen_execution_core_files": [
+    {"path": "src/rtdsl/v4_rtdlexe.py", "bytes": 212166, "sha256": "7429dddc578c927a9bd837a402300ed0e7256e5188accc17e5ebc6e732efa840"},
+    {"path": "src/rtdsl/__init__.py", "bytes": 317520, "sha256": "1598fbfb01846687d7c0a247e022798f32ed71090816f7d1ca6639f7a536cb04"},
+    {"path": "src/native/optix/rtdl_optix_core.cpp", "bytes": 384604, "sha256": "1b0c222eafd02ce410e88223baf5155e93c974d7e9426ff9c4a8ef7073eecb70"},
+    {"path": "src/native/rtdl_optix_v4_product.cpp", "bytes": 604, "sha256": "049dfd36478fe2f66439a0f6f0d7f85edbb47bc0d30f97dbd4b4eef735e2d151"},
+    {"path": "src/native/optix/rtdl_optix_api.cpp", "bytes": 523479, "sha256": "f4ec955a1ca4cbf7f9ea961ceab05c91bbd19dcc96ab0ffa3c1b0c12ee060e77"},
+    {"path": "Makefile", "bytes": 11095, "sha256": "659233ad9d9712d838e9c81b88b5401a3f2ece7ea2143a945a5ddf55a33aaceb"}
+  ],
+  "frozen_execution_artifact": {
+    "candidate_manifest_path": "/home/lestat/work/goal5805_fused_online_monitor_20260826/candidates_v14/candidate_manifest.json",
+    "deployment_id": "goal5801/lx1/relation/v14",
+    "artifact_sha256": "71a9a9f1b99612373f67f11dd70b613b13493776f0916ccf007a25cdc14924d6",
+    "authority_sha256": "08ab3773e4978bedf42ee0c0854b646534a39dba7b2a47e99a3690b85017d91c",
+    "executable_identity_sha256": "d36254612eb27776de3ee1a518011babdc8e2667d82d494feb33462b2f1c0010",
+    "native_sha256": "912ad474868c72c9ba24b1ab98d005f0279c0d205abe884cca692c5e721a23bd",
+    "capacity": 4096,
+    "minimum_overlap_f32": 1.0
+  },
+  "chronology_and_governance_boundary": {
+    "bed_task_semantics_declared_before_adapter_creation": true,
+    "initial_preaction_was_not_a_complete_exact_execution_freeze": true,
+    "exact_execution_artifact_was_bound_after_adapter_creation": true,
+    "first_home_gpu_attempt_preceded_current_execution_freeze": true,
+    "first_home_gpu_attempt_outcome": "INFRA_INVALID__RX031_CUDA_DRIVER_UNAVAILABLE_BEFORE_NATIVE_PREPARE_OR_LAUNCH",
+    "first_home_gpu_attempt_scientific_task_executed": false,
+    "first_home_gpu_attempt_result_file_created": false,
+    "current_exact_execution_freeze": "execution_freeze_v2.json",
+    "implementation_preregistered_claim_allowed": false,
+    "frozen_core_transfer_claim_allowed_after_exact_pass": true
+  },
+  "execution_rule": {
+    "core_or_native_change_allowed": false,
+    "private_execution_api_allowed": false,
+    "handwritten_ptx_sbt_or_pipeline_allowed": false,
+    "task_replacement_after_first_transfer_test_allowed": false,
+    "oracle_or_expected_output_passed_into_execute_allowed": false,
+    "exact_output_required": true,
+    "behavioral_optix_receipt_required": true,
+    "overflow_must_return_no_partial_application_result": true,
+    "performance_timing_allowed": false
+  },
+  "claim_ceiling": {
+    "if_pass": "one project-selected external-spec transfer case using a core frozen before task selection and exact runner bytes frozen before successful execution",
+    "if_fail": "one retained frozen-core transfer failure",
+    "broad_generalization_claim_allowed": false,
+    "transfer_rate_claim_allowed": false,
+    "usability_or_productivity_claim_allowed": false
+  }
+}

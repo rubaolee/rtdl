@@ -1,0 +1,31 @@
+{
+  "artifact_member_count": 13,
+  "native_sha256": "d9bd98135f18b1545a0d55e72acb4d7ae4aa06a6e36c03415e02b7efe70f7531",
+  "observed": [
+    [
+      1,
+      1052770304,
+      50
+    ],
+    [
+      0,
+      1065353216,
+      4294967295
+    ],
+    [
+      1,
+      1044381696,
+      900
+    ],
+    [
+      1,
+      1049699860,
+      77
+    ]
+  ],
+  "oracle_sha256": "8450d718afb77804e898e3ac805f41703420e5bb42cc2b9b83c334bdc75169a3",
+  "registered_performance_timing_count": 0,
+  "result_sha256": "67746c2141677df80dbdb62d396031a9d8f35d6343cb5283f7416c10a96e4b77",
+  "schema": "rtdl.goal5834.independent_verification.v1",
+  "status": "PASS"
+}

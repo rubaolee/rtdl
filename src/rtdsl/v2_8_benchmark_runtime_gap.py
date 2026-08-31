@@ -1,0 +1,576 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Any
+
+
+V2_7_INTERNAL_CLOSEOUT_VERSION = "rtdl.v2_7.internal_closeout.v1"
+V2_7_INTERNAL_CLOSEOUT_STATUS = "closed_internal_version_not_release_authorization"
+V2_8_BENCHMARK_RUNTIME_GAP_VERSION = "rtdl.v2_8.benchmark_runtime_gap.v1"
+V2_8_BENCHMARK_RUNTIME_GAP_STATUS = "v2_8_started_benchmark_runtime_gap_mapping"
+V2_8_FIRST_RUNTIME_TARGET = "typed_device_resident_result_streams_and_grouped_continuation"
+V2_8_PROMOTED_BENCHMARK_APPS = (
+    "hausdorff_xhd",
+    "spatial_rayjoin",
+    "rt_dbscan",
+    "robot_collision",
+    "contact_manifold",
+    "raydb_style",
+    "barnes_hut",
+    "librts_spatial_index",
+    "rtnn",
+    "triangle_counting",
+)
+V2_8_CLAIM_BOUNDARY = (
+    "v2.8 benchmark-runtime gap mapping starts an internal development lane. "
+    "It does not authorize a v2.8 release, public speedup wording, whole-app "
+    "speedup wording, broad RT-core wording, true-zero-copy wording, paper "
+    "reproduction claims, hidden partner selection, hidden dispatch, or "
+    "app-specific native-engine behavior."
+)
+
+
+@dataclass(frozen=True)
+class V28BenchmarkRuntimeGapRow:
+    benchmark_app: str
+    display_name: str
+    benchmark_path: str
+    current_best_path: str
+    partner_position: str
+    current_bottleneck: str
+    generic_runtime_target: str
+    target_family: str
+    priority: str
+    evidence_refs: tuple[str, ...]
+    app_specific_engine_logic_allowed: bool = False
+    automatic_partner_selection_allowed: bool = False
+    release_authorized: bool = False
+    public_speedup_claim_authorized: bool = False
+    rt_core_speedup_claim_authorized: bool = False
+    true_zero_copy_claim_authorized: bool = False
+
+    def __post_init__(self) -> None:
+        if self.benchmark_app not in V2_8_PROMOTED_BENCHMARK_APPS:
+            raise ValueError(f"unknown v2.8 benchmark app: {self.benchmark_app}")
+        if self.priority not in ("P0", "P1", "P2"):
+            raise ValueError("priority must be P0, P1, or P2")
+        for field in (
+            "app_specific_engine_logic_allowed",
+            "automatic_partner_selection_allowed",
+            "release_authorized",
+            "public_speedup_claim_authorized",
+            "rt_core_speedup_claim_authorized",
+            "true_zero_copy_claim_authorized",
+        ):
+            if getattr(self, field):
+                raise ValueError(f"v2.8 gap row must not authorize {field}")
+
+    def to_metadata(self) -> dict[str, Any]:
+        return {
+            "version": V2_8_BENCHMARK_RUNTIME_GAP_VERSION,
+            "benchmark_app": self.benchmark_app,
+            "display_name": self.display_name,
+            "benchmark_path": self.benchmark_path,
+            "current_best_path": self.current_best_path,
+            "partner_position": self.partner_position,
+            "current_bottleneck": self.current_bottleneck,
+            "generic_runtime_target": self.generic_runtime_target,
+            "target_family": self.target_family,
+            "priority": self.priority,
+            "evidence_refs": self.evidence_refs,
+            "app_specific_engine_logic_allowed": self.app_specific_engine_logic_allowed,
+            "automatic_partner_selection_allowed": self.automatic_partner_selection_allowed,
+            "release_authorized": self.release_authorized,
+            "public_speedup_claim_authorized": self.public_speedup_claim_authorized,
+            "rt_core_speedup_claim_authorized": self.rt_core_speedup_claim_authorized,
+            "true_zero_copy_claim_authorized": self.true_zero_copy_claim_authorized,
+            "claim_boundary": V2_8_CLAIM_BOUNDARY,
+        }
+
+
+V2_8_BENCHMARK_RUNTIME_GAP_ROWS: tuple[V28BenchmarkRuntimeGapRow, ...] = (
+    V28BenchmarkRuntimeGapRow(
+        benchmark_app="hausdorff_xhd",
+        display_name="Hausdorff / X-HD style",
+        benchmark_path="examples/current/research_benchmarks/hausdorff_xhd/",
+        current_best_path=(
+            "generic directed max-of-nearest-distance partner front door for exact partner "
+            "continuation; active-frontier RTDL/OptiX path remains the RT-core research harness"
+        ),
+        partner_position=(
+            "Numba is the recommended exact partner continuation for the scalar max-nearest path; "
+            "CuPy remains the CUDA-core fairness baseline."
+        ),
+        current_bottleneck=(
+            "front-door naming is now generic, and the RT-core nearest-witness stream device-column "
+            "path now emits reusable typed producer metadata; remaining work is serious-scale "
+            "device-resident continuation proof, broader partner conformance, and prepared input "
+            "residency without claiming true zero-copy."
+        ),
+        generic_runtime_target="typed nearest-witness streams plus grouped max-distance continuation",
+        target_family=V2_8_FIRST_RUNTIME_TARGET,
+        priority="P0",
+        evidence_refs=("Goal3046", "Goal3048", "Goal3052", "Goal3143", "Goal3160", "Goal3178"),
+    ),
+    V28BenchmarkRuntimeGapRow(
+        benchmark_app="spatial_rayjoin",
+        display_name="Spatial RayJoin",
+        benchmark_path="examples/current/research_benchmarks/spatial_rayjoin/",
+        current_best_path=(
+            "primitive-first scalar count/parity and first-hit paths; direct v2.8 compact-mask "
+            "typed-stream front door for explicit candidate-row filtering; generic 2-D relation-row "
+            "typed producer metadata for prepared shape/segment row views; generic prepared "
+            "shape-pair active-count route for overlay-seed scalar summaries; instance-aware "
+            "closed-shape candidate columns plus prepared CuPy exact refiner for PIP row/count "
+            "continuation; reusable prepared handles for PIP exact continuation, LSI grouped/dense "
+            "counts, and overlay-seed active-count summaries; generic device-side active-count "
+            "continuation is now the default overlay scalar-summary route; generic resident active "
+            "relation columns now expose left/right ids plus segment/containment dependency flags, "
+            "those columns feed a generic compact grouped-count continuation by id, and the stream "
+            "now exposes generic shape-pair geometry payload columns for explicit witness/area "
+            "continuations; zero-based ordinal columns now make sparse ids safe for payload indexing, "
+            "a CuPy bounds-overlap area continuation consumes the resident payload, the bounds-overlap "
+            "path has public-CDB scale evidence, and large public-CDB relation content now matches a "
+            "native-fidelity float32 host oracle; generic CuPy witness columns now materialize segment-edge "
+            "and containment witnesses for every active public-CDB relation row; generic CuPy relation "
+            "complexity columns now show 4,375 of 4,543 public-CDB active relation rows require the "
+            "general simple-polygon overlay path rather than a convex-only clip fast path; the convex "
+            "overlay-area fast path is implemented and exact for the 168 supported both-convex rows; "
+            "an external Shapely/GEOS exact oracle now gives the full active relation stream target "
+            "of 1,090 strict-positive rows (>0), current v2.8 thresholded runs give 1,086 positive "
+            "rows, and total exact area is 26.08321766231042; output-complexity "
+            "oracle evidence shows the full geometry path would require streamed component/vertex "
+            "output, while the current benchmark target can stay scalar exact-area first; "
+            "a concrete pre-kernel tolerance/topology/scratch policy plus prepared simple-polygon "
+            "component payload prototype now define the scalar exact-area kernel input shape; "
+            "a bounded tiled CPU evaluator now mirrors the scratch behavior the device continuation must preserve; "
+            "a CuPy RawKernel prototype over that prepared payload matches the CPU area fixture on an RTX A5000 pod; "
+            "public-CDB feasibility shows the current prepared payload covers all positive exact-area rows, "
+            "but one supported row reaches 318,096 triangle pairs; workload sizing shows 39,947 component-pair "
+            "rows and 9,653,005 triangle pairs across the supported public-CDB stream; a component/tile "
+            "task planner now gives large rows explicit relation-owner tile tasks; a CuPy tile-task executor "
+            "now runs those tasks on an RTX A5000 pod as one GPU thread per tile task and reduces partial "
+            "areas by relation id; the public-CDB full-stream scalar exact-area executor now matches the "
+            "Shapely/GEOS total within 1e-8 while processing 9,653,005 triangle pairs"
+        ),
+        partner_position=(
+            "Numba is the recommended custom continuation when row-stream compaction is part of the app; "
+            "CuPy is the measured prepared closed-shape refinement partner for exact PIP continuation."
+        ),
+        current_bottleneck=(
+            "compact-mask continuation now has a direct caller-column front door, and generic "
+            "relation-row typed producer metadata now exists for host row views; overlay active-count "
+            "mode now skips final host row allocation; PIP closed-shape exact continuation now has "
+            "instance-aware candidate columns and a prepared CuPy refiner with pod timing evidence; "
+            "prepared/reusable route shape now covers PIP, LSI, and overlay-seed scalar summaries. "
+            "Goal3441 showed the former host overlay active-count bottleneck was flag download, "
+            "CPU containment, host active scan, and orchestration rather than OptiX traversal; "
+            "Goal3442/3443 moved the scalar active-count continuation onto the device and made it "
+            "the default route with pod evidence; Goal3447/3449 added resident active relation "
+            "columns plus generic grouped-count continuation; Goal3450 proved the resident relation "
+            "column content against host materialized rows on a sparse-id fixture; Goal3453 exposed "
+            "generic left/right geometry payload columns with pod evidence; Goal3455 added ordinal columns "
+            "so sparse ids are not used as geometry indices; Goal3456 proved a generic CuPy bounds-overlap "
+            "area continuation over the resident payload; Goal3459 added public-CDB scale evidence for "
+            "bounds-overlap continuation; Goal3460 proved large public-CDB relation id/flag/ordinal content "
+            "against a native-fidelity float32 host oracle; Goal3463 emitted generic CuPy witness columns for "
+            "all public-CDB active relation rows; Goal3467 classified active relation complexity and found "
+            "4,375 of 4,543 rows require general-overlay handling, with only 168 both-convex rows and a "
+            "max active pair vertex count of 1,132; Goal3471 implemented a generic convex overlay-area "
+            "fast path, validated a synthetic 1.0-area fixture exactly, and computed supported convex area "
+            "for the 168 both-convex public-CDB rows while returning unsupported-nonconvex status for the "
+            "remaining 4,375 rows; Goal3474 added a Shapely/GEOS exact CPU oracle over the same RTDL/OptiX "
+            "relation rows, finding 1,090 strict-positive exact-area rows, 3,453 strict-zero rows, "
+            "0 topology exceptions, and total exact area 26.08321766231042; Goals3492-3494 establish "
+            "1,086 positive rows under the v2.8 row threshold. Remaining work is GPU-resident exact "
+            "overlay-area continuation for non-integer, non-orthogonal, mostly nonconvex polygons; "
+            "Goal3477 characterized exact output geometry and found 609 positive MultiPolygon rows, "
+            "48 positive GeometryCollection rows, 2,801 polygon components, 42,314 output vertices, "
+            "and a max of 22 polygon components / 586 output vertices in one relation row. Near-term "
+            "v2.8 should target scalar exact-area continuation first; full overlay-geometry output needs "
+            "a later streamed component/vertex contract plus boundary-witness ownership policy. "
+            "Goal3482 fixed the pre-kernel policy: explicit float64 tolerance, topology fail-closed "
+            "boundary, and bounded triangle-pair scratch policy. Goal3483 added a CPU prepared-payload "
+            "prototype: simple components become flat triangle arrays plus row/component triangle ranges. "
+            "Goal3484 added a bounded tiled scalar evaluator over the prepared payload, proving no "
+            "silent triangle-pair truncation under explicit tile capacity. Goal3486 executed a CuPy "
+            "RawKernel prototype over the prepared payload on an RTX A5000 pod, matching CPU total area "
+            "1.75 with zero absolute error on the fixture. Goal3488 found the current no-hole prepared "
+            "payload supports 4,539 of 4,543 active public-CDB rows, all 1,090 strict-positive area rows "
+            "(1,086 under the current v2.8 row threshold), and "
+            "100% of total exact area, while exposing a max supported row of 318,096 triangle pairs. "
+            "Goal3489 sized the supported workload at 39,947 component-pair rows and 9,653,005 triangle "
+            "pairs, with p50/p90/p99 triangle pairs per relation of 294/3,450/25,530. Goal3491 added a "
+            "CuPy tile-task executor for that Goal3490 plan, using one GPU thread per tile task plus "
+            "cupy_add_at_by_relation_row_ordinal reduction, with RTX A5000 fixture evidence for relation "
+            "totals 1.75 and 2.0. Goal3492 executed the public-CDB full-stream tile-task executor over "
+            "4,543 relation rows / 39,947 component-pair rows / 54,232 tile tasks / 9,653,005 triangle "
+            "pairs, matching the Shapely/GEOS total 26.08321766231046 within 9.78e-9 and all task statuses "
+            "zero; the executor took 0.488s while payload construction took 22.717s. Goal3493 added "
+            "active-shape-only payload construction because the active relation stream uses only 1,261 "
+            "of 15,700 left shapes, reducing geometry build to 1.158s, payload build to 7.864s, left "
+            "payload triangles from 309,337 to 46,297, and executor time to 0.281s while preserving the "
+            "same total-area error. Goal3494 adds resident CuPy tile-task inputs so repeated executor calls "
+            "reuse partner payload/task arrays instead of repacking them; pod repeat timing shows 0.101s "
+            "input preparation and a 0.0288s best repeat for the 9,653,005 triangle-pair stream. Goal3495 "
+            "adds a generic CuPy continuation that computes unique active shape ordinals from resident "
+            "relation ordinal columns on device, letting the active-payload path materialize only the smaller "
+            "unique shape lists while keeping full tile-task planning honestly host-side. Remaining work is "
+            "device-resident component-pair/tile-task planning and the native-vs-partner acceptance decision "
+            "over that execution shape. Goal3497 adds a generic bounds-positive filter before exact-area "
+            "tile-task planning: candidate rows drop from 4,543 to 2,274, component-pair rows from 39,947 "
+            "to 24,389, tile tasks from 54,232 to 36,414, triangle pairs from 9.65M to 7.66M, and payload "
+            "build from 7.7470s to 6.8054s while preserving exact total-area agreement. The remaining "
+            "dominant cost is still CPU-owned prepared payload construction. Goal3498 moves the component-pair "
+            "and tile-task expansion step into a generic CuPy device planner over relation ordinals and prepared "
+            "component tables; after RawKernel warmup, planning best repeat is 0.0415s versus Goal3497's "
+            "roughly 0.2113s host planner, with identical total-area agreement. This is a steady-state planning "
+            "win, not a first-use latency win, and does not remove the 6.89s CPU-owned payload construction cost. "
+            "Goal3501 adds prepared-component bounds filtering to both host and device planning routes, reducing "
+            "component-pair rows from 24,389 to 4,524, tile tasks from 36,414 to 11,617, triangle pairs from "
+            "7.66M to 4.07M, and executor best repeat from 0.0251s to 0.0146s while keeping total-area error "
+            "below 1e-8. The dominant unsolved cost remains CPU-owned Shapely/topology/triangulation payload "
+            "construction."
+        ),
+        generic_runtime_target=(
+            "typed hit/relation streams with compact-mask, grouped parity/count, bounded witness "
+            "continuation, and general simple-polygon overlay-area continuation"
+        ),
+        target_family=V2_8_FIRST_RUNTIME_TARGET,
+        priority="P0",
+        evidence_refs=(
+            "Goal3003",
+            "Goal3052",
+            "Goal3147",
+            "Goal3171",
+            "Goal3181",
+            "Goal3183",
+            "Goal3424",
+            "Goal3427",
+            "Goal3428",
+            "Goal3435",
+            "Goal3438",
+            "Goal3441",
+            "Goal3442",
+            "Goal3443",
+            "Goal3447",
+            "Goal3448",
+            "Goal3449",
+            "Goal3450",
+            "Goal3453",
+            "Goal3455",
+            "Goal3456",
+            "Goal3459",
+            "Goal3460",
+            "Goal3463",
+            "Goal3467",
+            "Goal3471",
+            "Goal3474",
+            "Goal3477",
+            "Goal3482",
+            "Goal3483",
+            "Goal3484",
+            "Goal3486",
+            "Goal3488",
+            "Goal3489",
+            "Goal3490",
+            "Goal3491",
+            "Goal3492",
+            "Goal3493",
+            "Goal3494",
+            "Goal3495",
+            "Goal3497",
+            "Goal3498",
+            "Goal3501",
+        ),
+    ),
+    V28BenchmarkRuntimeGapRow(
+        benchmark_app="rt_dbscan",
+        display_name="RT-DBSCAN",
+        benchmark_path="examples/current/research_benchmarks/rt_dbscan/",
+        current_best_path=(
+            "fixed-radius/core-summary primitives plus v2.8 fixed-radius graph component front door "
+            "over the measured OptiX+CuPy grouped-stream path, with typed adjacency/grouped-stream "
+            "producer metadata from Goal3158"
+        ),
+        partner_position=(
+            "CuPy is the current measured component-continuation reference through an explicit v2.8 front door; "
+            "Numba remains a candidate for future same-contract conformance."
+        ),
+        current_bottleneck=(
+            "the grouped-stream component path is now front-door reachable and typed producer metadata "
+            "now exists; the remaining shared work is broader partner conformance and larger "
+            "device-resident continuation coverage without DBSCAN-native engine semantics"
+        ),
+        generic_runtime_target="fixed-radius graph component front door plus typed adjacency/grouped-stream producer metadata",
+        target_family=V2_8_FIRST_RUNTIME_TARGET,
+        priority="P0",
+        evidence_refs=("Goal2425 lineage", "Goal2478", "Goal3154", "Goal3155", "Goal3156", "Goal3158", "Goal3179"),
+    ),
+    V28BenchmarkRuntimeGapRow(
+        benchmark_app="robot_collision",
+        display_name="Robot collision",
+        benchmark_path="examples/current/research_benchmarks/robot_collision/",
+        current_best_path=(
+            "generic any-hit/collision flag primitive over prepared static scenes; direct v2.8 bounded-collect "
+            "typed-stream front door for optional grouped witness rows"
+        ),
+        partner_position="torch/triton bounded collect is available only when users explicitly request grouped witness continuation.",
+        current_bottleneck=(
+            "bounded-collect continuation now has a direct caller-column front door; remaining work is native "
+            "typed flag/witness producer evidence, prepared-scene residency metadata, and same-scale optional "
+            "witness benchmarks."
+        ),
+        generic_runtime_target="bounded flag/witness result pages with prepared-scene residency metadata",
+        target_family=V2_8_FIRST_RUNTIME_TARGET,
+        priority="P1",
+        evidence_refs=("Goal2491", "Goal3173"),
+    ),
+    V28BenchmarkRuntimeGapRow(
+        benchmark_app="contact_manifold",
+        display_name="Contact manifold",
+        benchmark_path="examples/current/research_benchmarks/contact_manifold/",
+        current_best_path=(
+            "bounded witness collection with fail-closed overflow behavior; direct v2.8 bounded-collect "
+            "typed-stream front door over grouped item rows"
+        ),
+        partner_position="torch/triton bounded collect is available only when users explicitly request grouped witness continuation.",
+        current_bottleneck=(
+            "bounded-collect continuation now has a direct caller-column front door; remaining work is native "
+            "typed bounded-witness producer evidence, device-residency proof, and same-scale partner/native "
+            "benchmarks."
+        ),
+        generic_runtime_target="typed bounded witness pages with fail-closed completion metadata",
+        target_family=V2_8_FIRST_RUNTIME_TARGET,
+        priority="P1",
+        evidence_refs=("Goal2510 lineage", "Goal3173"),
+    ),
+    V28BenchmarkRuntimeGapRow(
+        benchmark_app="raydb_style",
+        display_name="RayDB-style grouped aggregates",
+        benchmark_path="examples/current/research_benchmarks/raydb_style/",
+        current_best_path=(
+            "fused columnar grouped reductions when the primitive exactly matches; "
+            "v2.8 grouped-reduction typed-stream front door for explicit unfused partner continuation; "
+            "generic ray/triangle grouped-i64 typed producer metadata"
+        ),
+        partner_position="Numba is recommended only for unfused grouped scalar continuations.",
+        current_bottleneck=(
+            "front-door schema for unfused grouped reductions now exists, and native typed producer metadata now exists; "
+            "the remaining native typed producer/residency evidence gap is device-resident output stream "
+            "evidence and broader partner conformance without overriding fused primitives."
+        ),
+        generic_runtime_target="typed grouped-reduction streams with explicit fused-vs-continuation selection",
+        target_family=V2_8_FIRST_RUNTIME_TARGET,
+        priority="P0",
+        evidence_refs=("Goal2995", "Goal3052", "Goal3162", "Goal3176"),
+    ),
+    V28BenchmarkRuntimeGapRow(
+        benchmark_app="barnes_hut",
+        display_name="Barnes-Hut / RT-BarnesHut style",
+        benchmark_path="examples/current/research_benchmarks/barnes_hut/",
+        current_best_path=(
+            "aggregate-frontier collect primitive plus v2.8 grouped-vector typed-stream "
+            "front door for app-owned force/vector continuation"
+        ),
+        partner_position=(
+            "CuPy remains the current force-vector continuation reference; torch/triton are "
+            "also supported by the generic grouped-vector front door."
+        ),
+        current_bottleneck=(
+            "grouped vector continuation now has a generic front door; remaining work is native "
+            "typed aggregate-frontier producer/residency evidence and force-law ownership boundaries "
+            "at serious scale."
+        ),
+        generic_runtime_target="typed aggregate-frontier streams with prepared residency plus grouped vector continuation",
+        target_family=V2_8_FIRST_RUNTIME_TARGET,
+        priority="P1",
+        evidence_refs=("Goal2905 lineage", "Goal3169"),
+    ),
+    V28BenchmarkRuntimeGapRow(
+        benchmark_app="librts_spatial_index",
+        display_name="LibRTS-style spatial index",
+        benchmark_path="examples/current/research_benchmarks/librts_spatial_index/",
+        current_best_path="generic point/range query rows and count-oriented no-regression evidence",
+        partner_position="no promoted v2.6 custom partner path",
+        current_bottleneck="mutable index/update policy remains app-owned; v2.8 should avoid treating this as the first runtime extension.",
+        generic_runtime_target="prepared spatial-index residency and no-regression query harness",
+        target_family="prepared_residency_and_harness",
+        priority="P2",
+        evidence_refs=("Goal2570 lineage",),
+    ),
+    V28BenchmarkRuntimeGapRow(
+        benchmark_app="rtnn",
+        display_name="RTNN neighbor search",
+        benchmark_path="examples/current/research_benchmarks/rtnn/",
+        current_best_path=(
+            "prepared fixed-radius ranked-summary primitives with batched request hardening; "
+            "v2.8 ranked-summary typed-stream front door for explicit grouped top-k/arg continuation"
+        ),
+        partner_position=(
+            "torch/triton are the current grouped_topk_f64 continuation partners; "
+            "numba supports grouped argmin/argmax but not promoted top-k yet; CuPy remains an all-pairs baseline."
+        ),
+        current_bottleneck=(
+            "ranked-summary top-k handoff now has a generic front door; remaining work is prepared "
+            "packed-column residency, native typed producer evidence, and replay/chunking at serious scale."
+        ),
+        generic_runtime_target="typed ranked-summary streams with prepared packed-column residency and native producer evidence",
+        target_family=V2_8_FIRST_RUNTIME_TARGET,
+        priority="P0",
+        evidence_refs=("Goal2821", "Goal2822", "Goal2958", "Goal3165"),
+    ),
+    V28BenchmarkRuntimeGapRow(
+        benchmark_app="triangle_counting",
+        display_name="Triangle counting",
+        benchmark_path="examples/current/research_benchmarks/triangle_counting/",
+        current_best_path=(
+            "generic RT graph relationship-count composition for scalar answers; direct v2.8 "
+            "compact-mask typed-stream front door for explicit candidate-row interpretation; "
+            "generic ray/triangle hit-stream typed producer metadata"
+        ),
+        partner_position="Numba compact-mask continuation is only for explicit candidate-row interpretation.",
+        current_bottleneck=(
+            "compact-mask continuation now has a direct caller-column front door, and generic native "
+            "typed candidate-row producer metadata now exists through the ray/triangle hit-stream "
+            "contract; remaining work is segmented/streamed graph lowering, benchmark-app adoption of "
+            "resident candidate streams, and resident continuation at serious scale."
+        ),
+        generic_runtime_target="typed graph candidate streams with segmented compact-mask continuation",
+        target_family=V2_8_FIRST_RUNTIME_TARGET,
+        priority="P0",
+        evidence_refs=("Goal3000", "Goal3052", "Goal3147", "Goal3171", "Goal3180"),
+    ),
+)
+
+
+def v2_7_internal_closeout_status() -> dict[str, Any]:
+    return {
+        "version": V2_7_INTERNAL_CLOSEOUT_VERSION,
+        "status": V2_7_INTERNAL_CLOSEOUT_STATUS,
+        "current_closeout_report": "docs/reports/goal3102_v2_7_post_semantic_search_current_closeout_2026-06-03.md",
+        "current_consensus_report": "docs/reports/goal3104_v2_7_post_d8_closeout_2ai_consensus_2026-06-03.md",
+        "d1_through_d8_closed": True,
+        "d8_semantic_search_preview_only": True,
+        "release_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "claim_boundary": V2_8_CLAIM_BOUNDARY,
+    }
+
+
+def v2_8_benchmark_runtime_gap_matrix() -> tuple[dict[str, Any], ...]:
+    return tuple(row.to_metadata() for row in V2_8_BENCHMARK_RUNTIME_GAP_ROWS)
+
+
+def v2_8_runtime_target_summary() -> dict[str, Any]:
+    rows = v2_8_benchmark_runtime_gap_matrix()
+    first_target_apps = tuple(
+        row["benchmark_app"]
+        for row in rows
+        if row["target_family"] == V2_8_FIRST_RUNTIME_TARGET
+    )
+    return {
+        "version": V2_8_BENCHMARK_RUNTIME_GAP_VERSION,
+        "status": V2_8_BENCHMARK_RUNTIME_GAP_STATUS,
+        "first_runtime_target": V2_8_FIRST_RUNTIME_TARGET,
+        "first_target_app_count": len(first_target_apps),
+        "first_target_apps": first_target_apps,
+        "first_target_reason": (
+            "typed device-resident result streams and grouped continuation are "
+            "the shared bottleneck across row-heavy spatial, neighbor, graph, "
+            "database, Hausdorff, collision, and witness workloads"
+        ),
+        "not_first_target": (
+            "app-specific RayJoin/RayDB/DBSCAN/Hausdorff kernels",
+            "hidden partner auto-selection",
+            "user-defined shader injection",
+        ),
+        "v3_boundary": "user-defined shader injection remains a later v3.0 lane",
+        "claim_boundary": V2_8_CLAIM_BOUNDARY,
+    }
+
+
+def validate_v2_8_benchmark_runtime_gap_map(
+    *,
+    expected_apps: tuple[str, ...] = V2_8_PROMOTED_BENCHMARK_APPS,
+) -> dict[str, Any]:
+    closeout = v2_7_internal_closeout_status()
+    rows = v2_8_benchmark_runtime_gap_matrix()
+    summary = v2_8_runtime_target_summary()
+    errors: list[str] = []
+
+    apps = tuple(row["benchmark_app"] for row in rows)
+    if apps != expected_apps:
+        errors.append("benchmark app order/coverage changed")
+    if len(set(apps)) != len(expected_apps):
+        errors.append("benchmark apps must be unique")
+    if closeout.get("status") != V2_7_INTERNAL_CLOSEOUT_STATUS:
+        errors.append("v2.7 internal closeout status is not closed")
+    if closeout.get("d1_through_d8_closed") is not True:
+        errors.append("v2.7 D-1 through D-8 must be closed before v2.8 starts")
+    if closeout.get("d8_semantic_search_preview_only") is not True:
+        errors.append("v2.7 D-8 must remain preview-only")
+    if summary.get("first_runtime_target") != V2_8_FIRST_RUNTIME_TARGET:
+        errors.append("first v2.8 runtime target changed")
+    if int(summary.get("first_target_app_count", 0)) < 7:
+        errors.append("first runtime target must cover at least seven benchmark apps")
+    for app in ("hausdorff_xhd", "spatial_rayjoin", "rt_dbscan", "raydb_style", "rtnn", "triangle_counting"):
+        if app not in tuple(summary.get("first_target_apps", ())):
+            errors.append(f"first runtime target must cover {app}")
+    for row in rows:
+        for field in (
+            "app_specific_engine_logic_allowed",
+            "automatic_partner_selection_allowed",
+            "release_authorized",
+            "public_speedup_claim_authorized",
+            "rt_core_speedup_claim_authorized",
+            "true_zero_copy_claim_authorized",
+        ):
+            if row.get(field) is not False:
+                errors.append(f"{row.get('benchmark_app')} authorizes {field}")
+        if not row.get("current_bottleneck"):
+            errors.append(f"{row.get('benchmark_app')} is missing current bottleneck")
+        if not row.get("generic_runtime_target"):
+            errors.append(f"{row.get('benchmark_app')} is missing generic runtime target")
+    for field in (
+        "release_authorized",
+        "public_speedup_claim_authorized",
+        "rt_core_speedup_claim_authorized",
+        "true_zero_copy_claim_authorized",
+    ):
+        if closeout.get(field) is not False:
+            errors.append(f"v2.7 closeout must not authorize {field}")
+
+    return {
+        "status": "accept" if not errors else "reject",
+        "version": V2_8_BENCHMARK_RUNTIME_GAP_VERSION,
+        "errors": tuple(errors),
+        "v2_7_status": closeout.get("status"),
+        "v2_8_status": V2_8_BENCHMARK_RUNTIME_GAP_STATUS,
+        "app_count": len(rows),
+        "first_runtime_target": summary.get("first_runtime_target"),
+        "first_target_app_count": summary.get("first_target_app_count"),
+        "release_authorized": False,
+        "public_speedup_claim_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "claim_boundary": V2_8_CLAIM_BOUNDARY,
+    }
+
+
+__all__ = [
+    "V28BenchmarkRuntimeGapRow",
+    "V2_7_INTERNAL_CLOSEOUT_STATUS",
+    "V2_7_INTERNAL_CLOSEOUT_VERSION",
+    "V2_8_BENCHMARK_RUNTIME_GAP_STATUS",
+    "V2_8_BENCHMARK_RUNTIME_GAP_VERSION",
+    "V2_8_CLAIM_BOUNDARY",
+    "V2_8_FIRST_RUNTIME_TARGET",
+    "V2_8_PROMOTED_BENCHMARK_APPS",
+    "v2_7_internal_closeout_status",
+    "v2_8_benchmark_runtime_gap_matrix",
+    "v2_8_runtime_target_summary",
+    "validate_v2_8_benchmark_runtime_gap_map",
+]

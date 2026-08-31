@@ -1,0 +1,449 @@
+{
+  "application_sources": [
+    {
+      "bytes": 9698,
+      "path": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v4_restricted_python_design\\case_studies\\sui_derived_edge_crossing_core\\bounded_piecewise_linear_core.py",
+      "sha256": "65e61185117a9cb052a1b4a6c29cc83346f9405911231784b7f2cd8b5eb0952f"
+    },
+    {
+      "bytes": 4646,
+      "path": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v4_restricted_python_design\\case_studies\\sui_derived_edge_crossing_core\\fixtures.py",
+      "sha256": "a204010d9bd2794da6fb1972f895232e4e51f0549bf82028e3891871de471bc5"
+    },
+    {
+      "bytes": 1949,
+      "path": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v4_restricted_python_design\\case_studies\\sui_derived_edge_crossing_core\\independent_edge_capsule_oracle.py",
+      "sha256": "1eb825e6d528185013eaff960ebd28ca3cfd3c2e068bdd928c014dc80e8e7a97"
+    },
+    {
+      "bytes": 2549,
+      "path": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v4_restricted_python_design\\case_studies\\sui_derived_edge_crossing_core\\README.md",
+      "sha256": "b8ff0817518785635d005665601b7590664e01a1854a860d39ea604e290abdbd"
+    }
+  ],
+  "b3_independent_evaluation_sha256": "786ebd4970dadf842c57aa6c08539694d0cdbe8a6b2f6672932029b5f19be02a",
+  "b3_raw_gpu_receipt_sha256": "b50043e81713aacf6a70986a6e334789cbfeef17342ae97a8ae401ab1507f513",
+  "fixture_authority_sha256": "0f13ab8a7408c253114c56a51645c015d0e5e36ca96a4290c9dd1a2ba700adad",
+  "fixture_family_count": 10,
+  "full_rt_ccd_implemented": false,
+  "generalization_exam_count": 0,
+  "goal5836_authorized": false,
+  "implemented_predicate": "OR_over_registered_obstacle_edges_of_OR_over_swept_sphere_capsules",
+  "inherited_b3_true_optix_launch_count": 33,
+  "mapped_execution_count": 11,
+  "matching_execution_count": 11,
+  "method_boundaries": [
+    "edge_crossing_only__face_interior_without_edge_contact_is_miss",
+    "start_inside_and_initial_overlap_not_implemented",
+    "near_tangent_and_near_parallel_inputs_excluded",
+    "exact_time_of_impact_and_collided_identity_not_exposed",
+    "author_code_same_input_comparison_deferred_to_goal5836",
+    "modern_rtx_functional_gate_deferred_to_goal5836"
+  ],
+  "new_goal5835_gpu_launch_count": 0,
+  "paper_app_claimed": false,
+  "paper_app_status": "NOT_A_PAPER_APP",
+  "performance_claimed": false,
+  "registered_performance_timing_count": 0,
+  "rows": [
+    {
+      "collision": 1,
+      "execution_id": "single_crossing_hit",
+      "family_id": "single_crossing_hit",
+      "identity_projection": {
+        "curve_to_path": [
+          {
+            "application_id": 1,
+            "path_segment_id": 1,
+            "primitive_index": 0,
+            "sphere_id": 0
+          }
+        ],
+        "problem_id": "single_crossing_hit",
+        "query_to_edge": [
+          {
+            "edge_id": "single_crossing_hit:edge:0",
+            "query_index": 0,
+            "source_triangle_ids": []
+          }
+        ]
+      },
+      "independent_active_set_oracle_match": true,
+      "per_edge_hit": [
+        1
+      ],
+      "query_commitment_sha256": "924bc1aa4f60097d96e4397494e328d55a0f3c6181578ea6c1ff659c9fd9abb7",
+      "raw_gpu_bit_vector_commitment_sha256": "07093ec73c61e400273e6a659e377ef4742a5890dcb9ee750d16cbf488f0ebfd",
+      "static_input_commitment_sha256": "82d017ede56b335e0749236971b5f59b252fc74b2c00f5f755cd3ff95bebbac4",
+      "true_optix": true
+    },
+    {
+      "collision": 0,
+      "execution_id": "clear_miss",
+      "family_id": "clear_miss",
+      "identity_projection": {
+        "curve_to_path": [
+          {
+            "application_id": 2,
+            "path_segment_id": 2,
+            "primitive_index": 0,
+            "sphere_id": 0
+          }
+        ],
+        "problem_id": "clear_miss",
+        "query_to_edge": [
+          {
+            "edge_id": "clear_miss:edge:0",
+            "query_index": 0,
+            "source_triangle_ids": []
+          }
+        ]
+      },
+      "independent_active_set_oracle_match": true,
+      "per_edge_hit": [
+        0
+      ],
+      "query_commitment_sha256": "9e0f3f712f6bda3bdee148c1484d8614d29d6d4af63d505fea459479e4d87e20",
+      "raw_gpu_bit_vector_commitment_sha256": "d55ab2a4d67d725be14f82651a73ea519cdaa881463cecbd21e8d82a4e687aff",
+      "static_input_commitment_sha256": "c51da3bf5cdbf7ee222532e36d9ff7afefd11ed2def3ab393b5c9a847258b38e",
+      "true_optix": true
+    },
+    {
+      "collision": 1,
+      "execution_id": "round_endcap_hit",
+      "family_id": "round_endcap_hit",
+      "identity_projection": {
+        "curve_to_path": [
+          {
+            "application_id": 3,
+            "path_segment_id": 3,
+            "primitive_index": 0,
+            "sphere_id": 0
+          }
+        ],
+        "problem_id": "round_endcap_hit",
+        "query_to_edge": [
+          {
+            "edge_id": "round_endcap_hit:edge:0",
+            "query_index": 0,
+            "source_triangle_ids": []
+          }
+        ]
+      },
+      "independent_active_set_oracle_match": true,
+      "per_edge_hit": [
+        1
+      ],
+      "query_commitment_sha256": "f408791986e6c6eaebb091ffbf69069badc4d75468ae88d6e12a291be474b31d",
+      "raw_gpu_bit_vector_commitment_sha256": "07093ec73c61e400273e6a659e377ef4742a5890dcb9ee750d16cbf488f0ebfd",
+      "static_input_commitment_sha256": "56233fafd3da5276ed25ba542d94e450f28b7844d6df74d1f69d4da59d577766",
+      "true_optix": true
+    },
+    {
+      "collision": 1,
+      "execution_id": "piecewise_linear_or",
+      "family_id": "piecewise_linear_or",
+      "identity_projection": {
+        "curve_to_path": [
+          {
+            "application_id": 10,
+            "path_segment_id": 10,
+            "primitive_index": 0,
+            "sphere_id": 0
+          },
+          {
+            "application_id": 11,
+            "path_segment_id": 11,
+            "primitive_index": 1,
+            "sphere_id": 1
+          }
+        ],
+        "problem_id": "piecewise_linear_or",
+        "query_to_edge": [
+          {
+            "edge_id": "piecewise_linear_or:edge:0",
+            "query_index": 0,
+            "source_triangle_ids": []
+          },
+          {
+            "edge_id": "piecewise_linear_or:edge:1",
+            "query_index": 1,
+            "source_triangle_ids": []
+          },
+          {
+            "edge_id": "piecewise_linear_or:edge:2",
+            "query_index": 2,
+            "source_triangle_ids": []
+          }
+        ]
+      },
+      "independent_active_set_oracle_match": true,
+      "per_edge_hit": [
+        0,
+        1,
+        0
+      ],
+      "query_commitment_sha256": "c3c37d908b2bb988e288629060877f62da14bc36716d456798b21d58f0d3e22a",
+      "raw_gpu_bit_vector_commitment_sha256": "83e0e156bd0891e9345f276c1395cc19724dc5334ebff722842df875806810e4",
+      "static_input_commitment_sha256": "8b500a598bfa62f782b4de5d2ca3fd3b72c14333365b247013a32936b0d765c6",
+      "true_optix": true
+    },
+    {
+      "collision": 1,
+      "execution_id": "multiple_robust_hits",
+      "family_id": "multiple_robust_hits",
+      "identity_projection": {
+        "curve_to_path": [
+          {
+            "application_id": 20,
+            "path_segment_id": 20,
+            "primitive_index": 0,
+            "sphere_id": 0
+          },
+          {
+            "application_id": 21,
+            "path_segment_id": 21,
+            "primitive_index": 1,
+            "sphere_id": 1
+          }
+        ],
+        "problem_id": "multiple_robust_hits",
+        "query_to_edge": [
+          {
+            "edge_id": "multiple_robust_hits:edge:0",
+            "query_index": 0,
+            "source_triangle_ids": []
+          }
+        ]
+      },
+      "independent_active_set_oracle_match": true,
+      "per_edge_hit": [
+        1
+      ],
+      "query_commitment_sha256": "6ed7d4f43518e9ca523acb990f04a461caf89c807e5a79ea489f80ebc14dfdef",
+      "raw_gpu_bit_vector_commitment_sha256": "07093ec73c61e400273e6a659e377ef4742a5890dcb9ee750d16cbf488f0ebfd",
+      "static_input_commitment_sha256": "244bdf1f7598816a70eb27803b233a0261fc8a30ea797e5f3af1cdd56d4c15f2",
+      "true_optix": true
+    },
+    {
+      "collision": 1,
+      "execution_id": "large_translation_base",
+      "family_id": "large_translation_metamorphic_pair",
+      "identity_projection": {
+        "curve_to_path": [
+          {
+            "application_id": 4,
+            "path_segment_id": 4,
+            "primitive_index": 0,
+            "sphere_id": 0
+          }
+        ],
+        "problem_id": "large_translation_base",
+        "query_to_edge": [
+          {
+            "edge_id": "large_translation_base:edge:0",
+            "query_index": 0,
+            "source_triangle_ids": []
+          }
+        ]
+      },
+      "independent_active_set_oracle_match": true,
+      "per_edge_hit": [
+        1
+      ],
+      "query_commitment_sha256": "f470347556c493c7ad72ed6d6833055519991ee6935b8b805c4141eeb657540e",
+      "raw_gpu_bit_vector_commitment_sha256": "07093ec73c61e400273e6a659e377ef4742a5890dcb9ee750d16cbf488f0ebfd",
+      "static_input_commitment_sha256": "c55b85bd6e54d50230992c67b1a1d75a2f93e025813f78301cf9c21613fa7e20",
+      "true_optix": true
+    },
+    {
+      "collision": 1,
+      "execution_id": "large_translation_transformed",
+      "family_id": "large_translation_metamorphic_pair",
+      "identity_projection": {
+        "curve_to_path": [
+          {
+            "application_id": 4,
+            "path_segment_id": 4,
+            "primitive_index": 0,
+            "sphere_id": 0
+          }
+        ],
+        "problem_id": "large_translation_transformed",
+        "query_to_edge": [
+          {
+            "edge_id": "large_translation_transformed:edge:0",
+            "query_index": 0,
+            "source_triangle_ids": []
+          }
+        ]
+      },
+      "independent_active_set_oracle_match": true,
+      "per_edge_hit": [
+        1
+      ],
+      "query_commitment_sha256": "f470347556c493c7ad72ed6d6833055519991ee6935b8b805c4141eeb657540e",
+      "raw_gpu_bit_vector_commitment_sha256": "07093ec73c61e400273e6a659e377ef4742a5890dcb9ee750d16cbf488f0ebfd",
+      "static_input_commitment_sha256": "c55b85bd6e54d50230992c67b1a1d75a2f93e025813f78301cf9c21613fa7e20",
+      "true_optix": true
+    },
+    {
+      "collision": 0,
+      "execution_id": "face_interior_only_boundary",
+      "family_id": "face_interior_only_boundary",
+      "identity_projection": {
+        "curve_to_path": [
+          {
+            "application_id": 30,
+            "path_segment_id": 30,
+            "primitive_index": 0,
+            "sphere_id": 0
+          }
+        ],
+        "problem_id": "face_interior_only_boundary",
+        "query_to_edge": [
+          {
+            "edge_id": "face_interior_only_boundary:edge:0",
+            "query_index": 0,
+            "source_triangle_ids": [
+              "face_boundary_triangle"
+            ]
+          },
+          {
+            "edge_id": "face_interior_only_boundary:edge:1",
+            "query_index": 1,
+            "source_triangle_ids": [
+              "face_boundary_triangle"
+            ]
+          },
+          {
+            "edge_id": "face_interior_only_boundary:edge:2",
+            "query_index": 2,
+            "source_triangle_ids": [
+              "face_boundary_triangle"
+            ]
+          }
+        ]
+      },
+      "independent_active_set_oracle_match": true,
+      "per_edge_hit": [
+        0,
+        0,
+        0
+      ],
+      "query_commitment_sha256": "c45551a06f38358e089105c7bc3da90ebb03b558108592e5c4c05cc4648bde07",
+      "raw_gpu_bit_vector_commitment_sha256": "b989938a8476331945ca9236040e09dd3714649649937162a656e2618c3d68d3",
+      "static_input_commitment_sha256": "a4c9aa12702f6a0c528eab859ab02145e07064889db7712f52d875469f12dfae",
+      "true_optix": true
+    },
+    {
+      "collision": 1,
+      "execution_id": "ordinary_provider_t_disagreement_regression",
+      "family_id": "ordinary_provider_t_disagreement_regression",
+      "identity_projection": {
+        "curve_to_path": [
+          {
+            "application_id": 555,
+            "path_segment_id": 555,
+            "primitive_index": 0,
+            "sphere_id": 0
+          }
+        ],
+        "problem_id": "ordinary_provider_t_disagreement_regression",
+        "query_to_edge": [
+          {
+            "edge_id": "ordinary_provider_t_disagreement_regression:edge:0",
+            "query_index": 0,
+            "source_triangle_ids": []
+          }
+        ]
+      },
+      "independent_active_set_oracle_match": true,
+      "per_edge_hit": [
+        1
+      ],
+      "query_commitment_sha256": "7ea5b3aea06941b6f8b2d81b9dcc4dbdd97c3483b3da77e6a615cb095605f419",
+      "raw_gpu_bit_vector_commitment_sha256": "07093ec73c61e400273e6a659e377ef4742a5890dcb9ee750d16cbf488f0ebfd",
+      "static_input_commitment_sha256": "13f2e343e608950d1397c3c72a11d3c95d4c78a54c044b414983b239336019ee",
+      "true_optix": true
+    },
+    {
+      "collision": 1,
+      "execution_id": "near_coincident_id_disagreement_regression",
+      "family_id": "near_coincident_id_disagreement_regression",
+      "identity_projection": {
+        "curve_to_path": [
+          {
+            "application_id": 1000,
+            "path_segment_id": 1000,
+            "primitive_index": 0,
+            "sphere_id": 0
+          },
+          {
+            "application_id": 1,
+            "path_segment_id": 1,
+            "primitive_index": 1,
+            "sphere_id": 1
+          }
+        ],
+        "problem_id": "near_coincident_id_disagreement_regression",
+        "query_to_edge": [
+          {
+            "edge_id": "near_coincident_id_disagreement_regression:edge:0",
+            "query_index": 0,
+            "source_triangle_ids": []
+          }
+        ]
+      },
+      "independent_active_set_oracle_match": true,
+      "per_edge_hit": [
+        1
+      ],
+      "query_commitment_sha256": "bdc2a72ee02ddfee2b2bddd732a7df1288a1d490bedf99ecd8ff564ee0e9e515",
+      "raw_gpu_bit_vector_commitment_sha256": "07093ec73c61e400273e6a659e377ef4742a5890dcb9ee750d16cbf488f0ebfd",
+      "static_input_commitment_sha256": "2804bf7611d3c0676439757590b5d106caa4af49796bbc721da3e61f013d0163",
+      "true_optix": true
+    },
+    {
+      "collision": 1,
+      "execution_id": "float32_tie_id_disagreement_regression",
+      "family_id": "float32_tie_id_disagreement_regression",
+      "identity_projection": {
+        "curve_to_path": [
+          {
+            "application_id": 100,
+            "path_segment_id": 100,
+            "primitive_index": 0,
+            "sphere_id": 0
+          },
+          {
+            "application_id": 1,
+            "path_segment_id": 1,
+            "primitive_index": 1,
+            "sphere_id": 1
+          }
+        ],
+        "problem_id": "float32_tie_id_disagreement_regression",
+        "query_to_edge": [
+          {
+            "edge_id": "float32_tie_id_disagreement_regression:edge:0",
+            "query_index": 0,
+            "source_triangle_ids": []
+          }
+        ]
+      },
+      "independent_active_set_oracle_match": true,
+      "per_edge_hit": [
+        1
+      ],
+      "query_commitment_sha256": "297d07d5bdf8092e070da245bb3ad9a4d36a7a28a704f468179bce4bbacea6cc",
+      "raw_gpu_bit_vector_commitment_sha256": "07093ec73c61e400273e6a659e377ef4742a5890dcb9ee750d16cbf488f0ebfd",
+      "static_input_commitment_sha256": "0ff61a764cd2e51cbef95232188744b8d7b159bc672b676e9bacf09bd0ffa5fc",
+      "true_optix": true
+    }
+  ],
+  "schema": "rtdl.goal5835.sui_derived_edge_crossing_mapping.v1",
+  "source_relation": "SUI_DERIVED_MAPPING__AUTHOR_DESIGNED_FIXTURES",
+  "status": "GOAL5835_COMPLETE_BOUNDED_SUI_DERIVED_EDGE_CROSSING_MAPPING",
+  "worker_inputs_sha256": "55eeff377c93c32fed8cc326ad975cb9d2437df85812e30b9d916b3e7cc581a4"
+}

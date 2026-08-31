@@ -1,0 +1,2364 @@
+{
+  "claim_ceiling": {
+    "arbitrary_capsule_correctness_claimed": false,
+    "exact_toi_or_id_claimed": false,
+    "full_collision_detection_claimed": false,
+    "generalization_exam_count": 0,
+    "paper_app_claimed": false,
+    "performance_claimed": false
+  },
+  "expected_before_execution": [
+    {
+      "execution_id": "single_crossing_hit",
+      "expected_collision": 1,
+      "expected_per_query_hit": [
+        1
+      ],
+      "oracle_boolean_equal": true,
+      "original_oracle_collision": 1
+    },
+    {
+      "execution_id": "clear_miss",
+      "expected_collision": 0,
+      "expected_per_query_hit": [
+        0
+      ],
+      "oracle_boolean_equal": true,
+      "original_oracle_collision": 0
+    },
+    {
+      "execution_id": "round_endcap_hit",
+      "expected_collision": 1,
+      "expected_per_query_hit": [
+        1
+      ],
+      "oracle_boolean_equal": true,
+      "original_oracle_collision": 1
+    },
+    {
+      "execution_id": "piecewise_linear_or",
+      "expected_collision": 1,
+      "expected_per_query_hit": [
+        0,
+        1,
+        0
+      ],
+      "oracle_boolean_equal": true,
+      "original_oracle_collision": 1
+    },
+    {
+      "execution_id": "multiple_robust_hits",
+      "expected_collision": 1,
+      "expected_per_query_hit": [
+        1
+      ],
+      "oracle_boolean_equal": true,
+      "original_oracle_collision": 1
+    },
+    {
+      "execution_id": "large_translation_base",
+      "expected_collision": 1,
+      "expected_per_query_hit": [
+        1
+      ],
+      "oracle_boolean_equal": true,
+      "original_oracle_collision": 1
+    },
+    {
+      "execution_id": "large_translation_transformed",
+      "expected_collision": 1,
+      "expected_per_query_hit": [
+        1
+      ],
+      "oracle_boolean_equal": true,
+      "original_oracle_collision": 1
+    },
+    {
+      "execution_id": "face_interior_only_boundary",
+      "expected_collision": 0,
+      "expected_per_query_hit": [
+        0,
+        0,
+        0
+      ],
+      "oracle_boolean_equal": true,
+      "original_oracle_collision": 0
+    },
+    {
+      "execution_id": "ordinary_provider_t_disagreement_regression",
+      "expected_collision": 1,
+      "expected_per_query_hit": [
+        1
+      ],
+      "oracle_boolean_equal": true,
+      "original_oracle_collision": 1
+    },
+    {
+      "execution_id": "near_coincident_id_disagreement_regression",
+      "expected_collision": 1,
+      "expected_per_query_hit": [
+        1
+      ],
+      "oracle_boolean_equal": true,
+      "original_oracle_collision": 1
+    },
+    {
+      "execution_id": "float32_tie_id_disagreement_regression",
+      "expected_collision": 1,
+      "expected_per_query_hit": [
+        1
+      ],
+      "oracle_boolean_equal": true,
+      "original_oracle_collision": 1
+    }
+  ],
+  "external_review_requested": false,
+  "fixture_manifest": {
+    "boundary": [
+      {
+        "canonical_oracle": {
+          "collision": 1,
+          "pair_rows": [
+            {
+              "both_query_endpoints_outside": false,
+              "capsule_index": 0,
+              "closest_capsule_parameter": 0.5,
+              "closest_query_parameter": 0.0,
+              "decision_separation": 1.0,
+              "direction_cross_ratio": 1.0,
+              "distance_squared": 0.0,
+              "entry_parameter": 0.25,
+              "hit": true,
+              "query_index": 0,
+              "radius_squared": 0.0625
+            }
+          ],
+          "per_query_hit": [
+            1
+          ]
+        },
+        "eligibility": "INELIGIBLE",
+        "execution_id": "start_inside_ineligible",
+        "family_id": "start_inside_ineligible",
+        "ineligibility_reasons": [
+          "QUERY_ENDPOINT_INSIDE_CAPSULE"
+        ],
+        "normalization": {
+          "capsules": [
+            [
+              [
+                0.0,
+                -1.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              0.25,
+              90
+            ]
+          ],
+          "normalized_input_sha256": "ac86f67d11f1eb819cde582c3baaded86fc6c81a7a4110f3205d82a2e9435efc",
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "origin_f64_bits": [
+            0,
+            0,
+            0
+          ],
+          "original_input_sha256": "39737ed9bce46865ac97f7b155899906a12bc0d8c03829bbf49f851f65a3e855",
+          "queries": [
+            [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ]
+            ]
+          ],
+          "scale": 1.0,
+          "scale_f64_bits": 4607182418800017408
+        },
+        "note": "query starts inside the swept capsule",
+        "oracle_boolean_equal": true,
+        "original_input": {
+          "capsules": [
+            [
+              [
+                0,
+                -1,
+                0
+              ],
+              [
+                0,
+                1,
+                0
+              ],
+              0.25,
+              90
+            ]
+          ],
+          "queries": [
+            [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                0
+              ]
+            ]
+          ]
+        },
+        "original_oracle": {
+          "collision": 1,
+          "pair_rows": [
+            {
+              "both_query_endpoints_outside": false,
+              "capsule_index": 0,
+              "closest_capsule_parameter": 0.5,
+              "closest_query_parameter": 0.0,
+              "decision_separation": 1.0,
+              "direction_cross_ratio": 1.0,
+              "distance_squared": 0.0,
+              "entry_parameter": 0.25,
+              "hit": true,
+              "query_index": 0,
+              "radius_squared": 0.0625
+            }
+          ],
+          "per_query_hit": [
+            1
+          ]
+        }
+      },
+      {
+        "canonical_oracle": {
+          "collision": 0,
+          "pair_rows": [
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 0,
+              "closest_capsule_parameter": 0.0,
+              "closest_query_parameter": 0.249999843995663,
+              "decision_separation": 5.003684426827772e-05,
+              "direction_cross_ratio": 6.2297389468891e-12,
+              "distance_squared": 0.06250625491850992,
+              "entry_parameter": null,
+              "hit": false,
+              "query_index": 0,
+              "radius_squared": 0.0625
+            }
+          ],
+          "per_query_hit": [
+            0
+          ]
+        },
+        "eligibility": "INELIGIBLE",
+        "execution_id": "near_tangent_parallel_ineligible",
+        "family_id": "near_tangent_parallel_ineligible",
+        "ineligibility_reasons": [
+          "DECISION_SEPARATION_BELOW_2^-10"
+        ],
+        "normalization": {
+          "capsules": [
+            [
+              [
+                0.0,
+                -1.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              0.25,
+              91
+            ]
+          ],
+          "normalized_input_sha256": "27852d8a7bbc32a7865fd710dd7a526b7d7a5b68f2dabe031cfdd90b8f4e8ced",
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "origin_f64_bits": [
+            0,
+            0,
+            0
+          ],
+          "original_input_sha256": "4db81d568284a9fe4cafb63cfd7ddbb7fd70b3ceb5d92440154663557c550ff9",
+          "queries": [
+            [
+              [
+                0.25001001358032227,
+                -2.0,
+                0.0
+              ],
+              [
+                0.25001999735832214,
+                2.0,
+                0.0
+              ]
+            ]
+          ],
+          "scale": 1.0,
+          "scale_f64_bits": 4607182418800017408
+        },
+        "note": "near-tangent and near-parallel input lies outside the frozen margin",
+        "oracle_boolean_equal": true,
+        "original_input": {
+          "capsules": [
+            [
+              [
+                0,
+                -1,
+                0
+              ],
+              [
+                0,
+                1,
+                0
+              ],
+              0.25,
+              91
+            ]
+          ],
+          "queries": [
+            [
+              [
+                0.25001,
+                -2,
+                0
+              ],
+              [
+                0.25002,
+                2,
+                0
+              ]
+            ]
+          ]
+        },
+        "original_oracle": {
+          "collision": 0,
+          "pair_rows": [
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 0,
+              "closest_capsule_parameter": 0.0,
+              "closest_query_parameter": 0.24999984374218753,
+              "decision_separation": 4.9998746875023156e-05,
+              "direction_cross_ratio": 6.249999999973439e-12,
+              "distance_squared": 0.06250625015585934,
+              "entry_parameter": null,
+              "hit": false,
+              "query_index": 0,
+              "radius_squared": 0.0625
+            }
+          ],
+          "per_query_hit": [
+            0
+          ]
+        }
+      }
+    ],
+    "concrete_gpu_execution_count": 11,
+    "corpus_kind": "AUTHOR_DESIGNED_CONVENIENCE_AND_ADVERSARIAL",
+    "direction_cross_ratio_margin_exact": "2^-12",
+    "entry_endpoint_margin_exact": "2^-12",
+    "evaluation_margin_exact": "2^-10",
+    "evaluator_ineligible_execution_count": 2,
+    "executable": [
+      {
+        "canonical_oracle": {
+          "collision": 1,
+          "pair_rows": [
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 0,
+              "closest_capsule_parameter": 0.5,
+              "closest_query_parameter": 0.5,
+              "decision_separation": 1.0,
+              "direction_cross_ratio": 1.0,
+              "distance_squared": 0.0,
+              "entry_parameter": 0.375,
+              "hit": true,
+              "query_index": 0,
+              "radius_squared": 0.0625
+            }
+          ],
+          "per_query_hit": [
+            1
+          ]
+        },
+        "eligibility": "ELIGIBLE",
+        "execution_id": "single_crossing_hit",
+        "family_id": "single_crossing_hit",
+        "ineligibility_reasons": [],
+        "normalization": {
+          "capsules": [
+            [
+              [
+                0.0,
+                -1.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              0.25,
+              1
+            ]
+          ],
+          "normalized_input_sha256": "b5b8e641c5e76381f3f9fb70289e10211348f1f614b7ce8ca677be3571539d5c",
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "origin_f64_bits": [
+            0,
+            0,
+            0
+          ],
+          "original_input_sha256": "acf4178cbd1aaa2a844bd2bf4762baa202fda86dd3aa2829af532fc043792ce7",
+          "queries": [
+            [
+              [
+                -1.0,
+                0.0,
+                0.0
+              ],
+              [
+                1.0,
+                0.0,
+                0.0
+              ]
+            ]
+          ],
+          "scale": 1.0,
+          "scale_f64_bits": 4607182418800017408
+        },
+        "note": "one edge crosses one swept capsule",
+        "oracle_boolean_equal": true,
+        "original_input": {
+          "capsules": [
+            [
+              [
+                0,
+                -1,
+                0
+              ],
+              [
+                0,
+                1,
+                0
+              ],
+              0.25,
+              1
+            ]
+          ],
+          "queries": [
+            [
+              [
+                -1,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                0
+              ]
+            ]
+          ]
+        },
+        "original_oracle": {
+          "collision": 1,
+          "pair_rows": [
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 0,
+              "closest_capsule_parameter": 0.5,
+              "closest_query_parameter": 0.5,
+              "decision_separation": 1.0,
+              "direction_cross_ratio": 1.0,
+              "distance_squared": 0.0,
+              "entry_parameter": 0.375,
+              "hit": true,
+              "query_index": 0,
+              "radius_squared": 0.0625
+            }
+          ],
+          "per_query_hit": [
+            1
+          ]
+        }
+      },
+      {
+        "canonical_oracle": {
+          "collision": 0,
+          "pair_rows": [
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 0,
+              "closest_capsule_parameter": 0.5,
+              "closest_query_parameter": 0.5,
+              "decision_separation": 0.8823529411764706,
+              "direction_cross_ratio": 1.0,
+              "distance_squared": 1.0,
+              "entry_parameter": null,
+              "hit": false,
+              "query_index": 0,
+              "radius_squared": 0.0625
+            }
+          ],
+          "per_query_hit": [
+            0
+          ]
+        },
+        "eligibility": "ELIGIBLE",
+        "execution_id": "clear_miss",
+        "family_id": "clear_miss",
+        "ineligibility_reasons": [],
+        "normalization": {
+          "capsules": [
+            [
+              [
+                0.0,
+                -1.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              0.25,
+              2
+            ]
+          ],
+          "normalized_input_sha256": "06e813a8738962394050f97bfed4808f48927c38bcba951a06d9de44983c03c9",
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "origin_f64_bits": [
+            0,
+            0,
+            0
+          ],
+          "original_input_sha256": "54fe09de124bc32c60494455efe542fff37186675c4cf36f2615cd1953f8713f",
+          "queries": [
+            [
+              [
+                -1.0,
+                0.0,
+                1.0
+              ],
+              [
+                1.0,
+                0.0,
+                1.0
+              ]
+            ]
+          ],
+          "scale": 1.0,
+          "scale_f64_bits": 4607182418800017408
+        },
+        "note": "one edge has robust clearance",
+        "oracle_boolean_equal": true,
+        "original_input": {
+          "capsules": [
+            [
+              [
+                0,
+                -1,
+                0
+              ],
+              [
+                0,
+                1,
+                0
+              ],
+              0.25,
+              2
+            ]
+          ],
+          "queries": [
+            [
+              [
+                -1,
+                0,
+                1
+              ],
+              [
+                1,
+                0,
+                1
+              ]
+            ]
+          ]
+        },
+        "original_oracle": {
+          "collision": 0,
+          "pair_rows": [
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 0,
+              "closest_capsule_parameter": 0.5,
+              "closest_query_parameter": 0.5,
+              "decision_separation": 0.8823529411764706,
+              "direction_cross_ratio": 1.0,
+              "distance_squared": 1.0,
+              "entry_parameter": null,
+              "hit": false,
+              "query_index": 0,
+              "radius_squared": 0.0625
+            }
+          ],
+          "per_query_hit": [
+            0
+          ]
+        }
+      },
+      {
+        "canonical_oracle": {
+          "collision": 1,
+          "pair_rows": [
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 0,
+              "closest_capsule_parameter": 0.0,
+              "closest_query_parameter": 0.5,
+              "decision_separation": 0.21951225185451115,
+              "direction_cross_ratio": 1.0,
+              "distance_squared": 0.15999998092651424,
+              "entry_parameter": 0.42499999205271466,
+              "hit": true,
+              "query_index": 0,
+              "radius_squared": 0.25
+            }
+          ],
+          "per_query_hit": [
+            1
+          ]
+        },
+        "eligibility": "ELIGIBLE",
+        "execution_id": "round_endcap_hit",
+        "family_id": "round_endcap_hit",
+        "ineligibility_reasons": [],
+        "normalization": {
+          "capsules": [
+            [
+              [
+                0.0,
+                -1.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              0.5,
+              3
+            ]
+          ],
+          "normalized_input_sha256": "e3840193d52b2215906805aad8043d069539c305b3b7fabcf44e3fa78cc9dcb7",
+          "origin": [
+            0.0,
+            0.5,
+            0.0
+          ],
+          "origin_f64_bits": [
+            0,
+            4602678819172646912,
+            0
+          ],
+          "original_input_sha256": "bcf16c9c3af21541f9b03dd7c86cc6c0d6428d4b13cb5cd688b47af0096acf94",
+          "queries": [
+            [
+              [
+                -2.0,
+                -1.399999976158142,
+                0.0
+              ],
+              [
+                2.0,
+                -1.399999976158142,
+                0.0
+              ]
+            ]
+          ],
+          "scale": 0.5,
+          "scale_f64_bits": 4602678819172646912
+        },
+        "note": "contact is through the rounded start cap, not the cylindrical side",
+        "oracle_boolean_equal": true,
+        "original_input": {
+          "capsules": [
+            [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                1,
+                0
+              ],
+              0.25,
+              3
+            ]
+          ],
+          "queries": [
+            [
+              [
+                -1,
+                -0.2,
+                0
+              ],
+              [
+                1,
+                -0.2,
+                0
+              ]
+            ]
+          ]
+        },
+        "original_oracle": {
+          "collision": 1,
+          "pair_rows": [
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 0,
+              "closest_capsule_parameter": 0.0,
+              "closest_query_parameter": 0.5,
+              "decision_separation": 0.21951219512195114,
+              "direction_cross_ratio": 1.0,
+              "distance_squared": 0.04000000000000001,
+              "entry_parameter": 0.42500000000000004,
+              "hit": true,
+              "query_index": 0,
+              "radius_squared": 0.0625
+            }
+          ],
+          "per_query_hit": [
+            1
+          ]
+        }
+      },
+      {
+        "canonical_oracle": {
+          "collision": 1,
+          "pair_rows": [
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 0,
+              "closest_capsule_parameter": 1.0,
+              "closest_query_parameter": 0.5,
+              "decision_separation": 0.9230769208726093,
+              "direction_cross_ratio": 1.0,
+              "distance_squared": 4.0,
+              "entry_parameter": null,
+              "hit": false,
+              "query_index": 0,
+              "radius_squared": 0.16000000476837162
+            },
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 1,
+              "closest_capsule_parameter": 0.0,
+              "closest_query_parameter": 0.5,
+              "decision_separation": 0.9230769208726093,
+              "direction_cross_ratio": 0.0,
+              "distance_squared": 4.0,
+              "entry_parameter": null,
+              "hit": false,
+              "query_index": 0,
+              "radius_squared": 0.16000000476837162
+            },
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 0,
+              "closest_capsule_parameter": 0.0,
+              "closest_query_parameter": 0.0,
+              "decision_separation": 0.7241379239471291,
+              "direction_cross_ratio": 0.0,
+              "distance_squared": 1.0,
+              "entry_parameter": null,
+              "hit": false,
+              "query_index": 1,
+              "radius_squared": 0.16000000476837162
+            },
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 1,
+              "closest_capsule_parameter": 0.5,
+              "closest_query_parameter": 0.5,
+              "decision_separation": 1.0,
+              "direction_cross_ratio": 1.0,
+              "distance_squared": 1.232595164407831e-32,
+              "entry_parameter": 0.3999999985098839,
+              "hit": true,
+              "query_index": 1,
+              "radius_squared": 0.16000000476837162
+            },
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 0,
+              "closest_capsule_parameter": 0.0,
+              "closest_query_parameter": 0.0,
+              "decision_separation": 0.9607843125796878,
+              "direction_cross_ratio": 0.0,
+              "distance_squared": 8.0,
+              "entry_parameter": null,
+              "hit": false,
+              "query_index": 2,
+              "radius_squared": 0.16000000476837162
+            },
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 1,
+              "closest_capsule_parameter": 0.0,
+              "closest_query_parameter": 0.5,
+              "decision_separation": 0.9607843125796878,
+              "direction_cross_ratio": 1.0,
+              "distance_squared": 8.0,
+              "entry_parameter": null,
+              "hit": false,
+              "query_index": 2,
+              "radius_squared": 0.16000000476837162
+            }
+          ],
+          "per_query_hit": [
+            0,
+            1,
+            0
+          ]
+        },
+        "eligibility": "ELIGIBLE",
+        "execution_id": "piecewise_linear_or",
+        "family_id": "piecewise_linear_or",
+        "ineligibility_reasons": [],
+        "normalization": {
+          "capsules": [
+            [
+              [
+                -1.0,
+                -1.0,
+                0.0
+              ],
+              [
+                -1.0,
+                1.0,
+                0.0
+              ],
+              0.4000000059604645,
+              10
+            ],
+            [
+              [
+                -1.0,
+                1.0,
+                0.0
+              ],
+              [
+                1.0,
+                1.0,
+                0.0
+              ],
+              0.4000000059604645,
+              11
+            ]
+          ],
+          "normalized_input_sha256": "d46b1341b2ffc0e81e08924c5e0696410d0a279b43971b78e5920647e6908eca",
+          "origin": [
+            0.49999999999999994,
+            -0.5,
+            0.0
+          ],
+          "origin_f64_bits": [
+            4602678819172646911,
+            13826050856027422720,
+            0
+          ],
+          "original_input_sha256": "d06c4711a7bfd901fa69a14c21d2231ce180928c0d1129aaab77fdf92f3b9daa",
+          "queries": [
+            [
+              [
+                -3.0,
+                1.0,
+                2.0
+              ],
+              [
+                1.0,
+                1.0,
+                2.0
+              ]
+            ],
+            [
+              [
+                1.1102230246251565e-16,
+                -1.0,
+                0.0
+              ],
+              [
+                1.1102230246251565e-16,
+                3.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                -3.0,
+                -1.0,
+                2.0
+              ],
+              [
+                -3.0,
+                3.0,
+                2.0
+              ]
+            ]
+          ],
+          "scale": 0.5,
+          "scale_f64_bits": 4602678819172646912
+        },
+        "note": "two swept path segments and three edges; exactly one edge hits",
+        "oracle_boolean_equal": true,
+        "original_input": {
+          "capsules": [
+            [
+              [
+                0,
+                -1,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              0.2,
+              10
+            ],
+            [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                0
+              ],
+              0.2,
+              11
+            ]
+          ],
+          "queries": [
+            [
+              [
+                -1,
+                0,
+                1
+              ],
+              [
+                1,
+                0,
+                1
+              ]
+            ],
+            [
+              [
+                0.5,
+                -1,
+                0
+              ],
+              [
+                0.5,
+                1,
+                0
+              ]
+            ],
+            [
+              [
+                -1,
+                -1,
+                1
+              ],
+              [
+                -1,
+                1,
+                1
+              ]
+            ]
+          ]
+        },
+        "original_oracle": {
+          "collision": 1,
+          "pair_rows": [
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 0,
+              "closest_capsule_parameter": 1.0,
+              "closest_query_parameter": 0.5,
+              "decision_separation": 0.923076923076923,
+              "direction_cross_ratio": 1.0,
+              "distance_squared": 1.0,
+              "entry_parameter": null,
+              "hit": false,
+              "query_index": 0,
+              "radius_squared": 0.04000000000000001
+            },
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 1,
+              "closest_capsule_parameter": 0.0,
+              "closest_query_parameter": 0.5,
+              "decision_separation": 0.923076923076923,
+              "direction_cross_ratio": 0.0,
+              "distance_squared": 1.0,
+              "entry_parameter": null,
+              "hit": false,
+              "query_index": 0,
+              "radius_squared": 0.04000000000000001
+            },
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 0,
+              "closest_capsule_parameter": 0.0,
+              "closest_query_parameter": 0.0,
+              "decision_separation": 0.7241379310344827,
+              "direction_cross_ratio": 0.0,
+              "distance_squared": 0.25,
+              "entry_parameter": null,
+              "hit": false,
+              "query_index": 1,
+              "radius_squared": 0.04000000000000001
+            },
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 1,
+              "closest_capsule_parameter": 0.5,
+              "closest_query_parameter": 0.5,
+              "decision_separation": 1.0,
+              "direction_cross_ratio": 1.0,
+              "distance_squared": 0.0,
+              "entry_parameter": 0.39999999999999997,
+              "hit": true,
+              "query_index": 1,
+              "radius_squared": 0.04000000000000001
+            },
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 0,
+              "closest_capsule_parameter": 0.0,
+              "closest_query_parameter": 0.0,
+              "decision_separation": 0.9607843137254901,
+              "direction_cross_ratio": 0.0,
+              "distance_squared": 2.0,
+              "entry_parameter": null,
+              "hit": false,
+              "query_index": 2,
+              "radius_squared": 0.04000000000000001
+            },
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 1,
+              "closest_capsule_parameter": 0.0,
+              "closest_query_parameter": 0.5,
+              "decision_separation": 0.9607843137254901,
+              "direction_cross_ratio": 1.0,
+              "distance_squared": 2.0,
+              "entry_parameter": null,
+              "hit": false,
+              "query_index": 2,
+              "radius_squared": 0.04000000000000001
+            }
+          ],
+          "per_query_hit": [
+            0,
+            1,
+            0
+          ]
+        }
+      },
+      {
+        "canonical_oracle": {
+          "collision": 1,
+          "pair_rows": [
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 0,
+              "closest_capsule_parameter": 0.5,
+              "closest_query_parameter": 0.5,
+              "decision_separation": 1.0,
+              "direction_cross_ratio": 1.0,
+              "distance_squared": 0.0,
+              "entry_parameter": 0.3999999985098839,
+              "hit": true,
+              "query_index": 0,
+              "radius_squared": 0.040000001192092904
+            },
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 1,
+              "closest_capsule_parameter": 0.5,
+              "closest_query_parameter": 0.75,
+              "decision_separation": 1.0,
+              "direction_cross_ratio": 1.0,
+              "distance_squared": 0.0,
+              "entry_parameter": 0.6499999985098841,
+              "hit": true,
+              "query_index": 0,
+              "radius_squared": 0.040000001192092904
+            }
+          ],
+          "per_query_hit": [
+            1
+          ]
+        },
+        "eligibility": "ELIGIBLE",
+        "execution_id": "multiple_robust_hits",
+        "family_id": "multiple_robust_hits",
+        "ineligibility_reasons": [],
+        "normalization": {
+          "capsules": [
+            [
+              [
+                -0.25,
+                -1.0,
+                0.0
+              ],
+              [
+                -0.25,
+                1.0,
+                0.0
+              ],
+              0.20000000298023224,
+              20
+            ],
+            [
+              [
+                0.25,
+                -1.0,
+                0.0
+              ],
+              [
+                0.25,
+                1.0,
+                0.0
+              ],
+              0.20000000298023224,
+              21
+            ]
+          ],
+          "normalized_input_sha256": "76c06ee1fd95cebaf6d2edf0764fd257d3e42d0976732fe3306f854f9673f757",
+          "origin": [
+            0.24999999999999994,
+            0.0,
+            0.0
+          ],
+          "origin_f64_bits": [
+            4598175219545276414,
+            0,
+            0
+          ],
+          "original_input_sha256": "cb3158ef23ebb939a82fe7a06fbf560ab6cc0b0e38b575fbd2e5257bfb51dda5",
+          "queries": [
+            [
+              [
+                -1.25,
+                0.0,
+                0.0
+              ],
+              [
+                0.75,
+                0.0,
+                0.0
+              ]
+            ]
+          ],
+          "scale": 1.0,
+          "scale_f64_bits": 4607182418800017408
+        },
+        "note": "one edge robustly intersects two capsules; output remains Boolean",
+        "oracle_boolean_equal": true,
+        "original_input": {
+          "capsules": [
+            [
+              [
+                0,
+                -1,
+                0
+              ],
+              [
+                0,
+                1,
+                0
+              ],
+              0.2,
+              20
+            ],
+            [
+              [
+                0.5,
+                -1,
+                0
+              ],
+              [
+                0.5,
+                1,
+                0
+              ],
+              0.2,
+              21
+            ]
+          ],
+          "queries": [
+            [
+              [
+                -1,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                0
+              ]
+            ]
+          ]
+        },
+        "original_oracle": {
+          "collision": 1,
+          "pair_rows": [
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 0,
+              "closest_capsule_parameter": 0.5,
+              "closest_query_parameter": 0.5,
+              "decision_separation": 1.0,
+              "direction_cross_ratio": 1.0,
+              "distance_squared": 0.0,
+              "entry_parameter": 0.39999999999999997,
+              "hit": true,
+              "query_index": 0,
+              "radius_squared": 0.04000000000000001
+            },
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 1,
+              "closest_capsule_parameter": 0.5,
+              "closest_query_parameter": 0.75,
+              "decision_separation": 1.0,
+              "direction_cross_ratio": 1.0,
+              "distance_squared": 0.0,
+              "entry_parameter": 0.6499999999999999,
+              "hit": true,
+              "query_index": 0,
+              "radius_squared": 0.04000000000000001
+            }
+          ],
+          "per_query_hit": [
+            1
+          ]
+        }
+      },
+      {
+        "canonical_oracle": {
+          "collision": 1,
+          "pair_rows": [
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 0,
+              "closest_capsule_parameter": 0.5,
+              "closest_query_parameter": 0.5,
+              "decision_separation": 1.0,
+              "direction_cross_ratio": 1.0,
+              "distance_squared": 0.0,
+              "entry_parameter": 0.484375,
+              "hit": true,
+              "query_index": 0,
+              "radius_squared": 0.015625
+            }
+          ],
+          "per_query_hit": [
+            1
+          ]
+        },
+        "eligibility": "ELIGIBLE",
+        "execution_id": "large_translation_base",
+        "family_id": "large_translation_metamorphic_pair",
+        "ineligibility_reasons": [],
+        "normalization": {
+          "capsules": [
+            [
+              [
+                0.0,
+                -1.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              0.125,
+              4
+            ]
+          ],
+          "normalized_input_sha256": "bd1efecb16f070b2e8c8cedd2dd7a5b4be0f34cce3fb3ce30a8e4a1577a2a0a4",
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "origin_f64_bits": [
+            0,
+            0,
+            0
+          ],
+          "original_input_sha256": "c9806e4b2d3ea0f7fcfeabdfa369ab9f26034c141f542ecb324c7bc09eb0ab25",
+          "queries": [
+            [
+              [
+                -4.0,
+                0.0,
+                0.0
+              ],
+              [
+                4.0,
+                0.0,
+                0.0
+              ]
+            ]
+          ],
+          "scale": 1.0,
+          "scale_f64_bits": 4607182418800017408
+        },
+        "note": "base member of the normalization metamorphic pair",
+        "oracle_boolean_equal": true,
+        "original_input": {
+          "capsules": [
+            [
+              [
+                0.0,
+                -1.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              0.125,
+              4
+            ]
+          ],
+          "queries": [
+            [
+              [
+                -4.0,
+                0.0,
+                0.0
+              ],
+              [
+                4.0,
+                0.0,
+                0.0
+              ]
+            ]
+          ]
+        },
+        "original_oracle": {
+          "collision": 1,
+          "pair_rows": [
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 0,
+              "closest_capsule_parameter": 0.5,
+              "closest_query_parameter": 0.5,
+              "decision_separation": 1.0,
+              "direction_cross_ratio": 1.0,
+              "distance_squared": 0.0,
+              "entry_parameter": 0.484375,
+              "hit": true,
+              "query_index": 0,
+              "radius_squared": 0.015625
+            }
+          ],
+          "per_query_hit": [
+            1
+          ]
+        }
+      },
+      {
+        "canonical_oracle": {
+          "collision": 1,
+          "pair_rows": [
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 0,
+              "closest_capsule_parameter": 0.5,
+              "closest_query_parameter": 0.5,
+              "decision_separation": 1.0,
+              "direction_cross_ratio": 1.0,
+              "distance_squared": 0.0,
+              "entry_parameter": 0.484375,
+              "hit": true,
+              "query_index": 0,
+              "radius_squared": 0.015625
+            }
+          ],
+          "per_query_hit": [
+            1
+          ]
+        },
+        "eligibility": "ELIGIBLE",
+        "execution_id": "large_translation_transformed",
+        "family_id": "large_translation_metamorphic_pair",
+        "ineligibility_reasons": [],
+        "normalization": {
+          "capsules": [
+            [
+              [
+                0.0,
+                -1.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              0.125,
+              4
+            ]
+          ],
+          "normalized_input_sha256": "bd1efecb16f070b2e8c8cedd2dd7a5b4be0f34cce3fb3ce30a8e4a1577a2a0a4",
+          "origin": [
+            1099511627776.0,
+            -549755813888.0,
+            274877906944.0
+          ],
+          "origin_f64_bits": [
+            4787326403894837248,
+            14006194841122242560,
+            4778319204640096256
+          ],
+          "original_input_sha256": "28e956cc9f64df3e4fc2d9eefd07e9c0dd0487e2a298f3c5453ef947698d16b1",
+          "queries": [
+            [
+              [
+                -4.0,
+                0.0,
+                0.0
+              ],
+              [
+                4.0,
+                0.0,
+                0.0
+              ]
+            ]
+          ],
+          "scale": 1048576.0,
+          "scale_f64_bits": 4697254411347427328
+        },
+        "note": "power-of-two scaled and translated member of the metamorphic pair",
+        "oracle_boolean_equal": true,
+        "original_input": {
+          "capsules": [
+            [
+              [
+                1099511627776.0,
+                -549756862464.0,
+                274877906944.0
+              ],
+              [
+                1099511627776.0,
+                -549754765312.0,
+                274877906944.0
+              ],
+              131072.0,
+              4
+            ]
+          ],
+          "queries": [
+            [
+              [
+                1099507433472.0,
+                -549755813888.0,
+                274877906944.0
+              ],
+              [
+                1099515822080.0,
+                -549755813888.0,
+                274877906944.0
+              ]
+            ]
+          ]
+        },
+        "original_oracle": {
+          "collision": 1,
+          "pair_rows": [
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 0,
+              "closest_capsule_parameter": 0.5,
+              "closest_query_parameter": 0.5,
+              "decision_separation": 1.0,
+              "direction_cross_ratio": 1.0,
+              "distance_squared": 0.0,
+              "entry_parameter": 0.484375,
+              "hit": true,
+              "query_index": 0,
+              "radius_squared": 17179869184.0
+            }
+          ],
+          "per_query_hit": [
+            1
+          ]
+        }
+      },
+      {
+        "canonical_oracle": {
+          "collision": 0,
+          "pair_rows": [
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 0,
+              "closest_capsule_parameter": 0.5,
+              "closest_query_parameter": 0.5,
+              "decision_separation": 0.9950124686796608,
+              "direction_cross_ratio": 1.0,
+              "distance_squared": 4.0,
+              "entry_parameter": null,
+              "hit": false,
+              "query_index": 0,
+              "radius_squared": 0.010000000298023226
+            },
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 0,
+              "closest_capsule_parameter": 0.5,
+              "closest_query_parameter": 0.6,
+              "decision_separation": 0.9753086412485337,
+              "direction_cross_ratio": 1.0,
+              "distance_squared": 0.8,
+              "entry_parameter": null,
+              "hit": false,
+              "query_index": 1,
+              "radius_squared": 0.010000000298023226
+            },
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 0,
+              "closest_capsule_parameter": 0.5,
+              "closest_query_parameter": 0.4,
+              "decision_separation": 0.9753086412485337,
+              "direction_cross_ratio": 1.0,
+              "distance_squared": 0.8,
+              "entry_parameter": null,
+              "hit": false,
+              "query_index": 2,
+              "radius_squared": 0.010000000298023226
+            }
+          ],
+          "per_query_hit": [
+            0,
+            0,
+            0
+          ]
+        },
+        "eligibility": "ELIGIBLE",
+        "execution_id": "face_interior_only_boundary",
+        "family_id": "face_interior_only_boundary",
+        "ineligibility_reasons": [],
+        "normalization": {
+          "capsules": [
+            [
+              [
+                0.0,
+                0.0,
+                -1.0
+              ],
+              [
+                0.0,
+                0.0,
+                1.0
+              ],
+              0.10000000149011612,
+              30
+            ]
+          ],
+          "normalized_input_sha256": "823657dffcffc3ab19f85165b1fdfce675dfaf3d1917d71ce1dfd6ca6e8fafdb",
+          "origin": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "origin_f64_bits": [
+            0,
+            0,
+            0
+          ],
+          "original_input_sha256": "e51dac781a0c5458297a8af7737fab5bc40427dea43e367db3c31ec6138cb1db",
+          "queries": [
+            [
+              [
+                -2.0,
+                -2.0,
+                0.0
+              ],
+              [
+                2.0,
+                -2.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                2.0,
+                -2.0,
+                0.0
+              ],
+              [
+                0.0,
+                2.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                0.0,
+                2.0,
+                0.0
+              ],
+              [
+                -2.0,
+                -2.0,
+                0.0
+              ]
+            ]
+          ],
+          "scale": 1.0,
+          "scale_f64_bits": 4607182418800017408
+        },
+        "note": "the swept capsule crosses the triangle face interior, but no registered triangle edge; the implemented edge predicate is MISS",
+        "oracle_boolean_equal": true,
+        "original_input": {
+          "capsules": [
+            [
+              [
+                0,
+                0,
+                -1
+              ],
+              [
+                0,
+                0,
+                1
+              ],
+              0.1,
+              30
+            ]
+          ],
+          "queries": [
+            [
+              [
+                -2,
+                -2,
+                0
+              ],
+              [
+                2,
+                -2,
+                0
+              ]
+            ],
+            [
+              [
+                2,
+                -2,
+                0
+              ],
+              [
+                0,
+                2,
+                0
+              ]
+            ],
+            [
+              [
+                0,
+                2,
+                0
+              ],
+              [
+                -2,
+                -2,
+                0
+              ]
+            ]
+          ]
+        },
+        "original_oracle": {
+          "collision": 0,
+          "pair_rows": [
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 0,
+              "closest_capsule_parameter": 0.5,
+              "closest_query_parameter": 0.5,
+              "decision_separation": 0.9950124688279303,
+              "direction_cross_ratio": 1.0,
+              "distance_squared": 4.0,
+              "entry_parameter": null,
+              "hit": false,
+              "query_index": 0,
+              "radius_squared": 0.010000000000000002
+            },
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 0,
+              "closest_capsule_parameter": 0.5,
+              "closest_query_parameter": 0.6,
+              "decision_separation": 0.9753086419753086,
+              "direction_cross_ratio": 1.0,
+              "distance_squared": 0.8,
+              "entry_parameter": null,
+              "hit": false,
+              "query_index": 1,
+              "radius_squared": 0.010000000000000002
+            },
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 0,
+              "closest_capsule_parameter": 0.5,
+              "closest_query_parameter": 0.4,
+              "decision_separation": 0.9753086419753086,
+              "direction_cross_ratio": 1.0,
+              "distance_squared": 0.8,
+              "entry_parameter": null,
+              "hit": false,
+              "query_index": 2,
+              "radius_squared": 0.010000000000000002
+            }
+          ],
+          "per_query_hit": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "canonical_oracle": {
+          "collision": 1,
+          "pair_rows": [
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 0,
+              "closest_capsule_parameter": 1.0,
+              "closest_query_parameter": 0.01135106001753806,
+              "decision_separation": 0.05673178710801992,
+              "direction_cross_ratio": 0.7212940147956652,
+              "distance_squared": 0.03570511467569366,
+              "entry_parameter": 0.001194212793766778,
+              "hit": true,
+              "query_index": 0,
+              "radius_squared": 0.040000001192092904
+            }
+          ],
+          "per_query_hit": [
+            1
+          ]
+        },
+        "eligibility": "ELIGIBLE",
+        "execution_id": "ordinary_provider_t_disagreement_regression",
+        "family_id": "ordinary_provider_t_disagreement_regression",
+        "ineligibility_reasons": [],
+        "normalization": {
+          "capsules": [
+            [
+              [
+                -0.5,
+                -1.0,
+                -0.5
+              ],
+              [
+                0.5,
+                1.0,
+                0.5
+              ],
+              0.20000000298023224,
+              555
+            ]
+          ],
+          "normalized_input_sha256": "8664280edc0a76868fb7f9e4b29f47f2e9276bd6495cbfcfb5cf8168ec93e08f",
+          "origin": [
+            -1.5,
+            0.0,
+            1.5
+          ],
+          "origin_f64_bits": [
+            13832806255468478464,
+            0,
+            4609434218613702656
+          ],
+          "original_input_sha256": "5467755392abb380c6fb65aeb3d44ffee2a7679866bfd2cbbb04720193dd3415",
+          "queries": [
+            [
+              [
+                0.5409121513366699,
+                1.1931053400039673,
+                0.45411035418510437
+              ],
+              [
+                3.9671945571899414,
+                -2.85371732711792,
+                -3.2223615646362305
+              ]
+            ]
+          ],
+          "scale": 1.0,
+          "scale_f64_bits": 4607182418800017408
+        },
+        "note": "Goal5834 exact-t counterexample retained as a Boolean HIT",
+        "oracle_boolean_equal": true,
+        "original_input": {
+          "capsules": [
+            [
+              [
+                -2,
+                -1,
+                1
+              ],
+              [
+                -1,
+                1,
+                2
+              ],
+              0.2,
+              555
+            ]
+          ],
+          "queries": [
+            [
+              [
+                -0.9590878702997561,
+                1.1931053085886383,
+                1.9541103637013393
+              ],
+              [
+                2.4671945820539714,
+                -2.85371731402841,
+                -1.7223614664107387
+              ]
+            ]
+          ]
+        },
+        "original_oracle": {
+          "collision": 1,
+          "pair_rows": [
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 0,
+              "closest_capsule_parameter": 1.0,
+              "closest_query_parameter": 0.01135105961968753,
+              "decision_separation": 0.05673197201931691,
+              "direction_cross_ratio": 0.7212940251298926,
+              "distance_squared": 0.0357051003644069,
+              "entry_parameter": 0.0011941967987005417,
+              "hit": true,
+              "query_index": 0,
+              "radius_squared": 0.04000000000000001
+            }
+          ],
+          "per_query_hit": [
+            1
+          ]
+        }
+      },
+      {
+        "canonical_oracle": {
+          "collision": 1,
+          "pair_rows": [
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 0,
+              "closest_capsule_parameter": 0.0,
+              "closest_query_parameter": 0.0952293791559187,
+              "decision_separation": 0.3893705255584591,
+              "direction_cross_ratio": 0.8332738138482908,
+              "distance_squared": 0.017580035631896286,
+              "entry_parameter": 0.05880036586700053,
+              "hit": true,
+              "query_index": 0,
+              "radius_squared": 0.04000000715255769
+            },
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 1,
+              "closest_capsule_parameter": 0.0,
+              "closest_query_parameter": 0.0952293791559187,
+              "decision_separation": 0.3893704623484356,
+              "direction_cross_ratio": 0.8332738138482908,
+              "distance_squared": 0.017580035631896286,
+              "entry_parameter": 0.05880037070942116,
+              "hit": true,
+              "query_index": 0,
+              "radius_squared": 0.040000001192092904
+            }
+          ],
+          "per_query_hit": [
+            1
+          ]
+        },
+        "eligibility": "ELIGIBLE",
+        "execution_id": "near_coincident_id_disagreement_regression",
+        "family_id": "near_coincident_id_disagreement_regression",
+        "ineligibility_reasons": [],
+        "normalization": {
+          "capsules": [
+            [
+              [
+                -0.5,
+                -1.0,
+                -0.5
+              ],
+              [
+                0.5,
+                1.0,
+                0.5
+              ],
+              0.20000001788139343,
+              1000
+            ],
+            [
+              [
+                -0.5,
+                -1.0,
+                -0.5
+              ],
+              [
+                0.5,
+                1.0,
+                0.5
+              ],
+              0.20000000298023224,
+              1
+            ]
+          ],
+          "normalized_input_sha256": "f8e6bfc8535741be6584c650f697cf41917f957d3851be904c0f94b6715b752d",
+          "origin": [
+            -1.5,
+            0.0,
+            1.5
+          ],
+          "origin_f64_bits": [
+            13832806255468478464,
+            0,
+            4609434218613702656
+          ],
+          "original_input_sha256": "5925102863eb222dda139ae895d79610b8d641cbad419e1526727668db802145",
+          "queries": [
+            [
+              [
+                -0.8912659883499146,
+                -1.1123559474945068,
+                -0.5712414979934692
+              ],
+              [
+                3.2186849117279053,
+                -1.1347604990005493,
+                -0.5253816246986389
+              ]
+            ]
+          ],
+          "scale": 1.0,
+          "scale_f64_bits": 4607182418800017408
+        },
+        "note": "Goal5834 unstable-winner counterexample retained as a Boolean HIT",
+        "oracle_boolean_equal": true,
+        "original_input": {
+          "capsules": [
+            [
+              [
+                -2,
+                -1,
+                1
+              ],
+              [
+                -1,
+                1,
+                2
+              ],
+              0.20000001788139343,
+              1000
+            ],
+            [
+              [
+                -2,
+                -1,
+                1
+              ],
+              [
+                -1,
+                1,
+                2
+              ],
+              0.20000000298023224,
+              1
+            ]
+          ],
+          "queries": [
+            [
+              [
+                -2.391265976033713,
+                -1.1123559085756902,
+                0.9287584731586094
+              ],
+              [
+                1.7186848663858152,
+                -1.1347605412858597,
+                0.9746184002928722
+              ]
+            ]
+          ]
+        },
+        "original_oracle": {
+          "collision": 1,
+          "pair_rows": [
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 0,
+              "closest_capsule_parameter": 0.0,
+              "closest_query_parameter": 0.09522937726444171,
+              "decision_separation": 0.3893706212700312,
+              "direction_cross_ratio": 0.833273822738715,
+              "distance_squared": 0.01758003166529707,
+              "entry_parameter": 0.05880036025123122,
+              "hit": true,
+              "query_index": 0,
+              "radius_squared": 0.04000000715255769
+            },
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 1,
+              "closest_capsule_parameter": 0.0,
+              "closest_query_parameter": 0.09522937726444171,
+              "decision_separation": 0.38937055806001325,
+              "direction_cross_ratio": 0.833273822738715,
+              "distance_squared": 0.01758003166529707,
+              "entry_parameter": 0.0588003650936515,
+              "hit": true,
+              "query_index": 0,
+              "radius_squared": 0.040000001192092904
+            }
+          ],
+          "per_query_hit": [
+            1
+          ]
+        }
+      },
+      {
+        "canonical_oracle": {
+          "collision": 1,
+          "pair_rows": [
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 0,
+              "closest_capsule_parameter": 0.5,
+              "closest_query_parameter": 0.49999999750000007,
+              "decision_separation": 1.0,
+              "direction_cross_ratio": 1.0,
+              "distance_squared": 0.0,
+              "entry_parameter": 0.4999998724545471,
+              "hit": true,
+              "query_index": 0,
+              "radius_squared": 0.0625
+            },
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 1,
+              "closest_capsule_parameter": 0.5,
+              "closest_query_parameter": 0.5000000025,
+              "decision_separation": 1.0,
+              "direction_cross_ratio": 1.0,
+              "distance_squared": 1.3552527156068805e-20,
+              "entry_parameter": 0.49999987758878794,
+              "hit": true,
+              "query_index": 0,
+              "radius_squared": 0.0625
+            }
+          ],
+          "per_query_hit": [
+            1
+          ]
+        },
+        "eligibility": "ELIGIBLE",
+        "execution_id": "float32_tie_id_disagreement_regression",
+        "family_id": "float32_tie_id_disagreement_regression",
+        "ineligibility_reasons": [],
+        "normalization": {
+          "capsules": [
+            [
+              [
+                -0.004999999888241291,
+                -1.0,
+                0.0
+              ],
+              [
+                -0.004999999888241291,
+                1.0,
+                0.0
+              ],
+              0.25,
+              100
+            ],
+            [
+              [
+                0.004999999888241291,
+                -1.0,
+                0.0
+              ],
+              [
+                0.004999999888241291,
+                1.0,
+                0.0
+              ],
+              0.25,
+              1
+            ]
+          ],
+          "normalized_input_sha256": "c723f8e68d0b30c6db021f1ebe367fc40953619fbd0eafbc9926332b92463c57",
+          "origin": [
+            0.0050000000000000044,
+            0.0,
+            0.0
+          ],
+          "origin_f64_bits": [
+            4572414629676717184,
+            0,
+            0
+          ],
+          "original_input_sha256": "252d4cf56c6c74d68f41750db40e09b12a48b0f75a9558823d9895e8b9312951",
+          "queries": [
+            [
+              [
+                -1000000.0,
+                0.0,
+                0.0
+              ],
+              [
+                1000000.0,
+                0.0,
+                0.0
+              ]
+            ]
+          ],
+          "scale": 1.0,
+          "scale_f64_bits": 4607182418800017408
+        },
+        "note": "Goal5834 float32 tie-order case retained as a Boolean HIT",
+        "oracle_boolean_equal": true,
+        "original_input": {
+          "capsules": [
+            [
+              [
+                0,
+                -1,
+                0
+              ],
+              [
+                0,
+                1,
+                0
+              ],
+              0.25,
+              100
+            ],
+            [
+              [
+                0.01,
+                -1,
+                0
+              ],
+              [
+                0.01,
+                1,
+                0
+              ],
+              0.25,
+              1
+            ]
+          ],
+          "queries": [
+            [
+              [
+                -1000000.0,
+                0,
+                0
+              ],
+              [
+                1000000.0,
+                0,
+                0
+              ]
+            ]
+          ]
+        },
+        "original_oracle": {
+          "collision": 1,
+          "pair_rows": [
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 0,
+              "closest_capsule_parameter": 0.5,
+              "closest_query_parameter": 0.5,
+              "decision_separation": 1.0,
+              "direction_cross_ratio": 1.0,
+              "distance_squared": 0.0,
+              "entry_parameter": 0.499999874954547,
+              "hit": true,
+              "query_index": 0,
+              "radius_squared": 0.0625
+            },
+            {
+              "both_query_endpoints_outside": true,
+              "capsule_index": 1,
+              "closest_capsule_parameter": 0.5,
+              "closest_query_parameter": 0.500000005,
+              "decision_separation": 1.0,
+              "direction_cross_ratio": 1.0,
+              "distance_squared": 1.1470859029486842e-20,
+              "entry_parameter": 0.499999879954547,
+              "hit": true,
+              "query_index": 0,
+              "radius_squared": 0.0625
+            }
+          ],
+          "per_query_hit": [
+            1
+          ]
+        }
+      }
+    ],
+    "fixture_family_count": 10,
+    "generalization_exam_count": 0,
+    "malformed_prelaunch_rejection_count": 1,
+    "schema": "rtdl.goal5834_b1.frozen_boolean_fixture_manifest.v1"
+  },
+  "goal": "5834-B1",
+  "goal5835_authorized": false,
+  "mathematical_comparison_scope": "FROZEN_QUALIFIED_FIXTURES_ONLY",
+  "performance_measurement_authorized": false,
+  "predeclared_outcomes": {
+    "all_match": "GOAL5834_B1_COMPLETE_REGISTERED_FIXTURE_EVALUATION",
+    "provider_boolean_mismatch": "TERMINAL_NEGATIVE__BUILTIN_CURVE_BOOLEAN_UNRELIABLE_FOR_REGISTERED_CORE",
+    "qualification_or_execution_failure": "TERMINAL_NEGATIVE__B1_REGISTERED_FIXTURE_NOT_EXECUTABLE_AS_FROZEN"
+  },
+  "public_executable_semantics": "provider_any_contact_bit",
+  "repository_binding": {
+    "binding_kind": "EXACT_SOURCE_MEMBER_HASHES__BROKEN_GIT_DISCLOSED",
+    "commit_identity_claimed": false,
+    "rev_parse": {
+      "returncode": 0,
+      "text": "1af120d187228035db733ce690de3a3bf5b54ee5"
+    },
+    "status": {
+      "returncode": 128,
+      "text": "fatal: bad object HEAD"
+    },
+    "workspace": "C:\\Users\\Lestat\\Desktop\\work\\rtdl_v4_restricted_python_design"
+  },
+  "schema": "rtdl.goal5834_b1.fixture_authority.v1",
+  "source_members": [
+    {
+      "bytes": 8816,
+      "path": "examples/curve_boolean_contact/independent_oracle.py",
+      "sha256": "61111750c21441bea1e5547a86bca1e1b8f24c48152f172f46ea72295b46ddfb"
+    },
+    {
+      "bytes": 14449,
+      "path": "examples/curve_boolean_contact/fixtures.py",
+      "sha256": "543d5e4c00e2451621ffb497e1582a59b193385216efd6ba79339c8a83eb4844"
+    },
+    {
+      "bytes": 8730,
+      "path": "src/rtdsl/v4_builtin_curve_standard_library.py",
+      "sha256": "23cb357263c3b2343738d3b1019ce8caa091e82f17e8dcc9b01b8e4c76382502"
+    },
+    {
+      "bytes": 43826,
+      "path": "src/rtdsl/v4_curve_physical_schema.py",
+      "sha256": "a0ccb359a2e759ca4c86a2569c0c36c2a73d905a6a66145ada9a02a05ead524a"
+    },
+    {
+      "bytes": 19682,
+      "path": "src/rtdsl/v4_sphere_optix_wrapper_codegen.py",
+      "sha256": "4a8a75fcfdd597f4a07c754af9a4bba115129d0f30da5cc3f0d70f7d70f28f01"
+    },
+    {
+      "bytes": 2433,
+      "path": "src/rtdsl/v4_curve_optix_wrapper_codegen.py",
+      "sha256": "176cef4ce6e8a7c4a56e5d813e11d7c52d3c6cc118bee8372c90a65a7304aaf9"
+    },
+    {
+      "bytes": 15974,
+      "path": "src/rtdsl/v4_public_builtin_curve.py",
+      "sha256": "3ec1f0903ad22290e4f8013ef4a2eff6e1fa35d22a7710861f6e080105320523"
+    },
+    {
+      "bytes": 35198,
+      "path": "src/rtdsl/v4_curve_prepared_runtime.py",
+      "sha256": "98c698048501713d46dab03335774bf7ba15ee3fffeec529dbef43975e48a5ed"
+    },
+    {
+      "bytes": 1663,
+      "path": "src/rtdsl/v4_curve.py",
+      "sha256": "9fe88e6669ea4fe1edccf4e73659dfc80a8c7c113b5212859eff14240d446b85"
+    },
+    {
+      "bytes": 12017,
+      "path": "tests/goal5834_b1_curve_boolean_specialization_test.py",
+      "sha256": "fb8bd0b296661d309bc3f76eac8b604f9f407f9be1991b465bc4ff6c5df58bc4"
+    },
+    {
+      "bytes": 6177,
+      "path": "tests/goal5834_b1_boolean_fixture_oracle_test.py",
+      "sha256": "05965708d5170619faace6e07f91e60864392419772b7df263ab77ebc85f0885"
+    }
+  ],
+  "status": "SCIENTIFIC_FIXTURES_FROZEN__WORKER_ZERO_FORBIDDEN",
+  "worker_inputs": {
+    "bytes": 16434,
+    "expected_output_bytes_present": false,
+    "path": "WORKER_INPUTS.json",
+    "sha256": "55eeff377c93c32fed8cc326ad975cb9d2437df85812e30b9d916b3e7cc581a4"
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "schema": "rtdl.goal5834.builtin_round_linear_curve_closeout.v1",
+  "goal": 5834,
+  "status": "COMPLETE_AT_BOUNDED_FUNCTIONAL_SCOPE",
+  "date": "2026-08-30",
+  "external_review_requested": false,
+  "performance_measurement_count": 0,
+  "public_lifecycle": [
+    "verify_source",
+    "compile_protocol",
+    "materialize",
+    "prepare",
+    "execute_repeatedly",
+    "close"
+  ],
+  "supported_subset": {
+    "provider": "OptiX 9.0.0",
+    "build_input": "OPTIX_BUILD_INPUT_TYPE_CURVES",
+    "primitive": "OPTIX_PRIMITIVE_TYPE_ROUND_LINEAR",
+    "geometry": "static constant-radius-per-segment capsules",
+    "endcaps": "OPTIX_CURVE_ENDCAP_DEFAULT__round_for_linear",
+    "gas_count": 1,
+    "sbt_record_count": 1,
+    "trace_depth": 1,
+    "callable_depth": 0,
+    "motion_blur": false,
+    "instancing": false,
+    "user_intersection_program": false
+  },
+  "functional_result": {
+    "fixture_count": 4,
+    "exact_output_count": 4,
+    "repeat_execution_exact": true,
+    "true_optix_traversal": true,
+    "role_counters": [0, 4, 0, 0, 3, 1, 4],
+    "observed": [
+      [1, 1052770304, 50],
+      [0, 1065353216, 4294967295],
+      [1, 1044381696, 900],
+      [1, 1049699860, 77]
+    ]
+  },
+  "post_observation_boundary": {
+    "fact": "an exactly axial cap ray produced oracle_hit__optix_miss in the first hardware attempt",
+    "repair": "potential contacts with query_axis_cross_ratio_below_2^-12 are rejected before launch",
+    "retroactively_described_as_pre_registered": false,
+    "final_negative_test_passed": true
+  },
+  "leaf_liveness": {
+    "populated_abi_scalar_occurrences_mutated": 611,
+    "physical_schema_scalar_occurrences_mutated": 35,
+    "target_scalar_occurrences_mutated": 6,
+    "canonical_plan_scalar_occurrences_mutated": 7,
+    "silent_accept_count": 0
+  },
+  "tests": {
+    "goal5834_local": "11/11 PASS",
+    "goal5834_home": "11/11 PASS",
+    "goal5833_local_regression": "70/70 PASS",
+    "goal5833_home_sphere_regression": "PASS",
+    "native_optix9_rebuild": "PASS",
+    "independent_recount": "PASS"
+  },
+  "identities": {
+    "source_sha256": "65c766041d864482c78a47ab402bd192322ad333485585acdf45a5ffd592e8c7",
+    "callback_ir_sha256": "627df36820b8d18cd3a3d0202d4d617ffa913444caff29d91af9a0613ba1fe7c",
+    "callback_effect_digest": "e89ddea0580fe0ad017e649de8dbe3d08409174e9cfdb3f662afbc1344d989be",
+    "physical_schema_sha256": "40d9487b1deeb1eac4366b5aea83f19b859e42a10e8921ca322a57656c8abf1e",
+    "canonical_plan_sha256": "28b1e52ba63cd221eeb2753823c4c022242daab55be0004c89915260b988b8d6",
+    "callback_abi_sha256": "a47fad0d52f082df8f34c5432a6b6092d08593becb92a70bb0b3c8ef04d7bc8a",
+    "wrapper_source_sha256": "f014546e135b1645175f5d55723e23a44850ac192219f070b5b42893e63316a6",
+    "executable_sha256": "b99f68509e88c9dbe2f604ab20622146117a6861c95fd0d354ae6ad1b2acc25a",
+    "composed_ptx_sha256": "2c04c7b6c06148098af6819ffdf596f789c4e8bb2a01c5552f56b8053520cb99",
+    "native_sha256": "7a9f38fe40f1fdea770e4e0d3aceb4f473c1434250e942003f359e108c86a46c",
+    "final_home_result_sha256": "562e4cb0d565f3b7a97e3c46ab14aaa27db31ea9a01cf04da530203e1bd5685a",
+    "independent_verification_sha256": "6081de60c3576d6ea63bf135a33b702a1cccfd99525b64ac1619f00104bf5c83",
+    "executed_source_projection_sha256": "a6d423001c01277f6bec3f7d252b0689a9a383c07a3efffcd9dbc923f5d5ca85",
+    "final_source_archive_sha256": "5face185c176a3277a1a7860d35ddc04f96ac487549b71716fb6c595271f0f73"
+  },
+  "claim_ceiling": {
+    "allowed": "tested OptiX round-linear built-in-curve subset and 4/4 leaf-kind presence in the pinned taxonomy",
+    "forbidden": [
+      "complete built-in-curve support",
+      "arbitrary Callback IR to GPU",
+      "prospective unseen-app generalization",
+      "RT-CCD Paper App",
+      "external-user usability",
+      "performance or no-overhead",
+      "RT-core silicon evidence"
+    ]
+  },
+  "repository_custody": {
+    "git_commit_created": false,
+    "reason": "the local Git object database cannot resolve HEAD or multiple refs",
+    "hash_bound_source_and_evidence_used_instead": true
+  }
+}

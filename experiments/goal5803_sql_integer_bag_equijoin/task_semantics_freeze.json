@@ -1,0 +1,29 @@
+{
+  "schema": "rtdl.goal5803.sql_integer_bag_equijoin.task_semantics_freeze.v1",
+  "date": "2026-08-27",
+  "status": "TASK_SEMANTICS_FROZEN_BEFORE_IMPLEMENTATION__NO_GPU_AUTHORITY",
+  "preaction": {
+    "path": "experiments/goal5803_sql_integer_bag_equijoin/preaction.json",
+    "bytes": 10188,
+    "sha256": "6cab8acb1b3bc7243232839074852c772fe5644560c923dea2da6328d7e71aa9"
+  },
+  "chronology_observation": {
+    "adapter_exists_at_freeze": false,
+    "independent_sqlite_oracle_exists_at_freeze": false,
+    "goal_specific_tests_exist_at_freeze": false,
+    "exact_execution_freeze_exists_at_freeze": false,
+    "gpu_call_count": 0,
+    "registered_performance_timing_count": 0
+  },
+  "authorization": {
+    "local_adapter_implementation": true,
+    "local_independent_oracle_implementation": true,
+    "local_cpu_tests": true,
+    "core_or_native_change": false,
+    "gpu_or_ssh_or_pod": false,
+    "performance_timing": false,
+    "scientific_pass_claim": false,
+    "publication_or_submission": false
+  },
+  "next_required_freeze": "EXACT_REPAIRED_CORE_WHEEL_NATIVE_ARTIFACT_AUTHORITY_TRUST_ADAPTER_ORACLE_RUNNER_AND_TEST_IDENTITIES_BEFORE_FIRST_SQL_GPU_CALL"
+}

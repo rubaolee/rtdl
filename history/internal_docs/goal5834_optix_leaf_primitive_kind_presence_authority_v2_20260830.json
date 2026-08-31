@@ -1,0 +1,121 @@
+{
+  "schema": "rtdl.goal5834.optix_leaf_primitive_kind_presence_authority.v2",
+  "date": "2026-08-30",
+  "controlling": true,
+  "scope": "current_kind_presence_counts_and_support_matrix_only",
+  "inherits_without_change": {
+    "path": "history/internal_docs/goal5832_protocol_shape_algebra_authority_v1_20260830.json",
+    "sha256": "33db5c7c9c9403cc3c8f1f426fdf1ba594fd6c4a8d94608ab41e50dbe7be5200",
+    "inherited_sections": [
+      "terminology",
+      "platform_denominator",
+      "identity_domains",
+      "family_shape_axes",
+      "axis_meanings",
+      "canonicalization",
+      "equivalence",
+      "scientific_outcome_rules"
+    ]
+  },
+  "supersedes_only": [
+    "goal5832_protocol_shape_algebra_authority_v1.current_counts.rtdl_physical_geometry_kinds",
+    "goal5832_protocol_shape_algebra_authority_v1.coverage_semantics",
+    "goal5832_protocol_shape_algebra_authority_v1.platform_denominator[*].rtdl_public_gpu_kind_presence",
+    "goal5832_protocol_shape_algebra_authority_v1.support_matrix.leaf_primitive_rows",
+    "goal5833_a3_repaired_home_final_result.claim_ceiling.primitive_taxonomy_statement"
+  ],
+  "evidence": {
+    "original_two_kind_denominator_and_algebra": {
+      "path": "history/internal_docs/goal5831_public_gpu_surface_terminology_and_denominator_result_20260830.json",
+      "sha256": "648335944aa3ad44a8cd265ce5a42ee08c27b21e2d320ae4f7ec6609f64124c1"
+    },
+    "sphere": {
+      "path": "history/internal_docs/goal5833_a3_repaired_home_final_result_20260830.json",
+      "sha256": "3911d1ddc4f9a08e07087423e06417d2c889e9214e46c823b8141ac5aad1ffd1",
+      "status": "COMPLETE_AT_BOUNDED_STATIC_BUILTIN_SPHERE_SCOPE"
+    },
+    "curve": {
+      "path": "history/internal_docs/goal5834_final_adversarial_self_review_result_20260830.json",
+      "sha256": "748cc96f05c12230d1a60f53c3b2f191d1221a331ac65c106e20df1548ac6e6f",
+      "status": "INCOMPLETE__POSITIVE_PROVIDER_EVENT_PATH__CAPSULE_NUMERIC_DOMAIN_NOT_ESTABLISHED"
+    }
+  },
+  "current_counts": {
+    "optix9_build_input_kinds": 6,
+    "optix9_leaf_primitive_kinds": 4,
+    "rtdl_public_gpu_leaf_primitive_kind_presence": 4,
+    "build_input_ratio": "4/6",
+    "leaf_primitive_ratio": "4/4",
+    "prospective_frozen_core_new_shape_exams": 0,
+    "external_human_authors": 0,
+    "application_semantic_shape_denominator": "OPEN_NO_FINITE_N"
+  },
+  "coverage_semantics": {
+    "classification": "KIND_PRESENCE_ONLY__NOT_FEATURE_COMPLETE",
+    "instantiated_leaf_build_input_members": [
+      "TRIANGLES",
+      "CUSTOM_PRIMITIVES",
+      "SPHERES",
+      "CURVES"
+    ],
+    "not_category_closure": true,
+    "not_application_semantic_coverage": true,
+    "not_prospective_generalization": true,
+    "not_cross_gpu_numeric_theorem": true,
+    "not_feature_percentage": true
+  },
+  "support_matrix": [
+    {
+      "feature": "custom_aabb_leaf_primitive",
+      "public_lifecycle": "SUPPORTED_FIXED_CONSTRUCTOR",
+      "true_gpu_evidence": "SUPPORTED",
+      "semantic_ceiling": "BOUNDED_RELATION_CONSTRUCTOR_ONLY"
+    },
+    {
+      "feature": "builtin_triangle_leaf_primitive",
+      "public_lifecycle": "SUPPORTED_FIXED_AND_BOUNDED_AUTHORING",
+      "true_gpu_evidence": "SUPPORTED",
+      "semantic_ceiling": "FROZEN_TRIANGLE_TEMPLATE_ONLY"
+    },
+    {
+      "feature": "builtin_sphere_leaf_primitive",
+      "public_lifecycle": "SUPPORTED_FIXED_CONSTRUCTOR",
+      "true_gpu_evidence": "SUPPORTED_ON_ONE_GTX1070",
+      "semantic_ceiling": "BOUNDED_STATIC_SPHERE_SCOPE"
+    },
+    {
+      "feature": "builtin_round_linear_curve_leaf_primitive",
+      "public_lifecycle": "SUPPORTED_FIXED_PROVIDER_EVENT_CONSTRUCTOR",
+      "true_gpu_evidence": "SUPPORTED_ON_ONE_GTX1070",
+      "semantic_ceiling": "FOUR_FIXED_FIXTURES_AND_PROVIDER_EVENT_OUTPUTS__GENERAL_CAPSULE_DOMAIN_NOT_ESTABLISHED"
+    },
+    {
+      "feature": "instances_scene_graph",
+      "public_lifecycle": "UNSUPPORTED",
+      "true_gpu_evidence": "NONE"
+    },
+    {
+      "feature": "instance_pointer_scene_graph",
+      "public_lifecycle": "UNSUPPORTED",
+      "true_gpu_evidence": "NONE"
+    }
+  ],
+  "claim_ceiling": {
+    "allowed": [
+      "RTDL now has public GPU provider kind presence for all four coarse OptiX 9 leaf primitive build-input classes.",
+      "The four-of-four statement is kind presence only and does not measure feature completeness, application coverage, semantic-shape coverage, or generalization.",
+      "Curve presence means an executable provider-event path with fixed positive fixtures; mathematical capsule equivalence remains unestablished."
+    ],
+    "forbidden": [
+      "complete OptiX geometry support",
+      "all RT protocols",
+      "all repurposed applications",
+      "general curve or swept-sphere correctness",
+      "prospective new-application generalization",
+      "feature-complete spheres or curves",
+      "cross-GPU numeric stability"
+    ]
+  },
+  "external_review_requested": false,
+  "external_review_authorized": false
+}

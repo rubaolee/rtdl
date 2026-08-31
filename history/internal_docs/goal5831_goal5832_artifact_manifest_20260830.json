@@ -1,0 +1,64 @@
+{
+  "schema": "rtdl.goal5831_goal5832.artifact_manifest.v1",
+  "date": "2026-08-30",
+  "repo_head_text": "1af120d187228035db733ce690de3a3bf5b54ee5",
+  "git_object_status": "BROKEN_BAD_OBJECT_HEAD_NO_COMMIT_CLAIM",
+  "external_review_requested": false,
+  "artifacts": [
+    {
+      "path": "history/internal_docs/goal5831_public_gpu_surface_terminology_and_denominator_result_20260830.json",
+      "bytes": 6739,
+      "sha256": "17a4069f60912676a267609885732295d2a3dec21ca0785e9cc443fc0543eaee"
+    },
+    {
+      "path": "history/internal_docs/goal5831_public_gpu_surface_terminology_and_denominator_report_20260830.md",
+      "bytes": 3923,
+      "sha256": "af016e4745cfe5ffa0e96120c990590d0c3ebac75630ec00506f04b442c37bcc"
+    },
+    {
+      "path": "history/internal_docs/goal5832_protocol_shape_algebra_authority_v1_20260830.json",
+      "bytes": 14028,
+      "sha256": "71f7a88ea75e0661735b62b3a20ab02dfa4009130cc7adf3fc7ed6185f316269"
+    },
+    {
+      "path": "history/internal_docs/goal5832_protocol_shape_algebra_result_20260830.json",
+      "bytes": 2396,
+      "sha256": "c3b40faecad8b9ac398280c5e228ac911242f32578526e9b130e4a979ebe5a61"
+    },
+    {
+      "path": "history/internal_docs/goal5832_protocol_shape_algebra_equivalence_and_claim_ceiling_report_20260830.md",
+      "bytes": 4278,
+      "sha256": "37950379653fa41a01dcff647be453aea99fa3c1139f24c6d81d17d8d306150e"
+    },
+    {
+      "path": "history/internal_docs/self_review_goal5831_goal5832_cgo_family_scope_20260830.md",
+      "bytes": 4627,
+      "sha256": "7e738b24ed53946ccac9506b69c35b1f212d031bca613e8413bb7ac538f64b65"
+    },
+    {
+      "path": "docs/v4/protocol_family_algebra_v1.md",
+      "bytes": 7995,
+      "sha256": "44b7d4b9966184df41ec878bc6af1b48782b247d300da6e3efc8b8cd2e895ede"
+    },
+    {
+      "path": "scripts/goal5832_protocol_shape_algebra.py",
+      "bytes": 14966,
+      "sha256": "3a21b6501626db9936635187f474296644b32ba2c4e75631e6d0ebd6e3e791cd"
+    },
+    {
+      "path": "tests/goal5832_protocol_shape_algebra_test.py",
+      "bytes": 7537,
+      "sha256": "57d6a25e1d2bd2ec8d5d5c0badfa98e214a434cb39416caaf497037d42aa5335"
+    },
+    {
+      "path": "paper/cgo2027/main.tex",
+      "bytes": 85429,
+      "sha256": "f384b19af03dbae2005ef82ebb9bf56cb8be69a5cc5ca81126126a74448f5a0a"
+    },
+    {
+      "path": "paper/cgo2027/goal5832_main.pdf",
+      "bytes": 643378,
+      "sha256": "c1f0868abf9effd6a5a0858a3dafab102700bb6102ff9fb4c3d59eac612865bf"
+    }
+  ]
+}

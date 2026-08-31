@@ -1,0 +1,338 @@
+from __future__ import annotations
+
+import json
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+import unittest
+
+from rtdsl.optimized_optix_embree_comparison_packet import (
+    optimized_optix_embree_comparison_packet,
+    validate_optimized_optix_embree_comparison_packet,
+)
+
+
+ROOT = Path(__file__).resolve().parents[1]
+SCRIPT = ROOT / "scripts" / "rtdl_optimized_optix_embree_comparison_packet.py"
+REPORT = ROOT / "docs" / "reports" / "goal4341_optimized_embree_optix_comparison_packet_2026-06-11.md"
+JSON_ARTIFACT = ROOT / "docs" / "reports" / "goal4341_optimized_embree_optix_comparison_packet_2026-06-11.json"
+V2_12_REPORT = ROOT / "docs" / "reports" / "goal4359_optimized_embree_optix_comparison_packet_v2_12_2026-06-13.md"
+V2_12_JSON_ARTIFACT = (
+    ROOT / "docs" / "reports" / "goal4359_optimized_embree_optix_comparison_packet_v2_12_2026-06-13.json"
+)
+GEMINI_REVIEW = (
+    ROOT
+    / "docs"
+    / "reviews"
+    / "goal4341_gemini_review_goal4339_4340_embree_aabb_optimization_2026-06-11.md"
+)
+CLAUDE_REVIEW = (
+    ROOT
+    / "docs"
+    / "reviews"
+    / "goal4341_claude_review_goal4339_4340_embree_aabb_optimization_2026-06-11.md"
+)
+CONSENSUS_REPORT = (
+    ROOT
+    / "docs"
+    / "reports"
+    / "goal4341_external_review_consensus_and_optimized_comparison_closeout_2026-06-11.md"
+)
+
+
+class Goal4341OptimizedEmbreeOptixComparisonPacketTest(unittest.TestCase):
+    def setUp(self) -> None:
+        self.payload = optimized_optix_embree_comparison_packet()
+
+    def test_validation_accepts_one_measured_pair(self) -> None:
+        validation = validate_optimized_optix_embree_comparison_packet()
+        self.assertEqual("accept", validation["status"], validation["errors"])
+        self.assertEqual(1, self.payload["summary"]["measured_pair_count"])
+        self.assertEqual(3, self.payload["summary"]["scale_comparison_row_count"])
+        self.assertEqual(2, self.payload["summary"]["same_stream_comparison_row_count"])
+        self.assertEqual(5, self.payload["summary"]["same_contract_backend_comparison_row_count"])
+        self.assertEqual(10, self.payload["summary"]["internal_query_median_ratio_count"])
+        self.assertEqual(0, self.payload["summary"]["boundary_limited_phase_ratio_count"])
+        self.assertEqual(0, self.payload["summary"]["same_contract_scale_pair_required_count"])
+        self.assertEqual(0, self.payload["summary"]["contract_split_pair_required_count"])
+        self.assertEqual(10, self.payload["summary"]["app_count"])
+        self.assertFalse(self.payload["public_speedup_claim_authorized"])
+        self.assertFalse(self.payload["release_authorized"])
+
+    def test_librts_pair_uses_optimized_embree_and_same_scale_optix(self) -> None:
+        pair = self.payload["measured_pairs"][0]
+        self.assertEqual("librts_spatial_index", pair["app"])
+        self.assertEqual("generic_prepared_aabb_index_query_2d", pair["contract"])
+        self.assertEqual("embree_native_aabb_collision_index", pair["embree_cpu_optimized"]["native_index"])
+        self.assertEqual("optix_prepared_aabb_index", pair["optix_rt"]["native_index"])
+        self.assertTrue(pair["goal4340_embree_validation"]["small_validated_matches_cpu_reference"])
+        self.assertGreater(pair["optimized_embree_query_median_speedup_vs_old_columnar_fallback"], 1000.0)
+        self.assertAlmostEqual(pair["optix_query_median_faster_than_optimized_embree"], 18.798465566341978)
+        self.assertTrue(pair["query_median_ratio_authorized_for_internal_packet"])
+        self.assertFalse(pair["elapsed_total_ratio_authorized"])
+        self.assertFalse(pair["public_speedup_claim_authorized"])
+
+    def test_scale_rows_separate_clean_query_ratios_from_boundary_limited_rows(self) -> None:
+        rows = {row["app"]: row for row in self.payload["scale_comparison_rows"]}
+        self.assertEqual(
+            {
+                "hausdorff_xhd",
+                "contact_manifold",
+                "triangle_counting",
+            },
+            set(rows),
+        )
+        clean = {
+            app
+            for app, row in rows.items()
+            if row["ratio_authorization"] == "internal_query_phase_ratio_only_not_public_claim"
+        }
+        boundary = {
+            app
+            for app, row in rows.items()
+            if row["ratio_authorization"].startswith("boundary_limited")
+        }
+        self.assertEqual({"hausdorff_xhd", "contact_manifold", "triangle_counting"}, clean)
+        self.assertEqual(set(), boundary)
+        self.assertEqual("embree", rows["contact_manifold"]["faster_backend_for_metric"])
+        self.assertEqual("optix", rows["triangle_counting"]["faster_backend_for_metric"])
+
+    def test_rayjoin_same_stream_rows_are_internal_only_count_pairs(self) -> None:
+        rows = self.payload["same_stream_comparison_rows"]
+        self.assertEqual(2, len(rows))
+        by_workload = {row["workload"]: row for row in rows}
+        self.assertEqual({"lsi", "pip"}, set(by_workload))
+        self.assertGreater(by_workload["lsi"]["embree_metric_divided_by_optix_metric"], 40.0)
+        self.assertGreater(by_workload["pip"]["embree_metric_divided_by_optix_metric"], 1.0)
+        for row in rows:
+            self.assertEqual("spatial_rayjoin", row["app"])
+            self.assertEqual(
+                "internal_same_stream_scalar_count_only_not_public_claim",
+                row["ratio_authorization"],
+            )
+            self.assertTrue(row["correctness"]["cross_backend_count_match"], row)
+            self.assertFalse(row["correctness"]["row_stream_materialized"], row)
+            self.assertFalse(row["public_speedup_claim_authorized"], row)
+
+    def test_same_contract_backend_rows_are_internal_only(self) -> None:
+        rows = self.payload["same_contract_backend_comparison_rows"]
+        self.assertEqual(5, len(rows))
+        by_app = {row["app"]: row for row in rows}
+        row = by_app["rtnn"]
+        self.assertEqual("rtnn_same_contract_raw_ranked_summary", row["comparison_table"])
+        self.assertEqual(
+            "internal_same_contract_raw_row_query_only_not_public_rt_core_claim",
+            row["ratio_authorization"],
+        )
+        self.assertGreater(row["embree_metric_divided_by_optix_metric"], 1.0)
+        correctness = row["correctness"]
+        self.assertTrue(correctness["optix_ok"])
+        self.assertTrue(correctness["embree_ok"])
+        self.assertTrue(correctness["row_count_match"])
+        self.assertTrue(correctness["integer_signature_match"])
+        self.assertTrue(correctness["sum_distance_match_exact"])
+        self.assertFalse(correctness["rt_core_neighbor_search_claim_authorized"])
+        self.assertFalse(row["public_speedup_claim_authorized"])
+        self.assertFalse(row["rt_core_neighbor_search_claim_authorized"])
+        rt_dbscan = by_app["rt_dbscan"]
+        self.assertEqual(
+            "rt_dbscan_same_contract_configured_numba_column_signature",
+            rt_dbscan["comparison_table"],
+        )
+        self.assertEqual(
+            "internal_same_contract_configured_numba_route_only_not_public_claim",
+            rt_dbscan["ratio_authorization"],
+        )
+        self.assertGreater(rt_dbscan["embree_metric_divided_by_optix_metric"], 50.0)
+        correctness = rt_dbscan["correctness"]
+        self.assertTrue(correctness["signature_match"])
+        self.assertTrue(correctness["same_numba_continuation"])
+        self.assertTrue(correctness["same_output_contract"])
+        self.assertTrue(correctness["optix_rt_core_accelerated"])
+        self.assertFalse(correctness["embree_rt_core_accelerated"])
+        self.assertGreater(correctness["threshold_phase_ratio"], 100.0)
+        self.assertFalse(rt_dbscan["public_speedup_claim_authorized"])
+        barnes_hut = by_app["barnes_hut"]
+        self.assertEqual(
+            "barnes_hut_same_contract_native_node_coverage",
+            barnes_hut["comparison_table"],
+        )
+        self.assertEqual(
+            "internal_same_contract_native_node_coverage_only_not_public_claim",
+            barnes_hut["ratio_authorization"],
+        )
+        self.assertGreater(barnes_hut["embree_metric_divided_by_optix_metric"], 1.5)
+        correctness = barnes_hut["correctness"]
+        self.assertTrue(correctness["same_body_count_radius_repeat_warmup"])
+        self.assertTrue(correctness["same_output_contract"])
+        self.assertTrue(correctness["covered_body_count_match"])
+        self.assertTrue(correctness["oracle_match_both"])
+        self.assertEqual(1_000_000, correctness["body_count"])
+        self.assertTrue(correctness["optix_rt_core_accelerated"])
+        self.assertFalse(correctness["embree_rt_core_accelerated"])
+        self.assertFalse(barnes_hut["public_speedup_claim_authorized"])
+        robot = by_app["robot_collision"]
+        self.assertEqual(
+            "robot_collision_same_contract_prepared_buffer_flags",
+            robot["comparison_table"],
+        )
+        self.assertEqual(
+            "internal_same_contract_prepared_buffer_flags_only_not_public_claim",
+            robot["ratio_authorization"],
+        )
+        self.assertGreater(robot["embree_metric_divided_by_optix_metric"], 1.5)
+        correctness = robot["correctness"]
+        self.assertTrue(correctness["same_contract"])
+        self.assertTrue(correctness["same_mode_family"])
+        self.assertTrue(correctness["same_dataset_pose_obstacle_link_repeat_warmup"])
+        self.assertTrue(correctness["validation_same_scale"])
+        self.assertTrue(correctness["validation_probe_reference_signature_match"])
+        self.assertEqual(4096, correctness["group_count"])
+        self.assertGreater(correctness["traversal_phase_ratio"], 5.0)
+        self.assertFalse(robot["public_speedup_claim_authorized"])
+        raydb = by_app["raydb_style"]
+        self.assertEqual(
+            "raydb_same_contract_prepared_grouped_reduction",
+            raydb["comparison_table"],
+        )
+        self.assertEqual(
+            "internal_same_contract_prepared_grouped_reduction_only_not_public_claim",
+            raydb["ratio_authorization"],
+        )
+        self.assertGreater(raydb["embree_metric_divided_by_optix_metric"], 20.0)
+        correctness = raydb["correctness"]
+        self.assertTrue(correctness["same_mode"])
+        self.assertTrue(correctness["same_generic_contract_family"])
+        self.assertTrue(correctness["same_fixture_rows_groups_repeat_warmup"])
+        self.assertTrue(correctness["matches_cpu_reference_both"])
+        self.assertEqual(262144, correctness["row_count"])
+        self.assertEqual(1024, correctness["group_count"])
+        self.assertGreater(correctness["traversal_phase_ratio"], 50.0)
+        self.assertTrue(correctness["optix_rt_core_accelerated"])
+        self.assertFalse(correctness["embree_rt_core_accelerated"])
+        self.assertFalse(raydb["public_speedup_claim_authorized"])
+
+    def test_app_table_marks_ratio_and_contract_choice_buckets(self) -> None:
+        rows = {row["app"]: row for row in self.payload["planning_rows"]}
+        self.assertEqual(set(rows), {
+            "hausdorff_xhd",
+            "spatial_rayjoin",
+            "rt_dbscan",
+            "robot_collision",
+            "contact_manifold",
+            "raydb_style",
+            "barnes_hut",
+            "librts_spatial_index",
+            "rtnn",
+            "triangle_counting",
+        })
+        ratio_rows = [
+            row["app"]
+            for row in self.payload["planning_rows"]
+            if row["query_median_ratio_authorized_for_internal_packet"]
+        ]
+        self.assertEqual(
+            [
+                "hausdorff_xhd",
+                "spatial_rayjoin",
+                "rt_dbscan",
+                "robot_collision",
+                "contact_manifold",
+                "raydb_style",
+                "barnes_hut",
+                "librts_spatial_index",
+                "rtnn",
+                "triangle_counting",
+            ],
+            ratio_rows,
+        )
+        boundary_rows = [
+            row["app"] for row in self.payload["planning_rows"] if row["boundary_limited_phase_ratio_only"]
+        ]
+        self.assertEqual([], boundary_rows)
+        self.assertEqual(rows["spatial_rayjoin"]["goal4341_status"], "same_stream_scalar_count_pairs_available")
+        self.assertEqual(rows["librts_spatial_index"]["goal4341_status"], "measured_same_contract_optimized_pair")
+        self.assertEqual(
+            rows["barnes_hut"]["goal4341_status"],
+            "same_contract_native_node_coverage_available",
+        )
+        self.assertEqual(
+            rows["rt_dbscan"]["goal4341_status"],
+            "same_contract_configured_numba_route_available",
+        )
+        self.assertEqual(
+            rows["rtnn"]["goal4341_status"],
+            "same_contract_raw_rows_available_not_rt_core_proof",
+        )
+        self.assertEqual(
+            rows["raydb_style"]["goal4341_status"],
+            "same_contract_prepared_grouped_reduction_available",
+        )
+        for app, row in rows.items():
+            self.assertIn("next_action", row)
+            self.assertNotEqual("", row["next_action"])
+            self.assertFalse(row["public_speedup_claim_authorized"], app)
+            self.assertFalse(row["release_authorized"], app)
+
+    def test_script_writes_report_and_json(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            out_json = Path(tmp) / "packet.json"
+            out_md = Path(tmp) / "packet.md"
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--output-json",
+                    str(out_json),
+                    "--output-markdown",
+                    str(out_md),
+                ],
+                cwd=ROOT,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=False,
+            )
+            self.assertEqual(0, completed.returncode, completed.stderr)
+            payload = json.loads(out_json.read_text(encoding="utf-8"))
+            report = out_md.read_text(encoding="utf-8")
+            self.assertEqual("accept", payload["validation"]["status"])
+            self.assertIn("Goal4359", report)
+            self.assertIn("not public speedup authorization", report)
+            self.assertIn("librts_spatial_index", report)
+            self.assertIn("RayJoin Same-Stream Rows", report)
+            self.assertIn("Same-Contract Backend Rows", report)
+            self.assertIn("Scale Rows", report)
+            self.assertIn("No active boundary-limited row remains", report)
+
+    def test_committed_report_and_json_artifact_are_present(self) -> None:
+        text = V2_12_REPORT.read_text(encoding="utf-8")
+        payload = json.loads(V2_12_JSON_ARTIFACT.read_text(encoding="utf-8"))
+        self.assertIn("Optimized Embree vs OptiX", text)
+        self.assertIn("RayJoin Same-Stream Rows", text)
+        self.assertIn("Same-Contract Backend Rows", text)
+        self.assertIn("measured_same_contract_optimized_pair", text)
+        self.assertIn("internal_query_ratio_candidate_ready", text)
+        self.assertNotIn("same_scale_boundary_limited", text)
+        self.assertNotIn("contract_split_pair_required", text)
+        self.assertEqual("accept", payload["validation"]["status"])
+        self.assertEqual(2, payload["summary"]["same_stream_comparison_row_count"])
+        self.assertEqual(5, payload["summary"]["same_contract_backend_comparison_row_count"])
+        self.assertFalse(payload["summary"]["public_speedup_claim_authorized"])
+
+    def test_external_reviews_and_consensus_record_boundaries(self) -> None:
+        gemini = GEMINI_REVIEW.read_text(encoding="utf-8")
+        claude = CLAUDE_REVIEW.read_text(encoding="utf-8")
+        consensus = CONSENSUS_REPORT.read_text(encoding="utf-8")
+
+        self.assertIn("`accept`", gemini)
+        self.assertIn("accept-with-boundary", claude.lower())
+        self.assertIn("Embree 3 availability quirk", consensus)
+        self.assertIn("embree_aabb_index_2d_available()", consensus)
+        self.assertIn("not public speedup authorization", consensus)
+        self.assertIn("Ran 26 tests", consensus)
+
+
+if __name__ == "__main__":
+    unittest.main()

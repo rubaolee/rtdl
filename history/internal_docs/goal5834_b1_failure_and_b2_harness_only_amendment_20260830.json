@@ -1,0 +1,42 @@
+{
+  "schema": "rtdl.goal5834_b1.failure_and_b2_amendment.v1",
+  "date": "2026-08-30",
+  "goal": "5834-B1",
+  "status": "TERMINAL_NEGATIVE__B1_REGISTERED_FIXTURE_NOT_EXECUTABLE_AS_FROZEN",
+  "failure_class": "PRELAUNCH_EXECUTABLE_LIVENESS_HARNESS_DEFECT",
+  "scientific_boolean_result_exists": false,
+  "raw_gpu_receipt_exists": false,
+  "registered_performance_timing_count": 0,
+  "failure": {
+    "error_type": "RuntimeError",
+    "error_text": "curve executable live-registry identity drift",
+    "failure_site": "v4_curve_optix_compiler.consume_verified_curve_executable -> _rederive",
+    "cause": "VerifiedCurveExecutable is single-use and its live-registry entry is consumed by the first static-scene prepare; the B1 worker incorrectly attempted to prepare eleven distinct static scenes from one materialization.",
+    "fixture_specific": false,
+    "native_or_optix_error": false,
+    "provider_boolean_mismatch_observed": false,
+    "partial_launch_count_directly_journaled": false,
+    "control_flow_inference": "The traceback is reachable on the second prepare only after the first row's primary, repeat, and reverse-order executions return. Those partial bits were not durably journaled and are not scientific evidence."
+  },
+  "custody": {
+    "fixture_authority_sha256": "0f13ab8a7408c253114c56a51645c015d0e5e36ca96a4290c9dd1a2ba700adad",
+    "worker_inputs_sha256": "55eeff377c93c32fed8cc326ad975cb9d2437df85812e30b9d916b3e7cc581a4",
+    "b1_source_projection_sha256": "443061f242c5205e4408d255f4511698e21b6e79f9c585c24a68004afdcb9cc5",
+    "b1_target_preaction_sha256": "47fcd2768bb5db5fa86246c63d412014cd042cc82a582546ac99d67635c32a39",
+    "fresh_native_sha256": "065599472ada1a8fa4cf9ecbb46ee2aa76a4d90ec099f6626b171b4720553d73",
+    "boolean_executable_sha256": "16a752edb5156d69007ba7bbd285e9051d2acd513644cc081a1ba9211127de68",
+    "preserved_target_preaction": "history/internal_docs/goal5834_b1_home_failure_20260830/TARGET_PREACTION.json",
+    "preserved_build_log_sha256": "7595f36757d6df475666ee3cf5db69be91e8600300c4e701196d3a4c2722dcaa"
+  },
+  "b2": {
+    "authorized": true,
+    "authorization_scope": "HARNESS_ONLY__SAME_FROZEN_FIXTURES_AND_EXPECTED_BITS",
+    "required_change": "Materialize one identity-equal single-use executable for each distinct static scene; change no Callback IR, schema, wrapper, native provider, fixture, normalization, margin, oracle, or expected output.",
+    "must_inherit_fixture_authority_sha256": "0f13ab8a7408c253114c56a51645c015d0e5e36ca96a4290c9dd1a2ba700adad",
+    "must_inherit_worker_inputs_sha256": "55eeff377c93c32fed8cc326ad975cb9d2437df85812e30b9d916b3e7cc581a4",
+    "result_accepted_unconditionally": true,
+    "goal5835_authorized": false,
+    "performance_authorized": false,
+    "external_review_requested": false
+  }
+}

@@ -1,0 +1,132 @@
+{
+  "all_members_regular_read_only": true,
+  "archive_bytes": 207405,
+  "archive_sha256": "ce92feb34baf7e168a1defcdfa6c0ce90d8a532f405e4225d446ef1389b15c4e",
+  "member_count": 24,
+  "members": [
+    {
+      "bytes": 19682,
+      "path": "src/rtdsl/v4_sphere_optix_wrapper_codegen.py",
+      "sha256": "4a8a75fcfdd597f4a07c754af9a4bba115129d0f30da5cc3f0d70f7d70f28f01"
+    },
+    {
+      "bytes": 13781,
+      "path": "src/rtdsl/v4_sphere_optix_compiler.py",
+      "sha256": "f4801b587396c1cbbe755aeafdba4eb00ab361cae4692426e682da3a68c4caa3"
+    },
+    {
+      "bytes": 43826,
+      "path": "src/rtdsl/v4_curve_physical_schema.py",
+      "sha256": "a0ccb359a2e759ca4c86a2569c0c36c2a73d905a6a66145ada9a02a05ead524a"
+    },
+    {
+      "bytes": 4747,
+      "path": "src/rtdsl/v4_curve_callback_abi.py",
+      "sha256": "71a27e44845531b495e3c377d251ccf1df8399b4bd11337552cce7132732decd"
+    },
+    {
+      "bytes": 2433,
+      "path": "src/rtdsl/v4_curve_optix_wrapper_codegen.py",
+      "sha256": "176cef4ce6e8a7c4a56e5d813e11d7c52d3c6cc118bee8372c90a65a7304aaf9"
+    },
+    {
+      "bytes": 2130,
+      "path": "src/rtdsl/v4_curve_callback_numba_codegen.py",
+      "sha256": "a83756c74fa18f718b61c941d5a22fce89d9566908443289ac73661cf9e357ed"
+    },
+    {
+      "bytes": 8730,
+      "path": "src/rtdsl/v4_builtin_curve_standard_library.py",
+      "sha256": "23cb357263c3b2343738d3b1019ce8caa091e82f17e8dcc9b01b8e4c76382502"
+    },
+    {
+      "bytes": 8675,
+      "path": "src/rtdsl/v4_curve_optix_compiler.py",
+      "sha256": "0f9e891ccaefba89d3da7c02119b3f2d32b9deff7b6d87ef370e063f65add301"
+    },
+    {
+      "bytes": 35198,
+      "path": "src/rtdsl/v4_curve_prepared_runtime.py",
+      "sha256": "98c698048501713d46dab03335774bf7ba15ee3fffeec529dbef43975e48a5ed"
+    },
+    {
+      "bytes": 15974,
+      "path": "src/rtdsl/v4_public_builtin_curve.py",
+      "sha256": "3ec1f0903ad22290e4f8013ef4a2eff6e1fa35d22a7710861f6e080105320523"
+    },
+    {
+      "bytes": 1663,
+      "path": "src/rtdsl/v4_curve.py",
+      "sha256": "9fe88e6669ea4fe1edccf4e73659dfc80a8c7c113b5212859eff14240d446b85"
+    },
+    {
+      "bytes": 65,
+      "path": "examples/curve_boolean_contact/__init__.py",
+      "sha256": "d73f64e613d884e997ec855cf5c49f7557c1834219d292f50c8bead92e6d9c16"
+    },
+    {
+      "bytes": 8816,
+      "path": "examples/curve_boolean_contact/independent_oracle.py",
+      "sha256": "61111750c21441bea1e5547a86bca1e1b8f24c48152f172f46ea72295b46ddfb"
+    },
+    {
+      "bytes": 14449,
+      "path": "examples/curve_boolean_contact/fixtures.py",
+      "sha256": "543d5e4c00e2451621ffb497e1582a59b193385216efd6ba79339c8a83eb4844"
+    },
+    {
+      "bytes": 389380,
+      "path": "src/native/optix/rtdl_optix_core.cpp",
+      "sha256": "427348f9895c1dc8b6fb2af6ad75b6199e15ad3d0972d624b1cdb814629442fb"
+    },
+    {
+      "bytes": 346630,
+      "path": "src/native/optix/rtdl_optix_v4_callback_poc.cpp",
+      "sha256": "ad86fb096e3b70b0826c17cff8fa22e6c273676dd0c4814ede0a4a44126eb154"
+    },
+    {
+      "bytes": 537580,
+      "path": "src/native/optix/rtdl_optix_api.cpp",
+      "sha256": "1483a933b206d91bd77b9f3db943f4e2e6959cbbed56ba9f59938e6b7a0b0246"
+    },
+    {
+      "bytes": 12017,
+      "path": "tests/goal5834_b1_curve_boolean_specialization_test.py",
+      "sha256": "fb8bd0b296661d309bc3f76eac8b604f9f407f9be1991b465bc4ff6c5df58bc4"
+    },
+    {
+      "bytes": 6177,
+      "path": "tests/goal5834_b1_boolean_fixture_oracle_test.py",
+      "sha256": "05965708d5170619faace6e07f91e60864392419772b7df263ab77ebc85f0885"
+    },
+    {
+      "bytes": 10776,
+      "path": "tests/goal5834_builtin_curve_public_path_test.py",
+      "sha256": "d8c2786cbde40fe7e440132b6ed2e7f709e47023122ccdb545ac0b3e5a59fc46"
+    },
+    {
+      "bytes": 9269,
+      "path": "tests/goal5834_curve_abi_physical_leaf_audit_test.py",
+      "sha256": "bf0d02b82f4b4e6386ff3d95956aa688215887c4138c8143e87b332ca667f951"
+    },
+    {
+      "bytes": 7664,
+      "path": "scripts/goal5834_b1_prepare_home_execution.py",
+      "sha256": "770ecb8c674996091d8963a486b57c1c1a3c24c8c0da3995e81a7ec3f109ca38"
+    },
+    {
+      "bytes": 13859,
+      "path": "scripts/goal5834_b1_home_boolean_worker.py",
+      "sha256": "74cf0a586b831dcc29b1ae90314ab0c82de5466f29485e0c810d1097bdf2f024"
+    },
+    {
+      "bytes": 11289,
+      "path": "scripts/goal5834_b1_evaluate_raw_boolean_receipt.py",
+      "sha256": "fe980dc54da5c7eac028b0df801e26cc3ea8f61f6a8f0c239db59b470fc340de"
+    }
+  ],
+  "native_source_changed_from_goal5834": false,
+  "schema": "rtdl.goal5834_b3.executed_source_projection.v1",
+  "twin_byte_identical": true,
+  "uid_gid_mtime_zero": true
+}

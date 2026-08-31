@@ -1,0 +1,179 @@
+from __future__ import annotations
+
+from typing import Any
+
+
+V1_5_STABLE_REDUCTION_PRIMITIVES = (
+    "COUNT_HITS",
+    "REDUCE_FLOAT(MIN)",
+    "REDUCE_FLOAT(MAX)",
+    "REDUCE_FLOAT(SUM)",
+    "REDUCE_INT(COUNT)",
+    "REDUCE_INT(SUM)",
+)
+
+V1_5_EXPERIMENTAL_PRIMITIVES = ("COLLECT_K_BOUNDED",)
+V1_5_GROUPED_THRESHOLD_BOOL_RESULT_LAYOUT = "grouped_threshold_bool"
+V1_5_GROUPED_REDUCTION_RESULT_LAYOUTS = (
+    V1_5_GROUPED_THRESHOLD_BOOL_RESULT_LAYOUT,
+    "grouped_int64_count",
+    "grouped_int64_sum",
+    "grouped_float64_sum",
+    "bounded_pairs_plus_grouped_float64_score",
+)
+
+
+def v1_5_grouped_reduction_contracts() -> tuple[dict[str, Any], ...]:
+    """Return the v1.5 grouped-reduction contracts for migrated rows.
+
+    These rows are internal contract metadata, not public claims. They
+    deliberately express grouped boolean output as grouped integer count plus a
+    boolean result layout, avoiding a new stable primitive outside the accepted
+    v1.5 primitive set.
+    """
+    return (
+        {
+            "app": "robot_collision_screening",
+            "subpath": "prepared_pose_flags",
+            "status": "pod_verified_generic_non_public",
+            "input_primitive": "ANY_HIT",
+            "reduction_primitive": "REDUCE_INT(COUNT)",
+            "group_key": "pose_id",
+            "result_layout": V1_5_GROUPED_THRESHOLD_BOOL_RESULT_LAYOUT,
+            "dtype_policy": "uint32 hit counts; boolean flag is count > 0",
+            "determinism_policy": "integer count is deterministic for fixed ray order",
+            "correctness_contract": "per-pose flag must match app-specific prepared_pose_flags oracle",
+            "unblocks": "replaces app-specific pose grouping for the verified prepared_pose_flags subpath",
+            "claim_boundary": (
+                "grouped reduction metadata only; not a new GROUPED_* primitive, "
+                "not whole-app robot collision planning, and not public speedup wording"
+            ),
+        },
+        {
+            "app": "database_analytics",
+            "subpath": "sales_risk_grouped_count",
+            "status": "pod_verified_generic_non_public",
+            "input_primitive": "numeric_predicate_rows",
+            "reduction_primitive": "REDUCE_INT(COUNT)",
+            "group_key": "risk_bucket_or_region_id",
+            "result_layout": "grouped_int64_count",
+            "dtype_policy": "signed int64 counts; overflow is a contract error",
+            "determinism_policy": "integer count is deterministic after predicate lowering",
+            "correctness_contract": "group counts must match Python compact-summary oracle exactly",
+            "unblocks": "generic DB compact count wrapper for Embree and OptiX",
+            "claim_boundary": (
+                "grouped reduction metadata only; not a new GROUPED_* primitive, "
+                "not SQL or DBMS behavior, and not public speedup wording"
+            ),
+        },
+        {
+            "app": "database_analytics",
+            "subpath": "sales_risk_grouped_sum",
+            "status": "pod_verified_generic_non_public",
+            "input_primitive": "numeric_predicate_rows",
+            "reduction_primitive": "REDUCE_INT(SUM)",
+            "group_key": "risk_bucket_or_region_id",
+            "result_layout": "grouped_int64_sum",
+            "dtype_policy": "signed int64 payload sum; overflow is a contract error",
+            "determinism_policy": "integer sum is deterministic after predicate lowering",
+            "correctness_contract": "group sums must match Python compact-summary oracle exactly",
+            "unblocks": "generic DB compact revenue/risk sum wrapper for Embree and OptiX",
+            "claim_boundary": (
+                "grouped reduction metadata only; not a new GROUPED_* primitive, "
+                "not SQL or DBMS behavior, and not public speedup wording"
+            ),
+        },
+        {
+            "app": "polygon_pair_overlap_area_rows",
+            "subpath": "exact_area_sum",
+            "status": "pod_verified_generic_non_public",
+            "input_primitive": "candidate_overlap_rows",
+            "reduction_primitive": "REDUCE_FLOAT(SUM)",
+            "group_key": "polygon_pair_id",
+            "result_layout": "grouped_float64_sum",
+            "dtype_policy": "float64 preferred; float32 requires explicit tolerance override",
+            "determinism_policy": "backend must publish reduction order or tolerance schema",
+            "correctness_contract": "area sums must satisfy documented abs/rel tolerance versus Python oracle",
+            "unblocks": "moves exact polygon area summary out of app-specific continuation for verified summary mode",
+            "claim_boundary": (
+                "grouped reduction metadata only; not a new GROUPED_* primitive, "
+                "not generic polygon overlay or GIS behavior, and not public speedup wording"
+            ),
+        },
+        {
+            "app": "polygon_set_jaccard",
+            "subpath": "chunked_candidate_scoring",
+            "status": "pod_verified_generic_non_public",
+            "input_primitive": "COLLECT_K_BOUNDED",
+            "reduction_primitive": "REDUCE_FLOAT(SUM)",
+            "group_key": "polygon_pair_id",
+            "result_layout": "bounded_pairs_plus_grouped_float64_score",
+            "dtype_policy": "float64 preferred for scores; bounded collection must report truncation",
+            "determinism_policy": "collection order, overflow, and score tolerance must be explicit",
+            "correctness_contract": "bounded candidate scoring must prove no silent truncation before score reduction",
+            "unblocks": "diagnostic generic Jaccard score reduction after complete bounded collection",
+            "claim_boundary": (
+                "grouped reduction metadata only; not a new GROUPED_* primitive, "
+                "not stable COLLECT_K_BOUNDED promotion, and not public speedup wording"
+            ),
+        },
+    )
+
+
+def validate_v1_5_grouped_reduction_contracts() -> tuple[dict[str, Any], ...]:
+    contracts = v1_5_grouped_reduction_contracts()
+    required_fields = (
+        "app",
+        "subpath",
+        "status",
+        "input_primitive",
+        "reduction_primitive",
+        "group_key",
+        "result_layout",
+        "dtype_policy",
+        "determinism_policy",
+        "correctness_contract",
+        "unblocks",
+        "claim_boundary",
+    )
+    valid_statuses = {
+        "design_required",
+        "experimental_blocked",
+        "pod_verified_generic_non_public",
+    }
+    valid_reductions = set(V1_5_STABLE_REDUCTION_PRIMITIVES)
+    valid_result_layouts = set(V1_5_GROUPED_REDUCTION_RESULT_LAYOUTS)
+    valid_inputs = {"ANY_HIT", "numeric_predicate_rows", "candidate_overlap_rows"} | set(
+        V1_5_EXPERIMENTAL_PRIMITIVES
+    )
+    for contract in contracts:
+        for field in required_fields:
+            if field not in contract:
+                raise ValueError(f"missing grouped reduction contract field: {field}")
+            if not str(contract[field]).strip():
+                raise ValueError(f"grouped reduction contract field must be non-empty: {field}")
+        if contract["status"] not in valid_statuses:
+            raise ValueError(f"invalid grouped reduction status: {contract['status']}")
+        if contract["input_primitive"] not in valid_inputs:
+            raise ValueError(f"invalid grouped reduction input primitive: {contract['input_primitive']}")
+        if contract["reduction_primitive"] not in valid_reductions:
+            raise ValueError(f"invalid grouped reduction primitive: {contract['reduction_primitive']}")
+        if contract["result_layout"] not in valid_result_layouts:
+            raise ValueError(f"invalid grouped reduction result layout: {contract['result_layout']}")
+        if contract["input_primitive"] in V1_5_EXPERIMENTAL_PRIMITIVES:
+            if contract["status"] not in {
+                "experimental_blocked",
+                "pod_verified_generic_non_public",
+            }:
+                raise ValueError("experimental grouped input must stay blocked or verified non-public")
+        if contract["reduction_primitive"].startswith("GROUPED_"):
+            raise ValueError("grouping is a result layout, not a new primitive name")
+        boundary = str(contract["claim_boundary"])
+        for required_boundary in (
+            "grouped reduction metadata only",
+            "not a new GROUPED_* primitive",
+            "not public speedup wording",
+        ):
+            if required_boundary not in boundary:
+                raise ValueError("grouped reduction claim boundary must block broad grouped claims")
+    return contracts

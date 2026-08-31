@@ -1,0 +1,24 @@
+{
+  "schema": "rtdl.goal5803.sql_integer_bag_equijoin.success_gate_interpretation.v1",
+  "date": "2026-08-27",
+  "status": "FROZEN_BEFORE_FIRST_SQL_GPU_CALL",
+  "preaction_sha256": "6cab8acb1b3bc7243232839074852c772fe5644560c923dea2da6328d7e71aa9",
+  "question": "How is the preaction requirement that each successful execution carry behavioral OptiX and status-before-output evidence applied when the public API exposes those facts in different modes?",
+  "controlling_interpretation": {
+    "scientific_execution_unit": "one frozen application case",
+    "required_public_observations_per_sql_case": 2,
+    "fast_observation": "include_diagnostics=false; materialize the public device_status and operation_receipt before accepting output; require status_before_output=true",
+    "diagnostic_observation": "include_diagnostics=true; require physical_executor_classification=optix_traversal_observed",
+    "cross_observation_obligations": [
+      "both outputs equal the independent SQLite oracle exactly",
+      "both outputs equal each other exactly",
+      "both executable_identity_sha256 values equal the frozen executable identity"
+    ],
+    "single_result_claim_allowed": false,
+    "claim_wording": "paired public observations for one application case provide the two required evidence classes; no single API result is claimed to carry both"
+  },
+  "relaxation_or_result_dependent_change": false,
+  "gpu_call_count_at_freeze": 0,
+  "scientific_result_count_at_freeze": 0,
+  "performance_timing_allowed": false
+}

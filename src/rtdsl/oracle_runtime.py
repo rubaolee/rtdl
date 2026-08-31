@@ -1,0 +1,2167 @@
+﻿from __future__ import annotations
+
+import ctypes
+import functools
+import os
+import platform
+import subprocess
+import tempfile
+from bisect import bisect_left
+from bisect import bisect_right
+from pathlib import Path
+from typing import NoReturn
+
+from .db_reference import GroupedAggregateQuery
+from .db_reference import PredicateClause
+from .db_reference import UINT32_MAX
+from .ir import CompiledKernel
+from .db_reference import grouped_count_cpu
+from .db_reference import grouped_sum_cpu
+from .reference import Point3D
+from .reference import ray_triangle_any_hit_cpu
+from .reference import ray_triangle_closest_hit_cpu
+
+
+def _pkg_config_flags(package: str, option: str) -> list[str]:
+    try:
+        result = subprocess.run(
+            ["pkg-config", option, package],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        return []
+    return result.stdout.split()
+
+
+def _geos_pkg_config_flags(option: str) -> list[str]:
+    if platform.system() == "Windows":
+        return []
+    flags = _pkg_config_flags("geos_c", option)
+    if flags:
+        return flags
+    flags = _pkg_config_flags("geos", option)
+    if flags:
+        return flags
+    return ["-lgeos_c"] if option == "--libs" else []
+
+
+def _run_windows_compile(command: list[str], *, vcvars: Path, cwd: Path) -> None:
+    script = "\r\n".join(
+        (
+            "@echo off",
+            f'call "{vcvars}" >nul 2>&1',
+            "if errorlevel 1 exit /b %errorlevel%",
+            subprocess.list2cmdline(command),
+        )
+    )
+    with tempfile.NamedTemporaryFile("w", suffix=".bat", delete=False, encoding="utf-8", newline="") as handle:
+        handle.write(script)
+        script_path = Path(handle.name)
+    try:
+        subprocess.run(["cmd", "/c", str(script_path)], check=True, cwd=cwd)
+    finally:
+        script_path.unlink(missing_ok=True)
+
+
+class _RtdlSegment(ctypes.Structure):
+    _fields_ = [
+        ("id", ctypes.c_uint32),
+        ("x0", ctypes.c_double),
+        ("y0", ctypes.c_double),
+        ("x1", ctypes.c_double),
+        ("y1", ctypes.c_double),
+    ]
+
+
+class _RtdlPoint(ctypes.Structure):
+    _fields_ = [
+        ("id", ctypes.c_uint32),
+        ("x", ctypes.c_double),
+        ("y", ctypes.c_double),
+    ]
+
+
+class _RtdlPoint3D(ctypes.Structure):
+    _fields_ = [
+        ("id", ctypes.c_uint32),
+        ("x", ctypes.c_double),
+        ("y", ctypes.c_double),
+        ("z", ctypes.c_double),
+    ]
+
+
+class _RtdlPolygonRef(ctypes.Structure):
+    _fields_ = [
+        ("id", ctypes.c_uint32),
+        ("vertex_offset", ctypes.c_uint32),
+        ("vertex_count", ctypes.c_uint32),
+    ]
+
+
+class _RtdlTriangle(ctypes.Structure):
+    _fields_ = [
+        ("id", ctypes.c_uint32),
+        ("x0", ctypes.c_double),
+        ("y0", ctypes.c_double),
+        ("x1", ctypes.c_double),
+        ("y1", ctypes.c_double),
+        ("x2", ctypes.c_double),
+        ("y2", ctypes.c_double),
+    ]
+
+
+class _RtdlRay2D(ctypes.Structure):
+    _fields_ = [
+        ("id", ctypes.c_uint32),
+        ("ox", ctypes.c_double),
+        ("oy", ctypes.c_double),
+        ("dx", ctypes.c_double),
+        ("dy", ctypes.c_double),
+        ("tmax", ctypes.c_double),
+    ]
+
+
+class _RtdlLsiRow(ctypes.Structure):
+    _fields_ = [
+        ("left_id", ctypes.c_uint32),
+        ("right_id", ctypes.c_uint32),
+        ("intersection_point_x", ctypes.c_double),
+        ("intersection_point_y", ctypes.c_double),
+    ]
+
+
+class _RtdlPipRow(ctypes.Structure):
+    _fields_ = [
+        ("point_id", ctypes.c_uint32),
+        ("polygon_id", ctypes.c_uint32),
+        ("contains", ctypes.c_uint32),
+    ]
+
+
+class _RtdlOverlayRow(ctypes.Structure):
+    _fields_ = [
+        ("left_polygon_id", ctypes.c_uint32),
+        ("right_polygon_id", ctypes.c_uint32),
+        ("requires_lsi", ctypes.c_uint32),
+        ("requires_pip", ctypes.c_uint32),
+    ]
+
+
+class _RtdlRayHitCountRow(ctypes.Structure):
+    _fields_ = [
+        ("ray_id", ctypes.c_uint32),
+        ("hit_count", ctypes.c_uint32),
+    ]
+
+
+class _RtdlSegmentPolygonHitCountRow(ctypes.Structure):
+    _fields_ = [
+        ("segment_id", ctypes.c_uint32),
+        ("hit_count", ctypes.c_uint32),
+    ]
+
+
+class _RtdlSegmentPolygonAnyHitRow(ctypes.Structure):
+    _fields_ = [
+        ("segment_id", ctypes.c_uint32),
+        ("polygon_id", ctypes.c_uint32),
+    ]
+
+
+class _RtdlPolygonPairOverlapAreaRow(ctypes.Structure):
+    _fields_ = [
+        ("left_polygon_id", ctypes.c_uint32),
+        ("right_polygon_id", ctypes.c_uint32),
+        ("intersection_area", ctypes.c_uint32),
+        ("left_area", ctypes.c_uint32),
+        ("right_area", ctypes.c_uint32),
+        ("union_area", ctypes.c_uint32),
+    ]
+
+
+class _RtdlPolygonSetJaccardRow(ctypes.Structure):
+    _fields_ = [
+        ("intersection_area", ctypes.c_uint32),
+        ("left_area", ctypes.c_uint32),
+        ("right_area", ctypes.c_uint32),
+        ("union_area", ctypes.c_uint32),
+        ("jaccard_similarity", ctypes.c_double),
+    ]
+
+
+class _RtdlPolygonPairAreaSummary(ctypes.Structure):
+    _fields_ = [
+        ("overlap_pair_count", ctypes.c_uint32),
+        ("intersection_area", ctypes.c_uint32),
+        ("left_area", ctypes.c_uint32),
+        ("right_area", ctypes.c_uint32),
+        ("union_area", ctypes.c_uint32),
+    ]
+
+
+class _RtdlPolygonPairCandidate(ctypes.Structure):
+    _fields_ = [
+        ("left_polygon_id", ctypes.c_uint32),
+        ("right_polygon_id", ctypes.c_uint32),
+    ]
+
+
+class _RtdlPointNearestSegmentRow(ctypes.Structure):
+    _fields_ = [
+        ("point_id", ctypes.c_uint32),
+        ("segment_id", ctypes.c_uint32),
+        ("distance", ctypes.c_double),
+    ]
+
+
+class _RtdlFixedRadiusNeighborRow(ctypes.Structure):
+    _fields_ = [
+        ("query_id", ctypes.c_uint32),
+        ("neighbor_id", ctypes.c_uint32),
+        ("distance", ctypes.c_double),
+    ]
+
+
+class _RtdlFixedRadiusSummaryRow(ctypes.Structure):
+    _fields_ = [
+        ("candidate_row_count", ctypes.c_uint32),
+        ("query_count_with_candidate", ctypes.c_uint32),
+        ("neighbor_count_seen", ctypes.c_uint32),
+    ]
+
+
+class _RtdlKnnNeighborRow(ctypes.Structure):
+    _fields_ = [
+        ("query_id", ctypes.c_uint32),
+        ("neighbor_id", ctypes.c_uint32),
+        ("distance", ctypes.c_double),
+        ("neighbor_rank", ctypes.c_uint32),
+    ]
+
+
+class _RtdlKnnSummaryRow(ctypes.Structure):
+    _fields_ = [
+        ("approximate_row_count", ctypes.c_uint32),
+        ("query_count_with_candidate", ctypes.c_uint32),
+        ("max_neighbor_rank", ctypes.c_uint32),
+    ]
+
+
+class _RtdlFrontierVertex(ctypes.Structure):
+    _fields_ = [
+        ("vertex_id", ctypes.c_uint32),
+        ("level", ctypes.c_uint32),
+    ]
+
+
+class _RtdlBfsExpandRow(ctypes.Structure):
+    _fields_ = [
+        ("src_vertex", ctypes.c_uint32),
+        ("dst_vertex", ctypes.c_uint32),
+        ("level", ctypes.c_uint32),
+    ]
+
+
+class _RtdlEdgeSeed(ctypes.Structure):
+    _fields_ = [
+        ("u", ctypes.c_uint32),
+        ("v", ctypes.c_uint32),
+    ]
+
+
+class _RtdlTriangleRow(ctypes.Structure):
+    _fields_ = [
+        ("u", ctypes.c_uint32),
+        ("v", ctypes.c_uint32),
+        ("w", ctypes.c_uint32),
+    ]
+
+
+class _RtdlBfsSummaryRow(ctypes.Structure):
+    _fields_ = [
+        ("discovered_edge_count", ctypes.c_uint32),
+        ("discovered_vertex_count", ctypes.c_uint32),
+        ("max_level", ctypes.c_uint32),
+    ]
+
+
+class _RtdlTriangleSummaryRow(ctypes.Structure):
+    _fields_ = [
+        ("triangle_count", ctypes.c_uint32),
+        ("touched_vertex_count", ctypes.c_uint32),
+    ]
+
+
+class _RtdlDbField(ctypes.Structure):
+    _fields_ = [
+        ("name", ctypes.c_char_p),
+        ("kind", ctypes.c_uint32),
+    ]
+
+
+class _RtdlDbScalar(ctypes.Structure):
+    _fields_ = [
+        ("kind", ctypes.c_uint32),
+        ("int_value", ctypes.c_int64),
+        ("double_value", ctypes.c_double),
+        ("string_value", ctypes.c_char_p),
+    ]
+
+
+class _RtdlDbClause(ctypes.Structure):
+    _fields_ = [
+        ("field", ctypes.c_char_p),
+        ("op", ctypes.c_uint32),
+        ("value", _RtdlDbScalar),
+        ("value_hi", _RtdlDbScalar),
+    ]
+
+
+class _RtdlDbRowIdRow(ctypes.Structure):
+    _fields_ = [
+        ("row_id", ctypes.c_uint32),
+    ]
+
+
+class _RtdlDbGroupedCountRow(ctypes.Structure):
+    _fields_ = [
+        ("group_key", ctypes.c_int64),
+        ("count", ctypes.c_int64),
+    ]
+
+
+class _RtdlDbGroupedSumRow(ctypes.Structure):
+    _fields_ = [
+        ("group_key", ctypes.c_int64),
+        ("sum", ctypes.c_double),
+    ]
+
+
+_RtdlColumnField = _RtdlDbField
+_RtdlColumnScalar = _RtdlDbScalar
+_RtdlColumnClause = _RtdlDbClause
+_RtdlColumnRowIdRow = _RtdlDbRowIdRow
+_RtdlGroupedCountRow = _RtdlDbGroupedCountRow
+_RtdlGroupedSumRow = _RtdlDbGroupedSumRow
+
+
+def oracle_version() -> tuple[int, int, int]:
+    library = _load_oracle_library()
+    major = ctypes.c_int()
+    minor = ctypes.c_int()
+    patch = ctypes.c_int()
+    _check_status(library.rtdl_oracle_get_version(ctypes.byref(major), ctypes.byref(minor), ctypes.byref(patch)))
+    return major.value, minor.value, patch.value
+
+
+def run_oracle(compiled: CompiledKernel, normalized_inputs) -> tuple[dict[str, object], ...]:
+    predicate_name = compiled.refine_op.predicate.name
+    if predicate_name == "conjunctive_scan":
+        library = _load_oracle_library()
+        return _run_conjunctive_scan_oracle(compiled, normalized_inputs, library)
+    if predicate_name == "grouped_count":
+        library = _load_oracle_library()
+        return _run_grouped_count_oracle(compiled, normalized_inputs, library)
+    if predicate_name == "grouped_sum":
+        library = _load_oracle_library()
+        return _run_grouped_sum_oracle(compiled, normalized_inputs, library)
+    library = _load_oracle_library()
+    if predicate_name == "bfs_discover":
+        return _run_bfs_expand_oracle(compiled, normalized_inputs, library)
+    if predicate_name == "triangle_match":
+        return _run_triangle_probe_oracle(compiled, normalized_inputs, library)
+    if predicate_name == "segment_intersection":
+        return _run_lsi_oracle(compiled, normalized_inputs, library)
+    if predicate_name == "point_in_polygon":
+        return _run_pip_oracle(compiled, normalized_inputs, library)
+    if predicate_name == "overlay_compose":
+        return _run_overlay_oracle(compiled, normalized_inputs, library)
+    if predicate_name == "ray_triangle_hit_count":
+        return _run_ray_hitcount_oracle(compiled, normalized_inputs, library)
+    if predicate_name == "ray_triangle_any_hit":
+        rays_name = compiled.candidates.left.name
+        triangles_name = compiled.candidates.right.name
+        return ray_triangle_any_hit_cpu(normalized_inputs[rays_name], normalized_inputs[triangles_name])
+    if predicate_name == "ray_triangle_closest_hit":
+        rays_name = compiled.candidates.left.name
+        triangles_name = compiled.candidates.right.name
+        return ray_triangle_closest_hit_cpu(normalized_inputs[rays_name], normalized_inputs[triangles_name])
+    if predicate_name == "segment_polygon_hitcount":
+        return _run_segment_polygon_hitcount_oracle(compiled, normalized_inputs, library)
+    if predicate_name == "segment_polygon_anyhit_rows":
+        return _run_segment_polygon_anyhit_rows_oracle(compiled, normalized_inputs, library)
+    if predicate_name == "polygon_pair_overlap_area_rows":
+        return _run_polygon_pair_overlap_area_rows_oracle(compiled, normalized_inputs, library)
+    if predicate_name == "polygon_set_jaccard":
+        return _run_polygon_set_jaccard_oracle(compiled, normalized_inputs, library)
+    if predicate_name == "point_nearest_segment":
+        return _run_point_nearest_segment_oracle(compiled, normalized_inputs, library)
+    if predicate_name == "fixed_radius_neighbors":
+        return _run_fixed_radius_neighbors_oracle(compiled, normalized_inputs, library)
+    if predicate_name == "knn_rows":
+        return _run_knn_rows_oracle(compiled, normalized_inputs, library)
+    if predicate_name == "bounded_knn_rows":
+        return _run_bounded_knn_rows_oracle(compiled, normalized_inputs, library)
+    raise ValueError(f"unsupported RTDL native oracle predicate: {predicate_name}")
+
+
+def _run_conjunctive_scan_oracle(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
+    predicates_name = compiled.candidates.left.name
+    table_name = compiled.candidates.right.name
+    table_rows = normalized_inputs[table_name]
+    predicates = normalized_inputs[predicates_name]
+    if not table_rows:
+        return ()
+    fields_array, row_values_array, row_count = _encode_db_table(table_rows)
+    clauses_array = _encode_db_clauses(predicates.clauses)
+    rows_ptr = ctypes.POINTER(_RtdlDbRowIdRow)()
+    row_count_out = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_oracle_run_conjunctive_scan(
+        fields_array,
+        ctypes.c_size_t(len(fields_array)),
+        row_values_array,
+        ctypes.c_size_t(row_count),
+        clauses_array,
+        ctypes.c_size_t(len(clauses_array)),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count_out),
+        error,
+        ctypes.c_size_t(len(error)),
+    )
+    _check_status(status, error)
+    try:
+        row_count_value = row_count_out.value
+        return tuple({"row_id": int(rows_ptr[index].row_id)} for index in range(row_count_value))
+    finally:
+        library.rtdl_oracle_free_rows(rows_ptr)
+
+
+def _run_grouped_count_oracle(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
+    query_name = compiled.candidates.left.name
+    table_name = compiled.candidates.right.name
+    query = normalized_inputs[query_name]
+    table_rows = normalized_inputs[table_name]
+    if not table_rows:
+        return ()
+    if len(query.group_keys) != 1:
+        return grouped_count_cpu(table_rows, query)
+    encoded_rows, encoded_predicates, reverse_maps = _encode_db_text_fields(
+        table_rows,
+        query.predicates,
+        extra_fields=query.group_keys,
+    )
+    fields_array, row_values_array, row_count = _encode_db_table(encoded_rows)
+    clauses_array = _encode_db_clauses(encoded_predicates)
+    rows_ptr = ctypes.POINTER(_RtdlDbGroupedCountRow)()
+    row_count_out = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    group_field = query.group_keys[0]
+    status = library.rtdl_oracle_run_grouped_count(
+        fields_array,
+        ctypes.c_size_t(len(fields_array)),
+        row_values_array,
+        ctypes.c_size_t(row_count),
+        clauses_array,
+        ctypes.c_size_t(len(clauses_array)),
+        group_field.encode("utf-8"),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count_out),
+        error,
+        ctypes.c_size_t(len(error)),
+    )
+    _check_status(status, error)
+    try:
+        reverse_map = reverse_maps.get(group_field)
+        rows = []
+        for index in range(row_count_out.value):
+            group_key = _decode_db_group_key(reverse_map, int(rows_ptr[index].group_key))
+            rows.append({group_field: group_key, "count": int(rows_ptr[index].count)})
+        return tuple(rows)
+    finally:
+        library.rtdl_oracle_free_rows(rows_ptr)
+
+
+def _run_grouped_sum_oracle(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
+    query_name = compiled.candidates.left.name
+    table_name = compiled.candidates.right.name
+    query = normalized_inputs[query_name]
+    table_rows = normalized_inputs[table_name]
+    if not table_rows:
+        return ()
+    if len(query.group_keys) != 1:
+        return grouped_sum_cpu(table_rows, query)
+    encoded_rows, encoded_predicates, reverse_maps = _encode_db_text_fields(
+        table_rows,
+        query.predicates,
+        extra_fields=query.group_keys,
+    )
+    fields_array, row_values_array, row_count = _encode_db_table(encoded_rows)
+    clauses_array = _encode_db_clauses(encoded_predicates)
+    rows_ptr = ctypes.POINTER(_RtdlDbGroupedSumRow)()
+    row_count_out = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    group_field = query.group_keys[0]
+    status = library.rtdl_oracle_run_grouped_sum(
+        fields_array,
+        ctypes.c_size_t(len(fields_array)),
+        row_values_array,
+        ctypes.c_size_t(row_count),
+        clauses_array,
+        ctypes.c_size_t(len(clauses_array)),
+        group_field.encode("utf-8"),
+        str(query.value_field).encode("utf-8"),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count_out),
+        error,
+        ctypes.c_size_t(len(error)),
+    )
+    _check_status(status, error)
+    try:
+        reverse_map = reverse_maps.get(group_field)
+        rows = []
+        for index in range(row_count_out.value):
+            group_key = _decode_db_group_key(reverse_map, int(rows_ptr[index].group_key))
+            total = float(rows_ptr[index].sum)
+            rows.append({group_field: group_key, "sum": int(total) if float(total).is_integer() else total})
+        return tuple(rows)
+    finally:
+        library.rtdl_oracle_free_rows(rows_ptr)
+
+
+_DB_KIND_INT64 = 1
+_DB_KIND_FLOAT64 = 2
+_DB_KIND_BOOL = 3
+_DB_KIND_TEXT = 4
+
+_DB_OP_EQ = 1
+_DB_OP_LT = 2
+_DB_OP_LE = 3
+_DB_OP_GT = 4
+_DB_OP_GE = 5
+_DB_OP_BETWEEN = 6
+
+_COLUMN_KIND_INT64 = _DB_KIND_INT64
+_COLUMN_KIND_FLOAT64 = _DB_KIND_FLOAT64
+_COLUMN_KIND_BOOL = _DB_KIND_BOOL
+_COLUMN_KIND_TEXT = _DB_KIND_TEXT
+
+_COLUMN_OP_EQ = _DB_OP_EQ
+_COLUMN_OP_LT = _DB_OP_LT
+_COLUMN_OP_LE = _DB_OP_LE
+_COLUMN_OP_GT = _DB_OP_GT
+_COLUMN_OP_GE = _DB_OP_GE
+_COLUMN_OP_BETWEEN = _DB_OP_BETWEEN
+
+
+def _encode_db_scalar(value) -> _RtdlDbScalar:
+    if value is None:
+        return _RtdlDbScalar()
+    if isinstance(value, bool):
+        return _RtdlDbScalar(kind=_DB_KIND_BOOL, int_value=1 if value else 0)
+    if isinstance(value, int) and not isinstance(value, bool):
+        return _RtdlDbScalar(kind=_DB_KIND_INT64, int_value=int(value))
+    if isinstance(value, float):
+        return _RtdlDbScalar(kind=_DB_KIND_FLOAT64, double_value=float(value))
+    return _RtdlDbScalar(kind=_DB_KIND_TEXT, string_value=str(value).encode("utf-8"))
+
+
+def _encode_db_field_kind(value) -> int:
+    if isinstance(value, bool):
+        return _DB_KIND_BOOL
+    if isinstance(value, int) and not isinstance(value, bool):
+        return _DB_KIND_INT64
+    if isinstance(value, float):
+        return _DB_KIND_FLOAT64
+    return _DB_KIND_TEXT
+
+
+def _encode_db_table(table_rows) -> tuple[object, object, int]:
+    if not table_rows:
+        raise ValueError("native oracle DB path requires at least one denormalized table row")
+    field_names = tuple(str(name) for name in table_rows[0].keys())
+    if "row_id" not in field_names:
+        raise ValueError("native oracle DB path requires a `row_id` field")
+    field_set = set(field_names)
+    for index, row in enumerate(table_rows):
+        if set(str(name) for name in row.keys()) != field_set:
+            raise ValueError(f"denorm table row {index} does not match the first-row schema")
+        row_id = row["row_id"]
+        if not isinstance(row_id, int) or isinstance(row_id, bool) or row_id < 0 or row_id > UINT32_MAX:
+            raise ValueError(f"denorm table row {index} has row_id outside uint32 range")
+    field_records = [_RtdlDbField(name=name.encode("utf-8"), kind=_encode_db_field_kind(table_rows[0][name])) for name in field_names]
+    fields_array = (_RtdlDbField * len(field_records))(*field_records)
+    scalar_records = []
+    for row in table_rows:
+        for name in field_names:
+            scalar_records.append(_encode_db_scalar(row[name]))
+    row_values_array = (_RtdlDbScalar * len(scalar_records))(*scalar_records)
+    return fields_array, row_values_array, len(table_rows)
+
+
+def _encode_db_text_fields(table_rows, clauses, *, extra_fields=()):
+    encode_fields: set[str] = set()
+    all_fields = set(extra_fields)
+    all_fields.update(str(clause.field) for clause in clauses)
+    for index, row in enumerate(table_rows):
+        for field in sorted(all_fields):
+            if field not in row:
+                raise ValueError(f"denorm table row {index} is missing DB field `{field}`")
+    for field in all_fields:
+        values = [row[field] for row in table_rows]
+        if any(isinstance(value, str) for value in values):
+            encode_fields.add(field)
+        for clause in clauses:
+            if str(clause.field) != field:
+                continue
+            if isinstance(clause.value, str) or isinstance(clause.value_hi, str):
+                encode_fields.add(field)
+    reverse_maps: dict[str, dict[int, object]] = {}
+    field_maps: dict[str, dict[object, int]] = {}
+    for field in sorted(encode_fields):
+        unique_value_set = {row[field] for row in table_rows}
+        for clause in clauses:
+            if str(clause.field) != field:
+                continue
+            if isinstance(clause.value, str):
+                unique_value_set.add(clause.value)
+            if isinstance(clause.value_hi, str):
+                unique_value_set.add(clause.value_hi)
+        unique_values = sorted(unique_value_set)
+        encode_map = {value: index + 1 for index, value in enumerate(unique_values)}
+        field_maps[field] = encode_map
+        reverse_maps[field] = {code: value for value, code in encode_map.items()}
+    encoded_rows = []
+    for row in table_rows:
+        encoded = dict(row)
+        for field, encode_map in field_maps.items():
+            encoded[field] = encode_map[row[field]]
+        encoded_rows.append(encoded)
+    encoded_clauses = []
+    for clause in clauses:
+        field = str(clause.field)
+        if field in field_maps:
+            encode_map = field_maps[field]
+            value, value_hi = _encode_db_text_clause_values(clause, encode_map)
+            encoded_clauses.append(PredicateClause(field=field, op=clause.op, value=value, value_hi=value_hi))
+        else:
+            encoded_clauses.append(clause)
+    return tuple(encoded_rows), tuple(encoded_clauses), reverse_maps
+
+
+def _encode_db_text_clause_values(clause: PredicateClause, encode_map: dict[object, int]) -> tuple[int, int | None]:
+    values = sorted(encode_map)
+    op = str(clause.op)
+    if op == "eq":
+        return int(encode_map.get(clause.value, 0)), None
+    if op in {"lt", "ge"}:
+        return bisect_left(values, clause.value) + 1, None
+    if op in {"le", "gt"}:
+        return bisect_right(values, clause.value), None
+    if op == "between":
+        return bisect_left(values, clause.value) + 1, bisect_right(values, clause.value_hi)
+    raise ValueError(f"unsupported predicate operator: {clause.op}")
+
+
+def _decode_db_group_key(reverse_map, encoded_value: int):
+    if reverse_map is None:
+        return encoded_value
+    return reverse_map[encoded_value]
+
+
+def _encode_db_clause(clause) -> _RtdlDbClause:
+    op_map = {
+        "eq": _DB_OP_EQ,
+        "lt": _DB_OP_LT,
+        "le": _DB_OP_LE,
+        "gt": _DB_OP_GT,
+        "ge": _DB_OP_GE,
+        "between": _DB_OP_BETWEEN,
+    }
+    return _RtdlDbClause(
+        field=str(clause.field).encode("utf-8"),
+        op=op_map[str(clause.op)],
+        value=_encode_db_scalar(clause.value),
+        value_hi=_encode_db_scalar(clause.value_hi),
+    )
+
+
+def _encode_db_clauses(clauses) -> object:
+    records = [_encode_db_clause(clause) for clause in clauses]
+    return (_RtdlDbClause * len(records))(*records)
+
+
+_encode_columnar_scalar = _encode_db_scalar
+_encode_columnar_field_kind = _encode_db_field_kind
+_encode_columnar_table = _encode_db_table
+_encode_columnar_text_fields = _encode_db_text_fields
+_encode_columnar_text_clause_values = _encode_db_text_clause_values
+_decode_columnar_group_key = _decode_db_group_key
+_encode_columnar_clause = _encode_db_clause
+_encode_columnar_clauses = _encode_db_clauses
+
+
+def _run_bfs_expand_oracle(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
+    frontier_name = compiled.candidates.left.name
+    graph_name = compiled.candidates.right.name
+    visited_name = str(compiled.refine_op.predicate.options["visited_input"])
+    frontier = normalized_inputs[frontier_name]
+    graph = normalized_inputs[graph_name]
+    visited = normalized_inputs[visited_name]
+
+    row_offsets = (ctypes.c_uint32 * len(graph.row_offsets))(*graph.row_offsets)
+    column_indices = (ctypes.c_uint32 * len(graph.column_indices))(*graph.column_indices)
+    frontier_array = (_RtdlFrontierVertex * len(frontier))(*[
+        _RtdlFrontierVertex(item.vertex_id, item.level) for item in frontier
+    ])
+    visited_array = (ctypes.c_uint32 * len(visited))(*visited)
+    rows_ptr = ctypes.POINTER(_RtdlBfsExpandRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_oracle_run_frontier_edge_traversal_packet(
+        row_offsets,
+        len(graph.row_offsets),
+        column_indices,
+        len(graph.column_indices),
+        frontier_array,
+        len(frontier),
+        visited_array,
+        len(visited),
+        ctypes.c_uint32(1 if compiled.refine_op.predicate.options.get("dedupe", True) else 0),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    try:
+        return tuple(
+            {
+                "src_vertex": rows_ptr[index].src_vertex,
+                "dst_vertex": rows_ptr[index].dst_vertex,
+                "level": rows_ptr[index].level,
+            }
+            for index in range(row_count.value)
+        )
+    finally:
+        library.rtdl_oracle_free_rows(rows_ptr)
+
+
+def _run_triangle_probe_oracle(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
+    seeds_name = compiled.candidates.left.name
+    graph_name = compiled.candidates.right.name
+    seeds = normalized_inputs[seeds_name]
+    graph = normalized_inputs[graph_name]
+
+    row_offsets = (ctypes.c_uint32 * len(graph.row_offsets))(*graph.row_offsets)
+    column_indices = (ctypes.c_uint32 * len(graph.column_indices))(*graph.column_indices)
+    seed_array = (_RtdlEdgeSeed * len(seeds))(*[
+        _RtdlEdgeSeed(item.u, item.v) for item in seeds
+    ])
+    rows_ptr = ctypes.POINTER(_RtdlTriangleRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_oracle_run_triangle_cycle_candidates(
+        row_offsets,
+        len(graph.row_offsets),
+        column_indices,
+        len(graph.column_indices),
+        seed_array,
+        len(seeds),
+        ctypes.c_uint32(1 if compiled.refine_op.predicate.options.get("order", "id_ascending") == "id_ascending" else 0),
+        ctypes.c_uint32(1 if compiled.refine_op.predicate.options.get("unique", True) else 0),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    try:
+        return tuple(
+            {
+                "u": rows_ptr[index].u,
+                "v": rows_ptr[index].v,
+                "w": rows_ptr[index].w,
+            }
+            for index in range(row_count.value)
+        )
+    finally:
+        library.rtdl_oracle_free_rows(rows_ptr)
+
+
+def _summarize_bfs_row_buffer(input_rows_ptr, input_row_count: int) -> dict[str, int]:
+    library = _load_oracle_library()
+    summary_rows_ptr = ctypes.POINTER(_RtdlBfsSummaryRow)()
+    summary_row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_oracle_summarize_frontier_traversal_rows(
+        input_rows_ptr,
+        input_row_count,
+        ctypes.byref(summary_rows_ptr),
+        ctypes.byref(summary_row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    try:
+        if summary_row_count.value != 1:
+            raise RuntimeError("native BFS summary must return exactly one row")
+        return {
+            "discovered_edge_count": int(summary_rows_ptr[0].discovered_edge_count),
+            "discovered_vertex_count": int(summary_rows_ptr[0].discovered_vertex_count),
+            "max_level": int(summary_rows_ptr[0].max_level),
+        }
+    finally:
+        library.rtdl_oracle_free_rows(summary_rows_ptr)
+
+
+def summarize_bfs_rows(rows) -> dict[str, int]:
+    row_values = tuple(rows)
+    row_array = (_RtdlBfsExpandRow * len(row_values))(*[
+        _RtdlBfsExpandRow(
+            int(row["src_vertex"]),
+            int(row["dst_vertex"]),
+            int(row["level"]),
+        )
+        for row in row_values
+    ])
+    return _summarize_bfs_row_buffer(row_array, len(row_values))
+
+
+def summarize_bfs_row_view(row_view) -> dict[str, int]:
+    """Summarize a native BFS row view without materializing Python dict rows."""
+    row_count = int(row_view.row_count)
+    rows_ptr = ctypes.cast(row_view.rows_ptr, ctypes.POINTER(_RtdlBfsExpandRow))
+    return _summarize_bfs_row_buffer(rows_ptr, row_count)
+
+
+def summarize_fixed_radius_rows(rows) -> dict[str, int]:
+    library = _load_oracle_library()
+    row_values = tuple(rows)
+    row_array = (_RtdlFixedRadiusNeighborRow * len(row_values))(*[
+        _RtdlFixedRadiusNeighborRow(
+            int(row["query_id"]),
+            int(row["neighbor_id"]),
+            float(row["distance"]),
+        )
+        for row in row_values
+    ])
+    rows_ptr = ctypes.POINTER(_RtdlFixedRadiusSummaryRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_oracle_summarize_fixed_radius_rows(
+        row_array,
+        len(row_values),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    try:
+        if row_count.value != 1:
+            raise RuntimeError("native fixed-radius summary must return exactly one row")
+        return {
+            "candidate_row_count": int(rows_ptr[0].candidate_row_count),
+            "query_count_with_candidate": int(rows_ptr[0].query_count_with_candidate),
+            "neighbor_count_seen": int(rows_ptr[0].neighbor_count_seen),
+        }
+    finally:
+        library.rtdl_oracle_free_rows(rows_ptr)
+
+
+def summarize_knn_rows(rows) -> dict[str, int]:
+    library = _load_oracle_library()
+    row_values = tuple(rows)
+    row_array = (_RtdlKnnNeighborRow * len(row_values))(*[
+        _RtdlKnnNeighborRow(
+            int(row["query_id"]),
+            int(row["neighbor_id"]),
+            float(row["distance"]),
+            int(row["neighbor_rank"]),
+        )
+        for row in row_values
+    ])
+    rows_ptr = ctypes.POINTER(_RtdlKnnSummaryRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_oracle_summarize_k_closest_hits(
+        row_array,
+        len(row_values),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    try:
+        if row_count.value != 1:
+            raise RuntimeError("native KNN summary must return exactly one row")
+        return {
+            "approximate_row_count": int(rows_ptr[0].approximate_row_count),
+            "query_count_with_candidate": int(rows_ptr[0].query_count_with_candidate),
+            "max_neighbor_rank": int(rows_ptr[0].max_neighbor_rank),
+        }
+    finally:
+        library.rtdl_oracle_free_rows(rows_ptr)
+
+
+def _summarize_triangle_row_buffer(input_rows_ptr, input_row_count: int) -> dict[str, int]:
+    library = _load_oracle_library()
+    summary_rows_ptr = ctypes.POINTER(_RtdlTriangleSummaryRow)()
+    summary_row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_oracle_summarize_triangle_rows(
+        input_rows_ptr,
+        input_row_count,
+        ctypes.byref(summary_rows_ptr),
+        ctypes.byref(summary_row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    try:
+        if summary_row_count.value != 1:
+            raise RuntimeError("native triangle summary must return exactly one row")
+        return {
+            "triangle_count": int(summary_rows_ptr[0].triangle_count),
+            "touched_vertex_count": int(summary_rows_ptr[0].touched_vertex_count),
+        }
+    finally:
+        library.rtdl_oracle_free_rows(summary_rows_ptr)
+
+
+def summarize_triangle_rows(rows) -> dict[str, int]:
+    row_values = tuple(rows)
+    row_array = (_RtdlTriangleRow * len(row_values))(*[
+        _RtdlTriangleRow(
+            int(row["u"]),
+            int(row["v"]),
+            int(row["w"]),
+        )
+        for row in row_values
+    ])
+    return _summarize_triangle_row_buffer(row_array, len(row_values))
+
+
+def summarize_triangle_row_view(row_view) -> dict[str, int]:
+    """Summarize a native triangle row view without materializing Python dict rows."""
+    row_count = int(row_view.row_count)
+    rows_ptr = ctypes.cast(row_view.rows_ptr, ctypes.POINTER(_RtdlTriangleRow))
+    return _summarize_triangle_row_buffer(rows_ptr, row_count)
+
+
+def _run_lsi_oracle(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
+    left_name = compiled.candidates.left.name
+    right_name = compiled.candidates.right.name
+    left = normalized_inputs[left_name]
+    right = normalized_inputs[right_name]
+    left_array = (_RtdlSegment * len(left))(*[
+        _RtdlSegment(item.id, item.x0, item.y0, item.x1, item.y1) for item in left
+    ])
+    right_array = (_RtdlSegment * len(right))(*[
+        _RtdlSegment(item.id, item.x0, item.y0, item.x1, item.y1) for item in right
+    ])
+    rows_ptr = ctypes.POINTER(_RtdlLsiRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_oracle_run_segment_pair_intersection(
+        left_array,
+        len(left),
+        right_array,
+        len(right),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    try:
+        return tuple(
+            {
+                "left_id": rows_ptr[index].left_id,
+                "right_id": rows_ptr[index].right_id,
+                "intersection_point_x": rows_ptr[index].intersection_point_x,
+                "intersection_point_y": rows_ptr[index].intersection_point_y,
+            }
+            for index in range(row_count.value)
+        )
+    finally:
+        library.rtdl_oracle_free_rows(rows_ptr)
+
+
+def _run_pip_oracle(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
+    boundary_mode = compiled.refine_op.predicate.options.get("boundary_mode", "inclusive")
+    if boundary_mode != "inclusive":
+        raise ValueError("the current native oracle PIP runtime supports only boundary_mode='inclusive'")
+    result_mode = compiled.refine_op.predicate.options.get("result_mode", "full_matrix")
+    if result_mode not in {"full_matrix", "positive_hits"}:
+        raise ValueError("the current native oracle PIP runtime supports only result_mode='full_matrix' or 'positive_hits'")
+    points_name = compiled.candidates.left.name
+    polygons_name = compiled.candidates.right.name
+    points = normalized_inputs[points_name]
+    polygons = normalized_inputs[polygons_name]
+    point_array = (_RtdlPoint * len(points))(*[
+        _RtdlPoint(item.id, item.x, item.y) for item in points
+    ])
+    polygon_refs, vertex_array = _encode_polygons(polygons)
+    rows_ptr = ctypes.POINTER(_RtdlPipRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_oracle_run_point_primitive_anyhit_packet(
+        point_array,
+        len(points),
+        polygon_refs,
+        len(polygons),
+        vertex_array,
+        len(vertex_array),
+        1 if result_mode == "positive_hits" else 0,
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    try:
+        return tuple(
+            {
+                "point_id": rows_ptr[index].point_id,
+                "polygon_id": rows_ptr[index].polygon_id,
+                "contains": rows_ptr[index].contains,
+            }
+            for index in range(row_count.value)
+        )
+    finally:
+        library.rtdl_oracle_free_rows(rows_ptr)
+
+
+def _run_overlay_oracle(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
+    left_name = compiled.candidates.left.name
+    right_name = compiled.candidates.right.name
+    left = normalized_inputs[left_name]
+    right = normalized_inputs[right_name]
+    left_refs, left_vertices = _encode_polygons(left)
+    right_refs, right_vertices = _encode_polygons(right)
+    rows_ptr = ctypes.POINTER(_RtdlOverlayRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_oracle_run_shape_pair_relation_flags(
+        left_refs,
+        len(left),
+        left_vertices,
+        len(left_vertices),
+        right_refs,
+        len(right),
+        right_vertices,
+        len(right_vertices),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    try:
+        return tuple(
+            {
+                "left_polygon_id": rows_ptr[index].left_polygon_id,
+                "right_polygon_id": rows_ptr[index].right_polygon_id,
+                "requires_lsi": rows_ptr[index].requires_lsi,
+                "requires_pip": rows_ptr[index].requires_pip,
+            }
+            for index in range(row_count.value)
+        )
+    finally:
+        library.rtdl_oracle_free_rows(rows_ptr)
+
+
+def _run_ray_hitcount_oracle(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
+    rays_name = compiled.candidates.left.name
+    triangles_name = compiled.candidates.right.name
+    rays = normalized_inputs[rays_name]
+    triangles = normalized_inputs[triangles_name]
+    ray_array = (_RtdlRay2D * len(rays))(*[
+        _RtdlRay2D(item.id, item.ox, item.oy, item.dx, item.dy, item.tmax) for item in rays
+    ])
+    triangle_array = (_RtdlTriangle * len(triangles))(*[
+        _RtdlTriangle(item.id, item.x0, item.y0, item.x1, item.y1, item.x2, item.y2)
+        for item in triangles
+    ])
+    rows_ptr = ctypes.POINTER(_RtdlRayHitCountRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_oracle_run_ray_hitcount(
+        ray_array,
+        len(rays),
+        triangle_array,
+        len(triangles),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    try:
+        return tuple(
+            {
+                "ray_id": rows_ptr[index].ray_id,
+                "hit_count": rows_ptr[index].hit_count,
+            }
+            for index in range(row_count.value)
+        )
+    finally:
+        library.rtdl_oracle_free_rows(rows_ptr)
+
+
+def _run_segment_polygon_hitcount_oracle(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
+    segments_name = compiled.candidates.left.name
+    polygons_name = compiled.candidates.right.name
+    segments = normalized_inputs[segments_name]
+    polygons = normalized_inputs[polygons_name]
+    segment_array = (_RtdlSegment * len(segments))(*[
+        _RtdlSegment(item.id, item.x0, item.y0, item.x1, item.y1) for item in segments
+    ])
+    polygon_refs, vertex_array = _encode_polygons(polygons)
+    rows_ptr = ctypes.POINTER(_RtdlSegmentPolygonHitCountRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_oracle_run_segment_shape_hitcount(
+        segment_array,
+        len(segments),
+        polygon_refs,
+        len(polygons),
+        vertex_array,
+        len(vertex_array),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    try:
+        return tuple(
+            {
+                "segment_id": rows_ptr[index].segment_id,
+                "hit_count": rows_ptr[index].hit_count,
+            }
+            for index in range(row_count.value)
+        )
+    finally:
+        library.rtdl_oracle_free_rows(rows_ptr)
+
+
+def _run_segment_polygon_anyhit_rows_oracle(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
+    segments_name = compiled.candidates.left.name
+    polygons_name = compiled.candidates.right.name
+    segments = normalized_inputs[segments_name]
+    polygons = normalized_inputs[polygons_name]
+    segment_array = (_RtdlSegment * len(segments))(*[
+        _RtdlSegment(item.id, item.x0, item.y0, item.x1, item.y1) for item in segments
+    ])
+    polygon_refs, vertex_array = _encode_polygons(polygons)
+    rows_ptr = ctypes.POINTER(_RtdlSegmentPolygonAnyHitRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_oracle_run_segment_shape_anyhit_rows(
+        segment_array,
+        len(segments),
+        polygon_refs,
+        len(polygons),
+        vertex_array,
+        len(vertex_array),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    try:
+        return tuple(
+            {
+                "segment_id": rows_ptr[index].segment_id,
+                "polygon_id": rows_ptr[index].polygon_id,
+            }
+            for index in range(row_count.value)
+        )
+    finally:
+        library.rtdl_oracle_free_rows(rows_ptr)
+
+
+def _run_polygon_pair_overlap_area_rows_oracle(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
+    left_name = compiled.candidates.left.name
+    right_name = compiled.candidates.right.name
+    left_polygons = normalized_inputs[left_name]
+    right_polygons = normalized_inputs[right_name]
+    left_refs, left_vertices = _encode_polygons(left_polygons)
+    right_refs, right_vertices = _encode_polygons(right_polygons)
+    rows_ptr = ctypes.POINTER(_RtdlPolygonPairOverlapAreaRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_oracle_run_shape_pair_overlap_area_rows(
+        left_refs,
+        len(left_polygons),
+        left_vertices,
+        len(left_vertices),
+        right_refs,
+        len(right_polygons),
+        right_vertices,
+        len(right_vertices),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    try:
+        return tuple(
+            {
+                "left_polygon_id": rows_ptr[index].left_polygon_id,
+                "right_polygon_id": rows_ptr[index].right_polygon_id,
+                "intersection_area": rows_ptr[index].intersection_area,
+                "left_area": rows_ptr[index].left_area,
+                "right_area": rows_ptr[index].right_area,
+                "union_area": rows_ptr[index].union_area,
+            }
+            for index in range(row_count.value)
+        )
+    finally:
+        library.rtdl_oracle_free_rows(rows_ptr)
+
+
+def _run_polygon_set_jaccard_oracle(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
+    left_name = compiled.candidates.left.name
+    right_name = compiled.candidates.right.name
+    left_polygons = normalized_inputs[left_name]
+    right_polygons = normalized_inputs[right_name]
+    left_refs, left_vertices = _encode_polygons(left_polygons)
+    right_refs, right_vertices = _encode_polygons(right_polygons)
+    rows_ptr = ctypes.POINTER(_RtdlPolygonSetJaccardRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_oracle_run_shape_set_overlap_ratio(
+        left_refs,
+        len(left_polygons),
+        left_vertices,
+        len(left_vertices),
+        right_refs,
+        len(right_polygons),
+        right_vertices,
+        len(right_vertices),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    try:
+        return tuple(
+            {
+                "intersection_area": rows_ptr[index].intersection_area,
+                "left_area": rows_ptr[index].left_area,
+                "right_area": rows_ptr[index].right_area,
+                "union_area": rows_ptr[index].union_area,
+                "jaccard_similarity": rows_ptr[index].jaccard_similarity,
+            }
+            for index in range(row_count.value)
+        )
+    finally:
+        library.rtdl_oracle_free_rows(rows_ptr)
+
+
+def refine_polygon_pair_overlap_area_rows_for_pairs(
+    left_polygons,
+    right_polygons,
+    candidate_pairs,
+) -> tuple[dict[str, object], ...]:
+    library = _load_oracle_library()
+    left_refs, left_vertices = _encode_polygons(left_polygons)
+    right_refs, right_vertices = _encode_polygons(right_polygons)
+    normalized_pairs = sorted({(int(left_id), int(right_id)) for left_id, right_id in candidate_pairs})
+    candidate_array = (_RtdlPolygonPairCandidate * len(normalized_pairs))(*[
+        _RtdlPolygonPairCandidate(left_id, right_id) for left_id, right_id in normalized_pairs
+    ])
+    rows_ptr = ctypes.POINTER(_RtdlPolygonPairOverlapAreaRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_oracle_refine_shape_pair_overlap_area_rows_for_pairs(
+        left_refs,
+        len(left_polygons),
+        left_vertices,
+        len(left_vertices),
+        right_refs,
+        len(right_polygons),
+        right_vertices,
+        len(right_vertices),
+        candidate_array,
+        len(normalized_pairs),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    try:
+        return tuple(
+            {
+                "left_polygon_id": rows_ptr[index].left_polygon_id,
+                "right_polygon_id": rows_ptr[index].right_polygon_id,
+                "intersection_area": rows_ptr[index].intersection_area,
+                "left_area": rows_ptr[index].left_area,
+                "right_area": rows_ptr[index].right_area,
+                "union_area": rows_ptr[index].union_area,
+            }
+            for index in range(row_count.value)
+        )
+    finally:
+        library.rtdl_oracle_free_rows(rows_ptr)
+
+
+def refine_polygon_set_jaccard_for_pairs(
+    left_polygons,
+    right_polygons,
+    candidate_pairs,
+) -> tuple[dict[str, object], ...]:
+    library = _load_oracle_library()
+    left_refs, left_vertices = _encode_polygons(left_polygons)
+    right_refs, right_vertices = _encode_polygons(right_polygons)
+    normalized_pairs = sorted({(int(left_id), int(right_id)) for left_id, right_id in candidate_pairs})
+    candidate_array = (_RtdlPolygonPairCandidate * len(normalized_pairs))(*[
+        _RtdlPolygonPairCandidate(left_id, right_id) for left_id, right_id in normalized_pairs
+    ])
+    rows_ptr = ctypes.POINTER(_RtdlPolygonSetJaccardRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_oracle_refine_shape_set_overlap_ratio_for_pairs(
+        left_refs,
+        len(left_polygons),
+        left_vertices,
+        len(left_vertices),
+        right_refs,
+        len(right_polygons),
+        right_vertices,
+        len(right_vertices),
+        candidate_array,
+        len(normalized_pairs),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    try:
+        return tuple(
+            {
+                "intersection_area": rows_ptr[index].intersection_area,
+                "left_area": rows_ptr[index].left_area,
+                "right_area": rows_ptr[index].right_area,
+                "union_area": rows_ptr[index].union_area,
+                "jaccard_similarity": rows_ptr[index].jaccard_similarity,
+            }
+            for index in range(row_count.value)
+        )
+    finally:
+        library.rtdl_oracle_free_rows(rows_ptr)
+
+
+def reduce_polygon_pair_exact_area_summary_for_candidates(
+    left_polygons,
+    right_polygons,
+    candidate_pairs,
+) -> dict[str, object]:
+    library = _load_oracle_library()
+    left_refs, left_vertices = _encode_polygons(left_polygons)
+    right_refs, right_vertices = _encode_polygons(right_polygons)
+    normalized_pairs = sorted({(int(left_id), int(right_id)) for left_id, right_id in candidate_pairs})
+    candidate_array = (_RtdlPolygonPairCandidate * len(normalized_pairs))(*[
+        _RtdlPolygonPairCandidate(left_id, right_id) for left_id, right_id in normalized_pairs
+    ])
+    summary = _RtdlPolygonPairAreaSummary()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_native_reduce_shape_pair_exact_area_summary(
+        left_refs,
+        len(left_polygons),
+        left_vertices,
+        len(left_vertices),
+        right_refs,
+        len(right_polygons),
+        right_vertices,
+        len(right_vertices),
+        candidate_array,
+        len(normalized_pairs),
+        ctypes.byref(summary),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    return {
+        "overlap_pair_count": int(summary.overlap_pair_count),
+        "intersection_area": int(summary.intersection_area),
+        "left_area": int(summary.left_area),
+        "right_area": int(summary.right_area),
+        "union_area": int(summary.union_area),
+    }
+
+
+def _run_point_nearest_segment_oracle(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
+    points_name = compiled.candidates.left.name
+    segments_name = compiled.candidates.right.name
+    points = normalized_inputs[points_name]
+    segments = normalized_inputs[segments_name]
+    point_array = (_RtdlPoint * len(points))(*[
+        _RtdlPoint(item.id, item.x, item.y) for item in points
+    ])
+    segment_array = (_RtdlSegment * len(segments))(*[
+        _RtdlSegment(item.id, item.x0, item.y0, item.x1, item.y1) for item in segments
+    ])
+    rows_ptr = ctypes.POINTER(_RtdlPointNearestSegmentRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    status = library.rtdl_oracle_run_point_nearest_segment(
+        point_array,
+        len(points),
+        segment_array,
+        len(segments),
+        ctypes.byref(rows_ptr),
+        ctypes.byref(row_count),
+        error,
+        len(error),
+    )
+    _check_status(status, error)
+    try:
+        return tuple(
+            {
+                "point_id": rows_ptr[index].point_id,
+                "segment_id": rows_ptr[index].segment_id,
+                "distance": rows_ptr[index].distance,
+            }
+            for index in range(row_count.value)
+        )
+    finally:
+        library.rtdl_oracle_free_rows(rows_ptr)
+
+
+def _run_fixed_radius_neighbors_oracle(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
+    query_name = compiled.candidates.left.name
+    search_name = compiled.candidates.right.name
+    query_points = normalized_inputs[query_name]
+    search_points = normalized_inputs[search_name]
+    rows_ptr = ctypes.POINTER(_RtdlFixedRadiusNeighborRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    radius = ctypes.c_double(float(compiled.refine_op.predicate.options["radius"]))
+    k_max = ctypes.c_uint32(int(compiled.refine_op.predicate.options["k_max"]))
+    if query_points and isinstance(query_points[0], Point3D):
+        query_array = (_RtdlPoint3D * len(query_points))(*[
+            _RtdlPoint3D(item.id, item.x, item.y, item.z) for item in query_points
+        ])
+        search_array = (_RtdlPoint3D * len(search_points))(*[
+            _RtdlPoint3D(item.id, item.x, item.y, item.z) for item in search_points
+        ])
+        status = library.rtdl_oracle_run_fixed_radius_neighbors_3d(
+            query_array,
+            len(query_points),
+            search_array,
+            len(search_points),
+            radius,
+            k_max,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
+    else:
+        query_array = (_RtdlPoint * len(query_points))(*[
+            _RtdlPoint(item.id, item.x, item.y) for item in query_points
+        ])
+        search_array = (_RtdlPoint * len(search_points))(*[
+            _RtdlPoint(item.id, item.x, item.y) for item in search_points
+        ])
+        status = library.rtdl_oracle_run_fixed_radius_neighbors(
+            query_array,
+            len(query_points),
+            search_array,
+            len(search_points),
+            radius,
+            k_max,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
+    _check_status(status, error)
+    try:
+        return tuple(
+            {
+                "query_id": rows_ptr[index].query_id,
+                "neighbor_id": rows_ptr[index].neighbor_id,
+                "distance": rows_ptr[index].distance,
+            }
+            for index in range(row_count.value)
+        )
+    finally:
+        library.rtdl_oracle_free_rows(rows_ptr)
+
+
+def _run_knn_rows_oracle(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
+    query_name = compiled.candidates.left.name
+    search_name = compiled.candidates.right.name
+    query_points = normalized_inputs[query_name]
+    search_points = normalized_inputs[search_name]
+    rows_ptr = ctypes.POINTER(_RtdlKnnNeighborRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    k = ctypes.c_uint32(int(compiled.refine_op.predicate.options["k"]))
+    if query_points and isinstance(query_points[0], Point3D):
+        query_array = (_RtdlPoint3D * len(query_points))(*[
+            _RtdlPoint3D(item.id, item.x, item.y, item.z) for item in query_points
+        ])
+        search_array = (_RtdlPoint3D * len(search_points))(*[
+            _RtdlPoint3D(item.id, item.x, item.y, item.z) for item in search_points
+        ])
+        status = library.rtdl_oracle_run_k_closest_hits_3d(
+            query_array,
+            len(query_points),
+            search_array,
+            len(search_points),
+            k,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
+    else:
+        query_array = (_RtdlPoint * len(query_points))(*[
+            _RtdlPoint(item.id, item.x, item.y) for item in query_points
+        ])
+        search_array = (_RtdlPoint * len(search_points))(*[
+            _RtdlPoint(item.id, item.x, item.y) for item in search_points
+        ])
+        status = library.rtdl_oracle_run_k_closest_hits(
+            query_array,
+            len(query_points),
+            search_array,
+            len(search_points),
+            k,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
+    _check_status(status, error)
+    try:
+        return tuple(
+            {
+                "query_id": rows_ptr[index].query_id,
+                "neighbor_id": rows_ptr[index].neighbor_id,
+                "distance": rows_ptr[index].distance,
+                "neighbor_rank": rows_ptr[index].neighbor_rank,
+            }
+            for index in range(row_count.value)
+        )
+    finally:
+        library.rtdl_oracle_free_rows(rows_ptr)
+
+
+def _run_bounded_knn_rows_oracle(compiled: CompiledKernel, normalized_inputs, library) -> tuple[dict[str, object], ...]:
+    query_name = compiled.candidates.left.name
+    search_name = compiled.candidates.right.name
+    query_points = normalized_inputs[query_name]
+    search_points = normalized_inputs[search_name]
+    rows_ptr = ctypes.POINTER(_RtdlKnnNeighborRow)()
+    row_count = ctypes.c_size_t()
+    error = ctypes.create_string_buffer(4096)
+    radius = ctypes.c_double(float(compiled.refine_op.predicate.options["radius"]))
+    k_max = ctypes.c_uint32(int(compiled.refine_op.predicate.options["k_max"]))
+    if query_points and isinstance(query_points[0], Point3D):
+        query_array = (_RtdlPoint3D * len(query_points))(*[
+            _RtdlPoint3D(item.id, item.x, item.y, item.z) for item in query_points
+        ])
+        search_array = (_RtdlPoint3D * len(search_points))(*[
+            _RtdlPoint3D(item.id, item.x, item.y, item.z) for item in search_points
+        ])
+        status = library.rtdl_oracle_run_bounded_k_closest_hits_3d(
+            query_array,
+            len(query_points),
+            search_array,
+            len(search_points),
+            radius,
+            k_max,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
+    else:
+        query_array = (_RtdlPoint * len(query_points))(*[
+            _RtdlPoint(item.id, item.x, item.y) for item in query_points
+        ])
+        search_array = (_RtdlPoint * len(search_points))(*[
+            _RtdlPoint(item.id, item.x, item.y) for item in search_points
+        ])
+        status = library.rtdl_oracle_run_bounded_k_closest_hits(
+            query_array,
+            len(query_points),
+            search_array,
+            len(search_points),
+            radius,
+            k_max,
+            ctypes.byref(rows_ptr),
+            ctypes.byref(row_count),
+            error,
+            len(error),
+        )
+    _check_status(status, error)
+    try:
+        return tuple(
+            {
+                "query_id": rows_ptr[index].query_id,
+                "neighbor_id": rows_ptr[index].neighbor_id,
+                "distance": rows_ptr[index].distance,
+                "neighbor_rank": rows_ptr[index].neighbor_rank,
+            }
+            for index in range(row_count.value)
+        )
+    finally:
+        library.rtdl_oracle_free_rows(rows_ptr)
+
+
+def _encode_polygons(polygons):
+    refs = []
+    vertices = []
+    offset = 0
+    for polygon in polygons:
+        refs.append(_RtdlPolygonRef(polygon.id, offset, len(polygon.vertices)))
+        for vertex in polygon.vertices:
+            vertices.extend([float(vertex[0]), float(vertex[1])])
+        offset += len(polygon.vertices)
+    ref_array = (_RtdlPolygonRef * len(refs))(*refs)
+    vertex_array = (ctypes.c_double * len(vertices))(*vertices) if vertices else (ctypes.c_double * 0)()
+    return ref_array, vertex_array
+
+
+def _check_status(status: int, error=None) -> None:
+    if status == 0:
+        return
+    if error is not None:
+        message = error.value.decode("utf-8", errors="replace").strip()
+    else:
+        message = ""
+    if not message:
+        message = f"native oracle call failed with status {status}"
+    raise RuntimeError(message)
+
+
+def _oracle_build_help_text(*, system: str) -> str:
+    if system == "Darwin":
+        return (
+            "Install GEOS and pkg-config so the native oracle can link successfully "
+            "(for example with Homebrew: `brew install geos pkg-config`)."
+        )
+    if system == "Linux":
+        return (
+            "Install GEOS development headers and pkg-config so the native oracle can link "
+            "successfully (for example `libgeos-dev` plus `pkg-config`)."
+        )
+    if system == "Windows":
+        return (
+            "Install the required native toolchain and ensure RTDL_VCVARS64 points to "
+            "vcvars64.bat before building the native oracle."
+        )
+    return "Install the native oracle dependencies and retry."
+
+
+def _raise_oracle_build_failure(
+    *,
+    command: list[str],
+    system: str,
+    error: BaseException,
+) -> NoReturn:
+    detail = ""
+    if isinstance(error, subprocess.CalledProcessError):
+        if error.stderr:
+            detail = error.stderr.strip()
+        elif error.stdout:
+            detail = error.stdout.strip()
+        else:
+            detail = str(error)
+    else:
+        detail = str(error)
+
+    message = [
+        "RTDL native oracle build failed while preparing run_cpu(...).",
+        _oracle_build_help_text(system=system),
+        f"Compiler command: {subprocess.list2cmdline(command)}",
+    ]
+    if detail:
+        message.append(f"Tool output: {detail}")
+    raise RuntimeError(" ".join(message))
+
+
+@functools.lru_cache(maxsize=1)
+def _load_oracle_library():
+    library_path = _ensure_oracle_library()
+    library = ctypes.CDLL(str(library_path))
+    library.rtdl_oracle_get_version.argtypes = [
+        ctypes.POINTER(ctypes.c_int),
+        ctypes.POINTER(ctypes.c_int),
+        ctypes.POINTER(ctypes.c_int),
+    ]
+    library.rtdl_oracle_get_version.restype = ctypes.c_int
+    library.rtdl_oracle_free_rows.argtypes = [ctypes.c_void_p]
+    library.rtdl_oracle_free_rows.restype = None
+
+    library.rtdl_oracle_run_segment_pair_intersection.argtypes = [
+        ctypes.POINTER(_RtdlSegment),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlSegment),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(_RtdlLsiRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_oracle_run_segment_pair_intersection.restype = ctypes.c_int
+
+    library.rtdl_oracle_run_point_primitive_anyhit_packet.argtypes = [
+        ctypes.POINTER(_RtdlPoint),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlPolygonRef),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.c_size_t,
+        ctypes.c_uint32,
+        ctypes.POINTER(ctypes.POINTER(_RtdlPipRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_oracle_run_point_primitive_anyhit_packet.restype = ctypes.c_int
+
+    library.rtdl_oracle_run_shape_pair_relation_flags.argtypes = [
+        ctypes.POINTER(_RtdlPolygonRef),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlPolygonRef),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(_RtdlOverlayRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_oracle_run_shape_pair_relation_flags.restype = ctypes.c_int
+
+    library.rtdl_oracle_run_ray_hitcount.argtypes = [
+        ctypes.POINTER(_RtdlRay2D),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlTriangle),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(_RtdlRayHitCountRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_oracle_run_ray_hitcount.restype = ctypes.c_int
+
+    library.rtdl_oracle_run_segment_shape_hitcount.argtypes = [
+        ctypes.POINTER(_RtdlSegment),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlPolygonRef),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(_RtdlSegmentPolygonHitCountRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_oracle_run_segment_shape_hitcount.restype = ctypes.c_int
+
+    library.rtdl_oracle_run_segment_shape_anyhit_rows.argtypes = [
+        ctypes.POINTER(_RtdlSegment),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlPolygonRef),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(_RtdlSegmentPolygonAnyHitRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_oracle_run_segment_shape_anyhit_rows.restype = ctypes.c_int
+
+    library.rtdl_oracle_run_shape_pair_overlap_area_rows.argtypes = [
+        ctypes.POINTER(_RtdlPolygonRef),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlPolygonRef),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(_RtdlPolygonPairOverlapAreaRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_oracle_run_shape_pair_overlap_area_rows.restype = ctypes.c_int
+
+    library.rtdl_oracle_run_shape_set_overlap_ratio.argtypes = [
+        ctypes.POINTER(_RtdlPolygonRef),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlPolygonRef),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(_RtdlPolygonSetJaccardRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_oracle_run_shape_set_overlap_ratio.restype = ctypes.c_int
+
+    library.rtdl_oracle_refine_shape_pair_overlap_area_rows_for_pairs.argtypes = [
+        ctypes.POINTER(_RtdlPolygonRef),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlPolygonRef),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlPolygonPairCandidate),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(_RtdlPolygonPairOverlapAreaRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_oracle_refine_shape_pair_overlap_area_rows_for_pairs.restype = ctypes.c_int
+
+    library.rtdl_oracle_refine_shape_set_overlap_ratio_for_pairs.argtypes = [
+        ctypes.POINTER(_RtdlPolygonRef),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlPolygonRef),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlPolygonPairCandidate),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(_RtdlPolygonSetJaccardRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_oracle_refine_shape_set_overlap_ratio_for_pairs.restype = ctypes.c_int
+
+    library.rtdl_native_reduce_shape_pair_exact_area_summary.argtypes = [
+        ctypes.POINTER(_RtdlPolygonRef),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlPolygonRef),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_double),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlPolygonPairCandidate),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlPolygonPairAreaSummary),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_native_reduce_shape_pair_exact_area_summary.restype = ctypes.c_int
+
+    library.rtdl_oracle_run_point_nearest_segment.argtypes = [
+        ctypes.POINTER(_RtdlPoint),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlSegment),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(_RtdlPointNearestSegmentRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_oracle_run_point_nearest_segment.restype = ctypes.c_int
+    library.rtdl_oracle_run_fixed_radius_neighbors.argtypes = [
+        ctypes.POINTER(_RtdlPoint),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlPoint),
+        ctypes.c_size_t,
+        ctypes.c_double,
+        ctypes.c_uint32,
+        ctypes.POINTER(ctypes.POINTER(_RtdlFixedRadiusNeighborRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_oracle_run_fixed_radius_neighbors.restype = ctypes.c_int
+    library.rtdl_oracle_run_fixed_radius_neighbors_3d.argtypes = [
+        ctypes.POINTER(_RtdlPoint3D),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlPoint3D),
+        ctypes.c_size_t,
+        ctypes.c_double,
+        ctypes.c_uint32,
+        ctypes.POINTER(ctypes.POINTER(_RtdlFixedRadiusNeighborRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_oracle_run_fixed_radius_neighbors_3d.restype = ctypes.c_int
+
+    library.rtdl_oracle_summarize_fixed_radius_rows.argtypes = [
+        ctypes.POINTER(_RtdlFixedRadiusNeighborRow),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(_RtdlFixedRadiusSummaryRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_oracle_summarize_fixed_radius_rows.restype = ctypes.c_int
+
+    library.rtdl_oracle_run_k_closest_hits.argtypes = [
+        ctypes.POINTER(_RtdlPoint),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlPoint),
+        ctypes.c_size_t,
+        ctypes.c_uint32,
+        ctypes.POINTER(ctypes.POINTER(_RtdlKnnNeighborRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_oracle_run_k_closest_hits.restype = ctypes.c_int
+    library.rtdl_oracle_run_k_closest_hits_3d.argtypes = [
+        ctypes.POINTER(_RtdlPoint3D),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlPoint3D),
+        ctypes.c_size_t,
+        ctypes.c_uint32,
+        ctypes.POINTER(ctypes.POINTER(_RtdlKnnNeighborRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_oracle_run_k_closest_hits_3d.restype = ctypes.c_int
+    library.rtdl_oracle_run_bounded_k_closest_hits.argtypes = [
+        ctypes.POINTER(_RtdlPoint),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlPoint),
+        ctypes.c_size_t,
+        ctypes.c_double,
+        ctypes.c_uint32,
+        ctypes.POINTER(ctypes.POINTER(_RtdlKnnNeighborRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_oracle_run_bounded_k_closest_hits.restype = ctypes.c_int
+    library.rtdl_oracle_run_bounded_k_closest_hits_3d.argtypes = [
+        ctypes.POINTER(_RtdlPoint3D),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlPoint3D),
+        ctypes.c_size_t,
+        ctypes.c_double,
+        ctypes.c_uint32,
+        ctypes.POINTER(ctypes.POINTER(_RtdlKnnNeighborRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_oracle_run_bounded_k_closest_hits_3d.restype = ctypes.c_int
+
+    library.rtdl_oracle_summarize_k_closest_hits.argtypes = [
+        ctypes.POINTER(_RtdlKnnNeighborRow),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(_RtdlKnnSummaryRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_oracle_summarize_k_closest_hits.restype = ctypes.c_int
+    library.rtdl_oracle_run_frontier_edge_traversal_packet.argtypes = [
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlFrontierVertex),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.c_size_t,
+        ctypes.c_uint32,
+        ctypes.POINTER(ctypes.POINTER(_RtdlBfsExpandRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_oracle_run_frontier_edge_traversal_packet.restype = ctypes.c_int
+    library.rtdl_oracle_run_triangle_cycle_candidates.argtypes = [
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlEdgeSeed),
+        ctypes.c_size_t,
+        ctypes.c_uint32,
+        ctypes.c_uint32,
+        ctypes.POINTER(ctypes.POINTER(_RtdlTriangleRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_oracle_run_triangle_cycle_candidates.restype = ctypes.c_int
+
+    library.rtdl_oracle_summarize_frontier_traversal_rows.argtypes = [
+        ctypes.POINTER(_RtdlBfsExpandRow),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(_RtdlBfsSummaryRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_oracle_summarize_frontier_traversal_rows.restype = ctypes.c_int
+
+    library.rtdl_oracle_summarize_triangle_rows.argtypes = [
+        ctypes.POINTER(_RtdlTriangleRow),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(_RtdlTriangleSummaryRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_oracle_summarize_triangle_rows.restype = ctypes.c_int
+    library.rtdl_oracle_run_conjunctive_scan.argtypes = [
+        ctypes.POINTER(_RtdlDbField),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlDbScalar),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlDbClause),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.POINTER(_RtdlDbRowIdRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_oracle_run_conjunctive_scan.restype = ctypes.c_int
+    library.rtdl_oracle_run_grouped_count.argtypes = [
+        ctypes.POINTER(_RtdlDbField),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlDbScalar),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlDbClause),
+        ctypes.c_size_t,
+        ctypes.c_char_p,
+        ctypes.POINTER(ctypes.POINTER(_RtdlDbGroupedCountRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_oracle_run_grouped_count.restype = ctypes.c_int
+    library.rtdl_oracle_run_grouped_sum.argtypes = [
+        ctypes.POINTER(_RtdlDbField),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlDbScalar),
+        ctypes.c_size_t,
+        ctypes.POINTER(_RtdlDbClause),
+        ctypes.c_size_t,
+        ctypes.c_char_p,
+        ctypes.c_char_p,
+        ctypes.POINTER(ctypes.POINTER(_RtdlDbGroupedSumRow)),
+        ctypes.POINTER(ctypes.c_size_t),
+        ctypes.c_char_p,
+        ctypes.c_size_t,
+    ]
+    library.rtdl_oracle_run_grouped_sum.restype = ctypes.c_int
+    return library
+
+
+def _runtime_build_directory(repo_root: Path) -> Path:
+    """Choose an external controlled build root, or retain the legacy default."""
+
+    configured = os.environ.get("RTDL_RUNTIME_BUILD_ROOT")
+    if configured is None:
+        build_dir = repo_root / "build"
+        build_dir.mkdir(exist_ok=True)
+        return build_dir
+    candidate = Path(configured)
+    if not candidate.is_absolute():
+        raise RuntimeError("RTDL_RUNTIME_BUILD_ROOT must be an absolute path")
+    if candidate.is_symlink():
+        raise RuntimeError("RTDL_RUNTIME_BUILD_ROOT must not be a symlink")
+    build_dir = candidate.resolve(strict=False)
+    source_root = repo_root.resolve()
+    if build_dir == source_root or source_root in build_dir.parents:
+        raise RuntimeError("RTDL_RUNTIME_BUILD_ROOT must be outside the source tree")
+    build_dir.mkdir(parents=True, exist_ok=True)
+    if not build_dir.is_dir() or build_dir.is_symlink():
+        raise RuntimeError("RTDL_RUNTIME_BUILD_ROOT is unsafe")
+    return build_dir
+
+
+def _ensure_oracle_library() -> Path:
+    repo_root = Path(__file__).resolve().parents[2]
+    build_dir = _runtime_build_directory(repo_root)
+    source_path = repo_root / "src" / "native" / "rtdl_oracle.cpp"
+    source_paths = (source_path, *sorted((repo_root / "src" / "native" / "oracle").glob("*")))
+    system = platform.system()
+    if system == "Darwin":
+        library_ext = ".dylib"
+    elif system == "Windows":
+        library_ext = ".dll"
+    else:
+        library_ext = ".so"
+    library_path = build_dir / f"librtdl_oracle{library_ext}"
+    if system == "Darwin":
+        compiler = os.environ.get("CXX", "clang++")
+        shared_flags = ["-dynamiclib", "-fPIC"]
+    elif system == "Windows":
+        compiler = os.environ.get("CXX", r"C:\Program Files\LLVM\bin\clang++.exe")
+        shared_flags = ["-shared"]
+    else:
+        compiler = os.environ.get("CXX", "g++")
+        shared_flags = ["-shared", "-fPIC"]
+    geos_cflags = _geos_pkg_config_flags("--cflags")
+    geos_libs = _geos_pkg_config_flags("--libs")
+    newest_source_mtime = max(path.stat().st_mtime for path in source_paths)
+    needs_build = not library_path.exists() or library_path.stat().st_mtime < newest_source_mtime
+    if needs_build:
+        command = [
+            compiler,
+            "-std=c++17",
+            "-O2",
+            *shared_flags,
+            *geos_cflags,
+            str(source_path),
+            *geos_libs,
+            "-o",
+            str(library_path),
+        ]
+        if system == "Windows":
+            vcvars = Path(
+                os.environ.get(
+                    "RTDL_VCVARS64",
+                    r"C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars64.bat",
+                )
+            )
+            if not vcvars.exists():
+                raise RuntimeError(
+                    "Windows oracle build requires vcvars64.bat. Set RTDL_VCVARS64 to the Visual Studio Build Tools vcvars64.bat path."
+                )
+            try:
+                _run_windows_compile(command, vcvars=vcvars, cwd=repo_root)
+            except (OSError, subprocess.CalledProcessError) as exc:
+                _raise_oracle_build_failure(command=command, system=system, error=exc)
+        else:
+            try:
+                subprocess.run(command, check=True, cwd=repo_root, capture_output=True, text=True)
+            except (OSError, subprocess.CalledProcessError) as exc:
+                _raise_oracle_build_failure(command=command, system=system, error=exc)
+    return library_path

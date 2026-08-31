@@ -1,0 +1,133 @@
+{
+  "schema": "rtdl.goal5834_b3.boolean_collision_bridge_result.v1",
+  "date": "2026-08-30",
+  "goal": "5834-B3",
+  "status": "GOAL5834_B3_COMPLETE_REGISTERED_FIXTURE_EVALUATION",
+  "controlling_for_goal5834_boolean_bridge": true,
+  "first_contact_general_numeric_goal_status": "INCOMPLETE__UNCHANGED_BY_BOOLEAN_RESULT",
+  "repository_binding": {
+    "workspace": "C:/Users/Lestat/Desktop/work/rtdl_v4_restricted_python_design",
+    "git_status": "BROKEN_BAD_OBJECT_HEAD_NO_COMMIT_CLAIM",
+    "observed_rev_parse_text": "1af120d187228035db733ce690de3a3bf5b54ee5",
+    "commit_identity_claimed": false,
+    "binding_kind": "EXACT_SOURCE_PROJECTION_AND_MEMBER_HASHES"
+  },
+  "scientific_contract": {
+    "public_executable_semantics": "provider_any_contact_bit_per_query",
+    "application_aggregation": "host_OR_after_raw_gpu_vector_receipt_seal",
+    "mathematical_comparison_scope": "FROZEN_CANONICAL_FLOAT32_MARGIN_SEPARATED_FIXTURES_ONLY",
+    "evaluation_margin": "2^-10",
+    "direction_cross_ratio_margin": "2^-12",
+    "entry_endpoint_margin": "2^-12",
+    "fixture_family_count": 10,
+    "concrete_primary_execution_count": 11,
+    "evaluator_ineligible_worker_count": 0,
+    "predeclared_ineligible_boundary_count": 2,
+    "malformed_prelaunch_rejection_count": 1,
+    "generalization_exam_count": 0
+  },
+  "home_environment": {
+    "machine": "lx1",
+    "gpu": "NVIDIA GeForce GTX 1070",
+    "compute_capability": "6.1",
+    "driver": "580.173.02",
+    "optix_sdk": "9.0.0",
+    "cuda_toolkit": "12.0",
+    "behavioral_true_optix": true,
+    "rt_core_silicon_claimed": false,
+    "registered_performance_timing_count": 0
+  },
+  "identities": {
+    "fixture_authority_sha256": "0f13ab8a7408c253114c56a51645c015d0e5e36ca96a4290c9dd1a2ba700adad",
+    "worker_inputs_sha256": "55eeff377c93c32fed8cc326ad975cb9d2437df85812e30b9d916b3e7cc581a4",
+    "b3_source_projection_sha256": "ce92feb34baf7e168a1defcdfa6c0ce90d8a532f405e4225d446ef1389b15c4e",
+    "b3_source_projection_manifest_sha256": "94878fa954dcae04214c98e4b1a2e8452b49a9991fbdfd5517aaa6dfb2337d5b",
+    "target_preaction_sha256": "5998d20a41eccb2a50d671d10995545cea210b25b9afb4452e9132ed30ae2127",
+    "native_sha256": "065599472ada1a8fa4cf9ecbb46ee2aa76a4d90ec099f6626b171b4720553d73",
+    "boolean_executable_sha256": "16a752edb5156d69007ba7bbd285e9051d2acd513644cc081a1ba9211127de68",
+    "materialized_artifact_manifest_sha256": "9d9f561ebbca697975279c95e68efa07f209860ed69f5bb82845162bd871db6f",
+    "raw_gpu_receipt_sha256": "b50043e81713aacf6a70986a6e334789cbfeef17342ae97a8ae401ab1507f513",
+    "independent_evaluation_sha256": "786ebd4970dadf842c57aa6c08539694d0cdbe8a6b2f6672932029b5f19be02a",
+    "independent_local_recount_sha256": "786ebd4970dadf842c57aa6c08539694d0cdbe8a6b2f6672932029b5f19be02a"
+  },
+  "execution": {
+    "primary_worker_count": 11,
+    "repeat_validation_launch_count": 11,
+    "reverse_order_validation_launch_count": 11,
+    "total_successful_application_launch_count": 33,
+    "forked_static_scene_worker_count": 11,
+    "materialization_count": 1,
+    "matching_primary_execution_count": 11,
+    "mismatch_execution_ids": [],
+    "all_status_before_output": true,
+    "all_true_optix_traversal": true,
+    "all_repeat_preserved": true,
+    "all_reverse_order_preserved": true,
+    "all_physical_padding_zero_checked": true,
+    "custom_intersection_used": false,
+    "primitive_type": "OPTIX_PRIMITIVE_TYPE_ROUND_LINEAR"
+  },
+  "fixture_outcomes": [
+    ["single_crossing_hit", [1], 1],
+    ["clear_miss", [0], 0],
+    ["round_endcap_hit", [1], 1],
+    ["piecewise_linear_or", [0, 1, 0], 1],
+    ["multiple_robust_hits", [1], 1],
+    ["large_translation_base", [1], 1],
+    ["large_translation_transformed", [1], 1],
+    ["face_interior_only_boundary", [0, 0, 0], 0],
+    ["ordinary_provider_t_disagreement_regression", [1], 1],
+    ["near_coincident_id_disagreement_regression", [1], 1],
+    ["float32_tie_id_disagreement_regression", [1], 1]
+  ],
+  "independent_verification": {
+    "home_and_local_evaluator_outputs_byte_identical": true,
+    "fixture_source_member_count": 11,
+    "fixture_source_member_mismatch_count": 0,
+    "b3_source_projection_member_count": 24,
+    "b3_source_projection_member_mismatch_count": 0,
+    "source_projection_twin_byte_identical": true,
+    "materialized_member_count": 13,
+    "materialized_member_mismatch_count": 0,
+    "second_active_set_geometry_crosscheck_pair_count": 21,
+    "second_active_set_geometry_crosscheck_mismatch_count": 0,
+    "goal5833_goal5834_adjacent_test_count": 95,
+    "goal5833_goal5834_adjacent_test_failure_count": 0
+  },
+  "failed_predecessors": [
+    {
+      "goal": "5834-B1",
+      "status": "TERMINAL_NEGATIVE__B1_REGISTERED_FIXTURE_NOT_EXECUTABLE_AS_FROZEN",
+      "cause": "one single-use executable was reused across distinct static scenes",
+      "record_sha256": "ba9514b7c49287a595a64fca35b2309dd4956810e8f53e7d1edac2ea194c608a"
+    },
+    {
+      "goal": "5834-B2",
+      "status": "TERMINAL_NEGATIVE__B2_MULTI_MATERIALIZATION_IDENTITY_DRIFT",
+      "cause": "same-process repeated NVRTC materialization changed raw PTX callseq comment bytes",
+      "record_sha256": "2af33ed7c09b260bd168805cb6e87ba90c30593f016c53af5248952a21f2bdc9"
+    }
+  ],
+  "claim_ceiling": {
+    "paper_app_status": "NOT_A_PAPER_APP",
+    "source_relation": "SUI_DERIVED_MAPPING_NOT_YET_IMPLEMENTED",
+    "full_rt_ccd_reproduction": false,
+    "arbitrary_capsule_correctness": false,
+    "exact_toi_or_id": false,
+    "representative_corpus": false,
+    "prospective_generalization": false,
+    "third_party_user": false,
+    "performance": false,
+    "modern_rtx": false
+  },
+  "goal5835": {
+    "authorized": true,
+    "authorization_scope": "REGISTERED_FIXTURE_SUI_DERIVED_EDGE_CROSSING_MAPPING_ONLY",
+    "must_use_public_boolean_curve_lifecycle": true,
+    "must_inherit_fixture_authority_sha256": "0f13ab8a7408c253114c56a51645c015d0e5e36ca96a4290c9dd1a2ba700adad",
+    "may_add_new_gpu_fixture": false,
+    "may_claim_paper_app": false,
+    "may_measure_performance": false,
+    "goal5836_promotion_gate_unchanged": true
+  }
+}

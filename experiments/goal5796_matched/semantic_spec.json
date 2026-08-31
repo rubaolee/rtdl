@@ -1,0 +1,106 @@
+{
+  "schema": "rtdl.goal5796.matched_semantics.v2",
+  "registered_performance_timing_count": 0,
+  "tasks": {
+    "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1": {
+      "precision": "binary32_coordinates_and_threshold",
+      "row_type": "lexicographic_unique_pair_u32",
+      "predicate": "closed_aabb_overlap_and_binary32_overlap_area_ge_threshold",
+      "overflow": "no_partial_application_result",
+      "overflow_witness": {
+        "base_fixture_id": "librts_tiny_broad",
+        "capacity": 7,
+        "expected_unique_row_count": 8,
+        "expected_disposition": "FAIL_CLOSED__NO_PARTIAL_APPLICATION_RESULT"
+      },
+      "fixtures": [
+        {
+          "id": "diagnostic_cross",
+          "capacity": 2,
+          "minimum_overlap": 0.0,
+          "indexed": [
+            [0.0, 0.0, 4.0, 1.0, 10],
+            [0.0, 0.0, 1.0, 4.0, 20]
+          ],
+          "sources": [
+            [2.0, 0.25, 3.0, 0.75, 100],
+            [0.25, 2.0, 0.75, 3.0, 101]
+          ],
+          "expected_rows": [[100, 10], [101, 20]]
+        },
+        {
+          "id": "librts_tiny_broad",
+          "capacity": 8,
+          "minimum_overlap": 0.0,
+          "indexed": [
+            [0.0, 0.0, 2.0, 2.0, 0],
+            [1.0, 1.0, 3.0, 3.0, 1],
+            [-2.0, -2.0, -1.0, -1.0, 2],
+            [10.0, 10.0, 11.0, 11.0, 3]
+          ],
+          "sources": [
+            [1.25, 1.25, 1.75, 1.75, 0],
+            [0.0, 0.0, 2.0, 2.0, 1],
+            [0.5, 0.5, 2.5, 2.5, 2],
+            [-1.75, -1.75, -1.25, -1.25, 3],
+            [10.0, 10.0, 11.0, 11.0, 4]
+          ],
+          "expected_rows": [[0, 0], [0, 1], [1, 0], [1, 1], [2, 0], [2, 1], [3, 2], [4, 3]]
+        },
+        {
+          "id": "librts_tiny_overlap_075",
+          "capacity": 5,
+          "minimum_overlap": 0.75,
+          "indexed": [
+            [0.0, 0.0, 2.0, 2.0, 0],
+            [1.0, 1.0, 3.0, 3.0, 1],
+            [-2.0, -2.0, -1.0, -1.0, 2],
+            [10.0, 10.0, 11.0, 11.0, 3]
+          ],
+          "sources": [
+            [1.25, 1.25, 1.75, 1.75, 0],
+            [0.0, 0.0, 2.0, 2.0, 1],
+            [0.5, 0.5, 2.5, 2.5, 2],
+            [-1.75, -1.75, -1.25, -1.25, 3],
+            [10.0, 10.0, 11.0, 11.0, 4]
+          ],
+          "expected_rows": [[1, 0], [1, 1], [2, 0], [2, 1], [4, 3]]
+        },
+        {
+          "id": "binary32_closed_boundary",
+          "capacity": 3,
+          "minimum_overlap": 0.0,
+          "indexed": [[0.0, 0.0, 1.0, 1.0, 7]],
+          "sources": [
+            [1.0, 0.25, 2.0, 0.75, 201],
+            [1.0, 1.0, 2.0, 2.0, 202],
+            [0.9999999403953552, 0.25, 2.0, 0.75, 203],
+            [1.0000001192092896, 0.25, 2.0, 0.75, 204]
+          ],
+          "expected_rows": [[201, 7], [202, 7], [203, 7]]
+        }
+      ]
+    },
+    "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1": {
+      "precision": "binary32_geometry_and_rays_checked_u64_counts_and_sum",
+      "tmin": 0.0,
+      "tmax": 10.0,
+      "vertices": [
+        [-1.0, -1.0, 1.0], [1.0, -1.0, 1.0], [0.0, 1.0, 1.0],
+        [-1.0, -1.0, 2.0], [1.0, -1.0, 2.0], [0.0, 1.0, 2.0],
+        [-1.0, -1.0, 3.0], [1.0, -1.0, 3.0], [0.0, 1.0, 3.0],
+        [2.0, -1.0, 1.0], [4.0, -1.0, 1.0], [3.0, 1.0, 1.0],
+        [2.0, -1.0, 1.0], [4.0, -1.0, 1.0], [3.0, 1.0, 1.0]
+      ],
+      "rays": [
+        [[0.0, 0.0, 0.0], [0.0, 0.0, 1.0]],
+        [[3.0, 0.0, 0.0], [0.0, 0.0, 1.0]],
+        [[6.0, 0.0, 0.0], [0.0, 0.0, 1.0]],
+        [[0.0, 0.0, 2.5], [0.0, 0.0, 1.0]]
+      ],
+      "weights": [1, 3, 5, 7],
+      "expected_per_ray": [3, 2, 0, 1],
+      "expected_weighted_sum": 16
+    }
+  }
+}

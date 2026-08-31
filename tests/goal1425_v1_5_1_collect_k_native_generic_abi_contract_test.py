@@ -1,0 +1,105 @@
+from __future__ import annotations
+
+import unittest
+
+import rtdsl as rt
+
+
+STATUS = (
+    "source_symbols_present_python_adapter_routed_embree_optix_adapter_parity_ok_"
+    "binary_validation_ok_generic_abi_parity_ok_production_wrapper_generic_symbol_route_ok_"
+    "stable_review_pending"
+)
+
+
+class Goal1425V151CollectKNativeGenericAbiContractTest(unittest.TestCase):
+    def test_contract_defines_app_name_free_backend_symbols_without_implementation_claim(self) -> None:
+        contract = rt.validate_v1_5_1_collect_k_bounded_native_generic_abi_contract()
+
+        self.assertEqual(contract["primitive"], "COLLECT_K_BOUNDED")
+        self.assertEqual(
+            contract["status"],
+            STATUS,
+        )
+        self.assertTrue(contract["native_source_symbols_present"])
+        self.assertTrue(contract["native_binary_validation_present"])
+        self.assertFalse(contract["stable_promotion_authorized"])
+        self.assertTrue(contract["app_name_free"])
+        self.assertEqual(
+            contract["backend_symbols"],
+            (
+                "rtdl_embree_collect_k_bounded_i64",
+                "rtdl_optix_collect_k_bounded_i64",
+            ),
+        )
+
+    def test_symbols_are_not_app_specific(self) -> None:
+        contract = rt.validate_v1_5_1_collect_k_bounded_native_generic_abi_contract()
+
+        for symbol in contract["backend_symbols"]:
+            lowered = symbol.lower()
+            with self.subTest(symbol=symbol):
+                self.assertIn("collect_k_bounded", lowered)
+                for forbidden in contract["forbidden_symbol_substrings"]:
+                    self.assertNotIn(forbidden, lowered)
+
+    def test_prototypes_use_generic_i64_row_buffers(self) -> None:
+        contract = rt.validate_v1_5_1_collect_k_bounded_native_generic_abi_contract()
+
+        for prototype in contract["prototypes"]:
+            with self.subTest(prototype=prototype):
+                self.assertIn("const int64_t* candidate_rows", prototype)
+                self.assertIn("size_t candidate_count", prototype)
+                self.assertIn("size_t row_width", prototype)
+                self.assertIn("int64_t* rows_out", prototype)
+                self.assertIn("size_t row_capacity", prototype)
+                self.assertIn("size_t* emitted_count_out", prototype)
+                self.assertIn("uint32_t* overflowed_out", prototype)
+                self.assertIn("char* error_out", prototype)
+                self.assertIn("size_t error_size", prototype)
+
+    def test_contract_preserves_fail_closed_collection_policy(self) -> None:
+        contract = rt.validate_v1_5_1_collect_k_bounded_native_generic_abi_contract()
+
+        self.assertEqual(contract["input_layout"], "row_major_int64_candidate_id_rows")
+        self.assertEqual(contract["output_layout"], rt.V1_5_1_COLLECT_K_BOUNDED_RESULT_LAYOUT)
+        self.assertEqual(contract["capacity_unit"], "candidate_id_rows")
+        self.assertEqual(contract["overflow_policy"], rt.V1_5_1_COLLECT_K_BOUNDED_OVERFLOW_POLICY)
+        self.assertEqual(contract["failure_mode"], "fail_closed_overflow")
+        self.assertFalse(contract["partial_result_on_overflow_allowed"])
+
+    def test_contract_names_required_adapter_work_before_stable_review(self) -> None:
+        contract = rt.validate_v1_5_1_collect_k_bounded_native_generic_abi_contract()
+
+        self.assertEqual(
+            contract["required_adapter_work"],
+            (),
+        )
+        evidence = contract["post_adapter_parity_evidence"]
+        self.assertIn("linux_embree_required", evidence)
+        self.assertIn("linux_optix_required_not_accepted_superseded", evidence)
+        self.assertIn("pod_optix_required", evidence)
+        self.assertEqual(
+            contract["generic_abi_parity_evidence"],
+            (
+                "docs/reports/goal1431_v1_5_1_collect_k_generic_i64_abi_parity_linux_embree_2026-05-06.md",
+                "docs/reports/goal1431_v1_5_1_collect_k_generic_i64_abi_parity_pod_optix_2026-05-06.md",
+            ),
+        )
+        self.assertEqual(
+            contract["production_wrapper_generic_symbol_evidence"],
+            (
+                "docs/reports/goal1432_v1_5_1_collect_k_production_wrapper_generic_symbol_linux_embree_2026-05-06.md",
+                "docs/reports/goal1432_v1_5_1_collect_k_production_wrapper_generic_symbol_pod_optix_2026-05-06.md",
+            ),
+        )
+        self.assertIn("native source-level ABI implementation step only", contract["claim_boundary"])
+        self.assertIn("Python generic i64 adapter", contract["claim_boundary"])
+        self.assertIn("Post-adapter Embree and OptiX polygon-pair parity are accepted", contract["claim_boundary"])
+        self.assertIn("direct same-ABI smoke validation", contract["claim_boundary"])
+        self.assertIn("formal generic ABI parity checks", contract["claim_boundary"])
+        self.assertIn("production wrappers now route native candidate rows", contract["claim_boundary"])
+
+
+if __name__ == "__main__":
+    unittest.main()

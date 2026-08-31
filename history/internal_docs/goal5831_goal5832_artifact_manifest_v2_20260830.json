@@ -1,0 +1,96 @@
+{
+  "schema": "rtdl.goal5831_goal5832.artifact_manifest.v2",
+  "date": "2026-08-30",
+  "supersedes": {
+    "path": "history/internal_docs/goal5831_goal5832_artifact_manifest_20260830.json",
+    "bytes": 2471,
+    "sha256": "a31f7491f3320734c99a07a4e506b801453eb4dbf8c8af804c681b9e66d3bc7d",
+    "reason": "V1_PRECEDED_HOSTILE_P1_REPAIR_AND_BECAME_STALE"
+  },
+  "repo_head_text": "1af120d187228035db733ce690de3a3bf5b54ee5",
+  "git_object_status": "BROKEN_BAD_OBJECT_HEAD_NO_COMMIT_CLAIM",
+  "external_review_requested": false,
+  "file_count_excluding_this_manifest": 16,
+  "artifacts": [
+    {
+      "path": "history/internal_docs/goal5831_public_gpu_surface_terminology_and_denominator_result_20260830.json",
+      "bytes": 7430,
+      "sha256": "648335944aa3ad44a8cd265ce5a42ee08c27b21e2d320ae4f7ec6609f64124c1"
+    },
+    {
+      "path": "history/internal_docs/goal5831_public_gpu_surface_terminology_and_denominator_report_20260830.md",
+      "bytes": 4331,
+      "sha256": "d612966ef492281a0bdd2853ef8618797edf8f12fbce35b4ae1ee3c0ed759e30"
+    },
+    {
+      "path": "history/internal_docs/goal5832_protocol_shape_algebra_authority_v1_20260830.json",
+      "bytes": 14887,
+      "sha256": "33db5c7c9c9403cc3c8f1f426fdf1ba594fd6c4a8d94608ab41e50dbe7be5200"
+    },
+    {
+      "path": "history/internal_docs/goal5832_protocol_shape_algebra_result_20260830.json",
+      "bytes": 2863,
+      "sha256": "5f6656ea15acc268863267d465aac9602e3421e5281fc7e5706d4abc001ed0ab"
+    },
+    {
+      "path": "history/internal_docs/goal5832_protocol_shape_algebra_equivalence_and_claim_ceiling_report_20260830.md",
+      "bytes": 4672,
+      "sha256": "98c7114b0209f909f82e2f00c9bc055b7ff4c93a27a76357c86b700bd48f4870"
+    },
+    {
+      "path": "history/internal_docs/self_review_goal5831_goal5832_cgo_family_scope_20260830.md",
+      "bytes": 5645,
+      "sha256": "30c86f1dc2693c52859ccaac5f273806ff0e6d128ee81f740d2d69ed2bbb5afe"
+    },
+    {
+      "path": "docs/v4/protocol_family_algebra_v1.md",
+      "bytes": 9182,
+      "sha256": "60d14ba8784eae08464830f2937f0a146e32ead2e92491f0dd6395ae3abf7262"
+    },
+    {
+      "path": "docs/v4/README.md",
+      "bytes": 4608,
+      "sha256": "0775950bdbf81367658ae75a03d8b41e2621cbbb93897594d36da0b1b5b14992"
+    },
+    {
+      "path": "docs/v4/api_reference.md",
+      "bytes": 7249,
+      "sha256": "1d0b5279ecd75709f09f61e2be9e5850d81472ebe1ff88636a22f8bf2f6be19e"
+    },
+    {
+      "path": "docs/v4/tutorial.md",
+      "bytes": 8370,
+      "sha256": "40f7fb8630aaf5129828db675f2fb47734408f2bd4165e2be2a8b9b0f95c2b3d"
+    },
+    {
+      "path": "docs/v4/nine_app_coverage.md",
+      "bytes": 3443,
+      "sha256": "0f74c7945c3abf16086824c62d82ffa7c5e59583b17b34b80baf932c5dd2d518"
+    },
+    {
+      "path": "docs/v4/typed_physical_schema_and_gas_abi_design.md",
+      "bytes": 14741,
+      "sha256": "8fcd643c7ec907604c5703e4d9f37dbad1e661d4600b949dc5d7ed69dbeec337"
+    },
+    {
+      "path": "scripts/goal5832_protocol_shape_algebra.py",
+      "bytes": 64206,
+      "sha256": "881f6336b369c507a59943b21917c583b2d8f5487d1e712d7ebaa3e8dc660361"
+    },
+    {
+      "path": "tests/goal5832_protocol_shape_algebra_test.py",
+      "bytes": 17371,
+      "sha256": "812c2330a5377725a0e9ac0a7117df71a1d7b872b3ea5d0577552c3f7d1d259d"
+    },
+    {
+      "path": "paper/cgo2027/main.tex",
+      "bytes": 85730,
+      "sha256": "d9cf2dc38f83e6545c4880efd6f101be27553c6729f41dcc7afe0e126c504716"
+    },
+    {
+      "path": "paper/cgo2027/goal5832_main.pdf",
+      "bytes": 643943,
+      "sha256": "a9344342d4f292fd35d08e94d85261799eca2c0d889bd9a70359f6a934e5e80a"
+    }
+  ]
+}

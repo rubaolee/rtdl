@@ -1,0 +1,71 @@
+{
+  "schema": "rtdl.goal5834.final_adversarial_closeout_manifest.v1",
+  "date": "2026-08-30",
+  "status": "CLOSED_SELF_REVIEW_TRANSACTION__GOAL_REMAINS_INCOMPLETE",
+  "controlling_status": "INCOMPLETE__POSITIVE_PROVIDER_EVENT_PATH__CAPSULE_NUMERIC_DOMAIN_NOT_ESTABLISHED",
+  "members": [
+    {
+      "path": "history/internal_docs/goal5834_final_adversarial_self_review_result_20260830.json",
+      "bytes": 11094,
+      "sha256": "748cc96f05c12230d1a60f53c3b2f191d1221a331ac65c106e20df1548ac6e6f"
+    },
+    {
+      "path": "history/internal_docs/self_review_goal5834_final_adversarial_20260830.md",
+      "bytes": 10430,
+      "sha256": "ab2a6b2fe2b6fb5d8fe662681783d24ccfce9e3f21027c4aa239d54eba8359cb"
+    },
+    {
+      "path": "history/internal_docs/goal5834_optix_leaf_primitive_kind_presence_authority_v2_20260830.json",
+      "bytes": 4938,
+      "sha256": "2802dd88c57763ae82ed3f4401d24ea62804f50d9f6110692428fc91d319063e"
+    },
+    {
+      "path": "history/internal_docs/goal5834_final_adversarial_self_review_20260830/EXECUTED_SOURCE_PROJECTION_V8.tar.gz",
+      "bytes": 197009,
+      "sha256": "e0edb530de776d815dd7055fc2fb553efea64082e04c4f2d3f8f9582bcbf6e51"
+    },
+    {
+      "path": "history/internal_docs/goal5834_final_adversarial_self_review_20260830/EXECUTED_SOURCE_PROJECTION_V8_TWIN.tar.gz",
+      "bytes": 197009,
+      "sha256": "e0edb530de776d815dd7055fc2fb553efea64082e04c4f2d3f8f9582bcbf6e51"
+    },
+    {
+      "path": "history/internal_docs/goal5834_final_adversarial_self_review_20260830/EXECUTED_SOURCE_PROJECTION_V8_MANIFEST.json",
+      "bytes": 3847,
+      "sha256": "85fc7de0341cf742c83b300b320894d16b7a1fdb58940596742802249a237cb0"
+    },
+    {
+      "path": "history/internal_docs/goal5834_final_adversarial_self_review_20260830/HOME_POSITIVE_RESULT.json",
+      "bytes": 16058,
+      "sha256": "67746c2141677df80dbdb62d396031a9d8f35d6343cb5283f7416c10a96e4b77"
+    },
+    {
+      "path": "history/internal_docs/goal5834_final_adversarial_self_review_20260830/HOME_POSITIVE_VERIFY.json",
+      "bytes": 641,
+      "sha256": "1964438e1a2ba816bc6479e313312d0314e8c94da7db16dbf7817f2f9c947129"
+    },
+    {
+      "path": "history/internal_docs/goal5834_final_adversarial_self_review_20260830/NUMERIC_COUNTEREXAMPLES.json",
+      "bytes": 37485,
+      "sha256": "ce9c7daddf65c6a0d4686ff89841a365930d15eceeea6e1069528b842a28cfd3"
+    },
+    {
+      "path": "history/internal_docs/goal5834_final_adversarial_self_review_20260830/librtdl_optix.so",
+      "bytes": 6480344,
+      "sha256": "d9bd98135f18b1545a0d55e72acb4d7ae4aa06a6e36c03415e02b7efe70f7531"
+    },
+    {
+      "path": "history/internal_docs/goal5834_final_adversarial_self_review_20260830/home_positive_artifacts/accepted/manifest.json",
+      "bytes": 2142,
+      "sha256": "837edb191e82b60ce7bcd587efc505cdc9f852fb8d0a384072da51b166c1188f"
+    },
+    {
+      "path": "history/internal_docs/goal5834_final_adversarial_self_review_20260830/build.log",
+      "bytes": 545,
+      "sha256": "d54b1fbca05f88a07d601af62c7241ae4645b4f6a7efea4d95eda6782cc76e40"
+    }
+  ],
+  "member_count": 12,
+  "external_review_requested": false,
+  "external_review_authorized": false
+}

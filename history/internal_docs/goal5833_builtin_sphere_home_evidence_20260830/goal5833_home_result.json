@@ -1,0 +1,425 @@
+{
+  "application_ids": [
+    9,
+    2,
+    99,
+    1,
+    11
+  ],
+  "callback_abi_sha256": "8f63b85dbd792b817b330b821e28a6f9d82c5b4d48f65097b4deff3a8b149652",
+  "callback_effect_digest": "e89ddea0580fe0ad017e649de8dbe3d08409174e9cfdb3f662afbc1344d989be",
+  "callback_ir_sha256": "60314121a0d865dbd32efe92616bbd3784f11286cb0581eaed3aded0fbe0ae5d",
+  "canonical_plan_sha256": "d289f2c3b11e668ec90c194628dec305e9d99ae6a21eabd1b3de95216951d16d",
+  "centers": [
+    [
+      3.0,
+      0.0,
+      0.0
+    ],
+    [
+      3.0,
+      0.0,
+      0.0
+    ],
+    [
+      3.0,
+      4.0,
+      0.0
+    ],
+    [
+      5.0,
+      4.0,
+      0.0
+    ],
+    [
+      2.0,
+      8.0,
+      0.0
+    ]
+  ],
+  "composed_ptx_sha256": "5653791d25b94a625a8d75df316fd38795c832c005ef74b33b023ce6a8020848",
+  "compute_capability": "6.1",
+  "device_status": [
+    {
+      "effect_tag": 0,
+      "error_code": 0,
+      "error_site": 0,
+      "first_error_claimed": 0,
+      "invocation_mask": 82,
+      "launch_index": 0,
+      "nonce_word": 0,
+      "role": 0,
+      "stage": 0
+    },
+    {
+      "effect_tag": 0,
+      "error_code": 0,
+      "error_site": 0,
+      "first_error_claimed": 0,
+      "invocation_mask": 98,
+      "launch_index": 1,
+      "nonce_word": 0,
+      "role": 0,
+      "stage": 0
+    },
+    {
+      "effect_tag": 0,
+      "error_code": 0,
+      "error_site": 0,
+      "first_error_claimed": 0,
+      "invocation_mask": 82,
+      "launch_index": 2,
+      "nonce_word": 0,
+      "role": 0,
+      "stage": 0
+    },
+    {
+      "effect_tag": 0,
+      "error_code": 0,
+      "error_site": 0,
+      "first_error_claimed": 0,
+      "invocation_mask": 82,
+      "launch_index": 3,
+      "nonce_word": 0,
+      "role": 0,
+      "stage": 0
+    },
+    {
+      "effect_tag": 0,
+      "error_code": 0,
+      "error_site": 0,
+      "first_error_claimed": 0,
+      "invocation_mask": 98,
+      "launch_index": 4,
+      "nonce_word": 0,
+      "role": 0,
+      "stage": 0
+    }
+  ],
+  "executable_sha256": "8a449c774324ba777eeff007787396607c2df6c128816637d1d3da29bd1a1a34",
+  "expected": [
+    [
+      1,
+      1056964608,
+      2
+    ],
+    [
+      0,
+      1065353216,
+      4294967295
+    ],
+    [
+      1,
+      1048576000,
+      99
+    ],
+    [
+      1,
+      1048576000,
+      11
+    ],
+    [
+      0,
+      1065353216,
+      4294967295
+    ]
+  ],
+  "fixture_names": [
+    "equal_time_stable_application_id",
+    "transverse_miss",
+    "nearer_time_precedes_application_id",
+    "exact_tangent",
+    "beyond_tmax_miss"
+  ],
+  "hit_rows": [
+    {
+      "hit_kind": 138,
+      "primitive_index": 1,
+      "t": 0.5
+    },
+    {
+      "hit_kind": null,
+      "primitive_index": null,
+      "t": null
+    },
+    {
+      "hit_kind": 138,
+      "primitive_index": 2,
+      "t": 0.25
+    },
+    {
+      "hit_kind": 138,
+      "primitive_index": 4,
+      "t": 0.25
+    },
+    {
+      "hit_kind": null,
+      "primitive_index": null,
+      "t": null
+    }
+  ],
+  "lifecycle_after": {
+    "composed_ptx_sha256": "5653791d25b94a625a8d75df316fd38795c832c005ef74b33b023ce6a8020848",
+    "execution_count": 1,
+    "native_library_sha256": "c0c2981f2d1bf132d11abdf533de1d4ead1bbb80bd6624ec4f1b7b0681bfbd45",
+    "nonreentrant": true,
+    "nonserializable": true,
+    "physical_receipt_sha256": "95abf90129316cad99f75c65adf1bfec3978e3c6a8c3aa0c8180a3a6032f6a45",
+    "process_bound": true,
+    "schema": "rtdl.v4.prepared_builtin_sphere_owner.v1",
+    "thread_bound": true
+  },
+  "lifecycle_before": {
+    "composed_ptx_sha256": "5653791d25b94a625a8d75df316fd38795c832c005ef74b33b023ce6a8020848",
+    "execution_count": 0,
+    "native_library_sha256": "c0c2981f2d1bf132d11abdf533de1d4ead1bbb80bd6624ec4f1b7b0681bfbd45",
+    "nonreentrant": true,
+    "nonserializable": true,
+    "physical_receipt_sha256": "95abf90129316cad99f75c65adf1bfec3978e3c6a8c3aa0c8180a3a6032f6a45",
+    "process_bound": true,
+    "schema": "rtdl.v4.prepared_builtin_sphere_owner.v1",
+    "thread_bound": true
+  },
+  "native_path": "/tmp/rtdl_goal5833_build_20260830_a5/build/librtdl_optix.so",
+  "native_sha256": "c0c2981f2d1bf132d11abdf533de1d4ead1bbb80bd6624ec4f1b7b0681bfbd45",
+  "observed": [
+    [
+      1,
+      1056964608,
+      2
+    ],
+    [
+      0,
+      1065353216,
+      4294967295
+    ],
+    [
+      1,
+      1048576000,
+      99
+    ],
+    [
+      1,
+      1048576000,
+      11
+    ],
+    [
+      0,
+      1065353216,
+      4294967295
+    ]
+  ],
+  "optix_sdk": "9.0.0",
+  "oracle_path": "/tmp/rtdl_goal5833_build_20260830_a5/examples/first_contact_sphere/first_contact_oracle.py",
+  "oracle_sha256": "cc2429679763280d8e38c5fa56ae304cbafe5ab410d284ecf6a7f33ee9aef27f",
+  "paper_app_claimed": false,
+  "performance_claimed": false,
+  "physical_receipt": {
+    "authority_nonce": "c5f0523c6bba64930627f6602d1fc1d78cf4a8ff2bbeeed1b2c78e1fa386f54c",
+    "build_flags_name": "OPTIX_BUILD_FLAG_PREFER_FAST_TRACE",
+    "build_input_type_name": "OPTIX_BUILD_INPUT_TYPE_SPHERES",
+    "builtin_is_api_name": "optixBuiltinISModuleGet",
+    "composed_ptx_sha256": "5653791d25b94a625a8d75df316fd38795c832c005ef74b33b023ce6a8020848",
+    "geometry_flags_name": "OPTIX_GEOMETRY_FLAG_REQUIRE_SINGLE_ANYHIT_CALL",
+    "native_descriptor": {
+      "build_flags": 4,
+      "build_input_type": 8518,
+      "builtin_is_module": true,
+      "center_stride_bytes": 12,
+      "gas_count": 1,
+      "geometry_flags": 2,
+      "primitive_count": 5,
+      "primitive_index_offset": 0,
+      "primitive_type": 9478,
+      "primitive_type_flags": 64,
+      "radius_stride_bytes": 4,
+      "sbt_record_count": 1,
+      "schema": "rtdl.v4.native_builtin_sphere_descriptor.v1",
+      "single_radius": false,
+      "user_intersection_program": false,
+      "uses_motion_blur": false
+    },
+    "native_library_sha256": "c0c2981f2d1bf132d11abdf533de1d4ead1bbb80bd6624ec4f1b7b0681bfbd45",
+    "primitive_type_flags_name": "OPTIX_PRIMITIVE_TYPE_FLAGS_SPHERE",
+    "primitive_type_name": "OPTIX_PRIMITIVE_TYPE_SPHERE",
+    "schema": "rtdl.v4.builtin_sphere_physical_receipt.v1",
+    "status_before_output": true
+  },
+  "physical_schema_sha256": "2ea5117c3a8da9a3ee5aa8edc78e0e02317766a79fde9c51109a768fb88d512e",
+  "prospective_generalization_claimed": false,
+  "provider": "optix",
+  "queries": [
+    [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        4.0,
+        0.0,
+        0.0
+      ]
+    ],
+    [
+      [
+        0.0,
+        2.0,
+        0.0
+      ],
+      [
+        8.0,
+        2.0,
+        0.0
+      ]
+    ],
+    [
+      [
+        0.0,
+        4.0,
+        0.0
+      ],
+      [
+        8.0,
+        4.0,
+        0.0
+      ]
+    ],
+    [
+      [
+        0.0,
+        8.0,
+        0.0
+      ],
+      [
+        4.0,
+        8.0,
+        0.0
+      ]
+    ],
+    [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        1.0,
+        0.0,
+        0.0
+      ]
+    ]
+  ],
+  "radii": [
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0
+  ],
+  "registered_performance_timing_count": 0,
+  "role_counters": [
+    0,
+    5,
+    0,
+    0,
+    3,
+    2,
+    5
+  ],
+  "schema": "rtdl.goal5833.home_builtin_sphere_validation.v1",
+  "scope": "functional_only_no_performance",
+  "source_sha256": "94bf800af5f1c04020ccdcd34d2e4c7b8378389d2be91196612d2fc63d8add7e",
+  "status": "PASS",
+  "traversal_receipt": {
+    "claim_rules": {
+      "nonzero_traversable_binding_required": true,
+      "output_digest_bound": true,
+      "program_bundle_binding_required": true,
+      "provider_name_alone_proves_traversal": false,
+      "selected_template_alone_proves_traversal": false,
+      "successful_optix_launch_required": true
+    },
+    "expected_program_bundle_ids": [
+      9501763502165707682
+    ],
+    "expected_program_bundles": [
+      "v4_builtin_sphere_callback_ir_four_role_composed"
+    ],
+    "expected_program_observed_at_receipt_edge": true,
+    "native_snapshot": {
+      "attempted_launch_count": 1,
+      "callsite_mix": 14586170179015080042,
+      "complete_context_launch_count": 1,
+      "context_bind_count": 1,
+      "failed_launch_count": 0,
+      "first_program_bundle_id": 9501763502165707682,
+      "first_traversable": 126961343009482,
+      "incomplete_callsite_lines": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "incomplete_callsite_record_count": 0,
+      "incomplete_context_launch_count": 0,
+      "last_program_bundle_id": 9501763502165707682,
+      "last_traversable": 126961343009482,
+      "nonce_hi": 12300886713306612221,
+      "nonce_lo": 11158955839086302717,
+      "params_mix": 10467997099877095024,
+      "pending_context_at_finish": 0,
+      "pipeline_mix": 2546518676157883084,
+      "program_bundle_mix": 13935565233693635669,
+      "raygen_invocation_count": 5,
+      "sbt_mix": 4108333306067498521,
+      "session_error": 0,
+      "stream_mix": 9248179162272254404,
+      "successful_launch_count": 1,
+      "traversable_mix": 11883496725621227634
+    },
+    "nonce": {
+      "hi": 12300886713306612221,
+      "lo": 11158955839086302717
+    },
+    "output_digest": "9669e0c1d12b75984f879589433c5ccb5b7d36d3b8caac8eea2d4ce471285fa2",
+    "physical_executor_classification": "optix_traversal_observed",
+    "provider_library": "librtdl_optix",
+    "provider_library_path": "/tmp/rtdl_goal5833_build_20260830_a5/build/librtdl_optix.so",
+    "provider_library_sha256": "c0c2981f2d1bf132d11abdf533de1d4ead1bbb80bd6624ec4f1b7b0681bfbd45",
+    "receipt_sha256": "39c4683ee03ad2a201135463fdad5204f9e8c025cacb65ea4509605ba33a9dd0",
+    "route_identity": "v4_builtin_sphere_callback_ir:four_role_composed_v1",
+    "schema": "rtdl.physical_execution.traversal_receipt.v1",
+    "semantic_digest": "c1e0546ffae2c8649cf9c419a9eec97172e25ce7116764cd1546e3ff2551a334"
+  },
+  "use_after_close_rejected": true,
+  "wrapper_source_sha256": "2cabe16eb8a386565e3ac2dd68639fb78337df549af86291957c29a45140391a"
+}

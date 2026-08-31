@@ -1,0 +1,255 @@
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from pathlib import Path
+
+ROOT = next(parent for parent in Path(__file__).resolve().parents if (parent / "src" / "rtdsl").exists())
+sys.path.insert(0, str(ROOT / "src"))
+sys.path.insert(0, str(ROOT))
+
+import rtdsl as rt
+
+
+RADIUS = 0.85
+K_MAX = 4
+
+
+@rt.kernel(backend="rtdl", precision="float_approx")
+def service_coverage_neighbors():
+    households = rt.input("households", rt.Points, role="probe")
+    clinics = rt.input("clinics", rt.Points, role="build")
+    candidates = rt.traverse(households, clinics, accel="bvh")
+    hits = rt.refine(candidates, predicate=rt.fixed_radius_neighbors(radius=RADIUS, k_max=K_MAX))
+    return rt.emit(hits, fields=["query_id", "neighbor_id", "distance"])
+
+
+def make_service_coverage_case(*, copies: int = 1) -> dict[str, tuple[rt.Point, ...]]:
+    households: list[rt.Point] = []
+    clinics: list[rt.Point] = []
+    for copy_index in range(copies):
+        offset_x = float(copy_index * 4)
+        base = copy_index * 100
+        households.extend(
+            (
+                rt.Point(id=base + 1, x=0.0 + offset_x, y=0.0),
+                rt.Point(id=base + 2, x=0.5 + offset_x, y=0.4),
+                rt.Point(id=base + 3, x=2.2 + offset_x, y=0.1),
+                rt.Point(id=base + 4, x=3.2 + offset_x, y=0.3),
+            )
+        )
+        clinics.extend(
+            (
+                rt.Point(id=base + 10, x=0.1 + offset_x, y=0.1),
+                rt.Point(id=base + 11, x=2.0 + offset_x, y=0.0),
+                rt.Point(id=base + 12, x=4.7 + offset_x, y=0.0),
+            )
+        )
+    return {"households": tuple(households), "clinics": tuple(clinics)}
+
+
+def _run_rows(backend: str, case: dict[str, tuple[rt.Point, ...]]) -> tuple[dict[str, object], ...]:
+    if backend == "cpu_python_reference":
+        return tuple(rt.run_cpu_python_reference(service_coverage_neighbors, **case))
+    if backend == "cpu":
+        return tuple(rt.run_cpu(service_coverage_neighbors, **case))
+    if backend == "embree":
+        return tuple(rt.run_embree(service_coverage_neighbors, **case))
+    if backend == "scipy":
+        return tuple(
+            rt.run_scipy_fixed_radius_neighbors(
+                case["households"],
+                case["clinics"],
+                radius=RADIUS,
+                k_max=K_MAX,
+            )
+        )
+    raise ValueError(f"unsupported backend `{backend}`")
+
+
+def _run_embree_gap_summary(case: dict[str, tuple[rt.Point, ...]]) -> tuple[dict[str, int], ...]:
+    result = rt.run_generic_fixed_radius_count_threshold_2d(
+        case["households"],
+        case["clinics"],
+        radius=RADIUS,
+        threshold=1,
+        backend="embree",
+    )
+    return tuple(result["rows"])
+
+
+def _run_optix_prepared_gap_summary(case: dict[str, tuple[rt.Point, ...]]) -> dict[str, int | None | str]:
+    result = rt.run_generic_prepared_fixed_radius_threshold_reached_count_2d(
+        search_points=case["clinics"],
+        query_points=case["households"],
+        radius=RADIUS,
+        threshold=1,
+        backend="optix",
+        max_radius=RADIUS,
+        prepare_scene=rt.prepare_optix_fixed_radius_count_threshold_2d,
+    )
+    covered_count = int(result["threshold_reached_count"])
+    return {
+        "covered_household_count": int(covered_count),
+        "uncovered_household_count": len(case["households"]) - int(covered_count),
+        "uncovered_household_ids": None,
+        "row_count": None,
+        "summary_mode": "scalar_threshold_count",
+        "generic_primitive": result["primitive"],
+        "summary_primitive": result["summary_primitive"],
+    }
+
+
+def _optix_performance() -> dict[str, str]:
+    support = rt.optix_app_performance_support("service_coverage_gaps")
+    return {"class": support.performance_class, "note": support.note}
+
+
+def _enforce_rt_core_requirement(backend: str, optix_summary_mode: str, require_rt_core: bool) -> None:
+    if not require_rt_core:
+        return
+    if backend != "optix":
+        raise ValueError("--require-rt-core is only meaningful with --backend optix")
+    if optix_summary_mode != "gap_summary_prepared":
+        raise RuntimeError(
+            "service_coverage_gaps RT-core claim path requires --optix-summary-mode gap_summary_prepared"
+        )
+
+
+def _native_continuation_backend(backend: str, embree_summary_mode: str, optix_summary_mode: str) -> str:
+    if backend == "embree" and embree_summary_mode == "gap_summary":
+        return "embree_threshold_count"
+    if backend == "optix" and optix_summary_mode == "gap_summary_prepared":
+        return "optix_threshold_count"
+    return "none"
+
+
+def run_case(
+    backend: str,
+    *,
+    copies: int = 1,
+    embree_summary_mode: str = "rows",
+    optix_summary_mode: str = "rows",
+    require_rt_core: bool = False,
+) -> dict[str, object]:
+    case = make_service_coverage_case(copies=copies)
+    if embree_summary_mode not in {"rows", "gap_summary"}:
+        raise ValueError("embree_summary_mode must be 'rows' or 'gap_summary'")
+    if optix_summary_mode not in {"rows", "gap_summary_prepared"}:
+        raise ValueError("optix_summary_mode must be 'rows' or 'gap_summary_prepared'")
+    _enforce_rt_core_requirement(backend, optix_summary_mode, require_rt_core)
+    clinics_by_household: dict[int, list[dict[str, object]]] = {}
+    clinic_loads: dict[int, int] = {}
+    household_ids = tuple(point.id for point in case["households"])
+    coverage_summary_rows: tuple[dict[str, int], ...]
+    if backend == "embree" and embree_summary_mode == "gap_summary":
+        rows = ()
+        coverage_summary_rows = _run_embree_gap_summary(case)
+        covered_household_ids = {
+            int(row["query_id"])
+            for row in coverage_summary_rows
+            if int(row["threshold_reached"]) != 0
+        }
+    elif backend == "optix" and optix_summary_mode == "gap_summary_prepared":
+        rows = ()
+        optix_summary = _run_optix_prepared_gap_summary(case)
+        coverage_summary_rows = ()
+        covered_household_ids = set()
+        scalar_covered_household_count = int(optix_summary["covered_household_count"])
+        scalar_uncovered_household_ids = None
+    else:
+        rows = _run_rows(backend, case)
+        coverage_summary_rows = ()
+        for row in rows:
+            query_id = int(row["query_id"])
+            neighbor_id = int(row["neighbor_id"])
+            clinics_by_household.setdefault(query_id, []).append(
+                {"clinic_id": neighbor_id, "distance": float(row["distance"])}
+            )
+            clinic_loads[neighbor_id] = clinic_loads.get(neighbor_id, 0) + 1
+        covered_household_ids = set(clinics_by_household)
+    if backend == "optix" and optix_summary_mode == "gap_summary_prepared":
+        uncovered_household_ids = scalar_uncovered_household_ids
+        covered_household_count = scalar_covered_household_count
+    else:
+        uncovered_household_ids = [household_id for household_id in household_ids if household_id not in covered_household_ids]
+        covered_household_count = len(covered_household_ids)
+    native_continuation_backend = _native_continuation_backend(backend, embree_summary_mode, optix_summary_mode)
+    return {
+        "app": "service_coverage_gaps",
+        "backend": backend,
+        "radius": RADIUS,
+        "k_max": K_MAX,
+        "copies": copies,
+        "household_count": len(case["households"]),
+        "clinic_count": len(case["clinics"]),
+        "rows": list(rows),
+        "coverage_summary_rows": coverage_summary_rows,
+        "nearby_clinics_by_household": clinics_by_household,
+        "uncovered_household_ids": uncovered_household_ids,
+        "covered_household_count": covered_household_count,
+        "clinic_loads": dict(sorted(clinic_loads.items())),
+        "embree_summary_mode": embree_summary_mode if backend == "embree" else None,
+        "optix_summary_mode": optix_summary_mode if backend == "optix" else None,
+        "optix_performance": _optix_performance(),
+        "native_continuation_active": native_continuation_backend != "none",
+        "native_continuation_backend": native_continuation_backend,
+        "rt_core_accelerated": native_continuation_backend == "optix_threshold_count",
+        "summary_boundary": (
+            "gap_summary reports covered/uncovered households only; use rows mode when clinic ids, "
+            "distances, or clinic_loads are required."
+            if backend == "embree" and embree_summary_mode == "gap_summary"
+            else "gap_summary_prepared reports only scalar covered/uncovered counts; use rows mode when household ids, clinic ids, distances, or clinic loads are required."
+            if backend == "optix" and optix_summary_mode == "gap_summary_prepared"
+            else None
+        ),
+    }
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description="Application example: detect households that do not have a clinic within a fixed service radius."
+    )
+    parser.add_argument(
+        "--backend",
+        choices=("cpu_python_reference", "cpu", "embree", "optix", "scipy"),
+        default="cpu_python_reference",
+    )
+    parser.add_argument("--copies", type=int, default=1)
+    parser.add_argument(
+        "--embree-summary-mode",
+        choices=("rows", "gap_summary"),
+        default="rows",
+        help="Embree-only: emit neighbor rows or compact covered/uncovered household summary",
+    )
+    parser.add_argument(
+        "--optix-summary-mode",
+        choices=("rows", "gap_summary_prepared"),
+        default="rows",
+        help="OptiX-only: use prepared fixed-radius threshold traversal for compact covered/uncovered household summaries",
+    )
+    parser.add_argument(
+        "--require-rt-core",
+        action="store_true",
+        help="Fail unless the selected path is the prepared OptiX gap-summary traversal path.",
+    )
+    args = parser.parse_args(argv)
+    print(
+        json.dumps(
+            run_case(
+                args.backend,
+                copies=args.copies,
+                embree_summary_mode=args.embree_summary_mode,
+                optix_summary_mode=args.optix_summary_mode,
+                require_rt_core=args.require_rt_core,
+            ),
+            indent=2,
+            sort_keys=True,
+        )
+    )
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,0 +1,107 @@
+{
+  "schema": "rtdl.goal5830.v4_public_stable_sort_result.v1",
+  "date": "2026-08-30",
+  "status": "COMPLETE_AT_BOUNDED_FUNCTIONAL_DEMO_SCOPE",
+  "implementation": {
+    "public_example": {
+      "path": "examples/current/v4_public_stable_sort.py",
+      "sha256": "53cd19d621d1fb13645aca1e78d4963653a2c5ddb08c5b852ae7cb46c0ec35fb"
+    },
+    "gpu_runner": {
+      "path": "scripts/goal5830_v4_public_stable_sort_gpu_functional.py",
+      "sha256": "9eb1f5c376a117d287d64f35569b3cc6387b6d3f6a5cbb679d7e7e43fdae96d1"
+    },
+    "pyoptix_cp002_control": {
+      "path": "scripts/goal5830_pyoptix_stable_sort_cp002_control.py",
+      "sha256": "ef570e3f754143ab9570624d163a73bb94c6743328be79178b3925777f85cc02"
+    },
+    "independent_verifier": {
+      "path": "scripts/goal5830_verify_stable_sort_evidence.py",
+      "sha256": "70e7639f72accd54b04b56737cc5783e34269ae56d30bbac891c1cc81da20043"
+    },
+    "tests": {
+      "path": "tests/goal5830_v4_public_stable_sort_test.py",
+      "sha256": "9f4ec6215a3390f0eaa77fe66689ede00c020642ce16ea27295d6599aab27a95"
+    },
+    "sorting_specific_core_or_native_source_change_count": 0,
+    "public_rtdl_import_surface": "rtdsl.v4_only"
+  },
+  "algorithm_instance": {
+    "input": [2, 1, 2, 0],
+    "stable_order_codes": [10, 6, 12, 3],
+    "indexed_physical_order": [2, 0, 3, 1],
+    "source_launch_order": [3, 2, 1, 0],
+    "exact_relation_rows": [
+      [0, 0], [0, 1], [0, 3],
+      [1, 1], [1, 3],
+      [2, 0], [2, 1], [2, 2], [2, 3],
+      [3, 3]
+    ],
+    "ranks_by_item_id": [2, 1, 3, 0],
+    "stable_sorted_records": [[0, 3], [1, 1], [2, 0], [2, 2]],
+    "host_comparison_sort_used_to_derive_ranks": false,
+    "python_stable_sort_used_only_as_postexecution_oracle": true,
+    "expected_rows_passed_into_rtdl_execute": false
+  },
+  "tests": {
+    "local_unittest_count": 40,
+    "local_unittest_status": "PASS",
+    "exhaustive_arrays": {
+      "count": 19530,
+      "lengths": [1, 2, 3, 4, 5, 6],
+      "key_domain": [-2, -1, 0, 1, 2]
+    },
+    "frozen_random_array_count": 256,
+    "main_fixture_physical_order_pair_count": 576,
+    "home_gpu_case_count": 21,
+    "home_gpu_exact_case_count": 21,
+    "maximum_exact_binary32_quarter_grid_executed": true,
+    "capacity_10_complete": true,
+    "capacity_9_fail_closed_without_result": true
+  },
+  "home_gpu_evidence": {
+    "result_path": "history/internal_docs/goal5830_v4_public_stable_sort_gpu_evidence_20260830/rtdl/GOAL5830_GPU_RESULT_V4.json",
+    "result_sha256": "6fe9eff8509dda1157d33f7f4ee38a6b111ea5f58f46c3658364700c1baea93d",
+    "native_sha256": "961d7c7526c4efcbdea2a4a63c67c8198fc49f35a3b64f5b86011bd1c666b176",
+    "runtime_source_archive_sha256": "2be5b845c56176415f688f73e53c7c152cb2291a939d58d27a4489f4d88d00df",
+    "gpu": "NVIDIA GeForce GTX 1070",
+    "driver": "580.173.02",
+    "compute_capability": "6.1",
+    "rt_core_hardware_claimed": false,
+    "physical_executor_classification": "optix_traversal_observed"
+  },
+  "cp002_value_control": {
+    "result_path": "history/internal_docs/goal5830_v4_public_stable_sort_gpu_evidence_20260830/pyoptix/result_v2.json",
+    "result_sha256": "9773fdb96f85b10611b650fbf61b87f50f9135387f7022c54c69d2d3c45c77bf",
+    "valid_expression": "optixReportIntersection(0.0f, 0u, item.item_id);",
+    "broken_expression": "optixReportIntersection(0.0f, 0u, primitive_index);",
+    "changed_device_source_line_count": 1,
+    "valid_program_sorted_correctly": true,
+    "broken_program_platform_exception": null,
+    "broken_program_cuda_last_error": "SUCCESS",
+    "broken_program_optix_fatal_or_error_count": 0,
+    "broken_program_returned_exact_silent_wrong_relation": true,
+    "application_postcheck_rejected_broken_relation": true,
+    "rtdl_cp002_contract_gate_reason": "CP002_ATTRIBUTE_ABI_OWNERSHIP_MISMATCH"
+  },
+  "independent_verification": {
+    "path": "history/internal_docs/goal5830_v4_public_stable_sort_gpu_evidence_20260830/INDEPENDENT_VERIFICATION_V4.json",
+    "sha256": "272fbe9b650939aacc5b6e4bf12c886e53e802216e6cca5bd39627aa1944f8b4",
+    "imports_rtdl_or_pyoptix": false,
+    "status": "PASS"
+  },
+  "claim_boundary": {
+    "rtdl_invented_rt_sorting": false,
+    "new_protocol_or_geometry_family": false,
+    "application_mapping_verified_by_rtdl": false,
+    "general_or_arbitrary_sorting_supported": false,
+    "high_performance_sorting_supported": false,
+    "performance_claimed": false,
+    "registered_performance_timing_count": 0,
+    "third_party_usability_evidence": false,
+    "proof_authority_semantics_revalidated_by_goal5830": false,
+    "demonstrates_existing_bounded_relation_family_can_execute_one_stable_sort_mapping": true,
+    "demonstrates_cp002_identity_confusion_has_a_concrete_sorting_consequence": true
+  },
+  "external_review_requested": false
+}

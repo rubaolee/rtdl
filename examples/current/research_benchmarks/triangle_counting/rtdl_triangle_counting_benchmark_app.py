@@ -1,0 +1,1947 @@
+from __future__ import annotations
+
+import argparse
+import json
+import statistics
+import sys
+import time
+from pathlib import Path
+from typing import Any
+
+
+ROOT = next(parent for parent in Path(__file__).resolve().parents if (parent / "src" / "rtdsl").exists())
+sys.path.insert(0, str(ROOT / "src"))
+sys.path.insert(0, str(ROOT))
+
+from examples.current.features.graph import rtdl_graph_triangle_count
+from examples.current.research_benchmarks.triangle_counting.rt_graph_contract import (
+    build_rt_graph_triangle_contract,
+)
+from examples.current.research_benchmarks.triangle_counting.rt_graph_contract import (
+    build_rt_graph_triangle_summary_contract_cupy_binary,
+)
+from examples.current.research_benchmarks.triangle_counting.rt_graph_contract import fixture_edges
+from examples.current.research_benchmarks.triangle_counting.rt_graph_contract import read_binary_edges
+from examples.current.research_benchmarks.triangle_counting.rt_graph_contract import read_text_edges
+from examples.current.research_benchmarks.triangle_counting.segmented_rt_graph import (
+    build_segmented_rt_graph_csr_binary,
+    count_segmented_rt_graph_segments,
+    iter_segmented_rt_graph_device_geometry,
+)
+import rtdsl as rt
+
+
+BENCHMARK_NAME = "triangle_counting"
+V2_4_RT_GRAPH_2A1_PRIMITIVE = "ray_triangle_weighted_any_hit_sum_3d"
+V2_4_RT_GRAPH_1A2_PRIMITIVE = "ray_triangle_hit_count_sum_3d"
+TRIANGLE_COUNTING_V2_6_NUMBA_COMPACT_MASK_VERSION = (
+    "rtdl.triangle_counting.v2_6.numba_compact_mask_preview.v1"
+)
+
+
+@rt.kernel(backend="rtdl", precision="float_approx")
+def _generic_ray_triangle_hit_count_3d_kernel():
+    rays = rt.input("rays", rt.Rays3D, layout=rt.Ray3DLayout, role="probe")
+    triangles = rt.input("triangles", rt.Triangles3D, layout=rt.Triangle3DLayout, role="build")
+    candidates = rt.traverse(rays, triangles, accel="bvh")
+    hits = rt.refine(candidates, predicate=rt.ray_triangle_hit_count(exact=False))
+    return rt.emit(hits, fields=["ray_id", "hit_count"])
+
+
+CLAIM_BOUNDARY = {
+    "benchmark_app": True,
+    "paper_reproduction": False,
+    "paper_code_intake_complete": True,
+    "rt_graph_preprocessing_oracle": True,
+    "rt_graph_id_ascending_adapter": True,
+    "rt_graph_2a1_generic_rt_mapping": True,
+    "rt_graph_1a2_generic_rt_mapping": True,
+    "generic_ray_triangle_rt_core_subpath_authorized": True,
+    "native_engine_customization": False,
+    "bfs_in_benchmark": False,
+    "visibility_edges_in_benchmark": False,
+    "full_graph_database_claim": False,
+    "distributed_graph_claim": False,
+    "triangle_count_rt_core_claim_authorized": False,
+    "whole_app_speedup_claim_authorized": False,
+    "public_speedup_claim_authorized": False,
+    "true_zero_copy_claim_authorized": False,
+    "automatic_partner_selection_authorized": False,
+    "app_specific_native_engine_logic_allowed": False,
+}
+
+
+def scope_payload() -> dict[str, Any]:
+    return {
+        "app": BENCHMARK_NAME,
+        "status": "promoted_benchmark_with_boundary",
+        "benchmark_kind": "single_contract_graph_benchmark",
+        "paper_reference": {
+            "title": (
+                "A Case Study for Ray Tracing Cores: Performance Insights with "
+                "Breadth-First Search and Triangle Counting in Graphs"
+            ),
+            "venue": "SIGMETRICS 2025",
+            "code": "https://github.com/rubaolee/RT-Graph",
+            "paper_pdf": "https://rubaolee.github.io/paper_pdfs/2025-rtgraph.pdf",
+            "benchmark_scope": "triangle_counting_only",
+            "reproduction_status": "contract_oracle_only",
+        },
+        "why_benchmark": (
+            "Triangle counting is small enough to audit, has an unambiguous "
+            "correctness contract, and stresses graph row/witness output plus "
+            "compact summary continuation without mixing in BFS or visibility "
+            "semantics."
+        ),
+        "supported_contracts": (
+            {
+                "name": "triangle_count",
+                "contract": "triangle witness rows or compact triangle summary",
+                "rt_role": "generic graph-row production and summary continuation where supported",
+                "rt_graph_status": (
+                    "benchmark-owned Python preprocessing/oracle exists; the RT-2A1 "
+                    "and RT-1A2 modes lower to generic ray/triangle RT primitives"
+                ),
+            },
+        ),
+        "excluded_from_benchmark": (
+            "BFS, visibility_edges, shortest path, graph database behavior, "
+            "and distributed graph analytics remain learner/demo/example surfaces."
+        ),
+        "runtime_design_pressure": (
+            "raw row views, compact row summaries, and clear separation between "
+            "Python graph semantics and app-agnostic engine row contracts"
+        ),
+        "primary_reports": (
+            "docs/application_catalog.md",
+            "docs/release_reports/v2_14/README.md",
+        ),
+        "claim_boundary": CLAIM_BOUNDARY,
+    }
+
+
+def run_payload(*, backend: str, copies: int, output_mode: str, optix_graph_mode: str) -> dict[str, Any]:
+    section = rtdl_graph_triangle_count.run_backend(
+        backend,
+        copies=copies,
+        output_mode=output_mode,
+        optix_graph_mode=optix_graph_mode,
+    )
+    return {
+        "benchmark_app": BENCHMARK_NAME,
+        "mode": "run",
+        "contract": "triangle_count_only",
+        "backend": backend,
+        "copies": copies,
+        "output_mode": output_mode,
+        "triangle_count": section["summary"]["triangle_count"],
+        "touched_vertex_count": section["summary"]["touched_vertex_count"],
+        "section": section,
+        "excluded_operations": ("bfs", "visibility_edges"),
+        "claim_boundary": CLAIM_BOUNDARY,
+    }
+
+
+def command_plan_payload() -> dict[str, Any]:
+    return {
+        "app": BENCHMARK_NAME,
+        "mode": "command_plan",
+        "local_correctness": (
+            "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
+            "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
+            "--mode run --backend cpu_python_reference --copies 2 --output-mode summary"
+        ),
+        "rt_graph_contract_oracle": (
+            "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
+            "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
+            "--mode rt_graph_contract --fixture degree_oriented_two_triangles"
+        ),
+        "rt_graph_rtdl_adapter_cpu": (
+            "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
+            "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
+            "--mode rt_graph_rtdl_adapter --fixture degree_oriented_two_triangles "
+            "--backend cpu_python_reference"
+        ),
+        "rt_graph_2a1_generic_rt_cpu": (
+            "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
+            "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
+            "--mode rt_graph_2a1_generic_rt --fixture degree_oriented_two_triangles "
+            "--backend cpu"
+        ),
+        "rt_graph_1a2_generic_rt_cpu": (
+            "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
+            "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
+            "--mode rt_graph_1a2_generic_rt --fixture degree_oriented_two_triangles "
+            "--backend cpu"
+        ),
+        "rt_graph_2a1_generic_rt_optix": (
+            "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
+            "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
+            "--mode rt_graph_2a1_generic_rt --fixture degree_oriented_two_triangles "
+            "--rt-graph-copies 2048 --backend optix --detail summary --warmup 1 --repeat 3"
+        ),
+        "rt_graph_2a1_generic_rt_optix_cupy_partner": (
+            "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
+            "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
+            "--mode rt_graph_2a1_generic_rt --edge-file graph.edge --edge-format binary "
+            "--backend optix --detail summary --partner cupy"
+        ),
+        "rt_graph_1a2_generic_rt_optix": (
+            "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
+            "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
+            "--mode rt_graph_1a2_generic_rt --fixture degree_oriented_two_triangles "
+            "--rt-graph-copies 2048 --backend optix --detail summary --warmup 1 --repeat 3"
+        ),
+        "rt_graph_1a2_generic_rt_optix_cupy_partner": (
+            "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
+            "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
+            "--mode rt_graph_1a2_generic_rt --edge-file graph.edge --edge-format binary "
+            "--backend optix --detail summary --partner cupy"
+        ),
+        "embree_contract_check": (
+            "PYTHONPATH=src:. python3 examples/current/research_benchmarks/"
+            "triangle_counting/rtdl_triangle_counting_benchmark_app.py "
+            "--mode run --backend embree --copies 1000 --output-mode summary"
+        ),
+        "authors_code_env_probe": (
+            "cd scratch/external/RT-Graph/tc && git rev-parse HEAD && "
+            "nvidia-smi && /usr/local/cuda-12.8/bin/nvcc --version && "
+            "test -n \"$OptiX_INSTALL_DIR\" && test -d \"$OptiX_INSTALL_DIR\""
+        ),
+        "authors_code_build": (
+            "cd scratch/external/RT-Graph/tc && export PATH=/usr/local/cuda-12.8/bin:$PATH && "
+            "cmake -B build -DCMAKE_CUDA_COMPILER=/usr/local/cuda-12.8/bin/nvcc "
+            "-DBIN2C=/usr/local/cuda-12.8/bin/bin2c && cmake --build build -j"
+        ),
+        "authors_rt_tc_run_shape": (
+            "cd scratch/external/RT-Graph/tc && ./bin/rt_tc "
+            "dataset/com-dblp/com-dblp.ungraph.edge.pd 0"
+        ),
+        "authors_bs_tc_run_shape": (
+            "cd scratch/external/RT-Graph/tc && ./bin/bs_tc "
+            "dataset/com-dblp/com-dblp.ungraph.edge.pd 0"
+        ),
+        "future_harder_gate": (
+            "Before any performance wording, reproduce the RT-Graph triangle-counting "
+            "authors-code contract where possible, then compare same-input RTDL "
+            "triangle-counting outputs against RT-Graph bs_tc and rt_tc baselines."
+        ),
+        "claim_boundary": CLAIM_BOUNDARY,
+    }
+
+
+def v2_5_plan_payload() -> dict[str, Any]:
+    manifest = rt.v2_5_tiered_benchmark_manifest()
+    row = next(app for app in manifest["apps"] if app["app_id"] == BENCHMARK_NAME)
+    primitive_first_plan = {
+        "contract_version": "rtdl.triangle_counting.v2_5.primitive_first_plan.v1",
+        "selected_path": "prepared_fused_generic_rt_summary",
+        "selected_primitives": (V2_4_RT_GRAPH_2A1_PRIMITIVE, V2_4_RT_GRAPH_1A2_PRIMITIVE),
+        "selection_reason": (
+            "triangle counting's benchmark result is a scalar summary already covered "
+            "by app-agnostic fused RTDL ray/triangle summary primitives"
+        ),
+        "alternative_path": "row_stream_or_compact_mask_plus_triton_continuation",
+        "alternative_reserved_for": (
+            "triangle witness rows, filtered row streams, or post-summary tensor work "
+            "that cannot be expressed as a fused scalar summary"
+        ),
+        "typed_hit_stream_forced": False,
+        "partner_continuation_required": False,
+        "public_speedup_claim_authorized": False,
+        "true_zero_copy_authorized": False,
+    }
+    return {
+        "app": BENCHMARK_NAME,
+        "mode": "v2_5_plan",
+        "tier": row["tier"],
+        "benchmark_track": row["benchmark_track"],
+        "preferred_partner": "triton",
+        "status": "primitive_first_plan_recorded_native_summary_not_relabelled_as_triton",
+        "v2_5_primitive_first_plan": primitive_first_plan,
+        "current_fast_paths": {
+            "rt_graph_2a1": (
+                "generic OptiX/Embree ray-triangle weighted any-hit summary; "
+                "optional CuPy path builds device geometry but is not a v2.5 Triton continuation"
+            ),
+            "rt_graph_1a2": (
+                "generic OptiX/Embree ray-triangle hit-count summary; "
+                "optional CuPy path builds device geometry but is not a v2.5 Triton continuation"
+            ),
+        },
+        "v2_5_required_operations": row["required_partner_operations"],
+        "same_contract_opponent": row["same_contract_opponent"],
+        "canonical_harness_status": row["canonical_harness_status"],
+        "pod_evidence_status": row["pod_evidence_status"],
+        "next_action": row["next_action"],
+        "integration_decision": (
+            "Do not relabel the existing native scalar summary as Triton. The v2.5 "
+            "planner should select the fused generic RTDL summary when the user asks "
+            "for a scalar triangle count, and reserve Triton compact-mask/segmented "
+            "continuations for row streams or tensor post-processing that the fused "
+            "summary cannot express."
+        ),
+        "claim_boundary": {
+            **CLAIM_BOUNDARY,
+            "v2_5_triton_benchmark_integrated": False,
+            "triton_speedup_claim_authorized": False,
+            "same_contract_parity_claim_authorized": False,
+        },
+    }
+
+
+def primitive_first_plan_payload() -> dict[str, Any]:
+    """Current alias for the legacy v2.5 primitive-first planning payload."""
+
+    payload = v2_5_plan_payload()
+    return {
+        **payload,
+        "mode": "primitive_first_plan",
+        "legacy_mode_alias": "v2_5_plan",
+    }
+
+
+def describe_triangle_counting_v2_6_numba_compact_mask_continuation() -> dict[str, Any]:
+    """Describe the triangle app's user-selected Numba compact-mask continuation.
+
+    Triangle candidate interpretation remains app-owned. The Numba continuation
+    receives only generic int64 row ids plus a boolean keep mask.
+    """
+
+    return {
+        "contract_version": TRIANGLE_COUNTING_V2_6_NUMBA_COMPACT_MASK_VERSION,
+        "app": BENCHMARK_NAME,
+        "mode": "v2_6_numba_compact_mask_plan",
+        "selected_partner": "numba",
+        "status": "preview_ready_not_promoted",
+        "operation": "compact_mask_i64",
+        "numba_descriptor": rt.describe_numba_compact_mask_i64(),
+        "requires_device_resident_columns": True,
+        "uses_v2_6_neutral_partner_handoff": True,
+        "uses_v2_8_segmented_typed_stream_front_door": True,
+        "uses_legacy_torch_carrier": False,
+        "uses_torch_conversion": False,
+        "input_columns": ("candidate_row_ids:int64", "valid_triangle_mask:bool"),
+        "output_columns": ("selected_candidate_row_ids:int64", "original_indices:int64"),
+        "fast_scalar_summary_path_unchanged": True,
+        "post_rt_continuation_only": True,
+        "replaces_rt_traversal": False,
+        "promoted_performance_path": False,
+        "public_speedup_claim_authorized": False,
+        "rt_core_speedup_claim_authorized": False,
+        "true_zero_copy_claim_authorized": False,
+        "app_owned_lowering": (
+            "Triangle candidate construction, duplicate filtering, and witness-row "
+            "meaning remain benchmark/app code. RTDL/Numba sees only generic "
+            "candidate row ids and a boolean keep mask."
+        ),
+        "integration_decision": (
+            "Keep the v2.5 primitive-first fused scalar summary as the recommended "
+            "triangle-count path. Use this legacy Numba compact-mask path only for "
+            "witness-row streams or tensor post-processing that cannot be expressed "
+            "as the fused generic RTDL summary."
+        ),
+    }
+
+
+def describe_triangle_counting_segmented_compact_mask_numba_continuation() -> dict[str, Any]:
+    """Current alias for the legacy Numba compact-mask continuation."""
+
+    plan = describe_triangle_counting_v2_6_numba_compact_mask_continuation()
+    return {
+        **plan,
+        "mode": "segmented_compact_mask_numba_plan",
+        "legacy_mode_alias": "v2_6_numba_compact_mask_plan",
+        "legacy_helper_alias": "describe_triangle_counting_v2_6_numba_compact_mask_continuation",
+    }
+
+
+def v2_6_numba_compact_mask_plan_payload() -> dict[str, Any]:
+    plan = describe_triangle_counting_v2_6_numba_compact_mask_continuation()
+    return {
+        **plan,
+        "command_shape": (
+            "Use run_triangle_counting_v2_6_numba_compact_mask_preview(...) from "
+            "Python with Numba CUDA device arrays for candidate_row_ids:int64 and "
+            "valid_triangle_mask:bool. The legacy app helper now routes "
+            "through the generic v2.8 segmented typed-stream partner front door."
+        ),
+        "claim_boundary": {
+            **CLAIM_BOUNDARY,
+            "v2_6_numba_benchmark_app_integrated": True,
+            "numba_speedup_claim_authorized": False,
+            "same_contract_perf_claim_authorized": False,
+        },
+    }
+
+
+def segmented_compact_mask_numba_plan_payload() -> dict[str, Any]:
+    """Current alias for the legacy Numba compact-mask plan payload."""
+
+    plan = describe_triangle_counting_segmented_compact_mask_numba_continuation()
+    return {
+        **v2_6_numba_compact_mask_plan_payload(),
+        "mode": "segmented_compact_mask_numba_plan",
+        "legacy_mode_alias": "v2_6_numba_compact_mask_plan",
+        "legacy_plan": plan,
+        "command_shape": (
+            "Use run_triangle_counting_segmented_compact_mask_numba_preview(...) "
+            "from Python with Numba CUDA device arrays for candidate_row_ids:int64 "
+            "and valid_triangle_mask:bool. The legacy helper remains available "
+            "as a compatibility alias."
+        ),
+    }
+
+
+def run_triangle_counting_v2_6_numba_compact_mask_preview(
+    inputs: dict[str, Any],
+    *,
+    block_size: int = 256,
+) -> dict[str, Any]:
+    """Run the triangle witness-row compact-mask preview over CUDA arrays."""
+
+    plan = describe_triangle_counting_v2_6_numba_compact_mask_continuation()
+    candidate_row_ids = inputs["candidate_row_ids"]
+    valid_triangle_mask = inputs["valid_triangle_mask"]
+    handoff = rt.prepare_v2_6_neutral_partner_handoff(
+        {
+            "candidate_row_ids": candidate_row_ids,
+            "valid_triangle_mask": valid_triangle_mask,
+        },
+        partner="numba",
+        consumer="triangle_counting_v2_6_numba_compact_mask_continuation",
+        access_modes={"candidate_row_ids": "read", "valid_triangle_mask": "read"},
+    )
+    handoff_validation = rt.validate_v2_6_neutral_partner_handoff(handoff)
+    if handoff_validation["status"] != "accept":
+        raise RuntimeError(
+            "Triangle counting legacy Numba neutral handoff rejected: "
+            f"{handoff_validation['errors']}"
+        )
+
+    result = rt.execute_compact_mask_typed_stream_partner_columns(
+        values=candidate_row_ids,
+        mask=valid_triangle_mask,
+        partner="numba",
+        stream_id="triangle_counting_v2_8_compact_mask_schema",
+        producer_primitive="app_supplied_candidate_row_stream",
+        block_size=block_size,
+    )
+    partner_metadata = result["partner_metadata"]
+    outputs = {
+        "selected_candidate_row_ids": result["outputs"]["values"],
+        "original_indices": result["outputs"]["original_indices"],
+    }
+    return {
+        "app": BENCHMARK_NAME,
+        "mode": "v2_6_numba_compact_mask_preview",
+        "partner": "numba",
+        "status": "preview_not_promoted",
+        "operation": "compact_mask_i64",
+        "outputs": outputs,
+        "metadata": {
+            "v2_6_numba_compact_mask_plan": plan,
+            "v2_6_neutral_handoff_validation": handoff_validation,
+            "v2_8_typed_stream_front_door_request": {
+                "adapter_version": result["adapter_version"],
+                "operation": result["operation"],
+                "stream_id": result["stream_id"],
+                "input_column_mapping": result["input_column_mapping"],
+                "requires_caller_supplied_partner_columns": result[
+                    "requires_caller_supplied_partner_columns"
+                ],
+            },
+            "execution_path": "v2_8_segmented_typed_stream_compact_mask_front_door",
+            "legacy_execution_path_alias": "v2_6_numba_compact_mask_front_door",
+            "block_size": int(block_size),
+            "stable_input_order": bool(partner_metadata.get("stable_input_order")),
+            "host_prefix_sum_used": bool(partner_metadata.get("host_prefix_sum_used")),
+            "v2_8_segmented_typed_stream_front_door_used": True,
+            "v2_8_partner_consumer_promoted": bool(result["partner_consumer_promoted"]),
+            "v2_8_release_authorized": bool(result["release_authorized"]),
+            "post_rt_continuation_only": True,
+            "replaces_rt_traversal": False,
+            "promoted_performance_path": False,
+            "rt_core_speedup_claim_authorized": False,
+            "public_speedup_claim_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "uses_legacy_torch_carrier": False,
+            "uses_torch_conversion": False,
+            "phase_timing": {
+                "phases_sec": {
+                    "partner_continuation": float(
+                        partner_metadata.get("numba_partner_continuation_elapsed_seconds", 0.0)
+                    )
+                }
+            },
+        },
+    }
+
+
+def run_triangle_counting_segmented_compact_mask_numba_preview(
+    inputs: dict[str, Any],
+    *,
+    block_size: int = 256,
+) -> dict[str, Any]:
+    """Current alias for the legacy compact-mask preview runner."""
+
+    payload = run_triangle_counting_v2_6_numba_compact_mask_preview(
+        inputs,
+        block_size=block_size,
+    )
+    return {
+        **payload,
+        "mode": "segmented_compact_mask_numba_preview",
+        "legacy_mode_alias": "v2_6_numba_compact_mask_preview",
+    }
+
+
+def describe_rt_graph_v2_4_prepared_session(
+    *,
+    backend: str,
+    paper_method: str,
+    primitive_count: int,
+    ray_count: int,
+    device_column_summary: bool,
+    partner: str,
+) -> dict[str, Any]:
+    """Describe the RT-Graph lowering with generic v2.4 buffer metadata."""
+
+    normalized_backend = backend.strip().lower().replace("-", "_")
+    if normalized_backend in {"cpu_python_reference", "python"}:
+        normalized_backend = "cpu"
+    if normalized_backend not in {"cpu", "embree", "optix"}:
+        raise ValueError("v2.4 RT-Graph descriptor supports cpu, embree, or optix")
+    method = paper_method.strip().upper()
+    if method not in {"RT-2A1", "RT-1A2"}:
+        raise ValueError("paper_method must be RT-2A1 or RT-1A2")
+
+    is_2a1 = method == "RT-2A1"
+    primitive = V2_4_RT_GRAPH_2A1_PRIMITIVE if is_2a1 else V2_4_RT_GRAPH_1A2_PRIMITIVE
+    source_protocol = "cupy_device_columns" if device_column_summary else "rtdl_packed_host_buffer"
+    geometry_device = "cuda" if device_column_summary else "cpu"
+    native_symbols: tuple[str, ...] = ()
+    if normalized_backend == "optix" and is_2a1:
+        native_symbols = (
+            "rtdl_optix_static_triangle_scene_3d_ray_any_hit_weighted_sum_device_rays"
+            if device_column_summary
+            else "rtdl_optix_static_triangle_scene_3d_ray_any_hit_weighted_sum",
+        )
+    elif normalized_backend == "embree" and is_2a1:
+        native_symbols = ("rtdl_embree_static_triangle_scene_3d_ray_any_hit_weighted_sum",)
+    elif normalized_backend == "optix":
+        native_symbols = (
+            "rtdl_optix_static_triangle_scene_3d_ray_hit_count_sum_device_rays"
+            if device_column_summary
+            else "rtdl_optix_static_triangle_scene_3d_ray_hit_count_sum",
+        )
+
+    input_buffers = [
+        rt.RtdlBufferDescriptor(
+            name="triangles",
+            dtype="rtdl_packed_triangle3d",
+            shape=(int(primitive_count),),
+            device_type=geometry_device,
+            source_protocol=source_protocol,
+            lifetime="session_retained",
+            access_mode="read",
+        ),
+        rt.RtdlBufferDescriptor(
+            name="rays",
+            dtype="rtdl_packed_ray3d",
+            shape=(int(ray_count),),
+            device_type=geometry_device,
+            source_protocol=source_protocol,
+            lifetime="session_retained",
+            access_mode="read",
+        ),
+    ]
+    if is_2a1:
+        input_buffers.append(
+            rt.RtdlBufferDescriptor(
+                name="ray_weights",
+                dtype="uint64",
+                shape=(int(ray_count),),
+                device_type=geometry_device,
+                source_protocol=source_protocol,
+                lifetime="session_retained",
+                access_mode="read",
+            )
+        )
+    output_name = "weighted_hit_sum" if is_2a1 else "hit_count_sum"
+    session = rt.RtdlPreparedSessionDescriptor(
+        session_id=(
+            f"generic_ray_triangle_summary_{method.lower().replace('-', '')}_"
+            f"{normalized_backend}_{int(primitive_count)}x{int(ray_count)}"
+        ),
+        backend=normalized_backend,
+        primitive=primitive,
+        input_buffers=tuple(input_buffers),
+        output_buffers=(
+            rt.RtdlBufferDescriptor(
+                name=output_name,
+                dtype="uint64",
+                shape=(1,),
+                device_type="cpu",
+                source_protocol="rtdl_scalar_summary",
+                lifetime="session_retained",
+                access_mode="write",
+                mutability="mutable",
+            ),
+        ),
+        reusable_scene=True,
+        reusable_query_buffers=True,
+        reusable_output_buffers=True,
+        phase_contract="prepared_ray_triangle_summary",
+        native_symbols=native_symbols,
+    )
+    return {
+        **session.to_metadata(),
+        "v2_4_protocol_version": rt.V2_4_PARTNER_PROTOCOL_VERSION,
+        "paper_method": method,
+        "partner": partner,
+        "device_column_lowering": bool(device_column_summary),
+        "app_owned_preprocessing": (
+            "Graph orientation, two-hop relation construction, and RT-Graph interpretation "
+            "remain benchmark/app code. RTDL sees generic rays, triangles, optional weights, "
+            "and a scalar summary."
+        ),
+        "same_phase_contract_as_basis_required": True,
+        "descriptor_only": True,
+    }
+
+
+def rt_graph_contract_payload(
+    *,
+    fixture: str,
+    edge_file: str | None,
+    edge_format: str,
+    detail: str,
+    rt_graph_copies: int,
+) -> dict[str, Any]:
+    started = time.perf_counter()
+    edges, input_source = _load_rt_graph_edges(
+        fixture=fixture,
+        edge_file=edge_file,
+        edge_format=edge_format,
+        fixture_copies=rt_graph_copies,
+    )
+    loaded = time.perf_counter()
+    contract = build_rt_graph_triangle_contract(edges)
+    built = time.perf_counter()
+    return {
+        "app": BENCHMARK_NAME,
+        "mode": "rt_graph_contract",
+        "input_source": input_source,
+        "contract": "rt_graph_style_degree_oriented_triangle_count",
+        "status": "python_preprocessing_oracle_only",
+        "authors_code_reproduction": False,
+        "same_contract_rtdl_backend_rows": False,
+        "rtdl_feature_gap": (
+            "RT-Graph orients edges by degree/id. The benchmark now has an "
+            "id-ascending relabeling adapter for RTDL's current triangle_match "
+            "contract, but native same-contract timing is still pending."
+        ),
+        "timing_ms": {
+            "load_edges": _elapsed_ms(started, loaded),
+            "build_contract": _elapsed_ms(loaded, built),
+            "total": _elapsed_ms(started, built),
+        },
+        "rt_graph_contract": _contract_payload(contract, detail=detail),
+        "claim_boundary": CLAIM_BOUNDARY,
+    }
+
+
+def rt_graph_rtdl_adapter_payload(
+    *,
+    fixture: str,
+    edge_file: str | None,
+    edge_format: str,
+    backend: str,
+    detail: str,
+    rt_graph_copies: int,
+) -> dict[str, Any]:
+    started = time.perf_counter()
+    edges, input_source = _load_rt_graph_edges(
+        fixture=fixture,
+        edge_file=edge_file,
+        edge_format=edge_format,
+        fixture_copies=rt_graph_copies,
+    )
+    loaded = time.perf_counter()
+    contract = build_rt_graph_triangle_contract(edges)
+    built = time.perf_counter()
+    graph = rt.csr_graph(
+        row_offsets=contract.id_ascending_row_offsets,
+        column_indices=contract.id_ascending_column_indices,
+    )
+    seeds = tuple(contract.id_ascending_edges)
+    inputs = {"seeds": seeds, "graph": graph}
+    if backend == "cpu_python_reference":
+        rows = rt.run_cpu_python_reference(rtdl_graph_triangle_count.triangle_probe_kernel, **inputs)
+    elif backend == "cpu":
+        rows = rt.run_cpu(rtdl_graph_triangle_count.triangle_probe_kernel, **inputs)
+    else:
+        raise ValueError("rt_graph_rtdl_adapter currently supports backend cpu_python_reference or cpu")
+    ran = time.perf_counter()
+    summary = rt.summarize_triangle_rows(rows)
+    reduced = time.perf_counter()
+    return {
+        "app": BENCHMARK_NAME,
+        "mode": "rt_graph_rtdl_adapter",
+        "input_source": input_source,
+        "backend": backend,
+        "contract": "rt_graph_contract_via_id_ascending_adapter",
+        "authors_code_reproduction": False,
+        "same_contract_native_timing": False,
+        "oracle_triangle_count": contract.triangle_count,
+        "rtdl_triangle_count": summary["triangle_count"],
+        "triangle_count_matches_oracle": summary["triangle_count"] == contract.triangle_count,
+        "timing_ms": {
+            "load_edges": _elapsed_ms(started, loaded),
+            "build_contract": _elapsed_ms(loaded, built),
+            "run_backend": _elapsed_ms(built, ran),
+            "reduce_rows": _elapsed_ms(ran, reduced),
+            "total": _elapsed_ms(started, reduced),
+        },
+        "rtdl_rows": rows if detail == "full" else {"row_count": len(rows)},
+        "rt_graph_contract": _contract_payload(contract, detail=detail),
+        "claim_boundary": CLAIM_BOUNDARY,
+    }
+
+
+def rt_graph_2a1_generic_rt_payload(
+    *,
+    fixture: str,
+    edge_file: str | None,
+    edge_format: str,
+    backend: str,
+    detail: str,
+    partner: str,
+    warmup: int,
+    repeat: int,
+    rt_graph_copies: int,
+) -> dict[str, Any]:
+    _validate_repetition(warmup=warmup, repeat=repeat)
+    started = time.perf_counter()
+    use_cupy_summary = _use_cupy_summary_partner(
+        partner=partner,
+        backend=backend,
+        detail=detail,
+        edge_file=edge_file,
+        edge_format=edge_format,
+    )
+    if use_cupy_summary:
+        if rt_graph_copies != 1:
+            raise ValueError("--rt-graph-copies applies only to fixture inputs")
+        edges = None
+        input_source = {"kind": "edge_file", "format": "binary", "path": edge_file}
+    else:
+        edges, input_source = _load_rt_graph_edges(
+            fixture=fixture,
+            edge_file=edge_file,
+            edge_format=edge_format,
+            fixture_copies=rt_graph_copies,
+        )
+    loaded = time.perf_counter()
+    if use_cupy_summary:
+        contract = build_rt_graph_triangle_summary_contract_cupy_binary(edge_file)
+    else:
+        contract = build_rt_graph_triangle_contract(edges, include_id_ascending_adapter=detail == "full")
+    built = time.perf_counter()
+    normalized_backend = backend.lower().replace("-", "_")
+    device_column_summary = use_cupy_summary and normalized_backend == "optix" and detail == "summary"
+    if device_column_summary:
+        triangles, rays, ray_weights = _build_rt_graph_2a1_device_geometry(contract)
+    elif normalized_backend == "optix" and detail == "summary":
+        triangles, rays, ray_weights = _build_rt_graph_2a1_packed_geometry(contract)
+    else:
+        triangles, rays, ray_weights = _build_rt_graph_2a1_geometry(contract)
+    lowered = time.perf_counter()
+    summary_result = None
+    query_timings_ms: list[float] = []
+    prepare_scene_ms: float | None = None
+    if device_column_summary:
+        prepare_started = time.perf_counter()
+        scene = rt.prepare_optix_static_triangle_scene_3d_device_triangles(triangles)
+        prepare_scene_ms = _elapsed_ms(prepare_started, time.perf_counter())
+        with scene:
+            for index in range(warmup + repeat):
+                query_started = time.perf_counter()
+                summary_result = scene.ray_any_hit_weighted_sum_device_columns(rays, ray_weights)
+                elapsed = _elapsed_ms(query_started, time.perf_counter())
+                if index >= warmup:
+                    query_timings_ms.append(elapsed)
+        rows = None
+        hit_weight_sum = int(summary_result["weighted_hit_sum"])
+    elif normalized_backend == "optix" and detail == "summary":
+        prepare_started = time.perf_counter()
+        scene = rt.prepare_optix_static_triangle_scene_3d(triangles)
+        prepare_scene_ms = _elapsed_ms(prepare_started, time.perf_counter())
+        with scene:
+            for index in range(warmup + repeat):
+                query_started = time.perf_counter()
+                summary_result = scene.ray_any_hit_weighted_sum(rays, ray_weights)
+                elapsed = _elapsed_ms(query_started, time.perf_counter())
+                if index >= warmup:
+                    query_timings_ms.append(elapsed)
+        rows = None
+        hit_weight_sum = int(summary_result["weighted_hit_sum"])
+    elif normalized_backend == "embree" and detail == "summary":
+        prepare_started = time.perf_counter()
+        scene = rt.prepare_embree_static_triangle_scene_3d(triangles)
+        prepare_scene_ms = _elapsed_ms(prepare_started, time.perf_counter())
+        with scene:
+            for index in range(warmup + repeat):
+                query_started = time.perf_counter()
+                summary_result = scene.ray_any_hit_weighted_sum(rays, ray_weights)
+                elapsed = _elapsed_ms(query_started, time.perf_counter())
+                if index >= warmup:
+                    query_timings_ms.append(elapsed)
+        rows = None
+        hit_weight_sum = int(summary_result["weighted_hit_sum"])
+    else:
+        rows = ()
+        for index in range(warmup + repeat):
+            query_started = time.perf_counter()
+            rows = rt.run_generic_ray_triangle_any_hit(rays, triangles, backend=backend)
+            elapsed = _elapsed_ms(query_started, time.perf_counter())
+            if index >= warmup:
+                query_timings_ms.append(elapsed)
+        hit_weight_sum = sum(ray_weights[int(row["ray_id"])] for row in rows if int(row["any_hit"]))
+    ran = time.perf_counter()
+    reduced = time.perf_counter()
+    ray_tracing_accelerated = normalized_backend in {"embree", "optix"}
+    rt_core_accelerated = normalized_backend == "optix"
+    primitive_count = _record_count(triangles)
+    ray_count = _record_count(rays)
+    v2_4_session = describe_rt_graph_v2_4_prepared_session(
+        backend=backend,
+        paper_method="RT-2A1",
+        primitive_count=primitive_count,
+        ray_count=ray_count,
+        device_column_summary=device_column_summary,
+        partner=partner,
+    )
+    v2_4_phase_timing = rt.v2_4_phase_timing_metadata(
+        {
+            "query_preparation": lowered - built,
+            "scene_build": 0.0 if prepare_scene_ms is None else prepare_scene_ms / 1000.0,
+            "rt_traversal": _median(query_timings_ms) / 1000.0,
+            "materialization": reduced - ran,
+        },
+        promoted_performance_path=normalized_backend in {"embree", "optix"},
+        same_phase_contract_as_basis=True,
+        source="triangle_counting.rt_graph_2a1_generic_rt",
+    )
+    session_key = rt.make_prepared_session_cache_key(
+        primitive="ray_triangle_weighted_any_hit_sum_3d",
+        backend=normalized_backend,
+        input_fingerprints={
+            "triangles": {"count": primitive_count, "fixture": fixture, "copies": rt_graph_copies},
+            "rays": {"count": ray_count, "fixture": fixture, "copies": rt_graph_copies},
+        },
+        parameters={"detail": detail, "summary": summary_result is not None},
+        partner="none",
+        device="cuda:0" if normalized_backend == "optix" else "cpu",
+    )
+    session_policy = rt.RtdlPreparedSessionResidencyPolicy(
+        cache_key=session_key,
+        cache_enabled=False,
+        lifetime_state="session_retained",
+        reuse_scope="explicit_user_session",
+        invalidation_events=("explicit_invalidate", "backend_context_reset", "close"),
+    )
+    return {
+        "app": BENCHMARK_NAME,
+        "mode": "rt_graph_2a1_generic_rt",
+        "input_source": input_source,
+        "backend": backend,
+        "contract": "rt_graph_2a1_mapped_to_generic_ray_triangle_any_hit",
+        "authors_code_reproduction": False,
+        "same_contract_native_timing": backend in {"embree", "optix"},
+        "ray_tracing_accelerated": ray_tracing_accelerated,
+        "rt_core_accelerated": rt_core_accelerated,
+        "rt_core_path": (
+            "generic_prepared_triangle_scene_3d_any_hit_weighted_sum"
+            if summary_result is not None and normalized_backend == "optix"
+            else (
+                "generic_prepared_triangle_scene_3d_any_hit_weighted_sum_embree"
+                if summary_result is not None and normalized_backend == "embree"
+                else ("generic_ray_triangle_any_hit_rows" if normalized_backend == "optix" else None)
+            )
+        ),
+        "partner": partner,
+        "partner_summary_contract_used": use_cupy_summary,
+        "partner_timing_ms": getattr(contract, "partner_timing_ms", None),
+        "primitive_layout": {
+            "paper_method": "RT-2A1",
+            "primitive_side": "directed 1-hop edges as Triangle3D primitives",
+            "ray_side": "compacted 2-hop relations as Ray3D probes with add-value weights",
+            "axis_offset": [contract.vertex_count / 2.0, 0.0, contract.vertex_count / 2.0],
+            "triangle_eps": 0.2,
+            "ray_tmax": 0.2,
+            "device_column_lowering": device_column_summary,
+        },
+        "primitive_count": primitive_count,
+        "ray_count": ray_count,
+        "rt_graph_fixture_copies": rt_graph_copies,
+        "oracle_triangle_count": contract.triangle_count,
+        "generic_rt_weighted_triangle_count": int(hit_weight_sum),
+        "triangle_count_matches_oracle": int(hit_weight_sum) == contract.triangle_count,
+        "timing_ms": {
+            "load_edges": _elapsed_ms(started, loaded),
+            "build_contract": _elapsed_ms(loaded, built),
+            "build_geometry": _elapsed_ms(built, lowered),
+            "run_backend": _elapsed_ms(lowered, ran),
+            "prepare_scene_ms": prepare_scene_ms,
+            "query_median_ms": _median(query_timings_ms),
+            "query_total_ms": float(sum(query_timings_ms)),
+            "query_mean_ms": float(sum(query_timings_ms) / len(query_timings_ms)),
+            "query_min_ms": min(query_timings_ms),
+            "query_max_ms": max(query_timings_ms),
+            "query_repeat": repeat,
+            "query_warmup": warmup,
+            "query_measured_runs": len(query_timings_ms),
+            "reduce_hits": _elapsed_ms(ran, reduced),
+            "total": _elapsed_ms(started, reduced),
+        },
+        "hit_rows": (
+            rows
+            if detail == "full"
+            else {
+                "row_count": _record_count(rays) if rows is None else len(rows),
+                "materialized": rows is not None,
+                "summary_primitive": None if summary_result is None else summary_result["contract"],
+            }
+        ),
+        "ray_weights": _ray_weight_payload(ray_weights, detail=detail),
+        "generic_rt_summary": summary_result,
+        "v2_4_prepared_session": v2_4_session,
+        "prepared_session_residency": {
+            "cache_key": session_key.to_metadata(),
+            "policy": session_policy.to_metadata(),
+            "explicit_reuse_helper": "get_or_prepare_explicit_session",
+            "cache_enabled_by_default": False,
+            "cold_hot_phase_split_required": True,
+            "prepare_once_query_many_pattern": True,
+            "automatic_partner_selection_authorized": False,
+            "true_zero_copy_claim_authorized": False,
+            "public_speedup_claim_authorized": False,
+        },
+        "v2_4_phase_timing": v2_4_phase_timing,
+        "rt_graph_contract": _contract_payload(contract, detail=detail),
+        "claim_boundary": CLAIM_BOUNDARY,
+    }
+
+
+def rt_graph_1a2_generic_rt_payload(
+    *,
+    fixture: str,
+    edge_file: str | None,
+    edge_format: str,
+    backend: str,
+    detail: str,
+    partner: str,
+    warmup: int,
+    repeat: int,
+    rt_graph_copies: int,
+) -> dict[str, Any]:
+    _validate_repetition(warmup=warmup, repeat=repeat)
+    started = time.perf_counter()
+    use_cupy_summary = _use_cupy_summary_partner(
+        partner=partner,
+        backend=backend,
+        detail=detail,
+        edge_file=edge_file,
+        edge_format=edge_format,
+    )
+    if use_cupy_summary:
+        if rt_graph_copies != 1:
+            raise ValueError("--rt-graph-copies applies only to fixture inputs")
+        edges = None
+        input_source = {"kind": "edge_file", "format": "binary", "path": edge_file}
+    else:
+        edges, input_source = _load_rt_graph_edges(
+            fixture=fixture,
+            edge_file=edge_file,
+            edge_format=edge_format,
+            fixture_copies=rt_graph_copies,
+        )
+    loaded = time.perf_counter()
+    if use_cupy_summary:
+        contract = build_rt_graph_triangle_summary_contract_cupy_binary(edge_file)
+    else:
+        contract = build_rt_graph_triangle_contract(edges, include_id_ascending_adapter=detail == "full")
+    built = time.perf_counter()
+    normalized_backend = backend.lower().replace("-", "_")
+    device_column_summary = use_cupy_summary and normalized_backend == "optix" and detail == "summary"
+    if device_column_summary:
+        triangles, rays = _build_rt_graph_1a2_device_geometry(contract)
+    elif normalized_backend == "optix" and detail == "summary":
+        triangles, rays = _build_rt_graph_1a2_packed_geometry(contract)
+    else:
+        triangles, rays = _build_rt_graph_1a2_geometry(contract)
+    lowered = time.perf_counter()
+    summary_result = None
+    query_timings_ms: list[float] = []
+    prepare_scene_ms: float | None = None
+    if device_column_summary:
+        prepare_started = time.perf_counter()
+        scene = rt.prepare_optix_static_triangle_scene_3d_device_triangles(triangles)
+        prepare_scene_ms = _elapsed_ms(prepare_started, time.perf_counter())
+        with scene:
+            for index in range(warmup + repeat):
+                query_started = time.perf_counter()
+                summary_result = scene.ray_hit_count_sum_device_columns(rays)
+                elapsed = _elapsed_ms(query_started, time.perf_counter())
+                if index >= warmup:
+                    query_timings_ms.append(elapsed)
+        rows = None
+        hit_count_sum = int(summary_result["hit_count_sum"])
+    elif normalized_backend == "optix" and detail == "summary":
+        prepare_started = time.perf_counter()
+        scene = rt.prepare_optix_static_triangle_scene_3d(triangles)
+        prepare_scene_ms = _elapsed_ms(prepare_started, time.perf_counter())
+        with scene:
+            for index in range(warmup + repeat):
+                query_started = time.perf_counter()
+                summary_result = scene.ray_hit_count_sum(rays)
+                elapsed = _elapsed_ms(query_started, time.perf_counter())
+                if index >= warmup:
+                    query_timings_ms.append(elapsed)
+        rows = None
+        hit_count_sum = int(summary_result["hit_count_sum"])
+    else:
+        rows = ()
+        for index in range(warmup + repeat):
+            query_started = time.perf_counter()
+            rows = _run_ray_triangle_hit_count_3d(rays, triangles, backend=backend)
+            elapsed = _elapsed_ms(query_started, time.perf_counter())
+            if index >= warmup:
+                query_timings_ms.append(elapsed)
+        hit_count_sum = sum(int(row["hit_count"]) for row in rows)
+    ran = time.perf_counter()
+    reduced = time.perf_counter()
+    max_adj_len = _max_out_degree(contract)
+    ray_tracing_accelerated = normalized_backend in {"embree", "optix"}
+    rt_core_accelerated = normalized_backend == "optix"
+    primitive_count = _record_count(triangles)
+    ray_count = _record_count(rays)
+    v2_4_session = describe_rt_graph_v2_4_prepared_session(
+        backend=backend,
+        paper_method="RT-1A2",
+        primitive_count=primitive_count,
+        ray_count=ray_count,
+        device_column_summary=device_column_summary,
+        partner=partner,
+    )
+    v2_4_phase_timing = rt.v2_4_phase_timing_metadata(
+        {
+            "query_preparation": lowered - built,
+            "scene_build": 0.0 if prepare_scene_ms is None else prepare_scene_ms / 1000.0,
+            "rt_traversal": _median(query_timings_ms) / 1000.0,
+            "materialization": reduced - ran,
+        },
+        promoted_performance_path=normalized_backend in {"embree", "optix"},
+        same_phase_contract_as_basis=True,
+        source="triangle_counting.rt_graph_1a2_generic_rt",
+    )
+    return {
+        "app": BENCHMARK_NAME,
+        "mode": "rt_graph_1a2_generic_rt",
+        "input_source": input_source,
+        "backend": backend,
+        "contract": "rt_graph_1a2_mapped_to_generic_ray_triangle_hit_count",
+        "authors_code_reproduction": False,
+        "same_contract_native_timing": backend in {"embree", "optix"},
+        "ray_tracing_accelerated": ray_tracing_accelerated,
+        "rt_core_accelerated": rt_core_accelerated,
+        "rt_core_path": (
+            "generic_prepared_triangle_scene_3d_hit_count_sum"
+            if summary_result is not None and normalized_backend == "optix"
+            else ("generic_ray_triangle_hit_count_rows" if normalized_backend == "optix" else None)
+        ),
+        "partner": partner,
+        "partner_summary_contract_used": use_cupy_summary,
+        "partner_timing_ms": getattr(contract, "partner_timing_ms", None),
+        "primitive_layout": {
+            "paper_method": "RT-1A2",
+            "primitive_side": "2-hop relations as Triangle3D primitives",
+            "ray_side": "directed 1-hop edges as Ray3D probes",
+            "axis_offset": [max_adj_len / 2.0, contract.vertex_count / 2.0, contract.vertex_count / 2.0],
+            "triangle_eps": 0.2,
+            "device_column_lowering": device_column_summary,
+        },
+        "primitive_count": primitive_count,
+        "ray_count": ray_count,
+        "rt_graph_fixture_copies": rt_graph_copies,
+        "oracle_triangle_count": contract.triangle_count,
+        "generic_rt_triangle_count": int(hit_count_sum),
+        "triangle_count_matches_oracle": int(hit_count_sum) == contract.triangle_count,
+        "timing_ms": {
+            "load_edges": _elapsed_ms(started, loaded),
+            "build_contract": _elapsed_ms(loaded, built),
+            "build_geometry": _elapsed_ms(built, lowered),
+            "run_backend": _elapsed_ms(lowered, ran),
+            "prepare_scene_ms": prepare_scene_ms,
+            "query_median_ms": _median(query_timings_ms),
+            "query_min_ms": min(query_timings_ms),
+            "query_max_ms": max(query_timings_ms),
+            "query_repeat": repeat,
+            "query_warmup": warmup,
+            "reduce_hits": _elapsed_ms(ran, reduced),
+            "total": _elapsed_ms(started, reduced),
+        },
+        "hit_count_rows": (
+            rows
+            if detail == "full"
+            else {
+                "row_count": _record_count(rays) if rows is None else len(rows),
+                "materialized": rows is not None,
+                "summary_primitive": None if summary_result is None else summary_result["contract"],
+            }
+        ),
+        "generic_rt_summary": summary_result,
+        "v2_4_prepared_session": v2_4_session,
+        "v2_4_phase_timing": v2_4_phase_timing,
+        "rt_graph_contract": _contract_payload(contract, detail=detail),
+        "claim_boundary": CLAIM_BOUNDARY,
+    }
+
+
+def _run_optix_ray_triangle_any_hit_weighted_sum_3d(
+    rays: tuple[rt.Ray3D, ...],
+    triangles: tuple[rt.Triangle3D, ...],
+    ray_weights: tuple[int, ...],
+) -> dict[str, object]:
+    with rt.prepare_optix_static_triangle_scene_3d(triangles) as scene:
+        return scene.ray_any_hit_weighted_sum(rays, ray_weights)
+
+
+def _run_optix_ray_triangle_any_hit_weighted_sum_3d_device_columns(
+    ray_columns: dict[str, object],
+    triangle_columns: dict[str, object],
+    ray_weights,
+) -> dict[str, object]:
+    with rt.prepare_optix_static_triangle_scene_3d_device_triangles(triangle_columns) as scene:
+        return scene.ray_any_hit_weighted_sum_device_columns(ray_columns, ray_weights)
+
+
+def _run_optix_ray_triangle_hit_count_sum_3d(
+    rays: tuple[rt.Ray3D, ...],
+    triangles: tuple[rt.Triangle3D, ...],
+) -> dict[str, object]:
+    with rt.prepare_optix_static_triangle_scene_3d(triangles) as scene:
+        return scene.ray_hit_count_sum(rays)
+
+
+def _run_optix_ray_triangle_hit_count_sum_3d_device_columns(
+    ray_columns: dict[str, object],
+    triangle_columns: dict[str, object],
+) -> dict[str, object]:
+    with rt.prepare_optix_static_triangle_scene_3d_device_triangles(triangle_columns) as scene:
+        return scene.ray_hit_count_sum_device_columns(ray_columns)
+
+
+def _run_ray_triangle_hit_count_3d(
+    rays: tuple[rt.Ray3D, ...],
+    triangles: tuple[rt.Triangle3D, ...],
+    *,
+    backend: str,
+) -> tuple[dict[str, int], ...]:
+    normalized = backend.lower().replace("-", "_")
+    if normalized in {"cpu_python_reference", "cpu"}:
+        return tuple(
+            {"ray_id": int(row["ray_id"]), "hit_count": int(row["hit_count"])}
+            for row in rt.ray_triangle_hit_count_cpu(rays, triangles)
+        )
+    if normalized == "embree":
+        rows = rt.run_embree(_generic_ray_triangle_hit_count_3d_kernel, rays=rays, triangles=triangles)
+    elif normalized == "optix":
+        rows = rt.run_optix(_generic_ray_triangle_hit_count_3d_kernel, rays=rays, triangles=triangles)
+    else:
+        raise ValueError("rt_graph_1a2_generic_rt backend must be one of: cpu_python_reference, cpu, embree, optix")
+    return tuple({"ray_id": int(row["ray_id"]), "hit_count": int(row["hit_count"])} for row in rows)
+
+
+def _contract_payload(contract, *, detail: str) -> dict[str, object]:
+    if detail == "full":
+        return contract.to_payload()
+    return {
+        "original_edge_count": _contract_count(contract, "original_edge_count", "original_edges"),
+        "compacted_vertex_count": _contract_count(contract, "compacted_vertex_count", "compacted_vertex_ids"),
+        "directed_vertex_count": contract.vertex_count,
+        "directed_edge_count": contract.directed_edge_count,
+        "triangle_count": contract.triangle_count,
+        "two_hop_ray_count_2a1": len(contract.two_hop_rays_2a1),
+        "duplicate_two_hop_relation_count": contract.duplicate_two_hop_relation_count,
+        "id_ascending_adapter_materialized": contract.id_ascending_adapter_materialized,
+        "id_ascending_edge_count": len(contract.id_ascending_edges),
+        "id_ascending_triangle_count": len(contract.id_ascending_triangle_witnesses),
+        "removed_low_degree_vertex_count": contract.removed_low_degree_vertex_count,
+        "removed_low_degree_edge_count": contract.removed_low_degree_edge_count,
+        "removed_duplicate_or_self_edge_count": contract.removed_duplicate_or_self_edge_count,
+        "partner": getattr(contract, "partner", "python"),
+        "partner_timing_ms": getattr(contract, "partner_timing_ms", None),
+    }
+
+
+def _elapsed_ms(started: float, ended: float) -> float:
+    return (ended - started) * 1000.0
+
+
+def _median(values: list[float]) -> float:
+    return float(statistics.median(values))
+
+
+def _validate_repetition(*, warmup: int, repeat: int) -> None:
+    if warmup < 0:
+        raise ValueError("warmup must be nonnegative")
+    if repeat <= 0:
+        raise ValueError("repeat must be positive")
+
+
+def _record_count(records) -> int:
+    if isinstance(records, dict) and "ids" in records:
+        return int(records["ids"].size)
+    count = getattr(records, "count", None)
+    if count is not None and not callable(count):
+        return int(count)
+    return len(records)
+
+
+def _contract_count(contract, count_attr: str, records_attr: str) -> int:
+    if hasattr(contract, count_attr):
+        return int(getattr(contract, count_attr))
+    return len(getattr(contract, records_attr))
+
+
+def _use_cupy_summary_partner(
+    *,
+    partner: str,
+    backend: str,
+    detail: str,
+    edge_file: str | None,
+    edge_format: str,
+) -> bool:
+    if partner == "none":
+        return False
+    if partner != "cupy":
+        raise ValueError(f"unsupported partner: {partner}")
+    normalized_backend = backend.lower().replace("-", "_")
+    if normalized_backend != "optix" or detail != "summary":
+        raise ValueError("--partner cupy currently supports only --backend optix --detail summary")
+    if edge_file is None or edge_format != "binary":
+        raise ValueError("--partner cupy currently requires --edge-file with --edge-format binary")
+    return True
+
+
+def _require_cupy_device_arrays(contract) -> dict[str, object]:
+    device_arrays = getattr(contract, "device_arrays", None)
+    if not isinstance(device_arrays, dict):
+        raise ValueError("CuPy summary contract is missing partner-resident device arrays")
+    required = {
+        "row_offsets",
+        "column_indices",
+        "directed_src",
+        "two_hop_src",
+        "two_hop_dst",
+        "two_hop_weights",
+    }
+    missing = sorted(required - set(device_arrays))
+    if missing:
+        raise ValueError(f"CuPy summary contract missing device arrays: {', '.join(missing)}")
+    return device_arrays
+
+
+def _cupy_repeat_by_counts(cp, values, counts):
+    """Repeat device values by device counts without array-repeat support."""
+
+    total = int(counts.sum().get())
+    if total == 0:
+        return cp.empty(0, dtype=values.dtype)
+    owners = cp.searchsorted(
+        cp.cumsum(counts, dtype=cp.int64),
+        cp.arange(total, dtype=cp.int64),
+        side="right",
+    )
+    return values[owners]
+
+
+def run_rt_graph_segmented_optix_scalar_summary(
+    contract,
+    *,
+    paper_method: str,
+    max_relation_rows: int,
+    start_segment_id: int = 0,
+    stop_segment_id: int | None = None,
+) -> dict[str, object]:
+    """Direct V2-style execution of one app-selected paper algorithm.
+
+    This is deliberately not a selector.  Each bounded segment calls the
+    existing generic OptiX scalar-summary symbol for the requested algorithm,
+    and the host performs only the associative U64 accumulation.
+    """
+
+    import cupy as cp
+    from rtdsl.optix_runtime import prepare_optix_static_triangle_scene_3d_device_triangles
+
+    if paper_method not in {"RT-1A2", "RT-2A1"}:
+        raise ValueError("paper_method must be RT-1A2 or RT-2A1")
+    if max_relation_rows <= 0:
+        raise ValueError("max_relation_rows must be positive")
+    scalar_sum = 0
+    segment_rows: list[dict[str, object]] = []
+    for segment in iter_segmented_rt_graph_device_geometry(
+        contract,
+        paper_algorithm=paper_method,
+        max_relation_rows=max_relation_rows,
+        max_directed_edge_rows=max_relation_rows,
+        start_segment_id=start_segment_id,
+        stop_segment_id=stop_segment_id,
+    ):
+        triangles = segment["triangles"]
+        rays = segment["rays"]
+        weights = segment["ray_weights"]
+        with prepare_optix_static_triangle_scene_3d_device_triangles(triangles) as scene:
+            if paper_method == "RT-1A2":
+                if weights is not None:
+                    raise RuntimeError("RT-1A2 segment must not carry ray weights")
+                native = scene.ray_hit_count_sum_device_columns(rays)
+                value = int(native["hit_count_sum"])
+            else:
+                if weights is None:
+                    raise RuntimeError("RT-2A1 segment requires ray weights")
+                native = scene.ray_any_hit_weighted_sum_device_columns(rays, weights)
+                value = int(native["weighted_hit_sum"])
+        if value < 0 or scalar_sum > ((1 << 64) - 1) - value:
+            raise OverflowError("segmented RT-Graph U64 scalar sum overflow")
+        scalar_sum += value
+        segment_rows.append(
+            {
+                "segment_id": int(segment["segment_id"]),
+                "scalar_sum": value,
+                "ray_count": int(rays["ids"].size),
+                "primitive_count": int(triangles["ids"].size),
+                "relation_count": int(segment["relation_count"]),
+                "host_geometry_bytes": int(segment["host_geometry_bytes"]),
+                "partition": segment["partition"],
+            }
+        )
+        del native, triangles, rays, weights, segment
+        cp.get_default_memory_pool().free_all_blocks()
+    if not segment_rows:
+        raise RuntimeError("segmented RT-Graph execution produced no physical segment")
+    return {
+        "scalar_sum": scalar_sum,
+        "segmented_execution": True,
+        "segment_count": len(segment_rows),
+        "segments": segment_rows,
+        "max_relation_rows": max_relation_rows,
+        "max_directed_edge_rows": max_relation_rows,
+        "global_two_hop_materialized": False,
+        "paper_algorithm_selected_by_application": paper_method,
+        "cross_algorithm_selection_performed": False,
+        "start_segment_id": start_segment_id,
+        "stop_segment_id": stop_segment_id,
+    }
+
+
+def _build_rt_graph_1a2_device_geometry(contract):
+    cp = __import__("cupy")
+
+    device_arrays = _require_cupy_device_arrays(contract)
+    row_offsets = device_arrays["row_offsets"]
+    column_indices = device_arrays["column_indices"]
+    out_degrees = row_offsets[1:] - row_offsets[:-1]
+    max_adj_len = int(out_degrees.max().get()) if int(out_degrees.size) else 0
+    axis_offset_x = max_adj_len / 2.0
+    axis_offset_y = contract.vertex_count / 2.0
+    axis_offset_z = contract.vertex_count / 2.0
+    eps = 0.2
+
+    edge_count = int(column_indices.size)
+    if edge_count:
+        edge_src = _cupy_repeat_by_counts(
+            cp,
+            cp.arange(contract.vertex_count, dtype=cp.int64),
+            out_degrees,
+        )
+        edge_starts = _cupy_repeat_by_counts(cp, row_offsets[:-1], out_degrees)
+        edge_local_index = cp.arange(edge_count, dtype=cp.int64) - edge_starts
+        edge_mid = column_indices
+        two_hop_counts = out_degrees[edge_mid]
+        nonempty = two_hop_counts > 0
+        active_counts = two_hop_counts[nonempty]
+        primitive_count = int(active_counts.sum().get()) if int(active_counts.size) else 0
+        if primitive_count:
+            center_x = _cupy_repeat_by_counts(cp, edge_local_index[nonempty], active_counts).astype(cp.float64) - axis_offset_x
+            center_y = _cupy_repeat_by_counts(cp, edge_src[nonempty], active_counts).astype(cp.float64) - axis_offset_y
+            starts = row_offsets[edge_mid[nonempty]]
+            repeated_starts = _cupy_repeat_by_counts(cp, starts, active_counts)
+            repeated_prefix = _cupy_repeat_by_counts(
+                cp,
+                cp.cumsum(active_counts) - active_counts,
+                active_counts,
+            )
+            dst_index = repeated_starts + (cp.arange(primitive_count, dtype=cp.int64) - repeated_prefix)
+            center_z = column_indices[dst_index].astype(cp.float64) - axis_offset_z
+        else:
+            center_x = cp.empty(0, dtype=cp.float64)
+            center_y = cp.empty(0, dtype=cp.float64)
+            center_z = cp.empty(0, dtype=cp.float64)
+    else:
+        primitive_count = 0
+        center_x = cp.empty(0, dtype=cp.float64)
+        center_y = cp.empty(0, dtype=cp.float64)
+        center_z = cp.empty(0, dtype=cp.float64)
+
+    triangles = {
+        "ids": cp.arange(primitive_count, dtype=cp.uint32),
+        "x0": center_x,
+        "y0": center_y,
+        "z0": center_z + eps,
+        "x1": center_x,
+        "y1": center_y - eps,
+        "z1": center_z - eps,
+        "x2": center_x,
+        "y2": center_y + eps,
+        "z2": center_z - eps,
+    }
+
+    ray_count = int(column_indices.size)
+    if ray_count:
+        ray_src = device_arrays["directed_src"]
+        ray_dst = column_indices
+        tmax = out_degrees[ray_src].astype(cp.float64)
+        oy = ray_src.astype(cp.float64) - axis_offset_y
+        oz = ray_dst.astype(cp.float64) - axis_offset_z
+    else:
+        tmax = cp.empty(0, dtype=cp.float64)
+        oy = cp.empty(0, dtype=cp.float64)
+        oz = cp.empty(0, dtype=cp.float64)
+    rays = {
+        "ids": cp.arange(ray_count, dtype=cp.uint32),
+        "ox": cp.full(ray_count, -0.5 - axis_offset_x, dtype=cp.float64),
+        "oy": oy,
+        "oz": oz,
+        "dx": cp.ones(ray_count, dtype=cp.float64),
+        "dy": cp.zeros(ray_count, dtype=cp.float64),
+        "dz": cp.zeros(ray_count, dtype=cp.float64),
+        "tmax": tmax,
+    }
+    return triangles, rays
+
+
+def _build_rt_graph_1a2_geometry(contract) -> tuple[tuple[rt.Triangle3D, ...], tuple[rt.Ray3D, ...]]:
+    max_adj_len = _max_out_degree(contract)
+    axis_offset_x = max_adj_len / 2.0
+    axis_offset_y = contract.vertex_count / 2.0
+    axis_offset_z = contract.vertex_count / 2.0
+    eps = 0.2
+    triangles: list[rt.Triangle3D] = []
+    primitive_id = 0
+    for src in range(contract.vertex_count):
+        neighbors = _contract_neighbors(contract, src)
+        for local_index, mid in enumerate(neighbors):
+            for dst in _contract_neighbors(contract, mid):
+                center_x = float(local_index) - axis_offset_x
+                center_y = float(src) - axis_offset_y
+                center_z = float(dst) - axis_offset_z
+                triangles.append(
+                    rt.Triangle3D(
+                        id=primitive_id,
+                        x0=center_x,
+                        y0=center_y,
+                        z0=center_z + eps,
+                        x1=center_x,
+                        y1=center_y - eps,
+                        z1=center_z - eps,
+                        x2=center_x,
+                        y2=center_y + eps,
+                        z2=center_z - eps,
+                    )
+                )
+                primitive_id += 1
+
+    rays: list[rt.Ray3D] = []
+    for ray_id, (src, dst) in enumerate(contract.directed_edges):
+        rays.append(
+            rt.Ray3D(
+                id=ray_id,
+                ox=-0.5 - axis_offset_x,
+                oy=float(src) - axis_offset_y,
+                oz=float(dst) - axis_offset_z,
+                dx=1.0,
+                dy=0.0,
+                dz=0.0,
+                tmax=float(len(_contract_neighbors(contract, src))),
+            )
+        )
+    return tuple(triangles), tuple(rays)
+
+
+def _build_rt_graph_1a2_packed_geometry(contract):
+    import numpy as np
+
+    row_offsets = np.asarray(contract.row_offsets, dtype=np.int64)
+    column_indices = np.asarray(contract.column_indices, dtype=np.int64)
+    out_degrees = np.diff(row_offsets)
+    max_adj_len = int(out_degrees.max()) if out_degrees.size else 0
+    axis_offset_x = max_adj_len / 2.0
+    axis_offset_y = contract.vertex_count / 2.0
+    axis_offset_z = contract.vertex_count / 2.0
+    eps = 0.2
+
+    edge_count = len(column_indices)
+    if edge_count:
+        edge_src = np.repeat(np.arange(contract.vertex_count, dtype=np.int64), out_degrees)
+        edge_starts = np.repeat(row_offsets[:-1], out_degrees)
+        edge_local_index = np.arange(edge_count, dtype=np.int64) - edge_starts
+        edge_mid = column_indices
+        two_hop_counts = out_degrees[edge_mid]
+        nonempty = two_hop_counts > 0
+        two_hop_counts = two_hop_counts[nonempty]
+        if two_hop_counts.size:
+            primitive_count = int(two_hop_counts.sum())
+            center_x = np.repeat(edge_local_index[nonempty], two_hop_counts).astype(np.float64) - axis_offset_x
+            center_y = np.repeat(edge_src[nonempty], two_hop_counts).astype(np.float64) - axis_offset_y
+            starts = row_offsets[edge_mid[nonempty]]
+            repeated_starts = np.repeat(starts, two_hop_counts)
+            repeated_prefix = np.repeat(np.cumsum(two_hop_counts) - two_hop_counts, two_hop_counts)
+            dst_index = repeated_starts + (np.arange(primitive_count, dtype=np.int64) - repeated_prefix)
+            center_z = column_indices[dst_index].astype(np.float64) - axis_offset_z
+        else:
+            primitive_count = 0
+            center_x = np.empty(0, dtype=np.float64)
+            center_y = np.empty(0, dtype=np.float64)
+            center_z = np.empty(0, dtype=np.float64)
+    else:
+        primitive_count = 0
+        center_x = np.empty(0, dtype=np.float64)
+        center_y = np.empty(0, dtype=np.float64)
+        center_z = np.empty(0, dtype=np.float64)
+
+    triangles = rt.pack_triangles_3d_from_arrays(
+        ids=np.arange(primitive_count, dtype=np.uint32),
+        x0=center_x,
+        y0=center_y,
+        z0=center_z + eps,
+        x1=center_x,
+        y1=center_y - eps,
+        z1=center_z - eps,
+        x2=center_x,
+        y2=center_y + eps,
+        z2=center_z - eps,
+    )
+
+    edge_count = len(contract.directed_edges)
+    ray_ids = np.arange(edge_count, dtype=np.uint32)
+    if edge_count:
+        edges = np.asarray(contract.directed_edges, dtype=np.int64)
+        src_i = edges[:, 0]
+        dst_i = edges[:, 1]
+        tmax = out_degrees[src_i].astype(np.float64)
+        src = src_i.astype(np.float64)
+        dst = dst_i.astype(np.float64)
+        oy = src - axis_offset_y
+        oz = dst - axis_offset_z
+    else:
+        oy = np.empty(0, dtype=np.float64)
+        oz = np.empty(0, dtype=np.float64)
+        tmax = np.empty(0, dtype=np.float64)
+    rays = rt.pack_rays_3d_from_arrays(
+        ids=ray_ids,
+        ox=np.full(edge_count, -0.5 - axis_offset_x, dtype=np.float64),
+        oy=oy,
+        oz=oz,
+        dx=np.ones(edge_count, dtype=np.float64),
+        dy=np.zeros(edge_count, dtype=np.float64),
+        dz=np.zeros(edge_count, dtype=np.float64),
+        tmax=tmax,
+    )
+    return triangles, rays
+
+
+def _build_rt_graph_2a1_device_geometry(contract):
+    cp = __import__("cupy")
+
+    device_arrays = _require_cupy_device_arrays(contract)
+    directed_src = device_arrays["directed_src"]
+    directed_dst = device_arrays["column_indices"]
+    axis_offset_x = contract.vertex_count / 2.0
+    axis_offset_z = contract.vertex_count / 2.0
+    eps = 0.2
+
+    edge_count = int(directed_dst.size)
+    if edge_count:
+        center_x = directed_src.astype(cp.float64) - axis_offset_x
+        center_z = directed_dst.astype(cp.float64) - axis_offset_z
+    else:
+        center_x = cp.empty(0, dtype=cp.float64)
+        center_z = cp.empty(0, dtype=cp.float64)
+    zero = cp.zeros(edge_count, dtype=cp.float64)
+    triangles = {
+        "ids": cp.arange(edge_count, dtype=cp.uint32),
+        "x0": center_x,
+        "y0": zero,
+        "z0": center_z + eps,
+        "x1": center_x - eps,
+        "y1": zero,
+        "z1": center_z - eps,
+        "x2": center_x + eps,
+        "y2": zero,
+        "z2": center_z - eps,
+    }
+
+    ray_src = device_arrays["two_hop_src"]
+    ray_dst = device_arrays["two_hop_dst"]
+    ray_count = int(ray_src.size)
+    if ray_count:
+        ox = ray_src.astype(cp.float64) - axis_offset_x
+        oz = ray_dst.astype(cp.float64) - axis_offset_z
+    else:
+        ox = cp.empty(0, dtype=cp.float64)
+        oz = cp.empty(0, dtype=cp.float64)
+    rays = {
+        "ids": cp.arange(ray_count, dtype=cp.uint32),
+        "ox": ox,
+        "oy": cp.full(ray_count, -0.1, dtype=cp.float64),
+        "oz": oz,
+        "dx": cp.zeros(ray_count, dtype=cp.float64),
+        "dy": cp.ones(ray_count, dtype=cp.float64),
+        "dz": cp.zeros(ray_count, dtype=cp.float64),
+        "tmax": cp.full(ray_count, 0.2, dtype=cp.float64),
+    }
+    ray_weights = device_arrays["two_hop_weights"].astype(cp.uint64, copy=False)
+    return triangles, rays, ray_weights
+
+
+def _build_rt_graph_2a1_geometry(contract) -> tuple[tuple[rt.Triangle3D, ...], tuple[rt.Ray3D, ...], tuple[int, ...]]:
+    axis_offset_x = contract.vertex_count / 2.0
+    axis_offset_z = contract.vertex_count / 2.0
+    eps = 0.2
+    triangles: list[rt.Triangle3D] = []
+    for primitive_id, (src, dst) in enumerate(contract.directed_edges):
+        center_x = float(src) - axis_offset_x
+        center_y = 0.0
+        center_z = float(dst) - axis_offset_z
+        triangles.append(
+            rt.Triangle3D(
+                id=primitive_id,
+                x0=center_x,
+                y0=center_y,
+                z0=center_z + eps,
+                x1=center_x - eps,
+                y1=center_y,
+                z1=center_z - eps,
+                x2=center_x + eps,
+                y2=center_y,
+                z2=center_z - eps,
+            )
+        )
+
+    rays: list[rt.Ray3D] = []
+    ray_weights: list[int] = []
+    for ray_id, (src, dst, weight) in enumerate(contract.two_hop_rays_2a1):
+        rays.append(
+            rt.Ray3D(
+                id=ray_id,
+                ox=float(src) - axis_offset_x,
+                oy=-0.1,
+                oz=float(dst) - axis_offset_z,
+                dx=0.0,
+                dy=1.0,
+                dz=0.0,
+                tmax=0.2,
+            )
+        )
+        ray_weights.append(int(weight))
+    return tuple(triangles), tuple(rays), tuple(ray_weights)
+
+
+def _build_rt_graph_2a1_packed_geometry(contract):
+    import numpy as np
+
+    axis_offset_x = contract.vertex_count / 2.0
+    axis_offset_z = contract.vertex_count / 2.0
+    eps = 0.2
+
+    edge_count = len(contract.directed_edges)
+    primitive_ids = np.arange(edge_count, dtype=np.uint32)
+    if edge_count:
+        edges = np.asarray(contract.directed_edges, dtype=np.int64)
+        src = edges[:, 0].astype(np.float64)
+        dst = edges[:, 1].astype(np.float64)
+        center_x = src - axis_offset_x
+        center_z = dst - axis_offset_z
+    else:
+        center_x = np.empty(0, dtype=np.float64)
+        center_z = np.empty(0, dtype=np.float64)
+    zero = np.zeros(edge_count, dtype=np.float64)
+    triangles = rt.pack_triangles_3d_from_arrays(
+        ids=primitive_ids,
+        x0=center_x,
+        y0=zero,
+        z0=center_z + eps,
+        x1=center_x - eps,
+        y1=zero,
+        z1=center_z - eps,
+        x2=center_x + eps,
+        y2=zero,
+        z2=center_z - eps,
+    )
+
+    ray_count = len(contract.two_hop_rays_2a1)
+    ray_ids = np.arange(ray_count, dtype=np.uint32)
+    if ray_count:
+        two_hop = np.asarray(contract.two_hop_rays_2a1, dtype=np.int64)
+        ray_src = two_hop[:, 0].astype(np.float64)
+        ray_dst = two_hop[:, 1].astype(np.float64)
+        ray_weights = np.ascontiguousarray(two_hop[:, 2], dtype=np.uint64)
+        ox = ray_src - axis_offset_x
+        oz = ray_dst - axis_offset_z
+    else:
+        ray_weights = np.empty(0, dtype=np.uint64)
+        ox = np.empty(0, dtype=np.float64)
+        oz = np.empty(0, dtype=np.float64)
+    rays = rt.pack_rays_3d_from_arrays(
+        ids=ray_ids,
+        ox=ox,
+        oy=np.full(ray_count, -0.1, dtype=np.float64),
+        oz=oz,
+        dx=np.zeros(ray_count, dtype=np.float64),
+        dy=np.ones(ray_count, dtype=np.float64),
+        dz=np.zeros(ray_count, dtype=np.float64),
+        tmax=np.full(ray_count, 0.2, dtype=np.float64),
+    )
+    return triangles, rays, ray_weights
+
+
+def _ray_weight_payload(ray_weights, *, detail: str) -> object:
+    try:
+        import numpy as np
+    except ImportError:  # pragma: no cover
+        np = None
+    if np is not None and isinstance(ray_weights, np.ndarray):
+        if detail == "full":
+            return [int(weight) for weight in ray_weights.tolist()]
+        return {"sum": int(ray_weights.sum(dtype=np.uint64)), "count": int(ray_weights.size)}
+    if hasattr(ray_weights, "get") and hasattr(ray_weights, "sum") and hasattr(ray_weights, "size"):
+        if detail == "full":
+            return [int(weight) for weight in ray_weights.get().tolist()]
+        return {"sum": int(ray_weights.sum().get()), "count": int(ray_weights.size), "device_resident": True}
+    if detail == "full":
+        return [int(weight) for weight in ray_weights]
+    return {"sum": int(sum(ray_weights)), "count": len(ray_weights)}
+
+
+def _contract_neighbors(contract, vertex: int) -> tuple[int, ...]:
+    start = contract.row_offsets[vertex]
+    end = contract.row_offsets[vertex + 1]
+    return contract.column_indices[start:end]
+
+
+def _max_out_degree(contract) -> int:
+    if contract.vertex_count == 0:
+        return 0
+    return max(len(_contract_neighbors(contract, vertex)) for vertex in range(contract.vertex_count))
+
+
+def _load_rt_graph_edges(
+    *,
+    fixture: str,
+    edge_file: str | None,
+    edge_format: str,
+    fixture_copies: int = 1,
+) -> tuple[tuple[tuple[int, int], ...], dict[str, str]]:
+    if fixture_copies <= 0:
+        raise ValueError("rt_graph_copies must be positive")
+    if edge_file is None:
+        edges = _repeat_fixture_edges(fixture_edges(fixture), fixture_copies)
+        input_source = {
+            "kind": "fixture",
+            "name": fixture,
+            "rt_graph_copies": str(fixture_copies),
+        }
+    elif edge_format == "text":
+        if fixture_copies != 1:
+            raise ValueError("--rt-graph-copies applies only when --edge-file is omitted")
+        edges = read_text_edges(edge_file)
+        input_source = {"kind": "edge_file", "format": "text", "path": edge_file}
+    elif edge_format == "binary":
+        if fixture_copies != 1:
+            raise ValueError("--rt-graph-copies applies only when --edge-file is omitted")
+        edges = read_binary_edges(edge_file)
+        input_source = {"kind": "edge_file", "format": "binary", "path": edge_file}
+    else:
+        raise ValueError(f"unsupported edge format: {edge_format}")
+    return edges, input_source
+
+
+def _repeat_fixture_edges(edges: tuple[tuple[int, int], ...], copies: int) -> tuple[tuple[int, int], ...]:
+    if copies == 1:
+        return edges
+    if not edges:
+        return ()
+    vertex_span = max(max(src, dst) for src, dst in edges) + 1
+    repeated: list[tuple[int, int]] = []
+    for copy_index in range(copies):
+        offset = copy_index * vertex_span
+        repeated.extend((src + offset, dst + offset) for src, dst in edges)
+    return tuple(repeated)
+
+
+def run_app(
+    mode: str = "scope",
+    *,
+    backend: str = "cpu_python_reference",
+    copies: int = 2,
+    output_mode: str = "summary",
+    optix_graph_mode: str = "auto",
+    fixture: str = "single_triangle",
+    edge_file: str | None = None,
+    edge_format: str = "text",
+    detail: str = "full",
+    partner: str = "none",
+    warmup: int = 0,
+    repeat: int = 1,
+    rt_graph_copies: int = 1,
+) -> dict[str, Any]:
+    if mode == "scope":
+        return scope_payload()
+    if mode == "run":
+        return run_payload(
+            backend=backend,
+            copies=copies,
+            output_mode=output_mode,
+            optix_graph_mode=optix_graph_mode,
+        )
+    if mode == "command_plan":
+        return command_plan_payload()
+    if mode in {"primitive_first_plan", "v2_5_plan"}:
+        return primitive_first_plan_payload() if mode == "primitive_first_plan" else v2_5_plan_payload()
+    if mode in {"segmented_compact_mask_numba_plan", "v2_6_numba_compact_mask_plan"}:
+        return (
+            segmented_compact_mask_numba_plan_payload()
+            if mode == "segmented_compact_mask_numba_plan"
+            else v2_6_numba_compact_mask_plan_payload()
+        )
+    if mode == "rt_graph_contract":
+        return rt_graph_contract_payload(
+            fixture=fixture,
+            edge_file=edge_file,
+            edge_format=edge_format,
+            detail=detail,
+            rt_graph_copies=rt_graph_copies,
+        )
+    if mode == "rt_graph_rtdl_adapter":
+        return rt_graph_rtdl_adapter_payload(
+            fixture=fixture,
+            edge_file=edge_file,
+            edge_format=edge_format,
+            backend=backend,
+            detail=detail,
+            rt_graph_copies=rt_graph_copies,
+        )
+    if mode == "rt_graph_2a1_generic_rt":
+        return rt_graph_2a1_generic_rt_payload(
+            fixture=fixture,
+            edge_file=edge_file,
+            edge_format=edge_format,
+            backend=backend,
+            detail=detail,
+            partner=partner,
+            warmup=warmup,
+            repeat=repeat,
+            rt_graph_copies=rt_graph_copies,
+        )
+    if mode == "rt_graph_1a2_generic_rt":
+        return rt_graph_1a2_generic_rt_payload(
+            fixture=fixture,
+            edge_file=edge_file,
+            edge_format=edge_format,
+            backend=backend,
+            detail=detail,
+            partner=partner,
+            warmup=warmup,
+            repeat=repeat,
+            rt_graph_copies=rt_graph_copies,
+        )
+    raise ValueError(f"unsupported mode: {mode}")
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description="Bounded triangle-counting research benchmark wrapper."
+    )
+    parser.add_argument(
+        "--mode",
+        choices=(
+            "scope",
+            "run",
+            "command_plan",
+            "primitive_first_plan",
+            "v2_5_plan",
+            "segmented_compact_mask_numba_plan",
+            "v2_6_numba_compact_mask_plan",
+            "rt_graph_contract",
+            "rt_graph_rtdl_adapter",
+            "rt_graph_2a1_generic_rt",
+            "rt_graph_1a2_generic_rt",
+        ),
+        default="scope",
+    )
+    parser.add_argument(
+        "--backend",
+        choices=("cpu_python_reference", "cpu", "embree", "optix", "vulkan"),
+        default="cpu_python_reference",
+    )
+    parser.add_argument("--copies", type=int, default=2)
+    parser.add_argument("--output-mode", choices=("rows", "summary"), default="summary")
+    parser.add_argument("--optix-graph-mode", choices=("auto", "host_indexed", "native"), default="auto")
+    parser.add_argument(
+        "--fixture",
+        choices=("single_triangle", "degree_oriented_two_triangles", "duplicates_self_and_leaf"),
+        default="single_triangle",
+    )
+    parser.add_argument("--edge-file")
+    parser.add_argument("--edge-format", choices=("text", "binary"), default="text")
+    parser.add_argument("--detail", choices=("full", "summary"), default="full")
+    parser.add_argument("--partner", choices=("none", "cupy", "numba"), default="none")
+    parser.add_argument("--warmup", type=int, default=0)
+    parser.add_argument("--repeat", type=int, default=1)
+    parser.add_argument(
+        "--rt-graph-copies",
+        type=int,
+        default=1,
+        help="Repeat a fixture as disjoint graph copies for RT-Graph generic modes.",
+    )
+    args = parser.parse_args(argv)
+    print(
+        json.dumps(
+            run_app(
+                args.mode,
+                backend=args.backend,
+                copies=args.copies,
+                output_mode=args.output_mode,
+                optix_graph_mode=args.optix_graph_mode,
+                fixture=args.fixture,
+                edge_file=args.edge_file,
+                edge_format=args.edge_format,
+            detail=args.detail,
+            partner=args.partner,
+            warmup=args.warmup,
+            repeat=args.repeat,
+            rt_graph_copies=args.rt_graph_copies,
+        ),
+            indent=2,
+            sort_keys=True,
+        )
+    )
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
