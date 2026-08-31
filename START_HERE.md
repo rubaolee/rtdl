@@ -9,6 +9,20 @@ bounded scopes. Goal5836 remains locked.**
 External review: **not authorized; do not send anything for review.**  
 Performance: **not authorized; do not collect timings.**
 
+Git handoff authority:
+
+```text
+remote: https://github.com/rubaolee/rtdl
+branch: codex/cgo-goal5836-handoff
+minimum exact-byte recovery checkpoint:
+d0bb938170cd227a33a5237cf5b7e48102cb5c7e
+```
+
+Instruction for the receiving Mac agent: **read this file completely before
+editing anything. Then execute Sections 1 and 5, report the resulting receipts,
+and continue with the bounded hostile review in Section 6.** Do not restart the
+project history and do not begin Goal5836 execution.
+
 ## 0. Read this first: the one-line handoff
 
 The next agent must first finish the interrupted, hostile **pre-Goal5836
@@ -45,30 +59,56 @@ test -f case_studies/sui_derived_edge_crossing_core/bounded_piecewise_linear_cor
 
 If either check fails, stop: the wrong or incomplete workspace is open.
 
-### 1.1 Git is not the current state authority
+### 1.1 Clone the exact CGO recovery branch
 
-The Windows working tree currently reports:
+The old linked worktree pointed at a missing Git object. That defect has now
+been contained in a separately named, exact-byte recovery branch. The branch
+begins with root checkpoint `d0bb938...`; it does not fabricate a parent or
+claim continuity with the missing historical object. Use this branch as the
+Mac state authority.
 
-```text
-git rev-parse HEAD
-1af120d187228035db733ce690de3a3bf5b54ee5
+On a Mac with no existing checkout:
 
-git status --short
-fatal: bad object HEAD
+```bash
+git clone --branch codex/cgo-goal5836-handoff --single-branch \
+  https://github.com/rubaolee/rtdl rtdl_v4_restricted_python_design
+cd rtdl_v4_restricted_python_design
+export RTDL_REPO="$PWD"
 ```
 
-Therefore:
+If the branch is not visible remotely, stop and tell the owner that the local
+branch has not yet been pushed. Do not substitute `main`, another branch, an
+old tarball, or an older V3/V4 workspace.
 
-- do not say the Goal5833--5835 work is committed;
-- do not use `git pull`, `git checkout`, `git reset`, or a branch name to
-  reconstruct the current state;
-- transfer/copy the exact working snapshot and verify the file hashes below;
-- do not repair Git as a side task during the CGO evidence window;
-- if a clean Git lineage is later required, create a separately named recovery
-  goal after preserving this exact snapshot.
+Prove that the checkout descends from the exact recovery checkpoint and that
+Git has not rewritten its byte-bound evidence:
 
-The apparent `rev-parse` value is historical metadata, not proof that the
-working files belong to that commit.
+```bash
+test "$(git branch --show-current)" = "codex/cgo-goal5836-handoff"
+git merge-base --is-ancestor \
+  d0bb938170cd227a33a5237cf5b7e48102cb5c7e HEAD
+test -z "$(git status --short --untracked-files=no)"
+python3 VERIFY_CAPSULE.py
+```
+
+The verifier must report:
+
+```text
+"status": "PASS__GOAL5836_MACBOOK_CAPSULE"
+"payload_count": 5357
+"payload_bytes": 77137824
+```
+
+The repository-level `.gitattributes` intentionally disables newline
+normalization for this recovery snapshot. Do not remove or weaken that rule:
+Goal5834/5835 authorities bind raw bytes, and a normal CRLF-to-LF rewrite makes
+their exact hashes fail. `git archive` of the checkpoint has independently
+passed the same verifier and the 102-test baseline.
+
+The branch is a curated CGO/Goal5836 handoff snapshot, not a reconstruction of
+every unrelated historical path that existed in the damaged Windows
+worktree. Do not add missing legacy material merely to make the repository
+larger.
 
 ### 1.2 The project in two minutes
 
@@ -605,7 +645,8 @@ to convert a failed gate into a Paper App.
 Do not spend time on:
 
 - production API polish unrelated to the frozen common input;
-- fixing the broken Git object graph;
+- merging the recovery branch into historical branches or reconstructing its
+  missing parent object;
 - general arbitrary Callback-IR-to-GPU compilation;
 - supporting all OptiX curve variants, motion blur, instancing, or recursion;
 - performance infrastructure or benchmarking;
@@ -630,7 +671,8 @@ three-route experiment, and preservation of the claim boundary.
 8. Never change inputs, thresholds, margins, or output predicates after seeing
    author/RTDL results.
 9. Never let an oracle or expected output enter the GPU worker process.
-10. Never claim a commit while `git status` reports `bad object HEAD`.
+10. Never continue from a checkout that fails the branch, ancestor, clean-tree,
+    or `VERIFY_CAPSULE.py` checks in Section 1.1.
 
 ## 10. Handoff acceptance checklist
 
@@ -638,6 +680,9 @@ Before the new session claims it is ready to continue, it must report:
 
 ```text
 [ ] exact RTDL_REPO path
+[ ] branch is codex/cgo-goal5836-handoff
+[ ] d0bb938170cd227a33a5237cf5b7e48102cb5c7e is an ancestor of HEAD
+[ ] tracked Git status is clean and VERIFY_CAPSULE.py passes
 [ ] five controlling evidence hashes match
 [ ] Python and macOS version recorded
 [ ] baseline Goal5833--5835 test denominator and outcome recorded

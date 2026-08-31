@@ -2,7 +2,7 @@
   "entrypoint": "START_HERE.md",
   "external_review_authorized": false,
   "goal5836_authorized": false,
-  "payload_bytes": 77137824,
+  "payload_bytes": 77141642,
   "payload_count": 5357,
   "payloads": [
     {
@@ -26,9 +26,9 @@
       "sha256": "aa65a988c441d9e3c42bd90936f0a37e7b31a5b2b1f7908ed3fbba0598a145c5"
     },
     {
-      "bytes": 29420,
+      "bytes": 31329,
       "path": "START_HERE.md",
-      "sha256": "39dea3de33e4d99e8fbac1d4aa8ecf7ff3eb817916995b431d28baae582bd82a"
+      "sha256": "c40716d18e6478bd8183382a8456dc5a829b1a5ce59bc459cca20c73aa36ae56"
     },
     {
       "bytes": 1265,
@@ -1726,9 +1726,9 @@
       "sha256": "c5e6e403ec6af7d389849f4092cd72a53dc840cc0ad937db373104636180fec3"
     },
     {
-      "bytes": 29420,
+      "bytes": 31329,
       "path": "history/internal_docs/handoff_macbook_pre_goal5836_cgo_checkpoint_20260831.md",
-      "sha256": "39dea3de33e4d99e8fbac1d4aa8ecf7ff3eb817916995b431d28baae582bd82a"
+      "sha256": "c40716d18e6478bd8183382a8456dc5a829b1a5ce59bc459cca20c73aa36ae56"
     },
     {
       "bytes": 65597,
