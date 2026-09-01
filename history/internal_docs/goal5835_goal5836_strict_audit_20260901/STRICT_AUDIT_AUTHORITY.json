@@ -1,0 +1,255 @@
+{
+  "cgo_manuscript_impact": {
+    "audited_file": {
+      "bytes": 85730,
+      "path": "paper/cgo2027/main.tex",
+      "sha256": "d9cf2dc38f83e6545c4880efd6f101be27553c6729f41dcc7afe0e126c504716"
+    },
+    "goal5835_literal_present": false,
+    "goal5836_literal_present": false,
+    "negative_goal5836_result_should_be_added_as_experiment": false,
+    "sui_is_used_as_related_work_problem_inventory": true
+  },
+  "claim_boundary": {
+    "goal5835_may_be_called_bounded_app_semantic_projection": true,
+    "goal5835_may_be_called_executed_app_front_door_result": false,
+    "goal5835_may_be_called_full_rtccd": false,
+    "goal5835_may_be_called_paper_reproduction": false,
+    "goal5836_may_be_called_completed_negative_fidelity_transaction": true,
+    "goal5836_may_be_called_successful_paper_app": false,
+    "new_performance_claim_authorized": false
+  },
+  "date": "2026-09-01",
+  "findings": [
+    {
+      "finding": "Goal5835 validly binds app-shaped objects to inherited true-OptiX fixture bytes, but its evidence runner never executes the app front door or constructs a positive mesh/trajectory scene. The supportable class is bounded app-semantic projection, not executed paper app.",
+      "id": "P1-G5835-CLAIM-SCOPE",
+      "severity": "P1",
+      "status": "OPEN_CLAIM_NARROWING_REQUIRED"
+    },
+    {
+      "finding": "No positive registered row reconstructs a complete triangle or mesh; the only complete-triangle row is the intentional miss boundary.",
+      "id": "P2-G5835-NO-POSITIVE-MESH",
+      "severity": "P2",
+      "status": "OPEN"
+    },
+    {
+      "finding": "The frozen fixture adapter assigns sphere_id=primitive_index. The connected piecewise-linear pair is therefore labelled as two spheres, and trajectory_to_swept_segments is not used by the evidence runner.",
+      "id": "P2-G5835-SYNTHETIC-SPHERE-IDENTITY",
+      "severity": "P2",
+      "status": "OPEN"
+    },
+    {
+      "finding": "execute_registered_problem accepts a result whose bit count differs from the edge count and whose collision value differs from OR(bits).",
+      "id": "P2-G5835-OUTPUT-FAIL-CLOSED",
+      "severity": "P2",
+      "status": "OPEN"
+    },
+    {
+      "finding": "Duplicate triangle IDs are accepted; stable sorting then preserves caller order, so an oppositely oriented shared edge changes direction when input order changes. Direction is predicate-significant here.",
+      "id": "P2-G5835-DUPLICATE-TRIANGLE-DIRECTION",
+      "severity": "P2",
+      "status": "OPEN"
+    },
+    {
+      "finding": "The receipt serializes absolute source paths. Mac regeneration is scientifically identical after removing path fields but not byte identical to the frozen Windows result.",
+      "id": "P2-G5835-PATH-DEPENDENT-RECEIPT",
+      "severity": "P2",
+      "status": "KNOWN_HISTORICAL_DEFECT"
+    },
+    {
+      "finding": "SweptSphereSegment accepts non-integral numeric IDs inside the u32 range; path IDs fail later at the physical input, while sphere IDs can remain in app-only provenance.",
+      "id": "P3-G5835-PERMISSIVE-ID-TYPES",
+      "severity": "P3",
+      "status": "OPEN_NON_LOAD_BEARING"
+    },
+    {
+      "finding": "A1 mechanically binds source bytes and anchors, but its semantic classification is a human-reviewed conclusion encoded as a constant; the hostile tests enforce custody and policy, not a graph theorem or mechanical PDF semantic extraction.",
+      "id": "P2-G5836-HUMAN-SEMANTIC-STEP",
+      "severity": "P2",
+      "status": "DISCLOSED_REVIEW_LIMIT"
+    }
+  ],
+  "goal5835": {
+    "complete_mesh_rows": [
+      "face_interior_only_boundary"
+    ],
+    "duplicate_triangle_direction_probe": {
+      "duplicate_triangle_ids_rejected": false,
+      "forward_shared_direction": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "input_order_invariant": false,
+      "reverse_shared_direction": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    "executed_paper_app": false,
+    "fixture_loader_calls_deduplicate_triangle_edges": true,
+    "fixture_loader_deduplication_scope": "NEGATIVE_FACE_INTERIOR_BOUNDARY_RECONSTRUCTION_ONLY",
+    "inherited_b3_true_optix_launch_count": 33,
+    "malformed_output_probe": {
+      "bit_count": 1,
+      "computed_or": 1,
+      "edge_count": 3,
+      "malformed_output_rejected": false,
+      "reported_collision": 0
+    },
+    "new_goal5835_gpu_launch_count": 0,
+    "paper_app_status": "NOT_A_PAPER_APP",
+    "permissive_id_probe": {
+      "accepted": true,
+      "path_segment_id": 2.5,
+      "sphere_id": 1.5
+    },
+    "piecewise_connected": true,
+    "piecewise_sphere_ids": [
+      0,
+      1
+    ],
+    "positive_complete_mesh_rows": [],
+    "receipt_source_directly_calls_deduplicate_triangle_edges": false,
+    "receipt_source_directly_calls_execute_registered_problem": false,
+    "receipt_source_directly_calls_trajectory_to_swept_segments": false,
+    "strict_classification": "BOUNDED_APP_SEMANTIC_PROJECTION_WITH_INHERITED_TRUE_OPTIX_EVIDENCE"
+  },
+  "goal5836": {
+    "a1_classification": "MATERIAL_PREDICATE_DIFFERENCE",
+    "a1_status": "TERMINAL_MAPPING_REFUSAL__KEEP_GOAL5835_SCOPE__A2_NOT_REACHABLE",
+    "author_or_rtdl_goal5836_execution_count": 0,
+    "core_reasoning_verdict": "ACCEPT__PAPER_AND_AUTHOR_CALL_CHAIN_SUPPORT_MATERIAL_DIRECTION_AND_INSIDE_START_DIFFERENCE",
+    "paper_app_promotion_succeeded": false,
+    "paper_semantics_mechanically_reextracted": false,
+    "performance_timing_count": 0,
+    "required_author_direction_labels_present": [
+      "ccd_benchmark_enables_loop_edges",
+      "directed_edge_set",
+      "forward_loop_edge_emission",
+      "loop_selects_directed_edges",
+      "one_sided_directed_edge_raygen",
+      "reverse_loop_edge_emission"
+    ],
+    "terminal_refusal_confirmed": true,
+    "transaction_complete": true
+  },
+  "historical_inputs": {
+    "b3_evaluation": {
+      "bytes": 5285,
+      "path": "history/internal_docs/goal5834_b3_home_result_20260830/INDEPENDENT_EVALUATION_B3.json",
+      "sha256": "786ebd4970dadf842c57aa6c08539694d0cdbe8a6b2f6672932029b5f19be02a"
+    },
+    "b3_raw": {
+      "bytes": 115663,
+      "path": "history/internal_docs/goal5834_b3_home_result_20260830/RAW_GPU_RECEIPT_B3.json",
+      "sha256": "b50043e81713aacf6a70986a6e334789cbfeef17342ae97a8ae401ab1507f513"
+    },
+    "fixture_authority": {
+      "bytes": 64132,
+      "path": "history/internal_docs/goal5834_b1_fixture_preaction_20260830/FIXTURE_AUTHORITY.json",
+      "sha256": "0f13ab8a7408c253114c56a51645c015d0e5e36ca96a4290c9dd1a2ba700adad"
+    },
+    "goal5835_core_source": {
+      "bytes": 9698,
+      "path": "case_studies/sui_derived_edge_crossing_core/bounded_piecewise_linear_core.py",
+      "sha256": "65e61185117a9cb052a1b4a6c29cc83346f9405911231784b7f2cd8b5eb0952f"
+    },
+    "goal5835_fixture_source": {
+      "bytes": 4646,
+      "path": "case_studies/sui_derived_edge_crossing_core/fixtures.py",
+      "sha256": "a204010d9bd2794da6fb1972f895232e4e51f0549bf82028e3891871de471bc5"
+    },
+    "goal5835_readme": {
+      "bytes": 2549,
+      "path": "case_studies/sui_derived_edge_crossing_core/README.md",
+      "sha256": "b8ff0817518785635d005665601b7590664e01a1854a860d39ea604e290abdbd"
+    },
+    "goal5835_receipt_source": {
+      "bytes": 7717,
+      "path": "case_studies/sui_derived_edge_crossing_core/run_functional_receipt.py",
+      "sha256": "ceb038092790f6a54ae84f455021769f00f42a618da8e84c7192b404a778717c"
+    },
+    "goal5835_recount": {
+      "bytes": 15642,
+      "path": "history/internal_docs/goal5835_sui_derived_edge_crossing_mapping_recount_20260830.json",
+      "sha256": "ae370da1ca5ac96562d0956438e7c6c8eee39fddf2d9894953db8e956c47ccff"
+    },
+    "goal5835_result": {
+      "bytes": 15642,
+      "path": "history/internal_docs/goal5835_sui_derived_edge_crossing_mapping_result_20260830.json",
+      "sha256": "ae370da1ca5ac96562d0956438e7c6c8eee39fddf2d9894953db8e956c47ccff"
+    },
+    "goal5836_a1_authority": {
+      "bytes": 16803,
+      "path": "history/internal_docs/goal5836_a1_source_fidelity_20260901/SOURCE_FIDELITY_AUTHORITY.json",
+      "sha256": "f05b026c2e96506466a400de71ee8ab6893f8deecb547447f29b8af567842c5f"
+    },
+    "worker_inputs": {
+      "bytes": 16434,
+      "path": "history/internal_docs/goal5834_b1_fixture_preaction_20260830/WORKER_INPUTS.json",
+      "sha256": "55eeff377c93c32fed8cc326ad975cb9d2437df85812e30b9d916b3e7cc581a4"
+    }
+  },
+  "next_action": {
+    "external_review_debt_recorded": true,
+    "external_review_required_now": false,
+    "future_successor_requires": [
+      "app_neutral_directed_orientation_or_connectivity_contract",
+      "real_trajectory_and_positive_complete_mesh_fixture",
+      "fail_closed_app_result_validation",
+      "same_input_author_rtdl_oracle_execution_after_freeze",
+      "modern_rtx_pod_only_after_local_gate_passes"
+    ],
+    "historical_goal5835_or_goal5836_bytes_may_be_rewritten": false,
+    "pod_required_for_this_audit": false,
+    "safe_local_work": [
+      "publish_current_status_and_claim_narrowing",
+      "preserve hostile counterexamples as tests",
+      "design_separate_successor_preaction_if_owner_wants_repair"
+    ]
+  },
+  "review_state": {
+    "consensus_claimed": false,
+    "external_review_count": 0,
+    "external_review_requested": false,
+    "external_review_status": "DEFERRED_BY_OWNER_UNTIL_RETURN_FROM_TRAVEL",
+    "review_type": "INTERNAL_HOSTILE_SELF_AUDIT"
+  },
+  "schema": "rtdl.goal5835_goal5836.strict_audit.v1",
+  "scope": "INTERNAL_HOSTILE_SELF_AUDIT__NO_NEW_GPU_OR_TIMING",
+  "strict_audit_authority_sha256": "84f2e128aee140ed8e02665f5b869ca38d6cd1636a750272c7fa85f4e7739561",
+  "verdict": {
+    "goal5835": "ACCEPT_ONLY_AFTER_CLAIM_NARROWING__NOT_AN_EXECUTED_PAPER_APP",
+    "goal5836": "ACCEPT_TERMINAL_A1_NEGATIVE_OUTCOME__NO_A2__NO_POD_REQUIRED",
+    "p0": 0,
+    "p1": 1,
+    "p2": 6,
+    "p3": 1
+  },
+  "verification": {
+    "goal5833_to_goal5836_regression_expected_count": 148,
+    "goal5835_result_equals_recount_bytes": true,
+    "goal5835_semantic_regeneration_equal_ignoring_absolute_paths": true,
+    "goal5835_whole_document_regeneration_equal": false,
+    "goal5836_a0_verified": true,
+    "goal5836_a1_verified": true,
+    "goal5836_preaction_verified": true
+  }
+}

@@ -1,5 +1,20 @@
 # Known Bugs And Failure Modes
 
+## Goal5835 evidence is a semantic projection, not app-front-door execution
+
+The Goal5835 receipt constructs app-shaped objects whose normalized bytes match
+the inherited Goal5834-B3 fixtures, then composes the prior true-OptiX result.
+It never calls the case-study execution front door or its trajectory/mesh
+builders and adds zero Goal5835 GPU launches. Describe it only as
+`BOUNDED_APP_SEMANTIC_PROJECTION_WITH_INHERITED_TRUE_OPTIX_EVIDENCE`.
+
+The strict audit also preserves these defects: no positive complete-mesh row;
+synthetic per-primitive sphere IDs; no cardinality/OR consistency check in the
+app result adapter; duplicate triangle IDs can reverse a predicate-significant
+edge according to caller order; absolute-path receipt fields; and permissive
+non-integral ID validation. Do not repair hash-bound Goal5835 files in place.
+Use a separately preregistered successor.
+
 ## Goal5835 does not preserve the author's directed-edge predicate
 
 Goal5835 deduplicates shared triangle edges by unordered identity and preserves

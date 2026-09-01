@@ -7,6 +7,23 @@ from pathlib import Path
 root = Path(__file__).resolve().parent
 manifest = json.loads((root / "CAPSULE_MANIFEST.json").read_text(encoding="utf-8"))
 expected = manifest["payloads"]
+required_policy = {
+    "status": "GOAL5836_COMPLETE__POST_A1_STRICT_AUDIT_CLAIM_NARROWED",
+    "goal5835_strict_classification":
+        "BOUNDED_APP_SEMANTIC_PROJECTION_WITH_INHERITED_TRUE_OPTIX_EVIDENCE",
+    "goal5836_transaction_complete": True,
+    "goal5836_successful_promotion_path_complete": False,
+    "strict_audit_review_type": "INTERNAL_HOSTILE_SELF_AUDIT",
+    "external_review_status": "DEFERRED_BY_OWNER_UNTIL_RETURN_FROM_TRAVEL",
+    "external_review_count": 0,
+    "consensus_claimed": False,
+    "a2_reachable": False,
+    "pod_authorized": False,
+    "performance_authorized": False,
+}
+for key, value in required_policy.items():
+    if manifest.get(key) != value:
+        raise SystemExit(f"capsule policy mismatch: {key}")
 optional_outer_capsule = {
     "history/internal_docs/goal5836_macbook_complete_handoff_capsule_20260831.tar.gz"
 }

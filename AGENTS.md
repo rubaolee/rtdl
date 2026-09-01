@@ -1,5 +1,24 @@
 # RTDL Codex Working Guide
 
+## Critical current override: strict Goal5835/5836 audit (2026-09-01)
+
+The controlling post-Goal5836 internal audit is
+`history/internal_docs/goal5835_goal5836_strict_audit_20260901/STRICT_AUDIT_AUTHORITY.json`.
+Goal5835 is only
+`BOUNDED_APP_SEMANTIC_PROJECTION_WITH_INHERITED_TRUE_OPTIX_EVIDENCE`: it
+reconstructs app-shaped inputs equal to inherited true-OptiX B3 fixture bytes,
+but does not execute the app front door, create a positive complete-mesh case,
+or add a Goal5835 GPU launch. Never call it a paper reproduction, executed
+Paper App, or full RT-CCD.
+
+Goal5836 remains complete at the A1 negative branch. Do not reopen A2--A5 or
+rewrite any hash-bound Goal5835/5836 source, README, result, report, or
+authority. Current status is in
+`case_studies/sui_derived_edge_crossing_core/CURRENT_STATUS_AFTER_GOAL5836.md`.
+The review is internal only: external review was owner-deferred, count is zero,
+and no consensus may be claimed. No pod is required for this audit. Verify with
+`python3 scripts/audit_goal5835_goal5836.py --verify-stored`.
+
 ## Critical current override: Goal5836 terminal at A1; no A2 gate (2026-09-01)
 
 Goal5836 is complete at its preregistered A1 negative branch. The controlling

@@ -1,5 +1,18 @@
 # TODO
 
+## Deferred independent review of strict Goal5835/5836 audit
+
+The 2026-09-01 strict audit is internal hostile self-review only. The owner
+explicitly deferred independent external review until returning from travel.
+Do not invoke an external reviewer now and do not claim consensus. Later review
+must inspect the exact authority, the P1 claim narrowing, all seven lower-
+severity findings, exact paper pages 5/7/10, and the author directed-edge call
+chain. Record any future review as a new file without rewriting the audit.
+
+No pod is required for review. A pod becomes relevant only under a separately
+authorized successor that first passes local design, fixture, oracle, and
+fail-closed validation gates.
+
 ## Goal5836 has no next stage (completed 2026-09-01)
 
 A1 returned the preregistered `MATERIAL_PREDICATE_DIFFERENCE`: the author

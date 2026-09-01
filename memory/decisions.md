@@ -1,5 +1,18 @@
 # Decisions
 
+## D202. Goal5835 Is An Inherited-Evidence Semantic Projection
+
+The Goal5835 result is genuine but narrower than an executed application. Its
+receipt reconstructs application-shaped objects, proves that their normalized
+bytes equal exact Goal5834-B3 fixtures, and composes 33 inherited true-OptiX
+launches. It does not call the app execution front door, build trajectory or
+positive complete-mesh inputs, or add a Goal5835 GPU launch. The controlling
+class is therefore
+`BOUNDED_APP_SEMANTIC_PROJECTION_WITH_INHERITED_TRUE_OPTIX_EVIDENCE`, while
+`NOT_A_PAPER_APP` remains unchanged. Publish the narrowing append-only; never
+rewrite the hash-bound historical source or authorities. Independent external
+review is owner-deferred and no consensus is claimed.
+
 ## D201. Directed Connectivity Is Predicate-Significant and Terminates Goal5836
 
 The Sui author benchmark's strongly connected directed obstacle-edge graph is

@@ -25,6 +25,10 @@ ROOT_FILES = {
 HANDOFF = Path(
     "history/internal_docs/handoff_macbook_pre_goal5836_cgo_checkpoint_20260831.md"
 )
+STRICT_AUDIT = Path(
+    "history/internal_docs/goal5835_goal5836_strict_audit_20260901/"
+    "STRICT_AUDIT_AUTHORITY.json"
+)
 CURRENT_PAPER_FILES = {
     "paper/cgo2027/README.md",
     "paper/cgo2027/anonymization_gate.md",
@@ -66,6 +70,7 @@ EVIDENCE_DIRECTORIES = {
     "goal5834_final_adversarial_self_review_20260830",
     "goal5836_a0_source_acquisition_20260901",
     "goal5836_a1_source_fidelity_20260901",
+    "goal5835_goal5836_strict_audit_20260901",
 }
 VERIFY_SOURCE = r'''#!/usr/bin/env python3
 from __future__ import annotations
@@ -76,6 +81,23 @@ from pathlib import Path
 root = Path(__file__).resolve().parent
 manifest = json.loads((root / "CAPSULE_MANIFEST.json").read_text(encoding="utf-8"))
 expected = manifest["payloads"]
+required_policy = {
+    "status": "GOAL5836_COMPLETE__POST_A1_STRICT_AUDIT_CLAIM_NARROWED",
+    "goal5835_strict_classification":
+        "BOUNDED_APP_SEMANTIC_PROJECTION_WITH_INHERITED_TRUE_OPTIX_EVIDENCE",
+    "goal5836_transaction_complete": True,
+    "goal5836_successful_promotion_path_complete": False,
+    "strict_audit_review_type": "INTERNAL_HOSTILE_SELF_AUDIT",
+    "external_review_status": "DEFERRED_BY_OWNER_UNTIL_RETURN_FROM_TRAVEL",
+    "external_review_count": 0,
+    "consensus_claimed": False,
+    "a2_reachable": False,
+    "pod_authorized": False,
+    "performance_authorized": False,
+}
+for key, value in required_policy.items():
+    if manifest.get(key) != value:
+        raise SystemExit(f"capsule policy mismatch: {key}")
 optional_outer_capsule = {
     "history/internal_docs/goal5836_macbook_complete_handoff_capsule_20260831.tar.gz"
 }
@@ -198,17 +220,43 @@ def _tar_info(name: PurePosixPath, data: bytes) -> tarfile.TarInfo:
 def build(repo: Path, output: Path) -> dict[str, object]:
     repo = repo.resolve(strict=True)
     payloads = _collect(repo)
+    strict_path = STRICT_AUDIT.as_posix()
+    try:
+        strict_audit = json.loads(payloads[strict_path].decode("ascii"))
+    except (KeyError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise RuntimeError("strict audit authority unavailable") from exc
+    if (
+        strict_audit.get("goal5835", {}).get("strict_classification")
+        != "BOUNDED_APP_SEMANTIC_PROJECTION_WITH_INHERITED_TRUE_OPTIX_EVIDENCE"
+        or strict_audit.get("goal5836", {}).get("transaction_complete") is not True
+        or strict_audit.get("review_state", {}).get("review_type")
+        != "INTERNAL_HOSTILE_SELF_AUDIT"
+        or strict_audit.get("review_state", {}).get("external_review_count") != 0
+        or strict_audit.get("review_state", {}).get("consensus_claimed") is not False
+    ):
+        raise RuntimeError("strict audit authority policy mismatch")
     rows = [
         {"path": path, "bytes": len(data), "sha256": _sha(data)}
         for path, data in payloads.items()
     ]
     manifest = {
-        "schema": "rtdl.goal5836.macbook_complete_handoff_capsule.v2",
-        "status": "GOAL5836_COMPLETE__A1_TERMINAL_NEGATIVE_OUTCOME",
+        "schema": "rtdl.goal5836.macbook_complete_handoff_capsule.v3",
+        "status": "GOAL5836_COMPLETE__POST_A1_STRICT_AUDIT_CLAIM_NARROWED",
         "entrypoint": "START_HERE.md",
         "verify_command": "python3 VERIFY_CAPSULE.py",
+        "goal5835_strict_classification": (
+            "BOUNDED_APP_SEMANTIC_PROJECTION_WITH_INHERITED_TRUE_OPTIX_EVIDENCE"
+        ),
         "goal5836_transaction_complete": True,
         "goal5836_successful_promotion_path_complete": False,
+        "strict_audit_authority_sha256": _sha(payloads[strict_path]),
+        "strict_audit_internal_seal": strict_audit[
+            "strict_audit_authority_sha256"
+        ],
+        "strict_audit_review_type": "INTERNAL_HOSTILE_SELF_AUDIT",
+        "external_review_status": "DEFERRED_BY_OWNER_UNTIL_RETURN_FROM_TRAVEL",
+        "external_review_count": 0,
+        "consensus_claimed": False,
         "a1_authorization_consumed": True,
         "a2_reachable": False,
         "goal5836_execution_authorized": False,

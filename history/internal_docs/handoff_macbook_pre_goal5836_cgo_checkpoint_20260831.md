@@ -1,5 +1,27 @@
 # MacBook continuation handoff: pre-Goal5836 RT-CCD/CGO checkpoint
 
+## 2026-09-01 strict internal-audit addendum (controlling)
+
+The post-Goal5836 hostile audit narrows Goal5835 to
+`BOUNDED_APP_SEMANTIC_PROJECTION_WITH_INHERITED_TRUE_OPTIX_EVIDENCE`.
+Its receipt maps application-shaped objects to exact previously executed B3
+fixture bytes; it does not execute the case-study front door, build a positive
+complete-mesh scene, or add a Goal5835 GPU launch. Do not call it an executed
+app, paper reproduction, Paper App, or complete RT-CCD.
+
+Goal5836's A1 terminal negative conclusion remains accepted and unchanged:
+`MATERIAL_PREDICATE_DIFFERENCE` and
+`TERMINAL_MAPPING_REFUSAL__KEEP_GOAL5835_SCOPE__A2_NOT_REACHABLE`.
+The new authority is
+`history/internal_docs/goal5835_goal5836_strict_audit_20260901/STRICT_AUDIT_AUTHORITY.json`.
+Read the current case-study status in
+`case_studies/sui_derived_edge_crossing_core/CURRENT_STATUS_AFTER_GOAL5836.md`.
+
+This was an internal hostile self-audit only. The owner deferred independent
+external review until returning from travel; external-review count is zero and
+no consensus is claimed. No pod is needed. Preserve the frozen Goal5835/5836
+bytes and make any repair a new preregistered successor goal.
+
 ## 2026-09-01 A1 terminal completion addendum (controlling)
 
 Goal5836 is complete at its preregistered A1 terminal negative outcome. The
@@ -153,8 +175,8 @@ The verifier must report:
 
 ```text
 "status": "PASS__GOAL5836_MACBOOK_CAPSULE"
-"payload_count": 5385
-"payload_bytes": 112655708
+"payload_count": 5391
+"payload_bytes": 112727171
 ```
 
 The repository-level `.gitattributes` intentionally disables newline
