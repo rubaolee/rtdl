@@ -1,31 +1,43 @@
 # TODO
 
-## Next: author Goal5836 preaction only (2026-09-01)
+## Next owner decision: Goal5836 A0 source acquisition only (2026-09-01)
+
+The preaction is frozen and locally verified. No work stage is currently
+authorized. The exact next requested decision is
+`AUTHORIZE_STAGE_A0_SOURCE_ACQUISITION_AND_HASHING_ONLY`. If explicitly
+approved, A0 may acquire and hash the exact paper PDF, planned Git commit,
+complete source-tree identity, license bytes, and fetch receipts. It still may
+not build/run author code, start Goal5836 functional execution, mutate product
+or case-study source, use a POD/GPU, collect timing, promote Paper App status,
+request external review, or make public claims.
+
+## Completed gate: author Goal5836 preaction only (2026-09-01)
 
 The Mac hostile review and Git-native acceptance-gate repair are complete at
 `history/internal_docs/self_review_pre_goal5836_macbook_handoff_a1_20260831.md`
-with `P0=0/P1=0/P2=4/P3=2`. The next authorized work is drafting and freezing
-a Goal5836 preaction only. It must stage exact paper/source/license provenance,
-source-fidelity inspection, one complete mesh-derived robust positive edge
-crossing, same-input author/RTDL/oracle mapping, deterministic identities,
-relative-path custody and unconditional negative branches.
+with `P0=0/P1=0/P2=4/P3=2`. Its authorization was consumed by drafting and
+freezing the Goal5836 preaction described above. That preaction stages exact
+paper/source/license provenance, source-fidelity inspection, one complete
+mesh-derived robust positive edge crossing, same-input author/RTDL/oracle
+mapping, deterministic identities, relative-path custody and unconditional
+negative branches.
 
 Do not acquire or execute author source, start Goal5836, use a POD, collect
 timing, mutate product source, promote Paper App status or request external
-review until the preaction receives a separate owner gate.
+review until the explicit A0 owner gate is granted.
 
-## Goal5835 closed; do not start Goal5836 without a new preaction (2026-08-30)
+## Historical Goal5835 closure before the preaction (2026-08-30)
 
 Goal5835 result `ae370da1...` is complete at bounded mapping scope. No further
 Goal5835 GPU rerun or API polish is needed for the scientific objective.
 
-The next unstarted goal is Goal5836, but it is currently locked. Its future
-preaction must freeze exact paper/source/author-code provenance, select a
-paper-source robust positive triangle-edge fixture before execution, define the
-same-input comparison, bind a modern RTX target, and accept negative outcomes
-unconditionally. It must not inherit Paper App status from Goal5835.
+Goal5836 remains locked. The later preaction now freezes exact paper/source/
+author-code provenance, requires a paper-source robust positive triangle-edge
+fixture before execution, defines the same-input comparison, binds a future
+modern RTX target, and accepts negative outcomes unconditionally. It does not
+inherit Paper App status from Goal5835.
 
-## Active: Goal5835 registered-fixture Sui-derived mapping (2026-08-30)
+## Historical active record: Goal5835 registered-fixture mapping (2026-08-30)
 
 Prerequisite Goal5834-B3 passed and narrowly authorizes Goal5835. Implement:
 

@@ -1,5 +1,21 @@
 # MacBook continuation handoff: pre-Goal5836 RT-CCD/CGO checkpoint
 
+## 2026-09-01 continuation addendum
+
+The hostile review and its bounded infrastructure repair are complete. The
+Goal5836 preaction is now frozen at
+`history/internal_docs/goal5836_sui_same_input_preaction_authority_20260901.json`
+with whole-file SHA-256
+`7e021a874a13454488bf056c44402225bc1deadfc990cf2a8aeb48eaed9c7f40`
+and internal seal
+`64457edb02f8b7d9f0636e2b6b08563e7b65069c510446643e5d4588224790dd`.
+Do not repeat Section 6. The only next possible owner decision is
+`AUTHORIZE_STAGE_A0_SOURCE_ACQUISITION_AND_HASHING_ONLY`; it has not yet been
+granted. All A0--A5 stages remain unauthorized, so do not acquire source,
+execute Goal5836, mutate product/case-study source, use a POD/GPU, measure
+performance, promote Paper App status, or request external review. Sections
+7--9 remain the controlling scientific and safety boundary.
+
 Date: 2026-08-31 (America/New_York)  
 Purpose: allow a new model/session on a MacBook to continue without repeating
 finished work, changing scientific scope, or confusing a platform limitation
@@ -95,8 +111,8 @@ The verifier must report:
 
 ```text
 "status": "PASS__GOAL5836_MACBOOK_CAPSULE"
-"payload_count": 5358
-"payload_bytes": 77164522
+"payload_count": 5362
+"payload_bytes": 77224163
 ```
 
 The repository-level `.gitattributes` intentionally disables newline

@@ -1,5 +1,27 @@
 # RTDL Codex Working Guide
 
+## Critical current override: Goal5836 preaction frozen; A0 owner gate only (2026-09-01)
+
+The deterministic preaction is
+`history/internal_docs/goal5836_sui_same_input_preaction_authority_20260901.json`
+with whole-file SHA-256 `7e021a874a13454488bf056c44402225bc1deadfc990cf2a8aeb48eaed9c7f40`
+and internal authority seal
+`64457edb02f8b7d9f0636e2b6b08563e7b65069c510446643e5d4588224790dd`.
+Its technical plan is
+`history/internal_docs/goal5836_sui_same_input_preaction_technical_plan_20260901.md`.
+All six stages A0--A5 have `authorized_now=false`; only creation of the
+preaction itself was authorized.
+
+The next possible owner decision is exactly
+`AUTHORIZE_STAGE_A0_SOURCE_ACQUISITION_AND_HASHING_ONLY`. Until that explicit
+decision, do not download the paper, fetch the author repository, inspect
+author bytes, build/run author code, start Goal5836, mutate product/case-study
+source, use a POD/GPU, collect timing, promote Paper App status, request
+external review, or make a public claim. Even an A0 approval would authorize
+only exact paper/Git/license acquisition and hashing; all later stages require
+separate owner gates. Verify locally with
+`python3 scripts/goal5836_build_sui_same_input_preaction.py --verify-stored`.
+
 ## Critical current override: MacBook pre-Goal5836 handoff controls continuation (2026-08-31)
 
 The complete cross-machine continuation entrypoint is

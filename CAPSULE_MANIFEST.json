@@ -2,8 +2,8 @@
   "entrypoint": "START_HERE.md",
   "external_review_authorized": false,
   "goal5836_authorized": false,
-  "payload_bytes": 77164522,
-  "payload_count": 5358,
+  "payload_bytes": 77224163,
+  "payload_count": 5362,
   "payloads": [
     {
       "bytes": 3259,
@@ -16,9 +16,9 @@
       "sha256": "fb0e229580a9ff386b3a72caa1ede363dd71ff91ad177bddc3731a8ea686e6c8"
     },
     {
-      "bytes": 140214,
+      "bytes": 141443,
       "path": "AGENTS.md",
-      "sha256": "d0d2d3b4e2b9331b8a00edba00df89fb47fb6ad3544216ae933acc5cfc76fb6a"
+      "sha256": "016e7766dafb6a893d4a5e34c98b9d7ec3ec9fedd86c4ad5ab71e33cce805b31"
     },
     {
       "bytes": 3988,
@@ -26,9 +26,9 @@
       "sha256": "aa65a988c441d9e3c42bd90936f0a37e7b31a5b2b1f7908ed3fbba0598a145c5"
     },
     {
-      "bytes": 31329,
+      "bytes": 32166,
       "path": "START_HERE.md",
-      "sha256": "b2368926e7f3e6e27bfd0caa5d070dcade3c37e151741626600e4ec488e46b90"
+      "sha256": "3fbc3c6968ddc689c441735b23dc4925a58b95520a247637bc5549f07c541764"
     },
     {
       "bytes": 1711,
@@ -1726,9 +1726,19 @@
       "sha256": "c5e6e403ec6af7d389849f4092cd72a53dc840cc0ad937db373104636180fec3"
     },
     {
-      "bytes": 31329,
+      "bytes": 13229,
+      "path": "history/internal_docs/goal5836_sui_same_input_preaction_authority_20260901.json",
+      "sha256": "7e021a874a13454488bf056c44402225bc1deadfc990cf2a8aeb48eaed9c7f40"
+    },
+    {
+      "bytes": 9089,
+      "path": "history/internal_docs/goal5836_sui_same_input_preaction_technical_plan_20260901.md",
+      "sha256": "c6fa48faac0fc1579b5d49860883e9f57ed681449c9544aa01d544ffcd5692f4"
+    },
+    {
+      "bytes": 32166,
       "path": "history/internal_docs/handoff_macbook_pre_goal5836_cgo_checkpoint_20260831.md",
-      "sha256": "b2368926e7f3e6e27bfd0caa5d070dcade3c37e151741626600e4ec488e46b90"
+      "sha256": "3fbc3c6968ddc689c441735b23dc4925a58b95520a247637bc5549f07c541764"
     },
     {
       "bytes": 65597,
@@ -1806,9 +1816,9 @@
       "sha256": "6cb9cd1632266746b3719d8a7e7264816a5172d3fc41baf08176d7a4936e98cd"
     },
     {
-      "bytes": 269847,
+      "bytes": 270492,
       "path": "memory/decisions.md",
-      "sha256": "1879309c3b054974e3689108ae831eef0945336661265fd6b94e53f8935e9f56"
+      "sha256": "8afe18c91c76e9ac3dd06bffd0cd80b5aba6011bb8be913b0233776998b58bc3"
     },
     {
       "bytes": 19288,
@@ -1816,9 +1826,9 @@
       "sha256": "35b4fff12eef86649ae4f5284f65e10c3ac32b613ba3a31fd52edeaad8698de7"
     },
     {
-      "bytes": 668961,
+      "bytes": 669607,
       "path": "memory/progress.md",
-      "sha256": "43a31f8db565112ba40939a96824426fddda52a4d7db281ef7fd0bbc7cfc7c6a"
+      "sha256": "bae11a97e0239fc75c95accbe363a9d3f68ba37e50ebffa4b8b1405e89be16dc"
     },
     {
       "bytes": 6654,
@@ -1826,14 +1836,14 @@
       "sha256": "7b9b061d635f498e7dad00527d18d50ee6fd79fe6065ef7c5eacf1f897fc5b64"
     },
     {
-      "bytes": 38485,
+      "bytes": 39036,
       "path": "memory/roadmap.md",
-      "sha256": "8d07b0c8e6beb275941a8ae364371bfd5359e8979b7e87c7e13f92355034b8c2"
+      "sha256": "59cff7296b253298f1c955148da2067e191f1eea0315d0f8d232afa5f12ae48d"
     },
     {
-      "bytes": 394474,
+      "bytes": 395097,
       "path": "memory/todo.md",
-      "sha256": "b131f85ce873747c7a5c21edee1702ae990c09dffd0d1b3729f6c4b126a74d01"
+      "sha256": "f9cf75a1159b5b9bd21695cc433e39ce35e0e1c8b182be8975d285d235d41d08"
     },
     {
       "bytes": 1248,
@@ -1891,9 +1901,9 @@
       "sha256": "666c6f70fe0170648c63eac9ed3915b2f991e4e5576ab50955636004e1322fd9"
     },
     {
-      "bytes": 8608,
+      "bytes": 8741,
       "path": "scripts/build_goal5836_macbook_handoff_capsule.py",
-      "sha256": "27815035aef96ef73156014df38297c3562dc5a8f12c45f44896838cc189d349"
+      "sha256": "a6fc07efb097233bc04e8243b80614ac9e7ed5333741e773520b7555764a743a"
     },
     {
       "bytes": 6162,
@@ -7574,6 +7584,11 @@
       "bytes": 10248,
       "path": "scripts/goal5834_verify_home_builtin_curve.py",
       "sha256": "8d1eec84c6c93d5acdab3671971ba28a1d43f5638a94c72b4f5017fd8073a5e2"
+    },
+    {
+      "bytes": 24737,
+      "path": "scripts/goal5836_build_sui_same_input_preaction.py",
+      "sha256": "d7eba6d81b88b67572c5ed93a4cd7a02d4d8ae2bb8a07e7a968246501e928537"
     },
     {
       "bytes": 15728,
@@ -25579,6 +25594,11 @@
       "bytes": 5457,
       "path": "tests/goal5835_sui_derived_edge_crossing_mapping_test.py",
       "sha256": "2d6fc8c6ea8f89bb9506a921a65af457826824ba7b380480c9f77fe519e360c0"
+    },
+    {
+      "bytes": 7085,
+      "path": "tests/goal5836_sui_same_input_preaction_test.py",
+      "sha256": "80febdb3d3f51efbebfb57f52dd860efe5642186c4f38e6071bdf341b330d747"
     },
     {
       "bytes": 14235,

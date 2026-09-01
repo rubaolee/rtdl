@@ -1,14 +1,23 @@
 # Roadmap
 
-## Goal5836 preaction-authoring gate open (2026-09-01)
+## Goal5836 preaction complete; A0 remains owner-locked (2026-09-01)
 
-The Mac hostile review closed at `P0=0/P1=0/P2=4/P3=2`. Only creation of a
-Goal5836 preaction is authorized. The preaction must preserve the existing
-edge-only claim and fail closed if exact Sui source does not support it; it must
-also require a complete mesh-derived positive edge crossing and path-independent
-custody. Author acquisition/comparison, Goal5836 execution, modern RTX, POD,
-performance, Paper-App promotion and external review remain locked behind a
-separate owner gate.
+The six-stage fail-closed preaction is frozen. A0 acquires exact source bytes;
+A1 classifies source fidelity; A2 freezes a source-derived same input; A3
+materializes independent author/RTDL/oracle routes; A4 performs a separately
+authorized untimed modern-RTX functional transaction; A5 evaluates all-or-
+nothing Paper-App promotion. No stage is currently authorized. The next gate
+may authorize A0 acquisition and hashing only.
+
+## Historical Goal5836 preaction-authoring gate (closed 2026-09-01)
+
+The Mac hostile review closed at `P0=0/P1=0/P2=4/P3=2` and authorized only
+creation of a Goal5836 preaction. That one action is complete. The frozen
+preaction preserves the existing edge-only claim, fails closed if exact Sui
+source does not support it, and requires a complete mesh-derived positive edge
+crossing plus path-independent custody. Author acquisition/comparison,
+Goal5836 execution, modern RTX, POD, performance, Paper-App promotion and
+external review remain locked; only A0 acquisition can be considered next.
 
 ## Goal5835 closure checkpoint (2026-08-30)
 

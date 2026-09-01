@@ -1,5 +1,17 @@
 # Progress
 
+## Goal5836 fail-closed preaction frozen (2026-09-01)
+
+The machine authority is
+`history/internal_docs/goal5836_sui_same_input_preaction_authority_20260901.json`
+at whole-file SHA-256 `7e021a874a...c7f40` and internal seal
+`64457edb...790dd`; its 13 hostile tests pass. It serializes six separately
+gated stages from exact source acquisition through conditional Paper-App
+decision, freezes three-route evidence independence and unconditional negative
+outcomes, and records zero source bytes, workers, timings, or authorized
+stages. The next possible owner gate is A0 exact source acquisition and hashing
+only; Goal5836 execution remains locked.
+
 ## Pre-Goal5836 Mac hostile review complete (2026-09-01)
 
 The internal review is

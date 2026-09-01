@@ -1,5 +1,16 @@
 # Decisions
 
+## D199. Goal5836 Uses Six Separately Authorized Fail-Closed Stages
+
+Freeze Goal5836 as A0 exact source acquisition, A1 source-fidelity
+classification, A2 same-input freeze, A3 local three-route materialization, A4
+untimed modern-RTX functional execution, and A5 conditional Paper-App decision.
+Passing one stage does not authorize the next. The preaction records all stages
+unauthorized, no observed author bytes or outputs, and unconditional mismatch,
+build-failure, fidelity-difference, mapping-failure, unsupported-capability and
+infrastructure-invalid branches. The immediate next owner gate may authorize
+A0 acquisition and hashing only.
+
 ## D198. Pre-Goal5836 Review Authorizes Preaction Authoring Only
 
 The repaired Git-native handoff passes its exact manifest, five-hash and

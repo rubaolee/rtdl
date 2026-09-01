@@ -45,6 +45,8 @@ CONTEXT_DOC_NAMES = {
     "reviewer_guidance_path_to_strong_accept_20260829.md",
     "reviewer_guidance_twelve_day_submission_plan_20260829.md",
     "self_review_pre_goal5836_macbook_handoff_a1_20260831.md",
+    "goal5836_sui_same_input_preaction_authority_20260901.json",
+    "goal5836_sui_same_input_preaction_technical_plan_20260901.md",
 }
 EVIDENCE_DIRECTORIES = {
     "goal5833_builtin_sphere_home_evidence_20260830",
