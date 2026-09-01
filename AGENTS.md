@@ -1,5 +1,33 @@
 # RTDL Codex Working Guide
 
+## Critical current override: Goal5836 A0 complete; A1 owner gate only (2026-09-01)
+
+Goal5836 A0 exact source acquisition is complete at
+`history/internal_docs/goal5836_a0_source_acquisition_20260901/`.
+The controlling authority has whole-file SHA-256
+`5d18d5736be47288e6867d29df93a05bc2f7a81462101e563d65f88c5d236bef`
+and internal seal
+`e266b5376f075c0da96ae93fa5c44e20245a3583e6f122a56e1032035c1c7050`.
+The exact arXiv v2 paper, planned author commit
+`bacbf77a612bba3e6e8f7a464fa0fa2c67298ac7`, reconstructed root tree
+`3e5e1c3a2a128148eae61bc94a22eaae491e496f`, complete 269-file inventory,
+203-file selected source capsule and exact MIT license are preserved.
+
+The A0 self-review is
+`history/internal_docs/self_review_goal5836_a0_source_acquisition_20260901.md`
+at `P0=0/P1=0/P2=3/P3=1`. The official arXiv v2 PDF is not the IEEE publisher
+PDF; omitted large author assets require exact-commit reacquisition; metadata
+discovery incidentally exposed paper method text but no author source semantics
+were inspected and no fidelity classification was made.
+
+The only next possible owner decision is
+`AUTHORIZE_STAGE_A1_AUTHOR_SOURCE_FIDELITY_CLASSIFICATION_ONLY`. It is not yet
+granted. Do not inspect author source semantics, classify fidelity, select an
+input, build/run author code, execute Goal5836, mutate product/case-study
+source, use a POD/GPU, collect timing, promote Paper App status, request
+external review, or make a public claim. Verify A0 with
+`python3 scripts/goal5836_a0_build_source_acquisition.py --verify-stored`.
+
 ## Critical current override: Goal5836 preaction frozen; A0 owner gate only (2026-09-01)
 
 The deterministic preaction is

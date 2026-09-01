@@ -1,0 +1,18 @@
+Title:           Hardware-Accelerated Ray Tracing for Discrete and Continuous Collision Detection on GPUs
+Author:          Sizhe Sui; Luis Sentis; Andrew Bylard
+Creator:         arXiv GenPDF (tex2pdf:)
+Producer:        pikepdf 8.15.1
+Custom Metadata: yes
+Metadata Stream: yes
+Tagged:          no
+UserProperties:  no
+Suspects:        no
+Form:            none
+JavaScript:      no
+Pages:           10
+Encrypted:       no
+Page size:       612 x 792 pts (letter)
+Page rot:        0
+File size:       34726851 bytes
+Optimized:       no
+PDF version:     1.7

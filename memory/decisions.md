@@ -1,5 +1,16 @@
 # Decisions
 
+## D200. Goal5836 A0 Preserves Exact Tree Identity Without Vendoring Large Assets
+
+Use the official arXiv v2 author-submitted revision as the exact acquired paper
+and label it explicitly as not the IEEE publisher PDF. Bind the planned author
+commit through its raw commit object, every blob's Git OID/size/SHA-256, and an
+independently reconstructed root tree. Preserve a deterministic mechanically
+selected source/build/document capsule for A1; omitted images, meshes and data
+may only be reacquired from the same exact commit and must match the complete
+inventory. A0 makes no source-fidelity classification and authorizes no later
+stage.
+
 ## D199. Goal5836 Uses Six Separately Authorized Fail-Closed Stages
 
 Freeze Goal5836 as A0 exact source acquisition, A1 source-fidelity

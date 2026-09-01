@@ -2,8 +2,8 @@
   "entrypoint": "START_HERE.md",
   "external_review_authorized": false,
   "goal5836_authorized": false,
-  "payload_bytes": 77224163,
-  "payload_count": 5362,
+  "payload_bytes": 112577317,
+  "payload_count": 5379,
   "payloads": [
     {
       "bytes": 3259,
@@ -16,9 +16,9 @@
       "sha256": "fb0e229580a9ff386b3a72caa1ede363dd71ff91ad177bddc3731a8ea686e6c8"
     },
     {
-      "bytes": 141443,
+      "bytes": 142979,
       "path": "AGENTS.md",
-      "sha256": "016e7766dafb6a893d4a5e34c98b9d7ec3ec9fedd86c4ad5ab71e33cce805b31"
+      "sha256": "a00b0d354deae0368078d7044d3a107a4e37351c37d1205c6b3698758617ecc3"
     },
     {
       "bytes": 3988,
@@ -26,9 +26,9 @@
       "sha256": "aa65a988c441d9e3c42bd90936f0a37e7b31a5b2b1f7908ed3fbba0598a145c5"
     },
     {
-      "bytes": 32166,
+      "bytes": 32884,
       "path": "START_HERE.md",
-      "sha256": "3fbc3c6968ddc689c441735b23dc4925a58b95520a247637bc5549f07c541764"
+      "sha256": "f57d595e153b8f01d88a1171d2bfd8628f8b19015753491afd96ef3ef77615d5"
     },
     {
       "bytes": 1711,
@@ -1726,6 +1726,76 @@
       "sha256": "c5e6e403ec6af7d389849f4092cd72a53dc840cc0ad937db373104636180fec3"
     },
     {
+      "bytes": 1169,
+      "path": "history/internal_docs/goal5836_a0_owner_authorization_20260901.md",
+      "sha256": "ec7f820ec9691ee3d62ce0dcb280a9f04e80c9a320aedef138c3e17189f56982"
+    },
+    {
+      "bytes": 232,
+      "path": "history/internal_docs/goal5836_a0_source_acquisition_20260901/AUTHOR_COMMIT_OBJECT.txt",
+      "sha256": "4ca504fc4d2c95946d23520aac1b2932b29dcab523207ad3d069ec13c33885f1"
+    },
+    {
+      "bytes": 1066,
+      "path": "history/internal_docs/goal5836_a0_source_acquisition_20260901/AUTHOR_LICENSE.txt",
+      "sha256": "12978fa5561b51ce1cb0a785e7fda31ad67c5458928f61bbdaed0053db812862"
+    },
+    {
+      "bytes": 371994,
+      "path": "history/internal_docs/goal5836_a0_source_acquisition_20260901/AUTHOR_SELECTED_SOURCE.tar.gz",
+      "sha256": "a09883fac899cffa3ac4273b207db75818c2155ab516653462806d1d439f1466"
+    },
+    {
+      "bytes": 59570,
+      "path": "history/internal_docs/goal5836_a0_source_acquisition_20260901/AUTHOR_SELECTED_SOURCE_MANIFEST.json",
+      "sha256": "26b368a2fb1e388e8eb5f37a039fc2deca26e3264840e2ef94c92a0b889477f4"
+    },
+    {
+      "bytes": 78755,
+      "path": "history/internal_docs/goal5836_a0_source_acquisition_20260901/AUTHOR_SOURCE_TREE_INVENTORY.json",
+      "sha256": "0c0ec619106245cb1be19630abfa8cce5289d73be59a3851f3f01043e4571c70"
+    },
+    {
+      "bytes": 1597,
+      "path": "history/internal_docs/goal5836_a0_source_acquisition_20260901/FETCH_RECEIPT.json",
+      "sha256": "03d4b7ef1527c2c10b6171343b1f2132cb7161d8659170042bb2ae750f47bbfd"
+    },
+    {
+      "bytes": 603,
+      "path": "history/internal_docs/goal5836_a0_source_acquisition_20260901/PAPER_ABS_HTTP_HEADERS.txt",
+      "sha256": "75c89ee41c5ad08ce29d86e5f7b0e47daafb0858cc5eb6edfd8bda8c6a7e43ce"
+    },
+    {
+      "bytes": 43250,
+      "path": "history/internal_docs/goal5836_a0_source_acquisition_20260901/PAPER_ABS_V2.html",
+      "sha256": "34d8494c68a8b54afb5aa50979c52751c40a888f21af05f8d9cd45397627fdce"
+    },
+    {
+      "bytes": 34726851,
+      "path": "history/internal_docs/goal5836_a0_source_acquisition_20260901/PAPER_ARXIV_2409.09918V2.pdf",
+      "sha256": "9a0003bda2ce176415389c99af0e91aea0fc1564a3bfb7388b8054760993c9c0"
+    },
+    {
+      "bytes": 550,
+      "path": "history/internal_docs/goal5836_a0_source_acquisition_20260901/PAPER_PDFINFO.txt",
+      "sha256": "9db4470e153d435dbaa5140d37c9f934c724ae9f5e87ca5ffd9f4f951d1fb105"
+    },
+    {
+      "bytes": 720,
+      "path": "history/internal_docs/goal5836_a0_source_acquisition_20260901/PAPER_PDF_HTTP_HEADERS.txt",
+      "sha256": "2c557927fba046426f17d76df30edf9ff45b47f3085fe94ff4c9e1157718832e"
+    },
+    {
+      "bytes": 7090,
+      "path": "history/internal_docs/goal5836_a0_source_acquisition_20260901/SOURCE_ACQUISITION_AUTHORITY.json",
+      "sha256": "5d18d5736be47288e6867d29df93a05bc2f7a81462101e563d65f88c5d236bef"
+    },
+    {
+      "bytes": 6794,
+      "path": "history/internal_docs/goal5836_a0_source_acquisition_technical_report_20260901.md",
+      "sha256": "be5274db645115a65a0ad1068c2ee90690d2bf8cdb4719154e5d384773c10b0f"
+    },
+    {
       "bytes": 13229,
       "path": "history/internal_docs/goal5836_sui_same_input_preaction_authority_20260901.json",
       "sha256": "7e021a874a13454488bf056c44402225bc1deadfc990cf2a8aeb48eaed9c7f40"
@@ -1736,9 +1806,9 @@
       "sha256": "c6fa48faac0fc1579b5d49860883e9f57ed681449c9544aa01d544ffcd5692f4"
     },
     {
-      "bytes": 32166,
+      "bytes": 32884,
       "path": "history/internal_docs/handoff_macbook_pre_goal5836_cgo_checkpoint_20260831.md",
-      "sha256": "3fbc3c6968ddc689c441735b23dc4925a58b95520a247637bc5549f07c541764"
+      "sha256": "f57d595e153b8f01d88a1171d2bfd8628f8b19015753491afd96ef3ef77615d5"
     },
     {
       "bytes": 65597,
@@ -1806,6 +1876,11 @@
       "sha256": "0b5c7073ae7d880ffceac5524b3bdb75b612fa9eaa371e8be2b645d88d0bcbcd"
     },
     {
+      "bytes": 7092,
+      "path": "history/internal_docs/self_review_goal5836_a0_source_acquisition_20260901.md",
+      "sha256": "9ecb03555269b5d55bfdd187d676d0cff2d653845e817243a4e65e24d8a68b70"
+    },
+    {
       "bytes": 18733,
       "path": "history/internal_docs/self_review_pre_goal5836_macbook_handoff_a1_20260831.md",
       "sha256": "e3b988a1dcdd94db0101221af841103b9c397a304cfc4504d53443dd7ef39ea2"
@@ -1816,19 +1891,19 @@
       "sha256": "6cb9cd1632266746b3719d8a7e7264816a5172d3fc41baf08176d7a4936e98cd"
     },
     {
-      "bytes": 270492,
+      "bytes": 271134,
       "path": "memory/decisions.md",
-      "sha256": "8afe18c91c76e9ac3dd06bffd0cd80b5aba6011bb8be913b0233776998b58bc3"
+      "sha256": "5a8ca0b8d9b6e9be4fa865f0e80a4c1d5b222d289eea94c4e1fdf66ddbbc100c"
     },
     {
-      "bytes": 19288,
+      "bytes": 19866,
       "path": "memory/known-bugs.md",
-      "sha256": "35b4fff12eef86649ae4f5284f65e10c3ac32b613ba3a31fd52edeaad8698de7"
+      "sha256": "a7a338f8146fdcfac2c079d5b2d7a0e317095d3947c7facc97c28cdf20a7967d"
     },
     {
-      "bytes": 669607,
+      "bytes": 670164,
       "path": "memory/progress.md",
-      "sha256": "bae11a97e0239fc75c95accbe363a9d3f68ba37e50ebffa4b8b1405e89be16dc"
+      "sha256": "ef1ceb314dd7ff75a641b84222a2a0d6a6c1a59a57fbeba6c7f2d2fb848d78ed"
     },
     {
       "bytes": 6654,
@@ -1836,14 +1911,14 @@
       "sha256": "7b9b061d635f498e7dad00527d18d50ee6fd79fe6065ef7c5eacf1f897fc5b64"
     },
     {
-      "bytes": 39036,
+      "bytes": 39461,
       "path": "memory/roadmap.md",
-      "sha256": "59cff7296b253298f1c955148da2067e191f1eea0315d0f8d232afa5f12ae48d"
+      "sha256": "8c82d70d00581a3c1a27b92c7ffcc2f5d274e78f82f1326aaf41ece7cff64fac"
     },
     {
-      "bytes": 395097,
+      "bytes": 395691,
       "path": "memory/todo.md",
-      "sha256": "f9cf75a1159b5b9bd21695cc433e39ce35e0e1c8b182be8975d285d235d41d08"
+      "sha256": "7a220eaeeca8fb849ab99805f61644fa88c46896e5a2e598172928d456ec262f"
     },
     {
       "bytes": 1248,
@@ -1901,9 +1976,9 @@
       "sha256": "666c6f70fe0170648c63eac9ed3915b2f991e4e5576ab50955636004e1322fd9"
     },
     {
-      "bytes": 8741,
+      "bytes": 8968,
       "path": "scripts/build_goal5836_macbook_handoff_capsule.py",
-      "sha256": "a6fc07efb097233bc04e8243b80614ac9e7ed5333741e773520b7555764a743a"
+      "sha256": "0aaeb50370c5ec71d7717ab4ad8c866809c7e251f2062a48e757257a800eb277"
     },
     {
       "bytes": 6162,
@@ -7584,6 +7659,11 @@
       "bytes": 10248,
       "path": "scripts/goal5834_verify_home_builtin_curve.py",
       "sha256": "8d1eec84c6c93d5acdab3671971ba28a1d43f5638a94c72b4f5017fd8073a5e2"
+    },
+    {
+      "bytes": 32159,
+      "path": "scripts/goal5836_a0_build_source_acquisition.py",
+      "sha256": "a190547fa2c51344457cce05c38148ad5fb1093d3499a3fce6d7b60f5dfb5070"
     },
     {
       "bytes": 24737,
@@ -25594,6 +25674,11 @@
       "bytes": 5457,
       "path": "tests/goal5835_sui_derived_edge_crossing_mapping_test.py",
       "sha256": "2d6fc8c6ea8f89bb9506a921a65af457826824ba7b380480c9f77fe519e360c0"
+    },
+    {
+      "bytes": 7667,
+      "path": "tests/goal5836_a0_source_acquisition_test.py",
+      "sha256": "b6d5dcd9e99cbe47380d86529ffe1d8257d1b7a0fffc1a5ace322db2d79a1452"
     },
     {
       "bytes": 7085,

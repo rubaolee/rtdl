@@ -1,0 +1,18 @@
+HTTP/2 200 
+content-disposition: inline; filename="2409.09918v2.pdf"
+server: Google Frontend
+via: 1.1 google, 1.1 varnish, 1.1 varnish, 1.1 varnish
+x-cloud-trace-context: ac550535a3eeff5ea54c28cba43867f1
+link: <https://arxiv.org/pdf/2409.09918>; rel='canonical'
+last-modified: Thu, 11 Sep 2025 00:27:37 GMT
+etag: "sha256:9f1975d7062926f74c47e4fb6b3e5d463474f162fd561719d3c2c1b25f7f7b94"
+access-control-allow-origin: *
+content-type: application/pdf
+accept-ranges: bytes
+age: 21129
+date: Tue, 01 Sep 2026 06:30:06 GMT
+x-served-by: cache-lga21991-LGA, cache-lga21991-LGA, cache-lga21974-LGA, cache-bos-kbos510037-BOS
+x-cache: MISS, HIT, MISS
+x-timer: S1788244206.272659,VS0,VE16
+content-length: 34726851
+

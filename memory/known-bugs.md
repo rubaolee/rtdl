@@ -1,5 +1,15 @@
 # Known Bugs And Failure Modes
 
+## Goal5836 A0 omits large author assets from RTDL Git by design
+
+The exact author commit contains 132,303,954 blob bytes, mostly images, GIFs,
+meshes and data. RTDL preserves a complete path/mode/OID/size/SHA-256 inventory
+and a compact 203-file source capsule, not a second copy of every large asset.
+Any later stage needing an omitted file must reacquire commit `bacbf77...0ac7`
+and match root tree `3e5e1c...e496f` plus the inventory. If exact reacquisition
+fails, stop; never replace the asset. The acquired paper is official arXiv v2,
+not the IEEE publisher byte stream.
+
 ## Goal5836 Git-native capsule environment paths (fixed 2026-09-01)
 
 The first Git-native handoff verifier enumerated `.git/**` as payload and could

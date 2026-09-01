@@ -1,0 +1,41 @@
+{
+  "date": "2026-09-01",
+  "git": {
+    "attempts": [
+      {
+        "attempt": 1,
+        "outcome": "INFRASTRUCTURE_FAILURE__CONNECTION_RESET__NO_COMMIT_INFERENCE",
+        "stderr": "error: RPC failed; curl 56 Recv failure: Connection reset by peer; fetch-pack: unexpected disconnect; fatal: early EOF; fatal: invalid index-pack output",
+        "transport": "git default HTTP transport"
+      },
+      {
+        "attempt": 2,
+        "observed_commit": "bacbf77a612bba3e6e8f7a464fa0fa2c67298ac7",
+        "outcome": "SUCCESS__EXACT_PLANNED_COMMIT_FETCHED",
+        "transport": "git HTTP/1.1"
+      }
+    ],
+    "pin_changed_after_fetch": false,
+    "planned_commit": "bacbf77a612bba3e6e8f7a464fa0fa2c67298ac7",
+    "repository": "https://github.com/Ssz990220/RTCollisionDetection.git"
+  },
+  "metadata_discovery_browsing_disclosed_separately": true,
+  "metadata_discovery_browsing_included_in_acquisition_count": false,
+  "paper": {
+    "abstract_url": "https://arxiv.org/abs/2409.09918v2",
+    "arxiv_id": "2409.09918v2",
+    "http_status_required": 200,
+    "pdf_url": "https://arxiv.org/pdf/2409.09918v2",
+    "publisher_pdf_claimed": false,
+    "related_icra_doi": "10.1109/ICRA55743.2025.11128528",
+    "selected_identity": "OFFICIAL_ARXIV_V2_AUTHOR_SUBMITTED_REVISION"
+  },
+  "registered_byte_acquisition_network_action_count": 4,
+  "registered_byte_acquisition_network_actions": [
+    "one failed exact Git fetch",
+    "one successful exact Git fetch retry",
+    "one arXiv v2 PDF fetch",
+    "one arXiv v2 abstract-page fetch"
+  ],
+  "schema": "rtdl.goal5836.a0.fetch_receipt.v1"
+}

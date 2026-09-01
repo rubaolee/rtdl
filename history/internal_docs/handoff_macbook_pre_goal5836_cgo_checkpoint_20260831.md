@@ -1,5 +1,20 @@
 # MacBook continuation handoff: pre-Goal5836 RT-CCD/CGO checkpoint
 
+## 2026-09-01 A0 completion addendum
+
+Goal5836 A0 exact source acquisition is complete. The authority at
+`history/internal_docs/goal5836_a0_source_acquisition_20260901/`
+has whole-file SHA-256
+`5d18d5736be47288e6867d29df93a05bc2f7a81462101e563d65f88c5d236bef`
+and seal
+`e266b5376f075c0da96ae93fa5c44e20245a3583e6f122a56e1032035c1c7050`.
+Do not repeat A0. The only next possible owner decision is
+`AUTHORIZE_STAGE_A1_AUTHOR_SOURCE_FIDELITY_CLASSIFICATION_ONLY`; it has not
+been granted. A1--A5, author/RTDL execution, product mutation, POD/GPU,
+performance, Paper App promotion and external review remain locked. The
+earlier addendum and Sections 7--9 remain controlling where not superseded by
+this exact A0 result.
+
 ## 2026-09-01 continuation addendum
 
 The hostile review and its bounded infrastructure repair are complete. The
@@ -111,8 +126,8 @@ The verifier must report:
 
 ```text
 "status": "PASS__GOAL5836_MACBOOK_CAPSULE"
-"payload_count": 5362
-"payload_bytes": 77224163
+"payload_count": 5379
+"payload_bytes": 112577317
 ```
 
 The repository-level `.gitattributes` intentionally disables newline

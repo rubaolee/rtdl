@@ -1,15 +1,25 @@
 # TODO
 
-## Next owner decision: Goal5836 A0 source acquisition only (2026-09-01)
+## Next owner decision: Goal5836 A1 source fidelity only (2026-09-01)
 
-The preaction is frozen and locally verified. No work stage is currently
+A0 is complete and its authorization is consumed. No later stage is currently
 authorized. The exact next requested decision is
-`AUTHORIZE_STAGE_A0_SOURCE_ACQUISITION_AND_HASHING_ONLY`. If explicitly
-approved, A0 may acquire and hash the exact paper PDF, planned Git commit,
-complete source-tree identity, license bytes, and fetch receipts. It still may
-not build/run author code, start Goal5836 functional execution, mutate product
-or case-study source, use a POD/GPU, collect timing, promote Paper App status,
-request external review, or make public claims.
+`AUTHORIZE_STAGE_A1_AUTHOR_SOURCE_FIDELITY_CLASSIFICATION_ONLY`. If explicitly
+approved, A1 may inspect the preserved exact paper and mechanically selected
+author-source bytes to classify edge direction, trajectory/curve width,
+Boolean reduction and discrete endpoint/pose semantics as `MATCH`,
+`MATERIAL_PREDICATE_DIFFERENCE`, or `UNRESOLVED`. It still may not freeze an
+input, materialize routes, build/run author code, mutate product source, use a
+POD/GPU, collect timing, promote Paper App status, or request external review.
+
+## Historical owner decision: Goal5836 A0 (completed 2026-09-01)
+
+At this historical checkpoint the preaction was frozen and requested
+`AUTHORIZE_STAGE_A0_SOURCE_ACQUISITION_AND_HASHING_ONLY`. The owner later
+approved that exact bounded action and A0 is now complete. Its prohibition on
+author build/run, Goal5836 execution, product/case-study mutation, POD/GPU,
+timing, Paper App promotion, external review and public claims remains active
+for every later stage unless separately authorized.
 
 ## Completed gate: author Goal5836 preaction only (2026-09-01)
 

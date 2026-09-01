@@ -1,0 +1,172 @@
+{
+  "a0_observation": {
+    "author_build_count": 0,
+    "author_commit_count": 1,
+    "author_execution_count": 0,
+    "author_source_semantics_inspected": false,
+    "gpu_worker_count": 0,
+    "license_count": 1,
+    "paper_identity_metadata_inspected": true,
+    "paper_method_text_incidentally_exposed_by_discovery_tool": true,
+    "paper_pdf_count": 1,
+    "performance_result_count": 0,
+    "rtdl_goal5836_execution_count": 0,
+    "source_fidelity_classification_made": false,
+    "timing_count": 0
+  },
+  "artifacts": [
+    {
+      "bytes": 34726851,
+      "path": "history/internal_docs/goal5836_a0_source_acquisition_20260901/PAPER_ARXIV_2409.09918V2.pdf",
+      "sha256": "9a0003bda2ce176415389c99af0e91aea0fc1564a3bfb7388b8054760993c9c0"
+    },
+    {
+      "bytes": 43250,
+      "path": "history/internal_docs/goal5836_a0_source_acquisition_20260901/PAPER_ABS_V2.html",
+      "sha256": "34d8494c68a8b54afb5aa50979c52751c40a888f21af05f8d9cd45397627fdce"
+    },
+    {
+      "bytes": 720,
+      "path": "history/internal_docs/goal5836_a0_source_acquisition_20260901/PAPER_PDF_HTTP_HEADERS.txt",
+      "sha256": "2c557927fba046426f17d76df30edf9ff45b47f3085fe94ff4c9e1157718832e"
+    },
+    {
+      "bytes": 603,
+      "path": "history/internal_docs/goal5836_a0_source_acquisition_20260901/PAPER_ABS_HTTP_HEADERS.txt",
+      "sha256": "75c89ee41c5ad08ce29d86e5f7b0e47daafb0858cc5eb6edfd8bda8c6a7e43ce"
+    },
+    {
+      "bytes": 550,
+      "path": "history/internal_docs/goal5836_a0_source_acquisition_20260901/PAPER_PDFINFO.txt",
+      "sha256": "9db4470e153d435dbaa5140d37c9f934c724ae9f5e87ca5ffd9f4f951d1fb105"
+    },
+    {
+      "bytes": 232,
+      "path": "history/internal_docs/goal5836_a0_source_acquisition_20260901/AUTHOR_COMMIT_OBJECT.txt",
+      "sha256": "4ca504fc4d2c95946d23520aac1b2932b29dcab523207ad3d069ec13c33885f1"
+    },
+    {
+      "bytes": 1066,
+      "path": "history/internal_docs/goal5836_a0_source_acquisition_20260901/AUTHOR_LICENSE.txt",
+      "sha256": "12978fa5561b51ce1cb0a785e7fda31ad67c5458928f61bbdaed0053db812862"
+    },
+    {
+      "bytes": 78755,
+      "path": "history/internal_docs/goal5836_a0_source_acquisition_20260901/AUTHOR_SOURCE_TREE_INVENTORY.json",
+      "sha256": "0c0ec619106245cb1be19630abfa8cce5289d73be59a3851f3f01043e4571c70"
+    },
+    {
+      "bytes": 59570,
+      "path": "history/internal_docs/goal5836_a0_source_acquisition_20260901/AUTHOR_SELECTED_SOURCE_MANIFEST.json",
+      "sha256": "26b368a2fb1e388e8eb5f37a039fc2deca26e3264840e2ef94c92a0b889477f4"
+    },
+    {
+      "bytes": 371994,
+      "path": "history/internal_docs/goal5836_a0_source_acquisition_20260901/AUTHOR_SELECTED_SOURCE.tar.gz",
+      "sha256": "a09883fac899cffa3ac4273b207db75818c2155ab516653462806d1d439f1466"
+    },
+    {
+      "bytes": 1597,
+      "path": "history/internal_docs/goal5836_a0_source_acquisition_20260901/FETCH_RECEIPT.json",
+      "sha256": "03d4b7ef1527c2c10b6171343b1f2132cb7161d8659170042bb2ae750f47bbfd"
+    }
+  ],
+  "author_source_identity": {
+    "commit_pin_changed": false,
+    "complete_tree_bytes_preserved_in_rtdl_git": false,
+    "complete_tree_identity_preserved": true,
+    "file_count": 269,
+    "large_binary_assets_reacquired_only_by_exact_commit": true,
+    "license_blob_git_oid_sha1": "0ec3c9a8cb0bb8fe2de6ad03ca465ccd12e1c4a5",
+    "license_bytes": 1066,
+    "license_label": "MIT",
+    "license_sha256": "12978fa5561b51ce1cb0a785e7fda31ad67c5458928f61bbdaed0053db812862",
+    "observed_commit": "bacbf77a612bba3e6e8f7a464fa0fa2c67298ac7",
+    "planned_commit": "bacbf77a612bba3e6e8f7a464fa0fa2c67298ac7",
+    "repository": "https://github.com/Ssz990220/RTCollisionDetection.git",
+    "root_tree_git_oid_sha1": "3e5e1c3a2a128148eae61bc94a22eaae491e496f",
+    "selected_source_blob_bytes": 1441191,
+    "selected_source_file_count": 203,
+    "selected_text_source_bytes_preserved": true,
+    "total_blob_bytes": 132303954
+  },
+  "authorization": {
+    "a0_acquisition_completed": true,
+    "a0_authorization_consumed": true,
+    "a0_owner_authorized": true,
+    "a1_source_fidelity_inspection_authorized": false,
+    "a2_input_freeze_authorized": false,
+    "a3_route_materialization_authorized": false,
+    "a4_modern_rtx_execution_authorized": false,
+    "a5_paper_app_decision_authorized": false,
+    "author_build_or_execution_authorized": false,
+    "external_review_authorized": false,
+    "pod_or_gpu_authorized": false,
+    "product_or_case_study_mutation_authorized": false,
+    "public_claim_authorized": false,
+    "timing_or_performance_authorized": false
+  },
+  "claim_boundary": {
+    "complete_rtccd_claimed": false,
+    "goal5836_functional_result_claimed": false,
+    "paper_app_claimed": false,
+    "paper_app_status": "NOT_A_PAPER_APP",
+    "performance_claimed": false,
+    "source_relation": "SUI_DERIVED_MAPPING__AUTHOR_DESIGNED_FIXTURES"
+  },
+  "date": "2026-09-01",
+  "fetch_receipt": {
+    "exact_retry_succeeded": true,
+    "first_git_attempt_was_infrastructure_failure": true,
+    "metadata_discovery_browsing_included_in_acquisition_count": false,
+    "paper_method_text_incidentally_returned_by_metadata_lookup": true,
+    "pin_changed_after_fetch": false,
+    "registered_byte_acquisition_network_action_count": 4
+  },
+  "goal": "5836-A0",
+  "implementation_and_tests": [
+    {
+      "bytes": 32159,
+      "path": "scripts/goal5836_a0_build_source_acquisition.py",
+      "sha256": "a190547fa2c51344457cce05c38148ad5fb1093d3499a3fce6d7b60f5dfb5070"
+    },
+    {
+      "bytes": 7667,
+      "path": "tests/goal5836_a0_source_acquisition_test.py",
+      "sha256": "b6d5dcd9e99cbe47380d86529ffe1d8257d1b7a0fffc1a5ace322db2d79a1452"
+    }
+  ],
+  "next_owner_gate": "AUTHORIZE_STAGE_A1_AUTHOR_SOURCE_FIDELITY_CLASSIFICATION_ONLY",
+  "paper_identity": {
+    "arxiv_id": "2409.09918v2",
+    "authors": [
+      "Sizhe Sui",
+      "Luis Sentis",
+      "Andrew Bylard"
+    ],
+    "bytes": 34726851,
+    "kind": "OFFICIAL_ARXIV_V2_AUTHOR_SUBMITTED_REVISION__NOT_IEEE_PUBLISHER_PDF",
+    "page_count": 10,
+    "pdf_url": "https://arxiv.org/pdf/2409.09918v2",
+    "publisher_pdf_acquired": false,
+    "related_icra_doi": "10.1109/ICRA55743.2025.11128528",
+    "sha256": "9a0003bda2ce176415389c99af0e91aea0fc1564a3bfb7388b8054760993c9c0",
+    "title": "Hardware-Accelerated Ray Tracing for Discrete and Continuous Collision Detection on GPUs"
+  },
+  "predecessor_commit": "92923035a676768a967b2b22d9592c4d712cd0ad",
+  "predecessors": [
+    {
+      "bytes": 13229,
+      "path": "history/internal_docs/goal5836_sui_same_input_preaction_authority_20260901.json",
+      "sha256": "7e021a874a13454488bf056c44402225bc1deadfc990cf2a8aeb48eaed9c7f40"
+    },
+    {
+      "bytes": 1169,
+      "path": "history/internal_docs/goal5836_a0_owner_authorization_20260901.md",
+      "sha256": "ec7f820ec9691ee3d62ce0dcb280a9f04e80c9a320aedef138c3e17189f56982"
+    }
+  ],
+  "schema": "rtdl.goal5836.a0.source_acquisition_authority.v1",
+  "source_acquisition_authority_sha256": "e266b5376f075c0da96ae93fa5c44e20245a3583e6f122a56e1032035c1c7050",
+  "status": "PASS__EXACT_SOURCE_BYTES_ACQUIRED_AND_HASHED__A1_LOCKED"
+}

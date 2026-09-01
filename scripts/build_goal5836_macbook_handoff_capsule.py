@@ -47,6 +47,9 @@ CONTEXT_DOC_NAMES = {
     "self_review_pre_goal5836_macbook_handoff_a1_20260831.md",
     "goal5836_sui_same_input_preaction_authority_20260901.json",
     "goal5836_sui_same_input_preaction_technical_plan_20260901.md",
+    "goal5836_a0_owner_authorization_20260901.md",
+    "goal5836_a0_source_acquisition_technical_report_20260901.md",
+    "self_review_goal5836_a0_source_acquisition_20260901.md",
 }
 EVIDENCE_DIRECTORIES = {
     "goal5833_builtin_sphere_home_evidence_20260830",
@@ -58,6 +61,7 @@ EVIDENCE_DIRECTORIES = {
     "goal5834_b3_home_result_20260830",
     "goal5834_b3_source_projection_20260830",
     "goal5834_final_adversarial_self_review_20260830",
+    "goal5836_a0_source_acquisition_20260901",
 }
 VERIFY_SOURCE = r'''#!/usr/bin/env python3
 from __future__ import annotations

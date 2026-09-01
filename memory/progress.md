@@ -1,5 +1,15 @@
 # Progress
 
+## Goal5836 A0 exact source acquisition complete (2026-09-01)
+
+Authority `5d18d573...236bef` / seal `e266b537...1c7050` binds the exact
+34,726,851-byte arXiv v2 PDF (`9a0003...c9c0`), planned author commit
+`bacbf77...0ac7`, reconstructed root tree `3e5e1c...e496f`, all 269 files and
+132,303,954 blob bytes, a deterministic 203-file source capsule, and exact MIT
+license bytes. Fifteen hostile tests pass. There were zero builds, executions,
+GPU workers, timings, or fidelity classifications. Self-review is
+`P0=0/P1=0/P2=3/P3=1`; A1 remains owner-locked.
+
 ## Goal5836 fail-closed preaction frozen (2026-09-01)
 
 The machine authority is

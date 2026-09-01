@@ -1,13 +1,21 @@
 # Roadmap
 
-## Goal5836 preaction complete; A0 remains owner-locked (2026-09-01)
+## Goal5836 A0 complete; A1 remains owner-locked (2026-09-01)
 
-The six-stage fail-closed preaction is frozen. A0 acquires exact source bytes;
-A1 classifies source fidelity; A2 freezes a source-derived same input; A3
-materializes independent author/RTDL/oracle routes; A4 performs a separately
-authorized untimed modern-RTX functional transaction; A5 evaluates all-or-
-nothing Paper-App promotion. No stage is currently authorized. The next gate
-may authorize A0 acquisition and hashing only.
+Exact paper/source/license provenance and a portable source capsule now exist.
+No fidelity result exists. The next possible local stage is A1 classification
+against exact paper and author-source bytes; it requires an explicit owner
+gate and must stop on `MATERIAL_PREDICATE_DIFFERENCE` or `UNRESOLVED`. A2 input
+freeze, A3 routes, A4 modern RTX and A5 promotion remain separately locked.
+
+## Historical Goal5836 A0 owner gate (closed 2026-09-01)
+
+The six-stage fail-closed preaction froze A0 exact-source acquisition before it
+ran. A0 has since completed under a separate owner gate. A1 classifies source
+fidelity; A2 freezes a source-derived same input; A3 materializes independent
+author/RTDL/oracle routes; A4 performs a separately authorized untimed modern-
+RTX transaction; A5 evaluates all-or-nothing Paper-App promotion. A1--A5
+remain separately locked.
 
 ## Historical Goal5836 preaction-authoring gate (closed 2026-09-01)
 
