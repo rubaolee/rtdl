@@ -2,8 +2,8 @@
   "entrypoint": "START_HERE.md",
   "external_review_authorized": false,
   "goal5836_authorized": false,
-  "payload_bytes": 77141642,
-  "payload_count": 5357,
+  "payload_bytes": 77164522,
+  "payload_count": 5358,
   "payloads": [
     {
       "bytes": 3259,
@@ -16,9 +16,9 @@
       "sha256": "fb0e229580a9ff386b3a72caa1ede363dd71ff91ad177bddc3731a8ea686e6c8"
     },
     {
-      "bytes": 139882,
+      "bytes": 140214,
       "path": "AGENTS.md",
-      "sha256": "f0192e36ccf0f0399fe6d999900dcb5dde96efe712e4e6df90252b8b6c04cc54"
+      "sha256": "d0d2d3b4e2b9331b8a00edba00df89fb47fb6ad3544216ae933acc5cfc76fb6a"
     },
     {
       "bytes": 3988,
@@ -28,12 +28,12 @@
     {
       "bytes": 31329,
       "path": "START_HERE.md",
-      "sha256": "c40716d18e6478bd8183382a8456dc5a829b1a5ce59bc459cca20c73aa36ae56"
+      "sha256": "b2368926e7f3e6e27bfd0caa5d070dcade3c37e151741626600e4ec488e46b90"
     },
     {
-      "bytes": 1265,
+      "bytes": 1711,
       "path": "VERIFY_CAPSULE.py",
-      "sha256": "71a130dfc8bb2a2e2daf58bc63cfd7cb4e2b3523db04af0faeb9ef83b3c7a0f8"
+      "sha256": "5d8625f6354d0f94845bb2d3b38d05f687a05ebb78b1a6ffbdd94b4f8bfe8b4e"
     },
     {
       "bytes": 2549,
@@ -1728,7 +1728,7 @@
     {
       "bytes": 31329,
       "path": "history/internal_docs/handoff_macbook_pre_goal5836_cgo_checkpoint_20260831.md",
-      "sha256": "c40716d18e6478bd8183382a8456dc5a829b1a5ce59bc459cca20c73aa36ae56"
+      "sha256": "b2368926e7f3e6e27bfd0caa5d070dcade3c37e151741626600e4ec488e46b90"
     },
     {
       "bytes": 65597,
@@ -1796,24 +1796,29 @@
       "sha256": "0b5c7073ae7d880ffceac5524b3bdb75b612fa9eaa371e8be2b645d88d0bcbcd"
     },
     {
+      "bytes": 18733,
+      "path": "history/internal_docs/self_review_pre_goal5836_macbook_handoff_a1_20260831.md",
+      "sha256": "e3b988a1dcdd94db0101221af841103b9c397a304cfc4504d53443dd7ef39ea2"
+    },
+    {
       "bytes": 18874,
       "path": "memory/architecture.md",
       "sha256": "6cb9cd1632266746b3719d8a7e7264816a5172d3fc41baf08176d7a4936e98cd"
     },
     {
-      "bytes": 269172,
+      "bytes": 269847,
       "path": "memory/decisions.md",
-      "sha256": "a1d060615bf342127185dd91d0d6c2666d38fbbf50d766affa39877722449e20"
+      "sha256": "1879309c3b054974e3689108ae831eef0945336661265fd6b94e53f8935e9f56"
     },
     {
-      "bytes": 18530,
+      "bytes": 19288,
       "path": "memory/known-bugs.md",
-      "sha256": "822707fd09aec258559e0eacc828586be8e9a5694f09dc2c3ef9f596947a8327"
+      "sha256": "35b4fff12eef86649ae4f5284f65e10c3ac32b613ba3a31fd52edeaad8698de7"
     },
     {
-      "bytes": 668328,
+      "bytes": 668961,
       "path": "memory/progress.md",
-      "sha256": "a63d1cb4f8226dcd94bb8ea4ca3217f07613b0b50a18f72ad726516ac09239ab"
+      "sha256": "43a31f8db565112ba40939a96824426fddda52a4d7db281ef7fd0bbc7cfc7c6a"
     },
     {
       "bytes": 6654,
@@ -1821,14 +1826,14 @@
       "sha256": "7b9b061d635f498e7dad00527d18d50ee6fd79fe6065ef7c5eacf1f897fc5b64"
     },
     {
-      "bytes": 37942,
+      "bytes": 38485,
       "path": "memory/roadmap.md",
-      "sha256": "4043376868a6e5550f8fc8755f324bb5d2d13b4ffcd6273c9d0edcb88908fb8b"
+      "sha256": "8d07b0c8e6beb275941a8ae364371bfd5359e8979b7e87c7e13f92355034b8c2"
     },
     {
-      "bytes": 394294,
+      "bytes": 394474,
       "path": "memory/todo.md",
-      "sha256": "b3d0d094038d0dc47185dfc1264ea4e56d49a9f7741b168ff63a5af0a9683dee"
+      "sha256": "b131f85ce873747c7a5c21edee1702ae990c09dffd0d1b3729f6c4b126a74d01"
     },
     {
       "bytes": 1248,
@@ -1886,9 +1891,9 @@
       "sha256": "666c6f70fe0170648c63eac9ed3915b2f991e4e5576ab50955636004e1322fd9"
     },
     {
-      "bytes": 8028,
+      "bytes": 8608,
       "path": "scripts/build_goal5836_macbook_handoff_capsule.py",
-      "sha256": "dd7524a360761324fc9c39e23644dff319efc7161703e44484e51bbe30c0552f"
+      "sha256": "27815035aef96ef73156014df38297c3562dc5a8f12c45f44896838cc189d349"
     },
     {
       "bytes": 6162,

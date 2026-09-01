@@ -1,5 +1,17 @@
 # Decisions
 
+## D198. Pre-Goal5836 Review Authorizes Preaction Authoring Only
+
+The repaired Git-native handoff passes its exact manifest, five-hash and
+102-test acceptance gates. The internal hostile review closes at
+`P0=0/P1=0/P2=4/P3=2`. NVIDIA OptiX 9 documentation plus the executed B3 source
+and receipt close the width convention as radius with round linear endcaps.
+Exact Sui source fidelity and a complete mesh-derived positive crossing remain
+unresolved. Therefore only a fail-closed Goal5836 preaction may be authored;
+author acquisition/comparison, product mutation, Goal5836 execution, POD,
+performance, Paper-App promotion and external review require a separate owner
+gate.
+
 ## D197. Goal5832 Separates Family Shape, Protocol Instance, and Deployment
 
 “Family” is no longer inferred from a Python class, enum member, wrapper, app

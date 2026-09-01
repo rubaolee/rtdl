@@ -10,9 +10,25 @@ expected = manifest["payloads"]
 optional_outer_capsule = {
     "history/internal_docs/goal5836_macbook_complete_handoff_capsule_20260831.tar.gz"
 }
+
+
+def is_environment_artifact(path: Path) -> bool:
+    relative = path.relative_to(root)
+    return (
+        relative.parts[0] in {".git", ".venv-goal5836"}
+        or "__pycache__" in relative.parts
+        or ".pytest_cache" in relative.parts
+        or any(part.endswith(".egg-info") for part in relative.parts)
+        or path.name == ".DS_Store"
+        or path.suffix in {".pyc", ".pyo"}
+    )
+
+
 actual_paths = {
     p.relative_to(root).as_posix() for p in root.rglob("*")
-    if p.is_file() and p.name != "CAPSULE_MANIFEST.json"
+    if p.is_file()
+    and p.name != "CAPSULE_MANIFEST.json"
+    and not is_environment_artifact(p)
 }
 expected_paths = {row["path"] for row in expected}
 if actual_paths - optional_outer_capsule != expected_paths:

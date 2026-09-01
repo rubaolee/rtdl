@@ -44,6 +44,7 @@ CONTEXT_DOC_NAMES = {
     "review_goal5794_callback_protocol_ir_pyoptix_and_related_work_strategy_20260823.md",
     "reviewer_guidance_path_to_strong_accept_20260829.md",
     "reviewer_guidance_twelve_day_submission_plan_20260829.md",
+    "self_review_pre_goal5836_macbook_handoff_a1_20260831.md",
 }
 EVIDENCE_DIRECTORIES = {
     "goal5833_builtin_sphere_home_evidence_20260830",
@@ -68,9 +69,25 @@ expected = manifest["payloads"]
 optional_outer_capsule = {
     "history/internal_docs/goal5836_macbook_complete_handoff_capsule_20260831.tar.gz"
 }
+
+
+def is_environment_artifact(path: Path) -> bool:
+    relative = path.relative_to(root)
+    return (
+        relative.parts[0] in {".git", ".venv-goal5836"}
+        or "__pycache__" in relative.parts
+        or ".pytest_cache" in relative.parts
+        or any(part.endswith(".egg-info") for part in relative.parts)
+        or path.name == ".DS_Store"
+        or path.suffix in {".pyc", ".pyo"}
+    )
+
+
 actual_paths = {
     p.relative_to(root).as_posix() for p in root.rglob("*")
-    if p.is_file() and p.name != "CAPSULE_MANIFEST.json"
+    if p.is_file()
+    and p.name != "CAPSULE_MANIFEST.json"
+    and not is_environment_artifact(p)
 }
 expected_paths = {row["path"] for row in expected}
 if actual_paths - optional_outer_capsule != expected_paths:
@@ -99,6 +116,7 @@ def _safe_source(path: Path) -> bool:
     return (
         path.is_file()
         and "__pycache__" not in path.parts
+        and not any(part.endswith(".egg-info") for part in path.parts)
         and path.suffix.lower() in SOURCE_SUFFIXES
         and path.suffix.lower() not in {".pyc", ".pyo", ".nbi", ".nbc"}
     )

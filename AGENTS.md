@@ -6,17 +6,23 @@ The complete cross-machine continuation entrypoint is
 `history/internal_docs/handoff_macbook_pre_goal5836_cgo_checkpoint_20260831.md`.
 Read it before taking any task action. The correct project is
 `rtdl_v4_restricted_python_design`, not the similarly named
-`rtdl_v0_4_release_prep_review` workspace. The current Git object graph is
-broken (`git status` reports `bad object HEAD`), so file hashes and the copied
-working snapshot, not a commit claim, bind Goals5833--5835.
+`rtdl_v0_4_release_prep_review` workspace. The Git-native recovery branch is
+`codex/cgo-goal5836-handoff`; checkpoint `d0bb938...` is an ancestor of the
+current branch. The repaired verifier passes both a Git working tree and an
+independent capsule extraction at 5358 payloads / 77164522 bytes, the five
+controlling evidence hashes match, and the macOS Goal5833--5835 denominator is
+102/102.
 
-The first Mac task is
+The first Mac task,
 `PRE-GOAL5836-A1__HOSTILE_REVIEW_AND_PREACTION_DECISION`: finish the
-interrupted strict review and decide only whether a Goal5836 preaction may be
-created. Goal5836, author-source acquisition/comparison, product mutations,
-POD/modern-RTX execution, performance, Paper-App promotion and external review
-remain locked. macOS is for source/oracle/preaction work; it cannot produce
-OptiX evidence. Do not call Claude.
+interrupted strict review, is complete at
+`history/internal_docs/self_review_pre_goal5836_macbook_handoff_a1_20260831.md`.
+Its final verdict is `P0=0/P1=0/P2=4/P3=2` and authorizes creation of a
+Goal5836 preaction only. Goal5836 execution, author-source acquisition or
+comparison, product mutations, POD/modern-RTX execution, performance,
+Paper-App promotion and external review remain locked. macOS is for source,
+oracle and preaction authoring; it cannot produce OptiX evidence. Do not call
+Claude.
 
 ## Critical current override: Goal5835 bounded Sui-derived mapping complete; Goal5836 locked (2026-08-30)
 

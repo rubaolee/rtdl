@@ -1,5 +1,17 @@
 # Known Bugs And Failure Modes
 
+## Goal5836 Git-native capsule environment paths (fixed 2026-09-01)
+
+The first Git-native handoff verifier enumerated `.git/**` as payload and could
+not pass in the fresh clone required by its own instructions. It also retained
+the minimum checkpoint's stale payload-byte receipt. The bounded repair makes
+the verifier ignore only repository/venv/cache/editable-install environment
+artifacts while preserving exact checks over every manifest payload and
+failing on any other extra path. The root tree and independent outer-capsule
+extraction both pass; an injected ordinary extra file still fails closed.
+Whenever the handoff, verifier or included internal review changes, rebuild the
+manifest/outer capsule and update both handoff receipt copies together.
+
 ## Curve verified executables are single-use across static prepares
 
 `consume_verified_curve_executable` deletes the live-registry entry when a

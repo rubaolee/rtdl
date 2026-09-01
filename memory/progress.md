@@ -1,5 +1,17 @@
 # Progress
 
+## Pre-Goal5836 Mac hostile review complete (2026-09-01)
+
+The internal review is
+`history/internal_docs/self_review_pre_goal5836_macbook_handoff_a1_20260831.md`.
+It closes the Git-native verifier/bootstrap defect without changing product or
+Goal5834/5835 evidence. The repaired capsule passes at 5358 payloads / 77164522
+bytes, all five controlling hashes still match, and 102/102 tests pass on
+macOS/Python 3.14.4. Final review is `P0=0/P1=0/P2=4/P3=2` and authorizes only
+creation of a Goal5836 preaction. Author acquisition/comparison, Goal5836
+execution, POD, performance, Paper-App promotion and external review remain
+locked.
+
 ## MacBook handoff at pre-Goal5836 review checkpoint (2026-08-31)
 
 The cross-machine entrypoint is

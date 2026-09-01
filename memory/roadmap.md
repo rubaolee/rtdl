@@ -1,5 +1,15 @@
 # Roadmap
 
+## Goal5836 preaction-authoring gate open (2026-09-01)
+
+The Mac hostile review closed at `P0=0/P1=0/P2=4/P3=2`. Only creation of a
+Goal5836 preaction is authorized. The preaction must preserve the existing
+edge-only claim and fail closed if exact Sui source does not support it; it must
+also require a complete mesh-derived positive edge crossing and path-independent
+custody. Author acquisition/comparison, Goal5836 execution, modern RTX, POD,
+performance, Paper-App promotion and external review remain locked behind a
+separate owner gate.
+
 ## Goal5835 closure checkpoint (2026-08-30)
 
 Goal5835 is complete at bounded mapping scope. The next possible step is not

@@ -95,8 +95,8 @@ The verifier must report:
 
 ```text
 "status": "PASS__GOAL5836_MACBOOK_CAPSULE"
-"payload_count": 5357
-"payload_bytes": 77137824
+"payload_count": 5358
+"payload_bytes": 77164522
 ```
 
 The repository-level `.gitattributes` intentionally disables newline

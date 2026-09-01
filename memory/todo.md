@@ -1,15 +1,18 @@
 # TODO
 
-## MacBook continuation: finish pre-Goal5836 hostile review first (2026-08-31)
+## Next: author Goal5836 preaction only (2026-09-01)
 
-Read
-`history/internal_docs/handoff_macbook_pre_goal5836_cgo_checkpoint_20260831.md`
-and execute its Section 6 only. Verify the copied snapshot by hash, record the
-macOS/Python environment, run the 102-test Goal5833--5835 denominator, and
-write `self_review_pre_goal5836_macbook_handoff_a1_20260831.md`. The report may
-authorize or refuse a Goal5836 preaction only. It must not acquire author
-source, change product code, use a POD, collect timing, promote Paper App
-status or request external review without a new owner command.
+The Mac hostile review and Git-native acceptance-gate repair are complete at
+`history/internal_docs/self_review_pre_goal5836_macbook_handoff_a1_20260831.md`
+with `P0=0/P1=0/P2=4/P3=2`. The next authorized work is drafting and freezing
+a Goal5836 preaction only. It must stage exact paper/source/license provenance,
+source-fidelity inspection, one complete mesh-derived robust positive edge
+crossing, same-input author/RTDL/oracle mapping, deterministic identities,
+relative-path custody and unconditional negative branches.
+
+Do not acquire or execute author source, start Goal5836, use a POD, collect
+timing, mutate product source, promote Paper App status or request external
+review until the preaction receives a separate owner gate.
 
 ## Goal5835 closed; do not start Goal5836 without a new preaction (2026-08-30)
 
