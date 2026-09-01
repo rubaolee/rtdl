@@ -1,16 +1,33 @@
 # TODO
 
-## Next owner decision: Goal5836 A1 source fidelity only (2026-09-01)
+## Goal5836 has no next stage (completed 2026-09-01)
 
-A0 is complete and its authorization is consumed. No later stage is currently
-authorized. The exact next requested decision is
+A1 returned the preregistered `MATERIAL_PREDICATE_DIFFERENCE`: the author
+benchmark requires a strongly connected directed obstacle-edge graph for
+inside-start correctness, while Goal5835 keeps one arbitrary deduplicated edge
+direction and explicitly excludes initial overlap. Goal5836 therefore ends at
+`A2_NOT_REACHABLE`; do not select an input, materialize routes, execute author
+or RTDL code, use a POD/GPU, collect timings or seek Paper-App promotion under
+this transaction.
+
+If the owner wants to repair the mapping, the next work is a new named goal and
+fresh preaction for a generic directed-connectivity/orientation contract. It
+must preserve app-agnostic engine boundaries and cannot edit the Goal5836 A1
+authority or silently broaden Goal5835.
+
+## Historical owner decision: Goal5836 A1 source fidelity (2026-09-01)
+
+A0 was complete and its authorization consumed. At that checkpoint the exact
+next requested decision was
 `AUTHORIZE_STAGE_A1_AUTHOR_SOURCE_FIDELITY_CLASSIFICATION_ONLY`. If explicitly
-approved, A1 may inspect the preserved exact paper and mechanically selected
+approved, A1 could inspect the preserved exact paper and mechanically selected
 author-source bytes to classify edge direction, trajectory/curve width,
 Boolean reduction and discrete endpoint/pose semantics as `MATCH`,
 `MATERIAL_PREDICATE_DIFFERENCE`, or `UNRESOLVED`. It still may not freeze an
 input, materialize routes, build/run author code, mutate product source, use a
 POD/GPU, collect timing, promote Paper App status, or request external review.
+That authorization was later granted and consumed; the terminal result is the
+controlling TODO above.
 
 ## Historical owner decision: Goal5836 A0 (completed 2026-09-01)
 
@@ -41,7 +58,7 @@ review until the explicit A0 owner gate is granted.
 Goal5835 result `ae370da1...` is complete at bounded mapping scope. No further
 Goal5835 GPU rerun or API polish is needed for the scientific objective.
 
-Goal5836 remains locked. The later preaction now freezes exact paper/source/
+Goal5836 was locked. The later preaction froze exact paper/source/
 author-code provenance, requires a paper-source robust positive triangle-edge
 fixture before execution, defines the same-input comparison, binds a future
 modern RTX target, and accepts negative outcomes unconditionally. It does not

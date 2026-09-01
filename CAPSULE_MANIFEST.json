@@ -1,14 +1,18 @@
 {
+  "a1_authorization_consumed": true,
+  "a2_reachable": false,
   "entrypoint": "START_HERE.md",
   "external_review_authorized": false,
-  "goal5836_authorized": false,
-  "payload_bytes": 112577317,
-  "payload_count": 5379,
+  "goal5836_execution_authorized": false,
+  "goal5836_successful_promotion_path_complete": false,
+  "goal5836_transaction_complete": true,
+  "payload_bytes": 112655708,
+  "payload_count": 5385,
   "payloads": [
     {
-      "bytes": 3259,
+      "bytes": 3486,
       "path": ".gitattributes",
-      "sha256": "46ff311de86cf36e6c8b91e4276f1eea77b139b2a2c02351d2ba44dbbf182890"
+      "sha256": "b42c48481ed99cd3c9445e97cd7a0be8edff221705ed49de80f83f45bc9d04a7"
     },
     {
       "bytes": 1503,
@@ -16,9 +20,9 @@
       "sha256": "fb0e229580a9ff386b3a72caa1ede363dd71ff91ad177bddc3731a8ea686e6c8"
     },
     {
-      "bytes": 142979,
+      "bytes": 143986,
       "path": "AGENTS.md",
-      "sha256": "a00b0d354deae0368078d7044d3a107a4e37351c37d1205c6b3698758617ecc3"
+      "sha256": "b5e571e1321780951c36d04df2a2965f6e8f19999d870dc77f66ebec11f79d60"
     },
     {
       "bytes": 3988,
@@ -26,9 +30,9 @@
       "sha256": "aa65a988c441d9e3c42bd90936f0a37e7b31a5b2b1f7908ed3fbba0598a145c5"
     },
     {
-      "bytes": 32884,
+      "bytes": 34210,
       "path": "START_HERE.md",
-      "sha256": "f57d595e153b8f01d88a1171d2bfd8628f8b19015753491afd96ef3ef77615d5"
+      "sha256": "3b82271d04e1f38e8c3339bcf7b1b2d476af0334ef5072e4ea670ade9f22e99c"
     },
     {
       "bytes": 1711,
@@ -1796,6 +1800,21 @@
       "sha256": "be5274db645115a65a0ad1068c2ee90690d2bf8cdb4719154e5d384773c10b0f"
     },
     {
+      "bytes": 1189,
+      "path": "history/internal_docs/goal5836_a1_owner_authorization_20260901.md",
+      "sha256": "066dbd5ea12182f6eda1936ade2ba3b1dc0be2a019b7e1d9989f524d1a9efa47"
+    },
+    {
+      "bytes": 16803,
+      "path": "history/internal_docs/goal5836_a1_source_fidelity_20260901/SOURCE_FIDELITY_AUTHORITY.json",
+      "sha256": "f05b026c2e96506466a400de71ee8ab6893f8deecb547447f29b8af567842c5f"
+    },
+    {
+      "bytes": 8708,
+      "path": "history/internal_docs/goal5836_a1_source_fidelity_technical_report_20260901.md",
+      "sha256": "ec855e1a0e25db9a5c0fc8c3c7f4e11588c5601e6a9b1295b8f9bd7fa7a74d7b"
+    },
+    {
       "bytes": 13229,
       "path": "history/internal_docs/goal5836_sui_same_input_preaction_authority_20260901.json",
       "sha256": "7e021a874a13454488bf056c44402225bc1deadfc990cf2a8aeb48eaed9c7f40"
@@ -1806,9 +1825,9 @@
       "sha256": "c6fa48faac0fc1579b5d49860883e9f57ed681449c9544aa01d544ffcd5692f4"
     },
     {
-      "bytes": 32884,
+      "bytes": 34210,
       "path": "history/internal_docs/handoff_macbook_pre_goal5836_cgo_checkpoint_20260831.md",
-      "sha256": "f57d595e153b8f01d88a1171d2bfd8628f8b19015753491afd96ef3ef77615d5"
+      "sha256": "3b82271d04e1f38e8c3339bcf7b1b2d476af0334ef5072e4ea670ade9f22e99c"
     },
     {
       "bytes": 65597,
@@ -1881,6 +1900,11 @@
       "sha256": "9ecb03555269b5d55bfdd187d676d0cff2d653845e817243a4e65e24d8a68b70"
     },
     {
+      "bytes": 6813,
+      "path": "history/internal_docs/self_review_goal5836_a1_source_fidelity_20260901.md",
+      "sha256": "5830a94a560a6644a8308731e7ff76277530812f699621956e93f1f036dfa21c"
+    },
+    {
       "bytes": 18733,
       "path": "history/internal_docs/self_review_pre_goal5836_macbook_handoff_a1_20260831.md",
       "sha256": "e3b988a1dcdd94db0101221af841103b9c397a304cfc4504d53443dd7ef39ea2"
@@ -1891,19 +1915,19 @@
       "sha256": "6cb9cd1632266746b3719d8a7e7264816a5172d3fc41baf08176d7a4936e98cd"
     },
     {
-      "bytes": 271134,
+      "bytes": 271887,
       "path": "memory/decisions.md",
-      "sha256": "5a8ca0b8d9b6e9be4fa865f0e80a4c1d5b222d289eea94c4e1fdf66ddbbc100c"
+      "sha256": "cc7e0ac74adb6280d1889fc548acd3f923bad24a7bcbf41e2842b157e10056c3"
     },
     {
-      "bytes": 19866,
+      "bytes": 20507,
       "path": "memory/known-bugs.md",
-      "sha256": "a7a338f8146fdcfac2c079d5b2d7a0e317095d3947c7facc97c28cdf20a7967d"
+      "sha256": "a3a472a5c1fd782d287612addb0d8d186e20177188253a2439388b78cd538cf3"
     },
     {
-      "bytes": 670164,
+      "bytes": 670962,
       "path": "memory/progress.md",
-      "sha256": "ef1ceb314dd7ff75a641b84222a2a0d6a6c1a59a57fbeba6c7f2d2fb848d78ed"
+      "sha256": "a2d1c371fd6ed738ec86f68788c797e7743fd52a88b15f045d60f243524f187b"
     },
     {
       "bytes": 6654,
@@ -1911,14 +1935,14 @@
       "sha256": "7b9b061d635f498e7dad00527d18d50ee6fd79fe6065ef7c5eacf1f897fc5b64"
     },
     {
-      "bytes": 39461,
+      "bytes": 40018,
       "path": "memory/roadmap.md",
-      "sha256": "8c82d70d00581a3c1a27b92c7ffcc2f5d274e78f82f1326aaf41ece7cff64fac"
+      "sha256": "53f23eef50c90551613a5958778cb4aa6b85d2382ad8577f1e439177a429975a"
     },
     {
-      "bytes": 395691,
+      "bytes": 396574,
       "path": "memory/todo.md",
-      "sha256": "7a220eaeeca8fb849ab99805f61644fa88c46896e5a2e598172928d456ec262f"
+      "sha256": "63d7a6686fa23c39380bf27df911a6cd7b5e2f3ac5c2a072cd8ce3845aefc42c"
     },
     {
       "bytes": 1248,
@@ -1976,9 +2000,9 @@
       "sha256": "666c6f70fe0170648c63eac9ed3915b2f991e4e5576ab50955636004e1322fd9"
     },
     {
-      "bytes": 8968,
+      "bytes": 9612,
       "path": "scripts/build_goal5836_macbook_handoff_capsule.py",
-      "sha256": "0aaeb50370c5ec71d7717ab4ad8c866809c7e251f2062a48e757257a800eb277"
+      "sha256": "64e3ccbc0f6b8a04037e79cc2e4487527f3cbdd5c2b6602a9eba58f419553af9"
     },
     {
       "bytes": 6162,
@@ -7664,6 +7688,11 @@
       "bytes": 32159,
       "path": "scripts/goal5836_a0_build_source_acquisition.py",
       "sha256": "a190547fa2c51344457cce05c38148ad5fb1093d3499a3fce6d7b60f5dfb5070"
+    },
+    {
+      "bytes": 28054,
+      "path": "scripts/goal5836_a1_build_source_fidelity.py",
+      "sha256": "97f853344e2de247f8e925e145666677d1d11e106a50ea10ccbcfe43aa5ce2dc"
     },
     {
       "bytes": 24737,
@@ -25681,6 +25710,11 @@
       "sha256": "b6d5dcd9e99cbe47380d86529ffe1d8257d1b7a0fffc1a5ace322db2d79a1452"
     },
     {
+      "bytes": 8662,
+      "path": "tests/goal5836_a1_source_fidelity_test.py",
+      "sha256": "fb5c977c030729c1cc0013f1c6f2c6b7ef1f5f4d0c610693ceb44da1e6718e53"
+    },
+    {
       "bytes": 7085,
       "path": "tests/goal5836_sui_same_input_preaction_test.py",
       "sha256": "80febdb3d3f51efbebfb57f52dd860efe5642186c4f38e6071bdf341b330d747"
@@ -26903,7 +26937,7 @@
   ],
   "performance_authorized": false,
   "pod_authorized": false,
-  "schema": "rtdl.goal5836.macbook_complete_handoff_capsule.v1",
-  "status": "PRE_GOAL5836__NO_EXECUTION_AUTHORIZED",
+  "schema": "rtdl.goal5836.macbook_complete_handoff_capsule.v2",
+  "status": "GOAL5836_COMPLETE__A1_TERMINAL_NEGATIVE_OUTCOME",
   "verify_command": "python3 VERIFY_CAPSULE.py"
 }

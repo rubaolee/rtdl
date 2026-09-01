@@ -1,5 +1,16 @@
 # Known Bugs And Failure Modes
 
+## Goal5835 does not preserve the author's directed-edge predicate
+
+Goal5835 deduplicates shared triangle edges by unordered identity and preserves
+one arbitrary first direction. The exact author benchmark instead enables a
+strongly connected directed obstacle-edge graph because its one-sided edge ray
+can start inside a hollow round curve and miss a back-face-only crossing.
+Goal5835 also explicitly excludes initial overlap. Do not describe Goal5835 as
+source-faithful, complete RT-CCD or a Paper App. Goal5836 terminated at A1; any
+repair must use a new preregistered goal and a generic, app-agnostic
+orientation/connectivity contract.
+
 ## Goal5836 A0 omits large author assets from RTDL Git by design
 
 The exact author commit contains 132,303,954 blob bytes, mostly images, GIFs,

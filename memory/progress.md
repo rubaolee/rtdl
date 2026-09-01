@@ -1,6 +1,18 @@
 # Progress
 
-## Goal5836 A0 exact source acquisition complete (2026-09-01)
+## Goal5836 completes at A1 terminal negative outcome (2026-09-01)
+
+The exact paper/source classification authority has whole-file SHA-256
+`f05b026c...2c5f` and internal seal `5d52efd4...034d6`. Exact static inspection
+found that Goal5835 matches ordinary round-linear swept-sphere, radius/endcap,
+edge-only and Boolean semantics, but materially differs from the author
+benchmark's directed-connectivity and inside-start coverage. The preregistered
+result is `TERMINAL_MAPPING_REFUSAL__KEEP_GOAL5835_SCOPE__A2_NOT_REACHABLE`.
+Goal5836 is complete at A1 without input freeze, execution, POD/GPU, timing,
+performance or Paper-App promotion. Eighteen A1 hostile tests and all 148
+Goal5833--Goal5836 tests pass. Self-review is `P0=0/P1=0/P2=2/P3=1`.
+
+## Historical Goal5836 A0 exact source acquisition (2026-09-01)
 
 Authority `5d18d573...236bef` / seal `e266b537...1c7050` binds the exact
 34,726,851-byte arXiv v2 PDF (`9a0003...c9c0`), planned author commit
@@ -8,7 +20,8 @@ Authority `5d18d573...236bef` / seal `e266b537...1c7050` binds the exact
 132,303,954 blob bytes, a deterministic 203-file source capsule, and exact MIT
 license bytes. Fifteen hostile tests pass. There were zero builds, executions,
 GPU workers, timings, or fidelity classifications. Self-review is
-`P0=0/P1=0/P2=3/P3=1`; A1 remains owner-locked.
+`P0=0/P1=0/P2=3/P3=1`; A1 was owner-locked at that checkpoint and later
+completed as recorded above.
 
 ## Goal5836 fail-closed preaction frozen (2026-09-01)
 
@@ -40,7 +53,7 @@ The cross-machine entrypoint is
 `history/internal_docs/handoff_macbook_pre_goal5836_cgo_checkpoint_20260831.md`.
 It records the correct repository, broken Git-object state, controlling hashes,
 Mac bootstrap/tests, exact Goal5833--5835 claim ceiling, interrupted-review
-leads and the future Linux/modern-RTX boundary. Goal5836 remains locked; the
+leads and the future Linux/modern-RTX boundary. Goal5836 was locked; the
 first Mac action is a local hostile review and preaction decision, not source
 mutation or execution.
 

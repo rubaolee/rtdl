@@ -1,0 +1,454 @@
+{
+  "a1_observation": {
+    "author_build_count": 0,
+    "author_execution_count": 0,
+    "author_program_output_inspected": false,
+    "author_source_semantics_inspected": true,
+    "external_review_count": 0,
+    "gpu_worker_count": 0,
+    "input_freeze_count": 0,
+    "paper_method_semantics_inspected": true,
+    "performance_result_count": 0,
+    "product_or_case_study_mutation_count": 0,
+    "route_materialization_count": 0,
+    "rtdl_goal5836_execution_count": 0,
+    "source_fidelity_classification_made": true,
+    "timing_count": 0
+  },
+  "author_source": {
+    "commit": "bacbf77a612bba3e6e8f7a464fa0fa2c67298ac7",
+    "locators": [
+      {
+        "anchors": [
+          {
+            "anchor_sha256": "2588bc51be07fd79a161d149f256a54483d397dccfc0c36aaf49613133f7bf98",
+            "label": "directed_edge_set",
+            "line_numbers": [
+              380
+            ],
+            "occurrence_count": 1
+          },
+          {
+            "anchor_sha256": "d571535458933d6776bd8ac9b2f4ed13a3bfcbb6c61c2d23446ba3a64173538f",
+            "label": "forward_loop_edge_emission",
+            "line_numbers": [
+              612
+            ],
+            "occurrence_count": 1
+          },
+          {
+            "anchor_sha256": "49dcaddd85a9ed9d99736073800076f3a8f2cae7498dcc09514f2fbf3d45d190",
+            "label": "reverse_loop_edge_emission",
+            "line_numbers": [
+              616
+            ],
+            "occurrence_count": 1
+          }
+        ],
+        "path": "RTCD/Meshes/mesh.h"
+      },
+      {
+        "anchors": [
+          {
+            "anchor_sha256": "4d787d81a20d3a11bc061d6f141d7f65a450c1b63b6a659a01a25b8636df05a7",
+            "label": "loop_selects_directed_edges",
+            "line_numbers": [
+              188,
+              200
+            ],
+            "occurrence_count": 2
+          }
+        ],
+        "path": "RTCD/CollisionScenes/obstacle.h"
+      },
+      {
+        "anchors": [
+          {
+            "anchor_sha256": "68c0c5e84eaeaf40dd6352601608f27643946b9b74f987bd76946a2fed51897d",
+            "label": "ccd_benchmark_enables_loop_edges",
+            "line_numbers": [
+              98
+            ],
+            "occurrence_count": 1
+          }
+        ],
+        "path": "RTCD/Benchmark/Curve/benchmark.cpp"
+      },
+      {
+        "anchors": [
+          {
+            "anchor_sha256": "c938bcd394e5f880b36010375844b1820100034893d0718ff5c8e8c955a017aa",
+            "label": "linear_curve_segments_follow_pose_samples",
+            "line_numbers": [
+              48
+            ],
+            "occurrence_count": 1
+          },
+          {
+            "anchor_sha256": "bff5f281a5e7a62d7ab3d5055645a8471a4000d670ae3c0e025f8c57d10fc7e1",
+            "label": "sphere_radius_copied_to_curve_widths",
+            "line_numbers": [
+              93
+            ],
+            "occurrence_count": 1
+          },
+          {
+            "anchor_sha256": "73075835450e0e2a07bf362f1780b8e09a8a83f2bda295ef78de1b959fddfb6a",
+            "label": "round_linear_primitive",
+            "line_numbers": [
+              212
+            ],
+            "occurrence_count": 1
+          },
+          {
+            "anchor_sha256": "b43b397018d18734df7af2defa9d65df98a033f95f6212e20ca8431b03007a05",
+            "label": "curve_width_buffer",
+            "line_numbers": [
+              221
+            ],
+            "occurrence_count": 1
+          },
+          {
+            "anchor_sha256": "64cae3ad49d850beabd8403ebc7fac56b073501c88d56bc5902ca4b7d0b10035",
+            "label": "round_endcaps_enabled",
+            "line_numbers": [
+              230
+            ],
+            "occurrence_count": 1
+          }
+        ],
+        "path": "RTCD/Robot/batchCurveRobot.h"
+      },
+      {
+        "anchors": [
+          {
+            "anchor_sha256": "a2bd849bda4d9c2c65617338e6783ca2b8de777328e98e3a8c7acd2091f0c39a",
+            "label": "hit_count_reduced_by_pose",
+            "line_numbers": [
+              33,
+              39
+            ],
+            "occurrence_count": 2
+          },
+          {
+            "anchor_sha256": "7ac79c144bb5332980e1ea3bb7c28c2d258c3ea2be0d548c43cfc20eed56d42d",
+            "label": "finite_edge_ray_origin",
+            "line_numbers": [
+              62
+            ],
+            "occurrence_count": 1
+          }
+        ],
+        "path": "RTCD/CollisionDetector/CCCuda.cu"
+      },
+      {
+        "anchors": [
+          {
+            "anchor_sha256": "874e4707dafabe036985284076cb49502b1a62872741e97f848a4872fd283059",
+            "label": "one_sided_directed_edge_raygen",
+            "line_numbers": [
+              617
+            ],
+            "occurrence_count": 1
+          },
+          {
+            "anchor_sha256": "6ba9279fafb2e86fca05d55b2f248d5bde71668f468eff3bfd17093bf34bd8a4",
+            "label": "round_linear_builtin_endcaps",
+            "line_numbers": [
+              587,
+              592,
+              597
+            ],
+            "occurrence_count": 3
+          }
+        ],
+        "path": "RTCD/CollisionDetector/CollisionDetector.h"
+      },
+      {
+        "anchors": [
+          {
+            "anchor_sha256": "4f81a1ba7352388d03804a7c01a35d8b4d0e105aabba27c40f36aa5d8e418a88",
+            "label": "piecewise_linear_selected_type",
+            "line_numbers": [
+              21
+            ],
+            "occurrence_count": 1
+          },
+          {
+            "anchor_sha256": "bb5636e54bc254071f9c4f61418cc61e8f0c00a089300aa6fab93b493ec922fc",
+            "label": "quadratic_endpoint_pose_composition",
+            "line_numbers": [
+              165
+            ],
+            "occurrence_count": 1
+          },
+          {
+            "anchor_sha256": "c7950827441990be8e22720666761576077539fced125228300efa33a16a74fb",
+            "label": "positive_hit_count_is_collision",
+            "line_numbers": [
+              190
+            ],
+            "occurrence_count": 1
+          }
+        ],
+        "path": "RTCD/CollisionDetector/Test/testCollisionCheckerCurve.cpp"
+      }
+    ],
+    "repository": "https://github.com/Ssz990220/RTCollisionDetection.git",
+    "root_tree_git_oid_sha1": "3e5e1c3a2a128148eae61bc94a22eaae491e496f",
+    "selected_files": [
+      {
+        "bytes": 39651,
+        "git_oid_sha1": "f64b11a6d6399c878f40af2dfaa7da01a202374b",
+        "path": "RTCD/Meshes/mesh.h",
+        "sha256": "98418c5520893e17c28d1bf5ee4ddcdcda3c09bc39c85212f30f37028e7f409b"
+      },
+      {
+        "bytes": 11964,
+        "git_oid_sha1": "c45458fd5ce60e92dfb42ca96ed1abc132a492b7",
+        "path": "RTCD/CollisionScenes/obstacle.h",
+        "sha256": "a79882f9b4624b4bebdafff6488bb8fe0aad36c5bbe7de39485a13d694980e6c"
+      },
+      {
+        "bytes": 4706,
+        "git_oid_sha1": "a8410acb0b8218575c00ce66be1f02b08d555728",
+        "path": "RTCD/Benchmark/Curve/benchmark.cpp",
+        "sha256": "90731dbfbf970ff7ec135992cbe6e7b467904816a549b1d9db67c797d061db83"
+      },
+      {
+        "bytes": 32122,
+        "git_oid_sha1": "f41a1267b099c8bbba188506c9c464e1d7330845",
+        "path": "RTCD/Robot/batchCurveRobot.h",
+        "sha256": "5093ddd9a1f79f9103e7acb635bf81474ed023c3fda348ab6f5d51dda82b5d2f"
+      },
+      {
+        "bytes": 4034,
+        "git_oid_sha1": "7e74ea18746293b22a990dbd9c1265ee89d24869",
+        "path": "RTCD/CollisionDetector/CCCuda.cu",
+        "sha256": "69c157a6b1cb2eee12be3a47c405d1714d2f71d3c129ceb3bc52552e25203910"
+      },
+      {
+        "bytes": 46252,
+        "git_oid_sha1": "a4459b3a65f323fbf2693e503c79d055f0028a46",
+        "path": "RTCD/CollisionDetector/CollisionDetector.h",
+        "sha256": "30e23f2c7d48ba0220dc95b05ea4521361edc8014f065a70bab1400cf27b7da2"
+      },
+      {
+        "bytes": 7717,
+        "git_oid_sha1": "6f8133d5f627df3cf62d2580a55c8dbb80372268",
+        "path": "RTCD/CollisionDetector/Test/testCollisionCheckerCurve.cpp",
+        "sha256": "3e960c71aa12e87eb724d82b24055139dc05249d4d34d75a0b4292522cd4633c"
+      }
+    ],
+    "selection_basis": "A1_REQUIRED_SEMANTIC_CALL_CHAIN__SELECTED_BEFORE_ANY_GOAL5836_PROGRAM_OUTPUT"
+  },
+  "authorization": {
+    "a0_completed": true,
+    "a1_authorization_consumed": true,
+    "a1_owner_authorized": true,
+    "a1_static_inspection_completed": true,
+    "a2_input_freeze_authorized": false,
+    "a3_route_materialization_authorized": false,
+    "a4_modern_rtx_execution_authorized": false,
+    "a5_paper_app_decision_authorized": false,
+    "author_build_or_execution_authorized": false,
+    "external_review_authorized": false,
+    "pod_or_gpu_authorized": false,
+    "product_or_case_study_mutation_authorized": false,
+    "public_claim_authorized": false,
+    "timing_or_performance_authorized": false
+  },
+  "claim_boundary": {
+    "complete_rtccd_claimed": false,
+    "generalization_exam_count": 0,
+    "goal5835_scope_preserved": true,
+    "goal5836_functional_result_claimed": false,
+    "paper_app_claimed": false,
+    "paper_app_status": "NOT_A_PAPER_APP",
+    "performance_claimed": false,
+    "source_relation": "SUI_DERIVED_MAPPING__AUTHOR_DESIGNED_FIXTURES__A1_MATERIAL_PREDICATE_DIFFERENCE"
+  },
+  "classification": "MATERIAL_PREDICATE_DIFFERENCE",
+  "classification_reason": "The author benchmark's directed-connectivity invariant changes inside-start collision coverage. Goal5835 neither preserves that invariant nor includes initial-overlap behavior, so the selected mapping is not source-faithful even though its ordinary crossing, radius, endcap, face-limit, and Boolean semantics align.",
+  "date": "2026-09-01",
+  "goal": "5836-A1",
+  "goal5835_source": {
+    "implemented_predicate": "OR_over_registered_obstacle_edges_of_OR_over_swept_sphere_capsules",
+    "locators": [
+      {
+        "anchors": [
+          {
+            "anchor_sha256": "34177b908face3229e28aebf8d08f23a0578f529bb74fd1c50a1f3965909102d",
+            "label": "initial_overlap_is_excluded",
+            "line_numbers": [
+              38
+            ],
+            "occurrence_count": 1
+          },
+          {
+            "anchor_sha256": "a80bafcab6884964741611ce2b5a2ca9b901b2c3323679955cc320f93c13edcd",
+            "label": "face_interior_is_excluded",
+            "line_numbers": [
+              40
+            ],
+            "occurrence_count": 1
+          }
+        ],
+        "path": "case_studies/sui_derived_edge_crossing_core/README.md"
+      },
+      {
+        "anchors": [
+          {
+            "anchor_sha256": "e8c708104791b142f5ff22ca2e9be95647e1655f5a9dad762841c1d15600ce95",
+            "label": "first_occurrence_fixes_arbitrary_direction",
+            "line_numbers": [
+              121
+            ],
+            "occurrence_count": 1
+          },
+          {
+            "anchor_sha256": "a6b7c88ddfd6bf77b020c56e762cbd2079ff59d241d40200b4f88a54cabada11",
+            "label": "first_edge_occurrence_is_preserved",
+            "line_numbers": [
+              139
+            ],
+            "occurrence_count": 1
+          }
+        ],
+        "path": "case_studies/sui_derived_edge_crossing_core/bounded_piecewise_linear_core.py"
+      }
+    ]
+  },
+  "goal_completion": {
+    "goal5836_transaction_complete": true,
+    "scientific_outcome": "SOURCE_FIDELITY_MATERIAL_DIFFERENCE__NO_PAPER_APP_PROMOTION",
+    "successful_promotion_path_complete": false,
+    "terminal_stage": "A1_AUTHOR_SOURCE_FIDELITY_CLASSIFICATION"
+  },
+  "implementation_and_tests": [
+    {
+      "bytes": 28054,
+      "path": "scripts/goal5836_a1_build_source_fidelity.py",
+      "sha256": "97f853344e2de247f8e925e145666677d1d11e106a50ea10ccbcfe43aa5ce2dc"
+    },
+    {
+      "bytes": 8662,
+      "path": "tests/goal5836_a1_source_fidelity_test.py",
+      "sha256": "fb5c977c030729c1cc0013f1c6f2c6b7ef1f5f4d0c610693ceb44da1e6718e53"
+    }
+  ],
+  "paper_evidence": {
+    "identity_bytes": 34726851,
+    "identity_sha256": "9a0003bda2ce176415389c99af0e91aea0fc1564a3bfb7388b8054760993c9c0",
+    "kind": "OFFICIAL_ARXIV_V2_AUTHOR_SUBMITTED_REVISION__NOT_IEEE_PUBLISHER_PDF",
+    "semantic_locators": [
+      {
+        "pdf_page": 5,
+        "section": "III-C Continuous Collision Detection",
+        "supports": [
+          "constant-radius round curve equals swept sphere",
+          "piecewise-linear sphere centers interpolate between poses",
+          "strongly-connected directed obstacle edges address inside starts"
+        ]
+      },
+      {
+        "pdf_page": 7,
+        "section": "V-A.2 RT-CCD Accuracy",
+        "supports": [
+          "RT-CCD detects swept-sphere collisions with mesh edges, not faces"
+        ]
+      },
+      {
+        "pdf_page": 10,
+        "section": "Algorithm 2 and Appendix D",
+        "supports": [
+          "directed graph is constructed to preserve CCD correctness"
+        ]
+      }
+    ]
+  },
+  "predecessors": [
+    {
+      "bytes": 7090,
+      "path": "history/internal_docs/goal5836_a0_source_acquisition_20260901/SOURCE_ACQUISITION_AUTHORITY.json",
+      "sha256": "5d18d5736be47288e6867d29df93a05bc2f7a81462101e563d65f88c5d236bef"
+    },
+    {
+      "bytes": 1189,
+      "path": "history/internal_docs/goal5836_a1_owner_authorization_20260901.md",
+      "sha256": "066dbd5ea12182f6eda1936ade2ba3b1dc0be2a019b7e1d9989f524d1a9efa47"
+    },
+    {
+      "bytes": 15642,
+      "path": "history/internal_docs/goal5835_sui_derived_edge_crossing_mapping_result_20260830.json",
+      "sha256": "ae370da1ca5ac96562d0956438e7c6c8eee39fddf2d9894953db8e956c47ccff"
+    },
+    {
+      "bytes": 9698,
+      "path": "case_studies/sui_derived_edge_crossing_core/bounded_piecewise_linear_core.py",
+      "sha256": "65e61185117a9cb052a1b4a6c29cc83346f9405911231784b7f2cd8b5eb0952f"
+    },
+    {
+      "bytes": 2549,
+      "path": "case_studies/sui_derived_edge_crossing_core/README.md",
+      "sha256": "b8ff0817518785635d005665601b7590664e01a1854a860d39ea604e290abdbd"
+    }
+  ],
+  "schema": "rtdl.goal5836.a1.source_fidelity_authority.v1",
+  "semantic_classification": [
+    {
+      "author_semantics": "sphere centers at successive poses form round-linear curves",
+      "decision": "MATCH",
+      "dimension": "piecewise_linear_swept_sphere_representation",
+      "goal5835_semantics": "each sphere path segment forms one round-linear capsule"
+    },
+    {
+      "author_semantics": "sphere radius is copied to curve widths and round endcaps are enabled",
+      "decision": "MATCH",
+      "dimension": "constant_radius_width_and_linear_endcaps",
+      "goal5835_semantics": "constant positive radius is assigned at both segment endpoints"
+    },
+    {
+      "author_semantics": "finite obstacle-edge rays increment per-trajectory hit counts; count>0 is collision",
+      "decision": "MATCH_AT_BOOLEAN_PREDICATE_LEVEL",
+      "dimension": "finite_edge_hit_boolean_reduction",
+      "goal5835_semantics": "per-edge hit bits are OR-reduced to a collision Boolean"
+    },
+    {
+      "author_semantics": "RT-CCD intentionally detects mesh-edge collisions rather than face-only collisions",
+      "decision": "MATCH_LIMITATION",
+      "dimension": "face_interior_only_collision",
+      "goal5835_semantics": "face-interior-only collision without edge contact is a visible miss boundary"
+    },
+    {
+      "author_semantics": "actual curve benchmark uses a strongly-connected directed edge graph, including selected bidirectional edges",
+      "decision": "MATERIAL_PREDICATE_DIFFERENCE",
+      "dimension": "obstacle_edge_direction_contract",
+      "goal5835_semantics": "shared edges are deduplicated and the first sorted triangle occurrence fixes one arbitrary direction"
+    },
+    {
+      "author_semantics": "directed connectivity is required to recover collisions when an edge vertex begins inside a hollow OptiX curve",
+      "decision": "MATERIAL_PREDICATE_DIFFERENCE",
+      "dimension": "inside_start_and_initial_overlap_coverage",
+      "goal5835_semantics": "start-inside and initial overlap are explicitly excluded and no connectivity invariant is enforced"
+    },
+    {
+      "author_semantics": "linear curves use round endcaps; quadratic test results separately add endpoint-pose results",
+      "decision": "MATCH_FOR_SELECTED_LINEAR_SUBPATH_ONLY",
+      "dimension": "discrete_endpoint_pose_composition",
+      "goal5835_semantics": "selected piecewise-linear route uses round endcaps and claims no quadratic route"
+    }
+  ],
+  "source_fidelity_authority_sha256": "5d52efd485eb9433a442c3a9a81d880e91e80bb38de33d6b4499a2329c3034d6",
+  "status": "TERMINAL_MAPPING_REFUSAL__KEEP_GOAL5835_SCOPE__A2_NOT_REACHABLE",
+  "terminal_transition": {
+    "a2_reachable": false,
+    "a3_reachable": false,
+    "a4_reachable": false,
+    "a5_reachable": false,
+    "input_replacement_allowed": false,
+    "next_owner_gate": "NONE__A1_TERMINAL_NEGATIVE_OUTCOME",
+    "preaction_outcome": "TERMINAL_MAPPING_REFUSAL__KEEP_GOAL5835_SCOPE",
+    "predicate_repair_inside_goal5836_allowed": false
+  }
+}

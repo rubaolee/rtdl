@@ -1,12 +1,22 @@
 # Roadmap
 
-## Goal5836 A0 complete; A1 remains owner-locked (2026-09-01)
+## Goal5836 terminal at A1; any repair is a new research transaction (2026-09-01)
+
+Goal5836 cannot proceed to A2--A5. Exact static evidence found a material
+predicate difference in directed edge connectivity and inside-start coverage,
+so the frozen preaction terminates without same-input execution or Paper-App
+promotion. Preserve Goal5835 as a bounded Sui-derived mapping. A future repair,
+if owner-prioritized, begins with a separately preregistered application-neutral
+orientation/connectivity abstraction and may not embed collision semantics in
+the engine.
+
+## Historical Goal5836 A0 checkpoint before A1 (2026-09-01)
 
 Exact paper/source/license provenance and a portable source capsule now exist.
-No fidelity result exists. The next possible local stage is A1 classification
-against exact paper and author-source bytes; it requires an explicit owner
-gate and must stop on `MATERIAL_PREDICATE_DIFFERENCE` or `UNRESOLVED`. A2 input
-freeze, A3 routes, A4 modern RTX and A5 promotion remain separately locked.
+No fidelity result existed at that checkpoint. The next possible local stage
+was A1 classification against exact paper and author-source bytes, requiring
+an explicit owner gate and a stop on `MATERIAL_PREDICATE_DIFFERENCE` or
+`UNRESOLVED`. A1 later took that terminal stop; the current roadmap is above.
 
 ## Historical Goal5836 A0 owner gate (closed 2026-09-01)
 

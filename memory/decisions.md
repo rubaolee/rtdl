@@ -1,5 +1,17 @@
 # Decisions
 
+## D201. Directed Connectivity Is Predicate-Significant and Terminates Goal5836
+
+The Sui author benchmark's strongly connected directed obstacle-edge graph is
+part of its collision predicate, not a performance-only implementation choice.
+One-sided finite rays can miss when they begin inside a hollow round curve; the
+directed graph supplies an outside-to-inside traversal direction. Goal5835's
+unordered edge deduplication and arbitrary first direction do not preserve that
+invariant and explicitly exclude initial overlap. Therefore A1 classifies a
+`MATERIAL_PREDICATE_DIFFERENCE`, preserves Goal5835 as `NOT_A_PAPER_APP`, and
+makes A2--A5 unreachable. Any generic orientation/connectivity repair requires
+a new owner-defined and preregistered goal.
+
 ## D200. Goal5836 A0 Preserves Exact Tree Identity Without Vendoring Large Assets
 
 Use the official arXiv v2 author-submitted revision as the exact acquired paper

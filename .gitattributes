@@ -48,3 +48,7 @@ scripts/goal5749_modern_rtx_executor.sh text eol=lf
 # authorities bind raw bytes and must not be rewritten by checkout-time EOL
 # normalization. This final rule intentionally overrides earlier text rules.
 * -text
+
+# This authorization is exact-byte evidence and intentionally retains one
+# Markdown hard-break line that is authority-bound.
+/history/internal_docs/goal5836_a1_owner_authorization_20260901.md -text whitespace=-trailing-space

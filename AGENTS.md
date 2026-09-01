@@ -1,6 +1,34 @@
 # RTDL Codex Working Guide
 
-## Critical current override: Goal5836 A0 complete; A1 owner gate only (2026-09-01)
+## Critical current override: Goal5836 terminal at A1; no A2 gate (2026-09-01)
+
+Goal5836 is complete at its preregistered A1 negative branch. The controlling
+authority is
+`history/internal_docs/goal5836_a1_source_fidelity_20260901/SOURCE_FIDELITY_AUTHORITY.json`
+with whole-file SHA-256
+`f05b026c2e96506466a400de71ee8ab6893f8deecb547447f29b8af567842c5f`
+and internal seal
+`5d52efd485eb9433a442c3a9a81d880e91e80bb38de33d6b4499a2329c3034d6`.
+
+Exact static inspection found `MATERIAL_PREDICATE_DIFFERENCE`: the author
+benchmark actually enables a strongly connected directed obstacle-edge graph
+to preserve inside-start correctness for one-sided rays against hollow round
+curves, while Goal5835 retains one arbitrary deduplicated edge direction and
+explicitly excludes initial overlap. Ordinary piecewise-linear swept-sphere,
+radius/endcap, edge-only and Boolean semantics still match at their bounded
+levels.
+
+Machine status is
+`TERMINAL_MAPPING_REFUSAL__KEEP_GOAL5835_SCOPE__A2_NOT_REACHABLE`. A2--A5 are
+unreachable; there is no next owner gate inside Goal5836. Do not freeze an
+input, materialize routes, build/run author or RTDL code, mutate product or
+case-study source, use a POD/GPU, collect timing, promote Paper App status,
+request external review or make public claims under this transaction. A future
+repair requires a new owner-defined preaction and an app-neutral generic
+orientation/connectivity contract. Verify with
+`python3 scripts/goal5836_a1_build_source_fidelity.py --verify-stored`.
+
+## Historical record: Goal5836 A0 complete before A1 (2026-09-01)
 
 Goal5836 A0 exact source acquisition is complete at
 `history/internal_docs/goal5836_a0_source_acquisition_20260901/`.
@@ -20,15 +48,13 @@ PDF; omitted large author assets require exact-commit reacquisition; metadata
 discovery incidentally exposed paper method text but no author source semantics
 were inspected and no fidelity classification was made.
 
-The only next possible owner decision is
-`AUTHORIZE_STAGE_A1_AUTHOR_SOURCE_FIDELITY_CLASSIFICATION_ONLY`. It is not yet
-granted. Do not inspect author source semantics, classify fidelity, select an
-input, build/run author code, execute Goal5836, mutate product/case-study
-source, use a POD/GPU, collect timing, promote Paper App status, request
-external review, or make a public claim. Verify A0 with
+At that checkpoint the only next possible owner decision was
+`AUTHORIZE_STAGE_A1_AUTHOR_SOURCE_FIDELITY_CLASSIFICATION_ONLY`. It was later
+granted and consumed, with the terminal result recorded in the controlling
+override above. Verify the historical A0 bytes with
 `python3 scripts/goal5836_a0_build_source_acquisition.py --verify-stored`.
 
-## Critical current override: Goal5836 preaction frozen; A0 owner gate only (2026-09-01)
+## Historical record: Goal5836 preaction before A0 (2026-09-01)
 
 The deterministic preaction is
 `history/internal_docs/goal5836_sui_same_input_preaction_authority_20260901.json`
@@ -40,14 +66,10 @@ Its technical plan is
 All six stages A0--A5 have `authorized_now=false`; only creation of the
 preaction itself was authorized.
 
-The next possible owner decision is exactly
-`AUTHORIZE_STAGE_A0_SOURCE_ACQUISITION_AND_HASHING_ONLY`. Until that explicit
-decision, do not download the paper, fetch the author repository, inspect
-author bytes, build/run author code, start Goal5836, mutate product/case-study
-source, use a POD/GPU, collect timing, promote Paper App status, request
-external review, or make a public claim. Even an A0 approval would authorize
-only exact paper/Git/license acquisition and hashing; all later stages require
-separate owner gates. Verify locally with
+At that checkpoint the next possible owner decision was exactly
+`AUTHORIZE_STAGE_A0_SOURCE_ACQUISITION_AND_HASHING_ONLY`. It was later granted
+and consumed. The historical preaction remains immutable and locally
+verifiable with
 `python3 scripts/goal5836_build_sui_same_input_preaction.py --verify-stored`.
 
 ## Critical current override: MacBook pre-Goal5836 handoff controls continuation (2026-08-31)

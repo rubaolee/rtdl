@@ -1,6 +1,35 @@
 # MacBook continuation handoff: pre-Goal5836 RT-CCD/CGO checkpoint
 
-## 2026-09-01 A0 completion addendum
+## 2026-09-01 A1 terminal completion addendum (controlling)
+
+Goal5836 is complete at its preregistered A1 terminal negative outcome. The
+controlling authority is
+`history/internal_docs/goal5836_a1_source_fidelity_20260901/SOURCE_FIDELITY_AUTHORITY.json`
+with whole-file SHA-256
+`f05b026c2e96506466a400de71ee8ab6893f8deecb547447f29b8af567842c5f`
+and internal seal
+`5d52efd485eb9433a442c3a9a81d880e91e80bb38de33d6b4499a2329c3034d6`.
+The exact classification is `MATERIAL_PREDICATE_DIFFERENCE`: Goal5835 does
+not preserve the author benchmark's strongly connected directed obstacle-edge
+invariant or its resulting inside-start coverage.
+
+Machine status is
+`TERMINAL_MAPPING_REFUSAL__KEEP_GOAL5835_SCOPE__A2_NOT_REACHABLE`. This is a
+completed scientific negative result, not pending work. Goal5835 remains
+`NOT_A_PAPER_APP`; no input freeze, author/RTDL execution, POD/GPU work,
+timing, performance result or external review occurred. All 18 A1 hostile
+tests and all 148 Goal5833--Goal5836 tests pass. Read
+`history/internal_docs/goal5836_a1_source_fidelity_technical_report_20260901.md`
+and `history/internal_docs/self_review_goal5836_a1_source_fidelity_20260901.md`.
+
+There is no A2 owner gate inside Goal5836. Do not execute the historical
+"next action" instructions below; they are retained only as an append-only
+record. Repository recovery and evidence-boundary instructions remain useful.
+Any mapping repair must start as a new owner-defined, preregistered goal with
+an app-neutral orientation/connectivity contract; it may not mutate this
+authority or silently broaden Goal5835.
+
+## 2026-09-01 A0 completion addendum (historical)
 
 Goal5836 A0 exact source acquisition is complete. The authority at
 `history/internal_docs/goal5836_a0_source_acquisition_20260901/`
@@ -8,14 +37,12 @@ has whole-file SHA-256
 `5d18d5736be47288e6867d29df93a05bc2f7a81462101e563d65f88c5d236bef`
 and seal
 `e266b5376f075c0da96ae93fa5c44e20245a3583e6f122a56e1032035c1c7050`.
-Do not repeat A0. The only next possible owner decision is
-`AUTHORIZE_STAGE_A1_AUTHOR_SOURCE_FIDELITY_CLASSIFICATION_ONLY`; it has not
-been granted. A1--A5, author/RTDL execution, product mutation, POD/GPU,
-performance, Paper App promotion and external review remain locked. The
-earlier addendum and Sections 7--9 remain controlling where not superseded by
-this exact A0 result.
+At that checkpoint the only next possible owner decision was
+`AUTHORIZE_STAGE_A1_AUTHOR_SOURCE_FIDELITY_CLASSIFICATION_ONLY`. It was later
+granted and consumed; the controlling A1 addendum above records the terminal
+result. Preserve this A0 receipt rather than repeating acquisition.
 
-## 2026-09-01 continuation addendum
+## 2026-09-01 preaction continuation addendum (historical)
 
 The hostile review and its bounded infrastructure repair are complete. The
 Goal5836 preaction is now frozen at
@@ -24,21 +51,21 @@ with whole-file SHA-256
 `7e021a874a13454488bf056c44402225bc1deadfc990cf2a8aeb48eaed9c7f40`
 and internal seal
 `64457edb02f8b7d9f0636e2b6b08563e7b65069c510446643e5d4588224790dd`.
-Do not repeat Section 6. The only next possible owner decision is
-`AUTHORIZE_STAGE_A0_SOURCE_ACQUISITION_AND_HASHING_ONLY`; it has not yet been
-granted. All A0--A5 stages remain unauthorized, so do not acquire source,
-execute Goal5836, mutate product/case-study source, use a POD/GPU, measure
-performance, promote Paper App status, or request external review. Sections
-7--9 remain the controlling scientific and safety boundary.
+At that checkpoint the only next possible owner decision was
+`AUTHORIZE_STAGE_A0_SOURCE_ACQUISITION_AND_HASHING_ONLY`. It was later granted
+and consumed. This section preserves the preaction receipt; the A1 addendum
+above is now controlling.
 
-Date: 2026-08-31 (America/New_York)  
+## Historical 2026-08-31 checkpoint record
+
+Checkpoint date: 2026-08-31 (America/New_York)
 Purpose: allow a new model/session on a MacBook to continue without repeating
 finished work, changing scientific scope, or confusing a platform limitation
 with a research result.  
-Status: **Goal5833, Goal5834-B3, and Goal5835 are complete at their declared
-bounded scopes. Goal5836 remains locked.**  
-External review: **not authorized; do not send anything for review.**  
-Performance: **not authorized; do not collect timings.**
+Historical status: **Goal5833, Goal5834-B3, and Goal5835 were complete at their declared
+bounded scopes. Goal5836 was locked.**
+Historical external-review status: **not authorized.**
+Historical performance status: **not authorized.**
 
 Git handoff authority:
 
@@ -126,8 +153,8 @@ The verifier must report:
 
 ```text
 "status": "PASS__GOAL5836_MACBOOK_CAPSULE"
-"payload_count": 5379
-"payload_bytes": 112577317
+"payload_count": 5385
+"payload_bytes": 112655708
 ```
 
 The repository-level `.gitattributes` intentionally disables newline
@@ -705,7 +732,7 @@ three-route experiment, and preservation of the claim boundary.
 10. Never continue from a checkout that fails the branch, ancestor, clean-tree,
     or `VERIFY_CAPSULE.py` checks in Section 1.1.
 
-## 10. Handoff acceptance checklist
+## 10. Historical handoff acceptance checklist
 
 Before the new session claims it is ready to continue, it must report:
 
@@ -718,11 +745,10 @@ Before the new session claims it is ready to continue, it must report:
 [ ] Python and macOS version recorded
 [ ] baseline Goal5833--5835 test denominator and outcome recorded
 [ ] Goal5835 remains NOT_A_PAPER_APP
-[ ] Goal5836 remains locked
+[ ] Goal5836 was locked at this checkpoint
 [ ] no external review/POD/performance action occurred
 [ ] interrupted hostile review resumed at Section 6, not restarted from history
 ```
 
-At that point the receiver can work immediately on the pre-Goal5836 review.
-The next owner decision should be based on that report: either authorize a
-bounded Goal5836 preaction or keep Goal5835 at its honest current scope.
+At that historical point the receiver could work on the pre-Goal5836 review.
+The controlling A1 addendum at the top supersedes this old next action.
