@@ -1,10 +1,10 @@
 """Provider-independent family-schema admission and compilation planning.
 
-This module is the generic Goal5833 core.  It deliberately contains no
-application names and no dispatch on concrete geometry families.  A family
-shape, a protocol instance, and an inert behavior/template binding produce a
-target-neutral canonical plan.  Provider execution is a separate Goal5834
-concern and is not part of any identity in this module.
+This module deliberately contains no application names and no dispatch on
+concrete geometry families.  A family shape, a protocol instance, and an inert
+behavior/template binding produce a target-neutral canonical plan.  Provider
+execution is a separate concern and is not part of any identity in this
+module.
 
 The public values are immutable.  Their normative documents are retained only
 as canonical bytes, and :attr:`document` returns a freshly decoded, recursively
@@ -48,6 +48,7 @@ _BINDER_FIELDS = {
     "channel_id": "h",
     "event_id": "e",
     "state_id": "s",
+    "step_id": "o",
 }
 _REFERENCE_FIELDS = {
     "parameter_ref": "p",
@@ -60,6 +61,7 @@ _REFERENCE_FIELDS = {
     "from_state": "s",
     "to_state": "s",
     "initial_state": "s",
+    "step_ref": "o",
 }
 _SET_REFERENCE_FIELDS = {"terminal_states": "s"}
 _SHAPE_SET_FIELDS = {
@@ -68,6 +70,7 @@ _SHAPE_SET_FIELDS = {
     "required_effects",
     "terminal_states",
     "identity_bind_set",
+    "algebra_properties",
 }
 _FORBIDDEN_NORMATIVE_KEYS = {
     "application_name",
@@ -96,6 +99,7 @@ _VALUE_TYPES = {
     "f64_bits",
     "u32x2",
     "u32x3",
+    "vec3f_bits",
     "ray3f_bits",
     "aabb3f_bits",
     "namespaced_identifier",
@@ -123,6 +127,7 @@ _RESULT_OPERATORS: dict[str, frozenset[str]] = {
     "commit_collected_rows": frozenset(),
     "commit_checked_reduction": frozenset(),
 }
+_PROVIDER_OPERATOR = "provider_operator"
 _COMMIT_OPERATORS = {
     "commit_ir_output",
     "commit_collected_rows",
@@ -590,6 +595,7 @@ def _validate_family_shape(shape: dict[str, Any]) -> None:
     role_set = set(role_names)
 
     channel_ordinals: list[int] = []
+    channel_producers: dict[str, tuple[str, str]] = {}
     for index, raw in enumerate(_array(root["channels"], "$.channels")):
         path = f"$.channels[{index}]"
         item = _object(
@@ -605,7 +611,9 @@ def _validate_family_shape(shape: dict[str, Any]) -> None:
                 "consumers",
             },
         )
-        _string(item["channel_id"], f"{path}.channel_id", identifier=True)
+        channel_id = _string(
+            item["channel_id"], f"{path}.channel_id", identifier=True
+        )
         channel_ordinals.append(_integer(item["ordinal"], f"{path}.ordinal"))
         _string(item["semantic"], f"{path}.semantic", identifier=True)
         if item["value_type"] not in _VALUE_TYPES:
@@ -615,12 +623,16 @@ def _validate_family_shape(shape: dict[str, Any]) -> None:
         )
         if producer["kind"] == "provider_builtin":
             _object(producer, f"{path}.producer", {"kind", "builtin"})
-            _string(producer["builtin"], f"{path}.producer.builtin", identifier=True)
+            builtin = _string(
+                producer["builtin"], f"{path}.producer.builtin", identifier=True
+            )
+            channel_producers[channel_id] = ("provider_builtin", builtin)
         elif producer["kind"] == "verified_effect":
             _object(producer, f"{path}.producer", {"kind", "role", "effect"})
             role = producer["role"]
             if role not in role_set or producer["effect"] not in _ROLE_EFFECTS[role]:
                 _fail("FS033_ROLE_EFFECT", f"{path}.producer", "illegal role effect")
+            channel_producers[channel_id] = ("verified_effect", role)
         else:
             _fail("FS025_UNSUPPORTED", f"{path}.producer.kind", repr(producer["kind"]))
         _string(item["ownership"], f"{path}.ownership", identifier=True)
@@ -642,12 +654,20 @@ def _validate_family_shape(shape: dict[str, Any]) -> None:
     if channel_ordinals != list(range(len(channel_ordinals))):
         _fail("FS031_ORDINALS", "$.channels", "must be contiguous and ordered")
 
+    view_keys: set[tuple[str, int]] = set()
+    buffer_lookup_views: dict[tuple[str, int], tuple[str, str]] = {}
     for index, raw in enumerate(_array(root["views"], "$.views")):
         path = f"$.views[{index}]"
         item = _object(raw, path, {"role", "argument_index", "source"})
         if item["role"] not in role_set:
             _fail("FS034_ROLE_REFERENCE", f"{path}.role", repr(item["role"]))
-        _integer(item["argument_index"], f"{path}.argument_index", maximum=255)
+        view_key = (
+            item["role"],
+            _integer(item["argument_index"], f"{path}.argument_index", maximum=255),
+        )
+        if view_key in view_keys:
+            _fail("FS024_DUPLICATE", "$.views", repr(view_key))
+        view_keys.add(view_key)
         source = _object(
             item["source"],
             f"{path}.source",
@@ -656,6 +676,9 @@ def _validate_family_shape(shape: dict[str, Any]) -> None:
         )
         if source["kind"] == "buffer_lookup":
             _object(source, f"{path}.source", {"kind", "buffer_ref", "index_channel_ref"})
+            buffer_lookup_views[view_key] = (
+                source["buffer_ref"], source["index_channel_ref"]
+            )
         elif source["kind"] == "hit_channel":
             _object(source, f"{path}.source", {"kind", "channel_ref"})
         else:
@@ -664,13 +687,36 @@ def _validate_family_shape(shape: dict[str, Any]) -> None:
     event_ordinals: list[int] = []
     for index, raw in enumerate(_array(root["events"], "$.events", nonempty=True)):
         path = f"$.events[{index}]"
-        item = _object(raw, path, {"event_id", "ordinal", "value_type", "source"})
+        item = _object(
+            raw,
+            path,
+            {"event_id", "ordinal", "value_type", "source"},
+            {"provider_builtin"},
+        )
         _string(item["event_id"], f"{path}.event_id", identifier=True)
         event_ordinals.append(_integer(item["ordinal"], f"{path}.ordinal"))
         if item["value_type"] not in _VALUE_TYPES:
             _fail("FS025_UNSUPPORTED", f"{path}.value_type", repr(item["value_type"]))
         if item["source"] not in {"ir_output", "verified_effect", "provider_builtin"}:
             _fail("FS025_UNSUPPORTED", f"{path}.source", repr(item["source"]))
+        if item["source"] == "provider_builtin":
+            if "provider_builtin" not in item:
+                _fail(
+                    "FS046_CHANNEL_PRODUCER",
+                    path,
+                    "provider_builtin event source requires a named builtin",
+                )
+            _string(
+                item["provider_builtin"],
+                f"{path}.provider_builtin",
+                identifier=True,
+            )
+        elif "provider_builtin" in item:
+            _fail(
+                "FS046_CHANNEL_PRODUCER",
+                path,
+                "named builtin is valid only for provider_builtin event source",
+            )
     if event_ordinals != list(range(len(event_ordinals))):
         _fail("FS031_ORDINALS", "$.events", "must be contiguous and ordered")
 
@@ -680,6 +726,7 @@ def _validate_family_shape(shape: dict[str, Any]) -> None:
         {"root", "metadata_bindings", "channel_bindings", "sbt"},
     )
     root_ref = _object(physical["root"], "$.physical.root", {"node_ref"})["node_ref"]
+    metadata_bindings: dict[tuple[str, int], tuple[str, str]] = {}
     for index, raw in enumerate(
         _array(physical["metadata_bindings"], "$.physical.metadata_bindings")
     ):
@@ -689,14 +736,76 @@ def _validate_family_shape(shape: dict[str, Any]) -> None:
         )
         if item["role"] not in role_set:
             _fail("FS034_ROLE_REFERENCE", f"{path}.role", repr(item["role"]))
-        _integer(item["argument_index"], f"{path}.argument_index", maximum=255)
+        binding_key = (
+            item["role"],
+            _integer(item["argument_index"], f"{path}.argument_index", maximum=255),
+        )
+        if binding_key in metadata_bindings:
+            _fail("FS024_DUPLICATE", "$.physical.metadata_bindings", repr(binding_key))
+        metadata_bindings[binding_key] = (
+            item["buffer_ref"], item["index_channel_ref"]
+        )
+    if metadata_bindings != buffer_lookup_views:
+        _fail(
+            "FS046_CHANNEL_PRODUCER",
+            "$.physical.metadata_bindings",
+            "physical metadata bindings must exactly match buffer_lookup views",
+        )
+    physical_channel_refs: set[str] = set()
     for index, raw in enumerate(
         _array(physical["channel_bindings"], "$.physical.channel_bindings")
     ):
         path = f"$.physical.channel_bindings[{index}]"
-        item = _object(raw, path, {"channel_ref", "producer_role"})
-        if item["producer_role"] not in role_set:
-            _fail("FS034_ROLE_REFERENCE", f"{path}.producer_role", repr(item["producer_role"]))
+        item = _object(
+            raw,
+            path,
+            {"channel_ref"},
+            {"producer_role", "provider_builtin"},
+        )
+        channel_ref = _string(
+            item["channel_ref"], f"{path}.channel_ref", identifier=True
+        )
+        if channel_ref in physical_channel_refs:
+            _fail("FS024_DUPLICATE", "$.physical.channel_bindings", channel_ref)
+        physical_channel_refs.add(channel_ref)
+        has_role = "producer_role" in item
+        has_builtin = "provider_builtin" in item
+        if has_role == has_builtin:
+            _fail(
+                "FS046_CHANNEL_PRODUCER",
+                path,
+                "exactly one of producer_role or provider_builtin is required",
+            )
+        if has_role and item["producer_role"] not in role_set:
+            _fail(
+                "FS034_ROLE_REFERENCE",
+                f"{path}.producer_role",
+                repr(item["producer_role"]),
+            )
+        if has_builtin:
+            _string(
+                item["provider_builtin"],
+                f"{path}.provider_builtin",
+                identifier=True,
+            )
+        declared_producer = channel_producers.get(channel_ref)
+        bound_producer = (
+            ("verified_effect", item["producer_role"])
+            if has_role else
+            ("provider_builtin", item["provider_builtin"])
+        )
+        if declared_producer is not None and declared_producer != bound_producer:
+            _fail(
+                "FS046_CHANNEL_PRODUCER",
+                path,
+                "physical channel producer differs from channel declaration",
+            )
+    if physical_channel_refs != set(channel_producers):
+        _fail(
+            "FS046_CHANNEL_PRODUCER",
+            "$.physical.channel_bindings",
+            "every channel requires exactly one physical producer binding",
+        )
     sbt = _object(
         physical["sbt"],
         "$.physical.sbt",
@@ -711,11 +820,98 @@ def _validate_family_shape(shape: dict[str, Any]) -> None:
     )
 
     pipeline = _array(root["result_pipeline"], "$.result_pipeline", nonempty=True)
+    prior_steps: set[str] = set()
+    operator_contracts: dict[str, str] = {}
+    commit_flags: list[bool] = []
     for index, raw in enumerate(pipeline):
         path = f"$.result_pipeline[{index}]"
         if not isinstance(raw, dict) or "operator" not in raw:
             _fail("FS014_MISSING_KEYS", path, "operator")
         operator = raw["operator"]
+        if operator == _PROVIDER_OPERATOR:
+            item = _object(
+                raw,
+                path,
+                {
+                    "operator",
+                    "step_id",
+                    "operator_id",
+                    "operator_contract_sha256",
+                    "inputs",
+                    "output_type",
+                    "output_count_relation",
+                    "algebra_properties",
+                    "commits_output",
+                },
+            )
+            step_id = _string(item["step_id"], f"{path}.step_id", identifier=True)
+            operator_id = _string(
+                item["operator_id"], f"{path}.operator_id", identifier=True
+            )
+            operator_contract = _digest(
+                item["operator_contract_sha256"],
+                f"{path}.operator_contract_sha256",
+            )
+            previous_contract = operator_contracts.setdefault(
+                operator_id, operator_contract
+            )
+            if previous_contract != operator_contract:
+                _fail(
+                    "FS047_OPERATOR_IDENTITY",
+                    f"{path}.operator_contract_sha256",
+                    "one operator_id cannot name multiple contracts",
+                )
+            if item["output_type"] not in _VALUE_TYPES:
+                _fail(
+                    "FS025_UNSUPPORTED",
+                    f"{path}.output_type",
+                    repr(item["output_type"]),
+                )
+            _string(
+                item["output_count_relation"],
+                f"{path}.output_count_relation",
+                identifier=True,
+            )
+            _unique_identifiers(
+                item["algebra_properties"],
+                f"{path}.algebra_properties",
+            )
+            inputs = _array(item["inputs"], f"{path}.inputs", nonempty=True)
+            for input_index, raw_input in enumerate(inputs):
+                input_path = f"{path}.inputs[{input_index}]"
+                source = _object(
+                    raw_input,
+                    input_path,
+                    {"kind"},
+                    {"event_ref", "buffer_ref", "parameter_ref", "step_ref"},
+                )
+                reference_by_kind = {
+                    "event": "event_ref",
+                    "buffer": "buffer_ref",
+                    "parameter": "parameter_ref",
+                    "step": "step_ref",
+                }
+                reference = reference_by_kind.get(source["kind"])
+                if reference is None:
+                    _fail(
+                        "FS025_UNSUPPORTED",
+                        f"{input_path}.kind",
+                        repr(source["kind"]),
+                    )
+                _object(source, input_path, {"kind", reference})
+                _string(source[reference], f"{input_path}.{reference}", identifier=True)
+                if reference == "step_ref" and source[reference] not in prior_steps:
+                    _fail(
+                        "FS045_PIPELINE_DATAFLOW",
+                        f"{input_path}.step_ref",
+                        "provider operator may reference only an earlier step",
+                    )
+            commits_output = _boolean(
+                item["commits_output"], f"{path}.commits_output"
+            )
+            prior_steps.add(step_id)
+            commit_flags.append(commits_output)
+            continue
         if operator not in _RESULT_OPERATORS:
             _fail("FS025_UNSUPPORTED", f"{path}.operator", repr(operator))
         item = _object(raw, path, {"operator"} | set(_RESULT_OPERATORS[operator]))
@@ -724,8 +920,15 @@ def _validate_family_shape(shape: dict[str, Any]) -> None:
                 _string(item[key], f"{path}.{key}", identifier=True)
         if "key_fields" in item:
             _unique_identifiers(item["key_fields"], f"{path}.key_fields", nonempty=True)
-    if pipeline[-1]["operator"] not in _COMMIT_OPERATORS:
+        commit_flags.append(operator in _COMMIT_OPERATORS)
+    if not commit_flags[-1]:
         _fail("FS035_RESULT_COMMIT", "$.result_pipeline", "must end in a commit")
+    if any(commit_flags[:-1]):
+        _fail(
+            "FS035_RESULT_COMMIT",
+            "$.result_pipeline",
+            "only the final result step may commit output",
+        )
 
     continuation = _object(
         root["continuation"],
@@ -1048,7 +1251,7 @@ def _derive_admission_document(
         _fail(
             "FS044_EXECUTABLE_FORBIDDEN",
             "executable",
-            "Goal5833 plans are declarations and must be inert",
+            "family plans are declarations and must be inert",
         )
     protocol = instance.to_dict()
     role_contracts = copy.deepcopy(schema.to_dict()["callback"]["roles"])
