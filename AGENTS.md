@@ -1,5 +1,31 @@
 # RTDL Codex Working Guide
 
+## Critical current override: Goal5837 successor classification frozen (2026-09-02)
+
+Goal5837 is complete at classification-only scope. The controlling authority is
+`history/internal_docs/goal5837_owner_grouped_classification_20260902/GOAL5837_AUTHORITY.json`.
+Its exact verdict is
+`ADDITIONAL_ROOT_EXPORTED_CLOSED_SUCCESSOR_ROUTE__NOT_STABLE_V4_FIXED_CONSTRUCTOR`.
+The stable `rtdsl.v4` fixed-constructor count remains two; the owner-grouped
+Boolean route is one additional root-exported closed successor route. These are
+heterogeneous categories and must not be summed into a claim of three stable V4
+constructors.
+
+The authority binds the app-neutral `OWNER_GROUPED_ANY_HIT / BOOL_OR` behavior,
+the built-in round-linear-curve OptiX provider, the bounded linear RT-CCD case
+study, 9/9 local reference cases, and the already recorded exact-profile OptiX
+8 result of 30/30 true launches and oracle matches. It adds no GPU execution.
+The successor is not registered as a Goal5832 family-shape/protocol instance
+and is not a prospective frozen-core generalization exam. Performance,
+speedup, benchmark-app, Paper App, full-reproduction, OptiX 9, external-review,
+and consensus claims remain forbidden. External review is owner-deferred while
+traveling. Verify with
+`python3 scripts/goal5837_freeze_owner_grouped_classification.py --verify-stored`.
+
+The next scientific step is a separately preregistered Goal5838 new-topology
+prospective exam. Do not retrospectively use Goal5837 as that exam, and do not
+modify the frozen Goal5835/5836 transaction.
+
 ## Critical current override: strict Goal5835/5836 audit (2026-09-01)
 
 The controlling post-Goal5836 internal audit is

@@ -1,0 +1,628 @@
+{
+  "authority_sha256": "025090252ac60b722cc398402297656877405a998024d221592e18aa888f0465",
+  "bundle_verification": {
+    "all_checksum_targets_match": true,
+    "bundle_member_count": 148,
+    "bundle_paths_safe_and_unique": true,
+    "checksum_entries": [
+      {
+        "path": "owner_grouped_preflight_v2_optix9_7ec6b67.log",
+        "sha256": "a0887dc1de3f7ac7291463755821aa5d9eef5de8364a049f63d5fa3a60e43f4f"
+      },
+      {
+        "path": "owner_grouped_preflight_v2_optix9_7ec6b67.exit_code",
+        "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+      },
+      {
+        "path": "owner_grouped_preflight_v2_optix8_7ec6b67.json",
+        "sha256": "9f87eab8d383b0fe56a70431bdef1bfc09dbeb03ff4da8bd493cb0c002185e32"
+      },
+      {
+        "path": "owner_grouped_native_build_optix8_7ec6b67.json",
+        "sha256": "679b0db35c64afc554d4095300a1431d99772ffb5bf211e7635572ba718e04cb"
+      },
+      {
+        "path": "owner_grouped_native_build_optix8_7ec6b67.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "owner_grouped_gpu_result_optix8_final_7ec6b67.json",
+        "sha256": "59e50a9f121f13b5b32fc13f2c9f6550a6756a3b48ad1a065fe824c60a93463f"
+      }
+    ],
+    "checksum_entry_count": 6
+  },
+  "claim_boundary": {
+    "additional_root_exported_closed_route": true,
+    "external_consensus_claim": false,
+    "goal5832_registered_protocol_shape_instance": false,
+    "optix9_functional_claim": false,
+    "paper_app_or_full_reproduction_claim": false,
+    "performance_or_speedup_claim": false,
+    "prospective_generalization_success": false,
+    "third_stable_v4_fixed_constructor": false
+  },
+  "claim_source_matrix": [
+    {
+      "authorized": true,
+      "claim_id": "C01_GENERIC_BEHAVIOR_EXISTS",
+      "disposition": "SUPPORTED_INTERNAL_ARCHITECTURE_FACT",
+      "source_ids": [
+        "src.successor_behavior",
+        "src.curve_provider"
+      ],
+      "statement": "OWNER_GROUPED_ANY_HIT/BOOL_OR is app-neutral generic behavior."
+    },
+    {
+      "authorized": true,
+      "claim_id": "C02_ROOT_CLOSED_ROUTE_EXISTS",
+      "disposition": "SUPPORTED_INTERNAL_SURFACE_FACT",
+      "source_ids": [
+        "src.root_public_surface",
+        "src.curve_provider"
+      ],
+      "statement": "One root-exported closed successor lifecycle exists."
+    },
+    {
+      "authorized": true,
+      "claim_id": "C03_BOUNDED_APP_EXISTS",
+      "disposition": "SUPPORTED_INTERNAL_CASE_STUDY_FACT",
+      "source_ids": [
+        "src.linear_rtccd_app",
+        "src.local_receipt"
+      ],
+      "statement": "A bounded linear RT-CCD case study consumes the generic route."
+    },
+    {
+      "authorized": true,
+      "claim_id": "C04_OPTIX8_FUNCTIONAL_PARITY",
+      "disposition": "SUPPORTED_EXACT_PROFILE_FUNCTIONAL_FACT",
+      "source_ids": [
+        "src.optix8_result",
+        "src.optix8_native_build"
+      ],
+      "statement": "The exact OptiX 8 profile passed 30/30 true launches and oracle matches."
+    },
+    {
+      "authorized": true,
+      "claim_id": "C05_STABLE_CONSTRUCTOR_COUNT_TWO",
+      "disposition": "SUPPORTED_STABLE_SURFACE_FACT",
+      "source_ids": [
+        "src.goal5832_authority",
+        "src.v4_stable_surface"
+      ],
+      "statement": "The stable rtdsl.v4 fixed-constructor count remains two."
+    },
+    {
+      "authorized": false,
+      "claim_id": "C06_THIRD_STABLE_CONSTRUCTOR",
+      "disposition": "FORBIDDEN_RETROSPECTIVE_PROMOTION",
+      "source_ids": [
+        "src.v4_stable_surface",
+        "src.root_public_surface"
+      ],
+      "statement": "The successor is a third stable V4 fixed constructor."
+    },
+    {
+      "authorized": false,
+      "claim_id": "C07_REGISTERED_GOAL5832_SHAPE_INSTANCE",
+      "disposition": "NOT_IMPLEMENTED_OR_REGISTERED",
+      "source_ids": [
+        "src.goal5832_authority",
+        "src.v4_stable_surface"
+      ],
+      "statement": "The successor is a Goal5832 family-shape/protocol-instance registration."
+    },
+    {
+      "authorized": false,
+      "claim_id": "C08_PROSPECTIVE_GENERALIZATION",
+      "disposition": "FORBIDDEN_RETROSPECTIVE_RELABEL",
+      "source_ids": [
+        "src.goal5832_authority",
+        "src.internal_review_policy"
+      ],
+      "statement": "The already-built successor is a prospective frozen-core generalization success."
+    },
+    {
+      "authorized": false,
+      "claim_id": "C09_PERFORMANCE_OR_SPEEDUP",
+      "disposition": "DEFERRED_REQUIRES_PREREGISTERED_TIMING_STUDY",
+      "source_ids": [
+        "src.optix8_result",
+        "src.internal_review_policy"
+      ],
+      "statement": "The route has a performance or speedup result."
+    },
+    {
+      "authorized": false,
+      "claim_id": "C10_PAPER_APP_OR_FULL_REPRODUCTION",
+      "disposition": "FORBIDDEN_BY_EVIDENCE_SCOPE",
+      "source_ids": [
+        "src.linear_rtccd_app",
+        "src.goal5836_a1_authority"
+      ],
+      "statement": "The bounded case study is a Paper App or full paper reproduction."
+    },
+    {
+      "authorized": false,
+      "claim_id": "C11_EXTERNAL_CONSENSUS",
+      "disposition": "DEFERRED_BY_OWNER",
+      "source_ids": [
+        "src.internal_review_policy"
+      ],
+      "statement": "Goal5837 has external review or multi-AI consensus."
+    },
+    {
+      "authorized": false,
+      "claim_id": "C12_OPTIX9_FUNCTIONAL_COVERAGE",
+      "disposition": "UNAVAILABLE_ON_R550_DRIVER",
+      "source_ids": [
+        "src.optix9_failure",
+        "src.optix8_result"
+      ],
+      "statement": "The successor has OptiX 9 functional execution evidence."
+    }
+  ],
+  "classification": {
+    "exact_verdict": "ADDITIONAL_ROOT_EXPORTED_CLOSED_SUCCESSOR_ROUTE__NOT_STABLE_V4_FIXED_CONSTRUCTOR",
+    "forbidden_stable_constructor_total": 3,
+    "goal5832_registered_successor_family_shape_count": 0,
+    "heterogeneous_count_sum_forbidden": true,
+    "prospective_frozen_core_new_shape_exam_count": 0,
+    "reason": "the successor has a closed root-exported lifecycle, but is absent from rtdsl.v4 ProtocolFamily, compile_protocol_program, and the Goal5832 family-shape/protocol-instance registry",
+    "root_exported_closed_successor_route_count": 1,
+    "root_exported_closed_successor_route_ids": [
+      "builtin_curve_owner_grouped_any_hit_bool_or_v1"
+    ],
+    "stable_v4_fixed_constructor_count_after_goal5837": 2,
+    "stable_v4_fixed_constructor_count_before_goal5837": 2,
+    "stable_v4_fixed_constructor_ids": [
+      "custom_aabb_bounded_relation_v1",
+      "builtin_triangle_reduction_v1"
+    ]
+  },
+  "date": "2026-09-02",
+  "evidence_summary": {
+    "external_review_count": 0,
+    "local_reference": {
+      "benchmark_app_claimed": false,
+      "external_review_count": 0,
+      "full_paper_reproduction_claimed": false,
+      "gpu_correctness_evidence_count": 0,
+      "matching_local_case_count": 9,
+      "optix_launch_count": 0,
+      "performance_timing_count": 0,
+      "registered_local_case_count": 9,
+      "registered_scale_case_count": 3,
+      "registered_semantic_case_count": 6,
+      "schema": "rtdl.successor_owner_grouped_any_hit.local_validation.v3",
+      "status": "LOCAL_RECEIPT_PASS__GPU_FUNCTIONAL_EVIDENCE_IS_SEPARATE"
+    },
+    "optix8_functional": {
+      "all_independent_oracles_match": true,
+      "all_prepared_reuse_counts_match": true,
+      "all_true_optix_receipts_valid": true,
+      "author_code_executed": false,
+      "benchmark_app_claimed": false,
+      "diagnostic_timing_sample_count": 30,
+      "external_review_count": 0,
+      "full_paper_reproduction_claimed": false,
+      "git_commit": "7ec6b673b1da3dbe63ff2915e82d61f5302bf85c",
+      "largest_workload": {
+        "case_id": "scale-o512-s8-h8-d1",
+        "independent_oracle_evaluated_pair_count": 4194304,
+        "independent_oracle_intersecting_pair_count": 1024,
+        "owner_count": 512,
+        "primitive_count": 4096,
+        "query_count": 1024
+      },
+      "matching_gpu_execution_count": 30,
+      "performance_claimed": false,
+      "registered_local_workload_count": 6,
+      "registered_performance_timing_count": 0,
+      "repeat_count_per_workload": 3,
+      "scale_workload_count": 4,
+      "schema": "rtdl.successor_owner_grouped_any_hit.pod_validation.v2",
+      "status": "PASS__TRUE_OPTIX_PARITY_AND_PREPARED_REUSE",
+      "true_optix_launch_count": 30,
+      "workload_count": 10
+    },
+    "optix8_native_build_status": "PASS__FRESH_NATIVE_BUILT_AND_REQUIRED_SYMBOLS_EXPORTED",
+    "optix8_preflight_status": "PASS__COMPILER_AND_OPTIX_RUNTIME_ABI_READY_FOR_NATIVE_BUILD",
+    "optix9_functional_status": "UNAVAILABLE__OPTIX_INIT_7801_ON_R550",
+    "paper_app_result_count": 0,
+    "performance_result_count": 0
+  },
+  "goal": "Goal5837",
+  "gpu_execution_checkpoint": "7ec6b673b1da3dbe63ff2915e82d61f5302bf85c",
+  "historical_inputs": {
+    "final_bundle": {
+      "bytes": 414863,
+      "path": "history/internal_docs/successor_owner_grouped_pod_20260902/owner_grouped_final_bundle_7ec6b67.tar.gz",
+      "sha256": "8946473aea9bb4598e830d3a78771407c6798618cd3f4ab789fc280cf62d4b9d"
+    },
+    "final_checksum_manifest": {
+      "bytes": 685,
+      "path": "history/internal_docs/successor_owner_grouped_pod_20260902/owner_grouped_final_7ec6b67_SHA256SUMS",
+      "sha256": "b1efde198887b8d8ecce2873d6702026833f230382e9dd3232931a39118ec837"
+    },
+    "goal5831_scope_result": {
+      "bytes": 7430,
+      "path": "history/internal_docs/goal5831_public_gpu_surface_terminology_and_denominator_result_20260830.json",
+      "sha256": "648335944aa3ad44a8cd265ce5a42ee08c27b21e2d320ae4f7ec6609f64124c1"
+    },
+    "goal5832_authority": {
+      "bytes": 14887,
+      "path": "history/internal_docs/goal5832_protocol_shape_algebra_authority_v1_20260830.json",
+      "sha256": "33db5c7c9c9403cc3c8f1f426fdf1ba594fd6c4a8d94608ab41e50dbe7be5200"
+    },
+    "goal5835_goal5836_strict_audit": {
+      "bytes": 10370,
+      "path": "history/internal_docs/goal5835_goal5836_strict_audit_20260901/STRICT_AUDIT_AUTHORITY.json",
+      "sha256": "bb58e1f0fc247f01f4636e985cef93b117c574e75b60f16e845f0e080f5820a5"
+    },
+    "goal5835_result": {
+      "bytes": 15642,
+      "path": "history/internal_docs/goal5835_sui_derived_edge_crossing_mapping_result_20260830.json",
+      "sha256": "ae370da1ca5ac96562d0956438e7c6c8eee39fddf2d9894953db8e956c47ccff"
+    },
+    "goal5836_a1_authority": {
+      "bytes": 16803,
+      "path": "history/internal_docs/goal5836_a1_source_fidelity_20260901/SOURCE_FIDELITY_AUTHORITY.json",
+      "sha256": "f05b026c2e96506466a400de71ee8ab6893f8deecb547447f29b8af567842c5f"
+    },
+    "optix8_gpu_result": {
+      "bytes": 377161,
+      "path": "history/internal_docs/successor_owner_grouped_pod_20260902/owner_grouped_gpu_result_optix8_final_7ec6b67.json",
+      "sha256": "59e50a9f121f13b5b32fc13f2c9f6550a6756a3b48ad1a065fe824c60a93463f"
+    },
+    "optix8_native_build": {
+      "bytes": 316224,
+      "path": "history/internal_docs/successor_owner_grouped_pod_20260902/owner_grouped_native_build_optix8_7ec6b67.json",
+      "sha256": "679b0db35c64afc554d4095300a1431d99772ffb5bf211e7635572ba718e04cb"
+    },
+    "optix8_preflight": {
+      "bytes": 312115,
+      "path": "history/internal_docs/successor_owner_grouped_pod_20260902/owner_grouped_preflight_v2_optix8_7ec6b67.json",
+      "sha256": "9f87eab8d383b0fe56a70431bdef1bfc09dbeb03ff4da8bd493cb0c002185e32"
+    },
+    "optix9_failure_exit_code": {
+      "bytes": 2,
+      "path": "history/internal_docs/successor_owner_grouped_pod_20260902/owner_grouped_preflight_v2_optix9_7ec6b67.exit_code",
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+    },
+    "optix9_failure_log": {
+      "bytes": 975,
+      "path": "history/internal_docs/successor_owner_grouped_pod_20260902/owner_grouped_preflight_v2_optix9_7ec6b67.log",
+      "sha256": "a0887dc1de3f7ac7291463755821aa5d9eef5de8364a049f63d5fa3a60e43f4f"
+    },
+    "successor_local_receipt": {
+      "bytes": 22500,
+      "path": "history/internal_docs/successor_owner_grouped_any_hit_local_validation_20260901.json",
+      "sha256": "6e9ed9334efb33a5164a18c4938a41688615816853b9785ef4e308e88d24bcf6"
+    }
+  },
+  "historical_validator_context": {
+    "current_root_identity": {
+      "bytes": 319859,
+      "path": "src/rtdsl/__init__.py",
+      "sha256": "cf212a9e9649680ca101cc99dad0779246d84a850856fe3b33bb8878b70cecaa"
+    },
+    "goal5831_frozen_root_identity": {
+      "bytes": 318939,
+      "path": "src/rtdsl/__init__.py",
+      "sha256": "57a012cecb0ffd5a5090022eb310dba991015a8750dd161d53104f17cb705fe8"
+    },
+    "goal5832_full_current_repository_validation_claimed": false,
+    "goal5832_usage_in_goal5837": "hash_bound terminology and count baseline only; current stable and root surfaces are independently derived from AST",
+    "historical_manifest_rewritten": false,
+    "identities_differ": true,
+    "status": "PREEXISTING_HISTORICAL_CUSTODY_CHECK_NOT_COMPOSITIONAL_WITH_LATER_ROOT_EXPORTS"
+  },
+  "input_checkpoint": "8180d754e7637670b502b17866be2a29ea1cc26f",
+  "next_separate_gates": [
+    "Goal5838 preregistered new-topology prospective exam",
+    "external review after the owner returns from travel",
+    "preregistered Embree/timing study before performance wording",
+    "explicit stable-V4 admission transaction if later desired"
+  ],
+  "review_state": {
+    "consensus_claimed": false,
+    "external_review_count": 0,
+    "external_review_requested": false,
+    "external_review_status": "DEFERRED_BY_OWNER_DURING_TRAVEL",
+    "new_gpu_execution_count": 0,
+    "pod_used_by_goal5837": false,
+    "review_type": "INTERNAL_HOSTILE_SELF_REVIEW_ONLY"
+  },
+  "schema": "rtdl.goal5837.owner_grouped_classification.v1",
+  "scope": "freeze and classify the owner-grouped successor route and its bounded linear RT-CCD functional evidence",
+  "source_inventory": {
+    "application": [
+      {
+        "bytes": 7480,
+        "path": "case_studies/linear_rtccd_owner_grouped/README.md",
+        "sha256": "47e29462fcec19d6afdfad1d5d7b19bd7f2af5b32c1cf454c532c49ab2fe7b6e"
+      },
+      {
+        "bytes": 991,
+        "path": "case_studies/linear_rtccd_owner_grouped/__init__.py",
+        "sha256": "223bbbf7e0c66aabd4a71928e95e6a32c569ce9c9a372de9fea7b6dbd10f99fd"
+      },
+      {
+        "bytes": 6429,
+        "path": "case_studies/linear_rtccd_owner_grouped/fixtures.py",
+        "sha256": "50c5c21f58a4ecea28b8e4d34c752998c41dcaa83d8a17281008b8486ee450fd"
+      },
+      {
+        "bytes": 3611,
+        "path": "case_studies/linear_rtccd_owner_grouped/independent_oracle.py",
+        "sha256": "496b48fa5a559025c3cd1032d44dee44870fad5a8989cd5a91e328e70143162b"
+      },
+      {
+        "bytes": 15827,
+        "path": "case_studies/linear_rtccd_owner_grouped/linear_rtccd_owner_grouped.py",
+        "sha256": "d2675f28d59d33719d24ac772085866b78f472c4780bcbfc41c8faac06c4645d"
+      },
+      {
+        "bytes": 12923,
+        "path": "case_studies/linear_rtccd_owner_grouped/run_local_validation.py",
+        "sha256": "f930518980993bb9681152af2f54137e108fb7961f472de8fbe7d5862f94f1ea"
+      }
+    ],
+    "classification_basis": [
+      {
+        "bytes": 146583,
+        "path": "AGENTS.md",
+        "sha256": "238bc9cd37e7f68b42e0d0db880d9979e397e5996e0c5a3fd888f206ebbae6c6"
+      },
+      {
+        "bytes": 64206,
+        "path": "scripts/goal5832_protocol_shape_algebra.py",
+        "sha256": "881f6336b369c507a59943b21917c583b2d8f5487d1e712d7ebaa3e8dc660361"
+      },
+      {
+        "bytes": 319859,
+        "path": "src/rtdsl/__init__.py",
+        "sha256": "cf212a9e9649680ca101cc99dad0779246d84a850856fe3b33bb8878b70cecaa"
+      },
+      {
+        "bytes": 5825,
+        "path": "src/rtdsl/v4.py",
+        "sha256": "5800a38193275b3c6e37dfc6a0aadfe6d3fbdd6c108af93ef3799dc296c7f582"
+      },
+      {
+        "bytes": 54398,
+        "path": "src/rtdsl/v4_callback_lifecycle.py",
+        "sha256": "76e35a2b246f125b51136bd6f8354a3133b8c207474f9e9aea31fda9c6b240bd"
+      }
+    ],
+    "curve_provider": [
+      {
+        "bytes": 540649,
+        "path": "src/native/optix/rtdl_optix_api.cpp",
+        "sha256": "c5398c636175bbb922900391cdce51944b0ee43635c4fe5594ebfec568a1077e"
+      },
+      {
+        "bytes": 372228,
+        "path": "src/native/optix/rtdl_optix_v4_callback_poc.cpp",
+        "sha256": "75b6ecbc69c7331f3c88024e9feeb4aab40c109df1a4b802f87365709ef523b0"
+      },
+      {
+        "bytes": 12798,
+        "path": "src/rtdsl/v4_curve_owner_grouped_any_hit.py",
+        "sha256": "15090c955553edb6041ff0352b5618928005b3d63d2d9e9b112094e7fa4d9bc0"
+      },
+      {
+        "bytes": 10194,
+        "path": "src/rtdsl/v4_curve_owner_grouped_any_hit_optix_compiler.py",
+        "sha256": "35ca32143b0a96d410bd1fe84391da1786c7ec31873513629e96a60ea0001dff"
+      },
+      {
+        "bytes": 13173,
+        "path": "src/rtdsl/v4_curve_owner_grouped_any_hit_optix_wrapper_codegen.py",
+        "sha256": "beb842ba8968642b4e8426578b4291f6f89107c0cd38f80d80d3088a4aa2afa6"
+      },
+      {
+        "bytes": 28666,
+        "path": "src/rtdsl/v4_curve_owner_grouped_any_hit_prepared_runtime.py",
+        "sha256": "0446871a7baccacb158fa9596ea28958c40763e2905aceafcd7393a2d7c5abfe"
+      },
+      {
+        "bytes": 10423,
+        "path": "src/rtdsl/v4_curve_owner_grouped_any_hit_public.py",
+        "sha256": "e6934833d596e6190a85f6af4e5769ee9f9ce29c350558a80759c805bd9db8eb"
+      },
+      {
+        "bytes": 4380,
+        "path": "src/rtdsl/v4_curve_owner_grouped_any_hit_standard_library.py",
+        "sha256": "0daa76c44bf1f58aa0d1b33a2cb313344956535b5a24f7859c11a86f2bb4c948"
+      },
+      {
+        "bytes": 15974,
+        "path": "src/rtdsl/v4_public_builtin_curve.py",
+        "sha256": "3ec1f0903ad22290e4f8013ef4a2eff6e1fa35d22a7710861f6e080105320523"
+      }
+    ],
+    "generic_behavior": [
+      {
+        "bytes": 15962,
+        "path": "src/rtdsl/v4_owner_grouped_any_hit.py",
+        "sha256": "660cf3ae0a5699f2aad38609e6e950684b400d42c6d92ac24008f6117694c6e6"
+      }
+    ],
+    "tooling_and_tests": [
+      {
+        "bytes": 17635,
+        "path": "scripts/build_v4_optix_native_snapshot.py",
+        "sha256": "e72672269880b10ba1411f58c4bc08a9be268c0be86ebbd4ca963c009adcc260"
+      },
+      {
+        "bytes": 41515,
+        "path": "scripts/goal5837_freeze_owner_grouped_classification.py",
+        "sha256": "275f996398274c635bf76aa616680ee4bfca367476f19ddf06847acbca234af4"
+      },
+      {
+        "bytes": 27857,
+        "path": "scripts/successor_linear_rtccd_owner_grouped_pod_runner.py",
+        "sha256": "51b8dbdec556719bbc81717e42aeed587cc372b2d080aa6a3b86f7822bcfc52f"
+      },
+      {
+        "bytes": 20798,
+        "path": "scripts/successor_owner_grouped_pod_preflight.py",
+        "sha256": "9747ce98fad98b70f5cc07ad4252acd5f2bec4c9576f73117ba48938a19d6102"
+      },
+      {
+        "bytes": 9436,
+        "path": "tests/goal5837_owner_grouped_classification_test.py",
+        "sha256": "2dcd3e39d9fc7a4b50806cb6fd735f4f75949230d10b08230d88dac29afa132e"
+      },
+      {
+        "bytes": 14522,
+        "path": "tests/successor_linear_rtccd_owner_grouped_app_test.py",
+        "sha256": "d3debccfd1e3ad473bb347471de3dc8a5afe397c0bae979f7305f81719c9ee86"
+      },
+      {
+        "bytes": 22121,
+        "path": "tests/successor_owner_grouped_any_hit_contract_test.py",
+        "sha256": "a483c1d9c98f316f3d7ecd6a356487dc6530d164e763a1f1db7ddc85519a4b68"
+      },
+      {
+        "bytes": 21920,
+        "path": "tests/successor_owner_grouped_gpu_tooling_test.py",
+        "sha256": "2f74911181ef146a2181ba8daeaa8e4d2037eadd79712536f71be6e01d4d4bba"
+      }
+    ]
+  },
+  "source_registry": {
+    "src.curve_provider": {
+      "authority_fields": [
+        "surface_observation.first_physical_provider",
+        "surface_observation.trusted_device_operation"
+      ],
+      "source_group": "curve_provider"
+    },
+    "src.goal5832_authority": {
+      "authority_fields": [
+        "classification"
+      ],
+      "historical_input": "goal5832_authority"
+    },
+    "src.goal5836_a1_authority": {
+      "authority_fields": [
+        "claim_boundary.paper_app_or_full_reproduction_claim"
+      ],
+      "historical_input": "goal5836_a1_authority"
+    },
+    "src.internal_review_policy": {
+      "authority_fields": [
+        "review_state",
+        "claim_boundary"
+      ],
+      "paths": [
+        "AGENTS.md"
+      ]
+    },
+    "src.linear_rtccd_app": {
+      "authority_fields": [
+        "surface_observation.application_semantics_location"
+      ],
+      "source_group": "application"
+    },
+    "src.local_receipt": {
+      "authority_fields": [
+        "evidence_summary.local_reference"
+      ],
+      "historical_input": "successor_local_receipt"
+    },
+    "src.optix8_native_build": {
+      "authority_fields": [
+        "evidence_summary.optix8_native_build_status"
+      ],
+      "historical_input": "optix8_native_build"
+    },
+    "src.optix8_result": {
+      "authority_fields": [
+        "evidence_summary.optix8_functional"
+      ],
+      "historical_input": "optix8_gpu_result"
+    },
+    "src.optix9_failure": {
+      "authority_fields": [
+        "evidence_summary.optix9_functional_status"
+      ],
+      "historical_inputs": [
+        "optix9_failure_log",
+        "optix9_failure_exit_code"
+      ]
+    },
+    "src.root_public_surface": {
+      "authority_fields": [
+        "surface_observation.root_successor_exports"
+      ],
+      "paths": [
+        "src/rtdsl/__init__.py"
+      ]
+    },
+    "src.successor_behavior": {
+      "authority_fields": [
+        "surface_observation.closed_behavior"
+      ],
+      "source_group": "generic_behavior"
+    },
+    "src.v4_stable_surface": {
+      "authority_fields": [
+        "surface_observation.stable_protocol_family_values",
+        "surface_observation.compile_protocol_program_admitted_types"
+      ],
+      "paths": [
+        "src/rtdsl/v4.py",
+        "src/rtdsl/v4_callback_lifecycle.py"
+      ]
+    }
+  },
+  "status": "COMPLETE__CLASSIFICATION_FROZEN__NO_CLAIM_UPGRADE",
+  "surface_observation": {
+    "application_semantics_location": "case_studies/linear_rtccd_owner_grouped",
+    "closed_behavior": "OWNER_GROUPED_ANY_HIT/BOOL_OR",
+    "compile_protocol_program_admitted_types": [
+      "BoundedRelationProtocol",
+      "TriangleReductionProtocol"
+    ],
+    "continue_traversal_marker": "optixIgnoreIntersection",
+    "first_physical_provider": "OPTIX_BUILTIN_ROUND_LINEAR_CURVE",
+    "generic_engine_application_vocabulary_matches": 0,
+    "public_lifecycle": {
+      "MaterializedCurveOwnerGroupedAnyHitProgram": [
+        "prepare"
+      ],
+      "PreparedCurveOwnerGroupedAnyHitProgram": [
+        "execute",
+        "close"
+      ],
+      "VerifiedCurveOwnerGroupedAnyHitProgram": [
+        "materialize"
+      ],
+      "VerifiedCurveOwnerGroupedAnyHitSource": [
+        "compile"
+      ]
+    },
+    "root_successor_export_count": 5,
+    "root_successor_export_occurrence_count_each": 1,
+    "root_successor_exports": [
+      "OwnerGroupedCurveQueryBatch",
+      "OwnerGroupedCurveStaticInput",
+      "PreparedCurveOwnerGroupedAnyHitProgram",
+      "V4CurveTarget",
+      "curve_owner_grouped_any_hit_source"
+    ],
+    "stable_protocol_family_values": [
+      "custom_aabb_bounded_relation_v1",
+      "builtin_triangle_reduction_v1"
+    ],
+    "stable_v4_module": "rtdsl.v4",
+    "stable_v4_successor_export_count": 0,
+    "true_traversal_marker": "optixTrace",
+    "trusted_device_operation": "atomic_or_u32"
+  }
+}
