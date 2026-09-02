@@ -358,6 +358,17 @@ def _fetch(uri: str) -> bytes:
         return response.read()
 
 
+def _normalize_certificate_pem(payload: bytes) -> bytes:
+    normalized = payload.replace(b"\r\n", b"\n")
+    if not normalized.endswith(b"\n"):
+        normalized += b"\n"
+    if not normalized.startswith(b"-----BEGIN CERTIFICATE-----\n") or not normalized.endswith(
+        b"-----END CERTIFICATE-----\n"
+    ):
+        raise Goal5838SelectionError("certificate endpoint did not return one PEM certificate")
+    return normalized
+
+
 def write_live_calibration() -> dict[str, Any]:
     now_ms = int(datetime.now(timezone.utc).timestamp() * 1000)
     if now_ms >= TARGET_TIMESTAMP_MS:
@@ -368,7 +379,7 @@ def write_live_calibration() -> dict[str, Any]:
     certificate_uri = (
         "https://beacon.nist.gov/beacon/2.0/certificate/" + PINNED_CERTIFICATE_ID
     )
-    certificate_pem = _fetch(certificate_uri)
+    certificate_pem = _normalize_certificate_pem(_fetch(certificate_uri))
     response = json.loads(response_bytes)
     verification = verify_signed_pulse(
         response,
@@ -440,7 +451,7 @@ def write_live_selection() -> dict[str, Any]:
     certificate_uri = (
         "https://beacon.nist.gov/beacon/2.0/certificate/" + PINNED_CERTIFICATE_ID
     )
-    certificate_pem = _fetch(certificate_uri)
+    certificate_pem = _normalize_certificate_pem(_fetch(certificate_uri))
     previous_response = json.loads(previous_bytes)
     target_response = json.loads(target_bytes)
     result = build_selection_result(
