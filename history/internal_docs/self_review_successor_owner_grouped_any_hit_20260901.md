@@ -3,7 +3,7 @@
 Date: 2026-09-01; updated 2026-09-02
 Review type: internal hostile self-review only
 External review count: 0, deferred by the owner
-Verdict: `ACCEPT_BOUNDED_OPTIX8_DIAGNOSTIC__BLOCK_FORMAL_OPTIX9_PROMOTION`
+Verdict: `ACCEPT_INTERNAL_OPTIX8_GPU_FUNCTIONAL_GATE__BLOCK_PERFORMANCE_AND_EXTERNAL_PROMOTION`
 
 ## Exact claim boundary
 
@@ -19,10 +19,11 @@ orientation, oracle, and result interpretation. No collision, robot, pose,
 trajectory, or RT-CCD vocabulary appears in the successor RTDL modules. The
 frozen Goal5835/5836 transaction was not modified or reinterpreted.
 
-This review authorizes the local source implementation and a separately
-recorded OptiX 8 diagnostic on one RTX 4000 Ada pod. It does not authorize an
-OptiX 9 formal gate, performance, full paper reproduction, Paper App status,
-benchmark-app promotion, or external-consensus wording.
+This review authorizes the local source implementation and exact-profile
+OptiX 8 internal GPU functional evidence on one RTX 4000 Ada Pod. It does not
+authorize performance, full paper reproduction, Paper App status,
+benchmark-app promotion, broad OptiX-version support, or external-consensus
+wording.
 
 ## Resolved findings
 
@@ -129,17 +130,31 @@ callback stack, records its binary and output hashes, and still performs zero
 OptiX launches. An ABI mismatch now fails before the expensive native build.
 The schema changed from `pod_preflight.v1` to `pod_preflight.v2` so old
 compile-only artifacts cannot be confused with new runtime-ABI evidence.
+Pod confirmation at commit `5ee0e94` rejected OptiX 9 with
+`optixInit_result=7801` before callback compilation/native build and accepted
+OptiX 8 with `optixInit_result=0` and zero launches.
+
+### R13, P1: OptiX 9 was treated as a mandatory gate without a semantic reason
+
+Source inspection and a complete OptiX 8 build show that the route uses no
+OptiX 9-specific API. No frozen successor authority selected 9.0.0 as the only
+valid provider profile; it was a CLI/documentation default. NVIDIA requires
+R570 or newer for OptiX 9, while OptiX 8.0 requires R535 or newer. The current
+R550 host is therefore a supported OptiX 8 profile and an unsupported OptiX 9
+profile. The exact OptiX 8 profile is accepted for internal functional
+completion; OptiX 9 is separate portability coverage. Both successor CLI
+entrypoints now require an explicit SDK version rather than silently choosing
+one.
 
 ## Open promotion blockers
 
-### O1, P1: the formal OptiX 9 GPU gate remains incomplete
+### O1, P3: OptiX 9 portability coverage is absent
 
-The current Pod's driver rejected OptiX 9 before launch. A deliberately bounded
-OptiX 8 diagnostic on the same host did execute 18 true-OptiX launches and
-matched all nine workloads twice, but changing the SDK is not the registered
-formal target. The checked-in local receipt also remains local-only and records
-zero GPU launches. A Pod whose driver negotiates the pinned OptiX 9 ABI is still
-mandatory for formal GPU promotion.
+The current Pod's driver rejected OptiX 9 before launch, exactly as NVIDIA's
+R570 minimum predicts. This blocks any OptiX 9 or broad cross-version wording,
+but it does not block the exact OptiX 8 internal functional result. A future
+R570-or-newer run is useful environment-diversity evidence, not unfinished app
+semantics.
 
 ### O2, P1: arbitrary near-boundary inputs are outside the proved app domain
 
@@ -188,39 +203,36 @@ authorized until that review is separately requested and completed.
 
 ## Local evidence
 
-- Successor tests: 50/50 pass.
+- Successor tests: 51/51 pass.
 - Goal5833--Goal5836 frozen/relevant regressions: 168/168 pass.
 - Stored local receipt: 9/9 semantic/scale cases match the independent oracle.
-- Receipt SHA-256: `8f7aa7208e20826b9d77eb0a4a675f2b3657afdff316bb3226258cc6df3e1ed0`.
+- Receipt SHA-256: `4be41ead52eb734b66422362510a57745363ca4e6dde0d7658338a160fa376e1`.
 - `scripts/audit_goal5835_goal5836.py --verify-stored`: pass.
 - `scripts/goal5836_a1_build_source_fidelity.py --verify-stored`: pass.
 - Python compile-all and `git diff --check`: pass.
 
-## Bounded Pod diagnostic
+## Internal Pod functional evidence
 
 The internal report is
 `successor_owner_grouped_pod_20260902/INTERNAL_POD_DIAGNOSTIC_REPORT.md`.
 At commit `2c48337`, OptiX 9 compiled and linked but failed ABI negotiation on
-driver 550.127.05 before launch. The same source under official OptiX 8 headers
-completed 9/9 workloads with repeat count two: 18/18 true-OptiX launches,
-18/18 matching executions, independent-oracle parity, and prepared reuse all
-passed. Timings are diagnostic only; registered performance count and external
-review count both remain zero.
+driver 550.127.05 before launch. At post-fix commit `5ee0e94`, preflight v2
+correctly split the SDK outcomes and a fresh official OptiX 8 build completed
+9/9 workloads twice: 18/18 true-OptiX launches, oracle parity, and prepared
+reuse all passed. A second scale run used 512 owners, 4096 primitives, 1024
+queries, and 4,194,304 oracle evaluations; all three prepared executions
+matched. The Mac regression passed at 51/51 successor and 168/168 frozen tests;
+the previous Pod commit passed 50/50 and 168/168 before the evidence-schema
+test was added. Timings are diagnostic only; registered performance count and
+external review count both remain zero.
 
-## Exact next evidence step
+## Next separate gates
 
-On one clean, compatible NVIDIA/OptiX checkout:
+1. Complete the owner-deferred external review before any consensus or public
+   promotion wording.
+2. Use R570-or-newer hardware only if OptiX 9 portability is to be claimed.
+3. Preregister an Embree baseline and timing protocol before any benchmark or
+   speedup claim.
 
-1. Run preflight v2 with pinned OptiX 9; preserve its zero-launch result and
-   require the NVCC, callback-stack, and `optixInit()` ABI probes to pass.
-2. Build with `scripts/build_v4_optix_native_snapshot.py` and save its manifest.
-3. Run `scripts/successor_linear_rtccd_owner_grouped_pod_runner.py` with the
-   exact `.so` and `--native-manifest` from step 2.
-4. Require all nine default workloads, repeated prepared execution, independent
-   oracle parity, descriptor transitions, and true-OptiX receipts to pass.
-5. Preserve the preflight result, build log, native manifest, materialized
-   artifacts, and final result JSON. Treat all timing fields as diagnostics
-   only.
-
-Until that step passes, the correct overall status remains
-`BOUNDED_OPTIX8_DIAGNOSTIC_COMPLETE__FORMAL_OPTIX9_VALIDATION_REQUIRED`.
+The correct current status is
+`INTERNAL_OPTIX8_GPU_FUNCTIONAL_GATE_COMPLETE__PERFORMANCE_AND_EXTERNAL_PROMOTION_DEFERRED`.

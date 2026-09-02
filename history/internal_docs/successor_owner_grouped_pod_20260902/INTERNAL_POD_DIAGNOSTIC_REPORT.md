@@ -1,21 +1,24 @@
-# Internal Pod diagnostic: successor owner-grouped any-hit
+# Internal Pod validation: successor owner-grouped any-hit
 
 Date: 2026-09-02
 
 Review class: internal execution diagnostic, not external review
 
 Verdict:
-`OPTIX8_BOUNDED_DIAGNOSTIC_PASS__OPTIX9_FORMAL_GATE_BLOCKED_BY_DRIVER_ABI`
+`OPTIX8_INTERNAL_GPU_FUNCTIONAL_GATE_PASS__OPTIX9_COVERAGE_UNAVAILABLE_ON_R550`
 
 ## Claim boundary
 
-This report records one clean-checkout GPU diagnostic of the app-neutral
+This report records clean-checkout GPU functional validation of the app-neutral
 `OWNER_GROUPED_ANY_HIT / BOOL_OR` route and its bounded linear RT-CCD case
 study. It authorizes no speedup, benchmark-app, Paper App, full-paper,
-same-input-author-code, OptiX 9 formal-gate, or external-consensus claim.
+same-input-author-code, broad OptiX-version, or external-consensus claim.
 
-The OptiX 8 execution is deliberately diagnostic because the registered target
-is OptiX 9. Timings were collected by the runner for troubleshooting only:
+OptiX 8.0 is the exact internal functional profile because this route uses no
+OptiX 9-specific API and NVIDIA supports OptiX 8.0 on R535 or newer. The exact
+decision is in
+`../successor_owner_grouped_optix_profile_decision_20260902.md`. Timings were
+collected by the runner for troubleshooting only:
 `registered_performance_timing_count=0` and `performance_claimed=false`.
 
 ## Source and host identity
@@ -24,7 +27,10 @@ is OptiX 9. Timings were collected by the runner for troubleshooting only:
 - SSH key path: `/Users/rl2025/.ssh/id_ed25519_rtdl_codex`.
 - Pod checkout: `/workspace/rtdl`, clean branch
   `codex/cgo-goal5836-handoff`.
-- Executed commit: `2c48337bda79a8bda3f3d123df6be393f88c4e95`.
+- Initial executed commit:
+  `2c48337bda79a8bda3f3d123df6be393f88c4e95`.
+- Post-fix executed commit:
+  `5ee0e9404a1262decca6176642edc9f764d8c3f3`.
 - GPU: NVIDIA RTX 4000 Ada Generation,
   `GPU-b0ed3da9-0c28-b259-37a1-d1a36d836ab7`, compute capability 8.9.
 - Driver: 550.127.05.
@@ -37,7 +43,7 @@ is OptiX 9. Timings were collected by the runner for troubleshooting only:
 - OptiX 8 diagnostic headers: NVIDIA `optix-dev` tag `v8.0.0`, commit
   `bef93afb12dbd00e5b8311bc9b320dd487d8cc1f`.
 
-## OptiX 9 formal-target attempt
+## OptiX 9 compatibility attempt
 
 The then-current preflight v1 compiled the exact NVCC host probe, four Numba
 callback leaves, and trusted NVRTC wrapper. It incorrectly reported readiness
@@ -56,11 +62,12 @@ result was published. `RUN_INCOMPLETE.json` remained in the artifact directory
 with status `INCOMPLETE__NO_GPU_RESULT_AUTHORIZED`. This is an environment
 incompatibility, not successful OptiX 9 evidence.
 
-## OptiX 8 bounded diagnostic
+## OptiX 8 internal functional validation
 
 Changing only to the official OptiX 8 header snapshot allowed the same source
-route to build and execute on the same host. The native library again exported
-all four required symbols:
+route to build and execute on the same host. No frozen successor authority or
+implementation feature required OptiX 9. The native library again exported all
+four required symbols:
 
 - native bytes: 7,192,472;
 - native SHA-256:
@@ -81,13 +88,28 @@ The complete runner result was
 
 ## Remediation triggered by the failure
 
-Preflight has been upgraded locally to schema
+Preflight was upgraded to schema
 `rtdl.successor_owner_grouped_any_hit.pod_preflight.v2`. Before compiling the
 callback stack it now builds and runs a temporary `optixInit()` probe against
 the selected headers and host driver. The probe performs zero `optixLaunch`
 calls, records its source/binary/output identity on success, and rejects an ABI
-mismatch before native-library construction. This remediation requires Pod
-confirmation at the post-fix commit before it is treated as complete.
+mismatch before native-library construction.
+
+The same Pod confirmed both branches at post-fix commit `5ee0e94`:
+
+- OptiX 9 failed with exit code 1 and `optixInit_result=7801`; no PASS JSON,
+  callback-stack compilation, native build, or OptiX launch followed.
+- OptiX 8 produced schema v2 status
+  `PASS__COMPILER_AND_OPTIX_RUNTIME_ABI_READY_FOR_NATIVE_BUILD`, with
+  `optixInit_result=0`, all four callback roles compiled, and zero launches.
+- A fresh post-fix OptiX 8 native build produced SHA-256
+  `bc093c2db1987997565d006f3b1061d8cfbfca4a4f6e4886edb5b2e0279458ed`
+  and build ID
+  `477f50bbdb49b2d4cc4832f62c3de56916fbaa271ffc39a2be4353725e0244b6`.
+- The fresh app-front-door run repeated 9/9 workloads, 18/18 true-OptiX
+  launches, 18/18 oracle matches, valid traversal receipts, and prepared reuse.
+- Pod regressions passed 50/50 successor tests and 168/168 frozen
+  Goal5833--Goal5836 tests.
 
 ## Preserved artifacts
 
@@ -102,17 +124,24 @@ The complete compressed bundle is
 | OptiX 8 preflight v1 JSON | `0ebaf2509cdba3d1fa4aeac96b65de43c585188e5eeab717f8bd5128de39c56d` |
 | OptiX 8 native manifest | `97b52dee4757a7938a16bc8a0ed552deb3c5931dc3fc33afe273a552cdb5f496` |
 | OptiX 8 complete GPU result | `64c3d09bc661ef910be6d657d87a20854d4967b7f2cd514b16896fa0e93de639` |
+| Post-fix OptiX 9 ABI-failure log | `ca3c84bccce74f31db9ed7d66099b6d87b78275e4554275226059201a6ef2527` |
+| Post-fix OptiX 9 exit-code file | `4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865` |
+| Post-fix OptiX 8 preflight v2 JSON | `900271b8e2b897a4c5e71248f424119e15dc0c9539b35d30d26da4c72fad7cd8` |
+| Post-fix OptiX 8 native manifest | `973ecf423fb1e58a95aaa56134fdf607c868c522a5d14a07305867647bcb99bd` |
+| Post-fix OptiX 8 complete GPU result | `9fac2dc7b70565a0dbb7c455b16aac73e94beba06cb180e0bd6dd45857805551` |
 
-Both native build logs are empty files with the SHA-256 of empty bytes because
+The post-fix bundle is `owner_grouped_postfix_bundle_5ee0e94.tar.gz`,
+SHA-256
+`e04f373a4ffc203aad1914e7310c66253763634933479b69f03119152e6c653b`.
+
+All native build logs are empty files with the SHA-256 of empty bytes because
 the successful builder emitted no compiler diagnostics.
 
-## Next exact gate
+## Remaining separate gates
 
-1. Commit the preflight-v2 remediation and validate that OptiX 9 fails during
-   `optixInit()` on this driver before native build.
-2. Validate that OptiX 8 passes the same zero-launch runtime ABI probe.
-3. Obtain a Pod whose driver negotiates the pinned OptiX 9 ABI.
-4. From a clean exact commit, rerun preflight v2, native build, and all nine
-   workloads twice.
-5. Preserve artifacts and perform the deferred external review before any
+1. Preserve final runner-schema-v2 artifacts from the exact post-decision
+   commit on this Pod.
+2. Perform the owner-deferred external review before consensus or public
    promotion wording.
+3. Preregister an Embree/timing protocol before benchmark or speedup claims.
+4. Use R570-or-newer hardware only if separate OptiX 9 coverage is desired.

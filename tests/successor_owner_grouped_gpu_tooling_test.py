@@ -22,6 +22,8 @@ from scripts.build_v4_optix_native_snapshot import (
     _validate_output_paths,
 )
 from scripts.successor_linear_rtccd_owner_grouped_pod_runner import (
+    _POD_VALIDATION_SCHEMA,
+    _oracle_pair_accounting,
     _parse_compute_capability,
     _parse_scale,
     _validate_native_build_manifest,
@@ -41,6 +43,21 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class SuccessorOwnerGroupedGpuToolingTest(unittest.TestCase):
+    def test_pod_validation_v2_distinguishes_pair_counts(self):
+        self.assertEqual(
+            _POD_VALIDATION_SCHEMA,
+            "rtdl.successor_owner_grouped_any_hit.pod_validation.v2",
+        )
+        self.assertEqual(
+            _oracle_pair_accounting(4096, 1024, 1024),
+            {
+                "independent_oracle_evaluated_pair_count": 4194304,
+                "independent_oracle_intersecting_pair_count": 1024,
+            },
+        )
+        with self.assertRaises(RuntimeError):
+            _oracle_pair_accounting(1, 1, 2)
+
     def test_successor_entrypoints_bootstrap_repo_imports(self):
         environment = dict(os.environ)
         environment.pop("PYTHONPATH", None)
@@ -66,6 +83,7 @@ class SuccessorOwnerGroupedGpuToolingTest(unittest.TestCase):
     def test_builder_parses_exact_target_and_optix_version(self):
         self.assertEqual(_compute_capability("8.9"), (8, 9))
         self.assertEqual(_parse_compute_capability("8.9"), (8, 9))
+        self.assertEqual(_optix_sdk_number("8.0.0"), 80000)
         self.assertEqual(_optix_sdk_number("9.0.0"), 90000)
         with self.assertRaises(ValueError):
             _compute_capability("sm_89")

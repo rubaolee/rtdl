@@ -515,7 +515,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--cuda-prefix", required=True, type=Path)
     parser.add_argument("--optix-prefix", required=True, type=Path)
-    parser.add_argument("--expected-optix-sdk", default="9.0.0")
+    parser.add_argument("--expected-optix-sdk", required=True)
     parser.add_argument("--compute-capability", required=True)
     parser.add_argument("--host-compiler", type=Path)
     parser.add_argument("--nvrtc-library", type=Path)

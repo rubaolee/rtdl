@@ -149,7 +149,7 @@ def _author_source_evidence() -> list[dict[str, object]]:
 
 def build_local_validation_receipt() -> dict[str, object]:
     target = CurveTargetProfile(
-        "optix", "9.0.0", "8.9", SYNTHETIC_LOCAL_NATIVE_SHA256)
+        "optix", "8.0.0", "8.9", SYNTHETIC_LOCAL_NATIVE_SHA256)
     authority, proof = build_curve_owner_grouped_any_hit_authority(target)
     abi = compile_owner_grouped_any_hit_abi(authority.behavior)
     wrapper = generate_trusted_optix_curve_owner_grouped_any_hit_wrapper_v1(
@@ -201,9 +201,9 @@ def build_local_validation_receipt() -> dict[str, object]:
     semantic_rows = validate_cases(semantic_cases)
     scale_rows = validate_cases(scale_cases)
     payload = {
-        "schema": "rtdl.successor_owner_grouped_any_hit.local_validation.v2",
-        "date": "2026-09-01",
-        "status": "LOCAL_IMPLEMENTATION_COMPLETE__GPU_VALIDATION_REQUIRED",
+        "schema": "rtdl.successor_owner_grouped_any_hit.local_validation.v3",
+        "date": "2026-09-02",
+        "status": "LOCAL_RECEIPT_PASS__GPU_FUNCTIONAL_EVIDENCE_IS_SEPARATE",
         "scope": (
             "bounded paper-derived linear RT-CCD owner-grouped Boolean subset"
         ),
@@ -264,15 +264,15 @@ def build_local_validation_receipt() -> dict[str, object]:
         "numba_ptx_compiled": False,
         "optix_launch_count": 0,
         "gpu_correctness_evidence_count": 0,
+        "external_pod_evidence_embedded": False,
         "performance_timing_count": 0,
         "full_paper_reproduction_claimed": False,
         "benchmark_app_claimed": False,
         "external_review_count": 0,
-        "next_required_evidence": [
-            "compatible pod exact callback/NVRTC toolchain preflight",
-            "compatible pod native build and exported-symbol check",
-            "true-OptiX parity for all nine registered local workloads",
-            "prepared/reused phase timing against same-contract CPU baseline",
+        "next_separate_gates": [
+            "owner-deferred external review before promotion wording",
+            "preregistered Embree/timing study before performance wording",
+            "R570-or-newer execution only for optional OptiX 9 coverage",
         ],
     }
     return {**payload, "receipt_sha256": _sha_bytes(_canonical_bytes(payload))}

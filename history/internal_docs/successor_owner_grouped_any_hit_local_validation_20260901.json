@@ -87,9 +87,9 @@
       "sha256": "e6934833d596e6190a85f6af4e5769ee9f9ce29c350558a80759c805bd9db8eb"
     },
     {
-      "bytes": 372205,
+      "bytes": 372228,
       "path": "src/native/optix/rtdl_optix_v4_callback_poc.cpp",
-      "sha256": "bc0c0ef2d08f44b5e981d065e4d7a7b7a86cc6b16f0fe3491b944731f680f034"
+      "sha256": "75b6ecbc69c7331f3c88024e9feeb4aab40c109df1a4b802f87365709ef523b0"
     },
     {
       "bytes": 540649,
@@ -117,14 +117,14 @@
       "sha256": "50c5c21f58a4ecea28b8e4d34c752998c41dcaa83d8a17281008b8486ee450fd"
     },
     {
-      "bytes": 12947,
+      "bytes": 12923,
       "path": "case_studies/linear_rtccd_owner_grouped/run_local_validation.py",
-      "sha256": "d302ad863f1dfa0a3c1edbebf20ff056db45ae6875e8c8a83b0b0f5c1aacb50c"
+      "sha256": "f930518980993bb9681152af2f54137e108fb7961f472de8fbe7d5862f94f1ea"
     },
     {
-      "bytes": 7160,
+      "bytes": 7477,
       "path": "case_studies/linear_rtccd_owner_grouped/README.md",
-      "sha256": "625127eb9211594091b1aa88ed6b7606cb13fe0181989996531d7aca6c548fb7"
+      "sha256": "b0760612610028b157a0aefa6eeca9f31dc897103f54b14ac4e605488337558b"
     },
     {
       "bytes": 17635,
@@ -132,14 +132,14 @@
       "sha256": "e72672269880b10ba1411f58c4bc08a9be268c0be86ebbd4ca963c009adcc260"
     },
     {
-      "bytes": 20800,
+      "bytes": 20798,
       "path": "scripts/successor_owner_grouped_pod_preflight.py",
-      "sha256": "8135930ab367526866b77db3bea614ba942a07e9172cb20b48d517d87c2ca134"
+      "sha256": "9747ce98fad98b70f5cc07ad4252acd5f2bec4c9576f73117ba48938a19d6102"
     },
     {
-      "bytes": 27001,
+      "bytes": 27857,
       "path": "scripts/successor_linear_rtccd_owner_grouped_pod_runner.py",
-      "sha256": "c28ebe3b4efdead601659a0b95b4ca7c15c2eb7f38eb6cdcc8a803f217486ef3"
+      "sha256": "51b8dbdec556719bbc81717e42aeed587cc372b2d080aa6a3b86f7822bcfc52f"
     },
     {
       "bytes": 22121,
@@ -147,17 +147,18 @@
       "sha256": "a483c1d9c98f316f3d7ecd6a356487dc6530d164e763a1f1db7ddc85519a4b68"
     },
     {
-      "bytes": 14174,
+      "bytes": 14522,
       "path": "tests/successor_linear_rtccd_owner_grouped_app_test.py",
-      "sha256": "8df39164dde4d17da7b0ef3d50d1e72f2d7d2dfef55f607e8b5b7e4e0c54bf6c"
+      "sha256": "d3debccfd1e3ad473bb347471de3dc8a5afe397c0bae979f7305f81719c9ee86"
     },
     {
-      "bytes": 21249,
+      "bytes": 21920,
       "path": "tests/successor_owner_grouped_gpu_tooling_test.py",
-      "sha256": "5de2ce8b5e08607d1cee8dd132eab1dcdd716551d8fd81aec8f89800c1350e63"
+      "sha256": "2f74911181ef146a2181ba8daeaa8e4d2037eadd79712536f71be6e01d4d4bba"
     }
   ],
-  "date": "2026-09-01",
+  "date": "2026-09-02",
+  "external_pod_evidence_embedded": false,
   "external_review_count": 0,
   "fresh_native_builder_ready": true,
   "frozen_goal5835_goal5836_files_modified": false,
@@ -179,7 +180,7 @@
       "make_ray": "b92a949e228da834fab4e596a79a82ad42ad6d0f1ddd80d68e10c15727870fcf",
       "miss": "76fe0d527a3e6d03e1ff77fd29c719c0adc820ba02c2e1e71626240c2f43ac9c"
     },
-    "physical_plan_sha256": "42e413cec70e2311d1ac6ca2766ceeca38371682a45628ef1d639bba6cc505c7",
+    "physical_plan_sha256": "21631cb792ac075bc26414346a7b740609d1929c3cfc9a374469500ffcd1338b",
     "physical_schema_sha256": "28355631bbf2e930bcd4ab2ded3aedfdad5f8ce6be266b3c76abcd458c28e86f",
     "role_topology": [
       "make_ray",
@@ -192,18 +193,17 @@
   "gpu_correctness_evidence_count": 0,
   "matching_local_case_count": 9,
   "native_library_built": false,
-  "next_required_evidence": [
-    "compatible pod exact callback/NVRTC toolchain preflight",
-    "compatible pod native build and exported-symbol check",
-    "true-OptiX parity for all nine registered local workloads",
-    "prepared/reused phase timing against same-contract CPU baseline"
+  "next_separate_gates": [
+    "owner-deferred external review before promotion wording",
+    "preregistered Embree/timing study before performance wording",
+    "R570-or-newer execution only for optional OptiX 9 coverage"
   ],
   "numba_ptx_compiled": false,
   "optix_launch_count": 0,
   "performance_timing_count": 0,
   "pod_toolchain_preflight_ready": true,
   "public_app_gpu_runner_ready": true,
-  "receipt_sha256": "8f7aa7208e20826b9d77eb0a4a675f2b3657afdff316bb3226258cc6df3e1ed0",
+  "receipt_sha256": "4be41ead52eb734b66422362510a57745363ca4e6dde0d7658338a160fa376e1",
   "registered_local_case_count": 9,
   "registered_scale_case_count": 3,
   "registered_scale_cases": [
@@ -678,13 +678,13 @@
     }
   ],
   "registered_surface_gap_floor_exponent2": -10,
-  "schema": "rtdl.successor_owner_grouped_any_hit.local_validation.v2",
+  "schema": "rtdl.successor_owner_grouped_any_hit.local_validation.v3",
   "scope": "bounded paper-derived linear RT-CCD owner-grouped Boolean subset",
-  "status": "LOCAL_IMPLEMENTATION_COMPLETE__GPU_VALIDATION_REQUIRED",
+  "status": "LOCAL_RECEIPT_PASS__GPU_FUNCTIONAL_EVIDENCE_IS_SEPARATE",
   "synthetic_local_target": {
     "compute_capability": "8.9",
     "native_sha256": "ac15f013ad3254720eb477adfb8a70554c0b8ea74aae987222ed514f2385e71a",
-    "optix_sdk": "9.0.0",
+    "optix_sdk": "8.0.0",
     "warning": "source-generation identity only; no native library was loaded"
   }
 }

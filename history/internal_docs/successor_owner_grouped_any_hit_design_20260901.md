@@ -1,7 +1,7 @@
 # Successor design: app-neutral owner-grouped any-hit
 
-Date: 2026-09-01
-Status: local implementation complete; GPU validation pending; no performance claim
+Date: 2026-09-01; updated 2026-09-02
+Status: internal OptiX 8 GPU functional gate complete; no performance claim
 
 ## Problem exposed by the paper-derived collision case
 
@@ -78,8 +78,9 @@ force, or paper-specific logic.
 Local tests may establish schema determinism, Callback-IR admission, proof
 rederivation, CPU semantics, generated-source structure, and hostile rejection.
 Only a compatible NVIDIA/OptiX pod can establish PTX compilation, native ABI
-linkage, true traversal, GPU parity, or performance. No such claims are
-authorized by this design document.
+linkage, true traversal, GPU parity, or performance. The separate Pod report
+now establishes the functional items for one exact OptiX 8 profile; performance
+and broader provider-version claims remain unauthorized.
 
 ## Implemented lifecycle
 
@@ -139,12 +140,18 @@ Passing preflight alone remains zero-launch toolchain evidence, not GPU
 correctness evidence.
 
 The first Pod exposed why runtime ABI negotiation belongs in preflight: OptiX 9
-compiled and linked but driver 550.127.05 rejected it before launch. A bounded
-OptiX 8 diagnostic on the same host then passed all nine workloads twice, for
-18 true-OptiX launches with oracle parity and prepared reuse. This establishes
-that the route executes under that diagnostic SDK, not that the pinned OptiX 9
-formal gate or any performance claim has passed. Exact evidence is recorded in
-`successor_owner_grouped_pod_20260902/INTERNAL_POD_DIAGNOSTIC_REPORT.md`.
+compiled and linked but driver 550.127.05 rejected it before launch. The route
+uses no OptiX 9-specific API, and NVIDIA supports OptiX 8.0 on R535 or newer.
+The exact OptiX 8.0/R550/RTX 4000 Ada profile is therefore the internal GPU
+functional target, while OptiX 9 is additional version coverage. Preflight v2
+confirmed this distinction: OptiX 9 failed early with
+`optixInit_result=7801`, while OptiX 8 returned `optixInit_result=0` with zero
+launches. A fresh build then passed all nine workloads twice for 18 true-OptiX
+launches, plus a 4096-primitive/1024-query scale run three times. Exact evidence
+and the non-performance boundary are recorded in
+`successor_owner_grouped_pod_20260902/INTERNAL_POD_DIAGNOSTIC_REPORT.md`; the
+profile decision is
+`successor_owner_grouped_optix_profile_decision_20260902.md`.
 
 All runner timings are diagnostics. `registered_performance_timing_count=0`
 and `performance_claimed=false` remain mandatory until a separate benchmark

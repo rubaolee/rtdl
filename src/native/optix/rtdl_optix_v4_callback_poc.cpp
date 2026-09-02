@@ -1,7 +1,7 @@
 // Goal5749 bounded V4 Callback-IR / Numba-PTX feasibility path.  Verified
 // Numba leaves are deterministically composed with the trusted wrapper into
-// one OptiX module because OptiX 9 does not link ordinary cross-module CUDA
-// device functions.
+// one OptiX module because ordinary cross-module CUDA device-function linking
+// is not part of this OptiX module path.
 //
 // This file is included inside rtdl_optix.cpp's anonymous namespace.  It is
 // intentionally isolated from every V3 builder and workload.  No application

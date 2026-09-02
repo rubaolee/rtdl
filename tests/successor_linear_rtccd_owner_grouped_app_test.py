@@ -316,6 +316,15 @@ class SuccessorLinearRTCCDOwnerGroupedAppTest(unittest.TestCase):
         expected = json.loads(STORED_RECEIPT.read_text(
             encoding="utf-8", errors="strict"))
         self.assertEqual(observed, expected)
+        self.assertEqual(
+            observed["schema"],
+            "rtdl.successor_owner_grouped_any_hit.local_validation.v3",
+        )
+        self.assertEqual(
+            observed["status"],
+            "LOCAL_RECEIPT_PASS__GPU_FUNCTIONAL_EVIDENCE_IS_SEPARATE",
+        )
+        self.assertFalse(observed["external_pod_evidence_embedded"])
         self.assertEqual(observed["registered_semantic_case_count"], 6)
         self.assertEqual(observed["registered_scale_case_count"], 3)
         self.assertEqual(observed["matching_local_case_count"], 9)

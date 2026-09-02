@@ -54,6 +54,9 @@ RUNNER_SOURCE_PATHS = (
     ROOT / "scripts/successor_owner_grouped_pod_preflight.py",
     Path(__file__).resolve(),
 )
+_POD_VALIDATION_SCHEMA = (
+    "rtdl.successor_owner_grouped_any_hit.pod_validation.v2"
+)
 
 
 def _sha(path: Path) -> str:
@@ -283,6 +286,23 @@ def _parse_scale(value: str) -> tuple[int, int, int, int]:
     return tuple(int(item) for item in match.groups())
 
 
+def _oracle_pair_accounting(
+    primitive_count: int,
+    query_count: int,
+    intersecting_pair_count: int,
+) -> dict[str, int]:
+    values = (primitive_count, query_count, intersecting_pair_count)
+    if any(type(value) is not int or value < 0 for value in values):
+        raise ValueError("oracle pair counts must be nonnegative integers")
+    evaluated_pair_count = primitive_count * query_count
+    if intersecting_pair_count > evaluated_pair_count:
+        raise RuntimeError("oracle intersecting pair count exceeds evaluations")
+    return {
+        "independent_oracle_evaluated_pair_count": evaluated_pair_count,
+        "independent_oracle_intersecting_pair_count": intersecting_pair_count,
+    }
+
+
 def _safe_case_id(value: str) -> str:
     return re.sub(r"[^A-Za-z0-9_.-]+", "_", value)
 
@@ -386,7 +406,11 @@ def _run_workload(
         "primitive_count": len(static.segment_indices),
         "query_count": len(batch.queries),
         "expected_owner_hit_bits": list(case.expected_bits),
-        "independent_oracle_pair_count": oracle.intersecting_pair_count,
+        **_oracle_pair_accounting(
+            len(static.segment_indices),
+            len(batch.queries),
+            oracle.intersecting_pair_count,
+        ),
         "minimum_surface_gap": oracle.minimum_surface_gap,
         "surface_crossing_domain_admission":
             case.problem.surface_crossing_domain_admission(),
@@ -512,7 +536,7 @@ def validate(args) -> dict[str, object]:
             ):
         raise RuntimeError("source identity changed during GPU validation")
     result = {
-        "schema": "rtdl.successor_owner_grouped_any_hit.pod_validation.v1",
+        "schema": _POD_VALIDATION_SCHEMA,
         "status": "PASS__TRUE_OPTIX_PARITY_AND_PREPARED_REUSE",
         "scope": "bounded paper-derived linear RT-CCD owner-grouped Boolean subset",
         "git_commit": pre_commit,
@@ -581,7 +605,7 @@ def main() -> None:
     parser.add_argument("--cuda-prefix", required=True, type=Path)
     parser.add_argument("--optix-include", required=True, type=Path)
     parser.add_argument("--cuda-include", required=True, type=Path)
-    parser.add_argument("--optix-sdk", default="9.0.0")
+    parser.add_argument("--optix-sdk", required=True)
     parser.add_argument("--compute-capability", required=True)
     parser.add_argument("--nvrtc-library", type=Path)
     parser.add_argument("--nvvm-library", type=Path)
