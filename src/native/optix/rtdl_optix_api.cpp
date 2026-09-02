@@ -554,6 +554,69 @@ extern "C" int rtdl_optix_v4_destroy_prepared_builtin_curve_callback_v1(
     }, error_out, error_size);
 }
 
+// App-neutral built-in-curve owner-grouped Boolean any-hit reduction.  The
+// Python physical authority remains responsible for callback/schema/target
+// admission; this ABI receives only composed PTX and typed columns.
+extern "C" int rtdl_optix_v4_prepare_curve_owner_grouped_any_hit_v1(
+        const char* composed_ptx, const float* control_points_xyz,
+        const float* widths, const uint32_t* segment_indices,
+        const uint32_t* owner_ids, size_t control_point_count,
+        size_t segment_count, size_t owner_count,
+        uint64_t* prepared_token_out, char* error_out, size_t error_size) {
+    return handle_native_call([&]() {
+        if (!composed_ptx || !prepared_token_out)
+            throw std::runtime_error(
+                "V4 curve owner-grouped PTX/output must not be null");
+        *prepared_token_out = prepare_v4_curve_owner_grouped_any_hit(
+            std::string(composed_ptx), control_points_xyz, widths,
+            segment_indices, owner_ids, control_point_count, segment_count,
+            owner_count);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_v4_execute_curve_owner_grouped_any_hit_v1(
+        uint64_t prepared_token, const float* query_starts_xyz,
+        const float* query_ends_xyz, size_t query_count,
+        uint32_t* output_owner_hit_bits,
+        uint32_t* output_query_completion_tokens,
+        V4FormalLaunchStatus* output_status, uint64_t* output_counters,
+        char* error_out, size_t error_size) {
+    return handle_native_call([&]() {
+        execute_v4_curve_owner_grouped_any_hit(
+            prepared_token, query_starts_xyz, query_ends_xyz, query_count,
+            output_owner_hit_bits, output_query_completion_tokens,
+            output_status, output_counters);
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_v4_describe_curve_owner_grouped_any_hit_v1(
+        uint64_t prepared_token, char* descriptor_out,
+        size_t descriptor_capacity, size_t* descriptor_bytes_out,
+        char* error_out, size_t error_size) {
+    return handle_native_call([&]() {
+        if (!descriptor_bytes_out ||
+                (!descriptor_out && descriptor_capacity != 0u))
+            throw std::runtime_error(
+                "V4 curve owner-grouped descriptor outputs are invalid");
+        const std::string descriptor =
+            describe_v4_curve_owner_grouped_any_hit(prepared_token);
+        *descriptor_bytes_out = descriptor.size();
+        if (!descriptor_out) return;
+        if (descriptor_capacity <= descriptor.size())
+            throw std::runtime_error(
+                "V4 curve owner-grouped descriptor buffer is too small");
+        std::memcpy(descriptor_out, descriptor.data(), descriptor.size());
+        descriptor_out[descriptor.size()] = '\0';
+    }, error_out, error_size);
+}
+
+extern "C" int rtdl_optix_v4_destroy_curve_owner_grouped_any_hit_v1(
+        uint64_t prepared_token, char* error_out, size_t error_size) {
+    return handle_native_call([&]() {
+        destroy_v4_curve_owner_grouped_any_hit(prepared_token);
+    }, error_out, error_size);
+}
+
 // Goal5759 app-neutral built-in-triangle reduction route.  Per-ray and
 // accepted-event columns are returned to the compiler-owned checked partner;
 // no user reducer function or application identity crosses this ABI.

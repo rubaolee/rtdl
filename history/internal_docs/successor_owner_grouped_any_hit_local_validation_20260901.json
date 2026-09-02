@@ -1,0 +1,690 @@
+{
+  "author_code_executed": false,
+  "author_source": {
+    "archive_path": "history/internal_docs/goal5836_a0_source_acquisition_20260901/AUTHOR_SELECTED_SOURCE.tar.gz",
+    "archive_sha256": "a09883fac899cffa3ac4273b207db75818c2155ab516653462806d1d439f1466",
+    "bounded_interpretation": "author source evidences primitive-to-pose grouped any-hit accumulation and continued traversal; this successor uses Boolean OR rather than reproducing author hit counts",
+    "commit": "bacbf77a612bba3e6e8f7a464fa0fa2c67298ac7",
+    "evidence": [
+      {
+        "all_required_markers_present": true,
+        "archive_member": "RTCollisionDetection-bacbf77a612bba3e6e8f7a464fa0fa2c67298ac7/RTCD/CollisionDetector/CCCuda.cu",
+        "bytes": 4034,
+        "path": "RTCD/CollisionDetector/CCCuda.cu",
+        "required_markers": [
+          "optixGetPrimitiveIndex()",
+          "primIdxToPoseIdx[primID]",
+          "atomicAdd",
+          "optixIgnoreIntersection()"
+        ],
+        "sha256": "69c157a6b1cb2eee12be3a47c405d1714d2f71d3c129ceb3bc52552e25203910"
+      },
+      {
+        "all_required_markers_present": true,
+        "archive_member": "RTCollisionDetection-bacbf77a612bba3e6e8f7a464fa0fa2c67298ac7/RTCD/CollisionDetector/CollisionDetector.h",
+        "bytes": 46252,
+        "path": "RTCD/CollisionDetector/CollisionDetector.h",
+        "required_markers": [
+          "params.mesh.primIdxToPoseIdx",
+          "getMapIndex(i)"
+        ],
+        "sha256": "30e23f2c7d48ba0220dc95b05ea4521361edc8014f065a70bab1400cf27b7da2"
+      },
+      {
+        "all_required_markers_present": true,
+        "archive_member": "RTCollisionDetection-bacbf77a612bba3e6e8f7a464fa0fa2c67298ac7/RTCD/Meshes/mesh.h",
+        "bytes": 39651,
+        "path": "RTCD/Meshes/mesh.h",
+        "required_markers": [
+          "loopEdgeIndices",
+          "ordered_edges",
+          "doesLoop"
+        ],
+        "sha256": "98418c5520893e17c28d1bf5ee4ddcdcda3c09bc39c85212f30f37028e7f409b"
+      }
+    ]
+  },
+  "benchmark_app_claimed": false,
+  "code_sources": [
+    {
+      "bytes": 319859,
+      "path": "src/rtdsl/__init__.py",
+      "sha256": "cf212a9e9649680ca101cc99dad0779246d84a850856fe3b33bb8878b70cecaa"
+    },
+    {
+      "bytes": 15962,
+      "path": "src/rtdsl/v4_owner_grouped_any_hit.py",
+      "sha256": "660cf3ae0a5699f2aad38609e6e950684b400d42c6d92ac24008f6117694c6e6"
+    },
+    {
+      "bytes": 12798,
+      "path": "src/rtdsl/v4_curve_owner_grouped_any_hit.py",
+      "sha256": "15090c955553edb6041ff0352b5618928005b3d63d2d9e9b112094e7fa4d9bc0"
+    },
+    {
+      "bytes": 4380,
+      "path": "src/rtdsl/v4_curve_owner_grouped_any_hit_standard_library.py",
+      "sha256": "0daa76c44bf1f58aa0d1b33a2cb313344956535b5a24f7859c11a86f2bb4c948"
+    },
+    {
+      "bytes": 13173,
+      "path": "src/rtdsl/v4_curve_owner_grouped_any_hit_optix_wrapper_codegen.py",
+      "sha256": "beb842ba8968642b4e8426578b4291f6f89107c0cd38f80d80d3088a4aa2afa6"
+    },
+    {
+      "bytes": 10194,
+      "path": "src/rtdsl/v4_curve_owner_grouped_any_hit_optix_compiler.py",
+      "sha256": "35ca32143b0a96d410bd1fe84391da1786c7ec31873513629e96a60ea0001dff"
+    },
+    {
+      "bytes": 28666,
+      "path": "src/rtdsl/v4_curve_owner_grouped_any_hit_prepared_runtime.py",
+      "sha256": "0446871a7baccacb158fa9596ea28958c40763e2905aceafcd7393a2d7c5abfe"
+    },
+    {
+      "bytes": 10423,
+      "path": "src/rtdsl/v4_curve_owner_grouped_any_hit_public.py",
+      "sha256": "e6934833d596e6190a85f6af4e5769ee9f9ce29c350558a80759c805bd9db8eb"
+    },
+    {
+      "bytes": 372205,
+      "path": "src/native/optix/rtdl_optix_v4_callback_poc.cpp",
+      "sha256": "bc0c0ef2d08f44b5e981d065e4d7a7b7a86cc6b16f0fe3491b944731f680f034"
+    },
+    {
+      "bytes": 540649,
+      "path": "src/native/optix/rtdl_optix_api.cpp",
+      "sha256": "c5398c636175bbb922900391cdce51944b0ee43635c4fe5594ebfec568a1077e"
+    },
+    {
+      "bytes": 991,
+      "path": "case_studies/linear_rtccd_owner_grouped/__init__.py",
+      "sha256": "223bbbf7e0c66aabd4a71928e95e6a32c569ce9c9a372de9fea7b6dbd10f99fd"
+    },
+    {
+      "bytes": 15827,
+      "path": "case_studies/linear_rtccd_owner_grouped/linear_rtccd_owner_grouped.py",
+      "sha256": "d2675f28d59d33719d24ac772085866b78f472c4780bcbfc41c8faac06c4645d"
+    },
+    {
+      "bytes": 3611,
+      "path": "case_studies/linear_rtccd_owner_grouped/independent_oracle.py",
+      "sha256": "496b48fa5a559025c3cd1032d44dee44870fad5a8989cd5a91e328e70143162b"
+    },
+    {
+      "bytes": 6429,
+      "path": "case_studies/linear_rtccd_owner_grouped/fixtures.py",
+      "sha256": "50c5c21f58a4ecea28b8e4d34c752998c41dcaa83d8a17281008b8486ee450fd"
+    },
+    {
+      "bytes": 12947,
+      "path": "case_studies/linear_rtccd_owner_grouped/run_local_validation.py",
+      "sha256": "d302ad863f1dfa0a3c1edbebf20ff056db45ae6875e8c8a83b0b0f5c1aacb50c"
+    },
+    {
+      "bytes": 6517,
+      "path": "case_studies/linear_rtccd_owner_grouped/README.md",
+      "sha256": "8a13a6f817eff3901dbbf868cd11c863e93aba0123405d53b6c2f0d9039f8a59"
+    },
+    {
+      "bytes": 17635,
+      "path": "scripts/build_v4_optix_native_snapshot.py",
+      "sha256": "e72672269880b10ba1411f58c4bc08a9be268c0be86ebbd4ca963c009adcc260"
+    },
+    {
+      "bytes": 18222,
+      "path": "scripts/successor_owner_grouped_pod_preflight.py",
+      "sha256": "06d9f0f635025574d58040d4706a363c0899e564e55e654dd3d561568e699282"
+    },
+    {
+      "bytes": 25906,
+      "path": "scripts/successor_linear_rtccd_owner_grouped_pod_runner.py",
+      "sha256": "a715787daf2ec2841f6bf2145cb7860716cd53f3e62723410d64e6c5290b87e7"
+    },
+    {
+      "bytes": 22121,
+      "path": "tests/successor_owner_grouped_any_hit_contract_test.py",
+      "sha256": "a483c1d9c98f316f3d7ecd6a356487dc6530d164e763a1f1db7ddc85519a4b68"
+    },
+    {
+      "bytes": 14174,
+      "path": "tests/successor_linear_rtccd_owner_grouped_app_test.py",
+      "sha256": "8df39164dde4d17da7b0ef3d50d1e72f2d7d2dfef55f607e8b5b7e4e0c54bf6c"
+    },
+    {
+      "bytes": 18999,
+      "path": "tests/successor_owner_grouped_gpu_tooling_test.py",
+      "sha256": "eff8e566ff7e2f97ed1bf212a08073a082897fc1a050f17bc9b8cded94d689fa"
+    }
+  ],
+  "date": "2026-09-01",
+  "external_review_count": 0,
+  "fresh_native_builder_ready": true,
+  "frozen_goal5835_goal5836_files_modified": false,
+  "full_paper_reproduction_claimed": false,
+  "generic_contract": {
+    "any_hit_proof_sha256": "59bd6e3b8431a96180b25636cd445e837698a301da35d7606a97fcf5af0cf4b6",
+    "behavior_authority_sha256": "550c3d5ede5475475a48e706f087b5879b03680a4583e7dd314f8beefa68da9f",
+    "behavior_schema_sha256": "8dfac158342ccb6fe786a6329c833eeb43d48b09c62d7d3d41ad74db62df5b84",
+    "callback_abi_sha256": "ec2e204893c211a362c074ce4936f95b6a6d323630bf7484e6c5cee226fc9811",
+    "callback_effect_digest": "49c63a2ed9e1cfa8beb47dc7595ce82d5eee63523b3efbb619ff50de0453bf5c",
+    "callback_ir_sha256": "566cba0b01d6640becd6c39344fe79a73d829951a755b01835a22022e2a746af",
+    "closed_reduction": "owner_hit_bits[owner_ids[primitive_id]] |= 1",
+    "duplicate_delivery_semantic": false,
+    "event_order_semantic": false,
+    "generated_wrapper_sha256": "705c5b134ae0c823e371efc2532c3e0860691c5fe9b54651cb3ff0e337a6cb87",
+    "numba_leaf_source_sha256": {
+      "any_hit": "945ac7e2616abfc306a198fde6e68e7dc2b20688e31e1d2e08706e1a32dde659",
+      "finalize": "6a02a5fd2f2ed9244965945646820dcb9766a27fb053d96efd210247b59e87c8",
+      "make_ray": "b92a949e228da834fab4e596a79a82ad42ad6d0f1ddd80d68e10c15727870fcf",
+      "miss": "76fe0d527a3e6d03e1ff77fd29c719c0adc820ba02c2e1e71626240c2f43ac9c"
+    },
+    "physical_plan_sha256": "42e413cec70e2311d1ac6ca2766ceeca38371682a45628ef1d639bba6cc505c7",
+    "physical_schema_sha256": "28355631bbf2e930bcd4ab2ded3aedfdad5f8ce6be266b3c76abcd458c28e86f",
+    "role_topology": [
+      "make_ray",
+      "any_hit",
+      "miss",
+      "finalize"
+    ],
+    "template": "owner_grouped_any_hit_bool_or_v1"
+  },
+  "gpu_correctness_evidence_count": 0,
+  "matching_local_case_count": 9,
+  "native_library_built": false,
+  "next_required_evidence": [
+    "compatible pod exact callback/NVRTC toolchain preflight",
+    "compatible pod native build and exported-symbol check",
+    "true-OptiX parity for all nine registered local workloads",
+    "prepared/reused phase timing against same-contract CPU baseline"
+  ],
+  "numba_ptx_compiled": false,
+  "optix_launch_count": 0,
+  "performance_timing_count": 0,
+  "pod_toolchain_preflight_ready": true,
+  "public_app_gpu_runner_ready": true,
+  "receipt_sha256": "41666a5631071e5344eead893776c2548944c6e72df5abfde037930f4784204f",
+  "registered_local_case_count": 9,
+  "registered_scale_case_count": 3,
+  "registered_scale_cases": [
+    {
+      "case_id": "scale-o8-s2-h2-d1",
+      "expected_owner_bits": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0
+      ],
+      "identity_projection_sha256": "72efcada86ad2f30977e08397c7d125fbd48a3285b1c08785621b927c96a922c",
+      "intersecting_directed_pair_count": 16,
+      "match": true,
+      "minimum_surface_gap": 0.125,
+      "observed_owner_bits": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0
+      ],
+      "owner_count": 8,
+      "primitive_count": 16,
+      "purpose": "separated scale ladder with owner reduction and duplicate delivery",
+      "query_count": 16,
+      "surface_crossing_domain_admission": {
+        "admission_sha256": "aee3581c2f9658620d27bd807488eb1343e3d62f74f941d825bdc96a7ccd7f90",
+        "certified_length_margin": 0.7499999999999993,
+        "fully_contained_query_excluded": true,
+        "maximum_capsule_diameter_upper_bound": 1.2500000000000004,
+        "minimum_query_length_lower_bound": 1.9999999999999998,
+        "pairwise_collision_discovery_performed": false,
+        "proof": "minimum_query_length_lower_bound_gt_maximum_capsule_diameter_upper_bound",
+        "rounding_policy": "canonical_f32_inputs__binary64_fsum_sqrt__nextafter_outward_bounds",
+        "schema": "rtdl.case_study.linear_rtccd_surface_crossing_domain.v2"
+      }
+    },
+    {
+      "case_id": "scale-o32-s4-h3-d2",
+      "expected_owner_bits": [
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0
+      ],
+      "identity_projection_sha256": "d494b43627eef7fb4f124ef3ae1ae92294eb35586ec9436d14ba39e291090212",
+      "intersecting_directed_pair_count": 176,
+      "match": true,
+      "minimum_surface_gap": 0.125,
+      "observed_owner_bits": [
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0
+      ],
+      "owner_count": 32,
+      "primitive_count": 128,
+      "purpose": "separated scale ladder with owner reduction and duplicate delivery",
+      "query_count": 176,
+      "surface_crossing_domain_admission": {
+        "admission_sha256": "aee3581c2f9658620d27bd807488eb1343e3d62f74f941d825bdc96a7ccd7f90",
+        "certified_length_margin": 0.7499999999999993,
+        "fully_contained_query_excluded": true,
+        "maximum_capsule_diameter_upper_bound": 1.2500000000000004,
+        "minimum_query_length_lower_bound": 1.9999999999999998,
+        "pairwise_collision_discovery_performed": false,
+        "proof": "minimum_query_length_lower_bound_gt_maximum_capsule_diameter_upper_bound",
+        "rounding_policy": "canonical_f32_inputs__binary64_fsum_sqrt__nextafter_outward_bounds",
+        "schema": "rtdl.case_study.linear_rtccd_surface_crossing_domain.v2"
+      }
+    },
+    {
+      "case_id": "scale-o64-s8-h5-d1",
+      "expected_owner_bits": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      "identity_projection_sha256": "0bec31fca9f06b96fb1e428b9840e3b0c6430a4a8744b332b83c54313febd467",
+      "intersecting_directed_pair_count": 208,
+      "match": true,
+      "minimum_surface_gap": 0.125,
+      "observed_owner_bits": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      "owner_count": 64,
+      "primitive_count": 512,
+      "purpose": "separated scale ladder with owner reduction and duplicate delivery",
+      "query_count": 208,
+      "surface_crossing_domain_admission": {
+        "admission_sha256": "aee3581c2f9658620d27bd807488eb1343e3d62f74f941d825bdc96a7ccd7f90",
+        "certified_length_margin": 0.7499999999999993,
+        "fully_contained_query_excluded": true,
+        "maximum_capsule_diameter_upper_bound": 1.2500000000000004,
+        "minimum_query_length_lower_bound": 1.9999999999999998,
+        "pairwise_collision_discovery_performed": false,
+        "proof": "minimum_query_length_lower_bound_gt_maximum_capsule_diameter_upper_bound",
+        "rounding_policy": "canonical_f32_inputs__binary64_fsum_sqrt__nextafter_outward_bounds",
+        "schema": "rtdl.case_study.linear_rtccd_surface_crossing_domain.v2"
+      }
+    }
+  ],
+  "registered_semantic_case_count": 6,
+  "registered_semantic_cases": [
+    {
+      "case_id": "clear_two_owners",
+      "expected_owner_bits": [
+        0,
+        0
+      ],
+      "identity_projection_sha256": "3ee59df10874a7d9e954a1315352af5bc45a1640da66c73a3e301d156f381d2b",
+      "intersecting_directed_pair_count": 0,
+      "match": true,
+      "minimum_surface_gap": 1.25,
+      "observed_owner_bits": [
+        0,
+        0
+      ],
+      "owner_count": 2,
+      "primitive_count": 2,
+      "purpose": "all-owner miss",
+      "query_count": 2,
+      "surface_crossing_domain_admission": {
+        "admission_sha256": "adac5d2e4961b5256f693f44730d61b3a0d0f8805efe49da9f3278470b4436a6",
+        "certified_length_margin": 1.4999999999999987,
+        "fully_contained_query_excluded": true,
+        "maximum_capsule_diameter_upper_bound": 2.500000000000001,
+        "minimum_query_length_lower_bound": 3.9999999999999996,
+        "pairwise_collision_discovery_performed": false,
+        "proof": "minimum_query_length_lower_bound_gt_maximum_capsule_diameter_upper_bound",
+        "rounding_policy": "canonical_f32_inputs__binary64_fsum_sqrt__nextafter_outward_bounds",
+        "schema": "rtdl.case_study.linear_rtccd_surface_crossing_domain.v2"
+      }
+    },
+    {
+      "case_id": "one_owner_hit",
+      "expected_owner_bits": [
+        1,
+        0
+      ],
+      "identity_projection_sha256": "e925132f226b47cf709d1b4fe809bd8299f349b2e6c9c16c89a10ef236190e77",
+      "intersecting_directed_pair_count": 2,
+      "match": true,
+      "minimum_surface_gap": 0.25,
+      "observed_owner_bits": [
+        1,
+        0
+      ],
+      "owner_count": 2,
+      "primitive_count": 2,
+      "purpose": "single owner hit",
+      "query_count": 2,
+      "surface_crossing_domain_admission": {
+        "admission_sha256": "adac5d2e4961b5256f693f44730d61b3a0d0f8805efe49da9f3278470b4436a6",
+        "certified_length_margin": 1.4999999999999987,
+        "fully_contained_query_excluded": true,
+        "maximum_capsule_diameter_upper_bound": 2.500000000000001,
+        "minimum_query_length_lower_bound": 3.9999999999999996,
+        "pairwise_collision_discovery_performed": false,
+        "proof": "minimum_query_length_lower_bound_gt_maximum_capsule_diameter_upper_bound",
+        "rounding_policy": "canonical_f32_inputs__binary64_fsum_sqrt__nextafter_outward_bounds",
+        "schema": "rtdl.case_study.linear_rtccd_surface_crossing_domain.v2"
+      }
+    },
+    {
+      "case_id": "many_primitives_one_owner",
+      "expected_owner_bits": [
+        1,
+        0
+      ],
+      "identity_projection_sha256": "8cc64f31b883fff427bf2c8917da6c047743efa3d29a128f3f61cbfdb6c672ac",
+      "intersecting_directed_pair_count": 2,
+      "match": true,
+      "minimum_surface_gap": 0.25,
+      "observed_owner_bits": [
+        1,
+        0
+      ],
+      "owner_count": 2,
+      "primitive_count": 3,
+      "purpose": "many primitives reduce into one owner",
+      "query_count": 2,
+      "surface_crossing_domain_admission": {
+        "admission_sha256": "adac5d2e4961b5256f693f44730d61b3a0d0f8805efe49da9f3278470b4436a6",
+        "certified_length_margin": 1.4999999999999987,
+        "fully_contained_query_excluded": true,
+        "maximum_capsule_diameter_upper_bound": 2.500000000000001,
+        "minimum_query_length_lower_bound": 3.9999999999999996,
+        "pairwise_collision_discovery_performed": false,
+        "proof": "minimum_query_length_lower_bound_gt_maximum_capsule_diameter_upper_bound",
+        "rounding_policy": "canonical_f32_inputs__binary64_fsum_sqrt__nextafter_outward_bounds",
+        "schema": "rtdl.case_study.linear_rtccd_surface_crossing_domain.v2"
+      }
+    },
+    {
+      "case_id": "two_owners_hit",
+      "expected_owner_bits": [
+        1,
+        1
+      ],
+      "identity_projection_sha256": "ab88642f10715f7464582dfd6a0599e55a658eb2cfab357e9bfad661d068445d",
+      "intersecting_directed_pair_count": 4,
+      "match": true,
+      "minimum_surface_gap": 0.25,
+      "observed_owner_bits": [
+        1,
+        1
+      ],
+      "owner_count": 2,
+      "primitive_count": 2,
+      "purpose": "multiple owners hit",
+      "query_count": 4,
+      "surface_crossing_domain_admission": {
+        "admission_sha256": "adac5d2e4961b5256f693f44730d61b3a0d0f8805efe49da9f3278470b4436a6",
+        "certified_length_margin": 1.4999999999999987,
+        "fully_contained_query_excluded": true,
+        "maximum_capsule_diameter_upper_bound": 2.500000000000001,
+        "minimum_query_length_lower_bound": 3.9999999999999996,
+        "pairwise_collision_discovery_performed": false,
+        "proof": "minimum_query_length_lower_bound_gt_maximum_capsule_diameter_upper_bound",
+        "rounding_policy": "canonical_f32_inputs__binary64_fsum_sqrt__nextafter_outward_bounds",
+        "schema": "rtdl.case_study.linear_rtccd_surface_crossing_domain.v2"
+      }
+    },
+    {
+      "case_id": "start_inside_bidirectional",
+      "expected_owner_bits": [
+        1,
+        0
+      ],
+      "identity_projection_sha256": "4c7316011c82713b5920299a80dc8f7e54a032464eb698461319aed9f29f0e3e",
+      "intersecting_directed_pair_count": 2,
+      "match": true,
+      "minimum_surface_gap": 0.25,
+      "observed_owner_bits": [
+        1,
+        0
+      ],
+      "owner_count": 2,
+      "primitive_count": 2,
+      "purpose": "start-inside query with conservative reverse direction",
+      "query_count": 2,
+      "surface_crossing_domain_admission": {
+        "admission_sha256": "77f8a3085e1978d0067f7571de6d0c0bf5f69216d76633f264ef6c3dc9477b3b",
+        "certified_length_margin": 0.49999999999999867,
+        "fully_contained_query_excluded": true,
+        "maximum_capsule_diameter_upper_bound": 2.500000000000001,
+        "minimum_query_length_lower_bound": 2.9999999999999996,
+        "pairwise_collision_discovery_performed": false,
+        "proof": "minimum_query_length_lower_bound_gt_maximum_capsule_diameter_upper_bound",
+        "rounding_policy": "canonical_f32_inputs__binary64_fsum_sqrt__nextafter_outward_bounds",
+        "schema": "rtdl.case_study.linear_rtccd_surface_crossing_domain.v2"
+      }
+    },
+    {
+      "case_id": "duplicate_geometric_queries",
+      "expected_owner_bits": [
+        1,
+        0
+      ],
+      "identity_projection_sha256": "0d8551f8e947a8b34dba00d947315c06a0707951c16792be4d73b1948848f9bb",
+      "intersecting_directed_pair_count": 3,
+      "match": true,
+      "minimum_surface_gap": 0.25,
+      "observed_owner_bits": [
+        1,
+        0
+      ],
+      "owner_count": 2,
+      "primitive_count": 2,
+      "purpose": "duplicate accepted events remain Boolean-idempotent",
+      "query_count": 3,
+      "surface_crossing_domain_admission": {
+        "admission_sha256": "adac5d2e4961b5256f693f44730d61b3a0d0f8805efe49da9f3278470b4436a6",
+        "certified_length_margin": 1.4999999999999987,
+        "fully_contained_query_excluded": true,
+        "maximum_capsule_diameter_upper_bound": 2.500000000000001,
+        "minimum_query_length_lower_bound": 3.9999999999999996,
+        "pairwise_collision_discovery_performed": false,
+        "proof": "minimum_query_length_lower_bound_gt_maximum_capsule_diameter_upper_bound",
+        "rounding_policy": "canonical_f32_inputs__binary64_fsum_sqrt__nextafter_outward_bounds",
+        "schema": "rtdl.case_study.linear_rtccd_surface_crossing_domain.v2"
+      }
+    }
+  ],
+  "registered_surface_gap_floor_exponent2": -10,
+  "schema": "rtdl.successor_owner_grouped_any_hit.local_validation.v2",
+  "scope": "bounded paper-derived linear RT-CCD owner-grouped Boolean subset",
+  "status": "LOCAL_IMPLEMENTATION_COMPLETE__GPU_VALIDATION_REQUIRED",
+  "synthetic_local_target": {
+    "compute_capability": "8.9",
+    "native_sha256": "ac15f013ad3254720eb477adfb8a70554c0b8ea74aae987222ed514f2385e71a",
+    "optix_sdk": "9.0.0",
+    "warning": "source-generation identity only; no native library was loaded"
+  }
+}

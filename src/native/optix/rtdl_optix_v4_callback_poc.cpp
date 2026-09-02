@@ -136,6 +136,33 @@ struct V4SphereParams {
 // The host launch record is layout-identical by construction.
 using V4CurveParams = V4SphereParams;
 
+// App-neutral accepted-event projection for built-in curves.  One read-only
+// owner ID is bound per primitive; the generated any-hit program performs the
+// closed Boolean-OR reduction into one owner-sized output column.
+struct V4CurveOwnerGroupedParams {
+    OptixTraversableHandle traversable;
+    const float* query_sx;
+    const float* query_sy;
+    const float* query_sz;
+    const float* query_ex;
+    const float* query_ey;
+    const float* query_ez;
+    const uint32_t* owner_ids;
+    uint32_t primitive_count;
+    uint32_t query_count;
+    uint32_t owner_count;
+    uint32_t* owner_hit_bits;
+    uint32_t* query_completion_tokens;
+    V4FormalLaunchStatus* status;
+    unsigned long long* role_counters;
+};
+static_assert(sizeof(V4CurveOwnerGroupedParams) == 112u,
+              "V4 curve owner-grouped launch-parameter layout changed");
+static_assert(offsetof(V4CurveOwnerGroupedParams, owner_ids) == 56u,
+              "V4 curve owner column offset changed");
+static_assert(offsetof(V4CurveOwnerGroupedParams, owner_hit_bits) == 80u,
+              "V4 curve owner output offset changed");
+
 // Goal5814 strict-interior Particle template.  This host mirror deliberately
 // has no generic built-in-triangle ``boundary_owner`` pointer.  Seven SoA f32
 // query columns and three SoA u32 result columns are the exact shared device
@@ -3564,6 +3591,486 @@ static void destroy_v4_prepared_builtin_curve_callback(uint64_t token) {
                 "V4 prepared built-in curve handle is unknown or closed");
         removed = found->second;
         g_v4_builtin_curve_registry.erase(found);
+    }
+    std::lock_guard<std::mutex> execution_lock(removed->execution_mutex);
+}
+
+// Successor app-neutral owner-grouped any-hit route.  It reuses the reviewed
+// built-in curve GAS builder, but has a distinct executable namespace and ABI.
+// Owner IDs need not be unique: many primitives may intentionally reduce into
+// the same output group.
+struct V4PreparedCurveOwnerGrouped {
+    V4CurveAccelHolder accel;
+    std::unique_ptr<PipelineHolder> pipeline;
+    CUdeviceptr owner_ids = 0;
+    uint32_t primitive_count = 0;
+    uint32_t owner_count = 0;
+    int compiled_optix_version = 0;
+    int cuda_device_ordinal = -1;
+    int cuda_compute_capability_major = -1;
+    int cuda_compute_capability_minor = -1;
+    int cuda_driver_version = 0;
+    std::string static_input_fingerprint;
+    std::string device_static_input_fingerprint;
+    uint64_t vertex_device_pointer = 0;
+    uint64_t width_device_pointer = 0;
+    uint64_t index_device_pointer = 0;
+    uint64_t owner_id_device_pointer = 0;
+    uint64_t traversable_identity = 0;
+    uint64_t execution_count = 0;
+    bool last_execution_present = false;
+    bool last_status_failed = false;
+    uint64_t last_query_count = 0;
+    uint32_t last_status_d2h_call_count = 0;
+    uint32_t last_application_output_d2h_call_count = 0;
+    uint32_t last_output_after_status_failure_count = 0;
+    std::string last_query_fingerprint;
+    std::string last_status_fingerprint;
+    std::string last_counter_fingerprint;
+    std::string last_output_fingerprint;
+    std::mutex execution_mutex;
+    ~V4PreparedCurveOwnerGrouped() {
+        if (owner_ids) cuMemFree(owner_ids);
+    }
+};
+
+static std::string v4_curve_owner_grouped_output_fingerprint(
+        const uint32_t* owner_bits, size_t owner_count,
+        const uint32_t* completion, size_t query_count) {
+    V4SphereCanonicalFingerprint fingerprint;
+    fingerprint.add_text("rtdl.v4.native_curve_owner_grouped_output.v1");
+    fingerprint.add_u64(static_cast<uint64_t>(owner_count));
+    for (size_t index = 0; index < owner_count; ++index)
+        fingerprint.add_u32(owner_bits[index]);
+    fingerprint.add_u64(static_cast<uint64_t>(query_count));
+    for (size_t index = 0; index < query_count; ++index)
+        fingerprint.add_u32(completion[index]);
+    return fingerprint.hex();
+}
+
+static std::string v4_curve_owner_grouped_static_fingerprint(
+        const std::vector<float3>& vertices, const std::vector<float>& widths,
+        const std::vector<uint32_t>& indices, const uint32_t* owner_ids,
+        uint32_t owner_count) {
+    V4SphereCanonicalFingerprint fingerprint;
+    fingerprint.add_text("rtdl.v4.native_curve_owner_grouped_static.v1");
+    fingerprint.add_u32(owner_count);
+    fingerprint.add_u64(static_cast<uint64_t>(vertices.size()));
+    for (size_t index = 0; index < vertices.size(); ++index) {
+        fingerprint.add_float(vertices[index].x);
+        fingerprint.add_float(vertices[index].y);
+        fingerprint.add_float(vertices[index].z);
+        fingerprint.add_float(widths[index]);
+    }
+    fingerprint.add_u64(static_cast<uint64_t>(indices.size()));
+    for (size_t index = 0; index < indices.size(); ++index) {
+        fingerprint.add_u32(indices[index]);
+        fingerprint.add_u32(owner_ids[index]);
+    }
+    return fingerprint.hex();
+}
+
+static std::mutex g_v4_curve_owner_grouped_registry_mutex;
+static std::unordered_map<uint64_t, std::shared_ptr<V4PreparedCurveOwnerGrouped>>
+    g_v4_curve_owner_grouped_registry;
+static uint64_t g_v4_curve_owner_grouped_next_token = 1;
+
+static uint64_t prepare_v4_curve_owner_grouped_any_hit(
+        const std::string& composed_ptx, const float* control_points_xyz,
+        const float* widths, const uint32_t* segment_indices,
+        const uint32_t* owner_ids, size_t control_point_count,
+        size_t segment_count, size_t owner_count) {
+    if (composed_ptx.empty() || !control_points_xyz || !widths ||
+            !segment_indices || !owner_ids || control_point_count < 2 ||
+            segment_count == 0 || owner_count == 0 ||
+            control_point_count > UINT32_MAX || segment_count > UINT32_MAX ||
+            owner_count > UINT32_MAX)
+        throw std::runtime_error(
+            "V4 curve owner-grouped prepare inputs are invalid");
+    std::vector<float3> vertices;
+    std::vector<float> normalized_widths;
+    vertices.reserve(control_point_count);
+    normalized_widths.reserve(control_point_count);
+    for (size_t index = 0; index < control_point_count; ++index) {
+        const float x = control_points_xyz[index * 3u + 0u];
+        const float y = control_points_xyz[index * 3u + 1u];
+        const float z = control_points_xyz[index * 3u + 2u];
+        const float width = widths[index];
+        if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z) ||
+                !std::isfinite(width) || width <= 0.0f)
+            throw std::runtime_error(
+                "V4 curve owner-grouped vertex is invalid");
+        vertices.push_back(make_float3(x, y, z));
+        normalized_widths.push_back(width);
+    }
+    std::vector<uint32_t> indices(
+        segment_indices, segment_indices + segment_count);
+    std::unordered_set<uint32_t> starts;
+    for (size_t primitive = 0; primitive < segment_count; ++primitive) {
+        const uint32_t start = indices[primitive];
+        if (start >= control_point_count - 1u ||
+                !starts.insert(start).second || owner_ids[primitive] >= owner_count)
+            throw std::runtime_error(
+                "V4 curve owner-grouped index/owner is invalid");
+        const auto& first = vertices[start];
+        const auto& second = vertices[start + 1u];
+        if ((first.x == second.x && first.y == second.y &&
+             first.z == second.z) ||
+                normalized_widths[start] != normalized_widths[start + 1u])
+            throw std::runtime_error(
+                "V4 curve owner-grouped segment is unsupported");
+    }
+    auto prepared = std::make_shared<V4PreparedCurveOwnerGrouped>();
+    prepared->primitive_count = static_cast<uint32_t>(segment_count);
+    prepared->owner_count = static_cast<uint32_t>(owner_count);
+    OptixDeviceContext ctx = get_optix_context();
+    CUdevice active_device = 0;
+    CU_CHECK(cuCtxGetDevice(&active_device));
+    prepared->compiled_optix_version = OPTIX_VERSION;
+    prepared->cuda_device_ordinal = static_cast<int>(active_device);
+    CU_CHECK(cuDeviceGetAttribute(
+        &prepared->cuda_compute_capability_major,
+        CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MAJOR, active_device));
+    CU_CHECK(cuDeviceGetAttribute(
+        &prepared->cuda_compute_capability_minor,
+        CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MINOR, active_device));
+    CU_CHECK(cuDriverGetVersion(&prepared->cuda_driver_version));
+    prepared->accel = build_v4_builtin_curve_accel(
+        ctx, vertices, normalized_widths, indices);
+    auto spec = make_native_producer_spec(
+        "__raygen__rtdl_v4_curve_owner_grouped",
+        "__miss__rtdl_v4_curve_owner_grouped", nullptr,
+        "__anyhit__rtdl_v4_curve_owner_grouped", nullptr, 1,
+        OPTIX_PRIMITIVE_TYPE_FLAGS_ROUND_LINEAR, 0);
+    spec.use_builtin_is = 1u;
+    spec.builtin_is_type = OPTIX_PRIMITIVE_TYPE_ROUND_LINEAR;
+    spec.builtin_is_build_flags = OPTIX_BUILD_FLAG_PREFER_FAST_TRACE;
+    spec.builtin_is_curve_endcap_flags = OPTIX_CURVE_ENDCAP_DEFAULT;
+    prepared->pipeline = build_pipeline(ctx, composed_ptx, spec);
+    auto& facts = prepared->accel.build_facts;
+    facts.primitive_type = static_cast<unsigned int>(spec.builtin_is_type);
+    facts.primitive_type_flags = spec.primitive_type_flags;
+    facts.builtin_is_build_flags = spec.builtin_is_build_flags;
+    facts.builtin_is_curve_endcap_flags = spec.builtin_is_curve_endcap_flags;
+    facts.builtin_is_module = prepared->pipeline->builtin_is_module != nullptr;
+    facts.user_intersection_program = spec.intersection_name != nullptr;
+    facts.uses_motion_blur = spec.uses_motion_blur != 0u;
+    facts.traversable_graph_flags = spec.traversable_graph_flags;
+    facts.max_payload_values = static_cast<unsigned int>(spec.max_payload_values);
+    facts.max_attribute_values = static_cast<unsigned int>(spec.max_attribute_values);
+    facts.max_trace_depth = spec.max_trace_depth;
+    facts.program_group_count = spec.program_group_count;
+    CU_CHECK(cuMemAlloc(&prepared->owner_ids, sizeof(uint32_t) * segment_count));
+    upload(prepared->owner_ids, owner_ids, segment_count);
+    prepared->static_input_fingerprint =
+        v4_curve_owner_grouped_static_fingerprint(
+            vertices, normalized_widths, indices, owner_ids,
+            prepared->owner_count);
+    std::vector<float3> observed_vertices(control_point_count);
+    std::vector<float> observed_widths(control_point_count);
+    std::vector<uint32_t> observed_indices(segment_count);
+    std::vector<uint32_t> observed_owners(segment_count);
+    download(observed_vertices.data(), prepared->accel.vertex_buf,
+             control_point_count);
+    download(observed_widths.data(), prepared->accel.width_buf,
+             control_point_count);
+    download(observed_indices.data(), prepared->accel.index_buf, segment_count);
+    download(observed_owners.data(), prepared->owner_ids, segment_count);
+    prepared->device_static_input_fingerprint =
+        v4_curve_owner_grouped_static_fingerprint(
+            observed_vertices, observed_widths, observed_indices,
+            observed_owners.data(), prepared->owner_count);
+    if (prepared->static_input_fingerprint !=
+            prepared->device_static_input_fingerprint)
+        throw std::runtime_error(
+            "V4 curve owner-grouped device content differs");
+    prepared->vertex_device_pointer =
+        static_cast<uint64_t>(prepared->accel.vertex_buf);
+    prepared->width_device_pointer =
+        static_cast<uint64_t>(prepared->accel.width_buf);
+    prepared->index_device_pointer =
+        static_cast<uint64_t>(prepared->accel.index_buf);
+    prepared->owner_id_device_pointer =
+        static_cast<uint64_t>(prepared->owner_ids);
+    prepared->traversable_identity =
+        static_cast<uint64_t>(prepared->accel.handle);
+    if (!prepared->vertex_device_pointer || !prepared->width_device_pointer ||
+            !prepared->index_device_pointer ||
+            !prepared->owner_id_device_pointer || !prepared->traversable_identity)
+        throw std::runtime_error(
+            "V4 curve owner-grouped device identity is zero");
+    std::lock_guard<std::mutex> lock(
+        g_v4_curve_owner_grouped_registry_mutex);
+    uint64_t token = g_v4_curve_owner_grouped_next_token++;
+    if (token == 0) token = g_v4_curve_owner_grouped_next_token++;
+    if (!g_v4_curve_owner_grouped_registry.emplace(token, prepared).second)
+        throw std::runtime_error(
+            "V4 curve owner-grouped token collision");
+    return token;
+}
+
+static std::shared_ptr<V4PreparedCurveOwnerGrouped>
+v4_curve_owner_grouped_from_token(uint64_t token) {
+    if (token == 0)
+        throw std::runtime_error(
+            "V4 curve owner-grouped token is zero");
+    std::lock_guard<std::mutex> lock(
+        g_v4_curve_owner_grouped_registry_mutex);
+    const auto found = g_v4_curve_owner_grouped_registry.find(token);
+    if (found == g_v4_curve_owner_grouped_registry.end())
+        throw std::runtime_error(
+            "V4 curve owner-grouped handle is unknown or closed");
+    return found->second;
+}
+
+static std::string describe_v4_curve_owner_grouped_any_hit(uint64_t token) {
+    const auto prepared = v4_curve_owner_grouped_from_token(token);
+    std::lock_guard<std::mutex> execution_lock(prepared->execution_mutex);
+    const auto& facts = prepared->accel.build_facts;
+    std::ostringstream out;
+    out << "{\"schema\":\"rtdl.v4.native_curve_owner_grouped_descriptor.v1\",";
+#ifdef RTDL_OPTIX_BUILD_ID
+    out << "\"native_build_id\":\"" << RTDL_OPTIX_BUILD_ID << "\",";
+#else
+    out << "\"native_build_id\":\"\",";
+#endif
+    out << "\"build_input_type\":" << facts.build_input_type << ',';
+    out << "\"primitive_type\":" << facts.primitive_type << ',';
+    out << "\"primitive_type_flags\":" << facts.primitive_type_flags << ',';
+    out << "\"builtin_is_build_flags\":"
+        << facts.builtin_is_build_flags << ',';
+    out << "\"builtin_is_curve_endcap_flags\":"
+        << facts.builtin_is_curve_endcap_flags << ',';
+    out << "\"builtin_is_module\":"
+        << (facts.builtin_is_module ? "true" : "false") << ',';
+    out << "\"user_intersection_program\":"
+        << (facts.user_intersection_program ? "true" : "false") << ',';
+    out << "\"uses_motion_blur\":"
+        << (facts.uses_motion_blur ? "true" : "false") << ',';
+    out << "\"build_flags\":" << facts.build_flags << ',';
+    out << "\"geometry_flags\":" << facts.geometry_flags << ',';
+    out << "\"vertex_stride_bytes\":" << facts.vertex_stride_bytes << ',';
+    out << "\"width_stride_bytes\":" << facts.width_stride_bytes << ',';
+    out << "\"index_stride_bytes\":" << facts.index_stride_bytes << ',';
+    out << "\"normal_buffers_present\":"
+        << (facts.normal_buffers_present ? "true" : "false") << ',';
+    out << "\"primitive_index_offset\":"
+        << facts.primitive_index_offset << ',';
+    out << "\"sbt_record_count\":" << facts.sbt_record_count << ',';
+    out << "\"gas_count\":" << facts.gas_count << ',';
+    out << "\"primitive_count\":" << facts.primitive_count << ',';
+    out << "\"vertex_count\":" << facts.vertex_count << ',';
+    out << "\"owner_count\":" << prepared->owner_count << ',';
+    out << "\"motion_key_count\":" << facts.motion_key_count << ',';
+    out << "\"endcap_flags\":" << facts.endcap_flags << ',';
+    out << "\"traversable_graph_flags\":"
+        << facts.traversable_graph_flags << ',';
+    out << "\"max_payload_values\":" << facts.max_payload_values << ',';
+    out << "\"max_attribute_values\":" << facts.max_attribute_values << ',';
+    out << "\"max_trace_depth\":" << facts.max_trace_depth << ',';
+    out << "\"program_group_count\":" << facts.program_group_count << ',';
+    out << "\"compiled_optix_version\":"
+        << prepared->compiled_optix_version << ',';
+    out << "\"compiled_optix_major\":"
+        << prepared->compiled_optix_version / 10000 << ',';
+    out << "\"compiled_optix_minor\":"
+        << (prepared->compiled_optix_version % 10000) / 100 << ',';
+    out << "\"compiled_optix_patch\":"
+        << prepared->compiled_optix_version % 100 << ',';
+    out << "\"cuda_device_ordinal\":" << prepared->cuda_device_ordinal << ',';
+    out << "\"cuda_compute_capability_major\":"
+        << prepared->cuda_compute_capability_major << ',';
+    out << "\"cuda_compute_capability_minor\":"
+        << prepared->cuda_compute_capability_minor << ',';
+    out << "\"cuda_driver_version\":" << prepared->cuda_driver_version << ',';
+    out << "\"static_input_fingerprint\":\""
+        << prepared->static_input_fingerprint << "\",";
+    out << "\"device_static_input_fingerprint\":\""
+        << prepared->device_static_input_fingerprint << "\",";
+    out << "\"vertex_device_pointer\":"
+        << prepared->vertex_device_pointer << ',';
+    out << "\"width_device_pointer\":"
+        << prepared->width_device_pointer << ',';
+    out << "\"index_device_pointer\":"
+        << prepared->index_device_pointer << ',';
+    out << "\"owner_id_device_pointer\":"
+        << prepared->owner_id_device_pointer << ',';
+    out << "\"traversable_identity\":"
+        << prepared->traversable_identity << ',';
+    out << "\"execution_count\":" << prepared->execution_count << ',';
+    out << "\"last_execution_present\":"
+        << (prepared->last_execution_present ? "true" : "false") << ',';
+    out << "\"last_status_failed\":"
+        << (prepared->last_status_failed ? "true" : "false") << ',';
+    out << "\"last_query_count\":" << prepared->last_query_count << ',';
+    out << "\"last_status_d2h_call_count\":"
+        << prepared->last_status_d2h_call_count << ',';
+    out << "\"last_application_output_d2h_call_count\":"
+        << prepared->last_application_output_d2h_call_count << ',';
+    out << "\"last_output_after_status_failure_count\":"
+        << prepared->last_output_after_status_failure_count << ',';
+    out << "\"last_query_fingerprint\":\""
+        << prepared->last_query_fingerprint << "\",";
+    out << "\"last_status_fingerprint\":\""
+        << prepared->last_status_fingerprint << "\",";
+    out << "\"last_counter_fingerprint\":\""
+        << prepared->last_counter_fingerprint << "\",";
+    out << "\"last_output_fingerprint\":\""
+        << prepared->last_output_fingerprint << "\"";
+    out << '}';
+    return out.str();
+}
+
+static void execute_v4_curve_owner_grouped_any_hit(
+        uint64_t token, const float* query_starts_xyz,
+        const float* query_ends_xyz, size_t query_count,
+        uint32_t* output_owner_hit_bits,
+        uint32_t* output_query_completion_tokens,
+        V4FormalLaunchStatus* output_status, uint64_t* output_counters) {
+    if (!query_starts_xyz || !query_ends_xyz || query_count == 0 ||
+            query_count > UINT32_MAX || !output_owner_hit_bits ||
+            !output_query_completion_tokens || !output_status ||
+            !output_counters)
+        throw std::runtime_error(
+            "V4 curve owner-grouped execute inputs are invalid");
+    const auto prepared = v4_curve_owner_grouped_from_token(token);
+    std::lock_guard<std::mutex> execution_lock(prepared->execution_mutex);
+    std::vector<float> qsx(query_count), qsy(query_count), qsz(query_count),
+        qex(query_count), qey(query_count), qez(query_count);
+    for (size_t index = 0; index < query_count; ++index) {
+        qsx[index] = query_starts_xyz[index * 3u + 0u];
+        qsy[index] = query_starts_xyz[index * 3u + 1u];
+        qsz[index] = query_starts_xyz[index * 3u + 2u];
+        qex[index] = query_ends_xyz[index * 3u + 0u];
+        qey[index] = query_ends_xyz[index * 3u + 1u];
+        qez[index] = query_ends_xyz[index * 3u + 2u];
+        if (!std::isfinite(qsx[index]) || !std::isfinite(qsy[index]) ||
+                !std::isfinite(qsz[index]) || !std::isfinite(qex[index]) ||
+                !std::isfinite(qey[index]) || !std::isfinite(qez[index]) ||
+                (qsx[index] == qex[index] && qsy[index] == qey[index] &&
+                 qsz[index] == qez[index]))
+            throw std::runtime_error(
+                "V4 curve owner-grouped query is invalid");
+    }
+    prepared->last_execution_present = true;
+    prepared->last_status_failed = false;
+    prepared->last_query_count = static_cast<uint64_t>(query_count);
+    prepared->last_status_d2h_call_count = 0;
+    prepared->last_application_output_d2h_call_count = 0;
+    prepared->last_output_after_status_failure_count = 0;
+    prepared->last_query_fingerprint = v4_curve_query_fingerprint(
+        qsx.data(), qsy.data(), qsz.data(), qex.data(), qey.data(), qez.data(),
+        query_count);
+    prepared->last_status_fingerprint.clear();
+    prepared->last_counter_fingerprint.clear();
+    prepared->last_output_fingerprint.clear();
+    DevPtr qsx_d(sizeof(float) * query_count),
+        qsy_d(sizeof(float) * query_count),
+        qsz_d(sizeof(float) * query_count),
+        qex_d(sizeof(float) * query_count),
+        qey_d(sizeof(float) * query_count),
+        qez_d(sizeof(float) * query_count),
+        owner_bits(sizeof(uint32_t) * prepared->owner_count),
+        completion(sizeof(uint32_t) * query_count),
+        status(sizeof(V4FormalLaunchStatus) * query_count),
+        counters(sizeof(uint64_t) * 7u);
+    upload(qsx_d.ptr, qsx.data(), query_count);
+    upload(qsy_d.ptr, qsy.data(), query_count);
+    upload(qsz_d.ptr, qsz.data(), query_count);
+    upload(qex_d.ptr, qex.data(), query_count);
+    upload(qey_d.ptr, qey.data(), query_count);
+    upload(qez_d.ptr, qez.data(), query_count);
+    CU_CHECK(cuMemsetD8(owner_bits.ptr, 0,
+                        sizeof(uint32_t) * prepared->owner_count));
+    CU_CHECK(cuMemsetD8(completion.ptr, 0,
+                        sizeof(uint32_t) * query_count));
+    CU_CHECK(cuMemsetD8(status.ptr, 0,
+                        sizeof(V4FormalLaunchStatus) * query_count));
+    CU_CHECK(cuMemsetD8(counters.ptr, 0, sizeof(uint64_t) * 7u));
+    V4CurveOwnerGroupedParams parameters = {};
+    parameters.traversable = prepared->accel.handle;
+    parameters.query_sx = reinterpret_cast<const float*>(qsx_d.ptr);
+    parameters.query_sy = reinterpret_cast<const float*>(qsy_d.ptr);
+    parameters.query_sz = reinterpret_cast<const float*>(qsz_d.ptr);
+    parameters.query_ex = reinterpret_cast<const float*>(qex_d.ptr);
+    parameters.query_ey = reinterpret_cast<const float*>(qey_d.ptr);
+    parameters.query_ez = reinterpret_cast<const float*>(qez_d.ptr);
+    parameters.owner_ids = reinterpret_cast<const uint32_t*>(
+        prepared->owner_ids);
+    parameters.primitive_count = prepared->primitive_count;
+    parameters.query_count = static_cast<uint32_t>(query_count);
+    parameters.owner_count = prepared->owner_count;
+    parameters.owner_hit_bits = reinterpret_cast<uint32_t*>(owner_bits.ptr);
+    parameters.query_completion_tokens =
+        reinterpret_cast<uint32_t*>(completion.ptr);
+    parameters.status = reinterpret_cast<V4FormalLaunchStatus*>(status.ptr);
+    parameters.role_counters =
+        reinterpret_cast<unsigned long long*>(counters.ptr);
+    DevPtr parameter_device(sizeof(parameters));
+    upload(parameter_device.ptr, &parameters, 1);
+    rtdl_optix_bind_traversal_audit_context(
+        "v4_curve_owner_grouped_any_hit_composed", prepared->accel.handle);
+    OPTIX_CHECK(optixLaunch(
+        prepared->pipeline->pipeline, 0, parameter_device.ptr,
+        sizeof(parameters), &prepared->pipeline->sbt,
+        static_cast<unsigned int>(query_count), 1, 1));
+    CU_CHECK(cuStreamSynchronize(0));
+    download(output_status, status.ptr, query_count);
+    download(output_counters, counters.ptr, 7u);
+    prepared->last_status_d2h_call_count = 2;
+    prepared->last_status_fingerprint = v4_curve_status_fingerprint(
+        output_status, query_count);
+    prepared->last_counter_fingerprint = v4_curve_counter_fingerprint(
+        output_counters, 7u);
+    const uint32_t required_mask = (1u << 1u) | (1u << 5u) | (1u << 6u);
+    const uint32_t allowed_mask = required_mask | (1u << 3u);
+    for (size_t index = 0; index < query_count; ++index) {
+        if (output_status[index].first_error_claimed ||
+                output_status[index].error_code ||
+                (output_status[index].invocation_mask & required_mask) !=
+                    required_mask ||
+                (output_status[index].invocation_mask & ~allowed_mask) != 0u) {
+            prepared->last_status_failed = true;
+            throw std::runtime_error(
+                "V4 curve owner-grouped callback failed closed");
+        }
+    }
+    if (output_counters[1] != query_count ||
+            output_counters[5] != query_count ||
+            output_counters[6] != query_count) {
+        prepared->last_status_failed = true;
+        throw std::runtime_error(
+            "V4 curve owner-grouped lifecycle is incomplete");
+    }
+    download(output_owner_hit_bits, owner_bits.ptr, prepared->owner_count);
+    download(output_query_completion_tokens, completion.ptr, query_count);
+    prepared->last_application_output_d2h_call_count = 2;
+    for (size_t owner = 0; owner < prepared->owner_count; ++owner)
+        if (output_owner_hit_bits[owner] > 1u)
+            throw std::runtime_error(
+                "V4 curve owner-grouped output is not Boolean");
+    for (size_t index = 0; index < query_count; ++index)
+        if (output_query_completion_tokens[index] != 0u)
+            throw std::runtime_error(
+                "V4 curve owner-grouped completion token differs");
+    prepared->last_output_fingerprint =
+        v4_curve_owner_grouped_output_fingerprint(
+            output_owner_hit_bits, prepared->owner_count,
+            output_query_completion_tokens, query_count);
+    ++prepared->execution_count;
+}
+
+static void destroy_v4_curve_owner_grouped_any_hit(uint64_t token) {
+    std::shared_ptr<V4PreparedCurveOwnerGrouped> removed;
+    {
+        std::lock_guard<std::mutex> lock(
+            g_v4_curve_owner_grouped_registry_mutex);
+        const auto found = g_v4_curve_owner_grouped_registry.find(token);
+        if (found == g_v4_curve_owner_grouped_registry.end())
+            throw std::runtime_error(
+                "V4 curve owner-grouped handle is unknown or closed");
+        removed = found->second;
+        g_v4_curve_owner_grouped_registry.erase(found);
     }
     std::lock_guard<std::mutex> execution_lock(removed->execution_mutex);
 }

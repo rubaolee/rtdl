@@ -11,6 +11,11 @@ import importlib as _importlib
 
 
 _LAZY_EXPORTS = {
+    'OwnerGroupedCurveQueryBatch': ('.v4_curve_owner_grouped_any_hit_public', 'OwnerGroupedCurveQueryBatch'),
+    'OwnerGroupedCurveStaticInput': ('.v4_curve_owner_grouped_any_hit_public', 'OwnerGroupedCurveStaticInput'),
+    'PreparedCurveOwnerGroupedAnyHitProgram': ('.v4_curve_owner_grouped_any_hit_public', 'PreparedCurveOwnerGroupedAnyHitProgram'),
+    'V4CurveTarget': ('.v4_curve_owner_grouped_any_hit_public', 'V4CurveTarget'),
+    'curve_owner_grouped_any_hit_source': ('.v4_curve_owner_grouped_any_hit_public', 'curve_owner_grouped_any_hit_source'),
     'BuiltParticleRTDLExecutable': ('.v4_particle_rtdlexe', 'BuiltParticleRTDLExecutable'),
     'InstalledParticleRTDLDeployment': ('.v4_particle_rtdlexe', 'InstalledParticleRTDLDeployment'),
     'LoadedParticleRTDLExecutable': ('.v4_particle_rtdlexe', 'LoadedParticleRTDLExecutable'),
@@ -2208,6 +2213,11 @@ def generate_embree_evaluation_artifacts(*, workloads=None, iterations: int = 5,
     )
 
 __all__ = [
+    "OwnerGroupedCurveQueryBatch",
+    "OwnerGroupedCurveStaticInput",
+    "PreparedCurveOwnerGroupedAnyHitProgram",
+    "V4CurveTarget",
+    "curve_owner_grouped_any_hit_source",
     "BoundedRelationBatch",
     "BoundedRelationStaticInput",
     "RTDLExecutableBoundedRelationBatch",
@@ -4090,6 +4100,10 @@ _CONTRACT_FIRST_DIR_EXPORTS = (
     "ExecutionPolicy",
     "ExecutionReport",
     "ExecutionResult",
+    "OwnerGroupedCurveQueryBatch",
+    "OwnerGroupedCurveStaticInput",
+    "PreparedCurveOwnerGroupedAnyHitProgram",
+    "V4CurveTarget",
     "any_hit",
     "aggregate_frontier_reduce_execution_contract_3d",
     "aggregate_frontier_reduce_spec_3d",
@@ -4100,6 +4114,7 @@ _CONTRACT_FIRST_DIR_EXPORTS = (
     "closest_hit",
     "collect_aggregate_frontier_2d",
     "compile_kernel",
+    "curve_owner_grouped_any_hit_source",
     "describe_aggregate_hierarchy_3d_contract",
     "emit",
     "emit_segmented_row_stream",
