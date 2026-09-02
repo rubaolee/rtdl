@@ -466,6 +466,41 @@ def verify_stored() -> dict[str, Any]:
         "challenge_table_sha256"
     ):
         raise Goal5838SealError("seal/table cross-binding mismatch")
+    if seal.get("challenge_table", {}).get("selected_candidate_count") != 0:
+        raise Goal5838SealError("pre-selection seal selected-count drift")
+    if table.get("selection", {}).get("selected_candidate_id") is not None:
+        raise Goal5838SealError("frozen challenge table was mutated after selection")
+    protocol = seal.get("selection_protocol")
+    if not isinstance(protocol, dict):
+        raise Goal5838SealError("selection protocol seal missing")
+    pinned_files = (
+        (protocol.get("path"), protocol.get("sha256"), "selection protocol"),
+        (
+            protocol.get("client_path"),
+            protocol.get("client_sha256"),
+            "selection client",
+        ),
+        (
+            protocol.get("pretarget_live_calibration", {}).get("path"),
+            protocol.get("pretarget_live_calibration", {}).get("sha256"),
+            "pretarget calibration",
+        ),
+        (
+            protocol.get("pretarget_live_calibration", {}).get("certificate_path"),
+            protocol.get("pretarget_live_calibration", {}).get("certificate_sha256"),
+            "pretarget certificate",
+        ),
+    )
+    for relative, expected_sha256, label in pinned_files:
+        if not isinstance(relative, str) or not isinstance(expected_sha256, str):
+            raise Goal5838SealError(f"{label} identity missing")
+        if sha256_path(relative) != expected_sha256:
+            raise Goal5838SealError(f"{label} drift")
+    preregistration = seal.get("preregistration")
+    if not isinstance(preregistration, dict):
+        raise Goal5838SealError("preregistration identity missing")
+    if sha256_path(preregistration["path"]) != preregistration.get("file_sha256"):
+        raise Goal5838SealError("preregistration file drift")
     _verify_file_rows(seal.get("frozen_core_files"), current=True)
     _verify_file_rows(seal.get("stage_b_evidence_files_at_seal"), current=False)
     return {

@@ -143,6 +143,20 @@ class Goal5838CoreSealAndSelectionTest(unittest.TestCase):
         self.assertNotIn("pulse/last", source)
         self.assertNotIn("time/next", source)
 
+    def test_09_stored_seal_rejects_selection_client_drift(self) -> None:
+        if not freeze.SEAL_PATH.exists() or not freeze.TABLE_PATH.exists():
+            self.skipTest("seal not generated yet")
+        real_sha = freeze.sha256_path
+
+        def attacked(relative):
+            if str(relative) == "scripts/goal5838_select_challenge.py":
+                return "00" * 32
+            return real_sha(relative)
+
+        with mock.patch.object(freeze, "sha256_path", side_effect=attacked):
+            with self.assertRaisesRegex(freeze.Goal5838SealError, "selection client drift"):
+                freeze.verify_stored()
+
 
 if __name__ == "__main__":
     unittest.main()
