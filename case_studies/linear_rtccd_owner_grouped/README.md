@@ -125,6 +125,8 @@ PYTHONPATH=src:. python \
   scripts/successor_linear_rtccd_owner_grouped_pod_runner.py \
   --native build/librtdl_optix.so \
   --native-manifest /tmp/owner_grouped_native_build.json \
+  --optix-prefix /path/to/optix \
+  --cuda-prefix /usr/local/cuda \
   --optix-include /path/to/optix/include \
   --cuda-include /usr/local/cuda/include \
   --optix-sdk 9.0.0 \

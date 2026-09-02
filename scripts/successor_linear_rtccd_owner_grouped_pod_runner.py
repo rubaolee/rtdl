@@ -123,6 +123,24 @@ def _parse_compute_capability(value: str) -> tuple[int, int]:
     return int(match.group(1)), int(match.group(2))
 
 
+def _validated_include_from_prefix(
+    prefix: Path,
+    supplied_include: Path,
+    *,
+    label: str,
+) -> tuple[Path, Path]:
+    resolved_prefix = prefix.expanduser().resolve(strict=True)
+    logical_include = resolved_prefix / "include"
+    resolved_include = logical_include.resolve(strict=True)
+    if not resolved_prefix.is_dir() or not resolved_include.is_dir():
+        raise NotADirectoryError(
+            resolved_prefix if not resolved_prefix.is_dir() else logical_include)
+    if supplied_include.expanduser().resolve(strict=True) != resolved_include:
+        raise ValueError(
+            f"--{label}-include does not belong to --{label}-prefix")
+    return resolved_prefix, logical_include
+
+
 def _validate_native_build_manifest(
     path: Path,
     native: Path,
@@ -133,6 +151,8 @@ def _validate_native_build_manifest(
     gpu_identity: str,
     optix_include: Path,
     cuda_include: Path,
+    optix_prefix: Path,
+    cuda_prefix: Path,
     allow_dirty: bool,
 ) -> dict[str, object]:
     native = native.resolve(strict=True)
@@ -159,9 +179,11 @@ def _validate_native_build_manifest(
         raise RuntimeError("native build manifest does not bind the selected library")
     build_input = manifest.get("build_input")
     builder_path = ROOT / "scripts/build_v4_optix_native_snapshot.py"
-    optix_include = optix_include.resolve(strict=True)
-    cuda_include = cuda_include.resolve(strict=True)
-    nvcc = (cuda_include.parent / "bin/nvcc").resolve(strict=True)
+    cuda_prefix, cuda_include = _validated_include_from_prefix(
+        cuda_prefix, cuda_include, label="cuda")
+    _, optix_include = _validated_include_from_prefix(
+        optix_prefix, optix_include, label="optix")
+    nvcc = (cuda_prefix / "bin/nvcc").resolve(strict=True)
     nvcc_version = _capture([str(nvcc), "--version"])
     if type(build_input) is not dict \
             or build_input.get("git_commit") != git_commit \
@@ -390,11 +412,10 @@ def validate(args) -> dict[str, object]:
     if output.exists() or artifact_root.exists():
         raise FileExistsError(output if output.exists() else artifact_root)
     output.parent.mkdir(parents=True, exist_ok=True)
-    optix_include = args.optix_include.resolve(strict=True)
-    cuda_include = args.cuda_include.resolve(strict=True)
-    if not optix_include.is_dir() or not cuda_include.is_dir():
-        raise NotADirectoryError(
-            optix_include if not optix_include.is_dir() else cuda_include)
+    cuda_prefix, cuda_include = _validated_include_from_prefix(
+        args.cuda_prefix, args.cuda_include, label="cuda")
+    optix_prefix, optix_include = _validated_include_from_prefix(
+        args.optix_prefix, args.optix_include, label="optix")
     pre_commit = _capture(["git", "rev-parse", "HEAD"])
     pre_status = _capture(["git", "status", "--porcelain"])
     if pre_status and not args.allow_dirty:
@@ -420,6 +441,8 @@ def validate(args) -> dict[str, object]:
         gpu_identity=gpu_identity,
         optix_include=optix_include,
         cuda_include=cuda_include,
+        optix_prefix=optix_prefix,
+        cuda_prefix=cuda_prefix,
         allow_dirty=args.allow_dirty,
     )
     os.environ["RTDL_OPTIX_LIB"] = str(native)
@@ -554,6 +577,8 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--native", required=True, type=Path)
     parser.add_argument("--native-manifest", required=True, type=Path)
+    parser.add_argument("--optix-prefix", required=True, type=Path)
+    parser.add_argument("--cuda-prefix", required=True, type=Path)
     parser.add_argument("--optix-include", required=True, type=Path)
     parser.add_argument("--cuda-include", required=True, type=Path)
     parser.add_argument("--optix-sdk", default="9.0.0")
@@ -569,8 +594,10 @@ def main() -> None:
     args = parser.parse_args()
     if args.repeat < 2 or args.repeat > 20:
         raise SystemExit("--repeat must be in [2,20] to prove prepared reuse")
-    cuda_prefix = args.cuda_include.expanduser().resolve(strict=True).parent
-    optix_prefix = args.optix_include.expanduser().resolve(strict=True).parent
+    cuda_prefix, _ = _validated_include_from_prefix(
+        args.cuda_prefix, args.cuda_include, label="cuda")
+    optix_prefix, _ = _validated_include_from_prefix(
+        args.optix_prefix, args.optix_include, label="optix")
     runtime_files = resolve_cuda_runtime_files(
         cuda_prefix,
         nvrtc_library=args.nvrtc_library,

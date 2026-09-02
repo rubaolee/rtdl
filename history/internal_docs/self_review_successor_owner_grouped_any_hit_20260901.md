@@ -107,6 +107,17 @@ own resolved path and bootstraps only that root plus `src` before project
 imports. A subprocess regression clears `PYTHONPATH` and requires all three
 `--help` front doors to succeed.
 
+### R11, P1: runner derived a false CUDA prefix through an include symlink
+
+The first clean-pod runner attempt stopped before any OptiX launch because
+`/usr/local/cuda-12.8/include` resolves into
+`targets/x86_64-linux/include`; taking the resolved include's parent therefore
+produced a false CUDA prefix and hid NVRTC. The runner now requires explicit
+CUDA and OptiX prefixes, verifies that each supplied include resolves to its
+prefix's include directory, preserves the logical include path used by the
+native manifest, and locates `nvcc` from the explicit CUDA prefix. A symlinked
+CUDA-layout regression covers this exact failure mode.
+
 ## Open promotion blockers
 
 ### O1, P1: no compatible GPU execution exists
@@ -164,10 +175,10 @@ authorized until that review is separately requested and completed.
 
 ## Local evidence
 
-- Successor tests: 48/48 pass.
+- Successor tests: 49/49 pass.
 - Goal5833--Goal5836 frozen/relevant regressions: 168/168 pass.
 - Stored local receipt: 9/9 semantic/scale cases match the independent oracle.
-- Receipt SHA-256: `41666a5631071e5344eead893776c2548944c6e72df5abfde037930f4784204f`.
+- Receipt SHA-256: `997c95845f4e1bc59a107ad706e5b88501e31fda8c037950ca4e70a72aaec0e2`.
 - `scripts/audit_goal5835_goal5836.py --verify-stored`: pass.
 - `scripts/goal5836_a1_build_source_fidelity.py --verify-stored`: pass.
 - Python compile-all and `git diff --check`: pass.

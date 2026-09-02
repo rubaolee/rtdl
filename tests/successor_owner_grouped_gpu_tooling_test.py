@@ -25,6 +25,7 @@ from scripts.successor_linear_rtccd_owner_grouped_pod_runner import (
     _parse_compute_capability,
     _parse_scale,
     _validate_native_build_manifest,
+    _validated_include_from_prefix,
     _validate_result_paths,
     _workloads,
 )
@@ -102,6 +103,24 @@ class SuccessorOwnerGroupedGpuToolingTest(unittest.TestCase):
             with self.assertRaises(ValueError):
                 _validate_result_paths(
                     root / "artifacts/result.json", root / "artifacts")
+
+    def test_runner_preserves_logical_prefix_across_include_symlink(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            cuda = root / "cuda"
+            physical_include = cuda / "targets/x86_64-linux/include"
+            physical_include.mkdir(parents=True)
+            (cuda / "include").symlink_to(physical_include, target_is_directory=True)
+            prefix, logical_include = _validated_include_from_prefix(
+                cuda, cuda / "include", label="cuda")
+            self.assertEqual(prefix, cuda.resolve())
+            self.assertEqual(logical_include, cuda.resolve() / "include")
+            self.assertNotEqual(logical_include, physical_include)
+            unrelated = root / "unrelated/include"
+            unrelated.mkdir(parents=True)
+            with self.assertRaisesRegex(ValueError, "does not belong"):
+                _validated_include_from_prefix(
+                    cuda, unrelated, label="cuda")
 
     def test_runner_requires_manifest_bound_to_native_and_current_sources(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -191,6 +210,8 @@ class SuccessorOwnerGroupedGpuToolingTest(unittest.TestCase):
                 optix_sdk="9.0.0", compute_capability=(8, 9),
                 gpu_identity=gpu_identity,
                 optix_include=optix_include, cuda_include=cuda_include,
+                optix_prefix=root / "optix",
+                cuda_prefix=root / "cuda",
                 allow_dirty=False)
             self.assertEqual(
                 observed["build_id"], _build_input_id(manifest["build_input"]))
@@ -204,6 +225,8 @@ class SuccessorOwnerGroupedGpuToolingTest(unittest.TestCase):
                     optix_sdk="9.0.0", compute_capability=(8, 9),
                     gpu_identity=gpu_identity,
                     optix_include=optix_include, cuda_include=cuda_include,
+                    optix_prefix=root / "optix",
+                    cuda_prefix=root / "cuda",
                     allow_dirty=False)
             manifest = copy.deepcopy(baseline)
             manifest["build_id"] = "b" * 64
@@ -215,6 +238,8 @@ class SuccessorOwnerGroupedGpuToolingTest(unittest.TestCase):
                     optix_sdk="9.0.0", compute_capability=(8, 9),
                     gpu_identity=gpu_identity,
                     optix_include=optix_include, cuda_include=cuda_include,
+                    optix_prefix=root / "optix",
+                    cuda_prefix=root / "cuda",
                     allow_dirty=False)
             manifest = copy.deepcopy(baseline)
             manifest["build_input"]["compute_capability"] = [9, 0]
@@ -226,6 +251,8 @@ class SuccessorOwnerGroupedGpuToolingTest(unittest.TestCase):
                     optix_sdk="9.0.0", compute_capability=(8, 9),
                     gpu_identity=gpu_identity,
                     optix_include=optix_include, cuda_include=cuda_include,
+                    optix_prefix=root / "optix",
+                    cuda_prefix=root / "cuda",
                     allow_dirty=False)
             manifest = copy.deepcopy(baseline)
             manifest["git_status_after_build"] = [" M changed"]
@@ -237,6 +264,8 @@ class SuccessorOwnerGroupedGpuToolingTest(unittest.TestCase):
                     optix_sdk="9.0.0", compute_capability=(8, 9),
                     gpu_identity=gpu_identity,
                     optix_include=optix_include, cuda_include=cuda_include,
+                    optix_prefix=root / "optix",
+                    cuda_prefix=root / "cuda",
                     allow_dirty=False)
             manifest = copy.deepcopy(baseline)
             manifest_path.write_text(
@@ -249,6 +278,8 @@ class SuccessorOwnerGroupedGpuToolingTest(unittest.TestCase):
                     optix_sdk="9.0.0", compute_capability=(8, 9),
                     gpu_identity=gpu_identity,
                     optix_include=optix_include, cuda_include=cuda_include,
+                    optix_prefix=root / "optix",
+                    cuda_prefix=root / "cuda",
                     allow_dirty=False)
 
     def test_preflight_resolves_and_pins_cuda_runtime_environment(self):

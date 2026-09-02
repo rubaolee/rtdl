@@ -122,9 +122,9 @@
       "sha256": "d302ad863f1dfa0a3c1edbebf20ff056db45ae6875e8c8a83b0b0f5c1aacb50c"
     },
     {
-      "bytes": 6517,
+      "bytes": 6585,
       "path": "case_studies/linear_rtccd_owner_grouped/README.md",
-      "sha256": "8a13a6f817eff3901dbbf868cd11c863e93aba0123405d53b6c2f0d9039f8a59"
+      "sha256": "01ab3fb84b0a9354c000c30b478a747c04c79b3dd70ab2288b970b35d1be00eb"
     },
     {
       "bytes": 17635,
@@ -137,9 +137,9 @@
       "sha256": "06d9f0f635025574d58040d4706a363c0899e564e55e654dd3d561568e699282"
     },
     {
-      "bytes": 25906,
+      "bytes": 27001,
       "path": "scripts/successor_linear_rtccd_owner_grouped_pod_runner.py",
-      "sha256": "a715787daf2ec2841f6bf2145cb7860716cd53f3e62723410d64e6c5290b87e7"
+      "sha256": "c28ebe3b4efdead601659a0b95b4ca7c15c2eb7f38eb6cdcc8a803f217486ef3"
     },
     {
       "bytes": 22121,
@@ -152,9 +152,9 @@
       "sha256": "8df39164dde4d17da7b0ef3d50d1e72f2d7d2dfef55f607e8b5b7e4e0c54bf6c"
     },
     {
-      "bytes": 18999,
+      "bytes": 20590,
       "path": "tests/successor_owner_grouped_gpu_tooling_test.py",
-      "sha256": "eff8e566ff7e2f97ed1bf212a08073a082897fc1a050f17bc9b8cded94d689fa"
+      "sha256": "1fb0da82e5257a910194e655cb1731aab9a9d5f9e898610364f12c4302efcffa"
     }
   ],
   "date": "2026-09-01",
@@ -203,7 +203,7 @@
   "performance_timing_count": 0,
   "pod_toolchain_preflight_ready": true,
   "public_app_gpu_runner_ready": true,
-  "receipt_sha256": "41666a5631071e5344eead893776c2548944c6e72df5abfde037930f4784204f",
+  "receipt_sha256": "997c95845f4e1bc59a107ad706e5b88501e31fda8c037950ca4e70a72aaec0e2",
   "registered_local_case_count": 9,
   "registered_scale_case_count": 3,
   "registered_scale_cases": [

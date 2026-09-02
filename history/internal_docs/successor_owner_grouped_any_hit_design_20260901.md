@@ -121,7 +121,10 @@ execution. The runner now requires the builder manifest and binds the selected
 native bytes to the same Git commit, builder hash, and complete native source
 inventory. It records an execution-source inventory before launch, rechecks it
 after all workloads, publishes the final JSON exclusively, and leaves an
-explicit incomplete marker if execution aborts.
+explicit incomplete marker if execution aborts. Explicit CUDA and OptiX
+prefixes are required; each supplied include path must resolve to its prefix's
+include directory, so toolkit symlinks cannot silently change compiler or
+runtime-library discovery.
 
 Before either step, `scripts/successor_owner_grouped_pod_preflight.py` rejects
 the wrong OS/architecture, multiple visible GPUs, a requested compute target
