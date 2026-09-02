@@ -1,5 +1,32 @@
 # RTDL Codex Working Guide
 
+## Critical current override: Goal5838 generic core sealed before selection (2026-09-02)
+
+Goal5838 Stage B is frozen at remote commit `1ad0628`. The controlling files
+are `history/internal_docs/goal5838_generic_core_exam_20260902/GENERIC_CORE_SEAL.json`
+and `CHALLENGE_TABLE.json`; their internal seals are respectively
+`c2a461c8a4a61650044b724d103a80d25241b44b7b486c071b601946292e5dae`
+and `0a2b2c01aed75ad08fad44f7fbc2509ef632d786545e0202b9a4b27425a30345`.
+Verify them with
+`PYTHONPATH=src:. python3 scripts/goal5838_freeze_generic_core.py --verify-stored`.
+
+The frozen core is exactly `src/rtdsl/v4_family_schema.py`,
+`src/rtdsl/v4_generic_family_lifecycle.py`, and `src/rtdsl/v4_family.py`.
+Do not modify any byte in those files during this prospective attempt. The
+complete ten-row table and exact NIST target pulse at
+`2026-09-02T19:00:00.000Z` were committed before revelation; selected count is
+still zero at this checkpoint. Candidate/provider/app/oracle/test/build layers
+remain mutable only after selection. Ordinary defects in those extension
+layers, missing infrastructure, or a missing pod are pending engineering, not
+scientific failure. Scientific failure requires all five preregistered
+conditions including a minimal witness that a frozen semantic core change is
+necessary.
+
+Stage B has `75/75` focused tests after sealing and the full Goal583x run is
+`264/265`, with only the already disclosed Goal5832 current-tree custody error.
+This is no prospective GPU success, performance result, external review, or
+consensus. External review remains owner-deferred while traveling.
+
 ## Critical current override: Goal5837 successor classification frozen (2026-09-02)
 
 Goal5837 is complete at classification-only scope. The controlling authority is
