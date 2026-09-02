@@ -1,0 +1,114 @@
+{
+  "activity_at_selection": {
+    "candidate_execution_count": 0,
+    "candidate_implementation_count": 0,
+    "gpu_receipt_count": 0,
+    "prospective_success_count": 0
+  },
+  "adjacent_previous_output_link_verified": true,
+  "certificate_identity_rule": "SHA512_OF_X509_DER__FROZEN_BEFORE_TARGET",
+  "challenge_table_sha256": "0a2b2c01aed75ad08fad44f7fbc2509ef632d786545e0202b9a4b27425a30345",
+  "claim_boundary": {
+    "frozen_core_edit_after_selection_allowed": false,
+    "ordinary_extension_bug_is_scientific_failure": false,
+    "selection_is_not_gpu_evidence": true,
+    "selection_is_not_implementation_success": true
+  },
+  "entropy_field_used": "target.pulse.localRandomValue",
+  "generic_core_seal_sha256": "c2a461c8a4a61650044b724d103a80d25241b44b7b486c071b601946292e5dae",
+  "mapping": {
+    "counter": 0,
+    "digest_sha256": "1dc80f14087876a313133680290b3e7b2e02274370bcfa7dc0a2742666ec2d7b",
+    "rejection_limit_hex": "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffa",
+    "selected_index": 3
+  },
+  "nist_output_value_used_for_selection": false,
+  "previous_pulse": {
+    "certificate_der_sha256": "67e1c70f0654421f589f3c908480f6edbadc3521e2798b2b4718dfb4f3c77288",
+    "certificate_id": "528943a555f5f8ca54423be6dfb95925a35c7b552046420e7d7cd072058a14d6536ad3a8e9754b6582f164a90b0cd86a65d659f5426a2659a947595d1c816c8c",
+    "chain_index": 2,
+    "local_random_value": "08413d6d50957177793e77cb3d7561d0068be080af538e178aa529d71ad6326adaecbf3a3e59dc30960e704455b2f81baa608fd9dac0efd0db5092864a528fde",
+    "output_value": "0c0237bdb2d30d60698de0132e783e712d5ac2579360c6e1e62db2246f4a43497d8769cf07aa2897bba650e6cefd1af5f9feda7c0ac1c0d58d142d72af471299",
+    "pulse_index": 1924175,
+    "signature_sha256": "385aeb0fada6b1d506af7adc73624c9d17a91217717c8916317ec8c18d8c44b5",
+    "signature_verified": true,
+    "signed_fields_bytes": 807,
+    "signed_fields_sha512": "e8873ce479a4fab680cb901c50da611c45e0c5c33ddd8012b408e68d53223db924835c3a12ad2e28d3a3525ed8ec169541e149c3fbfb0b0369db8f6accc07723",
+    "timestamp_ms": 1788375540000
+  },
+  "previous_pulse_uri": "https://beacon.nist.gov/beacon/2.0/pulse/time/1788375540000",
+  "schema": "rtdl.goal5838.challenge_selection_result.v1",
+  "selected_candidate": {
+    "candidate_id": "builtin_sphere::any_hit_count_continue_u64_per_query",
+    "continuation": "accept_every_hit_and_continue",
+    "exact_pre_goal5838_callback_topology_exists": false,
+    "geometry_contract": "optix.builtin_sphere.v1",
+    "graph_node_kind": "builtin",
+    "independent_cpu_oracle_feasible": true,
+    "metadata_channels": [],
+    "primitive_id": "builtin_sphere",
+    "required_capabilities": [
+      "any_hit_accept_continue",
+      "builtin_sphere_intersection",
+      "callback_ir",
+      "fail_closed_status",
+      "per_query_u64_output"
+    ],
+    "result_topology": {
+      "count_relation": "query_count",
+      "operator_id": "rtdl.result.per_query_u64.v1",
+      "value_type": "u64"
+    },
+    "role_effect_topology": [
+      {
+        "effects": [
+          "trace_request"
+        ],
+        "role": "make_ray"
+      },
+      {
+        "effects": [
+          "accept_continue"
+        ],
+        "role": "any_hit"
+      },
+      {
+        "effects": [
+          "payload"
+        ],
+        "role": "miss"
+      },
+      {
+        "effects": [
+          "output"
+        ],
+        "role": "finalize"
+      }
+    ],
+    "selection_status": "ELIGIBLE_UNSELECTED",
+    "single_static_gas": true,
+    "stable_index": 3,
+    "topology_id": "any_hit_count_continue_u64_per_query",
+    "true_gpu_receipt_required": true
+  },
+  "selection_result_sha256": "9f543f52cd9453e0410766aa79c3f302a6a0e39314487279842fa5ad5e57ed61",
+  "signed_field_serialization": "LIVE_BEACON_2_CIPHER_SUITE_0__U32_LENGTHS_AND_EXTERNAL_STATUS__FROZEN_BEFORE_TARGET",
+  "status": "PASS__INDEPENDENT_CHALLENGE_SELECTED__IMPLEMENTATION_NOT_STARTED",
+  "target_local_random_precommitment_verified": true,
+  "target_pulse": {
+    "certificate_der_sha256": "67e1c70f0654421f589f3c908480f6edbadc3521e2798b2b4718dfb4f3c77288",
+    "certificate_id": "528943a555f5f8ca54423be6dfb95925a35c7b552046420e7d7cd072058a14d6536ad3a8e9754b6582f164a90b0cd86a65d659f5426a2659a947595d1c816c8c",
+    "chain_index": 2,
+    "local_random_value": "aa62c239c5079ed89cf0ad70c1b44245552bf2dd519d6d4871518746fac2efca5a64bb5a21956e897e36a5bc7cc0f0bd53d1f9ae585045a3c762656f852eefa7",
+    "output_value": "65555176656440293e84a19b51330e1bfba588d9463a9a9981410f051525d9b947ba59f7b9f257adcf5c96fb77de978a6cf81e301ebda1dfe63666b2b646c184",
+    "pulse_index": 1924176,
+    "signature_sha256": "1a9f7ec5052f5ecd6c5b0ae45665b8fdde63020bbb3e6e371a2a88496b27248e",
+    "signature_verified": true,
+    "signed_fields_bytes": 807,
+    "signed_fields_sha512": "3c0a42637d3f8147a38060061a62107a79b84e6dd3e8ce7eceef4da8c29c95c138ba7b27b8b504c41832eff6aa1bdbfdf5f1f3d1a25cc5e65dffb0fd847da271",
+    "timestamp_ms": 1788375600000
+  },
+  "target_pulse_uri": "https://beacon.nist.gov/beacon/2.0/pulse/time/1788375600000",
+  "target_timestamp_ms": 1788375600000,
+  "transport": "HTTPS_WITH_PLATFORM_CA_VALIDATION"
+}
