@@ -30,6 +30,8 @@ from scripts.successor_linear_rtccd_owner_grouped_pod_runner import (
     _workloads,
 )
 from scripts.successor_owner_grouped_pod_preflight import (
+    _OPTIX_RUNTIME_ABI_PROBE_SOURCE,
+    _PREFLIGHT_SCHEMA,
     configured_runtime_environment,
     resolve_cuda_runtime_files,
 )
@@ -320,6 +322,22 @@ class SuccessorOwnerGroupedGpuToolingTest(unittest.TestCase):
             self.assertEqual(environment["CUDA_HOME"], str(cuda.resolve()))
             self.assertEqual(len(identity["nvrtc_sha256"]), 64)
             self.assertTrue(identity["formal_numba_cache_disabled"])
+
+    def test_preflight_runtime_abi_probe_is_zero_launch(self):
+        self.assertEqual(
+            _PREFLIGHT_SCHEMA,
+            "rtdl.successor_owner_grouped_any_hit.pod_preflight.v2",
+        )
+        self.assertIn(
+            "#include <optix_function_table_definition.h>",
+            _OPTIX_RUNTIME_ABI_PROBE_SOURCE,
+        )
+        self.assertIn(
+            "#include <optix_stubs.h>",
+            _OPTIX_RUNTIME_ABI_PROBE_SOURCE,
+        )
+        self.assertIn("optixInit()", _OPTIX_RUNTIME_ABI_PROBE_SOURCE)
+        self.assertNotIn("optixLaunch", _OPTIX_RUNTIME_ABI_PROBE_SOURCE)
 
     def test_native_builder_inventories_complete_optix_snapshot(self):
         inventory = _source_inventory()

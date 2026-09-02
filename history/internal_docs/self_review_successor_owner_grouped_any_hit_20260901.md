@@ -3,7 +3,7 @@
 Date: 2026-09-01; updated 2026-09-02
 Review type: internal hostile self-review only
 External review count: 0, deferred by the owner
-Verdict: `ACCEPT_LOCAL_IMPLEMENTATION__BLOCK_GPU_PROMOTION`
+Verdict: `ACCEPT_BOUNDED_OPTIX8_DIAGNOSTIC__BLOCK_FORMAL_OPTIX9_PROMOTION`
 
 ## Exact claim boundary
 
@@ -19,10 +19,10 @@ orientation, oracle, and result interpretation. No collision, robot, pose,
 trajectory, or RT-CCD vocabulary appears in the successor RTDL modules. The
 frozen Goal5835/5836 transaction was not modified or reinterpreted.
 
-This review authorizes only the local source implementation and local evidence.
-It does not authorize claims of native compilation, Numba PTX compilation,
-NVRTC composition, true OptiX execution, GPU correctness, performance, full
-paper reproduction, Paper App status, or benchmark-app promotion.
+This review authorizes the local source implementation and a separately
+recorded OptiX 8 diagnostic on one RTX 4000 Ada pod. It does not authorize an
+OptiX 9 formal gate, performance, full paper reproduction, Paper App status,
+benchmark-app promotion, or external-consensus wording.
 
 ## Resolved findings
 
@@ -118,15 +118,28 @@ prefix's include directory, preserves the logical include path used by the
 native manifest, and locates `nvcc` from the explicit CUDA prefix. A symlinked
 CUDA-layout regression covers this exact failure mode.
 
+### R12, P1: compile-only preflight overclaimed runtime readiness
+
+The first Pod preflight compiled every callback and wrapper successfully under
+OptiX 9, and the native library built, but the host's NVIDIA 550.127.05 driver
+rejected the OptiX 9 ABI during the first prepare, before any launch. The old
+status `READY_FOR_NATIVE_BUILD_AND_GPU_RUN` therefore exceeded its evidence.
+Preflight v2 now compiles and runs a temporary `optixInit()` program before the
+callback stack, records its binary and output hashes, and still performs zero
+OptiX launches. An ABI mismatch now fails before the expensive native build.
+The schema changed from `pod_preflight.v1` to `pod_preflight.v2` so old
+compile-only artifacts cannot be confused with new runtime-ABI evidence.
+
 ## Open promotion blockers
 
-### O1, P1: no compatible GPU execution exists
+### O1, P1: the formal OptiX 9 GPU gate remains incomplete
 
-This Mac cannot compile the isolated Numba leaves for CUDA, compile the trusted
-wrapper with NVRTC, build/link the OptiX native library, or launch the route.
-The checked-in receipt records `native_library_built=false`,
-`numba_ptx_compiled=false`, `optix_launch_count=0`, and
-`gpu_correctness_evidence_count=0`. A compatible NVIDIA/OptiX pod is mandatory.
+The current Pod's driver rejected OptiX 9 before launch. A deliberately bounded
+OptiX 8 diagnostic on the same host did execute 18 true-OptiX launches and
+matched all nine workloads twice, but changing the SDK is not the registered
+formal target. The checked-in local receipt also remains local-only and records
+zero GPU launches. A Pod whose driver negotiates the pinned OptiX 9 ABI is still
+mandatory for formal GPU promotion.
 
 ### O2, P1: arbitrary near-boundary inputs are outside the proved app domain
 
@@ -175,20 +188,31 @@ authorized until that review is separately requested and completed.
 
 ## Local evidence
 
-- Successor tests: 49/49 pass.
+- Successor tests: 50/50 pass.
 - Goal5833--Goal5836 frozen/relevant regressions: 168/168 pass.
 - Stored local receipt: 9/9 semantic/scale cases match the independent oracle.
-- Receipt SHA-256: `997c95845f4e1bc59a107ad706e5b88501e31fda8c037950ca4e70a72aaec0e2`.
+- Receipt SHA-256: `8f7aa7208e20826b9d77eb0a4a675f2b3657afdff316bb3226258cc6df3e1ed0`.
 - `scripts/audit_goal5835_goal5836.py --verify-stored`: pass.
 - `scripts/goal5836_a1_build_source_fidelity.py --verify-stored`: pass.
 - Python compile-all and `git diff --check`: pass.
+
+## Bounded Pod diagnostic
+
+The internal report is
+`successor_owner_grouped_pod_20260902/INTERNAL_POD_DIAGNOSTIC_REPORT.md`.
+At commit `2c48337`, OptiX 9 compiled and linked but failed ABI negotiation on
+driver 550.127.05 before launch. The same source under official OptiX 8 headers
+completed 9/9 workloads with repeat count two: 18/18 true-OptiX launches,
+18/18 matching executions, independent-oracle parity, and prepared reuse all
+passed. Timings are diagnostic only; registered performance count and external
+review count both remain zero.
 
 ## Exact next evidence step
 
 On one clean, compatible NVIDIA/OptiX checkout:
 
-1. Run `scripts/successor_owner_grouped_pod_preflight.py`; preserve its
-   zero-launch result and require both compiler probes to pass.
+1. Run preflight v2 with pinned OptiX 9; preserve its zero-launch result and
+   require the NVCC, callback-stack, and `optixInit()` ABI probes to pass.
 2. Build with `scripts/build_v4_optix_native_snapshot.py` and save its manifest.
 3. Run `scripts/successor_linear_rtccd_owner_grouped_pod_runner.py` with the
    exact `.so` and `--native-manifest` from step 2.
@@ -198,5 +222,5 @@ On one clean, compatible NVIDIA/OptiX checkout:
    artifacts, and final result JSON. Treat all timing fields as diagnostics
    only.
 
-Until that step passes, the correct status remains
-`LOCAL_IMPLEMENTATION_COMPLETE__GPU_VALIDATION_REQUIRED`.
+Until that step passes, the correct overall status remains
+`BOUNDED_OPTIX8_DIAGNOSTIC_COMPLETE__FORMAL_OPTIX9_VALIDATION_REQUIRED`.

@@ -79,6 +79,13 @@ CPU oracle behavior, schema/source determinism, six semantic boundary cases,
 three scale ladders, and engine/app separation. The checked-in receipt still
 records zero GPU launches.
 
+A separate internal Pod diagnostic at commit `2c48337` used official OptiX 8
+headers on an RTX 4000 Ada GPU and passed all nine workloads twice: 18 true
+OptiX launches, 18 matching GPU executions, independent-oracle parity, and
+prepared reuse. That run does not satisfy the pinned OptiX 9 formal gate and
+registers no performance samples. See
+`history/internal_docs/successor_owner_grouped_pod_20260902/INTERNAL_POD_DIAGNOSTIC_REPORT.md`.
+
 The length admission is a sufficient, deliberately conservative subset rule.
 It prevents the logical case where a finite edge lies wholly inside a capsule
 and therefore intersects the volume without crossing the OptiX curve surface.
@@ -92,8 +99,9 @@ capsule-radius boundary under the independent distance oracle.
 The current handoff snapshot has no root `Makefile`. On a compatible NVIDIA
 host, first run the fail-fast toolchain preflight. It compiles a minimal
 `nvcc`/host-compiler object plus the exact four restricted-Python/Numba
-callback leaves and trusted NVRTC wrapper, but builds no RTDL native library
-and launches no OptiX work:
+callback leaves and trusted NVRTC wrapper. A separate temporary `optixInit()`
+probe requires the selected SDK ABI to negotiate with the host driver. It
+builds no RTDL native library and launches no OptiX work:
 
 ```bash
 PYTHONPATH=src:. python scripts/successor_owner_grouped_pod_preflight.py \
@@ -136,8 +144,9 @@ PYTHONPATH=src:. python \
   --output /tmp/owner_grouped_gpu_result.json
 ```
 
-Native OptiX compilation, true GPU traversal parity, and selected built-in
-curve inside-start behavior remain unproven until that runner passes on a pod.
+Native OptiX 8 compilation and bounded diagnostic traversal parity now exist;
+the registered OptiX 9 formal route remains unproven until that runner passes
+on a driver-compatible Pod.
 The runner rejects a native library that is not bound by the supplied build
 manifest to the same Git commit, builder bytes, exact `nvcc` and host compiler,
 GPU UUID/driver/compute capability, complete native source inventory, and

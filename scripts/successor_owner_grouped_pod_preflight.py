@@ -40,6 +40,9 @@ from scripts.build_v4_optix_native_snapshot import (
 )
 
 _ENV_MARKER = "RTDL_SUCCESSOR_OWNER_GROUPED_TOOLCHAIN_ENV_V1"
+_PREFLIGHT_SCHEMA = (
+    "rtdl.successor_owner_grouped_any_hit.pod_preflight.v2"
+)
 _FORMAL_CACHE_ENV = (
     "RTDL_V4_FORMAL_LEAF_CACHE",
     "RTDL_V4_FORMAL_LEAF_CACHE_MANIFEST",
@@ -60,6 +63,22 @@ _ROLES = (
     CallbackRole.MISS,
     CallbackRole.FINALIZE,
 )
+_OPTIX_RUNTIME_ABI_PROBE_SOURCE = """\
+#include <cstdio>
+#include <optix.h>
+#include <optix_function_table_definition.h>
+#include <optix_stubs.h>
+
+int main() {
+    const OptixResult result = optixInit();
+    if (result != OPTIX_SUCCESS) {
+        std::fprintf(stderr, "optixInit_result=%d\\n", static_cast<int>(result));
+        return 1;
+    }
+    std::printf("optixInit_result=%d\\n", static_cast<int>(result));
+    return 0;
+}
+"""
 
 
 def _capture(command: list[str]) -> str:
@@ -317,6 +336,52 @@ def _compile_nvcc_host_probe(
         }
 
 
+def _run_optix_runtime_abi_probe(
+    host_compiler: Path,
+    optix_include: Path,
+    cuda_include: Path,
+) -> dict[str, object]:
+    """Require the selected headers to negotiate with the host OptiX driver."""
+
+    with tempfile.TemporaryDirectory(
+            prefix="rtdl-successor-optix-abi-preflight-") as directory:
+        root = Path(directory)
+        source = root / "probe.cpp"
+        executable = root / "probe"
+        source.write_text(
+            _OPTIX_RUNTIME_ABI_PROBE_SOURCE,
+            encoding="utf-8",
+            newline="\n",
+        )
+        command = [
+            str(host_compiler), "-std=c++17",
+            f"-I{optix_include}", f"-I{cuda_include}",
+            str(source), "-ldl", "-o", str(executable),
+        ]
+        compiler_output = _capture(command)
+        if not executable.is_file() or executable.stat().st_size == 0:
+            raise RuntimeError("OptiX runtime ABI probe produced no executable")
+        runtime_output = _capture([str(executable)])
+        if runtime_output != "optixInit_result=0":
+            raise RuntimeError(
+                f"unexpected OptiX runtime ABI probe output: {runtime_output!r}")
+        return {
+            "command_template": [
+                "<temporary>/probe.cpp" if item == str(source) else
+                "<temporary>/probe" if item == str(executable) else item
+                for item in command
+            ],
+            "source_sha256": hashlib.sha256(
+                _OPTIX_RUNTIME_ABI_PROBE_SOURCE.encode("utf-8")).hexdigest(),
+            "executable_bytes": executable.stat().st_size,
+            "executable_sha256": _sha(executable),
+            "compiler_output_sha256": hashlib.sha256(
+                compiler_output.encode("utf-8")).hexdigest(),
+            "runtime_output": runtime_output,
+            "optix_launch_count": 0,
+        }
+
+
 def run_preflight(args) -> dict[str, object]:
     if platform.system() != "Linux" \
             or platform.machine().lower() not in {"x86_64", "amd64"}:
@@ -383,6 +448,11 @@ def run_preflight(args) -> dict[str, object]:
         host_compiler,
         capability,
     )
+    optix_runtime_abi_probe = _run_optix_runtime_abi_probe(
+        host_compiler,
+        optix_include,
+        cuda_include,
+    )
     callback_stack = _compile_callback_stack(
         optix_sdk=args.expected_optix_sdk,
         compute_capability=capability,
@@ -396,8 +466,8 @@ def run_preflight(args) -> dict[str, object]:
             or _header_inventory(cuda_include) != cuda_headers_before:
         raise RuntimeError("preflight input identity changed during compilation")
     result = {
-        "schema": "rtdl.successor_owner_grouped_any_hit.pod_preflight.v1",
-        "status": "PASS__TOOLCHAIN_READY_FOR_NATIVE_BUILD_AND_GPU_RUN",
+        "schema": _PREFLIGHT_SCHEMA,
+        "status": "PASS__COMPILER_AND_OPTIX_RUNTIME_ABI_READY_FOR_NATIVE_BUILD",
         "git_commit": git_commit,
         "git_status_before": git_status.splitlines(),
         "git_status_after": post_status.splitlines(),
@@ -428,6 +498,8 @@ def run_preflight(args) -> dict[str, object]:
         },
         "compiler_probe": callback_stack,
         "nvcc_host_compiler_probe": host_compile_probe,
+        "optix_runtime_abi_probe": optix_runtime_abi_probe,
+        "optix_runtime_abi_checked": True,
         "native_library_built": False,
         "optix_launch_count": 0,
         "gpu_correctness_evidence_count": 0,

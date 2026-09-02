@@ -131,10 +131,20 @@ the wrong OS/architecture, multiple visible GPUs, a requested compute target
 that differs from the actual GPU, wrong OptiX headers, dirty Git state, missing
 NVRTC/NVVM/libdevice, or failed compilation of the exact four Numba leaves and
 trusted NVRTC wrapper. It also compiles a minimal object with the exact
-`nvcc`/host-compiler/SM target. The builder and runner independently recheck
-the same GPU identity and bind exact `nvcc`, its host C++ compiler, CUDA/OptiX
-header inventories, and runtime compiler-library bytes. Passing preflight
-alone remains zero-launch toolchain evidence, not GPU correctness evidence.
+`nvcc`/host-compiler/SM target and runs a temporary zero-launch `optixInit()`
+probe to reject an SDK/host-driver ABI mismatch. The builder and runner
+independently recheck the same GPU identity and bind exact `nvcc`, its host C++
+compiler, CUDA/OptiX header inventories, and runtime compiler-library bytes.
+Passing preflight alone remains zero-launch toolchain evidence, not GPU
+correctness evidence.
+
+The first Pod exposed why runtime ABI negotiation belongs in preflight: OptiX 9
+compiled and linked but driver 550.127.05 rejected it before launch. A bounded
+OptiX 8 diagnostic on the same host then passed all nine workloads twice, for
+18 true-OptiX launches with oracle parity and prepared reuse. This establishes
+that the route executes under that diagnostic SDK, not that the pinned OptiX 9
+formal gate or any performance claim has passed. Exact evidence is recorded in
+`successor_owner_grouped_pod_20260902/INTERNAL_POD_DIAGNOSTIC_REPORT.md`.
 
 All runner timings are diagnostics. `registered_performance_timing_count=0`
 and `performance_claimed=false` remain mandatory until a separate benchmark
