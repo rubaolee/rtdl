@@ -1,0 +1,120 @@
+{
+  "challenge_table": {
+    "authority_sha256": "0a2b2c01aed75ad08fad44f7fbc2509ef632d786545e0202b9a4b27425a30345",
+    "eligible_candidate_count": 10,
+    "path": "history/internal_docs/goal5838_generic_core_exam_20260902/CHALLENGE_TABLE.json",
+    "selected_candidate_count": 0
+  },
+  "claim_boundary": {
+    "ordinary_extension_or_infrastructure_bug_is_scientific_failure": false,
+    "scientific_failure_requires_preregistered_minimal_core_change_witness": true,
+    "seal_is_not_prospective_success": true,
+    "seal_is_not_true_gpu_evidence": true,
+    "seal_is_stage_b_engineering_evidence": true
+  },
+  "frozen_core_files": [
+    {
+      "bytes": 58007,
+      "path": "src/rtdsl/v4_family_schema.py",
+      "sha256": "2d118697d10cb2bc2a8672700ae5a991eaf94e66834bb3e08fd898323720f224"
+    },
+    {
+      "bytes": 41675,
+      "path": "src/rtdsl/v4_generic_family_lifecycle.py",
+      "sha256": "7ac68832de9d1e04fdd6f0f11bfa0de7d6109d892ab22e42c9aeb2825d28228c"
+    },
+    {
+      "bytes": 2792,
+      "path": "src/rtdsl/v4_family.py",
+      "sha256": "d25c487823e966a8e9083092811c9a1a2b6aa0fef6ce8f3a0a5b8919c5b809e8"
+    }
+  ],
+  "pre_selection_activity": {
+    "candidate_execution_count": 0,
+    "candidate_specific_provider_implementation_count": 0,
+    "prospective_success_count": 0,
+    "selected_candidate_count": 0,
+    "true_gpu_receipt_count": 0
+  },
+  "preregistration": {
+    "authority_sha256": "7b3a7b7615a60b3abc2fb6dd2e65a4edfd0fb76d66bf278f1c258afbbcd3096f",
+    "baseline_git_commit": "0f5c9d4297f73e412732e5a8ab133423fe4cfd21",
+    "file_sha256": "ebcd762cdc16c38226b9cd51080ad4f17e50ee1062375c2848f8f50822ad5da5",
+    "path": "history/internal_docs/goal5838_generic_core_exam_20260902/GOAL5838_PREREGISTRATION.json"
+  },
+  "public_api": {
+    "module": "rtdsl.v4_family",
+    "surface_sha256": "d25c487823e966a8e9083092811c9a1a2b6aa0fef6ce8f3a0a5b8919c5b809e8",
+    "version": "1.0.0"
+  },
+  "repository": {
+    "branch": "codex/cgo-goal5836-handoff",
+    "core_mutation_allowed_after_seal": false,
+    "last_core_mutation_commit": "3b2f540e6b04e70f98c0e46e3691d15db58d8967",
+    "seal_tooling_commit": "19b3fda3017422f237319ee1fb81c54eb061f1c4"
+  },
+  "review": {
+    "external_review_count": 0,
+    "external_review_deferred_by_owner_while_traveling": true,
+    "internal_hostile_review_required_before_seal": true,
+    "multi_ai_consensus_claimed": false
+  },
+  "schema": "rtdl.goal5838.generic_core_seal.v1",
+  "seal_sha256": "c2a461c8a4a61650044b724d103a80d25241b44b7b486c071b601946292e5dae",
+  "selection_protocol": {
+    "client_path": "scripts/goal5838_select_challenge.py",
+    "client_sha256": "afd600341ed3cd0f3f69bef10656227fd6bb5ea6d3f56c8cbc851e3c26aa270e",
+    "path": "history/internal_docs/goal5838_generic_core_exam_20260902/CHALLENGE_SELECTION_PROTOCOL.md",
+    "pretarget_live_calibration": {
+      "certificate_path": "history/internal_docs/goal5838_generic_core_exam_20260902/NIST_PRETARGET_CERTIFICATE.pem",
+      "certificate_sha256": "847bbfff2a1a842f07c2c5697e63a102d3cb7605559ec2da5cf8397ee0b5e9de",
+      "path": "history/internal_docs/goal5838_generic_core_exam_20260902/NIST_PRETARGET_CALIBRATION.json",
+      "sha256": "dae23b70dc61b3ed0b4ec799ee5da45063f0b07f877b23093969b03790b34fa1"
+    },
+    "sha256": "5f6eafa41e75fda4a412611b8f736a73aec3b840e11643452cdcbd3b15ddcbaa",
+    "target_timestamp": "2026-09-02T19:00:00.000Z",
+    "target_timestamp_ms": 1788375600000,
+    "target_was_future_when_protocol_committed": true
+  },
+  "stage_b_evidence_files_at_seal": [
+    {
+      "bytes": 35946,
+      "path": "src/rtdsl/v4_family_route_adapters.py",
+      "sha256": "ff576b65d0161b3593a1509614edbf5cdea3aa63a68c63eebd49908f0815e1b8"
+    },
+    {
+      "bytes": 4848,
+      "path": "tests/fixtures/goal5838_external_provider.py",
+      "sha256": "093a221695292eca75c7a1cbc0f828f22661d597bdab3d83090441902e6138e4"
+    },
+    {
+      "bytes": 24090,
+      "path": "tests/goal5838_generic_family_lifecycle_test.py",
+      "sha256": "1ab5f1b1df5519fda396c489fb74278a3f9145fd54d22168e07aea3bae68db75"
+    },
+    {
+      "bytes": 16314,
+      "path": "tests/goal5838_family_route_migration_test.py",
+      "sha256": "bcedc2bd9d6a258a6797c70a7151032a27438cc055a24d20ac930002868b8946"
+    }
+  ],
+  "stage_b_results": {
+    "classifications_changed": 0,
+    "closed_successor_routes_migrated": 1,
+    "focused_tests": {
+      "errors": 0,
+      "failed": 0,
+      "passed": 67
+    },
+    "goal583x_regression": {
+      "known_error": "goal5832_protocol_shape_algebra_test.test_authority_matches_repository: goal5831.source_authorities[6] byte count drift",
+      "known_historical_errors": 1,
+      "new_goal5838_regressions": 0,
+      "passed": 264,
+      "run": 265
+    },
+    "package_external_provider_fixture_count": 1,
+    "stable_fixed_constructors_migrated": 2
+  },
+  "status": "GENERIC_CORE_FROZEN__CHALLENGE_NOT_SELECTED"
+}
