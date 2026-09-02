@@ -79,12 +79,12 @@ CPU oracle behavior, schema/source determinism, six semantic boundary cases,
 three scale ladders, and engine/app separation. The checked-in receipt still
 records zero GPU launches.
 
-A clean internal GPU functional run at commit `5ee0e94` used official OptiX 8
-headers on an RTX 4000 Ada GPU and passed all nine workloads twice: 18 true
-OptiX launches, 18 matching GPU executions, independent-oracle parity, and
-prepared reuse. A second near-limit scale run used 512 owners, 4096
-primitives, 1024 queries, 4,194,304 oracle evaluations, and passed all three
-prepared executions. Neither run registers performance samples. See
+A clean internal GPU functional run at commit `7ec6b67` used official OptiX 8
+headers on an RTX 4000 Ada GPU and passed six semantic cases plus four scale
+levels three times: 30 true OptiX launches, 30 matching GPU executions,
+independent-oracle parity, and prepared reuse. The largest level used 512
+owners, 4096 primitives, 1024 queries, 4,194,304 oracle evaluations, and 1024
+intersecting pairs. The run registers no performance samples. See
 `history/internal_docs/successor_owner_grouped_pod_20260902/INTERNAL_POD_DIAGNOSTIC_REPORT.md`.
 The exact OptiX-profile decision is recorded in
 `history/internal_docs/successor_owner_grouped_optix_profile_decision_20260902.md`.

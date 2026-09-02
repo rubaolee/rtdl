@@ -1,0 +1,15 @@
+Traceback (most recent call last):
+  File "/workspace/rtdl/scripts/successor_owner_grouped_pod_preflight.py", line 537, in <module>
+    main()
+  File "/workspace/rtdl/scripts/successor_owner_grouped_pod_preflight.py", line 527, in main
+    result = run_preflight(args)
+             ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/rtdl/scripts/successor_owner_grouped_pod_preflight.py", line 451, in run_preflight
+    optix_runtime_abi_probe = _run_optix_runtime_abi_probe(
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/rtdl/scripts/successor_owner_grouped_pod_preflight.py", line 364, in _run_optix_runtime_abi_probe
+    runtime_output = _capture([str(executable)])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/rtdl/scripts/successor_owner_grouped_pod_preflight.py", line 89, in _capture
+    raise RuntimeError(
+RuntimeError: command failed (1): ['/tmp/rtdl-successor-optix-abi-preflight-gae40w7w/probe']: optixInit_result=7801

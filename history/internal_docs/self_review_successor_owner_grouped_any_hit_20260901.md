@@ -206,7 +206,7 @@ authorized until that review is separately requested and completed.
 - Successor tests: 51/51 pass.
 - Goal5833--Goal5836 frozen/relevant regressions: 168/168 pass.
 - Stored local receipt: 9/9 semantic/scale cases match the independent oracle.
-- Receipt SHA-256: `4be41ead52eb734b66422362510a57745363ca4e6dde0d7658338a160fa376e1`.
+- Receipt SHA-256: `291a3e2ff23ba027084ca06f594a6fb1fc9d760c20aaa6e6f960140e6767faef`.
 - `scripts/audit_goal5835_goal5836.py --verify-stored`: pass.
 - `scripts/goal5836_a1_build_source_fidelity.py --verify-stored`: pass.
 - Python compile-all and `git diff --check`: pass.
@@ -216,15 +216,14 @@ authorized until that review is separately requested and completed.
 The internal report is
 `successor_owner_grouped_pod_20260902/INTERNAL_POD_DIAGNOSTIC_REPORT.md`.
 At commit `2c48337`, OptiX 9 compiled and linked but failed ABI negotiation on
-driver 550.127.05 before launch. At post-fix commit `5ee0e94`, preflight v2
+driver 550.127.05 before launch. At controlling commit `7ec6b67`, preflight v2
 correctly split the SDK outcomes and a fresh official OptiX 8 build completed
-9/9 workloads twice: 18/18 true-OptiX launches, oracle parity, and prepared
-reuse all passed. A second scale run used 512 owners, 4096 primitives, 1024
-queries, and 4,194,304 oracle evaluations; all three prepared executions
-matched. The Mac regression passed at 51/51 successor and 168/168 frozen tests;
-the previous Pod commit passed 50/50 and 168/168 before the evidence-schema
-test was added. Timings are diagnostic only; registered performance count and
-external review count both remain zero.
+six semantic plus four scale workloads three times: 30/30 true-OptiX launches,
+oracle parity, and prepared reuse all passed. The largest scale used 512 owners,
+4096 primitives, 1024 queries, 4,194,304 oracle evaluations, and 1024
+intersecting pairs. Mac and Pod regressions both passed at 51/51 successor and
+168/168 frozen tests. Timings are diagnostic only; registered performance
+count and external review count both remain zero.
 
 ## Next separate gates
 

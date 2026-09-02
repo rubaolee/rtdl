@@ -29,8 +29,8 @@ collected by the runner for troubleshooting only:
   `codex/cgo-goal5836-handoff`.
 - Initial executed commit:
   `2c48337bda79a8bda3f3d123df6be393f88c4e95`.
-- Post-fix executed commit:
-  `5ee0e9404a1262decca6176642edc9f764d8c3f3`.
+- Controlling final executed commit:
+  `7ec6b673b1da3dbe63ff2915e82d61f5302bf85c`.
 - GPU: NVIDIA RTX 4000 Ada Generation,
   `GPU-b0ed3da9-0c28-b259-37a1-d1a36d836ab7`, compute capability 8.9.
 - Driver: 550.127.05.
@@ -40,7 +40,7 @@ collected by the runner for troubleshooting only:
 - Geometry dependency: GEOS 3.12.1.
 - OptiX 9 headers: NVIDIA `optix-dev` tag `v9.0.0`, commit
   `083bffe2011019ca2b9078f53206ff9f0193b63a`.
-- OptiX 8 diagnostic headers: NVIDIA `optix-dev` tag `v8.0.0`, commit
+- OptiX 8 functional headers: NVIDIA `optix-dev` tag `v8.0.0`, commit
   `bef93afb12dbd00e5b8311bc9b320dd487d8cc1f`.
 
 ## OptiX 9 compatibility attempt
@@ -66,22 +66,25 @@ incompatibility, not successful OptiX 9 evidence.
 
 Changing only to the official OptiX 8 header snapshot allowed the same source
 route to build and execute on the same host. No frozen successor authority or
-implementation feature required OptiX 9. The native library again exported all
-four required symbols:
+implementation feature required OptiX 9. At the controlling clean commit, the
+native library exported all four required symbols:
 
 - native bytes: 7,192,472;
 - native SHA-256:
-  `2b840b57e6e259c0a16d764fd99a00917e651625464e93c8b31edcf602f523d8`;
+  `84a08dd78a60336cb94715d3ef9dcedb02828e60085d9906233645badb14e282`;
 - build ID:
-  `221ceb83693e8978242b7b40139343dec8c242209711aeb05f7a4dd17b4d5e2f`.
+  `0d5095fe89c51d9828b767b0b174426c7c073e6b3014db8fac4149751c3ce2ee`.
 
 The complete runner result was
 `PASS__TRUE_OPTIX_PARITY_AND_PREPARED_REUSE`:
 
-- six semantic workloads plus three deterministic scale workloads, 9/9;
-- repeat count two, 18/18 true OptiX launches;
-- 18/18 GPU executions matched the independent CPU oracle;
+- six semantic workloads plus four deterministic scale workloads, 10/10;
+- repeat count three, 30/30 true OptiX launches;
+- 30/30 GPU executions matched the independent CPU oracle;
 - all true-OptiX receipts and prepared-reuse counts validated;
+- the largest workload used 512 owners, 4,096 primitives, and 1,024 queries;
+  its independent oracle evaluated 4,194,304 pairs, found 1,024 intersecting
+  pairs, and all three prepared GPU executions matched;
 - zero registered performance timings;
 - zero external reviews;
 - no author-code, Paper App, full reproduction, or benchmark-app claim.
@@ -95,27 +98,35 @@ the selected headers and host driver. The probe performs zero `optixLaunch`
 calls, records its source/binary/output identity on success, and rejects an ABI
 mismatch before native-library construction.
 
-The same Pod confirmed both branches at post-fix commit `5ee0e94`:
+The same Pod confirmed both branches at controlling commit `7ec6b67`:
 
 - OptiX 9 failed with exit code 1 and `optixInit_result=7801`; no PASS JSON,
   callback-stack compilation, native build, or OptiX launch followed.
 - OptiX 8 produced schema v2 status
   `PASS__COMPILER_AND_OPTIX_RUNTIME_ABI_READY_FOR_NATIVE_BUILD`, with
   `optixInit_result=0`, all four callback roles compiled, and zero launches.
-- A fresh post-fix OptiX 8 native build produced SHA-256
-  `bc093c2db1987997565d006f3b1061d8cfbfca4a4f6e4886edb5b2e0279458ed`
+- A fresh OptiX 8 native build produced SHA-256
+  `84a08dd78a60336cb94715d3ef9dcedb02828e60085d9906233645badb14e282`
   and build ID
-  `477f50bbdb49b2d4cc4832f62c3de56916fbaa271ffc39a2be4353725e0244b6`.
-- The fresh app-front-door run repeated 9/9 workloads, 18/18 true-OptiX
-  launches, 18/18 oracle matches, valid traversal receipts, and prepared reuse.
-- Pod regressions passed 50/50 successor tests and 168/168 frozen
+  `0d5095fe89c51d9828b767b0b174426c7c073e6b3014db8fac4149751c3ce2ee`.
+- The fresh app-front-door run repeated 10/10 workloads three times: 30/30
+  true-OptiX launches, oracle matches, traversal receipts, and prepared-reuse
+  checks passed.
+- Pod regressions passed 51/51 successor tests and 168/168 frozen
   Goal5833--Goal5836 tests.
 
 ## Preserved artifacts
 
-The complete compressed bundle is
+The initial diagnostic bundle is
 `owner_grouped_pod_bundle_2c48337.tar.gz`, SHA-256
 `6182a7f52116a0137baaf9d97900860aa61196d4bc783418a1779f9d93ab2d05`.
+
+The controlling final bundle is
+`owner_grouped_final_bundle_7ec6b67.tar.gz`, SHA-256
+`8946473aea9bb4598e830d3a78771407c6798618cd3f4ab789fc280cf62d4b9d`.
+Its standalone checksum manifest is
+`owner_grouped_final_7ec6b67_SHA256SUMS`, SHA-256
+`b1efde198887b8d8ecce2873d6702026833f230382e9dd3232931a39118ec837`.
 
 | Artifact | SHA-256 |
 |---|---|
@@ -124,24 +135,23 @@ The complete compressed bundle is
 | OptiX 8 preflight v1 JSON | `0ebaf2509cdba3d1fa4aeac96b65de43c585188e5eeab717f8bd5128de39c56d` |
 | OptiX 8 native manifest | `97b52dee4757a7938a16bc8a0ed552deb3c5931dc3fc33afe273a552cdb5f496` |
 | OptiX 8 complete GPU result | `64c3d09bc661ef910be6d657d87a20854d4967b7f2cd514b16896fa0e93de639` |
-| Post-fix OptiX 9 ABI-failure log | `ca3c84bccce74f31db9ed7d66099b6d87b78275e4554275226059201a6ef2527` |
-| Post-fix OptiX 9 exit-code file | `4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865` |
-| Post-fix OptiX 8 preflight v2 JSON | `900271b8e2b897a4c5e71248f424119e15dc0c9539b35d30d26da4c72fad7cd8` |
-| Post-fix OptiX 8 native manifest | `973ecf423fb1e58a95aaa56134fdf607c868c522a5d14a07305867647bcb99bd` |
-| Post-fix OptiX 8 complete GPU result | `9fac2dc7b70565a0dbb7c455b16aac73e94beba06cb180e0bd6dd45857805551` |
+| Final OptiX 9 ABI-failure log | `a0887dc1de3f7ac7291463755821aa5d9eef5de8364a049f63d5fa3a60e43f4f` |
+| Final OptiX 9 exit-code file | `4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865` |
+| Final OptiX 8 preflight v2 JSON | `9f87eab8d383b0fe56a70431bdef1bfc09dbeb03ff4da8bd493cb0c002185e32` |
+| Final OptiX 8 native manifest | `679b0db35c64afc554d4095300a1431d99772ffb5bf211e7635572ba718e04cb` |
+| Final OptiX 8 native build log | `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855` |
+| Final OptiX 8 complete GPU result | `59e50a9f121f13b5b32fc13f2c9f6550a6756a3b48ad1a065fe824c60a93463f` |
 
-The post-fix bundle is `owner_grouped_postfix_bundle_5ee0e94.tar.gz`,
-SHA-256
-`e04f373a4ffc203aad1914e7310c66253763634933479b69f03119152e6c653b`.
+The five v1 rows are preserved inside the initial diagnostic bundle. The six
+final rows are preserved both as standalone files and inside the controlling
+final bundle; the standalone checksum manifest verifies all six.
 
 All native build logs are empty files with the SHA-256 of empty bytes because
 the successful builder emitted no compiler diagnostics.
 
 ## Remaining separate gates
 
-1. Preserve final runner-schema-v2 artifacts from the exact post-decision
-   commit on this Pod.
-2. Perform the owner-deferred external review before consensus or public
+1. Perform the owner-deferred external review before consensus or public
    promotion wording.
-3. Preregister an Embree/timing protocol before benchmark or speedup claims.
-4. Use R570-or-newer hardware only if separate OptiX 9 coverage is desired.
+2. Preregister an Embree/timing protocol before benchmark or speedup claims.
+3. Use R570-or-newer hardware only if separate OptiX 9 coverage is desired.

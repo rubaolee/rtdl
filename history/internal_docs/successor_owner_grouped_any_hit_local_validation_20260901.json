@@ -122,9 +122,9 @@
       "sha256": "f930518980993bb9681152af2f54137e108fb7961f472de8fbe7d5862f94f1ea"
     },
     {
-      "bytes": 7477,
+      "bytes": 7480,
       "path": "case_studies/linear_rtccd_owner_grouped/README.md",
-      "sha256": "b0760612610028b157a0aefa6eeca9f31dc897103f54b14ac4e605488337558b"
+      "sha256": "47e29462fcec19d6afdfad1d5d7b19bd7f2af5b32c1cf454c532c49ab2fe7b6e"
     },
     {
       "bytes": 17635,
@@ -203,7 +203,7 @@
   "performance_timing_count": 0,
   "pod_toolchain_preflight_ready": true,
   "public_app_gpu_runner_ready": true,
-  "receipt_sha256": "4be41ead52eb734b66422362510a57745363ca4e6dde0d7658338a160fa376e1",
+  "receipt_sha256": "291a3e2ff23ba027084ca06f594a6fb1fc9d760c20aaa6e6f960140e6767faef",
   "registered_local_case_count": 9,
   "registered_scale_case_count": 3,
   "registered_scale_cases": [

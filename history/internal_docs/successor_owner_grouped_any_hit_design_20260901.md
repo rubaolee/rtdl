@@ -146,9 +146,10 @@ The exact OptiX 8.0/R550/RTX 4000 Ada profile is therefore the internal GPU
 functional target, while OptiX 9 is additional version coverage. Preflight v2
 confirmed this distinction: OptiX 9 failed early with
 `optixInit_result=7801`, while OptiX 8 returned `optixInit_result=0` with zero
-launches. A fresh build then passed all nine workloads twice for 18 true-OptiX
-launches, plus a 4096-primitive/1024-query scale run three times. Exact evidence
-and the non-performance boundary are recorded in
+launches. At the controlling clean commit, a fresh build passed six semantic
+and four scale workloads three times for 30 true-OptiX launches. The largest
+scale used 4096 primitives and 1024 queries. Exact evidence and the
+non-performance boundary are recorded in
 `successor_owner_grouped_pod_20260902/INTERNAL_POD_DIAGNOSTIC_REPORT.md`; the
 profile decision is
 `successor_owner_grouped_optix_profile_decision_20260902.md`.

@@ -58,17 +58,17 @@ The provided Pod has driver 550.127.05. Therefore:
 
 ## Completed internal functional gate
 
-At clean commit `5ee0e9404a1262decca6176642edc9f764d8c3f3`:
+At clean commit `7ec6b673b1da3dbe63ff2915e82d61f5302bf85c`:
 
 - preflight v2 bound OptiX 8.0.0, CUDA 12.8, compute capability 8.9, exact
   compiler/runtime libraries, SDK headers, GPU UUID, and driver;
 - the runtime ABI probe returned `optixInit_result=0` with zero launches;
 - a fresh native library exported all four required C ABI symbols;
-- the public app front door passed six semantic plus three scale workloads,
-  repeated twice, for 18/18 true-OptiX launches and oracle matches; and
-- an additional near-runner-limit scale used 512 owners, 4096 primitives, and
-  1024 queries. Its oracle evaluated 4,194,304 primitive/query pairs; all three
-  prepared GPU executions matched, bringing that run to 21/21 launches.
+- the public app front door passed six semantic plus four scale workloads,
+  repeated three times, for 30/30 true-OptiX launches and oracle matches; and
+- the largest scale used 512 owners, 4096 primitives, and 1024 queries. Its
+  oracle evaluated 4,194,304 primitive/query pairs and found 1024 intersecting
+  pairs; all three prepared GPU executions matched.
 
 The exact artifacts and hashes are recorded in
 `successor_owner_grouped_pod_20260902/INTERNAL_POD_DIAGNOSTIC_REPORT.md`.
