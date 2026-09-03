@@ -51,6 +51,19 @@ Numba 0.65.1, NumPy 2.4.4, CUDA compatible with the visible GPU, and OptiX SDK
 9.0.0. Replace the uppercase placeholders with discovered absolute paths and
 the full 40-character Git commit.
 
+Use a normal full-history clone when possible. The preregistration verifier
+reads the frozen baseline commit
+`0f5c9d4297f73e412732e5a8ab133423fe4cfd21`; an unqualified depth-one clone
+does not contain that object and therefore fails closed before GPU work. If a
+shallow clone is required, fetch the baseline object without changing `HEAD`:
+
+```bash
+git fetch --depth=1 origin 0f5c9d4297f73e412732e5a8ab133423fe4cfd21
+git rev-parse HEAD
+git rev-parse 0f5c9d4297f73e412732e5a8ab133423fe4cfd21
+test -z "$(git status --porcelain=v1 --untracked-files=all)"
+```
+
 The existing product-only native build excludes the sphere lifecycle ABI under
 `RTDL_V4_PRODUCT_ONLY`. Therefore this exam builds the existing full generic
 provider from `src/native/rtdl_optix.cpp`; it does not modify native C++ source

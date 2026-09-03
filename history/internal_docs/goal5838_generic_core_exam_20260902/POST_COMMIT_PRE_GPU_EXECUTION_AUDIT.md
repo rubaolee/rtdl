@@ -36,6 +36,14 @@ verifier, and the selection verifier also pass. The worktree remained clean.
 These are local source, contract, oracle, lifecycle-mock, and evidence-tool
 checks. They are not OptiX execution.
 
+A depth-one GitHub clone initially passed 64 tests and failed five
+preregistration tests because it lacked the frozen baseline commit object
+`0f5c9d4297f73e412732e5a8ab133423fe4cfd21`. Fetching that one object, without
+changing `HEAD`, made all 69 tests and both stored verifiers pass while the
+clone remained clean. This is now documented in the case-study procedure. It
+is a repository-history prerequisite, not an implementation or scientific
+failure.
+
 ## Native ancestry evidence and its exact limit
 
 The current native provider source is byte-identical to commit
