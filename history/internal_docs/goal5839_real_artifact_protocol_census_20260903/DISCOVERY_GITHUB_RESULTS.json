@@ -1,0 +1,2194 @@
+{
+  "binding": {
+    "binding_sha256": "c4293003045f54ebe1011fe94af90bfa08474869d2e73c8175bdb6939abdddfa",
+    "commit": "7da8488ce",
+    "file_sha256": "f6753da2ac417a77f842c71ec3e519c13ee91b8b69736fb2bf0077d4c2d390ed"
+  },
+  "claim_boundary": {
+    "complete_artifact_discovery": false,
+    "external_review_or_consensus": false,
+    "field_result_or_paper_claim": false,
+    "search_result_set_only": true
+  },
+  "completed_at_utc": "2026-09-03T07:08:35Z",
+  "execution_boundary": {
+    "artifact_eligibility_decided": false,
+    "candidate_result_metadata_collected": true,
+    "candidate_source_inspected": false,
+    "gpu_or_pod_used": false,
+    "performance_timed": false,
+    "property_classified": false,
+    "repository_cloned": false
+  },
+  "goal": 5839,
+  "provider": "github",
+  "query_count": 29,
+  "result_sha256": "fa2fe1397fb25429f1928a4363fc66d1e0aacdb1420b82ab4d556d4395ec7647",
+  "returned_item_count": 69,
+  "rows": [
+    {
+      "citation_key": "Chan2018ParticlemeshCI",
+      "query": "\"Particle\u2013mesh coupling in the interaction of fluid and deformable bodies with screen space refraction rendering\" in:name,description,readme",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:08:21Z",
+            "delay_before_attempt_seconds": 0,
+            "http_status": 200,
+            "resolved_url": "https://api.github.com/search/repositories?q=%22Particle%E2%80%93mesh+coupling+in+the+interaction+of+fluid+and+deformable+bodies+with+screen+space+refraction+rendering%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+            "response_bytes": 55,
+            "response_headers": {
+              "content-type": "application/json; charset=utf-8",
+              "x-github-request-id": "C560:11C362:214EB4B:6965549:6A991CE4",
+              "x-ratelimit-limit": "30",
+              "x-ratelimit-remaining": "29",
+              "x-ratelimit-reset": "1788419361",
+              "x-ratelimit-resource": "search",
+              "x-ratelimit-used": "1"
+            },
+            "response_sha256": "4af480b8ee5b87b369a76c49bd22c9a783908272ebffbe97898f8ab0f0772a5f",
+            "started_at_utc": "2026-09-03T07:08:20Z",
+            "status": "SUCCESS"
+          }
+        ],
+        "terminal_status": "SUCCESS"
+      },
+      "request_url": "https://api.github.com/search/repositories?q=%22Particle%E2%80%93mesh+coupling+in+the+interaction+of+fluid+and+deformable+bodies+with+screen+space+refraction+rendering%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+      "result": {
+        "incomplete_results": false,
+        "items": [],
+        "returned_item_count": 0,
+        "total_count": 0
+      },
+      "title": "Particle\u2013mesh coupling in the interaction of fluid and deformable bodies with screen space refraction rendering",
+      "work_id": "survey_bib:Chan2018ParticlemeshCI"
+    },
+    {
+      "citation_key": "Cui2024RTSRTAM",
+      "query": "\"RTSRT: Accelerating Monte Carlo Particle Transport with Ray Tracing Shared Cache Architecture\" in:name,description,readme",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:08:21Z",
+            "delay_before_attempt_seconds": 0,
+            "http_status": 200,
+            "resolved_url": "https://api.github.com/search/repositories?q=%22RTSRT%3A+Accelerating+Monte+Carlo+Particle+Transport+with+Ray+Tracing+Shared+Cache+Architecture%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+            "response_bytes": 55,
+            "response_headers": {
+              "content-type": "application/json; charset=utf-8",
+              "x-github-request-id": "C561:33515F:FB12CF:31D8A7B:6A991CE5",
+              "x-ratelimit-limit": "30",
+              "x-ratelimit-remaining": "28",
+              "x-ratelimit-reset": "1788419361",
+              "x-ratelimit-resource": "search",
+              "x-ratelimit-used": "2"
+            },
+            "response_sha256": "4af480b8ee5b87b369a76c49bd22c9a783908272ebffbe97898f8ab0f0772a5f",
+            "started_at_utc": "2026-09-03T07:08:21Z",
+            "status": "SUCCESS"
+          }
+        ],
+        "terminal_status": "SUCCESS"
+      },
+      "request_url": "https://api.github.com/search/repositories?q=%22RTSRT%3A+Accelerating+Monte+Carlo+Particle+Transport+with+Ray+Tracing+Shared+Cache+Architecture%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+      "result": {
+        "incomplete_results": false,
+        "items": [],
+        "returned_item_count": 0,
+        "total_count": 0
+      },
+      "title": "RTSRT: Accelerating Monte Carlo Particle Transport with Ray Tracing Shared Cache Architecture",
+      "work_id": "survey_bib:Cui2024RTSRTAM"
+    },
+    {
+      "citation_key": "Geng2024RayJoinFA",
+      "query": "\"RayJoin: Fast and Precise Spatial Join\" in:name,description,readme",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:08:22Z",
+            "delay_before_attempt_seconds": 0,
+            "http_status": 200,
+            "resolved_url": "https://api.github.com/search/repositories?q=%22RayJoin%3A+Fast+and+Precise+Spatial+Join%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+            "response_bytes": 15467,
+            "response_headers": {
+              "content-type": "application/json; charset=utf-8",
+              "x-github-request-id": "C562:375B73:F9F878:319AAB0:6A991CE5",
+              "x-ratelimit-limit": "30",
+              "x-ratelimit-remaining": "27",
+              "x-ratelimit-reset": "1788419361",
+              "x-ratelimit-resource": "search",
+              "x-ratelimit-used": "3"
+            },
+            "response_sha256": "4a6bb5f335fa8c5af1fbccc8ed895e1cd98bf22ce709c798c2c44f30fe991d10",
+            "started_at_utc": "2026-09-03T07:08:21Z",
+            "status": "SUCCESS"
+          }
+        ],
+        "terminal_status": "SUCCESS"
+      },
+      "request_url": "https://api.github.com/search/repositories?q=%22RayJoin%3A+Fast+and+Precise+Spatial+Join%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+      "result": {
+        "incomplete_results": false,
+        "items": [
+          {
+            "archived": false,
+            "created_at": "2023-03-01T16:42:03Z",
+            "default_branch": "main",
+            "description": "This repo contains the code of the paper \"RayJoin: Fast and Precise Spatial Join\", ICS'24",
+            "fork": false,
+            "full_name": "pwrliang/RayJoin",
+            "html_url": "https://github.com/pwrliang/RayJoin",
+            "id": 608259125,
+            "node_id": "R_kgDOJEFMNQ",
+            "owner_login": "pwrliang",
+            "pushed_at": "2026-09-03T01:00:12Z",
+            "rank": 1,
+            "updated_at": "2026-04-20T11:27:00Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2026-07-02T17:11:04Z",
+            "default_branch": "main",
+            "description": "General Purpose Ray Tracing Cores",
+            "fork": false,
+            "full_name": "simon2/GPRTC",
+            "html_url": "https://github.com/simon2/GPRTC",
+            "id": 1287422912,
+            "node_id": "R_kgDOTLyDwA",
+            "owner_login": "simon2",
+            "pushed_at": "2026-07-02T17:11:19Z",
+            "rank": 2,
+            "updated_at": "2026-07-02T17:11:23Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2026-07-29T07:01:43Z",
+            "default_branch": "main",
+            "description": "Exact GPU design-rule checker for rectangle spacing \u2014 serial CPU, 16-thread CPU, and CUDA paths cross-validated against each other. 10.4x end-to-end on 1M rectangles.",
+            "fork": false,
+            "full_name": "abdogad/cuDRC-mini",
+            "html_url": "https://github.com/abdogad/cuDRC-mini",
+            "id": 1315804896,
+            "node_id": "R_kgDOTm2W4A",
+            "owner_login": "abdogad",
+            "pushed_at": "2026-07-29T09:46:37Z",
+            "rank": 3,
+            "updated_at": "2026-08-29T14:00:37Z"
+          }
+        ],
+        "returned_item_count": 3,
+        "total_count": 3
+      },
+      "title": "RayJoin: Fast and Precise Spatial Join",
+      "work_id": "survey_bib:Geng2024RayJoinFA"
+    },
+    {
+      "citation_key": "Geng2025LibRTSAS",
+      "query": "\"LibRTS: A Spatial Indexing Library by Ray Tracing\" in:name,description,readme",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:08:22Z",
+            "delay_before_attempt_seconds": 0,
+            "http_status": 200,
+            "resolved_url": "https://api.github.com/search/repositories?q=%22LibRTS%3A+A+Spatial+Indexing+Library+by+Ray+Tracing%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+            "response_bytes": 10254,
+            "response_headers": {
+              "content-type": "application/json; charset=utf-8",
+              "x-github-request-id": "C563:375B73:F9FBE9:319B667:6A991CE6",
+              "x-ratelimit-limit": "30",
+              "x-ratelimit-remaining": "26",
+              "x-ratelimit-reset": "1788419361",
+              "x-ratelimit-resource": "search",
+              "x-ratelimit-used": "4"
+            },
+            "response_sha256": "e8453fdba54e86a2149e10fd9b817c7a4fa5da5f08358df4820d902e38a865df",
+            "started_at_utc": "2026-09-03T07:08:22Z",
+            "status": "SUCCESS"
+          }
+        ],
+        "terminal_status": "SUCCESS"
+      },
+      "request_url": "https://api.github.com/search/repositories?q=%22LibRTS%3A+A+Spatial+Indexing+Library+by+Ray+Tracing%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+      "result": {
+        "incomplete_results": false,
+        "items": [
+          {
+            "archived": false,
+            "created_at": "2024-11-14T01:31:26Z",
+            "default_branch": "main",
+            "description": "This repo contains the source code for our paper \"LibRTS: A Spatial Indexing Library by Ray Tracing\" published in PPoPP'25",
+            "fork": false,
+            "full_name": "RTSpatial/RTSpatial",
+            "html_url": "https://github.com/RTSpatial/RTSpatial",
+            "id": 888199173,
+            "node_id": "R_kgDONPDYBQ",
+            "owner_login": "RTSpatial",
+            "pushed_at": "2026-09-03T01:01:34Z",
+            "rank": 1,
+            "updated_at": "2026-05-14T08:20:14Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2026-07-02T17:11:04Z",
+            "default_branch": "main",
+            "description": "General Purpose Ray Tracing Cores",
+            "fork": false,
+            "full_name": "simon2/GPRTC",
+            "html_url": "https://github.com/simon2/GPRTC",
+            "id": 1287422912,
+            "node_id": "R_kgDOTLyDwA",
+            "owner_login": "simon2",
+            "pushed_at": "2026-07-02T17:11:19Z",
+            "rank": 2,
+            "updated_at": "2026-07-02T17:11:23Z"
+          }
+        ],
+        "returned_item_count": 2,
+        "total_count": 2
+      },
+      "title": "LibRTS: A Spatial Indexing Library by Ray Tracing",
+      "work_id": "survey_bib:Geng2025LibRTSAS"
+    },
+    {
+      "citation_key": "Hashinoki2023ImplementationOR",
+      "query": "\"Implementation of Radio Wave Propagation using RT Cores and Consideration of Programming Models\" in:name,description,readme",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:08:23Z",
+            "delay_before_attempt_seconds": 0,
+            "http_status": 200,
+            "resolved_url": "https://api.github.com/search/repositories?q=%22Implementation+of+Radio+Wave+Propagation+using+RT+Cores+and+Consideration+of+Programming+Models%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+            "response_bytes": 55,
+            "response_headers": {
+              "content-type": "application/json; charset=utf-8",
+              "x-github-request-id": "C564:26C237:1FF4737:64DA5E1:6A991CE6",
+              "x-ratelimit-limit": "30",
+              "x-ratelimit-remaining": "25",
+              "x-ratelimit-reset": "1788419361",
+              "x-ratelimit-resource": "search",
+              "x-ratelimit-used": "5"
+            },
+            "response_sha256": "4af480b8ee5b87b369a76c49bd22c9a783908272ebffbe97898f8ab0f0772a5f",
+            "started_at_utc": "2026-09-03T07:08:22Z",
+            "status": "SUCCESS"
+          }
+        ],
+        "terminal_status": "SUCCESS"
+      },
+      "request_url": "https://api.github.com/search/repositories?q=%22Implementation+of+Radio+Wave+Propagation+using+RT+Cores+and+Consideration+of+Programming+Models%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+      "result": {
+        "incomplete_results": false,
+        "items": [],
+        "returned_item_count": 0,
+        "total_count": 0
+      },
+      "title": "Implementation of Radio Wave Propagation using RT Cores and Consideration of Programming Models",
+      "work_id": "survey_bib:Hashinoki2023ImplementationOR"
+    },
+    {
+      "citation_key": "Henneberg2023RTIndeXEH",
+      "query": "\"RTIndeX: Exploiting Hardware-Accelerated GPU Raytracing for Database Indexing\" in:name,description,readme",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:08:23Z",
+            "delay_before_attempt_seconds": 0,
+            "http_status": 200,
+            "resolved_url": "https://api.github.com/search/repositories?q=%22RTIndeX%3A+Exploiting+Hardware-Accelerated+GPU+Raytracing+for+Database+Indexing%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+            "response_bytes": 4843,
+            "response_headers": {
+              "content-type": "application/json; charset=utf-8",
+              "x-github-request-id": "C565:327987:FCC1BC:323F0E4:6A991CE7",
+              "x-ratelimit-limit": "30",
+              "x-ratelimit-remaining": "24",
+              "x-ratelimit-reset": "1788419361",
+              "x-ratelimit-resource": "search",
+              "x-ratelimit-used": "6"
+            },
+            "response_sha256": "f81db1017ab60ef679892a3f00f5487e21da578d4061b0d9a4aef3d4c1645665",
+            "started_at_utc": "2026-09-03T07:08:23Z",
+            "status": "SUCCESS"
+          }
+        ],
+        "terminal_status": "SUCCESS"
+      },
+      "request_url": "https://api.github.com/search/repositories?q=%22RTIndeX%3A+Exploiting+Hardware-Accelerated+GPU+Raytracing+for+Database+Indexing%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+      "result": {
+        "incomplete_results": false,
+        "items": [
+          {
+            "archived": false,
+            "created_at": "2026-07-02T17:11:04Z",
+            "default_branch": "main",
+            "description": "General Purpose Ray Tracing Cores",
+            "fork": false,
+            "full_name": "simon2/GPRTC",
+            "html_url": "https://github.com/simon2/GPRTC",
+            "id": 1287422912,
+            "node_id": "R_kgDOTLyDwA",
+            "owner_login": "simon2",
+            "pushed_at": "2026-07-02T17:11:19Z",
+            "rank": 1,
+            "updated_at": "2026-07-02T17:11:23Z"
+          }
+        ],
+        "returned_item_count": 1,
+        "total_count": 1
+      },
+      "title": "RTIndeX: Exploiting Hardware-Accelerated GPU Raytracing for Database Indexing",
+      "work_id": "survey_bib:Henneberg2023RTIndeXEH"
+    },
+    {
+      "citation_key": "Henneberg2024MoreBF",
+      "query": "\"More Bang for Your Buck(et): Fast and Space-Efficient Hardware-Accelerated Coarse-Granular Indexing on GPUs\" in:name,description,readme",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:08:24Z",
+            "delay_before_attempt_seconds": 0,
+            "http_status": 200,
+            "resolved_url": "https://api.github.com/search/repositories?q=%22More+Bang+for+Your+Buck%28et%29%3A+Fast+and+Space-Efficient+Hardware-Accelerated+Coarse-Granular+Indexing+on+GPUs%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+            "response_bytes": 55,
+            "response_headers": {
+              "content-type": "application/json; charset=utf-8",
+              "x-github-request-id": "C566:284D74:F25826:302B2D1:6A991CE7",
+              "x-ratelimit-limit": "30",
+              "x-ratelimit-remaining": "23",
+              "x-ratelimit-reset": "1788419361",
+              "x-ratelimit-resource": "search",
+              "x-ratelimit-used": "7"
+            },
+            "response_sha256": "4af480b8ee5b87b369a76c49bd22c9a783908272ebffbe97898f8ab0f0772a5f",
+            "started_at_utc": "2026-09-03T07:08:23Z",
+            "status": "SUCCESS"
+          }
+        ],
+        "terminal_status": "SUCCESS"
+      },
+      "request_url": "https://api.github.com/search/repositories?q=%22More+Bang+for+Your+Buck%28et%29%3A+Fast+and+Space-Efficient+Hardware-Accelerated+Coarse-Granular+Indexing+on+GPUs%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+      "result": {
+        "incomplete_results": false,
+        "items": [],
+        "returned_item_count": 0,
+        "total_count": 0
+      },
+      "title": "More Bang for Your Buck(et): Fast and Space-Efficient Hardware-Accelerated Coarse-Granular Indexing on GPUs",
+      "work_id": "survey_bib:Henneberg2024MoreBF"
+    },
+    {
+      "citation_key": "Kim2025RTPDPD",
+      "query": "\"RTPD: penetration depth calculation using hardware-accelerated ray-tracing\" in:name,description,readme",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:08:24Z",
+            "delay_before_attempt_seconds": 0,
+            "http_status": 200,
+            "resolved_url": "https://api.github.com/search/repositories?q=%22RTPD%3A+penetration+depth+calculation+using+hardware-accelerated+ray-tracing%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+            "response_bytes": 4957,
+            "response_headers": {
+              "content-type": "application/json; charset=utf-8",
+              "x-github-request-id": "C567:1DFE89:200B818:650A9A9:6A991CE8",
+              "x-ratelimit-limit": "30",
+              "x-ratelimit-remaining": "22",
+              "x-ratelimit-reset": "1788419361",
+              "x-ratelimit-resource": "search",
+              "x-ratelimit-used": "8"
+            },
+            "response_sha256": "399b1524ce00834a83e36be36b237ad294b767b7d2f88b304b0be11f0ab2c770",
+            "started_at_utc": "2026-09-03T07:08:24Z",
+            "status": "SUCCESS"
+          }
+        ],
+        "terminal_status": "SUCCESS"
+      },
+      "request_url": "https://api.github.com/search/repositories?q=%22RTPD%3A+penetration+depth+calculation+using+hardware-accelerated+ray-tracing%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+      "result": {
+        "incomplete_results": false,
+        "items": [
+          {
+            "archived": false,
+            "created_at": "2026-03-23T14:39:52Z",
+            "default_branch": "main",
+            "description": null,
+            "fork": false,
+            "full_name": "aister9/aister9",
+            "html_url": "https://github.com/aister9/aister9",
+            "id": 1189657125,
+            "node_id": "R_kgDORui6JQ",
+            "owner_login": "aister9",
+            "pushed_at": "2026-03-23T15:11:42Z",
+            "rank": 1,
+            "updated_at": "2026-03-23T15:12:03Z"
+          }
+        ],
+        "returned_item_count": 1,
+        "total_count": 1
+      },
+      "title": "RTPD: penetration depth calculation using hardware-accelerated ray-tracing",
+      "work_id": "survey_bib:Kim2025RTPDPD"
+    },
+    {
+      "citation_key": "Liu2023JUNOOH",
+      "query": "\"JUNO: Optimizing High-Dimensional Approximate Nearest Neighbour Search with Sparsity-Aware Algorithm and Ray-Tracing Core Mapping\" in:name,description,readme",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:08:25Z",
+            "delay_before_attempt_seconds": 0,
+            "http_status": 200,
+            "resolved_url": "https://api.github.com/search/repositories?q=%22JUNO%3A+Optimizing+High-Dimensional+Approximate+Nearest+Neighbour+Search+with+Sparsity-Aware+Algorithm+and+Ray-Tracing+Core+Mapping%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+            "response_bytes": 22595,
+            "response_headers": {
+              "content-type": "application/json; charset=utf-8",
+              "x-github-request-id": "C568:11C362:2150623:696AB6B:6A991CE8",
+              "x-ratelimit-limit": "30",
+              "x-ratelimit-remaining": "21",
+              "x-ratelimit-reset": "1788419361",
+              "x-ratelimit-resource": "search",
+              "x-ratelimit-used": "9"
+            },
+            "response_sha256": "9e7c76043b8fc2abeefff02b077c5f8129beba8bbd56bb6b0f0150a3cb0adbce",
+            "started_at_utc": "2026-09-03T07:08:24Z",
+            "status": "SUCCESS"
+          }
+        ],
+        "terminal_status": "SUCCESS"
+      },
+      "request_url": "https://api.github.com/search/repositories?q=%22JUNO%3A+Optimizing+High-Dimensional+Approximate+Nearest+Neighbour+Search+with+Sparsity-Aware+Algorithm+and+Ray-Tracing+Core+Mapping%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+      "result": {
+        "incomplete_results": false,
+        "items": [
+          {
+            "archived": false,
+            "created_at": "2024-09-04T10:52:56Z",
+            "default_branch": "main",
+            "description": "A list of papers in the field of approximate nearest neighbor search on high-dimensional vectors.",
+            "fork": false,
+            "full_name": "SimoneZeng/awesome-vector-ANN-search-papers",
+            "html_url": "https://github.com/SimoneZeng/awesome-vector-ANN-search-papers",
+            "id": 852170538,
+            "node_id": "R_kgDOMssXKg",
+            "owner_login": "SimoneZeng",
+            "pushed_at": "2026-08-11T08:05:57Z",
+            "rank": 1,
+            "updated_at": "2026-08-31T18:40:22Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2026-07-02T17:11:04Z",
+            "default_branch": "main",
+            "description": "General Purpose Ray Tracing Cores",
+            "fork": false,
+            "full_name": "simon2/GPRTC",
+            "html_url": "https://github.com/simon2/GPRTC",
+            "id": 1287422912,
+            "node_id": "R_kgDOTLyDwA",
+            "owner_login": "simon2",
+            "pushed_at": "2026-07-02T17:11:19Z",
+            "rank": 2,
+            "updated_at": "2026-07-02T17:11:23Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2023-10-19T02:29:16Z",
+            "default_branch": "main",
+            "description": "Papers relevant with graph and GPU",
+            "fork": false,
+            "full_name": "junyimei/paper-reading-list",
+            "html_url": "https://github.com/junyimei/paper-reading-list",
+            "id": 706993374,
+            "node_id": "R_kgDOKiPc3g",
+            "owner_login": "junyimei",
+            "pushed_at": "2026-01-01T15:22:49Z",
+            "rank": 3,
+            "updated_at": "2026-05-06T08:51:06Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2025-04-25T02:38:41Z",
+            "default_branch": "main",
+            "description": "Vector ANNS paper collections",
+            "fork": false,
+            "full_name": "revectores/awesome-vector-anns-paper",
+            "html_url": "https://github.com/revectores/awesome-vector-anns-paper",
+            "id": 972397615,
+            "node_id": "R_kgDOOfWcLw",
+            "owner_login": "revectores",
+            "pushed_at": "2025-10-04T06:03:09Z",
+            "rank": 4,
+            "updated_at": "2025-10-04T06:03:12Z"
+          }
+        ],
+        "returned_item_count": 4,
+        "total_count": 4
+      },
+      "title": "JUNO: Optimizing High-Dimensional Approximate Nearest Neighbour Search with Sparsity-Aware Algorithm and Ray-Tracing Core Mapping",
+      "work_id": "survey_bib:Liu2023JUNOOH"
+    },
+    {
+      "citation_key": "Liu2025RayTC",
+      "query": "\"Ray tracing core accelerated high performance implementation for infrared radiation signature simulation using reverse Monte Carlo method\" in:name,description,readme",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:08:25Z",
+            "delay_before_attempt_seconds": 0,
+            "http_status": 200,
+            "resolved_url": "https://api.github.com/search/repositories?q=%22Ray+tracing+core+accelerated+high+performance+implementation+for+infrared+radiation+signature+simulation+using+reverse+Monte+Carlo+method%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+            "response_bytes": 55,
+            "response_headers": {
+              "content-type": "application/json; charset=utf-8",
+              "x-github-request-id": "C569:FF857:1EED4D6:61A4B6E:6A991CE9",
+              "x-ratelimit-limit": "30",
+              "x-ratelimit-remaining": "20",
+              "x-ratelimit-reset": "1788419361",
+              "x-ratelimit-resource": "search",
+              "x-ratelimit-used": "10"
+            },
+            "response_sha256": "4af480b8ee5b87b369a76c49bd22c9a783908272ebffbe97898f8ab0f0772a5f",
+            "started_at_utc": "2026-09-03T07:08:25Z",
+            "status": "SUCCESS"
+          }
+        ],
+        "terminal_status": "SUCCESS"
+      },
+      "request_url": "https://api.github.com/search/repositories?q=%22Ray+tracing+core+accelerated+high+performance+implementation+for+infrared+radiation+signature+simulation+using+reverse+Monte+Carlo+method%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+      "result": {
+        "incomplete_results": false,
+        "items": [],
+        "returned_item_count": 0,
+        "total_count": 0
+      },
+      "title": "Ray tracing core accelerated high performance implementation for infrared radiation signature simulation using reverse Monte Carlo method",
+      "work_id": "survey_bib:Liu2025RayTC"
+    },
+    {
+      "citation_key": "Lv2024RTScanES",
+      "query": "\"RTScan: Efficient Scan with Ray Tracing Cores\" in:name,description,readme",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:08:26Z",
+            "delay_before_attempt_seconds": 0,
+            "http_status": 200,
+            "resolved_url": "https://api.github.com/search/repositories?q=%22RTScan%3A+Efficient+Scan+with+Ray+Tracing+Cores%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+            "response_bytes": 15348,
+            "response_headers": {
+              "content-type": "application/json; charset=utf-8",
+              "x-github-request-id": "C56A:375B73:FA1422:31A03E5:6A991CE9",
+              "x-ratelimit-limit": "30",
+              "x-ratelimit-remaining": "19",
+              "x-ratelimit-reset": "1788419361",
+              "x-ratelimit-resource": "search",
+              "x-ratelimit-used": "11"
+            },
+            "response_sha256": "f113f474abb0d8b37fc2e658101f04f61f2e0812f8520330191fa01bece564bf",
+            "started_at_utc": "2026-09-03T07:08:25Z",
+            "status": "SUCCESS"
+          }
+        ],
+        "terminal_status": "SUCCESS"
+      },
+      "request_url": "https://api.github.com/search/repositories?q=%22RTScan%3A+Efficient+Scan+with+Ray+Tracing+Cores%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+      "result": {
+        "incomplete_results": false,
+        "items": [
+          {
+            "archived": false,
+            "created_at": "2023-09-01T07:14:57Z",
+            "default_branch": "main",
+            "description": null,
+            "fork": false,
+            "full_name": "AntaresAlice/RTScan",
+            "html_url": "https://github.com/AntaresAlice/RTScan",
+            "id": 685861000,
+            "node_id": "R_kgDOKOFoiA",
+            "owner_login": "AntaresAlice",
+            "pushed_at": "2024-06-26T15:16:27Z",
+            "rank": 1,
+            "updated_at": "2026-03-19T15:27:55Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2025-10-13T08:14:30Z",
+            "default_branch": "main",
+            "description": "A Rasterization-based Database Index Scan",
+            "fork": false,
+            "full_name": "microsoft/raster-scan",
+            "html_url": "https://github.com/microsoft/raster-scan",
+            "id": 1075232659,
+            "node_id": "R_kgDOQBa_kw",
+            "owner_login": "microsoft",
+            "pushed_at": "2026-08-25T11:18:20Z",
+            "rank": 2,
+            "updated_at": "2026-08-25T11:17:45Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2026-07-02T17:11:04Z",
+            "default_branch": "main",
+            "description": "General Purpose Ray Tracing Cores",
+            "fork": false,
+            "full_name": "simon2/GPRTC",
+            "html_url": "https://github.com/simon2/GPRTC",
+            "id": 1287422912,
+            "node_id": "R_kgDOTLyDwA",
+            "owner_login": "simon2",
+            "pushed_at": "2026-07-02T17:11:19Z",
+            "rank": 3,
+            "updated_at": "2026-07-02T17:11:23Z"
+          }
+        ],
+        "returned_item_count": 3,
+        "total_count": 3
+      },
+      "title": "RTScan: Efficient Scan with Ray Tracing Cores",
+      "work_id": "survey_bib:Lv2024RTScanES"
+    },
+    {
+      "citation_key": "Mandarapu2023ArkadeKN",
+      "query": "\"Arkade: k-Nearest Neighbor Search With Non-Euclidean Distances using GPU Ray Tracing\" in:name,description,readme",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:08:26Z",
+            "delay_before_attempt_seconds": 0,
+            "http_status": 200,
+            "resolved_url": "https://api.github.com/search/repositories?q=%22Arkade%3A+k-Nearest+Neighbor+Search+With+Non-Euclidean+Distances+using+GPU+Ray+Tracing%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+            "response_bytes": 22107,
+            "response_headers": {
+              "content-type": "application/json; charset=utf-8",
+              "x-github-request-id": "C56B:375B73:FA1863:31A11ED:6A991CEA",
+              "x-ratelimit-limit": "30",
+              "x-ratelimit-remaining": "18",
+              "x-ratelimit-reset": "1788419361",
+              "x-ratelimit-resource": "search",
+              "x-ratelimit-used": "12"
+            },
+            "response_sha256": "dfd6700db92d380d658a3a24dd016ffacf3efb05e304eac5f7de617ebb41a761",
+            "started_at_utc": "2026-09-03T07:08:26Z",
+            "status": "SUCCESS"
+          }
+        ],
+        "terminal_status": "SUCCESS"
+      },
+      "request_url": "https://api.github.com/search/repositories?q=%22Arkade%3A+k-Nearest+Neighbor+Search+With+Non-Euclidean+Distances+using+GPU+Ray+Tracing%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+      "result": {
+        "incomplete_results": false,
+        "items": [
+          {
+            "archived": false,
+            "created_at": "2024-04-12T00:54:16Z",
+            "default_branch": "main",
+            "description": "Source code of \"Arkade: k-Nearest Neighbor Search With Non-Euclidean Distances using GPU Ray Tracing.\"  ",
+            "fork": false,
+            "full_name": "MDurgaKeerthi/Arkade",
+            "html_url": "https://github.com/MDurgaKeerthi/Arkade",
+            "id": 785479753,
+            "node_id": "R_kgDOLtF4SQ",
+            "owner_login": "MDurgaKeerthi",
+            "pushed_at": "2025-02-12T23:26:33Z",
+            "rank": 1,
+            "updated_at": "2025-08-31T11:24:28Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2025-06-27T18:37:24Z",
+            "default_branch": "main",
+            "description": null,
+            "fork": false,
+            "full_name": "diegorandolp/eda-project-tipe-tree",
+            "html_url": "https://github.com/diegorandolp/eda-project-tipe-tree",
+            "id": 1009805550,
+            "node_id": "R_kgDOPDBo7g",
+            "owner_login": "diegorandolp",
+            "pushed_at": "2025-07-03T21:41:42Z",
+            "rank": 2,
+            "updated_at": "2025-07-03T21:41:45Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2026-07-02T17:11:04Z",
+            "default_branch": "main",
+            "description": "General Purpose Ray Tracing Cores",
+            "fork": false,
+            "full_name": "simon2/GPRTC",
+            "html_url": "https://github.com/simon2/GPRTC",
+            "id": 1287422912,
+            "node_id": "R_kgDOTLyDwA",
+            "owner_login": "simon2",
+            "pushed_at": "2026-07-02T17:11:19Z",
+            "rank": 3,
+            "updated_at": "2026-07-02T17:11:23Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2025-11-23T02:10:10Z",
+            "default_branch": "main",
+            "description": null,
+            "fork": false,
+            "full_name": "JeanPiero369/06C_EDA_15S02_GPU_KNN",
+            "html_url": "https://github.com/JeanPiero369/06C_EDA_15S02_GPU_KNN",
+            "id": 1102200170,
+            "node_id": "R_kgDOQbI9ag",
+            "owner_login": "JeanPiero369",
+            "pushed_at": "2025-11-27T22:26:12Z",
+            "rank": 4,
+            "updated_at": "2025-11-27T22:26:16Z"
+          }
+        ],
+        "returned_item_count": 4,
+        "total_count": 4
+      },
+      "title": "Arkade: k-Nearest Neighbor Search With Non-Euclidean Distances using GPU Ray Tracing",
+      "work_id": "survey_bib:Mandarapu2023ArkadeKN"
+    },
+    {
+      "citation_key": "Meneses2024RTXRMQ",
+      "query": "\"Accelerating range minimum queries with ray tracing cores\" in:name,description,readme",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:08:27Z",
+            "delay_before_attempt_seconds": 0,
+            "http_status": 200,
+            "resolved_url": "https://api.github.com/search/repositories?q=%22Accelerating+range+minimum+queries+with+ray+tracing+cores%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+            "response_bytes": 15188,
+            "response_headers": {
+              "content-type": "application/json; charset=utf-8",
+              "x-github-request-id": "C56C:3A1327:F8F02A:3157A03:6A991CEA",
+              "x-ratelimit-limit": "30",
+              "x-ratelimit-remaining": "17",
+              "x-ratelimit-reset": "1788419361",
+              "x-ratelimit-resource": "search",
+              "x-ratelimit-used": "13"
+            },
+            "response_sha256": "a6d610f9944d01d16d1351437d8616d5e5cc530d1c65842670ab41c7f21bc38b",
+            "started_at_utc": "2026-09-03T07:08:26Z",
+            "status": "SUCCESS"
+          }
+        ],
+        "terminal_status": "SUCCESS"
+      },
+      "request_url": "https://api.github.com/search/repositories?q=%22Accelerating+range+minimum+queries+with+ray+tracing+cores%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+      "result": {
+        "incomplete_results": false,
+        "items": [
+          {
+            "archived": false,
+            "created_at": "2022-10-03T15:35:30Z",
+            "default_branch": "main",
+            "description": "RMQ batch queries accelerated with ray tracing cores",
+            "fork": false,
+            "full_name": "temporal-hpc/rtxrmq",
+            "html_url": "https://github.com/temporal-hpc/rtxrmq",
+            "id": 544989793,
+            "node_id": "R_kgDOIHviYQ",
+            "owner_login": "temporal-hpc",
+            "pushed_at": "2024-04-02T10:33:45Z",
+            "rank": 1,
+            "updated_at": "2024-03-28T21:22:33Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2026-03-26T14:31:47Z",
+            "default_branch": "main",
+            "description": null,
+            "fork": false,
+            "full_name": "lakreis/GPU-RMQ",
+            "html_url": "https://github.com/lakreis/GPU-RMQ",
+            "id": 1192757306,
+            "node_id": "R_kgDORxgIOg",
+            "owner_login": "lakreis",
+            "pushed_at": "2026-04-27T14:16:17Z",
+            "rank": 2,
+            "updated_at": "2026-04-27T14:17:02Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2026-07-02T17:11:04Z",
+            "default_branch": "main",
+            "description": "General Purpose Ray Tracing Cores",
+            "fork": false,
+            "full_name": "simon2/GPRTC",
+            "html_url": "https://github.com/simon2/GPRTC",
+            "id": 1287422912,
+            "node_id": "R_kgDOTLyDwA",
+            "owner_login": "simon2",
+            "pushed_at": "2026-07-02T17:11:19Z",
+            "rank": 3,
+            "updated_at": "2026-07-02T17:11:23Z"
+          }
+        ],
+        "returned_item_count": 3,
+        "total_count": 3
+      },
+      "title": "Accelerating range minimum queries with ray tracing cores",
+      "work_id": "survey_bib:Meneses2024RTXRMQ"
+    },
+    {
+      "citation_key": "Morrical2019EfficientSS",
+      "query": "\"Efficient Space Skipping and Adaptive Sampling of Unstructured Volumes Using Hardware Accelerated Ray Tracing\" in:name,description,readme",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:08:28Z",
+            "delay_before_attempt_seconds": 0,
+            "http_status": 200,
+            "resolved_url": "https://api.github.com/search/repositories?q=%22Efficient+Space+Skipping+and+Adaptive+Sampling+of+Unstructured+Volumes+Using+Hardware+Accelerated+Ray+Tracing%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+            "response_bytes": 16449,
+            "response_headers": {
+              "content-type": "application/json; charset=utf-8",
+              "x-github-request-id": "C56D:2B59B3:1FF3E69:64B8CF7:6A991CEB",
+              "x-ratelimit-limit": "30",
+              "x-ratelimit-remaining": "16",
+              "x-ratelimit-reset": "1788419361",
+              "x-ratelimit-resource": "search",
+              "x-ratelimit-used": "14"
+            },
+            "response_sha256": "5a8d9ddcbd4d933b4a8e5c6a7005dd52442372aa9db6485e0fa4052bb6db5320",
+            "started_at_utc": "2026-09-03T07:08:27Z",
+            "status": "SUCCESS"
+          }
+        ],
+        "terminal_status": "SUCCESS"
+      },
+      "request_url": "https://api.github.com/search/repositories?q=%22Efficient+Space+Skipping+and+Adaptive+Sampling+of+Unstructured+Volumes+Using+Hardware+Accelerated+Ray+Tracing%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+      "result": {
+        "incomplete_results": false,
+        "items": [
+          {
+            "archived": false,
+            "created_at": "2025-10-15T01:48:04Z",
+            "default_branch": "main",
+            "description": "The OptiX Wrappers Library",
+            "fork": false,
+            "full_name": "NVIDIA/OWL",
+            "html_url": "https://github.com/NVIDIA/OWL",
+            "id": 1076526906,
+            "node_id": "R_kgDOQCp_Og",
+            "owner_login": "NVIDIA",
+            "pushed_at": "2026-07-15T18:58:36Z",
+            "rank": 1,
+            "updated_at": "2026-08-26T14:10:48Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2019-12-19T19:50:28Z",
+            "default_branch": "master",
+            "description": null,
+            "fork": false,
+            "full_name": "owl-project/owl",
+            "html_url": "https://github.com/owl-project/owl",
+            "id": 229127964,
+            "node_id": "MDEwOlJlcG9zaXRvcnkyMjkxMjc5NjQ=",
+            "owner_login": "owl-project",
+            "pushed_at": "2025-10-24T19:51:26Z",
+            "rank": 2,
+            "updated_at": "2026-08-09T11:16:41Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2021-03-16T14:34:41Z",
+            "default_branch": "main",
+            "description": "Masters Project at University of Leeds 2020 - 2021",
+            "fork": false,
+            "full_name": "vermaayu/High-Performance-Volumetric-Rendering",
+            "html_url": "https://github.com/vermaayu/High-Performance-Volumetric-Rendering",
+            "id": 348380648,
+            "node_id": "MDEwOlJlcG9zaXRvcnkzNDgzODA2NDg=",
+            "owner_login": "vermaayu",
+            "pushed_at": "2022-04-23T10:09:54Z",
+            "rank": 3,
+            "updated_at": "2022-04-23T10:04:12Z"
+          }
+        ],
+        "returned_item_count": 3,
+        "total_count": 3
+      },
+      "title": "Efficient Space Skipping and Adaptive Sampling of Unstructured Volumes Using Hardware Accelerated Ray Tracing",
+      "work_id": "survey_bib:Morrical2019EfficientSS"
+    },
+    {
+      "citation_key": "Morrical2022AcceleratingUM",
+      "query": "\"Accelerating Unstructured Mesh Point Location With RT Cores\" in:name,description,readme",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:08:28Z",
+            "delay_before_attempt_seconds": 0,
+            "http_status": 200,
+            "resolved_url": "https://api.github.com/search/repositories?q=%22Accelerating+Unstructured+Mesh+Point+Location+With+RT+Cores%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+            "response_bytes": 4924,
+            "response_headers": {
+              "content-type": "application/json; charset=utf-8",
+              "x-github-request-id": "C56E:257624:FFEA44:32C855D:6A991CEC",
+              "x-ratelimit-limit": "30",
+              "x-ratelimit-remaining": "15",
+              "x-ratelimit-reset": "1788419361",
+              "x-ratelimit-resource": "search",
+              "x-ratelimit-used": "15"
+            },
+            "response_sha256": "69de470d9d7be9bdafa197360d34e96944883246299bd3bb8c6a5ca8d48e8b2f",
+            "started_at_utc": "2026-09-03T07:08:28Z",
+            "status": "SUCCESS"
+          }
+        ],
+        "terminal_status": "SUCCESS"
+      },
+      "request_url": "https://api.github.com/search/repositories?q=%22Accelerating+Unstructured+Mesh+Point+Location+With+RT+Cores%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+      "result": {
+        "incomplete_results": false,
+        "items": [
+          {
+            "archived": false,
+            "created_at": "2025-10-15T01:48:04Z",
+            "default_branch": "main",
+            "description": "The OptiX Wrappers Library",
+            "fork": false,
+            "full_name": "NVIDIA/OWL",
+            "html_url": "https://github.com/NVIDIA/OWL",
+            "id": 1076526906,
+            "node_id": "R_kgDOQCp_Og",
+            "owner_login": "NVIDIA",
+            "pushed_at": "2026-07-15T18:58:36Z",
+            "rank": 1,
+            "updated_at": "2026-08-26T14:10:48Z"
+          }
+        ],
+        "returned_item_count": 1,
+        "total_count": 1
+      },
+      "title": "Accelerating Unstructured Mesh Point Location With RT Cores",
+      "work_id": "survey_bib:Morrical2022AcceleratingUM"
+    },
+    {
+      "citation_key": "Nagarajan2023RTDBSCANAD",
+      "query": "\"RT-DBSCAN: Accelerating DBSCAN using Ray Tracing Hardware\" in:name,description,readme",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:08:28Z",
+            "delay_before_attempt_seconds": 0,
+            "http_status": 200,
+            "resolved_url": "https://api.github.com/search/repositories?q=%22RT-DBSCAN%3A+Accelerating+DBSCAN+using+Ray+Tracing+Hardware%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+            "response_bytes": 10241,
+            "response_headers": {
+              "content-type": "application/json; charset=utf-8",
+              "x-github-request-id": "C56F:280B5D:F5C568:30D9209:6A991CEC",
+              "x-ratelimit-limit": "30",
+              "x-ratelimit-remaining": "14",
+              "x-ratelimit-reset": "1788419361",
+              "x-ratelimit-resource": "search",
+              "x-ratelimit-used": "16"
+            },
+            "response_sha256": "b88c8dcf8d63f82ed93541689fda6096e14dca730035d7d7e3ae9b740b808caa",
+            "started_at_utc": "2026-09-03T07:08:28Z",
+            "status": "SUCCESS"
+          }
+        ],
+        "terminal_status": "SUCCESS"
+      },
+      "request_url": "https://api.github.com/search/repositories?q=%22RT-DBSCAN%3A+Accelerating+DBSCAN+using+Ray+Tracing+Hardware%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+      "result": {
+        "incomplete_results": false,
+        "items": [
+          {
+            "archived": false,
+            "created_at": "2021-06-01T18:47:07Z",
+            "default_branch": "master",
+            "description": null,
+            "fork": false,
+            "full_name": "vani-nag/OWLRayTracing",
+            "html_url": "https://github.com/vani-nag/OWLRayTracing",
+            "id": 372930656,
+            "node_id": "MDEwOlJlcG9zaXRvcnkzNzI5MzA2NTY=",
+            "owner_login": "vani-nag",
+            "pushed_at": "2024-11-26T05:30:57Z",
+            "rank": 1,
+            "updated_at": "2026-08-07T01:23:42Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2026-07-02T17:11:04Z",
+            "default_branch": "main",
+            "description": "General Purpose Ray Tracing Cores",
+            "fork": false,
+            "full_name": "simon2/GPRTC",
+            "html_url": "https://github.com/simon2/GPRTC",
+            "id": 1287422912,
+            "node_id": "R_kgDOTLyDwA",
+            "owner_login": "simon2",
+            "pushed_at": "2026-07-02T17:11:19Z",
+            "rank": 2,
+            "updated_at": "2026-07-02T17:11:23Z"
+          }
+        ],
+        "returned_item_count": 2,
+        "total_count": 2
+      },
+      "title": "RT-DBSCAN: Accelerating DBSCAN using Ray Tracing Hardware",
+      "work_id": "survey_bib:Nagarajan2023RTDBSCANAD"
+    },
+    {
+      "citation_key": "Nagarajan2023RTkNNSUU",
+      "query": "\"RT-kNNS Unbound: Using RT Cores to Accelerate Unrestricted Neighbor Search\" in:name,description,readme",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:08:29Z",
+            "delay_before_attempt_seconds": 0,
+            "http_status": 200,
+            "resolved_url": "https://api.github.com/search/repositories?q=%22RT-kNNS+Unbound%3A+Using+RT+Cores+to+Accelerate+Unrestricted+Neighbor+Search%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+            "response_bytes": 10241,
+            "response_headers": {
+              "content-type": "application/json; charset=utf-8",
+              "x-github-request-id": "C570:3B6E03:FD951D:326C5C3:6A991CEC",
+              "x-ratelimit-limit": "30",
+              "x-ratelimit-remaining": "13",
+              "x-ratelimit-reset": "1788419361",
+              "x-ratelimit-resource": "search",
+              "x-ratelimit-used": "17"
+            },
+            "response_sha256": "b88c8dcf8d63f82ed93541689fda6096e14dca730035d7d7e3ae9b740b808caa",
+            "started_at_utc": "2026-09-03T07:08:28Z",
+            "status": "SUCCESS"
+          }
+        ],
+        "terminal_status": "SUCCESS"
+      },
+      "request_url": "https://api.github.com/search/repositories?q=%22RT-kNNS+Unbound%3A+Using+RT+Cores+to+Accelerate+Unrestricted+Neighbor+Search%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+      "result": {
+        "incomplete_results": false,
+        "items": [
+          {
+            "archived": false,
+            "created_at": "2021-06-01T18:47:07Z",
+            "default_branch": "master",
+            "description": null,
+            "fork": false,
+            "full_name": "vani-nag/OWLRayTracing",
+            "html_url": "https://github.com/vani-nag/OWLRayTracing",
+            "id": 372930656,
+            "node_id": "MDEwOlJlcG9zaXRvcnkzNzI5MzA2NTY=",
+            "owner_login": "vani-nag",
+            "pushed_at": "2024-11-26T05:30:57Z",
+            "rank": 1,
+            "updated_at": "2026-08-07T01:23:42Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2026-07-02T17:11:04Z",
+            "default_branch": "main",
+            "description": "General Purpose Ray Tracing Cores",
+            "fork": false,
+            "full_name": "simon2/GPRTC",
+            "html_url": "https://github.com/simon2/GPRTC",
+            "id": 1287422912,
+            "node_id": "R_kgDOTLyDwA",
+            "owner_login": "simon2",
+            "pushed_at": "2026-07-02T17:11:19Z",
+            "rank": 2,
+            "updated_at": "2026-07-02T17:11:23Z"
+          }
+        ],
+        "returned_item_count": 2,
+        "total_count": 2
+      },
+      "title": "RT-kNNS Unbound: Using RT Cores to Accelerate Unrestricted Neighbor Search",
+      "work_id": "survey_bib:Nagarajan2023RTkNNSUU"
+    },
+    {
+      "citation_key": "Nagarajan2025RTBarnesHutAB",
+      "query": "\"{RT-BarnesHut}: Accelerating Barnes-Hut Using Ray-Tracing Hardware\" in:name,description,readme",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:08:29Z",
+            "delay_before_attempt_seconds": 0,
+            "http_status": 200,
+            "resolved_url": "https://api.github.com/search/repositories?q=%22%7BRT-BarnesHut%7D%3A+Accelerating+Barnes-Hut+Using+Ray-Tracing+Hardware%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+            "response_bytes": 4843,
+            "response_headers": {
+              "content-type": "application/json; charset=utf-8",
+              "x-github-request-id": "C571:257624:FFF252:32C9E95:6A991CED",
+              "x-ratelimit-limit": "30",
+              "x-ratelimit-remaining": "12",
+              "x-ratelimit-reset": "1788419361",
+              "x-ratelimit-resource": "search",
+              "x-ratelimit-used": "18"
+            },
+            "response_sha256": "f81db1017ab60ef679892a3f00f5487e21da578d4061b0d9a4aef3d4c1645665",
+            "started_at_utc": "2026-09-03T07:08:29Z",
+            "status": "SUCCESS"
+          }
+        ],
+        "terminal_status": "SUCCESS"
+      },
+      "request_url": "https://api.github.com/search/repositories?q=%22%7BRT-BarnesHut%7D%3A+Accelerating+Barnes-Hut+Using+Ray-Tracing+Hardware%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+      "result": {
+        "incomplete_results": false,
+        "items": [
+          {
+            "archived": false,
+            "created_at": "2026-07-02T17:11:04Z",
+            "default_branch": "main",
+            "description": "General Purpose Ray Tracing Cores",
+            "fork": false,
+            "full_name": "simon2/GPRTC",
+            "html_url": "https://github.com/simon2/GPRTC",
+            "id": 1287422912,
+            "node_id": "R_kgDOTLyDwA",
+            "owner_login": "simon2",
+            "pushed_at": "2026-07-02T17:11:19Z",
+            "rank": 1,
+            "updated_at": "2026-07-02T17:11:23Z"
+          }
+        ],
+        "returned_item_count": 1,
+        "total_count": 1
+      },
+      "title": "{RT-BarnesHut}: Accelerating Barnes-Hut Using Ray-Tracing Hardware",
+      "work_id": "survey_bib:Nagarajan2025RTBarnesHutAB"
+    },
+    {
+      "citation_key": "Petrescu2019GPUSR",
+      "query": "\"GPU Sparse Ray-Traced Segmentation\" in:name,description,readme",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:08:30Z",
+            "delay_before_attempt_seconds": 0,
+            "http_status": 200,
+            "resolved_url": "https://api.github.com/search/repositories?q=%22GPU+Sparse+Ray-Traced+Segmentation%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+            "response_bytes": 55,
+            "response_headers": {
+              "content-type": "application/json; charset=utf-8",
+              "x-github-request-id": "C572:11C362:2152797:697180B:6A991CED",
+              "x-ratelimit-limit": "30",
+              "x-ratelimit-remaining": "11",
+              "x-ratelimit-reset": "1788419361",
+              "x-ratelimit-resource": "search",
+              "x-ratelimit-used": "19"
+            },
+            "response_sha256": "4af480b8ee5b87b369a76c49bd22c9a783908272ebffbe97898f8ab0f0772a5f",
+            "started_at_utc": "2026-09-03T07:08:29Z",
+            "status": "SUCCESS"
+          }
+        ],
+        "terminal_status": "SUCCESS"
+      },
+      "request_url": "https://api.github.com/search/repositories?q=%22GPU+Sparse+Ray-Traced+Segmentation%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+      "result": {
+        "incomplete_results": false,
+        "items": [],
+        "returned_item_count": 0,
+        "total_count": 0
+      },
+      "title": "GPU Sparse Ray-Traced Segmentation",
+      "work_id": "survey_bib:Petrescu2019GPUSR"
+    },
+    {
+      "citation_key": "Salmon2019ExploitingHR",
+      "query": "\"Exploiting Hardware-Accelerated Ray Tracing for Monte Carlo Particle Transport with OpenMC\" in:name,description,readme",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:08:30Z",
+            "delay_before_attempt_seconds": 0,
+            "http_status": 200,
+            "resolved_url": "https://api.github.com/search/repositories?q=%22Exploiting+Hardware-Accelerated+Ray+Tracing+for+Monte+Carlo+Particle+Transport+with+OpenMC%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+            "response_bytes": 55,
+            "response_headers": {
+              "content-type": "application/json; charset=utf-8",
+              "x-github-request-id": "C573:9A30A:F91FD1:31A4C3D:6A991CEE",
+              "x-ratelimit-limit": "30",
+              "x-ratelimit-remaining": "10",
+              "x-ratelimit-reset": "1788419361",
+              "x-ratelimit-resource": "search",
+              "x-ratelimit-used": "20"
+            },
+            "response_sha256": "4af480b8ee5b87b369a76c49bd22c9a783908272ebffbe97898f8ab0f0772a5f",
+            "started_at_utc": "2026-09-03T07:08:30Z",
+            "status": "SUCCESS"
+          }
+        ],
+        "terminal_status": "SUCCESS"
+      },
+      "request_url": "https://api.github.com/search/repositories?q=%22Exploiting+Hardware-Accelerated+Ray+Tracing+for+Monte+Carlo+Particle+Transport+with+OpenMC%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+      "result": {
+        "incomplete_results": false,
+        "items": [],
+        "returned_item_count": 0,
+        "total_count": 0
+      },
+      "title": "Exploiting Hardware-Accelerated Ray Tracing for Monte Carlo Particle Transport with OpenMC",
+      "work_id": "survey_bib:Salmon2019ExploitingHR"
+    },
+    {
+      "citation_key": "Schwarz2010FastPS",
+      "query": "\"Fast parallel surface and solid voxelization on GPUs\" in:name,description,readme",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:08:31Z",
+            "delay_before_attempt_seconds": 0,
+            "http_status": 200,
+            "resolved_url": "https://api.github.com/search/repositories?q=%22Fast+parallel+surface+and+solid+voxelization+on+GPUs%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+            "response_bytes": 100430,
+            "response_headers": {
+              "content-type": "application/json; charset=utf-8",
+              "x-github-request-id": "C574:FF857:1EEF72A:61ABB26:6A991CEE",
+              "x-ratelimit-limit": "30",
+              "x-ratelimit-remaining": "9",
+              "x-ratelimit-reset": "1788419361",
+              "x-ratelimit-resource": "search",
+              "x-ratelimit-used": "21"
+            },
+            "response_sha256": "9f8b48bc4def3cf32d9a6827d80b38cfc4655ee79b62a6e84bdef8b535cddadb",
+            "started_at_utc": "2026-09-03T07:08:30Z",
+            "status": "SUCCESS"
+          }
+        ],
+        "terminal_status": "SUCCESS"
+      },
+      "request_url": "https://api.github.com/search/repositories?q=%22Fast+parallel+surface+and+solid+voxelization+on+GPUs%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+      "result": {
+        "incomplete_results": false,
+        "items": [
+          {
+            "archived": false,
+            "created_at": "2013-04-25T06:32:35Z",
+            "default_branch": "master",
+            "description": "implementation of Fast parallel surface and solid voxelization on GPUs",
+            "fork": false,
+            "full_name": "hpsoar/voxelizer",
+            "html_url": "https://github.com/hpsoar/voxelizer",
+            "id": 9665258,
+            "node_id": "MDEwOlJlcG9zaXRvcnk5NjY1MjU4",
+            "owner_login": "hpsoar",
+            "pushed_at": "2013-08-25T15:47:34Z",
+            "rank": 1,
+            "updated_at": "2024-09-24T12:38:07Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2014-04-28T10:13:33Z",
+            "default_branch": "main",
+            "description": "CUDA Voxelizer to convert polygon meshes into annotated voxel grids",
+            "fork": false,
+            "full_name": "Forceflow/cuda_voxelizer",
+            "html_url": "https://github.com/Forceflow/cuda_voxelizer",
+            "id": 19234691,
+            "node_id": "MDEwOlJlcG9zaXRvcnkxOTIzNDY5MQ==",
+            "owner_login": "Forceflow",
+            "pushed_at": "2026-06-16T22:28:52Z",
+            "rank": 2,
+            "updated_at": "2026-09-01T14:44:27Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2023-04-02T10:04:49Z",
+            "default_branch": "master",
+            "description": null,
+            "fork": false,
+            "full_name": "Ushio/MassiveVoxelRayTracing",
+            "html_url": "https://github.com/Ushio/MassiveVoxelRayTracing",
+            "id": 622502305,
+            "node_id": "R_kgDOJRqhoQ",
+            "owner_login": "Ushio",
+            "pushed_at": "2023-09-24T10:15:38Z",
+            "rank": 3,
+            "updated_at": "2026-01-16T11:32:17Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2019-07-10T01:18:07Z",
+            "default_branch": "master",
+            "description": "Voxelization of a triangle in 3D. Pure math demo.",
+            "fork": false,
+            "full_name": "ramakarl/voxelizer",
+            "html_url": "https://github.com/ramakarl/voxelizer",
+            "id": 196107135,
+            "node_id": "MDEwOlJlcG9zaXRvcnkxOTYxMDcxMzU=",
+            "owner_login": "ramakarl",
+            "pushed_at": "2025-11-24T06:32:46Z",
+            "rank": 4,
+            "updated_at": "2026-02-27T02:47:18Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2023-10-17T16:46:53Z",
+            "default_branch": "main",
+            "description": "Flight navigation in free space for Godot4",
+            "fork": false,
+            "full_name": "RevolNoom/godot_flight_navigation_3d",
+            "html_url": "https://github.com/RevolNoom/godot_flight_navigation_3d",
+            "id": 706288809,
+            "node_id": "R_kgDOKhkcqQ",
+            "owner_login": "RevolNoom",
+            "pushed_at": "2026-08-25T07:30:30Z",
+            "rank": 5,
+            "updated_at": "2026-08-25T07:31:53Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2017-11-17T11:13:38Z",
+            "default_branch": "master",
+            "description": "Source code of my master thesis on occlusion culling for (out-of-core) path tracing",
+            "fork": false,
+            "full_name": "mathijs727/pandora",
+            "html_url": "https://github.com/mathijs727/pandora",
+            "id": 111094772,
+            "node_id": "MDEwOlJlcG9zaXRvcnkxMTEwOTQ3NzI=",
+            "owner_login": "mathijs727",
+            "pushed_at": "2025-07-29T15:25:08Z",
+            "rank": 6,
+            "updated_at": "2026-04-23T15:41:31Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2023-04-16T13:52:25Z",
+            "default_branch": "master",
+            "description": null,
+            "fork": false,
+            "full_name": "Alan-Leo-Wong/GPU-SVO",
+            "html_url": "https://github.com/Alan-Leo-Wong/GPU-SVO",
+            "id": 628612331,
+            "node_id": "R_kgDOJXfc6w",
+            "owner_login": "Alan-Leo-Wong",
+            "pushed_at": "2024-11-10T13:26:56Z",
+            "rank": 7,
+            "updated_at": "2026-01-07T06:27:23Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2022-09-28T15:43:39Z",
+            "default_branch": "main",
+            "description": "A library for partitioning 3D data.",
+            "fork": false,
+            "full_name": "SignalWalker/eightfold",
+            "html_url": "https://github.com/SignalWalker/eightfold",
+            "id": 542667050,
+            "node_id": "R_kgDOIFhxKg",
+            "owner_login": "SignalWalker",
+            "pushed_at": "2026-01-06T16:31:25Z",
+            "rank": 8,
+            "updated_at": "2025-02-01T18:59:24Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2025-06-06T15:55:59Z",
+            "default_branch": "main",
+            "description": "GPU-accelerated pipeline for robust 3D mesh Boolean operations (CSG) using voxelized Signed Distance Fields (SDFs).",
+            "fork": false,
+            "full_name": "bigmat18/cuda-mesh-voxelization",
+            "html_url": "https://github.com/bigmat18/cuda-mesh-voxelization",
+            "id": 997486407,
+            "node_id": "R_kgDOO3RvRw",
+            "owner_login": "bigmat18",
+            "pushed_at": "2026-05-04T17:48:40Z",
+            "rank": 9,
+            "updated_at": "2026-06-10T00:51:54Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2025-09-04T18:02:44Z",
+            "default_branch": "main",
+            "description": "raymarching voxel engine and world editor",
+            "fork": false,
+            "full_name": "collinlongoria/blok",
+            "html_url": "https://github.com/collinlongoria/blok",
+            "id": 1050638943,
+            "node_id": "R_kgDOPp96Xw",
+            "owner_login": "collinlongoria",
+            "pushed_at": "2025-12-20T21:19:12Z",
+            "rank": 10,
+            "updated_at": "2025-12-12T22:14:29Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2025-02-13T23:45:10Z",
+            "default_branch": "master",
+            "description": "A simple voxelizer for .obj files written in CUDA.",
+            "fork": false,
+            "full_name": "AndreaFedeli99/cudaVoxelizer",
+            "html_url": "https://github.com/AndreaFedeli99/cudaVoxelizer",
+            "id": 932450799,
+            "node_id": "R_kgDON5QR7w",
+            "owner_login": "AndreaFedeli99",
+            "pushed_at": "2025-03-09T12:04:09Z",
+            "rank": 11,
+            "updated_at": "2026-07-25T16:08:47Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2017-11-05T23:53:18Z",
+            "default_branch": "master",
+            "description": "Collision detection between a polygon (triangle) and a voxel (AABB).",
+            "fork": false,
+            "full_name": "LUXOPHIA/TriVoxel",
+            "html_url": "https://github.com/LUXOPHIA/TriVoxel",
+            "id": 109626719,
+            "node_id": "MDEwOlJlcG9zaXRvcnkxMDk2MjY3MTk=",
+            "owner_login": "LUXOPHIA",
+            "pushed_at": "2018-09-08T16:58:50Z",
+            "rank": 12,
+            "updated_at": "2026-01-05T16:14:36Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2025-02-26T23:11:34Z",
+            "default_branch": "main",
+            "description": null,
+            "fork": false,
+            "full_name": "TianhongZhou/CIS660_Maya_VoMoBo",
+            "html_url": "https://github.com/TianhongZhou/CIS660_Maya_VoMoBo",
+            "id": 939672201,
+            "node_id": "R_kgDOOAJCiQ",
+            "owner_login": "TianhongZhou",
+            "pushed_at": "2025-05-05T20:27:01Z",
+            "rank": 13,
+            "updated_at": "2025-05-20T07:53:15Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2026-06-05T18:33:37Z",
+            "default_branch": "main",
+            "description": null,
+            "fork": false,
+            "full_name": "estebanSulcaInfante/voxelizacion-de-mallas-triangulares",
+            "html_url": "https://github.com/estebanSulcaInfante/voxelizacion-de-mallas-triangulares",
+            "id": 1260666276,
+            "node_id": "R_kgDOSyQ9pA",
+            "owner_login": "estebanSulcaInfante",
+            "pushed_at": "2026-07-05T17:36:08Z",
+            "rank": 14,
+            "updated_at": "2026-07-05T17:36:12Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2025-03-15T20:26:11Z",
+            "default_branch": "master",
+            "description": "A fast gpu voxelizer implemented in CUDA",
+            "fork": false,
+            "full_name": "ivandrodri/gpu-voxelizer",
+            "html_url": "https://github.com/ivandrodri/gpu-voxelizer",
+            "id": 949163921,
+            "node_id": "R_kgDOOJMXkQ",
+            "owner_login": "ivandrodri",
+            "pushed_at": "2025-03-16T16:16:18Z",
+            "rank": 15,
+            "updated_at": "2025-03-16T16:00:17Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2022-02-02T17:10:27Z",
+            "default_branch": "main",
+            "description": null,
+            "fork": false,
+            "full_name": "bjthorpe/Cad2vox",
+            "html_url": "https://github.com/bjthorpe/Cad2vox",
+            "id": 454865191,
+            "node_id": "R_kgDOGxyxJw",
+            "owner_login": "bjthorpe",
+            "pushed_at": "2024-06-22T11:55:34Z",
+            "rank": 16,
+            "updated_at": "2026-07-02T03:41:15Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2018-09-17T00:54:37Z",
+            "default_branch": "master",
+            "description": ".off mesh voxelizer with Gaussian guarantee",
+            "fork": false,
+            "full_name": "ianzone/Gaussian-Voxelizer",
+            "html_url": "https://github.com/ianzone/Gaussian-Voxelizer",
+            "id": 149049831,
+            "node_id": "MDEwOlJlcG9zaXRvcnkxNDkwNDk4MzE=",
+            "owner_login": "ianzone",
+            "pushed_at": "2020-03-26T23:06:51Z",
+            "rank": 17,
+            "updated_at": "2025-07-03T18:41:22Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2025-05-30T10:40:25Z",
+            "default_branch": "main",
+            "description": "Alternative to PackAssistant",
+            "fork": false,
+            "full_name": "OriolCanillasGautier/SOME-PackagingAssistant",
+            "html_url": "https://github.com/OriolCanillasGautier/SOME-PackagingAssistant",
+            "id": 993172952,
+            "node_id": "R_kgDOOzKd2A",
+            "owner_login": "OriolCanillasGautier",
+            "pushed_at": "2026-08-26T14:18:54Z",
+            "rank": 18,
+            "updated_at": "2026-08-26T14:35:09Z"
+          }
+        ],
+        "returned_item_count": 18,
+        "total_count": 18
+      },
+      "title": "Fast parallel surface and solid voxelization on GPUs",
+      "work_id": "survey_bib:Schwarz2010FastPS"
+    },
+    {
+      "citation_key": "Sui2024HardwareAcceleratedRT",
+      "query": "\"Hardware-Accelerated Ray Tracing for Discrete and Continuous Collision Detection on GPUs\" in:name,description,readme",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:08:32Z",
+            "delay_before_attempt_seconds": 0,
+            "http_status": 200,
+            "resolved_url": "https://api.github.com/search/repositories?q=%22Hardware-Accelerated+Ray+Tracing+for+Discrete+and+Continuous+Collision+Detection+on+GPUs%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+            "response_bytes": 16823,
+            "response_headers": {
+              "content-type": "application/json; charset=utf-8",
+              "x-github-request-id": "C575:3624B4:F3F2E6:3090E1E:6A991CEF",
+              "x-ratelimit-limit": "30",
+              "x-ratelimit-remaining": "8",
+              "x-ratelimit-reset": "1788419361",
+              "x-ratelimit-resource": "search",
+              "x-ratelimit-used": "22"
+            },
+            "response_sha256": "5cb2316b8a814c746b7e753da95c521bac30257c5c07664107f0398f38ca210f",
+            "started_at_utc": "2026-09-03T07:08:31Z",
+            "status": "SUCCESS"
+          }
+        ],
+        "terminal_status": "SUCCESS"
+      },
+      "request_url": "https://api.github.com/search/repositories?q=%22Hardware-Accelerated+Ray+Tracing+for+Discrete+and+Continuous+Collision+Detection+on+GPUs%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+      "result": {
+        "incomplete_results": false,
+        "items": [
+          {
+            "archived": false,
+            "created_at": "2025-02-04T03:58:41Z",
+            "default_branch": "master",
+            "description": "Ray-tracing collision detection library",
+            "fork": false,
+            "full_name": "Ssz990220/RTCollisionDetection",
+            "html_url": "https://github.com/Ssz990220/RTCollisionDetection",
+            "id": 926904777,
+            "node_id": "R_kgDONz9xyQ",
+            "owner_login": "Ssz990220",
+            "pushed_at": "2025-04-17T14:44:20Z",
+            "rank": 1,
+            "updated_at": "2026-08-21T15:28:48Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2025-01-15T19:42:34Z",
+            "default_branch": "master",
+            "description": "Some scientific plotting with blender for fun",
+            "fork": false,
+            "full_name": "Ssz990220/blender_playground",
+            "html_url": "https://github.com/Ssz990220/blender_playground",
+            "id": 917336114,
+            "node_id": "R_kgDONq1wMg",
+            "owner_login": "Ssz990220",
+            "pushed_at": "2025-11-11T16:44:49Z",
+            "rank": 2,
+            "updated_at": "2025-11-11T16:44:52Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2025-04-13T14:05:29Z",
+            "default_branch": "main",
+            "description": "ICRA2025 Paper List",
+            "fork": false,
+            "full_name": "DoongLi/ICRA2025-Paper-List",
+            "html_url": "https://github.com/DoongLi/ICRA2025-Paper-List",
+            "id": 965594502,
+            "node_id": "R_kgDOOY3Nhg",
+            "owner_login": "DoongLi",
+            "pushed_at": "2025-05-22T07:36:46Z",
+            "rank": 3,
+            "updated_at": "2026-09-02T08:46:42Z"
+          }
+        ],
+        "returned_item_count": 3,
+        "total_count": 3
+      },
+      "title": "Hardware-Accelerated Ray Tracing for Discrete and Continuous Collision Detection on GPUs",
+      "work_id": "survey_bib:Sui2024HardwareAcceleratedRT"
+    },
+    {
+      "citation_key": "Wang2022AnGP",
+      "query": "\"An {GPU}-accelerated particle tracking method for Eulerian-Lagrangian simulations using hardware ray tracing cores\" in:name,description,readme",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:08:32Z",
+            "delay_before_attempt_seconds": 0,
+            "http_status": 200,
+            "resolved_url": "https://api.github.com/search/repositories?q=%22An+%7BGPU%7D-accelerated+particle+tracking+method+for+Eulerian-Lagrangian+simulations+using+hardware+ray+tracing+cores%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+            "response_bytes": 5661,
+            "response_headers": {
+              "content-type": "application/json; charset=utf-8",
+              "x-github-request-id": "C576:1C2415:20110AB:65386CF:6A991CF0",
+              "x-ratelimit-limit": "30",
+              "x-ratelimit-remaining": "7",
+              "x-ratelimit-reset": "1788419361",
+              "x-ratelimit-resource": "search",
+              "x-ratelimit-used": "23"
+            },
+            "response_sha256": "a1dfda41d24072af3cb9b0505f6d40983d58686ac617bac1144205e7ceb9c0ae",
+            "started_at_utc": "2026-09-03T07:08:32Z",
+            "status": "SUCCESS"
+          }
+        ],
+        "terminal_status": "SUCCESS"
+      },
+      "request_url": "https://api.github.com/search/repositories?q=%22An+%7BGPU%7D-accelerated+particle+tracking+method+for+Eulerian-Lagrangian+simulations+using+hardware+ray+tracing+cores%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+      "result": {
+        "incomplete_results": false,
+        "items": [
+          {
+            "archived": false,
+            "created_at": "2022-08-08T11:49:59Z",
+            "default_branch": "main",
+            "description": ":rocket: GPU-accelerated particle tracking for OpenFOAM",
+            "fork": false,
+            "full_name": "simzero/cudaParticlesFoam",
+            "html_url": "https://github.com/simzero/cudaParticlesFoam",
+            "id": 522527857,
+            "node_id": "R_kgDOHyUkcQ",
+            "owner_login": "simzero",
+            "pushed_at": "2022-08-12T09:39:13Z",
+            "rank": 1,
+            "updated_at": "2026-02-12T11:47:03Z"
+          }
+        ],
+        "returned_item_count": 1,
+        "total_count": 1
+      },
+      "title": "An {GPU}-accelerated particle tracking method for Eulerian-Lagrangian simulations using hardware ray tracing cores",
+      "work_id": "survey_bib:Wang2022AnGP"
+    },
+    {
+      "citation_key": "Wang2024RTODEO",
+      "query": "\"RTOD: Efficient Outlier Detection With Ray Tracing Cores\" in:name,description,readme",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:08:33Z",
+            "delay_before_attempt_seconds": 0,
+            "http_status": 200,
+            "resolved_url": "https://api.github.com/search/repositories?q=%22RTOD%3A+Efficient+Outlier+Detection+With+Ray+Tracing+Cores%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+            "response_bytes": 11326,
+            "response_headers": {
+              "content-type": "application/json; charset=utf-8",
+              "x-github-request-id": "C577:3624B4:F3FA24:3092545:6A991CF0",
+              "x-ratelimit-limit": "30",
+              "x-ratelimit-remaining": "6",
+              "x-ratelimit-reset": "1788419361",
+              "x-ratelimit-resource": "search",
+              "x-ratelimit-used": "24"
+            },
+            "response_sha256": "eb36f06ae8748d382aabbcdc4c0544cc68935655837b11c861080d983048aff2",
+            "started_at_utc": "2026-09-03T07:08:32Z",
+            "status": "SUCCESS"
+          }
+        ],
+        "terminal_status": "SUCCESS"
+      },
+      "request_url": "https://api.github.com/search/repositories?q=%22RTOD%3A+Efficient+Outlier+Detection+With+Ray+Tracing+Cores%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+      "result": {
+        "incomplete_results": false,
+        "items": [
+          {
+            "archived": false,
+            "created_at": "2024-07-14T03:35:55Z",
+            "default_branch": "main",
+            "description": "Code implementation of the paper [Continuous Monitoring of Distance-Based Outliers over Data Streams]",
+            "fork": false,
+            "full_name": "Wang-Zm/mcod",
+            "html_url": "https://github.com/Wang-Zm/mcod",
+            "id": 828403845,
+            "node_id": "R_kgDOMWBwhQ",
+            "owner_login": "Wang-Zm",
+            "pushed_at": "2024-07-14T05:55:41Z",
+            "rank": 1,
+            "updated_at": "2024-07-14T05:55:44Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2022-11-04T16:20:20Z",
+            "default_branch": "main",
+            "description": null,
+            "fork": false,
+            "full_name": "bitzhangcy/Deep-Learning-Based-Anomaly-Detection",
+            "html_url": "https://github.com/bitzhangcy/Deep-Learning-Based-Anomaly-Detection",
+            "id": 561849292,
+            "node_id": "R_kgDOIX0jzA",
+            "owner_login": "bitzhangcy",
+            "pushed_at": "2025-10-24T16:01:53Z",
+            "rank": 2,
+            "updated_at": "2026-08-26T10:35:14Z"
+          }
+        ],
+        "returned_item_count": 2,
+        "total_count": 2
+      },
+      "title": "RTOD: Efficient Outlier Detection With Ray Tracing Cores",
+      "work_id": "survey_bib:Wang2024RTODEO"
+    },
+    {
+      "citation_key": "Xiao2025ACS",
+      "query": "\"A Case Study for Ray Tracing Cores: Performance Insights with Breadth-First Search and Triangle Counting in Graphs\" in:name,description,readme",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:08:33Z",
+            "delay_before_attempt_seconds": 0,
+            "http_status": 200,
+            "resolved_url": "https://api.github.com/search/repositories?q=%22A+Case+Study+for+Ray+Tracing+Cores%3A+Performance+Insights+with+Breadth-First+Search+and+Triangle+Counting+in+Graphs%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+            "response_bytes": 10021,
+            "response_headers": {
+              "content-type": "application/json; charset=utf-8",
+              "x-github-request-id": "C578:2F9496:FD2D11:325E357:6A991CF1",
+              "x-ratelimit-limit": "30",
+              "x-ratelimit-remaining": "5",
+              "x-ratelimit-reset": "1788419361",
+              "x-ratelimit-resource": "search",
+              "x-ratelimit-used": "25"
+            },
+            "response_sha256": "508497675dcf9e6fb13c0cd7ebd9a513ba91ced7ec8312542d2d580bdf0a9d54",
+            "started_at_utc": "2026-09-03T07:08:33Z",
+            "status": "SUCCESS"
+          }
+        ],
+        "terminal_status": "SUCCESS"
+      },
+      "request_url": "https://api.github.com/search/repositories?q=%22A+Case+Study+for+Ray+Tracing+Cores%3A+Performance+Insights+with+Breadth-First+Search+and+Triangle+Counting+in+Graphs%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+      "result": {
+        "incomplete_results": false,
+        "items": [
+          {
+            "archived": false,
+            "created_at": "2024-11-22T07:15:22Z",
+            "default_branch": "main",
+            "description": "An exploration of accelerating graph algorithms with Ray-tracing Cores",
+            "fork": false,
+            "full_name": "xiaozxiong/RT-Graph",
+            "html_url": "https://github.com/xiaozxiong/RT-Graph",
+            "id": 892473277,
+            "node_id": "R_kgDONTIPvQ",
+            "owner_login": "xiaozxiong",
+            "pushed_at": "2025-05-03T12:38:33Z",
+            "rank": 1,
+            "updated_at": "2026-07-31T19:25:54Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2026-07-02T17:11:04Z",
+            "default_branch": "main",
+            "description": "General Purpose Ray Tracing Cores",
+            "fork": false,
+            "full_name": "simon2/GPRTC",
+            "html_url": "https://github.com/simon2/GPRTC",
+            "id": 1287422912,
+            "node_id": "R_kgDOTLyDwA",
+            "owner_login": "simon2",
+            "pushed_at": "2026-07-02T17:11:19Z",
+            "rank": 2,
+            "updated_at": "2026-07-02T17:11:23Z"
+          }
+        ],
+        "returned_item_count": 2,
+        "total_count": 2
+      },
+      "title": "A Case Study for Ray Tracing Cores: Performance Insights with Breadth-First Search and Triangle Counting in Graphs",
+      "work_id": "survey_bib:Xiao2025ACS"
+    },
+    {
+      "citation_key": "Zhang2025RTSpMSpMHR",
+      "query": "\"{RTSpMSpM}: Harnessing Ray Tracing for Efficient Sparse Matrix Computations\" in:name,description,readme",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:08:34Z",
+            "delay_before_attempt_seconds": 0,
+            "http_status": 200,
+            "resolved_url": "https://api.github.com/search/repositories?q=%22%7BRTSpMSpM%7D%3A+Harnessing+Ray+Tracing+for+Efficient+Sparse+Matrix+Computations%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+            "response_bytes": 21826,
+            "response_headers": {
+              "content-type": "application/json; charset=utf-8",
+              "x-github-request-id": "C579:3624B4:F40085:3093A11:6A991CF1",
+              "x-ratelimit-limit": "30",
+              "x-ratelimit-remaining": "4",
+              "x-ratelimit-reset": "1788419361",
+              "x-ratelimit-resource": "search",
+              "x-ratelimit-used": "26"
+            },
+            "response_sha256": "8ed59fc200605d90e4eba4df2239f3f9cd5ced62cd3ca423557e43168ad6fb63",
+            "started_at_utc": "2026-09-03T07:08:33Z",
+            "status": "SUCCESS"
+          }
+        ],
+        "terminal_status": "SUCCESS"
+      },
+      "request_url": "https://api.github.com/search/repositories?q=%22%7BRTSpMSpM%7D%3A+Harnessing+Ray+Tracing+for+Efficient+Sparse+Matrix+Computations%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+      "result": {
+        "incomplete_results": false,
+        "items": [
+          {
+            "archived": false,
+            "created_at": "2025-03-26T20:05:39Z",
+            "default_branch": "master",
+            "description": null,
+            "fork": false,
+            "full_name": "escalab/RTSpMSpM",
+            "html_url": "https://github.com/escalab/RTSpMSpM",
+            "id": 955544836,
+            "node_id": "R_kgDOOPR1BA",
+            "owner_login": "escalab",
+            "pushed_at": "2025-04-13T23:03:45Z",
+            "rank": 1,
+            "updated_at": "2026-08-06T07:59:00Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2026-07-02T17:11:04Z",
+            "default_branch": "main",
+            "description": "General Purpose Ray Tracing Cores",
+            "fork": false,
+            "full_name": "simon2/GPRTC",
+            "html_url": "https://github.com/simon2/GPRTC",
+            "id": 1287422912,
+            "node_id": "R_kgDOTLyDwA",
+            "owner_login": "simon2",
+            "pushed_at": "2026-07-02T17:11:19Z",
+            "rank": 2,
+            "updated_at": "2026-07-02T17:11:23Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2023-10-19T02:29:16Z",
+            "default_branch": "main",
+            "description": "Papers relevant with graph and GPU",
+            "fork": false,
+            "full_name": "junyimei/paper-reading-list",
+            "html_url": "https://github.com/junyimei/paper-reading-list",
+            "id": 706993374,
+            "node_id": "R_kgDOKiPc3g",
+            "owner_login": "junyimei",
+            "pushed_at": "2026-01-01T15:22:49Z",
+            "rank": 3,
+            "updated_at": "2026-05-06T08:51:06Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2026-08-31T17:47:12Z",
+            "default_branch": "main",
+            "description": "Awesome list of sparsity in deep learning: pruning, sparse attention, N:M structured sparsity, KV-cache & LLM sparsity, MoE, sparse matrix accelerators (SpMM/SpGEMM), GNN hardware, sparse GPU kernels & PIM. 590 papers organized by mechanism.",
+            "fork": false,
+            "full_name": "amir-ghz/awesome-sparse-acceleration",
+            "html_url": "https://github.com/amir-ghz/awesome-sparse-acceleration",
+            "id": 1352699136,
+            "node_id": "R_kgDOUKCNAA",
+            "owner_login": "amir-ghz",
+            "pushed_at": "2026-08-31T22:05:20Z",
+            "rank": 4,
+            "updated_at": "2026-09-02T23:23:27Z"
+          }
+        ],
+        "returned_item_count": 4,
+        "total_count": 4
+      },
+      "title": "{RTSpMSpM}: Harnessing Ray Tracing for Efficient Sparse Matrix Computations",
+      "work_id": "survey_bib:Zhang2025RTSpMSpMHR"
+    },
+    {
+      "citation_key": "zellmann2020accelerating",
+      "query": "\"Accelerating Force-Directed Graph Drawing with {RT} Cores\" in:name,description,readme",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:08:34Z",
+            "delay_before_attempt_seconds": 0,
+            "http_status": 200,
+            "resolved_url": "https://api.github.com/search/repositories?q=%22Accelerating+Force-Directed+Graph+Drawing+with+%7BRT%7D+Cores%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+            "response_bytes": 15823,
+            "response_headers": {
+              "content-type": "application/json; charset=utf-8",
+              "x-github-request-id": "C57A:24E009:F5EBC0:30EF251:6A991CF2",
+              "x-ratelimit-limit": "30",
+              "x-ratelimit-remaining": "3",
+              "x-ratelimit-reset": "1788419361",
+              "x-ratelimit-resource": "search",
+              "x-ratelimit-used": "27"
+            },
+            "response_sha256": "310879019a9112c8c7e65eb2b3d572ff14d5703fa4df12e536e06e7834b46377",
+            "started_at_utc": "2026-09-03T07:08:34Z",
+            "status": "SUCCESS"
+          }
+        ],
+        "terminal_status": "SUCCESS"
+      },
+      "request_url": "https://api.github.com/search/repositories?q=%22Accelerating+Force-Directed+Graph+Drawing+with+%7BRT%7D+Cores%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+      "result": {
+        "incomplete_results": false,
+        "items": [
+          {
+            "archived": false,
+            "created_at": "2025-10-15T01:48:04Z",
+            "default_branch": "main",
+            "description": "The OptiX Wrappers Library",
+            "fork": false,
+            "full_name": "NVIDIA/OWL",
+            "html_url": "https://github.com/NVIDIA/OWL",
+            "id": 1076526906,
+            "node_id": "R_kgDOQCp_Og",
+            "owner_login": "NVIDIA",
+            "pushed_at": "2026-07-15T18:58:36Z",
+            "rank": 1,
+            "updated_at": "2026-08-26T14:10:48Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2019-12-19T19:50:28Z",
+            "default_branch": "master",
+            "description": null,
+            "fork": false,
+            "full_name": "owl-project/owl",
+            "html_url": "https://github.com/owl-project/owl",
+            "id": 229127964,
+            "node_id": "MDEwOlJlcG9zaXRvcnkyMjkxMjc5NjQ=",
+            "owner_login": "owl-project",
+            "pushed_at": "2025-10-24T19:51:26Z",
+            "rank": 2,
+            "updated_at": "2026-08-09T11:16:41Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2020-09-25T17:38:06Z",
+            "default_branch": "master",
+            "description": null,
+            "fork": false,
+            "full_name": "owl-project/owl-graph-drawing",
+            "html_url": "https://github.com/owl-project/owl-graph-drawing",
+            "id": 298640216,
+            "node_id": "MDEwOlJlcG9zaXRvcnkyOTg2NDAyMTY=",
+            "owner_login": "owl-project",
+            "pushed_at": "2020-10-15T21:20:54Z",
+            "rank": 3,
+            "updated_at": "2021-07-29T11:11:03Z"
+          }
+        ],
+        "returned_item_count": 3,
+        "total_count": 3
+      },
+      "title": "Accelerating Force-Directed Graph Drawing with {RT} Cores",
+      "work_id": "survey_bib:zellmann2020accelerating"
+    },
+    {
+      "citation_key": "zhao2023leveraging",
+      "query": "\"Leveraging ray tracing cores for particle-based simulations on {GPU}s\" in:name,description,readme",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:08:35Z",
+            "delay_before_attempt_seconds": 0,
+            "http_status": 200,
+            "resolved_url": "https://api.github.com/search/repositories?q=%22Leveraging+ray+tracing+cores+for+particle-based+simulations+on+%7BGPU%7Ds%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+            "response_bytes": 55,
+            "response_headers": {
+              "content-type": "application/json; charset=utf-8",
+              "x-github-request-id": "C57C:9A30A:F93CE8:31AA8D6:6A991CF2",
+              "x-ratelimit-limit": "30",
+              "x-ratelimit-remaining": "2",
+              "x-ratelimit-reset": "1788419361",
+              "x-ratelimit-resource": "search",
+              "x-ratelimit-used": "28"
+            },
+            "response_sha256": "4af480b8ee5b87b369a76c49bd22c9a783908272ebffbe97898f8ab0f0772a5f",
+            "started_at_utc": "2026-09-03T07:08:34Z",
+            "status": "SUCCESS"
+          }
+        ],
+        "terminal_status": "SUCCESS"
+      },
+      "request_url": "https://api.github.com/search/repositories?q=%22Leveraging+ray+tracing+cores+for+particle-based+simulations+on+%7BGPU%7Ds%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+      "result": {
+        "incomplete_results": false,
+        "items": [],
+        "returned_item_count": 0,
+        "total_count": 0
+      },
+      "title": "Leveraging ray tracing cores for particle-based simulations on {GPU}s",
+      "work_id": "survey_bib:zhao2023leveraging"
+    },
+    {
+      "citation_key": "zhu2022rtnn",
+      "query": "\"{RTNN}: accelerating neighbor search using hardware ray tracing\" in:name,description,readme",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:08:35Z",
+            "delay_before_attempt_seconds": 0,
+            "http_status": 200,
+            "resolved_url": "https://api.github.com/search/repositories?q=%22%7BRTNN%7D%3A+accelerating+neighbor+search+using+hardware+ray+tracing%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+            "response_bytes": 34165,
+            "response_headers": {
+              "content-type": "application/json; charset=utf-8",
+              "x-github-request-id": "C57D:2F8498:F97253:318B2E5:6A991CF3",
+              "x-ratelimit-limit": "30",
+              "x-ratelimit-remaining": "1",
+              "x-ratelimit-reset": "1788419361",
+              "x-ratelimit-resource": "search",
+              "x-ratelimit-used": "29"
+            },
+            "response_sha256": "ab8d4c214103067304ce16941eeeb16f70d27527577f39391f5e2dd673c715fa",
+            "started_at_utc": "2026-09-03T07:08:35Z",
+            "status": "SUCCESS"
+          }
+        ],
+        "terminal_status": "SUCCESS"
+      },
+      "request_url": "https://api.github.com/search/repositories?q=%22%7BRTNN%7D%3A+accelerating+neighbor+search+using+hardware+ray+tracing%22+in%3Aname%2Cdescription%2Creadme&page=1&per_page=50",
+      "result": {
+        "incomplete_results": false,
+        "items": [
+          {
+            "archived": false,
+            "created_at": "2021-06-18T00:32:22Z",
+            "default_branch": "main",
+            "description": null,
+            "fork": false,
+            "full_name": "horizon-research/rtnn",
+            "html_url": "https://github.com/horizon-research/rtnn",
+            "id": 377993328,
+            "node_id": "MDEwOlJlcG9zaXRvcnkzNzc5OTMzMjg=",
+            "owner_login": "horizon-research",
+            "pushed_at": "2025-10-06T12:38:44Z",
+            "rank": 1,
+            "updated_at": "2026-07-23T14:24:52Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2023-12-19T02:29:38Z",
+            "default_branch": "main",
+            "description": "\ud83d\udcda Awesome papers and technical blogs on vector DB (database), semantic-based vector search or approximate nearest neighbor search (ANN Search, ANNS). Vector search is the key component of large-scale information retrieval, cross-modal retrieval, LLMs-based RAG, vector databases.",
+            "fork": false,
+            "full_name": "matchyc/vector-search-papers",
+            "html_url": "https://github.com/matchyc/vector-search-papers",
+            "id": 733297122,
+            "node_id": "R_kgDOK7U54g",
+            "owner_login": "matchyc",
+            "pushed_at": "2025-12-02T14:23:33Z",
+            "rank": 2,
+            "updated_at": "2026-07-15T12:15:28Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2023-03-21T05:22:35Z",
+            "default_branch": "main",
+            "description": "A curated list of awesome works related to high dimensional structure/vector search & database",
+            "fork": false,
+            "full_name": "dangkhoasdc/awesome-vector-database",
+            "html_url": "https://github.com/dangkhoasdc/awesome-vector-database",
+            "id": 616800196,
+            "node_id": "R_kgDOJMOfxA",
+            "owner_login": "dangkhoasdc",
+            "pushed_at": "2026-08-24T02:54:55Z",
+            "rank": 3,
+            "updated_at": "2026-08-28T23:43:47Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2026-07-02T17:11:04Z",
+            "default_branch": "main",
+            "description": "General Purpose Ray Tracing Cores",
+            "fork": false,
+            "full_name": "simon2/GPRTC",
+            "html_url": "https://github.com/simon2/GPRTC",
+            "id": 1287422912,
+            "node_id": "R_kgDOTLyDwA",
+            "owner_login": "simon2",
+            "pushed_at": "2026-07-02T17:11:19Z",
+            "rank": 4,
+            "updated_at": "2026-07-02T17:11:23Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2023-10-19T02:29:16Z",
+            "default_branch": "main",
+            "description": "Papers relevant with graph and GPU",
+            "fork": false,
+            "full_name": "junyimei/paper-reading-list",
+            "html_url": "https://github.com/junyimei/paper-reading-list",
+            "id": 706993374,
+            "node_id": "R_kgDOKiPc3g",
+            "owner_login": "junyimei",
+            "pushed_at": "2026-01-01T15:22:49Z",
+            "rank": 5,
+            "updated_at": "2026-05-06T08:51:06Z"
+          },
+          {
+            "archived": false,
+            "created_at": "2025-05-13T22:30:04Z",
+            "default_branch": "master",
+            "description": "A curated list of vector database solutions, libraries, and resources for AI applications - https://vectordb.ever.works",
+            "fork": false,
+            "full_name": "ever-works/awesome-vector-databases",
+            "html_url": "https://github.com/ever-works/awesome-vector-databases",
+            "id": 983110009,
+            "node_id": "R_kgDOOpkReQ",
+            "owner_login": "ever-works",
+            "pushed_at": "2026-08-04T21:55:47Z",
+            "rank": 6,
+            "updated_at": "2026-08-31T10:58:05Z"
+          }
+        ],
+        "returned_item_count": 6,
+        "total_count": 6
+      },
+      "title": "{RTNN}: accelerating neighbor search using hardware ray tracing",
+      "work_id": "survey_bib:zhu2022rtnn"
+    }
+  ],
+  "schema": "rtdl.goal5839.github_discovery_results.v1",
+  "stage": "GITHUB_DISCOVERY_RESULT_COLLECTION",
+  "started_at_utc": "2026-09-03T07:08:20Z",
+  "status": "COMPLETE_FROZEN_QUERY_SET",
+  "successful_query_count": 29,
+  "terminal_failure_count": 0
+}
