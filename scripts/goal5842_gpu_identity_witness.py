@@ -37,7 +37,7 @@ from rtdsl.v4_public_builtin_sphere import V4SphereTarget
 ROOT = Path(__file__).resolve().parents[1]
 GENERIC_LIFECYCLE_SCHEMA = "rtdl.generic_family_lifecycle.v1"
 PUBLIC_PROTOCOL_PROVIDER_LIFECYCLE_SCHEMA = "rtdl.v4.public_protocol_lifecycle.v1"
-SPHERE_PROVIDER_LIFECYCLE_SCHEMA = "rtdl.v4.prepared_builtin_sphere_owner.v1"
+SPHERE_PROVIDER_LIFECYCLE_SCHEMA = "rtdl.v4.prepared_sphere_any_hit_count_owner.v1"
 
 
 def report_progress(task_id: str, phase: str) -> None:

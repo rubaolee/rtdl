@@ -63,7 +63,7 @@ ROUTE_PHASE = "route_declaration_and_artifact_binding"
 CAUSAL_PHASE = "provider_projection_and_public_admission_or_unchecked_construction"
 GENERIC_LIFECYCLE_SCHEMA = "rtdl.generic_family_lifecycle.v1"
 PUBLIC_PROTOCOL_PROVIDER_LIFECYCLE_SCHEMA = "rtdl.v4.public_protocol_lifecycle.v1"
-SPHERE_PROVIDER_LIFECYCLE_SCHEMA = "rtdl.v4.prepared_builtin_sphere_owner.v1"
+SPHERE_PROVIDER_LIFECYCLE_SCHEMA = "rtdl.v4.prepared_sphere_any_hit_count_owner.v1"
 GPU_WITNESS_FIELDS = {
     "schema",
     "status",

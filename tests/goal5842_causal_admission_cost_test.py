@@ -77,6 +77,10 @@ from experiments.goal5842_causal_admission.contracts import (
     V9_PREREGISTRATION_PATH,
     V9_PREREGISTRATION_SCHEMA,
     V9_PREREGISTRATION_SHA256,
+    V10_PREREGISTRATION_FILE_SHA256,
+    V10_PREREGISTRATION_PATH,
+    V10_PREREGISTRATION_SCHEMA,
+    V10_PREREGISTRATION_SHA256,
     Goal5842ContractError,
     build_baseline_schedule,
     build_causal_schedule,
@@ -91,6 +95,7 @@ from experiments.goal5842_causal_admission.contracts import (
     v8_preregistration_supersession,
     v9_preregistration_supersession,
     v10_preregistration_supersession,
+    v11_preregistration_supersession,
     validate_preregistration,
 )
 from experiments.goal5842_causal_admission.controller import summarize
@@ -110,6 +115,7 @@ from scripts.goal5842_build_cross_generation_authority import (
 )
 from scripts.goal5842_build_preregistration import build
 from scripts.goal5842_gpu_identity_witness import (
+    SPHERE_PROVIDER_LIFECYCLE_SCHEMA,
     execute_and_check,
     provider_lifecycle_evidence,
 )
@@ -131,7 +137,7 @@ from scripts.goal5842_run_one_generation import validated_python_entrypoint
 ROOT = Path(__file__).resolve().parents[1]
 PREREGISTRATION = ROOT / (
     "history/internal_docs/goal5842_causal_admission_cost_20260903/"
-    "PREREGISTRATION_V10.json"
+    "PREREGISTRATION_V11.json"
 )
 V1_PREREGISTRATION = ROOT / V1_PREREGISTRATION_PATH
 V2_PREREGISTRATION = ROOT / V2_PREREGISTRATION_PATH
@@ -142,6 +148,7 @@ V6_PREREGISTRATION = ROOT / V6_PREREGISTRATION_PATH
 V7_PREREGISTRATION = ROOT / V7_PREREGISTRATION_PATH
 V8_PREREGISTRATION = ROOT / V8_PREREGISTRATION_PATH
 V9_PREREGISTRATION = ROOT / V9_PREREGISTRATION_PATH
+V10_PREREGISTRATION = ROOT / V10_PREREGISTRATION_PATH
 FROZEN_CORE = (
     "src/rtdsl/v4_family_schema.py",
     "src/rtdsl/v4_generic_family_lifecycle.py",
@@ -710,15 +717,19 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
 
     def test_v10_binds_v9_preexecution_source_contract_correction(self) -> None:
         v9 = json.loads(V9_PREREGISTRATION.read_text(encoding="utf-8"))
+        v10 = json.loads(V10_PREREGISTRATION.read_text(encoding="utf-8"))
         self.assertEqual(
             sha256_file(V9_PREREGISTRATION), V9_PREREGISTRATION_FILE_SHA256
         )
         self.assertEqual(v9["schema"], V9_PREREGISTRATION_SCHEMA)
         self.assertEqual(v9["preregistration_sha256"], V9_PREREGISTRATION_SHA256)
         self.assertEqual(
-            self.prereg["supersession"], v10_preregistration_supersession()
+            sha256_file(V10_PREREGISTRATION), V10_PREREGISTRATION_FILE_SHA256
         )
-        supersession = self.prereg["supersession"]
+        self.assertEqual(v10["schema"], V10_PREREGISTRATION_SCHEMA)
+        self.assertEqual(v10["preregistration_sha256"], V10_PREREGISTRATION_SHA256)
+        self.assertEqual(v10["supersession"], v10_preregistration_supersession())
+        supersession = v10["supersession"]
         self.assertFalse(supersession["worker_zero_reached"])
         self.assertEqual(supersession["registered_timing_observation_count"], 0)
         self.assertEqual(supersession["formal_gpu_execution_count"], 0)
@@ -765,7 +776,7 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
             "hardware_design",
             "failure_policy",
         ):
-            self.assertEqual(self.prereg[key], v9[key], key)
+            self.assertEqual(v10[key], v9[key], key)
         changed = supersession["changed_existing_source_paths"]
         self.assertEqual(len(changed), 1)
         row = changed[0]
@@ -783,11 +794,11 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
             "c692655f54e8be377c5d8d4d727ba1720b487cbbbad61bec35dd8d092285f4cd",
         )
         self.assertEqual(
-            self.prereg["gpu_execution_count_scope"],
+            v10["gpu_execution_count_scope"],
             "FORMAL_V10_TRANSACTION_ONLY",
         )
         self.assertEqual(
-            self.prereg["unregistered_engineering_preflight"],
+            v10["unregistered_engineering_preflight"],
             {
                 "complete_execution_call_count": 6,
                 "optix_launch_count": 8,
@@ -795,6 +806,114 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
                 "timings_retained_or_used": False,
                 "included_in_estimators": False,
             },
+        )
+
+    def test_v11_binds_v10_preworker_failure_without_changing_science(self) -> None:
+        v10 = json.loads(V10_PREREGISTRATION.read_text(encoding="utf-8"))
+        self.assertEqual(
+            self.prereg["supersession"], v11_preregistration_supersession()
+        )
+        supersession = self.prereg["supersession"]
+        self.assertFalse(supersession["worker_zero_reached"])
+        self.assertEqual(supersession["registered_timing_observation_count"], 0)
+        self.assertEqual(supersession["gpu_complete_execution_call_count"], 290)
+        self.assertFalse(supersession["scientific_design_changed"])
+        self.assertFalse(supersession["runtime_semantics_changed"])
+        self.assertTrue(supersession["witness_implementation_changed"])
+        self.assertFalse(supersession["v11_is_v10_retry"])
+        self.assertTrue(supersession["v11_is_append_only_full_replication"])
+        self.assertFalse(supersession["v10_untimed_calls_pooled_into_v11_estimators"])
+        for key in (
+            "scientific_question",
+            "causal_estimand",
+            "admission_tasks",
+            "baseline_tasks",
+            "task_contracts",
+            "causal_arms",
+            "baseline_arms",
+            "cohort_boundary",
+            "causal_phase_boundaries",
+            "baseline_phase_boundaries",
+            "cold_counterfactual_design",
+            "post_estimand_reference_admission",
+            "execution_identity_requirements",
+            "pre_worker_zero_witness_design",
+            "baseline_worker_design",
+            "byte_identity_invariant",
+            "byte_identity_invariant_scope",
+            "causal_schedule",
+            "causal_schedule_sha256",
+            "baseline_schedule",
+            "baseline_schedule_sha256",
+            "statistics",
+            "hardware_design",
+            "failure_policy",
+        ):
+            self.assertEqual(self.prereg[key], v10[key], key)
+        artifact = ROOT / supersession["v10_preworker_artifact_path"]
+        self.assertEqual(
+            artifact.stat().st_size, supersession["v10_preworker_artifact_bytes"]
+        )
+        self.assertEqual(
+            sha256_file(artifact), supersession["v10_preworker_artifact_sha256"]
+        )
+
+        def archived_bytes(suffix: str) -> bytes:
+            with tarfile.open(artifact, "r:gz") as archive:
+                matches = [name for name in archive.getnames() if name.endswith(suffix)]
+                self.assertEqual(len(matches), 1, suffix)
+                extracted = archive.extractfile(matches[0])
+                self.assertIsNotNone(extracted)
+                return extracted.read()
+
+        for suffix, expected in (
+            (
+                "/execution_authority.json",
+                supersession["execution_authority_file_sha256"],
+            ),
+            (
+                "/PREFLIGHT_FAILED_REPAIR_ALLOWED.json",
+                supersession["failure_marker_sha256"],
+            ),
+            (
+                "/stage_logs/01_gpu_identity_witness_no_timing/command.json",
+                supersession["command_sha256"],
+            ),
+            (
+                "/stage_logs/01_gpu_identity_witness_no_timing/stdout.txt",
+                supersession["stdout_sha256"],
+            ),
+            (
+                "/stage_logs/01_gpu_identity_witness_no_timing/stderr.txt",
+                supersession["stderr_sha256"],
+            ),
+        ):
+            self.assertEqual(
+                hashlib.sha256(archived_bytes(suffix)).hexdigest(), expected
+            )
+        authority = json.loads(archived_bytes("/execution_authority.json"))
+        self.assertEqual(
+            authority["authority_sha256"], supersession["execution_authority_sha256"]
+        )
+        stderr = archived_bytes(
+            "/stage_logs/01_gpu_identity_witness_no_timing/stderr.txt"
+        )
+        self.assertIn(b"provider prepared lifecycle schema mismatch", stderr)
+        progress = [
+            json.loads(line)
+            for line in archived_bytes(
+                "/stage_logs/01_gpu_identity_witness_no_timing/stdout.txt"
+            ).splitlines()
+        ]
+        complete_tasks = [
+            row["task"] for row in progress if row["phase"] == "TASK_COMPLETE"
+        ]
+        self.assertEqual(complete_tasks, list(BASELINE_TASKS))
+        self.assertEqual(progress[-1]["task"], ADMISSION_TASKS[-1])
+        self.assertEqual(progress[-1]["phase"], "EXECUTE_CHECK_ON")
+        self.assertEqual(
+            self.prereg["gpu_execution_count_scope"],
+            "FORMAL_V11_TRANSACTION_ONLY",
         )
 
     def test_gpu_entrypoints_bind_legacy_loader_to_authorized_native(self) -> None:
@@ -1280,7 +1399,7 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
         for contract in self.prereg["task_contracts"]:
             calls = 1 if contract["task"].endswith("SPHERE_ANY_HIT_COUNT_V1") else 72
             provider_schema = (
-                "rtdl.v4.prepared_builtin_sphere_owner.v1"
+                SPHERE_PROVIDER_LIFECYCLE_SCHEMA
                 if contract["task"].endswith("SPHERE_ANY_HIT_COUNT_V1")
                 else "rtdl.v4.public_protocol_lifecycle.v1"
             )
@@ -1558,6 +1677,25 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
         finally:
             prepared.close()
 
+    def test_sphere_provider_schema_is_the_selected_sphere_owner(self) -> None:
+        import threading
+
+        from rtdsl.v4_sphere_any_hit_count_prepared_runtime import (
+            PreparedSphereAnyHitCountOwner,
+        )
+
+        owner = object.__new__(PreparedSphereAnyHitCountOwner)
+        owner._closed = False
+        owner._pid = os.getpid()
+        owner._thread_id = threading.get_ident()
+        owner._execution_count = 1
+        owner._native_sha256 = "a" * 64
+        owner._ptx_sha256 = "b" * 64
+        owner._physical_receipt = {"schema": "test.physical.receipt.v1"}
+        receipt = owner.lifecycle_receipt
+        self.assertEqual(receipt["schema"], SPHERE_PROVIDER_LIFECYCLE_SCHEMA)
+        self.assertEqual(receipt["execution_count"], 1)
+
     def test_architecture_generation_is_explicit_and_unknown_fails_closed(self) -> None:
         self.assertEqual(architecture_generation("7.5"), "TURING")
         self.assertEqual(architecture_generation("8.6"), "AMPERE")
@@ -1584,8 +1722,10 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
                 "scripts/goal5842_independent_recount.py",
                 "scripts/goal5842_run_one_generation.py",
                 "experiments/goal5796_matched/matched_device.cu",
+                "src/rtdsl/v4_sphere_any_hit_count_prepared_runtime.py",
                 V3_PREREGISTRATION_PATH,
                 V8_PREREGISTRATION_PATH,
+                V10_PREREGISTRATION_PATH,
                 (
                     "history/internal_docs/goal5842_causal_admission_cost_20260903/"
                     "PRE_WORKER_ZERO_REPAIR_03.md"

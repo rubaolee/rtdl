@@ -150,6 +150,13 @@ runtime semantics, tasks, estimands, schedules, witnesses, timing boundaries,
 or statistics. Six unregistered correctness-preflight calls comprising eight
 OptiX launches are disclosed separately and are excluded from all estimators.
 
+V11 supersedes the failed V10 pre-worker transaction. V10 completed 290
+timer-free RTDL calls but stopped when the witness compared the selected
+sphere-any-hit-count owner against the unrelated legacy built-in-sphere owner
+schema. V11 corrects only that witness/recount schema classification, binds the
+complete V10 failure archive, and repeats every witness before worker zero.
+V10 calls are neither a V11 witness nor input to any estimator.
+
 Goal5842 may attribute only the measured incremental generic-admission delta.
 It may not claim that this delta explains all prior setup overhead, that the
 unchecked arm is a supported optimization, that two provider tasks represent

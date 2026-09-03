@@ -29,14 +29,14 @@ from experiments.goal5842_causal_admission.contracts import (
     digest,
     pin_file,
     post_failure_replication_provenance,
-    v10_preregistration_supersession,
+    v11_preregistration_supersession,
     validate_preregistration,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / (
     "history/internal_docs/goal5842_causal_admission_cost_20260903/"
-    "PREREGISTRATION_V10.json"
+    "PREREGISTRATION_V11.json"
 )
 
 
@@ -51,8 +51,8 @@ def build() -> dict[str, object]:
     result: dict[str, object] = {
         "schema": PREREGISTRATION_SCHEMA,
         "date": "2026-09-03",
-        "status": "FROZEN_BEFORE_INDEPENDENT_V10_FAIR_BASELINE_TIMING",
-        "supersession": v10_preregistration_supersession(),
+        "status": "FROZEN_BEFORE_INDEPENDENT_V11_FAIR_BASELINE_TIMING",
+        "supersession": v11_preregistration_supersession(),
         "post_failure_replication": post_failure_replication_provenance(),
         "scientific_question": (
             "How much cold post-import generic-family latency is attributable "
@@ -246,11 +246,15 @@ def build() -> dict[str, object]:
             "v9_preexecution_freeze_reclassified_as_executed_result": False,
             "v9_rows_pooled_into_v10_estimators": False,
             "v10_called_a_result_dependent_retry": False,
+            "v10_preworker_attempt_reclassified_as_success": False,
+            "v10_untimed_calls_count_as_v11_witness": False,
+            "v10_rows_pooled_into_v11_estimators": False,
+            "v11_called_a_result_dependent_retry": False,
         },
         "source_manifest": manifest,
         "source_manifest_sha256": digest(manifest),
         "preregistration_build_counter_scope": {
-            "top_level_counters_cover_this_v10_fair_baseline_build_only": True,
+            "top_level_counters_cover_this_v11_fair_baseline_build_only": True,
             "prior_evidence_is_bound_in_provenance_fields": True,
             "pre_v4_untimed_gpu_complete_execution_call_count": 8,
             "v4_registered_causal_worker_timing_vector_count": 216,
@@ -277,10 +281,13 @@ def build() -> dict[str, object]:
             "v9_formal_gpu_execution_count": 0,
             "v9_unregistered_engineering_complete_execution_call_count": 6,
             "v9_unregistered_engineering_optix_launch_count": 8,
+            "v10_preworker_attempt_count": 1,
+            "v10_registered_timing_observation_count": 0,
+            "v10_untimed_rtdl_identity_complete_execution_call_count": 290,
         },
         "registered_timing_observation_count": 0,
         "gpu_execution_count": 0,
-        "gpu_execution_count_scope": "FORMAL_V10_TRANSACTION_ONLY",
+        "gpu_execution_count_scope": "FORMAL_V11_TRANSACTION_ONLY",
         "unregistered_engineering_preflight": {
             "complete_execution_call_count": 6,
             "optix_launch_count": 8,

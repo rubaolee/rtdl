@@ -112,7 +112,18 @@ V9_PREREGISTRATION_SHA256 = (
 V9_PREREGISTRATION_FILE_SHA256 = (
     "417ae18b5c249d439d9794bb6bd7a5d0bf890ea7a39203a38b9caa7f0146355a"
 )
-PREREGISTRATION_SCHEMA = "rtdl.goal5842.causal_admission_preregistration.v10"
+V10_PREREGISTRATION_SCHEMA = "rtdl.goal5842.causal_admission_preregistration.v10"
+V10_PREREGISTRATION_PATH = (
+    "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+    "PREREGISTRATION_V10.json"
+)
+V10_PREREGISTRATION_SHA256 = (
+    "58ec90e1f9a8ddca789ff4999aaa22f64941edb40b18089e3b86c21820889a53"
+)
+V10_PREREGISTRATION_FILE_SHA256 = (
+    "8b7f2bd1f62a6997ba0dfe4fd6762c07668994b563c5059bd56f0639c5824cf4"
+)
+PREREGISTRATION_SCHEMA = "rtdl.goal5842.causal_admission_preregistration.v11"
 EXECUTION_AUTHORITY_SCHEMA = "rtdl.goal5842.execution_authority.v1"
 WORKER_RECEIPT_SCHEMA = "rtdl.goal5842.causal_admission_worker.v1"
 CONTROLLER_RESULT_SCHEMA = "rtdl.goal5842.causal_admission_controller.v1"
@@ -248,6 +259,7 @@ REQUIRED_SOURCE_PATHS = (
     "src/rtdsl/v4_family_schema.py",
     "src/rtdsl/v4_generic_family_lifecycle.py",
     "src/rtdsl/v4_sphere_any_hit_count_family_route.py",
+    "src/rtdsl/v4_sphere_any_hit_count_prepared_runtime.py",
     "src/rtdsl/v4_triangle_reduction_prepared_runtime.py",
     "tests/goal5842_causal_admission_cost_test.py",
     "tests/goal5842_prepared_cache_commit_test.py",
@@ -336,6 +348,19 @@ REQUIRED_SOURCE_PATHS = (
     (
         "history/internal_docs/goal5842_causal_admission_cost_20260903/"
         "PRE_EXECUTION_INTERNAL_HOSTILE_REVIEW_V10.md"
+    ),
+    V10_PREREGISTRATION_PATH,
+    (
+        "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+        "PRE_WORKER_ZERO_REPAIR_08.md"
+    ),
+    (
+        "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+        "PRE_EXECUTION_INTERNAL_HOSTILE_REVIEW_V11.md"
+    ),
+    (
+        "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+        "pod_artifacts/goal5842_v10_preworker_failure.tar.gz"
     ),
 )
 
@@ -807,6 +832,73 @@ def v10_preregistration_supersession() -> dict[str, object]:
     }
 
 
+def v11_preregistration_supersession() -> dict[str, object]:
+    """Bind V11 to the disclosed pre-worker-zero V10 attempt."""
+
+    return {
+        "predecessor_path": V10_PREREGISTRATION_PATH,
+        "predecessor_schema": V10_PREREGISTRATION_SCHEMA,
+        "predecessor_preregistration_sha256": V10_PREREGISTRATION_SHA256,
+        "predecessor_file_sha256": V10_PREREGISTRATION_FILE_SHA256,
+        "v10_source_commit": "3bf4413fab3ce4f95bf6db64f84a4ac03a55e5bd",
+        "v10_preworker_artifact_path": (
+            "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+            "pod_artifacts/goal5842_v10_preworker_failure.tar.gz"
+        ),
+        "v10_preworker_artifact_bytes": 3_524,
+        "v10_preworker_artifact_sha256": (
+            "6296e6782bf86f4e41cf069921478731744ec6b0a495bd5a153cbe3e0f6f8b74"
+        ),
+        "failed_stage": "01_gpu_identity_witness_no_timing",
+        "reason_code": "SPHERE_PROVIDER_LIFECYCLE_SCHEMA_CLASSIFICATION_DEFECT",
+        "execution_authority_sha256": (
+            "17a8a8e4d3a4d99720d94317ae7aac523f4f4eb89be1e2eb52cc2ab01a9f113f"
+        ),
+        "execution_authority_file_sha256": (
+            "d2352d6c4a4a06a9d29f7e6d07f275130fe81b3118ed92065c585fdd9ba696fd"
+        ),
+        "worker_zero_reached": False,
+        "registered_timing_observation_count": 0,
+        "gpu_complete_execution_call_count": 290,
+        "gpu_call_count_basis": (
+            "the timer-free relation and triangle CHECK_ON/CHECK_OFF loops "
+            "completed 72 calls per arm, the triangle auxiliary oracle completed "
+            "one call, and sphere CHECK_ON completed one call before its post-call "
+            "provider-schema assertion raised"
+        ),
+        "failure_marker_sha256": (
+            "71222136e24031c38abfdec3ff4d276187b25b7eb3cacb701b630e05162ae4c6"
+        ),
+        "command_sha256": (
+            "461b879706a94cd4245b788d7053e01be10246a0cb4da9e499147473f72fdfa3"
+        ),
+        "stdout_sha256": (
+            "dba67b7c32e690937efd40cf1cefbfc666b00223c322ee272a1fb00d7d7f0d51"
+        ),
+        "stderr_sha256": (
+            "b15ad0cb114d5ad67177f0427eb2bdc354a3cb6f510224f537a9e99dfd5c45e2"
+        ),
+        "scientific_design_changed": False,
+        "causal_estimand_changed": False,
+        "schedule_changed": False,
+        "workload_values_changed": False,
+        "statistics_changed": False,
+        "hardware_design_changed": False,
+        "baseline_timing_boundary_changed": False,
+        "runtime_semantics_changed": False,
+        "witness_implementation_changed": True,
+        "repair_scope": (
+            "validate the selected sphere route against its actual prepared "
+            "sphere-any-hit-count owner schema instead of the unrelated legacy "
+            "built-in-sphere owner schema"
+        ),
+        "successful_transaction_repeats_all_witnesses_before_worker_zero": True,
+        "v11_is_v10_retry": False,
+        "v11_is_append_only_full_replication": True,
+        "v10_untimed_calls_pooled_into_v11_estimators": False,
+    }
+
+
 def canonical_bytes(value: object) -> bytes:
     return json.dumps(
         value,
@@ -975,16 +1067,16 @@ def validate_preregistration(value: object, root: Path, *, verify_files: bool) -
         "preregistration schema mismatch",
     )
     _require(
-        prereg.get("supersession") == v10_preregistration_supersession(),
-        "V10 pre-execution supersession provenance mismatch",
+        prereg.get("supersession") == v11_preregistration_supersession(),
+        "V11 pre-execution supersession provenance mismatch",
     )
     _require(
         prereg.get("post_failure_replication") == post_failure_replication_provenance(),
         "post-failure replication provenance mismatch",
     )
     _require(
-        prereg.get("status") == "FROZEN_BEFORE_INDEPENDENT_V10_FAIR_BASELINE_TIMING",
-        "V10 fair-baseline preregistration is not frozen",
+        prereg.get("status") == "FROZEN_BEFORE_INDEPENDENT_V11_FAIR_BASELINE_TIMING",
+        "V11 fair-baseline preregistration is not frozen",
     )
     _require(
         prereg.get("registered_timing_observation_count") == 0,
@@ -992,7 +1084,7 @@ def validate_preregistration(value: object, root: Path, *, verify_files: bool) -
     )
     _require(prereg.get("gpu_execution_count") == 0, "pre-freeze GPU execution exists")
     _require(
-        prereg.get("gpu_execution_count_scope") == "FORMAL_V10_TRANSACTION_ONLY",
+        prereg.get("gpu_execution_count_scope") == "FORMAL_V11_TRANSACTION_ONLY",
         "formal GPU execution counter scope mismatch",
     )
     _require(
@@ -1009,7 +1101,7 @@ def validate_preregistration(value: object, root: Path, *, verify_files: bool) -
     _require(
         prereg.get("preregistration_build_counter_scope")
         == {
-            "top_level_counters_cover_this_v10_fair_baseline_build_only": True,
+            "top_level_counters_cover_this_v11_fair_baseline_build_only": True,
             "prior_evidence_is_bound_in_provenance_fields": True,
             "pre_v4_untimed_gpu_complete_execution_call_count": 8,
             "v4_registered_causal_worker_timing_vector_count": 216,
@@ -1036,6 +1128,9 @@ def validate_preregistration(value: object, root: Path, *, verify_files: bool) -
             "v9_formal_gpu_execution_count": 0,
             "v9_unregistered_engineering_complete_execution_call_count": 6,
             "v9_unregistered_engineering_optix_launch_count": 8,
+            "v10_preworker_attempt_count": 1,
+            "v10_registered_timing_observation_count": 0,
+            "v10_untimed_rtdl_identity_complete_execution_call_count": 290,
         },
         "replication counter scope or prior evidence disclosure differs",
     )
@@ -1240,6 +1335,10 @@ def validate_preregistration(value: object, root: Path, *, verify_files: bool) -
         "v9_preexecution_freeze_reclassified_as_executed_result",
         "v9_rows_pooled_into_v10_estimators",
         "v10_called_a_result_dependent_retry",
+        "v10_preworker_attempt_reclassified_as_success",
+        "v10_untimed_calls_count_as_v11_witness",
+        "v10_rows_pooled_into_v11_estimators",
+        "v11_called_a_result_dependent_retry",
     ):
         _require(ceiling.get(key) is False, f"claim ceiling widened: {key}")
     _require(
@@ -1353,6 +1452,10 @@ __all__ = [
     "V9_PREREGISTRATION_PATH",
     "V9_PREREGISTRATION_SCHEMA",
     "V9_PREREGISTRATION_SHA256",
+    "V10_PREREGISTRATION_FILE_SHA256",
+    "V10_PREREGISTRATION_PATH",
+    "V10_PREREGISTRATION_SCHEMA",
+    "V10_PREREGISTRATION_SHA256",
     "WORKER_RECEIPT_SCHEMA",
     "Goal5842ContractError",
     "build_baseline_schedule",
@@ -1371,6 +1474,7 @@ __all__ = [
     "v8_preregistration_supersession",
     "v9_preregistration_supersession",
     "v10_preregistration_supersession",
+    "v11_preregistration_supersession",
     "validate_baseline_schedule",
     "validate_causal_schedule",
     "validate_preregistration",
