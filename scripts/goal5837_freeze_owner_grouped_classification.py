@@ -13,11 +13,11 @@ import ast
 import copy
 import hashlib
 import json
-from pathlib import Path, PurePosixPath
 import re
+import subprocess
 import tarfile
+from pathlib import Path, PurePosixPath
 from typing import Any
-
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_DIR = (
@@ -29,6 +29,7 @@ DOMAIN = b"rtdl.goal5837.owner_grouped_classification.v1\0"
 
 INPUT_CHECKPOINT = "8180d754e7637670b502b17866be2a29ea1cc26f"
 GPU_EXECUTION_CHECKPOINT = "7ec6b673b1da3dbe63ff2915e82d61f5302bf85c"
+AUTHORITY_CHECKPOINT = "0f5c9d4297f73e412732e5a8ab133423fe4cfd21"
 EXACT_CLASSIFICATION = (
     "ADDITIONAL_ROOT_EXPORTED_CLOSED_SUCCESSOR_ROUTE__"
     "NOT_STABLE_V4_FIXED_CONSTRUCTOR"
@@ -276,6 +277,26 @@ def _identity(relative: str) -> dict[str, Any]:
     return {"path": relative, "bytes": len(data), "sha256": _sha_bytes(data)}
 
 
+def _identity_at_authority_checkpoint(relative: str) -> dict[str, Any]:
+    path = PurePosixPath(relative)
+    _require(
+        not path.is_absolute() and ".." not in path.parts,
+        f"UNSAFE_SOURCE_INVENTORY_PATH:{relative}",
+    )
+    result = subprocess.run(
+        ["git", "show", f"{AUTHORITY_CHECKPOINT}:{path.as_posix()}"],
+        cwd=ROOT,
+        check=False,
+        capture_output=True,
+    )
+    _require(
+        result.returncode == 0,
+        f"MISSING_AUTHORITY_CHECKPOINT_SOURCE:{relative}",
+    )
+    data = result.stdout
+    return {"path": relative, "bytes": len(data), "sha256": _sha_bytes(data)}
+
+
 def _historical_identities() -> dict[str, dict[str, Any]]:
     rows: dict[str, dict[str, Any]] = {}
     for label, expected in HISTORICAL_INPUTS.items():
@@ -290,7 +311,10 @@ def _historical_identities() -> dict[str, dict[str, Any]]:
 
 def _source_inventory() -> dict[str, list[dict[str, Any]]]:
     return {
-        group: [_identity(relative) for relative in sorted(paths)]
+        group: [
+            _identity_at_authority_checkpoint(relative)
+            for relative in sorted(paths)
+        ]
         for group, paths in sorted(SOURCE_GROUPS.items())
     }
 

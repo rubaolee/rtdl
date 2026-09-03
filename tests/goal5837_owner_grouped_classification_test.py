@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 import copy
-import json
-from pathlib import Path
 import tempfile
 import unittest
+from pathlib import Path
+from unittest import mock
 
 from scripts import goal5837_freeze_owner_grouped_classification as goal5837
 
@@ -193,6 +193,23 @@ class Goal5837OwnerGroupedClassificationTest(unittest.TestCase):
             loaded = goal5837.load_json_exact(path)
             self.assertEqual(written, loaded)
             goal5837.validate_authority(loaded)
+
+    def test_19_source_inventory_is_bound_to_authority_checkpoint(self) -> None:
+        stored = self.authority["source_inventory"]["classification_basis"][0]
+        self.assertEqual(
+            stored,
+            goal5837._identity_at_authority_checkpoint("AGENTS.md"),
+        )
+        with mock.patch.object(
+            goal5837,
+            "_identity",
+            side_effect=AssertionError("current-tree identity must not be used"),
+        ):
+            rebuilt = goal5837._source_inventory()
+        self.assertEqual(
+            stored,
+            rebuilt["classification_basis"][0],
+        )
 
 
 if __name__ == "__main__":
