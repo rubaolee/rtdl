@@ -27,21 +27,29 @@ from experiments.goal5842_causal_admission.contracts import (
     CHECK_ON,
     CROSS_GENERATION_AUTHORITY_SCHEMA,
     INDEPENDENT_RECOUNT_SCHEMA,
-    PREDECESSOR_PREREGISTRATION_FILE_SHA256,
-    PREDECESSOR_PREREGISTRATION_PATH,
-    PREDECESSOR_PREREGISTRATION_SCHEMA,
-    PREDECESSOR_PREREGISTRATION_SHA256,
     TASK_CONTRACTS,
     TRIANGLE_TASK,
+    V1_PREREGISTRATION_FILE_SHA256,
+    V1_PREREGISTRATION_PATH,
+    V1_PREREGISTRATION_SCHEMA,
+    V1_PREREGISTRATION_SHA256,
+    V2_PREREGISTRATION_FILE_SHA256,
+    V2_PREREGISTRATION_PATH,
+    V2_PREREGISTRATION_SCHEMA,
+    V2_PREREGISTRATION_SHA256,
     Goal5842ContractError,
     build_baseline_schedule,
     build_causal_schedule,
     digest,
     preregistration_supersession,
     sha256_file,
+    v2_preregistration_supersession,
     validate_preregistration,
 )
 from experiments.goal5842_causal_admission.controller import summarize
+from experiments.goal5842_causal_admission.runtime import (
+    bind_authorized_native_library,
+)
 from experiments.goal5842_causal_admission.tasks import (
     SPHERE_SIZE,
     build_task,
@@ -69,9 +77,10 @@ from scripts.goal5842_run_one_generation import validated_python_entrypoint
 ROOT = Path(__file__).resolve().parents[1]
 PREREGISTRATION = ROOT / (
     "history/internal_docs/goal5842_causal_admission_cost_20260903/"
-    "PREREGISTRATION_V2.json"
+    "PREREGISTRATION_V3.json"
 )
-PREDECESSOR_PREREGISTRATION = ROOT / PREDECESSOR_PREREGISTRATION_PATH
+V1_PREREGISTRATION = ROOT / V1_PREREGISTRATION_PATH
+V2_PREREGISTRATION = ROOT / V2_PREREGISTRATION_PATH
 FROZEN_CORE = (
     "src/rtdsl/v4_family_schema.py",
     "src/rtdsl/v4_generic_family_lifecycle.py",
@@ -95,22 +104,70 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
         self.assertEqual(self.prereg["registered_timing_observation_count"], 0)
         self.assertEqual(self.prereg["gpu_execution_count"], 0)
 
-    def test_v2_preregistration_append_only_supersedes_failed_v1(self) -> None:
-        predecessor = json.loads(
-            PREDECESSOR_PREREGISTRATION.read_text(encoding="utf-8")
-        )
-        self.assertEqual(predecessor["schema"], PREDECESSOR_PREREGISTRATION_SCHEMA)
+    def test_v3_preregistration_preserves_append_only_repair_chain(self) -> None:
+        v1 = json.loads(V1_PREREGISTRATION.read_text(encoding="utf-8"))
+        v2 = json.loads(V2_PREREGISTRATION.read_text(encoding="utf-8"))
+        self.assertEqual(v1["schema"], V1_PREREGISTRATION_SCHEMA)
         self.assertEqual(
-            predecessor["preregistration_sha256"],
-            PREDECESSOR_PREREGISTRATION_SHA256,
+            v1["preregistration_sha256"],
+            V1_PREREGISTRATION_SHA256,
         )
         self.assertEqual(
-            sha256_file(PREDECESSOR_PREREGISTRATION),
-            PREDECESSOR_PREREGISTRATION_FILE_SHA256,
+            sha256_file(V1_PREREGISTRATION),
+            V1_PREREGISTRATION_FILE_SHA256,
         )
+        self.assertEqual(v2["schema"], V2_PREREGISTRATION_SCHEMA)
+        self.assertEqual(v2["preregistration_sha256"], V2_PREREGISTRATION_SHA256)
+        self.assertEqual(
+            sha256_file(V2_PREREGISTRATION), V2_PREREGISTRATION_FILE_SHA256
+        )
+        self.assertEqual(v2["supersession"], v2_preregistration_supersession())
         self.assertEqual(self.prereg["supersession"], preregistration_supersession())
         self.assertFalse(self.prereg["supersession"]["worker_zero_reached"])
         self.assertFalse(self.prereg["supersession"]["scientific_design_changed"])
+        self.assertEqual(
+            self.prereg["supersession"]["gpu_complete_execution_call_count"], 4
+        )
+        self.assertEqual(
+            self.prereg["preregistration_build_counter_scope"]
+            ["prior_untimed_gpu_complete_execution_call_count"],
+            4,
+        )
+        self.assertTrue(
+            self.prereg["preregistration_build_counter_scope"]
+            ["prior_untimed_gpu_calls_are_in_supersession"]
+        )
+
+    def test_gpu_entrypoints_bind_legacy_loader_to_authorized_native(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            native = Path(temporary) / "librtdl_optix.so"
+            native.write_bytes(b"test native identity")
+            authority = {
+                "execution_paths": {"native_library": str(native.resolve())}
+            }
+            environment = {
+                "RTDL_OPTIX_LIB": "/untrusted/ambient.so",
+                "RTDL_OPTIX_LIBRARY": "/untrusted/ambient.so",
+            }
+            observed = bind_authorized_native_library(
+                authority, native, environment=environment
+            )
+            self.assertEqual(observed, native.resolve())
+            self.assertEqual(
+                environment,
+                {
+                    "RTDL_OPTIX_LIB": str(native.resolve()),
+                    "RTDL_OPTIX_LIBRARY": str(native.resolve()),
+                },
+            )
+        for relative in (
+            "scripts/goal5842_gpu_identity_witness.py",
+            "experiments/goal5842_causal_admission/baseline_worker.py",
+        ):
+            self.assertIn(
+                "bind_authorized_native_library",
+                (ROOT / relative).read_text(encoding="utf-8"),
+            )
 
     def test_one_generation_runner_preserves_virtualenv_entrypoint(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

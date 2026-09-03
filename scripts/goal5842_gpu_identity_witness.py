@@ -15,6 +15,7 @@ from experiments.goal5842_causal_admission.contracts import (
     digest,
 )
 from experiments.goal5842_causal_admission.runtime import (
+    bind_authorized_native_library,
     create_json,
     load_execution_authority,
     require_bound_path,
@@ -78,8 +79,8 @@ def main() -> None:
     )
     if args.compute_capability != authority["hardware"]["compute_capability"]:
         raise RuntimeError("compute capability differs from execution authority")
+    native = bind_authorized_native_library(authority, args.native)
     for key, supplied in (
-        ("native_library", args.native),
         ("optix_include", args.optix_include),
         ("cuda_include", args.cuda_include),
     ):
@@ -103,13 +104,13 @@ def main() -> None:
             raise RuntimeError("target-neutral on/off identity mismatch")
         target = (
             V4SphereTarget.from_native(
-                args.native,
+                native,
                 optix_sdk=args.optix_sdk,
                 compute_capability=args.compute_capability,
             )
             if task_id == SPHERE_TASK
             else V4Target.from_native(
-                args.native,
+                native,
                 optix_sdk=args.optix_sdk,
                 compute_capability=args.compute_capability,
             )

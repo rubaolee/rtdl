@@ -7,7 +7,7 @@ import os
 import subprocess
 import sys
 import time
-from collections.abc import Mapping
+from collections.abc import Mapping, MutableMapping
 from pathlib import Path
 from typing import Any
 
@@ -242,6 +242,21 @@ def require_bound_path(
             f"execution argument path differs from authority: {key}"
         )
     return actual
+
+
+def bind_authorized_native_library(
+    authority: Mapping[str, object],
+    supplied: Path,
+    *,
+    environment: MutableMapping[str, str] | None = None,
+) -> Path:
+    """Force legacy loaders to use the DSO already bound by the authority."""
+
+    native = require_bound_path(authority, "native_library", supplied)
+    target = os.environ if environment is None else environment
+    for name in ("RTDL_OPTIX_LIB", "RTDL_OPTIX_LIBRARY"):
+        target[name] = str(native)
+    return native
 
 
 def require_idle_bound_gpu(authority: Mapping[str, object]) -> None:

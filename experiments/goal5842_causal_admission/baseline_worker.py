@@ -24,7 +24,12 @@ from .contracts import (
     TRIANGLE_TASK,
     digest,
 )
-from .runtime import create_json, load_execution_authority, require_bound_path
+from .runtime import (
+    bind_authorized_native_library,
+    create_json,
+    load_execution_authority,
+    require_bound_path,
+)
 from .tasks import build_task, program_signature
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -305,6 +310,8 @@ def main() -> None:
         require_bound_path(authority, key, supplied)
     if args.optix_sdk != authority["toolchain"]["optix_sdk"]:
         raise RuntimeError("OptiX SDK argument differs from execution authority")
+    if args.arm == RTDL_ARM:
+        bind_authorized_native_library(authority, args.native)
     input_started = time.perf_counter_ns()
     task = build_task(row["task"])
     input_ns = time.perf_counter_ns() - input_started
