@@ -32,6 +32,22 @@ from rtdsl.v4_public_builtin_sphere import V4SphereTarget
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def report_progress(task_id: str, phase: str) -> None:
+    """Emit untimed progress without adding an observation clock."""
+
+    print(
+        json.dumps(
+            {
+                "schema": "rtdl.goal5842.gpu_identity_witness_progress.v1",
+                "task": task_id,
+                "phase": phase,
+            },
+            sort_keys=True,
+        ),
+        flush=True,
+    )
+
+
 def thaw(value: object) -> object:
     if isinstance(value, Mapping):
         return {str(key): thaw(item) for key, item in value.items()}
@@ -96,6 +112,7 @@ def main() -> None:
     )
     rows = []
     for task_id in ADMISSION_TASKS:
+        report_progress(task_id, "BUILD_TASK")
         task = build_task(task_id)
         route = task.route_factory()
         admitted = route.compile()
@@ -115,19 +132,25 @@ def main() -> None:
                 compute_capability=args.compute_capability,
             )
         )
+        report_progress(task_id, "MATERIALIZE_CHECK_ON")
         on_materialized = admitted.materialize(target=target, toolchain=toolchain)
+        report_progress(task_id, "MATERIALIZE_CHECK_OFF")
         off_materialized = bypass.materialize(target=target, toolchain=toolchain)
         on_identity = on_materialized.identity.to_dict()
         off_identity = off_materialized.identity.to_dict()
         if on_identity != off_identity:
             raise RuntimeError("generated/native on/off identity mismatch")
+        report_progress(task_id, "PREPARE_CHECK_ON")
         on_prepared = on_materialized.prepare(task.static_input)
         try:
+            report_progress(task_id, "EXECUTE_CHECK_ON")
             on_result = execute_and_check(on_prepared, task)
         finally:
             on_prepared.close()
+        report_progress(task_id, "PREPARE_CHECK_OFF")
         off_prepared = off_materialized.prepare(task.static_input)
         try:
+            report_progress(task_id, "EXECUTE_CHECK_OFF")
             off_result = execute_and_check(off_prepared, task)
         finally:
             off_prepared.close()
@@ -144,6 +167,7 @@ def main() -> None:
                 "exact_identity_equal": True,
             }
         )
+        report_progress(task_id, "TASK_COMPLETE")
     result: dict[str, object] = {
         "schema": GPU_IDENTITY_WITNESS_SCHEMA,
         "status": "PASS__NO_TIMING_OBSERVED",

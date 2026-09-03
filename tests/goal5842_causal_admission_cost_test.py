@@ -37,6 +37,10 @@ from experiments.goal5842_causal_admission.contracts import (
     V2_PREREGISTRATION_PATH,
     V2_PREREGISTRATION_SCHEMA,
     V2_PREREGISTRATION_SHA256,
+    V3_PREREGISTRATION_FILE_SHA256,
+    V3_PREREGISTRATION_PATH,
+    V3_PREREGISTRATION_SCHEMA,
+    V3_PREREGISTRATION_SHA256,
     Goal5842ContractError,
     build_baseline_schedule,
     build_causal_schedule,
@@ -44,6 +48,7 @@ from experiments.goal5842_causal_admission.contracts import (
     preregistration_supersession,
     sha256_file,
     v2_preregistration_supersession,
+    v3_preregistration_supersession,
     validate_preregistration,
 )
 from experiments.goal5842_causal_admission.controller import summarize
@@ -77,10 +82,11 @@ from scripts.goal5842_run_one_generation import validated_python_entrypoint
 ROOT = Path(__file__).resolve().parents[1]
 PREREGISTRATION = ROOT / (
     "history/internal_docs/goal5842_causal_admission_cost_20260903/"
-    "PREREGISTRATION_V3.json"
+    "PREREGISTRATION_V4.json"
 )
 V1_PREREGISTRATION = ROOT / V1_PREREGISTRATION_PATH
 V2_PREREGISTRATION = ROOT / V2_PREREGISTRATION_PATH
+V3_PREREGISTRATION = ROOT / V3_PREREGISTRATION_PATH
 FROZEN_CORE = (
     "src/rtdsl/v4_family_schema.py",
     "src/rtdsl/v4_generic_family_lifecycle.py",
@@ -104,9 +110,10 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
         self.assertEqual(self.prereg["registered_timing_observation_count"], 0)
         self.assertEqual(self.prereg["gpu_execution_count"], 0)
 
-    def test_v3_preregistration_preserves_append_only_repair_chain(self) -> None:
+    def test_v4_preregistration_preserves_append_only_repair_chain(self) -> None:
         v1 = json.loads(V1_PREREGISTRATION.read_text(encoding="utf-8"))
         v2 = json.loads(V2_PREREGISTRATION.read_text(encoding="utf-8"))
+        v3 = json.loads(V3_PREREGISTRATION.read_text(encoding="utf-8"))
         self.assertEqual(v1["schema"], V1_PREREGISTRATION_SCHEMA)
         self.assertEqual(
             v1["preregistration_sha256"],
@@ -122,16 +129,34 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
             sha256_file(V2_PREREGISTRATION), V2_PREREGISTRATION_FILE_SHA256
         )
         self.assertEqual(v2["supersession"], v2_preregistration_supersession())
+        self.assertEqual(v3["schema"], V3_PREREGISTRATION_SCHEMA)
+        self.assertEqual(v3["preregistration_sha256"], V3_PREREGISTRATION_SHA256)
+        self.assertEqual(
+            sha256_file(V3_PREREGISTRATION), V3_PREREGISTRATION_FILE_SHA256
+        )
+        self.assertEqual(v3["supersession"], v3_preregistration_supersession())
+        self.assertFalse(v3["supersession"]["scientific_design_changed"])
+        self.assertEqual(
+            v3["supersession"]["gpu_complete_execution_call_count"], 4
+        )
         self.assertEqual(self.prereg["supersession"], preregistration_supersession())
         self.assertFalse(self.prereg["supersession"]["worker_zero_reached"])
-        self.assertFalse(self.prereg["supersession"]["scientific_design_changed"])
+        self.assertTrue(self.prereg["supersession"]["scientific_design_changed"])
+        self.assertTrue(self.prereg["supersession"]["workload_changed"])
+        self.assertFalse(self.prereg["supersession"]["schedule_changed"])
+        self.assertFalse(self.prereg["supersession"]["statistics_changed"])
         self.assertEqual(
             self.prereg["supersession"]["gpu_complete_execution_call_count"], 4
         )
         self.assertEqual(
+            self.prereg["supersession"]
+            ["cumulative_prior_untimed_gpu_complete_execution_call_count"],
+            8,
+        )
+        self.assertEqual(
             self.prereg["preregistration_build_counter_scope"]
             ["prior_untimed_gpu_complete_execution_call_count"],
-            4,
+            8,
         )
         self.assertTrue(
             self.prereg["preregistration_build_counter_scope"]
@@ -267,6 +292,8 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
         first = sphere_workload()
         second = sphere_workload()
         self.assertEqual(first, second)
+        self.assertEqual(SPHERE_SIZE, 1_024)
+        self.assertEqual(SPHERE_SIZE * SPHERE_SIZE, 1_048_576)
         self.assertEqual(len(first["centers"]), SPHERE_SIZE)
         self.assertEqual(first["expected_counts"], (1,) * SPHERE_SIZE)
         for index in (0, 1, SPHERE_SIZE // 2, SPHERE_SIZE - 1):
@@ -532,6 +559,11 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
                 "scripts/goal5842_independent_recount.py",
                 "scripts/goal5842_run_one_generation.py",
                 "experiments/goal5796_matched/matched_device.cu",
+                V3_PREREGISTRATION_PATH,
+                (
+                    "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+                    "PRE_WORKER_ZERO_REPAIR_03.md"
+                ),
             }
             <= paths
         )

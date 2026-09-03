@@ -36,7 +36,18 @@ V2_PREREGISTRATION_SHA256 = (
 V2_PREREGISTRATION_FILE_SHA256 = (
     "12d2acc7f26632e72552e588254ce319669044571eb6b32866737a9a9c31df6c"
 )
-PREREGISTRATION_SCHEMA = "rtdl.goal5842.causal_admission_preregistration.v3"
+V3_PREREGISTRATION_SCHEMA = "rtdl.goal5842.causal_admission_preregistration.v3"
+V3_PREREGISTRATION_PATH = (
+    "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+    "PREREGISTRATION_V3.json"
+)
+V3_PREREGISTRATION_SHA256 = (
+    "aef2f97f917dfa8cd1d639c10bb76e41c1f31f0ba7035b83903a7040547f5b9f"
+)
+V3_PREREGISTRATION_FILE_SHA256 = (
+    "73a9b6c86f4017f4ea9f0ab59eb23923b92d981182295cc81fc1ef1b6533dda0"
+)
+PREREGISTRATION_SCHEMA = "rtdl.goal5842.causal_admission_preregistration.v4"
 EXECUTION_AUTHORITY_SCHEMA = "rtdl.goal5842.execution_authority.v1"
 WORKER_RECEIPT_SCHEMA = "rtdl.goal5842.causal_admission_worker.v1"
 CONTROLLER_RESULT_SCHEMA = "rtdl.goal5842.causal_admission_controller.v1"
@@ -120,11 +131,11 @@ TASK_CONTRACTS = (
     },
     {
         "task": SPHERE_TASK,
-        "input_sha256": "66f66867b86440659a769580018b59078af71435444c9539c38986ecd74492cb",
-        "full_oracle_sha256": "10f12038f6836614e72c78a707cfc4202f2566cd3aae7390a854c7fcc86e3329",
-        "public_output_sha256": "10f12038f6836614e72c78a707cfc4202f2566cd3aae7390a854c7fcc86e3329",
-        "primitive_count": 16_384,
-        "query_count": 16_384,
+        "input_sha256": "7144bd41ce7167b82e5fc5f33b9d12738a6e7d163cd64c615c5d6ef275231053",
+        "full_oracle_sha256": "4aa93e65f6282776efbd54f4c9ea892d5b537277db851447f97f59a9d4e55789",
+        "public_output_sha256": "4aa93e65f6282776efbd54f4c9ea892d5b537277db851447f97f59a9d4e55789",
+        "primitive_count": 1_024,
+        "query_count": 1_024,
         "three_arm_baseline_included": False,
     },
 )
@@ -167,6 +178,11 @@ REQUIRED_SOURCE_PATHS = (
         "history/internal_docs/goal5842_causal_admission_cost_20260903/"
         "PRE_WORKER_ZERO_REPAIR_02.md"
     ),
+    V3_PREREGISTRATION_PATH,
+    (
+        "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+        "PRE_WORKER_ZERO_REPAIR_03.md"
+    ),
 )
 
 
@@ -195,7 +211,7 @@ def v2_preregistration_supersession() -> dict[str, object]:
     }
 
 
-def preregistration_supersession() -> dict[str, object]:
+def v3_preregistration_supersession() -> dict[str, object]:
     """Return the append-only pre-worker-zero repair chain for v3."""
 
     return {
@@ -216,6 +232,39 @@ def preregistration_supersession() -> dict[str, object]:
         "schedule_workload_statistics_changed": False,
         "successful_transaction_repeats_full_witness_before_timing": True,
         "repair_scope": "bind_legacy_native_loader_to_authorized_dso",
+    }
+
+
+def preregistration_supersession() -> dict[str, object]:
+    """Return the append-only pre-worker-zero repair chain for v4."""
+
+    return {
+        "predecessor_path": V3_PREREGISTRATION_PATH,
+        "predecessor_schema": V3_PREREGISTRATION_SCHEMA,
+        "predecessor_preregistration_sha256": V3_PREREGISTRATION_SHA256,
+        "predecessor_file_sha256": V3_PREREGISTRATION_FILE_SHA256,
+        "reason_code": (
+            "PRE_WORKER_ZERO_QUADRATIC_SPHERE_WITNESS_FIXTURE_DEFECT"
+        ),
+        "failed_stage": "01_gpu_identity_witness_no_timing",
+        "worker_zero_reached": False,
+        "registered_timing_observation_count": 0,
+        "gpu_complete_execution_call_count": 4,
+        "cumulative_prior_untimed_gpu_complete_execution_call_count": 8,
+        "gpu_call_count_basis": (
+            "transaction03 completed relation and triangle CHECK_ON/CHECK_OFF; "
+            "sphere CHECK_ON was interrupted in host exact-pair validation "
+            "before its native GPU call"
+        ),
+        "scientific_design_changed": True,
+        "schedule_changed": False,
+        "workload_changed": True,
+        "statistics_changed": False,
+        "successful_transaction_repeats_full_witness_before_timing": True,
+        "repair_scope": (
+            "reduce the witness-only sphere fixture from 16384-square to "
+            "1024-square while preserving its route and exact checks"
+        ),
     }
 
 
@@ -401,9 +450,9 @@ def validate_preregistration(value: object, root: Path, *, verify_files: bool) -
     _require(
         prereg.get("preregistration_build_counter_scope")
         == {
-            "top_level_counters_cover_this_v3_build_only": True,
+            "top_level_counters_cover_this_v4_build_only": True,
             "prior_untimed_gpu_calls_are_in_supersession": True,
-            "prior_untimed_gpu_complete_execution_call_count": 4,
+            "prior_untimed_gpu_complete_execution_call_count": 8,
             "prior_registered_timing_observation_count": 0,
         },
         "preregistration counter scope or prior untimed GPU disclosure differs",
@@ -615,6 +664,10 @@ __all__ = [
     "V2_PREREGISTRATION_PATH",
     "V2_PREREGISTRATION_SCHEMA",
     "V2_PREREGISTRATION_SHA256",
+    "V3_PREREGISTRATION_FILE_SHA256",
+    "V3_PREREGISTRATION_PATH",
+    "V3_PREREGISTRATION_SCHEMA",
+    "V3_PREREGISTRATION_SHA256",
     "WORKER_RECEIPT_SCHEMA",
     "Goal5842ContractError",
     "build_baseline_schedule",
@@ -626,6 +679,7 @@ __all__ = [
     "preregistration_supersession",
     "sha256_file",
     "v2_preregistration_supersession",
+    "v3_preregistration_supersession",
     "validate_baseline_schedule",
     "validate_causal_schedule",
     "validate_preregistration",

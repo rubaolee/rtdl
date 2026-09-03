@@ -43,7 +43,12 @@ from rtdsl.v4_sphere_any_hit_count_prepared_runtime import (
 
 from .contracts import RELATION_TASK, SPHERE_TASK, TRIANGLE_TASK
 
-SPHERE_SIZE = 16_384
+# Sphere has no provider-performance row in Goal5842.  This fixture exists to
+# witness a third admitted topology and its exact CHECK_ON/CHECK_OFF identity.
+# The public runtime deliberately checks every query/sphere numeric pair, so a
+# 16K-square fixture would spend hours in untimed exact-rational validation
+# without strengthening the causal admission estimand.
+SPHERE_SIZE = 1_024
 PROOF_KIND = "external_machine_checked_order_independence_v1"
 
 
@@ -160,7 +165,7 @@ def sphere_workload() -> dict[str, object]:
     )
     expected_counts = (1,) * SPHERE_SIZE
     return {
-        "id": "GOAL5842_SPHERE_16384_ONE_TO_ONE",
+        "id": "GOAL5842_SPHERE_1024_ONE_TO_ONE",
         "centers": centers,
         "radii": radii,
         "queries": queries,

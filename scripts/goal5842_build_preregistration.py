@@ -35,7 +35,7 @@ from experiments.goal5842_causal_admission.contracts import (
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / (
     "history/internal_docs/goal5842_causal_admission_cost_20260903/"
-    "PREREGISTRATION_V3.json"
+    "PREREGISTRATION_V4.json"
 )
 
 
@@ -188,9 +188,9 @@ def build() -> dict[str, object]:
         "source_manifest": manifest,
         "source_manifest_sha256": digest(manifest),
         "preregistration_build_counter_scope": {
-            "top_level_counters_cover_this_v3_build_only": True,
+            "top_level_counters_cover_this_v4_build_only": True,
             "prior_untimed_gpu_calls_are_in_supersession": True,
-            "prior_untimed_gpu_complete_execution_call_count": 4,
+            "prior_untimed_gpu_complete_execution_call_count": 8,
             "prior_registered_timing_observation_count": 0,
         },
         "registered_timing_observation_count": 0,
