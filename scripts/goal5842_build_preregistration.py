@@ -28,12 +28,14 @@ from experiments.goal5842_causal_admission.contracts import (
     build_causal_schedule,
     digest,
     pin_file,
+    preregistration_supersession,
     validate_preregistration,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / (
-    "history/internal_docs/goal5842_causal_admission_cost_20260903/PREREGISTRATION.json"
+    "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+    "PREREGISTRATION_V2.json"
 )
 
 
@@ -49,6 +51,7 @@ def build() -> dict[str, object]:
         "schema": PREREGISTRATION_SCHEMA,
         "date": "2026-09-03",
         "status": "FROZEN_BEFORE_TIMING",
+        "supersession": preregistration_supersession(),
         "scientific_question": (
             "How much cold post-import generic-family latency is attributable "
             "to RTDL's admission integrity checks when both arms perform the "

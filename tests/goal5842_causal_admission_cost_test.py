@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import ast
 import json
+import os
 import tempfile
 import unittest
 from collections import Counter
@@ -26,12 +27,18 @@ from experiments.goal5842_causal_admission.contracts import (
     CHECK_ON,
     CROSS_GENERATION_AUTHORITY_SCHEMA,
     INDEPENDENT_RECOUNT_SCHEMA,
+    PREDECESSOR_PREREGISTRATION_FILE_SHA256,
+    PREDECESSOR_PREREGISTRATION_PATH,
+    PREDECESSOR_PREREGISTRATION_SCHEMA,
+    PREDECESSOR_PREREGISTRATION_SHA256,
     TASK_CONTRACTS,
     TRIANGLE_TASK,
     Goal5842ContractError,
     build_baseline_schedule,
     build_causal_schedule,
     digest,
+    preregistration_supersession,
+    sha256_file,
     validate_preregistration,
 )
 from experiments.goal5842_causal_admission.controller import summarize
@@ -57,11 +64,14 @@ from scripts.goal5842_independent_recount import (
     recount_baseline,
     recount_causal,
 )
+from scripts.goal5842_run_one_generation import validated_python_entrypoint
 
 ROOT = Path(__file__).resolve().parents[1]
 PREREGISTRATION = ROOT / (
-    "history/internal_docs/goal5842_causal_admission_cost_20260903/PREREGISTRATION.json"
+    "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+    "PREREGISTRATION_V2.json"
 )
+PREDECESSOR_PREREGISTRATION = ROOT / PREDECESSOR_PREREGISTRATION_PATH
 FROZEN_CORE = (
     "src/rtdsl/v4_family_schema.py",
     "src/rtdsl/v4_generic_family_lifecycle.py",
@@ -84,6 +94,41 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
         validate_preregistration(self.prereg, ROOT, verify_files=True)
         self.assertEqual(self.prereg["registered_timing_observation_count"], 0)
         self.assertEqual(self.prereg["gpu_execution_count"], 0)
+
+    def test_v2_preregistration_append_only_supersedes_failed_v1(self) -> None:
+        predecessor = json.loads(
+            PREDECESSOR_PREREGISTRATION.read_text(encoding="utf-8")
+        )
+        self.assertEqual(predecessor["schema"], PREDECESSOR_PREREGISTRATION_SCHEMA)
+        self.assertEqual(
+            predecessor["preregistration_sha256"],
+            PREDECESSOR_PREREGISTRATION_SHA256,
+        )
+        self.assertEqual(
+            sha256_file(PREDECESSOR_PREREGISTRATION),
+            PREDECESSOR_PREREGISTRATION_FILE_SHA256,
+        )
+        self.assertEqual(self.prereg["supersession"], preregistration_supersession())
+        self.assertFalse(self.prereg["supersession"]["worker_zero_reached"])
+        self.assertFalse(self.prereg["supersession"]["scientific_design_changed"])
+
+    def test_one_generation_runner_preserves_virtualenv_entrypoint(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            base = root / "base-python"
+            base.write_text("#!/bin/sh\nexit 0\n", encoding="ascii")
+            base.chmod(0o755)
+            launcher = root / "venv" / "bin" / "python"
+            launcher.parent.mkdir(parents=True)
+            launcher.symlink_to(base)
+            self.assertEqual(
+                validated_python_entrypoint(str(launcher)),
+                os.path.abspath(launcher),
+            )
+            self.assertNotEqual(
+                validated_python_entrypoint(str(launcher)),
+                str(base.resolve()),
+            )
 
     def test_causal_schedule_is_balanced_abba_baab(self) -> None:
         schedule = build_causal_schedule()

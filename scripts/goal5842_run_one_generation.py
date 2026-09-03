@@ -13,6 +13,15 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def validated_python_entrypoint(value: str) -> str:
+    """Keep the selected venv launcher instead of resolving its base-Python link."""
+
+    entrypoint = Path(os.path.abspath(value))
+    if not entrypoint.is_file() or not os.access(entrypoint, os.X_OK):
+        raise RuntimeError(f"Python entrypoint is not executable: {entrypoint}")
+    return str(entrypoint)
+
+
 def create_text(path: Path, value: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("x", encoding="utf-8") as stream:
@@ -88,7 +97,7 @@ def main() -> None:
         raise RuntimeError("explicit --owner-authorized is required")
     output_root = args.output_root.resolve()
     output_root.mkdir(parents=True, exist_ok=False)
-    python = str(Path(sys.executable).resolve(strict=True))
+    python = validated_python_entrypoint(sys.executable)
     prereg = str(args.preregistration.resolve(strict=True))
     native = str(args.native.resolve(strict=True))
     build_manifest = str(args.native_build_manifest.resolve(strict=True))

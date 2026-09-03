@@ -14,7 +14,20 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
-PREREGISTRATION_SCHEMA = "rtdl.goal5842.causal_admission_preregistration.v1"
+PREDECESSOR_PREREGISTRATION_SCHEMA = (
+    "rtdl.goal5842.causal_admission_preregistration.v1"
+)
+PREREGISTRATION_SCHEMA = "rtdl.goal5842.causal_admission_preregistration.v2"
+PREDECESSOR_PREREGISTRATION_PATH = (
+    "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+    "PREREGISTRATION.json"
+)
+PREDECESSOR_PREREGISTRATION_SHA256 = (
+    "6f4cc3123e51d3a1d37193673fb943fca1610ab6536043c3cff774ed4d7f2536"
+)
+PREDECESSOR_PREREGISTRATION_FILE_SHA256 = (
+    "1546e6977e3e7a6bfb43206973e98774af8fa666343c4d5b9f2bf5aa369a397b"
+)
 EXECUTION_AUTHORITY_SCHEMA = "rtdl.goal5842.execution_authority.v1"
 WORKER_RECEIPT_SCHEMA = "rtdl.goal5842.causal_admission_worker.v1"
 CONTROLLER_RESULT_SCHEMA = "rtdl.goal5842.causal_admission_controller.v1"
@@ -135,11 +148,39 @@ REQUIRED_SOURCE_PATHS = (
     "src/rtdsl/v4_sphere_any_hit_count_family_route.py",
     "tests/goal5842_causal_admission_cost_test.py",
     "history/internal_docs/goal5842_causal_admission_cost_20260903/DESIGN.md",
+    PREDECESSOR_PREREGISTRATION_PATH,
+    (
+        "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+        "PRE_WORKER_ZERO_REPAIR_01.md"
+    ),
 )
 
 
 class Goal5842ContractError(ValueError):
     """Raised when preregistered Goal5842 evidence is structurally invalid."""
+
+
+def preregistration_supersession() -> dict[str, object]:
+    """Return the append-only pre-worker-zero repair chain for v2."""
+
+    return {
+        "predecessor_path": PREDECESSOR_PREREGISTRATION_PATH,
+        "predecessor_schema": PREDECESSOR_PREREGISTRATION_SCHEMA,
+        "predecessor_preregistration_sha256": (
+            PREDECESSOR_PREREGISTRATION_SHA256
+        ),
+        "predecessor_file_sha256": PREDECESSOR_PREREGISTRATION_FILE_SHA256,
+        "reason_code": (
+            "PRE_WORKER_ZERO_VENV_LAUNCHER_SYMLINK_RESOLUTION_DEFECT"
+        ),
+        "failed_stage": "00_bind_execution_authority",
+        "worker_zero_reached": False,
+        "registered_timing_observation_count": 0,
+        "gpu_execution_count": 0,
+        "scientific_design_changed": False,
+        "schedule_workload_statistics_changed": False,
+        "repair_scope": "preserve_validated_virtualenv_python_entrypoint",
+    }
 
 
 def canonical_bytes(value: object) -> bytes:
@@ -308,6 +349,10 @@ def validate_preregistration(value: object, root: Path, *, verify_files: bool) -
     _require(
         prereg.get("schema") == PREREGISTRATION_SCHEMA,
         "preregistration schema mismatch",
+    )
+    _require(
+        prereg.get("supersession") == preregistration_supersession(),
+        "preregistration supersession chain mismatch",
     )
     _require(
         prereg.get("status") == "FROZEN_BEFORE_TIMING", "preregistration is not frozen"
@@ -505,6 +550,10 @@ __all__ = [
     "FIRST_MODE",
     "GPU_IDENTITY_WITNESS_SCHEMA",
     "INDEPENDENT_RECOUNT_SCHEMA",
+    "PREDECESSOR_PREREGISTRATION_FILE_SHA256",
+    "PREDECESSOR_PREREGISTRATION_PATH",
+    "PREDECESSOR_PREREGISTRATION_SCHEMA",
+    "PREDECESSOR_PREREGISTRATION_SHA256",
     "PREREGISTRATION_SCHEMA",
     "PYOPTIX_ARM",
     "RELATION_TASK",
@@ -524,6 +573,7 @@ __all__ = [
     "digest",
     "load_preregistration",
     "pin_file",
+    "preregistration_supersession",
     "sha256_file",
     "validate_baseline_schedule",
     "validate_causal_schedule",
