@@ -521,6 +521,82 @@ class Goal5838SelectedSphereAnyHitCountTest(unittest.TestCase):
                     tampered, build_input=build_input
                 )
 
+    def test_independent_verifier_accepts_git_oid_and_nested_lifecycle(self):
+        verifier = _load_script_module(
+            "goal5838_verify_selected_sphere_gpu_exam"
+        )
+        self.assertEqual(verifier._git_oid("a" * 40, "commit"), "a" * 40)
+        for invalid in ("a" * 64, "A" * 40, "g" * 40, None):
+            with self.assertRaisesRegex(
+                verifier.Goal5838ExamVerificationError,
+                "Git object id",
+            ):
+                verifier._git_oid(invalid, "commit")
+
+        generic = {
+            "plan_sha256": "1" * 64,
+            "provider_projection_sha256": "2" * 64,
+        }
+        identity = {
+            "identity_sha256": "3" * 64,
+            "generated_artifact_sha256": "4" * 64,
+        }
+        native_sha256 = "5" * 64
+
+        def row(execution_count):
+            return {
+                "schema": "rtdl.generic_family_lifecycle.v1",
+                "process_bound": True,
+                "thread_bound": True,
+                "nonserializable": True,
+                "nonreentrant": True,
+                "idempotent_close": True,
+                "plan_sha256": generic["plan_sha256"],
+                "provider_projection_sha256": generic[
+                    "provider_projection_sha256"
+                ],
+                "executable_identity_sha256": identity["identity_sha256"],
+                "provider_receipt": {
+                    "schema": "rtdl.v4.prepared_sphere_any_hit_count_owner.v1",
+                    "process_bound": True,
+                    "thread_bound": True,
+                    "nonserializable": True,
+                    "nonreentrant": True,
+                    "execution_count": execution_count,
+                    "native_library_sha256": native_sha256,
+                    "composed_ptx_sha256": identity[
+                        "generated_artifact_sha256"
+                    ],
+                    "physical_receipt_sha256": "6" * 64,
+                },
+            }
+
+        lifecycle = {
+            "before": row(0),
+            "after_primary": row(1),
+            "after_reverse": row(2),
+            "execution_count": 2,
+            "closed_idempotently": True,
+        }
+        verifier._verify_lifecycle(
+            lifecycle,
+            generic=generic,
+            identity=identity,
+            native_sha256=native_sha256,
+        )
+        tampered = copy.deepcopy(lifecycle)
+        tampered["after_reverse"]["provider_receipt"]["execution_count"] = 1
+        with self.assertRaisesRegex(
+            verifier.Goal5838ExamVerificationError,
+            "provider receipt differs",
+        ):
+            verifier._verify_lifecycle(
+                tampered,
+                generic=generic,
+                identity=identity,
+                native_sha256=native_sha256,
+            )
+
     def test_independent_verifier_rejects_resealed_native_build_tampering(self):
         builder = _load_script_module(
             "goal5838_build_selected_sphere_optix_provider"
@@ -650,7 +726,7 @@ class Goal5838SelectedSphereAnyHitCountTest(unittest.TestCase):
             "repository": {
                 "expected_commit": "f" * 40,
                 "head_before": "f" * 40,
-                "branch": "synthetic",
+                "branch": "",
                 "origin_url": "https://example.invalid/rtdl",
                 "clean_before": True,
                 "source_files": source_rows,

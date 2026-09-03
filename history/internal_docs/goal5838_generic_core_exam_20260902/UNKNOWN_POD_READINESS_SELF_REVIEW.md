@@ -125,8 +125,8 @@ zero. A dedicated regression test covers 9.0 and rejects a zero major.
 
 ## Local evidence
 
-- Goal5838 focused tests pass `87/87`.
-- Goal5838 plus inherited Goal5833 built-in-sphere tests pass `157/157`.
+- Goal5838 focused tests pass `88/88`.
+- Goal5838 plus inherited Goal5833 built-in-sphere tests pass `158/158`.
 - Stored generic-core seal verification passes with zero frozen-file changes.
 - Stored independent challenge selection verification passes.
 - Python byte compilation passes for all changed Python files.

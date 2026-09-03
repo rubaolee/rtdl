@@ -129,6 +129,10 @@ EXAM_SOURCE_PATHS = (
         "history/internal_docs/goal5838_generic_core_exam_20260902/"
         "UNKNOWN_POD_COMPLETION_PLAN.md"
     ),
+    (
+        "history/internal_docs/goal5838_generic_core_exam_20260902/"
+        "FIRST_POD_EXECUTION_REPAIR_LOG.md"
+    ),
     "case_studies/goal5838_selected_sphere_any_hit_count/fixture.py",
     (
         "case_studies/goal5838_selected_sphere_any_hit_count/"
@@ -628,6 +632,16 @@ def _sha(value: object, label: str) -> str:
     return value
 
 
+def _git_oid(value: object, label: str) -> str:
+    if (
+        type(value) is not str
+        or len(value) != 40
+        or any(char not in "0123456789abcdef" for char in value)
+    ):
+        _fail(f"{label} is not a full lowercase Git object id")
+    return value
+
+
 def _mapping(value: object, label: str) -> Mapping[str, object]:
     if not isinstance(value, Mapping):
         _fail(f"{label} is not a mapping")
@@ -806,15 +820,13 @@ def _verify_repository(artifact: Mapping[str, object], *, root: Path) -> str:
     }
     if set(repository) != expected_keys:
         _fail("repository custody field set differs")
-    commit = repository.get("head_commit")
-    _sha(commit, "repository commit")
+    commit = _git_oid(repository.get("head_commit"), "repository commit")
     if (
         repository.get("expected_commit") != commit
         or repository.get("clean_before_execution") is not True
         or repository.get("head_after_execution") != commit
         or repository.get("clean_after_execution") is not True
         or not isinstance(repository.get("branch"), str)
-        or not repository.get("branch")
         or not isinstance(repository.get("origin_url"), str)
         or not repository.get("origin_url")
     ):
@@ -1243,7 +1255,6 @@ def _verify_native_build(
         or repository.get("clean_before") is not True
         or repository.get("clean_after") is not True
         or not isinstance(repository.get("branch"), str)
-        or not repository.get("branch")
         or not isinstance(repository.get("origin_url"), str)
         or not repository.get("origin_url")
     ):
@@ -1557,6 +1568,103 @@ def _verify_compiler_environment(
             _fail("compiler NVRTC differs from native build input")
 
 
+def _verify_lifecycle(
+    value: object,
+    *,
+    generic: Mapping[str, object],
+    identity: Mapping[str, object],
+    native_sha256: str,
+) -> None:
+    lifecycle = _mapping(value, "lifecycle")
+    if set(lifecycle) != {
+        "before",
+        "after_primary",
+        "after_reverse",
+        "execution_count",
+        "closed_idempotently",
+    }:
+        _fail("lifecycle field set differs")
+    lifecycle_rows = (
+        ("before", 0),
+        ("after_primary", 1),
+        ("after_reverse", 2),
+    )
+    physical_receipt_sha256 = None
+    for label, execution_count in lifecycle_rows:
+        row = _mapping(lifecycle.get(label), f"lifecycle.{label}")
+        if (
+            set(row)
+            != {
+                "schema",
+                "process_bound",
+                "thread_bound",
+                "nonserializable",
+                "nonreentrant",
+                "idempotent_close",
+                "plan_sha256",
+                "provider_projection_sha256",
+                "executable_identity_sha256",
+                "provider_receipt",
+            }
+            or row.get("schema") != "rtdl.generic_family_lifecycle.v1"
+            or row.get("process_bound") is not True
+            or row.get("thread_bound") is not True
+            or row.get("nonserializable") is not True
+            or row.get("nonreentrant") is not True
+            or row.get("idempotent_close") is not True
+            or row.get("plan_sha256") != generic.get("plan_sha256")
+            or row.get("provider_projection_sha256")
+            != generic.get("provider_projection_sha256")
+            or row.get("executable_identity_sha256")
+            != identity.get("identity_sha256")
+        ):
+            _fail(f"prepared lifecycle receipt differs: {label}")
+        provider = _mapping(
+            row.get("provider_receipt"), f"lifecycle.{label}.provider_receipt"
+        )
+        if (
+            set(provider)
+            != {
+                "schema",
+                "process_bound",
+                "thread_bound",
+                "nonserializable",
+                "nonreentrant",
+                "execution_count",
+                "native_library_sha256",
+                "composed_ptx_sha256",
+                "physical_receipt_sha256",
+            }
+            or provider.get("schema")
+            != "rtdl.v4.prepared_sphere_any_hit_count_owner.v1"
+            or provider.get("process_bound") is not True
+            or provider.get("thread_bound") is not True
+            or provider.get("nonserializable") is not True
+            or provider.get("nonreentrant") is not True
+            or provider.get("execution_count") != execution_count
+            or provider.get("native_library_sha256") != native_sha256
+            or provider.get("composed_ptx_sha256")
+            != identity.get("generated_artifact_sha256")
+        ):
+            _fail(f"prepared provider receipt differs: {label}")
+        _sha(
+            provider.get("physical_receipt_sha256"),
+            "physical receipt identity",
+        )
+        if physical_receipt_sha256 is None:
+            physical_receipt_sha256 = provider["physical_receipt_sha256"]
+        elif (
+            provider.get("physical_receipt_sha256")
+            != physical_receipt_sha256
+        ):
+            _fail("prepared physical identity changed across executions")
+    if (
+        lifecycle.get("execution_count") != 2
+        or lifecycle.get("closed_idempotently") is not True
+    ):
+        _fail("prepared lifecycle progression differs")
+
+
 def verify_artifact(
     artifact: Mapping[str, object],
     *,
@@ -1797,58 +1905,12 @@ def verify_artifact(
             target=target,
             identity=identity,
         )
-    lifecycle = _mapping(artifact.get("lifecycle"), "lifecycle")
-    if set(lifecycle) != {
-        "before",
-        "after_primary",
-        "after_reverse",
-        "execution_count",
-        "closed_idempotently",
-    }:
-        _fail("lifecycle field set differs")
-    lifecycle_rows = (
-        ("before", 0),
-        ("after_primary", 1),
-        ("after_reverse", 2),
+    _verify_lifecycle(
+        artifact.get("lifecycle"),
+        generic=generic,
+        identity=identity,
+        native_sha256=native_sha256,
     )
-    physical_receipt_sha256 = None
-    for label, execution_count in lifecycle_rows:
-        row = _mapping(lifecycle.get(label), f"lifecycle.{label}")
-        if (
-            set(row)
-            != {
-                "schema",
-                "process_bound",
-                "thread_bound",
-                "nonserializable",
-                "nonreentrant",
-                "execution_count",
-                "native_library_sha256",
-                "composed_ptx_sha256",
-                "physical_receipt_sha256",
-            }
-            or row.get("schema")
-            != "rtdl.v4.prepared_sphere_any_hit_count_owner.v1"
-            or row.get("process_bound") is not True
-            or row.get("thread_bound") is not True
-            or row.get("nonserializable") is not True
-            or row.get("nonreentrant") is not True
-            or row.get("execution_count") != execution_count
-            or row.get("native_library_sha256") != native_sha256
-            or row.get("composed_ptx_sha256")
-            != identity.get("generated_artifact_sha256")
-        ):
-            _fail(f"prepared lifecycle receipt differs: {label}")
-        _sha(row.get("physical_receipt_sha256"), "physical receipt identity")
-        if physical_receipt_sha256 is None:
-            physical_receipt_sha256 = row["physical_receipt_sha256"]
-        elif row.get("physical_receipt_sha256") != physical_receipt_sha256:
-            _fail("prepared physical identity changed across executions")
-    if (
-        lifecycle.get("execution_count") != 2
-        or lifecycle.get("closed_idempotently") is not True
-    ):
-        _fail("prepared lifecycle progression differs")
     if artifact.get("summary") != {
         "true_optix_launch_count": 2,
         "oracle_case_count": 12,
