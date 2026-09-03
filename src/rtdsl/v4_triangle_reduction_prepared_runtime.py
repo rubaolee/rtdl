@@ -6,10 +6,9 @@ import ctypes
 import hashlib
 import math
 import os
-from pathlib import Path
 import threading
 import time
-from typing import Iterator, Mapping, Sequence
+from collections.abc import Iterator, Mapping, Sequence
 
 import numpy as np
 
@@ -28,64 +27,130 @@ from .v4_triangle_reduction_optix_compiler import (
 )
 from .v4_triangle_reduction_optix_runtime import (
     V4TriangleReductionResult,
-    _Status,
     _digest,
     _native_path,
+    _Status,
     _typed_metadata,
 )
 
 
 def _configure(library):
     prepare = getattr(
-        library, "rtdl_optix_v4_prepare_triangle_reduction_callback_v1", None)
+        library, "rtdl_optix_v4_prepare_triangle_reduction_callback_v1", None
+    )
     execute = getattr(
-        library, "rtdl_optix_v4_execute_prepared_triangle_reduction_callback_v2",
-        None)
+        library, "rtdl_optix_v4_execute_prepared_triangle_reduction_callback_v2", None
+    )
+    commit = getattr(
+        library, "rtdl_optix_v4_commit_prepared_triangle_reduction_cache_v1", None
+    )
+    cache_digest = getattr(
+        library, "rtdl_optix_v4_prepared_triangle_reduction_cache_digest_v1", None
+    )
     destroy = getattr(
-        library, "rtdl_optix_v4_destroy_prepared_triangle_reduction_callback_v1",
-        None)
-    reduce_u64 = getattr(
-        library, "rtdl_optix_v4_checked_u64_product_sum_host_v1", None)
-    if prepare is None or execute is None or destroy is None or reduce_u64 is None:
-        raise RuntimeError("native library lacks Goal5773 prepared triangle ABI")
+        library, "rtdl_optix_v4_destroy_prepared_triangle_reduction_callback_v1", None
+    )
+    reduce_u64 = getattr(library, "rtdl_optix_v4_checked_u64_product_sum_host_v1", None)
+    if any(
+        symbol is None
+        for symbol in (prepare, execute, commit, cache_digest, destroy, reduce_u64)
+    ):
+        raise RuntimeError("native library lacks two-phase prepared triangle cache ABI")
     prepare.argtypes = [
         ctypes.c_char_p,
-        ctypes.POINTER(ctypes.c_float), ctypes.c_size_t,
-        ctypes.POINTER(ctypes.c_uint32), ctypes.c_size_t,
-        ctypes.POINTER(ctypes.c_uint64), ctypes.POINTER(ctypes.c_int64),
-        ctypes.POINTER(ctypes.c_uint32), ctypes.c_uint64,
-        ctypes.POINTER(ctypes.c_uint64), ctypes.POINTER(ctypes.c_char),
+        ctypes.POINTER(ctypes.c_float),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_uint64),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.c_uint64,
+        ctypes.POINTER(ctypes.c_uint64),
+        ctypes.POINTER(ctypes.c_char),
         ctypes.c_size_t,
     ]
     execute.argtypes = [
         ctypes.c_uint64,
-        ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-        ctypes.POINTER(ctypes.c_float), ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_float),
+        ctypes.POINTER(ctypes.c_float),
+        ctypes.POINTER(ctypes.c_float),
+        ctypes.c_size_t,
         ctypes.c_uint32,
-        ctypes.POINTER(ctypes.c_uint64), ctypes.POINTER(ctypes.c_uint64),
-        ctypes.POINTER(ctypes.c_uint32), ctypes.POINTER(ctypes.c_uint32),
-        ctypes.POINTER(ctypes.c_uint64), ctypes.POINTER(ctypes.c_int64),
-        ctypes.POINTER(ctypes.c_uint32), ctypes.POINTER(_Status),
-        ctypes.POINTER(ctypes.c_uint64), ctypes.POINTER(ctypes.c_char),
+        ctypes.POINTER(ctypes.c_uint64),
+        ctypes.POINTER(ctypes.c_uint64),
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.POINTER(ctypes.c_uint64),
+        ctypes.POINTER(ctypes.c_int64),
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.POINTER(_Status),
+        ctypes.POINTER(ctypes.c_uint64),
+        ctypes.POINTER(ctypes.c_char),
         ctypes.c_size_t,
     ]
-    destroy.argtypes = [
-        ctypes.c_uint64, ctypes.POINTER(ctypes.c_char), ctypes.c_size_t]
-    reduce_u64.argtypes = [
-        ctypes.POINTER(ctypes.c_uint64), ctypes.POINTER(ctypes.c_uint64),
-        ctypes.c_size_t, ctypes.POINTER(ctypes.c_uint64),
-        ctypes.POINTER(ctypes.c_char), ctypes.c_size_t,
+    commit.argtypes = [
+        ctypes.c_uint64,
+        ctypes.POINTER(ctypes.c_uint8),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_char),
+        ctypes.c_size_t,
     ]
-    for symbol in (prepare, execute, destroy, reduce_u64):
+    cache_digest.argtypes = [
+        ctypes.c_uint64,
+        ctypes.POINTER(ctypes.c_uint8),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.POINTER(ctypes.c_char),
+        ctypes.c_size_t,
+    ]
+    destroy.argtypes = [ctypes.c_uint64, ctypes.POINTER(ctypes.c_char), ctypes.c_size_t]
+    reduce_u64.argtypes = [
+        ctypes.POINTER(ctypes.c_uint64),
+        ctypes.POINTER(ctypes.c_uint64),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_uint64),
+        ctypes.POINTER(ctypes.c_char),
+        ctypes.c_size_t,
+    ]
+    for symbol in (prepare, execute, commit, cache_digest, destroy, reduce_u64):
         symbol.restype = ctypes.c_int
-    return prepare, execute, destroy, reduce_u64
+    return prepare, execute, commit, cache_digest, destroy, reduce_u64
 
 
 def _raise(status, error, label):
     if status:
         raise RuntimeError(
-            error.value.decode("utf-8", errors="replace") or
-            f"{label} failed with status {status}")
+            error.value.decode("utf-8", errors="replace")
+            or f"{label} failed with status {status}"
+        )
+
+
+def _packed_query_digest(origins_f32, directions_f32, tmax_f32) -> str:
+    digest = hashlib.sha256(b"RTDL-V4-TRIANGLE-QUERY-CACHE-V1\x00")
+    for values in (origins_f32, directions_f32, tmax_f32):
+        payload = values.tobytes(order="C")
+        digest.update(len(payload).to_bytes(8, "little"))
+        digest.update(payload)
+    return digest.hexdigest()
+
+
+def _query_rows_are_immutable(queries, query_metadata) -> bool:
+    return (
+        isinstance(queries, tuple)
+        and all(
+            isinstance(row, tuple)
+            and len(row) == 3
+            and isinstance(row[0], tuple)
+            and isinstance(row[1], tuple)
+            and all(type(value) in (int, float) for value in (*row[0], *row[1], row[2]))
+            for row in queries
+        )
+        and all(
+            isinstance(values, tuple) and all(type(value) is int for value in values)
+            for values in query_metadata.values()
+        )
+    )
 
 
 class _ValidatedStatusRows(Sequence[Mapping[str, int]]):
@@ -183,68 +248,116 @@ class _PerRayReducerRows(Sequence[Mapping[str, int]]):
 
 class PreparedTriangleReductionOwner:
     def __init__(
-        self, *, authority, contract, abi, any_hit_proof_authority,
-        executable, vertices, triangles, metadata, event_capacity,
-        library=None, native_library_path=None,
+        self,
+        *,
+        authority,
+        contract,
+        abi,
+        any_hit_proof_authority,
+        executable,
+        vertices,
+        triangles,
+        metadata,
+        event_capacity,
+        library=None,
+        native_library_path=None,
     ):
         started = time.perf_counter()
         fresh = verify_triangle_reduction_schema(
-            authority.callback, authority.schema, target=authority.target)
+            authority.callback, authority.schema, target=authority.target
+        )
         if (
             fresh != authority
             or compile_triangle_reduction_abi(
-                fresh, any_hit_proof_authority=any_hit_proof_authority) != abi
-            or compile_triangle_reduction_contract(
-                fresh, abi_sha256=abi.abi_sha256) != contract
+                fresh, any_hit_proof_authority=any_hit_proof_authority
+            )
+            != abi
+            or compile_triangle_reduction_contract(fresh, abi_sha256=abi.abi_sha256)
+            != contract
         ):
             raise RuntimeError("triangle-reduction authority/ABI/contract drift")
         composed_ptx = consume_verified_triangle_reduction_executable(
-            executable, fresh, contract, abi,
-            any_hit_proof_authority=any_hit_proof_authority)
+            executable,
+            fresh,
+            contract,
+            abi,
+            any_hit_proof_authority=any_hit_proof_authority,
+        )
         vertex_flat = [float(value) for row in vertices for value in row]
         index_flat = [int(value) for row in triangles for value in row]
-        if not vertices or not triangles or any(len(row) != 3 for row in vertices) \
-                or any(len(row) != 3 for row in triangles):
+        if (
+            not vertices
+            or not triangles
+            or any(len(row) != 3 for row in vertices)
+            or any(len(row) != 3 for row in triangles)
+        ):
             raise ValueError("nonempty arity-three vertices and triangles required")
-        if not all(math.isfinite(item) for item in vertex_flat) \
-                or any(not 0 <= item < len(vertices) for item in index_flat):
+        if not all(math.isfinite(item) for item in vertex_flat) or any(
+            not 0 <= item < len(vertices) for item in index_flat
+        ):
             raise ValueError("invalid prepared triangle geometry")
         if not isinstance(event_capacity, int) or event_capacity <= 0:
             raise ValueError("positive event capacity required")
         primitive_names = {
-            channel.semantic_id for channel in fresh.schema.metadata_channels
-            if channel.domain is MetadataDomain.PRIMITIVE}
+            channel.semantic_id
+            for channel in fresh.schema.metadata_channels
+            if channel.domain is MetadataDomain.PRIMITIVE
+        }
         if set(metadata) != primitive_names:
             raise ValueError("prepared metadata must contain exact primitive channels")
         seed_metadata = dict(metadata)
-        seed_metadata.update({
-            channel.semantic_id: () for channel in fresh.schema.metadata_channels
-            if channel.domain is MetadataDomain.QUERY})
+        seed_metadata.update(
+            {
+                channel.semantic_id: ()
+                for channel in fresh.schema.metadata_channels
+                if channel.domain is MetadataDomain.QUERY
+            }
+        )
         normalized, p_u64, p_i64, p_u32 = _typed_metadata(
-            fresh, seed_metadata,
-            primitive_count=len(triangles), query_count=0)
+            fresh, seed_metadata, primitive_count=len(triangles), query_count=0
+        )
         if library is None:
             from . import optix_runtime
+
             library = optix_runtime._load_optix_library()
         native_path = _native_path(library, native_library_path)
         native_sha = hashlib.sha256(native_path.read_bytes()).hexdigest()
         if native_sha != fresh.target.native_sha256:
             raise RuntimeError("executed native bytes do not match target authority")
-        prepare, execute, destroy, reduce_u64 = _configure(library)
+        prepare, execute, commit, cache_digest, destroy, reduce_u64 = _configure(
+            library
+        )
         vertices_native = (ctypes.c_float * len(vertex_flat))(*vertex_flat)
         triangles_native = (ctypes.c_uint32 * len(index_flat))(*index_flat)
         token = ctypes.c_uint64()
         error = ctypes.create_string_buffer(16384)
-        _raise(int(prepare(
-            composed_ptx.encode(), vertices_native, len(vertices),
-            triangles_native, len(triangles), p_u64, p_i64, p_u32,
-            event_capacity, ctypes.byref(token), error, len(error))),
-            error, "prepared triangle prepare")
+        _raise(
+            int(
+                prepare(
+                    composed_ptx.encode(),
+                    vertices_native,
+                    len(vertices),
+                    triangles_native,
+                    len(triangles),
+                    p_u64,
+                    p_i64,
+                    p_u32,
+                    event_capacity,
+                    ctypes.byref(token),
+                    error,
+                    len(error),
+                )
+            ),
+            error,
+            "prepared triangle prepare",
+        )
         if not token.value:
             raise RuntimeError("prepared triangle returned zero token")
         self._token = int(token.value)
         self._library = library
         self._execute = execute
+        self._commit = commit
+        self._cache_digest = cache_digest
         self._destroy = destroy
         self._reduce_u64 = reduce_u64
         self._fresh = fresh
@@ -261,6 +374,7 @@ class PreparedTriangleReductionOwner:
         self._cached_queries = None
         self._cached_query_metadata = None
         self._cached_query_inputs = None
+        self._cached_query_digest = None
         self._native_sha = native_sha
         self._composed_ptx_sha = hashlib.sha256(composed_ptx.encode()).hexdigest()
         self._pid = os.getpid()
@@ -269,17 +383,19 @@ class PreparedTriangleReductionOwner:
         self._closed = False
         self._execution_count = 0
         self.prepare_seconds = time.perf_counter() - started
-        self._session_identity = _digest({
-            "schema": "rtdl.v4.prepared_triangle_reduction_owner.v1",
-            "authority": fresh.authority_nonce,
-            "contract": contract.contract_sha256,
-            "abi": abi.abi_sha256,
-            "ptx": self._composed_ptx_sha,
-            "native": native_sha,
-            "pid": self._pid,
-            "thread": self._thread,
-            "token": self._token,
-        })
+        self._session_identity = _digest(
+            {
+                "schema": "rtdl.v4.prepared_triangle_reduction_owner.v1",
+                "authority": fresh.authority_nonce,
+                "contract": contract.contract_sha256,
+                "abi": abi.abi_sha256,
+                "ptx": self._composed_ptx_sha,
+                "native": native_sha,
+                "pid": self._pid,
+                "thread": self._thread,
+                "token": self._token,
+            }
+        )
 
     def __getstate__(self):
         raise RuntimeError("prepared triangle owner cannot be serialized")
@@ -291,6 +407,48 @@ class PreparedTriangleReductionOwner:
             raise RuntimeError("prepared triangle owner crossed process boundary")
         if threading.get_ident() != self._thread:
             raise RuntimeError("prepared triangle owner crossed thread boundary")
+
+    def _clear_query_cache_identity(self) -> None:
+        self._cached_queries = None
+        self._cached_query_metadata = None
+        self._cached_query_inputs = None
+        self._cached_query_digest = None
+
+    def _commit_query_cache(self, digest_hex: str) -> None:
+        digest = (ctypes.c_uint8 * 32).from_buffer_copy(bytes.fromhex(digest_hex))
+        error = ctypes.create_string_buffer(16384)
+        _raise(
+            int(self._commit(self._token, digest, 32, error, len(error))),
+            error,
+            "prepared triangle query-cache commit",
+        )
+
+    def _native_query_cache_digest(self) -> str | None:
+        digest = (ctypes.c_uint8 * 32)()
+        present = ctypes.c_uint32()
+        error = ctypes.create_string_buffer(16384)
+        _raise(
+            int(
+                self._cache_digest(
+                    self._token, digest, 32, ctypes.byref(present), error, len(error)
+                )
+            ),
+            error,
+            "prepared triangle query-cache digest",
+        )
+        return bytes(digest).hex() if present.value else None
+
+    def _query_cache_reusable(self, queries, metadata_key) -> bool:
+        local_match = (
+            queries is self._cached_queries
+            and metadata_key == self._cached_query_metadata
+            and self._cached_query_inputs is not None
+            and self._cached_query_digest is not None
+        )
+        return (
+            local_match
+            and self._native_query_cache_digest() == self._cached_query_digest
+        )
 
     @property
     def lifecycle_receipt(self):
@@ -319,75 +477,86 @@ class PreparedTriangleReductionOwner:
             count = len(queries)
             query_metadata = {} if query_metadata is None else dict(query_metadata)
             expected_query_names = {
-                channel.semantic_id for channel in self._fresh.schema.metadata_channels
-                if channel.domain is MetadataDomain.QUERY}
+                channel.semantic_id
+                for channel in self._fresh.schema.metadata_channels
+                if channel.domain is MetadataDomain.QUERY
+            }
             if set(query_metadata) != expected_query_names:
                 raise ValueError("query metadata must contain exact query channels")
-            cacheable = (
-                isinstance(queries, tuple)
-                and all(isinstance(row, tuple) for row in queries)
-                and all(isinstance(value, tuple)
-                        for value in query_metadata.values())
-            )
+            cacheable = _query_rows_are_immutable(queries, query_metadata)
             metadata_key = tuple(sorted(query_metadata.items()))
-            cache_hit = (
-                cacheable
-                and queries is self._cached_queries
-                and metadata_key == self._cached_query_metadata
-                and self._cached_query_inputs is not None
-            )
+            try:
+                cache_hit = cacheable and self._query_cache_reusable(
+                    queries, metadata_key
+                )
+            except BaseException:
+                self._clear_query_cache_identity()
+                raise
             next_cached_query_inputs = None
             if cache_hit:
-                origins_f32, directions_f32, tmax_f32, normalized, \
-                    multiplier_native = \
+                origins_f32, directions_f32, tmax_f32, normalized, multiplier_native = (
                     self._cached_query_inputs
+                )
+                query_digest = self._cached_query_digest
             else:
                 # Retire the old identity before native state can change.  A
                 # failed A->B transition must never make a later A look like
                 # a valid device-cache hit.
-                self._cached_queries = None
-                self._cached_query_metadata = None
-                self._cached_query_inputs = None
-                if any(len(origin) != 3 or len(direction) != 3
-                       for origin, direction, _tmax in queries):
+                self._clear_query_cache_identity()
+                if any(
+                    len(origin) != 3 or len(direction) != 3
+                    for origin, direction, _tmax in queries
+                ):
                     raise ValueError("query arity is invalid")
                 try:
                     origins_f64 = np.asarray(
                         [origin for origin, _direction, _tmax in queries],
-                        dtype=np.float64)
+                        dtype=np.float64,
+                    )
                     directions_f64 = np.asarray(
                         [direction for _origin, direction, _tmax in queries],
-                        dtype=np.float64)
+                        dtype=np.float64,
+                    )
                     tmax_f64 = np.asarray(
                         [tmax for _origin, _direction, tmax in queries],
-                        dtype=np.float64)
+                        dtype=np.float64,
+                    )
                 except (TypeError, ValueError, OverflowError) as exc:
                     raise ValueError("query contains a nonnumeric value") from exc
-                if origins_f64.shape != (count, 3) \
-                        or directions_f64.shape != (count, 3) \
-                        or tmax_f64.shape != (count,) \
-                        or not np.isfinite(origins_f64).all() \
-                        or not np.isfinite(directions_f64).all() \
-                        or not np.isfinite(tmax_f64).all() \
-                        or np.any(tmax_f64 <= 0.0) \
-                        or np.any(np.all(directions_f64 == 0.0, axis=1)):
+                if (
+                    origins_f64.shape != (count, 3)
+                    or directions_f64.shape != (count, 3)
+                    or tmax_f64.shape != (count,)
+                    or not np.isfinite(origins_f64).all()
+                    or not np.isfinite(directions_f64).all()
+                    or not np.isfinite(tmax_f64).all()
+                    or np.any(tmax_f64 <= 0.0)
+                    or np.any(np.all(directions_f64 == 0.0, axis=1))
+                ):
                     raise ValueError("query contains an invalid ray")
                 origins_f32 = np.ascontiguousarray(origins_f64, dtype=np.float32)
-                directions_f32 = np.ascontiguousarray(
-                    directions_f64, dtype=np.float32)
+                directions_f32 = np.ascontiguousarray(directions_f64, dtype=np.float32)
                 tmax_f32 = np.ascontiguousarray(tmax_f64, dtype=np.float32)
-                if not np.isfinite(origins_f32).all() \
-                        or not np.isfinite(directions_f32).all() \
-                        or not np.isfinite(tmax_f32).all():
+                if (
+                    not np.isfinite(origins_f32).all()
+                    or not np.isfinite(directions_f32).all()
+                    or not np.isfinite(tmax_f32).all()
+                ):
                     raise ValueError(
-                        "query is outside the finite float32 target domain")
+                        "query is outside the finite float32 target domain"
+                    )
                 all_metadata = {
-                    key: value for key, value in self._normalized_metadata.items()
-                    if key not in expected_query_names}
+                    key: value
+                    for key, value in self._normalized_metadata.items()
+                    if key not in expected_query_names
+                }
                 all_metadata.update(query_metadata)
                 normalized, _p_u64, _p_i64, _p_u32 = _typed_metadata(
-                    self._fresh, all_metadata,
-                    primitive_count=self._primitive_count, query_count=count)
+                    self._fresh,
+                    all_metadata,
+                    primitive_count=self._primitive_count,
+                    query_count=count,
+                )
                 reducer = self._fresh.schema.reducer
                 multiplier_native = None
                 if reducer.algebra is ReducerAlgebra.CHECKED_U64_PRODUCT_SUM:
@@ -395,20 +564,27 @@ class PreparedTriangleReductionOwner:
                     multiplier_semantic = reducer.multiplicand_source.semantic_id
                     assert multiplier_semantic is not None
                     multiplier_native = (ctypes.c_uint64 * count)(
-                        *normalized[multiplier_semantic])
+                        *normalized[multiplier_semantic]
+                    )
                 if cacheable:
                     next_cached_query_inputs = (
-                        origins_f32, directions_f32, tmax_f32, normalized,
-                        multiplier_native)
-            origin_native = origins_f32.ctypes.data_as(
-                ctypes.POINTER(ctypes.c_float))
+                        origins_f32,
+                        directions_f32,
+                        tmax_f32,
+                        normalized,
+                        multiplier_native,
+                    )
+                query_digest = _packed_query_digest(
+                    origins_f32, directions_f32, tmax_f32
+                )
+            assert query_digest is not None
+            origin_native = origins_f32.ctypes.data_as(ctypes.POINTER(ctypes.c_float))
             direction_native = directions_f32.ctypes.data_as(
-                ctypes.POINTER(ctypes.c_float))
-            tmax_native = tmax_f32.ctypes.data_as(
-                ctypes.POINTER(ctypes.c_float))
+                ctypes.POINTER(ctypes.c_float)
+            )
+            tmax_native = tmax_f32.ctypes.data_as(ctypes.POINTER(ctypes.c_float))
             per_ray = (ctypes.c_uint64 * count)()
             event_count = ctypes.c_uint64()
-            capacity = self._event_capacity
             event_query = self._event_query_host
             event_primitive = self._event_primitive_host
             event_stable = self._event_stable_host
@@ -419,32 +595,57 @@ class PreparedTriangleReductionOwner:
             error = ctypes.create_string_buffer(16384)
             audit = OptixTraversalAuditSession.open(library=self._library)
             try:
-                _raise(int(self._execute(
-                    self._token, origin_native, direction_native, tmax_native,
-                    count, int(cache_hit), per_ray, ctypes.byref(event_count), event_query,
-                    event_primitive, event_stable, event_signed, event_include,
-                    statuses, counters, error, len(error))),
-                    error, "prepared triangle execute")
+                _raise(
+                    int(
+                        self._execute(
+                            self._token,
+                            origin_native,
+                            direction_native,
+                            tmax_native,
+                            count,
+                            int(cache_hit),
+                            per_ray,
+                            ctypes.byref(event_count),
+                            event_query,
+                            event_primitive,
+                            event_stable,
+                            event_signed,
+                            event_include,
+                            statuses,
+                            counters,
+                            error,
+                            len(error),
+                        )
+                    ),
+                    error,
+                    "prepared triangle execute",
+                )
                 # The paired native ABI scanned every status row and would
                 # have failed before returning any output.  Preserve the full
                 # rows lazily for users and evidence consumers.
                 status_rows = _ValidatedStatusRows(statuses)
                 counter_rows = tuple(int(item) for item in counters)
-                if counter_rows[1] != count or counter_rows[5] != count \
-                        or counter_rows[6] != count or counter_rows[3] <= 0:
+                if (
+                    counter_rows[1] != count
+                    or counter_rows[5] != count
+                    or counter_rows[6] != count
+                    or counter_rows[3] <= 0
+                ):
                     raise RuntimeError("prepared triangle role lifecycle incomplete")
                 per_ray_values = _U64Values(per_ray)
                 reducer = self._fresh.schema.reducer
                 if reducer.algebra is ReducerAlgebra.CHECKED_KEYED_I64_SUM:
                     rows = []
                     for index in range(int(event_count.value)):
-                        rows.append({
-                            "launch_index": int(event_query[index]),
-                            "primitive_index": int(event_primitive[index]),
-                            "primitive.stable_id": int(event_stable[index]),
-                            "primitive.signed_value": int(event_signed[index]),
-                            "primitive.include": int(event_include[index]),
-                        })
+                        rows.append(
+                            {
+                                "launch_index": int(event_query[index]),
+                                "primitive_index": int(event_primitive[index]),
+                                "primitive.stable_id": int(event_stable[index]),
+                                "primitive.signed_value": int(event_signed[index]),
+                                "primitive.include": int(event_include[index]),
+                            }
+                        )
                     reduced = execute_checked_reducer(reducer, rows)
                     reducer_rows: Sequence[Mapping[str, int]] = tuple(rows)
                 else:
@@ -458,10 +659,20 @@ class PreparedTriangleReductionOwner:
                         assert multiplier_semantic is not None
                         multipliers = normalized[multiplier_semantic]
                     reduced_native = ctypes.c_uint64()
-                    _raise(int(self._reduce_u64(
-                        per_ray, multiplier_native, count,
-                        ctypes.byref(reduced_native), error, len(error))),
-                        error, "prepared triangle checked U64 reduction")
+                    _raise(
+                        int(
+                            self._reduce_u64(
+                                per_ray,
+                                multiplier_native,
+                                count,
+                                ctypes.byref(reduced_native),
+                                error,
+                                len(error),
+                            )
+                        ),
+                        error,
+                        "prepared triangle checked U64 reduction",
+                    )
                     reduced = int(reduced_native.value)
                     reducer_rows = _PerRayReducerRows(
                         per_ray_values,
@@ -471,37 +682,46 @@ class PreparedTriangleReductionOwner:
                     )
                 output_sha = _digest(reduced)
                 receipt = audit.finish(
-                    semantic_digest=_digest({
-                        "authority": self._fresh.authority_nonce,
-                        "contract": self._contract.contract_sha256,
-                        "abi": self._abi.abi_sha256,
-                        "composed_ptx": self._composed_ptx_sha,
-                        "native": self._native_sha,
-                    }),
+                    semantic_digest=_digest(
+                        {
+                            "authority": self._fresh.authority_nonce,
+                            "contract": self._contract.contract_sha256,
+                            "abi": self._abi.abi_sha256,
+                            "composed_ptx": self._composed_ptx_sha,
+                            "native": self._native_sha,
+                        }
+                    ),
                     output_digest=output_sha,
                     route_identity=(
-                        "v4_builtin_triangle_callback_ir:checked_reduction_v1"),
+                        "v4_builtin_triangle_callback_ir:checked_reduction_v1"
+                    ),
                     expected_program_bundles=(
-                        "v4_builtin_triangle_checked_reduction_composed",),
+                        "v4_builtin_triangle_checked_reduction_composed",
+                    ),
                 )
-            except Exception:
+                if (
+                    receipt["physical_executor_classification"]
+                    != "optix_traversal_observed"
+                ):
+                    raise RuntimeError("prepared triangle lacked bound traversal")
+                if not cache_hit:
+                    self._commit_query_cache(query_digest)
+                    if self._native_query_cache_digest() != query_digest:
+                        raise RuntimeError(
+                            "prepared triangle query-cache commit mismatch"
+                        )
+            except BaseException:
                 audit.abort()
-                self._cached_queries = None
-                self._cached_query_metadata = None
-                self._cached_query_inputs = None
+                self._clear_query_cache_identity()
                 raise
-            if receipt["physical_executor_classification"] \
-                    != "optix_traversal_observed":
-                raise RuntimeError("prepared triangle lacked bound traversal")
             if not cache_hit:
                 if next_cached_query_inputs is not None:
                     self._cached_queries = queries
                     self._cached_query_metadata = metadata_key
                     self._cached_query_inputs = next_cached_query_inputs
+                    self._cached_query_digest = query_digest
                 else:
-                    self._cached_queries = None
-                    self._cached_query_metadata = None
-                    self._cached_query_inputs = None
+                    self._clear_query_cache_identity()
             self._execution_count += 1
             return V4TriangleReductionResult(
                 reduced_output=reduced,
@@ -523,8 +743,11 @@ class PreparedTriangleReductionOwner:
             raise RuntimeError("cannot close prepared triangle during execution")
         try:
             error = ctypes.create_string_buffer(16384)
-            _raise(int(self._destroy(self._token, error, len(error))),
-                   error, "prepared triangle destroy")
+            _raise(
+                int(self._destroy(self._token, error, len(error))),
+                error,
+                "prepared triangle destroy",
+            )
             self._token = 0
             self._closed = True
         finally:

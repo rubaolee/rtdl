@@ -14,6 +14,8 @@ from experiments.goal5842_causal_admission.contracts import (
     BASELINE_TASKS,
     PYOPTIX_IDENTITY_WITNESS_SCHEMA,
     RELATION_TASK,
+    STEADY_REPETITIONS,
+    STEADY_WARMUPS,
     TRIANGLE_TASK,
     digest,
 )
@@ -77,16 +79,15 @@ def execute_task(
     prepared = None
     try:
         if task_id == RELATION_TASK:
-            prepared = PyOptixRelationPrepared(
-                baseline, context, pipeline, sbt, raw
-            )
+            prepared = PyOptixRelationPrepared(baseline, context, pipeline, sbt, raw)
         else:
-            prepared = PyOptixTrianglePrepared(
-                baseline, context, pipeline, sbt, raw
+            prepared = PyOptixTrianglePrepared(baseline, context, pipeline, sbt, raw)
+        complete_execution_call_count = STEADY_WARMUPS + STEADY_REPETITIONS
+        output_sha256 = ""
+        for _ in range(complete_execution_call_count):
+            output_sha256 = verify_output(
+                task_id, prepared.execute(), task.expected_output
             )
-        output_sha256 = verify_output(
-            task_id, prepared.execute(), task.expected_output
-        )
     finally:
         del prepared, sbt, sbt_keepalive, groups, pipeline, context, logger, logs
         gc.collect()
@@ -98,10 +99,8 @@ def execute_task(
         "device_source_sha256": hashlib.sha256(device_source.read_bytes()).hexdigest(),
         "ptx_sha256": hashlib.sha256(ptx).hexdigest(),
         "pyoptix_repository_commit": baseline.PYOPTIX_COMMIT,
-        "optix_api_version": ".".join(
-            str(value) for value in baseline.optix.version()
-        ),
-        "complete_execution_call_count": 1,
+        "optix_api_version": ".".join(str(value) for value in baseline.optix.version()),
+        "complete_execution_call_count": complete_execution_call_count,
         "oracle_exact": True,
     }
 
@@ -139,8 +138,9 @@ def main() -> None:
         raise RuntimeError("CuPy version differs from execution authority")
     if baseline.PYOPTIX_COMMIT != authority["pyoptix"]["repository_commit"]:
         raise RuntimeError("PyOptiX repository identity differs from authority")
-    if importlib.metadata.version(authority["pyoptix"]["distribution_name"]) != (
-        authority["pyoptix"]["distribution_version"]
+    if (
+        importlib.metadata.version(authority["pyoptix"]["distribution_name"])
+        != (authority["pyoptix"]["distribution_version"])
     ):
         raise RuntimeError("PyOptiX distribution identity differs from authority")
 
@@ -157,15 +157,19 @@ def main() -> None:
     ]
     result: dict[str, object] = {
         "schema": PYOPTIX_IDENTITY_WITNESS_SCHEMA,
-        "status": "PASS__PYOPTIX_PACKAGE_FRONT_DOOR_NO_TIMING_OBSERVED",
+        "status": (
+            "PASS__PYOPTIX_PACKAGE_FRONT_DOOR_REPEATED_LIFECYCLE_NO_TIMING_OBSERVED"
+        ),
         "source_commit": authority["source_commit"],
         "preregistration_sha256": prereg["preregistration_sha256"],
         "execution_authority_sha256": authority["authority_sha256"],
         "hardware": authority["hardware"],
         "tasks": rows,
         "task_count": len(rows),
-        "gpu_complete_execution_call_count": len(rows),
-        "optix_launch_count": 3,
+        "gpu_complete_execution_call_count": sum(
+            row["complete_execution_call_count"] for row in rows
+        ),
+        "optix_launch_count": 3 * (STEADY_WARMUPS + STEADY_REPETITIONS),
         "registered_timing_observation_count": 0,
         "clock_api_called_by_witness_module": False,
         "duration_field_count": 0,

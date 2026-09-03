@@ -32,8 +32,10 @@ from experiments.goal5842_causal_admission.contracts import (
     PYOPTIX_ARM,
     PYOPTIX_IDENTITY_WITNESS_SCHEMA,
     RTDL_ARM,
+    SPHERE_TASK,
     STEADY_MODE,
     STEADY_REPETITIONS,
+    STEADY_WARMUPS,
     WORKER_RECEIPT_SCHEMA,
     digest,
     load_preregistration,
@@ -56,6 +58,43 @@ PHASE_KEYS = {
 }
 ROUTE_PHASE = "route_declaration_and_artifact_binding"
 CAUSAL_PHASE = "provider_projection_and_public_admission_or_unchecked_construction"
+GPU_WITNESS_FIELDS = {
+    "schema",
+    "status",
+    "source_commit",
+    "preregistration_sha256",
+    "execution_authority_sha256",
+    "hardware",
+    "native_library_sha256",
+    "tasks",
+    "task_count",
+    "all_exact_identity_equal",
+    "registered_timing_observation_count",
+    "gpu_complete_execution_call_count",
+    "repeated_lifecycle_calls_per_baseline_task_arm",
+    "clock_api_called_by_witness_module",
+    "duration_field_count",
+    "performance_claim_authorized",
+    "witness_sha256",
+}
+GPU_WITNESS_TASK_FIELDS = {
+    "task",
+    "input_sha256",
+    "program_signature",
+    "executable_identity",
+    "on",
+    "off",
+    "exact_identity_equal",
+}
+GPU_WITNESS_ARM_FIELDS = {
+    "output",
+    "output_sha256",
+    "full_output_sha256",
+    "traversal_receipt_sha256",
+    "physical_executor_classification",
+    "complete_execution_call_count",
+    "prepared_lifecycle_execution_count",
+}
 PYOPTIX_WITNESS_FIELDS = {
     "schema",
     "status",
@@ -708,11 +747,16 @@ def validate_identity_witness(
 ) -> None:
     verify_seal(witness, "witness_sha256", "GPU identity witness")
     require(
+        set(witness) == GPU_WITNESS_FIELDS,
+        "GPU identity witness field set mismatch",
+    )
+    require(
         witness.get("schema") == GPU_IDENTITY_WITNESS_SCHEMA,
         "identity witness schema mismatch",
     )
     require(
-        witness.get("status") == "PASS__NO_TIMING_OBSERVED",
+        witness.get("status")
+        == "PASS__IDENTITY_AND_REPEATED_LIFECYCLE_NO_TIMING_OBSERVED",
         "identity witness status mismatch",
     )
     require(
@@ -730,6 +774,15 @@ def validate_identity_witness(
     require(
         witness.get("hardware") == authority["hardware"], "identity hardware mismatch"
     )
+    require(
+        witness.get("native_library_sha256")
+        == authority["execution_paths"]["native_library_sha256"],
+        "identity native library mismatch",
+    )
+    require(
+        witness.get("all_exact_identity_equal") is True,
+        "identity witness aggregate equality flag missing",
+    )
     rows = witness.get("tasks")
     require(
         isinstance(rows, list)
@@ -737,6 +790,10 @@ def validate_identity_witness(
         "identity task cohort mismatch",
     )
     for row in rows:
+        require(
+            isinstance(row, dict) and set(row) == GPU_WITNESS_TASK_FIELDS,
+            "GPU identity witness task field set mismatch",
+        )
         frozen_task = next(
             task for task in prereg["task_contracts"] if task["task"] == row["task"]
         )
@@ -748,28 +805,53 @@ def validate_identity_witness(
             row.get("exact_identity_equal") is True,
             "on/off executable identity mismatch",
         )
+        expected_calls = (
+            1 if row["task"] == SPHERE_TASK else STEADY_WARMUPS + STEADY_REPETITIONS
+        )
+        for arm_name in ("on", "off"):
+            arm = row.get(arm_name)
+            require(
+                isinstance(arm, dict) and set(arm) == GPU_WITNESS_ARM_FIELDS,
+                f"{arm_name} identity witness field set mismatch",
+            )
+            require(
+                arm.get("output_sha256") == frozen_task["public_output_sha256"],
+                "identity witness output differs from preregistration",
+            )
+            require(
+                arm.get("full_output_sha256") == frozen_task["full_oracle_sha256"],
+                "identity witness full output differs from preregistration",
+            )
+            require(
+                arm.get("physical_executor_classification")
+                == "optix_traversal_observed",
+                f"{arm_name} arm lacks OptiX traversal",
+            )
+            require(
+                arm.get("complete_execution_call_count") == expected_calls
+                and arm.get("prepared_lifecycle_execution_count") == expected_calls,
+                f"{arm_name} repeated lifecycle count mismatch",
+            )
         require(
-            row.get("on", {}).get("output_sha256")
-            == row.get("off", {}).get("output_sha256"),
+            row["on"]["output_sha256"] == row["off"]["output_sha256"]
+            and row["on"]["full_output_sha256"] == row["off"]["full_output_sha256"],
             "on/off output mismatch",
         )
-        require(
-            row.get("on", {}).get("output_sha256")
-            == frozen_task["public_output_sha256"],
-            "identity witness output differs from preregistration",
-        )
-        require(
-            row.get("on", {}).get("physical_executor_classification")
-            == "optix_traversal_observed",
-            "on arm lacks OptiX traversal",
-        )
-        require(
-            row.get("off", {}).get("physical_executor_classification")
-            == "optix_traversal_observed",
-            "off arm lacks OptiX traversal",
-        )
+    expected_rtdl_calls = 2 * (2 * (STEADY_WARMUPS + STEADY_REPETITIONS) + 1)
+    require(witness.get("task_count") == 3, "identity witness task count mismatch")
     require(
-        witness.get("registered_timing_observation_count") == 0,
+        witness.get("gpu_complete_execution_call_count") == expected_rtdl_calls,
+        "identity witness complete execution count mismatch",
+    )
+    require(
+        witness.get("repeated_lifecycle_calls_per_baseline_task_arm")
+        == STEADY_WARMUPS + STEADY_REPETITIONS,
+        "identity witness repeated lifecycle design mismatch",
+    )
+    require(
+        witness.get("registered_timing_observation_count") == 0
+        and witness.get("clock_api_called_by_witness_module") is False
+        and witness.get("duration_field_count") == 0,
         "identity witness contains timing",
     )
     require(
@@ -792,7 +874,7 @@ def validate_pyoptix_identity_witness(
     )
     require(
         witness.get("status")
-        == "PASS__PYOPTIX_PACKAGE_FRONT_DOOR_NO_TIMING_OBSERVED",
+        == ("PASS__PYOPTIX_PACKAGE_FRONT_DOOR_REPEATED_LIFECYCLE_NO_TIMING_OBSERVED"),
         "PyOptiX identity witness status mismatch",
     )
     for field, expected in (
@@ -826,7 +908,8 @@ def validate_pyoptix_identity_witness(
         )
         require(row.get("oracle_exact") is True, "PyOptiX witness oracle failed")
         require(
-            row.get("complete_execution_call_count") == 1,
+            row.get("complete_execution_call_count")
+            == STEADY_WARMUPS + STEADY_REPETITIONS,
             "PyOptiX witness execution count mismatch",
         )
         require(
@@ -856,11 +939,12 @@ def validate_pyoptix_identity_witness(
         )
     require(witness.get("task_count") == 2, "PyOptiX witness task count mismatch")
     require(
-        witness.get("gpu_complete_execution_call_count") == 2,
+        witness.get("gpu_complete_execution_call_count")
+        == 2 * (STEADY_WARMUPS + STEADY_REPETITIONS),
         "PyOptiX witness complete execution count mismatch",
     )
     require(
-        witness.get("optix_launch_count") == 3,
+        witness.get("optix_launch_count") == 3 * (STEADY_WARMUPS + STEADY_REPETITIONS),
         "PyOptiX witness OptiX launch count mismatch",
     )
     require(

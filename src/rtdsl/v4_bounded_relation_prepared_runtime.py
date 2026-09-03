@@ -7,53 +7,123 @@ import hashlib
 import os
 import threading
 import time
-from typing import Iterator, Mapping, Sequence
+from collections.abc import Iterator, Mapping, Sequence
 
 from .physical_execution_provenance import OptixTraversalAuditSession
 from .v4_bounded_relation import (
     compile_bounded_relation_contract,
-    verify_precanonical_bounded_relation,
     verify_bounded_relation_schema,
+    verify_precanonical_bounded_relation,
 )
-from .v4_bounded_relation_optix_compiler import consume_verified_bounded_relation_executable
+from .v4_bounded_relation_optix_compiler import (
+    consume_verified_bounded_relation_executable,
+)
 from .v4_bounded_relation_optix_runtime import (
-    V4BoundedRelationResult, _Status, _boxes, _digest, _native_path)
+    V4BoundedRelationResult,
+    _boxes,
+    _digest,
+    _native_path,
+    _Status,
+)
 from .v4_callback_abi import verify_compiled_callback_abi
 
 
 def _configure(library):
-    prepare = getattr(library, "rtdl_optix_v4_prepare_bounded_relation_callback_v1", None)
-    execute = getattr(library, "rtdl_optix_v4_execute_prepared_bounded_relation_callback_v3", None)
-    destroy = getattr(library, "rtdl_optix_v4_destroy_prepared_bounded_relation_callback_v1", None)
-    if prepare is None or execute is None or destroy is None:
+    prepare = getattr(
+        library, "rtdl_optix_v4_prepare_bounded_relation_callback_v1", None
+    )
+    execute = getattr(
+        library, "rtdl_optix_v4_execute_prepared_bounded_relation_callback_v3", None
+    )
+    commit = getattr(
+        library,
+        "rtdl_optix_v4_commit_prepared_bounded_relation_source_cache_v2",
+        None,
+    )
+    cache_digest = getattr(
+        library,
+        "rtdl_optix_v4_prepared_bounded_relation_source_cache_digest_v1",
+        None,
+    )
+    destroy = getattr(
+        library, "rtdl_optix_v4_destroy_prepared_bounded_relation_callback_v1", None
+    )
+    if any(
+        symbol is None for symbol in (prepare, execute, commit, cache_digest, destroy)
+    ):
         raise RuntimeError(
-            "native library lacks Goal5798 immutable-input-reuse bounded-relation ABI")
+            "native library lacks two-phase prepared bounded-relation cache ABI"
+        )
     prepare.argtypes = [
-        ctypes.c_char_p, ctypes.POINTER(ctypes.c_float),
-        ctypes.POINTER(ctypes.c_uint32), ctypes.c_size_t, ctypes.c_float,
-        ctypes.c_uint64, ctypes.POINTER(ctypes.c_uint64),
-        ctypes.POINTER(ctypes.c_char), ctypes.c_size_t]
-    execute.argtypes = [
-        ctypes.c_uint64, ctypes.POINTER(ctypes.c_float),
-        ctypes.POINTER(ctypes.c_uint32), ctypes.c_size_t,
-        ctypes.c_uint32,
-        ctypes.POINTER(ctypes.c_uint64), ctypes.POINTER(ctypes.c_uint64),
+        ctypes.c_char_p,
+        ctypes.POINTER(ctypes.c_float),
         ctypes.POINTER(ctypes.c_uint32),
-        ctypes.POINTER(ctypes.c_uint32), ctypes.POINTER(_Status),
-        ctypes.POINTER(ctypes.c_uint64), ctypes.POINTER(ctypes.c_char),
-        ctypes.c_size_t]
-    destroy.argtypes = [
-        ctypes.c_uint64, ctypes.POINTER(ctypes.c_char), ctypes.c_size_t]
-    for symbol in (prepare, execute, destroy):
+        ctypes.c_size_t,
+        ctypes.c_float,
+        ctypes.c_uint64,
+        ctypes.POINTER(ctypes.c_uint64),
+        ctypes.POINTER(ctypes.c_char),
+        ctypes.c_size_t,
+    ]
+    execute.argtypes = [
+        ctypes.c_uint64,
+        ctypes.POINTER(ctypes.c_float),
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.c_size_t,
+        ctypes.c_uint32,
+        ctypes.POINTER(ctypes.c_uint64),
+        ctypes.POINTER(ctypes.c_uint64),
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.POINTER(_Status),
+        ctypes.POINTER(ctypes.c_uint64),
+        ctypes.POINTER(ctypes.c_char),
+        ctypes.c_size_t,
+    ]
+    commit.argtypes = [
+        ctypes.c_uint64,
+        ctypes.POINTER(ctypes.c_uint8),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_char),
+        ctypes.c_size_t,
+    ]
+    cache_digest.argtypes = [
+        ctypes.c_uint64,
+        ctypes.POINTER(ctypes.c_uint8),
+        ctypes.c_size_t,
+        ctypes.POINTER(ctypes.c_uint32),
+        ctypes.POINTER(ctypes.c_char),
+        ctypes.c_size_t,
+    ]
+    destroy.argtypes = [ctypes.c_uint64, ctypes.POINTER(ctypes.c_char), ctypes.c_size_t]
+    for symbol in (prepare, execute, commit, cache_digest, destroy):
         symbol.restype = ctypes.c_int
-    return prepare, execute, destroy
+    return prepare, execute, commit, cache_digest, destroy
 
 
 def _raise(status, error, label):
     if status:
         raise RuntimeError(
             error.value.decode("utf-8", errors="replace")
-            or f"{label} failed with status {status}")
+            or f"{label} failed with status {status}"
+        )
+
+
+def _packed_source_digest(source_native, source_ids) -> str:
+    digest = hashlib.sha256(b"RTDL-V4-BOUNDED-SOURCE-CACHE-V1\x00")
+    for values in (source_native, source_ids):
+        payload = bytes(values)
+        digest.update(len(payload).to_bytes(8, "little"))
+        digest.update(payload)
+    return digest.hexdigest()
+
+
+def _source_rows_are_immutable(source_boxes) -> bool:
+    return (
+        isinstance(source_boxes, tuple)
+        and all(isinstance(row, tuple) and len(row) == 5 for row in source_boxes)
+        and all(type(value) in (int, float) for row in source_boxes for value in row)
+    )
 
 
 class _ValidatedStatusRows(Sequence[Mapping[str, int]]):
@@ -87,38 +157,68 @@ class _ValidatedStatusRows(Sequence[Mapping[str, int]]):
 
 class PreparedBoundedRelationOwner:
     def __init__(
-        self, *, authority, contract, abi, executable,
-        any_hit_proof_authority, indexed_boxes, library=None,
+        self,
+        *,
+        authority,
+        contract,
+        abi,
+        executable,
+        any_hit_proof_authority,
+        indexed_boxes,
+        library=None,
         native_library_path=None,
     ):
         started = time.perf_counter()
         fresh = verify_bounded_relation_schema(authority.physical, authority.schema)
-        if fresh != authority \
-                or verify_compiled_callback_abi(
-                    abi, fresh.physical.callback,
-                    any_hit_proof_authority=any_hit_proof_authority,
-                    physical_schema_authority=fresh.physical) != abi \
-                or compile_bounded_relation_contract(
-                    fresh, abi_sha256=abi.abi_sha256) != contract:
+        if (
+            fresh != authority
+            or verify_compiled_callback_abi(
+                abi,
+                fresh.physical.callback,
+                any_hit_proof_authority=any_hit_proof_authority,
+                physical_schema_authority=fresh.physical,
+            )
+            != abi
+            or compile_bounded_relation_contract(fresh, abi_sha256=abi.abi_sha256)
+            != contract
+        ):
             raise RuntimeError("bounded-relation authority/ABI/contract drift")
         composed_ptx = consume_verified_bounded_relation_executable(
-            executable, fresh, contract, abi,
-            any_hit_proof_authority=any_hit_proof_authority)
+            executable,
+            fresh,
+            contract,
+            abi,
+            any_hit_proof_authority=any_hit_proof_authority,
+        )
         indexed_native, indexed_ids = _boxes(indexed_boxes, "indexed_boxes")
         if library is None:
             from . import optix_runtime
+
             library = optix_runtime._load_optix_library()
         native_path = _native_path(library, native_library_path)
         native_sha = hashlib.sha256(native_path.read_bytes()).hexdigest()
         if native_sha != fresh.physical.target.native_sha256:
             raise RuntimeError("executed native bytes do not match target authority")
-        prepare, execute, destroy = _configure(library)
-        token = ctypes.c_uint64(); error = ctypes.create_string_buffer(16384)
-        _raise(int(prepare(
-            composed_ptx.encode(), indexed_native, indexed_ids,
-            len(indexed_boxes), float(contract.minimum_overlap_f32),
-            contract.capacity, ctypes.byref(token), error, len(error))),
-            error, "prepared bounded relation prepare")
+        prepare, execute, commit, cache_digest, destroy = _configure(library)
+        token = ctypes.c_uint64()
+        error = ctypes.create_string_buffer(16384)
+        _raise(
+            int(
+                prepare(
+                    composed_ptx.encode(),
+                    indexed_native,
+                    indexed_ids,
+                    len(indexed_boxes),
+                    float(contract.minimum_overlap_f32),
+                    contract.capacity,
+                    ctypes.byref(token),
+                    error,
+                    len(error),
+                )
+            ),
+            error,
+            "prepared bounded relation prepare",
+        )
         if not token.value:
             raise RuntimeError("prepared bounded relation returned zero token")
         self._token = int(token.value)
@@ -127,21 +227,25 @@ class PreparedBoundedRelationOwner:
         self._abi = abi
         self._library = library
         self._execute = execute
+        self._commit = commit
+        self._cache_digest = cache_digest
         self._destroy = destroy
         self._indexed_count = len(indexed_boxes)
         self._native_sha = native_sha
         self._ptx_sha = hashlib.sha256(composed_ptx.encode()).hexdigest()
-        self._pid = os.getpid(); self._thread = threading.get_ident()
-        self._active = threading.Lock(); self._closed = False
+        self._pid = os.getpid()
+        self._thread = threading.get_ident()
+        self._active = threading.Lock()
+        self._closed = False
         self._execution_count = 0
         self._cached_source_object = None
         self._cached_source_native = None
+        self._cached_source_digest = None
         self._cached_expected_object = None
         self._cached_expected_rows = None
         self._cached_output_rows = None
         self._cached_output_sha = None
-        self._row_storage = (
-            ctypes.c_uint32 * (self._contract.capacity * 2))()
+        self._row_storage = (ctypes.c_uint32 * (self._contract.capacity * 2))()
         self._status_capacity = self._indexed_count
         self._statuses = (_Status * self._status_capacity)()
         self._counters = (ctypes.c_uint64 * 7)()
@@ -150,13 +254,19 @@ class PreparedBoundedRelationOwner:
         self._overflowed = ctypes.c_uint32()
         self._error = ctypes.create_string_buffer(16384)
         self.prepare_seconds = time.perf_counter() - started
-        self._session_identity = _digest({
-            "schema": "rtdl.v4.prepared_bounded_relation_owner.v1",
-            "authority": fresh.authority_nonce,
-            "contract": contract.contract_sha256, "abi": abi.abi_sha256,
-            "ptx": self._ptx_sha, "native": native_sha,
-            "pid": self._pid, "thread": self._thread, "token": self._token,
-        })
+        self._session_identity = _digest(
+            {
+                "schema": "rtdl.v4.prepared_bounded_relation_owner.v1",
+                "authority": fresh.authority_nonce,
+                "contract": contract.contract_sha256,
+                "abi": abi.abi_sha256,
+                "ptx": self._ptx_sha,
+                "native": native_sha,
+                "pid": self._pid,
+                "thread": self._thread,
+                "token": self._token,
+            }
+        )
 
     def __getstate__(self):
         raise RuntimeError("prepared bounded relation owner cannot be serialized")
@@ -165,9 +275,53 @@ class PreparedBoundedRelationOwner:
         if self._closed:
             raise RuntimeError("prepared bounded relation owner is closed")
         if os.getpid() != self._pid:
-            raise RuntimeError("prepared bounded relation owner crossed process boundary")
+            raise RuntimeError(
+                "prepared bounded relation owner crossed process boundary"
+            )
         if threading.get_ident() != self._thread:
-            raise RuntimeError("prepared bounded relation owner crossed thread boundary")
+            raise RuntimeError(
+                "prepared bounded relation owner crossed thread boundary"
+            )
+
+    def _clear_source_cache_identity(self) -> None:
+        self._cached_source_object = None
+        self._cached_source_native = None
+        self._cached_source_digest = None
+
+    def _commit_source_cache(self, digest_hex: str) -> None:
+        digest = (ctypes.c_uint8 * 32).from_buffer_copy(bytes.fromhex(digest_hex))
+        error = ctypes.create_string_buffer(16384)
+        _raise(
+            int(self._commit(self._token, digest, 32, error, len(error))),
+            error,
+            "prepared bounded relation source-cache commit",
+        )
+
+    def _native_source_cache_digest(self) -> str | None:
+        digest = (ctypes.c_uint8 * 32)()
+        present = ctypes.c_uint32()
+        error = ctypes.create_string_buffer(16384)
+        _raise(
+            int(
+                self._cache_digest(
+                    self._token, digest, 32, ctypes.byref(present), error, len(error)
+                )
+            ),
+            error,
+            "prepared bounded relation source-cache digest",
+        )
+        return bytes(digest).hex() if present.value else None
+
+    def _source_cache_reusable(self, source_boxes) -> bool:
+        local_match = (
+            source_boxes is self._cached_source_object
+            and self._cached_source_native is not None
+            and self._cached_source_digest is not None
+        )
+        return (
+            local_match
+            and self._native_source_cache_digest() == self._cached_source_digest
+        )
 
     @property
     def lifecycle_receipt(self):
@@ -175,8 +329,10 @@ class PreparedBoundedRelationOwner:
         return {
             "schema": "rtdl.v4.prepared_application_lifecycle.v1",
             "session_identity": self._session_identity,
-            "process_bound": True, "thread_bound": True,
-            "nonserializable": True, "nonreentrant": True,
+            "process_bound": True,
+            "thread_bound": True,
+            "nonserializable": True,
+            "nonreentrant": True,
             "prepare_seconds_reported_separately": True,
             "cold_result_replaced": False,
             "execution_count": self._execution_count,
@@ -189,19 +345,22 @@ class PreparedBoundedRelationOwner:
         if not self._active.acquire(blocking=False):
             raise RuntimeError("prepared bounded relation owner is already executing")
         try:
-            cache_hit = (
-                source_boxes is self._cached_source_object
-                and self._cached_source_native is not None
-            )
+            try:
+                cache_hit = self._source_cache_reusable(source_boxes)
+            except BaseException:
+                self._clear_source_cache_identity()
+                raise
             if cache_hit:
                 source_native, source_ids = self._cached_source_native
+                source_digest = self._cached_source_digest
             else:
                 # Retire the old identity before native state can change.  A
                 # failed A->B transition must never make a later A look like
                 # a valid device-cache hit.
-                self._cached_source_object = None
-                self._cached_source_native = None
+                self._clear_source_cache_identity()
                 source_native, source_ids = _boxes(source_boxes, "source_boxes")
+                source_digest = _packed_source_digest(source_native, source_ids)
+            assert source_digest is not None
             capacity = self._contract.capacity
             row_storage = self._row_storage
             required_status = len(source_boxes) + self._indexed_count
@@ -216,13 +375,27 @@ class PreparedBoundedRelationOwner:
             error = self._error
             audit = OptixTraversalAuditSession.open(library=self._library)
             try:
-                _raise(int(self._execute(
-                    self._token, source_native, source_ids, len(source_boxes),
-                    int(cache_hit),
-                    ctypes.byref(raw_count), ctypes.byref(unique_count),
-                    ctypes.byref(overflowed), row_storage,
-                    statuses, counters, error, len(error))), error,
-                    "prepared bounded relation execute")
+                _raise(
+                    int(
+                        self._execute(
+                            self._token,
+                            source_native,
+                            source_ids,
+                            len(source_boxes),
+                            int(cache_hit),
+                            ctypes.byref(raw_count),
+                            ctypes.byref(unique_count),
+                            ctypes.byref(overflowed),
+                            row_storage,
+                            statuses,
+                            counters,
+                            error,
+                            len(error),
+                        )
+                    ),
+                    error,
+                    "prepared bounded relation execute",
+                )
                 # The paired native ABI scanned every status row and failed
                 # before returning output.  Preserve the complete evidence
                 # without allocating thousands of Python dictionaries in the
@@ -230,29 +403,35 @@ class PreparedBoundedRelationOwner:
                 status_rows = _ValidatedStatusRows(statuses, required_status)
                 counter_rows = tuple(int(item) for item in counters)
                 launch_count = len(source_boxes) + self._indexed_count
-                if counter_rows[1] != launch_count or counter_rows[6] != launch_count \
-                        or counter_rows[4] + counter_rows[5] != launch_count:
+                if (
+                    counter_rows[1] != launch_count
+                    or counter_rows[6] != launch_count
+                    or counter_rows[4] + counter_rows[5] != launch_count
+                ):
                     raise RuntimeError("prepared bounded relation lifecycle incomplete")
                 stored = min(int(unique_count.value), capacity)
                 raw_rows = tuple(
                     (int(row_storage[index * 2]), int(row_storage[index * 2 + 1]))
-                    for index in range(stored))
+                    for index in range(stored)
+                )
                 rows = verify_precanonical_bounded_relation(
-                    raw_rows, capacity=capacity,
+                    raw_rows,
+                    capacity=capacity,
                     observed_unique_count=int(unique_count.value),
-                    overflowed=bool(overflowed.value))
+                    overflowed=bool(overflowed.value),
+                )
                 if expected_rows is not None:
                     if expected_rows is self._cached_expected_object:
                         normalized_expected = self._cached_expected_rows
                     else:
-                        normalized_expected = tuple(sorted(
-                            (int(row[0]), int(row[1])) for row in expected_rows))
+                        normalized_expected = tuple(
+                            sorted((int(row[0]), int(row[1])) for row in expected_rows)
+                        )
                         if isinstance(expected_rows, tuple):
                             self._cached_expected_object = expected_rows
                             self._cached_expected_rows = normalized_expected
                     if rows != normalized_expected:
-                        raise RuntimeError(
-                            "prepared bounded relation output mismatch")
+                        raise RuntimeError("prepared bounded relation output mismatch")
                 if rows == self._cached_output_rows:
                     output_sha = self._cached_output_sha
                 else:
@@ -260,52 +439,82 @@ class PreparedBoundedRelationOwner:
                     self._cached_output_rows = rows
                     self._cached_output_sha = output_sha
                 receipt = audit.finish(
-                    semantic_digest=_digest({
-                        "authority": self._fresh.authority_nonce,
-                        "contract": self._contract.contract_sha256,
-                        "abi": self._abi.abi_sha256, "ptx": self._ptx_sha,
-                        "native": self._native_sha,
-                    }), output_digest=output_sha,
+                    semantic_digest=_digest(
+                        {
+                            "authority": self._fresh.authority_nonce,
+                            "contract": self._contract.contract_sha256,
+                            "abi": self._abi.abi_sha256,
+                            "ptx": self._ptx_sha,
+                            "native": self._native_sha,
+                        }
+                    ),
+                    output_digest=output_sha,
                     route_identity="v4_callback_ir:custom_aabb_bounded_relation_v1",
                     expected_program_bundles=(
-                        "v4_custom_aabb_bounded_relation_composed",))
-            except Exception:
+                        "v4_custom_aabb_bounded_relation_composed",
+                    ),
+                )
+                if (
+                    receipt["physical_executor_classification"]
+                    != "optix_traversal_observed"
+                ):
+                    raise RuntimeError(
+                        "prepared bounded relation lacked bound traversal"
+                    )
+                if not cache_hit:
+                    self._commit_source_cache(source_digest)
+                    if self._native_source_cache_digest() != source_digest:
+                        raise RuntimeError(
+                            "prepared bounded relation source-cache commit mismatch"
+                        )
+            except BaseException:
                 audit.abort()
-                self._cached_source_object = None
-                self._cached_source_native = None
+                self._clear_source_cache_identity()
                 raise
-            if receipt["physical_executor_classification"] != "optix_traversal_observed":
-                raise RuntimeError("prepared bounded relation lacked bound traversal")
             if not cache_hit:
-                if isinstance(source_boxes, tuple):
+                if _source_rows_are_immutable(source_boxes):
                     self._cached_source_object = source_boxes
                     self._cached_source_native = (source_native, source_ids)
+                    self._cached_source_digest = source_digest
                 else:
-                    self._cached_source_object = None
-                    self._cached_source_native = None
+                    self._clear_source_cache_identity()
             self._execution_count += 1
             return V4BoundedRelationResult(
-                rows, raw_rows, int(raw_count.value),
+                rows,
+                raw_rows,
+                int(raw_count.value),
                 int(raw_count.value) - int(unique_count.value),
-                counter_rows, status_rows, receipt, output_sha, self._ptx_sha,
-                self._native_sha)
+                counter_rows,
+                status_rows,
+                receipt,
+                output_sha,
+                self._ptx_sha,
+                self._native_sha,
+            )
         finally:
             self._active.release()
 
     def close(self):
         self._check()
         if not self._active.acquire(blocking=False):
-            raise RuntimeError("cannot close prepared bounded relation during execution")
+            raise RuntimeError(
+                "cannot close prepared bounded relation during execution"
+            )
         try:
             error = ctypes.create_string_buffer(16384)
-            _raise(int(self._destroy(self._token, error, len(error))), error,
-                   "prepared bounded relation destroy")
-            self._token = 0; self._closed = True
+            _raise(
+                int(self._destroy(self._token, error, len(error))),
+                error,
+                "prepared bounded relation destroy",
+            )
+            self._token = 0
+            self._closed = True
         finally:
             self._active.release()
 
     def __enter__(self):
-        self._check(); return self
+        self._check()
+        return self
 
     def __exit__(self, exc_type, exc, traceback):
         self.close()

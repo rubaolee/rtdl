@@ -35,7 +35,7 @@ from experiments.goal5842_causal_admission.contracts import (
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / (
     "history/internal_docs/goal5842_causal_admission_cost_20260903/"
-    "PREREGISTRATION_V5.json"
+    "PREREGISTRATION_V6.json"
 )
 
 
@@ -50,7 +50,7 @@ def build() -> dict[str, object]:
     result: dict[str, object] = {
         "schema": PREREGISTRATION_SCHEMA,
         "date": "2026-09-03",
-        "status": "FROZEN_BEFORE_INDEPENDENT_REPLICATION_TIMING",
+        "status": "FROZEN_BEFORE_INDEPENDENT_V6_REPLICATION_TIMING",
         "post_failure_replication": post_failure_replication_provenance(),
         "scientific_question": (
             "How much cold post-import generic-family latency is attributable "
@@ -105,15 +105,25 @@ def build() -> dict[str, object]:
         },
         "pre_worker_zero_witness_design": {
             "rtdl_check_on_off_task_count": 3,
-            "rtdl_check_on_off_complete_execution_call_count": 6,
+            "rtdl_relation_triangle_calls_per_arm": (
+                STEADY_WARMUPS + STEADY_REPETITIONS
+            ),
+            "rtdl_sphere_calls_per_arm": 1,
+            "rtdl_check_on_off_complete_execution_call_count": (
+                2 * (2 * (STEADY_WARMUPS + STEADY_REPETITIONS) + 1)
+            ),
+            "rtdl_repeated_lifecycle_matches_steady_shape": True,
             "pyoptix_package_front_door_task_count": 2,
-            "pyoptix_complete_execution_call_count": 2,
-            "pyoptix_optix_launch_count": 3,
+            "pyoptix_calls_per_task": STEADY_WARMUPS + STEADY_REPETITIONS,
+            "pyoptix_complete_execution_call_count": (
+                2 * (STEADY_WARMUPS + STEADY_REPETITIONS)
+            ),
+            "pyoptix_optix_launch_count": (3 * (STEADY_WARMUPS + STEADY_REPETITIONS)),
             "all_witnesses_register_no_timing": True,
             "worker_zero_after_all_witnesses_pass": True,
             "direct_witness_excluded": (
-                "V4 Direct relation first-and-steady subworkers completed; "
-                "the Direct binary has no timer-free mode"
+                "V5 Direct relation first-and-steady subworkers completed; "
+                "the Direct binary has no separate unregistered no-duration witness mode"
             ),
         },
         "baseline_worker_design": {
@@ -204,13 +214,14 @@ def build() -> dict[str, object]:
             "one_generation_is_goal5842_complete": False,
             "external_review_or_consensus": False,
             "v4_transaction_reclassified_as_success": False,
-            "v4_rows_pooled_into_v5_estimators": False,
-            "v5_called_a_retry_of_v4": False,
+            "v5_transaction_reclassified_as_success": False,
+            "v4_or_v5_rows_pooled_into_v6_estimators": False,
+            "v6_called_a_retry_of_v5": False,
         },
         "source_manifest": manifest,
         "source_manifest_sha256": digest(manifest),
         "preregistration_build_counter_scope": {
-            "top_level_counters_cover_this_v5_replication_build_only": True,
+            "top_level_counters_cover_this_v6_replication_build_only": True,
             "prior_evidence_is_bound_in_post_failure_replication": True,
             "pre_v4_untimed_gpu_complete_execution_call_count": 8,
             "v4_registered_causal_worker_timing_vector_count": 216,
@@ -218,6 +229,11 @@ def build() -> dict[str, object]:
             "v4_registered_baseline_execution_sample_count": 65,
             "v4_untimed_rtdl_identity_complete_execution_call_count": 6,
             "v4_direct_baseline_complete_execution_call_count": 73,
+            "v5_registered_causal_worker_timing_vector_count": 216,
+            "v5_registered_baseline_subworker_timing_vector_count": 5,
+            "v5_registered_baseline_execution_sample_count": 131,
+            "v5_untimed_rtdl_identity_complete_execution_call_count": 6,
+            "v5_untimed_pyoptix_identity_complete_execution_call_count": 2,
         },
         "registered_timing_observation_count": 0,
         "gpu_execution_count": 0,
