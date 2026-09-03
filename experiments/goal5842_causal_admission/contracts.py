@@ -79,15 +79,26 @@ V6_PREREGISTRATION_SHA256 = (
 V6_PREREGISTRATION_FILE_SHA256 = (
     "b63a755694f6e8973c325171fc7da7970b7abe166d4809d446169d25aa33048f"
 )
-PREREGISTRATION_SCHEMA = "rtdl.goal5842.causal_admission_preregistration.v7"
+V7_PREREGISTRATION_SCHEMA = "rtdl.goal5842.causal_admission_preregistration.v7"
+V7_PREREGISTRATION_PATH = (
+    "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+    "PREREGISTRATION_V7.json"
+)
+V7_PREREGISTRATION_SHA256 = (
+    "4eb544b6a61c8c7256bb165baa3cdf1141fededcc043b9f9b5822054788539ee"
+)
+V7_PREREGISTRATION_FILE_SHA256 = (
+    "138e71fa9f4e1c4fd1437c38fcbab5a7356404c4967f810a1285f80c46d37b96"
+)
+PREREGISTRATION_SCHEMA = "rtdl.goal5842.causal_admission_preregistration.v8"
 EXECUTION_AUTHORITY_SCHEMA = "rtdl.goal5842.execution_authority.v1"
 WORKER_RECEIPT_SCHEMA = "rtdl.goal5842.causal_admission_worker.v1"
 CONTROLLER_RESULT_SCHEMA = "rtdl.goal5842.causal_admission_controller.v1"
 BASELINE_SUBWORKER_SCHEMA = "rtdl.goal5842.baseline_subworker.v1"
 BASELINE_CONTROLLER_SCHEMA = "rtdl.goal5842.baseline_controller.v1"
-GPU_IDENTITY_WITNESS_SCHEMA = "rtdl.goal5842.gpu_identity_witness.v3"
+GPU_IDENTITY_WITNESS_SCHEMA = "rtdl.goal5842.gpu_identity_witness.v4"
 PYOPTIX_IDENTITY_WITNESS_SCHEMA = "rtdl.goal5842.pyoptix_identity_witness.v2"
-INDEPENDENT_RECOUNT_SCHEMA = "rtdl.goal5842.independent_recount.v4"
+INDEPENDENT_RECOUNT_SCHEMA = "rtdl.goal5842.independent_recount.v5"
 CROSS_GENERATION_AUTHORITY_SCHEMA = "rtdl.goal5842.cross_generation_authority.v1"
 
 CHECK_ON = "CHECK_ON_COLD_PUBLIC_ADMISSION"
@@ -257,6 +268,19 @@ REQUIRED_SOURCE_PATHS = (
     (
         "history/internal_docs/goal5842_causal_admission_cost_20260903/"
         "pod_artifacts/goal5842_v6_preworker_failures.tar.gz"
+    ),
+    V7_PREREGISTRATION_PATH,
+    (
+        "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+        "PRE_WORKER_ZERO_REPAIR_05.md"
+    ),
+    (
+        "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+        "PRE_EXECUTION_INTERNAL_HOSTILE_REVIEW_V8.md"
+    ),
+    (
+        "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+        "pod_artifacts/goal5842_v7_preworker_failure.tar.gz"
     ),
 )
 
@@ -549,6 +573,62 @@ def v7_preregistration_supersession() -> dict[str, object]:
     }
 
 
+def v8_preregistration_supersession() -> dict[str, object]:
+    """Bind V8 to the disclosed pre-worker-zero V7 attempt."""
+
+    return {
+        "predecessor_path": V7_PREREGISTRATION_PATH,
+        "predecessor_schema": V7_PREREGISTRATION_SCHEMA,
+        "predecessor_preregistration_sha256": V7_PREREGISTRATION_SHA256,
+        "predecessor_file_sha256": V7_PREREGISTRATION_FILE_SHA256,
+        "v7_source_commit": "50c0c12bf4e96991edb2c6dcaca1f93508f87282",
+        "v7_preworker_artifact_path": (
+            "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+            "pod_artifacts/goal5842_v7_preworker_failure.tar.gz"
+        ),
+        "v7_preworker_artifact_bytes": 3_253,
+        "v7_preworker_artifact_sha256": (
+            "6ad034ebfb18e9158fb7a0b610590e25c9653001ccf2fe1d94365b8a97c0dfdc"
+        ),
+        "failed_stage": "01_gpu_identity_witness_no_timing",
+        "reason_code": "PUBLIC_PROVIDER_LIFECYCLE_SCHEMA_CLASSIFICATION_DEFECT",
+        "execution_authority_sha256": (
+            "717cdc4db1666c891e8900d9d63e0fa562877b90d5af0b07f8d09036d5dbf821"
+        ),
+        "worker_zero_reached": False,
+        "registered_timing_observation_count": 0,
+        "gpu_complete_execution_call_count": 72,
+        "gpu_call_count_basis": (
+            "the timer-free relation CHECK_ON loop completed and validated all "
+            "72 outputs and OptiX traversal receipts before the provider-schema "
+            "assertion raised"
+        ),
+        "failure_marker_sha256": (
+            "71222136e24031c38abfdec3ff4d276187b25b7eb3cacb701b630e05162ae4c6"
+        ),
+        "stdout_sha256": (
+            "b49f4b12bd85968859dd4b43e49fc97bbb555781a5f143e713cb3fd3de02b5bc"
+        ),
+        "stderr_sha256": (
+            "29c43574ccb2df1c8b1124a70dc727fe7346246917c76572779f8dba071c0d84"
+        ),
+        "scientific_design_changed": False,
+        "schedule_changed": False,
+        "workload_changed": False,
+        "statistics_changed": False,
+        "hardware_design_changed": False,
+        "witness_implementation_changed": True,
+        "repair_scope": (
+            "validate relation and triangle against the public prepared-protocol "
+            "provider receipt schema rather than its hidden owner schema"
+        ),
+        "successful_transaction_repeats_full_witness_before_timing": True,
+        "v8_is_v7_retry": False,
+        "v8_is_append_only_full_replication": True,
+        "v7_untimed_calls_pooled_into_v8_estimators": False,
+    }
+
+
 def canonical_bytes(value: object) -> bytes:
     return json.dumps(
         value,
@@ -717,16 +797,16 @@ def validate_preregistration(value: object, root: Path, *, verify_files: bool) -
         "preregistration schema mismatch",
     )
     _require(
-        prereg.get("supersession") == v7_preregistration_supersession(),
-        "V7 pre-worker-zero supersession provenance mismatch",
+        prereg.get("supersession") == v8_preregistration_supersession(),
+        "V8 pre-worker-zero supersession provenance mismatch",
     )
     _require(
         prereg.get("post_failure_replication") == post_failure_replication_provenance(),
         "post-failure replication provenance mismatch",
     )
     _require(
-        prereg.get("status") == "FROZEN_BEFORE_INDEPENDENT_V7_REPLICATION_TIMING",
-        "V7 replication preregistration is not frozen",
+        prereg.get("status") == "FROZEN_BEFORE_INDEPENDENT_V8_REPLICATION_TIMING",
+        "V8 replication preregistration is not frozen",
     )
     _require(
         prereg.get("registered_timing_observation_count") == 0,
@@ -736,7 +816,7 @@ def validate_preregistration(value: object, root: Path, *, verify_files: bool) -
     _require(
         prereg.get("preregistration_build_counter_scope")
         == {
-            "top_level_counters_cover_this_v7_replication_build_only": True,
+            "top_level_counters_cover_this_v8_replication_build_only": True,
             "prior_evidence_is_bound_in_provenance_fields": True,
             "pre_v4_untimed_gpu_complete_execution_call_count": 8,
             "v4_registered_causal_worker_timing_vector_count": 216,
@@ -752,6 +832,9 @@ def validate_preregistration(value: object, root: Path, *, verify_files: bool) -
             "v6_preworker_attempt_count": 2,
             "v6_registered_timing_observation_count": 0,
             "v6_untimed_rtdl_identity_complete_execution_call_count": 72,
+            "v7_preworker_attempt_count": 1,
+            "v7_registered_timing_observation_count": 0,
+            "v7_untimed_rtdl_identity_complete_execution_call_count": 72,
         },
         "replication counter scope or prior evidence disclosure differs",
     )
@@ -920,6 +1003,10 @@ def validate_preregistration(value: object, root: Path, *, verify_files: bool) -
         "v6_untimed_calls_count_as_v7_witness",
         "v4_v5_or_v6_rows_pooled_into_v7_estimators",
         "v7_called_a_retry_of_v6",
+        "v7_preworker_attempt_reclassified_as_success",
+        "v7_untimed_calls_count_as_v8_witness",
+        "v4_v5_v6_or_v7_rows_pooled_into_v8_estimators",
+        "v8_called_a_retry_of_v7",
     ):
         _require(ceiling.get(key) is False, f"claim ceiling widened: {key}")
     _require(
@@ -1020,6 +1107,10 @@ __all__ = [
     "V6_PREREGISTRATION_PATH",
     "V6_PREREGISTRATION_SCHEMA",
     "V6_PREREGISTRATION_SHA256",
+    "V7_PREREGISTRATION_FILE_SHA256",
+    "V7_PREREGISTRATION_PATH",
+    "V7_PREREGISTRATION_SCHEMA",
+    "V7_PREREGISTRATION_SHA256",
     "WORKER_RECEIPT_SCHEMA",
     "Goal5842ContractError",
     "build_baseline_schedule",
@@ -1035,6 +1126,7 @@ __all__ = [
     "v4_preregistration_supersession",
     "v5_post_failure_replication_provenance",
     "v7_preregistration_supersession",
+    "v8_preregistration_supersession",
     "validate_baseline_schedule",
     "validate_causal_schedule",
     "validate_preregistration",
