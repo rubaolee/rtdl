@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 import platform
+import shutil
 import sys
 import tempfile
 import unittest
@@ -16,6 +17,7 @@ from rtdsl.v4_callback_numba_codegen import (
     FORMAL_NUMBA_CACHE_MANIFEST_ENV,
     FORMAL_NUMBA_CACHE_MANIFEST_SHA256_ENV,
     CallbackCodegenError,
+    FormalNumbaLeafCachePolicy,
     GeneratedFormalNumbaLeaf,
     compile_formal_numba_leaf_isolated,
     materialize_formal_numba_leaf_cache_manifest,
@@ -49,7 +51,12 @@ class Goal5775FormalLeafCacheTest(unittest.TestCase):
             ".visible .func rtdl_v4_test() {\n    ret;\n}\n"
         )
 
-    def compile(self, leaf: GeneratedFormalNumbaLeaf):
+    def compile(
+        self,
+        leaf: GeneratedFormalNumbaLeaf,
+        *,
+        formal_leaf_cache: FormalNumbaLeafCachePolicy | None = None,
+    ):
         return compile_formal_numba_leaf_isolated(
             leaf,
             compute_capability=(6, 1),
@@ -59,6 +66,7 @@ class Goal5775FormalLeafCacheTest(unittest.TestCase):
             expected_numba_version="0.65.1",
             expected_numpy_version="2.4.4",
             python_executable=sys.executable,
+            formal_leaf_cache=formal_leaf_cache,
         )
 
     def compiler(self):
@@ -92,6 +100,83 @@ class Goal5775FormalLeafCacheTest(unittest.TestCase):
             entries = [item for item in Path(directory).iterdir() if item.is_dir()]
             self.assertEqual(len(entries), 1)
             self.assertEqual([item.name for item in entries[0].iterdir()], ["artifact.json"])
+
+    def test_explicit_policy_overrides_process_environment(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "explicit"
+            poisoned = Path(directory) / "poisoned"
+            policy = FormalNumbaLeafCachePolicy(root=root)
+            compiler = self.compiler()
+            with mock.patch.dict(
+                os.environ, {FORMAL_NUMBA_CACHE_ENV: str(poisoned)}, clear=False
+            ), mock.patch(
+                "rtdsl.v4_callback_numba_codegen.subprocess.run", compiler
+            ):
+                first = self.compile(self.leaf(), formal_leaf_cache=policy)
+                second = self.compile(self.leaf(), formal_leaf_cache=policy)
+            self.assertEqual(first, second)
+            self.assertEqual(compiler.call_count, 1)
+            self.assertTrue(root.is_dir())
+            self.assertFalse(poisoned.exists())
+
+    def test_explicit_sealed_policy_is_read_only(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "cache"
+            writable = FormalNumbaLeafCachePolicy(root=root)
+            compiler = self.compiler()
+            with mock.patch(
+                "rtdsl.v4_callback_numba_codegen.subprocess.run", compiler
+            ):
+                expected = self.compile(
+                    self.leaf(), formal_leaf_cache=writable
+                )
+            manifest = Path(directory) / "manifest.json"
+            materialize_formal_numba_leaf_cache_manifest(root, manifest)
+            sealed = FormalNumbaLeafCachePolicy(
+                root=root,
+                manifest=manifest,
+                manifest_sha256=hashlib.sha256(manifest.read_bytes()).hexdigest(),
+            )
+            with mock.patch(
+                "rtdsl.v4_callback_numba_codegen.subprocess.run"
+            ) as forbidden:
+                self.assertEqual(
+                    expected,
+                    self.compile(self.leaf(), formal_leaf_cache=sealed),
+                )
+                forbidden.assert_not_called()
+
+    def test_explicit_sealed_policy_does_not_create_missing_root(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "cache"
+            compiler = self.compiler()
+            with mock.patch(
+                "rtdsl.v4_callback_numba_codegen.subprocess.run", compiler
+            ):
+                self.compile(
+                    self.leaf(),
+                    formal_leaf_cache=FormalNumbaLeafCachePolicy(root=root),
+                )
+            manifest = Path(directory) / "manifest.json"
+            materialize_formal_numba_leaf_cache_manifest(root, manifest)
+            sealed = FormalNumbaLeafCachePolicy(
+                root=root,
+                manifest=manifest,
+                manifest_sha256=hashlib.sha256(manifest.read_bytes()).hexdigest(),
+            )
+            shutil.rmtree(root)
+            with self.assertRaisesRegex(
+                CallbackCodegenError, "sealed cache root does not exist"
+            ):
+                self.compile(self.leaf(), formal_leaf_cache=sealed)
+            self.assertFalse(root.exists())
+
+    def test_explicit_policy_requires_complete_manifest_authority(self):
+        with tempfile.TemporaryDirectory() as directory:
+            with self.assertRaisesRegex(ValueError, "must be supplied together"):
+                FormalNumbaLeafCachePolicy(
+                    root=Path(directory), manifest=Path(directory) / "manifest.json"
+                )
 
     def test_ptx_mutation_fails_closed_instead_of_recompiling(self):
         with tempfile.TemporaryDirectory() as directory, mock.patch.dict(

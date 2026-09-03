@@ -118,7 +118,6 @@ from scripts.goal5842_bind_execution_authority import architecture_generation
 from scripts.goal5842_build_cross_generation_authority import (
     build as build_cross_generation_authority,
 )
-from scripts.goal5842_build_preregistration import build
 from scripts.goal5842_gpu_identity_witness import (
     SPHERE_PROVIDER_LIFECYCLE_SCHEMA,
     execute_and_check,
@@ -144,6 +143,10 @@ PREREGISTRATION = ROOT / (
     "history/internal_docs/goal5842_causal_admission_cost_20260903/"
     "PREREGISTRATION_V12.json"
 )
+FINAL_AUTHORITY = ROOT / (
+    "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+    "GOAL5842_FINAL_INTERNAL_AUTHORITY.json"
+)
 V1_PREREGISTRATION = ROOT / V1_PREREGISTRATION_PATH
 V2_PREREGISTRATION = ROOT / V2_PREREGISTRATION_PATH
 V3_PREREGISTRATION = ROOT / V3_PREREGISTRATION_PATH
@@ -162,6 +165,12 @@ FROZEN_CORE = (
 )
 
 
+def _git_blob(commit: str, relative_path: str) -> bytes:
+    return subprocess.check_output(
+        ["git", "show", f"{commit}:{relative_path}"], cwd=ROOT
+    )
+
+
 def _reseal(value: dict[str, object]) -> None:
     value.pop("preregistration_sha256", None)
     value["preregistration_sha256"] = digest(value)
@@ -171,10 +180,28 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.prereg = json.loads(PREREGISTRATION.read_text(encoding="utf-8"))
+        cls.source_commit = json.loads(
+            FINAL_AUTHORITY.read_text(encoding="utf-8")
+        )["source_commit"]
 
-    def test_preregistration_rebuilds_exactly_without_timing(self) -> None:
-        self.assertEqual(build(), self.prereg)
-        validate_preregistration(self.prereg, ROOT, verify_files=True)
+    def test_preregistration_is_bound_to_frozen_source_without_timing(self) -> None:
+        validate_preregistration(self.prereg, ROOT, verify_files=False)
+        subprocess.run(
+            ["git", "cat-file", "-e", f"{self.source_commit}^{{commit}}"],
+            cwd=ROOT,
+            check=True,
+            capture_output=True,
+        )
+        frozen_preregistration = _git_blob(
+            self.source_commit, PREREGISTRATION.relative_to(ROOT).as_posix()
+        )
+        self.assertEqual(frozen_preregistration, PREREGISTRATION.read_bytes())
+        for row in self.prereg["source_manifest"]:
+            payload = _git_blob(self.source_commit, row["path"])
+            self.assertEqual(len(payload), row["bytes"], row["path"])
+            self.assertEqual(
+                hashlib.sha256(payload).hexdigest(), row["sha256"], row["path"]
+            )
         self.assertEqual(self.prereg["registered_timing_observation_count"], 0)
         self.assertEqual(self.prereg["gpu_execution_count"], 0)
 
@@ -980,7 +1007,12 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
             },
         )
         for row in changed:
-            self.assertEqual(sha256_file(ROOT / row["path"]), row["v12_sha256"])
+            self.assertEqual(
+                hashlib.sha256(
+                    _git_blob(self.source_commit, row["path"])
+                ).hexdigest(),
+                row["v12_sha256"],
+            )
         contract_change = supersession["self_referential_contract_source_change"]
         self.assertEqual(
             contract_change["path"],

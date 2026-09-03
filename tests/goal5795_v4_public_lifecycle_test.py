@@ -18,6 +18,7 @@ from rtdsl.v4 import (
     BoundedRelationProtocol,
     BoundedRelationStaticInput,
     CompilerProtocolProjection,
+    FormalNumbaLeafCachePolicy,
     ProtocolLifecycleError,
     TriangleReductionBatch,
     TriangleReductionMode,
@@ -54,6 +55,7 @@ class _FakeOwner:
         self.bad_output_digest = False
         self.bad_receipt = False
         self.bad_receipt_digest = False
+        self.execute_kwargs = []
 
     @property
     def lifecycle_receipt(self):
@@ -61,6 +63,7 @@ class _FakeOwner:
 
     def execute(self, value, **kwargs):
         self.execute_count += 1
+        self.execute_kwargs.append(dict(kwargs))
         output = ((100, 10), (101, 20)) if self.family == "bounded" else 16
         output_sha = _value_sha(output)
         reported_output_sha = (
@@ -368,11 +371,28 @@ class Goal5795PublicLifecycleTest(unittest.TestCase):
             query_metadata={"query.weight": (1, 3, 5, 7)},
         )
         first = prepared.execute(batch)
-        second = prepared.execute(batch)
+        second = prepared.execute(batch, include_diagnostics=True)
         self.assertEqual(first.output, 16)
-        self.assertEqual(first.details["per_ray_u64"], (3, 2, 0, 1))
+        self.assertEqual(first.details, {})
         self.assertEqual(second.output, 16)
+        self.assertEqual(second.details["per_ray_u64"], (3, 2, 0, 1))
+        self.assertEqual(
+            [row["include_diagnostics"] for row in owner.execute_kwargs],
+            [False, True],
+        )
         self.assertEqual(owner.execute_count, 2)
+        prepared.close()
+
+    def test_public_execute_rejects_non_boolean_diagnostics_mode(self):
+        _materialized, prepared, _owner = self._prepare_triangle()
+        batch = TriangleReductionBatch(
+            queries=(((0.1, 0.1, 0.0), (0.0, 0.0, 1.0), 4.0),),
+            query_metadata={"query.weight": (1,)},
+        )
+        with self.assertRaisesRegex(
+            ProtocolLifecycleError, "PL038_DIAGNOSTICS_INVALID"
+        ):
+            prepared.execute(batch, include_diagnostics=1)
         prepared.close()
 
     def test_materialized_executable_is_single_use_and_nonsserializable(self):
@@ -494,6 +514,53 @@ class Goal5795PublicLifecycleTest(unittest.TestCase):
         ):
             materialize_protocol_program(
                 program, target=self.target, toolchain=wrong)
+
+    def test_toolchain_threads_explicit_leaf_cache_to_compiler(self):
+        protocol = TriangleReductionProtocol(
+            TriangleReductionMode.WEIGHTED_HIT_COUNT
+        )
+        program = compile_protocol_program(
+            protocol,
+            physical_plan=standard_protocol_physical_plan(protocol),
+            any_hit_proof=self.triangle_proof,
+        )
+        policy = FormalNumbaLeafCachePolicy(root=Path(self.temp.name) / "leaves")
+        toolchain = V4Toolchain(
+            compute_capability=(8, 9),
+            optix_include=self.optix_include,
+            cuda_include=self.cuda_include,
+            expected_python_version="3.11.0",
+            expected_numba_version="test",
+            expected_numpy_version="test",
+            formal_leaf_cache=policy,
+        )
+        executable = self._fake_executable("triangle-cache-policy")
+        with patch(
+            "rtdsl.v4_triangle_reduction_optix_compiler."
+            "compile_verified_triangle_reduction_executable",
+            return_value=(executable, "compiler log"),
+        ) as compiler:
+            materialize_protocol_program(
+                program, target=self.target, toolchain=toolchain
+            )
+        self.assertIs(compiler.call_args.kwargs["formal_leaf_cache"], policy)
+
+        bounded_protocol = BoundedRelationProtocol(capacity=8)
+        bounded_program = compile_protocol_program(
+            bounded_protocol,
+            physical_plan=standard_protocol_physical_plan(bounded_protocol),
+            any_hit_proof=self.bounded_proof,
+        )
+        bounded_executable = self._fake_executable("bounded-cache-policy")
+        with patch(
+            "rtdsl.v4_bounded_relation_optix_compiler."
+            "compile_verified_bounded_relation_executable",
+            return_value=(bounded_executable, "compiler log"),
+        ) as compiler:
+            materialize_protocol_program(
+                bounded_program, target=self.target, toolchain=toolchain
+            )
+        self.assertIs(compiler.call_args.kwargs["formal_leaf_cache"], policy)
 
     def test_unrecognized_or_decorative_proof_kind_is_rejected(self):
         with self.assertRaisesRegex(

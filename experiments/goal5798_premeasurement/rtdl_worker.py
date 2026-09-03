@@ -159,7 +159,10 @@ def main() -> None:
         if row["task"] != RELATION_TASK else None)
 
     def complete_execute() -> dict[str, Any]:
-        result = prepared.execute(batch)
+        result = prepared.execute(
+            batch,
+            include_diagnostics=(row["task"] == TRIANGLE_TASK),
+        )
         if row["task"] == RELATION_TASK:
             output = result.output
             if output != expected_relation_rows:

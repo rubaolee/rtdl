@@ -22,6 +22,7 @@ from .v4_callback_ir import CallbackRole, RuntimeStatus, ScalarKind
 from .v4_callback_numba_codegen import (
     FORMAL_NUMBA_SOURCE_SCHEMA,
     GeneratedFormalNumbaLeaf,
+    FormalNumbaLeafCachePolicy,
     _Emitter,
     _Value,
     _emit_helper,
@@ -251,6 +252,7 @@ def compile_verified_bounded_relation_executable(
     expected_numpy_version: str,
     accepted_ptx_isa: tuple[str, str] = ("8.0", "9.0"),
     python_executable: str = sys.executable,
+    formal_leaf_cache: FormalNumbaLeafCachePolicy | None = None,
 ) -> tuple[VerifiedBoundedRelationExecutable, str]:
     fresh = _fresh(authority, contract, abi, any_hit_proof_authority)
     if compute_capability != tuple(
@@ -271,6 +273,7 @@ def compile_verified_bounded_relation_executable(
         expected_numba_version=expected_numba_version,
         expected_numpy_version=expected_numpy_version,
         python_executable=python_executable,
+        formal_leaf_cache=formal_leaf_cache,
     ))
     symbols = {
         role.value: artifact.abi_name

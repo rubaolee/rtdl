@@ -103,7 +103,9 @@ def main() -> None:
     oracle_samples = []
 
     def execute_checked():
-        result, api_elapsed = measured(lambda: prepared.execute(batch))
+        result, api_elapsed = measured(
+            lambda: prepared.execute(batch, include_diagnostics=True)
+        )
         oracle_started = time.perf_counter_ns()
         if list(result.details["per_ray_u64"]) != task["expected_per_ray"] \
                 or int(result.output) != int(task["expected_weighted_sum"]):

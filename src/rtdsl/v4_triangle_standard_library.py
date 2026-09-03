@@ -17,6 +17,7 @@ if TYPE_CHECKING:
     )
 
 from .v4_callback_abi import AnyHitProofAuthority
+from .v4_callback_numba_codegen import FormalNumbaLeafCachePolicy
 from .v4_callback_frontend import parse_callback_source
 from .v4_callback_ir import (
     AnyHitDeliveryContract,
@@ -262,6 +263,7 @@ def compile_standard_triangle_program(
     expected_python_version: str,
     expected_numba_version: str,
     expected_numpy_version: str,
+    formal_leaf_cache: FormalNumbaLeafCachePolicy | None = None,
 ) -> StandardTriangleProgram:
     """Compile one closed standard template without app identity dispatch."""
 
@@ -285,6 +287,7 @@ def compile_standard_triangle_program(
         expected_python_version=expected_python_version,
         expected_numba_version=expected_numba_version,
         expected_numpy_version=expected_numpy_version,
+        formal_leaf_cache=formal_leaf_cache,
     )
     return StandardTriangleProgram(
         authority, proof, abi, contract, executable, compiler_log)

@@ -76,6 +76,39 @@ class CallbackCodegenError(ValueError):
 
 
 @dataclass(frozen=True)
+class FormalNumbaLeafCachePolicy:
+    """Explicit content-addressed cache policy for formal Numba leaves.
+
+    A root without a manifest is a create-only development cache. Supplying a
+    manifest and its digest makes the cache read-only and binds exact entry
+    membership. The legacy environment variables remain supported for old
+    harnesses, but a supplied policy is authoritative and requires no process-
+    global environment mutation.
+    """
+
+    root: Path
+    manifest: Path | None = None
+    manifest_sha256: str | None = None
+
+    def __post_init__(self) -> None:
+        root = Path(self.root).expanduser().absolute()
+        manifest = (
+            None
+            if self.manifest is None
+            else Path(self.manifest).expanduser().absolute()
+        )
+        digest = self.manifest_sha256
+        if (manifest is None) != (digest is None):
+            raise ValueError(
+                "formal leaf cache manifest and manifest_sha256 must be supplied together"
+            )
+        if digest is not None and re.fullmatch(r"[0-9a-f]{64}", digest) is None:
+            raise ValueError("formal leaf cache manifest_sha256 must be lowercase SHA-256")
+        object.__setattr__(self, "root", root)
+        object.__setattr__(self, "manifest", manifest)
+
+
+@dataclass(frozen=True)
 class GeneratedFormalNumbaLeaf:
     schema: str
     role: CallbackRole
@@ -875,14 +908,38 @@ def _device_function_artifact_from_dict(
     return artifact
 
 
-def _formal_numba_cache_root(leaf: GeneratedFormalNumbaLeaf) -> Path | None:
-    configured = os.environ.get(FORMAL_NUMBA_CACHE_ENV, "")
+def _formal_numba_cache_root(
+    leaf: GeneratedFormalNumbaLeaf,
+    policy: FormalNumbaLeafCachePolicy | None,
+) -> Path | None:
+    configured = (
+        os.fspath(policy.root)
+        if policy is not None
+        else os.environ.get(FORMAL_NUMBA_CACHE_ENV, "")
+    )
     if not configured:
         _FORMAL_NUMBA_CACHE_COUNTS["disabled"] += 1
         return None
     configured_root = Path(configured)
-    configured_root.mkdir(parents=True, exist_ok=True)
-    if configured_root.is_symlink() or not configured_root.is_dir():
+    sealed = (
+        policy.manifest is not None
+        if policy is not None
+        else bool(
+            os.environ.get(FORMAL_NUMBA_CACHE_MANIFEST_ENV)
+            or os.environ.get(FORMAL_NUMBA_CACHE_MANIFEST_SHA256_ENV)
+        )
+    )
+    if configured_root.is_symlink():
+        _fail("formal_leaf_cache_root", leaf.role.value, os.fspath(configured_root))
+    if not configured_root.exists():
+        if sealed:
+            _fail(
+                "formal_leaf_cache_root",
+                leaf.role.value,
+                "sealed cache root does not exist",
+            )
+        configured_root.mkdir(parents=True)
+    if not configured_root.is_dir():
         _fail("formal_leaf_cache_root", leaf.role.value, os.fspath(configured_root))
     root = configured_root.resolve(strict=True)
     if not root.is_dir() or root.is_symlink():
@@ -965,11 +1022,16 @@ def _formal_numba_cache_manifest_entry(
     key_sha256: str,
     *,
     leaf: GeneratedFormalNumbaLeaf,
+    policy: FormalNumbaLeafCachePolicy | None,
 ) -> Mapping[str, object] | None:
-    manifest_name = os.environ.get(FORMAL_NUMBA_CACHE_MANIFEST_ENV, "")
-    manifest_sha256 = os.environ.get(
-        FORMAL_NUMBA_CACHE_MANIFEST_SHA256_ENV, ""
-    )
+    if policy is None:
+        manifest_name = os.environ.get(FORMAL_NUMBA_CACHE_MANIFEST_ENV, "")
+        manifest_sha256 = os.environ.get(
+            FORMAL_NUMBA_CACHE_MANIFEST_SHA256_ENV, ""
+        )
+    else:
+        manifest_name = os.fspath(policy.manifest) if policy.manifest else ""
+        manifest_sha256 = policy.manifest_sha256 or ""
     if not manifest_name and not manifest_sha256:
         return None
     if not manifest_name or re.fullmatch(r"[0-9a-f]{64}", manifest_sha256) is None:
@@ -1230,6 +1292,7 @@ def compile_formal_numba_leaf_isolated(
     expected_numba_version: str,
     expected_numpy_version: str,
     python_executable: str | os.PathLike[str] = sys.executable,
+    formal_leaf_cache: FormalNumbaLeafCachePolicy | None = None,
     _cache_policy_identity: Mapping[str, object] | None = None,
 ) -> DeviceFunctionArtifact:
     """Compile only the deterministic formal leaf in a fresh child process."""
@@ -1249,7 +1312,11 @@ def compile_formal_numba_leaf_isolated(
         "numeric_mode": leaf.numeric_mode,
         "compute_capability": list(compute_capability),
     }
-    cache_root = _formal_numba_cache_root(leaf)
+    if formal_leaf_cache is not None and not isinstance(
+        formal_leaf_cache, FormalNumbaLeafCachePolicy
+    ):
+        raise TypeError("formal_leaf_cache must be FormalNumbaLeafCachePolicy or None")
+    cache_root = _formal_numba_cache_root(leaf, formal_leaf_cache)
     cache_key_sha256: str | None = None
     cache_key: dict[str, object] | None = None
     if cache_root is not None:
@@ -1265,7 +1332,10 @@ def compile_formal_numba_leaf_isolated(
             policy_identity=_cache_policy_identity,
         )
         manifest_entry = _formal_numba_cache_manifest_entry(
-            cache_root, cache_key_sha256, leaf=leaf
+            cache_root,
+            cache_key_sha256,
+            leaf=leaf,
+            policy=formal_leaf_cache,
         )
         cached = _load_formal_numba_cache_entry(
             cache_root,
@@ -1319,9 +1389,15 @@ def compile_formal_numba_leaf_isolated(
     )
     if cache_root is None:
         return artifact
-    if os.environ.get(FORMAL_NUMBA_CACHE_MANIFEST_ENV) or os.environ.get(
-        FORMAL_NUMBA_CACHE_MANIFEST_SHA256_ENV
-    ):
+    sealed = (
+        formal_leaf_cache.manifest is not None
+        if formal_leaf_cache is not None
+        else bool(
+            os.environ.get(FORMAL_NUMBA_CACHE_MANIFEST_ENV)
+            or os.environ.get(FORMAL_NUMBA_CACHE_MANIFEST_SHA256_ENV)
+        )
+    )
+    if sealed:
         _fail(
             "formal_leaf_cache_sealed_write",
             leaf.role.value,
@@ -1358,6 +1434,7 @@ def compile_formal_numba_leaves_isolated(
     expected_numba_version: str,
     expected_numpy_version: str,
     python_executable: str | os.PathLike[str] = sys.executable,
+    formal_leaf_cache: FormalNumbaLeafCachePolicy | None = None,
 ) -> tuple[DeviceFunctionArtifact, ...]:
     """Compile a closed leaf set in one fresh compiler child.
 
@@ -1370,11 +1447,18 @@ def compile_formal_numba_leaves_isolated(
     rows = tuple(leaves)
     if not rows:
         raise ValueError("at least one formal leaf is required")
-    if any(os.environ.get(name) for name in (
-        FORMAL_NUMBA_CACHE_ENV,
-        FORMAL_NUMBA_CACHE_MANIFEST_ENV,
-        FORMAL_NUMBA_CACHE_MANIFEST_SHA256_ENV,
-    )):
+    if formal_leaf_cache is not None and not isinstance(
+        formal_leaf_cache, FormalNumbaLeafCachePolicy
+    ):
+        raise TypeError("formal_leaf_cache must be FormalNumbaLeafCachePolicy or None")
+    if formal_leaf_cache is not None or any(
+        os.environ.get(name)
+        for name in (
+            FORMAL_NUMBA_CACHE_ENV,
+            FORMAL_NUMBA_CACHE_MANIFEST_ENV,
+            FORMAL_NUMBA_CACHE_MANIFEST_SHA256_ENV,
+        )
+    ):
         before_policy = _formal_numba_cache_policy_identity(
             python_executable, role="batch")
         artifacts = tuple(compile_formal_numba_leaf_isolated(
@@ -1386,6 +1470,7 @@ def compile_formal_numba_leaves_isolated(
             expected_numba_version=expected_numba_version,
             expected_numpy_version=expected_numpy_version,
             python_executable=python_executable,
+            formal_leaf_cache=formal_leaf_cache,
             _cache_policy_identity=before_policy,
         ) for leaf in rows)
         after_policy = _formal_numba_cache_policy_identity(
@@ -1724,6 +1809,7 @@ __all__ = [
     "FORMAL_NUMBA_CACHE_SCHEMA",
     "FORMAL_NUMBA_SOURCE_SCHEMA",
     "CallbackCodegenError",
+    "FormalNumbaLeafCachePolicy",
     "GeneratedFormalNumbaLeaf",
     "compile_formal_numba_leaf_isolated",
     "compile_formal_numba_leaves_isolated",

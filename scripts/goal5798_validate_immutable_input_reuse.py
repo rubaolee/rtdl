@@ -254,7 +254,7 @@ def main() -> None:
         ("A_restore_reuse", triangle_a, expected_a,
          triangle["expected_weighted_sum"]),
     ):
-        observed = triangle_prepared.execute(batch)
+        observed = triangle_prepared.execute(batch, include_diagnostics=True)
         per_ray = tuple(observed.details["per_ray_u64"])
         if per_ray != expected_per_ray or int(observed.output) != int(expected_sum):
             raise RuntimeError(f"triangle transition {label} mismatch")
@@ -264,15 +264,21 @@ def main() -> None:
         })
     triangle_samples = []
     for _ in range(args.warmups):
-        triangle_prepared.execute(triangle_a)
+        triangle_prepared.execute(triangle_a, include_diagnostics=True)
     for _ in range(args.repetitions):
-        _value, duration = elapsed_ns(lambda: triangle_prepared.execute(triangle_a))
+        _value, duration = elapsed_ns(
+            lambda: triangle_prepared.execute(
+                triangle_a, include_diagnostics=True
+            )
+        )
         triangle_samples.append(duration)
     triangle_complete_samples = []
     triangle_bulk_complete_samples = []
 
     def triangle_complete_execute():
-        observed = triangle_prepared.execute(triangle_a)
+        observed = triangle_prepared.execute(
+            triangle_a, include_diagnostics=True
+        )
         per_ray = [int(value) for value in observed.details["per_ray_u64"]]
         weighted = int(observed.output)
         if per_ray != triangle["expected_per_ray"] \
@@ -289,7 +295,9 @@ def main() -> None:
     expected_per_ray_tuple = tuple(triangle["expected_per_ray"])
 
     def triangle_bulk_complete_execute():
-        observed = triangle_prepared.execute(triangle_a)
+        observed = triangle_prepared.execute(
+            triangle_a, include_diagnostics=True
+        )
         per_ray = tuple(observed.details["per_ray_u64"])
         weighted = int(observed.output)
         if per_ray != expected_per_ray_tuple \

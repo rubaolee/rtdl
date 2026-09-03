@@ -34,12 +34,89 @@ from .v4_triangle_reduction_optix_runtime import (
 )
 
 
+class _ProductStatusSummary(ctypes.Structure):
+    _fields_ = [
+        ("schema_version", ctypes.c_uint32),
+        ("ok", ctypes.c_uint32),
+        ("first_error_claimed", ctypes.c_uint32),
+        ("error_code", ctypes.c_uint32),
+        ("validated_row_count", ctypes.c_uint64),
+        ("required_invocation_mask", ctypes.c_uint32),
+        ("terminal_invocation_mask", ctypes.c_uint32),
+        ("invalid_row_count", ctypes.c_uint32),
+        ("first_invalid_row", ctypes.c_uint64),
+        ("role_counters", ctypes.c_uint64 * 7),
+        ("success_status_d2h_bytes", ctypes.c_uint64),
+    ]
+
+
+class _ValidatedProductStatusRows(Sequence[Mapping[str, int]]):
+    """Constant-size status evidence for scalar-only product execution."""
+
+    native_validated_all_ok = True
+
+    def __init__(self, summary: _ProductStatusSummary) -> None:
+        self._row = {
+            "first_error_claimed": int(summary.first_error_claimed),
+            "error_code": int(summary.error_code),
+            "validated_row_count": int(summary.validated_row_count),
+            "required_invocation_mask": int(summary.required_invocation_mask),
+            "terminal_invocation_mask": int(summary.terminal_invocation_mask),
+        }
+
+    def __len__(self) -> int:
+        return 1
+
+    def __getitem__(self, index):
+        if isinstance(index, slice):
+            return (self._row,)[index]
+        if index in (0, -1):
+            return dict(self._row)
+        raise IndexError(index)
+
+    def __iter__(self) -> Iterator[Mapping[str, int]]:
+        yield dict(self._row)
+
+
+def _validate_product_summary(
+    summary: _ProductStatusSummary,
+    counters: Sequence[int],
+    *,
+    query_count: int,
+) -> tuple[_ValidatedProductStatusRows, tuple[int, ...]]:
+    counter_rows = tuple(int(item) for item in counters)
+    summary_counters = tuple(int(item) for item in summary.role_counters)
+    if (
+        int(summary.schema_version) != 2
+        or int(summary.ok) != 1
+        or int(summary.first_error_claimed) != 0
+        or int(summary.error_code) != 0
+        or int(summary.validated_row_count) != query_count
+        or int(summary.required_invocation_mask) != ((1 << 1) | (1 << 6))
+        or int(summary.terminal_invocation_mask) != (1 << 5)
+        or int(summary.invalid_row_count) != 0
+        or int(summary.first_invalid_row) != (1 << 64) - 1
+        or int(summary.success_status_d2h_bytes)
+        != ctypes.sizeof(_ProductStatusSummary)
+        or len(counter_rows) != 7
+        or counter_rows != summary_counters
+        or counter_rows[1] != query_count
+        or counter_rows[6] != query_count
+        or counter_rows[4] + counter_rows[5] != query_count
+    ):
+        raise RuntimeError("prepared triangle product status is invalid")
+    return _ValidatedProductStatusRows(summary), counter_rows
+
+
 def _configure(library):
     prepare = getattr(
         library, "rtdl_optix_v4_prepare_triangle_reduction_callback_v1", None
     )
     execute = getattr(
         library, "rtdl_optix_v4_execute_prepared_triangle_reduction_callback_v2", None
+    )
+    execute_scalar = getattr(
+        library, "rtdl_optix_v4_execute_prepared_triangle_reduction_callback_v4", None
     )
     commit = getattr(
         library, "rtdl_optix_v4_commit_prepared_triangle_reduction_cache_v1", None
@@ -53,7 +130,15 @@ def _configure(library):
     reduce_u64 = getattr(library, "rtdl_optix_v4_checked_u64_product_sum_host_v1", None)
     if any(
         symbol is None
-        for symbol in (prepare, execute, commit, cache_digest, destroy, reduce_u64)
+        for symbol in (
+            prepare,
+            execute,
+            execute_scalar,
+            commit,
+            cache_digest,
+            destroy,
+            reduce_u64,
+        )
     ):
         raise RuntimeError("native library lacks two-phase prepared triangle cache ABI")
     prepare.argtypes = [
@@ -89,6 +174,22 @@ def _configure(library):
         ctypes.POINTER(ctypes.c_char),
         ctypes.c_size_t,
     ]
+    execute_scalar.argtypes = [
+        ctypes.c_uint64,
+        ctypes.POINTER(ctypes.c_float),
+        ctypes.POINTER(ctypes.c_float),
+        ctypes.POINTER(ctypes.c_float),
+        ctypes.c_size_t,
+        ctypes.c_uint32,
+        ctypes.c_uint32,
+        ctypes.c_uint32,
+        ctypes.POINTER(ctypes.c_uint64),
+        ctypes.POINTER(ctypes.c_uint64),
+        ctypes.POINTER(_ProductStatusSummary),
+        ctypes.POINTER(ctypes.c_uint64),
+        ctypes.POINTER(ctypes.c_char),
+        ctypes.c_size_t,
+    ]
     commit.argtypes = [
         ctypes.c_uint64,
         ctypes.POINTER(ctypes.c_uint8),
@@ -113,9 +214,25 @@ def _configure(library):
         ctypes.POINTER(ctypes.c_char),
         ctypes.c_size_t,
     ]
-    for symbol in (prepare, execute, commit, cache_digest, destroy, reduce_u64):
+    for symbol in (
+        prepare,
+        execute,
+        execute_scalar,
+        commit,
+        cache_digest,
+        destroy,
+        reduce_u64,
+    ):
         symbol.restype = ctypes.c_int
-    return prepare, execute, commit, cache_digest, destroy, reduce_u64
+    return (
+        prepare,
+        execute,
+        execute_scalar,
+        commit,
+        cache_digest,
+        destroy,
+        reduce_u64,
+    )
 
 
 def _raise(status, error, label):
@@ -324,9 +441,15 @@ class PreparedTriangleReductionOwner:
         native_sha = hashlib.sha256(native_path.read_bytes()).hexdigest()
         if native_sha != fresh.target.native_sha256:
             raise RuntimeError("executed native bytes do not match target authority")
-        prepare, execute, commit, cache_digest, destroy, reduce_u64 = _configure(
-            library
-        )
+        (
+            prepare,
+            execute,
+            execute_scalar,
+            commit,
+            cache_digest,
+            destroy,
+            reduce_u64,
+        ) = _configure(library)
         vertices_native = (ctypes.c_float * len(vertex_flat))(*vertex_flat)
         triangles_native = (ctypes.c_uint32 * len(index_flat))(*index_flat)
         token = ctypes.c_uint64()
@@ -356,6 +479,7 @@ class PreparedTriangleReductionOwner:
         self._token = int(token.value)
         self._library = library
         self._execute = execute
+        self._execute_scalar = execute_scalar
         self._commit = commit
         self._cache_digest = cache_digest
         self._destroy = destroy
@@ -382,6 +506,11 @@ class PreparedTriangleReductionOwner:
         self._active = threading.Lock()
         self._closed = False
         self._execution_count = 0
+        self._last_execution_receipt = None
+        self._scalar_output = ctypes.c_uint64()
+        self._product_summary = _ProductStatusSummary()
+        self._product_counters = (ctypes.c_uint64 * 7)()
+        self._call_error = ctypes.create_string_buffer(16384)
         self.prepare_seconds = time.perf_counter() - started
         self._session_identity = _digest(
             {
@@ -463,12 +592,15 @@ class PreparedTriangleReductionOwner:
             "prepare_seconds_reported_separately": True,
             "cold_result_replaced": False,
             "execution_count": self._execution_count,
+            "last_execution": self._last_execution_receipt,
             "native_library_sha256": self._native_sha,
             "composed_ptx_sha256": self._composed_ptx_sha,
         }
 
-    def execute(self, queries, *, query_metadata=None):
+    def execute(self, queries, *, query_metadata=None, include_diagnostics=True):
         self._check()
+        if type(include_diagnostics) is not bool:
+            raise TypeError("include_diagnostics must be an exact bool")
         if not self._active.acquire(blocking=False):
             raise RuntimeError("prepared triangle owner is already executing")
         try:
@@ -583,103 +715,161 @@ class PreparedTriangleReductionOwner:
                 ctypes.POINTER(ctypes.c_float)
             )
             tmax_native = tmax_f32.ctypes.data_as(ctypes.POINTER(ctypes.c_float))
-            per_ray = (ctypes.c_uint64 * count)()
-            event_count = ctypes.c_uint64()
-            event_query = self._event_query_host
-            event_primitive = self._event_primitive_host
-            event_stable = self._event_stable_host
-            event_signed = self._event_signed_host
-            event_include = self._event_include_host
-            statuses = (_Status * count)()
-            counters = (ctypes.c_uint64 * 7)()
-            error = ctypes.create_string_buffer(16384)
+            reducer = self._fresh.schema.reducer
+            scalar_only = (
+                not include_diagnostics
+                and reducer.algebra
+                in {
+                    ReducerAlgebra.CHECKED_U64_SUM,
+                    ReducerAlgebra.CHECKED_U64_PRODUCT_SUM,
+                }
+            )
+            error = getattr(self, "_call_error", None)
+            if error is None:
+                error = ctypes.create_string_buffer(16384)
+                self._call_error = error
             audit = OptixTraversalAuditSession.open(library=self._library)
             try:
-                _raise(
-                    int(
-                        self._execute(
-                            self._token,
-                            origin_native,
-                            direction_native,
-                            tmax_native,
-                            count,
-                            int(cache_hit),
-                            per_ray,
-                            ctypes.byref(event_count),
-                            event_query,
-                            event_primitive,
-                            event_stable,
-                            event_signed,
-                            event_include,
-                            statuses,
-                            counters,
-                            error,
-                            len(error),
-                        )
-                    ),
-                    error,
-                    "prepared triangle execute",
-                )
-                # The paired native ABI scanned every status row and would
-                # have failed before returning any output.  Preserve the full
-                # rows lazily for users and evidence consumers.
-                status_rows = _ValidatedStatusRows(statuses)
-                counter_rows = tuple(int(item) for item in counters)
-                if (
-                    counter_rows[1] != count
-                    or counter_rows[5] != count
-                    or counter_rows[6] != count
-                    or counter_rows[3] <= 0
-                ):
-                    raise RuntimeError("prepared triangle role lifecycle incomplete")
-                per_ray_values = _U64Values(per_ray)
-                reducer = self._fresh.schema.reducer
-                if reducer.algebra is ReducerAlgebra.CHECKED_KEYED_I64_SUM:
-                    rows = []
-                    for index in range(int(event_count.value)):
-                        rows.append(
-                            {
-                                "launch_index": int(event_query[index]),
-                                "primitive_index": int(event_primitive[index]),
-                                "primitive.stable_id": int(event_stable[index]),
-                                "primitive.signed_value": int(event_signed[index]),
-                                "primitive.include": int(event_include[index]),
-                            }
-                        )
-                    reduced = execute_checked_reducer(reducer, rows)
-                    reducer_rows: Sequence[Mapping[str, int]] = tuple(rows)
-                else:
-                    value_field = reducer.value_source.output_field
-                    assert reducer.value_source.kind is ReducerSourceKind.PER_RAY_OUTPUT
-                    assert value_field is not None
-                    multipliers = None
-                    multiplier_semantic = None
-                    if reducer.multiplicand_source is not None:
-                        multiplier_semantic = reducer.multiplicand_source.semantic_id
-                        assert multiplier_semantic is not None
-                        multipliers = normalized[multiplier_semantic]
-                    reduced_native = ctypes.c_uint64()
+                if scalar_only:
+                    reduced_native = getattr(self, "_scalar_output", None)
+                    if reduced_native is None:
+                        reduced_native = ctypes.c_uint64()
+                        self._scalar_output = reduced_native
+                    summary = getattr(self, "_product_summary", None)
+                    if summary is None:
+                        summary = _ProductStatusSummary()
+                        self._product_summary = summary
+                    counters = getattr(self, "_product_counters", None)
+                    if counters is None:
+                        counters = (ctypes.c_uint64 * 7)()
+                        self._product_counters = counters
+                    use_multipliers = int(multiplier_native is not None)
                     _raise(
                         int(
-                            self._reduce_u64(
-                                per_ray,
-                                multiplier_native,
+                            self._execute_scalar(
+                                self._token,
+                                origin_native,
+                                direction_native,
+                                tmax_native,
                                 count,
+                                int(cache_hit),
+                                use_multipliers,
+                                int(cache_hit and use_multipliers),
+                                multiplier_native,
                                 ctypes.byref(reduced_native),
+                                ctypes.byref(summary),
+                                counters,
                                 error,
                                 len(error),
                             )
                         ),
                         error,
-                        "prepared triangle checked U64 reduction",
+                        "prepared triangle scalar execute",
+                    )
+                    status_rows, counter_rows = _validate_product_summary(
+                        summary, counters, query_count=count
                     )
                     reduced = int(reduced_native.value)
-                    reducer_rows = _PerRayReducerRows(
-                        per_ray_values,
-                        value_field=value_field,
-                        multiplier_semantic=multiplier_semantic,
-                        multipliers=multipliers,
+                    per_ray_values: Sequence[int] = ()
+                    reducer_rows: Sequence[Mapping[str, int]] = ()
+                else:
+                    per_ray = (ctypes.c_uint64 * count)()
+                    event_count = ctypes.c_uint64()
+                    event_query = self._event_query_host
+                    event_primitive = self._event_primitive_host
+                    event_stable = self._event_stable_host
+                    event_signed = self._event_signed_host
+                    event_include = self._event_include_host
+                    statuses = (_Status * count)()
+                    counters = (ctypes.c_uint64 * 7)()
+                    _raise(
+                        int(
+                            self._execute(
+                                self._token,
+                                origin_native,
+                                direction_native,
+                                tmax_native,
+                                count,
+                                int(cache_hit),
+                                per_ray,
+                                ctypes.byref(event_count),
+                                event_query,
+                                event_primitive,
+                                event_stable,
+                                event_signed,
+                                event_include,
+                                statuses,
+                                counters,
+                                error,
+                                len(error),
+                            )
+                        ),
+                        error,
+                        "prepared triangle diagnostic execute",
                     )
+                    status_rows = _ValidatedStatusRows(statuses)
+                    counter_rows = tuple(int(item) for item in counters)
+                    if (
+                        counter_rows[1] != count
+                        or counter_rows[5] != count
+                        or counter_rows[6] != count
+                        or counter_rows[3] <= 0
+                    ):
+                        raise RuntimeError(
+                            "prepared triangle role lifecycle incomplete"
+                        )
+                    per_ray_values = _U64Values(per_ray)
+                    if reducer.algebra is ReducerAlgebra.CHECKED_KEYED_I64_SUM:
+                        rows = []
+                        for index in range(int(event_count.value)):
+                            rows.append(
+                                {
+                                    "launch_index": int(event_query[index]),
+                                    "primitive_index": int(event_primitive[index]),
+                                    "primitive.stable_id": int(event_stable[index]),
+                                    "primitive.signed_value": int(event_signed[index]),
+                                    "primitive.include": int(event_include[index]),
+                                }
+                            )
+                        reduced = execute_checked_reducer(reducer, rows)
+                        reducer_rows = tuple(rows)
+                    else:
+                        value_field = reducer.value_source.output_field
+                        assert (
+                            reducer.value_source.kind
+                            is ReducerSourceKind.PER_RAY_OUTPUT
+                        )
+                        assert value_field is not None
+                        multipliers = None
+                        multiplier_semantic = None
+                        if reducer.multiplicand_source is not None:
+                            multiplier_semantic = (
+                                reducer.multiplicand_source.semantic_id
+                            )
+                            assert multiplier_semantic is not None
+                            multipliers = normalized[multiplier_semantic]
+                        reduced_native = ctypes.c_uint64()
+                        _raise(
+                            int(
+                                self._reduce_u64(
+                                    per_ray,
+                                    multiplier_native,
+                                    count,
+                                    ctypes.byref(reduced_native),
+                                    error,
+                                    len(error),
+                                )
+                            ),
+                            error,
+                            "prepared triangle checked U64 reduction",
+                        )
+                        reduced = int(reduced_native.value)
+                        reducer_rows = _PerRayReducerRows(
+                            per_ray_values,
+                            value_field=value_field,
+                            multiplier_semantic=multiplier_semantic,
+                            multipliers=multipliers,
+                        )
                 output_sha = _digest(reduced)
                 receipt = audit.finish(
                     semantic_digest=_digest(
@@ -722,6 +912,20 @@ class PreparedTriangleReductionOwner:
                     self._cached_query_digest = query_digest
                 else:
                     self._clear_query_cache_identity()
+            self._last_execution_receipt = {
+                "schema": "rtdl.v4.triangle_reduction_execution_boundary.v1",
+                "execution_path": (
+                    "device_resident_checked_u64_scalar_v4"
+                    if scalar_only
+                    else "diagnostic_per_ray_v2"
+                ),
+                "prepared_query_input_reused": bool(cache_hit),
+                "per_ray_u64_materialized_on_host": not scalar_only,
+                "event_rows_materialized_on_host": not scalar_only,
+                "public_output_scalar_bytes": (
+                    ctypes.sizeof(ctypes.c_uint64) if scalar_only else None
+                ),
+            }
             self._execution_count += 1
             return V4TriangleReductionResult(
                 reduced_output=reduced,

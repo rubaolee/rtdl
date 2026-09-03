@@ -24,6 +24,7 @@ from .v4_callback_interpreter import (
     RuntimeRecord,
     execute_callback_role,
 )
+from .v4_callback_numba_codegen import FormalNumbaLeafCachePolicy
 from .v4_callback_ir import (
     AABB3F,
     BOOL,
@@ -152,6 +153,7 @@ __all__ = sorted([
     "CompiledCallbackAbi",
     "CompilerProtocolProjection",
     "FrozenConstant",
+    "FormalNumbaLeafCachePolicy",
     "GeometryAdmission",
     "GeometryContract",
     "GeometryProofAuthority",

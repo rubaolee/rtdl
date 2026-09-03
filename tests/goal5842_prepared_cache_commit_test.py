@@ -16,6 +16,7 @@ class _NativeDigestState:
         self.digest: bytes | None = None
         self.pending = False
         self.reuse_flags: list[int] = []
+        self.scalar_multiplier_flags: list[tuple[int, int]] = []
         self.commit_count = 0
 
     def begin_execution(self, reuse: int) -> int:
@@ -181,7 +182,41 @@ def _triangle_owner(state: _NativeDigestState):
         ctypes.cast(output, ctypes.POINTER(ctypes.c_uint64))[0] = total
         return 0
 
+    def execute_scalar(*args):
+        reuse = int(args[5])
+        use_multipliers = int(args[6])
+        reuse_multipliers = int(args[7])
+        state.scalar_multiplier_flags.append((use_multipliers, reuse_multipliers))
+        if state.begin_execution(reuse):
+            return 1
+        count = int(args[4])
+        multiplier = int(args[8][0]) if use_multipliers else 1
+        ctypes.cast(args[9], ctypes.POINTER(ctypes.c_uint64))[0] = 3 * multiplier
+        summary = ctypes.cast(
+            args[10], ctypes.POINTER(triangle._ProductStatusSummary)
+        )[0]
+        summary.schema_version = 2
+        summary.ok = 1
+        summary.first_error_claimed = 0
+        summary.error_code = 0
+        summary.validated_row_count = count
+        summary.required_invocation_mask = (1 << 1) | (1 << 6)
+        summary.terminal_invocation_mask = 1 << 5
+        summary.invalid_row_count = 0
+        summary.first_invalid_row = (1 << 64) - 1
+        for index in range(7):
+            args[11][index] = 0
+            summary.role_counters[index] = 0
+        for index, value in ((1, count), (3, 1), (5, count), (6, count)):
+            args[11][index] = value
+            summary.role_counters[index] = value
+        summary.success_status_d2h_bytes = ctypes.sizeof(
+            triangle._ProductStatusSummary
+        )
+        return 0
+
     owner._execute = execute
+    owner._execute_scalar = execute_scalar
     owner._reduce_u64 = reduce_u64
     return owner
 
@@ -301,6 +336,111 @@ class Goal5842PreparedCacheCommitTest(unittest.TestCase):
         self.assertEqual(state.reuse_flags, [0, 1])
         self.assertEqual(state.commit_count, 1)
         self.assertEqual(owner._native_query_cache_digest(), owner._cached_query_digest)
+
+    def test_triangle_scalar_path_keeps_per_ray_rows_device_resident(self):
+        state = _NativeDigestState()
+        owner = _triangle_owner(state)
+        queries = (((0.0, 0.0, 0.0), (0.0, 0.0, 1.0), 2.0),)
+        metadata = {"query.weight": (2,)}
+        typed = ({"query.weight": (2,)}, None, None, None)
+
+        def forbidden(*_args):
+            raise AssertionError("diagnostic/host reduction path was called")
+
+        owner._execute = forbidden
+        owner._reduce_u64 = forbidden
+        with (
+            patch.object(
+                triangle.OptixTraversalAuditSession,
+                "open",
+                side_effect=lambda **_kwargs: _Audit(),
+            ),
+            patch.object(triangle, "_typed_metadata", return_value=typed),
+        ):
+            first = owner.execute(
+                queries, query_metadata=metadata, include_diagnostics=False
+            )
+            second = owner.execute(
+                queries, query_metadata=metadata, include_diagnostics=False
+            )
+        self.assertEqual(first.reduced_output, 6)
+        self.assertEqual(second.reduced_output, 6)
+        self.assertEqual(tuple(first.per_ray_u64), ())
+        self.assertEqual(tuple(first.raw_reducer_rows), ())
+        self.assertTrue(first.launch_status.native_validated_all_ok)
+        self.assertEqual(first.launch_status[0]["validated_row_count"], 1)
+        self.assertEqual(state.reuse_flags, [0, 1])
+        self.assertEqual(state.scalar_multiplier_flags, [(1, 0), (1, 1)])
+        self.assertEqual(state.commit_count, 1)
+        boundary = owner._last_execution_receipt
+        self.assertEqual(
+            boundary["execution_path"], "device_resident_checked_u64_scalar_v4"
+        )
+        self.assertTrue(boundary["prepared_query_input_reused"])
+        self.assertFalse(boundary["per_ray_u64_materialized_on_host"])
+        self.assertFalse(boundary["event_rows_materialized_on_host"])
+        self.assertEqual(boundary["public_output_scalar_bytes"], 8)
+
+    def test_triangle_scalar_path_rejects_invalid_product_summary(self):
+        state = _NativeDigestState()
+        owner = _triangle_owner(state)
+        valid_scalar = owner._execute_scalar
+
+        def corrupt_summary(*args):
+            status = valid_scalar(*args)
+            summary = ctypes.cast(
+                args[10], ctypes.POINTER(triangle._ProductStatusSummary)
+            )[0]
+            summary.ok = 0
+            return status
+
+        owner._execute_scalar = corrupt_summary
+        queries = (((0.0, 0.0, 0.0), (0.0, 0.0, 1.0), 2.0),)
+        typed = ({"query.weight": (2,)}, None, None, None)
+        with (
+            patch.object(
+                triangle.OptixTraversalAuditSession,
+                "open",
+                side_effect=lambda **_kwargs: _Audit(),
+            ),
+            patch.object(triangle, "_typed_metadata", return_value=typed),
+            self.assertRaisesRegex(RuntimeError, "product status is invalid"),
+        ):
+            owner.execute(
+                queries,
+                query_metadata={"query.weight": (2,)},
+                include_diagnostics=False,
+            )
+        self.assertEqual(state.commit_count, 0)
+        self.assertIsNone(owner._cached_queries)
+
+    def test_triangle_scalar_sum_path_uses_no_multiplier(self):
+        state = _NativeDigestState()
+        owner = _triangle_owner(state)
+        owner._fresh.schema.metadata_channels = ()
+        owner._fresh.schema.reducer = SimpleNamespace(
+            algebra=triangle.ReducerAlgebra.CHECKED_U64_SUM,
+            multiplicand_source=None,
+            value_source=SimpleNamespace(
+                kind=triangle.ReducerSourceKind.PER_RAY_OUTPUT,
+                output_field="hit_count",
+            ),
+        )
+        queries = (((0.0, 0.0, 0.0), (0.0, 0.0, 1.0), 2.0),)
+        typed = ({}, None, None, None)
+        with (
+            patch.object(
+                triangle.OptixTraversalAuditSession,
+                "open",
+                side_effect=lambda **_kwargs: _Audit(),
+            ),
+            patch.object(triangle, "_typed_metadata", return_value=typed),
+        ):
+            result = owner.execute(
+                queries, query_metadata={}, include_diagnostics=False
+            )
+        self.assertEqual(result.reduced_output, 3)
+        self.assertEqual(state.scalar_multiplier_flags, [(0, 0)])
 
     def test_triangle_native_digest_mismatch_forces_rebuild(self):
         state = _NativeDigestState()

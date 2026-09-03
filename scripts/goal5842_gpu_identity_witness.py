@@ -161,7 +161,7 @@ def execute_triangle_auxiliary_full_oracle(
     materialized = program.materialize(target=target, toolchain=toolchain)
     prepared = materialized.prepare(task.static_input)
     try:
-        result = prepared.execute(task.batch)
+        result = prepared.execute(task.batch, include_diagnostics=True)
     finally:
         prepared.close()
     full_output = {

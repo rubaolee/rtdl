@@ -32,6 +32,7 @@ from typing import Mapping, Sequence
 
 from .v4_callback_abi import AnyHitProofAuthority
 from .v4_callback_interpreter import execute_callback_role
+from .v4_callback_numba_codegen import FormalNumbaLeafCachePolicy
 from .v4_callback_ir import (
     AnyHitDeliveryContract,
     CallbackRole,
@@ -364,6 +365,7 @@ class V4Toolchain:
     expected_python_version: str
     expected_numba_version: str
     expected_numpy_version: str
+    formal_leaf_cache: FormalNumbaLeafCachePolicy | None = None
 
     def __post_init__(self) -> None:
         capability = tuple(int(item) for item in self.compute_capability)
@@ -383,6 +385,14 @@ class V4Toolchain:
             "expected_numpy_version",
         ):
             _nonempty(getattr(self, name), f"toolchain.{name}")
+        if self.formal_leaf_cache is not None and not isinstance(
+            self.formal_leaf_cache, FormalNumbaLeafCachePolicy
+        ):
+            _fail(
+                "PL037_CACHE_POLICY_INVALID",
+                "toolchain.formal_leaf_cache",
+                type(self.formal_leaf_cache).__name__,
+            )
         object.__setattr__(self, "compute_capability", capability)
         object.__setattr__(self, "optix_include", optix)
         object.__setattr__(self, "cuda_include", cuda)
@@ -394,6 +404,7 @@ class V4Toolchain:
         compute_capability: tuple[int, int],
         optix_include: str | Path,
         cuda_include: str | Path,
+        formal_leaf_cache: FormalNumbaLeafCachePolicy | None = None,
     ) -> "V4Toolchain":
         return cls(
             compute_capability=compute_capability,
@@ -405,6 +416,7 @@ class V4Toolchain:
             ),
             expected_numba_version=importlib.metadata.version("numba"),
             expected_numpy_version=importlib.metadata.version("numpy"),
+            formal_leaf_cache=formal_leaf_cache,
         )
 
 
@@ -912,6 +924,7 @@ def materialize_protocol_program(
         expected_python_version=toolchain.expected_python_version,
         expected_numba_version=toolchain.expected_numba_version,
         expected_numpy_version=toolchain.expected_numpy_version,
+        formal_leaf_cache=toolchain.formal_leaf_cache,
     )
     if isinstance(program.protocol, BoundedRelationProtocol):
         from .v4_bounded_relation_optix_compiler import (
@@ -1233,6 +1246,7 @@ class PreparedProtocolProgram:
     @property
     def lifecycle_receipt(self) -> dict[str, object]:
         self._check_open()
+        provider = getattr(self._owner, "lifecycle_receipt", None)
         return {
             "schema": "rtdl.v4.public_protocol_lifecycle.v1",
             "family": self._family.value,
@@ -1250,6 +1264,11 @@ class PreparedProtocolProgram:
             "protocol_contract_verdict": self._protocol_contract_decision.verdict,
             "protocol_contract_decision_sha256": (
                 self._protocol_contract_decision.to_mapping()["decision_sha256"]),
+            "provider_execution": (
+                provider.get("last_execution")
+                if isinstance(provider, Mapping)
+                else None
+            ),
         }
 
     def _check_owner_thread(self) -> None:
@@ -1266,8 +1285,16 @@ class PreparedProtocolProgram:
     def execute(
         self,
         batch: BoundedRelationBatch | TriangleReductionBatch,
+        *,
+        include_diagnostics: bool = False,
     ) -> ProtocolExecutionResult:
         self._check_open()
+        if type(include_diagnostics) is not bool:
+            _fail(
+                "PL038_DIAGNOSTICS_INVALID",
+                "prepared.execute.include_diagnostics",
+                "exact bool required",
+            )
         if not self._active.acquire(blocking=False):
             _fail("PL023_REENTRANT", "prepared.execute", "already active")
         try:
@@ -1286,12 +1313,19 @@ class PreparedProtocolProgram:
                 if not isinstance(batch, TriangleReductionBatch):
                     _fail("PL027_BATCH_MISMATCH", "batch", type(batch).__name__)
                 raw = self._owner.execute(
-                    batch.queries, query_metadata=batch.metadata_dict())
+                    batch.queries,
+                    query_metadata=batch.metadata_dict(),
+                    include_diagnostics=include_diagnostics,
+                )
                 output = raw.reduced_output
-                details = {
-                    "per_ray_u64": raw.per_ray_u64,
-                    "raw_reducer_rows": raw.raw_reducer_rows,
-                }
+                details = (
+                    {
+                        "per_ray_u64": raw.per_ray_u64,
+                        "raw_reducer_rows": raw.raw_reducer_rows,
+                    }
+                    if include_diagnostics
+                    else {}
+                )
             if raw.composed_ptx_sha256 != self._identity.composed_ptx_sha256 \
                     or raw.native_library_sha256 != self._identity.native_library_sha256:
                 _fail(
@@ -1393,6 +1427,7 @@ __all__ = [
     "BoundedRelationBatch",
     "BoundedRelationProtocol",
     "BoundedRelationStaticInput",
+    "FormalNumbaLeafCachePolicy",
     "MaterializedProtocolProgram",
     "PreparedProtocolProgram",
     "ProtocolExecutableIdentity",
