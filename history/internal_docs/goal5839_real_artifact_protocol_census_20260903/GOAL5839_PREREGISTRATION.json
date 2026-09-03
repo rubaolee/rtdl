@@ -1,0 +1,1455 @@
+{
+  "artifact_discovery_and_selection_protocol": {
+    "canonical_route_rule_per_artifact": "classify every distinct paper-evaluated OptiX route explicitly named by artifact docs; otherwise classify the documented default OptiX target; if neither is unique, retain the artifact but classify all cells UNRESOLVED_WITH_REASON",
+    "completeness_boundary": "complete for 29 survey works under this finite discovery protocol, not a claim that all code ever published on the internet was found",
+    "discovery_cutoff_utc": "2026-09-03T06:56:46Z",
+    "discovery_steps_in_order": [
+      "inspect exact bibliography DOI/URL fields and canonical paper landing page",
+      "inspect the exact paper and publisher supplement for author-declared code or artifact links",
+      "run GitHub repository search for the exact paper title; preserve query and first 50 returned repository identities",
+      "run general web search for the exact quoted title plus source code; preserve query and first 20 returned URLs",
+      "inspect candidate repository README/citation/license metadata only to establish author/paper relation before source classification"
+    ],
+    "duplicate_or_mirror_precedence": [
+      "exact artifact revision explicitly named by the paper",
+      "publisher-hosted archival artifact explicitly attached to the paper",
+      "first code repository URL in paper order",
+      "author-or-institution repository whose metadata explicitly identifies the paper"
+    ],
+    "eligible_artifact": "public source artifact explicitly linked by the paper/publisher or maintained by a paper author/institution with metadata that identifies the paper, and containing a buildable or statically inspectable implementation of the paper's NVIDIA OptiX RT-repurposing route at an exact revision",
+    "excluded_artifacts": [
+      "CUDA-only or CPU-only baselines without the paper's OptiX route",
+      "rendering-only code unrelated to the surveyed repurposing workload",
+      "third-party reimplementations not released by paper authors or the named institution",
+      "forks or mirrors with no distinct author-maintained implementation",
+      "paper prose or pseudocode without statically inspectable source",
+      "binary-only releases whose relevant protocol cannot be statically inspected"
+    ],
+    "multiple_distinct_official_artifacts": "inventory and classify every distinct eligible official artifact; use precedence only to collapse byte-identical mirrors or duplicate releases, and never choose based on observed labels",
+    "no_public_artifact_found_effect": "retain work and emit five UNRESOLVED_WITH_REASON cells using the frozen no-artifact reason",
+    "revision_rule": "use paper-declared tag/commit when exact; otherwise pin the observed default-branch HEAD, commit, tree, submodules, and acquisition timestamp without later updating it",
+    "same_precedence_tie_breaker": "lexicographically smallest normalized canonical URL",
+    "work_denominator_never_shrinks": true
+  },
+  "authority_sha256": "767fb5e8601268aea8c505babec0fcbf25d6c9407b54cb9801c5271c8015df0c",
+  "claim_boundary": {
+    "absence_of_enforcement_found": false,
+    "external_review_or_consensus": false,
+    "field_prevalence_result": false,
+    "paper_ready_complete_denominator_table": false,
+    "performance_or_application_correctness": false,
+    "preregistration_only": true,
+    "real_artifact_violation_found": false
+  },
+  "classification_contract": {
+    "absence_of_explicit_check_is_violation": false,
+    "allowed_labels_only": [
+      "ENFORCED",
+      "UNCHECKED_BUT_APPARENTLY_CONSISTENT",
+      "VIOLATED",
+      "UNRESOLVED_WITH_REASON"
+    ],
+    "allowed_unresolved_reasons": [
+      "NO_ELIGIBLE_PUBLIC_AUTHOR_ARTIFACT_FOUND_UNDER_FROZEN_DISCOVERY_PROTOCOL",
+      "PUBLIC_ARTIFACT_UNAVAILABLE_AT_ACQUISITION",
+      "NO_STATICALLY_INSPECTABLE_OPTIX_ROUTE",
+      "RELEVANT_GENERATED_OR_HOST_SOURCE_MISSING",
+      "MULTIPLE_ROUTES_WITH_NO_FROZEN_CANONICAL_ROUTE",
+      "SEMANTIC_INTENT_AMBIGUOUS_IN_EXACT_SOURCE_AND_PAPER",
+      "BUILD_OR_GENERATION_STEP_REQUIRED_TO_OBSERVE_PROPERTY_BUT_NOT_REPRODUCIBLE",
+      "PROPERTY_NOT_APPLICABLE_ONLY_AFTER_INDEPENDENT_ADJUDICATION",
+      "INDEPENDENT_EXTRACTION_OR_ADJUDICATION_PENDING",
+      "RESPONSIBLE_DISCLOSURE_GATE_PENDING"
+    ],
+    "ambiguity_default": "UNRESOLVED_WITH_REASON",
+    "favorable_imputation_allowed": false,
+    "label_definitions": {
+      "ENFORCED": "An exact, relevant machine check observes independently sourced protocol facts and rejects the incompatible route before launch or result consumption.",
+      "UNCHECKED_BUT_APPARENTLY_CONSISTENT": "No complete relevant enforcing check was found, but the exact canonical route's inspected producers, consumers, bindings, and continuation appear mutually consistent; this is not proof and not a defect count.",
+      "UNRESOLVED_WITH_REASON": "Available exact evidence is insufficient, ambiguous, unavailable, or needs a missing build/generated artifact. The reason must be one frozen token.",
+      "VIOLATED": "Exact source evidence establishes a concrete reachable mismatch in the canonical declared route; public naming additionally requires independent adjudication and the responsible-disclosure gate."
+    },
+    "matching_machine_types_are_semantic_ownership": false,
+    "not_applicable_is_standalone_label": false,
+    "successful_build_or_output_is_enforcement": false
+  },
+  "denominator": {
+    "complete_under_scope": true,
+    "distinct_problem_label_count": 32,
+    "expected_minimum_property_cell_count_after_census": 145,
+    "paper_problem_row_count": 35,
+    "problem_rows": [
+      {
+        "citation_key": "Kim2025RTPDPD",
+        "problem": "Penetration Depth",
+        "source_index": 0,
+        "survey_measurements": {
+          "average": "3.2",
+          "best_speedup": "5.33",
+          "improves_count": "4",
+          "worst_speedup": "0.93"
+        }
+      },
+      {
+        "citation_key": "Zhang2025RTSpMSpMHR",
+        "problem": "SpMM",
+        "source_index": 1,
+        "survey_measurements": {
+          "average": "3.46",
+          "best_speedup": "4.02",
+          "improves_count": "5",
+          "worst_speedup": "1.1"
+        }
+      },
+      {
+        "citation_key": "Xiao2025ACS",
+        "problem": "BFS",
+        "source_index": 2,
+        "survey_measurements": {
+          "average": "0.54",
+          "best_speedup": "1.4",
+          "improves_count": "1",
+          "worst_speedup": "0.4"
+        }
+      },
+      {
+        "citation_key": "Xiao2025ACS",
+        "problem": "Triangle Counting",
+        "source_index": 3,
+        "survey_measurements": {
+          "average": "1.07",
+          "best_speedup": "2.0",
+          "improves_count": "3",
+          "worst_speedup": "0.4"
+        }
+      },
+      {
+        "citation_key": "Xiao2025ACS",
+        "problem": "Set Intersection",
+        "source_index": 4,
+        "survey_measurements": {
+          "average": "1.26",
+          "best_speedup": "10.0",
+          "improves_count": "2",
+          "worst_speedup": "0.4"
+        }
+      },
+      {
+        "citation_key": "Xiao2025ACS",
+        "problem": "Binary Search",
+        "source_index": 5,
+        "survey_measurements": {
+          "average": "1.15",
+          "best_speedup": "2.0",
+          "improves_count": "3",
+          "worst_speedup": "0.5"
+        }
+      },
+      {
+        "citation_key": "Geng2025LibRTSAS",
+        "problem": "Point Queries",
+        "source_index": 6,
+        "survey_measurements": {
+          "average": "50.91",
+          "best_speedup": "85.1",
+          "improves_count": "5",
+          "worst_speedup": "2.0"
+        }
+      },
+      {
+        "citation_key": "Geng2025LibRTSAS",
+        "problem": "Range Queries",
+        "source_index": 7,
+        "survey_measurements": {
+          "average": "55.94",
+          "best_speedup": "94.0",
+          "improves_count": "5",
+          "worst_speedup": "1.91"
+        }
+      },
+      {
+        "citation_key": "Nagarajan2025RTBarnesHutAB",
+        "problem": "Barnes-Hut",
+        "source_index": 8,
+        "survey_measurements": {
+          "average": "49.41",
+          "best_speedup": "93.0",
+          "improves_count": "5",
+          "worst_speedup": "6.0"
+        }
+      },
+      {
+        "citation_key": "Sui2024HardwareAcceleratedRT",
+        "problem": "Discrete CD",
+        "source_index": 9,
+        "survey_measurements": {
+          "average": "1.92",
+          "best_speedup": "2.8",
+          "improves_count": "4",
+          "worst_speedup": "0.5"
+        }
+      },
+      {
+        "citation_key": "Sui2024HardwareAcceleratedRT",
+        "problem": "Continuous CD",
+        "source_index": 10,
+        "survey_measurements": {
+          "average": "1.91",
+          "best_speedup": "3.0",
+          "improves_count": "4",
+          "worst_speedup": "0.3"
+        }
+      },
+      {
+        "citation_key": "Henneberg2024MoreBF",
+        "problem": "Range Queries",
+        "source_index": 11,
+        "survey_measurements": {
+          "average": "1.44",
+          "best_speedup": "1.5",
+          "improves_count": "5",
+          "worst_speedup": "1.0"
+        }
+      },
+      {
+        "citation_key": "Meneses2024RTXRMQ",
+        "problem": "RMQ",
+        "source_index": 12,
+        "survey_measurements": {
+          "average": "0.57",
+          "best_speedup": "2.3",
+          "improves_count": "2",
+          "worst_speedup": "0.2"
+        }
+      },
+      {
+        "citation_key": "Geng2024RayJoinFA",
+        "problem": "Line-Segment Intersection",
+        "source_index": 13,
+        "survey_measurements": {
+          "average": "2.11",
+          "best_speedup": "2.4",
+          "improves_count": "5",
+          "worst_speedup": "1.5"
+        }
+      },
+      {
+        "citation_key": "Geng2024RayJoinFA",
+        "problem": "Point in Polygon",
+        "source_index": 14,
+        "survey_measurements": {
+          "average": "15.12",
+          "best_speedup": "22.2",
+          "improves_count": "5",
+          "worst_speedup": "2.1"
+        }
+      },
+      {
+        "citation_key": "Mandarapu2023ArkadeKN",
+        "problem": "Non-euclidean kNN",
+        "source_index": 15,
+        "survey_measurements": {
+          "average": "112.33",
+          "best_speedup": "200.0",
+          "improves_count": "5",
+          "worst_speedup": "1.6"
+        }
+      },
+      {
+        "citation_key": "Liu2023JUNOOH",
+        "problem": "ANN",
+        "source_index": 16,
+        "survey_measurements": {
+          "average": "6.34",
+          "best_speedup": "8.5",
+          "improves_count": "5",
+          "worst_speedup": "2.2"
+        }
+      },
+      {
+        "citation_key": "Wang2024RTODEO",
+        "problem": "Outlier Detection",
+        "source_index": 17,
+        "survey_measurements": {
+          "average": "7.34",
+          "best_speedup": "9.9",
+          "improves_count": "5",
+          "worst_speedup": "2.0"
+        }
+      },
+      {
+        "citation_key": "Lv2024RTScanES",
+        "problem": "Index Scan",
+        "source_index": 18,
+        "survey_measurements": {
+          "average": "3.95",
+          "best_speedup": "4.7",
+          "improves_count": "5",
+          "worst_speedup": "1.2"
+        }
+      },
+      {
+        "citation_key": "Nagarajan2023RTkNNSUU",
+        "problem": "kNN",
+        "source_index": 19,
+        "survey_measurements": {
+          "average": "109.86",
+          "best_speedup": "200.0",
+          "improves_count": "5",
+          "worst_speedup": "2.0"
+        }
+      },
+      {
+        "citation_key": "zhao2023leveraging",
+        "problem": "Particle Simulation",
+        "source_index": 20,
+        "survey_measurements": {
+          "average": "1.51",
+          "best_speedup": "1.6",
+          "improves_count": "5",
+          "worst_speedup": "1.1"
+        }
+      },
+      {
+        "citation_key": "Henneberg2023RTIndeXEH",
+        "problem": "Point Queries",
+        "source_index": 21,
+        "survey_measurements": {
+          "average": "1.7",
+          "best_speedup": "7.6",
+          "improves_count": "3",
+          "worst_speedup": "0.2"
+        }
+      },
+      {
+        "citation_key": "Hashinoki2023ImplementationOR",
+        "problem": "Radio Wave Propagation",
+        "source_index": 22,
+        "survey_measurements": {
+          "average": "3.8",
+          "best_speedup": "5.25",
+          "improves_count": "5",
+          "worst_speedup": "4.86"
+        }
+      },
+      {
+        "citation_key": "Nagarajan2023RTDBSCANAD",
+        "problem": "DBSCAN",
+        "source_index": 23,
+        "survey_measurements": {
+          "average": "2.71",
+          "best_speedup": "4.0",
+          "improves_count": "4",
+          "worst_speedup": "1.3"
+        }
+      },
+      {
+        "citation_key": "Morrical2022AcceleratingUM",
+        "problem": "Point Location",
+        "source_index": 24,
+        "survey_measurements": {
+          "average": "3.95",
+          "best_speedup": "6.6",
+          "improves_count": "4",
+          "worst_speedup": "1.7"
+        }
+      },
+      {
+        "citation_key": "zhu2022rtnn",
+        "problem": "FRNN",
+        "source_index": 25,
+        "survey_measurements": {
+          "average": "7.94",
+          "best_speedup": "10.0",
+          "improves_count": "5",
+          "worst_speedup": "1.0"
+        }
+      },
+      {
+        "citation_key": "Wang2022AnGP",
+        "problem": "Particle Tracking",
+        "source_index": 26,
+        "survey_measurements": {
+          "average": "1.85",
+          "best_speedup": "2.0",
+          "improves_count": "5",
+          "worst_speedup": "1.08"
+        }
+      },
+      {
+        "citation_key": "zellmann2020accelerating",
+        "problem": "Graph Drawing",
+        "source_index": 27,
+        "survey_measurements": {
+          "average": "8.76",
+          "best_speedup": "13.0",
+          "improves_count": "5",
+          "worst_speedup": "4.0"
+        }
+      },
+      {
+        "citation_key": "Morrical2019EfficientSS",
+        "problem": "Space Skipping",
+        "source_index": 28,
+        "survey_measurements": {
+          "average": "5.16",
+          "best_speedup": "7.0",
+          "improves_count": "5",
+          "worst_speedup": "3.0"
+        }
+      },
+      {
+        "citation_key": "Petrescu2019GPUSR",
+        "problem": "Segmentation",
+        "source_index": 29,
+        "survey_measurements": {
+          "average": "4.61",
+          "best_speedup": "6.2",
+          "improves_count": "5",
+          "worst_speedup": "3.1"
+        }
+      },
+      {
+        "citation_key": "Chan2018ParticlemeshCI",
+        "problem": "Particle-Mesh Coupling",
+        "source_index": 30,
+        "survey_measurements": {
+          "average": "1.3",
+          "best_speedup": "1.47",
+          "improves_count": "4",
+          "worst_speedup": "0.96"
+        }
+      },
+      {
+        "citation_key": "Liu2025RayTC",
+        "problem": "Infrared Radiation",
+        "source_index": 31,
+        "survey_measurements": {
+          "average": "8.47",
+          "best_speedup": "13.41",
+          "improves_count": "5",
+          "worst_speedup": "7.38"
+        }
+      },
+      {
+        "citation_key": "Cui2024RTSRTAM",
+        "problem": "Particle Transport",
+        "source_index": 32,
+        "survey_measurements": {
+          "average": "1.59",
+          "best_speedup": "1.67",
+          "improves_count": "5",
+          "worst_speedup": "1.0"
+        }
+      },
+      {
+        "citation_key": "Salmon2019ExploitingHR",
+        "problem": "Particle Transport",
+        "source_index": 33,
+        "survey_measurements": {
+          "average": "1.43",
+          "best_speedup": "1.5",
+          "improves_count": "5",
+          "worst_speedup": "1.1"
+        }
+      },
+      {
+        "citation_key": "Schwarz2010FastPS",
+        "problem": "Voxelization",
+        "source_index": 34,
+        "survey_measurements": {
+          "average": "12.42",
+          "best_speedup": "18.2",
+          "improves_count": "5",
+          "worst_speedup": "2.5"
+        }
+      }
+    ],
+    "unique_work_count": 29,
+    "unit": "all_29_unique_cited_works_represented_by_the_exact_35_row_survey_problem_table, plus every distinct eligible public author artifact discovered for each work",
+    "works": [
+      {
+        "artifact_discovery_status": "NOT_STARTED_AT_PREREGISTRATION",
+        "author": "Ka\u2010Hou Chan and W. Ke and Sio Kei Im",
+        "citation_key": "Chan2018ParticlemeshCI",
+        "classification_cell_count": 0,
+        "doi": null,
+        "entry_type": "article",
+        "raw_bibtex_entry_sha256": "fe17662d027e4aeaa8a0b893db869ef8c7c3d4de532b749ec3dd9993fdfccb62",
+        "survey_problem_rows": [
+          {
+            "citation_key": "Chan2018ParticlemeshCI",
+            "problem": "Particle-Mesh Coupling",
+            "source_index": 30,
+            "survey_measurements": {
+              "average": "1.3",
+              "best_speedup": "1.47",
+              "improves_count": "4",
+              "worst_speedup": "0.96"
+            }
+          }
+        ],
+        "title": "Particle\u2013mesh coupling in the interaction of fluid and deformable bodies with screen space refraction rendering",
+        "url": null,
+        "work_id": "survey_bib:Chan2018ParticlemeshCI",
+        "year": "2018"
+      },
+      {
+        "artifact_discovery_status": "NOT_STARTED_AT_PREREGISTRATION",
+        "author": "Cunhao Cui and Tiejun Li and Jianmin Zhang and Hanqing Li and Changsong Jin and Ruixuan Ren",
+        "citation_key": "Cui2024RTSRTAM",
+        "classification_cell_count": 0,
+        "doi": null,
+        "entry_type": "article",
+        "raw_bibtex_entry_sha256": "4ba316a90f15cc8c8af318afe76a94391be8220723b2c036d2fcb4a0557be78a",
+        "survey_problem_rows": [
+          {
+            "citation_key": "Cui2024RTSRTAM",
+            "problem": "Particle Transport",
+            "source_index": 32,
+            "survey_measurements": {
+              "average": "1.59",
+              "best_speedup": "1.67",
+              "improves_count": "5",
+              "worst_speedup": "1.0"
+            }
+          }
+        ],
+        "title": "RTSRT: Accelerating Monte Carlo Particle Transport with Ray Tracing Shared Cache Architecture",
+        "url": null,
+        "work_id": "survey_bib:Cui2024RTSRTAM",
+        "year": "2024"
+      },
+      {
+        "artifact_discovery_status": "NOT_STARTED_AT_PREREGISTRATION",
+        "author": "Liang Geng and Rubao Lee and Xiaodong Zhang",
+        "citation_key": "Geng2024RayJoinFA",
+        "classification_cell_count": 0,
+        "doi": null,
+        "entry_type": "article",
+        "raw_bibtex_entry_sha256": "8c0f0dcbef1c48a7aaf72c4df160df3620b208c8d1d448bbbf0571a7ceb05b99",
+        "survey_problem_rows": [
+          {
+            "citation_key": "Geng2024RayJoinFA",
+            "problem": "Line-Segment Intersection",
+            "source_index": 13,
+            "survey_measurements": {
+              "average": "2.11",
+              "best_speedup": "2.4",
+              "improves_count": "5",
+              "worst_speedup": "1.5"
+            }
+          },
+          {
+            "citation_key": "Geng2024RayJoinFA",
+            "problem": "Point in Polygon",
+            "source_index": 14,
+            "survey_measurements": {
+              "average": "15.12",
+              "best_speedup": "22.2",
+              "improves_count": "5",
+              "worst_speedup": "2.1"
+            }
+          }
+        ],
+        "title": "RayJoin: Fast and Precise Spatial Join",
+        "url": null,
+        "work_id": "survey_bib:Geng2024RayJoinFA",
+        "year": "2024"
+      },
+      {
+        "artifact_discovery_status": "NOT_STARTED_AT_PREREGISTRATION",
+        "author": "Liang Geng and Rubao Lee and Xiaodong Zhang",
+        "citation_key": "Geng2025LibRTSAS",
+        "classification_cell_count": 0,
+        "doi": null,
+        "entry_type": "article",
+        "raw_bibtex_entry_sha256": "313dabef27d1c7f7e86d8183fb01f7d21dccd451be45d3ca681d5e41daf1ac7f",
+        "survey_problem_rows": [
+          {
+            "citation_key": "Geng2025LibRTSAS",
+            "problem": "Point Queries",
+            "source_index": 6,
+            "survey_measurements": {
+              "average": "50.91",
+              "best_speedup": "85.1",
+              "improves_count": "5",
+              "worst_speedup": "2.0"
+            }
+          },
+          {
+            "citation_key": "Geng2025LibRTSAS",
+            "problem": "Range Queries",
+            "source_index": 7,
+            "survey_measurements": {
+              "average": "55.94",
+              "best_speedup": "94.0",
+              "improves_count": "5",
+              "worst_speedup": "1.91"
+            }
+          }
+        ],
+        "title": "LibRTS: A Spatial Indexing Library by Ray Tracing",
+        "url": null,
+        "work_id": "survey_bib:Geng2025LibRTSAS",
+        "year": "2025"
+      },
+      {
+        "artifact_discovery_status": "NOT_STARTED_AT_PREREGISTRATION",
+        "author": "Shinya Hashinoki and Satoshi Ohshima and Takahiro Katagiri and Toru Nagai and Tetsuya Hoshino",
+        "citation_key": "Hashinoki2023ImplementationOR",
+        "classification_cell_count": 0,
+        "doi": null,
+        "entry_type": "article",
+        "raw_bibtex_entry_sha256": "d3fffa18de979bcc62ef4a1998bf3957987fcb3d8420cf6564334875e369983d",
+        "survey_problem_rows": [
+          {
+            "citation_key": "Hashinoki2023ImplementationOR",
+            "problem": "Radio Wave Propagation",
+            "source_index": 22,
+            "survey_measurements": {
+              "average": "3.8",
+              "best_speedup": "5.25",
+              "improves_count": "5",
+              "worst_speedup": "4.86"
+            }
+          }
+        ],
+        "title": "Implementation of Radio Wave Propagation using RT Cores and Consideration of Programming Models",
+        "url": null,
+        "work_id": "survey_bib:Hashinoki2023ImplementationOR",
+        "year": "2023"
+      },
+      {
+        "artifact_discovery_status": "NOT_STARTED_AT_PREREGISTRATION",
+        "author": "Justus Henneberg and Felix Martin Schuhknecht",
+        "citation_key": "Henneberg2023RTIndeXEH",
+        "classification_cell_count": 0,
+        "doi": null,
+        "entry_type": "article",
+        "raw_bibtex_entry_sha256": "4a778cbdc4f694fc1b102890286ca0c47554825db7cea187c6e1693eb37732bf",
+        "survey_problem_rows": [
+          {
+            "citation_key": "Henneberg2023RTIndeXEH",
+            "problem": "Point Queries",
+            "source_index": 21,
+            "survey_measurements": {
+              "average": "1.7",
+              "best_speedup": "7.6",
+              "improves_count": "3",
+              "worst_speedup": "0.2"
+            }
+          }
+        ],
+        "title": "RTIndeX: Exploiting Hardware-Accelerated GPU Raytracing for Database Indexing",
+        "url": null,
+        "work_id": "survey_bib:Henneberg2023RTIndeXEH",
+        "year": "2023"
+      },
+      {
+        "artifact_discovery_status": "NOT_STARTED_AT_PREREGISTRATION",
+        "author": "Justus Henneberg and Felix Martin Schuhknecht and Rosina F. Kharal and Trevor Brown",
+        "citation_key": "Henneberg2024MoreBF",
+        "classification_cell_count": 0,
+        "doi": null,
+        "entry_type": "article",
+        "raw_bibtex_entry_sha256": "818f202f0b75198e08f77f72576c57a56d80729df4186e9e65c71e4b32e990fe",
+        "survey_problem_rows": [
+          {
+            "citation_key": "Henneberg2024MoreBF",
+            "problem": "Range Queries",
+            "source_index": 11,
+            "survey_measurements": {
+              "average": "1.44",
+              "best_speedup": "1.5",
+              "improves_count": "5",
+              "worst_speedup": "1.0"
+            }
+          }
+        ],
+        "title": "More Bang for Your Buck(et): Fast and Space-Efficient Hardware-Accelerated Coarse-Granular Indexing on GPUs",
+        "url": null,
+        "work_id": "survey_bib:Henneberg2024MoreBF",
+        "year": "2024"
+      },
+      {
+        "artifact_discovery_status": "NOT_STARTED_AT_PREREGISTRATION",
+        "author": "YoungWoo Kim and Sungmin Kwon and Duksu Kim",
+        "citation_key": "Kim2025RTPDPD",
+        "classification_cell_count": 0,
+        "doi": null,
+        "entry_type": "article",
+        "raw_bibtex_entry_sha256": "61d8ba11887d3775e00b606c6cf84ee81944808eed3e39bc3b56c0df25d3864e",
+        "survey_problem_rows": [
+          {
+            "citation_key": "Kim2025RTPDPD",
+            "problem": "Penetration Depth",
+            "source_index": 0,
+            "survey_measurements": {
+              "average": "3.2",
+              "best_speedup": "5.33",
+              "improves_count": "4",
+              "worst_speedup": "0.93"
+            }
+          }
+        ],
+        "title": "RTPD: penetration depth calculation using hardware-accelerated ray-tracing",
+        "url": null,
+        "work_id": "survey_bib:Kim2025RTPDPD",
+        "year": "2025"
+      },
+      {
+        "artifact_discovery_status": "NOT_STARTED_AT_PREREGISTRATION",
+        "author": "Zihan Liu and Wentao Ni and Jingwen Leng and Yu Feng and Cong Guo and Quan Chen and Chao Li and Minyi Guo and Yuhao Zhu",
+        "citation_key": "Liu2023JUNOOH",
+        "classification_cell_count": 0,
+        "doi": null,
+        "entry_type": "article",
+        "raw_bibtex_entry_sha256": "b21a081945928c98957e56b97f945779d808ea691d0cbac407e4a58a15370f4f",
+        "survey_problem_rows": [
+          {
+            "citation_key": "Liu2023JUNOOH",
+            "problem": "ANN",
+            "source_index": 16,
+            "survey_measurements": {
+              "average": "6.34",
+              "best_speedup": "8.5",
+              "improves_count": "5",
+              "worst_speedup": "2.2"
+            }
+          }
+        ],
+        "title": "JUNO: Optimizing High-Dimensional Approximate Nearest Neighbour Search with Sparsity-Aware Algorithm and Ray-Tracing Core Mapping",
+        "url": null,
+        "work_id": "survey_bib:Liu2023JUNOOH",
+        "year": "2023"
+      },
+      {
+        "artifact_discovery_status": "NOT_STARTED_AT_PREREGISTRATION",
+        "author": "Jiaan Liu and Qitai Eri and Bo Kong and Jifeng Huang and Yue Zhou",
+        "citation_key": "Liu2025RayTC",
+        "classification_cell_count": 0,
+        "doi": null,
+        "entry_type": "article",
+        "raw_bibtex_entry_sha256": "fd701642cfdef5d8fdaac50f20a78553c898ed313821a1497088fd4ac5662201",
+        "survey_problem_rows": [
+          {
+            "citation_key": "Liu2025RayTC",
+            "problem": "Infrared Radiation",
+            "source_index": 31,
+            "survey_measurements": {
+              "average": "8.47",
+              "best_speedup": "13.41",
+              "improves_count": "5",
+              "worst_speedup": "7.38"
+            }
+          }
+        ],
+        "title": "Ray tracing core accelerated high performance implementation for infrared radiation signature simulation using reverse Monte Carlo method",
+        "url": null,
+        "work_id": "survey_bib:Liu2025RayTC",
+        "year": "2025"
+      },
+      {
+        "artifact_discovery_status": "NOT_STARTED_AT_PREREGISTRATION",
+        "author": "Yangming Lv and Kai Zhang and Ziming Wang and Xiaodong Zhang and Rubao Lee and Zhenying He and Yinan Jing and Xiaoyang Sean Wang",
+        "citation_key": "Lv2024RTScanES",
+        "classification_cell_count": 0,
+        "doi": null,
+        "entry_type": "article",
+        "raw_bibtex_entry_sha256": "728dc2f711155c854bdce9897e4b08dc42f688eb2a652f5604449c1b2c004b21",
+        "survey_problem_rows": [
+          {
+            "citation_key": "Lv2024RTScanES",
+            "problem": "Index Scan",
+            "source_index": 18,
+            "survey_measurements": {
+              "average": "3.95",
+              "best_speedup": "4.7",
+              "improves_count": "5",
+              "worst_speedup": "1.2"
+            }
+          }
+        ],
+        "title": "RTScan: Efficient Scan with Ray Tracing Cores",
+        "url": null,
+        "work_id": "survey_bib:Lv2024RTScanES",
+        "year": "2024"
+      },
+      {
+        "artifact_discovery_status": "NOT_STARTED_AT_PREREGISTRATION",
+        "author": "Durga Keerthi Mandarapu and Vani Nagarajan and Artem Pelenitsyn and Milind Kulkarni",
+        "citation_key": "Mandarapu2023ArkadeKN",
+        "classification_cell_count": 0,
+        "doi": null,
+        "entry_type": "article",
+        "raw_bibtex_entry_sha256": "9ce64384e8d814cc206917c9b9158eae0919d8fdc6e024b5c1e4b2accf827841",
+        "survey_problem_rows": [
+          {
+            "citation_key": "Mandarapu2023ArkadeKN",
+            "problem": "Non-euclidean kNN",
+            "source_index": 15,
+            "survey_measurements": {
+              "average": "112.33",
+              "best_speedup": "200.0",
+              "improves_count": "5",
+              "worst_speedup": "1.6"
+            }
+          }
+        ],
+        "title": "Arkade: k-Nearest Neighbor Search With Non-Euclidean Distances using GPU Ray Tracing",
+        "url": null,
+        "work_id": "survey_bib:Mandarapu2023ArkadeKN",
+        "year": "2023"
+      },
+      {
+        "artifact_discovery_status": "NOT_STARTED_AT_PREREGISTRATION",
+        "author": "Enzo Meneses and Crist\u00f3bal A. Navarro and H\u00e9ctor Ferrada and Felipe A. Quezada",
+        "citation_key": "Meneses2024RTXRMQ",
+        "classification_cell_count": 0,
+        "doi": "https://doi.org/10.1016/j.future.2024.03.040",
+        "entry_type": "article",
+        "raw_bibtex_entry_sha256": "f06910423cdb1993ff358689bbf37d9b381c4f57acd3d65a0677c16393937743",
+        "survey_problem_rows": [
+          {
+            "citation_key": "Meneses2024RTXRMQ",
+            "problem": "RMQ",
+            "source_index": 12,
+            "survey_measurements": {
+              "average": "0.57",
+              "best_speedup": "2.3",
+              "improves_count": "2",
+              "worst_speedup": "0.2"
+            }
+          }
+        ],
+        "title": "Accelerating range minimum queries with ray tracing cores",
+        "url": "https://www.sciencedirect.com/science/article/pii/S0167739X24001110",
+        "work_id": "survey_bib:Meneses2024RTXRMQ",
+        "year": "2024"
+      },
+      {
+        "artifact_discovery_status": "NOT_STARTED_AT_PREREGISTRATION",
+        "author": "Nate Morrical and Will Usher and Ingo Wald and Valerio Pascucci",
+        "citation_key": "Morrical2019EfficientSS",
+        "classification_cell_count": 0,
+        "doi": null,
+        "entry_type": "article",
+        "raw_bibtex_entry_sha256": "aef0c8dbf441905d7aa59e60e003fb65df602e1399726a35c4c3bb4afb187454",
+        "survey_problem_rows": [
+          {
+            "citation_key": "Morrical2019EfficientSS",
+            "problem": "Space Skipping",
+            "source_index": 28,
+            "survey_measurements": {
+              "average": "5.16",
+              "best_speedup": "7.0",
+              "improves_count": "5",
+              "worst_speedup": "3.0"
+            }
+          }
+        ],
+        "title": "Efficient Space Skipping and Adaptive Sampling of Unstructured Volumes Using Hardware Accelerated Ray Tracing",
+        "url": null,
+        "work_id": "survey_bib:Morrical2019EfficientSS",
+        "year": "2019"
+      },
+      {
+        "artifact_discovery_status": "NOT_STARTED_AT_PREREGISTRATION",
+        "author": "Nate Morrical and Ingo Wald and Will Usher and Valerio Pascucci",
+        "citation_key": "Morrical2022AcceleratingUM",
+        "classification_cell_count": 0,
+        "doi": null,
+        "entry_type": "article",
+        "raw_bibtex_entry_sha256": "596f85074f3963bf531fff1fd0cbfa655e5867abe338f109ed7c415d4aa92265",
+        "survey_problem_rows": [
+          {
+            "citation_key": "Morrical2022AcceleratingUM",
+            "problem": "Point Location",
+            "source_index": 24,
+            "survey_measurements": {
+              "average": "3.95",
+              "best_speedup": "6.6",
+              "improves_count": "4",
+              "worst_speedup": "1.7"
+            }
+          }
+        ],
+        "title": "Accelerating Unstructured Mesh Point Location With RT Cores",
+        "url": null,
+        "work_id": "survey_bib:Morrical2022AcceleratingUM",
+        "year": "2022"
+      },
+      {
+        "artifact_discovery_status": "NOT_STARTED_AT_PREREGISTRATION",
+        "author": "Vani Nagarajan and Milind Kulkarni",
+        "citation_key": "Nagarajan2023RTDBSCANAD",
+        "classification_cell_count": 0,
+        "doi": null,
+        "entry_type": "article",
+        "raw_bibtex_entry_sha256": "4d4af592cf862adbd0509ba70e9e4fc263a8a92f90c2e99d736e8f655da9848a",
+        "survey_problem_rows": [
+          {
+            "citation_key": "Nagarajan2023RTDBSCANAD",
+            "problem": "DBSCAN",
+            "source_index": 23,
+            "survey_measurements": {
+              "average": "2.71",
+              "best_speedup": "4.0",
+              "improves_count": "4",
+              "worst_speedup": "1.3"
+            }
+          }
+        ],
+        "title": "RT-DBSCAN: Accelerating DBSCAN using Ray Tracing Hardware",
+        "url": null,
+        "work_id": "survey_bib:Nagarajan2023RTDBSCANAD",
+        "year": "2023"
+      },
+      {
+        "artifact_discovery_status": "NOT_STARTED_AT_PREREGISTRATION",
+        "author": "Vani Nagarajan and Durga Keerthi Mandarapu and Milind Kulkarni",
+        "citation_key": "Nagarajan2023RTkNNSUU",
+        "classification_cell_count": 0,
+        "doi": null,
+        "entry_type": "article",
+        "raw_bibtex_entry_sha256": "25da5a1e0e184b23e4b9312de57eb507ff979f99c210769c51f6c4320f5a04f1",
+        "survey_problem_rows": [
+          {
+            "citation_key": "Nagarajan2023RTkNNSUU",
+            "problem": "kNN",
+            "source_index": 19,
+            "survey_measurements": {
+              "average": "109.86",
+              "best_speedup": "200.0",
+              "improves_count": "5",
+              "worst_speedup": "2.0"
+            }
+          }
+        ],
+        "title": "RT-kNNS Unbound: Using RT Cores to Accelerate Unrestricted Neighbor Search",
+        "url": null,
+        "work_id": "survey_bib:Nagarajan2023RTkNNSUU",
+        "year": "2023"
+      },
+      {
+        "artifact_discovery_status": "NOT_STARTED_AT_PREREGISTRATION",
+        "author": "Vani Nagarajan and Rohan Gangaraju and Kirshanthan Sundararajah and Artem Pelenitsyn and Milind Kulkarni",
+        "citation_key": "Nagarajan2025RTBarnesHutAB",
+        "classification_cell_count": 0,
+        "doi": null,
+        "entry_type": "article",
+        "raw_bibtex_entry_sha256": "9c4f1074725558115691c3bad952d822ad484ef8952074afb2794b6f3f3ccc9f",
+        "survey_problem_rows": [
+          {
+            "citation_key": "Nagarajan2025RTBarnesHutAB",
+            "problem": "Barnes-Hut",
+            "source_index": 8,
+            "survey_measurements": {
+              "average": "49.41",
+              "best_speedup": "93.0",
+              "improves_count": "5",
+              "worst_speedup": "6.0"
+            }
+          }
+        ],
+        "title": "{RT-BarnesHut}: Accelerating Barnes-Hut Using Ray-Tracing Hardware",
+        "url": null,
+        "work_id": "survey_bib:Nagarajan2025RTBarnesHutAB",
+        "year": "2025"
+      },
+      {
+        "artifact_discovery_status": "NOT_STARTED_AT_PREREGISTRATION",
+        "author": "Lucian Petrescu and Anca Morar and Florica Moldoveanu and Alin Dragos Bogdan Moldoveanu",
+        "citation_key": "Petrescu2019GPUSR",
+        "classification_cell_count": 0,
+        "doi": null,
+        "entry_type": "article",
+        "raw_bibtex_entry_sha256": "8aa641a5b97311644116a6e1605826173a26ff19119935f6fcf6f0dce0851205",
+        "survey_problem_rows": [
+          {
+            "citation_key": "Petrescu2019GPUSR",
+            "problem": "Segmentation",
+            "source_index": 29,
+            "survey_measurements": {
+              "average": "4.61",
+              "best_speedup": "6.2",
+              "improves_count": "5",
+              "worst_speedup": "3.1"
+            }
+          }
+        ],
+        "title": "GPU Sparse Ray-Traced Segmentation",
+        "url": "https://api.semanticscholar.org/CorpusID:174818776",
+        "work_id": "survey_bib:Petrescu2019GPUSR",
+        "year": "2019"
+      },
+      {
+        "artifact_discovery_status": "NOT_STARTED_AT_PREREGISTRATION",
+        "author": "Justin Salmon and Simon McIntosh-Smith",
+        "citation_key": "Salmon2019ExploitingHR",
+        "classification_cell_count": 0,
+        "doi": null,
+        "entry_type": "article",
+        "raw_bibtex_entry_sha256": "6f919f6e7a1e29565ba33a2c28e71ef8297743e4a482273042888aef5dd8105e",
+        "survey_problem_rows": [
+          {
+            "citation_key": "Salmon2019ExploitingHR",
+            "problem": "Particle Transport",
+            "source_index": 33,
+            "survey_measurements": {
+              "average": "1.43",
+              "best_speedup": "1.5",
+              "improves_count": "5",
+              "worst_speedup": "1.1"
+            }
+          }
+        ],
+        "title": "Exploiting Hardware-Accelerated Ray Tracing for Monte Carlo Particle Transport with OpenMC",
+        "url": null,
+        "work_id": "survey_bib:Salmon2019ExploitingHR",
+        "year": "2019"
+      },
+      {
+        "artifact_discovery_status": "NOT_STARTED_AT_PREREGISTRATION",
+        "author": "Michael Schwarz and Hans-Peter Seidel",
+        "citation_key": "Schwarz2010FastPS",
+        "classification_cell_count": 0,
+        "doi": null,
+        "entry_type": "article",
+        "raw_bibtex_entry_sha256": "e67b1ff897b4ac6ab1774061ed198e40fe63e6ef4effc1ba202fcae73b6def82",
+        "survey_problem_rows": [
+          {
+            "citation_key": "Schwarz2010FastPS",
+            "problem": "Voxelization",
+            "source_index": 34,
+            "survey_measurements": {
+              "average": "12.42",
+              "best_speedup": "18.2",
+              "improves_count": "5",
+              "worst_speedup": "2.5"
+            }
+          }
+        ],
+        "title": "Fast parallel surface and solid voxelization on GPUs",
+        "url": null,
+        "work_id": "survey_bib:Schwarz2010FastPS",
+        "year": "2010"
+      },
+      {
+        "artifact_discovery_status": "NOT_STARTED_AT_PREREGISTRATION",
+        "author": "Sizhe Sui and Luis Sentis and Andrew Bylard",
+        "citation_key": "Sui2024HardwareAcceleratedRT",
+        "classification_cell_count": 0,
+        "doi": null,
+        "entry_type": "article",
+        "raw_bibtex_entry_sha256": "4ced83a5b9fb5ea12984b8507100a6e5a356e1007b9d0f111dc3f5399a0d1db5",
+        "survey_problem_rows": [
+          {
+            "citation_key": "Sui2024HardwareAcceleratedRT",
+            "problem": "Discrete CD",
+            "source_index": 9,
+            "survey_measurements": {
+              "average": "1.92",
+              "best_speedup": "2.8",
+              "improves_count": "4",
+              "worst_speedup": "0.5"
+            }
+          },
+          {
+            "citation_key": "Sui2024HardwareAcceleratedRT",
+            "problem": "Continuous CD",
+            "source_index": 10,
+            "survey_measurements": {
+              "average": "1.91",
+              "best_speedup": "3.0",
+              "improves_count": "4",
+              "worst_speedup": "0.3"
+            }
+          }
+        ],
+        "title": "Hardware-Accelerated Ray Tracing for Discrete and Continuous Collision Detection on GPUs",
+        "url": null,
+        "work_id": "survey_bib:Sui2024HardwareAcceleratedRT",
+        "year": "2024"
+      },
+      {
+        "artifact_discovery_status": "NOT_STARTED_AT_PREREGISTRATION",
+        "author": "Bin Wang and Ingo Wald and Nate Morrical and Will Usher and Lin Mu and Karsten Thompson and Richard Hughes",
+        "citation_key": "Wang2022AnGP",
+        "classification_cell_count": 0,
+        "doi": null,
+        "entry_type": "article",
+        "raw_bibtex_entry_sha256": "ccfecccf0b310d5900351f6ecfef60da78f038c910c79f8f57960a754fd43289",
+        "survey_problem_rows": [
+          {
+            "citation_key": "Wang2022AnGP",
+            "problem": "Particle Tracking",
+            "source_index": 26,
+            "survey_measurements": {
+              "average": "1.85",
+              "best_speedup": "2.0",
+              "improves_count": "5",
+              "worst_speedup": "1.08"
+            }
+          }
+        ],
+        "title": "An {GPU}-accelerated particle tracking method for Eulerian-Lagrangian simulations using hardware ray tracing cores",
+        "url": null,
+        "work_id": "survey_bib:Wang2022AnGP",
+        "year": "2022"
+      },
+      {
+        "artifact_discovery_status": "NOT_STARTED_AT_PREREGISTRATION",
+        "author": "Ziming Wang and Kaiyin Zhang and Yangming Lv and Yinglong Wang and Zhigang Zhao and Zhenying He and Yinan Jing and Xiaoyang Sean Wang",
+        "citation_key": "Wang2024RTODEO",
+        "classification_cell_count": 0,
+        "doi": null,
+        "entry_type": "article",
+        "raw_bibtex_entry_sha256": "19061a5b305ff1cbe70d6ee25988c08f0b2a1cf8a5a9f515c23f8fc43155da78",
+        "survey_problem_rows": [
+          {
+            "citation_key": "Wang2024RTODEO",
+            "problem": "Outlier Detection",
+            "source_index": 17,
+            "survey_measurements": {
+              "average": "7.34",
+              "best_speedup": "9.9",
+              "improves_count": "5",
+              "worst_speedup": "2.0"
+            }
+          }
+        ],
+        "title": "RTOD: Efficient Outlier Detection With Ray Tracing Cores",
+        "url": null,
+        "work_id": "survey_bib:Wang2024RTODEO",
+        "year": "2024"
+      },
+      {
+        "artifact_discovery_status": "NOT_STARTED_AT_PREREGISTRATION",
+        "author": "Zhixiong Xiao and Mengbai Xiao and Yuan Yuan and Dongxiao Yu and Rubao Lee and Xiaodong Zhang",
+        "citation_key": "Xiao2025ACS",
+        "classification_cell_count": 0,
+        "doi": null,
+        "entry_type": "article",
+        "raw_bibtex_entry_sha256": "7115fd0644ee4664d175566b71836f8dbf07afa53545d141fe1390b973593d51",
+        "survey_problem_rows": [
+          {
+            "citation_key": "Xiao2025ACS",
+            "problem": "BFS",
+            "source_index": 2,
+            "survey_measurements": {
+              "average": "0.54",
+              "best_speedup": "1.4",
+              "improves_count": "1",
+              "worst_speedup": "0.4"
+            }
+          },
+          {
+            "citation_key": "Xiao2025ACS",
+            "problem": "Triangle Counting",
+            "source_index": 3,
+            "survey_measurements": {
+              "average": "1.07",
+              "best_speedup": "2.0",
+              "improves_count": "3",
+              "worst_speedup": "0.4"
+            }
+          },
+          {
+            "citation_key": "Xiao2025ACS",
+            "problem": "Set Intersection",
+            "source_index": 4,
+            "survey_measurements": {
+              "average": "1.26",
+              "best_speedup": "10.0",
+              "improves_count": "2",
+              "worst_speedup": "0.4"
+            }
+          },
+          {
+            "citation_key": "Xiao2025ACS",
+            "problem": "Binary Search",
+            "source_index": 5,
+            "survey_measurements": {
+              "average": "1.15",
+              "best_speedup": "2.0",
+              "improves_count": "3",
+              "worst_speedup": "0.5"
+            }
+          }
+        ],
+        "title": "A Case Study for Ray Tracing Cores: Performance Insights with Breadth-First Search and Triangle Counting in Graphs",
+        "url": null,
+        "work_id": "survey_bib:Xiao2025ACS",
+        "year": "2025"
+      },
+      {
+        "artifact_discovery_status": "NOT_STARTED_AT_PREREGISTRATION",
+        "author": "Hongrui Zhang and Yunan Zhang and Hung-Wei Tseng",
+        "citation_key": "Zhang2025RTSpMSpMHR",
+        "classification_cell_count": 0,
+        "doi": null,
+        "entry_type": "article",
+        "raw_bibtex_entry_sha256": "5ca245c2ca3164d8ff474e7b62a1d442440c4195d0dfcdd2bf09d7f605899b97",
+        "survey_problem_rows": [
+          {
+            "citation_key": "Zhang2025RTSpMSpMHR",
+            "problem": "SpMM",
+            "source_index": 1,
+            "survey_measurements": {
+              "average": "3.46",
+              "best_speedup": "4.02",
+              "improves_count": "5",
+              "worst_speedup": "1.1"
+            }
+          }
+        ],
+        "title": "{RTSpMSpM}: Harnessing Ray Tracing for Efficient Sparse Matrix Computations",
+        "url": null,
+        "work_id": "survey_bib:Zhang2025RTSpMSpMHR",
+        "year": "2025"
+      },
+      {
+        "artifact_discovery_status": "NOT_STARTED_AT_PREREGISTRATION",
+        "author": "Zellmann, Stefan and Weier, Martin and Wald, Ingo",
+        "citation_key": "zellmann2020accelerating",
+        "classification_cell_count": 0,
+        "doi": null,
+        "entry_type": "inproceedings",
+        "raw_bibtex_entry_sha256": "1c6ff73c8f18ced9894deeeb60337df965e6bf5a47e74c7b114726a5253ef3bb",
+        "survey_problem_rows": [
+          {
+            "citation_key": "zellmann2020accelerating",
+            "problem": "Graph Drawing",
+            "source_index": 27,
+            "survey_measurements": {
+              "average": "8.76",
+              "best_speedup": "13.0",
+              "improves_count": "5",
+              "worst_speedup": "4.0"
+            }
+          }
+        ],
+        "title": "Accelerating Force-Directed Graph Drawing with {RT} Cores",
+        "url": null,
+        "work_id": "survey_bib:zellmann2020accelerating",
+        "year": "2020"
+      },
+      {
+        "artifact_discovery_status": "NOT_STARTED_AT_PREREGISTRATION",
+        "author": "Zhao, Shiwei and Lai, Zhengshou and Zhao, Jidong",
+        "citation_key": "zhao2023leveraging",
+        "classification_cell_count": 0,
+        "doi": null,
+        "entry_type": "article",
+        "raw_bibtex_entry_sha256": "837cd18702bd729406f18a9bfec4ea81e94bfc46020c5cda8237ef399db863c7",
+        "survey_problem_rows": [
+          {
+            "citation_key": "zhao2023leveraging",
+            "problem": "Particle Simulation",
+            "source_index": 20,
+            "survey_measurements": {
+              "average": "1.51",
+              "best_speedup": "1.6",
+              "improves_count": "5",
+              "worst_speedup": "1.1"
+            }
+          }
+        ],
+        "title": "Leveraging ray tracing cores for particle-based simulations on {GPU}s",
+        "url": null,
+        "work_id": "survey_bib:zhao2023leveraging",
+        "year": "2023"
+      },
+      {
+        "artifact_discovery_status": "NOT_STARTED_AT_PREREGISTRATION",
+        "author": "Zhu, Yuhao",
+        "citation_key": "zhu2022rtnn",
+        "classification_cell_count": 0,
+        "doi": null,
+        "entry_type": "inproceedings",
+        "raw_bibtex_entry_sha256": "cc6c91cb9fca09aae0e0bd52c2d043df6fd3a4d57f3a75e8265873d2ed1b7dd7",
+        "survey_problem_rows": [
+          {
+            "citation_key": "zhu2022rtnn",
+            "problem": "FRNN",
+            "source_index": 25,
+            "survey_measurements": {
+              "average": "7.94",
+              "best_speedup": "10.0",
+              "improves_count": "5",
+              "worst_speedup": "1.0"
+            }
+          }
+        ],
+        "title": "{RTNN}: accelerating neighbor search using hardware ray tracing",
+        "url": null,
+        "work_id": "survey_bib:zhu2022rtnn",
+        "year": "2022"
+      }
+    ]
+  },
+  "execution_state": {
+    "adjudicated_property_cell_count": 0,
+    "candidate_source_file_inspection_count": 0,
+    "candidate_source_inventory_count": 0,
+    "gpu_or_pod_use_count": 0,
+    "network_artifact_discovery_count": 0,
+    "performance_timing_count": 0,
+    "property_extraction_count": 0,
+    "upstream_notification_count": 0
+  },
+  "frozen_at_utc": "2026-09-03T06:56:46Z",
+  "goal": 5839,
+  "independence_and_adjudication": {
+    "current_external_adjudicator_count": 0,
+    "current_independent_extractor_count": 0,
+    "disagreement_resolution": "UNRESOLVED_WITH_REASON unless independent adjudicator resolves it",
+    "external_review_currently_available": false,
+    "paper_claim_requires": "two independent extractions, or one extraction plus external adjudication, for every reported property cell",
+    "paper_ready_census_claim_authorized": false,
+    "project_author_may_resolve_ambiguity_favorably": false,
+    "same_codex_session_repeated_extraction_counts_as_independent": false
+  },
+  "protocol_properties": [
+    {
+      "boundary": "A language-legal callback, successful compilation, or reviewer inference does not count as protocol enforcement.",
+      "id": "CP001_ROLE_EFFECT_CLOSURE",
+      "question": "Does the artifact machine-check the allowed callback-role effects and required cross-role effect topology before creating or launching the route?",
+      "required_evidence": "role entry points, effect-producing statements, consumers, and the exact rejecting check or explicit absence of such a check"
+    },
+    {
+      "boundary": "Matching C/CUDA types or manually consistent comments do not establish nominal semantic ownership.",
+      "id": "CP002_SEMANTIC_ABI_OWNERSHIP",
+      "question": "Does the artifact machine-check the nominal meaning and producer/consumer ownership of payload, attribute, SBT, and result channels rather than only their bit widths?",
+      "required_evidence": "every relevant channel slot, its producer expression, consumer expression, declared meaning, and the exact rejecting check or explicit absence"
+    },
+    {
+      "boundary": "A route that happens to bind the expected buffers is apparently consistent, not enforced, unless incompatible bindings are rejected by a relevant check.",
+      "id": "CP003_PHYSICAL_BINDING",
+      "question": "Does the artifact machine-check callback assumptions against geometry kind, GAS/SBT association, buffer layout, field-to-geometry mapping, output/reducer, and target binding before launch?",
+      "required_evidence": "host construction, device declarations, launch bindings, layout definitions, and the exact rejecting check or explicit absence"
+    },
+    {
+      "boundary": "Reading a status without suppressing invalid or partial output does not count as enforcement. A route with no bounded output may be unresolved or not-applicable only through the frozen reason taxonomy.",
+      "id": "CP004_STATUS_GATED_CONTINUATION_AND_COMPLETENESS",
+      "question": "Does the artifact represent failure, overflow, truncation, or incompleteness and prevent result exposure or host/device continuation until status is accepted?",
+      "required_evidence": "capacity/completeness contract, status production, status read order, output exposure, and continuation behavior"
+    },
+    {
+      "boundary": "This is chain-of-custody evidence, not application correctness; build success or a filename convention alone is not enforcement.",
+      "id": "CP005_EXECUTABLE_IDENTITY_CHAIN",
+      "question": "Does the artifact bind the intended protocol and physical plan to the exact generated source/PTX, native/provider objects, target, and launched executable so substitution is rejected?",
+      "required_evidence": "program construction, module/pipeline loading, cache selection, identity checks, and execution receipt or explicit absence"
+    }
+  ],
+  "reporting_rules": {
+    "always_report": [
+      "all 29 work rows",
+      "all unavailable and unresolved rows",
+      "all zero-violation outcomes",
+      "artifact discovery failures",
+      "all disagreements",
+      "prior project exposure and lack of blindness"
+    ],
+    "forbidden_aggregation": [
+      "treating five correlated properties as independent defect observations",
+      "treating UNCHECKED_BUT_APPARENTLY_CONSISTENT as VIOLATED",
+      "dropping works with no source",
+      "reporting percentages without numerator and denominator"
+    ],
+    "primary_counts": [
+      "work denominator, artifact denominator, route denominator, and artifact availability",
+      "property cells by the four labels",
+      "unresolved cells by frozen reason"
+    ]
+  },
+  "repository_state": {
+    "blind_corpus_or_unseen_artifact_claimed": false,
+    "branch": "codex/cgo-goal5836-handoff",
+    "candidate_property_classification_count_in_goal5839": 0,
+    "candidate_repository_clone_count_in_goal5839": 0,
+    "candidate_source_inspection_started_in_goal5839": false,
+    "pre_registration_parent_commit": "cc1c5052f09bbf468650181d442a85907924609e",
+    "prior_project_exposure_exists": true
+  },
+  "required_extraction_record": {
+    "identity_fields": [
+      "work_id",
+      "artifact_url",
+      "artifact_revision",
+      "artifact_tree_identity",
+      "license_identity",
+      "source_inventory_identity",
+      "canonical_route",
+      "extractor_identity",
+      "extracted_at_utc"
+    ],
+    "per_property_fields": [
+      "property_id",
+      "proposed_label",
+      "evidence_file",
+      "evidence_lines_or_symbol",
+      "producer",
+      "consumer",
+      "enforcement_or_gap",
+      "unresolved_reason",
+      "notes"
+    ],
+    "route_evidence_fields": [
+      "callback_roles",
+      "payload_and_attribute_meanings",
+      "physical_bindings",
+      "status_and_continuation",
+      "executable_construction"
+    ],
+    "source_inventory": "all relevant regular source/build/documentation paths with byte count and SHA-256; generated/vendor/build outputs separately identified"
+  },
+  "responsible_disclosure": {
+    "concrete_violation_public_naming_allowed_before_notification": false,
+    "public_repository_rule": "Do not commit or push a named VIOLATED evidence row before the notification gate; retain a private local potential-finding packet instead.",
+    "required_before_public_naming": [
+      "independent adjudication of exact evidence",
+      "private notice to the upstream artifact maintainers",
+      "an offered minimal patch or precise repair suggestion",
+      "a recorded response window of at least 14 calendar days unless authors consent earlier",
+      "corrections or maintainer disagreement preserved adjacent to the finding"
+    ]
+  },
+  "schema": "rtdl.goal5839.real_artifact_protocol_census_preregistration.v1",
+  "source_authority": {
+    "goal5839_authority_choice": "USE_EXACT_SURVEY_ARCHIVE_AND_EMBEDDED_DENOMINATOR_ROWS; DO_NOT CLAIM RECOVERY OF THE MISSING LEGACY GOAL5753 JSON",
+    "legacy_goal5753_custody": {
+      "byte_identical_reproduction": false,
+      "current_generator_rebuild_from_exact_source": {
+        "bytes": 42754,
+        "sha256": "fb90228614107a82d028d3ecc85a97d624f8d80d8f6fd650acb4ae5fe5858697"
+      },
+      "disposition": "LEGACY_GOAL5753_ARTIFACT_UNAVAILABLE_AND_NOT_REPRODUCED_BYTE_IDENTICALLY__DO_NOT_USE_AS_GOAL5839_SOURCE_AUTHORITY",
+      "expected_historical_artifact": {
+        "bytes": 43892,
+        "sha256": "fb89d1da0e9b7bc18ce3333eb11a5920ffdef9f23ba227f4ecbf96e898234b05"
+      }
+    },
+    "prob_csv": {
+      "row_count": 35,
+      "sha256": "88749ea23e465c972afb9c6efa1553bc1a4e0a25b6faa5f00c1c5b9c27979e95"
+    },
+    "sample_bib": {
+      "entry_count": 186,
+      "sha256": "9e394f5712478c5b84f8dd88b80490e009a033dffd1e17773f24aadb0c2eb26a"
+    },
+    "survey_archive": {
+      "bytes": 752766,
+      "reacquisition_requires_exact_hash": true,
+      "sha256": "bfe852a1425b01b63ee0298f75646c824e9daf67429184211d446ba7f3643857",
+      "stored_in_repository": false
+    },
+    "survey_source_url": "https://export.arxiv.org/e-print/2603.28771",
+    "survey_title": "Ray Tracing Cores for General-Purpose Computing: A Literature Review",
+    "survey_url": "https://arxiv.org/abs/2603.28771"
+  },
+  "stage": "PREREGISTRATION_BEFORE_GOAL5839_CANDIDATE_SOURCE_INSPECTION",
+  "status": "FROZEN_PROTOCOL__CENSUS_EXTRACTION_NOT_STARTED__NO_FIELD_RESULT"
+}
