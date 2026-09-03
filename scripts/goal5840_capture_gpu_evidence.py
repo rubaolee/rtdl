@@ -18,6 +18,12 @@ from typing import Mapping
 from rtdsl.v4_callback_lifecycle import V4Target, V4Toolchain
 from rtdsl.v4_sphere_any_hit_count import V4SphereTarget
 from rtdsl.v4_target_evidence_capture import capture_real_target_evidence_bundle
+from scripts.goal5840_freeze_repair_inputs import (
+    ALLOWED_CHANGED_PATHS as REPAIR_ALLOWED_CHANGED_PATHS,
+    BASE_COMMIT as ATTEMPT_01_SOURCE_COMMIT,
+    DOMAIN as REPAIR_AUTHORITY_DOMAIN,
+    SOURCE_PATHS as REPAIR_AUTHORITY_SOURCE_PATHS,
+)
 from scripts.goal5840_gpu_cases import goal5840_mode_cases
 
 
@@ -28,9 +34,11 @@ GOAL_ROOT = (
 )
 PREREGISTRATION = GOAL_ROOT / "GOAL5840_PREREGISTRATION.json"
 PRE_POD_AUTHORITY = GOAL_ROOT / "PRE_POD_INPUT_AUTHORITY.json"
+ATTEMPT_01_INCIDENT = GOAL_ROOT / "ATTEMPT_01_ENGINEERING_FAILURE.md"
+REPAIR_AUTHORITY = GOAL_ROOT / "POST_ATTEMPT_01_REPAIR_AUTHORITY.json"
 CHECKER = ROOT / "scripts/goal5840_independent_target_checker.py"
 MUTATION_RUNNER = ROOT / "scripts/goal5840_mutation_suite.py"
-SUMMARY_DOMAIN = b"rtdl.goal5840.true_optix_target_evidence.v1\0"
+SUMMARY_DOMAIN = b"rtdl.goal5840.true_optix_target_evidence.v2\0"
 TRUST_ROOT_DOMAIN = b"rtdl.goal5840.runtime_trust_roots.v1\0"
 NATIVE_BUILD_DOMAIN = b"rtdl.goal5838.selected_sphere_optix_provider_build.v2\0"
 GOAL5840_REQUIRED_NATIVE_SYMBOLS = (
@@ -67,6 +75,7 @@ NATIVE_BUILD_SOURCE_PATHS = frozenset({
 SOURCE_PATHS = (
     "scripts/goal5840_capture_gpu_evidence.py",
     "scripts/goal5840_freeze_gpu_inputs.py",
+    "scripts/goal5840_freeze_repair_inputs.py",
     "scripts/goal5840_gpu_cases.py",
     "scripts/goal5840_independent_target_checker.py",
     "scripts/goal5840_mutation_suite.py",
@@ -78,6 +87,10 @@ SOURCE_PATHS = (
     "GOAL5840_PREREGISTRATION.json",
     "history/internal_docs/goal5840_independent_lowering_refinement_20260903/"
     "PRE_POD_INPUT_AUTHORITY.json",
+    "history/internal_docs/goal5840_independent_lowering_refinement_20260903/"
+    "ATTEMPT_01_ENGINEERING_FAILURE.md",
+    "history/internal_docs/goal5840_independent_lowering_refinement_20260903/"
+    "POST_ATTEMPT_01_REPAIR_AUTHORITY.json",
 )
 
 
@@ -118,6 +131,20 @@ def _git(*args: str) -> str:
     if completed.returncode:
         raise RuntimeError(f"git {' '.join(args)}: {completed.stderr.strip()}")
     return completed.stdout.strip()
+
+
+def _git_blob(commit: str, path: str) -> bytes:
+    completed = subprocess.run(
+        ["git", "show", f"{commit}:{path}"],
+        cwd=ROOT,
+        capture_output=True,
+        check=False,
+    )
+    if completed.returncode:
+        raise RuntimeError(
+            f"git show {commit}:{path}: {completed.stderr.decode(errors='replace')}"
+        )
+    return completed.stdout
 
 
 def _repository_custody(expected_commit: str) -> dict[str, object]:
@@ -230,7 +257,11 @@ def _verify_frozen_core() -> dict[str, object]:
 
 
 def _verify_pre_pod_authority() -> dict[str, object]:
-    authority = json.loads(PRE_POD_AUTHORITY.read_text(encoding="ascii"))
+    authority_bytes = PRE_POD_AUTHORITY.read_bytes()
+    relative = str(PRE_POD_AUTHORITY.relative_to(ROOT))
+    if authority_bytes != _git_blob(ATTEMPT_01_SOURCE_COMMIT, relative):
+        raise RuntimeError("pre-pod authority differs from Attempt-01 commit")
+    authority = json.loads(authority_bytes.decode("ascii"))
     body = dict(authority)
     observed = body.pop("authority_sha256", None)
     body["authority_sha256"] = ""
@@ -257,15 +288,154 @@ def _verify_pre_pod_authority() -> dict[str, object]:
     if not isinstance(source_rows, list):
         raise RuntimeError("pre-pod input authority source inventory is absent")
     for row in source_rows:
-        if not isinstance(row, dict):
+        if not isinstance(row, dict) or not isinstance(row.get("path"), str):
             raise RuntimeError("pre-pod source inventory row is invalid")
-        path = ROOT / str(row.get("path"))
+        relative = str(row["path"])
+        blob = _git_blob(ATTEMPT_01_SOURCE_COMMIT, relative)
         if (
-            not path.is_file()
-            or path.stat().st_size != row.get("bytes")
-            or _sha_file(path) != row.get("sha256")
+            len(blob) != row.get("bytes")
+            or hashlib.sha256(blob).hexdigest() != row.get("sha256")
         ):
-            raise RuntimeError(f"pre-pod source changed: {row.get('path')}")
+            raise RuntimeError(f"pre-pod source differs at base commit: {relative}")
+    return authority
+
+
+def _verify_repair_authority(
+    original: Mapping[str, object],
+    preregistration: Mapping[str, object],
+    expected_commit: str,
+) -> dict[str, object]:
+    authority = json.loads(REPAIR_AUTHORITY.read_text(encoding="ascii"))
+    body = dict(authority)
+    observed = body.get("authority_sha256")
+    body["authority_sha256"] = ""
+    expected = hashlib.sha256(
+        REPAIR_AUTHORITY_DOMAIN + _canonical(body)
+    ).hexdigest()
+    if observed != expected:
+        raise RuntimeError("post-Attempt-01 repair authority seal differs")
+    if (
+        authority.get("schema")
+        != "rtdl.goal5840.post_attempt_01_repair_authority.v1"
+        or authority.get("stage")
+        != "AFTER_ATTEMPT_01_BEFORE_ATTEMPT_02_GPU_EXECUTION"
+        or authority.get("status")
+        != "FROZEN_BOUNDED_EVIDENCE_TRANSPORT_REPAIR__NO_ACCEPTED_RESULT"
+        or authority.get("route_bundle_group_count") != 3
+        or authority.get("required_mode_count") != 4
+        or authority.get("mode_cases") != original.get("mode_cases")
+        or authority.get("goal5838_frozen_core")
+        != original.get("goal5838_frozen_core")
+        or authority.get("preregistration") != original.get("preregistration")
+    ):
+        raise RuntimeError("post-Attempt-01 repair authority contract differs")
+
+    base = authority.get("base_attempt")
+    scope = authority.get("repair_scope")
+    counts = authority.get("execution_counts_at_repair_freeze")
+    if not isinstance(base, dict) or not isinstance(scope, dict):
+        raise RuntimeError("repair authority base/scope is absent")
+    pre_pod_ref = base.get("pre_pod_input_authority")
+    incident_ref = base.get("attempt_01_incident")
+    if not isinstance(pre_pod_ref, dict) or not isinstance(incident_ref, dict):
+        raise RuntimeError("repair authority chain reference is absent")
+    if (
+        base.get("source_commit") != ATTEMPT_01_SOURCE_COMMIT
+        or pre_pod_ref
+        != {
+            "path": str(PRE_POD_AUTHORITY.relative_to(ROOT)),
+            "bytes": PRE_POD_AUTHORITY.stat().st_size,
+            "file_sha256": _sha_file(PRE_POD_AUTHORITY),
+            "authority_sha256": original.get("authority_sha256"),
+        }
+        or incident_ref.get("path")
+        != str(ATTEMPT_01_INCIDENT.relative_to(ROOT))
+        or incident_ref.get("bytes") != ATTEMPT_01_INCIDENT.stat().st_size
+        or incident_ref.get("file_sha256") != _sha_file(ATTEMPT_01_INCIDENT)
+        or incident_ref.get("classification")
+        != "EVIDENCE_TRANSPORT_ENGINEERING_FAILURE"
+    ):
+        raise RuntimeError("repair authority base-attempt identity differs")
+    expected_observed_counts = {
+        "runner_processes_started": 1,
+        "frozen_modes_entered": 1,
+        "public_route_expected_outputs_returned": 1,
+        "published_evidence_bundles": 0,
+        "published_independent_property_reports": 0,
+        "published_mutation_applications": 0,
+        "accepted_positive_evidence_rows": 0,
+    }
+    expected_repair_counts = {
+        "attempted_runner_processes": 1,
+        "entered_frozen_modes": 1,
+        "returned_expected_outputs": 1,
+        "published_evidence_bundles": 0,
+        "published_independent_property_reports": 0,
+        "published_mutation_applications": 0,
+        "accepted_goal5840_positive_evidence_rows": 0,
+    }
+    if (
+        base.get("observed_counts") != expected_observed_counts
+        or counts != expected_repair_counts
+        or scope.get("allowed_changed_paths") != list(REPAIR_ALLOWED_CHANGED_PATHS)
+        or scope.get("exact_changed_paths_since_base")
+        != list(REPAIR_ALLOWED_CHANGED_PATHS)
+        or scope.get("nonsemantic_harness_hardening")
+        != "generate_pod_mutation_report_under_python_isolated_mode"
+        or any(
+            scope.get(field) is not False
+            for field in (
+                "route_change_allowed",
+                "fixture_or_oracle_change_allowed",
+                "declaration_or_control_root_change_allowed",
+                "property_or_mutation_change_allowed",
+                "native_engine_change_allowed",
+                "frozen_core_change_allowed",
+            )
+        )
+    ):
+        raise RuntimeError("repair authority scope/counts differ")
+    changed = tuple(sorted(
+        line
+        for line in _git(
+            "diff",
+            "--name-only",
+            f"{ATTEMPT_01_SOURCE_COMMIT}..{expected_commit}",
+            "--",
+        ).splitlines()
+        if line
+    ))
+    if changed != REPAIR_ALLOWED_CHANGED_PATHS:
+        raise RuntimeError(f"committed repair path set differs: {changed!r}")
+
+    source_rows = authority.get("source_files")
+    if not isinstance(source_rows, list):
+        raise RuntimeError("repair authority source inventory is absent")
+    observed_paths = set()
+    for row in source_rows:
+        if not isinstance(row, dict) or not isinstance(row.get("path"), str):
+            raise RuntimeError("repair authority source row is invalid")
+        relative = str(row["path"])
+        blob = _git_blob(expected_commit, relative)
+        if (
+            relative in observed_paths
+            or len(blob) != row.get("bytes")
+            or hashlib.sha256(blob).hexdigest() != row.get("sha256")
+            or (ROOT / relative).read_bytes() != blob
+        ):
+            raise RuntimeError(f"repair source custody differs: {relative}")
+        observed_paths.add(relative)
+    if observed_paths != set(REPAIR_AUTHORITY_SOURCE_PATHS):
+        raise RuntimeError("repair authority source denominator differs")
+
+    frozen_preregistration = authority.get("preregistration")
+    if (
+        not isinstance(frozen_preregistration, dict)
+        or frozen_preregistration.get("file_sha256") != _sha_file(PREREGISTRATION)
+        or frozen_preregistration.get("authority_sha256")
+        != preregistration.get("authority_sha256")
+    ):
+        raise RuntimeError("repair authority preregistration differs")
     return authority
 
 
@@ -428,6 +598,9 @@ def run(args: argparse.Namespace) -> dict[str, object]:
     frozen_core = _verify_frozen_core()
     preregistration = json.loads(PREREGISTRATION.read_text(encoding="ascii"))
     input_authority = _verify_pre_pod_authority()
+    repair_authority = _verify_repair_authority(
+        input_authority, preregistration, args.expected_commit
+    )
     frozen_preregistration = input_authority.get("preregistration")
     if (
         not isinstance(frozen_preregistration, dict)
@@ -470,7 +643,7 @@ def run(args: argparse.Namespace) -> dict[str, object]:
         compute_capability=args.compute_capability,
     )
     expected_by_key = {
-        row["key"]: row for row in input_authority["mode_cases"]
+        row["key"]: row for row in repair_authority["mode_cases"]
     }
     if len(expected_by_key) != 4:
         raise RuntimeError("pre-pod authority has duplicate or missing mode keys")
@@ -599,6 +772,7 @@ def run(args: argparse.Namespace) -> dict[str, object]:
     mutation_path = output / "EXACT_BUNDLE_MUTATION_RESULT.json"
     mutation_command = [
         sys.executable,
+        "-I",
         str(MUTATION_RUNNER),
         "--trust-roots",
         str(trust_path),
@@ -609,8 +783,8 @@ def run(args: argparse.Namespace) -> dict[str, object]:
         mutation_command.extend(("--bundle", str(bundle_path)))
     mutation = subprocess.run(
         mutation_command,
-        cwd=ROOT,
-        env={**os.environ, "PYTHONPATH": "src:."},
+        cwd=output,
+        env={"PATH": os.environ.get("PATH", "")},
         text=True,
         capture_output=True,
         check=False,
@@ -627,8 +801,9 @@ def run(args: argparse.Namespace) -> dict[str, object]:
     )
     repository = _finish_repository_custody(repository, args.expected_commit)
     summary: dict[str, object] = {
-        "schema": "rtdl.goal5840.true_optix_target_evidence.v1",
+        "schema": "rtdl.goal5840.true_optix_target_evidence.v2",
         "status": "PASS__FOUR_MODES_TRUE_OPTIX_AND_15_UNIQUE_MUTATIONS_REJECTED",
+        "formal_attempt_number": 2,
         "repository": repository,
         "machine": machine,
         "runtime": {
@@ -658,6 +833,18 @@ def run(args: argparse.Namespace) -> dict[str, object]:
             "path": str(PRE_POD_AUTHORITY.relative_to(ROOT)),
             "file_sha256": _sha_file(PRE_POD_AUTHORITY),
             "authority_sha256": input_authority["authority_sha256"],
+            "source_commit": ATTEMPT_01_SOURCE_COMMIT,
+        },
+        "attempt_01_engineering_failure": {
+            "path": str(ATTEMPT_01_INCIDENT.relative_to(ROOT)),
+            "bytes": ATTEMPT_01_INCIDENT.stat().st_size,
+            "file_sha256": _sha_file(ATTEMPT_01_INCIDENT),
+            "accepted_positive_evidence_rows": 0,
+        },
+        "post_attempt_01_repair_authority": {
+            "path": str(REPAIR_AUTHORITY.relative_to(ROOT)),
+            "file_sha256": _sha_file(REPAIR_AUTHORITY),
+            "authority_sha256": repair_authority["authority_sha256"],
         },
         "frozen_core": frozen_core,
         "route_bundle_group_count": 3,
@@ -681,6 +868,8 @@ def run(args: argparse.Namespace) -> dict[str, object]:
             "three_bounded_routes_only": True,
             "four_required_modes": True,
             "target_side_structural_refinement_evidence": True,
+            "attempt_01_preserved_as_unaccepted_engineering_failure": True,
+            "append_only_repair_authority_verified": True,
             "general_compiler_soundness": False,
             "application_correctness": False,
             "performance_or_speedup": False,

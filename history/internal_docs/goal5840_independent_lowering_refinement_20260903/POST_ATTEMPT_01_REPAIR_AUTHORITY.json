@@ -1,0 +1,263 @@
+{
+  "authority_sha256": "d872df15c5ede9a13080d24dd7aca1fedbcc217eb3a27399a42ab2ebccf3511c",
+  "base_attempt": {
+    "attempt_01_incident": {
+      "bytes": 2834,
+      "classification": "EVIDENCE_TRANSPORT_ENGINEERING_FAILURE",
+      "file_sha256": "862d36657120a190d76527536d09ac8ecd8da77e01b9df4465dd25aee45fe786",
+      "path": "history/internal_docs/goal5840_independent_lowering_refinement_20260903/ATTEMPT_01_ENGINEERING_FAILURE.md"
+    },
+    "observed_counts": {
+      "accepted_positive_evidence_rows": 0,
+      "frozen_modes_entered": 1,
+      "public_route_expected_outputs_returned": 1,
+      "published_evidence_bundles": 0,
+      "published_independent_property_reports": 0,
+      "published_mutation_applications": 0,
+      "runner_processes_started": 1
+    },
+    "pre_pod_input_authority": {
+      "authority_sha256": "785529613e79a806937b5cc56b041e671de90a164e7434d6772de9b7f4989d91",
+      "bytes": 7800,
+      "file_sha256": "a34a59767b75cd125f00f85613597197017c8b7cd7a8c66a0f55b66737177f82",
+      "path": "history/internal_docs/goal5840_independent_lowering_refinement_20260903/PRE_POD_INPUT_AUTHORITY.json"
+    },
+    "source_commit": "91a8309d9ee234f0315b6640a8dde1db29abe7e9"
+  },
+  "claim_boundary": {
+    "accepted_goal5840_result": false,
+    "append_only_engineering_repair_authority": true,
+    "application_correctness": false,
+    "external_review_or_consensus": false,
+    "lowering_preservation_established": false,
+    "performance_or_speedup": false,
+    "scientific_inputs_unchanged": true
+  },
+  "execution_counts_at_repair_freeze": {
+    "accepted_goal5840_positive_evidence_rows": 0,
+    "attempted_runner_processes": 1,
+    "entered_frozen_modes": 1,
+    "published_evidence_bundles": 0,
+    "published_independent_property_reports": 0,
+    "published_mutation_applications": 0,
+    "returned_expected_outputs": 1
+  },
+  "frozen_at_utc": "2026-09-03T09:29:22.536372Z",
+  "goal": 5840,
+  "goal5838_frozen_core": {
+    "changed_file_count": 0,
+    "files": [
+      {
+        "bytes": 58007,
+        "path": "src/rtdsl/v4_family_schema.py",
+        "sha256": "2d118697d10cb2bc2a8672700ae5a991eaf94e66834bb3e08fd898323720f224"
+      },
+      {
+        "bytes": 41675,
+        "path": "src/rtdsl/v4_generic_family_lifecycle.py",
+        "sha256": "7ac68832de9d1e04fdd6f0f11bfa0de7d6109d892ab22e42c9aeb2825d28228c"
+      },
+      {
+        "bytes": 2792,
+        "path": "src/rtdsl/v4_family.py",
+        "sha256": "d25c487823e966a8e9083092811c9a1a2b6aa0fef6ce8f3a0a5b8919c5b809e8"
+      }
+    ],
+    "seal_sha256": "c2a461c8a4a61650044b724d103a80d25241b44b7b486c071b601946292e5dae"
+  },
+  "mode_cases": [
+    {
+      "control_flow_manifest_sha256": "cdb6b80aac352bf89089e3137364db7033a594c2810f8052eb61ba84915e7996",
+      "declaration_sha256": "608060a1d42764ea1582a81aae3dd64f3caa6a14c082db7c7d941c938925c480",
+      "expected_output": [
+        [
+          100,
+          10
+        ],
+        [
+          100,
+          30
+        ],
+        [
+          200,
+          20
+        ]
+      ],
+      "expected_output_sha256": "ca707c27b414a83c636e6a40202f74a445415b6c42676a0d0df17f77bccb6c42",
+      "fixture_sha256": "f6bd2783681d895f933429a05a328cb9656f0eaf3362489901b0ad15975ee87c",
+      "key": "stable::bounded_relation::canonical_bounded_pair_collection::capacity_fail_closed_collection",
+      "mode": "capacity_fail_closed_collection",
+      "plan_sha256": "e4aa0d5958c0c37b9ddb7c831fbbc3868218d3605c9ed7b51f0f51cc9a2bdde2",
+      "route_id": "stable::bounded_relation::canonical_bounded_pair_collection",
+      "target_kind": "stable"
+    },
+    {
+      "control_flow_manifest_sha256": "82b32bbe5f6e6df9bad7b6b05c5899ebc260ecbb89699792f6d935aad598baea",
+      "declaration_sha256": "2fb010647d51c62dfbfa73352a7139031118d79564665e4d8fa6f2e48bd04eff",
+      "expected_output": 5,
+      "expected_output_sha256": "ef2d127de37b942baad06145e54b0c619a1f22327b2ebbcfbec78f5564afe39d",
+      "fixture_sha256": "a58b2d5bd97a65a60614fccc494bef25ef9025f15d9bc71bc2970fce946a61b6",
+      "key": "stable::triangle_reduction::checked_u64_reduction::all_hit_count",
+      "mode": "all_hit_count",
+      "plan_sha256": "8348d2d3523f80caf5820eb47d7c8480a612d89bc06a874407cda5d1a36ae8ec",
+      "route_id": "stable::triangle_reduction::checked_u64_reduction",
+      "target_kind": "stable"
+    },
+    {
+      "control_flow_manifest_sha256": "82b32bbe5f6e6df9bad7b6b05c5899ebc260ecbb89699792f6d935aad598baea",
+      "declaration_sha256": "3f000ea48805fdb1e3c644ba9449234c4b3b7697b6655d6331d715bff15993e8",
+      "expected_output": 35,
+      "expected_output_sha256": "9f14025af0065b30e47e23ebb3b491d39ae8ed17d33739e5ff3827ffb3634953",
+      "fixture_sha256": "91e7942c9842cd672e2d8924a6e8abff1e8f2285058e888ed931d7e8823367d5",
+      "key": "stable::triangle_reduction::checked_u64_reduction::weighted_hit_count",
+      "mode": "weighted_hit_count",
+      "plan_sha256": "cc34c24616272e0ef4e6b3b72f71a3bdf163b7ecda332518d5b47ca759abdd73",
+      "route_id": "stable::triangle_reduction::checked_u64_reduction",
+      "target_kind": "stable"
+    },
+    {
+      "control_flow_manifest_sha256": "ece4699c064fa77049bfcdbab3aeb0fbcea5aac53f3aa66467f9490243b11796",
+      "declaration_sha256": "97bb941681974d7b88472e9b49f5031fcc84a0c9f93246c66b57c8f51382230b",
+      "expected_output": {
+        "counts": [
+          4,
+          1,
+          1,
+          0,
+          4,
+          0
+        ],
+        "schema": "rtdl.v4.sphere_any_hit_count_output.v1"
+      },
+      "expected_output_sha256": "504d506f7611f87e30b9660abe35e28e98d023bf0efa1860ac1a5a1a1c808a7e",
+      "fixture_sha256": "69e38e95e8d3a2e14cb428f18e4d8bb27a87da1c21688b6ddad672406a94977a",
+      "key": "prospective::builtin_sphere::any_hit_count_continue_u64_per_query::accept_every_hit_and_continue",
+      "mode": "accept_every_hit_and_continue",
+      "plan_sha256": "5a8f15a3941f10560ffecc6021cd4689c068f5ed39903014b1d5e99e98b3d669",
+      "route_id": "prospective::builtin_sphere::any_hit_count_continue_u64_per_query",
+      "target_kind": "sphere"
+    }
+  ],
+  "preregistration": {
+    "authority_sha256": "013ccfef04835a3d6b2ad572f504f2d07a80a19b48e591d7c7887ff6e00b8192",
+    "bytes": 20649,
+    "file_sha256": "7ded948b0062a8eb8b51871785395456c45dba9d83a479367725fb4415c229d2",
+    "mutation_count": 15,
+    "path": "history/internal_docs/goal5840_independent_lowering_refinement_20260903/GOAL5840_PREREGISTRATION.json"
+  },
+  "repair_scope": {
+    "allowed_changed_paths": [
+      "history/internal_docs/goal5840_independent_lowering_refinement_20260903/ATTEMPT_01_ENGINEERING_FAILURE.md",
+      "history/internal_docs/goal5840_independent_lowering_refinement_20260903/POST_ATTEMPT_01_REPAIR_AUTHORITY.json",
+      "scripts/goal5840_capture_gpu_evidence.py",
+      "scripts/goal5840_freeze_repair_inputs.py",
+      "scripts/goal5840_verify_gpu_evidence.py",
+      "src/rtdsl/v4_target_evidence_capture.py",
+      "tests/goal5840_gpu_evidence_harness_test.py",
+      "tests/goal5840_gpu_evidence_verifier_test.py",
+      "tests/goal5840_real_target_evidence_capture_test.py"
+    ],
+    "declaration_or_control_root_change_allowed": false,
+    "defect": "nested_read_only_mapping_not_recursively_json_canonicalized",
+    "exact_changed_paths_since_base": [
+      "history/internal_docs/goal5840_independent_lowering_refinement_20260903/ATTEMPT_01_ENGINEERING_FAILURE.md",
+      "history/internal_docs/goal5840_independent_lowering_refinement_20260903/POST_ATTEMPT_01_REPAIR_AUTHORITY.json",
+      "scripts/goal5840_capture_gpu_evidence.py",
+      "scripts/goal5840_freeze_repair_inputs.py",
+      "scripts/goal5840_verify_gpu_evidence.py",
+      "src/rtdsl/v4_target_evidence_capture.py",
+      "tests/goal5840_gpu_evidence_harness_test.py",
+      "tests/goal5840_gpu_evidence_verifier_test.py",
+      "tests/goal5840_real_target_evidence_capture_test.py"
+    ],
+    "fixture_or_oracle_change_allowed": false,
+    "frozen_core_change_allowed": false,
+    "native_engine_change_allowed": false,
+    "nonsemantic_harness_hardening": "generate_pod_mutation_report_under_python_isolated_mode",
+    "property_or_mutation_change_allowed": false,
+    "repair": "recursive_mapping_sequence_to_canonical_json_tree",
+    "route_change_allowed": false
+  },
+  "required_mode_count": 4,
+  "route_bundle_group_count": 3,
+  "schema": "rtdl.goal5840.post_attempt_01_repair_authority.v1",
+  "source_files": [
+    {
+      "bytes": 37154,
+      "path": "scripts/goal5840_capture_gpu_evidence.py",
+      "sha256": "ca9a511f706a4bfee95b83769a99f3a76608083b3292c725397e649ec13c1ca5"
+    },
+    {
+      "bytes": 7511,
+      "path": "scripts/goal5840_freeze_gpu_inputs.py",
+      "sha256": "13f0ed052af14437737344dd7a55bd1c1ac329ce679d0eae30e2def6cb1f8d90"
+    },
+    {
+      "bytes": 10350,
+      "path": "scripts/goal5840_freeze_repair_inputs.py",
+      "sha256": "c4641e0d9c8d134634fe320af7a13bd4c00dc7707760d3884e689ea6fdbfe1f1"
+    },
+    {
+      "bytes": 7071,
+      "path": "scripts/goal5840_gpu_cases.py",
+      "sha256": "217fa653cb751554629d687c1d626e28955f9f8b8960f210f27cd50526885b52"
+    },
+    {
+      "bytes": 77617,
+      "path": "scripts/goal5840_independent_target_checker.py",
+      "sha256": "5a9265aaf26d96edd60a4254bc189f274d4baa6a0d08cc2a525e488fa42e1d00"
+    },
+    {
+      "bytes": 24343,
+      "path": "scripts/goal5840_mutation_suite.py",
+      "sha256": "c645c2b81a0eaab802372c1e81d31e8c2c8c206e75ea8807b6912faec03db8b1"
+    },
+    {
+      "bytes": 50152,
+      "path": "scripts/goal5840_verify_gpu_evidence.py",
+      "sha256": "9487d2d13ef1dcf57b6279e623c2564d846d69b68b61a7fae8fdd41e611fcf32"
+    },
+    {
+      "bytes": 3117,
+      "path": "src/rtdsl/v4_target_control_flow_evidence.py",
+      "sha256": "6e781a767e7d2dadd46648341a5714da6fadd8407325d8e33701a4433c44c1a7"
+    },
+    {
+      "bytes": 45655,
+      "path": "src/rtdsl/v4_target_evidence_bundle.py",
+      "sha256": "4aaf6fd8e0e56573eec263c2199fc062f7724522204a3cb0dd45fb24d6252ddb"
+    },
+    {
+      "bytes": 12707,
+      "path": "src/rtdsl/v4_target_evidence_capture.py",
+      "sha256": "dedc5d37b4fba47db2662a5ec98d0b60d89f4755d2d16cdb392806e77b87b5fb"
+    },
+    {
+      "bytes": 4846,
+      "path": "tests/goal5840_gpu_evidence_harness_test.py",
+      "sha256": "cc647f7cb3763c16d2dfe384aa6cfba75b7e4acd0e2a505db91be4e66a56844a"
+    },
+    {
+      "bytes": 37685,
+      "path": "tests/goal5840_gpu_evidence_verifier_test.py",
+      "sha256": "8d99416e8954f32756cce6f5434ba92e6df1358d7cdd0f76c7c53159aa430bf9"
+    },
+    {
+      "bytes": 34948,
+      "path": "tests/goal5840_independent_target_checker_test.py",
+      "sha256": "be0457e7a63973fd15db192c4fbfce5b12fa277d82f7dbd193bba76876a5d8cf"
+    },
+    {
+      "bytes": 9544,
+      "path": "tests/goal5840_real_target_evidence_capture_test.py",
+      "sha256": "5984ace74d92d2c37a310eb7306f81a06c2170edae626e782e2027b52b9adbb7"
+    },
+    {
+      "bytes": 17127,
+      "path": "tests/goal5840_target_evidence_bundle_test.py",
+      "sha256": "74b8f68896a84ca3cac2a62482020c29b873dbc7f7ebc9c97aa2f7dbd68840d2"
+    }
+  ],
+  "stage": "AFTER_ATTEMPT_01_BEFORE_ATTEMPT_02_GPU_EXECUTION",
+  "status": "FROZEN_BOUNDED_EVIDENCE_TRANSPORT_REPAIR__NO_ACCEPTED_RESULT"
+}

@@ -46,11 +46,30 @@ def _fail(path: str, detail: object) -> None:
     raise TargetEvidenceCaptureError(f"{path}: {detail}")
 
 
+def _json_tree(value: object, path: str) -> object:
+    if isinstance(value, Mapping):
+        result = {}
+        for key, item in value.items():
+            if not isinstance(key, str):
+                _fail(path, f"non-string mapping key: {key!r}")
+            result[key] = _json_tree(item, f"{path}.{key}")
+        return result
+    if isinstance(value, (tuple, list)):
+        return [
+            _json_tree(item, f"{path}[{index}]")
+            for index, item in enumerate(value)
+        ]
+    if isinstance(value, (str, int, float, bool)) or value is None:
+        return value
+    _fail(path, f"unsupported JSON value: {type(value).__name__}")
+    raise AssertionError
+
+
 def _canonical_copy(value: object, path: str) -> object:
     try:
         return json.loads(
             json.dumps(
-                value,
+                _json_tree(value, path),
                 sort_keys=True,
                 separators=(",", ":"),
                 ensure_ascii=True,

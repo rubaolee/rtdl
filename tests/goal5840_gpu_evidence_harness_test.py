@@ -4,8 +4,10 @@ import hashlib
 import json
 from pathlib import Path
 import unittest
+from unittest.mock import patch
 
 from scripts import goal5840_freeze_gpu_inputs as freezer
+from scripts import goal5840_freeze_repair_inputs as repair_freezer
 from scripts.goal5840_gpu_cases import goal5840_mode_cases
 
 
@@ -65,8 +67,62 @@ class Goal5840GpuEvidenceHarnessTest(unittest.TestCase):
         ).read_text(encoding="utf-8")
         self.assertIn("PRE_POD_INPUT_AUTHORITY.json", source)
         self.assertIn("_verify_pre_pod_authority()", source)
+        self.assertIn("POST_ATTEMPT_01_REPAIR_AUTHORITY.json", source)
+        self.assertIn("_verify_repair_authority(", source)
+        self.assertIn("rtdl.goal5840.true_optix_target_evidence.v2", source)
         self.assertIn('sys.executable,\n            "-I"', source)
         self.assertIn("EXACT_BUNDLE_MUTATION_RESULT.json", source)
+
+    def test_repair_authority_is_append_only_and_preserves_scientific_inputs(
+        self,
+    ) -> None:
+        expected_before_output = tuple(
+            path
+            for path in repair_freezer.ALLOWED_CHANGED_PATHS
+            if not path.endswith("POST_ATTEMPT_01_REPAIR_AUTHORITY.json")
+        )
+        with patch.object(Path, "exists", return_value=False), patch.object(
+            repair_freezer,
+            "_changed_paths_since_base",
+            return_value=expected_before_output,
+        ):
+            document = repair_freezer.build_authority("2026-09-03T10:00:00Z")
+        original = json.loads(
+            repair_freezer.PRE_POD_AUTHORITY.read_text(encoding="ascii")
+        )
+        self.assertEqual(document["mode_cases"], original["mode_cases"])
+        self.assertEqual(
+            document["goal5838_frozen_core"],
+            original["goal5838_frozen_core"],
+        )
+        self.assertEqual(
+            document["execution_counts_at_repair_freeze"][
+                "accepted_goal5840_positive_evidence_rows"
+            ],
+            0,
+        )
+        self.assertEqual(
+            document["base_attempt"]["source_commit"],
+            repair_freezer.BASE_COMMIT,
+        )
+        self.assertEqual(
+            document["repair_scope"]["exact_changed_paths_since_base"],
+            list(repair_freezer.ALLOWED_CHANGED_PATHS),
+        )
+        body = dict(document)
+        observed = body["authority_sha256"]
+        body["authority_sha256"] = ""
+        expected = hashlib.sha256(
+            repair_freezer.DOMAIN
+            + json.dumps(
+                body,
+                sort_keys=True,
+                separators=(",", ":"),
+                ensure_ascii=True,
+                allow_nan=False,
+            ).encode("ascii")
+        ).hexdigest()
+        self.assertEqual(observed, expected)
 
 
 if __name__ == "__main__":

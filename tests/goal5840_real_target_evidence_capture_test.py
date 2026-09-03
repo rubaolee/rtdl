@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import hashlib
+import json
 from pathlib import Path
-from types import SimpleNamespace
+from types import MappingProxyType, SimpleNamespace
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -161,6 +162,57 @@ class Goal5840RealTargetEvidenceCaptureTest(unittest.TestCase):
             captured["target_binding"]["native_library_sha256"],
             captured["executable_identity"]["provider_artifact_sha256"],
         )
+
+    def test_nested_read_only_traversal_receipt_is_canonicalized(self) -> None:
+        with tempfile.TemporaryDirectory() as name:
+            native = Path(name) / "librtdl_optix.so"
+            native.write_bytes(b"goal5840-test-native")
+            route, program, materialized, result, target, toolchain = _fixture(native)
+            result.traversal_receipt = MappingProxyType({
+                "physical_executor_classification": "optix_traversal_observed",
+                "provider_library_sha256": target.profile.native_sha256,
+                "output_digest": _sha("output"),
+                "backend_receipt": MappingProxyType({
+                    "launch_dimensions": (1, 1, 1),
+                    "program_groups": (
+                        MappingProxyType({"kind": "any_hit"}),
+                    ),
+                }),
+            })
+            with patch(
+                "rtdsl.v4_target_evidence_capture.build_family_target_declaration",
+                return_value={"declaration": "captured"},
+            ), patch(
+                "rtdsl.v4_target_evidence_capture.capture_family_program_artifacts",
+                return_value=[{"artifact": "captured"}],
+            ), patch(
+                "rtdsl.v4_target_evidence_capture.capture_generated_target_artifacts",
+                return_value={"generated": "captured"},
+            ), patch(
+                "rtdsl.v4_target_evidence_capture.build_target_evidence_bundle",
+                side_effect=lambda **kwargs: kwargs,
+            ):
+                captured = capture_real_target_evidence_bundle(
+                    route_id=ROUTE_ID,
+                    mode="capacity_fail_closed_collection",
+                    route=route,
+                    program=program,
+                    materialized=materialized,
+                    result=result,
+                    target=target,
+                    toolchain=toolchain,
+                    declaration_authority_sha256=_sha("authority"),
+                )
+        receipt = captured["execution_receipt"]["traversal_receipt"]
+        self.assertIs(type(receipt), dict)
+        self.assertIs(type(receipt["backend_receipt"]), dict)
+        self.assertEqual(
+            receipt["backend_receipt"]["launch_dimensions"], [1, 1, 1]
+        )
+        self.assertIs(
+            type(receipt["backend_receipt"]["program_groups"][0]), dict
+        )
+        json.dumps(receipt, sort_keys=True, allow_nan=False)
 
     def test_non_optix_receipt_fails_closed(self) -> None:
         with tempfile.TemporaryDirectory() as name:
