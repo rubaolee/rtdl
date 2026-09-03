@@ -49,7 +49,9 @@ A passing receipt must independently establish all of the following:
 Run from a clean checkout of the exact committed exam source. Use Python 3.12,
 Numba 0.65.1, NumPy 2.4.4, CUDA compatible with the visible GPU, and OptiX SDK
 9.0.0. Replace the uppercase placeholders with discovered absolute paths and
-the full 40-character Git commit.
+the full 40-character Git commit. The NVIDIA driver must be R570 or newer;
+the previously tested R550 environment compiled OptiX 9 but rejected its ABI
+before launch.
 
 Use a normal full-history clone when possible. The preregistration verifier
 reads the frozen baseline commit
@@ -63,6 +65,22 @@ git rev-parse HEAD
 git rev-parse 0f5c9d4297f73e412732e5a8ab133423fe4cfd21
 test -z "$(git status --porcelain=v1 --untracked-files=all)"
 ```
+
+If the pod has no OptiX headers, acquire the public NVIDIA header repository
+at the exact currently pinned commit rather than trusting a tag name alone:
+
+```bash
+git clone --quiet --depth 1 --branch v9.0.0 \
+  https://github.com/NVIDIA/optix-dev.git /tmp/optix-dev-v9.0.0
+test "$(git -C /tmp/optix-dev-v9.0.0 rev-parse HEAD)" = \
+  fff65c2a7c592f1ea5f1661ad7d2381cf965f9bd
+grep -Eq '^#define[[:space:]]+OPTIX_VERSION[[:space:]]+90000$' \
+  /tmp/optix-dev-v9.0.0/include/optix.h
+```
+
+For this checkout, set `OPTIX_9_PREFIX=/tmp/optix-dev-v9.0.0`. The native
+build manifest independently records every key OptiX header hash, so the final
+evidence does not rely on the tag label.
 
 The existing product-only native build excludes the sphere lifecycle ABI under
 `RTDL_V4_PRODUCT_ONLY`. Therefore this exam builds the existing full generic
