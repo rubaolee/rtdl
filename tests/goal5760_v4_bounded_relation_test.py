@@ -120,6 +120,7 @@ class Goal5760BoundedRelationTests(unittest.TestCase):
         second = generate_trusted_bounded_relation_wrapper_v1(
             authority, contract, abi, any_hit_proof_authority=proof)
         self.assertEqual(first, second)
+        self.assertFalse(first.linked_role_symbols)
         source = first.source
         for required in (
             "optixTrace", "optixReportIntersection",

@@ -308,15 +308,76 @@ def _leaf_source(symbol: str, effects: tuple[str, ...]) -> str:
     return "\n".join(lines) + "\n"
 
 
-def _wrapper_source(route_id: str, symbols: list[str]) -> str:
+def _inline_definition(symbol: str, effects: tuple[str, ...]) -> str:
+    lines = [
+        'extern "C" __forceinline__ __device__ unsigned long long '
+        f"{symbol}(unsigned int* out_effect_tag) {{",
+        "    out_effect_tag[0] = 0;",
+    ]
+    for effect in effects:
+        tag = next(
+            tag for tag, name in checker.EFFECT_TAGS.items() if name == effect
+        )
+        lines.append(f"    out_effect_tag[0] = {tag};")
+    lines.extend(("    return 0ull;", "}"))
+    return "\n".join(lines) + "\n"
+
+
+def _wrapper_source(
+    route_id: str,
+    symbols: list[str],
+    inline_definitions: list[str],
+) -> str:
     declarations = "\n".join(f'extern "C" void {symbol}();' for symbol in symbols)
     if route_id.startswith("stable::bounded_relation"):
-        body = """
-params.overflowed;
-atomicExch(params.overflowed, 1u);
-optixReportIntersection(0.0f, 0u, primitive.item_id, 0u);
-const unsigned int item = optixGetAttribute_0();
+        body = declarations + "\n\n" + "\n".join(inline_definitions) + """
+extern "C" __global__ void __raygen__rtdl_v4_bounded_relation() {
+    atomicOr(&params.status[query].invocation_mask, 1u << 1u);
+    origin = make_float3(0.0f, 0.0f, 0.0f);
+    direction = make_float3(1.0f, 1.0f, 0.0f);
+    optixTrace(params.traversable, origin, direction);
+    params.output_hit_count[query] = payload_count;
+    params.output_minimum_id[query] = payload_minimum;
+    params.output_intersection_count[query] = intersection_count;
+    atomicOr(&params.status[query].invocation_mask, 1u << 6u);
+}
+extern "C" __global__ void __intersection__rtdl_v4_bounded_relation() {
+    const bool closed =
+        params.primitives[primitive_index].lower_x <= source_max_x &&
+        params.primitives[primitive_index].lower_y <= source_max_y &&
+        params.primitives[primitive_index].upper_x >= source_min_x &&
+        params.primitives[primitive_index].upper_y >= source_min_y;
+    atomicOr(&params.status[query].invocation_mask,
+             (1u << 0u) | (1u << 2u));
+    if (closed && overlap_x * overlap_y >= params.minimum_overlap)
+        optixReportIntersection(0.0f, 0u,
+                                params.primitives[primitive_index].item_id, 0u);
+}
+extern "C" __global__ void __anyhit__rtdl_v4_bounded_relation() {
+    if (prior_count == 0xffffffffu) {
+        optixTerminateRay(); return;
+    }
+    const unsigned int updated_count = prior_count + 1u;
+    const unsigned int updated_minimum = hit_kind;
+    const unsigned long long slot = v4_relation_reserve_row();
+    if (slot < params.event_capacity) {
+        row.item_id = optixGetAttribute_0();
+        params.rows[slot] = row;
+    } else {
+        atomicExch(params.overflowed, 1u);
+    }
+    optixSetPayload_0(updated_count);
+    optixSetPayload_1(updated_minimum);
+    atomicOr(&params.status[query].invocation_mask, 1u << 3u);
+}
+extern "C" __global__ void __closesthit__rtdl_v4_bounded_relation() {
+    atomicOr(&params.status[query].invocation_mask, 1u << 4u);
+}
+extern "C" __global__ void __miss__rtdl_v4_bounded_relation() {
+    atomicOr(&params.status[query].invocation_mask, 1u << 5u);
+}
 """
+        return body
     elif route_id.startswith("stable::triangle_reduction"):
         body = """
 const unsigned int primitive = optixGetPrimitiveIndex();
@@ -349,6 +410,7 @@ def _make_bundle(
     ptx_header = ".version 8.0\n.target sm_89\n.address_size 64\n"
     ptx_bodies = []
     role_symbols = []
+    inline_definitions = []
     for role, effects in sorted(_role_effects(route_id).items()):
         symbol = f"goal5840_{role}"
         symbols.append(symbol)
@@ -357,6 +419,8 @@ def _make_bundle(
         ptx_body = f".visible .func {symbol}() {{ ret; }}\n"
         ptx = ptx_header + ptx_body
         ptx_bodies.append(ptx_body)
+        if route_id.startswith("stable::bounded_relation"):
+            inline_definitions.append(_inline_definition(symbol, effects))
         leaves.append({
             "role": role,
             "generated_metadata": {
@@ -377,10 +441,14 @@ def _make_bundle(
             },
             "compiled_ptx": make_blob_record(ptx),
         })
-    wrapper_source = _wrapper_source(route_id, symbols)
+    wrapper_source = _wrapper_source(
+        route_id, symbols, inline_definitions
+    )
     wrapper_body = ".visible .entry __raygen__goal5840() { ret; }\n"
     if route_id.startswith("stable::bounded_relation"):
-        wrapper_ptx = ptx_header + "".join(ptx_bodies) + wrapper_body
+        # NVRTC may erase every forced-inline leaf symbol. The identity proof
+        # must use the raw source definitions, not final-PTX byte presence.
+        wrapper_ptx = ptx_header + wrapper_body
         composed_ptx = wrapper_ptx
     else:
         wrapper_ptx = ptx_header + wrapper_body
@@ -405,10 +473,14 @@ def _make_bundle(
             "wrapper_ptx": wrapper_ptx_sha,
             "generated": generated_hashes,
             "compiled": compiled_hashes,
-            "inline_cuda": _sha(route_id + ":inline-cuda"),
+            "inline_cuda": hashlib.sha256(
+                "\n".join(inline_definitions).encode()
+            ).hexdigest(),
             "inline_cuda_leaves": [
-                [role, _sha(route_id + ":inline:" + role)]
-                for role, _symbol in role_symbols
+                [role, hashlib.sha256(definition.encode()).hexdigest()]
+                for (role, _symbol), definition in zip(
+                    role_symbols, inline_definitions, strict=True
+                )
             ],
             "composed": composed_sha,
             "options": ["--gpu-architecture=compute_89"],
@@ -450,6 +522,9 @@ def _make_bundle(
                 "callback_ir_sha256": callback_ir_sha,
                 "callback_abi_sha256": abi_sha,
                 "role_symbols": role_symbols,
+                "linked_role_symbols": not route_id.startswith(
+                    "stable::bounded_relation"
+                ),
             },
             "source": make_blob_record(wrapper_source),
             "ptx": make_blob_record(wrapper_ptx),
@@ -646,6 +721,26 @@ def _reseal_bundle(bundle: dict[str, object]) -> None:
     ).hexdigest()
 
 
+def _replace_wrapper_source(
+    bundle: dict[str, object], old: str, new: str
+) -> None:
+    generated = bundle["generated_target_artifacts"]
+    assert isinstance(generated, dict)
+    wrapper = generated["wrapper"]
+    assert isinstance(wrapper, dict)
+    source_record = wrapper["source"]
+    assert isinstance(source_record, dict)
+    source = base64.b64decode(str(source_record["base64"])).decode("utf-8")
+    if source.count(old) != 1:
+        raise AssertionError(f"wrapper replacement cardinality differs: {old!r}")
+    source = source.replace(old, new, 1)
+    wrapper["source"] = make_blob_record(source)
+    metadata = wrapper["metadata"]
+    assert isinstance(metadata, dict)
+    metadata["source_sha256"] = hashlib.sha256(source.encode()).hexdigest()
+    _reseal_bundle(bundle)
+
+
 class Goal5840IndependentTargetCheckerTest(unittest.TestCase):
     def test_checker_imports_only_python_standard_library(self) -> None:
         path = Path(checker.__file__)
@@ -711,6 +806,122 @@ class Goal5840IndependentTargetCheckerTest(unittest.TestCase):
                 self.assertEqual(report["verdict"], "ACCEPT", report)
                 self.assertEqual(report["pass_count"], 5)
                 self.assertEqual(report["reject_count"], 0)
+
+    def test_inline_route_accepts_optimized_ptx_without_leaf_symbols(self) -> None:
+        bundle, declaration_sha, identity_sha, control_flow_sha = _make_bundle(
+            ROUTES[0]
+        )
+        generated = bundle["generated_target_artifacts"]
+        assert isinstance(generated, dict)
+        composed = generated["composed_ptx"]
+        assert isinstance(composed, dict)
+        ptx = base64.b64decode(str(composed["base64"])).decode("utf-8")
+        wrapper = generated["wrapper"]
+        assert isinstance(wrapper, dict)
+        metadata = wrapper["metadata"]
+        assert isinstance(metadata, dict)
+        for _role, symbol in metadata["role_symbols"]:
+            self.assertNotIn(symbol, ptx)
+        report = checker.check_target_evidence(
+            bundle,
+            trusted_declaration_sha256=declaration_sha,
+            trusted_executable_identity_sha256=identity_sha,
+            trusted_control_flow_manifest_sha256=control_flow_sha,
+        )
+        self.assertEqual(report["verdict"], "ACCEPT", report)
+
+    def test_inline_effect_drift_rejects_cp001_itself(self) -> None:
+        bundle, declaration_sha, identity_sha, control_flow_sha = _make_bundle(
+            ROUTES[0]
+        )
+        _replace_wrapper_source(
+            bundle,
+            "    out_effect_tag[0] = 5;\n",
+            "    out_effect_tag[0] = 7;\n",
+        )
+        report = checker.check_target_evidence(
+            bundle,
+            trusted_declaration_sha256=declaration_sha,
+            trusted_executable_identity_sha256=identity_sha,
+            trusted_control_flow_manifest_sha256=control_flow_sha,
+        )
+        cp001 = report["property_checks"][0]
+        self.assertEqual(cp001["property_id"], "CP001_ROLE_EFFECT_CLOSURE")
+        self.assertEqual(cp001["verdict"], "REJECT")
+        self.assertEqual(
+            cp001["reason_id"], "TC001_INLINE_OR_PARTIAL_EFFECT_MISMATCH"
+        )
+
+    def test_partial_evaluation_drift_rejects_cp001_itself(self) -> None:
+        bundle, declaration_sha, identity_sha, control_flow_sha = _make_bundle(
+            ROUTES[0]
+        )
+        _replace_wrapper_source(
+            bundle,
+            "    optixSetPayload_0(updated_count);\n",
+            "    /* removed accept-continue payload update */\n",
+        )
+        report = checker.check_target_evidence(
+            bundle,
+            trusted_declaration_sha256=declaration_sha,
+            trusted_executable_identity_sha256=identity_sha,
+            trusted_control_flow_manifest_sha256=control_flow_sha,
+        )
+        cp001 = report["property_checks"][0]
+        self.assertEqual(cp001["verdict"], "REJECT")
+        self.assertEqual(
+            cp001["reason_id"], "TC001_PARTIAL_EVAL_ANY_HIT_MISMATCH"
+        )
+
+    def test_partial_evaluation_comment_spoof_rejects_cp001_itself(self) -> None:
+        bundle, declaration_sha, identity_sha, control_flow_sha = _make_bundle(
+            ROUTES[0]
+        )
+        _replace_wrapper_source(
+            bundle,
+            "    optixSetPayload_0(updated_count);\n",
+            "    /* optixSetPayload_0(updated_count); */\n",
+        )
+        report = checker.check_target_evidence(
+            bundle,
+            trusted_declaration_sha256=declaration_sha,
+            trusted_executable_identity_sha256=identity_sha,
+            trusted_control_flow_manifest_sha256=control_flow_sha,
+        )
+        cp001 = report["property_checks"][0]
+        self.assertEqual(cp001["verdict"], "REJECT")
+        self.assertEqual(
+            cp001["reason_id"], "TC001_PARTIAL_EVAL_ANY_HIT_MISMATCH"
+        )
+
+    def test_inline_preimage_drift_rejects_cp005_recomputation(self) -> None:
+        for field, reason in (
+            ("inline_cuda", "TC005_INLINE_SOURCE_PREIMAGE_MISMATCH"),
+            ("inline_cuda_leaves", "TC005_INLINE_LEAF_PREIMAGE_MISMATCH"),
+        ):
+            with self.subTest(field=field):
+                bundle, _declaration_sha, _identity_sha, _control_flow_sha = (
+                    _make_bundle(ROUTES[0])
+                )
+                generated = bundle["generated_target_artifacts"]
+                assert isinstance(generated, dict)
+                executable = generated["executable_metadata"]
+                assert isinstance(executable, dict)
+                preimage = executable["identity_preimage"]
+                assert isinstance(preimage, dict)
+                if field == "inline_cuda":
+                    preimage[field] = "0" * 64
+                else:
+                    rows = preimage[field]
+                    assert isinstance(rows, list)
+                    rows[0][1] = "0" * 64
+                plan = bundle["declaration"]
+                assert isinstance(plan, dict)
+                with self.assertRaises(checker.IndependentTargetCheckError) as caught:
+                    checker._generated_identity_facts(
+                        bundle, plan["family_plan"]
+                    )
+                self.assertEqual(caught.exception.reason_id, reason)
 
     def test_real_route_plans_and_sources_satisfy_control_flow_extractors(self) -> None:
         bounded_protocol = BoundedRelationProtocol(16, 0.25)

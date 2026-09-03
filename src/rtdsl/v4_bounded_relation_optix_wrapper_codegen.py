@@ -422,6 +422,9 @@ extern "C" __global__ void __miss__rtdl_v4_bounded_relation() {
         source=source,
         source_sha256=hashlib.sha256(source.encode("utf-8")).hexdigest(),
         role_symbols=tuple((role.value, roles[role].symbol) for role in CallbackRole),
+        # This closed standard callback is partially evaluated by the wrapper;
+        # the generated role definitions are identity-bound but not called.
+        linked_role_symbols=False,
     )
 
 

@@ -8,6 +8,7 @@ from unittest.mock import patch
 
 from scripts import goal5840_freeze_gpu_inputs as freezer
 from scripts import goal5840_freeze_attempt02_repair_inputs as attempt02_freezer
+from scripts import goal5840_freeze_attempt03_repair_inputs as attempt03_freezer
 from scripts import goal5840_freeze_repair_inputs as repair_freezer
 from scripts.goal5840_gpu_cases import goal5840_mode_cases
 
@@ -72,7 +73,9 @@ class Goal5840GpuEvidenceHarnessTest(unittest.TestCase):
         self.assertIn("_verify_repair_authority(", source)
         self.assertIn("POST_ATTEMPT_02_REPAIR_AUTHORITY.json", source)
         self.assertIn("_verify_attempt02_repair_authority(", source)
-        self.assertIn("rtdl.goal5840.true_optix_target_evidence.v3", source)
+        self.assertIn("POST_ATTEMPT_03_REPAIR_AUTHORITY.json", source)
+        self.assertIn("_verify_attempt03_repair_authority(", source)
+        self.assertIn("rtdl.goal5840.true_optix_target_evidence.v4", source)
         self.assertIn('sys.executable,\n            "-I"', source)
         self.assertIn("EXACT_BUNDLE_MUTATION_RESULT.json", source)
 
@@ -117,6 +120,67 @@ class Goal5840GpuEvidenceHarnessTest(unittest.TestCase):
         body["authority_sha256"] = ""
         expected = hashlib.sha256(
             repair_freezer.DOMAIN
+            + json.dumps(
+                body,
+                sort_keys=True,
+                separators=(",", ":"),
+                ensure_ascii=True,
+                allow_nan=False,
+            ).encode("ascii")
+        ).hexdigest()
+        self.assertEqual(observed, expected)
+
+    def test_attempt03_repair_authority_preserves_all_failures_and_inputs(
+        self,
+    ) -> None:
+        expected_before_output = tuple(
+            path
+            for path in attempt03_freezer.ALLOWED_CHANGED_PATHS
+            if not path.endswith("POST_ATTEMPT_03_REPAIR_AUTHORITY.json")
+        )
+
+        def changed_paths(base: str, revision: str | None = None):
+            if revision is None:
+                self.assertEqual(base, attempt03_freezer.BASE_COMMIT)
+                return expected_before_output
+            self.assertEqual(revision, attempt03_freezer.BASE_COMMIT)
+            return tuple(sorted(attempt02_freezer.ALLOWED_CHANGED_PATHS))
+
+        with patch.object(Path, "exists", return_value=False), patch.object(
+            attempt03_freezer,
+            "_changed_paths",
+            side_effect=changed_paths,
+        ):
+            document = attempt03_freezer.build_authority(
+                "2026-09-03T11:00:00Z"
+            )
+        prior = json.loads(
+            attempt03_freezer.PRIOR_REPAIR_AUTHORITY.read_text(encoding="ascii")
+        )
+        self.assertEqual(document["mode_cases"], prior["mode_cases"])
+        self.assertEqual(
+            document["goal5838_frozen_core"], prior["goal5838_frozen_core"]
+        )
+        counts = document["base_chain"][
+            "formal_observed_counts_through_attempt_03"
+        ]
+        self.assertEqual(counts["runner_processes_started"], 3)
+        self.assertEqual(counts["published_evidence_bundles"], 1)
+        self.assertEqual(counts["independently_accepted_reports"], 0)
+        self.assertEqual(counts["accepted_positive_evidence_rows"], 0)
+        artifacts = document["base_chain"]["attempt_03_incident"][
+            "published_failure_artifacts"
+        ]
+        self.assertEqual(len(artifacts), 2)
+        self.assertEqual(
+            document["repair_scope"]["exact_changed_paths_since_base"],
+            list(attempt03_freezer.ALLOWED_CHANGED_PATHS),
+        )
+        body = dict(document)
+        observed = body["authority_sha256"]
+        body["authority_sha256"] = ""
+        expected = hashlib.sha256(
+            attempt03_freezer.DOMAIN
             + json.dumps(
                 body,
                 sort_keys=True,

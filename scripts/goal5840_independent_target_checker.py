@@ -404,7 +404,304 @@ def _leaf_effect_tags(source: str, path: str) -> frozenset[int]:
     return frozenset(tags)
 
 
-def _check_cp001(bundle: Mapping[str, Any], declaration: Mapping[str, Any]) -> dict[str, Any]:
+def _cpp_lexical_mask(source: str, *, preserve_strings: bool) -> str:
+    """Return an equal-length view with non-code bytes replaced by spaces."""
+
+    result = list(source)
+    state = "code"
+    escaped = False
+    index = 0
+    while index < len(source):
+        character = source[index]
+        following = source[index + 1] if index + 1 < len(source) else ""
+        if state == "line_comment":
+            if character == "\n":
+                state = "code"
+            else:
+                result[index] = " "
+        elif state == "block_comment":
+            if character == "*" and following == "/":
+                result[index] = " "
+                result[index + 1] = " "
+                index += 1
+                state = "code"
+            elif character != "\n":
+                result[index] = " "
+        elif state in {"single", "double"}:
+            if not preserve_strings and character != "\n":
+                result[index] = " "
+            if escaped:
+                escaped = False
+            elif character == "\\":
+                escaped = True
+            elif (state == "single" and character == "'") or (
+                state == "double" and character == '"'
+            ):
+                state = "code"
+        elif character == "/" and following == "/":
+            result[index] = " "
+            result[index + 1] = " "
+            index += 1
+            state = "line_comment"
+        elif character == "/" and following == "*":
+            result[index] = " "
+            result[index + 1] = " "
+            index += 1
+            state = "block_comment"
+        elif character == "'":
+            if not preserve_strings:
+                result[index] = " "
+            state = "single"
+        elif character == '"':
+            if not preserve_strings:
+                result[index] = " "
+            state = "double"
+        index += 1
+    return "".join(result)
+
+
+def _inline_cuda_definition(
+    source: str, symbol: str, path: str
+) -> str:
+    _require(
+        re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", symbol) is not None,
+        "TC001_INLINE_SYMBOL_INVALID",
+        path,
+        symbol,
+    )
+    marker = (
+        'extern "C" __forceinline__ __device__ unsigned long long '
+        f"{symbol}("
+    )
+    commentless = _cpp_lexical_mask(source, preserve_strings=True)
+    _require(
+        commentless.count(marker) == 1,
+        "TC001_INLINE_DEFINITION_CARDINALITY",
+        path,
+        {"symbol": symbol, "count": commentless.count(marker)},
+    )
+    start = commentless.index(marker)
+    code_mask = _cpp_lexical_mask(source, preserve_strings=False)
+    opening = code_mask.find("{", start + len(marker))
+    _require(
+        opening >= 0,
+        "TC001_INLINE_DEFINITION_UNPARSEABLE",
+        path,
+        symbol,
+    )
+    depth = 0
+    state = "code"
+    escaped = False
+    index = opening
+    while index < len(source):
+        character = source[index]
+        following = source[index + 1] if index + 1 < len(source) else ""
+        if state in {"single", "double"}:
+            if escaped:
+                escaped = False
+            elif character == "\\":
+                escaped = True
+            elif (state == "single" and character == "'") or (
+                state == "double" and character == '"'
+            ):
+                state = "code"
+        elif state == "line_comment":
+            if character == "\n":
+                state = "code"
+        elif state == "block_comment":
+            if character == "*" and following == "/":
+                state = "code"
+                index += 1
+        elif character == "/" and following == "/":
+            state = "line_comment"
+            index += 1
+        elif character == "/" and following == "*":
+            state = "block_comment"
+            index += 1
+        elif character == "'":
+            state = "single"
+        elif character == '"':
+            state = "double"
+        elif character == "{":
+            depth += 1
+        elif character == "}":
+            depth -= 1
+            if depth == 0:
+                end = index + 1
+                if end < len(source) and source[end] == "\n":
+                    end += 1
+                return source[start:end]
+        index += 1
+    _fail("TC001_INLINE_DEFINITION_UNPARSEABLE", path, symbol)
+    raise AssertionError
+
+
+def _inline_cuda_effect_tags(definition: str, path: str) -> frozenset[int]:
+    code = _cpp_lexical_mask(definition, preserve_strings=False)
+    tags = {
+        int(match.group(1))
+        for match in re.finditer(
+            r"\bout_effect_tag\s*\[\s*0\s*\]\s*=\s*([0-9]+)\s*;",
+            code,
+        )
+        if int(match.group(1)) != 0
+    }
+    _require(
+        bool(tags),
+        "TC001_INLINE_EFFECT_TAG_ABSENT",
+        path,
+        "no nonzero out_effect_tag assignment",
+    )
+    unknown = sorted(tags - set(EFFECT_TAGS))
+    _require(
+        not unknown,
+        "TC001_INLINE_EFFECT_TAG_UNKNOWN",
+        path,
+        unknown,
+    )
+    return frozenset(tags)
+
+
+def _require_source_anchors(
+    source: str, anchors: Sequence[str], reason: str, path: str
+) -> None:
+    missing = [anchor for anchor in anchors if anchor not in source]
+    _require(not missing, reason, path, missing)
+
+
+def _bounded_partial_evaluation_effects(
+    wrapper_source: str,
+) -> dict[str, tuple[str, ...]]:
+    windows = {
+        "raygen": _cpp_function_window(
+            wrapper_source,
+            "__raygen__rtdl_v4_bounded_relation",
+            "generated.wrapper.source.raygen",
+        ),
+        "intersection": _cpp_function_window(
+            wrapper_source,
+            "__intersection__rtdl_v4_bounded_relation",
+            "generated.wrapper.source.intersection",
+        ),
+        "any_hit": _cpp_function_window(
+            wrapper_source,
+            "__anyhit__rtdl_v4_bounded_relation",
+            "generated.wrapper.source.any_hit",
+        ),
+        "closest_hit": _cpp_function_window(
+            wrapper_source,
+            "__closesthit__rtdl_v4_bounded_relation",
+            "generated.wrapper.source.closest_hit",
+        ),
+        "miss": _cpp_function_window(
+            wrapper_source,
+            "__miss__rtdl_v4_bounded_relation",
+            "generated.wrapper.source.miss",
+        ),
+    }
+    windows = {
+        role: _cpp_lexical_mask(window, preserve_strings=False)
+        for role, window in windows.items()
+    }
+    _require_source_anchors(
+        windows["intersection"],
+        (
+            "params.primitives[primitive_index].lower_x",
+            "params.primitives[primitive_index].lower_y",
+            "params.primitives[primitive_index].upper_x",
+            "params.primitives[primitive_index].upper_y",
+            "(1u << 0u)",
+        ),
+        "TC001_PARTIAL_EVAL_BOUNDS_MISMATCH",
+        "bounds",
+    )
+    _require_source_anchors(
+        windows["raygen"],
+        (
+            "origin = make_float3(",
+            "direction = make_float3(",
+            "optixTrace(",
+            "1u << 1u",
+        ),
+        "TC001_PARTIAL_EVAL_MAKE_RAY_MISMATCH",
+        "make_ray",
+    )
+    _require_source_anchors(
+        windows["intersection"],
+        (
+            "const bool closed =",
+            "overlap_x * overlap_y >= params.minimum_overlap",
+            "optixReportIntersection(",
+            "(1u << 2u)",
+        ),
+        "TC001_PARTIAL_EVAL_INTERSECTION_MISMATCH",
+        "intersection",
+    )
+    _require_source_anchors(
+        windows["any_hit"],
+        (
+            "const unsigned int updated_count = prior_count + 1u;",
+            "const unsigned int updated_minimum =",
+            "v4_relation_reserve_row()",
+            "params.rows[slot] = row;",
+            "optixSetPayload_0(updated_count);",
+            "optixSetPayload_1(updated_minimum);",
+            "1u << 3u",
+        ),
+        "TC001_PARTIAL_EVAL_ANY_HIT_MISMATCH",
+        "any_hit",
+    )
+    _require(
+        "optixIgnoreIntersection" not in windows["any_hit"]
+        and windows["any_hit"].count("optixTerminateRay()") == 1
+        and windows["any_hit"].index("optixTerminateRay()")
+        < windows["any_hit"].index("const unsigned int updated_count"),
+        "TC001_PARTIAL_EVAL_ACCEPT_CONTINUE_MISMATCH",
+        "any_hit",
+        "success path must accept and continue; termination is overflow-only",
+    )
+    for role, bit in (("closest_hit", "1u << 4u"), ("miss", "1u << 5u")):
+        _require(
+            bit in windows[role]
+            and "optixSetPayload" not in windows[role],
+            "TC001_PARTIAL_EVAL_IDENTITY_PAYLOAD_MISMATCH",
+            role,
+            "identity payload path or invocation marker missing",
+        )
+    finalize_anchors = (
+        "params.output_hit_count[query] = payload_count;",
+        "params.output_minimum_id[query] = payload_minimum;",
+        "params.output_intersection_count[query] = intersection_count;",
+        "1u << 6u",
+    )
+    _require_source_anchors(
+        windows["raygen"],
+        finalize_anchors,
+        "TC001_PARTIAL_EVAL_FINALIZE_MISMATCH",
+        "finalize",
+    )
+    _require(
+        windows["raygen"].index("optixTrace(")
+        < windows["raygen"].index(finalize_anchors[0])
+        < windows["raygen"].index("1u << 6u"),
+        "TC001_PARTIAL_EVAL_FINALIZE_ORDER",
+        "finalize",
+        "trace -> output -> finalize marker order differs",
+    )
+    return {
+        "bounds": ("aabb",),
+        "make_ray": ("trace_request",),
+        "intersection": ("hit", "no_hit"),
+        "any_hit": ("accept_continue",),
+        "closest_hit": ("payload",),
+        "miss": ("payload",),
+        "finalize": ("output",),
+    }
+
+
+def _check_cp001(
+    bundle: Mapping[str, Any], declaration: Mapping[str, Any]
+) -> dict[str, Any]:
     shape = _family_shape(declaration)
     roles = _sequence(_mapping(shape.get("callback"), "family_shape.callback").get("roles"), "family_shape.callback.roles")
     declared = {}
@@ -439,15 +736,25 @@ def _check_cp001(bundle: Mapping[str, Any], declaration: Mapping[str, Any]) -> d
         if isinstance(pair, Sequence) and len(pair) == 2
     }
     composed_ptx = _text_blob(generated.get("composed_ptx"), "generated.composed_ptx")
-    target = {}
+    generated_target = {}
+    inline_target = {}
     leaf_roles = set()
+    inline_definitions: dict[str, str] = {}
+    executable_metadata = _mapping(
+        generated.get("executable_metadata"), "generated.executable_metadata"
+    )
+    composition = _mapping(
+        executable_metadata.get("composition"),
+        "generated.executable_metadata.composition",
+    )
+    composition_mode = str(composition.get("mode"))
     for index, raw in enumerate(_sequence(generated.get("leaves"), "generated.leaves")):
         row = _mapping(raw, f"generated.leaves[{index}]")
         role = str(row.get("role"))
         leaf_roles.add(role)
         source = _text_blob(row.get("generated_source"), f"generated.leaves.{role}.source")
         tags = _leaf_effect_tags(source, f"generated.leaves.{role}.source")
-        target[role] = tuple(sorted(EFFECT_TAGS[tag] for tag in tags))
+        generated_target[role] = tuple(sorted(EFFECT_TAGS[tag] for tag in tags))
         generated_metadata = _mapping(row.get("generated_metadata"), f"generated.leaves.{role}.generated_metadata")
         compiled_metadata = _mapping(row.get("compiled_metadata"), f"generated.leaves.{role}.compiled_metadata")
         symbol = str(generated_metadata.get("abi_name"))
@@ -457,19 +764,87 @@ def _check_cp001(bundle: Mapping[str, Any], declaration: Mapping[str, Any]) -> d
         compiled_ptx = _text_blob(row.get("compiled_ptx"), f"generated.leaves.{role}.ptx")
         _require(symbol in wrapper_source, "TC001_WRAPPER_SYMBOL_ABSENT", role, symbol)
         _require(symbol in compiled_ptx, "TC001_LEAF_PTX_SYMBOL_ABSENT", role, symbol)
-        _require(symbol in composed_ptx, "TC001_COMPOSED_PTX_SYMBOL_ABSENT", role, symbol)
+        if composition_mode == "linked_leaf_ptx":
+            _require(
+                symbol in composed_ptx,
+                "TC001_COMPOSED_PTX_SYMBOL_ABSENT",
+                role,
+                symbol,
+            )
+        elif composition_mode == "inline_cuda_wrapper":
+            definition = _inline_cuda_definition(
+                wrapper_source, symbol, f"generated.wrapper.inline.{role}"
+            )
+            inline_definitions[role] = definition
+            inline_tags = _inline_cuda_effect_tags(
+                definition, f"generated.wrapper.inline.{role}"
+            )
+            inline_target[role] = tuple(
+                sorted(EFFECT_TAGS[tag] for tag in inline_tags)
+            )
+        else:
+            _fail(
+                "TC001_COMPOSITION_MODE_UNSUPPORTED",
+                "generated.executable_metadata.composition.mode",
+                composition_mode,
+            )
     _require(set(declared) == set(abi_roles) == leaf_roles, "TC001_ROLE_SET_MISMATCH", "roles", (sorted(declared), sorted(abi_roles), sorted(leaf_roles)))
-    _require(declared == abi_roles == target, "TC001_ROLE_EFFECT_MISMATCH", "roles", {"declared": declared, "abi": abi_roles, "target": target})
-    return {
-        "declared_facts_sha256": _digest(declared),
-        "target_facts_sha256": _digest(target),
-        "evidence": [
+    if composition_mode == "inline_cuda_wrapper":
+        _require(
+            wrapper_metadata.get("linked_role_symbols") is False,
+            "TC001_PARTIAL_EVAL_METADATA_MISMATCH",
+            "generated.wrapper.metadata.linked_role_symbols",
+            wrapper_metadata.get("linked_role_symbols"),
+        )
+        executable_target = _bounded_partial_evaluation_effects(wrapper_source)
+        _require(
+            generated_target == inline_target == executable_target,
+            "TC001_INLINE_OR_PARTIAL_EFFECT_MISMATCH",
+            "roles",
+            {
+                "generated": generated_target,
+                "inline": inline_target,
+                "partial_evaluation": executable_target,
+            },
+        )
+        evidence = [
+            "declaration.family_plan.family_shape.callback.roles",
+            "artifact.rtdl.callback.abi.roles",
+            "generated.leaves[*].generated_source AST out_effect_tag assignments",
+            "generated.wrapper.source exact inline definitions and effect tags",
+            "generated.wrapper.source bounded partial-evaluation entry-point semantics",
+        ]
+    else:
+        _require(
+            wrapper_metadata.get("linked_role_symbols") is True,
+            "TC001_LINKED_METADATA_MISMATCH",
+            "generated.wrapper.metadata.linked_role_symbols",
+            wrapper_metadata.get("linked_role_symbols"),
+        )
+        executable_target = generated_target
+        evidence = [
             "declaration.family_plan.family_shape.callback.roles",
             "artifact.rtdl.callback.abi.roles",
             "generated.leaves[*].generated_source AST out_effect_tag assignments",
             "generated.wrapper.metadata.role_symbols",
             "generated.wrapper.source and generated/composed PTX symbols",
-        ],
+        ]
+    _require(
+        declared == abi_roles == generated_target == executable_target,
+        "TC001_ROLE_EFFECT_MISMATCH",
+        "roles",
+        {
+            "declared": declared,
+            "abi": abi_roles,
+            "generated": generated_target,
+            "executable": executable_target,
+        },
+    )
+    return {
+        "declared_facts_sha256": _digest(declared),
+        "generated_facts_sha256": _digest(generated_target),
+        "target_facts_sha256": _digest(executable_target),
+        "evidence": evidence,
     }
 
 
@@ -651,13 +1026,14 @@ def _derive_plan_requirements(shape: Mapping[str, Any]) -> dict[str, Any]:
 
 
 def _cpp_function_window(source: str, function_name: str, path: str) -> str:
+    code_mask = _cpp_lexical_mask(source, preserve_strings=False)
     for match in re.finditer(
-        r"\b" + re.escape(function_name) + r"\s*\(", source
+        r"\b" + re.escape(function_name) + r"\s*\(", code_mask
     ):
         parentheses = 0
         closing = -1
-        for index in range(match.end() - 1, len(source)):
-            character = source[index]
+        for index in range(match.end() - 1, len(code_mask)):
+            character = code_mask[index]
             if character == "(":
                 parentheses += 1
             elif character == ")":
@@ -668,26 +1044,14 @@ def _cpp_function_window(source: str, function_name: str, path: str) -> str:
         if closing < 0:
             continue
         opening = closing + 1
-        while opening < len(source) and source[opening].isspace():
+        while opening < len(code_mask) and code_mask[opening].isspace():
             opening += 1
-        if opening >= len(source) or source[opening] != "{":
+        if opening >= len(code_mask) or code_mask[opening] != "{":
             continue
         depth = 0
-        in_string: str | None = None
-        escaped = False
-        for index in range(opening, len(source)):
-            character = source[index]
-            if in_string is not None:
-                if escaped:
-                    escaped = False
-                elif character == "\\":
-                    escaped = True
-                elif character == in_string:
-                    in_string = None
-                continue
-            if character in {'"', "'"}:
-                in_string = character
-            elif character == "{":
+        for index in range(opening, len(code_mask)):
+            character = code_mask[index]
+            if character == "{":
                 depth += 1
             elif character == "}":
                 depth -= 1
@@ -1523,6 +1887,50 @@ def _generated_identity_facts(
         "generated.executable_metadata.identity_preimage",
         preimage,
     )
+    if rule["composition_mode"] == "inline_cuda_wrapper":
+        definitions = []
+        inline_leaf_rows = []
+        for role in leaf_order:
+            definition = _inline_cuda_definition(
+                wrapper_source,
+                bindings[role],
+                f"generated.wrapper.inline.{role}",
+            )
+            definitions.append(definition)
+            inline_leaf_rows.append(
+                [role, _sha256(definition.encode("utf-8"))]
+            )
+        joined = "\n".join(definitions)
+        _require(
+            wrapper_source.count(joined) == 1,
+            "TC005_INLINE_DEFINITION_SEQUENCE_MISMATCH",
+            "generated.wrapper.source",
+            "inline definitions are not one exact leaf-order sequence",
+        )
+        _require(
+            preimage.get("inline_cuda_leaves") == inline_leaf_rows,
+            "TC005_INLINE_LEAF_PREIMAGE_MISMATCH",
+            "generated.executable_metadata.identity_preimage.inline_cuda_leaves",
+            {
+                "observed": preimage.get("inline_cuda_leaves"),
+                "expected": inline_leaf_rows,
+            },
+        )
+        inline_sha = _sha256(joined.encode("utf-8"))
+        _require(
+            preimage.get("inline_cuda") == inline_sha,
+            "TC005_INLINE_SOURCE_PREIMAGE_MISMATCH",
+            "generated.executable_metadata.identity_preimage.inline_cuda",
+            {"observed": preimage.get("inline_cuda"), "expected": inline_sha},
+        )
+    else:
+        _require(
+            "inline_cuda" not in preimage
+            and "inline_cuda_leaves" not in preimage,
+            "TC005_UNEXPECTED_INLINE_PREIMAGE",
+            "generated.executable_metadata.identity_preimage",
+            sorted(preimage),
+        )
     if sphere:
         _require(
             preimage.get("plan_sha256")
