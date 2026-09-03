@@ -121,12 +121,17 @@ CORE_ROWS = (
 )
 EXAM_SOURCE_PATHS = (
     "case_studies/goal5838_selected_sphere_any_hit_count/README.md",
+    (
+        "history/internal_docs/goal5838_generic_core_exam_20260902/"
+        "POD_COMPATIBILITY_CORRECTION.md"
+    ),
     "case_studies/goal5838_selected_sphere_any_hit_count/fixture.py",
     (
         "case_studies/goal5838_selected_sphere_any_hit_count/"
         "sphere_any_hit_count_oracle.py"
     ),
     "scripts/goal5838_build_selected_sphere_optix_provider.py",
+    "scripts/goal5838_pod_preflight.py",
     "scripts/goal5838_run_selected_sphere_gpu_exam.py",
     "scripts/goal5838_verify_selected_sphere_gpu_exam.py",
     "src/native/rtdl_optix.cpp",
@@ -151,6 +156,7 @@ EXAM_SOURCE_PATHS = (
     "src/rtdsl/v4_sphere_physical_schema.py",
     "src/rtdsl/v4_sphere_prepared_runtime.py",
     "tests/goal5838_selected_sphere_any_hit_count_test.py",
+    "tests/goal5838_pod_preflight_test.py",
 )
 NATIVE_BUILD_RESULT_DOMAIN = (
     "rtdl.goal5838.selected_sphere_optix_provider_build.v1"
@@ -183,6 +189,21 @@ NATIVE_BUILD_REQUIRED_SYMBOLS = (
     "rtdl_optix_v4_describe_prepared_builtin_sphere_callback_v1",
     "rtdl_optix_v4_destroy_prepared_builtin_sphere_callback_v1",
 )
+OPTIX_RUNTIME_ABI_PROBE_SOURCE_SHA256 = (
+    "ccc24914e3a88ddd711b2fa9dfc40b125ed3649dca24429571a444c9c9f8a876"
+)
+OPTIX_RUNTIME_ABI_PROBE_FIELDS = {
+    "source_sha256",
+    "compile_command_template",
+    "compile_returncode",
+    "compiler_output_sha256",
+    "executable_bytes",
+    "executable_sha256",
+    "runtime_returncode",
+    "runtime_output",
+    "optix_launch_count",
+    "passed",
+}
 SNAPSHOT_FIELDS = {
     "nonce_hi",
     "nonce_lo",
@@ -315,6 +336,31 @@ def _digest(value: object) -> str:
 
 def _sha256_bytes(value: bytes) -> str:
     return hashlib.sha256(value).hexdigest()
+
+
+def _strict_version(
+    value: object, components: int, label: str
+) -> tuple[int, ...]:
+    if not isinstance(value, str):
+        _fail(f"{label} is not a string")
+    parts = value.split(".")
+    if len(parts) != components or any(
+        not part
+        or not part.isascii()
+        or not part.isdecimal()
+        or (len(part) > 1 and part.startswith("0"))
+        for part in parts
+    ):
+        _fail(f"{label} is not a strict {components}-component version")
+    result = tuple(int(part) for part in parts)
+    if result[0] == 0 or any(part >= 100 for part in result[1:]):
+        _fail(f"{label} is outside the supported version form")
+    return result
+
+
+def _encoded_optix_version(value: object) -> int:
+    major, minor, patch = _strict_version(value, 3, "target OptiX SDK")
+    return major * 10000 + minor * 100 + patch
 
 
 def _require_external_output(path: Path, *, artifact_path: Path) -> Path:
@@ -983,10 +1029,13 @@ def _verify_traversal_receipt(
     )
     if receipt.get("semantic_digest") != expected_semantic_digest:
         _fail("traversal semantic digest does not rederive")
-    compute = str(target.get("compute_capability")).split(".")
-    if len(compute) != 2 or any(not item.isdecimal() for item in compute):
-        _fail("target compute capability differs")
-    compute_major, compute_minor = (int(item) for item in compute)
+    compute_major, compute_minor = _strict_version(
+        target.get("compute_capability"), 2, "target compute capability"
+    )
+    optix_major, optix_minor, optix_patch = _strict_version(
+        target.get("optix_sdk"), 3, "target OptiX SDK"
+    )
+    optix_version = optix_major * 10000 + optix_minor * 100 + optix_patch
     static_fingerprint = _static_native_fingerprint()
     if (
         descriptor.get("schema")
@@ -1013,10 +1062,10 @@ def _verify_traversal_receipt(
         or descriptor.get("max_attribute_values") != 0
         or descriptor.get("max_trace_depth") != 1
         or descriptor.get("program_group_count") != 3
-        or descriptor.get("compiled_optix_version") != 90000
-        or descriptor.get("compiled_optix_major") != 9
-        or descriptor.get("compiled_optix_minor") != 0
-        or descriptor.get("compiled_optix_patch") != 0
+        or descriptor.get("compiled_optix_version") != optix_version
+        or descriptor.get("compiled_optix_major") != optix_major
+        or descriptor.get("compiled_optix_minor") != optix_minor
+        or descriptor.get("compiled_optix_patch") != optix_patch
         or type(descriptor.get("cuda_device_ordinal")) is not int
         or descriptor.get("cuda_device_ordinal") < 0
         or descriptor.get("cuda_compute_capability_major") != compute_major
@@ -1062,6 +1111,41 @@ def _verify_traversal_receipt(
         value = _sha(descriptor.get(key), f"native descriptor {key}")
         if value == "0" * 64:
             _fail(f"native descriptor {key} is zero")
+
+
+def _verify_optix_runtime_abi_probe(
+    build_input: Mapping[str, object],
+) -> None:
+    abi_probe = _mapping(
+        build_input.get("optix_runtime_abi_probe"),
+        "OptiX runtime ABI probe",
+    )
+    expected_probe_command = [
+        build_input["host_compiler_path"],
+        "-std=c++17",
+        f"-I{build_input['optix_include']}",
+        f"-I{build_input['cuda_include']}",
+        "<temporary>/probe.cpp",
+        "-ldl",
+        "-o",
+        "<temporary>/probe",
+    ]
+    if (
+        set(abi_probe) != OPTIX_RUNTIME_ABI_PROBE_FIELDS
+        or abi_probe.get("source_sha256")
+        != OPTIX_RUNTIME_ABI_PROBE_SOURCE_SHA256
+        or abi_probe.get("compile_command_template") != expected_probe_command
+        or abi_probe.get("compile_returncode") != 0
+        or abi_probe.get("runtime_returncode") != 0
+        or abi_probe.get("runtime_output") != "optixInit_result=0"
+        or abi_probe.get("optix_launch_count") != 0
+        or abi_probe.get("passed") is not True
+        or type(abi_probe.get("executable_bytes")) is not int
+        or abi_probe.get("executable_bytes") <= 0
+    ):
+        _fail("OptiX runtime ABI probe differs")
+    _sha(abi_probe.get("compiler_output_sha256"), "ABI compiler output")
+    _sha(abi_probe.get("executable_sha256"), "ABI probe executable")
 
 
 def _verify_native_build(
@@ -1173,6 +1257,8 @@ def _verify_native_build(
         "key_headers",
         "compute_capability",
         "gpu",
+        "cuda_visible_devices",
+        "optix_runtime_abi_probe",
         "language_standard",
         "optimization",
         "position_independent_code",
@@ -1195,10 +1281,12 @@ def _verify_native_build(
         != list(NATIVE_BUILD_TRANSLATION_UNITS)
         or build_input.get("builder_path") != NATIVE_BUILD_SOURCE_PATHS[0]
         or build_input.get("builder_sha256") != first_source.get("sha256")
-        or build_input.get("optix_version") != 90000
-        or build_input.get("expected_optix_sdk") != "9.0.0"
+        or build_input.get("optix_version")
+        != _encoded_optix_version(target.get("optix_sdk"))
+        or build_input.get("expected_optix_sdk") != target.get("optix_sdk")
         or build_input.get("compute_capability")
         != target.get("compute_capability")
+        or build_input.get("cuda_visible_devices") != "0"
         or build_input.get("language_standard") != "c++17"
         or build_input.get("optimization") != "O3"
         or build_input.get("position_independent_code") is not True
@@ -1220,6 +1308,7 @@ def _verify_native_build(
         for key in required_strings
     ):
         _fail("native build path or tool version is absent")
+    _verify_optix_runtime_abi_probe(build_input)
     _sha(build_input.get("nvcc_sha256"), "native build nvcc")
     _sha(build_input.get("host_compiler_sha256"), "native build host compiler")
     if not isinstance(build_input.get("cuda_system_include"), str):
@@ -1430,11 +1519,12 @@ def verify_artifact(
         or not target.get("native_library_path")
         or type(target.get("native_library_bytes")) is not int
         or target.get("native_library_bytes") <= 0
-        or target.get("optix_sdk") != "9.0.0"
+        or not isinstance(target.get("optix_sdk"), str)
         or not isinstance(target.get("compute_capability"), str)
         or not isinstance(target.get("gpu"), dict)
     ):
         _fail("target identity differs")
+    _strict_version(target.get("optix_sdk"), 3, "target OptiX SDK")
     expected_target_sha256 = _digest(
         {
             "provider": "optix",
@@ -1499,8 +1589,10 @@ def verify_artifact(
             "numpy",
             "optix_include",
             "cuda_include",
+            "cuda_visible_devices",
         }
         or any(not isinstance(value, str) or not value for value in toolchain.values())
+        or toolchain.get("cuda_visible_devices") != "0"
     ):
         _fail("toolchain identity differs")
     fixture = _mapping(artifact.get("fixture"), "fixture")

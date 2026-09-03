@@ -10,6 +10,7 @@ import importlib.util
 import json
 import os
 import platform
+import re
 import subprocess
 import sys
 import tempfile
@@ -53,12 +54,17 @@ TARGET_LOCAL_RANDOM_VALUE = (
 )
 EXAM_SOURCE_PATHS = (
     "case_studies/goal5838_selected_sphere_any_hit_count/README.md",
+    (
+        "history/internal_docs/goal5838_generic_core_exam_20260902/"
+        "POD_COMPATIBILITY_CORRECTION.md"
+    ),
     "case_studies/goal5838_selected_sphere_any_hit_count/fixture.py",
     (
         "case_studies/goal5838_selected_sphere_any_hit_count/"
         "sphere_any_hit_count_oracle.py"
     ),
     "scripts/goal5838_build_selected_sphere_optix_provider.py",
+    "scripts/goal5838_pod_preflight.py",
     "scripts/goal5838_run_selected_sphere_gpu_exam.py",
     "scripts/goal5838_verify_selected_sphere_gpu_exam.py",
     "src/native/rtdl_optix.cpp",
@@ -83,6 +89,7 @@ EXAM_SOURCE_PATHS = (
     "src/rtdsl/v4_sphere_physical_schema.py",
     "src/rtdsl/v4_sphere_prepared_runtime.py",
     "tests/goal5838_selected_sphere_any_hit_count_test.py",
+    "tests/goal5838_pod_preflight_test.py",
 )
 NATIVE_BUILD_RESULT_DOMAIN = (
     "rtdl.goal5838.selected_sphere_optix_provider_build.v1"
@@ -153,6 +160,32 @@ def _native_build_seal(document: dict[str, object]) -> str:
         + b"\0"
         + _canonical_bytes(payload)
     ).hexdigest()
+
+
+def _require_cuda_visibility() -> str:
+    value = os.environ.get("CUDA_VISIBLE_DEVICES")
+    if value != "0":
+        raise RuntimeError(
+            "Goal5838 requires CUDA_VISIBLE_DEVICES=0 so nvidia-smi and the "
+            "native CUDA ordinal bind the same selected GPU"
+        )
+    return value
+
+
+def _optix_sdk_number(value: str) -> int:
+    match = re.fullmatch(
+        (
+            r"([1-9][0-9]?)\.((?:0|[1-9][0-9]?))\."
+            r"((?:0|[1-9][0-9]?))"
+        ),
+        value,
+    )
+    if match is None:
+        raise ValueError(f"invalid OptiX SDK version: {value!r}")
+    major, minor, patch = (int(item) for item in match.groups())
+    if major == 0 or minor >= 100 or patch >= 100:
+        raise ValueError(f"invalid OptiX SDK version: {value!r}")
+    return major * 10000 + minor * 100 + patch
 
 
 def _load_module(name: str, path: Path):
@@ -361,17 +394,24 @@ def _verify_native_build_manifest(
     build_input = manifest.get("build_input")
     if not isinstance(build_input, dict):
         raise RuntimeError("native build input is absent")
+    abi_probe = build_input.get("optix_runtime_abi_probe")
     if (
         manifest.get("build_input_sha256") != _digest(build_input)
         or build_input.get("translation_units")
         != list(NATIVE_BUILD_TRANSLATION_UNITS)
         or build_input.get("builder_path") != NATIVE_BUILD_SOURCE_PATHS[0]
         or build_input.get("expected_optix_sdk") != optix_sdk
-        or build_input.get("optix_version") != 90000
+        or build_input.get("optix_version") != _optix_sdk_number(optix_sdk)
         or build_input.get("compute_capability") != compute_capability
+        or build_input.get("cuda_visible_devices") != "0"
         or build_input.get("language_standard") != "c++17"
         or build_input.get("optimization") != "O3"
         or build_input.get("position_independent_code") is not True
+        or not isinstance(abi_probe, dict)
+        or abi_probe.get("passed") is not True
+        or abi_probe.get("runtime_returncode") != 0
+        or abi_probe.get("runtime_output") != "optixInit_result=0"
+        or abi_probe.get("optix_launch_count") != 0
     ):
         raise RuntimeError("native build input identity differs")
     build_gpu = build_input.get("gpu")
@@ -436,6 +476,7 @@ def _nvidia_smi() -> dict[str, object]:
     completed = subprocess.run(
         [
             "nvidia-smi",
+            "--id=0",
             f"--query-gpu={query}",
             "--format=csv,noheader,nounits",
         ],
@@ -451,7 +492,7 @@ def _nvidia_smi() -> dict[str, object]:
         if line.strip()
     ]
     if len(rows) != 1 or len(rows[0]) != 6:
-        raise RuntimeError(f"expected exactly one NVIDIA GPU, got {rows!r}")
+        raise RuntimeError(f"selected NVIDIA GPU query differs: {rows!r}")
     fields = (
         "name",
         "uuid",
@@ -524,6 +565,7 @@ def _require_true_optix(receipt: dict[str, object]) -> None:
 
 
 def run(args: argparse.Namespace) -> dict[str, object]:
+    cuda_visible_devices = _require_cuda_visibility()
     repository = _repository_custody(args.expected_commit)
     frozen = _verify_frozen_core()
     selection = _verify_selection()
@@ -638,11 +680,12 @@ def run(args: argparse.Namespace) -> dict[str, object]:
         },
         "toolchain": {
             "python": platform.python_version(),
-            "python_executable": str(Path(sys.executable).resolve()),
+            "python_executable": os.path.abspath(sys.executable),
             "numba": importlib.metadata.version("numba"),
             "numpy": importlib.metadata.version("numpy"),
             "optix_include": str(args.optix_include.resolve()),
             "cuda_include": str(args.cuda_include.resolve()),
+            "cuda_visible_devices": cuda_visible_devices,
         },
         "generic_family": {
             "classification": route.classification,
@@ -705,7 +748,7 @@ def main() -> int:
     parser.add_argument("--native-build-manifest", type=Path, required=True)
     parser.add_argument("--optix-include", type=Path, required=True)
     parser.add_argument("--cuda-include", type=Path, required=True)
-    parser.add_argument("--optix-sdk", default="9.0.0")
+    parser.add_argument("--optix-sdk", required=True)
     parser.add_argument("--compute-capability", required=True)
     parser.add_argument("--expected-commit", required=True)
     parser.add_argument("--output", type=Path, required=True)

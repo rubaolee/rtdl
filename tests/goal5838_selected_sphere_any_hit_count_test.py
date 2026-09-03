@@ -5,6 +5,7 @@ import hashlib
 import importlib.util
 import json
 import math
+import os
 import random
 import shlex
 import tempfile
@@ -338,6 +339,16 @@ class Goal5838SelectedSphereAnyHitCountTest(unittest.TestCase):
         self.assertIn("-lnvrtc", command)
         self.assertEqual(command[-2:], ["-o", "/tmp/goal5838.so"])
         self.assertEqual(builder._parse_compute_capability("8.9"), (8, 9))
+        self.assertEqual(builder._optix_sdk_number("8.0.0"), 80000)
+        self.assertEqual(runner._optix_sdk_number("8.0.0"), 80000)
+        with self.assertRaises(ValueError):
+            builder._optix_sdk_number("08.0.0")
+        with patch.dict(os.environ, {"CUDA_VISIBLE_DEVICES": "0"}):
+            self.assertEqual(builder._require_cuda_visibility(), "0")
+            self.assertEqual(runner._require_cuda_visibility(), "0")
+        with patch.dict(os.environ, {}, clear=True):
+            with self.assertRaisesRegex(RuntimeError, "CUDA_VISIBLE_DEVICES=0"):
+                builder._require_cuda_visibility()
         with self.assertRaises(ValueError):
             builder._parse_compute_capability("sm_89")
         with self.assertRaisesRegex(ValueError, "outside Git tree"):
@@ -388,6 +399,27 @@ class Goal5838SelectedSphereAnyHitCountTest(unittest.TestCase):
             }
             for index, name in enumerate(builder.KEY_HEADER_NAMES)
         ]
+        abi_probe = {
+            "source_sha256": verifier.OPTIX_RUNTIME_ABI_PROBE_SOURCE_SHA256,
+            "compile_command_template": [
+                "/usr/bin/g++-13",
+                "-std=c++17",
+                "-I/optix/include",
+                "-I/cuda/include",
+                "<temporary>/probe.cpp",
+                "-ldl",
+                "-o",
+                "<temporary>/probe",
+            ],
+            "compile_returncode": 0,
+            "compiler_output_sha256": hashlib.sha256(b"").hexdigest(),
+            "executable_bytes": 1234,
+            "executable_sha256": "d" * 64,
+            "runtime_returncode": 0,
+            "runtime_output": "optixInit_result=0",
+            "optix_launch_count": 0,
+            "passed": True,
+        }
         build_input = {
             "schema": "rtdl.goal5838.selected_sphere_optix_build_input.v1",
             "translation_units": list(verifier.NATIVE_BUILD_TRANSLATION_UNITS),
@@ -404,11 +436,13 @@ class Goal5838SelectedSphereAnyHitCountTest(unittest.TestCase):
             "host_compiler_version": "g++ 13",
             "optix_prefix": "/optix",
             "optix_include": "/optix/include",
-            "optix_version": 90000,
-            "expected_optix_sdk": "9.0.0",
+            "optix_version": 80000,
+            "expected_optix_sdk": "8.0.0",
             "key_headers": headers,
             "compute_capability": "8.9",
             "gpu": gpu,
+            "cuda_visible_devices": "0",
+            "optix_runtime_abi_probe": abi_probe,
             "language_standard": "c++17",
             "optimization": "O3",
             "position_independent_code": True,
@@ -418,6 +452,16 @@ class Goal5838SelectedSphereAnyHitCountTest(unittest.TestCase):
             "library_dirs": ["/cuda/lib64"],
         }
         build_input_sha256 = verifier._digest(build_input)
+        verifier._verify_optix_runtime_abi_probe(build_input)
+        tampered_probe_input = copy.deepcopy(build_input)
+        tampered_probe_input["optix_runtime_abi_probe"][
+            "runtime_output"
+        ] = "optixInit_result=7801"
+        with self.assertRaisesRegex(
+            verifier.Goal5838ExamVerificationError,
+            "runtime ABI probe differs",
+        ):
+            verifier._verify_optix_runtime_abi_probe(tampered_probe_input)
         command = builder._build_command(
             nvcc=Path(build_input["nvcc_path"]),
             host_compiler=Path(build_input["host_compiler_path"]),
@@ -435,6 +479,7 @@ class Goal5838SelectedSphereAnyHitCountTest(unittest.TestCase):
             "native_library_path": "/tmp/goal5838.so",
             "native_library_bytes": 123,
             "native_library_sha256": "c" * 64,
+            "optix_sdk": "8.0.0",
             "compute_capability": "8.9",
             "gpu": {
                 **gpu,
@@ -496,6 +541,46 @@ class Goal5838SelectedSphereAnyHitCountTest(unittest.TestCase):
                 verifier._verify_native_build(
                     tampered, commit="f" * 40, target=target, root=ROOT
                 )
+
+    def test_optix_runtime_abi_probe_records_zero_launch_success(self):
+        builder = _load_script_module(
+            "goal5838_build_selected_sphere_optix_provider"
+        )
+        verifier = _load_script_module(
+            "goal5838_verify_selected_sphere_gpu_exam"
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            compiler = root / "fake-cxx"
+            compiler.write_text(
+                "#!/bin/sh\n"
+                "output=''\n"
+                "while [ \"$#\" -gt 0 ]; do\n"
+                "  if [ \"$1\" = '-o' ]; then shift; output=$1; fi\n"
+                "  shift\n"
+                "done\n"
+                "printf '%s\\n' '#!/bin/sh' "
+                "'printf \"optixInit_result=0\\\\n\"' > \"$output\"\n"
+                "chmod +x \"$output\"\n",
+                encoding="ascii",
+            )
+            compiler.chmod(0o755)
+            result = builder.probe_optix_runtime_abi(
+                compiler,
+                root / "optix" / "include",
+                root / "cuda" / "include",
+            )
+        self.assertTrue(result["passed"])
+        self.assertEqual(result["runtime_output"], "optixInit_result=0")
+        self.assertEqual(result["optix_launch_count"], 0)
+        self.assertEqual(
+            result["source_sha256"],
+            verifier.OPTIX_RUNTIME_ABI_PROBE_SOURCE_SHA256,
+        )
+        self.assertEqual(
+            result["compile_command_template"][-3:],
+            ["-ldl", "-o", "<temporary>/probe"],
+        )
 
     def test_family_route_is_admitted_without_metadata_or_core_dispatch(self):
         route = sphere_any_hit_count_family_route()
@@ -713,12 +798,13 @@ class Goal5838SelectedSphereAnyHitCountTest(unittest.TestCase):
         target = {
             "native_library_path": "/tmp/librtdl_optix.so",
             "native_library_sha256": native_sha256,
+            "optix_sdk": "8.1.0",
             "compute_capability": "8.9",
         }
         target["profile_sha256"] = verifier._digest(
             {
                 "provider": "optix",
-                "optix_sdk": "9.0.0",
+                "optix_sdk": "8.1.0",
                 "compute_capability": "8.9",
                 "native_sha256": native_sha256,
                 "supports_builtin_sphere": True,
@@ -837,9 +923,9 @@ class Goal5838SelectedSphereAnyHitCountTest(unittest.TestCase):
             "max_attribute_values": 0,
             "max_trace_depth": 1,
             "program_group_count": 3,
-            "compiled_optix_version": 90000,
-            "compiled_optix_major": 9,
-            "compiled_optix_minor": 0,
+            "compiled_optix_version": 80100,
+            "compiled_optix_major": 8,
+            "compiled_optix_minor": 1,
             "compiled_optix_patch": 0,
             "cuda_device_ordinal": 0,
             "cuda_compute_capability_major": 8,

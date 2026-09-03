@@ -55,6 +55,22 @@ KEY_HEADER_NAMES = (
     "nvrtc.h",
 )
 RESULT_DOMAIN = "rtdl.goal5838.selected_sphere_optix_provider_build.v1"
+OPTIX_RUNTIME_ABI_PROBE_SOURCE = """\
+#include <cstdio>
+#include <optix.h>
+#include <optix_function_table_definition.h>
+#include <optix_stubs.h>
+
+int main() {
+    const OptixResult result = optixInit();
+    if (result != OPTIX_SUCCESS) {
+        std::fprintf(stderr, "optixInit_result=%d\\n", static_cast<int>(result));
+        return 1;
+    }
+    std::printf("optixInit_result=%d\\n", static_cast<int>(result));
+    return 0;
+}
+"""
 
 
 def _canonical_bytes(value: object) -> bytes:
@@ -101,6 +117,100 @@ def _capture(command: list[str], *, required: bool = True) -> str:
             f"command failed ({completed.returncode}): {command!r}: {output}"
         )
     return output
+
+
+def _probe(command: list[str]) -> dict[str, object]:
+    try:
+        completed = subprocess.run(
+            command,
+            cwd=ROOT,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            check=False,
+        )
+        return {
+            "returncode": completed.returncode,
+            "output": completed.stdout,
+        }
+    except OSError as exc:
+        return {
+            "returncode": -1,
+            "output": f"{type(exc).__name__}: {exc}",
+        }
+
+
+def probe_optix_runtime_abi(
+    host_compiler: Path,
+    optix_include: Path,
+    cuda_include: Path,
+) -> dict[str, object]:
+    """Compile and execute optixInit without building or launching RT work."""
+
+    with tempfile.TemporaryDirectory(prefix="rtdl-goal5838-optix-abi-") as name:
+        directory = Path(name)
+        source = directory / "probe.cpp"
+        executable = directory / "probe"
+        source.write_text(
+            OPTIX_RUNTIME_ABI_PROBE_SOURCE,
+            encoding="utf-8",
+            newline="\n",
+        )
+        command = [
+            str(host_compiler),
+            "-std=c++17",
+            f"-I{optix_include}",
+            f"-I{cuda_include}",
+            str(source),
+            "-ldl",
+            "-o",
+            str(executable),
+        ]
+        compile_probe = _probe(command)
+        executable_exists = executable.is_file() and executable.stat().st_size > 0
+        runtime_probe = (
+            _probe([str(executable)]) if executable_exists else None
+        )
+        runtime_output = (
+            str(runtime_probe["output"]).strip()
+            if runtime_probe is not None
+            else ""
+        )
+        return {
+            "source_sha256": hashlib.sha256(
+                OPTIX_RUNTIME_ABI_PROBE_SOURCE.encode("ascii")
+            ).hexdigest(),
+            "compile_command_template": [
+                "<temporary>/probe.cpp"
+                if item == str(source)
+                else "<temporary>/probe"
+                if item == str(executable)
+                else item
+                for item in command
+            ],
+            "compile_returncode": compile_probe["returncode"],
+            "compiler_output_sha256": hashlib.sha256(
+                str(compile_probe["output"]).encode("utf-8")
+            ).hexdigest(),
+            "executable_bytes": (
+                executable.stat().st_size if executable_exists else 0
+            ),
+            "executable_sha256": (
+                _file_sha256(executable) if executable_exists else ""
+            ),
+            "runtime_returncode": (
+                runtime_probe["returncode"] if runtime_probe is not None else None
+            ),
+            "runtime_output": runtime_output,
+            "optix_launch_count": 0,
+            "passed": (
+                compile_probe["returncode"] == 0
+                and executable_exists
+                and runtime_probe is not None
+                and runtime_probe["returncode"] == 0
+                and runtime_output == "optixInit_result=0"
+            ),
+        }
 
 
 def _git(*arguments: str) -> str:
@@ -178,7 +288,9 @@ def _repository_after(before: dict[str, object]) -> dict[str, object]:
 
 
 def _parse_compute_capability(value: str) -> tuple[int, int]:
-    match = re.fullmatch(r"([0-9]{1,2})\.([0-9]{1,2})", value)
+    match = re.fullmatch(
+        r"([1-9][0-9]?)\.((?:0|[1-9][0-9]?))", value
+    )
     if match is None:
         raise ValueError(f"invalid compute capability: {value!r}")
     major, minor = (int(item) for item in match.groups())
@@ -187,11 +299,22 @@ def _parse_compute_capability(value: str) -> tuple[int, int]:
     return major, minor
 
 
+def _require_cuda_visibility() -> str:
+    value = os.environ.get("CUDA_VISIBLE_DEVICES")
+    if value != "0":
+        raise RuntimeError(
+            "Goal5838 requires CUDA_VISIBLE_DEVICES=0 so nvidia-smi and the "
+            "native CUDA ordinal bind the same selected GPU"
+        )
+    return value
+
+
 def _gpu_identity() -> dict[str, str]:
     fields = ("name", "uuid", "driver_version", "compute_capability")
     rows = _capture(
         [
             "nvidia-smi",
+            "--id=0",
             "--query-gpu=name,uuid,driver_version,compute_cap",
             "--format=csv,noheader,nounits",
         ]
@@ -199,7 +322,7 @@ def _gpu_identity() -> dict[str, str]:
     rows = [row.strip() for row in rows if row.strip()]
     if len(rows) != 1:
         raise RuntimeError(
-            f"exactly one visible NVIDIA GPU is required, observed {len(rows)}"
+            f"selected NVIDIA GPU query returned {len(rows)} rows"
         )
     values = tuple(part.strip() for part in rows[0].split(","))
     if len(values) != len(fields):
@@ -222,7 +345,11 @@ def _optix_version(path: Path) -> int:
 
 def _optix_sdk_number(value: str) -> int:
     match = re.fullmatch(
-        r"([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,2})", value
+        (
+            r"([1-9][0-9]?)\.((?:0|[1-9][0-9]?))\."
+            r"((?:0|[1-9][0-9]?))"
+        ),
+        value,
     )
     if match is None:
         raise ValueError(f"invalid OptiX SDK version: {value!r}")
@@ -411,6 +538,7 @@ def build(args: argparse.Namespace) -> dict[str, object]:
         path.parent.mkdir(parents=True, exist_ok=True)
 
     repository_before = _repository_before(args.expected_commit)
+    cuda_visible_devices = _require_cuda_visibility()
     cuda_prefix = args.cuda_prefix.expanduser().resolve(strict=True)
     optix_prefix = args.optix_prefix.expanduser().resolve(strict=True)
     cuda_include = (cuda_prefix / "include").resolve(strict=True)
@@ -438,6 +566,14 @@ def build(args: argparse.Namespace) -> dict[str, object]:
             f"{optix_version} != {expected_optix_version}"
         )
     headers = _header_rows(optix_include, cuda_include)
+    optix_runtime_abi_probe = probe_optix_runtime_abi(
+        host_compiler, optix_include, cuda_include
+    )
+    if optix_runtime_abi_probe["passed"] is not True:
+        raise RuntimeError(
+            "selected OptiX headers do not negotiate with the host driver: "
+            f"{optix_runtime_abi_probe}"
+        )
     geos_cflags, geos_libraries, geos_mode = _pkg_config_geos()
     library_dirs = _library_dirs(cuda_prefix)
     system_include = _cuda_system_include(host_compiler)
@@ -466,6 +602,8 @@ def build(args: argparse.Namespace) -> dict[str, object]:
         "key_headers": headers,
         "compute_capability": gpu["compute_capability"],
         "gpu": gpu,
+        "cuda_visible_devices": cuda_visible_devices,
+        "optix_runtime_abi_probe": optix_runtime_abi_probe,
         "language_standard": "c++17",
         "optimization": "O3",
         "position_independent_code": True,
@@ -594,7 +732,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--cuda-prefix", type=Path, required=True)
     parser.add_argument("--optix-prefix", type=Path, required=True)
-    parser.add_argument("--expected-optix-sdk", default="9.0.0")
+    parser.add_argument("--expected-optix-sdk", required=True)
     parser.add_argument("--compute-capability")
     parser.add_argument("--host-compiler", type=Path)
     parser.add_argument("--expected-commit", required=True)
