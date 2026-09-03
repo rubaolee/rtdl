@@ -57,7 +57,23 @@ OPTIX_HEADERS = (
     "optix_stubs.h",
 )
 CUDA_HEADERS = ("cuda.h", "cuda_runtime.h", "nvrtc.h")
-RESULT_DOMAIN = "rtdl.goal5838.pod_preflight.v1"
+CALLBACK_ROLES = ("make_ray", "any_hit", "miss", "finalize")
+FORMAL_CACHE_ENV = (
+    "RTDL_V4_FORMAL_LEAF_CACHE",
+    "RTDL_V4_FORMAL_LEAF_CACHE_MANIFEST",
+    "RTDL_V4_FORMAL_LEAF_CACHE_MANIFEST_SHA256",
+)
+CLEARED_AMBIENT_ENV = FORMAL_CACHE_ENV + (
+    "LD_PRELOAD",
+    "NUMBA_ENABLE_CUDASIM",
+    "NUMBA_FORCE_CUDA_CC",
+    "NUMBA_CUDA_DEFAULT_PTX_CC",
+    "NUMBA_CUDA_DRIVER",
+    "RTDL_OPTIX_LIB",
+    "RTDL_OPTIX_LIBRARY",
+)
+INTERNAL_CALLBACK_PROBE = "--internal-callback-compile-probe"
+RESULT_DOMAIN = "rtdl.goal5838.pod_preflight.v2"
 PASS_STATUS = (
     "PASS__GOAL5838_POD_READY_FOR_FROZEN_GPU_EXAM"
     "__NO_GPU_EXECUTION_CLAIM"
@@ -90,6 +106,148 @@ def _file_sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _first_file(
+    explicit: Path | None,
+    candidates: tuple[Path, ...],
+    globs: tuple[tuple[Path, str], ...],
+    *,
+    label: str,
+) -> Path:
+    if explicit is not None:
+        resolved = explicit.expanduser().resolve(strict=True)
+        if not resolved.is_file():
+            raise FileNotFoundError(resolved)
+        return resolved
+    observed: list[Path] = []
+    for candidate in candidates:
+        if candidate.is_file():
+            observed.append(candidate.resolve(strict=True))
+    for root, pattern in globs:
+        if root.is_dir():
+            observed.extend(
+                path.resolve(strict=True)
+                for path in sorted(root.glob(pattern))
+                if path.is_file()
+            )
+    unique = tuple(dict.fromkeys(observed))
+    if not unique:
+        raise FileNotFoundError(f"{label} was not found; pass its exact path")
+    return unique[0]
+
+
+def resolve_cuda_compiler_files(
+    cuda_prefix: Path,
+    *,
+    nvrtc_library: Path | None = None,
+    nvvm_library: Path | None = None,
+    libdevice: Path | None = None,
+) -> dict[str, Path]:
+    """Resolve the exact offline CUDA compiler inputs used by Callback IR."""
+
+    cuda = cuda_prefix.expanduser().resolve(strict=True)
+    if not cuda.is_dir():
+        raise NotADirectoryError(cuda)
+    library_roots = (
+        cuda / "lib64",
+        cuda / "targets/x86_64-linux/lib",
+        Path("/usr/lib/x86_64-linux-gnu"),
+    )
+    nvvm_roots = (
+        cuda / "nvvm/lib64",
+        Path("/usr/lib/x86_64-linux-gnu"),
+    )
+    return {
+        "nvrtc_library": _first_file(
+            nvrtc_library,
+            tuple(
+                root / name
+                for root in library_roots
+                for name in ("libnvrtc.so.12", "libnvrtc.so")
+            ),
+            tuple((root, "libnvrtc.so*") for root in library_roots),
+            label="NVRTC shared library",
+        ),
+        "nvvm_library": _first_file(
+            nvvm_library,
+            tuple(root / "libnvvm.so" for root in nvvm_roots),
+            tuple((root, "libnvvm.so*") for root in nvvm_roots),
+            label="NVVM shared library",
+        ),
+        "libdevice": _first_file(
+            libdevice,
+            (cuda / "nvvm/libdevice/libdevice.10.bc",),
+            ((cuda / "nvvm/libdevice", "libdevice*.bc"),),
+            label="CUDA libdevice bitcode",
+        ),
+    }
+
+
+def configured_cuda_environment(
+    cuda_prefix: Path,
+    optix_prefix: Path,
+    compiler_files: dict[str, Path],
+    *,
+    base: dict[str, str] | None = None,
+) -> tuple[dict[str, str], dict[str, object]]:
+    """Build a clean, reproducible compiler environment for child processes."""
+
+    cuda = cuda_prefix.expanduser().resolve(strict=True)
+    optix = optix_prefix.expanduser().resolve(strict=True)
+    environment = dict(os.environ if base is None else base)
+    library_dirs = tuple(
+        dict.fromkeys(
+            str(path)
+            for path in (
+                compiler_files["nvrtc_library"].parent,
+                compiler_files["nvvm_library"].parent,
+                cuda / "lib64",
+                cuda / "targets/x86_64-linux/lib",
+                Path("/usr/lib/x86_64-linux-gnu"),
+            )
+            if path.is_dir()
+        )
+    )
+    path_dirs = (str(cuda / "bin"),)
+    old_library_path = tuple(
+        filter(None, environment.get("LD_LIBRARY_PATH", "").split(os.pathsep))
+    )
+    old_path = tuple(filter(None, environment.get("PATH", "").split(os.pathsep)))
+    environment.update(
+        {
+            "CUDA_VISIBLE_DEVICES": "0",
+            "LD_LIBRARY_PATH": os.pathsep.join(
+                tuple(dict.fromkeys(library_dirs + old_library_path))
+            ),
+            "PATH": os.pathsep.join(tuple(dict.fromkeys(path_dirs + old_path))),
+            "NUMBA_CUDA_NVVM": str(compiler_files["nvvm_library"]),
+            "NUMBA_CUDA_LIBDEVICE": str(compiler_files["libdevice"]),
+            "CUDA_HOME": str(cuda),
+            "CUDA_PATH": str(cuda),
+            "RTDL_V4_CUDA_PREFIX": str(cuda),
+            "RTDL_V4_OPTIX_PREFIX": str(optix),
+            "PYTHONPATH": "src:.",
+        }
+    )
+    for name in CLEARED_AMBIENT_ENV:
+        environment.pop(name, None)
+    identity = {
+        "cuda_prefix": str(cuda),
+        "optix_prefix": str(optix),
+        "nvrtc_library": str(compiler_files["nvrtc_library"]),
+        "nvrtc_sha256": _file_sha256(compiler_files["nvrtc_library"]),
+        "nvvm_library": str(compiler_files["nvvm_library"]),
+        "nvvm_sha256": _file_sha256(compiler_files["nvvm_library"]),
+        "libdevice": str(compiler_files["libdevice"]),
+        "libdevice_sha256": _file_sha256(compiler_files["libdevice"]),
+        "ld_library_path_prefix": list(library_dirs),
+        "path_prefix": list(path_dirs),
+        "formal_numba_cache_disabled": True,
+        "cleared_ambient_environment": list(CLEARED_AMBIENT_ENV),
+    }
+    identity["environment_sha256"] = _digest(identity)
+    return environment, identity
+
+
 def _require_full_commit(value: str) -> str:
     if not re.fullmatch(r"[0-9a-f]{40}", value):
         raise ValueError("--expected-commit must be a full lowercase commit id")
@@ -113,6 +271,19 @@ def _parse_compute_capability(value: str) -> tuple[int, int]:
     if major == 0:
         raise ValueError(f"invalid compute capability: {value!r}")
     return major, minor
+
+
+def _normalize_compute_capability_row(value: object) -> tuple[int, int]:
+    if (
+        not isinstance(value, list)
+        or len(value) != 2
+        or any(type(item) is not int for item in value)
+        or value[0] <= 0
+        or value[1] < 0
+        or any(item > 99 for item in value)
+    ):
+        raise ValueError("internal callback compute capability differs")
+    return value[0], value[1]
 
 
 def _parse_gpu_rows(output: str) -> list[dict[str, str]]:
@@ -239,6 +410,207 @@ def _write_json_exclusive(path: Path, value: object) -> None:
         temporary.unlink(missing_ok=True)
 
 
+def _compile_selected_callback_stack(request: dict[str, object]) -> dict[str, object]:
+    """Compile the selected route without loading native code or launching OptiX."""
+
+    expected_keys = {
+        "compute_capability",
+        "cuda_include",
+        "expected_numba_version",
+        "expected_numpy_version",
+        "expected_python_version",
+        "optix_include",
+        "optix_sdk",
+    }
+    if set(request) != expected_keys:
+        raise ValueError("internal callback compile request differs")
+    capability = _normalize_compute_capability_row(request["compute_capability"])
+    optix_sdk = str(request["optix_sdk"])
+    _optix_sdk_number(optix_sdk)
+    optix_include = Path(str(request["optix_include"])).resolve(strict=True)
+    cuda_include = Path(str(request["cuda_include"])).resolve(strict=True)
+
+    for import_root in (ROOT / "src", ROOT):
+        if str(import_root) not in sys.path:
+            sys.path.insert(0, str(import_root))
+    from rtdsl.v4_callback_lifecycle import V4Toolchain
+    from rtdsl.v4_public_builtin_sphere import V4SphereTarget
+    from rtdsl.v4_sphere_any_hit_count_family_route import (
+        sphere_any_hit_count_family_route,
+    )
+
+    with tempfile.TemporaryDirectory(
+        prefix="rtdl-goal5838-callback-preflight-"
+    ) as name:
+        native = Path(name) / "not_loaded_native_identity.bin"
+        native.write_bytes(
+            b"Goal5838 callback compiler preflight; never loaded or executed\n"
+        )
+        target = V4SphereTarget.from_native(
+            native,
+            optix_sdk=optix_sdk,
+            compute_capability=f"{capability[0]}.{capability[1]}",
+        )
+        toolchain = V4Toolchain(
+            capability,
+            optix_include,
+            cuda_include,
+            str(request["expected_python_version"]),
+            str(request["expected_numba_version"]),
+            str(request["expected_numpy_version"]),
+        )
+        route = sphere_any_hit_count_family_route()
+        program = route.compile()
+        shape = route.plan.to_dict()["family_shape"]
+        roles = tuple(row["role"] for row in shape["callback"]["roles"])
+        if roles != CALLBACK_ROLES:
+            raise RuntimeError("selected callback role topology differs")
+        materialized = program.materialize(target=target, toolchain=toolchain)
+        identity = materialized.identity.to_dict()
+        if materialized.state != "materialized":
+            raise RuntimeError("callback preflight crossed the prepare boundary")
+    return {
+        "schema": "rtdl.goal5838.selected_callback_compile_probe.v1",
+        "classification": route.classification,
+        "provider_id": route.provider.descriptor.provider_id,
+        "callback_roles": list(roles),
+        "plan_sha256": route.plan.plan_sha256,
+        "provider_descriptor_sha256": (
+            route.provider.descriptor.descriptor_sha256
+        ),
+        "provider_projection_sha256": (
+            program.provider_projection.projection_sha256
+        ),
+        "executable_identity": identity,
+        "optix_sdk": optix_sdk,
+        "compute_capability": list(capability),
+        "compiled_through_generic_family_front_door": True,
+        "native_prepare_called": False,
+        "native_library_loaded": False,
+        "gpu_execution_performed": False,
+        "optix_launch_count": 0,
+    }
+
+
+def _callback_probe_receipt_passes(
+    receipt: object,
+    *,
+    optix_sdk: str,
+    compute_capability: tuple[int, int],
+) -> bool:
+    if not isinstance(receipt, dict):
+        return False
+    identity = receipt.get("executable_identity")
+    hashes = (
+        "identity_sha256",
+        "provider_descriptor_sha256",
+        "provider_projection_sha256",
+        "plan_sha256",
+        "target_sha256",
+        "executable_sha256",
+        "provider_artifact_sha256",
+        "generated_artifact_sha256",
+    )
+    return (
+        receipt.get("schema")
+        == "rtdl.goal5838.selected_callback_compile_probe.v1"
+        and receipt.get("classification") == "prospective_selected_extension"
+        and receipt.get("provider_id")
+        == "rtdl.optix.builtin_sphere_any_hit_count"
+        and receipt.get("callback_roles") == list(CALLBACK_ROLES)
+        and receipt.get("optix_sdk") == optix_sdk
+        and receipt.get("compute_capability") == list(compute_capability)
+        and receipt.get("compiled_through_generic_family_front_door") is True
+        and receipt.get("native_prepare_called") is False
+        and receipt.get("native_library_loaded") is False
+        and receipt.get("gpu_execution_performed") is False
+        and receipt.get("optix_launch_count") == 0
+        and isinstance(identity, dict)
+        and all(
+            isinstance(identity.get(name), str)
+            and re.fullmatch(r"[0-9a-f]{64}", identity[name]) is not None
+            for name in hashes
+        )
+        and receipt.get("plan_sha256") == identity.get("plan_sha256")
+        and receipt.get("provider_descriptor_sha256")
+        == identity.get("provider_descriptor_sha256")
+        and receipt.get("provider_projection_sha256")
+        == identity.get("provider_projection_sha256")
+    )
+
+
+def _probe_selected_callback_compiler(
+    *,
+    python: Path,
+    environment: dict[str, str],
+    optix_sdk: str,
+    compute_capability: tuple[int, int],
+    optix_include: Path,
+    cuda_include: Path,
+    package_versions: dict[str, str | None],
+) -> dict[str, object]:
+    request = {
+        "compute_capability": list(compute_capability),
+        "cuda_include": str(cuda_include),
+        "expected_numba_version": package_versions["numba"],
+        "expected_numpy_version": package_versions["numpy"],
+        "expected_python_version": platform.python_version(),
+        "optix_include": str(optix_include),
+        "optix_sdk": optix_sdk,
+    }
+    with tempfile.TemporaryDirectory(
+        prefix="rtdl-goal5838-callback-probe-parent-"
+    ) as name:
+        directory = Path(name)
+        request_path = directory / "request.json"
+        output_path = directory / "result.json"
+        request_path.write_text(
+            json.dumps(request, sort_keys=True), encoding="utf-8", newline="\n"
+        )
+        command = [
+            str(python),
+            str(Path(__file__).resolve()),
+            INTERNAL_CALLBACK_PROBE,
+            str(request_path),
+            str(output_path),
+        ]
+        process = _capture(command, env=environment)
+        receipt = None
+        parse_error = None
+        if process["returncode"] == 0 and output_path.is_file():
+            try:
+                receipt = json.loads(output_path.read_text(encoding="utf-8"))
+            except (json.JSONDecodeError, OSError) as exc:
+                parse_error = f"{type(exc).__name__}: {exc}"
+        passed = (
+            process["returncode"] == 0
+            and _callback_probe_receipt_passes(
+                receipt,
+                optix_sdk=optix_sdk,
+                compute_capability=compute_capability,
+            )
+        )
+        command_template = [
+            "<temporary>/request.json" if item == str(request_path) else
+            "<temporary>/result.json" if item == str(output_path) else item
+            for item in command
+        ]
+        return {
+            "passed": passed,
+            "command_template": command_template,
+            "returncode": process["returncode"],
+            "output_tail": process["output_tail"],
+            "parse_error": parse_error,
+            "request": request,
+            "request_sha256": _digest(request),
+            "receipt": receipt,
+            "receipt_sha256": None if receipt is None else _digest(receipt),
+            "native_prepare_called": False,
+            "gpu_execution_performed": False,
+            "optix_launch_count": 0,
+        }
+
+
 def _discover_host_compiler(requested: Path | None) -> Path | None:
     if requested is not None:
         candidate = requested.expanduser().resolve()
@@ -295,11 +667,23 @@ def _command_plan(
     compute_capability: str,
     expected_commit: str,
     artifacts: dict[str, Path],
+    compiler_environment: dict[str, str],
 ) -> dict[str, dict[str, object]]:
+    environment_names = (
+        "CUDA_VISIBLE_DEVICES",
+        "LD_LIBRARY_PATH",
+        "PATH",
+        "NUMBA_CUDA_NVVM",
+        "NUMBA_CUDA_LIBDEVICE",
+        "CUDA_HOME",
+        "CUDA_PATH",
+        "RTDL_V4_CUDA_PREFIX",
+        "RTDL_V4_OPTIX_PREFIX",
+        "PYTHONPATH",
+    )
     prefix = [
         "env",
-        "CUDA_VISIBLE_DEVICES=0",
-        "PYTHONPATH=src:.",
+        *(f"{name}={compiler_environment[name]}" for name in environment_names),
         str(python),
     ]
     build = [
@@ -532,27 +916,38 @@ def run_preflight(args: argparse.Namespace) -> dict[str, object]:
         observed={"include": str(cuda_include), "missing": missing_cuda_headers},
         repair="point --cuda-prefix at a complete CUDA toolkit",
     )
-    cuda_library_dirs = tuple(
-        path
-        for path in (
-            cuda_prefix / "lib64",
-            cuda_prefix / "targets/x86_64-linux/lib",
+    compiler_files = None
+    compiler_environment = None
+    compiler_environment_identity = None
+    compiler_resolution_error = None
+    try:
+        compiler_files = resolve_cuda_compiler_files(
+            cuda_prefix,
+            nvrtc_library=getattr(args, "nvrtc_library", None),
+            nvvm_library=getattr(args, "nvvm_library", None),
+            libdevice=getattr(args, "libdevice", None),
         )
-        if path.is_dir()
-    )
-    nvrtc_libraries = [
-        str(path)
-        for directory in cuda_library_dirs
-        for path in sorted(directory.glob("libnvrtc.so*"))
-        if path.is_file()
-    ]
+        compiler_environment, compiler_environment_identity = (
+            configured_cuda_environment(
+                cuda_prefix, optix_prefix, compiler_files
+            )
+        )
+    except (FileNotFoundError, NotADirectoryError, OSError) as exc:
+        compiler_resolution_error = f"{type(exc).__name__}: {exc}"
     _check(
         checks,
-        "nvrtc_link_library",
-        bool(nvrtc_libraries),
-        requirement="libnvrtc.so in the selected CUDA toolkit",
-        observed=nvrtc_libraries,
-        repair="install the CUDA NVRTC runtime/development library",
+        "cuda_offline_compiler_inputs",
+        compiler_files is not None,
+        requirement="exact libnvrtc, libnvvm, and libdevice inputs",
+        observed=(
+            compiler_resolution_error
+            if compiler_files is None
+            else {name: str(path) for name, path in compiler_files.items()}
+        ),
+        repair=(
+            "complete the pod-local CUDA compiler toolkit or pass exact "
+            "--nvrtc-library, --nvvm-library, and --libdevice paths"
+        ),
     )
 
     missing_optix_headers = [
@@ -658,6 +1053,57 @@ def run_preflight(args: argparse.Namespace) -> dict[str, object]:
             "do not classify an ABI mismatch as scientific failure"
         ),
     )
+    probes["cuda_compiler_environment"] = compiler_environment_identity
+    callback_probe = None
+    callback_probe_error = None
+    package_stack_matches = all(
+        package_versions[name] == expected
+        for name, expected in EXPECTED_PACKAGE_VERSIONS.items()
+    )
+    if (
+        compiler_environment is not None
+        and compute_capability is not None
+        and sys.version_info[:2] == (3, 12)
+        and package_stack_matches
+        and not missing_cuda_headers
+        and not missing_optix_headers
+        and optix_version == expected_optix_version
+    ):
+        try:
+            callback_probe = _probe_selected_callback_compiler(
+                python=python_path,
+                environment=compiler_environment,
+                optix_sdk=args.expected_optix_sdk,
+                compute_capability=_parse_compute_capability(
+                    compute_capability
+                ),
+                optix_include=optix_include,
+                cuda_include=cuda_include,
+                package_versions=package_versions,
+            )
+        except Exception as exc:
+            callback_probe_error = f"{type(exc).__name__}: {exc}"
+    probes["selected_callback_compiler"] = (
+        callback_probe if callback_probe is not None else callback_probe_error
+    )
+    _check(
+        checks,
+        "selected_callback_compiler",
+        callback_probe is not None and callback_probe["passed"] is True,
+        requirement=(
+            "the selected make_ray/any_hit/miss/finalize stack compiles via "
+            "the generic family front door with real Numba/NVVM and NVRTC"
+        ),
+        observed=(
+            callback_probe_error
+            if callback_probe is None
+            else callback_probe
+        ),
+        repair=(
+            "repair the pod-local CUDA compiler environment or select a "
+            "compatible CUDA toolkit; do not change the frozen family core"
+        ),
+    )
     required_tools = {name: shutil.which(name) for name in ("nm", "ldd")}
     for name, path in required_tools.items():
         _check(
@@ -718,7 +1164,11 @@ def run_preflight(args: argparse.Namespace) -> dict[str, object]:
     ]
     ready = not required_failures
     command_plan = None
-    if compute_capability is not None and host_compiler is not None:
+    if (
+        compute_capability is not None
+        and host_compiler is not None
+        and compiler_environment is not None
+    ):
         command_plan = _command_plan(
             python=python_path,
             cuda_prefix=cuda_prefix,
@@ -728,6 +1178,7 @@ def run_preflight(args: argparse.Namespace) -> dict[str, object]:
             compute_capability=compute_capability,
             expected_commit=expected_commit,
             artifacts=artifacts,
+            compiler_environment=compiler_environment,
         )
     result = {
         "schema": RESULT_DOMAIN,
@@ -753,6 +1204,7 @@ def run_preflight(args: argparse.Namespace) -> dict[str, object]:
             "optix_prefix": str(optix_prefix),
             "optix_header_inventory": optix_header_inventory,
             "cuda_header_inventory": cuda_header_inventory,
+            "cuda_compiler_environment": compiler_environment_identity,
             "artifact_dir": str(artifact_dir),
             "artifacts": {name: str(path) for name, path in artifacts.items()},
         },
@@ -773,7 +1225,26 @@ def run_preflight(args: argparse.Namespace) -> dict[str, object]:
     return result
 
 
+def _internal_callback_compile_main(arguments: list[str]) -> int:
+    if len(arguments) != 2:
+        raise ValueError(
+            f"{INTERNAL_CALLBACK_PROBE} requires request and output paths"
+        )
+    request_path = Path(arguments[0]).expanduser().resolve(strict=True)
+    output_path = Path(arguments[1]).expanduser().resolve()
+    if output_path.exists():
+        raise FileExistsError(output_path)
+    request = json.loads(request_path.read_text(encoding="utf-8"))
+    if not isinstance(request, dict):
+        raise ValueError("internal callback compile request must be an object")
+    result = _compile_selected_callback_stack(request)
+    _write_json_exclusive(output_path, result)
+    return 0
+
+
 def main() -> int:
+    if len(sys.argv) >= 2 and sys.argv[1] == INTERNAL_CALLBACK_PROBE:
+        return _internal_callback_compile_main(sys.argv[2:])
     parser = argparse.ArgumentParser()
     parser.add_argument("--cuda-prefix", type=Path, required=True)
     parser.add_argument("--optix-prefix", type=Path, required=True)
@@ -781,6 +1252,9 @@ def main() -> int:
     parser.add_argument("--expected-commit", required=True)
     parser.add_argument("--compute-capability")
     parser.add_argument("--host-compiler", type=Path)
+    parser.add_argument("--nvrtc-library", type=Path)
+    parser.add_argument("--nvvm-library", type=Path)
+    parser.add_argument("--libdevice", type=Path)
     parser.add_argument("--artifact-dir", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()

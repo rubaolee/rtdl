@@ -7,6 +7,13 @@ from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "goal5838_pod_preflight.py"
+UNKNOWN_POD_PLAN = (
+    ROOT
+    / "history"
+    / "internal_docs"
+    / "goal5838_generic_core_exam_20260902"
+    / "UNKNOWN_POD_COMPLETION_PLAN.md"
+)
 
 
 def _load_module():
@@ -16,6 +23,21 @@ def _load_module():
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+def _compiler_environment():
+    return {
+        "CUDA_VISIBLE_DEVICES": "0",
+        "LD_LIBRARY_PATH": "/cuda/lib64",
+        "PATH": "/cuda/bin:/usr/bin",
+        "NUMBA_CUDA_NVVM": "/cuda/nvvm/lib64/libnvvm.so",
+        "NUMBA_CUDA_LIBDEVICE": "/cuda/nvvm/libdevice/libdevice.10.bc",
+        "CUDA_HOME": "/cuda",
+        "CUDA_PATH": "/cuda",
+        "RTDL_V4_CUDA_PREFIX": "/cuda",
+        "RTDL_V4_OPTIX_PREFIX": "/optix",
+        "PYTHONPATH": "src:.",
+    }
 
 
 class Goal5838PodPreflightTest(unittest.TestCase):
@@ -51,6 +73,14 @@ class Goal5838PodPreflightTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.module._parse_gpu_rows("NVIDIA L4, GPU-0123, 570.124.06\n")
 
+    def test_compute_capability_minor_zero_is_valid(self):
+        self.assertEqual(self.module._parse_compute_capability("9.0"), (9, 0))
+        self.assertEqual(
+            self.module._normalize_compute_capability_row([9, 0]), (9, 0)
+        )
+        with self.assertRaises(ValueError):
+            self.module._normalize_compute_capability_row([0, 9])
+
     def test_optix_version_parser_is_exact(self):
         with tempfile.TemporaryDirectory() as temporary:
             header = Path(temporary) / "optix.h"
@@ -81,6 +111,7 @@ class Goal5838PodPreflightTest(unittest.TestCase):
                 compute_capability="8.9",
                 expected_commit=commit,
                 artifacts=artifacts,
+                compiler_environment=_compiler_environment(),
             )
         build = plan["build"]["argv"]
         run = plan["run"]["argv"]
@@ -94,11 +125,115 @@ class Goal5838PodPreflightTest(unittest.TestCase):
         self.assertIn("CUDA_VISIBLE_DEVICES=0", build)
         self.assertIn("CUDA_VISIBLE_DEVICES=0", run)
         self.assertIn("PYTHONPATH=src:.", build)
+        self.assertIn("NUMBA_CUDA_NVVM=/cuda/nvvm/lib64/libnvvm.so", run)
+        self.assertIn(
+            "NUMBA_CUDA_LIBDEVICE=/cuda/nvvm/libdevice/libdevice.10.bc",
+            run,
+        )
         self.assertNotIn("PYTHONPATH=src:.", verify)
+
+    def test_cuda_compiler_inputs_and_clean_environment_are_exact(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            cuda = root / "cuda"
+            optix = root / "optix"
+            for directory in (
+                cuda / "bin",
+                cuda / "lib64",
+                cuda / "nvvm" / "lib64",
+                cuda / "nvvm" / "libdevice",
+                optix,
+            ):
+                directory.mkdir(parents=True, exist_ok=True)
+            (cuda / "lib64" / "libnvrtc.so.12").write_bytes(b"nvrtc")
+            (cuda / "nvvm" / "lib64" / "libnvvm.so").write_bytes(b"nvvm")
+            (cuda / "nvvm" / "libdevice" / "libdevice.10.bc").write_bytes(
+                b"libdevice"
+            )
+            files = self.module.resolve_cuda_compiler_files(cuda)
+            environment, identity = self.module.configured_cuda_environment(
+                cuda,
+                optix,
+                files,
+                base={
+                    "PATH": "/usr/bin",
+                    "LD_LIBRARY_PATH": "/old/lib",
+                    "RTDL_V4_FORMAL_LEAF_CACHE": "/forbidden/cache",
+                    "NUMBA_ENABLE_CUDASIM": "1",
+                },
+            )
+        self.assertEqual(environment["CUDA_VISIBLE_DEVICES"], "0")
+        self.assertEqual(environment["NUMBA_CUDA_NVVM"], str(files["nvvm_library"]))
+        self.assertEqual(
+            environment["NUMBA_CUDA_LIBDEVICE"], str(files["libdevice"])
+        )
+        self.assertNotIn("RTDL_V4_FORMAL_LEAF_CACHE", environment)
+        self.assertNotIn("NUMBA_ENABLE_CUDASIM", environment)
+        self.assertTrue(identity["formal_numba_cache_disabled"])
+        self.assertRegex(identity["environment_sha256"], r"^[0-9a-f]{64}$")
+
+    def test_callback_compile_receipt_requires_front_door_and_zero_launch(self):
+        hashes = {
+            name: str(index) * 64
+            for index, name in enumerate(
+                (
+                    "identity_sha256",
+                    "provider_descriptor_sha256",
+                    "provider_projection_sha256",
+                    "plan_sha256",
+                    "target_sha256",
+                    "executable_sha256",
+                    "provider_artifact_sha256",
+                    "generated_artifact_sha256",
+                ),
+                start=1,
+            )
+        }
+        receipt = {
+            "schema": "rtdl.goal5838.selected_callback_compile_probe.v1",
+            "classification": "prospective_selected_extension",
+            "provider_id": "rtdl.optix.builtin_sphere_any_hit_count",
+            "callback_roles": list(self.module.CALLBACK_ROLES),
+            "plan_sha256": hashes["plan_sha256"],
+            "provider_descriptor_sha256": hashes[
+                "provider_descriptor_sha256"
+            ],
+            "provider_projection_sha256": hashes[
+                "provider_projection_sha256"
+            ],
+            "executable_identity": hashes,
+            "optix_sdk": "8.0.0",
+            "compute_capability": [8, 9],
+            "compiled_through_generic_family_front_door": True,
+            "native_prepare_called": False,
+            "native_library_loaded": False,
+            "gpu_execution_performed": False,
+            "optix_launch_count": 0,
+        }
+        self.assertTrue(
+            self.module._callback_probe_receipt_passes(
+                receipt, optix_sdk="8.0.0", compute_capability=(8, 9)
+            )
+        )
+        receipt["native_prepare_called"] = True
+        self.assertFalse(
+            self.module._callback_probe_receipt_passes(
+                receipt, optix_sdk="8.0.0", compute_capability=(8, 9)
+            )
+        )
 
     def test_status_vocabulary_never_calls_readiness_failure_scientific(self):
         self.assertIn("NOT_SCIENTIFIC_FAILURE", self.module.REPAIR_STATUS)
         self.assertIn("NO_GPU_EXECUTION_CLAIM", self.module.PASS_STATUS)
+
+    def test_unknown_pod_plan_assigns_software_adaptation_to_agent(self):
+        text = " ".join(UNKNOWN_POD_PLAN.read_text(encoding="utf-8").split())
+        self.assertIn("The owner supplies one reachable SSH command", text)
+        self.assertIn("The RTDL agent owns discovery", text)
+        self.assertIn("There is no R570 driver floor", text)
+        self.assertIn("reject a pod merely because", text)
+        self.assertIn("toolkit, compiler, Python version", text)
+        self.assertIn("two true OptiX executions", text)
 
     def test_argument_namespace_shape_for_run_preflight_is_explicit(self):
         namespace = argparse.Namespace(
@@ -108,6 +243,9 @@ class Goal5838PodPreflightTest(unittest.TestCase):
             expected_commit="b" * 40,
             compute_capability=None,
             host_compiler=None,
+            nvrtc_library=None,
+            nvvm_library=None,
+            libdevice=None,
             artifact_dir=Path("/tmp/goal5838-artifacts"),
             output=Path("/tmp/goal5838-preflight.json"),
         )
@@ -129,6 +267,8 @@ class Goal5838PodPreflightTest(unittest.TestCase):
                 cuda / "bin",
                 cuda / "include",
                 cuda / "lib64",
+                cuda / "nvvm" / "lib64",
+                cuda / "nvvm" / "libdevice",
                 optix / "include",
             ):
                 directory.mkdir(parents=True, exist_ok=True)
@@ -138,6 +278,10 @@ class Goal5838PodPreflightTest(unittest.TestCase):
             for name in self.module.CUDA_HEADERS:
                 (cuda / "include" / name).write_text("/* cuda */\n", encoding="ascii")
             (cuda / "lib64" / "libnvrtc.so").write_bytes(b"nvrtc")
+            (cuda / "nvvm" / "lib64" / "libnvvm.so").write_bytes(b"nvvm")
+            (cuda / "nvvm" / "libdevice" / "libdevice.10.bc").write_bytes(
+                b"libdevice"
+            )
             for name in self.module.OPTIX_HEADERS:
                 body = "#define OPTIX_VERSION 80000\n" if name == "optix.h" else ""
                 (optix / "include" / name).write_text(body, encoding="ascii")
@@ -150,6 +294,9 @@ class Goal5838PodPreflightTest(unittest.TestCase):
                 expected_commit=commit,
                 compute_capability=None,
                 host_compiler=None,
+                nvrtc_library=None,
+                nvvm_library=None,
+                libdevice=None,
                 artifact_dir=root / "artifacts",
                 output=root / "preflight.json",
             )
@@ -202,6 +349,11 @@ class Goal5838PodPreflightTest(unittest.TestCase):
                     self.module,
                     "probe_optix_runtime_abi",
                     return_value=abi,
+                ),
+                patch.object(
+                    self.module,
+                    "_probe_selected_callback_compiler",
+                    return_value={"passed": True, "optix_launch_count": 0},
                 ),
                 patch.object(
                     self.module,

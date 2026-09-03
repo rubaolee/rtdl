@@ -34,6 +34,11 @@ Multi-GPU pods are accepted: the formal command selects container GPU 0 with
 `CUDA_VISIBLE_DEVICES=0`, and both `nvidia-smi --id=0` and the native runtime
 descriptor record the selected target.
 
+The owner supplies only the SSH endpoint. The RTDL agent owns Python, CUDA,
+compiler, SDK, ABI, and path adaptation under the controlling
+`UNKNOWN_POD_COMPLETION_PLAN.md`; it must not ask the owner to provision a
+particular driver branch or SDK image.
+
 The zero-launch ABI probe is required twice by construction: the pod preflight
 uses it before authorizing the commands, and the native builder reruns it and
 seals its source, compile command, executable, return code, and exact output in

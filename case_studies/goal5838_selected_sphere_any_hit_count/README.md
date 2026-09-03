@@ -46,10 +46,16 @@ A passing receipt must independently establish all of the following:
 
 ## Clean-pod procedure
 
+The owner supplies only a reachable SSH command for an already allocated
+NVIDIA pod. Driver, SDK, CUDA, Python, compiler, and filesystem discovery and
+repair belong to the RTDL agent. The controlling intake and recovery procedure
+is
+`history/internal_docs/goal5838_generic_core_exam_20260902/UNKNOWN_POD_COMPLETION_PLAN.md`.
+
 Run from a clean checkout of the exact committed exam source. Use Python 3.12,
-Numba 0.65.1, NumPy 2.4.4, and CUDA compatible with the visible GPU. Replace
-the uppercase placeholders with discovered absolute paths and the full
-40-character Git commit.
+Numba 0.65.1, NumPy 2.4.4, and a pod-local CUDA compiler stack compatible with
+the visible GPU. Replace the uppercase placeholders with discovered absolute
+paths and the full 40-character Git commit.
 
 Goal5838 does not preregister one mandatory OptiX SDK or driver branch. Select
 the newest exact SDK whose zero-launch `optixInit()` ABI probe succeeds against
@@ -94,9 +100,11 @@ test "$(git -C OPTIX_PREFIX rev-parse HEAD)" = OPTIX_COMMIT
 
 Before building, run the dedicated read-only pod preflight. It verifies the
 exact clean commit, preregistered baseline object, frozen-core and selection
-authorities, focused tests, Python dependencies, selected GPU 0, CUDA/NVRTC,
-the exact selected OptiX headers, host tools, fresh external artifact paths,
-and a compiled-and-executed `optixInit()` ABI probe. It performs no provider
+authorities, focused tests, Python dependencies, selected GPU 0, exact
+CUDA/NVRTC/NVVM/libdevice inputs, the exact selected OptiX headers, host tools,
+fresh external artifact paths, a compiled-and-executed `optixInit()` ABI probe,
+and a real offline compile of all four selected Callback-IR leaves plus the
+NVRTC wrapper through the generic family front door. It performs no provider
 build and no OptiX launch. Replace `FULL_COMMIT`, `CUDA_PREFIX`, `OPTIX_PREFIX`,
 and `OPTIX_SDK`.
 
@@ -120,6 +128,10 @@ The existing product-only native build excludes the sphere lifecycle ABI under
 `RTDL_V4_PRODUCT_ONLY`. Therefore this exam builds the existing full generic
 provider from `src/native/rtdl_optix.cpp`; it does not modify native C++ source
 or add selected-app logic to the engine.
+
+The command blocks below document argument shape only. Execute the exact
+commands printed by the passing preflight; those commands also bind the tested
+NVRTC, NVVM, libdevice, CUDA, loader, cache, and GPU-selection environment.
 
 ```bash
 CUDA_VISIBLE_DEVICES=0 PYTHONPATH=src:. \

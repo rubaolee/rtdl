@@ -58,6 +58,10 @@ EXAM_SOURCE_PATHS = (
         "history/internal_docs/goal5838_generic_core_exam_20260902/"
         "POD_COMPATIBILITY_CORRECTION.md"
     ),
+    (
+        "history/internal_docs/goal5838_generic_core_exam_20260902/"
+        "UNKNOWN_POD_COMPLETION_PLAN.md"
+    ),
     "case_studies/goal5838_selected_sphere_any_hit_count/fixture.py",
     (
         "case_studies/goal5838_selected_sphere_any_hit_count/"
