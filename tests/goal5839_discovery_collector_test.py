@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import json
+import http.client
 import unittest
 import urllib.parse
+from unittest.mock import patch
 
 from scripts import goal5839_collect_discovery_search_results as collector
 
@@ -66,6 +68,30 @@ class Goal5839DiscoveryCollectorTest(unittest.TestCase):
         binding = collector._load_binding()
         self.assertEqual(binding["preregistration"]["work_count"], 29)
         self.assertTrue(all(value == 0 for value in binding["execution_state"].values()))
+
+    def test_remote_disconnect_is_recorded_through_all_frozen_retries(self) -> None:
+        with patch.object(
+            collector.urllib.request,
+            "urlopen",
+            side_effect=http.client.RemoteDisconnected("closed"),
+        ), patch.object(collector.time, "sleep") as sleep:
+            request, result = collector._request_with_frozen_retries(
+                "https://example.invalid/",
+                {},
+                lambda payload: payload,
+            )
+
+        self.assertIsNone(result)
+        self.assertEqual(request["terminal_status"], "TERMINAL_REQUEST_FAILURE")
+        self.assertEqual(len(request["attempts"]), 3)
+        self.assertEqual(
+            [row["error_type"] for row in request["attempts"]],
+            ["RemoteDisconnected"] * 3,
+        )
+        self.assertEqual(
+            [call.args[0] for call in sleep.call_args_list],
+            [5, 30],
+        )
 
 
 if __name__ == "__main__":

@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import html
+import http.client
 import json
 import os
 import time
@@ -126,7 +127,14 @@ def _request_with_frozen_retries(
                 }
             )
             return {"attempts": attempts, "terminal_status": "SUCCESS"}, parsed
-        except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError, ValueError, DiscoveryCollectionError) as exc:
+        except (
+            urllib.error.HTTPError,
+            urllib.error.URLError,
+            http.client.HTTPException,
+            TimeoutError,
+            ValueError,
+            DiscoveryCollectionError,
+        ) as exc:
             status = exc.code if isinstance(exc, urllib.error.HTTPError) else None
             attempts.append(
                 {
