@@ -1,0 +1,383 @@
+{
+  "authority_sha256": "013ccfef04835a3d6b2ad572f504f2d07a80a19b48e591d7c7887ff6e00b8192",
+  "baseline": {
+    "commit": "2f256d5775fd8a522921af48fb8b8fc176a68756",
+    "files": [
+      {
+        "path": "src/rtdsl/v4_protocol_contract.py",
+        "sha256": "e60f83f5a15df58de2f3f38b681331efb51b797c1b12628ebdaaf1c26a448973"
+      },
+      {
+        "path": "src/rtdsl/v4_callback_lifecycle.py",
+        "sha256": "76e35a2b246f125b51136bd6f8354a3133b8c207474f9e9aea31fda9c6b240bd"
+      },
+      {
+        "path": "src/rtdsl/v4_rtdlexe.py",
+        "sha256": "ea32830ec3ba273523adf947e4e85c460af2ca50aaa316eeb90e1caa39bda097"
+      },
+      {
+        "path": "scripts/goal5801_independent_closeout_verifier.py",
+        "sha256": "d706f755586fece911447608da0cc158d0904239e915d8aa5d4b7f30474f9119"
+      },
+      {
+        "path": "src/rtdsl/v4_family_schema.py",
+        "sha256": "2d118697d10cb2bc2a8672700ae5a991eaf94e66834bb3e08fd898323720f224"
+      },
+      {
+        "path": "src/rtdsl/v4_generic_family_lifecycle.py",
+        "sha256": "7ac68832de9d1e04fdd6f0f11bfa0de7d6109d892ab22e42c9aeb2825d28228c"
+      },
+      {
+        "path": "src/rtdsl/v4_family.py",
+        "sha256": "d25c487823e966a8e9083092811c9a1a2b6aa0fef6ce8f3a0a5b8919c5b809e8"
+      }
+    ],
+    "goal5838_final_authority": {
+      "file_sha256": "dafea025d8f9583cd186e914f6e2974b6aab2fdd59781a6d2a39087e0def7ce8",
+      "internal_seal": "c0578a22e006e2bee2dec39e6de98201ce547eca95dc20b6b7f4c1a891479a8e",
+      "path": "history/internal_docs/goal5838_generic_core_exam_20260902/FINAL_AUTHORITY.json"
+    },
+    "identity_rule": "file SHA-256 values describe blobs at the frozen baseline commit; later working-tree files are not reinterpreted as the baseline",
+    "pre_freeze_verification": "all listed working-tree files matched these SHA-256 values before this preregistration was generated",
+    "roadmap": {
+      "path": "history/internal_docs/goal5838_goal5843_cgo_reviewer_attack_remediation_plan_20260902.md",
+      "sha256": "bf02dfe3833d524c14586d4459adfe7b5063f88cc498a137562f55e087e0b664"
+    }
+  },
+  "claim_boundary": {
+    "cgo_claim_authorized": false,
+    "external_review_or_consensus": false,
+    "general_soundness_theorem": false,
+    "gpu_result": false,
+    "independent_extractor_implemented": false,
+    "lowering_preservation_established": false,
+    "performance_or_speedup": false,
+    "preregistration_only": true,
+    "target_evidence_bundle_implemented": false
+  },
+  "execution_order": [
+    "freeze this preregistration",
+    "implement target evidence bundle without changing Goal5838 frozen core",
+    "implement standalone extractor without rtdsl imports",
+    "produce local deterministic positive bundles and run 15 mutations",
+    "run exact positive routes and receipts on an NVIDIA OptiX pod",
+    "repeat mutations against exact captured bundles",
+    "write bounded preservation argument and hostile self-review",
+    "seek external review only after travel constraint ends"
+  ],
+  "failure_condition": {
+    "goal5838_frozen_core_change_required": true,
+    "mutation_accepted_for_claimed_property": true,
+    "stored_projection_required_to_recover_any_claimed_fact": true,
+    "unsupported_rule_retained_in_preservation_statement": true
+  },
+  "frozen_at_utc": "2026-09-03T07:31:16Z",
+  "goal": 5840,
+  "independent_extractor": {
+    "derives": [
+      "role effects and required role-symbol topology",
+      "nominal channel semantics and producer/consumer ownership",
+      "geometry/template/SBT/buffer/result physical bindings",
+      "status-before-output and completeness continuation policy",
+      "generated source/PTX/native target/runtime receipt identity chain"
+    ],
+    "implementation_language": "Python standard library only",
+    "imports_declaration_side_projection_builder": false,
+    "imports_existing_compiler_projection_builder": false,
+    "imports_rtdsl": false,
+    "independence_test": "AST import scan plus isolated subprocess with repository package imports blocked",
+    "must_emit": "property-by-property facts with exact evidence object/path/symbol citations",
+    "reads_stored_compiler_projection_as_target_facts": false,
+    "unknown_or_unparseable": "FAIL_CLOSED_UNSUPPORTED_RULE"
+  },
+  "mutation_count": 15,
+  "mutation_matrix": [
+    {
+      "gpu_launch_required_for_rejection": false,
+      "mutation": "change one generated role effect or remove one required role symbol while recomputing every untrusted bundle-local digest",
+      "mutation_id": "stable::bounded_relation::canonical_bounded_pair_collection::CP001_ROLE_EFFECT_CLOSURE",
+      "mutation_time": "after_declaration_admission_before_target_acceptance",
+      "property_id": "CP001_ROLE_EFFECT_CLOSURE",
+      "recompute_attacker_controlled_digests": true,
+      "replacement": "terminate",
+      "required_rejection": "TARGET_ROLE_EFFECT_OR_SYMBOL_MISMATCH",
+      "route_id": "stable::bounded_relation::canonical_bounded_pair_collection",
+      "target_selector": "callback_abi.roles[any_hit].effects[accept_continue]"
+    },
+    {
+      "gpu_launch_required_for_rejection": false,
+      "mutation": "swap one same-width nominal semantic or producer/consumer owner while preserving machine scalar widths and recomputing bundle-local digests",
+      "mutation_id": "stable::bounded_relation::canonical_bounded_pair_collection::CP002_SEMANTIC_ABI_OWNERSHIP",
+      "mutation_time": "after_declaration_admission_before_target_acceptance",
+      "property_id": "CP002_SEMANTIC_ABI_OWNERSHIP",
+      "recompute_attacker_controlled_digests": true,
+      "replacement": "query.item_id",
+      "required_rejection": "TARGET_NOMINAL_CHANNEL_OWNERSHIP_MISMATCH",
+      "route_id": "stable::bounded_relation::canonical_bounded_pair_collection",
+      "target_selector": "family_schema.channels[relation_item_id].semantic"
+    },
+    {
+      "gpu_launch_required_for_rejection": false,
+      "mutation": "change one geometry/template, SBT, buffer ordinal/layout, result operator, or native producer binding and recompute bundle-local digests",
+      "mutation_id": "stable::bounded_relation::canonical_bounded_pair_collection::CP003_PHYSICAL_BINDING",
+      "mutation_time": "after_declaration_admission_before_target_acceptance",
+      "property_id": "CP003_PHYSICAL_BINDING",
+      "recompute_attacker_controlled_digests": true,
+      "replacement": "builtin_triangle",
+      "required_rejection": "TARGET_PHYSICAL_BINDING_MISMATCH",
+      "route_id": "stable::bounded_relation::canonical_bounded_pair_collection",
+      "target_selector": "family_schema.physical.primitive_kind"
+    },
+    {
+      "gpu_launch_required_for_rejection": false,
+      "mutation": "remove or reorder a status-before-output guard, or mark overflow/truncation complete, then recompute bundle-local digests",
+      "mutation_id": "stable::bounded_relation::canonical_bounded_pair_collection::CP004_STATUS_GATED_CONTINUATION_AND_COMPLETENESS",
+      "mutation_time": "after_declaration_admission_before_target_acceptance",
+      "property_id": "CP004_STATUS_GATED_CONTINUATION_AND_COMPLETENESS",
+      "recompute_attacker_controlled_digests": true,
+      "replacement": "return_partial_result",
+      "required_rejection": "TARGET_STATUS_OR_COMPLETENESS_MISMATCH",
+      "route_id": "stable::bounded_relation::canonical_bounded_pair_collection",
+      "target_selector": "result_operator.contract.capacity"
+    },
+    {
+      "gpu_launch_required_for_rejection": false,
+      "mutation": "swap generated source/PTX, native DSO, target, or runtime receipt identity while recomputing every attacker-controlled bundle-local digest",
+      "mutation_id": "stable::bounded_relation::canonical_bounded_pair_collection::CP005_EXECUTABLE_IDENTITY_CHAIN",
+      "mutation_time": "after_declaration_admission_before_target_acceptance",
+      "property_id": "CP005_EXECUTABLE_IDENTITY_CHAIN",
+      "recompute_attacker_controlled_digests": true,
+      "replacement": "different_valid_route_ptx_bytes",
+      "required_rejection": "TARGET_EXECUTABLE_IDENTITY_MISMATCH",
+      "route_id": "stable::bounded_relation::canonical_bounded_pair_collection",
+      "target_selector": "composed_ptx.bytes"
+    },
+    {
+      "gpu_launch_required_for_rejection": false,
+      "mutation": "change one generated role effect or remove one required role symbol while recomputing every untrusted bundle-local digest",
+      "mutation_id": "stable::triangle_reduction::checked_u64_reduction::CP001_ROLE_EFFECT_CLOSURE",
+      "mutation_time": "after_declaration_admission_before_target_acceptance",
+      "property_id": "CP001_ROLE_EFFECT_CLOSURE",
+      "recompute_attacker_controlled_digests": true,
+      "replacement": "terminate",
+      "required_rejection": "TARGET_ROLE_EFFECT_OR_SYMBOL_MISMATCH",
+      "route_id": "stable::triangle_reduction::checked_u64_reduction",
+      "target_selector": "callback_abi.roles[any_hit].effects[accept_continue]"
+    },
+    {
+      "gpu_launch_required_for_rejection": false,
+      "mutation": "swap one same-width nominal semantic or producer/consumer owner while preserving machine scalar widths and recomputing bundle-local digests",
+      "mutation_id": "stable::triangle_reduction::checked_u64_reduction::CP002_SEMANTIC_ABI_OWNERSHIP",
+      "mutation_time": "after_declaration_admission_before_target_acceptance",
+      "property_id": "CP002_SEMANTIC_ABI_OWNERSHIP",
+      "recompute_attacker_controlled_digests": true,
+      "replacement": "query.index",
+      "required_rejection": "TARGET_NOMINAL_CHANNEL_OWNERSHIP_MISMATCH",
+      "route_id": "stable::triangle_reduction::checked_u64_reduction",
+      "target_selector": "family_schema.channels[triangle_primitive_index].semantic"
+    },
+    {
+      "gpu_launch_required_for_rejection": false,
+      "mutation": "change one geometry/template, SBT, buffer ordinal/layout, result operator, or native producer binding and recompute bundle-local digests",
+      "mutation_id": "stable::triangle_reduction::checked_u64_reduction::CP003_PHYSICAL_BINDING",
+      "mutation_time": "after_declaration_admission_before_target_acceptance",
+      "property_id": "CP003_PHYSICAL_BINDING",
+      "recompute_attacker_controlled_digests": true,
+      "replacement": "builtin_sphere",
+      "required_rejection": "TARGET_PHYSICAL_BINDING_MISMATCH",
+      "route_id": "stable::triangle_reduction::checked_u64_reduction",
+      "target_selector": "family_schema.physical.primitive_kind"
+    },
+    {
+      "gpu_launch_required_for_rejection": false,
+      "mutation": "remove or reorder a status-before-output guard, or mark overflow/truncation complete, then recompute bundle-local digests",
+      "mutation_id": "stable::triangle_reduction::checked_u64_reduction::CP004_STATUS_GATED_CONTINUATION_AND_COMPLETENESS",
+      "mutation_time": "after_declaration_admission_before_target_acceptance",
+      "property_id": "CP004_STATUS_GATED_CONTINUATION_AND_COMPLETENESS",
+      "recompute_attacker_controlled_digests": true,
+      "replacement": "wrap_u64_and_report_complete",
+      "required_rejection": "TARGET_STATUS_OR_COMPLETENESS_MISMATCH",
+      "route_id": "stable::triangle_reduction::checked_u64_reduction",
+      "target_selector": "result_operator.contract.overflow"
+    },
+    {
+      "gpu_launch_required_for_rejection": false,
+      "mutation": "swap generated source/PTX, native DSO, target, or runtime receipt identity while recomputing every attacker-controlled bundle-local digest",
+      "mutation_id": "stable::triangle_reduction::checked_u64_reduction::CP005_EXECUTABLE_IDENTITY_CHAIN",
+      "mutation_time": "after_declaration_admission_before_target_acceptance",
+      "property_id": "CP005_EXECUTABLE_IDENTITY_CHAIN",
+      "recompute_attacker_controlled_digests": true,
+      "replacement": "different_well_formed_sha256",
+      "required_rejection": "TARGET_EXECUTABLE_IDENTITY_MISMATCH",
+      "route_id": "stable::triangle_reduction::checked_u64_reduction",
+      "target_selector": "execution_receipt.native_library_sha256"
+    },
+    {
+      "gpu_launch_required_for_rejection": false,
+      "mutation": "change one generated role effect or remove one required role symbol while recomputing every untrusted bundle-local digest",
+      "mutation_id": "prospective::builtin_sphere::any_hit_count_continue_u64_per_query::CP001_ROLE_EFFECT_CLOSURE",
+      "mutation_time": "after_declaration_admission_before_target_acceptance",
+      "property_id": "CP001_ROLE_EFFECT_CLOSURE",
+      "recompute_attacker_controlled_digests": true,
+      "replacement": "terminate",
+      "required_rejection": "TARGET_ROLE_EFFECT_OR_SYMBOL_MISMATCH",
+      "route_id": "prospective::builtin_sphere::any_hit_count_continue_u64_per_query",
+      "target_selector": "callback_abi.roles[any_hit].effects[accept_continue]"
+    },
+    {
+      "gpu_launch_required_for_rejection": false,
+      "mutation": "swap one same-width nominal semantic or producer/consumer owner while preserving machine scalar widths and recomputing bundle-local digests",
+      "mutation_id": "prospective::builtin_sphere::any_hit_count_continue_u64_per_query::CP002_SEMANTIC_ABI_OWNERSHIP",
+      "mutation_time": "after_declaration_admission_before_target_acceptance",
+      "property_id": "CP002_SEMANTIC_ABI_OWNERSHIP",
+      "recompute_attacker_controlled_digests": true,
+      "replacement": "query.user_u64",
+      "required_rejection": "TARGET_NOMINAL_CHANNEL_OWNERSHIP_MISMATCH",
+      "route_id": "prospective::builtin_sphere::any_hit_count_continue_u64_per_query",
+      "target_selector": "protocol_instance.nominal_semantics.output"
+    },
+    {
+      "gpu_launch_required_for_rejection": false,
+      "mutation": "change one geometry/template, SBT, buffer ordinal/layout, result operator, or native producer binding and recompute bundle-local digests",
+      "mutation_id": "prospective::builtin_sphere::any_hit_count_continue_u64_per_query::CP003_PHYSICAL_BINDING",
+      "mutation_time": "after_declaration_admission_before_target_acceptance",
+      "property_id": "CP003_PHYSICAL_BINDING",
+      "recompute_attacker_controlled_digests": true,
+      "replacement": "primitive_count",
+      "required_rejection": "TARGET_PHYSICAL_BINDING_MISMATCH",
+      "route_id": "prospective::builtin_sphere::any_hit_count_continue_u64_per_query",
+      "target_selector": "family_schema.physical.sbt.record_count_relation"
+    },
+    {
+      "gpu_launch_required_for_rejection": false,
+      "mutation": "remove or reorder a status-before-output guard, or mark overflow/truncation complete, then recompute bundle-local digests",
+      "mutation_id": "prospective::builtin_sphere::any_hit_count_continue_u64_per_query::CP004_STATUS_GATED_CONTINUATION_AND_COMPLETENESS",
+      "mutation_time": "after_declaration_admission_before_target_acceptance",
+      "property_id": "CP004_STATUS_GATED_CONTINUATION_AND_COMPLETENESS",
+      "recompute_attacker_controlled_digests": true,
+      "replacement": "expose_partial_output",
+      "required_rejection": "TARGET_STATUS_OR_COMPLETENESS_MISMATCH",
+      "route_id": "prospective::builtin_sphere::any_hit_count_continue_u64_per_query",
+      "target_selector": "result_operator.contract.overflow"
+    },
+    {
+      "gpu_launch_required_for_rejection": false,
+      "mutation": "swap generated source/PTX, native DSO, target, or runtime receipt identity while recomputing every attacker-controlled bundle-local digest",
+      "mutation_id": "prospective::builtin_sphere::any_hit_count_continue_u64_per_query::CP005_EXECUTABLE_IDENTITY_CHAIN",
+      "mutation_time": "after_declaration_admission_before_target_acceptance",
+      "property_id": "CP005_EXECUTABLE_IDENTITY_CHAIN",
+      "recompute_attacker_controlled_digests": true,
+      "replacement": "different_well_formed_sha256",
+      "required_rejection": "TARGET_EXECUTABLE_IDENTITY_MISMATCH",
+      "route_id": "prospective::builtin_sphere::any_hit_count_continue_u64_per_query",
+      "target_selector": "execution_receipt.target_sha256"
+    }
+  ],
+  "reviewer_attack": {
+    "attack": "The declaration and compiler projections are produced inside the same implementation and tests do not establish lowering preservation.",
+    "current_limitation": "The Goal5801 detached verifier validates stored compiler_projection identity but does not independently recover that projection from raw target artifacts.",
+    "id": "R3"
+  },
+  "schema": "rtdl.goal5840.independent_lowering_refinement_preregistration.v1",
+  "stage": "PREREGISTRATION_BEFORE_IMPLEMENTATION",
+  "status": "PREREGISTERED_BEFORE_TARGET_EVIDENCE_BUNDLE_OR_INDEPENDENT_EXTRACTOR_IMPLEMENTATION",
+  "success_condition": {
+    "all_preregistered_mutations_rejected": true,
+    "all_required_modes_present": true,
+    "frozen_goal5838_core_byte_changes": 0,
+    "independent_extractor_matches_declaration_for_every_claim_unit": true,
+    "positive_route_bundles": 3,
+    "rejected_before_gpu_launch": true,
+    "tcb_and_unproved_obligations_reported": true,
+    "true_optix_positive_receipt_per_route": true,
+    "unsupported_lowering_rule_removed_or_goal_fails_closed": true
+  },
+  "supported_scope": {
+    "claim_unit": "one_route_times_one_property",
+    "excluded": [
+      "arbitrary Callback IR",
+      "owner-grouped closed successor route",
+      "unselected Goal5838 challenge-table topologies",
+      "non-OptiX providers",
+      "application correctness",
+      "performance or speedup",
+      "general compiler soundness"
+    ],
+    "properties": [
+      "CP001_ROLE_EFFECT_CLOSURE",
+      "CP002_SEMANTIC_ABI_OWNERSHIP",
+      "CP003_PHYSICAL_BINDING",
+      "CP004_STATUS_GATED_CONTINUATION_AND_COMPLETENESS",
+      "CP005_EXECUTABLE_IDENTITY_CHAIN"
+    ],
+    "property_count": 5,
+    "required_claim_unit_count": 15,
+    "route_count": 3,
+    "routes": [
+      {
+        "classification": "stable_fixed_constructor",
+        "geometry": "custom_primitive_aabb",
+        "required_modes": [
+          "capacity_fail_closed_collection"
+        ],
+        "result": "canonical_bounded_u32_pair_rows",
+        "route_id": "stable::bounded_relation::canonical_bounded_pair_collection"
+      },
+      {
+        "classification": "stable_fixed_constructor",
+        "geometry": "builtin_triangle",
+        "required_modes": [
+          "all_hit_count",
+          "weighted_hit_count"
+        ],
+        "result": "checked_u64_scalar",
+        "route_id": "stable::triangle_reduction::checked_u64_reduction"
+      },
+      {
+        "classification": "goal5838_bounded_prospective_success",
+        "geometry": "builtin_sphere",
+        "required_modes": [
+          "accept_every_hit_and_continue"
+        ],
+        "result": "per_query_u64",
+        "route_id": "prospective::builtin_sphere::any_hit_count_continue_u64_per_query"
+      }
+    ]
+  },
+  "target_evidence_bundle": {
+    "bundle_local_hashes_are_not_external_authority": true,
+    "missing_required_component": "FAIL_CLOSED_UNSUPPORTED_EVIDENCE_BUNDLE",
+    "must_preserve_exact_bytes_or_canonical_records": [
+      "public protocol declaration",
+      "verified Callback IR and role/effect manifest",
+      "compiled Callback ABI with nominal semantic types and owners",
+      "generated leaf source for every role",
+      "trusted wrapper source and role symbols",
+      "leaf PTX, wrapper PTX, and composed PTX",
+      "family schema and canonical compilation plan",
+      "provider key and native producer descriptor",
+      "SBT and buffer layout/binding records",
+      "target/toolchain/native DSO identities",
+      "status/completeness and exact execution receipt"
+    ],
+    "raw_artifact_anchor_rule": "each recovered fact must cite raw generated source or PTX plus its structural ABI/plan/binding/receipt evidence when that fact has an executable representation; nominal-only facts must cite both producer and consumer structural origins",
+    "stored_compiler_projection_is_evidence_source": false
+  },
+  "trusted_computing_base_to_report": [
+    "public declaration serializer and admission authority",
+    "target evidence bundler",
+    "standalone independent extractor/checker",
+    "SHA-256 and canonical JSON implementation",
+    "Numba/NVVM, NVRTC, PTX linker, OptiX runtime and NVIDIA driver",
+    "native producer descriptor and execution-receipt producer",
+    "GPU hardware for positive execution receipts"
+  ],
+  "unproved_obligations": [
+    "semantic correctness of arbitrary Callback IR",
+    "compiler, driver, OptiX, and hardware correctness",
+    "geometry intersection arithmetic correctness",
+    "application-level correctness",
+    "properties outside the three registered routes",
+    "performance, usability, and provider portability"
+  ]
+}
