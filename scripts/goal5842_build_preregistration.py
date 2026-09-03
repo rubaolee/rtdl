@@ -29,13 +29,14 @@ from experiments.goal5842_causal_admission.contracts import (
     digest,
     pin_file,
     post_failure_replication_provenance,
+    v7_preregistration_supersession,
     validate_preregistration,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / (
     "history/internal_docs/goal5842_causal_admission_cost_20260903/"
-    "PREREGISTRATION_V6.json"
+    "PREREGISTRATION_V7.json"
 )
 
 
@@ -50,7 +51,8 @@ def build() -> dict[str, object]:
     result: dict[str, object] = {
         "schema": PREREGISTRATION_SCHEMA,
         "date": "2026-09-03",
-        "status": "FROZEN_BEFORE_INDEPENDENT_V6_REPLICATION_TIMING",
+        "status": "FROZEN_BEFORE_INDEPENDENT_V7_REPLICATION_TIMING",
+        "supersession": v7_preregistration_supersession(),
         "post_failure_replication": post_failure_replication_provenance(),
         "scientific_question": (
             "How much cold post-import generic-family latency is attributable "
@@ -217,12 +219,16 @@ def build() -> dict[str, object]:
             "v5_transaction_reclassified_as_success": False,
             "v4_or_v5_rows_pooled_into_v6_estimators": False,
             "v6_called_a_retry_of_v5": False,
+            "v6_preworker_attempt_reclassified_as_success": False,
+            "v6_untimed_calls_count_as_v7_witness": False,
+            "v4_v5_or_v6_rows_pooled_into_v7_estimators": False,
+            "v7_called_a_retry_of_v6": False,
         },
         "source_manifest": manifest,
         "source_manifest_sha256": digest(manifest),
         "preregistration_build_counter_scope": {
-            "top_level_counters_cover_this_v6_replication_build_only": True,
-            "prior_evidence_is_bound_in_post_failure_replication": True,
+            "top_level_counters_cover_this_v7_replication_build_only": True,
+            "prior_evidence_is_bound_in_provenance_fields": True,
             "pre_v4_untimed_gpu_complete_execution_call_count": 8,
             "v4_registered_causal_worker_timing_vector_count": 216,
             "v4_registered_baseline_subworker_timing_vector_count": 2,
@@ -234,6 +240,9 @@ def build() -> dict[str, object]:
             "v5_registered_baseline_execution_sample_count": 131,
             "v5_untimed_rtdl_identity_complete_execution_call_count": 6,
             "v5_untimed_pyoptix_identity_complete_execution_call_count": 2,
+            "v6_preworker_attempt_count": 2,
+            "v6_registered_timing_observation_count": 0,
+            "v6_untimed_rtdl_identity_complete_execution_call_count": 72,
         },
         "registered_timing_observation_count": 0,
         "gpu_execution_count": 0,

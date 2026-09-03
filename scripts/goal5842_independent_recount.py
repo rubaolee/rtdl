@@ -58,6 +58,9 @@ PHASE_KEYS = {
 }
 ROUTE_PHASE = "route_declaration_and_artifact_binding"
 CAUSAL_PHASE = "provider_projection_and_public_admission_or_unchecked_construction"
+GENERIC_LIFECYCLE_SCHEMA = "rtdl.generic_family_lifecycle.v1"
+APPLICATION_PROVIDER_LIFECYCLE_SCHEMA = "rtdl.v4.prepared_application_lifecycle.v1"
+SPHERE_PROVIDER_LIFECYCLE_SCHEMA = "rtdl.v4.prepared_builtin_sphere_owner.v1"
 GPU_WITNESS_FIELDS = {
     "schema",
     "status",
@@ -93,6 +96,8 @@ GPU_WITNESS_ARM_FIELDS = {
     "traversal_receipt_sha256",
     "physical_executor_classification",
     "complete_execution_call_count",
+    "generic_lifecycle_schema",
+    "provider_lifecycle_schema",
     "prepared_lifecycle_execution_count",
 }
 PYOPTIX_WITNESS_FIELDS = {
@@ -808,6 +813,11 @@ def validate_identity_witness(
         expected_calls = (
             1 if row["task"] == SPHERE_TASK else STEADY_WARMUPS + STEADY_REPETITIONS
         )
+        expected_provider_schema = (
+            SPHERE_PROVIDER_LIFECYCLE_SCHEMA
+            if row["task"] == SPHERE_TASK
+            else APPLICATION_PROVIDER_LIFECYCLE_SCHEMA
+        )
         for arm_name in ("on", "off"):
             arm = row.get(arm_name)
             require(
@@ -826,6 +836,14 @@ def validate_identity_witness(
                 arm.get("physical_executor_classification")
                 == "optix_traversal_observed",
                 f"{arm_name} arm lacks OptiX traversal",
+            )
+            require(
+                arm.get("generic_lifecycle_schema") == GENERIC_LIFECYCLE_SCHEMA,
+                f"{arm_name} generic lifecycle schema mismatch",
+            )
+            require(
+                arm.get("provider_lifecycle_schema") == expected_provider_schema,
+                f"{arm_name} provider lifecycle schema mismatch",
             )
             require(
                 arm.get("complete_execution_call_count") == expected_calls

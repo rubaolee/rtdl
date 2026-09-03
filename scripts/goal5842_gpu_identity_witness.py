@@ -33,6 +33,9 @@ from rtdsl.v4 import V4Target, V4Toolchain
 from rtdsl.v4_public_builtin_sphere import V4SphereTarget
 
 ROOT = Path(__file__).resolve().parents[1]
+GENERIC_LIFECYCLE_SCHEMA = "rtdl.generic_family_lifecycle.v1"
+APPLICATION_PROVIDER_LIFECYCLE_SCHEMA = "rtdl.v4.prepared_application_lifecycle.v1"
+SPHERE_PROVIDER_LIFECYCLE_SCHEMA = "rtdl.v4.prepared_builtin_sphere_owner.v1"
 
 
 def report_progress(task_id: str, phase: str) -> None:
@@ -57,6 +60,38 @@ def thaw(value: object) -> object:
     if isinstance(value, (list, tuple)):
         return [thaw(item) for item in value]
     return value
+
+
+def provider_lifecycle_evidence(
+    lifecycle_receipt: object,
+    *,
+    expected_execution_count: int,
+    expected_provider_schema: str,
+) -> dict[str, object]:
+    """Validate the generic wrapper and extract its provider-owned count."""
+
+    lifecycle = thaw(lifecycle_receipt)
+    if not isinstance(lifecycle, dict):
+        raise TypeError("prepared lifecycle receipt is not an object")
+    if lifecycle.get("schema") != GENERIC_LIFECYCLE_SCHEMA:
+        raise RuntimeError("generic prepared lifecycle schema mismatch")
+    provider = lifecycle.get("provider_receipt")
+    if not isinstance(provider, dict):
+        raise TypeError("generic lifecycle provider receipt is missing")
+    if provider.get("schema") != expected_provider_schema:
+        raise RuntimeError("provider prepared lifecycle schema mismatch")
+    execution_count = provider.get("execution_count")
+    if (
+        not isinstance(execution_count, int)
+        or isinstance(execution_count, bool)
+        or execution_count != expected_execution_count
+    ):
+        raise RuntimeError("prepared lifecycle execution count mismatch")
+    return {
+        "generic_lifecycle_schema": lifecycle["schema"],
+        "provider_lifecycle_schema": provider["schema"],
+        "prepared_lifecycle_execution_count": execution_count,
+    }
 
 
 def execute_and_check(
@@ -89,9 +124,15 @@ def execute_and_check(
         latest_full_output = full_output
     if latest is None:
         raise RuntimeError("identity witness executed zero calls")
-    lifecycle = thaw(prepared.lifecycle_receipt)
-    if lifecycle.get("execution_count") != complete_execution_call_count:
-        raise RuntimeError("prepared lifecycle execution count mismatch")
+    lifecycle = provider_lifecycle_evidence(
+        prepared.lifecycle_receipt,
+        expected_execution_count=complete_execution_call_count,
+        expected_provider_schema=(
+            SPHERE_PROVIDER_LIFECYCLE_SCHEMA
+            if task.task_id == SPHERE_TASK
+            else APPLICATION_PROVIDER_LIFECYCLE_SCHEMA
+        ),
+    )
     return {
         "output": latest_output,
         "output_sha256": latest.output_sha256,
@@ -99,7 +140,7 @@ def execute_and_check(
         "traversal_receipt_sha256": digest(receipt),
         "physical_executor_classification": receipt["physical_executor_classification"],
         "complete_execution_call_count": complete_execution_call_count,
-        "prepared_lifecycle_execution_count": lifecycle["execution_count"],
+        **lifecycle,
     }
 
 

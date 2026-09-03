@@ -68,15 +68,26 @@ V5_PREREGISTRATION_SHA256 = (
 V5_PREREGISTRATION_FILE_SHA256 = (
     "f2d6f7039d27b5fbddd0c5636e994669ab1ffdc22c522cb083bcb4ddc444fdf3"
 )
-PREREGISTRATION_SCHEMA = "rtdl.goal5842.causal_admission_preregistration.v6"
+V6_PREREGISTRATION_SCHEMA = "rtdl.goal5842.causal_admission_preregistration.v6"
+V6_PREREGISTRATION_PATH = (
+    "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+    "PREREGISTRATION_V6.json"
+)
+V6_PREREGISTRATION_SHA256 = (
+    "214e81ab1a57f23eea06a762f12b07015b8e0052fa27e95c40245598b7f00ad1"
+)
+V6_PREREGISTRATION_FILE_SHA256 = (
+    "b63a755694f6e8973c325171fc7da7970b7abe166d4809d446169d25aa33048f"
+)
+PREREGISTRATION_SCHEMA = "rtdl.goal5842.causal_admission_preregistration.v7"
 EXECUTION_AUTHORITY_SCHEMA = "rtdl.goal5842.execution_authority.v1"
 WORKER_RECEIPT_SCHEMA = "rtdl.goal5842.causal_admission_worker.v1"
 CONTROLLER_RESULT_SCHEMA = "rtdl.goal5842.causal_admission_controller.v1"
 BASELINE_SUBWORKER_SCHEMA = "rtdl.goal5842.baseline_subworker.v1"
 BASELINE_CONTROLLER_SCHEMA = "rtdl.goal5842.baseline_controller.v1"
-GPU_IDENTITY_WITNESS_SCHEMA = "rtdl.goal5842.gpu_identity_witness.v2"
+GPU_IDENTITY_WITNESS_SCHEMA = "rtdl.goal5842.gpu_identity_witness.v3"
 PYOPTIX_IDENTITY_WITNESS_SCHEMA = "rtdl.goal5842.pyoptix_identity_witness.v2"
-INDEPENDENT_RECOUNT_SCHEMA = "rtdl.goal5842.independent_recount.v3"
+INDEPENDENT_RECOUNT_SCHEMA = "rtdl.goal5842.independent_recount.v4"
 CROSS_GENERATION_AUTHORITY_SCHEMA = "rtdl.goal5842.cross_generation_authority.v1"
 
 CHECK_ON = "CHECK_ON_COLD_PUBLIC_ADMISSION"
@@ -233,6 +244,19 @@ REQUIRED_SOURCE_PATHS = (
     (
         "history/internal_docs/goal5842_causal_admission_cost_20260903/"
         "pod_artifacts/goal5842_replication05_failure.tar.gz"
+    ),
+    V6_PREREGISTRATION_PATH,
+    (
+        "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+        "PRE_WORKER_ZERO_REPAIR_04.md"
+    ),
+    (
+        "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+        "PRE_EXECUTION_INTERNAL_HOSTILE_REVIEW_V7.md"
+    ),
+    (
+        "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+        "pod_artifacts/goal5842_v6_preworker_failures.tar.gz"
     ),
 )
 
@@ -451,6 +475,80 @@ def post_failure_replication_provenance() -> dict[str, object]:
     }
 
 
+def v7_preregistration_supersession() -> dict[str, object]:
+    """Bind V7 to both disclosed pre-worker-zero V6 attempts."""
+
+    return {
+        "predecessor_path": V6_PREREGISTRATION_PATH,
+        "predecessor_schema": V6_PREREGISTRATION_SCHEMA,
+        "predecessor_preregistration_sha256": V6_PREREGISTRATION_SHA256,
+        "predecessor_file_sha256": V6_PREREGISTRATION_FILE_SHA256,
+        "v6_source_commit": "1a2b98abf5c04c095f81f05b17f91a62e120ffca",
+        "v6_preworker_artifact_path": (
+            "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+            "pod_artifacts/goal5842_v6_preworker_failures.tar.gz"
+        ),
+        "v6_preworker_artifact_bytes": 3_761,
+        "v6_preworker_artifact_sha256": (
+            "9f32d8aab3be262148bc10eeac55c92f950d483207240c42323371b5a0839bb1"
+        ),
+        "v6_preflight_attempt_count": 2,
+        "v6_attempt_1": {
+            "failed_stage": "00_bind_execution_authority",
+            "reason_code": "NVCC_NOT_VISIBLE_IN_NON_LOGIN_PATH",
+            "worker_zero_reached": False,
+            "registered_timing_observation_count": 0,
+            "gpu_complete_execution_call_count": 0,
+            "failure_marker_sha256": (
+                "47d570cdd595b50a0f1db7fbe21433e29bc5f207962ef5438f70cea361ca23a9"
+            ),
+            "stderr_sha256": (
+                "321af0fc3fe72c57cde9f3b6bce2b2ec66aedf61b007d64c3b51141e3baee0ab"
+            ),
+        },
+        "v6_attempt_2": {
+            "failed_stage": "01_gpu_identity_witness_no_timing",
+            "reason_code": (
+                "GENERIC_LIFECYCLE_PROVIDER_RECEIPT_NESTING_INTERPRETATION_DEFECT"
+            ),
+            "execution_authority_sha256": (
+                "636132f8c4ff44af5c1d4df1ffe92ed563f71241ce0df6538e7512c5ea8b0087"
+            ),
+            "worker_zero_reached": False,
+            "registered_timing_observation_count": 0,
+            "gpu_complete_execution_call_count": 72,
+            "gpu_call_count_basis": (
+                "the timer-free relation CHECK_ON loop completed and validated all "
+                "72 outputs and OptiX traversal receipts before the post-loop "
+                "lifecycle assertion raised"
+            ),
+            "failure_marker_sha256": (
+                "71222136e24031c38abfdec3ff4d276187b25b7eb3cacb701b630e05162ae4c6"
+            ),
+            "stdout_sha256": (
+                "b49f4b12bd85968859dd4b43e49fc97bbb555781a5f143e713cb3fd3de02b5bc"
+            ),
+            "stderr_sha256": (
+                "78a9dbb5c6c14205f4101d2d278aa82a9a7f8fef97b120e0e30fe45295e3bfdd"
+            ),
+        },
+        "scientific_design_changed": False,
+        "schedule_changed": False,
+        "workload_changed": False,
+        "statistics_changed": False,
+        "hardware_design_changed": False,
+        "witness_implementation_changed": True,
+        "repair_scope": (
+            "read and validate the provider execution count from the generic "
+            "lifecycle receipt's nested provider_receipt"
+        ),
+        "successful_transaction_repeats_full_witness_before_timing": True,
+        "v7_is_v6_retry": False,
+        "v7_is_append_only_full_replication": True,
+        "v6_untimed_calls_pooled_into_v7_estimators": False,
+    }
+
+
 def canonical_bytes(value: object) -> bytes:
     return json.dumps(
         value,
@@ -618,14 +716,17 @@ def validate_preregistration(value: object, root: Path, *, verify_files: bool) -
         prereg.get("schema") == PREREGISTRATION_SCHEMA,
         "preregistration schema mismatch",
     )
-    _require("supersession" not in prereg, "V6 must not supersede failed V5")
+    _require(
+        prereg.get("supersession") == v7_preregistration_supersession(),
+        "V7 pre-worker-zero supersession provenance mismatch",
+    )
     _require(
         prereg.get("post_failure_replication") == post_failure_replication_provenance(),
         "post-failure replication provenance mismatch",
     )
     _require(
-        prereg.get("status") == "FROZEN_BEFORE_INDEPENDENT_V6_REPLICATION_TIMING",
-        "V6 replication preregistration is not frozen",
+        prereg.get("status") == "FROZEN_BEFORE_INDEPENDENT_V7_REPLICATION_TIMING",
+        "V7 replication preregistration is not frozen",
     )
     _require(
         prereg.get("registered_timing_observation_count") == 0,
@@ -635,8 +736,8 @@ def validate_preregistration(value: object, root: Path, *, verify_files: bool) -
     _require(
         prereg.get("preregistration_build_counter_scope")
         == {
-            "top_level_counters_cover_this_v6_replication_build_only": True,
-            "prior_evidence_is_bound_in_post_failure_replication": True,
+            "top_level_counters_cover_this_v7_replication_build_only": True,
+            "prior_evidence_is_bound_in_provenance_fields": True,
             "pre_v4_untimed_gpu_complete_execution_call_count": 8,
             "v4_registered_causal_worker_timing_vector_count": 216,
             "v4_registered_baseline_subworker_timing_vector_count": 2,
@@ -648,6 +749,9 @@ def validate_preregistration(value: object, root: Path, *, verify_files: bool) -
             "v5_registered_baseline_execution_sample_count": 131,
             "v5_untimed_rtdl_identity_complete_execution_call_count": 6,
             "v5_untimed_pyoptix_identity_complete_execution_call_count": 2,
+            "v6_preworker_attempt_count": 2,
+            "v6_registered_timing_observation_count": 0,
+            "v6_untimed_rtdl_identity_complete_execution_call_count": 72,
         },
         "replication counter scope or prior evidence disclosure differs",
     )
@@ -812,6 +916,10 @@ def validate_preregistration(value: object, root: Path, *, verify_files: bool) -
         "v5_transaction_reclassified_as_success",
         "v4_or_v5_rows_pooled_into_v6_estimators",
         "v6_called_a_retry_of_v5",
+        "v6_preworker_attempt_reclassified_as_success",
+        "v6_untimed_calls_count_as_v7_witness",
+        "v4_v5_or_v6_rows_pooled_into_v7_estimators",
+        "v7_called_a_retry_of_v6",
     ):
         _require(ceiling.get(key) is False, f"claim ceiling widened: {key}")
     _require(
@@ -908,6 +1016,10 @@ __all__ = [
     "V5_PREREGISTRATION_PATH",
     "V5_PREREGISTRATION_SCHEMA",
     "V5_PREREGISTRATION_SHA256",
+    "V6_PREREGISTRATION_FILE_SHA256",
+    "V6_PREREGISTRATION_PATH",
+    "V6_PREREGISTRATION_SCHEMA",
+    "V6_PREREGISTRATION_SHA256",
     "WORKER_RECEIPT_SCHEMA",
     "Goal5842ContractError",
     "build_baseline_schedule",
@@ -922,6 +1034,7 @@ __all__ = [
     "v3_preregistration_supersession",
     "v4_preregistration_supersession",
     "v5_post_failure_replication_provenance",
+    "v7_preregistration_supersession",
     "validate_baseline_schedule",
     "validate_causal_schedule",
     "validate_preregistration",
