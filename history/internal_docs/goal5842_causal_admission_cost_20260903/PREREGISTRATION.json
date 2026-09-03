@@ -1,0 +1,3672 @@
+{
+  "admission_tasks": [
+    "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+    "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+    "BUILTIN_SPHERE_ANY_HIT_COUNT_V1"
+  ],
+  "baseline_arms": [
+    "A_DIRECT_CUDA_OPTIX",
+    "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+    "D_RTDL_PUBLIC_CHECK_ON"
+  ],
+  "baseline_phase_boundaries": [
+    "deterministic_input_materialization",
+    "route_declaration_and_artifact_binding",
+    "provider_projection_and_generic_family_admission",
+    "runtime_target_and_toolchain_binding",
+    "device_compile",
+    "module_program_pipeline_sbt",
+    "target_materialization",
+    "native_prepare",
+    "first_complete_execution",
+    "steady_complete_execution",
+    "close"
+  ],
+  "baseline_schedule": [
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 0,
+      "arm_sample_index": 0,
+      "block": 0,
+      "permutation_index": 0,
+      "sequence_index": 0,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "B000__K00__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 1,
+      "arm_sample_index": 0,
+      "block": 0,
+      "permutation_index": 0,
+      "sequence_index": 1,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "B001__K00__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON",
+      "arm_position": 2,
+      "arm_sample_index": 0,
+      "block": 0,
+      "permutation_index": 0,
+      "sequence_index": 2,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "B002__K00__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__D_RTDL_PUBLIC_CHECK_ON"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 0,
+      "arm_sample_index": 0,
+      "block": 0,
+      "permutation_index": 2,
+      "sequence_index": 3,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "B003__K00__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 1,
+      "arm_sample_index": 0,
+      "block": 0,
+      "permutation_index": 2,
+      "sequence_index": 4,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "B004__K00__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON",
+      "arm_position": 2,
+      "arm_sample_index": 0,
+      "block": 0,
+      "permutation_index": 2,
+      "sequence_index": 5,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "B005__K00__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__D_RTDL_PUBLIC_CHECK_ON"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 0,
+      "arm_sample_index": 1,
+      "block": 1,
+      "permutation_index": 3,
+      "sequence_index": 6,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "B006__K01__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON",
+      "arm_position": 1,
+      "arm_sample_index": 1,
+      "block": 1,
+      "permutation_index": 3,
+      "sequence_index": 7,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "B007__K01__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__D_RTDL_PUBLIC_CHECK_ON"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 2,
+      "arm_sample_index": 1,
+      "block": 1,
+      "permutation_index": 3,
+      "sequence_index": 8,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "B008__K01__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 0,
+      "arm_sample_index": 1,
+      "block": 1,
+      "permutation_index": 1,
+      "sequence_index": 9,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "B009__K01__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON",
+      "arm_position": 1,
+      "arm_sample_index": 1,
+      "block": 1,
+      "permutation_index": 1,
+      "sequence_index": 10,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "B010__K01__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__D_RTDL_PUBLIC_CHECK_ON"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 2,
+      "arm_sample_index": 1,
+      "block": 1,
+      "permutation_index": 1,
+      "sequence_index": 11,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "B011__K01__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 0,
+      "arm_sample_index": 2,
+      "block": 2,
+      "permutation_index": 2,
+      "sequence_index": 12,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "B012__K02__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 1,
+      "arm_sample_index": 2,
+      "block": 2,
+      "permutation_index": 2,
+      "sequence_index": 13,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "B013__K02__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON",
+      "arm_position": 2,
+      "arm_sample_index": 2,
+      "block": 2,
+      "permutation_index": 2,
+      "sequence_index": 14,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "B014__K02__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__D_RTDL_PUBLIC_CHECK_ON"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON",
+      "arm_position": 0,
+      "arm_sample_index": 2,
+      "block": 2,
+      "permutation_index": 4,
+      "sequence_index": 15,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "B015__K02__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__D_RTDL_PUBLIC_CHECK_ON"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 1,
+      "arm_sample_index": 2,
+      "block": 2,
+      "permutation_index": 4,
+      "sequence_index": 16,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "B016__K02__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 2,
+      "arm_sample_index": 2,
+      "block": 2,
+      "permutation_index": 4,
+      "sequence_index": 17,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "B017__K02__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON",
+      "arm_position": 0,
+      "arm_sample_index": 3,
+      "block": 3,
+      "permutation_index": 5,
+      "sequence_index": 18,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "B018__K03__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__D_RTDL_PUBLIC_CHECK_ON"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 1,
+      "arm_sample_index": 3,
+      "block": 3,
+      "permutation_index": 5,
+      "sequence_index": 19,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "B019__K03__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 2,
+      "arm_sample_index": 3,
+      "block": 3,
+      "permutation_index": 5,
+      "sequence_index": 20,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "B020__K03__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 0,
+      "arm_sample_index": 3,
+      "block": 3,
+      "permutation_index": 3,
+      "sequence_index": 21,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "B021__K03__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON",
+      "arm_position": 1,
+      "arm_sample_index": 3,
+      "block": 3,
+      "permutation_index": 3,
+      "sequence_index": 22,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "B022__K03__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__D_RTDL_PUBLIC_CHECK_ON"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 2,
+      "arm_sample_index": 3,
+      "block": 3,
+      "permutation_index": 3,
+      "sequence_index": 23,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "B023__K03__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON",
+      "arm_position": 0,
+      "arm_sample_index": 4,
+      "block": 4,
+      "permutation_index": 4,
+      "sequence_index": 24,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "B024__K04__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__D_RTDL_PUBLIC_CHECK_ON"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 1,
+      "arm_sample_index": 4,
+      "block": 4,
+      "permutation_index": 4,
+      "sequence_index": 25,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "B025__K04__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 2,
+      "arm_sample_index": 4,
+      "block": 4,
+      "permutation_index": 4,
+      "sequence_index": 26,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "B026__K04__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 0,
+      "arm_sample_index": 4,
+      "block": 4,
+      "permutation_index": 0,
+      "sequence_index": 27,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "B027__K04__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 1,
+      "arm_sample_index": 4,
+      "block": 4,
+      "permutation_index": 0,
+      "sequence_index": 28,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "B028__K04__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON",
+      "arm_position": 2,
+      "arm_sample_index": 4,
+      "block": 4,
+      "permutation_index": 0,
+      "sequence_index": 29,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "B029__K04__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__D_RTDL_PUBLIC_CHECK_ON"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 0,
+      "arm_sample_index": 5,
+      "block": 5,
+      "permutation_index": 1,
+      "sequence_index": 30,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "B030__K05__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON",
+      "arm_position": 1,
+      "arm_sample_index": 5,
+      "block": 5,
+      "permutation_index": 1,
+      "sequence_index": 31,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "B031__K05__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__D_RTDL_PUBLIC_CHECK_ON"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 2,
+      "arm_sample_index": 5,
+      "block": 5,
+      "permutation_index": 1,
+      "sequence_index": 32,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "B032__K05__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON",
+      "arm_position": 0,
+      "arm_sample_index": 5,
+      "block": 5,
+      "permutation_index": 5,
+      "sequence_index": 33,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "B033__K05__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__D_RTDL_PUBLIC_CHECK_ON"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 1,
+      "arm_sample_index": 5,
+      "block": 5,
+      "permutation_index": 5,
+      "sequence_index": 34,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "B034__K05__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 2,
+      "arm_sample_index": 5,
+      "block": 5,
+      "permutation_index": 5,
+      "sequence_index": 35,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "B035__K05__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 0,
+      "arm_sample_index": 6,
+      "block": 6,
+      "permutation_index": 0,
+      "sequence_index": 36,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "B036__K06__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 1,
+      "arm_sample_index": 6,
+      "block": 6,
+      "permutation_index": 0,
+      "sequence_index": 37,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "B037__K06__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON",
+      "arm_position": 2,
+      "arm_sample_index": 6,
+      "block": 6,
+      "permutation_index": 0,
+      "sequence_index": 38,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "B038__K06__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__D_RTDL_PUBLIC_CHECK_ON"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 0,
+      "arm_sample_index": 6,
+      "block": 6,
+      "permutation_index": 2,
+      "sequence_index": 39,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "B039__K06__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 1,
+      "arm_sample_index": 6,
+      "block": 6,
+      "permutation_index": 2,
+      "sequence_index": 40,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "B040__K06__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON",
+      "arm_position": 2,
+      "arm_sample_index": 6,
+      "block": 6,
+      "permutation_index": 2,
+      "sequence_index": 41,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "B041__K06__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__D_RTDL_PUBLIC_CHECK_ON"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 0,
+      "arm_sample_index": 7,
+      "block": 7,
+      "permutation_index": 3,
+      "sequence_index": 42,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "B042__K07__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON",
+      "arm_position": 1,
+      "arm_sample_index": 7,
+      "block": 7,
+      "permutation_index": 3,
+      "sequence_index": 43,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "B043__K07__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__D_RTDL_PUBLIC_CHECK_ON"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 2,
+      "arm_sample_index": 7,
+      "block": 7,
+      "permutation_index": 3,
+      "sequence_index": 44,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "B044__K07__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 0,
+      "arm_sample_index": 7,
+      "block": 7,
+      "permutation_index": 1,
+      "sequence_index": 45,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "B045__K07__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON",
+      "arm_position": 1,
+      "arm_sample_index": 7,
+      "block": 7,
+      "permutation_index": 1,
+      "sequence_index": 46,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "B046__K07__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__D_RTDL_PUBLIC_CHECK_ON"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 2,
+      "arm_sample_index": 7,
+      "block": 7,
+      "permutation_index": 1,
+      "sequence_index": 47,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "B047__K07__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 0,
+      "arm_sample_index": 8,
+      "block": 8,
+      "permutation_index": 2,
+      "sequence_index": 48,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "B048__K08__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 1,
+      "arm_sample_index": 8,
+      "block": 8,
+      "permutation_index": 2,
+      "sequence_index": 49,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "B049__K08__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON",
+      "arm_position": 2,
+      "arm_sample_index": 8,
+      "block": 8,
+      "permutation_index": 2,
+      "sequence_index": 50,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "B050__K08__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__D_RTDL_PUBLIC_CHECK_ON"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON",
+      "arm_position": 0,
+      "arm_sample_index": 8,
+      "block": 8,
+      "permutation_index": 4,
+      "sequence_index": 51,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "B051__K08__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__D_RTDL_PUBLIC_CHECK_ON"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 1,
+      "arm_sample_index": 8,
+      "block": 8,
+      "permutation_index": 4,
+      "sequence_index": 52,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "B052__K08__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 2,
+      "arm_sample_index": 8,
+      "block": 8,
+      "permutation_index": 4,
+      "sequence_index": 53,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "B053__K08__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON",
+      "arm_position": 0,
+      "arm_sample_index": 9,
+      "block": 9,
+      "permutation_index": 5,
+      "sequence_index": 54,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "B054__K09__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__D_RTDL_PUBLIC_CHECK_ON"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 1,
+      "arm_sample_index": 9,
+      "block": 9,
+      "permutation_index": 5,
+      "sequence_index": 55,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "B055__K09__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 2,
+      "arm_sample_index": 9,
+      "block": 9,
+      "permutation_index": 5,
+      "sequence_index": 56,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "B056__K09__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 0,
+      "arm_sample_index": 9,
+      "block": 9,
+      "permutation_index": 3,
+      "sequence_index": 57,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "B057__K09__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON",
+      "arm_position": 1,
+      "arm_sample_index": 9,
+      "block": 9,
+      "permutation_index": 3,
+      "sequence_index": 58,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "B058__K09__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__D_RTDL_PUBLIC_CHECK_ON"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 2,
+      "arm_sample_index": 9,
+      "block": 9,
+      "permutation_index": 3,
+      "sequence_index": 59,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "B059__K09__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON",
+      "arm_position": 0,
+      "arm_sample_index": 10,
+      "block": 10,
+      "permutation_index": 4,
+      "sequence_index": 60,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "B060__K10__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__D_RTDL_PUBLIC_CHECK_ON"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 1,
+      "arm_sample_index": 10,
+      "block": 10,
+      "permutation_index": 4,
+      "sequence_index": 61,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "B061__K10__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 2,
+      "arm_sample_index": 10,
+      "block": 10,
+      "permutation_index": 4,
+      "sequence_index": 62,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "B062__K10__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 0,
+      "arm_sample_index": 10,
+      "block": 10,
+      "permutation_index": 0,
+      "sequence_index": 63,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "B063__K10__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 1,
+      "arm_sample_index": 10,
+      "block": 10,
+      "permutation_index": 0,
+      "sequence_index": 64,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "B064__K10__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON",
+      "arm_position": 2,
+      "arm_sample_index": 10,
+      "block": 10,
+      "permutation_index": 0,
+      "sequence_index": 65,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "B065__K10__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__D_RTDL_PUBLIC_CHECK_ON"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 0,
+      "arm_sample_index": 11,
+      "block": 11,
+      "permutation_index": 1,
+      "sequence_index": 66,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "B066__K11__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON",
+      "arm_position": 1,
+      "arm_sample_index": 11,
+      "block": 11,
+      "permutation_index": 1,
+      "sequence_index": 67,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "B067__K11__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__D_RTDL_PUBLIC_CHECK_ON"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 2,
+      "arm_sample_index": 11,
+      "block": 11,
+      "permutation_index": 1,
+      "sequence_index": 68,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "B068__K11__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON",
+      "arm_position": 0,
+      "arm_sample_index": 11,
+      "block": 11,
+      "permutation_index": 5,
+      "sequence_index": 69,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "B069__K11__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__D_RTDL_PUBLIC_CHECK_ON"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 1,
+      "arm_sample_index": 11,
+      "block": 11,
+      "permutation_index": 5,
+      "sequence_index": 70,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "B070__K11__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 2,
+      "arm_sample_index": 11,
+      "block": 11,
+      "permutation_index": 5,
+      "sequence_index": 71,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "B071__K11__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 0,
+      "arm_sample_index": 12,
+      "block": 12,
+      "permutation_index": 0,
+      "sequence_index": 72,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "B072__K12__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 1,
+      "arm_sample_index": 12,
+      "block": 12,
+      "permutation_index": 0,
+      "sequence_index": 73,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "B073__K12__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON",
+      "arm_position": 2,
+      "arm_sample_index": 12,
+      "block": 12,
+      "permutation_index": 0,
+      "sequence_index": 74,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "B074__K12__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__D_RTDL_PUBLIC_CHECK_ON"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 0,
+      "arm_sample_index": 12,
+      "block": 12,
+      "permutation_index": 2,
+      "sequence_index": 75,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "B075__K12__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 1,
+      "arm_sample_index": 12,
+      "block": 12,
+      "permutation_index": 2,
+      "sequence_index": 76,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "B076__K12__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON",
+      "arm_position": 2,
+      "arm_sample_index": 12,
+      "block": 12,
+      "permutation_index": 2,
+      "sequence_index": 77,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "B077__K12__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__D_RTDL_PUBLIC_CHECK_ON"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 0,
+      "arm_sample_index": 13,
+      "block": 13,
+      "permutation_index": 3,
+      "sequence_index": 78,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "B078__K13__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON",
+      "arm_position": 1,
+      "arm_sample_index": 13,
+      "block": 13,
+      "permutation_index": 3,
+      "sequence_index": 79,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "B079__K13__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__D_RTDL_PUBLIC_CHECK_ON"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 2,
+      "arm_sample_index": 13,
+      "block": 13,
+      "permutation_index": 3,
+      "sequence_index": 80,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "B080__K13__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 0,
+      "arm_sample_index": 13,
+      "block": 13,
+      "permutation_index": 1,
+      "sequence_index": 81,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "B081__K13__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON",
+      "arm_position": 1,
+      "arm_sample_index": 13,
+      "block": 13,
+      "permutation_index": 1,
+      "sequence_index": 82,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "B082__K13__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__D_RTDL_PUBLIC_CHECK_ON"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 2,
+      "arm_sample_index": 13,
+      "block": 13,
+      "permutation_index": 1,
+      "sequence_index": 83,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "B083__K13__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 0,
+      "arm_sample_index": 14,
+      "block": 14,
+      "permutation_index": 2,
+      "sequence_index": 84,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "B084__K14__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 1,
+      "arm_sample_index": 14,
+      "block": 14,
+      "permutation_index": 2,
+      "sequence_index": 85,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "B085__K14__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON",
+      "arm_position": 2,
+      "arm_sample_index": 14,
+      "block": 14,
+      "permutation_index": 2,
+      "sequence_index": 86,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "B086__K14__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__D_RTDL_PUBLIC_CHECK_ON"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON",
+      "arm_position": 0,
+      "arm_sample_index": 14,
+      "block": 14,
+      "permutation_index": 4,
+      "sequence_index": 87,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "B087__K14__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__D_RTDL_PUBLIC_CHECK_ON"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 1,
+      "arm_sample_index": 14,
+      "block": 14,
+      "permutation_index": 4,
+      "sequence_index": 88,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "B088__K14__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 2,
+      "arm_sample_index": 14,
+      "block": 14,
+      "permutation_index": 4,
+      "sequence_index": 89,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "B089__K14__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON",
+      "arm_position": 0,
+      "arm_sample_index": 15,
+      "block": 15,
+      "permutation_index": 5,
+      "sequence_index": 90,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "B090__K15__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__D_RTDL_PUBLIC_CHECK_ON"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 1,
+      "arm_sample_index": 15,
+      "block": 15,
+      "permutation_index": 5,
+      "sequence_index": 91,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "B091__K15__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 2,
+      "arm_sample_index": 15,
+      "block": 15,
+      "permutation_index": 5,
+      "sequence_index": 92,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "B092__K15__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 0,
+      "arm_sample_index": 15,
+      "block": 15,
+      "permutation_index": 3,
+      "sequence_index": 93,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "B093__K15__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON",
+      "arm_position": 1,
+      "arm_sample_index": 15,
+      "block": 15,
+      "permutation_index": 3,
+      "sequence_index": 94,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "B094__K15__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__D_RTDL_PUBLIC_CHECK_ON"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 2,
+      "arm_sample_index": 15,
+      "block": 15,
+      "permutation_index": 3,
+      "sequence_index": 95,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "B095__K15__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON",
+      "arm_position": 0,
+      "arm_sample_index": 16,
+      "block": 16,
+      "permutation_index": 4,
+      "sequence_index": 96,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "B096__K16__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__D_RTDL_PUBLIC_CHECK_ON"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 1,
+      "arm_sample_index": 16,
+      "block": 16,
+      "permutation_index": 4,
+      "sequence_index": 97,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "B097__K16__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 2,
+      "arm_sample_index": 16,
+      "block": 16,
+      "permutation_index": 4,
+      "sequence_index": 98,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 0,
+      "worker_id": "B098__K16__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 0,
+      "arm_sample_index": 16,
+      "block": 16,
+      "permutation_index": 0,
+      "sequence_index": 99,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "B099__K16__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 1,
+      "arm_sample_index": 16,
+      "block": 16,
+      "permutation_index": 0,
+      "sequence_index": 100,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "B100__K16__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON",
+      "arm_position": 2,
+      "arm_sample_index": 16,
+      "block": 16,
+      "permutation_index": 0,
+      "sequence_index": 101,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 1,
+      "worker_id": "B101__K16__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__D_RTDL_PUBLIC_CHECK_ON"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 0,
+      "arm_sample_index": 17,
+      "block": 17,
+      "permutation_index": 1,
+      "sequence_index": 102,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "B102__K17__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__A_DIRECT_CUDA_OPTIX"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON",
+      "arm_position": 1,
+      "arm_sample_index": 17,
+      "block": 17,
+      "permutation_index": 1,
+      "sequence_index": 103,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "B103__K17__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__D_RTDL_PUBLIC_CHECK_ON"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 2,
+      "arm_sample_index": 17,
+      "block": 17,
+      "permutation_index": 1,
+      "sequence_index": 104,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_position": 0,
+      "worker_id": "B104__K17__BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "D_RTDL_PUBLIC_CHECK_ON",
+      "arm_position": 0,
+      "arm_sample_index": 17,
+      "block": 17,
+      "permutation_index": 5,
+      "sequence_index": 105,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "B105__K17__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__D_RTDL_PUBLIC_CHECK_ON"
+    },
+    {
+      "arm": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+      "arm_position": 1,
+      "arm_sample_index": 17,
+      "block": 17,
+      "permutation_index": 5,
+      "sequence_index": 106,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "B106__K17__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"
+    },
+    {
+      "arm": "A_DIRECT_CUDA_OPTIX",
+      "arm_position": 2,
+      "arm_sample_index": 17,
+      "block": 17,
+      "permutation_index": 5,
+      "sequence_index": 107,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_position": 1,
+      "worker_id": "B107__K17__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__A_DIRECT_CUDA_OPTIX"
+    }
+  ],
+  "baseline_schedule_sha256": "038d82df783f772d0d729e5c7fd36c40139a5f40e92a65aed715df3372cd0119",
+  "baseline_tasks": [
+    "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+    "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1"
+  ],
+  "baseline_worker_design": {
+    "close_phase_cross_arm_ratio_forbidden": true,
+    "composite_workers": 108,
+    "direct_close_phase_available": false,
+    "first_and_steady_processes_are_independent": true,
+    "fresh_subworkers_per_composite": 2,
+    "input_materialization_reported_separately_from_setup": true,
+    "setup_total_excludes_input_first_execution_and_close": true,
+    "total_subworkers": 216
+  },
+  "byte_identity_invariant": {
+    "composed_ptx": "EXACT_SHA256_EQUAL",
+    "family_artifacts": "EXACT_SHA256_EQUAL",
+    "family_plan": "EXACT_SHA256_EQUAL",
+    "generated_executable": "EXACT_SHA256_EQUAL",
+    "input": "EXACT_SHA256_EQUAL",
+    "native_library": "EXACT_SHA256_EQUAL",
+    "output": "EXACT_SHA256_EQUAL",
+    "provider_projection": "EXACT_SHA256_EQUAL"
+  },
+  "causal_arms": [
+    "CHECK_ON_COLD_PUBLIC_ADMISSION",
+    "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+  ],
+  "causal_estimand": "within-block CHECK_ON_COLD_PUBLIC_ADMISSION median minus CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION median for the registered provider-projection-and-admission phase, in absolute nanoseconds",
+  "causal_phase_boundaries": [
+    "route_declaration_and_artifact_binding",
+    "provider_projection_and_public_admission_or_unchecked_construction"
+  ],
+  "causal_schedule": [
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 0,
+      "block": 0,
+      "position": 0,
+      "sequence_index": 0,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C000__T0__B00__P0__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 0,
+      "block": 0,
+      "position": 1,
+      "sequence_index": 1,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C001__T0__B00__P1__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 1,
+      "block": 0,
+      "position": 2,
+      "sequence_index": 2,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C002__T0__B00__P2__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 1,
+      "block": 0,
+      "position": 3,
+      "sequence_index": 3,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C003__T0__B00__P3__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 2,
+      "block": 1,
+      "position": 0,
+      "sequence_index": 4,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C004__T0__B01__P0__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 2,
+      "block": 1,
+      "position": 1,
+      "sequence_index": 5,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C005__T0__B01__P1__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 3,
+      "block": 1,
+      "position": 2,
+      "sequence_index": 6,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C006__T0__B01__P2__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 3,
+      "block": 1,
+      "position": 3,
+      "sequence_index": 7,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C007__T0__B01__P3__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 4,
+      "block": 2,
+      "position": 0,
+      "sequence_index": 8,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C008__T0__B02__P0__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 4,
+      "block": 2,
+      "position": 1,
+      "sequence_index": 9,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C009__T0__B02__P1__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 5,
+      "block": 2,
+      "position": 2,
+      "sequence_index": 10,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C010__T0__B02__P2__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 5,
+      "block": 2,
+      "position": 3,
+      "sequence_index": 11,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C011__T0__B02__P3__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 6,
+      "block": 3,
+      "position": 0,
+      "sequence_index": 12,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C012__T0__B03__P0__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 6,
+      "block": 3,
+      "position": 1,
+      "sequence_index": 13,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C013__T0__B03__P1__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 7,
+      "block": 3,
+      "position": 2,
+      "sequence_index": 14,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C014__T0__B03__P2__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 7,
+      "block": 3,
+      "position": 3,
+      "sequence_index": 15,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C015__T0__B03__P3__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 8,
+      "block": 4,
+      "position": 0,
+      "sequence_index": 16,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C016__T0__B04__P0__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 8,
+      "block": 4,
+      "position": 1,
+      "sequence_index": 17,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C017__T0__B04__P1__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 9,
+      "block": 4,
+      "position": 2,
+      "sequence_index": 18,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C018__T0__B04__P2__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 9,
+      "block": 4,
+      "position": 3,
+      "sequence_index": 19,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C019__T0__B04__P3__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 10,
+      "block": 5,
+      "position": 0,
+      "sequence_index": 20,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C020__T0__B05__P0__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 10,
+      "block": 5,
+      "position": 1,
+      "sequence_index": 21,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C021__T0__B05__P1__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 11,
+      "block": 5,
+      "position": 2,
+      "sequence_index": 22,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C022__T0__B05__P2__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 11,
+      "block": 5,
+      "position": 3,
+      "sequence_index": 23,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C023__T0__B05__P3__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 12,
+      "block": 6,
+      "position": 0,
+      "sequence_index": 24,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C024__T0__B06__P0__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 12,
+      "block": 6,
+      "position": 1,
+      "sequence_index": 25,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C025__T0__B06__P1__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 13,
+      "block": 6,
+      "position": 2,
+      "sequence_index": 26,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C026__T0__B06__P2__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 13,
+      "block": 6,
+      "position": 3,
+      "sequence_index": 27,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C027__T0__B06__P3__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 14,
+      "block": 7,
+      "position": 0,
+      "sequence_index": 28,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C028__T0__B07__P0__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 14,
+      "block": 7,
+      "position": 1,
+      "sequence_index": 29,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C029__T0__B07__P1__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 15,
+      "block": 7,
+      "position": 2,
+      "sequence_index": 30,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C030__T0__B07__P2__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 15,
+      "block": 7,
+      "position": 3,
+      "sequence_index": 31,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C031__T0__B07__P3__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 16,
+      "block": 8,
+      "position": 0,
+      "sequence_index": 32,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C032__T0__B08__P0__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 16,
+      "block": 8,
+      "position": 1,
+      "sequence_index": 33,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C033__T0__B08__P1__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 17,
+      "block": 8,
+      "position": 2,
+      "sequence_index": 34,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C034__T0__B08__P2__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 17,
+      "block": 8,
+      "position": 3,
+      "sequence_index": 35,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C035__T0__B08__P3__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 18,
+      "block": 9,
+      "position": 0,
+      "sequence_index": 36,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C036__T0__B09__P0__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 18,
+      "block": 9,
+      "position": 1,
+      "sequence_index": 37,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C037__T0__B09__P1__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 19,
+      "block": 9,
+      "position": 2,
+      "sequence_index": 38,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C038__T0__B09__P2__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 19,
+      "block": 9,
+      "position": 3,
+      "sequence_index": 39,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C039__T0__B09__P3__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 20,
+      "block": 10,
+      "position": 0,
+      "sequence_index": 40,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C040__T0__B10__P0__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 20,
+      "block": 10,
+      "position": 1,
+      "sequence_index": 41,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C041__T0__B10__P1__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 21,
+      "block": 10,
+      "position": 2,
+      "sequence_index": 42,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C042__T0__B10__P2__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 21,
+      "block": 10,
+      "position": 3,
+      "sequence_index": 43,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C043__T0__B10__P3__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 22,
+      "block": 11,
+      "position": 0,
+      "sequence_index": 44,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C044__T0__B11__P0__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 22,
+      "block": 11,
+      "position": 1,
+      "sequence_index": 45,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C045__T0__B11__P1__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 23,
+      "block": 11,
+      "position": 2,
+      "sequence_index": 46,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C046__T0__B11__P2__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 23,
+      "block": 11,
+      "position": 3,
+      "sequence_index": 47,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C047__T0__B11__P3__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 24,
+      "block": 12,
+      "position": 0,
+      "sequence_index": 48,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C048__T0__B12__P0__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 24,
+      "block": 12,
+      "position": 1,
+      "sequence_index": 49,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C049__T0__B12__P1__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 25,
+      "block": 12,
+      "position": 2,
+      "sequence_index": 50,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C050__T0__B12__P2__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 25,
+      "block": 12,
+      "position": 3,
+      "sequence_index": 51,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C051__T0__B12__P3__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 26,
+      "block": 13,
+      "position": 0,
+      "sequence_index": 52,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C052__T0__B13__P0__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 26,
+      "block": 13,
+      "position": 1,
+      "sequence_index": 53,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C053__T0__B13__P1__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 27,
+      "block": 13,
+      "position": 2,
+      "sequence_index": 54,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C054__T0__B13__P2__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 27,
+      "block": 13,
+      "position": 3,
+      "sequence_index": 55,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C055__T0__B13__P3__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 28,
+      "block": 14,
+      "position": 0,
+      "sequence_index": 56,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C056__T0__B14__P0__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 28,
+      "block": 14,
+      "position": 1,
+      "sequence_index": 57,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C057__T0__B14__P1__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 29,
+      "block": 14,
+      "position": 2,
+      "sequence_index": 58,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C058__T0__B14__P2__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 29,
+      "block": 14,
+      "position": 3,
+      "sequence_index": 59,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C059__T0__B14__P3__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 30,
+      "block": 15,
+      "position": 0,
+      "sequence_index": 60,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C060__T0__B15__P0__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 30,
+      "block": 15,
+      "position": 1,
+      "sequence_index": 61,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C061__T0__B15__P1__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 31,
+      "block": 15,
+      "position": 2,
+      "sequence_index": 62,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C062__T0__B15__P2__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 31,
+      "block": 15,
+      "position": 3,
+      "sequence_index": 63,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C063__T0__B15__P3__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 32,
+      "block": 16,
+      "position": 0,
+      "sequence_index": 64,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C064__T0__B16__P0__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 32,
+      "block": 16,
+      "position": 1,
+      "sequence_index": 65,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C065__T0__B16__P1__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 33,
+      "block": 16,
+      "position": 2,
+      "sequence_index": 66,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C066__T0__B16__P2__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 33,
+      "block": 16,
+      "position": 3,
+      "sequence_index": 67,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C067__T0__B16__P3__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 34,
+      "block": 17,
+      "position": 0,
+      "sequence_index": 68,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C068__T0__B17__P0__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 34,
+      "block": 17,
+      "position": 1,
+      "sequence_index": 69,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C069__T0__B17__P1__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 35,
+      "block": 17,
+      "position": 2,
+      "sequence_index": 70,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C070__T0__B17__P2__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 35,
+      "block": 17,
+      "position": 3,
+      "sequence_index": 71,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "task_index": 0,
+      "worker_id": "C071__T0__B17__P3__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 0,
+      "block": 0,
+      "position": 0,
+      "sequence_index": 72,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C072__T1__B00__P0__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 0,
+      "block": 0,
+      "position": 1,
+      "sequence_index": 73,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C073__T1__B00__P1__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 1,
+      "block": 0,
+      "position": 2,
+      "sequence_index": 74,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C074__T1__B00__P2__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 1,
+      "block": 0,
+      "position": 3,
+      "sequence_index": 75,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C075__T1__B00__P3__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 2,
+      "block": 1,
+      "position": 0,
+      "sequence_index": 76,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C076__T1__B01__P0__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 2,
+      "block": 1,
+      "position": 1,
+      "sequence_index": 77,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C077__T1__B01__P1__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 3,
+      "block": 1,
+      "position": 2,
+      "sequence_index": 78,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C078__T1__B01__P2__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 3,
+      "block": 1,
+      "position": 3,
+      "sequence_index": 79,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C079__T1__B01__P3__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 4,
+      "block": 2,
+      "position": 0,
+      "sequence_index": 80,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C080__T1__B02__P0__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 4,
+      "block": 2,
+      "position": 1,
+      "sequence_index": 81,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C081__T1__B02__P1__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 5,
+      "block": 2,
+      "position": 2,
+      "sequence_index": 82,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C082__T1__B02__P2__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 5,
+      "block": 2,
+      "position": 3,
+      "sequence_index": 83,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C083__T1__B02__P3__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 6,
+      "block": 3,
+      "position": 0,
+      "sequence_index": 84,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C084__T1__B03__P0__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 6,
+      "block": 3,
+      "position": 1,
+      "sequence_index": 85,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C085__T1__B03__P1__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 7,
+      "block": 3,
+      "position": 2,
+      "sequence_index": 86,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C086__T1__B03__P2__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 7,
+      "block": 3,
+      "position": 3,
+      "sequence_index": 87,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C087__T1__B03__P3__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 8,
+      "block": 4,
+      "position": 0,
+      "sequence_index": 88,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C088__T1__B04__P0__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 8,
+      "block": 4,
+      "position": 1,
+      "sequence_index": 89,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C089__T1__B04__P1__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 9,
+      "block": 4,
+      "position": 2,
+      "sequence_index": 90,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C090__T1__B04__P2__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 9,
+      "block": 4,
+      "position": 3,
+      "sequence_index": 91,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C091__T1__B04__P3__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 10,
+      "block": 5,
+      "position": 0,
+      "sequence_index": 92,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C092__T1__B05__P0__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 10,
+      "block": 5,
+      "position": 1,
+      "sequence_index": 93,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C093__T1__B05__P1__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 11,
+      "block": 5,
+      "position": 2,
+      "sequence_index": 94,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C094__T1__B05__P2__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 11,
+      "block": 5,
+      "position": 3,
+      "sequence_index": 95,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C095__T1__B05__P3__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 12,
+      "block": 6,
+      "position": 0,
+      "sequence_index": 96,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C096__T1__B06__P0__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 12,
+      "block": 6,
+      "position": 1,
+      "sequence_index": 97,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C097__T1__B06__P1__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 13,
+      "block": 6,
+      "position": 2,
+      "sequence_index": 98,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C098__T1__B06__P2__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 13,
+      "block": 6,
+      "position": 3,
+      "sequence_index": 99,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C099__T1__B06__P3__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 14,
+      "block": 7,
+      "position": 0,
+      "sequence_index": 100,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C100__T1__B07__P0__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 14,
+      "block": 7,
+      "position": 1,
+      "sequence_index": 101,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C101__T1__B07__P1__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 15,
+      "block": 7,
+      "position": 2,
+      "sequence_index": 102,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C102__T1__B07__P2__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 15,
+      "block": 7,
+      "position": 3,
+      "sequence_index": 103,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C103__T1__B07__P3__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 16,
+      "block": 8,
+      "position": 0,
+      "sequence_index": 104,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C104__T1__B08__P0__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 16,
+      "block": 8,
+      "position": 1,
+      "sequence_index": 105,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C105__T1__B08__P1__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 17,
+      "block": 8,
+      "position": 2,
+      "sequence_index": 106,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C106__T1__B08__P2__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 17,
+      "block": 8,
+      "position": 3,
+      "sequence_index": 107,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C107__T1__B08__P3__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 18,
+      "block": 9,
+      "position": 0,
+      "sequence_index": 108,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C108__T1__B09__P0__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 18,
+      "block": 9,
+      "position": 1,
+      "sequence_index": 109,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C109__T1__B09__P1__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 19,
+      "block": 9,
+      "position": 2,
+      "sequence_index": 110,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C110__T1__B09__P2__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 19,
+      "block": 9,
+      "position": 3,
+      "sequence_index": 111,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C111__T1__B09__P3__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 20,
+      "block": 10,
+      "position": 0,
+      "sequence_index": 112,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C112__T1__B10__P0__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 20,
+      "block": 10,
+      "position": 1,
+      "sequence_index": 113,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C113__T1__B10__P1__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 21,
+      "block": 10,
+      "position": 2,
+      "sequence_index": 114,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C114__T1__B10__P2__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 21,
+      "block": 10,
+      "position": 3,
+      "sequence_index": 115,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C115__T1__B10__P3__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 22,
+      "block": 11,
+      "position": 0,
+      "sequence_index": 116,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C116__T1__B11__P0__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 22,
+      "block": 11,
+      "position": 1,
+      "sequence_index": 117,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C117__T1__B11__P1__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 23,
+      "block": 11,
+      "position": 2,
+      "sequence_index": 118,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C118__T1__B11__P2__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 23,
+      "block": 11,
+      "position": 3,
+      "sequence_index": 119,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C119__T1__B11__P3__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 24,
+      "block": 12,
+      "position": 0,
+      "sequence_index": 120,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C120__T1__B12__P0__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 24,
+      "block": 12,
+      "position": 1,
+      "sequence_index": 121,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C121__T1__B12__P1__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 25,
+      "block": 12,
+      "position": 2,
+      "sequence_index": 122,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C122__T1__B12__P2__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 25,
+      "block": 12,
+      "position": 3,
+      "sequence_index": 123,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C123__T1__B12__P3__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 26,
+      "block": 13,
+      "position": 0,
+      "sequence_index": 124,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C124__T1__B13__P0__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 26,
+      "block": 13,
+      "position": 1,
+      "sequence_index": 125,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C125__T1__B13__P1__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 27,
+      "block": 13,
+      "position": 2,
+      "sequence_index": 126,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C126__T1__B13__P2__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 27,
+      "block": 13,
+      "position": 3,
+      "sequence_index": 127,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C127__T1__B13__P3__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 28,
+      "block": 14,
+      "position": 0,
+      "sequence_index": 128,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C128__T1__B14__P0__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 28,
+      "block": 14,
+      "position": 1,
+      "sequence_index": 129,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C129__T1__B14__P1__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 29,
+      "block": 14,
+      "position": 2,
+      "sequence_index": 130,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C130__T1__B14__P2__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 29,
+      "block": 14,
+      "position": 3,
+      "sequence_index": 131,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C131__T1__B14__P3__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 30,
+      "block": 15,
+      "position": 0,
+      "sequence_index": 132,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C132__T1__B15__P0__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 30,
+      "block": 15,
+      "position": 1,
+      "sequence_index": 133,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C133__T1__B15__P1__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 31,
+      "block": 15,
+      "position": 2,
+      "sequence_index": 134,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C134__T1__B15__P2__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 31,
+      "block": 15,
+      "position": 3,
+      "sequence_index": 135,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C135__T1__B15__P3__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 32,
+      "block": 16,
+      "position": 0,
+      "sequence_index": 136,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C136__T1__B16__P0__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 32,
+      "block": 16,
+      "position": 1,
+      "sequence_index": 137,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C137__T1__B16__P1__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 33,
+      "block": 16,
+      "position": 2,
+      "sequence_index": 138,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C138__T1__B16__P2__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 33,
+      "block": 16,
+      "position": 3,
+      "sequence_index": 139,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C139__T1__B16__P3__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 34,
+      "block": 17,
+      "position": 0,
+      "sequence_index": 140,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C140__T1__B17__P0__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 34,
+      "block": 17,
+      "position": 1,
+      "sequence_index": 141,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C141__T1__B17__P1__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 35,
+      "block": 17,
+      "position": 2,
+      "sequence_index": 142,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C142__T1__B17__P2__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 35,
+      "block": 17,
+      "position": 3,
+      "sequence_index": 143,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "task_index": 1,
+      "worker_id": "C143__T1__B17__P3__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 0,
+      "block": 0,
+      "position": 0,
+      "sequence_index": 144,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C144__T2__B00__P0__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 0,
+      "block": 0,
+      "position": 1,
+      "sequence_index": 145,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C145__T2__B00__P1__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 1,
+      "block": 0,
+      "position": 2,
+      "sequence_index": 146,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C146__T2__B00__P2__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 1,
+      "block": 0,
+      "position": 3,
+      "sequence_index": 147,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C147__T2__B00__P3__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 2,
+      "block": 1,
+      "position": 0,
+      "sequence_index": 148,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C148__T2__B01__P0__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 2,
+      "block": 1,
+      "position": 1,
+      "sequence_index": 149,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C149__T2__B01__P1__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 3,
+      "block": 1,
+      "position": 2,
+      "sequence_index": 150,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C150__T2__B01__P2__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 3,
+      "block": 1,
+      "position": 3,
+      "sequence_index": 151,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C151__T2__B01__P3__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 4,
+      "block": 2,
+      "position": 0,
+      "sequence_index": 152,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C152__T2__B02__P0__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 4,
+      "block": 2,
+      "position": 1,
+      "sequence_index": 153,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C153__T2__B02__P1__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 5,
+      "block": 2,
+      "position": 2,
+      "sequence_index": 154,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C154__T2__B02__P2__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 5,
+      "block": 2,
+      "position": 3,
+      "sequence_index": 155,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C155__T2__B02__P3__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 6,
+      "block": 3,
+      "position": 0,
+      "sequence_index": 156,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C156__T2__B03__P0__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 6,
+      "block": 3,
+      "position": 1,
+      "sequence_index": 157,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C157__T2__B03__P1__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 7,
+      "block": 3,
+      "position": 2,
+      "sequence_index": 158,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C158__T2__B03__P2__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 7,
+      "block": 3,
+      "position": 3,
+      "sequence_index": 159,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C159__T2__B03__P3__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 8,
+      "block": 4,
+      "position": 0,
+      "sequence_index": 160,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C160__T2__B04__P0__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 8,
+      "block": 4,
+      "position": 1,
+      "sequence_index": 161,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C161__T2__B04__P1__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 9,
+      "block": 4,
+      "position": 2,
+      "sequence_index": 162,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C162__T2__B04__P2__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 9,
+      "block": 4,
+      "position": 3,
+      "sequence_index": 163,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C163__T2__B04__P3__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 10,
+      "block": 5,
+      "position": 0,
+      "sequence_index": 164,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C164__T2__B05__P0__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 10,
+      "block": 5,
+      "position": 1,
+      "sequence_index": 165,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C165__T2__B05__P1__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 11,
+      "block": 5,
+      "position": 2,
+      "sequence_index": 166,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C166__T2__B05__P2__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 11,
+      "block": 5,
+      "position": 3,
+      "sequence_index": 167,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C167__T2__B05__P3__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 12,
+      "block": 6,
+      "position": 0,
+      "sequence_index": 168,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C168__T2__B06__P0__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 12,
+      "block": 6,
+      "position": 1,
+      "sequence_index": 169,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C169__T2__B06__P1__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 13,
+      "block": 6,
+      "position": 2,
+      "sequence_index": 170,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C170__T2__B06__P2__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 13,
+      "block": 6,
+      "position": 3,
+      "sequence_index": 171,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C171__T2__B06__P3__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 14,
+      "block": 7,
+      "position": 0,
+      "sequence_index": 172,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C172__T2__B07__P0__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 14,
+      "block": 7,
+      "position": 1,
+      "sequence_index": 173,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C173__T2__B07__P1__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 15,
+      "block": 7,
+      "position": 2,
+      "sequence_index": 174,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C174__T2__B07__P2__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 15,
+      "block": 7,
+      "position": 3,
+      "sequence_index": 175,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C175__T2__B07__P3__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 16,
+      "block": 8,
+      "position": 0,
+      "sequence_index": 176,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C176__T2__B08__P0__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 16,
+      "block": 8,
+      "position": 1,
+      "sequence_index": 177,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C177__T2__B08__P1__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 17,
+      "block": 8,
+      "position": 2,
+      "sequence_index": 178,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C178__T2__B08__P2__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 17,
+      "block": 8,
+      "position": 3,
+      "sequence_index": 179,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C179__T2__B08__P3__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 18,
+      "block": 9,
+      "position": 0,
+      "sequence_index": 180,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C180__T2__B09__P0__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 18,
+      "block": 9,
+      "position": 1,
+      "sequence_index": 181,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C181__T2__B09__P1__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 19,
+      "block": 9,
+      "position": 2,
+      "sequence_index": 182,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C182__T2__B09__P2__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 19,
+      "block": 9,
+      "position": 3,
+      "sequence_index": 183,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C183__T2__B09__P3__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 20,
+      "block": 10,
+      "position": 0,
+      "sequence_index": 184,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C184__T2__B10__P0__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 20,
+      "block": 10,
+      "position": 1,
+      "sequence_index": 185,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C185__T2__B10__P1__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 21,
+      "block": 10,
+      "position": 2,
+      "sequence_index": 186,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C186__T2__B10__P2__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 21,
+      "block": 10,
+      "position": 3,
+      "sequence_index": 187,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C187__T2__B10__P3__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 22,
+      "block": 11,
+      "position": 0,
+      "sequence_index": 188,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C188__T2__B11__P0__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 22,
+      "block": 11,
+      "position": 1,
+      "sequence_index": 189,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C189__T2__B11__P1__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 23,
+      "block": 11,
+      "position": 2,
+      "sequence_index": 190,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C190__T2__B11__P2__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 23,
+      "block": 11,
+      "position": 3,
+      "sequence_index": 191,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C191__T2__B11__P3__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 24,
+      "block": 12,
+      "position": 0,
+      "sequence_index": 192,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C192__T2__B12__P0__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 24,
+      "block": 12,
+      "position": 1,
+      "sequence_index": 193,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C193__T2__B12__P1__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 25,
+      "block": 12,
+      "position": 2,
+      "sequence_index": 194,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C194__T2__B12__P2__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 25,
+      "block": 12,
+      "position": 3,
+      "sequence_index": 195,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C195__T2__B12__P3__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 26,
+      "block": 13,
+      "position": 0,
+      "sequence_index": 196,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C196__T2__B13__P0__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 26,
+      "block": 13,
+      "position": 1,
+      "sequence_index": 197,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C197__T2__B13__P1__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 27,
+      "block": 13,
+      "position": 2,
+      "sequence_index": 198,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C198__T2__B13__P2__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 27,
+      "block": 13,
+      "position": 3,
+      "sequence_index": 199,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C199__T2__B13__P3__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 28,
+      "block": 14,
+      "position": 0,
+      "sequence_index": 200,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C200__T2__B14__P0__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 28,
+      "block": 14,
+      "position": 1,
+      "sequence_index": 201,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C201__T2__B14__P1__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 29,
+      "block": 14,
+      "position": 2,
+      "sequence_index": 202,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C202__T2__B14__P2__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 29,
+      "block": 14,
+      "position": 3,
+      "sequence_index": 203,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C203__T2__B14__P3__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 30,
+      "block": 15,
+      "position": 0,
+      "sequence_index": 204,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C204__T2__B15__P0__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 30,
+      "block": 15,
+      "position": 1,
+      "sequence_index": 205,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C205__T2__B15__P1__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 31,
+      "block": 15,
+      "position": 2,
+      "sequence_index": 206,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C206__T2__B15__P2__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 31,
+      "block": 15,
+      "position": 3,
+      "sequence_index": 207,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C207__T2__B15__P3__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 32,
+      "block": 16,
+      "position": 0,
+      "sequence_index": 208,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C208__T2__B16__P0__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 32,
+      "block": 16,
+      "position": 1,
+      "sequence_index": 209,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C209__T2__B16__P1__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 33,
+      "block": 16,
+      "position": 2,
+      "sequence_index": 210,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C210__T2__B16__P2__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 33,
+      "block": 16,
+      "position": 3,
+      "sequence_index": 211,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C211__T2__B16__P3__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 34,
+      "block": 17,
+      "position": 0,
+      "sequence_index": 212,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C212__T2__B17__P0__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 34,
+      "block": 17,
+      "position": 1,
+      "sequence_index": 213,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C213__T2__B17__P1__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_ON_COLD_PUBLIC_ADMISSION",
+      "arm_sample_index": 35,
+      "block": 17,
+      "position": 2,
+      "sequence_index": 214,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C214__T2__B17__P2__CHECK_ON_COLD_PUBLIC_ADMISSION"
+    },
+    {
+      "arm": "CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION",
+      "arm_sample_index": 35,
+      "block": 17,
+      "position": 3,
+      "sequence_index": 215,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "task_index": 2,
+      "worker_id": "C215__T2__B17__P3__CHECK_OFF_COLD_UNCHECKED_CONSTRUCTION"
+    }
+  ],
+  "causal_schedule_sha256": "d0f0f61bafcbdc8dc796af8da29d11c3bb2e0561e46b6464993f4c9284d6cb87",
+  "claim_ceiling": {
+    "admission_delta_explains_entire_setup_gap": false,
+    "checker_off_is_experiment_only_counterfactual": true,
+    "checker_off_is_public_api": false,
+    "checker_off_is_safe_for_users": false,
+    "checker_off_is_supported_optimization": false,
+    "cross_generation_equivalence": false,
+    "external_review_or_consensus": false,
+    "materialization_still_revalidates_identity": true,
+    "one_generation_is_goal5842_complete": false,
+    "sphere_has_direct_pyoptix_or_owl_performance_claim": false,
+    "two_task_baseline_result_generalizes_to_all_rt": false
+  },
+  "cohort_boundary": {
+    "owl_responsibility_analysis_retained": true,
+    "owl_timing": "EXCLUDED_UNLESS_PUBLIC_EXACT_ARM_IS_FROZEN_BEFORE_WORKER_ZERO",
+    "sphere_provider_baseline_timing": "EXCLUDED_NO_INDEPENDENT_EXACT_COMPARATOR",
+    "three_task_admission_ablation": true,
+    "two_task_same_contract_provider_comparison": true
+  },
+  "cold_counterfactual_design": {
+    "check_off": "experiment-only direct capability construction after the same provider.project call, skipping generic admission integrity checks",
+    "check_on": "public route.compile on its first call in a fresh process",
+    "materialization_revalidation_remains_outside_causal_estimand": true,
+    "pre_timing_public_admission": false,
+    "route_factory_first_call_in_both_arms": true
+  },
+  "date": "2026-09-03",
+  "execution_identity_requirements": {
+    "clean_exact_source_commit": true,
+    "cupy_version_and_module_file": true,
+    "device_source_sha256": true,
+    "direct_binary_sha256": true,
+    "exact_python_executable": true,
+    "native_library_and_build_manifest_sha256": true,
+    "optix_and_cuda_header_sha256": true,
+    "pyoptix_distribution_version_repository_commit_and_module_tree": true
+  },
+  "failure_policy": {
+    "failed_or_incorrect_worker_disclosed": true,
+    "failed_or_incorrect_worker_in_aggregate": false,
+    "foreign_gpu_process_aborts_transaction": true,
+    "formal_worker_drop": false,
+    "formal_worker_retry": false,
+    "identity_mismatch_aborts_transaction": true,
+    "post_result_rtdl_only_optimization": false,
+    "post_result_task_or_phase_change": false,
+    "preflight_repairs_before_worker_zero_allowed": true
+  },
+  "gpu_execution_count": 0,
+  "hardware_design": {
+    "cross_machine_raw_time_ratio_forbidden": true,
+    "current_available_ada_pod_counts_as_at_most_one_generation": true,
+    "minimum_distinct_gpu_architecture_generations": 2,
+    "no_fixed_driver_cuda_or_optix_floor": true,
+    "per_hardware_results_reported_separately": true,
+    "same_exact_harness_and_workloads_on_each": true
+  },
+  "post_estimand_reference_admission": {
+    "cannot_warm_registered_timing": true,
+    "included_in_causal_estimand": false,
+    "performed_after_registered_interval_in_both_arms": true,
+    "purpose": "prove exact program identity against normal public admission"
+  },
+  "preregistration_sha256": "6f4cc3123e51d3a1d37193673fb943fca1610ab6536043c3cff774ed4d7f2536",
+  "registered_timing_observation_count": 0,
+  "schema": "rtdl.goal5842.causal_admission_preregistration.v1",
+  "scientific_question": "How much cold post-import generic-family latency is attributable to RTDL's admission integrity checks when both arms perform the same route construction, provider projection, and capability construction?",
+  "source_manifest": [
+    {
+      "bytes": 17741,
+      "path": "experiments/goal5798_premeasurement/direct_measurement.cpp",
+      "sha256": "3807389337891e00911b98c185e718746382a008a1ef6068ca851cb63b177b50"
+    },
+    {
+      "bytes": 440,
+      "path": "experiments/goal5798_premeasurement/build_direct_measurement.sh",
+      "sha256": "dde3222d0cd0807afc9c39c37df1e424523472f68df4b6ab6abf1a7c6451d0f5"
+    },
+    {
+      "bytes": 13187,
+      "path": "experiments/goal5798_premeasurement/pyoptix_worker.py",
+      "sha256": "de01c36f6191fe84ec877c188eebd9d44d0b9c90a88bbda2d03fd71675680a6b"
+    },
+    {
+      "bytes": 4985,
+      "path": "experiments/goal5798_premeasurement/workload.py",
+      "sha256": "5e3ebd4362856f11e69aa43fd628463aed0e06742f97dbd93604c297353cf03b"
+    },
+    {
+      "bytes": 25148,
+      "path": "experiments/goal5796_matched/direct_optix.cpp",
+      "sha256": "2533a14152e441f97690e8e427e97f1be5f1747ee8faa0f181cd05b438a01383"
+    },
+    {
+      "bytes": 5513,
+      "path": "experiments/goal5796_matched/matched_device.cu",
+      "sha256": "dcfb335a2a63ab609d21ce0361d0d530f148d157bd98b122989df0dab51f17a8"
+    },
+    {
+      "bytes": 33366,
+      "path": "experiments/goal5796_matched/pyoptix_baseline.py",
+      "sha256": "76ea1e5334e584611153f9276a5eb5ea041f42abafcf0bc65d73f79e56eeec6b"
+    },
+    {
+      "bytes": 57,
+      "path": "experiments/goal5842_causal_admission/__init__.py",
+      "sha256": "e114ff2bfcd05849bb3ddb956ef7e96319687364aa5fba81380fab52da50d10c"
+    },
+    {
+      "bytes": 3687,
+      "path": "experiments/goal5842_causal_admission/admission_worker.py",
+      "sha256": "c55ab1fef2452bb5efea1236b557abc1cf25e144767a35e0b1205372f3ee12fa"
+    },
+    {
+      "bytes": 23919,
+      "path": "experiments/goal5842_causal_admission/baseline_controller.py",
+      "sha256": "f9494d77fbf8d5a798689c08e039199ef6741fb698f4f6dedae020cbee2c6a6f"
+    },
+    {
+      "bytes": 13153,
+      "path": "experiments/goal5842_causal_admission/baseline_worker.py",
+      "sha256": "77c4413bc1884a42d8cfc3d08f0c46e333f947bf9ac010d291305082b6b51943"
+    },
+    {
+      "bytes": 10727,
+      "path": "experiments/goal5842_causal_admission/controller.py",
+      "sha256": "96ffb5c879773c42b3fa072d973e8b79f5b95e616322bbaa0919576c85ba2ddd"
+    },
+    {
+      "bytes": 20015,
+      "path": "experiments/goal5842_causal_admission/contracts.py",
+      "sha256": "54d835cbcf587597bd786ff3baf7edec489dc7924c22b6e2b02c1a52950a7f3b"
+    },
+    {
+      "bytes": 14131,
+      "path": "experiments/goal5842_causal_admission/runtime.py",
+      "sha256": "29d9b99394e2a524ee2baf8d40c37f74c43ada6cbc08e47e9424d582d5365649"
+    },
+    {
+      "bytes": 7475,
+      "path": "experiments/goal5842_causal_admission/tasks.py",
+      "sha256": "ef5c1206e91a993581447073cfa6cc8f22a2665247503d1f88de9cc316ff0247"
+    },
+    {
+      "bytes": 8314,
+      "path": "scripts/goal5842_bind_execution_authority.py",
+      "sha256": "db347f91c9bd9305c32651d8fcc5771fc3effbd63fa3dd595a02162a3ad7fce6"
+    },
+    {
+      "bytes": 4226,
+      "path": "scripts/goal5842_build_cross_generation_authority.py",
+      "sha256": "d397abf35206683f4f528b9429caecefa545aa064b0e5cd5ea5d680464241008"
+    },
+    {
+      "bytes": 9404,
+      "path": "scripts/goal5842_build_preregistration.py",
+      "sha256": "50ccf56ea8f76781df7677321c3f99ad9a5c48f5fdd2502cd20d8601421266ba"
+    },
+    {
+      "bytes": 6576,
+      "path": "scripts/goal5842_gpu_identity_witness.py",
+      "sha256": "182c3ae4fdb8bdebb91d37e1ee30cde7d540dfa350eb2db6ab8c1bdbccd0bb09"
+    },
+    {
+      "bytes": 31846,
+      "path": "scripts/goal5842_independent_recount.py",
+      "sha256": "d3bf67502a988db8f3145c1a165e0ff6cf682616b2ccac6d57122e2efcb322bb"
+    },
+    {
+      "bytes": 7783,
+      "path": "scripts/goal5842_run_one_generation.py",
+      "sha256": "8c278b0be83f359936236583ed0b2b351da3191f55a00ac2be2b9a195004347d"
+    },
+    {
+      "bytes": 54398,
+      "path": "src/rtdsl/v4_callback_lifecycle.py",
+      "sha256": "76e35a2b246f125b51136bd6f8354a3133b8c207474f9e9aea31fda9c6b240bd"
+    },
+    {
+      "bytes": 35946,
+      "path": "src/rtdsl/v4_family_route_adapters.py",
+      "sha256": "ff576b65d0161b3593a1509614edbf5cdea3aa63a68c63eebd49908f0815e1b8"
+    },
+    {
+      "bytes": 58007,
+      "path": "src/rtdsl/v4_family_schema.py",
+      "sha256": "2d118697d10cb2bc2a8672700ae5a991eaf94e66834bb3e08fd898323720f224"
+    },
+    {
+      "bytes": 41675,
+      "path": "src/rtdsl/v4_generic_family_lifecycle.py",
+      "sha256": "7ac68832de9d1e04fdd6f0f11bfa0de7d6109d892ab22e42c9aeb2825d28228c"
+    },
+    {
+      "bytes": 12086,
+      "path": "src/rtdsl/v4_sphere_any_hit_count_family_route.py",
+      "sha256": "ae529caf95e2618744030a816bd3c3dad3edb02d46c31e8c9cc94f9dc757b939"
+    },
+    {
+      "bytes": 31162,
+      "path": "tests/goal5842_causal_admission_cost_test.py",
+      "sha256": "c3f996b8a38a82c66bc13c0474c1113311ec87320a362bb74c1b035be57f98ea"
+    },
+    {
+      "bytes": 7709,
+      "path": "history/internal_docs/goal5842_causal_admission_cost_20260903/DESIGN.md",
+      "sha256": "8d3dc53c9e3636c333009785fe1c8af33f4cda7aa7d0e6b33f5e5dbb62d77c1a"
+    }
+  ],
+  "source_manifest_sha256": "f609bd20a220fc00c74cc7716ead410275a600a047ce41ea774ab22f4c49fb06",
+  "statistics": {
+    "all_adverse_rows_retained": true,
+    "baseline_block_count": 18,
+    "baseline_summary": "median_of_per-block_arm_ratios",
+    "bootstrap_draws": 10000,
+    "bootstrap_lower_index": 249,
+    "bootstrap_seed_base": 58420000,
+    "bootstrap_upper_index": 9749,
+    "causal_block_count": 18,
+    "causal_block_summary": "median_of_two_per_arm_then_public_admission_minus_unchecked_construction",
+    "negative_control": "route_declaration_on_minus_off_median_nanoseconds",
+    "primary_summary": "median_of_provider_projection_and_admission_phase_block_deltas_absolute_nanoseconds",
+    "ratio_to_near_zero_control_is_forbidden": true,
+    "secondary_summary": "median_of_full_route_to_capability_block_deltas_absolute_nanoseconds",
+    "steady_repetitions": 64,
+    "steady_warmups": 8,
+    "steady_worker_summary": "median_of_64_complete_execution_samples",
+    "success_threshold": null
+  },
+  "status": "FROZEN_BEFORE_TIMING",
+  "task_contracts": [
+    {
+      "full_oracle_sha256": "2fb668490480cbb5d4d9bbf5a8d357435eff5fc6bb3532427ac2726cdaa88c77",
+      "input_sha256": "8606dd3c22d424a7ee2d64b61918f6185d39d8090d1a0a64001de65054d25e0e",
+      "primitive_count": 4096,
+      "public_output_sha256": "2fb668490480cbb5d4d9bbf5a8d357435eff5fc6bb3532427ac2726cdaa88c77",
+      "query_count": 4096,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "three_arm_baseline_included": true
+    },
+    {
+      "full_oracle_sha256": "24f4651b65f2abc93ffae0a8a9603c6eff9e9c6acdc24b65fb20937d6f416d93",
+      "input_sha256": "d994f80418995342d0faa4bda84b42c2ef3604b2798de413a2813dd28dc039a7",
+      "primitive_count": 16384,
+      "public_output_sha256": "2df49102543561c678ce39e05cc6c79ce92c0ea919ad45134d53d19bb67174ef",
+      "query_count": 16384,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "three_arm_baseline_included": true
+    },
+    {
+      "full_oracle_sha256": "10f12038f6836614e72c78a707cfc4202f2566cd3aae7390a854c7fcc86e3329",
+      "input_sha256": "66f66867b86440659a769580018b59078af71435444c9539c38986ecd74492cb",
+      "primitive_count": 16384,
+      "public_output_sha256": "10f12038f6836614e72c78a707cfc4202f2566cd3aae7390a854c7fcc86e3329",
+      "query_count": 16384,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "three_arm_baseline_included": false
+    }
+  ]
+}
