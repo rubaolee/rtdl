@@ -1,0 +1,1283 @@
+{
+  "binding": {
+    "binding_sha256": "c4293003045f54ebe1011fe94af90bfa08474869d2e73c8175bdb6939abdddfa",
+    "commit": "7da8488ce",
+    "file_sha256": "f6753da2ac417a77f842c71ec3e519c13ee91b8b69736fb2bf0077d4c2d390ed"
+  },
+  "claim_boundary": {
+    "complete_artifact_discovery": false,
+    "external_review_or_consensus": false,
+    "field_result_or_paper_claim": false,
+    "search_result_set_only": true
+  },
+  "completed_at_utc": "2026-09-03T08:48:36Z",
+  "execution_boundary": {
+    "artifact_eligibility_decided": false,
+    "candidate_result_metadata_collected": true,
+    "candidate_source_inspected": false,
+    "gpu_or_pod_used": false,
+    "performance_timed": false,
+    "property_classified": false,
+    "repository_cloned": false
+  },
+  "goal": 5839,
+  "provider": "general_web",
+  "query_count": 29,
+  "result_sha256": "03c0baad9fff43344c66532ba236d1d346f3dfe81085db86f1ebca1f821f1fcb",
+  "returned_item_count": 0,
+  "rows": [
+    {
+      "citation_key": "Chan2018ParticlemeshCI",
+      "query": "\"Particle\u2013mesh coupling in the interaction of fluid and deformable bodies with screen space refraction rendering\" \"source code\"",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:27:09Z",
+            "delay_before_attempt_seconds": 0,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T07:26:24Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 2,
+            "completed_at_utc": "2026-09-03T07:27:59Z",
+            "delay_before_attempt_seconds": 5,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T07:27:14Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 3,
+            "completed_at_utc": "2026-09-03T07:29:14Z",
+            "delay_before_attempt_seconds": 30,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T07:28:29Z",
+            "status": "FAILED"
+          }
+        ],
+        "terminal_status": "TERMINAL_REQUEST_FAILURE"
+      },
+      "request_url": "https://html.duckduckgo.com/html/?q=%22Particle%E2%80%93mesh+coupling+in+the+interaction+of+fluid+and+deformable+bodies+with+screen+space+refraction+rendering%22+%22source+code%22",
+      "result": null,
+      "title": "Particle\u2013mesh coupling in the interaction of fluid and deformable bodies with screen space refraction rendering",
+      "work_id": "survey_bib:Chan2018ParticlemeshCI"
+    },
+    {
+      "citation_key": "Cui2024RTSRTAM",
+      "query": "\"RTSRT: Accelerating Monte Carlo Particle Transport with Ray Tracing Shared Cache Architecture\" \"source code\"",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:29:59Z",
+            "delay_before_attempt_seconds": 0,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T07:29:14Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 2,
+            "completed_at_utc": "2026-09-03T07:30:49Z",
+            "delay_before_attempt_seconds": 5,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T07:30:04Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 3,
+            "completed_at_utc": "2026-09-03T07:32:04Z",
+            "delay_before_attempt_seconds": 30,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T07:31:19Z",
+            "status": "FAILED"
+          }
+        ],
+        "terminal_status": "TERMINAL_REQUEST_FAILURE"
+      },
+      "request_url": "https://html.duckduckgo.com/html/?q=%22RTSRT%3A+Accelerating+Monte+Carlo+Particle+Transport+with+Ray+Tracing+Shared+Cache+Architecture%22+%22source+code%22",
+      "result": null,
+      "title": "RTSRT: Accelerating Monte Carlo Particle Transport with Ray Tracing Shared Cache Architecture",
+      "work_id": "survey_bib:Cui2024RTSRTAM"
+    },
+    {
+      "citation_key": "Geng2024RayJoinFA",
+      "query": "\"RayJoin: Fast and Precise Spatial Join\" \"source code\"",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:32:49Z",
+            "delay_before_attempt_seconds": 0,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T07:32:04Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 2,
+            "completed_at_utc": "2026-09-03T07:33:39Z",
+            "delay_before_attempt_seconds": 5,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T07:32:54Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 3,
+            "completed_at_utc": "2026-09-03T07:34:54Z",
+            "delay_before_attempt_seconds": 30,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T07:34:09Z",
+            "status": "FAILED"
+          }
+        ],
+        "terminal_status": "TERMINAL_REQUEST_FAILURE"
+      },
+      "request_url": "https://html.duckduckgo.com/html/?q=%22RayJoin%3A+Fast+and+Precise+Spatial+Join%22+%22source+code%22",
+      "result": null,
+      "title": "RayJoin: Fast and Precise Spatial Join",
+      "work_id": "survey_bib:Geng2024RayJoinFA"
+    },
+    {
+      "citation_key": "Geng2025LibRTSAS",
+      "query": "\"LibRTS: A Spatial Indexing Library by Ray Tracing\" \"source code\"",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:35:39Z",
+            "delay_before_attempt_seconds": 0,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T07:34:54Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 2,
+            "completed_at_utc": "2026-09-03T07:36:29Z",
+            "delay_before_attempt_seconds": 5,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T07:35:44Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 3,
+            "completed_at_utc": "2026-09-03T07:37:44Z",
+            "delay_before_attempt_seconds": 30,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T07:36:59Z",
+            "status": "FAILED"
+          }
+        ],
+        "terminal_status": "TERMINAL_REQUEST_FAILURE"
+      },
+      "request_url": "https://html.duckduckgo.com/html/?q=%22LibRTS%3A+A+Spatial+Indexing+Library+by+Ray+Tracing%22+%22source+code%22",
+      "result": null,
+      "title": "LibRTS: A Spatial Indexing Library by Ray Tracing",
+      "work_id": "survey_bib:Geng2025LibRTSAS"
+    },
+    {
+      "citation_key": "Hashinoki2023ImplementationOR",
+      "query": "\"Implementation of Radio Wave Propagation using RT Cores and Consideration of Programming Models\" \"source code\"",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:38:29Z",
+            "delay_before_attempt_seconds": 0,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T07:37:44Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 2,
+            "completed_at_utc": "2026-09-03T07:39:19Z",
+            "delay_before_attempt_seconds": 5,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T07:38:34Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 3,
+            "completed_at_utc": "2026-09-03T07:40:34Z",
+            "delay_before_attempt_seconds": 30,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T07:39:49Z",
+            "status": "FAILED"
+          }
+        ],
+        "terminal_status": "TERMINAL_REQUEST_FAILURE"
+      },
+      "request_url": "https://html.duckduckgo.com/html/?q=%22Implementation+of+Radio+Wave+Propagation+using+RT+Cores+and+Consideration+of+Programming+Models%22+%22source+code%22",
+      "result": null,
+      "title": "Implementation of Radio Wave Propagation using RT Cores and Consideration of Programming Models",
+      "work_id": "survey_bib:Hashinoki2023ImplementationOR"
+    },
+    {
+      "citation_key": "Henneberg2023RTIndeXEH",
+      "query": "\"RTIndeX: Exploiting Hardware-Accelerated GPU Raytracing for Database Indexing\" \"source code\"",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:41:19Z",
+            "delay_before_attempt_seconds": 0,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T07:40:34Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 2,
+            "completed_at_utc": "2026-09-03T07:42:09Z",
+            "delay_before_attempt_seconds": 5,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T07:41:24Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 3,
+            "completed_at_utc": "2026-09-03T07:43:25Z",
+            "delay_before_attempt_seconds": 30,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T07:42:39Z",
+            "status": "FAILED"
+          }
+        ],
+        "terminal_status": "TERMINAL_REQUEST_FAILURE"
+      },
+      "request_url": "https://html.duckduckgo.com/html/?q=%22RTIndeX%3A+Exploiting+Hardware-Accelerated+GPU+Raytracing+for+Database+Indexing%22+%22source+code%22",
+      "result": null,
+      "title": "RTIndeX: Exploiting Hardware-Accelerated GPU Raytracing for Database Indexing",
+      "work_id": "survey_bib:Henneberg2023RTIndeXEH"
+    },
+    {
+      "citation_key": "Henneberg2024MoreBF",
+      "query": "\"More Bang for Your Buck(et): Fast and Space-Efficient Hardware-Accelerated Coarse-Granular Indexing on GPUs\" \"source code\"",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:44:10Z",
+            "delay_before_attempt_seconds": 0,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T07:43:25Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 2,
+            "completed_at_utc": "2026-09-03T07:45:00Z",
+            "delay_before_attempt_seconds": 5,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T07:44:15Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 3,
+            "completed_at_utc": "2026-09-03T07:46:15Z",
+            "delay_before_attempt_seconds": 30,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T07:45:30Z",
+            "status": "FAILED"
+          }
+        ],
+        "terminal_status": "TERMINAL_REQUEST_FAILURE"
+      },
+      "request_url": "https://html.duckduckgo.com/html/?q=%22More+Bang+for+Your+Buck%28et%29%3A+Fast+and+Space-Efficient+Hardware-Accelerated+Coarse-Granular+Indexing+on+GPUs%22+%22source+code%22",
+      "result": null,
+      "title": "More Bang for Your Buck(et): Fast and Space-Efficient Hardware-Accelerated Coarse-Granular Indexing on GPUs",
+      "work_id": "survey_bib:Henneberg2024MoreBF"
+    },
+    {
+      "citation_key": "Kim2025RTPDPD",
+      "query": "\"RTPD: penetration depth calculation using hardware-accelerated ray-tracing\" \"source code\"",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:47:00Z",
+            "delay_before_attempt_seconds": 0,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T07:46:15Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 2,
+            "completed_at_utc": "2026-09-03T07:47:50Z",
+            "delay_before_attempt_seconds": 5,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T07:47:05Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 3,
+            "completed_at_utc": "2026-09-03T07:49:05Z",
+            "delay_before_attempt_seconds": 30,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T07:48:20Z",
+            "status": "FAILED"
+          }
+        ],
+        "terminal_status": "TERMINAL_REQUEST_FAILURE"
+      },
+      "request_url": "https://html.duckduckgo.com/html/?q=%22RTPD%3A+penetration+depth+calculation+using+hardware-accelerated+ray-tracing%22+%22source+code%22",
+      "result": null,
+      "title": "RTPD: penetration depth calculation using hardware-accelerated ray-tracing",
+      "work_id": "survey_bib:Kim2025RTPDPD"
+    },
+    {
+      "citation_key": "Liu2023JUNOOH",
+      "query": "\"JUNO: Optimizing High-Dimensional Approximate Nearest Neighbour Search with Sparsity-Aware Algorithm and Ray-Tracing Core Mapping\" \"source code\"",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:49:50Z",
+            "delay_before_attempt_seconds": 0,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T07:49:05Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 2,
+            "completed_at_utc": "2026-09-03T07:50:40Z",
+            "delay_before_attempt_seconds": 5,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T07:49:55Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 3,
+            "completed_at_utc": "2026-09-03T07:51:55Z",
+            "delay_before_attempt_seconds": 30,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T07:51:10Z",
+            "status": "FAILED"
+          }
+        ],
+        "terminal_status": "TERMINAL_REQUEST_FAILURE"
+      },
+      "request_url": "https://html.duckduckgo.com/html/?q=%22JUNO%3A+Optimizing+High-Dimensional+Approximate+Nearest+Neighbour+Search+with+Sparsity-Aware+Algorithm+and+Ray-Tracing+Core+Mapping%22+%22source+code%22",
+      "result": null,
+      "title": "JUNO: Optimizing High-Dimensional Approximate Nearest Neighbour Search with Sparsity-Aware Algorithm and Ray-Tracing Core Mapping",
+      "work_id": "survey_bib:Liu2023JUNOOH"
+    },
+    {
+      "citation_key": "Liu2025RayTC",
+      "query": "\"Ray tracing core accelerated high performance implementation for infrared radiation signature simulation using reverse Monte Carlo method\" \"source code\"",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:52:40Z",
+            "delay_before_attempt_seconds": 0,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T07:51:55Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 2,
+            "completed_at_utc": "2026-09-03T07:53:30Z",
+            "delay_before_attempt_seconds": 5,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T07:52:45Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 3,
+            "completed_at_utc": "2026-09-03T07:54:45Z",
+            "delay_before_attempt_seconds": 30,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T07:54:00Z",
+            "status": "FAILED"
+          }
+        ],
+        "terminal_status": "TERMINAL_REQUEST_FAILURE"
+      },
+      "request_url": "https://html.duckduckgo.com/html/?q=%22Ray+tracing+core+accelerated+high+performance+implementation+for+infrared+radiation+signature+simulation+using+reverse+Monte+Carlo+method%22+%22source+code%22",
+      "result": null,
+      "title": "Ray tracing core accelerated high performance implementation for infrared radiation signature simulation using reverse Monte Carlo method",
+      "work_id": "survey_bib:Liu2025RayTC"
+    },
+    {
+      "citation_key": "Lv2024RTScanES",
+      "query": "\"RTScan: Efficient Scan with Ray Tracing Cores\" \"source code\"",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:55:30Z",
+            "delay_before_attempt_seconds": 0,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T07:54:45Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 2,
+            "completed_at_utc": "2026-09-03T07:56:20Z",
+            "delay_before_attempt_seconds": 5,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T07:55:35Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 3,
+            "completed_at_utc": "2026-09-03T07:57:35Z",
+            "delay_before_attempt_seconds": 30,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T07:56:50Z",
+            "status": "FAILED"
+          }
+        ],
+        "terminal_status": "TERMINAL_REQUEST_FAILURE"
+      },
+      "request_url": "https://html.duckduckgo.com/html/?q=%22RTScan%3A+Efficient+Scan+with+Ray+Tracing+Cores%22+%22source+code%22",
+      "result": null,
+      "title": "RTScan: Efficient Scan with Ray Tracing Cores",
+      "work_id": "survey_bib:Lv2024RTScanES"
+    },
+    {
+      "citation_key": "Mandarapu2023ArkadeKN",
+      "query": "\"Arkade: k-Nearest Neighbor Search With Non-Euclidean Distances using GPU Ray Tracing\" \"source code\"",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T07:58:20Z",
+            "delay_before_attempt_seconds": 0,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T07:57:35Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 2,
+            "completed_at_utc": "2026-09-03T07:59:10Z",
+            "delay_before_attempt_seconds": 5,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T07:58:25Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 3,
+            "completed_at_utc": "2026-09-03T08:00:25Z",
+            "delay_before_attempt_seconds": 30,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T07:59:40Z",
+            "status": "FAILED"
+          }
+        ],
+        "terminal_status": "TERMINAL_REQUEST_FAILURE"
+      },
+      "request_url": "https://html.duckduckgo.com/html/?q=%22Arkade%3A+k-Nearest+Neighbor+Search+With+Non-Euclidean+Distances+using+GPU+Ray+Tracing%22+%22source+code%22",
+      "result": null,
+      "title": "Arkade: k-Nearest Neighbor Search With Non-Euclidean Distances using GPU Ray Tracing",
+      "work_id": "survey_bib:Mandarapu2023ArkadeKN"
+    },
+    {
+      "citation_key": "Meneses2024RTXRMQ",
+      "query": "\"Accelerating range minimum queries with ray tracing cores\" \"source code\"",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T08:01:10Z",
+            "delay_before_attempt_seconds": 0,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:00:25Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 2,
+            "completed_at_utc": "2026-09-03T08:02:00Z",
+            "delay_before_attempt_seconds": 5,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:01:15Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 3,
+            "completed_at_utc": "2026-09-03T08:03:15Z",
+            "delay_before_attempt_seconds": 30,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:02:30Z",
+            "status": "FAILED"
+          }
+        ],
+        "terminal_status": "TERMINAL_REQUEST_FAILURE"
+      },
+      "request_url": "https://html.duckduckgo.com/html/?q=%22Accelerating+range+minimum+queries+with+ray+tracing+cores%22+%22source+code%22",
+      "result": null,
+      "title": "Accelerating range minimum queries with ray tracing cores",
+      "work_id": "survey_bib:Meneses2024RTXRMQ"
+    },
+    {
+      "citation_key": "Morrical2019EfficientSS",
+      "query": "\"Efficient Space Skipping and Adaptive Sampling of Unstructured Volumes Using Hardware Accelerated Ray Tracing\" \"source code\"",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T08:04:00Z",
+            "delay_before_attempt_seconds": 0,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:03:15Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 2,
+            "completed_at_utc": "2026-09-03T08:04:50Z",
+            "delay_before_attempt_seconds": 5,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:04:05Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 3,
+            "completed_at_utc": "2026-09-03T08:06:05Z",
+            "delay_before_attempt_seconds": 30,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:05:20Z",
+            "status": "FAILED"
+          }
+        ],
+        "terminal_status": "TERMINAL_REQUEST_FAILURE"
+      },
+      "request_url": "https://html.duckduckgo.com/html/?q=%22Efficient+Space+Skipping+and+Adaptive+Sampling+of+Unstructured+Volumes+Using+Hardware+Accelerated+Ray+Tracing%22+%22source+code%22",
+      "result": null,
+      "title": "Efficient Space Skipping and Adaptive Sampling of Unstructured Volumes Using Hardware Accelerated Ray Tracing",
+      "work_id": "survey_bib:Morrical2019EfficientSS"
+    },
+    {
+      "citation_key": "Morrical2022AcceleratingUM",
+      "query": "\"Accelerating Unstructured Mesh Point Location With RT Cores\" \"source code\"",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T08:06:50Z",
+            "delay_before_attempt_seconds": 0,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:06:05Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 2,
+            "completed_at_utc": "2026-09-03T08:07:40Z",
+            "delay_before_attempt_seconds": 5,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:06:55Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 3,
+            "completed_at_utc": "2026-09-03T08:08:55Z",
+            "delay_before_attempt_seconds": 30,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:08:10Z",
+            "status": "FAILED"
+          }
+        ],
+        "terminal_status": "TERMINAL_REQUEST_FAILURE"
+      },
+      "request_url": "https://html.duckduckgo.com/html/?q=%22Accelerating+Unstructured+Mesh+Point+Location+With+RT+Cores%22+%22source+code%22",
+      "result": null,
+      "title": "Accelerating Unstructured Mesh Point Location With RT Cores",
+      "work_id": "survey_bib:Morrical2022AcceleratingUM"
+    },
+    {
+      "citation_key": "Nagarajan2023RTDBSCANAD",
+      "query": "\"RT-DBSCAN: Accelerating DBSCAN using Ray Tracing Hardware\" \"source code\"",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T08:09:40Z",
+            "delay_before_attempt_seconds": 0,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:08:55Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 2,
+            "completed_at_utc": "2026-09-03T08:10:30Z",
+            "delay_before_attempt_seconds": 5,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:09:45Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 3,
+            "completed_at_utc": "2026-09-03T08:11:45Z",
+            "delay_before_attempt_seconds": 30,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:11:00Z",
+            "status": "FAILED"
+          }
+        ],
+        "terminal_status": "TERMINAL_REQUEST_FAILURE"
+      },
+      "request_url": "https://html.duckduckgo.com/html/?q=%22RT-DBSCAN%3A+Accelerating+DBSCAN+using+Ray+Tracing+Hardware%22+%22source+code%22",
+      "result": null,
+      "title": "RT-DBSCAN: Accelerating DBSCAN using Ray Tracing Hardware",
+      "work_id": "survey_bib:Nagarajan2023RTDBSCANAD"
+    },
+    {
+      "citation_key": "Nagarajan2023RTkNNSUU",
+      "query": "\"RT-kNNS Unbound: Using RT Cores to Accelerate Unrestricted Neighbor Search\" \"source code\"",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T08:12:30Z",
+            "delay_before_attempt_seconds": 0,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:11:45Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 2,
+            "completed_at_utc": "2026-09-03T08:13:20Z",
+            "delay_before_attempt_seconds": 5,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:12:35Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 3,
+            "completed_at_utc": "2026-09-03T08:14:35Z",
+            "delay_before_attempt_seconds": 30,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:13:50Z",
+            "status": "FAILED"
+          }
+        ],
+        "terminal_status": "TERMINAL_REQUEST_FAILURE"
+      },
+      "request_url": "https://html.duckduckgo.com/html/?q=%22RT-kNNS+Unbound%3A+Using+RT+Cores+to+Accelerate+Unrestricted+Neighbor+Search%22+%22source+code%22",
+      "result": null,
+      "title": "RT-kNNS Unbound: Using RT Cores to Accelerate Unrestricted Neighbor Search",
+      "work_id": "survey_bib:Nagarajan2023RTkNNSUU"
+    },
+    {
+      "citation_key": "Nagarajan2025RTBarnesHutAB",
+      "query": "\"{RT-BarnesHut}: Accelerating Barnes-Hut Using Ray-Tracing Hardware\" \"source code\"",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T08:15:20Z",
+            "delay_before_attempt_seconds": 0,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:14:35Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 2,
+            "completed_at_utc": "2026-09-03T08:16:10Z",
+            "delay_before_attempt_seconds": 5,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:15:25Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 3,
+            "completed_at_utc": "2026-09-03T08:17:25Z",
+            "delay_before_attempt_seconds": 30,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:16:40Z",
+            "status": "FAILED"
+          }
+        ],
+        "terminal_status": "TERMINAL_REQUEST_FAILURE"
+      },
+      "request_url": "https://html.duckduckgo.com/html/?q=%22%7BRT-BarnesHut%7D%3A+Accelerating+Barnes-Hut+Using+Ray-Tracing+Hardware%22+%22source+code%22",
+      "result": null,
+      "title": "{RT-BarnesHut}: Accelerating Barnes-Hut Using Ray-Tracing Hardware",
+      "work_id": "survey_bib:Nagarajan2025RTBarnesHutAB"
+    },
+    {
+      "citation_key": "Petrescu2019GPUSR",
+      "query": "\"GPU Sparse Ray-Traced Segmentation\" \"source code\"",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T08:18:10Z",
+            "delay_before_attempt_seconds": 0,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:17:25Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 2,
+            "completed_at_utc": "2026-09-03T08:19:00Z",
+            "delay_before_attempt_seconds": 5,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:18:15Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 3,
+            "completed_at_utc": "2026-09-03T08:20:15Z",
+            "delay_before_attempt_seconds": 30,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:19:30Z",
+            "status": "FAILED"
+          }
+        ],
+        "terminal_status": "TERMINAL_REQUEST_FAILURE"
+      },
+      "request_url": "https://html.duckduckgo.com/html/?q=%22GPU+Sparse+Ray-Traced+Segmentation%22+%22source+code%22",
+      "result": null,
+      "title": "GPU Sparse Ray-Traced Segmentation",
+      "work_id": "survey_bib:Petrescu2019GPUSR"
+    },
+    {
+      "citation_key": "Salmon2019ExploitingHR",
+      "query": "\"Exploiting Hardware-Accelerated Ray Tracing for Monte Carlo Particle Transport with OpenMC\" \"source code\"",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T08:21:00Z",
+            "delay_before_attempt_seconds": 0,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:20:15Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 2,
+            "completed_at_utc": "2026-09-03T08:21:50Z",
+            "delay_before_attempt_seconds": 5,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:21:05Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 3,
+            "completed_at_utc": "2026-09-03T08:23:05Z",
+            "delay_before_attempt_seconds": 30,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:22:20Z",
+            "status": "FAILED"
+          }
+        ],
+        "terminal_status": "TERMINAL_REQUEST_FAILURE"
+      },
+      "request_url": "https://html.duckduckgo.com/html/?q=%22Exploiting+Hardware-Accelerated+Ray+Tracing+for+Monte+Carlo+Particle+Transport+with+OpenMC%22+%22source+code%22",
+      "result": null,
+      "title": "Exploiting Hardware-Accelerated Ray Tracing for Monte Carlo Particle Transport with OpenMC",
+      "work_id": "survey_bib:Salmon2019ExploitingHR"
+    },
+    {
+      "citation_key": "Schwarz2010FastPS",
+      "query": "\"Fast parallel surface and solid voxelization on GPUs\" \"source code\"",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T08:23:50Z",
+            "delay_before_attempt_seconds": 0,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:23:05Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 2,
+            "completed_at_utc": "2026-09-03T08:24:40Z",
+            "delay_before_attempt_seconds": 5,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:23:55Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 3,
+            "completed_at_utc": "2026-09-03T08:25:55Z",
+            "delay_before_attempt_seconds": 30,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:25:10Z",
+            "status": "FAILED"
+          }
+        ],
+        "terminal_status": "TERMINAL_REQUEST_FAILURE"
+      },
+      "request_url": "https://html.duckduckgo.com/html/?q=%22Fast+parallel+surface+and+solid+voxelization+on+GPUs%22+%22source+code%22",
+      "result": null,
+      "title": "Fast parallel surface and solid voxelization on GPUs",
+      "work_id": "survey_bib:Schwarz2010FastPS"
+    },
+    {
+      "citation_key": "Sui2024HardwareAcceleratedRT",
+      "query": "\"Hardware-Accelerated Ray Tracing for Discrete and Continuous Collision Detection on GPUs\" \"source code\"",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T08:26:40Z",
+            "delay_before_attempt_seconds": 0,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:25:55Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 2,
+            "completed_at_utc": "2026-09-03T08:27:30Z",
+            "delay_before_attempt_seconds": 5,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:26:45Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 3,
+            "completed_at_utc": "2026-09-03T08:28:45Z",
+            "delay_before_attempt_seconds": 30,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:28:00Z",
+            "status": "FAILED"
+          }
+        ],
+        "terminal_status": "TERMINAL_REQUEST_FAILURE"
+      },
+      "request_url": "https://html.duckduckgo.com/html/?q=%22Hardware-Accelerated+Ray+Tracing+for+Discrete+and+Continuous+Collision+Detection+on+GPUs%22+%22source+code%22",
+      "result": null,
+      "title": "Hardware-Accelerated Ray Tracing for Discrete and Continuous Collision Detection on GPUs",
+      "work_id": "survey_bib:Sui2024HardwareAcceleratedRT"
+    },
+    {
+      "citation_key": "Wang2022AnGP",
+      "query": "\"An {GPU}-accelerated particle tracking method for Eulerian-Lagrangian simulations using hardware ray tracing cores\" \"source code\"",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T08:29:30Z",
+            "delay_before_attempt_seconds": 0,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:28:45Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 2,
+            "completed_at_utc": "2026-09-03T08:30:20Z",
+            "delay_before_attempt_seconds": 5,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:29:35Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 3,
+            "completed_at_utc": "2026-09-03T08:31:35Z",
+            "delay_before_attempt_seconds": 30,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:30:50Z",
+            "status": "FAILED"
+          }
+        ],
+        "terminal_status": "TERMINAL_REQUEST_FAILURE"
+      },
+      "request_url": "https://html.duckduckgo.com/html/?q=%22An+%7BGPU%7D-accelerated+particle+tracking+method+for+Eulerian-Lagrangian+simulations+using+hardware+ray+tracing+cores%22+%22source+code%22",
+      "result": null,
+      "title": "An {GPU}-accelerated particle tracking method for Eulerian-Lagrangian simulations using hardware ray tracing cores",
+      "work_id": "survey_bib:Wang2022AnGP"
+    },
+    {
+      "citation_key": "Wang2024RTODEO",
+      "query": "\"RTOD: Efficient Outlier Detection With Ray Tracing Cores\" \"source code\"",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T08:32:21Z",
+            "delay_before_attempt_seconds": 0,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:31:35Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 2,
+            "completed_at_utc": "2026-09-03T08:33:11Z",
+            "delay_before_attempt_seconds": 5,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:32:26Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 3,
+            "completed_at_utc": "2026-09-03T08:34:26Z",
+            "delay_before_attempt_seconds": 30,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:33:41Z",
+            "status": "FAILED"
+          }
+        ],
+        "terminal_status": "TERMINAL_REQUEST_FAILURE"
+      },
+      "request_url": "https://html.duckduckgo.com/html/?q=%22RTOD%3A+Efficient+Outlier+Detection+With+Ray+Tracing+Cores%22+%22source+code%22",
+      "result": null,
+      "title": "RTOD: Efficient Outlier Detection With Ray Tracing Cores",
+      "work_id": "survey_bib:Wang2024RTODEO"
+    },
+    {
+      "citation_key": "Xiao2025ACS",
+      "query": "\"A Case Study for Ray Tracing Cores: Performance Insights with Breadth-First Search and Triangle Counting in Graphs\" \"source code\"",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T08:35:11Z",
+            "delay_before_attempt_seconds": 0,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:34:26Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 2,
+            "completed_at_utc": "2026-09-03T08:36:01Z",
+            "delay_before_attempt_seconds": 5,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:35:16Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 3,
+            "completed_at_utc": "2026-09-03T08:37:16Z",
+            "delay_before_attempt_seconds": 30,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:36:31Z",
+            "status": "FAILED"
+          }
+        ],
+        "terminal_status": "TERMINAL_REQUEST_FAILURE"
+      },
+      "request_url": "https://html.duckduckgo.com/html/?q=%22A+Case+Study+for+Ray+Tracing+Cores%3A+Performance+Insights+with+Breadth-First+Search+and+Triangle+Counting+in+Graphs%22+%22source+code%22",
+      "result": null,
+      "title": "A Case Study for Ray Tracing Cores: Performance Insights with Breadth-First Search and Triangle Counting in Graphs",
+      "work_id": "survey_bib:Xiao2025ACS"
+    },
+    {
+      "citation_key": "Zhang2025RTSpMSpMHR",
+      "query": "\"{RTSpMSpM}: Harnessing Ray Tracing for Efficient Sparse Matrix Computations\" \"source code\"",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T08:38:01Z",
+            "delay_before_attempt_seconds": 0,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:37:16Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 2,
+            "completed_at_utc": "2026-09-03T08:38:51Z",
+            "delay_before_attempt_seconds": 5,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:38:06Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 3,
+            "completed_at_utc": "2026-09-03T08:40:06Z",
+            "delay_before_attempt_seconds": 30,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:39:21Z",
+            "status": "FAILED"
+          }
+        ],
+        "terminal_status": "TERMINAL_REQUEST_FAILURE"
+      },
+      "request_url": "https://html.duckduckgo.com/html/?q=%22%7BRTSpMSpM%7D%3A+Harnessing+Ray+Tracing+for+Efficient+Sparse+Matrix+Computations%22+%22source+code%22",
+      "result": null,
+      "title": "{RTSpMSpM}: Harnessing Ray Tracing for Efficient Sparse Matrix Computations",
+      "work_id": "survey_bib:Zhang2025RTSpMSpMHR"
+    },
+    {
+      "citation_key": "zellmann2020accelerating",
+      "query": "\"Accelerating Force-Directed Graph Drawing with {RT} Cores\" \"source code\"",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T08:40:51Z",
+            "delay_before_attempt_seconds": 0,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:40:06Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 2,
+            "completed_at_utc": "2026-09-03T08:41:41Z",
+            "delay_before_attempt_seconds": 5,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:40:56Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 3,
+            "completed_at_utc": "2026-09-03T08:42:56Z",
+            "delay_before_attempt_seconds": 30,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:42:11Z",
+            "status": "FAILED"
+          }
+        ],
+        "terminal_status": "TERMINAL_REQUEST_FAILURE"
+      },
+      "request_url": "https://html.duckduckgo.com/html/?q=%22Accelerating+Force-Directed+Graph+Drawing+with+%7BRT%7D+Cores%22+%22source+code%22",
+      "result": null,
+      "title": "Accelerating Force-Directed Graph Drawing with {RT} Cores",
+      "work_id": "survey_bib:zellmann2020accelerating"
+    },
+    {
+      "citation_key": "zhao2023leveraging",
+      "query": "\"Leveraging ray tracing cores for particle-based simulations on {GPU}s\" \"source code\"",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T08:43:41Z",
+            "delay_before_attempt_seconds": 0,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:42:56Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 2,
+            "completed_at_utc": "2026-09-03T08:44:31Z",
+            "delay_before_attempt_seconds": 5,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:43:46Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 3,
+            "completed_at_utc": "2026-09-03T08:45:46Z",
+            "delay_before_attempt_seconds": 30,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:45:01Z",
+            "status": "FAILED"
+          }
+        ],
+        "terminal_status": "TERMINAL_REQUEST_FAILURE"
+      },
+      "request_url": "https://html.duckduckgo.com/html/?q=%22Leveraging+ray+tracing+cores+for+particle-based+simulations+on+%7BGPU%7Ds%22+%22source+code%22",
+      "result": null,
+      "title": "Leveraging ray tracing cores for particle-based simulations on {GPU}s",
+      "work_id": "survey_bib:zhao2023leveraging"
+    },
+    {
+      "citation_key": "zhu2022rtnn",
+      "query": "\"{RTNN}: accelerating neighbor search using hardware ray tracing\" \"source code\"",
+      "request": {
+        "attempts": [
+          {
+            "attempt": 1,
+            "completed_at_utc": "2026-09-03T08:46:31Z",
+            "delay_before_attempt_seconds": 0,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:45:46Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 2,
+            "completed_at_utc": "2026-09-03T08:47:21Z",
+            "delay_before_attempt_seconds": 5,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:46:36Z",
+            "status": "FAILED"
+          },
+          {
+            "attempt": 3,
+            "completed_at_utc": "2026-09-03T08:48:36Z",
+            "delay_before_attempt_seconds": 30,
+            "error": "<urlopen error timed out>",
+            "error_type": "URLError",
+            "http_status": null,
+            "started_at_utc": "2026-09-03T08:47:51Z",
+            "status": "FAILED"
+          }
+        ],
+        "terminal_status": "TERMINAL_REQUEST_FAILURE"
+      },
+      "request_url": "https://html.duckduckgo.com/html/?q=%22%7BRTNN%7D%3A+accelerating+neighbor+search+using+hardware+ray+tracing%22+%22source+code%22",
+      "result": null,
+      "title": "{RTNN}: accelerating neighbor search using hardware ray tracing",
+      "work_id": "survey_bib:zhu2022rtnn"
+    }
+  ],
+  "schema": "rtdl.goal5839.general_web_discovery_results.v1",
+  "stage": "GENERAL_WEB_DISCOVERY_RESULT_COLLECTION",
+  "started_at_utc": "2026-09-03T07:26:24Z",
+  "status": "COMPLETE_FROZEN_QUERY_SET_WITH_TERMINAL_FAILURES",
+  "successful_query_count": 0,
+  "terminal_failure_count": 29
+}
