@@ -303,7 +303,10 @@ def _capture_executable_identity_preimage(
     ]:
         inline_leaf_sha256 = [
             [
-                _string(role, f"executable.inline_cuda_leaf_sha256[{index}].role"),
+                _string(
+                    getattr(role, "value", role),
+                    f"executable.inline_cuda_leaf_sha256[{index}].role",
+                ),
                 _sha(digest, f"executable.inline_cuda_leaf_sha256[{index}].sha256"),
             ]
             for index, (role, digest) in enumerate(

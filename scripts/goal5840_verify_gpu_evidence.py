@@ -25,7 +25,7 @@ from typing import Any, Mapping, Sequence
 ROOT = Path(__file__).resolve().parents[1]
 CHECKER = ROOT / "scripts/goal5840_independent_target_checker.py"
 MUTATION_RUNNER = ROOT / "scripts/goal5840_mutation_suite.py"
-SUMMARY_DOMAIN = b"rtdl.goal5840.true_optix_target_evidence.v2\0"
+SUMMARY_DOMAIN = b"rtdl.goal5840.true_optix_target_evidence.v3\0"
 TRUST_ROOT_DOMAIN = b"rtdl.goal5840.runtime_trust_roots.v1\0"
 MUTATION_DOMAIN = b"rtdl.goal5840.exact_bundle_mutation_suite.v1\0"
 CHECKER_REPORT_DOMAIN = b"rtdl.goal5840.independent_target_check.v1\0"
@@ -34,7 +34,10 @@ PREREGISTRATION_DOMAIN = (
 )
 PRE_POD_DOMAIN = b"rtdl.goal5840.pre_pod_input_authority.v1\0"
 REPAIR_AUTHORITY_DOMAIN = b"rtdl.goal5840.post_attempt_01_repair_authority.v1\0"
-VERIFICATION_DOMAIN = b"rtdl.goal5840.downloaded_gpu_evidence_verification.v2\0"
+ATTEMPT_02_REPAIR_AUTHORITY_DOMAIN = (
+    b"rtdl.goal5840.post_attempt_02_repair_authority.v1\0"
+)
+VERIFICATION_DOMAIN = b"rtdl.goal5840.downloaded_gpu_evidence_verification.v3\0"
 NATIVE_BUILD_DOMAIN = b"rtdl.goal5838.selected_sphere_optix_provider_build.v2\0"
 SHA256_RE = re.compile(r"[0-9a-f]{64}")
 COMMIT_RE = re.compile(r"[0-9a-f]{40}")
@@ -59,6 +62,7 @@ EXPECTED_MODES = {
 }
 RUNTIME_SOURCE_PATHS = frozenset({
     "scripts/goal5840_capture_gpu_evidence.py",
+    "scripts/goal5840_freeze_attempt02_repair_inputs.py",
     "scripts/goal5840_freeze_gpu_inputs.py",
     "scripts/goal5840_freeze_repair_inputs.py",
     "scripts/goal5840_gpu_cases.py",
@@ -69,7 +73,11 @@ RUNTIME_SOURCE_PATHS = frozenset({
     "src/rtdsl/v4_target_evidence_bundle.py",
     "src/rtdsl/v4_target_evidence_capture.py",
 })
+ATTEMPT_01_REPAIR_RUNTIME_SOURCE_PATHS = RUNTIME_SOURCE_PATHS - {
+    "scripts/goal5840_freeze_attempt02_repair_inputs.py",
+}
 ORIGINAL_RUNTIME_SOURCE_PATHS = RUNTIME_SOURCE_PATHS - {
+    "scripts/goal5840_freeze_attempt02_repair_inputs.py",
     "scripts/goal5840_freeze_repair_inputs.py",
 }
 ATTEMPT_01_SOURCE_COMMIT = "91a8309d9ee234f0315b6640a8dde1db29abe7e9"
@@ -89,6 +97,23 @@ REPAIR_ALLOWED_CHANGED_PATHS = (
     "tests/goal5840_gpu_evidence_verifier_test.py",
     "tests/goal5840_real_target_evidence_capture_test.py",
 )
+ATTEMPT_01_REPAIR_COMMIT = "3dcd92e3c2ebc71faffbcae0783b747b9820d71e"
+ATTEMPT_02_INCIDENT_SHA256 = (
+    "865eeb8d5ccacb4f87fe2a3bd73e99e9c835974e27dcae8ebd294ae12c5c7ade"
+)
+ATTEMPT_02_REPAIR_ALLOWED_CHANGED_PATHS = (
+    "history/internal_docs/goal5840_independent_lowering_refinement_20260903/"
+    "ATTEMPT_02_ENGINEERING_FAILURE.md",
+    "history/internal_docs/goal5840_independent_lowering_refinement_20260903/"
+    "POST_ATTEMPT_02_REPAIR_AUTHORITY.json",
+    "scripts/goal5840_capture_gpu_evidence.py",
+    "scripts/goal5840_freeze_attempt02_repair_inputs.py",
+    "scripts/goal5840_verify_gpu_evidence.py",
+    "src/rtdsl/v4_target_evidence_bundle.py",
+    "tests/goal5840_gpu_evidence_harness_test.py",
+    "tests/goal5840_gpu_evidence_verifier_test.py",
+    "tests/goal5840_target_evidence_bundle_test.py",
+)
 PREREGISTRATION_PATH = (
     "history/internal_docs/goal5840_independent_lowering_refinement_20260903/"
     "GOAL5840_PREREGISTRATION.json"
@@ -105,11 +130,21 @@ REPAIR_AUTHORITY_PATH = (
     "history/internal_docs/goal5840_independent_lowering_refinement_20260903/"
     "POST_ATTEMPT_01_REPAIR_AUTHORITY.json"
 )
+ATTEMPT_02_INCIDENT_PATH = (
+    "history/internal_docs/goal5840_independent_lowering_refinement_20260903/"
+    "ATTEMPT_02_ENGINEERING_FAILURE.md"
+)
+ATTEMPT_02_REPAIR_AUTHORITY_PATH = (
+    "history/internal_docs/goal5840_independent_lowering_refinement_20260903/"
+    "POST_ATTEMPT_02_REPAIR_AUTHORITY.json"
+)
 RESULT_SOURCE_PATHS = RUNTIME_SOURCE_PATHS | {
     PREREGISTRATION_PATH,
     PRE_POD_AUTHORITY_PATH,
     ATTEMPT_01_INCIDENT_PATH,
     REPAIR_AUTHORITY_PATH,
+    ATTEMPT_02_INCIDENT_PATH,
+    ATTEMPT_02_REPAIR_AUTHORITY_PATH,
 }
 GOAL5840_REQUIRED_NATIVE_SYMBOLS = (
     "rtdl_optix_get_version",
@@ -630,7 +665,7 @@ def _verify_repair_authority(
     _require(
         set(source_rows)
         == original_source_paths | {"scripts/goal5840_freeze_repair_inputs.py"}
-        and RUNTIME_SOURCE_PATHS <= set(source_rows),
+        and ATTEMPT_01_REPAIR_RUNTIME_SOURCE_PATHS <= set(source_rows),
         "repair authority source denominator differs",
     )
     original_prereg = _mapping(
@@ -660,6 +695,191 @@ def _verify_repair_authority(
     return {
         str(row["key"]): row
         for row in _sequence(document.get("mode_cases"), "repair_authority.mode_cases")
+        if isinstance(row, dict)
+    }
+
+
+def _verify_attempt02_repair_authority(
+    document: Mapping[str, object], *, root: Path, commit: str,
+    original: Mapping[str, object], prior: Mapping[str, object],
+    preregistration: Mapping[str, object],
+) -> dict[str, dict[str, object]]:
+    _require(
+        document.get("schema")
+        == "rtdl.goal5840.post_attempt_02_repair_authority.v1"
+        and document.get("stage")
+        == "AFTER_ATTEMPT_02_BEFORE_ATTEMPT_03_GPU_EXECUTION"
+        and document.get("status")
+        == "FROZEN_BOUNDED_EXECUTABLE_IDENTITY_REPAIR__NO_ACCEPTED_RESULT",
+        "Attempt-02 repair authority status differs",
+    )
+    _verify_seal(
+        document,
+        "authority_sha256",
+        ATTEMPT_02_REPAIR_AUTHORITY_DOMAIN,
+        "attempt_02_repair_authority",
+    )
+    _require(
+        document.get("route_bundle_group_count") == 3
+        and document.get("required_mode_count") == 4
+        and document.get("mode_cases") == prior.get("mode_cases")
+        and document.get("mode_cases") == original.get("mode_cases")
+        and document.get("goal5838_frozen_core")
+        == prior.get("goal5838_frozen_core")
+        and document.get("preregistration") == prior.get("preregistration"),
+        "Attempt-02 repair authority changed a scientific input",
+    )
+
+    chain = _mapping(
+        document.get("base_chain"), "attempt_02_repair_authority.base_chain"
+    )
+    prior_ref = _mapping(
+        chain.get("post_attempt_01_repair_authority"),
+        "attempt_02_repair_authority.base_chain.post_attempt_01_repair_authority",
+    )
+    incident_ref = _mapping(
+        chain.get("attempt_02_incident"),
+        "attempt_02_repair_authority.base_chain.attempt_02_incident",
+    )
+    prior_blob = _git_blob(root, ATTEMPT_01_REPAIR_COMMIT, REPAIR_AUTHORITY_PATH)
+    incident_blob = _git_blob(root, commit, ATTEMPT_02_INCIDENT_PATH)
+    _require(
+        chain.get("attempt_01_source_commit") == ATTEMPT_01_SOURCE_COMMIT
+        and chain.get("attempt_01_repair_commit") == ATTEMPT_01_REPAIR_COMMIT
+        and prior_ref.get("path") == REPAIR_AUTHORITY_PATH
+        and prior_ref.get("bytes") == len(prior_blob)
+        and prior_ref.get("file_sha256") == hashlib.sha256(prior_blob).hexdigest()
+        and prior_ref.get("authority_sha256") == prior.get("authority_sha256")
+        and incident_ref.get("path") == ATTEMPT_02_INCIDENT_PATH
+        and incident_ref.get("bytes") == len(incident_blob)
+        and incident_ref.get("file_sha256") == ATTEMPT_02_INCIDENT_SHA256
+        and hashlib.sha256(incident_blob).hexdigest()
+        == ATTEMPT_02_INCIDENT_SHA256
+        and incident_ref.get("classification")
+        == (
+            "EVIDENCE_EXECUTABLE_IDENTITY_CANONICALIZATION_"
+            "ENGINEERING_FAILURE"
+        ),
+        "Attempt-02 repair authority base chain differs",
+    )
+    _require(
+        chain.get("formal_observed_counts_through_attempt_02")
+        == {
+            "runner_processes_started": 2,
+            "frozen_modes_entered": 2,
+            "public_route_expected_outputs_returned": 2,
+            "published_evidence_bundles": 0,
+            "published_independent_property_reports": 0,
+            "published_mutation_applications": 0,
+            "accepted_positive_evidence_rows": 0,
+        }
+        and chain.get("post_failure_diagnostics")
+        == {
+            "diagnostic_processes": 2,
+            "diagnostic_mode_executions": 2,
+            "diagnostic_expected_outputs_returned": 2,
+            "diagnostic_evidence_files_published": 0,
+            "accepted_positive_evidence_rows": 0,
+        }
+        and document.get("execution_counts_at_repair_freeze")
+        == {
+            "formal_runner_processes": 2,
+            "formal_entered_modes": 2,
+            "formal_returned_expected_outputs": 2,
+            "diagnostic_processes": 2,
+            "diagnostic_mode_executions": 2,
+            "published_evidence_bundles": 0,
+            "published_independent_property_reports": 0,
+            "published_mutation_applications": 0,
+            "accepted_goal5840_positive_evidence_rows": 0,
+        },
+        "Attempt-02 repair authority execution history differs",
+    )
+
+    scope = _mapping(
+        document.get("repair_scope"), "attempt_02_repair_authority.repair_scope"
+    )
+    _require(
+        scope.get("defect")
+        == "str_derived_enum_role_stringified_to_enum_qualname"
+        and scope.get("repair")
+        == "preserve_and_validate_underlying_string_enum_value"
+        and scope.get("allowed_changed_paths")
+        == list(ATTEMPT_02_REPAIR_ALLOWED_CHANGED_PATHS)
+        and scope.get("exact_changed_paths_since_base")
+        == list(ATTEMPT_02_REPAIR_ALLOWED_CHANGED_PATHS)
+        and all(
+            scope.get(field) is False
+            for field in (
+                "route_change_allowed",
+                "fixture_or_oracle_change_allowed",
+                "declaration_or_control_root_change_allowed",
+                "property_or_mutation_change_allowed",
+                "native_engine_change_allowed",
+                "frozen_core_change_allowed",
+            )
+        ),
+        "Attempt-02 repair authority scope differs",
+    )
+    _require(
+        _git_changed_paths(root, ATTEMPT_01_REPAIR_COMMIT, commit)
+        == ATTEMPT_02_REPAIR_ALLOWED_CHANGED_PATHS,
+        "Attempt-02 repair changed an unapproved path",
+    )
+
+    source_rows = _verify_source_rows(
+        document.get("source_files"),
+        root=root,
+        commit=commit,
+        label="attempt_02_repair_authority.source_files",
+    )
+    prior_source_paths = {
+        str(row.get("path"))
+        for row in _sequence(
+            prior.get("source_files"), "repair_authority.source_files"
+        )
+        if isinstance(row, dict)
+    }
+    _require(
+        set(source_rows)
+        == prior_source_paths | {"scripts/goal5840_freeze_attempt02_repair_inputs.py"}
+        and RUNTIME_SOURCE_PATHS <= set(source_rows),
+        "Attempt-02 repair authority source denominator differs",
+    )
+    prior_prereg = _mapping(
+        prior.get("preregistration"), "repair_authority.preregistration"
+    )
+    current_prereg = _mapping(
+        document.get("preregistration"),
+        "attempt_02_repair_authority.preregistration",
+    )
+    _require(
+        current_prereg == prior_prereg
+        and current_prereg.get("authority_sha256")
+        == preregistration.get("authority_sha256"),
+        "Attempt-02 repair authority preregistration chain differs",
+    )
+    claims = _mapping(
+        document.get("claim_boundary"),
+        "attempt_02_repair_authority.claim_boundary",
+    )
+    _require(
+        claims.get("append_only_engineering_repair_authority") is True
+        and claims.get("two_prior_formal_failures_preserved") is True
+        and claims.get("diagnostic_launches_not_accepted_as_evidence") is True
+        and claims.get("scientific_inputs_unchanged") is True
+        and claims.get("accepted_goal5840_result") is False
+        and claims.get("lowering_preservation_established") is False
+        and claims.get("performance_or_speedup") is False
+        and claims.get("application_correctness") is False
+        and claims.get("external_review_or_consensus") is False,
+        "Attempt-02 repair authority claim boundary differs",
+    )
+    return {
+        str(row["key"]): row
+        for row in _sequence(
+            document.get("mode_cases"), "attempt_02_repair_authority.mode_cases"
+        )
         if isinstance(row, dict)
     }
 
@@ -877,12 +1097,12 @@ def verify(
     directory = result_path.parent
     summary = _load_json(result_path, "RESULT")
     _require(
-        summary.get("schema") == "rtdl.goal5840.true_optix_target_evidence.v2"
+        summary.get("schema") == "rtdl.goal5840.true_optix_target_evidence.v3"
         and summary.get("status")
         == "PASS__FOUR_MODES_TRUE_OPTIX_AND_15_UNIQUE_MUTATIONS_REJECTED",
         "RESULT status differs",
     )
-    _require(summary.get("formal_attempt_number") == 2, "formal attempt differs")
+    _require(summary.get("formal_attempt_number") == 3, "formal attempt differs")
     summary_sha = _verify_seal(summary, "summary_sha256", SUMMARY_DOMAIN, "RESULT")
     repository = _mapping(summary.get("repository"), "RESULT.repository")
     commit = _commit(
@@ -1011,7 +1231,7 @@ def verify(
     )
     repair = _load_committed_json(
         root,
-        commit,
+        ATTEMPT_01_REPAIR_COMMIT,
         repair_ref.get("path"),
         repair_ref.get("file_sha256"),
         "repair_authority",
@@ -1025,7 +1245,7 @@ def verify(
     frozen_modes = _verify_repair_authority(
         repair,
         root=root,
-        commit=commit,
+        commit=ATTEMPT_01_REPAIR_COMMIT,
         original=pre_pod,
         preregistration=prereg,
     )
@@ -1033,6 +1253,58 @@ def verify(
         frozen_modes == original_frozen_modes,
         "repair authority mode rows differ from original freeze",
     )
+
+    attempt02_incident_ref = _mapping(
+        summary.get("attempt_02_engineering_failure"),
+        "RESULT.attempt_02_engineering_failure",
+    )
+    _require(
+        attempt02_incident_ref.get("path") == ATTEMPT_02_INCIDENT_PATH
+        and attempt02_incident_ref.get("accepted_positive_evidence_rows") == 0
+        and attempt02_incident_ref.get("diagnostic_launches_accepted_as_evidence")
+        == 0,
+        "Attempt-02 incident reference differs",
+    )
+    attempt02_incident_blob = _git_blob(root, commit, ATTEMPT_02_INCIDENT_PATH)
+    _require(
+        attempt02_incident_ref.get("bytes") == len(attempt02_incident_blob)
+        and attempt02_incident_ref.get("file_sha256")
+        == ATTEMPT_02_INCIDENT_SHA256
+        and hashlib.sha256(attempt02_incident_blob).hexdigest()
+        == ATTEMPT_02_INCIDENT_SHA256,
+        "Attempt-02 incident bytes differ",
+    )
+
+    attempt02_repair_ref = _mapping(
+        summary.get("post_attempt_02_repair_authority"),
+        "RESULT.post_attempt_02_repair_authority",
+    )
+    attempt02_repair = _load_committed_json(
+        root,
+        commit,
+        attempt02_repair_ref.get("path"),
+        attempt02_repair_ref.get("file_sha256"),
+        "attempt_02_repair_authority",
+    )
+    _require(
+        attempt02_repair_ref.get("path") == ATTEMPT_02_REPAIR_AUTHORITY_PATH
+        and attempt02_repair_ref.get("authority_sha256")
+        == attempt02_repair.get("authority_sha256"),
+        "Attempt-02 repair authority reference differs",
+    )
+    attempt02_frozen_modes = _verify_attempt02_repair_authority(
+        attempt02_repair,
+        root=root,
+        commit=commit,
+        original=pre_pod,
+        prior=repair,
+        preregistration=prereg,
+    )
+    _require(
+        attempt02_frozen_modes == frozen_modes,
+        "Attempt-02 repair authority mode rows differ from original freeze",
+    )
+    frozen_modes = attempt02_frozen_modes
 
     native = _mapping(summary.get("native"), "RESULT.native")
     native_path = native_path.expanduser().resolve(strict=True)
@@ -1185,7 +1457,14 @@ def verify(
         and summary_claims.get(
             "attempt_01_preserved_as_unaccepted_engineering_failure"
         ) is True
-        and summary_claims.get("append_only_repair_authority_verified") is True
+        and summary_claims.get(
+            "attempt_02_preserved_as_unaccepted_engineering_failure"
+        ) is True
+        and summary_claims.get(
+            "diagnostic_launches_preserved_as_unaccepted_engineering_work"
+        ) is True
+        and summary_claims.get("append_only_repair_authority_chain_verified")
+        is True
         and summary_claims.get("general_compiler_soundness") is False
         and summary_claims.get("application_correctness") is False
         and summary_claims.get("performance_or_speedup") is False
@@ -1196,20 +1475,26 @@ def verify(
     _require(
         frozen_core == pre_pod.get("goal5838_frozen_core")
         and frozen_core == repair.get("goal5838_frozen_core")
+        and frozen_core == attempt02_repair.get("goal5838_frozen_core")
         and frozen_core.get("changed_file_count") == 0
         and len(_sequence(frozen_core.get("files"), "frozen_core.files")) == 3,
         "Goal5838 frozen-core preservation differs",
     )
 
     report: dict[str, object] = {
-        "schema": "rtdl.goal5840.downloaded_gpu_evidence_verification.v2",
+        "schema": "rtdl.goal5840.downloaded_gpu_evidence_verification.v3",
         "status": "PASS__DOWNLOADED_GOAL5840_EVIDENCE_REPLAYED_AND_BOUND",
-        "formal_attempt_number": 2,
+        "formal_attempt_number": 3,
         "source_commit": commit,
         "attempt_01_source_commit": ATTEMPT_01_SOURCE_COMMIT,
         "pre_pod_authority_sha256": pre_pod.get("authority_sha256"),
         "attempt_01_incident_file_sha256": ATTEMPT_01_INCIDENT_SHA256,
         "repair_authority_sha256": repair.get("authority_sha256"),
+        "attempt_01_repair_commit": ATTEMPT_01_REPAIR_COMMIT,
+        "attempt_02_incident_file_sha256": ATTEMPT_02_INCIDENT_SHA256,
+        "attempt_02_repair_authority_sha256": attempt02_repair.get(
+            "authority_sha256"
+        ),
         "result_file_sha256": _sha_file(result_path),
         "summary_sha256": summary_sha,
         "native_file_sha256": native_sha,

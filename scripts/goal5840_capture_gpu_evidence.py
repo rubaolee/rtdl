@@ -18,6 +18,13 @@ from typing import Mapping
 from rtdsl.v4_callback_lifecycle import V4Target, V4Toolchain
 from rtdsl.v4_sphere_any_hit_count import V4SphereTarget
 from rtdsl.v4_target_evidence_capture import capture_real_target_evidence_bundle
+from scripts.goal5840_freeze_attempt02_repair_inputs import (
+    ALLOWED_CHANGED_PATHS as ATTEMPT_02_REPAIR_ALLOWED_CHANGED_PATHS,
+    ATTEMPT_02_INCIDENT_SHA256,
+    BASE_COMMIT as ATTEMPT_02_SOURCE_COMMIT,
+    DOMAIN as ATTEMPT_02_REPAIR_AUTHORITY_DOMAIN,
+    SOURCE_PATHS as ATTEMPT_02_REPAIR_AUTHORITY_SOURCE_PATHS,
+)
 from scripts.goal5840_freeze_repair_inputs import (
     ALLOWED_CHANGED_PATHS as REPAIR_ALLOWED_CHANGED_PATHS,
     BASE_COMMIT as ATTEMPT_01_SOURCE_COMMIT,
@@ -36,9 +43,13 @@ PREREGISTRATION = GOAL_ROOT / "GOAL5840_PREREGISTRATION.json"
 PRE_POD_AUTHORITY = GOAL_ROOT / "PRE_POD_INPUT_AUTHORITY.json"
 ATTEMPT_01_INCIDENT = GOAL_ROOT / "ATTEMPT_01_ENGINEERING_FAILURE.md"
 REPAIR_AUTHORITY = GOAL_ROOT / "POST_ATTEMPT_01_REPAIR_AUTHORITY.json"
+ATTEMPT_02_INCIDENT = GOAL_ROOT / "ATTEMPT_02_ENGINEERING_FAILURE.md"
+ATTEMPT_02_REPAIR_AUTHORITY = (
+    GOAL_ROOT / "POST_ATTEMPT_02_REPAIR_AUTHORITY.json"
+)
 CHECKER = ROOT / "scripts/goal5840_independent_target_checker.py"
 MUTATION_RUNNER = ROOT / "scripts/goal5840_mutation_suite.py"
-SUMMARY_DOMAIN = b"rtdl.goal5840.true_optix_target_evidence.v2\0"
+SUMMARY_DOMAIN = b"rtdl.goal5840.true_optix_target_evidence.v3\0"
 TRUST_ROOT_DOMAIN = b"rtdl.goal5840.runtime_trust_roots.v1\0"
 NATIVE_BUILD_DOMAIN = b"rtdl.goal5838.selected_sphere_optix_provider_build.v2\0"
 GOAL5840_REQUIRED_NATIVE_SYMBOLS = (
@@ -75,6 +86,7 @@ NATIVE_BUILD_SOURCE_PATHS = frozenset({
 SOURCE_PATHS = (
     "scripts/goal5840_capture_gpu_evidence.py",
     "scripts/goal5840_freeze_gpu_inputs.py",
+    "scripts/goal5840_freeze_attempt02_repair_inputs.py",
     "scripts/goal5840_freeze_repair_inputs.py",
     "scripts/goal5840_gpu_cases.py",
     "scripts/goal5840_independent_target_checker.py",
@@ -91,6 +103,10 @@ SOURCE_PATHS = (
     "ATTEMPT_01_ENGINEERING_FAILURE.md",
     "history/internal_docs/goal5840_independent_lowering_refinement_20260903/"
     "POST_ATTEMPT_01_REPAIR_AUTHORITY.json",
+    "history/internal_docs/goal5840_independent_lowering_refinement_20260903/"
+    "ATTEMPT_02_ENGINEERING_FAILURE.md",
+    "history/internal_docs/goal5840_independent_lowering_refinement_20260903/"
+    "POST_ATTEMPT_02_REPAIR_AUTHORITY.json",
 )
 
 
@@ -304,6 +320,8 @@ def _verify_repair_authority(
     original: Mapping[str, object],
     preregistration: Mapping[str, object],
     expected_commit: str,
+    *,
+    require_current_source_match: bool = True,
 ) -> dict[str, object]:
     authority = json.loads(REPAIR_AUTHORITY.read_text(encoding="ascii"))
     body = dict(authority)
@@ -421,7 +439,10 @@ def _verify_repair_authority(
             relative in observed_paths
             or len(blob) != row.get("bytes")
             or hashlib.sha256(blob).hexdigest() != row.get("sha256")
-            or (ROOT / relative).read_bytes() != blob
+            or (
+                require_current_source_match
+                and (ROOT / relative).read_bytes() != blob
+            )
         ):
             raise RuntimeError(f"repair source custody differs: {relative}")
         observed_paths.add(relative)
@@ -436,6 +457,179 @@ def _verify_repair_authority(
         != preregistration.get("authority_sha256")
     ):
         raise RuntimeError("repair authority preregistration differs")
+    return authority
+
+
+def _verify_attempt02_repair_authority(
+    original: Mapping[str, object],
+    prior: Mapping[str, object],
+    preregistration: Mapping[str, object],
+    expected_commit: str,
+) -> dict[str, object]:
+    authority = json.loads(
+        ATTEMPT_02_REPAIR_AUTHORITY.read_text(encoding="ascii")
+    )
+    body = dict(authority)
+    observed = body.get("authority_sha256")
+    body["authority_sha256"] = ""
+    expected = hashlib.sha256(
+        ATTEMPT_02_REPAIR_AUTHORITY_DOMAIN + _canonical(body)
+    ).hexdigest()
+    if observed != expected:
+        raise RuntimeError("post-Attempt-02 repair authority seal differs")
+    if (
+        authority.get("schema")
+        != "rtdl.goal5840.post_attempt_02_repair_authority.v1"
+        or authority.get("stage")
+        != "AFTER_ATTEMPT_02_BEFORE_ATTEMPT_03_GPU_EXECUTION"
+        or authority.get("status")
+        != "FROZEN_BOUNDED_EXECUTABLE_IDENTITY_REPAIR__NO_ACCEPTED_RESULT"
+        or authority.get("route_bundle_group_count") != 3
+        or authority.get("required_mode_count") != 4
+        or authority.get("mode_cases") != prior.get("mode_cases")
+        or authority.get("mode_cases") != original.get("mode_cases")
+        or authority.get("goal5838_frozen_core")
+        != prior.get("goal5838_frozen_core")
+        or authority.get("preregistration") != prior.get("preregistration")
+    ):
+        raise RuntimeError("post-Attempt-02 repair authority contract differs")
+
+    chain = authority.get("base_chain")
+    scope = authority.get("repair_scope")
+    counts = authority.get("execution_counts_at_repair_freeze")
+    if not isinstance(chain, dict) or not isinstance(scope, dict):
+        raise RuntimeError("Attempt-02 repair authority chain/scope is absent")
+    prior_ref = chain.get("post_attempt_01_repair_authority")
+    incident_ref = chain.get("attempt_02_incident")
+    formal_counts = chain.get("formal_observed_counts_through_attempt_02")
+    diagnostic_counts = chain.get("post_failure_diagnostics")
+    if not isinstance(prior_ref, dict) or not isinstance(incident_ref, dict):
+        raise RuntimeError("Attempt-02 repair authority references are absent")
+    if (
+        chain.get("attempt_01_source_commit") != ATTEMPT_01_SOURCE_COMMIT
+        or chain.get("attempt_01_repair_commit") != ATTEMPT_02_SOURCE_COMMIT
+        or prior_ref
+        != {
+            "path": str(REPAIR_AUTHORITY.relative_to(ROOT)),
+            "bytes": REPAIR_AUTHORITY.stat().st_size,
+            "file_sha256": _sha_file(REPAIR_AUTHORITY),
+            "authority_sha256": prior.get("authority_sha256"),
+        }
+        or incident_ref.get("path")
+        != str(ATTEMPT_02_INCIDENT.relative_to(ROOT))
+        or incident_ref.get("bytes") != ATTEMPT_02_INCIDENT.stat().st_size
+        or incident_ref.get("file_sha256") != ATTEMPT_02_INCIDENT_SHA256
+        or _sha_file(ATTEMPT_02_INCIDENT) != ATTEMPT_02_INCIDENT_SHA256
+        or incident_ref.get("classification")
+        != (
+            "EVIDENCE_EXECUTABLE_IDENTITY_CANONICALIZATION_"
+            "ENGINEERING_FAILURE"
+        )
+    ):
+        raise RuntimeError("Attempt-02 repair authority identity chain differs")
+    if formal_counts != {
+        "runner_processes_started": 2,
+        "frozen_modes_entered": 2,
+        "public_route_expected_outputs_returned": 2,
+        "published_evidence_bundles": 0,
+        "published_independent_property_reports": 0,
+        "published_mutation_applications": 0,
+        "accepted_positive_evidence_rows": 0,
+    } or diagnostic_counts != {
+        "diagnostic_processes": 2,
+        "diagnostic_mode_executions": 2,
+        "diagnostic_expected_outputs_returned": 2,
+        "diagnostic_evidence_files_published": 0,
+        "accepted_positive_evidence_rows": 0,
+    } or counts != {
+        "formal_runner_processes": 2,
+        "formal_entered_modes": 2,
+        "formal_returned_expected_outputs": 2,
+        "diagnostic_processes": 2,
+        "diagnostic_mode_executions": 2,
+        "published_evidence_bundles": 0,
+        "published_independent_property_reports": 0,
+        "published_mutation_applications": 0,
+        "accepted_goal5840_positive_evidence_rows": 0,
+    }:
+        raise RuntimeError("Attempt-02 repair execution history differs")
+    if (
+        scope.get("defect")
+        != "str_derived_enum_role_stringified_to_enum_qualname"
+        or scope.get("repair")
+        != "preserve_and_validate_underlying_string_enum_value"
+        or scope.get("allowed_changed_paths")
+        != list(ATTEMPT_02_REPAIR_ALLOWED_CHANGED_PATHS)
+        or scope.get("exact_changed_paths_since_base")
+        != list(ATTEMPT_02_REPAIR_ALLOWED_CHANGED_PATHS)
+        or any(
+            scope.get(field) is not False
+            for field in (
+                "route_change_allowed",
+                "fixture_or_oracle_change_allowed",
+                "declaration_or_control_root_change_allowed",
+                "property_or_mutation_change_allowed",
+                "native_engine_change_allowed",
+                "frozen_core_change_allowed",
+            )
+        )
+    ):
+        raise RuntimeError("Attempt-02 repair scope differs")
+    changed = tuple(sorted(
+        line
+        for line in _git(
+            "diff",
+            "--name-only",
+            f"{ATTEMPT_02_SOURCE_COMMIT}..{expected_commit}",
+            "--",
+        ).splitlines()
+        if line
+    ))
+    if changed != ATTEMPT_02_REPAIR_ALLOWED_CHANGED_PATHS:
+        raise RuntimeError(f"Attempt-02 committed repair paths differ: {changed!r}")
+
+    source_rows = authority.get("source_files")
+    if not isinstance(source_rows, list):
+        raise RuntimeError("Attempt-02 repair source inventory is absent")
+    observed_paths = set()
+    for row in source_rows:
+        if not isinstance(row, dict) or not isinstance(row.get("path"), str):
+            raise RuntimeError("Attempt-02 repair source row is invalid")
+        relative = str(row["path"])
+        blob = _git_blob(expected_commit, relative)
+        if (
+            relative in observed_paths
+            or len(blob) != row.get("bytes")
+            or hashlib.sha256(blob).hexdigest() != row.get("sha256")
+            or (ROOT / relative).read_bytes() != blob
+        ):
+            raise RuntimeError(
+                f"Attempt-02 repair source custody differs: {relative}"
+            )
+        observed_paths.add(relative)
+    if observed_paths != set(ATTEMPT_02_REPAIR_AUTHORITY_SOURCE_PATHS):
+        raise RuntimeError("Attempt-02 repair source denominator differs")
+
+    frozen_preregistration = authority.get("preregistration")
+    claims = authority.get("claim_boundary")
+    if (
+        not isinstance(frozen_preregistration, dict)
+        or frozen_preregistration.get("file_sha256")
+        != _sha_file(PREREGISTRATION)
+        or frozen_preregistration.get("authority_sha256")
+        != preregistration.get("authority_sha256")
+        or not isinstance(claims, dict)
+        or claims.get("append_only_engineering_repair_authority") is not True
+        or claims.get("two_prior_formal_failures_preserved") is not True
+        or claims.get("diagnostic_launches_not_accepted_as_evidence") is not True
+        or claims.get("scientific_inputs_unchanged") is not True
+        or claims.get("accepted_goal5840_result") is not False
+        or claims.get("lowering_preservation_established") is not False
+        or claims.get("performance_or_speedup") is not False
+        or claims.get("application_correctness") is not False
+        or claims.get("external_review_or_consensus") is not False
+    ):
+        raise RuntimeError("Attempt-02 repair preregistration/claims differ")
     return authority
 
 
@@ -599,7 +793,16 @@ def run(args: argparse.Namespace) -> dict[str, object]:
     preregistration = json.loads(PREREGISTRATION.read_text(encoding="ascii"))
     input_authority = _verify_pre_pod_authority()
     repair_authority = _verify_repair_authority(
-        input_authority, preregistration, args.expected_commit
+        input_authority,
+        preregistration,
+        ATTEMPT_02_SOURCE_COMMIT,
+        require_current_source_match=False,
+    )
+    attempt02_repair_authority = _verify_attempt02_repair_authority(
+        input_authority,
+        repair_authority,
+        preregistration,
+        args.expected_commit,
     )
     frozen_preregistration = input_authority.get("preregistration")
     if (
@@ -643,7 +846,7 @@ def run(args: argparse.Namespace) -> dict[str, object]:
         compute_capability=args.compute_capability,
     )
     expected_by_key = {
-        row["key"]: row for row in repair_authority["mode_cases"]
+        row["key"]: row for row in attempt02_repair_authority["mode_cases"]
     }
     if len(expected_by_key) != 4:
         raise RuntimeError("pre-pod authority has duplicate or missing mode keys")
@@ -801,9 +1004,9 @@ def run(args: argparse.Namespace) -> dict[str, object]:
     )
     repository = _finish_repository_custody(repository, args.expected_commit)
     summary: dict[str, object] = {
-        "schema": "rtdl.goal5840.true_optix_target_evidence.v2",
+        "schema": "rtdl.goal5840.true_optix_target_evidence.v3",
         "status": "PASS__FOUR_MODES_TRUE_OPTIX_AND_15_UNIQUE_MUTATIONS_REJECTED",
-        "formal_attempt_number": 2,
+        "formal_attempt_number": 3,
         "repository": repository,
         "machine": machine,
         "runtime": {
@@ -846,6 +1049,18 @@ def run(args: argparse.Namespace) -> dict[str, object]:
             "file_sha256": _sha_file(REPAIR_AUTHORITY),
             "authority_sha256": repair_authority["authority_sha256"],
         },
+        "attempt_02_engineering_failure": {
+            "path": str(ATTEMPT_02_INCIDENT.relative_to(ROOT)),
+            "bytes": ATTEMPT_02_INCIDENT.stat().st_size,
+            "file_sha256": _sha_file(ATTEMPT_02_INCIDENT),
+            "accepted_positive_evidence_rows": 0,
+            "diagnostic_launches_accepted_as_evidence": 0,
+        },
+        "post_attempt_02_repair_authority": {
+            "path": str(ATTEMPT_02_REPAIR_AUTHORITY.relative_to(ROOT)),
+            "file_sha256": _sha_file(ATTEMPT_02_REPAIR_AUTHORITY),
+            "authority_sha256": attempt02_repair_authority["authority_sha256"],
+        },
         "frozen_core": frozen_core,
         "route_bundle_group_count": 3,
         "required_mode_bundle_count": len(mode_records),
@@ -869,7 +1084,9 @@ def run(args: argparse.Namespace) -> dict[str, object]:
             "four_required_modes": True,
             "target_side_structural_refinement_evidence": True,
             "attempt_01_preserved_as_unaccepted_engineering_failure": True,
-            "append_only_repair_authority_verified": True,
+            "attempt_02_preserved_as_unaccepted_engineering_failure": True,
+            "diagnostic_launches_preserved_as_unaccepted_engineering_work": True,
+            "append_only_repair_authority_chain_verified": True,
             "general_compiler_soundness": False,
             "application_correctness": False,
             "performance_or_speedup": False,

@@ -13,6 +13,7 @@ from rtdsl.v4_callback_lifecycle import (
     TriangleReductionProtocol,
     standard_protocol_physical_plan,
 )
+from rtdsl.v4_callback_ir import CallbackRole
 from rtdsl.v4_family_route_adapters import (
     bounded_relation_family_route,
     triangle_reduction_family_route,
@@ -209,6 +210,124 @@ def _bundle() -> dict[str, object]:
 
 
 class Goal5840TargetEvidenceBundleTest(unittest.TestCase):
+    def test_capture_preserves_bounded_inline_string_enum_role_value(self) -> None:
+        source = "def bounds(out_effect_tag):\n    out_effect_tag[0] = 1\n"
+        leaf_ptx = (
+            ".version 8.0\n.target sm_89\n.address_size 64\n"
+            ".visible .func bounds() { ret; }\n"
+        )
+        wrapper_source = "inline bounds; optixGetPrimitiveIndex();"
+        wrapper_ptx = (
+            ".version 8.0\n.target sm_89\n.address_size 64\n"
+            ".visible .entry raygen() { ret; }\n"
+        )
+        source_sha = hashlib.sha256(source.encode()).hexdigest()
+        leaf_ptx_sha = hashlib.sha256(leaf_ptx.encode()).hexdigest()
+        wrapper_source_sha = hashlib.sha256(wrapper_source.encode()).hexdigest()
+        wrapper_ptx_sha = hashlib.sha256(wrapper_ptx.encode()).hexdigest()
+        inline_cuda_sha = _sha("inline-cuda")
+        inline_leaf_sha = _sha("inline-bounds")
+        generated_metadata = {
+            "schema": "rtdl.v4.generated_formal_numba_leaf.v1",
+            "role": CallbackRole.BOUNDS.value,
+            "abi_name": "bounds",
+            "generated_source_sha256": source_sha,
+            "callback_ir_sha256": _sha("bounded-ir"),
+            "callback_effect_digest": _sha("bounded-effect"),
+            "callback_abi_sha256": _sha("bounded-abi"),
+            "nonce_word": 1,
+            "numeric_mode": "strict",
+            "compiler_function_count": 1,
+        }
+        generated_leaf = SimpleNamespace(
+            role=CallbackRole.BOUNDS,
+            generated_source=source,
+            to_dict=lambda include_source=False: dict(generated_metadata),
+        )
+        compiled_leaf = SimpleNamespace(
+            schema="rtdl.v4.device_function.v1",
+            role=CallbackRole.BOUNDS.value,
+            abi_name="bounds",
+            compute_capability=(8, 9),
+            numeric_mode="strict",
+            generated_source_sha256=source_sha,
+            ir_sha256=_sha("bounded-ir"),
+            ptx=leaf_ptx,
+            ptx_sha256=leaf_ptx_sha,
+            ptx_version="8.0",
+            ptx_target="sm_89",
+            external_symbols=(),
+            numba_version="test",
+            python_version="3.12",
+            nonce_word=1,
+            compiler_function_count=1,
+        )
+        wrapper = SimpleNamespace(
+            schema="rtdl.v4.generated_optix_wrapper.v1",
+            physical_template="bounded-test",
+            callback_ir_sha256=_sha("bounded-ir"),
+            callback_abi_sha256=_sha("bounded-abi"),
+            source=wrapper_source,
+            source_sha256=wrapper_source_sha,
+            role_symbols=((CallbackRole.BOUNDS.value, "bounds"),),
+            linked_role_symbols=False,
+        )
+        composed = SimpleNamespace(
+            ptx=wrapper_ptx,
+            ptx_sha256=wrapper_ptx_sha,
+            ptx_version="8.0",
+            ptx_target="sm_89",
+            address_size="64",
+            wrapper_ptx_sha256=wrapper_ptx_sha,
+            leaf_bindings=(),
+            stripped_wrapper_externs=(),
+            stripped_numba_environments=(),
+        )
+        preimage = {
+            "schema": "rtdl.v4.verified_bounded_relation_executable.v1",
+            "authority": _sha("bounded-authority"),
+            "contract": _sha("bounded-contract"),
+            "abi": _sha("bounded-abi"),
+            "wrapper_source": wrapper_source_sha,
+            "wrapper_ptx": wrapper_ptx_sha,
+            "generated": [source_sha],
+            "compiled": [leaf_ptx_sha],
+            "inline_cuda": inline_cuda_sha,
+            "inline_cuda_leaves": [[CallbackRole.BOUNDS.value, inline_leaf_sha]],
+            "composed": wrapper_ptx_sha,
+            "options": ["--gpu-architecture=compute_89"],
+            "nvrtc_log": _sha("bounded-log"),
+        }
+        executable = SimpleNamespace(
+            schema=preimage["schema"],
+            authority_sha256=preimage["authority"],
+            contract_sha256=preimage["contract"],
+            abi_sha256=preimage["abi"],
+            wrapper=wrapper,
+            wrapper_ptx=wrapper_ptx,
+            generated_leaves=(generated_leaf,),
+            compiled_leaves=(compiled_leaf,),
+            inline_cuda_source_sha256=inline_cuda_sha,
+            inline_cuda_leaf_sha256=((CallbackRole.BOUNDS, inline_leaf_sha),),
+            composed=composed,
+            compiler_options=tuple(preimage["options"]),
+            nvrtc_log_sha256=preimage["nvrtc_log"],
+            executable_sha256=_digest(preimage),
+        )
+
+        captured = capture_generated_target_artifacts(executable)
+
+        self.assertEqual(
+            captured["executable_metadata"]["identity_preimage"], preimage
+        )
+        self.assertEqual(
+            captured["executable_metadata"]["executable_sha256"],
+            _digest(preimage),
+        )
+        old_preimage = copy.deepcopy(preimage)
+        old_preimage["inline_cuda_leaves"][0][0] = str(CallbackRole.BOUNDS)
+        self.assertNotEqual(_digest(old_preimage), _digest(preimage))
+
     def test_capture_reconstructs_exact_triangle_executable_preimage(self) -> None:
         source = "def leaf(out_effect_tag):\n    out_effect_tag[0] = 5\n"
         leaf_ptx = (
