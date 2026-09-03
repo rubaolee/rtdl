@@ -18,6 +18,7 @@ from typing import Mapping
 from rtdsl.v4_callback_lifecycle import V4Target, V4Toolchain
 from rtdsl.v4_sphere_any_hit_count import V4SphereTarget
 from rtdsl.v4_target_evidence_capture import capture_real_target_evidence_bundle
+from scripts import goal5840_freeze_attempt05_repair_inputs as attempt05_freezer
 from scripts import goal5840_freeze_attempt04_repair_inputs as attempt04_freezer
 from scripts import goal5840_freeze_attempt03_repair_inputs as attempt03_freezer
 from scripts.goal5840_freeze_attempt02_repair_inputs import (
@@ -57,9 +58,13 @@ ATTEMPT_04_INCIDENT = GOAL_ROOT / "ATTEMPT_04_ENGINEERING_FAILURE.md"
 ATTEMPT_04_REPAIR_AUTHORITY = (
     GOAL_ROOT / "POST_ATTEMPT_04_REPAIR_AUTHORITY.json"
 )
+ATTEMPT_05_INCIDENT = GOAL_ROOT / "ATTEMPT_05_ENGINEERING_FAILURE.md"
+ATTEMPT_05_REPAIR_AUTHORITY = (
+    GOAL_ROOT / "POST_ATTEMPT_05_REPAIR_AUTHORITY.json"
+)
 CHECKER = ROOT / "scripts/goal5840_independent_target_checker.py"
 MUTATION_RUNNER = ROOT / "scripts/goal5840_mutation_suite.py"
-SUMMARY_DOMAIN = b"rtdl.goal5840.true_optix_target_evidence.v5\0"
+SUMMARY_DOMAIN = b"rtdl.goal5840.true_optix_target_evidence.v6\0"
 TRUST_ROOT_DOMAIN = b"rtdl.goal5840.runtime_trust_roots.v1\0"
 NATIVE_BUILD_DOMAIN = b"rtdl.goal5838.selected_sphere_optix_provider_build.v2\0"
 GOAL5840_REQUIRED_NATIVE_SYMBOLS = (
@@ -99,6 +104,7 @@ SOURCE_PATHS = (
     "scripts/goal5840_freeze_attempt02_repair_inputs.py",
     "scripts/goal5840_freeze_attempt03_repair_inputs.py",
     "scripts/goal5840_freeze_attempt04_repair_inputs.py",
+    "scripts/goal5840_freeze_attempt05_repair_inputs.py",
     "scripts/goal5840_freeze_repair_inputs.py",
     "scripts/goal5840_gpu_cases.py",
     "scripts/goal5840_independent_target_checker.py",
@@ -131,6 +137,10 @@ SOURCE_PATHS = (
     "ATTEMPT_04_ENGINEERING_FAILURE.md",
     "history/internal_docs/goal5840_independent_lowering_refinement_20260903/"
     "POST_ATTEMPT_04_REPAIR_AUTHORITY.json",
+    "history/internal_docs/goal5840_independent_lowering_refinement_20260903/"
+    "ATTEMPT_05_ENGINEERING_FAILURE.md",
+    "history/internal_docs/goal5840_independent_lowering_refinement_20260903/"
+    "POST_ATTEMPT_05_REPAIR_AUTHORITY.json",
 )
 
 
@@ -241,6 +251,30 @@ def _outside_repository(path: Path) -> Path:
         raise FileExistsError(result)
     result.mkdir(parents=True)
     return result
+
+
+def _bind_optix_runtime_library(native: Path) -> str:
+    """Bind every route to the exact DSO already admitted by ``--native``."""
+
+    exact = native.expanduser().resolve(strict=True)
+    configured = os.environ.get("RTDL_OPTIX_LIB")
+    if configured:
+        candidate = Path(configured).expanduser()
+        if not candidate.is_absolute():
+            raise RuntimeError("RTDL_OPTIX_LIB must be an absolute path")
+        try:
+            candidate = candidate.resolve(strict=True)
+        except OSError as error:
+            raise RuntimeError(
+                f"RTDL_OPTIX_LIB cannot be resolved: {configured}"
+            ) from error
+        if candidate != exact:
+            raise RuntimeError(
+                "RTDL_OPTIX_LIB differs from the admitted --native DSO: "
+                f"{candidate} != {exact}"
+            )
+    os.environ["RTDL_OPTIX_LIB"] = str(exact)
+    return str(exact)
 
 
 def _machine() -> dict[str, object]:
@@ -771,6 +805,69 @@ def _verify_attempt04_repair_authority(
     return authority
 
 
+def _verify_attempt05_repair_authority(
+    original: Mapping[str, object],
+    prior: Mapping[str, object],
+    preregistration: Mapping[str, object],
+    expected_commit: str,
+) -> dict[str, object]:
+    authority = json.loads(
+        ATTEMPT_05_REPAIR_AUTHORITY.read_text(encoding="ascii")
+    )
+    rebuilt = attempt05_freezer.build_authority(
+        str(authority.get("frozen_at_utc"))
+    )
+    if authority != rebuilt:
+        raise RuntimeError("post-Attempt-05 repair authority differs")
+    frozen_preregistration = authority.get("preregistration")
+    if (
+        _git("rev-parse", "HEAD") != expected_commit
+        or authority.get("schema")
+        != "rtdl.goal5840.post_attempt_05_repair_authority.v1"
+        or authority.get("stage")
+        != "AFTER_ATTEMPT_05_BEFORE_ATTEMPT_06_GPU_EXECUTION"
+        or authority.get("status")
+        != (
+            "FROZEN_EXACT_NATIVE_ENVIRONMENT_BINDING_REPAIR__"
+            "NO_COMPLETE_ACCEPTED_RESULT"
+        )
+        or authority.get("route_bundle_group_count") != 3
+        or authority.get("required_mode_count") != 4
+        or authority.get("mode_cases") != prior.get("mode_cases")
+        or authority.get("mode_cases") != original.get("mode_cases")
+        or authority.get("preregistration") != prior.get("preregistration")
+        or not isinstance(frozen_preregistration, dict)
+        or frozen_preregistration.get("authority_sha256")
+        != preregistration.get("authority_sha256")
+    ):
+        raise RuntimeError("post-Attempt-05 repair authority contract differs")
+    claims = authority.get("claim_boundary")
+    counts = authority.get("execution_counts_at_repair_freeze")
+    scope = authority.get("repair_scope")
+    if (
+        not isinstance(claims, dict)
+        or not isinstance(counts, dict)
+        or not isinstance(scope, dict)
+        or claims.get("five_prior_formal_failures_preserved") is not True
+        or claims.get("attempt_05_three_per_mode_acceptances_preserved")
+        is not True
+        or claims.get("attempt_05_incomplete_run_not_accepted_as_goal_result")
+        is not True
+        or claims.get("scientific_inputs_unchanged") is not True
+        or claims.get("accepted_goal5840_result") is not False
+        or counts.get("formal_runner_processes") != 5
+        or counts.get("published_evidence_bundles") != 6
+        or counts.get("published_independent_property_reports") != 6
+        or counts.get("independently_accepted_per_mode_reports") != 4
+        or counts.get("accepted_goal5840_complete_results") != 0
+        or scope.get("absent_matching_and_conflicting_bindings_tested")
+        is not True
+        or scope.get("exact_binding_recorded_in_result") is not True
+    ):
+        raise RuntimeError("post-Attempt-05 repair history/claims differ")
+    return authority
+
+
 def _verify_native_build(path: Path, native: Path, expected_commit: str) -> dict[str, object]:
     manifest_path = path.expanduser().resolve(strict=True)
     document = json.loads(manifest_path.read_text(encoding="ascii"))
@@ -943,14 +1040,17 @@ def run(args: argparse.Namespace) -> dict[str, object]:
         attempt03_freezer.BASE_COMMIT,
         require_current_source_match=False,
     )
-    attempt04_repair_authority = _verify_attempt04_repair_authority(
-        input_authority,
-        attempt02_repair_authority,
-        preregistration,
-        args.expected_commit,
-    )
     attempt03_repair_authority = json.loads(
         ATTEMPT_03_REPAIR_AUTHORITY.read_text(encoding="ascii")
+    )
+    attempt04_repair_authority = json.loads(
+        ATTEMPT_04_REPAIR_AUTHORITY.read_text(encoding="ascii")
+    )
+    attempt05_repair_authority = _verify_attempt05_repair_authority(
+        input_authority,
+        attempt04_repair_authority,
+        preregistration,
+        args.expected_commit,
     )
     frozen_preregistration = input_authority.get("preregistration")
     if (
@@ -965,6 +1065,7 @@ def run(args: argparse.Namespace) -> dict[str, object]:
     native_build = _verify_native_build(
         args.native_build_manifest, native, args.expected_commit
     )
+    runtime_optix_library = _bind_optix_runtime_library(native)
     native_symbols = _verify_goal5840_native_symbols(native)
     machine = _machine()
     _progress(
@@ -994,7 +1095,7 @@ def run(args: argparse.Namespace) -> dict[str, object]:
         compute_capability=args.compute_capability,
     )
     expected_by_key = {
-        row["key"]: row for row in attempt04_repair_authority["mode_cases"]
+        row["key"]: row for row in attempt05_repair_authority["mode_cases"]
     }
     if len(expected_by_key) != 4:
         raise RuntimeError("pre-pod authority has duplicate or missing mode keys")
@@ -1152,9 +1253,9 @@ def run(args: argparse.Namespace) -> dict[str, object]:
     )
     repository = _finish_repository_custody(repository, args.expected_commit)
     summary: dict[str, object] = {
-        "schema": "rtdl.goal5840.true_optix_target_evidence.v5",
+        "schema": "rtdl.goal5840.true_optix_target_evidence.v6",
         "status": "PASS__FOUR_MODES_TRUE_OPTIX_AND_15_UNIQUE_MUTATIONS_REJECTED",
-        "formal_attempt_number": 5,
+        "formal_attempt_number": 6,
         "repository": repository,
         "machine": machine,
         "runtime": {
@@ -1167,6 +1268,7 @@ def run(args: argparse.Namespace) -> dict[str, object]:
             "compute_capability": args.compute_capability,
             "optix_include": str(toolchain.optix_include),
             "cuda_include": str(toolchain.cuda_include),
+            "rtdl_optix_lib": runtime_optix_library,
         },
         "native": {
             "path": str(native),
@@ -1238,6 +1340,23 @@ def run(args: argparse.Namespace) -> dict[str, object]:
             "file_sha256": _sha_file(ATTEMPT_04_REPAIR_AUTHORITY),
             "authority_sha256": attempt04_repair_authority["authority_sha256"],
         },
+        "attempt_05_engineering_failure": {
+            "path": str(ATTEMPT_05_INCIDENT.relative_to(ROOT)),
+            "bytes": ATTEMPT_05_INCIDENT.stat().st_size,
+            "file_sha256": _sha_file(ATTEMPT_05_INCIDENT),
+            "published_failure_bundle_count": 3,
+            "published_independent_report_count": 3,
+            "independently_accepted_per_mode_report_count": 3,
+            "independent_property_pass_count": 15,
+            "sphere_optix_launches": 0,
+            "accepted_complete_goal5840_result_count": 0,
+            "post_failure_gpu_diagnostic_launches": 0,
+        },
+        "post_attempt_05_repair_authority": {
+            "path": str(ATTEMPT_05_REPAIR_AUTHORITY.relative_to(ROOT)),
+            "file_sha256": _sha_file(ATTEMPT_05_REPAIR_AUTHORITY),
+            "authority_sha256": attempt05_repair_authority["authority_sha256"],
+        },
         "frozen_core": frozen_core,
         "route_bundle_group_count": 3,
         "required_mode_bundle_count": len(mode_records),
@@ -1267,6 +1386,10 @@ def run(args: argparse.Namespace) -> dict[str, object]:
             "attempt_04_mode_01_acceptance_preserved_without_goal_promotion": (
                 True
             ),
+            "attempt_05_preserved_as_incomplete_engineering_failure": True,
+            "attempt_05_three_per_mode_acceptances_preserved_without_goal_"
+            "promotion": True,
+            "exact_native_dso_bound_to_runtime_lookup": True,
             "diagnostic_launches_preserved_as_unaccepted_engineering_work": True,
             "append_only_repair_authority_chain_verified": True,
             "general_compiler_soundness": False,

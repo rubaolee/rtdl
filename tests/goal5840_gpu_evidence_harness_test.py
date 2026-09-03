@@ -2,14 +2,18 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 from pathlib import Path
+import tempfile
 import unittest
 from unittest.mock import patch
 
+from scripts import goal5840_capture_gpu_evidence as capture
 from scripts import goal5840_freeze_gpu_inputs as freezer
 from scripts import goal5840_freeze_attempt02_repair_inputs as attempt02_freezer
 from scripts import goal5840_freeze_attempt03_repair_inputs as attempt03_freezer
 from scripts import goal5840_freeze_attempt04_repair_inputs as attempt04_freezer
+from scripts import goal5840_freeze_attempt05_repair_inputs as attempt05_freezer
 from scripts import goal5840_freeze_repair_inputs as repair_freezer
 from scripts.goal5840_gpu_cases import goal5840_mode_cases
 
@@ -77,9 +81,44 @@ class Goal5840GpuEvidenceHarnessTest(unittest.TestCase):
         self.assertIn("POST_ATTEMPT_03_REPAIR_AUTHORITY.json", source)
         self.assertIn("POST_ATTEMPT_04_REPAIR_AUTHORITY.json", source)
         self.assertIn("_verify_attempt04_repair_authority(", source)
-        self.assertIn("rtdl.goal5840.true_optix_target_evidence.v5", source)
+        self.assertIn("POST_ATTEMPT_05_REPAIR_AUTHORITY.json", source)
+        self.assertIn("_verify_attempt05_repair_authority(", source)
+        self.assertIn("rtdl.goal5840.true_optix_target_evidence.v6", source)
         self.assertIn('sys.executable,\n            "-I"', source)
         self.assertIn("EXACT_BUNDLE_MUTATION_RESULT.json", source)
+
+    def test_exact_native_runtime_binding_is_fail_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name).resolve()
+            admitted = root / "admitted.so"
+            conflicting = root / "conflicting.so"
+            admitted.write_bytes(b"admitted")
+            conflicting.write_bytes(b"conflicting")
+
+            with patch.dict(os.environ, {}, clear=True):
+                observed = capture._bind_optix_runtime_library(admitted)
+                self.assertEqual(observed, str(admitted))
+                self.assertEqual(os.environ["RTDL_OPTIX_LIB"], str(admitted))
+                self.assertEqual(
+                    capture._bind_optix_runtime_library(admitted),
+                    str(admitted),
+                )
+
+            with patch.dict(
+                os.environ,
+                {"RTDL_OPTIX_LIB": str(conflicting)},
+                clear=True,
+            ):
+                with self.assertRaisesRegex(RuntimeError, "differs"):
+                    capture._bind_optix_runtime_library(admitted)
+
+            with patch.dict(
+                os.environ,
+                {"RTDL_OPTIX_LIB": "relative.so"},
+                clear=True,
+            ):
+                with self.assertRaisesRegex(RuntimeError, "absolute"):
+                    capture._bind_optix_runtime_library(admitted)
 
     def test_repair_authority_is_append_only_and_preserves_scientific_inputs(
         self,
@@ -247,6 +286,76 @@ class Goal5840GpuEvidenceHarnessTest(unittest.TestCase):
         body["authority_sha256"] = ""
         expected = hashlib.sha256(
             attempt04_freezer.DOMAIN
+            + json.dumps(
+                body,
+                sort_keys=True,
+                separators=(",", ":"),
+                ensure_ascii=True,
+                allow_nan=False,
+            ).encode("ascii")
+        ).hexdigest()
+        self.assertEqual(observed, expected)
+
+    def test_attempt05_repair_authority_preserves_three_partial_acceptances(
+        self,
+    ) -> None:
+        expected_before_output = tuple(
+            path
+            for path in attempt05_freezer.ALLOWED_CHANGED_PATHS
+            if not path.endswith("POST_ATTEMPT_05_REPAIR_AUTHORITY.json")
+        )
+
+        def changed_paths(base: str, revision: str | None = None):
+            if revision is None:
+                self.assertEqual(base, attempt05_freezer.BASE_COMMIT)
+                return expected_before_output
+            self.assertEqual(base, attempt04_freezer.BASE_COMMIT)
+            self.assertEqual(revision, attempt05_freezer.BASE_COMMIT)
+            return tuple(sorted(attempt04_freezer.ALLOWED_CHANGED_PATHS))
+
+        with patch.object(Path, "exists", return_value=False), patch.object(
+            attempt05_freezer,
+            "_changed_paths",
+            side_effect=changed_paths,
+        ):
+            document = attempt05_freezer.build_authority(
+                "2026-09-03T13:00:00Z"
+            )
+        prior = json.loads(
+            attempt05_freezer.PRIOR_REPAIR_AUTHORITY.read_text(encoding="ascii")
+        )
+        self.assertEqual(document["mode_cases"], prior["mode_cases"])
+        self.assertEqual(
+            document["goal5838_frozen_core"], prior["goal5838_frozen_core"]
+        )
+        counts = document["base_chain"][
+            "formal_observed_counts_through_attempt_05"
+        ]
+        self.assertEqual(counts["runner_processes_started"], 5)
+        self.assertEqual(counts["published_evidence_bundles"], 6)
+        self.assertEqual(counts["independently_accepted_per_mode_reports"], 4)
+        self.assertEqual(counts["accepted_complete_goal5840_results"], 0)
+        incident = document["base_chain"]["attempt_05_incident"]
+        self.assertEqual(len(incident["published_failure_artifacts"]), 6)
+        self.assertEqual(
+            incident["independently_accepted_per_mode_report_count"], 3
+        )
+        self.assertEqual(incident["sphere_optix_launches"], 0)
+        self.assertEqual(
+            document["repair_scope"][
+                "absent_matching_and_conflicting_bindings_tested"
+            ],
+            True,
+        )
+        self.assertEqual(
+            document["repair_scope"]["exact_changed_paths_since_base"],
+            list(attempt05_freezer.ALLOWED_CHANGED_PATHS),
+        )
+        body = dict(document)
+        observed = body["authority_sha256"]
+        body["authority_sha256"] = ""
+        expected = hashlib.sha256(
+            attempt05_freezer.DOMAIN
             + json.dumps(
                 body,
                 sort_keys=True,

@@ -15,6 +15,7 @@ from scripts import goal5840_freeze_gpu_inputs as freeze
 from scripts import goal5840_freeze_attempt02_repair_inputs as attempt02_freeze
 from scripts import goal5840_freeze_attempt03_repair_inputs as attempt03_freeze
 from scripts import goal5840_freeze_attempt04_repair_inputs as attempt04_freeze
+from scripts import goal5840_freeze_attempt05_repair_inputs as attempt05_freeze
 from scripts import goal5840_freeze_repair_inputs as repair_freeze
 from scripts import goal5840_independent_target_checker as checker
 from scripts import goal5840_mutation_suite as mutation_suite
@@ -255,7 +256,11 @@ class Goal5840GpuEvidenceVerifierTest(unittest.TestCase):
             set(attempt02_freeze.SOURCE_PATHS),
         )
         self.assertLessEqual(
-            verifier.RUNTIME_SOURCE_PATHS, set(attempt04_freeze.SOURCE_PATHS)
+            verifier.ATTEMPT_04_REPAIR_RUNTIME_SOURCE_PATHS,
+            set(attempt04_freeze.SOURCE_PATHS),
+        )
+        self.assertLessEqual(
+            verifier.RUNTIME_SOURCE_PATHS, set(attempt05_freeze.SOURCE_PATHS)
         )
         self.assertEqual(
             capture.REPAIR_ALLOWED_CHANGED_PATHS,
@@ -280,6 +285,10 @@ class Goal5840GpuEvidenceVerifierTest(unittest.TestCase):
         self.assertEqual(
             tuple(attempt04_freeze.ALLOWED_CHANGED_PATHS),
             verifier.ATTEMPT_04_REPAIR_ALLOWED_CHANGED_PATHS,
+        )
+        self.assertEqual(
+            tuple(attempt05_freeze.ALLOWED_CHANGED_PATHS),
+            verifier.ATTEMPT_05_REPAIR_ALLOWED_CHANGED_PATHS,
         )
         self.assertEqual(
             capture.GOAL5840_REQUIRED_NATIVE_SYMBOLS,
@@ -531,7 +540,7 @@ class Goal5840GpuEvidenceVerifierTest(unittest.TestCase):
             source_blobs = {
                 path: (Path(path).read_bytes() if Path(path).is_file() else b"")
                 for path in (
-                    set(attempt04_freeze.SOURCE_PATHS)
+                    set(attempt05_freeze.SOURCE_PATHS)
                     | verifier.NATIVE_BUILD_SOURCE_PATHS
                     | set(frozen_paths)
                 )
@@ -841,6 +850,10 @@ class Goal5840GpuEvidenceVerifierTest(unittest.TestCase):
             attempt04_authority_source_paths = (
                 attempt03_authority_source_paths
                 | {"scripts/goal5840_freeze_attempt04_repair_inputs.py"}
+            )
+            attempt05_authority_source_paths = (
+                attempt04_authority_source_paths
+                | {"scripts/goal5840_freeze_attempt05_repair_inputs.py"}
             )
             attempt03_repair: dict[str, object] = {
                 "schema": (
@@ -1181,6 +1194,238 @@ class Goal5840GpuEvidenceVerifierTest(unittest.TestCase):
                 json.dumps(attempt04_repair, indent=2, sort_keys=True) + "\n"
             ).encode("ascii")
 
+            attempt05_incident_path = verifier.ATTEMPT_05_INCIDENT_PATH
+            attempt05_incident_bytes = Path(attempt05_incident_path).read_bytes()
+            self.assertEqual(
+                hashlib.sha256(attempt05_incident_bytes).hexdigest(),
+                verifier.ATTEMPT_05_INCIDENT_SHA256,
+            )
+            attempt05_failure_artifacts = [
+                {
+                    "name": (
+                        "mode_01_capacity_fail_closed_collection_bundle.json"
+                    ),
+                    "bytes": 1364072,
+                    "file_sha256": (
+                        "944f4dd717af365e31ad5d624dbd7ed5a8b71a8e5d6c6304"
+                        "c5336c348b6242c3"
+                    ),
+                    "internal_sha256": (
+                        "1f93c9f763f28b72247b88e048ca50a2d62f1431e32da732"
+                        "dfb59662f8a55531"
+                    ),
+                },
+                {
+                    "name": (
+                        "mode_01_capacity_fail_closed_collection_"
+                        "independent_check.json"
+                    ),
+                    "bytes": 3967,
+                    "file_sha256": (
+                        "246a867b35a793439926e65e9791d4874525ba937bb793d9b"
+                        "737b215094439da"
+                    ),
+                    "internal_sha256": (
+                        "aba46744b907f16c44700cd39c14c67b3de3c048217a9c9b"
+                        "02c1bb2a05596b90"
+                    ),
+                    "verdict": "ACCEPT",
+                    "property_pass_count": 5,
+                },
+                {
+                    "name": "mode_02_all_hit_count_bundle.json",
+                    "bytes": 806033,
+                    "file_sha256": (
+                        "84645793be976b021bea510365d6936a67df056dbc837ed710"
+                        "093ea8ac191645"
+                    ),
+                    "internal_sha256": (
+                        "1818eaa45162b94215060e688639d32e9f0ffde2c521354f"
+                        "955abe6f586e67c7"
+                    ),
+                },
+                {
+                    "name": "mode_02_all_hit_count_independent_check.json",
+                    "bytes": 3917,
+                    "file_sha256": (
+                        "423e6f61672cf91110089c38409e1befee4fb26d50610421"
+                        "4580d5d577fe1431"
+                    ),
+                    "internal_sha256": (
+                        "40d760e5932e6e7e66f0e4618a29a32d620c2b8a4b743192"
+                        "065842447c0bb8b7"
+                    ),
+                    "verdict": "ACCEPT",
+                    "property_pass_count": 5,
+                },
+                {
+                    "name": "mode_03_weighted_hit_count_bundle.json",
+                    "bytes": 806393,
+                    "file_sha256": (
+                        "990eb99867984d959afdd2d65ba804d4813620e74108b3531"
+                        "bd0e8de192b64a4"
+                    ),
+                    "internal_sha256": (
+                        "14de9b974fb0f873899aaa782a4febc9118661a5b6ec05134"
+                        "02bd4149f3203c5"
+                    ),
+                },
+                {
+                    "name": (
+                        "mode_03_weighted_hit_count_independent_check.json"
+                    ),
+                    "bytes": 3917,
+                    "file_sha256": (
+                        "8c2ee19cfea08ab192f9c0bab89dda9d35383f0044bdcd101"
+                        "785e932753213db"
+                    ),
+                    "internal_sha256": (
+                        "449af0f81b8e434f1fd525ac50bcd485bbe58afe962453971"
+                        "12cb4ea08b3dc87"
+                    ),
+                    "verdict": "ACCEPT",
+                    "property_pass_count": 5,
+                },
+            ]
+            attempt05_repair: dict[str, object] = {
+                "schema": (
+                    "rtdl.goal5840.post_attempt_05_repair_authority.v1"
+                ),
+                "goal": 5840,
+                "frozen_at_utc": "2026-09-03T13:00:00Z",
+                "stage": "AFTER_ATTEMPT_05_BEFORE_ATTEMPT_06_GPU_EXECUTION",
+                "status": (
+                    "FROZEN_EXACT_NATIVE_ENVIRONMENT_BINDING_REPAIR__"
+                    "NO_COMPLETE_ACCEPTED_RESULT"
+                ),
+                "base_chain": {
+                    "attempt_05_source_commit": verifier.ATTEMPT_05_SOURCE_COMMIT,
+                    "post_attempt_04_repair_authority": {
+                        "path": attempt04_repair_path,
+                        "bytes": len(attempt04_repair_bytes),
+                        "file_sha256": hashlib.sha256(
+                            attempt04_repair_bytes
+                        ).hexdigest(),
+                        "authority_sha256": attempt04_repair[
+                            "authority_sha256"
+                        ],
+                    },
+                    "attempt_05_incident": {
+                        "path": attempt05_incident_path,
+                        "bytes": len(attempt05_incident_bytes),
+                        "file_sha256": hashlib.sha256(
+                            attempt05_incident_bytes
+                        ).hexdigest(),
+                        "classification": (
+                            "SPHERE_RUNTIME_NATIVE_LIBRARY_ENV_BINDING_"
+                            "ENGINEERING_FAILURE"
+                        ),
+                        "published_failure_artifacts": (
+                            attempt05_failure_artifacts
+                        ),
+                        "published_failure_bundle_count": 3,
+                        "published_independent_report_count": 3,
+                        "independently_accepted_per_mode_report_count": 3,
+                        "independent_property_pass_count": 15,
+                        "sphere_optix_launches": 0,
+                        "published_mutation_applications": 0,
+                        "accepted_complete_goal5840_results": 0,
+                    },
+                    "formal_observed_counts_through_attempt_05": {
+                        "runner_processes_started": 5,
+                        "frozen_modes_entered": 9,
+                        "public_route_expected_outputs_returned": 8,
+                        "published_evidence_bundles": 6,
+                        "published_independent_property_reports": 6,
+                        "independently_accepted_per_mode_reports": 4,
+                        "published_mutation_applications": 0,
+                        "accepted_complete_goal5840_results": 0,
+                    },
+                    "prior_post_failure_gpu_diagnostics": {
+                        "diagnostic_processes": 2,
+                        "diagnostic_mode_executions": 2,
+                        "accepted_as_evidence": 0,
+                    },
+                    "attempt_05_post_failure_gpu_diagnostics": {
+                        "diagnostic_processes": 0,
+                        "diagnostic_mode_executions": 0,
+                        "accepted_as_evidence": 0,
+                    },
+                },
+                "repair_scope": {
+                    "defect": (
+                        "missing_sphere_runtime_native_library_"
+                        "environment_binding"
+                    ),
+                    "repair": (
+                        "fail_closed_exact_native_dso_environment_binding_"
+                        "before_route_materialization"
+                    ),
+                    "allowed_changed_paths": list(
+                        verifier.ATTEMPT_05_REPAIR_ALLOWED_CHANGED_PATHS
+                    ),
+                    "exact_changed_paths_since_base": list(
+                        verifier.ATTEMPT_05_REPAIR_ALLOWED_CHANGED_PATHS
+                    ),
+                    "absent_matching_and_conflicting_bindings_tested": True,
+                    "exact_binding_recorded_in_result": True,
+                    "route_change_allowed": False,
+                    "fixture_or_oracle_change_allowed": False,
+                    "declaration_or_control_root_change_allowed": False,
+                    "property_or_mutation_change_allowed": False,
+                    "native_engine_or_runtime_change_allowed": False,
+                    "independent_checker_change_allowed": False,
+                    "frozen_core_change_allowed": False,
+                },
+                "preregistration": pre_pod["preregistration"],
+                "source_files": [
+                    row
+                    for row in source_rows
+                    if row["path"] in attempt05_authority_source_paths
+                ],
+                "goal5838_frozen_core": frozen_core,
+                "route_bundle_group_count": 3,
+                "required_mode_count": 4,
+                "mode_cases": frozen_mode_rows,
+                "execution_counts_at_repair_freeze": {
+                    "formal_runner_processes": 5,
+                    "formal_entered_modes": 9,
+                    "formal_returned_expected_outputs": 8,
+                    "prior_gpu_diagnostic_processes": 2,
+                    "prior_gpu_diagnostic_mode_executions": 2,
+                    "published_evidence_bundles": 6,
+                    "published_independent_property_reports": 6,
+                    "independently_accepted_per_mode_reports": 4,
+                    "published_mutation_applications": 0,
+                    "accepted_goal5840_complete_results": 0,
+                },
+                "claim_boundary": {
+                    "append_only_engineering_repair_authority": True,
+                    "five_prior_formal_failures_preserved": True,
+                    "attempt_05_three_per_mode_acceptances_preserved": True,
+                    "attempt_05_incomplete_run_not_accepted_as_goal_result": (
+                        True
+                    ),
+                    "diagnostic_processes_not_accepted_as_evidence": True,
+                    "scientific_inputs_unchanged": True,
+                    "accepted_goal5840_result": False,
+                    "lowering_preservation_established": False,
+                    "performance_or_speedup": False,
+                    "application_correctness": False,
+                    "external_review_or_consensus": False,
+                },
+                "authority_sha256": "",
+            }
+            _seal(
+                attempt05_repair,
+                "authority_sha256",
+                verifier.ATTEMPT_05_REPAIR_AUTHORITY_DOMAIN,
+            )
+            attempt05_repair_path = verifier.ATTEMPT_05_REPAIR_AUTHORITY_PATH
+            attempt05_repair_bytes = (
+                json.dumps(attempt05_repair, indent=2, sort_keys=True) + "\n"
+            ).encode("ascii")
+
             build_sources = [
                 row
                 for row in source_rows
@@ -1237,6 +1482,8 @@ class Goal5840GpuEvidenceVerifierTest(unittest.TestCase):
             source_blobs[attempt03_repair_path] = attempt03_repair_bytes
             source_blobs[attempt04_incident_path] = attempt04_incident_bytes
             source_blobs[attempt04_repair_path] = attempt04_repair_bytes
+            source_blobs[attempt05_incident_path] = attempt05_incident_bytes
+            source_blobs[attempt05_repair_path] = attempt05_repair_bytes
             repository_rows = [
                 {
                     "path": path,
@@ -1248,11 +1495,11 @@ class Goal5840GpuEvidenceVerifierTest(unittest.TestCase):
             dynamic_symbols = set(verifier.GOAL5840_REQUIRED_NATIVE_SYMBOLS)
             dynamic_symbols.add("synthetic_extra_symbol")
             summary: dict[str, object] = {
-                "schema": "rtdl.goal5840.true_optix_target_evidence.v5",
+                "schema": "rtdl.goal5840.true_optix_target_evidence.v6",
                 "status": (
                     "PASS__FOUR_MODES_TRUE_OPTIX_AND_15_UNIQUE_MUTATIONS_REJECTED"
                 ),
-                "formal_attempt_number": 5,
+                "formal_attempt_number": 6,
                 "repository": {
                     "expected_commit": commit,
                     "head_before": commit,
@@ -1264,7 +1511,10 @@ class Goal5840GpuEvidenceVerifierTest(unittest.TestCase):
                     "source_files": repository_rows,
                 },
                 "machine": {"name": "synthetic"},
-                "runtime": {"python": "synthetic"},
+                "runtime": {
+                    "python": "synthetic",
+                    "rtdl_optix_lib": str(native_path),
+                },
                 "native": {
                     "path": str(native_path),
                     "bytes": len(native_bytes),
@@ -1380,6 +1630,27 @@ class Goal5840GpuEvidenceVerifierTest(unittest.TestCase):
                     ).hexdigest(),
                     "authority_sha256": attempt04_repair["authority_sha256"],
                 },
+                "attempt_05_engineering_failure": {
+                    "path": attempt05_incident_path,
+                    "bytes": len(attempt05_incident_bytes),
+                    "file_sha256": hashlib.sha256(
+                        attempt05_incident_bytes
+                    ).hexdigest(),
+                    "published_failure_bundle_count": 3,
+                    "published_independent_report_count": 3,
+                    "independently_accepted_per_mode_report_count": 3,
+                    "independent_property_pass_count": 15,
+                    "sphere_optix_launches": 0,
+                    "accepted_complete_goal5840_result_count": 0,
+                    "post_failure_gpu_diagnostic_launches": 0,
+                },
+                "post_attempt_05_repair_authority": {
+                    "path": attempt05_repair_path,
+                    "file_sha256": hashlib.sha256(
+                        attempt05_repair_bytes
+                    ).hexdigest(),
+                    "authority_sha256": attempt05_repair["authority_sha256"],
+                },
                 "frozen_core": frozen_core,
                 "route_bundle_group_count": 3,
                 "required_mode_bundle_count": 4,
@@ -1413,6 +1684,12 @@ class Goal5840GpuEvidenceVerifierTest(unittest.TestCase):
                     "attempt_04_mode_01_acceptance_preserved_without_goal_promotion": (
                         True
                     ),
+                    "attempt_05_preserved_as_incomplete_engineering_failure": (
+                        True
+                    ),
+                    "attempt_05_three_per_mode_acceptances_preserved_without_goal_"
+                    "promotion": True,
+                    "exact_native_dso_bound_to_runtime_lookup": True,
                     "diagnostic_launches_preserved_as_unaccepted_engineering_work": (
                         True
                     ),
@@ -1440,6 +1717,7 @@ class Goal5840GpuEvidenceVerifierTest(unittest.TestCase):
                         verifier.ATTEMPT_01_REPAIR_COMMIT,
                         verifier.ATTEMPT_03_SOURCE_COMMIT,
                         verifier.ATTEMPT_04_SOURCE_COMMIT,
+                        verifier.ATTEMPT_05_SOURCE_COMMIT,
                     },
                 )
                 return source_blobs[path]
@@ -1464,9 +1742,14 @@ class Goal5840GpuEvidenceVerifierTest(unittest.TestCase):
                     return verifier.ATTEMPT_03_REPAIR_ALLOWED_CHANGED_PATHS
                 if (
                     base == verifier.ATTEMPT_04_SOURCE_COMMIT
-                    and observed_commit == commit
+                    and observed_commit == verifier.ATTEMPT_05_SOURCE_COMMIT
                 ):
                     return verifier.ATTEMPT_04_REPAIR_ALLOWED_CHANGED_PATHS
+                if (
+                    base == verifier.ATTEMPT_05_SOURCE_COMMIT
+                    and observed_commit == commit
+                ):
+                    return verifier.ATTEMPT_05_REPAIR_ALLOWED_CHANGED_PATHS
                 self.fail(
                     f"unexpected synthetic Git diff: {base}..{observed_commit}"
                 )
@@ -1489,6 +1772,24 @@ class Goal5840GpuEvidenceVerifierTest(unittest.TestCase):
                     expected_commit=commit,
                     repository_root=Path.cwd(),
                 )
+                mismatched = copy.deepcopy(summary)
+                mismatched["runtime"]["rtdl_optix_lib"] = "/tmp/other.so"
+                _seal(mismatched, "summary_sha256", verifier.SUMMARY_DOMAIN)
+                result_path.write_text(
+                    json.dumps(mismatched, indent=2, sort_keys=True) + "\n",
+                    encoding="ascii",
+                )
+                with self.assertRaisesRegex(
+                    verifier.Goal5840EvidenceVerificationError,
+                    "exact admitted native DSO",
+                ):
+                    verifier.verify(
+                        result_path,
+                        native_path=native_path,
+                        native_build_manifest_path=build_path,
+                        expected_commit=commit,
+                        repository_root=Path.cwd(),
+                    )
             self.assertEqual(
                 report["status"],
                 "PASS__DOWNLOADED_GOAL5840_EVIDENCE_REPLAYED_AND_BOUND",

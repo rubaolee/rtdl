@@ -25,7 +25,6 @@ from typing import Any, Mapping, Sequence
 ROOT = Path(__file__).resolve().parents[1]
 CHECKER = ROOT / "scripts/goal5840_independent_target_checker.py"
 MUTATION_RUNNER = ROOT / "scripts/goal5840_mutation_suite.py"
-SUMMARY_DOMAIN = b"rtdl.goal5840.true_optix_target_evidence.v5\0"
 TRUST_ROOT_DOMAIN = b"rtdl.goal5840.runtime_trust_roots.v1\0"
 MUTATION_DOMAIN = b"rtdl.goal5840.exact_bundle_mutation_suite.v1\0"
 CHECKER_REPORT_DOMAIN = b"rtdl.goal5840.independent_target_check.v1\0"
@@ -43,7 +42,11 @@ ATTEMPT_03_REPAIR_AUTHORITY_DOMAIN = (
 ATTEMPT_04_REPAIR_AUTHORITY_DOMAIN = (
     b"rtdl.goal5840.post_attempt_04_repair_authority.v1\0"
 )
-VERIFICATION_DOMAIN = b"rtdl.goal5840.downloaded_gpu_evidence_verification.v5\0"
+ATTEMPT_05_REPAIR_AUTHORITY_DOMAIN = (
+    b"rtdl.goal5840.post_attempt_05_repair_authority.v1\0"
+)
+SUMMARY_DOMAIN = b"rtdl.goal5840.true_optix_target_evidence.v6\0"
+VERIFICATION_DOMAIN = b"rtdl.goal5840.downloaded_gpu_evidence_verification.v6\0"
 NATIVE_BUILD_DOMAIN = b"rtdl.goal5838.selected_sphere_optix_provider_build.v2\0"
 SHA256_RE = re.compile(r"[0-9a-f]{64}")
 COMMIT_RE = re.compile(r"[0-9a-f]{40}")
@@ -89,7 +92,7 @@ ORIGINAL_RUNTIME_SOURCE_PATHS = ATTEMPT_02_REPAIR_RUNTIME_SOURCE_PATHS - {
     "scripts/goal5840_freeze_attempt02_repair_inputs.py",
     "scripts/goal5840_freeze_repair_inputs.py",
 }
-RUNTIME_SOURCE_PATHS = ATTEMPT_02_REPAIR_RUNTIME_SOURCE_PATHS | {
+ATTEMPT_04_REPAIR_RUNTIME_SOURCE_PATHS = ATTEMPT_02_REPAIR_RUNTIME_SOURCE_PATHS | {
     "scripts/goal5840_freeze_attempt03_repair_inputs.py",
     "scripts/goal5840_freeze_attempt04_repair_inputs.py",
     "src/rtdsl/v4_bounded_relation_optix_compiler.py",
@@ -97,8 +100,11 @@ RUNTIME_SOURCE_PATHS = ATTEMPT_02_REPAIR_RUNTIME_SOURCE_PATHS | {
     "src/rtdsl/v4_callback_ptx_composer.py",
     "src/rtdsl/v4_inline_cuda_codegen.py",
 }
-ATTEMPT_03_REPAIR_RUNTIME_SOURCE_PATHS = RUNTIME_SOURCE_PATHS - {
+ATTEMPT_03_REPAIR_RUNTIME_SOURCE_PATHS = ATTEMPT_04_REPAIR_RUNTIME_SOURCE_PATHS - {
     "scripts/goal5840_freeze_attempt04_repair_inputs.py",
+}
+RUNTIME_SOURCE_PATHS = ATTEMPT_04_REPAIR_RUNTIME_SOURCE_PATHS | {
+    "scripts/goal5840_freeze_attempt05_repair_inputs.py",
 }
 ATTEMPT_01_SOURCE_COMMIT = "91a8309d9ee234f0315b6640a8dde1db29abe7e9"
 ATTEMPT_01_INCIDENT_SHA256 = (
@@ -170,6 +176,21 @@ ATTEMPT_04_REPAIR_ALLOWED_CHANGED_PATHS = tuple(sorted((
     "tests/goal5840_gpu_evidence_verifier_test.py",
     "tests/goal5840_independent_target_checker_test.py",
 )))
+ATTEMPT_05_SOURCE_COMMIT = "16fb9523e3688e792ff4083a6600434c75d8c9e6"
+ATTEMPT_05_INCIDENT_SHA256 = (
+    "8bbe23346ea96e11b86c32df163f61c2f2aac1565f9e414fa235316c38ef2fd0"
+)
+ATTEMPT_05_REPAIR_ALLOWED_CHANGED_PATHS = tuple(sorted((
+    "history/internal_docs/goal5840_independent_lowering_refinement_20260903/"
+    "ATTEMPT_05_ENGINEERING_FAILURE.md",
+    "history/internal_docs/goal5840_independent_lowering_refinement_20260903/"
+    "POST_ATTEMPT_05_REPAIR_AUTHORITY.json",
+    "scripts/goal5840_capture_gpu_evidence.py",
+    "scripts/goal5840_freeze_attempt05_repair_inputs.py",
+    "scripts/goal5840_verify_gpu_evidence.py",
+    "tests/goal5840_gpu_evidence_harness_test.py",
+    "tests/goal5840_gpu_evidence_verifier_test.py",
+)))
 PREREGISTRATION_PATH = (
     "history/internal_docs/goal5840_independent_lowering_refinement_20260903/"
     "GOAL5840_PREREGISTRATION.json"
@@ -210,6 +231,14 @@ ATTEMPT_04_REPAIR_AUTHORITY_PATH = (
     "history/internal_docs/goal5840_independent_lowering_refinement_20260903/"
     "POST_ATTEMPT_04_REPAIR_AUTHORITY.json"
 )
+ATTEMPT_05_INCIDENT_PATH = (
+    "history/internal_docs/goal5840_independent_lowering_refinement_20260903/"
+    "ATTEMPT_05_ENGINEERING_FAILURE.md"
+)
+ATTEMPT_05_REPAIR_AUTHORITY_PATH = (
+    "history/internal_docs/goal5840_independent_lowering_refinement_20260903/"
+    "POST_ATTEMPT_05_REPAIR_AUTHORITY.json"
+)
 RESULT_SOURCE_PATHS = RUNTIME_SOURCE_PATHS | {
     PREREGISTRATION_PATH,
     PRE_POD_AUTHORITY_PATH,
@@ -221,6 +250,8 @@ RESULT_SOURCE_PATHS = RUNTIME_SOURCE_PATHS | {
     ATTEMPT_03_REPAIR_AUTHORITY_PATH,
     ATTEMPT_04_INCIDENT_PATH,
     ATTEMPT_04_REPAIR_AUTHORITY_PATH,
+    ATTEMPT_05_INCIDENT_PATH,
+    ATTEMPT_05_REPAIR_AUTHORITY_PATH,
 }
 GOAL5840_REQUIRED_NATIVE_SYMBOLS = (
     "rtdl_optix_get_version",
@@ -1395,7 +1426,7 @@ def _verify_attempt04_repair_authority(
     _require(
         set(source_rows)
         == prior_source_paths | {"scripts/goal5840_freeze_attempt04_repair_inputs.py"}
-        and RUNTIME_SOURCE_PATHS <= set(source_rows),
+        and ATTEMPT_04_REPAIR_RUNTIME_SOURCE_PATHS <= set(source_rows),
         "Attempt-04 repair authority source denominator differs",
     )
     current_prereg = _mapping(
@@ -1431,6 +1462,283 @@ def _verify_attempt04_repair_authority(
         str(row["key"]): row
         for row in _sequence(
             document.get("mode_cases"), "attempt_04_repair_authority.mode_cases"
+        )
+        if isinstance(row, dict)
+    }
+
+
+def _verify_attempt05_repair_authority(
+    document: Mapping[str, object], *, root: Path, commit: str,
+    original: Mapping[str, object], prior: Mapping[str, object],
+    preregistration: Mapping[str, object],
+) -> dict[str, dict[str, object]]:
+    _require(
+        document.get("schema")
+        == "rtdl.goal5840.post_attempt_05_repair_authority.v1"
+        and document.get("stage")
+        == "AFTER_ATTEMPT_05_BEFORE_ATTEMPT_06_GPU_EXECUTION"
+        and document.get("status")
+        == (
+            "FROZEN_EXACT_NATIVE_ENVIRONMENT_BINDING_REPAIR__"
+            "NO_COMPLETE_ACCEPTED_RESULT"
+        ),
+        "Attempt-05 repair authority status differs",
+    )
+    _verify_seal(
+        document,
+        "authority_sha256",
+        ATTEMPT_05_REPAIR_AUTHORITY_DOMAIN,
+        "attempt_05_repair_authority",
+    )
+    _require(
+        document.get("route_bundle_group_count") == 3
+        and document.get("required_mode_count") == 4
+        and document.get("mode_cases") == prior.get("mode_cases")
+        and document.get("mode_cases") == original.get("mode_cases")
+        and document.get("goal5838_frozen_core")
+        == prior.get("goal5838_frozen_core")
+        and document.get("preregistration") == prior.get("preregistration"),
+        "Attempt-05 repair authority changed a scientific input",
+    )
+
+    chain = _mapping(
+        document.get("base_chain"), "attempt_05_repair_authority.base_chain"
+    )
+    prior_ref = _mapping(
+        chain.get("post_attempt_04_repair_authority"),
+        "attempt_05_repair_authority.base_chain.post_attempt_04_repair_authority",
+    )
+    incident_ref = _mapping(
+        chain.get("attempt_05_incident"),
+        "attempt_05_repair_authority.base_chain.attempt_05_incident",
+    )
+    prior_blob = _git_blob(
+        root, ATTEMPT_05_SOURCE_COMMIT, ATTEMPT_04_REPAIR_AUTHORITY_PATH
+    )
+    incident_blob = _git_blob(root, commit, ATTEMPT_05_INCIDENT_PATH)
+    expected_failure_artifacts = [
+        {
+            "name": "mode_01_capacity_fail_closed_collection_bundle.json",
+            "bytes": 1364072,
+            "file_sha256": (
+                "944f4dd717af365e31ad5d624dbd7ed5a8b71a8e5d6c6304c5336c348b6242c3"
+            ),
+            "internal_sha256": (
+                "1f93c9f763f28b72247b88e048ca50a2d62f1431e32da732dfb59662f8a55531"
+            ),
+        },
+        {
+            "name": (
+                "mode_01_capacity_fail_closed_collection_independent_check.json"
+            ),
+            "bytes": 3967,
+            "file_sha256": (
+                "246a867b35a793439926e65e9791d4874525ba937bb793d9b737b215094439da"
+            ),
+            "internal_sha256": (
+                "aba46744b907f16c44700cd39c14c67b3de3c048217a9c9b02c1bb2a05596b90"
+            ),
+            "verdict": "ACCEPT",
+            "property_pass_count": 5,
+        },
+        {
+            "name": "mode_02_all_hit_count_bundle.json",
+            "bytes": 806033,
+            "file_sha256": (
+                "84645793be976b021bea510365d6936a67df056dbc837ed710093ea8ac191645"
+            ),
+            "internal_sha256": (
+                "1818eaa45162b94215060e688639d32e9f0ffde2c521354f955abe6f586e67c7"
+            ),
+        },
+        {
+            "name": "mode_02_all_hit_count_independent_check.json",
+            "bytes": 3917,
+            "file_sha256": (
+                "423e6f61672cf91110089c38409e1befee4fb26d506104214580d5d577fe1431"
+            ),
+            "internal_sha256": (
+                "40d760e5932e6e7e66f0e4618a29a32d620c2b8a4b743192065842447c0bb8b7"
+            ),
+            "verdict": "ACCEPT",
+            "property_pass_count": 5,
+        },
+        {
+            "name": "mode_03_weighted_hit_count_bundle.json",
+            "bytes": 806393,
+            "file_sha256": (
+                "990eb99867984d959afdd2d65ba804d4813620e74108b3531bd0e8de192b64a4"
+            ),
+            "internal_sha256": (
+                "14de9b974fb0f873899aaa782a4febc9118661a5b6ec0513402bd4149f3203c5"
+            ),
+        },
+        {
+            "name": "mode_03_weighted_hit_count_independent_check.json",
+            "bytes": 3917,
+            "file_sha256": (
+                "8c2ee19cfea08ab192f9c0bab89dda9d35383f0044bdcd101785e932753213db"
+            ),
+            "internal_sha256": (
+                "449af0f81b8e434f1fd525ac50bcd485bbe58afe96245397112cb4ea08b3dc87"
+            ),
+            "verdict": "ACCEPT",
+            "property_pass_count": 5,
+        },
+    ]
+    _require(
+        chain.get("attempt_05_source_commit") == ATTEMPT_05_SOURCE_COMMIT
+        and prior_ref.get("path") == ATTEMPT_04_REPAIR_AUTHORITY_PATH
+        and prior_ref.get("bytes") == len(prior_blob)
+        and prior_ref.get("file_sha256") == hashlib.sha256(prior_blob).hexdigest()
+        and prior_ref.get("authority_sha256") == prior.get("authority_sha256")
+        and incident_ref.get("path") == ATTEMPT_05_INCIDENT_PATH
+        and incident_ref.get("bytes") == len(incident_blob)
+        and incident_ref.get("file_sha256") == ATTEMPT_05_INCIDENT_SHA256
+        and hashlib.sha256(incident_blob).hexdigest()
+        == ATTEMPT_05_INCIDENT_SHA256
+        and incident_ref.get("classification")
+        == "SPHERE_RUNTIME_NATIVE_LIBRARY_ENV_BINDING_ENGINEERING_FAILURE"
+        and incident_ref.get("published_failure_artifacts")
+        == expected_failure_artifacts
+        and incident_ref.get("published_failure_bundle_count") == 3
+        and incident_ref.get("published_independent_report_count") == 3
+        and incident_ref.get("independently_accepted_per_mode_report_count")
+        == 3
+        and incident_ref.get("independent_property_pass_count") == 15
+        and incident_ref.get("sphere_optix_launches") == 0
+        and incident_ref.get("published_mutation_applications") == 0
+        and incident_ref.get("accepted_complete_goal5840_results") == 0,
+        "Attempt-05 repair authority base chain differs",
+    )
+    _require(
+        chain.get("formal_observed_counts_through_attempt_05")
+        == {
+            "runner_processes_started": 5,
+            "frozen_modes_entered": 9,
+            "public_route_expected_outputs_returned": 8,
+            "published_evidence_bundles": 6,
+            "published_independent_property_reports": 6,
+            "independently_accepted_per_mode_reports": 4,
+            "published_mutation_applications": 0,
+            "accepted_complete_goal5840_results": 0,
+        }
+        and chain.get("prior_post_failure_gpu_diagnostics")
+        == {
+            "diagnostic_processes": 2,
+            "diagnostic_mode_executions": 2,
+            "accepted_as_evidence": 0,
+        }
+        and chain.get("attempt_05_post_failure_gpu_diagnostics")
+        == {
+            "diagnostic_processes": 0,
+            "diagnostic_mode_executions": 0,
+            "accepted_as_evidence": 0,
+        }
+        and document.get("execution_counts_at_repair_freeze")
+        == {
+            "formal_runner_processes": 5,
+            "formal_entered_modes": 9,
+            "formal_returned_expected_outputs": 8,
+            "prior_gpu_diagnostic_processes": 2,
+            "prior_gpu_diagnostic_mode_executions": 2,
+            "published_evidence_bundles": 6,
+            "published_independent_property_reports": 6,
+            "independently_accepted_per_mode_reports": 4,
+            "published_mutation_applications": 0,
+            "accepted_goal5840_complete_results": 0,
+        },
+        "Attempt-05 repair authority execution history differs",
+    )
+
+    scope = _mapping(
+        document.get("repair_scope"), "attempt_05_repair_authority.repair_scope"
+    )
+    _require(
+        scope.get("defect")
+        == "missing_sphere_runtime_native_library_environment_binding"
+        and scope.get("repair")
+        == (
+            "fail_closed_exact_native_dso_environment_binding_before_"
+            "route_materialization"
+        )
+        and scope.get("allowed_changed_paths")
+        == list(ATTEMPT_05_REPAIR_ALLOWED_CHANGED_PATHS)
+        and scope.get("exact_changed_paths_since_base")
+        == list(ATTEMPT_05_REPAIR_ALLOWED_CHANGED_PATHS)
+        and scope.get("absent_matching_and_conflicting_bindings_tested") is True
+        and scope.get("exact_binding_recorded_in_result") is True
+        and all(
+            scope.get(field) is False
+            for field in (
+                "route_change_allowed",
+                "fixture_or_oracle_change_allowed",
+                "declaration_or_control_root_change_allowed",
+                "property_or_mutation_change_allowed",
+                "native_engine_or_runtime_change_allowed",
+                "independent_checker_change_allowed",
+                "frozen_core_change_allowed",
+            )
+        ),
+        "Attempt-05 repair authority scope differs",
+    )
+    _require(
+        _git_changed_paths(root, ATTEMPT_05_SOURCE_COMMIT, commit)
+        == ATTEMPT_05_REPAIR_ALLOWED_CHANGED_PATHS,
+        "Attempt-05 repair changed an unapproved path",
+    )
+    source_rows = _verify_source_rows(
+        document.get("source_files"),
+        root=root,
+        commit=commit,
+        label="attempt_05_repair_authority.source_files",
+    )
+    prior_source_paths = {
+        str(row.get("path"))
+        for row in _sequence(
+            prior.get("source_files"), "attempt_04_repair_authority.source_files"
+        )
+        if isinstance(row, dict)
+    }
+    _require(
+        set(source_rows)
+        == prior_source_paths | {"scripts/goal5840_freeze_attempt05_repair_inputs.py"}
+        and RUNTIME_SOURCE_PATHS <= set(source_rows),
+        "Attempt-05 repair authority source denominator differs",
+    )
+    current_prereg = _mapping(
+        document.get("preregistration"),
+        "attempt_05_repair_authority.preregistration",
+    )
+    _require(
+        current_prereg == prior.get("preregistration")
+        and current_prereg.get("authority_sha256")
+        == preregistration.get("authority_sha256"),
+        "Attempt-05 repair authority preregistration chain differs",
+    )
+    claims = _mapping(
+        document.get("claim_boundary"),
+        "attempt_05_repair_authority.claim_boundary",
+    )
+    _require(
+        claims.get("append_only_engineering_repair_authority") is True
+        and claims.get("five_prior_formal_failures_preserved") is True
+        and claims.get("attempt_05_three_per_mode_acceptances_preserved") is True
+        and claims.get("attempt_05_incomplete_run_not_accepted_as_goal_result")
+        is True
+        and claims.get("diagnostic_processes_not_accepted_as_evidence") is True
+        and claims.get("scientific_inputs_unchanged") is True
+        and claims.get("accepted_goal5840_result") is False
+        and claims.get("lowering_preservation_established") is False
+        and claims.get("performance_or_speedup") is False
+        and claims.get("application_correctness") is False
+        and claims.get("external_review_or_consensus") is False,
+        "Attempt-05 repair authority claim boundary differs",
+    )
+    return {
+        str(row["key"]): row
+        for row in _sequence(
+            document.get("mode_cases"), "attempt_05_repair_authority.mode_cases"
         )
         if isinstance(row, dict)
     }
@@ -1649,12 +1957,12 @@ def verify(
     directory = result_path.parent
     summary = _load_json(result_path, "RESULT")
     _require(
-        summary.get("schema") == "rtdl.goal5840.true_optix_target_evidence.v5"
+        summary.get("schema") == "rtdl.goal5840.true_optix_target_evidence.v6"
         and summary.get("status")
         == "PASS__FOUR_MODES_TRUE_OPTIX_AND_15_UNIQUE_MUTATIONS_REJECTED",
         "RESULT status differs",
     )
-    _require(summary.get("formal_attempt_number") == 5, "formal attempt differs")
+    _require(summary.get("formal_attempt_number") == 6, "formal attempt differs")
     summary_sha = _verify_seal(summary, "summary_sha256", SUMMARY_DOMAIN, "RESULT")
     repository = _mapping(summary.get("repository"), "RESULT.repository")
     commit = _commit(
@@ -1935,7 +2243,9 @@ def verify(
         == 0,
         "Attempt-04 incident reference differs",
     )
-    attempt04_incident_blob = _git_blob(root, commit, ATTEMPT_04_INCIDENT_PATH)
+    attempt04_incident_blob = _git_blob(
+        root, ATTEMPT_05_SOURCE_COMMIT, ATTEMPT_04_INCIDENT_PATH
+    )
     _require(
         attempt04_incident_ref.get("bytes") == len(attempt04_incident_blob)
         and attempt04_incident_ref.get("file_sha256")
@@ -1951,7 +2261,7 @@ def verify(
     )
     attempt04_repair = _load_committed_json(
         root,
-        commit,
+        ATTEMPT_05_SOURCE_COMMIT,
         attempt04_repair_ref.get("path"),
         attempt04_repair_ref.get("file_sha256"),
         "attempt_04_repair_authority",
@@ -1965,7 +2275,7 @@ def verify(
     attempt04_frozen_modes = _verify_attempt04_repair_authority(
         attempt04_repair,
         root=root,
-        commit=commit,
+        commit=ATTEMPT_05_SOURCE_COMMIT,
         original=pre_pod,
         prior=attempt03_repair,
         preregistration=prereg,
@@ -1976,7 +2286,78 @@ def verify(
     )
     frozen_modes = attempt04_frozen_modes
 
+    attempt05_incident_ref = _mapping(
+        summary.get("attempt_05_engineering_failure"),
+        "RESULT.attempt_05_engineering_failure",
+    )
+    _require(
+        attempt05_incident_ref.get("path") == ATTEMPT_05_INCIDENT_PATH
+        and attempt05_incident_ref.get("published_failure_bundle_count") == 3
+        and attempt05_incident_ref.get("published_independent_report_count")
+        == 3
+        and attempt05_incident_ref.get(
+            "independently_accepted_per_mode_report_count"
+        ) == 3
+        and attempt05_incident_ref.get("independent_property_pass_count") == 15
+        and attempt05_incident_ref.get("sphere_optix_launches") == 0
+        and attempt05_incident_ref.get(
+            "accepted_complete_goal5840_result_count"
+        ) == 0
+        and attempt05_incident_ref.get("post_failure_gpu_diagnostic_launches")
+        == 0,
+        "Attempt-05 incident reference differs",
+    )
+    attempt05_incident_blob = _git_blob(root, commit, ATTEMPT_05_INCIDENT_PATH)
+    _require(
+        attempt05_incident_ref.get("bytes") == len(attempt05_incident_blob)
+        and attempt05_incident_ref.get("file_sha256")
+        == ATTEMPT_05_INCIDENT_SHA256
+        and hashlib.sha256(attempt05_incident_blob).hexdigest()
+        == ATTEMPT_05_INCIDENT_SHA256,
+        "Attempt-05 incident bytes differ",
+    )
+
+    attempt05_repair_ref = _mapping(
+        summary.get("post_attempt_05_repair_authority"),
+        "RESULT.post_attempt_05_repair_authority",
+    )
+    attempt05_repair = _load_committed_json(
+        root,
+        commit,
+        attempt05_repair_ref.get("path"),
+        attempt05_repair_ref.get("file_sha256"),
+        "attempt_05_repair_authority",
+    )
+    _require(
+        attempt05_repair_ref.get("path") == ATTEMPT_05_REPAIR_AUTHORITY_PATH
+        and attempt05_repair_ref.get("authority_sha256")
+        == attempt05_repair.get("authority_sha256"),
+        "Attempt-05 repair authority reference differs",
+    )
+    attempt05_frozen_modes = _verify_attempt05_repair_authority(
+        attempt05_repair,
+        root=root,
+        commit=commit,
+        original=pre_pod,
+        prior=attempt04_repair,
+        preregistration=prereg,
+    )
+    _require(
+        attempt05_frozen_modes == frozen_modes,
+        "Attempt-05 repair authority mode rows differ from original freeze",
+    )
+    frozen_modes = attempt05_frozen_modes
+
     native = _mapping(summary.get("native"), "RESULT.native")
+    runtime = _mapping(summary.get("runtime"), "RESULT.runtime")
+    recorded_native_path = native.get("path")
+    recorded_runtime_path = runtime.get("rtdl_optix_lib")
+    _require(
+        isinstance(recorded_native_path, str)
+        and Path(recorded_native_path).is_absolute()
+        and recorded_runtime_path == recorded_native_path,
+        "RESULT runtime did not bind the exact admitted native DSO",
+    )
     native_path = native_path.expanduser().resolve(strict=True)
     native_sha = _sha(native.get("sha256"), "RESULT.native.sha256")
     _require(
@@ -2034,6 +2415,7 @@ def verify(
         and build_repo.get("expected_commit") == commit
         and build_repo.get("head_before") == commit
         and build_repo.get("head_after") == commit
+        and build_output.get("path") == recorded_native_path
         and build_output.get("sha256") == native_sha,
         "native build does not bind the exact commit and DSO",
     )
@@ -2140,6 +2522,15 @@ def verify(
             "attempt_04_mode_01_acceptance_preserved_without_goal_promotion"
         ) is True
         and summary_claims.get(
+            "attempt_05_preserved_as_incomplete_engineering_failure"
+        ) is True
+        and summary_claims.get(
+            "attempt_05_three_per_mode_acceptances_preserved_without_goal_"
+            "promotion"
+        ) is True
+        and summary_claims.get("exact_native_dso_bound_to_runtime_lookup")
+        is True
+        and summary_claims.get(
             "diagnostic_launches_preserved_as_unaccepted_engineering_work"
         ) is True
         and summary_claims.get("append_only_repair_authority_chain_verified")
@@ -2157,15 +2548,16 @@ def verify(
         and frozen_core == attempt02_repair.get("goal5838_frozen_core")
         and frozen_core == attempt03_repair.get("goal5838_frozen_core")
         and frozen_core == attempt04_repair.get("goal5838_frozen_core")
+        and frozen_core == attempt05_repair.get("goal5838_frozen_core")
         and frozen_core.get("changed_file_count") == 0
         and len(_sequence(frozen_core.get("files"), "frozen_core.files")) == 3,
         "Goal5838 frozen-core preservation differs",
     )
 
     report: dict[str, object] = {
-        "schema": "rtdl.goal5840.downloaded_gpu_evidence_verification.v5",
+        "schema": "rtdl.goal5840.downloaded_gpu_evidence_verification.v6",
         "status": "PASS__DOWNLOADED_GOAL5840_EVIDENCE_REPLAYED_AND_BOUND",
-        "formal_attempt_number": 5,
+        "formal_attempt_number": 6,
         "source_commit": commit,
         "attempt_01_source_commit": ATTEMPT_01_SOURCE_COMMIT,
         "pre_pod_authority_sha256": pre_pod.get("authority_sha256"),
@@ -2184,6 +2576,11 @@ def verify(
         "attempt_04_source_commit": ATTEMPT_04_SOURCE_COMMIT,
         "attempt_04_incident_file_sha256": ATTEMPT_04_INCIDENT_SHA256,
         "attempt_04_repair_authority_sha256": attempt04_repair.get(
+            "authority_sha256"
+        ),
+        "attempt_05_source_commit": ATTEMPT_05_SOURCE_COMMIT,
+        "attempt_05_incident_file_sha256": ATTEMPT_05_INCIDENT_SHA256,
+        "attempt_05_repair_authority_sha256": attempt05_repair.get(
             "authority_sha256"
         ),
         "result_file_sha256": _sha_file(result_path),
