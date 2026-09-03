@@ -340,6 +340,8 @@ extern "C" __global__ void __raygen__rtdl_v4_bounded_relation() {
     params.output_minimum_id[query] = payload_minimum;
     params.output_intersection_count[query] = intersection_count;
     atomicOr(&params.status[query].invocation_mask, 1u << 6u);
+    if (latent_error || lifecycle_invalid || evidence_invalid) return;
+    atomicAdd(&params.fast_control->validated_row_count, 1u);
 }
 extern "C" __global__ void __intersection__rtdl_v4_bounded_relation() {
     const bool closed =
@@ -381,16 +383,43 @@ extern "C" __global__ void __miss__rtdl_v4_bounded_relation() {
     elif route_id.startswith("stable::triangle_reduction"):
         body = """
 const unsigned int primitive = optixGetPrimitiveIndex();
-if (params.status[query].first_error_claimed != 0u) return;
-const unsigned long long result = 1u;
+extern "C" __global__ void __raygen__rtdl_v4_triangle_reduction() {
+    optixTrace(params.traversable);
+    if (params.fast_control->error_code != 0u) return;
+    const unsigned long long final_value = 1u;
+    params.per_ray_u64[query] = final_value;
+}
+extern "C" __global__ void __raygen__rtdl_v4_triangle_reduction_diagnostic() {
+    if (params.fast_control != nullptr) {
+        optixTrace(params.traversable);
+        if (params.fast_control->error_code != 0u) return;
+        const unsigned long long final_value = 1u;
+        params.per_ray_u64[query] = final_value;
+        return;
+    }
+    optixTrace(params.traversable);
+    if (params.fast_control != nullptr) {
+        if (params.fast_control->error_code != 0u) return;
+    } else if (params.status[query].first_error_claimed != 0u) return;
+    (void)rtdl_v4_finalize_goal5840(query);
+    if (!v4_commit_leaf_status(query, fin_status_ok)) { return; }
+    if (fin_out_effect_tag != 9u) return;
+    const unsigned long long final_value = 1u;
+    params.per_ray_u64[query] = final_value;
+}
 """
     else:
         body = """
 const unsigned int primitive = optixGetPrimitiveIndex();
-if (params.status[query].first_error_claimed != 0u) return;
-const unsigned long long result = 1u;
-params.output_0[query] = 1u;
-params.output_1[query] = 0u;
+extern "C" __global__ void __raygen__rtdl_v4_sphere() {
+    optixTrace(params.traversable);
+    if (params.status[query].first_error_claimed != 0u) return;
+    (void)rtdl_v4_finalize_goal5840(query);
+    if (!v4_commit_leaf_status(query, fin_status_ok)) { return; }
+    const unsigned long long result = 1u;
+    params.output_0[query] = v4_u64_low(result);
+    params.output_1[query] = v4_u64_high(result);
+}
 """
     return declarations + body
 
@@ -742,6 +771,79 @@ def _replace_wrapper_source(
 
 
 class Goal5840IndependentTargetCheckerTest(unittest.TestCase):
+    def test_cp004_accepts_all_four_real_wrapper_shapes(self) -> None:
+        from rtdsl.v4_bounded_relation_optix_wrapper_codegen import (
+            generate_trusted_bounded_relation_wrapper_v1,
+        )
+        from rtdsl.v4_sphere_any_hit_count_contract import (
+            build_sphere_any_hit_count_authority,
+        )
+        from rtdsl.v4_sphere_any_hit_count_wrapper_codegen import (
+            generate_trusted_optix_sphere_any_hit_count_wrapper_v1,
+        )
+        from rtdsl.v4_triangle_reduction_optix_wrapper_codegen import (
+            generate_trusted_optix_triangle_reduction_wrapper_v1,
+        )
+        from scripts.goal5758_m1_consumer_fixtures import (
+            all_hit_schema,
+            compile_count_callback,
+            weighted_schema,
+        )
+        from tests.goal5759_v4_triangle_reduction_target_test import (
+            _compiled as compiled_triangle,
+        )
+        from tests.goal5760_v4_bounded_relation_test import (
+            _compiled as compiled_bounded,
+        )
+        from tests.goal5838_selected_sphere_any_hit_count_test import (
+            _target as sphere_target,
+        )
+
+        bounded_authority, bounded_proof, bounded_abi, bounded_contract = (
+            compiled_bounded()
+        )
+        bounded = generate_trusted_bounded_relation_wrapper_v1(
+            bounded_authority,
+            bounded_contract,
+            bounded_abi,
+            any_hit_proof_authority=bounded_proof,
+        )
+        bounded_flow = checker._check_wrapper_status_flow(ROUTES[0], bounded.source)
+        self.assertEqual(bounded_flow["kind"], "bounded_fail_closed_collection")
+
+        count_callback = compile_count_callback()
+        for mode, schema in (
+            ("all_hit_count", all_hit_schema(count_callback)),
+            ("weighted_hit_count", weighted_schema(count_callback)),
+        ):
+            with self.subTest(mode=mode):
+                authority, proof, abi, contract = compiled_triangle(
+                    count_callback, schema
+                )
+                triangle = generate_trusted_optix_triangle_reduction_wrapper_v1(
+                    authority,
+                    contract,
+                    abi,
+                    any_hit_proof_authority=proof,
+                )
+                flow = checker._check_wrapper_status_flow(
+                    ROUTES[1], triangle.source
+                )
+                self.assertEqual(
+                    flow["kind"], "triangle_dual_path_status_gated_reduction"
+                )
+
+        sphere_authority, _proof, sphere_abi, _behavior = (
+            build_sphere_any_hit_count_authority(sphere_target())
+        )
+        sphere = generate_trusted_optix_sphere_any_hit_count_wrapper_v1(
+            sphere_authority,
+            sphere_authority.canonical_plan,
+            sphere_abi,
+        )
+        sphere_flow = checker._check_wrapper_status_flow(ROUTES[2], sphere.source)
+        self.assertEqual(sphere_flow["kind"], "sphere_status_gated_count")
+
     def test_checker_imports_only_python_standard_library(self) -> None:
         path = Path(checker.__file__)
         tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
@@ -1067,6 +1169,124 @@ class Goal5840IndependentTargetCheckerTest(unittest.TestCase):
         )
         self.assertEqual(cp004["verdict"], "REJECT")
         self.assertEqual(cp004["reason_id"], "TC004_MODE_PLAN_MISMATCH")
+
+    def test_triangle_fast_status_after_output_rejects_cp004(self) -> None:
+        route_id = ROUTES[1]
+        bundle, declaration_sha, identity_sha, control_flow_sha = _make_bundle(
+            route_id
+        )
+        _replace_wrapper_source(
+            bundle,
+            """extern \"C\" __global__ void __raygen__rtdl_v4_triangle_reduction() {
+    optixTrace(params.traversable);
+    if (params.fast_control->error_code != 0u) return;
+    const unsigned long long final_value = 1u;
+    params.per_ray_u64[query] = final_value;
+}""",
+            """extern \"C\" __global__ void __raygen__rtdl_v4_triangle_reduction() {
+    optixTrace(params.traversable);
+    const unsigned long long final_value = 1u;
+    params.per_ray_u64[query] = final_value;
+    if (params.fast_control->error_code != 0u) return;
+}""",
+        )
+        report = checker.check_target_evidence(
+            bundle,
+            trusted_declaration_sha256=declaration_sha,
+            trusted_executable_identity_sha256=identity_sha,
+            trusted_control_flow_manifest_sha256=control_flow_sha,
+        )
+        cp004 = next(
+            row for row in report["property_checks"]
+            if row["property_id"]
+            == "CP004_STATUS_GATED_CONTINUATION_AND_COMPLETENESS"
+        )
+        self.assertEqual(cp004["verdict"], "REJECT")
+        self.assertEqual(cp004["reason_id"], "TC004_STATUS_AFTER_OUTPUT")
+
+    def test_triangle_diagnostic_status_comment_spoof_rejects_cp004(self) -> None:
+        route_id = ROUTES[1]
+        bundle, declaration_sha, identity_sha, control_flow_sha = _make_bundle(
+            route_id
+        )
+        _replace_wrapper_source(
+            bundle,
+            "    } else if (params.status[query].first_error_claimed != 0u) return;\n",
+            (
+                "    } /* else if "
+                "(params.status[query].first_error_claimed != 0u) return; */\n"
+            ),
+        )
+        report = checker.check_target_evidence(
+            bundle,
+            trusted_declaration_sha256=declaration_sha,
+            trusted_executable_identity_sha256=identity_sha,
+            trusted_control_flow_manifest_sha256=control_flow_sha,
+        )
+        cp004 = next(
+            row for row in report["property_checks"]
+            if row["property_id"]
+            == "CP004_STATUS_GATED_CONTINUATION_AND_COMPLETENESS"
+        )
+        self.assertEqual(cp004["verdict"], "REJECT")
+        self.assertEqual(
+            cp004["reason_id"], "TC004_STATUS_SOURCE_ANCHOR_MISSING"
+        )
+
+    def test_triangle_diagnostic_status_string_spoof_rejects_cp004(self) -> None:
+        route_id = ROUTES[1]
+        bundle, declaration_sha, identity_sha, control_flow_sha = _make_bundle(
+            route_id
+        )
+        _replace_wrapper_source(
+            bundle,
+            "    } else if (params.status[query].first_error_claimed != 0u) return;\n",
+            (
+                "    } const char* fake_status_gate = \"else if "
+                "(params.status[query].first_error_claimed != 0u) return;\";\n"
+            ),
+        )
+        report = checker.check_target_evidence(
+            bundle,
+            trusted_declaration_sha256=declaration_sha,
+            trusted_executable_identity_sha256=identity_sha,
+            trusted_control_flow_manifest_sha256=control_flow_sha,
+        )
+        cp004 = next(
+            row for row in report["property_checks"]
+            if row["property_id"]
+            == "CP004_STATUS_GATED_CONTINUATION_AND_COMPLETENESS"
+        )
+        self.assertEqual(cp004["verdict"], "REJECT")
+        self.assertEqual(
+            cp004["reason_id"], "TC004_STATUS_SOURCE_ANCHOR_MISSING"
+        )
+
+    def test_triangle_finalizer_status_commit_removal_rejects_cp004(self) -> None:
+        route_id = ROUTES[1]
+        bundle, declaration_sha, identity_sha, control_flow_sha = _make_bundle(
+            route_id
+        )
+        _replace_wrapper_source(
+            bundle,
+            "    if (!v4_commit_leaf_status(query, fin_status_ok)) { return; }\n",
+            "    /* finalizer status commit removed */\n",
+        )
+        report = checker.check_target_evidence(
+            bundle,
+            trusted_declaration_sha256=declaration_sha,
+            trusted_executable_identity_sha256=identity_sha,
+            trusted_control_flow_manifest_sha256=control_flow_sha,
+        )
+        cp004 = next(
+            row for row in report["property_checks"]
+            if row["property_id"]
+            == "CP004_STATUS_GATED_CONTINUATION_AND_COMPLETENESS"
+        )
+        self.assertEqual(cp004["verdict"], "REJECT")
+        self.assertEqual(
+            cp004["reason_id"], "TC004_STATUS_SOURCE_ANCHOR_MISSING"
+        )
 
     def test_report_never_issues_capability_or_broad_claim(self) -> None:
         bundle, declaration_sha, identity_sha, control_flow_sha = _make_bundle(

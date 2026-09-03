@@ -59,7 +59,6 @@ ROUTE_RULES = {
             ".item_id",
             "optixGetAttribute_0()",
         ),
-        "status_anchors": ("params.overflowed", "atomicExch(params.overflowed"),
         "native_names": (
             "custom_primitive",
             "OPTIX_BUILD_INPUT_TYPE_CUSTOM_PRIMITIVES",
@@ -81,10 +80,6 @@ ROUTE_RULES = {
         "nominal_output": "result.checked_u64_scalar",
         "channel": ("primitive.index", "provider.builtin_primitive_index"),
         "source_anchors": ("optixGetPrimitiveIndex()",),
-        "status_anchors": (
-            "first_error_claimed != 0u",
-            "const unsigned long long result",
-        ),
         "native_names": (
             "builtin_triangle",
             "OPTIX_BUILD_INPUT_TYPE_TRIANGLES",
@@ -108,10 +103,6 @@ ROUTE_RULES = {
             "optixGetPrimitiveIndex()",
             "params.output_0[query]",
             "params.output_1[query]",
-        ),
-        "status_anchors": (
-            "first_error_claimed != 0u",
-            "const unsigned long long result",
         ),
         "native_names": (
             "builtin_sphere",
@@ -1061,6 +1052,357 @@ def _cpp_function_window(source: str, function_name: str, path: str) -> str:
     raise AssertionError
 
 
+def _cp004_function_window(
+    source: str, function_name: str, path: str
+) -> str:
+    code = _cpp_lexical_mask(source, preserve_strings=False)
+    count = len(tuple(re.finditer(
+        r"\b" + re.escape(function_name) + r"\s*\(", code
+    )))
+    _require(
+        count == 1,
+        "TC004_STATUS_FUNCTION_CARDINALITY",
+        path,
+        {"function": function_name, "count": count},
+    )
+    return _cpp_function_window(source, function_name, path)
+
+
+def _cp004_pattern_offsets(
+    source: str,
+    patterns: Sequence[tuple[str, str, int]],
+    path: str,
+) -> dict[str, tuple[int, ...]]:
+    code = _cpp_lexical_mask(source, preserve_strings=False)
+    result: dict[str, tuple[int, ...]] = {}
+    for label, pattern, expected_count in patterns:
+        offsets = tuple(match.start() for match in re.finditer(pattern, code))
+        _require(
+            len(offsets) == expected_count,
+            (
+                "TC004_STATUS_SOURCE_ANCHOR_MISSING"
+                if not offsets
+                else "TC004_STATUS_SOURCE_ANCHOR_CARDINALITY"
+            ),
+            path,
+            {
+                "label": label,
+                "expected_count": expected_count,
+                "observed_offsets": offsets,
+            },
+        )
+        result[label] = offsets
+    return result
+
+
+def _cp004_require_order(
+    offsets: Mapping[str, tuple[int, ...]],
+    ordered_labels: Sequence[tuple[str, int]],
+    path: str,
+) -> tuple[int, ...]:
+    positions = tuple(offsets[label][ordinal] for label, ordinal in ordered_labels)
+    _require(
+        positions == tuple(sorted(positions))
+        and len(set(positions)) == len(positions),
+        "TC004_STATUS_AFTER_OUTPUT",
+        path,
+        {
+            f"{label}[{ordinal}]": position
+            for (label, ordinal), position in zip(
+                ordered_labels, positions, strict=True
+            )
+        },
+    )
+    return positions
+
+
+def _check_wrapper_status_flow(
+    route_id: str, wrapper_source: str
+) -> dict[str, object]:
+    """Validate status-before-publication structure in the captured wrapper."""
+
+    if route_id.startswith("stable::bounded_relation"):
+        raygen_path = "generated.wrapper.source.bounded.raygen"
+        raygen = _cp004_function_window(
+            wrapper_source,
+            "__raygen__rtdl_v4_bounded_relation",
+            raygen_path,
+        )
+        raygen_offsets = _cp004_pattern_offsets(
+            raygen,
+            (
+                ("trace", r"\boptixTrace\s*\(", 1),
+                (
+                    "hit_count_output",
+                    r"params\.output_hit_count\s*\[\s*query\s*\]\s*=",
+                    1,
+                ),
+                (
+                    "minimum_id_output",
+                    r"params\.output_minimum_id\s*\[\s*query\s*\]\s*=",
+                    1,
+                ),
+                (
+                    "intersection_count_output",
+                    r"params\.output_intersection_count\s*\[\s*query\s*\]\s*=",
+                    1,
+                ),
+                (
+                    "lifecycle_gate",
+                    r"if\s*\(\s*latent_error\s*\|\|\s*lifecycle_invalid\s*"
+                    r"\|\|\s*evidence_invalid\s*\)",
+                    1,
+                ),
+                (
+                    "validated_row_commit",
+                    r"atomicAdd\s*\(\s*&params\.fast_control->"
+                    r"validated_row_count\s*,\s*1u\s*\)",
+                    1,
+                ),
+            ),
+            raygen_path,
+        )
+        raygen_order = _cp004_require_order(
+            raygen_offsets,
+            (
+                ("trace", 0),
+                ("hit_count_output", 0),
+                ("minimum_id_output", 0),
+                ("intersection_count_output", 0),
+                ("lifecycle_gate", 0),
+                ("validated_row_commit", 0),
+            ),
+            raygen_path,
+        )
+        any_hit_path = "generated.wrapper.source.bounded.any_hit"
+        any_hit = _cp004_function_window(
+            wrapper_source,
+            "__anyhit__rtdl_v4_bounded_relation",
+            any_hit_path,
+        )
+        any_hit_offsets = _cp004_pattern_offsets(
+            any_hit,
+            (
+                (
+                    "capacity_branch",
+                    r"if\s*\(\s*slot\s*<\s*params\.event_capacity\s*\)",
+                    1,
+                ),
+                (
+                    "row_commit",
+                    r"params\.rows\s*\[\s*slot\s*\]\s*=\s*row\s*;",
+                    1,
+                ),
+                (
+                    "overflow_commit",
+                    r"atomicExch\s*\(\s*params\.overflowed\s*,\s*1u\s*\)",
+                    1,
+                ),
+            ),
+            any_hit_path,
+        )
+        any_hit_order = _cp004_require_order(
+            any_hit_offsets,
+            (
+                ("capacity_branch", 0),
+                ("row_commit", 0),
+                ("overflow_commit", 0),
+            ),
+            any_hit_path,
+        )
+        return {
+            "kind": "bounded_fail_closed_collection",
+            "raygen_order": raygen_order,
+            "any_hit_order": any_hit_order,
+        }
+
+    if route_id.startswith("stable::triangle_reduction"):
+        common_patterns = (
+            ("trace", r"\boptixTrace\s*\(", 1),
+            (
+                "fast_status_gate",
+                r"if\s*\(\s*params\.fast_control->error_code\s*"
+                r"!=\s*0u\s*\)\s*return\s*;",
+                1,
+            ),
+            (
+                "final_value",
+                r"const\s+unsigned\s+long\s+long\s+final_value\s*=",
+                1,
+            ),
+            (
+                "output_commit",
+                r"params\.per_ray_u64\s*\[\s*query\s*\]\s*=\s*"
+                r"final_value\s*;",
+                1,
+            ),
+        )
+        fast_path = "generated.wrapper.source.triangle.fast_raygen"
+        fast = _cp004_function_window(
+            wrapper_source,
+            "__raygen__rtdl_v4_triangle_reduction",
+            fast_path,
+        )
+        fast_offsets = _cp004_pattern_offsets(fast, common_patterns, fast_path)
+        fast_order = _cp004_require_order(
+            fast_offsets,
+            (
+                ("trace", 0),
+                ("fast_status_gate", 0),
+                ("final_value", 0),
+                ("output_commit", 0),
+            ),
+            fast_path,
+        )
+
+        diagnostic_path = "generated.wrapper.source.triangle.diagnostic_raygen"
+        diagnostic = _cp004_function_window(
+            wrapper_source,
+            "__raygen__rtdl_v4_triangle_reduction_diagnostic",
+            diagnostic_path,
+        )
+        diagnostic_offsets = _cp004_pattern_offsets(
+            diagnostic,
+            (
+                ("trace", r"\boptixTrace\s*\(", 2),
+                (
+                    "fast_status_gate",
+                    r"if\s*\(\s*params\.fast_control->error_code\s*"
+                    r"!=\s*0u\s*\)\s*return\s*;",
+                    2,
+                ),
+                (
+                    "diagnostic_status_gate",
+                    r"else\s+if\s*\(\s*params\.status\s*\[\s*query\s*\]"
+                    r"\.first_error_claimed\s*!=\s*0u\s*\)\s*return\s*;",
+                    1,
+                ),
+                (
+                    "finalizer_call",
+                    r"\(void\)\s*rtdl_v4_finalize_[A-Za-z0-9_]+\s*\(",
+                    1,
+                ),
+                (
+                    "finalizer_status_commit",
+                    r"if\s*\(\s*!v4_commit_leaf_status\s*\(\s*query\s*,\s*"
+                    r"fin_status_ok\b",
+                    1,
+                ),
+                (
+                    "finalizer_effect_gate",
+                    r"if\s*\(\s*fin_out_effect_tag\s*!=\s*9u\s*\)",
+                    1,
+                ),
+                (
+                    "final_value",
+                    r"const\s+unsigned\s+long\s+long\s+final_value\s*=",
+                    2,
+                ),
+                (
+                    "output_commit",
+                    r"params\.per_ray_u64\s*\[\s*query\s*\]\s*=\s*"
+                    r"final_value\s*;",
+                    2,
+                ),
+            ),
+            diagnostic_path,
+        )
+        diagnostic_fast_order = _cp004_require_order(
+            diagnostic_offsets,
+            (
+                ("trace", 0),
+                ("fast_status_gate", 0),
+                ("final_value", 0),
+                ("output_commit", 0),
+                ("trace", 1),
+            ),
+            diagnostic_path,
+        )
+        diagnostic_checked_order = _cp004_require_order(
+            diagnostic_offsets,
+            (
+                ("trace", 1),
+                ("fast_status_gate", 1),
+                ("diagnostic_status_gate", 0),
+                ("finalizer_call", 0),
+                ("finalizer_status_commit", 0),
+                ("finalizer_effect_gate", 0),
+                ("final_value", 1),
+                ("output_commit", 1),
+            ),
+            diagnostic_path,
+        )
+        return {
+            "kind": "triangle_dual_path_status_gated_reduction",
+            "fast_order": fast_order,
+            "diagnostic_fast_order": diagnostic_fast_order,
+            "diagnostic_checked_order": diagnostic_checked_order,
+        }
+
+    sphere_path = "generated.wrapper.source.sphere.raygen"
+    sphere = _cp004_function_window(
+        wrapper_source, "__raygen__rtdl_v4_sphere", sphere_path
+    )
+    sphere_offsets = _cp004_pattern_offsets(
+        sphere,
+        (
+            ("trace", r"\boptixTrace\s*\(", 1),
+            (
+                "status_gate",
+                r"if\s*\(\s*params\.status\s*\[\s*query\s*\]"
+                r"\.first_error_claimed\s*!=\s*0u\s*\)\s*return\s*;",
+                1,
+            ),
+            (
+                "finalizer_call",
+                r"\(void\)\s*rtdl_v4_finalize_[A-Za-z0-9_]+\s*\(",
+                1,
+            ),
+            (
+                "finalizer_status_commit",
+                r"if\s*\(\s*!v4_commit_leaf_status\s*\(\s*query\s*,\s*"
+                r"fin_status_ok\b",
+                1,
+            ),
+            (
+                "result",
+                r"const\s+unsigned\s+long\s+long\s+result\s*=",
+                1,
+            ),
+            (
+                "output_low",
+                r"params\.output_0\s*\[\s*query\s*\]\s*=\s*"
+                r"v4_u64_low\s*\(\s*result\s*\)\s*;",
+                1,
+            ),
+            (
+                "output_high",
+                r"params\.output_1\s*\[\s*query\s*\]\s*=\s*"
+                r"v4_u64_high\s*\(\s*result\s*\)\s*;",
+                1,
+            ),
+        ),
+        sphere_path,
+    )
+    sphere_order = _cp004_require_order(
+        sphere_offsets,
+        (
+            ("trace", 0),
+            ("status_gate", 0),
+            ("finalizer_call", 0),
+            ("finalizer_status_commit", 0),
+            ("result", 0),
+            ("output_low", 0),
+            ("output_high", 0),
+        ),
+        sphere_path,
+    )
+    return {
+        "kind": "sphere_status_gated_count",
+        "raygen_order": sphere_order,
+    }
+
+
 def _check_native_producer_source(
     route_id: str, sources: Mapping[str, str]
 ) -> dict[str, str]:
@@ -1577,12 +1919,7 @@ def _check_cp004(
         _mapping(_generated(bundle).get("wrapper"), "generated.wrapper").get("source"),
         "generated.wrapper.source",
     )
-    first_anchor, second_anchor = rule["status_anchors"]
-    first_index = wrapper_source.find(first_anchor)
-    second_index = wrapper_source.find(second_anchor)
-    _require(first_index >= 0 and second_index >= 0, "TC004_STATUS_SOURCE_ANCHOR_MISSING", route_id, (first_anchor, second_anchor))
-    if route_id != "stable::bounded_relation::canonical_bounded_pair_collection":
-        _require(first_index < second_index, "TC004_STATUS_AFTER_OUTPUT", route_id, (first_index, second_index))
+    wrapper_flow = _check_wrapper_status_flow(route_id, wrapper_source)
     host_flow = _check_host_status_flow(route_id, control_sources)
     receipt = _mapping(bundle.get("execution_receipt"), "bundle.execution_receipt")
     if route_id in FIXED_MODE_BY_ROUTE:
@@ -1638,6 +1975,7 @@ def _check_cp004(
         "partial_result_exposed": False,
         "execution_mode": expected_mode,
         "control_flow_manifest_sha256": control_flow_manifest_sha256,
+        "wrapper_flow": wrapper_flow,
         "host_flow": host_flow,
     }
     return {
