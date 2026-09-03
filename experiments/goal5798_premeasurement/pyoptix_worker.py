@@ -12,21 +12,38 @@ from pathlib import Path
 import sys
 from typing import Any
 
-from worker_common import (
-    MEMORY_MODE,
-    PREPARED_REPETITIONS,
-    PREPARED_WARMUPS,
-    admit,
-    create_json,
-    finish_receipt,
-    load_runtime_manifest,
-    measured,
-    now_ns,
-    parser_for,
-    plan_result,
-    wait_memory_barrier,
-)
-from workload import digest, relation_workload, triangle_workload
+if __package__:
+    from .worker_common import (
+        MEMORY_MODE,
+        PREPARED_REPETITIONS,
+        PREPARED_WARMUPS,
+        admit,
+        create_json,
+        finish_receipt,
+        load_runtime_manifest,
+        measured,
+        now_ns,
+        parser_for,
+        plan_result,
+        wait_memory_barrier,
+    )
+    from .workload import digest, relation_workload, triangle_workload
+else:
+    from worker_common import (
+        MEMORY_MODE,
+        PREPARED_REPETITIONS,
+        PREPARED_WARMUPS,
+        admit,
+        create_json,
+        finish_receipt,
+        load_runtime_manifest,
+        measured,
+        now_ns,
+        parser_for,
+        plan_result,
+        wait_memory_barrier,
+    )
+    from workload import digest, relation_workload, triangle_workload
 
 
 ARM = "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API"

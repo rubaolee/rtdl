@@ -47,14 +47,26 @@ V3_PREREGISTRATION_SHA256 = (
 V3_PREREGISTRATION_FILE_SHA256 = (
     "73a9b6c86f4017f4ea9f0ab59eb23923b92d981182295cc81fc1ef1b6533dda0"
 )
-PREREGISTRATION_SCHEMA = "rtdl.goal5842.causal_admission_preregistration.v4"
+V4_PREREGISTRATION_SCHEMA = "rtdl.goal5842.causal_admission_preregistration.v4"
+V4_PREREGISTRATION_PATH = (
+    "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+    "PREREGISTRATION_V4.json"
+)
+V4_PREREGISTRATION_SHA256 = (
+    "afdd4094f982285ab8843c578542da24303a1c77d3f877a2e6c5c9f1eda38710"
+)
+V4_PREREGISTRATION_FILE_SHA256 = (
+    "7d66f2f93042786e4f7291d98d7a98ac1d5a00e961997cb4cd2fde58d3988b3a"
+)
+PREREGISTRATION_SCHEMA = "rtdl.goal5842.causal_admission_preregistration.v5"
 EXECUTION_AUTHORITY_SCHEMA = "rtdl.goal5842.execution_authority.v1"
 WORKER_RECEIPT_SCHEMA = "rtdl.goal5842.causal_admission_worker.v1"
 CONTROLLER_RESULT_SCHEMA = "rtdl.goal5842.causal_admission_controller.v1"
 BASELINE_SUBWORKER_SCHEMA = "rtdl.goal5842.baseline_subworker.v1"
 BASELINE_CONTROLLER_SCHEMA = "rtdl.goal5842.baseline_controller.v1"
 GPU_IDENTITY_WITNESS_SCHEMA = "rtdl.goal5842.gpu_identity_witness.v1"
-INDEPENDENT_RECOUNT_SCHEMA = "rtdl.goal5842.independent_recount.v1"
+PYOPTIX_IDENTITY_WITNESS_SCHEMA = "rtdl.goal5842.pyoptix_identity_witness.v1"
+INDEPENDENT_RECOUNT_SCHEMA = "rtdl.goal5842.independent_recount.v2"
 CROSS_GENERATION_AUTHORITY_SCHEMA = "rtdl.goal5842.cross_generation_authority.v1"
 
 CHECK_ON = "CHECK_ON_COLD_PUBLIC_ADMISSION"
@@ -143,6 +155,8 @@ REQUIRED_SOURCE_PATHS = (
     "experiments/goal5798_premeasurement/direct_measurement.cpp",
     "experiments/goal5798_premeasurement/build_direct_measurement.sh",
     "experiments/goal5798_premeasurement/pyoptix_worker.py",
+    "experiments/goal5798_premeasurement/worker_common.py",
+    "experiments/goal5798_premeasurement/contract_runtime.py",
     "experiments/goal5798_premeasurement/workload.py",
     "experiments/goal5796_matched/direct_optix.cpp",
     "experiments/goal5796_matched/matched_device.cu",
@@ -159,6 +173,7 @@ REQUIRED_SOURCE_PATHS = (
     "scripts/goal5842_build_cross_generation_authority.py",
     "scripts/goal5842_build_preregistration.py",
     "scripts/goal5842_gpu_identity_witness.py",
+    "scripts/goal5842_pyoptix_identity_witness.py",
     "scripts/goal5842_independent_recount.py",
     "scripts/goal5842_run_one_generation.py",
     "src/rtdsl/v4_callback_lifecycle.py",
@@ -182,6 +197,15 @@ REQUIRED_SOURCE_PATHS = (
     (
         "history/internal_docs/goal5842_causal_admission_cost_20260903/"
         "PRE_WORKER_ZERO_REPAIR_03.md"
+    ),
+    V4_PREREGISTRATION_PATH,
+    (
+        "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+        "FORMAL_TRANSACTION04_FAILURE_AND_REPLICATION_PLAN.md"
+    ),
+    (
+        "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+        "pod_artifacts/goal5842_transaction04_failure.tar.gz"
     ),
 )
 
@@ -235,7 +259,7 @@ def v3_preregistration_supersession() -> dict[str, object]:
     }
 
 
-def preregistration_supersession() -> dict[str, object]:
+def v4_preregistration_supersession() -> dict[str, object]:
     """Return the append-only pre-worker-zero repair chain for v4."""
 
     return {
@@ -265,6 +289,68 @@ def preregistration_supersession() -> dict[str, object]:
             "reduce the witness-only sphere fixture from 16384-square to "
             "1024-square while preserving its route and exact checks"
         ),
+    }
+
+
+def post_failure_replication_provenance() -> dict[str, object]:
+    """Bind V5 to the disclosed terminal V4 transaction without superseding it."""
+
+    return {
+        "predecessor_path": V4_PREREGISTRATION_PATH,
+        "predecessor_schema": V4_PREREGISTRATION_SCHEMA,
+        "predecessor_preregistration_sha256": V4_PREREGISTRATION_SHA256,
+        "predecessor_file_sha256": V4_PREREGISTRATION_FILE_SHA256,
+        "v4_transaction_source_commit": (
+            "c1fe04d76511f5db57ea802e8ba7c305c1a088d3"
+        ),
+        "v4_transaction_artifact_path": (
+            "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+            "pod_artifacts/goal5842_transaction04_failure.tar.gz"
+        ),
+        "v4_transaction_artifact_bytes": 222_439,
+        "v4_transaction_artifact_sha256": (
+            "d22ccd42bb55c876c5f0e575aa3a50d2110d347b037cd325fb4a0fbf1a22a603"
+        ),
+        "v4_execution_authority_file_sha256": (
+            "3edf3f9c84c66bb7cd13966f22e4a3c3aee2fc67ed49bcf4ba56c15ad101a043"
+        ),
+        "v4_gpu_identity_witness_file_sha256": (
+            "d449a979ab7dad6ab0cc27717b2cd1faf0e8455cab10fd7bb565390da3379945"
+        ),
+        "v4_causal_result_file_sha256": (
+            "828fbe5e63b9692a0bbc59a9fca4869fd4e78e6f2eb1b5e4c89af3155fbc71c1"
+        ),
+        "v4_failure_marker_file_sha256": (
+            "7d2350daed571bbea14c509089a558ee47f9c5ef7e11c483305bdafc90b2e338"
+        ),
+        "v4_failed_pyoptix_marker_file_sha256": (
+            "de6b7d6b34208a8bf5b32c31e3a8003444c76c3b75b49cce0ebf9c5fa81cf021"
+        ),
+        "v4_failed_pyoptix_stderr_file_sha256": (
+            "c6cb5b2fdaad61768e0fb8b032497da3919859dff25529e8a8d97335c970cb99"
+        ),
+        "v4_worker_zero_reached": True,
+        "v4_new_transaction_after_repair_permitted": False,
+        "v4_completed_causal_worker_count": 216,
+        "v4_completed_baseline_subworker_count": 2,
+        "v4_failed_baseline_subworker_count": 1,
+        "v4_registered_causal_worker_timing_vector_count": 216,
+        "v4_registered_causal_phase_value_count": 432,
+        "v4_registered_baseline_subworker_timing_vector_count": 2,
+        "v4_registered_baseline_execution_sample_count": 65,
+        "v4_unregistered_baseline_warmup_execution_count": 8,
+        "v4_untimed_rtdl_identity_complete_execution_call_count": 6,
+        "v4_direct_baseline_complete_execution_call_count": 73,
+        "pre_v4_untimed_gpu_complete_execution_call_count": 8,
+        "failure_code": "PYOPTIX_HISTORICAL_WORKER_PACKAGE_IMPORT_DEFECT",
+        "failure_before_pyoptix_clock_or_gpu": True,
+        "repair_scope": (
+            "conditional package-relative imports with direct-script fallback"
+        ),
+        "v5_is_v4_retry": False,
+        "v5_is_independent_full_replication": True,
+        "v4_rows_pooled_into_v5_estimators": False,
+        "task_schedule_phase_statistics_threshold_changed_from_v4": False,
     }
 
 
@@ -435,12 +521,16 @@ def validate_preregistration(value: object, root: Path, *, verify_files: bool) -
         prereg.get("schema") == PREREGISTRATION_SCHEMA,
         "preregistration schema mismatch",
     )
+    _require("supersession" not in prereg, "V5 must not supersede failed V4")
     _require(
-        prereg.get("supersession") == preregistration_supersession(),
-        "preregistration supersession chain mismatch",
+        prereg.get("post_failure_replication")
+        == post_failure_replication_provenance(),
+        "post-failure replication provenance mismatch",
     )
     _require(
-        prereg.get("status") == "FROZEN_BEFORE_TIMING", "preregistration is not frozen"
+        prereg.get("status")
+        == "FROZEN_BEFORE_INDEPENDENT_REPLICATION_TIMING",
+        "replication preregistration is not frozen",
     )
     _require(
         prereg.get("registered_timing_observation_count") == 0,
@@ -450,12 +540,35 @@ def validate_preregistration(value: object, root: Path, *, verify_files: bool) -
     _require(
         prereg.get("preregistration_build_counter_scope")
         == {
-            "top_level_counters_cover_this_v4_build_only": True,
-            "prior_untimed_gpu_calls_are_in_supersession": True,
-            "prior_untimed_gpu_complete_execution_call_count": 8,
-            "prior_registered_timing_observation_count": 0,
+            "top_level_counters_cover_this_v5_replication_build_only": True,
+            "prior_evidence_is_bound_in_post_failure_replication": True,
+            "pre_v4_untimed_gpu_complete_execution_call_count": 8,
+            "v4_registered_causal_worker_timing_vector_count": 216,
+            "v4_registered_baseline_subworker_timing_vector_count": 2,
+            "v4_registered_baseline_execution_sample_count": 65,
+            "v4_untimed_rtdl_identity_complete_execution_call_count": 6,
+            "v4_direct_baseline_complete_execution_call_count": 73,
         },
-        "preregistration counter scope or prior untimed GPU disclosure differs",
+        "replication counter scope or prior evidence disclosure differs",
+    )
+    witnesses = prereg.get("pre_worker_zero_witness_design")
+    _require(isinstance(witnesses, dict), "pre-worker-zero witness design missing")
+    _require(
+        witnesses
+        == {
+            "rtdl_check_on_off_task_count": 3,
+            "rtdl_check_on_off_complete_execution_call_count": 6,
+            "pyoptix_package_front_door_task_count": 2,
+            "pyoptix_complete_execution_call_count": 2,
+            "pyoptix_optix_launch_count": 3,
+            "all_witnesses_register_no_timing": True,
+            "worker_zero_after_all_witnesses_pass": True,
+            "direct_witness_excluded": (
+                "V4 Direct relation first-and-steady subworkers completed; "
+                "the Direct binary has no timer-free mode"
+            ),
+        },
+        "pre-worker-zero witness design drift",
     )
     _require(
         prereg.get("admission_tasks") == list(ADMISSION_TASKS),
@@ -569,6 +682,16 @@ def validate_preregistration(value: object, root: Path, *, verify_files: bool) -
             identity.get(key) == "EXACT_SHA256_EQUAL",
             f"identity invariant missing: {key}",
         )
+    _require(
+        prereg.get("byte_identity_invariant_scope")
+        == {
+            "applies_to": "CHECK_ON_VS_CHECK_OFF_WITHIN_EACH_RTDL_TASK",
+            "provider_baseline_generated_bytes_must_match": False,
+            "provider_baseline_same_semantic_input_output_contract": True,
+            "provider_baseline_implementations_are_independent": True,
+        },
+        "byte-identity scope drift",
+    )
     ceiling = prereg.get("claim_ceiling")
     _require(isinstance(ceiling, dict), "claim ceiling missing")
     for key in (
@@ -581,6 +704,9 @@ def validate_preregistration(value: object, root: Path, *, verify_files: bool) -
         "cross_generation_equivalence",
         "one_generation_is_goal5842_complete",
         "external_review_or_consensus",
+        "v4_transaction_reclassified_as_success",
+        "v4_rows_pooled_into_v5_estimators",
+        "v5_called_a_retry_of_v4",
     ):
         _require(ceiling.get(key) is False, f"claim ceiling widened: {key}")
     _require(
@@ -647,6 +773,7 @@ __all__ = [
     "INDEPENDENT_RECOUNT_SCHEMA",
     "PREREGISTRATION_SCHEMA",
     "PYOPTIX_ARM",
+    "PYOPTIX_IDENTITY_WITNESS_SCHEMA",
     "RELATION_TASK",
     "REQUIRED_SOURCE_PATHS",
     "RTDL_ARM",
@@ -668,6 +795,10 @@ __all__ = [
     "V3_PREREGISTRATION_PATH",
     "V3_PREREGISTRATION_SCHEMA",
     "V3_PREREGISTRATION_SHA256",
+    "V4_PREREGISTRATION_FILE_SHA256",
+    "V4_PREREGISTRATION_PATH",
+    "V4_PREREGISTRATION_SCHEMA",
+    "V4_PREREGISTRATION_SHA256",
     "WORKER_RECEIPT_SCHEMA",
     "Goal5842ContractError",
     "build_baseline_schedule",
@@ -676,10 +807,11 @@ __all__ = [
     "digest",
     "load_preregistration",
     "pin_file",
-    "preregistration_supersession",
+    "post_failure_replication_provenance",
     "sha256_file",
     "v2_preregistration_supersession",
     "v3_preregistration_supersession",
+    "v4_preregistration_supersession",
     "validate_baseline_schedule",
     "validate_causal_schedule",
     "validate_preregistration",

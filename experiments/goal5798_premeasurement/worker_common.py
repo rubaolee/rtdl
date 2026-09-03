@@ -17,12 +17,20 @@ import statistics
 import time
 from typing import Any, Callable
 
-from contract_runtime import (
-    MEMORY_MODE,
-    canonical,
-    digest,
-    load_freeze,
-)
+if __package__:
+    from .contract_runtime import (
+        MEMORY_MODE,
+        canonical,
+        digest,
+        load_freeze,
+    )
+else:
+    from contract_runtime import (
+        MEMORY_MODE,
+        canonical,
+        digest,
+        load_freeze,
+    )
 
 
 SCHEMA = "rtdl.goal5798.worker_payload_receipt.v1"

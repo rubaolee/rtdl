@@ -30,6 +30,7 @@ from experiments.goal5842_causal_admission.contracts import (
     GPU_IDENTITY_WITNESS_SCHEMA,
     INDEPENDENT_RECOUNT_SCHEMA,
     PYOPTIX_ARM,
+    PYOPTIX_IDENTITY_WITNESS_SCHEMA,
     RTDL_ARM,
     STEADY_MODE,
     STEADY_REPETITIONS,
@@ -55,6 +56,34 @@ PHASE_KEYS = {
 }
 ROUTE_PHASE = "route_declaration_and_artifact_binding"
 CAUSAL_PHASE = "provider_projection_and_public_admission_or_unchecked_construction"
+PYOPTIX_WITNESS_FIELDS = {
+    "schema",
+    "status",
+    "source_commit",
+    "preregistration_sha256",
+    "execution_authority_sha256",
+    "hardware",
+    "tasks",
+    "task_count",
+    "gpu_complete_execution_call_count",
+    "optix_launch_count",
+    "registered_timing_observation_count",
+    "clock_api_called_by_witness_module",
+    "duration_field_count",
+    "performance_claim_authorized",
+    "witness_sha256",
+}
+PYOPTIX_WITNESS_TASK_FIELDS = {
+    "task",
+    "input_sha256",
+    "output_sha256",
+    "device_source_sha256",
+    "ptx_sha256",
+    "pyoptix_repository_commit",
+    "optix_api_version",
+    "complete_execution_call_count",
+    "oracle_exact",
+}
 
 
 def require(condition: bool, message: str) -> None:
@@ -749,11 +778,109 @@ def validate_identity_witness(
     )
 
 
+def validate_pyoptix_identity_witness(
+    witness: dict[str, Any], prereg: dict[str, Any], authority: dict[str, Any]
+) -> None:
+    verify_seal(witness, "witness_sha256", "PyOptiX identity witness")
+    require(
+        set(witness) == PYOPTIX_WITNESS_FIELDS,
+        "PyOptiX identity witness field set mismatch",
+    )
+    require(
+        witness.get("schema") == PYOPTIX_IDENTITY_WITNESS_SCHEMA,
+        "PyOptiX identity witness schema mismatch",
+    )
+    require(
+        witness.get("status")
+        == "PASS__PYOPTIX_PACKAGE_FRONT_DOOR_NO_TIMING_OBSERVED",
+        "PyOptiX identity witness status mismatch",
+    )
+    for field, expected in (
+        ("source_commit", authority["source_commit"]),
+        ("preregistration_sha256", prereg["preregistration_sha256"]),
+        ("execution_authority_sha256", authority["authority_sha256"]),
+        ("hardware", authority["hardware"]),
+    ):
+        require(witness.get(field) == expected, f"PyOptiX witness {field} mismatch")
+    rows = witness.get("tasks")
+    require(
+        isinstance(rows, list)
+        and [row.get("task") for row in rows] == list(BASELINE_TASKS),
+        "PyOptiX identity task cohort mismatch",
+    )
+    contracts = {row["task"]: row for row in prereg["task_contracts"]}
+    ptx_sha256: str | None = None
+    for row in rows:
+        require(
+            isinstance(row, dict) and set(row) == PYOPTIX_WITNESS_TASK_FIELDS,
+            "PyOptiX identity task field set mismatch",
+        )
+        contract = contracts[row["task"]]
+        require(
+            row.get("input_sha256") == contract["input_sha256"],
+            "PyOptiX witness input differs from preregistration",
+        )
+        require(
+            row.get("output_sha256") == contract["public_output_sha256"],
+            "PyOptiX witness output differs from preregistration",
+        )
+        require(row.get("oracle_exact") is True, "PyOptiX witness oracle failed")
+        require(
+            row.get("complete_execution_call_count") == 1,
+            "PyOptiX witness execution count mismatch",
+        )
+        require(
+            row.get("pyoptix_repository_commit")
+            == authority["pyoptix"]["repository_commit"],
+            "PyOptiX witness repository identity mismatch",
+        )
+        require(
+            row.get("device_source_sha256")
+            == authority["execution_paths"]["device_source_sha256"],
+            "PyOptiX witness device source identity mismatch",
+        )
+        require(
+            row.get("optix_api_version") == authority["toolchain"]["optix_sdk"],
+            "PyOptiX witness OptiX API identity mismatch",
+        )
+        observed_ptx = row.get("ptx_sha256")
+        require(
+            isinstance(observed_ptx, str) and len(observed_ptx) == 64,
+            "PyOptiX witness PTX identity missing",
+        )
+        if ptx_sha256 is None:
+            ptx_sha256 = observed_ptx
+        require(
+            observed_ptx == ptx_sha256,
+            "PyOptiX witness PTX identity differs across tasks",
+        )
+    require(witness.get("task_count") == 2, "PyOptiX witness task count mismatch")
+    require(
+        witness.get("gpu_complete_execution_call_count") == 2,
+        "PyOptiX witness complete execution count mismatch",
+    )
+    require(
+        witness.get("optix_launch_count") == 3,
+        "PyOptiX witness OptiX launch count mismatch",
+    )
+    require(
+        witness.get("registered_timing_observation_count") == 0
+        and witness.get("clock_api_called_by_witness_module") is False
+        and witness.get("duration_field_count") == 0,
+        "PyOptiX identity witness contains timing",
+    )
+    require(
+        witness.get("performance_claim_authorized") is False,
+        "PyOptiX identity witness overclaims performance",
+    )
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--preregistration", type=Path, required=True)
     parser.add_argument("--execution-authority", type=Path, required=True)
     parser.add_argument("--identity-witness", type=Path, required=True)
+    parser.add_argument("--pyoptix-identity-witness", type=Path, required=True)
     parser.add_argument("--causal-root", type=Path, required=True)
     parser.add_argument("--baseline-root", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
@@ -768,6 +895,8 @@ def main() -> None:
     validate_authority(authority, prereg, prereg_path)
     witness = read_json(witness_path)
     validate_identity_witness(witness, prereg, authority)
+    pyoptix_witness = read_json(args.pyoptix_identity_witness.resolve())
+    validate_pyoptix_identity_witness(pyoptix_witness, prereg, authority)
     causal, causal_receipts = recount_causal(causal_root, prereg, authority)
     baseline, composites = recount_baseline(baseline_root, prereg, authority)
     require(causal.get("hardware") == authority["hardware"], "causal hardware mismatch")
@@ -808,6 +937,17 @@ def main() -> None:
             ),
             f"baseline/identity output mismatch: {task}",
         )
+        pyoptix_witness_row = next(
+            row for row in pyoptix_witness["tasks"] if row["task"] == task
+        )
+        require(
+            all(
+                row["output_sha256"] == pyoptix_witness_row["output_sha256"]
+                for row in baseline_rows
+                if row["arm"] == PYOPTIX_ARM
+            ),
+            f"baseline/PyOptiX-witness output mismatch: {task}",
+        )
     causal_manifest = evidence_manifest(causal_root)
     baseline_manifest = evidence_manifest(baseline_root)
     result: dict[str, object] = {
@@ -819,6 +959,7 @@ def main() -> None:
         "hardware": authority["hardware"],
         "architecture_generation": authority["hardware"]["architecture_generation"],
         "identity_witness_sha256": witness["witness_sha256"],
+        "pyoptix_identity_witness_sha256": pyoptix_witness["witness_sha256"],
         "causal_result_sha256": causal["result_sha256"],
         "baseline_result_sha256": baseline["result_sha256"],
         "causal_receipt_count": len(causal_receipts),

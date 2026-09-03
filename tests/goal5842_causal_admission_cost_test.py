@@ -3,8 +3,13 @@
 from __future__ import annotations
 
 import ast
+import hashlib
+import importlib
 import json
 import os
+import subprocess
+import sys
+import tarfile
 import tempfile
 import unittest
 from collections import Counter
@@ -41,14 +46,19 @@ from experiments.goal5842_causal_admission.contracts import (
     V3_PREREGISTRATION_PATH,
     V3_PREREGISTRATION_SCHEMA,
     V3_PREREGISTRATION_SHA256,
+    V4_PREREGISTRATION_FILE_SHA256,
+    V4_PREREGISTRATION_PATH,
+    V4_PREREGISTRATION_SCHEMA,
+    V4_PREREGISTRATION_SHA256,
     Goal5842ContractError,
     build_baseline_schedule,
     build_causal_schedule,
     digest,
-    preregistration_supersession,
+    post_failure_replication_provenance,
     sha256_file,
     v2_preregistration_supersession,
     v3_preregistration_supersession,
+    v4_preregistration_supersession,
     validate_preregistration,
 )
 from experiments.goal5842_causal_admission.controller import summarize
@@ -76,17 +86,19 @@ from scripts.goal5842_independent_recount import (
 from scripts.goal5842_independent_recount import (
     recount_baseline,
     recount_causal,
+    validate_pyoptix_identity_witness,
 )
 from scripts.goal5842_run_one_generation import validated_python_entrypoint
 
 ROOT = Path(__file__).resolve().parents[1]
 PREREGISTRATION = ROOT / (
     "history/internal_docs/goal5842_causal_admission_cost_20260903/"
-    "PREREGISTRATION_V4.json"
+    "PREREGISTRATION_V5.json"
 )
 V1_PREREGISTRATION = ROOT / V1_PREREGISTRATION_PATH
 V2_PREREGISTRATION = ROOT / V2_PREREGISTRATION_PATH
 V3_PREREGISTRATION = ROOT / V3_PREREGISTRATION_PATH
+V4_PREREGISTRATION = ROOT / V4_PREREGISTRATION_PATH
 FROZEN_CORE = (
     "src/rtdsl/v4_family_schema.py",
     "src/rtdsl/v4_generic_family_lifecycle.py",
@@ -110,10 +122,11 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
         self.assertEqual(self.prereg["registered_timing_observation_count"], 0)
         self.assertEqual(self.prereg["gpu_execution_count"], 0)
 
-    def test_v4_preregistration_preserves_append_only_repair_chain(self) -> None:
+    def test_v5_binds_v4_failure_without_superseding_or_pooling_it(self) -> None:
         v1 = json.loads(V1_PREREGISTRATION.read_text(encoding="utf-8"))
         v2 = json.loads(V2_PREREGISTRATION.read_text(encoding="utf-8"))
         v3 = json.loads(V3_PREREGISTRATION.read_text(encoding="utf-8"))
+        v4 = json.loads(V4_PREREGISTRATION.read_text(encoding="utf-8"))
         self.assertEqual(v1["schema"], V1_PREREGISTRATION_SCHEMA)
         self.assertEqual(
             v1["preregistration_sha256"],
@@ -139,29 +152,103 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
         self.assertEqual(
             v3["supersession"]["gpu_complete_execution_call_count"], 4
         )
-        self.assertEqual(self.prereg["supersession"], preregistration_supersession())
-        self.assertFalse(self.prereg["supersession"]["worker_zero_reached"])
-        self.assertTrue(self.prereg["supersession"]["scientific_design_changed"])
-        self.assertTrue(self.prereg["supersession"]["workload_changed"])
-        self.assertFalse(self.prereg["supersession"]["schedule_changed"])
-        self.assertFalse(self.prereg["supersession"]["statistics_changed"])
+        self.assertEqual(v4["schema"], V4_PREREGISTRATION_SCHEMA)
+        self.assertEqual(v4["preregistration_sha256"], V4_PREREGISTRATION_SHA256)
         self.assertEqual(
-            self.prereg["supersession"]["gpu_complete_execution_call_count"], 4
+            sha256_file(V4_PREREGISTRATION), V4_PREREGISTRATION_FILE_SHA256
         )
+        self.assertEqual(v4["supersession"], v4_preregistration_supersession())
+        self.assertFalse(v4["supersession"]["worker_zero_reached"])
+        self.assertTrue(v4["supersession"]["scientific_design_changed"])
+        self.assertTrue(v4["supersession"]["workload_changed"])
+        self.assertNotIn("supersession", self.prereg)
         self.assertEqual(
-            self.prereg["supersession"]
-            ["cumulative_prior_untimed_gpu_complete_execution_call_count"],
+            self.prereg["post_failure_replication"],
+            post_failure_replication_provenance(),
+        )
+        provenance = self.prereg["post_failure_replication"]
+        self.assertFalse(provenance["v5_is_v4_retry"])
+        self.assertTrue(provenance["v5_is_independent_full_replication"])
+        self.assertFalse(provenance["v4_rows_pooled_into_v5_estimators"])
+        for key in (
+            "admission_tasks",
+            "baseline_tasks",
+            "task_contracts",
+            "causal_arms",
+            "baseline_arms",
+            "causal_phase_boundaries",
+            "baseline_phase_boundaries",
+            "causal_schedule",
+            "causal_schedule_sha256",
+            "baseline_schedule",
+            "baseline_schedule_sha256",
+            "statistics",
+            "failure_policy",
+        ):
+            self.assertEqual(self.prereg[key], v4[key], key)
+        self.assertEqual(
+            provenance
+            ["pre_v4_untimed_gpu_complete_execution_call_count"],
             8,
         )
         self.assertEqual(
             self.prereg["preregistration_build_counter_scope"]
-            ["prior_untimed_gpu_complete_execution_call_count"],
+            ["pre_v4_untimed_gpu_complete_execution_call_count"],
             8,
         )
         self.assertTrue(
             self.prereg["preregistration_build_counter_scope"]
-            ["prior_untimed_gpu_calls_are_in_supersession"]
+            ["prior_evidence_is_bound_in_post_failure_replication"]
         )
+        artifact = ROOT / provenance["v4_transaction_artifact_path"]
+        self.assertEqual(
+            artifact.stat().st_size,
+            provenance["v4_transaction_artifact_bytes"],
+        )
+        self.assertEqual(
+            sha256_file(artifact), provenance["v4_transaction_artifact_sha256"]
+        )
+        with tarfile.open(artifact, "r:gz") as archive:
+            members = {member.name: member for member in archive.getmembers()}
+
+            def archived_bytes(suffix: str) -> bytes:
+                matches = [name for name in members if name.endswith(suffix)]
+                self.assertEqual(len(matches), 1, suffix)
+                extracted = archive.extractfile(members[matches[0]])
+                self.assertIsNotNone(extracted)
+                return extracted.read()
+
+            internal = {
+                "v4_execution_authority_file_sha256": archived_bytes(
+                    "/execution_authority.json"
+                ),
+                "v4_gpu_identity_witness_file_sha256": archived_bytes(
+                    "/gpu_identity_witness.json"
+                ),
+                "v4_causal_result_file_sha256": archived_bytes(
+                    "/causal/result.json"
+                ),
+                "v4_failure_marker_file_sha256": archived_bytes(
+                    "/TRANSACTION_FAILED_NO_RETRY.json"
+                ),
+                "v4_failed_pyoptix_marker_file_sha256": archived_bytes(
+                    "/baseline/001_B001__K00__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__"
+                    "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API/first/failure.json"
+                ),
+                "v4_failed_pyoptix_stderr_file_sha256": archived_bytes(
+                    "/baseline/001_B001__K00__CUSTOM_AABB_CLOSED_RELATION_COUNT_V1__"
+                    "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API/first/stderr.txt"
+                ),
+            }
+        for field, payload in internal.items():
+            self.assertEqual(hashlib.sha256(payload).hexdigest(), provenance[field])
+        causal = json.loads(internal["v4_causal_result_file_sha256"])
+        failure = json.loads(internal["v4_failure_marker_file_sha256"])
+        stderr = internal["v4_failed_pyoptix_stderr_file_sha256"].decode("utf-8")
+        self.assertEqual(causal["worker_count"], 216)
+        self.assertTrue(failure["worker_zero_reached"])
+        self.assertFalse(failure["new_transaction_after_repair_permitted"])
+        self.assertIn("No module named 'worker_common'", stderr)
 
     def test_gpu_entrypoints_bind_legacy_loader_to_authorized_native(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -366,6 +453,14 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
         )
         _reseal(fake_optimization)
         attacks.append(fake_optimization)
+        pooled_v4 = deepcopy(self.prereg)
+        pooled_v4["claim_ceiling"]["v4_rows_pooled_into_v5_estimators"] = True
+        _reseal(pooled_v4)
+        attacks.append(pooled_v4)
+        hidden_failure = deepcopy(self.prereg)
+        hidden_failure["post_failure_replication"]["v4_worker_zero_reached"] = False
+        _reseal(hidden_failure)
+        attacks.append(hidden_failure)
         swapped_input = deepcopy(self.prereg)
         swapped_input["task_contracts"][0]["input_sha256"] = "f" * 64
         _reseal(swapped_input)
@@ -522,18 +617,106 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
                 imported.add(node.module.split(".")[0])
         self.assertTrue(imported.isdisjoint({"cupy", "numba", "torch"}))
         self.assertNotIn("optix_runtime", worker)
-        witness = ast.parse(
-            (ROOT / "scripts/goal5842_gpu_identity_witness.py").read_text(
-                encoding="utf-8"
+        for relative in (
+            "scripts/goal5842_gpu_identity_witness.py",
+            "scripts/goal5842_pyoptix_identity_witness.py",
+        ):
+            witness = ast.parse((ROOT / relative).read_text(encoding="utf-8"))
+            self.assertFalse(
+                any(
+                    isinstance(node, ast.Attribute)
+                    and node.attr
+                    in {"perf_counter", "perf_counter_ns", "monotonic_ns"}
+                    for node in ast.walk(witness)
+                ),
+                relative,
             )
-        )
-        self.assertFalse(
-            any(
-                isinstance(node, ast.Attribute)
-                and node.attr in {"perf_counter", "perf_counter_ns", "monotonic_ns"}
-                for node in ast.walk(witness)
+            self.assertFalse(
+                any(
+                    isinstance(node, (ast.Import, ast.ImportFrom))
+                    and (
+                        any(alias.name == "time" for alias in node.names)
+                        if isinstance(node, ast.Import)
+                        else node.module == "time"
+                    )
+                    for node in ast.walk(witness)
+                ),
+                relative,
             )
+        runner = (ROOT / "scripts/goal5842_run_one_generation.py").read_text(
+            encoding="utf-8"
         )
+        pyoptix_gate = runner.index("02_pyoptix_identity_witness_no_timing")
+        worker_zero = runner.index("03_causal_admission")
+        self.assertLess(pyoptix_gate, worker_zero)
+        pyoptix_source = (
+            ROOT / "scripts/goal5842_pyoptix_identity_witness.py"
+        ).read_text(encoding="utf-8")
+        self.assertEqual(pyoptix_source.count("baseline.compile_ptx("), 1)
+        self.assertIn("ptx=ptx", pyoptix_source)
+
+    def test_pyoptix_identity_witness_validator_fails_closed(self) -> None:
+        authority = {
+            "source_commit": "a" * 40,
+            "authority_sha256": "b" * 64,
+            "hardware": {"gpu_uuid": "GPU-TEST"},
+            "pyoptix": {"repository_commit": "c" * 40},
+            "execution_paths": {"device_source_sha256": "d" * 64},
+            "toolchain": {"optix_sdk": "9.0.0"},
+        }
+        contracts = {row["task"]: row for row in self.prereg["task_contracts"]}
+        rows = [
+            {
+                "task": task,
+                "input_sha256": contracts[task]["input_sha256"],
+                "output_sha256": contracts[task]["public_output_sha256"],
+                "device_source_sha256": "d" * 64,
+                "ptx_sha256": "e" * 64,
+                "pyoptix_repository_commit": "c" * 40,
+                "optix_api_version": "9.0.0",
+                "complete_execution_call_count": 1,
+                "oracle_exact": True,
+            }
+            for task in BASELINE_TASKS
+        ]
+        witness = {
+            "schema": "rtdl.goal5842.pyoptix_identity_witness.v1",
+            "status": "PASS__PYOPTIX_PACKAGE_FRONT_DOOR_NO_TIMING_OBSERVED",
+            "source_commit": "a" * 40,
+            "preregistration_sha256": self.prereg["preregistration_sha256"],
+            "execution_authority_sha256": "b" * 64,
+            "hardware": authority["hardware"],
+            "tasks": rows,
+            "task_count": 2,
+            "gpu_complete_execution_call_count": 2,
+            "optix_launch_count": 3,
+            "registered_timing_observation_count": 0,
+            "clock_api_called_by_witness_module": False,
+            "duration_field_count": 0,
+            "performance_claim_authorized": False,
+        }
+        witness["witness_sha256"] = digest(witness)
+        validate_pyoptix_identity_witness(witness, self.prereg, authority)
+        attacked = deepcopy(witness)
+        attacked["registered_timing_observation_count"] = 1
+        attacked.pop("witness_sha256")
+        attacked["witness_sha256"] = digest(attacked)
+        with self.assertRaisesRegex(RuntimeError, "contains timing"):
+            validate_pyoptix_identity_witness(attacked, self.prereg, authority)
+        hidden_duration = deepcopy(witness)
+        hidden_duration["tasks"][0]["duration_ns"] = 1
+        hidden_duration.pop("witness_sha256")
+        hidden_duration["witness_sha256"] = digest(hidden_duration)
+        with self.assertRaisesRegex(RuntimeError, "task field set mismatch"):
+            validate_pyoptix_identity_witness(
+                hidden_duration, self.prereg, authority
+            )
+        split_ptx = deepcopy(witness)
+        split_ptx["tasks"][1]["ptx_sha256"] = "f" * 64
+        split_ptx.pop("witness_sha256")
+        split_ptx["witness_sha256"] = digest(split_ptx)
+        with self.assertRaisesRegex(RuntimeError, "PTX identity differs"):
+            validate_pyoptix_identity_witness(split_ptx, self.prereg, authority)
 
     def test_architecture_generation_is_explicit_and_unknown_fails_closed(self) -> None:
         self.assertEqual(architecture_generation("7.5"), "TURING")
@@ -556,6 +739,7 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
                 "scripts/goal5842_bind_execution_authority.py",
                 "scripts/goal5842_build_cross_generation_authority.py",
                 "scripts/goal5842_gpu_identity_witness.py",
+                "scripts/goal5842_pyoptix_identity_witness.py",
                 "scripts/goal5842_independent_recount.py",
                 "scripts/goal5842_run_one_generation.py",
                 "experiments/goal5796_matched/matched_device.cu",
@@ -577,6 +761,25 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
         for task_id in BASELINE_TASKS:
             task = build_task(task_id)
             self.assertIsInstance(task.provider_fixture, dict)
+
+    def test_pyoptix_worker_is_importable_through_package_front_door(self) -> None:
+        module = importlib.import_module(
+            "experiments.goal5798_premeasurement.pyoptix_worker"
+        )
+        self.assertTrue(hasattr(module, "PyOptixRelationPrepared"))
+        self.assertTrue(hasattr(module, "PyOptixTrianglePrepared"))
+        completed = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "experiments/goal5798_premeasurement/pyoptix_worker.py"),
+                "--help",
+            ],
+            cwd=ROOT,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(completed.returncode, 0, completed.stderr)
 
     def test_direct_worker_constants_match_frozen_task_sizes_and_sampling(self) -> None:
         source = (
