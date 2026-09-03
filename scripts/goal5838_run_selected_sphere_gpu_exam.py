@@ -90,13 +90,14 @@ EXAM_SOURCE_PATHS = (
     "src/rtdsl/v4_sphere_any_hit_count_optix_compiler.py",
     "src/rtdsl/v4_sphere_any_hit_count_prepared_runtime.py",
     "src/rtdsl/v4_sphere_any_hit_count_wrapper_codegen.py",
+    "src/rtdsl/v4_sphere_optix_compiler.py",
     "src/rtdsl/v4_sphere_physical_schema.py",
     "src/rtdsl/v4_sphere_prepared_runtime.py",
     "tests/goal5838_selected_sphere_any_hit_count_test.py",
     "tests/goal5838_pod_preflight_test.py",
 )
 NATIVE_BUILD_RESULT_DOMAIN = (
-    "rtdl.goal5838.selected_sphere_optix_provider_build.v1"
+    "rtdl.goal5838.selected_sphere_optix_provider_build.v2"
 )
 NATIVE_BUILD_SOURCE_PATHS = (
     "scripts/goal5838_build_selected_sphere_optix_provider.py",
@@ -126,6 +127,32 @@ NATIVE_BUILD_REQUIRED_SYMBOLS = (
     "rtdl_optix_v4_describe_prepared_builtin_sphere_callback_v1",
     "rtdl_optix_v4_destroy_prepared_builtin_sphere_callback_v1",
 )
+COMPILER_ENVIRONMENT_SCHEMA = "rtdl.goal5838.cuda_compiler_environment.v1"
+COMPILER_FILE_ENVIRONMENT = (
+    ("nvrtc", "RTDL_V4_NVRTC_LIBRARY"),
+    ("nvvm", "NUMBA_CUDA_NVVM"),
+    ("libdevice", "NUMBA_CUDA_LIBDEVICE"),
+)
+COMPILER_PREFIX_ENVIRONMENT = (
+    ("CUDA_HOME", "cuda_prefix"),
+    ("CUDA_PATH", "cuda_prefix"),
+    ("RTDL_V4_CUDA_PREFIX", "cuda_prefix"),
+    ("RTDL_V4_OPTIX_PREFIX", "optix_prefix"),
+)
+FORBIDDEN_COMPILER_ENVIRONMENT = (
+    "RTDL_V4_FORMAL_LEAF_CACHE",
+    "RTDL_V4_FORMAL_LEAF_CACHE_MANIFEST",
+    "RTDL_V4_FORMAL_LEAF_CACHE_MANIFEST_SHA256",
+    "LD_PRELOAD",
+    "NUMBA_ENABLE_CUDASIM",
+    "NUMBA_FORCE_CUDA_CC",
+    "NUMBA_CUDA_DEFAULT_PTX_CC",
+    "NUMBA_CUDA_DRIVER",
+)
+NATIVE_LIBRARY_OVERRIDE_ENVIRONMENT = (
+    "RTDL_OPTIX_LIB",
+    "RTDL_OPTIX_LIBRARY",
+)
 
 
 def _canonical_bytes(value: object) -> bytes:
@@ -144,6 +171,128 @@ def _digest(value: object) -> str:
 
 def _file_sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _resolve_ldd_dependency(output: str, stem: str) -> Path:
+    matches = []
+    for line in output.splitlines():
+        if "=>" not in line:
+            continue
+        name, resolution = (part.strip() for part in line.split("=>", 1))
+        if name != stem and not name.startswith(stem + "."):
+            continue
+        path_text = resolution.split(maxsplit=1)[0]
+        if path_text == "not":
+            raise RuntimeError(f"dynamic dependency is unresolved: {line.strip()}")
+        path = Path(path_text).resolve(strict=True)
+        if not path.is_file():
+            raise RuntimeError(f"dynamic dependency is not a file: {path}")
+        matches.append(path)
+    unique = tuple(dict.fromkeys(matches))
+    if len(unique) != 1:
+        raise RuntimeError(
+            f"expected one resolved {stem} dependency, observed {unique!r}"
+        )
+    return unique[0]
+
+
+def _resolved_environment_path(name: str, *, file: bool) -> Path:
+    value = os.environ.get(name)
+    if not value:
+        raise RuntimeError(f"required compiler environment variable is absent: {name}")
+    try:
+        path = Path(value).expanduser().resolve(strict=True)
+    except OSError as exc:
+        raise RuntimeError(
+            f"compiler environment path is unavailable: {name}={value}"
+        ) from exc
+    if file and not path.is_file():
+        raise RuntimeError(f"compiler environment path is not a file: {name}={path}")
+    if not file and not path.is_dir():
+        raise RuntimeError(
+            f"compiler environment path is not a directory: {name}={path}"
+        )
+    return path
+
+
+def _capture_compiler_environment(
+    native_build: dict[str, object],
+    *,
+    optix_include: Path,
+    cuda_include: Path,
+    native_override: Path | None,
+) -> dict[str, object]:
+    build_input = native_build.get("build_input")
+    if not isinstance(build_input, dict):
+        raise TypeError("native build input is absent from compiler custody")
+    expected_optix_include = Path(str(build_input["optix_include"])).resolve(
+        strict=True
+    )
+    expected_cuda_include = Path(str(build_input["cuda_include"])).resolve(
+        strict=True
+    )
+    if (
+        optix_include.resolve(strict=True) != expected_optix_include
+        or cuda_include.resolve(strict=True) != expected_cuda_include
+    ):
+        raise RuntimeError("runtime include roots differ from the native build")
+
+    prefixes: dict[str, str] = {}
+    for environment_name, build_key in COMPILER_PREFIX_ENVIRONMENT:
+        observed = _resolved_environment_path(environment_name, file=False)
+        expected = Path(str(build_input[build_key])).resolve(strict=True)
+        if observed != expected:
+            raise RuntimeError(
+                f"compiler prefix differs: {environment_name}={observed} != {expected}"
+            )
+        prefixes[environment_name] = str(observed)
+
+    contaminated = [
+        name for name in FORBIDDEN_COMPILER_ENVIRONMENT if name in os.environ
+    ]
+    if contaminated:
+        raise RuntimeError(
+            f"forbidden compiler environment is present: {contaminated}"
+        )
+    expected_native = None if native_override is None else native_override.resolve(
+        strict=True
+    )
+    for name in NATIVE_LIBRARY_OVERRIDE_ENVIRONMENT:
+        value = os.environ.get(name)
+        if expected_native is None:
+            if name in os.environ:
+                raise RuntimeError(
+                    f"native library override was present before runner setup: {name}"
+                )
+        elif not value or Path(value).expanduser().resolve(strict=True) != expected_native:
+            raise RuntimeError(f"runner-owned native library override differs: {name}")
+
+    files = []
+    for label, environment_name in COMPILER_FILE_ENVIRONMENT:
+        path = _resolved_environment_path(environment_name, file=True)
+        row = {
+            "label": label,
+            "environment_variable": environment_name,
+            "path": str(path),
+            "bytes": path.stat().st_size,
+            "sha256": _file_sha256(path),
+        }
+        if label == "nvrtc" and (
+            path
+            != Path(str(build_input["nvrtc_library_path"])).resolve(strict=True)
+            or row["bytes"] != build_input["nvrtc_library_bytes"]
+            or row["sha256"] != build_input["nvrtc_library_sha256"]
+        ):
+            raise RuntimeError("runtime NVRTC differs from the native build input")
+        files.append(row)
+    result = {
+        "schema": COMPILER_ENVIRONMENT_SCHEMA,
+        "prefixes": prefixes,
+        "compiler_files": files,
+        "forbidden_environment_absent": list(FORBIDDEN_COMPILER_ENVIRONMENT),
+    }
+    result["identity_sha256"] = _digest(result)
+    return result
 
 
 def _sealed_document_sha256(
@@ -353,7 +502,7 @@ def _verify_native_build_manifest(
     except json.JSONDecodeError as exc:
         raise RuntimeError("native build manifest is invalid JSON") from exc
     if not isinstance(manifest, dict):
-        raise RuntimeError("native build manifest root must be an object")
+        raise TypeError("native build manifest root must be an object")
     if (
         manifest.get("schema") != NATIVE_BUILD_RESULT_DOMAIN
         or manifest.get("status")
@@ -367,7 +516,7 @@ def _verify_native_build_manifest(
         raise RuntimeError("native build manifest envelope differs")
     repository = manifest.get("repository")
     if not isinstance(repository, dict):
-        raise RuntimeError("native build manifest lacks repository custody")
+        raise TypeError("native build manifest lacks repository custody")
     if (
         repository.get("expected_commit") != expected_commit
         or repository.get("head_before") != expected_commit
@@ -397,7 +546,7 @@ def _verify_native_build_manifest(
             raise RuntimeError(f"native build source row differs: {relative}")
     build_input = manifest.get("build_input")
     if not isinstance(build_input, dict):
-        raise RuntimeError("native build input is absent")
+        raise TypeError("native build input is absent")
     abi_probe = build_input.get("optix_runtime_abi_probe")
     if (
         manifest.get("build_input_sha256") != _digest(build_input)
@@ -411,6 +560,15 @@ def _verify_native_build_manifest(
         or build_input.get("language_standard") != "c++17"
         or build_input.get("optimization") != "O3"
         or build_input.get("position_independent_code") is not True
+        or not isinstance(build_input.get("nvrtc_library_path"), str)
+        or not build_input.get("nvrtc_library_path")
+        or type(build_input.get("nvrtc_library_bytes")) is not int
+        or build_input.get("nvrtc_library_bytes") <= 0
+        or not isinstance(build_input.get("nvrtc_library_sha256"), str)
+        or re.fullmatch(
+            r"[0-9a-f]{64}", build_input["nvrtc_library_sha256"]
+        )
+        is None
         or not isinstance(abi_probe, dict)
         or abi_probe.get("passed") is not True
         or abi_probe.get("runtime_returncode") != 0
@@ -418,6 +576,36 @@ def _verify_native_build_manifest(
         or abi_probe.get("optix_launch_count") != 0
     ):
         raise RuntimeError("native build input identity differs")
+    dynamic_dependencies = manifest.get("dynamic_dependencies")
+    dynamic_nvrtc = manifest.get("dynamic_nvrtc")
+    if (
+        not isinstance(dynamic_dependencies, str)
+        or not isinstance(dynamic_nvrtc, dict)
+        or set(dynamic_nvrtc) != {"path", "bytes", "sha256"}
+        or dynamic_nvrtc.get("path") != build_input.get("nvrtc_library_path")
+        or dynamic_nvrtc.get("bytes") != build_input.get("nvrtc_library_bytes")
+        or dynamic_nvrtc.get("sha256")
+        != build_input.get("nvrtc_library_sha256")
+    ):
+        raise RuntimeError("native build dynamic NVRTC identity differs")
+    ldd = subprocess.run(
+        ["ldd", str(native)],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if ldd.returncode:
+        raise RuntimeError(f"ldd failed for execution DSO: {ldd.stderr.strip()}")
+    resolved_nvrtc = _resolve_ldd_dependency(
+        ldd.stdout + ldd.stderr, "libnvrtc.so"
+    )
+    if (
+        resolved_nvrtc
+        != Path(str(build_input["nvrtc_library_path"])).resolve(strict=True)
+        or resolved_nvrtc.stat().st_size != build_input["nvrtc_library_bytes"]
+        or _file_sha256(resolved_nvrtc) != build_input["nvrtc_library_sha256"]
+    ):
+        raise RuntimeError("execution DSO resolves a different NVRTC file")
     build_gpu = build_input.get("gpu")
     if not isinstance(build_gpu, dict) or any(
         build_gpu.get(field) != visible_gpu.get(field)
@@ -553,7 +741,7 @@ def _require_true_optix(receipt: dict[str, object]) -> None:
         raise RuntimeError("execution receipt selected topology differs")
     physical = receipt.get("physical_receipt")
     if not isinstance(physical, dict):
-        raise RuntimeError("execution receipt lacks physical receipt")
+        raise TypeError("execution receipt lacks physical receipt")
     descriptor = physical.get("native_descriptor")
     if (
         physical.get("build_input_type_name")
@@ -599,6 +787,12 @@ def run(args: argparse.Namespace) -> dict[str, object]:
         compute_capability=args.compute_capability,
         optix_sdk=args.optix_sdk,
         visible_gpu=visible_gpu,
+    )
+    compiler_environment = _capture_compiler_environment(
+        native_build,
+        optix_include=args.optix_include,
+        cuda_include=args.cuda_include,
+        native_override=None,
     )
     os.environ["RTDL_OPTIX_LIBRARY"] = str(native)
     os.environ["RTDL_OPTIX_LIB"] = str(native)
@@ -648,6 +842,15 @@ def run(args: argparse.Namespace) -> dict[str, object]:
         prepared.close()
         prepared.close()
 
+    compiler_environment_after = _capture_compiler_environment(
+        native_build,
+        optix_include=args.optix_include,
+        cuda_include=args.cuda_include,
+        native_override=native,
+    )
+    if compiler_environment_after != compiler_environment:
+        raise RuntimeError("compiler environment changed during GPU execution")
+
     repository = _finalize_repository_custody(repository)
 
     result = {
@@ -690,6 +893,10 @@ def run(args: argparse.Namespace) -> dict[str, object]:
             "optix_include": str(args.optix_include.resolve()),
             "cuda_include": str(args.cuda_include.resolve()),
             "cuda_visible_devices": cuda_visible_devices,
+            "compiler_environment": compiler_environment,
+            "native_library_overrides": {
+                name: str(native) for name in NATIVE_LIBRARY_OVERRIDE_ENVIRONMENT
+            },
         },
         "generic_family": {
             "classification": route.classification,

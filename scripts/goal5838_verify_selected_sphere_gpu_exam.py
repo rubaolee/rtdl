@@ -157,13 +157,14 @@ EXAM_SOURCE_PATHS = (
     "src/rtdsl/v4_sphere_any_hit_count_optix_compiler.py",
     "src/rtdsl/v4_sphere_any_hit_count_prepared_runtime.py",
     "src/rtdsl/v4_sphere_any_hit_count_wrapper_codegen.py",
+    "src/rtdsl/v4_sphere_optix_compiler.py",
     "src/rtdsl/v4_sphere_physical_schema.py",
     "src/rtdsl/v4_sphere_prepared_runtime.py",
     "tests/goal5838_selected_sphere_any_hit_count_test.py",
     "tests/goal5838_pod_preflight_test.py",
 )
 NATIVE_BUILD_RESULT_DOMAIN = (
-    "rtdl.goal5838.selected_sphere_optix_provider_build.v1"
+    "rtdl.goal5838.selected_sphere_optix_provider_build.v2"
 )
 NATIVE_BUILD_SOURCE_PATHS = (
     "scripts/goal5838_build_selected_sphere_optix_provider.py",
@@ -192,6 +193,32 @@ NATIVE_BUILD_REQUIRED_SYMBOLS = (
     "rtdl_optix_v4_execute_prepared_builtin_sphere_callback_v1",
     "rtdl_optix_v4_describe_prepared_builtin_sphere_callback_v1",
     "rtdl_optix_v4_destroy_prepared_builtin_sphere_callback_v1",
+)
+COMPILER_ENVIRONMENT_SCHEMA = "rtdl.goal5838.cuda_compiler_environment.v1"
+COMPILER_FILE_ENVIRONMENT = (
+    ("nvrtc", "RTDL_V4_NVRTC_LIBRARY"),
+    ("nvvm", "NUMBA_CUDA_NVVM"),
+    ("libdevice", "NUMBA_CUDA_LIBDEVICE"),
+)
+COMPILER_PREFIX_ENVIRONMENT = (
+    ("CUDA_HOME", "cuda_prefix"),
+    ("CUDA_PATH", "cuda_prefix"),
+    ("RTDL_V4_CUDA_PREFIX", "cuda_prefix"),
+    ("RTDL_V4_OPTIX_PREFIX", "optix_prefix"),
+)
+FORBIDDEN_COMPILER_ENVIRONMENT = (
+    "RTDL_V4_FORMAL_LEAF_CACHE",
+    "RTDL_V4_FORMAL_LEAF_CACHE_MANIFEST",
+    "RTDL_V4_FORMAL_LEAF_CACHE_MANIFEST_SHA256",
+    "LD_PRELOAD",
+    "NUMBA_ENABLE_CUDASIM",
+    "NUMBA_FORCE_CUDA_CC",
+    "NUMBA_CUDA_DEFAULT_PTX_CC",
+    "NUMBA_CUDA_DRIVER",
+)
+NATIVE_LIBRARY_OVERRIDE_ENVIRONMENT = (
+    "RTDL_OPTIX_LIB",
+    "RTDL_OPTIX_LIBRARY",
 )
 OPTIX_RUNTIME_ABI_PROBE_SOURCE_SHA256 = (
     "ccc24914e3a88ddd711b2fa9dfc40b125ed3649dca24429571a444c9c9f8a876"
@@ -1176,6 +1203,7 @@ def _verify_native_build(
         "required_symbol_check",
         "all_required_symbols_exported",
         "dynamic_dependencies",
+        "dynamic_nvrtc",
         "result_sha256",
     }
     if set(manifest) != expected_manifest_keys:
@@ -1251,6 +1279,9 @@ def _verify_native_build(
         "nvcc_path",
         "nvcc_sha256",
         "nvcc_version",
+        "nvrtc_library_path",
+        "nvrtc_library_bytes",
+        "nvrtc_library_sha256",
         "host_compiler_path",
         "host_compiler_sha256",
         "host_compiler_version",
@@ -1280,7 +1311,7 @@ def _verify_native_build(
     if (
         build_input_sha256 != _digest(build_input)
         or build_input.get("schema")
-        != "rtdl.goal5838.selected_sphere_optix_build_input.v1"
+        != "rtdl.goal5838.selected_sphere_optix_build_input.v2"
         or build_input.get("translation_units")
         != list(NATIVE_BUILD_TRANSLATION_UNITS)
         or build_input.get("builder_path") != NATIVE_BUILD_SOURCE_PATHS[0]
@@ -1301,6 +1332,7 @@ def _verify_native_build(
         "cuda_include",
         "nvcc_path",
         "nvcc_version",
+        "nvrtc_library_path",
         "host_compiler_path",
         "host_compiler_version",
         "optix_prefix",
@@ -1314,7 +1346,22 @@ def _verify_native_build(
         _fail("native build path or tool version is absent")
     _verify_optix_runtime_abi_probe(build_input)
     _sha(build_input.get("nvcc_sha256"), "native build nvcc")
+    _sha(build_input.get("nvrtc_library_sha256"), "native build NVRTC")
     _sha(build_input.get("host_compiler_sha256"), "native build host compiler")
+    if (
+        type(build_input.get("nvrtc_library_bytes")) is not int
+        or build_input.get("nvrtc_library_bytes") <= 0
+    ):
+        _fail("native build NVRTC byte count differs")
+    dynamic_nvrtc = _mapping(
+        manifest.get("dynamic_nvrtc"), "native build dynamic NVRTC"
+    )
+    if dynamic_nvrtc != {
+        "path": build_input.get("nvrtc_library_path"),
+        "bytes": build_input.get("nvrtc_library_bytes"),
+        "sha256": build_input.get("nvrtc_library_sha256"),
+    }:
+        _fail("native build dynamic NVRTC binding differs")
     if not isinstance(build_input.get("cuda_system_include"), str):
         _fail("native build CUDA system include differs")
     for key in ("geos_cflags", "geos_libraries", "library_dirs"):
@@ -1430,7 +1477,7 @@ def _verify_native_build(
         ),
         *(f"-L{path}" for path in build_input["library_dirs"]),
         "-lcuda",
-        "-lnvrtc",
+        str(build_input["nvrtc_library_path"]),
         *build_input["geos_libraries"],
         "-o",
         command[-1],
@@ -1444,6 +1491,69 @@ def _verify_native_build(
         != shlex.join(reproduction)
     ):
         _fail("native build command does not rederive")
+
+
+def _verify_compiler_environment(
+    value: object,
+    *,
+    build_input: Mapping[str, object],
+) -> None:
+    environment = _mapping(value, "compiler environment")
+    if set(environment) != {
+        "schema",
+        "prefixes",
+        "compiler_files",
+        "forbidden_environment_absent",
+        "identity_sha256",
+    }:
+        _fail("compiler environment field set differs")
+    body = dict(environment)
+    identity_sha256 = _sha(
+        body.pop("identity_sha256", None), "compiler environment"
+    )
+    if (
+        environment.get("schema") != COMPILER_ENVIRONMENT_SCHEMA
+        or identity_sha256 != _digest(body)
+    ):
+        _fail("compiler environment identity differs")
+
+    prefixes = _mapping(environment.get("prefixes"), "compiler prefixes")
+    expected_prefixes = {
+        environment_name: build_input[build_key]
+        for environment_name, build_key in COMPILER_PREFIX_ENVIRONMENT
+    }
+    if prefixes != expected_prefixes:
+        _fail("compiler prefix binding differs")
+    if environment.get("forbidden_environment_absent") != list(
+        FORBIDDEN_COMPILER_ENVIRONMENT
+    ):
+        _fail("compiler contamination guard differs")
+
+    rows = environment.get("compiler_files")
+    if not isinstance(rows, list) or len(rows) != len(COMPILER_FILE_ENVIRONMENT):
+        _fail("compiler file inventory cardinality differs")
+    for row_value, (label, environment_name) in zip(
+        rows, COMPILER_FILE_ENVIRONMENT, strict=True
+    ):
+        row = _mapping(row_value, f"compiler file {label}")
+        if (
+            set(row)
+            != {"label", "environment_variable", "path", "bytes", "sha256"}
+            or row.get("label") != label
+            or row.get("environment_variable") != environment_name
+            or not isinstance(row.get("path"), str)
+            or not row.get("path")
+            or type(row.get("bytes")) is not int
+            or row.get("bytes") <= 0
+        ):
+            _fail(f"compiler file identity differs: {label}")
+        _sha(row.get("sha256"), f"compiler file {label}")
+        if label == "nvrtc" and (
+            row.get("path") != build_input.get("nvrtc_library_path")
+            or row.get("bytes") != build_input.get("nvrtc_library_bytes")
+            or row.get("sha256") != build_input.get("nvrtc_library_sha256")
+        ):
+            _fail("compiler NVRTC differs from native build input")
 
 
 def verify_artifact(
@@ -1570,9 +1680,9 @@ def verify_artifact(
         ):
             _fail("provided native library differs from executed bytes")
         native_verified = True
-    _verify_native_build(
-        artifact.get("native_build"), commit=commit, target=target, root=root
-    )
+    native_build = _mapping(artifact.get("native_build"), "native build")
+    _verify_native_build(native_build, commit=commit, target=target, root=root)
+    build_input = _mapping(native_build.get("build_input"), "native build input")
     generic = _mapping(artifact.get("generic_family"), "generic family")
     if set(generic) != {
         "classification",
@@ -1594,11 +1704,37 @@ def verify_artifact(
             "optix_include",
             "cuda_include",
             "cuda_visible_devices",
+            "compiler_environment",
+            "native_library_overrides",
         }
-        or any(not isinstance(value, str) or not value for value in toolchain.values())
+        or any(
+            not isinstance(toolchain.get(key), str) or not toolchain.get(key)
+            for key in (
+                "python",
+                "python_executable",
+                "numba",
+                "numpy",
+                "optix_include",
+                "cuda_include",
+                "cuda_visible_devices",
+            )
+        )
         or toolchain.get("cuda_visible_devices") != "0"
+        or toolchain.get("optix_include") != build_input.get("optix_include")
+        or toolchain.get("cuda_include") != build_input.get("cuda_include")
     ):
         _fail("toolchain identity differs")
+    _verify_compiler_environment(
+        toolchain.get("compiler_environment"), build_input=build_input
+    )
+    overrides = _mapping(
+        toolchain.get("native_library_overrides"), "native library overrides"
+    )
+    if overrides != {
+        name: target.get("native_library_path")
+        for name in NATIVE_LIBRARY_OVERRIDE_ENVIRONMENT
+    }:
+        _fail("native library override binding differs")
     fixture = _mapping(artifact.get("fixture"), "fixture")
     independently_fixed_fixture_sha256 = _digest(
         {

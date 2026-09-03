@@ -36,6 +36,7 @@ def _compiler_environment():
         "CUDA_PATH": "/cuda",
         "RTDL_V4_CUDA_PREFIX": "/cuda",
         "RTDL_V4_OPTIX_PREFIX": "/optix",
+        "RTDL_V4_NVRTC_LIBRARY": "/cuda/lib64/libnvrtc.so.12",
         "PYTHONPATH": "src:.",
     }
 
@@ -130,6 +131,16 @@ class Goal5838PodPreflightTest(unittest.TestCase):
             "NUMBA_CUDA_LIBDEVICE=/cuda/nvvm/libdevice/libdevice.10.bc",
             run,
         )
+        self.assertIn("RTDL_V4_NVRTC_LIBRARY=/cuda/lib64/libnvrtc.so.12", run)
+        for name in self.module.CLEARED_AMBIENT_ENV:
+            occurrences = [
+                index
+                for index, item in enumerate(run[:-1])
+                if item == "-u" and run[index + 1] == name
+            ]
+            self.assertEqual(len(occurrences), 1, name)
+        self.assertIn("--nvrtc-library", build)
+        self.assertIn("/cuda/lib64/libnvrtc.so.12", build)
         self.assertNotIn("PYTHONPATH=src:.", verify)
 
     def test_cuda_compiler_inputs_and_clean_environment_are_exact(self):
@@ -160,6 +171,7 @@ class Goal5838PodPreflightTest(unittest.TestCase):
                     "LD_LIBRARY_PATH": "/old/lib",
                     "RTDL_V4_FORMAL_LEAF_CACHE": "/forbidden/cache",
                     "NUMBA_ENABLE_CUDASIM": "1",
+                    "RTDL_V4_NVRTC_LIBRARY": "/wrong/libnvrtc.so",
                 },
             )
         self.assertEqual(environment["CUDA_VISIBLE_DEVICES"], "0")
@@ -169,6 +181,10 @@ class Goal5838PodPreflightTest(unittest.TestCase):
         )
         self.assertNotIn("RTDL_V4_FORMAL_LEAF_CACHE", environment)
         self.assertNotIn("NUMBA_ENABLE_CUDASIM", environment)
+        self.assertEqual(
+            environment["RTDL_V4_NVRTC_LIBRARY"],
+            str(files["nvrtc_library"]),
+        )
         self.assertTrue(identity["formal_numba_cache_disabled"])
         self.assertRegex(identity["environment_sha256"], r"^[0-9a-f]{64}$")
 

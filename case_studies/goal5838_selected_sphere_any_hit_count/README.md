@@ -130,8 +130,12 @@ provider from `src/native/rtdl_optix.cpp`; it does not modify native C++ source
 or add selected-app logic to the engine.
 
 The command blocks below document argument shape only. Execute the exact
-commands printed by the passing preflight; those commands also bind the tested
-NVRTC, NVVM, libdevice, CUDA, loader, cache, and GPU-selection environment.
+commands printed by the passing preflight; those commands explicitly unset
+ambient simulator/cache/compiler overrides and bind the tested NVRTC, NVVM,
+libdevice, CUDA, loader, and GPU-selection environment. The builder records the
+exact NVRTC file and rejects a provider DSO whose dynamic dependency resolves
+to different bytes. The runner rechecks those compiler files before and after
+materialization, and the RTDL-free verifier rederives the recorded bindings.
 
 ```bash
 CUDA_VISIBLE_DEVICES=0 PYTHONPATH=src:. \
@@ -140,6 +144,7 @@ python scripts/goal5838_build_selected_sphere_optix_provider.py \
   --optix-prefix OPTIX_PREFIX \
   --expected-optix-sdk OPTIX_SDK \
   --compute-capability COMPUTE_CAPABILITY \
+  --nvrtc-library NVRTC_LIBRARY \
   --expected-commit FULL_COMMIT \
   --output /tmp/librtdl_optix_goal5838.so \
   --manifest /tmp/goal5838_native_build.json \

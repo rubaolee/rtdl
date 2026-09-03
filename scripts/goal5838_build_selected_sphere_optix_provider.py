@@ -54,7 +54,7 @@ KEY_HEADER_NAMES = (
     "cuda_runtime.h",
     "nvrtc.h",
 )
-RESULT_DOMAIN = "rtdl.goal5838.selected_sphere_optix_provider_build.v1"
+RESULT_DOMAIN = "rtdl.goal5838.selected_sphere_optix_provider_build.v2"
 OPTIX_RUNTIME_ABI_PROBE_SOURCE = """\
 #include <cstdio>
 #include <optix.h>
@@ -430,6 +430,54 @@ def _library_dirs(cuda_prefix: Path) -> list[Path]:
     return result
 
 
+def _resolve_nvrtc_library(
+    cuda_prefix: Path, requested: Path | None
+) -> Path:
+    if requested is not None:
+        result = requested.expanduser().resolve(strict=True)
+        if not result.is_file():
+            raise FileNotFoundError(result)
+        return result
+    roots = _library_dirs(cuda_prefix)
+    candidates = [
+        root / name
+        for root in roots
+        for name in ("libnvrtc.so.12", "libnvrtc.so")
+    ]
+    candidates.extend(
+        path
+        for root in roots
+        for path in sorted(root.glob("libnvrtc.so*"))
+    )
+    for candidate in candidates:
+        if candidate.is_file():
+            return candidate.resolve(strict=True)
+    raise FileNotFoundError("no NVRTC shared library found; pass --nvrtc-library")
+
+
+def _resolve_ldd_dependency(output: str, stem: str) -> Path:
+    matches = []
+    for line in output.splitlines():
+        if "=>" not in line:
+            continue
+        name, resolution = (part.strip() for part in line.split("=>", 1))
+        if name != stem and not name.startswith(stem + "."):
+            continue
+        path_text = resolution.split(maxsplit=1)[0]
+        if path_text == "not":
+            raise RuntimeError(f"dynamic dependency is unresolved: {line.strip()}")
+        path = Path(path_text).resolve(strict=True)
+        if not path.is_file():
+            raise RuntimeError(f"dynamic dependency is not a file: {path}")
+        matches.append(path)
+    unique = tuple(dict.fromkeys(matches))
+    if len(unique) != 1:
+        raise RuntimeError(
+            f"expected one resolved {stem} dependency, observed {unique!r}"
+        )
+    return unique[0]
+
+
 def _header_rows(optix_include: Path, cuda_include: Path) -> list[dict[str, object]]:
     rows = []
     for name in KEY_HEADER_NAMES:
@@ -474,6 +522,7 @@ def _build_command(
     geos_cflags: list[str],
     geos_libraries: list[str],
     library_dirs: list[Path],
+    nvrtc_library: Path,
     output: Path,
 ) -> list[str]:
     return [
@@ -496,7 +545,7 @@ def _build_command(
         *(str(ROOT / relative) for relative in TRANSLATION_UNIT_PATHS),
         *(f"-L{path}" for path in library_dirs),
         "-lcuda",
-        "-lnvrtc",
+        str(nvrtc_library),
         *geos_libraries,
         "-o",
         str(output),
@@ -576,9 +625,12 @@ def build(args: argparse.Namespace) -> dict[str, object]:
         )
     geos_cflags, geos_libraries, geos_mode = _pkg_config_geos()
     library_dirs = _library_dirs(cuda_prefix)
+    nvrtc_library = _resolve_nvrtc_library(
+        cuda_prefix, args.nvrtc_library
+    )
     system_include = _cuda_system_include(host_compiler)
     build_input = {
-        "schema": "rtdl.goal5838.selected_sphere_optix_build_input.v1",
+        "schema": "rtdl.goal5838.selected_sphere_optix_build_input.v2",
         "translation_units": list(TRANSLATION_UNIT_PATHS),
         "builder_path": BUILDER_PATH,
         "builder_sha256": next(
@@ -592,6 +644,9 @@ def build(args: argparse.Namespace) -> dict[str, object]:
         "nvcc_path": str(nvcc),
         "nvcc_sha256": _file_sha256(nvcc),
         "nvcc_version": _capture([str(nvcc), "--version"]),
+        "nvrtc_library_path": str(nvrtc_library),
+        "nvrtc_library_bytes": nvrtc_library.stat().st_size,
+        "nvrtc_library_sha256": _file_sha256(nvrtc_library),
         "host_compiler_path": str(host_compiler),
         "host_compiler_sha256": _file_sha256(host_compiler),
         "host_compiler_version": _capture([str(host_compiler), "--version"]),
@@ -631,6 +686,7 @@ def build(args: argparse.Namespace) -> dict[str, object]:
         geos_cflags=geos_cflags,
         geos_libraries=geos_libraries,
         library_dirs=library_dirs,
+        nvrtc_library=nvrtc_library,
         output=temporary_output,
     )
     try:
@@ -669,9 +725,20 @@ def build(args: argparse.Namespace) -> dict[str, object]:
             raise RuntimeError(f"required Goal5838 symbols are missing: {missing}")
         native_bytes = temporary_output.stat().st_size
         native_sha256 = _file_sha256(temporary_output)
-        dynamic_dependencies = _capture(
-            ["ldd", str(temporary_output)], required=False
+        dynamic_dependencies = _capture(["ldd", str(temporary_output)])
+        dynamic_nvrtc = _resolve_ldd_dependency(
+            dynamic_dependencies, "libnvrtc.so"
         )
+        if dynamic_nvrtc != nvrtc_library:
+            raise RuntimeError(
+                "provider DSO resolves NVRTC from a different file: "
+                f"{dynamic_nvrtc} != {nvrtc_library}"
+            )
+        dynamic_nvrtc_identity = {
+            "path": str(dynamic_nvrtc),
+            "bytes": dynamic_nvrtc.stat().st_size,
+            "sha256": _file_sha256(dynamic_nvrtc),
+        }
         _publish_exclusive(temporary_output, output)
     finally:
         temporary_output.unlink(missing_ok=True)
@@ -680,6 +747,8 @@ def build(args: argparse.Namespace) -> dict[str, object]:
     if (
         _file_sha256(nvcc) != build_input["nvcc_sha256"]
         or _capture([str(nvcc), "--version"]) != build_input["nvcc_version"]
+        or nvrtc_library.stat().st_size != build_input["nvrtc_library_bytes"]
+        or _file_sha256(nvrtc_library) != build_input["nvrtc_library_sha256"]
         or _file_sha256(host_compiler) != build_input["host_compiler_sha256"]
         or _capture([str(host_compiler), "--version"])
         != build_input["host_compiler_version"]
@@ -717,6 +786,7 @@ def build(args: argparse.Namespace) -> dict[str, object]:
         "required_symbol_check": "exact_nm_dynamic_defined_name",
         "all_required_symbols_exported": True,
         "dynamic_dependencies": dynamic_dependencies,
+        "dynamic_nvrtc": dynamic_nvrtc_identity,
         "result_sha256": "",
     }
     result["result_sha256"] = _sealed_sha256(result)
@@ -735,6 +805,7 @@ def main() -> int:
     parser.add_argument("--expected-optix-sdk", required=True)
     parser.add_argument("--compute-capability")
     parser.add_argument("--host-compiler", type=Path)
+    parser.add_argument("--nvrtc-library", type=Path)
     parser.add_argument("--expected-commit", required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--manifest", type=Path, required=True)

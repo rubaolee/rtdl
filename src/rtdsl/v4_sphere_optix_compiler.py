@@ -3,12 +3,13 @@
 from __future__ import annotations
 
 import ctypes
-from dataclasses import dataclass
 import hashlib
 import json
-from pathlib import Path
+import os
 import sys
-from typing import Sequence
+from collections.abc import Sequence
+from dataclasses import dataclass
+from pathlib import Path
 
 from .v4_callback_abi import CompiledCallbackAbi
 from .v4_callback_ir import CallbackRole
@@ -19,11 +20,11 @@ from .v4_callback_numba_codegen import (
 from .v4_callback_optix_wrapper_codegen import GeneratedOptixWrapper
 from .v4_callback_poc import DeviceFunctionArtifact
 from .v4_callback_ptx_composer import ComposedCallbackPtx, compose_callback_ptx
+from .v4_sphere_callback_abi import verify_sphere_callback_abi
+from .v4_sphere_callback_numba_codegen import generate_formal_sphere_numba_leaf
 from .v4_sphere_optix_wrapper_codegen import (
     generate_trusted_optix_sphere_wrapper_v1,
 )
-from .v4_sphere_callback_abi import verify_sphere_callback_abi
-from .v4_sphere_callback_numba_codegen import generate_formal_sphere_numba_leaf
 from .v4_sphere_physical_schema import (
     SphereCanonicalPlan,
     VerifiedSpherePhysicalAuthority,
@@ -51,6 +52,7 @@ class VerifiedSphereExecutable:
 
 
 _LIVE_EXECUTABLES: dict[int, str] = {}
+NVRTC_LIBRARY_ENV = "RTDL_V4_NVRTC_LIBRARY"
 
 
 def _digest(value: object) -> str:
@@ -89,6 +91,22 @@ def _fresh(
 
 
 def _load_nvrtc() -> ctypes.CDLL:
+    configured = os.environ.get(NVRTC_LIBRARY_ENV)
+    if configured:
+        try:
+            path = Path(configured).expanduser().resolve(strict=True)
+        except OSError as exc:
+            raise RuntimeError(
+                f"configured NVRTC library is unavailable: {configured}"
+            ) from exc
+        if not path.is_file():
+            raise RuntimeError(f"configured NVRTC library is not a file: {path}")
+        try:
+            return ctypes.CDLL(str(path))
+        except OSError as exc:
+            raise RuntimeError(
+                f"configured NVRTC library cannot be loaded: {path}"
+            ) from exc
     for name in ("libnvrtc.so.12", "libnvrtc.so"):
         try:
             return ctypes.CDLL(name)

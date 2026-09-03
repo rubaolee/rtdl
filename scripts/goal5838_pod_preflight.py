@@ -69,6 +69,7 @@ CLEARED_AMBIENT_ENV = FORMAL_CACHE_ENV + (
     "NUMBA_FORCE_CUDA_CC",
     "NUMBA_CUDA_DEFAULT_PTX_CC",
     "NUMBA_CUDA_DRIVER",
+    "RTDL_V4_NVRTC_LIBRARY",
     "RTDL_OPTIX_LIB",
     "RTDL_OPTIX_LIBRARY",
 )
@@ -212,6 +213,8 @@ def configured_cuda_environment(
         filter(None, environment.get("LD_LIBRARY_PATH", "").split(os.pathsep))
     )
     old_path = tuple(filter(None, environment.get("PATH", "").split(os.pathsep)))
+    for name in CLEARED_AMBIENT_ENV:
+        environment.pop(name, None)
     environment.update(
         {
             "CUDA_VISIBLE_DEVICES": "0",
@@ -225,11 +228,12 @@ def configured_cuda_environment(
             "CUDA_PATH": str(cuda),
             "RTDL_V4_CUDA_PREFIX": str(cuda),
             "RTDL_V4_OPTIX_PREFIX": str(optix),
+            "RTDL_V4_NVRTC_LIBRARY": str(
+                compiler_files["nvrtc_library"]
+            ),
             "PYTHONPATH": "src:.",
         }
     )
-    for name in CLEARED_AMBIENT_ENV:
-        environment.pop(name, None)
     identity = {
         "cuda_prefix": str(cuda),
         "optix_prefix": str(optix),
@@ -679,10 +683,16 @@ def _command_plan(
         "CUDA_PATH",
         "RTDL_V4_CUDA_PREFIX",
         "RTDL_V4_OPTIX_PREFIX",
+        "RTDL_V4_NVRTC_LIBRARY",
         "PYTHONPATH",
     )
     prefix = [
         "env",
+        *(
+            item
+            for name in CLEARED_AMBIENT_ENV
+            for item in ("-u", name)
+        ),
         *(f"{name}={compiler_environment[name]}" for name in environment_names),
         str(python),
     ]
@@ -699,6 +709,8 @@ def _command_plan(
         compute_capability,
         "--host-compiler",
         str(host_compiler),
+        "--nvrtc-library",
+        compiler_environment["RTDL_V4_NVRTC_LIBRARY"],
         "--expected-commit",
         expected_commit,
         "--output",
@@ -1081,7 +1093,7 @@ def run_preflight(args: argparse.Namespace) -> dict[str, object]:
                 cuda_include=cuda_include,
                 package_versions=package_versions,
             )
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001 - convert probe failures to evidence
             callback_probe_error = f"{type(exc).__name__}: {exc}"
     probes["selected_callback_compiler"] = (
         callback_probe if callback_probe is not None else callback_probe_error
@@ -1236,7 +1248,7 @@ def _internal_callback_compile_main(arguments: list[str]) -> int:
         raise FileExistsError(output_path)
     request = json.loads(request_path.read_text(encoding="utf-8"))
     if not isinstance(request, dict):
-        raise ValueError("internal callback compile request must be an object")
+        raise TypeError("internal callback compile request must be an object")
     result = _compile_selected_callback_stack(request)
     _write_json_exclusive(output_path, result)
     return 0

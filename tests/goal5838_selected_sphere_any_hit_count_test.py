@@ -209,8 +209,11 @@ class Goal5838SelectedSphereAnyHitCountTest(unittest.TestCase):
             "range": range,
             "abs": abs,
         }
-        exec(compile(leaf.generated_source, "<goal5838-any-hit>", "exec"),
-             namespace, namespace)
+        exec(  # noqa: S102 - execute the generated restricted callback in isolation
+            compile(leaf.generated_source, "<goal5838-any-hit>", "exec"),
+            namespace,
+            namespace,
+        )
 
         def run(count: int):
             values = {
@@ -330,14 +333,34 @@ class Goal5838SelectedSphereAnyHitCountTest(unittest.TestCase):
             geos_cflags=["-I/geos/include"],
             geos_libraries=["-lgeos_c"],
             library_dirs=[Path("/cuda/lib64")],
+            nvrtc_library=Path("/cuda/lib64/libnvrtc.so.12"),
             output=Path("/tmp/goal5838.so"),
         )
         self.assertEqual(command[0:3], ["/cuda/bin/nvcc", "-ccbin", "/usr/bin/g++-13"])
         self.assertIn("-arch=sm_89", command)
         self.assertIn(str(ROOT / "src/native/rtdl_optix.cpp"), command)
         self.assertIn("-lcuda", command)
-        self.assertIn("-lnvrtc", command)
+        self.assertIn("/cuda/lib64/libnvrtc.so.12", command)
+        self.assertNotIn("-lnvrtc", command)
         self.assertEqual(command[-2:], ["-o", "/tmp/goal5838.so"])
+        with tempfile.TemporaryDirectory() as temporary:
+            real_nvrtc = Path(temporary) / "libnvrtc.so.12.8.93"
+            linked_nvrtc = Path(temporary) / "libnvrtc.so.12"
+            real_nvrtc.write_bytes(b"nvrtc")
+            linked_nvrtc.symlink_to(real_nvrtc.name)
+            ldd_output = (
+                f"libnvrtc.so.12 => {linked_nvrtc} (0x0000000000000000)\n"
+            )
+            self.assertEqual(
+                builder._resolve_ldd_dependency(ldd_output, "libnvrtc.so"),
+                real_nvrtc.resolve(),
+            )
+            self.assertEqual(
+                runner._resolve_ldd_dependency(ldd_output, "libnvrtc.so"),
+                real_nvrtc.resolve(),
+            )
+            with self.assertRaisesRegex(RuntimeError, "expected one resolved"):
+                builder._resolve_ldd_dependency("linux-vdso.so.1\n", "libnvrtc.so")
         self.assertEqual(builder._parse_compute_capability("8.9"), (8, 9))
         self.assertEqual(builder._optix_sdk_number("8.0.0"), 80000)
         self.assertEqual(runner._optix_sdk_number("8.0.0"), 80000)
@@ -346,9 +369,11 @@ class Goal5838SelectedSphereAnyHitCountTest(unittest.TestCase):
         with patch.dict(os.environ, {"CUDA_VISIBLE_DEVICES": "0"}):
             self.assertEqual(builder._require_cuda_visibility(), "0")
             self.assertEqual(runner._require_cuda_visibility(), "0")
-        with patch.dict(os.environ, {}, clear=True):
-            with self.assertRaisesRegex(RuntimeError, "CUDA_VISIBLE_DEVICES=0"):
-                builder._require_cuda_visibility()
+        with (
+            patch.dict(os.environ, {}, clear=True),
+            self.assertRaisesRegex(RuntimeError, "CUDA_VISIBLE_DEVICES=0"),
+        ):
+            builder._require_cuda_visibility()
         with self.assertRaises(ValueError):
             builder._parse_compute_capability("sm_89")
         with self.assertRaisesRegex(ValueError, "outside Git tree"):
@@ -368,6 +393,131 @@ class Goal5838SelectedSphereAnyHitCountTest(unittest.TestCase):
                 Path("/tmp/goal5838-artifact.json"),
                 artifact_path=Path("/tmp/goal5838-artifact.json"),
             )
+
+    def test_target_compiler_prefers_exact_configured_nvrtc_file(self):
+        from rtdsl import v4_sphere_optix_compiler as compiler
+
+        with tempfile.TemporaryDirectory() as temporary:
+            nvrtc = Path(temporary) / "libnvrtc.so.13"
+            nvrtc.write_bytes(b"synthetic-nvrtc")
+            sentinel = object()
+            with (
+                patch.dict(
+                    os.environ,
+                    {compiler.NVRTC_LIBRARY_ENV: str(nvrtc)},
+                    clear=False,
+                ),
+                patch.object(compiler.ctypes, "CDLL", return_value=sentinel) as load,
+            ):
+                self.assertIs(compiler._load_nvrtc(), sentinel)
+            load.assert_called_once_with(str(nvrtc.resolve()))
+        with (
+            patch.dict(
+                os.environ,
+                {compiler.NVRTC_LIBRARY_ENV: "/absent/libnvrtc.so"},
+                clear=False,
+            ),
+            self.assertRaisesRegex(RuntimeError, "configured NVRTC"),
+        ):
+            compiler._load_nvrtc()
+
+    def test_runner_and_verifier_bind_exact_compiler_environment(self):
+        runner = _load_script_module(
+            "goal5838_run_selected_sphere_gpu_exam"
+        )
+        verifier = _load_script_module(
+            "goal5838_verify_selected_sphere_gpu_exam"
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            cuda = root / "cuda"
+            optix = root / "optix"
+            cuda_include = cuda / "include"
+            optix_include = optix / "include"
+            for directory in (
+                cuda_include,
+                optix_include,
+                cuda / "lib64",
+                cuda / "nvvm" / "lib64",
+                cuda / "nvvm" / "libdevice",
+            ):
+                directory.mkdir(parents=True, exist_ok=True)
+            nvrtc = cuda / "lib64" / "libnvrtc.so.12"
+            nvvm = cuda / "nvvm" / "lib64" / "libnvvm.so"
+            libdevice = cuda / "nvvm" / "libdevice" / "libdevice.10.bc"
+            native = root / "librtdl_optix.so"
+            for path, payload in (
+                (nvrtc, b"nvrtc"),
+                (nvvm, b"nvvm"),
+                (libdevice, b"libdevice"),
+                (native, b"native"),
+            ):
+                path.write_bytes(payload)
+            build_input = {
+                "cuda_prefix": str(cuda.resolve()),
+                "cuda_include": str(cuda_include.resolve()),
+                "optix_prefix": str(optix.resolve()),
+                "optix_include": str(optix_include.resolve()),
+                "nvrtc_library_path": str(nvrtc.resolve()),
+                "nvrtc_library_bytes": nvrtc.stat().st_size,
+                "nvrtc_library_sha256": hashlib.sha256(
+                    nvrtc.read_bytes()
+                ).hexdigest(),
+            }
+            environment = {
+                "CUDA_HOME": str(cuda),
+                "CUDA_PATH": str(cuda),
+                "RTDL_V4_CUDA_PREFIX": str(cuda),
+                "RTDL_V4_OPTIX_PREFIX": str(optix),
+                "RTDL_V4_NVRTC_LIBRARY": str(nvrtc),
+                "NUMBA_CUDA_NVVM": str(nvvm),
+                "NUMBA_CUDA_LIBDEVICE": str(libdevice),
+            }
+            with patch.dict(os.environ, environment, clear=True):
+                identity = runner._capture_compiler_environment(
+                    {"build_input": build_input},
+                    optix_include=optix_include,
+                    cuda_include=cuda_include,
+                    native_override=None,
+                )
+                os.environ.update(
+                    {
+                        name: str(native)
+                        for name in runner.NATIVE_LIBRARY_OVERRIDE_ENVIRONMENT
+                    }
+                )
+                after = runner._capture_compiler_environment(
+                    {"build_input": build_input},
+                    optix_include=optix_include,
+                    cuda_include=cuda_include,
+                    native_override=native,
+                )
+                os.environ["NUMBA_ENABLE_CUDASIM"] = "1"
+                with self.assertRaisesRegex(
+                    RuntimeError, "forbidden compiler environment"
+                ):
+                    runner._capture_compiler_environment(
+                        {"build_input": build_input},
+                        optix_include=optix_include,
+                        cuda_include=cuda_include,
+                        native_override=native,
+                    )
+            self.assertEqual(identity, after)
+            verifier._verify_compiler_environment(
+                identity, build_input=build_input
+            )
+            tampered = copy.deepcopy(identity)
+            tampered["compiler_files"][0]["sha256"] = "f" * 64
+            body = dict(tampered)
+            body.pop("identity_sha256")
+            tampered["identity_sha256"] = verifier._digest(body)
+            with self.assertRaisesRegex(
+                verifier.Goal5838ExamVerificationError,
+                "NVRTC differs",
+            ):
+                verifier._verify_compiler_environment(
+                    tampered, build_input=build_input
+                )
 
     def test_independent_verifier_rejects_resealed_native_build_tampering(self):
         builder = _load_script_module(
@@ -421,7 +571,7 @@ class Goal5838SelectedSphereAnyHitCountTest(unittest.TestCase):
             "passed": True,
         }
         build_input = {
-            "schema": "rtdl.goal5838.selected_sphere_optix_build_input.v1",
+            "schema": "rtdl.goal5838.selected_sphere_optix_build_input.v2",
             "translation_units": list(verifier.NATIVE_BUILD_TRANSLATION_UNITS),
             "builder_path": verifier.NATIVE_BUILD_SOURCE_PATHS[0],
             "builder_sha256": source_rows[0]["sha256"],
@@ -431,6 +581,9 @@ class Goal5838SelectedSphereAnyHitCountTest(unittest.TestCase):
             "nvcc_path": "/cuda/bin/nvcc",
             "nvcc_sha256": "a" * 64,
             "nvcc_version": "Cuda compilation tools, release 12.8",
+            "nvrtc_library_path": "/cuda/lib64/libnvrtc.so.12",
+            "nvrtc_library_bytes": 123456,
+            "nvrtc_library_sha256": "e" * 64,
             "host_compiler_path": "/usr/bin/g++-13",
             "host_compiler_sha256": "b" * 64,
             "host_compiler_version": "g++ 13",
@@ -473,6 +626,7 @@ class Goal5838SelectedSphereAnyHitCountTest(unittest.TestCase):
             geos_cflags=[],
             geos_libraries=[],
             library_dirs=[Path("/cuda/lib64")],
+            nvrtc_library=Path(build_input["nvrtc_library_path"]),
             output=Path("/tmp/.goal5838.partial"),
         )
         target = {
@@ -521,6 +675,11 @@ class Goal5838SelectedSphereAnyHitCountTest(unittest.TestCase):
             "required_symbol_check": "exact_nm_dynamic_defined_name",
             "all_required_symbols_exported": True,
             "dynamic_dependencies": "synthetic",
+            "dynamic_nvrtc": {
+                "path": build_input["nvrtc_library_path"],
+                "bytes": build_input["nvrtc_library_bytes"],
+                "sha256": build_input["nvrtc_library_sha256"],
+            },
             "result_sha256": "",
         }
         manifest["result_sha256"] = verifier._native_build_seal(manifest)

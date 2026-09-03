@@ -67,7 +67,25 @@ that passed callback compilation. Ambient simulator, compiler override,
 native-library, preload, and formal cache variables are removed before the
 compiler child starts.
 
-### R4, P1: legal compute capabilities with minor zero were rejected
+### R4, P1: compiler identity was not closed across probe, build, and execution
+
+The preflight hashed one NVRTC input, but the target compiler loaded NVRTC by
+soname and the provider DSO linked with `-lnvrtc`. A passing probe therefore did
+not prove that native build and selected callback materialization used the same
+bytes. The command plan also inherited ambient variables unless the caller had
+already removed them.
+
+Repair: the target compiler now loads `RTDL_V4_NVRTC_LIBRARY` by exact canonical
+path. The native builder links that exact file, records its bytes and SHA-256,
+and rejects an `ldd` resolution to any other file. Generated commands use
+explicit `env -u` guards. The GPU runner rejects compiler-path, prefix,
+simulator, cache, or native-library contamination; hashes exact NVRTC, NVVM,
+and libdevice files before materialization; rechecks them after both launches;
+and stores a sealed compiler-environment identity. The RTDL-free verifier
+independently rederives the schema and binds the NVRTC row back to the native
+build manifest.
+
+### R5, P1: legal compute capabilities with minor zero were rejected
 
 The first implementation of the internal compiler request required both
 compute-capability components to be positive. That incorrectly rejected legal
@@ -94,17 +112,19 @@ zero. A dedicated regression test covers 9.0 and rejects a zero major.
 
 ## Local evidence
 
-- Goal5838 focused tests pass `85/85`.
-- Goal5838 plus inherited Goal5833 built-in-sphere tests pass `155/155`.
+- Goal5838 focused tests pass `87/87`.
+- Goal5838 plus inherited Goal5833 built-in-sphere tests pass `157/157`.
 - Stored generic-core seal verification passes with zero frozen-file changes.
 - Stored independent challenge selection verification passes.
 - Python byte compilation passes for all changed Python files.
-- Ruff `E,F,I,UP` with repository `E501` exclusion passes.
+- Ruff passes for every modified Python file.
 - `git diff --check` passes.
 - The synthetic R550 plus OptiX 8 readiness path remains accepted; no minimum
   driver constant exists.
 - Unit tests bind the exact CUDA compiler environment into generated build and
-  run commands and reject callback receipts that cross the no-launch boundary.
+  run commands, require explicit ambient-variable removal, validate canonical
+  `ldd` resolution, reject compiler contamination, and reject callback receipts
+  that cross the no-launch boundary.
 - A real full preflight invocation on this non-NVIDIA Mac exits one, preserves
   all three local gates as passing, writes schema v2 with
   `scientific_failure_claimed=false` and `gpu_execution_performed=false`, and
