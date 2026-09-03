@@ -1,0 +1,780 @@
+{
+  "architecture_generation": "ADA",
+  "baseline_composite_count": 108,
+  "baseline_evidence_file_count": 866,
+  "baseline_evidence_manifest_sha256": "038235943178b116d867ee47f89c2b19e5309331a856bf804b409dc1a57350bb",
+  "baseline_result_sha256": "4ae06bf373780bd0d0d126527ba99903a0349d9d47254bd123fa3f33c7506452",
+  "baseline_summaries": [
+    {
+      "arm_medians_ns": {
+        "A_DIRECT_CUDA_OPTIX": {
+          "first_complete_execution_ns": 896838,
+          "first_worker_phase_medians_ns": {
+            "close": null,
+            "deterministic_input_materialization": 77038,
+            "device_compile": 105130653,
+            "module_program_pipeline_sbt": 268242697,
+            "native_prepare": 41614743,
+            "provider_projection_and_generic_family_admission": null,
+            "route_declaration_and_artifact_binding": null,
+            "runtime_target_and_toolchain_binding": null,
+            "target_materialization": 375247474
+          },
+          "setup_total_ns": 416042810,
+          "steady_complete_execution_median_ns": 834211,
+          "worker_count": 18
+        },
+        "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API": {
+          "first_complete_execution_ns": 3878811,
+          "first_worker_phase_medians_ns": {
+            "close": 8513901,
+            "deterministic_input_materialization": 16001433,
+            "device_compile": 191715790,
+            "module_program_pipeline_sbt": 105003814,
+            "native_prepare": 18150140,
+            "provider_projection_and_generic_family_admission": null,
+            "route_declaration_and_artifact_binding": null,
+            "runtime_target_and_toolchain_binding": null,
+            "target_materialization": 299095511
+          },
+          "setup_total_ns": 317506015,
+          "steady_complete_execution_median_ns": 2823119,
+          "worker_count": 18
+        },
+        "D_RTDL_PUBLIC_CHECK_ON": {
+          "first_complete_execution_ns": 17326246,
+          "first_worker_phase_medians_ns": {
+            "close": 830459,
+            "deterministic_input_materialization": 15893310,
+            "device_compile": null,
+            "module_program_pipeline_sbt": null,
+            "native_prepare": 718615283,
+            "provider_projection_and_generic_family_admission": 60783432,
+            "route_declaration_and_artifact_binding": 62400321,
+            "runtime_target_and_toolchain_binding": 50065591,
+            "target_materialization": 4203053402
+          },
+          "setup_total_ns": 5172555935,
+          "steady_complete_execution_median_ns": 8387719,
+          "worker_count": 18
+        }
+      },
+      "comparisons": [
+        {
+          "bootstrap_95_percent_ratio": [
+            15.668053922,
+            17.285632901
+          ],
+          "denominator": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+          "median_ratio": 16.07807346,
+          "metric": "setup_total_ns",
+          "numerator": "D_RTDL_PUBLIC_CHECK_ON",
+          "registered_gate": null
+        },
+        {
+          "bootstrap_95_percent_ratio": [
+            4.404333532,
+            4.532863635
+          ],
+          "denominator": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+          "median_ratio": 4.467773056,
+          "metric": "first_complete_execution_ns",
+          "numerator": "D_RTDL_PUBLIC_CHECK_ON",
+          "registered_gate": null
+        },
+        {
+          "bootstrap_95_percent_ratio": [
+            2.936613252,
+            3.073967024
+          ],
+          "denominator": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+          "median_ratio": 3.00468917,
+          "metric": "steady_complete_execution_median_ns",
+          "numerator": "D_RTDL_PUBLIC_CHECK_ON",
+          "registered_gate": null
+        },
+        {
+          "bootstrap_95_percent_ratio": [
+            11.574263619,
+            13.090658647
+          ],
+          "denominator": "A_DIRECT_CUDA_OPTIX",
+          "median_ratio": 12.291682134,
+          "metric": "setup_total_ns",
+          "numerator": "D_RTDL_PUBLIC_CHECK_ON",
+          "registered_gate": null
+        },
+        {
+          "bootstrap_95_percent_ratio": [
+            19.047046184,
+            19.553141187
+          ],
+          "denominator": "A_DIRECT_CUDA_OPTIX",
+          "median_ratio": 19.282947241,
+          "metric": "first_complete_execution_ns",
+          "numerator": "D_RTDL_PUBLIC_CHECK_ON",
+          "registered_gate": null
+        },
+        {
+          "bootstrap_95_percent_ratio": [
+            10.046566984,
+            10.201150424
+          ],
+          "denominator": "A_DIRECT_CUDA_OPTIX",
+          "median_ratio": 10.057868878,
+          "metric": "steady_complete_execution_median_ns",
+          "numerator": "D_RTDL_PUBLIC_CHECK_ON",
+          "registered_gate": null
+        }
+      ],
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1"
+    },
+    {
+      "arm_medians_ns": {
+        "A_DIRECT_CUDA_OPTIX": {
+          "first_complete_execution_ns": 134505,
+          "first_worker_phase_medians_ns": {
+            "close": null,
+            "deterministic_input_materialization": 907953,
+            "device_compile": 101343708,
+            "module_program_pipeline_sbt": 274099417,
+            "native_prepare": 41687905,
+            "provider_projection_and_generic_family_admission": null,
+            "route_declaration_and_artifact_binding": null,
+            "runtime_target_and_toolchain_binding": null,
+            "target_materialization": 379585906
+          },
+          "setup_total_ns": 422424136,
+          "steady_complete_execution_median_ns": 73803,
+          "worker_count": 18
+        },
+        "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API": {
+          "first_complete_execution_ns": 224564,
+          "first_worker_phase_medians_ns": {
+            "close": 17062816,
+            "deterministic_input_materialization": 161160916,
+            "device_compile": 194996444,
+            "module_program_pipeline_sbt": 110759277,
+            "native_prepare": 49605814,
+            "provider_projection_and_generic_family_admission": null,
+            "route_declaration_and_artifact_binding": null,
+            "runtime_target_and_toolchain_binding": null,
+            "target_materialization": 302785957
+          },
+          "setup_total_ns": 352035784,
+          "steady_complete_execution_median_ns": 128135,
+          "worker_count": 18
+        },
+        "D_RTDL_PUBLIC_CHECK_ON": {
+          "first_complete_execution_ns": 29640115,
+          "first_worker_phase_medians_ns": {
+            "close": 1181933,
+            "deterministic_input_materialization": 158970791,
+            "device_compile": null,
+            "module_program_pipeline_sbt": null,
+            "native_prepare": 703678695,
+            "provider_projection_and_generic_family_admission": 54516030,
+            "route_declaration_and_artifact_binding": 47974444,
+            "runtime_target_and_toolchain_binding": 41512289,
+            "target_materialization": 3643481839
+          },
+          "setup_total_ns": 4499897786,
+          "steady_complete_execution_median_ns": 13930763,
+          "worker_count": 18
+        }
+      },
+      "comparisons": [
+        {
+          "bootstrap_95_percent_ratio": [
+            11.401180578,
+            13.289289995
+          ],
+          "denominator": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+          "median_ratio": 12.564801521,
+          "metric": "setup_total_ns",
+          "numerator": "D_RTDL_PUBLIC_CHECK_ON",
+          "registered_gate": null
+        },
+        {
+          "bootstrap_95_percent_ratio": [
+            126.491879946,
+            139.045279537
+          ],
+          "denominator": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+          "median_ratio": 134.465927254,
+          "metric": "first_complete_execution_ns",
+          "numerator": "D_RTDL_PUBLIC_CHECK_ON",
+          "registered_gate": null
+        },
+        {
+          "bootstrap_95_percent_ratio": [
+            106.30981506,
+            109.893086941
+          ],
+          "denominator": "B_CURRENT_NVIDIA_PYOPTIX_COMPATIBLE_API",
+          "median_ratio": 108.748608164,
+          "metric": "steady_complete_execution_median_ns",
+          "numerator": "D_RTDL_PUBLIC_CHECK_ON",
+          "registered_gate": null
+        },
+        {
+          "bootstrap_95_percent_ratio": [
+            10.057185385,
+            11.202431654
+          ],
+          "denominator": "A_DIRECT_CUDA_OPTIX",
+          "median_ratio": 10.4717514,
+          "metric": "setup_total_ns",
+          "numerator": "D_RTDL_PUBLIC_CHECK_ON",
+          "registered_gate": null
+        },
+        {
+          "bootstrap_95_percent_ratio": [
+            214.279652178,
+            231.420383674
+          ],
+          "denominator": "A_DIRECT_CUDA_OPTIX",
+          "median_ratio": 223.790148313,
+          "metric": "first_complete_execution_ns",
+          "numerator": "D_RTDL_PUBLIC_CHECK_ON",
+          "registered_gate": null
+        },
+        {
+          "bootstrap_95_percent_ratio": [
+            186.483578254,
+            192.658241785
+          ],
+          "denominator": "A_DIRECT_CUDA_OPTIX",
+          "median_ratio": 188.952109572,
+          "metric": "steady_complete_execution_median_ns",
+          "numerator": "D_RTDL_PUBLIC_CHECK_ON",
+          "registered_gate": null
+        }
+      ],
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1"
+    }
+  ],
+  "causal_evidence_file_count": 866,
+  "causal_evidence_manifest_sha256": "fe7e6747218bb66a9b8e7cb2867e5c836567f6fccca3cdcdc24c390782e5c5e2",
+  "causal_receipt_count": 216,
+  "causal_result_sha256": "c11396de2c1b0a5832a441497f7d362f88d0fa99f3a8361a799e5977c0cbefce",
+  "causal_summaries": [
+    {
+      "block_count": 18,
+      "block_rows": [
+        {
+          "block": 0,
+          "causal_phase_on_minus_off_ns": 37957238,
+          "check_off_causal_phase_median_ns": 22044474,
+          "check_on_causal_phase_median_ns": 60001712,
+          "route_declaration_on_minus_off_ns": 25687691,
+          "total_capability_on_minus_off_ns": 63644929
+        },
+        {
+          "block": 1,
+          "causal_phase_on_minus_off_ns": 39145056,
+          "check_off_causal_phase_median_ns": 21244142,
+          "check_on_causal_phase_median_ns": 60389198,
+          "route_declaration_on_minus_off_ns": 3809332,
+          "total_capability_on_minus_off_ns": 42954387
+        },
+        {
+          "block": 2,
+          "causal_phase_on_minus_off_ns": 32774630,
+          "check_off_causal_phase_median_ns": 28099697,
+          "check_on_causal_phase_median_ns": 60874327,
+          "route_declaration_on_minus_off_ns": -1595824,
+          "total_capability_on_minus_off_ns": 31178805
+        },
+        {
+          "block": 3,
+          "causal_phase_on_minus_off_ns": 38826772,
+          "check_off_causal_phase_median_ns": 22102657,
+          "check_on_causal_phase_median_ns": 60929429,
+          "route_declaration_on_minus_off_ns": 11255932,
+          "total_capability_on_minus_off_ns": 50082704
+        },
+        {
+          "block": 4,
+          "causal_phase_on_minus_off_ns": 38238438,
+          "check_off_causal_phase_median_ns": 22519419,
+          "check_on_causal_phase_median_ns": 60757857,
+          "route_declaration_on_minus_off_ns": 7106585,
+          "total_capability_on_minus_off_ns": 45345024
+        },
+        {
+          "block": 5,
+          "causal_phase_on_minus_off_ns": 37958273,
+          "check_off_causal_phase_median_ns": 21814665,
+          "check_on_causal_phase_median_ns": 59772938,
+          "route_declaration_on_minus_off_ns": -5510486,
+          "total_capability_on_minus_off_ns": 32447787
+        },
+        {
+          "block": 6,
+          "causal_phase_on_minus_off_ns": 37711903,
+          "check_off_causal_phase_median_ns": 22429140,
+          "check_on_causal_phase_median_ns": 60141043,
+          "route_declaration_on_minus_off_ns": -3912797,
+          "total_capability_on_minus_off_ns": 33799106
+        },
+        {
+          "block": 7,
+          "causal_phase_on_minus_off_ns": 37455372,
+          "check_off_causal_phase_median_ns": 21645004,
+          "check_on_causal_phase_median_ns": 59100376,
+          "route_declaration_on_minus_off_ns": -6039072,
+          "total_capability_on_minus_off_ns": 31416300
+        },
+        {
+          "block": 8,
+          "causal_phase_on_minus_off_ns": 37659131,
+          "check_off_causal_phase_median_ns": 22334321,
+          "check_on_causal_phase_median_ns": 59993452,
+          "route_declaration_on_minus_off_ns": -1013441,
+          "total_capability_on_minus_off_ns": 36645690
+        },
+        {
+          "block": 9,
+          "causal_phase_on_minus_off_ns": 39046167,
+          "check_off_causal_phase_median_ns": 21846491,
+          "check_on_causal_phase_median_ns": 60892658,
+          "route_declaration_on_minus_off_ns": 3660626,
+          "total_capability_on_minus_off_ns": 42706794
+        },
+        {
+          "block": 10,
+          "causal_phase_on_minus_off_ns": 39098819,
+          "check_off_causal_phase_median_ns": 21615687,
+          "check_on_causal_phase_median_ns": 60714506,
+          "route_declaration_on_minus_off_ns": -1639566,
+          "total_capability_on_minus_off_ns": 37459253
+        },
+        {
+          "block": 11,
+          "causal_phase_on_minus_off_ns": 33563952,
+          "check_off_causal_phase_median_ns": 26608037,
+          "check_on_causal_phase_median_ns": 60171989,
+          "route_declaration_on_minus_off_ns": 9402407,
+          "total_capability_on_minus_off_ns": 42966359
+        },
+        {
+          "block": 12,
+          "causal_phase_on_minus_off_ns": 38267426,
+          "check_off_causal_phase_median_ns": 22180519,
+          "check_on_causal_phase_median_ns": 60447945,
+          "route_declaration_on_minus_off_ns": -2534832,
+          "total_capability_on_minus_off_ns": 35732594
+        },
+        {
+          "block": 13,
+          "causal_phase_on_minus_off_ns": 38108993,
+          "check_off_causal_phase_median_ns": 21849017,
+          "check_on_causal_phase_median_ns": 59958010,
+          "route_declaration_on_minus_off_ns": 1585004,
+          "total_capability_on_minus_off_ns": 39693998
+        },
+        {
+          "block": 14,
+          "causal_phase_on_minus_off_ns": 36496609,
+          "check_off_causal_phase_median_ns": 24059050,
+          "check_on_causal_phase_median_ns": 60555659,
+          "route_declaration_on_minus_off_ns": -24080171,
+          "total_capability_on_minus_off_ns": 12416438
+        },
+        {
+          "block": 15,
+          "causal_phase_on_minus_off_ns": 38300626,
+          "check_off_causal_phase_median_ns": 22568200,
+          "check_on_causal_phase_median_ns": 60868826,
+          "route_declaration_on_minus_off_ns": -6525107,
+          "total_capability_on_minus_off_ns": 31775520
+        },
+        {
+          "block": 16,
+          "causal_phase_on_minus_off_ns": 37661487,
+          "check_off_causal_phase_median_ns": 22579160,
+          "check_on_causal_phase_median_ns": 60240647,
+          "route_declaration_on_minus_off_ns": -3100464,
+          "total_capability_on_minus_off_ns": 34561022
+        },
+        {
+          "block": 17,
+          "causal_phase_on_minus_off_ns": 39161977,
+          "check_off_causal_phase_median_ns": 22738482,
+          "check_on_causal_phase_median_ns": 61900459,
+          "route_declaration_on_minus_off_ns": -366264,
+          "total_capability_on_minus_off_ns": 38795713
+        }
+      ],
+      "check_off_causal_phase_median_ns": 22155474,
+      "check_on_causal_phase_median_ns": 60371582,
+      "primary_causal_phase_delta_bootstrap_95_percent_ns": [
+        37660309,
+        38563699
+      ],
+      "primary_causal_phase_delta_median_ns": 38033633,
+      "ratio_to_check_off_reported": false,
+      "route_declaration_negative_control_delta_median_ns": -1304633,
+      "secondary_total_capability_delta_bootstrap_95_percent_ns": [
+        33123446,
+        42830590
+      ],
+      "secondary_total_capability_delta_median_ns": 37052471,
+      "task": "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1",
+      "worker_count": 72
+    },
+    {
+      "block_count": 18,
+      "block_rows": [
+        {
+          "block": 0,
+          "causal_phase_on_minus_off_ns": 43086349,
+          "check_off_causal_phase_median_ns": 25852167,
+          "check_on_causal_phase_median_ns": 68938516,
+          "route_declaration_on_minus_off_ns": 5112690,
+          "total_capability_on_minus_off_ns": 48199039
+        },
+        {
+          "block": 1,
+          "causal_phase_on_minus_off_ns": 33837666,
+          "check_off_causal_phase_median_ns": 19781688,
+          "check_on_causal_phase_median_ns": 53619354,
+          "route_declaration_on_minus_off_ns": 2392596,
+          "total_capability_on_minus_off_ns": 36230262
+        },
+        {
+          "block": 2,
+          "causal_phase_on_minus_off_ns": 25476680,
+          "check_off_causal_phase_median_ns": 27732685,
+          "check_on_causal_phase_median_ns": 53209365,
+          "route_declaration_on_minus_off_ns": 633521,
+          "total_capability_on_minus_off_ns": 26110201
+        },
+        {
+          "block": 3,
+          "causal_phase_on_minus_off_ns": 33538114,
+          "check_off_causal_phase_median_ns": 20578161,
+          "check_on_causal_phase_median_ns": 54116275,
+          "route_declaration_on_minus_off_ns": -3192012,
+          "total_capability_on_minus_off_ns": 30346103
+        },
+        {
+          "block": 4,
+          "causal_phase_on_minus_off_ns": 33499259,
+          "check_off_causal_phase_median_ns": 19709216,
+          "check_on_causal_phase_median_ns": 53208475,
+          "route_declaration_on_minus_off_ns": -4212277,
+          "total_capability_on_minus_off_ns": 29286982
+        },
+        {
+          "block": 5,
+          "causal_phase_on_minus_off_ns": 33833911,
+          "check_off_causal_phase_median_ns": 19938961,
+          "check_on_causal_phase_median_ns": 53772872,
+          "route_declaration_on_minus_off_ns": 529111,
+          "total_capability_on_minus_off_ns": 34363022
+        },
+        {
+          "block": 6,
+          "causal_phase_on_minus_off_ns": 34280879,
+          "check_off_causal_phase_median_ns": 19755758,
+          "check_on_causal_phase_median_ns": 54036637,
+          "route_declaration_on_minus_off_ns": 4320786,
+          "total_capability_on_minus_off_ns": 38601666
+        },
+        {
+          "block": 7,
+          "causal_phase_on_minus_off_ns": 46369603,
+          "check_off_causal_phase_median_ns": 20022314,
+          "check_on_causal_phase_median_ns": 66391917,
+          "route_declaration_on_minus_off_ns": -2373083,
+          "total_capability_on_minus_off_ns": 43996520
+        },
+        {
+          "block": 8,
+          "causal_phase_on_minus_off_ns": 27768121,
+          "check_off_causal_phase_median_ns": 26316663,
+          "check_on_causal_phase_median_ns": 54084784,
+          "route_declaration_on_minus_off_ns": 1185327,
+          "total_capability_on_minus_off_ns": 28953448
+        },
+        {
+          "block": 9,
+          "causal_phase_on_minus_off_ns": 29552087,
+          "check_off_causal_phase_median_ns": 24731495,
+          "check_on_causal_phase_median_ns": 54283582,
+          "route_declaration_on_minus_off_ns": -2433872,
+          "total_capability_on_minus_off_ns": 27118215
+        },
+        {
+          "block": 10,
+          "causal_phase_on_minus_off_ns": 36154788,
+          "check_off_causal_phase_median_ns": 23408373,
+          "check_on_causal_phase_median_ns": 59563161,
+          "route_declaration_on_minus_off_ns": 7485207,
+          "total_capability_on_minus_off_ns": 43639995
+        },
+        {
+          "block": 11,
+          "causal_phase_on_minus_off_ns": 34222957,
+          "check_off_causal_phase_median_ns": 19307851,
+          "check_on_causal_phase_median_ns": 53530808,
+          "route_declaration_on_minus_off_ns": 2833357,
+          "total_capability_on_minus_off_ns": 37056314
+        },
+        {
+          "block": 12,
+          "causal_phase_on_minus_off_ns": 32602333,
+          "check_off_causal_phase_median_ns": 21595476,
+          "check_on_causal_phase_median_ns": 54197809,
+          "route_declaration_on_minus_off_ns": -3276185,
+          "total_capability_on_minus_off_ns": 29326148
+        },
+        {
+          "block": 13,
+          "causal_phase_on_minus_off_ns": 33450742,
+          "check_off_causal_phase_median_ns": 20772478,
+          "check_on_causal_phase_median_ns": 54223220,
+          "route_declaration_on_minus_off_ns": -7038324,
+          "total_capability_on_minus_off_ns": 26412417
+        },
+        {
+          "block": 14,
+          "causal_phase_on_minus_off_ns": 34578741,
+          "check_off_causal_phase_median_ns": 19767928,
+          "check_on_causal_phase_median_ns": 54346669,
+          "route_declaration_on_minus_off_ns": -4786279,
+          "total_capability_on_minus_off_ns": 29792462
+        },
+        {
+          "block": 15,
+          "causal_phase_on_minus_off_ns": 35527779,
+          "check_off_causal_phase_median_ns": 19741128,
+          "check_on_causal_phase_median_ns": 55268907,
+          "route_declaration_on_minus_off_ns": 3531935,
+          "total_capability_on_minus_off_ns": 39059714
+        },
+        {
+          "block": 16,
+          "causal_phase_on_minus_off_ns": 33820537,
+          "check_off_causal_phase_median_ns": 19711926,
+          "check_on_causal_phase_median_ns": 53532463,
+          "route_declaration_on_minus_off_ns": 12548317,
+          "total_capability_on_minus_off_ns": 46368854
+        },
+        {
+          "block": 17,
+          "causal_phase_on_minus_off_ns": 27372765,
+          "check_off_causal_phase_median_ns": 26197674,
+          "check_on_causal_phase_median_ns": 53570439,
+          "route_declaration_on_minus_off_ns": 7494618,
+          "total_capability_on_minus_off_ns": 34867383
+        }
+      ],
+      "check_off_causal_phase_median_ns": 20076201,
+      "check_on_causal_phase_median_ns": 53857876,
+      "primary_causal_phase_delta_bootstrap_95_percent_ns": [
+        33026537,
+        34429810
+      ],
+      "primary_causal_phase_delta_median_ns": 33827224,
+      "ratio_to_check_off_reported": false,
+      "route_declaration_negative_control_delta_median_ns": 909424,
+      "secondary_total_capability_delta_bootstrap_95_percent_ns": [
+        29326148,
+        38830690
+      ],
+      "secondary_total_capability_delta_median_ns": 34615202,
+      "task": "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1",
+      "worker_count": 72
+    },
+    {
+      "block_count": 18,
+      "block_rows": [
+        {
+          "block": 0,
+          "causal_phase_on_minus_off_ns": 27822478,
+          "check_off_causal_phase_median_ns": 18939196,
+          "check_on_causal_phase_median_ns": 46761674,
+          "route_declaration_on_minus_off_ns": 2508424,
+          "total_capability_on_minus_off_ns": 30330902
+        },
+        {
+          "block": 1,
+          "causal_phase_on_minus_off_ns": 25267142,
+          "check_off_causal_phase_median_ns": 21443230,
+          "check_on_causal_phase_median_ns": 46710372,
+          "route_declaration_on_minus_off_ns": -2881504,
+          "total_capability_on_minus_off_ns": 22385638
+        },
+        {
+          "block": 2,
+          "causal_phase_on_minus_off_ns": 20772969,
+          "check_off_causal_phase_median_ns": 26750586,
+          "check_on_causal_phase_median_ns": 47523555,
+          "route_declaration_on_minus_off_ns": -18106003,
+          "total_capability_on_minus_off_ns": 2666966
+        },
+        {
+          "block": 3,
+          "causal_phase_on_minus_off_ns": 22908443,
+          "check_off_causal_phase_median_ns": 28330623,
+          "check_on_causal_phase_median_ns": 51239066,
+          "route_declaration_on_minus_off_ns": -4621144,
+          "total_capability_on_minus_off_ns": 18287300
+        },
+        {
+          "block": 4,
+          "causal_phase_on_minus_off_ns": 28620326,
+          "check_off_causal_phase_median_ns": 17795422,
+          "check_on_causal_phase_median_ns": 46415748,
+          "route_declaration_on_minus_off_ns": 7405073,
+          "total_capability_on_minus_off_ns": 36025398
+        },
+        {
+          "block": 5,
+          "causal_phase_on_minus_off_ns": 26453678,
+          "check_off_causal_phase_median_ns": 20213933,
+          "check_on_causal_phase_median_ns": 46667611,
+          "route_declaration_on_minus_off_ns": -831924,
+          "total_capability_on_minus_off_ns": 25621754
+        },
+        {
+          "block": 6,
+          "causal_phase_on_minus_off_ns": 32322015,
+          "check_off_causal_phase_median_ns": 22085891,
+          "check_on_causal_phase_median_ns": 54407906,
+          "route_declaration_on_minus_off_ns": 3420271,
+          "total_capability_on_minus_off_ns": 35742286
+        },
+        {
+          "block": 7,
+          "causal_phase_on_minus_off_ns": 18058739,
+          "check_off_causal_phase_median_ns": 28211005,
+          "check_on_causal_phase_median_ns": 46269744,
+          "route_declaration_on_minus_off_ns": 634901,
+          "total_capability_on_minus_off_ns": 18693640
+        },
+        {
+          "block": 8,
+          "causal_phase_on_minus_off_ns": 23209927,
+          "check_off_causal_phase_median_ns": 23118359,
+          "check_on_causal_phase_median_ns": 46328286,
+          "route_declaration_on_minus_off_ns": -5839778,
+          "total_capability_on_minus_off_ns": 17370150
+        },
+        {
+          "block": 9,
+          "causal_phase_on_minus_off_ns": 23310007,
+          "check_off_causal_phase_median_ns": 22837387,
+          "check_on_causal_phase_median_ns": 46147394,
+          "route_declaration_on_minus_off_ns": -6927672,
+          "total_capability_on_minus_off_ns": 16382335
+        },
+        {
+          "block": 10,
+          "causal_phase_on_minus_off_ns": 28283278,
+          "check_off_causal_phase_median_ns": 18611222,
+          "check_on_causal_phase_median_ns": 46894500,
+          "route_declaration_on_minus_off_ns": -3936968,
+          "total_capability_on_minus_off_ns": 24346310
+        },
+        {
+          "block": 11,
+          "causal_phase_on_minus_off_ns": 28291558,
+          "check_off_causal_phase_median_ns": 17208629,
+          "check_on_causal_phase_median_ns": 45500187,
+          "route_declaration_on_minus_off_ns": -2552646,
+          "total_capability_on_minus_off_ns": 25738913
+        },
+        {
+          "block": 12,
+          "causal_phase_on_minus_off_ns": 31751127,
+          "check_off_causal_phase_median_ns": 17388866,
+          "check_on_causal_phase_median_ns": 49139993,
+          "route_declaration_on_minus_off_ns": -307708,
+          "total_capability_on_minus_off_ns": 31443419
+        },
+        {
+          "block": 13,
+          "causal_phase_on_minus_off_ns": 27574929,
+          "check_off_causal_phase_median_ns": 18877087,
+          "check_on_causal_phase_median_ns": 46452016,
+          "route_declaration_on_minus_off_ns": 5582032,
+          "total_capability_on_minus_off_ns": 33156960
+        },
+        {
+          "block": 14,
+          "causal_phase_on_minus_off_ns": 28620371,
+          "check_off_causal_phase_median_ns": 17299143,
+          "check_on_causal_phase_median_ns": 45919514,
+          "route_declaration_on_minus_off_ns": -1366521,
+          "total_capability_on_minus_off_ns": 27253850
+        },
+        {
+          "block": 15,
+          "causal_phase_on_minus_off_ns": 39531054,
+          "check_off_causal_phase_median_ns": 17994731,
+          "check_on_causal_phase_median_ns": 57525785,
+          "route_declaration_on_minus_off_ns": 9221182,
+          "total_capability_on_minus_off_ns": 48752236
+        },
+        {
+          "block": 16,
+          "causal_phase_on_minus_off_ns": 29719593,
+          "check_off_causal_phase_median_ns": 17125095,
+          "check_on_causal_phase_median_ns": 46844688,
+          "route_declaration_on_minus_off_ns": 2096547,
+          "total_capability_on_minus_off_ns": 31816140
+        },
+        {
+          "block": 17,
+          "causal_phase_on_minus_off_ns": 22877259,
+          "check_off_causal_phase_median_ns": 22972262,
+          "check_on_causal_phase_median_ns": 45849521,
+          "route_declaration_on_minus_off_ns": -48861463,
+          "total_capability_on_minus_off_ns": -25984203
+        }
+      ],
+      "check_off_causal_phase_median_ns": 17575134,
+      "check_on_causal_phase_median_ns": 46380543,
+      "primary_causal_phase_delta_bootstrap_95_percent_ns": [
+        23259967,
+        28620348
+      ],
+      "primary_causal_phase_delta_median_ns": 27698703,
+      "ratio_to_check_off_reported": false,
+      "route_declaration_negative_control_delta_median_ns": -1099223,
+      "secondary_total_capability_delta_bootstrap_95_percent_ns": [
+        18693640,
+        31629779
+      ],
+      "secondary_total_capability_delta_median_ns": 25680333,
+      "task": "BUILTIN_SPHERE_ANY_HIT_COUNT_V1",
+      "worker_count": 72
+    }
+  ],
+  "cross_generation_gate_passed": false,
+  "direct_identity_witness_sha256": "10bd533d9033915548c9ab3bae30a188759634e4bcc9872d21370587c30b2a79",
+  "distinct_gpu_architecture_generation_count": 1,
+  "execution_authority_sha256": "79af4df41c3feacb081fe657c93a2e7c649d3f55333e6c5fc1817f921a559827",
+  "external_review_or_consensus": false,
+  "hardware": {
+    "architecture_generation": "ADA",
+    "compute_capability": "8.9",
+    "driver_version": "580.159.04",
+    "gpu_model": "NVIDIA RTX 2000 Ada Generation",
+    "gpu_uuid": "GPU-f0ab2afa-0ec0-7da9-c951-01fc713ee1e9",
+    "vram_bytes": "17175674880"
+  },
+  "identity_witness_sha256": "d037bd37f6651696067f10b49a505236de2fa121c3acb175eee67e985c5cc92a",
+  "preregistration_sha256": "9bcb9876bca6234756c9c49b0caf12956fd87a13748a62074278194446e67570",
+  "public_performance_claim_authorized": false,
+  "pyoptix_identity_witness_sha256": "0e3d92a6bcf9b03b9d20129e4e4d60e032f035ae1a141a7bd4050262f14a3513",
+  "recount_sha256": "70305326b122e15806f9a67353b259620fcbb85932f6bbc04f002b4c899bbab3",
+  "required_gpu_architecture_generation_count": 2,
+  "schema": "rtdl.goal5842.independent_recount.v7",
+  "source_commit": "04305fc820290cc183a599376f13d2fb48175233",
+  "status": "PASS__ONE_GPU_GENERATION_RECOUNT_COMPLETE"
+}

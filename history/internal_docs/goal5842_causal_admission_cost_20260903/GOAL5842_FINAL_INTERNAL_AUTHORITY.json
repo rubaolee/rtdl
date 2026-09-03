@@ -1,0 +1,76 @@
+{
+  "authority_sha256": "5c8044d9204df6b5d622142aecab8fcd25990e2ca1a19c7c5055ef4e16a31e43",
+  "claim_boundary": {
+    "checker_off_is_supported_api": false,
+    "external_review_or_consensus": false,
+    "goal5842_external_review_complete": false,
+    "goal5842_internal_technical_complete": true,
+    "hardware_independent_timing_magnitude_claimed": false,
+    "intrinsic_language_overhead_claimed": false,
+    "manuscript_performance_wording_authorized": false,
+    "optimization_result_included": false,
+    "public_performance_claim_authorized": false
+  },
+  "completion_basis": {
+    "all_adverse_results_retained": true,
+    "complete_archive_count": 2,
+    "cross_machine_raw_time_ratios_computed": false,
+    "distinct_gpu_architecture_generation_count": 2,
+    "distinct_gpu_uuid_count": 2,
+    "local_byte_identical_recount_count": 2,
+    "pod_recount_count": 2,
+    "post_result_internal_hostile_review_complete": true,
+    "same_exact_harness_and_workloads": true,
+    "v11_rows_pooled": false
+  },
+  "cross_generation_authority": {
+    "architecture_generations": [
+      "ADA",
+      "AMPERE"
+    ],
+    "authority_sha256": "5f755721a3c335786951e1bf091815fec609ecb4aa4498be2fddbe1da17ab3da",
+    "file_sha256": "20604efec23bf2efecb9046ef9d63a90522e7beb0a1d670af169f56c02c4f77a",
+    "generation_count": 2,
+    "path": "history/internal_docs/goal5842_causal_admission_cost_20260903/V12_CROSS_GENERATION_AUTHORITY.json"
+  },
+  "generation_authorities": [
+    {
+      "architecture_generation": "ADA",
+      "archive_sha256": "6dff96a2c76674f56a467ae10ef8e50045792cbf2fc6908c93296e092e8bff21",
+      "authority_sha256": "588462752860276987d12ab8d6bd0e71c8d371004268ad9e47d1d0b2bbf94006",
+      "file_sha256": "176becd03d31345ec242c3819396de7a8567c6ad6e7db9fcf997da84e1cc6a65",
+      "path": "history/internal_docs/goal5842_causal_admission_cost_20260903/V12_ADA_FIRST_GENERATION_AUTHORITY.json",
+      "recount_sha256": "70305326b122e15806f9a67353b259620fcbb85932f6bbc04f002b4c899bbab3"
+    },
+    {
+      "architecture_generation": "AMPERE",
+      "archive_sha256": "df4e1e1062ffbb4907608ca61c0bd791d49f182889821ab4e75c382718e444a7",
+      "authority_sha256": "0b32261798db751b20e72776237f72c43072167e67ee4aae86784893a5d30f9c",
+      "file_sha256": "f855822893cc3a0275d923323b7a9903272dd06e43d0de05c1cbdf2d1472c60a",
+      "path": "history/internal_docs/goal5842_causal_admission_cost_20260903/V12_AMPERE_SECOND_GENERATION_AUTHORITY.json",
+      "recount_sha256": "4590c10d47541d1e2bdb834f43bc6b9c3046f92bf506b7b02e5782579e7ef984"
+    }
+  ],
+  "preregistration_sha256": "9bcb9876bca6234756c9c49b0caf12956fd87a13748a62074278194446e67570",
+  "reports": [
+    {
+      "path": "history/internal_docs/goal5842_causal_admission_cost_20260903/FORMAL_V12_AMPERE_SECOND_GENERATION_AND_CROSS_GENERATION_REPORT.md",
+      "sha256": "b94d5578d0e635dbe23769a5e67748ce9909a0fef28b089556ce356186c060ca"
+    },
+    {
+      "path": "history/internal_docs/goal5842_causal_admission_cost_20260903/FINAL_INTERNAL_HOSTILE_REVIEW_V12_TWO_GENERATION.md",
+      "sha256": "acb6a317b410ba6ad49de4e70b19df6d6831f1407931c9fb1e390b805454b66e"
+    }
+  ],
+  "schema": "rtdl.goal5842.final_internal_authority.v1",
+  "scientific_result": {
+    "admission_cost_direction_replicated_across_generations": true,
+    "admission_is_not_dominant_setup_gap_diagnosis_replicated": true,
+    "all_six_primary_bootstrap_intervals_exclude_zero": true,
+    "checker_removal_recommended": false,
+    "current_provider_baselines_are_adverse": true,
+    "materialization_and_native_prepare_dominate_setup_on_both_generations": true
+  },
+  "source_commit": "04305fc820290cc183a599376f13d2fb48175233",
+  "status": "PASS__GOAL5842_INTERNAL_TECHNICAL_COMPLETE__EXTERNAL_REVIEW_PENDING"
+}

@@ -1,0 +1,39 @@
+{
+  "architecture_generations": [
+    "ADA",
+    "AMPERE"
+  ],
+  "authority_sha256": "5f755721a3c335786951e1bf091815fec609ecb4aa4498be2fddbe1da17ab3da",
+  "cross_machine_raw_time_ratios_computed": false,
+  "external_review_or_consensus": false,
+  "generation_count": 2,
+  "hardware_rows": [
+    {
+      "architecture_generation": "ADA",
+      "baseline_result_sha256": "4ae06bf373780bd0d0d126527ba99903a0349d9d47254bd123fa3f33c7506452",
+      "causal_result_sha256": "c11396de2c1b0a5832a441497f7d362f88d0fa99f3a8361a799e5977c0cbefce",
+      "file_sha256": "bf5206a86009a6f9c7519dff45a92d1f527035dc0d05a609fc88f59d762b1a89",
+      "gpu_model": "NVIDIA RTX 2000 Ada Generation",
+      "gpu_uuid": "GPU-f0ab2afa-0ec0-7da9-c951-01fc713ee1e9",
+      "path": "/Users/rl2025/rtdl_v4_restricted_python_design/history/internal_docs/goal5842_causal_admission_cost_20260903/V12_ADA_INDEPENDENT_RECOUNT.json",
+      "recount_sha256": "70305326b122e15806f9a67353b259620fcbb85932f6bbc04f002b4c899bbab3"
+    },
+    {
+      "architecture_generation": "AMPERE",
+      "baseline_result_sha256": "3dc295592c39617ff34ed5d75ce354ee033917669edfb3ba3218616db01ff325",
+      "causal_result_sha256": "4fb1fbfdeac9d3a318d21e7755029444bdbb53549751f5970e389f9d84e9606c",
+      "file_sha256": "b72a1df3cc5c6983e7b6f69719bddcfb1a767e7ebd41955fd25b7b7613ae5560",
+      "gpu_model": "NVIDIA RTX A6000",
+      "gpu_uuid": "GPU-6457d4af-a4bb-bff5-a9d2-02f251ceca27",
+      "path": "/Users/rl2025/rtdl_v4_restricted_python_design/history/internal_docs/goal5842_causal_admission_cost_20260903/V12_AMPERE_INDEPENDENT_RECOUNT.json",
+      "recount_sha256": "4590c10d47541d1e2bdb834f43bc6b9c3046f92bf506b7b02e5782579e7ef984"
+    }
+  ],
+  "no_post_result_success_threshold": true,
+  "preregistration_sha256": "9bcb9876bca6234756c9c49b0caf12956fd87a13748a62074278194446e67570",
+  "public_performance_claim_authorized": false,
+  "same_exact_harness_and_workloads": true,
+  "schema": "rtdl.goal5842.cross_generation_authority.v1",
+  "source_commit": "04305fc820290cc183a599376f13d2fb48175233",
+  "status": "PASS__GOAL5842_TWO_GENERATION_INTERNAL_EVIDENCE_GATE"
+}

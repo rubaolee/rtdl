@@ -1,32 +1,38 @@
 # RTDL Codex Working Guide
 
-## Critical current override: Goal5842 V12 Ada first generation verified; second generation required (2026-09-03)
+## Critical current override: Goal5842 internally complete on Ada and Ampere (2026-09-03)
 
-The formal V12 transaction from exact source commit
-`04305fc820290cc183a599376f13d2fb48175233` completed on one RTX 2000 Ada
-generation. The controlling first-generation authority is
-`history/internal_docs/goal5842_causal_admission_cost_20260903/V12_ADA_FIRST_GENERATION_AUTHORITY.json`;
-its internal seal is
-`588462752860276987d12ab8d6bd0e71c8d371004268ad9e47d1d0b2bbf94006`.
+Goal5842 is internally technically complete at exactly
+`PASS__GOAL5842_INTERNAL_TECHNICAL_COMPLETE__EXTERNAL_REVIEW_PENDING`. The
+controlling authority is
+`history/internal_docs/goal5842_causal_admission_cost_20260903/GOAL5842_FINAL_INTERNAL_AUTHORITY.json`;
+its seal is
+`5c8044d9204df6b5d622142aecab8fcd25990e2ca1a19c7c5055ef4e16a31e43`.
 Verify it with
-`PYTHONPATH=src:. python scripts/goal5842_build_first_generation_authority.py --verify-stored`.
+`PYTHONPATH=src:. python scripts/goal5842_build_final_authority.py --verify-stored`.
 
-All 216 causal receipts, 216 baseline subworker receipts, 108 baseline
-composites and seven formal stages passed. A fresh local replay from the exact
-frozen Git blobs reproduced the pod recount byte for byte. Generic admission
-costs 27.7--38.0 ms in the three registered tasks, but explains descriptively
-only about 0.8% of the observed 4.1--4.9 s RTDL setup disadvantage. Target
-materialization and native prepare dominate. The adverse baseline rows remain
-mandatory: relation steady RTDL/PyOptiX is 3.00x and triangle is 108.75x; these
-are current-implementation measurements, not intrinsic language bounds.
+The exact V12 experiment at source commit
+`04305fc820290cc183a599376f13d2fb48175233` passed independently on RTX 2000
+Ada and RTX A6000 Ampere GPUs with distinct UUIDs. Both complete archives are
+hash-bound; each contains 216 causal receipts, 216 baseline subworker receipts,
+108 baseline composites, and seven passing formal stages. Fresh Mac replays
+from frozen Git blobs reproduce both pod recounts byte for byte. The frozen
+cross-generation gate passes without pooling V11 rows or computing
+cross-machine raw-time ratios.
 
-Goal5842 is not complete. The preregistration requires the exact V12 bytes on a
-second, non-Ada NVIDIA architecture generation with a distinct GPU UUID. Do
-not substitute a second Ada GPU, pool terminal V11 rows, compute cross-machine
-raw-time ratios, call V12 result-blind, recommend the private checker-off path,
-or authorize public/manuscript performance wording. Follow
-`SECOND_GENERATION_REPLAY_PLAN_V12.md` beside the authority. External review
-and consensus remain owner-deferred while traveling.
+Both generations show that generic admission has a measurable cost but is not
+the dominant current setup gap; target materialization plus native prepare is
+the dominant phase class. All adverse baseline rows remain mandatory. On
+Ampere, relation steady RTDL/PyOptiX is 3.13x and triangle is 155.21x; these are
+current-implementation measurements, not intrinsic language bounds. Do not
+recommend the private checker-off path or authorize public/manuscript
+performance wording. External review and consensus remain owner-deferred.
+
+The next engineering work is a new goal, not a Goal5842 rewrite: reuse exact-
+identity compiled/prepared state, remove repeated Python/native materialization,
+and move triangle checked-U64 reduction to the existing generic device-resident
+path while returning only the public scalar. Any post-optimization baseline
+requires a fresh preregistration and must retain V12 unchanged.
 
 ## Critical current override: Goal5840 bounded refinement evidence complete (2026-09-03)
 

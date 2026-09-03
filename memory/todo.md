@@ -1,6 +1,32 @@
 # TODO
 
-## Current CGO critical path after Goal5840 (2026-09-03)
+## Current CGO critical path after Goal5842 (2026-09-03)
+
+Goal5842 is internally technically complete at
+`PASS__GOAL5842_INTERNAL_TECHNICAL_COMPLETE__EXTERNAL_REVIEW_PENDING` under
+`history/internal_docs/goal5842_causal_admission_cost_20260903/GOAL5842_FINAL_INTERNAL_AUTHORITY.json`.
+Exact V12 evidence passed on distinct Ada and Ampere generations, and both pod
+recounts reproduce byte for byte locally. External review and public/manuscript
+performance wording remain pending.
+
+Immediate engineering work must be a separately named and preregistered goal:
+
+1. reuse exact-identity compiled leaves, pipeline state, and prepared targets;
+2. remove repeated Python/native input materialization after immutable-identity
+   proof;
+3. connect the public triangle scalar contract to generic device-resident
+   checked-U64 reduction instead of copying and host-reducing a per-ray vector;
+4. compare cold setup, warm reuse, first execution, and steady execution under
+   exact public-output parity;
+5. preserve Goal5842 V12 unchanged and retain every adverse result.
+
+Goal5841's external-human study is unavailable and cannot be replaced by AI or
+project-author observations. Therefore remove or bound ease/productivity claims
+in Goal5843 rather than asserting unsupported human evidence. Goal5843 remains
+the manuscript reconstruction, external-review, anonymity, and final claim
+gate after the performance-debt goal.
+
+## Historical CGO critical path after Goal5840 (2026-09-03)
 
 Goal5840 is complete at
 `PASS__GOAL5840_COMPLETE_AT_PREREGISTERED_BOUNDED_REFINEMENT_SCOPE` under

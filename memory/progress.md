@@ -1,5 +1,24 @@
 # Progress
 
+## Goal5842 two-generation internal technical completion (2026-09-03)
+
+Exact V12 completed on RTX 2000 Ada and RTX A6000 Ampere at source commit
+`04305fc820290cc183a599376f13d2fb48175233`. Each generation has 216 causal
+receipts, 216 baseline subworker receipts, 108 composites, seven passing
+stages, a complete hash-bound archive, and a Mac recount that is byte-identical
+to the pod recount. The cross-generation gate passes for distinct generations
+and UUIDs. Final authority seal: `5c8044d9...31e43`; focused evidence and
+lifecycle tests pass 83/83.
+
+Across both machines, generic admission is measurable but not the dominant
+setup gap; target materialization plus native prepare accounts descriptively
+for roughly 94%--97% of RTDL setup. Provider baselines remain adverse and are
+retained, especially the public triangle route's avoidable per-ray host
+materialization/reduction. Status is internal technical completion only;
+external review, consensus, and public/manuscript performance wording remain
+blocked. The next goal is a separately preregistered implementation repair,
+not a rewrite of V12.
+
 ## Goal5836 completes at A1 terminal negative outcome (2026-09-01)
 
 The exact paper/source classification authority has whole-file SHA-256
