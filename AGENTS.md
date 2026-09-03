@@ -1,5 +1,33 @@
 # RTDL Codex Working Guide
 
+## Critical current override: Goal5842 V12 Ada first generation verified; second generation required (2026-09-03)
+
+The formal V12 transaction from exact source commit
+`04305fc820290cc183a599376f13d2fb48175233` completed on one RTX 2000 Ada
+generation. The controlling first-generation authority is
+`history/internal_docs/goal5842_causal_admission_cost_20260903/V12_ADA_FIRST_GENERATION_AUTHORITY.json`;
+its internal seal is
+`588462752860276987d12ab8d6bd0e71c8d371004268ad9e47d1d0b2bbf94006`.
+Verify it with
+`PYTHONPATH=src:. python scripts/goal5842_build_first_generation_authority.py --verify-stored`.
+
+All 216 causal receipts, 216 baseline subworker receipts, 108 baseline
+composites and seven formal stages passed. A fresh local replay from the exact
+frozen Git blobs reproduced the pod recount byte for byte. Generic admission
+costs 27.7--38.0 ms in the three registered tasks, but explains descriptively
+only about 0.8% of the observed 4.1--4.9 s RTDL setup disadvantage. Target
+materialization and native prepare dominate. The adverse baseline rows remain
+mandatory: relation steady RTDL/PyOptiX is 3.00x and triangle is 108.75x; these
+are current-implementation measurements, not intrinsic language bounds.
+
+Goal5842 is not complete. The preregistration requires the exact V12 bytes on a
+second, non-Ada NVIDIA architecture generation with a distinct GPU UUID. Do
+not substitute a second Ada GPU, pool terminal V11 rows, compute cross-machine
+raw-time ratios, call V12 result-blind, recommend the private checker-off path,
+or authorize public/manuscript performance wording. Follow
+`SECOND_GENERATION_REPLAY_PLAN_V12.md` beside the authority. External review
+and consensus remain owner-deferred while traveling.
+
 ## Critical current override: Goal5840 bounded refinement evidence complete (2026-09-03)
 
 Goal5840 is complete at exactly
