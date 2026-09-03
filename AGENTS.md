@@ -1,5 +1,36 @@
 # RTDL Codex Working Guide
 
+## Critical current override: Goal5840 bounded refinement evidence complete (2026-09-03)
+
+Goal5840 is complete at exactly
+`PASS__GOAL5840_COMPLETE_AT_PREREGISTERED_BOUNDED_REFINEMENT_SCOPE`. The
+controlling authority is
+`history/internal_docs/goal5840_independent_lowering_refinement_20260903/FINAL_AUTHORITY.json`;
+its internal seal is
+`3857a8c1f579808ea96a2f54c58e5698818deae7b879c849523ccf72a3f59a80`.
+The exact GPU evidence source commit is
+`79fdbb61c2afd602a16e8fc01b27d0cf8a576e7b`.
+
+One fresh Attempt-07 run on RTX 2000 Ada / OptiX 9.0 passed all four true-OptiX
+modes across three bounded routes. A separately implemented target checker
+passed 20/20 property applications, and the isolated mutation suite rejected
+15 unique frozen mutations across 20 mode applications. The downloaded
+artifact verifier replayed the exact Linux DSO, Git blobs, four bundles, four
+checker reports, and all mutations; two Mac runs were byte-identical. The three
+Goal5838 frozen-core files changed by zero bytes. Verify the final authority
+with
+`PYTHONPATH=src:. python3 scripts/goal5840_build_final_authority.py --verify-stored`.
+
+This is bounded structural lowering/refinement evidence for exactly three route
+groups, four modes, and five properties. It is not a general compiler-soundness
+theorem, arbitrary Callback-IR support, application correctness, performance or
+speedup evidence, independent hardware attestation, external review, or
+consensus. Attempts 1 through 6 remain preserved engineering failures and must
+not be hidden or promoted. External review remains owner-deferred. The next
+scientific gates are Goal5841 external-human authoring evidence and Goal5842
+causal admission-cost/performance evaluation; do not keep extending the
+Goal5840 evidence harness.
+
 ## Critical current override: Goal5838 bounded prospective exam complete (2026-09-03)
 
 Goal5838 is complete at exactly

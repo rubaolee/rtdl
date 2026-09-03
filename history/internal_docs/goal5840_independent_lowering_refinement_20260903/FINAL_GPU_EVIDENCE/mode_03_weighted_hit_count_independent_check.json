@@ -1,0 +1,86 @@
+{
+  "claim_boundary": {
+    "application_correctness": false,
+    "bounded_three_route_target_check_only": true,
+    "executable_capability_issued": false,
+    "external_review_or_consensus": false,
+    "general_compiler_soundness": false,
+    "performance_or_speedup": false
+  },
+  "pass_count": 5,
+  "property_checks": [
+    {
+      "declared_facts_sha256": "d4dbe9cc0529a62c921c658a3dba8aec89bb4db1a7de64bc47d31b6f419607d1",
+      "evidence": [
+        "declaration.family_plan.family_shape.callback.roles",
+        "artifact.rtdl.callback.abi.roles",
+        "generated.leaves[*].generated_source AST out_effect_tag assignments",
+        "generated.wrapper.metadata.role_symbols",
+        "generated.wrapper.source and generated/composed PTX symbols"
+      ],
+      "generated_facts_sha256": "d4dbe9cc0529a62c921c658a3dba8aec89bb4db1a7de64bc47d31b6f419607d1",
+      "property_id": "CP001_ROLE_EFFECT_CLOSURE",
+      "reason_id": "PASS__BOUNDED_TARGET_FACTS_MATCH",
+      "target_facts_sha256": "d4dbe9cc0529a62c921c658a3dba8aec89bb4db1a7de64bc47d31b6f419607d1",
+      "verdict": "PASS"
+    },
+    {
+      "declared_facts_sha256": "bf66e6f003225d484e5ab6871e1b6299b9e2cd4ea51917b6fc8661adcba65cc1",
+      "evidence": [
+        "declaration family channels and protocol-instance nominal semantics",
+        "compiled ABI producer/consumer fields",
+        "raw wrapper source provider intrinsic and output anchors"
+      ],
+      "property_id": "CP002_SEMANTIC_ABI_OWNERSHIP",
+      "reason_id": "PASS__BOUNDED_TARGET_FACTS_MATCH",
+      "target_facts_sha256": "bf66e6f003225d484e5ab6871e1b6299b9e2cd4ea51917b6fc8661adcba65cc1",
+      "verdict": "PASS"
+    },
+    {
+      "declared_facts_sha256": "fa33175c2d38cd168d519289c57a9fb341c3973f8b3373b6e098cb06eecd797f",
+      "evidence": [
+        "declaration graph/buffer/SBT shape",
+        "native producer descriptor primitive names",
+        "trusted native producer source call chain and OptiX build-input enum",
+        "SBT/buffer binding receipt",
+        "raw wrapper provider-intrinsic anchors"
+      ],
+      "property_id": "CP003_PHYSICAL_BINDING",
+      "reason_id": "PASS__BOUNDED_TARGET_FACTS_MATCH",
+      "target_facts_sha256": "5f7f205993a8a82f682619f12fd26fe10c28e06f7ebdfe3a915919045e4996d0",
+      "verdict": "PASS"
+    },
+    {
+      "declared_facts_sha256": "21f56642ee9ebaa0e2c02b4ea7ea7727583efc4960ae852bbe3e1e2f88fedf9a",
+      "evidence": [
+        "raw operator contract bound by plan hash",
+        "raw wrapper status/control-flow anchors",
+        "externally trusted host continuation source AST and native source manifest",
+        "execution receipt status/completeness/exposure fields"
+      ],
+      "property_id": "CP004_STATUS_GATED_CONTINUATION_AND_COMPLETENESS",
+      "reason_id": "PASS__BOUNDED_TARGET_FACTS_MATCH",
+      "target_facts_sha256": "ae9838f5f6c6f8b81ebd7c0f618e1395c0cf8e5d979951a3a42556a4f0125950",
+      "verdict": "PASS"
+    },
+    {
+      "declared_facts_sha256": "dbf75d6942abe77194a144fcb9cc7640819ee0e5479fa236f99ae05501181fa6",
+      "evidence": [
+        "independently supplied declaration and executable identity trust anchors",
+        "provider descriptor/projection/executable identity canonical records",
+        "raw wrapper/leaf/composed source and PTX identity preimage",
+        "target/native binding and exact execution receipt",
+        "family-plan to Callback ABI identity chain"
+      ],
+      "property_id": "CP005_EXECUTABLE_IDENTITY_CHAIN",
+      "reason_id": "PASS__BOUNDED_TARGET_FACTS_MATCH",
+      "target_facts_sha256": "ff243138df0f9d7e7e814cc4134b02701bf74f24442ca051012d5614571671ad",
+      "verdict": "PASS"
+    }
+  ],
+  "reject_count": 0,
+  "report_sha256": "6e25ecb1684c4e96f6b0f3e69bf3409b3b7d47b2c1bd370867d2e6cb3662c14c",
+  "route_id": "stable::triangle_reduction::checked_u64_reduction",
+  "schema": "rtdl.goal5840.independent_target_check.v1",
+  "verdict": "ACCEPT"
+}

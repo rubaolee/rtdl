@@ -1,0 +1,32 @@
+{
+  "claim_boundary": {
+    "independent_hardware_attestation": false,
+    "post_materialization_executable_identity_root": true,
+    "pre_pod_declaration_and_control_roots": true
+  },
+  "schema": "rtdl.goal5840.runtime_trust_roots.v1",
+  "source": "captured_from_live_generic_lifecycle_objects_before_bundle_independent_check; capture_runner_remains_in_tcb",
+  "trust_roots": {
+    "prospective::builtin_sphere::any_hit_count_continue_u64_per_query::accept_every_hit_and_continue": {
+      "control_flow_manifest_sha256": "ece4699c064fa77049bfcdbab3aeb0fbcea5aac53f3aa66467f9490243b11796",
+      "declaration_sha256": "97bb941681974d7b88472e9b49f5031fcc84a0c9f93246c66b57c8f51382230b",
+      "executable_identity_sha256": "b901929f547db49cae15898e9bd7cc0052adf5a61d10e2667282d453b56951e3"
+    },
+    "stable::bounded_relation::canonical_bounded_pair_collection::capacity_fail_closed_collection": {
+      "control_flow_manifest_sha256": "cdb6b80aac352bf89089e3137364db7033a594c2810f8052eb61ba84915e7996",
+      "declaration_sha256": "608060a1d42764ea1582a81aae3dd64f3caa6a14c082db7c7d941c938925c480",
+      "executable_identity_sha256": "99fbe5618c029f54b85fedf04efb2916ea62514c51f768e1328635f7ff5a2634"
+    },
+    "stable::triangle_reduction::checked_u64_reduction::all_hit_count": {
+      "control_flow_manifest_sha256": "82b32bbe5f6e6df9bad7b6b05c5899ebc260ecbb89699792f6d935aad598baea",
+      "declaration_sha256": "2fb010647d51c62dfbfa73352a7139031118d79564665e4d8fa6f2e48bd04eff",
+      "executable_identity_sha256": "dacb63134a0a1904b84beaa9562a0d36ec318490c509f501aec6cf8c05c8aa51"
+    },
+    "stable::triangle_reduction::checked_u64_reduction::weighted_hit_count": {
+      "control_flow_manifest_sha256": "82b32bbe5f6e6df9bad7b6b05c5899ebc260ecbb89699792f6d935aad598baea",
+      "declaration_sha256": "3f000ea48805fdb1e3c644ba9449234c4b3b7697b6655d6331d715bff15993e8",
+      "executable_identity_sha256": "3c546b793b8ed6053efeb2bbf12c090df48c6a2c3ff4a9ed08ed4899fa306803"
+    }
+  },
+  "trust_roots_sha256": "8da54a715b91f6720aee88568ce5b2789ff90240a3f32cba76b25dbc3c2a2b9d"
+}

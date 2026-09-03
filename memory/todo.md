@@ -1,5 +1,29 @@
 # TODO
 
+## Current CGO critical path after Goal5840 (2026-09-03)
+
+Goal5840 is complete at
+`PASS__GOAL5840_COMPLETE_AT_PREREGISTERED_BOUNDED_REFINEMENT_SCOPE` under
+`history/internal_docs/goal5840_independent_lowering_refinement_20260903/FINAL_AUTHORITY.json`
+with authority seal
+`3857a8c1f579808ea96a2f54c58e5698818deae7b879c849523ccf72a3f59a80`.
+Do not add more Goal5840 harness work or broaden its three-route, four-mode,
+five-property claim.
+
+The controlling successor numbering is the later plan at
+`history/internal_docs/goal5838_goal5843_cgo_reviewer_attack_remediation_plan_20260902.md`:
+
+1. Goal5841: external-human authoring case series. Recruitment, ethics, and
+   actual observations remain deferred while the owner is traveling.
+2. Goal5842: preregistered causal admission-cost and fair-baseline evaluation.
+   This can proceed without relabeling Goal5840 as performance evidence.
+3. Goal5843: manuscript reconstruction, external critical review, and final
+   claim gate.
+
+Older sections below retain historical plans and superseded Goal numbers for
+provenance. They do not override this section, `AGENTS.md`, or the controlling
+Goal5838--5843 remediation plan.
+
 ## Deferred independent review of strict Goal5835/5836 audit
 
 The 2026-09-01 strict audit is internal hostile self-review only. The owner

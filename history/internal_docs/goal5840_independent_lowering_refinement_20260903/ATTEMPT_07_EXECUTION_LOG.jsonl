@@ -1,0 +1,13 @@
+{"output": "/workspace/goal5840-evidence-attempt07-79fdbb6", "stage": "preflight_started"}
+{"compute_capability": "8.9", "gpu": "NVIDIA RTX 2000 Ada Generation", "native_sha256": "8060367df223bbcedd45bf8002820ee45338047c977dde93a4951ce67a27de4c", "stage": "preflight_passed"}
+{"index": 1, "key": "stable::bounded_relation::canonical_bounded_pair_collection::capacity_fail_closed_collection", "stage": "mode_started"}
+{"bundle_sha256": "634a26222322c6129ff495e68ed87f2e54e9648ea7a314d169fb9c1ab86f325f", "independent_property_pass_count": 5, "index": 1, "key": "stable::bounded_relation::canonical_bounded_pair_collection::capacity_fail_closed_collection", "stage": "mode_passed"}
+{"index": 2, "key": "stable::triangle_reduction::checked_u64_reduction::all_hit_count", "stage": "mode_started"}
+{"bundle_sha256": "b382db723210f3e13efd400f70c84c796b12257fde13bad79609004a0a8739c8", "independent_property_pass_count": 5, "index": 2, "key": "stable::triangle_reduction::checked_u64_reduction::all_hit_count", "stage": "mode_passed"}
+{"index": 3, "key": "stable::triangle_reduction::checked_u64_reduction::weighted_hit_count", "stage": "mode_started"}
+{"bundle_sha256": "cd0751be6e1efa595bcdf437a5d85bde609f4af9e2ea5b16b8be9ffb3d00f595", "independent_property_pass_count": 5, "index": 3, "key": "stable::triangle_reduction::checked_u64_reduction::weighted_hit_count", "stage": "mode_passed"}
+{"index": 4, "key": "prospective::builtin_sphere::any_hit_count_continue_u64_per_query::accept_every_hit_and_continue", "stage": "mode_started"}
+{"bundle_sha256": "72a7a954e94c6704bcc17092af44a091b63c1fc92cf479900845f5c9d02269a1", "independent_property_pass_count": 5, "index": 4, "key": "prospective::builtin_sphere::any_hit_count_continue_u64_per_query::accept_every_hit_and_continue", "stage": "mode_passed"}
+{"mode_replications": 20, "stage": "mutation_suite_passed", "unique_claim_units": 15}
+{"stage": "capture_passed", "summary_sha256": "ff2a71ca1331219da5a89dd0f4f847637ebe406fb9403ac95d7b9c34830b3049"}
+{"output": "/workspace/goal5840-evidence-attempt07-79fdbb6/RESULT.json", "status": "PASS__FOUR_MODES_TRUE_OPTIX_AND_15_UNIQUE_MUTATIONS_REJECTED", "summary_sha256": "ff2a71ca1331219da5a89dd0f4f847637ebe406fb9403ac95d7b9c34830b3049"}

@@ -1,0 +1,268 @@
+{
+  "all_required_symbols_exported": true,
+  "build_input": {
+    "builder_path": "scripts/goal5838_build_selected_sphere_optix_provider.py",
+    "builder_sha256": "d89547bbb2708b9efda1fe06f83d57c4cee46acd5d0795b10aa5f739897f7628",
+    "compute_capability": "8.9",
+    "cuda_include": "/usr/local/cuda-12.8/targets/x86_64-linux/include",
+    "cuda_prefix": "/usr/local/cuda-12.8",
+    "cuda_system_include": "/usr/include/x86_64-linux-gnu",
+    "cuda_visible_devices": "0",
+    "expected_optix_sdk": "9.0.0",
+    "geos_cflags": [],
+    "geos_libraries": [],
+    "geos_mode": "disabled-header-absent",
+    "gpu": {
+      "compute_capability": "8.9",
+      "driver_version": "580.159.04",
+      "name": "NVIDIA RTX 2000 Ada Generation",
+      "uuid": "GPU-f0ab2afa-0ec0-7da9-c951-01fc713ee1e9"
+    },
+    "host_compiler_path": "/usr/bin/x86_64-linux-gnu-g++-13",
+    "host_compiler_sha256": "52f1ddb33fe78b9441e0f42e9cd22c571f1101938e046c8a26582494e041cc73",
+    "host_compiler_version": "x86_64-linux-gnu-g++-13 (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0\nCopyright (C) 2023 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
+    "key_headers": [
+      {
+        "bytes": 1115,
+        "name": "optix.h",
+        "path": "/workspace/goal5838-optix-dev/include/optix.h",
+        "sha256": "85a13f5966e98e23b00cb6be0fa25ad6580bbbea94bc9fce9d0bf00d16827b8f"
+      },
+      {
+        "bytes": 125776,
+        "name": "optix_device.h",
+        "path": "/workspace/goal5838-optix-dev/include/optix_device.h",
+        "sha256": "3a5c1f784b64161479546462f35f953ab0f9e14058356c45ab1422313e79676f"
+      },
+      {
+        "bytes": 2328,
+        "name": "optix_function_table_definition.h",
+        "path": "/workspace/goal5838-optix-dev/include/optix_function_table_definition.h",
+        "sha256": "a9b118be4c7ca3ee13824baecdfb8d85f60aa179c8f957342d2d2fba624a5c66"
+      },
+      {
+        "bytes": 18176,
+        "name": "optix_stack_size.h",
+        "path": "/workspace/goal5838-optix-dev/include/optix_stack_size.h",
+        "sha256": "d1e10de40b2a12fd2765d305439946ad7e8a976cb65466eb3d4b2a516b6b492a"
+      },
+      {
+        "bytes": 41120,
+        "name": "optix_stubs.h",
+        "path": "/workspace/goal5838-optix-dev/include/optix_stubs.h",
+        "sha256": "6fdc4c2e60334665ee01e5eae3a90099f5442bd0236f3030f6c03f7c4010a413"
+      },
+      {
+        "bytes": 1156988,
+        "name": "cuda.h",
+        "path": "/usr/local/cuda-12.8/targets/x86_64-linux/include/cuda.h",
+        "sha256": "4568cc9e7a321e47707cd6403980f21ac2e2e55170500d0e0a3f54feb03a9acb"
+      },
+      {
+        "bytes": 98570,
+        "name": "cuda_runtime.h",
+        "path": "/usr/local/cuda-12.8/targets/x86_64-linux/include/cuda_runtime.h",
+        "sha256": "1aaa84ed2ac4086acdf908390e4f742d28ecfb1bca94766944b9691fb2d47a13"
+      },
+      {
+        "bytes": 44261,
+        "name": "nvrtc.h",
+        "path": "/usr/local/cuda-12.8/targets/x86_64-linux/include/nvrtc.h",
+        "sha256": "07389d2cf314fe749050767641a868f9514ee41c759048288c531e24f778504e"
+      }
+    ],
+    "language_standard": "c++17",
+    "library_dirs": [
+      "/usr/local/cuda-12.8/lib64",
+      "/usr/local/cuda-12.8/targets/x86_64-linux/lib",
+      "/usr/lib/x86_64-linux-gnu"
+    ],
+    "nvcc_path": "/usr/local/cuda-12.8/bin/nvcc",
+    "nvcc_sha256": "59e4e55f9a38b78c590df1e28a69dad91052958f18a03868ca4a547c043fbba7",
+    "nvcc_version": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Fri_Feb_21_20:23:50_PST_2025\nCuda compilation tools, release 12.8, V12.8.93\nBuild cuda_12.8.r12.8/compiler.35583870_0",
+    "nvrtc_library_bytes": 104480432,
+    "nvrtc_library_path": "/usr/local/cuda-12.8/targets/x86_64-linux/lib/libnvrtc.so.12.8.93",
+    "nvrtc_library_sha256": "2bb82d1a34b9fefa46aca357299aed66763d4d6613d015d5a591224c00fa7e5a",
+    "optimization": "O3",
+    "optix_include": "/workspace/goal5838-optix-dev/include",
+    "optix_prefix": "/workspace/goal5838-optix-dev",
+    "optix_runtime_abi_probe": {
+      "compile_command_template": [
+        "/usr/bin/x86_64-linux-gnu-g++-13",
+        "-std=c++17",
+        "-I/workspace/goal5838-optix-dev/include",
+        "-I/usr/local/cuda-12.8/targets/x86_64-linux/include",
+        "<temporary>/probe.cpp",
+        "-ldl",
+        "-o",
+        "<temporary>/probe"
+      ],
+      "compile_returncode": 0,
+      "compiler_output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "executable_bytes": 16296,
+      "executable_sha256": "c4f6d57bccac6a106f9c79f0290f9f3274884b3e9e588f7cbe755ac0dc4b8a9a",
+      "optix_launch_count": 0,
+      "passed": true,
+      "runtime_output": "optixInit_result=0",
+      "runtime_returncode": 0,
+      "source_sha256": "ccc24914e3a88ddd711b2fa9dfc40b125ed3649dca24429571a444c9c9f8a876"
+    },
+    "optix_version": 90000,
+    "position_independent_code": true,
+    "schema": "rtdl.goal5838.selected_sphere_optix_build_input.v2",
+    "translation_units": [
+      "src/native/rtdl_optix.cpp",
+      "src/native/optix/rtdl_optix_cuda_helpers.cu"
+    ]
+  },
+  "build_input_sha256": "fb2cb9bdf9256dcb00716f3d1e986cd847b6c54ad216b381309c6c59bfeac95f",
+  "build_log": {
+    "bytes": 0,
+    "path": "/workspace/goal5840-build-attempt07-79fdbb6/native_build.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "dynamic_dependencies": "linux-vdso.so.1 (0x00007ffc22d5d000)\n\tlibnvrtc.so.12 => /usr/local/cuda/targets/x86_64-linux/lib/libnvrtc.so.12 (0x00007b9db4ebc000)\n\tlibcuda.so.1 => /lib/x86_64-linux-gnu/libcuda.so.1 (0x00007b9daf200000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007b9daef82000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007b9daee99000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007b9db4e8e000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007b9daec87000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007b9dbbc64000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007b9dbbc50000)\n\tlibrt.so.1 => /lib/x86_64-linux-gnu/librt.so.1 (0x00007b9dbbc4b000)\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007b9dbbc46000)",
+  "dynamic_nvrtc": {
+    "bytes": 104480432,
+    "path": "/usr/local/cuda-12.8/targets/x86_64-linux/lib/libnvrtc.so.12.8.93",
+    "sha256": "2bb82d1a34b9fefa46aca357299aed66763d4d6613d015d5a591224c00fa7e5a"
+  },
+  "executed_command": [
+    "/usr/local/cuda-12.8/bin/nvcc",
+    "-ccbin",
+    "/usr/bin/x86_64-linux-gnu-g++-13",
+    "-std=c++17",
+    "-O3",
+    "-shared",
+    "-I/workspace/goal5838-optix-dev/include",
+    "-I/usr/local/cuda-12.8/targets/x86_64-linux/include",
+    "-DRTDL_OPTIX_INCLUDE_DIR=\"/workspace/goal5838-optix-dev/include\"",
+    "-DRTDL_CUDA_INCLUDE_DIR=\"/usr/local/cuda-12.8/targets/x86_64-linux/include\"",
+    "-DRTDL_CUDA_SYSTEM_INCLUDE_DIR=\"/usr/include/x86_64-linux-gnu\"",
+    "-DRTDL_OPTIX_BUILD_ID=\"fb2cb9bdf9256dcb00716f3d1e986cd847b6c54ad216b381309c6c59bfeac95f\"",
+    "-arch=sm_89",
+    "-Xcompiler",
+    "-fPIC",
+    "/workspace/rtdl-goal5840-attempt07-79fdbb6-bg/src/native/rtdl_optix.cpp",
+    "/workspace/rtdl-goal5840-attempt07-79fdbb6-bg/src/native/optix/rtdl_optix_cuda_helpers.cu",
+    "-L/usr/local/cuda-12.8/lib64",
+    "-L/usr/local/cuda-12.8/targets/x86_64-linux/lib",
+    "-L/usr/lib/x86_64-linux-gnu",
+    "-lcuda",
+    "-Xlinker",
+    "/usr/local/cuda-12.8/targets/x86_64-linux/lib/libnvrtc.so.12.8.93",
+    "-o",
+    "/workspace/goal5840-build-attempt07-79fdbb6/.librtdl_optix_goal5840.so.fvp2dlsj.partial"
+  ],
+  "executed_command_display": "/usr/local/cuda-12.8/bin/nvcc -ccbin /usr/bin/x86_64-linux-gnu-g++-13 -std=c++17 -O3 -shared -I/workspace/goal5838-optix-dev/include -I/usr/local/cuda-12.8/targets/x86_64-linux/include '-DRTDL_OPTIX_INCLUDE_DIR=\"/workspace/goal5838-optix-dev/include\"' '-DRTDL_CUDA_INCLUDE_DIR=\"/usr/local/cuda-12.8/targets/x86_64-linux/include\"' '-DRTDL_CUDA_SYSTEM_INCLUDE_DIR=\"/usr/include/x86_64-linux-gnu\"' '-DRTDL_OPTIX_BUILD_ID=\"fb2cb9bdf9256dcb00716f3d1e986cd847b6c54ad216b381309c6c59bfeac95f\"' -arch=sm_89 -Xcompiler -fPIC /workspace/rtdl-goal5840-attempt07-79fdbb6-bg/src/native/rtdl_optix.cpp /workspace/rtdl-goal5840-attempt07-79fdbb6-bg/src/native/optix/rtdl_optix_cuda_helpers.cu -L/usr/local/cuda-12.8/lib64 -L/usr/local/cuda-12.8/targets/x86_64-linux/lib -L/usr/lib/x86_64-linux-gnu -lcuda -Xlinker /usr/local/cuda-12.8/targets/x86_64-linux/lib/libnvrtc.so.12.8.93 -o /workspace/goal5840-build-attempt07-79fdbb6/.librtdl_optix_goal5840.so.fvp2dlsj.partial",
+  "native_output": {
+    "bytes": 7181936,
+    "path": "/workspace/goal5840-build-attempt07-79fdbb6/librtdl_optix_goal5840.so",
+    "sha256": "8060367df223bbcedd45bf8002820ee45338047c977dde93a4951ce67a27de4c"
+  },
+  "repository": {
+    "branch": "",
+    "clean_after": true,
+    "clean_before": true,
+    "expected_commit": "79fdbb61c2afd602a16e8fc01b27d0cf8a576e7b",
+    "head_after": "79fdbb61c2afd602a16e8fc01b27d0cf8a576e7b",
+    "head_before": "79fdbb61c2afd602a16e8fc01b27d0cf8a576e7b",
+    "origin_url": "https://github.com/rubaolee/rtdl",
+    "source_files": [
+      {
+        "bytes": 29089,
+        "path": "scripts/goal5838_build_selected_sphere_optix_provider.py",
+        "sha256": "d89547bbb2708b9efda1fe06f83d57c4cee46acd5d0795b10aa5f739897f7628"
+      },
+      {
+        "bytes": 249,
+        "path": "src/native/rtdl_optix.cpp",
+        "sha256": "8f670db5adf2cf880921f954ea00829bc424f8cdef065ea1e03d52323947e6bc"
+      },
+      {
+        "bytes": 140176,
+        "path": "src/native/optix/rtdl_optix_prelude.h",
+        "sha256": "2032b6110a384658665d3b1e7a3f52a20ce3221f7a25ca1e07b8cf611dd838e0"
+      },
+      {
+        "bytes": 389380,
+        "path": "src/native/optix/rtdl_optix_core.cpp",
+        "sha256": "427348f9895c1dc8b6fb2af6ad75b6199e15ad3d0972d624b1cdb814629442fb"
+      },
+      {
+        "bytes": 372228,
+        "path": "src/native/optix/rtdl_optix_v4_callback_poc.cpp",
+        "sha256": "75b6ecbc69c7331f3c88024e9feeb4aab40c109df1a4b802f87365709ef523b0"
+      },
+      {
+        "bytes": 540649,
+        "path": "src/native/optix/rtdl_optix_api.cpp",
+        "sha256": "c5398c636175bbb922900391cdce51944b0ee43635c4fe5594ebfec568a1077e"
+      },
+      {
+        "bytes": 6342,
+        "path": "src/native/optix/rtdl_optix_v4_particle_template.h",
+        "sha256": "6ac0f59c675a98cd9c1ee8b76a87fc3cc31b0df1ac112fc83dddca737b7253ed"
+      },
+      {
+        "bytes": 8814,
+        "path": "src/native/optix/rtdl_optix_v4_product_status.h",
+        "sha256": "519cf0f39a845f8c74708a7e159cd4ff72deedec84f67979e08c1dc65ea9fda5"
+      },
+      {
+        "bytes": 1441292,
+        "path": "src/native/optix/rtdl_optix_workloads.cpp",
+        "sha256": "9315dc3a1782c4e5289b75407662f2943909c0a3616cd3022f3a4898694a22b9"
+      },
+      {
+        "bytes": 153977,
+        "path": "src/native/optix/rtdl_optix_cuda_helpers.cu",
+        "sha256": "b31f323e1ac33e7d60e0c4443e1763ac8ef31d1ad1d2ef486d10c29d95b042f2"
+      }
+    ]
+  },
+  "reproduction_command": [
+    "/usr/local/cuda-12.8/bin/nvcc",
+    "-ccbin",
+    "/usr/bin/x86_64-linux-gnu-g++-13",
+    "-std=c++17",
+    "-O3",
+    "-shared",
+    "-I/workspace/goal5838-optix-dev/include",
+    "-I/usr/local/cuda-12.8/targets/x86_64-linux/include",
+    "-DRTDL_OPTIX_INCLUDE_DIR=\"/workspace/goal5838-optix-dev/include\"",
+    "-DRTDL_CUDA_INCLUDE_DIR=\"/usr/local/cuda-12.8/targets/x86_64-linux/include\"",
+    "-DRTDL_CUDA_SYSTEM_INCLUDE_DIR=\"/usr/include/x86_64-linux-gnu\"",
+    "-DRTDL_OPTIX_BUILD_ID=\"fb2cb9bdf9256dcb00716f3d1e986cd847b6c54ad216b381309c6c59bfeac95f\"",
+    "-arch=sm_89",
+    "-Xcompiler",
+    "-fPIC",
+    "/workspace/rtdl-goal5840-attempt07-79fdbb6-bg/src/native/rtdl_optix.cpp",
+    "/workspace/rtdl-goal5840-attempt07-79fdbb6-bg/src/native/optix/rtdl_optix_cuda_helpers.cu",
+    "-L/usr/local/cuda-12.8/lib64",
+    "-L/usr/local/cuda-12.8/targets/x86_64-linux/lib",
+    "-L/usr/lib/x86_64-linux-gnu",
+    "-lcuda",
+    "-Xlinker",
+    "/usr/local/cuda-12.8/targets/x86_64-linux/lib/libnvrtc.so.12.8.93",
+    "-o",
+    "/workspace/goal5840-build-attempt07-79fdbb6/librtdl_optix_goal5840.so"
+  ],
+  "reproduction_command_display": "/usr/local/cuda-12.8/bin/nvcc -ccbin /usr/bin/x86_64-linux-gnu-g++-13 -std=c++17 -O3 -shared -I/workspace/goal5838-optix-dev/include -I/usr/local/cuda-12.8/targets/x86_64-linux/include '-DRTDL_OPTIX_INCLUDE_DIR=\"/workspace/goal5838-optix-dev/include\"' '-DRTDL_CUDA_INCLUDE_DIR=\"/usr/local/cuda-12.8/targets/x86_64-linux/include\"' '-DRTDL_CUDA_SYSTEM_INCLUDE_DIR=\"/usr/include/x86_64-linux-gnu\"' '-DRTDL_OPTIX_BUILD_ID=\"fb2cb9bdf9256dcb00716f3d1e986cd847b6c54ad216b381309c6c59bfeac95f\"' -arch=sm_89 -Xcompiler -fPIC /workspace/rtdl-goal5840-attempt07-79fdbb6-bg/src/native/rtdl_optix.cpp /workspace/rtdl-goal5840-attempt07-79fdbb6-bg/src/native/optix/rtdl_optix_cuda_helpers.cu -L/usr/local/cuda-12.8/lib64 -L/usr/local/cuda-12.8/targets/x86_64-linux/lib -L/usr/lib/x86_64-linux-gnu -lcuda -Xlinker /usr/local/cuda-12.8/targets/x86_64-linux/lib/libnvrtc.so.12.8.93 -o /workspace/goal5840-build-attempt07-79fdbb6/librtdl_optix_goal5840.so",
+  "required_symbol_check": "exact_nm_dynamic_defined_name",
+  "required_symbols": [
+    "rtdl_optix_get_version",
+    "rtdl_optix_v4_runtime_compiler_attempt_count_v1",
+    "rtdl_optix_v4_rtdlexe_producer_descriptor_v1",
+    "rtdl_optix_traversal_audit_begin",
+    "rtdl_optix_traversal_audit_finish",
+    "rtdl_optix_traversal_audit_abort",
+    "rtdl_optix_v4_prepare_builtin_sphere_callback_v1",
+    "rtdl_optix_v4_execute_prepared_builtin_sphere_callback_v1",
+    "rtdl_optix_v4_describe_prepared_builtin_sphere_callback_v1",
+    "rtdl_optix_v4_destroy_prepared_builtin_sphere_callback_v1"
+  ],
+  "result_sha256": "7f9031e229130f4fe34b649f006a380b0eb20efc8229c977e1532d64a9ff6e79",
+  "schema": "rtdl.goal5838.selected_sphere_optix_provider_build.v2",
+  "status": "PASS__FRESH_PROVIDER_DSO_AND_REQUIRED_ABI_EXPORTED"
+}

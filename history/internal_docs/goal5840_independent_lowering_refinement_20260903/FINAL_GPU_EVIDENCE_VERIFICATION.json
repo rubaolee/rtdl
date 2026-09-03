@@ -1,0 +1,78 @@
+{
+  "attempt_01_incident_file_sha256": "862d36657120a190d76527536d09ac8ecd8da77e01b9df4465dd25aee45fe786",
+  "attempt_01_repair_commit": "3dcd92e3c2ebc71faffbcae0783b747b9820d71e",
+  "attempt_01_source_commit": "91a8309d9ee234f0315b6640a8dde1db29abe7e9",
+  "attempt_02_incident_file_sha256": "865eeb8d5ccacb4f87fe2a3bd73e99e9c835974e27dcae8ebd294ae12c5c7ade",
+  "attempt_02_repair_authority_sha256": "998f6d9ac8490b7bc70441678bd994a05ca3d784dde5887d4b871ccb20cff15c",
+  "attempt_03_incident_file_sha256": "d9985b8389882fc07895a1464051f3c5e5c9d85d2cbb83ec32328b63b264f6ee",
+  "attempt_03_repair_authority_sha256": "c9be840758e696afec003055c93876b3f54fb02b5aaf93eb19fa4d4a9c3e2cc1",
+  "attempt_03_source_commit": "78610253c9650c3661f3f0107da373bf9f2ff549",
+  "attempt_04_incident_file_sha256": "4a06eb1cc98b78719d7bddb99162f4a24619bdd0151eb2790631c2b058ff2918",
+  "attempt_04_repair_authority_sha256": "bf611d0ae15416f8d056c50097aedcb530b1c2b6f2cd004cf431bc2f4b66e3ab",
+  "attempt_04_source_commit": "4f2a5d7f4d0f2c4a74756d7456180c8520742a47",
+  "attempt_05_incident_file_sha256": "8bbe23346ea96e11b86c32df163f61c2f2aac1565f9e414fa235316c38ef2fd0",
+  "attempt_05_repair_authority_sha256": "57e986a79bffeeeb6505ca0cc4ee331ad253d4d5c426f59704ff93db31dbe64b",
+  "attempt_05_source_commit": "16fb9523e3688e792ff4083a6600434c75d8c9e6",
+  "attempt_06_incident_file_sha256": "6cd031390db51cf20f24485de2a4f47d61d38e1d648de17f8c36553398f49e2f",
+  "attempt_06_repair_authority_sha256": "9cf2dc8ac2f97b1193354bed510d13654c9575c56ee707aed2c6304b45af3359",
+  "attempt_06_source_commit": "593a514637ab2075653bbd4e499c36860519bf31",
+  "claim_boundary": {
+    "application_correctness": false,
+    "downloaded_exact_artifact_verification_only": true,
+    "external_review_or_consensus": false,
+    "general_compiler_soundness": false,
+    "performance_or_speedup": false,
+    "sphere_two_level_physical_plan_refinement_independently_derived": true,
+    "three_bounded_routes_only": true
+  },
+  "formal_attempt_number": 7,
+  "mode_evidence": [
+    {
+      "bundle_file_sha256": "2a7deddadfdca35ea4ec535d5bfce4a4859f270ec021792ed570c628c8a73593",
+      "bundle_sha256": "634a26222322c6129ff495e68ed87f2e54e9648ea7a314d169fb9c1ab86f325f",
+      "checker_file_sha256": "4d53878c79d5f14130e8c7fe47abfa2153cd949e9510144ede2260dccc2ad4d3",
+      "checker_report_sha256": "1c690ea6c252608a149ee8565f33fe7f08040460e6cf97645912aee0c7b35fe8",
+      "key": "stable::bounded_relation::canonical_bounded_pair_collection::capacity_fail_closed_collection"
+    },
+    {
+      "bundle_file_sha256": "52d3cb8f6649fca6171d491be5b8c0f98796d963d0cc6f1429a29be4b4e90f78",
+      "bundle_sha256": "b382db723210f3e13efd400f70c84c796b12257fde13bad79609004a0a8739c8",
+      "checker_file_sha256": "299086a27e6df0ea6928b68300c74cba95859bdf728c55bbe513573ece19bccb",
+      "checker_report_sha256": "5d8f2d64038b6dcb24a3f456d2377243c367a9d6f6de6fd8d9faa6e8133fd863",
+      "key": "stable::triangle_reduction::checked_u64_reduction::all_hit_count"
+    },
+    {
+      "bundle_file_sha256": "d067b750df01477f31fef153d15dda0939ecec7def0683486cd66a95015f8e1a",
+      "bundle_sha256": "cd0751be6e1efa595bcdf437a5d85bde609f4af9e2ea5b16b8be9ffb3d00f595",
+      "checker_file_sha256": "71d3b02820d6bcb5f1e537af77587d1e26ed67e858e857d0005b283f59407104",
+      "checker_report_sha256": "6e25ecb1684c4e96f6b0f3e69bf3409b3b7d47b2c1bd370867d2e6cb3662c14c",
+      "key": "stable::triangle_reduction::checked_u64_reduction::weighted_hit_count"
+    },
+    {
+      "bundle_file_sha256": "42cd7cf9d53ba85b3679458f9caf5886c0c3bd44beed2157aa3415ec8ef219cf",
+      "bundle_sha256": "72a7a954e94c6704bcc17092af44a091b63c1fc92cf479900845f5c9d02269a1",
+      "checker_file_sha256": "89080369c3002b1ef1da8652a5393e7c4d2c3b57633dcbc393ce6833cae60420",
+      "checker_report_sha256": "abeee916066b4028b21c48c82b1cdc4bda5da718704adf88c8232397fd243093",
+      "key": "prospective::builtin_sphere::any_hit_count_continue_u64_per_query::accept_every_hit_and_continue"
+    }
+  ],
+  "mutation_result_file_sha256": "c5b3630eb0b3d9807f1fd2f543d924d3ceec4395bba494d8c102e1000cfa4b9a",
+  "native_build_manifest_file_sha256": "f782484e53d400b1bbb99380a4fcbf5e169259fea7294d81568845184e1df0a7",
+  "native_exported_symbol_count": 861,
+  "native_file_sha256": "8060367df223bbcedd45bf8002820ee45338047c977dde93a4951ce67a27de4c",
+  "native_required_symbol_count": 17,
+  "pre_pod_authority_sha256": "785529613e79a806937b5cc56b041e671de90a164e7434d6772de9b7f4989d91",
+  "repair_authority_sha256": "d872df15c5ede9a13080d24dd7aca1fedbcc217eb3a27399a42ab2ebccf3511c",
+  "replayed_property_pass_count": 20,
+  "result_file_sha256": "5bc907be82dc7c951f8a7c50ec098b2f0b7923ee36d027fa5d9c8e9bda1af2a8",
+  "runtime_trust_roots_file_sha256": "e887e64582eed4c9f182665abad5acd88c8687ece5acd03cbf33d3c863f59867",
+  "schema": "rtdl.goal5840.downloaded_gpu_evidence_verification.v7",
+  "source_commit": "79fdbb61c2afd602a16e8fc01b27d0cf8a576e7b",
+  "status": "PASS__DOWNLOADED_GOAL5840_EVIDENCE_REPLAYED_AND_BOUND",
+  "summary_sha256": "ff2a71ca1331219da5a89dd0f4f847637ebe406fb9403ac95d7b9c34830b3049",
+  "verification_sha256": "574b46be2a2d65a27cb3c3e2b1cdbf2371998ab8d2f5ecc8626b06a0d5448f60",
+  "verified_mode_count": 4,
+  "verified_mutation_application_count": 20,
+  "verified_route_group_count": 3,
+  "verified_unique_mutation_count": 15
+}

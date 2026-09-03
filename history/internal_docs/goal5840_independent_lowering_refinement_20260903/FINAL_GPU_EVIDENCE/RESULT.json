@@ -1,0 +1,506 @@
+{
+  "attempt_01_engineering_failure": {
+    "accepted_positive_evidence_rows": 0,
+    "bytes": 2834,
+    "file_sha256": "862d36657120a190d76527536d09ac8ecd8da77e01b9df4465dd25aee45fe786",
+    "path": "history/internal_docs/goal5840_independent_lowering_refinement_20260903/ATTEMPT_01_ENGINEERING_FAILURE.md"
+  },
+  "attempt_02_engineering_failure": {
+    "accepted_positive_evidence_rows": 0,
+    "bytes": 6213,
+    "diagnostic_launches_accepted_as_evidence": 0,
+    "file_sha256": "865eeb8d5ccacb4f87fe2a3bd73e99e9c835974e27dcae8ebd294ae12c5c7ade",
+    "path": "history/internal_docs/goal5840_independent_lowering_refinement_20260903/ATTEMPT_02_ENGINEERING_FAILURE.md"
+  },
+  "attempt_03_engineering_failure": {
+    "accepted_positive_evidence_rows": 0,
+    "bytes": 7417,
+    "file_sha256": "d9985b8389882fc07895a1464051f3c5e5c9d85d2cbb83ec32328b63b264f6ee",
+    "path": "history/internal_docs/goal5840_independent_lowering_refinement_20260903/ATTEMPT_03_ENGINEERING_FAILURE.md",
+    "post_failure_gpu_diagnostic_launches": 0,
+    "published_failure_bundle_count": 1,
+    "published_reject_report_count": 1
+  },
+  "attempt_04_engineering_failure": {
+    "accepted_complete_goal5840_result_count": 0,
+    "bytes": 8508,
+    "file_sha256": "4a06eb1cc98b78719d7bddb99162f4a24619bdd0151eb2790631c2b058ff2918",
+    "independently_accepted_per_mode_report_count": 1,
+    "path": "history/internal_docs/goal5840_independent_lowering_refinement_20260903/ATTEMPT_04_ENGINEERING_FAILURE.md",
+    "post_failure_gpu_diagnostic_launches": 0,
+    "published_failure_bundle_count": 2,
+    "published_independent_report_count": 2
+  },
+  "attempt_05_engineering_failure": {
+    "accepted_complete_goal5840_result_count": 0,
+    "bytes": 8998,
+    "file_sha256": "8bbe23346ea96e11b86c32df163f61c2f2aac1565f9e414fa235316c38ef2fd0",
+    "independent_property_pass_count": 15,
+    "independently_accepted_per_mode_report_count": 3,
+    "path": "history/internal_docs/goal5840_independent_lowering_refinement_20260903/ATTEMPT_05_ENGINEERING_FAILURE.md",
+    "post_failure_gpu_diagnostic_launches": 0,
+    "published_failure_bundle_count": 3,
+    "published_independent_report_count": 3,
+    "sphere_optix_launches": 0
+  },
+  "attempt_06_engineering_failure": {
+    "accepted_complete_goal5840_result_count": 0,
+    "bytes": 11409,
+    "file_sha256": "6cd031390db51cf20f24485de2a4f47d61d38e1d648de17f8c36553398f49e2f",
+    "independent_property_pass_count": 19,
+    "independent_property_reject_count": 1,
+    "independently_accepted_per_mode_report_count": 3,
+    "path": "history/internal_docs/goal5840_independent_lowering_refinement_20260903/ATTEMPT_06_ENGINEERING_FAILURE.md",
+    "post_failure_gpu_diagnostic_launches": 0,
+    "published_failure_bundle_count": 4,
+    "published_independent_report_count": 4,
+    "sphere_optix_launches": 1
+  },
+  "claim_boundary": {
+    "append_only_repair_authority_chain_verified": true,
+    "application_correctness": false,
+    "attempt_01_preserved_as_unaccepted_engineering_failure": true,
+    "attempt_02_preserved_as_unaccepted_engineering_failure": true,
+    "attempt_03_preserved_as_unaccepted_engineering_failure": true,
+    "attempt_04_mode_01_acceptance_preserved_without_goal_promotion": true,
+    "attempt_04_preserved_as_incomplete_engineering_failure": true,
+    "attempt_05_preserved_as_incomplete_engineering_failure": true,
+    "attempt_05_three_per_mode_acceptances_preserved_without_goal_promotion": true,
+    "attempt_06_preserved_as_incomplete_engineering_failure": true,
+    "attempt_06_sphere_true_optix_launch_preserved_without_goal_promotion": true,
+    "attempt_06_three_per_mode_acceptances_preserved_without_goal_promotion": true,
+    "diagnostic_launches_preserved_as_unaccepted_engineering_work": true,
+    "exact_native_dso_bound_to_runtime_lookup": true,
+    "external_review_or_consensus": false,
+    "four_required_modes": true,
+    "general_compiler_soundness": false,
+    "performance_or_speedup": false,
+    "sphere_two_level_physical_plan_refinement_independently_derived": true,
+    "target_side_structural_refinement_evidence": true,
+    "three_bounded_routes_only": true
+  },
+  "formal_attempt_number": 7,
+  "frozen_core": {
+    "changed_file_count": 0,
+    "files": [
+      {
+        "bytes": 58007,
+        "path": "src/rtdsl/v4_family_schema.py",
+        "sha256": "2d118697d10cb2bc2a8672700ae5a991eaf94e66834bb3e08fd898323720f224"
+      },
+      {
+        "bytes": 41675,
+        "path": "src/rtdsl/v4_generic_family_lifecycle.py",
+        "sha256": "7ac68832de9d1e04fdd6f0f11bfa0de7d6109d892ab22e42c9aeb2825d28228c"
+      },
+      {
+        "bytes": 2792,
+        "path": "src/rtdsl/v4_family.py",
+        "sha256": "d25c487823e966a8e9083092811c9a1a2b6aa0fef6ce8f3a0a5b8919c5b809e8"
+      }
+    ],
+    "seal_sha256": "c2a461c8a4a61650044b724d103a80d25241b44b7b486c071b601946292e5dae"
+  },
+  "independent_property_pass_count": 20,
+  "machine": {
+    "compute_capability": "8.9",
+    "driver": "580.159.04",
+    "memory_mib": "16380",
+    "name": "NVIDIA RTX 2000 Ada Generation",
+    "pci_bus_id": "00000000:C3:00.0",
+    "uuid": "GPU-f0ab2afa-0ec0-7da9-c951-01fc713ee1e9"
+  },
+  "mode_cases": [
+    {
+      "bundle_file": "mode_01_capacity_fail_closed_collection_bundle.json",
+      "bundle_sha256": "634a26222322c6129ff495e68ed87f2e54e9648ea7a314d169fb9c1ab86f325f",
+      "expected_output": [
+        [
+          100,
+          10
+        ],
+        [
+          100,
+          30
+        ],
+        [
+          200,
+          20
+        ]
+      ],
+      "expected_output_sha256": "ca707c27b414a83c636e6a40202f74a445415b6c42676a0d0df17f77bccb6c42",
+      "fixture_sha256": "f6bd2783681d895f933429a05a328cb9656f0eaf3362489901b0ad15975ee87c",
+      "independent_check_file": "mode_01_capacity_fail_closed_collection_independent_check.json",
+      "independent_check_sha256": "1c690ea6c252608a149ee8565f33fe7f08040460e6cf97645912aee0c7b35fe8",
+      "independent_property_pass_count": 5,
+      "key": "stable::bounded_relation::canonical_bounded_pair_collection::capacity_fail_closed_collection",
+      "mode": "capacity_fail_closed_collection",
+      "observed_output": [
+        [
+          100,
+          10
+        ],
+        [
+          100,
+          30
+        ],
+        [
+          200,
+          20
+        ]
+      ],
+      "observed_output_sha256": "ca707c27b414a83c636e6a40202f74a445415b6c42676a0d0df17f77bccb6c42",
+      "route_id": "stable::bounded_relation::canonical_bounded_pair_collection",
+      "true_optix": true
+    },
+    {
+      "bundle_file": "mode_02_all_hit_count_bundle.json",
+      "bundle_sha256": "b382db723210f3e13efd400f70c84c796b12257fde13bad79609004a0a8739c8",
+      "expected_output": 5,
+      "expected_output_sha256": "ef2d127de37b942baad06145e54b0c619a1f22327b2ebbcfbec78f5564afe39d",
+      "fixture_sha256": "a58b2d5bd97a65a60614fccc494bef25ef9025f15d9bc71bc2970fce946a61b6",
+      "independent_check_file": "mode_02_all_hit_count_independent_check.json",
+      "independent_check_sha256": "5d8f2d64038b6dcb24a3f456d2377243c367a9d6f6de6fd8d9faa6e8133fd863",
+      "independent_property_pass_count": 5,
+      "key": "stable::triangle_reduction::checked_u64_reduction::all_hit_count",
+      "mode": "all_hit_count",
+      "observed_output": 5,
+      "observed_output_sha256": "ef2d127de37b942baad06145e54b0c619a1f22327b2ebbcfbec78f5564afe39d",
+      "route_id": "stable::triangle_reduction::checked_u64_reduction",
+      "true_optix": true
+    },
+    {
+      "bundle_file": "mode_03_weighted_hit_count_bundle.json",
+      "bundle_sha256": "cd0751be6e1efa595bcdf437a5d85bde609f4af9e2ea5b16b8be9ffb3d00f595",
+      "expected_output": 35,
+      "expected_output_sha256": "9f14025af0065b30e47e23ebb3b491d39ae8ed17d33739e5ff3827ffb3634953",
+      "fixture_sha256": "91e7942c9842cd672e2d8924a6e8abff1e8f2285058e888ed931d7e8823367d5",
+      "independent_check_file": "mode_03_weighted_hit_count_independent_check.json",
+      "independent_check_sha256": "6e25ecb1684c4e96f6b0f3e69bf3409b3b7d47b2c1bd370867d2e6cb3662c14c",
+      "independent_property_pass_count": 5,
+      "key": "stable::triangle_reduction::checked_u64_reduction::weighted_hit_count",
+      "mode": "weighted_hit_count",
+      "observed_output": 35,
+      "observed_output_sha256": "9f14025af0065b30e47e23ebb3b491d39ae8ed17d33739e5ff3827ffb3634953",
+      "route_id": "stable::triangle_reduction::checked_u64_reduction",
+      "true_optix": true
+    },
+    {
+      "bundle_file": "mode_04_accept_every_hit_and_continue_bundle.json",
+      "bundle_sha256": "72a7a954e94c6704bcc17092af44a091b63c1fc92cf479900845f5c9d02269a1",
+      "expected_output": {
+        "counts": [
+          4,
+          1,
+          1,
+          0,
+          4,
+          0
+        ],
+        "schema": "rtdl.v4.sphere_any_hit_count_output.v1"
+      },
+      "expected_output_sha256": "504d506f7611f87e30b9660abe35e28e98d023bf0efa1860ac1a5a1a1c808a7e",
+      "fixture_sha256": "69e38e95e8d3a2e14cb428f18e4d8bb27a87da1c21688b6ddad672406a94977a",
+      "independent_check_file": "mode_04_accept_every_hit_and_continue_independent_check.json",
+      "independent_check_sha256": "abeee916066b4028b21c48c82b1cdc4bda5da718704adf88c8232397fd243093",
+      "independent_property_pass_count": 5,
+      "key": "prospective::builtin_sphere::any_hit_count_continue_u64_per_query::accept_every_hit_and_continue",
+      "mode": "accept_every_hit_and_continue",
+      "observed_output": {
+        "counts": [
+          4,
+          1,
+          1,
+          0,
+          4,
+          0
+        ],
+        "schema": "rtdl.v4.sphere_any_hit_count_output.v1"
+      },
+      "observed_output_sha256": "504d506f7611f87e30b9660abe35e28e98d023bf0efa1860ac1a5a1a1c808a7e",
+      "route_id": "prospective::builtin_sphere::any_hit_count_continue_u64_per_query",
+      "true_optix": true
+    }
+  ],
+  "mode_replication_mutation_count": 20,
+  "mutation_result_file": "EXACT_BUNDLE_MUTATION_RESULT.json",
+  "mutation_result_sha256": "5958db5ccdd9e08483840cd799be84da293826f69295dcbde8a0eedaa6c631db",
+  "native": {
+    "build_manifest": {
+      "bytes": 14067,
+      "path": "/workspace/goal5840-build-attempt07-79fdbb6/NATIVE_BUILD.json",
+      "result_sha256": "7f9031e229130f4fe34b649f006a380b0eb20efc8229c977e1532d64a9ff6e79",
+      "schema": "rtdl.goal5838.selected_sphere_optix_provider_build.v2",
+      "sha256": "f782484e53d400b1bbb99380a4fcbf5e169259fea7294d81568845184e1df0a7",
+      "status": "PASS__FRESH_PROVIDER_DSO_AND_REQUIRED_ABI_EXPORTED"
+    },
+    "bytes": 7181936,
+    "goal5840_required_symbol_check": {
+      "all_required_symbols_exported": true,
+      "exported_symbol_count": 861,
+      "exported_symbol_names_sha256": "b4867d9c593cb94feceba5a2ab1047aaac6c98d046b4eb2124625507f208516d",
+      "method": "gnu_nm_dynamic_external_defined_exact_name",
+      "nm_path": "/usr/bin/x86_64-linux-gnu-nm",
+      "required_symbols": [
+        "rtdl_optix_get_version",
+        "rtdl_optix_traversal_audit_abort",
+        "rtdl_optix_traversal_audit_begin",
+        "rtdl_optix_traversal_audit_finish",
+        "rtdl_optix_v4_checked_u64_product_sum_host_v1",
+        "rtdl_optix_v4_describe_prepared_builtin_sphere_callback_v1",
+        "rtdl_optix_v4_destroy_prepared_bounded_relation_callback_v1",
+        "rtdl_optix_v4_destroy_prepared_builtin_sphere_callback_v1",
+        "rtdl_optix_v4_destroy_prepared_triangle_reduction_callback_v1",
+        "rtdl_optix_v4_execute_prepared_bounded_relation_callback_v3",
+        "rtdl_optix_v4_execute_prepared_builtin_sphere_callback_v1",
+        "rtdl_optix_v4_execute_prepared_triangle_reduction_callback_v2",
+        "rtdl_optix_v4_prepare_bounded_relation_callback_v1",
+        "rtdl_optix_v4_prepare_builtin_sphere_callback_v1",
+        "rtdl_optix_v4_prepare_triangle_reduction_callback_v1",
+        "rtdl_optix_v4_rtdlexe_producer_descriptor_v1",
+        "rtdl_optix_v4_runtime_compiler_attempt_count_v1"
+      ],
+      "schema": "rtdl.goal5840.required_native_symbols.v1"
+    },
+    "path": "/workspace/goal5840-build-attempt07-79fdbb6/librtdl_optix_goal5840.so",
+    "sha256": "8060367df223bbcedd45bf8002820ee45338047c977dde93a4951ce67a27de4c"
+  },
+  "post_attempt_01_repair_authority": {
+    "authority_sha256": "d872df15c5ede9a13080d24dd7aca1fedbcc217eb3a27399a42ab2ebccf3511c",
+    "file_sha256": "9a25eead7cc0283d86d1487dc6df463e34507507dd37fe9e78f31bf95da5022d",
+    "path": "history/internal_docs/goal5840_independent_lowering_refinement_20260903/POST_ATTEMPT_01_REPAIR_AUTHORITY.json"
+  },
+  "post_attempt_02_repair_authority": {
+    "authority_sha256": "998f6d9ac8490b7bc70441678bd994a05ca3d784dde5887d4b871ccb20cff15c",
+    "file_sha256": "7aeaecd33898306411aa810bc43a7c1fb943d6dc9c69fca7611c7c674e2891a2",
+    "path": "history/internal_docs/goal5840_independent_lowering_refinement_20260903/POST_ATTEMPT_02_REPAIR_AUTHORITY.json"
+  },
+  "post_attempt_03_repair_authority": {
+    "authority_sha256": "c9be840758e696afec003055c93876b3f54fb02b5aaf93eb19fa4d4a9c3e2cc1",
+    "file_sha256": "8febd004f3f1624e4117142a28077fcaa6c08d7ef44b953beadbc6bede5be0f6",
+    "path": "history/internal_docs/goal5840_independent_lowering_refinement_20260903/POST_ATTEMPT_03_REPAIR_AUTHORITY.json"
+  },
+  "post_attempt_04_repair_authority": {
+    "authority_sha256": "bf611d0ae15416f8d056c50097aedcb530b1c2b6f2cd004cf431bc2f4b66e3ab",
+    "file_sha256": "c542ebfe0c27d97a3349523a7f1b6dd80d1436fad78e2f784ae6aba52d11591b",
+    "path": "history/internal_docs/goal5840_independent_lowering_refinement_20260903/POST_ATTEMPT_04_REPAIR_AUTHORITY.json"
+  },
+  "post_attempt_05_repair_authority": {
+    "authority_sha256": "57e986a79bffeeeb6505ca0cc4ee331ad253d4d5c426f59704ff93db31dbe64b",
+    "file_sha256": "0072bd7701ce2ca84a000171bed05943198baad2ad6e675caf5772f59e0b9258",
+    "path": "history/internal_docs/goal5840_independent_lowering_refinement_20260903/POST_ATTEMPT_05_REPAIR_AUTHORITY.json"
+  },
+  "post_attempt_06_repair_authority": {
+    "authority_sha256": "9cf2dc8ac2f97b1193354bed510d13654c9575c56ee707aed2c6304b45af3359",
+    "file_sha256": "d19fedd791edc0d1afa209bc3c2def0bd7bf57c9d3740826c5db2f47b8f8a17c",
+    "path": "history/internal_docs/goal5840_independent_lowering_refinement_20260903/POST_ATTEMPT_06_REPAIR_AUTHORITY.json"
+  },
+  "pre_pod_input_authority": {
+    "authority_sha256": "785529613e79a806937b5cc56b041e671de90a164e7434d6772de9b7f4989d91",
+    "file_sha256": "a34a59767b75cd125f00f85613597197017c8b7cd7a8c66a0f55b66737177f82",
+    "path": "history/internal_docs/goal5840_independent_lowering_refinement_20260903/PRE_POD_INPUT_AUTHORITY.json",
+    "source_commit": "91a8309d9ee234f0315b6640a8dde1db29abe7e9"
+  },
+  "preregistered_unique_mutation_count": 15,
+  "preregistration": {
+    "authority_sha256": "013ccfef04835a3d6b2ad572f504f2d07a80a19b48e591d7c7887ff6e00b8192",
+    "file_sha256": "7ded948b0062a8eb8b51871785395456c45dba9d83a479367725fb4415c229d2",
+    "path": "history/internal_docs/goal5840_independent_lowering_refinement_20260903/GOAL5840_PREREGISTRATION.json"
+  },
+  "repository": {
+    "branch": "",
+    "clean_after": true,
+    "clean_before": true,
+    "expected_commit": "79fdbb61c2afd602a16e8fc01b27d0cf8a576e7b",
+    "head_after": "79fdbb61c2afd602a16e8fc01b27d0cf8a576e7b",
+    "head_before": "79fdbb61c2afd602a16e8fc01b27d0cf8a576e7b",
+    "origin": "https://github.com/rubaolee/rtdl",
+    "source_files": [
+      {
+        "bytes": 65992,
+        "path": "scripts/goal5840_capture_gpu_evidence.py",
+        "sha256": "c3a5b0a9d22ecb693bcadb354e2c826b8039eeb0df3c2470724ee6aa30d6b85e"
+      },
+      {
+        "bytes": 7511,
+        "path": "scripts/goal5840_freeze_gpu_inputs.py",
+        "sha256": "13f0ed052af14437737344dd7a55bd1c1ac329ce679d0eae30e2def6cb1f8d90"
+      },
+      {
+        "bytes": 13371,
+        "path": "scripts/goal5840_freeze_attempt02_repair_inputs.py",
+        "sha256": "6fc6a3cde9ded9d25bcf583a8ed96a3ee3caf39a17c3859cddf870e4fdae68b7"
+      },
+      {
+        "bytes": 14786,
+        "path": "scripts/goal5840_freeze_attempt03_repair_inputs.py",
+        "sha256": "234759bd8475e090c4decf413b0f668eaee59377f72dc0588db15520f316ad5d"
+      },
+      {
+        "bytes": 15558,
+        "path": "scripts/goal5840_freeze_attempt04_repair_inputs.py",
+        "sha256": "f68170b6adf4e67fda12abd32cc8dd754e5e70618d06ce7eb7daa780d01bb271"
+      },
+      {
+        "bytes": 16332,
+        "path": "scripts/goal5840_freeze_attempt05_repair_inputs.py",
+        "sha256": "7b88842e2d5a7d3f3ec203791187a7c936e4b20a527a10fd5fc1f940807b3bf7"
+      },
+      {
+        "bytes": 18299,
+        "path": "scripts/goal5840_freeze_attempt06_repair_inputs.py",
+        "sha256": "a07c3b048024a2250d763460886293f867d43355e9f2ae038f498f34efa1b97a"
+      },
+      {
+        "bytes": 10350,
+        "path": "scripts/goal5840_freeze_repair_inputs.py",
+        "sha256": "c4641e0d9c8d134634fe320af7a13bd4c00dc7707760d3884e689ea6fdbfe1f1"
+      },
+      {
+        "bytes": 7071,
+        "path": "scripts/goal5840_gpu_cases.py",
+        "sha256": "217fa653cb751554629d687c1d626e28955f9f8b8960f210f27cd50526885b52"
+      },
+      {
+        "bytes": 109560,
+        "path": "scripts/goal5840_independent_target_checker.py",
+        "sha256": "36456020f56e5aa24d072020c3d86e33e55e9d9a8743186ed807cf2947ca09c7"
+      },
+      {
+        "bytes": 24343,
+        "path": "scripts/goal5840_mutation_suite.py",
+        "sha256": "c645c2b81a0eaab802372c1e81d31e8c2c8c206e75ea8807b6912faec03db8b1"
+      },
+      {
+        "bytes": 123524,
+        "path": "scripts/goal5840_verify_gpu_evidence.py",
+        "sha256": "1f63377d25901eac4cfac2db1e7da1d53279e6c2afb9f3ea21e1f117875b17f6"
+      },
+      {
+        "bytes": 3117,
+        "path": "src/rtdsl/v4_target_control_flow_evidence.py",
+        "sha256": "6e781a767e7d2dadd46648341a5714da6fadd8407325d8e33701a4433c44c1a7"
+      },
+      {
+        "bytes": 45738,
+        "path": "src/rtdsl/v4_target_evidence_bundle.py",
+        "sha256": "df0b99eb0acf261518bfdea029150c9a1f94f82b891e99ffa038cf01da7539b3"
+      },
+      {
+        "bytes": 12707,
+        "path": "src/rtdsl/v4_target_evidence_capture.py",
+        "sha256": "dedc5d37b4fba47db2662a5ec98d0b60d89f4755d2d16cdb392806e77b87b5fb"
+      },
+      {
+        "bytes": 15892,
+        "path": "src/rtdsl/v4_bounded_relation_optix_compiler.py",
+        "sha256": "c38de4d3742601b8d19d434163b65bd12e5505a8c983592ac748f5c8155042e4"
+      },
+      {
+        "bytes": 19189,
+        "path": "src/rtdsl/v4_bounded_relation_optix_wrapper_codegen.py",
+        "sha256": "ef1a7ec9a54d150db11ea7aa1eecf87e536b9de7b982e5254b96c627afd533a2"
+      },
+      {
+        "bytes": 10216,
+        "path": "src/rtdsl/v4_callback_ptx_composer.py",
+        "sha256": "e6310a57b9fcc8a4e3ba9dd89b45a5c1ca6c207d0f72333ff5e28500519d6b4a"
+      },
+      {
+        "bytes": 20035,
+        "path": "src/rtdsl/v4_inline_cuda_codegen.py",
+        "sha256": "a9c247fb7401091eb98e3e51445159c676cad87d5e56db376645279249a68529"
+      },
+      {
+        "bytes": 20649,
+        "path": "history/internal_docs/goal5840_independent_lowering_refinement_20260903/GOAL5840_PREREGISTRATION.json",
+        "sha256": "7ded948b0062a8eb8b51871785395456c45dba9d83a479367725fb4415c229d2"
+      },
+      {
+        "bytes": 7800,
+        "path": "history/internal_docs/goal5840_independent_lowering_refinement_20260903/PRE_POD_INPUT_AUTHORITY.json",
+        "sha256": "a34a59767b75cd125f00f85613597197017c8b7cd7a8c66a0f55b66737177f82"
+      },
+      {
+        "bytes": 2834,
+        "path": "history/internal_docs/goal5840_independent_lowering_refinement_20260903/ATTEMPT_01_ENGINEERING_FAILURE.md",
+        "sha256": "862d36657120a190d76527536d09ac8ecd8da77e01b9df4465dd25aee45fe786"
+      },
+      {
+        "bytes": 11185,
+        "path": "history/internal_docs/goal5840_independent_lowering_refinement_20260903/POST_ATTEMPT_01_REPAIR_AUTHORITY.json",
+        "sha256": "9a25eead7cc0283d86d1487dc6df463e34507507dd37fe9e78f31bf95da5022d"
+      },
+      {
+        "bytes": 6213,
+        "path": "history/internal_docs/goal5840_independent_lowering_refinement_20260903/ATTEMPT_02_ENGINEERING_FAILURE.md",
+        "sha256": "865eeb8d5ccacb4f87fe2a3bd73e99e9c835974e27dcae8ebd294ae12c5c7ade"
+      },
+      {
+        "bytes": 11863,
+        "path": "history/internal_docs/goal5840_independent_lowering_refinement_20260903/POST_ATTEMPT_02_REPAIR_AUTHORITY.json",
+        "sha256": "7aeaecd33898306411aa810bc43a7c1fb943d6dc9c69fca7611c7c674e2891a2"
+      },
+      {
+        "bytes": 7417,
+        "path": "history/internal_docs/goal5840_independent_lowering_refinement_20260903/ATTEMPT_03_ENGINEERING_FAILURE.md",
+        "sha256": "d9985b8389882fc07895a1464051f3c5e5c9d85d2cbb83ec32328b63b264f6ee"
+      },
+      {
+        "bytes": 14006,
+        "path": "history/internal_docs/goal5840_independent_lowering_refinement_20260903/POST_ATTEMPT_03_REPAIR_AUTHORITY.json",
+        "sha256": "8febd004f3f1624e4117142a28077fcaa6c08d7ef44b953beadbc6bede5be0f6"
+      },
+      {
+        "bytes": 8508,
+        "path": "history/internal_docs/goal5840_independent_lowering_refinement_20260903/ATTEMPT_04_ENGINEERING_FAILURE.md",
+        "sha256": "4a06eb1cc98b78719d7bddb99162f4a24619bdd0151eb2790631c2b058ff2918"
+      },
+      {
+        "bytes": 14845,
+        "path": "history/internal_docs/goal5840_independent_lowering_refinement_20260903/POST_ATTEMPT_04_REPAIR_AUTHORITY.json",
+        "sha256": "c542ebfe0c27d97a3349523a7f1b6dd80d1436fad78e2f784ae6aba52d11591b"
+      },
+      {
+        "bytes": 8998,
+        "path": "history/internal_docs/goal5840_independent_lowering_refinement_20260903/ATTEMPT_05_ENGINEERING_FAILURE.md",
+        "sha256": "8bbe23346ea96e11b86c32df163f61c2f2aac1565f9e414fa235316c38ef2fd0"
+      },
+      {
+        "bytes": 15950,
+        "path": "history/internal_docs/goal5840_independent_lowering_refinement_20260903/POST_ATTEMPT_05_REPAIR_AUTHORITY.json",
+        "sha256": "0072bd7701ce2ca84a000171bed05943198baad2ad6e675caf5772f59e0b9258"
+      },
+      {
+        "bytes": 11409,
+        "path": "history/internal_docs/goal5840_independent_lowering_refinement_20260903/ATTEMPT_06_ENGINEERING_FAILURE.md",
+        "sha256": "6cd031390db51cf20f24485de2a4f47d61d38e1d648de17f8c36553398f49e2f"
+      },
+      {
+        "bytes": 17868,
+        "path": "history/internal_docs/goal5840_independent_lowering_refinement_20260903/POST_ATTEMPT_06_REPAIR_AUTHORITY.json",
+        "sha256": "d19fedd791edc0d1afa209bc3c2def0bd7bf57c9d3740826c5db2f47b8f8a17c"
+      }
+    ]
+  },
+  "required_mode_bundle_count": 4,
+  "route_bundle_group_count": 3,
+  "runtime": {
+    "compute_capability": "8.9",
+    "cuda_include": "/usr/local/cuda-12.8/targets/x86_64-linux/include",
+    "cuda_visible_devices": "0",
+    "numba": "0.65.1",
+    "numpy": "2.4.4",
+    "optix_include": "/workspace/goal5838-optix-dev/include",
+    "optix_sdk": "9.0.0",
+    "python": "3.12.3",
+    "python_executable": "/workspace/goal5838-python-9e0cb79/bin/python",
+    "rtdl_optix_lib": "/workspace/goal5840-build-attempt07-79fdbb6/librtdl_optix_goal5840.so"
+  },
+  "runtime_trust_roots_file": "RUNTIME_TRUST_ROOTS.json",
+  "runtime_trust_roots_sha256": "8da54a715b91f6720aee88568ce5b2789ff90240a3f32cba76b25dbc3c2a2b9d",
+  "schema": "rtdl.goal5840.true_optix_target_evidence.v7",
+  "status": "PASS__FOUR_MODES_TRUE_OPTIX_AND_15_UNIQUE_MUTATIONS_REJECTED",
+  "summary_sha256": "ff2a71ca1331219da5a89dd0f4f847637ebe406fb9403ac95d7b9c34830b3049",
+  "true_optix_mode_count": 4
+}
