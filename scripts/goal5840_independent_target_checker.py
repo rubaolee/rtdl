@@ -26,6 +26,11 @@ CONTROL_FLOW_DOMAIN = b"rtdl.v4.target_control_flow_evidence.v1\0"
 REPORT_SCHEMA = "rtdl.goal5840.independent_target_check.v1"
 REPORT_DOMAIN = b"rtdl.goal5840.independent_target_check.v1\0"
 FAMILY_PLAN_DOMAIN = b"rtdl.family_compilation_plan.v1\0"
+SPHERE_ROUTE_ID = (
+    "prospective::builtin_sphere::any_hit_count_continue_u64_per_query"
+)
+SPHERE_BEHAVIOR_SCHEMA = "rtdl.behavior.sphere_any_hit_count.v1"
+SPHERE_PHYSICAL_TEMPLATE = "builtin_sphere_any_hit_count_u64_per_query_v1"
 SHA256_RE = re.compile(r"[0-9a-f]{64}")
 EFFECT_TAGS = {
     1: "aabb",
@@ -2008,8 +2013,173 @@ def _ptx_directives(ptx: str, path: str) -> dict[str, str]:
     return result
 
 
+def _sphere_physical_plan_refinement(
+    bundle: Mapping[str, Any],
+    plan: Mapping[str, Any],
+    target_sha256: str,
+) -> dict[str, str]:
+    """Independently derive the provider-internal plan from outer commitments."""
+
+    behavior = _json_artifact(bundle, "rtdl.behavior.schema")
+    expected_behavior = {
+        "schema",
+        "callback_ir_sha256",
+        "effect_digest",
+        "physical_schema_sha256",
+        "event_semantics",
+        "continuation",
+        "result_operator",
+        "output_count_relation",
+        "overflow",
+    }
+    _require(
+        set(behavior) == expected_behavior,
+        "TC005_SPHERE_BEHAVIOR_SCHEMA_FIELDS",
+        "artifact.rtdl.behavior.schema",
+        sorted(behavior),
+    )
+    _require(
+        behavior.get("schema") == SPHERE_BEHAVIOR_SCHEMA
+        and behavior.get("event_semantics") == "intersected_primitive_once"
+        and behavior.get("continuation") == "accept_every_hit_and_continue"
+        and behavior.get("result_operator") == "rtdl.result.per_query_u64.v1"
+        and behavior.get("output_count_relation") == "query_count"
+        and behavior.get("overflow")
+        == "impossible_under_u32_primitive_count_bound",
+        "TC005_SPHERE_BEHAVIOR_CONTRACT_MISMATCH",
+        "artifact.rtdl.behavior.schema",
+        behavior,
+    )
+    callback_ir_sha256 = _sha(
+        plan.get("callback_ir_sha256"),
+        "declaration.family_plan.callback_ir_sha256",
+    )
+    effect_digest = _sha(
+        plan.get("effect_digest"), "declaration.family_plan.effect_digest"
+    )
+    physical_schema_sha256 = _sha(
+        behavior.get("physical_schema_sha256"),
+        "artifact.rtdl.behavior.schema.physical_schema_sha256",
+    )
+    _require(
+        behavior.get("callback_ir_sha256") == callback_ir_sha256
+        and behavior.get("effect_digest") == effect_digest
+        and _digest(behavior) == plan.get("behavior_schema_sha256"),
+        "TC005_SPHERE_BEHAVIOR_PLAN_BINDING_MISMATCH",
+        "artifact.rtdl.behavior.schema",
+        {
+            "behavior_callback": behavior.get("callback_ir_sha256"),
+            "plan_callback": callback_ir_sha256,
+            "behavior_effect": behavior.get("effect_digest"),
+            "plan_effect": effect_digest,
+            "derived_behavior_sha256": _digest(behavior),
+            "plan_behavior_sha256": plan.get("behavior_schema_sha256"),
+        },
+    )
+
+    instance = _mapping(
+        plan.get("protocol_instance"),
+        "declaration.family_plan.protocol_instance",
+    )
+    authority_rows = _sequence(
+        instance.get("authorities"), "protocol_instance.authorities"
+    )
+    physical_authorities = []
+    for index, raw in enumerate(authority_rows):
+        row = _mapping(raw, f"protocol_instance.authorities[{index}]")
+        if row.get("authority_kind") == "physical_schema":
+            _require(
+                set(row) == {"authority_kind", "authority_sha256"},
+                "TC005_SPHERE_PHYSICAL_AUTHORITY_SCHEMA",
+                f"protocol_instance.authorities[{index}]",
+                sorted(row),
+            )
+            physical_authorities.append(row)
+    _require(
+        len(physical_authorities) == 1
+        and physical_authorities[0].get("authority_sha256")
+        == physical_schema_sha256,
+        "TC005_SPHERE_PHYSICAL_AUTHORITY_BINDING_MISMATCH",
+        "protocol_instance.authorities[physical_schema]",
+        physical_authorities,
+    )
+    _require(
+        plan.get("canonical_template_id") == SPHERE_PHYSICAL_TEMPLATE,
+        "TC005_SPHERE_PHYSICAL_TEMPLATE_MISMATCH",
+        "declaration.family_plan.canonical_template_id",
+        plan.get("canonical_template_id"),
+    )
+    target_sha256 = _sha(target_sha256, "physical.executable_identity.target_sha256")
+    nonce = _digest({
+        "kind": "builtin_sphere_any_hit_count_physical_authority_v1",
+        "callback": callback_ir_sha256,
+        "effect": effect_digest,
+        "schema": physical_schema_sha256,
+        "target": target_sha256,
+    })
+    authority_sha256 = _digest({
+        "callback_ir_sha256": callback_ir_sha256,
+        "callback_effect_digest": effect_digest,
+        "schema_sha256": physical_schema_sha256,
+        "target_sha256": target_sha256,
+        "authority_nonce": nonce,
+    })
+    physical_plan_sha256 = _digest({
+        "schema_sha256": physical_schema_sha256,
+        "callback_ir_sha256": callback_ir_sha256,
+        "effect_digest": effect_digest,
+        "target_sha256": target_sha256,
+        "authority_nonce": nonce,
+        "template_id": SPHERE_PHYSICAL_TEMPLATE,
+        "executable": False,
+    })
+
+    physical = _mapping(bundle.get("physical_evidence"), "bundle.physical_evidence")
+    native_descriptor = _mapping(
+        physical.get("native_producer_descriptor"),
+        "physical.native_producer_descriptor",
+    )
+    runtime_receipt = _mapping(
+        native_descriptor.get("runtime_physical_receipt"),
+        "physical.native_producer_descriptor.runtime_physical_receipt",
+    )
+    execution_receipt = _mapping(
+        bundle.get("execution_receipt"), "bundle.execution_receipt"
+    )
+    traversal_receipt = _mapping(
+        execution_receipt.get("traversal_receipt"),
+        "execution_receipt.traversal_receipt",
+    )
+    traversal_physical_receipt = _mapping(
+        traversal_receipt.get("physical_receipt"),
+        "execution_receipt.traversal_receipt.physical_receipt",
+    )
+    _require(
+        runtime_receipt.get("authority_nonce") == nonce
+        and traversal_physical_receipt.get("authority_nonce") == nonce,
+        "TC005_SPHERE_RUNTIME_AUTHORITY_NONCE_MISMATCH",
+        "physical.runtime_authority_nonce",
+        {
+            "derived": nonce,
+            "native_producer": runtime_receipt.get("authority_nonce"),
+            "traversal": traversal_physical_receipt.get("authority_nonce"),
+        },
+    )
+    return {
+        "behavior_schema_sha256": _digest(behavior),
+        "physical_schema_sha256": physical_schema_sha256,
+        "target_sha256": target_sha256,
+        "authority_nonce": nonce,
+        "authority_sha256": authority_sha256,
+        "physical_plan_sha256": physical_plan_sha256,
+    }
+
+
 def _generated_identity_facts(
-    bundle: Mapping[str, Any], plan: Mapping[str, Any]
+    bundle: Mapping[str, Any],
+    plan: Mapping[str, Any],
+    *,
+    target_sha256: str,
 ) -> dict[str, Any]:
     route_id = str(bundle["route_id"])
     rule = ROUTE_RULES[route_id]
@@ -2205,7 +2375,7 @@ def _generated_identity_facts(
         "generated.executable_metadata.identity_preimage.schema",
         preimage.get("schema"),
     )
-    sphere = route_id.startswith("prospective::builtin_sphere")
+    sphere = route_id == SPHERE_ROUTE_ID
     generated_key = "generated_leaf_sha256" if sphere else "generated"
     compiled_key = "compiled_leaf_sha256" if sphere else "compiled"
     wrapper_source_key = "wrapper_source_sha256" if sphere else "wrapper_source"
@@ -2269,13 +2439,30 @@ def _generated_identity_facts(
             "generated.executable_metadata.identity_preimage",
             sorted(preimage),
         )
+    physical_plan_refinement = None
     if sphere:
+        physical_plan_refinement = _sphere_physical_plan_refinement(
+            bundle, plan, target_sha256
+        )
         _require(
             preimage.get("plan_sha256")
-            == _sha256(FAMILY_PLAN_DOMAIN + _canonical_bytes(plan)),
+            == physical_plan_refinement["physical_plan_sha256"],
             "TC005_EXECUTABLE_PREIMAGE_PLAN_MISMATCH",
             "generated.executable_metadata.identity_preimage.plan_sha256",
-            preimage.get("plan_sha256"),
+            {
+                "observed": preimage.get("plan_sha256"),
+                "derived": physical_plan_refinement["physical_plan_sha256"],
+            },
+        )
+        _require(
+            preimage.get("authority_sha256")
+            == physical_plan_refinement["authority_sha256"],
+            "TC005_EXECUTABLE_PREIMAGE_AUTHORITY_MISMATCH",
+            "generated.executable_metadata.identity_preimage.authority_sha256",
+            {
+                "observed": preimage.get("authority_sha256"),
+                "derived": physical_plan_refinement["authority_sha256"],
+            },
         )
     executable_sha = _digest(preimage)
     _require(
@@ -2284,7 +2471,7 @@ def _generated_identity_facts(
         "generated.executable_metadata.executable_sha256",
         executable_metadata.get("executable_sha256"),
     )
-    return {
+    facts = {
         "executable_sha256": executable_sha,
         "composed_ptx_sha256": composed_sha,
         "wrapper_source_sha256": wrapper_source_sha,
@@ -2293,6 +2480,9 @@ def _generated_identity_facts(
         "leaf_ptx_sha256_by_role": ptx_sha_by_role,
         "composition_mode": rule["composition_mode"],
     }
+    if physical_plan_refinement is not None:
+        facts["physical_plan_refinement"] = physical_plan_refinement
+    return facts
 
 
 def _verify_digest_field(value: Mapping[str, Any], field: str, reason: str, path: str) -> str:
@@ -2363,9 +2553,6 @@ def _check_cp005(
         declaration.get("declaration_sha256"),
     )
     plan = _mapping(declaration.get("family_plan"), "declaration.family_plan")
-    generated_facts = _generated_identity_facts(bundle, plan)
-    executable_sha = str(generated_facts["executable_sha256"])
-    composed_sha = str(generated_facts["composed_ptx_sha256"])
     physical = _mapping(bundle.get("physical_evidence"), "bundle.physical_evidence")
     descriptor = _mapping(physical.get("provider_descriptor"), "physical.provider_descriptor")
     projection = _mapping(physical.get("provider_projection"), "physical.provider_projection")
@@ -2377,8 +2564,6 @@ def _check_cp005(
     _require(identity.get("provider_descriptor_sha256") == descriptor_sha, "TC005_PROVIDER_DESCRIPTOR_CHAIN", "physical.executable_identity", identity.get("provider_descriptor_sha256"))
     _require(identity.get("provider_projection_sha256") == projection_sha, "TC005_PROVIDER_PROJECTION_CHAIN", "physical.executable_identity", identity.get("provider_projection_sha256"))
     _require(identity.get("plan_sha256") == declaration.get("plan_sha256"), "TC005_PLAN_CHAIN", "physical.executable_identity", identity.get("plan_sha256"))
-    _require(identity.get("executable_sha256") == executable_sha, "TC005_EXECUTABLE_CHAIN", "physical.executable_identity", identity.get("executable_sha256"))
-    _require(identity.get("generated_artifact_sha256") == composed_sha, "TC005_GENERATED_ARTIFACT_CHAIN", "physical.executable_identity", identity.get("generated_artifact_sha256"))
     target = _mapping(physical.get("target_binding"), "physical.target_binding")
     _require(identity.get("target_sha256") == target.get("target_sha256"), "TC005_TARGET_CHAIN", "physical.target_binding", target.get("target_sha256"))
     _require(identity.get("provider_artifact_sha256") == target.get("native_library_sha256"), "TC005_NATIVE_LIBRARY_CHAIN", "physical.target_binding", target.get("native_library_sha256"))
@@ -2387,6 +2572,18 @@ def _check_cp005(
     _require(receipt.get("executable_identity_sha256") == identity_sha, "TC005_RECEIPT_EXECUTABLE_CHAIN", "execution_receipt.executable_identity_sha256", receipt.get("executable_identity_sha256"))
     _require(receipt.get("target_sha256") == identity.get("target_sha256"), "TC005_RECEIPT_TARGET_CHAIN", "execution_receipt.target_sha256", receipt.get("target_sha256"))
     _require(receipt.get("native_library_sha256") == identity.get("provider_artifact_sha256"), "TC005_RECEIPT_NATIVE_CHAIN", "execution_receipt.native_library_sha256", receipt.get("native_library_sha256"))
+    generated_facts = _generated_identity_facts(
+        bundle,
+        plan,
+        target_sha256=_sha(
+            identity.get("target_sha256"),
+            "physical.executable_identity.target_sha256",
+        ),
+    )
+    executable_sha = str(generated_facts["executable_sha256"])
+    composed_sha = str(generated_facts["composed_ptx_sha256"])
+    _require(identity.get("executable_sha256") == executable_sha, "TC005_EXECUTABLE_CHAIN", "physical.executable_identity", identity.get("executable_sha256"))
+    _require(identity.get("generated_artifact_sha256") == composed_sha, "TC005_GENERATED_ARTIFACT_CHAIN", "physical.executable_identity", identity.get("generated_artifact_sha256"))
     _require(
         receipt.get("output_sha256")
         == _mapping(

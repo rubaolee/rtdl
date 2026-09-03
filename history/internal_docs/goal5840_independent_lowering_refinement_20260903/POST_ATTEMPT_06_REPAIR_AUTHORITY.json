@@ -1,0 +1,412 @@
+{
+  "authority_sha256": "9cf2dc8ac2f97b1193354bed510d13654c9575c56ee707aed2c6304b45af3359",
+  "base_chain": {
+    "attempt_06_incident": {
+      "accepted_complete_goal5840_results": 0,
+      "bytes": 11409,
+      "classification": "SPHERE_TWO_LEVEL_PHYSICAL_PLAN_REFINEMENT_CHECKER_ENGINEERING_FAILURE",
+      "file_sha256": "6cd031390db51cf20f24485de2a4f47d61d38e1d648de17f8c36553398f49e2f",
+      "independent_property_pass_count": 19,
+      "independent_property_reject_count": 1,
+      "independently_accepted_per_mode_report_count": 3,
+      "path": "history/internal_docs/goal5840_independent_lowering_refinement_20260903/ATTEMPT_06_ENGINEERING_FAILURE.md",
+      "published_failure_artifacts": [
+        {
+          "bytes": 1364075,
+          "file_sha256": "f259c779347b945229ac545fbe9765adfeff8e2fea9d27f9acc5a6c9251824ca",
+          "internal_sha256": "eba236fdc8b946392e6e45c1eb47d7b5e963278b8cdf0f7918b2b88c0b01ef0e",
+          "name": "mode_01_capacity_fail_closed_collection_bundle.json"
+        },
+        {
+          "bytes": 3967,
+          "file_sha256": "737cecffb9ccaf95a639e3a815bebec7e581af3ea80ac257714e4e3c67384c45",
+          "internal_sha256": "d76ef08ae8bae5a3c07c919c03238229138402d257a7fc1ede3a027cebac5a77",
+          "name": "mode_01_capacity_fail_closed_collection_independent_check.json",
+          "property_pass_count": 5,
+          "property_reject_count": 0,
+          "verdict": "ACCEPT"
+        },
+        {
+          "bytes": 806032,
+          "file_sha256": "9e6cf9440ddb77724378a5dc3af7182dbc76cc8b8f801be299a197ec96f95712",
+          "internal_sha256": "3420e8f467d2fb18e3a1db6512a882a60ffc83df41ff202a5cfc76bd443c25f9",
+          "name": "mode_02_all_hit_count_bundle.json"
+        },
+        {
+          "bytes": 3917,
+          "file_sha256": "16173ef87f0db27f3e326bbf612eb59d7f21bace48a22c72172d846cecfd4795",
+          "internal_sha256": "4cd4c21b89d668c206c45e98e6f4a92bc636e93680bf08ad9019b2dd628a0a91",
+          "name": "mode_02_all_hit_count_independent_check.json",
+          "property_pass_count": 5,
+          "property_reject_count": 0,
+          "verdict": "ACCEPT"
+        },
+        {
+          "bytes": 806395,
+          "file_sha256": "9190d49385a1be87c2a7c27c7c01bfc64b79db841e27f17f348704d4f29bebde",
+          "internal_sha256": "33da537ebb69235d876b82928c573947a2c621e5c36ad26616c46e7a43472095",
+          "name": "mode_03_weighted_hit_count_bundle.json"
+        },
+        {
+          "bytes": 3917,
+          "file_sha256": "e802c7de5d924956e8c5ae0489e12f244bc0e205e38822b86d0ab7b4b337ce7d",
+          "internal_sha256": "6402cad30d6968734cb35909cf5914e62cdc34bd180249785c6b0edd0ef6acd8",
+          "name": "mode_03_weighted_hit_count_independent_check.json",
+          "property_pass_count": 5,
+          "property_reject_count": 0,
+          "verdict": "ACCEPT"
+        },
+        {
+          "bytes": 779946,
+          "file_sha256": "275b474bb0f94c55e84cebcf9743daad6c4d80e19418099abbafa59bdcf97319",
+          "internal_sha256": "9aa0a5d6f85a82bda860b11b377e48f4c576cc87727e0462456f1625dda6e3f4",
+          "name": "mode_04_accept_every_hit_and_continue_bundle.json"
+        },
+        {
+          "bytes": 3552,
+          "file_sha256": "edfc176172f213110da7422aa6eefa39d3acc4350d89688c86214aed7519c854",
+          "internal_sha256": "d5932d027e41d1041a3606497940b61bfa703e59cd46899fea014615c8d2da31",
+          "name": "mode_04_accept_every_hit_and_continue_independent_check.json",
+          "property_pass_count": 4,
+          "property_reject_count": 1,
+          "reason_id": "TC005_EXECUTABLE_PREIMAGE_PLAN_MISMATCH",
+          "verdict": "REJECT"
+        }
+      ],
+      "published_failure_bundle_count": 4,
+      "published_independent_report_count": 4,
+      "published_mutation_applications": 0,
+      "sphere_optix_launches": 1
+    },
+    "attempt_06_post_failure_gpu_diagnostics": {
+      "accepted_as_evidence": 0,
+      "diagnostic_mode_executions": 0,
+      "diagnostic_processes": 0
+    },
+    "attempt_06_source_commit": "593a514637ab2075653bbd4e499c36860519bf31",
+    "formal_observed_counts_through_attempt_06": {
+      "accepted_complete_goal5840_results": 0,
+      "frozen_modes_entered": 13,
+      "independently_accepted_per_mode_reports": 7,
+      "public_route_expected_outputs_returned": 12,
+      "published_evidence_bundles": 10,
+      "published_independent_property_reports": 10,
+      "published_mutation_applications": 0,
+      "runner_processes_started": 6
+    },
+    "post_attempt_05_repair_authority": {
+      "authority_sha256": "57e986a79bffeeeb6505ca0cc4ee331ad253d4d5c426f59704ff93db31dbe64b",
+      "bytes": 15950,
+      "file_sha256": "0072bd7701ce2ca84a000171bed05943198baad2ad6e675caf5772f59e0b9258",
+      "path": "history/internal_docs/goal5840_independent_lowering_refinement_20260903/POST_ATTEMPT_05_REPAIR_AUTHORITY.json"
+    },
+    "prior_post_failure_gpu_diagnostics": {
+      "accepted_as_evidence": 0,
+      "diagnostic_mode_executions": 2,
+      "diagnostic_processes": 2
+    }
+  },
+  "claim_boundary": {
+    "accepted_goal5840_result": false,
+    "append_only_engineering_repair_authority": true,
+    "application_correctness": false,
+    "attempt_06_incomplete_run_not_accepted_as_goal_result": true,
+    "attempt_06_sphere_true_optix_launch_preserved": true,
+    "attempt_06_three_per_mode_acceptances_preserved": true,
+    "diagnostic_processes_not_accepted_as_evidence": true,
+    "external_review_or_consensus": false,
+    "lowering_preservation_established": false,
+    "performance_or_speedup": false,
+    "scientific_inputs_unchanged": true,
+    "six_prior_formal_failures_preserved": true
+  },
+  "execution_counts_at_repair_freeze": {
+    "accepted_goal5840_complete_results": 0,
+    "formal_entered_modes": 13,
+    "formal_returned_expected_outputs": 12,
+    "formal_runner_processes": 6,
+    "independently_accepted_per_mode_reports": 7,
+    "prior_gpu_diagnostic_mode_executions": 2,
+    "prior_gpu_diagnostic_processes": 2,
+    "published_evidence_bundles": 10,
+    "published_independent_property_reports": 10,
+    "published_mutation_applications": 0
+  },
+  "frozen_at_utc": "2026-09-03T12:04:19.936338Z",
+  "goal": 5840,
+  "goal5838_frozen_core": {
+    "changed_file_count": 0,
+    "files": [
+      {
+        "bytes": 58007,
+        "path": "src/rtdsl/v4_family_schema.py",
+        "sha256": "2d118697d10cb2bc2a8672700ae5a991eaf94e66834bb3e08fd898323720f224"
+      },
+      {
+        "bytes": 41675,
+        "path": "src/rtdsl/v4_generic_family_lifecycle.py",
+        "sha256": "7ac68832de9d1e04fdd6f0f11bfa0de7d6109d892ab22e42c9aeb2825d28228c"
+      },
+      {
+        "bytes": 2792,
+        "path": "src/rtdsl/v4_family.py",
+        "sha256": "d25c487823e966a8e9083092811c9a1a2b6aa0fef6ce8f3a0a5b8919c5b809e8"
+      }
+    ],
+    "seal_sha256": "c2a461c8a4a61650044b724d103a80d25241b44b7b486c071b601946292e5dae"
+  },
+  "mode_cases": [
+    {
+      "control_flow_manifest_sha256": "cdb6b80aac352bf89089e3137364db7033a594c2810f8052eb61ba84915e7996",
+      "declaration_sha256": "608060a1d42764ea1582a81aae3dd64f3caa6a14c082db7c7d941c938925c480",
+      "expected_output": [
+        [
+          100,
+          10
+        ],
+        [
+          100,
+          30
+        ],
+        [
+          200,
+          20
+        ]
+      ],
+      "expected_output_sha256": "ca707c27b414a83c636e6a40202f74a445415b6c42676a0d0df17f77bccb6c42",
+      "fixture_sha256": "f6bd2783681d895f933429a05a328cb9656f0eaf3362489901b0ad15975ee87c",
+      "key": "stable::bounded_relation::canonical_bounded_pair_collection::capacity_fail_closed_collection",
+      "mode": "capacity_fail_closed_collection",
+      "plan_sha256": "e4aa0d5958c0c37b9ddb7c831fbbc3868218d3605c9ed7b51f0f51cc9a2bdde2",
+      "route_id": "stable::bounded_relation::canonical_bounded_pair_collection",
+      "target_kind": "stable"
+    },
+    {
+      "control_flow_manifest_sha256": "82b32bbe5f6e6df9bad7b6b05c5899ebc260ecbb89699792f6d935aad598baea",
+      "declaration_sha256": "2fb010647d51c62dfbfa73352a7139031118d79564665e4d8fa6f2e48bd04eff",
+      "expected_output": 5,
+      "expected_output_sha256": "ef2d127de37b942baad06145e54b0c619a1f22327b2ebbcfbec78f5564afe39d",
+      "fixture_sha256": "a58b2d5bd97a65a60614fccc494bef25ef9025f15d9bc71bc2970fce946a61b6",
+      "key": "stable::triangle_reduction::checked_u64_reduction::all_hit_count",
+      "mode": "all_hit_count",
+      "plan_sha256": "8348d2d3523f80caf5820eb47d7c8480a612d89bc06a874407cda5d1a36ae8ec",
+      "route_id": "stable::triangle_reduction::checked_u64_reduction",
+      "target_kind": "stable"
+    },
+    {
+      "control_flow_manifest_sha256": "82b32bbe5f6e6df9bad7b6b05c5899ebc260ecbb89699792f6d935aad598baea",
+      "declaration_sha256": "3f000ea48805fdb1e3c644ba9449234c4b3b7697b6655d6331d715bff15993e8",
+      "expected_output": 35,
+      "expected_output_sha256": "9f14025af0065b30e47e23ebb3b491d39ae8ed17d33739e5ff3827ffb3634953",
+      "fixture_sha256": "91e7942c9842cd672e2d8924a6e8abff1e8f2285058e888ed931d7e8823367d5",
+      "key": "stable::triangle_reduction::checked_u64_reduction::weighted_hit_count",
+      "mode": "weighted_hit_count",
+      "plan_sha256": "cc34c24616272e0ef4e6b3b72f71a3bdf163b7ecda332518d5b47ca759abdd73",
+      "route_id": "stable::triangle_reduction::checked_u64_reduction",
+      "target_kind": "stable"
+    },
+    {
+      "control_flow_manifest_sha256": "ece4699c064fa77049bfcdbab3aeb0fbcea5aac53f3aa66467f9490243b11796",
+      "declaration_sha256": "97bb941681974d7b88472e9b49f5031fcc84a0c9f93246c66b57c8f51382230b",
+      "expected_output": {
+        "counts": [
+          4,
+          1,
+          1,
+          0,
+          4,
+          0
+        ],
+        "schema": "rtdl.v4.sphere_any_hit_count_output.v1"
+      },
+      "expected_output_sha256": "504d506f7611f87e30b9660abe35e28e98d023bf0efa1860ac1a5a1a1c808a7e",
+      "fixture_sha256": "69e38e95e8d3a2e14cb428f18e4d8bb27a87da1c21688b6ddad672406a94977a",
+      "key": "prospective::builtin_sphere::any_hit_count_continue_u64_per_query::accept_every_hit_and_continue",
+      "mode": "accept_every_hit_and_continue",
+      "plan_sha256": "5a8f15a3941f10560ffecc6021cd4689c068f5ed39903014b1d5e99e98b3d669",
+      "route_id": "prospective::builtin_sphere::any_hit_count_continue_u64_per_query",
+      "target_kind": "sphere"
+    }
+  ],
+  "preregistration": {
+    "authority_sha256": "013ccfef04835a3d6b2ad572f504f2d07a80a19b48e591d7c7887ff6e00b8192",
+    "bytes": 20649,
+    "file_sha256": "7ded948b0062a8eb8b51871785395456c45dba9d83a479367725fb4415c229d2",
+    "mutation_count": 15,
+    "path": "history/internal_docs/goal5840_independent_lowering_refinement_20260903/GOAL5840_PREREGISTRATION.json"
+  },
+  "repair_scope": {
+    "adversarial_bridge_input_mutations_required": true,
+    "allowed_changed_paths": [
+      "history/internal_docs/goal5840_independent_lowering_refinement_20260903/ATTEMPT_06_ENGINEERING_FAILURE.md",
+      "history/internal_docs/goal5840_independent_lowering_refinement_20260903/POST_ATTEMPT_06_REPAIR_AUTHORITY.json",
+      "scripts/goal5840_capture_gpu_evidence.py",
+      "scripts/goal5840_freeze_attempt06_repair_inputs.py",
+      "scripts/goal5840_independent_target_checker.py",
+      "scripts/goal5840_verify_gpu_evidence.py",
+      "tests/goal5840_gpu_evidence_harness_test.py",
+      "tests/goal5840_gpu_evidence_verifier_test.py",
+      "tests/goal5840_independent_target_checker_test.py"
+    ],
+    "capture_and_final_verifier_chain_change_allowed": true,
+    "declaration_or_control_root_change_allowed": false,
+    "defect": "sphere_inner_physical_plan_was_incorrectly_compared_to_outer_family_plan",
+    "direct_inner_outer_plan_equality_forbidden": true,
+    "exact_changed_paths_since_base": [
+      "history/internal_docs/goal5840_independent_lowering_refinement_20260903/ATTEMPT_06_ENGINEERING_FAILURE.md",
+      "history/internal_docs/goal5840_independent_lowering_refinement_20260903/POST_ATTEMPT_06_REPAIR_AUTHORITY.json",
+      "scripts/goal5840_capture_gpu_evidence.py",
+      "scripts/goal5840_freeze_attempt06_repair_inputs.py",
+      "scripts/goal5840_independent_target_checker.py",
+      "scripts/goal5840_verify_gpu_evidence.py",
+      "tests/goal5840_gpu_evidence_harness_test.py",
+      "tests/goal5840_gpu_evidence_verifier_test.py",
+      "tests/goal5840_independent_target_checker_test.py"
+    ],
+    "existing_bundle_fields_only": true,
+    "fixture_or_oracle_change_allowed": false,
+    "frozen_core_change_allowed": false,
+    "independent_checker_change_allowed": true,
+    "native_engine_or_runtime_change_allowed": false,
+    "physical_schema_authority_cross_binding_required": true,
+    "property_or_preregistered_mutation_change_allowed": false,
+    "provider_or_compiler_codegen_change_allowed": false,
+    "repair": "independently_derive_target_bound_inner_physical_plan_from_existing_outer_commitments_and_compare_exactly",
+    "route_change_allowed": false,
+    "runtime_authority_nonce_cross_binding_required": true,
+    "target_evidence_bundle_schema_change_allowed": false,
+    "unverified_provider_emitted_bridge_forbidden": true
+  },
+  "required_mode_count": 4,
+  "route_bundle_group_count": 3,
+  "schema": "rtdl.goal5840.post_attempt_06_repair_authority.v1",
+  "source_files": [
+    {
+      "bytes": 65992,
+      "path": "scripts/goal5840_capture_gpu_evidence.py",
+      "sha256": "c3a5b0a9d22ecb693bcadb354e2c826b8039eeb0df3c2470724ee6aa30d6b85e"
+    },
+    {
+      "bytes": 13371,
+      "path": "scripts/goal5840_freeze_attempt02_repair_inputs.py",
+      "sha256": "6fc6a3cde9ded9d25bcf583a8ed96a3ee3caf39a17c3859cddf870e4fdae68b7"
+    },
+    {
+      "bytes": 14786,
+      "path": "scripts/goal5840_freeze_attempt03_repair_inputs.py",
+      "sha256": "234759bd8475e090c4decf413b0f668eaee59377f72dc0588db15520f316ad5d"
+    },
+    {
+      "bytes": 15558,
+      "path": "scripts/goal5840_freeze_attempt04_repair_inputs.py",
+      "sha256": "f68170b6adf4e67fda12abd32cc8dd754e5e70618d06ce7eb7daa780d01bb271"
+    },
+    {
+      "bytes": 16332,
+      "path": "scripts/goal5840_freeze_attempt05_repair_inputs.py",
+      "sha256": "7b88842e2d5a7d3f3ec203791187a7c936e4b20a527a10fd5fc1f940807b3bf7"
+    },
+    {
+      "bytes": 18299,
+      "path": "scripts/goal5840_freeze_attempt06_repair_inputs.py",
+      "sha256": "a07c3b048024a2250d763460886293f867d43355e9f2ae038f498f34efa1b97a"
+    },
+    {
+      "bytes": 7511,
+      "path": "scripts/goal5840_freeze_gpu_inputs.py",
+      "sha256": "13f0ed052af14437737344dd7a55bd1c1ac329ce679d0eae30e2def6cb1f8d90"
+    },
+    {
+      "bytes": 10350,
+      "path": "scripts/goal5840_freeze_repair_inputs.py",
+      "sha256": "c4641e0d9c8d134634fe320af7a13bd4c00dc7707760d3884e689ea6fdbfe1f1"
+    },
+    {
+      "bytes": 7071,
+      "path": "scripts/goal5840_gpu_cases.py",
+      "sha256": "217fa653cb751554629d687c1d626e28955f9f8b8960f210f27cd50526885b52"
+    },
+    {
+      "bytes": 109560,
+      "path": "scripts/goal5840_independent_target_checker.py",
+      "sha256": "36456020f56e5aa24d072020c3d86e33e55e9d9a8743186ed807cf2947ca09c7"
+    },
+    {
+      "bytes": 24343,
+      "path": "scripts/goal5840_mutation_suite.py",
+      "sha256": "c645c2b81a0eaab802372c1e81d31e8c2c8c206e75ea8807b6912faec03db8b1"
+    },
+    {
+      "bytes": 123524,
+      "path": "scripts/goal5840_verify_gpu_evidence.py",
+      "sha256": "1f63377d25901eac4cfac2db1e7da1d53279e6c2afb9f3ea21e1f117875b17f6"
+    },
+    {
+      "bytes": 15892,
+      "path": "src/rtdsl/v4_bounded_relation_optix_compiler.py",
+      "sha256": "c38de4d3742601b8d19d434163b65bd12e5505a8c983592ac748f5c8155042e4"
+    },
+    {
+      "bytes": 19189,
+      "path": "src/rtdsl/v4_bounded_relation_optix_wrapper_codegen.py",
+      "sha256": "ef1a7ec9a54d150db11ea7aa1eecf87e536b9de7b982e5254b96c627afd533a2"
+    },
+    {
+      "bytes": 10216,
+      "path": "src/rtdsl/v4_callback_ptx_composer.py",
+      "sha256": "e6310a57b9fcc8a4e3ba9dd89b45a5c1ca6c207d0f72333ff5e28500519d6b4a"
+    },
+    {
+      "bytes": 20035,
+      "path": "src/rtdsl/v4_inline_cuda_codegen.py",
+      "sha256": "a9c247fb7401091eb98e3e51445159c676cad87d5e56db376645279249a68529"
+    },
+    {
+      "bytes": 3117,
+      "path": "src/rtdsl/v4_target_control_flow_evidence.py",
+      "sha256": "6e781a767e7d2dadd46648341a5714da6fadd8407325d8e33701a4433c44c1a7"
+    },
+    {
+      "bytes": 45738,
+      "path": "src/rtdsl/v4_target_evidence_bundle.py",
+      "sha256": "df0b99eb0acf261518bfdea029150c9a1f94f82b891e99ffa038cf01da7539b3"
+    },
+    {
+      "bytes": 12707,
+      "path": "src/rtdsl/v4_target_evidence_capture.py",
+      "sha256": "dedc5d37b4fba47db2662a5ec98d0b60d89f4755d2d16cdb392806e77b87b5fb"
+    },
+    {
+      "bytes": 11531,
+      "path": "tests/goal5760_v4_bounded_relation_test.py",
+      "sha256": "faa1550b98990c771c20b516b808258edc96b5d0de49c9caca6bf5a9dd4b99fd"
+    },
+    {
+      "bytes": 20532,
+      "path": "tests/goal5840_gpu_evidence_harness_test.py",
+      "sha256": "cd82868483967e499fe762f72821342f491cce34d125970cb94e68ced8492b08"
+    },
+    {
+      "bytes": 92429,
+      "path": "tests/goal5840_gpu_evidence_verifier_test.py",
+      "sha256": "2aa420ae6e74e3f69ff7108384e8853c9e09e1fe5bbb1b3ab01f373cded16b75"
+    },
+    {
+      "bytes": 67894,
+      "path": "tests/goal5840_independent_target_checker_test.py",
+      "sha256": "a461fddcf352e896f5d05da3554d8604a8e9974f91f8b608176cdab77850c477"
+    },
+    {
+      "bytes": 9544,
+      "path": "tests/goal5840_real_target_evidence_capture_test.py",
+      "sha256": "5984ace74d92d2c37a310eb7306f81a06c2170edae626e782e2027b52b9adbb7"
+    },
+    {
+      "bytes": 22144,
+      "path": "tests/goal5840_target_evidence_bundle_test.py",
+      "sha256": "c302745ce597c6feffc0e53510db6b87add744beba52f1467c1afe5cc0dadfb6"
+    }
+  ],
+  "stage": "AFTER_ATTEMPT_06_BEFORE_ATTEMPT_07_GPU_EXECUTION",
+  "status": "FROZEN_TWO_LEVEL_PHYSICAL_PLAN_REFINEMENT_CHECKER_REPAIR__NO_COMPLETE_ACCEPTED_RESULT"
+}

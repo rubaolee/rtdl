@@ -14,6 +14,7 @@ from scripts import goal5840_freeze_attempt02_repair_inputs as attempt02_freezer
 from scripts import goal5840_freeze_attempt03_repair_inputs as attempt03_freezer
 from scripts import goal5840_freeze_attempt04_repair_inputs as attempt04_freezer
 from scripts import goal5840_freeze_attempt05_repair_inputs as attempt05_freezer
+from scripts import goal5840_freeze_attempt06_repair_inputs as attempt06_freezer
 from scripts import goal5840_freeze_repair_inputs as repair_freezer
 from scripts.goal5840_gpu_cases import goal5840_mode_cases
 
@@ -83,7 +84,9 @@ class Goal5840GpuEvidenceHarnessTest(unittest.TestCase):
         self.assertIn("_verify_attempt04_repair_authority(", source)
         self.assertIn("POST_ATTEMPT_05_REPAIR_AUTHORITY.json", source)
         self.assertIn("_verify_attempt05_repair_authority(", source)
-        self.assertIn("rtdl.goal5840.true_optix_target_evidence.v6", source)
+        self.assertIn("POST_ATTEMPT_06_REPAIR_AUTHORITY.json", source)
+        self.assertIn("_verify_attempt06_repair_authority(", source)
+        self.assertIn("rtdl.goal5840.true_optix_target_evidence.v7", source)
         self.assertIn('sys.executable,\n            "-I"', source)
         self.assertIn("EXACT_BUNDLE_MUTATION_RESULT.json", source)
 
@@ -356,6 +359,76 @@ class Goal5840GpuEvidenceHarnessTest(unittest.TestCase):
         body["authority_sha256"] = ""
         expected = hashlib.sha256(
             attempt05_freezer.DOMAIN
+            + json.dumps(
+                body,
+                sort_keys=True,
+                separators=(",", ":"),
+                ensure_ascii=True,
+                allow_nan=False,
+            ).encode("ascii")
+        ).hexdigest()
+        self.assertEqual(observed, expected)
+
+    def test_attempt06_repair_authority_preserves_true_sphere_launch_and_inputs(
+        self,
+    ) -> None:
+        expected_before_output = tuple(
+            path
+            for path in attempt06_freezer.ALLOWED_CHANGED_PATHS
+            if not path.endswith("POST_ATTEMPT_06_REPAIR_AUTHORITY.json")
+        )
+
+        def changed_paths(base: str, revision: str | None = None):
+            if revision is None:
+                self.assertEqual(base, attempt06_freezer.BASE_COMMIT)
+                return expected_before_output
+            self.assertEqual(base, attempt05_freezer.BASE_COMMIT)
+            self.assertEqual(revision, attempt06_freezer.BASE_COMMIT)
+            return tuple(sorted(attempt05_freezer.ALLOWED_CHANGED_PATHS))
+
+        with patch.object(Path, "exists", return_value=False), patch.object(
+            attempt06_freezer,
+            "_changed_paths",
+            side_effect=changed_paths,
+        ):
+            document = attempt06_freezer.build_authority(
+                "2026-09-03T14:00:00Z"
+            )
+        prior = json.loads(
+            attempt06_freezer.PRIOR_REPAIR_AUTHORITY.read_text(encoding="ascii")
+        )
+        self.assertEqual(document["mode_cases"], prior["mode_cases"])
+        self.assertEqual(
+            document["goal5838_frozen_core"], prior["goal5838_frozen_core"]
+        )
+        counts = document["base_chain"][
+            "formal_observed_counts_through_attempt_06"
+        ]
+        self.assertEqual(counts["runner_processes_started"], 6)
+        self.assertEqual(counts["published_evidence_bundles"], 10)
+        self.assertEqual(counts["independently_accepted_per_mode_reports"], 7)
+        self.assertEqual(counts["accepted_complete_goal5840_results"], 0)
+        incident = document["base_chain"]["attempt_06_incident"]
+        self.assertEqual(len(incident["published_failure_artifacts"]), 8)
+        self.assertEqual(
+            incident["independently_accepted_per_mode_report_count"], 3
+        )
+        self.assertEqual(incident["sphere_optix_launches"], 1)
+        self.assertEqual(
+            document["repair_scope"][
+                "physical_schema_authority_cross_binding_required"
+            ],
+            True,
+        )
+        self.assertEqual(
+            document["repair_scope"]["exact_changed_paths_since_base"],
+            list(attempt06_freezer.ALLOWED_CHANGED_PATHS),
+        )
+        body = dict(document)
+        observed = body["authority_sha256"]
+        body["authority_sha256"] = ""
+        expected = hashlib.sha256(
+            attempt06_freezer.DOMAIN
             + json.dumps(
                 body,
                 sort_keys=True,

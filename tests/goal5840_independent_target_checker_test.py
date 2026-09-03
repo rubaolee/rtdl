@@ -215,6 +215,23 @@ def _plan(
                 "operator_contract_sha256": _digest(contract),
             }],
         }
+    effect_digest = _sha(route_id + ":effects")
+    sphere = route_id == checker.SPHERE_ROUTE_ID
+    physical_schema_sha = _sha(route_id + ":physical-schema")
+    if sphere:
+        behavior_schema = {
+            "schema": checker.SPHERE_BEHAVIOR_SCHEMA,
+            "callback_ir_sha256": callback_ir_sha,
+            "effect_digest": effect_digest,
+            "physical_schema_sha256": physical_schema_sha,
+            "event_semantics": "intersected_primitive_once",
+            "continuation": "accept_every_hit_and_continue",
+            "result_operator": "rtdl.result.per_query_u64.v1",
+            "output_count_relation": "query_count",
+            "overflow": "impossible_under_u32_primitive_count_bound",
+        }
+    else:
+        behavior_schema = {"schema_sha256": _sha(route_id + ":behavior")}
     protocol_instance = {
         "nominal_semantics": {"output": rule["nominal_output"]},
         "parameter_values": ([{
@@ -227,6 +244,11 @@ def _plan(
             ),
         }] if route_id.startswith("stable::triangle_reduction") else []),
     }
+    if sphere:
+        protocol_instance["authorities"] = [{
+            "authority_kind": "physical_schema",
+            "authority_sha256": physical_schema_sha,
+        }]
     family_shape_sha = hashlib.sha256(
         FAMILY_SHAPE_DOMAIN + _canonical(family_shape)
     ).hexdigest()
@@ -239,15 +261,28 @@ def _plan(
         "protocol_instance_sha256": protocol_instance_sha,
         "callback_source_sha256": _sha(route_id + ":callback-source"),
         "callback_ir_sha256": callback_ir_sha,
-        "effect_digest": _sha(route_id + ":effects"),
+        "effect_digest": effect_digest,
         "abi_sha256": abi_sha,
-        "behavior_schema_sha256": _sha(route_id + ":behavior"),
-        "canonical_template_id": "goal5840.synthetic.template.v1",
+        "behavior_schema_sha256": (
+            _digest(behavior_schema)
+            if sphere
+            else _sha(route_id + ":behavior")
+        ),
+        "canonical_template_id": (
+            checker.SPHERE_PHYSICAL_TEMPLATE
+            if sphere
+            else "goal5840.synthetic.template.v1"
+        ),
         "family_shape": family_shape,
         "protocol_instance": protocol_instance,
     }
     plan_sha = hashlib.sha256(FAMILY_PLAN_DOMAIN + _canonical(document)).hexdigest()
-    return SimpleNamespace(to_dict=lambda: document, plan_sha256=plan_sha)
+    return SimpleNamespace(
+        to_dict=lambda: document,
+        plan_sha256=plan_sha,
+        behavior_schema=behavior_schema,
+        physical_schema_sha256=physical_schema_sha,
+    )
 
 
 def _effect_fields(route_id: str, role: str, effect: str) -> list[dict[str, object]]:
@@ -434,6 +469,8 @@ def _make_bundle(
     plan = _plan(route_id, abi_sha, callback_ir_sha, mode=mode)
     declaration = build_family_target_declaration(route_id, plan)
     abi = _abi(route_id, abi_sha, callback_ir_sha)
+    target_sha = _sha(route_id + ":target")
+    native_sha = _sha(route_id + ":native")
     leaves = []
     symbols = []
     ptx_header = ".version 8.0\n.target sm_89\n.address_size 64\n"
@@ -530,10 +567,33 @@ def _make_bundle(
             "nvrtc_log": _sha(route_id + ":nvrtc-log"),
         }
     else:
+        authority_nonce = _digest({
+            "kind": "builtin_sphere_any_hit_count_physical_authority_v1",
+            "callback": callback_ir_sha,
+            "effect": plan.to_dict()["effect_digest"],
+            "schema": plan.physical_schema_sha256,
+            "target": target_sha,
+        })
+        physical_authority_sha = _digest({
+            "callback_ir_sha256": callback_ir_sha,
+            "callback_effect_digest": plan.to_dict()["effect_digest"],
+            "schema_sha256": plan.physical_schema_sha256,
+            "target_sha256": target_sha,
+            "authority_nonce": authority_nonce,
+        })
+        physical_plan_sha = _digest({
+            "schema_sha256": plan.physical_schema_sha256,
+            "callback_ir_sha256": callback_ir_sha,
+            "effect_digest": plan.to_dict()["effect_digest"],
+            "target_sha256": target_sha,
+            "authority_nonce": authority_nonce,
+            "template_id": checker.SPHERE_PHYSICAL_TEMPLATE,
+            "executable": False,
+        })
         identity_preimage = {
             "schema": executable_schema,
-            "authority_sha256": _sha(route_id + ":authority"),
-            "plan_sha256": plan.plan_sha256,
+            "authority_sha256": physical_authority_sha,
+            "plan_sha256": physical_plan_sha,
             "abi_sha256": abi_sha,
             "wrapper_source_sha256": wrapper_source_sha,
             "wrapper_ptx_sha256": wrapper_ptx_sha,
@@ -603,7 +663,7 @@ def _make_bundle(
             "artifact_id": "rtdl.behavior.schema",
             "format_id": "rtdl.behavior_schema.canonical_json.v1",
             "payload": make_blob_record(
-                _canonical({"schema_sha256": _sha(route_id + ':behavior')})
+                _canonical(plan.behavior_schema)
             ),
         },
     ]
@@ -661,8 +721,6 @@ def _make_bundle(
         "requirements_sha256": _digest(requirements_body),
         "artifact_bundle_sha256": artifact_bundle_sha,
     }, "projection_sha256")
-    target_sha = _sha(route_id + ":target")
-    native_sha = _sha(route_id + ":native")
     identity = _sealed({
         "schema": "rtdl.family_executable_identity.v1",
         "provider_descriptor_sha256": descriptor["descriptor_sha256"],
@@ -703,7 +761,11 @@ def _make_bundle(
         },
         native_producer_descriptor={
             "build_input_type_name": rule["native_names"][1],
-        },
+        } | ({
+            "runtime_physical_receipt": {
+                "authority_nonce": authority_nonce,
+            },
+        } if route_id == checker.SPHERE_ROUTE_ID else {}),
         sbt_buffer_bindings={
             "schema": "rtdl.v4.target_sbt_buffer_bindings.v1",
             "primitive_kind": rule["primitive_kind"],
@@ -731,7 +793,11 @@ def _make_bundle(
                 "physical_executor_classification": "optix_traversal_observed",
                 "provider_library_sha256": native_sha,
                 "output_digest": output_sha,
-            },
+            } | ({
+                "physical_receipt": {
+                    "authority_nonce": authority_nonce,
+                },
+            } if route_id == checker.SPHERE_ROUTE_ID else {}),
         },
     )
     return (
@@ -1021,9 +1087,289 @@ class Goal5840IndependentTargetCheckerTest(unittest.TestCase):
                 assert isinstance(plan, dict)
                 with self.assertRaises(checker.IndependentTargetCheckError) as caught:
                     checker._generated_identity_facts(
-                        bundle, plan["family_plan"]
+                        bundle,
+                        plan["family_plan"],
+                        target_sha256=bundle["physical_evidence"][
+                            "executable_identity"
+                        ]["target_sha256"],
                     )
                 self.assertEqual(caught.exception.reason_id, reason)
+
+    def test_sphere_inner_plan_is_independently_derived_from_outer_bindings(
+        self,
+    ) -> None:
+        route_id = checker.SPHERE_ROUTE_ID
+        bundle, declaration_sha, identity_sha, control_flow_sha = _make_bundle(
+            route_id
+        )
+        declaration = bundle["declaration"]
+        physical = bundle["physical_evidence"]
+        generated = bundle["generated_target_artifacts"]
+        assert isinstance(declaration, dict)
+        assert isinstance(physical, dict)
+        assert isinstance(generated, dict)
+        plan = declaration["family_plan"]
+        identity = physical["executable_identity"]
+        executable = generated["executable_metadata"]
+        assert isinstance(plan, dict)
+        assert isinstance(identity, dict)
+        assert isinstance(executable, dict)
+        preimage = executable["identity_preimage"]
+        assert isinstance(preimage, dict)
+
+        self.assertNotEqual(declaration["plan_sha256"], preimage["plan_sha256"])
+        generated_facts = checker._generated_identity_facts(
+            bundle,
+            plan,
+            target_sha256=identity["target_sha256"],
+        )
+        refinement = generated_facts["physical_plan_refinement"]
+        assert isinstance(refinement, dict)
+        self.assertEqual(
+            refinement["physical_plan_sha256"], preimage["plan_sha256"]
+        )
+        self.assertEqual(
+            refinement["authority_sha256"], preimage["authority_sha256"]
+        )
+        report = checker.check_target_evidence(
+            bundle,
+            trusted_declaration_sha256=declaration_sha,
+            trusted_executable_identity_sha256=identity_sha,
+            trusted_control_flow_manifest_sha256=control_flow_sha,
+        )
+        self.assertEqual(report["verdict"], "ACCEPT", report)
+        self.assertEqual(report["pass_count"], 5)
+
+    def test_sphere_plan_refinement_rejects_each_untrusted_bridge_drift(
+        self,
+    ) -> None:
+        route_id = checker.SPHERE_ROUTE_ID
+        cases = (
+            (
+                "inner_plan",
+                "TC005_EXECUTABLE_PREIMAGE_PLAN_MISMATCH",
+            ),
+            (
+                "physical_authority",
+                "TC005_EXECUTABLE_PREIMAGE_AUTHORITY_MISMATCH",
+            ),
+            (
+                "native_runtime_nonce",
+                "TC005_SPHERE_RUNTIME_AUTHORITY_NONCE_MISMATCH",
+            ),
+            (
+                "traversal_runtime_nonce",
+                "TC005_SPHERE_RUNTIME_AUTHORITY_NONCE_MISMATCH",
+            ),
+            (
+                "behavior_physical_schema",
+                "TC005_SPHERE_BEHAVIOR_PLAN_BINDING_MISMATCH",
+            ),
+            (
+                "protocol_physical_authority",
+                "TC005_SPHERE_PHYSICAL_AUTHORITY_BINDING_MISMATCH",
+            ),
+            (
+                "outer_callback",
+                "TC005_WRAPPER_PLAN_IDENTITY_MISMATCH",
+            ),
+            (
+                "outer_effect",
+                "TC005_LEAF_IDENTITY_MISMATCH",
+            ),
+            (
+                "target",
+                "TC005_SPHERE_RUNTIME_AUTHORITY_NONCE_MISMATCH",
+            ),
+            (
+                "physical_template",
+                "TC005_SPHERE_PHYSICAL_TEMPLATE_MISMATCH",
+            ),
+            (
+                "behavior_contract",
+                "TC005_SPHERE_BEHAVIOR_CONTRACT_MISMATCH",
+            ),
+        )
+        for mutation, reason in cases:
+            with self.subTest(mutation=mutation):
+                bundle, _declaration_sha, _identity_sha, _control_flow_sha = (
+                    _make_bundle(route_id)
+                )
+                declaration = bundle["declaration"]
+                physical = bundle["physical_evidence"]
+                generated = bundle["generated_target_artifacts"]
+                receipt = bundle["execution_receipt"]
+                assert isinstance(declaration, dict)
+                assert isinstance(physical, dict)
+                assert isinstance(generated, dict)
+                assert isinstance(receipt, dict)
+                plan = declaration["family_plan"]
+                identity = physical["executable_identity"]
+                executable = generated["executable_metadata"]
+                assert isinstance(plan, dict)
+                assert isinstance(identity, dict)
+                assert isinstance(executable, dict)
+                preimage = executable["identity_preimage"]
+                assert isinstance(preimage, dict)
+                if mutation == "inner_plan":
+                    preimage["plan_sha256"] = "0" * 64
+                elif mutation == "physical_authority":
+                    preimage["authority_sha256"] = "0" * 64
+                elif mutation == "native_runtime_nonce":
+                    native = physical["native_producer_descriptor"]
+                    assert isinstance(native, dict)
+                    runtime = native["runtime_physical_receipt"]
+                    assert isinstance(runtime, dict)
+                    runtime["authority_nonce"] = "0" * 64
+                elif mutation == "traversal_runtime_nonce":
+                    traversal = receipt["traversal_receipt"]
+                    assert isinstance(traversal, dict)
+                    runtime = traversal["physical_receipt"]
+                    assert isinstance(runtime, dict)
+                    runtime["authority_nonce"] = "0" * 64
+                elif mutation == "behavior_physical_schema":
+                    artifacts = bundle["program_artifacts"]
+                    assert isinstance(artifacts, list)
+                    row = next(
+                        item
+                        for item in artifacts
+                        if item["artifact_id"] == "rtdl.behavior.schema"
+                    )
+                    payload = row["payload"]
+                    assert isinstance(payload, dict)
+                    behavior = json.loads(
+                        base64.b64decode(payload["base64"]).decode("ascii")
+                    )
+                    behavior["physical_schema_sha256"] = "0" * 64
+                    row["payload"] = make_blob_record(_canonical(behavior))
+                elif mutation == "protocol_physical_authority":
+                    instance = plan["protocol_instance"]
+                    assert isinstance(instance, dict)
+                    authorities = instance["authorities"]
+                    assert isinstance(authorities, list)
+                    authorities[0]["authority_sha256"] = "0" * 64
+                elif mutation == "outer_callback":
+                    plan["callback_ir_sha256"] = "0" * 64
+                elif mutation == "outer_effect":
+                    plan["effect_digest"] = "0" * 64
+                elif mutation == "target":
+                    identity["target_sha256"] = "0" * 64
+                elif mutation == "physical_template":
+                    plan["canonical_template_id"] = "attacker.template"
+                else:
+                    artifacts = bundle["program_artifacts"]
+                    assert isinstance(artifacts, list)
+                    row = next(
+                        item
+                        for item in artifacts
+                        if item["artifact_id"] == "rtdl.behavior.schema"
+                    )
+                    payload = row["payload"]
+                    assert isinstance(payload, dict)
+                    behavior = json.loads(
+                        base64.b64decode(payload["base64"]).decode("ascii")
+                    )
+                    behavior["continuation"] = "terminate_on_first_hit"
+                    row["payload"] = make_blob_record(_canonical(behavior))
+                with self.assertRaises(
+                    checker.IndependentTargetCheckError
+                ) as caught:
+                    checker._generated_identity_facts(
+                        bundle,
+                        plan,
+                        target_sha256=identity["target_sha256"],
+                    )
+                self.assertEqual(caught.exception.reason_id, reason)
+
+    def test_sphere_self_consistent_inner_rewrite_cannot_replace_trusted_identity(
+        self,
+    ) -> None:
+        route_id = checker.SPHERE_ROUTE_ID
+        bundle, declaration_sha, identity_sha, control_flow_sha = _make_bundle(
+            route_id
+        )
+        declaration = bundle["declaration"]
+        generated = bundle["generated_target_artifacts"]
+        physical = bundle["physical_evidence"]
+        receipt = bundle["execution_receipt"]
+        assert isinstance(declaration, dict)
+        assert isinstance(generated, dict)
+        assert isinstance(physical, dict)
+        assert isinstance(receipt, dict)
+        plan = declaration["family_plan"]
+        executable = generated["executable_metadata"]
+        identity = physical["executable_identity"]
+        target = physical["target_binding"]
+        native_descriptor = physical["native_producer_descriptor"]
+        traversal = receipt["traversal_receipt"]
+        assert isinstance(plan, dict)
+        assert isinstance(executable, dict)
+        assert isinstance(identity, dict)
+        assert isinstance(target, dict)
+        assert isinstance(native_descriptor, dict)
+        assert isinstance(traversal, dict)
+        preimage = executable["identity_preimage"]
+        runtime_receipt = native_descriptor["runtime_physical_receipt"]
+        traversal_physical = traversal["physical_receipt"]
+        assert isinstance(preimage, dict)
+        assert isinstance(runtime_receipt, dict)
+        assert isinstance(traversal_physical, dict)
+
+        physical_schema_sha = next(
+            row["authority_sha256"]
+            for row in plan["protocol_instance"]["authorities"]
+            if row["authority_kind"] == "physical_schema"
+        )
+        attacker_target_sha = _sha("attacker:replacement-target")
+        attacker_nonce = _digest({
+            "kind": "builtin_sphere_any_hit_count_physical_authority_v1",
+            "callback": plan["callback_ir_sha256"],
+            "effect": plan["effect_digest"],
+            "schema": physical_schema_sha,
+            "target": attacker_target_sha,
+        })
+        preimage["authority_sha256"] = _digest({
+            "callback_ir_sha256": plan["callback_ir_sha256"],
+            "callback_effect_digest": plan["effect_digest"],
+            "schema_sha256": physical_schema_sha,
+            "target_sha256": attacker_target_sha,
+            "authority_nonce": attacker_nonce,
+        })
+        preimage["plan_sha256"] = _digest({
+            "schema_sha256": physical_schema_sha,
+            "callback_ir_sha256": plan["callback_ir_sha256"],
+            "effect_digest": plan["effect_digest"],
+            "target_sha256": attacker_target_sha,
+            "authority_nonce": attacker_nonce,
+            "template_id": checker.SPHERE_PHYSICAL_TEMPLATE,
+            "executable": False,
+        })
+        executable["executable_sha256"] = _digest(preimage)
+        identity["target_sha256"] = attacker_target_sha
+        identity["executable_sha256"] = executable["executable_sha256"]
+        _sealed(identity, "identity_sha256")
+        target["target_sha256"] = attacker_target_sha
+        receipt["target_sha256"] = attacker_target_sha
+        receipt["executable_identity_sha256"] = identity["identity_sha256"]
+        runtime_receipt["authority_nonce"] = attacker_nonce
+        traversal_physical["authority_nonce"] = attacker_nonce
+        _reseal_bundle(bundle)
+
+        report = checker.check_target_evidence(
+            bundle,
+            trusted_declaration_sha256=declaration_sha,
+            trusted_executable_identity_sha256=identity_sha,
+            trusted_control_flow_manifest_sha256=control_flow_sha,
+        )
+        cp005 = next(
+            row
+            for row in report["property_checks"]
+            if row["property_id"] == "CP005_EXECUTABLE_IDENTITY_CHAIN"
+        )
+        self.assertEqual(cp005["verdict"], "REJECT")
+        self.assertEqual(
+            cp005["reason_id"], "TC005_EXECUTABLE_IDENTITY_TRUST_MISMATCH"
+        )
 
     def test_real_route_plans_and_sources_satisfy_control_flow_extractors(self) -> None:
         bounded_protocol = BoundedRelationProtocol(16, 0.25)
