@@ -1,0 +1,16 @@
+{
+  "artifact_file_sha256": "560b88e53aa5bebaca0d6e1cf98ae19bfee9b9f0bda0187bdfa2b80344431593",
+  "artifact_result_sha256": "89542280e402a663fbda184a2f8efd6e65447f67a922dbfa1c2f07c30f309dd0",
+  "external_review_or_consensus_claimed": false,
+  "frozen_core_changed_file_count": 0,
+  "native_library_bytes_reverified": true,
+  "oracle_exact_match_count": 12,
+  "performance_claim_authorized": false,
+  "repository_commit": "7da68056550818d8e2f6cdb4d7aa3e9029cc4524",
+  "schema": "rtdl.goal5838.selected_sphere_gpu_exam_verification.v1",
+  "selected_candidate_id": "builtin_sphere::any_hit_count_continue_u64_per_query",
+  "source_file_count": 34,
+  "status": "PASS__INDEPENDENT_ARTIFACT_REDERIVATION",
+  "true_optix_launch_count": 2,
+  "verification_sha256": "fb9d4ee3c779185eacb9f7db08038d824e1388d35a11bc3efb45899476f15b00"
+}

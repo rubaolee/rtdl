@@ -1,0 +1,1077 @@
+{
+  "claim_boundary": {
+    "arbitrary_callback_ir_gpu_execution": false,
+    "external_review_or_consensus": false,
+    "one_bounded_prospective_result": true,
+    "performance_or_speedup": false,
+    "universal_provider_portability": false
+  },
+  "executions": [
+    {
+      "label": "primary",
+      "observed_counts": [
+        4,
+        1,
+        1,
+        0,
+        4,
+        0
+      ],
+      "oracle_exact_match": true,
+      "output_sha256": "504d506f7611f87e30b9660abe35e28e98d023bf0efa1860ac1a5a1a1c808a7e",
+      "traversal_receipt": {
+        "claim_rules": {
+          "nonzero_traversable_binding_required": true,
+          "output_digest_bound": true,
+          "program_bundle_binding_required": true,
+          "provider_name_alone_proves_traversal": false,
+          "selected_template_alone_proves_traversal": false,
+          "successful_optix_launch_required": true
+        },
+        "expected_program_bundle_ids": [
+          9501763502165707682
+        ],
+        "expected_program_bundles": [
+          "v4_builtin_sphere_callback_ir_four_role_composed"
+        ],
+        "expected_program_observed_at_receipt_edge": true,
+        "native_snapshot": {
+          "attempted_launch_count": 1,
+          "callsite_mix": 5302529683443915917,
+          "complete_context_launch_count": 1,
+          "context_bind_count": 1,
+          "failed_launch_count": 0,
+          "first_program_bundle_id": 9501763502165707682,
+          "first_traversable": 138200098017996,
+          "incomplete_callsite_lines": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "incomplete_callsite_record_count": 0,
+          "incomplete_context_launch_count": 0,
+          "last_program_bundle_id": 9501763502165707682,
+          "last_traversable": 138200098017996,
+          "nonce_hi": 17228132946833441173,
+          "nonce_lo": 7870688049730825957,
+          "params_mix": 13880054268168169962,
+          "pending_context_at_finish": 0,
+          "pipeline_mix": 9807465214222650378,
+          "program_bundle_mix": 13935565233693635669,
+          "raygen_invocation_count": 6,
+          "sbt_mix": 10691370716607904260,
+          "session_error": 0,
+          "stream_mix": 9248179162272254404,
+          "successful_launch_count": 1,
+          "traversable_mix": 3361954491201434983
+        },
+        "nonce": {
+          "hi": 17228132946833441173,
+          "lo": 7870688049730825957
+        },
+        "output_digest": "504d506f7611f87e30b9660abe35e28e98d023bf0efa1860ac1a5a1a1c808a7e",
+        "physical_executor_classification": "optix_traversal_observed",
+        "physical_receipt": {
+          "authority_nonce": "9c34219418dba95c39ee74c7813e2837d429e95dda90cc2c52fe0d350b626bc6",
+          "build_input_type_name": "OPTIX_BUILD_INPUT_TYPE_SPHERES",
+          "builtin_is_api_name": "optixBuiltinISModuleGet",
+          "composed_ptx_sha256": "0f927f783b8f995d93c3d68e7063edbd052aadb41d4222365f758b896c94dae9",
+          "continuation_name": "optixIgnoreIntersection",
+          "discriminant_guard_binary32_unit_roundoffs": 4096,
+          "field_mapping_commitment_sha256": "f918b3f74e8bcb044c9c1513d740faec10ef058251453aa6849537f6ede96921",
+          "geometry_flags_name": "OPTIX_GEOMETRY_FLAG_REQUIRE_SINGLE_ANYHIT_CALL",
+          "loaded_native_library_path": "/workspace/goal5838-final-7da6805-optix90/librtdl_optix_goal5838.so",
+          "metadata_channels": [],
+          "native_descriptor": {
+            "application_id_device_pointer": 138200098014720,
+            "build_flags": 4,
+            "build_input_type": 8518,
+            "builtin_is_build_flags": 4,
+            "builtin_is_module": true,
+            "center_device_pointer": 138200098013184,
+            "center_stride_bytes": 12,
+            "compiled_optix_major": 9,
+            "compiled_optix_minor": 0,
+            "compiled_optix_patch": 0,
+            "compiled_optix_version": 90000,
+            "cuda_compute_capability_major": 8,
+            "cuda_compute_capability_minor": 9,
+            "cuda_device_ordinal": 0,
+            "cuda_driver_version": 13000,
+            "device_static_input_fingerprint": "66f985e50aee67aa89bd7ada954a1c7e810b7b36518dbeb0603a579f4d0e66b9",
+            "gas_count": 1,
+            "geometry_flags": 2,
+            "last_application_output_d2h_call_count": 6,
+            "last_counter_fingerprint": "de221d177a58fe9561257e16d3095e732fe43384cbd8fd931b87bee1aa964164",
+            "last_device_query_fingerprint": "9cccb84fe13acf14a7207741324b612731714dd54359929293313bd9b2bea9c2",
+            "last_execution_present": true,
+            "last_output_after_status_failure_count": 0,
+            "last_output_device_pointer_fingerprint": "f61012004756abf6ad944dc2e73711885dc34a9a159562661bb56bd9729c2bb3",
+            "last_output_device_pointer_nonzero_count": 8,
+            "last_output_fingerprint": "7202e52c1ad750bafcff6f74c162cf84717de278a0c82934c6c3aa469bf76cbd",
+            "last_query_count": 6,
+            "last_query_device_pointer_fingerprint": "5d2a2476308afc1e3892521ca4da62ade2eedc3e786dd312012e913c625b946e",
+            "last_query_device_pointer_nonzero_count": 6,
+            "last_query_fingerprint": "9cccb84fe13acf14a7207741324b612731714dd54359929293313bd9b2bea9c2",
+            "last_status_d2h_call_count": 1,
+            "last_status_failed": false,
+            "last_status_fingerprint": "121e786cbe5c0ea2b0f1d4abd120a8648151a73cf6466cda9cb68170cdbeb9c3",
+            "max_attribute_values": 0,
+            "max_payload_values": 8,
+            "max_trace_depth": 1,
+            "motion_key_count": 0,
+            "primitive_count": 6,
+            "primitive_index_offset": 0,
+            "primitive_type": 9478,
+            "primitive_type_flags": 64,
+            "program_group_count": 3,
+            "radius_device_pointer": 138200098013696,
+            "radius_stride_bytes": 4,
+            "sbt_record_count": 1,
+            "schema": "rtdl.v4.native_builtin_sphere_descriptor.v2",
+            "single_radius": false,
+            "static_input_fingerprint": "66f985e50aee67aa89bd7ada954a1c7e810b7b36518dbeb0603a579f4d0e66b9",
+            "traversable_graph_flags": 1,
+            "traversable_identity": 138200098017996,
+            "user_intersection_program": false,
+            "uses_motion_blur": false
+          },
+          "native_library_sha256": "c91a22edbd7855824c6ad111a11c77aa599bdbb767b54b0d2e3f4355a1932076",
+          "nonexact_toi_ulp_bound": 4,
+          "numeric_policy": "binary32_projection__disc_ratio_ge_2^-12__exact_tangent_prelaunch_reject__front_entry_endpoint_margin_2^-12__nonexact_toi_ulp_le_4_v3",
+          "output_commitment_sha256": "504d506f7611f87e30b9660abe35e28e98d023bf0efa1860ac1a5a1a1c808a7e",
+          "primitive_type_name": "OPTIX_PRIMITIVE_TYPE_SPHERE",
+          "provider_private_primitive_ids": true,
+          "query_commitment_sha256": "b1019bae740e9757947e26c36bbaed67171ddf53b8aa9affec3312657b964b60",
+          "raw_output_commitment_sha256": "85f9e013d5418962388558d25af213ecea83b1907cfc4a601a20f3e6f2301152",
+          "result_semantics": "per_query_u64_intersected_primitive_count",
+          "role_counters": [
+            0,
+            6,
+            0,
+            10,
+            0,
+            6,
+            6
+          ],
+          "schema": "rtdl.v4.sphere_any_hit_count_physical_receipt.v1",
+          "static_input_commitment_sha256": "7b327720385b1983e88a96427a3aa8d211958bc3156896bb1039116024e461be",
+          "status_before_output": true
+        },
+        "provider_library": "librtdl_optix",
+        "provider_library_path": "/workspace/goal5838-final-7da6805-optix90/librtdl_optix_goal5838.so",
+        "provider_library_sha256": "c91a22edbd7855824c6ad111a11c77aa599bdbb767b54b0d2e3f4355a1932076",
+        "receipt_sha256": "f7b7abbd10f04551e5bcedcd9654dfe6400f2503c87fd64130d88b424f2828ae",
+        "role_counters": [
+          0,
+          6,
+          0,
+          10,
+          0,
+          6,
+          6
+        ],
+        "route_identity": "v4_builtin_sphere_any_hit_count:four_role_composed_v1",
+        "schema": "rtdl.physical_execution.traversal_receipt.v1",
+        "selected_topology": "builtin_sphere::any_hit_count_continue_u64_per_query",
+        "semantic_digest": "7ea16b129d45185eaab6b6c0e88d8a5e46f641bf30fb68efaa23bc9e7c4a4b51"
+      }
+    },
+    {
+      "label": "reverse_query_order",
+      "observed_counts": [
+        0,
+        4,
+        0,
+        1,
+        1,
+        4
+      ],
+      "oracle_exact_match": true,
+      "output_sha256": "3727bb548e28e0287743440df38d8dcff09a83c7f166b738b7f2a6bd4f1676c6",
+      "traversal_receipt": {
+        "claim_rules": {
+          "nonzero_traversable_binding_required": true,
+          "output_digest_bound": true,
+          "program_bundle_binding_required": true,
+          "provider_name_alone_proves_traversal": false,
+          "selected_template_alone_proves_traversal": false,
+          "successful_optix_launch_required": true
+        },
+        "expected_program_bundle_ids": [
+          9501763502165707682
+        ],
+        "expected_program_bundles": [
+          "v4_builtin_sphere_callback_ir_four_role_composed"
+        ],
+        "expected_program_observed_at_receipt_edge": true,
+        "native_snapshot": {
+          "attempted_launch_count": 1,
+          "callsite_mix": 5302529683443915917,
+          "complete_context_launch_count": 1,
+          "context_bind_count": 1,
+          "failed_launch_count": 0,
+          "first_program_bundle_id": 9501763502165707682,
+          "first_traversable": 138200098017996,
+          "incomplete_callsite_lines": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "incomplete_callsite_record_count": 0,
+          "incomplete_context_launch_count": 0,
+          "last_program_bundle_id": 9501763502165707682,
+          "last_traversable": 138200098017996,
+          "nonce_hi": 15557813792677184803,
+          "nonce_lo": 7767166145191513616,
+          "params_mix": 13880054268168169962,
+          "pending_context_at_finish": 0,
+          "pipeline_mix": 9807465214222650378,
+          "program_bundle_mix": 13935565233693635669,
+          "raygen_invocation_count": 6,
+          "sbt_mix": 10691370716607904260,
+          "session_error": 0,
+          "stream_mix": 9248179162272254404,
+          "successful_launch_count": 1,
+          "traversable_mix": 3361954491201434983
+        },
+        "nonce": {
+          "hi": 15557813792677184803,
+          "lo": 7767166145191513616
+        },
+        "output_digest": "3727bb548e28e0287743440df38d8dcff09a83c7f166b738b7f2a6bd4f1676c6",
+        "physical_executor_classification": "optix_traversal_observed",
+        "physical_receipt": {
+          "authority_nonce": "9c34219418dba95c39ee74c7813e2837d429e95dda90cc2c52fe0d350b626bc6",
+          "build_input_type_name": "OPTIX_BUILD_INPUT_TYPE_SPHERES",
+          "builtin_is_api_name": "optixBuiltinISModuleGet",
+          "composed_ptx_sha256": "0f927f783b8f995d93c3d68e7063edbd052aadb41d4222365f758b896c94dae9",
+          "continuation_name": "optixIgnoreIntersection",
+          "discriminant_guard_binary32_unit_roundoffs": 4096,
+          "field_mapping_commitment_sha256": "f918b3f74e8bcb044c9c1513d740faec10ef058251453aa6849537f6ede96921",
+          "geometry_flags_name": "OPTIX_GEOMETRY_FLAG_REQUIRE_SINGLE_ANYHIT_CALL",
+          "loaded_native_library_path": "/workspace/goal5838-final-7da6805-optix90/librtdl_optix_goal5838.so",
+          "metadata_channels": [],
+          "native_descriptor": {
+            "application_id_device_pointer": 138200098014720,
+            "build_flags": 4,
+            "build_input_type": 8518,
+            "builtin_is_build_flags": 4,
+            "builtin_is_module": true,
+            "center_device_pointer": 138200098013184,
+            "center_stride_bytes": 12,
+            "compiled_optix_major": 9,
+            "compiled_optix_minor": 0,
+            "compiled_optix_patch": 0,
+            "compiled_optix_version": 90000,
+            "cuda_compute_capability_major": 8,
+            "cuda_compute_capability_minor": 9,
+            "cuda_device_ordinal": 0,
+            "cuda_driver_version": 13000,
+            "device_static_input_fingerprint": "66f985e50aee67aa89bd7ada954a1c7e810b7b36518dbeb0603a579f4d0e66b9",
+            "gas_count": 1,
+            "geometry_flags": 2,
+            "last_application_output_d2h_call_count": 6,
+            "last_counter_fingerprint": "de221d177a58fe9561257e16d3095e732fe43384cbd8fd931b87bee1aa964164",
+            "last_device_query_fingerprint": "9e40208456752bf4c141b2e2cee8f93709cdc3c1e0defdd23eba675bcd072d82",
+            "last_execution_present": true,
+            "last_output_after_status_failure_count": 0,
+            "last_output_device_pointer_fingerprint": "f61012004756abf6ad944dc2e73711885dc34a9a159562661bb56bd9729c2bb3",
+            "last_output_device_pointer_nonzero_count": 8,
+            "last_output_fingerprint": "1532be98ad0430ba8425811b1843fa84fec8e746bce722b464c32fdca50f653d",
+            "last_query_count": 6,
+            "last_query_device_pointer_fingerprint": "5d2a2476308afc1e3892521ca4da62ade2eedc3e786dd312012e913c625b946e",
+            "last_query_device_pointer_nonzero_count": 6,
+            "last_query_fingerprint": "9e40208456752bf4c141b2e2cee8f93709cdc3c1e0defdd23eba675bcd072d82",
+            "last_status_d2h_call_count": 1,
+            "last_status_failed": false,
+            "last_status_fingerprint": "986b121e56adcea2eae8adc64614b744fbf94fd1b2f2ecda51f80b5e860f0e43",
+            "max_attribute_values": 0,
+            "max_payload_values": 8,
+            "max_trace_depth": 1,
+            "motion_key_count": 0,
+            "primitive_count": 6,
+            "primitive_index_offset": 0,
+            "primitive_type": 9478,
+            "primitive_type_flags": 64,
+            "program_group_count": 3,
+            "radius_device_pointer": 138200098013696,
+            "radius_stride_bytes": 4,
+            "sbt_record_count": 1,
+            "schema": "rtdl.v4.native_builtin_sphere_descriptor.v2",
+            "single_radius": false,
+            "static_input_fingerprint": "66f985e50aee67aa89bd7ada954a1c7e810b7b36518dbeb0603a579f4d0e66b9",
+            "traversable_graph_flags": 1,
+            "traversable_identity": 138200098017996,
+            "user_intersection_program": false,
+            "uses_motion_blur": false
+          },
+          "native_library_sha256": "c91a22edbd7855824c6ad111a11c77aa599bdbb767b54b0d2e3f4355a1932076",
+          "nonexact_toi_ulp_bound": 4,
+          "numeric_policy": "binary32_projection__disc_ratio_ge_2^-12__exact_tangent_prelaunch_reject__front_entry_endpoint_margin_2^-12__nonexact_toi_ulp_le_4_v3",
+          "output_commitment_sha256": "3727bb548e28e0287743440df38d8dcff09a83c7f166b738b7f2a6bd4f1676c6",
+          "primitive_type_name": "OPTIX_PRIMITIVE_TYPE_SPHERE",
+          "provider_private_primitive_ids": true,
+          "query_commitment_sha256": "eae117c1a3078d0f6354446b934b3f4f4b6eddbcec31db559ddd6d1e8d77ef5e",
+          "raw_output_commitment_sha256": "88ab97ca09122d25464fe916c0b126c2cf2ee93da86332c4294567c3d73384c0",
+          "result_semantics": "per_query_u64_intersected_primitive_count",
+          "role_counters": [
+            0,
+            6,
+            0,
+            10,
+            0,
+            6,
+            6
+          ],
+          "schema": "rtdl.v4.sphere_any_hit_count_physical_receipt.v1",
+          "static_input_commitment_sha256": "7b327720385b1983e88a96427a3aa8d211958bc3156896bb1039116024e461be",
+          "status_before_output": true
+        },
+        "provider_library": "librtdl_optix",
+        "provider_library_path": "/workspace/goal5838-final-7da6805-optix90/librtdl_optix_goal5838.so",
+        "provider_library_sha256": "c91a22edbd7855824c6ad111a11c77aa599bdbb767b54b0d2e3f4355a1932076",
+        "receipt_sha256": "b7fc8ae82599082c1500992ca2ab779c710efbf1595c6fe9d3bf4c2efa114862",
+        "role_counters": [
+          0,
+          6,
+          0,
+          10,
+          0,
+          6,
+          6
+        ],
+        "route_identity": "v4_builtin_sphere_any_hit_count:four_role_composed_v1",
+        "schema": "rtdl.physical_execution.traversal_receipt.v1",
+        "selected_topology": "builtin_sphere::any_hit_count_continue_u64_per_query",
+        "semantic_digest": "b4c626f17b2a1bb374d0331242d6d13ecc82911967a32da8716f277cf7a80b19"
+      }
+    }
+  ],
+  "fixture": {
+    "case_names": [
+      "four_hits_with_overlapping_centers",
+      "one_offset_hit",
+      "one_negative_offset_hit",
+      "all_miss",
+      "reverse_direction_four_hits",
+      "parallel_plane_miss"
+    ],
+    "expected_counts": [
+      4,
+      1,
+      1,
+      0,
+      4,
+      0
+    ],
+    "fixture_sha256": "69e38e95e8d3a2e14cb428f18e4d8bb27a87da1c21688b6ddad672406a94977a",
+    "oracle_sha256": "b43839793ea426528053adc4ff1cd66d090ac6f2b05b6b774fa7c290bb91fa63",
+    "primitive_count": 6,
+    "query_count": 6
+  },
+  "frozen_core": {
+    "changed_file_count": 0,
+    "files": [
+      {
+        "bytes": 58007,
+        "path": "src/rtdsl/v4_family_schema.py",
+        "sha256": "2d118697d10cb2bc2a8672700ae5a991eaf94e66834bb3e08fd898323720f224"
+      },
+      {
+        "bytes": 41675,
+        "path": "src/rtdsl/v4_generic_family_lifecycle.py",
+        "sha256": "7ac68832de9d1e04fdd6f0f11bfa0de7d6109d892ab22e42c9aeb2825d28228c"
+      },
+      {
+        "bytes": 2792,
+        "path": "src/rtdsl/v4_family.py",
+        "sha256": "d25c487823e966a8e9083092811c9a1a2b6aa0fef6ce8f3a0a5b8919c5b809e8"
+      }
+    ],
+    "generic_core_seal_sha256": "c2a461c8a4a61650044b724d103a80d25241b44b7b486c071b601946292e5dae"
+  },
+  "generic_family": {
+    "classification": "prospective_selected_extension",
+    "executable_identity": {
+      "executable_sha256": "df9720b349595cb90cd449cc289a2d09c4cb16ddfc0441c40ed6a8bdb2e273eb",
+      "generated_artifact_sha256": "0f927f783b8f995d93c3d68e7063edbd052aadb41d4222365f758b896c94dae9",
+      "identity_sha256": "4563d16b96f41b4fbf2cd740331b07902fd82e2e76b24bf12b91d66386e130d2",
+      "plan_sha256": "5a8f15a3941f10560ffecc6021cd4689c068f5ed39903014b1d5e99e98b3d669",
+      "provider_artifact_sha256": "c91a22edbd7855824c6ad111a11c77aa599bdbb767b54b0d2e3f4355a1932076",
+      "provider_descriptor_sha256": "a92be4d2defc87fd7dcf2e1edd143cf6afb63035a7048a7560d486b4bdf7463a",
+      "provider_projection_sha256": "fe26dc5417f644c7c649dfbe9827404ed9c914d82334d16e878872cc11f68ec1",
+      "schema": "rtdl.family_executable_identity.v1",
+      "target_sha256": "b8a5bf75bf5c56f283a13d0af8be639f8179457b2ed56483caceb62eacf2d399"
+    },
+    "plan_sha256": "5a8f15a3941f10560ffecc6021cd4689c068f5ed39903014b1d5e99e98b3d669",
+    "provider_descriptor_sha256": "a92be4d2defc87fd7dcf2e1edd143cf6afb63035a7048a7560d486b4bdf7463a",
+    "provider_projection_sha256": "fe26dc5417f644c7c649dfbe9827404ed9c914d82334d16e878872cc11f68ec1"
+  },
+  "lifecycle": {
+    "after_primary": {
+      "executable_identity_sha256": "4563d16b96f41b4fbf2cd740331b07902fd82e2e76b24bf12b91d66386e130d2",
+      "idempotent_close": true,
+      "nonreentrant": true,
+      "nonserializable": true,
+      "plan_sha256": "5a8f15a3941f10560ffecc6021cd4689c068f5ed39903014b1d5e99e98b3d669",
+      "process_bound": true,
+      "provider_projection_sha256": "fe26dc5417f644c7c649dfbe9827404ed9c914d82334d16e878872cc11f68ec1",
+      "provider_receipt": {
+        "composed_ptx_sha256": "0f927f783b8f995d93c3d68e7063edbd052aadb41d4222365f758b896c94dae9",
+        "execution_count": 1,
+        "native_library_sha256": "c91a22edbd7855824c6ad111a11c77aa599bdbb767b54b0d2e3f4355a1932076",
+        "nonreentrant": true,
+        "nonserializable": true,
+        "physical_receipt_sha256": "f32fc512f0bd599e7175f22c1ecb4a0beb4c928177bc43ccebcf8e2224c817d3",
+        "process_bound": true,
+        "schema": "rtdl.v4.prepared_sphere_any_hit_count_owner.v1",
+        "thread_bound": true
+      },
+      "schema": "rtdl.generic_family_lifecycle.v1",
+      "thread_bound": true
+    },
+    "after_reverse": {
+      "executable_identity_sha256": "4563d16b96f41b4fbf2cd740331b07902fd82e2e76b24bf12b91d66386e130d2",
+      "idempotent_close": true,
+      "nonreentrant": true,
+      "nonserializable": true,
+      "plan_sha256": "5a8f15a3941f10560ffecc6021cd4689c068f5ed39903014b1d5e99e98b3d669",
+      "process_bound": true,
+      "provider_projection_sha256": "fe26dc5417f644c7c649dfbe9827404ed9c914d82334d16e878872cc11f68ec1",
+      "provider_receipt": {
+        "composed_ptx_sha256": "0f927f783b8f995d93c3d68e7063edbd052aadb41d4222365f758b896c94dae9",
+        "execution_count": 2,
+        "native_library_sha256": "c91a22edbd7855824c6ad111a11c77aa599bdbb767b54b0d2e3f4355a1932076",
+        "nonreentrant": true,
+        "nonserializable": true,
+        "physical_receipt_sha256": "f32fc512f0bd599e7175f22c1ecb4a0beb4c928177bc43ccebcf8e2224c817d3",
+        "process_bound": true,
+        "schema": "rtdl.v4.prepared_sphere_any_hit_count_owner.v1",
+        "thread_bound": true
+      },
+      "schema": "rtdl.generic_family_lifecycle.v1",
+      "thread_bound": true
+    },
+    "before": {
+      "executable_identity_sha256": "4563d16b96f41b4fbf2cd740331b07902fd82e2e76b24bf12b91d66386e130d2",
+      "idempotent_close": true,
+      "nonreentrant": true,
+      "nonserializable": true,
+      "plan_sha256": "5a8f15a3941f10560ffecc6021cd4689c068f5ed39903014b1d5e99e98b3d669",
+      "process_bound": true,
+      "provider_projection_sha256": "fe26dc5417f644c7c649dfbe9827404ed9c914d82334d16e878872cc11f68ec1",
+      "provider_receipt": {
+        "composed_ptx_sha256": "0f927f783b8f995d93c3d68e7063edbd052aadb41d4222365f758b896c94dae9",
+        "execution_count": 0,
+        "native_library_sha256": "c91a22edbd7855824c6ad111a11c77aa599bdbb767b54b0d2e3f4355a1932076",
+        "nonreentrant": true,
+        "nonserializable": true,
+        "physical_receipt_sha256": "f32fc512f0bd599e7175f22c1ecb4a0beb4c928177bc43ccebcf8e2224c817d3",
+        "process_bound": true,
+        "schema": "rtdl.v4.prepared_sphere_any_hit_count_owner.v1",
+        "thread_bound": true
+      },
+      "schema": "rtdl.generic_family_lifecycle.v1",
+      "thread_bound": true
+    },
+    "closed_idempotently": true,
+    "execution_count": 2
+  },
+  "native_build": {
+    "all_required_symbols_exported": true,
+    "build_input": {
+      "builder_path": "scripts/goal5838_build_selected_sphere_optix_provider.py",
+      "builder_sha256": "d89547bbb2708b9efda1fe06f83d57c4cee46acd5d0795b10aa5f739897f7628",
+      "compute_capability": "8.9",
+      "cuda_include": "/usr/local/cuda-12.8/targets/x86_64-linux/include",
+      "cuda_prefix": "/usr/local/cuda-12.8",
+      "cuda_system_include": "/usr/include/x86_64-linux-gnu",
+      "cuda_visible_devices": "0",
+      "expected_optix_sdk": "9.0.0",
+      "geos_cflags": [],
+      "geos_libraries": [],
+      "geos_mode": "disabled-header-absent",
+      "gpu": {
+        "compute_capability": "8.9",
+        "driver_version": "580.159.04",
+        "name": "NVIDIA RTX 2000 Ada Generation",
+        "uuid": "GPU-f0ab2afa-0ec0-7da9-c951-01fc713ee1e9"
+      },
+      "host_compiler_path": "/usr/bin/x86_64-linux-gnu-g++-13",
+      "host_compiler_sha256": "52f1ddb33fe78b9441e0f42e9cd22c571f1101938e046c8a26582494e041cc73",
+      "host_compiler_version": "x86_64-linux-gnu-g++-13 (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0\nCopyright (C) 2023 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
+      "key_headers": [
+        {
+          "bytes": 1115,
+          "name": "optix.h",
+          "path": "/workspace/goal5838-optix-dev/include/optix.h",
+          "sha256": "85a13f5966e98e23b00cb6be0fa25ad6580bbbea94bc9fce9d0bf00d16827b8f"
+        },
+        {
+          "bytes": 125776,
+          "name": "optix_device.h",
+          "path": "/workspace/goal5838-optix-dev/include/optix_device.h",
+          "sha256": "3a5c1f784b64161479546462f35f953ab0f9e14058356c45ab1422313e79676f"
+        },
+        {
+          "bytes": 2328,
+          "name": "optix_function_table_definition.h",
+          "path": "/workspace/goal5838-optix-dev/include/optix_function_table_definition.h",
+          "sha256": "a9b118be4c7ca3ee13824baecdfb8d85f60aa179c8f957342d2d2fba624a5c66"
+        },
+        {
+          "bytes": 18176,
+          "name": "optix_stack_size.h",
+          "path": "/workspace/goal5838-optix-dev/include/optix_stack_size.h",
+          "sha256": "d1e10de40b2a12fd2765d305439946ad7e8a976cb65466eb3d4b2a516b6b492a"
+        },
+        {
+          "bytes": 41120,
+          "name": "optix_stubs.h",
+          "path": "/workspace/goal5838-optix-dev/include/optix_stubs.h",
+          "sha256": "6fdc4c2e60334665ee01e5eae3a90099f5442bd0236f3030f6c03f7c4010a413"
+        },
+        {
+          "bytes": 1156988,
+          "name": "cuda.h",
+          "path": "/usr/local/cuda-12.8/targets/x86_64-linux/include/cuda.h",
+          "sha256": "4568cc9e7a321e47707cd6403980f21ac2e2e55170500d0e0a3f54feb03a9acb"
+        },
+        {
+          "bytes": 98570,
+          "name": "cuda_runtime.h",
+          "path": "/usr/local/cuda-12.8/targets/x86_64-linux/include/cuda_runtime.h",
+          "sha256": "1aaa84ed2ac4086acdf908390e4f742d28ecfb1bca94766944b9691fb2d47a13"
+        },
+        {
+          "bytes": 44261,
+          "name": "nvrtc.h",
+          "path": "/usr/local/cuda-12.8/targets/x86_64-linux/include/nvrtc.h",
+          "sha256": "07389d2cf314fe749050767641a868f9514ee41c759048288c531e24f778504e"
+        }
+      ],
+      "language_standard": "c++17",
+      "library_dirs": [
+        "/usr/local/cuda-12.8/lib64",
+        "/usr/local/cuda-12.8/targets/x86_64-linux/lib",
+        "/usr/lib/x86_64-linux-gnu"
+      ],
+      "nvcc_path": "/usr/local/cuda-12.8/bin/nvcc",
+      "nvcc_sha256": "59e4e55f9a38b78c590df1e28a69dad91052958f18a03868ca4a547c043fbba7",
+      "nvcc_version": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Fri_Feb_21_20:23:50_PST_2025\nCuda compilation tools, release 12.8, V12.8.93\nBuild cuda_12.8.r12.8/compiler.35583870_0",
+      "nvrtc_library_bytes": 104480432,
+      "nvrtc_library_path": "/usr/local/cuda-12.8/targets/x86_64-linux/lib/libnvrtc.so.12.8.93",
+      "nvrtc_library_sha256": "2bb82d1a34b9fefa46aca357299aed66763d4d6613d015d5a591224c00fa7e5a",
+      "optimization": "O3",
+      "optix_include": "/workspace/goal5838-optix-dev/include",
+      "optix_prefix": "/workspace/goal5838-optix-dev",
+      "optix_runtime_abi_probe": {
+        "compile_command_template": [
+          "/usr/bin/x86_64-linux-gnu-g++-13",
+          "-std=c++17",
+          "-I/workspace/goal5838-optix-dev/include",
+          "-I/usr/local/cuda-12.8/targets/x86_64-linux/include",
+          "<temporary>/probe.cpp",
+          "-ldl",
+          "-o",
+          "<temporary>/probe"
+        ],
+        "compile_returncode": 0,
+        "compiler_output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "executable_bytes": 16296,
+        "executable_sha256": "c4f6d57bccac6a106f9c79f0290f9f3274884b3e9e588f7cbe755ac0dc4b8a9a",
+        "optix_launch_count": 0,
+        "passed": true,
+        "runtime_output": "optixInit_result=0",
+        "runtime_returncode": 0,
+        "source_sha256": "ccc24914e3a88ddd711b2fa9dfc40b125ed3649dca24429571a444c9c9f8a876"
+      },
+      "optix_version": 90000,
+      "position_independent_code": true,
+      "schema": "rtdl.goal5838.selected_sphere_optix_build_input.v2",
+      "translation_units": [
+        "src/native/rtdl_optix.cpp",
+        "src/native/optix/rtdl_optix_cuda_helpers.cu"
+      ]
+    },
+    "build_input_sha256": "fb2cb9bdf9256dcb00716f3d1e986cd847b6c54ad216b381309c6c59bfeac95f",
+    "build_log": {
+      "bytes": 0,
+      "path": "/workspace/goal5838-final-7da6805-optix90/goal5838_native_build.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "dynamic_dependencies": "linux-vdso.so.1 (0x00007ffe4b9f0000)\n\tlibnvrtc.so.12 => /usr/local/cuda-12.8/targets/x86_64-linux/lib/libnvrtc.so.12 (0x00007952580bc000)\n\tlibcuda.so.1 => /usr/lib/x86_64-linux-gnu/libcuda.so.1 (0x0000795252400000)\n\tlibstdc++.so.6 => /usr/lib/x86_64-linux-gnu/libstdc++.so.6 (0x0000795252182000)\n\tlibm.so.6 => /usr/lib/x86_64-linux-gnu/libm.so.6 (0x000079525ee45000)\n\tlibgcc_s.so.1 => /usr/lib/x86_64-linux-gnu/libgcc_s.so.1 (0x000079525808e000)\n\tlibc.so.6 => /usr/lib/x86_64-linux-gnu/libc.so.6 (0x0000795251f70000)\n\t/lib64/ld-linux-x86-64.so.2 (0x000079525ef30000)\n\tlibpthread.so.0 => /usr/lib/x86_64-linux-gnu/libpthread.so.0 (0x000079525ee3e000)\n\tlibrt.so.1 => /usr/lib/x86_64-linux-gnu/librt.so.1 (0x000079525ee39000)\n\tlibdl.so.2 => /usr/lib/x86_64-linux-gnu/libdl.so.2 (0x000079525ee34000)",
+    "dynamic_nvrtc": {
+      "bytes": 104480432,
+      "path": "/usr/local/cuda-12.8/targets/x86_64-linux/lib/libnvrtc.so.12.8.93",
+      "sha256": "2bb82d1a34b9fefa46aca357299aed66763d4d6613d015d5a591224c00fa7e5a"
+    },
+    "executed_command": [
+      "/usr/local/cuda-12.8/bin/nvcc",
+      "-ccbin",
+      "/usr/bin/x86_64-linux-gnu-g++-13",
+      "-std=c++17",
+      "-O3",
+      "-shared",
+      "-I/workspace/goal5838-optix-dev/include",
+      "-I/usr/local/cuda-12.8/targets/x86_64-linux/include",
+      "-DRTDL_OPTIX_INCLUDE_DIR=\"/workspace/goal5838-optix-dev/include\"",
+      "-DRTDL_CUDA_INCLUDE_DIR=\"/usr/local/cuda-12.8/targets/x86_64-linux/include\"",
+      "-DRTDL_CUDA_SYSTEM_INCLUDE_DIR=\"/usr/include/x86_64-linux-gnu\"",
+      "-DRTDL_OPTIX_BUILD_ID=\"fb2cb9bdf9256dcb00716f3d1e986cd847b6c54ad216b381309c6c59bfeac95f\"",
+      "-arch=sm_89",
+      "-Xcompiler",
+      "-fPIC",
+      "/workspace/rtdl-goal5838-9e0cb79/src/native/rtdl_optix.cpp",
+      "/workspace/rtdl-goal5838-9e0cb79/src/native/optix/rtdl_optix_cuda_helpers.cu",
+      "-L/usr/local/cuda-12.8/lib64",
+      "-L/usr/local/cuda-12.8/targets/x86_64-linux/lib",
+      "-L/usr/lib/x86_64-linux-gnu",
+      "-lcuda",
+      "-Xlinker",
+      "/usr/local/cuda-12.8/targets/x86_64-linux/lib/libnvrtc.so.12.8.93",
+      "-o",
+      "/workspace/goal5838-final-7da6805-optix90/.librtdl_optix_goal5838.so.elsxq_y3.partial"
+    ],
+    "executed_command_display": "/usr/local/cuda-12.8/bin/nvcc -ccbin /usr/bin/x86_64-linux-gnu-g++-13 -std=c++17 -O3 -shared -I/workspace/goal5838-optix-dev/include -I/usr/local/cuda-12.8/targets/x86_64-linux/include '-DRTDL_OPTIX_INCLUDE_DIR=\"/workspace/goal5838-optix-dev/include\"' '-DRTDL_CUDA_INCLUDE_DIR=\"/usr/local/cuda-12.8/targets/x86_64-linux/include\"' '-DRTDL_CUDA_SYSTEM_INCLUDE_DIR=\"/usr/include/x86_64-linux-gnu\"' '-DRTDL_OPTIX_BUILD_ID=\"fb2cb9bdf9256dcb00716f3d1e986cd847b6c54ad216b381309c6c59bfeac95f\"' -arch=sm_89 -Xcompiler -fPIC /workspace/rtdl-goal5838-9e0cb79/src/native/rtdl_optix.cpp /workspace/rtdl-goal5838-9e0cb79/src/native/optix/rtdl_optix_cuda_helpers.cu -L/usr/local/cuda-12.8/lib64 -L/usr/local/cuda-12.8/targets/x86_64-linux/lib -L/usr/lib/x86_64-linux-gnu -lcuda -Xlinker /usr/local/cuda-12.8/targets/x86_64-linux/lib/libnvrtc.so.12.8.93 -o /workspace/goal5838-final-7da6805-optix90/.librtdl_optix_goal5838.so.elsxq_y3.partial",
+    "native_output": {
+      "bytes": 7181936,
+      "path": "/workspace/goal5838-final-7da6805-optix90/librtdl_optix_goal5838.so",
+      "sha256": "c91a22edbd7855824c6ad111a11c77aa599bdbb767b54b0d2e3f4355a1932076"
+    },
+    "repository": {
+      "branch": "",
+      "clean_after": true,
+      "clean_before": true,
+      "expected_commit": "7da68056550818d8e2f6cdb4d7aa3e9029cc4524",
+      "head_after": "7da68056550818d8e2f6cdb4d7aa3e9029cc4524",
+      "head_before": "7da68056550818d8e2f6cdb4d7aa3e9029cc4524",
+      "origin_url": "https://github.com/rubaolee/rtdl.git",
+      "source_files": [
+        {
+          "bytes": 29089,
+          "path": "scripts/goal5838_build_selected_sphere_optix_provider.py",
+          "sha256": "d89547bbb2708b9efda1fe06f83d57c4cee46acd5d0795b10aa5f739897f7628"
+        },
+        {
+          "bytes": 249,
+          "path": "src/native/rtdl_optix.cpp",
+          "sha256": "8f670db5adf2cf880921f954ea00829bc424f8cdef065ea1e03d52323947e6bc"
+        },
+        {
+          "bytes": 140176,
+          "path": "src/native/optix/rtdl_optix_prelude.h",
+          "sha256": "2032b6110a384658665d3b1e7a3f52a20ce3221f7a25ca1e07b8cf611dd838e0"
+        },
+        {
+          "bytes": 389380,
+          "path": "src/native/optix/rtdl_optix_core.cpp",
+          "sha256": "427348f9895c1dc8b6fb2af6ad75b6199e15ad3d0972d624b1cdb814629442fb"
+        },
+        {
+          "bytes": 372228,
+          "path": "src/native/optix/rtdl_optix_v4_callback_poc.cpp",
+          "sha256": "75b6ecbc69c7331f3c88024e9feeb4aab40c109df1a4b802f87365709ef523b0"
+        },
+        {
+          "bytes": 540649,
+          "path": "src/native/optix/rtdl_optix_api.cpp",
+          "sha256": "c5398c636175bbb922900391cdce51944b0ee43635c4fe5594ebfec568a1077e"
+        },
+        {
+          "bytes": 6342,
+          "path": "src/native/optix/rtdl_optix_v4_particle_template.h",
+          "sha256": "6ac0f59c675a98cd9c1ee8b76a87fc3cc31b0df1ac112fc83dddca737b7253ed"
+        },
+        {
+          "bytes": 8814,
+          "path": "src/native/optix/rtdl_optix_v4_product_status.h",
+          "sha256": "519cf0f39a845f8c74708a7e159cd4ff72deedec84f67979e08c1dc65ea9fda5"
+        },
+        {
+          "bytes": 1441292,
+          "path": "src/native/optix/rtdl_optix_workloads.cpp",
+          "sha256": "9315dc3a1782c4e5289b75407662f2943909c0a3616cd3022f3a4898694a22b9"
+        },
+        {
+          "bytes": 153977,
+          "path": "src/native/optix/rtdl_optix_cuda_helpers.cu",
+          "sha256": "b31f323e1ac33e7d60e0c4443e1763ac8ef31d1ad1d2ef486d10c29d95b042f2"
+        }
+      ]
+    },
+    "reproduction_command": [
+      "/usr/local/cuda-12.8/bin/nvcc",
+      "-ccbin",
+      "/usr/bin/x86_64-linux-gnu-g++-13",
+      "-std=c++17",
+      "-O3",
+      "-shared",
+      "-I/workspace/goal5838-optix-dev/include",
+      "-I/usr/local/cuda-12.8/targets/x86_64-linux/include",
+      "-DRTDL_OPTIX_INCLUDE_DIR=\"/workspace/goal5838-optix-dev/include\"",
+      "-DRTDL_CUDA_INCLUDE_DIR=\"/usr/local/cuda-12.8/targets/x86_64-linux/include\"",
+      "-DRTDL_CUDA_SYSTEM_INCLUDE_DIR=\"/usr/include/x86_64-linux-gnu\"",
+      "-DRTDL_OPTIX_BUILD_ID=\"fb2cb9bdf9256dcb00716f3d1e986cd847b6c54ad216b381309c6c59bfeac95f\"",
+      "-arch=sm_89",
+      "-Xcompiler",
+      "-fPIC",
+      "/workspace/rtdl-goal5838-9e0cb79/src/native/rtdl_optix.cpp",
+      "/workspace/rtdl-goal5838-9e0cb79/src/native/optix/rtdl_optix_cuda_helpers.cu",
+      "-L/usr/local/cuda-12.8/lib64",
+      "-L/usr/local/cuda-12.8/targets/x86_64-linux/lib",
+      "-L/usr/lib/x86_64-linux-gnu",
+      "-lcuda",
+      "-Xlinker",
+      "/usr/local/cuda-12.8/targets/x86_64-linux/lib/libnvrtc.so.12.8.93",
+      "-o",
+      "/workspace/goal5838-final-7da6805-optix90/librtdl_optix_goal5838.so"
+    ],
+    "reproduction_command_display": "/usr/local/cuda-12.8/bin/nvcc -ccbin /usr/bin/x86_64-linux-gnu-g++-13 -std=c++17 -O3 -shared -I/workspace/goal5838-optix-dev/include -I/usr/local/cuda-12.8/targets/x86_64-linux/include '-DRTDL_OPTIX_INCLUDE_DIR=\"/workspace/goal5838-optix-dev/include\"' '-DRTDL_CUDA_INCLUDE_DIR=\"/usr/local/cuda-12.8/targets/x86_64-linux/include\"' '-DRTDL_CUDA_SYSTEM_INCLUDE_DIR=\"/usr/include/x86_64-linux-gnu\"' '-DRTDL_OPTIX_BUILD_ID=\"fb2cb9bdf9256dcb00716f3d1e986cd847b6c54ad216b381309c6c59bfeac95f\"' -arch=sm_89 -Xcompiler -fPIC /workspace/rtdl-goal5838-9e0cb79/src/native/rtdl_optix.cpp /workspace/rtdl-goal5838-9e0cb79/src/native/optix/rtdl_optix_cuda_helpers.cu -L/usr/local/cuda-12.8/lib64 -L/usr/local/cuda-12.8/targets/x86_64-linux/lib -L/usr/lib/x86_64-linux-gnu -lcuda -Xlinker /usr/local/cuda-12.8/targets/x86_64-linux/lib/libnvrtc.so.12.8.93 -o /workspace/goal5838-final-7da6805-optix90/librtdl_optix_goal5838.so",
+    "required_symbol_check": "exact_nm_dynamic_defined_name",
+    "required_symbols": [
+      "rtdl_optix_get_version",
+      "rtdl_optix_v4_runtime_compiler_attempt_count_v1",
+      "rtdl_optix_v4_rtdlexe_producer_descriptor_v1",
+      "rtdl_optix_traversal_audit_begin",
+      "rtdl_optix_traversal_audit_finish",
+      "rtdl_optix_traversal_audit_abort",
+      "rtdl_optix_v4_prepare_builtin_sphere_callback_v1",
+      "rtdl_optix_v4_execute_prepared_builtin_sphere_callback_v1",
+      "rtdl_optix_v4_describe_prepared_builtin_sphere_callback_v1",
+      "rtdl_optix_v4_destroy_prepared_builtin_sphere_callback_v1"
+    ],
+    "result_sha256": "38523a2943177bc43735654d49cccf9a067e4e6428ac4ddf1cfb14aa623ece94",
+    "schema": "rtdl.goal5838.selected_sphere_optix_provider_build.v2",
+    "status": "PASS__FRESH_PROVIDER_DSO_AND_REQUIRED_ABI_EXPORTED"
+  },
+  "repository": {
+    "branch": "",
+    "clean_after_execution": true,
+    "clean_before_execution": true,
+    "expected_commit": "7da68056550818d8e2f6cdb4d7aa3e9029cc4524",
+    "head_after_execution": "7da68056550818d8e2f6cdb4d7aa3e9029cc4524",
+    "head_commit": "7da68056550818d8e2f6cdb4d7aa3e9029cc4524",
+    "origin_url": "https://github.com/rubaolee/rtdl.git",
+    "tracked_source_files": [
+      {
+        "bytes": 8664,
+        "path": "case_studies/goal5838_selected_sphere_any_hit_count/README.md",
+        "sha256": "57b8145b1c571b442816494247ac55720ceb5fc48fbab1c928af15695c1bda3b"
+      },
+      {
+        "bytes": 3753,
+        "path": "history/internal_docs/goal5838_generic_core_exam_20260902/POD_COMPATIBILITY_CORRECTION.md",
+        "sha256": "6df3eef3a5c2c407142ed2362ffbf6c7d4d49975f7fbca2a4c5ba154e44e2288"
+      },
+      {
+        "bytes": 8511,
+        "path": "history/internal_docs/goal5838_generic_core_exam_20260902/UNKNOWN_POD_COMPLETION_PLAN.md",
+        "sha256": "49e6407083046328ba0fd24bb781816c52ad8a033b1227196ce5a159595c8739"
+      },
+      {
+        "bytes": 4638,
+        "path": "history/internal_docs/goal5838_generic_core_exam_20260902/FIRST_POD_EXECUTION_REPAIR_LOG.md",
+        "sha256": "7b85f4d26528ca327f1feec2a80cb6dacb0fadc89c99a45785d94abea6b70bca"
+      },
+      {
+        "bytes": 1056,
+        "path": "case_studies/goal5838_selected_sphere_any_hit_count/fixture.py",
+        "sha256": "7330e47cd4e20170c08aa76041a4612b1103b98e8120042f19cb763935a9ee21"
+      },
+      {
+        "bytes": 3903,
+        "path": "case_studies/goal5838_selected_sphere_any_hit_count/sphere_any_hit_count_oracle.py",
+        "sha256": "b43839793ea426528053adc4ff1cd66d090ac6f2b05b6b774fa7c290bb91fa63"
+      },
+      {
+        "bytes": 29089,
+        "path": "scripts/goal5838_build_selected_sphere_optix_provider.py",
+        "sha256": "d89547bbb2708b9efda1fe06f83d57c4cee46acd5d0795b10aa5f739897f7628"
+      },
+      {
+        "bytes": 44573,
+        "path": "scripts/goal5838_pod_preflight.py",
+        "sha256": "aa1778fe9f5cd7296ee0401f0d5d4ff3b950736a072e4814a3c30e28816db796"
+      },
+      {
+        "bytes": 36893,
+        "path": "scripts/goal5838_run_selected_sphere_gpu_exam.py",
+        "sha256": "5ac31f93d6cfac541948a44044b1f51967f559f56a73c551e3b24c9f0e944b13"
+      },
+      {
+        "bytes": 71884,
+        "path": "scripts/goal5838_verify_selected_sphere_gpu_exam.py",
+        "sha256": "761edd929d97b7a59e744acc237ec00a4e49ac125cb14be2b6262469ce81b061"
+      },
+      {
+        "bytes": 249,
+        "path": "src/native/rtdl_optix.cpp",
+        "sha256": "8f670db5adf2cf880921f954ea00829bc424f8cdef065ea1e03d52323947e6bc"
+      },
+      {
+        "bytes": 540649,
+        "path": "src/native/optix/rtdl_optix_api.cpp",
+        "sha256": "c5398c636175bbb922900391cdce51944b0ee43635c4fe5594ebfec568a1077e"
+      },
+      {
+        "bytes": 389380,
+        "path": "src/native/optix/rtdl_optix_core.cpp",
+        "sha256": "427348f9895c1dc8b6fb2af6ad75b6199e15ad3d0972d624b1cdb814629442fb"
+      },
+      {
+        "bytes": 153977,
+        "path": "src/native/optix/rtdl_optix_cuda_helpers.cu",
+        "sha256": "b31f323e1ac33e7d60e0c4443e1763ac8ef31d1ad1d2ef486d10c29d95b042f2"
+      },
+      {
+        "bytes": 372228,
+        "path": "src/native/optix/rtdl_optix_v4_callback_poc.cpp",
+        "sha256": "75b6ecbc69c7331f3c88024e9feeb4aab40c109df1a4b802f87365709ef523b0"
+      },
+      {
+        "bytes": 6342,
+        "path": "src/native/optix/rtdl_optix_v4_particle_template.h",
+        "sha256": "6ac0f59c675a98cd9c1ee8b76a87fc3cc31b0df1ac112fc83dddca737b7253ed"
+      },
+      {
+        "bytes": 8814,
+        "path": "src/native/optix/rtdl_optix_v4_product_status.h",
+        "sha256": "519cf0f39a845f8c74708a7e159cd4ff72deedec84f67979e08c1dc65ea9fda5"
+      },
+      {
+        "bytes": 140176,
+        "path": "src/native/optix/rtdl_optix_prelude.h",
+        "sha256": "2032b6110a384658665d3b1e7a3f52a20ce3221f7a25ca1e07b8cf611dd838e0"
+      },
+      {
+        "bytes": 1441292,
+        "path": "src/native/optix/rtdl_optix_workloads.cpp",
+        "sha256": "9315dc3a1782c4e5289b75407662f2943909c0a3616cd3022f3a4898694a22b9"
+      },
+      {
+        "bytes": 28038,
+        "path": "src/rtdsl/physical_execution_provenance.py",
+        "sha256": "82bc90b99fbc52dce0e61ef805f7b0fc4d3134bc874a2bb477c4adeb77930fba"
+      },
+      {
+        "bytes": 35946,
+        "path": "src/rtdsl/v4_family_route_adapters.py",
+        "sha256": "ff576b65d0161b3593a1509614edbf5cdea3aa63a68c63eebd49908f0815e1b8"
+      },
+      {
+        "bytes": 8879,
+        "path": "src/rtdsl/v4_public_sphere_any_hit_count.py",
+        "sha256": "2519d396c7ecf5fd99d9866fc42a7171c6a4d26bc7d22d71776f07601f4b84b7"
+      },
+      {
+        "bytes": 1066,
+        "path": "src/rtdsl/v4_sphere_any_hit_count.py",
+        "sha256": "dec5a7f0abe63a74a41f1a6d74dc2b9b8343758063388a423bd01621349f78e5"
+      },
+      {
+        "bytes": 21136,
+        "path": "src/rtdsl/v4_sphere_any_hit_count_contract.py",
+        "sha256": "7b693a108d90b96dd73083833b7f19bad66b702ad751f6115afde647d99a9dcc"
+      },
+      {
+        "bytes": 12086,
+        "path": "src/rtdsl/v4_sphere_any_hit_count_family_route.py",
+        "sha256": "ae529caf95e2618744030a816bd3c3dad3edb02d46c31e8c9cc94f9dc757b939"
+      },
+      {
+        "bytes": 4024,
+        "path": "src/rtdsl/v4_sphere_any_hit_count_numba_codegen.py",
+        "sha256": "56192ee479c942fbd11c068fa2bc3cd197783cb1c75d895a96da0f1d9f857fee"
+      },
+      {
+        "bytes": 10649,
+        "path": "src/rtdsl/v4_sphere_any_hit_count_optix_compiler.py",
+        "sha256": "a5049c4836617b66805c193e5fe80e7a77287559e191ec6dc17b59259f394e4f"
+      },
+      {
+        "bytes": 22115,
+        "path": "src/rtdsl/v4_sphere_any_hit_count_prepared_runtime.py",
+        "sha256": "4d10a4df0e3d24d5de4affb92ce0137515c5a70b97af94d4c0653d0690e7b85b"
+      },
+      {
+        "bytes": 15865,
+        "path": "src/rtdsl/v4_sphere_any_hit_count_wrapper_codegen.py",
+        "sha256": "e087e7e854ecfebdc9ba55ff976728d2736a53ca20f0458ae8b4cdcc44f553fd"
+      },
+      {
+        "bytes": 14479,
+        "path": "src/rtdsl/v4_sphere_optix_compiler.py",
+        "sha256": "022fc0763f8960f1028a85ec4409aa26c8ae1cdf1bc175e8a995e73cc7516f35"
+      },
+      {
+        "bytes": 26213,
+        "path": "src/rtdsl/v4_sphere_physical_schema.py",
+        "sha256": "7397428ad5e5851926f832be333af8d9771d852f7c63e3e111bab497448df35e"
+      },
+      {
+        "bytes": 47326,
+        "path": "src/rtdsl/v4_sphere_prepared_runtime.py",
+        "sha256": "d2214539479d5350c5c1c3c000f9d80cea4675f26f99ddc33773fdc0ee555362"
+      },
+      {
+        "bytes": 53621,
+        "path": "tests/goal5838_selected_sphere_any_hit_count_test.py",
+        "sha256": "b40757e4a7a73476361517ea625d4e66173b4197f067861cda9364538362fb1d"
+      },
+      {
+        "bytes": 16455,
+        "path": "tests/goal5838_pod_preflight_test.py",
+        "sha256": "b96e4e44ed8226a80e61b1b1ac36d455bd0ef65cecbd9784085fb5d97a9065b1"
+      }
+    ]
+  },
+  "result_sha256": "89542280e402a663fbda184a2f8efd6e65447f67a922dbfa1c2f07c30f309dd0",
+  "schema": "rtdl.goal5838.selected_sphere_gpu_exam.v1",
+  "selection": {
+    "candidate_id": "builtin_sphere::any_hit_count_continue_u64_per_query",
+    "selected_index": 3,
+    "selection_file_sha256": "f12461047e234901b799d5fadeb1ce9bf58172a34a21138a09ceeac51ae772f9",
+    "selection_result_sha256": "9f543f52cd9453e0410766aa79c3f302a6a0e39314487279842fa5ad5e57ed61",
+    "target_local_random_value": "aa62c239c5079ed89cf0ad70c1b44245552bf2dd519d6d4871518746fac2efca5a64bb5a21956e897e36a5bc7cc0f0bd53d1f9ae585045a3c762656f852eefa7",
+    "target_pulse_index": 1924176
+  },
+  "status": "PASS__BOUNDED_PROSPECTIVE_FROZEN_CORE_TOPOLOGY",
+  "summary": {
+    "frozen_core_changed_file_count": 0,
+    "oracle_case_count": 12,
+    "oracle_exact_match_count": 12,
+    "true_optix_launch_count": 2
+  },
+  "target": {
+    "compute_capability": "8.9",
+    "gpu": {
+      "compute_capability": "8.9",
+      "driver_version": "580.159.04",
+      "memory_mib": "16380",
+      "name": "NVIDIA RTX 2000 Ada Generation",
+      "pci_bus_id": "00000000:C3:00.0",
+      "uuid": "GPU-f0ab2afa-0ec0-7da9-c951-01fc713ee1e9"
+    },
+    "native_library_bytes": 7181936,
+    "native_library_path": "/workspace/goal5838-final-7da6805-optix90/librtdl_optix_goal5838.so",
+    "native_library_sha256": "c91a22edbd7855824c6ad111a11c77aa599bdbb767b54b0d2e3f4355a1932076",
+    "optix_sdk": "9.0.0",
+    "profile_sha256": "b8a5bf75bf5c56f283a13d0af8be639f8179457b2ed56483caceb62eacf2d399"
+  },
+  "toolchain": {
+    "compiler_environment": {
+      "compiler_files": [
+        {
+          "bytes": 104480432,
+          "environment_variable": "RTDL_V4_NVRTC_LIBRARY",
+          "label": "nvrtc",
+          "path": "/usr/local/cuda-12.8/targets/x86_64-linux/lib/libnvrtc.so.12.8.93",
+          "sha256": "2bb82d1a34b9fefa46aca357299aed66763d4d6613d015d5a591224c00fa7e5a"
+        },
+        {
+          "bytes": 64270496,
+          "environment_variable": "NUMBA_CUDA_NVVM",
+          "label": "nvvm",
+          "path": "/usr/local/cuda-12.8/nvvm/lib64/libnvvm.so.4.0.0",
+          "sha256": "dfb07dc65ffb0f7a16bc82ee1f87d7f4634b908d30aa8103d1e28afb1fe6589e"
+        },
+        {
+          "bytes": 484900,
+          "environment_variable": "NUMBA_CUDA_LIBDEVICE",
+          "label": "libdevice",
+          "path": "/usr/local/cuda-12.8/nvvm/libdevice/libdevice.10.bc",
+          "sha256": "25498d6e3c64782833ff15a5f56665ff09e5d21177163148a1cf008c61733449"
+        }
+      ],
+      "forbidden_environment_absent": [
+        "RTDL_V4_FORMAL_LEAF_CACHE",
+        "RTDL_V4_FORMAL_LEAF_CACHE_MANIFEST",
+        "RTDL_V4_FORMAL_LEAF_CACHE_MANIFEST_SHA256",
+        "LD_PRELOAD",
+        "NUMBA_ENABLE_CUDASIM",
+        "NUMBA_FORCE_CUDA_CC",
+        "NUMBA_CUDA_DEFAULT_PTX_CC",
+        "NUMBA_CUDA_DRIVER"
+      ],
+      "identity_sha256": "d12ed9d24a1857e95aa68ac2f115a9d891361b082389ad10bb99bff0db3f11a8",
+      "prefixes": {
+        "CUDA_HOME": "/usr/local/cuda-12.8",
+        "CUDA_PATH": "/usr/local/cuda-12.8",
+        "RTDL_V4_CUDA_PREFIX": "/usr/local/cuda-12.8",
+        "RTDL_V4_OPTIX_PREFIX": "/workspace/goal5838-optix-dev"
+      },
+      "schema": "rtdl.goal5838.cuda_compiler_environment.v1"
+    },
+    "cuda_include": "/usr/local/cuda-12.8/targets/x86_64-linux/include",
+    "cuda_visible_devices": "0",
+    "native_library_overrides": {
+      "RTDL_OPTIX_LIB": "/workspace/goal5838-final-7da6805-optix90/librtdl_optix_goal5838.so",
+      "RTDL_OPTIX_LIBRARY": "/workspace/goal5838-final-7da6805-optix90/librtdl_optix_goal5838.so"
+    },
+    "numba": "0.65.1",
+    "numpy": "2.4.4",
+    "optix_include": "/workspace/goal5838-optix-dev/include",
+    "python": "3.12.3",
+    "python_executable": "/workspace/goal5838-python-9e0cb79/bin/python"
+  }
+}

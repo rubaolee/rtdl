@@ -30,6 +30,22 @@ IDs are generated only inside the provider as private compatibility input to
 the pre-existing native sphere ABI; the wrapper never reads them and they are
 not output.
 
+## Final result
+
+Goal5838 is complete at its preregistered bounded scope. A clean detached Pod
+checkout of commit `7da68056550818d8e2f6cdb4d7aa3e9029cc4524` built the
+provider and executed the selected topology twice on an NVIDIA RTX 2000 Ada
+Generation GPU with OptiX 9.0. Both primary and reverse query orders matched
+the independent oracle: 12/12 rows, two successful true OptiX launches, and
+zero frozen-core byte changes.
+
+The controlling machine-readable result is
+`history/internal_docs/goal5838_generic_core_exam_20260902/FINAL_AUTHORITY.json`.
+Its authority seal is
+`c0578a22e006e2bee2dec39e6de98201ce547eca95dc20b6b7f4c1a891479a8e`.
+The detailed evidence and limits are in `FINAL_TECHNICAL_REPORT.md` and
+`FINAL_INTERNAL_HOSTILE_SELF_REVIEW.md` in the same directory.
+
 ## True RT requirements
 
 A passing receipt must independently establish all of the following:
@@ -179,8 +195,7 @@ native fingerprints, physical descriptor, and traversal receipt.
 
 ## Claim boundary
 
-Before a verified true-GPU artifact exists, this is implementation and local
-readiness evidence only. A pass establishes one bounded prospective result for
-one independently selected topology. It is not performance evidence, a Paper
-App, arbitrary Callback-IR GPU execution, universal provider portability,
+The verified pass establishes one bounded prospective result for one
+independently selected topology. It is not performance evidence, a Paper App,
+arbitrary Callback-IR GPU execution, universal provider portability,
 application correctness, external review, or consensus.

@@ -1,5 +1,35 @@
 # RTDL Codex Working Guide
 
+## Critical current override: Goal5838 bounded prospective exam complete (2026-09-03)
+
+Goal5838 is complete at exactly
+`PASS__GOAL5838_COMPLETE_AT_PREREGISTERED_BOUNDED_SCOPE`. The controlling
+machine-readable authority is
+`history/internal_docs/goal5838_generic_core_exam_20260902/FINAL_AUTHORITY.json`;
+its internal seal is
+`c0578a22e006e2bee2dec39e6de98201ce547eca95dc20b6b7f4c1a891479a8e`.
+The exact GPU evidence source commit is
+`7da68056550818d8e2f6cdb4d7aa3e9029cc4524`.
+
+The independently selected topology is
+`builtin_sphere::any_hit_count_continue_u64_per_query`. On one RTX 2000 Ada /
+OptiX 9.0 profile, two true OptiX launches matched all 12 independent oracle
+rows. The three frozen core files changed by zero bytes after their seal. The
+RTDL-free verifier passed and was reproduced byte-identically on the Mac.
+Verify the final authority with
+`PYTHONPATH=src:. python3 scripts/goal5838_build_final_authority.py --verify-stored`.
+
+This is one bounded prospective frozen-core topology success. It is not
+arbitrary Callback-IR execution, universal provider portability, performance
+or speedup evidence, a Paper App, application correctness, external review, or
+consensus. External review remains owner-deferred. Preserve the frozen core and
+all committed Goal5838 evidence; do not rewrite history or broaden wording.
+The final technical report and internal hostile review are respectively
+`FINAL_TECHNICAL_REPORT.md` and `FINAL_INTERNAL_HOSTILE_SELF_REVIEW.md` beside
+the authority. Goal5838 focused tests pass 91/91, inherited Goal5833 tests pass
+70/70, and the whole Goal583x audit is 312/313 with only the previously
+disclosed Goal5832 current-tree custody error.
+
 ## Critical current override: Goal5838 generic core sealed before selection (2026-09-02)
 
 Goal5838 Stage B is frozen at remote commit `1ad0628`. The controlling files

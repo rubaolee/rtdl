@@ -1,0 +1,862 @@
+{
+  "baseline_commit": "0f5c9d4297f73e412732e5a8ab133423fe4cfd21",
+  "boundary": "This receipt establishes pod readiness only. A non-ready result is repairable engineering, not scientific failure. A ready result is not a native build, GPU execution, performance result, Paper App, external review, consensus, or Goal5838 completion claim.",
+  "checks": [
+    {
+      "name": "exact_expected_commit",
+      "observed": "7da68056550818d8e2f6cdb4d7aa3e9029cc4524",
+      "passed": true,
+      "repair": "",
+      "required": true,
+      "requirement": "7da68056550818d8e2f6cdb4d7aa3e9029cc4524"
+    },
+    {
+      "name": "clean_worktree",
+      "observed": "",
+      "passed": true,
+      "repair": "",
+      "required": true,
+      "requirement": "no tracked or untracked changes"
+    },
+    {
+      "name": "preregistered_baseline_object_present",
+      "observed": 0,
+      "passed": true,
+      "repair": "",
+      "required": true,
+      "requirement": "0f5c9d4297f73e412732e5a8ab133423fe4cfd21"
+    },
+    {
+      "name": "python_3_12",
+      "observed": "3.12.3",
+      "passed": true,
+      "repair": "",
+      "required": true,
+      "requirement": "Python 3.12.x"
+    },
+    {
+      "name": "python_package_numba",
+      "observed": "0.65.1",
+      "passed": true,
+      "repair": "",
+      "required": true,
+      "requirement": "0.65.1"
+    },
+    {
+      "name": "python_package_numpy",
+      "observed": "2.4.4",
+      "passed": true,
+      "repair": "",
+      "required": true,
+      "requirement": "2.4.4"
+    },
+    {
+      "name": "selected_nvidia_gpu_zero",
+      "observed": [
+        {
+          "compute_capability": "8.9",
+          "driver_version": "580.159.04",
+          "name": "NVIDIA RTX 2000 Ada Generation",
+          "uuid": "GPU-f0ab2afa-0ec0-7da9-c951-01fc713ee1e9"
+        }
+      ],
+      "passed": true,
+      "repair": "",
+      "required": true,
+      "requirement": "nvidia-smi GPU index 0 resolves to exactly one GPU"
+    },
+    {
+      "name": "compute_capability_identified",
+      "observed": "8.9",
+      "passed": true,
+      "repair": "",
+      "required": true,
+      "requirement": "a parseable visible-GPU capability"
+    },
+    {
+      "name": "nvcc_executable",
+      "observed": true,
+      "passed": true,
+      "repair": "",
+      "required": true,
+      "requirement": "/usr/local/cuda-12.8/bin/nvcc"
+    },
+    {
+      "name": "nvcc_version_probe",
+      "observed": {
+        "command": [
+          "/usr/local/cuda-12.8/bin/nvcc",
+          "--version"
+        ],
+        "command_display": "/usr/local/cuda-12.8/bin/nvcc --version",
+        "output_tail": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Fri_Feb_21_20:23:50_PST_2025\nCuda compilation tools, release 12.8, V12.8.93\nBuild cuda_12.8.r12.8/compiler.35583870_0\n",
+        "returncode": 0
+      },
+      "passed": true,
+      "repair": "",
+      "required": true,
+      "requirement": "nvcc --version succeeds"
+    },
+    {
+      "name": "cuda_build_headers",
+      "observed": {
+        "include": "/usr/local/cuda-12.8/include",
+        "missing": []
+      },
+      "passed": true,
+      "repair": "",
+      "required": true,
+      "requirement": [
+        "cuda.h",
+        "cuda_runtime.h",
+        "nvrtc.h"
+      ]
+    },
+    {
+      "name": "cuda_offline_compiler_inputs",
+      "observed": {
+        "libdevice": "/usr/local/cuda-12.8/nvvm/libdevice/libdevice.10.bc",
+        "nvrtc_library": "/usr/local/cuda-12.8/targets/x86_64-linux/lib/libnvrtc.so.12.8.93",
+        "nvvm_library": "/usr/local/cuda-12.8/nvvm/lib64/libnvvm.so.4.0.0"
+      },
+      "passed": true,
+      "repair": "",
+      "required": true,
+      "requirement": "exact libnvrtc, libnvvm, and libdevice inputs"
+    },
+    {
+      "name": "optix_build_headers",
+      "observed": {
+        "include": "/workspace/goal5838-optix-dev/include",
+        "missing": []
+      },
+      "passed": true,
+      "repair": "",
+      "required": true,
+      "requirement": [
+        "optix.h",
+        "optix_device.h",
+        "optix_function_table_definition.h",
+        "optix_stack_size.h",
+        "optix_stubs.h"
+      ]
+    },
+    {
+      "name": "optix_header_version",
+      "observed": 90000,
+      "passed": true,
+      "repair": "",
+      "required": true,
+      "requirement": 90000
+    },
+    {
+      "name": "known_optix_dev_commit",
+      "observed": "fff65c2a7c592f1ea5f1661ad7d2381cf965f9bd",
+      "passed": true,
+      "repair": "",
+      "required": false,
+      "requirement": "fff65c2a7c592f1ea5f1661ad7d2381cf965f9bd"
+    },
+    {
+      "name": "host_compiler",
+      "observed": "/usr/bin/x86_64-linux-gnu-g++-13",
+      "passed": true,
+      "repair": "",
+      "required": true,
+      "requirement": "an executable g++-13/g++-12/g++-11/g++"
+    },
+    {
+      "name": "optix_runtime_abi",
+      "observed": {
+        "compile_command_template": [
+          "/usr/bin/x86_64-linux-gnu-g++-13",
+          "-std=c++17",
+          "-I/workspace/goal5838-optix-dev/include",
+          "-I/usr/local/cuda-12.8/include",
+          "<temporary>/probe.cpp",
+          "-ldl",
+          "-o",
+          "<temporary>/probe"
+        ],
+        "compile_returncode": 0,
+        "compiler_output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "executable_bytes": 16296,
+        "executable_sha256": "c4f6d57bccac6a106f9c79f0290f9f3274884b3e9e588f7cbe755ac0dc4b8a9a",
+        "optix_launch_count": 0,
+        "passed": true,
+        "runtime_output": "optixInit_result=0",
+        "runtime_returncode": 0,
+        "source_sha256": "ccc24914e3a88ddd711b2fa9dfc40b125ed3649dca24429571a444c9c9f8a876"
+      },
+      "passed": true,
+      "repair": "",
+      "required": true,
+      "requirement": "a zero-launch optixInit() probe succeeds for the exact selected headers and host driver"
+    },
+    {
+      "name": "selected_callback_compiler",
+      "observed": {
+        "command_template": [
+          "/workspace/goal5838-python-9e0cb79/bin/python",
+          "/workspace/rtdl-goal5838-9e0cb79/scripts/goal5838_pod_preflight.py",
+          "--internal-callback-compile-probe",
+          "<temporary>/request.json",
+          "<temporary>/result.json"
+        ],
+        "gpu_execution_performed": false,
+        "native_prepare_called": false,
+        "optix_launch_count": 0,
+        "output_tail": "",
+        "parse_error": null,
+        "passed": true,
+        "receipt": {
+          "callback_roles": [
+            "make_ray",
+            "any_hit",
+            "miss",
+            "finalize"
+          ],
+          "classification": "prospective_selected_extension",
+          "compiled_through_generic_family_front_door": true,
+          "compute_capability": [
+            8,
+            9
+          ],
+          "executable_identity": {
+            "executable_sha256": "4d330d4d3a5018c7a3fc3306d54b152bdd36ccebc10863912e2850f03854ef78",
+            "generated_artifact_sha256": "0f927f783b8f995d93c3d68e7063edbd052aadb41d4222365f758b896c94dae9",
+            "identity_sha256": "327e0f16a7326977d54b592ea5f502585080b69f384d1608c53662b835c917ae",
+            "plan_sha256": "5a8f15a3941f10560ffecc6021cd4689c068f5ed39903014b1d5e99e98b3d669",
+            "provider_artifact_sha256": "bb2e7dff6d5789711fe1726213c867f10d80f48c8e527f5e4b34557d69047f57",
+            "provider_descriptor_sha256": "a92be4d2defc87fd7dcf2e1edd143cf6afb63035a7048a7560d486b4bdf7463a",
+            "provider_projection_sha256": "fe26dc5417f644c7c649dfbe9827404ed9c914d82334d16e878872cc11f68ec1",
+            "schema": "rtdl.family_executable_identity.v1",
+            "target_sha256": "7836963c87ef03f41d9bc7902fa28d7cbaa5dd2044e5ba44881588049faabd6e"
+          },
+          "gpu_execution_performed": false,
+          "native_library_loaded": false,
+          "native_prepare_called": false,
+          "optix_launch_count": 0,
+          "optix_sdk": "9.0.0",
+          "plan_sha256": "5a8f15a3941f10560ffecc6021cd4689c068f5ed39903014b1d5e99e98b3d669",
+          "provider_descriptor_sha256": "a92be4d2defc87fd7dcf2e1edd143cf6afb63035a7048a7560d486b4bdf7463a",
+          "provider_id": "rtdl.optix.builtin_sphere_any_hit_count",
+          "provider_projection_sha256": "fe26dc5417f644c7c649dfbe9827404ed9c914d82334d16e878872cc11f68ec1",
+          "schema": "rtdl.goal5838.selected_callback_compile_probe.v1"
+        },
+        "receipt_sha256": "46873796af8b76646762b16b54e7e540758c03721f244ac0c311b60e21f21055",
+        "request": {
+          "compute_capability": [
+            8,
+            9
+          ],
+          "cuda_include": "/usr/local/cuda-12.8/include",
+          "expected_numba_version": "0.65.1",
+          "expected_numpy_version": "2.4.4",
+          "expected_python_version": "3.12.3",
+          "optix_include": "/workspace/goal5838-optix-dev/include",
+          "optix_sdk": "9.0.0"
+        },
+        "request_sha256": "02a2ca1d87c2e2d0cc22b1ce486b43ef19d020a06ae6937ac2a9b93b6f25926e",
+        "returncode": 0
+      },
+      "passed": true,
+      "repair": "",
+      "required": true,
+      "requirement": "the selected make_ray/any_hit/miss/finalize stack compiles via the generic family front door with real Numba/NVVM and NVRTC"
+    },
+    {
+      "name": "tool_nm",
+      "observed": "/usr/bin/nm",
+      "passed": true,
+      "repair": "",
+      "required": true,
+      "requirement": "nm"
+    },
+    {
+      "name": "tool_ldd",
+      "observed": "/usr/bin/ldd",
+      "passed": true,
+      "repair": "",
+      "required": true,
+      "requirement": "ldd"
+    },
+    {
+      "name": "local_gate_freeze",
+      "observed": {
+        "command": [
+          "/workspace/goal5838-python-9e0cb79/bin/python",
+          "scripts/goal5838_freeze_generic_core.py",
+          "--verify-stored"
+        ],
+        "command_display": "/workspace/goal5838-python-9e0cb79/bin/python scripts/goal5838_freeze_generic_core.py --verify-stored",
+        "output_tail": "{\"challenge_table_sha256\": \"0a2b2c01aed75ad08fad44f7fbc2509ef632d786545e0202b9a4b27425a30345\", \"eligible_candidate_count\": 10, \"frozen_core_file_count\": 3, \"seal_sha256\": \"c2a461c8a4a61650044b724d103a80d25241b44b7b486c071b601946292e5dae\", \"selected_candidate_count\": 0, \"status\": \"PASS__GOAL5838_GENERIC_CORE_AND_CHALLENGE_TABLE_SEAL\"}\n",
+        "returncode": 0
+      },
+      "passed": true,
+      "repair": "",
+      "required": true,
+      "requirement": "freeze gate exits zero"
+    },
+    {
+      "name": "local_gate_selection",
+      "observed": {
+        "command": [
+          "/workspace/goal5838-python-9e0cb79/bin/python",
+          "scripts/goal5838_select_challenge.py",
+          "--verify-stored"
+        ],
+        "command_display": "/workspace/goal5838-python-9e0cb79/bin/python scripts/goal5838_select_challenge.py --verify-stored",
+        "output_tail": "{\"frozen_core_byte_changes\": 0, \"selected_candidate_id\": \"builtin_sphere::any_hit_count_continue_u64_per_query\", \"selection_result_sha256\": \"9f543f52cd9453e0410766aa79c3f302a6a0e39314487279842fa5ad5e57ed61\", \"status\": \"PASS__GOAL5838_STORED_SELECTION_VERIFIED\"}\n",
+        "returncode": 0
+      },
+      "passed": true,
+      "repair": "",
+      "required": true,
+      "requirement": "selection gate exits zero"
+    },
+    {
+      "name": "local_gate_focused_tests",
+      "observed": {
+        "command": [
+          "/workspace/goal5838-python-9e0cb79/bin/python",
+          "-m",
+          "unittest",
+          "tests.goal5838_preregistration_test",
+          "tests.goal5838_generic_family_lifecycle_test",
+          "tests.goal5838_core_seal_and_selection_test",
+          "tests.goal5838_family_route_migration_test",
+          "tests.goal5838_selected_sphere_any_hit_count_test",
+          "tests.goal5838_pod_preflight_test"
+        ],
+        "command_display": "/workspace/goal5838-python-9e0cb79/bin/python -m unittest tests.goal5838_preregistration_test tests.goal5838_generic_family_lifecycle_test tests.goal5838_core_seal_and_selection_test tests.goal5838_family_route_migration_test tests.goal5838_selected_sphere_any_hit_count_test tests.goal5838_pod_preflight_test",
+        "output_tail": "........................................................................................\n----------------------------------------------------------------------\nRan 88 tests in 5.596s\n\nOK\n",
+        "returncode": 0
+      },
+      "passed": true,
+      "repair": "",
+      "required": true,
+      "requirement": "focused_tests gate exits zero"
+    },
+    {
+      "name": "fresh_artifact_path_native",
+      "observed": false,
+      "passed": true,
+      "repair": "",
+      "required": true,
+      "requirement": "nonexistent exclusive output /workspace/goal5838-final-7da6805-optix90/librtdl_optix_goal5838.so"
+    },
+    {
+      "name": "fresh_artifact_path_native_build_manifest",
+      "observed": false,
+      "passed": true,
+      "repair": "",
+      "required": true,
+      "requirement": "nonexistent exclusive output /workspace/goal5838-final-7da6805-optix90/goal5838_native_build.json"
+    },
+    {
+      "name": "fresh_artifact_path_native_build_log",
+      "observed": false,
+      "passed": true,
+      "repair": "",
+      "required": true,
+      "requirement": "nonexistent exclusive output /workspace/goal5838-final-7da6805-optix90/goal5838_native_build.log"
+    },
+    {
+      "name": "fresh_artifact_path_gpu_exam",
+      "observed": false,
+      "passed": true,
+      "repair": "",
+      "required": true,
+      "requirement": "nonexistent exclusive output /workspace/goal5838-final-7da6805-optix90/goal5838_gpu_exam.json"
+    },
+    {
+      "name": "fresh_artifact_path_verification",
+      "observed": false,
+      "passed": true,
+      "repair": "",
+      "required": true,
+      "requirement": "nonexistent exclusive output /workspace/goal5838-final-7da6805-optix90/goal5838_gpu_exam_verification.json"
+    }
+  ],
+  "command_plan": {
+    "build": {
+      "argv": [
+        "env",
+        "-u",
+        "RTDL_V4_FORMAL_LEAF_CACHE",
+        "-u",
+        "RTDL_V4_FORMAL_LEAF_CACHE_MANIFEST",
+        "-u",
+        "RTDL_V4_FORMAL_LEAF_CACHE_MANIFEST_SHA256",
+        "-u",
+        "LD_PRELOAD",
+        "-u",
+        "NUMBA_ENABLE_CUDASIM",
+        "-u",
+        "NUMBA_FORCE_CUDA_CC",
+        "-u",
+        "NUMBA_CUDA_DEFAULT_PTX_CC",
+        "-u",
+        "NUMBA_CUDA_DRIVER",
+        "-u",
+        "RTDL_V4_NVRTC_LIBRARY",
+        "-u",
+        "RTDL_OPTIX_LIB",
+        "-u",
+        "RTDL_OPTIX_LIBRARY",
+        "CUDA_VISIBLE_DEVICES=0",
+        "LD_LIBRARY_PATH=/usr/local/cuda-12.8/targets/x86_64-linux/lib:/usr/local/cuda-12.8/nvvm/lib64:/usr/local/cuda-12.8/lib64:/usr/lib/x86_64-linux-gnu",
+        "PATH=/usr/local/cuda-12.8/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "NUMBA_CUDA_NVVM=/usr/local/cuda-12.8/nvvm/lib64/libnvvm.so.4.0.0",
+        "NUMBA_CUDA_LIBDEVICE=/usr/local/cuda-12.8/nvvm/libdevice/libdevice.10.bc",
+        "CUDA_HOME=/usr/local/cuda-12.8",
+        "CUDA_PATH=/usr/local/cuda-12.8",
+        "RTDL_V4_CUDA_PREFIX=/usr/local/cuda-12.8",
+        "RTDL_V4_OPTIX_PREFIX=/workspace/goal5838-optix-dev",
+        "RTDL_V4_NVRTC_LIBRARY=/usr/local/cuda-12.8/targets/x86_64-linux/lib/libnvrtc.so.12.8.93",
+        "PYTHONPATH=src:.",
+        "/workspace/goal5838-python-9e0cb79/bin/python",
+        "scripts/goal5838_build_selected_sphere_optix_provider.py",
+        "--cuda-prefix",
+        "/usr/local/cuda-12.8",
+        "--optix-prefix",
+        "/workspace/goal5838-optix-dev",
+        "--expected-optix-sdk",
+        "9.0.0",
+        "--compute-capability",
+        "8.9",
+        "--host-compiler",
+        "/usr/bin/x86_64-linux-gnu-g++-13",
+        "--nvrtc-library",
+        "/usr/local/cuda-12.8/targets/x86_64-linux/lib/libnvrtc.so.12.8.93",
+        "--expected-commit",
+        "7da68056550818d8e2f6cdb4d7aa3e9029cc4524",
+        "--output",
+        "/workspace/goal5838-final-7da6805-optix90/librtdl_optix_goal5838.so",
+        "--manifest",
+        "/workspace/goal5838-final-7da6805-optix90/goal5838_native_build.json",
+        "--log",
+        "/workspace/goal5838-final-7da6805-optix90/goal5838_native_build.log"
+      ],
+      "display": "env -u RTDL_V4_FORMAL_LEAF_CACHE -u RTDL_V4_FORMAL_LEAF_CACHE_MANIFEST -u RTDL_V4_FORMAL_LEAF_CACHE_MANIFEST_SHA256 -u LD_PRELOAD -u NUMBA_ENABLE_CUDASIM -u NUMBA_FORCE_CUDA_CC -u NUMBA_CUDA_DEFAULT_PTX_CC -u NUMBA_CUDA_DRIVER -u RTDL_V4_NVRTC_LIBRARY -u RTDL_OPTIX_LIB -u RTDL_OPTIX_LIBRARY CUDA_VISIBLE_DEVICES=0 LD_LIBRARY_PATH=/usr/local/cuda-12.8/targets/x86_64-linux/lib:/usr/local/cuda-12.8/nvvm/lib64:/usr/local/cuda-12.8/lib64:/usr/lib/x86_64-linux-gnu PATH=/usr/local/cuda-12.8/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin NUMBA_CUDA_NVVM=/usr/local/cuda-12.8/nvvm/lib64/libnvvm.so.4.0.0 NUMBA_CUDA_LIBDEVICE=/usr/local/cuda-12.8/nvvm/libdevice/libdevice.10.bc CUDA_HOME=/usr/local/cuda-12.8 CUDA_PATH=/usr/local/cuda-12.8 RTDL_V4_CUDA_PREFIX=/usr/local/cuda-12.8 RTDL_V4_OPTIX_PREFIX=/workspace/goal5838-optix-dev RTDL_V4_NVRTC_LIBRARY=/usr/local/cuda-12.8/targets/x86_64-linux/lib/libnvrtc.so.12.8.93 PYTHONPATH=src:. /workspace/goal5838-python-9e0cb79/bin/python scripts/goal5838_build_selected_sphere_optix_provider.py --cuda-prefix /usr/local/cuda-12.8 --optix-prefix /workspace/goal5838-optix-dev --expected-optix-sdk 9.0.0 --compute-capability 8.9 --host-compiler /usr/bin/x86_64-linux-gnu-g++-13 --nvrtc-library /usr/local/cuda-12.8/targets/x86_64-linux/lib/libnvrtc.so.12.8.93 --expected-commit 7da68056550818d8e2f6cdb4d7aa3e9029cc4524 --output /workspace/goal5838-final-7da6805-optix90/librtdl_optix_goal5838.so --manifest /workspace/goal5838-final-7da6805-optix90/goal5838_native_build.json --log /workspace/goal5838-final-7da6805-optix90/goal5838_native_build.log"
+    },
+    "run": {
+      "argv": [
+        "env",
+        "-u",
+        "RTDL_V4_FORMAL_LEAF_CACHE",
+        "-u",
+        "RTDL_V4_FORMAL_LEAF_CACHE_MANIFEST",
+        "-u",
+        "RTDL_V4_FORMAL_LEAF_CACHE_MANIFEST_SHA256",
+        "-u",
+        "LD_PRELOAD",
+        "-u",
+        "NUMBA_ENABLE_CUDASIM",
+        "-u",
+        "NUMBA_FORCE_CUDA_CC",
+        "-u",
+        "NUMBA_CUDA_DEFAULT_PTX_CC",
+        "-u",
+        "NUMBA_CUDA_DRIVER",
+        "-u",
+        "RTDL_V4_NVRTC_LIBRARY",
+        "-u",
+        "RTDL_OPTIX_LIB",
+        "-u",
+        "RTDL_OPTIX_LIBRARY",
+        "CUDA_VISIBLE_DEVICES=0",
+        "LD_LIBRARY_PATH=/usr/local/cuda-12.8/targets/x86_64-linux/lib:/usr/local/cuda-12.8/nvvm/lib64:/usr/local/cuda-12.8/lib64:/usr/lib/x86_64-linux-gnu",
+        "PATH=/usr/local/cuda-12.8/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+        "NUMBA_CUDA_NVVM=/usr/local/cuda-12.8/nvvm/lib64/libnvvm.so.4.0.0",
+        "NUMBA_CUDA_LIBDEVICE=/usr/local/cuda-12.8/nvvm/libdevice/libdevice.10.bc",
+        "CUDA_HOME=/usr/local/cuda-12.8",
+        "CUDA_PATH=/usr/local/cuda-12.8",
+        "RTDL_V4_CUDA_PREFIX=/usr/local/cuda-12.8",
+        "RTDL_V4_OPTIX_PREFIX=/workspace/goal5838-optix-dev",
+        "RTDL_V4_NVRTC_LIBRARY=/usr/local/cuda-12.8/targets/x86_64-linux/lib/libnvrtc.so.12.8.93",
+        "PYTHONPATH=src:.",
+        "/workspace/goal5838-python-9e0cb79/bin/python",
+        "scripts/goal5838_run_selected_sphere_gpu_exam.py",
+        "--native",
+        "/workspace/goal5838-final-7da6805-optix90/librtdl_optix_goal5838.so",
+        "--native-build-manifest",
+        "/workspace/goal5838-final-7da6805-optix90/goal5838_native_build.json",
+        "--optix-include",
+        "/workspace/goal5838-optix-dev/include",
+        "--cuda-include",
+        "/usr/local/cuda-12.8/include",
+        "--optix-sdk",
+        "9.0.0",
+        "--compute-capability",
+        "8.9",
+        "--expected-commit",
+        "7da68056550818d8e2f6cdb4d7aa3e9029cc4524",
+        "--output",
+        "/workspace/goal5838-final-7da6805-optix90/goal5838_gpu_exam.json"
+      ],
+      "display": "env -u RTDL_V4_FORMAL_LEAF_CACHE -u RTDL_V4_FORMAL_LEAF_CACHE_MANIFEST -u RTDL_V4_FORMAL_LEAF_CACHE_MANIFEST_SHA256 -u LD_PRELOAD -u NUMBA_ENABLE_CUDASIM -u NUMBA_FORCE_CUDA_CC -u NUMBA_CUDA_DEFAULT_PTX_CC -u NUMBA_CUDA_DRIVER -u RTDL_V4_NVRTC_LIBRARY -u RTDL_OPTIX_LIB -u RTDL_OPTIX_LIBRARY CUDA_VISIBLE_DEVICES=0 LD_LIBRARY_PATH=/usr/local/cuda-12.8/targets/x86_64-linux/lib:/usr/local/cuda-12.8/nvvm/lib64:/usr/local/cuda-12.8/lib64:/usr/lib/x86_64-linux-gnu PATH=/usr/local/cuda-12.8/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin NUMBA_CUDA_NVVM=/usr/local/cuda-12.8/nvvm/lib64/libnvvm.so.4.0.0 NUMBA_CUDA_LIBDEVICE=/usr/local/cuda-12.8/nvvm/libdevice/libdevice.10.bc CUDA_HOME=/usr/local/cuda-12.8 CUDA_PATH=/usr/local/cuda-12.8 RTDL_V4_CUDA_PREFIX=/usr/local/cuda-12.8 RTDL_V4_OPTIX_PREFIX=/workspace/goal5838-optix-dev RTDL_V4_NVRTC_LIBRARY=/usr/local/cuda-12.8/targets/x86_64-linux/lib/libnvrtc.so.12.8.93 PYTHONPATH=src:. /workspace/goal5838-python-9e0cb79/bin/python scripts/goal5838_run_selected_sphere_gpu_exam.py --native /workspace/goal5838-final-7da6805-optix90/librtdl_optix_goal5838.so --native-build-manifest /workspace/goal5838-final-7da6805-optix90/goal5838_native_build.json --optix-include /workspace/goal5838-optix-dev/include --cuda-include /usr/local/cuda-12.8/include --optix-sdk 9.0.0 --compute-capability 8.9 --expected-commit 7da68056550818d8e2f6cdb4d7aa3e9029cc4524 --output /workspace/goal5838-final-7da6805-optix90/goal5838_gpu_exam.json"
+    },
+    "verify": {
+      "argv": [
+        "/workspace/goal5838-python-9e0cb79/bin/python",
+        "scripts/goal5838_verify_selected_sphere_gpu_exam.py",
+        "--artifact",
+        "/workspace/goal5838-final-7da6805-optix90/goal5838_gpu_exam.json",
+        "--native",
+        "/workspace/goal5838-final-7da6805-optix90/librtdl_optix_goal5838.so",
+        "--output",
+        "/workspace/goal5838-final-7da6805-optix90/goal5838_gpu_exam_verification.json"
+      ],
+      "display": "/workspace/goal5838-python-9e0cb79/bin/python scripts/goal5838_verify_selected_sphere_gpu_exam.py --artifact /workspace/goal5838-final-7da6805-optix90/goal5838_gpu_exam.json --native /workspace/goal5838-final-7da6805-optix90/librtdl_optix_goal5838.so --output /workspace/goal5838-final-7da6805-optix90/goal5838_gpu_exam_verification.json"
+    }
+  },
+  "created_at_utc": "2026-09-03T06:30:53.906459+00:00",
+  "expected_commit": "7da68056550818d8e2f6cdb4d7aa3e9029cc4524",
+  "expected_optix_sdk": "9.0.0",
+  "expected_optix_version": 90000,
+  "gpu": {
+    "compute_capability": "8.9",
+    "driver_version": "580.159.04",
+    "name": "NVIDIA RTX 2000 Ada Generation",
+    "uuid": "GPU-f0ab2afa-0ec0-7da9-c951-01fc713ee1e9"
+  },
+  "gpu_execution_performed": false,
+  "paths": {
+    "artifact_dir": "/workspace/goal5838-final-7da6805-optix90",
+    "artifacts": {
+      "gpu_exam": "/workspace/goal5838-final-7da6805-optix90/goal5838_gpu_exam.json",
+      "native": "/workspace/goal5838-final-7da6805-optix90/librtdl_optix_goal5838.so",
+      "native_build_log": "/workspace/goal5838-final-7da6805-optix90/goal5838_native_build.log",
+      "native_build_manifest": "/workspace/goal5838-final-7da6805-optix90/goal5838_native_build.json",
+      "verification": "/workspace/goal5838-final-7da6805-optix90/goal5838_gpu_exam_verification.json"
+    },
+    "cuda_compiler_environment": {
+      "cleared_ambient_environment": [
+        "RTDL_V4_FORMAL_LEAF_CACHE",
+        "RTDL_V4_FORMAL_LEAF_CACHE_MANIFEST",
+        "RTDL_V4_FORMAL_LEAF_CACHE_MANIFEST_SHA256",
+        "LD_PRELOAD",
+        "NUMBA_ENABLE_CUDASIM",
+        "NUMBA_FORCE_CUDA_CC",
+        "NUMBA_CUDA_DEFAULT_PTX_CC",
+        "NUMBA_CUDA_DRIVER",
+        "RTDL_V4_NVRTC_LIBRARY",
+        "RTDL_OPTIX_LIB",
+        "RTDL_OPTIX_LIBRARY"
+      ],
+      "cuda_prefix": "/usr/local/cuda-12.8",
+      "environment_sha256": "f57ea3d5ff5cb6decfef050875ba8b5ea8c6ab77727c9f5b792582f360a1e57e",
+      "formal_numba_cache_disabled": true,
+      "ld_library_path_prefix": [
+        "/usr/local/cuda-12.8/targets/x86_64-linux/lib",
+        "/usr/local/cuda-12.8/nvvm/lib64",
+        "/usr/local/cuda-12.8/lib64",
+        "/usr/lib/x86_64-linux-gnu"
+      ],
+      "libdevice": "/usr/local/cuda-12.8/nvvm/libdevice/libdevice.10.bc",
+      "libdevice_sha256": "25498d6e3c64782833ff15a5f56665ff09e5d21177163148a1cf008c61733449",
+      "nvrtc_library": "/usr/local/cuda-12.8/targets/x86_64-linux/lib/libnvrtc.so.12.8.93",
+      "nvrtc_sha256": "2bb82d1a34b9fefa46aca357299aed66763d4d6613d015d5a591224c00fa7e5a",
+      "nvvm_library": "/usr/local/cuda-12.8/nvvm/lib64/libnvvm.so.4.0.0",
+      "nvvm_sha256": "dfb07dc65ffb0f7a16bc82ee1f87d7f4634b908d30aa8103d1e28afb1fe6589e",
+      "optix_prefix": "/workspace/goal5838-optix-dev",
+      "path_prefix": [
+        "/usr/local/cuda-12.8/bin"
+      ]
+    },
+    "cuda_header_inventory": [
+      {
+        "bytes": 1156988,
+        "name": "cuda.h",
+        "path": "/usr/local/cuda-12.8/targets/x86_64-linux/include/cuda.h",
+        "sha256": "4568cc9e7a321e47707cd6403980f21ac2e2e55170500d0e0a3f54feb03a9acb"
+      },
+      {
+        "bytes": 98570,
+        "name": "cuda_runtime.h",
+        "path": "/usr/local/cuda-12.8/targets/x86_64-linux/include/cuda_runtime.h",
+        "sha256": "1aaa84ed2ac4086acdf908390e4f742d28ecfb1bca94766944b9691fb2d47a13"
+      },
+      {
+        "bytes": 44261,
+        "name": "nvrtc.h",
+        "path": "/usr/local/cuda-12.8/targets/x86_64-linux/include/nvrtc.h",
+        "sha256": "07389d2cf314fe749050767641a868f9514ee41c759048288c531e24f778504e"
+      }
+    ],
+    "cuda_prefix": "/usr/local/cuda-12.8",
+    "optix_header_inventory": [
+      {
+        "bytes": 1115,
+        "name": "optix.h",
+        "path": "/workspace/goal5838-optix-dev/include/optix.h",
+        "sha256": "85a13f5966e98e23b00cb6be0fa25ad6580bbbea94bc9fce9d0bf00d16827b8f"
+      },
+      {
+        "bytes": 125776,
+        "name": "optix_device.h",
+        "path": "/workspace/goal5838-optix-dev/include/optix_device.h",
+        "sha256": "3a5c1f784b64161479546462f35f953ab0f9e14058356c45ab1422313e79676f"
+      },
+      {
+        "bytes": 2328,
+        "name": "optix_function_table_definition.h",
+        "path": "/workspace/goal5838-optix-dev/include/optix_function_table_definition.h",
+        "sha256": "a9b118be4c7ca3ee13824baecdfb8d85f60aa179c8f957342d2d2fba624a5c66"
+      },
+      {
+        "bytes": 18176,
+        "name": "optix_stack_size.h",
+        "path": "/workspace/goal5838-optix-dev/include/optix_stack_size.h",
+        "sha256": "d1e10de40b2a12fd2765d305439946ad7e8a976cb65466eb3d4b2a516b6b492a"
+      },
+      {
+        "bytes": 41120,
+        "name": "optix_stubs.h",
+        "path": "/workspace/goal5838-optix-dev/include/optix_stubs.h",
+        "sha256": "6fdc4c2e60334665ee01e5eae3a90099f5442bd0236f3030f6c03f7c4010a413"
+      }
+    ],
+    "optix_prefix": "/workspace/goal5838-optix-dev",
+    "repository": "/workspace/rtdl-goal5838-9e0cb79"
+  },
+  "performance_claim_authorized": false,
+  "probes": {
+    "baseline_commit": {
+      "command": [
+        "git",
+        "cat-file",
+        "-e",
+        "0f5c9d4297f73e412732e5a8ab133423fe4cfd21^{commit}"
+      ],
+      "command_display": "git cat-file -e '0f5c9d4297f73e412732e5a8ab133423fe4cfd21^{commit}'",
+      "output_tail": "",
+      "returncode": 0
+    },
+    "cuda_compiler_environment": {
+      "cleared_ambient_environment": [
+        "RTDL_V4_FORMAL_LEAF_CACHE",
+        "RTDL_V4_FORMAL_LEAF_CACHE_MANIFEST",
+        "RTDL_V4_FORMAL_LEAF_CACHE_MANIFEST_SHA256",
+        "LD_PRELOAD",
+        "NUMBA_ENABLE_CUDASIM",
+        "NUMBA_FORCE_CUDA_CC",
+        "NUMBA_CUDA_DEFAULT_PTX_CC",
+        "NUMBA_CUDA_DRIVER",
+        "RTDL_V4_NVRTC_LIBRARY",
+        "RTDL_OPTIX_LIB",
+        "RTDL_OPTIX_LIBRARY"
+      ],
+      "cuda_prefix": "/usr/local/cuda-12.8",
+      "environment_sha256": "f57ea3d5ff5cb6decfef050875ba8b5ea8c6ab77727c9f5b792582f360a1e57e",
+      "formal_numba_cache_disabled": true,
+      "ld_library_path_prefix": [
+        "/usr/local/cuda-12.8/targets/x86_64-linux/lib",
+        "/usr/local/cuda-12.8/nvvm/lib64",
+        "/usr/local/cuda-12.8/lib64",
+        "/usr/lib/x86_64-linux-gnu"
+      ],
+      "libdevice": "/usr/local/cuda-12.8/nvvm/libdevice/libdevice.10.bc",
+      "libdevice_sha256": "25498d6e3c64782833ff15a5f56665ff09e5d21177163148a1cf008c61733449",
+      "nvrtc_library": "/usr/local/cuda-12.8/targets/x86_64-linux/lib/libnvrtc.so.12.8.93",
+      "nvrtc_sha256": "2bb82d1a34b9fefa46aca357299aed66763d4d6613d015d5a591224c00fa7e5a",
+      "nvvm_library": "/usr/local/cuda-12.8/nvvm/lib64/libnvvm.so.4.0.0",
+      "nvvm_sha256": "dfb07dc65ffb0f7a16bc82ee1f87d7f4634b908d30aa8103d1e28afb1fe6589e",
+      "optix_prefix": "/workspace/goal5838-optix-dev",
+      "path_prefix": [
+        "/usr/local/cuda-12.8/bin"
+      ]
+    },
+    "gate_focused_tests": {
+      "command": [
+        "/workspace/goal5838-python-9e0cb79/bin/python",
+        "-m",
+        "unittest",
+        "tests.goal5838_preregistration_test",
+        "tests.goal5838_generic_family_lifecycle_test",
+        "tests.goal5838_core_seal_and_selection_test",
+        "tests.goal5838_family_route_migration_test",
+        "tests.goal5838_selected_sphere_any_hit_count_test",
+        "tests.goal5838_pod_preflight_test"
+      ],
+      "command_display": "/workspace/goal5838-python-9e0cb79/bin/python -m unittest tests.goal5838_preregistration_test tests.goal5838_generic_family_lifecycle_test tests.goal5838_core_seal_and_selection_test tests.goal5838_family_route_migration_test tests.goal5838_selected_sphere_any_hit_count_test tests.goal5838_pod_preflight_test",
+      "output_tail": "........................................................................................\n----------------------------------------------------------------------\nRan 88 tests in 5.596s\n\nOK\n",
+      "returncode": 0
+    },
+    "gate_freeze": {
+      "command": [
+        "/workspace/goal5838-python-9e0cb79/bin/python",
+        "scripts/goal5838_freeze_generic_core.py",
+        "--verify-stored"
+      ],
+      "command_display": "/workspace/goal5838-python-9e0cb79/bin/python scripts/goal5838_freeze_generic_core.py --verify-stored",
+      "output_tail": "{\"challenge_table_sha256\": \"0a2b2c01aed75ad08fad44f7fbc2509ef632d786545e0202b9a4b27425a30345\", \"eligible_candidate_count\": 10, \"frozen_core_file_count\": 3, \"seal_sha256\": \"c2a461c8a4a61650044b724d103a80d25241b44b7b486c071b601946292e5dae\", \"selected_candidate_count\": 0, \"status\": \"PASS__GOAL5838_GENERIC_CORE_AND_CHALLENGE_TABLE_SEAL\"}\n",
+      "returncode": 0
+    },
+    "gate_selection": {
+      "command": [
+        "/workspace/goal5838-python-9e0cb79/bin/python",
+        "scripts/goal5838_select_challenge.py",
+        "--verify-stored"
+      ],
+      "command_display": "/workspace/goal5838-python-9e0cb79/bin/python scripts/goal5838_select_challenge.py --verify-stored",
+      "output_tail": "{\"frozen_core_byte_changes\": 0, \"selected_candidate_id\": \"builtin_sphere::any_hit_count_continue_u64_per_query\", \"selection_result_sha256\": \"9f543f52cd9453e0410766aa79c3f302a6a0e39314487279842fa5ad5e57ed61\", \"status\": \"PASS__GOAL5838_STORED_SELECTION_VERIFIED\"}\n",
+      "returncode": 0
+    },
+    "git_head": {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "command_display": "git rev-parse HEAD",
+      "output_tail": "7da68056550818d8e2f6cdb4d7aa3e9029cc4524\n",
+      "returncode": 0
+    },
+    "git_status": {
+      "command": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "command_display": "git status --porcelain=v1 --untracked-files=all",
+      "output_tail": "",
+      "returncode": 0
+    },
+    "gpu_identity": {
+      "command": [
+        "/usr/bin/nvidia-smi",
+        "--id=0",
+        "--query-gpu=name,uuid,driver_version,compute_cap",
+        "--format=csv,noheader,nounits"
+      ],
+      "command_display": "/usr/bin/nvidia-smi --id=0 --query-gpu=name,uuid,driver_version,compute_cap --format=csv,noheader,nounits",
+      "output_tail": "NVIDIA RTX 2000 Ada Generation, GPU-f0ab2afa-0ec0-7da9-c951-01fc713ee1e9, 580.159.04, 8.9\n",
+      "returncode": 0
+    },
+    "nvcc_version": {
+      "command": [
+        "/usr/local/cuda-12.8/bin/nvcc",
+        "--version"
+      ],
+      "command_display": "/usr/local/cuda-12.8/bin/nvcc --version",
+      "output_tail": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Fri_Feb_21_20:23:50_PST_2025\nCuda compilation tools, release 12.8, V12.8.93\nBuild cuda_12.8.r12.8/compiler.35583870_0\n",
+      "returncode": 0
+    },
+    "optix_git_head": {
+      "command": [
+        "git",
+        "-C",
+        "/workspace/goal5838-optix-dev",
+        "rev-parse",
+        "HEAD"
+      ],
+      "command_display": "git -C /workspace/goal5838-optix-dev rev-parse HEAD",
+      "output_tail": "fff65c2a7c592f1ea5f1661ad7d2381cf965f9bd\n",
+      "returncode": 0
+    },
+    "optix_runtime_abi": {
+      "compile_command_template": [
+        "/usr/bin/x86_64-linux-gnu-g++-13",
+        "-std=c++17",
+        "-I/workspace/goal5838-optix-dev/include",
+        "-I/usr/local/cuda-12.8/include",
+        "<temporary>/probe.cpp",
+        "-ldl",
+        "-o",
+        "<temporary>/probe"
+      ],
+      "compile_returncode": 0,
+      "compiler_output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "executable_bytes": 16296,
+      "executable_sha256": "c4f6d57bccac6a106f9c79f0290f9f3274884b3e9e588f7cbe755ac0dc4b8a9a",
+      "optix_launch_count": 0,
+      "passed": true,
+      "runtime_output": "optixInit_result=0",
+      "runtime_returncode": 0,
+      "source_sha256": "ccc24914e3a88ddd711b2fa9dfc40b125ed3649dca24429571a444c9c9f8a876"
+    },
+    "selected_callback_compiler": {
+      "command_template": [
+        "/workspace/goal5838-python-9e0cb79/bin/python",
+        "/workspace/rtdl-goal5838-9e0cb79/scripts/goal5838_pod_preflight.py",
+        "--internal-callback-compile-probe",
+        "<temporary>/request.json",
+        "<temporary>/result.json"
+      ],
+      "gpu_execution_performed": false,
+      "native_prepare_called": false,
+      "optix_launch_count": 0,
+      "output_tail": "",
+      "parse_error": null,
+      "passed": true,
+      "receipt": {
+        "callback_roles": [
+          "make_ray",
+          "any_hit",
+          "miss",
+          "finalize"
+        ],
+        "classification": "prospective_selected_extension",
+        "compiled_through_generic_family_front_door": true,
+        "compute_capability": [
+          8,
+          9
+        ],
+        "executable_identity": {
+          "executable_sha256": "4d330d4d3a5018c7a3fc3306d54b152bdd36ccebc10863912e2850f03854ef78",
+          "generated_artifact_sha256": "0f927f783b8f995d93c3d68e7063edbd052aadb41d4222365f758b896c94dae9",
+          "identity_sha256": "327e0f16a7326977d54b592ea5f502585080b69f384d1608c53662b835c917ae",
+          "plan_sha256": "5a8f15a3941f10560ffecc6021cd4689c068f5ed39903014b1d5e99e98b3d669",
+          "provider_artifact_sha256": "bb2e7dff6d5789711fe1726213c867f10d80f48c8e527f5e4b34557d69047f57",
+          "provider_descriptor_sha256": "a92be4d2defc87fd7dcf2e1edd143cf6afb63035a7048a7560d486b4bdf7463a",
+          "provider_projection_sha256": "fe26dc5417f644c7c649dfbe9827404ed9c914d82334d16e878872cc11f68ec1",
+          "schema": "rtdl.family_executable_identity.v1",
+          "target_sha256": "7836963c87ef03f41d9bc7902fa28d7cbaa5dd2044e5ba44881588049faabd6e"
+        },
+        "gpu_execution_performed": false,
+        "native_library_loaded": false,
+        "native_prepare_called": false,
+        "optix_launch_count": 0,
+        "optix_sdk": "9.0.0",
+        "plan_sha256": "5a8f15a3941f10560ffecc6021cd4689c068f5ed39903014b1d5e99e98b3d669",
+        "provider_descriptor_sha256": "a92be4d2defc87fd7dcf2e1edd143cf6afb63035a7048a7560d486b4bdf7463a",
+        "provider_id": "rtdl.optix.builtin_sphere_any_hit_count",
+        "provider_projection_sha256": "fe26dc5417f644c7c649dfbe9827404ed9c914d82334d16e878872cc11f68ec1",
+        "schema": "rtdl.goal5838.selected_callback_compile_probe.v1"
+      },
+      "receipt_sha256": "46873796af8b76646762b16b54e7e540758c03721f244ac0c311b60e21f21055",
+      "request": {
+        "compute_capability": [
+          8,
+          9
+        ],
+        "cuda_include": "/usr/local/cuda-12.8/include",
+        "expected_numba_version": "0.65.1",
+        "expected_numpy_version": "2.4.4",
+        "expected_python_version": "3.12.3",
+        "optix_include": "/workspace/goal5838-optix-dev/include",
+        "optix_sdk": "9.0.0"
+      },
+      "request_sha256": "02a2ca1d87c2e2d0cc22b1ce486b43ef19d020a06ae6937ac2a9b93b6f25926e",
+      "returncode": 0
+    }
+  },
+  "python": {
+    "executable": "/workspace/goal5838-python-9e0cb79/bin/python",
+    "packages": {
+      "numba": "0.65.1",
+      "numpy": "2.4.4"
+    },
+    "version": "3.12.3"
+  },
+  "ready_for_gpu_exam": true,
+  "repair_required_checks": [],
+  "result_sha256": "ba20a3823032d37051c734cb0c1504618f9fdcee08483fbaadadad52cca90155",
+  "schema": "rtdl.goal5838.pod_preflight.v2",
+  "scientific_failure_claimed": false,
+  "status": "PASS__GOAL5838_POD_READY_FOR_FROZEN_GPU_EXAM__NO_GPU_EXECUTION_CLAIM"
+}

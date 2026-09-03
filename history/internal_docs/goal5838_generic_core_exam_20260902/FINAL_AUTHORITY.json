@@ -1,0 +1,103 @@
+{
+  "answer": "YES__ONE_BOUNDED_PROSPECTIVE_TRUE_OPTIX_RESULT",
+  "authority_sha256": "c0578a22e006e2bee2dec39e6de98201ce547eca95dc20b6b7f4c1a891479a8e",
+  "baseline_commit": "0f5c9d4297f73e412732e5a8ab133423fe4cfd21",
+  "claim_boundary": {
+    "arbitrary_callback_ir_gpu_execution": false,
+    "external_review_or_consensus": false,
+    "one_bounded_prospective_frozen_core_topology_result": true,
+    "paper_app": false,
+    "performance_or_speedup": false,
+    "universal_provider_portability": false
+  },
+  "completion": {
+    "external_review_deferred_by_owner": true,
+    "goal5838_complete": true,
+    "preregistered_success_condition_satisfied": true,
+    "scientific_failure_claimed": false
+  },
+  "date": "2026-09-03",
+  "evidence_commit": "7da68056550818d8e2f6cdb4d7aa3e9029cc4524",
+  "evidence_files": [
+    {
+      "bytes": 37359,
+      "path": "history/internal_docs/goal5838_generic_core_exam_20260902/FINAL_POD_PREFLIGHT.json",
+      "sha256": "a001e285fae610d5154528ec326104c3252011773e15324f6c9760f1ebf90f5c"
+    },
+    {
+      "bytes": 14001,
+      "path": "history/internal_docs/goal5838_generic_core_exam_20260902/FINAL_NATIVE_BUILD_MANIFEST.json",
+      "sha256": "670782153e65a0ac9b5a9472aba981144861dc1d55fae49ef0aa2d90ee3fb9ad"
+    },
+    {
+      "bytes": 48507,
+      "path": "history/internal_docs/goal5838_generic_core_exam_20260902/FINAL_GPU_EXAM.json",
+      "sha256": "560b88e53aa5bebaca0d6e1cf98ae19bfee9b9f0bda0187bdfa2b80344431593"
+    },
+    {
+      "bytes": 826,
+      "path": "history/internal_docs/goal5838_generic_core_exam_20260902/FINAL_GPU_EXAM_VERIFICATION.json",
+      "sha256": "3451b9127260ef962a0d800302ec16dd2bb2d159debb5dec3e09476594b26783"
+    }
+  ],
+  "frozen_authorities": {
+    "authority_files": [
+      {
+        "bytes": 23059,
+        "path": "history/internal_docs/goal5838_generic_core_exam_20260902/CHALLENGE_TABLE.json",
+        "sha256": "2ac4681d3d5ebba35dcbafec631682e0dbe79766a7301df646fb63b684275a48"
+      },
+      {
+        "bytes": 4883,
+        "path": "history/internal_docs/goal5838_generic_core_exam_20260902/GENERIC_CORE_SEAL.json",
+        "sha256": "3d08e556d483e84d3bdd1596c9925801ca8c3ac8eda25171346dec9d46960e87"
+      },
+      {
+        "bytes": 5111,
+        "path": "history/internal_docs/goal5838_generic_core_exam_20260902/CHALLENGE_SELECTION_RESULT.json",
+        "sha256": "f12461047e234901b799d5fadeb1ce9bf58172a34a21138a09ceeac51ae772f9"
+      }
+    ],
+    "challenge_table_sha256": "0a2b2c01aed75ad08fad44f7fbc2509ef632d786545e0202b9a4b27425a30345",
+    "frozen_core_changed_file_count": 0,
+    "generic_core_seal_sha256": "c2a461c8a4a61650044b724d103a80d25241b44b7b486c071b601946292e5dae",
+    "selection_result_sha256": "9f543f52cd9453e0410766aa79c3f302a6a0e39314487279842fa5ad5e57ed61"
+  },
+  "goal": 5838,
+  "native_provider": {
+    "all_required_symbols_exported": true,
+    "bytes": 7181936,
+    "bytes_reverified_by_independent_verifier": true,
+    "committed_to_git": false,
+    "sha256": "c91a22edbd7855824c6ad111a11c77aa599bdbb767b54b0d2e3f4355a1932076"
+  },
+  "pod_target": {
+    "compiler_environment_identity_sha256": "d12ed9d24a1857e95aa68ac2f115a9d891361b082389ad10bb99bff0db3f11a8",
+    "compute_capability": "8.9",
+    "gpu": {
+      "compute_capability": "8.9",
+      "driver_version": "580.159.04",
+      "memory_mib": "16380",
+      "name": "NVIDIA RTX 2000 Ada Generation",
+      "pci_bus_id": "00000000:C3:00.0",
+      "uuid": "GPU-f0ab2afa-0ec0-7da9-c951-01fc713ee1e9"
+    },
+    "optix_sdk": "9.0.0",
+    "ssh_endpoint": "root@213.173.108.100:12943"
+  },
+  "prospective_result": {
+    "frozen_core_changed_file_count": 0,
+    "oracle_case_count": 12,
+    "oracle_exact_match_count": 12,
+    "true_optix_launch_count": 2
+  },
+  "repair_log": {
+    "bytes": 4638,
+    "path": "history/internal_docs/goal5838_generic_core_exam_20260902/FIRST_POD_EXECUTION_REPAIR_LOG.md",
+    "sha256": "7b85f4d26528ca327f1feec2a80cb6dacb0fadc89c99a45785d94abea6b70bca"
+  },
+  "schema": "rtdl.goal5838.final_authority.v1",
+  "scientific_question": "schema_driven_frozen_core_executes_independently_selected_new_topology_without_core_change",
+  "selected_candidate_id": "builtin_sphere::any_hit_count_continue_u64_per_query",
+  "status": "PASS__GOAL5838_COMPLETE_AT_PREREGISTERED_BOUNDED_SCOPE"
+}
