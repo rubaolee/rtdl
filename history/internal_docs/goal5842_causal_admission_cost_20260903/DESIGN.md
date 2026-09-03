@@ -50,11 +50,12 @@ row.  OWL remains responsibility analysis unless an exact public executable
 arm is frozen before worker zero.
 
 The common public output contract is the canonical relation-row set for the
-relation task and the checked weighted scalar for the triangle task.  Direct
-and PyOptiX additionally validate the triangle per-ray vector; current RTDL's
-generic public adapter exposes only the scalar, so the stronger internal vector
-is not fabricated as a cross-arm RTDL output.  Capacity, overlap threshold,
-ray bounds, geometry, queries, and weights are all part of each input digest.
+relation task and the checked weighted scalar for the triangle task. Direct,
+PyOptiX, and the fixed-protocol RTDL owner each validate the triangle per-ray
+vector in separate pre-worker-zero, non-timed witnesses. Current RTDL's generic
+public adapter exposes only the scalar, so the stronger internal vector is not
+fabricated as a cross-arm generic result. Capacity, overlap threshold, ray
+bounds, geometry, queries, and weights are all part of each input digest.
 
 ## Phase boundaries
 
@@ -70,6 +71,13 @@ Every provider-baseline worker reports deterministic input materialization,
 route declaration and artifact binding, provider projection and generic-family
 admission, runtime target/toolchain binding, target materialization, native
 prepare, first complete execution, steady complete execution, and close.
+The registered execution interval ends when the implementation has materialized
+the common public result and completed its required status checks. Experimental
+comparison with the frozen oracle occurs immediately afterward and is never
+timed. For the triangle task, the explicit Goal5842 Direct and PyOptiX modes do
+not copy the auxiliary per-ray vector to host during this interval. RTDL's
+current internal per-ray materialization and host reduction remain measured as
+real implementation cost.
 
 Every three-arm baseline schedule row is a composite of two independent fresh
 processes.  The first process measures input, setup, first complete execution,
@@ -92,8 +100,9 @@ block deltas in absolute nanoseconds.  The full route-to-capability delta is a
 secondary statistic.  A fixed-seed 10,000-draw percentile bootstrap reports
 indices 249 and 9749 for each.  Ratios against the unchecked arm are forbidden.
 
-Steady execution uses eight warmups and 64 complete execute-and-validate
-samples per worker.  Baseline ordering uses all six permutations of Direct,
+Steady execution uses eight warmups and 64 complete execution samples per
+worker, each followed immediately by mandatory out-of-interval oracle
+validation. Baseline ordering uses all six permutations of Direct,
 PyOptiX-compatible, and checked RTDL across 18 blocks per task.  Adverse rows
 are retained.  No success threshold is selected.
 
@@ -115,7 +124,9 @@ preregistration, Python executable, native DSO and build manifest, Direct
 binary, CUDA device source, OptiX/CUDA headers, PyOptiX package/version/source
 identity, CuPy identity, GPU UUID, driver, and architecture generation.  A
 non-timed GPU witness must show checker-on/off executable and output identity
-for all three tasks.  After both controllers finish, a separately implemented
+for all three tasks. Additional non-timed witnesses must establish the full
+triangle per-ray oracle for RTDL, PyOptiX, and Direct before worker zero. After
+both controllers finish, a separately implemented
 recount reads every raw receipt and independently recomputes all medians,
 within-block deltas, ratios, and fixed-seed bootstrap intervals.
 
@@ -127,6 +138,17 @@ GPU UUIDs, commit drift, or preregistration drift.  It preserves each machine's
 absolute results separately and never computes a cross-machine raw-time ratio.
 
 ## Claim ceiling
+
+V9 is an append-only fair-baseline redesign after V8 failed before worker zero.
+Prior V4/V5 partial timing is disclosed and not pooled. The V9 correction was
+motivated by source-level output/timing-contract inspection, but it is not
+called a strict replication because earlier partial timing existed.
+
+V10 supersedes the locally frozen V9 before any V9 formal execution. It only
+restores an inherited PyOptiX source-level bulk-copy contract without changing
+runtime semantics, tasks, estimands, schedules, witnesses, timing boundaries,
+or statistics. Six unregistered correctness-preflight calls comprising eight
+OptiX launches are disclosed separately and are excluded from all estimators.
 
 Goal5842 may attribute only the measured incremental generic-admission delta.
 It may not claim that this delta explains all prior setup overhead, that the

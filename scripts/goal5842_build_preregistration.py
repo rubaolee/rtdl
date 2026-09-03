@@ -29,14 +29,14 @@ from experiments.goal5842_causal_admission.contracts import (
     digest,
     pin_file,
     post_failure_replication_provenance,
-    v8_preregistration_supersession,
+    v10_preregistration_supersession,
     validate_preregistration,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / (
     "history/internal_docs/goal5842_causal_admission_cost_20260903/"
-    "PREREGISTRATION_V8.json"
+    "PREREGISTRATION_V10.json"
 )
 
 
@@ -51,8 +51,8 @@ def build() -> dict[str, object]:
     result: dict[str, object] = {
         "schema": PREREGISTRATION_SCHEMA,
         "date": "2026-09-03",
-        "status": "FROZEN_BEFORE_INDEPENDENT_V8_REPLICATION_TIMING",
-        "supersession": v8_preregistration_supersession(),
+        "status": "FROZEN_BEFORE_INDEPENDENT_V10_FAIR_BASELINE_TIMING",
+        "supersession": v10_preregistration_supersession(),
         "post_failure_replication": post_failure_replication_provenance(),
         "scientific_question": (
             "How much cold post-import generic-family latency is attributable "
@@ -114,6 +114,10 @@ def build() -> dict[str, object]:
             "rtdl_check_on_off_complete_execution_call_count": (
                 2 * (2 * (STEADY_WARMUPS + STEADY_REPETITIONS) + 1)
             ),
+            "rtdl_triangle_auxiliary_full_oracle_call_count": 1,
+            "rtdl_total_witness_complete_execution_call_count": (
+                2 * (2 * (STEADY_WARMUPS + STEADY_REPETITIONS) + 1) + 1
+            ),
             "rtdl_repeated_lifecycle_matches_steady_shape": True,
             "pyoptix_package_front_door_task_count": 2,
             "pyoptix_calls_per_task": STEADY_WARMUPS + STEADY_REPETITIONS,
@@ -121,12 +125,13 @@ def build() -> dict[str, object]:
                 2 * (STEADY_WARMUPS + STEADY_REPETITIONS)
             ),
             "pyoptix_optix_launch_count": (3 * (STEADY_WARMUPS + STEADY_REPETITIONS)),
+            "direct_full_oracle_task_count": 2,
+            "direct_complete_execution_call_count": 2,
+            "direct_optix_launch_count": 3,
             "all_witnesses_register_no_timing": True,
             "worker_zero_after_all_witnesses_pass": True,
-            "direct_witness_excluded": (
-                "V5 Direct relation first-and-steady subworkers completed; "
-                "the Direct binary has no separate unregistered no-duration witness mode"
-            ),
+            "triangle_public_output_scope": "CHECKED_U64_WEIGHTED_SCALAR_ONLY",
+            "triangle_auxiliary_per_ray_scope": "NON_PUBLIC_UNTIMED_FULL_ORACLE",
         },
         "baseline_worker_design": {
             "composite_workers": len(baseline_schedule),
@@ -137,6 +142,12 @@ def build() -> dict[str, object]:
             "close_phase_cross_arm_ratio_forbidden": True,
             "input_materialization_reported_separately_from_setup": True,
             "setup_total_excludes_input_first_execution_and_close": True,
+            "registered_execute_interval_ends_before_experimental_oracle_comparison": True,
+            "every_registered_sample_checked_immediately_after_interval": True,
+            "triangle_cross_arm_public_output": "CHECKED_U64_WEIGHTED_SCALAR_ONLY",
+            "direct_and_pyoptix_triangle_timed_host_copy_excludes_per_ray_vector": True,
+            "rtdl_internal_per_ray_materialization_is_retained_as_implementation_cost": True,
+            "full_per_ray_correctness_proved_only_by_pre_worker_zero_witnesses": True,
         },
         "byte_identity_invariant": {
             "family_plan": "EXACT_SHA256_EQUAL",
@@ -227,11 +238,19 @@ def build() -> dict[str, object]:
             "v7_untimed_calls_count_as_v8_witness": False,
             "v4_v5_v6_or_v7_rows_pooled_into_v8_estimators": False,
             "v8_called_a_retry_of_v7": False,
+            "v8_preworker_attempt_reclassified_as_success": False,
+            "v8_untimed_calls_count_as_v9_witness": False,
+            "v4_through_v8_rows_pooled_into_v9_estimators": False,
+            "v9_called_a_retry_of_v8": False,
+            "prior_partial_timing_hidden": False,
+            "v9_preexecution_freeze_reclassified_as_executed_result": False,
+            "v9_rows_pooled_into_v10_estimators": False,
+            "v10_called_a_result_dependent_retry": False,
         },
         "source_manifest": manifest,
         "source_manifest_sha256": digest(manifest),
         "preregistration_build_counter_scope": {
-            "top_level_counters_cover_this_v8_replication_build_only": True,
+            "top_level_counters_cover_this_v10_fair_baseline_build_only": True,
             "prior_evidence_is_bound_in_provenance_fields": True,
             "pre_v4_untimed_gpu_complete_execution_call_count": 8,
             "v4_registered_causal_worker_timing_vector_count": 216,
@@ -250,9 +269,25 @@ def build() -> dict[str, object]:
             "v7_preworker_attempt_count": 1,
             "v7_registered_timing_observation_count": 0,
             "v7_untimed_rtdl_identity_complete_execution_call_count": 72,
+            "v8_preworker_attempt_count": 1,
+            "v8_registered_timing_observation_count": 0,
+            "v8_untimed_rtdl_identity_complete_execution_call_count": 145,
+            "v9_preexecution_freeze_count": 1,
+            "v9_registered_timing_observation_count": 0,
+            "v9_formal_gpu_execution_count": 0,
+            "v9_unregistered_engineering_complete_execution_call_count": 6,
+            "v9_unregistered_engineering_optix_launch_count": 8,
         },
         "registered_timing_observation_count": 0,
         "gpu_execution_count": 0,
+        "gpu_execution_count_scope": "FORMAL_V10_TRANSACTION_ONLY",
+        "unregistered_engineering_preflight": {
+            "complete_execution_call_count": 6,
+            "optix_launch_count": 8,
+            "registered_timing_observation_count": 0,
+            "timings_retained_or_used": False,
+            "included_in_estimators": False,
+        },
     }
     result["preregistration_sha256"] = digest(result)
     validate_preregistration(result, ROOT, verify_files=True)

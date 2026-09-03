@@ -90,15 +90,38 @@ V7_PREREGISTRATION_SHA256 = (
 V7_PREREGISTRATION_FILE_SHA256 = (
     "138e71fa9f4e1c4fd1437c38fcbab5a7356404c4967f810a1285f80c46d37b96"
 )
-PREREGISTRATION_SCHEMA = "rtdl.goal5842.causal_admission_preregistration.v8"
+V8_PREREGISTRATION_SCHEMA = "rtdl.goal5842.causal_admission_preregistration.v8"
+V8_PREREGISTRATION_PATH = (
+    "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+    "PREREGISTRATION_V8.json"
+)
+V8_PREREGISTRATION_SHA256 = (
+    "5929d9d1c4fe69961f2c24412cf476c1f3cd4ec8a485b4038b53108ebdcf4017"
+)
+V8_PREREGISTRATION_FILE_SHA256 = (
+    "1116b18b9e54ce942ac513488f2ab3468f775db5472af4615bde263f4a13e325"
+)
+V9_PREREGISTRATION_SCHEMA = "rtdl.goal5842.causal_admission_preregistration.v9"
+V9_PREREGISTRATION_PATH = (
+    "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+    "PREREGISTRATION_V9.json"
+)
+V9_PREREGISTRATION_SHA256 = (
+    "88543c367920697e6d9e11052c923af2e79e8d373c87aea480e55d9a52c54e28"
+)
+V9_PREREGISTRATION_FILE_SHA256 = (
+    "417ae18b5c249d439d9794bb6bd7a5d0bf890ea7a39203a38b9caa7f0146355a"
+)
+PREREGISTRATION_SCHEMA = "rtdl.goal5842.causal_admission_preregistration.v10"
 EXECUTION_AUTHORITY_SCHEMA = "rtdl.goal5842.execution_authority.v1"
 WORKER_RECEIPT_SCHEMA = "rtdl.goal5842.causal_admission_worker.v1"
 CONTROLLER_RESULT_SCHEMA = "rtdl.goal5842.causal_admission_controller.v1"
-BASELINE_SUBWORKER_SCHEMA = "rtdl.goal5842.baseline_subworker.v1"
-BASELINE_CONTROLLER_SCHEMA = "rtdl.goal5842.baseline_controller.v1"
-GPU_IDENTITY_WITNESS_SCHEMA = "rtdl.goal5842.gpu_identity_witness.v4"
-PYOPTIX_IDENTITY_WITNESS_SCHEMA = "rtdl.goal5842.pyoptix_identity_witness.v2"
-INDEPENDENT_RECOUNT_SCHEMA = "rtdl.goal5842.independent_recount.v5"
+BASELINE_SUBWORKER_SCHEMA = "rtdl.goal5842.baseline_subworker.v2"
+BASELINE_CONTROLLER_SCHEMA = "rtdl.goal5842.baseline_controller.v2"
+GPU_IDENTITY_WITNESS_SCHEMA = "rtdl.goal5842.gpu_identity_witness.v5"
+PYOPTIX_IDENTITY_WITNESS_SCHEMA = "rtdl.goal5842.pyoptix_identity_witness.v3"
+DIRECT_IDENTITY_WITNESS_SCHEMA = "rtdl.goal5842.direct_identity_witness.v1"
+INDEPENDENT_RECOUNT_SCHEMA = "rtdl.goal5842.independent_recount.v6"
 CROSS_GENERATION_AUTHORITY_SCHEMA = "rtdl.goal5842.cross_generation_authority.v1"
 
 CHECK_ON = "CHECK_ON_COLD_PUBLIC_ADMISSION"
@@ -160,6 +183,9 @@ TASK_CONTRACTS = (
         "input_sha256": "8606dd3c22d424a7ee2d64b61918f6185d39d8090d1a0a64001de65054d25e0e",
         "full_oracle_sha256": "2fb668490480cbb5d4d9bbf5a8d357435eff5fc6bb3532427ac2726cdaa88c77",
         "public_output_sha256": "2fb668490480cbb5d4d9bbf5a8d357435eff5fc6bb3532427ac2726cdaa88c77",
+        "public_output_contract_id": "canonical_relation_rows.v1",
+        "public_output_scope": "FULL_CANONICAL_RELATION_ROWS",
+        "auxiliary_full_oracle_required": False,
         "primitive_count": 4_096,
         "query_count": 4_096,
         "three_arm_baseline_included": True,
@@ -169,6 +195,9 @@ TASK_CONTRACTS = (
         "input_sha256": "d994f80418995342d0faa4bda84b42c2ef3604b2798de413a2813dd28dc039a7",
         "full_oracle_sha256": "24f4651b65f2abc93ffae0a8a9603c6eff9e9c6acdc24b65fb20937d6f416d93",
         "public_output_sha256": "2df49102543561c678ce39e05cc6c79ce92c0ea919ad45134d53d19bb67174ef",
+        "public_output_contract_id": "checked_u64_weighted_scalar.v1",
+        "public_output_scope": "CHECKED_U64_WEIGHTED_SCALAR_ONLY",
+        "auxiliary_full_oracle_required": True,
         "primitive_count": 16_384,
         "query_count": 16_384,
         "three_arm_baseline_included": True,
@@ -178,6 +207,9 @@ TASK_CONTRACTS = (
         "input_sha256": "7144bd41ce7167b82e5fc5f33b9d12738a6e7d163cd64c615c5d6ef275231053",
         "full_oracle_sha256": "4aa93e65f6282776efbd54f4c9ea892d5b537277db851447f97f59a9d4e55789",
         "public_output_sha256": "4aa93e65f6282776efbd54f4c9ea892d5b537277db851447f97f59a9d4e55789",
+        "public_output_contract_id": "per_query_count_vector.v1",
+        "public_output_scope": "FULL_PER_QUERY_COUNT_VECTOR",
+        "auxiliary_full_oracle_required": False,
         "primitive_count": 1_024,
         "query_count": 1_024,
         "three_arm_baseline_included": False,
@@ -204,6 +236,7 @@ REQUIRED_SOURCE_PATHS = (
     "scripts/goal5842_bind_execution_authority.py",
     "scripts/goal5842_build_cross_generation_authority.py",
     "scripts/goal5842_build_preregistration.py",
+    "scripts/goal5842_direct_identity_witness.py",
     "scripts/goal5842_gpu_identity_witness.py",
     "scripts/goal5842_pyoptix_identity_witness.py",
     "scripts/goal5842_independent_recount.py",
@@ -281,6 +314,28 @@ REQUIRED_SOURCE_PATHS = (
     (
         "history/internal_docs/goal5842_causal_admission_cost_20260903/"
         "pod_artifacts/goal5842_v7_preworker_failure.tar.gz"
+    ),
+    V8_PREREGISTRATION_PATH,
+    (
+        "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+        "PRE_WORKER_ZERO_REPAIR_06.md"
+    ),
+    (
+        "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+        "PRE_EXECUTION_INTERNAL_HOSTILE_REVIEW_V9.md"
+    ),
+    (
+        "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+        "pod_artifacts/goal5842_v8_preworker_failure.tar.gz"
+    ),
+    V9_PREREGISTRATION_PATH,
+    (
+        "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+        "PRE_WORKER_ZERO_REPAIR_07.md"
+    ),
+    (
+        "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+        "PRE_EXECUTION_INTERNAL_HOSTILE_REVIEW_V10.md"
     ),
 )
 
@@ -629,6 +684,129 @@ def v8_preregistration_supersession() -> dict[str, object]:
     }
 
 
+def v9_preregistration_supersession() -> dict[str, object]:
+    """Bind V9 to V8 and disclose the pre-result measurement-design correction."""
+
+    return {
+        "predecessor_path": V8_PREREGISTRATION_PATH,
+        "predecessor_schema": V8_PREREGISTRATION_SCHEMA,
+        "predecessor_preregistration_sha256": V8_PREREGISTRATION_SHA256,
+        "predecessor_file_sha256": V8_PREREGISTRATION_FILE_SHA256,
+        "v8_source_commit": "adb32fbb05e808cb50e2f7ee48e7f7aae4f854ad",
+        "v8_preworker_artifact_path": (
+            "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+            "pod_artifacts/goal5842_v8_preworker_failure.tar.gz"
+        ),
+        "v8_preworker_artifact_bytes": 3_346,
+        "v8_preworker_artifact_sha256": (
+            "b6a70ec90b40d13269d3b9301c23cb86335c52a2ea34572a6909555362394234"
+        ),
+        "failed_stage": "01_gpu_identity_witness_no_timing",
+        "reason_code": "PUBLIC_RESULT_CONTRACT_AND_TIMED_ORACLE_ASYMMETRY_DEFECT",
+        "execution_authority_sha256": (
+            "7a1646533562b9a4f166668d81519723eeb483a272308e21d916cc7b932f43f9"
+        ),
+        "execution_authority_file_sha256": (
+            "ee6738ab7e42bb7b8fd791442e87a29ef46053cddce076ca68a0ac3185b432fa"
+        ),
+        "worker_zero_reached": False,
+        "registered_timing_observation_count": 0,
+        "gpu_complete_execution_call_count": 145,
+        "gpu_call_count_basis": (
+            "the timer-free relation CHECK_ON and CHECK_OFF loops completed 72 "
+            "calls each; the triangle CHECK_ON first call completed before the "
+            "witness accessed a nonexistent generic-result details attribute"
+        ),
+        "failure_marker_sha256": (
+            "71222136e24031c38abfdec3ff4d276187b25b7eb3cacb701b630e05162ae4c6"
+        ),
+        "command_sha256": (
+            "cab7f10b70fc79a6b4447a3d7450cac5f8fb9af04d8a44a4640717d929a0c7e7"
+        ),
+        "stdout_sha256": (
+            "527389b531cccfee4e65e0769a7134c6135608a9f8fa8ac6c5ddae28455d022f"
+        ),
+        "stderr_sha256": (
+            "2af711b9a710f3d3484dfef9a809c1f5f82b3900e17b0f6b62e3ececec340293"
+        ),
+        "scientific_design_changed": True,
+        "causal_estimand_changed": False,
+        "schedule_changed": False,
+        "workload_values_changed": False,
+        "statistics_changed": False,
+        "hardware_design_changed": False,
+        "witness_contract_changed": True,
+        "baseline_timing_boundary_changed": True,
+        "prior_partial_timing_was_available": True,
+        "design_change_motivated_by_source_contract_audit_not_observed_ratio": True,
+        "repair_scope": (
+            "treat the triangle generic result as its actual public weighted scalar; "
+            "move experimental oracle comparisons outside every registered execute "
+            "interval; add timer-free full-output witnesses for RTDL, PyOptiX, and Direct"
+        ),
+        "v9_is_v8_retry": False,
+        "v9_is_append_only_new_fair_baseline_design": True,
+        "v4_through_v8_rows_pooled_into_v9_estimators": False,
+        "successful_transaction_repeats_all_witnesses_before_worker_zero": True,
+    }
+
+
+def v10_preregistration_supersession() -> dict[str, object]:
+    """Bind V10 to the immutable V9 pre-execution source-contract freeze."""
+
+    return {
+        "predecessor_path": V9_PREREGISTRATION_PATH,
+        "predecessor_schema": V9_PREREGISTRATION_SCHEMA,
+        "predecessor_preregistration_sha256": V9_PREREGISTRATION_SHA256,
+        "predecessor_file_sha256": V9_PREREGISTRATION_FILE_SHA256,
+        "reason_code": "PRE_EXECUTION_INHERITED_SOURCE_CONTRACT_REGRESSION",
+        "worker_zero_reached": False,
+        "registered_timing_observation_count": 0,
+        "formal_gpu_execution_count": 0,
+        "prefreeze_unregistered_engineering_complete_execution_call_count": 6,
+        "prefreeze_unregistered_engineering_optix_launch_count": 8,
+        "prefreeze_engineering_timings_retained_or_used": False,
+        "scientific_design_changed": False,
+        "causal_estimand_changed": False,
+        "schedule_changed": False,
+        "workload_values_changed": False,
+        "statistics_changed": False,
+        "hardware_design_changed": False,
+        "witness_contract_changed": False,
+        "baseline_timing_boundary_changed": False,
+        "runtime_semantics_changed": False,
+        "changed_existing_source_paths": [
+            {
+                "path": "experiments/goal5798_premeasurement/pyoptix_worker.py",
+                "v9_sha256": (
+                    "b144b9d48ba68f5dd0c9c0fbe18aacb119b0ca229dc2e28305c95d536e162019"
+                ),
+                "v10_sha256": (
+                    "b97d299a5a9021ddc49fba969c31f692dfe4416be727b4173d47a639b002c4c7"
+                ),
+                "change": (
+                    "replace a semantically equivalent conditional expression with "
+                    "the historical explicit bulk cp.asnumpy statement inside a "
+                    "public_output_only guard"
+                ),
+            }
+        ],
+        "append_only_documents": [
+            (
+                "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+                "PRE_WORKER_ZERO_REPAIR_07.md"
+            ),
+            (
+                "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+                "PRE_EXECUTION_INTERNAL_HOSTILE_REVIEW_V10.md"
+            ),
+        ],
+        "v10_is_result_dependent_retry": False,
+        "v10_is_append_only_preexecution_source_contract_correction": True,
+        "v9_rows_pooled_into_v10_estimators": False,
+    }
+
+
 def canonical_bytes(value: object) -> bytes:
     return json.dumps(
         value,
@@ -797,16 +975,16 @@ def validate_preregistration(value: object, root: Path, *, verify_files: bool) -
         "preregistration schema mismatch",
     )
     _require(
-        prereg.get("supersession") == v8_preregistration_supersession(),
-        "V8 pre-worker-zero supersession provenance mismatch",
+        prereg.get("supersession") == v10_preregistration_supersession(),
+        "V10 pre-execution supersession provenance mismatch",
     )
     _require(
         prereg.get("post_failure_replication") == post_failure_replication_provenance(),
         "post-failure replication provenance mismatch",
     )
     _require(
-        prereg.get("status") == "FROZEN_BEFORE_INDEPENDENT_V8_REPLICATION_TIMING",
-        "V8 replication preregistration is not frozen",
+        prereg.get("status") == "FROZEN_BEFORE_INDEPENDENT_V10_FAIR_BASELINE_TIMING",
+        "V10 fair-baseline preregistration is not frozen",
     )
     _require(
         prereg.get("registered_timing_observation_count") == 0,
@@ -814,9 +992,24 @@ def validate_preregistration(value: object, root: Path, *, verify_files: bool) -
     )
     _require(prereg.get("gpu_execution_count") == 0, "pre-freeze GPU execution exists")
     _require(
+        prereg.get("gpu_execution_count_scope") == "FORMAL_V10_TRANSACTION_ONLY",
+        "formal GPU execution counter scope mismatch",
+    )
+    _require(
+        prereg.get("unregistered_engineering_preflight")
+        == {
+            "complete_execution_call_count": 6,
+            "optix_launch_count": 8,
+            "registered_timing_observation_count": 0,
+            "timings_retained_or_used": False,
+            "included_in_estimators": False,
+        },
+        "unregistered engineering preflight disclosure mismatch",
+    )
+    _require(
         prereg.get("preregistration_build_counter_scope")
         == {
-            "top_level_counters_cover_this_v8_replication_build_only": True,
+            "top_level_counters_cover_this_v10_fair_baseline_build_only": True,
             "prior_evidence_is_bound_in_provenance_fields": True,
             "pre_v4_untimed_gpu_complete_execution_call_count": 8,
             "v4_registered_causal_worker_timing_vector_count": 216,
@@ -835,6 +1028,14 @@ def validate_preregistration(value: object, root: Path, *, verify_files: bool) -
             "v7_preworker_attempt_count": 1,
             "v7_registered_timing_observation_count": 0,
             "v7_untimed_rtdl_identity_complete_execution_call_count": 72,
+            "v8_preworker_attempt_count": 1,
+            "v8_registered_timing_observation_count": 0,
+            "v8_untimed_rtdl_identity_complete_execution_call_count": 145,
+            "v9_preexecution_freeze_count": 1,
+            "v9_registered_timing_observation_count": 0,
+            "v9_formal_gpu_execution_count": 0,
+            "v9_unregistered_engineering_complete_execution_call_count": 6,
+            "v9_unregistered_engineering_optix_launch_count": 8,
         },
         "replication counter scope or prior evidence disclosure differs",
     )
@@ -847,19 +1048,43 @@ def validate_preregistration(value: object, root: Path, *, verify_files: bool) -
             "rtdl_relation_triangle_calls_per_arm": 72,
             "rtdl_sphere_calls_per_arm": 1,
             "rtdl_check_on_off_complete_execution_call_count": 290,
+            "rtdl_triangle_auxiliary_full_oracle_call_count": 1,
+            "rtdl_total_witness_complete_execution_call_count": 291,
             "rtdl_repeated_lifecycle_matches_steady_shape": True,
             "pyoptix_package_front_door_task_count": 2,
             "pyoptix_calls_per_task": 72,
             "pyoptix_complete_execution_call_count": 144,
             "pyoptix_optix_launch_count": 216,
+            "direct_full_oracle_task_count": 2,
+            "direct_complete_execution_call_count": 2,
+            "direct_optix_launch_count": 3,
             "all_witnesses_register_no_timing": True,
             "worker_zero_after_all_witnesses_pass": True,
-            "direct_witness_excluded": (
-                "V5 Direct relation first-and-steady subworkers completed; "
-                "the Direct binary has no separate unregistered no-duration witness mode"
-            ),
+            "triangle_public_output_scope": "CHECKED_U64_WEIGHTED_SCALAR_ONLY",
+            "triangle_auxiliary_per_ray_scope": "NON_PUBLIC_UNTIMED_FULL_ORACLE",
         },
         "pre-worker-zero witness design drift",
+    )
+    baseline_design = prereg.get("baseline_worker_design")
+    _require(
+        baseline_design
+        == {
+            "composite_workers": 108,
+            "fresh_subworkers_per_composite": 2,
+            "total_subworkers": 216,
+            "first_and_steady_processes_are_independent": True,
+            "direct_close_phase_available": False,
+            "close_phase_cross_arm_ratio_forbidden": True,
+            "input_materialization_reported_separately_from_setup": True,
+            "setup_total_excludes_input_first_execution_and_close": True,
+            "registered_execute_interval_ends_before_experimental_oracle_comparison": True,
+            "every_registered_sample_checked_immediately_after_interval": True,
+            "triangle_cross_arm_public_output": "CHECKED_U64_WEIGHTED_SCALAR_ONLY",
+            "direct_and_pyoptix_triangle_timed_host_copy_excludes_per_ray_vector": True,
+            "rtdl_internal_per_ray_materialization_is_retained_as_implementation_cost": True,
+            "full_per_ray_correctness_proved_only_by_pre_worker_zero_witnesses": True,
+        },
+        "baseline worker timing/output contract drift",
     )
     _require(
         prereg.get("admission_tasks") == list(ADMISSION_TASKS),
@@ -1007,6 +1232,14 @@ def validate_preregistration(value: object, root: Path, *, verify_files: bool) -
         "v7_untimed_calls_count_as_v8_witness",
         "v4_v5_v6_or_v7_rows_pooled_into_v8_estimators",
         "v8_called_a_retry_of_v7",
+        "v8_preworker_attempt_reclassified_as_success",
+        "v8_untimed_calls_count_as_v9_witness",
+        "v4_through_v8_rows_pooled_into_v9_estimators",
+        "v9_called_a_retry_of_v8",
+        "prior_partial_timing_hidden",
+        "v9_preexecution_freeze_reclassified_as_executed_result",
+        "v9_rows_pooled_into_v10_estimators",
+        "v10_called_a_result_dependent_retry",
     ):
         _require(ceiling.get(key) is False, f"claim ceiling widened: {key}")
     _require(
@@ -1067,6 +1300,7 @@ __all__ = [
     "CONTROLLER_RESULT_SCHEMA",
     "CROSS_GENERATION_AUTHORITY_SCHEMA",
     "DIRECT_ARM",
+    "DIRECT_IDENTITY_WITNESS_SCHEMA",
     "EXECUTION_AUTHORITY_SCHEMA",
     "FIRST_MODE",
     "GPU_IDENTITY_WITNESS_SCHEMA",
@@ -1111,6 +1345,14 @@ __all__ = [
     "V7_PREREGISTRATION_PATH",
     "V7_PREREGISTRATION_SCHEMA",
     "V7_PREREGISTRATION_SHA256",
+    "V8_PREREGISTRATION_FILE_SHA256",
+    "V8_PREREGISTRATION_PATH",
+    "V8_PREREGISTRATION_SCHEMA",
+    "V8_PREREGISTRATION_SHA256",
+    "V9_PREREGISTRATION_FILE_SHA256",
+    "V9_PREREGISTRATION_PATH",
+    "V9_PREREGISTRATION_SCHEMA",
+    "V9_PREREGISTRATION_SHA256",
     "WORKER_RECEIPT_SCHEMA",
     "Goal5842ContractError",
     "build_baseline_schedule",
@@ -1127,6 +1369,8 @@ __all__ = [
     "v5_post_failure_replication_provenance",
     "v7_preregistration_supersession",
     "v8_preregistration_supersession",
+    "v9_preregistration_supersession",
+    "v10_preregistration_supersession",
     "validate_baseline_schedule",
     "validate_causal_schedule",
     "validate_preregistration",

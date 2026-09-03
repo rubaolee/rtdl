@@ -15,6 +15,7 @@ import unittest
 from collections import Counter
 from copy import deepcopy
 from pathlib import Path
+from types import SimpleNamespace
 
 from experiments.goal5842_causal_admission.baseline_controller import (
     combine_subworkers,
@@ -22,15 +23,21 @@ from experiments.goal5842_causal_admission.baseline_controller import (
 from experiments.goal5842_causal_admission.baseline_controller import (
     summarize as summarize_baselines,
 )
+from experiments.goal5842_causal_admission.baseline_worker import (
+    verify_public_output,
+)
 from experiments.goal5842_causal_admission.contracts import (
     ADMISSION_TASKS,
     BASELINE_ARMS,
     BASELINE_BLOCKS,
+    BASELINE_CONTROLLER_SCHEMA,
+    BASELINE_SUBWORKER_SCHEMA,
     BASELINE_TASKS,
     CAUSAL_BLOCKS,
     CHECK_OFF,
     CHECK_ON,
     CROSS_GENERATION_AUTHORITY_SCHEMA,
+    DIRECT_IDENTITY_WITNESS_SCHEMA,
     INDEPENDENT_RECOUNT_SCHEMA,
     TASK_CONTRACTS,
     TRIANGLE_TASK,
@@ -62,6 +69,14 @@ from experiments.goal5842_causal_admission.contracts import (
     V7_PREREGISTRATION_PATH,
     V7_PREREGISTRATION_SCHEMA,
     V7_PREREGISTRATION_SHA256,
+    V8_PREREGISTRATION_FILE_SHA256,
+    V8_PREREGISTRATION_PATH,
+    V8_PREREGISTRATION_SCHEMA,
+    V8_PREREGISTRATION_SHA256,
+    V9_PREREGISTRATION_FILE_SHA256,
+    V9_PREREGISTRATION_PATH,
+    V9_PREREGISTRATION_SCHEMA,
+    V9_PREREGISTRATION_SHA256,
     Goal5842ContractError,
     build_baseline_schedule,
     build_causal_schedule,
@@ -74,6 +89,8 @@ from experiments.goal5842_causal_admission.contracts import (
     v5_post_failure_replication_provenance,
     v7_preregistration_supersession,
     v8_preregistration_supersession,
+    v9_preregistration_supersession,
+    v10_preregistration_supersession,
     validate_preregistration,
 )
 from experiments.goal5842_causal_admission.controller import summarize
@@ -92,7 +109,10 @@ from scripts.goal5842_build_cross_generation_authority import (
     build as build_cross_generation_authority,
 )
 from scripts.goal5842_build_preregistration import build
-from scripts.goal5842_gpu_identity_witness import provider_lifecycle_evidence
+from scripts.goal5842_gpu_identity_witness import (
+    execute_and_check,
+    provider_lifecycle_evidence,
+)
 from scripts.goal5842_independent_recount import (
     baseline_summary as independently_summarize_baselines,
 )
@@ -102,6 +122,7 @@ from scripts.goal5842_independent_recount import (
 from scripts.goal5842_independent_recount import (
     recount_baseline,
     recount_causal,
+    validate_direct_identity_witness,
     validate_identity_witness,
     validate_pyoptix_identity_witness,
 )
@@ -110,7 +131,7 @@ from scripts.goal5842_run_one_generation import validated_python_entrypoint
 ROOT = Path(__file__).resolve().parents[1]
 PREREGISTRATION = ROOT / (
     "history/internal_docs/goal5842_causal_admission_cost_20260903/"
-    "PREREGISTRATION_V8.json"
+    "PREREGISTRATION_V10.json"
 )
 V1_PREREGISTRATION = ROOT / V1_PREREGISTRATION_PATH
 V2_PREREGISTRATION = ROOT / V2_PREREGISTRATION_PATH
@@ -119,6 +140,8 @@ V4_PREREGISTRATION = ROOT / V4_PREREGISTRATION_PATH
 V5_PREREGISTRATION = ROOT / V5_PREREGISTRATION_PATH
 V6_PREREGISTRATION = ROOT / V6_PREREGISTRATION_PATH
 V7_PREREGISTRATION = ROOT / V7_PREREGISTRATION_PATH
+V8_PREREGISTRATION = ROOT / V8_PREREGISTRATION_PATH
+V9_PREREGISTRATION = ROOT / V9_PREREGISTRATION_PATH
 FROZEN_CORE = (
     "src/rtdsl/v4_family_schema.py",
     "src/rtdsl/v4_generic_family_lifecycle.py",
@@ -495,12 +518,13 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
 
     def test_v8_binds_v7_preworker_failure_without_changing_science(self) -> None:
         v7 = json.loads(V7_PREREGISTRATION.read_text(encoding="utf-8"))
-        self.assertEqual(self.prereg["supersession"], v8_preregistration_supersession())
+        v8 = json.loads(V8_PREREGISTRATION.read_text(encoding="utf-8"))
+        self.assertEqual(v8["supersession"], v8_preregistration_supersession())
         self.assertEqual(
-            self.prereg["post_failure_replication"],
+            v8["post_failure_replication"],
             post_failure_replication_provenance(),
         )
-        supersession = self.prereg["supersession"]
+        supersession = v8["supersession"]
         self.assertFalse(supersession["scientific_design_changed"])
         self.assertFalse(supersession["schedule_changed"])
         self.assertFalse(supersession["workload_changed"])
@@ -536,7 +560,7 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
             "hardware_design",
             "failure_policy",
         ):
-            self.assertEqual(self.prereg[key], v7[key], key)
+            self.assertEqual(v8[key], v7[key], key)
         artifact = ROOT / supersession["v7_preworker_artifact_path"]
         self.assertEqual(artifact.stat().st_size, 3_253)
         self.assertEqual(
@@ -567,11 +591,211 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
             self.assertEqual(hashlib.sha256(payload).hexdigest(), expected)
         self.assertIn(b"EXECUTE_CHECK_ON", stdout)
         self.assertIn(b"provider prepared lifecycle schema mismatch", stderr)
-        claims = self.prereg["claim_ceiling"]
+        claims = v8["claim_ceiling"]
         self.assertFalse(claims["v7_preworker_attempt_reclassified_as_success"])
         self.assertFalse(claims["v7_untimed_calls_count_as_v8_witness"])
         self.assertFalse(claims["v4_v5_v6_or_v7_rows_pooled_into_v8_estimators"])
         self.assertFalse(claims["v8_called_a_retry_of_v7"])
+
+    def test_v9_binds_v8_and_discloses_fair_baseline_design_change(self) -> None:
+        v8 = json.loads(V8_PREREGISTRATION.read_text(encoding="utf-8"))
+        v9 = json.loads(V9_PREREGISTRATION.read_text(encoding="utf-8"))
+        self.assertEqual(
+            sha256_file(V8_PREREGISTRATION), V8_PREREGISTRATION_FILE_SHA256
+        )
+        self.assertEqual(v8["schema"], V8_PREREGISTRATION_SCHEMA)
+        self.assertEqual(v8["preregistration_sha256"], V8_PREREGISTRATION_SHA256)
+        self.assertEqual(v9["supersession"], v9_preregistration_supersession())
+        supersession = v9["supersession"]
+        self.assertTrue(supersession["scientific_design_changed"])
+        self.assertFalse(supersession["causal_estimand_changed"])
+        self.assertFalse(supersession["schedule_changed"])
+        self.assertFalse(supersession["workload_values_changed"])
+        self.assertFalse(supersession["statistics_changed"])
+        self.assertTrue(supersession["witness_contract_changed"])
+        self.assertTrue(supersession["baseline_timing_boundary_changed"])
+        self.assertTrue(supersession["prior_partial_timing_was_available"])
+        self.assertFalse(supersession["v9_is_v8_retry"])
+        self.assertTrue(supersession["v9_is_append_only_new_fair_baseline_design"])
+        self.assertFalse(supersession["v4_through_v8_rows_pooled_into_v9_estimators"])
+        self.assertEqual(supersession["gpu_complete_execution_call_count"], 145)
+        for key in (
+            "scientific_question",
+            "causal_estimand",
+            "admission_tasks",
+            "baseline_tasks",
+            "causal_arms",
+            "baseline_arms",
+            "cohort_boundary",
+            "causal_phase_boundaries",
+            "baseline_phase_boundaries",
+            "cold_counterfactual_design",
+            "post_estimand_reference_admission",
+            "execution_identity_requirements",
+            "byte_identity_invariant",
+            "byte_identity_invariant_scope",
+            "causal_schedule",
+            "causal_schedule_sha256",
+            "baseline_schedule",
+            "baseline_schedule_sha256",
+            "statistics",
+            "hardware_design",
+            "failure_policy",
+        ):
+            self.assertEqual(v9[key], v8[key], key)
+        stable_task_fields = {
+            "task",
+            "input_sha256",
+            "full_oracle_sha256",
+            "public_output_sha256",
+            "primitive_count",
+            "query_count",
+            "three_arm_baseline_included",
+        }
+        for old, new in zip(v8["task_contracts"], v9["task_contracts"]):
+            self.assertEqual(
+                {key: old[key] for key in stable_task_fields},
+                {key: new[key] for key in stable_task_fields},
+            )
+        artifact = ROOT / supersession["v8_preworker_artifact_path"]
+        self.assertEqual(artifact.stat().st_size, 3_346)
+        self.assertEqual(
+            sha256_file(artifact), supersession["v8_preworker_artifact_sha256"]
+        )
+        with tarfile.open(artifact, "r:gz") as archive:
+            root = "goal5842-ada-adb32fbb0-replication08/"
+
+            def archived_bytes(relative: str) -> bytes:
+                extracted = archive.extractfile(root + relative)
+                self.assertIsNotNone(extracted)
+                return extracted.read()
+
+            marker = archived_bytes("PREFLIGHT_FAILED_REPAIR_ALLOWED.json")
+            authority = archived_bytes("execution_authority.json")
+            command = archived_bytes(
+                "stage_logs/01_gpu_identity_witness_no_timing/command.json"
+            )
+            stdout = archived_bytes(
+                "stage_logs/01_gpu_identity_witness_no_timing/stdout.txt"
+            )
+            stderr = archived_bytes(
+                "stage_logs/01_gpu_identity_witness_no_timing/stderr.txt"
+            )
+        for payload, expected in (
+            (marker, supersession["failure_marker_sha256"]),
+            (authority, supersession["execution_authority_file_sha256"]),
+            (command, supersession["command_sha256"]),
+            (stdout, supersession["stdout_sha256"]),
+            (stderr, supersession["stderr_sha256"]),
+        ):
+            self.assertEqual(hashlib.sha256(payload).hexdigest(), expected)
+        self.assertIn(b"BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1", stdout)
+        self.assertIn(b"has no attribute 'details'", stderr)
+        design = v9["baseline_worker_design"]
+        self.assertTrue(
+            design[
+                "registered_execute_interval_ends_before_experimental_oracle_comparison"
+            ]
+        )
+        self.assertEqual(
+            design["triangle_cross_arm_public_output"],
+            "CHECKED_U64_WEIGHTED_SCALAR_ONLY",
+        )
+        claims = v9["claim_ceiling"]
+        self.assertFalse(claims["v8_preworker_attempt_reclassified_as_success"])
+        self.assertFalse(claims["v8_untimed_calls_count_as_v9_witness"])
+        self.assertFalse(claims["v4_through_v8_rows_pooled_into_v9_estimators"])
+        self.assertFalse(claims["v9_called_a_retry_of_v8"])
+        self.assertFalse(claims["prior_partial_timing_hidden"])
+
+    def test_v10_binds_v9_preexecution_source_contract_correction(self) -> None:
+        v9 = json.loads(V9_PREREGISTRATION.read_text(encoding="utf-8"))
+        self.assertEqual(
+            sha256_file(V9_PREREGISTRATION), V9_PREREGISTRATION_FILE_SHA256
+        )
+        self.assertEqual(v9["schema"], V9_PREREGISTRATION_SCHEMA)
+        self.assertEqual(v9["preregistration_sha256"], V9_PREREGISTRATION_SHA256)
+        self.assertEqual(
+            self.prereg["supersession"], v10_preregistration_supersession()
+        )
+        supersession = self.prereg["supersession"]
+        self.assertFalse(supersession["worker_zero_reached"])
+        self.assertEqual(supersession["registered_timing_observation_count"], 0)
+        self.assertEqual(supersession["formal_gpu_execution_count"], 0)
+        self.assertEqual(
+            supersession[
+                "prefreeze_unregistered_engineering_complete_execution_call_count"
+            ],
+            6,
+        )
+        self.assertEqual(
+            supersession["prefreeze_unregistered_engineering_optix_launch_count"],
+            8,
+        )
+        self.assertFalse(supersession["scientific_design_changed"])
+        self.assertFalse(supersession["runtime_semantics_changed"])
+        self.assertFalse(supersession["v10_is_result_dependent_retry"])
+        self.assertTrue(
+            supersession["v10_is_append_only_preexecution_source_contract_correction"]
+        )
+        self.assertFalse(supersession["v9_rows_pooled_into_v10_estimators"])
+        for key in (
+            "scientific_question",
+            "causal_estimand",
+            "admission_tasks",
+            "baseline_tasks",
+            "task_contracts",
+            "causal_arms",
+            "baseline_arms",
+            "cohort_boundary",
+            "causal_phase_boundaries",
+            "baseline_phase_boundaries",
+            "cold_counterfactual_design",
+            "post_estimand_reference_admission",
+            "execution_identity_requirements",
+            "pre_worker_zero_witness_design",
+            "baseline_worker_design",
+            "byte_identity_invariant",
+            "byte_identity_invariant_scope",
+            "causal_schedule",
+            "causal_schedule_sha256",
+            "baseline_schedule",
+            "baseline_schedule_sha256",
+            "statistics",
+            "hardware_design",
+            "failure_policy",
+        ):
+            self.assertEqual(self.prereg[key], v9[key], key)
+        changed = supersession["changed_existing_source_paths"]
+        self.assertEqual(len(changed), 1)
+        row = changed[0]
+        path = ROOT / row["path"]
+        self.assertEqual(
+            row["v9_sha256"],
+            "b144b9d48ba68f5dd0c9c0fbe18aacb119b0ca229dc2e28305c95d536e162019",
+        )
+        self.assertEqual(sha256_file(path), row["v10_sha256"])
+        self.assertEqual(
+            sha256_file(
+                ROOT / "history/internal_docs/goal5842_causal_admission_cost_20260903/"
+                "PRE_EXECUTION_INTERNAL_HOSTILE_REVIEW_V9.md"
+            ),
+            "c692655f54e8be377c5d8d4d727ba1720b487cbbbad61bec35dd8d092285f4cd",
+        )
+        self.assertEqual(
+            self.prereg["gpu_execution_count_scope"],
+            "FORMAL_V10_TRANSACTION_ONLY",
+        )
+        self.assertEqual(
+            self.prereg["unregistered_engineering_preflight"],
+            {
+                "complete_execution_call_count": 6,
+                "optix_launch_count": 8,
+                "registered_timing_observation_count": 0,
+                "timings_retained_or_used": False,
+                "included_in_estimators": False,
+            },
+        )
 
     def test_gpu_entrypoints_bind_legacy_loader_to_authorized_native(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -941,6 +1165,7 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
         for relative in (
             "scripts/goal5842_gpu_identity_witness.py",
             "scripts/goal5842_pyoptix_identity_witness.py",
+            "scripts/goal5842_direct_identity_witness.py",
         ):
             witness = ast.parse((ROOT / relative).read_text(encoding="utf-8"))
             self.assertFalse(
@@ -967,8 +1192,10 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
             encoding="utf-8"
         )
         pyoptix_gate = runner.index("02_pyoptix_identity_witness_no_timing")
-        worker_zero = runner.index("03_causal_admission")
+        direct_gate = runner.index("03_direct_identity_witness_no_timing")
+        worker_zero = runner.index("04_causal_admission")
         self.assertLess(pyoptix_gate, worker_zero)
+        self.assertLess(direct_gate, worker_zero)
         pyoptix_source = (
             ROOT / "scripts/goal5842_pyoptix_identity_witness.py"
         ).read_text(encoding="utf-8")
@@ -990,17 +1217,21 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
                 "task": task,
                 "input_sha256": contracts[task]["input_sha256"],
                 "output_sha256": contracts[task]["public_output_sha256"],
+                "public_output_contract_id": contracts[task][
+                    "public_output_contract_id"
+                ],
+                "full_oracle_sha256": contracts[task]["full_oracle_sha256"],
+                "full_oracle_exact": True,
                 "device_source_sha256": "d" * 64,
                 "ptx_sha256": "e" * 64,
                 "pyoptix_repository_commit": "c" * 40,
                 "optix_api_version": "9.0.0",
                 "complete_execution_call_count": 72,
-                "oracle_exact": True,
             }
             for task in BASELINE_TASKS
         ]
         witness = {
-            "schema": "rtdl.goal5842.pyoptix_identity_witness.v2",
+            "schema": "rtdl.goal5842.pyoptix_identity_witness.v3",
             "status": (
                 "PASS__PYOPTIX_PACKAGE_FRONT_DOOR_REPEATED_LIFECYCLE_NO_TIMING_OBSERVED"
             ),
@@ -1056,7 +1287,8 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
             arm = {
                 "output": None,
                 "output_sha256": contract["public_output_sha256"],
-                "full_output_sha256": contract["full_oracle_sha256"],
+                "public_output_contract_id": contract["public_output_contract_id"],
+                "public_output_oracle_exact": True,
                 "traversal_receipt_sha256": "d" * 64,
                 "physical_executor_classification": "optix_traversal_observed",
                 "complete_execution_call_count": calls,
@@ -1072,11 +1304,29 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
                     "executable_identity": {},
                     "on": deepcopy(arm),
                     "off": deepcopy(arm),
+                    "auxiliary_full_oracle": (
+                        {
+                            "scope": (
+                                "NON_PUBLIC_PROVIDER_PER_RAY_VECTOR_PLUS_PUBLIC_"
+                                "WEIGHTED_SCALAR"
+                            ),
+                            "full_oracle_sha256": contract["full_oracle_sha256"],
+                            "full_oracle_exact": True,
+                            "complete_execution_call_count": 1,
+                            "physical_executor_classification": (
+                                "optix_traversal_observed"
+                            ),
+                            "output_sha256": contract["public_output_sha256"],
+                            "traversal_receipt_sha256": "e" * 64,
+                        }
+                        if contract["task"] == TRIANGLE_TASK
+                        else None
+                    ),
                     "exact_identity_equal": True,
                 }
             )
         witness = {
-            "schema": "rtdl.goal5842.gpu_identity_witness.v4",
+            "schema": "rtdl.goal5842.gpu_identity_witness.v5",
             "status": "PASS__IDENTITY_AND_REPEATED_LIFECYCLE_NO_TIMING_OBSERVED",
             "source_commit": "a" * 40,
             "preregistration_sha256": self.prereg["preregistration_sha256"],
@@ -1087,7 +1337,9 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
             "task_count": 3,
             "all_exact_identity_equal": True,
             "registered_timing_observation_count": 0,
-            "gpu_complete_execution_call_count": 290,
+            "generic_public_complete_execution_call_count": 290,
+            "auxiliary_full_oracle_complete_execution_call_count": 1,
+            "gpu_complete_execution_call_count": 291,
             "repeated_lifecycle_calls_per_baseline_task_arm": 72,
             "clock_api_called_by_witness_module": False,
             "duration_field_count": 0,
@@ -1109,6 +1361,130 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
         hidden_timing["witness_sha256"] = digest(hidden_timing)
         with self.assertRaisesRegex(RuntimeError, "field set mismatch"):
             validate_identity_witness(hidden_timing, self.prereg, authority)
+
+    def test_generic_triangle_witness_uses_public_scalar_without_details(self) -> None:
+        weighted = 17
+        result = SimpleNamespace(
+            output=weighted,
+            output_sha256=digest(weighted),
+            traversal_receipt={
+                "physical_executor_classification": "optix_traversal_observed"
+            },
+        )
+
+        class Prepared:
+            def __init__(self) -> None:
+                self.calls = 0
+
+            def execute(self, batch: object) -> object:
+                self.calls += 1
+                return result
+
+            @property
+            def lifecycle_receipt(self) -> dict[str, object]:
+                return {
+                    "schema": "rtdl.generic_family_lifecycle.v1",
+                    "provider_receipt": {
+                        "schema": "rtdl.v4.public_protocol_lifecycle.v1",
+                        "execution_count": self.calls,
+                    },
+                }
+
+        task = SimpleNamespace(
+            task_id=TRIANGLE_TASK,
+            batch=object(),
+            expected_output={"weighted_sum": weighted, "per_ray": (1, 1)},
+        )
+        observed = execute_and_check(Prepared(), task, 2)
+        self.assertEqual(observed["output"], weighted)
+        self.assertEqual(observed["output_sha256"], digest(weighted))
+        self.assertEqual(
+            observed["public_output_contract_id"],
+            "checked_u64_weighted_scalar.v1",
+        )
+        self.assertTrue(observed["public_output_oracle_exact"])
+        self.assertNotIn("full_output_sha256", observed)
+
+    def test_v9_baseline_checks_public_output_without_fabricated_per_ray(self) -> None:
+        expected = {"weighted_sum": 23, "per_ray": (7, 8)}
+        self.assertEqual(
+            verify_public_output(TRIANGLE_TASK, {"weighted_sum": 23}, expected),
+            digest(23),
+        )
+        worker = (
+            ROOT / "experiments/goal5842_causal_admission/baseline_worker.py"
+        ).read_text(encoding="utf-8")
+        direct = (
+            ROOT / "experiments/goal5798_premeasurement/direct_measurement.cpp"
+        ).read_text(encoding="utf-8")
+        pyoptix = (
+            ROOT / "experiments/goal5798_premeasurement/pyoptix_worker.py"
+        ).read_text(encoding="utf-8")
+        self.assertNotIn('"per_ray": task.expected_output["per_ray"]', worker)
+        self.assertIn("GOAL5842_PUBLIC_OUTPUT_V1", direct)
+        self.assertIn("GOAL5842_WITNESS_NO_TIMING_V1", direct)
+        self.assertIn('args.mode == "CORRECTNESS_WITNESS_NO_TIMING"', direct)
+        self.assertIn("const auto duration = elapsed_ns(start);", direct)
+        self.assertIn("if (goal5842_public)", direct)
+        self.assertIn("public_output_only: bool = False", pyoptix)
+        self.assertIn("public_output_only=True", worker)
+
+    def test_direct_identity_witness_validator_requires_full_oracle_and_no_timing(
+        self,
+    ) -> None:
+        authority = {
+            "source_commit": "a" * 40,
+            "authority_sha256": "b" * 64,
+            "hardware": {"gpu_uuid": "GPU-TEST"},
+            "execution_paths": {
+                "direct_binary_sha256": "c" * 64,
+                "device_source_sha256": "d" * 64,
+            },
+        }
+        rows = []
+        for contract in self.prereg["task_contracts"]:
+            if not contract["three_arm_baseline_included"]:
+                continue
+            rows.append(
+                {
+                    "task": contract["task"],
+                    "input_sha256": contract["input_sha256"],
+                    "public_output_sha256": contract["public_output_sha256"],
+                    "full_oracle_sha256": contract["full_oracle_sha256"],
+                    "full_oracle_exact": True,
+                    "gpu_complete_execution_call_count": 1,
+                    "optix_launch_count": (
+                        2 if contract["task"].startswith("CUSTOM_AABB") else 1
+                    ),
+                }
+            )
+        witness = {
+            "schema": DIRECT_IDENTITY_WITNESS_SCHEMA,
+            "status": "PASS__DIRECT_FULL_ORACLE_NO_TIMING_OBSERVED",
+            "source_commit": "a" * 40,
+            "preregistration_sha256": self.prereg["preregistration_sha256"],
+            "execution_authority_sha256": "b" * 64,
+            "hardware": authority["hardware"],
+            "direct_binary_sha256": "c" * 64,
+            "device_source_sha256": "d" * 64,
+            "tasks": rows,
+            "task_count": 2,
+            "gpu_complete_execution_call_count": 2,
+            "optix_launch_count": 3,
+            "registered_timing_observation_count": 0,
+            "clock_api_called_by_witness_module": False,
+            "clock_api_called_by_direct_witness_path": False,
+            "duration_field_count": 0,
+            "performance_claim_authorized": False,
+        }
+        witness["witness_sha256"] = digest(witness)
+        validate_direct_identity_witness(witness, self.prereg, authority)
+        attacked = deepcopy(witness)
+        attacked["tasks"][1]["full_oracle_exact"] = False
+        attacked.pop("witness_sha256")
+        attacked["witness_sha256"] = digest(attacked)
+        with self.assertRaisesRegex(RuntimeError, "oracle/call count mismatch"):
+            validate_direct_identity_witness(attacked, self.prereg, authority)
 
     def test_provider_lifecycle_evidence_requires_nested_provider_receipt(
         self,
@@ -1202,12 +1578,14 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
                 "experiments/goal5842_causal_admission/runtime.py",
                 "scripts/goal5842_bind_execution_authority.py",
                 "scripts/goal5842_build_cross_generation_authority.py",
+                "scripts/goal5842_direct_identity_witness.py",
                 "scripts/goal5842_gpu_identity_witness.py",
                 "scripts/goal5842_pyoptix_identity_witness.py",
                 "scripts/goal5842_independent_recount.py",
                 "scripts/goal5842_run_one_generation.py",
                 "experiments/goal5796_matched/matched_device.cu",
                 V3_PREREGISTRATION_PATH,
+                V8_PREREGISTRATION_PATH,
                 (
                     "history/internal_docs/goal5842_causal_admission_cost_20260903/"
                     "PRE_WORKER_ZERO_REPAIR_03.md"
@@ -1392,7 +1770,7 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
             for index, row in enumerate(self.prereg["baseline_schedule"]):
                 identity = {"arm_identity": row["arm"]}
                 common = {
-                    "schema": "rtdl.goal5842.baseline_subworker.v1",
+                    "schema": BASELINE_SUBWORKER_SCHEMA,
                     "status": "PASS",
                     "schedule_worker_id": row["worker_id"],
                     "task": row["task"],
@@ -1402,7 +1780,12 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
                     "execution_authority_sha256": authority["authority_sha256"],
                     "input_sha256": inputs[row["task"]],
                     "output_sha256": outputs[row["task"]],
-                    "oracle_exact": True,
+                    "public_output_contract_id": contracts[row["task"]][
+                        "public_output_contract_id"
+                    ],
+                    "public_output_oracle_exact": True,
+                    "oracle_validation_outside_registered_interval": True,
+                    "auxiliary_full_oracle_witness_before_worker_zero": True,
                     "identity": identity,
                 }
                 direct = row["arm"] == "A_DIRECT_CUDA_OPTIX"
@@ -1443,7 +1826,7 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
                 write(directory / "steady/receipt.json", steady)
                 composites.append(combine_subworkers(first, steady, [80, 90]))
             baseline_result: dict[str, object] = {
-                "schema": "rtdl.goal5842.baseline_controller.v1",
+                "schema": BASELINE_CONTROLLER_SCHEMA,
                 "status": "PASS__TWO_TASK_THREE_ARM_BASELINE_COMPLETE",
                 "source_commit": authority["source_commit"],
                 "preregistration_sha256": self.prereg["preregistration_sha256"],
@@ -1453,6 +1836,8 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
                 "subworker_count": 2 * len(composites),
                 "task_summaries": summarize_baselines(composites),
                 "composite_rows": composites,
+                "cross_arm_public_input_output_contract_exact": True,
+                "oracle_validation_outside_registered_intervals": True,
             }
             baseline_result["result_sha256"] = digest(baseline_result)
             write(baseline_root / "result.json", baseline_result)
@@ -1472,6 +1857,15 @@ class Goal5842CausalAdmissionCostTest(unittest.TestCase):
             attacked_path.write_text(json.dumps(attacked), encoding="utf-8")
             with self.assertRaisesRegex(RuntimeError, "causal total mismatch"):
                 recount_causal(causal_root, self.prereg, authority)
+
+            baseline_receipt_path = next(baseline_root.glob("*/first/receipt.json"))
+            hidden = json.loads(baseline_receipt_path.read_text(encoding="utf-8"))
+            hidden["hidden_duration_ns"] = 1
+            hidden.pop("receipt_sha256")
+            hidden["receipt_sha256"] = digest(hidden)
+            baseline_receipt_path.write_text(json.dumps(hidden), encoding="utf-8")
+            with self.assertRaisesRegex(RuntimeError, "field set mismatch"):
+                recount_baseline(baseline_root, self.prereg, authority)
 
 
 if __name__ == "__main__":

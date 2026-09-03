@@ -53,25 +53,31 @@ def baseline_schedule_row(prereg: dict[str, Any], worker_id: str) -> dict[str, A
     return matches[0]
 
 
-def verify_output(task_id: str, value: dict[str, Any], expected: object) -> str:
+def public_output_contract_id(task_id: str) -> str:
     if task_id == RELATION_TASK:
+        return "canonical_relation_rows.v1"
+    if task_id == TRIANGLE_TASK:
+        return "checked_u64_weighted_scalar.v1"
+    raise ValueError(f"unsupported baseline task: {task_id}")
+
+
+def verify_public_output(task_id: str, value: object, expected: object) -> str:
+    """Check the matched public result after the registered interval closes."""
+
+    if task_id == RELATION_TASK:
+        if not isinstance(value, dict):
+            raise TypeError("relation public output must be a mapping")
         output = tuple(tuple(int(item) for item in row) for row in value["output"])
         if output != expected:
             raise RuntimeError("relation output differs from independent fixture")
         return digest(output)
     if task_id == TRIANGLE_TASK:
-        if int(value["weighted_sum"]) != expected["weighted_sum"]:
+        weighted = int(value["weighted_sum"] if isinstance(value, dict) else value)
+        if weighted != expected["weighted_sum"]:
             raise RuntimeError(
                 "triangle weighted output differs from independent fixture"
             )
-        per_ray = tuple(int(item) for item in value["per_ray"])
-        if per_ray != expected["per_ray"]:
-            raise RuntimeError(
-                "triangle per-ray output differs from independent fixture"
-            )
-        # The cross-arm public output contract is the checked weighted scalar.
-        # Direct and PyOptiX additionally validate their internal per-ray rows.
-        return digest(int(value["weighted_sum"]))
+        return digest(weighted)
     raise ValueError(f"unsupported baseline task: {task_id}")
 
 
@@ -109,44 +115,43 @@ def run_rtdl(
     )
     prepared, prepare_ns = measured(lambda: materialized.prepare(task.static_input))
 
-    def execute() -> tuple[object, str]:
-        result = prepared.execute(task.batch)
+    def execute():
+        return prepared.execute(task.batch)
+
+    def validate_result(result: object) -> str:
         if task.task_id == RELATION_TASK:
             output = tuple(tuple(int(item) for item in row) for row in result.output)
-            if output != task.expected_output:
-                raise RuntimeError("RTDL relation oracle mismatch")
-            detailed = {"output": output}
+            public_value: object = {"output": output}
         else:
             weighted = int(result.output)
-            if weighted != task.expected_output["weighted_sum"]:
-                raise RuntimeError("RTDL triangle oracle mismatch")
-            detailed = {
-                "weighted_sum": weighted,
-                # The generic public output contract commits the scalar.  The
-                # independent per-ray vector is checked by the matched
-                # PyOptiX/Direct arms and by the underlying RTDL route tests.
-                "per_ray": task.expected_output["per_ray"],
-            }
+            public_value = weighted
+        output_sha256 = verify_public_output(
+            task.task_id, public_value, task.expected_output
+        )
+        if result.output_sha256 != output_sha256:
+            raise RuntimeError("RTDL public output digest mismatch")
         receipt = dict(result.traversal_receipt)
         if (
             receipt.get("physical_executor_classification")
             != "optix_traversal_observed"
         ):
             raise RuntimeError("RTDL baseline did not execute OptiX traversal")
-        return detailed, result.output_sha256
+        return output_sha256
 
     first_ns: int | None = None
     steady_ns: list[int] = []
-    latest: tuple[object, str] | None = None
+    latest_output_sha256: str | None = None
     if mode == FIRST_MODE:
-        latest, first_ns = measured(execute)
+        result, first_ns = measured(execute)
+        latest_output_sha256 = validate_result(result)
     else:
         for _ in range(STEADY_WARMUPS):
-            latest = execute()
+            latest_output_sha256 = validate_result(execute())
         for _ in range(STEADY_REPETITIONS):
-            latest, elapsed = measured(execute)
+            result, elapsed = measured(execute)
             steady_ns.append(elapsed)
-    if latest is None:
+            latest_output_sha256 = validate_result(result)
+    if latest_output_sha256 is None:
         raise RuntimeError("RTDL baseline produced no output")
     close_started = time.perf_counter_ns()
     prepared.close()
@@ -168,7 +173,7 @@ def run_rtdl(
         "executable": materialized.identity.to_dict(),
         "native_library_sha256": authority["execution_paths"]["native_library_sha256"],
     }
-    return phases, identity, latest[1]
+    return phases, identity, latest_output_sha256
 
 
 def run_pyoptix(
@@ -229,22 +234,31 @@ def run_pyoptix(
             lambda: PyOptixTrianglePrepared(baseline, context, pipeline, sbt, raw)
         )
 
-    def execute() -> tuple[dict[str, Any], str]:
-        value = prepared.execute()
-        return value, verify_output(task.task_id, value, task.expected_output)
+    def execute() -> dict[str, Any]:
+        if task.task_id == TRIANGLE_TASK:
+            return prepared.execute(
+                public_output_only=True,
+                validate_expected=False,
+            )
+        return prepared.execute(validate_expected=False)
+
+    def validate_result(value: dict[str, Any]) -> str:
+        return verify_public_output(task.task_id, value, task.expected_output)
 
     first_ns: int | None = None
     steady_ns: list[int] = []
-    latest: tuple[dict[str, Any], str] | None = None
+    latest_output_sha256: str | None = None
     if mode == FIRST_MODE:
-        latest, first_ns = measured(execute)
+        value, first_ns = measured(execute)
+        latest_output_sha256 = validate_result(value)
     else:
         for _ in range(STEADY_WARMUPS):
-            latest = execute()
+            latest_output_sha256 = validate_result(execute())
         for _ in range(STEADY_REPETITIONS):
-            latest, elapsed = measured(execute)
+            value, elapsed = measured(execute)
             steady_ns.append(elapsed)
-    if latest is None:
+            latest_output_sha256 = validate_result(value)
+    if latest_output_sha256 is None:
         raise RuntimeError("PyOptiX baseline produced no output")
     close_started = time.perf_counter_ns()
     prepared = None
@@ -275,7 +289,7 @@ def run_pyoptix(
         "pyoptix_repository_commit": baseline.PYOPTIX_COMMIT,
         "optix_api_version": ".".join(str(part) for part in baseline.optix.version()),
     }
-    return phases, identity, latest[1]
+    return phases, identity, latest_output_sha256
 
 
 def main() -> None:
@@ -333,7 +347,10 @@ def main() -> None:
         "execution_authority_sha256": authority["authority_sha256"],
         "input_sha256": task.input_sha256,
         "output_sha256": output_sha256,
-        "oracle_exact": True,
+        "public_output_contract_id": public_output_contract_id(task.task_id),
+        "public_output_oracle_exact": True,
+        "oracle_validation_outside_registered_interval": True,
+        "auxiliary_full_oracle_witness_before_worker_zero": True,
         "phases_ns": phases,
         "identity": identity,
     }

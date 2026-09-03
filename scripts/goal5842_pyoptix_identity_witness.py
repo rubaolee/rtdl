@@ -96,12 +96,18 @@ def execute_task(
         "task": task_id,
         "input_sha256": task.input_sha256,
         "output_sha256": output_sha256,
+        "public_output_contract_id": (
+            "canonical_relation_rows.v1"
+            if task_id == RELATION_TASK
+            else "checked_u64_weighted_scalar.v1"
+        ),
+        "full_oracle_sha256": digest(task.expected_output),
+        "full_oracle_exact": True,
         "device_source_sha256": hashlib.sha256(device_source.read_bytes()).hexdigest(),
         "ptx_sha256": hashlib.sha256(ptx).hexdigest(),
         "pyoptix_repository_commit": baseline.PYOPTIX_COMMIT,
         "optix_api_version": ".".join(str(value) for value in baseline.optix.version()),
         "complete_execution_call_count": complete_execution_call_count,
-        "oracle_exact": True,
     }
 
 

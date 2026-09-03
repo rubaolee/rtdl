@@ -25,17 +25,20 @@ from experiments.goal5842_causal_admission.contracts import (
     CHECK_ON,
     CONTROLLER_RESULT_SCHEMA,
     DIRECT_ARM,
+    DIRECT_IDENTITY_WITNESS_SCHEMA,
     EXECUTION_AUTHORITY_SCHEMA,
     FIRST_MODE,
     GPU_IDENTITY_WITNESS_SCHEMA,
     INDEPENDENT_RECOUNT_SCHEMA,
     PYOPTIX_ARM,
     PYOPTIX_IDENTITY_WITNESS_SCHEMA,
+    RELATION_TASK,
     RTDL_ARM,
     SPHERE_TASK,
     STEADY_MODE,
     STEADY_REPETITIONS,
     STEADY_WARMUPS,
+    TRIANGLE_TASK,
     WORKER_RECEIPT_SCHEMA,
     digest,
     load_preregistration,
@@ -73,6 +76,8 @@ GPU_WITNESS_FIELDS = {
     "task_count",
     "all_exact_identity_equal",
     "registered_timing_observation_count",
+    "generic_public_complete_execution_call_count",
+    "auxiliary_full_oracle_complete_execution_call_count",
     "gpu_complete_execution_call_count",
     "repeated_lifecycle_calls_per_baseline_task_arm",
     "clock_api_called_by_witness_module",
@@ -87,12 +92,14 @@ GPU_WITNESS_TASK_FIELDS = {
     "executable_identity",
     "on",
     "off",
+    "auxiliary_full_oracle",
     "exact_identity_equal",
 }
 GPU_WITNESS_ARM_FIELDS = {
     "output",
     "output_sha256",
-    "full_output_sha256",
+    "public_output_contract_id",
+    "public_output_oracle_exact",
     "traversal_receipt_sha256",
     "physical_executor_classification",
     "complete_execution_call_count",
@@ -121,12 +128,64 @@ PYOPTIX_WITNESS_TASK_FIELDS = {
     "task",
     "input_sha256",
     "output_sha256",
+    "public_output_contract_id",
+    "full_oracle_sha256",
+    "full_oracle_exact",
     "device_source_sha256",
     "ptx_sha256",
     "pyoptix_repository_commit",
     "optix_api_version",
     "complete_execution_call_count",
-    "oracle_exact",
+}
+DIRECT_WITNESS_FIELDS = {
+    "schema",
+    "status",
+    "source_commit",
+    "preregistration_sha256",
+    "execution_authority_sha256",
+    "hardware",
+    "direct_binary_sha256",
+    "device_source_sha256",
+    "tasks",
+    "task_count",
+    "gpu_complete_execution_call_count",
+    "optix_launch_count",
+    "registered_timing_observation_count",
+    "clock_api_called_by_witness_module",
+    "clock_api_called_by_direct_witness_path",
+    "duration_field_count",
+    "performance_claim_authorized",
+    "witness_sha256",
+}
+DIRECT_WITNESS_TASK_FIELDS = {
+    "task",
+    "input_sha256",
+    "public_output_sha256",
+    "full_oracle_sha256",
+    "full_oracle_exact",
+    "gpu_complete_execution_call_count",
+    "optix_launch_count",
+}
+BASELINE_RECEIPT_FIELDS = {
+    "schema",
+    "status",
+    "schedule_worker_id",
+    "subworker_id",
+    "task",
+    "arm",
+    "block",
+    "mode",
+    "preregistration_sha256",
+    "execution_authority_sha256",
+    "input_sha256",
+    "output_sha256",
+    "public_output_contract_id",
+    "public_output_oracle_exact",
+    "oracle_validation_outside_registered_interval",
+    "auxiliary_full_oracle_witness_before_worker_zero",
+    "phases_ns",
+    "identity",
+    "receipt_sha256",
 }
 
 
@@ -447,6 +506,10 @@ def validate_baseline_receipt(
         receipt, "receipt_sha256", f"baseline receipt {scheduled['worker_id']}/{mode}"
     )
     require(
+        set(receipt) == BASELINE_RECEIPT_FIELDS,
+        "baseline receipt field set mismatch",
+    )
+    require(
         receipt.get("schema") == BASELINE_SUBWORKER_SCHEMA,
         "baseline receipt schema mismatch",
     )
@@ -471,7 +534,10 @@ def validate_baseline_receipt(
         receipt.get("execution_authority_sha256") == authority["authority_sha256"],
         "baseline authority mismatch",
     )
-    require(receipt.get("oracle_exact") is True, "baseline oracle did not pass")
+    require(
+        receipt.get("public_output_oracle_exact") is True,
+        "baseline public-output oracle did not pass",
+    )
     frozen_task = next(
         row for row in prereg["task_contracts"] if row["task"] == scheduled["task"]
     )
@@ -482,6 +548,19 @@ def validate_baseline_receipt(
     require(
         receipt.get("output_sha256") == frozen_task["public_output_sha256"],
         "baseline output differs from preregistered task",
+    )
+    require(
+        receipt.get("public_output_contract_id")
+        == frozen_task["public_output_contract_id"],
+        "baseline public-output contract differs from preregistration",
+    )
+    require(
+        receipt.get("oracle_validation_outside_registered_interval") is True,
+        "baseline oracle comparison contaminated the registered interval",
+    )
+    require(
+        receipt.get("auxiliary_full_oracle_witness_before_worker_zero") is True,
+        "baseline lacks its pre-worker-zero full-oracle witness",
     )
     phases = receipt.get("phases_ns")
     require(
@@ -536,6 +615,10 @@ def combine_baseline(
         "execution_authority_sha256",
         "input_sha256",
         "output_sha256",
+        "public_output_contract_id",
+        "public_output_oracle_exact",
+        "oracle_validation_outside_registered_interval",
+        "auxiliary_full_oracle_witness_before_worker_zero",
         "identity",
     ):
         require(
@@ -557,6 +640,7 @@ def combine_baseline(
         "block": first["block"],
         "input_sha256": first["input_sha256"],
         "output_sha256": first["output_sha256"],
+        "public_output_contract_id": first["public_output_contract_id"],
         "identity": first["identity"],
         "first_phases_ns": first_phases,
         "steady_phases_ns": steady["phases_ns"],
@@ -572,7 +656,9 @@ def combine_baseline(
         "steady_complete_execution_median_ns": integer_median(steady_values),
         "close_ns": first_phases["close"],
         "process_wall_ns": process_walls,
-        "oracle_exact": True,
+        "public_output_oracle_exact": True,
+        "oracle_validation_outside_registered_interval": True,
+        "auxiliary_full_oracle_witness_before_worker_zero": True,
     }
 
 
@@ -744,6 +830,11 @@ def recount_baseline(
         result.get("subworker_count") == 2 * len(composites),
         "baseline subworker count mismatch",
     )
+    require(
+        result.get("cross_arm_public_input_output_contract_exact") is True
+        and result.get("oracle_validation_outside_registered_intervals") is True,
+        "baseline public-output/timing boundary aggregate marker missing",
+    )
     return result, composites
 
 
@@ -829,8 +920,13 @@ def validate_identity_witness(
                 "identity witness output differs from preregistration",
             )
             require(
-                arm.get("full_output_sha256") == frozen_task["full_oracle_sha256"],
-                "identity witness full output differs from preregistration",
+                arm.get("public_output_contract_id")
+                == frozen_task["public_output_contract_id"],
+                "identity witness public-output contract differs from preregistration",
+            )
+            require(
+                arm.get("public_output_oracle_exact") is True,
+                "identity witness public-output oracle failed",
             )
             require(
                 arm.get("physical_executor_classification")
@@ -851,15 +947,47 @@ def validate_identity_witness(
                 f"{arm_name} repeated lifecycle count mismatch",
             )
         require(
-            row["on"]["output_sha256"] == row["off"]["output_sha256"]
-            and row["on"]["full_output_sha256"] == row["off"]["full_output_sha256"],
-            "on/off output mismatch",
+            row["on"]["output_sha256"] == row["off"]["output_sha256"],
+            "on/off public output mismatch",
         )
+        auxiliary = row.get("auxiliary_full_oracle")
+        if row["task"] == TRIANGLE_TASK:
+            require(
+                isinstance(auxiliary, dict)
+                and auxiliary
+                == {
+                    "scope": (
+                        "NON_PUBLIC_PROVIDER_PER_RAY_VECTOR_PLUS_PUBLIC_WEIGHTED_SCALAR"
+                    ),
+                    "full_oracle_sha256": frozen_task["full_oracle_sha256"],
+                    "full_oracle_exact": True,
+                    "complete_execution_call_count": 1,
+                    "physical_executor_classification": "optix_traversal_observed",
+                    "output_sha256": frozen_task["public_output_sha256"],
+                    "traversal_receipt_sha256": auxiliary.get(
+                        "traversal_receipt_sha256"
+                    ),
+                }
+                and isinstance(auxiliary.get("traversal_receipt_sha256"), str)
+                and len(auxiliary["traversal_receipt_sha256"]) == 64,
+                "triangle auxiliary full-oracle witness mismatch",
+            )
+        else:
+            require(
+                auxiliary is None,
+                "non-triangle task unexpectedly carries an auxiliary oracle",
+            )
     expected_rtdl_calls = 2 * (2 * (STEADY_WARMUPS + STEADY_REPETITIONS) + 1)
     require(witness.get("task_count") == 3, "identity witness task count mismatch")
     require(
-        witness.get("gpu_complete_execution_call_count") == expected_rtdl_calls,
-        "identity witness complete execution count mismatch",
+        witness.get("generic_public_complete_execution_call_count")
+        == expected_rtdl_calls,
+        "identity witness generic execution count mismatch",
+    )
+    require(
+        witness.get("auxiliary_full_oracle_complete_execution_call_count") == 1
+        and witness.get("gpu_complete_execution_call_count") == expected_rtdl_calls + 1,
+        "identity witness total execution count mismatch",
     )
     require(
         witness.get("repeated_lifecycle_calls_per_baseline_task_arm")
@@ -924,7 +1052,16 @@ def validate_pyoptix_identity_witness(
             row.get("output_sha256") == contract["public_output_sha256"],
             "PyOptiX witness output differs from preregistration",
         )
-        require(row.get("oracle_exact") is True, "PyOptiX witness oracle failed")
+        require(
+            row.get("public_output_contract_id")
+            == contract["public_output_contract_id"],
+            "PyOptiX witness public-output contract mismatch",
+        )
+        require(
+            row.get("full_oracle_sha256") == contract["full_oracle_sha256"]
+            and row.get("full_oracle_exact") is True,
+            "PyOptiX witness full oracle failed",
+        )
         require(
             row.get("complete_execution_call_count")
             == STEADY_WARMUPS + STEADY_REPETITIONS,
@@ -977,12 +1114,92 @@ def validate_pyoptix_identity_witness(
     )
 
 
+def validate_direct_identity_witness(
+    witness: dict[str, Any], prereg: dict[str, Any], authority: dict[str, Any]
+) -> None:
+    verify_seal(witness, "witness_sha256", "Direct identity witness")
+    require(
+        set(witness) == DIRECT_WITNESS_FIELDS,
+        "Direct identity witness field set mismatch",
+    )
+    require(
+        witness.get("schema") == DIRECT_IDENTITY_WITNESS_SCHEMA,
+        "Direct identity witness schema mismatch",
+    )
+    require(
+        witness.get("status") == "PASS__DIRECT_FULL_ORACLE_NO_TIMING_OBSERVED",
+        "Direct identity witness status mismatch",
+    )
+    for field, expected in (
+        ("source_commit", authority["source_commit"]),
+        ("preregistration_sha256", prereg["preregistration_sha256"]),
+        ("execution_authority_sha256", authority["authority_sha256"]),
+        ("hardware", authority["hardware"]),
+        (
+            "direct_binary_sha256",
+            authority["execution_paths"]["direct_binary_sha256"],
+        ),
+        (
+            "device_source_sha256",
+            authority["execution_paths"]["device_source_sha256"],
+        ),
+    ):
+        require(witness.get(field) == expected, f"Direct witness {field} mismatch")
+    rows = witness.get("tasks")
+    require(
+        isinstance(rows, list)
+        and [row.get("task") for row in rows] == list(BASELINE_TASKS),
+        "Direct identity task cohort mismatch",
+    )
+    contracts = {row["task"]: row for row in prereg["task_contracts"]}
+    for row in rows:
+        require(
+            isinstance(row, dict) and set(row) == DIRECT_WITNESS_TASK_FIELDS,
+            "Direct identity task field set mismatch",
+        )
+        contract = contracts[row["task"]]
+        require(
+            row.get("input_sha256") == contract["input_sha256"]
+            and row.get("public_output_sha256") == contract["public_output_sha256"]
+            and row.get("full_oracle_sha256") == contract["full_oracle_sha256"],
+            "Direct witness task contract mismatch",
+        )
+        require(
+            row.get("full_oracle_exact") is True
+            and row.get("gpu_complete_execution_call_count") == 1,
+            "Direct witness task oracle/call count mismatch",
+        )
+        expected_launches = 2 if row["task"] == RELATION_TASK else 1
+        require(
+            row.get("optix_launch_count") == expected_launches,
+            "Direct witness task launch count mismatch",
+        )
+    require(
+        witness.get("task_count") == 2
+        and witness.get("gpu_complete_execution_call_count") == 2
+        and witness.get("optix_launch_count") == 3,
+        "Direct witness aggregate count mismatch",
+    )
+    require(
+        witness.get("registered_timing_observation_count") == 0
+        and witness.get("clock_api_called_by_witness_module") is False
+        and witness.get("clock_api_called_by_direct_witness_path") is False
+        and witness.get("duration_field_count") == 0,
+        "Direct identity witness contains timing",
+    )
+    require(
+        witness.get("performance_claim_authorized") is False,
+        "Direct identity witness overclaims performance",
+    )
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--preregistration", type=Path, required=True)
     parser.add_argument("--execution-authority", type=Path, required=True)
     parser.add_argument("--identity-witness", type=Path, required=True)
     parser.add_argument("--pyoptix-identity-witness", type=Path, required=True)
+    parser.add_argument("--direct-identity-witness", type=Path, required=True)
     parser.add_argument("--causal-root", type=Path, required=True)
     parser.add_argument("--baseline-root", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
@@ -999,6 +1216,8 @@ def main() -> None:
     validate_identity_witness(witness, prereg, authority)
     pyoptix_witness = read_json(args.pyoptix_identity_witness.resolve())
     validate_pyoptix_identity_witness(pyoptix_witness, prereg, authority)
+    direct_witness = read_json(args.direct_identity_witness.resolve())
+    validate_direct_identity_witness(direct_witness, prereg, authority)
     causal, causal_receipts = recount_causal(causal_root, prereg, authority)
     baseline, composites = recount_baseline(baseline_root, prereg, authority)
     require(causal.get("hardware") == authority["hardware"], "causal hardware mismatch")
@@ -1050,6 +1269,17 @@ def main() -> None:
             ),
             f"baseline/PyOptiX-witness output mismatch: {task}",
         )
+        direct_witness_row = next(
+            row for row in direct_witness["tasks"] if row["task"] == task
+        )
+        require(
+            all(
+                row["output_sha256"] == direct_witness_row["public_output_sha256"]
+                for row in baseline_rows
+                if row["arm"] == DIRECT_ARM
+            ),
+            f"baseline/Direct-witness output mismatch: {task}",
+        )
     causal_manifest = evidence_manifest(causal_root)
     baseline_manifest = evidence_manifest(baseline_root)
     result: dict[str, object] = {
@@ -1062,6 +1292,7 @@ def main() -> None:
         "architecture_generation": authority["hardware"]["architecture_generation"],
         "identity_witness_sha256": witness["witness_sha256"],
         "pyoptix_identity_witness_sha256": pyoptix_witness["witness_sha256"],
+        "direct_identity_witness_sha256": direct_witness["witness_sha256"],
         "causal_result_sha256": causal["result_sha256"],
         "baseline_result_sha256": baseline["result_sha256"],
         "causal_receipt_count": len(causal_receipts),

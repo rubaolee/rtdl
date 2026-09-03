@@ -27,6 +27,7 @@ from .contracts import (
     STEADY_MODE,
     STEADY_REPETITIONS,
     STEADY_WARMUPS,
+    TRIANGLE_TASK,
     digest,
 )
 from .controller import bootstrap_interval, integer_median
@@ -55,6 +56,14 @@ PHASE_KEYS = {
 }
 
 
+def public_output_contract_id(task: str) -> str:
+    if task == RELATION_TASK:
+        return "canonical_relation_rows.v1"
+    if task == TRIANGLE_TASK:
+        return "checked_u64_weighted_scalar.v1"
+    raise ValueError(f"unsupported baseline public-output task: {task}")
+
+
 def validate_subworker_receipt(
     receipt: dict[str, Any],
     *,
@@ -78,7 +87,10 @@ def validate_subworker_receipt(
         "mode": mode,
         "preregistration_sha256": authority["preregistration_sha256"],
         "execution_authority_sha256": authority["authority_sha256"],
-        "oracle_exact": True,
+        "public_output_contract_id": public_output_contract_id(row["task"]),
+        "public_output_oracle_exact": True,
+        "oracle_validation_outside_registered_interval": True,
+        "auxiliary_full_oracle_witness_before_worker_zero": True,
     }
     for key, expected_value in expected.items():
         if receipt.get(key) != expected_value:
@@ -147,6 +159,8 @@ def direct_command(
         authority["preregistration_sha256"],
         "--controller-ticket",
         ticket,
+        "--measurement-contract",
+        "GOAL5842_PUBLIC_OUTPUT_V1",
     ]
     return command, ticket
 
@@ -169,7 +183,7 @@ def parse_direct(
         version_parts[0] * 10_000 + version_parts[1] * 100 + version_parts[2]
     )
     if (
-        raw.get("schema") != "rtdl.goal5798.direct_raw_worker.v1"
+        raw.get("schema") != "rtdl.goal5842.direct_public_output_raw.v1"
         or raw.get("status") != "PASS"
         or raw.get("worker_id") != subworker_id
         or raw.get("task") != row["task"]
@@ -177,14 +191,20 @@ def parse_direct(
         or raw.get("controller_ticket") != ticket
         or raw.get("freeze_sha256") != authority["preregistration_sha256"]
         or raw.get("optix_header_version") != expected_header_version
+        or raw.get("measurement_contract") != "GOAL5842_PUBLIC_OUTPUT_V1"
+        or raw.get("oracle_validation_outside_execute_durations") is not True
     ):
         raise RuntimeError("Direct subworker identity mismatch")
     task = build_task(row["task"])
     correctness = raw.get("correctness")
     if not isinstance(correctness, dict):
         raise TypeError("Direct correctness payload missing")
-    if correctness.get("oracle_exact") is not True:
-        raise RuntimeError("Direct worker did not report an exact oracle")
+    if correctness.get("public_output_oracle_exact") is not True:
+        raise RuntimeError("Direct worker did not report an exact public oracle")
+    if correctness.get("public_output_contract_id") != public_output_contract_id(
+        row["task"]
+    ):
+        raise RuntimeError("Direct public output contract mismatch")
     if row["task"] == RELATION_TASK:
         output = tuple(
             tuple(int(item) for item in pair) for pair in correctness["canonical_rows"]
@@ -198,13 +218,9 @@ def parse_direct(
             raise RuntimeError("Direct relation device status failure")
         output_sha256 = digest(output)
     else:
-        per_ray = tuple(int(item) for item in correctness["per_ray"])
         weighted = int(correctness["weighted_sum"])
-        if (
-            per_ray != task.expected_output["per_ray"]
-            or weighted != task.expected_output["weighted_sum"]
-        ):
-            raise RuntimeError("Direct triangle oracle mismatch")
+        if weighted != task.expected_output["weighted_sum"]:
+            raise RuntimeError("Direct triangle public oracle mismatch")
         if correctness.get("device_status") != 0:
             raise RuntimeError("Direct triangle device status failure")
         output_sha256 = digest(weighted)
@@ -262,7 +278,10 @@ def parse_direct(
         "execution_authority_sha256": authority["authority_sha256"],
         "input_sha256": task.input_sha256,
         "output_sha256": output_sha256,
-        "oracle_exact": True,
+        "public_output_contract_id": public_output_contract_id(row["task"]),
+        "public_output_oracle_exact": True,
+        "oracle_validation_outside_registered_interval": True,
+        "auxiliary_full_oracle_witness_before_worker_zero": True,
         "phases_ns": phases,
         "identity": {
             "direct_binary_sha256": authority["execution_paths"][
@@ -401,6 +420,10 @@ def combine_subworkers(
         "execution_authority_sha256",
         "input_sha256",
         "output_sha256",
+        "public_output_contract_id",
+        "public_output_oracle_exact",
+        "oracle_validation_outside_registered_interval",
+        "auxiliary_full_oracle_witness_before_worker_zero",
         "identity",
     ):
         if first.get(key) != steady.get(key):
@@ -428,6 +451,7 @@ def combine_subworkers(
         "block": first["block"],
         "input_sha256": first["input_sha256"],
         "output_sha256": first["output_sha256"],
+        "public_output_contract_id": first["public_output_contract_id"],
         "identity": first["identity"],
         "first_phases_ns": first_phases,
         "steady_phases_ns": steady["phases_ns"],
@@ -439,7 +463,9 @@ def combine_subworkers(
         "steady_complete_execution_median_ns": integer_median(steady_values),
         "close_ns": first_phases["close"],
         "process_wall_ns": process_walls,
-        "oracle_exact": True,
+        "public_output_oracle_exact": True,
+        "oracle_validation_outside_registered_interval": True,
+        "auxiliary_full_oracle_witness_before_worker_zero": True,
     }
 
 
@@ -623,7 +649,8 @@ def main() -> None:
         * (1 + STEADY_WARMUPS + STEADY_REPETITIONS),
         "task_summaries": summaries,
         "composite_rows": composites,
-        "cross_arm_input_output_contract_exact": True,
+        "cross_arm_public_input_output_contract_exact": True,
+        "oracle_validation_outside_registered_intervals": True,
         "cross_arm_generated_artifact_identity_claimed": False,
         "direct_close_phase_available": False,
         "close_phase_comparable_across_all_arms": False,

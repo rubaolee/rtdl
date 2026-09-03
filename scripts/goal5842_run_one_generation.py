@@ -108,6 +108,7 @@ def main() -> None:
     authority = output_root / "execution_authority.json"
     witness = output_root / "gpu_identity_witness.json"
     pyoptix_witness = output_root / "pyoptix_identity_witness.json"
+    direct_witness = output_root / "direct_identity_witness.json"
     causal_root = output_root / "causal"
     baseline_root = output_root / "baseline"
     recount = output_root / "independent_recount.json"
@@ -196,7 +197,30 @@ def main() -> None:
         worker_zero_reached=False,
     )
     run_stage(
-        "03_causal_admission",
+        "03_direct_identity_witness_no_timing",
+        [
+            python,
+            str(ROOT / "scripts/goal5842_direct_identity_witness.py"),
+            "--preregistration",
+            prereg,
+            "--execution-authority",
+            str(authority),
+            "--direct-binary",
+            direct_binary,
+            "--device-source",
+            device_source,
+            "--optix-include",
+            optix_include,
+            "--cuda-include",
+            cuda_include,
+            "--output",
+            str(direct_witness),
+        ],
+        output_root,
+        worker_zero_reached=False,
+    )
+    run_stage(
+        "04_causal_admission",
         [
             python,
             "-m",
@@ -214,7 +238,7 @@ def main() -> None:
         worker_zero_reached=True,
     )
     run_stage(
-        "04_three_arm_baseline",
+        "05_three_arm_baseline",
         [
             python,
             "-m",
@@ -235,7 +259,7 @@ def main() -> None:
         worker_zero_reached=True,
     )
     run_stage(
-        "05_independent_recount",
+        "06_independent_recount",
         [
             python,
             str(ROOT / "scripts/goal5842_independent_recount.py"),
@@ -247,6 +271,8 @@ def main() -> None:
             str(witness),
             "--pyoptix-identity-witness",
             str(pyoptix_witness),
+            "--direct-identity-witness",
+            str(direct_witness),
             "--causal-root",
             str(causal_root),
             "--baseline-root",

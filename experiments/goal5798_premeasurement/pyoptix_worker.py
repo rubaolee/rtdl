@@ -68,10 +68,14 @@ class PyOptixRelationPrepared:
         self.d_count = cp.zeros(1, dtype=cp.uint32)
         self.d_overflow = cp.zeros(1, dtype=cp.uint32)
         self.d_status = cp.zeros(1, dtype=cp.uint32)
-        self.indexed_handle, self.indexed_gas = baseline.build_custom_gas(context, self.indexed)
-        self.source_handle, self.source_gas = baseline.build_custom_gas(context, self.sources)
+        self.indexed_handle, self.indexed_gas = baseline.build_custom_gas(
+            context, self.indexed
+        )
+        self.source_handle, self.source_gas = baseline.build_custom_gas(
+            context, self.sources
+        )
 
-    def execute(self) -> dict[str, Any]:
+    def execute(self, *, validate_expected: bool = True) -> dict[str, Any]:
         b = self.baseline
         cp = b.cp
         self.d_rows.fill(0)
@@ -80,16 +84,44 @@ class PyOptixRelationPrepared:
         self.d_status.fill(0)
         cp.cuda.get_current_stream().synchronize()
         for reverse, primitive_host, query_host, d_primitive, d_query, handle in (
-            (0, self.indexed, self.sources, self.d_indexed, self.d_sources, self.indexed_handle),
-            (1, self.sources, self.indexed, self.d_sources, self.d_indexed, self.source_handle),
+            (
+                0,
+                self.indexed,
+                self.sources,
+                self.d_indexed,
+                self.d_sources,
+                self.indexed_handle,
+            ),
+            (
+                1,
+                self.sources,
+                self.indexed,
+                self.d_sources,
+                self.d_indexed,
+                self.source_handle,
+            ),
         ):
             params = b.np.zeros(1, dtype=b.PARAM_DTYPE)
             params[0] = (
-                handle, d_primitive.ptr, d_query.ptr, self.d_rows.data.ptr,
-                self.d_count.data.ptr, self.d_overflow.data.ptr,
-                len(primitive_host), len(query_host), RAW_RELATION_CAPACITY, reverse,
-                b.np.float32(self.fixture["minimum_overlap"]), b.np.float32(0.0),
-                b.np.float32(1.0), 0, 0, 0, 0, 0, self.d_status.data.ptr,
+                handle,
+                d_primitive.ptr,
+                d_query.ptr,
+                self.d_rows.data.ptr,
+                self.d_count.data.ptr,
+                self.d_overflow.data.ptr,
+                len(primitive_host),
+                len(query_host),
+                RAW_RELATION_CAPACITY,
+                reverse,
+                b.np.float32(self.fixture["minimum_overlap"]),
+                b.np.float32(0.0),
+                b.np.float32(1.0),
+                0,
+                0,
+                0,
+                0,
+                0,
+                self.d_status.data.ptr,
             )
             b.launch(self.pipeline, self.sbt, params, len(query_host))
         raw_count = int(cp.asnumpy(self.d_count)[0])
@@ -98,13 +130,14 @@ class PyOptixRelationPrepared:
         if overflow or status or raw_count > RAW_RELATION_CAPACITY:
             raise RuntimeError(
                 f"PyOptiX formal relation status failure: count={raw_count} "
-                f"overflow={overflow} status={status}")
-        raw = cp.asnumpy(self.d_rows[:raw_count * 2]).reshape((-1, 2))
+                f"overflow={overflow} status={status}"
+            )
+        raw = cp.asnumpy(self.d_rows[: raw_count * 2]).reshape((-1, 2))
         rows = sorted(set(map(tuple, raw.tolist())))
         output = [list(row) for row in rows]
         if len(output) > int(self.fixture["capacity"]):
             raise RuntimeError("PyOptiX formal relation capacity exceeded")
-        if output != self.fixture["expected_rows"]:
+        if validate_expected and output != self.fixture["expected_rows"]:
             raise RuntimeError("PyOptiX formal relation oracle mismatch")
         return {
             "output": output,
@@ -135,7 +168,12 @@ class PyOptixTrianglePrepared:
         self.d_weighted = b.cp.zeros(1, dtype=b.cp.uint64)
         self.d_status = b.cp.zeros(1, dtype=b.cp.uint32)
 
-    def execute(self) -> dict[str, Any]:
+    def execute(
+        self,
+        *,
+        public_output_only: bool = False,
+        validate_expected: bool = True,
+    ) -> dict[str, Any]:
         b = self.baseline
         cp = b.cp
         self.d_per_ray.fill(0)
@@ -144,22 +182,47 @@ class PyOptixTrianglePrepared:
         cp.cuda.get_current_stream().synchronize()
         params = b.np.zeros(1, dtype=b.PARAM_DTYPE)
         params[0] = (
-            self.handle, 0, 0, 0, 0, 0, 0, len(self.rays), 0, 0,
-            b.np.float32(0.0), b.np.float32(self.task["tmin"]),
-            b.np.float32(self.task["tmax"]), 0, self.d_rays.ptr,
-            self.d_weights.data.ptr, self.d_per_ray.data.ptr,
-            self.d_weighted.data.ptr, self.d_status.data.ptr,
+            self.handle,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            len(self.rays),
+            0,
+            0,
+            b.np.float32(0.0),
+            b.np.float32(self.task["tmin"]),
+            b.np.float32(self.task["tmax"]),
+            0,
+            self.d_rays.ptr,
+            self.d_weights.data.ptr,
+            self.d_per_ray.data.ptr,
+            self.d_weighted.data.ptr,
+            self.d_status.data.ptr,
         )
         b.launch(self.pipeline, self.sbt, params, len(self.rays))
         status = int(cp.asnumpy(self.d_status)[0])
-        per_ray = cp.asnumpy(self.d_per_ray).tolist()
+        per_ray = None
+        if not public_output_only:
+            per_ray = cp.asnumpy(self.d_per_ray).tolist()
         weighted = int(cp.asnumpy(self.d_weighted)[0])
         if status:
             raise RuntimeError(f"PyOptiX formal triangle status failure: {status}")
-        if per_ray != self.task["expected_per_ray"] \
-                or weighted != self.task["expected_weighted_sum"]:
-            raise RuntimeError("PyOptiX formal triangle oracle mismatch")
-        return {"per_ray": per_ray, "weighted_sum": weighted, "device_status": status}
+        if validate_expected:
+            if public_output_only:
+                if weighted != self.task["expected_weighted_sum"]:
+                    raise RuntimeError("PyOptiX formal triangle public oracle mismatch")
+            elif (
+                per_ray != self.task["expected_per_ray"]
+                or weighted != self.task["expected_weighted_sum"]
+            ):
+                raise RuntimeError("PyOptiX formal triangle oracle mismatch")
+        result = {"weighted_sum": weighted, "device_status": status}
+        if per_ray is not None:
+            result["per_ray"] = per_ray
+        return result
 
 
 def main() -> None:
@@ -171,9 +234,17 @@ def main() -> None:
     freeze, row, authority = admit(args)
     runtime = load_runtime_manifest(args.runtime_manifest.resolve(), verify_files=False)
     if args.plan_only:
-        print(json.dumps(plan_result(
-            freeze=freeze, row=row, runtime_manifest=runtime, arm=row["arm"],
-        ), sort_keys=True))
+        print(
+            json.dumps(
+                plan_result(
+                    freeze=freeze,
+                    row=row,
+                    runtime_manifest=runtime,
+                    arm=row["arm"],
+                ),
+                sort_keys=True,
+            )
+        )
         return
     for name in ("device_source", "optix_include", "cuda_include"):
         if getattr(args, name) is None:
@@ -186,11 +257,14 @@ def main() -> None:
     from experiments.goal5796_matched import pyoptix_baseline as baseline
 
     selected = authority["host_binding"]["selected_stack"]
-    expected_api = tuple(int(value) for value in selected["optix_api_version"].split("."))
+    expected_api = tuple(
+        int(value) for value in selected["optix_api_version"].split(".")
+    )
     if tuple(int(value) for value in baseline.optix.version()) != expected_api:
         raise RuntimeError(
             f"selected PyOptiX arm requires OptiX {selected['optix_api_version']}, "
-            f"got {baseline.optix.version()}")
+            f"got {baseline.optix.version()}"
+        )
     distribution_name = selected["pyoptix_distribution_name"]
     distribution_version = importlib.metadata.version(distribution_name)
     if distribution_version != selected["pyoptix_distribution_version"]:
@@ -209,10 +283,16 @@ def main() -> None:
     }
     task_value: dict[str, Any]
     task_value, phases["deterministic_input_materialization"] = measured(
-        relation_workload if row["task"] == RELATION_TASK else triangle_workload)
+        relation_workload if row["task"] == RELATION_TASK else triangle_workload
+    )
     preparation_start = now_ns()
-    ptx, phases["device_compile"] = measured(lambda: baseline.compile_ptx(
-        args.device_source.resolve(), args.optix_include.resolve(), args.cuda_include.resolve()))
+    ptx, phases["device_compile"] = measured(
+        lambda: baseline.compile_ptx(
+            args.device_source.resolve(),
+            args.optix_include.resolve(),
+            args.cuda_include.resolve(),
+        )
+    )
 
     def make_pipeline():
         context, logger = baseline.make_context()
@@ -225,10 +305,16 @@ def main() -> None:
     context, logger, pipeline, groups, logs, sbt, sbt_keepalive = pipeline_state
     if row["task"] == RELATION_TASK:
         prepared, phases["gas_and_static_prepare"] = measured(
-            lambda: PyOptixRelationPrepared(baseline, context, pipeline, sbt, task_value))
+            lambda: PyOptixRelationPrepared(
+                baseline, context, pipeline, sbt, task_value
+            )
+        )
     else:
         prepared, phases["gas_and_static_prepare"] = measured(
-            lambda: PyOptixTrianglePrepared(baseline, context, pipeline, sbt, task_value))
+            lambda: PyOptixTrianglePrepared(
+                baseline, context, pipeline, sbt, task_value
+            )
+        )
     phases["common_preparation_total"] = now_ns() - preparation_start
 
     durations: list[int] = []
@@ -242,11 +328,16 @@ def main() -> None:
     elif row["mode"] == MEMORY_MODE:
         for _ in range(PREPARED_WARMUPS):
             latest = prepared.execute()
-        wait_memory_barrier(args.barrier_dir, {
-            "schema": "rtdl.goal5798.prepared_memory_barrier.v1",
-            "worker_id": row["worker_id"], "pid": os.getpid(),
-            "arm": ARM, "task": row["task"],
-        })
+        wait_memory_barrier(
+            args.barrier_dir,
+            {
+                "schema": "rtdl.goal5798.prepared_memory_barrier.v1",
+                "worker_id": row["worker_id"],
+                "pid": os.getpid(),
+                "arm": ARM,
+                "task": row["task"],
+            },
+        )
         latest, elapsed = measured(prepared.execute)
         durations.append(elapsed)
     else:
@@ -276,8 +367,9 @@ def main() -> None:
             "weighted_sum": latest["weighted_sum"],
             "expected_weighted_sum": task_value["expected_weighted_sum"],
             "device_status": latest["device_status"],
-            "raw_output_sha256": digest({
-                "per_ray": latest["per_ray"], "weighted_sum": latest["weighted_sum"]}),
+            "raw_output_sha256": digest(
+                {"per_ray": latest["per_ray"], "weighted_sum": latest["weighted_sum"]}
+            ),
         }
 
     close_start = now_ns()
@@ -286,11 +378,17 @@ def main() -> None:
     baseline.cp.get_default_memory_pool().free_all_blocks()
     phases["close"] = now_ns() - close_start
     import resource
-    host_rusage_maxrss_bytes = int(
-        resource.getrusage(resource.RUSAGE_SELF).ru_maxrss) * 1024
+
+    host_rusage_maxrss_bytes = (
+        int(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss) * 1024
+    )
     receipt = finish_receipt(
-        freeze=freeze, row=row, runtime_manifest=runtime, authority=authority,
-        phases_ns=phases, execute_durations_ns=durations,
+        freeze=freeze,
+        row=row,
+        runtime_manifest=runtime,
+        authority=authority,
+        phases_ns=phases,
+        execute_durations_ns=durations,
         correctness=correctness,
         implementation={
             "arm": ARM,
@@ -298,8 +396,12 @@ def main() -> None:
             "pyoptix_distribution_name": distribution_name,
             "pyoptix_distribution_version": distribution_version,
             "pyoptix_repository_commit": baseline.PYOPTIX_COMMIT,
-            "optix_api_version": ".".join(str(value) for value in baseline.optix.version()),
-            "device_source_sha256": hashlib.sha256(args.device_source.read_bytes()).hexdigest(),
+            "optix_api_version": ".".join(
+                str(value) for value in baseline.optix.version()
+            ),
+            "device_source_sha256": hashlib.sha256(
+                args.device_source.read_bytes()
+            ).hexdigest(),
             "ptx_sha256": hashlib.sha256(ptx).hexdigest(),
             "public_pyoptix_host_api": True,
             "rtdl_imported": False,

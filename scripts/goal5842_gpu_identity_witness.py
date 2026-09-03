@@ -15,6 +15,7 @@ from experiments.goal5842_causal_admission.contracts import (
     SPHERE_TASK,
     STEADY_REPETITIONS,
     STEADY_WARMUPS,
+    TRIANGLE_TASK,
     digest,
 )
 from experiments.goal5842_causal_admission.runtime import (
@@ -26,6 +27,7 @@ from experiments.goal5842_causal_admission.runtime import (
 )
 from experiments.goal5842_causal_admission.tasks import (
     build_task,
+    build_triangle_auxiliary_program,
     checker_off_program,
     program_signature,
 )
@@ -99,20 +101,15 @@ def execute_and_check(
 ) -> dict[str, object]:
     latest = None
     latest_output = None
-    latest_full_output = None
     for _ in range(complete_execution_call_count):
         result = prepared.execute(task.batch)
         output = thaw(result.output)
         expected = thaw(task.expected_output)
-        if task.task_id.endswith("TRIANGLE_WEIGHTED_ALL_HIT_V1"):
-            per_ray = thaw(tuple(result.details["per_ray_u64"]))
-            full_output = {"weighted_sum": output, "per_ray": per_ray}
-            if full_output != expected:
-                raise RuntimeError("triangle full output mismatch")
-        else:
-            full_output = output
-            if output != expected:
-                raise RuntimeError(f"output mismatch for {task.task_id}")
+        expected_public = (
+            expected["weighted_sum"] if task.task_id == TRIANGLE_TASK else expected
+        )
+        if output != expected_public:
+            raise RuntimeError(f"public output mismatch for {task.task_id}")
         receipt = thaw(result.traversal_receipt)
         if (
             receipt.get("physical_executor_classification")
@@ -121,7 +118,6 @@ def execute_and_check(
             raise RuntimeError("identity witness did not observe OptiX traversal")
         latest = result
         latest_output = output
-        latest_full_output = full_output
     if latest is None:
         raise RuntimeError("identity witness executed zero calls")
     lifecycle = provider_lifecycle_evidence(
@@ -136,11 +132,55 @@ def execute_and_check(
     return {
         "output": latest_output,
         "output_sha256": latest.output_sha256,
-        "full_output_sha256": digest(latest_full_output),
+        "public_output_contract_id": (
+            "checked_u64_weighted_scalar.v1"
+            if task.task_id == TRIANGLE_TASK
+            else (
+                "canonical_relation_rows.v1"
+                if task.task_id in BASELINE_TASKS
+                else "per_query_count_vector.v1"
+            )
+        ),
+        "public_output_oracle_exact": True,
         "traversal_receipt_sha256": digest(receipt),
         "physical_executor_classification": receipt["physical_executor_classification"],
         "complete_execution_call_count": complete_execution_call_count,
         **lifecycle,
+    }
+
+
+def execute_triangle_auxiliary_full_oracle(
+    task: object,
+    *,
+    target: object,
+    toolchain: object,
+) -> dict[str, object]:
+    """Check the provider's non-public per-ray vector without observing time."""
+
+    program = build_triangle_auxiliary_program()
+    materialized = program.materialize(target=target, toolchain=toolchain)
+    prepared = materialized.prepare(task.static_input)
+    try:
+        result = prepared.execute(task.batch)
+    finally:
+        prepared.close()
+    full_output = {
+        "weighted_sum": int(result.output),
+        "per_ray": tuple(int(value) for value in result.details["per_ray_u64"]),
+    }
+    if full_output != task.expected_output:
+        raise RuntimeError("RTDL triangle auxiliary full oracle mismatch")
+    receipt = thaw(result.traversal_receipt)
+    if receipt.get("physical_executor_classification") != "optix_traversal_observed":
+        raise RuntimeError("RTDL triangle auxiliary witness lacked OptiX traversal")
+    return {
+        "scope": "NON_PUBLIC_PROVIDER_PER_RAY_VECTOR_PLUS_PUBLIC_WEIGHTED_SCALAR",
+        "full_oracle_sha256": digest(full_output),
+        "full_oracle_exact": True,
+        "complete_execution_call_count": 1,
+        "physical_executor_classification": "optix_traversal_observed",
+        "output_sha256": result.output_sha256,
+        "traversal_receipt_sha256": digest(receipt),
     }
 
 
@@ -231,8 +271,14 @@ def main() -> None:
             off_prepared.close()
         if on_result["output_sha256"] != off_result["output_sha256"]:
             raise RuntimeError("on/off output identity mismatch")
-        if on_result["full_output_sha256"] != off_result["full_output_sha256"]:
-            raise RuntimeError("on/off full output identity mismatch")
+        auxiliary_full_oracle = None
+        if task_id == TRIANGLE_TASK:
+            report_progress(task_id, "AUXILIARY_FULL_ORACLE")
+            auxiliary_full_oracle = execute_triangle_auxiliary_full_oracle(
+                task,
+                target=target,
+                toolchain=toolchain,
+            )
         rows.append(
             {
                 "task": task_id,
@@ -241,6 +287,7 @@ def main() -> None:
                 "executable_identity": on_identity,
                 "on": on_result,
                 "off": off_result,
+                "auxiliary_full_oracle": auxiliary_full_oracle,
                 "exact_identity_equal": True,
             }
         )
@@ -257,11 +304,18 @@ def main() -> None:
         "task_count": len(rows),
         "all_exact_identity_equal": all(row["exact_identity_equal"] for row in rows),
         "registered_timing_observation_count": 0,
-        "gpu_complete_execution_call_count": sum(
+        "generic_public_complete_execution_call_count": sum(
             row[arm]["complete_execution_call_count"]
             for row in rows
             for arm in ("on", "off")
         ),
+        "auxiliary_full_oracle_complete_execution_call_count": 1,
+        "gpu_complete_execution_call_count": sum(
+            row[arm]["complete_execution_call_count"]
+            for row in rows
+            for arm in ("on", "off")
+        )
+        + 1,
         "repeated_lifecycle_calls_per_baseline_task_arm": (
             STEADY_WARMUPS + STEADY_REPETITIONS
         ),

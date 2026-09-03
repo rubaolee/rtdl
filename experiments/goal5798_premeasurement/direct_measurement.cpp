@@ -168,14 +168,6 @@ struct PreparedRelation {
         auto raw = download_vector<RelationRow>(d_rows.ptr, count);
         std::set<std::pair<std::uint32_t, std::uint32_t>> canonical;
         for (const auto& row : raw) canonical.emplace(row.source_id, row.item_id);
-        if (canonical.size() != kRelationSize)
-            throw std::runtime_error("direct formal relation row-count mismatch");
-        std::uint32_t expected = 0;
-        for (const auto& row : canonical) {
-            if (row.first != expected || row.second != expected)
-                throw std::runtime_error("direct formal relation oracle mismatch");
-            ++expected;
-        }
         return {{canonical.begin(), canonical.end()}, count, status, overflow};
     }
 };
@@ -207,7 +199,7 @@ struct PreparedTriangle {
           d_weights(upload_vector(weights)), d_per_ray(sizeof(std::uint64_t) * rays.size()),
           d_weighted(sizeof(std::uint64_t)), d_status(sizeof(std::uint32_t)) {}
 
-    FormalTriangleResult execute() {
+    FormalTriangleResult execute(bool include_auxiliary_per_ray = true) {
         CU_CHECK(cuMemsetD8(d_per_ray.ptr, 0, d_per_ray.bytes));
         CU_CHECK(cuMemsetD8(d_weighted.ptr, 0, d_weighted.bytes));
         CU_CHECK(cuMemsetD8(d_status.ptr, 0, d_status.bytes));
@@ -224,20 +216,41 @@ struct PreparedTriangle {
         launch(pipeline, params, kTriangleSize);
         FormalTriangleResult result;
         result.status = download_vector<std::uint32_t>(d_status.ptr, 1)[0];
-        result.per_ray = download_vector<std::uint64_t>(d_per_ray.ptr, kTriangleSize);
+        if (include_auxiliary_per_ray)
+            result.per_ray = download_vector<std::uint64_t>(d_per_ray.ptr, kTriangleSize);
         result.weighted = download_vector<std::uint64_t>(d_weighted.ptr, 1)[0];
         if (result.status) throw std::runtime_error("direct formal triangle device status failure");
-        if (result.weighted != 65530 ||
-            !std::all_of(result.per_ray.begin(), result.per_ray.end(),
-                         [](std::uint64_t value) { return value == 1; }))
-            throw std::runtime_error("direct formal triangle oracle mismatch");
         return result;
     }
 };
 
+void validate_relation_oracle(const FormalRelationResult& result) {
+    if (result.rows.size() != kRelationSize)
+        throw std::runtime_error("direct formal relation row-count mismatch");
+    std::uint32_t expected = 0;
+    for (const auto& row : result.rows) {
+        if (row.first != expected || row.second != expected)
+            throw std::runtime_error("direct formal relation oracle mismatch");
+        ++expected;
+    }
+}
+
+void validate_triangle_public_oracle(const FormalTriangleResult& result) {
+    if (result.weighted != 65530)
+        throw std::runtime_error("direct formal triangle public oracle mismatch");
+}
+
+void validate_triangle_full_oracle(const FormalTriangleResult& result) {
+    validate_triangle_public_oracle(result);
+    if (result.per_ray.size() != kTriangleSize ||
+        !std::all_of(result.per_ray.begin(), result.per_ray.end(),
+                     [](std::uint64_t value) { return value == 1; }))
+        throw std::runtime_error("direct formal triangle auxiliary oracle mismatch");
+}
+
 struct Arguments {
     std::string worker_id, task, mode, device_source, optix_include, cuda_include;
-    std::string freeze_sha256, controller_ticket, barrier_dir;
+    std::string freeze_sha256, controller_ticket, barrier_dir, measurement_contract;
 };
 
 Arguments parse_arguments(int argc, char** argv) {
@@ -248,6 +261,7 @@ Arguments parse_arguments(int argc, char** argv) {
         {"--optix-include", &result.optix_include}, {"--cuda-include", &result.cuda_include},
         {"--freeze-sha256", &result.freeze_sha256},
         {"--controller-ticket", &result.controller_ticket}, {"--barrier-dir", &result.barrier_dir},
+        {"--measurement-contract", &result.measurement_contract},
     };
     for (int index = 1; index < argc; index += 2) {
         if (index + 1 >= argc || !destinations.count(argv[index]))
@@ -290,6 +304,73 @@ std::uint64_t host_rusage_maxrss_bytes() {
 int main(int argc, char** argv) {
     try {
         const Arguments args = parse_arguments(argc, argv);
+        const bool goal5842_public =
+            args.measurement_contract == "GOAL5842_PUBLIC_OUTPUT_V1";
+        const bool goal5842_witness =
+            args.measurement_contract == "GOAL5842_WITNESS_NO_TIMING_V1";
+        if (!args.measurement_contract.empty() && !goal5842_public && !goal5842_witness)
+            throw std::runtime_error("unsupported measurement contract");
+        if (goal5842_witness !=
+            (args.mode == "CORRECTNESS_WITNESS_NO_TIMING"))
+            throw std::runtime_error(
+                "Direct witness mode and measurement contract must be paired");
+
+        if (goal5842_witness) {
+            const std::string source = read_file(args.device_source);
+            const std::string ptx = compile_ptx(
+                source, args.device_source, args.optix_include, args.cuda_include);
+            Context context;
+            auto pipeline = build_pipeline(
+                context.optix, ptx,
+                args.task == "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1");
+            FormalRelationResult relation_result;
+            FormalTriangleResult triangle_result;
+            if (args.task == "CUSTOM_AABB_CLOSED_RELATION_COUNT_V1") {
+                PreparedRelation relation(context.optix, *pipeline, relation_boxes());
+                relation_result = relation.execute();
+                validate_relation_oracle(relation_result);
+            } else if (args.task == "BUILTIN_TRIANGLE_WEIGHTED_ALL_HIT_V1") {
+                PreparedTriangle triangle(
+                    context.optix, *pipeline, triangle_vertices(), triangle_rays(),
+                    triangle_weights());
+                triangle_result = triangle.execute(true);
+                validate_triangle_full_oracle(triangle_result);
+            } else {
+                throw std::runtime_error("unsupported direct witness task");
+            }
+            std::ostringstream output;
+            output << "{\"schema\":\"rtdl.goal5842.direct_identity_witness_raw.v1\","
+                   << "\"status\":\"PASS\",\"worker_id\":\"" << args.worker_id << "\","
+                   << "\"task\":\"" << args.task << "\","
+                   << "\"mode\":\"" << args.mode << "\","
+                   << "\"freeze_sha256\":\"" << args.freeze_sha256 << "\","
+                   << "\"controller_ticket\":\"" << args.controller_ticket << "\","
+                   << "\"optix_header_version\":" << OPTIX_VERSION << ','
+                   << "\"clock_api_called_by_witness_path\":false,"
+                   << "\"duration_field_count\":0,"
+                   << "\"gpu_complete_execution_call_count\":1,"
+                   << "\"optix_launch_count\":" << (relation_result.rows.empty() ? 1 : 2)
+                   << ",\"correctness\":";
+            if (!relation_result.rows.empty()) {
+                output << "{\"full_oracle_exact\":true,\"canonical_rows\":[";
+                for (std::size_t index = 0; index < relation_result.rows.size(); ++index) {
+                    if (index) output << ',';
+                    output << '[' << relation_result.rows[index].first << ','
+                           << relation_result.rows[index].second << ']';
+                }
+                output << "],\"device_status\":" << relation_result.status
+                       << ",\"device_overflow\":" << relation_result.overflow << '}';
+            } else {
+                output << "{\"full_oracle_exact\":true,\"per_ray\":";
+                json_durations(output, triangle_result.per_ray);
+                output << ",\"weighted_sum\":" << triangle_result.weighted
+                       << ",\"device_status\":" << triangle_result.status << '}';
+            }
+            output << "}\n";
+            std::cout << output.str();
+            return 0;
+        }
+
         std::uint64_t input_ns = 0, compile_ns = 0, pipeline_ns = 0, static_ns = 0;
         const auto input_start = Clock::now();
         std::vector<Box> boxes;
@@ -330,9 +411,19 @@ int main(int argc, char** argv) {
         FormalTriangleResult triangle_result;
         auto execute = [&]() {
             const auto start = Clock::now();
-            if (relation) relation_result = relation->execute();
-            else triangle_result = triangle->execute();
-            return elapsed_ns(start);
+            if (relation) {
+                relation_result = relation->execute();
+                if (!goal5842_public) validate_relation_oracle(relation_result);
+            } else {
+                triangle_result = triangle->execute(!goal5842_public);
+                if (!goal5842_public) validate_triangle_full_oracle(triangle_result);
+            }
+            const auto duration = elapsed_ns(start);
+            if (goal5842_public) {
+                if (relation) validate_relation_oracle(relation_result);
+                else validate_triangle_public_oracle(triangle_result);
+            }
+            return duration;
         };
         if (args.mode == "PREPARED_EXECUTION") {
             for (int index = 0; index < kWarmups; ++index) (void)execute();
@@ -346,7 +437,10 @@ int main(int argc, char** argv) {
         } else throw std::runtime_error("unsupported direct mode");
 
         std::ostringstream output;
-        output << "{\"schema\":\"rtdl.goal5798.direct_raw_worker.v1\","
+        output << "{\"schema\":\""
+               << (goal5842_public ? "rtdl.goal5842.direct_public_output_raw.v1"
+                                   : "rtdl.goal5798.direct_raw_worker.v1")
+               << "\","
                << "\"status\":\"PASS\",\"worker_id\":\"" << args.worker_id << "\","
                << "\"task\":\"" << args.task << "\",\"mode\":\"" << args.mode << "\","
                << "\"freeze_sha256\":\"" << args.freeze_sha256 << "\","
@@ -360,9 +454,17 @@ int main(int argc, char** argv) {
                << ",\"common_preparation_total\":" << preparation_ns << "},"
                << "\"execute_durations_ns\":";
         json_durations(output, durations);
-        output << ",\"correctness\":";
+        output << ",\"measurement_contract\":\""
+               << (goal5842_public ? "GOAL5842_PUBLIC_OUTPUT_V1" : "LEGACY_GOAL5798")
+               << "\",\"oracle_validation_outside_execute_durations\":"
+               << (goal5842_public ? "true" : "false") << ','
+               << "\"correctness\":";
         if (relation) {
-            output << "{\"oracle_exact\":true,\"canonical_rows\":";
+            output << (goal5842_public
+                           ? "{\"public_output_oracle_exact\":true,"
+                             "\"public_output_contract_id\":"
+                             "\"canonical_relation_rows.v1\",\"canonical_rows\":"
+                           : "{\"oracle_exact\":true,\"canonical_rows\":");
             output << '[';
             for (std::size_t index = 0; index < relation_result.rows.size(); ++index) {
                 if (index) output << ',';
@@ -374,10 +476,18 @@ int main(int argc, char** argv) {
                    << ",\"device_status\":" << relation_result.status
                    << ",\"device_overflow\":" << relation_result.overflow << '}';
         } else {
-            output << "{\"oracle_exact\":true,\"per_ray\":";
-            json_durations(output, triangle_result.per_ray);
-            output << ",\"weighted_sum\":" << triangle_result.weighted
-                   << ",\"device_status\":" << triangle_result.status << '}';
+            if (goal5842_public) {
+                output << "{\"public_output_oracle_exact\":true,"
+                       << "\"public_output_contract_id\":"
+                       << "\"checked_u64_weighted_scalar.v1\","
+                       << "\"weighted_sum\":" << triangle_result.weighted
+                       << ",\"device_status\":" << triangle_result.status << '}';
+            } else {
+                output << "{\"oracle_exact\":true,\"per_ray\":";
+                json_durations(output, triangle_result.per_ray);
+                output << ",\"weighted_sum\":" << triangle_result.weighted
+                       << ",\"device_status\":" << triangle_result.status << '}';
+            }
         }
         output << "}\n";
         std::cout << output.str();

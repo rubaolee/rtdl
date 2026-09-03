@@ -25,6 +25,7 @@ from rtdsl.v4 import (
     TriangleReductionMode,
     TriangleReductionProtocol,
     TriangleReductionStaticInput,
+    compile_protocol_program,
     standard_protocol_physical_plan,
 )
 from rtdsl.v4_family_route_adapters import (
@@ -208,6 +209,17 @@ def build_task(task_id: str) -> Goal5842TaskInput:
     return factory()
 
 
+def build_triangle_auxiliary_program():
+    """Build the fixed-protocol owner used only for untimed full-output checking."""
+
+    protocol = TriangleReductionProtocol(TriangleReductionMode.WEIGHTED_HIT_COUNT)
+    return compile_protocol_program(
+        protocol,
+        physical_plan=standard_protocol_physical_plan(protocol),
+        any_hit_proof=_proof(protocol, "triangle_weighted"),
+    )
+
+
 def program_signature(program: object) -> dict[str, str]:
     plan = program.plan
     artifacts = program.artifacts
@@ -248,6 +260,7 @@ __all__ = [
     "SPHERE_SIZE",
     "Goal5842TaskInput",
     "build_task",
+    "build_triangle_auxiliary_program",
     "checker_off_program",
     "program_signature",
     "sphere_workload",
