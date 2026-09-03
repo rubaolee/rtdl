@@ -1,0 +1,87 @@
+{
+  "claim_boundary": {
+    "arbitrary_callback_ir_gpu_execution": false,
+    "external_review_or_consensus": false,
+    "goal5838_complete": false,
+    "paper_app": false,
+    "performance_or_speedup": false,
+    "true_gpu_result_exists": false
+  },
+  "date": "2026-09-03",
+  "frozen_core": {
+    "changed_file_count": 0,
+    "files": [
+      {
+        "path": "src/rtdsl/v4_family_schema.py",
+        "sha256": "2d118697d10cb2bc2a8672700ae5a991eaf94e66834bb3e08fd898323720f224"
+      },
+      {
+        "path": "src/rtdsl/v4_generic_family_lifecycle.py",
+        "sha256": "7ac68832de9d1e04fdd6f0f11bfa0de7d6109d892ab22e42c9aeb2825d28228c"
+      },
+      {
+        "path": "src/rtdsl/v4_family.py",
+        "sha256": "d25c487823e966a8e9083092811c9a1a2b6aa0fef6ce8f3a0a5b8919c5b809e8"
+      }
+    ],
+    "seal_sha256": "c2a461c8a4a61650044b724d103a80d25241b44b7b486c071b601946292e5dae"
+  },
+  "generic_family_identities": {
+    "plan_sha256": "5a8f15a3941f10560ffecc6021cd4689c068f5ed39903014b1d5e99e98b3d669",
+    "provider_descriptor_sha256": "a92be4d2defc87fd7dcf2e1edd143cf6afb63035a7048a7560d486b4bdf7463a",
+    "provider_projection_sha256": "fe26dc5417f644c7c649dfbe9827404ed9c914d82334d16e878872cc11f68ec1"
+  },
+  "known_historical_broad_suite_errors": [
+    "goal5832_protocol_shape_algebra_test.ProtocolShapeAlgebraTest.test_authority_matches_repository: goal5831.source_authorities[6] byte count drift",
+    "goal5837_owner_grouped_classification_test.Goal5837OwnerGroupedClassificationTest.setUpClass: AUTHORITY_CURRENT_INPUT_MISMATCH"
+  ],
+  "local_checks": [
+    {
+      "name": "selected_goal5838_tests_strict",
+      "passed": 16,
+      "total": 16
+    },
+    {
+      "name": "all_goal5838_tests_optimized_strict",
+      "passed": 69,
+      "total": 69
+    },
+    {
+      "name": "reused_goal5833_sphere_tests_optimized_strict",
+      "passed": 70,
+      "total": 70
+    },
+    {
+      "errors": 2,
+      "name": "broad_goal583x_normal",
+      "passed": 269,
+      "total": 271
+    },
+    {
+      "name": "selected_compileall",
+      "status": "PASS"
+    },
+    {
+      "name": "selected_ruff_E_F_I_UP_except_E501",
+      "status": "PASS"
+    },
+    {
+      "name": "stored_generic_core_seal_verification",
+      "status": "PASS"
+    },
+    {
+      "name": "stored_independent_selection_verification",
+      "status": "PASS"
+    }
+  ],
+  "next_gate": "COMMIT_PUSH_EXACT_SOURCE__THEN_BUILD_RUN_AND_INDEPENDENTLY_VERIFY_ON_TRUE_OPTIX_GPU",
+  "oracle": {
+    "expected_counts": [4, 1, 1, 0, 4, 0],
+    "fixture_sha256": "69e38e95e8d3a2e14cb428f18e4d8bb27a87da1c21688b6ddad672406a94977a",
+    "oracle_sha256": "b43839793ea426528053adc4ff1cd66d090ac6f2b05b6b774fa7c290bb91fa63"
+  },
+  "schema": "rtdl.goal5838.pre_gpu_readiness.v1",
+  "selected_candidate_id": "builtin_sphere::any_hit_count_continue_u64_per_query",
+  "selection_result_sha256": "9f543f52cd9453e0410766aa79c3f302a6a0e39314487279842fa5ad5e57ed61",
+  "status": "READY_FOR_CLEAN_COMMIT_AND_TRUE_GPU_EXAM__NOT_YET_SUCCESS"
+}
